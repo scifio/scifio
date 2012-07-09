@@ -33,8 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
-package loci.formats.gui;
+package ome.scifio.util;
 
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
@@ -42,7 +41,7 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 
-import loci.common.DataTools;
+import ome.scifio.common.DataTools;
 
 /**
  * ColorModel that handles 16 bits per channel lookup tables.
@@ -71,7 +70,7 @@ public class Index16ColorModel extends ColorModel {
     this.littleEndian = littleEndian;
 
     if (table == null) throw new IOException("LUT cannot be null");
-    for (int i=0; i<table.length; i++) {
+    for (int i = 0; i < table.length; i++) {
       if (table[i].length < size) {
         throw new IOException("LUT " + i + " too small");
       }
@@ -129,8 +128,7 @@ public class Index16ColorModel extends ColorModel {
 
   /* @see java.awt.image.ColorModel#createCompatibleWritableRaster(int, int) */
   public WritableRaster createCompatibleWritableRaster(int w, int h) {
-    return Raster.createInterleavedRaster(DataBuffer.TYPE_USHORT,
-      w, h, 1, null);
+    return Raster.createInterleavedRaster(DataBuffer.TYPE_USHORT, w, h, 1, null);
   }
 
   /* @see java.awt.image.ColorModel#getAlpha(int) */

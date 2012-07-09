@@ -34,7 +34,7 @@
  * #L%
  */
 
-package loci.formats.gui;
+package ome.scifio.util;
 
 import java.awt.image.DataBuffer;
 
@@ -81,7 +81,7 @@ public class SignedByteBuffer extends DataBuffer {
 
   /* @see java.awt.image.DataBuffer#getElem(int, int) */
   public int getElem(int bank, int i) {
-    return (int) bankData[bank][i + getOffsets()[bank]];
+    return bankData[bank][i + getOffsets()[bank]];
   }
 
   /* @see java.awt.image.DataBuffer#setElem(int, int) */

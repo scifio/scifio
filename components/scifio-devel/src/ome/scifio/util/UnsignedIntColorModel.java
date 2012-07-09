@@ -1,3 +1,7 @@
+//
+// UnsignedIntColorModel.java
+//
+
 /*
  * #%L
  * OME SCIFIO package for reading and converting scientific file formats.
@@ -34,8 +38,9 @@
  * #L%
  */
 
-package loci.formats.gui;
+package ome.scifio.util;
 
+import java.awt.Transparency;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.ComponentSampleModel;
@@ -66,12 +71,15 @@ public class UnsignedIntColorModel extends ColorModel {
   public UnsignedIntColorModel(int pixelBits, int dataType, int nChannels)
     throws IOException
   {
-    super(pixelBits, makeBitArray(nChannels, pixelBits),
+    super(
+      pixelBits, makeBitArray(nChannels, pixelBits),
       AWTImageTools.makeColorSpace(nChannels), nChannels == 4, false,
-      ColorModel.TRANSLUCENT, dataType);
+      Transparency.TRANSLUCENT, dataType);
 
-    helper = new ComponentColorModel(AWTImageTools.makeColorSpace(nChannels),
-      nChannels == 4, false, ColorModel.TRANSLUCENT, dataType);
+    helper =
+      new ComponentColorModel(
+        AWTImageTools.makeColorSpace(nChannels), nChannels == 4, false,
+        Transparency.TRANSLUCENT, dataType);
 
     this.pixelBits = pixelBits;
     this.nChannels = nChannels;
@@ -93,10 +101,12 @@ public class UnsignedIntColorModel extends ColorModel {
   /* @see java.awt.image.ColorModel#createCompatibleWritableRaster(int, int) */
   public WritableRaster createCompatibleWritableRaster(int w, int h) {
     int[] bandOffsets = new int[nChannels];
-    for (int i=0; i<nChannels; i++) bandOffsets[i] = i;
+    for (int i = 0; i < nChannels; i++)
+      bandOffsets[i] = i;
 
-    SampleModel m = new ComponentSampleModel(DataBuffer.TYPE_INT, w, h,
-      nChannels, w * nChannels, bandOffsets);
+    SampleModel m =
+      new ComponentSampleModel(DataBuffer.TYPE_INT, w, h, nChannels, w *
+        nChannels, bandOffsets);
     DataBuffer db = new DataBufferInt(w * h, nChannels);
     return Raster.createWritableRaster(m, db, null);
   }
@@ -169,14 +179,14 @@ public class UnsignedIntColorModel extends ColorModel {
 
   private int getComponent(int pixel, int index) {
     long v = pixel & 0xffffffffL;
-    double f = (double) v / (Math.pow(2, 32) - 1);
+    double f = v / (Math.pow(2, 32) - 1);
     f *= 255;
     return (int) f;
   }
 
   private static int[] makeBitArray(int nChannels, int nBits) {
     int[] bits = new int[nChannels];
-    for (int i=0; i<bits.length; i++) {
+    for (int i = 0; i < bits.length; i++) {
       bits[i] = nBits;
     }
     return bits;

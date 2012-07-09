@@ -34,7 +34,7 @@
  * #L%
  */
 
-package loci.formats.gui;
+package ome.scifio.util;
 
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferShort;

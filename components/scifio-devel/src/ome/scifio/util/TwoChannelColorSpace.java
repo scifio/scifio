@@ -1,3 +1,7 @@
+//
+// TwoChannelColorSpace.java
+//
+
 /*
  * #%L
  * OME SCIFIO package for reading and converting scientific file formats.
@@ -34,7 +38,7 @@
  * #L%
  */
 
-package loci.formats.gui;
+package ome.scifio.util;
 
 import java.awt.color.ColorSpace;
 
@@ -91,7 +95,9 @@ public class TwoChannelColorSpace extends ColorSpace {
     return ColorSpace.TYPE_2CLR;
   }
 
-  public boolean isCS_sRGB() { return false; }
+  public boolean isCS_sRGB() {
+    return false;
+  }
 
   public float[] toCIEXYZ(float[] color) {
     ColorSpace rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
