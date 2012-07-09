@@ -1,7 +1,3 @@
-//
-// SignedColorModel.java
-//
-
 /*
  * #%L
  * OME SCIFIO package for reading and converting scientific file formats.
@@ -37,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package ome.scifio.util;
 
 import java.awt.Transparency;
