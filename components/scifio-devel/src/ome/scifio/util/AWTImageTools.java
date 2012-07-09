@@ -72,9 +72,16 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import loci.formats.FormatTools;
+import loci.formats.IFormatReader;
+import loci.formats.gui.Index16ColorModel;
+import loci.formats.gui.SignedColorModel;
+import loci.formats.meta.MetadataRetrieve;
+
 import ome.scifio.FormatException;
 import ome.scifio.Reader;
 import ome.scifio.common.DataTools;
+import ome.xml.model.primitives.PositiveInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -440,7 +447,7 @@ public final class AWTImageTools {
    * @param meta Metadata object containing dimensional parameters.
    * @param series Relevant image series number of metadata object.
    */
-  /* TODO: MetadataRetrieve refactoring
+  //TODO: MetadataRetrieve refactoring
   public static BufferedImage makeImage(byte[] data, boolean interleaved,
     MetadataRetrieve meta, int series) throws FormatException
   {
@@ -461,7 +468,6 @@ public final class AWTImageTools {
       FormatTools.isFloatingPoint(type), littleEndian,
       FormatTools.isSigned(type));
   }
-  /*
 
   /**
    * Creates an image from the given raw byte array,
@@ -816,6 +822,85 @@ public final class AWTImageTools {
       WritableRaster raster =
         Raster.createWritableRaster(b.getSampleModel(), b.getRaster()
           .getDataBuffer(), null);
+      b = new BufferedImage(model, raster, false, null);
+    }
+
+    return b;
+  }
+  
+  /**
+   * Legacy openImage(byte[], IFormatReader, int, int)
+   */
+  @Deprecated
+  public static BufferedImage openImage(byte[] buf, IFormatReader r,
+    int w, int h) throws FormatException, IOException
+  {
+    int pixelType = r.getPixelType();
+    boolean little = r.isLittleEndian();
+    boolean normal = r.isNormalized();
+    int rgbChanCount = r.getRGBChannelCount();
+    boolean interleaved = r.isInterleaved();
+    boolean indexed = r.isIndexed();
+
+    if (pixelType == FormatTools.FLOAT) {
+      float[] f = (float[]) DataTools.makeDataArray(buf, 4, true, little);
+      if (normal) f = DataTools.normalizeFloats(f);
+      return makeImage(f, w, h, rgbChanCount, interleaved);
+    }
+    else if (pixelType == FormatTools.DOUBLE) {
+      double[] d = (double[]) DataTools.makeDataArray(buf, 8, true, little);
+      if (normal) d = DataTools.normalizeDoubles(d);
+      return makeImage(d, w, h, rgbChanCount, interleaved);
+    }
+
+    boolean signed = FormatTools.isSigned(pixelType);
+    ColorModel model = null;
+
+    if (signed) {
+      if (pixelType == FormatTools.INT8) {
+        model = new SignedColorModel(8, DataBuffer.TYPE_BYTE, rgbChanCount);
+      }
+      else if (pixelType == FormatTools.INT16) {
+        model = new SignedColorModel(16, DataBuffer.TYPE_SHORT, rgbChanCount);
+      }
+      else if (pixelType == FormatTools.INT32) {
+        model = new SignedColorModel(32, DataBuffer.TYPE_INT, rgbChanCount);
+      }
+    }
+
+    int bpp = FormatTools.getBytesPerPixel(pixelType);
+    BufferedImage b = makeImage(buf, w, h, rgbChanCount,
+      interleaved, bpp, false, little, signed);
+    if (b == null) {
+      throw new FormatException("Could not construct BufferedImage");
+    }
+
+    if (indexed && rgbChanCount == 1) {
+      if (pixelType == FormatTools.UINT8 || pixelType == FormatTools.INT8) {
+        byte[][] table = r.get8BitLookupTable();
+        if (table != null && table.length > 0 && table[0] != null) {
+          int len = table[0].length;
+          byte[] dummy = table.length < 3 ? new byte[len] : null;
+          byte[] red = table.length >= 1 ? table[0] : dummy;
+          byte[] green = table.length >= 2 ? table[1] : dummy;
+          byte[] blue = table.length >= 3 ? table[2] : dummy;
+          model = new IndexColorModel(8, len, red, green, blue);
+        }
+      }
+      else if (pixelType == FormatTools.UINT16 ||
+        pixelType == FormatTools.INT16)
+      {
+        short[][] table = r.get16BitLookupTable();
+        if (table != null && table.length > 0 && table[0] != null) {
+          model = new Index16ColorModel(16, table[0].length, table,
+            r.isLittleEndian());
+        }
+      }
+    }
+
+    if (model != null) {
+      WritableRaster raster = Raster.createWritableRaster(b.getSampleModel(),
+        b.getRaster().getDataBuffer(), null);
       b = new BufferedImage(model, raster, false, null);
     }
 
