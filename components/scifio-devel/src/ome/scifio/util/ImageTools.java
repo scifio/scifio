@@ -36,7 +36,7 @@
 
 package loci.formats;
 
-import loci.common.DataTools;
+import ome.scifio.common.DataTools;
 
 /**
  * A utility class with convenience methods for manipulating images
