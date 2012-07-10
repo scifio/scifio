@@ -34,7 +34,7 @@
  * #L%
  */
 
-package loci.formats.codec;
+package ome.scifio.codec;
 
 import java.awt.image.ColorModel;
 
