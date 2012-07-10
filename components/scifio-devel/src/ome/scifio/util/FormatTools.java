@@ -38,29 +38,14 @@ package ome.scifio.util;
 import java.io.IOException;
 import java.util.Vector;
 
-import loci.formats.DimensionSwapper;
-import loci.formats.IFormatReader;
-import loci.formats.IFormatWriter;
-import loci.formats.ImageReader;
-import loci.formats.ImageWriter;
-import loci.formats.MissingLibraryException;
-import loci.formats.meta.DummyMetadata;
-import loci.formats.meta.MetadataRetrieve;
-import loci.formats.meta.MetadataStore;
-import loci.formats.services.OMEXMLService;
-import loci.formats.services.OMEXMLServiceImpl;
 import net.imglib2.meta.Axes;
 import ome.scifio.CoreMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Reader;
 import ome.scifio.Writer;
-import ome.scifio.common.DateTools;
 import ome.scifio.common.ReflectException;
 import ome.scifio.common.ReflectedUniverse;
 import ome.scifio.io.RandomAccessInputStream;
-import ome.scifio.services.DependencyException;
-import ome.scifio.services.ServiceException;
-import ome.scifio.services.ServiceFactory;
 
 /**
  * A utility class for format reader and writer implementations.
@@ -294,20 +279,6 @@ public class FormatTools {
   }
   
   /**
-   * Legacy getIndex(IFormatReader, int, int, int) method
-   */
-  @Deprecated
-  public static int getIndex(IFormatReader reader, int z, int c, int t) {
-    String order = reader.getDimensionOrder();
-    int zSize = reader.getSizeZ();
-    int cSize = reader.getEffectiveSizeC();
-    int tSize = reader.getSizeT();
-    int num = reader.getImageCount();
-    return getIndex(order, zSize, cSize, tSize, num, z, c, t);
-  } 
-  
-  
-  /**
    * Gets the rasterized index corresponding
    * to the given Z, C and T coordinates.
    *
@@ -414,19 +385,6 @@ public class FormatTools {
   }
   
   /**
-   * Legacy getZCTCoords(IFormatReader, int)
-   */
-  @Deprecated
-  public static int[] getZCTCoords(IFormatReader reader, int index) {
-    String order = reader.getDimensionOrder();
-    int zSize = reader.getSizeZ();
-    int cSize = reader.getEffectiveSizeC();
-    int tSize = reader.getSizeT();
-    int num = reader.getImageCount();
-    return getZCTCoords(order, zSize, cSize, tSize, num, index);
-  }
-
-  /**
    * Gets the Z, C and T coordinates corresponding to the given rasterized
    * index value.
    *
@@ -519,22 +477,6 @@ public class FormatTools {
       zSize, cSize, tSize, num, newIndex);
   }
   
-  /**
-   * Legacy getReorderedIndex(IFormatReader, String, int)
-   */
-  @Deprecated
-  public static int getReorderedIndex(IFormatReader reader,
-    String newOrder, int newIndex) throws FormatException
-  {
-    String origOrder = reader.getDimensionOrder();
-    int zSize = reader.getSizeZ();
-    int cSize = reader.getEffectiveSizeC();
-    int tSize = reader.getSizeT();
-    int num = reader.getImageCount();
-    return getReorderedIndex(origOrder, newOrder,
-      zSize, cSize, tSize, num, newIndex);
-  }
-
   /**
    * Converts index from one dimension order to another.
    * This method is useful for shuffling the planar order around
@@ -643,7 +585,7 @@ public class FormatTools {
     String header;
     if (depth > 0 && ste.length > depth) {
       String c = ste[depth].getClassName();
-      if (c.startsWith("loci.formats.")) {
+      if (c.startsWith("ome.scifio.")) {
         c = c.substring(c.lastIndexOf(".") + 1);
       }
       header = c + "." + ste[depth].getMethodName() + ": ";
@@ -704,20 +646,6 @@ public class FormatTools {
     if (bufLength >= 0) checkBufferSize(r, bufLength, w, h, imageIndex);
   }
   
-  /**
-   * Legacy checkPlaneParameters(IFormatReader, int, int, int,
-   * int, int, int, int)
-   */
-  @Deprecated
-  public static void checkPlaneParameters(IFormatReader r, int no,
-    int bufLength, int x, int y, int w, int h) throws FormatException
-  {
-    assertId(r.getCurrentFile(), true, 2);
-    checkPlaneNumber(r, no);
-    checkTileSize(r, x, y, w, h);
-    if (bufLength >= 0) checkBufferSize(r, bufLength, w, h);
-  }
-  
   /** Checks that the given plane number is valid for the given reader. */
   public static void checkPlaneNumber(Reader r, int imageIndex, int planeIndex)
     throws FormatException
@@ -730,20 +658,6 @@ public class FormatTools {
     }
   }
   
-  /**
-   * Legacy checkPlaneNumber(IFormatReader, int)
-   */
-  @Deprecated
-  public static void checkPlaneNumber(IFormatReader r, int no)
-    throws FormatException
-  {
-    int imageCount = r.getImageCount();
-    if (no < 0 || no >= imageCount) {
-      throw new FormatException("Invalid image number: " + no +
-        " (series=" + r.getSeries() + ", imageCount=" + imageCount + ")");
-    }
-  }
-
   /** Checks that the given tile size is valid for the given reader. */
   public static void checkTileSize(Reader r, int x, int y, int w, int h,
     int imageIndex) throws FormatException
@@ -756,23 +670,6 @@ public class FormatTools {
         ", w=" + w + ", h=" + h);
     }
   }
-  
-  /** 
-   * Legacy checkTileSize(IFormatReader, int, int, int, int)
-   */
-  @Deprecated
-  public static void checkTileSize(IFormatReader r, int x, int y, int w, int h)
-    throws FormatException
-  {
-    int width = r.getSizeX();
-    int height = r.getSizeY();
-    if (x < 0 || y < 0 || w < 0 || h < 0 || (x + w) >  width ||
-      (y + h) > height)
-    {
-      throw new FormatException("Invalid tile size: x=" + x + ", y=" + y +
-        ", w=" + w + ", h=" + h);
-    }
-  }
 
   public static void checkBufferSize(int imageIndex, Reader r, int len)
     throws FormatException
@@ -780,16 +677,6 @@ public class FormatTools {
     checkBufferSize(
       r, len, r.getCoreMetadata().getAxisLength(imageIndex, Axes.X),
       r.getCoreMetadata().getAxisLength(imageIndex, Axes.Y), imageIndex);
-  }
-
-  /**
-   * Legacy checkBufferSize(IFormatReader, int)
-   */
-  @Deprecated
-  public static void checkBufferSize(IFormatReader r, int len)
-    throws FormatException
-  {
-    checkBufferSize(r, len, r.getSizeX(), r.getSizeY());
   }
   
   /**
@@ -808,19 +695,6 @@ public class FormatTools {
   }
   
   /**
-   * Legacy checkBufferSize(IFormatReader, int, int, int)
-   */
-  public static void checkBufferSize(IFormatReader r, int len, int w, int h)
-    throws FormatException
-  {
-    int size = getPlaneSize(r, w, h);
-    if (size > len) {
-      throw new FormatException("Buffer too small (got " + len +
-        ", expected " + size + ").");
-    }
-  }
-
-  /**
    * Returns true if the given RandomAccessInputStream conatins at least
    * 'len' bytes.
    */
@@ -838,14 +712,6 @@ public class FormatTools {
       r, r.getCoreMetadata().getAxisLength(imageIndex, Axes.X),
       r.getCoreMetadata().getAxisLength(imageIndex, Axes.Y), imageIndex);
   }
-
-  /** 
-   * Legacy getPlaneSize(IFormatReader)
-   */
-  @Deprecated
-  public static int getPlaneSize(IFormatReader r) {
-    return getPlaneSize(r, r.getSizeX(), r.getSizeY());
-  }
   
   /** Returns the size in bytes of a w * h tile. */
   public static int getPlaneSize(Reader r, int w, int h, int imageIndex) {
@@ -853,14 +719,6 @@ public class FormatTools {
       getBytesPerPixel(r.getCoreMetadata().getPixelType(imageIndex));
   }
 
-  /** 
-   * Legacy getPlaneSize(IFormatReader, int, int)
-   */
-  @Deprecated
-  public static int getPlaneSize(IFormatReader r, int w, int h) {
-    return w * h * r.getRGBChannelCount() * getBytesPerPixel(r.getPixelType());
-  }
-  
   // -- Utility methods - pixel types --
 
   /**
@@ -1057,56 +915,6 @@ public class FormatTools {
   }
   
   /**
-   * Legacy getFilename(int, int, IFormatReader, String)
-   */
-  @Deprecated
-  public static String getFilename(int series, int image, IFormatReader r,
-    String pattern) throws FormatException, IOException
-  {
-    MetadataStore store = r.getMetadataStore();
-    MetadataRetrieve retrieve = store instanceof MetadataRetrieve ?
-      (MetadataRetrieve) store : new DummyMetadata();
-
-    String filename = pattern.replaceAll(SERIES_NUM, String.valueOf(series));
-
-    String imageName = retrieve.getImageName(series);
-    if (imageName == null) imageName = "Series" + series;
-    imageName = imageName.replaceAll("/", "_");
-    imageName = imageName.replaceAll("\\\\", "_");
-
-    filename = filename.replaceAll(SERIES_NAME, imageName);
-
-    r.setSeries(series);
-    int[] coordinates = r.getZCTCoords(image);
-
-    filename = filename.replaceAll(Z_NUM, String.valueOf(coordinates[0]));
-    filename = filename.replaceAll(T_NUM, String.valueOf(coordinates[2]));
-    filename = filename.replaceAll(CHANNEL_NUM, String.valueOf(coordinates[1]));
-
-    String channelName = retrieve.getChannelName(series, coordinates[1]);
-    if (channelName == null) channelName = String.valueOf(coordinates[1]);
-    channelName = channelName.replaceAll("/", "_");
-    channelName = channelName.replaceAll("\\\\", "_");
-
-    filename = filename.replaceAll(CHANNEL_NAME, channelName);
-
-    String date = retrieve.getImageAcquisitionDate(series).getValue();
-    long stamp = 0;
-    if (retrieve.getPlaneCount(series) > image) {
-      Double deltaT = retrieve.getPlaneDeltaT(series, image);
-      if (deltaT != null) {
-        stamp = (long) (deltaT * 1000);
-      }
-    }
-    stamp += DateTools.getTime(date, DateTools.ISO8601_FORMAT);
-    date = DateTools.convertDate(stamp, (int) DateTools.UNIX_EPOCH);
-
-    filename = filename.replaceAll(TIMESTAMP, date);
-
-    return filename;
-  }
-  
-  /**
    * @throws FormatException
    * @throws IOException
    */
@@ -1125,25 +933,6 @@ public class FormatTools {
   }
 
   /**
-   * Legacy getFilenames(String, IFormatReader)
-   */
-  @Deprecated
-  public static String[] getFilenames(String pattern, IFormatReader r)
-    throws FormatException, IOException
-  {
-    Vector<String> filenames = new Vector<String>();
-    String filename = null;
-    for (int series=0; series<r.getSeriesCount(); series++) {
-      r.setSeries(series);
-      for (int image=0; image<r.getImageCount(); image++) {
-        filename = getFilename(series, image, r, pattern);
-        if (!filenames.contains(filename)) filenames.add(filename);
-      }
-    }
-    return filenames.toArray(new String[0]);
-  }
-  
-  /**
    * @throws FormatException
    * @throws IOException
    */
@@ -1158,63 +947,7 @@ public class FormatTools {
     return totalPlanes / filenames.length;
   } 
   
-  /**
-   * Legacy getImagesPerFile(String, IFormatReader)
-   */
-  @Deprecated
-  public static int getImagesPerFile(String pattern, IFormatReader r)
-    throws FormatException, IOException
-  {
-    String[] filenames = getFilenames(pattern, r);
-    int totalPlanes = 0;
-    for (int series=0; series<r.getSeriesCount(); series++) {
-      r.setSeries(series);
-      totalPlanes += r.getImageCount();
-    }
-    return totalPlanes / filenames.length;
-  }
-  
   // -- Utility methods -- other
-  
-  /**
-   * Recursively look for the first underlying reader that is an
-   * instance of the given class.
-   */
-  public static Reader getReader(Reader r,
-    Class<? extends IFormatReader> c)
-  {
-    Reader[] underlying = r.getUnderlyingReaders();
-    if (underlying != null) {
-      for (int i=0; i<underlying.length; i++) {
-        if (underlying[i].getClass().isInstance(c)) return underlying[i];
-      }
-      for (int i=0; i<underlying.length; i++) {
-        Reader t = getReader(underlying[i], c);
-        if (t != null) return t;
-      }
-    }
-    return null;
-  } 
-  
-  /**
-   * Legacy getReader(IFormatReader, Class<>)
-   */
-  @Deprecated
-  public static IFormatReader getReader(IFormatReader r,
-    Class<? extends IFormatReader> c)
-  {
-    IFormatReader[] underlying = r.getUnderlyingReaders();
-    if (underlying != null) {
-      for (int i=0; i<underlying.length; i++) {
-        if (underlying[i].getClass().isInstance(c)) return underlying[i];
-      }
-      for (int i=0; i<underlying.length; i++) {
-        IFormatReader t = getReader(underlying[i], c);
-        if (t != null) return t;
-      }
-    }
-    return null;
-  }
   
   /**
    * Default implementation for {@link IFormatReader#openThumbBytes}.
@@ -1234,7 +967,7 @@ public class FormatTools {
     ReflectedUniverse r = new ReflectedUniverse();
     byte[][] bytes = null;
     try {
-      r.exec("import loci.formats.gui.AWTImageTools");
+      r.exec("import ome.scifio.gui.AWTImageTools");
 
       int planeSize = getPlaneSize(reader, imageIndex);
       byte[] plane = null;
@@ -1286,95 +1019,7 @@ public class FormatTools {
     return rtn;
   }
   
-  /**
-   * Legacy openThumbBytes(IFormatReader, int)
-   */
-  @Deprecated
-  public static byte[] openThumbBytes(IFormatReader reader, int no)
-    throws FormatException, IOException
-  {
-    // NB: Dependency on AWT here is unfortunate, but very difficult to
-    // eliminate in general. We use reflection to limit class loading
-    // problems with AWT on Mac OS X.
-    ReflectedUniverse r = new ReflectedUniverse();
-    byte[][] bytes = null;
-    try {
-      r.exec("import loci.formats.gui.AWTImageTools");
-
-      int planeSize = getPlaneSize(reader);
-      byte[] plane = null;
-      if (planeSize < 0) {
-        int width = reader.getThumbSizeX() * 4;
-        int height = reader.getThumbSizeY() * 4;
-        int x = (reader.getSizeX() - width) / 2;
-        int y = (reader.getSizeY() - height) / 2;
-        plane = reader.openBytes(no, x, y, width, height);
-      }
-      else {
-        plane = reader.openBytes(no);
-      }
-
-      r.setVar("plane", plane);
-      r.setVar("reader", reader);
-      r.setVar("sizeX", reader.getSizeX());
-      r.setVar("sizeY", reader.getSizeY());
-      r.setVar("thumbSizeX", reader.getThumbSizeX());
-      r.setVar("thumbSizeY", reader.getThumbSizeY());
-      r.setVar("little", reader.isLittleEndian());
-      r.exec("img = AWTImageTools.openImage(plane, reader, sizeX, sizeY)");
-      r.exec("img = AWTImageTools.makeUnsigned(img)");
-      r.exec("thumb = AWTImageTools.scale(img, thumbSizeX, thumbSizeY, false)");
-      bytes = (byte[][]) r.exec("AWTImageTools.getPixelBytes(thumb, little)");
-    }
-    catch (ReflectException exc) {
-      throw new FormatException(exc);
-    }
-
-    if (bytes.length == 1) return bytes[0];
-    int rgbChannelCount = reader.getRGBChannelCount();
-    byte[] rtn = new byte[rgbChannelCount * bytes[0].length];
-    for (int i=0; i<rgbChannelCount; i++) {
-      System.arraycopy(bytes[i], 0, rtn, bytes[0].length * i, bytes[i].length);
-    }
-    return rtn;
-  }
-
   // -- Conversion convenience methods --
-
-  /**
-   * Convenience method for converting the specified input file to the
-   * specified output file.  The ImageReader and ImageWriter classes are used
-   * for input and output, respectively.  To use other IFormatReader or
-   * IFormatWriter implementation,
-   * @see convert(IFormatReader, IFormatWriter, String).
-   *
-   * @param input the full path name of the existing input file
-   * @param output the full path name of the output file to be created
-   * @throws FormatException if there is a general problem reading from or
-   * writing to one of the files.
-   * @throws IOException if there is an I/O-related error.
-   */
-  public static void convert(String input, String output)
-    throws FormatException, IOException
-  {
-    IFormatReader reader = new ImageReader();
-    try {
-      ServiceFactory factory = new ServiceFactory();
-      OMEXMLService service = factory.getInstance(OMEXMLService.class);
-      reader.setMetadataStore(service.createOMEXMLMetadata());
-    }
-    catch (DependencyException de) {
-      throw new MissingLibraryException(OMEXMLServiceImpl.NO_OME_XML_MSG, de);
-    }
-    catch (ServiceException se) {
-      throw new FormatException(se);
-    }
-    reader.setId(input);
-
-    IFormatWriter writer = new ImageWriter();
-
-    convert(reader, writer, output);
-  }
   
   /**
    * Convenience method for writing all of the images and metadata obtained
@@ -1401,44 +1046,6 @@ public class FormatTools {
       }
     }
     
-    input.close();
-    output.close();
-  }
-  
-  /**
-   * Legacy convert(IFormatReader, IFormatWriter)
-   */
-  @Deprecated
-  public static void convert(IFormatReader input, IFormatWriter output,
-    String outputFile)
-    throws FormatException, IOException
-  {
-    MetadataStore store = input.getMetadataStore();
-    MetadataRetrieve meta = null;
-    try {
-      ServiceFactory factory = new ServiceFactory();
-      OMEXMLService service = factory.getInstance(OMEXMLService.class);
-      meta = service.asRetrieve(store);
-    }
-    catch (DependencyException de) {
-      throw new MissingLibraryException(OMEXMLServiceImpl.NO_OME_XML_MSG, de);
-    }
-
-    output.setMetadataRetrieve(meta);
-    output.setId(outputFile);
-
-    for (int series=0; series<input.getSeriesCount(); series++) {
-      input.setSeries(series);
-      output.setSeries(series);
-
-      byte[] buf = new byte[getPlaneSize(input)];
-
-      for (int image=0; image<input.getImageCount(); image++) {
-        input.openBytes(image, buf);
-        output.saveBytes(image, buf);
-      }
-    }
-
     input.close();
     output.close();
   }
