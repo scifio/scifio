@@ -34,27 +34,28 @@
  * #L%
  */
 
-package ome.scifio.util;
+package ome.scifio.gui;
 
 import java.awt.Transparency;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.ComponentSampleModel;
 import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferShort;
+import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 
+
 /**
- * ColorModel that handles 8, 16 and 32 bits per channel signed data.
+ * ColorModel that handles unsigned 32 bit data.
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/SignedColorModel.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/SignedColorModel.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/UnsignedIntColorModel.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/UnsignedIntColorModel.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class SignedColorModel extends ColorModel {
+public class UnsignedIntColorModel extends ColorModel {
 
   // -- Fields --
 
@@ -62,11 +63,9 @@ public class SignedColorModel extends ColorModel {
   private int nChannels;
   private ComponentColorModel helper;
 
-  private int max;
-
   // -- Constructors --
 
-  public SignedColorModel(int pixelBits, int dataType, int nChannels)
+  public UnsignedIntColorModel(int pixelBits, int dataType, int nChannels)
     throws IOException
   {
     super(
@@ -74,20 +73,13 @@ public class SignedColorModel extends ColorModel {
       AWTImageTools.makeColorSpace(nChannels), nChannels == 4, false,
       Transparency.TRANSLUCENT, dataType);
 
-    int type = dataType;
-    if (type == DataBuffer.TYPE_SHORT) {
-      type = DataBuffer.TYPE_USHORT;
-    }
-
     helper =
       new ComponentColorModel(
         AWTImageTools.makeColorSpace(nChannels), nChannels == 4, false,
-        Transparency.TRANSLUCENT, type);
+        Transparency.TRANSLUCENT, dataType);
 
     this.pixelBits = pixelBits;
     this.nChannels = nChannels;
-
-    max = (int) Math.pow(2, pixelBits) - 1;
   }
 
   // -- ColorModel API methods --
@@ -99,147 +91,94 @@ public class SignedColorModel extends ColorModel {
 
   /* @see java.awt.image.ColorModel#isCompatibleRaster(Raster) */
   public boolean isCompatibleRaster(Raster raster) {
-    if (pixelBits == 16) {
-      return raster.getTransferType() == DataBuffer.TYPE_SHORT;
-    }
-    return helper.isCompatibleRaster(raster);
+    return raster.getNumBands() == getNumComponents() &&
+      raster.getTransferType() == getTransferType();
   }
 
   /* @see java.awt.image.ColorModel#createCompatibleWritableRaster(int, int) */
   public WritableRaster createCompatibleWritableRaster(int w, int h) {
-    if (pixelBits == 16) {
-      int[] bandOffsets = new int[nChannels];
-      for (int i = 0; i < nChannels; i++)
-        bandOffsets[i] = i;
+    int[] bandOffsets = new int[nChannels];
+    for (int i = 0; i < nChannels; i++)
+      bandOffsets[i] = i;
 
-      SampleModel m =
-        new ComponentSampleModel(DataBuffer.TYPE_SHORT, w, h, nChannels, w *
-          nChannels, bandOffsets);
-      DataBuffer db = new DataBufferShort(w * h, nChannels);
-      return Raster.createWritableRaster(m, db, null);
-    }
-    return helper.createCompatibleWritableRaster(w, h);
+    SampleModel m =
+      new ComponentSampleModel(DataBuffer.TYPE_INT, w, h, nChannels, w *
+        nChannels, bandOffsets);
+    DataBuffer db = new DataBufferInt(w * h, nChannels);
+    return Raster.createWritableRaster(m, db, null);
   }
 
   /* @see java.awt.image.ColorModel#getAlpha(int) */
   public int getAlpha(int pixel) {
-    if (nChannels < 4) return 255;
-    return rescale(pixel, max);
+    return (int) (Math.pow(2, 32) - 1);
   }
 
   /* @see java.awt.image.ColorModel#getBlue(int) */
   public int getBlue(int pixel) {
-    if (nChannels == 1) return getRed(pixel);
-    return rescale(pixel, max);
+    return getComponent(pixel, 3);
   }
 
   /* @see java.awt.image.ColorModel#getGreen(int) */
   public int getGreen(int pixel) {
-    if (nChannels == 1) return getRed(pixel);
-    return rescale(pixel, max);
+    return getComponent(pixel, 2);
   }
 
   /* @see java.awt.image.ColorModel#getRed(int) */
   public int getRed(int pixel) {
-    return rescale(pixel, max);
+    return getComponent(pixel, 1);
   }
 
   /* @see java.awt.image.ColorModel#getAlpha(Object) */
   public int getAlpha(Object data) {
-    if (data instanceof byte[]) {
-      byte[] b = (byte[]) data;
-      if (b.length == 1) return getAlpha(b[0]);
-      return rescale(b.length == 4 ? b[0] : max, max);
-    }
-    else if (data instanceof short[]) {
-      short[] s = (short[]) data;
-      if (s.length == 1) return getAlpha(s[0]);
-      return rescale(s.length == 4 ? s[0] : max, max);
-    }
-    else if (data instanceof int[]) {
+    int max = (int) Math.pow(2, 32) - 1;
+    if (data instanceof int[]) {
       int[] i = (int[]) data;
       if (i.length == 1) return getAlpha(i[0]);
-      return rescale(i.length == 4 ? i[0] : max, max);
+      return getAlpha(i.length == 4 ? i[0] : max);
     }
-    return 0;
+    return max;
   }
 
   /* @see java.awt.image.ColorModel#getRed(Object) */
   public int getRed(Object data) {
-    if (data instanceof byte[]) {
-      byte[] b = (byte[]) data;
-      if (b.length == 1) return getRed(b[0]);
-      return rescale(b.length != 4 ? b[0] : b[1]);
-    }
-    else if (data instanceof short[]) {
-      short[] s = (short[]) data;
-      if (s.length == 1) return getRed(s[0]);
-      return rescale(s.length != 4 ? s[0] : s[1], max);
-    }
-    else if (data instanceof int[]) {
+    int max = (int) Math.pow(2, 32) - 1;
+    if (data instanceof int[]) {
       int[] i = (int[]) data;
       if (i.length == 1) return getRed(i[0]);
-      return rescale(i.length != 4 ? i[0] : i[1], max);
+      return getRed(i.length != 4 ? i[0] : i[1]);
     }
-    return 0;
+    return max;
   }
 
   /* @see java.awt.image.ColorModel#getGreen(Object) */
   public int getGreen(Object data) {
-    if (data instanceof byte[]) {
-      byte[] b = (byte[]) data;
-      if (b.length == 1) return getGreen(b[0]);
-      return rescale(b.length != 4 ? b[1] : b[2]);
-    }
-    else if (data instanceof short[]) {
-      short[] s = (short[]) data;
-      if (s.length == 1) return getGreen(s[0]);
-      return rescale(s.length != 4 ? s[1] : s[2], max);
-    }
-    else if (data instanceof int[]) {
+    int max = (int) Math.pow(2, 32) - 1;
+    if (data instanceof int[]) {
       int[] i = (int[]) data;
       if (i.length == 1) return getGreen(i[0]);
-      return rescale(i.length != 4 ? i[1] : i[2], max);
+      return getGreen(i.length != 4 ? i[1] : i[2]);
     }
-    return 0;
+    return max;
   }
 
   /* @see java.awt.image.ColorModel#getBlue(Object) */
   public int getBlue(Object data) {
-    if (data instanceof byte[]) {
-      byte[] b = (byte[]) data;
-      if (b.length == 1) return getBlue(b[0]);
-      return rescale(b.length > 2 ? b[b.length - 1] : 0);
-    }
-    else if (data instanceof short[]) {
-      short[] s = (short[]) data;
-      if (s.length == 1) return getBlue(s[0]);
-      return rescale(s.length > 2 ? s[s.length - 1] : 0, max);
-    }
-    else if (data instanceof int[]) {
+    int max = (int) Math.pow(2, 32) - 1;
+    if (data instanceof int[]) {
       int[] i = (int[]) data;
       if (i.length == 1) return getBlue(i[0]);
-      return rescale(i.length > 2 ? i[i.length - 1] : 0, max);
+      return getBlue(i[i.length - 1]);
     }
-    return 0;
+    return max;
   }
 
   // -- Helper methods --
 
-  private int rescale(int value, int max) {
-    float v = (float) value / (float) max;
-    v *= 255;
-    return rescale((int) v);
-  }
-
-  private int rescale(int value) {
-    if (value < 128) {
-      value += 128; // [0, 127] -> [128, 255]
-    }
-    else {
-      value -= 128; // [128, 255] -> [0, 127]
-    }
-    return value;
+  private int getComponent(int pixel, int index) {
+    long v = pixel & 0xffffffffL;
+    double f = v / (Math.pow(2, 32) - 1);
+    f *= 255;
+    return (int) f;
   }
 
   private static int[] makeBitArray(int nChannels, int nBits) {

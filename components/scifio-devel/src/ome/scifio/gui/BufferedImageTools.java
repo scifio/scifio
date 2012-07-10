@@ -1,8 +1,10 @@
-package ome.scifio.util;
+package ome.scifio.gui;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
+
+import ome.scifio.util.FormatTools;
 
 public class BufferedImageTools {
   /**

@@ -33,7 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package ome.scifio.util;
+package ome.scifio.gui;
 
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;

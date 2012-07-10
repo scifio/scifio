@@ -42,7 +42,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 
 /**
- * Legacy delegator class for ome.scifio.util.UnsignedIntColorModel
+ * Legacy delegator class for ome.scifio.gui.UnsignedIntColorModel
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/UnsignedIntColorModel.java">Trac</a>,
@@ -52,7 +52,7 @@ public class UnsignedIntColorModel extends ColorModel {
 
   // -- Fields --
 
-  private ome.scifio.util.UnsignedIntColorModel cm;
+  private ome.scifio.gui.UnsignedIntColorModel cm;
 
   // -- Constructors --
 
@@ -62,7 +62,7 @@ public class UnsignedIntColorModel extends ColorModel {
     super(pixelBits, makeBitArray(nChannels, pixelBits),
       AWTImageTools.makeColorSpace(nChannels), nChannels == 4, false,
       ColorModel.TRANSLUCENT, dataType);
-    cm = new ome.scifio.util.UnsignedIntColorModel(pixelBits, dataType, nChannels);
+    cm = new ome.scifio.gui.UnsignedIntColorModel(pixelBits, dataType, nChannels);
   }
 
   // -- ColorModel API methods --

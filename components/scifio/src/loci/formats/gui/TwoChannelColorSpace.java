@@ -41,7 +41,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Legacy delegator for ome.scfio.util.TwoChannelColorSpace
+ * Legacy delegator for ome.scfio.gui.TwoChannelColorSpace
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/TwoChannelColorSpace.java">Trac</a>,
@@ -53,9 +53,9 @@ public class TwoChannelColorSpace extends ColorSpace {
 
   // -- Constants --
 
-  public static final int CS_2C = ome.scifio.util.TwoChannelColorSpace.CS_2C;
+  public static final int CS_2C = ome.scifio.gui.TwoChannelColorSpace.CS_2C;
   
-  private ome.scifio.util.TwoChannelColorSpace cs;
+  private ome.scifio.gui.TwoChannelColorSpace cs;
 
   // -- Constructor --
 
@@ -84,7 +84,7 @@ public class TwoChannelColorSpace extends ColorSpace {
       
       if(pVec.length == 2 && pVec[0] == int.class && pVec[1] == int.class) {
         try {
-          cs = (ome.scifio.util.TwoChannelColorSpace) constructor.newInstance(type, components);
+          cs = (ome.scifio.gui.TwoChannelColorSpace) constructor.newInstance(type, components);
         }
         catch (IllegalArgumentException e) {
           e.printStackTrace();

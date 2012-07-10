@@ -34,64 +34,74 @@
  * #L%
  */
 
-package ome.scifio.util;
+package ome.scifio.gui;
 
-import java.awt.image.DataBuffer;
+import java.awt.color.ColorSpace;
 
 /**
- * DataBuffer that stores signed bytes.
+ * ColorSpace for 2-channel images.
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/SignedByteBuffer.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/SignedByteBuffer.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/TwoChannelColorSpace.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/TwoChannelColorSpace.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class SignedByteBuffer extends DataBuffer {
+public class TwoChannelColorSpace extends ColorSpace {
 
-  private byte[][] bankData;
+  // -- Constants --
 
-  /** Construct a new buffer of signed bytes using the given byte array.  */
-  public SignedByteBuffer(byte[] dataArray, int size) {
-    super(DataBuffer.TYPE_BYTE, size);
-    bankData = new byte[1][];
-    bankData[0] = dataArray;
+  public static final int CS_2C = -1;
+
+  private static final int NUM_COMPONENTS = 2;
+
+  // -- Constructor --
+
+  protected TwoChannelColorSpace(int type, int components) {
+    super(type, components);
   }
 
-  /** Construct a new buffer of signed bytes using the given 2D byte array. */
-  public SignedByteBuffer(byte[][] dataArray, int size) {
-    super(DataBuffer.TYPE_BYTE, size);
-    bankData = dataArray;
+  // -- ColorSpace API methods --
+
+  public float[] fromCIEXYZ(float[] color) {
+    ColorSpace rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+    return rgb.fromCIEXYZ(toRGB(color));
   }
 
-  /* @see java.awt.image.DataBuffer.getData() */
-  public byte[] getData() {
-    return bankData[0];
+  public float[] fromRGB(float[] rgb) {
+    return new float[] {rgb[0], rgb[1]};
   }
 
-  /* @see java.awt.image.DataBuffer#getData(int) */
-  public byte[] getData(int bank) {
-    return bankData[bank];
+  public static ColorSpace getInstance(int colorSpace) {
+    if (colorSpace == CS_2C) {
+      return new TwoChannelColorSpace(ColorSpace.TYPE_2CLR, NUM_COMPONENTS);
+    }
+    return ColorSpace.getInstance(colorSpace);
   }
 
-  /* @see java.awt.image.DataBuffer#getElem(int) */
-  public int getElem(int i) {
-    return getElem(0, i);
+  public String getName(int idx) {
+    return idx == 0 ? "Red" : "Green";
   }
 
-  /* @see java.awt.image.DataBuffer#getElem(int, int) */
-  public int getElem(int bank, int i) {
-    return bankData[bank][i + getOffsets()[bank]];
+  public int getNumComponents() {
+    return NUM_COMPONENTS;
   }
 
-  /* @see java.awt.image.DataBuffer#setElem(int, int) */
-  public void setElem(int i, int val) {
-    setElem(0, i, val);
+  public int getType() {
+    return ColorSpace.TYPE_2CLR;
   }
 
-  /* @see java.awt.image.DataBuffer#setElem(int, int, int) */
-  public void setElem(int bank, int i, int val) {
-    bankData[bank][i + getOffsets()[bank]] = (byte) val;
+  public boolean isCS_sRGB() {
+    return false;
+  }
+
+  public float[] toCIEXYZ(float[] color) {
+    ColorSpace rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+    return rgb.toCIEXYZ(toRGB(color));
+  }
+
+  public float[] toRGB(float[] color) {
+    return new float[] {color[0], color[1], 0};
   }
 
 }

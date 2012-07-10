@@ -34,7 +34,7 @@
  * #L%
  */
 
-package ome.scifio.util;
+package ome.scifio.gui;
 
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferShort;

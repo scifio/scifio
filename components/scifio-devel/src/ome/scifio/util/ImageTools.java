@@ -47,7 +47,7 @@ import ome.scifio.common.DataTools;
  * in primitive array form.
  *
  * To work with images in {@link java.awt.image.BufferedImage} form,
- * use the {@link ome.scifio.util.AWTImageTools} class.
+ * use the {@link ome.scifio.gui.AWTImageTools} class.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ImageTools.java">Trac</a>,

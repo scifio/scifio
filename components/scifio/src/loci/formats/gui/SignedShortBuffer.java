@@ -40,7 +40,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferShort;
 
 /**
- * Legacy delegator class for ome.scifio.util.SignedShortBuffer.
+ * Legacy delegator class for ome.scifio.gui.SignedShortBuffer.
  *
  * SignedShortBuffer serves the same purpose as java.awt.image.DataBufferShort;
  * the only difference is that SignedShortBuffer's getType() method
@@ -56,38 +56,38 @@ public class SignedShortBuffer extends DataBuffer {
 
   // -- Fields --
   
-  private ome.scifio.util.SignedShortBuffer sb;
+  private ome.scifio.gui.SignedShortBuffer sb;
 
   // -- Constructors --
 
   public SignedShortBuffer(int size) {
     super(DataBuffer.TYPE_USHORT, size);
-    sb = new ome.scifio.util.SignedShortBuffer(size);
+    sb = new ome.scifio.gui.SignedShortBuffer(size);
   }
 
   public SignedShortBuffer(int size, int numbanks) {
     super(DataBuffer.TYPE_USHORT, size, numbanks);
-    sb = new ome.scifio.util.SignedShortBuffer(size, numbanks);
+    sb = new ome.scifio.gui.SignedShortBuffer(size, numbanks);
   }
 
   public SignedShortBuffer(short[] data, int size) {
     super(DataBuffer.TYPE_USHORT, size);
-    sb = new ome.scifio.util.SignedShortBuffer(data, size);
+    sb = new ome.scifio.gui.SignedShortBuffer(data, size);
   }
 
   public SignedShortBuffer(short[] data, int size, int offset) {
     super(DataBuffer.TYPE_USHORT, size, 1, offset);
-    sb = new ome.scifio.util.SignedShortBuffer(data, size, offset);
+    sb = new ome.scifio.gui.SignedShortBuffer(data, size, offset);
   }
 
   public SignedShortBuffer(short[][] data, int size) {
     super(DataBuffer.TYPE_USHORT, size, data.length);
-    sb = new ome.scifio.util.SignedShortBuffer(data, size);
+    sb = new ome.scifio.gui.SignedShortBuffer(data, size);
   }
 
   public SignedShortBuffer(short[][] data, int size, int[] offsets) {
     super(DataBuffer.TYPE_USHORT, size, data.length, offsets);
-    sb = new ome.scifio.util.SignedShortBuffer(data, size, offsets);
+    sb = new ome.scifio.gui.SignedShortBuffer(data, size, offsets);
   }
 
   // -- DataBuffer API methods --

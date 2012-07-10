@@ -42,7 +42,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 
 /**
- * Legacy delegator class for ome.scifio.util.Index16ColorModel.
+ * Legacy delegator class for ome.scifio.gui.Index16ColorModel.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/Index16ColorModel.java">Trac</a>,
@@ -52,7 +52,7 @@ public class Index16ColorModel extends ColorModel {
 
   // -- Fields --
   
-  private ome.scifio.util.Index16ColorModel cm;
+  private ome.scifio.gui.Index16ColorModel cm;
 
   // -- Constructors --
 
@@ -60,7 +60,7 @@ public class Index16ColorModel extends ColorModel {
     boolean littleEndian) throws IOException
   {
     super(bits);
-    cm = new ome.scifio.util.Index16ColorModel(bits, size, table, littleEndian);
+    cm = new ome.scifio.gui.Index16ColorModel(bits, size, table, littleEndian);
   }
 
   // -- Index16ColorModel API methods --

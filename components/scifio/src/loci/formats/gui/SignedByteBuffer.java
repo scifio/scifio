@@ -51,20 +51,20 @@ public class SignedByteBuffer extends DataBuffer {
 
   // -- Fields --
   
-  private ome.scifio.util.SignedByteBuffer bb;
+  private ome.scifio.gui.SignedByteBuffer bb;
   
   // -- Constructors --
 
   /** Construct a new buffer of signed bytes using the given byte array.  */
   public SignedByteBuffer(byte[] dataArray, int size) {
     super(DataBuffer.TYPE_BYTE, size);
-    bb = new ome.scifio.util.SignedByteBuffer(dataArray, size);
+    bb = new ome.scifio.gui.SignedByteBuffer(dataArray, size);
   }
 
   /** Construct a new buffer of signed bytes using the given 2D byte array. */
   public SignedByteBuffer(byte[][] dataArray, int size) {
     super(DataBuffer.TYPE_BYTE, size);
-    bb = new ome.scifio.util.SignedByteBuffer(dataArray, size);
+    bb = new ome.scifio.gui.SignedByteBuffer(dataArray, size);
   }
   
   // -- SignedByteBuffer API --

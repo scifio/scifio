@@ -39,7 +39,7 @@ package loci.formats.gui;
 import java.awt.image.DataBuffer;
 
 /**
- * Legacy delegator class for ome.scifio.util.UnsignedIntBuffer
+ * Legacy delegator class for ome.scifio.gui.UnsignedIntBuffer
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/UnsignedIntBuffer.java">Trac</a>,
@@ -51,20 +51,20 @@ public class UnsignedIntBuffer extends DataBuffer {
 
   // -- Fields --
   
-  private ome.scifio.util.UnsignedIntBuffer ub;
+  private ome.scifio.gui.UnsignedIntBuffer ub;
 
   // -- UnsignedIntBuffer API --
   
   /** Construct a new buffer of unsigned ints using the given int array.  */
   public UnsignedIntBuffer(int[] dataArray, int size) {
     super(DataBuffer.TYPE_INT, size);
-    ub = new ome.scifio.util.UnsignedIntBuffer(dataArray, size);
+    ub = new ome.scifio.gui.UnsignedIntBuffer(dataArray, size);
   }
 
   /** Construct a new buffer of unsigned ints using the given 2D int array. */
   public UnsignedIntBuffer(int[][] dataArray, int size) {
     super(DataBuffer.TYPE_INT, size);
-    ub = new ome.scifio.util.UnsignedIntBuffer(dataArray, size);
+    ub = new ome.scifio.gui.UnsignedIntBuffer(dataArray, size);
   }
   
   // -- DataBuffer API -- 
