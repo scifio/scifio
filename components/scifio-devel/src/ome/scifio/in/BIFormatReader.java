@@ -34,16 +34,17 @@
  * #L%
  */
 
-package loci.formats.in;
+package ome.scifio.in;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
-import loci.common.DataTools;
-import loci.formats.FormatException;
-import loci.formats.FormatReader;
-import loci.formats.FormatTools;
-import loci.formats.gui.AWTImageTools;
+import ome.scifio.AbstractReader;
+import ome.scifio.FormatException;
+import ome.scifio.Metadata;
+import ome.scifio.SCIFIO;
+import ome.scifio.common.DataTools;
+import ome.scifio.util.AWTImageTools;
+import ome.scifio.util.FormatTools;
 
 /**
  * BIFormatReader is the superclass for file format readers
@@ -55,42 +56,46 @@ import loci.formats.gui.AWTImageTools;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  */
-public abstract class BIFormatReader extends FormatReader {
-
+public abstract class BIFormatReader<M extends Metadata>
+  extends AbstractReader<M> {
   // -- Constructors --
 
   /** Constructs a new BIFormatReader. */
-  public BIFormatReader(String name, String suffix) {
-    super(name, suffix);
+  public BIFormatReader(final String name, final String suffix, final SCIFIO ctx) {
+    super(name, suffix, ctx);
   }
 
   /** Constructs a new BIFormatReader. */
-  public BIFormatReader(String name, String[] suffixes) {
-    super(name, suffixes);
+  public BIFormatReader(final String name, final String[] suffixes, final SCIFIO ctx) {
+    super(name, suffixes, ctx);
   }
 
-  // -- IFormatReader API methods --
+  // -- Reader API methods --
 
   /**
-   * @see loci.formats.IFormatReader#openBytes(int, byte[], int, int, int, int)
+   * @see ome.scifio.Reader#openBytes(int, byte[], int, int, int, int)
    */
-  public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
-    throws FormatException, IOException
+  @Override
+  public byte[] openBytes(final int imageIndex, final int planeIndex, final byte[] buf, final int x,
+    final int y, final int w, final int h) throws FormatException, IOException
   {
-    FormatTools.checkPlaneParameters(this, no, buf.length, x, y, w, h);
+    FormatTools.checkPlaneParameters(
+      this, imageIndex, planeIndex, buf.length, x, y, w, h);
 
-    BufferedImage data = (BufferedImage) openPlane(no, x, y, w, h);
+    final BufferedImage data =
+      (BufferedImage) openPlane(imageIndex, planeIndex, x, y, w, h);
     switch (data.getColorModel().getComponentSize(0)) {
       case 8:
-        byte[] t = AWTImageTools.getBytes(data, false);
-        System.arraycopy(t, 0, buf, 0, (int) Math.min(t.length, buf.length));
+        final byte[] t = AWTImageTools.getBytes(data, false);
+        System.arraycopy(t, 0, buf, 0, Math.min(t.length, buf.length));
         break;
       case 16:
-        short[][] ts = AWTImageTools.getShorts(data);
-        for (int c=0; c<ts.length; c++) {
+        final short[][] ts = AWTImageTools.getShorts(data);
+        for (int c = 0; c < ts.length; c++) {
           int offset = c * ts[c].length * 2;
-          for (int i=0; i<ts[c].length && offset < buf.length; i++) {
-            DataTools.unpackBytes(ts[c][i], buf, offset, 2, isLittleEndian());
+          for (int i = 0; i < ts[c].length && offset < buf.length; i++) {
+            DataTools.unpackBytes(
+              ts[c][i], buf, offset, 2, cMeta.isLittleEndian(planeIndex));
             offset += 2;
           }
         }
@@ -99,9 +104,8 @@ public abstract class BIFormatReader extends FormatReader {
     return buf;
   }
 
-  // -- IFormatHandler API methods --
+  // -- BIFormatReader methods --
 
-  /* @see loci.formats.IFormatHandler#getNativeDataType() */
   public Class<?> getNativeDataType() {
     return BufferedImage.class;
   }
