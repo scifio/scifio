@@ -38,6 +38,7 @@ package loci.formats;
 
 import java.io.IOException;
 
+import ome.scifio.SCIFIO;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -48,6 +49,10 @@ import ome.scifio.io.RandomAccessInputStream;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FormatTools.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 public final class FormatTools {
+
+  // -- Constants -- context
+  
+  public static final SCIFIO CONTEXT = createContext();
 
   // -- Constants - pixel types --
 
@@ -253,12 +258,14 @@ public final class FormatTools {
     return ome.scifio.util.FormatTools.getIndex(order, zSize, cSize, tSize, num, z, c, t);
   }
 
+
   /**
    * Gets the Z, C and T coordinates corresponding
    * to the given rasterized index value.
    */
   @SuppressWarnings("deprecation")
   public static int[] getZCTCoords(IFormatReader reader, int index) {
+//    new OldToNewAdapter(CONTEXT, reader);
     return ome.scifio.util.FormatTools.getZCTCoords(reader, index);
   }
 
@@ -685,6 +692,19 @@ public final class FormatTools {
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
+    }
+  }
+  
+  // -- Helper methods --
+  
+  private static SCIFIO createContext() {
+    try {
+      return new SCIFIO();
+    }
+    catch (ome.scifio.FormatException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace(); // CHECK
+      return null;
     }
   }
 
