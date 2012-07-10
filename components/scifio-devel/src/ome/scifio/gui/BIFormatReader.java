@@ -34,7 +34,7 @@
  * #L%
  */
 
-package ome.scifio.in;
+package ome.scifio.gui;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -43,7 +43,6 @@ import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DataTools;
-import ome.scifio.util.AWTImageTools;
 import ome.scifio.util.FormatTools;
 
 /**

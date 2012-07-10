@@ -19,7 +19,7 @@ import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
 import ome.scifio.common.DataTools;
 import ome.scifio.gui.AWTImageTools;
-import ome.scifio.in.BIFormatReader;
+import ome.scifio.gui.BIFormatReader;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
 
