@@ -37,13 +37,11 @@ public abstract class AbstractFormatHandler extends AbstractHasContext
   // -- FormatHandler API Methods --
 
   /* @see FormatHandler#getFormatName() */
-  @Override
   public String getFormatName() {
     return formatName;
   }
 
   /* @see FormatHandler#getSuffixes() */
-  @Override
   public String[] getSuffixes() {
     return suffixes.clone();
   }

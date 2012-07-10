@@ -49,7 +49,6 @@ public abstract class AbstractChecker<M extends Metadata>
 
   // -- HasFormat API --
 
-  @Override
   @SuppressWarnings("unchecked")
   public Format<M, ?, ?, ?, ?> getFormat() {
     return getContext().getFormatFromChecker(getClass());
@@ -58,7 +57,6 @@ public abstract class AbstractChecker<M extends Metadata>
   // -- Checker API Methods --
 
   /* @see Checker#isFormat(String name, boolean open) */
-  @Override
   public boolean isFormat(final String name, final boolean open) {
     // if file extension ID is insufficient and we can't open the file, give up
     if (!suffixSufficient && !open) return false;
@@ -90,7 +88,6 @@ public abstract class AbstractChecker<M extends Metadata>
   }
 
   /* @see Checker#isFormat(byte[] block) */
-  @Override
   public boolean isFormat(final byte[] block) {
     try {
       final RandomAccessInputStream stream = new RandomAccessInputStream(block);
@@ -105,7 +102,6 @@ public abstract class AbstractChecker<M extends Metadata>
   }
 
   /* @see Checker#isFormat(RandomAccessInputStream) */
-  @Override
   public boolean isFormat(final RandomAccessInputStream stream)
     throws IOException
   {

@@ -87,7 +87,6 @@ public abstract class AbstractWriter<M extends Metadata>
 
   // -- HasFormat API Methods --
 
-  @Override
   @SuppressWarnings("unchecked")
   public Format<M, ?, ?, ?, ?> getFormat() {
     return getContext().getFormatFromWriter(getClass());
@@ -96,25 +95,21 @@ public abstract class AbstractWriter<M extends Metadata>
   // -- Writer API Methods --
 
   /* @see ome.scifio.Writer#getMetadata() */
-  @Override
   public M getMetadata() {
     return this.metadata;
   }
 
   /* @see ome.scifio.Writer#getCoreMetadata() */
-  @Override
   public CoreMetadata getCoreMetadata() {
     return this.cMeta;
   }
 
   /* @see ome.scifio.Writer#setStream(File) */
-  @Override
   public void setDest(final File file) throws FormatException, IOException {
     setDest(file.getName(), 0);
   }
 
   /* @see ome.scifio.Writer#setStream(String) */
-  @Override
   public void setDest(final String fileName)
     throws FormatException, IOException
   {
@@ -122,7 +117,6 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#setStream(RandomAccessOutputStream) */
-  @Override
   public void setDest(final RandomAccessOutputStream out)
     throws FormatException, IOException
   {
@@ -131,7 +125,6 @@ public abstract class AbstractWriter<M extends Metadata>
 
   /* @see ome.scifio.Writer#setStream(File, int) */
 
-  @Override
   public void setDest(final File file, final int imageIndex)
     throws FormatException, IOException
   {
@@ -139,7 +132,6 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#setStream(String, int) */
-  @Override
   public void setDest(final String fileName, final int imageIndex)
     throws FormatException, IOException
   {
@@ -147,7 +139,6 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#setStream(RandomAccessOutputStream, int) */
-  @Override
   public void setDest(final RandomAccessOutputStream out, final int imageIndex)
     throws FormatException, IOException
   {
@@ -161,13 +152,11 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#getStream() */
-  @Override
   public RandomAccessOutputStream getStream() {
     return this.out;
   }
 
   /* @see ome.scifio.Writer#saveBytes(int, int, byte[]) */
-  @Override
   public void saveBytes(final int imageIndex, final int planeIndex,
     final byte[] buf) throws FormatException, IOException
   {
@@ -177,7 +166,6 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#savePlane(int, int, Object) */
-  @Override
   public void savePlane(final int imageIndex, final int planeIndex,
     final Object plane) throws FormatException, IOException
   {
@@ -187,7 +175,6 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#savePlane(int, int, Object, int, int, int, int) */
-  @Override
   public void savePlane(final int imageIndex, final int planeIndex,
     final Object plane, final int x, final int y, final int w, final int h)
     throws FormatException, IOException
@@ -200,49 +187,41 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#canDoStacks() */
-  @Override
   public boolean canDoStacks() {
     return false;
   }
 
   /* @see ome.scifio.Writer#setColorModel(ColorModel) */
-  @Override
   public void setColorModel(final ColorModel cm) {
     this.cm = cm;
   }
 
   /* @see ome.scifio.Writer#getColorModel() */
-  @Override
   public ColorModel getColorModel() {
     return cm;
   }
 
   /* @see ome.scifio.Writer#setFramesPerSecond(int) */
-  @Override
   public void setFramesPerSecond(final int rate) {
     this.fps = rate;
   }
 
   /* @see ome.scifio.Writer#getFramesPerSecond() */
-  @Override
   public int getFramesPerSecond() {
     return fps;
   }
 
   /* @see ome.scifio.Writer#getCompressionTypes() */
-  @Override
   public String[] getCompressionTypes() {
     return compressionTypes;
   }
 
   /* @see ome.scifio.Writer#getPixelTypes() */
-  @Override
   public int[] getPixelTypes() {
     return getPixelTypes(getCompression());
   }
 
   /* @see ome.scifio.Writer#getPixelTypes(String) */
-  @Override
   public int[] getPixelTypes(final String codec) {
     return new int[] {
         FormatTools.INT8, FormatTools.UINT8, FormatTools.INT16,
@@ -251,7 +230,6 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#isSupportedType(int) */
-  @Override
   public boolean isSupportedType(final int type) {
     final int[] types = getPixelTypes();
     for (int i = 0; i < types.length; i++) {
@@ -261,7 +239,6 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#setCompression(String) */
-  @Override
   public void setCompression(final String compress) throws FormatException {
     for (int i = 0; i < compressionTypes.length; i++) {
       if (compressionTypes[i].equals(compress)) {
@@ -273,19 +250,16 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#setCodecOptions(CodecOptions) */
-  @Override
   public void setCodecOptions(final CodecOptions options) {
     this.options = options;
   }
 
   /* @see ome.scifio.Writer#getCompression() */
-  @Override
   public String getCompression() {
     return compression;
   }
 
   /* @see ome.scifio.Writer#changeOutputFile(String) */
-  @Override
   public void changeOutputFile(final String id)
     throws FormatException, IOException
   {
@@ -293,13 +267,11 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#setWriterSequentially(boolean) */
-  @Override
   public void setWriteSequentially(final boolean sequential) {
     this.sequential = sequential;
   }
 
   /* @see ome.scifio.Writer#close() */
-  @Override
   public void close() throws IOException {
     if (out != null) out.close();
     out = null;
@@ -313,7 +285,6 @@ public abstract class AbstractWriter<M extends Metadata>
    * @see ome.scifio.Writer#saveBytes(byte[], boolean)
    */
   @Deprecated
-  @Override
   public void saveBytes(final byte[] bytes, final boolean last)
     throws FormatException, IOException
   {
@@ -326,7 +297,6 @@ public abstract class AbstractWriter<M extends Metadata>
    * @see ome.scifio.Writer#saveBytes(byte[], int, boolean, boolean)
    */
   @Deprecated
-  @Override
   public void saveBytes(final byte[] bytes, final int planeIndex,
     final boolean lastInSeries, final boolean last)
     throws FormatException, IOException
@@ -340,7 +310,6 @@ public abstract class AbstractWriter<M extends Metadata>
    * @see ome.scifio.Writer#savePlane(Object, boolean)
    */
   @Deprecated
-  @Override
   public void savePlane(final Object plane, final boolean last)
     throws FormatException, IOException
   {
@@ -353,7 +322,6 @@ public abstract class AbstractWriter<M extends Metadata>
    * @see ome.scifio.Writer#savePlane(Object, int, boolean, boolean)
    */
   @Deprecated
-  @Override
   public void savePlane(final Object plane, final int planeIndex,
     final boolean lastInSeries, final boolean last)
     throws FormatException, IOException

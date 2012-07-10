@@ -34,7 +34,6 @@ public class TranslatorDiscoverer<M extends Metadata, N extends Metadata>
   
   // -- Discoverer API Methods --
   
-  @Override
   public List<Translator<M, N>> discover() throws FormatException {
     List<Translator<M, N>> transList = new ArrayList<Translator<M, N>>();
     for (@SuppressWarnings("rawtypes")

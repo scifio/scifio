@@ -34,7 +34,6 @@ public class CoreICSTranslator
 
   // -- Translator API Methods --
 
-  @Override
   public void translate(final CoreMetadata source, final ICSMetadata destination)
   {
     // note that the destination fields will preserve their default values

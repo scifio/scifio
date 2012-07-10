@@ -61,7 +61,6 @@ public abstract class AbstractParser<M extends Metadata>
 
   // -- HasFormat API Methods --
 
-  @Override
   @SuppressWarnings("unchecked")
   public Format<M, ?, ?, ?, ?> getFormat() {
     return getContext().getFormatFromParser(getClass());
@@ -70,19 +69,16 @@ public abstract class AbstractParser<M extends Metadata>
   // -- Parser API Methods --
 
   /* @see Parser#parse(File file) */
-  @Override
   public M parse(final File file) throws IOException, FormatException {
     return parse(file.getPath());
   }
 
   /* @see Parser#parse(String fileName) */
-  @Override
   public M parse(final String fileName) throws IOException, FormatException {
     return parse(new RandomAccessInputStream(fileName));
   }
 
   /* @see Parser#parse(RandomAccessInputStream stream) */
-  @Override
   public M parse(final RandomAccessInputStream stream)
     throws IOException, FormatException
   {
@@ -100,7 +96,6 @@ public abstract class AbstractParser<M extends Metadata>
   }
 
   /* @see Parser#parse(File, M) */
-  @Override
   public M parse(final File file, final M meta)
     throws IOException, FormatException
   {
@@ -108,7 +103,6 @@ public abstract class AbstractParser<M extends Metadata>
   }
 
   /* @see Parser#parse(String, M) */
-  @Override
   public M parse(final String fileName, final M meta)
     throws IOException, FormatException
   {
@@ -116,7 +110,6 @@ public abstract class AbstractParser<M extends Metadata>
   }
 
   /* @see Parser#parse(RandomAccessInputStream, M) */
-  @Override
   public M parse(final RandomAccessInputStream stream, final M meta)
     throws IOException, FormatException
   {
@@ -133,7 +126,6 @@ public abstract class AbstractParser<M extends Metadata>
   }
 
   /* @see Parser#close(boolean) */
-  @Override
   public void close(final boolean fileOnly) throws IOException {
     if (in != null) in.close();
     if (!fileOnly) {
@@ -142,32 +134,27 @@ public abstract class AbstractParser<M extends Metadata>
   }
 
   /* @see Parser#close() */
-  @Override
   public void close() throws IOException {
     close(false);
   }
 
   /* @see Parser#setOriginalMetadataPopulated(boolean) */
-  @Override
   public void setOriginalMetadataPopulated(final boolean populate) {
     FormatTools.assertStream(in, false, 1);
     saveOriginalMetadata = populate;
   }
 
   /* @see Parser#isOriginalMetadataPopulated() */
-  @Override
   public boolean isOriginalMetadataPopulated() {
     return saveOriginalMetadata;
   }
 
   /* @see Parser#getUsedFiles() */
-  @Override
   public String[] getUsedFiles() {
     return getUsedFiles(false);
   }
 
   /* @see Parser#getUsedFiles() */
-  @Override
   public String[] getUsedFiles(final boolean noPixels) {
     final Vector<String> files = new Vector<String>();
     for (int i = 0; i < cMeta.getImageCount(); i++) {
@@ -184,33 +171,28 @@ public abstract class AbstractParser<M extends Metadata>
   }
 
   /* @see Parser#setMetadataFiltered(boolean) */
-  @Override
   public void setMetadataFiltered(final boolean filter) {
     FormatTools.assertStream(in, false, 1);
     filterMetadata = filter;
   }
 
   /* @see Parser#isMetadataFiltered() */
-  @Override
   public boolean isMetadataFiltered() {
     return filterMetadata;
   }
 
   /* @see Parser#getImageUsedFiles() */
-  @Override
   public String[] getImageUsedFiles(final int imageIndex) {
     return getImageUsedFiles(imageIndex, false);
   }
 
   /* @see Parser#getImageUsedFiles(boolean) */
-  @Override
   public String[] getImageUsedFiles(final int imageIndex, final boolean noPixels)
   {
     return noPixels ? null : new String[] {in.getFileName()};
   }
 
   /* @see Parser#getAdvancedUsedFiles(boolean) */
-  @Override
   public FileInfo[] getAdvancedUsedFiles(final boolean noPixels) {
     final String[] files = getUsedFiles(noPixels);
     if (files == null) return null;
@@ -218,7 +200,6 @@ public abstract class AbstractParser<M extends Metadata>
   }
 
   /* @see Parser#getAdvancedSeriesUsedFiles(boolean) */
-  @Override
   public FileInfo[] getAdvancedImageUsedFiles(final int imageIndex,
     final boolean noPixels)
   {
@@ -230,7 +211,6 @@ public abstract class AbstractParser<M extends Metadata>
   /* (non-Javadoc)
    * @see ome.scifio.Parser#getSupportedMetadataLevels()
    */
-  @Override
   public Set<MetadataLevel> getSupportedMetadataLevels() {
     final Set<MetadataLevel> supportedLevels = new HashSet<MetadataLevel>();
     supportedLevels.add(MetadataLevel.ALL);
@@ -242,7 +222,6 @@ public abstract class AbstractParser<M extends Metadata>
   /* (non-Javadoc)
    * @see ome.scifio.Parser#getMetadataOptions()
    */
-  @Override
   public MetadataOptions getMetadataOptions() {
     return metadataOptions;
   }
@@ -250,7 +229,6 @@ public abstract class AbstractParser<M extends Metadata>
   /* (non-Javadoc)
    * @see ome.scifio.Parser#setMetadataOptions(loci.formats.in.MetadataOptions)
    */
-  @Override
   public void setMetadataOptions(final MetadataOptions options) {
     this.metadataOptions = options;
   }
@@ -308,7 +286,6 @@ public abstract class AbstractParser<M extends Metadata>
   }
 
   /** Adds an entry to the specified Hashtable. */
-  @Override
   public void addMeta(String key, Object value,
     final Hashtable<String, Object> meta)
   {

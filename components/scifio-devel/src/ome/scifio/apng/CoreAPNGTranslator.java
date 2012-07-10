@@ -40,7 +40,6 @@ public class CoreAPNGTranslator
   }
 	
   // -- Translator API Methods --	
-  @Override
   public void translate(final CoreMetadata source, final APNGMetadata dest) {
 
     final APNGIHDRChunk ihdr =

@@ -39,7 +39,6 @@ public class ICSCoreTranslator
 
   // -- Translator API Methods --
 
-  @Override
   public void translate(final ICSMetadata source, final CoreMetadata destination)
   {
     final CoreImageMetadata coreMeta = new CoreImageMetadata();

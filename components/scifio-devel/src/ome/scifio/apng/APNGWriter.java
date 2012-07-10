@@ -54,7 +54,6 @@ public class APNGWriter extends AbstractWriter<APNGMetadata> {
 	/**
 	 * @see ome.scifio.Writer#saveBytes(int, byte[], int, int, int, int)
 	 */
-	@Override
 	public void saveBytes(final int imageIndex, final int planeIndex,
 			final byte[] buf, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException {
@@ -91,20 +90,17 @@ public class APNGWriter extends AbstractWriter<APNGMetadata> {
 	}
 
 	/* @see ome.scifio.Writer#canDoStacks() */
-	@Override
 	public boolean canDoStacks() {
 		return true;
 	}
 
 	/* @see ome.scifio.Writer#getPixelTypes(String) */
-	@Override
 	public int[] getPixelTypes(final String codec) {
 		return new int[] { FormatTools.INT8, FormatTools.UINT8,
 				FormatTools.INT16, FormatTools.UINT16 };
 	}
 
 	/* @see Writer#setMetadata(M) */
-	@Override
 	public void setMetadata(final APNGMetadata meta) {
 		super.setMetadata(meta, new APNGCoreTranslator());
 	}
@@ -112,7 +108,6 @@ public class APNGWriter extends AbstractWriter<APNGMetadata> {
 	// -- APNGWriter Methods --
 
 	/* @see ome.scifio.Writer#close() */
-	@Override
 	public void close() throws IOException {
 		if (out != null) {
 			writeFooter();
@@ -125,7 +120,6 @@ public class APNGWriter extends AbstractWriter<APNGMetadata> {
 	}
 
 	/* @see ome.scifio.Writer#setDest(RandomAccessOutputStream, int) */
-	@Override
 	public void setDest(final RandomAccessOutputStream out, final int imageIndex)
 			throws FormatException, IOException {
 		super.setDest(out, imageIndex);

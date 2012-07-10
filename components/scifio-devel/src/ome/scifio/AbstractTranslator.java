@@ -23,7 +23,6 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 
   // -- HasFormat API Methods --
 
-  @Override
   @SuppressWarnings("unchecked")
   public Format<M, ?, ?, ?, ?> getFormat() {
     return getContext().getFormatFromTranslator(getClass());

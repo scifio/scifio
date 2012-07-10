@@ -52,87 +52,73 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
   // -- Format API Methods --
 
   /* @see Format#getPriority() */
-  @Override
   public Double getPriority() {
     return this.priority;
   }
 
   /* @see Format#createMetadata() */
-  @Override
   public M createMetadata() throws FormatException {
     return createContextualObject(this.getMetadataClass());
   }
 
   /* @see Format#createChecker() */
-  @Override
   public C createChecker() throws FormatException {
     return createContextualObject(this.getCheckerClass());
   }
 
   /* @see Format#createParser() */
-  @Override
   public P createParser() throws FormatException {
     return createContextualObject(this.getParserClass());
   }
 
   /* @see Format#createReader() */
-  @Override
   public R createReader() throws FormatException {
     return createContextualObject(this.getReaderClass());
   }
 
   /* @see Format#createWriter() */
-  @Override
   public W createWriter() throws FormatException {
     return createContextualObject(this.getWriterClass());
   }
 
   /* @see Format#getMetadataClass() */
-  @Override
   public Class<M> getMetadataClass() {
     return metadataClass;
   }
 
   /* @see Format#getCheckerClass() */
-  @Override
   public Class<C> getCheckerClass() {
     return checkerClass;
   }
 
   /* @see Format#getParserClass() */
-  @Override
   public Class<P> getParserClass() {
     return parserClass;
   }
 
   /* @see Format#getReaderClass() */
-  @Override
   public Class<R> getReaderClass() {
     return readerClass;
   }
 
   /* @see Format#getWriteerClass() */
-  @Override
   public Class<W> getWriterClass() {
     return writerClass;
   }
 
   /* @see Format#findSourceTranslator() */
-  @Override
   public <N extends Metadata> Translator<M, N> findSourceTranslator(
       final Class<N> targetMeta) throws FormatException {
       return findTranslator(metadataClass, targetMeta);
   }
 
   /* @see Format#findDestTranslator() */
-  @Override
   public <N extends Metadata> Translator<N, M> findDestTranslator(
       final Class<N> targetMeta) throws FormatException {
     return findTranslator(targetMeta, metadataClass);
   }
 
   /* @see Format#getTranslatorclassList() */
-  @Override
   public List<Class<Translator<?, ?>>> getTranslatorClassList() {
     return translatorClassList;
   }
@@ -212,7 +198,6 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
 
   // -- Comparable API Methods --
   
-  @Override
   public int compareTo(final Format<?, ?, ?, ?, ?> format) {
     return getPriority().compareTo(format.getPriority());
   }

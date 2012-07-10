@@ -33,7 +33,6 @@ public class APNGCoreTranslator
 
   // -- Translator API Methods --
 
-  @Override
   public void translate(final APNGMetadata source, final CoreMetadata dest) {
     final CoreImageMetadata coreMeta = new CoreImageMetadata();
     dest.add(coreMeta);

@@ -20,7 +20,6 @@ public abstract class AbstractMetadata extends AbstractHasContext
 
   // -- HasFormat API Methods --
 
-  @Override
   public Format<?, ?, ?, ?, ?> getFormat() {
     return getContext().getFormatFromMetadata(getClass());
   }
@@ -34,7 +33,6 @@ public abstract class AbstractMetadata extends AbstractHasContext
   // -- Metadata API Methods --
 
   /* @see Metadata#resetMeta(Class<?>) */
-  @Override
   public void reset(final Class<?> type) {
     if (type == null || type == AbstractMetadata.class) return;
 
@@ -69,13 +67,11 @@ public abstract class AbstractMetadata extends AbstractHasContext
   }
 
   /* @see Metadata#setSource(RandomAccessInputStream) */
-  @Override
   public void setSource(final RandomAccessInputStream source) {
     this.source = source;
   }
 
   /* @see Metadata#getSource() */
-  @Override
   public RandomAccessInputStream getSource() {
     return this.source;
   }

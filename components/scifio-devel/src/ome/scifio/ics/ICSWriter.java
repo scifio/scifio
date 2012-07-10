@@ -26,7 +26,6 @@ public class ICSWriter extends AbstractWriter<ICSMetadata> {
 
   // -- Writer API Methods --
 
-  @Override
   public void saveBytes(final int imageIndex, final int planeIndex,
     final byte[] buf, final int x, final int y, final int w, final int h)
     throws FormatException, IOException
@@ -36,7 +35,6 @@ public class ICSWriter extends AbstractWriter<ICSMetadata> {
   }
 
   /* @see ome.scifio.Writer#setMetadata(M) */
-  @Override
   public void setMetadata(final ICSMetadata meta) {
     super.setMetadata(meta, new ICSCoreTranslator());
   }

@@ -17,12 +17,10 @@ public abstract class AbstractHasContext implements HasContext {
 
   // -- HasContext API --
 
-  @Override
   public SCIFIO getContext() {
     return context;
   }
 
-  @Override
   public void setContext(final SCIFIO ctx) {
     if (this.context == null) {
       this.context = ctx;
@@ -34,7 +32,6 @@ public abstract class AbstractHasContext implements HasContext {
 
   // -- Default toString implementation --
 
-  @Override
   public String toString() {
     return new FieldPrinter(this).toString();
   }
