@@ -498,5 +498,9 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
     if (markedPos < 0) throw new IOException("No mark set");
     seek(markedPos);
   }
+  
+  public String getFileName() {
+    return this.file;
+  }
 
 }
