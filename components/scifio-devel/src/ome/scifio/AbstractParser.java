@@ -227,7 +227,7 @@ public abstract class AbstractParser<M extends Metadata>
   }
 
   /* (non-Javadoc)
-   * @see ome.scifio.Parser#setMetadataOptions(loci.formats.in.MetadataOptions)
+   * @see ome.scifio.Parser#setMetadataOptions(ome.scifio.MetadataOptions)
    */
   public void setMetadataOptions(final MetadataOptions options) {
     this.metadataOptions = options;

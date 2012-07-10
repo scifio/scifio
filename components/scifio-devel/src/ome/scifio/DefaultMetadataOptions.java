@@ -43,14 +43,14 @@ public class DefaultMetadataOptions implements MetadataOptions {
   }
 
   /* (non-Javadoc)
-   * @see loci.formats.in.MetadataOptions#getMetadataLevel()
+   * @see ome.scifio.MetadataOptions#getMetadataLevel()
    */
   public MetadataLevel getMetadataLevel() {
     return level;
   }
 
   /* (non-Javadoc)
-   * @see loci.formats.in.MetadataOptions#setMetadataLevel(loci.formats.in.MetadataLevel)
+   * @see ome.scifio.MetadataOptions#setMetadataLevel(ome.scifio.MetadataLevel)
    */
   public void setMetadataLevel(final MetadataLevel level) {
     this.level = level;

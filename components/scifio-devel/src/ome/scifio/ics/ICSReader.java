@@ -177,7 +177,7 @@ public class ICSReader extends AbstractReader<ICSMetadata> {
     return buf;
   }
 
-  /* @see loci.formats.IFormatReader#close(boolean) */
+  /* @see Reader#close(boolean) */
   @Override
   public void close(final boolean fileOnly) throws IOException {
     super.close(fileOnly);
