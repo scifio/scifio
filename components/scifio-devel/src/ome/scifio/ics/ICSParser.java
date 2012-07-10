@@ -2,7 +2,7 @@ package ome.scifio.ics;
 
 import java.io.IOException;
 
-import ome.scifio.common.Location;
+import ome.scifio.io.Location;
 import ome.scifio.AbstractParser;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
