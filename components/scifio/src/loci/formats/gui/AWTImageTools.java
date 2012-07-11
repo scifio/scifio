@@ -47,8 +47,13 @@ import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 
+import ome.xml.model.primitives.PositiveInteger;
+
 import loci.formats.FormatException;
+import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
+import loci.formats.MetadataTools;
+import loci.formats.SCIFIOReaderAdapter;
 import loci.formats.meta.MetadataRetrieve;
 
 /**
@@ -332,12 +337,23 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(byte[] data, boolean interleaved,
     MetadataRetrieve meta, int series) throws FormatException
   {
-    try {
-      return ome.scifio.gui.AWTImageTools.makeImage(data, interleaved, meta, series);
+    MetadataTools.verifyMinimumPopulated(meta, series);
+
+    int width = meta.getPixelsSizeX(series).getValue().intValue();
+    int height = meta.getPixelsSizeY(series).getValue().intValue();
+    String pixelType = meta.getPixelsType(series).toString();
+    int type = FormatTools.pixelTypeFromString(pixelType);
+    PositiveInteger nChannels = meta.getChannelSamplesPerPixel(series, 0);
+    if (nChannels == null) {
+      //LOGGER.warn("SamplesPerPixel is null; it is assumed to be 1.");
     }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e);
-    }
+    int channels = nChannels == null ? 1 : nChannels.getValue();
+    boolean littleEndian =
+      !meta.getPixelsBinDataBigEndian(series, 0).booleanValue();
+    return makeImage(data, width, height, channels,
+      interleaved, FormatTools.getBytesPerPixel(type),
+      FormatTools.isFloatingPoint(type), littleEndian,
+      FormatTools.isSigned(type));
   }
 
   /**
@@ -436,12 +452,12 @@ public final class AWTImageTools {
    * Creates an image from the given byte array, using the given
    * IFormatReader to retrieve additional information.
    */
-  @SuppressWarnings("deprecation")
   public static BufferedImage openImage(byte[] buf, IFormatReader r,
     int w, int h) throws FormatException, IOException
   {
     try {
-      return ome.scifio.gui.AWTImageTools.openImage(buf, r, w, h);
+      return ome.scifio.gui.AWTImageTools.openImage(buf, 
+        new SCIFIOReaderAdapter(FormatTools.CONTEXT, r), w, h, r.getSeries());
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
