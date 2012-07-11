@@ -39,14 +39,28 @@ package loci.formats;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import loci.formats.meta.IMetadata;
 import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
+import loci.formats.ome.OMEXMLMetadataImpl;
 import loci.formats.services.OMEXMLService;
-
+import ome.scifio.common.DateTools;
+import ome.scifio.io.Location;
 import ome.scifio.services.DependencyException;
 import ome.scifio.services.ServiceException;
 import ome.scifio.services.ServiceFactory;
+import ome.xml.model.BinData;
+import ome.xml.model.OME;
+import ome.xml.model.enums.DimensionOrder;
+import ome.xml.model.enums.EnumerationException;
+import ome.xml.model.enums.PixelType;
+import ome.xml.model.primitives.NonNegativeInteger;
+import ome.xml.model.primitives.NonNegativeLong;
+import ome.xml.model.primitives.PositiveInteger;
+import ome.xml.model.primitives.Timestamp;
 
 
 
@@ -64,9 +78,13 @@ import ome.scifio.services.ServiceFactory;
 public final class MetadataTools {
 
   // -- Constants --
-
+  
+  private static final Logger LOGGER =
+    LoggerFactory.getLogger(MetadataTools.class);
 
   // -- Static fields --
+
+  private static boolean defaultDateEnabled = true;
 
   // -- Constructor --
 
@@ -79,7 +97,7 @@ public final class MetadataTools {
    * metadata from the given reader.
    */
   public static void populatePixels(MetadataStore store, IFormatReader r) {
-    ome.scifio.util.MetadataTools.populatePixels(store, r);
+    populatePixels(store, r, false, true);
   }
 
   /**
@@ -90,7 +108,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane)
   {
-    ome.scifio.util.MetadataTools.populatePixels(store, r, doPlane);
+    populatePixels(store, r, doPlane, true);
   }
 
   /**
@@ -103,22 +121,52 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane, boolean doImageName)
   {
-    ome.scifio.util.MetadataTools.populatePixels(store, r, doPlane, doImageName);
-  }
+    if (store == null || r == null) return;
+    int oldSeries = r.getSeries();
+    for (int i=0; i<r.getSeriesCount(); i++) {
+      r.setSeries(i);
 
-  /**
-   * Populates the given {@link MetadataStore}, for the specified series, using
-   * the values from the provided {@link CoreMetadata}.
-   * <p>
-   * After calling this method, the metadata store will be sufficiently
-   * populated for use with an {@link IFormatWriter} (assuming it is also a
-   * {@link MetadataRetrieve}).
-   * </p>
-   */
-  public static void populateMetadata(MetadataStore store, int series,
-    String imageName, CoreMetadata coreMeta)
-  {
-    ome.scifio.util.MetadataTools.populateMetadata(store, series, imageName, coreMeta);
+      String imageName = null;
+      if (doImageName) {
+        Location f = new Location(r.getCurrentFile());
+        imageName = f.getName();
+      }
+      String pixelType = FormatTools.getPixelTypeString(r.getPixelType());
+
+      populateMetadata(store, r.getCurrentFile(), i, imageName,
+        r.isLittleEndian(), r.getDimensionOrder(), pixelType, r.getSizeX(),
+        r.getSizeY(), r.getSizeZ(), r.getSizeC(), r.getSizeT(),
+        r.getRGBChannelCount());
+
+      try {
+        OMEXMLService service =
+          new ServiceFactory().getInstance(OMEXMLService.class);
+        if (service.isOMEXMLRoot(store.getRoot())) {
+          MetadataStore baseStore = r.getMetadataStore();
+          if (service.isOMEXMLMetadata(baseStore)) {
+            ((OMEXMLMetadataImpl) baseStore).resolveReferences();
+          }
+
+          OME root = (OME) store.getRoot();
+          BinData bin = root.getImage(i).getPixels().getBinData(0);
+          bin.setLength(new NonNegativeLong(0L));
+          store.setRoot(root);
+        }
+      }
+      catch (DependencyException exc) {
+        LOGGER.warn("Failed to set BinData.Length", exc);
+      }
+
+      if (doPlane) {
+        for (int q=0; q<r.getImageCount(); q++) {
+          int[] coords = r.getZCTCoords(q);
+          store.setPlaneTheZ(new NonNegativeInteger(coords[0]), i, q);
+          store.setPlaneTheC(new NonNegativeInteger(coords[1]), i, q);
+          store.setPlaneTheT(new NonNegativeInteger(coords[2]), i, q);
+        }
+      }
+    }
+    r.setSeries(oldSeries);
   }
 
   /**
@@ -139,7 +187,27 @@ public final class MetadataTools {
       dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT,
       samplesPerPixel);
   }
-
+  
+  /**
+   * Populates the given {@link MetadataStore}, for the specified series, using
+   * the values from the provided {@link CoreMetadata}.
+   * <p>
+   * After calling this method, the metadata store will be sufficiently
+   * populated for use with an {@link IFormatWriter} (assuming it is also a
+   * {@link MetadataRetrieve}).
+   * </p>
+   */
+  public static void populateMetadata(MetadataStore store, int series,
+    String imageName, loci.formats.CoreMetadata coreMeta)
+  {
+    final String pixelType = FormatTools.getPixelTypeString(coreMeta.pixelType);
+    final int effSizeC = coreMeta.imageCount / coreMeta.sizeZ / coreMeta.sizeT;
+    final int samplesPerPixel = coreMeta.sizeC / effSizeC;
+    populateMetadata(store, null, series, imageName, coreMeta.littleEndian,
+      coreMeta.dimensionOrder, pixelType, coreMeta.sizeX, coreMeta.sizeY,
+      coreMeta.sizeZ, coreMeta.sizeC, coreMeta.sizeT, samplesPerPixel);
+  }
+  
   /**
    * Populates the given {@link MetadataStore}, for the specified series, using
    * the provided values.
@@ -162,15 +230,50 @@ public final class MetadataTools {
   }
 
   public static void populatePixelsOnly(MetadataStore store, IFormatReader r) {
-    ome.scifio.util.MetadataTools.populatePixelsOnly(store, r);
+    int oldSeries = r.getSeries();
+    for (int i=0; i<r.getSeriesCount(); i++) {
+      r.setSeries(i);
+
+      String pixelType = FormatTools.getPixelTypeString(r.getPixelType());
+
+      populatePixelsOnly(store, i, r.isLittleEndian(), r.getDimensionOrder(),
+        pixelType, r.getSizeX(), r.getSizeY(), r.getSizeZ(), r.getSizeC(),
+        r.getSizeT(), r.getRGBChannelCount());
+    }
+    r.setSeries(oldSeries);
   }
 
   public static void populatePixelsOnly(MetadataStore store, int series,
     boolean littleEndian, String dimensionOrder, String pixelType, int sizeX,
     int sizeY, int sizeZ, int sizeC, int sizeT, int samplesPerPixel)
   {
-    ome.scifio.util.MetadataTools.populatePixelsOnly(store, series, littleEndian,
-      dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
+    store.setPixelsID(createLSID("Pixels", series), series);
+    store.setPixelsBinDataBigEndian(!littleEndian, series, 0);
+    try {
+      store.setPixelsDimensionOrder(
+        DimensionOrder.fromString(dimensionOrder), series);
+    }
+    catch (EnumerationException e) {
+      LOGGER.warn("Invalid dimension order: " + dimensionOrder, e);
+    }
+    try {
+      store.setPixelsType(PixelType.fromString(pixelType), series);
+    }
+    catch (EnumerationException e) {
+      LOGGER.warn("Invalid pixel type: " + pixelType, e);
+    }
+    store.setPixelsSizeX(new PositiveInteger(sizeX), series);
+    store.setPixelsSizeY(new PositiveInteger(sizeY), series);
+    store.setPixelsSizeZ(new PositiveInteger(sizeZ), series);
+    store.setPixelsSizeC(new PositiveInteger(sizeC), series);
+    store.setPixelsSizeT(new PositiveInteger(sizeT), series);
+    int effSizeC = sizeC / samplesPerPixel;
+    for (int i=0; i<effSizeC; i++) {
+      store.setChannelID(createLSID("Channel", series, i),
+        series, i);
+      store.setChannelSamplesPerPixel(new PositiveInteger(samplesPerPixel),
+        series, i);
+    }
   }
 
   /**
@@ -183,40 +286,68 @@ public final class MetadataTools {
   }
 
   /**
-   * Checks whether the given metadata object has the minimum metadata
-   * populated to successfully describe an Image.
    *
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  @SuppressWarnings("deprecation")
   public static void verifyMinimumPopulated(MetadataRetrieve src)
     throws FormatException
   {
-    try {
-      ome.scifio.util.MetadataTools.verifyMinimumPopulated(src);
-    }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e);
-    }
+    verifyMinimumPopulated(src, 0);
   }
 
   /**
-   * Checks whether the given metadata object has the minimum metadata
-   * populated to successfully describe the nth Image.
    *
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  @SuppressWarnings("deprecation")
   public static void verifyMinimumPopulated(MetadataRetrieve src, int n)
     throws FormatException
   {
-    try {
-      ome.scifio.util.MetadataTools.verifyMinimumPopulated(src, n);
+    if (src == null) {
+      throw new FormatException("Metadata object is null; " +
+          "call IFormatWriter.setMetadataRetrieve() first");
     }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e);
+    if (src instanceof MetadataStore
+        && ((MetadataStore) src).getRoot() == null) {
+      throw new FormatException("Metadata object has null root; " +
+        "call IMetadata.createRoot() first");
+    }
+    if (src.getImageID(n) == null) {
+      throw new FormatException("Image ID #" + n + " is null");
+    }
+    if (src.getPixelsID(n) == null) {
+      throw new FormatException("Pixels ID #" + n + " is null");
+    }
+    for (int i=0; i<src.getChannelCount(n); i++) {
+      if (src.getChannelID(n, i) == null) {
+        throw new FormatException("Channel ID #" + i + " in Image #" + n +
+          " is null");
+      }
+    }
+    if (src.getPixelsBinDataBigEndian(n, 0) == null) {
+      throw new FormatException("BigEndian #" + n + " is null");
+    }
+    if (src.getPixelsDimensionOrder(n) == null) {
+      throw new FormatException("DimensionOrder #" + n + " is null");
+    }
+    if (src.getPixelsType(n) == null) {
+      throw new FormatException("PixelType #" + n + " is null");
+    }
+    if (src.getPixelsSizeC(n) == null) {
+      throw new FormatException("SizeC #" + n + " is null");
+    }
+    if (src.getPixelsSizeT(n) == null) {
+      throw new FormatException("SizeT #" + n + " is null");
+    }
+    if (src.getPixelsSizeX(n) == null) {
+      throw new FormatException("SizeX #" + n + " is null");
+    }
+    if (src.getPixelsSizeY(n) == null) {
+      throw new FormatException("SizeY #" + n + " is null");
+    }
+    if (src.getPixelsSizeZ(n) == null) {
+      throw new FormatException("SizeZ #" + n + " is null");
     }
   }
 
@@ -234,7 +365,7 @@ public final class MetadataTools {
    * @see #setDefaultCreationDate(MetadataStore, String, int)
    */
   public static void setDefaultDateEnabled(boolean enabled) {
-    ome.scifio.util.MetadataTools.setDefaultDateEnabled(enabled);
+    defaultDateEnabled = enabled;
   }
 
   /**
@@ -247,7 +378,14 @@ public final class MetadataTools {
   public static void setDefaultCreationDate(MetadataStore store, String id,
     int series)
   {
-    ome.scifio.util.MetadataTools.setDefaultCreationDate(store, id, series);
+    if (!defaultDateEnabled) {
+      return;
+    }
+    Location file = id == null ? null : new Location(id).getAbsoluteFile();
+    long time = System.currentTimeMillis();
+    if (file != null && file.exists()) time = file.lastModified();
+    store.setImageAcquisitionDate(new Timestamp(DateTools.convertDate(
+        time, DateTools.UNIX)), series);
   }
 
   /**
