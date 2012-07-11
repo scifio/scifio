@@ -38,6 +38,8 @@ package loci.formats;
 
 import java.util.Hashtable;
 
+import net.imglib2.meta.Axes;
+
 /**
  * Encompasses core metadata values.
  *
@@ -213,6 +215,55 @@ public class CoreMetadata implements Cloneable {
     resolutionCount = c.resolutionCount;
   }
 
+  public CoreMetadata(ome.scifio.CoreMetadata scmeta, int series) {
+    this(scmeta.getImageMetadata().toArray(
+        new ome.scifio.CoreImageMetadata[scmeta.getImageCount()])[series]);
+  }
+  
+  public CoreMetadata(ome.scifio.CoreImageMetadata imgMeta) {
+    AxisType[] axes = imgMeta.getAxisTypes();
+    int xIndex = -1, yIndex = -1, cIndex = -1, tIndex = -1, zIndex = -1;
+    
+    for(int i = 0; i < axes.length; i++) {
+      switch((Axes)axes[i]) {
+      case X: xIndex = i;
+        break;
+      case Y: yIndex = i;
+        break;
+      case Z: zIndex = i;
+        break;
+      case CHANNEL: cIndex = i;
+        break;
+      case TIME: tIndex = i;
+        break;
+      default:
+      }
+    }
+    
+    sizeX = xIndex == -1 ? 1 : imgMeta.getAxisLengths()[xIndex];
+    sizeY = yIndex == -1 ? 1 : imgMeta.getAxisLengths()[yIndex];
+    sizeZ = zIndex == -1 ? 1 : imgMeta.getAxisLengths()[zIndex];
+    sizeC = cIndex == -1 ? 1 : imgMeta.getAxisLengths()[cIndex];
+    sizeT = tIndex == -1 ? 1 : imgMeta.getAxisLengths()[tIndex];
+    thumbSizeX = imgMeta.getThumbSizeX();
+    thumbSizeY = imgMeta.getThumbSizeY();
+    pixelType = imgMeta.getPixelType();
+    bitsPerPixel = imgMeta.getBitsPerPixel();
+    imageCount = imgMeta.getPlaneCount();
+    cLengths = imgMeta.getcLengths();
+    cTypes = imgMeta.getcTypes();
+    dimensionOrder = ome.scifio.util.FormatTools.findDimensionOrder(imgMeta.getAxisTypes());
+    orderCertain = imgMeta.isOrderCertain();
+    rgb = imgMeta.isRgb();
+    littleEndian = imgMeta.isLittleEndian();
+    interleaved = imgMeta.isInterleaved();
+    indexed = imgMeta.isIndexed();
+    falseColor = imgMeta.isFalseColor();
+    metadataComplete = imgMeta.isMetadataComplete();
+    seriesMetadata = imgMeta.getImageMetadata();
+    thumbnail = imgMeta.isThumbnail();
+  }
+
   // -- Object methods --
 
   public String toString() {
@@ -246,7 +297,7 @@ public class CoreMetadata implements Cloneable {
     sb.append("\n\tthumbnail = " + thumbnail);
     return sb.toString();
   }
-
+  
   public Object clone() throws CloneNotSupportedException {
     return super.clone();
   }
