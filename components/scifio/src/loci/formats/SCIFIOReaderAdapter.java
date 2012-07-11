@@ -46,16 +46,48 @@ import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 import ome.scifio.io.RandomAccessInputStream;
 
+/**
+ * This class is an adapter from ome.scifio.Reader for loci.formats.IFormatReader.
+ * Using a "hasa" relationship, this class can be wrap an IFormatReader and be
+ * passed to ome.scifio.* methods requiring an ome.scifio.Reader and allow
+ * calculations to proceed as normal.
+ * 
+ * This eliminates the need for redundant method signatures. Instead, the
+ * adapter class can be used for direct delegation.
+ * 
+ * Note that not every method in ome.scifio.Reader has a direct analog in
+ * IFormatReader.
+ * 
+ * Unsupported methods:
+ * - getFormat()
+ * - getStream()
+ * - setMetadata(ome.scifio.Metadata)
+ * - getMetadata()
+ * - readPlane(RandomAccessInputStream s, int imageIndex, int x,
+ *     int y, int w, int h, byte[] buf)
+ * - readlane(RandomAccessInputStream s, int imageIndex, int x,
+ *   int y, int w, int h, int scanlinePad, byte[] buf)
+ * 
+ * @author Mark Hiner
+ */
 public class SCIFIOReaderAdapter implements ome.scifio.Reader {
-
+  
+  // -- Constants --
+  
+  // -- Fields --
+  
   private SCIFIO context;
   private final IFormatReader reader;
 
+  // -- Constructor --
+  
   public SCIFIOReaderAdapter(SCIFIO context, IFormatReader reader) {
     this.context = context;
     this.reader = reader;
   }
 
+  // -- ome.scifio.Reader API --
+  
   public SCIFIO getContext() {
     return context;
   }
@@ -71,63 +103,63 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
   public byte[] openBytes(int imageIndex, int planeIndex)
     throws ome.scifio.FormatException, IOException
   {
-    throw new UnsupportedOperationException();
+    return reader.openBytes(imageIndex);
   }
 
   public byte[] openBytes(int imageIndex, int planeIndex, int x, int y,
     int w, int h) throws ome.scifio.FormatException, IOException
   {
-    throw new UnsupportedOperationException();
+    return reader.openBytes(imageIndex, x, y, w, h);
   }
 
   public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
     throws ome.scifio.FormatException, IOException
   {
-    throw new UnsupportedOperationException();
+    return reader.openBytes(imageIndex, buf);
   }
 
   public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x,
     int y, int w, int h) throws ome.scifio.FormatException, IOException
   {
-    throw new UnsupportedOperationException();
+    return reader.openBytes(imageIndex, buf, x, y, w, h);
   }
 
   public Object openPlane(int imageIndex, int planeIndex, int x, int y,
     int w, int h) throws ome.scifio.FormatException, IOException
   {
-    throw new UnsupportedOperationException();
+    return reader.openPlane(imageIndex, x, y, w, h);
   }
 
   public byte[] openThumbBytes(int imageIndex, int planeIndex)
     throws ome.scifio.FormatException, IOException
   {
-    throw new UnsupportedOperationException();
+    return reader.openThumbBytes(imageIndex);
   }
 
   public void setGroupFiles(boolean group) {
-    throw new UnsupportedOperationException();
+    reader.setGroupFiles(group);
   }
 
   public boolean isGroupFiles() {
-    throw new UnsupportedOperationException();
+    return reader.isGroupFiles();
   }
 
   public int fileGroupOption(String id)
     throws ome.scifio.FormatException, IOException
   {
-    throw new UnsupportedOperationException();
+    return reader.fileGroupOption(id);
   }
 
   public String getCurrentFile() {
-    throw new UnsupportedOperationException();
+    return reader.getCurrentFile();
   }
 
   public String[] getDomains() {
-    throw new UnsupportedOperationException();
+    return reader.getDomains();
   }
 
   public int[] getZCTCoords(int index) {
-    throw new UnsupportedOperationException();
+    return reader.getZCTCoords(index);
   }
 
   public RandomAccessInputStream getStream() {
@@ -135,15 +167,22 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
   }
 
   public Reader[] getUnderlyingReaders() {
-    throw new UnsupportedOperationException();
+    IFormatReader[] iReaders = reader.getUnderlyingReaders();
+    Reader[] sReaders = new Reader[iReaders.length];
+    
+    for(int i = 0; i < iReaders.length; i++) {
+      sReaders[i] = new SCIFIOReaderAdapter(context, iReaders[i]);
+    }
+    
+    return sReaders;
   }
 
   public int getOptimalTileWidth(int imageIndex) {
-    throw new UnsupportedOperationException();
+    return reader.getOptimalTileWidth();
   }
 
   public int getOptimalTileHeight(int imageIndex) {
-    throw new UnsupportedOperationException();
+    return reader.getOptimalTileHeight();
   }
 
   public void setMetadata(Metadata meta) throws IOException {
@@ -155,39 +194,54 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
   }
 
   public CoreMetadata getCoreMetadata() {
-    throw new UnsupportedOperationException();
+    return reader.getCoreMetadata()[0].convert();
   }
 
   public void setNormalized(boolean normalize) {
-    throw new UnsupportedOperationException();
+    reader.setNormalized(normalize);
   }
 
   public boolean isNormalized() {
-    throw new UnsupportedOperationException();
+    return reader.isNormalized();
   }
 
   public boolean hasCompanionFiles() {
-    throw new UnsupportedOperationException();
+    return reader.hasCompanionFiles();
   }
 
   public void setSource(File file) throws IOException {
-    throw new UnsupportedOperationException();
+    try {
+      reader.setId(file.getAbsolutePath());
+    }
+    catch (FormatException e) {
+      throw new IOException(e);
+    }
   }
 
   public void setSource(String fileName) throws IOException {
-    throw new UnsupportedOperationException();
+    try {
+      reader.setId(fileName);
+    }
+    catch (FormatException e) {
+      throw new IOException(e);
+    }
   }
 
   public void setSource(RandomAccessInputStream stream) throws IOException {
-    throw new UnsupportedOperationException();
+    try {
+      reader.setId(stream.getFileName());
+    }
+    catch (FormatException e) {
+      throw new IOException(e);
+    }
   }
 
   public void close(boolean fileOnly) throws IOException {
-    throw new UnsupportedOperationException();
+    reader.close(fileOnly);
   }
 
   public void close() throws IOException {
-    throw new UnsupportedOperationException();
+    reader.close();
   }
 
   public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
@@ -203,11 +257,11 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
   }
 
   public int getPlaneCount(int imageIndex) {
-    throw new UnsupportedOperationException();
+    return (reader.getSizeC() * reader.getSizeT() * reader.getSizeZ());
   }
 
   public int getImageCount() {
-    throw new UnsupportedOperationException();
+    return reader.getImageCount();
   }
   
 }
