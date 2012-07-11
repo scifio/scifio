@@ -39,6 +39,8 @@ package loci.formats;
 import java.util.Hashtable;
 
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+import ome.scifio.CoreImageMetadata;
 
 /**
  * Encompasses core metadata values.
@@ -262,6 +264,73 @@ public class CoreMetadata implements Cloneable {
     metadataComplete = imgMeta.isMetadataComplete();
     seriesMetadata = imgMeta.getImageMetadata();
     thumbnail = imgMeta.isThumbnail();
+  }
+
+  // -- CoreMetadata methods --
+
+  /**
+   * Converts this CoreMetadata object to an ome.scifio.CoreMetadata.
+   * 
+   */
+  public ome.scifio.CoreImageMetadata convert() {
+    ome.scifio.CoreMetadata cMeta = new ome.scifio.CoreMetadata();      
+    CoreImageMetadata coreImg = new CoreImageMetadata();
+
+
+    int[] axisLengths = new int[5];
+    AxisType[] axisTypes = new AxisType[5];
+
+    int planeCount = 1;
+
+    for(int i = 0; i < dimensionOrder.length(); i++) {
+      switch(dimensionOrder.toUpperCase().charAt(i)) {
+        case 'X':
+          axisLengths[i] = sizeX;
+          axisTypes[i] = Axes.X;
+          break;
+        case 'Y':
+          axisLengths[i] = sizeY;
+          axisTypes[i] = Axes.Y;
+          break;
+        case 'Z':
+          axisLengths[i] = sizeZ;
+          axisTypes[i] = Axes.Z;
+          planeCount *= sizeZ;
+          break;
+        case 'C':
+          axisLengths[i] = sizeC;
+          axisTypes[i] = Axes.CHANNEL;
+          planeCount *= sizeC;
+          break;
+        case 'T':
+          axisLengths[i] = sizeT;
+          axisTypes[i] = Axes.TIME;
+          planeCount *= sizeT;
+          break;
+      }
+    }
+
+    coreImg.setAxisLengths(axisLengths);
+    coreImg.setAxisTypes(axisTypes);
+    coreImg.setPlaneCount(planeCount);
+
+    coreImg.setThumbSizeX(thumbSizeX);
+    coreImg.setThumbSizeY(thumbSizeY);
+    coreImg.setPixelType(pixelType);
+    coreImg.setBitsPerPixel(bitsPerPixel);
+    coreImg.setcLengths(cLengths);
+    coreImg.setcTypes(cTypes);
+    coreImg.setOrderCertain(orderCertain);
+    coreImg.setRgb(rgb);
+    coreImg.setLittleEndian(littleEndian);
+    coreImg.setInterleaved(interleaved);
+    coreImg.setIndexed(indexed);
+    coreImg.setFalseColor(falseColor);
+    coreImg.setMetadataComplete(metadataComplete);
+    coreImg.setImageMetadata(seriesMetadata);
+    coreImg.setThumbnail(thumbnail);
+
+    return coreImg;
   }
 
   // -- Object methods --
