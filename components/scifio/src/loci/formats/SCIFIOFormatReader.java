@@ -16,6 +16,7 @@ import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
 import net.imglib2.meta.Axes;
 import ome.scifio.Checker;
+import ome.scifio.Format;
 import ome.scifio.Metadata;
 import ome.scifio.Parser;
 import ome.scifio.Reader;
@@ -87,17 +88,20 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   {
 
   // -- Fields --
+  
+  /** SCIFIO Format, used to generate the other components */
+  protected Format<?, ?, ?, ?, ?> format;
 
-  /** Scifio Checker for deference */
+  /** SCIFIO Checker for deference */
   protected Checker<T> checker;
 
-  /** Scifio Parser for deference */
+  /** SCIFIO Parser for deference */
   protected Parser<T> parser;
 
-  /** Scifio Reader for deference */
+  /** SCIFIO Reader for deference */
   protected Reader<T> reader;
 
-  /** Scifio Translator for deference */
+  /** SCIFIO Translator for deference */
   protected Translator<T, ome.scifio.CoreMetadata> translator;
 
   // -- Constructors --

@@ -82,17 +82,8 @@ public abstract class AbstractParser<M extends Metadata>
   public M parse(final RandomAccessInputStream stream)
     throws IOException, FormatException
   {
-    try {
-      M meta = metaClass.newInstance();
-      meta.setContext(this.getContext());
-      return parse(stream, meta);
-    }
-    catch (final InstantiationException e) {
-      throw new FormatException(e);
-    }
-    catch (final IllegalAccessException e) {
-      throw new FormatException(e);
-    }
+    M meta = getFormat().createMetadata();
+    return parse(stream, meta);
   }
 
   /* @see Parser#parse(File, M) */

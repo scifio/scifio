@@ -38,12 +38,12 @@ package loci.formats.in;
 
 import java.io.IOException;
 
-import ome.scifio.apng.APNGChecker;
-import ome.scifio.apng.APNGMetadata;
-import ome.scifio.apng.APNGParser;
-
+import ome.scifio.Metadata;
+import ome.scifio.ics.ICSFormat;
 import ome.scifio.io.RandomAccessInputStream;
+
 import loci.formats.FormatException;
+import loci.formats.FormatTools;
 import loci.formats.gui.SCIFIOBIFormatReader;
 
 /**
@@ -57,7 +57,7 @@ import loci.formats.gui.SCIFIOBIFormatReader;
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 @Deprecated
-public class APNGReader extends SCIFIOBIFormatReader<APNGMetadata> {
+public class APNGReader extends SCIFIOBIFormatReader {
 
   // -- Constants --
 
@@ -68,9 +68,16 @@ public class APNGReader extends SCIFIOBIFormatReader<APNGMetadata> {
   /** Constructs a new APNGReader. */
   public APNGReader() {
     super("Animated PNG", "png");
-    checker = new APNGChecker();
-    parser = new APNGParser();
-    reader = new ome.scifio.apng.APNGReader();
+
+    try {
+      format = new ICSFormat(FormatTools.CONTEXT);
+      checker = format.createChecker();
+      parser = format.createParser();
+      reader = format.createReader();
+    }
+    catch (ome.scifio.FormatException e) {
+      LOGGER.warn("Failed to create APNGFormat components");
+    }
   }
 
   // -- IFormatReader API methods --
@@ -156,7 +163,7 @@ public class APNGReader extends SCIFIOBIFormatReader<APNGMetadata> {
   @Deprecated
   protected void initFile(String id) throws FormatException, IOException {
     super.initFile(id);
-    APNGMetadata meta = null;
+    Metadata meta = null;
     try {
       meta = parser.parse(id);
     }

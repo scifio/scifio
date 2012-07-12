@@ -42,11 +42,11 @@ import loci.common.DateTools;
 import loci.common.Location;
 import loci.common.RandomAccessInputStream;
 import loci.formats.FormatException;
+import loci.formats.FormatTools;
 import loci.formats.SCIFIOFormatReader;
 
-import ome.scifio.ics.ICSMetadata;
-import ome.scifio.ics.ICSChecker;
-import ome.scifio.ics.ICSParser;
+import ome.scifio.Metadata;
+import ome.scifio.ics.ICSFormat;
 
 /**
  * ICSReader is the file format reader for ICS (Image Cytometry Standard)
@@ -61,7 +61,7 @@ import ome.scifio.ics.ICSParser;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class ICSReader extends SCIFIOFormatReader<ICSMetadata> {
+public class ICSReader extends SCIFIOFormatReader {
 
   // -- Fields --
 
@@ -71,9 +71,16 @@ public class ICSReader extends SCIFIOFormatReader<ICSMetadata> {
   @Deprecated
   public ICSReader() {
     super("Image Cytometry Standard", new String[] {"ics", "ids"});
-    checker = new ICSChecker();
-    parser = new ICSParser();
-    reader = new ome.scifio.ics.ICSReader();
+    
+    try {
+      format = new ICSFormat(FormatTools.CONTEXT);
+      checker = format.createChecker();
+      parser = format.createParser();
+      reader = format.createReader();
+    }
+    catch (ome.scifio.FormatException e) {
+      LOGGER.warn("Failed to create ICSFormat components");
+    }
   }
 
   // -- IFormatReader API methods --
@@ -81,7 +88,7 @@ public class ICSReader extends SCIFIOFormatReader<ICSMetadata> {
   /* @see loci.formats.IFormatReader#isSingleFile(String) */
   @Deprecated
   public boolean isSingleFile(String id) throws FormatException, IOException {
-    return reader.getMetadata().isVersionTwo();
+    return ((ICSFormat)format).isVersionTwo(reader.getMetadata());
   }
 
   /* @see loci.formats.IFormatReader#getDomains() */
@@ -150,7 +157,7 @@ public class ICSReader extends SCIFIOFormatReader<ICSMetadata> {
  // ARG for testing protected void oldInitFile(String id) throws FormatException, IOException {
     super.initFile(id);
 
-    ICSMetadata meta = null;
+    Metadata meta = null;
     try {
       meta = parser.parse(id);
     }

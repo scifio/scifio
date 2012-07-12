@@ -24,7 +24,7 @@ public class TranslatorDiscoverer<M extends Metadata, N extends Metadata>
           
   private Class<M> metaInClass;
   private Class<N> metaOutClass;
-
+  
   // -- Constructor --
 
   public TranslatorDiscoverer(Class<M> metaIn, Class<N> metaOut) {
@@ -59,8 +59,7 @@ public class TranslatorDiscoverer<M extends Metadata, N extends Metadata>
   
   @SuppressWarnings("unchecked")
   private Translator<M, N> getInstance(
-      @SuppressWarnings("rawtypes") IndexItem<SCIFIOTranslator, Translator> item)
-      throws InstantiationException {
+      @SuppressWarnings("rawtypes") IndexItem<SCIFIOTranslator, Translator> item) throws InstantiationException {
     return item.instance();
   }
 }

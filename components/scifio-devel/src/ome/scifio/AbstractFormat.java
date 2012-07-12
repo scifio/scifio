@@ -177,9 +177,9 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
   private <T> T createObject(final Class<T> c) throws FormatException {
     try {
       return c.newInstance();
-    } catch (final InstantiationException e) {
+    } catch (InstantiationException e) {
       throw new FormatException(e);
-    } catch (final IllegalAccessException e) {
+    } catch (IllegalAccessException e) {
       throw new FormatException(e);
     }
   }
