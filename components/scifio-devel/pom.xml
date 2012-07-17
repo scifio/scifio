@@ -30,6 +30,11 @@
     <!-- NB: dependency:analyze has false warning about xml-apis:xml-apis. -->
 
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ome-xml</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.14</version>

@@ -454,7 +454,7 @@ Type "ant -p" for a list of targets.
   <!-- SCIFIO -->
 
   <target name="deps-scifio-devel"
-    depends=""/>
+    depends="jar-ome-xml"/>
 
   <target name="compile-scifio-devel" depends="deps-scifio-devel"
     description="compile classes for SCIFIO-devel">
@@ -477,7 +477,7 @@ Type "ant -p" for a list of targets.
   </target>
 
   <target name="clean-scifio-devel"
-    depends=""
+    depends="clean-ome-xml"
     description="remove build files for SCIFIO-devel">
     <ant dir="components/scifio-devel" target="scifio-devel.clean"/>
   </target>
