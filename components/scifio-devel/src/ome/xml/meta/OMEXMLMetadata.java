@@ -38,8 +38,6 @@ package ome.xml.meta;
 
 import java.util.Hashtable;
 
-import loci.formats.meta.IMetadata;
-
 /**
  * A utility class for constructing and manipulating OME-XML DOMs.
  *
