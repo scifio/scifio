@@ -39,8 +39,7 @@
 package loci.formats.meta;
 
 /**
- * Interface for consumers of minima and maxima pixel intensities across a
- * given wavelength.
+ * A legacy wrapper interface for ome.xml.meta.IMinMaxStore
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/meta/IMinMaxStore.java">Trac</a>,
@@ -48,16 +47,6 @@ package loci.formats.meta;
  *
  * @author Chris Allan callan at blackcat.ca
  */
-public interface IMinMaxStore {
-
-  /**
-   * Populates the channel global minimum and maximum.
-   * @param channel Channel index to populate.
-   * @param minimum Minimum global pixel intensity.
-   * @param maximum Maximum global pixel intensity.
-   * @param series Image series.
-   */
-  void setChannelGlobalMinMax(int channel, double minimum, double maximum,
-    int series);
+public interface IMinMaxStore extends ome.xml.meta.IMinMaxStore {
 
 }

@@ -39,14 +39,7 @@
 package loci.formats.meta;
 
 /**
- * A proxy capable of bidirectional communication of biological image data to
- * and from a particular storage medium.
- *
- * <p>The <code>IMetadata</code> interface is a shorthand for a metadata
- * storage implementation that handles both storage (see {@link MetadataStore})
- * and retrieval (see {@link MetadataRetrieve}) of metadata fields. It exists
- * mainly to reduce the need to cast between <code>MetadataStore</code> and
- * <code>MetadataRetrieve</code> object types.
+ * A legacy wrapper interface for ome.xml.meta.IMetadata
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/meta/IMetadata.java">Trac</a>,
@@ -54,4 +47,4 @@ package loci.formats.meta;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  */
-public interface IMetadata extends MetadataRetrieve, MetadataStore { }
+public interface IMetadata extends MetadataRetrieve, MetadataStore, ome.xml.meta.IMetadata { }
