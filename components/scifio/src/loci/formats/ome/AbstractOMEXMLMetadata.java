@@ -36,31 +36,10 @@
 
 package loci.formats.ome;
 
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Hashtable;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import loci.common.Constants;
-
-import ome.xml.DOMUtil;
-import ome.xml.model.OME;
-import ome.xml.model.OMEModelObject;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.lang.reflect.InvocationTargetException;
 
 /**
- * A utility class for constructing and manipulating OME-XML DOMs.
- * It is the superclass for all versions of OME-XML. It requires the
- * ome.xml package to compile (part of ome-xml.jar).
+ * A legacy delegator class for ome.xml.meta.AbstractOMEXMLMetadata
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ome/AbstractOMEXMLMetadata.java">Trac</a>,
@@ -75,29 +54,23 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
 
   /** XSI namespace. */
   public static final String XSI_NS =
-    "http://www.w3.org/2001/XMLSchema-instance";
+    ome.xml.meta.AbstractOMEXMLMetadata.XSI_NS;
 
   /** OME-XML schema location. */
-  public static final String SCHEMA =
-    "http://www.openmicroscopy.org/Schemas/OME/2012-06/ome.xsd";
-
-  protected static final Logger LOGGER =
-    LoggerFactory.getLogger(AbstractOMEXMLMetadata.class);
+  public static final String SCHEMA = 
+    ome.xml.meta.AbstractOMEXMLMetadata.SCHEMA;
 
   // -- Fields --
 
-  /** The root element of OME-XML. */
-  protected OMEModelObject root;
-
-  /** DOM element that backs the first Image's CustomAttributes node. */
-  private Element imageCA;
-
-  private DocumentBuilder builder;
+  protected loci.utils.ProtectedMethodInvoker pmi;
+  
+  protected ome.xml.meta.AbstractOMEXMLMetadata meta;
 
   // -- Constructors --
 
   /** Creates a new OME-XML metadata object. */
   public AbstractOMEXMLMetadata() {
+    pmi = new loci.utils.ProtectedMethodInvoker();
   }
 
   // -- OMEXMLMetadata API methods --
@@ -107,52 +80,31 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
    * @return OME-XML as a string.
    */
   public String dumpXML() {
-    if (root == null) {
-      root = (OMEModelObject) getRoot();
-      if (root == null) return null;
-    }
-    try {
-      ByteArrayOutputStream os = new ByteArrayOutputStream();
-      Document doc = createNewDocument();
-      Element r = root.asXMLElement(doc);
-      r.setAttribute("xmlns:xsi", XSI_NS);
-      r.setAttribute("xsi:schemaLocation", OME.NAMESPACE + " " + SCHEMA);
-      doc.appendChild(r);
-      DOMUtil.writeXML(os, doc);
-      return os.toString(Constants.ENCODING);
-    }
-    catch (TransformerException exc) {
-      LOGGER.warn("Failed to create OME-XML", exc);
-    }
-    catch (UnsupportedEncodingException exc) {
-      LOGGER.warn("Failed to create OME-XML", exc);
-    }
-    return null;
+    return meta.dumpXML();
   }
 
   // -- MetadataRetrieve API methods --
 
   /* @see loci.formats.meta.MetadataRetrieve#getUUID() */
   public String getUUID() {
-    Element ome = getRootElement();
-    return DOMUtil.getAttribute("UUID", ome);
+    return meta.getUUID();
   }
 
   // -- MetadataStore API methods --
 
   /* @see loci.formats.meta.MetadataStore#setRoot(Object) */
   public void setRoot(Object root) {
+    meta.setRoot(root);
   }
 
   /* @see loci.formats.meta.MetadataStore#getRoot() */
   public Object getRoot() {
-    return root;
+    return meta.getRoot();
   }
 
   /* @see loci.formats.meta.MetadataRetrieve#setUUID(String) */
   public void setUUID(String uuid) {
-    Element ome = getRootElement();
-    DOMUtil.setAttribute("UUID", uuid, ome);
+    meta.setUUID(uuid);
   }
 
   // -- Type conversion methods --
@@ -163,7 +115,14 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
    * to Laser FrequencyMultiplication Integer value.
    */
   protected Integer booleanToInteger(Boolean value) {
-    return value == null ? null : new Integer(value.booleanValue() ? 2 : 1);
+    Class<?>[] c = new Class<?>[] {value.getClass()};
+    Object[] o = new Object[] {value};
+    try {
+      return (Integer) pmi.invokeProtected(meta, "booleanToInteger", c, o);
+    }
+    catch (InvocationTargetException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   /**
@@ -172,8 +131,14 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
    * to 2003-FC Laser FrequencyDoubled Boolean value.
    */
   protected Boolean integerToBoolean(Integer value) {
-    return value == null ? null : new Boolean(value.intValue() == 2);
-  }
+    Class<?>[] c = new Class<?>[] {value.getClass()};
+    Object[] o = new Object[] {value};
+    try {
+      return (Boolean) pmi.invokeProtected(meta, "integerToBoolean", c, o);
+    }
+    catch (InvocationTargetException e) {
+      throw new IllegalStateException(e);
+    }  }
 
   /**
    * Converts Double value to Integer. Used to convert
@@ -181,7 +146,14 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
    * to LogicalChannel PinholeSize Double value.
    */
   protected Integer doubleToInteger(Double value) {
-    return value == null ? null : new Integer(value.intValue());
+    Class<?>[] c = new Class<?>[] {value.getClass()};
+    Object[] o = new Object[] {value};
+    try {
+      return (Integer) pmi.invokeProtected(meta, "doubleToInteger", c, o);
+    }
+    catch (InvocationTargetException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   /**
@@ -190,23 +162,13 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
    * to 2008-02 LogicalChannel PinholeSize Integer value.
    */
   protected Double integerToDouble(Integer value) {
-    return value == null ? null : new Double(value.doubleValue());
-  }
-
-  // -- Helper methods --
-
-  private Document createNewDocument() {
-    if (builder == null) {
-      try {
-        builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-      }
-      catch (ParserConfigurationException e) { }
+    Class<?>[] c = new Class<?>[] {value.getClass()};
+    Object[] o = new Object[] {value};
+    try {
+      return (Double) pmi.invokeProtected(meta, "integerToDouble", c, o);
     }
-    return builder.newDocument();
+    catch (InvocationTargetException e) {
+      throw new IllegalStateException(e);
+    }
   }
-
-  private Element getRootElement() {
-    return root.asXMLElement(createNewDocument());
-  }
-
 }

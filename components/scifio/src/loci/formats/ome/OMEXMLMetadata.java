@@ -39,7 +39,7 @@ package loci.formats.ome;
 import loci.formats.meta.IMetadata;
 
 /**
- * A utility class for constructing and manipulating OME-XML DOMs.
+ * A legacy wrapping interface for ome.xml.meta.OMEXMLMetadata
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ome/OMEXMLMetadata.java">Trac</a>,
@@ -47,14 +47,6 @@ import loci.formats.meta.IMetadata;
  *
  * @author Chris Allan callan at blackcat dot ca
  */
-public interface OMEXMLMetadata extends IMetadata {
-
-  /**
-   * Dumps the given OME-XML DOM tree to a string.
-   * @return OME-XML as a string.
-   */
-  String dumpXML();
-
-  int resolveReferences();
+public interface OMEXMLMetadata extends IMetadata, ome.xml.meta.OMEXMLMetadata {
 
 }

@@ -37,14 +37,13 @@
 package loci.formats.ome;
 
 /**
- * OmeisException is the exception thrown when something
- * goes wrong communicating with the OME Image Server (OMEIS).
+ * Legacy wrapper exception for ome.xml.meta.OmeisException
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ome/OmeisException.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/ome/OmeisException.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class OmeisException extends Exception {
+public class OmeisException extends ome.xml.meta.OmeisException {
 
   public OmeisException() { super(); }
   public OmeisException(String s) { super(s); }
