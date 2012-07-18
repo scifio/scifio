@@ -47,19 +47,19 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+//TODO Convert these imports to ome.scifio.* when available
 import loci.formats.ChannelFiller;
 import loci.formats.ChannelSeparator;
 import loci.formats.FileStitcher;
-import loci.formats.FormatException;
-import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
-import loci.formats.MetadataTools;
-import loci.formats.services.OMEXMLService;
+import ome.xml.services.OMEXMLService;
+import ome.scifio.FormatException;
 import ome.scifio.common.Constants;
 import ome.scifio.io.Location;
 import ome.scifio.services.DependencyException;
 import ome.scifio.services.ServiceException;
 import ome.scifio.services.ServiceFactory;
+import ome.scifio.util.FormatTools;
 import ome.xml.DOMUtil;
 import ome.xml.r2003fc.ome.OMENode;
 
@@ -97,11 +97,13 @@ public class OmeisImporter {
 
   // -- Fields --
 
+  //TODO convert to an ome.scifio.Reader, and update delegator calls to use
+  // ScifioReaderAdapter
   /** Reader for handling file formats. */
   private IFormatReader reader;
 
   /** Metadata object, for gathering OME-XML metadata. */
-  private AbstractOMEXMLMetadata omexmlMeta;
+  private ome.xml.meta.AbstractOMEXMLMetadata omexmlMeta;
 
   private boolean stitch;
 
@@ -119,7 +121,7 @@ public class OmeisImporter {
     try {
       ServiceFactory factory = new ServiceFactory();
       OMEXMLService service = factory.getInstance(OMEXMLService.class);
-      omexmlMeta = (AbstractOMEXMLMetadata) service.createOMEXMLMetadata();
+      omexmlMeta = (ome.xml.meta.AbstractOMEXMLMetadata) service.createOMEXMLMetadata();
     }
     catch (DependencyException de) { }
     catch (ServiceException se) { }
