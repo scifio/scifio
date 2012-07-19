@@ -64,6 +64,470 @@ public class APNGFormat
   }
 
   /**
+   * File format SCIFIO Metadata for Animated Portable Network Graphics
+   * (APNG) images.
+   *
+   */
+  public static class Metadata extends AbstractMetadata {
+  
+    // -- Fields --
+  
+    private List<APNGIDATChunk> idat;
+  
+    private List<APNGfcTLChunk> fctl;
+  
+    private APNGacTLChunk actl;
+  
+    private APNGIHDRChunk ihdr;
+  
+    private APNGPLTEChunk plte;
+    
+    private APNGIENDChunk iend;
+  
+    // true if the default image is not part of the animation
+    private boolean separateDefault;
+  
+    // -- Constructor --
+  
+    public Metadata() {
+      this(null);
+    }
+  
+    public Metadata(final SCIFIO context) {
+      super(context);
+      fctl = new ArrayList<APNGfcTLChunk>();
+      idat = new ArrayList<APNGIDATChunk>();
+    }
+  
+    // -- Getters and Setters --
+  
+    public List<APNGIDATChunk> getIdat() {
+      return idat;
+    }
+  
+    public void setIdat(final List<APNGIDATChunk> idat) {
+      this.idat = idat;
+    }
+  
+    public void addIdat(final APNGIDATChunk idat) {
+      this.idat.add(idat);
+    }
+  
+    public void setSeparateDefault(final boolean separateDefault) {
+      this.separateDefault = separateDefault;
+    }
+  
+    public boolean isSeparateDefault() {
+      return separateDefault;
+    }
+  
+    public List<APNGfcTLChunk> getFctl() {
+      return fctl;
+    }
+  
+    public void setFctl(final List<APNGfcTLChunk> fctl) {
+      this.fctl = fctl;
+    }
+  
+    public APNGacTLChunk getActl() {
+      return actl;
+    }
+  
+    public void setActl(final APNGacTLChunk actl) {
+      this.actl = actl;
+    }
+  
+    public APNGIHDRChunk getIhdr() {
+      return ihdr;
+    }
+  
+    public void setIhdr(final APNGIHDRChunk ihdr) {
+      this.ihdr = ihdr;
+    }
+  
+    public APNGPLTEChunk getPlte() {
+      return plte;
+    }
+  
+    public void setPlte(final APNGPLTEChunk plte) {
+      this.plte = plte;
+    }
+    
+    public APNGIENDChunk getIend() {
+    return iend;
+    }
+  
+    public void setIend(APNGIENDChunk iend) {
+    this.iend = iend;
+    }
+  
+    // -- Helper Methods --
+  
+  
+  /* @see Metadata#resetMeta() */
+    public void reset() {
+      super.reset(this.getClass());
+      fctl = new ArrayList<APNGfcTLChunk>();
+      idat = new ArrayList<APNGIDATChunk>();
+    }
+  }
+
+  /**
+   * File format SCIFIO Checker for Animated Portable Network Graphics
+   * (APNG) images.
+   *
+   */
+  public static class Checker extends AbstractChecker<Metadata> {
+
+    // -- Fields --
+
+    // -- Constructor --
+
+    /** Constructs a new APNGChecker */
+    public Checker(final SCIFIO ctx) {
+      super("Animated PNG", "png", ctx);
+      suffixNecessary = false;
+    }
+
+    public Checker() {
+      this(null);
+    }
+
+    // -- Checker API Methods --
+
+    /* @see ome.scifio.Checker#isFormat(RandomAccessInputStream stream) */
+    @Override
+    public boolean isFormat(final RandomAccessInputStream stream) throws IOException {
+      final int blockLen = 8;
+      if (!StreamTools.validStream(stream, blockLen, false)) return false;
+
+      final byte[] signature = new byte[blockLen];
+      stream.read(signature);
+
+      if (signature[0] != (byte) 0x89 || signature[1] != 0x50 ||
+        signature[2] != 0x4e || signature[3] != 0x47 || signature[4] != 0x0d ||
+        signature[5] != 0x0a || signature[6] != 0x1a || signature[7] != 0x0a)
+      {
+        return false;
+      }
+      return true;
+    }
+
+    // -- MetadataHandler API Methods --
+
+    /* @see MetadataHandler#getMetadataTypes() */
+    public Class<Metadata> getMetadataType() {
+      return Metadata.class;
+    }
+  }
+
+  /**
+   * File format SCIFIO Parser for Animated Portable Network Graphics
+   * (APNG) images.
+   *
+   */
+  public static class Parser extends AbstractParser<Metadata> {
+
+    // -- Fields --
+
+    // -- Constructor --
+
+    /** Constructs a new APNGParser. */
+    public Parser() {
+      this(null);
+    }
+
+    public Parser(final SCIFIO ctx) {
+      super(ctx, Metadata.class);
+    }
+
+    // -- Parser API Methods --
+
+    /* @see ome.scifio.AbstractParser#parse(RandomAccessInputStream stream) */
+    @Override
+    public Metadata parse(final RandomAccessInputStream stream)
+      throws IOException, FormatException
+    {
+      super.parse(stream);
+
+      // check that this is a valid PNG file
+      final byte[] signature = new byte[8];
+      in.read(signature);
+
+      if (signature[0] != (byte) 0x89 || signature[1] != 0x50 ||
+        signature[2] != 0x4e || signature[3] != 0x47 || signature[4] != 0x0d ||
+        signature[5] != 0x0a || signature[6] != 0x1a || signature[7] != 0x0a)
+      {
+        throw new FormatException("Invalid PNG signature.");
+      }
+      // For determining if the first frame is also the default image
+      boolean sawFctl = false;
+  
+      // read data chunks - each chunk consists of the following:
+      // 1) 32 bit length
+      // 2) 4 char type
+      // 3) 'length' bytes of data
+      // 4) 32 bit CRC
+  
+      while (in.getFilePointer() < in.length()) {
+        final int length = in.readInt();
+        final String type = in.readString(4);
+        final long offset = in.getFilePointer();
+  
+        APNGChunk chunk = null;
+  
+        if (type.equals("acTL")) {
+          chunk = new APNGacTLChunk();
+          ((APNGacTLChunk) chunk).setNumFrames(in.readInt());
+          ((APNGacTLChunk) chunk).setNumPlays(in.readInt());
+          metadata.setActl(((APNGacTLChunk) chunk));
+        }
+        else if (type.equals("fcTL")) {
+          sawFctl = true;
+          chunk = new APNGfcTLChunk();
+          ((APNGfcTLChunk) chunk).setSequenceNumber(in.readInt());
+          ((APNGfcTLChunk) chunk).setWidth(in.readInt());
+          ((APNGfcTLChunk) chunk).setHeight(in.readInt());
+          ((APNGfcTLChunk) chunk).setxOffset(in.readInt());
+          ((APNGfcTLChunk) chunk).setyOffset(in.readInt());
+          ((APNGfcTLChunk) chunk).setDelayNum(in.readShort());
+          ((APNGfcTLChunk) chunk).setDelayDen(in.readShort());
+          ((APNGfcTLChunk) chunk).setDisposeOp(in.readByte());
+          ((APNGfcTLChunk) chunk).setBlendOp(in.readByte());
+          metadata.getFctl().add(((APNGfcTLChunk) chunk));
+        }
+        else if (type.equals("IDAT")) {
+          metadata.setSeparateDefault(!sawFctl);
+          chunk = new APNGIDATChunk();
+          metadata.addIdat(((APNGIDATChunk) chunk));
+          in.skipBytes(length);
+        }
+        else if (type.equals("fdAT")) {
+          chunk = new APNGfdATChunk();
+          ((APNGfdATChunk) chunk).setSequenceNumber(in.readInt());
+          metadata.getFctl()
+            .get(metadata.getFctl().size() - 1)
+            .addChunk(((APNGfdATChunk) chunk));
+          in.skipBytes(length - 4);
+        }
+        else if (type.equals("IHDR")) {
+          chunk = new APNGIHDRChunk();
+          ((APNGIHDRChunk) chunk).setWidth(in.readInt());
+          ((APNGIHDRChunk) chunk).setHeight(in.readInt());
+          ((APNGIHDRChunk) chunk).setBitDepth(in.readByte());
+          ((APNGIHDRChunk) chunk).setColourType(in.readByte());
+          ((APNGIHDRChunk) chunk).setCompressionMethod(in.readByte());
+          ((APNGIHDRChunk) chunk).setFilterMethod(in.readByte());
+          ((APNGIHDRChunk) chunk).setInterlaceMethod(in.readByte());
+          metadata.setIhdr(((APNGIHDRChunk) chunk));
+        }
+        else if (type.equals("PLTE")) {
+          chunk = new APNGPLTEChunk();
+          final byte[] red = new byte[length / 3];
+          final byte[] blue = new byte[length / 3];
+          final byte[] green = new byte[length / 3];
+  
+          for (int i = 0; i < length; i += 3) {
+            red[i] = in.readByte();
+            green[i] = in.readByte();
+            blue[i] = in.readByte();
+          }
+  
+          ((APNGPLTEChunk) chunk).setRed(red);
+          ((APNGPLTEChunk) chunk).setGreen(green);
+          ((APNGPLTEChunk) chunk).setBlue(blue);
+  
+          metadata.setPlte(((APNGPLTEChunk) chunk));
+        }
+        else if(type.equals("IEND")) {
+          chunk = new APNGIENDChunk();
+          in.skipBytes((int) (in.length() - in.getFilePointer()));
+          metadata.setIend((APNGIENDChunk) chunk);
+        }
+        else in.skipBytes(length);
+  
+        if (chunk != null) {
+          chunk.setOffset(offset);
+          chunk.setLength(length);
+        }
+  
+        if (in.getFilePointer() < in.length() - 4) {
+          in.skipBytes(4); // skip the CRC
+        }
+      }
+  
+      return metadata;
+    }
+  }
+
+  /**
+   * File format SCIFIO Reader for Animated Portable Network Graphics (APNG)
+   * images.
+   * 
+   */
+  public static class Reader extends BIFormatReader<Metadata> {
+  
+    // -- Fields --
+  
+    // Cached copy of the last plane that was returned.
+    private BufferedImage lastPlane;
+  
+    // Plane index of the last plane that was returned.
+    private int lastPlaneIndex = -1;
+  
+    // -- Constructor --
+  
+    /** Constructs a new APNGReader. */
+  
+    public Reader() {
+      this(null);
+    }
+  
+    public Reader(final SCIFIO ctx) {
+      super("Animated PNG", "png", ctx);
+    }
+  
+    // -- Reader API Methods --
+  
+    /* @see ome.scifio.Reader#openPlane(int, int, int, int, int) */
+    @Override
+    public Object openPlane(final int imageIndex, final int planeIndex, final int x, final int y, final int w,
+      final int h) throws FormatException, IOException
+    {
+      FormatTools.checkPlaneParameters(
+        this, imageIndex, planeIndex, -1, x, y, w, h);
+  
+      // If the last processed (cached) plane is requested, return it
+      if (planeIndex == lastPlaneIndex && lastPlane != null) {
+        return AWTImageTools.getSubimage(
+          lastPlane, cMeta.isLittleEndian(planeIndex), x, y, w, h);
+      }
+  
+      // The default frame is requested and we can use the standard Java ImageIO to extract it
+      if (planeIndex == 0) {
+        in.seek(0);
+        final DataInputStream dis =
+          new DataInputStream(new BufferedInputStream(in, 4096));
+        lastPlane = ImageIO.read(dis);
+        lastPlaneIndex = 0;
+        if (x == 0 && y == 0 && w == cMeta.getAxisLength(imageIndex, Axes.X) &&
+          h == cMeta.getAxisLength(imageIndex, Axes.Y))
+        {
+          return lastPlane;
+        }
+        return AWTImageTools.getSubimage(
+          lastPlane, cMeta.isLittleEndian(imageIndex), x, y, w, h);
+      }
+  
+      // For a non-default frame, the appropriate chunks will be used to create a new image,
+      // which will be read with the standard Java ImageIO and pasted onto frame 0.
+      final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      stream.write(APNGFormat.PNG_SIGNATURE);
+
+      final int[] coords = metadata.getFctl().get(planeIndex).getFrameCoordinates();
+      // process IHDR chunk
+      final APNGIHDRChunk ihdr = metadata.getIhdr();
+      processChunk(
+        imageIndex, ihdr.getLength(), ihdr.getOffset(), coords, stream, true);
+
+      // process fcTL and fdAT chunks
+      final APNGfcTLChunk fctl =
+        metadata.getFctl().get(
+          metadata.isSeparateDefault() ? planeIndex - 1 : planeIndex);
+
+      // fdAT chunks are converted to IDAT chunks, as we are essentially building a standalone single-frame image
+      for (final APNGfdATChunk fdat : fctl.getFdatChunks()) {
+        in.seek(fdat.getOffset() + 4);
+        byte[] b = new byte[fdat.getLength() + 8];
+        DataTools.unpackBytes(
+          fdat.getLength() - 4, b, 0, 4, cMeta.isLittleEndian(imageIndex));
+        b[4] = 'I';
+        b[5] = 'D';
+        b[6] = 'A';
+        b[7] = 'T';
+        in.read(b, 8, b.length - 12);
+        final int crc = (int) computeCRC(b, b.length - 4);
+        DataTools.unpackBytes(
+          crc, b, b.length - 4, 4, cMeta.isLittleEndian(imageIndex));
+        stream.write(b);
+        b = null;
+      }
+
+      // process PLTE chunks
+      final APNGPLTEChunk plte = metadata.getPlte();
+      if (plte != null) {
+        processChunk(
+          imageIndex, plte.getLength(), plte.getOffset(), coords, stream, false);
+      }
+      final RandomAccessInputStream s =
+        new RandomAccessInputStream(stream.toByteArray());
+      final DataInputStream dis = new DataInputStream(new BufferedInputStream(s, 4096));
+      final BufferedImage bi = ImageIO.read(dis);
+      dis.close();
+
+      // Recover first plane
+
+      lastPlane = null;
+      openPlane(
+        imageIndex, 0, 0, 0, cMeta.getAxisLength(imageIndex, Axes.X),
+        cMeta.getAxisLength(imageIndex, Axes.Y));
+
+      // paste current image onto first plane
+
+      final WritableRaster firstRaster = lastPlane.getRaster();
+      final WritableRaster currentRaster = bi.getRaster();
+
+      firstRaster.setDataElements(coords[0], coords[1], currentRaster);
+      lastPlane =
+        new BufferedImage(lastPlane.getColorModel(), firstRaster, false, null);
+      lastPlaneIndex = planeIndex;
+      return lastPlane;
+    }
+
+    /* @see Reader#setMetadata(M) */
+    @Override
+    public void setMetadata(final Metadata meta) throws IOException {
+      super.setMetadata(meta);
+      this.metadata = meta;
+      final Translator<Metadata, CoreMetadata> t = new APNGCoreTranslator();
+      t.translate(meta, cMeta);
+    }
+
+    // -- Helper methods --
+
+    private long computeCRC(final byte[] buf, final int len) {
+      final CRC32 crc = new CRC32();
+      crc.update(buf, 0, len);
+      return crc.getValue();
+    }
+
+    private void processChunk(final int imageIndex, final int length, final long offset,
+      final int[] coords, final ByteArrayOutputStream stream, final boolean isIHDR)
+      throws IOException
+    {
+      byte[] b = new byte[length + 12];
+      DataTools.unpackBytes(length, b, 0, 4, cMeta.isLittleEndian(imageIndex));
+      final byte[] typeBytes = (isIHDR ? "IHDR".getBytes(Constants.ENCODING) :
+        "PLTE".getBytes(Constants.ENCODING));
+      System.arraycopy(typeBytes, 0, b, 4, 4);
+      in.seek(offset);
+      in.read(b, 8, b.length - 12);
+      if (isIHDR) {
+        DataTools.unpackBytes(
+          coords[2], b, 8, 4, cMeta.isLittleEndian(imageIndex));
+        DataTools.unpackBytes(
+          coords[3], b, 12, 4, cMeta.isLittleEndian(imageIndex));
+      }
+      final int crc = (int) computeCRC(b, b.length - 4);
+      DataTools.unpackBytes(
+        crc, b, b.length - 4, 4, cMeta.isLittleEndian(imageIndex));
+      stream.write(b);
+      b = null;
+    }
+  }
+
+
+  /**
    * The SCIFIO file format writer for PNG and APNG files.
    * 
    */
@@ -384,467 +848,269 @@ public class APNGFormat
   }
 
   /**
-   * File format SCIFIO Reader for Animated Portable Network Graphics (APNG)
-   * images.
+   * This class can be used for translating Metadata in the Core SCIFIO format
+   * to Metadata for writing Animated Portable Network Graphics (APNG)
+   * files.
    * 
-   */
-  public static class Reader extends BIFormatReader<Metadata> {
-
-    // -- Fields --
-
-    // Cached copy of the last plane that was returned.
-    private BufferedImage lastPlane;
-
-    // Plane index of the last plane that was returned.
-    private int lastPlaneIndex = -1;
-
-    // -- Constructor --
-
-    /** Constructs a new APNGReader. */
-
-    public Reader() {
-      this(null);
-    }
-
-    public Reader(final SCIFIO ctx) {
-      super("Animated PNG", "png", ctx);
-    }
-
-    // -- Reader API Methods --
-
-    /* @see ome.scifio.Reader#openPlane(int, int, int, int, int) */
-    @Override
-    public Object openPlane(final int imageIndex, final int planeIndex, final int x, final int y, final int w,
-      final int h) throws FormatException, IOException
-    {
-      FormatTools.checkPlaneParameters(
-        this, imageIndex, planeIndex, -1, x, y, w, h);
-
-      // If the last processed (cached) plane is requested, return it
-      if (planeIndex == lastPlaneIndex && lastPlane != null) {
-        return AWTImageTools.getSubimage(
-          lastPlane, cMeta.isLittleEndian(planeIndex), x, y, w, h);
-      }
-
-      // The default frame is requested and we can use the standard Java ImageIO to extract it
-      if (planeIndex == 0) {
-        in.seek(0);
-        final DataInputStream dis =
-          new DataInputStream(new BufferedInputStream(in, 4096));
-        lastPlane = ImageIO.read(dis);
-        lastPlaneIndex = 0;
-        if (x == 0 && y == 0 && w == cMeta.getAxisLength(imageIndex, Axes.X) &&
-          h == cMeta.getAxisLength(imageIndex, Axes.Y))
-        {
-          return lastPlane;
-        }
-        return AWTImageTools.getSubimage(
-          lastPlane, cMeta.isLittleEndian(imageIndex), x, y, w, h);
-      }
-
-      // For a non-default frame, the appropriate chunks will be used to create a new image,
-      // which will be read with the standard Java ImageIO and pasted onto frame 0.
-      final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      stream.write(APNGFormat.PNG_SIGNATURE);
-
-      final int[] coords = metadata.getFctl().get(planeIndex).getFrameCoordinates();
-      // process IHDR chunk
-      final APNGIHDRChunk ihdr = metadata.getIhdr();
-      processChunk(
-        imageIndex, ihdr.getLength(), ihdr.getOffset(), coords, stream, true);
-
-      // process fcTL and fdAT chunks
-      final APNGfcTLChunk fctl =
-        metadata.getFctl().get(
-          metadata.isSeparateDefault() ? planeIndex - 1 : planeIndex);
-
-      // fdAT chunks are converted to IDAT chunks, as we are essentially building a standalone single-frame image
-      for (final APNGfdATChunk fdat : fctl.getFdatChunks()) {
-        in.seek(fdat.getOffset() + 4);
-        byte[] b = new byte[fdat.getLength() + 8];
-        DataTools.unpackBytes(
-          fdat.getLength() - 4, b, 0, 4, cMeta.isLittleEndian(imageIndex));
-        b[4] = 'I';
-        b[5] = 'D';
-        b[6] = 'A';
-        b[7] = 'T';
-        in.read(b, 8, b.length - 12);
-        final int crc = (int) computeCRC(b, b.length - 4);
-        DataTools.unpackBytes(
-          crc, b, b.length - 4, 4, cMeta.isLittleEndian(imageIndex));
-        stream.write(b);
-        b = null;
-      }
-
-      // process PLTE chunks
-      final APNGPLTEChunk plte = metadata.getPlte();
-      if (plte != null) {
-        processChunk(
-          imageIndex, plte.getLength(), plte.getOffset(), coords, stream, false);
-      }
-      final RandomAccessInputStream s =
-        new RandomAccessInputStream(stream.toByteArray());
-      final DataInputStream dis = new DataInputStream(new BufferedInputStream(s, 4096));
-      final BufferedImage bi = ImageIO.read(dis);
-      dis.close();
-
-      // Recover first plane
-
-      lastPlane = null;
-      openPlane(
-        imageIndex, 0, 0, 0, cMeta.getAxisLength(imageIndex, Axes.X),
-        cMeta.getAxisLength(imageIndex, Axes.Y));
-
-      // paste current image onto first plane
-
-      final WritableRaster firstRaster = lastPlane.getRaster();
-      final WritableRaster currentRaster = bi.getRaster();
-
-      firstRaster.setDataElements(coords[0], coords[1], currentRaster);
-      lastPlane =
-        new BufferedImage(lastPlane.getColorModel(), firstRaster, false, null);
-      lastPlaneIndex = planeIndex;
-      return lastPlane;
-    }
-
-    /* @see Reader#setMetadata(M) */
-    @Override
-    public void setMetadata(final Metadata meta) throws IOException {
-      super.setMetadata(meta);
-      this.metadata = meta;
-      final Translator<Metadata, CoreMetadata> t = new APNGCoreTranslator();
-      t.translate(meta, cMeta);
-    }
-
-    // -- Helper methods --
-
-    private long computeCRC(final byte[] buf, final int len) {
-      final CRC32 crc = new CRC32();
-      crc.update(buf, 0, len);
-      return crc.getValue();
-    }
-
-    private void processChunk(final int imageIndex, final int length, final long offset,
-      final int[] coords, final ByteArrayOutputStream stream, final boolean isIHDR)
-      throws IOException
-    {
-      byte[] b = new byte[length + 12];
-      DataTools.unpackBytes(length, b, 0, 4, cMeta.isLittleEndian(imageIndex));
-      final byte[] typeBytes = (isIHDR ? "IHDR".getBytes(Constants.ENCODING) :
-        "PLTE".getBytes(Constants.ENCODING));
-      System.arraycopy(typeBytes, 0, b, 4, 4);
-      in.seek(offset);
-      in.read(b, 8, b.length - 12);
-      if (isIHDR) {
-        DataTools.unpackBytes(
-          coords[2], b, 8, 4, cMeta.isLittleEndian(imageIndex));
-        DataTools.unpackBytes(
-          coords[3], b, 12, 4, cMeta.isLittleEndian(imageIndex));
-      }
-      final int crc = (int) computeCRC(b, b.length - 4);
-      DataTools.unpackBytes(
-        crc, b, b.length - 4, 4, cMeta.isLittleEndian(imageIndex));
-      stream.write(b);
-      b = null;
-    }
-  }
-
-  /**
-   * File format SCIFIO Checker for Animated Portable Network Graphics
-   * (APNG) images.
+   * Note that Metadata translated from Core is only write-safe.
+   * 
+   * If trying to read, there should already exist an originally-parsed APNG
+   * Metadata object which can be used.
+   * 
+   * Note also that any APNG image written must be reparsed, as the Metadata used
+   * to write it can not be guaranteed valid.
    *
    */
-  public static class Checker extends AbstractChecker<Metadata> {
-
-    // -- Fields --
-
-    // -- Constructor --
-
-    /** Constructs a new APNGChecker */
-    public Checker(final SCIFIO ctx) {
-      super("Animated PNG", "png", ctx);
-      suffixNecessary = false;
-    }
-
-    public Checker() {
-      this(null);
-    }
-
-    // -- Checker API Methods --
-
-    /* @see ome.scifio.Checker#isFormat(RandomAccessInputStream stream) */
-    @Override
-    public boolean isFormat(final RandomAccessInputStream stream) throws IOException {
-      final int blockLen = 8;
-      if (!StreamTools.validStream(stream, blockLen, false)) return false;
-
-      final byte[] signature = new byte[blockLen];
-      stream.read(signature);
-
-      if (signature[0] != (byte) 0x89 || signature[1] != 0x50 ||
-        signature[2] != 0x4e || signature[3] != 0x47 || signature[4] != 0x0d ||
-        signature[5] != 0x0a || signature[6] != 0x1a || signature[7] != 0x0a)
-      {
-        return false;
-      }
-      return true;
-    }
-
-    // -- MetadataHandler API Methods --
-
-    /* @see MetadataHandler#getMetadataTypes() */
-    public Class<Metadata> getMetadataType() {
-      return Metadata.class;
-    }
-  }
-
-  /**
-   * File format SCIFIO Parser for Animated Portable Network Graphics
-   * (APNG) images.
-   *
-   */
-  public static class Parser extends AbstractParser<Metadata> {
-
-    // -- Fields --
-
-    // -- Constructor --
-
-    /** Constructs a new APNGParser. */
-    public Parser() {
-      this(null);
-    }
-
-    public Parser(final SCIFIO ctx) {
-      super(ctx, Metadata.class);
-    }
-
-    // -- Parser API Methods --
-
-    /* @see ome.scifio.AbstractParser#parse(RandomAccessInputStream stream) */
-    @Override
-    public Metadata parse(final RandomAccessInputStream stream)
-      throws IOException, FormatException
-    {
-      super.parse(stream);
-
-      // check that this is a valid PNG file
-      final byte[] signature = new byte[8];
-      in.read(signature);
-
-      if (signature[0] != (byte) 0x89 || signature[1] != 0x50 ||
-        signature[2] != 0x4e || signature[3] != 0x47 || signature[4] != 0x0d ||
-        signature[5] != 0x0a || signature[6] != 0x1a || signature[7] != 0x0a)
-      {
-        throw new FormatException("Invalid PNG signature.");
-      }
-
-      // For determining if the first frame is also the default image
-      boolean sawFctl = false;
-
-      // read data chunks - each chunk consists of the following:
-      // 1) 32 bit length
-      // 2) 4 char type
-      // 3) 'length' bytes of data
-      // 4) 32 bit CRC
-
-      while (in.getFilePointer() < in.length()) {
-        final int length = in.readInt();
-        final String type = in.readString(4);
-        final long offset = in.getFilePointer();
-
-        APNGChunk chunk = null;
-
-        if (type.equals("acTL")) {
-          chunk = new APNGacTLChunk();
-          ((APNGacTLChunk) chunk).setNumFrames(in.readInt());
-          ((APNGacTLChunk) chunk).setNumPlays(in.readInt());
-          metadata.setActl(((APNGacTLChunk) chunk));
-        }
-        else if (type.equals("fcTL")) {
-          sawFctl = true;
-          chunk = new APNGfcTLChunk();
-          ((APNGfcTLChunk) chunk).setSequenceNumber(in.readInt());
-          ((APNGfcTLChunk) chunk).setWidth(in.readInt());
-          ((APNGfcTLChunk) chunk).setHeight(in.readInt());
-          ((APNGfcTLChunk) chunk).setxOffset(in.readInt());
-          ((APNGfcTLChunk) chunk).setyOffset(in.readInt());
-          ((APNGfcTLChunk) chunk).setDelayNum(in.readShort());
-          ((APNGfcTLChunk) chunk).setDelayDen(in.readShort());
-          ((APNGfcTLChunk) chunk).setDisposeOp(in.readByte());
-          ((APNGfcTLChunk) chunk).setBlendOp(in.readByte());
-          metadata.getFctl().add(((APNGfcTLChunk) chunk));
-        }
-        else if (type.equals("IDAT")) {
-          metadata.setSeparateDefault(!sawFctl);
-          chunk = new APNGIDATChunk();
-          metadata.addIdat(((APNGIDATChunk) chunk));
-          in.skipBytes(length);
-        }
-        else if (type.equals("fdAT")) {
-          chunk = new APNGfdATChunk();
-          ((APNGfdATChunk) chunk).setSequenceNumber(in.readInt());
-          metadata.getFctl()
-            .get(metadata.getFctl().size() - 1)
-            .addChunk(((APNGfdATChunk) chunk));
-          in.skipBytes(length - 4);
-        }
-        else if (type.equals("IHDR")) {
-          chunk = new APNGIHDRChunk();
-          ((APNGIHDRChunk) chunk).setWidth(in.readInt());
-          ((APNGIHDRChunk) chunk).setHeight(in.readInt());
-          ((APNGIHDRChunk) chunk).setBitDepth(in.readByte());
-          ((APNGIHDRChunk) chunk).setColourType(in.readByte());
-          ((APNGIHDRChunk) chunk).setCompressionMethod(in.readByte());
-          ((APNGIHDRChunk) chunk).setFilterMethod(in.readByte());
-          ((APNGIHDRChunk) chunk).setInterlaceMethod(in.readByte());
-          metadata.setIhdr(((APNGIHDRChunk) chunk));
-        }
-        else if (type.equals("PLTE")) {
-          chunk = new APNGPLTEChunk();
-          final byte[] red = new byte[length / 3];
-          final byte[] blue = new byte[length / 3];
-          final byte[] green = new byte[length / 3];
-
-          for (int i = 0; i < length; i += 3) {
-            red[i] = in.readByte();
-            green[i] = in.readByte();
-            blue[i] = in.readByte();
-          }
-
-          ((APNGPLTEChunk) chunk).setRed(red);
-          ((APNGPLTEChunk) chunk).setGreen(green);
-          ((APNGPLTEChunk) chunk).setBlue(blue);
-
-          metadata.setPlte(((APNGPLTEChunk) chunk));
-        }
-        else if(type.equals("IEND")) {
-          chunk = new APNGIENDChunk();
-          in.skipBytes((int) (in.length() - in.getFilePointer()));
-          metadata.setIend((APNGIENDChunk) chunk);
-        }
-        else in.skipBytes(length);
-
-        if (chunk != null) {
-          chunk.setOffset(offset);
-          chunk.setLength(length);
-        }
-
-        if (in.getFilePointer() < in.length() - 4) {
-          in.skipBytes(4); // skip the CRC
-        }
-      }
-
-      return metadata;
-    }
-  }
-
-  /**
-   * File format SCIFIO Metadata for Animated Portable Network Graphics
-   * (APNG) images.
-   *
-   */
-  public static class Metadata extends AbstractMetadata {
-
-    // -- Fields --
-
-    private List<APNGIDATChunk> idat;
-
-    private List<APNGfcTLChunk> fctl;
-
-    private APNGacTLChunk actl;
-
-    private APNGIHDRChunk ihdr;
-
-    private APNGPLTEChunk plte;
+  @SCIFIOTranslator(metaIn = CoreMetadata.class, metaOut = Metadata.class)
+  public static class CoreAPNGTranslator
+    extends AbstractTranslator<CoreMetadata, Metadata> {
+  
+    // -- Constructors --
     
-    private APNGIENDChunk iend;
-
-    // true if the default image is not part of the animation
-    private boolean separateDefault;
-
-    // -- Constructor --
-
-    public Metadata() {
+    public CoreAPNGTranslator() {
       this(null);
-    }
-
-    public Metadata(final SCIFIO context) {
-      super(context);
-      fctl = new ArrayList<APNGfcTLChunk>();
-      idat = new ArrayList<APNGIDATChunk>();
-    }
-
-    // -- Getters and Setters --
-
-    public List<APNGIDATChunk> getIdat() {
-      return idat;
-    }
-
-    public void setIdat(final List<APNGIDATChunk> idat) {
-      this.idat = idat;
-    }
-
-    public void addIdat(final APNGIDATChunk idat) {
-      this.idat.add(idat);
-    }
-
-    public void setSeparateDefault(final boolean separateDefault) {
-      this.separateDefault = separateDefault;
-    }
-
-    public boolean isSeparateDefault() {
-      return separateDefault;
-    }
-
-    public List<APNGfcTLChunk> getFctl() {
-      return fctl;
-    }
-
-    public void setFctl(final List<APNGfcTLChunk> fctl) {
-      this.fctl = fctl;
-    }
-
-    public APNGacTLChunk getActl() {
-      return actl;
-    }
-
-    public void setActl(final APNGacTLChunk actl) {
-      this.actl = actl;
-    }
-
-    public APNGIHDRChunk getIhdr() {
-      return ihdr;
-    }
-
-    public void setIhdr(final APNGIHDRChunk ihdr) {
-      this.ihdr = ihdr;
-    }
-
-    public APNGPLTEChunk getPlte() {
-      return plte;
-    }
-
-    public void setPlte(final APNGPLTEChunk plte) {
-      this.plte = plte;
     }
     
-    public APNGIENDChunk getIend() {
-    return iend;
+    public CoreAPNGTranslator(SCIFIO ctx) {
+      super(ctx);
     }
-
-    public void setIend(APNGIENDChunk iend) {
-    this.iend = iend;
+    
+    // -- Translator API Methods -- 
+    public void translate(final CoreMetadata source, final Metadata dest) {
+  
+      final APNGIHDRChunk ihdr =
+        dest.getIhdr() == null ? new APNGIHDRChunk() : dest.getIhdr();
+      final APNGPLTEChunk plte =
+        dest.getPlte() == null ? new APNGPLTEChunk() : dest.getPlte();
+      final APNGacTLChunk actl =
+        dest.getActl() == null ? new APNGacTLChunk() : dest.getActl();
+      final List<APNGfcTLChunk> fctl = new ArrayList<APNGfcTLChunk>();
+  
+      dest.setIhdr(ihdr);
+      dest.setPlte(plte);
+      dest.setActl(actl);
+      dest.setFctl(fctl);
+  
+      ihdr.setWidth(source.getAxisLength(0, Axes.X));
+      ihdr.setHeight(source.getAxisLength(0, Axes.Y));
+      ihdr.setBitDepth((byte) source.getBitsPerPixel(0));
+      ihdr.setFilterMethod((byte) 0);
+      ihdr.setCompressionMethod((byte) 0);
+      ihdr.setInterlaceMethod((byte) 0);
+  
+      final int sizec = source.getAxisLength(0, Axes.CHANNEL);
+      final boolean rgb = source.isRGB(0);
+      final boolean indexed = source.isIndexed(0);
+  
+      if (indexed) {
+        ihdr.setColourType((byte) 0x2);
+        byte[][] lut = null;
+        try {
+          lut = source.get8BitLookupTable(0);
+          plte.setRed(lut[0]);
+          plte.setGreen(lut[1]);
+          plte.setBlue(lut[2]);
+        }
+        catch (final FormatException e) {
+          e.printStackTrace();
+        }
+        catch (final IOException e) {
+          e.printStackTrace();
+        }
+  
+      }
+      else if (sizec == 2) {
+        ihdr.setColourType((byte) 0x4);
+      }
+      else if (sizec == 4) {
+        ihdr.setColourType((byte) 0x6);
+      }
+      else if (!rgb) {
+        ihdr.setColourType((byte) 0x0);
+      }
+      else {
+        ihdr.setColourType((byte) 0x3);
+      }
+  
+      actl.setNumFrames(source.getAxisLength(0, Axes.TIME));
+  
+      for (int i = 0; i < actl.getNumFrames(); i++) {
+        final APNGfcTLChunk frame = new APNGfcTLChunk();
+        frame.setHeight(ihdr.getHeight());
+        frame.setWidth(ihdr.getWidth());
+        frame.setxOffset(0);
+        frame.setyOffset(0);
+        frame.setSequenceNumber(i);
+        frame.setDelayDen((short) 0);
+        frame.setDelayNum((short) 0);
+        frame.setBlendOp((byte) 0);
+        frame.setDisposeOp((byte) 0);
+        fctl.add(frame);
+      }
+  
+      dest.setSeparateDefault(true);
     }
+  }
 
-    // -- Helper Methods --
-
-
-  /* @see Metadata#resetMeta() */
-    public void reset() {
-      super.reset(this.getClass());
-      fctl = new ArrayList<APNGfcTLChunk>();
-      idat = new ArrayList<APNGIDATChunk>();
+  /**
+   * File format SCIFIO Translator for Animated Portable Network Graphics
+   * (APNG) images to the Core SCIFIO image type.
+   *
+   */
+  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = CoreMetadata.class)
+  public static class APNGCoreTranslator
+    extends AbstractTranslator<Metadata, CoreMetadata>
+    implements CoreTranslator {
+  
+    // -- Constructors --
+  
+    public APNGCoreTranslator() {
+      this(null);
     }
+  
+    public APNGCoreTranslator(final SCIFIO ctx) {
+      super(ctx);
+    }
+  
+    // -- Translator API Methods --
+  
+    public void translate(final Metadata source, final CoreMetadata dest) {
+      final CoreImageMetadata coreMeta = new CoreImageMetadata();
+      dest.add(coreMeta);
+  
+      coreMeta.setInterleaved(false);
+      coreMeta.setOrderCertain(true);
+      coreMeta.setFalseColor(true);
+  
+      coreMeta.setIndexed(false);
+  
+      boolean indexed = false;
+      boolean rgb = true;
+      int sizec = 1;
+  
+      switch (source.getIhdr().getColourType()) {
+        case 0x0:
+          rgb = false;
+          break;
+        case 0x2:
+          indexed = true;
+          sizec = 3;
+          break;
+        case 0x3:
+          break;
+        case 0x4:
+          rgb = false;
+          sizec = 2;
+          break;
+        case 0x6:
+          sizec = 4;
+          break;
+      }
+  
+      if (indexed) {
+        final byte[][] lut = new byte[3][0];
+  
+        lut[0] = source.getPlte().getRed();
+        lut[1] = source.getPlte().getGreen();
+        lut[2] = source.getPlte().getBlue();
+  
+        coreMeta.setLut(lut);
+      }
+  
+      final APNGacTLChunk actl = source.getActl();
+      final int planeCount = actl == null ? 1 : actl.getNumFrames();
+  
+      coreMeta.setAxisTypes(new AxisType[] {
+          Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME, Axes.Z});
+      coreMeta.setAxisLengths(new int[] {
+          source.getIhdr().getWidth(), source.getIhdr().getHeight(), sizec,
+          planeCount, 1});
+  
+      final int bpp = source.getIhdr().getBitDepth();
+  
+      coreMeta.setBitsPerPixel(bpp);
+      try {
+        coreMeta.setPixelType(FormatTools.pixelTypeFromBytes(
+          bpp / 8, false, false));
+      }
+      catch (final FormatException e) {
+        e.printStackTrace();
+      }
+      coreMeta.setRgb(rgb);
+      coreMeta.setIndexed(indexed);
+      coreMeta.setPlaneCount(planeCount);
+      coreMeta.setLittleEndian(false);
+  
+      // Some anciliary chunks may not have been parsed
+      coreMeta.setMetadataComplete(false);
+  
+      coreMeta.setThumbnail(false);
+      //coreMeta.setThumbSizeX(source.thumbSizeX);
+      //coreMeta.setThumbSizeY(source.thumbSizeY);
+  
+      //coreMeta.setcLengths(source.cLengths);
+      //coreMeta.setcTypes(source.cTypes);
+  
+      //TODO could generate this via fields?
+      //coreMeta.setImageMetadata(source.imageMetadata);
+    }
+  }
+
+  /**
+   * A parent class for all APNG Chunk classes.
+   * 
+   * Provides a length and offset (in the overall file stream)
+   * field.
+   * 
+   * Each chunk should instantiate and define its own CHUNK_SIGNATURE.
+   *
+   */
+  public static class APNGChunk {
+  
+    // -- Fields --
+  
+    // Offset in the file data stream. Points to the start of the
+    // data of the chunk, which comes after an entry for the length
+    // and the chunk's signature.
+    private long offset;
+  
+    // Length of the chunk
+    private int length;
+  
+    // Unique chunk type signature (e.g. "IHDR")
+    protected byte[] CHUNK_SIGNATURE;
+  
+    // -- Methods --
+  
+    public byte[] getCHUNK_SIGNATURE() {
+      return CHUNK_SIGNATURE;
+    }
+  
+    public int[] getFrameCoordinates() {
+      return new int[0];
+    }
+  
+    public void setOffset(final long offset) {
+      this.offset = offset;
+    }
+  
+    public long getOffset() {
+      return offset;
+    }
+  
+    public void setLength(final int length) {
+      this.length = length;
+    }
+  
+    public int getLength() {
+      return length;
+    }
+    
+    @Override
+    public String toString() {
+      return new FieldPrinter(this).toString();
+    }
+  
   }
 
   /**
@@ -949,22 +1215,6 @@ public class APNGFormat
   }
 
   /**
-   * This class represents the critical IEND chunk that signifies
-   * the end of a PNG stream.
-   * 
-   * @author Mark Hiner
-   *
-   */
-  public static class APNGIENDChunk extends APNGChunk {
-    
-    // -- Constructor --
-    public APNGIENDChunk() {
-      this.CHUNK_SIGNATURE = new byte[] {(byte) 0x49, 0x45, 0x4E, 0x44};
-    }
-  }
-  
-  
-  /**
    * Represents the PLTE chunk of the APNG image format.
    * 
    * The PLTE chunk contains color palette data for the current
@@ -972,52 +1222,197 @@ public class APNGFormat
    *
    */
   public static class APNGPLTEChunk extends APNGChunk {
-
+  
     // -- Constructor --
-
+  
     public APNGPLTEChunk() {
       this.CHUNK_SIGNATURE = new byte[] {(byte) 0x50, 0x4C, 0x54, 0x45};
     }
-
+  
     // -- Fields --
-
+  
     // Red palette entries
     private byte[] red;
-
+  
     // Green palette entries
     private byte[] green;
-
+  
     // Blue palette entries
     private byte[] blue;
-
+  
     // -- Methods --
-
+  
     public byte[] getRed() {
       return red;
     }
-
+  
     public void setRed(final byte[] red) {
       this.red = red;
     }
-
+  
     public byte[] getGreen() {
       return green;
     }
-
+  
     public void setGreen(final byte[] green) {
       this.green = green;
     }
-
+  
     public byte[] getBlue() {
       return blue;
     }
-
+  
     public void setBlue(final byte[] blue) {
       this.blue = blue;
     }
-
+  
   }
 
+  /**
+   * Represents the fcTL chunk of the APNG image format.
+   * 
+   * The fcTL chunk contains metadata for a matching fdAT
+   * chunk, or IDAT chunk (if the default image is also
+   * the first frame of the animation).
+   *
+   */
+  public static class APNGfcTLChunk extends APNGChunk {
+  
+    // -- Fields --
+  
+    /** Sequence number of the animation chunk, starting from 0 */
+    @Field(label = "sequence_number")
+    private int sequenceNumber;
+  
+    /** Width of the following frame */
+    @Field(label = "width")
+    private int width;
+  
+    /** Height of the following frame */
+    @Field(label = "height")
+    private int height;
+  
+    /** X position at which to render the following frame */
+    @Field(label = "x_offset")
+    private int xOffset;
+  
+    /** Y position at which to render the following frame */
+    @Field(label = "y_offset")
+    private int yOffset;
+  
+    /** Frame delay fraction numerator */
+    @Field(label = "delay_num")
+    private short delayNum;
+  
+    /** Frame delay fraction denominator */
+    @Field(label = "delay_den")
+    private short delayDen;
+  
+    /** Type of frame area disposal to be done after rendering this frame */
+    @Field(label = "dispose_op")
+    private byte disposeOp;
+  
+    /** Type of frame area rendering for this frame */
+    @Field(label = "blend_op")
+    private byte blendOp;
+  
+    private final List<APNGfdATChunk> fdatChunks;
+  
+    // -- Constructor --
+  
+    public APNGfcTLChunk() {
+      this.fdatChunks = new ArrayList<APNGfdATChunk>();
+      this.CHUNK_SIGNATURE = new byte[] {(byte) 0x66, 0x63, 0x54, 0x4C};
+    }
+  
+    // -- Methods --
+  
+    public void addChunk(final APNGfdATChunk chunk) {
+      this.fdatChunks.add(chunk);
+    }
+  
+    public int getSequenceNumber() {
+      return sequenceNumber;
+    }
+  
+    public void setSequenceNumber(final int sequenceNumber) {
+      this.sequenceNumber = sequenceNumber;
+    }
+  
+    public int getWidth() {
+      return width;
+    }
+  
+    public void setWidth(final int width) {
+      this.width = width;
+    }
+  
+    public int getHeight() {
+      return height;
+    }
+  
+    public void setHeight(final int height) {
+      this.height = height;
+    }
+  
+    public int getxOffset() {
+      return xOffset;
+    }
+  
+    public void setxOffset(final int xOffset) {
+      this.xOffset = xOffset;
+    }
+  
+    public int getyOffset() {
+      return yOffset;
+    }
+  
+    public void setyOffset(final int yOffset) {
+      this.yOffset = yOffset;
+    }
+  
+    public short getDelayNum() {
+      return delayNum;
+    }
+  
+    public void setDelayNum(final short delayNum) {
+      this.delayNum = delayNum;
+    }
+  
+    public short getDelayDen() {
+      return delayDen;
+    }
+  
+    public void setDelayDen(final short delayDen) {
+      this.delayDen = delayDen;
+    }
+  
+    public byte getDisposeOp() {
+      return disposeOp;
+    }
+  
+    public void setDisposeOp(final byte disposeOp) {
+      this.disposeOp = disposeOp;
+    }
+  
+    public byte getBlendOp() {
+      return blendOp;
+    }
+  
+    public void setBlendOp(final byte blendOp) {
+      this.blendOp = blendOp;
+    }
+  
+    public List<APNGfdATChunk> getFdatChunks() {
+      return fdatChunks;
+    }
+  
+    // -- Helper Method --
+    @Override
+    public int[] getFrameCoordinates() {
+      return new int[] {xOffset, yOffset, width, height};
+    }
+  }
 
   /**
    * Represents the IDAT chunk of the APNG image format.
@@ -1027,13 +1422,74 @@ public class APNGFormat
    *
    */
   public static class APNGIDATChunk extends APNGChunk {
-
+  
     // -- Constructor --
-
+  
     public APNGIDATChunk() {
       this.CHUNK_SIGNATURE = new byte[] {(byte) 0x49, 0x44, 0x41, 0x54};
     }
+  
+  }
 
+  /**
+   * Represents the acTL chunk of the APNG image format.
+   * 
+   * There is one acTL chunk per APNG image, and is not
+   * present in PNG files.
+   * 
+   * The acTL chunk contains metadata describing the number
+   * of frames in the image, and how many times the animation
+   * sequence should be played.
+   *
+   */
+  public static class APNGacTLChunk extends APNGChunk {
+  
+    // -- Constructor --
+  
+    public APNGacTLChunk() {
+      this.CHUNK_SIGNATURE = new byte[] {(byte) 0x61, 0x63, 0x54, 0x4C};
+    }
+  
+    // -- Fields --
+  
+    /** Sequence number of the animation chunk, starting from 0 */
+    @Field(label = "sequence_number")
+    private int sequenceNumber;
+  
+    /** Number of frames in this APNG file */
+    @Field(label = "num_frames")
+    private int numFrames;
+  
+    /** Times to play the animation sequence */
+    @Field(label = "num_plays")
+    private int numPlays;
+  
+    // -- Methods --
+  
+    public int getNumFrames() {
+      return numFrames;
+    }
+  
+    public void setNumFrames(final int numFrames) {
+      this.numFrames = numFrames;
+    }
+  
+    public int getNumPlays() {
+      return numPlays;
+    }
+  
+    public void setNumPlays(final int numPlays) {
+      this.numPlays = numPlays;
+    }
+  
+    public int getSequenceNumber() {
+      return sequenceNumber;
+    }
+  
+    public void setSequenceNumber(final int sequenceNumber) {
+      this.sequenceNumber = sequenceNumber;
+    }
+  
   }
 
   /**
@@ -1049,501 +1505,43 @@ public class APNGFormat
    *
    */
   public static class APNGfdATChunk extends APNGChunk {
-
+  
     // -- Constructor --
-
+  
     public APNGfdATChunk() {
       this.CHUNK_SIGNATURE = new byte[] {(byte) 0x66, 0x64, 0x41, 0x54};
     }
-
-    // -- Fields --
-
-    /** Sequence number of the animation chunk, starting from 0 */
-    @Field(label = "sequence_number")
-    private int sequenceNumber;
-
-    // -- Methods --
-
-    public int getSequenceNumber() {
-      return sequenceNumber;
-    }
-
-    public void setSequenceNumber(final int sequenceNumber) {
-      this.sequenceNumber = sequenceNumber;
-    }
-  }
-
-  /**
-   * Represents the fcTL chunk of the APNG image format.
-   * 
-   * The fcTL chunk contains metadata for a matching fdAT
-   * chunk, or IDAT chunk (if the default image is also
-   * the first frame of the animation).
-   *
-   */
-  public static class APNGfcTLChunk extends APNGChunk {
-
-    // -- Fields --
-
-    /** Sequence number of the animation chunk, starting from 0 */
-    @Field(label = "sequence_number")
-    private int sequenceNumber;
-
-    /** Width of the following frame */
-    @Field(label = "width")
-    private int width;
-
-    /** Height of the following frame */
-    @Field(label = "height")
-    private int height;
-
-    /** X position at which to render the following frame */
-    @Field(label = "x_offset")
-    private int xOffset;
-
-    /** Y position at which to render the following frame */
-    @Field(label = "y_offset")
-    private int yOffset;
-
-    /** Frame delay fraction numerator */
-    @Field(label = "delay_num")
-    private short delayNum;
-
-    /** Frame delay fraction denominator */
-    @Field(label = "delay_den")
-    private short delayDen;
-
-    /** Type of frame area disposal to be done after rendering this frame */
-    @Field(label = "dispose_op")
-    private byte disposeOp;
-
-    /** Type of frame area rendering for this frame */
-    @Field(label = "blend_op")
-    private byte blendOp;
-
-    private final List<APNGfdATChunk> fdatChunks;
-
-    // -- Constructor --
-
-    public APNGfcTLChunk() {
-      this.fdatChunks = new ArrayList<APNGfdATChunk>();
-      this.CHUNK_SIGNATURE = new byte[] {(byte) 0x66, 0x63, 0x54, 0x4C};
-    }
-
-    // -- Methods --
-
-    public void addChunk(final APNGfdATChunk chunk) {
-      this.fdatChunks.add(chunk);
-    }
-
-    public int getSequenceNumber() {
-      return sequenceNumber;
-    }
-
-    public void setSequenceNumber(final int sequenceNumber) {
-      this.sequenceNumber = sequenceNumber;
-    }
-
-    public int getWidth() {
-      return width;
-    }
-
-    public void setWidth(final int width) {
-      this.width = width;
-    }
-
-    public int getHeight() {
-      return height;
-    }
-
-    public void setHeight(final int height) {
-      this.height = height;
-    }
-
-    public int getxOffset() {
-      return xOffset;
-    }
-
-    public void setxOffset(final int xOffset) {
-      this.xOffset = xOffset;
-    }
-
-    public int getyOffset() {
-      return yOffset;
-    }
-
-    public void setyOffset(final int yOffset) {
-      this.yOffset = yOffset;
-    }
-
-    public short getDelayNum() {
-      return delayNum;
-    }
-
-    public void setDelayNum(final short delayNum) {
-      this.delayNum = delayNum;
-    }
-
-    public short getDelayDen() {
-      return delayDen;
-    }
-
-    public void setDelayDen(final short delayDen) {
-      this.delayDen = delayDen;
-    }
-
-    public byte getDisposeOp() {
-      return disposeOp;
-    }
-
-    public void setDisposeOp(final byte disposeOp) {
-      this.disposeOp = disposeOp;
-    }
-
-    public byte getBlendOp() {
-      return blendOp;
-    }
-
-    public void setBlendOp(final byte blendOp) {
-      this.blendOp = blendOp;
-    }
-
-    public List<APNGfdATChunk> getFdatChunks() {
-      return fdatChunks;
-    }
-
-    // -- Helper Method --
-    @Override
-    public int[] getFrameCoordinates() {
-      return new int[] {xOffset, yOffset, width, height};
-    }
-  }
   
-  /**
-   * File format SCIFIO Translator for Animated Portable Network Graphics
-   * (APNG) images to the Core SCIFIO image type.
-   *
-   */
-  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = CoreMetadata.class)
-  public static class APNGCoreTranslator
-    extends AbstractTranslator<Metadata, CoreMetadata>
-    implements CoreTranslator {
-
-    // -- Constructors --
-
-    public APNGCoreTranslator() {
-      this(null);
-    }
-
-    public APNGCoreTranslator(final SCIFIO ctx) {
-      super(ctx);
-    }
-
-    // -- Translator API Methods --
-
-    public void translate(final Metadata source, final CoreMetadata dest) {
-      final CoreImageMetadata coreMeta = new CoreImageMetadata();
-      dest.add(coreMeta);
-
-      coreMeta.setInterleaved(false);
-      coreMeta.setOrderCertain(true);
-      coreMeta.setFalseColor(true);
-
-      coreMeta.setIndexed(false);
-
-      boolean indexed = false;
-      boolean rgb = true;
-      int sizec = 1;
-
-      switch (source.getIhdr().getColourType()) {
-        case 0x0:
-          rgb = false;
-          break;
-        case 0x2:
-          indexed = true;
-          sizec = 3;
-          break;
-        case 0x3:
-          break;
-        case 0x4:
-          rgb = false;
-          sizec = 2;
-          break;
-        case 0x6:
-          sizec = 4;
-          break;
-      }
-
-      if (indexed) {
-        final byte[][] lut = new byte[3][0];
-
-        lut[0] = source.getPlte().getRed();
-        lut[1] = source.getPlte().getGreen();
-        lut[2] = source.getPlte().getBlue();
-
-        coreMeta.setLut(lut);
-      }
-
-      final APNGacTLChunk actl = source.getActl();
-      final int planeCount = actl == null ? 1 : actl.getNumFrames();
-
-      coreMeta.setAxisTypes(new AxisType[] {
-          Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME, Axes.Z});
-      coreMeta.setAxisLengths(new int[] {
-          source.getIhdr().getWidth(), source.getIhdr().getHeight(), sizec,
-          planeCount, 1});
-
-      final int bpp = source.getIhdr().getBitDepth();
-
-      coreMeta.setBitsPerPixel(bpp);
-      try {
-        coreMeta.setPixelType(FormatTools.pixelTypeFromBytes(
-          bpp / 8, false, false));
-      }
-      catch (final FormatException e) {
-        e.printStackTrace();
-      }
-      coreMeta.setRgb(rgb);
-      coreMeta.setIndexed(indexed);
-      coreMeta.setPlaneCount(planeCount);
-      coreMeta.setLittleEndian(false);
-
-      // Some anciliary chunks may not have been parsed
-      coreMeta.setMetadataComplete(false);
-
-      coreMeta.setThumbnail(false);
-      //coreMeta.setThumbSizeX(source.thumbSizeX);
-      //coreMeta.setThumbSizeY(source.thumbSizeY);
-
-      //coreMeta.setcLengths(source.cLengths);
-      //coreMeta.setcTypes(source.cTypes);
-
-      //TODO could generate this via fields?
-      //coreMeta.setImageMetadata(source.imageMetadata);
-    }
-  }
+    // -- Fields --
   
-  /**
-   * This class can be used for translating Metadata in the Core SCIFIO format
-   * to Metadata for writing Animated Portable Network Graphics (APNG)
-   * files.
-   * 
-   * Note that Metadata translated from Core is only write-safe.
-   * 
-   * If trying to read, there should already exist an originally-parsed APNG
-   * Metadata object which can be used.
-   * 
-   * Note also that any APNG image written must be reparsed, as the Metadata used
-   * to write it can not be guaranteed valid.
-   *
-   */
-  @SCIFIOTranslator(metaIn = CoreMetadata.class, metaOut = Metadata.class)
-  public static class CoreAPNGTranslator
-    extends AbstractTranslator<CoreMetadata, Metadata> {
-
-    // -- Constructors --
-    
-    public CoreAPNGTranslator() {
-      this(null);
-    }
-    
-    public CoreAPNGTranslator(SCIFIO ctx) {
-      super(ctx);
-    }
-    
-    // -- Translator API Methods -- 
-    public void translate(final CoreMetadata source, final Metadata dest) {
-
-      final APNGIHDRChunk ihdr =
-        dest.getIhdr() == null ? new APNGIHDRChunk() : dest.getIhdr();
-      final APNGPLTEChunk plte =
-        dest.getPlte() == null ? new APNGPLTEChunk() : dest.getPlte();
-      final APNGacTLChunk actl =
-        dest.getActl() == null ? new APNGacTLChunk() : dest.getActl();
-      final List<APNGfcTLChunk> fctl = new ArrayList<APNGfcTLChunk>();
-
-      dest.setIhdr(ihdr);
-      dest.setPlte(plte);
-      dest.setActl(actl);
-      dest.setFctl(fctl);
-
-      ihdr.setWidth(source.getAxisLength(0, Axes.X));
-      ihdr.setHeight(source.getAxisLength(0, Axes.Y));
-      ihdr.setBitDepth((byte) source.getBitsPerPixel(0));
-      ihdr.setFilterMethod((byte) 0);
-      ihdr.setCompressionMethod((byte) 0);
-      ihdr.setInterlaceMethod((byte) 0);
-
-      final int sizec = source.getAxisLength(0, Axes.CHANNEL);
-      final boolean rgb = source.isRGB(0);
-      final boolean indexed = source.isIndexed(0);
-
-      if (indexed) {
-        ihdr.setColourType((byte) 0x2);
-        byte[][] lut = null;
-        try {
-          lut = source.get8BitLookupTable(0);
-          plte.setRed(lut[0]);
-          plte.setGreen(lut[1]);
-          plte.setBlue(lut[2]);
-        }
-        catch (final FormatException e) {
-          e.printStackTrace();
-        }
-        catch (final IOException e) {
-          e.printStackTrace();
-        }
-
-      }
-      else if (sizec == 2) {
-        ihdr.setColourType((byte) 0x4);
-      }
-      else if (sizec == 4) {
-        ihdr.setColourType((byte) 0x6);
-      }
-      else if (!rgb) {
-        ihdr.setColourType((byte) 0x0);
-      }
-      else {
-        ihdr.setColourType((byte) 0x3);
-      }
-
-      actl.setNumFrames(source.getAxisLength(0, Axes.TIME));
-
-      for (int i = 0; i < actl.getNumFrames(); i++) {
-        final APNGfcTLChunk frame = new APNGfcTLChunk();
-        frame.setHeight(ihdr.getHeight());
-        frame.setWidth(ihdr.getWidth());
-        frame.setxOffset(0);
-        frame.setyOffset(0);
-        frame.setSequenceNumber(i);
-        frame.setDelayDen((short) 0);
-        frame.setDelayNum((short) 0);
-        frame.setBlendOp((byte) 0);
-        frame.setDisposeOp((byte) 0);
-        fctl.add(frame);
-      }
-
-      dest.setSeparateDefault(true);
-    }
-  }
-
-  /**
-   * A parent class for all APNG Chunk classes.
-   * 
-   * Provides a length and offset (in the overall file stream)
-   * field.
-   * 
-   * Each chunk should instantiate and define its own CHUNK_SIGNATURE.
-   *
-   */
-  public static class APNGChunk {
-
-    // -- Fields --
-
-    // Offset in the file data stream. Points to the start of the
-    // data of the chunk, which comes after an entry for the length
-    // and the chunk's signature.
-    private long offset;
-
-    // Length of the chunk
-    private int length;
-
-    // Unique chunk type signature (e.g. "IHDR")
-    protected byte[] CHUNK_SIGNATURE;
-
-    // -- Methods --
-
-    public byte[] getCHUNK_SIGNATURE() {
-      return CHUNK_SIGNATURE;
-    }
-
-    public int[] getFrameCoordinates() {
-      return new int[0];
-    }
-
-    public void setOffset(final long offset) {
-      this.offset = offset;
-    }
-
-    public long getOffset() {
-      return offset;
-    }
-
-    public void setLength(final int length) {
-      this.length = length;
-    }
-
-    public int getLength() {
-      return length;
-    }
-    
-    @Override
-    public String toString() {
-      return new FieldPrinter(this).toString();
-    }
-
-  }
-
-  /**
-   * Represents the acTL chunk of the APNG image format.
-   * 
-   * There is one acTL chunk per APNG image, and is not
-   * present in PNG files.
-   * 
-   * The acTL chunk contains metadata describing the number
-   * of frames in the image, and how many times the animation
-   * sequence should be played.
-   *
-   */
-  public static class APNGacTLChunk extends APNGChunk {
-
-    // -- Constructor --
-
-    public APNGacTLChunk() {
-      this.CHUNK_SIGNATURE = new byte[] {(byte) 0x61, 0x63, 0x54, 0x4C};
-    }
-
-    // -- Fields --
-
     /** Sequence number of the animation chunk, starting from 0 */
     @Field(label = "sequence_number")
     private int sequenceNumber;
-
-    /** Number of frames in this APNG file */
-    @Field(label = "num_frames")
-    private int numFrames;
-
-    /** Times to play the animation sequence */
-    @Field(label = "num_plays")
-    private int numPlays;
-
+  
     // -- Methods --
-
-    public int getNumFrames() {
-      return numFrames;
-    }
-
-    public void setNumFrames(final int numFrames) {
-      this.numFrames = numFrames;
-    }
-
-    public int getNumPlays() {
-      return numPlays;
-    }
-
-    public void setNumPlays(final int numPlays) {
-      this.numPlays = numPlays;
-    }
-
+  
     public int getSequenceNumber() {
       return sequenceNumber;
     }
-
+  
     public void setSequenceNumber(final int sequenceNumber) {
       this.sequenceNumber = sequenceNumber;
     }
+  }
 
+  /**
+   * This class represents the critical IEND chunk that signifies
+   * the end of a PNG stream.
+   * 
+   * @author Mark Hiner
+   *
+   */
+  public static class APNGIENDChunk extends APNGChunk {
+    
+    // -- Constructor --
+    public APNGIENDChunk() {
+      this.CHUNK_SIGNATURE = new byte[] {(byte) 0x49, 0x45, 0x4E, 0x44};
+    }
   }
 
 }

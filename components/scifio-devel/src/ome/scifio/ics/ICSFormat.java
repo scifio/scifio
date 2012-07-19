@@ -57,6 +57,102 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   }
 
   /**
+   * SCIFIO Metadata object for ICS images. 
+   *
+   */
+  public static class Metadata extends AbstractMetadata {
+  
+    // -- Fields -- 
+  
+    /** Whether this file is ICS version 2,
+     *  and thus does not have an IDS companion */
+    protected boolean versionTwo = false;
+  
+    /** Offset to pixel data */
+    protected long offset = -1;
+  
+    /** */
+    protected boolean hasInstrumentData = false;
+  
+    /** ICS file name */
+    protected String icsId = "";
+  
+    /** IDS file name */
+    protected String idsId = "";
+  
+    /** ICS Metadata */
+    protected Hashtable<String, String> keyValPairs;
+  
+    // -- Constructor --
+  
+    public Metadata() {
+      this(null);
+    }
+  
+    public Metadata(SCIFIO ctx) {
+      super(ctx);
+      this.keyValPairs = new Hashtable<String, String>();
+    }
+  
+    // -- Helper Methods --
+  
+    /* @see Metadata#resetMeta() */
+    public void reset() {
+      super.reset(this.getClass());
+      this.keyValPairs = new Hashtable<String, String>();
+    }
+  
+    /**
+     * Convenience method to directly access the hashtable.
+     * @param key
+     * @return
+     */
+    public String get(final String key) {
+      return this.keyValPairs.get(key);
+    }
+  
+    public String getIcsId() {
+      return icsId;
+    }
+  
+    public void setIcsId(final String icsId) {
+      this.icsId = icsId;
+    }
+  
+    public String getIdsId() {
+      return idsId;
+    }
+  
+    public void setIdsId(final String idsId) {
+      this.idsId = idsId;
+    }
+  
+    public boolean hasInstrumentData() {
+      return hasInstrumentData;
+    }
+  
+    public void setHasInstrumentData(final boolean hasInstrumentData) {
+      this.hasInstrumentData = hasInstrumentData;
+    }
+  
+    public boolean isVersionTwo() {
+      return versionTwo;
+    }
+  
+    public void setVersionTwo(final boolean versionTwo) {
+      this.versionTwo = versionTwo;
+    }
+  
+    public void setKeyValPairs(Hashtable<String, String> keyValPairs) {
+      this.keyValPairs = keyValPairs;
+    }
+  
+    public Hashtable<String, String> getKeyValPairs() {
+      return keyValPairs;
+    }
+  }
+
+  /**
    * SCIFIO file format Checker for ICS images.
    * 
    */
@@ -76,164 +172,405 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
 
   }
 
-
   /**
-   * SCIFIO file format Translator for ICS Metadata objects to the SCIFIO Core
-   * metadata type.
-   * 
+   * SCIFIO file format Parser for ICS images. 
+   *
    */
-  @SCIFIOTranslator(metaIn = CoreMetadata.class, metaOut = Metadata.class)
-  public static class CoreICSTranslator
-  extends AbstractTranslator<CoreMetadata, Metadata>
-  implements CoreTranslator {
-
-    // -- Constructors --
-
-    public CoreICSTranslator() {
+  public static class Parser extends AbstractParser<Metadata> {
+  
+    // -- Constructor --
+  
+    public Parser() {
       this(null);
     }
-
-    public CoreICSTranslator(final SCIFIO ctx) {
-      super(ctx);
+  
+    public Parser(final SCIFIO ctx) {
+      super(ctx, Metadata.class);
     }
-
-    // -- Translator API Methods --
-
-    public void translate(final CoreMetadata source, final Metadata destination)
-    {
-      // note that the destination fields will preserve their default values
-      // only the keyValPairs will be modified
-
-      Hashtable<String, String> keyValPairs = null;
-      if (destination == null || destination.getKeyValPairs() == null) keyValPairs =
-        new Hashtable<String, String>();
-      else 
-        keyValPairs = destination.getKeyValPairs();
-
-      final int numAxes = source.getAxisCount(0);
-
-      String order = "";
-      String sizes = "";
-
-      for (int i = 0; i < numAxes; i++) {
-        final AxisType axis = source.getAxisType(0, i);
-
-        if (axis.equals(Axes.X)) {
-          order += "x";
+  
+    // -- Parser API Methods --
+  
+    /* @see Parser#parse(RandomAccessInputStream) */
+    @Override
+    public Metadata parse(final RandomAccessInputStream stream)
+      throws IOException, FormatException
+      {
+      super.parse(stream);
+  
+      if (stream.getFileName() != null) findCompanion(stream.getFileName());
+  
+      final RandomAccessInputStream reader =
+        new RandomAccessInputStream(metadata.getIcsId());
+  
+      reader.seek(0);
+      reader.readString(ICSUtils.NL);
+      String line = reader.readString(ICSUtils.NL);
+  
+      // Extracts the keys, value pairs from each line and inserts them into the ICSMetadata object
+      while (line != null && !line.trim().equals("end") &&
+        reader.getFilePointer() < reader.length() - 1)
+      {
+        line = line.trim();
+        final String[] tokens = line.split("[ \t]");
+        final StringBuffer key = new StringBuffer();
+        for (int q = 0; q < tokens.length; q++) {
+          tokens[q] = tokens[q].trim();
+          if (tokens[q].length() == 0) continue;
+  
+          boolean foundValue = true;
+          for (int i = 0; i < ICSUtils.CATEGORIES.length; i++) {
+            if (tokens[q].matches(ICSUtils.CATEGORIES[i])) {
+              foundValue = false;
+              break;
+            }
+          }
+          if (!foundValue) {
+            key.append(tokens[q]);
+            key.append(" ");
+            continue;
+          }
+  
+          final StringBuffer value = new StringBuffer(tokens[q++]);
+          for (; q < tokens.length; q++) {
+            value.append(" ");
+            value.append(tokens[q].trim());
+          }
+          final String k = key.toString().trim().replaceAll("\t", " ");
+          final String v = value.toString().trim();
+          addGlobalMeta(k, v);
+          metadata.keyValPairs.put(k.toLowerCase(), v);
         }
-        else if (axis.equals(Axes.Y)) {
-          order += "y";
-        }
-        else if (axis.equals(Axes.Z)) {
-          order += "z";
-        }
-        else if (axis.equals(Axes.TIME)) {
-          order += "t";
-        }
-        else if (axis.equals(Axes.CHANNEL)) {
-          order += "c";
-        }
-        else if (axis.equals(Axes.PHASE)) {
-          order += "p";
-        }
-        else if (axis.equals(Axes.FREQUENCY)) {
-          order += "f";
-        }
-        else {
-          if(axis.getLabel().equals("bits"))
-            order += "bits";
-          else
-            order += "u";
-        }
-
-        order += " ";
-        sizes += source.getAxisLength(0, i) + " ";
+        line = reader.readString(ICSUtils.NL);
       }
-
-      keyValPairs.put("layout sizes", sizes);
-      keyValPairs.put("layout order", order);
-
-      keyValPairs.put("layout significant_bits", "" + source.getBitsPerPixel(0));
-
-      if(source.getChannelDimTypes(0).equals(FormatTools.LIFETIME))
-        keyValPairs.put("history type", "time resolved");
-
-      boolean signed = false;
-      boolean fPoint = false;
-
-      switch (source.getPixelType(0)) {
-        case FormatTools.INT8:
-        case FormatTools.INT16:
-        case FormatTools.INT32:
-          signed = true;
-          break;
-        case FormatTools.UINT8:
-        case FormatTools.UINT16:
-        case FormatTools.UINT32:
-          break;
-        case FormatTools.FLOAT:
-        case FormatTools.DOUBLE:
-          fPoint = true;
-          signed = true;
-          break;
-
+      reader.close();
+  
+      if (metadata.versionTwo) {
+        String s = in.readString(ICSUtils.NL);
+        while (!s.trim().equals("end"))
+          s = in.readString(ICSUtils.NL);
       }
-
-      keyValPairs.put("representation sign", signed ? "signed" : "");
-      keyValPairs.put("representation format", fPoint ? "real" : "");
-      keyValPairs.put("representation compression", "");
-
-      String byteOrder = "0";
-
-      if(source.isLittleEndian(0))
-        byteOrder = fPoint ? "1" : "0";
-      else
-        byteOrder = fPoint ? "0" : "1";
-
-      keyValPairs.put("representation byte_order", byteOrder);
-
-      destination.setKeyValPairs(keyValPairs);
+  
+      metadata.offset = in.getFilePointer();
+  
+      metadata.hasInstrumentData =
+        nullKeyCheck(new String[] {
+          "history cube emm nm", "history cube exc nm", "history objective NA",
+          "history stage xyzum", "history objective magnification",
+          "history objective mag", "history objective WorkingDistance",
+          "history objective type", "history objective",
+        "history objective immersion"});
+  
+      return metadata;
+      }
+  
+    // -- Helper Methods --
+  
+    /* Returns true if any of the keys in testKeys has a non-null value */
+    private boolean nullKeyCheck(final String[] testKeys) {
+      for (final String key : testKeys) {
+        if (metadata.get(key) != null) {
+          return true;
+        }
+      }
+      return false;
     }
-
+  
+    /* Finds the companion file (ICS and IDS are companions) */
+    private void findCompanion(final String id)
+      throws IOException, FormatException
+      {
+      metadata.icsId = id;
+      metadata.idsId = id;
+      String icsId = id, idsId = id;
+      final int dot = id.lastIndexOf(".");
+      final String ext = dot < 0 ? "" : id.substring(dot + 1).toLowerCase();
+      if (ext.equals("ics")) {
+        // convert C to D regardless of case
+        final char[] c = idsId.toCharArray();
+        c[c.length - 2]++;
+        idsId = new String(c);
+      }
+      else if (ext.equals("ids")) {
+        // convert D to C regardless of case
+        final char[] c = icsId.toCharArray();
+        c[c.length - 2]--;
+        icsId = new String(c);
+      }
+  
+      if (icsId == null) throw new FormatException("No ICS file found.");
+      final Location icsFile = new Location(icsId);
+      if (!icsFile.exists()) throw new FormatException("ICS file not found.");
+  
+      // check if we have a v2 ICS file - means there is no companion IDS file
+      final RandomAccessInputStream f = new RandomAccessInputStream(icsId);
+      if (f.readString(17).trim().equals("ics_version\t2.0")) {
+        in = new RandomAccessInputStream(icsId);
+        metadata.versionTwo = true;
+      }
+      else {
+        if (idsId == null) throw new FormatException("No IDS file found.");
+        final Location idsFile = new Location(idsId);
+        if (!idsFile.exists()) throw new FormatException("IDS file not found.");
+        //currentIdsId = idsId;
+        metadata.idsId = idsId;
+        in = new RandomAccessInputStream(idsId);
+      }
+      f.close();
+      }
   }
 
+  /**
+   * File format SCIFIO Reader for Image Cytometry Standard (ICS)
+   * images. Version 1 and 2 supported.
+   * 
+   */
+  public static class Reader extends AbstractReader<Metadata> {
+  
+    // -- Fields --
+  
+    private int prevImage;
+  
+    /** Whether or not the pixels are GZIP-compressed. */
+  
+    private boolean gzip;
+  
+    private GZIPInputStream gzipStream;
+  
+    /** Whether or not the image is inverted along the Y axis. */
+    private boolean invertY; //TODO only in oldInitFile
+  
+    /** Whether or not the channels represent lifetime histogram bins. */
+    private boolean lifetime; //TODO only in oldInitFile
+  
+    /** Image data. */
+    private byte[] data;
+  
+    private boolean storedRGB = false; // TODO only in oldInitFile
+  
+    // -- Constructor --
+  
+    public Reader() {
+      this(null);
+    }
+  
+    public Reader(final SCIFIO ctx) {
+      super("Image Cytometry Standard", new String[] {"ics", "ids"}, ctx);
+      domains =
+        new String[] {
+        FormatTools.LM_DOMAIN, FormatTools.FLIM_DOMAIN,
+        FormatTools.UNKNOWN_DOMAIN};
+      hasCompanionFiles = true;
+    }
+  
+    // -- Reader API Methods --
+  
+    @Override
+    public byte[] openBytes(final int imageIndex, final int planeIndex,
+      final byte[] buf, final int x, final int y, final int w, final int h)
+        throws FormatException, IOException
+        {
+      FormatTools.checkPlaneParameters(
+        this, imageIndex, planeIndex, buf.length, x, y, w, h);
+  
+      final int bpp =
+        FormatTools.getBytesPerPixel(cMeta.getPixelType(imageIndex));
+      final int len = FormatTools.getPlaneSize(this, imageIndex);
+      final int pixel = bpp * cMeta.getRGBChannelCount(imageIndex);
+      final int rowLen = FormatTools.getPlaneSize(this, w, 1, imageIndex);
+  
+      final int[] coordinates = getZCTCoords(planeIndex);
+      final int[] prevCoordinates = getZCTCoords(prevImage);
+  
+      if (!gzip) {
+        in.seek(metadata.offset + planeIndex * (long) len);
+      }
+      else {
+        long toSkip = (planeIndex - prevImage - 1) * (long) len;
+        if (gzipStream == null || planeIndex <= prevImage) {
+          FileInputStream fis = null;
+          toSkip = planeIndex * (long) len;
+          if (metadata.versionTwo) {
+            fis = new FileInputStream(metadata.icsId);
+            fis.skip(metadata.offset);
+          }
+          else {
+            fis = new FileInputStream(metadata.idsId);
+            toSkip += metadata.offset;
+          }
+          try {
+            gzipStream = new GZIPInputStream(fis);
+          }
+          catch (final IOException e) {
+            // the 'gzip' flag is set erroneously
+            gzip = false;
+            in.seek(metadata.offset + planeIndex * (long) len);
+            gzipStream = null;
+          }
+        }
+  
+        if (gzipStream != null) {
+          while (toSkip > 0) {
+            toSkip -= gzipStream.skip(toSkip);
+          }
+  
+          data =
+            new byte[len *
+                     (storedRGB ? cMeta.getAxisLength(imageIndex, Axes.CHANNEL) : 1)];
+          int toRead = data.length;
+          while (toRead > 0) {
+            toRead -= gzipStream.read(data, data.length - toRead, toRead);
+          }
+        }
+      }
+  
+      final int sizeC =
+        lifetime ? 1 : cMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+  
+      final int channelLengths = 0;
+  
+      if (!cMeta.isRGB(imageIndex) &&
+          cMeta.getChannelDimLengths(imageIndex).length == 1 && storedRGB)
+      {
+        // channels are stored interleaved, but because there are more than we
+        // can display as RGB, we need to separate them
+        in.seek(metadata.offset +
+            (long) len *
+            FormatTools.getIndex(
+                this, imageIndex, coordinates[0], 0, coordinates[2]));
+        if (!gzip && data == null) {
+          data = new byte[len * cMeta.getAxisLength(imageIndex, Axes.CHANNEL)];
+          in.read(data);
+        }
+        else if (!gzip &&
+            (coordinates[0] != prevCoordinates[0] || coordinates[2] != prevCoordinates[2]))
+        {
+          in.read(data);
+        }
+  
+        for (int row = y; row < h + y; row++) {
+          for (int col = x; col < w + x; col++) {
+            int src =
+                bpp * ((planeIndex % cMeta.getAxisLength(imageIndex, Axes.CHANNEL))
+                    + sizeC * (row * (row * cMeta.getAxisLength(imageIndex, Axes.X) + col)));
+            int dest = bpp * ((row - y) * w + (col - x));
+            System.arraycopy(data, src, buf, dest, bpp); 
+          }
+        }
+      }
+      else if (gzip) {
+        final RandomAccessInputStream s = new RandomAccessInputStream(data);
+        readPlane(s, imageIndex, x, y, w, h, buf);
+        s.close();
+      }
+      else {
+        readPlane(in, imageIndex, x, y, w, h, buf);
+      }
+  
+      if (invertY) {
+        final byte[] row = new byte[rowLen];
+        for (int r = 0; r < h / 2; r++) {
+          final int topOffset = r * rowLen;
+          final int bottomOffset = (h - r - 1) * rowLen;
+          System.arraycopy(buf, topOffset, row, 0, rowLen);
+          System.arraycopy(buf, bottomOffset, buf, topOffset, rowLen);
+          System.arraycopy(row, 0, buf, bottomOffset, rowLen);
+        }
+      }
+  
+      prevImage = planeIndex;
+  
+      return buf;
+        }
+  
+    /* @see Reader#close(boolean) */
+    @Override
+    public void close(final boolean fileOnly) throws IOException {
+      super.close(fileOnly);
+      if (!fileOnly) {
+        data = null;
+        gzip = false;
+        invertY = false;
+        lifetime = false;
+        prevImage = 0;
+        //TODO hasInstrumentData = false;
+        storedRGB = false;
+        if (gzipStream != null) {
+          gzipStream.close();
+        }
+        gzipStream = null;
+      }
+    }
+  
+    /* @see Reader#setMetadata(Metadata) */
+    @Override
+    public void setMetadata(final Metadata meta) throws IOException {
+      super.setMetadata(meta);
+      this.metadata = meta;
+      final Translator<Metadata, CoreMetadata> t = new ICSCoreTranslator();
+      t.translate(meta, cMeta);
+      gzip = metadata.get("representation compression").equals("gzip");
+    }
+  
+    /* @see Reader#setSource(RandomAccessInputStream) */
+    @Override
+    public void setSource(final RandomAccessInputStream stream) throws IOException {
+      super.setSource(stream);
+      if(!this.getMetadata().versionTwo)
+        this.in = new RandomAccessInputStream(this.getMetadata().idsId);
+    }
+  
+    @Override
+    public String[] getDomains() {
+      FormatTools.assertStream(in, true, 0);
+      final String[] domain = new String[] {FormatTools.GRAPHICS_DOMAIN};
+      if (cMeta.getChannelDimLengths(0).length > 1) {
+        domain[0] = FormatTools.FLIM_DOMAIN;
+      }
+      else if (metadata.hasInstrumentData) {
+        domain[0] = FormatTools.LM_DOMAIN;
+      }
+  
+      return domain;
+    }
+  
+    // -- ICSReader Methods --
+  
+  }
 
   /**
    *  SCIFIO file format writer for ICS version 1 and 2 files.
    *
    */
   public static class Writer extends AbstractWriter<Metadata> {
-
+  
     // -- Fields --
-
+  
     // -- Constructor --
-
+  
     public Writer() {
       this(null);
     }
-
+  
     public Writer(final SCIFIO ctx) {
       super("Image Cytometry Standard", "ics", ctx);
     }
-
+  
     // -- Writer API Methods --
-
+  
     public void saveBytes(final int imageIndex, final int planeIndex,
       final byte[] buf, final int x, final int y, final int w, final int h)
         throws FormatException, IOException
         {
       // TODO Auto-generated method stub
-
+  
         }
-
+  
     /* @see ome.scifio.Writer#setMetadata(M) */
     public void setMetadata(final Metadata meta) {
       super.setMetadata(meta, new ICSCoreTranslator());
     }
-
+  
   }
-
-
 
   /**
    * Collection of utility methods and constants
@@ -774,371 +1111,124 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   }
 
   /**
-   * SCIFIO file format Parser for ICS images. 
-   *
-   */
-  public static class Parser extends AbstractParser<Metadata> {
-
-    // -- Constructor --
-
-    public Parser() {
-      this(null);
-    }
-
-    public Parser(final SCIFIO ctx) {
-      super(ctx, Metadata.class);
-    }
-
-    // -- Parser API Methods --
-
-    /* @see Parser#parse(RandomAccessInputStream) */
-    @Override
-    public Metadata parse(final RandomAccessInputStream stream)
-      throws IOException, FormatException
-      {
-      super.parse(stream);
-
-      if (stream.getFileName() != null) findCompanion(stream.getFileName());
-
-      final RandomAccessInputStream reader =
-        new RandomAccessInputStream(metadata.getIcsId());
-
-      reader.seek(0);
-      reader.readString(ICSUtils.NL);
-      String line = reader.readString(ICSUtils.NL);
-
-      // Extracts the keys, value pairs from each line and inserts them into the ICSMetadata object
-      while (line != null && !line.trim().equals("end") &&
-        reader.getFilePointer() < reader.length() - 1)
-      {
-        line = line.trim();
-        final String[] tokens = line.split("[ \t]");
-        final StringBuffer key = new StringBuffer();
-        for (int q = 0; q < tokens.length; q++) {
-          tokens[q] = tokens[q].trim();
-          if (tokens[q].length() == 0) continue;
-
-          boolean foundValue = true;
-          for (int i = 0; i < ICSUtils.CATEGORIES.length; i++) {
-            if (tokens[q].matches(ICSUtils.CATEGORIES[i])) {
-              foundValue = false;
-              break;
-            }
-          }
-          if (!foundValue) {
-            key.append(tokens[q]);
-            key.append(" ");
-            continue;
-          }
-
-          final StringBuffer value = new StringBuffer(tokens[q++]);
-          for (; q < tokens.length; q++) {
-            value.append(" ");
-            value.append(tokens[q].trim());
-          }
-          final String k = key.toString().trim().replaceAll("\t", " ");
-          final String v = value.toString().trim();
-          addGlobalMeta(k, v);
-          metadata.keyValPairs.put(k.toLowerCase(), v);
-        }
-        line = reader.readString(ICSUtils.NL);
-      }
-      reader.close();
-
-      if (metadata.versionTwo) {
-        String s = in.readString(ICSUtils.NL);
-        while (!s.trim().equals("end"))
-          s = in.readString(ICSUtils.NL);
-      }
-
-      metadata.offset = in.getFilePointer();
-
-      metadata.hasInstrumentData =
-        nullKeyCheck(new String[] {
-          "history cube emm nm", "history cube exc nm", "history objective NA",
-          "history stage xyzum", "history objective magnification",
-          "history objective mag", "history objective WorkingDistance",
-          "history objective type", "history objective",
-        "history objective immersion"});
-
-      return metadata;
-      }
-
-    // -- Helper Methods --
-
-    /* Returns true if any of the keys in testKeys has a non-null value */
-    private boolean nullKeyCheck(final String[] testKeys) {
-      for (final String key : testKeys) {
-        if (metadata.get(key) != null) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    /* Finds the companion file (ICS and IDS are companions) */
-    private void findCompanion(final String id)
-      throws IOException, FormatException
-      {
-      metadata.icsId = id;
-      metadata.idsId = id;
-      String icsId = id, idsId = id;
-      final int dot = id.lastIndexOf(".");
-      final String ext = dot < 0 ? "" : id.substring(dot + 1).toLowerCase();
-      if (ext.equals("ics")) {
-        // convert C to D regardless of case
-        final char[] c = idsId.toCharArray();
-        c[c.length - 2]++;
-        idsId = new String(c);
-      }
-      else if (ext.equals("ids")) {
-        // convert D to C regardless of case
-        final char[] c = icsId.toCharArray();
-        c[c.length - 2]--;
-        icsId = new String(c);
-      }
-
-      if (icsId == null) throw new FormatException("No ICS file found.");
-      final Location icsFile = new Location(icsId);
-      if (!icsFile.exists()) throw new FormatException("ICS file not found.");
-
-      // check if we have a v2 ICS file - means there is no companion IDS file
-      final RandomAccessInputStream f = new RandomAccessInputStream(icsId);
-      if (f.readString(17).trim().equals("ics_version\t2.0")) {
-        in = new RandomAccessInputStream(icsId);
-        metadata.versionTwo = true;
-      }
-      else {
-        if (idsId == null) throw new FormatException("No IDS file found.");
-        final Location idsFile = new Location(idsId);
-        if (!idsFile.exists()) throw new FormatException("IDS file not found.");
-        //currentIdsId = idsId;
-        metadata.idsId = idsId;
-        in = new RandomAccessInputStream(idsId);
-      }
-      f.close();
-      }
-  }
-
-
-  /**
-   * File format SCIFIO Reader for Image Cytometry Standard (ICS)
-   * images. Version 1 and 2 supported.
+   * SCIFIO file format Translator for ICS Metadata objects to the SCIFIO Core
+   * metadata type.
    * 
    */
-  public static class Reader extends AbstractReader<Metadata> {
-
-    // -- Fields --
-
-    private int prevImage;
-
-    /** Whether or not the pixels are GZIP-compressed. */
-
-    private boolean gzip;
-
-    private GZIPInputStream gzipStream;
-
-    /** Whether or not the image is inverted along the Y axis. */
-    private boolean invertY; //TODO only in oldInitFile
-
-    /** Whether or not the channels represent lifetime histogram bins. */
-    private boolean lifetime; //TODO only in oldInitFile
-
-    /** Image data. */
-    private byte[] data;
-
-    private boolean storedRGB = false; // TODO only in oldInitFile
-
-    // -- Constructor --
-
-    public Reader() {
+  @SCIFIOTranslator(metaIn = CoreMetadata.class, metaOut = Metadata.class)
+  public static class CoreICSTranslator
+  extends AbstractTranslator<CoreMetadata, Metadata>
+  implements CoreTranslator {
+  
+    // -- Constructors --
+  
+    public CoreICSTranslator() {
       this(null);
     }
-
-    public Reader(final SCIFIO ctx) {
-      super("Image Cytometry Standard", new String[] {"ics", "ids"}, ctx);
-      domains =
-        new String[] {
-        FormatTools.LM_DOMAIN, FormatTools.FLIM_DOMAIN,
-        FormatTools.UNKNOWN_DOMAIN};
-      hasCompanionFiles = true;
+  
+    public CoreICSTranslator(final SCIFIO ctx) {
+      super(ctx);
     }
-
-    // -- Reader API Methods --
-
-    @Override
-    public byte[] openBytes(final int imageIndex, final int planeIndex,
-      final byte[] buf, final int x, final int y, final int w, final int h)
-        throws FormatException, IOException
-        {
-      FormatTools.checkPlaneParameters(
-        this, imageIndex, planeIndex, buf.length, x, y, w, h);
-
-      final int bpp =
-        FormatTools.getBytesPerPixel(cMeta.getPixelType(imageIndex));
-      final int len = FormatTools.getPlaneSize(this, imageIndex);
-      final int pixel = bpp * cMeta.getRGBChannelCount(imageIndex);
-      final int rowLen = FormatTools.getPlaneSize(this, w, 1, imageIndex);
-
-      final int[] coordinates = getZCTCoords(planeIndex);
-      final int[] prevCoordinates = getZCTCoords(prevImage);
-
-      if (!gzip) {
-        in.seek(metadata.offset + planeIndex * (long) len);
+  
+    // -- Translator API Methods --
+  
+    public void translate(final CoreMetadata source, final Metadata destination)
+    {
+      // note that the destination fields will preserve their default values
+      // only the keyValPairs will be modified
+  
+      Hashtable<String, String> keyValPairs = null;
+      if (destination == null || destination.getKeyValPairs() == null) keyValPairs =
+        new Hashtable<String, String>();
+      else 
+        keyValPairs = destination.getKeyValPairs();
+  
+      final int numAxes = source.getAxisCount(0);
+  
+      String order = "";
+      String sizes = "";
+  
+      for (int i = 0; i < numAxes; i++) {
+        final AxisType axis = source.getAxisType(0, i);
+  
+        if (axis.equals(Axes.X)) {
+          order += "x";
+        }
+        else if (axis.equals(Axes.Y)) {
+          order += "y";
+        }
+        else if (axis.equals(Axes.Z)) {
+          order += "z";
+        }
+        else if (axis.equals(Axes.TIME)) {
+          order += "t";
+        }
+        else if (axis.equals(Axes.CHANNEL)) {
+          order += "c";
+        }
+        else if (axis.equals(Axes.PHASE)) {
+          order += "p";
+        }
+        else if (axis.equals(Axes.FREQUENCY)) {
+          order += "f";
+        }
+        else {
+          if(axis.getLabel().equals("bits"))
+            order += "bits";
+          else
+            order += "u";
+        }
+  
+        order += " ";
+        sizes += source.getAxisLength(0, i) + " ";
       }
-      else {
-        long toSkip = (planeIndex - prevImage - 1) * (long) len;
-        if (gzipStream == null || planeIndex <= prevImage) {
-          FileInputStream fis = null;
-          toSkip = planeIndex * (long) len;
-          if (metadata.versionTwo) {
-            fis = new FileInputStream(metadata.icsId);
-            fis.skip(metadata.offset);
-          }
-          else {
-            fis = new FileInputStream(metadata.idsId);
-            toSkip += metadata.offset;
-          }
-          try {
-            gzipStream = new GZIPInputStream(fis);
-          }
-          catch (final IOException e) {
-            // the 'gzip' flag is set erroneously
-            gzip = false;
-            in.seek(metadata.offset + planeIndex * (long) len);
-            gzipStream = null;
-          }
-        }
-
-        if (gzipStream != null) {
-          while (toSkip > 0) {
-            toSkip -= gzipStream.skip(toSkip);
-          }
-
-          data =
-            new byte[len *
-                     (storedRGB ? cMeta.getAxisLength(imageIndex, Axes.CHANNEL) : 1)];
-          int toRead = data.length;
-          while (toRead > 0) {
-            toRead -= gzipStream.read(data, data.length - toRead, toRead);
-          }
-        }
+  
+      keyValPairs.put("layout sizes", sizes);
+      keyValPairs.put("layout order", order);
+  
+      keyValPairs.put("layout significant_bits", "" + source.getBitsPerPixel(0));
+  
+      if(source.getChannelDimTypes(0).equals(FormatTools.LIFETIME))
+        keyValPairs.put("history type", "time resolved");
+  
+      boolean signed = false;
+      boolean fPoint = false;
+  
+      switch (source.getPixelType(0)) {
+        case FormatTools.INT8:
+        case FormatTools.INT16:
+        case FormatTools.INT32:
+          signed = true;
+          break;
+        case FormatTools.UINT8:
+        case FormatTools.UINT16:
+        case FormatTools.UINT32:
+          break;
+        case FormatTools.FLOAT:
+        case FormatTools.DOUBLE:
+          fPoint = true;
+          signed = true;
+          break;
+  
       }
-
-      final int sizeC =
-        lifetime ? 1 : cMeta.getAxisLength(imageIndex, Axes.CHANNEL);
-
-      final int channelLengths = 0;
-
-      if (!cMeta.isRGB(imageIndex) &&
-        cMeta.getChannelDimLengths(imageIndex).length == 1 && storedRGB)
-      {
-        // channels are stored interleaved, but because there are more than we
-        // can display as RGB, we need to separate them
-        in.seek(metadata.offset +
-          (long) len *
-          FormatTools.getIndex(
-            this, imageIndex, coordinates[0], 0, coordinates[2]));
-        if (!gzip && data == null) {
-          data = new byte[len * cMeta.getAxisLength(imageIndex, Axes.CHANNEL)];
-          in.read(data);
-        }
-        else if (!gzip &&
-          (coordinates[0] != prevCoordinates[0] || coordinates[2] != prevCoordinates[2]))
-        {
-          in.read(data);
-        }
-
-        for (int row = y; row < h + y; row++) {
-          for (int col = x; col < w + x; col++) {
-            int src =
-                bpp * ((planeIndex % cMeta.getAxisLength(imageIndex, Axes.CHANNEL))
-                    + sizeC * (row * (row * cMeta.getAxisLength(imageIndex, Axes.X) + col)));
-            int dest = bpp * ((row - y) * w + (col - x));
-            System.arraycopy(data, src, buf, dest, bpp); 
-          }
-        }
-      }
-      else if (gzip) {
-        final RandomAccessInputStream s = new RandomAccessInputStream(data);
-        readPlane(s, imageIndex, x, y, w, h, buf);
-        s.close();
-      }
-      else {
-        readPlane(in, imageIndex, x, y, w, h, buf);
-      }
-
-      if (invertY) {
-        final byte[] row = new byte[rowLen];
-        for (int r = 0; r < h / 2; r++) {
-          final int topOffset = r * rowLen;
-          final int bottomOffset = (h - r - 1) * rowLen;
-          System.arraycopy(buf, topOffset, row, 0, rowLen);
-          System.arraycopy(buf, bottomOffset, buf, topOffset, rowLen);
-          System.arraycopy(row, 0, buf, bottomOffset, rowLen);
-        }
-      }
-
-      prevImage = planeIndex;
-
-      return buf;
-        }
-
-    /* @see Reader#close(boolean) */
-    @Override
-    public void close(final boolean fileOnly) throws IOException {
-      super.close(fileOnly);
-      if (!fileOnly) {
-        data = null;
-        gzip = false;
-        invertY = false;
-        lifetime = false;
-        prevImage = 0;
-        //TODO hasInstrumentData = false;
-        storedRGB = false;
-        if (gzipStream != null) {
-          gzipStream.close();
-        }
-        gzipStream = null;
-      }
+  
+      keyValPairs.put("representation sign", signed ? "signed" : "");
+      keyValPairs.put("representation format", fPoint ? "real" : "");
+      keyValPairs.put("representation compression", "");
+  
+      String byteOrder = "0";
+  
+      if(source.isLittleEndian(0))
+        byteOrder = fPoint ? "1" : "0";
+      else
+        byteOrder = fPoint ? "0" : "1";
+  
+      keyValPairs.put("representation byte_order", byteOrder);
+  
+      destination.setKeyValPairs(keyValPairs);
     }
-
-    /* @see Reader#setMetadata(Metadata) */
-    @Override
-    public void setMetadata(final Metadata meta) throws IOException {
-      super.setMetadata(meta);
-      this.metadata = meta;
-      final Translator<Metadata, CoreMetadata> t = new ICSCoreTranslator();
-      t.translate(meta, cMeta);
-      gzip = metadata.get("representation compression").equals("gzip");
-    }
-
-    /* @see Reader#setSource(RandomAccessInputStream) */
-    @Override
-    public void setSource(final RandomAccessInputStream stream) throws IOException {
-      super.setSource(stream);
-      if(!this.getMetadata().versionTwo)
-        this.in = new RandomAccessInputStream(this.getMetadata().idsId);
-    }
-
-    @Override
-    public String[] getDomains() {
-      FormatTools.assertStream(in, true, 0);
-      final String[] domain = new String[] {FormatTools.GRAPHICS_DOMAIN};
-      if (cMeta.getChannelDimLengths(0).length > 1) {
-        domain[0] = FormatTools.FLIM_DOMAIN;
-      }
-      else if (metadata.hasInstrumentData) {
-        domain[0] = FormatTools.LM_DOMAIN;
-      }
-
-      return domain;
-    }
-
-    // -- ICSReader Methods --
-
+  
   }
-
 
   /**
    * SCIFIO file format Translator for ICS Metadata objects
@@ -1350,103 +1440,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
 
     StringTokenizer getTknz(final String target) {
       return new StringTokenizer(curSource.get(target));
-    }
-  } 
-
-  /**
-   * SCIFIO Metadata object for ICS images. 
-   *
-   */
-  public static class Metadata extends AbstractMetadata {
-
-    // -- Fields -- 
-
-    /** Whether this file is ICS version 2,
-     *  and thus does not have an IDS companion */
-    protected boolean versionTwo = false;
-
-    /** Offset to pixel data */
-    protected long offset = -1;
-
-    /** */
-    protected boolean hasInstrumentData = false;
-
-    /** ICS file name */
-    protected String icsId = "";
-
-    /** IDS file name */
-    protected String idsId = "";
-
-    /** ICS Metadata */
-    protected Hashtable<String, String> keyValPairs;
-
-    // -- Constructor --
-
-    public Metadata() {
-      this(null);
-    }
-
-    public Metadata(SCIFIO ctx) {
-      super(ctx);
-      this.keyValPairs = new Hashtable<String, String>();
-    }
-
-
-    // -- Helper Methods --
-
-    /* @see Metadata#resetMeta() */
-    public void reset() {
-      super.reset(this.getClass());
-      this.keyValPairs = new Hashtable<String, String>();
-    }
-
-    /**
-     * Convenience method to directly access the hashtable.
-     * @param key
-     * @return
-     */
-    public String get(final String key) {
-      return this.keyValPairs.get(key);
-    }
-
-    public String getIcsId() {
-      return icsId;
-    }
-
-    public void setIcsId(final String icsId) {
-      this.icsId = icsId;
-    }
-
-    public String getIdsId() {
-      return idsId;
-    }
-
-    public void setIdsId(final String idsId) {
-      this.idsId = idsId;
-    }
-
-    public boolean hasInstrumentData() {
-      return hasInstrumentData;
-    }
-
-    public void setHasInstrumentData(final boolean hasInstrumentData) {
-      this.hasInstrumentData = hasInstrumentData;
-    }
-
-    public boolean isVersionTwo() {
-      return versionTwo;
-    }
-
-    public void setVersionTwo(final boolean versionTwo) {
-      this.versionTwo = versionTwo;
-    }
-
-    public void setKeyValPairs(Hashtable<String, String> keyValPairs) {
-      this.keyValPairs = keyValPairs;
-    }
-
-    public Hashtable<String, String> getKeyValPairs() {
-      return keyValPairs;
     }
   }
 }
