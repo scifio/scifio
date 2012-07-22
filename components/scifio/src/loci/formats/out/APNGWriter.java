@@ -1,7 +1,3 @@
-//
-// APNGWriter.java
-//
-
 /*
  * #%L
  * OME SCIFIO package for reading and converting scientific file formats.
