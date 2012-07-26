@@ -273,7 +273,7 @@ public class FormatTools {
     int zSize = reader.getCoreMetadata().getAxisLength(imageIndex, Axes.Z);
     int cSize = reader.getCoreMetadata().getEffectiveSizeC(imageIndex);
     int tSize = reader.getCoreMetadata().getAxisLength(imageIndex, Axes.TIME);
-    int num = reader.getCoreMetadata().getImageCount();
+    int num = reader.getCoreMetadata().getPlaneCount(imageIndex);
     return getIndex(
       findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, num, z, c, t);
   }
@@ -378,7 +378,7 @@ public class FormatTools {
     int zSize = core.getAxisLength(imageIndex, Axes.Z);
     int cSize = core.getEffectiveSizeC(imageIndex);
     int tSize = core.getAxisLength(imageIndex, Axes.TIME);
-    int num = core.getImageCount();
+    int num = core.getPlaneCount(imageIndex);
 
     return getZCTCoords(
       findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, num, index);
@@ -640,7 +640,7 @@ public class FormatTools {
     int planeIndex, int bufLength, int x, int y, int w, int h)
     throws FormatException
   {
-    assertStream(r.getStream(), true, 2);
+    assertId(r.getCurrentFile(), true, 2);
     checkPlaneNumber(r, imageIndex, planeIndex);
     checkTileSize(r, x, y, w, h, imageIndex);
     if (bufLength >= 0) checkBufferSize(r, bufLength, w, h, imageIndex);
