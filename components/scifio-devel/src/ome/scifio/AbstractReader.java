@@ -132,6 +132,7 @@ public abstract class AbstractReader<M extends Metadata>
     throws IOException
   {
     this.in = stream;
+    this.currentId = stream.getFileName();
 
     if (this.metadata == null) {
       try {
