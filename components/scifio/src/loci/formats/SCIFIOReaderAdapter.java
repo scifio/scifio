@@ -78,12 +78,14 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
   
   private SCIFIO context;
   private final IFormatReader reader;
+  private CoreMetadata cMeta;
 
   // -- Constructor --
   
   public SCIFIOReaderAdapter(SCIFIO context, IFormatReader reader) {
     this.context = context;
     this.reader = reader;
+    generateCoreMetadata();
   }
 
   // -- ome.scifio.Reader API --
@@ -194,7 +196,7 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
   }
 
   public CoreMetadata getCoreMetadata() {
-    return reader.getCoreMetadata()[0].convert();
+    return cMeta;
   }
 
   public void setNormalized(boolean normalize) {
@@ -234,6 +236,7 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
     catch (FormatException e) {
       throw new IOException(e);
     }
+    generateCoreMetadata();
   }
 
   public void close(boolean fileOnly) throws IOException {
@@ -262,6 +265,18 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
 
   public int getImageCount() {
     return reader.getImageCount();
+  }
+  
+  // -- Helper Methods --
+  
+  private void generateCoreMetadata() {
+    CoreMetadata core = new CoreMetadata(context);
+
+    for(int i = 0; i < reader.getSeriesCount(); i++) {
+      core.add(reader.getCoreMetadata()[i].convert());
+    }
+    
+    cMeta = core;
   }
   
 }
