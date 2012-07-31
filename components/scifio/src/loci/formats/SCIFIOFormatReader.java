@@ -141,8 +141,8 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
       }
     }
 
-    core = new CoreMetadata[1];
-    core[0] = new CoreMetadata();
+    core = new CoreMetadata[getSeriesCount()];
+    //core[0] = new CoreMetadata();
     series = 0;
     close();
     currentId = id;
@@ -998,6 +998,8 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   @Deprecated
   @Override
   public void setId(String id) throws FormatException, IOException {
+    reader.setSource(id);
+
     if (!id.equals(currentId)) {
       initFile(id);
       // NB: this has to happen after init file, instead of within init file
@@ -1008,7 +1010,6 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
         core[i].orderCertain = true;
       }
     }
-    reader.setSource(id);
   }
 
   /* @see IFormatHandler#close() */
