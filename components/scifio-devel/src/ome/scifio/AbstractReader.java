@@ -293,6 +293,7 @@ public abstract class AbstractReader<M extends Metadata>
   /* @see Reader#setMetadata() */
   public void setMetadata(final M meta) throws IOException {
     this.metadata = meta;
+    this.cMeta = new CoreMetadata();
     if(this.in == null) setSource(meta.getSource());
   }
 
