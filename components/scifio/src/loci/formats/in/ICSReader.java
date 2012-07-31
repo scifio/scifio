@@ -38,9 +38,6 @@ package loci.formats.in;
 
 import java.io.IOException;
 
-import loci.common.DateTools;
-import loci.common.Location;
-import loci.common.RandomAccessInputStream;
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
 import loci.formats.SCIFIOFormatReader;
@@ -88,7 +85,7 @@ public class ICSReader extends SCIFIOFormatReader {
   /* @see loci.formats.IFormatReader#isSingleFile(String) */
   @Deprecated
   public boolean isSingleFile(String id) throws FormatException, IOException {
-    return ((ICSFormat)format).isVersionTwo(reader.getMetadata());
+    return ((ICSFormat)format).isVersionTwo((ICSFormat.Metadata) reader.getMetadata());
   }
 
   /* @see loci.formats.IFormatReader#getDomains() */
@@ -156,7 +153,6 @@ public class ICSReader extends SCIFIOFormatReader {
   protected void initFile(String id) throws FormatException, IOException {
  // ARG for testing protected void oldInitFile(String id) throws FormatException, IOException {
     super.initFile(id);
-
     Metadata meta = null;
     try {
       meta = parser.parse(id);
@@ -165,7 +161,6 @@ public class ICSReader extends SCIFIOFormatReader {
       throw new FormatException(e.getCause());
     }
     
-    reader.setSource(id);
     reader.setMetadata(meta);
   }
 

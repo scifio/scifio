@@ -170,7 +170,6 @@ public class APNGReader extends SCIFIOBIFormatReader {
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e.getCause());
     }
-    reader.setSource(id);
     reader.setMetadata(meta);
   }
 }
