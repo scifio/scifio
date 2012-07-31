@@ -39,7 +39,7 @@ package loci.formats.in;
 import java.io.IOException;
 
 import ome.scifio.Metadata;
-import ome.scifio.ics.ICSFormat;
+import ome.scifio.apng.APNGFormat;
 import ome.scifio.io.RandomAccessInputStream;
 
 import loci.formats.FormatException;
@@ -70,7 +70,7 @@ public class APNGReader extends SCIFIOBIFormatReader {
     super("Animated PNG", "png");
 
     try {
-      format = new ICSFormat(FormatTools.CONTEXT);
+      format = new APNGFormat(FormatTools.CONTEXT);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();
