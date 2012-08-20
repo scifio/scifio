@@ -41,7 +41,6 @@ import ome.scifio.SCIFIO;
 import ome.scifio.apng.APNGFormat;
 import ome.scifio.discovery.SCIFIOTranslator;
 import ome.scifio.util.FormatTools;
-import ome.scifio.util.SCIFIOMetadataTools;
 import ome.xml.meta.OMEMetadata;
 
 /**
