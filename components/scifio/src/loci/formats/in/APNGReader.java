@@ -40,7 +40,6 @@ import java.io.IOException;
 
 import ome.scifio.Metadata;
 import ome.scifio.apng.APNGFormat;
-import ome.scifio.io.RandomAccessInputStream;
 
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
@@ -81,12 +80,6 @@ public class APNGReader extends SCIFIOBIFormatReader {
   }
 
   // -- IFormatReader API methods --
-
-  /* @see loci.formats.IFormatReader#isThisType(RandomAccessInputStream) */
-  @Deprecated
-  public boolean isThisType(RandomAccessInputStream stream) throws IOException {
-    return checker.isFormat(stream);
-  }
 
   /* @see loci.formats.IFormatReader#get8BitLookupTable() */
   @Deprecated
