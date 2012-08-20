@@ -116,7 +116,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     Hashtable<Integer, Double> pinholes = new Hashtable<Integer, Double>();
     Hashtable<Integer, Integer> wavelengths = new Hashtable<Integer, Integer>();
     
-    FilterMetadata filter = new FilterMetadata(store, true);
+    FilterMetadata filter = new FilterMetadata(store, source.isFiltered());
     filter.createRoot();
     
     CoreMetadata cMeta = new CoreMetadata();
