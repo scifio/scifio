@@ -5,8 +5,9 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
-import net.imglib2.meta.Axes;
-
+import loci.common.Location;
+import loci.common.RandomAccessInputStream;
+import loci.common.adapter.RandomAccessInputStreamAdapter;
 import loci.formats.in.DefaultMetadataOptions;
 import loci.formats.in.MetadataLevel;
 import loci.formats.in.MetadataOptions;
@@ -21,8 +22,7 @@ import ome.scifio.Metadata;
 import ome.scifio.Parser;
 import ome.scifio.Reader;
 import ome.scifio.Translator;
-import ome.scifio.io.Location;
-import ome.scifio.io.RandomAccessInputStream;
+import ome.scifio.io.ByteArrayHandle;
 import ome.xml.model.enums.AcquisitionMode;
 import ome.xml.model.enums.ArcType;
 import ome.xml.model.enums.Binning;
@@ -319,7 +319,8 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   protected byte[] readPlane(RandomAccessInputStream s, int x, int y, int w,
     int h, byte[] buf) throws IOException
   {
-    return reader.readPlane(s, getSeries(), x, y, w, h, buf);
+    return reader.readPlane(AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+        getSeries(), x, y, w, h, buf);
   }
 
   /** Reads a raw plane from disk. */
@@ -328,7 +329,8 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   protected byte[] readPlane(RandomAccessInputStream s, int x, int y, int w,
     int h, int scanlinePad, byte[] buf) throws IOException
   {
-    return reader.readPlane(s, getSeries(), x, y, w, h, buf);
+    return reader.readPlane(AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+        getSeries(), x, y, w, h, buf);
   }
 
   /** Return a properly configured loci.formats.meta.FilterMetadata. */
@@ -412,7 +414,8 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   @Deprecated
   @Override
   public boolean isThisType(RandomAccessInputStream stream) throws IOException {
-    return checker.isFormat(stream);
+    return checker.isFormat(
+        AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(stream));
   }
 
   /* @see IFormatReader#getImageCount() */
