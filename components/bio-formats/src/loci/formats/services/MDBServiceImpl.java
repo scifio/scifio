@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+import ome.scifio.discovery.SCIFIOService;
+
 import loci.common.services.AbstractService;
 import mdbtools.jdbc2.File;
 import mdbtools.libmdb.Catalog;
@@ -50,6 +52,8 @@ import mdbtools.libmdb.mem;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/services/MDBServiceImpl.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/services/MDBServiceImpl.java;hb=HEAD">Gitweb</a></dd></dl>
  */
+@SCIFIOService(interfaceName = "loci.formats.services.MDBService", 
+               implementationName = "loci.formats.services.MDBServiceImpl")
 public class MDBServiceImpl extends AbstractService implements MDBService {
 
   // -- Fields --

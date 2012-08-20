@@ -1,8 +1,8 @@
 /*
  * #%L
- * Legacy layer preserving compatibility between legacy Bio-Formats and SCIFIO.
+ * OME SCIFIO package for reading and converting scientific file formats.
  * %%
- * Copyright (C) 2005 - 2013 Open Microscopy Environment:
+ * Copyright (C) 2005 - 2012 Open Microscopy Environment:
  *   - Board of Regents of the University of Wisconsin-Madison
  *   - Glencoe Software, Inc.
  *   - University of Dundee
@@ -34,15 +34,28 @@
  * #L%
  */
 
-package loci.common.services;
+package ome.scifio.services;
+
 
 /**
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/services/Service.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/services/Service.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/services/AbstractService.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/services/AbstractService.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author callan
  */
-public interface Service extends ome.scifio.services.Service {
+public abstract class AbstractService implements Service {
+
+  /**
+   * Checks a given class dependency at runtime to ensure that a given class
+   * will be available. This method is expected to be called at least once by
+   * all service implementations.
+   * @param klass A class that this service depends upon.
+   */
+  protected void checkClassDependency(Class<? extends Object> klass) {
+    // Just need *something* here to trigger a ClassNotFoundException if the
+    // class isn't on the classpath.
+    klass.getName();
+  }
 
 }

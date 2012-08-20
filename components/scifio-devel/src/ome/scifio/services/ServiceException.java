@@ -1,8 +1,8 @@
 /*
  * #%L
- * Legacy layer preserving compatibility between legacy Bio-Formats and SCIFIO.
+ * OME SCIFIO package for reading and converting scientific file formats.
  * %%
- * Copyright (C) 2005 - 2013 Open Microscopy Environment:
+ * Copyright (C) 2005 - 2012 Open Microscopy Environment:
  *   - Board of Regents of the University of Wisconsin-Madison
  *   - Glencoe Software, Inc.
  *   - University of Dundee
@@ -34,15 +34,48 @@
  * #L%
  */
 
-package loci.common.services;
+package ome.scifio.services;
 
 /**
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/services/Service.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/services/Service.java;hb=HEAD">Gitweb</a></dd></dl>
+ * Exception thrown when there is an error within a given service. That could
+ * not be handled.
  *
- * @author callan
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/services/ServiceException.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/services/ServiceException.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
+ * @author Chris Allan <callan at blackcat dot ca>
  */
-public interface Service extends ome.scifio.services.Service {
+public class ServiceException extends Exception
+{
+  /** Serial for this version. */
+  private static final long serialVersionUID = 7402442944895106504L;
 
+  /**
+   * Default constructor.
+   * @param message Error message.
+   */
+  public ServiceException(String message)
+  {
+    super(message);
+  }
+
+  /**
+   * Default constructor.
+   * @param message Error message. 
+   * @param cause Upstream exception.
+   */
+  public ServiceException(String message, Throwable cause)
+  {
+    super(message, cause);
+  }
+
+  /**
+   * Default constructor.
+   * @param cause Upstream exception.
+   */
+  public ServiceException(Throwable cause)
+  {
+    super(cause);
+  }
 }

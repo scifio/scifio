@@ -51,6 +51,8 @@ import javax.imageio.spi.ServiceRegistry;
 import javax.imageio.stream.ImageOutputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 
+import ome.scifio.discovery.SCIFIOService;
+
 import loci.common.services.AbstractService;
 import loci.common.services.ServiceException;
 import loci.formats.codec.JPEG2000CodecOptions;
@@ -69,6 +71,8 @@ import com.sun.media.imageioimpl.plugins.jpeg2000.J2KImageWriterSpi;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/services/JAIIIOServiceImpl.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/services/JAIIIOServiceImpl.java;hb=HEAD">Gitweb</a></dd></dl>
  */
+@SCIFIOService(interfaceName = "loci.formats.services.JAIIIOService", 
+               implementationName = "loci.formats.services.JAIIIOServiceImpl")
 public class JAIIIOServiceImpl extends AbstractService
   implements JAIIIOService
 {

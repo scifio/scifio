@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import ome.scifio.discovery.SCIFIOService;
+
 import loci.common.Constants;
 import loci.common.Location;
 import loci.common.services.AbstractService;
@@ -53,6 +55,8 @@ import ucar.nc2.Variable;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/services/NetCDFServiceImpl.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/services/NetCDFServiceImpl.java;hb=HEAD">Gitweb</a></dd></dl>
  */
+@SCIFIOService(interfaceName = "loci.formats.services.NetCDFService", 
+               implementationName = "loci.formats.services.NetCDFServiceImpl")
 public class NetCDFServiceImpl extends AbstractService
   implements NetCDFService {
 
