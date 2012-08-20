@@ -76,7 +76,7 @@ public final class MetadataTools {
    * metadata from the given reader.
    */
   public static void populatePixels(MetadataStore store, IFormatReader r) {
-    ome.xml.meta.MetadataTools.populatePixels(store, r);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, r);
   }
 
   /**
@@ -87,7 +87,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane)
   {
-    ome.xml.meta.MetadataTools.populatePixels(store, r, doPlane);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, r, doPlane);
   }
 
   /**
@@ -100,7 +100,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane, boolean doImageName)
   {
-    ome.xml.meta.MetadataTools.populatePixels(store, r, doPlane, doImageName);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, r, doPlane, doImageName);
   }
 
   /**
@@ -117,7 +117,7 @@ public final class MetadataTools {
     String pixelType, int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT,
     int samplesPerPixel)
   {
-    ome.xml.meta.MetadataTools.populateMetadata(store, series, imageName, 
+    ome.xml.meta.OMEXMLMetadataTools.populateMetadata(store, series, imageName, 
       littleEndian, dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, 
       sizeT, samplesPerPixel);
   }
@@ -134,7 +134,7 @@ public final class MetadataTools {
   public static void populateMetadata(MetadataStore store, int series,
     String imageName, loci.formats.CoreMetadata coreMeta)
   {
-    ome.xml.meta.MetadataTools.populateMetadata(store, series, imageName, coreMeta);
+    ome.xml.meta.OMEXMLMetadataTools.populateMetadata(store, series, imageName, coreMeta);
   }
   
   /**
@@ -151,20 +151,20 @@ public final class MetadataTools {
     String pixelType, int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT,
     int samplesPerPixel)
   {
-    ome.xml.meta.MetadataTools.populateMetadata(store, file, series, imageName,
+    ome.xml.meta.OMEXMLMetadataTools.populateMetadata(store, file, series, imageName,
       littleEndian, dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT,
       samplesPerPixel);
   }
 
   public static void populatePixelsOnly(MetadataStore store, IFormatReader r) {
-    ome.xml.meta.MetadataTools.populatePixelsOnly(store, r);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixelsOnly(store, r);
   }
 
   public static void populatePixelsOnly(MetadataStore store, int series,
     boolean littleEndian, String dimensionOrder, String pixelType, int sizeX,
     int sizeY, int sizeZ, int sizeC, int sizeT, int samplesPerPixel)
   {
-    ome.xml.meta.MetadataTools.populatePixelsOnly(store, series, littleEndian,
+    ome.xml.meta.OMEXMLMetadataTools.populatePixelsOnly(store, series, littleEndian,
       dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT, 
       samplesPerPixel);
   }
@@ -175,7 +175,7 @@ public final class MetadataTools {
    * be "Detector:1:0".
    */
   public static String createLSID(String type, int... indices) {
-    return ome.xml.meta.MetadataTools.createLSID(type, indices);
+    return ome.xml.meta.OMEXMLMetadataTools.createLSID(type, indices);
   }
 
   /**
@@ -187,7 +187,7 @@ public final class MetadataTools {
     throws FormatException
   {
     try {
-      ome.xml.meta.MetadataTools.verifyMinimumPopulated(src);
+      ome.xml.meta.OMEXMLMetadataTools.verifyMinimumPopulated(src);
     }
     catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
@@ -203,7 +203,7 @@ public final class MetadataTools {
     throws FormatException
   {
     try {
-      ome.xml.meta.MetadataTools.verifyMinimumPopulated(src, n);
+      ome.xml.meta.OMEXMLMetadataTools.verifyMinimumPopulated(src, n);
     }
     catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
@@ -224,7 +224,7 @@ public final class MetadataTools {
    * @see #setDefaultCreationDate(MetadataStore, String, int)
    */
   public static void setDefaultDateEnabled(boolean enabled) {
-    ome.xml.meta.MetadataTools.setDefaultDateEnabled(enabled);
+    ome.xml.meta.OMEXMLMetadataTools.setDefaultDateEnabled(enabled);
   }
 
   /**
@@ -237,7 +237,7 @@ public final class MetadataTools {
   public static void setDefaultCreationDate(MetadataStore store, String id,
     int series)
   {
-    ome.xml.meta.MetadataTools.setDefaultCreationDate(store, id, series);
+    ome.xml.meta.OMEXMLMetadataTools.setDefaultCreationDate(store, id, series);
   }
 
   /**

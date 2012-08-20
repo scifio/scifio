@@ -68,12 +68,12 @@ import ome.xml.services.OMEXMLService;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/MetadataTools.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/MetadataTools.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class MetadataTools {
+public class OMEXMLMetadataTools {
   
   // -- Constants --
   
   private static final Logger LOGGER =
-    LoggerFactory.getLogger(MetadataTools.class);
+    LoggerFactory.getLogger(OMEXMLMetadataTools.class);
   
   // -- Static fields --
 
