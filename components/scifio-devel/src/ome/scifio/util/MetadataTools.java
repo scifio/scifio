@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package ome.scifio.util;
 
 import java.util.Arrays;
@@ -47,11 +48,7 @@ import ome.scifio.FormatException;
 import ome.scifio.io.RandomAccessOutputStream;
 
 /**
- * A utility class for working with metadata objects,
- * including {@link MetadataStore}, {@link MetadataRetrieve},
- * and OME-XML strings.
- * Most of the methods require the optional {@link loci.formats.ome}
- * package, and optional ome-xml.jar library, to be present at runtime.
+ * A utility class for working with CoreMetadata objects.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/MetadataTools.java">Trac</a>,
@@ -68,7 +65,7 @@ public class MetadataTools {
   
   private MetadataTools() { }
   
-  // -- Utility Methods -- OME-XML -- 
+  // -- Utility Methods -- CoreMetadata -- 
   
   /**
    * Checks whether the given metadata object has the minimum metadata
@@ -120,37 +117,6 @@ public class MetadataTools {
     if (src.getAxisCount(0) == 0) {
       throw new FormatException("Axiscount #" + imageIndex + " is 0");
     }
-  }
-
-  /**
-   * Adjusts the given dimension order as needed so that it contains exactly
-   * one of each of the following characters: 'X', 'Y', 'Z', 'C', 'T'.
-   */
-  public static String makeSaneDimensionOrder(String dimensionOrder) {
-    String order = dimensionOrder.toUpperCase();
-    order = order.replaceAll("[^XYZCT]", "");
-    String[] axes = new String[] {"X", "Y", "C", "Z", "T"};
-    for (String axis : axes) {
-      if (order.indexOf(axis) == -1) order += axis;
-      while (order.indexOf(axis) != order.lastIndexOf(axis)) {
-        order = order.replaceFirst(axis, "");
-      }
-    }
-    return order;
-  }
-  
-  /**
-   * Constructs an LSID, given the object type and indices.
-   * For example, if the arguments are "Detector", 1, and 0, the LSID will
-   * be "Detector:1:0".
-   */
-  public static String createLSID(String type, int... indices) {
-    StringBuffer lsid = new StringBuffer(type);
-    for (int index : indices) {
-      lsid.append(":");
-      lsid.append(index);
-    }
-    return lsid.toString();
   }
   
   // Utility methods -- original metadata --
