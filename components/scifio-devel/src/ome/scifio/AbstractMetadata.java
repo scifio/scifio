@@ -53,6 +53,8 @@ public abstract class AbstractMetadata extends AbstractHasContext
 
   // -- Fields --
   private RandomAccessInputStream source;
+  
+  protected boolean filtered;
 
   // -- HasFormat API Methods --
 
@@ -110,6 +112,11 @@ public abstract class AbstractMetadata extends AbstractHasContext
   /* @see Metadata#getSource() */
   public RandomAccessInputStream getSource() {
     return this.source;
+  }
+  
+  /* @see Metadata#isFiltered() */
+  public boolean isFiltered() {
+    return this.filtered;
   }
 
 }

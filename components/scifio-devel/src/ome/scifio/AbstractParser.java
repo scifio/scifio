@@ -149,6 +149,7 @@ public abstract class AbstractParser<M extends Metadata>
       }
     }
     
+    ((AbstractMetadata)metadata).filtered = filterMetadata;
     return metadata;
   }
 

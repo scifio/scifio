@@ -68,9 +68,17 @@ public interface Metadata extends Serializable, HasFormat, HasContext {
   void setSource(RandomAccessInputStream in);
 
   /**
-   * Returns the source used to generate this Metadat object.
+   * Returns the source used to generate this Metadata object.
    * 
    * @return
    */
   RandomAccessInputStream getSource();
+  
+  /**
+   * Returns whether or not filterMetadata was set when parsing this
+   * Metadata object.
+   * 
+   * @return
+   */
+  boolean isFiltered();
 }
