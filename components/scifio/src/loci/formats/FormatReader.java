@@ -113,6 +113,7 @@ import ome.xml.model.enums.handlers.MicroscopeTypeEnumHandler;
 import ome.xml.model.enums.handlers.NamingConventionEnumHandler;
 import ome.xml.model.enums.handlers.PixelTypeEnumHandler;
 import ome.xml.model.enums.handlers.PulseEnumHandler;
+import ome.xml.meta.OMEXMLMetadataTools;
 
 /**
  * Abstract superclass of all biological file format readers.
@@ -1471,12 +1472,10 @@ public abstract class FormatReader extends FormatHandler
    *  enumeration value is not found.
    */
   protected Correction getCorrection(String value) throws FormatException {
-    CorrectionEnumHandler handler = new CorrectionEnumHandler();
     try {
-      return (Correction) handler.getEnumeration(value);
-    }
-    catch (EnumerationException e) {
-      throw new FormatException("Correction creation failed", e);
+      return OMEXMLMetadataTools.getCorrection(value);
+    } catch (ome.scifio.FormatException e) {
+      throw (FormatException)e;
     }
   }
   /**
@@ -1487,12 +1486,10 @@ public abstract class FormatReader extends FormatHandler
    *  enumeration value is not found.
    */
   protected DetectorType getDetectorType(String value) throws FormatException {
-    DetectorTypeEnumHandler handler = new DetectorTypeEnumHandler();
     try {
-      return (DetectorType) handler.getEnumeration(value);
-    }
-    catch (EnumerationException e) {
-      throw new FormatException("DetectorType creation failed", e);
+      return OMEXMLMetadataTools.getDetectorType(value);
+    } catch (ome.scifio.FormatException e) {
+      throw (FormatException)e;
     }
   }
   /**
@@ -1523,12 +1520,10 @@ public abstract class FormatReader extends FormatHandler
   protected ExperimentType getExperimentType(String value)
     throws FormatException
   {
-    ExperimentTypeEnumHandler handler = new ExperimentTypeEnumHandler();
     try {
-      return (ExperimentType) handler.getEnumeration(value);
-    }
-    catch (EnumerationException e) {
-      throw new FormatException("ExperimentType creation failed", e);
+      return OMEXMLMetadataTools.getExperimentType(value);
+    } catch (ome.scifio.FormatException e) {
+      throw (FormatException)e;
     }
   }
   /**
@@ -1637,12 +1632,10 @@ public abstract class FormatReader extends FormatHandler
    *  enumeration value is not found.
    */
   protected Immersion getImmersion(String value) throws FormatException {
-    ImmersionEnumHandler handler = new ImmersionEnumHandler();
     try {
-      return (Immersion) handler.getEnumeration(value);
-    }
-    catch (EnumerationException e) {
-      throw new FormatException("Immersion creation failed", e);
+      return OMEXMLMetadataTools.getImmersion(value);
+    } catch (ome.scifio.FormatException e) {
+      throw (FormatException)e;
     }
   }
   /**
@@ -1653,12 +1646,10 @@ public abstract class FormatReader extends FormatHandler
    *  enumeration value is not found.
    */
   protected LaserMedium getLaserMedium(String value) throws FormatException {
-    LaserMediumEnumHandler handler = new LaserMediumEnumHandler();
     try {
-      return (LaserMedium) handler.getEnumeration(value);
-    }
-    catch (EnumerationException e) {
-      throw new FormatException("LaserMedium creation failed", e);
+      return OMEXMLMetadataTools.getLaserMedium(value);
+    } catch (ome.scifio.FormatException e) {
+      throw (FormatException)e;
     }
   }
   /**
@@ -1669,12 +1660,10 @@ public abstract class FormatReader extends FormatHandler
    *  enumeration value is not found.
    */
   protected LaserType getLaserType(String value) throws FormatException {
-    LaserTypeEnumHandler handler = new LaserTypeEnumHandler();
     try {
-      return (LaserType) handler.getEnumeration(value);
-    }
-    catch (EnumerationException e) {
-      throw new FormatException("LaserType creation failed", e);
+      return OMEXMLMetadataTools.getLaserType(value);
+    } catch (ome.scifio.FormatException e) {
+      throw (FormatException)e;
     }
   }
   /**

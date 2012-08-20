@@ -51,9 +51,21 @@ import ome.scifio.services.DependencyException;
 import ome.scifio.services.ServiceFactory;
 import ome.scifio.util.FormatTools;
 import ome.xml.model.*;
+import ome.xml.model.enums.Correction;
+import ome.xml.model.enums.DetectorType;
 import ome.xml.model.enums.DimensionOrder;
 import ome.xml.model.enums.EnumerationException;
+import ome.xml.model.enums.ExperimentType;
+import ome.xml.model.enums.Immersion;
+import ome.xml.model.enums.LaserMedium;
+import ome.xml.model.enums.LaserType;
 import ome.xml.model.enums.PixelType;
+import ome.xml.model.enums.handlers.CorrectionEnumHandler;
+import ome.xml.model.enums.handlers.DetectorTypeEnumHandler;
+import ome.xml.model.enums.handlers.ExperimentTypeEnumHandler;
+import ome.xml.model.enums.handlers.ImmersionEnumHandler;
+import ome.xml.model.enums.handlers.LaserMediumEnumHandler;
+import ome.xml.model.enums.handlers.LaserTypeEnumHandler;
 import ome.xml.model.primitives.*;
 import ome.xml.services.OMEXMLService;
 
@@ -176,7 +188,7 @@ public class OMEXMLMetadataTools {
       dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT,
       samplesPerPixel);
   }
-  
+
   /**
    * Populates the given {@link MetadataStore}, for the specified series, using
    * the values from the provided {@link CoreMetadata}.
@@ -196,7 +208,7 @@ public class OMEXMLMetadataTools {
       coreMeta.dimensionOrder, pixelType, coreMeta.sizeX, coreMeta.sizeY,
       coreMeta.sizeZ, coreMeta.sizeC, coreMeta.sizeT, samplesPerPixel);
   }
-  
+
   /**
    * Populates the given {@link MetadataStore}, for the specified series, using
    * the provided values.
@@ -299,105 +311,209 @@ public class OMEXMLMetadataTools {
     long time = System.currentTimeMillis();
     if (file != null && file.exists()) time = file.lastModified();
     store.setImageAcquisitionDate(new Timestamp(DateTools.convertDate(
-        time, DateTools.UNIX)), series);
+      time, DateTools.UNIX)), series);
+  }
+
+  /**
+   *
+   * @throws FormatException if there is a missing metadata field,
+   *   or the metadata object is uninitialized
+   */
+  public static void verifyMinimumPopulated(MetadataRetrieve src)
+    throws FormatException
+    {
+    verifyMinimumPopulated(src, 0);
+    }
+
+  /**
+   *
+   * @throws FormatException if there is a missing metadata field,
+   *   or the metadata object is uninitialized
+   */
+  public static void verifyMinimumPopulated(MetadataRetrieve src, int n)
+    throws FormatException
+    {
+    if (src == null) {
+      throw new FormatException("Metadata object is null; " +
+        "call IFormatWriter.setMetadataRetrieve() first");
+    }
+    if (src instanceof MetadataStore
+      && ((MetadataStore) src).getRoot() == null) {
+      throw new FormatException("Metadata object has null root; " +
+        "call IMetadata.createRoot() first");
+    }
+    if (src.getImageID(n) == null) {
+      throw new FormatException("Image ID #" + n + " is null");
+    }
+    if (src.getPixelsID(n) == null) {
+      throw new FormatException("Pixels ID #" + n + " is null");
+    }
+    for (int i=0; i<src.getChannelCount(n); i++) {
+      if (src.getChannelID(n, i) == null) {
+        throw new FormatException("Channel ID #" + i + " in Image #" + n +
+          " is null");
+      }
+    }
+    if (src.getPixelsBinDataBigEndian(n, 0) == null) {
+      throw new FormatException("BigEndian #" + n + " is null");
+    }
+    if (src.getPixelsDimensionOrder(n) == null) {
+      throw new FormatException("DimensionOrder #" + n + " is null");
+    }
+    if (src.getPixelsType(n) == null) {
+      throw new FormatException("PixelType #" + n + " is null");
+    }
+    if (src.getPixelsSizeC(n) == null) {
+      throw new FormatException("SizeC #" + n + " is null");
+    }
+    if (src.getPixelsSizeT(n) == null) {
+      throw new FormatException("SizeT #" + n + " is null");
+    }
+    if (src.getPixelsSizeX(n) == null) {
+      throw new FormatException("SizeX #" + n + " is null");
+    }
+    if (src.getPixelsSizeY(n) == null) {
+      throw new FormatException("SizeY #" + n + " is null");
+    }
+    if (src.getPixelsSizeZ(n) == null) {
+      throw new FormatException("SizeZ #" + n + " is null");
+    }
+    }
+
+
+  /**
+   * Adjusts the given dimension order as needed so that it contains exactly
+   * one of each of the following characters: 'X', 'Y', 'Z', 'C', 'T'.
+   */
+  public static String makeSaneDimensionOrder(String dimensionOrder) {
+    String order = dimensionOrder.toUpperCase();
+    order = order.replaceAll("[^XYZCT]", "");
+    String[] axes = new String[] {"X", "Y", "C", "Z", "T"};
+    for (String axis : axes) {
+      if (order.indexOf(axis) == -1) order += axis;
+      while (order.indexOf(axis) != order.lastIndexOf(axis)) {
+        order = order.replaceFirst(axis, "");
+      }
+    }
+    return order;
+  }
+
+  /**
+   * Constructs an LSID, given the object type and indices.
+   * For example, if the arguments are "Detector", 1, and 0, the LSID will
+   * be "Detector:1:0".
+   */
+  public static String createLSID(String type, int... indices) {
+    StringBuffer lsid = new StringBuffer(type);
+    for (int index : indices) {
+      lsid.append(":");
+      lsid.append(index);
+    }
+    return lsid.toString();
+  }
+
+
+  /**
+   * Retrieves an {@link ome.xml.model.enums.ExperimentType} enumeration
+   * value for the given String.
+   *
+   * @throws ome.xml.model.enums.EnumerationException if an appropriate
+   *  enumeration value is not found.
+   */
+  public static ExperimentType getExperimentType(String value)
+    throws FormatException
+  {
+    ExperimentTypeEnumHandler handler = new ExperimentTypeEnumHandler();
+    try {
+      return (ExperimentType) handler.getEnumeration(value);
+    }
+    catch (EnumerationException e) {
+      throw new FormatException("ExperimentType creation failed", e);
+    }
+  }
+
+  /**
+   * Retrieves an {@link ome.xml.model.enums.LaserType} enumeration
+   * value for the given String.
+   *
+   * @throws ome.xml.model.enums.EnumerationException if an appropriate
+   *  enumeration value is not found.
+   */
+  public static LaserType getLaserType(String value) throws FormatException {
+    LaserTypeEnumHandler handler = new LaserTypeEnumHandler();
+    try {
+      return (LaserType) handler.getEnumeration(value);
+    }
+    catch (EnumerationException e) {
+      throw new FormatException("LaserType creation failed", e);
+    }
+  }
+
+  /**
+   * Retrieves an {@link ome.xml.model.enums.LaserMedium} enumeration
+   * value for the given String.
+   *
+   * @throws ome.xml.model.enums.EnumerationException if an appropriate
+   *  enumeration value is not found.
+   */
+  public static LaserMedium getLaserMedium(String value) throws FormatException {
+    LaserMediumEnumHandler handler = new LaserMediumEnumHandler();
+    try {
+      return (LaserMedium) handler.getEnumeration(value);
+    }
+    catch (EnumerationException e) {
+      throw new FormatException("LaserMedium creation failed", e);
+    }
   }
   
   /**
-  *
-  * @throws FormatException if there is a missing metadata field,
-  *   or the metadata object is uninitialized
-  */
- public static void verifyMinimumPopulated(MetadataRetrieve src)
-   throws FormatException
- {
-   verifyMinimumPopulated(src, 0);
- }
-
- /**
-  *
-  * @throws FormatException if there is a missing metadata field,
-  *   or the metadata object is uninitialized
-  */
- public static void verifyMinimumPopulated(MetadataRetrieve src, int n)
-   throws FormatException
- {
-   if (src == null) {
-     throw new FormatException("Metadata object is null; " +
-         "call IFormatWriter.setMetadataRetrieve() first");
-   }
-   if (src instanceof MetadataStore
-       && ((MetadataStore) src).getRoot() == null) {
-     throw new FormatException("Metadata object has null root; " +
-       "call IMetadata.createRoot() first");
-   }
-   if (src.getImageID(n) == null) {
-     throw new FormatException("Image ID #" + n + " is null");
-   }
-   if (src.getPixelsID(n) == null) {
-     throw new FormatException("Pixels ID #" + n + " is null");
-   }
-   for (int i=0; i<src.getChannelCount(n); i++) {
-     if (src.getChannelID(n, i) == null) {
-       throw new FormatException("Channel ID #" + i + " in Image #" + n +
-         " is null");
-     }
-   }
-   if (src.getPixelsBinDataBigEndian(n, 0) == null) {
-     throw new FormatException("BigEndian #" + n + " is null");
-   }
-   if (src.getPixelsDimensionOrder(n) == null) {
-     throw new FormatException("DimensionOrder #" + n + " is null");
-   }
-   if (src.getPixelsType(n) == null) {
-     throw new FormatException("PixelType #" + n + " is null");
-   }
-   if (src.getPixelsSizeC(n) == null) {
-     throw new FormatException("SizeC #" + n + " is null");
-   }
-   if (src.getPixelsSizeT(n) == null) {
-     throw new FormatException("SizeT #" + n + " is null");
-   }
-   if (src.getPixelsSizeX(n) == null) {
-     throw new FormatException("SizeX #" + n + " is null");
-   }
-   if (src.getPixelsSizeY(n) == null) {
-     throw new FormatException("SizeY #" + n + " is null");
-   }
-   if (src.getPixelsSizeZ(n) == null) {
-     throw new FormatException("SizeZ #" + n + " is null");
-   }
- }
- 
-
- /**
-  * Adjusts the given dimension order as needed so that it contains exactly
-  * one of each of the following characters: 'X', 'Y', 'Z', 'C', 'T'.
-  */
- public static String makeSaneDimensionOrder(String dimensionOrder) {
-   String order = dimensionOrder.toUpperCase();
-   order = order.replaceAll("[^XYZCT]", "");
-   String[] axes = new String[] {"X", "Y", "C", "Z", "T"};
-   for (String axis : axes) {
-     if (order.indexOf(axis) == -1) order += axis;
-     while (order.indexOf(axis) != order.lastIndexOf(axis)) {
-       order = order.replaceFirst(axis, "");
-     }
-   }
-   return order;
- }
- 
- /**
-  * Constructs an LSID, given the object type and indices.
-  * For example, if the arguments are "Detector", 1, and 0, the LSID will
-  * be "Detector:1:0".
-  */
- public static String createLSID(String type, int... indices) {
-   StringBuffer lsid = new StringBuffer(type);
-   for (int index : indices) {
-     lsid.append(":");
-     lsid.append(index);
-   }
-   return lsid.toString();
- }
+   * Retrieves an {@link ome.xml.model.enums.Immersion} enumeration
+   * value for the given String.
+   *
+   * @throws ome.xml.model.enums.EnumerationException if an appropriate
+   *  enumeration value is not found.
+   */
+  public static Immersion getImmersion(String value) throws FormatException {
+    ImmersionEnumHandler handler = new ImmersionEnumHandler();
+    try {
+      return (Immersion) handler.getEnumeration(value);
+    }
+    catch (EnumerationException e) {
+      throw new FormatException("Immersion creation failed", e);
+    }
+  }
+    
+  /**
+   * Retrieves an {@link ome.xml.model.enums.Correction} enumeration
+   * value for the given String.
+   *
+   * @throws ome.xml.model.enums.EnumerationException if an appropriate
+   *  enumeration value is not found.
+   */
+  public static Correction getCorrection(String value) throws FormatException {
+    CorrectionEnumHandler handler = new CorrectionEnumHandler();
+    try {
+      return (Correction) handler.getEnumeration(value);
+    }
+    catch (EnumerationException e) {
+      throw new FormatException("Correction creation failed", e);
+    }
+  }
   
+  /**
+   * Retrieves an {@link ome.xml.model.enums.DetectorType} enumeration
+   * value for the given String.
+   *
+   * @throws ome.xml.model.enums.EnumerationException if an appropriate
+   *  enumeration value is not found.
+   */
+  public static DetectorType getDetectorType(String value) throws FormatException {
+    DetectorTypeEnumHandler handler = new DetectorTypeEnumHandler();
+    try {
+      return (DetectorType) handler.getEnumeration(value);
+    }
+    catch (EnumerationException e) {
+      throw new FormatException("DetectorType creation failed", e);
+    }
+  }
 }
