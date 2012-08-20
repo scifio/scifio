@@ -717,14 +717,14 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     @Override
     public void setDest(final String id)
       throws FormatException, IOException {
-      if(checkSuffix(id, "ids")) this.metadata.idsId = id;
+      updateMetadataIds(id);
       setDest(new RandomAccessOutputStream(id), 0);
     }
     
     @Override
     public void setDest(final String id, final int imageIndex)
       throws FormatException, IOException {
-      if(checkSuffix(id, "ids")) this.metadata.idsId = id;
+      updateMetadataIds(id);
       setDest(new RandomAccessOutputStream(id), imageIndex);
     }
   
@@ -737,14 +737,18 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     
     // -- Helper methods --
     
+    private void updateMetadataIds(String id) {
+      metadata.idsId = FormatTools.checkSuffix(id, "ids") ? id : makeIdsId(id);
+      metadata.icsId = FormatTools.checkSuffix(id, "ics") ? id : makeIcsId(id);
+    }
+    
     private void initialize(final int imageIndex) throws FormatException,
       IOException {
       String currentId = this.getMetadata().idsId != null ? 
           this.getMetadata().idsId : this.getMetadata().icsId;
       
       if (checkSuffix(this.getMetadata().idsId, "ids")) {
-        String metadataFile = currentId.substring(0, currentId.lastIndexOf("."));
-        metadataFile += ".ics";
+        String metadataFile = makeIcsId(currentId);
         if(out != null) out.close();
         out = new RandomAccessOutputStream(metadataFile);
       }
@@ -898,6 +902,25 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       out.writeBytes("\n");
 
       return sizes;
+    }
+    
+    /* Turns the provided id into a .ics path */
+    private String makeIcsId(String idsId) {
+      return setIdExtension(idsId, ".ics");
+    }
+    
+    /* Turns the provided id into a .ids path */
+    private String makeIdsId(String icsId) {
+      return setIdExtension(icsId, ".ids");
+    }
+    
+    /* Replaces the current extension of the provided id with the
+     * provided extension
+     */
+    private String setIdExtension(String id, String extension) {
+      id = id.substring(0, id.lastIndexOf("."));
+      id += extension;
+      return id;
     }
   }
 
