@@ -76,7 +76,7 @@ public final class MetadataTools {
    * metadata from the given reader.
    */
   public static void populatePixels(MetadataStore store, IFormatReader r) {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, r);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, new SCIFIOReaderAdapter(FormatTools.CONTEXT, r).getCoreMetadata());
   }
 
   /**
@@ -87,7 +87,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, r, doPlane);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, new SCIFIOReaderAdapter(FormatTools.CONTEXT, r).getCoreMetadata(), doPlane);
   }
 
   /**
@@ -100,7 +100,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane, boolean doImageName)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, r, doPlane, doImageName);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, new SCIFIOReaderAdapter(FormatTools.CONTEXT, r).getCoreMetadata(), doPlane, doImageName);
   }
 
   /**

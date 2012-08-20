@@ -37,8 +37,8 @@
 package ome.xml.meta;
 
 import loci.formats.IFormatReader;
-import loci.formats.meta.MetadataRetrieve;
-import loci.formats.meta.MetadataStore;
+
+import net.imglib2.meta.Axes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,8 +97,8 @@ public class OMEXMLMetadataTools {
    * Populates the 'pixels' element of the given metadata store, using core
    * metadata from the given reader.
    */
-  public static void populatePixels(MetadataStore store, IFormatReader r) {
-    populatePixels(store, r, false, true);
+  public static void populatePixels(MetadataStore store, CoreMetadata meta) {
+    populatePixels(store, meta, false, true);
   }
 
   /**
@@ -106,10 +106,10 @@ public class OMEXMLMetadataTools {
    * metadata from the given reader.  If the 'doPlane' flag is set,
    * then the 'plane' elements will be populated as well.
    */
-  public static void populatePixels(MetadataStore store, IFormatReader r,
+  public static void populatePixels(MetadataStore store, CoreMetadata meta,
     boolean doPlane)
   {
-    populatePixels(store, r, doPlane, true);
+    populatePixels(store, meta, doPlane, true);
   }
 
   /**
@@ -119,35 +119,35 @@ public class OMEXMLMetadataTools {
    * If the 'doImageName' flag is set, then the image name will be populated
    * as well.  By default, 'doImageName' is true.
    */
-  public static void populatePixels(MetadataStore store, IFormatReader r,
+  public static void populatePixels(MetadataStore store, CoreMetadata meta,
     boolean doPlane, boolean doImageName)
   {
-    if (store == null || r == null) return;
-    int oldSeries = r.getSeries();
-    for (int i=0; i<r.getSeriesCount(); i++) {
-      r.setSeries(i);
+    if (store == null || meta == null) return;
+    for (int i=0; i<meta.getImageCount(); i++) {
 
       String imageName = null;
       if (doImageName) {
-        Location f = new Location(r.getCurrentFile());
+        Location f = new Location(meta.getSource().getFileName());
         imageName = f.getName();
       }
-      String pixelType = FormatTools.getPixelTypeString(r.getPixelType());
-
-      populateMetadata(store, r.getCurrentFile(), i, imageName,
-        r.isLittleEndian(), r.getDimensionOrder(), pixelType, r.getSizeX(),
-        r.getSizeY(), r.getSizeZ(), r.getSizeC(), r.getSizeT(),
-        r.getRGBChannelCount());
+      String pixelType = FormatTools.getPixelTypeString(meta.getPixelType(i));
+      String order = FormatTools.findDimensionOrder(meta, i);
+      
+      int xSize = meta.getAxisLength(i, Axes.X);
+      int ySize = meta.getAxisLength(i, Axes.Y);
+      int zSize = meta.getAxisLength(i, Axes.Z);
+      int cSize = meta.getAxisLength(i, Axes.CHANNEL);
+      int tSize = meta.getAxisLength(i, Axes.TIME);
+      
+      populateMetadata(store, meta.getSource().getFileName(), i, imageName,
+        meta.isLittleEndian(i), order, pixelType, xSize,
+        ySize, zSize, cSize, tSize,
+        meta.getRGBChannelCount(i));
 
       try {
         OMEXMLService service =
           new ServiceFactory().getInstance(OMEXMLService.class);
         if (service.isOMEXMLRoot(store.getRoot())) {
-          MetadataStore baseStore = r.getMetadataStore();
-          if (service.isOMEXMLMetadata(baseStore)) {
-            ((OMEXMLMetadataImpl) baseStore).resolveReferences();
-          }
-
           OME root = (OME) store.getRoot();
           BinData bin = root.getImage(i).getPixels().getBinData(0);
           bin.setLength(new NonNegativeLong(0L));
@@ -159,15 +159,15 @@ public class OMEXMLMetadataTools {
       }
 
       if (doPlane) {
-        for (int q=0; q<r.getImageCount(); q++) {
-          int[] coords = r.getZCTCoords(q);
+        for (int q=0; q<meta.getPlaneCount(i); q++) {
+          int[] coords = FormatTools.getZCTCoords(order, zSize, cSize, tSize,
+            meta.getPlaneCount(i), q);
           store.setPlaneTheZ(new NonNegativeInteger(coords[0]), i, q);
           store.setPlaneTheC(new NonNegativeInteger(coords[1]), i, q);
           store.setPlaneTheT(new NonNegativeInteger(coords[2]), i, q);
         }
       }
     }
-    r.setSeries(oldSeries);
   }
 
   /**
