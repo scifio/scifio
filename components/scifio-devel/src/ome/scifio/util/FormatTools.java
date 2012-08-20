@@ -37,9 +37,12 @@
 package ome.scifio.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Vector;
 
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import ome.scifio.CoreMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Reader;
@@ -356,9 +359,15 @@ public class FormatTools {
 
   public static String findDimensionOrder(CoreMetadata core, int imageIndex) {
     String order = "";
+   
+    //TODO currently this list is restricted to the traiditional 5D axes compatible with Bio-Formats
+    ArrayList<AxisType> validAxes =
+      new ArrayList<AxisType>(Arrays.asList(new AxisType[]{Axes.X, Axes.Y, Axes.Z, Axes.TIME, Axes.CHANNEL}));
 
     for (int i = 0; i < core.getAxisCount(imageIndex); i++) {
-      order += core.getAxisType(imageIndex, i).toString().charAt(0);
+      AxisType type = core.getAxisType(imageIndex, i);
+      if(validAxes.contains(type))
+        order += core.getAxisType(imageIndex, i).toString().charAt(0);
     }
     return order;
   }
