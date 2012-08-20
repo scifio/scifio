@@ -125,5 +125,14 @@ public abstract class AbstractMetadata extends AbstractHasContext
   public MetadataOptions getMetadataOptions() {
     return this.metadataOptions;
   }
+  
+  // -- Methods for preserving information between translation --
+  protected void setFiltered(boolean filtered) {
+    this.filtered = filtered;
+  }
+  
+  protected void setMetadataOptions(MetadataOptions opts) {
+    this.metadataOptions = opts;
+  }
 
 }

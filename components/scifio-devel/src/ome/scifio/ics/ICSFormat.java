@@ -1484,8 +1484,10 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     // -- Translator API Methods --
   
+    @Override
     public void translate(final CoreMetadata source, final Metadata destination)
     {
+      super.translate(source, destination);
       // note that the destination fields will preserve their default values
       // only the keyValPairs will be modified
   
@@ -1606,8 +1608,10 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
 
     // -- Translator API Methods --
 
+    @Override
     public void translate(final Metadata source, final CoreMetadata destination)
     {
+      super.translate(source, destination);
       final CoreImageMetadata coreMeta = new CoreImageMetadata();
       destination.add(coreMeta);
       final int index = destination.getImageCount() - 1;

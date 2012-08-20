@@ -62,8 +62,9 @@ public abstract class OMETranslator<M extends AbstractMetadata>
 
   // -- Translator API Methods --
 
+  @Override
   public void translate(final M source, final OMEMetadata destination) {
-
+    super.translate(source, destination);
   }
 
 }

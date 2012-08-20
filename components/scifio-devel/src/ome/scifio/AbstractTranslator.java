@@ -49,7 +49,18 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
   public AbstractTranslator(final SCIFIO ctx) {
     super(ctx);
   }
+  
+  // -- Translator API --
 
+  public void translate(M source, N dest) {
+    dest.setSource(source.getSource());
+    
+    if(dest.getClass().isAssignableFrom(AbstractMetadata.class)) {
+      ((AbstractMetadata)dest).setFiltered(source.isFiltered());
+      ((AbstractMetadata)dest).setMetadataOptions(source.getMetadataOptions());
+    }
+  }
+  
   // -- Constants --
 
   protected static final Logger LOGGER =
