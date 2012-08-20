@@ -713,7 +713,22 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       }
       pixels = null;
     }
+    
+    @Override
+    public void setDest(final String id)
+      throws FormatException, IOException {
+      if(checkSuffix(id, "ids")) this.metadata.idsId = id;
+      setDest(new RandomAccessOutputStream(id), 0);
+    }
+    
+    @Override
+    public void setDest(final String id, final int imageIndex)
+      throws FormatException, IOException {
+      if(checkSuffix(id, "ids")) this.metadata.idsId = id;
+      setDest(new RandomAccessOutputStream(id), imageIndex);
+    }
   
+    @Override
     public void setDest(final RandomAccessOutputStream out, final int imageIndex)
       throws FormatException, IOException {
       super.setDest(out, imageIndex);
@@ -746,7 +761,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         out.writeBytes("layout\tparameters\t6\n");
 
         CoreMetadata meta = cMeta;
-        SCIFIOMetadataTools.verifyMinimumPopulated(meta, pixels);
+        //SCIFIOMetadataTools.verifyMinimumPopulated(meta, pixels);
 
         int pixelType = meta.getPixelType(imageIndex);
 
