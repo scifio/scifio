@@ -39,13 +39,14 @@ package loci.formats;
 import java.util.Hashtable;
 import java.util.Map;
 
+import loci.common.services.DependencyException;
+import loci.common.services.ServiceException;
+import loci.common.services.ServiceFactory;
 import loci.formats.meta.IMetadata;
 import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
 import loci.formats.services.OMEXMLService;
-import ome.scifio.services.DependencyException;
-import ome.scifio.services.ServiceException;
-import ome.scifio.services.ServiceFactory;
+import loci.legacy.adapter.AdapterTools;
 
 
 /**
@@ -76,7 +77,7 @@ public final class MetadataTools {
    * metadata from the given reader.
    */
   public static void populatePixels(MetadataStore store, IFormatReader r) {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, new SCIFIOReaderAdapter(FormatTools.CONTEXT, r).getCoreMetadata());
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getCoreMetadata());
   }
 
   /**
@@ -87,7 +88,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, new SCIFIOReaderAdapter(FormatTools.CONTEXT, r).getCoreMetadata(), doPlane);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getCoreMetadata(), doPlane);
   }
 
   /**
@@ -100,7 +101,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane, boolean doImageName)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, new SCIFIOReaderAdapter(FormatTools.CONTEXT, r).getCoreMetadata(), doPlane, doImageName);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getCoreMetadata(), doPlane, doImageName);
   }
 
   /**
@@ -134,7 +135,16 @@ public final class MetadataTools {
   public static void populateMetadata(MetadataStore store, int series,
     String imageName, loci.formats.CoreMetadata coreMeta)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populateMetadata(store, series, imageName, coreMeta);
+    ome.scifio.CoreMetadata cMeta = new ome.scifio.CoreMetadata(FormatTools.CONTEXT);
+    
+    // Fake an ome.scifio.CoreMetadata array, with the converted coreMetadata at index series
+    for(int i=0; i<series; i++)
+      cMeta.add(null);
+    
+    cMeta.add(coreMeta.convert());
+    
+    ome.xml.meta.OMEXMLMetadataTools.populateMetadata((ome.xml.meta.MetadataStore)store, 
+      series, imageName, cMeta);
   }
   
   /**
@@ -157,7 +167,8 @@ public final class MetadataTools {
   }
 
   public static void populatePixelsOnly(MetadataStore store, IFormatReader r) {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixelsOnly(store, r);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixelsOnly(store,
+        AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r));
   }
 
   public static void populatePixelsOnly(MetadataStore store, int series,
