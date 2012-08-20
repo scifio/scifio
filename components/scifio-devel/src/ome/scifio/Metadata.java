@@ -81,4 +81,12 @@ public interface Metadata extends Serializable, HasFormat, HasContext {
    * @return
    */
   boolean isFiltered();
+  
+  /**
+   * Returns the MetadataOptions object that was used to parse this
+   * Metadata.
+   * 
+   * @return
+   */
+  MetadataOptions getMetadataOptions();
 }
