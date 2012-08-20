@@ -54,16 +54,16 @@ import ome.scifio.io.RandomAccessOutputStream;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/MetadataTools.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/MetadataTools.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class MetadataTools {
+public class SCIFIOMetadataTools {
   
   // -- Constants --
   
   private static final Logger LOGGER =
-    LoggerFactory.getLogger(MetadataTools.class);
+    LoggerFactory.getLogger(SCIFIOMetadataTools.class);
   
   // -- Constructor --
   
-  private MetadataTools() { }
+  private SCIFIOMetadataTools() { }
   
   // -- Utility Methods -- CoreMetadata -- 
   

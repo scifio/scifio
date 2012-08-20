@@ -49,7 +49,7 @@ import ome.scifio.codec.CodecOptions;
 import ome.scifio.common.DataTools;
 import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.util.FormatTools;
-import ome.scifio.util.MetadataTools;
+import ome.scifio.util.SCIFIOMetadataTools;
 
 /**
  * Abstract superclass of all SCIFIO Writer components.
@@ -381,7 +381,7 @@ public abstract class AbstractWriter<M extends Metadata>
   private void initialize(final int imageIndex)
     throws FormatException, IOException
   {
-    MetadataTools.verifyMinimumPopulated(cMeta, out);
+    SCIFIOMetadataTools.verifyMinimumPopulated(cMeta, out);
     initialized = new boolean[cMeta.getImageCount()][];
     for (int i = 0; i < cMeta.getImageCount(); i++) {
       initialized[i] = new boolean[getPlaneCount(i)];
@@ -417,7 +417,7 @@ public abstract class AbstractWriter<M extends Metadata>
     final byte[] buf, final int x, final int y, final int w, final int h)
     throws FormatException
   {
-    MetadataTools.verifyMinimumPopulated(cMeta, out, imageIndex, planeIndex);
+    SCIFIOMetadataTools.verifyMinimumPopulated(cMeta, out, imageIndex, planeIndex);
 
     if (buf == null) throw new FormatException("Buffer cannot be null.");
     final int z = cMeta.getAxisLength(imageIndex, Axes.Z);

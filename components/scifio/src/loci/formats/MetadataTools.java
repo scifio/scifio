@@ -245,14 +245,14 @@ public final class MetadataTools {
    * one of each of the following characters: 'X', 'Y', 'Z', 'C', 'T'.
    */
   public static String makeSaneDimensionOrder(String dimensionOrder) {
-    return ome.xml.meta.MetadataTools.makeSaneDimensionOrder(dimensionOrder);
+    return ome.xml.meta.OMEXMLMetadataTools.makeSaneDimensionOrder(dimensionOrder);
   }
 
   // -- Utility methods - original metadata --
 
   /** Gets a sorted list of keys from the given hashtable. */
   public static String[] keys(Hashtable<String, Object> meta) {
-    return ome.scifio.util.MetadataTools.keys(meta);
+    return ome.scifio.util.SCIFIOMetadataTools.keys(meta);
   }
 
   /**
@@ -262,7 +262,7 @@ public final class MetadataTools {
   public static void merge(Map<String, Object> src, Map<String, Object> dest,
     String prefix)
   {
-    ome.scifio.util.MetadataTools.merge(src, dest, prefix);
+    ome.scifio.util.SCIFIOMetadataTools.merge(src, dest, prefix);
   }
 
   // -- Deprecated methods --
