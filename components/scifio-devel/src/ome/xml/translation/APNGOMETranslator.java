@@ -106,8 +106,8 @@ public class APNGOMETranslator extends OMETranslator<APNGFormat.Metadata> {
     final int samplesPerPixel = 1; // = sizeC / effectiveSizeC... just sizeC for APNG? #planes / Z * T
     final String imageName = "";
 
-    loci.formats.MetadataTools.populateMetadata(
-      (loci.formats.meta.IMetadata)destination.getRoot(), series, imageName, littleEndian, dimOrder,
+    ome.xml.meta.OMEXMLMetadataTools.populateMetadata(
+      (ome.xml.meta.IMetadata)destination.getRoot(), series, imageName, littleEndian, dimOrder,
       pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
 
     if (source.getFctl() != null && source.getFctl().size() > 0)

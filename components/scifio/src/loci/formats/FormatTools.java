@@ -276,7 +276,7 @@ public final class FormatTools {
   public static int[] getZCTCoords(IFormatReader reader, int index) {
 //    new OldToNewAdapter(CONTEXT, reader);
     return ome.scifio.util.FormatTools.getZCTCoords(new SCIFIOReaderAdapter(FormatTools.CONTEXT, reader),
-      reader.getSeries(), index);
+      index);
   }
 
   /**

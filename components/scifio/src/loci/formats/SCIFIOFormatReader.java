@@ -847,7 +847,7 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   @Deprecated
   @Override
   public int[] getZCTCoords(int index) {
-    return ome.scifio.util.FormatTools.getZCTCoords(reader, getSeries(), index);
+    return ome.scifio.util.FormatTools.getZCTCoords(reader, index);
   }
 
   /* @see IFormatReader#getMetadataValue(String) */

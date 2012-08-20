@@ -33,15 +33,13 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package ome.scifio.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Vector;
 
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 import ome.scifio.CoreMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Reader;
@@ -50,13 +48,6 @@ import ome.scifio.common.ReflectException;
 import ome.scifio.common.ReflectedUniverse;
 import ome.scifio.io.RandomAccessInputStream;
 
-/**
- * A utility class for format reader and writer implementations.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FormatTools.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FormatTools.java;hb=HEAD">Gitweb</a></dd></dl>
- */
 public class FormatTools {
 
   // -- Constants - Thumbnail dimensions --
@@ -365,15 +356,9 @@ public class FormatTools {
 
   public static String findDimensionOrder(CoreMetadata core, int imageIndex) {
     String order = "";
-   
-    //TODO currently this list is restricted to the traiditional 5D axes compatible with Bio-Formats
-    ArrayList<AxisType> validAxes =
-      new ArrayList<AxisType>(Arrays.asList(new AxisType[]{Axes.X, Axes.Y, Axes.Z, Axes.TIME, Axes.CHANNEL}));
 
     for (int i = 0; i < core.getAxisCount(imageIndex); i++) {
-      AxisType type = core.getAxisType(imageIndex, i);
-      if(validAxes.contains(type))
-        order += core.getAxisType(imageIndex, i).toString().charAt(0);
+      order += core.getAxisType(imageIndex, i).toString().charAt(0);
     }
     return order;
   }
@@ -382,7 +367,7 @@ public class FormatTools {
    * Gets the Z, C and T coordinates corresponding
    * to the given rasterized index value.
    */
-  public static int[] getZCTCoords(Reader reader, int imageIndex, int index) {
+  public static int[] getZCTCoords(Reader reader, int imageIndex) {
     CoreMetadata core = reader.getCoreMetadata();
     int zSize = core.getAxisLength(imageIndex, Axes.Z);
     int cSize = core.getEffectiveSizeC(imageIndex);
@@ -390,7 +375,7 @@ public class FormatTools {
     int num = core.getPlaneCount(imageIndex);
 
     return getZCTCoords(
-      findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, num, index);
+      findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, num, imageIndex);
   }
   
   /**
@@ -400,12 +385,12 @@ public class FormatTools {
    * @param zSize Total number of focal planes.
    * @param cSize Total number of channels.
    * @param tSize Total number of time points.
-   * @param num Total number of image planes (zSize * cSize * tSize),
+   * @param numPlanes Total number of image planes (zSize * cSize * tSize),
    *   specified as a consistency check.
-   * @param index 1D (rasterized) index to convert to ZCT coordinate triple.
+   * @param imageIndex 1D (rasterized) index to convert to ZCT coordinate triple.
    */
   public static int[] getZCTCoords(String order, int zSize, int cSize,
-    int tSize, int num, int index)
+    int tSize, int numPlanes, int imageIndex)
   {
     // check DimensionOrder
 
@@ -435,29 +420,29 @@ public class FormatTools {
     }
 
     // check image count
-    if (num <= 0) {
-      throw new IllegalArgumentException("Invalid image count: " + num);
+    if (numPlanes <= 0) {
+      throw new IllegalArgumentException("Invalid image count: " + numPlanes);
     }
-    if (num != zSize * cSize * tSize) {
+    if (numPlanes != zSize * cSize * tSize) {
       // if this happens, there is probably a bug in metadata population --
       // either one of the ZCT sizes, or the total number of images --
       // or else the input file is invalid
       throw new IllegalArgumentException("ZCT size vs image count mismatch " +
         "(sizeZ=" + zSize + ", sizeC=" + cSize + ", sizeT=" + tSize +
-        ", total=" + num + ")");
+        ", total=" + numPlanes + ")");
     }
-    if (index < 0 || index >= num) {
-      throw new IllegalArgumentException("Invalid image index: " + index + "/" +
-        num);
+    if (imageIndex < 0 || imageIndex >= numPlanes) {
+      throw new IllegalArgumentException("Invalid image index: " + imageIndex + "/" +
+        numPlanes);
     }
 
     // assign rasterization order
     int len0 = iz == 0 ? zSize : (ic == 0 ? cSize : tSize);
     int len1 = iz == 1 ? zSize : (ic == 1 ? cSize : tSize);
     //int len2 = iz == 2 ? sizeZ : (ic == 2 ? sizeC : sizeT);
-    int v0 = index % len0;
-    int v1 = index / len0 % len1;
-    int v2 = index / len0 / len1;
+    int v0 = imageIndex % len0;
+    int v1 = imageIndex / len0 % len1;
+    int v2 = imageIndex / len0 / len1;
     int z = iz == 0 ? v0 : (iz == 1 ? v1 : v2);
     int c = ic == 0 ? v0 : (ic == 1 ? v1 : v2);
     int t = it == 0 ? v0 : (it == 1 ? v1 : v2);
