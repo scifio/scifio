@@ -36,8 +36,6 @@
 
 package ome.xml.meta;
 
-import loci.formats.IFormatReader;
-
 import net.imglib2.meta.Axes;
 
 import org.slf4j.Logger;
@@ -45,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import ome.scifio.CoreMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.Reader;
 import ome.scifio.common.DateTools;
 import ome.scifio.io.Location;
 import ome.scifio.services.DependencyException;
@@ -171,7 +170,7 @@ public class OMEXMLMetadataTools {
   }
 
   /**
-   * Populates the given {@link MetadataStore}, for the specified series, using
+   * Populates the given {@link MetadataStore}, for the specified imageIndex, using
    * the provided values.
    * <p>
    * After calling this method, the metadata store will be sufficiently
@@ -179,18 +178,18 @@ public class OMEXMLMetadataTools {
    * {@link MetadataRetrieve}).
    * </p>
    */
-  public static void populateMetadata(MetadataStore store, int series,
+  public static void populateMetadata(MetadataStore store, int imageIndex,
     String imageName, boolean littleEndian, String dimensionOrder,
     String pixelType, int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT,
     int samplesPerPixel)
   {
-    populateMetadata(store, null, series, imageName, littleEndian,
+    populateMetadata(store, null, imageIndex, imageName, littleEndian,
       dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT,
       samplesPerPixel);
   }
 
   /**
-   * Populates the given {@link MetadataStore}, for the specified series, using
+   * Populates the given {@link MetadataStore}, for the specified imageIndex, using
    * the values from the provided {@link CoreMetadata}.
    * <p>
    * After calling this method, the metadata store will be sufficiently
@@ -198,19 +197,28 @@ public class OMEXMLMetadataTools {
    * {@link MetadataRetrieve}).
    * </p>
    */
-  public static void populateMetadata(MetadataStore store, int series,
-    String imageName, loci.formats.CoreMetadata coreMeta)
+  public static void populateMetadata(MetadataStore store, int imageIndex,
+    String imageName, CoreMetadata coreMeta)
   {
-    final String pixelType = FormatTools.getPixelTypeString(coreMeta.pixelType);
-    final int effSizeC = coreMeta.imageCount / coreMeta.sizeZ / coreMeta.sizeT;
-    final int samplesPerPixel = coreMeta.sizeC / effSizeC;
-    populateMetadata(store, null, series, imageName, coreMeta.littleEndian,
-      coreMeta.dimensionOrder, pixelType, coreMeta.sizeX, coreMeta.sizeY,
-      coreMeta.sizeZ, coreMeta.sizeC, coreMeta.sizeT, samplesPerPixel);
+    
+    int sizeX = coreMeta.getAxisLength(imageIndex, Axes.X);
+    int sizeY = coreMeta.getAxisLength(imageIndex, Axes.Y);
+    int sizeZ = coreMeta.getAxisLength(imageIndex, Axes.Z);
+    int sizeC = coreMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+    int sizeT = coreMeta.getAxisLength(imageIndex, Axes.TIME);
+    
+    final String pixelType = 
+      FormatTools.getPixelTypeString(coreMeta.getPixelType(imageIndex));
+    final int effSizeC = coreMeta.getImageCount() / sizeZ / sizeT;
+    final int samplesPerPixel = sizeC / effSizeC;
+    populateMetadata(store, null, imageIndex, imageName, 
+      coreMeta.isLittleEndian(imageIndex), 
+      FormatTools.findDimensionOrder(coreMeta, imageIndex), pixelType,
+      sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
   }
 
   /**
-   * Populates the given {@link MetadataStore}, for the specified series, using
+   * Populates the given {@link MetadataStore}, for the specified imageIndex, using
    * the provided values.
    * <p>
    * After calling this method, the metadata store will be sufficiently
@@ -219,61 +227,61 @@ public class OMEXMLMetadataTools {
    * </p>
    */
   public static void populateMetadata(MetadataStore store, String file,
-    int series, String imageName, boolean littleEndian, String dimensionOrder,
+    int imageIndex, String imageName, boolean littleEndian, String dimensionOrder,
     String pixelType, int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT,
     int samplesPerPixel)
   {
-    store.setImageID(createLSID("Image", series), series);
-    setDefaultCreationDate(store, file, series);
-    if (imageName != null) store.setImageName(imageName, series);
-    populatePixelsOnly(store, series, littleEndian, dimensionOrder, pixelType,
+    store.setImageID(createLSID("Image", imageIndex), imageIndex);
+    setDefaultCreationDate(store, file, imageIndex);
+    if (imageName != null) store.setImageName(imageName, imageIndex);
+    populatePixelsOnly(store, imageIndex, littleEndian, dimensionOrder, pixelType,
       sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
   }
 
-  public static void populatePixelsOnly(MetadataStore store, IFormatReader r) {
-    int oldSeries = r.getSeries();
-    for (int i=0; i<r.getSeriesCount(); i++) {
-      r.setSeries(i);
+  public static void populatePixelsOnly(MetadataStore store, Reader r) {
+    CoreMetadata cMeta = r.getCoreMetadata();
 
-      String pixelType = FormatTools.getPixelTypeString(r.getPixelType());
+    for (int imageIndex=0; imageIndex<r.getImageCount(); imageIndex++) {
+      String pixelType = FormatTools.getPixelTypeString(cMeta.getPixelType(imageIndex));
 
-      populatePixelsOnly(store, i, r.isLittleEndian(), r.getDimensionOrder(),
-        pixelType, r.getSizeX(), r.getSizeY(), r.getSizeZ(), r.getSizeC(),
-        r.getSizeT(), r.getRGBChannelCount());
+      populatePixelsOnly(store, imageIndex, cMeta.isLittleEndian(imageIndex), 
+        FormatTools.findDimensionOrder(cMeta, imageIndex), pixelType, 
+        cMeta.getAxisLength(imageIndex, Axes.X), cMeta.getAxisLength(imageIndex, Axes.Y),
+        cMeta.getAxisLength(imageIndex, Axes.Z), cMeta.getAxisLength(imageIndex, Axes.CHANNEL),
+        cMeta.getAxisLength(imageIndex, Axes.TIME), cMeta.getRGBChannelCount(imageIndex));
     }
-    r.setSeries(oldSeries);
   }
 
-  public static void populatePixelsOnly(MetadataStore store, int series,
+  public static void populatePixelsOnly(MetadataStore store, int imageIndex,
     boolean littleEndian, String dimensionOrder, String pixelType, int sizeX,
     int sizeY, int sizeZ, int sizeC, int sizeT, int samplesPerPixel)
   {
-    store.setPixelsID(createLSID("Pixels", series), series);
-    store.setPixelsBinDataBigEndian(!littleEndian, series, 0);
+    store.setPixelsID(createLSID("Pixels", imageIndex), imageIndex);
+    store.setPixelsBinDataBigEndian(!littleEndian, imageIndex, 0);
     try {
       store.setPixelsDimensionOrder(
-        DimensionOrder.fromString(dimensionOrder), series);
+        DimensionOrder.fromString(dimensionOrder), imageIndex);
     }
     catch (EnumerationException e) {
       LOGGER.warn("Invalid dimension order: " + dimensionOrder, e);
     }
     try {
-      store.setPixelsType(PixelType.fromString(pixelType), series);
+      store.setPixelsType(PixelType.fromString(pixelType), imageIndex);
     }
     catch (EnumerationException e) {
       LOGGER.warn("Invalid pixel type: " + pixelType, e);
     }
-    store.setPixelsSizeX(new PositiveInteger(sizeX), series);
-    store.setPixelsSizeY(new PositiveInteger(sizeY), series);
-    store.setPixelsSizeZ(new PositiveInteger(sizeZ), series);
-    store.setPixelsSizeC(new PositiveInteger(sizeC), series);
-    store.setPixelsSizeT(new PositiveInteger(sizeT), series);
+    store.setPixelsSizeX(new PositiveInteger(sizeX), imageIndex);
+    store.setPixelsSizeY(new PositiveInteger(sizeY), imageIndex);
+    store.setPixelsSizeZ(new PositiveInteger(sizeZ), imageIndex);
+    store.setPixelsSizeC(new PositiveInteger(sizeC), imageIndex);
+    store.setPixelsSizeT(new PositiveInteger(sizeT), imageIndex);
     int effSizeC = sizeC / samplesPerPixel;
     for (int i=0; i<effSizeC; i++) {
-      store.setChannelID(createLSID("Channel", series, i),
-        series, i);
+      store.setChannelID(createLSID("Channel", imageIndex, i),
+        imageIndex, i);
       store.setChannelSamplesPerPixel(new PositiveInteger(samplesPerPixel),
-        series, i);
+        imageIndex, i);
     }
   }
 
@@ -302,7 +310,7 @@ public class OMEXMLMetadataTools {
    * @see #setDefaultDateEnabled(boolean)
    */
   public static void setDefaultCreationDate(MetadataStore store, String id,
-    int series)
+    int imageIndex)
   {
     if (!defaultDateEnabled) {
       return;
@@ -311,7 +319,7 @@ public class OMEXMLMetadataTools {
     long time = System.currentTimeMillis();
     if (file != null && file.exists()) time = file.lastModified();
     store.setImageAcquisitionDate(new Timestamp(DateTools.convertDate(
-      time, DateTools.UNIX)), series);
+      time, DateTools.UNIX)), imageIndex);
   }
 
   /**
