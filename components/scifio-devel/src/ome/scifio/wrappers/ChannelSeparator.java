@@ -33,12 +33,20 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package ome.scifio.wrappers;
 
-package loci.formats;
-
+import java.io.File;
 import java.io.IOException;
 
-import loci.common.DataTools;
+import net.imglib2.meta.Axes;
+import ome.scifio.CoreMetadata;
+import ome.scifio.FormatException;
+import ome.scifio.Metadata;
+import ome.scifio.Reader;
+import ome.scifio.common.DataTools;
+import ome.scifio.io.RandomAccessInputStream;
+import ome.scifio.util.FormatTools;
+import ome.scifio.util.ImageTools;
 
 /**
  * Logic to automatically separate the channels in a file.
@@ -47,38 +55,39 @@ import loci.common.DataTools;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ChannelSeparator.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/ChannelSeparator.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class ChannelSeparator extends ReaderWrapper {
+public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
 
   // -- Utility methods --
 
   /** Converts the given reader into a ChannelSeparator, wrapping if needed. */
-  public static ChannelSeparator makeChannelSeparator(IFormatReader r) {
+  public static ChannelSeparator makeChannelSeparator(Reader r) {
     if (r instanceof ChannelSeparator) return (ChannelSeparator) r;
     return new ChannelSeparator(r);
   }
 
   // -- Fields --
 
-  /** Last image opened. */
-  private byte[] lastImage;
+  //TODO remove state..
+  /** Last plane opened. */
+  private byte[] lastPlane;
 
-  /** Index of last image opened. */
+  /** Index of last plane opened. */
+  private int lastPlaneIndex = -1;
+
+  /** Index of last plane opened. */
   private int lastImageIndex = -1;
 
-  /** Series of last image opened. */
-  private int lastImageSeries = -1;
+  /** X index of last plane opened. */
+  private int lastPlaneX = -1;
 
-  /** X index of last image opened. */
-  private int lastImageX = -1;
+  /** Y index of last plane opened. */
+  private int lastPlaneY = -1;
 
-  /** Y index of last image opened. */
-  private int lastImageY = -1;
+  /** Width of last plane opened. */
+  private int lastPlaneWidth = -1;
 
-  /** Width of last image opened. */
-  private int lastImageWidth = -1;
-
-  /** Height of last image opened. */
-  private int lastImageHeight = -1;
+  /** Height of last plane opened. */
+  private int lastPlaneHeight = -1;
 
   // -- Constructors --
 
@@ -86,8 +95,8 @@ public class ChannelSeparator extends ReaderWrapper {
   public ChannelSeparator() { super(); }
 
   /** Constructs a ChannelSeparator with the given reader. */
-  public ChannelSeparator(IFormatReader r) { super(r); }
-
+  public ChannelSeparator(Reader<M> r) { super(r); }
+  
   // -- ChannelSeparator API methods --
 
   /**
@@ -95,35 +104,29 @@ public class ChannelSeparator extends ReaderWrapper {
    * given image number.  For instance, if the original dataset was a single
    * RGB image and the given image number is 2, the return value will be 0.
    *
-   * @param no is an image number greater than or equal to 0 and less than
-   *   getImageCount()
-   * @return the corresponding image number in the original (unseparated) data.
+   * @param planeIndex is a plane number greater than or equal to 0 and less than
+   *   getPlaneCount()
+   * @return the corresponding plane number in the original (unseparated) data.
    */
-  public int getOriginalIndex(int no) {
-    int imageCount = getImageCount();
-    int originalCount = reader.getImageCount();
+  public int getOriginalIndex(int imageIndex, int planeIndex) {
+    int planeCount = getPlaneCount(imageIndex);
+    int originalCount = coreMeta().getPlaneCount(imageIndex);
 
-    if (imageCount == originalCount) return no;
-    int[] coords = getZCTCoords(no);
-    coords[1] /= reader.getRGBChannelCount();
-    return reader.getIndex(coords[0], coords[1], coords[2]);
+    if (planeCount == originalCount) return planeIndex;
+    int[] coords = getZCTCoords(planeIndex);
+    coords[1] /= coreMeta().getRGBChannelCount(imageIndex);
+    return FormatTools.getIndex(this, imageIndex, coords[0], coords[1], coords[2]);
   }
-
-  // -- IFormatReader API methods --
-
-  /* @see IFormatReader#getImageCount() */
-  public int getImageCount() {
+  
+  /**
+   * 
+   * @param imageIndex
+   * @return
+   */
+  public String getDimensionOrder(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return (reader.isRGB() && !reader.isIndexed()) ?
-      reader.getRGBChannelCount() * reader.getImageCount() :
-      reader.getImageCount();
-  }
-
-  /* @see IFormatReader#getDimensionOrder() */
-  public String getDimensionOrder() {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    String order = super.getDimensionOrder();
-    if (reader.isRGB() && !reader.isIndexed()) {
+    String order = FormatTools.findDimensionOrder(getReader(), imageIndex);
+    if (coreMeta().isRGB(imageIndex) && !coreMeta().isIndexed(imageIndex)) {
       String newOrder = "XYC";
       if (order.indexOf("Z") > order.indexOf("T")) newOrder += "TZ";
       else newOrder += "ZT";
@@ -131,51 +134,67 @@ public class ChannelSeparator extends ReaderWrapper {
     }
     return order;
   }
-
-  /* @see IFormatReader#isRGB() */
-  public boolean isRGB() {
+  
+  /**
+   * 
+   * @return
+   */
+  public boolean isRGB(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return isIndexed() && !isFalseColor() && getSizeC() > 1;
+    return coreMeta().isIndexed(imageIndex) && !coreMeta().isFalseColor(imageIndex)
+      && coreMeta().getAxisLength(imageIndex, Axes.CHANNEL) > 1;
+  }
+  
+  // -- Reader API methods --
+
+  /* @see Reader#getImageCount(int) */
+  public int getPlaneCount(int imageIndex) {
+    FormatTools.assertId(getCurrentFile(), true, 2);
+    return (coreMeta().isRGB(imageIndex) && !coreMeta().isIndexed(imageIndex)) ?
+      coreMeta().getRGBChannelCount(imageIndex) * coreMeta().getImageCount() :
+        coreMeta().getImageCount();
   }
 
-  /* @see IFormatReader#openBytes(int) */
-  public byte[] openBytes(int no) throws FormatException, IOException {
-    return openBytes(no, 0, 0, getSizeX(), getSizeY());
+  /* @see Reader#openBytes(int, int) */
+  public byte[] openBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
+    return openBytes(imageIndex, planeIndex, 0, 0, coreMeta().getAxisLength(imageIndex, Axes.X),
+      coreMeta().getAxisLength(imageIndex, Axes.Y));
   }
 
-  /* @see IFormatReader#openBytes(int, byte[]) */
-  public byte[] openBytes(int no, byte[] buf)
+  /* @see Reader#openBytes(int, int, byte[]) */
+  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
     throws FormatException, IOException
   {
-    return openBytes(no, buf, 0, 0, getSizeX(), getSizeY());
+    return openBytes(imageIndex, planeIndex, buf, 0, 0, coreMeta().getAxisLength(imageIndex, Axes.X),
+      coreMeta().getAxisLength(imageIndex, Axes.Y));
   }
 
-  /* @see IFormatReader#openBytes(int, int, int, int, int) */
-  public byte[] openBytes(int no, int x, int y, int w, int h)
+  /* @see Reader#openBytes(int, int, int, int, int, int) */
+  public byte[] openBytes(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
   {
     byte[] buf =
-      DataTools.allocate(w, h, FormatTools.getBytesPerPixel(getPixelType()));
-    return openBytes(no, buf, x, y, w, h);
+      DataTools.allocate(w, h, FormatTools.getBytesPerPixel(coreMeta().getPixelType(imageIndex)));
+    return openBytes(imageIndex, planeIndex, buf, x, y, w, h);
   }
 
-  /* @see IFormatReader#openBytes(int, byte[], int, int, int, int) */
-  public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
+  /* @see Reader#openBytes(int, byte[], int, int, int, int) */
+  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x, int y, int w, int h)
     throws FormatException, IOException
   {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    FormatTools.checkPlaneNumber(this, no);
+    FormatTools.checkPlaneNumber(this, imageIndex, planeIndex);
 
-    if (reader.isRGB() && !reader.isIndexed()) {
-      int c = getSizeC() / reader.getEffectiveSizeC();
-      int source = getOriginalIndex(no);
-      int channel = no % c;
-      int series = getSeries();
-      int bpp = FormatTools.getBytesPerPixel(getPixelType());
+    if (coreMeta().isRGB(imageIndex) && !coreMeta().isIndexed(imageIndex)) {
+      int c = coreMeta().getAxisLength(imageIndex, Axes.CHANNEL) / coreMeta().getEffectiveSizeC(imageIndex);
+      int source = getOriginalIndex(imageIndex, planeIndex);
+      int channel = planeIndex % c;
+      int bpp = FormatTools.getBytesPerPixel(coreMeta().getPixelType(imageIndex));
 
-      if (source != lastImageIndex || series != lastImageSeries ||
-        x != lastImageX || y != lastImageY || w != lastImageWidth ||
-        h != lastImageHeight)
+      //TODO not clear if this should be planeIndex or imageIndex.. it was series originally.. but not sure why?
+      if (source != lastPlaneIndex || planeIndex != lastImageIndex ||
+        x != lastPlaneX || y != lastPlaneY || w != lastPlaneWidth ||
+        h != lastPlaneHeight)
       {
         int strips = 1;
 
@@ -194,22 +213,22 @@ public class ChannelSeparator extends ReaderWrapper {
         int lastStripHeight = stripHeight + (h - (stripHeight * strips));
         byte[] strip = strips == 1 ? buf : new byte[stripHeight * w * bpp];
         for (int i=0; i<strips; i++) {
-          lastImage = reader.openBytes(source, x, y + i * stripHeight, w,
+          lastPlane = getReader().openBytes(imageIndex, source, x, y + i * stripHeight, w,
             i == strips - 1 ? lastStripHeight : stripHeight);
-          lastImageIndex = source;
-          lastImageSeries = series;
-          lastImageX = x;
-          lastImageY = y + i * stripHeight;
-          lastImageWidth = w;
-          lastImageHeight = i == strips - 1 ? lastStripHeight : stripHeight;
+          lastPlaneIndex = source;
+          lastImageIndex = imageIndex;
+          lastPlaneX = x;
+          lastPlaneY = y + i * stripHeight;
+          lastPlaneWidth = w;
+          lastPlaneHeight = i == strips - 1 ? lastStripHeight : stripHeight;
 
           if (strips != 1 && lastStripHeight != stripHeight && i == strips - 1)
           {
             strip = new byte[lastStripHeight * w * bpp];
           }
 
-          ImageTools.splitChannels(lastImage, strip, channel, c, bpp,
-            false, isInterleaved(), strips == 1 ? w * h * bpp : strip.length);
+          ImageTools.splitChannels(lastPlane, strip, channel, c, bpp,
+            false, coreMeta().isInterleaved(imageIndex), strips == 1 ? w * h * bpp : strip.length);
           if (strips != 1) {
             System.arraycopy(strip, 0, buf, i * stripHeight * w * bpp,
               strip.length);
@@ -217,70 +236,77 @@ public class ChannelSeparator extends ReaderWrapper {
         }
       }
       else {
-        ImageTools.splitChannels(lastImage, buf, channel, c, bpp,
-          false, isInterleaved(), w * h * bpp);
+        ImageTools.splitChannels(lastPlane, buf, channel, c, bpp,
+          false, coreMeta().isInterleaved(imageIndex), w * h * bpp);
       }
 
       return buf;
     }
-    return reader.openBytes(no, buf, x, y, w, h);
+    return getReader().openBytes(imageIndex, planeIndex, buf, x, y, w, h);
   }
 
-  /* @see loci.formats.IFormatReader#openThumbBytes(int) */
-  public byte[] openThumbBytes(int no) throws FormatException, IOException {
+  /* @see Reader#openThumbBytes(int) */
+  public byte[] openThumbBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
     FormatTools.assertId(getCurrentFile(), true, 2);
 
-    int source = getOriginalIndex(no);
-    byte[] thumb = reader.openThumbBytes(source);
+    int source = getOriginalIndex(imageIndex, planeIndex);
+    byte[] thumb = getReader().openThumbBytes(imageIndex, planeIndex);
 
-    int c = getSizeC() / reader.getEffectiveSizeC();
-    int channel = no % c;
-    int bpp = FormatTools.getBytesPerPixel(getPixelType());
+    int c = coreMeta().getAxisLength(imageIndex, Axes.CHANNEL) /
+      coreMeta().getEffectiveSizeC(imageIndex);
+    int channel = planeIndex % c;
+    int bpp = FormatTools.getBytesPerPixel(coreMeta().getPixelType(imageIndex));
 
     return ImageTools.splitChannels(thumb, channel, c, bpp, false, false);
   }
 
-  /* @see IFormatReader#close(boolean) */
+  /* @see Reader#close(boolean) */
   public void close(boolean fileOnly) throws IOException {
     super.close(fileOnly);
     if (!fileOnly) {
-      lastImage = null;
+      lastPlane = null;
+      lastPlaneIndex = -1;
       lastImageIndex = -1;
-      lastImageSeries = -1;
-      lastImageX = -1;
-      lastImageY = -1;
-      lastImageWidth = -1;
-      lastImageHeight = -1;
+      lastPlaneX = -1;
+      lastPlaneY = -1;
+      lastPlaneWidth = -1;
+      lastPlaneHeight = -1;
     }
   }
-
-  public int getIndex(int z, int c, int t) {
-    return FormatTools.getIndex(this, z, c, t);
-  }
-
+  
+  /* @see Reader#getZCTCoords(int) */
   public int[] getZCTCoords(int index) {
     return FormatTools.getZCTCoords(this, index);
   }
 
-  // -- IFormatHandler API methods --
-
-  /* @see IFormatHandler#getNativeDataType() */
-  public Class<?> getNativeDataType() {
-    return byte[].class;
+  /* @see Reader#setSource(String) */
+  public void setSource(String id) throws IOException {
+    setSource(new RandomAccessInputStream(id));
   }
-
-  /* @see IFormatHandler#setId(String) */
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
-
+  
+  /* @see Reader#setSource(File) */
+  public void setSource(File file) throws IOException {
+    setSource(new RandomAccessInputStream(file.getAbsolutePath()));
+  }
+  
+  /* @see Reader#setSource(RandomAccessInputStream) */
+  public void setSource(RandomAccessInputStream stream) throws IOException {
+    super.setSource(stream);
+    
     // clear last image cache
-    lastImage = null;
+    lastPlane = null;
+    lastPlaneIndex = -1;
     lastImageIndex = -1;
-    lastImageSeries = -1;
-    lastImageX = -1;
-    lastImageY = -1;
-    lastImageWidth = -1;
-    lastImageHeight = -1;
+    lastPlaneX = -1;
+    lastPlaneY = -1;
+    lastPlaneWidth = -1;
+    lastPlaneHeight = -1;
+  }
+  
+  // -- Helper Methods --
+  
+  private CoreMetadata coreMeta() {
+    return getReader().getCoreMetadata();
   }
 
 }
