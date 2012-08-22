@@ -360,4 +360,10 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
     return wrapperCopy;
   }
   
+  // -- Helper Methods --
+  
+  public CoreMetadata coreMeta() {
+    return getReader().getCoreMetadata();
+  }
+  
 }

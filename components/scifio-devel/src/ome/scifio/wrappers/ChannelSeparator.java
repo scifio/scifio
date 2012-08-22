@@ -302,11 +302,4 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
     lastPlaneWidth = -1;
     lastPlaneHeight = -1;
   }
-  
-  // -- Helper Methods --
-  
-  private CoreMetadata coreMeta() {
-    return getReader().getCoreMetadata();
-  }
-
 }
