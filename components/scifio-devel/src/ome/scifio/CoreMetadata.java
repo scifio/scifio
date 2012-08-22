@@ -93,7 +93,7 @@ public class CoreMetadata extends AbstractMetadata {
   }
 
   public Hashtable<String, Object> getDatasetMetadata() {
-    return this.datasetMeta;
+    return datasetMeta;
   }
 
   public Hashtable<String, Object> getImageMetadata(final int imageIndex) {
@@ -211,11 +211,11 @@ public class CoreMetadata extends AbstractMetadata {
   }
 
   public AxisType getAxisType(final int imageIndex, final int axisIndex) {
-    return imageMeta.get(imageIndex).axisTypes[axisIndex];
+    return imageMeta.get(imageIndex).getAxisTypes()[axisIndex];
   }
 
   public int getAxisLength(final int imageIndex, final int index) {
-    return imageMeta.get(imageIndex).axisLengths[index];
+    return imageMeta.get(imageIndex).getAxisLengths()[index];
   }
 
   public int getAxisIndex(final int imageIndex, final AxisType type) {
@@ -226,7 +226,7 @@ public class CoreMetadata extends AbstractMetadata {
   }
 
   public void addAxis(final int imageIndex, final AxisType type) {
-    this.addAxis(imageIndex, type, 0);
+    addAxis(imageIndex, type, 0);
   }
 
   public void addAxis(final int imageIndex, final AxisType type, final int value)
@@ -273,7 +273,7 @@ public class CoreMetadata extends AbstractMetadata {
   public void set8BitLookupTable(final int imageIndex, final byte[][] lut)
     throws FormatException, IOException
   {
-    this.imageMeta.get(imageIndex).setLut(lut);
+    imageMeta.get(imageIndex).setLut(lut);
   }
 
   public void set16BitLookupTable(final int imageIndex, final short[][] lut)
@@ -283,77 +283,85 @@ public class CoreMetadata extends AbstractMetadata {
   }
 
   public void setThumbSizeX(final int imageIndex, final int thumbX) {
-    this.imageMeta.get(imageIndex).setThumbSizeX(thumbX);
+    imageMeta.get(imageIndex).setThumbSizeX(thumbX);
   }
 
   public void setThumbSizeY(final int imageIndex, final int thumbY) {
-    this.imageMeta.get(imageIndex).setThumbSizeY(thumbY);
+    imageMeta.get(imageIndex).setThumbSizeY(thumbY);
   }
 
   public void setPixelType(final int imageIndex, final int type) {
-    this.imageMeta.get(imageIndex).setPixelType(type);
+    imageMeta.get(imageIndex).setPixelType(type);
   }
 
   public void setBitsPerPixel(final int imageIndex, final int bpp) {
-    this.imageMeta.get(imageIndex).setBitsPerPixel(bpp);
+    imageMeta.get(imageIndex).setBitsPerPixel(bpp);
   }
 
   public void setChannelDimLengths(final int imageIndex, final int[] cLengths) {
-    this.imageMeta.get(imageIndex).setcLengths(cLengths);
+    imageMeta.get(imageIndex).setcLengths(cLengths);
   }
 
   public void setChannelDimTypes(final int imageIndex, final String[] cTypes) {
-    this.imageMeta.get(imageIndex).setcTypes(cTypes);
+    imageMeta.get(imageIndex).setcTypes(cTypes);
   }
 
   public void setOrderCertain(final int imageIndex, final boolean orderCertain)
   {
-    this.imageMeta.get(imageIndex).setOrderCertain(orderCertain);
+    imageMeta.get(imageIndex).setOrderCertain(orderCertain);
   }
 
   public void setRGB(final int imageIndex, final boolean rgb) {
-    this.imageMeta.get(imageIndex).setRgb(rgb);
+    imageMeta.get(imageIndex).setRgb(rgb);
   }
 
   public void setLittleEndian(final int imageIndex, final boolean littleEndian)
   {
-    this.imageMeta.get(imageIndex).setLittleEndian(littleEndian);
+    imageMeta.get(imageIndex).setLittleEndian(littleEndian);
   }
 
   public void setInterleaved(final int imageIndex, final boolean interleaved) {
-    this.imageMeta.get(imageIndex).setInterleaved(interleaved);
+    imageMeta.get(imageIndex).setInterleaved(interleaved);
   }
 
   public void setIndexed(final int imageIndex, final boolean indexed) {
-    this.imageMeta.get(imageIndex).setIndexed(indexed);
+    imageMeta.get(imageIndex).setIndexed(indexed);
   }
 
   public void setFalseColor(final int imageIndex, final boolean falseC) {
-    this.imageMeta.get(imageIndex).setFalseColor(falseC);
+    imageMeta.get(imageIndex).setFalseColor(falseC);
   }
 
   public void setMetadataComplete(final int imageIndex,
     final boolean metadataComplete)
   {
-    this.imageMeta.get(imageIndex).setMetadataComplete(metadataComplete);
+    imageMeta.get(imageIndex).setMetadataComplete(metadataComplete);
   }
 
   public void setImageMetadata(final int imageIndex,
     final Hashtable<String, Object> meta)
   {
-    this.imageMeta.get(imageIndex).setImageMetadata(meta);
+    imageMeta.get(imageIndex).setImageMetadata(meta);
   }
 
   public void setThumbnailImage(final int imageIndex, final boolean thumbnail) {
-    this.imageMeta.get(imageIndex).setThumbnail(thumbnail);
+    imageMeta.get(imageIndex).setThumbnail(thumbnail);
   }
 
   public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
-    this.imageMeta.get(imageIndex).setAxisTypes(axisTypes);
+    imageMeta.get(imageIndex).setAxisTypes(axisTypes);
+  }
+  
+  public void setAxisType(final int imageIndex, final int axisIndex, final AxisType axis) {
+    imageMeta.get(imageIndex).setAxisType(axisIndex, axis);
   }
 
   public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
-    this.imageMeta.get(imageIndex).setAxisLengths(axisLengths);
+    imageMeta.get(imageIndex).setAxisLengths(axisLengths);
+  }
+  
+  public void setAxisLength(final int imageIndex, final AxisType axis, final int length) {
+    imageMeta.get(imageIndex).setAxisLength(axis, length);
   }
 
   // -- Helper Methods --
