@@ -46,13 +46,27 @@ import net.imglib2.meta.AxisType;
 import ome.scifio.CoreMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Reader;
+import ome.scifio.SCIFIO;
 import ome.scifio.Writer;
 import ome.scifio.common.ReflectException;
 import ome.scifio.common.ReflectedUniverse;
 import ome.scifio.io.RandomAccessInputStream;
 
+/**
+ * A collection of constants and utility methods applicable for all
+ * cycles of image processing within SCIFIO.
+ * 
+ * Also provides a default context (SCIFIO object) 
+ * 
+ * @author Mark Hiner
+ *
+ */
 public class FormatTools {
 
+  // -- Constants -- context
+  
+  public static final SCIFIO CONTEXT = createContext();
+  
   // -- Constants - Thumbnail dimensions --
 
   /** Default height and width for thumbnails. */
@@ -1100,5 +1114,18 @@ public class FormatTools {
 
     long[] values = {min, max};
     return values;
+  }
+
+  // -- Helper methods --
+
+  private static SCIFIO createContext() {
+    try {
+      return new SCIFIO();
+    }
+    catch (ome.scifio.FormatException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace(); // CHECK
+      return null;
+    }
   }
 }

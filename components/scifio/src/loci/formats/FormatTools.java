@@ -62,7 +62,7 @@ public final class FormatTools {
 
   // -- Constants -- context
   
-  public static final SCIFIO CONTEXT = createContext();
+  public static final SCIFIO CONTEXT = ome.scifio.util.FormatTools.CONTEXT;
 
   // -- Constants - pixel types --
 
@@ -748,18 +748,4 @@ public final class FormatTools {
   public static long[] defaultMinMax(int pixelType) {
     return ome.scifio.util.FormatTools.defaultMinMax(pixelType);
   }
-
-  // -- Helper methods --
-
-  private static SCIFIO createContext() {
-    try {
-      return new SCIFIO();
-    }
-    catch (ome.scifio.FormatException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace(); // CHECK
-      return null;
-    }
-  }
-
 }
