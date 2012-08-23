@@ -367,10 +367,26 @@ public class FormatTools {
     return v0 + v1 * len0 + v2 * len0 * len1;
   }
 
+  /**
+   * Returns the dimension order for the provided reader.
+   * Currently limited to 5D orders.
+   * 
+   * @param r
+   * @param imageIndex
+   * @return
+   */
   public static String findDimensionOrder(Reader r, int imageIndex) {
     return findDimensionOrder(r.getCoreMetadata(), imageIndex);
   }
 
+  /**
+   * Returns the dimension order for the provided CoreMetadata object.
+   * Currently limited to 5D orders.
+   * 
+   * @param core
+   * @param imageIndex
+   * @return
+   */
   public static String findDimensionOrder(CoreMetadata core, int imageIndex) {
     String order = "";
    
@@ -384,6 +400,31 @@ public class FormatTools {
         order += core.getAxisType(imageIndex, i).toString().charAt(0);
     }
     return order;
+  }
+  
+  /**
+   * Rearranges the ordering of the provided CoreMetadata object, based on the
+   * ording of the provided AxisTypes.
+   * 
+   * @param core
+   * @param imageIndex
+   * @param order
+   */
+  public static void setDimensionOrder(CoreMetadata core, int imageIndex, AxisType... order) {
+    int[] axisLengths = new int[core.getAxisCount(imageIndex)];
+    
+    int i = 0;
+    
+    for(AxisType t : order) {
+      int index = core.getAxisIndex(imageIndex, t);
+      if(index != -1) {
+        axisLengths[i] = core.getAxisLength(imageIndex, t);
+        i++;
+      }
+    }
+    
+    core.setAxisLengths(imageIndex, axisLengths);
+    core.setAxisTypes(imageIndex, order);
   }
 
   /**
