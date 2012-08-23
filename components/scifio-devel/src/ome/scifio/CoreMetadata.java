@@ -38,6 +38,7 @@ package ome.scifio;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -233,6 +234,16 @@ public class CoreMetadata extends AbstractMetadata {
       if (imageMeta.get(imageIndex).getAxisTypes()[i] == type) return i;
     }
     return -1; // throw exception?
+  }
+  
+  public AxisType[] getAxes(int imageIndex) {
+    AxisType[] axes = imageMeta.get(imageIndex).getAxisTypes();
+    return Arrays.copyOf(axes, axes.length);
+  }
+  
+  public int[] getAxesLengths(int imageIndex) {
+    int[] lengths = imageMeta.get(imageIndex).getAxisLengths();
+    return Arrays.copyOf(lengths, lengths.length);
   }
 
   public void addAxis(final int imageIndex, final AxisType type) {
