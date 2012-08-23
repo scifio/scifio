@@ -45,7 +45,6 @@ import java.util.List;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-
 import ome.scifio.util.FormatTools;
 
 /**
@@ -79,6 +78,17 @@ public class CoreMetadata extends AbstractMetadata {
     super(ctx);
     datasetMeta = new Hashtable<String, Object>();
     imageMeta = new ArrayList<CoreImageMetadata>();
+  }
+  
+  public CoreMetadata(final CoreMetadata copy, final SCIFIO ctx) {
+    super(ctx);
+    
+    datasetMeta = (Hashtable<String, Object>) copy.datasetMeta.clone();
+    imageMeta = new ArrayList<CoreImageMetadata>();
+    
+    for (CoreImageMetadata core : copy.imageMeta) {
+      imageMeta.add(new CoreImageMetadata(core));
+    }
   }
 
   // -- Getters --

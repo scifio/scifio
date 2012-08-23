@@ -154,6 +154,29 @@ public class CoreImageMetadata {
   public CoreImageMetadata() {
     imageMetadata = new Hashtable<String, Object>();
   }
+  
+  public CoreImageMetadata(CoreImageMetadata copy) {
+    imageMetadata = (Hashtable<String, Object>) copy.imageMetadata.clone();
+    
+    this.axisLengths = copy.axisLengths.clone();
+    this.axisTypes = copy.axisTypes.clone();
+    this.bitsPerPixel = copy.bitsPerPixel;
+    this.cLengths = copy.cLengths.clone();
+    this.cTypes = copy.cTypes.clone();
+    this.falseColor = copy.falseColor;
+    this.indexed = copy.indexed;
+    this.interleaved = copy.interleaved;
+    this.littleEndian = copy.littleEndian;
+    this.lut = copy.lut.clone();
+    this.metadataComplete = copy.metadataComplete;
+    this.orderCertain = copy.orderCertain;
+    this.pixelType = copy.pixelType;
+    this.planeCount = copy.planeCount;
+    this.rgb = copy.rgb;
+    this.thumbnail = copy.thumbnail;
+    this.thumbSizeX = copy.thumbSizeX;
+    this.thumbSizeY = copy.thumbSizeY;
+  }
 
   // -- Setters -- 
 
