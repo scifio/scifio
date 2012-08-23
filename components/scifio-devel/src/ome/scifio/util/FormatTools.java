@@ -388,16 +388,20 @@ public class FormatTools {
    * @return
    */
   public static String findDimensionOrder(CoreMetadata core, int imageIndex) {
+    return findDimensionOrder(core.getAxes(imageIndex));
+  }
+  
+  public static String findDimensionOrder(AxisType[] axes) {
     String order = "";
-   
+    
     //TODO currently this list is restricted to the traiditional 5D axes compatible with Bio-Formats
     ArrayList<AxisType> validAxes =
       new ArrayList<AxisType>(Arrays.asList(new AxisType[]{Axes.X, Axes.Y, Axes.Z, Axes.TIME, Axes.CHANNEL}));
 
-    for (int i = 0; i < core.getAxisCount(imageIndex); i++) {
-      AxisType type = core.getAxisType(imageIndex, i);
+    for (int i = 0; i < axes.length; i++) {
+      AxisType type = axes[i];
       if(validAxes.contains(type))
-        order += core.getAxisType(imageIndex, i).toString().charAt(0);
+        order += axes[i].toString().charAt(0);
     }
     return order;
   }
