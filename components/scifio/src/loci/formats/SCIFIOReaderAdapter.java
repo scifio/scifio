@@ -260,11 +260,11 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
   }
 
   public int getPlaneCount(int imageIndex) {
-    return (reader.getSizeC() * reader.getSizeT() * reader.getSizeZ());
+    return reader.getImageCount();
   }
 
   public int getImageCount() {
-    return reader.getImageCount();
+    return reader.getSeriesCount();
   }
 
   public IFormatReader getReader() {
