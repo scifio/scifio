@@ -93,6 +93,11 @@ public abstract class AbstractChecker<M extends Metadata>
   // -- Checker API Methods --
 
   /* @see Checker#isFormat(String name, boolean open) */
+  public boolean isFormat(final String name) {
+    return isFormat(name, true);
+  }
+  
+  /* @see Checker#isFormat(String name, boolean open) */
   public boolean isFormat(final String name, final boolean open) {
     // if file extension ID is insufficient and we can't open the file, give up
     if (!suffixSufficient && !open) return false;

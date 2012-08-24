@@ -61,6 +61,11 @@ public interface Checker<M extends Metadata> extends HasContext, HasFormat {
    *   access is not allowed.
    */
   boolean isFormat(String name, boolean open);
+  
+  /**
+   * As isFormat(String, boolean) with a default open == true.
+   */
+  boolean isFormat(String name);
 
   /** Checks if the given block is a valid header for this file format. */
   boolean isFormat(byte[] block);
