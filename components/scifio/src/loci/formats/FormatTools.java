@@ -276,7 +276,7 @@ public final class FormatTools {
   public static int[] getZCTCoords(IFormatReader reader, int index) {
 //    new OldToNewAdapter(CONTEXT, reader);
     return ome.scifio.util.FormatTools.getZCTCoords(new SCIFIOReaderAdapter(FormatTools.CONTEXT, reader),
-      index);
+      reader.getSeries(), index);
   }
 
   /**
@@ -294,7 +294,7 @@ public final class FormatTools {
   public static int[] getZCTCoords(String order,
     int zSize, int cSize, int tSize, int num, int index)
   {
-    return ome.scifio.util.FormatTools.getZCTCoords(order, zSize, cSize, tSize, num, index);
+    return ome.scifio.util.FormatTools.getZCTCoords(order, zSize, cSize, tSize, num, 0, index);
   }
 
   /**
@@ -335,7 +335,7 @@ public final class FormatTools {
     int zSize, int cSize, int tSize, int num, int newIndex)
   {
     return ome.scifio.util.FormatTools.getReorderedIndex(origOrder, newOrder, 
-      zSize, cSize, tSize, num, newIndex);
+      zSize, cSize, tSize, num, 0, newIndex);
   }
 
   /**

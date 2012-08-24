@@ -284,9 +284,9 @@ public class FormatTools {
     int zSize = reader.getCoreMetadata().getAxisLength(imageIndex, Axes.Z);
     int cSize = reader.getCoreMetadata().getEffectiveSizeC(imageIndex);
     int tSize = reader.getCoreMetadata().getAxisLength(imageIndex, Axes.TIME);
-    int num = reader.getCoreMetadata().getPlaneCount(imageIndex);
+    int numPlanes = reader.getCoreMetadata().getPlaneCount(imageIndex);
     return getIndex(
-      findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, num, z, c, t);
+      findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, numPlanes, z, c, t);
   }
   
   /**
@@ -297,14 +297,14 @@ public class FormatTools {
    * @param zSize Total number of focal planes.
    * @param cSize Total number of channels.
    * @param tSize Total number of time points.
-   * @param num Total number of image planes (zSize * cSize * tSize),
+   * @param numPlanes Total number of image planes (zSize * cSize * tSize),
    *   specified as a consistency check.
    * @param z Z coordinate of ZCT coordinate triple to convert to 1D index.
    * @param c C coordinate of ZCT coordinate triple to convert to 1D index.
    * @param t T coordinate of ZCT coordinate triple to convert to 1D index.
    */
   public static int getIndex(String order, int zSize, int cSize, int tSize,
-    int num, int z, int c, int t)
+    int numPlanes, int z, int c, int t)
   {
     // check DimensionOrder
     if (order == null) {
@@ -345,16 +345,16 @@ public class FormatTools {
     }
 
     // check image count
-    if (num <= 0) {
-      throw new IllegalArgumentException("Invalid image count: " + num);
+    if (numPlanes <= 0) {
+      throw new IllegalArgumentException("Invalid image count: " + numPlanes);
     }
-    if (num != zSize * cSize * tSize) {
+    if (numPlanes != zSize * cSize * tSize) {
       // if this happens, there is probably a bug in metadata population --
       // either one of the ZCT sizes, or the total number of images --
       // or else the input file is invalid
       throw new IllegalArgumentException("ZCT size vs image count mismatch " +
         "(sizeZ=" + zSize + ", sizeC=" + cSize + ", sizeT=" + tSize +
-        ", total=" + num + ")");
+        ", total=" + numPlanes + ")");
     }
 
     // assign rasterization order
@@ -463,15 +463,15 @@ public class FormatTools {
    * Gets the Z, C and T coordinates corresponding
    * to the given rasterized index value.
    */
-  public static int[] getZCTCoords(Reader reader, int imageIndex) {
+  public static int[] getZCTCoords(Reader reader, int imageIndex, int planeIndex) {
     CoreMetadata core = reader.getCoreMetadata();
     int zSize = core.getAxisLength(imageIndex, Axes.Z);
     int cSize = core.getEffectiveSizeC(imageIndex);
     int tSize = core.getAxisLength(imageIndex, Axes.TIME);
-    int num = core.getPlaneCount(imageIndex);
+    int numPlanes = core.getPlaneCount(imageIndex);
 
     return getZCTCoords(
-      findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, num, imageIndex);
+      findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, numPlanes, imageIndex, planeIndex);
   }
   
   /**
@@ -486,7 +486,7 @@ public class FormatTools {
    * @param imageIndex 1D (rasterized) index to convert to ZCT coordinate triple.
    */
   public static int[] getZCTCoords(String order, int zSize, int cSize,
-    int tSize, int numPlanes, int imageIndex)
+    int tSize, int numPlanes, int imageIndex, int planeIndex)
   {
     // check DimensionOrder
 
@@ -527,8 +527,8 @@ public class FormatTools {
         "(sizeZ=" + zSize + ", sizeC=" + cSize + ", sizeT=" + tSize +
         ", total=" + numPlanes + ")");
     }
-    if (imageIndex < 0 || imageIndex >= numPlanes) {
-      throw new IllegalArgumentException("Invalid image index: " + imageIndex + "/" +
+    if (planeIndex < 0 || planeIndex >= numPlanes) {
+      throw new IllegalArgumentException("Invalid plane index: " + planeIndex + "/" +
         numPlanes);
     }
 
@@ -536,9 +536,9 @@ public class FormatTools {
     int len0 = iz == 0 ? zSize : (ic == 0 ? cSize : tSize);
     int len1 = iz == 1 ? zSize : (ic == 1 ? cSize : tSize);
     //int len2 = iz == 2 ? sizeZ : (ic == 2 ? sizeC : sizeT);
-    int v0 = imageIndex % len0;
-    int v1 = imageIndex / len0 % len1;
-    int v2 = imageIndex / len0 / len1;
+    int v0 = planeIndex % len0;
+    int v1 = planeIndex / len0 % len1;
+    int v2 = planeIndex / len0 / len1;
     int z = iz == 0 ? v0 : (iz == 1 ? v1 : v2);
     int c = ic == 0 ? v0 : (ic == 1 ? v1 : v2);
     int t = it == 0 ? v0 : (it == 1 ? v1 : v2);
@@ -561,10 +561,10 @@ public class FormatTools {
     int zSize = core.getAxisLength(imageIndex, Axes.Z);
     int cSize = core.getEffectiveSizeC(imageIndex);
     int tSize = core.getAxisLength(imageIndex, Axes.TIME);
-    int num = core.getImageCount();
+    int numPlanes = core.getPlaneCount(imageIndex);
     
     return getReorderedIndex(findDimensionOrder(reader, imageIndex), newOrder,
-      zSize, cSize, tSize, num, newIndex);
+      zSize, cSize, tSize, numPlanes, imageIndex, newIndex);
   }
   
   /**
@@ -583,11 +583,11 @@ public class FormatTools {
    * @return rasterized index according to original dimension order.
    */
   public static int getReorderedIndex(String origOrder, String newOrder,
-    int zSize, int cSize, int tSize, int num, int newIndex)
+    int zSize, int cSize, int tSize, int numPlanes, int imageIndex, int newIndex)
   {
-    int[] zct = getZCTCoords(newOrder, zSize, cSize, tSize, num, newIndex);
+    int[] zct = getZCTCoords(newOrder, zSize, cSize, tSize, numPlanes, imageIndex, newIndex);
     return getIndex(origOrder,
-      zSize, cSize, tSize, num, zct[0], zct[1], zct[2]);
+      zSize, cSize, tSize, numPlanes, zct[0], zct[1], zct[2]);
   }
   
   
@@ -972,7 +972,7 @@ public class FormatTools {
 
     filename = filename.replaceAll(SERIES_NAME, imageName);
 
-    int[] coordinates = r.getZCTCoords(image);
+    int[] coordinates = r.getZCTCoords(imageIndex, image);
 
     filename = filename.replaceAll(Z_NUM, String.valueOf(coordinates[0]));
     filename = filename.replaceAll(T_NUM, String.valueOf(coordinates[2]));

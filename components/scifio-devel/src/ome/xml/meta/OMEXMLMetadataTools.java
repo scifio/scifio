@@ -160,7 +160,7 @@ public class OMEXMLMetadataTools {
       if (doPlane) {
         for (int q=0; q<meta.getPlaneCount(i); q++) {
           int[] coords = FormatTools.getZCTCoords(order, zSize, cSize, tSize,
-            meta.getPlaneCount(i), q);
+            meta.getPlaneCount(i), i, q);
           store.setPlaneTheZ(new NonNegativeInteger(coords[0]), i, q);
           store.setPlaneTheC(new NonNegativeInteger(coords[1]), i, q);
           store.setPlaneTheT(new NonNegativeInteger(coords[2]), i, q);

@@ -113,7 +113,7 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
     int originalCount = coreMeta().getPlaneCount(imageIndex);
 
     if (planeCount == originalCount) return planeIndex;
-    int[] coords = getZCTCoords(planeIndex);
+    int[] coords = getZCTCoords(imageIndex, planeIndex);
     coords[1] /= coreMeta().getRGBChannelCount(imageIndex);
     return FormatTools.getIndex(this, imageIndex, coords[0], coords[1], coords[2]);
   }
@@ -275,8 +275,8 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
   }
   
   /* @see Reader#getZCTCoords(int) */
-  public int[] getZCTCoords(int index) {
-    return FormatTools.getZCTCoords(this, index);
+  public int[] getZCTCoords(int imageIndex, int index) {
+    return FormatTools.getZCTCoords(this, imageIndex, index);
   }
 
   /* @see Reader#setSource(String) */

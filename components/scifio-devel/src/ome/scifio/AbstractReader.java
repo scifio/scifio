@@ -364,9 +364,8 @@ public abstract class AbstractReader<M extends Metadata>
   }
 
   /* @see Reader#getZCTCoords(int) */
-  public int[] getZCTCoords(final int index) {
-    // TODO Auto-generated method stub
-    return null;
+  public int[] getZCTCoords(final int imageIndex, final int planeIndex) {
+    return FormatTools.getZCTCoords(this, imageIndex, planeIndex);
   }
 
   /* @see Reader#getStream() */

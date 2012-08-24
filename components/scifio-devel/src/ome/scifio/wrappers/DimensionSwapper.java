@@ -207,8 +207,8 @@ public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
   }
 
   /* @see Reader#getZCTCoords(int) */
-  public int[] getZCTCoords(int no) {
-    return FormatTools.getZCTCoords(this, no);
+  public int[] getZCTCoords(int imageIndex, int planeIndex) {
+    return FormatTools.getZCTCoords(this, imageIndex, planeIndex);
   }
 
   /* @see Reader#getIndex(int, int, int) */
@@ -260,7 +260,7 @@ public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
     return FormatTools.getReorderedIndex(FormatTools.findDimensionOrder(inputAxes),
       FormatTools.findDimensionOrder(outputAxes), getDimensionLength(imageIndex, Axes.Z),
       core.getEffectiveSizeC(imageIndex), getDimensionLength(imageIndex, Axes.TIME),
-      getImageCount(), planeIndex);
+      core.getPlaneCount(imageIndex), imageIndex, planeIndex);
   }
 
 }

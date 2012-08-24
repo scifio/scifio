@@ -580,13 +580,13 @@ public class FileStitcher<M extends Metadata> extends ReaderWrapper<M> {
   }
 
   /* @see Reader#getZCTCoords(int) */
-  public int[] getZCTCoords(int imageIndex) {
+  public int[] getZCTCoords(int imageIndex, int planeIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return noStitch ? FormatTools.getZCTCoords(getReader(), imageIndex) :
+    return noStitch ? FormatTools.getZCTCoords(getReader(), imageIndex, planeIndex) :
       FormatTools.getZCTCoords(FormatTools.findDimensionOrder(core, imageIndex),
       core.getAxisLength(imageIndex, Axes.Z), core.getEffectiveSizeC(imageIndex),
       core.getAxisLength(imageIndex, Axes.TIME), core.getPlaneCount(imageIndex),
-      imageIndex);
+      imageIndex, planeIndex);
   }
 
   /* @see Reader#getSeriesMetadata() */
@@ -938,7 +938,7 @@ public class FileStitcher<M extends Metadata> extends ReaderWrapper<M> {
     int[] count = s.getFilePattern().getCount();
 
     // get Z, C and T positions
-    int[] zct = getZCTCoords(planeIndex);
+    int[] zct = getZCTCoords(imageIndex, planeIndex);
     int[] posZ = FormatTools.rasterToPosition(lenZ[sno], zct[0]);
     int[] posC = FormatTools.rasterToPosition(lenC[sno], zct[1]);
     int[] posT = FormatTools.rasterToPosition(lenT[sno], zct[2]);

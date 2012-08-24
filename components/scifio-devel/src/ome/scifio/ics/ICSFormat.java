@@ -415,8 +415,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       final int pixel = bpp * cMeta.getRGBChannelCount(imageIndex);
       final int rowLen = FormatTools.getPlaneSize(this, w, 1, imageIndex);
   
-      final int[] coordinates = getZCTCoords(planeIndex);
-      final int[] prevCoordinates = getZCTCoords(prevImage);
+      final int[] coordinates = getZCTCoords(imageIndex, planeIndex);
+      final int[] prevCoordinates = getZCTCoords(imageIndex, prevImage);
   
       if (!gzip) {
         in.seek(metadata.offset + planeIndex * (long) len);
@@ -639,7 +639,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
 
       int[] coords =
           FormatTools.getZCTCoords(outputOrder, sizeZ, sizeC, sizeT,
-              planes, imageIndex);
+              planes, imageIndex, planeIndex);
       int realIndex =
           FormatTools.getIndex(outputOrder, sizeZ, sizeC, sizeT,
           planes, coords[0], coords[1], coords[2]);
@@ -864,7 +864,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
 
       if (lastPlane < 0) lastPlane = z * c * t - 1;
       int[] pos =
-        FormatTools.getZCTCoords(outputOrder, z, c, t, z * c * t, lastPlane);
+        FormatTools.getZCTCoords(outputOrder, z, c, t, z * c * t, imageIndex, lastPlane);
       lastPlane = -1;
 
       StringBuffer dimOrder = new StringBuffer();

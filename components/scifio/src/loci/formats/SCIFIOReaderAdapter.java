@@ -160,7 +160,7 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
     return reader.getDomains();
   }
 
-  public int[] getZCTCoords(int index) {
+  public int[] getZCTCoords(int imageIndex, int index) {
     return reader.getZCTCoords(index);
   }
 

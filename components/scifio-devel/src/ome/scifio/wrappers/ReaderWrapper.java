@@ -234,8 +234,8 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
     return reader.getDomains();
   }
 
-  public int[] getZCTCoords(int index) {
-    return reader.getZCTCoords(index);
+  public int[] getZCTCoords(int imageIndex, int planeIndex) {
+    return reader.getZCTCoords(imageIndex, planeIndex);
   }
 
   public RandomAccessInputStream getStream() {

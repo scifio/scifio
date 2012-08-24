@@ -140,9 +140,9 @@ public interface Reader<M extends Metadata> extends HasContext, HasFormat {
 
   /**
    * Gets the Z, C and T coordinates corresponding
-   * to the given rasterized index value.
+   * to the given rasterized planeIndex value.
    */
-  int[] getZCTCoords(int index);
+  int[] getZCTCoords(int imageIndex, int planeIndex);
 
   /**
    * Retrieves the current input stream for this reader.
