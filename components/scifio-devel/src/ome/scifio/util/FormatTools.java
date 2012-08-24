@@ -407,6 +407,34 @@ public class FormatTools {
   }
   
   /**
+   * Attempts to convert the provided String dimension order to an array
+   * of AxisTypes.
+   * @param dimensionOrder
+   * @return
+   */
+  public static AxisType[] findDimensionList(String dimensionOrder) {
+    AxisType[] axes = new AxisType[dimensionOrder.length()];
+    
+    for(int i = 0; i < dimensionOrder.length(); i++) {
+      switch(dimensionOrder.toUpperCase().charAt(i)) {
+        case 'X': axes[i] = Axes.X;
+          break;
+        case 'Y': axes[i] = Axes.Y;
+          break;
+        case 'Z': axes[i] = Axes.Z;
+          break;
+        case 'C': axes[i] = Axes.CHANNEL;
+          break;
+        case 'T': axes[i] = Axes.TIME;
+          break;
+        default: axes[i] = Axes.UNKNOWN;
+      }
+    }
+    
+    return axes;
+  }
+  
+  /**
    * Rearranges the ordering of the provided CoreMetadata object, based on the
    * ording of the provided AxisTypes.
    * 
