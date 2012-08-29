@@ -144,24 +144,7 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
   @Deprecated
   @Override
   public void setMetadataRetrieve(MetadataRetrieve retrieve) {
-    FormatTools.assertId(currentId, false, 1);
-    if (retrieve == null) {
-      throw new IllegalArgumentException("Metadata object is null");
-    }
-    metadataRetrieve = retrieve;
-    
-    String id = retrieve.getImageID(0);
-    
-    try {
-      writer.setMetadata((T) 
-        FormatTools.CONTEXT.getFormatFromWriter(writer.getClass()).createParser().parse(id));
-    }
-    catch (IOException e) {
-      LOGGER.warn("IOException on attempting to create Metadata.");
-    }
-    catch (ome.scifio.FormatException e) {
-      LOGGER.warn("FormatException on attempting to create Metadata.");
-    }
+     metadataRetrieve = retrieve;
   }
 
   /* @see IFormatWriter#getMetadataRetrieve() */
@@ -340,7 +323,10 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
     if (id.equals(currentId)) return;
     writer.close();
     currentId = id;
+    
     try {
+      writer.setMetadata((T) 
+              FormatTools.CONTEXT.getFormatFromWriter(writer.getClass()).createParser().parse(id));
       writer.setDest(id);
     }
     catch (ome.scifio.FormatException e) {
