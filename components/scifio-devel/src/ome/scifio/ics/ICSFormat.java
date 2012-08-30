@@ -542,9 +542,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     @Override
     public void setMetadata(final Metadata meta) throws IOException {
       super.setMetadata(meta);
-      this.metadata = meta;
-      final Translator<Metadata, CoreMetadata> t = new ICSCoreTranslator();
-      t.translate(meta, cMeta);
       gzip = metadata.get("representation compression").equals("gzip");
     }
   

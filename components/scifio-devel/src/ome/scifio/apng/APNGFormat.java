@@ -519,16 +519,7 @@ public class APNGFormat
       lastPlaneIndex = planeIndex;
       return lastPlane;
     }
-
-    /* @see Reader#setMetadata(M) */
-    @Override
-    public void setMetadata(final Metadata meta) throws IOException {
-      super.setMetadata(meta);
-      this.metadata = meta;
-      final Translator<Metadata, CoreMetadata> t = new APNGCoreTranslator();
-      t.translate(meta, cMeta);
-    }
-
+    
     // -- Helper methods --
 
     private long computeCRC(final byte[] buf, final int len) {

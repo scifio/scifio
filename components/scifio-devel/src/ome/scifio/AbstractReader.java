@@ -295,6 +295,12 @@ public abstract class AbstractReader<M extends Metadata>
     this.metadata = meta;
     this.cMeta = new CoreMetadata();
     if(this.in == null) setSource(meta.getSource());
+    
+    try {
+      this.getFormat().findSourceTranslator(CoreMetadata.class).translate(meta, cMeta);
+    } catch (FormatException e) {
+      LOGGER.debug(e.getMessage());
+    }
   }
 
   /* @see Reader#getMetadata() */
