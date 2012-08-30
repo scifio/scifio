@@ -149,9 +149,11 @@ public abstract class AbstractParser<M extends Metadata>
       }
     }
     
+    //TODO relying on Abstract-level API
     ((AbstractMetadata)metadata).filtered = filterMetadata;
     ((AbstractMetadata)metadata).metadataOptions = metadataOptions;
     if(metadata.getContext() == null) metadata.setContext(this.getContext());
+    metadata.setSource(stream);
     return metadata;
   }
 
