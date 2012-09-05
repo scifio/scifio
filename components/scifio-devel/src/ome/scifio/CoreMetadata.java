@@ -51,6 +51,9 @@ import ome.scifio.util.FormatTools;
 /**
  * CoreMetadata represents the metadata for a complete dataset, consisting of an
  * arbitrary number of images (and corresponding CoreImageMetadata objects).
+ * 
+ * CoreMetadata is the lowest level image currency of SCIFIO, that by default all formats
+ * can be translated to/from.
  *
  */
 public class CoreMetadata extends AbstractMetadata {
@@ -213,22 +216,62 @@ public class CoreMetadata extends AbstractMetadata {
     return imageMeta.get(imageIndex).getThumbSizeY();
   }
 
-  public int getAxisLength(final int imageIndex, final AxisType t) {
-    return getAxisLength(imageIndex, getAxisIndex(imageIndex, t));
-  }
-
+  /**
+   * Returns the number of axes (planes) in the
+   * specified image.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @return The axis/plane count
+   */
   public int getAxisCount(final int imageIndex) {
     return imageMeta.get(imageIndex).getAxisLengths().length;
   }
 
-  public AxisType getAxisType(final int imageIndex, final int axisIndex) {
-    return imageMeta.get(imageIndex).getAxisTypes()[axisIndex];
+  /**
+   * Gets the type of the (zero-indexed) specified plane.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param planeIndex - index of the desired plane within the specified image
+   * @return Type of the desired plane.
+   */
+  public AxisType getAxisType(final int imageIndex, final int planeIndex) {
+    return imageMeta.get(imageIndex).getAxisTypes()[planeIndex];
   }
 
-  public int getAxisLength(final int imageIndex, final int index) {
-    return imageMeta.get(imageIndex).getAxisLengths()[index];
+  /**
+   * Gets the length of the (zero-indexed) specified plane.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param planeIndex - index of the desired plane within the specified image
+   * @return Length of the desired plane.
+   */
+  public int getAxisLength(final int imageIndex, final int planeIndex) {
+    return imageMeta.get(imageIndex).getAxisLengths()[planeIndex];
+  }
+  
+  /**
+   * A convenience method for looking up the length of an axis
+   * based on its type. No knowledge of plane ordering is necessary.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param t - desired axis type
+   * @return
+   */
+  public int getAxisLength(final int imageIndex, final AxisType t) {
+    return getAxisLength(imageIndex, getAxisIndex(imageIndex, t));
   }
 
+  /**
+   * Returns the array index for the specified AxisType. This index
+   * can be used in other Axes methods for looking up lengths, etc...
+   * </br></br>
+   * This method can also be used as an existence check for the
+   * targe AxisType.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param type - axis type to look up
+   * @return The index of the desired axis or -1 if not found.
+   */
   public int getAxisIndex(final int imageIndex, final AxisType type) {
     for (int i = 0; i < imageMeta.get(imageIndex).getAxisTypes().length; i++) {
       if (imageMeta.get(imageIndex).getAxisTypes()[i] == type) return i;
@@ -236,20 +279,58 @@ public class CoreMetadata extends AbstractMetadata {
     return -1; // throw exception?
   }
   
+  /**
+   * Returns an array of the types for axes associated with
+   * the specified image index. Order is consistent with the
+   * axis length (int) array returned by 
+   * {@link CoreMetadata#getAxesLengths(int)}.
+   * </br></br>
+   * AxisType order is sorted and represents order within the image.
+   * 
+   * @param imageIndex - index for multi-image sources
+   * @return An array of AxisTypes in the order they appear.
+   */
   public AxisType[] getAxes(int imageIndex) {
     AxisType[] axes = imageMeta.get(imageIndex).getAxisTypes();
     return Arrays.copyOf(axes, axes.length);
   }
   
+  /**
+   * Returns an array of the lengths for axes associated with
+   * the specified image index.
+   * 
+   * Ordering is consistent with the 
+   * AxisType array returned by {@link CoreMetadata#getAxes(int)}.
+   * 
+   * @param imageIndex
+   * @return
+   */
   public int[] getAxesLengths(int imageIndex) {
     int[] lengths = imageMeta.get(imageIndex).getAxisLengths();
     return Arrays.copyOf(lengths, lengths.length);
   }
 
+  /**
+   * Appends the provided AxisType to the current AxisType array
+   * and creates corresponding length = 0 entry in the axis lengths
+   * array.
+   * 
+   * @param imageIndex
+   * @param type
+   */
   public void addAxis(final int imageIndex, final AxisType type) {
     addAxis(imageIndex, type, 0);
   }
 
+  /**
+   * Appends the provided AxisType to the current AxisType array
+   * and creates a corresponding entry with the specified value in
+   * axis lengths.
+   * 
+   * @param imageIndex
+   * @param type
+   * @param value
+   */
   public void addAxis(final int imageIndex, final AxisType type, final int value)
   {
     final int[] axisLengths = imageMeta.get(imageIndex).getAxisLengths();
