@@ -1,8 +1,8 @@
 /*
  * #%L
- * Legacy layer preserving compatibility between legacy Bio-Formats and SCIFIO.
+ * OME SCIFIO package for reading and converting scientific file formats.
  * %%
- * Copyright (C) 2005 - 2013 Open Microscopy Environment:
+ * Copyright (C) 2005 - 2012 Open Microscopy Environment:
  *   - Board of Regents of the University of Wisconsin-Madison
  *   - Glencoe Software, Inc.
  *   - University of Dundee
@@ -35,19 +35,29 @@
  */
 package loci.legacy.adapter;
 
+import java.util.HashMap;
+
 /**
- * Serves as a static context definition of {@link AdapterHelper} 
- * so that a consistent {@link LegacyAdapter} mapping can be maintained.
+ * Maintains a context of {@link LegacyAdapter}s for wrapping (and thereby delegating)
+ * between Legacy classes and their Modern equivalents.
+ * <p>
+ * As adapters use HashTables to manage delegation between instances, this ensures
+ * a single instance of every mapping is available within this context, to avoid unnecessary
+ * or repetitive wrappings.
+ * </p>
  * 
  * @author Mark Hiner
+ *
  */
-public final class AdapterTools {
+public class AdapterHelper {
 
-  private static AdapterHelper helper;
+  // -- Fields --
   
-  static {
-    helper = new AdapterHelper();
-  }
+  /** Maps LegacyAdapter classes to an instance of that class, so that a single instance of 
+   * each adapter is maintained.
+   */
+  private HashMap<Class<? extends LegacyAdapter<?, ?>>, Object> adapterMap =
+         new HashMap<Class<? extends LegacyAdapter<?, ?>>, Object>();
   
   // -- Adapter Retrieval --
   
@@ -55,7 +65,23 @@ public final class AdapterTools {
    * Looks up the adapter instance 
    * @return An adapter for converting between legacy and modern IRandomAccess objects
    */
-  public static <T extends LegacyAdapter<?, ?>> T getAdapter(Class<T> adapterClass) {
-    return helper.getAdapter(adapterClass);
+  @SuppressWarnings("unchecked")
+  public <T extends LegacyAdapter<?, ?>> T getAdapter(Class<T> adapterClass) {    
+    T adapter = (T) adapterMap.get(adapterClass);
+    
+    if(adapter == null) {
+      try {
+        adapter = adapterClass.newInstance();
+        adapterMap.put(adapterClass, adapter);
+      } catch (InstantiationException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IllegalAccessException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    
+    return adapter;
   }
 }
