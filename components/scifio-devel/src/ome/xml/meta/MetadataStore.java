@@ -1,12 +1,8 @@
-//
-// MetadataStore.java
-//
-
 /*
  * #%L
  * OME-XML Java library for working with OME-XML metadata structures.
  * %%
- * Copyright (C) 2006 - 2012 Open Microscopy Environment:
+ * Copyright (C) 2006 - 2013 Open Microscopy Environment:
  *   - Massachusetts Institute of Technology
  *   - National Institutes of Health
  *   - University of Dundee
@@ -43,49 +39,49 @@
 /*-----------------------------------------------------------------------------
  *
  * THIS IS AUTOMATICALLY GENERATED CODE.  DO NOT MODIFY.
- * Created by hinerm via xsd-fu on 2012-07-17 09:48:56.676008
+ * Created by temp via xsd-fu on 2012-09-20 09:10:01.892012
  *
  *-----------------------------------------------------------------------------
  */
 
 package ome.xml.meta;
 
-import ome.xml.model.*;
-import ome.xml.model.enums.*;
-import ome.xml.model.primitives.*;
+import ome.xml.model.AffineTransform;
+import ome.xml.model.enums.AcquisitionMode;
+import ome.xml.model.enums.ArcType;
+import ome.xml.model.enums.Binning;
+import ome.xml.model.enums.ContrastMethod;
+import ome.xml.model.enums.Correction;
+import ome.xml.model.enums.DetectorType;
+import ome.xml.model.enums.DimensionOrder;
+import ome.xml.model.enums.ExperimentType;
+import ome.xml.model.enums.FilamentType;
+import ome.xml.model.enums.FillRule;
+import ome.xml.model.enums.FilterType;
+import ome.xml.model.enums.FontFamily;
+import ome.xml.model.enums.FontStyle;
+import ome.xml.model.enums.IlluminationType;
+import ome.xml.model.enums.Immersion;
+import ome.xml.model.enums.LaserMedium;
+import ome.xml.model.enums.LaserType;
+import ome.xml.model.enums.LineCap;
+import ome.xml.model.enums.Marker;
+import ome.xml.model.enums.Medium;
+import ome.xml.model.enums.MicrobeamManipulationType;
+import ome.xml.model.enums.MicroscopeType;
+import ome.xml.model.enums.NamingConvention;
+import ome.xml.model.enums.PixelType;
+import ome.xml.model.enums.Pulse;
+import ome.xml.model.primitives.Color;
+import ome.xml.model.primitives.NonNegativeInteger;
+import ome.xml.model.primitives.NonNegativeLong;
+import ome.xml.model.primitives.PercentFraction;
+import ome.xml.model.primitives.PositiveFloat;
+import ome.xml.model.primitives.PositiveInteger;
+import ome.xml.model.primitives.Timestamp;
 
 /**
- * A proxy whose responsibility it is to marshal biological image data into a
- * particular storage medium.
- *
- * <p>The <code>MetadataStore</code> interface encompasses the metadata that
- * any specific storage medium (file, relational database, etc.) should be
- * expected to store into its backing data model.
- *
- * <p>The <code>MetadataStore</code> interface goes hand in hand with the
- * <code>MetadataRetrieve</code> interface. Essentially,
- * <code>MetadataRetrieve</code> provides the "getter" methods for a storage
- * medium, and <code>MetadataStore</code> provides the "setter" methods.
- *
- * <p>Since it often makes sense for a storage medium to implement both
- * interfaces, there is also an {@link IMetadata} interface encompassing
- * both <code>MetadataStore</code> and <code>MetadataRetrieve</code>, which
- * reduces the need to cast between object types.
- *
- * <p>See {@link loci.formats.ome.OMEXMLMetadata} for an example
- * implementation.
- *
- * <p><b>Important note:</b> It is strongly recommended that applications
- * (e.g., file format readers) using <code>MetadataStore</code> populate
- * information in a linear order. Specifically, iterating over entities
- * from "leftmost" index to "rightmost" index is required for certain
- * <code>MetadataStore</code> implementations such as OMERO's
- * <code>OMEROMetadataStore</code>. For example, when populating Image, Pixels
- * and Plane information, an outer loop should iterate across
- * <code>imageIndex</code>, an inner loop should iterate across
- * <code>pixelsIndex</code>, and an innermost loop should handle
- * <code>planeIndex</code>. For an illustration of the ideal traversal order,
- * see {@link loci.formats.meta.MetadataConverter#convertMetadata}.</p>
+ * Legacy wrapper interface for ome.xml.meta.MetadataStore.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/meta/MetadataStore.java">Trac</a>,
@@ -93,15 +89,16 @@ import ome.xml.model.primitives.*;
  *
  * @author Chris Allan callan at blackcat.ca
  * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Mark Hiner hiner at wisc.edu
  */
-public interface MetadataStore
+public interface MetadataStore 
 {
 	void createRoot();
 
 	Object getRoot();
 
 	void setRoot(Object root);
-	
+
 	// -- Entity storage (manual definitions) --
 
 	void setPixelsBinDataBigEndian(Boolean bigEndian, int imageIndex, int binDataIndex);

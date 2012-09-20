@@ -1,4 +1,4 @@
-/*
+ /*
  * #%L
  * OME-XML Java library for working with OME-XML metadata structures.
  * %%
@@ -39,22 +39,21 @@
 /*-----------------------------------------------------------------------------
  *
  * THIS IS AUTOMATICALLY GENERATED CODE.  DO NOT MODIFY.
+ * Created by temp via xsd-fu on 2012-09-20 09:08:52.526388
  *
  *-----------------------------------------------------------------------------
  */
 
 package loci.formats.meta;
 
-import loci.common.DataTools;
+import ome.scifio.common.DataTools;
 
 import ome.xml.model.*;
 import ome.xml.model.enums.*;
 import ome.xml.model.primitives.*;
 
 /**
- * An implementation of {@link MetadataStore} that removes unprintable
- * characters from metadata values before storing them in a delegate
- * MetadataStore.
+ * A legacy delegator class for ome.xml.meta.FilterMetadata
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/meta/FilterMetadata.java">Trac</a>,
@@ -62,20 +61,19 @@ import ome.xml.model.primitives.*;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Mark Hiner hiner at wisc.edu
  */
 public class FilterMetadata implements MetadataStore
 {
 	// -- Fields --
 
-	private MetadataStore store;
-	private boolean filter;
+	private ome.xml.meta.FilterMetadata meta;
 
 	// -- Constructor --
 
 	public FilterMetadata(MetadataStore store, boolean filter)
 	{
-		this.store = store;
-		this.filter = filter;
+		meta = new ome.xml.meta.FilterMetadata(store, filter);
 	}
 
 	// -- MetadataStore API methods --
@@ -83,25 +81,25 @@ public class FilterMetadata implements MetadataStore
 	/* @see MetadataStore#createRoot() */
 	public void createRoot()
 	{
-		store.createRoot();
+		meta.createRoot();
 	}
 
 	/* @see MetadataStore#getRoot() */
 	public Object getRoot()
 	{
-		return store.getRoot();
+		return meta.getRoot();
 	}
 
 	/* @see MetadataStore#setRoot(Object) */
 	public void setRoot(Object root)
 	{
-		store.setRoot(root);
+		meta.setRoot(root);
 	}
 
 	/* @see MetadataStore#setUUID(String) */
 	public void setUUID(String uuid)
 	{
-		store.setUUID(uuid);
+		meta.setUUID(uuid);
 	}
 
 	// -- AggregateMetadata API methods --
@@ -110,12 +108,12 @@ public class FilterMetadata implements MetadataStore
 
 	public void setPixelsBinDataBigEndian(Boolean bigEndian, int imageIndex, int binDataIndex)
 	{
-		store.setPixelsBinDataBigEndian(bigEndian, imageIndex, binDataIndex);
+		meta.setPixelsBinDataBigEndian(bigEndian, imageIndex, binDataIndex);
 	}
 
 	public void setMaskBinData(byte[] binData, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskBinData(binData, ROIIndex, shapeIndex);
+		meta.setMaskBinData(binData, ROIIndex, shapeIndex);
 	}
 
 	// -- Entity storage (code generated definitions) --
@@ -141,8 +139,7 @@ public class FilterMetadata implements MetadataStore
 	// ID accessor from parent LightSource
 	public void setArcID(String id, int instrumentIndex, int lightSourceIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setArcID(id, instrumentIndex, lightSourceIndex);
+		meta.setArcID(id, instrumentIndex, lightSourceIndex);
 	}
 
 	// Ignoring Laser of parent abstract type
@@ -150,40 +147,36 @@ public class FilterMetadata implements MetadataStore
 	// LotNumber accessor from parent LightSource
 	public void setArcLotNumber(String lotNumber, int instrumentIndex, int lightSourceIndex)
 	{
-		lotNumber = filter? DataTools.sanitize(lotNumber) : lotNumber;
-		store.setArcLotNumber(lotNumber, instrumentIndex, lightSourceIndex);
+		meta.setArcLotNumber(lotNumber, instrumentIndex, lightSourceIndex);
 	}
 
 	// Manufacturer accessor from parent LightSource
 	public void setArcManufacturer(String manufacturer, int instrumentIndex, int lightSourceIndex)
 	{
-		manufacturer = filter? DataTools.sanitize(manufacturer) : manufacturer;
-		store.setArcManufacturer(manufacturer, instrumentIndex, lightSourceIndex);
+		meta.setArcManufacturer(manufacturer, instrumentIndex, lightSourceIndex);
 	}
 
 	// Model accessor from parent LightSource
 	public void setArcModel(String model, int instrumentIndex, int lightSourceIndex)
 	{
-		model = filter? DataTools.sanitize(model) : model;
-		store.setArcModel(model, instrumentIndex, lightSourceIndex);
+		meta.setArcModel(model, instrumentIndex, lightSourceIndex);
 	}
 
 	// Power accessor from parent LightSource
 	public void setArcPower(Double power, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setArcPower(power, instrumentIndex, lightSourceIndex);
+		meta.setArcPower(power, instrumentIndex, lightSourceIndex);
 	}
 
 	// SerialNumber accessor from parent LightSource
 	public void setArcSerialNumber(String serialNumber, int instrumentIndex, int lightSourceIndex)
 	{
-		serialNumber = filter? DataTools.sanitize(serialNumber) : serialNumber;
-		store.setArcSerialNumber(serialNumber, instrumentIndex, lightSourceIndex);
+		meta.setArcSerialNumber(serialNumber, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setArcType(ArcType type, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setArcType(type, instrumentIndex, lightSourceIndex);
+		meta.setArcType(type, instrumentIndex, lightSourceIndex);
 	}
 
 	//
@@ -196,19 +189,17 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring External element, complex property
 	public void setBinaryFileFileName(String fileName, int fileAnnotationIndex)
 	{
-		fileName = filter? DataTools.sanitize(fileName) : fileName;
-		store.setBinaryFileFileName(fileName, fileAnnotationIndex);
+		meta.setBinaryFileFileName(fileName, fileAnnotationIndex);
 	}
 
 	public void setBinaryFileMIMEType(String mimeType, int fileAnnotationIndex)
 	{
-		mimeType = filter? DataTools.sanitize(mimeType) : mimeType;
-		store.setBinaryFileMIMEType(mimeType, fileAnnotationIndex);
+		meta.setBinaryFileMIMEType(mimeType, fileAnnotationIndex);
 	}
 
 	public void setBinaryFileSize(NonNegativeLong size, int fileAnnotationIndex)
 	{
-		store.setBinaryFileSize(size, fileAnnotationIndex);
+		meta.setBinaryFileSize(size, fileAnnotationIndex);
 	}
 
 	//
@@ -219,14 +210,12 @@ public class FilterMetadata implements MetadataStore
 
 	public void setBinaryOnlyMetadataFile(String metadataFile)
 	{
-		metadataFile = filter? DataTools.sanitize(metadataFile) : metadataFile;
-		store.setBinaryOnlyMetadataFile(metadataFile);
+		meta.setBinaryOnlyMetadataFile(metadataFile);
 	}
 
 	public void setBinaryOnlyUUID(String uuid)
 	{
-		uuid = filter? DataTools.sanitize(uuid) : uuid;
-		store.setBinaryOnlyUUID(uuid);
+		meta.setBinaryOnlyUUID(uuid);
 	}
 
 	//
@@ -237,30 +226,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setBooleanAnnotationAnnotationRef(String annotation, int booleanAnnotationIndex, int annotationRefIndex)
 	{
-		store.setBooleanAnnotationAnnotationRef(annotation, booleanAnnotationIndex, annotationRefIndex);
+		meta.setBooleanAnnotationAnnotationRef(annotation, booleanAnnotationIndex, annotationRefIndex);
 	}
 
 	// Ignoring Channel_BackReference back reference
 	// Ignoring Dataset_BackReference back reference
 	public void setBooleanAnnotationDescription(String description, int booleanAnnotationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setBooleanAnnotationDescription(description, booleanAnnotationIndex);
+		meta.setBooleanAnnotationDescription(description, booleanAnnotationIndex);
 	}
 
 	// Ignoring ExperimenterGroup_BackReference back reference
 	// Ignoring Experimenter_BackReference back reference
 	public void setBooleanAnnotationID(String id, int booleanAnnotationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setBooleanAnnotationID(id, booleanAnnotationIndex);
+		meta.setBooleanAnnotationID(id, booleanAnnotationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setBooleanAnnotationNamespace(String namespace, int booleanAnnotationIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setBooleanAnnotationNamespace(namespace, booleanAnnotationIndex);
+		meta.setBooleanAnnotationNamespace(namespace, booleanAnnotationIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
@@ -274,7 +260,7 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring StructuredAnnotations_BackReference back reference
 	public void setBooleanAnnotationValue(Boolean value, int booleanAnnotationIndex)
 	{
-		store.setBooleanAnnotationValue(value, booleanAnnotationIndex);
+		meta.setBooleanAnnotationValue(value, booleanAnnotationIndex);
 	}
 
 	// Ignoring WellSample_BackReference back reference
@@ -287,84 +273,81 @@ public class FilterMetadata implements MetadataStore
 
 	public void setChannelAcquisitionMode(AcquisitionMode acquisitionMode, int imageIndex, int channelIndex)
 	{
-		store.setChannelAcquisitionMode(acquisitionMode, imageIndex, channelIndex);
+		meta.setChannelAcquisitionMode(acquisitionMode, imageIndex, channelIndex);
 	}
 
 	public void setChannelAnnotationRef(String annotation, int imageIndex, int channelIndex, int annotationRefIndex)
 	{
-		store.setChannelAnnotationRef(annotation, imageIndex, channelIndex, annotationRefIndex);
+		meta.setChannelAnnotationRef(annotation, imageIndex, channelIndex, annotationRefIndex);
 	}
 
 	public void setChannelColor(Color color, int imageIndex, int channelIndex)
 	{
-		store.setChannelColor(color, imageIndex, channelIndex);
+		meta.setChannelColor(color, imageIndex, channelIndex);
 	}
 
 	public void setChannelContrastMethod(ContrastMethod contrastMethod, int imageIndex, int channelIndex)
 	{
-		store.setChannelContrastMethod(contrastMethod, imageIndex, channelIndex);
+		meta.setChannelContrastMethod(contrastMethod, imageIndex, channelIndex);
 	}
 
 	// Ignoring DetectorSettings element, complex property
 	public void setChannelEmissionWavelength(PositiveInteger emissionWavelength, int imageIndex, int channelIndex)
 	{
-		store.setChannelEmissionWavelength(emissionWavelength, imageIndex, channelIndex);
+		meta.setChannelEmissionWavelength(emissionWavelength, imageIndex, channelIndex);
 	}
 
 	public void setChannelExcitationWavelength(PositiveInteger excitationWavelength, int imageIndex, int channelIndex)
 	{
-		store.setChannelExcitationWavelength(excitationWavelength, imageIndex, channelIndex);
+		meta.setChannelExcitationWavelength(excitationWavelength, imageIndex, channelIndex);
 	}
 
 	public void setChannelFilterSetRef(String filterSet, int imageIndex, int channelIndex)
 	{
-		store.setChannelFilterSetRef(filterSet, imageIndex, channelIndex);
+		meta.setChannelFilterSetRef(filterSet, imageIndex, channelIndex);
 	}
 
 	public void setChannelFluor(String fluor, int imageIndex, int channelIndex)
 	{
-		fluor = filter? DataTools.sanitize(fluor) : fluor;
-		store.setChannelFluor(fluor, imageIndex, channelIndex);
+		meta.setChannelFluor(fluor, imageIndex, channelIndex);
 	}
 
 	public void setChannelID(String id, int imageIndex, int channelIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setChannelID(id, imageIndex, channelIndex);
+		meta.setChannelID(id, imageIndex, channelIndex);
 	}
 
 	public void setChannelIlluminationType(IlluminationType illuminationType, int imageIndex, int channelIndex)
 	{
-		store.setChannelIlluminationType(illuminationType, imageIndex, channelIndex);
+		meta.setChannelIlluminationType(illuminationType, imageIndex, channelIndex);
 	}
 
 	// Ignoring LightPath element, complex property
 	// Ignoring LightSourceSettings element, complex property
 	public void setChannelNDFilter(Double ndFilter, int imageIndex, int channelIndex)
 	{
-		store.setChannelNDFilter(ndFilter, imageIndex, channelIndex);
+		meta.setChannelNDFilter(ndFilter, imageIndex, channelIndex);
 	}
 
 	public void setChannelName(String name, int imageIndex, int channelIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setChannelName(name, imageIndex, channelIndex);
+		meta.setChannelName(name, imageIndex, channelIndex);
 	}
 
 	public void setChannelPinholeSize(Double pinholeSize, int imageIndex, int channelIndex)
 	{
-		store.setChannelPinholeSize(pinholeSize, imageIndex, channelIndex);
+		meta.setChannelPinholeSize(pinholeSize, imageIndex, channelIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
 	public void setChannelPockelCellSetting(Integer pockelCellSetting, int imageIndex, int channelIndex)
 	{
-		store.setChannelPockelCellSetting(pockelCellSetting, imageIndex, channelIndex);
+		meta.setChannelPockelCellSetting(pockelCellSetting, imageIndex, channelIndex);
 	}
 
 	public void setChannelSamplesPerPixel(PositiveInteger samplesPerPixel, int imageIndex, int channelIndex)
 	{
-		store.setChannelSamplesPerPixel(samplesPerPixel, imageIndex, channelIndex);
+		meta.setChannelSamplesPerPixel(samplesPerPixel, imageIndex, channelIndex);
 	}
 
 	//
@@ -375,30 +358,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setCommentAnnotationAnnotationRef(String annotation, int commentAnnotationIndex, int annotationRefIndex)
 	{
-		store.setCommentAnnotationAnnotationRef(annotation, commentAnnotationIndex, annotationRefIndex);
+		meta.setCommentAnnotationAnnotationRef(annotation, commentAnnotationIndex, annotationRefIndex);
 	}
 
 	// Ignoring Channel_BackReference back reference
 	// Ignoring Dataset_BackReference back reference
 	public void setCommentAnnotationDescription(String description, int commentAnnotationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setCommentAnnotationDescription(description, commentAnnotationIndex);
+		meta.setCommentAnnotationDescription(description, commentAnnotationIndex);
 	}
 
 	// Ignoring ExperimenterGroup_BackReference back reference
 	// Ignoring Experimenter_BackReference back reference
 	public void setCommentAnnotationID(String id, int commentAnnotationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setCommentAnnotationID(id, commentAnnotationIndex);
+		meta.setCommentAnnotationID(id, commentAnnotationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setCommentAnnotationNamespace(String namespace, int commentAnnotationIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setCommentAnnotationNamespace(namespace, commentAnnotationIndex);
+		meta.setCommentAnnotationNamespace(namespace, commentAnnotationIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
@@ -412,8 +392,7 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring StructuredAnnotations_BackReference back reference
 	public void setCommentAnnotationValue(String value, int commentAnnotationIndex)
 	{
-		value = filter? DataTools.sanitize(value) : value;
-		store.setCommentAnnotationValue(value, commentAnnotationIndex);
+		meta.setCommentAnnotationValue(value, commentAnnotationIndex);
 	}
 
 	// Ignoring WellSample_BackReference back reference
@@ -426,40 +405,37 @@ public class FilterMetadata implements MetadataStore
 
 	public void setDatasetAnnotationRef(String annotation, int datasetIndex, int annotationRefIndex)
 	{
-		store.setDatasetAnnotationRef(annotation, datasetIndex, annotationRefIndex);
+		meta.setDatasetAnnotationRef(annotation, datasetIndex, annotationRefIndex);
 	}
 
 	public void setDatasetDescription(String description, int datasetIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setDatasetDescription(description, datasetIndex);
+		meta.setDatasetDescription(description, datasetIndex);
 	}
 
 	public void setDatasetExperimenterGroupRef(String experimenterGroup, int datasetIndex)
 	{
-		store.setDatasetExperimenterGroupRef(experimenterGroup, datasetIndex);
+		meta.setDatasetExperimenterGroupRef(experimenterGroup, datasetIndex);
 	}
 
 	public void setDatasetExperimenterRef(String experimenter, int datasetIndex)
 	{
-		store.setDatasetExperimenterRef(experimenter, datasetIndex);
+		meta.setDatasetExperimenterRef(experimenter, datasetIndex);
 	}
 
 	public void setDatasetID(String id, int datasetIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setDatasetID(id, datasetIndex);
+		meta.setDatasetID(id, datasetIndex);
 	}
 
 	public void setDatasetImageRef(String image, int datasetIndex, int imageRefIndex)
 	{
-		store.setDatasetImageRef(image, datasetIndex, imageRefIndex);
+		meta.setDatasetImageRef(image, datasetIndex, imageRefIndex);
 	}
 
 	public void setDatasetName(String name, int datasetIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setDatasetName(name, datasetIndex);
+		meta.setDatasetName(name, datasetIndex);
 	}
 
 	// Ignoring Project_BackReference back reference
@@ -481,63 +457,58 @@ public class FilterMetadata implements MetadataStore
 
 	public void setDetectorAmplificationGain(Double amplificationGain, int instrumentIndex, int detectorIndex)
 	{
-		store.setDetectorAmplificationGain(amplificationGain, instrumentIndex, detectorIndex);
+		meta.setDetectorAmplificationGain(amplificationGain, instrumentIndex, detectorIndex);
 	}
 
 	public void setDetectorGain(Double gain, int instrumentIndex, int detectorIndex)
 	{
-		store.setDetectorGain(gain, instrumentIndex, detectorIndex);
+		meta.setDetectorGain(gain, instrumentIndex, detectorIndex);
 	}
 
 	public void setDetectorID(String id, int instrumentIndex, int detectorIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setDetectorID(id, instrumentIndex, detectorIndex);
+		meta.setDetectorID(id, instrumentIndex, detectorIndex);
 	}
 
 	// Ignoring Instrument_BackReference back reference
 	public void setDetectorLotNumber(String lotNumber, int instrumentIndex, int detectorIndex)
 	{
-		lotNumber = filter? DataTools.sanitize(lotNumber) : lotNumber;
-		store.setDetectorLotNumber(lotNumber, instrumentIndex, detectorIndex);
+		meta.setDetectorLotNumber(lotNumber, instrumentIndex, detectorIndex);
 	}
 
 	public void setDetectorManufacturer(String manufacturer, int instrumentIndex, int detectorIndex)
 	{
-		manufacturer = filter? DataTools.sanitize(manufacturer) : manufacturer;
-		store.setDetectorManufacturer(manufacturer, instrumentIndex, detectorIndex);
+		meta.setDetectorManufacturer(manufacturer, instrumentIndex, detectorIndex);
 	}
 
 	public void setDetectorModel(String model, int instrumentIndex, int detectorIndex)
 	{
-		model = filter? DataTools.sanitize(model) : model;
-		store.setDetectorModel(model, instrumentIndex, detectorIndex);
+		meta.setDetectorModel(model, instrumentIndex, detectorIndex);
 	}
 
 	public void setDetectorOffset(Double offset, int instrumentIndex, int detectorIndex)
 	{
-		store.setDetectorOffset(offset, instrumentIndex, detectorIndex);
+		meta.setDetectorOffset(offset, instrumentIndex, detectorIndex);
 	}
 
 	public void setDetectorSerialNumber(String serialNumber, int instrumentIndex, int detectorIndex)
 	{
-		serialNumber = filter? DataTools.sanitize(serialNumber) : serialNumber;
-		store.setDetectorSerialNumber(serialNumber, instrumentIndex, detectorIndex);
+		meta.setDetectorSerialNumber(serialNumber, instrumentIndex, detectorIndex);
 	}
 
 	public void setDetectorType(DetectorType type, int instrumentIndex, int detectorIndex)
 	{
-		store.setDetectorType(type, instrumentIndex, detectorIndex);
+		meta.setDetectorType(type, instrumentIndex, detectorIndex);
 	}
 
 	public void setDetectorVoltage(Double voltage, int instrumentIndex, int detectorIndex)
 	{
-		store.setDetectorVoltage(voltage, instrumentIndex, detectorIndex);
+		meta.setDetectorVoltage(voltage, instrumentIndex, detectorIndex);
 	}
 
 	public void setDetectorZoom(Double zoom, int instrumentIndex, int detectorIndex)
 	{
-		store.setDetectorZoom(zoom, instrumentIndex, detectorIndex);
+		meta.setDetectorZoom(zoom, instrumentIndex, detectorIndex);
 	}
 
 	//
@@ -548,34 +519,33 @@ public class FilterMetadata implements MetadataStore
 
 	public void setDetectorSettingsBinning(Binning binning, int imageIndex, int channelIndex)
 	{
-		store.setDetectorSettingsBinning(binning, imageIndex, channelIndex);
+		meta.setDetectorSettingsBinning(binning, imageIndex, channelIndex);
 	}
 
 	// Ignoring DetectorRef back reference
 	public void setDetectorSettingsGain(Double gain, int imageIndex, int channelIndex)
 	{
-		store.setDetectorSettingsGain(gain, imageIndex, channelIndex);
+		meta.setDetectorSettingsGain(gain, imageIndex, channelIndex);
 	}
 
 	public void setDetectorSettingsID(String id, int imageIndex, int channelIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setDetectorSettingsID(id, imageIndex, channelIndex);
+		meta.setDetectorSettingsID(id, imageIndex, channelIndex);
 	}
 
 	public void setDetectorSettingsOffset(Double offset, int imageIndex, int channelIndex)
 	{
-		store.setDetectorSettingsOffset(offset, imageIndex, channelIndex);
+		meta.setDetectorSettingsOffset(offset, imageIndex, channelIndex);
 	}
 
 	public void setDetectorSettingsReadOutRate(Double readOutRate, int imageIndex, int channelIndex)
 	{
-		store.setDetectorSettingsReadOutRate(readOutRate, imageIndex, channelIndex);
+		meta.setDetectorSettingsReadOutRate(readOutRate, imageIndex, channelIndex);
 	}
 
 	public void setDetectorSettingsVoltage(Double voltage, int imageIndex, int channelIndex)
 	{
-		store.setDetectorSettingsVoltage(voltage, imageIndex, channelIndex);
+		meta.setDetectorSettingsVoltage(voltage, imageIndex, channelIndex);
 	}
 
 	//
@@ -587,34 +557,29 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring FilterSet_BackReference back reference
 	public void setDichroicID(String id, int instrumentIndex, int dichroicIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setDichroicID(id, instrumentIndex, dichroicIndex);
+		meta.setDichroicID(id, instrumentIndex, dichroicIndex);
 	}
 
 	// Ignoring Instrument_BackReference back reference
 	// Ignoring LightPath_BackReference back reference
 	public void setDichroicLotNumber(String lotNumber, int instrumentIndex, int dichroicIndex)
 	{
-		lotNumber = filter? DataTools.sanitize(lotNumber) : lotNumber;
-		store.setDichroicLotNumber(lotNumber, instrumentIndex, dichroicIndex);
+		meta.setDichroicLotNumber(lotNumber, instrumentIndex, dichroicIndex);
 	}
 
 	public void setDichroicManufacturer(String manufacturer, int instrumentIndex, int dichroicIndex)
 	{
-		manufacturer = filter? DataTools.sanitize(manufacturer) : manufacturer;
-		store.setDichroicManufacturer(manufacturer, instrumentIndex, dichroicIndex);
+		meta.setDichroicManufacturer(manufacturer, instrumentIndex, dichroicIndex);
 	}
 
 	public void setDichroicModel(String model, int instrumentIndex, int dichroicIndex)
 	{
-		model = filter? DataTools.sanitize(model) : model;
-		store.setDichroicModel(model, instrumentIndex, dichroicIndex);
+		meta.setDichroicModel(model, instrumentIndex, dichroicIndex);
 	}
 
 	public void setDichroicSerialNumber(String serialNumber, int instrumentIndex, int dichroicIndex)
 	{
-		serialNumber = filter? DataTools.sanitize(serialNumber) : serialNumber;
-		store.setDichroicSerialNumber(serialNumber, instrumentIndex, dichroicIndex);
+		meta.setDichroicSerialNumber(serialNumber, instrumentIndex, dichroicIndex);
 	}
 
 	//
@@ -635,30 +600,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setDoubleAnnotationAnnotationRef(String annotation, int doubleAnnotationIndex, int annotationRefIndex)
 	{
-		store.setDoubleAnnotationAnnotationRef(annotation, doubleAnnotationIndex, annotationRefIndex);
+		meta.setDoubleAnnotationAnnotationRef(annotation, doubleAnnotationIndex, annotationRefIndex);
 	}
 
 	// Ignoring Channel_BackReference back reference
 	// Ignoring Dataset_BackReference back reference
 	public void setDoubleAnnotationDescription(String description, int doubleAnnotationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setDoubleAnnotationDescription(description, doubleAnnotationIndex);
+		meta.setDoubleAnnotationDescription(description, doubleAnnotationIndex);
 	}
 
 	// Ignoring ExperimenterGroup_BackReference back reference
 	// Ignoring Experimenter_BackReference back reference
 	public void setDoubleAnnotationID(String id, int doubleAnnotationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setDoubleAnnotationID(id, doubleAnnotationIndex);
+		meta.setDoubleAnnotationID(id, doubleAnnotationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setDoubleAnnotationNamespace(String namespace, int doubleAnnotationIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setDoubleAnnotationNamespace(namespace, doubleAnnotationIndex);
+		meta.setDoubleAnnotationNamespace(namespace, doubleAnnotationIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
@@ -672,7 +634,7 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring StructuredAnnotations_BackReference back reference
 	public void setDoubleAnnotationValue(Double value, int doubleAnnotationIndex)
 	{
-		store.setDoubleAnnotationValue(value, doubleAnnotationIndex);
+		meta.setDoubleAnnotationValue(value, doubleAnnotationIndex);
 	}
 
 	// Ignoring WellSample_BackReference back reference
@@ -687,38 +649,37 @@ public class FilterMetadata implements MetadataStore
 	// FillColor accessor from parent Shape
 	public void setEllipseFillColor(Color fillColor, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseFillColor(fillColor, ROIIndex, shapeIndex);
+		meta.setEllipseFillColor(fillColor, ROIIndex, shapeIndex);
 	}
 
 	// FillRule accessor from parent Shape
 	public void setEllipseFillRule(FillRule fillRule, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseFillRule(fillRule, ROIIndex, shapeIndex);
+		meta.setEllipseFillRule(fillRule, ROIIndex, shapeIndex);
 	}
 
 	// FontFamily accessor from parent Shape
 	public void setEllipseFontFamily(FontFamily fontFamily, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseFontFamily(fontFamily, ROIIndex, shapeIndex);
+		meta.setEllipseFontFamily(fontFamily, ROIIndex, shapeIndex);
 	}
 
 	// FontSize accessor from parent Shape
 	public void setEllipseFontSize(NonNegativeInteger fontSize, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseFontSize(fontSize, ROIIndex, shapeIndex);
+		meta.setEllipseFontSize(fontSize, ROIIndex, shapeIndex);
 	}
 
 	// FontStyle accessor from parent Shape
 	public void setEllipseFontStyle(FontStyle fontStyle, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseFontStyle(fontStyle, ROIIndex, shapeIndex);
+		meta.setEllipseFontStyle(fontStyle, ROIIndex, shapeIndex);
 	}
 
 	// ID accessor from parent Shape
 	public void setEllipseID(String id, int ROIIndex, int shapeIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setEllipseID(id, ROIIndex, shapeIndex);
+		meta.setEllipseID(id, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Label of parent abstract type
@@ -726,13 +687,13 @@ public class FilterMetadata implements MetadataStore
 	// LineCap accessor from parent Shape
 	public void setEllipseLineCap(LineCap lineCap, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseLineCap(lineCap, ROIIndex, shapeIndex);
+		meta.setEllipseLineCap(lineCap, ROIIndex, shapeIndex);
 	}
 
 	// Locked accessor from parent Shape
 	public void setEllipseLocked(Boolean locked, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseLocked(locked, ROIIndex, shapeIndex);
+		meta.setEllipseLocked(locked, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Mask of parent abstract type
@@ -743,77 +704,75 @@ public class FilterMetadata implements MetadataStore
 	// StrokeColor accessor from parent Shape
 	public void setEllipseStrokeColor(Color strokeColor, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseStrokeColor(strokeColor, ROIIndex, shapeIndex);
+		meta.setEllipseStrokeColor(strokeColor, ROIIndex, shapeIndex);
 	}
 
 	// StrokeDashArray accessor from parent Shape
 	public void setEllipseStrokeDashArray(String strokeDashArray, int ROIIndex, int shapeIndex)
 	{
-		strokeDashArray = filter? DataTools.sanitize(strokeDashArray) : strokeDashArray;
-		store.setEllipseStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
+		meta.setEllipseStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
 	}
 
 	// StrokeWidth accessor from parent Shape
 	public void setEllipseStrokeWidth(Double strokeWidth, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
+		meta.setEllipseStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
 	}
 
 	// Text accessor from parent Shape
 	public void setEllipseText(String text, int ROIIndex, int shapeIndex)
 	{
-		text = filter? DataTools.sanitize(text) : text;
-		store.setEllipseText(text, ROIIndex, shapeIndex);
+		meta.setEllipseText(text, ROIIndex, shapeIndex);
 	}
 
 	// TheC accessor from parent Shape
 	public void setEllipseTheC(NonNegativeInteger theC, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseTheC(theC, ROIIndex, shapeIndex);
+		meta.setEllipseTheC(theC, ROIIndex, shapeIndex);
 	}
 
 	// TheT accessor from parent Shape
 	public void setEllipseTheT(NonNegativeInteger theT, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseTheT(theT, ROIIndex, shapeIndex);
+		meta.setEllipseTheT(theT, ROIIndex, shapeIndex);
 	}
 
 	// TheZ accessor from parent Shape
 	public void setEllipseTheZ(NonNegativeInteger theZ, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseTheZ(theZ, ROIIndex, shapeIndex);
+		meta.setEllipseTheZ(theZ, ROIIndex, shapeIndex);
 	}
 
 	// Transform accessor from parent Shape
 	public void setEllipseTransform(AffineTransform transform, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseTransform(transform, ROIIndex, shapeIndex);
+		meta.setEllipseTransform(transform, ROIIndex, shapeIndex);
 	}
 
 	// Visible accessor from parent Shape
 	public void setEllipseVisible(Boolean visible, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseVisible(visible, ROIIndex, shapeIndex);
+		meta.setEllipseVisible(visible, ROIIndex, shapeIndex);
 	}
 
 	public void setEllipseRadiusX(Double radiusX, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseRadiusX(radiusX, ROIIndex, shapeIndex);
+		meta.setEllipseRadiusX(radiusX, ROIIndex, shapeIndex);
 	}
 
 	public void setEllipseRadiusY(Double radiusY, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseRadiusY(radiusY, ROIIndex, shapeIndex);
+		meta.setEllipseRadiusY(radiusY, ROIIndex, shapeIndex);
 	}
 
 	public void setEllipseX(Double x, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseX(x, ROIIndex, shapeIndex);
+		meta.setEllipseX(x, ROIIndex, shapeIndex);
 	}
 
 	public void setEllipseY(Double y, int ROIIndex, int shapeIndex)
 	{
-		store.setEllipseY(y, ROIIndex, shapeIndex);
+		meta.setEllipseY(y, ROIIndex, shapeIndex);
 	}
 
 	//
@@ -836,26 +795,24 @@ public class FilterMetadata implements MetadataStore
 
 	public void setExperimentDescription(String description, int experimentIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setExperimentDescription(description, experimentIndex);
+		meta.setExperimentDescription(description, experimentIndex);
 	}
 
 	public void setExperimentExperimenterRef(String experimenter, int experimentIndex)
 	{
-		store.setExperimentExperimenterRef(experimenter, experimentIndex);
+		meta.setExperimentExperimenterRef(experimenter, experimentIndex);
 	}
 
 	public void setExperimentID(String id, int experimentIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setExperimentID(id, experimentIndex);
+		meta.setExperimentID(id, experimentIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	// Ignoring MicrobeamManipulation element, complex property
 	public void setExperimentType(ExperimentType type, int experimentIndex)
 	{
-		store.setExperimentType(type, experimentIndex);
+		meta.setExperimentType(type, experimentIndex);
 	}
 
 	//
@@ -876,55 +833,48 @@ public class FilterMetadata implements MetadataStore
 
 	public void setExperimenterAnnotationRef(String annotation, int experimenterIndex, int annotationRefIndex)
 	{
-		store.setExperimenterAnnotationRef(annotation, experimenterIndex, annotationRefIndex);
+		meta.setExperimenterAnnotationRef(annotation, experimenterIndex, annotationRefIndex);
 	}
 
 	// Ignoring Dataset_BackReference back reference
 	public void setExperimenterEmail(String email, int experimenterIndex)
 	{
-		email = filter? DataTools.sanitize(email) : email;
-		store.setExperimenterEmail(email, experimenterIndex);
+		meta.setExperimenterEmail(email, experimenterIndex);
 	}
 
 	// Ignoring Experiment_BackReference back reference
 	// Ignoring ExperimenterGroup_BackReference back reference
 	public void setExperimenterFirstName(String firstName, int experimenterIndex)
 	{
-		firstName = filter? DataTools.sanitize(firstName) : firstName;
-		store.setExperimenterFirstName(firstName, experimenterIndex);
+		meta.setExperimenterFirstName(firstName, experimenterIndex);
 	}
 
 	public void setExperimenterID(String id, int experimenterIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setExperimenterID(id, experimenterIndex);
+		meta.setExperimenterID(id, experimenterIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setExperimenterInstitution(String institution, int experimenterIndex)
 	{
-		institution = filter? DataTools.sanitize(institution) : institution;
-		store.setExperimenterInstitution(institution, experimenterIndex);
+		meta.setExperimenterInstitution(institution, experimenterIndex);
 	}
 
 	public void setExperimenterLastName(String lastName, int experimenterIndex)
 	{
-		lastName = filter? DataTools.sanitize(lastName) : lastName;
-		store.setExperimenterLastName(lastName, experimenterIndex);
+		meta.setExperimenterLastName(lastName, experimenterIndex);
 	}
 
 	// Ignoring MicrobeamManipulation_BackReference back reference
 	public void setExperimenterMiddleName(String middleName, int experimenterIndex)
 	{
-		middleName = filter? DataTools.sanitize(middleName) : middleName;
-		store.setExperimenterMiddleName(middleName, experimenterIndex);
+		meta.setExperimenterMiddleName(middleName, experimenterIndex);
 	}
 
 	// Ignoring Project_BackReference back reference
 	public void setExperimenterUserName(String userName, int experimenterIndex)
 	{
-		userName = filter? DataTools.sanitize(userName) : userName;
-		store.setExperimenterUserName(userName, experimenterIndex);
+		meta.setExperimenterUserName(userName, experimenterIndex);
 	}
 
 	//
@@ -935,37 +885,34 @@ public class FilterMetadata implements MetadataStore
 
 	public void setExperimenterGroupAnnotationRef(String annotation, int experimenterGroupIndex, int annotationRefIndex)
 	{
-		store.setExperimenterGroupAnnotationRef(annotation, experimenterGroupIndex, annotationRefIndex);
+		meta.setExperimenterGroupAnnotationRef(annotation, experimenterGroupIndex, annotationRefIndex);
 	}
 
 	// Ignoring Dataset_BackReference back reference
 	public void setExperimenterGroupDescription(String description, int experimenterGroupIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setExperimenterGroupDescription(description, experimenterGroupIndex);
+		meta.setExperimenterGroupDescription(description, experimenterGroupIndex);
 	}
 
 	public void setExperimenterGroupExperimenterRef(String experimenter, int experimenterGroupIndex, int experimenterRefIndex)
 	{
-		store.setExperimenterGroupExperimenterRef(experimenter, experimenterGroupIndex, experimenterRefIndex);
+		meta.setExperimenterGroupExperimenterRef(experimenter, experimenterGroupIndex, experimenterRefIndex);
 	}
 
 	public void setExperimenterGroupID(String id, int experimenterGroupIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setExperimenterGroupID(id, experimenterGroupIndex);
+		meta.setExperimenterGroupID(id, experimenterGroupIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setExperimenterGroupLeader(String leader, int experimenterGroupIndex, int leaderIndex)
 	{
-		store.setExperimenterGroupLeader(leader, experimenterGroupIndex, leaderIndex);
+		meta.setExperimenterGroupLeader(leader, experimenterGroupIndex, leaderIndex);
 	}
 
 	public void setExperimenterGroupName(String name, int experimenterGroupIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setExperimenterGroupName(name, experimenterGroupIndex);
+		meta.setExperimenterGroupName(name, experimenterGroupIndex);
 	}
 
 	// Ignoring Project_BackReference back reference
@@ -1000,8 +947,7 @@ public class FilterMetadata implements MetadataStore
 	// ID accessor from parent LightSource
 	public void setFilamentID(String id, int instrumentIndex, int lightSourceIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setFilamentID(id, instrumentIndex, lightSourceIndex);
+		meta.setFilamentID(id, instrumentIndex, lightSourceIndex);
 	}
 
 	// Ignoring Laser of parent abstract type
@@ -1009,40 +955,36 @@ public class FilterMetadata implements MetadataStore
 	// LotNumber accessor from parent LightSource
 	public void setFilamentLotNumber(String lotNumber, int instrumentIndex, int lightSourceIndex)
 	{
-		lotNumber = filter? DataTools.sanitize(lotNumber) : lotNumber;
-		store.setFilamentLotNumber(lotNumber, instrumentIndex, lightSourceIndex);
+		meta.setFilamentLotNumber(lotNumber, instrumentIndex, lightSourceIndex);
 	}
 
 	// Manufacturer accessor from parent LightSource
 	public void setFilamentManufacturer(String manufacturer, int instrumentIndex, int lightSourceIndex)
 	{
-		manufacturer = filter? DataTools.sanitize(manufacturer) : manufacturer;
-		store.setFilamentManufacturer(manufacturer, instrumentIndex, lightSourceIndex);
+		meta.setFilamentManufacturer(manufacturer, instrumentIndex, lightSourceIndex);
 	}
 
 	// Model accessor from parent LightSource
 	public void setFilamentModel(String model, int instrumentIndex, int lightSourceIndex)
 	{
-		model = filter? DataTools.sanitize(model) : model;
-		store.setFilamentModel(model, instrumentIndex, lightSourceIndex);
+		meta.setFilamentModel(model, instrumentIndex, lightSourceIndex);
 	}
 
 	// Power accessor from parent LightSource
 	public void setFilamentPower(Double power, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setFilamentPower(power, instrumentIndex, lightSourceIndex);
+		meta.setFilamentPower(power, instrumentIndex, lightSourceIndex);
 	}
 
 	// SerialNumber accessor from parent LightSource
 	public void setFilamentSerialNumber(String serialNumber, int instrumentIndex, int lightSourceIndex)
 	{
-		serialNumber = filter? DataTools.sanitize(serialNumber) : serialNumber;
-		store.setFilamentSerialNumber(serialNumber, instrumentIndex, lightSourceIndex);
+		meta.setFilamentSerialNumber(serialNumber, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setFilamentType(FilamentType type, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setFilamentType(type, instrumentIndex, lightSourceIndex);
+		meta.setFilamentType(type, instrumentIndex, lightSourceIndex);
 	}
 
 	//
@@ -1053,7 +995,7 @@ public class FilterMetadata implements MetadataStore
 
 	public void setFileAnnotationAnnotationRef(String annotation, int fileAnnotationIndex, int annotationRefIndex)
 	{
-		store.setFileAnnotationAnnotationRef(annotation, fileAnnotationIndex, annotationRefIndex);
+		meta.setFileAnnotationAnnotationRef(annotation, fileAnnotationIndex, annotationRefIndex);
 	}
 
 	// Ignoring BinaryFile element, complex property
@@ -1061,23 +1003,20 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring Dataset_BackReference back reference
 	public void setFileAnnotationDescription(String description, int fileAnnotationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setFileAnnotationDescription(description, fileAnnotationIndex);
+		meta.setFileAnnotationDescription(description, fileAnnotationIndex);
 	}
 
 	// Ignoring ExperimenterGroup_BackReference back reference
 	// Ignoring Experimenter_BackReference back reference
 	public void setFileAnnotationID(String id, int fileAnnotationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setFileAnnotationID(id, fileAnnotationIndex);
+		meta.setFileAnnotationID(id, fileAnnotationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setFileAnnotationNamespace(String namespace, int fileAnnotationIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setFileAnnotationNamespace(namespace, fileAnnotationIndex);
+		meta.setFileAnnotationNamespace(namespace, fileAnnotationIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
@@ -1101,14 +1040,12 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring FilterSet_BackReference back reference
 	public void setFilterFilterWheel(String filterWheel, int instrumentIndex, int filterIndex)
 	{
-		filterWheel = filter? DataTools.sanitize(filterWheel) : filterWheel;
-		store.setFilterFilterWheel(filterWheel, instrumentIndex, filterIndex);
+		meta.setFilterFilterWheel(filterWheel, instrumentIndex, filterIndex);
 	}
 
 	public void setFilterID(String id, int instrumentIndex, int filterIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setFilterID(id, instrumentIndex, filterIndex);
+		meta.setFilterID(id, instrumentIndex, filterIndex);
 	}
 
 	// Ignoring Instrument_BackReference back reference
@@ -1116,32 +1053,28 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring LightPath_BackReference back reference
 	public void setFilterLotNumber(String lotNumber, int instrumentIndex, int filterIndex)
 	{
-		lotNumber = filter? DataTools.sanitize(lotNumber) : lotNumber;
-		store.setFilterLotNumber(lotNumber, instrumentIndex, filterIndex);
+		meta.setFilterLotNumber(lotNumber, instrumentIndex, filterIndex);
 	}
 
 	public void setFilterManufacturer(String manufacturer, int instrumentIndex, int filterIndex)
 	{
-		manufacturer = filter? DataTools.sanitize(manufacturer) : manufacturer;
-		store.setFilterManufacturer(manufacturer, instrumentIndex, filterIndex);
+		meta.setFilterManufacturer(manufacturer, instrumentIndex, filterIndex);
 	}
 
 	public void setFilterModel(String model, int instrumentIndex, int filterIndex)
 	{
-		model = filter? DataTools.sanitize(model) : model;
-		store.setFilterModel(model, instrumentIndex, filterIndex);
+		meta.setFilterModel(model, instrumentIndex, filterIndex);
 	}
 
 	public void setFilterSerialNumber(String serialNumber, int instrumentIndex, int filterIndex)
 	{
-		serialNumber = filter? DataTools.sanitize(serialNumber) : serialNumber;
-		store.setFilterSerialNumber(serialNumber, instrumentIndex, filterIndex);
+		meta.setFilterSerialNumber(serialNumber, instrumentIndex, filterIndex);
 	}
 
 	// Ignoring TransmittanceRange element, complex property
 	public void setFilterType(FilterType type, int instrumentIndex, int filterIndex)
 	{
-		store.setFilterType(type, instrumentIndex, filterIndex);
+		meta.setFilterType(type, instrumentIndex, filterIndex);
 	}
 
 	//
@@ -1153,48 +1086,43 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring Channel_BackReference back reference
 	public void setFilterSetDichroicRef(String dichroic, int instrumentIndex, int filterSetIndex)
 	{
-		store.setFilterSetDichroicRef(dichroic, instrumentIndex, filterSetIndex);
+		meta.setFilterSetDichroicRef(dichroic, instrumentIndex, filterSetIndex);
 	}
 
 	public void setFilterSetEmissionFilterRef(String emissionFilter, int instrumentIndex, int filterSetIndex, int emissionFilterRefIndex)
 	{
-		store.setFilterSetEmissionFilterRef(emissionFilter, instrumentIndex, filterSetIndex, emissionFilterRefIndex);
+		meta.setFilterSetEmissionFilterRef(emissionFilter, instrumentIndex, filterSetIndex, emissionFilterRefIndex);
 	}
 
 	public void setFilterSetExcitationFilterRef(String excitationFilter, int instrumentIndex, int filterSetIndex, int excitationFilterRefIndex)
 	{
-		store.setFilterSetExcitationFilterRef(excitationFilter, instrumentIndex, filterSetIndex, excitationFilterRefIndex);
+		meta.setFilterSetExcitationFilterRef(excitationFilter, instrumentIndex, filterSetIndex, excitationFilterRefIndex);
 	}
 
 	public void setFilterSetID(String id, int instrumentIndex, int filterSetIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setFilterSetID(id, instrumentIndex, filterSetIndex);
+		meta.setFilterSetID(id, instrumentIndex, filterSetIndex);
 	}
 
 	// Ignoring Instrument_BackReference back reference
 	public void setFilterSetLotNumber(String lotNumber, int instrumentIndex, int filterSetIndex)
 	{
-		lotNumber = filter? DataTools.sanitize(lotNumber) : lotNumber;
-		store.setFilterSetLotNumber(lotNumber, instrumentIndex, filterSetIndex);
+		meta.setFilterSetLotNumber(lotNumber, instrumentIndex, filterSetIndex);
 	}
 
 	public void setFilterSetManufacturer(String manufacturer, int instrumentIndex, int filterSetIndex)
 	{
-		manufacturer = filter? DataTools.sanitize(manufacturer) : manufacturer;
-		store.setFilterSetManufacturer(manufacturer, instrumentIndex, filterSetIndex);
+		meta.setFilterSetManufacturer(manufacturer, instrumentIndex, filterSetIndex);
 	}
 
 	public void setFilterSetModel(String model, int instrumentIndex, int filterSetIndex)
 	{
-		model = filter? DataTools.sanitize(model) : model;
-		store.setFilterSetModel(model, instrumentIndex, filterSetIndex);
+		meta.setFilterSetModel(model, instrumentIndex, filterSetIndex);
 	}
 
 	public void setFilterSetSerialNumber(String serialNumber, int instrumentIndex, int filterSetIndex)
 	{
-		serialNumber = filter? DataTools.sanitize(serialNumber) : serialNumber;
-		store.setFilterSetSerialNumber(serialNumber, instrumentIndex, filterSetIndex);
+		meta.setFilterSetSerialNumber(serialNumber, instrumentIndex, filterSetIndex);
 	}
 
 	//
@@ -1215,64 +1143,61 @@ public class FilterMetadata implements MetadataStore
 
 	public void setImageAcquisitionDate(Timestamp acquisitionDate, int imageIndex)
 	{
-		store.setImageAcquisitionDate(acquisitionDate, imageIndex);
+		meta.setImageAcquisitionDate(acquisitionDate, imageIndex);
 	}
 
 	public void setImageAnnotationRef(String annotation, int imageIndex, int annotationRefIndex)
 	{
-		store.setImageAnnotationRef(annotation, imageIndex, annotationRefIndex);
+		meta.setImageAnnotationRef(annotation, imageIndex, annotationRefIndex);
 	}
 
 	// Ignoring Dataset_BackReference back reference
 	public void setImageDescription(String description, int imageIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setImageDescription(description, imageIndex);
+		meta.setImageDescription(description, imageIndex);
 	}
 
 	public void setImageExperimentRef(String experiment, int imageIndex)
 	{
-		store.setImageExperimentRef(experiment, imageIndex);
+		meta.setImageExperimentRef(experiment, imageIndex);
 	}
 
 	public void setImageExperimenterGroupRef(String experimenterGroup, int imageIndex)
 	{
-		store.setImageExperimenterGroupRef(experimenterGroup, imageIndex);
+		meta.setImageExperimenterGroupRef(experimenterGroup, imageIndex);
 	}
 
 	public void setImageExperimenterRef(String experimenter, int imageIndex)
 	{
-		store.setImageExperimenterRef(experimenter, imageIndex);
+		meta.setImageExperimenterRef(experimenter, imageIndex);
 	}
 
 	public void setImageID(String id, int imageIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setImageID(id, imageIndex);
+		meta.setImageID(id, imageIndex);
 	}
 
 	// Ignoring ImagingEnvironment element, complex property
 	public void setImageInstrumentRef(String instrument, int imageIndex)
 	{
-		store.setImageInstrumentRef(instrument, imageIndex);
+		meta.setImageInstrumentRef(instrument, imageIndex);
 	}
 
 	public void setImageMicrobeamManipulationRef(String microbeamManipulation, int imageIndex, int microbeamManipulationRefIndex)
 	{
-		store.setImageMicrobeamManipulationRef(microbeamManipulation, imageIndex, microbeamManipulationRefIndex);
+		meta.setImageMicrobeamManipulationRef(microbeamManipulation, imageIndex, microbeamManipulationRefIndex);
 	}
 
 	public void setImageName(String name, int imageIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setImageName(name, imageIndex);
+		meta.setImageName(name, imageIndex);
 	}
 
 	// Ignoring ObjectiveSettings element, complex property
 	// Ignoring Pixels element, complex property
 	public void setImageROIRef(String roi, int imageIndex, int ROIRefIndex)
 	{
-		store.setImageROIRef(roi, imageIndex, ROIRefIndex);
+		meta.setImageROIRef(roi, imageIndex, ROIRefIndex);
 	}
 
 	// Ignoring StageLabel element, complex property
@@ -1295,22 +1220,22 @@ public class FilterMetadata implements MetadataStore
 
 	public void setImagingEnvironmentAirPressure(Double airPressure, int imageIndex)
 	{
-		store.setImagingEnvironmentAirPressure(airPressure, imageIndex);
+		meta.setImagingEnvironmentAirPressure(airPressure, imageIndex);
 	}
 
 	public void setImagingEnvironmentCO2Percent(PercentFraction co2Percent, int imageIndex)
 	{
-		store.setImagingEnvironmentCO2Percent(co2Percent, imageIndex);
+		meta.setImagingEnvironmentCO2Percent(co2Percent, imageIndex);
 	}
 
 	public void setImagingEnvironmentHumidity(PercentFraction humidity, int imageIndex)
 	{
-		store.setImagingEnvironmentHumidity(humidity, imageIndex);
+		meta.setImagingEnvironmentHumidity(humidity, imageIndex);
 	}
 
 	public void setImagingEnvironmentTemperature(Double temperature, int imageIndex)
 	{
-		store.setImagingEnvironmentTemperature(temperature, imageIndex);
+		meta.setImagingEnvironmentTemperature(temperature, imageIndex);
 	}
 
 	//
@@ -1325,8 +1250,7 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring FilterSet element, complex property
 	public void setInstrumentID(String id, int instrumentIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setInstrumentID(id, instrumentIndex);
+		meta.setInstrumentID(id, instrumentIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
@@ -1353,38 +1277,37 @@ public class FilterMetadata implements MetadataStore
 	// FillColor accessor from parent Shape
 	public void setLabelFillColor(Color fillColor, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelFillColor(fillColor, ROIIndex, shapeIndex);
+		meta.setLabelFillColor(fillColor, ROIIndex, shapeIndex);
 	}
 
 	// FillRule accessor from parent Shape
 	public void setLabelFillRule(FillRule fillRule, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelFillRule(fillRule, ROIIndex, shapeIndex);
+		meta.setLabelFillRule(fillRule, ROIIndex, shapeIndex);
 	}
 
 	// FontFamily accessor from parent Shape
 	public void setLabelFontFamily(FontFamily fontFamily, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelFontFamily(fontFamily, ROIIndex, shapeIndex);
+		meta.setLabelFontFamily(fontFamily, ROIIndex, shapeIndex);
 	}
 
 	// FontSize accessor from parent Shape
 	public void setLabelFontSize(NonNegativeInteger fontSize, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelFontSize(fontSize, ROIIndex, shapeIndex);
+		meta.setLabelFontSize(fontSize, ROIIndex, shapeIndex);
 	}
 
 	// FontStyle accessor from parent Shape
 	public void setLabelFontStyle(FontStyle fontStyle, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelFontStyle(fontStyle, ROIIndex, shapeIndex);
+		meta.setLabelFontStyle(fontStyle, ROIIndex, shapeIndex);
 	}
 
 	// ID accessor from parent Shape
 	public void setLabelID(String id, int ROIIndex, int shapeIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setLabelID(id, ROIIndex, shapeIndex);
+		meta.setLabelID(id, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Label of parent abstract type
@@ -1392,13 +1315,13 @@ public class FilterMetadata implements MetadataStore
 	// LineCap accessor from parent Shape
 	public void setLabelLineCap(LineCap lineCap, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelLineCap(lineCap, ROIIndex, shapeIndex);
+		meta.setLabelLineCap(lineCap, ROIIndex, shapeIndex);
 	}
 
 	// Locked accessor from parent Shape
 	public void setLabelLocked(Boolean locked, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelLocked(locked, ROIIndex, shapeIndex);
+		meta.setLabelLocked(locked, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Mask of parent abstract type
@@ -1409,67 +1332,65 @@ public class FilterMetadata implements MetadataStore
 	// StrokeColor accessor from parent Shape
 	public void setLabelStrokeColor(Color strokeColor, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelStrokeColor(strokeColor, ROIIndex, shapeIndex);
+		meta.setLabelStrokeColor(strokeColor, ROIIndex, shapeIndex);
 	}
 
 	// StrokeDashArray accessor from parent Shape
 	public void setLabelStrokeDashArray(String strokeDashArray, int ROIIndex, int shapeIndex)
 	{
-		strokeDashArray = filter? DataTools.sanitize(strokeDashArray) : strokeDashArray;
-		store.setLabelStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
+		meta.setLabelStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
 	}
 
 	// StrokeWidth accessor from parent Shape
 	public void setLabelStrokeWidth(Double strokeWidth, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
+		meta.setLabelStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
 	}
 
 	// Text accessor from parent Shape
 	public void setLabelText(String text, int ROIIndex, int shapeIndex)
 	{
-		text = filter? DataTools.sanitize(text) : text;
-		store.setLabelText(text, ROIIndex, shapeIndex);
+		meta.setLabelText(text, ROIIndex, shapeIndex);
 	}
 
 	// TheC accessor from parent Shape
 	public void setLabelTheC(NonNegativeInteger theC, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelTheC(theC, ROIIndex, shapeIndex);
+		meta.setLabelTheC(theC, ROIIndex, shapeIndex);
 	}
 
 	// TheT accessor from parent Shape
 	public void setLabelTheT(NonNegativeInteger theT, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelTheT(theT, ROIIndex, shapeIndex);
+		meta.setLabelTheT(theT, ROIIndex, shapeIndex);
 	}
 
 	// TheZ accessor from parent Shape
 	public void setLabelTheZ(NonNegativeInteger theZ, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelTheZ(theZ, ROIIndex, shapeIndex);
+		meta.setLabelTheZ(theZ, ROIIndex, shapeIndex);
 	}
 
 	// Transform accessor from parent Shape
 	public void setLabelTransform(AffineTransform transform, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelTransform(transform, ROIIndex, shapeIndex);
+		meta.setLabelTransform(transform, ROIIndex, shapeIndex);
 	}
 
 	// Visible accessor from parent Shape
 	public void setLabelVisible(Boolean visible, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelVisible(visible, ROIIndex, shapeIndex);
+		meta.setLabelVisible(visible, ROIIndex, shapeIndex);
 	}
 
 	public void setLabelX(Double x, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelX(x, ROIIndex, shapeIndex);
+		meta.setLabelX(x, ROIIndex, shapeIndex);
 	}
 
 	public void setLabelY(Double y, int ROIIndex, int shapeIndex)
 	{
-		store.setLabelY(y, ROIIndex, shapeIndex);
+		meta.setLabelY(y, ROIIndex, shapeIndex);
 	}
 
 	//
@@ -1483,8 +1404,7 @@ public class FilterMetadata implements MetadataStore
 	// ID accessor from parent LightSource
 	public void setLaserID(String id, int instrumentIndex, int lightSourceIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setLaserID(id, instrumentIndex, lightSourceIndex);
+		meta.setLaserID(id, instrumentIndex, lightSourceIndex);
 	}
 
 	// Ignoring Laser of parent abstract type
@@ -1492,80 +1412,76 @@ public class FilterMetadata implements MetadataStore
 	// LotNumber accessor from parent LightSource
 	public void setLaserLotNumber(String lotNumber, int instrumentIndex, int lightSourceIndex)
 	{
-		lotNumber = filter? DataTools.sanitize(lotNumber) : lotNumber;
-		store.setLaserLotNumber(lotNumber, instrumentIndex, lightSourceIndex);
+		meta.setLaserLotNumber(lotNumber, instrumentIndex, lightSourceIndex);
 	}
 
 	// Manufacturer accessor from parent LightSource
 	public void setLaserManufacturer(String manufacturer, int instrumentIndex, int lightSourceIndex)
 	{
-		manufacturer = filter? DataTools.sanitize(manufacturer) : manufacturer;
-		store.setLaserManufacturer(manufacturer, instrumentIndex, lightSourceIndex);
+		meta.setLaserManufacturer(manufacturer, instrumentIndex, lightSourceIndex);
 	}
 
 	// Model accessor from parent LightSource
 	public void setLaserModel(String model, int instrumentIndex, int lightSourceIndex)
 	{
-		model = filter? DataTools.sanitize(model) : model;
-		store.setLaserModel(model, instrumentIndex, lightSourceIndex);
+		meta.setLaserModel(model, instrumentIndex, lightSourceIndex);
 	}
 
 	// Power accessor from parent LightSource
 	public void setLaserPower(Double power, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLaserPower(power, instrumentIndex, lightSourceIndex);
+		meta.setLaserPower(power, instrumentIndex, lightSourceIndex);
 	}
 
 	// SerialNumber accessor from parent LightSource
 	public void setLaserSerialNumber(String serialNumber, int instrumentIndex, int lightSourceIndex)
 	{
-		serialNumber = filter? DataTools.sanitize(serialNumber) : serialNumber;
-		store.setLaserSerialNumber(serialNumber, instrumentIndex, lightSourceIndex);
+		meta.setLaserSerialNumber(serialNumber, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setLaserFrequencyMultiplication(PositiveInteger frequencyMultiplication, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLaserFrequencyMultiplication(frequencyMultiplication, instrumentIndex, lightSourceIndex);
+		meta.setLaserFrequencyMultiplication(frequencyMultiplication, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setLaserLaserMedium(LaserMedium laserMedium, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLaserLaserMedium(laserMedium, instrumentIndex, lightSourceIndex);
+		meta.setLaserLaserMedium(laserMedium, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setLaserPockelCell(Boolean pockelCell, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLaserPockelCell(pockelCell, instrumentIndex, lightSourceIndex);
+		meta.setLaserPockelCell(pockelCell, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setLaserPulse(Pulse pulse, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLaserPulse(pulse, instrumentIndex, lightSourceIndex);
+		meta.setLaserPulse(pulse, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setLaserPump(String pump, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLaserPump(pump, instrumentIndex, lightSourceIndex);
+		meta.setLaserPump(pump, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setLaserRepetitionRate(Double repetitionRate, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLaserRepetitionRate(repetitionRate, instrumentIndex, lightSourceIndex);
+		meta.setLaserRepetitionRate(repetitionRate, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setLaserTuneable(Boolean tuneable, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLaserTuneable(tuneable, instrumentIndex, lightSourceIndex);
+		meta.setLaserTuneable(tuneable, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setLaserType(LaserType type, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLaserType(type, instrumentIndex, lightSourceIndex);
+		meta.setLaserType(type, instrumentIndex, lightSourceIndex);
 	}
 
 	public void setLaserWavelength(PositiveInteger wavelength, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLaserWavelength(wavelength, instrumentIndex, lightSourceIndex);
+		meta.setLaserWavelength(wavelength, instrumentIndex, lightSourceIndex);
 	}
 
 	//
@@ -1593,8 +1509,7 @@ public class FilterMetadata implements MetadataStore
 	// ID accessor from parent LightSource
 	public void setLightEmittingDiodeID(String id, int instrumentIndex, int lightSourceIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setLightEmittingDiodeID(id, instrumentIndex, lightSourceIndex);
+		meta.setLightEmittingDiodeID(id, instrumentIndex, lightSourceIndex);
 	}
 
 	// Ignoring Laser of parent abstract type
@@ -1602,35 +1517,31 @@ public class FilterMetadata implements MetadataStore
 	// LotNumber accessor from parent LightSource
 	public void setLightEmittingDiodeLotNumber(String lotNumber, int instrumentIndex, int lightSourceIndex)
 	{
-		lotNumber = filter? DataTools.sanitize(lotNumber) : lotNumber;
-		store.setLightEmittingDiodeLotNumber(lotNumber, instrumentIndex, lightSourceIndex);
+		meta.setLightEmittingDiodeLotNumber(lotNumber, instrumentIndex, lightSourceIndex);
 	}
 
 	// Manufacturer accessor from parent LightSource
 	public void setLightEmittingDiodeManufacturer(String manufacturer, int instrumentIndex, int lightSourceIndex)
 	{
-		manufacturer = filter? DataTools.sanitize(manufacturer) : manufacturer;
-		store.setLightEmittingDiodeManufacturer(manufacturer, instrumentIndex, lightSourceIndex);
+		meta.setLightEmittingDiodeManufacturer(manufacturer, instrumentIndex, lightSourceIndex);
 	}
 
 	// Model accessor from parent LightSource
 	public void setLightEmittingDiodeModel(String model, int instrumentIndex, int lightSourceIndex)
 	{
-		model = filter? DataTools.sanitize(model) : model;
-		store.setLightEmittingDiodeModel(model, instrumentIndex, lightSourceIndex);
+		meta.setLightEmittingDiodeModel(model, instrumentIndex, lightSourceIndex);
 	}
 
 	// Power accessor from parent LightSource
 	public void setLightEmittingDiodePower(Double power, int instrumentIndex, int lightSourceIndex)
 	{
-		store.setLightEmittingDiodePower(power, instrumentIndex, lightSourceIndex);
+		meta.setLightEmittingDiodePower(power, instrumentIndex, lightSourceIndex);
 	}
 
 	// SerialNumber accessor from parent LightSource
 	public void setLightEmittingDiodeSerialNumber(String serialNumber, int instrumentIndex, int lightSourceIndex)
 	{
-		serialNumber = filter? DataTools.sanitize(serialNumber) : serialNumber;
-		store.setLightEmittingDiodeSerialNumber(serialNumber, instrumentIndex, lightSourceIndex);
+		meta.setLightEmittingDiodeSerialNumber(serialNumber, instrumentIndex, lightSourceIndex);
 	}
 
 	//
@@ -1641,17 +1552,17 @@ public class FilterMetadata implements MetadataStore
 
 	public void setLightPathDichroicRef(String dichroic, int imageIndex, int channelIndex)
 	{
-		store.setLightPathDichroicRef(dichroic, imageIndex, channelIndex);
+		meta.setLightPathDichroicRef(dichroic, imageIndex, channelIndex);
 	}
 
 	public void setLightPathEmissionFilterRef(String emissionFilter, int imageIndex, int channelIndex, int emissionFilterRefIndex)
 	{
-		store.setLightPathEmissionFilterRef(emissionFilter, imageIndex, channelIndex, emissionFilterRefIndex);
+		meta.setLightPathEmissionFilterRef(emissionFilter, imageIndex, channelIndex, emissionFilterRefIndex);
 	}
 
 	public void setLightPathExcitationFilterRef(String excitationFilter, int imageIndex, int channelIndex, int excitationFilterRefIndex)
 	{
-		store.setLightPathExcitationFilterRef(excitationFilter, imageIndex, channelIndex, excitationFilterRefIndex);
+		meta.setLightPathExcitationFilterRef(excitationFilter, imageIndex, channelIndex, excitationFilterRefIndex);
 	}
 
 	//
@@ -1662,36 +1573,34 @@ public class FilterMetadata implements MetadataStore
 
 	public void setChannelLightSourceSettingsAttenuation(PercentFraction attenuation, int imageIndex, int channelIndex)
 	{
-		store.setChannelLightSourceSettingsAttenuation(attenuation, imageIndex, channelIndex);
+		meta.setChannelLightSourceSettingsAttenuation(attenuation, imageIndex, channelIndex);
 	}
 
 	public void setMicrobeamManipulationLightSourceSettingsAttenuation(PercentFraction attenuation, int experimentIndex, int microbeamManipulationIndex, int lightSourceSettingsIndex)
 	{
-		store.setMicrobeamManipulationLightSourceSettingsAttenuation(attenuation, experimentIndex, microbeamManipulationIndex, lightSourceSettingsIndex);
+		meta.setMicrobeamManipulationLightSourceSettingsAttenuation(attenuation, experimentIndex, microbeamManipulationIndex, lightSourceSettingsIndex);
 	}
 
 	public void setChannelLightSourceSettingsID(String id, int imageIndex, int channelIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setChannelLightSourceSettingsID(id, imageIndex, channelIndex);
+		meta.setChannelLightSourceSettingsID(id, imageIndex, channelIndex);
 	}
 
 	public void setMicrobeamManipulationLightSourceSettingsID(String id, int experimentIndex, int microbeamManipulationIndex, int lightSourceSettingsIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setMicrobeamManipulationLightSourceSettingsID(id, experimentIndex, microbeamManipulationIndex, lightSourceSettingsIndex);
+		meta.setMicrobeamManipulationLightSourceSettingsID(id, experimentIndex, microbeamManipulationIndex, lightSourceSettingsIndex);
 	}
 
 	// Ignoring LightSourceRef back reference
 	// Ignoring MicrobeamManipulation_BackReference back reference
 	public void setChannelLightSourceSettingsWavelength(PositiveInteger wavelength, int imageIndex, int channelIndex)
 	{
-		store.setChannelLightSourceSettingsWavelength(wavelength, imageIndex, channelIndex);
+		meta.setChannelLightSourceSettingsWavelength(wavelength, imageIndex, channelIndex);
 	}
 
 	public void setMicrobeamManipulationLightSourceSettingsWavelength(PositiveInteger wavelength, int experimentIndex, int microbeamManipulationIndex, int lightSourceSettingsIndex)
 	{
-		store.setMicrobeamManipulationLightSourceSettingsWavelength(wavelength, experimentIndex, microbeamManipulationIndex, lightSourceSettingsIndex);
+		meta.setMicrobeamManipulationLightSourceSettingsWavelength(wavelength, experimentIndex, microbeamManipulationIndex, lightSourceSettingsIndex);
 	}
 
 	//
@@ -1704,38 +1613,37 @@ public class FilterMetadata implements MetadataStore
 	// FillColor accessor from parent Shape
 	public void setLineFillColor(Color fillColor, int ROIIndex, int shapeIndex)
 	{
-		store.setLineFillColor(fillColor, ROIIndex, shapeIndex);
+		meta.setLineFillColor(fillColor, ROIIndex, shapeIndex);
 	}
 
 	// FillRule accessor from parent Shape
 	public void setLineFillRule(FillRule fillRule, int ROIIndex, int shapeIndex)
 	{
-		store.setLineFillRule(fillRule, ROIIndex, shapeIndex);
+		meta.setLineFillRule(fillRule, ROIIndex, shapeIndex);
 	}
 
 	// FontFamily accessor from parent Shape
 	public void setLineFontFamily(FontFamily fontFamily, int ROIIndex, int shapeIndex)
 	{
-		store.setLineFontFamily(fontFamily, ROIIndex, shapeIndex);
+		meta.setLineFontFamily(fontFamily, ROIIndex, shapeIndex);
 	}
 
 	// FontSize accessor from parent Shape
 	public void setLineFontSize(NonNegativeInteger fontSize, int ROIIndex, int shapeIndex)
 	{
-		store.setLineFontSize(fontSize, ROIIndex, shapeIndex);
+		meta.setLineFontSize(fontSize, ROIIndex, shapeIndex);
 	}
 
 	// FontStyle accessor from parent Shape
 	public void setLineFontStyle(FontStyle fontStyle, int ROIIndex, int shapeIndex)
 	{
-		store.setLineFontStyle(fontStyle, ROIIndex, shapeIndex);
+		meta.setLineFontStyle(fontStyle, ROIIndex, shapeIndex);
 	}
 
 	// ID accessor from parent Shape
 	public void setLineID(String id, int ROIIndex, int shapeIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setLineID(id, ROIIndex, shapeIndex);
+		meta.setLineID(id, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Label of parent abstract type
@@ -1743,13 +1651,13 @@ public class FilterMetadata implements MetadataStore
 	// LineCap accessor from parent Shape
 	public void setLineLineCap(LineCap lineCap, int ROIIndex, int shapeIndex)
 	{
-		store.setLineLineCap(lineCap, ROIIndex, shapeIndex);
+		meta.setLineLineCap(lineCap, ROIIndex, shapeIndex);
 	}
 
 	// Locked accessor from parent Shape
 	public void setLineLocked(Boolean locked, int ROIIndex, int shapeIndex)
 	{
-		store.setLineLocked(locked, ROIIndex, shapeIndex);
+		meta.setLineLocked(locked, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Mask of parent abstract type
@@ -1760,87 +1668,85 @@ public class FilterMetadata implements MetadataStore
 	// StrokeColor accessor from parent Shape
 	public void setLineStrokeColor(Color strokeColor, int ROIIndex, int shapeIndex)
 	{
-		store.setLineStrokeColor(strokeColor, ROIIndex, shapeIndex);
+		meta.setLineStrokeColor(strokeColor, ROIIndex, shapeIndex);
 	}
 
 	// StrokeDashArray accessor from parent Shape
 	public void setLineStrokeDashArray(String strokeDashArray, int ROIIndex, int shapeIndex)
 	{
-		strokeDashArray = filter? DataTools.sanitize(strokeDashArray) : strokeDashArray;
-		store.setLineStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
+		meta.setLineStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
 	}
 
 	// StrokeWidth accessor from parent Shape
 	public void setLineStrokeWidth(Double strokeWidth, int ROIIndex, int shapeIndex)
 	{
-		store.setLineStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
+		meta.setLineStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
 	}
 
 	// Text accessor from parent Shape
 	public void setLineText(String text, int ROIIndex, int shapeIndex)
 	{
-		text = filter? DataTools.sanitize(text) : text;
-		store.setLineText(text, ROIIndex, shapeIndex);
+		meta.setLineText(text, ROIIndex, shapeIndex);
 	}
 
 	// TheC accessor from parent Shape
 	public void setLineTheC(NonNegativeInteger theC, int ROIIndex, int shapeIndex)
 	{
-		store.setLineTheC(theC, ROIIndex, shapeIndex);
+		meta.setLineTheC(theC, ROIIndex, shapeIndex);
 	}
 
 	// TheT accessor from parent Shape
 	public void setLineTheT(NonNegativeInteger theT, int ROIIndex, int shapeIndex)
 	{
-		store.setLineTheT(theT, ROIIndex, shapeIndex);
+		meta.setLineTheT(theT, ROIIndex, shapeIndex);
 	}
 
 	// TheZ accessor from parent Shape
 	public void setLineTheZ(NonNegativeInteger theZ, int ROIIndex, int shapeIndex)
 	{
-		store.setLineTheZ(theZ, ROIIndex, shapeIndex);
+		meta.setLineTheZ(theZ, ROIIndex, shapeIndex);
 	}
 
 	// Transform accessor from parent Shape
 	public void setLineTransform(AffineTransform transform, int ROIIndex, int shapeIndex)
 	{
-		store.setLineTransform(transform, ROIIndex, shapeIndex);
+		meta.setLineTransform(transform, ROIIndex, shapeIndex);
 	}
 
 	// Visible accessor from parent Shape
 	public void setLineVisible(Boolean visible, int ROIIndex, int shapeIndex)
 	{
-		store.setLineVisible(visible, ROIIndex, shapeIndex);
+		meta.setLineVisible(visible, ROIIndex, shapeIndex);
 	}
 
 	public void setLineMarkerEnd(Marker markerEnd, int ROIIndex, int shapeIndex)
 	{
-		store.setLineMarkerEnd(markerEnd, ROIIndex, shapeIndex);
+		meta.setLineMarkerEnd(markerEnd, ROIIndex, shapeIndex);
 	}
 
 	public void setLineMarkerStart(Marker markerStart, int ROIIndex, int shapeIndex)
 	{
-		store.setLineMarkerStart(markerStart, ROIIndex, shapeIndex);
+		meta.setLineMarkerStart(markerStart, ROIIndex, shapeIndex);
 	}
 
 	public void setLineX1(Double x1, int ROIIndex, int shapeIndex)
 	{
-		store.setLineX1(x1, ROIIndex, shapeIndex);
+		meta.setLineX1(x1, ROIIndex, shapeIndex);
 	}
 
 	public void setLineX2(Double x2, int ROIIndex, int shapeIndex)
 	{
-		store.setLineX2(x2, ROIIndex, shapeIndex);
+		meta.setLineX2(x2, ROIIndex, shapeIndex);
 	}
 
 	public void setLineY1(Double y1, int ROIIndex, int shapeIndex)
 	{
-		store.setLineY1(y1, ROIIndex, shapeIndex);
+		meta.setLineY1(y1, ROIIndex, shapeIndex);
 	}
 
 	public void setLineY2(Double y2, int ROIIndex, int shapeIndex)
 	{
-		store.setLineY2(y2, ROIIndex, shapeIndex);
+		meta.setLineY2(y2, ROIIndex, shapeIndex);
 	}
 
 	//
@@ -1851,30 +1757,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setListAnnotationAnnotationRef(String annotation, int listAnnotationIndex, int annotationRefIndex)
 	{
-		store.setListAnnotationAnnotationRef(annotation, listAnnotationIndex, annotationRefIndex);
+		meta.setListAnnotationAnnotationRef(annotation, listAnnotationIndex, annotationRefIndex);
 	}
 
 	// Ignoring Channel_BackReference back reference
 	// Ignoring Dataset_BackReference back reference
 	public void setListAnnotationDescription(String description, int listAnnotationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setListAnnotationDescription(description, listAnnotationIndex);
+		meta.setListAnnotationDescription(description, listAnnotationIndex);
 	}
 
 	// Ignoring ExperimenterGroup_BackReference back reference
 	// Ignoring Experimenter_BackReference back reference
 	public void setListAnnotationID(String id, int listAnnotationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setListAnnotationID(id, listAnnotationIndex);
+		meta.setListAnnotationID(id, listAnnotationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setListAnnotationNamespace(String namespace, int listAnnotationIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setListAnnotationNamespace(namespace, listAnnotationIndex);
+		meta.setListAnnotationNamespace(namespace, listAnnotationIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
@@ -1896,30 +1799,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setLongAnnotationAnnotationRef(String annotation, int longAnnotationIndex, int annotationRefIndex)
 	{
-		store.setLongAnnotationAnnotationRef(annotation, longAnnotationIndex, annotationRefIndex);
+		meta.setLongAnnotationAnnotationRef(annotation, longAnnotationIndex, annotationRefIndex);
 	}
 
 	// Ignoring Channel_BackReference back reference
 	// Ignoring Dataset_BackReference back reference
 	public void setLongAnnotationDescription(String description, int longAnnotationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setLongAnnotationDescription(description, longAnnotationIndex);
+		meta.setLongAnnotationDescription(description, longAnnotationIndex);
 	}
 
 	// Ignoring ExperimenterGroup_BackReference back reference
 	// Ignoring Experimenter_BackReference back reference
 	public void setLongAnnotationID(String id, int longAnnotationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setLongAnnotationID(id, longAnnotationIndex);
+		meta.setLongAnnotationID(id, longAnnotationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setLongAnnotationNamespace(String namespace, int longAnnotationIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setLongAnnotationNamespace(namespace, longAnnotationIndex);
+		meta.setLongAnnotationNamespace(namespace, longAnnotationIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
@@ -1933,7 +1833,7 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring StructuredAnnotations_BackReference back reference
 	public void setLongAnnotationValue(Long value, int longAnnotationIndex)
 	{
-		store.setLongAnnotationValue(value, longAnnotationIndex);
+		meta.setLongAnnotationValue(value, longAnnotationIndex);
 	}
 
 	// Ignoring WellSample_BackReference back reference
@@ -1948,38 +1848,37 @@ public class FilterMetadata implements MetadataStore
 	// FillColor accessor from parent Shape
 	public void setMaskFillColor(Color fillColor, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskFillColor(fillColor, ROIIndex, shapeIndex);
+		meta.setMaskFillColor(fillColor, ROIIndex, shapeIndex);
 	}
 
 	// FillRule accessor from parent Shape
 	public void setMaskFillRule(FillRule fillRule, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskFillRule(fillRule, ROIIndex, shapeIndex);
+		meta.setMaskFillRule(fillRule, ROIIndex, shapeIndex);
 	}
 
 	// FontFamily accessor from parent Shape
 	public void setMaskFontFamily(FontFamily fontFamily, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskFontFamily(fontFamily, ROIIndex, shapeIndex);
+		meta.setMaskFontFamily(fontFamily, ROIIndex, shapeIndex);
 	}
 
 	// FontSize accessor from parent Shape
 	public void setMaskFontSize(NonNegativeInteger fontSize, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskFontSize(fontSize, ROIIndex, shapeIndex);
+		meta.setMaskFontSize(fontSize, ROIIndex, shapeIndex);
 	}
 
 	// FontStyle accessor from parent Shape
 	public void setMaskFontStyle(FontStyle fontStyle, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskFontStyle(fontStyle, ROIIndex, shapeIndex);
+		meta.setMaskFontStyle(fontStyle, ROIIndex, shapeIndex);
 	}
 
 	// ID accessor from parent Shape
 	public void setMaskID(String id, int ROIIndex, int shapeIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setMaskID(id, ROIIndex, shapeIndex);
+		meta.setMaskID(id, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Label of parent abstract type
@@ -1987,13 +1886,13 @@ public class FilterMetadata implements MetadataStore
 	// LineCap accessor from parent Shape
 	public void setMaskLineCap(LineCap lineCap, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskLineCap(lineCap, ROIIndex, shapeIndex);
+		meta.setMaskLineCap(lineCap, ROIIndex, shapeIndex);
 	}
 
 	// Locked accessor from parent Shape
 	public void setMaskLocked(Boolean locked, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskLocked(locked, ROIIndex, shapeIndex);
+		meta.setMaskLocked(locked, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Mask of parent abstract type
@@ -2004,78 +1903,76 @@ public class FilterMetadata implements MetadataStore
 	// StrokeColor accessor from parent Shape
 	public void setMaskStrokeColor(Color strokeColor, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskStrokeColor(strokeColor, ROIIndex, shapeIndex);
+		meta.setMaskStrokeColor(strokeColor, ROIIndex, shapeIndex);
 	}
 
 	// StrokeDashArray accessor from parent Shape
 	public void setMaskStrokeDashArray(String strokeDashArray, int ROIIndex, int shapeIndex)
 	{
-		strokeDashArray = filter? DataTools.sanitize(strokeDashArray) : strokeDashArray;
-		store.setMaskStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
+		meta.setMaskStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
 	}
 
 	// StrokeWidth accessor from parent Shape
 	public void setMaskStrokeWidth(Double strokeWidth, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
+		meta.setMaskStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
 	}
 
 	// Text accessor from parent Shape
 	public void setMaskText(String text, int ROIIndex, int shapeIndex)
 	{
-		text = filter? DataTools.sanitize(text) : text;
-		store.setMaskText(text, ROIIndex, shapeIndex);
+		meta.setMaskText(text, ROIIndex, shapeIndex);
 	}
 
 	// TheC accessor from parent Shape
 	public void setMaskTheC(NonNegativeInteger theC, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskTheC(theC, ROIIndex, shapeIndex);
+		meta.setMaskTheC(theC, ROIIndex, shapeIndex);
 	}
 
 	// TheT accessor from parent Shape
 	public void setMaskTheT(NonNegativeInteger theT, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskTheT(theT, ROIIndex, shapeIndex);
+		meta.setMaskTheT(theT, ROIIndex, shapeIndex);
 	}
 
 	// TheZ accessor from parent Shape
 	public void setMaskTheZ(NonNegativeInteger theZ, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskTheZ(theZ, ROIIndex, shapeIndex);
+		meta.setMaskTheZ(theZ, ROIIndex, shapeIndex);
 	}
 
 	// Transform accessor from parent Shape
 	public void setMaskTransform(AffineTransform transform, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskTransform(transform, ROIIndex, shapeIndex);
+		meta.setMaskTransform(transform, ROIIndex, shapeIndex);
 	}
 
 	// Visible accessor from parent Shape
 	public void setMaskVisible(Boolean visible, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskVisible(visible, ROIIndex, shapeIndex);
+		meta.setMaskVisible(visible, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring BinData element, complex property
 	public void setMaskHeight(Double height, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskHeight(height, ROIIndex, shapeIndex);
+		meta.setMaskHeight(height, ROIIndex, shapeIndex);
 	}
 
 	public void setMaskWidth(Double width, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskWidth(width, ROIIndex, shapeIndex);
+		meta.setMaskWidth(width, ROIIndex, shapeIndex);
 	}
 
 	public void setMaskX(Double x, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskX(x, ROIIndex, shapeIndex);
+		meta.setMaskX(x, ROIIndex, shapeIndex);
 	}
 
 	public void setMaskY(Double y, int ROIIndex, int shapeIndex)
 	{
-		store.setMaskY(y, ROIIndex, shapeIndex);
+		meta.setMaskY(y, ROIIndex, shapeIndex);
 	}
 
 	//
@@ -2092,32 +1989,30 @@ public class FilterMetadata implements MetadataStore
 
 	public void setMicrobeamManipulationDescription(String description, int experimentIndex, int microbeamManipulationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setMicrobeamManipulationDescription(description, experimentIndex, microbeamManipulationIndex);
+		meta.setMicrobeamManipulationDescription(description, experimentIndex, microbeamManipulationIndex);
 	}
 
 	// Ignoring Experiment_BackReference back reference
 	public void setMicrobeamManipulationExperimenterRef(String experimenter, int experimentIndex, int microbeamManipulationIndex)
 	{
-		store.setMicrobeamManipulationExperimenterRef(experimenter, experimentIndex, microbeamManipulationIndex);
+		meta.setMicrobeamManipulationExperimenterRef(experimenter, experimentIndex, microbeamManipulationIndex);
 	}
 
 	public void setMicrobeamManipulationID(String id, int experimentIndex, int microbeamManipulationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setMicrobeamManipulationID(id, experimentIndex, microbeamManipulationIndex);
+		meta.setMicrobeamManipulationID(id, experimentIndex, microbeamManipulationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	// Ignoring LightSourceSettings element, complex property
 	public void setMicrobeamManipulationROIRef(String roi, int experimentIndex, int microbeamManipulationIndex, int ROIRefIndex)
 	{
-		store.setMicrobeamManipulationROIRef(roi, experimentIndex, microbeamManipulationIndex, ROIRefIndex);
+		meta.setMicrobeamManipulationROIRef(roi, experimentIndex, microbeamManipulationIndex, ROIRefIndex);
 	}
 
 	public void setMicrobeamManipulationType(MicrobeamManipulationType type, int experimentIndex, int microbeamManipulationIndex)
 	{
-		store.setMicrobeamManipulationType(type, experimentIndex, microbeamManipulationIndex);
+		meta.setMicrobeamManipulationType(type, experimentIndex, microbeamManipulationIndex);
 	}
 
 	//
@@ -2138,31 +2033,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setMicroscopeLotNumber(String lotNumber, int instrumentIndex)
 	{
-		lotNumber = filter? DataTools.sanitize(lotNumber) : lotNumber;
-		store.setMicroscopeLotNumber(lotNumber, instrumentIndex);
+		meta.setMicroscopeLotNumber(lotNumber, instrumentIndex);
 	}
 
 	public void setMicroscopeManufacturer(String manufacturer, int instrumentIndex)
 	{
-		manufacturer = filter? DataTools.sanitize(manufacturer) : manufacturer;
-		store.setMicroscopeManufacturer(manufacturer, instrumentIndex);
+		meta.setMicroscopeManufacturer(manufacturer, instrumentIndex);
 	}
 
 	public void setMicroscopeModel(String model, int instrumentIndex)
 	{
-		model = filter? DataTools.sanitize(model) : model;
-		store.setMicroscopeModel(model, instrumentIndex);
+		meta.setMicroscopeModel(model, instrumentIndex);
 	}
 
 	public void setMicroscopeSerialNumber(String serialNumber, int instrumentIndex)
 	{
-		serialNumber = filter? DataTools.sanitize(serialNumber) : serialNumber;
-		store.setMicroscopeSerialNumber(serialNumber, instrumentIndex);
+		meta.setMicroscopeSerialNumber(serialNumber, instrumentIndex);
 	}
 
 	public void setMicroscopeType(MicroscopeType type, int instrumentIndex)
 	{
-		store.setMicroscopeType(type, instrumentIndex);
+		meta.setMicroscopeType(type, instrumentIndex);
 	}
 
 	//
@@ -2173,68 +2064,63 @@ public class FilterMetadata implements MetadataStore
 
 	public void setObjectiveCalibratedMagnification(Double calibratedMagnification, int instrumentIndex, int objectiveIndex)
 	{
-		store.setObjectiveCalibratedMagnification(calibratedMagnification, instrumentIndex, objectiveIndex);
+		meta.setObjectiveCalibratedMagnification(calibratedMagnification, instrumentIndex, objectiveIndex);
 	}
 
 	public void setObjectiveCorrection(Correction correction, int instrumentIndex, int objectiveIndex)
 	{
-		store.setObjectiveCorrection(correction, instrumentIndex, objectiveIndex);
+		meta.setObjectiveCorrection(correction, instrumentIndex, objectiveIndex);
 	}
 
 	public void setObjectiveID(String id, int instrumentIndex, int objectiveIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setObjectiveID(id, instrumentIndex, objectiveIndex);
+		meta.setObjectiveID(id, instrumentIndex, objectiveIndex);
 	}
 
 	public void setObjectiveImmersion(Immersion immersion, int instrumentIndex, int objectiveIndex)
 	{
-		store.setObjectiveImmersion(immersion, instrumentIndex, objectiveIndex);
+		meta.setObjectiveImmersion(immersion, instrumentIndex, objectiveIndex);
 	}
 
 	// Ignoring Instrument_BackReference back reference
 	public void setObjectiveIris(Boolean iris, int instrumentIndex, int objectiveIndex)
 	{
-		store.setObjectiveIris(iris, instrumentIndex, objectiveIndex);
+		meta.setObjectiveIris(iris, instrumentIndex, objectiveIndex);
 	}
 
 	public void setObjectiveLensNA(Double lensNA, int instrumentIndex, int objectiveIndex)
 	{
-		store.setObjectiveLensNA(lensNA, instrumentIndex, objectiveIndex);
+		meta.setObjectiveLensNA(lensNA, instrumentIndex, objectiveIndex);
 	}
 
 	public void setObjectiveLotNumber(String lotNumber, int instrumentIndex, int objectiveIndex)
 	{
-		lotNumber = filter? DataTools.sanitize(lotNumber) : lotNumber;
-		store.setObjectiveLotNumber(lotNumber, instrumentIndex, objectiveIndex);
+		meta.setObjectiveLotNumber(lotNumber, instrumentIndex, objectiveIndex);
 	}
 
 	public void setObjectiveManufacturer(String manufacturer, int instrumentIndex, int objectiveIndex)
 	{
-		manufacturer = filter? DataTools.sanitize(manufacturer) : manufacturer;
-		store.setObjectiveManufacturer(manufacturer, instrumentIndex, objectiveIndex);
+		meta.setObjectiveManufacturer(manufacturer, instrumentIndex, objectiveIndex);
 	}
 
 	public void setObjectiveModel(String model, int instrumentIndex, int objectiveIndex)
 	{
-		model = filter? DataTools.sanitize(model) : model;
-		store.setObjectiveModel(model, instrumentIndex, objectiveIndex);
+		meta.setObjectiveModel(model, instrumentIndex, objectiveIndex);
 	}
 
 	public void setObjectiveNominalMagnification(PositiveInteger nominalMagnification, int instrumentIndex, int objectiveIndex)
 	{
-		store.setObjectiveNominalMagnification(nominalMagnification, instrumentIndex, objectiveIndex);
+		meta.setObjectiveNominalMagnification(nominalMagnification, instrumentIndex, objectiveIndex);
 	}
 
 	public void setObjectiveSerialNumber(String serialNumber, int instrumentIndex, int objectiveIndex)
 	{
-		serialNumber = filter? DataTools.sanitize(serialNumber) : serialNumber;
-		store.setObjectiveSerialNumber(serialNumber, instrumentIndex, objectiveIndex);
+		meta.setObjectiveSerialNumber(serialNumber, instrumentIndex, objectiveIndex);
 	}
 
 	public void setObjectiveWorkingDistance(Double workingDistance, int instrumentIndex, int objectiveIndex)
 	{
-		store.setObjectiveWorkingDistance(workingDistance, instrumentIndex, objectiveIndex);
+		meta.setObjectiveWorkingDistance(workingDistance, instrumentIndex, objectiveIndex);
 	}
 
 	//
@@ -2245,24 +2131,23 @@ public class FilterMetadata implements MetadataStore
 
 	public void setObjectiveSettingsCorrectionCollar(Double correctionCollar, int imageIndex)
 	{
-		store.setObjectiveSettingsCorrectionCollar(correctionCollar, imageIndex);
+		meta.setObjectiveSettingsCorrectionCollar(correctionCollar, imageIndex);
 	}
 
 	public void setObjectiveSettingsID(String id, int imageIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setObjectiveSettingsID(id, imageIndex);
+		meta.setObjectiveSettingsID(id, imageIndex);
 	}
 
 	public void setObjectiveSettingsMedium(Medium medium, int imageIndex)
 	{
-		store.setObjectiveSettingsMedium(medium, imageIndex);
+		meta.setObjectiveSettingsMedium(medium, imageIndex);
 	}
 
 	// Ignoring ObjectiveRef back reference
 	public void setObjectiveSettingsRefractiveIndex(Double refractiveIndex, int imageIndex)
 	{
-		store.setObjectiveSettingsRefractiveIndex(refractiveIndex, imageIndex);
+		meta.setObjectiveSettingsRefractiveIndex(refractiveIndex, imageIndex);
 	}
 
 	//
@@ -2273,73 +2158,72 @@ public class FilterMetadata implements MetadataStore
 
 	public void setPixelsAnnotationRef(String annotation, int imageIndex, int annotationRefIndex)
 	{
-		store.setPixelsAnnotationRef(annotation, imageIndex, annotationRefIndex);
+		meta.setPixelsAnnotationRef(annotation, imageIndex, annotationRefIndex);
 	}
 
 	// Ignoring BinData element, complex property
 	// Ignoring Channel element, complex property
 	public void setPixelsDimensionOrder(DimensionOrder dimensionOrder, int imageIndex)
 	{
-		store.setPixelsDimensionOrder(dimensionOrder, imageIndex);
+		meta.setPixelsDimensionOrder(dimensionOrder, imageIndex);
 	}
 
 	public void setPixelsID(String id, int imageIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setPixelsID(id, imageIndex);
+		meta.setPixelsID(id, imageIndex);
 	}
 
 	// Ignoring MetadataOnly element, complex property
 	public void setPixelsPhysicalSizeX(PositiveFloat physicalSizeX, int imageIndex)
 	{
-		store.setPixelsPhysicalSizeX(physicalSizeX, imageIndex);
+		meta.setPixelsPhysicalSizeX(physicalSizeX, imageIndex);
 	}
 
 	public void setPixelsPhysicalSizeY(PositiveFloat physicalSizeY, int imageIndex)
 	{
-		store.setPixelsPhysicalSizeY(physicalSizeY, imageIndex);
+		meta.setPixelsPhysicalSizeY(physicalSizeY, imageIndex);
 	}
 
 	public void setPixelsPhysicalSizeZ(PositiveFloat physicalSizeZ, int imageIndex)
 	{
-		store.setPixelsPhysicalSizeZ(physicalSizeZ, imageIndex);
+		meta.setPixelsPhysicalSizeZ(physicalSizeZ, imageIndex);
 	}
 
 	// Ignoring Plane element, complex property
 	public void setPixelsSizeC(PositiveInteger sizeC, int imageIndex)
 	{
-		store.setPixelsSizeC(sizeC, imageIndex);
+		meta.setPixelsSizeC(sizeC, imageIndex);
 	}
 
 	public void setPixelsSizeT(PositiveInteger sizeT, int imageIndex)
 	{
-		store.setPixelsSizeT(sizeT, imageIndex);
+		meta.setPixelsSizeT(sizeT, imageIndex);
 	}
 
 	public void setPixelsSizeX(PositiveInteger sizeX, int imageIndex)
 	{
-		store.setPixelsSizeX(sizeX, imageIndex);
+		meta.setPixelsSizeX(sizeX, imageIndex);
 	}
 
 	public void setPixelsSizeY(PositiveInteger sizeY, int imageIndex)
 	{
-		store.setPixelsSizeY(sizeY, imageIndex);
+		meta.setPixelsSizeY(sizeY, imageIndex);
 	}
 
 	public void setPixelsSizeZ(PositiveInteger sizeZ, int imageIndex)
 	{
-		store.setPixelsSizeZ(sizeZ, imageIndex);
+		meta.setPixelsSizeZ(sizeZ, imageIndex);
 	}
 
 	// Ignoring TiffData element, complex property
 	public void setPixelsTimeIncrement(Double timeIncrement, int imageIndex)
 	{
-		store.setPixelsTimeIncrement(timeIncrement, imageIndex);
+		meta.setPixelsTimeIncrement(timeIncrement, imageIndex);
 	}
 
 	public void setPixelsType(PixelType type, int imageIndex)
 	{
-		store.setPixelsType(type, imageIndex);
+		meta.setPixelsType(type, imageIndex);
 	}
 
 	//
@@ -2350,54 +2234,53 @@ public class FilterMetadata implements MetadataStore
 
 	public void setPlaneAnnotationRef(String annotation, int imageIndex, int planeIndex, int annotationRefIndex)
 	{
-		store.setPlaneAnnotationRef(annotation, imageIndex, planeIndex, annotationRefIndex);
+		meta.setPlaneAnnotationRef(annotation, imageIndex, planeIndex, annotationRefIndex);
 	}
 
 	public void setPlaneDeltaT(Double deltaT, int imageIndex, int planeIndex)
 	{
-		store.setPlaneDeltaT(deltaT, imageIndex, planeIndex);
+		meta.setPlaneDeltaT(deltaT, imageIndex, planeIndex);
 	}
 
 	public void setPlaneExposureTime(Double exposureTime, int imageIndex, int planeIndex)
 	{
-		store.setPlaneExposureTime(exposureTime, imageIndex, planeIndex);
+		meta.setPlaneExposureTime(exposureTime, imageIndex, planeIndex);
 	}
 
 	public void setPlaneHashSHA1(String hashSHA1, int imageIndex, int planeIndex)
 	{
-		hashSHA1 = filter? DataTools.sanitize(hashSHA1) : hashSHA1;
-		store.setPlaneHashSHA1(hashSHA1, imageIndex, planeIndex);
+		meta.setPlaneHashSHA1(hashSHA1, imageIndex, planeIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
 	public void setPlanePositionX(Double positionX, int imageIndex, int planeIndex)
 	{
-		store.setPlanePositionX(positionX, imageIndex, planeIndex);
+		meta.setPlanePositionX(positionX, imageIndex, planeIndex);
 	}
 
 	public void setPlanePositionY(Double positionY, int imageIndex, int planeIndex)
 	{
-		store.setPlanePositionY(positionY, imageIndex, planeIndex);
+		meta.setPlanePositionY(positionY, imageIndex, planeIndex);
 	}
 
 	public void setPlanePositionZ(Double positionZ, int imageIndex, int planeIndex)
 	{
-		store.setPlanePositionZ(positionZ, imageIndex, planeIndex);
+		meta.setPlanePositionZ(positionZ, imageIndex, planeIndex);
 	}
 
 	public void setPlaneTheC(NonNegativeInteger theC, int imageIndex, int planeIndex)
 	{
-		store.setPlaneTheC(theC, imageIndex, planeIndex);
+		meta.setPlaneTheC(theC, imageIndex, planeIndex);
 	}
 
 	public void setPlaneTheT(NonNegativeInteger theT, int imageIndex, int planeIndex)
 	{
-		store.setPlaneTheT(theT, imageIndex, planeIndex);
+		meta.setPlaneTheT(theT, imageIndex, planeIndex);
 	}
 
 	public void setPlaneTheZ(NonNegativeInteger theZ, int imageIndex, int planeIndex)
 	{
-		store.setPlaneTheZ(theZ, imageIndex, planeIndex);
+		meta.setPlaneTheZ(theZ, imageIndex, planeIndex);
 	}
 
 	//
@@ -2408,75 +2291,70 @@ public class FilterMetadata implements MetadataStore
 
 	public void setPlateAnnotationRef(String annotation, int plateIndex, int annotationRefIndex)
 	{
-		store.setPlateAnnotationRef(annotation, plateIndex, annotationRefIndex);
+		meta.setPlateAnnotationRef(annotation, plateIndex, annotationRefIndex);
 	}
 
 	public void setPlateColumnNamingConvention(NamingConvention columnNamingConvention, int plateIndex)
 	{
-		store.setPlateColumnNamingConvention(columnNamingConvention, plateIndex);
+		meta.setPlateColumnNamingConvention(columnNamingConvention, plateIndex);
 	}
 
 	public void setPlateColumns(PositiveInteger columns, int plateIndex)
 	{
-		store.setPlateColumns(columns, plateIndex);
+		meta.setPlateColumns(columns, plateIndex);
 	}
 
 	public void setPlateDescription(String description, int plateIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setPlateDescription(description, plateIndex);
+		meta.setPlateDescription(description, plateIndex);
 	}
 
 	public void setPlateExternalIdentifier(String externalIdentifier, int plateIndex)
 	{
-		externalIdentifier = filter? DataTools.sanitize(externalIdentifier) : externalIdentifier;
-		store.setPlateExternalIdentifier(externalIdentifier, plateIndex);
+		meta.setPlateExternalIdentifier(externalIdentifier, plateIndex);
 	}
 
 	public void setPlateFieldIndex(NonNegativeInteger fieldIndex, int plateIndex)
 	{
-		store.setPlateFieldIndex(fieldIndex, plateIndex);
+		meta.setPlateFieldIndex(fieldIndex, plateIndex);
 	}
 
 	public void setPlateID(String id, int plateIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setPlateID(id, plateIndex);
+		meta.setPlateID(id, plateIndex);
 	}
 
 	public void setPlateName(String name, int plateIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setPlateName(name, plateIndex);
+		meta.setPlateName(name, plateIndex);
 	}
 
 	// Ignoring PlateAcquisition element, complex property
 	public void setPlateRowNamingConvention(NamingConvention rowNamingConvention, int plateIndex)
 	{
-		store.setPlateRowNamingConvention(rowNamingConvention, plateIndex);
+		meta.setPlateRowNamingConvention(rowNamingConvention, plateIndex);
 	}
 
 	public void setPlateRows(PositiveInteger rows, int plateIndex)
 	{
-		store.setPlateRows(rows, plateIndex);
+		meta.setPlateRows(rows, plateIndex);
 	}
 
 	// Ignoring Screen_BackReference back reference
 	public void setPlateStatus(String status, int plateIndex)
 	{
-		status = filter? DataTools.sanitize(status) : status;
-		store.setPlateStatus(status, plateIndex);
+		meta.setPlateStatus(status, plateIndex);
 	}
 
 	// Ignoring Well element, complex property
 	public void setPlateWellOriginX(Double wellOriginX, int plateIndex)
 	{
-		store.setPlateWellOriginX(wellOriginX, plateIndex);
+		meta.setPlateWellOriginX(wellOriginX, plateIndex);
 	}
 
 	public void setPlateWellOriginY(Double wellOriginY, int plateIndex)
 	{
-		store.setPlateWellOriginY(wellOriginY, plateIndex);
+		meta.setPlateWellOriginY(wellOriginY, plateIndex);
 	}
 
 	//
@@ -2487,46 +2365,43 @@ public class FilterMetadata implements MetadataStore
 
 	public void setPlateAcquisitionAnnotationRef(String annotation, int plateIndex, int plateAcquisitionIndex, int annotationRefIndex)
 	{
-		store.setPlateAcquisitionAnnotationRef(annotation, plateIndex, plateAcquisitionIndex, annotationRefIndex);
+		meta.setPlateAcquisitionAnnotationRef(annotation, plateIndex, plateAcquisitionIndex, annotationRefIndex);
 	}
 
 	public void setPlateAcquisitionDescription(String description, int plateIndex, int plateAcquisitionIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setPlateAcquisitionDescription(description, plateIndex, plateAcquisitionIndex);
+		meta.setPlateAcquisitionDescription(description, plateIndex, plateAcquisitionIndex);
 	}
 
 	public void setPlateAcquisitionEndTime(Timestamp endTime, int plateIndex, int plateAcquisitionIndex)
 	{
-		store.setPlateAcquisitionEndTime(endTime, plateIndex, plateAcquisitionIndex);
+		meta.setPlateAcquisitionEndTime(endTime, plateIndex, plateAcquisitionIndex);
 	}
 
 	public void setPlateAcquisitionID(String id, int plateIndex, int plateAcquisitionIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setPlateAcquisitionID(id, plateIndex, plateAcquisitionIndex);
+		meta.setPlateAcquisitionID(id, plateIndex, plateAcquisitionIndex);
 	}
 
 	public void setPlateAcquisitionMaximumFieldCount(PositiveInteger maximumFieldCount, int plateIndex, int plateAcquisitionIndex)
 	{
-		store.setPlateAcquisitionMaximumFieldCount(maximumFieldCount, plateIndex, plateAcquisitionIndex);
+		meta.setPlateAcquisitionMaximumFieldCount(maximumFieldCount, plateIndex, plateAcquisitionIndex);
 	}
 
 	public void setPlateAcquisitionName(String name, int plateIndex, int plateAcquisitionIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setPlateAcquisitionName(name, plateIndex, plateAcquisitionIndex);
+		meta.setPlateAcquisitionName(name, plateIndex, plateAcquisitionIndex);
 	}
 
 	// Ignoring Plate_BackReference back reference
 	public void setPlateAcquisitionStartTime(Timestamp startTime, int plateIndex, int plateAcquisitionIndex)
 	{
-		store.setPlateAcquisitionStartTime(startTime, plateIndex, plateAcquisitionIndex);
+		meta.setPlateAcquisitionStartTime(startTime, plateIndex, plateAcquisitionIndex);
 	}
 
 	public void setPlateAcquisitionWellSampleRef(String wellSample, int plateIndex, int plateAcquisitionIndex, int wellSampleRefIndex)
 	{
-		store.setPlateAcquisitionWellSampleRef(wellSample, plateIndex, plateAcquisitionIndex, wellSampleRefIndex);
+		meta.setPlateAcquisitionWellSampleRef(wellSample, plateIndex, plateAcquisitionIndex, wellSampleRefIndex);
 	}
 
 	//
@@ -2549,38 +2424,37 @@ public class FilterMetadata implements MetadataStore
 	// FillColor accessor from parent Shape
 	public void setPointFillColor(Color fillColor, int ROIIndex, int shapeIndex)
 	{
-		store.setPointFillColor(fillColor, ROIIndex, shapeIndex);
+		meta.setPointFillColor(fillColor, ROIIndex, shapeIndex);
 	}
 
 	// FillRule accessor from parent Shape
 	public void setPointFillRule(FillRule fillRule, int ROIIndex, int shapeIndex)
 	{
-		store.setPointFillRule(fillRule, ROIIndex, shapeIndex);
+		meta.setPointFillRule(fillRule, ROIIndex, shapeIndex);
 	}
 
 	// FontFamily accessor from parent Shape
 	public void setPointFontFamily(FontFamily fontFamily, int ROIIndex, int shapeIndex)
 	{
-		store.setPointFontFamily(fontFamily, ROIIndex, shapeIndex);
+		meta.setPointFontFamily(fontFamily, ROIIndex, shapeIndex);
 	}
 
 	// FontSize accessor from parent Shape
 	public void setPointFontSize(NonNegativeInteger fontSize, int ROIIndex, int shapeIndex)
 	{
-		store.setPointFontSize(fontSize, ROIIndex, shapeIndex);
+		meta.setPointFontSize(fontSize, ROIIndex, shapeIndex);
 	}
 
 	// FontStyle accessor from parent Shape
 	public void setPointFontStyle(FontStyle fontStyle, int ROIIndex, int shapeIndex)
 	{
-		store.setPointFontStyle(fontStyle, ROIIndex, shapeIndex);
+		meta.setPointFontStyle(fontStyle, ROIIndex, shapeIndex);
 	}
 
 	// ID accessor from parent Shape
 	public void setPointID(String id, int ROIIndex, int shapeIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setPointID(id, ROIIndex, shapeIndex);
+		meta.setPointID(id, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Label of parent abstract type
@@ -2588,13 +2462,13 @@ public class FilterMetadata implements MetadataStore
 	// LineCap accessor from parent Shape
 	public void setPointLineCap(LineCap lineCap, int ROIIndex, int shapeIndex)
 	{
-		store.setPointLineCap(lineCap, ROIIndex, shapeIndex);
+		meta.setPointLineCap(lineCap, ROIIndex, shapeIndex);
 	}
 
 	// Locked accessor from parent Shape
 	public void setPointLocked(Boolean locked, int ROIIndex, int shapeIndex)
 	{
-		store.setPointLocked(locked, ROIIndex, shapeIndex);
+		meta.setPointLocked(locked, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Mask of parent abstract type
@@ -2605,67 +2479,65 @@ public class FilterMetadata implements MetadataStore
 	// StrokeColor accessor from parent Shape
 	public void setPointStrokeColor(Color strokeColor, int ROIIndex, int shapeIndex)
 	{
-		store.setPointStrokeColor(strokeColor, ROIIndex, shapeIndex);
+		meta.setPointStrokeColor(strokeColor, ROIIndex, shapeIndex);
 	}
 
 	// StrokeDashArray accessor from parent Shape
 	public void setPointStrokeDashArray(String strokeDashArray, int ROIIndex, int shapeIndex)
 	{
-		strokeDashArray = filter? DataTools.sanitize(strokeDashArray) : strokeDashArray;
-		store.setPointStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
+		meta.setPointStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
 	}
 
 	// StrokeWidth accessor from parent Shape
 	public void setPointStrokeWidth(Double strokeWidth, int ROIIndex, int shapeIndex)
 	{
-		store.setPointStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
+		meta.setPointStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
 	}
 
 	// Text accessor from parent Shape
 	public void setPointText(String text, int ROIIndex, int shapeIndex)
 	{
-		text = filter? DataTools.sanitize(text) : text;
-		store.setPointText(text, ROIIndex, shapeIndex);
+		meta.setPointText(text, ROIIndex, shapeIndex);
 	}
 
 	// TheC accessor from parent Shape
 	public void setPointTheC(NonNegativeInteger theC, int ROIIndex, int shapeIndex)
 	{
-		store.setPointTheC(theC, ROIIndex, shapeIndex);
+		meta.setPointTheC(theC, ROIIndex, shapeIndex);
 	}
 
 	// TheT accessor from parent Shape
 	public void setPointTheT(NonNegativeInteger theT, int ROIIndex, int shapeIndex)
 	{
-		store.setPointTheT(theT, ROIIndex, shapeIndex);
+		meta.setPointTheT(theT, ROIIndex, shapeIndex);
 	}
 
 	// TheZ accessor from parent Shape
 	public void setPointTheZ(NonNegativeInteger theZ, int ROIIndex, int shapeIndex)
 	{
-		store.setPointTheZ(theZ, ROIIndex, shapeIndex);
+		meta.setPointTheZ(theZ, ROIIndex, shapeIndex);
 	}
 
 	// Transform accessor from parent Shape
 	public void setPointTransform(AffineTransform transform, int ROIIndex, int shapeIndex)
 	{
-		store.setPointTransform(transform, ROIIndex, shapeIndex);
+		meta.setPointTransform(transform, ROIIndex, shapeIndex);
 	}
 
 	// Visible accessor from parent Shape
 	public void setPointVisible(Boolean visible, int ROIIndex, int shapeIndex)
 	{
-		store.setPointVisible(visible, ROIIndex, shapeIndex);
+		meta.setPointVisible(visible, ROIIndex, shapeIndex);
 	}
 
 	public void setPointX(Double x, int ROIIndex, int shapeIndex)
 	{
-		store.setPointX(x, ROIIndex, shapeIndex);
+		meta.setPointX(x, ROIIndex, shapeIndex);
 	}
 
 	public void setPointY(Double y, int ROIIndex, int shapeIndex)
 	{
-		store.setPointY(y, ROIIndex, shapeIndex);
+		meta.setPointY(y, ROIIndex, shapeIndex);
 	}
 
 	//
@@ -2678,38 +2550,37 @@ public class FilterMetadata implements MetadataStore
 	// FillColor accessor from parent Shape
 	public void setPolygonFillColor(Color fillColor, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonFillColor(fillColor, ROIIndex, shapeIndex);
+		meta.setPolygonFillColor(fillColor, ROIIndex, shapeIndex);
 	}
 
 	// FillRule accessor from parent Shape
 	public void setPolygonFillRule(FillRule fillRule, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonFillRule(fillRule, ROIIndex, shapeIndex);
+		meta.setPolygonFillRule(fillRule, ROIIndex, shapeIndex);
 	}
 
 	// FontFamily accessor from parent Shape
 	public void setPolygonFontFamily(FontFamily fontFamily, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonFontFamily(fontFamily, ROIIndex, shapeIndex);
+		meta.setPolygonFontFamily(fontFamily, ROIIndex, shapeIndex);
 	}
 
 	// FontSize accessor from parent Shape
 	public void setPolygonFontSize(NonNegativeInteger fontSize, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonFontSize(fontSize, ROIIndex, shapeIndex);
+		meta.setPolygonFontSize(fontSize, ROIIndex, shapeIndex);
 	}
 
 	// FontStyle accessor from parent Shape
 	public void setPolygonFontStyle(FontStyle fontStyle, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonFontStyle(fontStyle, ROIIndex, shapeIndex);
+		meta.setPolygonFontStyle(fontStyle, ROIIndex, shapeIndex);
 	}
 
 	// ID accessor from parent Shape
 	public void setPolygonID(String id, int ROIIndex, int shapeIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setPolygonID(id, ROIIndex, shapeIndex);
+		meta.setPolygonID(id, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Label of parent abstract type
@@ -2717,13 +2588,13 @@ public class FilterMetadata implements MetadataStore
 	// LineCap accessor from parent Shape
 	public void setPolygonLineCap(LineCap lineCap, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonLineCap(lineCap, ROIIndex, shapeIndex);
+		meta.setPolygonLineCap(lineCap, ROIIndex, shapeIndex);
 	}
 
 	// Locked accessor from parent Shape
 	public void setPolygonLocked(Boolean locked, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonLocked(locked, ROIIndex, shapeIndex);
+		meta.setPolygonLocked(locked, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Mask of parent abstract type
@@ -2734,63 +2605,60 @@ public class FilterMetadata implements MetadataStore
 	// StrokeColor accessor from parent Shape
 	public void setPolygonStrokeColor(Color strokeColor, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonStrokeColor(strokeColor, ROIIndex, shapeIndex);
+		meta.setPolygonStrokeColor(strokeColor, ROIIndex, shapeIndex);
 	}
 
 	// StrokeDashArray accessor from parent Shape
 	public void setPolygonStrokeDashArray(String strokeDashArray, int ROIIndex, int shapeIndex)
 	{
-		strokeDashArray = filter? DataTools.sanitize(strokeDashArray) : strokeDashArray;
-		store.setPolygonStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
+		meta.setPolygonStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
 	}
 
 	// StrokeWidth accessor from parent Shape
 	public void setPolygonStrokeWidth(Double strokeWidth, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
+		meta.setPolygonStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
 	}
 
 	// Text accessor from parent Shape
 	public void setPolygonText(String text, int ROIIndex, int shapeIndex)
 	{
-		text = filter? DataTools.sanitize(text) : text;
-		store.setPolygonText(text, ROIIndex, shapeIndex);
+		meta.setPolygonText(text, ROIIndex, shapeIndex);
 	}
 
 	// TheC accessor from parent Shape
 	public void setPolygonTheC(NonNegativeInteger theC, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonTheC(theC, ROIIndex, shapeIndex);
+		meta.setPolygonTheC(theC, ROIIndex, shapeIndex);
 	}
 
 	// TheT accessor from parent Shape
 	public void setPolygonTheT(NonNegativeInteger theT, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonTheT(theT, ROIIndex, shapeIndex);
+		meta.setPolygonTheT(theT, ROIIndex, shapeIndex);
 	}
 
 	// TheZ accessor from parent Shape
 	public void setPolygonTheZ(NonNegativeInteger theZ, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonTheZ(theZ, ROIIndex, shapeIndex);
+		meta.setPolygonTheZ(theZ, ROIIndex, shapeIndex);
 	}
 
 	// Transform accessor from parent Shape
 	public void setPolygonTransform(AffineTransform transform, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonTransform(transform, ROIIndex, shapeIndex);
+		meta.setPolygonTransform(transform, ROIIndex, shapeIndex);
 	}
 
 	// Visible accessor from parent Shape
 	public void setPolygonVisible(Boolean visible, int ROIIndex, int shapeIndex)
 	{
-		store.setPolygonVisible(visible, ROIIndex, shapeIndex);
+		meta.setPolygonVisible(visible, ROIIndex, shapeIndex);
 	}
 
 	public void setPolygonPoints(String points, int ROIIndex, int shapeIndex)
 	{
-		points = filter? DataTools.sanitize(points) : points;
-		store.setPolygonPoints(points, ROIIndex, shapeIndex);
+		meta.setPolygonPoints(points, ROIIndex, shapeIndex);
 	}
 
 	//
@@ -2803,38 +2671,37 @@ public class FilterMetadata implements MetadataStore
 	// FillColor accessor from parent Shape
 	public void setPolylineFillColor(Color fillColor, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineFillColor(fillColor, ROIIndex, shapeIndex);
+		meta.setPolylineFillColor(fillColor, ROIIndex, shapeIndex);
 	}
 
 	// FillRule accessor from parent Shape
 	public void setPolylineFillRule(FillRule fillRule, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineFillRule(fillRule, ROIIndex, shapeIndex);
+		meta.setPolylineFillRule(fillRule, ROIIndex, shapeIndex);
 	}
 
 	// FontFamily accessor from parent Shape
 	public void setPolylineFontFamily(FontFamily fontFamily, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineFontFamily(fontFamily, ROIIndex, shapeIndex);
+		meta.setPolylineFontFamily(fontFamily, ROIIndex, shapeIndex);
 	}
 
 	// FontSize accessor from parent Shape
 	public void setPolylineFontSize(NonNegativeInteger fontSize, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineFontSize(fontSize, ROIIndex, shapeIndex);
+		meta.setPolylineFontSize(fontSize, ROIIndex, shapeIndex);
 	}
 
 	// FontStyle accessor from parent Shape
 	public void setPolylineFontStyle(FontStyle fontStyle, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineFontStyle(fontStyle, ROIIndex, shapeIndex);
+		meta.setPolylineFontStyle(fontStyle, ROIIndex, shapeIndex);
 	}
 
 	// ID accessor from parent Shape
 	public void setPolylineID(String id, int ROIIndex, int shapeIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setPolylineID(id, ROIIndex, shapeIndex);
+		meta.setPolylineID(id, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Label of parent abstract type
@@ -2842,13 +2709,13 @@ public class FilterMetadata implements MetadataStore
 	// LineCap accessor from parent Shape
 	public void setPolylineLineCap(LineCap lineCap, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineLineCap(lineCap, ROIIndex, shapeIndex);
+		meta.setPolylineLineCap(lineCap, ROIIndex, shapeIndex);
 	}
 
 	// Locked accessor from parent Shape
 	public void setPolylineLocked(Boolean locked, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineLocked(locked, ROIIndex, shapeIndex);
+		meta.setPolylineLocked(locked, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Mask of parent abstract type
@@ -2859,73 +2726,70 @@ public class FilterMetadata implements MetadataStore
 	// StrokeColor accessor from parent Shape
 	public void setPolylineStrokeColor(Color strokeColor, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineStrokeColor(strokeColor, ROIIndex, shapeIndex);
+		meta.setPolylineStrokeColor(strokeColor, ROIIndex, shapeIndex);
 	}
 
 	// StrokeDashArray accessor from parent Shape
 	public void setPolylineStrokeDashArray(String strokeDashArray, int ROIIndex, int shapeIndex)
 	{
-		strokeDashArray = filter? DataTools.sanitize(strokeDashArray) : strokeDashArray;
-		store.setPolylineStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
+		meta.setPolylineStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
 	}
 
 	// StrokeWidth accessor from parent Shape
 	public void setPolylineStrokeWidth(Double strokeWidth, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
+		meta.setPolylineStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
 	}
 
 	// Text accessor from parent Shape
 	public void setPolylineText(String text, int ROIIndex, int shapeIndex)
 	{
-		text = filter? DataTools.sanitize(text) : text;
-		store.setPolylineText(text, ROIIndex, shapeIndex);
+		meta.setPolylineText(text, ROIIndex, shapeIndex);
 	}
 
 	// TheC accessor from parent Shape
 	public void setPolylineTheC(NonNegativeInteger theC, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineTheC(theC, ROIIndex, shapeIndex);
+		meta.setPolylineTheC(theC, ROIIndex, shapeIndex);
 	}
 
 	// TheT accessor from parent Shape
 	public void setPolylineTheT(NonNegativeInteger theT, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineTheT(theT, ROIIndex, shapeIndex);
+		meta.setPolylineTheT(theT, ROIIndex, shapeIndex);
 	}
 
 	// TheZ accessor from parent Shape
 	public void setPolylineTheZ(NonNegativeInteger theZ, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineTheZ(theZ, ROIIndex, shapeIndex);
+		meta.setPolylineTheZ(theZ, ROIIndex, shapeIndex);
 	}
 
 	// Transform accessor from parent Shape
 	public void setPolylineTransform(AffineTransform transform, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineTransform(transform, ROIIndex, shapeIndex);
+		meta.setPolylineTransform(transform, ROIIndex, shapeIndex);
 	}
 
 	// Visible accessor from parent Shape
 	public void setPolylineVisible(Boolean visible, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineVisible(visible, ROIIndex, shapeIndex);
+		meta.setPolylineVisible(visible, ROIIndex, shapeIndex);
 	}
 
 	public void setPolylineMarkerEnd(Marker markerEnd, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineMarkerEnd(markerEnd, ROIIndex, shapeIndex);
+		meta.setPolylineMarkerEnd(markerEnd, ROIIndex, shapeIndex);
 	}
 
 	public void setPolylineMarkerStart(Marker markerStart, int ROIIndex, int shapeIndex)
 	{
-		store.setPolylineMarkerStart(markerStart, ROIIndex, shapeIndex);
+		meta.setPolylineMarkerStart(markerStart, ROIIndex, shapeIndex);
 	}
 
 	public void setPolylinePoints(String points, int ROIIndex, int shapeIndex)
 	{
-		points = filter? DataTools.sanitize(points) : points;
-		store.setPolylinePoints(points, ROIIndex, shapeIndex);
+		meta.setPolylinePoints(points, ROIIndex, shapeIndex);
 	}
 
 	//
@@ -2936,40 +2800,37 @@ public class FilterMetadata implements MetadataStore
 
 	public void setProjectAnnotationRef(String annotation, int projectIndex, int annotationRefIndex)
 	{
-		store.setProjectAnnotationRef(annotation, projectIndex, annotationRefIndex);
+		meta.setProjectAnnotationRef(annotation, projectIndex, annotationRefIndex);
 	}
 
 	public void setProjectDatasetRef(String dataset, int projectIndex, int datasetRefIndex)
 	{
-		store.setProjectDatasetRef(dataset, projectIndex, datasetRefIndex);
+		meta.setProjectDatasetRef(dataset, projectIndex, datasetRefIndex);
 	}
 
 	public void setProjectDescription(String description, int projectIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setProjectDescription(description, projectIndex);
+		meta.setProjectDescription(description, projectIndex);
 	}
 
 	public void setProjectExperimenterGroupRef(String experimenterGroup, int projectIndex)
 	{
-		store.setProjectExperimenterGroupRef(experimenterGroup, projectIndex);
+		meta.setProjectExperimenterGroupRef(experimenterGroup, projectIndex);
 	}
 
 	public void setProjectExperimenterRef(String experimenter, int projectIndex)
 	{
-		store.setProjectExperimenterRef(experimenter, projectIndex);
+		meta.setProjectExperimenterRef(experimenter, projectIndex);
 	}
 
 	public void setProjectID(String id, int projectIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setProjectID(id, projectIndex);
+		meta.setProjectID(id, projectIndex);
 	}
 
 	public void setProjectName(String name, int projectIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setProjectName(name, projectIndex);
+		meta.setProjectName(name, projectIndex);
 	}
 
 	//
@@ -2994,33 +2855,29 @@ public class FilterMetadata implements MetadataStore
 
 	public void setROIAnnotationRef(String annotation, int ROIIndex, int annotationRefIndex)
 	{
-		store.setROIAnnotationRef(annotation, ROIIndex, annotationRefIndex);
+		meta.setROIAnnotationRef(annotation, ROIIndex, annotationRefIndex);
 	}
 
 	public void setROIDescription(String description, int ROIIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setROIDescription(description, ROIIndex);
+		meta.setROIDescription(description, ROIIndex);
 	}
 
 	public void setROIID(String id, int ROIIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setROIID(id, ROIIndex);
+		meta.setROIID(id, ROIIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	// Ignoring MicrobeamManipulation_BackReference back reference
 	public void setROIName(String name, int ROIIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setROIName(name, ROIIndex);
+		meta.setROIName(name, ROIIndex);
 	}
 
 	public void setROINamespace(String namespace, int ROIIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setROINamespace(namespace, ROIIndex);
+		meta.setROINamespace(namespace, ROIIndex);
 	}
 
 	// Ignoring Union element, complex property
@@ -3042,31 +2899,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setReagentAnnotationRef(String annotation, int screenIndex, int reagentIndex, int annotationRefIndex)
 	{
-		store.setReagentAnnotationRef(annotation, screenIndex, reagentIndex, annotationRefIndex);
+		meta.setReagentAnnotationRef(annotation, screenIndex, reagentIndex, annotationRefIndex);
 	}
 
 	public void setReagentDescription(String description, int screenIndex, int reagentIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setReagentDescription(description, screenIndex, reagentIndex);
+		meta.setReagentDescription(description, screenIndex, reagentIndex);
 	}
 
 	public void setReagentID(String id, int screenIndex, int reagentIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setReagentID(id, screenIndex, reagentIndex);
+		meta.setReagentID(id, screenIndex, reagentIndex);
 	}
 
 	public void setReagentName(String name, int screenIndex, int reagentIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setReagentName(name, screenIndex, reagentIndex);
+		meta.setReagentName(name, screenIndex, reagentIndex);
 	}
 
 	public void setReagentReagentIdentifier(String reagentIdentifier, int screenIndex, int reagentIndex)
 	{
-		reagentIdentifier = filter? DataTools.sanitize(reagentIdentifier) : reagentIdentifier;
-		store.setReagentReagentIdentifier(reagentIdentifier, screenIndex, reagentIndex);
+		meta.setReagentReagentIdentifier(reagentIdentifier, screenIndex, reagentIndex);
 	}
 
 	// Ignoring Screen_BackReference back reference
@@ -3091,38 +2944,37 @@ public class FilterMetadata implements MetadataStore
 	// FillColor accessor from parent Shape
 	public void setRectangleFillColor(Color fillColor, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleFillColor(fillColor, ROIIndex, shapeIndex);
+		meta.setRectangleFillColor(fillColor, ROIIndex, shapeIndex);
 	}
 
 	// FillRule accessor from parent Shape
 	public void setRectangleFillRule(FillRule fillRule, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleFillRule(fillRule, ROIIndex, shapeIndex);
+		meta.setRectangleFillRule(fillRule, ROIIndex, shapeIndex);
 	}
 
 	// FontFamily accessor from parent Shape
 	public void setRectangleFontFamily(FontFamily fontFamily, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleFontFamily(fontFamily, ROIIndex, shapeIndex);
+		meta.setRectangleFontFamily(fontFamily, ROIIndex, shapeIndex);
 	}
 
 	// FontSize accessor from parent Shape
 	public void setRectangleFontSize(NonNegativeInteger fontSize, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleFontSize(fontSize, ROIIndex, shapeIndex);
+		meta.setRectangleFontSize(fontSize, ROIIndex, shapeIndex);
 	}
 
 	// FontStyle accessor from parent Shape
 	public void setRectangleFontStyle(FontStyle fontStyle, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleFontStyle(fontStyle, ROIIndex, shapeIndex);
+		meta.setRectangleFontStyle(fontStyle, ROIIndex, shapeIndex);
 	}
 
 	// ID accessor from parent Shape
 	public void setRectangleID(String id, int ROIIndex, int shapeIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setRectangleID(id, ROIIndex, shapeIndex);
+		meta.setRectangleID(id, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Label of parent abstract type
@@ -3130,13 +2982,13 @@ public class FilterMetadata implements MetadataStore
 	// LineCap accessor from parent Shape
 	public void setRectangleLineCap(LineCap lineCap, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleLineCap(lineCap, ROIIndex, shapeIndex);
+		meta.setRectangleLineCap(lineCap, ROIIndex, shapeIndex);
 	}
 
 	// Locked accessor from parent Shape
 	public void setRectangleLocked(Boolean locked, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleLocked(locked, ROIIndex, shapeIndex);
+		meta.setRectangleLocked(locked, ROIIndex, shapeIndex);
 	}
 
 	// Ignoring Mask of parent abstract type
@@ -3147,77 +2999,75 @@ public class FilterMetadata implements MetadataStore
 	// StrokeColor accessor from parent Shape
 	public void setRectangleStrokeColor(Color strokeColor, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleStrokeColor(strokeColor, ROIIndex, shapeIndex);
+		meta.setRectangleStrokeColor(strokeColor, ROIIndex, shapeIndex);
 	}
 
 	// StrokeDashArray accessor from parent Shape
 	public void setRectangleStrokeDashArray(String strokeDashArray, int ROIIndex, int shapeIndex)
 	{
-		strokeDashArray = filter? DataTools.sanitize(strokeDashArray) : strokeDashArray;
-		store.setRectangleStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
+		meta.setRectangleStrokeDashArray(strokeDashArray, ROIIndex, shapeIndex);
 	}
 
 	// StrokeWidth accessor from parent Shape
 	public void setRectangleStrokeWidth(Double strokeWidth, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
+		meta.setRectangleStrokeWidth(strokeWidth, ROIIndex, shapeIndex);
 	}
 
 	// Text accessor from parent Shape
 	public void setRectangleText(String text, int ROIIndex, int shapeIndex)
 	{
-		text = filter? DataTools.sanitize(text) : text;
-		store.setRectangleText(text, ROIIndex, shapeIndex);
+		meta.setRectangleText(text, ROIIndex, shapeIndex);
 	}
 
 	// TheC accessor from parent Shape
 	public void setRectangleTheC(NonNegativeInteger theC, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleTheC(theC, ROIIndex, shapeIndex);
+		meta.setRectangleTheC(theC, ROIIndex, shapeIndex);
 	}
 
 	// TheT accessor from parent Shape
 	public void setRectangleTheT(NonNegativeInteger theT, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleTheT(theT, ROIIndex, shapeIndex);
+		meta.setRectangleTheT(theT, ROIIndex, shapeIndex);
 	}
 
 	// TheZ accessor from parent Shape
 	public void setRectangleTheZ(NonNegativeInteger theZ, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleTheZ(theZ, ROIIndex, shapeIndex);
+		meta.setRectangleTheZ(theZ, ROIIndex, shapeIndex);
 	}
 
 	// Transform accessor from parent Shape
 	public void setRectangleTransform(AffineTransform transform, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleTransform(transform, ROIIndex, shapeIndex);
+		meta.setRectangleTransform(transform, ROIIndex, shapeIndex);
 	}
 
 	// Visible accessor from parent Shape
 	public void setRectangleVisible(Boolean visible, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleVisible(visible, ROIIndex, shapeIndex);
+		meta.setRectangleVisible(visible, ROIIndex, shapeIndex);
 	}
 
 	public void setRectangleHeight(Double height, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleHeight(height, ROIIndex, shapeIndex);
+		meta.setRectangleHeight(height, ROIIndex, shapeIndex);
 	}
 
 	public void setRectangleWidth(Double width, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleWidth(width, ROIIndex, shapeIndex);
+		meta.setRectangleWidth(width, ROIIndex, shapeIndex);
 	}
 
 	public void setRectangleX(Double x, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleX(x, ROIIndex, shapeIndex);
+		meta.setRectangleX(x, ROIIndex, shapeIndex);
 	}
 
 	public void setRectangleY(Double y, int ROIIndex, int shapeIndex)
 	{
-		store.setRectangleY(y, ROIIndex, shapeIndex);
+		meta.setRectangleY(y, ROIIndex, shapeIndex);
 	}
 
 	//
@@ -3228,61 +3078,53 @@ public class FilterMetadata implements MetadataStore
 
 	public void setScreenAnnotationRef(String annotation, int screenIndex, int annotationRefIndex)
 	{
-		store.setScreenAnnotationRef(annotation, screenIndex, annotationRefIndex);
+		meta.setScreenAnnotationRef(annotation, screenIndex, annotationRefIndex);
 	}
 
 	public void setScreenDescription(String description, int screenIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setScreenDescription(description, screenIndex);
+		meta.setScreenDescription(description, screenIndex);
 	}
 
 	public void setScreenID(String id, int screenIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setScreenID(id, screenIndex);
+		meta.setScreenID(id, screenIndex);
 	}
 
 	public void setScreenName(String name, int screenIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setScreenName(name, screenIndex);
+		meta.setScreenName(name, screenIndex);
 	}
 
 	public void setScreenPlateRef(String plate, int screenIndex, int plateRefIndex)
 	{
-		store.setScreenPlateRef(plate, screenIndex, plateRefIndex);
+		meta.setScreenPlateRef(plate, screenIndex, plateRefIndex);
 	}
 
 	public void setScreenProtocolDescription(String protocolDescription, int screenIndex)
 	{
-		protocolDescription = filter? DataTools.sanitize(protocolDescription) : protocolDescription;
-		store.setScreenProtocolDescription(protocolDescription, screenIndex);
+		meta.setScreenProtocolDescription(protocolDescription, screenIndex);
 	}
 
 	public void setScreenProtocolIdentifier(String protocolIdentifier, int screenIndex)
 	{
-		protocolIdentifier = filter? DataTools.sanitize(protocolIdentifier) : protocolIdentifier;
-		store.setScreenProtocolIdentifier(protocolIdentifier, screenIndex);
+		meta.setScreenProtocolIdentifier(protocolIdentifier, screenIndex);
 	}
 
 	// Ignoring Reagent element, complex property
 	public void setScreenReagentSetDescription(String reagentSetDescription, int screenIndex)
 	{
-		reagentSetDescription = filter? DataTools.sanitize(reagentSetDescription) : reagentSetDescription;
-		store.setScreenReagentSetDescription(reagentSetDescription, screenIndex);
+		meta.setScreenReagentSetDescription(reagentSetDescription, screenIndex);
 	}
 
 	public void setScreenReagentSetIdentifier(String reagentSetIdentifier, int screenIndex)
 	{
-		reagentSetIdentifier = filter? DataTools.sanitize(reagentSetIdentifier) : reagentSetIdentifier;
-		store.setScreenReagentSetIdentifier(reagentSetIdentifier, screenIndex);
+		meta.setScreenReagentSetIdentifier(reagentSetIdentifier, screenIndex);
 	}
 
 	public void setScreenType(String type, int screenIndex)
 	{
-		type = filter? DataTools.sanitize(type) : type;
-		store.setScreenType(type, screenIndex);
+		meta.setScreenType(type, screenIndex);
 	}
 
 	//
@@ -3293,23 +3135,22 @@ public class FilterMetadata implements MetadataStore
 
 	public void setStageLabelName(String name, int imageIndex)
 	{
-		name = filter? DataTools.sanitize(name) : name;
-		store.setStageLabelName(name, imageIndex);
+		meta.setStageLabelName(name, imageIndex);
 	}
 
 	public void setStageLabelX(Double x, int imageIndex)
 	{
-		store.setStageLabelX(x, imageIndex);
+		meta.setStageLabelX(x, imageIndex);
 	}
 
 	public void setStageLabelY(Double y, int imageIndex)
 	{
-		store.setStageLabelY(y, imageIndex);
+		meta.setStageLabelY(y, imageIndex);
 	}
 
 	public void setStageLabelZ(Double z, int imageIndex)
 	{
-		store.setStageLabelZ(z, imageIndex);
+		meta.setStageLabelZ(z, imageIndex);
 	}
 
 	//
@@ -3336,30 +3177,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setTagAnnotationAnnotationRef(String annotation, int tagAnnotationIndex, int annotationRefIndex)
 	{
-		store.setTagAnnotationAnnotationRef(annotation, tagAnnotationIndex, annotationRefIndex);
+		meta.setTagAnnotationAnnotationRef(annotation, tagAnnotationIndex, annotationRefIndex);
 	}
 
 	// Ignoring Channel_BackReference back reference
 	// Ignoring Dataset_BackReference back reference
 	public void setTagAnnotationDescription(String description, int tagAnnotationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setTagAnnotationDescription(description, tagAnnotationIndex);
+		meta.setTagAnnotationDescription(description, tagAnnotationIndex);
 	}
 
 	// Ignoring ExperimenterGroup_BackReference back reference
 	// Ignoring Experimenter_BackReference back reference
 	public void setTagAnnotationID(String id, int tagAnnotationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setTagAnnotationID(id, tagAnnotationIndex);
+		meta.setTagAnnotationID(id, tagAnnotationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setTagAnnotationNamespace(String namespace, int tagAnnotationIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setTagAnnotationNamespace(namespace, tagAnnotationIndex);
+		meta.setTagAnnotationNamespace(namespace, tagAnnotationIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
@@ -3373,8 +3211,7 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring StructuredAnnotations_BackReference back reference
 	public void setTagAnnotationValue(String value, int tagAnnotationIndex)
 	{
-		value = filter? DataTools.sanitize(value) : value;
-		store.setTagAnnotationValue(value, tagAnnotationIndex);
+		meta.setTagAnnotationValue(value, tagAnnotationIndex);
 	}
 
 	// Ignoring WellSample_BackReference back reference
@@ -3387,30 +3224,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setTermAnnotationAnnotationRef(String annotation, int termAnnotationIndex, int annotationRefIndex)
 	{
-		store.setTermAnnotationAnnotationRef(annotation, termAnnotationIndex, annotationRefIndex);
+		meta.setTermAnnotationAnnotationRef(annotation, termAnnotationIndex, annotationRefIndex);
 	}
 
 	// Ignoring Channel_BackReference back reference
 	// Ignoring Dataset_BackReference back reference
 	public void setTermAnnotationDescription(String description, int termAnnotationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setTermAnnotationDescription(description, termAnnotationIndex);
+		meta.setTermAnnotationDescription(description, termAnnotationIndex);
 	}
 
 	// Ignoring ExperimenterGroup_BackReference back reference
 	// Ignoring Experimenter_BackReference back reference
 	public void setTermAnnotationID(String id, int termAnnotationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setTermAnnotationID(id, termAnnotationIndex);
+		meta.setTermAnnotationID(id, termAnnotationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setTermAnnotationNamespace(String namespace, int termAnnotationIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setTermAnnotationNamespace(namespace, termAnnotationIndex);
+		meta.setTermAnnotationNamespace(namespace, termAnnotationIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
@@ -3424,8 +3258,7 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring StructuredAnnotations_BackReference back reference
 	public void setTermAnnotationValue(String value, int termAnnotationIndex)
 	{
-		value = filter? DataTools.sanitize(value) : value;
-		store.setTermAnnotationValue(value, termAnnotationIndex);
+		meta.setTermAnnotationValue(value, termAnnotationIndex);
 	}
 
 	// Ignoring WellSample_BackReference back reference
@@ -3438,28 +3271,28 @@ public class FilterMetadata implements MetadataStore
 
 	public void setTiffDataFirstC(NonNegativeInteger firstC, int imageIndex, int tiffDataIndex)
 	{
-		store.setTiffDataFirstC(firstC, imageIndex, tiffDataIndex);
+		meta.setTiffDataFirstC(firstC, imageIndex, tiffDataIndex);
 	}
 
 	public void setTiffDataFirstT(NonNegativeInteger firstT, int imageIndex, int tiffDataIndex)
 	{
-		store.setTiffDataFirstT(firstT, imageIndex, tiffDataIndex);
+		meta.setTiffDataFirstT(firstT, imageIndex, tiffDataIndex);
 	}
 
 	public void setTiffDataFirstZ(NonNegativeInteger firstZ, int imageIndex, int tiffDataIndex)
 	{
-		store.setTiffDataFirstZ(firstZ, imageIndex, tiffDataIndex);
+		meta.setTiffDataFirstZ(firstZ, imageIndex, tiffDataIndex);
 	}
 
 	public void setTiffDataIFD(NonNegativeInteger ifd, int imageIndex, int tiffDataIndex)
 	{
-		store.setTiffDataIFD(ifd, imageIndex, tiffDataIndex);
+		meta.setTiffDataIFD(ifd, imageIndex, tiffDataIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
 	public void setTiffDataPlaneCount(NonNegativeInteger planeCount, int imageIndex, int tiffDataIndex)
 	{
-		store.setTiffDataPlaneCount(planeCount, imageIndex, tiffDataIndex);
+		meta.setTiffDataPlaneCount(planeCount, imageIndex, tiffDataIndex);
 	}
 
 	// Ignoring UUID element, complex property
@@ -3471,30 +3304,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setTimestampAnnotationAnnotationRef(String annotation, int timestampAnnotationIndex, int annotationRefIndex)
 	{
-		store.setTimestampAnnotationAnnotationRef(annotation, timestampAnnotationIndex, annotationRefIndex);
+		meta.setTimestampAnnotationAnnotationRef(annotation, timestampAnnotationIndex, annotationRefIndex);
 	}
 
 	// Ignoring Channel_BackReference back reference
 	// Ignoring Dataset_BackReference back reference
 	public void setTimestampAnnotationDescription(String description, int timestampAnnotationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setTimestampAnnotationDescription(description, timestampAnnotationIndex);
+		meta.setTimestampAnnotationDescription(description, timestampAnnotationIndex);
 	}
 
 	// Ignoring ExperimenterGroup_BackReference back reference
 	// Ignoring Experimenter_BackReference back reference
 	public void setTimestampAnnotationID(String id, int timestampAnnotationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setTimestampAnnotationID(id, timestampAnnotationIndex);
+		meta.setTimestampAnnotationID(id, timestampAnnotationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setTimestampAnnotationNamespace(String namespace, int timestampAnnotationIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setTimestampAnnotationNamespace(namespace, timestampAnnotationIndex);
+		meta.setTimestampAnnotationNamespace(namespace, timestampAnnotationIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
@@ -3508,7 +3338,7 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring StructuredAnnotations_BackReference back reference
 	public void setTimestampAnnotationValue(Timestamp value, int timestampAnnotationIndex)
 	{
-		store.setTimestampAnnotationValue(value, timestampAnnotationIndex);
+		meta.setTimestampAnnotationValue(value, timestampAnnotationIndex);
 	}
 
 	// Ignoring WellSample_BackReference back reference
@@ -3521,35 +3351,34 @@ public class FilterMetadata implements MetadataStore
 
 	public void setTransmittanceRangeCutIn(PositiveInteger cutIn, int instrumentIndex, int filterIndex)
 	{
-		store.setTransmittanceRangeCutIn(cutIn, instrumentIndex, filterIndex);
+		meta.setTransmittanceRangeCutIn(cutIn, instrumentIndex, filterIndex);
 	}
 
 	public void setTransmittanceRangeCutInTolerance(NonNegativeInteger cutInTolerance, int instrumentIndex, int filterIndex)
 	{
-		store.setTransmittanceRangeCutInTolerance(cutInTolerance, instrumentIndex, filterIndex);
+		meta.setTransmittanceRangeCutInTolerance(cutInTolerance, instrumentIndex, filterIndex);
 	}
 
 	public void setTransmittanceRangeCutOut(PositiveInteger cutOut, int instrumentIndex, int filterIndex)
 	{
-		store.setTransmittanceRangeCutOut(cutOut, instrumentIndex, filterIndex);
+		meta.setTransmittanceRangeCutOut(cutOut, instrumentIndex, filterIndex);
 	}
 
 	public void setTransmittanceRangeCutOutTolerance(NonNegativeInteger cutOutTolerance, int instrumentIndex, int filterIndex)
 	{
-		store.setTransmittanceRangeCutOutTolerance(cutOutTolerance, instrumentIndex, filterIndex);
+		meta.setTransmittanceRangeCutOutTolerance(cutOutTolerance, instrumentIndex, filterIndex);
 	}
 
 	public void setTransmittanceRangeTransmittance(PercentFraction transmittance, int instrumentIndex, int filterIndex)
 	{
-		store.setTransmittanceRangeTransmittance(transmittance, instrumentIndex, filterIndex);
+		meta.setTransmittanceRangeTransmittance(transmittance, instrumentIndex, filterIndex);
 	}
 
 	// Element's text data
 	// {u'TiffData': [u'int imageIndex', u'int tiffDataIndex']}
 	public void setUUIDValue(String value, int imageIndex, int tiffDataIndex)
 	{
-		value = filter? DataTools.sanitize(value) : value;
-		store.setUUIDValue(value, imageIndex, tiffDataIndex);
+		meta.setUUIDValue(value, imageIndex, tiffDataIndex);
 	}
 
 	//
@@ -3560,8 +3389,7 @@ public class FilterMetadata implements MetadataStore
 
 	public void setUUIDFileName(String fileName, int imageIndex, int tiffDataIndex)
 	{
-		fileName = filter? DataTools.sanitize(fileName) : fileName;
-		store.setUUIDFileName(fileName, imageIndex, tiffDataIndex);
+		meta.setUUIDFileName(fileName, imageIndex, tiffDataIndex);
 	}
 
 	//
@@ -3579,52 +3407,48 @@ public class FilterMetadata implements MetadataStore
 
 	public void setWellAnnotationRef(String annotation, int plateIndex, int wellIndex, int annotationRefIndex)
 	{
-		store.setWellAnnotationRef(annotation, plateIndex, wellIndex, annotationRefIndex);
+		meta.setWellAnnotationRef(annotation, plateIndex, wellIndex, annotationRefIndex);
 	}
 
 	public void setWellColor(Color color, int plateIndex, int wellIndex)
 	{
-		store.setWellColor(color, plateIndex, wellIndex);
+		meta.setWellColor(color, plateIndex, wellIndex);
 	}
 
 	public void setWellColumn(NonNegativeInteger column, int plateIndex, int wellIndex)
 	{
-		store.setWellColumn(column, plateIndex, wellIndex);
+		meta.setWellColumn(column, plateIndex, wellIndex);
 	}
 
 	public void setWellExternalDescription(String externalDescription, int plateIndex, int wellIndex)
 	{
-		externalDescription = filter? DataTools.sanitize(externalDescription) : externalDescription;
-		store.setWellExternalDescription(externalDescription, plateIndex, wellIndex);
+		meta.setWellExternalDescription(externalDescription, plateIndex, wellIndex);
 	}
 
 	public void setWellExternalIdentifier(String externalIdentifier, int plateIndex, int wellIndex)
 	{
-		externalIdentifier = filter? DataTools.sanitize(externalIdentifier) : externalIdentifier;
-		store.setWellExternalIdentifier(externalIdentifier, plateIndex, wellIndex);
+		meta.setWellExternalIdentifier(externalIdentifier, plateIndex, wellIndex);
 	}
 
 	public void setWellID(String id, int plateIndex, int wellIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setWellID(id, plateIndex, wellIndex);
+		meta.setWellID(id, plateIndex, wellIndex);
 	}
 
 	// Ignoring Plate_BackReference back reference
 	public void setWellReagentRef(String reagent, int plateIndex, int wellIndex)
 	{
-		store.setWellReagentRef(reagent, plateIndex, wellIndex);
+		meta.setWellReagentRef(reagent, plateIndex, wellIndex);
 	}
 
 	public void setWellRow(NonNegativeInteger row, int plateIndex, int wellIndex)
 	{
-		store.setWellRow(row, plateIndex, wellIndex);
+		meta.setWellRow(row, plateIndex, wellIndex);
 	}
 
 	public void setWellType(String type, int plateIndex, int wellIndex)
 	{
-		type = filter? DataTools.sanitize(type) : type;
-		store.setWellType(type, plateIndex, wellIndex);
+		meta.setWellType(type, plateIndex, wellIndex);
 	}
 
 	// Ignoring WellSample element, complex property
@@ -3636,39 +3460,38 @@ public class FilterMetadata implements MetadataStore
 
 	public void setWellSampleAnnotationRef(String annotation, int plateIndex, int wellIndex, int wellSampleIndex, int annotationRefIndex)
 	{
-		store.setWellSampleAnnotationRef(annotation, plateIndex, wellIndex, wellSampleIndex, annotationRefIndex);
+		meta.setWellSampleAnnotationRef(annotation, plateIndex, wellIndex, wellSampleIndex, annotationRefIndex);
 	}
 
 	public void setWellSampleID(String id, int plateIndex, int wellIndex, int wellSampleIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setWellSampleID(id, plateIndex, wellIndex, wellSampleIndex);
+		meta.setWellSampleID(id, plateIndex, wellIndex, wellSampleIndex);
 	}
 
 	public void setWellSampleImageRef(String image, int plateIndex, int wellIndex, int wellSampleIndex)
 	{
-		store.setWellSampleImageRef(image, plateIndex, wellIndex, wellSampleIndex);
+		meta.setWellSampleImageRef(image, plateIndex, wellIndex, wellSampleIndex);
 	}
 
 	public void setWellSampleIndex(NonNegativeInteger index, int plateIndex, int wellIndex, int wellSampleIndex)
 	{
-		store.setWellSampleIndex(index, plateIndex, wellIndex, wellSampleIndex);
+		meta.setWellSampleIndex(index, plateIndex, wellIndex, wellSampleIndex);
 	}
 
 	// Ignoring PlateAcquisition_BackReference back reference
 	public void setWellSamplePositionX(Double positionX, int plateIndex, int wellIndex, int wellSampleIndex)
 	{
-		store.setWellSamplePositionX(positionX, plateIndex, wellIndex, wellSampleIndex);
+		meta.setWellSamplePositionX(positionX, plateIndex, wellIndex, wellSampleIndex);
 	}
 
 	public void setWellSamplePositionY(Double positionY, int plateIndex, int wellIndex, int wellSampleIndex)
 	{
-		store.setWellSamplePositionY(positionY, plateIndex, wellIndex, wellSampleIndex);
+		meta.setWellSamplePositionY(positionY, plateIndex, wellIndex, wellSampleIndex);
 	}
 
 	public void setWellSampleTimepoint(Timestamp timepoint, int plateIndex, int wellIndex, int wellSampleIndex)
 	{
-		store.setWellSampleTimepoint(timepoint, plateIndex, wellIndex, wellSampleIndex);
+		meta.setWellSampleTimepoint(timepoint, plateIndex, wellIndex, wellSampleIndex);
 	}
 
 	// Ignoring Well_BackReference back reference
@@ -3690,30 +3513,27 @@ public class FilterMetadata implements MetadataStore
 
 	public void setXMLAnnotationAnnotationRef(String annotation, int XMLAnnotationIndex, int annotationRefIndex)
 	{
-		store.setXMLAnnotationAnnotationRef(annotation, XMLAnnotationIndex, annotationRefIndex);
+		meta.setXMLAnnotationAnnotationRef(annotation, XMLAnnotationIndex, annotationRefIndex);
 	}
 
 	// Ignoring Channel_BackReference back reference
 	// Ignoring Dataset_BackReference back reference
 	public void setXMLAnnotationDescription(String description, int XMLAnnotationIndex)
 	{
-		description = filter? DataTools.sanitize(description) : description;
-		store.setXMLAnnotationDescription(description, XMLAnnotationIndex);
+		meta.setXMLAnnotationDescription(description, XMLAnnotationIndex);
 	}
 
 	// Ignoring ExperimenterGroup_BackReference back reference
 	// Ignoring Experimenter_BackReference back reference
 	public void setXMLAnnotationID(String id, int XMLAnnotationIndex)
 	{
-		id = filter? DataTools.sanitize(id) : id;
-		store.setXMLAnnotationID(id, XMLAnnotationIndex);
+		meta.setXMLAnnotationID(id, XMLAnnotationIndex);
 	}
 
 	// Ignoring Image_BackReference back reference
 	public void setXMLAnnotationNamespace(String namespace, int XMLAnnotationIndex)
 	{
-		namespace = filter? DataTools.sanitize(namespace) : namespace;
-		store.setXMLAnnotationNamespace(namespace, XMLAnnotationIndex);
+		meta.setXMLAnnotationNamespace(namespace, XMLAnnotationIndex);
 	}
 
 	// Ignoring Pixels_BackReference back reference
@@ -3727,8 +3547,7 @@ public class FilterMetadata implements MetadataStore
 	// Ignoring StructuredAnnotations_BackReference back reference
 	public void setXMLAnnotationValue(String value, int XMLAnnotationIndex)
 	{
-		value = filter? DataTools.sanitize(value) : value;
-		store.setXMLAnnotationValue(value, XMLAnnotationIndex);
+		meta.setXMLAnnotationValue(value, XMLAnnotationIndex);
 	}
 
 	// Ignoring WellSample_BackReference back reference

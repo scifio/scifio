@@ -123,7 +123,7 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
     }
     catch (TransformerException exc) {
       LOGGER.warn("Failed to create OME-XML", exc);
-    } catch (UnsupportedEncodingException e) {
+    } catch (UnsupportedEncodingException exc) {
       LOGGER.warn("Failed to create OME-XML", exc);
     }
     return null;
