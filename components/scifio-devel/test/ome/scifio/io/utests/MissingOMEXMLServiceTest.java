@@ -34,12 +34,12 @@
  * #L%
  */
 
-package loci.formats.utests;
+package ome.scifio.io.utests;
 
 import static org.testng.AssertJUnit.assertNotNull;
-import loci.common.services.DependencyException;
-import loci.common.services.ServiceFactory;
-import loci.formats.services.OMEXMLService;
+import ome.scifio.services.DependencyException;
+import ome.scifio.services.ServiceFactory;
+import ome.xml.services.OMEXMLService;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
