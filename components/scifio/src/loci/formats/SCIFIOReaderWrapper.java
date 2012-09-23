@@ -39,13 +39,17 @@ package loci.formats;
 import java.io.File;
 import java.io.IOException;
 
-import loci.legacy.adapter.Wrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import loci.legacy.adapter.Wrapper;
+import loci.legacy.adapter.AdapterTools;
 import ome.scifio.CoreMetadata;
 import ome.scifio.Format;
 import ome.scifio.Metadata;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
+import ome.scifio.io.Location;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -76,18 +80,26 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
   
   // -- Constants --
   
+  protected static final Logger LOGGER =
+      LoggerFactory.getLogger(ome.scifio.Reader.class);
+  
   // -- Fields --
   
+  private RandomAccessInputStream stream;
   private SCIFIO context;
   private final IFormatReader reader;
-  private CoreMetadata cMeta;
 
   // -- Constructor --
   
   public SCIFIOReaderWrapper(SCIFIO context, IFormatReader reader) {
     this.context = context;
     this.reader = reader;
-    generateCoreMetadata();
+    
+    try {
+      this.stream = new RandomAccessInputStream(reader.getCurrentFile());
+    } catch (IOException e) {
+      LOGGER.debug("Failed to create a RAIS for file: " + reader.getCurrentFile(), e);
+    }
   }
   
   // -- Wrapper API Methods --
@@ -173,7 +185,7 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
   }
 
   public RandomAccessInputStream getStream() {
-    throw new UnsupportedOperationException();
+    return stream;
   }
 
   public Reader[] getUnderlyingReaders() {
@@ -204,8 +216,13 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
   }
 
   public CoreMetadata getCoreMetadata() {
-    return cMeta;
-  }
+    CoreMetadata cMeta = AdapterTools.getAdapter(CoreMetadataAdapter.class).
+        getModern(reader.getCoreMetadata());
+    
+      cMeta.setSource(getStream());
+    
+      return cMeta;
+    }
 
   public void setNormalized(boolean normalize) {
     reader.setNormalized(normalize);
@@ -221,30 +238,32 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
 
   public void setSource(File file) throws IOException {
     try {
+      this.stream = new RandomAccessInputStream(file.getAbsolutePath());
       reader.setId(file.getAbsolutePath());
     }
     catch (FormatException e) {
-      throw new IOException(e);
+      LOGGER.debug("Format error when creating a RAIS: " + file.getAbsolutePath(), e);
     }
   }
 
   public void setSource(String fileName) throws IOException {
     try {
+      this.stream = new RandomAccessInputStream(fileName);
       reader.setId(fileName);
     }
     catch (FormatException e) {
-      throw new IOException(e);
+      LOGGER.debug("Format error when creating a RAIS: " + fileName, e);
     }
   }
 
   public void setSource(RandomAccessInputStream stream) throws IOException {
     try {
+      this.stream = stream;
       reader.setId(stream.getFileName());
     }
     catch (FormatException e) {
-      throw new IOException(e);
+      LOGGER.debug("Format error when creating a RAIS: " + stream.getFileName(), e);
     }
-    generateCoreMetadata();
   }
 
   public void close(boolean fileOnly) throws IOException {
@@ -277,24 +296,5 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
 
   public IFormatReader getReader() {
     return reader;
-  }
-  
-  // -- Helper Methods --
-  
-  private void generateCoreMetadata() {
-    CoreMetadata core = new CoreMetadata(context);
-
-    for(int i = 0; i < reader.getSeriesCount(); i++) {
-      core.add(reader.getCoreMetadata()[i].convert());
-    }
-    
-    cMeta = core;
-    try {
-      cMeta.setSource(new RandomAccessInputStream(reader.getCurrentFile()));
-    }
-    catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
   }
 }
