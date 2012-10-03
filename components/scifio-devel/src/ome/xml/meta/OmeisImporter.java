@@ -47,21 +47,22 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-//TODO Convert these imports to ome.scifio.* when available
-import loci.formats.ChannelFiller;
-import loci.formats.ChannelSeparator;
-import loci.formats.FileStitcher;
-import loci.formats.IFormatReader;
-import ome.xml.services.OMEXMLService;
+import net.imglib2.meta.Axes;
 import ome.scifio.FormatException;
+import ome.scifio.Parser;
+import ome.scifio.Reader;
 import ome.scifio.common.Constants;
 import ome.scifio.io.Location;
 import ome.scifio.services.DependencyException;
 import ome.scifio.services.ServiceException;
 import ome.scifio.services.ServiceFactory;
 import ome.scifio.util.FormatTools;
+import ome.scifio.wrappers.ChannelFiller;
+import ome.scifio.wrappers.ChannelSeparator;
+import ome.scifio.wrappers.FileStitcher;
 import ome.xml.DOMUtil;
 import ome.xml.r2003fc.ome.OMENode;
+import ome.xml.services.OMEXMLService;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -97,10 +98,11 @@ public class OmeisImporter {
 
   // -- Fields --
 
-  //TODO convert to an ome.scifio.Reader, and update delegator calls to use
-  // ScifioReaderAdapter
   /** Reader for handling file formats. */
-  private IFormatReader reader;
+  private Reader reader;
+  
+  /** Parser for interrogating files. */
+  private Parser parser;
 
   /** Metadata object, for gathering OME-XML metadata. */
   private ome.xml.meta.AbstractOMEXMLMetadata omexmlMeta;
@@ -113,9 +115,17 @@ public class OmeisImporter {
     this(true);
   }
 
-  public OmeisImporter(boolean stitchFiles) {
+  public OmeisImporter(boolean stitchFiles)  {
     stitch = stitchFiles;
     reader = new ChannelSeparator(new ChannelFiller());
+    
+    try {
+      parser = reader.getFormat().createParser();
+    }
+    catch (FormatException e) {
+      if(DEBUG) log("Failed to create a parser for format: " + reader.getFormat() + e.getMessage());
+    }
+    
     if (stitch) reader = new FileStitcher(reader);
 
     try {
@@ -125,9 +135,6 @@ public class OmeisImporter {
     }
     catch (DependencyException de) { }
     catch (ServiceException se) { }
-
-    reader.setOriginalMetadataPopulated(true);
-    reader.setMetadataStore(omexmlMeta);
   }
 
   // -- OmeisImporter API methods - main functionality --
@@ -164,9 +171,10 @@ public class OmeisImporter {
     for (int i=0; i<fileIds.length; i++) {
       if (done[i]) continue; // already part of another group
       if (ids[i] == null) continue; // invalid id
-      if (!reader.isThisType(ids[i])) continue; // unknown format
-      reader.setId(ids[i]);
-      String[] files = reader.getUsedFiles();
+      if (!reader.getFormat().createChecker().isFormat(ids[i])) continue; // unknown format
+      reader.setSource(ids[i]);
+      parser.parse(ids[i]);
+      String[] files = parser.getUsedFiles();
 
       if (files == null) continue; // invalid files list
       sb.setLength(0);
@@ -221,8 +229,9 @@ public class OmeisImporter {
     if (DEBUG) log("Reading file '" + id + "' --> " + path);
 
     // verify that all given file IDs were grouped by the reader
-    reader.setId(id);
-    String[] used = reader.getUsedFiles();
+    reader.setSource(id);
+    parser.parse(id);
+    String[] used = parser.getUsedFiles();
     if (used == null) {
       throw new FormatException("Invalid file list for " + path);
     }
@@ -248,29 +257,28 @@ public class OmeisImporter {
         "File list does not correspond to ID list for " + path);
     }
 
-    int seriesCount = reader.getSeriesCount();
+    int imageCount = reader.getImageCount();
 
     // get DOM and Pixels elements for the file's OME-XML metadata
     OMENode ome = (OMENode) omexmlMeta.getRoot();
     Document omeDoc = ome.getDOMElement().getOwnerDocument();
     Vector pix = DOMUtil.findElementList("Pixels", omeDoc);
-    if (pix.size() != seriesCount) {
+    if (pix.size() != imageCount) {
       throw new FormatException("Pixels element count (" +
         pix.size() + ") does not match series count (" +
-        seriesCount + ") for '" + id + "'");
+        imageCount + ") for '" + id + "'");
     }
-    if (DEBUG) log(seriesCount + " series detected.");
+    if (DEBUG) log(imageCount + " series detected.");
 
-    for (int s=0; s<seriesCount; s++) {
-      reader.setSeries(s);
+    for (int i=0; i<imageCount; i++) {
 
       // gather pixels information for this series
-      int sizeX = reader.getSizeX();
-      int sizeY = reader.getSizeY();
-      int sizeZ = reader.getSizeZ();
-      int sizeC = reader.getSizeC();
-      int sizeT = reader.getSizeT();
-      int pixelType = reader.getPixelType();
+      int sizeX = reader.getCoreMetadata().getAxisLength(i, Axes.X);
+      int sizeY = reader.getCoreMetadata().getAxisLength(i, Axes.Y);
+      int sizeZ = reader.getCoreMetadata().getAxisLength(i, Axes.Z);
+      int sizeC = reader.getCoreMetadata().getAxisLength(i, Axes.CHANNEL);
+      int sizeT = reader.getCoreMetadata().getAxisLength(i, Axes.TIME);
+      int pixelType = reader.getCoreMetadata().getPixelType(i);
       int bytesPerPixel;
       boolean isSigned, isFloat;
       switch (pixelType) {
@@ -316,9 +324,9 @@ public class OmeisImporter {
           break;
         default:
           throw new FormatException("Unknown pixel type for '" +
-            id + "' series #" + s + ": " + pixelType);
+            id + "' series #" + i + ": " + pixelType);
       }
-      boolean little = reader.isLittleEndian();
+      boolean little = reader.getCoreMetadata().isLittleEndian(i);
       boolean swap = doLittle != little && bytesPerPixel > 1 && !isFloat;
 
       // ask OMEIS to allocate new pixels file
@@ -326,12 +334,12 @@ public class OmeisImporter {
         bytesPerPixel, isSigned, isFloat);
       String pixelsPath = getLocalPixelsPath(pixelsId);
       if (DEBUG) {
-        log("Series #" + s + ": id=" + pixelsId + ", path=" + pixelsPath);
+        log("Series #" + i + ": id=" + pixelsId + ", path=" + pixelsPath);
       }
 
       // write pixels to file
       FileOutputStream out = new FileOutputStream(pixelsPath);
-      int imageCount = reader.getImageCount();
+      imageCount = reader.getImageCount();
       if (DEBUG) {
         log("Processing " + imageCount + " planes (sizeZ=" + sizeZ +
           ", sizeC=" + sizeC + ", sizeT=" + sizeT + "): ");
@@ -343,12 +351,12 @@ public class OmeisImporter {
       for (int t=0; t<sizeT; t++) {
         for (int c=0; c<sizeC; c++) {
           for (int z=0; z<sizeZ; z++) {
-            int ndx = reader.getIndex(z, c, t);
+            int ndx = FormatTools.getIndex(reader, i, z, c, t);
             if (DEBUG) {
               log("Reading plane #" + ndx +
                 ": z=" + z + ", c=" + c + ", t=" + t);
             }
-            byte[] plane = reader.openBytes(ndx);
+            byte[] plane = reader.openBytes(i, ndx);
             if (swap) { // swap endianness
               for (int b=0; b<plane.length; b+=bytesPerPixel) {
                 for (int k=0; k<bytesPerPixel/2; k++) {
@@ -377,7 +385,7 @@ public class OmeisImporter {
       if (DEBUG) log("SHA1=" + sha1);
 
       // inject important extra attributes into proper Pixels element
-      Element pixels = (Element) pix.elementAt(s);
+      Element pixels = (Element) pix.elementAt(i);
       pixels.setAttribute("FileSHA1", sha1);
       pixels.setAttribute("ImageServerID", "" + pixelsId);
       pixels.setAttribute("DimensionOrder", "XYZCT"); // ignored anyway
@@ -627,6 +635,7 @@ public class OmeisImporter {
    * Run ./omebf with a list of file IDs to import those IDs.
    * Run with the -test flag to ask Bio-Formats whether it
    * thinks it can import those files.
+   * @throws FormatException 
    */
   public static void main(String[] args) {
     boolean version = false, test = false, stitch = true;
