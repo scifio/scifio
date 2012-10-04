@@ -33,261 +33,36 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package loci.formats;
 
-import java.io.File;
-import java.io.IOException;
-
-import ome.scifio.CoreMetadata;
-import ome.scifio.Format;
-import ome.scifio.Metadata;
 import ome.scifio.Reader;
-import ome.scifio.SCIFIO;
-import ome.scifio.io.RandomAccessInputStream;
+import loci.legacy.adapter.AbstractLegacyAdapter;
 
 /**
- * This class is an adapter from ome.scifio.Reader for loci.formats.IFormatReader.
- * Using a "hasa" relationship, this class can be wrap an IFormatReader and be
- * passed to ome.scifio.* methods requiring an ome.scifio.Reader and allow
- * calculations to proceed as normal.
- * 
- * This eliminates the need for redundant method signatures. Instead, the
- * adapter class can be used for direct delegation.
- * 
- * Note that not every method in ome.scifio.Reader has a direct analog in
- * IFormatReader.
- * 
- * Unsupported methods:
- * - getFormat()
- * - getStream()
- * - setMetadata(ome.scifio.Metadata)
- * - getMetadata()
- * - readPlane(RandomAccessInputStream s, int imageIndex, int x,
- *     int y, int w, int h, byte[] buf)
- * - readlane(RandomAccessInputStream s, int imageIndex, int x,
- *   int y, int w, int h, int scanlinePad, byte[] buf)
- * 
+ * This class manages delegation between {@link loci.formats.IFormatReader}
+ * and {@link ome.scifio.Reader}.
+ * <p>
+ * Delegation is maintained by two WeakHashTables. See {@link AbstractLegacyAdapter}
+ * </p>
+ * <p>
+ * Functionally, the delegation is handled in the Wrapper classes - currently
+ * only for wrapping from loci.formats.IFormatReader to ome.scifio.Reader is 
+ * supported.
+ * </p>
  * @author Mark Hiner
  */
-public class SCIFIOReaderAdapter implements ome.scifio.Reader {
+public class SCIFIOReaderAdapter extends AbstractLegacyAdapter<IFormatReader, ome.scifio.Reader> {
+
+  // -- LegacyAdapter API Methods --
   
-  // -- Constants --
-  
-  // -- Fields --
-  
-  private SCIFIO context;
-  private final IFormatReader reader;
-  private CoreMetadata cMeta;
-
-  // -- Constructor --
-  
-  public SCIFIOReaderAdapter(SCIFIO context, IFormatReader reader) {
-    this.context = context;
-    this.reader = reader;
-    generateCoreMetadata();
-  }
-
-  // -- ome.scifio.Reader API --
-  
-  public SCIFIO getContext() {
-    return context;
-  }
-
-  public void setContext(SCIFIO ctx) {
-    context = ctx;
-  }
-
-  public Format<?, ?, ?, ?, ?> getFormat() {
+  @Override
+  protected IFormatReader wrapToLegacy(Reader modern) {
     throw new UnsupportedOperationException();
   }
 
-  public byte[] openBytes(int imageIndex, int planeIndex)
-    throws ome.scifio.FormatException, IOException
-  {
-    return reader.openBytes(imageIndex);
-  }
-
-  public byte[] openBytes(int imageIndex, int planeIndex, int x, int y,
-    int w, int h) throws ome.scifio.FormatException, IOException
-  {
-    return reader.openBytes(imageIndex, x, y, w, h);
-  }
-
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
-    throws ome.scifio.FormatException, IOException
-  {
-    return reader.openBytes(imageIndex, buf);
-  }
-
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x,
-    int y, int w, int h) throws ome.scifio.FormatException, IOException
-  {
-    return reader.openBytes(imageIndex, buf, x, y, w, h);
-  }
-
-  public Object openPlane(int imageIndex, int planeIndex, int x, int y,
-    int w, int h) throws ome.scifio.FormatException, IOException
-  {
-    return reader.openPlane(imageIndex, x, y, w, h);
-  }
-
-  public byte[] openThumbBytes(int imageIndex, int planeIndex)
-    throws ome.scifio.FormatException, IOException
-  {
-    return reader.openThumbBytes(imageIndex);
-  }
-
-  public void setGroupFiles(boolean group) {
-    reader.setGroupFiles(group);
-  }
-
-  public boolean isGroupFiles() {
-    return reader.isGroupFiles();
-  }
-
-  public int fileGroupOption(String id)
-    throws ome.scifio.FormatException, IOException
-  {
-    return reader.fileGroupOption(id);
-  }
-
-  public String getCurrentFile() {
-    return reader.getCurrentFile();
-  }
-
-  public String[] getDomains() {
-    return reader.getDomains();
-  }
-
-  public int[] getZCTCoords(int imageIndex, int index) {
-    return reader.getZCTCoords(index);
-  }
-
-  public RandomAccessInputStream getStream() {
-    throw new UnsupportedOperationException();
-  }
-
-  public Reader[] getUnderlyingReaders() {
-    IFormatReader[] iReaders = reader.getUnderlyingReaders();
-    Reader[] sReaders = new Reader[iReaders.length];
-    
-    for(int i = 0; i < iReaders.length; i++) {
-      sReaders[i] = new SCIFIOReaderAdapter(context, iReaders[i]);
-    }
-    
-    return sReaders;
-  }
-
-  public int getOptimalTileWidth(int imageIndex) {
-    return reader.getOptimalTileWidth();
-  }
-
-  public int getOptimalTileHeight(int imageIndex) {
-    return reader.getOptimalTileHeight();
-  }
-
-  public void setMetadata(Metadata meta) throws IOException {
-    throw new UnsupportedOperationException();
-  }
-
-  public Metadata getMetadata() {
-    throw new UnsupportedOperationException();
-  }
-
-  public CoreMetadata getCoreMetadata() {
-    return cMeta;
-  }
-
-  public void setNormalized(boolean normalize) {
-    reader.setNormalized(normalize);
-  }
-
-  public boolean isNormalized() {
-    return reader.isNormalized();
-  }
-
-  public boolean hasCompanionFiles() {
-    return reader.hasCompanionFiles();
-  }
-
-  public void setSource(File file) throws IOException {
-    try {
-      reader.setId(file.getAbsolutePath());
-    }
-    catch (FormatException e) {
-      throw new IOException(e);
-    }
-  }
-
-  public void setSource(String fileName) throws IOException {
-    try {
-      reader.setId(fileName);
-    }
-    catch (FormatException e) {
-      throw new IOException(e);
-    }
-  }
-
-  public void setSource(RandomAccessInputStream stream) throws IOException {
-    try {
-      reader.setId(stream.getFileName());
-    }
-    catch (FormatException e) {
-      throw new IOException(e);
-    }
-    generateCoreMetadata();
-  }
-
-  public void close(boolean fileOnly) throws IOException {
-    reader.close(fileOnly);
-  }
-
-  public void close() throws IOException {
-    reader.close();
-  }
-
-  public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
-    int y, int w, int h, byte[] buf) throws IOException
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
-    int y, int w, int h, int scanlinePad, byte[] buf) throws IOException
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  public int getPlaneCount(int imageIndex) {
-    return reader.getImageCount();
-  }
-
-  public int getImageCount() {
-    return reader.getSeriesCount();
-  }
-
-  public IFormatReader getReader() {
-    return reader;
-  }
-
-  // -- Helper Methods --
-
-  private void generateCoreMetadata() {
-    CoreMetadata core = new CoreMetadata(context);
-
-    for(int i = 0; i < reader.getSeriesCount(); i++) {
-      core.add(reader.getCoreMetadata()[i].convert());
-    }
-
-    cMeta = core;
-    try {
-      cMeta.setSource(new RandomAccessInputStream(reader.getCurrentFile()));
-    }
-    catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
+  @Override
+  protected Reader wrapToModern(IFormatReader legacy) {
+    return new SCIFIOReaderWrapper(FormatTools.CONTEXT, legacy);
   }
 
 }
