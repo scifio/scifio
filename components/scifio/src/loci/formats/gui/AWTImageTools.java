@@ -55,6 +55,7 @@ import loci.formats.IFormatReader;
 import loci.formats.MetadataTools;
 import loci.formats.SCIFIOReaderAdapter;
 import loci.formats.meta.MetadataRetrieve;
+import loci.legacy.adapter.AdapterTools;
 
 /**
  * A legacy delegator class for ome.scifio.gui.AWTImageTools
@@ -457,7 +458,7 @@ public final class AWTImageTools {
   {
     try {
       return ome.scifio.gui.AWTImageTools.openImage(buf, 
-        new SCIFIOReaderAdapter(FormatTools.CONTEXT, r), w, h, r.getSeries());
+          AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r), w, h, r.getSeries());
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
