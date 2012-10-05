@@ -92,6 +92,11 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 
   // -- Constructors --
 
+  protected RandomAccessInputStream() {
+    raf = null;
+    file = null;
+  }
+  
   /**
    * Constructs a hybrid RandomAccessFile/DataInputStream
    * around the given file.
