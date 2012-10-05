@@ -58,30 +58,30 @@ import ome.scifio.common.DataTools;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public abstract class StreamHandle implements IRandomAccess {
+public abstract class StreamHandle implements IStreamAccess {
 
   // -- Fields --
 
   /** Name of the open stream. */
-  protected String file;
+  private String file;
 
   /** InputStream to be used for reading. */
-  protected DataInputStream stream;
+  private DataInputStream stream;
 
   /** OutputStream to be used for writing. */
-  protected DataOutputStream outStream;
+  private DataOutputStream outStream;
 
   /** Length of the stream. */
-  protected long length;
+  private long length;
 
   /** Current position within the stream. */
-  protected long fp;
+  private long fp;
 
   /** Marked position within the stream. */
-  protected long mark;
+  private long mark;
 
   /** Byte ordering of this stream. */
-  protected ByteOrder order;
+  private ByteOrder order;
 
   // -- Constructor --
 
@@ -93,8 +93,66 @@ public abstract class StreamHandle implements IRandomAccess {
   public StreamHandle() {
     fp = 0;
     order = ByteOrder.BIG_ENDIAN;
+    file = null;
+    stream = null;
+    outStream = null;
+    length = 0;
+    mark = 0;
   }
 
+  // -- Field getters/setters --
+  
+  public String getFile() {
+    return file;
+  }
+
+  public DataInputStream getStream() {
+    return stream;
+  }
+
+  public void setStream(DataInputStream stream) {
+    this.stream = stream;
+  }
+
+  public DataOutputStream getOutStream() {
+    return outStream;
+  }
+
+  public void setOutStream(DataOutputStream outStream) {
+    this.outStream = outStream;
+  }
+
+  public long getLength() {
+    return length;
+  }
+
+  public void setLength(long length) {
+    this.length = length;
+  }
+
+  public long getFp() {
+    return fp;
+  }
+
+  public void setFp(long fp) {
+    this.fp = fp;
+  }
+
+  public long getMark() {
+    return mark;
+  }
+
+  public void setMark(long mark) {
+    this.mark = mark;
+  }
+  
+  // -- IStreamAccess API methods --
+  
+  /* @see IStreamAccess#setFile(String) */
+  public void setFile(String file) throws IOException {
+    this.file = file;
+  }
+  
   // -- IRandomAccess API methods --
 
   /* @see IRandomAccess#close() */
@@ -425,12 +483,6 @@ public abstract class StreamHandle implements IRandomAccess {
 
   // -- Helper methods --
 
-  /**
-   * Close and reopen the stream; the stream pointer and mark should be
-   * reset to 0.  This method is called if we need to seek backwards within
-   * the stream.
-   */
-  protected abstract void resetStream() throws IOException;
 
   /** Reset the marked position, if necessary. */
   private void markManager() {

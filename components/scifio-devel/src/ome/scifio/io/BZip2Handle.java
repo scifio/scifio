@@ -42,6 +42,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import ome.scifio.common.Constants;
+import ome.scifio.discovery.DiscoverableHandle;
 
 
 /**
@@ -56,9 +57,19 @@ import ome.scifio.common.Constants;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
+@DiscoverableHandle
 public class BZip2Handle extends StreamHandle {
 
   // -- Constructor --
+  
+  /**
+   * Zero-parameter constructor. This instructor can be used first
+   * to see if a given file is constructable from this handle. If so,
+   * setFile can then be used.
+   */
+  public BZip2Handle() {
+    super();
+  }
 
   /**
    * Construct a new BZip2Handle corresponding to the given file.
@@ -67,27 +78,13 @@ public class BZip2Handle extends StreamHandle {
    */
   public BZip2Handle(String file) throws IOException {
     super();
-    this.file = file;
-    if (!isBZip2File(file)) {
-      throw new HandleException(file + " is not a BZip2 file.");
-    }
-
-    resetStream();
-
-    length = 0;
-    while (true) {
-      int skip = stream.skipBytes(1024);
-      if (skip <= 0) break;
-      length += skip;
-    }
-
-    resetStream();
+    setFile(file);
   }
 
-  // -- BZip2Handle API methods --
+  // -- IStreamAccess API methods --
 
-  /** Returns true if the given filename is a BZip2 file. */
-  public static boolean isBZip2File(String file) throws IOException {
+  /* @see IStreamAccess#isConstructable(String) */
+  public boolean isConstructable(String file) throws IOException {
     if (!file.toLowerCase().endsWith(".bz2")) return false;
 
     FileInputStream s = new FileInputStream(file);
@@ -97,17 +94,37 @@ public class BZip2Handle extends StreamHandle {
     return new String(b, Constants.ENCODING).equals("BZ");
   }
 
-  // -- StreamHandle API methods --
-
-  /* @see StreamHandle#resetStream() */
-  protected void resetStream() throws IOException {
+  /* @see IStreamAccess#resetStream() */
+  public void resetStream() throws IOException {
     BufferedInputStream bis = new BufferedInputStream(
-      new FileInputStream(file), RandomAccessInputStream.MAX_OVERHEAD);
+      new FileInputStream(getFile()), RandomAccessInputStream.MAX_OVERHEAD);
     int skipped = 0;
     while (skipped < 2) {
       skipped += bis.skip(2 - skipped);
     }
-    stream = new DataInputStream(new CBZip2InputStream(bis));
+    setStream(new DataInputStream(new CBZip2InputStream(bis)));
   }
+  
+  // -- IStreamAccess API methods --
+  
+  /* @see IStreamAccess#setFile(String) */
+  public void setFile(String file) throws IOException {
+    super.setFile(file);
+    if (!isConstructable(file)) {
+      throw new HandleException(file + " is not a BZip2 file.");
+    }
 
+    resetStream();
+
+    int length = 0;
+    while (true) {
+      int skip = getStream().skipBytes(1024);
+      if (skip <= 0) break;
+      length += skip;
+    }
+    
+    setLength(length);
+
+    resetStream();
+  }
 }

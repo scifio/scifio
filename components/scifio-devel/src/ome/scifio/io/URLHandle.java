@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import ome.scifio.discovery.DiscoverableHandle;
+
 /**
  * Provides random access to URLs using the IRandomAccess interface.
  * Instances of URLHandle are read-only.
@@ -56,6 +58,7 @@ import java.net.URLConnection;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
+@DiscoverableHandle
 public class URLHandle extends StreamHandle {
 
   // -- Fields --
@@ -69,9 +72,33 @@ public class URLHandle extends StreamHandle {
   // -- Constructors --
 
   /**
+   * Zero-parameter constructor. This instructor can be used first
+   * to see if a given file is constructable from this handle. If so,
+   * setFile can then be used.
+   */
+  public URLHandle() {
+    super();
+  }
+  
+  /**
    * Constructs a new URLHandle using the given URL.
    */
   public URLHandle(String url) throws IOException {
+    super();
+    setURL(url);
+  }
+  
+  // -- URLHandle API --
+  
+  /**
+   * Initializes this URLHandle with the provided url.
+   * @throws IOException 
+   */
+  public void setURL(String url) throws IOException {
+    if (!isConstructable(url)) {
+      throw new HandleException(url + " is not a valid url.");
+    }
+    
     if (!url.startsWith("http") && !url.startsWith("file:")) {
       url = "http://" + url;
     }
@@ -83,25 +110,32 @@ public class URLHandle extends StreamHandle {
 
   /* @see IRandomAccess#seek(long) */
   public void seek(long pos) throws IOException {
-    if (pos < fp && pos >= mark) {
-      stream.reset();
-      fp = mark;
-      skip(pos - fp);
+    if (pos < getFp() && pos >= getMark()) {
+      getStream().reset();
+      setFp(getMark());
+      skip(pos - getFp());
     }
     else super.seek(pos);
+  }
+  
+  // -- IStreamAccess API methods --
+  
+  /* @see IStreamAccess#isConstructable(String id) */
+  public boolean isConstructable(String id) throws IOException {
+    return id.startsWith("http:") || id.startsWith("file:");
   }
 
   // -- StreamHandle API methods --
 
-  /* @see StreamHandle#resetStream() */
-  protected void resetStream() throws IOException {
+  /* @see IStreamAccess#resetStream() */
+  public void resetStream() throws IOException {
     conn = (new URL(url)).openConnection();
-    stream = new DataInputStream(new BufferedInputStream(
-      conn.getInputStream(), RandomAccessInputStream.MAX_OVERHEAD));
-    fp = 0;
-    mark = 0;
-    length = conn.getContentLength();
-    if (stream != null) stream.mark(RandomAccessInputStream.MAX_OVERHEAD);
+    setStream(new DataInputStream(new BufferedInputStream(
+      conn.getInputStream(), RandomAccessInputStream.MAX_OVERHEAD)));
+    setFp(0);
+    setMark(0);
+    setLength(conn.getContentLength());
+    if (getStream() != null) getStream().mark(RandomAccessInputStream.MAX_OVERHEAD);
   }
 
   // -- Helper methods --
@@ -118,5 +152,4 @@ public class URLHandle extends StreamHandle {
       skipped += n;
     }
   }
-
 }

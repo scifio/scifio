@@ -46,7 +46,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.java.sezpoz.Index;
+import net.java.sezpoz.IndexItem;
 import ome.scifio.common.Constants;
+import ome.scifio.discovery.DiscoverableHandle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,7 +188,7 @@ public class Location {
    */
   public static void cleanStaleCacheEntries() {
     long t = System.nanoTime() - cacheNanos;
-    ArrayList<String> staleKeys = new ArrayList();
+    ArrayList<String> staleKeys = new ArrayList<String>();
     for (String key : fileListings.keySet()) {
       if (fileListings.get(key).time < t) {
         staleKeys.add(key);
@@ -293,21 +296,23 @@ public class Location {
       LOGGER.trace("no handle was mapped for this ID");
       String mapId = getMappedId(id);
 
-      if (id.startsWith("http://")) {
-        handle = new URLHandle(mapId);
+      
+      for(final IndexItem<DiscoverableHandle, IStreamAccess> item :
+        Index.load(DiscoverableHandle.class, IStreamAccess.class)) {
+        try {
+          if (allowArchiveHandles && item.instance().isConstructable(id)) {
+            handle = item.instance();
+            ((IStreamAccess)handle).setFile(id);
+            break;
+          }
+        } catch (InstantiationException e) {
+          throw new HandleException(e);
+        }
       }
-      else if (allowArchiveHandles && ZipHandle.isZipFile(id)) {
-        handle = new ZipHandle(mapId);
-      }
-      else if (allowArchiveHandles && GZipHandle.isGZipFile(id)) {
-        handle = new GZipHandle(mapId);
-      }
-      else if (allowArchiveHandles && BZip2Handle.isBZip2File(id)) {
-        handle = new BZip2Handle(mapId);
-      }
-      else {
+      
+      if (handle == null)
         handle = new NIOFileHandle(mapId, writable ? "rw" : "r");
-      }
+      
     }
     LOGGER.trace("Location.getHandle: {} -> {}", id, handle);
     return handle;

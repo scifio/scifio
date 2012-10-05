@@ -80,7 +80,9 @@ public class ZipHandle extends StreamHandle {
 
   /** Returns true if the given filename is a Zip file. */
   public static boolean isZipFile(String file) throws IOException {
-    return ome.scifio.io.ZipHandle.isZipFile(file);
+    ome.scifio.io.ZipHandle handle = new ome.scifio.io.ZipHandle();
+    
+    return handle.isConstructable(file);
   }
 
   /** Get the name of the backing Zip entry. */

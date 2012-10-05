@@ -81,7 +81,9 @@ public class BZip2Handle extends StreamHandle {
 
   /** Returns true if the given filename is a BZip2 file. */
   public static boolean isBZip2File(String file) throws IOException {
-    return ome.scifio.io.BZip2Handle.isBZip2File(file);
+    ome.scifio.io.BZip2Handle handle = new ome.scifio.io.BZip2Handle();
+    
+    return handle.isConstructable(file);
   }
 
   // -- StreamHandle API methods --

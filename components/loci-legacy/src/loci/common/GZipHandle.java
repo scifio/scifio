@@ -73,7 +73,9 @@ public class GZipHandle extends StreamHandle {
 
   /** Returns true if the given filename is a gzip file. */
   public static boolean isGZipFile(String file) throws IOException {
-    return ome.scifio.io.GZipHandle.isGZipFile(file);
+    ome.scifio.io.GZipHandle handle = new ome.scifio.io.GZipHandle();
+    
+    return handle.isConstructable(file);
   }
 
   // -- StreamHandle API methods --

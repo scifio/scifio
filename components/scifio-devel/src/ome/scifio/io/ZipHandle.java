@@ -44,6 +44,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import ome.scifio.common.Constants;
+import ome.scifio.discovery.DiscoverableHandle;
 
 
 /**
@@ -58,6 +59,7 @@ import ome.scifio.common.Constants;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
+@DiscoverableHandle
 public class ZipHandle extends StreamHandle {
 
   // -- Fields --
@@ -68,10 +70,88 @@ public class ZipHandle extends StreamHandle {
   private int entryCount;
 
   // -- Constructor --
+  
+  /**
+   * Zero-parameter constructor. This instructor can be used first
+   * to see if a given file is constructable from this handle. If so,
+   * setFile can then be used.
+   */
+  public ZipHandle() {
+    super();
+  }
 
   public ZipHandle(String file) throws IOException {
     super();
-    this.file = file;
+    setFile(file);
+  }
+
+  /**
+   * Constructs a new ZipHandle corresponding to the given entry of the
+   * specified Zip file.
+   *
+   * @throws HandleException if the given file is not a Zip file.
+   */
+  public ZipHandle(String file, ZipEntry entry) throws IOException {
+    super();
+
+    seekToEntry();
+    resetStream();
+    populateLength();
+    setFile(file, entry);
+  }
+
+  // -- IStreamAccess API methods --
+
+  /** Returns true if the given filename is a Zip file. */
+  public boolean isConstructable(String file) throws IOException {
+    if (!file.toLowerCase().endsWith(".zip")) return false;
+
+    IRandomAccess handle = getHandle(file);
+    byte[] b = new byte[2];
+    if (handle.length() >= 2) {
+      handle.read(b);
+    }
+    handle.close();
+    return new String(b, Constants.ENCODING).equals("PK");
+  }
+
+  // -- ZipHandle API methods --
+  
+  /** Get the name of the backing Zip entry. */
+  public String getEntryName() {
+    return entryName;
+  }
+
+  /** Returns the DataInputStream corresponding to the backing Zip entry. */
+  public DataInputStream getInputStream() {
+    return getStream();
+  }
+
+  /** Returns the number of entries. */
+  public int getEntryCount() {
+    return entryCount;
+  }
+  
+  // -- IStreamAccess API methods --
+  
+  /* @see IStreamAccess#setFile(String) */
+  public void setFile(String file, ZipEntry entry) throws IOException {
+    super.setFile(file);
+    
+    in = openStream(file);
+    zip = new ZipInputStream(in);
+    this.entryName = entry.getName();
+    entryCount = 1;
+
+    seekToEntry();
+    resetStream();
+    populateLength();
+  }
+
+  /* @see IStreamAccess#setFile(String) */
+  @Override
+  public void setFile(String file) throws IOException {
+    super.setFile(file);
 
     in = openStream(file);
     zip = new ZipInputStream(in);
@@ -101,55 +181,20 @@ public class ZipHandle extends StreamHandle {
 
     populateLength();
   }
-
-  /**
-   * Constructs a new ZipHandle corresponding to the given entry of the
-   * specified Zip file.
-   *
-   * @throws HandleException if the given file is not a Zip file.
-   */
-  public ZipHandle(String file, ZipEntry entry) throws IOException {
-    super();
-    this.file = file;
-
-    in = openStream(file);
-    zip = new ZipInputStream(in);
-    entryName = entry.getName();
-    entryCount = 1;
-
-    seekToEntry();
-    resetStream();
-    populateLength();
-  }
-
-  // -- ZipHandle API methods --
-
-  /** Returns true if the given filename is a Zip file. */
-  public static boolean isZipFile(String file) throws IOException {
-    if (!file.toLowerCase().endsWith(".zip")) return false;
-
-    IRandomAccess handle = getHandle(file);
-    byte[] b = new byte[2];
-    if (handle.length() >= 2) {
-      handle.read(b);
+  
+  /* @see IStreamAccess#resetStream() */
+  public void resetStream() throws IOException {
+    if (getStream() != null) getStream().close();
+    if (in != null) {
+      in.close();
+      in = openStream(getFile());
     }
-    handle.close();
-    return new String(b, Constants.ENCODING).equals("PK");
-  }
-
-  /** Get the name of the backing Zip entry. */
-  public String getEntryName() {
-    return entryName;
-  }
-
-  /** Returns the DataInputStream corresponding to the backing Zip entry. */
-  public DataInputStream getInputStream() {
-    return stream;
-  }
-
-  /** Returns the number of entries. */
-  public int getEntryCount() {
-    return entryCount;
+    if (zip != null) zip.close();
+    zip = new ZipInputStream(in);
+    if (entryName != null) seekToEntry();
+    setStream(new DataInputStream(new BufferedInputStream(
+      zip, RandomAccessInputStream.MAX_OVERHEAD * 10)));
+    getStream().mark(RandomAccessInputStream.MAX_OVERHEAD * 10);
   }
 
   // -- IRandomAccess API methods --
@@ -164,23 +209,6 @@ public class ZipHandle extends StreamHandle {
     entryCount = 0;
   }
 
-  // -- StreamHandle API methods --
-
-  /* @see StreamHandle#resetStream() */
-  protected void resetStream() throws IOException {
-    if (stream != null) stream.close();
-    if (in != null) {
-      in.close();
-      in = openStream(file);
-    }
-    if (zip != null) zip.close();
-    zip = new ZipInputStream(in);
-    if (entryName != null) seekToEntry();
-    stream = new DataInputStream(new BufferedInputStream(
-      zip, RandomAccessInputStream.MAX_OVERHEAD));
-    stream.mark(RandomAccessInputStream.MAX_OVERHEAD);
-  }
-
   // -- Helper methods --
 
   private void seekToEntry() throws IOException {
@@ -188,11 +216,13 @@ public class ZipHandle extends StreamHandle {
   }
 
   private void populateLength() throws IOException {
-    length = -1;
-    while (stream.available() > 0) {
-      stream.skip(1);
+    
+    int length = -1;
+    while (getStream().available() > 0) {
+      getStream().skip(1);
       length++;
     }
+    setLength(length);
     resetStream();
   }
 

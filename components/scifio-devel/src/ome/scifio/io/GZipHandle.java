@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
 import ome.scifio.common.DataTools;
+import ome.scifio.discovery.DiscoverableHandle;
 
 
 /**
@@ -57,10 +58,20 @@ import ome.scifio.common.DataTools;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
+@DiscoverableHandle
 public class GZipHandle extends StreamHandle {
 
   // -- Constructor --
 
+  /**
+   * Zero-parameter constructor. This instructor can be used first
+   * to see if a given file is constructable from this handle. If so,
+   * setFile can then be used.
+   */
+  public GZipHandle() {
+    super();
+  }
+  
   /**
    * Construct a new GZipHandle for the given file.
    *
@@ -68,27 +79,13 @@ public class GZipHandle extends StreamHandle {
    */
   public GZipHandle(String file) throws IOException {
     super();
-    this.file = file;
-    if (!isGZipFile(file)) {
-      throw new HandleException(file + " is not a gzip file.");
-    }
-
-    resetStream();
-
-    length = 0;
-    while (true) {
-      int skip = stream.skipBytes(1024);
-      if (skip <= 0) break;
-      length += skip;
-    }
-
-    resetStream();
+    setFile(file);
   }
 
-  // -- GZipHandle API methods --
+  // -- IStreamAccess API methods --
 
-  /** Returns true if the given filename is a gzip file. */
-  public static boolean isGZipFile(String file) throws IOException {
+  /* @see IStreamAccess#isConstructable(String) */
+  public boolean isConstructable(String file) throws IOException {
     if (!file.toLowerCase().endsWith(".gz")) return false;
 
     FileInputStream s = new FileInputStream(file);
@@ -98,14 +95,36 @@ public class GZipHandle extends StreamHandle {
     return DataTools.bytesToInt(b, true) == GZIPInputStream.GZIP_MAGIC;
   }
 
-  // -- StreamHandle API methods --
 
-  /* @see StreamHandle#resetStream() */
-  protected void resetStream() throws IOException {
-    if (stream != null) stream.close();
+  /* @see IStreamAccess#resetStream() */
+  public void resetStream() throws IOException {
+    if (getStream() != null) getStream().close();
     BufferedInputStream bis = new BufferedInputStream(
-      new FileInputStream(file), RandomAccessInputStream.MAX_OVERHEAD);
-    stream = new DataInputStream(new GZIPInputStream(bis));
+      new FileInputStream(getFile()), RandomAccessInputStream.MAX_OVERHEAD);
+    setStream(new DataInputStream(new GZIPInputStream(bis)));
+  }
+
+  // -- IStreamAccess API methods --
+  
+  /* @see IStreamAccess#setFile(String) */
+  public void setFile(String file) throws IOException {
+    super.setFile(file);
+    if (!isConstructable(file)) {
+      throw new HandleException(file + " is not a gzip file.");
+    }
+
+    resetStream();
+
+    int length = 0;
+    while (true) {
+      int skip = getStream().skipBytes(1024);
+      if (skip <= 0) break;
+      length += skip;
+    }
+
+    setLength(length);
+    
+    resetStream();
   }
 
 }
