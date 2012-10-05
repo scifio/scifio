@@ -281,6 +281,13 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
     }
 
     cMeta = core;
+    try {
+      cMeta.setSource(new RandomAccessInputStream(reader.getCurrentFile()));
+    }
+    catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
   }
 
 }
