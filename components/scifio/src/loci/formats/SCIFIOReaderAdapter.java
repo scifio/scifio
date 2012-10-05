@@ -266,17 +266,21 @@ public class SCIFIOReaderAdapter implements ome.scifio.Reader {
   public int getImageCount() {
     return reader.getImageCount();
   }
-  
+
+  public IFormatReader getReader() {
+    return reader;
+  }
+
   // -- Helper Methods --
-  
+
   private void generateCoreMetadata() {
     CoreMetadata core = new CoreMetadata(context);
 
     for(int i = 0; i < reader.getSeriesCount(); i++) {
       core.add(reader.getCoreMetadata()[i].convert());
     }
-    
+
     cMeta = core;
   }
-  
+
 }
