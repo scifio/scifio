@@ -43,18 +43,24 @@ import java.nio.ByteBuffer;
 
 import loci.common.adapter.IRandomAccessAdapter;
 import loci.legacy.adapter.AdapterTools;
+import loci.legacy.adapter.Wrapper;
 
 /**
- * A legacy delegator class for ome.scifio.io.RandomAccessInputStream
- * 
+ * A legacy wrapper/delegator class for ome.scifio.io.RandomAccessInputStream.
+ * <p>
+ * This class can be used to convert an ome.scifio.io.RandomAccessInputStream
+ * to a loci.common.RandomAccessInputStream for the purpose of backwards compatibility.
+ * </p>
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/RandomAccessInputStream.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/RandomAccessInputStream.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Mark Hiner
  */
-public class RandomAccessInputStream extends InputStream implements DataInput {
+public class RandomAccessInputStream extends InputStream 
+  implements DataInput, Wrapper<ome.scifio.io.RandomAccessInputStream> {
 
   // -- Constants --
 
@@ -90,6 +96,18 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
   /** Constructs a random access stream around the given byte array. */
   public RandomAccessInputStream(byte[] array) throws IOException {
     rais = new ome.scifio.io.RandomAccessInputStream(array);
+  }
+  
+  /** Wrapper constructor. */
+  public RandomAccessInputStream(ome.scifio.io.RandomAccessInputStream rais) {
+    this.rais = rais;
+  }
+  
+  // -- Wrapper API Methods --
+  
+  /* @see Wrapper#unwrap() */
+  public ome.scifio.io.RandomAccessInputStream unwrap() {
+    return rais;
   }
 
   // -- RandomAccessInputStream API methods --
