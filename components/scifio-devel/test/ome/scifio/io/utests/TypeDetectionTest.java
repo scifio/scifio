@@ -63,20 +63,23 @@ public class TypeDetectionTest {
   public void testBZip2TypeDetection() throws IOException {
     File invalidFile = File.createTempFile("invalid", ".bz2");
     invalidFile.deleteOnExit();
-    assertEquals(BZip2Handle.isBZip2File(invalidFile.getAbsolutePath()), false);
+    BZip2Handle handle = new BZip2Handle();
+    assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
   }
 
   @Test
   public void testGZipTypeDetection() throws IOException {
     File invalidFile = File.createTempFile("invalid", ".gz");
     invalidFile.deleteOnExit();
-    assertEquals(GZipHandle.isGZipFile(invalidFile.getAbsolutePath()), false);
+    GZipHandle handle = new GZipHandle();
+    assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
   }
 
   @Test
   public void testZipTypeDetection() throws IOException {
     File invalidFile = File.createTempFile("invalid", ".zip");
     invalidFile.deleteOnExit();
-    assertEquals(ZipHandle.isZipFile(invalidFile.getAbsolutePath()), false);
+    ZipHandle handle = new ZipHandle();
+    assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
   }
 }
