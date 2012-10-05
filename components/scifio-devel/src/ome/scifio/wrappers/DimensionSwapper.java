@@ -34,11 +34,22 @@
  * #L%
  */
 
-package loci.formats;
+package ome.scifio.wrappers;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import loci.formats.meta.MetadataStore;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+import ome.scifio.CoreMetadata;
+import ome.scifio.FormatException;
+import ome.scifio.Metadata;
+import ome.scifio.Reader;
+import ome.scifio.io.RandomAccessInputStream;
+import ome.scifio.util.FormatTools;
 
 /**
  * Handles swapping the dimension order of an image series. This class is
@@ -49,12 +60,12 @@ import loci.formats.meta.MetadataStore;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/DimensionSwapper.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/DimensionSwapper.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class DimensionSwapper extends ReaderWrapper {
+public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
 
   // -- Utility methods --
 
   /** Converts the given reader into a DimensionSwapper, wrapping if needed. */
-  public static DimensionSwapper makeDimensionSwapper(IFormatReader r) {
+  public static DimensionSwapper makeDimensionSwapper(Reader r) {
     if (r instanceof DimensionSwapper) return (DimensionSwapper) r;
     return new DimensionSwapper(r);
   }
@@ -62,7 +73,7 @@ public class DimensionSwapper extends ReaderWrapper {
   // -- Fields --
 
   /** Core metadata associated with this dimension swapper. */
-  private CoreMetadata[] core;
+  private CoreMetadata core;
 
   // -- Constructors --
 
@@ -70,9 +81,9 @@ public class DimensionSwapper extends ReaderWrapper {
   public DimensionSwapper() { super(); }
 
   /** Constructs a DimensionSwapper with the given reader. */
-  public DimensionSwapper(IFormatReader r) { super(r); }
+  public DimensionSwapper(Reader<M> r) { super(r); }
 
-  private String[] outputOrder;
+  private List<AxisType>[] outputOrder;
 
   // -- DimensionSwapper API methods --
 
@@ -86,80 +97,48 @@ public class DimensionSwapper extends ReaderWrapper {
    * nothing happens. Note that this method will throw an exception if X and Y
    * do not appear in positions 0 and 1 (although X and Y can be reversed).
    */
-  public void swapDimensions(String order) {
+  public void swapDimensions(int imageIndex, List<AxisType> newOrder) {
     FormatTools.assertId(getCurrentFile(), true, 2);
 
-    if (order == null) throw new IllegalArgumentException("order is null");
+    if (newOrder == null) throw new IllegalArgumentException("order is null");
 
-    String oldOrder = getDimensionOrder();
-    if (order.equals(oldOrder)) return;
-
-    if (order.length() != 5) {
-      throw new IllegalArgumentException("order is unexpected length (" +
-        order.length() + ")");
+    List<AxisType> oldOrder = getDimensionOrder(imageIndex);
+    
+    if (newOrder.size() != oldOrder.size()) {
+      throw new IllegalArgumentException("newOrder is unexpected length (" +
+        newOrder.size() + ")");
+    }
+    
+    for(int i=0; i<newOrder.size(); i++) {
+      if(!oldOrder.contains(newOrder.get(i)))
+        throw new IllegalArgumentException("newOrder specifies different axes");
     }
 
-    int newX = order.indexOf("X");
-    int newY = order.indexOf("Y");
-    int newZ = order.indexOf("Z");
-    int newC = order.indexOf("C");
-    int newT = order.indexOf("T");
-
-    if (newX < 0) throw new IllegalArgumentException("X does not appear");
-    if (newY < 0) throw new IllegalArgumentException("Y does not appear");
-    if (newZ < 0) throw new IllegalArgumentException("Z does not appear");
-    if (newC < 0) throw new IllegalArgumentException("C does not appear");
-    if (newT < 0) throw new IllegalArgumentException("T does not appear");
-
-    if (newX > 1) {
-      throw new IllegalArgumentException("X in unexpected position (" +
-        newX + ")");
+    if(newOrder.get(0) != Axes.X && newOrder.get(1) != Axes.X)  {
+      throw new IllegalArgumentException("X is not in first two positions");
     }
-    if (newY > 1) {
-      throw new IllegalArgumentException("Y in unexpected position (" +
-        newY + ")");
+    if(newOrder.get(0) != Axes.Y && newOrder.get(1) != Axes.Y)  {
+      throw new IllegalArgumentException("Y in unexpected position");
     }
 
-    int[] dims = new int[5];
-
-    int oldX = oldOrder.indexOf("X");
-    int oldY = oldOrder.indexOf("Y");
-    int oldZ = oldOrder.indexOf("Z");
-    int oldC = oldOrder.indexOf("C");
-    int oldT = oldOrder.indexOf("T");
-
-    if (oldC != newC && reader.getRGBChannelCount() > 1) {
+    if (newOrder.indexOf(Axes.CHANNEL) != oldOrder.indexOf(Axes.CHANNEL)
+      && core.getRGBChannelCount(imageIndex) > 1) {
       throw new IllegalArgumentException(
         "Cannot swap C dimension when RGB channel count > 1");
     }
 
-    dims[oldX] = getSizeX();
-    dims[oldY] = getSizeY();
-    dims[oldZ] = getSizeZ();
-    dims[oldC] = getSizeC();
-    dims[oldT] = getSizeT();
-
-    int series = getCoreIndex();
-
-    core[series].sizeX = dims[newX];
-    core[series].sizeY = dims[newY];
-    core[series].sizeZ = dims[newZ];
-    core[series].sizeC = dims[newC];
-    core[series].sizeT = dims[newT];
     //core.currentOrder[series] = order;
-    if (outputOrder[series] == null) {
-      outputOrder[series] = core[series].dimensionOrder;
+    if (outputOrder[imageIndex] == null) {
+      outputOrder[imageIndex] = Arrays.asList(core.getAxes(imageIndex));
     }
-    core[series].dimensionOrder = order;
+    
+    FormatTools.setDimensionOrder(core, imageIndex, newOrder.toArray(new AxisType[newOrder.size()]));
 
-    if (oldC != newC) {
+    if (newOrder.indexOf(Axes.CHANNEL) != oldOrder.indexOf(Axes.CHANNEL)) {
       // C was overridden; clear the sub-C dimensional metadata
-      core[series].cLengths = new int[] {getSizeC()};
-      core[series].cTypes = new String[] {FormatTools.CHANNEL};
+      core.setChannelDimLengths(imageIndex, new int[] {getDimensionLength(imageIndex, Axes.CHANNEL)});
+      core.setChannelDimTypes(imageIndex, new String[] {FormatTools.CHANNEL});
     }
-
-    MetadataStore store = getMetadataStore();
-    MetadataTools.populatePixels(store, this);
   }
 
   /**
@@ -172,141 +151,116 @@ public class DimensionSwapper extends ReaderWrapper {
    * This method is useful when your application requires a particular output
    * dimension order; e.g., ImageJ virtual stacks must be in XYCZT order.
    */
-  public void setOutputOrder(String outputOrder) {
+  public void setOutputOrder(int imageIndex, List<AxisType> outputOrder) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    this.outputOrder[getCoreIndex()] = outputOrder;
+    this.outputOrder[imageIndex] = outputOrder;
   }
 
-  public String getInputOrder() {
+  public List<AxisType> getInputOrder(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return core[getCoreIndex()].dimensionOrder;
+    return Arrays.asList(core.getAxes(imageIndex));
+  }
+  
+  public int getDimensionLength(int imageIndex, AxisType t) {
+    FormatTools.assertId(getCurrentFile(), true, 2);
+    return core.getAxisLength(imageIndex, t);
   }
 
-  // -- IFormatReader API methods --
-
-  /* @see IFormatReader#getSizeX() */
-  public int getSizeX() {
+  public List<AxisType> getDimensionOrder(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return core[getCoreIndex()].sizeX;
-  }
-
-  /* @see IFormatReader#getSizeY() */
-  public int getSizeY() {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    return core[getCoreIndex()].sizeY;
-  }
-
-  /* @see IFormatReader#getSizeZ() */
-  public int getSizeZ() {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    return core[getCoreIndex()].sizeZ;
-  }
-
-  /* @see IFormatReader#getSizeC() */
-  public int getSizeC() {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    return core[getCoreIndex()].sizeC;
-  }
-
-  /* @see IFormatReader#getSizeT() */
-  public int getSizeT() {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    return core[getCoreIndex()].sizeT;
-  }
-
-  /* @see IFormatReader#getChannelDimLengths() */
-  public int[] getChannelDimLengths() {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    int[] cLengths = core[getCoreIndex()].cLengths;
-    return cLengths == null ? super.getChannelDimLengths() : cLengths;
-  }
-
-  /* @see IFormatReader#getChannelDimTypes() */
-  public String[] getChannelDimTypes() {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    String[] cTypes = core[getCoreIndex()].cTypes;
-    return cTypes == null ? super.getChannelDimTypes() : cTypes;
-  }
-
-  /* @see IFormatReader#getDimensionOrder() */
-  public String getDimensionOrder() {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    String outOrder = outputOrder[getCoreIndex()];
+    List<AxisType> outOrder = outputOrder[imageIndex];
     if (outOrder != null) return outOrder;
-    return getInputOrder();
+    return getInputOrder(imageIndex);
   }
 
-  /* @see IFormatReader#openBytes(int) */
-  public byte[] openBytes(int no) throws FormatException, IOException {
-    return super.openBytes(reorder(no));
+  // -- Reader API methods --
+
+  /* @see Reader#openBytes(int) */
+  public byte[] openBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
+    return super.openBytes(imageIndex, reorder(imageIndex, planeIndex));
   }
 
-  /* @see IFormatReader#openBytes(int, int, int, int, int) */
-  public byte[] openBytes(int no, int x, int y, int w, int h)
+  /* @see Reader#openBytes(int, int, int, int, int) */
+  public byte[] openBytes(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    return super.openBytes(reorder(no), x, y, w, h);
+    return super.openBytes(imageIndex, reorder(imageIndex, planeIndex), x, y, w, h);
   }
 
-  /* @see IFormatReader#openBytes(int, byte[]) */
-  public byte[] openBytes(int no, byte[] buf)
+  /* @see Reader#openBytes(int, byte[]) */
+  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
     throws FormatException, IOException
   {
-    return super.openBytes(reorder(no), buf);
+    return super.openBytes(imageIndex, reorder(imageIndex, planeIndex), buf);
   }
 
-  /* @see IFormatReader#openBytes(int, byte[], int, int, int, int) */
-  public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
+  /* @see Reader#openBytes(int, byte[], int, int, int, int) */
+  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    return super.openBytes(reorder(no), buf, x, y, w, h);
+    return super.openBytes(imageIndex, reorder(imageIndex, planeIndex), buf, x, y, w, h);
   }
 
-  /* @see IFormatReader#openThumbImage(int) */
-  public byte[] openThumbBytes(int no) throws FormatException, IOException {
-    return super.openThumbBytes(reorder(no));
+  /* @see Reader#openThumbImage(int) */
+  public byte[] openThumbBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
+    return super.openThumbBytes(imageIndex, reorder(imageIndex, planeIndex));
   }
 
-  /* @see IFormatReader#getZCTCoords(int) */
+  /* @see Reader#getZCTCoords(int) */
   public int[] getZCTCoords(int no) {
     return FormatTools.getZCTCoords(this, no);
   }
 
-  /* @see IFormatReader#getIndex(int, int, int) */
-  public int getIndex(int z, int c, int t) {
-    return FormatTools.getIndex(this, z, c, t);
+  /* @see Reader#getIndex(int, int, int) */
+  public int getIndex(int imageIndex, int z, int c, int t) {
+    return FormatTools.getIndex(this, imageIndex, z, c, t);
   }
 
-  /* @see IFormatReader#getCoreMetadata() */
+  /* @see Reader#getCoreMetadata() */
   @Override
-  public CoreMetadata[] getCoreMetadata() {
+  public CoreMetadata getCoreMetadata() {
     FormatTools.assertId(getCurrentFile(), true, 2);
     return core;
   }
 
-  // -- IFormatHandler API methods --
-
-  /* @see IFormatHandler#setId(String) */
-  public void setId(String id) throws FormatException, IOException {
+  /* @see Reader#setSource(String) */
+  public void setSource(String id) throws IOException {
+    setSource(new RandomAccessInputStream(id));
+  }
+  
+  /* @see Reader#setSource(File) */
+  public void setSource(File file) throws IOException {
+    setSource(new RandomAccessInputStream(file.getAbsolutePath()));
+  }
+  
+  /* @see Reader#setSource(RandomAccessInputStream) */
+  public void setSource(RandomAccessInputStream stream) throws IOException {
+    super.setSource(stream);
     String oldFile = getCurrentFile();
-    super.setId(id);
-    if (!id.equals(oldFile) || outputOrder == null ||
-      outputOrder.length != reader.getCoreMetadata().length)
+    if (!stream.getFileName().equals(oldFile) || outputOrder == null ||
+      outputOrder.length != getReader().getImageCount())
     {
-      outputOrder = new String[reader.getCoreMetadata().length];
+      outputOrder = new ArrayList[getReader().getImageCount()];
 
       // NB: Create our own copy of the CoreMetadata,
       // which we can manipulate safely.
-      core = copyCoreMetadata(reader);
+      core = new CoreMetadata(core, getReader().getContext());
     }
   }
 
   // -- Helper methods --
 
-  protected int reorder(int no) {
-    if (getInputOrder() == null) return no;
-    return FormatTools.getReorderedIndex(getInputOrder(), getDimensionOrder(),
-      getSizeZ(), getEffectiveSizeC(), getSizeT(), getImageCount(), no);
+  protected int reorder(int imageIndex, int planeIndex) {
+    if (getInputOrder(imageIndex) == null) return planeIndex;
+    List<AxisType> outputOrder = getDimensionOrder(imageIndex);
+    AxisType[] outputAxes = outputOrder.toArray(new AxisType[outputOrder.size()]);
+    List<AxisType> inputOrder = getInputOrder(imageIndex);
+    AxisType[] inputAxes = inputOrder.toArray(new AxisType[inputOrder.size()]);
+     
+    return FormatTools.getReorderedIndex(FormatTools.findDimensionOrder(inputAxes),
+      FormatTools.findDimensionOrder(outputAxes), getDimensionLength(imageIndex, Axes.Z),
+      core.getEffectiveSizeC(imageIndex), getDimensionLength(imageIndex, Axes.TIME),
+      getImageCount(), planeIndex);
   }
 
 }
