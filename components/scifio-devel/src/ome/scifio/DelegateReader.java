@@ -34,15 +34,12 @@
  * #L%
  */
 
-package loci.formats;
+package ome.scifio;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 
-import loci.common.RandomAccessInputStream;
-import loci.formats.in.MetadataLevel;
-import loci.formats.in.MetadataOptions;
-import loci.formats.meta.MetadataStore;
+import ome.scifio.io.RandomAccessInputStream;
 
 /**
  * DelegateReader is a file format reader that selects which reader to use
@@ -52,16 +49,16 @@ import loci.formats.meta.MetadataStore;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/DelegateReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/DelegateReader.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public abstract class DelegateReader extends FormatReader {
+public abstract class DelegateReader <M extends Metadata> extends AbstractReader<M> {
 
   /** Flag indicating whether to use legacy reader by default. */
   protected boolean useLegacy;
 
   /** Native reader. */
-  protected IFormatReader nativeReader;
+  protected Reader<M> nativeReader;
 
   /** Legacy reader. */
-  protected IFormatReader legacyReader;
+  protected Reader<M> legacyReader;
 
   /** Flag indicating that the native reader was successfully initialized. */
   protected boolean nativeReaderInitialized;
@@ -72,13 +69,16 @@ public abstract class DelegateReader extends FormatReader {
   // -- Constructor --
 
   /** Constructs a new delegate reader. */
-  public DelegateReader(String format, String suffix) {
-    super(format, suffix);
+  public DelegateReader() {
+    this(null, null, null);
   }
 
   /** Constructs a new delegate reader. */
-  public DelegateReader(String format, String[] suffixes) {
-    super(format, suffixes);
+  public DelegateReader(Reader<M> nativeReader, Reader<M> legacyReader,
+    final SCIFIO ctx) {
+    super(nativeReader.getFormatName(), nativeReader.getSuffixes(), ctx);
+    this.nativeReader = nativeReader;
+    this.legacyReader = legacyReader;
   }
 
   // -- DelegateReader API methods --
@@ -89,198 +89,191 @@ public abstract class DelegateReader extends FormatReader {
   /** Gets whether to use the legacy reader by default. */
   public boolean isLegacy() { return useLegacy; }
 
-  // -- IMetadataConfigurable API methods --
-
-  /* @see IMetadataConfigurable#getSupportedMetadataLevels() */
-  public Set<MetadataLevel> getSupportedMetadataLevels() {
-    return nativeReader.getSupportedMetadataLevels();
+  // -- FormatHandler API methods --
+  
+  public String getFormatName() {
+    return useLegacy ? legacyReader.getFormatName() : nativeReader.getFormatName();
+  }
+  
+  public String[] getSuffixes() {
+    return useLegacy ? legacyReader.getSuffixes() : nativeReader.getSuffixes();
+  }
+  
+  // -- HasContext API methods --
+  
+  public SCIFIO getContext() {
+    return useLegacy ? legacyReader.getContext() : nativeReader.getContext();
   }
 
-  /* @see IMetadataConfigurable#getMetadataOptions() */
-  public MetadataOptions getMetadataOptions() {
-    return nativeReader.getMetadataOptions();
+  public void setContext(SCIFIO ctx) {
+    if (useLegacy) legacyReader.setContext(ctx);
+    else nativeReader.setContext(ctx);
   }
-
-  /* @see IMetadataConfigurable#setMetadataOptions(MetadataOptions) */
-  public void setMetadataOptions(MetadataOptions options) {
-    nativeReader.setMetadataOptions(options);
-    legacyReader.setMetadataOptions(options);
+  
+  // -- HasFormat API methods --
+  
+  public Format<M, ?, ?, ?, ?> getFormat() {
+    return (Format<M, ?, ?, ?, ?>) (useLegacy ? legacyReader.getFormat() : nativeReader.getFormat());
   }
+  
+  // -- Reader API methods --
 
-  // -- IFormatReader API methods --
-
-  /* @see IFormatReader#isThisType(String, boolean) */
-  public boolean isThisType(String name, boolean open) {
-    return nativeReader.isThisType(name, open);
-  }
-
-  /* @see IFormatReader#isThisType(RandomAccessInputStream) */
-  public boolean isThisType(RandomAccessInputStream stream) throws IOException {
-    return nativeReader.isThisType(stream);
-  }
-
-  /* @see IFormatReader#setSeries(int) */
-  public void setSeries(int no) {
-    super.setSeries(no);
-    if (nativeReaderInitialized) nativeReader.setSeries(no);
-    if (legacyReaderInitialized) legacyReader.setSeries(no);
-  }
-
-  /* @see IFormatReader#setResolution(int) */
-  public void setResolution(int resolution) {
-    super.setResolution(resolution);
-    if (nativeReaderInitialized) nativeReader.setResolution(resolution);
-    if (legacyReaderInitialized) legacyReader.setResolution(resolution);
-  }
-
-  /* @see IFormatReader#setNormalized(boolean) */
-  public void setNormalized(boolean normalize) {
-    super.setNormalized(normalize);
-    nativeReader.setNormalized(normalize);
-    legacyReader.setNormalized(normalize);
-  }
-
-  /**
-   * @deprecated
-   * @see IFormatReader#setMetadataCollected(boolean)
-   */
-  public void setMetadataCollected(boolean collect) {
-    super.setMetadataCollected(collect);
-    nativeReader.setMetadataCollected(collect);
-    legacyReader.setMetadataCollected(collect);
-  }
-
-  /* @see IFormatReader#setOriginalMetadataPopulated(boolean) */
-  public void setOriginalMetadataPopulated(boolean populate) {
-    super.setOriginalMetadataPopulated(populate);
-    nativeReader.setOriginalMetadataPopulated(populate);
-    legacyReader.setOriginalMetadataPopulated(populate);
-  }
-
-  /* @see IFormatReader#setGroupFiles(boolean) */
-  public void setGroupFiles(boolean group) {
-    super.setGroupFiles(group);
-    nativeReader.setGroupFiles(group);
-    legacyReader.setGroupFiles(group);
-  }
-
-  /* @see IFormatReader#setFlattenedResolutions(boolean) */
-  public void setFlattenedResolutions(boolean flattened) {
-    super.setFlattenedResolutions(flattened);
-    nativeReader.setFlattenedResolutions(flattened);
-    legacyReader.setFlattenedResolutions(flattened);
-  }
-
-  /* @see IFormatReader#setMetadataFiltered(boolean) */
-  public void setMetadataFiltered(boolean filter) {
-    super.setMetadataFiltered(filter);
-    nativeReader.setMetadataFiltered(filter);
-    legacyReader.setMetadataFiltered(filter);
-  }
-
-  /* @see IFormatReader#setMetadataStore(MetadataStore) */
-  public void setMetadataStore(MetadataStore store) {
-    super.setMetadataStore(store);
-    nativeReader.setMetadataStore(store);
-    legacyReader.setMetadataStore(store);
-  }
-
-  /* @see IFormatReader#get8BitLookupTable() */
-  public byte[][] get8BitLookupTable() throws FormatException, IOException {
-    if (useLegacy || (legacyReaderInitialized && !nativeReaderInitialized)) {
-      return legacyReader.get8BitLookupTable();
-    }
-    return nativeReader.get8BitLookupTable();
-  }
-
-  /* @see IFormatReader#get16BitLookupTable() */
-  public short[][] get16BitLookupTable() throws FormatException, IOException {
-    if (useLegacy || (legacyReaderInitialized && !nativeReaderInitialized)) {
-      return legacyReader.get16BitLookupTable();
-    }
-    return nativeReader.get16BitLookupTable();
-  }
-
-  /* @see IFormatReader#openBytes(int, byte[], int, int, int, int) */
-  public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
+  public byte[] openBytes(int imageIndex, int planeIndex)
     throws FormatException, IOException
   {
-    if (useLegacy || (legacyReaderInitialized && !nativeReaderInitialized)) {
-      return legacyReader.openBytes(no, buf, x, y, w, h);
-    }
-    return nativeReader.openBytes(no, buf, x, y, w, h);
+    return useLegacy ? legacyReader.openBytes(imageIndex, planeIndex)
+      : nativeReader.openBytes(imageIndex, planeIndex);
   }
 
-  /* @see IFormatReader#close(boolean) */
+  public byte[] openBytes(int imageIndex, int planeIndex, int x, int y, int w,
+    int h) throws FormatException, IOException
+  {
+    return useLegacy ? legacyReader.openBytes(imageIndex, planeIndex, x, y, w, h) 
+      : nativeReader.openBytes(imageIndex, planeIndex, x, y, w, h);
+  }
+
+  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
+    throws FormatException, IOException
+  {
+    return useLegacy ? legacyReader.openBytes(imageIndex, planeIndex, buf) 
+      : nativeReader.openBytes(imageIndex, planeIndex, buf);
+  }
+
+  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x,
+    int y, int w, int h) throws FormatException, IOException
+  {
+    return useLegacy ? legacyReader.openBytes(imageIndex, planeIndex, buf, x, y, w, h) :
+      nativeReader.openBytes(imageIndex, planeIndex, buf, x, y, w, h);
+  }
+
+  public Object openPlane(int imageIndex, int planeIndex, int x, int y, int w,
+    int h) throws FormatException, IOException
+  {
+    return useLegacy ? legacyReader.openPlane(imageIndex, planeIndex, x, y, w, h) 
+      : nativeReader.openPlane(imageIndex, planeIndex, x, y, w, h);
+  }
+
+  public byte[] openThumbBytes(int imageIndex, int planeIndex)
+    throws FormatException, IOException
+  {
+    return useLegacy ? legacyReader.openThumbBytes(imageIndex, planeIndex) 
+      : nativeReader.openThumbBytes(imageIndex, planeIndex);
+  }
+
+  public void setGroupFiles(boolean group) {
+    if (useLegacy) legacyReader.setGroupFiles(group);
+    else nativeReader.setGroupFiles(group);
+  }
+
+  public boolean isGroupFiles() {
+    return useLegacy ? legacyReader.isGroupFiles() : nativeReader.isGroupFiles();
+  }
+
+  public int fileGroupOption(String id) throws FormatException, IOException {
+    return useLegacy ? legacyReader.fileGroupOption(id) : nativeReader.fileGroupOption(id);
+  }
+
+  public String getCurrentFile() {
+    return useLegacy ? legacyReader.getCurrentFile() : nativeReader.getCurrentFile();
+  }
+
+  public String[] getDomains() {
+    return useLegacy ? legacyReader.getDomains() : nativeReader.getDomains();
+  }
+
+  public int[] getZCTCoords(int index) {
+    return useLegacy ? legacyReader.getZCTCoords(index) : nativeReader.getZCTCoords(index);
+  }
+
+  public RandomAccessInputStream getStream() {
+    return useLegacy ? legacyReader.getStream() : nativeReader.getStream();
+  }
+
+  public Reader<Metadata>[] getUnderlyingReaders() {
+    return useLegacy ? legacyReader.getUnderlyingReaders() : nativeReader.getUnderlyingReaders();
+  }
+
+  public int getOptimalTileWidth(int imageIndex) {
+    return useLegacy ? legacyReader.getOptimalTileWidth(imageIndex)
+      : nativeReader.getOptimalTileWidth(imageIndex);
+  }
+
+  public int getOptimalTileHeight(int imageIndex) {
+    return useLegacy ? legacyReader.getOptimalTileHeight(imageIndex)
+      : nativeReader.getOptimalTileHeight(imageIndex);
+  }
+
+  public void setMetadata(M meta) throws IOException {
+    if (useLegacy) legacyReader.setMetadata(meta);
+    else  nativeReader.setMetadata(meta);
+  }
+
+  public M getMetadata() {
+    return useLegacy ? legacyReader.getMetadata() : nativeReader.getMetadata();
+  }
+
+  public CoreMetadata getCoreMetadata() {
+    return useLegacy ? legacyReader.getCoreMetadata() : nativeReader.getCoreMetadata();
+  }
+
+  public void setNormalized(boolean normalize) {
+    if (useLegacy) legacyReader.setNormalized(normalize);
+    else nativeReader.setNormalized(normalize);
+  }
+
+  public boolean isNormalized() {
+    return useLegacy ? legacyReader.isNormalized() : nativeReader.isNormalized();
+  }
+
+  public boolean hasCompanionFiles() {
+    return useLegacy ? legacyReader.hasCompanionFiles() : nativeReader.hasCompanionFiles();
+  }
+
+  public void setSource(File file) throws IOException {
+    if (useLegacy) legacyReader.setSource(file);
+    else nativeReader.setSource(file);
+  }
+
+  public void setSource(String fileName) throws IOException {
+    if (useLegacy) legacyReader.setSource(fileName);
+    else nativeReader.setSource(fileName);
+  }
+
+  public void setSource(RandomAccessInputStream stream) throws IOException {
+    if (useLegacy) legacyReader.setSource(stream);
+    else nativeReader.setSource(stream);
+  }
+
   public void close(boolean fileOnly) throws IOException {
-    super.close(fileOnly);
-    if (nativeReader != null) nativeReader.close(fileOnly);
-    if (legacyReader != null) legacyReader.close(fileOnly);
-    if (!fileOnly) {
-      nativeReaderInitialized = legacyReaderInitialized = false;
-    }
+    if (useLegacy) legacyReader.close(fileOnly);
+    else nativeReader.close(fileOnly);
   }
 
-  /* @see IFormatReader#getOptimalTileWidth() */
-  public int getOptimalTileWidth() {
-    if (useLegacy || (legacyReaderInitialized && !nativeReaderInitialized)) {
-      return legacyReader.getOptimalTileWidth();
-    }
-    return nativeReader.getOptimalTileWidth();
+  public void close() throws IOException {
+    if (useLegacy) legacyReader.close();
+    else nativeReader.close();
   }
 
-  /* @see IFormatReader#getOptimalTileHeight() */
-  public int getOptimalTileHeight() {
-    if (useLegacy || (legacyReaderInitialized && !nativeReaderInitialized)) {
-      return legacyReader.getOptimalTileHeight();
-    }
-    return nativeReader.getOptimalTileHeight();
+  public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
+    int y, int w, int h, byte[] buf) throws IOException
+  {
+    return useLegacy ? legacyReader.readPlane(s, imageIndex, x, y, w, h, buf)
+      : nativeReader.readPlane(s, imageIndex, x, y, w, h, buf);
   }
 
-  // -- IFormatHandler API methods --
-
-  /* @see IFormatHandler#setId(String) */
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
-    if (useLegacy) {
-      try {
-        legacyReader.setId(id);
-        legacyReaderInitialized = true;
-      }
-      catch (FormatException e) {
-        LOGGER.debug("", e);
-        nativeReader.setId(id);
-        nativeReaderInitialized = true;
-      }
-    }
-    else {
-      Exception exc = null;
-      try {
-        nativeReader.setId(id);
-        nativeReaderInitialized = true;
-      }
-      catch (FormatException e) { exc = e; }
-      catch (IOException e) { exc = e; }
-      if (exc != null) {
-        nativeReaderInitialized = false;
-        LOGGER.debug("", exc);
-        legacyReader.setId(id);
-        legacyReaderInitialized = true;
-      }
-      if (legacyReaderInitialized) {
-        nativeReaderInitialized = false;
-      }
-    }
-    if (nativeReaderInitialized) {
-      core = nativeReader.getCoreMetadata();
-      metadata = nativeReader.getGlobalMetadata();
-      metadataStore = nativeReader.getMetadataStore();
-    }
-    if (legacyReaderInitialized) {
-      core = legacyReader.getCoreMetadata();
-      metadata = legacyReader.getGlobalMetadata();
-      metadataStore = legacyReader.getMetadataStore();
-    }
+  public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
+    int y, int w, int h, int scanlinePad, byte[] buf) throws IOException
+  {
+    return useLegacy ? legacyReader.readPlane(s, imageIndex, x, y, w, h, scanlinePad, buf)
+      : nativeReader.readPlane(s, imageIndex, x, y, w, h, scanlinePad, buf);
   }
 
+  public int getPlaneCount(int imageIndex) {
+    return useLegacy ? legacyReader.getPlaneCount(imageIndex)
+      : nativeReader.getPlaneCount(imageIndex);
+  }
+
+  public int getImageCount() {
+    return useLegacy ? legacyReader.getImageCount() : nativeReader.getImageCount();
+  }
 }
