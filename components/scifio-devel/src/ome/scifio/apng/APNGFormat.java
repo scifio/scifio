@@ -274,7 +274,7 @@ public class APNGFormat
     }
 
     public Parser(final SCIFIO ctx) {
-      super(ctx, Metadata.class);
+      super(ctx);
     }
 
     // -- Parser API Methods --

@@ -63,9 +63,6 @@ public abstract class AbstractParser<M extends Metadata>
 
   // -- Fields --
 
-  /** Class pointer to circumvent type erasure */
-  private Class<M> metaClass;
-
   /** Current file. */
   protected RandomAccessInputStream in;
 
@@ -89,9 +86,8 @@ public abstract class AbstractParser<M extends Metadata>
 
   // -- Constructors --
 
-  public AbstractParser(final SCIFIO ctx, Class<M> mClass) {
+  public AbstractParser(final SCIFIO ctx) {
     super(ctx);
-    metaClass = mClass;
     cMeta = new CoreMetadata();
   }
 

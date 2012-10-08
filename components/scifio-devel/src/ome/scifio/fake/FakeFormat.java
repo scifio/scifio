@@ -202,7 +202,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     }
     
     public Parser(final SCIFIO ctx) {
-      super(ctx, Metadata.class);
+      super(ctx);
     }
     
     // -- Parser API Methods --
