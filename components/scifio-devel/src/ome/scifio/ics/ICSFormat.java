@@ -415,8 +415,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       final int pixel = bpp * cMeta.getRGBChannelCount(imageIndex);
       final int rowLen = FormatTools.getPlaneSize(this, w, 1, imageIndex);
   
-      final int[] coordinates = getZCTCoords(imageIndex, planeIndex);
-      final int[] prevCoordinates = getZCTCoords(imageIndex, prevImage);
+      final int[] coordinates = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
+      final int[] prevCoordinates = FormatTools.getZCTCoords(this, imageIndex, prevImage);
   
       if (!gzip) {
         in.seek(metadata.offset + planeIndex * (long) len);

@@ -360,11 +360,6 @@ public abstract class AbstractReader<M extends Metadata>
     return cMeta;
   }
 
-  /* @see Reader#getZCTCoords(int) */
-  public int[] getZCTCoords(final int imageIndex, final int planeIndex) {
-    return FormatTools.getZCTCoords(this, imageIndex, planeIndex);
-  }
-
   /* @see Reader#getStream() */
   public RandomAccessInputStream getStream() {
     return in;

@@ -171,10 +171,6 @@ public abstract class DelegateReader <M extends Metadata> extends AbstractReader
     return useLegacy ? legacyReader.getDomains() : nativeReader.getDomains();
   }
 
-  public int[] getZCTCoords(int imageIndex, int index) {
-    return useLegacy ? legacyReader.getZCTCoords(imageIndex, index) : nativeReader.getZCTCoords(imageIndex, index);
-  }
-
   public RandomAccessInputStream getStream() {
     return useLegacy ? legacyReader.getStream() : nativeReader.getStream();
   }

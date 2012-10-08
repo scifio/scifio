@@ -317,7 +317,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       final short[][][] lut16 = (short[][][]) cMeta.getMetadataValue(imageIndex, LUT16);
       final int[][] valueToIndex = (int[][])cMeta.getMetadataValue(imageIndex, VALUE_INDEX_MAP);
       
-      final int[] zct = getZCTCoords(imageIndex, planeIndex);
+      final int[] zct = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
       final int zIndex = zct[0], cIndex = zct[1], tIndex = zct[2];
       ac = cIndex;
 

@@ -974,7 +974,7 @@ public class FormatTools {
 
     filename = filename.replaceAll(SERIES_NAME, imageName);
 
-    int[] coordinates = r.getZCTCoords(imageIndex, image);
+    int[] coordinates = FormatTools.getZCTCoords(r, imageIndex, image);
 
     filename = filename.replaceAll(Z_NUM, String.valueOf(coordinates[0]));
     filename = filename.replaceAll(T_NUM, String.valueOf(coordinates[2]));
