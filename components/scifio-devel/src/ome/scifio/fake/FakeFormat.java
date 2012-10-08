@@ -147,7 +147,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   }
   
   public FakeFormat(final SCIFIO ctx) throws FormatException {
-    super(ctx, Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
+    super(ctx, "Simulated data", "fake", Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
   }
 
   /**
@@ -183,7 +183,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     }
     
     public Checker(SCIFIO ctx) {
-      super("Simulated data", "fake", ctx);
+      super(ctx);
     }
   }
   
@@ -292,7 +292,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     }
     
     public Reader(final SCIFIO ctx) {
-      super("Simulated data", "fake", ctx);
+      super(ctx);
     }
     
     // -- Reader API methods --
@@ -413,7 +413,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     }
     
     public Writer(final SCIFIO ctx) {
-      super("Simulated data", "fake", ctx);
+      super(ctx);
     }
     
     // -- Writer API Methods --

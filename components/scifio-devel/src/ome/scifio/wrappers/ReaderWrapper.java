@@ -77,8 +77,7 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
   }
   
   public ReaderWrapper(Reader<M> r, SCIFIO ctx) {
-    super(r == null? null : r.getFormatName(),
-      r == null? null : r.getSuffixes(), ctx);
+    super(ctx);
     
     if(r == null) {
       throw new IllegalArgumentException("Reader can not be null");

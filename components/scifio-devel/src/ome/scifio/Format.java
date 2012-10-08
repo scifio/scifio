@@ -119,7 +119,13 @@ public interface Format<M extends Metadata, C extends Checker<M>, P extends Pars
    * @throws FormatException
    */
   List<Class<Translator<?, ?>>> getTranslatorClassList();
+  
+  /** Gets the name of this file format. */
+  String getFormatName();
 
+  /** Gets the default file suffixes for this file format. */
+  String[] getSuffixes();
+  
   /**
    * Returns the class of the Metadata associated with this format
    * @return

@@ -63,6 +63,12 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
   
   // -- Fields --
 
+  /** Name of this file format. */
+  protected String formatName;
+
+  /** Valid suffixes for this file format. */
+  protected String[] suffixes;
+
   private Class<M> metadataClass;
   private Class<C> checkerClass;
   private Class<P> parserClass;
@@ -75,15 +81,25 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
 
   // -- Constructor --
 
-  public AbstractFormat(final SCIFIO ctx, Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass, Class<W> wClass ) throws FormatException {
-    super(ctx);
-    this.metadataClass = mClass;
-    this.checkerClass = cClass;
-    this.parserClass = pClass;
-    this.readerClass = rClass;
-    this.writerClass = wClass;
-    findTranslatorClassList();
+  public AbstractFormat(final SCIFIO ctx, String formatName, String suffix,
+      Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass,
+      Class<W> wClass) throws FormatException {
+    this(ctx, formatName, new String[]{suffix}, mClass, cClass, pClass, rClass, wClass);
   }
+  
+   public AbstractFormat(final SCIFIO ctx, String formatName, String[] suffixes,
+       Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass,
+       Class<W> wClass) throws FormatException {
+      super(ctx);
+      this.formatName = formatName;
+      this.suffixes = suffixes == null ? new String[0] : suffixes;
+      this.metadataClass = mClass;
+      this.checkerClass = cClass;
+      this.parserClass = pClass;
+      this.readerClass = rClass;
+      this.writerClass = wClass;
+      findTranslatorClassList();
+    }
 
   // -- Format API Methods --
 
@@ -115,6 +131,16 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
   /* @see Format#createWriter() */
   public W createWriter() throws FormatException {
     return createContextualObject(this.getWriterClass());
+  }
+  
+  /* @see Format#getFormatName() */
+  public String getFormatName() {
+    return formatName;
+  }
+
+  /* @see Format#getSuffixes() */
+  public String[] getSuffixes() {
+    return suffixes.clone();
   }
 
   /* @see Format#getMetadataClass() */
@@ -160,7 +186,7 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
   }
 
   // -- Helper Methods --
-
+  
   /**
    * Populates the list of Translators associated with this Format
    */

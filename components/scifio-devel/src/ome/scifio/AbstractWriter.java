@@ -56,7 +56,7 @@ import ome.scifio.util.SCIFIOMetadataTools;
  *
  */
 public abstract class AbstractWriter<M extends Metadata>
-  extends AbstractFormatHandler implements Writer<M> {
+  extends AbstractHasContext implements Writer<M> {
 
   // -- Constants --
 
@@ -105,19 +105,10 @@ public abstract class AbstractWriter<M extends Metadata>
 
   // -- Constructors --
 
-  /** Constructs a writer with the given name and default suffix */
-  public AbstractWriter(final String format, final String suffix,
-    final SCIFIO ctx)
+  /** Constructs a writer with the given context */
+  public AbstractWriter(final SCIFIO ctx)
   {
-    super(format, suffix, ctx);
-    init();
-  }
-
-  /** Constructs a writer with the given name and default suffixes */
-  public AbstractWriter(final String format, final String[] suffixes,
-    final SCIFIO ctx)
-  {
-    super(format, suffixes, ctx);
+    super(ctx);
     init();
   }
 

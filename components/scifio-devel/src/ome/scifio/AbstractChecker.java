@@ -41,13 +41,14 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ome.scifio.io.RandomAccessInputStream;
+import ome.scifio.util.FormatTools;
 
 /**
  * Abstract superclass of all SCIFIO checker components. 
  *
  */
 public abstract class AbstractChecker<M extends Metadata>
-  extends AbstractFormatHandler implements Checker<M> {
+  extends AbstractHasContext implements Checker<M> {
 
   // -- Constants --
 
@@ -69,18 +70,10 @@ public abstract class AbstractChecker<M extends Metadata>
 
   // -- Constructors --
 
-  /** Constructs a checker with the given name and default suffix */
-  public AbstractChecker(final String format, final String suffix,
-    final SCIFIO ctx)
+  /** Constructs a checker with the given context */
+  public AbstractChecker(final SCIFIO ctx)
   {
-    super(format, suffix, ctx);
-  }
-
-  /** Constructs a checker with the given name and default suffixes */
-  public AbstractChecker(final String format, final String[] suffixes,
-    final SCIFIO ctx)
-  {
-    super(format, suffixes, ctx);
+    super(ctx);
   }
 
   // -- HasFormat API --
@@ -104,7 +97,7 @@ public abstract class AbstractChecker<M extends Metadata>
 
     if (suffixNecessary || suffixSufficient) {
       // it's worth checking the file extension
-      final boolean suffixMatch = checkSuffix(name, suffixes);
+      final boolean suffixMatch = FormatTools.checkSuffix(name, getFormat().getSuffixes());
       ;
 
       // if suffix match is required but it doesn't match, failure
@@ -148,5 +141,4 @@ public abstract class AbstractChecker<M extends Metadata>
   {
     return false;
   }
-
 }

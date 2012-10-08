@@ -76,7 +76,7 @@ public abstract class DelegateReader <M extends Metadata> extends AbstractReader
   /** Constructs a new delegate reader. */
   public DelegateReader(Reader<M> nativeReader, Reader<M> legacyReader,
     final SCIFIO ctx) {
-    super(nativeReader.getFormatName(), nativeReader.getSuffixes(), ctx);
+    super(ctx);
     this.nativeReader = nativeReader;
     this.legacyReader = legacyReader;
   }
@@ -88,16 +88,6 @@ public abstract class DelegateReader <M extends Metadata> extends AbstractReader
 
   /** Gets whether to use the legacy reader by default. */
   public boolean isLegacy() { return useLegacy; }
-
-  // -- FormatHandler API methods --
-  
-  public String getFormatName() {
-    return useLegacy ? legacyReader.getFormatName() : nativeReader.getFormatName();
-  }
-  
-  public String[] getSuffixes() {
-    return useLegacy ? legacyReader.getSuffixes() : nativeReader.getSuffixes();
-  }
   
   // -- HasContext API methods --
   

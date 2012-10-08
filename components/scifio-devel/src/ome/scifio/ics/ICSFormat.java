@@ -84,7 +84,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   }
 
   public ICSFormat(final SCIFIO ctx) throws FormatException {
-    super(ctx, Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
+    super(ctx, "Image Cytometry Standard", new String[] {"ics", "ids"}, Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
   }
   
   // -- Accessor methods for private classes --
@@ -202,7 +202,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
 
     public Checker(final SCIFIO ctx) {
-      super("Image Cytometry Standard", new String[] {"ics", "ids"}, ctx);
+      super(ctx);
     }
 
     // -- Checker API Methods --
@@ -391,7 +391,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
   
     public Reader(final SCIFIO ctx) {
-      super("Image Cytometry Standard", new String[] {"ics", "ids"}, ctx);
+      super(ctx);
       domains =
         new String[] {
         FormatTools.LM_DOMAIN, FormatTools.FLIM_DOMAIN,
@@ -598,7 +598,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
   
     public Writer(final SCIFIO ctx) {
-      super("Image Cytometry Standard", new String[] {"ids", "ics"}, ctx);
+      super(ctx);
     }
     
     // -- ICSWriter API methods --
@@ -744,7 +744,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       String currentId = this.getMetadata().idsId != null ? 
           this.getMetadata().idsId : this.getMetadata().icsId;
       
-      if (checkSuffix(this.getMetadata().idsId, "ids")) {
+      if (FormatTools.checkSuffix(this.getMetadata().idsId, "ids")) {
         String metadataFile = makeIcsId(currentId);
         if(out != null) out.close();
         out = new RandomAccessOutputStream(metadataFile);
@@ -752,7 +752,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
 
       if (out.length() == 0) {
         out.writeBytes("\t\n");
-        if (checkSuffix(currentId, "ids")) {
+        if (FormatTools.checkSuffix(currentId, "ids")) {
           out.writeBytes("ics_version\t1.0\n");
         }
         else {
@@ -832,14 +832,14 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         out.writeBytes("\nend\n");
         pixelOffset = out.getFilePointer();
       }
-      else if (checkSuffix(currentId, "ics")) {
+      else if (FormatTools.checkSuffix(currentId, "ics")) {
         RandomAccessInputStream in = new RandomAccessInputStream(currentId);
         in.findString("\nend\n");
         pixelOffset = in.getFilePointer();
         in.close();
       }
 
-      if (checkSuffix(currentId, "ids")) {
+      if (FormatTools.checkSuffix(currentId, "ids")) {
         pixelOffset = 0;
       }
 

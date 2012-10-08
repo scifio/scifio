@@ -53,7 +53,7 @@ import ome.scifio.util.FormatTools;
  *
  */
 public abstract class AbstractReader<M extends Metadata>
-  extends AbstractFormatHandler implements Reader<M> {
+  extends AbstractHasContext implements Reader<M> {
 
   // -- Constants --
 
@@ -90,19 +90,10 @@ public abstract class AbstractReader<M extends Metadata>
 
   // -- Constructors --
 
-  /** Constructs a reader with the given name and default suffix */
-  public AbstractReader(final String format, final String suffix,
-    final SCIFIO ctx)
+  /** Constructs a reader with the given context */
+  public AbstractReader(final SCIFIO ctx)
   {
-    super(format, suffix, ctx);
-    init();
-  }
-
-  /** Constructs a reader with the given name and default suffixes */
-  public AbstractReader(final String format, final String[] suffixes,
-    final SCIFIO ctx)
-  {
-    super(format, suffixes, ctx);
+    super(ctx);
     init();
   }
 

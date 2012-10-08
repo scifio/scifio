@@ -67,6 +67,8 @@ public class FormatTools {
   
   public static final SCIFIO CONTEXT = createContext();
   
+  public static final String[] COMPRESSION_SUFFIXES = {"bz2", "gz"};
+  
   // -- Constants - Thumbnail dimensions --
 
   /** Default height and width for thumbnails. */
@@ -1187,6 +1189,24 @@ public class FormatTools {
 
     long[] values = {min, max};
     return values;
+  }
+  
+  /** Performs suffix matching for the given filename. */
+  public static boolean checkSuffix(final String name, final String suffix) {
+    return checkSuffix(name, new String[] {suffix});
+  }
+
+  /** Performs suffix matching for the given filename. */
+  public static boolean checkSuffix(final String name, final String[] suffixList) {
+    final String lname = name.toLowerCase();
+    for (int i = 0; i < suffixList.length; i++) {
+      final String s = "." + suffixList[i];
+      if (lname.endsWith(s)) return true;
+      for (int j = 0; j < COMPRESSION_SUFFIXES.length; j++) {
+        if (lname.endsWith(s + "." + COMPRESSION_SUFFIXES[j])) return true;
+      }
+    }
+    return false;
   }
 
   // -- Helper methods --

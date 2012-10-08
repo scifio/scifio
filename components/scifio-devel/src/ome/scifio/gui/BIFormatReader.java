@@ -60,13 +60,8 @@ public abstract class BIFormatReader<M extends Metadata>
   // -- Constructors --
 
   /** Constructs a new BIFormatReader. */
-  public BIFormatReader(final String name, final String suffix, final SCIFIO ctx) {
-    super(name, suffix, ctx);
-  }
-
-  /** Constructs a new BIFormatReader. */
-  public BIFormatReader(final String name, final String[] suffixes, final SCIFIO ctx) {
-    super(name, suffixes, ctx);
+  public BIFormatReader(final SCIFIO ctx) {
+    super(ctx);
   }
 
   // -- Reader API methods --
