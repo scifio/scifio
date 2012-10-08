@@ -376,7 +376,7 @@ public class AxisGuesser {
   // -- Main method --
   
   public static void main(String[] args) throws FormatException, IOException {
-    main(args, FormatTools.CONTEXT);
+    main(args, new SCIFIO());
   }
 
   /** Method for testing pattern guessing logic. */

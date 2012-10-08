@@ -56,16 +56,12 @@ import ome.scifio.io.RandomAccessInputStream;
  * A collection of constants and utility methods applicable for all
  * cycles of image processing within SCIFIO.
  * 
- * Also provides a default context (SCIFIO object) 
- * 
  * @author Mark Hiner
  *
  */
 public class FormatTools {
 
-  // -- Constants -- context
-  
-  public static final SCIFIO CONTEXT = createContext();
+  // -- Constants --
   
   public static final String[] COMPRESSION_SUFFIXES = {"bz2", "gz"};
   
@@ -1207,18 +1203,5 @@ public class FormatTools {
       }
     }
     return false;
-  }
-
-  // -- Helper methods --
-
-  private static SCIFIO createContext() {
-    try {
-      return new SCIFIO();
-    }
-    catch (ome.scifio.FormatException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace(); // CHECK
-      return null;
-    }
   }
 }

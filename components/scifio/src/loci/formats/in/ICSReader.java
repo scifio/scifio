@@ -41,6 +41,7 @@ import java.io.IOException;
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
 import loci.formats.SCIFIOFormatReader;
+import loci.legacy.context.LegacyContext;
 
 import ome.scifio.Metadata;
 import ome.scifio.ics.ICSFormat;
@@ -70,7 +71,7 @@ public class ICSReader extends SCIFIOFormatReader {
     super("Image Cytometry Standard", new String[] {"ics", "ids"});
     
     try {
-      format = new ICSFormat(FormatTools.CONTEXT);
+      format = new ICSFormat(LegacyContext.get());
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();

@@ -47,6 +47,7 @@ import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
 import loci.formats.services.OMEXMLService;
 import loci.legacy.adapter.AdapterTools;
+import loci.legacy.context.LegacyContext;
 
 
 /**
@@ -135,7 +136,7 @@ public final class MetadataTools {
   public static void populateMetadata(MetadataStore store, int series,
     String imageName, loci.formats.CoreMetadata coreMeta)
   {
-    ome.scifio.CoreMetadata cMeta = new ome.scifio.CoreMetadata(FormatTools.CONTEXT);
+    ome.scifio.CoreMetadata cMeta = new ome.scifio.CoreMetadata(LegacyContext.get());
     
     // Fake an ome.scifio.CoreMetadata array, with the converted coreMetadata at index series
     for(int i=0; i<series; i++)

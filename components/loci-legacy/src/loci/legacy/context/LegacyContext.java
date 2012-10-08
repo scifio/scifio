@@ -33,37 +33,34 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package loci.formats;
+package loci.legacy.context;
 
-import ome.scifio.Reader;
-import loci.legacy.adapter.AbstractLegacyAdapter;
-import loci.legacy.context.LegacyContext;
+import ome.scifio.FormatException;
+import ome.scifio.SCIFIO;
 
 /**
- * This class manages delegation between {@link loci.formats.IFormatReader}
- * and {@link ome.scifio.Reader}.
+ * Provides a single context for legacy classes.
  * <p>
- * Delegation is maintained by two WeakHashTables. See {@link AbstractLegacyAdapter}
+ * This is functionally equivalent to the legacy bheavior
+ * of a single, static loading of readers by ImageReader.
  * </p>
- * <p>
- * Functionally, the delegation is handled in the Wrapper classes - currently
- * only for wrapping from loci.formats.IFormatReader to ome.scifio.Reader is 
- * supported.
- * </p>
+ * 
  * @author Mark Hiner
+ *
  */
-public class SCIFIOReaderAdapter extends AbstractLegacyAdapter<IFormatReader, ome.scifio.Reader> {
+public final class LegacyContext {
 
-  // -- LegacyAdapter API Methods --
+  private static SCIFIO context;
   
-  @Override
-  protected IFormatReader wrapToLegacy(Reader modern) {
-    throw new UnsupportedOperationException();
+  public static SCIFIO get() {
+    if(context == null)
+      try {
+        context = new SCIFIO();
+      } catch (FormatException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    
+    return context;
   }
-
-  @Override
-  protected Reader wrapToModern(IFormatReader legacy) {
-    return new SCIFIOReaderWrapper(LegacyContext.get(), legacy);
-  }
-
 }

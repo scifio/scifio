@@ -325,8 +325,7 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
     currentId = id;
     
     try {
-      writer.setMetadata((T) 
-              FormatTools.CONTEXT.getFormatFromWriter(writer.getClass()).createParser().parse(id));
+      writer.setMetadata((T)writer.getFormat().createParser().parse(id));
       writer.setDest(id);
     }
     catch (ome.scifio.FormatException e) {

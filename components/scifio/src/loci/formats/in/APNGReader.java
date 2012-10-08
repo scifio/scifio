@@ -44,6 +44,7 @@ import ome.scifio.apng.APNGFormat;
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
 import loci.formats.gui.SCIFIOBIFormatReader;
+import loci.legacy.context.LegacyContext;
 
 /**
  * APNGReader is the file format reader for
@@ -69,7 +70,7 @@ public class APNGReader extends SCIFIOBIFormatReader {
     super("Animated PNG", "png");
 
     try {
-      format = new APNGFormat(FormatTools.CONTEXT);
+      format = new APNGFormat(LegacyContext.get());
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();

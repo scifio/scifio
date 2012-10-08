@@ -59,10 +59,6 @@ import ome.scifio.SCIFIO;
  */
 public final class FormatTools {
 
-  // -- Constants -- context
-  
-  public static final SCIFIO CONTEXT = ome.scifio.util.FormatTools.CONTEXT;
-
   // -- Constants - pixel types --
 
   /** Identifies the <i>INT8</i> data type used to store pixel values. */
