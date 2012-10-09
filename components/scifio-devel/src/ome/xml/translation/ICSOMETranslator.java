@@ -120,7 +120,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     filter.createRoot();
     
     CoreMetadata cMeta = new CoreMetadata();
-    Format<?,?,?,?,?> icsFormat = this.getContext().getFormatFromMetadata(source.getClass());
+    Format<?,?,?,?,?> icsFormat = getContext().getFormatFromMetadata(source.getClass());
     
     Translator<ICSFormat.Metadata, CoreMetadata> trans = null;
     try {

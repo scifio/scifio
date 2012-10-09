@@ -148,7 +148,7 @@ public abstract class AbstractParser<M extends Metadata>
     //TODO relying on Abstract-level API
     ((AbstractMetadata)metadata).filtered = filterMetadata;
     ((AbstractMetadata)metadata).metadataOptions = metadataOptions;
-    if(metadata.getContext() == null) metadata.setContext(this.getContext());
+    if(metadata.getContext() == null) metadata.setContext(getContext());
     metadata.setSource(stream);
     return metadata;
   }
@@ -258,7 +258,7 @@ public abstract class AbstractParser<M extends Metadata>
    * @see ome.scifio.Parser#setMetadataOptions(ome.scifio.MetadataOptions)
    */
   public void setMetadataOptions(final MetadataOptions options) {
-    this.metadataOptions = options;
+    metadataOptions = options;
   }
 
   // -- AbstractParser Methods --
@@ -379,8 +379,8 @@ public abstract class AbstractParser<M extends Metadata>
     }
 
     close();
-    this.in = stream;
-    this.metadata.setSource(in);
+    in = stream;
+    metadata.setSource(in);
   }
 
   /* Builds a FileInfo array around the provided array of file names */

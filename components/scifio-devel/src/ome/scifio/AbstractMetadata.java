@@ -113,17 +113,17 @@ public abstract class AbstractMetadata extends AbstractHasContext
 
   /* @see Metadata#getSource() */
   public RandomAccessInputStream getSource() {
-    return this.source;
+    return source;
   }
   
   /* @see Metadata#isFiltered() */
   public boolean isFiltered() {
-    return this.filtered;
+    return filtered;
   }
   
   /* @see Metadata#getMetadataOptions() */
   public MetadataOptions getMetadataOptions() {
-    return this.metadataOptions;
+    return metadataOptions;
   }
   
   // -- Methods for preserving information between translation --
@@ -132,7 +132,7 @@ public abstract class AbstractMetadata extends AbstractHasContext
   }
   
   protected void setMetadataOptions(MetadataOptions opts) {
-    this.metadataOptions = opts;
+    metadataOptions = opts;
   }
 
 }

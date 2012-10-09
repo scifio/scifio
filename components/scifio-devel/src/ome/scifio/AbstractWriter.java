@@ -123,12 +123,12 @@ public abstract class AbstractWriter<M extends Metadata>
 
   /* @see ome.scifio.Writer#getMetadata() */
   public M getMetadata() {
-    return this.metadata;
+    return metadata;
   }
 
   /* @see ome.scifio.Writer#getCoreMetadata() */
   public CoreMetadata getCoreMetadata() {
-    return this.cMeta;
+    return cMeta;
   }
 
   /* @see ome.scifio.Writer#setStream(File) */
@@ -169,8 +169,8 @@ public abstract class AbstractWriter<M extends Metadata>
   public void setDest(final RandomAccessOutputStream out, final int imageIndex)
     throws FormatException, IOException
   {
-    this.close();
-    if (this.metadata == null)
+    close();
+    if (metadata == null)
       throw new FormatException(
         "Can not set Destination without setting Metadata first.");
 
@@ -180,7 +180,7 @@ public abstract class AbstractWriter<M extends Metadata>
 
   /* @see ome.scifio.Writer#getStream() */
   public RandomAccessOutputStream getStream() {
-    return this.out;
+    return out;
   }
 
   /* @see ome.scifio.Writer#saveBytes(int, int, byte[]) */
@@ -230,7 +230,7 @@ public abstract class AbstractWriter<M extends Metadata>
 
   /* @see ome.scifio.Writer#setFramesPerSecond(int) */
   public void setFramesPerSecond(final int rate) {
-    this.fps = rate;
+    fps = rate;
   }
 
   /* @see ome.scifio.Writer#getFramesPerSecond() */

@@ -93,11 +93,11 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
       super(ctx);
       this.formatName = formatName;
       this.suffixes = suffixes == null ? new String[0] : suffixes;
-      this.metadataClass = mClass;
-      this.checkerClass = cClass;
-      this.parserClass = pClass;
-      this.readerClass = rClass;
-      this.writerClass = wClass;
+      metadataClass = mClass;
+      checkerClass = cClass;
+      parserClass = pClass;
+      readerClass = rClass;
+      writerClass = wClass;
       findTranslatorClassList();
     }
 
@@ -105,32 +105,32 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
 
   /* @see Format#getPriority() */
   public Double getPriority() {
-    return this.priority;
+    return priority;
   }
 
   /* @see Format#createMetadata() */
   public M createMetadata() throws FormatException {
-    return createContextualObject(this.getMetadataClass());
+    return createContextualObject(getMetadataClass());
   }
 
   /* @see Format#createChecker() */
   public C createChecker() throws FormatException {
-    return createContextualObject(this.getCheckerClass());
+    return createContextualObject(getCheckerClass());
   }
 
   /* @see Format#createParser() */
   public P createParser() throws FormatException {
-    return createContextualObject(this.getParserClass());
+    return createContextualObject(getParserClass());
   }
 
   /* @see Format#createReader() */
   public R createReader() throws FormatException {
-    return createContextualObject(this.getReaderClass());
+    return createContextualObject(getReaderClass());
   }
 
   /* @see Format#createWriter() */
   public W createWriter() throws FormatException {
-    return createContextualObject(this.getWriterClass());
+    return createContextualObject(getWriterClass());
   }
   
   /* @see Format#getFormatName() */
@@ -224,7 +224,7 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
   private <T extends HasContext> T createContextualObject(final Class<T> c)
       throws FormatException {
     final T t = createObject(c);
-    t.setContext(this.getContext());
+    t.setContext(getContext());
     return t;
   }
 
@@ -254,7 +254,7 @@ public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P
     Discoverer<SCIFIOTranslator, Translator<S, T>> disc = 
         new TranslatorDiscoverer<S, T>(metaIn, metaOut);
     Translator<S, T> translator = disc.discover().get(0);
-    translator.setContext(this.getContext());
+    translator.setContext(getContext());
     return translator;
   }
 

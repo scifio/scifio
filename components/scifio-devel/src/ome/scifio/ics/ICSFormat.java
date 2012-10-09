@@ -128,15 +128,15 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     public Metadata(SCIFIO ctx) {
       super(ctx);
-      this.keyValPairs = new Hashtable<String, String>();
+      keyValPairs = new Hashtable<String, String>();
     }
   
     // -- Helper Methods --
   
     /* @see Metadata#resetMeta() */
     public void reset() {
-      super.reset(this.getClass());
-      this.keyValPairs = new Hashtable<String, String>();
+      super.reset(getClass());
+      keyValPairs = new Hashtable<String, String>();
     }
   
     /**
@@ -145,7 +145,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
      * @return
      */
     public String get(final String key) {
-      return this.keyValPairs.get(key);
+      return keyValPairs.get(key);
     }
   
     public String getIcsId() {
@@ -549,8 +549,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     @Override
     public void setSource(final RandomAccessInputStream stream) throws IOException {
       super.setSource(stream);
-      if(!this.getMetadata().versionTwo)
-        this.in = new RandomAccessInputStream(this.getMetadata().idsId);
+      if(!getMetadata().versionTwo)
+        in = new RandomAccessInputStream(getMetadata().idsId);
     }
   
     @Override
@@ -741,10 +741,10 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     
     private void initialize(final int imageIndex) throws FormatException,
       IOException {
-      String currentId = this.getMetadata().idsId != null ? 
-          this.getMetadata().idsId : this.getMetadata().icsId;
+      String currentId = getMetadata().idsId != null ? 
+          getMetadata().idsId : getMetadata().icsId;
       
-      if (FormatTools.checkSuffix(this.getMetadata().idsId, "ids")) {
+      if (FormatTools.checkSuffix(getMetadata().idsId, "ids")) {
         String metadataFile = makeIcsId(currentId);
         if(out != null) out.close();
         out = new RandomAccessOutputStream(metadataFile);

@@ -122,17 +122,17 @@ public abstract class AbstractReader<M extends Metadata>
   public void setSource(final RandomAccessInputStream stream)
     throws IOException
   {
-    this.in = stream;
-    this.currentId = stream.getFileName();
+    in = stream;
+    currentId = stream.getFileName();
 
-    if (this.metadata == null) {
+    if (metadata == null) {
       try {
         @SuppressWarnings("unchecked")
         final M meta =
           (M) getContext().getFormatFromReader(getClass())
             .createParser()
             .parse(stream);
-        this.setMetadata(meta);
+        setMetadata(meta);
       }
       catch (final FormatException e) {
         throw new IOException(e);
@@ -283,12 +283,12 @@ public abstract class AbstractReader<M extends Metadata>
 
   /* @see Reader#setMetadata() */
   public void setMetadata(final M meta) throws IOException {
-    this.metadata = meta;
-    this.cMeta = new CoreMetadata();
-    if(this.in == null) setSource(meta.getSource());
+    metadata = meta;
+    cMeta = new CoreMetadata();
+    if(in == null) setSource(meta.getSource());
     
     try {
-      this.getFormat().findSourceTranslator(CoreMetadata.class).translate(meta, cMeta);
+      getFormat().findSourceTranslator(CoreMetadata.class).translate(meta, cMeta);
     } catch (FormatException e) {
       LOGGER.debug(e.getMessage());
     }
@@ -296,7 +296,7 @@ public abstract class AbstractReader<M extends Metadata>
 
   /* @see Reader#getMetadata() */
   public M getMetadata() {
-    return this.metadata;
+    return metadata;
   }
 
   /* @see Reader#getCurrentFile() */
@@ -383,7 +383,7 @@ public abstract class AbstractReader<M extends Metadata>
   // -- AbstractReader Methods --
 
   private void init() {
-    this.cMeta = new CoreMetadata();
+    cMeta = new CoreMetadata();
   }
 
   public byte[] readPlane(final RandomAccessInputStream s,

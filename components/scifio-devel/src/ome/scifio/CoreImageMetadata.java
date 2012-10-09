@@ -158,24 +158,24 @@ public class CoreImageMetadata {
   public CoreImageMetadata(CoreImageMetadata copy) {
     imageMetadata = (Hashtable<String, Object>) copy.imageMetadata.clone();
     
-    this.axisLengths = copy.axisLengths.clone();
-    this.axisTypes = copy.axisTypes.clone();
-    this.bitsPerPixel = copy.bitsPerPixel;
-    this.cLengths = copy.cLengths.clone();
-    this.cTypes = copy.cTypes.clone();
-    this.falseColor = copy.falseColor;
-    this.indexed = copy.indexed;
-    this.interleaved = copy.interleaved;
-    this.littleEndian = copy.littleEndian;
-    this.lut = copy.lut.clone();
-    this.metadataComplete = copy.metadataComplete;
-    this.orderCertain = copy.orderCertain;
-    this.pixelType = copy.pixelType;
-    this.planeCount = copy.planeCount;
-    this.rgb = copy.rgb;
-    this.thumbnail = copy.thumbnail;
-    this.thumbSizeX = copy.thumbSizeX;
-    this.thumbSizeY = copy.thumbSizeY;
+    axisLengths = copy.axisLengths.clone();
+    axisTypes = copy.axisTypes.clone();
+    bitsPerPixel = copy.bitsPerPixel;
+    cLengths = copy.cLengths.clone();
+    cTypes = copy.cTypes.clone();
+    falseColor = copy.falseColor;
+    indexed = copy.indexed;
+    interleaved = copy.interleaved;
+    littleEndian = copy.littleEndian;
+    lut = copy.lut.clone();
+    metadataComplete = copy.metadataComplete;
+    orderCertain = copy.orderCertain;
+    pixelType = copy.pixelType;
+    planeCount = copy.planeCount;
+    rgb = copy.rgb;
+    thumbnail = copy.thumbnail;
+    thumbSizeX = copy.thumbSizeX;
+    thumbSizeY = copy.thumbSizeY;
   }
 
   // -- Setters -- 

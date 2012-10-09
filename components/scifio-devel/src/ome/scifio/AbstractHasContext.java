@@ -48,7 +48,7 @@ public abstract class AbstractHasContext implements HasContext {
   // -- Constructor --
 
   public AbstractHasContext(final SCIFIO ctx) {
-    this.context = ctx;
+    context = ctx;
   }
 
   // -- HasContext API --
@@ -58,8 +58,8 @@ public abstract class AbstractHasContext implements HasContext {
   }
 
   public void setContext(final SCIFIO ctx) {
-    if (this.context == null) {
-      this.context = ctx;
+    if (context == null) {
+      context = ctx;
     }
     else {
       throw new UnsupportedOperationException("Context can only be set once.");
