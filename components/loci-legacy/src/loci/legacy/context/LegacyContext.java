@@ -35,6 +35,9 @@
  */
 package loci.legacy.context;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
 
@@ -49,7 +52,11 @@ import ome.scifio.SCIFIO;
  *
  */
 public final class LegacyContext {
+  
+  //-- Constants --
 
+  protected static final Logger LOGGER = LoggerFactory.getLogger(SCIFIO.class);
+  
   private static SCIFIO context;
   
   public static SCIFIO get() {
@@ -57,10 +64,8 @@ public final class LegacyContext {
       try {
         context = new SCIFIO();
       } catch (FormatException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOGGER.debug("Error creating SCIFIO context", e);
       }
-    
     return context;
   }
 }

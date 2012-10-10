@@ -37,6 +37,9 @@ package loci.legacy.adapter;
 
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Maintains a context of {@link LegacyAdapter}s for wrapping (and thereby delegating)
  * between Legacy classes and their Modern equivalents.
@@ -50,7 +53,11 @@ import java.util.HashMap;
  *
  */
 public class AdapterHelper {
+  // -- Constants --
 
+  protected static final Logger LOGGER =
+    LoggerFactory.getLogger(LegacyAdapter.class);
+  
   // -- Fields --
   
   /** Maps LegacyAdapter classes to an instance of that class, so that a single instance of 
@@ -74,11 +81,9 @@ public class AdapterHelper {
         adapter = adapterClass.newInstance();
         adapterMap.put(adapterClass, adapter);
       } catch (InstantiationException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOGGER.debug("Failed to create a new instance of: " + adapterClass, e);
       } catch (IllegalAccessException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOGGER.debug("Illegal acceess for class: " + adapterClass, e);
       }
     }
     
