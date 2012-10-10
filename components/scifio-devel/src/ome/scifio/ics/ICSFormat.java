@@ -61,14 +61,13 @@ import ome.scifio.CoreMetadata;
 import ome.scifio.CoreTranslator;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
-import ome.scifio.Translator;
+import ome.scifio.common.DateTools;
 import ome.scifio.discovery.SCIFIOFormat;
 import ome.scifio.discovery.SCIFIOTranslator;
 import ome.scifio.io.Location;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.util.FormatTools;
-import ome.scifio.util.SCIFIOMetadataTools;
 
 @SCIFIOFormat
 public class ICSFormat
@@ -186,6 +185,521 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     public Hashtable<String, String> getKeyValPairs() {
       return keyValPairs;
+    }
+    
+    // -- Accessor methods for dynamically retrieving common metadata --
+    
+    public String getDate() {
+      String date = null;
+      String[] kv = findValueForKey("history date", "history created on", "history creation date");
+      if (kv[0].equalsIgnoreCase("history date") ||
+        kv[0].equalsIgnoreCase("history created on"))
+      {
+        if (kv[1].indexOf(" ") > 0) {
+          date = kv[1].substring(0, kv[1].lastIndexOf(" "));
+        }
+      }
+      else if (kv[0].equalsIgnoreCase("history creation date")) {
+        date = kv[1];
+      }
+      
+      if(date != null)
+        date = DateTools.formatDate(date, ICSFormat.ICSUtils.DATE_FORMATS);
+      
+      return date;
+    }
+    
+    public String getDescription() {
+      return findValueForKey("history other text")[1];
+    }
+    
+    public String getMicroscopeModel() {
+      return findValueForKey("history microscope")[1];
+    }
+    
+    public String getMicroscopeManufacturer() {
+      return findValueForKey("history manufacturer")[1];
+    }
+    
+    public boolean getLifetime() {
+      String[] kv = findValueForKey("history type");
+      boolean lifetime = false;
+      if (kv[1].equalsIgnoreCase("time resolved") ||
+        kv[1].equalsIgnoreCase("FluorescenceLifetime"))
+      {
+        lifetime = true;
+      }
+      return lifetime;
+    }
+    
+    public String getExperimentType() {
+      return findValueForKey("history type")[1];
+    }
+    
+    public Double[] getPixelSizes() {
+      String[] kv = findValueForKey("parameter scale");
+      return kv[1] == null ? null : splitDoubles(kv[1]);
+    }
+    
+    public String[] getUnits() {
+      String[] kv = findValueForKey("parameter units");
+      return kv[1] == null ? null : kv[1].split("\\s+");
+    }
+    
+    public String[] getAxes() {
+      String[] kv = findValueForKey("layout order");
+      String[] axes = null;
+      if (kv[1] != null) {
+        StringTokenizer t = new StringTokenizer(kv[1]);
+        axes = new String[t.countTokens()];
+        for(int n = 0; n < axes.length; n++) {
+          axes[n] = t.nextToken().trim();
+        }
+      }
+      return axes;
+    }
+    
+    public double[] getAxesSizes() {
+      String[] kv = findValueForKey("history extents");
+      double[] sizes = null;
+      if(kv[1] != null) {
+        String[] lengths = kv[1].split(" ");
+        sizes = new double[lengths.length];
+        for(int n = 0; n < sizes.length; n++) {
+          try { 
+            sizes[n] = Double.parseDouble(lengths[n].trim());
+          } catch (NumberFormatException e) {
+            LOGGER.debug("Could not parse axis length", e);
+          }
+        }
+      }
+      return sizes;
+    }
+    
+    public Double[] getTimestamps() {
+      String[] kv = findValueForKey("parameter t");
+      return kv[1] == null ? null : splitDoubles(kv[1]);
+    }
+    
+    public Hashtable<Integer, String> getChannelNames() {
+      String[] kv = findValueForKey("parameter ch");
+      Hashtable<Integer, String> channelNames = new Hashtable<Integer, String>();
+      if(kv[1] != null) {
+        String[] names = kv[1].split(" ");
+        for (int n = 0; n < names.length; n++) {
+          channelNames.put(new Integer(n), names[n].trim());
+        }
+      }
+      return channelNames;
+    }
+    
+    public void addStepChannel(Hashtable<Integer, String> channelNames) {
+      String[] kv = findValueIteration("history step", "name");
+      if(kv[1] != null)
+        channelNames.put(new Integer(kv[0].substring(12, kv[0].indexOf(" ", 12))), kv[1]);
+    }
+    
+    public void addCubeChannel(Hashtable<Integer, String> channelNames) {
+      String[] kv = findValueForKey("history cube");
+      if(kv[1] != null)
+        channelNames.put(new Integer(channelNames.size()), kv[1]);
+    }
+    
+    public Hashtable<Integer, Double> getPinholes() {
+      String[] kv = findValueForKey("sensor s_params PinholeRadius");
+      Hashtable<Integer, Double> pinholes = new Hashtable<Integer, Double>();
+      if(kv[1] != null) {
+        String pins[] = kv[1].split(" ");
+        int channel = 0;
+        for(int n = 0; n < pins.length; n++) {
+          if (pins[n].trim().equals("")) continue;
+          try {
+            pinholes.put(new Integer(channel++), new Double(pins[n]));
+          } catch (NumberFormatException e) {
+            LOGGER.debug("Could not parse pinhole", e);
+          }
+        }
+      }
+      return pinholes;
+    }
+    
+    public Integer[] getEMWaves() {
+      String[] kv = findValueForKey("sensor s_params LambdaEm");
+      Integer[] emWaves = null;
+      if(kv[1] != null) {
+        String[] waves = kv[1].split(" ");
+        emWaves = new Integer[waves.length];
+        for (int n = 0; n < emWaves.length; n++) {
+          try {
+            emWaves[n] = new Integer((int) Double.parseDouble(waves[n]));
+          } catch (NumberFormatException e) {
+            LOGGER.debug("Could not parse emission wavelength", e);
+          }
+        }
+      }
+      return emWaves;
+    }
+    
+    public Integer[] getEMSingleton() {
+      String[] kv = findValueForKey("history cube emm nm");
+      Integer[] emWaves = null;
+      if(kv[1] != null) {
+        emWaves = new Integer[1];
+        emWaves[0] = new Integer(kv[1].split(" ")[1].trim());
+      }
+      return emWaves;
+    }
+    
+    public Integer[] getEXWaves() {
+      String[] kv = findValueForKey("sensor s_params LambdaEx");
+      Integer[] exWaves = null;
+      if (kv[1] != null) {
+        String[] waves = kv[1].split(" ");
+        exWaves = new Integer[waves.length];
+        for (int n = 0; n < exWaves.length; n++) {
+          try {
+            exWaves[n] = new Integer((int) Double.parseDouble(waves[n]));
+          } catch (NumberFormatException e) {
+            LOGGER.debug("Could not parse excitation wavelength", e);
+          }
+        }
+      }
+      return exWaves;
+    }
+    
+    public Integer[] getEXSingleton() {
+      String[] kv = findValueForKey("history cube exc nm");
+      Integer[] exWaves = null;
+      if(kv[1] != null) {
+        exWaves = new Integer[1];
+        exWaves[0] = new Integer(kv[1].split(" ")[1].trim());
+      }
+      return exWaves;
+    }
+    
+    public Hashtable<Integer, Integer> getWavelengths() {
+      String[] kv = findValueForKey("history Wavelength*");
+      Hashtable<Integer, Integer> wavelengths = new Hashtable<Integer, Integer>();
+      if(kv[1] != null) {
+        String[] waves = kv[1].split(" ");
+        for(int n = 0; n < waves.length; n++) {
+          wavelengths.put(new Integer(n), new Integer(waves[n]));
+        }
+      }
+      return wavelengths;
+    }
+    
+    public void addLaserWavelength(Hashtable<Integer, Integer> wavelengths) {
+      String[] kv = findValueIteration("history laser", "wavelength");
+      if(kv[1] != null) {
+        int laser = Integer.parseInt(kv[0].substring(13, kv[0].indexOf(" ", 13))) - 1;
+        kv[1] = kv[1].replaceAll("nm", "").trim();
+        try {
+          wavelengths.put(new Integer(laser), new Integer(kv[1]));
+        } catch (NumberFormatException e) {
+          LOGGER.debug("Could not parse wavelength", e);
+        }
+      }
+    }
+    
+    public String getByteOrder() {
+      return findValueForKey("representation byte_order")[1];
+    }
+    
+    public String getRepFormat() {
+      return findValueForKey("representation format")[1];
+    }
+    
+    public String getCompression() {
+      return findValueForKey("representation compression")[1];
+    }
+    
+    public boolean isSigned() {
+      String signed = findValueForKey("representation sign")[1];
+      return signed != null && signed.equals("signed");
+    }
+    
+    public String getLaserManufacturer() {
+      return findValueForKey("history laser manufacturer")[1];
+    }
+    
+    public String getLaserModel() {
+      return findValueForKey("history laser model")[1];
+    }
+    
+    public Double getLaserRepetitionRate() {
+      return new Double(findValueForKey("history laser model")[1]);
+    }
+    
+    public Double getLaserPower() {
+      return new Double(findValueForKey("history laser power")[1]);
+    }
+    
+    public String getDichroicModel() {
+      return findValueForKey("history filterset dichroic name")[1];
+    }
+    
+    public String getExcitationModel() {
+      return findValueForKey("history filterset exc name")[1];
+    }
+    
+    public String getEmissionModel() {
+      return findValueForKey("history filterset emm name")[1];
+    }
+    
+    public String getFilterSetModel() {
+      return findValueForKey("history filterset")[1];
+    }
+    
+    public String getObjectiveModel() {
+      return findValueForKey("history objective type", "history objective")[1];
+    }
+    
+    public String getImmersion() {
+      return findValueForKey("history objective immersion")[1];
+    }
+    
+    public Double getLensNA() {
+      return new Double(findValueForKey("history objective NA")[1]);
+    }
+    
+    public Double getWorkingDistance() {
+      return new Double(findValueForKey("history objective WorkingDistance")[1]);
+    }
+    
+    public Double getMagnification() {
+      return new Double(findValueForKey("history objective magnification", "history objective mag")[1]);
+    }
+    
+    public String getDetectorManufacturer() {
+      return findValueForKey("history camera manufacturer")[1];
+    }
+    
+    public String getDetectorModel() {
+      return findValueForKey("history camera model")[1];
+    }
+    
+    public Integer getBitsPerPixel() {
+      String[] kv = findValueForKey("layout significant_bits");
+      Integer bpp = null;
+      if(kv[1] != null) {
+        bpp = new Integer(kv[1]);
+      }
+      return bpp;
+    }
+    
+    public Hashtable<Integer, Double> getGains() {
+      String[] kv = findValueForKey("history gain");
+      Hashtable<Integer, Double> gains = new Hashtable<Integer, Double>();
+      if(kv[1] != null) {
+        Integer n = new Integer(0);
+        try{ 
+          n = new Integer(kv[0].substring(12).trim());
+          n = new Integer(n.intValue() - 1);
+        }
+        catch (NumberFormatException e) { }
+        gains.put(n, new Double(kv[1]));
+      }
+      return gains;
+    }
+    
+    public String getAuthorLastName() {
+      return findValueForKey("history author", "history experimenter")[1];
+    }
+    
+    public Double[] getStagePositions() {
+      String[] kv = findValueForKey("history stage_xyzum");
+      Double[] stagePos = null;
+      if(kv[1] != null) {
+        String[] positions = kv[1].split(" ");
+        stagePos = new Double[positions.length];
+        for(int n = 0; n < stagePos.length; n++) {
+          try {
+            stagePos[n] = new Double(positions[n]);
+          } catch (NumberFormatException e) {
+            LOGGER.debug("Could not parse stage position", e);
+          }
+        }
+      }
+      return stagePos;
+    }
+    
+    public Double getStageX() {
+      return new Double(findValueForKey("history stage positionx")[1]);
+    }
+    
+    public Double getStageY() {
+      return new Double(findValueForKey("history stage positiony")[1]);
+    }
+    
+    public Double getStageZ() {
+      return new Double(findValueForKey("history stage positionz")[1]);
+    }
+    
+    public Double getExposureTime() {
+      String[] kv = findValueForKey("history Exposure");
+      Double exposureTime = null;
+      if (kv[1] != null) {
+        String expTime = kv[1];
+        if(expTime.indexOf(" ") != -1) {
+          exposureTime = new Double(expTime.indexOf(" "));
+        }
+      } 
+      return exposureTime;
+    }
+    
+    // -- Helper methods for finding key values --
+
+    /* Given a list of tokens and an array of lists of regular expressions, tries
+     * to find a match.  If no match is found, looks in OTHER_KEYS.
+     */
+    String[] findKeyValue(String[] tokens, String[][] regexesArray) {
+      String[] keyValue = findKeyValueForCategory(tokens, regexesArray);
+      if (null == keyValue) {
+        keyValue = findKeyValueOther(tokens, ICSFormat.ICSUtils.OTHER_KEYS);
+      }
+      if (null == keyValue) {
+        String key = tokens[0];
+        String value = concatenateTokens(tokens, 1, tokens.length);
+        keyValue = new String[] { key, value };
+      }
+      return keyValue;
+    }
+
+    /*
+     * Builds a string from a list of tokens.
+     */
+    private String concatenateTokens(String[] tokens, int start, int stop) {
+      StringBuffer returnValue = new StringBuffer();
+      for (int i = start; i < tokens.length && i < stop; ++i) {
+        returnValue.append(tokens[i]);
+        if (i < stop - 1) {
+          returnValue.append(' ');
+        }
+      }
+      return returnValue.toString();
+    }
+    
+    /*
+     * Checks the list of keys for non-null values in the global hashtable.
+     * 
+     * If a non-null value is found, it is returned.
+     * 
+     * The returned array includes the matching key first, and the value second.
+     * 
+     */
+    private String[] findValueForKey (String... keys) {
+
+      for(String key : keys) {
+        String value = keyValPairs.get(key);
+        if(value != null) return new String[]{key, value};
+      }
+      
+      return new String[]{null, null};
+    }
+    
+    /*
+     * Iterates through the key set, looking for a key that starts
+     * and/or ends with the provided partial keys.
+     * 
+     * Returns an array containing the first matching key and its 
+     * corresponding value if found, and an empty array otherwise.
+     * 
+     */
+    private String[] findValueIteration (String starts, String ends) {
+      
+      for (String key : keyValPairs.keySet()) {
+        if ((starts == null || key.startsWith(starts)) && (ends == null || key.endsWith(ends)))
+          return new String[]{key, keyValPairs.get(key)};
+      }
+      
+      return new String[]{null, null};
+    }
+
+    /*
+     * Given a list of tokens and an array of lists of regular expressions, finds
+     * a match.  Returns key/value pair if matched, null otherwise.
+     *
+     * The first element, tokens[0], has already been matched to a category, i.e.
+     * 'history', and the regexesArray is category-specific.
+     */
+    private String[] findKeyValueForCategory(String[] tokens,
+                                             String[][] regexesArray) {
+      String[] keyValue = null;
+      int index = 0;
+      for (String[] regexes : regexesArray) {
+        if (compareTokens(tokens, 1, regexes, 0)) {
+          int splitIndex = 1 + regexes.length; // add one for the category
+          String key = concatenateTokens(tokens, 0, splitIndex);
+          String value = concatenateTokens(tokens, splitIndex, tokens.length);
+          keyValue = new String[] { key, value };
+          break;
+        }
+        ++index;
+      }
+      return keyValue;
+    }
+
+    /* Given a list of tokens and an array of lists of regular expressions, finds
+     * a match.  Returns key/value pair if matched, null otherwise.
+     *
+     * The first element, tokens[0], represents a category and is skipped.  Look
+     * for a match of a list of regular expressions anywhere in the list of tokens.
+     */
+    private String[] findKeyValueOther(String[] tokens, String[][] regexesArray) {
+      String[] keyValue = null;
+      for (String[] regexes : regexesArray) {
+        for (int i = 1; i < tokens.length - regexes.length; ++i) {
+          // does token match first regex?
+          if (tokens[i].toLowerCase().matches(regexes[0])) {
+            // do remaining tokens match remaining regexes?
+            if (1 == regexes.length || compareTokens(tokens, i + 1, regexes, 1)) {
+              // if so, return key/value
+              int splitIndex = i + regexes.length;
+              String key = concatenateTokens(tokens, 0, splitIndex);
+              String value = concatenateTokens(tokens, splitIndex, tokens.length);
+              keyValue = new String[] { key, value };
+              break;
+            }
+          }
+        }
+        if (null != keyValue) {
+          break;
+        }
+      }
+      return keyValue;
+    }
+
+    /*
+     * Compares a list of tokens with a list of regular expressions.
+     */
+    private boolean compareTokens(String[] tokens, int tokenIndex,
+                                  String[] regexes, int regexesIndex) {
+      boolean returnValue = true;
+      int i, j;
+      for (i = tokenIndex, j = regexesIndex; j < regexes.length; ++i, ++j) {
+        if (i >= tokens.length || !tokens[i].toLowerCase().matches(regexes[j])) {
+          returnValue = false;
+          break;
+        }
+      }
+      return returnValue;
+    }
+    
+    /** Splits the given string into a list of {@link Double}s. */
+    private Double[] splitDoubles(String v) {
+      StringTokenizer t = new StringTokenizer(v);
+      Double[] values = new Double[t.countTokens()];
+      for (int n=0; n<values.length; n++) {
+        String token = t.nextToken().trim();
+        try {
+          values[n] = new Double(token);
+        }
+        catch (NumberFormatException e) {
+          LOGGER.debug("Could not parse double value '{}'", token, e);
+        }
+      }
+      return values;
     }
   }
 
@@ -1619,59 +2133,56 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
 
       // find axis sizes
 
+      double[] axesSizes = source.getAxesSizes();
+      String[] axes = source.getAxes();
+      
       AxisType[] axisTypes = null;
       int[] axisLengths = null;
 
+      
       int bitsPerPixel = 0;
 
-      StringTokenizer layoutTokens = getTknz("layout sizes");
-      axisLengths = new int[layoutTokens.countTokens()];
+      axisLengths = new int[axesSizes.length];
 
       for (int n = 0; n < axisLengths.length; n++) {
-        try {
-          axisLengths[n] = Integer.parseInt(layoutTokens.nextToken().trim());
-        }
-        catch (final NumberFormatException e) {
-          LOGGER.debug("Could not parse axis length", e);
-        }
+        axisLengths[n] = new Double(axesSizes[n]).intValue();
       }
 
-      layoutTokens = getTknz("layout order");
-      axisTypes = new AxisType[layoutTokens.countTokens()];
+      axisTypes = new AxisType[axes.length];
 
       final Vector<Integer> channelLengths = new Vector<Integer>();
       final Vector<String> channelTypes = new Vector<String>();
 
       for (int n = 0; n < axisTypes.length; n++) {
-        final String tkn = layoutTokens.nextToken().trim();
-        if (tkn.equals("x")) {
+        final String axis = axes[n].toLowerCase();
+        if (axis.equals("x")) {
           axisTypes[n] = Axes.X;
         }
-        else if (tkn.equals("y")) {
+        else if (axis.equals("y")) {
           axisTypes[n] = Axes.Y;
         }
-        else if (tkn.equals("z")) {
+        else if (axis.equals("z")) {
           axisTypes[n] = Axes.Z;
         }
-        else if (tkn.equals("t")) {
+        else if (axis.equals("t")) {
           axisTypes[n] = Axes.TIME;
         }
-        else if (tkn.startsWith("c")) {
+        else if (axis.startsWith("c")) {
           axisTypes[n] = Axes.CHANNEL;
           channelTypes.add(FormatTools.CHANNEL);
           channelLengths.add(axisLengths[n]);
         }
-        else if (tkn.startsWith("p")) {
+        else if (axis.startsWith("p")) {
           axisTypes[n] = Axes.PHASE;
           channelTypes.add(FormatTools.PHASE);
           channelLengths.add(axisLengths[n]);
         }
-        else if (tkn.startsWith("f")) {
+        else if (axis.startsWith("f")) {
           axisTypes[n] = Axes.FREQUENCY;
           channelTypes.add(FormatTools.FREQUENCY);
           channelLengths.add(axisLengths[n]);
         }
-        else if (tkn.equals("bits")) {
+        else if (axis.equals("bits")) {
           axisTypes[n] = new CustomAxisType("bits");
           bitsPerPixel = axisLengths[n];
           while (bitsPerPixel % 8 != 0)
@@ -1685,11 +2196,10 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         }
       }
 
-      if (source.get("layout significant_bits") != null) {
-        destination.setBitsPerPixel(
-          index, Integer.parseInt(source.get("layout significant_bits")));
-      }
-      else destination.setBitsPerPixel(index, bitsPerPixel);
+      if(source.getBitsPerPixel() != null)
+        bitsPerPixel = source.getBitsPerPixel();
+      
+      destination.setBitsPerPixel(index, bitsPerPixel);
 
       coreMeta.setAxisLengths(axisLengths);
       coreMeta.setAxisTypes(axisTypes);
@@ -1739,11 +2249,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       destination.setMetadataComplete(index, true);
       destination.setLittleEndian(index, true);
 
-      final String history = source.get("history type");
-      boolean lifetime = false;
-      if (history != null &&
-        (history.equalsIgnoreCase("time resolved") || history.equalsIgnoreCase("FluorescenceLifetime")))
-        lifetime = true;
+      boolean lifetime = source.getLifetime();
 
       // HACK - support for Gray Institute at Oxford's ICS lifetime data
       if (lifetime) {
@@ -1759,9 +2265,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         coreMeta.setAxisType(zIndex, Axes.CHANNEL);
       }
 
-      final String byteOrder = source.get("representation byte_order");
-      final String rFormat = source.get("representation format");
-      final String compression = source.get("representation compression");
+      final String byteOrder = source.getByteOrder();
+      final String rFormat = source.getRepFormat();
+      final String compression = source.getCompression();
 
       if (byteOrder != null) {
         final String firstByte = byteOrder.split(" ")[0];
@@ -1778,7 +2284,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         coreMeta.setLittleEndian(!destination.isLittleEndian(0));
 
       final boolean floatingPt = rFormat.equals("real");
-      final boolean signed = source.get("representation sign").equals("signed");
+      final boolean signed = source.isSigned();
 
       try {
         coreMeta.setPixelType(FormatTools.pixelTypeFromBytes(bytes, signed, floatingPt));

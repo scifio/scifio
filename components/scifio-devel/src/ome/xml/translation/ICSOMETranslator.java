@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import net.imglib2.meta.Axes;
 
@@ -50,7 +49,6 @@ import ome.scifio.FormatException;
 import ome.scifio.MetadataLevel;
 import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
-import ome.scifio.common.DateTools;
 import ome.scifio.discovery.SCIFIOTranslator;
 import ome.scifio.ics.ICSFormat;
 import ome.xml.meta.FilterMetadata;
@@ -85,7 +83,6 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
   
   // -- Fields --
   
-  private Hashtable<String, String> keyPairs = null;
 
   // -- Translator API --
 
@@ -95,10 +92,8 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     super.translate(source, destination);
 
     IMetadata store = new OMEXMLMetadataImpl();
-    keyPairs = source.getKeyValPairs();
     boolean lifetime = false;
     int imageIndex = 0; //TODO correct index?
-    String[] kv = null;
     Double[] pixelSizes = null, timestamps = null, stagePos = null;
     Double laserPower = null, laserRepetitionRate = null, lensNA = null, workingDistance = null,
       magnification = null, exposureTime = null;
@@ -138,51 +133,33 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     
     // populate date data
     
-    kv = findValueForKey("history date", "history created on", "history creation date");
-    if (kv[0].equalsIgnoreCase("history date") ||
-      kv[0].equalsIgnoreCase("history created on"))
-    {
-      if (kv[1].indexOf(" ") > 0) {
-        date = kv[1].substring(0, kv[1].lastIndexOf(" "));
-        date = DateTools.formatDate(date, ICSFormat.ICSUtils.DATE_FORMATS);
-      }
-    }
-    else if (kv[0].equalsIgnoreCase("history creation date")) {
-      date = DateTools.formatDate(kv[1], ICSFormat.ICSUtils.DATE_FORMATS);
-    }
+    date = source.getDate();
     
     if (date != null) store.setImageAcquisitionDate(new Timestamp(date), 0);
 
     // > Minimum Metadata population
     if (source.getMetadataOptions().getMetadataLevel() != MetadataLevel.MINIMUM) {
       
-      kv = findValueForKey("history other text");
-      description = kv[1];
+      description = source.getDescription();
       store.setImageDescription(description, 0);
 
       // link Instrument and Image
       String instrumentID = OMEXMLMetadataTools.createLSID("Instrument", 0);
       store.setInstrumentID(instrumentID, 0);
       
-      kv = findValueForKey("history microscope");
-      microscopeModel = kv[1];
+      microscopeModel = source.getMicroscopeModel();
       store.setMicroscopeModel(microscopeModel, 0);
       
-      kv = findValueForKey("history manufacturer");
-      microscopeManufacturer = kv[1];
+      microscopeManufacturer = source.getMicroscopeManufacturer();
       store.setMicroscopeManufacturer(microscopeManufacturer, 0);
 
       store.setImageInstrumentRef(instrumentID, 0);
 
       store.setExperimentID(OMEXMLMetadataTools.createLSID("Experiment", 0), 0);
       
-      kv = findValueForKey("history type");
-      if (kv[0].equalsIgnoreCase("time resolved") ||
-        kv[0].equalsIgnoreCase("FluorescenceLifetime"))
-      {
-        lifetime = true;
-      }
-      experimentType = kv[1];
+      lifetime = source.getLifetime();
+
+      experimentType = source.getExperimentType();
       
       try {
         store.setExperimentType(OMEXMLMetadataTools.getExperimentType(experimentType), 0);
@@ -192,33 +169,13 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
 
       // populate Dimensions data
 
-      kv = findValueForKey("parameter scale");
-      if(kv[1] != null) pixelSizes = splitDoubles(kv[1]);
+      pixelSizes = source.getPixelSizes();
       
-      kv = findValueForKey("parameter units");
-      if(kv[1] != null) units = kv[1].split("\\s+");
+      units = source.getUnits();
       
-      kv = findValueForKey("layout order");
-      if (kv[1] != null) {
-        StringTokenizer t = new StringTokenizer(kv[1]);
-        axes = new String[t.countTokens()];
-        for(int n = 0; n < axes.length; n++) {
-          axes[n] = t.nextToken().trim();
-        }
-      }
+      axes = source.getAxes();
       
-      kv = findValueForKey("history extents");
-      if(kv[1] != null) {
-        String[] lengths = kv[1].split(" ");
-        sizes = new double[lengths.length];
-        for(int n = 0; n < sizes.length; n++) {
-          try { 
-            sizes[n] = Double.parseDouble(lengths[n].trim());
-          } catch (NumberFormatException e) {
-            LOGGER.debug("Could not parse axis length", e);
-          }
-        }
-      }
+      sizes = source.getAxesSizes();
       
       if (pixelSizes != null) {
         if (units != null && units.length == pixelSizes.length - 1) {
@@ -307,9 +264,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     
     // populate Plane data
 
-    kv = findValueForKey("parameter t");
-    if(kv[1] != null) 
-      timestamps = splitDoubles(kv[1]);
+    timestamps = source.getTimestamps();
     
     if (timestamps != null) {
       for (int t=0; t<timestamps.length; t++) {
@@ -331,73 +286,22 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     
     // populate LogicalChannel data
 
-    kv = findValueForKey("parameter ch");
-    if(kv[1] != null) {
-      String[] names = kv[1].split(" ");
-      for (int n = 0; n < names.length; n++) {
-        channelNames.put(new Integer(n), names[n].trim());
-      }
+    channelNames = source.getChannelNames();
+    source.addStepChannel(channelNames);
+    source.addCubeChannel(channelNames);
+    
+    pinholes = source.getPinholes();
+    
+    emWaves = source.getEMWaves();
+    
+    if(emWaves == null) {
+      emWaves = source.getEMSingleton();
     }
     
-    kv = findValueIteration("history step", "name");
-    if(kv[1] != null)
-      channelNames.put(new Integer(kv[0].substring(12, kv[0].indexOf(" ", 12))), kv[1]);
-      
-    kv = findValueForKey("history cube");
-    if(kv[1] != null)
-      channelNames.put(new Integer(channelNames.size()), kv[1]);
+    exWaves = source.getEXWaves();
     
-    kv = findValueForKey("sensor s_params PinholeRadius");
-    if(kv[1] != null) {
-      String pins[] = kv[1].split(" ");
-      int channel = 0;
-      for(int n = 0; n < pins.length; n++) {
-        if (pins[n].trim().equals("")) continue;
-        try {
-          pinholes.put(new Integer(channel++), new Double(pins[n]));
-        } catch (NumberFormatException e) {
-          LOGGER.debug("Could not parse pinhole", e);
-        }
-      }
-    }
-    
-    //TODO should this really potentially get overwritten?
-    kv = findValueForKey("sensor s_params LambdaEm");
-    if(kv[1] != null) {
-      String[] waves = kv[1].split(" ");
-      emWaves = new Integer[waves.length];
-      for (int n = 0; n < emWaves.length; n++) {
-        try {
-          emWaves[n] = new Integer((int) Double.parseDouble(waves[n]));
-        } catch (NumberFormatException e) {
-          LOGGER.debug("Could not parse emission wavelength", e);
-        }
-      }
-    }
-    
-    kv = findValueForKey("history cube emm nm");
-    if(kv[1] != null) {
-      if(emWaves == null) emWaves = new Integer[1];
-      emWaves[0] = new Integer(kv[1].split(" ")[1].trim());
-    }
-    
-    kv = findValueForKey("sensor s_params LambdaEx");
-    if (kv[1] != null) {
-      String[] waves = kv[1].split(" ");
-      exWaves = new Integer[waves.length];
-      for (int n = 0; n < exWaves.length; n++) {
-        try {
-          exWaves[n] = new Integer((int) Double.parseDouble(waves[n]));
-        } catch (NumberFormatException e) {
-          LOGGER.debug("Could not parse excitation wavelength", e);
-        }
-      }
-    }
-    
-    kv = findValueForKey("history cube exc nm");
-    if(kv[1] != null) {
-      if(exWaves == null) exWaves = new Integer[1];
-      exWaves[0] = new Integer(kv[1].split(" ")[1].trim());
+    if(exWaves == null) {
+      exWaves = source.getEXSingleton();
     }
     
     for (int i=0; i<cMeta.getEffectiveSizeC(imageIndex); i++) {
@@ -433,44 +337,16 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
 
     // populate Laser data
     
-    kv = findValueIteration("history laser", "wavelength");
-    if(kv[1] != null) {
-      int laser = Integer.parseInt(kv[0].substring(13, kv[0].indexOf(" ", 13))) - 1;
-      kv[1] = kv[1].replaceAll("nm", "").trim();
-      try {
-        wavelengths.put(new Integer(laser), new Integer(kv[1]));
-      } catch (NumberFormatException e) {
-        LOGGER.debug("Could not parse wavelength", e);
-      }
-    }
+    wavelengths = source.getWavelengths();
+    source.addLaserWavelength(wavelengths);
     
-    kv = findValueForKey("history Wavelength*");
-    if(kv[1] != null) {
-      String[] waves = kv[1].split(" ");
-      for(int n = 0; n < waves.length; n++) {
-        wavelengths.put(new Integer(n), new Integer(waves[n]));
-      }
-    }
+    laserManufacturer = source.getLaserManufacturer();
     
-    kv = findValueForKey("history laser manufacturer");
-    if(kv[1] != null) {
-      laserManufacturer = kv[1];
-    }
+    laserModel = source.getLaserModel();
     
-    kv = findValueForKey("history laser model");
-    if(kv[1] != null) {
-      laserModel = kv[1];
-    }
+    laserPower = source.getLaserPower();
     
-    kv = findValueForKey("history laser power");
-    if(kv[1] != null) {
-      laserPower = new Double(kv[1]);
-    }
-    
-    kv = findValueForKey("history laser rep rate");
-    if(kv[1] != null) {
-      laserRepetitionRate = new Double(kv[1]);
-    }
+    laserRepetitionRate = source.getLaserRepetitionRate();
 
     Integer[] lasers = wavelengths.keySet().toArray(new Integer[0]);
     Arrays.sort(lasers);
@@ -524,25 +400,13 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
 
     // populate FilterSet data
     
-    kv = findValueForKey("history filterset");
-    if(kv[1] != null) {
-      filterSetModel = kv[1];
-    }
+    filterSetModel = source.getFilterSetModel();
     
-    kv = findValueForKey("history filterset dichroic name");
-    if(kv[1] != null) {
-      dichroicModel = kv[1];
-    }
+    dichroicModel = source.getDichroicModel();
     
-    kv = findValueForKey("history filterset exc name");
-    if(kv[1] != null) {
-      excitationModel = kv[1];
-    }
+    excitationModel = source.getExcitationModel();
     
-    kv = findValueForKey("history filterset emm name");
-    if(kv[1] != null) {
-      emissionModel = kv[1];
-    }
+    emissionModel = source.getEmissionModel();
 
     if (filterSetModel != null) {
       store.setFilterSetID(OMEXMLMetadataTools.createLSID("FilterSet", 0, 0), 0, 0);
@@ -567,31 +431,15 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     
     // populate Objective data
 
-    kv = findValueForKey("history objective type", "history objective");
-    if(kv[1] != null) {
-      objectiveModel = kv[1];
-    }
+    objectiveModel = source.getObjectiveModel();
     
-    kv = findValueForKey("history objective immersion");
-    if(kv[1] != null) {
-      immersion = kv[1];
-    }
+    immersion = source.getImmersion();
     
-    kv = findValueForKey("history objective NA");
-    if(kv[1] != null) {
-      //TODO try/catch all double creation... in one spot!?
-      lensNA = new Double(kv[1]);
-    }
+    lensNA = source.getLensNA();
     
-    kv = findValueForKey("history objective WorkingDistance");
-    if(kv[1] != null) {
-      workingDistance = new Double(kv[1]);
-    }
+    workingDistance = source.getWorkingDistance();
     
-    kv = findValueForKey("history objective magnification", "history objective mag");
-    if(kv[1] != null) {
-      magnification = new Double(kv[1]);
-    }
+    magnification = source.getMagnification();
     
     if (objectiveModel != null) store.setObjectiveModel(objectiveModel, 0, 0);
     if (immersion == null) immersion = "Other";
@@ -620,15 +468,9 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     
     // populate Detector data
 
-    kv = findValueForKey("history camera manufacturer");
-    if(kv[1] != null) {
-      detectorManufacturer = kv[1];
-    }
+    detectorManufacturer = source.getDetectorManufacturer();
     
-    kv = findValueForKey("history camera model");
-    if(kv[1] != null) {
-      detectorModel = kv[1];
-    }
+    detectorModel = source.getDetectorModel();
     
     String detectorID = OMEXMLMetadataTools.createLSID("Detector", 0, 0);
     store.setDetectorID(detectorID, 0, 0);
@@ -640,16 +482,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
       LOGGER.warn("Failed to store detector type", e);
     }
     
-    kv = findValueForKey("history gain");
-    if(kv[1] != null) {
-      Integer n = new Integer(0);
-      try{ 
-        n = new Integer(kv[0].substring(12).trim());
-        n = new Integer(n.intValue() - 1);
-      }
-      catch (NumberFormatException e) { }
-      gains.put(n, new Double(kv[1]));
-    }
+    gains = source.getGains();
 
     for (Integer key : gains.keySet()) {
       int index = key.intValue();
@@ -661,10 +494,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     
     // populate Experimenter data
 
-    kv = findValueForKey("history author", "history experimenter");
-    if(kv[1] != null) {
-      lastName = kv[1];
-    }
+    lastName = source.getAuthorLastName();
     
     if (lastName != null) {
       String experimenterID = OMEXMLMetadataTools.createLSID("Experimenter", 0);
@@ -674,47 +504,21 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     
     // populate StagePosition data
     
-    kv = findValueForKey("history stage_xyzum");
-    if(kv[1] != null) {
-      String[] positions = kv[1].split(" ");
-      stagePos = new Double[positions.length];
-      for(int n = 0; n < stagePos.length; n++) {
-        try {
-          stagePos[n] = new Double(positions[n]);
-        } catch (NumberFormatException e) {
-          LOGGER.debug("Could not parse stage position", e);
-        }
-      }
-    }
+    stagePos = source.getStagePositions();
     
     if(stagePos == null) {
       stagePos = new Double[3];
     }
     
-    kv = findValueForKey("history stage positionx");
-    if(kv[1] != null) {
-      stagePos[0] = new Double(kv[1]);
-    }
-    
-    kv = findValueForKey("history stage positiony");
-    if(kv[1] != null) {
-      stagePos[1] = new Double(kv[1]);
-    }
-    
-    kv = findValueForKey("history stage positionz");
-    if(kv[1] != null) {
-      stagePos[2] = new Double(kv[1]);
-    }
+    stagePos[0] = source.getStageX();
+
+    stagePos[1] = source.getStageY();
+
+    stagePos[2] = source.getStageZ();
     
     //TODO set global meta - x, y, z positions?
 
-    kv = findValueForKey("history Exposure");
-    if (kv[1] != null) {
-      String expTime = kv[1];
-      if(expTime.indexOf(" ") != -1) {
-        exposureTime = new Double(expTime.indexOf(" "));
-      }
-    }
+    exposureTime = source.getExposureTime();
     
     if (exposureTime != null) {
       for (int i=0; i<cMeta.getImageCount(); i++) {
@@ -783,158 +587,6 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
       tokens.add(token.toString());
     }
     return tokens.toArray(new String[0]);
-  }
-
-  /* Given a list of tokens and an array of lists of regular expressions, tries
-   * to find a match.  If no match is found, looks in OTHER_KEYS.
-   */
-  String[] findKeyValue(String[] tokens, String[][] regexesArray) {
-    String[] keyValue = findKeyValueForCategory(tokens, regexesArray);
-    if (null == keyValue) {
-      keyValue = findKeyValueOther(tokens, ICSFormat.ICSUtils.OTHER_KEYS);
-    }
-    if (null == keyValue) {
-      String key = tokens[0];
-      String value = concatenateTokens(tokens, 1, tokens.length);
-      keyValue = new String[] { key, value };
-    }
-    return keyValue;
-  }
-
-  /*
-   * Builds a string from a list of tokens.
-   */
-  private String concatenateTokens(String[] tokens, int start, int stop) {
-    StringBuffer returnValue = new StringBuffer();
-    for (int i = start; i < tokens.length && i < stop; ++i) {
-      returnValue.append(tokens[i]);
-      if (i < stop - 1) {
-        returnValue.append(' ');
-      }
-    }
-    return returnValue.toString();
-  }
-  
-  /*
-   * Checks the list of keys for non-null values in the global hashtable.
-   * 
-   * If a non-null value is found, it is returned.
-   * 
-   * The returned array includes the matching key first, and the value second.
-   * 
-   */
-  private String[] findValueForKey (String... keys) {
-
-    for(String key : keys) {
-      String value = keyPairs.get(key);
-      if(value != null) return new String[]{key, value};
-    }
-    
-    return new String[]{null, null};
-  }
-  
-  /*
-   * Iterates through the key set, looking for a key that starts
-   * and/or ends with the provided partial keys.
-   * 
-   * Returns an array containing the first matching key and its 
-   * corresponding value if found, and an empty array otherwise.
-   * 
-   */
-  private String[] findValueIteration (String starts, String ends) {
-    
-    for (String key : keyPairs.keySet()) {
-      if ((starts == null || key.startsWith(starts)) && (ends == null || key.endsWith(ends)))
-        return new String[]{key, keyPairs.get(key)};
-    }
-    
-    return new String[]{null, null};
-  }
-
-  /*
-   * Given a list of tokens and an array of lists of regular expressions, finds
-   * a match.  Returns key/value pair if matched, null otherwise.
-   *
-   * The first element, tokens[0], has already been matched to a category, i.e.
-   * 'history', and the regexesArray is category-specific.
-   */
-  private String[] findKeyValueForCategory(String[] tokens,
-                                           String[][] regexesArray) {
-    String[] keyValue = null;
-    int index = 0;
-    for (String[] regexes : regexesArray) {
-      if (compareTokens(tokens, 1, regexes, 0)) {
-        int splitIndex = 1 + regexes.length; // add one for the category
-        String key = concatenateTokens(tokens, 0, splitIndex);
-        String value = concatenateTokens(tokens, splitIndex, tokens.length);
-        keyValue = new String[] { key, value };
-        break;
-      }
-      ++index;
-    }
-    return keyValue;
-  }
-
-  /* Given a list of tokens and an array of lists of regular expressions, finds
-   * a match.  Returns key/value pair if matched, null otherwise.
-   *
-   * The first element, tokens[0], represents a category and is skipped.  Look
-   * for a match of a list of regular expressions anywhere in the list of tokens.
-   */
-  private String[] findKeyValueOther(String[] tokens, String[][] regexesArray) {
-    String[] keyValue = null;
-    for (String[] regexes : regexesArray) {
-      for (int i = 1; i < tokens.length - regexes.length; ++i) {
-        // does token match first regex?
-        if (tokens[i].toLowerCase().matches(regexes[0])) {
-          // do remaining tokens match remaining regexes?
-          if (1 == regexes.length || compareTokens(tokens, i + 1, regexes, 1)) {
-            // if so, return key/value
-            int splitIndex = i + regexes.length;
-            String key = concatenateTokens(tokens, 0, splitIndex);
-            String value = concatenateTokens(tokens, splitIndex, tokens.length);
-            keyValue = new String[] { key, value };
-            break;
-          }
-        }
-      }
-      if (null != keyValue) {
-        break;
-      }
-    }
-    return keyValue;
-  }
-
-  /*
-   * Compares a list of tokens with a list of regular expressions.
-   */
-  private boolean compareTokens(String[] tokens, int tokenIndex,
-                                String[] regexes, int regexesIndex) {
-    boolean returnValue = true;
-    int i, j;
-    for (i = tokenIndex, j = regexesIndex; j < regexes.length; ++i, ++j) {
-      if (i >= tokens.length || !tokens[i].toLowerCase().matches(regexes[j])) {
-        returnValue = false;
-        break;
-      }
-    }
-    return returnValue;
-  }
-
-  /** Splits the given string into a list of {@link Double}s. */
-  private Double[] splitDoubles(String v) {
-    StringTokenizer t = new StringTokenizer(v);
-    Double[] values = new Double[t.countTokens()];
-    for (int n=0; n<values.length; n++) {
-      String token = t.nextToken().trim();
-      try {
-        values[n] = new Double(token);
-      }
-      catch (NumberFormatException e) {
-        LOGGER.debug("Could not parse double value '{}'", token, e);
-      }
-    }
-    return values;
   }
 
   /** Verifies that a unit matches the expected value. */
