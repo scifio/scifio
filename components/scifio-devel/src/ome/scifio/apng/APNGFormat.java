@@ -942,10 +942,10 @@ public class APNGFormat
           plte.setBlue(lut[2]);
         }
         catch (final FormatException e) {
-          e.printStackTrace();
+          LOGGER.error("Format error when finding 8bit lookup table", e);
         }
         catch (final IOException e) {
-          e.printStackTrace();
+          LOGGER.error("IO error when finding 8bit lookup table", e);
         }
   
       }
@@ -1066,7 +1066,7 @@ public class APNGFormat
           bpp / 8, false, false));
       }
       catch (final FormatException e) {
-        e.printStackTrace();
+        LOGGER.error("Failed to find pixel type from bytes: " + (bpp/8), e);
       }
       coreMeta.setRgb(rgb);
       coreMeta.setIndexed(indexed);

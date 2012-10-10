@@ -1442,7 +1442,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
           values[n] = new Double(token);
         }
         catch (final NumberFormatException e) {
-          //LOGGER.debug("Could not parse double value '{}'", token, e);
+          LOGGER.debug("Could not parse double value '{}'", token, e);
         }
       }
       return values;
@@ -1784,7 +1784,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         coreMeta.setPixelType(FormatTools.pixelTypeFromBytes(bytes, signed, floatingPt));
       }
       catch (final FormatException e) {
-        e.printStackTrace();
+        LOGGER.error("Could not get pixel type from bytes: " + bytes, e);
       }
 
     }
