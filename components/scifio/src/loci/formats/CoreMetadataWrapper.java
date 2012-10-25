@@ -35,432 +35,260 @@
  */
 package loci.formats;
 
-import java.io.IOException;
 import java.util.Hashtable;
 
-import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import ome.scifio.FormatException;
-import ome.scifio.util.FormatTools;
 import loci.legacy.adapter.Wrapper;
 
 /**
- * Wraps an array of legacy CoreMetadata objects in a modern, SCIFIO
- * CoreMetadata. This wrapper preserves backwards compatibility, and maintains
- * synchronization between the two layers by delegating all functionality from
- * modern to legacy classes.
+ * This class is used for delegation in the Legacy
+ * to Modern direction. It can be used in method singatures
+ * expecting an {@link ome.scifio.CoreImageMetadata} - or,
+ * more significantly, stored within an {@link ome.scifio.CoreMetadata}
+ *  - but delegates all functionality to the wrapped @{link loci.formats.CoreMetadata}
  * 
  * @author Mark Hiner
  *
  */
-public class CoreMetadataWrapper extends ome.scifio.CoreMetadata implements Wrapper<CoreMetadata[]> {
+public class CoreMetadataWrapper extends ome.scifio.CoreImageMetadata
+  implements Wrapper<CoreMetadata> 
+{
 
   // -- Fields --
   
-  private CoreMetadata[] cMeta;
+  private CoreMetadata coreMeta;
   
   // -- Constructor --
   
-  public CoreMetadataWrapper(CoreMetadata[] core) {
-    cMeta = core;
+  public CoreMetadataWrapper(CoreMetadata cMeta) {
+    coreMeta = cMeta;
   }
   
   // -- Wrapper API Methods --
-  
-  public CoreMetadata[] unwrap() {
-    return cMeta;
+
+  public CoreMetadata unwrap() {
+    return coreMeta;
   }
   
-  // -- CoreMetadata Methods --
+  // -- CoreImageMetadata methods --
+  
+  // -- Setters -- 
 
-  // -- Getters --
-
-  public Object getImageMetadataValue(final int imageIndex, final String field)
-  {
-    return cMeta[imageIndex].seriesMetadata.get(field);
+  public void setLut(final byte[][] lut) {
+    throw new UnsupportedOperationException();
   }
 
-  public Hashtable<String, Object> getImageMetadata(final int imageIndex) {
-    return cMeta[imageIndex].seriesMetadata;
+  public void setThumbSizeX(final int thumbSizeX) {
+    coreMeta.thumbSizeX = thumbSizeX;
   }
 
-  public int getImageCount() {
-    return cMeta.length;
+  public void setThumbSizeY(final int thumbSizeY) {
+    coreMeta.thumbSizeY = thumbSizeY;
   }
 
-  public int getPlaneCount(final int imageIndex) {
-    return cMeta[imageIndex].imageCount;
+  public void setPixelType(final int pixelType) {
+    coreMeta.pixelType = pixelType;
   }
 
-  public boolean isInterleaved(final int imageIndex) {
-    return cMeta[imageIndex].interleaved;
+  public void setBitsPerPixel(final int bitsPerPixel) {
+    coreMeta.bitsPerPixel = bitsPerPixel;
   }
 
-  public int getPixelType(final int imageIndex) {
-    return cMeta[imageIndex].pixelType;
+  public void setcLengths(final int[] cLengths) {
+    coreMeta.cLengths = cLengths;
   }
 
-  public int getEffectiveSizeC(final int imageIndex) {
-    final int sizeZT =
-        cMeta[imageIndex].sizeZ * cMeta[imageIndex].sizeT;
-    if (sizeZT == 0) return 0;
-    return getPlaneCount(imageIndex) / sizeZT;
+  public void setcTypes(final String[] cTypes) {
+    coreMeta.cTypes = cTypes;
   }
 
-  public int getRGBChannelCount(final int imageIndex) {
-    if(!cMeta[imageIndex].rgb) return 1;
+  public void setOrderCertain(final boolean orderCertain) {
+    coreMeta.orderCertain = orderCertain;
+  }
+
+  public void setRgb(final boolean rgb) {
+    coreMeta.rgb = rgb;
+  }
+
+  public void setLittleEndian(final boolean littleEndian) {
+    coreMeta.littleEndian = littleEndian;
+  }
+
+  public void setInterleaved(final boolean interleaved) {
+    coreMeta.interleaved = interleaved;
+  }
+
+  public void setIndexed(final boolean indexed) {
+    coreMeta.indexed = indexed;
+  }
+
+  public void setFalseColor(final boolean falseColor) {
+    coreMeta.falseColor = falseColor;
+  }
+
+  public void setMetadataComplete(final boolean metadataComplete) {
+    coreMeta.metadataComplete = metadataComplete;
+  }
+
+  public void setImageMetadata(final Hashtable<String, Object> imageMetadata) {
+    coreMeta.seriesMetadata = imageMetadata;
+  }
+
+  public void setThumbnail(final boolean thumbnail) {
+    coreMeta.thumbnail = thumbnail;
+  }
+
+  public void setAxisTypes(final AxisType[] axisTypes) {
+    coreMeta.dimensionOrder = 
+        ome.scifio.util.FormatTools.findDimensionOrder(axisTypes);
+  }
+
+  public void setAxisLengths(final int[] axisLengths) {
     
-    final int effSizeC = getEffectiveSizeC(imageIndex);
-    if (effSizeC == 0) return 0;
-    return cMeta[imageIndex].sizeC / effSizeC;
-  }
-
-  public boolean isLittleEndian(final int imageIndex) {
-    return cMeta[imageIndex].littleEndian;
-  }
-
-  public boolean isIndexed(final int imageIndex) {
-    return cMeta[imageIndex].indexed;
-  }
-
-  public int getBitsPerPixel(final int imageIndex) {
-    return cMeta[imageIndex].bitsPerPixel;
-  }
-
-  public byte[][] get8BitLookupTable(final int imageIndex)
-    throws ome.scifio.FormatException, IOException
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  public short[][] get16BitLookupTable(final int imageIndex)
-    throws ome.scifio.FormatException, IOException
-  {
-    throw new UnsupportedOperationException();
-  }
-
-  public boolean isRGB(final int imageIndex) {
-    return getRGBChannelCount(imageIndex) > 1;
-  }
-
-  public boolean isFalseColor(final int imageIndex) {
-    return cMeta[imageIndex].falseColor;
-  }
-
-  public int[] getChannelDimLengths(final int imageIndex) {
-    if (cMeta[imageIndex].cLengths == null)
-      return new int[] {cMeta[imageIndex].sizeC};
-    return cMeta[imageIndex].cLengths;
-  }
-
-  public String[] getChannelDimTypes(final int imageIndex) {
-    if (cMeta[imageIndex].cTypes == null)
-      return new String[] {FormatTools.CHANNEL};
-    return cMeta[imageIndex].cTypes;
-  }
-
-  public int getThumbSizeX(final int imageIndex) {
-    if (cMeta[imageIndex].thumbSizeX == 0) {
-      final int sx = cMeta[imageIndex].sizeX;
-      final int sy = cMeta[imageIndex].sizeY;
-      int thumbSizeX = 0;
-      if (sx > sy) thumbSizeX = FormatTools.THUMBNAIL_DIMENSION;
-      else if (sy > 0) thumbSizeX = sx * FormatTools.THUMBNAIL_DIMENSION / sy;
-      if (thumbSizeX == 0) thumbSizeX = 1;
-      return thumbSizeX;
-    }
-    return cMeta[imageIndex].thumbSizeX;
-  }
-
-  public int getThumbSizeY(final int imageIndex) {
-    if (cMeta[imageIndex].thumbSizeY == 0) {
-      final int sx = cMeta[imageIndex].sizeX;
-      final int sy = cMeta[imageIndex].sizeY;
-      int thumbSizeY = 1;
-      if (sy > sx) thumbSizeY = FormatTools.THUMBNAIL_DIMENSION;
-      else if (sx > 0) thumbSizeY = sy * FormatTools.THUMBNAIL_DIMENSION / sx;
-      if (thumbSizeY == 0) thumbSizeY = 1;
-      return thumbSizeY;
-    }
-    return cMeta[imageIndex].thumbSizeY;
-  }
-  
-  //TODO valid index checking - fail more gracefully?
-
-  /**
-   * Returns the number of axes (planes) in the
-   * specified image.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @return The axis/plane count
-   */
-  public int getAxisCount(final int imageIndex) {
-    return cMeta[imageIndex].dimensionOrder.length();
-  }
-
-  /**
-   * Gets the type of the (zero-indexed) specified plane.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param planeIndex - index of the desired plane within the specified image
-   * @return Type of the desired plane.
-   */
-  public AxisType getAxisType(final int imageIndex, final int planeIndex) {
-    switch(cMeta[imageIndex].dimensionOrder.toUpperCase().charAt(planeIndex)) {
-    case 'X': return Axes.X;
-    case 'Y': return Axes.Y;
-    case 'Z': return Axes.Z;
-    case 'C': return Axes.CHANNEL;
-    case 'T': return Axes.TIME;
-    default : return Axes.UNKNOWN;
+    for(int i = 0; i < 5; i++) {
+      switch(coreMeta.dimensionOrder.charAt(i)) {
+      case 'X': coreMeta.sizeX = axisLengths[i];
+        break;
+      case 'Y': coreMeta.sizeY = axisLengths[i];
+        break;
+      case 'Z': coreMeta.sizeZ = axisLengths[i];
+        break;
+      case 'C': coreMeta.sizeC = axisLengths[i];
+        break;
+      case 'T': coreMeta.sizeT = axisLengths[i];
+        break;
+      default:
+      }
     }
   }
 
-  /**
-   * Gets the length of the (zero-indexed) specified plane.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param planeIndex - index of the desired plane within the specified image
-   * @return Length of the desired plane.
-   */
-  public int getAxisLength(final int imageIndex, final int planeIndex) {
-    switch(cMeta[imageIndex].dimensionOrder.toUpperCase().charAt(planeIndex)) {
-    case 'X': return cMeta[imageIndex].sizeX;
-    case 'Y': return cMeta[imageIndex].sizeY;
-    case 'Z': return cMeta[imageIndex].sizeZ;
-    case 'C': return cMeta[imageIndex].sizeC;
-    case 'T': return cMeta[imageIndex].sizeT;
-    default : return -1;
+  public void setAxisLength(final AxisType axis, final int length) {
+    switch(axis.getLabel().toUpperCase().charAt(0)) {
+    case 'X': coreMeta.sizeX = length;
+      break;
+    case 'Y': coreMeta.sizeY = length;
+      break;
+    case 'Z': coreMeta.sizeZ = length;
+      break;
+    case 'C': coreMeta.sizeC = length;
+      break;
+    case 'T': coreMeta.sizeT = length;
+      break;
+    default:
     }
   }
-  
-  /**
-   * A convenience method for looking up the length of an axis
-   * based on its type. No knowledge of plane ordering is necessary.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param t - desired axis type
-   * @return
-   */
-  public int getAxisLength(final int imageIndex, final AxisType t) {
-    return getAxisLength(imageIndex, getAxisIndex(imageIndex, t));
+
+  public void setAxisType(final int index, final AxisType axis) {
+    String order = "";
+    
+    for(int i = 0; i < coreMeta.dimensionOrder.length(); i++) {
+      if(i == index) {
+        order += axis.getLabel().toUpperCase().charAt(0);
+      }
+      else
+        order += coreMeta.dimensionOrder.charAt(i);
+    }
+      
+    coreMeta.dimensionOrder = order;
   }
 
-  /**
-   * Returns the array index for the specified AxisType. This index
-   * can be used in other Axes methods for looking up lengths, etc...
-   * </br></br>
-   * This method can also be used as an existence check for the
-   * targe AxisType.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param type - axis type to look up
-   * @return The index of the desired axis or -1 if not found.
-   */
-  public int getAxisIndex(final int imageIndex, final AxisType type) {
-    return cMeta[imageIndex].dimensionOrder.toUpperCase().indexOf(
-        type.getLabel().toUpperCase().charAt(0));
-    // throw exception?
+  public void setPlaneCount(final int planeCount) {
+    coreMeta.imageCount = planeCount;
   }
   
-  /**
-   * Returns an array of the types for axes associated with
-   * the specified image index. Order is consistent with the
-   * axis length (int) array returned by 
-   * {@link CoreMetadata#getAxesLengths(int)}.
-   * </br></br>
-   * AxisType order is sorted and represents order within the image.
-   * 
-   * @param imageIndex - index for multi-image sources
-   * @return An array of AxisTypes in the order they appear.
-   */
-  public AxisType[] getAxes(int imageIndex) {
-    return FormatTools.findDimensionList(cMeta[imageIndex].dimensionOrder);
+  // -- Getters --
+    
+  public int getPlaneCount() {
+    return coreMeta.imageCount;
   }
-  
-  /**
-   * Returns an array of the lengths for axes associated with
-   * the specified image index.
-   * 
-   * Ordering is consistent with the 
-   * AxisType array returned by {@link CoreMetadata#getAxes(int)}.
-   * 
-   * @param imageIndex
-   * @return
-   */
-  public int[] getAxesLengths(int imageIndex) {
-    String order = cMeta[imageIndex].dimensionOrder;
-    int[] lengths = new int[order.length()];
-    for(int i = 0; i < order.length(); i++) {
-      char dim = order.toUpperCase().charAt(i);
-      switch(dim) {
-      case 'X': lengths[i] = cMeta[imageIndex].sizeX;
+
+  public byte[][] getLut() {
+    return null;
+  }
+
+  public int getThumbSizeX() {
+    return coreMeta.thumbSizeX;
+  }
+
+  public int getThumbSizeY() {
+    return coreMeta.thumbSizeY;
+  }
+
+  public int getPixelType() {
+    return coreMeta.pixelType;
+  }
+
+  public int getBitsPerPixel() {
+    return coreMeta.bitsPerPixel;
+  }
+
+  public int[] getcLengths() {
+    return coreMeta.cLengths;
+  }
+
+  public String[] getcTypes() {
+    return coreMeta.cTypes;
+  }
+
+  public AxisType[] getAxisTypes() {
+    return ome.scifio.util.FormatTools.findDimensionList(coreMeta.dimensionOrder);
+  }
+
+  public int[] getAxisLengths() {
+    int[] lengths = new int[5];
+    
+    lengths[0] = coreMeta.sizeX;
+    lengths[1] = coreMeta.sizeY;
+    
+    for(int i = 2; i < 5; i++) {
+      switch(coreMeta.dimensionOrder.charAt(i)) {
+      case 'Z': lengths[i] = coreMeta.sizeZ;
         break;
-      case 'Y': lengths[i] = cMeta[imageIndex].sizeY;
+      case 'C': lengths[i] = coreMeta.sizeC;
         break;
-      case 'Z': lengths[i] = cMeta[imageIndex].sizeZ;
+      case 'T': lengths[i] = coreMeta.sizeT;
         break;
-      case 'C': lengths[i] = cMeta[imageIndex].sizeC;
-        break;
-      case 'T': lengths[i] = cMeta[imageIndex].sizeT;
-        break;
+      default:
+        lengths[i] = 1;
       }
     }
     
     return lengths;
   }
 
-  /**
-   * Appends the provided AxisType to the current AxisType array
-   * and creates corresponding length = 0 entry in the axis lengths
-   * array.
-   * 
-   * @param imageIndex
-   * @param type
-   */
-  public void addAxis(final int imageIndex, final AxisType type) {
-    throw new UnsupportedOperationException();
+  public boolean isOrderCertain() {
+    return coreMeta.orderCertain;
   }
 
-  /**
-   * Appends the provided AxisType to the current AxisType array
-   * and creates a corresponding entry with the specified value in
-   * axis lengths.
-   * 
-   * @param imageIndex
-   * @param type
-   * @param value
-   */
-  public void addAxis(final int imageIndex, final AxisType type, final int value)
-  {
-    throw new UnsupportedOperationException();
+  public boolean isRgb() {
+    return coreMeta.rgb;
   }
 
-  public boolean isOrderCertain(final int imageIndex) {
-    return cMeta[imageIndex].orderCertain;
+  public boolean isLittleEndian() {
+    return coreMeta.littleEndian;
   }
 
-  public boolean isThumbnailImage(final int imageIndex) {
-    return cMeta[imageIndex].thumbnail;
+  public boolean isInterleaved() {
+    return coreMeta.interleaved;
   }
 
-  public boolean isMetadataComplete(final int imageIndex) {
-    return cMeta[imageIndex].metadataComplete;
+  public boolean isIndexed() {
+    return coreMeta.indexed;
   }
 
-  // -- Setters --
-  
-  public void set8BitLookupTable(final int imageIndex, final byte[][] lut)
-    throws FormatException, IOException
-  {
-    throw new UnsupportedOperationException();
+  public boolean isFalseColor() {
+    return coreMeta.falseColor;
   }
 
-  public void set16BitLookupTable(final int imageIndex, final short[][] lut)
-    throws FormatException, IOException
-  {
-    throw new UnsupportedOperationException();
+  public boolean isMetadataComplete() {
+    return coreMeta.metadataComplete;
   }
 
-  public void setThumbSizeX(final int imageIndex, final int thumbX) {
-    cMeta[imageIndex].thumbSizeX = thumbX;
+  public Hashtable<String, Object> getImageMetadata() {
+    return coreMeta.seriesMetadata;
   }
 
-  public void setThumbSizeY(final int imageIndex, final int thumbY) {
-    cMeta[imageIndex].thumbSizeY = thumbY;
-  }
-
-  public void setPixelType(final int imageIndex, final int type) {
-    cMeta[imageIndex].pixelType = type;
-  }
-
-  public void setBitsPerPixel(final int imageIndex, final int bpp) {
-    cMeta[imageIndex].bitsPerPixel = bpp;
-  }
-
-  public void setChannelDimLengths(final int imageIndex, final int[] cLengths) {
-    cMeta[imageIndex].cLengths = cLengths;
-  }
-
-  public void setChannelDimTypes(final int imageIndex, final String[] cTypes) {
-    cMeta[imageIndex].cTypes = cTypes;
-  }
-
-  public void setOrderCertain(final int imageIndex, final boolean orderCertain)
-  {
-    cMeta[imageIndex].orderCertain = orderCertain;
-  }
-
-  public void setRGB(final int imageIndex, final boolean rgb) {
-    cMeta[imageIndex].rgb = rgb;
-  }
-
-  public void setLittleEndian(final int imageIndex, final boolean littleEndian)
-  {
-    cMeta[imageIndex].littleEndian = littleEndian;
-  }
-
-  public void setInterleaved(final int imageIndex, final boolean interleaved) {
-    cMeta[imageIndex].interleaved = interleaved;
-  }
-
-  public void setIndexed(final int imageIndex, final boolean indexed) {
-    cMeta[imageIndex].indexed = indexed;
-  }
-
-  public void setFalseColor(final int imageIndex, final boolean falseC) {
-    cMeta[imageIndex].falseColor = falseC;
-  }
-
-  public void setMetadataComplete(final int imageIndex,
-    final boolean metadataComplete)
-  {
-    cMeta[imageIndex].metadataComplete = metadataComplete;
-  }
-
-  public void setImageMetadata(final int imageIndex,
-    final Hashtable<String, Object> meta)
-  {
-    cMeta[imageIndex].seriesMetadata = meta;
-  }
-
-  public void setThumbnailImage(final int imageIndex, final boolean thumbnail) {
-    cMeta[imageIndex].thumbnail = thumbnail;
-  }
-
-  public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
-    cMeta[imageIndex].dimensionOrder = FormatTools.findDimensionOrder(axisTypes);
-  }
-  
-  public void setAxisType(final int imageIndex, final int axisIndex, final AxisType axis) {
-    throw new UnsupportedOperationException();
-  }
-
-  public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
-    for(int i = 0; i < axisLengths.length; i++) {
-      setDimLength(imageIndex, 
-          cMeta[imageIndex].dimensionOrder.toUpperCase().charAt(i), axisLengths[i]);
-    }
-  }
-  
-  public void setAxisLength(final int imageIndex, final AxisType axis, final int length) {
-    setDimLength(imageIndex, axis.getLabel().toUpperCase().charAt(0), length);
-  }
-  
-  // -- Helper methods --
-  
-  private void setDimLength(final int imageIndex, final char dim, final int length) {
-    switch(dim) {
-    case 'X': cMeta[imageIndex].sizeX = length;
-      break;
-    case 'Y': cMeta[imageIndex].sizeY = length;
-      break;
-    case 'Z': cMeta[imageIndex].sizeZ = length;
-      break;
-    case 'C': cMeta[imageIndex].sizeC = length;
-      break;
-    case 'T': cMeta[imageIndex].sizeT = length;
-      break;
-    }
+  public boolean isThumbnail() {
+    return coreMeta.thumbnail;
   }
 }

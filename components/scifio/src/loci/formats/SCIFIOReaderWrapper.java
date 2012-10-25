@@ -38,6 +38,7 @@ package loci.formats;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,7 +218,7 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
 
   public CoreMetadata getCoreMetadata() {
     CoreMetadata cMeta = AdapterTools.getAdapter(CoreMetadataAdapter.class).
-        getModern(reader.getCoreMetadata());
+        getModern(Arrays.asList(reader.getCoreMetadata()));
     
       cMeta.setSource(getStream());
     

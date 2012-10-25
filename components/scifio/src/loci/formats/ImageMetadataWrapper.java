@@ -35,47 +35,42 @@
  */
 package loci.formats;
 
-import java.util.Iterator;
-
 import ome.scifio.CoreImageMetadata;
-
-import loci.legacy.adapter.AbstractLegacyAdapter;
-import loci.legacy.adapter.AdapterTools;
+import loci.legacy.adapter.Wrapper;
 
 /**
- * {@link LegacyAdapter} for converting between instances of
- * {@link ome.scifio.CoreMetadata} and an array of {@link loci.formats.CoreMetadata}.
- * <p>
- * Since the legacy CoreMetadata objects were stored in an array, there is no class to
- * extend and no setter methods to override in the Modern -> Legacy direction. Thus 
- * any such delegation has to be managed by the {@link CoreImageMetadataAdapter}.
- * </p>
+ * This class is used for delegation in the Modern
+ * to Legacy direction. It can be used in method signatures
+ * expecting a {@link loci.formats.CoreMetadata} but
+ * delegates all functionality to the wrapped
+ * {@link ome.scifio.CoreImageMetadata}.
+ * 
  * @author Mark Hiner
  *
  */
-public class CoreMetadataAdapter extends AbstractLegacyAdapter<loci.formats.CoreMetadata[], ome.scifio.CoreMetadata> {
+public class ImageMetadataWrapper extends CoreMetadata 
+  implements Wrapper<CoreImageMetadata>
+{
 
-  // -- LegacyAdapter API --
+  // -- Fields --
   
-  @Override
-  protected loci.formats.CoreMetadata[] wrapToLegacy(ome.scifio.CoreMetadata modern) {
-    CoreMetadata[] legacyArray = new ImageMetadataWrapper[modern.getImageCount()];
+  private CoreImageMetadata imageMeta;
+  
+  // -- Constructor --
+  
+  ImageMetadataWrapper(CoreImageMetadata imageMeta) {
+    super(imageMeta);
     
-    Iterator<CoreImageMetadata> metaIterator = modern.getImageMetadata().iterator();
-    
-    int i = 0;
-    while(metaIterator.hasNext()) {
-      legacyArray[i] = 
-          AdapterTools.getAdapter(CoreImageMetadataAdapter.class).getLegacy(metaIterator.next());
-      i++;
-    }
-    
-    return legacyArray;
+    this.imageMeta = imageMeta;
+  }
+  
+  // -- Wrapper API methods --
+  
+  public CoreImageMetadata unwrap() {
+    return imageMeta;
   }
 
-  @Override
-  protected ome.scifio.CoreMetadata wrapToModern(loci.formats.CoreMetadata[] legacy) {
-    return new CoreMetadataArrayWrapper(legacy);
-  }
-
+  // -- CoreMetadata methods --
+  
+  
 }
