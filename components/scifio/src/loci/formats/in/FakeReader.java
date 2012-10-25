@@ -43,7 +43,9 @@ import ome.scifio.fake.FakeFormat;
 
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
+import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
+import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
 
 /**
@@ -154,5 +156,14 @@ public class FakeReader extends SCIFIOFormatReader {
     }
     
     reader.setMetadata(meta);
+    
+    // reinitialize the MetadataStore
+    MetadataStore store = makeFilterMetadata();
+    MetadataTools.populatePixels(store, this);
+    
+    for (int s=0; s<getSeriesCount(); s++) {
+      String imageName = id.substring(0, id.lastIndexOf(".")) + (s > 0 ? (s + 1) : "");
+      store.setImageName(imageName, s);
+    }
   }
 }

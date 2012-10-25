@@ -39,12 +39,16 @@ package loci.formats.in;
 import java.io.IOException;
 
 import loci.formats.FormatException;
-import loci.formats.FormatTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.legacy.context.LegacyContext;
 
 import ome.scifio.Metadata;
+import ome.scifio.Translator;
 import ome.scifio.ics.ICSFormat;
+import ome.xml.meta.IMetadata;
+import ome.xml.meta.OMEMetadata;
+import ome.xml.meta.OMEXMLMetadataImpl;
+import ome.xml.meta.OMEXMLMetadataTools;
 
 /**
  * ICSReader is the file format reader for ICS (Image Cytometry Standard)
@@ -163,6 +167,22 @@ public class ICSReader extends SCIFIOFormatReader {
     }
     
     reader.setMetadata(meta);
+    IMetadata omeRoot = new OMEXMLMetadataImpl() ;
+    omeRoot.createRoot();
+    OMEXMLMetadataTools.populatePixels(omeRoot, reader.getCoreMetadata());
+    omeRoot.setImageName(id, 0);
+    
+    OMEMetadata omeMeta = new OMEMetadata(reader.getContext(), omeRoot);
+
+    try {
+      Translator t = reader.getFormat().findSourceTranslator(OMEMetadata.class);
+      
+      t.translate(meta, omeMeta);
+    } catch (ome.scifio.FormatException e) {
+      throw new FormatException(e.getCause());
+    }
+    
+    setMetadataStore((loci.formats.meta.MetadataStore) omeMeta.getRoot());
   }
 
   // -- Helper methods --

@@ -158,35 +158,6 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
 
   // -- Internal FormatReader API methods --
 
-  /**
-   * Initializes the given file (parsing header information, etc.).
-   * Most subclasses should override this method to perform
-   * initialization operations such as parsing metadata.
-   *
-   * @throws FormatException if a parsing error occurs processing the file.
-   * @throws IOException if an I/O error occurs processing the file
-   */
-  @Deprecated
-  @Override
-  protected void initFile(String id) throws FormatException, IOException {
-    LOGGER.debug("{}.initFile({})", this.getClass().getName(), id);
-    if (currentId != null) {
-      String[] s = getUsedFiles();
-      for (int i = 0; i < s.length; i++) {
-        if (id.equals(s[i])) return;
-      }
-    }
-
-    core = new CoreMetadata[1];
-    core[0] = new CoreMetadata();
-    series = 0;
-    close();
-    currentId = id;
-    // reinitialize the MetadataStore
-    // NB: critical for metadata conversion to work properly!
-    getMetadataStore().createRoot();
-  }
-
   /** Returns true if the given file name is in the used files list. */
   @Deprecated
   @Override

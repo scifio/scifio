@@ -42,8 +42,9 @@ import ome.scifio.Metadata;
 import ome.scifio.apng.APNGFormat;
 
 import loci.formats.FormatException;
-import loci.formats.FormatTools;
+import loci.formats.MetadataTools;
 import loci.formats.gui.SCIFIOBIFormatReader;
+import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
 
 /**
@@ -165,5 +166,8 @@ public class APNGReader extends SCIFIOBIFormatReader {
       throw new FormatException(e.getCause());
     }
     reader.setMetadata(meta);
+    
+    MetadataStore store = makeFilterMetadata();
+    MetadataTools.populatePixels(store, this);
   }
 }
