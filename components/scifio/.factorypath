@@ -1,0 +1,4 @@
+<factorypath>
+    <factorypathentry kind="PLUGIN" id="org.eclipse.modisco.infra.discovery.core" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="/Users/temp/loci/bioformats/jar/sezpoz-1.9.jar" enabled="true" runInBatchMode="true"/>
+</factorypath>
