@@ -35,7 +35,7 @@
  */
 package loci.formats;
 
-import ome.scifio.CoreImageMetadata;
+import ome.scifio.ImageMetadata;
 import loci.legacy.adapter.Wrapper;
 
 /**
@@ -43,22 +43,22 @@ import loci.legacy.adapter.Wrapper;
  * to Legacy direction. It can be used in method signatures
  * expecting a {@link loci.formats.CoreMetadata} but
  * delegates all functionality to the wrapped
- * {@link ome.scifio.CoreImageMetadata}.
+ * {@link ome.scifio.ImageMetadata}.
  * 
  * @author Mark Hiner
  *
  */
 public class ImageMetadataWrapper extends CoreMetadata 
-  implements Wrapper<CoreImageMetadata>
+  implements Wrapper<ImageMetadata>
 {
 
   // -- Fields --
   
-  private CoreImageMetadata imageMeta;
+  private ImageMetadata imageMeta;
   
   // -- Constructor --
   
-  ImageMetadataWrapper(CoreImageMetadata imageMeta) {
+  ImageMetadataWrapper(ImageMetadata imageMeta) {
     super(imageMeta);
     
     this.imageMeta = imageMeta;
@@ -66,11 +66,7 @@ public class ImageMetadataWrapper extends CoreMetadata
   
   // -- Wrapper API methods --
   
-  public CoreImageMetadata unwrap() {
+  public ImageMetadata unwrap() {
     return imageMeta;
   }
-
-  // -- CoreMetadata methods --
-  
-  
 }

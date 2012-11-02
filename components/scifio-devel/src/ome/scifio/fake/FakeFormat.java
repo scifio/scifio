@@ -49,8 +49,8 @@ import ome.scifio.AbstractParser;
 import ome.scifio.AbstractReader;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
-import ome.scifio.CoreImageMetadata;
-import ome.scifio.CoreMetadata;
+import ome.scifio.ImageMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DataTools;
@@ -302,20 +302,20 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
         int y, int w, int h) throws FormatException, IOException {
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
 
-      CoreMetadata cMeta = getCoreMetadata();
+      DatasetMetadata dMeta = getDatasetMetadata();
       
-      final int pixelType = cMeta.getPixelType(imageIndex);
+      final int pixelType = dMeta.getPixelType(imageIndex);
       final int bpp = FormatTools.getBytesPerPixel(pixelType);
       final boolean signed = FormatTools.isSigned(pixelType);
       final boolean floating = FormatTools.isFloatingPoint(pixelType);
-      final int rgb = cMeta.getRGBChannelCount(imageIndex);
-      final boolean indexed = cMeta.isIndexed(imageIndex);
-      final boolean little = cMeta.isLittleEndian(imageIndex);
-      final boolean interleaved = cMeta.isInterleaved(imageIndex);
-      final int scaleFactor = ((Double)cMeta.getMetadataValue(imageIndex, SCALE_FACTOR)).intValue();
-      final byte[][][] lut8 = (byte[][][]) cMeta.getMetadataValue(imageIndex, LUT8);
-      final short[][][] lut16 = (short[][][]) cMeta.getMetadataValue(imageIndex, LUT16);
-      final int[][] valueToIndex = (int[][])cMeta.getMetadataValue(imageIndex, VALUE_INDEX_MAP);
+      final int rgb = dMeta.getRGBChannelCount(imageIndex);
+      final boolean indexed = dMeta.isIndexed(imageIndex);
+      final boolean little = dMeta.isLittleEndian(imageIndex);
+      final boolean interleaved = dMeta.isInterleaved(imageIndex);
+      final int scaleFactor = ((Double)dMeta.getMetadataValue(imageIndex, SCALE_FACTOR)).intValue();
+      final byte[][][] lut8 = (byte[][][]) dMeta.getMetadataValue(imageIndex, LUT8);
+      final short[][][] lut16 = (short[][][]) dMeta.getMetadataValue(imageIndex, LUT16);
+      final int[][] valueToIndex = (int[][])dMeta.getMetadataValue(imageIndex, VALUE_INDEX_MAP);
       
       final int[] zct = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
       final int zIndex = zct[0], cIndex = zct[1], tIndex = zct[2];
@@ -431,11 +431,11 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   }
   
   /**
-   * Translator from Fake metadata to {@link CoreMetadata}.
+   * Translator from Fake metadata to {@link DatasetMetadata}.
    */
-  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = CoreMetadata.class)
+  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
   public static class FakeCoreTranslator 
-  extends AbstractTranslator<Metadata, CoreMetadata> {
+  extends AbstractTranslator<Metadata, DatasetMetadata> {
     
     // -- Constants --
 
@@ -455,7 +455,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Translator API Methods --
     
     @Override
-    public void translate(final Metadata source, final CoreMetadata destination) {
+    public void translate(final Metadata source, final DatasetMetadata destination) {
       super.translate(source, destination);
       
       int sizeX = DEFAULT_SIZE_X;
@@ -587,37 +587,37 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       int effSizeC = sizeC / rgb;
       
       for(int i = 0; i < numImages; i++) {
-        CoreImageMetadata coreMeta = new CoreImageMetadata();
+        ImageMetadata imageMeta = new ImageMetadata();
 
-        coreMeta.setAxisTypes(axes);
-        coreMeta.setAxisLengths(axisLengths);
-        coreMeta.setPixelType(pixelType);
-        coreMeta.setPlaneCount(sizeZ * sizeT);
-        coreMeta.setThumbSizeX(thumbSizeX);
-        coreMeta.setThumbSizeY(thumbSizeY);
-        coreMeta.setIndexed(indexed);
-        coreMeta.setFalseColor(falseColor);
-        coreMeta.setRgb(rgb > 1);
-        coreMeta.setLittleEndian(little);
-        coreMeta.setInterleaved(interleaved);
-        coreMeta.setMetadataComplete(metadataComplete);
-        coreMeta.setThumbnail(thumbnail);
-        coreMeta.setOrderCertain(orderCertain);
-        coreMeta.setBitsPerPixel(bitsPerPixel);
-        coreMeta.setPlaneCount(sizeZ * effSizeC * sizeT);
+        imageMeta.setAxisTypes(axes);
+        imageMeta.setAxisLengths(axisLengths);
+        imageMeta.setPixelType(pixelType);
+        imageMeta.setPlaneCount(sizeZ * sizeT);
+        imageMeta.setThumbSizeX(thumbSizeX);
+        imageMeta.setThumbSizeY(thumbSizeY);
+        imageMeta.setIndexed(indexed);
+        imageMeta.setFalseColor(falseColor);
+        imageMeta.setRgb(rgb > 1);
+        imageMeta.setLittleEndian(little);
+        imageMeta.setInterleaved(interleaved);
+        imageMeta.setMetadataComplete(metadataComplete);
+        imageMeta.setThumbnail(thumbnail);
+        imageMeta.setOrderCertain(orderCertain);
+        imageMeta.setBitsPerPixel(bitsPerPixel);
+        imageMeta.setPlaneCount(sizeZ * effSizeC * sizeT);
         
-        destination.add(coreMeta);
+        destination.add(imageMeta);
       }
     }
     
   }
   
   /**
-   * Translator from {@link CoreMetadata} to Fake Metadata.
+   * Translator from {@link DatasetMetadata} to Fake Metadata.
    */
-  @SCIFIOTranslator(metaIn = CoreMetadata.class, metaOut = Metadata.class)
+  @SCIFIOTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreFakeTranslator 
-  extends AbstractTranslator<CoreMetadata, Metadata> {
+  extends AbstractTranslator<DatasetMetadata, Metadata> {
 
     // -- Constructor --
     
@@ -632,7 +632,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Translator API Methods --
     
     @Override
-    public void translate(final CoreMetadata source, final Metadata destination) {
+    public void translate(final DatasetMetadata source, final Metadata destination) {
       super.translate(source, destination);
       
       String fakeId = NAME + "=" + source.getSource().getFileName();

@@ -40,7 +40,7 @@ import java.util.Hashtable;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import ome.scifio.CoreImageMetadata;
+import ome.scifio.ImageMetadata;
 
 /**
  * Encompasses core metadata values.
@@ -217,12 +217,12 @@ public class CoreMetadata implements Cloneable {
     resolutionCount = c.resolutionCount;
   }
 
-  public CoreMetadata(ome.scifio.CoreMetadata scmeta, int series) {
+  public CoreMetadata(ome.scifio.DatasetMetadata scmeta, int series) {
     this(scmeta.getImageMetadata().toArray(
-        new ome.scifio.CoreImageMetadata[scmeta.getImageCount()])[series]);
+        new ome.scifio.ImageMetadata[scmeta.getImageCount()])[series]);
   }
   
-  public CoreMetadata(ome.scifio.CoreImageMetadata imgMeta) {
+  public CoreMetadata(ome.scifio.ImageMetadata imgMeta) {
     AxisType[] axes = imgMeta.getAxisTypes();
     int xIndex = -1, yIndex = -1, cIndex = -1, tIndex = -1, zIndex = -1;
     
@@ -272,9 +272,9 @@ public class CoreMetadata implements Cloneable {
    * Converts this CoreMetadata object to an ome.scifio.CoreMetadata.
    * 
    */
-  public ome.scifio.CoreImageMetadata convert() {
-    ome.scifio.CoreMetadata cMeta = new ome.scifio.CoreMetadata();      
-    CoreImageMetadata coreImg = new CoreImageMetadata();
+  public ome.scifio.ImageMetadata convert() {
+    ome.scifio.DatasetMetadata cMeta = new ome.scifio.DatasetMetadata();      
+    ImageMetadata coreImg = new ImageMetadata();
 
 
     int[] axisLengths = new int[5];

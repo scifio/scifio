@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import ome.scifio.AbstractReader;
-import ome.scifio.CoreMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.DelegateReader;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
@@ -257,8 +257,8 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
     return reader.getMetadata();
   }
 
-  public CoreMetadata getCoreMetadata() {
-    return reader.getCoreMetadata();
+  public DatasetMetadata getDatasetMetadata() {
+    return reader.getDatasetMetadata();
   }
 
   public void setNormalized(boolean normalize) {
@@ -357,8 +357,8 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
   
   // -- Helper Methods --
   
-  public CoreMetadata coreMeta() {
-    return getReader().getCoreMetadata();
+  public DatasetMetadata datasetMeta() {
+    return getReader().getDatasetMetadata();
   }
   
 }

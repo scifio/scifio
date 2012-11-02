@@ -110,7 +110,7 @@ public class FakeReader extends SCIFIOFormatReader {
   @Override
   public byte[][] get8BitLookupTable() throws FormatException, IOException {
     try {
-      return reader.getCoreMetadata().get8BitLookupTable(getSeries());
+      return reader.getDatasetMetadata().get8BitLookupTable(getSeries());
     } catch (ome.scifio.FormatException e) {
       throw new FormatException(e.getCause());
     }
@@ -120,7 +120,7 @@ public class FakeReader extends SCIFIOFormatReader {
   @Override
   public short[][] get16BitLookupTable() throws FormatException, IOException {
     try {
-      return reader.getCoreMetadata().get16BitLookupTable(getSeries());
+      return reader.getDatasetMetadata().get16BitLookupTable(getSeries());
     } catch (ome.scifio.FormatException e) {
       throw new FormatException(e.getCause());
     }

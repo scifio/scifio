@@ -198,8 +198,8 @@ public abstract class DelegateReader <M extends Metadata> extends AbstractReader
     return useLegacy ? legacyReader.getMetadata() : nativeReader.getMetadata();
   }
 
-  public CoreMetadata getCoreMetadata() {
-    return useLegacy ? legacyReader.getCoreMetadata() : nativeReader.getCoreMetadata();
+  public DatasetMetadata getDatasetMetadata() {
+    return useLegacy ? legacyReader.getDatasetMetadata() : nativeReader.getDatasetMetadata();
   }
 
   public void setNormalized(boolean normalize) {

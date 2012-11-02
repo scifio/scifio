@@ -44,7 +44,7 @@ import java.util.List;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import ome.scifio.CoreMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.Reader;
@@ -73,7 +73,7 @@ public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
   // -- Fields --
 
   /** Core metadata associated with this dimension swapper. */
-  private CoreMetadata core;
+  private DatasetMetadata core;
 
   // -- Constructors --
 
@@ -216,9 +216,9 @@ public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
     return FormatTools.getIndex(this, imageIndex, z, c, t);
   }
 
-  /* @see Reader#getCoreMetadata() */
+  /* @see Reader#getDatasetMetadata() */
   @Override
-  public CoreMetadata getCoreMetadata() {
+  public DatasetMetadata getDatasetMetadata() {
     FormatTools.assertId(getCurrentFile(), true, 2);
     return core;
   }
@@ -242,9 +242,9 @@ public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
     {
       outputOrder = new ArrayList[getReader().getImageCount()];
 
-      // NB: Create our own copy of the CoreMetadata,
+      // NB: Create our own copy of the DatasetMetadata,
       // which we can manipulate safely.
-      core = new CoreMetadata(core, getReader().getContext());
+      core = new DatasetMetadata(core, getReader().getContext());
     }
   }
 

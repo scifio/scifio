@@ -365,7 +365,7 @@ public class TextReader extends FormatReader {
     }
   }
 
-  /** Populates the {@link CoreMetadata} values. */
+  /** Populates the {@link DatasetMetadata} values. */
   private void populateCoreMetadata(int sizeX, int sizeY,
     int sizeZ, int sizeC, int sizeT)
   {

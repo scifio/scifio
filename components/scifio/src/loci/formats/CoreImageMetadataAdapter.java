@@ -35,12 +35,12 @@
  */
 package loci.formats;
 
-import ome.scifio.CoreImageMetadata;
+import ome.scifio.ImageMetadata;
 import loci.legacy.adapter.AbstractLegacyAdapter;
 
 /**
  * {@link LegacyAdapter} for converting between instances of
- * {@link ome.scifio.CoreImageMetadata} and {@link loci.formats.CoreMetadata}.
+ * {@link ome.scifio.ImageMetadata} and {@link loci.formats.CoreMetadata}.
  * <p>
  * Note that because of the presence of public fields, synchronization
  * between the layers can not be maintained in the Modern -> Legacy direction.
@@ -50,17 +50,17 @@ import loci.legacy.adapter.AbstractLegacyAdapter;
  * @author Mark Hiner
  *
  */
-public class CoreImageMetadataAdapter extends AbstractLegacyAdapter<CoreMetadata, CoreImageMetadata> {
+public class CoreImageMetadataAdapter extends AbstractLegacyAdapter<CoreMetadata, ImageMetadata> {
 
   // -- LegacyWrapper API Methods --
   
   @Override
-  protected CoreMetadata wrapToLegacy(CoreImageMetadata modern) {
+  protected CoreMetadata wrapToLegacy(ImageMetadata modern) {
     return new ImageMetadataWrapper(modern);
   }
 
   @Override
-  protected CoreImageMetadata wrapToModern(CoreMetadata legacy) {
+  protected ImageMetadata wrapToModern(CoreMetadata legacy) {
     return new CoreMetadataWrapper(legacy);
   }
 

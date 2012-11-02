@@ -41,12 +41,12 @@ import java.util.Hashtable;
 import net.imglib2.meta.AxisType;
 
 /**
- * CoreImageMetadata consists of the metadata fields common 
+ * ImageMetadata consists of the metadata fields common 
  * to any image type, expressed in a standardized way within
  *  SCIFIO.
  *
  */
-public class CoreImageMetadata {
+public class ImageMetadata {
 
   // -- Fields --
 
@@ -151,11 +151,11 @@ public class CoreImageMetadata {
 
   // -- Constructors --
 
-  public CoreImageMetadata() {
+  public ImageMetadata() {
     imageMetadata = new Hashtable<String, Object>();
   }
   
-  public CoreImageMetadata(CoreImageMetadata copy) {
+  public ImageMetadata(ImageMetadata copy) {
     imageMetadata = (Hashtable<String, Object>) copy.imageMetadata.clone();
     
     axisLengths = copy.axisLengths.clone();

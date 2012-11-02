@@ -37,14 +37,14 @@ package loci.formats;
 
 import java.util.Iterator;
 
-import ome.scifio.CoreImageMetadata;
+import ome.scifio.ImageMetadata;
 
 import loci.legacy.adapter.AbstractLegacyAdapter;
 import loci.legacy.adapter.AdapterTools;
 
 /**
  * {@link LegacyAdapter} for converting between instances of
- * {@link ome.scifio.CoreMetadata} and an array of {@link loci.formats.CoreMetadata}.
+ * {@link ome.scifio.DatasetMetadata} and an array of {@link loci.formats.CoreMetadata}.
  * <p>
  * Since the legacy CoreMetadata objects were stored in an array, there is no class to
  * extend and no setter methods to override in the Modern -> Legacy direction. Thus 
@@ -53,15 +53,15 @@ import loci.legacy.adapter.AdapterTools;
  * @author Mark Hiner
  *
  */
-public class CoreMetadataAdapter extends AbstractLegacyAdapter<loci.formats.CoreMetadata[], ome.scifio.CoreMetadata> {
+public class CoreMetadataAdapter extends AbstractLegacyAdapter<loci.formats.CoreMetadata[], ome.scifio.DatasetMetadata> {
 
   // -- LegacyAdapter API --
   
   @Override
-  protected loci.formats.CoreMetadata[] wrapToLegacy(ome.scifio.CoreMetadata modern) {
+  protected loci.formats.CoreMetadata[] wrapToLegacy(ome.scifio.DatasetMetadata modern) {
     CoreMetadata[] legacyArray = new ImageMetadataWrapper[modern.getImageCount()];
     
-    Iterator<CoreImageMetadata> metaIterator = modern.getImageMetadata().iterator();
+    Iterator<ImageMetadata> metaIterator = modern.getImageMetadata().iterator();
     
     int i = 0;
     while(metaIterator.hasNext()) {
@@ -74,7 +74,7 @@ public class CoreMetadataAdapter extends AbstractLegacyAdapter<loci.formats.Core
   }
 
   @Override
-  protected ome.scifio.CoreMetadata wrapToModern(loci.formats.CoreMetadata[] legacy) {
+  protected ome.scifio.DatasetMetadata wrapToModern(loci.formats.CoreMetadata[] legacy) {
     return new CoreMetadataArrayWrapper(legacy);
   }
 

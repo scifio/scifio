@@ -49,14 +49,14 @@ import net.imglib2.meta.AxisType;
 import ome.scifio.util.FormatTools;
 
 /**
- * CoreMetadata represents the metadata for a complete dataset, consisting of an
- * arbitrary number of images (and corresponding CoreImageMetadata objects).
+ * DatasetMetadata represents the metadata for a complete dataset, consisting of an
+ * arbitrary number of images (and corresponding ImageMetadata objects).
  * 
- * CoreMetadata is the lowest level image currency of SCIFIO, that by default all formats
+ * DatasetMetadata is the lowest level image currency of SCIFIO, that by default all formats
  * can be translated to/from.
  *
  */
-public class CoreMetadata extends AbstractMetadata {
+public class DatasetMetadata extends AbstractMetadata {
 
   // -- Fields --
 
@@ -65,7 +65,7 @@ public class CoreMetadata extends AbstractMetadata {
 
   /** Contains a list of metadata objects for each image in this dataset */
   @Field(label = "imageMeta", isList = true)
-  private List<CoreImageMetadata> imageMeta;
+  private List<ImageMetadata> imageMeta;
 
   /**
    * 
@@ -74,24 +74,24 @@ public class CoreMetadata extends AbstractMetadata {
 
   // -- Constructors --
 
-  public CoreMetadata() {
+  public DatasetMetadata() {
     this(null);
   }
 
-  public CoreMetadata(final SCIFIO ctx) {
+  public DatasetMetadata(final SCIFIO ctx) {
     super(ctx);
     datasetMeta = new Hashtable<String, Object>();
-    imageMeta = new ArrayList<CoreImageMetadata>();
+    imageMeta = new ArrayList<ImageMetadata>();
   }
   
-  public CoreMetadata(final CoreMetadata copy, final SCIFIO ctx) {
+  public DatasetMetadata(final DatasetMetadata copy, final SCIFIO ctx) {
     super(ctx);
     
     datasetMeta = (Hashtable<String, Object>) copy.datasetMeta.clone();
-    imageMeta = new ArrayList<CoreImageMetadata>();
+    imageMeta = new ArrayList<ImageMetadata>();
     
-    for (CoreImageMetadata core : copy.imageMeta) {
-      imageMeta.add(new CoreImageMetadata(core));
+    for (ImageMetadata core : copy.imageMeta) {
+      imageMeta.add(new ImageMetadata(core));
     }
   }
 
@@ -283,7 +283,7 @@ public class CoreMetadata extends AbstractMetadata {
    * Returns an array of the types for axes associated with
    * the specified image index. Order is consistent with the
    * axis length (int) array returned by 
-   * {@link CoreMetadata#getAxesLengths(int)}.
+   * {@link DatasetMetadata#getAxesLengths(int)}.
    * </br></br>
    * AxisType order is sorted and represents order within the image.
    * 
@@ -300,7 +300,7 @@ public class CoreMetadata extends AbstractMetadata {
    * the specified image index.
    * 
    * Ordering is consistent with the 
-   * AxisType array returned by {@link CoreMetadata#getAxes(int)}.
+   * AxisType array returned by {@link DatasetMetadata#getAxes(int)}.
    * 
    * @param imageIndex
    * @return
@@ -471,14 +471,14 @@ public class CoreMetadata extends AbstractMetadata {
   public void resetMeta() {
     super.reset(this.getClass());
     datasetMeta = new Hashtable<String, Object>();
-    imageMeta = new ArrayList<CoreImageMetadata>();
+    imageMeta = new ArrayList<ImageMetadata>();
   }
 
-  public Collection<CoreImageMetadata> getImageMetadata() {
+  public Collection<ImageMetadata> getImageMetadata() {
     return Collections.unmodifiableCollection(imageMeta);
   }
 
-  public void add(final CoreImageMetadata meta) {
+  public void add(final ImageMetadata meta) {
     imageMeta.add(meta);
   }
 

@@ -70,7 +70,7 @@ public abstract class AbstractParser<M extends Metadata>
   protected M metadata;
 
   /** Core metadata values. */
-  protected CoreMetadata cMeta;
+  protected DatasetMetadata dMeta;
 
   /** Name of current file. */
   protected String currentId;
@@ -88,7 +88,7 @@ public abstract class AbstractParser<M extends Metadata>
 
   public AbstractParser(final SCIFIO ctx) {
     super(ctx);
-    cMeta = new CoreMetadata();
+    dMeta = new DatasetMetadata();
   }
 
   // -- HasFormat API Methods --
@@ -185,7 +185,7 @@ public abstract class AbstractParser<M extends Metadata>
   /* @see Parser#getUsedFiles() */
   public String[] getUsedFiles(final boolean noPixels) {
     final Vector<String> files = new Vector<String>();
-    for (int i = 0; i < cMeta.getImageCount(); i++) {
+    for (int i = 0; i < dMeta.getImageCount(); i++) {
       final String[] s = getImageUsedFiles(i, noPixels);
       if (s != null) {
         for (final String file : s) {
@@ -265,7 +265,7 @@ public abstract class AbstractParser<M extends Metadata>
 
   /** Adds an entry to the global metadata table. */
   public void addGlobalMeta(final String key, final Object value) {
-    addMeta(key, value, cMeta.getDatasetMetadata());
+    addMeta(key, value, dMeta.getDatasetMetadata());
   }
 
   /** Adds an entry to the global metadata table. */
@@ -310,7 +310,7 @@ public abstract class AbstractParser<M extends Metadata>
 
   /** Gets a value from the global metadata table. */
   public Object getGlobalMeta(final String key) {
-    return cMeta.getDatasetMetadata().get(key);
+    return dMeta.getDatasetMetadata().get(key);
   }
 
   /** Adds an entry to the specified Hashtable. */

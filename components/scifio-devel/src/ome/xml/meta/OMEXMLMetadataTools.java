@@ -41,7 +41,7 @@ import net.imglib2.meta.Axes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ome.scifio.CoreMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Reader;
 import ome.scifio.common.DateTools;
@@ -96,7 +96,7 @@ public class OMEXMLMetadataTools {
    * Populates the 'pixels' element of the given metadata store, using core
    * metadata from the given reader.
    */
-  public static void populatePixels(MetadataStore store, CoreMetadata meta) {
+  public static void populatePixels(MetadataStore store, DatasetMetadata meta) {
     populatePixels(store, meta, false, true);
   }
 
@@ -105,7 +105,7 @@ public class OMEXMLMetadataTools {
    * metadata from the given reader.  If the 'doPlane' flag is set,
    * then the 'plane' elements will be populated as well.
    */
-  public static void populatePixels(MetadataStore store, CoreMetadata meta,
+  public static void populatePixels(MetadataStore store, DatasetMetadata meta,
     boolean doPlane)
   {
     populatePixels(store, meta, doPlane, true);
@@ -118,7 +118,7 @@ public class OMEXMLMetadataTools {
    * If the 'doImageName' flag is set, then the image name will be populated
    * as well.  By default, 'doImageName' is true.
    */
-  public static void populatePixels(MetadataStore store, CoreMetadata meta,
+  public static void populatePixels(MetadataStore store, DatasetMetadata meta,
     boolean doPlane, boolean doImageName)
   {
     if (store == null || meta == null) return;
@@ -190,7 +190,7 @@ public class OMEXMLMetadataTools {
 
   /**
    * Populates the given {@link MetadataStore}, for the specified imageIndex, using
-   * the values from the provided {@link CoreMetadata}.
+   * the values from the provided {@link DatasetMetadata}.
    * <p>
    * After calling this method, the metadata store will be sufficiently
    * populated for use with an {@link IFormatWriter} (assuming it is also a
@@ -198,22 +198,22 @@ public class OMEXMLMetadataTools {
    * </p>
    */
   public static void populateMetadata(MetadataStore store, int imageIndex,
-    String imageName, CoreMetadata coreMeta)
+    String imageName, DatasetMetadata datasetMeta)
   {
     
-    int sizeX = coreMeta.getAxisLength(imageIndex, Axes.X);
-    int sizeY = coreMeta.getAxisLength(imageIndex, Axes.Y);
-    int sizeZ = coreMeta.getAxisLength(imageIndex, Axes.Z);
-    int sizeC = coreMeta.getAxisLength(imageIndex, Axes.CHANNEL);
-    int sizeT = coreMeta.getAxisLength(imageIndex, Axes.TIME);
+    int sizeX = datasetMeta.getAxisLength(imageIndex, Axes.X);
+    int sizeY = datasetMeta.getAxisLength(imageIndex, Axes.Y);
+    int sizeZ = datasetMeta.getAxisLength(imageIndex, Axes.Z);
+    int sizeC = datasetMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+    int sizeT = datasetMeta.getAxisLength(imageIndex, Axes.TIME);
     
     final String pixelType = 
-      FormatTools.getPixelTypeString(coreMeta.getPixelType(imageIndex));
-    final int effSizeC = coreMeta.getImageCount() / sizeZ / sizeT;
+      FormatTools.getPixelTypeString(datasetMeta.getPixelType(imageIndex));
+    final int effSizeC = datasetMeta.getImageCount() / sizeZ / sizeT;
     final int samplesPerPixel = sizeC / effSizeC;
     populateMetadata(store, null, imageIndex, imageName, 
-      coreMeta.isLittleEndian(imageIndex), 
-      FormatTools.findDimensionOrder(coreMeta, imageIndex), pixelType,
+      datasetMeta.isLittleEndian(imageIndex), 
+      FormatTools.findDimensionOrder(datasetMeta, imageIndex), pixelType,
       sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
   }
 
@@ -239,16 +239,16 @@ public class OMEXMLMetadataTools {
   }
 
   public static void populatePixelsOnly(MetadataStore store, Reader r) {
-    CoreMetadata cMeta = r.getCoreMetadata();
+    DatasetMetadata dMeta = r.getDatasetMetadata();
 
     for (int imageIndex=0; imageIndex<r.getImageCount(); imageIndex++) {
-      String pixelType = FormatTools.getPixelTypeString(cMeta.getPixelType(imageIndex));
+      String pixelType = FormatTools.getPixelTypeString(dMeta.getPixelType(imageIndex));
 
-      populatePixelsOnly(store, imageIndex, cMeta.isLittleEndian(imageIndex), 
-        FormatTools.findDimensionOrder(cMeta, imageIndex), pixelType, 
-        cMeta.getAxisLength(imageIndex, Axes.X), cMeta.getAxisLength(imageIndex, Axes.Y),
-        cMeta.getAxisLength(imageIndex, Axes.Z), cMeta.getAxisLength(imageIndex, Axes.CHANNEL),
-        cMeta.getAxisLength(imageIndex, Axes.TIME), cMeta.getRGBChannelCount(imageIndex));
+      populatePixelsOnly(store, imageIndex, dMeta.isLittleEndian(imageIndex), 
+        FormatTools.findDimensionOrder(dMeta, imageIndex), pixelType, 
+        dMeta.getAxisLength(imageIndex, Axes.X), dMeta.getAxisLength(imageIndex, Axes.Y),
+        dMeta.getAxisLength(imageIndex, Axes.Z), dMeta.getAxisLength(imageIndex, Axes.CHANNEL),
+        dMeta.getAxisLength(imageIndex, Axes.TIME), dMeta.getRGBChannelCount(imageIndex));
     }
   }
 

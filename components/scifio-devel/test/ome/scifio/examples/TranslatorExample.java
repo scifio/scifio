@@ -2,7 +2,7 @@ package ome.scifio.examples;
 
 import java.io.IOException;
 
-import ome.scifio.CoreMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
@@ -35,11 +35,11 @@ public class TranslatorExample {
 			outFormat = ctx.getFormat(outFile);
 			Writer writer = outFormat.createWriter();
 			Metadata metaOut = outFormat.createMetadata();
-			Translator inToCore = inFormat.findSourceTranslator(CoreMetadata.class);
-			CoreMetadata coreMeta = new CoreMetadata();
-			inToCore.translate(metaIn, coreMeta);
-			Translator coreToDest = outFormat.findDestTranslator(CoreMetadata.class);
-			coreToDest.translate(coreMeta, metaOut);
+			Translator inToCore = inFormat.findSourceTranslator(DatasetMetadata.class);
+			DatasetMetadata datasetMeta = new DatasetMetadata();
+			inToCore.translate(metaIn, datasetMeta);
+			Translator coreToDest = outFormat.findDestTranslator(DatasetMetadata.class);
+			coreToDest.translate(datasetMeta, metaOut);
 			writer.setMetadata(metaOut);
 			
 			writer.setDest(outFile);

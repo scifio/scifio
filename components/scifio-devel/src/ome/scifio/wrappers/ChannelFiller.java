@@ -43,8 +43,8 @@ import java.util.Hashtable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
-import ome.scifio.CoreImageMetadata;
-import ome.scifio.CoreMetadata;
+import ome.scifio.ImageMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
@@ -100,9 +100,9 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
 
   /** Returns true if the indices are being factored out. */
   public boolean isFilled(int imageIndex) {
-    if (!coreMeta().isIndexed(imageIndex)) return false; // cannot fill non-indexed color
+    if (!datasetMeta().isIndexed(imageIndex)) return false; // cannot fill non-indexed color
     if (lutLength < 1) return false; // cannot fill when LUTs are missing
-    return filled == null ? !coreMeta().isFalseColor(imageIndex) : filled;
+    return filled == null ? !datasetMeta().isFalseColor(imageIndex) : filled;
   }
 
   /** Toggles whether the indices should be factored out. */
@@ -112,31 +112,31 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
   
   /** */
   public boolean isRGB(int imageIndex) {
-    if (!isFilled(imageIndex)) return coreMeta().isRGB(imageIndex);
-    return coreMeta().getRGBChannelCount(imageIndex) > 1;
+    if (!isFilled(imageIndex)) return datasetMeta().isRGB(imageIndex);
+    return datasetMeta().getRGBChannelCount(imageIndex) > 1;
   }
 
   /** */
   public boolean isIndexed(int imageIndex) {
-    if (!isFilled(imageIndex)) return coreMeta().isIndexed(imageIndex);
+    if (!isFilled(imageIndex)) return datasetMeta().isIndexed(imageIndex);
     return false;
   }
   
   /** */
   public byte[][] get8BitLookupTable(int imageIndex) throws FormatException, IOException {
-    if (!isFilled(imageIndex)) return coreMeta().get8BitLookupTable(imageIndex);
+    if (!isFilled(imageIndex)) return datasetMeta().get8BitLookupTable(imageIndex);
     return null;
   }
 
   /** */
   public short[][] get16BitLookupTable(int imageIndex) throws FormatException, IOException {
-    if (!isFilled(imageIndex)) return coreMeta().get16BitLookupTable(imageIndex);
+    if (!isFilled(imageIndex)) return datasetMeta().get16BitLookupTable(imageIndex);
     return null;
   }
   
   /** */
   public int[] getChannelDimLengths(int imageIndex) {
-    int[] cLengths = coreMeta().getChannelDimLengths(imageIndex);
+    int[] cLengths = datasetMeta().getChannelDimLengths(imageIndex);
     if (!isFilled(imageIndex)) return cLengths;
 
     // in the case of a single channel, replace rather than append
@@ -151,11 +151,11 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
 
   /** */
   public String[] getChannelDimTypes(int imageIndex) {
-    String[] cTypes = coreMeta().getChannelDimTypes(imageIndex);
+    String[] cTypes = datasetMeta().getChannelDimTypes(imageIndex);
     if (!isFilled(imageIndex)) return cTypes;
 
     // in the case of a single channel, leave type unchanged
-    int[] cLengths = coreMeta().getChannelDimLengths(imageIndex);
+    int[] cLengths = datasetMeta().getChannelDimLengths(imageIndex);
     if (cLengths.length == 1 && cLengths[0] == 1) return cTypes;
 
     // append filled dimension to channel dim types
@@ -167,19 +167,19 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
 
   // -- Reader API methods --
 
-  /* @see Reader#getCoreMetadata() */
+  /* @see Reader#getDatasetMetadata() */
   @Override
-  public CoreMetadata getCoreMetadata() {
-    CoreMetadataWrapper wrapper = new CoreMetadataWrapper(coreMeta());
+  public DatasetMetadata getDatasetMetadata() {
+    DatasetMetadataWrapper wrapper = new DatasetMetadataWrapper(datasetMeta());
     
-    return (CoreMetadata)wrapper;
+    return (DatasetMetadata)wrapper;
   }
 
   /* @see Reader#openBytes(int) */
   @Override
   public byte[] openBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
     return openBytes(imageIndex, planeIndex, 0, 0, 
-      coreMeta().getAxisLength(imageIndex, Axes.X), coreMeta().getAxisLength(imageIndex, Axes.Y));
+      datasetMeta().getAxisLength(imageIndex, Axes.X), datasetMeta().getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, byte[]) */
@@ -188,7 +188,7 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
     throws FormatException, IOException
   {
     return openBytes(imageIndex, planeIndex, buf, 0, 0, 
-      coreMeta().getAxisLength(imageIndex, Axes.X), coreMeta().getAxisLength(imageIndex, Axes.Y));
+      datasetMeta().getAxisLength(imageIndex, Axes.X), datasetMeta().getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, int, int, int, int) */
@@ -196,8 +196,8 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
   public byte[] openBytes(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    byte[] buf = DataTools.allocate(w, h, coreMeta().getRGBChannelCount(imageIndex),
-      FormatTools.getBytesPerPixel(coreMeta().getPixelType(imageIndex)));
+    byte[] buf = DataTools.allocate(w, h, datasetMeta().getRGBChannelCount(imageIndex),
+      FormatTools.getBytesPerPixel(datasetMeta().getPixelType(imageIndex)));
     return openBytes(imageIndex, planeIndex, buf, x, y, w, h);
   }
 
@@ -217,9 +217,9 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
     // TODO: This logic below is opaque and could use some comments.
 
     byte[] pix = getReader().openBytes(imageIndex, planeIndex, x, y, w, h);
-    if (coreMeta().getPixelType(imageIndex) == FormatTools.UINT8) {
+    if (datasetMeta().getPixelType(imageIndex) == FormatTools.UINT8) {
       byte[][] b = ImageTools.indexedToRGB(get8BitLookupTable(imageIndex), pix);
-      if (coreMeta().isInterleaved(imageIndex)) {
+      if (datasetMeta().isInterleaved(imageIndex)) {
         int pt = 0;
         for (int i=0; i<b[0].length; i++) {
           for (int j=0; j<b.length; j++) {
@@ -235,15 +235,15 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
       return buf;
     }
     short[][] s = ImageTools.indexedToRGB(get16BitLookupTable(imageIndex),
-      pix, coreMeta().isLittleEndian(imageIndex));
+      pix, datasetMeta().isLittleEndian(imageIndex));
 
-    if (coreMeta().isInterleaved(imageIndex)) {
+    if (datasetMeta().isInterleaved(imageIndex)) {
       int pt = 0;
       for (int i=0; i<s[0].length; i++) {
         for (int j=0; j<s.length; j++) {
-          buf[pt++] = (byte) (coreMeta().isLittleEndian(imageIndex) ?
+          buf[pt++] = (byte) (datasetMeta().isLittleEndian(imageIndex) ?
             (s[j][i] & 0xff) : (s[j][i] >> 8));
-          buf[pt++] = (byte) (coreMeta().isLittleEndian(imageIndex) ?
+          buf[pt++] = (byte) (datasetMeta().isLittleEndian(imageIndex) ?
             (s[j][i] >> 8) : (s[j][i] & 0xff));
         }
       }
@@ -252,9 +252,9 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
       int pt = 0;
       for (int i=0; i<s.length; i++) {
         for (int j=0; j<s[i].length; j++) {
-          buf[pt++] = (byte) (coreMeta().isLittleEndian(imageIndex) ?
+          buf[pt++] = (byte) (datasetMeta().isLittleEndian(imageIndex) ?
             (s[i][j] & 0xff) : (s[i][j] >> 8));
-          buf[pt++] = (byte) (coreMeta().isLittleEndian(imageIndex) ?
+          buf[pt++] = (byte) (datasetMeta().isLittleEndian(imageIndex) ?
             (s[i][j] >> 8) : (s[i][j] & 0xff));
         }
       }
@@ -315,10 +315,10 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
     return 0; // LUTs are missing
   }
   
-  //-- CoreMetadata wrapping class --
+  //-- DatasetMetadata wrapping class --
 
   /**
-   * Wrapping class that allows the returned coreMetadata to
+   * Wrapping class that allows the returned DatasetMetadata to
    * have the correct axis lengths if isFilled would return
    * true.
    * 
@@ -328,153 +328,153 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
    * @author Mark Hiner
    *
    */
-  private class CoreMetadataWrapper extends CoreMetadata {
+  private class DatasetMetadataWrapper extends DatasetMetadata {
     
     // -- Fields (delegation target) --
     
-    private CoreMetadata cMeta;
+    private DatasetMetadata dMeta;
     
     // -- Constructor --
     
-    public CoreMetadataWrapper(CoreMetadata meta) {
-      cMeta = meta;
+    public DatasetMetadataWrapper(DatasetMetadata meta) {
+      dMeta = meta;
     }
     
-    // -- CoreMetadata API methods --
+    // -- DatasetMetadata API methods --
 
     /* @see ome.scifio.AbstractHasContext#getContext() */
     public SCIFIO getContext() {
-      return cMeta.getContext();
+      return dMeta.getContext();
     }
 
     /* @see ome.scifio.AbstractMetadata#getFormat() */
     public Format<?, ?, ?, ?, ?> getFormat() {
-      return cMeta.getFormat();
+      return dMeta.getFormat();
     }
 
     /* @see ome.scifio.AbstractHasContext#setContext(ome.scifio.SCIFIO) */
     public void setContext(SCIFIO ctx) {
-      cMeta.setContext(ctx);
+      dMeta.setContext(ctx);
     }
 
     /* @see ome.scifio.AbstractMetadata#reset(java.lang.Class) */
     public void reset(Class<?> type) {
-      cMeta.reset(type);
+      dMeta.reset(type);
     }
 
     /* @see ome.scifio.AbstractHasContext#toString() */
     public String toString() {
-      return cMeta.toString();
+      return dMeta.toString();
     }
 
-    /* @see ome.scifio.CoreMetadata#getMetadataValue(int, java.lang.String) */
+    /* @see ome.scifio.DatasetMetadata#getMetadataValue(int, java.lang.String) */
     public Object getMetadataValue(int imageIndex, String field) {
-      return cMeta.getMetadataValue(imageIndex, field);
+      return dMeta.getMetadataValue(imageIndex, field);
     }
 
-    /* @see ome.scifio.CoreMetadata#getImageMetadataValue(int, java.lang.String) */
+    /* @see ome.scifio.DatasetMetadata#getImageMetadataValue(int, java.lang.String) */
     public Object getImageMetadataValue(int imageIndex, String field) {
-      return cMeta.getImageMetadataValue(imageIndex, field);
+      return dMeta.getImageMetadataValue(imageIndex, field);
     }
 
-    /* @see ome.scifio.CoreMetadata#getGlobalMetadata() */
+    /* @see ome.scifio.DatasetMetadata#getGlobalMetadata() */
     public Hashtable<String, Object> getDatasetMetadata() {
-      return cMeta.getDatasetMetadata();
+      return dMeta.getDatasetMetadata();
     }
 
-    /* @see ome.scifio.CoreMetadata#getImageMetadata(int) */
+    /* @see ome.scifio.DatasetMetadata#getImageMetadata(int) */
     public Hashtable<String, Object> getImageMetadata(int imageIndex) {
-      return cMeta.getImageMetadata(imageIndex);
+      return dMeta.getImageMetadata(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#getImageCount() */
+    /* @see ome.scifio.DatasetMetadata#getImageCount() */
     public int getImageCount() {
-      return cMeta.getImageCount();
+      return dMeta.getImageCount();
     }
 
-    /* @see ome.scifio.CoreMetadata#getPlaneCount(int) */
+    /* @see ome.scifio.DatasetMetadata#getPlaneCount(int) */
     public int getPlaneCount(int imageIndex) {
-      return cMeta.getPlaneCount(imageIndex);
+      return dMeta.getPlaneCount(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#isInterleaved(int) */
+    /* @see ome.scifio.DatasetMetadata#isInterleaved(int) */
     public boolean isInterleaved(int imageIndex) {
-      return cMeta.isInterleaved(imageIndex);
+      return dMeta.isInterleaved(imageIndex);
     }
 
     /* @see ome.scifio.AbstractMetadata#setSource(ome.scifio.io.RandomAccessInputStream) */
     public void setSource(RandomAccessInputStream source) {
-      cMeta.setSource(source);
+      dMeta.setSource(source);
     }
 
-    /* @see ome.scifio.CoreMetadata#getPixelType(int) */
+    /* @see ome.scifio.DatasetMetadata#getPixelType(int) */
     public int getPixelType(int imageIndex) {
-      return cMeta.getPixelType(imageIndex);
+      return dMeta.getPixelType(imageIndex);
     }
 
     /* @see ome.scifio.AbstractMetadata#getSource() */
     public RandomAccessInputStream getSource() {
-      return cMeta.getSource();
+      return dMeta.getSource();
     }
 
-    /* @see ome.scifio.CoreMetadata#getEffectiveSizeC(int) */
+    /* @see ome.scifio.DatasetMetadata#getEffectiveSizeC(int) */
     public int getEffectiveSizeC(int imageIndex) {
-      return cMeta.getEffectiveSizeC(imageIndex);
+      return dMeta.getEffectiveSizeC(imageIndex);
     }
 
     /* @see ome.scifio.AbstractMetadata#getMetadataOptions() */
     public MetadataOptions getMetadataOptions() {
-      return cMeta.getMetadataOptions();
+      return dMeta.getMetadataOptions();
     }
 
-    /* @see ome.scifio.CoreMetadata#getRGBChannelCount(int) */
+    /* @see ome.scifio.DatasetMetadata#getRGBChannelCount(int) */
     public int getRGBChannelCount(int imageIndex) {
-      return cMeta.getRGBChannelCount(imageIndex);
+      return dMeta.getRGBChannelCount(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#isLittleEndian(int) */
+    /* @see ome.scifio.DatasetMetadata#isLittleEndian(int) */
     public boolean isLittleEndian(int imageIndex) {
-      return cMeta.isLittleEndian(imageIndex);
+      return dMeta.isLittleEndian(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#isIndexed(int) */
+    /* @see ome.scifio.DatasetMetadata#isIndexed(int) */
     public boolean isIndexed(int imageIndex) {
-      return cMeta.isIndexed(imageIndex);
+      return dMeta.isIndexed(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#getBitsPerPixel(int) */
+    /* @see ome.scifio.DatasetMetadata#getBitsPerPixel(int) */
     public int getBitsPerPixel(int imageIndex) {
-      return cMeta.getBitsPerPixel(imageIndex);
+      return dMeta.getBitsPerPixel(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#isRGB(int) */
+    /* @see ome.scifio.DatasetMetadata#isRGB(int) */
     public boolean isRGB(int imageIndex) {
-      return cMeta.isRGB(imageIndex);
+      return dMeta.isRGB(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#getChannelDimLengths(int) */
+    /* @see ome.scifio.DatasetMetadata#getChannelDimLengths(int) */
     public int[] getChannelDimLengths(int imageIndex) {
-      return cMeta.getChannelDimLengths(imageIndex);
+      return dMeta.getChannelDimLengths(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#getChannelDimTypes(int) */
+    /* @see ome.scifio.DatasetMetadata#getChannelDimTypes(int) */
     public String[] getChannelDimTypes(int imageIndex) {
-      return cMeta.getChannelDimTypes(imageIndex);
+      return dMeta.getChannelDimTypes(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#getThumbSizeX(int) */
+    /* @see ome.scifio.DatasetMetadata#getThumbSizeX(int) */
     public int getThumbSizeX(int imageIndex) {
-      return cMeta.getThumbSizeX(imageIndex);
+      return dMeta.getThumbSizeX(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#getThumbSizeY(int) */
+    /* @see ome.scifio.DatasetMetadata#getThumbSizeY(int) */
     public int getThumbSizeY(int imageIndex) {
-      return cMeta.getThumbSizeY(imageIndex);
+      return dMeta.getThumbSizeY(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#getAxisLength(int, net.imglib2.meta.AxisType) */
+    /* @see ome.scifio.DatasetMetadata#getAxisLength(int, net.imglib2.meta.AxisType) */
     public int getAxisLength(int imageIndex, AxisType t) {
-      int length = cMeta.getAxisLength(imageIndex, t);
+      int length = dMeta.getAxisLength(imageIndex, t);
 
       if(!t.equals(Axes.CHANNEL))
         return length;
@@ -482,208 +482,208 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
       return (!isFilled(imageIndex)) ? length : length * lutLength; 
     }
 
-    /* @see ome.scifio.CoreMetadata#getAxisType(int, int) */
+    /* @see ome.scifio.DatasetMetadata#getAxisType(int, int) */
     public AxisType getAxisType(int imageIndex, int axisIndex) {
-      return cMeta.getAxisType(imageIndex, axisIndex);
+      return dMeta.getAxisType(imageIndex, axisIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#getAxisLength(int, int) */
+    /* @see ome.scifio.DatasetMetadata#getAxisLength(int, int) */
     public int getAxisLength(int imageIndex, int index) {
-      return cMeta.getAxisLength(imageIndex, index);
+      return dMeta.getAxisLength(imageIndex, index);
     }
 
-    /* @see ome.scifio.CoreMetadata#addAxis(int, net.imglib2.meta.AxisType) */
+    /* @see ome.scifio.DatasetMetadata#addAxis(int, net.imglib2.meta.AxisType) */
     public void addAxis(int imageIndex, AxisType type) {
-      cMeta.addAxis(imageIndex, type);
+      dMeta.addAxis(imageIndex, type);
     }
 
-    /* @see ome.scifio.CoreMetadata#addAxis(int, net.imglib2.meta.AxisType, int) */
+    /* @see ome.scifio.DatasetMetadata#addAxis(int, net.imglib2.meta.AxisType, int) */
     public void addAxis(int imageIndex, AxisType type, int value) {
-      cMeta.addAxis(imageIndex, type, value);
+      dMeta.addAxis(imageIndex, type, value);
     }
 
-    /* @see ome.scifio.CoreMetadata#isOrderCertain(int) */
+    /* @see ome.scifio.DatasetMetadata#isOrderCertain(int) */
     public boolean isOrderCertain(int imageIndex) {
-      return cMeta.isOrderCertain(imageIndex);
+      return dMeta.isOrderCertain(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#isThumbnailImage(int) */
+    /* @see ome.scifio.DatasetMetadata#isThumbnailImage(int) */
     public boolean isThumbnailImage(int imageIndex) {
-      return cMeta.isThumbnailImage(imageIndex);
+      return dMeta.isThumbnailImage(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#isMetadataComplete(int) */
+    /* @see ome.scifio.DatasetMetadata#isMetadataComplete(int) */
     public boolean isMetadataComplete(int imageIndex) {
-      return cMeta.isMetadataComplete(imageIndex);
+      return dMeta.isMetadataComplete(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#set8BitLookupTable(int, byte[][]) */
+    /* @see ome.scifio.DatasetMetadata#set8BitLookupTable(int, byte[][]) */
     public void set8BitLookupTable(int imageIndex, byte[][] lut)
       throws FormatException, IOException
     {
-      cMeta.set8BitLookupTable(imageIndex, lut);
+      dMeta.set8BitLookupTable(imageIndex, lut);
     }
 
-    /* @see ome.scifio.CoreMetadata#set16BitLookupTable(int, short[][]) */
+    /* @see ome.scifio.DatasetMetadata#set16BitLookupTable(int, short[][]) */
     public void set16BitLookupTable(int imageIndex, short[][] lut)
       throws FormatException, IOException
     {
-      cMeta.set16BitLookupTable(imageIndex, lut);
+      dMeta.set16BitLookupTable(imageIndex, lut);
     }
 
-    /* @see ome.scifio.CoreMetadata#setThumbSizeX(int, int) */
+    /* @see ome.scifio.DatasetMetadata#setThumbSizeX(int, int) */
     public void setThumbSizeX(int imageIndex, int thumbX) {
-      cMeta.setThumbSizeX(imageIndex, thumbX);
+      dMeta.setThumbSizeX(imageIndex, thumbX);
     }
 
-    /* @see ome.scifio.CoreMetadata#setThumbSizeY(int, int) */
+    /* @see ome.scifio.DatasetMetadata#setThumbSizeY(int, int) */
     public void setThumbSizeY(int imageIndex, int thumbY) {
-      cMeta.setThumbSizeY(imageIndex, thumbY);
+      dMeta.setThumbSizeY(imageIndex, thumbY);
     }
 
-    /* @see ome.scifio.CoreMetadata#setPixelType(int, int) */
+    /* @see ome.scifio.DatasetMetadata#setPixelType(int, int) */
     public void setPixelType(int imageIndex, int type) {
-      cMeta.setPixelType(imageIndex, type);
+      dMeta.setPixelType(imageIndex, type);
     }
 
-    /* @see ome.scifio.CoreMetadata#setBitsPerPixel(int, int) */
+    /* @see ome.scifio.DatasetMetadata#setBitsPerPixel(int, int) */
     public void setBitsPerPixel(int imageIndex, int bpp) {
-      cMeta.setBitsPerPixel(imageIndex, bpp);
+      dMeta.setBitsPerPixel(imageIndex, bpp);
     }
 
-    /* @see ome.scifio.CoreMetadata#setChannelDimLengths(int, int[]) */
+    /* @see ome.scifio.DatasetMetadata#setChannelDimLengths(int, int[]) */
     public void setChannelDimLengths(int imageIndex, int[] cLengths) {
-      cMeta.setChannelDimLengths(imageIndex, cLengths);
+      dMeta.setChannelDimLengths(imageIndex, cLengths);
     }
 
-    /* @see ome.scifio.CoreMetadata#setChannelDimTypes(int, java.lang.String[]) */
+    /* @see ome.scifio.DatasetMetadata#setChannelDimTypes(int, java.lang.String[]) */
     public void setChannelDimTypes(int imageIndex, String[] cTypes) {
-      cMeta.setChannelDimTypes(imageIndex, cTypes);
+      dMeta.setChannelDimTypes(imageIndex, cTypes);
     }
 
-    /* @see ome.scifio.CoreMetadata#setOrderCertain(int, boolean) */
+    /* @see ome.scifio.DatasetMetadata#setOrderCertain(int, boolean) */
     public void setOrderCertain(int imageIndex, boolean orderCertain) {
-      cMeta.setOrderCertain(imageIndex, orderCertain);
+      dMeta.setOrderCertain(imageIndex, orderCertain);
     }
 
-    /* @see ome.scifio.CoreMetadata#setRGB(int, boolean) */
+    /* @see ome.scifio.DatasetMetadata#setRGB(int, boolean) */
     public void setRGB(int imageIndex, boolean rgb) {
-      cMeta.setRGB(imageIndex, rgb);
+      dMeta.setRGB(imageIndex, rgb);
     }
 
-    /* @see ome.scifio.CoreMetadata#setLittleEndian(int, boolean) */
+    /* @see ome.scifio.DatasetMetadata#setLittleEndian(int, boolean) */
     public void setLittleEndian(int imageIndex, boolean littleEndian) {
-      cMeta.setLittleEndian(imageIndex, littleEndian);
+      dMeta.setLittleEndian(imageIndex, littleEndian);
     }
 
-    /* @see ome.scifio.CoreMetadata#setInterleaved(int, boolean) */
+    /* @see ome.scifio.DatasetMetadata#setInterleaved(int, boolean) */
     public void setInterleaved(int imageIndex, boolean interleaved) {
-      cMeta.setInterleaved(imageIndex, interleaved);
+      dMeta.setInterleaved(imageIndex, interleaved);
     }
 
-    /* @see ome.scifio.CoreMetadata#setIndexed(int, boolean) */
+    /* @see ome.scifio.DatasetMetadata#setIndexed(int, boolean) */
     public void setIndexed(int imageIndex, boolean indexed) {
-      cMeta.setIndexed(imageIndex, indexed);
+      dMeta.setIndexed(imageIndex, indexed);
     }
 
-    /* @see ome.scifio.CoreMetadata#setFalseColor(int, boolean) */
+    /* @see ome.scifio.DatasetMetadata#setFalseColor(int, boolean) */
     public void setFalseColor(int imageIndex, boolean falseC) {
-      cMeta.setFalseColor(imageIndex, falseC);
+      dMeta.setFalseColor(imageIndex, falseC);
     }
 
-    /* @see ome.scifio.CoreMetadata#setMetadataComplete(int, boolean) */
+    /* @see ome.scifio.DatasetMetadata#setMetadataComplete(int, boolean) */
     public void setMetadataComplete(int imageIndex, boolean metadataComplete) {
-      cMeta.setMetadataComplete(imageIndex, metadataComplete);
+      dMeta.setMetadataComplete(imageIndex, metadataComplete);
     }
 
-    /* @see ome.scifio.CoreMetadata#setImageMetadata(int, java.util.Hashtable) */
+    /* @see ome.scifio.DatasetMetadata#setImageMetadata(int, java.util.Hashtable) */
     public void setImageMetadata(int imageIndex, Hashtable<String, Object> meta)
     {
-      cMeta.setImageMetadata(imageIndex, meta);
+      dMeta.setImageMetadata(imageIndex, meta);
     }
 
-    /* @see ome.scifio.CoreMetadata#setThumbnailImage(int, boolean) */
+    /* @see ome.scifio.DatasetMetadata#setThumbnailImage(int, boolean) */
     public void setThumbnailImage(int imageIndex, boolean thumbnail) {
-      cMeta.setThumbnailImage(imageIndex, thumbnail);
+      dMeta.setThumbnailImage(imageIndex, thumbnail);
     }
 
-    /* @see ome.scifio.CoreMetadata#setAxisTypes(int, net.imglib2.meta.AxisType[]) */
+    /* @see ome.scifio.DatasetMetadata#setAxisTypes(int, net.imglib2.meta.AxisType[]) */
     public void setAxisTypes(int imageIndex, AxisType[] axisTypes) {
-      cMeta.setAxisTypes(imageIndex, axisTypes);
+      dMeta.setAxisTypes(imageIndex, axisTypes);
     }
 
-    /* @see ome.scifio.CoreMetadata#setAxisType(int, int, net.imglib2.meta.AxisType) */
+    /* @see ome.scifio.DatasetMetadata#setAxisType(int, int, net.imglib2.meta.AxisType) */
     public void setAxisType(int imageIndex, int axisIndex, AxisType axis) {
-      cMeta.setAxisType(imageIndex, axisIndex, axis);
+      dMeta.setAxisType(imageIndex, axisIndex, axis);
     }
 
-    /* @see ome.scifio.CoreMetadata#setAxisLengths(int, int[]) */
+    /* @see ome.scifio.DatasetMetadata#setAxisLengths(int, int[]) */
     public void setAxisLengths(int imageIndex, int[] axisLengths) {
-      cMeta.setAxisLengths(imageIndex, axisLengths);
+      dMeta.setAxisLengths(imageIndex, axisLengths);
     }
 
-    /* @see ome.scifio.CoreMetadata#setAxisLength(int, net.imglib2.meta.AxisType, int) */
+    /* @see ome.scifio.DatasetMetadata#setAxisLength(int, net.imglib2.meta.AxisType, int) */
     public void setAxisLength(int imageIndex, AxisType axis, int length) {
-      cMeta.setAxisLength(imageIndex, axis, length);
+      dMeta.setAxisLength(imageIndex, axis, length);
     }
 
-    /* @see ome.scifio.CoreMetadata#resetMeta() */
+    /* @see ome.scifio.DatasetMetadata#resetMeta() */
     public void resetMeta() {
-      cMeta.resetMeta();
+      dMeta.resetMeta();
     }
 
-    /* @see ome.scifio.CoreMetadata#getImageMetadata() */
-    public Collection<CoreImageMetadata> getImageMetadata() {
-      return cMeta.getImageMetadata();
+    /* @see ome.scifio.DatasetMetadata#getImageMetadata() */
+    public Collection<ImageMetadata> getImageMetadata() {
+      return dMeta.getImageMetadata();
     }
 
-    /* @see ome.scifio.CoreMetadata#add(ome.scifio.CoreImageMetadata) */
-    public void add(CoreImageMetadata meta) {
-      cMeta.add(meta);
+    /* @see ome.scifio.DatasetMetadata#add(ome.scifio.ImageMetadata) */
+    public void add(ImageMetadata meta) {
+      dMeta.add(meta);
     }
 
     /* @see java.lang.Object#equals(java.lang.Object) */
     public boolean equals(Object obj) {
-      return cMeta.equals(obj);
+      return dMeta.equals(obj);
     }
 
-    /* @see ome.scifio.CoreMetadata#get8BitLookupTable(int) */
+    /* @see ome.scifio.DatasetMetadata#get8BitLookupTable(int) */
     public byte[][] get8BitLookupTable(int imageIndex)
       throws FormatException, IOException
     {
-      return cMeta.get8BitLookupTable(imageIndex);
+      return dMeta.get8BitLookupTable(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#get16BitLookupTable(int) */
+    /* @see ome.scifio.DatasetMetadata#get16BitLookupTable(int) */
     public short[][] get16BitLookupTable(int imageIndex)
       throws FormatException, IOException
     {
-      return cMeta.get16BitLookupTable(imageIndex);
+      return dMeta.get16BitLookupTable(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#getAxisCount(int) */
+    /* @see ome.scifio.DatasetMetadata#getAxisCount(int) */
     public int getAxisCount(int imageIndex) {
-      return cMeta.getAxisCount(imageIndex);
+      return dMeta.getAxisCount(imageIndex);
     }
 
-    /* @see ome.scifio.CoreMetadata#getAxisIndex(int, net.imglib2.meta.AxisType) */
+    /* @see ome.scifio.DatasetMetadata#getAxisIndex(int, net.imglib2.meta.AxisType) */
     public int getAxisIndex(int imageIndex, AxisType type) {
-      return cMeta.getAxisIndex(imageIndex, type);
+      return dMeta.getAxisIndex(imageIndex, type);
     }
 
     /* @see java.lang.Object#hashCode() */
     public int hashCode() {
-      return cMeta.hashCode();
+      return dMeta.hashCode();
     }
 
     /* @see ome.scifio.AbstractMetadata#isFiltered() */
     public boolean isFiltered() {
-      return cMeta.isFiltered();
+      return dMeta.isFiltered();
     }
 
-    /* @see ome.scifio.CoreMetadata#isFalseColor(int) */
+    /* @see ome.scifio.DatasetMetadata#isFalseColor(int) */
     public boolean isFalseColor(int imageIndex) {
-      return cMeta.isFalseColor(imageIndex);
+      return dMeta.isFalseColor(imageIndex);
     }
   }
 }

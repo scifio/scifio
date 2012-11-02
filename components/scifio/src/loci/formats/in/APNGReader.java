@@ -87,7 +87,7 @@ public class APNGReader extends SCIFIOBIFormatReader {
   @Deprecated
   public byte[][] get8BitLookupTable() throws IOException, FormatException {
     try {
-      return reader.getCoreMetadata().get8BitLookupTable(getSeries());
+      return reader.getDatasetMetadata().get8BitLookupTable(getSeries());
     } catch (ome.scifio.FormatException e) {
       throw new FormatException(e.getCause());
     }

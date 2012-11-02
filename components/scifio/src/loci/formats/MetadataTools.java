@@ -78,7 +78,7 @@ public final class MetadataTools {
    * metadata from the given reader.
    */
   public static void populatePixels(MetadataStore store, IFormatReader r) {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getCoreMetadata());
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata());
   }
 
   /**
@@ -89,7 +89,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getCoreMetadata(), doPlane);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata(), doPlane);
   }
 
   /**
@@ -102,7 +102,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane, boolean doImageName)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getCoreMetadata(), doPlane, doImageName);
+    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata(), doPlane, doImageName);
   }
 
   /**
@@ -136,7 +136,7 @@ public final class MetadataTools {
   public static void populateMetadata(MetadataStore store, int series,
     String imageName, loci.formats.CoreMetadata coreMeta)
   {
-    ome.scifio.CoreMetadata cMeta = new ome.scifio.CoreMetadata(LegacyContext.get());
+    ome.scifio.DatasetMetadata cMeta = new ome.scifio.DatasetMetadata(LegacyContext.get());
     
     // Fake an ome.scifio.CoreMetadata array, with the converted coreMetadata at index series
     for(int i=0; i<series; i++)

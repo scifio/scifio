@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import loci.legacy.adapter.Wrapper;
 import loci.legacy.adapter.AdapterTools;
-import ome.scifio.CoreMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.Format;
 import ome.scifio.Metadata;
 import ome.scifio.Reader;
@@ -215,8 +215,8 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
     throw new UnsupportedOperationException();
   }
 
-  public CoreMetadata getCoreMetadata() {
-    CoreMetadata cMeta = AdapterTools.getAdapter(CoreMetadataAdapter.class).
+  public DatasetMetadata getDatasetMetadata() {
+    DatasetMetadata cMeta = AdapterTools.getAdapter(CoreMetadataAdapter.class).
         getModern(reader.getCoreMetadata());
     
       cMeta.setSource(getStream());

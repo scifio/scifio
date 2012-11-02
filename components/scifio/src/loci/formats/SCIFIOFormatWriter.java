@@ -22,7 +22,7 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
   protected Writer<T> writer;
 
   /** */
-  protected ome.scifio.CoreMetadata cMeta;
+  protected ome.scifio.DatasetMetadata cMeta;
 
   // -- Constructor --
 
@@ -98,10 +98,10 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
   @Override
   public void setSeries(int series) throws FormatException {
     if (series < 0) throw new FormatException("Series must be > 0.");
-    if (series >= writer.getCoreMetadata().getImageCount()) {
+    if (series >= writer.getDatasetMetadata().getImageCount()) {
       throw new FormatException("Series is '" + series +
         "' but MetadataRetrieve only defines " +
-        writer.getCoreMetadata().getImageCount() + " series.");
+        writer.getDatasetMetadata().getImageCount() + " series.");
     }
     this.series = series;
   }
@@ -116,21 +116,21 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
   @Deprecated
   @Override
   public void setInterleaved(boolean interleaved) {
-    writer.getCoreMetadata().setInterleaved(getSeries(), interleaved);
+    writer.getDatasetMetadata().setInterleaved(getSeries(), interleaved);
   }
 
   /* @see IFormatWriter#isInterleaved() */
   @Deprecated
   @Override
   public boolean isInterleaved() {
-    return writer.getCoreMetadata().isInterleaved(getSeries());
+    return writer.getDatasetMetadata().isInterleaved(getSeries());
   }
 
   /* @see IFormatWriter#setValidBitsPerPixel(int) */
   @Deprecated
   @Override
   public void setValidBitsPerPixel(int bits) {
-    writer.getCoreMetadata().setBitsPerPixel(getSeries(), bits);
+    writer.getDatasetMetadata().setBitsPerPixel(getSeries(), bits);
   }
 
   /* @see IFormatWriter#canDoStacks() */

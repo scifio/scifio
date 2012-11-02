@@ -401,11 +401,11 @@ public class AxisGuesser {
           LOGGER.info("Reading first file ");
           
           Reader reader = ctx.initializeReader(id);
-          String dimOrder = FormatTools.findDimensionOrder(reader.getCoreMetadata(), 0);
-          int sizeZ = reader.getCoreMetadata().getAxisLength(0, Axes.Z);
-          int sizeT = reader.getCoreMetadata().getAxisLength(0, Axes.TIME);
-          int sizeC = reader.getCoreMetadata().getAxisLength(0, Axes.CHANNEL);
-          boolean certain = reader.getCoreMetadata().isOrderCertain(0);
+          String dimOrder = FormatTools.findDimensionOrder(reader.getDatasetMetadata(), 0);
+          int sizeZ = reader.getDatasetMetadata().getAxisLength(0, Axes.Z);
+          int sizeT = reader.getDatasetMetadata().getAxisLength(0, Axes.TIME);
+          int sizeC = reader.getDatasetMetadata().getAxisLength(0, Axes.CHANNEL);
+          boolean certain = reader.getDatasetMetadata().isOrderCertain(0);
           reader.close();
           LOGGER.info("[done]");
           LOGGER.info("\tdimOrder = {} ({})",

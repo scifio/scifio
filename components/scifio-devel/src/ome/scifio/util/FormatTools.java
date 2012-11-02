@@ -43,7 +43,7 @@ import java.util.Vector;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import ome.scifio.CoreMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
@@ -279,10 +279,10 @@ public class FormatTools {
    */
   public static int getIndex(Reader reader, int imageIndex, int z, int c, int t)
   {
-    int zSize = reader.getCoreMetadata().getAxisLength(imageIndex, Axes.Z);
-    int cSize = reader.getCoreMetadata().getEffectiveSizeC(imageIndex);
-    int tSize = reader.getCoreMetadata().getAxisLength(imageIndex, Axes.TIME);
-    int numPlanes = reader.getCoreMetadata().getPlaneCount(imageIndex);
+    int zSize = reader.getDatasetMetadata().getAxisLength(imageIndex, Axes.Z);
+    int cSize = reader.getDatasetMetadata().getEffectiveSizeC(imageIndex);
+    int tSize = reader.getDatasetMetadata().getAxisLength(imageIndex, Axes.TIME);
+    int numPlanes = reader.getDatasetMetadata().getPlaneCount(imageIndex);
     return getIndex(
       findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, numPlanes, z, c, t);
   }
@@ -374,18 +374,18 @@ public class FormatTools {
    * @return
    */
   public static String findDimensionOrder(Reader r, int imageIndex) {
-    return findDimensionOrder(r.getCoreMetadata(), imageIndex);
+    return findDimensionOrder(r.getDatasetMetadata(), imageIndex);
   }
 
   /**
-   * Returns the dimension order for the provided CoreMetadata object.
+   * Returns the dimension order for the provided DatasetMetadata object.
    * Currently limited to 5D orders.
    * 
    * @param core
    * @param imageIndex
    * @return
    */
-  public static String findDimensionOrder(CoreMetadata core, int imageIndex) {
+  public static String findDimensionOrder(DatasetMetadata core, int imageIndex) {
     return findDimensionOrder(core.getAxes(imageIndex));
   }
   
@@ -433,14 +433,14 @@ public class FormatTools {
   }
   
   /**
-   * Rearranges the ordering of the provided CoreMetadata object, based on the
+   * Rearranges the ordering of the provided DatasetMetadata object, based on the
    * ording of the provided AxisTypes.
    * 
    * @param core
    * @param imageIndex
    * @param order
    */
-  public static void setDimensionOrder(CoreMetadata core, int imageIndex, AxisType... order) {
+  public static void setDimensionOrder(DatasetMetadata core, int imageIndex, AxisType... order) {
     int[] axisLengths = new int[core.getAxisCount(imageIndex)];
     
     int i = 0;
@@ -462,7 +462,7 @@ public class FormatTools {
    * to the given rasterized index value.
    */
   public static int[] getZCTCoords(Reader reader, int imageIndex, int planeIndex) {
-    CoreMetadata core = reader.getCoreMetadata();
+    DatasetMetadata core = reader.getDatasetMetadata();
     int zSize = core.getAxisLength(imageIndex, Axes.Z);
     int cSize = core.getEffectiveSizeC(imageIndex);
     int tSize = core.getAxisLength(imageIndex, Axes.TIME);
@@ -555,7 +555,7 @@ public class FormatTools {
   public static int getReorderedIndex(Reader reader, int imageIndex,
     String newOrder, int newIndex) throws FormatException
   {
-    CoreMetadata core = reader.getCoreMetadata();
+    DatasetMetadata core = reader.getDatasetMetadata();
     int zSize = core.getAxisLength(imageIndex, Axes.Z);
     int cSize = core.getEffectiveSizeC(imageIndex);
     int tSize = core.getAxisLength(imageIndex, Axes.TIME);
@@ -738,7 +738,7 @@ public class FormatTools {
   public static void checkPlaneNumber(Reader r, int imageIndex, int planeIndex)
     throws FormatException
   {
-    int imageCount = r.getCoreMetadata().getPlaneCount(imageIndex);
+    int imageCount = r.getDatasetMetadata().getPlaneCount(imageIndex);
     if (planeIndex < 0 || planeIndex >= imageCount) {
       throw new FormatException("Invalid plane number: " + planeIndex + " (" +
       /* TODO series=" +
@@ -750,8 +750,8 @@ public class FormatTools {
   public static void checkTileSize(Reader r, int x, int y, int w, int h,
     int imageIndex) throws FormatException
   {
-    int width = r.getCoreMetadata().getAxisLength(imageIndex, Axes.X);
-    int height = r.getCoreMetadata().getAxisLength(imageIndex, Axes.Y);
+    int width = r.getDatasetMetadata().getAxisLength(imageIndex, Axes.X);
+    int height = r.getDatasetMetadata().getAxisLength(imageIndex, Axes.Y);
     if (x < 0 || y < 0 || w < 0 || h < 0 || (x + w) > width || (y + h) > height)
     {
       throw new FormatException("Invalid tile size: x=" + x + ", y=" + y +
@@ -763,8 +763,8 @@ public class FormatTools {
     throws FormatException
   {
     checkBufferSize(
-      r, len, r.getCoreMetadata().getAxisLength(imageIndex, Axes.X),
-      r.getCoreMetadata().getAxisLength(imageIndex, Axes.Y), imageIndex);
+      r, len, r.getDatasetMetadata().getAxisLength(imageIndex, Axes.X),
+      r.getDatasetMetadata().getAxisLength(imageIndex, Axes.Y), imageIndex);
   }
   
   /**
@@ -797,14 +797,14 @@ public class FormatTools {
   /** Returns the size in bytes of a single plane. */
   public static int getPlaneSize(Reader r, int imageIndex) {
     return getPlaneSize(
-      r, r.getCoreMetadata().getAxisLength(imageIndex, Axes.X),
-      r.getCoreMetadata().getAxisLength(imageIndex, Axes.Y), imageIndex);
+      r, r.getDatasetMetadata().getAxisLength(imageIndex, Axes.X),
+      r.getDatasetMetadata().getAxisLength(imageIndex, Axes.Y), imageIndex);
   }
   
   /** Returns the size in bytes of a w * h tile. */
   public static int getPlaneSize(Reader r, int w, int h, int imageIndex) {
-    return w * h * r.getCoreMetadata().getRGBChannelCount(imageIndex) *
-      getBytesPerPixel(r.getCoreMetadata().getPixelType(imageIndex));
+    return w * h * r.getDatasetMetadata().getRGBChannelCount(imageIndex) *
+      getBytesPerPixel(r.getDatasetMetadata().getPixelType(imageIndex));
   }
 
   // -- Utility methods - pixel types --
@@ -976,7 +976,7 @@ public class FormatTools {
     filename = filename.replaceAll(T_NUM, String.valueOf(coordinates[2]));
     filename = filename.replaceAll(CHANNEL_NUM, String.valueOf(coordinates[1]));
 
-    String channelName = r.getCoreMetadata().getAxisType(imageIndex, coordinates[1]).getLabel();
+    String channelName = r.getDatasetMetadata().getAxisType(imageIndex, coordinates[1]).getLabel();
     if (channelName == null) channelName = String.valueOf(coordinates[1]);
     channelName = channelName.replaceAll("/", "_");
     channelName = channelName.replaceAll("\\\\", "_");
@@ -1030,7 +1030,7 @@ public class FormatTools {
     String[] filenames = getFilenames(pattern, r);
     int totalPlanes = 0;
     for (int series=0; series<r.getImageCount(); series++) {
-      totalPlanes += r.getCoreMetadata().getPlaneCount(series);
+      totalPlanes += r.getDatasetMetadata().getPlaneCount(series);
     }
     return totalPlanes / filenames.length;
   } 
@@ -1060,10 +1060,10 @@ public class FormatTools {
       int planeSize = getPlaneSize(reader, imageIndex);
       byte[] plane = null;
       if (planeSize < 0) {
-        int width = reader.getCoreMetadata().getThumbSizeX(imageIndex) * 4;
-        int height = reader.getCoreMetadata().getThumbSizeY(imageIndex) * 4;
-        int x = (reader.getCoreMetadata().getAxisLength(imageIndex, Axes.X) - width) / 2;
-        int y = (reader.getCoreMetadata().getAxisLength(imageIndex, Axes.Y) - height) / 2;
+        int width = reader.getDatasetMetadata().getThumbSizeX(imageIndex) * 4;
+        int height = reader.getDatasetMetadata().getThumbSizeY(imageIndex) * 4;
+        int x = (reader.getDatasetMetadata().getAxisLength(imageIndex, Axes.X) - width) / 2;
+        int y = (reader.getDatasetMetadata().getAxisLength(imageIndex, Axes.Y) - height) / 2;
         plane = reader.openBytes(imageIndex, planeIndex, x, y, width, height);
       }
       else {
@@ -1072,11 +1072,11 @@ public class FormatTools {
 
       r.setVar("plane", plane);
       r.setVar("reader", reader);
-      r.setVar("sizeX", reader.getCoreMetadata().getAxisLength(imageIndex, Axes.X));
-      r.setVar("sizeY", reader.getCoreMetadata().getAxisLength(imageIndex, Axes.Y));
-      r.setVar("thumbSizeX", reader.getCoreMetadata().getThumbSizeX(imageIndex));
-      r.setVar("thumbSizeY", reader.getCoreMetadata().getThumbSizeY(imageIndex));
-      r.setVar("little", reader.getCoreMetadata().isLittleEndian(imageIndex));
+      r.setVar("sizeX", reader.getDatasetMetadata().getAxisLength(imageIndex, Axes.X));
+      r.setVar("sizeY", reader.getDatasetMetadata().getAxisLength(imageIndex, Axes.Y));
+      r.setVar("thumbSizeX", reader.getDatasetMetadata().getThumbSizeX(imageIndex));
+      r.setVar("thumbSizeY", reader.getDatasetMetadata().getThumbSizeY(imageIndex));
+      r.setVar("little", reader.getDatasetMetadata().isLittleEndian(imageIndex));
       r.exec("img = AWTImageTools.openImage(plane, reader, sizeX, sizeY)");
       r.exec("img = AWTImageTools.makeUnsigned(img)");
       r.exec("thumb = AWTImageTools.scale(img, thumbSizeX, thumbSizeY, false)");
@@ -1087,7 +1087,7 @@ public class FormatTools {
     }
 
     if (bytes.length == 1) return bytes[0];
-    int rgbChannelCount = reader.getCoreMetadata().getRGBChannelCount(imageIndex);
+    int rgbChannelCount = reader.getDatasetMetadata().getRGBChannelCount(imageIndex);
     byte[] rtn = new byte[rgbChannelCount * bytes[0].length];
 
     if (!reader.getDatasetMetadata().isInterleaved(imageIndex)) {

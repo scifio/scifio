@@ -43,12 +43,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ome.scifio.CoreMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.io.RandomAccessOutputStream;
 
 /**
- * A utility class for working with CoreMetadata objects.
+ * A utility class for working with DatasetMetadata objects.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/MetadataTools.java">Trac</a>,
@@ -65,7 +65,7 @@ public class SCIFIOMetadataTools {
   
   private SCIFIOMetadataTools() { }
   
-  // -- Utility Methods -- CoreMetadata -- 
+  // -- Utility Methods -- DatasetMetadata -- 
   
   /**
    * Checks whether the given metadata object has the minimum metadata
@@ -74,7 +74,7 @@ public class SCIFIOMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(CoreMetadata src,
+  public static void verifyMinimumPopulated(DatasetMetadata src,
     RandomAccessOutputStream out) throws FormatException
   {
     verifyMinimumPopulated(src, out, 0, 0);
@@ -87,7 +87,7 @@ public class SCIFIOMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(CoreMetadata src,
+  public static void verifyMinimumPopulated(DatasetMetadata src,
     RandomAccessOutputStream out, int imageIndex) throws FormatException
   {
     verifyMinimumPopulated(src, out, imageIndex, 0);
@@ -100,7 +100,7 @@ public class SCIFIOMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(CoreMetadata src,
+  public static void verifyMinimumPopulated(DatasetMetadata src,
     RandomAccessOutputStream out, int imageIndex, int planeIndex)
     throws FormatException
   {

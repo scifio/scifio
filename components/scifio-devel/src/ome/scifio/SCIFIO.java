@@ -371,28 +371,28 @@ public class SCIFIO {
     final Format<M, ?, ?, ?, ?> dFormat = (Format<M, ?, ?, ?, ?>) getFormat(
         destination, false);
     final Parser<N> parser = sFormat.createParser();
-    final N sMeta = parser.parse(source);
-    M dMeta = null;
+    final N sourceMeta = parser.parse(source);
+    M destMeta = null;
 
     // if dest is a different format than source, translate..
     if (sFormat != dFormat) {
-      dMeta = dFormat.createMetadata();
+      destMeta = dFormat.createMetadata();
       
-      final Translator<N, CoreMetadata> transToCore = sFormat
-          .findSourceTranslator(CoreMetadata.class);
-      final Translator<CoreMetadata, M> transFromCore = dFormat
-          .findDestTranslator(CoreMetadata.class);
-      final CoreMetadata cMeta = new CoreMetadata(this);
-      cMeta.setSource(new RandomAccessInputStream(source));
-      transToCore.translate(sMeta, cMeta);
-      transFromCore.translate(cMeta, dMeta);
+      final Translator<N, DatasetMetadata> transToCore = sFormat
+          .findSourceTranslator(DatasetMetadata.class);
+      final Translator<DatasetMetadata, M> transFromCore = dFormat
+          .findDestTranslator(DatasetMetadata.class);
+      final DatasetMetadata transMeta = new DatasetMetadata(this);
+      transMeta.setSource(new RandomAccessInputStream(source));
+      transToCore.translate(sourceMeta, transMeta);
+      transFromCore.translate(transMeta, destMeta);
     } else {
       // otherwise we can directly cast, since they are the same types
-      dMeta = castMeta(sMeta, dMeta);
+      destMeta = castMeta(sourceMeta, destMeta);
     }
 
     final Writer<M> writer = dFormat.createWriter();
-    writer.setMetadata(dMeta);
+    writer.setMetadata(destMeta);
     writer.setDest(destination);
 
     return writer;

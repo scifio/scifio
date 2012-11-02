@@ -126,7 +126,7 @@ public interface Writer<M extends Metadata> extends HasContext, HasFormat {
   M getMetadata();
 
   /** Gets the core metadata for this Writer. */
-  CoreMetadata getCoreMetadata();
+  DatasetMetadata getDatasetMetadata();
 
   /**
    * Sets the source for this reader to read from.

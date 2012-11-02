@@ -40,14 +40,14 @@ import loci.legacy.adapter.Wrapper;
 
 /**
  * Wraps an array of legacy {@link loci.formats.CoreMetadata} objects
- * in the equivalent {@link ome.scifio.CoreMetadata}. Since there are no
+ * in the equivalent {@link ome.scifio.DatasetMetadata}. Since there are no
  * accessor methods of the array to override, its contents are manually
  * extracted and converted via the {@link CoreImageMetadataAdapter}.
  * 
  * @author Mark Hiner
  *
  */
-public class CoreMetadataArrayWrapper extends ome.scifio.CoreMetadata
+public class CoreMetadataArrayWrapper extends ome.scifio.DatasetMetadata
   implements Wrapper<CoreMetadata[]>
 {
 

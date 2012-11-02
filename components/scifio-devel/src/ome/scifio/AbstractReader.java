@@ -68,7 +68,7 @@ public abstract class AbstractReader<M extends Metadata>
   protected M metadata;
 
   /** Core Metadata values. */
-  protected CoreMetadata cMeta;
+  protected DatasetMetadata dMeta;
 
   /** Whether or not to group multi-file formats. */
   protected boolean group = true;
@@ -145,8 +145,8 @@ public abstract class AbstractReader<M extends Metadata>
     throws FormatException, IOException
   {
     return openBytes(
-      imageIndex, planeNumber, 0, 0, cMeta.getAxisLength(imageIndex, Axes.X),
-      cMeta.getAxisLength(imageIndex, Axes.Y));
+      imageIndex, planeNumber, 0, 0, dMeta.getAxisLength(imageIndex, Axes.X),
+      dMeta.getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, int, int, int, int, int) */
@@ -155,8 +155,8 @@ public abstract class AbstractReader<M extends Metadata>
     throws FormatException, IOException
   {
     final int bpp =
-      FormatTools.getBytesPerPixel(cMeta.getPixelType(imageIndex));
-    final int ch = cMeta.getRGBChannelCount(imageIndex);
+      FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
+    final int ch = dMeta.getRGBChannelCount(imageIndex);
     final byte[] newBuffer = new byte[w * h * ch * bpp];
     return openBytes(imageIndex, planeIndex, newBuffer, x, y, w, h);
   }
@@ -167,8 +167,8 @@ public abstract class AbstractReader<M extends Metadata>
   {
     return openBytes(
       imageIndex, planeIndex, buf, 0, 0,
-      cMeta.getAxisLength(imageIndex, Axes.X),
-      cMeta.getAxisLength(imageIndex, Axes.Y));
+      dMeta.getAxisLength(imageIndex, Axes.X),
+      dMeta.getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, int, byte[], int, int, int, int) */
@@ -189,18 +189,18 @@ public abstract class AbstractReader<M extends Metadata>
     final int imageIndex, final int x, final int y, final int w, final int h,
     final int scanlinePad, final byte[] buf) throws IOException
   {
-    final int c = cMeta.getRGBChannelCount(imageIndex);
+    final int c = dMeta.getRGBChannelCount(imageIndex);
     final int bpp =
-      FormatTools.getBytesPerPixel(cMeta.getPixelType(imageIndex));
-    if (x == 0 && y == 0 && w == cMeta.getAxisLength(imageIndex, Axes.X) &&
-      h == cMeta.getAxisLength(imageIndex, Axes.Y) && scanlinePad == 0)
+      FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
+    if (x == 0 && y == 0 && w == dMeta.getAxisLength(imageIndex, Axes.X) &&
+      h == dMeta.getAxisLength(imageIndex, Axes.Y) && scanlinePad == 0)
     {
       s.read(buf);
     }
-    else if (x == 0 && w == cMeta.getAxisLength(imageIndex, Axes.Y) &&
+    else if (x == 0 && w == dMeta.getAxisLength(imageIndex, Axes.Y) &&
       scanlinePad == 0)
     {
-      if (cMeta.isInterleaved(imageIndex)) {
+      if (dMeta.isInterleaved(imageIndex)) {
         s.skipBytes(y * w * bpp * c);
         s.read(buf, 0, h * w * bpp * c);
       }
@@ -211,7 +211,7 @@ public abstract class AbstractReader<M extends Metadata>
           s.read(buf, channel * h * rowLen, h * rowLen);
           if (channel < c - 1) {
             // no need to skip bytes after reading final channel
-            s.skipBytes((cMeta.getAxisLength(imageIndex, Axes.Y) - y - h) *
+            s.skipBytes((dMeta.getAxisLength(imageIndex, Axes.Y) - y - h) *
               rowLen);
           }
         }
@@ -219,8 +219,8 @@ public abstract class AbstractReader<M extends Metadata>
     }
     else {
       final int scanlineWidth =
-        cMeta.getAxisLength(imageIndex, Axes.Y) + scanlinePad;
-      if (cMeta.isInterleaved(imageIndex)) {
+        dMeta.getAxisLength(imageIndex, Axes.Y) + scanlinePad;
+      if (dMeta.isInterleaved(imageIndex)) {
         s.skipBytes(y * scanlineWidth * bpp * c);
         for (int row = 0; row < h; row++) {
           s.skipBytes(x * bpp * c);
@@ -245,7 +245,7 @@ public abstract class AbstractReader<M extends Metadata>
           if (channel < c - 1) {
             // no need to skip bytes after reading final channel
             s.skipBytes(scanlineWidth * bpp *
-              (cMeta.getAxisLength(imageIndex, Axes.Y) - y - h));
+              (dMeta.getAxisLength(imageIndex, Axes.Y) - y - h));
           }
         }
       }
@@ -284,11 +284,11 @@ public abstract class AbstractReader<M extends Metadata>
   /* @see Reader#setMetadata() */
   public void setMetadata(final M meta) throws IOException {
     metadata = meta;
-    cMeta = new CoreMetadata();
+    dMeta = new DatasetMetadata();
     if(in == null) setSource(meta.getSource());
     
     try {
-      getFormat().findSourceTranslator(CoreMetadata.class).translate(meta, cMeta);
+      getFormat().findSourceTranslator(DatasetMetadata.class).translate(meta, dMeta);
     } catch (FormatException e) {
       LOGGER.debug(e.getMessage());
     }
@@ -336,18 +336,18 @@ public abstract class AbstractReader<M extends Metadata>
 
   /* @see Reader#getOptimalTileWidth(int) */
   public int getOptimalTileWidth(final int imageIndex) {
-    return cMeta.getAxisLength(imageIndex, Axes.Y);
+    return dMeta.getAxisLength(imageIndex, Axes.Y);
   }
 
   /* @see Reader#getOptimalTileHeight(int) */
   public int getOptimalTileHeight(final int imageIndex) {
     final int bpp =
-      FormatTools.getBytesPerPixel(cMeta.getPixelType(imageIndex));
+      FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
     final int maxHeight =
       (1024 * 1024) /
-        (cMeta.getAxisLength(imageIndex, Axes.X) *
-          cMeta.getRGBChannelCount(imageIndex) * bpp);
-    return Math.min(maxHeight, cMeta.getAxisLength(imageIndex, Axes.X));
+        (dMeta.getAxisLength(imageIndex, Axes.X) *
+          dMeta.getRGBChannelCount(imageIndex) * bpp);
+    return Math.min(maxHeight, dMeta.getAxisLength(imageIndex, Axes.X));
   }
 
   /* @see Reader#getDomains() */
@@ -355,9 +355,9 @@ public abstract class AbstractReader<M extends Metadata>
     return domains;
   }
 
-  /* @see Reader#getCoreMetadata() */
-  public CoreMetadata getCoreMetadata() {
-    return cMeta;
+  /* @see Reader#getDatasetMetadata() */
+  public DatasetMetadata getDatasetMetadata() {
+    return dMeta;
   }
 
   /* @see Reader#getStream() */
@@ -367,12 +367,12 @@ public abstract class AbstractReader<M extends Metadata>
 
   /* @see Reader#getImageCount() */
   public int getImageCount() {
-    return cMeta.getImageCount();
+    return dMeta.getImageCount();
   }
 
   /* @see Reader#getPlaneCount(int) */
   public int getPlaneCount(final int imageIndex) {
-    return cMeta.getPlaneCount(imageIndex);
+    return dMeta.getPlaneCount(imageIndex);
   }
 
   public Reader<Metadata>[] getUnderlyingReaders() {
@@ -383,7 +383,7 @@ public abstract class AbstractReader<M extends Metadata>
   // -- AbstractReader Methods --
 
   private void init() {
-    cMeta = new CoreMetadata();
+    dMeta = new DatasetMetadata();
   }
 
   public byte[] readPlane(final RandomAccessInputStream s,

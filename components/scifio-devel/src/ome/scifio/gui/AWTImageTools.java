@@ -715,12 +715,12 @@ public final class AWTImageTools {
   public static BufferedImage openImage(byte[] buf, Reader r, int w, int h,
     int no) throws FormatException, IOException
   {
-    int pixelType = r.getCoreMetadata().getPixelType(no);
-    boolean little = r.getCoreMetadata().isLittleEndian(no);
+    int pixelType = r.getDatasetMetadata().getPixelType(no);
+    boolean little = r.getDatasetMetadata().isLittleEndian(no);
     boolean normal = r.isNormalized();
-    int rgbChanCount = r.getCoreMetadata().getRGBChannelCount(no);
-    boolean interleaved = r.getCoreMetadata().isInterleaved(no);
-    boolean indexed = r.getCoreMetadata().isIndexed(no);
+    int rgbChanCount = r.getDatasetMetadata().getRGBChannelCount(no);
+    boolean interleaved = r.getDatasetMetadata().isInterleaved(no);
+    boolean indexed = r.getDatasetMetadata().isIndexed(no);
 
     if (pixelType == FormatTools.FLOAT) {
       float[] f = (float[]) DataTools.makeDataArray(buf, 4, true, little);
@@ -758,7 +758,7 @@ public final class AWTImageTools {
 
     if (indexed && rgbChanCount == 1) {
       if (pixelType == FormatTools.UINT8 || pixelType == FormatTools.INT8) {
-        byte[][] table = r.getCoreMetadata().get8BitLookupTable(no);
+        byte[][] table = r.getDatasetMetadata().get8BitLookupTable(no);
         if (table != null && table.length > 0 && table[0] != null) {
           int len = table[0].length;
           byte[] dummy = table.length < 3 ? new byte[len] : null;
@@ -771,11 +771,11 @@ public final class AWTImageTools {
       else if (pixelType == FormatTools.UINT16 ||
         pixelType == FormatTools.INT16)
       {
-        short[][] table = r.getCoreMetadata().get16BitLookupTable(no);
+        short[][] table = r.getDatasetMetadata().get16BitLookupTable(no);
         if (table != null && table.length > 0 && table[0] != null) {
           model =
             new Index16ColorModel(
-              16, table[0].length, table, r.getCoreMetadata()
+              16, table[0].length, table, r.getDatasetMetadata()
                 .isLittleEndian(no));
         }
       }

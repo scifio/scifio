@@ -89,7 +89,7 @@ public abstract class BIFormatReader<M extends Metadata>
           int offset = c * ts[c].length * 2;
           for (int i = 0; i < ts[c].length && offset < buf.length; i++) {
             DataTools.unpackBytes(
-              ts[c][i], buf, offset, 2, cMeta.isLittleEndian(planeIndex));
+              ts[c][i], buf, offset, 2, dMeta.isLittleEndian(planeIndex));
             offset += 2;
           }
         }

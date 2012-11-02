@@ -58,8 +58,8 @@ import ome.scifio.AbstractMetadata;
 import ome.scifio.AbstractParser;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
-import ome.scifio.CoreImageMetadata;
-import ome.scifio.CoreMetadata;
+import ome.scifio.ImageMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.CoreTranslator;
 import ome.scifio.Field;
 import ome.scifio.FieldPrinter;
@@ -436,7 +436,7 @@ public class APNGFormat
       // If the last processed (cached) plane is requested, return it
       if (planeIndex == lastPlaneIndex && lastPlane != null) {
         return AWTImageTools.getSubimage(
-          lastPlane, cMeta.isLittleEndian(planeIndex), x, y, w, h);
+          lastPlane, dMeta.isLittleEndian(planeIndex), x, y, w, h);
       }
   
       // The default frame is requested and we can use the standard Java ImageIO to extract it
@@ -446,13 +446,13 @@ public class APNGFormat
           new DataInputStream(new BufferedInputStream(in, 4096));
         lastPlane = ImageIO.read(dis);
         lastPlaneIndex = 0;
-        if (x == 0 && y == 0 && w == cMeta.getAxisLength(imageIndex, Axes.X) &&
-          h == cMeta.getAxisLength(imageIndex, Axes.Y))
+        if (x == 0 && y == 0 && w == dMeta.getAxisLength(imageIndex, Axes.X) &&
+          h == dMeta.getAxisLength(imageIndex, Axes.Y))
         {
           return lastPlane;
         }
         return AWTImageTools.getSubimage(
-          lastPlane, cMeta.isLittleEndian(imageIndex), x, y, w, h);
+          lastPlane, dMeta.isLittleEndian(imageIndex), x, y, w, h);
       }
   
       // For a non-default frame, the appropriate chunks will be used to create a new image,
@@ -476,7 +476,7 @@ public class APNGFormat
         in.seek(fdat.getOffset() + 4);
         byte[] b = new byte[fdat.getLength() + 8];
         DataTools.unpackBytes(
-          fdat.getLength() - 4, b, 0, 4, cMeta.isLittleEndian(imageIndex));
+          fdat.getLength() - 4, b, 0, 4, dMeta.isLittleEndian(imageIndex));
         b[4] = 'I';
         b[5] = 'D';
         b[6] = 'A';
@@ -484,7 +484,7 @@ public class APNGFormat
         in.read(b, 8, b.length - 12);
         final int crc = (int) computeCRC(b, b.length - 4);
         DataTools.unpackBytes(
-          crc, b, b.length - 4, 4, cMeta.isLittleEndian(imageIndex));
+          crc, b, b.length - 4, 4, dMeta.isLittleEndian(imageIndex));
         stream.write(b);
         b = null;
       }
@@ -505,9 +505,9 @@ public class APNGFormat
 
       lastPlane = null;
       openPlane(
-        imageIndex, 0, 0, 0, cMeta.getAxisLength(imageIndex, Axes.X),
-        cMeta.getAxisLength(imageIndex, Axes.Y));
-
+        imageIndex, 0, 0, 0, dMeta.getAxisLength(imageIndex, Axes.X),
+        dMeta.getAxisLength(imageIndex, Axes.Y));
+      
       // paste current image onto first plane
 
       final WritableRaster firstRaster = lastPlane.getRaster();
@@ -533,7 +533,7 @@ public class APNGFormat
       throws IOException
     {
       byte[] b = new byte[length + 12];
-      DataTools.unpackBytes(length, b, 0, 4, cMeta.isLittleEndian(imageIndex));
+      DataTools.unpackBytes(length, b, 0, 4, dMeta.isLittleEndian(imageIndex));
       final byte[] typeBytes = (isIHDR ? "IHDR".getBytes(Constants.ENCODING) :
         "PLTE".getBytes(Constants.ENCODING));
       System.arraycopy(typeBytes, 0, b, 4, 4);
@@ -541,13 +541,13 @@ public class APNGFormat
       in.read(b, 8, b.length - 12);
       if (isIHDR) {
         DataTools.unpackBytes(
-          coords[2], b, 8, 4, cMeta.isLittleEndian(imageIndex));
+          coords[2], b, 8, 4, dMeta.isLittleEndian(imageIndex));
         DataTools.unpackBytes(
-          coords[3], b, 12, 4, cMeta.isLittleEndian(imageIndex));
+          coords[3], b, 12, 4, dMeta.isLittleEndian(imageIndex));
       }
       final int crc = (int) computeCRC(b, b.length - 4);
       DataTools.unpackBytes(
-        crc, b, b.length - 4, 4, cMeta.isLittleEndian(imageIndex));
+        crc, b, b.length - 4, 4, dMeta.isLittleEndian(imageIndex));
       stream.write(b);
       b = null;
     }
@@ -598,8 +598,8 @@ public class APNGFormat
             "APNGWriter does not yet support saving image tiles.");
       }
 
-      final int width = cMeta.getAxisLength(imageIndex, Axes.X);
-      final int height = cMeta.getAxisLength(imageIndex, Axes.Y);
+      final int width = dMeta.getAxisLength(imageIndex, Axes.X);
+      final int height = dMeta.getAxisLength(imageIndex, Axes.Y);
 
       if (!initialized[imageIndex][planeIndex]) {
         if (numFrames == 0) {
@@ -666,14 +666,14 @@ public class APNGFormat
     private void initialize(final int imageIndex) throws FormatException,
         IOException {
       if (out.length() == 0) {
-        final int width = cMeta.getAxisLength(imageIndex, Axes.X);
-        final int height = cMeta.getAxisLength(imageIndex, Axes.Y);
-        final int bytesPerPixel = FormatTools.getBytesPerPixel(cMeta
+        final int width = dMeta.getAxisLength(imageIndex, Axes.X);
+        final int height = dMeta.getAxisLength(imageIndex, Axes.Y);
+        final int bytesPerPixel = FormatTools.getBytesPerPixel(dMeta
             .getPixelType(imageIndex));
-        final int nChannels = cMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+        final int nChannels = dMeta.getAxisLength(imageIndex, Axes.CHANNEL);
         final boolean indexed = getColorModel() != null
             && (getColorModel() instanceof IndexColorModel);
-        littleEndian = cMeta.isLittleEndian(imageIndex);
+        littleEndian = dMeta.isLittleEndian(imageIndex);
 
         // write 8-byte PNG signature
         out.write(APNGFormat.PNG_SIGNATURE);
@@ -787,8 +787,8 @@ public class APNGFormat
     private void writePixels(final int imageIndex, final String chunk,
         final byte[] stream, final int x, final int y, final int width,
         final int height) throws FormatException, IOException {
-      final int sizeC = cMeta.getAxisLength(imageIndex, Axes.CHANNEL);
-      final int pixelType = cMeta.getPixelType(imageIndex);
+      final int sizeC = dMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+      final int pixelType = dMeta.getPixelType(imageIndex);
       final boolean signed = FormatTools.isSigned(pixelType);
 
       if (!isFullPlane(imageIndex, x, y, width, height)) {
@@ -888,9 +888,9 @@ public class APNGFormat
    * to write it can not be guaranteed valid.
    *
    */
-  @SCIFIOTranslator(metaIn = CoreMetadata.class, metaOut = Metadata.class)
+  @SCIFIOTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreAPNGTranslator
-    extends AbstractTranslator<CoreMetadata, Metadata> {
+    extends AbstractTranslator<DatasetMetadata, Metadata> {
   
     // -- Constructors --
     
@@ -905,7 +905,7 @@ public class APNGFormat
     // -- Translator API Methods -- 
     
     @Override
-    public void translate(final CoreMetadata source, final Metadata dest) {
+    public void translate(final DatasetMetadata source, final Metadata dest) {
       super.translate(source, dest);
   
       final APNGIHDRChunk ihdr =
@@ -987,9 +987,9 @@ public class APNGFormat
    * (APNG) images to the Core SCIFIO image type.
    *
    */
-  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = CoreMetadata.class)
+  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
   public static class APNGCoreTranslator
-    extends AbstractTranslator<Metadata, CoreMetadata>
+    extends AbstractTranslator<Metadata, DatasetMetadata>
     implements CoreTranslator {
   
     // -- Constructors --
@@ -1005,16 +1005,16 @@ public class APNGFormat
     // -- Translator API Methods --
   
     @Override
-    public void translate(final Metadata source, final CoreMetadata dest) {
+    public void translate(final Metadata source, final DatasetMetadata dest) {
       super.translate(source, dest);
-      final CoreImageMetadata coreMeta = new CoreImageMetadata();
-      dest.add(coreMeta);
+      final ImageMetadata imageMeta = new ImageMetadata();
+      dest.add(imageMeta);
   
-      coreMeta.setInterleaved(false);
-      coreMeta.setOrderCertain(true);
-      coreMeta.setFalseColor(true);
+      imageMeta.setInterleaved(false);
+      imageMeta.setOrderCertain(true);
+      imageMeta.setFalseColor(true);
   
-      coreMeta.setIndexed(false);
+      imageMeta.setIndexed(false);
   
       boolean indexed = false;
       boolean rgb = true;
@@ -1046,37 +1046,37 @@ public class APNGFormat
         lut[1] = source.getPlte().getGreen();
         lut[2] = source.getPlte().getBlue();
   
-        coreMeta.setLut(lut);
+        imageMeta.setLut(lut);
       }
   
       final APNGacTLChunk actl = source.getActl();
       final int planeCount = actl == null ? 1 : actl.getNumFrames();
   
-      coreMeta.setAxisTypes(new AxisType[] {
+      imageMeta.setAxisTypes(new AxisType[] {
           Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME, Axes.Z});
-      coreMeta.setAxisLengths(new int[] {
+      imageMeta.setAxisLengths(new int[] {
           source.getIhdr().getWidth(), source.getIhdr().getHeight(), sizec,
           planeCount, 1});
   
       final int bpp = source.getIhdr().getBitDepth();
   
-      coreMeta.setBitsPerPixel(bpp);
+      imageMeta.setBitsPerPixel(bpp);
       try {
-        coreMeta.setPixelType(FormatTools.pixelTypeFromBytes(
+        imageMeta.setPixelType(FormatTools.pixelTypeFromBytes(
           bpp / 8, false, false));
       }
       catch (final FormatException e) {
         LOGGER.error("Failed to find pixel type from bytes: " + (bpp/8), e);
       }
-      coreMeta.setRgb(rgb);
-      coreMeta.setIndexed(indexed);
-      coreMeta.setPlaneCount(planeCount);
-      coreMeta.setLittleEndian(false);
+      imageMeta.setRgb(rgb);
+      imageMeta.setIndexed(indexed);
+      imageMeta.setPlaneCount(planeCount);
+      imageMeta.setLittleEndian(false);
   
       // Some anciliary chunks may not have been parsed
-      coreMeta.setMetadataComplete(false);
+      imageMeta.setMetadataComplete(false);
   
-      coreMeta.setThumbnail(false);
+      imageMeta.setThumbnail(false);
       //coreMeta.setThumbSizeX(source.thumbSizeX);
       //coreMeta.setThumbSizeY(source.thumbSizeY);
   

@@ -39,7 +39,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.imglib2.meta.Axes;
-import ome.scifio.CoreMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.Reader;
@@ -110,11 +110,11 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
    */
   public int getOriginalIndex(int imageIndex, int planeIndex) {
     int planeCount = getPlaneCount(imageIndex);
-    int originalCount = coreMeta().getPlaneCount(imageIndex);
+    int originalCount = datasetMeta().getPlaneCount(imageIndex);
 
     if (planeCount == originalCount) return planeIndex;
     int[] coords = getZCTCoords(imageIndex, planeIndex);
-    coords[1] /= coreMeta().getRGBChannelCount(imageIndex);
+    coords[1] /= datasetMeta().getRGBChannelCount(imageIndex);
     return FormatTools.getIndex(this, imageIndex, coords[0], coords[1], coords[2]);
   }
   
@@ -126,7 +126,7 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
   public String getDimensionOrder(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
     String order = FormatTools.findDimensionOrder(getReader(), imageIndex);
-    if (coreMeta().isRGB(imageIndex) && !coreMeta().isIndexed(imageIndex)) {
+    if (datasetMeta().isRGB(imageIndex) && !datasetMeta().isIndexed(imageIndex)) {
       String newOrder = "XYC";
       if (order.indexOf("Z") > order.indexOf("T")) newOrder += "TZ";
       else newOrder += "ZT";
@@ -141,8 +141,8 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
    */
   public boolean isRGB(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return coreMeta().isIndexed(imageIndex) && !coreMeta().isFalseColor(imageIndex)
-      && coreMeta().getAxisLength(imageIndex, Axes.CHANNEL) > 1;
+    return datasetMeta().isIndexed(imageIndex) && !datasetMeta().isFalseColor(imageIndex)
+      && datasetMeta().getAxisLength(imageIndex, Axes.CHANNEL) > 1;
   }
   
   // -- Reader API methods --
@@ -150,23 +150,23 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
   /* @see Reader#getImageCount(int) */
   public int getPlaneCount(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return (coreMeta().isRGB(imageIndex) && !coreMeta().isIndexed(imageIndex)) ?
-      coreMeta().getRGBChannelCount(imageIndex) * coreMeta().getImageCount() :
-        coreMeta().getImageCount();
+    return (datasetMeta().isRGB(imageIndex) && !datasetMeta().isIndexed(imageIndex)) ?
+      datasetMeta().getRGBChannelCount(imageIndex) * datasetMeta().getImageCount() :
+        datasetMeta().getImageCount();
   }
 
   /* @see Reader#openBytes(int, int) */
   public byte[] openBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
-    return openBytes(imageIndex, planeIndex, 0, 0, coreMeta().getAxisLength(imageIndex, Axes.X),
-      coreMeta().getAxisLength(imageIndex, Axes.Y));
+    return openBytes(imageIndex, planeIndex, 0, 0, datasetMeta().getAxisLength(imageIndex, Axes.X),
+      datasetMeta().getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, int, byte[]) */
   public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
     throws FormatException, IOException
   {
-    return openBytes(imageIndex, planeIndex, buf, 0, 0, coreMeta().getAxisLength(imageIndex, Axes.X),
-      coreMeta().getAxisLength(imageIndex, Axes.Y));
+    return openBytes(imageIndex, planeIndex, buf, 0, 0, datasetMeta().getAxisLength(imageIndex, Axes.X),
+      datasetMeta().getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, int, int, int, int, int) */
@@ -174,7 +174,7 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
     throws FormatException, IOException
   {
     byte[] buf =
-      DataTools.allocate(w, h, FormatTools.getBytesPerPixel(coreMeta().getPixelType(imageIndex)));
+      DataTools.allocate(w, h, FormatTools.getBytesPerPixel(datasetMeta().getPixelType(imageIndex)));
     return openBytes(imageIndex, planeIndex, buf, x, y, w, h);
   }
 
@@ -185,11 +185,11 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
     FormatTools.assertId(getCurrentFile(), true, 2);
     FormatTools.checkPlaneNumber(this, imageIndex, planeIndex);
 
-    if (coreMeta().isRGB(imageIndex) && !coreMeta().isIndexed(imageIndex)) {
-      int c = coreMeta().getAxisLength(imageIndex, Axes.CHANNEL) / coreMeta().getEffectiveSizeC(imageIndex);
+    if (datasetMeta().isRGB(imageIndex) && !datasetMeta().isIndexed(imageIndex)) {
+      int c = datasetMeta().getAxisLength(imageIndex, Axes.CHANNEL) / datasetMeta().getEffectiveSizeC(imageIndex);
       int source = getOriginalIndex(imageIndex, planeIndex);
       int channel = planeIndex % c;
-      int bpp = FormatTools.getBytesPerPixel(coreMeta().getPixelType(imageIndex));
+      int bpp = FormatTools.getBytesPerPixel(datasetMeta().getPixelType(imageIndex));
 
       //TODO not clear if this should be planeIndex or imageIndex.. it was series originally.. but not sure why?
       if (source != lastPlaneIndex || planeIndex != lastImageIndex ||
@@ -228,7 +228,7 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
           }
 
           ImageTools.splitChannels(lastPlane, strip, channel, c, bpp,
-            false, coreMeta().isInterleaved(imageIndex), strips == 1 ? w * h * bpp : strip.length);
+            false, datasetMeta().isInterleaved(imageIndex), strips == 1 ? w * h * bpp : strip.length);
           if (strips != 1) {
             System.arraycopy(strip, 0, buf, i * stripHeight * w * bpp,
               strip.length);
@@ -237,7 +237,7 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
       }
       else {
         ImageTools.splitChannels(lastPlane, buf, channel, c, bpp,
-          false, coreMeta().isInterleaved(imageIndex), w * h * bpp);
+          false, datasetMeta().isInterleaved(imageIndex), w * h * bpp);
       }
 
       return buf;
@@ -252,10 +252,10 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
     int source = getOriginalIndex(imageIndex, planeIndex);
     byte[] thumb = getReader().openThumbBytes(imageIndex, planeIndex);
 
-    int c = coreMeta().getAxisLength(imageIndex, Axes.CHANNEL) /
-      coreMeta().getEffectiveSizeC(imageIndex);
+    int c = datasetMeta().getAxisLength(imageIndex, Axes.CHANNEL) /
+      datasetMeta().getEffectiveSizeC(imageIndex);
     int channel = planeIndex % c;
-    int bpp = FormatTools.getBytesPerPixel(coreMeta().getPixelType(imageIndex));
+    int bpp = FormatTools.getBytesPerPixel(datasetMeta().getPixelType(imageIndex));
 
     return ImageTools.splitChannels(thumb, channel, c, bpp, false, false);
   }

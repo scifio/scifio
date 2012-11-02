@@ -43,14 +43,14 @@ import loci.legacy.adapter.Wrapper;
 /**
  * This class is used for delegation in the Legacy
  * to Modern direction. It can be used in method singatures
- * expecting an {@link ome.scifio.CoreImageMetadata} - or,
- * more significantly, stored within an {@link ome.scifio.CoreMetadata}
+ * expecting an {@link ome.scifio.ImageMetadata} - or,
+ * more significantly, stored within an {@link ome.scifio.DatasetMetadata}
  *  - but delegates all functionality to the wrapped @{link loci.formats.CoreMetadata}
  * 
  * @author Mark Hiner
  *
  */
-public class CoreMetadataWrapper extends ome.scifio.CoreImageMetadata
+public class CoreMetadataWrapper extends ome.scifio.ImageMetadata
   implements Wrapper<CoreMetadata> 
 {
 
