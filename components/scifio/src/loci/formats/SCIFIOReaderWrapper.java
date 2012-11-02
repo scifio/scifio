@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package loci.formats;
 
 import java.io.File;
@@ -218,7 +217,7 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
 
   public CoreMetadata getCoreMetadata() {
     CoreMetadata cMeta = AdapterTools.getAdapter(CoreMetadataAdapter.class).
-        getModern(Arrays.asList(reader.getCoreMetadata()));
+        getModern(reader.getCoreMetadata());
     
       cMeta.setSource(getStream());
     
