@@ -198,7 +198,7 @@ public abstract class DelegateReader <M extends Metadata> extends AbstractReader
     return useLegacy ? legacyReader.getMetadata() : nativeReader.getMetadata();
   }
 
-  public DatasetMetadata getDatasetMetadata() {
+  public DatasetMetadata<?> getDatasetMetadata() {
     return useLegacy ? legacyReader.getDatasetMetadata() : nativeReader.getDatasetMetadata();
   }
 

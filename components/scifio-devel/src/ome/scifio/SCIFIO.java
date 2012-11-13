@@ -378,11 +378,13 @@ public class SCIFIO {
     if (sFormat != dFormat) {
       destMeta = dFormat.createMetadata();
       
-      final Translator<N, DatasetMetadata> transToCore = sFormat
-          .findSourceTranslator(DatasetMetadata.class);
-      final Translator<DatasetMetadata, M> transFromCore = dFormat
-          .findDestTranslator(DatasetMetadata.class);
-      final DatasetMetadata transMeta = new DatasetMetadata(this);
+      // TODO should probably make this general wrt DatasetMetadata,
+      // but that also requires having a general way to instantiate DatasetMetadata
+      final Translator<N, DefaultDatasetMetadata> transToCore = sFormat
+          .findSourceTranslator(DefaultDatasetMetadata.class);
+      final Translator<DefaultDatasetMetadata, M> transFromCore = dFormat
+          .findDestTranslator(DefaultDatasetMetadata.class);
+      final DefaultDatasetMetadata transMeta = new DefaultDatasetMetadata(this);
       transMeta.setSource(new RandomAccessInputStream(source));
       transToCore.translate(sourceMeta, transMeta);
       transFromCore.translate(transMeta, destMeta);

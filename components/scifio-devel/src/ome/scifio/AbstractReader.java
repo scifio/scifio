@@ -68,7 +68,7 @@ public abstract class AbstractReader<M extends Metadata>
   protected M metadata;
 
   /** Core Metadata values. */
-  protected DatasetMetadata dMeta;
+  protected DefaultDatasetMetadata dMeta;
 
   /** Whether or not to group multi-file formats. */
   protected boolean group = true;
@@ -284,7 +284,7 @@ public abstract class AbstractReader<M extends Metadata>
   /* @see Reader#setMetadata() */
   public void setMetadata(final M meta) throws IOException {
     metadata = meta;
-    dMeta = new DatasetMetadata();
+    dMeta = new DefaultDatasetMetadata();
     if(in == null) setSource(meta.getSource());
     
     try {
@@ -356,7 +356,7 @@ public abstract class AbstractReader<M extends Metadata>
   }
 
   /* @see Reader#getDatasetMetadata() */
-  public DatasetMetadata getDatasetMetadata() {
+  public DatasetMetadata<?> getDatasetMetadata() {
     return dMeta;
   }
 
@@ -383,7 +383,7 @@ public abstract class AbstractReader<M extends Metadata>
   // -- AbstractReader Methods --
 
   private void init() {
-    dMeta = new DatasetMetadata();
+    dMeta = new DefaultDatasetMetadata();
   }
 
   public byte[] readPlane(final RandomAccessInputStream s,

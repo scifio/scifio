@@ -58,8 +58,8 @@ import ome.scifio.AbstractMetadata;
 import ome.scifio.AbstractParser;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
-import ome.scifio.ImageMetadata;
-import ome.scifio.DatasetMetadata;
+import ome.scifio.DefaultDatasetMetadata;
+import ome.scifio.DefaultImageMetadata;
 import ome.scifio.CoreTranslator;
 import ome.scifio.Field;
 import ome.scifio.FieldPrinter;
@@ -882,9 +882,9 @@ public class APNGFormat
    * to write it can not be guaranteed valid.
    *
    */
-  @SCIFIOTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
+  @SCIFIOTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreAPNGTranslator
-    extends AbstractTranslator<DatasetMetadata, Metadata> {
+    extends AbstractTranslator<DefaultDatasetMetadata, Metadata> {
   
     // -- Constructors --
     
@@ -899,7 +899,7 @@ public class APNGFormat
     // -- Translator API Methods -- 
     
     @Override
-    public void translate(final DatasetMetadata source, final Metadata dest) {
+    public void translate(final DefaultDatasetMetadata source, final Metadata dest) {
       super.translate(source, dest);
   
       final APNGIHDRChunk ihdr =
@@ -981,9 +981,9 @@ public class APNGFormat
    * (APNG) images to the Core SCIFIO image type.
    *
    */
-  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
+  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
   public static class APNGCoreTranslator
-    extends AbstractTranslator<Metadata, DatasetMetadata>
+    extends AbstractTranslator<Metadata, DefaultDatasetMetadata>
     implements CoreTranslator {
   
     // -- Constructors --
@@ -999,9 +999,9 @@ public class APNGFormat
     // -- Translator API Methods --
   
     @Override
-    public void translate(final Metadata source, final DatasetMetadata dest) {
+    public void translate(final Metadata source, final DefaultDatasetMetadata dest) {
       super.translate(source, dest);
-      final ImageMetadata imageMeta = new ImageMetadata();
+      final DefaultImageMetadata imageMeta = new DefaultImageMetadata();
       dest.add(imageMeta);
   
       imageMeta.setInterleaved(false);

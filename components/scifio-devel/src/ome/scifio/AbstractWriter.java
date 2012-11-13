@@ -68,7 +68,7 @@ public abstract class AbstractWriter<M extends Metadata>
   protected M metadata;
 
   /** Core Metadata values */
-  protected DatasetMetadata dMeta;
+  protected DefaultDatasetMetadata dMeta;
 
   /** Frame rate to use when writing in frames per second, if applicable. */
   protected int fps = 10;
@@ -127,7 +127,7 @@ public abstract class AbstractWriter<M extends Metadata>
   }
 
   /* @see ome.scifio.Writer#getDatasetMetadata() */
-  public DatasetMetadata getDatasetMetadata() {
+  public DatasetMetadata<?> getDatasetMetadata() {
     return dMeta;
   }
 
@@ -367,7 +367,7 @@ public abstract class AbstractWriter<M extends Metadata>
   // -- Helper methods --
 
   private void init() {
-    this.dMeta = new DatasetMetadata();
+    this.dMeta = new DefaultDatasetMetadata();
   }
 
   /** Sets up the initialized array and ensures this Writer is ready for writing */

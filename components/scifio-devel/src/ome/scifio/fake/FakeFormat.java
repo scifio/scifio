@@ -49,7 +49,8 @@ import ome.scifio.AbstractParser;
 import ome.scifio.AbstractReader;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
-import ome.scifio.ImageMetadata;
+import ome.scifio.DefaultDatasetMetadata;
+import ome.scifio.DefaultImageMetadata;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
@@ -302,7 +303,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
         int y, int w, int h) throws FormatException, IOException {
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
 
-      DatasetMetadata dMeta = getDatasetMetadata();
+      DatasetMetadata<?> dMeta = getDatasetMetadata();
       
       final int pixelType = dMeta.getPixelType(imageIndex);
       final int bpp = FormatTools.getBytesPerPixel(pixelType);
@@ -433,9 +434,9 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   /**
    * Translator from Fake metadata to {@link DatasetMetadata}.
    */
-  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
+  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
   public static class FakeCoreTranslator 
-  extends AbstractTranslator<Metadata, DatasetMetadata> {
+  extends AbstractTranslator<Metadata, DefaultDatasetMetadata> {
     
     // -- Constants --
 
@@ -455,7 +456,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Translator API Methods --
     
     @Override
-    public void translate(final Metadata source, final DatasetMetadata destination) {
+    public void translate(final Metadata source, final DefaultDatasetMetadata destination) {
       super.translate(source, destination);
       
       int sizeX = DEFAULT_SIZE_X;
@@ -587,7 +588,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       int effSizeC = sizeC / rgb;
       
       for(int i = 0; i < numImages; i++) {
-        ImageMetadata imageMeta = new ImageMetadata();
+        DefaultImageMetadata imageMeta = new DefaultImageMetadata();
 
         imageMeta.setAxisTypes(axes);
         imageMeta.setAxisLengths(axisLengths);
@@ -615,9 +616,9 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   /**
    * Translator from {@link DatasetMetadata} to Fake Metadata.
    */
-  @SCIFIOTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
+  @SCIFIOTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreFakeTranslator 
-  extends AbstractTranslator<DatasetMetadata, Metadata> {
+  extends AbstractTranslator<DefaultDatasetMetadata, Metadata> {
 
     // -- Constructor --
     
@@ -632,7 +633,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Translator API Methods --
     
     @Override
-    public void translate(final DatasetMetadata source, final Metadata destination) {
+    public void translate(final DefaultDatasetMetadata source, final Metadata destination) {
       super.translate(source, destination);
       
       String fakeId = NAME + "=" + source.getSource().getFileName();

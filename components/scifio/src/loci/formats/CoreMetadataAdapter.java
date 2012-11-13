@@ -37,7 +37,7 @@ package loci.formats;
 
 import java.util.Iterator;
 
-import ome.scifio.ImageMetadata;
+import ome.scifio.DefaultImageMetadata;
 
 import loci.legacy.adapter.AbstractLegacyAdapter;
 import loci.legacy.adapter.AdapterTools;
@@ -53,15 +53,16 @@ import loci.legacy.adapter.AdapterTools;
  * @author Mark Hiner
  *
  */
-public class CoreMetadataAdapter extends AbstractLegacyAdapter<loci.formats.CoreMetadata[], ome.scifio.DatasetMetadata> {
+public class CoreMetadataAdapter extends 
+  AbstractLegacyAdapter<loci.formats.CoreMetadata[], ome.scifio.DefaultDatasetMetadata> {
 
   // -- LegacyAdapter API --
   
   @Override
-  protected loci.formats.CoreMetadata[] wrapToLegacy(ome.scifio.DatasetMetadata modern) {
+  protected loci.formats.CoreMetadata[] wrapToLegacy(ome.scifio.DefaultDatasetMetadata modern) {
     CoreMetadata[] legacyArray = new ImageMetadataWrapper[modern.getImageCount()];
     
-    Iterator<ImageMetadata> metaIterator = modern.getImageMetadata().iterator();
+    Iterator<DefaultImageMetadata> metaIterator = modern.getImageMetadata().iterator();
     
     int i = 0;
     while(metaIterator.hasNext()) {
@@ -74,7 +75,7 @@ public class CoreMetadataAdapter extends AbstractLegacyAdapter<loci.formats.Core
   }
 
   @Override
-  protected ome.scifio.DatasetMetadata wrapToModern(loci.formats.CoreMetadata[] legacy) {
+  protected ome.scifio.DefaultDatasetMetadata wrapToModern(loci.formats.CoreMetadata[] legacy) {
     return new CoreMetadataArrayWrapper(legacy);
   }
 

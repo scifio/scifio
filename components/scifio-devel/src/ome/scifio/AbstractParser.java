@@ -70,7 +70,7 @@ public abstract class AbstractParser<M extends Metadata>
   protected M metadata;
 
   /** Core metadata values. */
-  protected DatasetMetadata dMeta;
+  protected DefaultDatasetMetadata dMeta;
 
   /** Name of current file. */
   protected String currentId;
@@ -88,7 +88,7 @@ public abstract class AbstractParser<M extends Metadata>
 
   public AbstractParser(final SCIFIO ctx) {
     super(ctx);
-    dMeta = new DatasetMetadata();
+    dMeta = new DefaultDatasetMetadata();
   }
 
   // -- HasFormat API Methods --

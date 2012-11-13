@@ -56,8 +56,9 @@ import ome.scifio.AbstractParser;
 import ome.scifio.AbstractReader;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
-import ome.scifio.ImageMetadata;
 import ome.scifio.DatasetMetadata;
+import ome.scifio.DefaultDatasetMetadata;
+import ome.scifio.DefaultImageMetadata;
 import ome.scifio.CoreTranslator;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
@@ -1270,7 +1271,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         out.writeBytes("filename\t" + currentId + "\n");
         out.writeBytes("layout\tparameters\t6\n");
 
-        DatasetMetadata meta = dMeta;
+        DatasetMetadata<?> meta = dMeta;
         //SCIFIOMetadataTools.verifyMinimumPopulated(meta, pixels);
 
         int pixelType = meta.getPixelType(imageIndex);
@@ -1357,7 +1358,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       }
     }
     
-    private int[] overwriteDimensions(DatasetMetadata meta, int imageIndex) throws IOException {
+    private int[] overwriteDimensions(DatasetMetadata<?> meta, int imageIndex) throws IOException {
       out.seek(dimensionOffset);
       int sizeX = meta.getAxisLength(imageIndex, Axes.X);
       int sizeY = meta.getAxisLength(imageIndex, Axes.Y);
@@ -1973,9 +1974,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * metadata type.
    * 
    */
-  @SCIFIOTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
+  @SCIFIOTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreICSTranslator
-  extends AbstractTranslator<DatasetMetadata, Metadata>
+  extends AbstractTranslator<DefaultDatasetMetadata, Metadata>
   implements CoreTranslator {
   
     // -- Constructors --
@@ -1991,7 +1992,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Translator API Methods --
   
     @Override
-    public void translate(final DatasetMetadata source, final Metadata destination)
+    public void translate(final DefaultDatasetMetadata source, final Metadata destination)
     {
       super.translate(source, destination);
       // note that the destination fields will preserve their default values
@@ -2095,9 +2096,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * to the SCIFIO Core metadata type. 
    *
    */
-  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
+  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
   public static class ICSCoreTranslator
-  extends AbstractTranslator<Metadata, DatasetMetadata>
+  extends AbstractTranslator<Metadata, DefaultDatasetMetadata>
   implements CoreTranslator {
 
     private Metadata curSource;
@@ -2115,10 +2116,10 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Translator API Methods --
 
     @Override
-    public void translate(final Metadata source, final DatasetMetadata destination)
+    public void translate(final Metadata source, final DefaultDatasetMetadata destination)
     {
       super.translate(source, destination);
-      final ImageMetadata imageMeta = new ImageMetadata();
+      final DefaultImageMetadata imageMeta = new DefaultImageMetadata();
       destination.add(imageMeta);
       final int index = destination.getImageCount() - 1;
 
@@ -2213,8 +2214,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         cTypes[i] = channelTypes.get(i);
       }
 
-      imageMeta.setcLengths(cLengths);
-      imageMeta.setcTypes(cTypes);
+      imageMeta.setChannelLengths(cLengths);
+      imageMeta.setChannelTypes(cTypes);
 
       if (destination.getAxisIndex(index, Axes.Z) == -1) {
         destination.addAxis(index, Axes.Z, 1);
@@ -2252,8 +2253,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         imageMeta.setAxisLength(
           Axes.Z, (destination.getAxisLength(index, Axes.CHANNEL)));
         imageMeta.setAxisLength(Axes.CHANNEL, binCount);
-        imageMeta.setcLengths(new int[] {binCount});
-        imageMeta.setcTypes(new String[] {FormatTools.LIFETIME});
+        imageMeta.setChannelLengths(new int[] {binCount});
+        imageMeta.setChannelTypes(new String[] {FormatTools.LIFETIME});
         final int cIndex = destination.getAxisIndex(index, Axes.CHANNEL);
         final int zIndex = destination.getAxisIndex(index, Axes.Z);
         imageMeta.setAxisType(cIndex, Axes.Z);

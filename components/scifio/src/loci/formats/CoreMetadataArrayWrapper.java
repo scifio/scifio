@@ -47,7 +47,7 @@ import loci.legacy.adapter.Wrapper;
  * @author Mark Hiner
  *
  */
-public class CoreMetadataArrayWrapper extends ome.scifio.DatasetMetadata
+public class CoreMetadataArrayWrapper extends ome.scifio.DefaultDatasetMetadata
   implements Wrapper<CoreMetadata[]>
 {
 

@@ -136,7 +136,8 @@ public final class MetadataTools {
   public static void populateMetadata(MetadataStore store, int series,
     String imageName, loci.formats.CoreMetadata coreMeta)
   {
-    ome.scifio.DatasetMetadata cMeta = new ome.scifio.DatasetMetadata(LegacyContext.get());
+    ome.scifio.DefaultDatasetMetadata cMeta = 
+        new ome.scifio.DefaultDatasetMetadata(LegacyContext.get());
     
     // Fake an ome.scifio.CoreMetadata array, with the converted coreMetadata at index series
     for(int i=0; i<series; i++)

@@ -50,7 +50,7 @@ import loci.legacy.adapter.Wrapper;
  * @author Mark Hiner
  *
  */
-public class CoreMetadataWrapper extends ome.scifio.ImageMetadata
+public class CoreMetadataWrapper extends ome.scifio.DefaultImageMetadata
   implements Wrapper<CoreMetadata> 
 {
 

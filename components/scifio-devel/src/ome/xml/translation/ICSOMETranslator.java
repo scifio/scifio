@@ -43,7 +43,7 @@ import java.util.List;
 
 import net.imglib2.meta.Axes;
 
-import ome.scifio.DatasetMetadata;
+import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.MetadataLevel;
@@ -114,12 +114,13 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     FilterMetadata filter = new FilterMetadata(store, source.isFiltered());
     filter.createRoot();
     
-    DatasetMetadata dMeta = new DatasetMetadata();
+    DefaultDatasetMetadata dMeta = new DefaultDatasetMetadata();
     Format<?,?,?,?,?> icsFormat = getContext().getFormatFromMetadata(source.getClass());
     
-    Translator<ICSFormat.Metadata, DatasetMetadata> trans = null;
+    Translator<ICSFormat.Metadata, DefaultDatasetMetadata> trans = null;
     try {
-      trans = (Translator<ICSFormat.Metadata, DatasetMetadata>) icsFormat.findSourceTranslator(DatasetMetadata.class);
+      trans = (Translator<ICSFormat.Metadata, DefaultDatasetMetadata>) 
+          icsFormat.findSourceTranslator(DefaultDatasetMetadata.class);
     } catch (FormatException e) {
       throw new RuntimeException(e);
     }
