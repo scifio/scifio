@@ -54,10 +54,6 @@ public class ImageMetadata {
   @Field(label = "planeCount")
   private int planeCount;
 
-  /** 8-bit lookup table for this image */
-  @Field(label = "lut")
-  private byte[][] lut;
-
   /** Width (in pixels) of thumbnail planes in this image. */
   @Field(label = "thumbSizeX")
   private int thumbSizeX;
@@ -167,7 +163,6 @@ public class ImageMetadata {
     indexed = copy.indexed;
     interleaved = copy.interleaved;
     littleEndian = copy.littleEndian;
-    lut = copy.lut.clone();
     metadataComplete = copy.metadataComplete;
     orderCertain = copy.orderCertain;
     pixelType = copy.pixelType;
@@ -179,10 +174,6 @@ public class ImageMetadata {
   }
 
   // -- Setters -- 
-
-  public void setLut(final byte[][] lut) {
-    this.lut = lut;
-  }
 
   public void setThumbSizeX(final int thumbSizeX) {
     this.thumbSizeX = thumbSizeX;
@@ -272,10 +263,6 @@ public class ImageMetadata {
     
   public int getPlaneCount() {
     return planeCount;
-  }
-
-  public byte[][] getLut() {
-    return lut;
   }
 
   public int getThumbSizeX() {

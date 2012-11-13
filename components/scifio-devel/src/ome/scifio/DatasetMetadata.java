@@ -157,19 +157,6 @@ public class DatasetMetadata extends AbstractMetadata {
     return imageMeta.get(imageIndex).getBitsPerPixel();
   }
 
-  public byte[][] get8BitLookupTable(final int imageIndex)
-    throws ome.scifio.FormatException, IOException
-  {
-    return imageMeta.get(imageIndex).getLut();
-  }
-
-  public short[][] get16BitLookupTable(final int imageIndex)
-    throws ome.scifio.FormatException, IOException
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
   public boolean isRGB(final int imageIndex) {
     return imageMeta.get(imageIndex).isRgb();
   }
@@ -370,18 +357,6 @@ public class DatasetMetadata extends AbstractMetadata {
   
   public void putImageMeta(final int imageIndex, String key, Object value) {
     imageMeta.get(imageIndex).getImageMetadata().put(key, value);
-  }
-
-  public void set8BitLookupTable(final int imageIndex, final byte[][] lut)
-    throws FormatException, IOException
-  {
-    imageMeta.get(imageIndex).setLut(lut);
-  }
-
-  public void set16BitLookupTable(final int imageIndex, final short[][] lut)
-    throws FormatException, IOException
-  {
-    // TODO Auto-generated method stub
   }
 
   public void setThumbSizeX(final int imageIndex, final int thumbX) {
