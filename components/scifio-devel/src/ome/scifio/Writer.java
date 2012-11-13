@@ -115,7 +115,7 @@ public interface Writer<M extends Metadata> extends HasContext, HasFormat {
    * Sets the metadata retrieval object from
    * which to retrieve standardized metadata.
    */
-  void setMetadata(M meta);
+  void setMetadata(M meta) throws FormatException;
 
   /**
    * Retrieves the current metadata retrieval object for this writer. You can

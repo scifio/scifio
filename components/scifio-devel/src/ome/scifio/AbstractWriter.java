@@ -357,8 +357,10 @@ public abstract class AbstractWriter<M extends Metadata>
 
   }
 
-  public void setMetadata(final M meta, final Translator<M, DatasetMetadata> t) {
+  public void setMetadata(final M meta) throws FormatException {
     this.metadata = meta;
+    Translator<M, DatasetMetadata> t =
+        getFormat().findSourceTranslator(DatasetMetadata.class);
     t.translate(meta, dMeta);
   }
 

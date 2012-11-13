@@ -1195,11 +1195,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     
     /* @see ome.scifio.Writer#caDoStacks() */
     public boolean canDoStacks() { return true; };
-  
-    /* @see ome.scifio.Writer#setMetadata(Metadata) */
-    public void setMetadata(final Metadata meta) {
-      super.setMetadata(meta, new ICSCoreTranslator());
-    }
     
     /* @see ome.scifio.Writer#getPixelTypes(String) */
     public int[] getPixelTypes(String codec) {

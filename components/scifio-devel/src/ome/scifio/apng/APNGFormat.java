@@ -635,11 +635,6 @@ public class APNGFormat
           FormatTools.INT16, FormatTools.UINT16 };
     }
 
-    /* @see Writer#setMetadata(M) */
-    public void setMetadata(final Metadata meta) {
-      super.setMetadata(meta, new APNGCoreTranslator());
-    }
-
     // -- APNGWriter Methods --
 
     /* @see ome.scifio.Writer#close() */
