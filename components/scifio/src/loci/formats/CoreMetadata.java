@@ -252,11 +252,11 @@ public class CoreMetadata implements Cloneable {
     pixelType = imgMeta.getPixelType();
     bitsPerPixel = imgMeta.getBitsPerPixel();
     imageCount = imgMeta.getPlaneCount();
-    cLengths = imgMeta.getcLengths();
-    cTypes = imgMeta.getcTypes();
+    cLengths = imgMeta.getChannelLengths();
+    cTypes = imgMeta.getChannelTypes();
     dimensionOrder = ome.scifio.util.FormatTools.findDimensionOrder(imgMeta.getAxisTypes());
     orderCertain = imgMeta.isOrderCertain();
-    rgb = imgMeta.isRgb();
+    rgb = imgMeta.isRGB();
     littleEndian = imgMeta.isLittleEndian();
     interleaved = imgMeta.isInterleaved();
     indexed = imgMeta.isIndexed();
@@ -318,10 +318,10 @@ public class CoreMetadata implements Cloneable {
     coreImg.setThumbSizeY(thumbSizeY);
     coreImg.setPixelType(pixelType);
     coreImg.setBitsPerPixel(bitsPerPixel);
-    coreImg.setcLengths(cLengths);
-    coreImg.setcTypes(cTypes);
+    coreImg.setChannelLengths(cLengths);
+    coreImg.setChannelTypes(cTypes);
     coreImg.setOrderCertain(orderCertain);
-    coreImg.setRgb(rgb);
+    coreImg.setRGB(rgb);
     coreImg.setLittleEndian(littleEndian);
     coreImg.setInterleaved(interleaved);
     coreImg.setIndexed(indexed);
