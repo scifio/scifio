@@ -49,7 +49,7 @@ public class TranslatorExample {
 			
 			for(int i = 0; i < reader.getImageCount(); i++) {
 				for(int j = 0; j < reader.getPlaneCount(i); j++) {
-					byte[] bytes = reader.openBytes(i, j);
+					byte[] bytes = reader.openPlane(i, j).getBytes();
 					writer.saveBytes(i, j, bytes);
 				}
 			}

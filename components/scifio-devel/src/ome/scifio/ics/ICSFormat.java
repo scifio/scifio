@@ -53,9 +53,10 @@ import ome.scifio.AbstractChecker;
 import ome.scifio.AbstractFormat;
 import ome.scifio.AbstractMetadata;
 import ome.scifio.AbstractParser;
-import ome.scifio.AbstractReader;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
+import ome.scifio.ByteArrayPlane;
+import ome.scifio.ByteArrayReader;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
@@ -855,20 +856,22 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
       // check if we have a v2 ICS file - means there is no companion IDS file
       final RandomAccessInputStream f = new RandomAccessInputStream(icsId);
-      if (f.readString(17).trim().equals("ics_version\t2.0")) {
+      String version = f.readString(17).trim();
+      f.close();
+      
+      if (version.equals("ics_version\t2.0")) {
         in = new RandomAccessInputStream(icsId);
         metadata.versionTwo = true;
       }
       else {
         if (idsId == null) throw new FormatException("No IDS file found.");
         final Location idsFile = new Location(idsId);
-        if (!idsFile.exists()) throw new FormatException("IDS file not found.");
+        if (!idsFile.exists()) throw new FormatException("IDS file does not exist.");
         //currentIdsId = idsId;
         metadata.idsId = idsId;
         in = new RandomAccessInputStream(idsId);
       }
-      f.close();
-      }
+    }
   }
 
   /**
@@ -876,7 +879,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * images. Version 1 and 2 supported.
    * 
    */
-  public static class Reader extends AbstractReader<Metadata> {
+  public static class Reader extends ByteArrayReader<Metadata> {
   
     // -- Fields --
   
@@ -916,13 +919,12 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     // -- Reader API Methods --
   
-    @Override
-    public byte[] openBytes(final int imageIndex, final int planeIndex,
-      final byte[] buf, final int x, final int y, final int w, final int h)
+    public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+      final ByteArrayPlane plane, final int x, final int y, final int w, final int h)
         throws FormatException, IOException
         {
       FormatTools.checkPlaneParameters(
-        this, imageIndex, planeIndex, buf.length, x, y, w, h);
+        this, imageIndex, planeIndex, plane.getData().length, x, y, w, h);
   
       final int bpp =
         FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
@@ -1005,17 +1007,17 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
                 bpp * ((planeIndex % dMeta.getAxisLength(imageIndex, Axes.CHANNEL))
                     + sizeC * (row * (row * dMeta.getAxisLength(imageIndex, Axes.X) + col)));
             int dest = bpp * ((row - y) * w + (col - x));
-            System.arraycopy(data, src, buf, dest, bpp); 
+            System.arraycopy(data, src, plane.getBytes(), dest, bpp); 
           }
         }
       }
       else if (gzip) {
         final RandomAccessInputStream s = new RandomAccessInputStream(data);
-        readPlane(s, imageIndex, x, y, w, h, buf);
+        readPlane(s, imageIndex, x, y, w, h, plane);
         s.close();
       }
       else {
-        readPlane(in, imageIndex, x, y, w, h, buf);
+        readPlane(in, imageIndex, x, y, w, h, plane);
       }
   
       if (invertY) {
@@ -1023,16 +1025,16 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         for (int r = 0; r < h / 2; r++) {
           final int topOffset = r * rowLen;
           final int bottomOffset = (h - r - 1) * rowLen;
-          System.arraycopy(buf, topOffset, row, 0, rowLen);
-          System.arraycopy(buf, bottomOffset, buf, topOffset, rowLen);
-          System.arraycopy(row, 0, buf, bottomOffset, rowLen);
+          System.arraycopy(plane.getBytes(), topOffset, row, 0, rowLen);
+          System.arraycopy(plane.getBytes(), bottomOffset, plane, topOffset, rowLen);
+          System.arraycopy(row, 0, plane.getBytes(), bottomOffset, rowLen);
         }
       }
   
       prevImage = planeIndex;
   
-      return buf;
-        }
+      return plane;
+    }
   
     /* @see Reader#close(boolean) */
     @Override
@@ -2125,7 +2127,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
 
       curSource = source;
 
-      imageMeta.setRgb(false);
+      imageMeta.setRGB(false);
 
       // find axis sizes
 

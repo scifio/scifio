@@ -45,7 +45,9 @@ import java.util.List;
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
  */
-public interface Format<M extends Metadata, C extends Checker<M>, P extends Parser<M>, R extends Reader<M>, W extends Writer<M>>
+public interface Format<M extends Metadata, C extends Checker<M>,
+  P extends Parser<M>, R extends Reader<M, ? extends Plane>,
+  W extends Writer<M>>
   extends HasContext, Comparable<Format<?, ?, ?, ?, ?>> {
 
   // -- Format API methods --

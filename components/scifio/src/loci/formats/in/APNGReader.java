@@ -98,7 +98,7 @@ public class APNGReader extends SCIFIOBIFormatReader {
   @Deprecated
   public byte[] openBytes(int no) throws FormatException, IOException {
     try {
-      return reader.openBytes(getSeries(), no);
+      return reader.openPlane(getSeries(), no);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e.getCause());
@@ -112,7 +112,7 @@ public class APNGReader extends SCIFIOBIFormatReader {
     throws FormatException, IOException
   {
     try {
-      return reader.openBytes(this.getSeries(), no, buf);
+      return reader.openPlane(this.getSeries(), no, buf);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e.getCause());
@@ -126,7 +126,7 @@ public class APNGReader extends SCIFIOBIFormatReader {
     throws FormatException, IOException
   {
     try {
-      return reader.openBytes(this.getSeries(), no, x, y, w, h);
+      return reader.openPlane(this.getSeries(), no, x, y, w, h);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e.getCause());

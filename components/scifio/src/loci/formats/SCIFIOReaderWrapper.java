@@ -122,13 +122,13 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
     throw new UnsupportedOperationException();
   }
 
-  public byte[] openBytes(int imageIndex, int planeIndex)
+  public byte[] openPlane(int imageIndex, int planeIndex)
     throws ome.scifio.FormatException, IOException
   {
     return reader.openBytes(imageIndex);
   }
 
-  public byte[] openBytes(int imageIndex, int planeIndex, int x, int y,
+  public byte[] openPlane(int imageIndex, int planeIndex, int x, int y,
     int w, int h) throws ome.scifio.FormatException, IOException
   {
     return reader.openBytes(imageIndex, x, y, w, h);
@@ -152,7 +152,7 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
     return reader.openPlane(imageIndex, x, y, w, h);
   }
 
-  public byte[] openThumbBytes(int imageIndex, int planeIndex)
+  public byte[] openThumbPlane(int imageIndex, int planeIndex)
     throws ome.scifio.FormatException, IOException
   {
     return reader.openThumbBytes(imageIndex);

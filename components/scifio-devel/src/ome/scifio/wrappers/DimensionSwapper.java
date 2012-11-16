@@ -45,8 +45,10 @@ import java.util.List;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.DatasetMetadata;
+import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
@@ -60,20 +62,20 @@ import ome.scifio.util.FormatTools;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/DimensionSwapper.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/DimensionSwapper.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
+public class DimensionSwapper<M extends Metadata, P extends Plane> extends ReaderWrapper<M, P> {
 
   // -- Utility methods --
 
   /** Converts the given reader into a DimensionSwapper, wrapping if needed. */
-  public static DimensionSwapper makeDimensionSwapper(Reader r) {
-    if (r instanceof DimensionSwapper) return (DimensionSwapper) r;
-    return new DimensionSwapper(r);
+  public static <M extends Metadata, P extends Plane> DimensionSwapper<M, P> makeDimensionSwapper(Reader<M, P> r) {
+    if (r instanceof DimensionSwapper) return (DimensionSwapper<M, P>) r;
+    return new DimensionSwapper<M, P>(r);
   }
 
   // -- Fields --
 
   /** Core metadata associated with this dimension swapper. */
-  private DatasetMetadata core;
+  private DatasetMetadata<?> core;
 
   // -- Constructors --
 
@@ -81,7 +83,7 @@ public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
   public DimensionSwapper() { super(); }
 
   /** Constructs a DimensionSwapper with the given reader. */
-  public DimensionSwapper(Reader<M> r) { super(r); }
+  public DimensionSwapper(Reader<M, P> r) { super(r); }
 
   private List<AxisType>[] outputOrder;
 
@@ -176,34 +178,34 @@ public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
   // -- Reader API methods --
 
   /* @see Reader#openBytes(int) */
-  public byte[] openBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
-    return super.openBytes(imageIndex, reorder(imageIndex, planeIndex));
+  public P openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
+    return super.openPlane(imageIndex, reorder(imageIndex, planeIndex));
   }
 
   /* @see Reader#openBytes(int, int, int, int, int) */
-  public byte[] openBytes(int imageIndex, int planeIndex, int x, int y, int w, int h)
+  public P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    return super.openBytes(imageIndex, reorder(imageIndex, planeIndex), x, y, w, h);
+    return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), x, y, w, h);
   }
 
   /* @see Reader#openBytes(int, byte[]) */
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
+  public P openBytes(int imageIndex, int planeIndex, P plane)
     throws FormatException, IOException
   {
-    return super.openBytes(imageIndex, reorder(imageIndex, planeIndex), buf);
+    return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane);
   }
 
   /* @see Reader#openBytes(int, byte[], int, int, int, int) */
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x, int y, int w, int h)
+  public P openBytes(int imageIndex, int planeIndex, P plane, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    return super.openBytes(imageIndex, reorder(imageIndex, planeIndex), buf, x, y, w, h);
+    return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane, x, y, w, h);
   }
 
   /* @see Reader#openThumbImage(int) */
-  public byte[] openThumbBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
-    return super.openThumbBytes(imageIndex, reorder(imageIndex, planeIndex));
+  public P openThumbPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
+    return super.openThumbPlane(imageIndex, reorder(imageIndex, planeIndex));
   }
 
   /* @see Reader#getZCTCoords(int) */
@@ -218,7 +220,7 @@ public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
 
   /* @see Reader#getDatasetMetadata() */
   @Override
-  public DatasetMetadata getDatasetMetadata() {
+  public DatasetMetadata<?> getDatasetMetadata() {
     FormatTools.assertId(getCurrentFile(), true, 2);
     return core;
   }
@@ -244,7 +246,8 @@ public class DimensionSwapper<M extends Metadata> extends ReaderWrapper<M> {
 
       // NB: Create our own copy of the DatasetMetadata,
       // which we can manipulate safely.
-      core = new DatasetMetadata(core, getReader().getContext());
+      //TODO should be a copy method
+      core = new DefaultDatasetMetadata(getReader().getDatasetMetadata(), getReader().getContext());
     }
   }
 

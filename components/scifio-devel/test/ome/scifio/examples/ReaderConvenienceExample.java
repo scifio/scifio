@@ -14,12 +14,12 @@ public class ReaderConvenienceExample {
 		String testFile = fnf.buildPath("testPNG.png");
 
     SCIFIO ctx = null;
-    Reader<?> r = null;
+    Reader<?, ?> r = null;
 
     try {
       ctx = new SCIFIO();
       r = ctx.initializeReader(testFile);
-      byte[] bytes = r.openBytes(0, 0);
+      byte[] bytes = r.openPlane(0, 0).getBytes();
       r.close();
       
       System.out.println("Num bytes:" + bytes.length);

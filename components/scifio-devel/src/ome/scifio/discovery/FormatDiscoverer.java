@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package ome.scifio.discovery;
 
 import java.util.ArrayList;
@@ -46,26 +45,31 @@ import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.Parser;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.Writer;
 
+/**
+ * @author Mark Hiner
+ *
+ */
 public class FormatDiscoverer implements
     Discoverer<SCIFIOFormat, Format<? extends Metadata, ? extends Checker<? extends Metadata>, 
-        ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata>, 
+        ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata, ? extends Plane>, 
         ? extends Writer<? extends Metadata>>> {
 
   // -- Discoverer API Methods --
   
   /* Builds a list of all discovered Formats */
   public List<Format<? extends Metadata, ? extends Checker<? extends Metadata>, 
-      ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata>, 
+      ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata, ? extends Plane>, 
       ? extends Writer<? extends Metadata>>> discover() throws FormatException {
     
     final List<Format<? extends Metadata, ? extends Checker<? extends Metadata>, 
-        ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata>, 
+        ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata, ? extends Plane>, 
         ? extends Writer<? extends Metadata>>> formats = 
         new ArrayList<Format<? extends Metadata, ? extends Checker<? extends Metadata>, 
-            ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata>, 
+            ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata, ? extends Plane>, 
             ? extends Writer<? extends Metadata>>>();
 
     for (final IndexItem<SCIFIOFormat, Format> item : Index
@@ -73,7 +77,7 @@ public class FormatDiscoverer implements
       try {
         @SuppressWarnings("unchecked")
         final Format<? extends Metadata, ? extends Checker<? extends Metadata>, 
-            ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata>, 
+            ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata, ? extends Plane>, 
             ? extends Writer<? extends Metadata>> format = item.instance();
         formats.add(format);
       } catch (final InstantiationException e) {

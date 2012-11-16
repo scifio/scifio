@@ -53,7 +53,7 @@ import ome.scifio.discovery.TranslatorDiscoverer;
  * ome.scifio.Format.
  * 
  */
-public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P extends Parser<M>, R extends Reader<M>, W extends Writer<M>>
+public abstract class AbstractFormat<M extends Metadata, C extends Checker<M>, P extends Parser<M>, R extends Reader<M, ? extends Plane>, W extends Writer<M>>
     extends AbstractHasContext implements Format<M, C, P, R, W> {
   
   // -- Constants --

@@ -49,6 +49,7 @@ import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.MetadataOptions;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DataTools;
@@ -67,14 +68,15 @@ import ome.scifio.util.ImageTools;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ChannelFiller.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/ChannelFiller.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
+public class ChannelFiller<M extends Metadata, P extends Plane> extends ReaderWrapper<M, P> {
 
   // -- Utility methods --
 
   /** Converts the given reader into a ChannelFiller, wrapping if needed. */
-  public static ChannelFiller makeChannelFiller(Reader r) {
-    if (r instanceof ChannelFiller) return (ChannelFiller) r;
-    return new ChannelFiller(r);
+  public static <M extends Metadata, P extends Plane> ChannelFiller<M, P>
+    makeChannelFiller(Reader<M, P> r) {
+    if (r instanceof ChannelFiller) return (ChannelFiller<M, P>) r;
+    return new ChannelFiller<M, P>(r);
   }
 
   // -- Fields --
@@ -94,7 +96,7 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
   public ChannelFiller() { super(); }
 
   /** Constructs a ChannelFiller with a given reader. */
-  public ChannelFiller(Reader<M> r) { super(r); }
+  public ChannelFiller(Reader<M, P> r) { super(r); }
 
   // -- ChannelFiller methods --
 
@@ -169,44 +171,43 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
 
   /* @see Reader#getDatasetMetadata() */
   @Override
-  public DatasetMetadata getDatasetMetadata() {
+  public DatasetMetadata<?> getDatasetMetadata() {
     DatasetMetadataWrapper wrapper = new DatasetMetadataWrapper(datasetMeta());
     
-    return (DatasetMetadata)wrapper;
+    return (DatasetMetadata<?>)wrapper;
   }
 
   /* @see Reader#openBytes(int) */
   @Override
-  public byte[] openBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
-    return openBytes(imageIndex, planeIndex, 0, 0, 
+  public P openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
+    return openPlane(imageIndex, planeIndex, 0, 0, 
       datasetMeta().getAxisLength(imageIndex, Axes.X), datasetMeta().getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, byte[]) */
   @Override
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
+  public P openPlane(int imageIndex, int planeIndex, P plane)
     throws FormatException, IOException
   {
-    return openBytes(imageIndex, planeIndex, buf, 0, 0, 
+    return openPlane(imageIndex, planeIndex, plane, 0, 0, 
       datasetMeta().getAxisLength(imageIndex, Axes.X), datasetMeta().getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, int, int, int, int) */
   @Override
-  public byte[] openBytes(int imageIndex, int planeIndex, int x, int y, int w, int h)
+  public P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    byte[] buf = DataTools.allocate(w, h, datasetMeta().getRGBChannelCount(imageIndex),
-      FormatTools.getBytesPerPixel(datasetMeta().getPixelType(imageIndex)));
-    return openBytes(imageIndex, planeIndex, buf, x, y, w, h);
+    P plane = createPlane(x, y, w, h);
+    return openPlane(imageIndex, planeIndex, plane, x, y, w, h);
   }
 
   /* @see Reader#openBytes(int, byte[], int, int, int, int) */
   @Override
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x, int y, int w, int h)
+  public P openPlane(int imageIndex, int planeIndex, P plane, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    if (!isFilled(imageIndex)) return getReader().openBytes(imageIndex, planeIndex, buf, x, y, w, h);
+    if (!isFilled(imageIndex)) return getReader().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
 
     // TODO: The pixel type should change to match the available color table.
     // That is, even if the indices are uint8, if the color table is 16-bit,
@@ -216,7 +217,7 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
 
     // TODO: This logic below is opaque and could use some comments.
 
-    byte[] pix = getReader().openBytes(imageIndex, planeIndex, x, y, w, h);
+    byte[] pix = getReader().openPlane(imageIndex, planeIndex, x, y, w, h).getBytes();
     if (datasetMeta().getPixelType(imageIndex) == FormatTools.UINT8) {
       byte[][] b = ImageTools.indexedToRGB(get8BitLookupTable(imageIndex), pix);
       if (datasetMeta().isInterleaved(imageIndex)) {
@@ -328,15 +329,15 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
    * @author Mark Hiner
    *
    */
-  private class DatasetMetadataWrapper extends DatasetMetadata {
+  private class DatasetMetadataWrapper implements DatasetMetadata {
     
     // -- Fields (delegation target) --
     
-    private DatasetMetadata dMeta;
+    private DatasetMetadata<?> dMeta;
     
     // -- Constructor --
     
-    public DatasetMetadataWrapper(DatasetMetadata meta) {
+    public DatasetMetadataWrapper(DatasetMetadata<?> meta) {
       dMeta = meta;
     }
     
@@ -369,7 +370,7 @@ public class ChannelFiller<M extends Metadata> extends ReaderWrapper<M> {
 
     /* @see ome.scifio.DatasetMetadata#getMetadataValue(int, java.lang.String) */
     public Object getMetadataValue(int imageIndex, String field) {
-      return dMeta.getMetadataValue(imageIndex, field);
+      return dMeta.getImageMetadataValue(imageIndex, field);
     }
 
     /* @see ome.scifio.DatasetMetadata#getImageMetadataValue(int, java.lang.String) */

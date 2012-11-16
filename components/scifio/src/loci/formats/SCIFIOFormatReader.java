@@ -620,7 +620,7 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   @Override
   public byte[] openBytes(int no) throws FormatException, IOException {
     try {
-      return reader.openBytes(getSeries(), no);
+      return reader.openPlane(getSeries(), no);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -634,7 +634,7 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
     throws FormatException, IOException
   {
     try {
-      return reader.openBytes(getSeries(), no, buf);
+      return reader.openPlane(getSeries(), no, buf);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -648,7 +648,7 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
     throws FormatException, IOException
   {
     try {
-      return reader.openBytes(getSeries(), no, x, y, w, h);
+      return reader.openPlane(getSeries(), no, x, y, w, h);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -674,7 +674,7 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   @Override
   public byte[] openThumbBytes(int no) throws FormatException, IOException {
     try {
-      return reader.openThumbBytes(getSeries(), no);
+      return reader.openThumbPlane(getSeries(), no);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);

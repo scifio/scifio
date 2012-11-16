@@ -52,8 +52,8 @@ import ome.scifio.util.FormatTools;
  * Abstract superclass of all SCIFIO reader components.
  *
  */
-public abstract class AbstractReader<M extends Metadata>
-  extends AbstractHasContext implements Reader<M> {
+public abstract class AbstractReader<M extends Metadata, P extends Plane>
+  extends AbstractHasContext implements Reader<M, P> {
 
   // -- Constants --
 
@@ -99,7 +99,6 @@ public abstract class AbstractReader<M extends Metadata>
 
   // -- HasFormat API Methods --
 
-  @SuppressWarnings("unchecked")
   public Format<M, ?, ?, ?, ?> getFormat() {
     return getContext().getFormatFromReader(getClass());
   }
@@ -141,74 +140,64 @@ public abstract class AbstractReader<M extends Metadata>
   }
 
   /* @see Reader#openBytes(int, int) */
-  public byte[] openBytes(final int imageIndex, final int planeNumber)
+  public P openPlane(final int imageIndex, final int planeNumber)
     throws FormatException, IOException
   {
-    return openBytes(
+    return openPlane(
       imageIndex, planeNumber, 0, 0, dMeta.getAxisLength(imageIndex, Axes.X),
       dMeta.getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, int, int, int, int, int) */
-  public byte[] openBytes(final int imageIndex, final int planeIndex,
+  public P openPlane(final int imageIndex, final int planeIndex,
     final int x, final int y, final int w, final int h)
     throws FormatException, IOException
   {
     final int bpp =
       FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
     final int ch = dMeta.getRGBChannelCount(imageIndex);
-    final byte[] newBuffer = new byte[w * h * ch * bpp];
-    return openBytes(imageIndex, planeIndex, newBuffer, x, y, w, h);
+    final P plane = createPlane(w, h, ch, bpp);
+    return openPlane(imageIndex, planeIndex, plane, x, y, w, h);
   }
 
   /* @see Reader#openBytes(int, int, byte[]) */
-  public byte[] openBytes(final int imageIndex, final int planeIndex,
-    final byte[] buf) throws FormatException, IOException
+  public P openPlane(final int imageIndex, final int planeIndex,
+    final P plane) throws FormatException, IOException
   {
-    return openBytes(
-      imageIndex, planeIndex, buf, 0, 0,
+    return openPlane(
+      imageIndex, planeIndex, plane, 0, 0,
       dMeta.getAxisLength(imageIndex, Axes.X),
       dMeta.getAxisLength(imageIndex, Axes.Y));
   }
 
-  /* @see Reader#openBytes(int, int, byte[], int, int, int, int) */
-  public abstract byte[] openBytes(int imageIndex, int planeIndex, byte[] buf,
-    int x, int y, int w, int h) throws FormatException, IOException;
-
-  /* @see Reader#openPlane(int, int, int, int, int, int int) */
-  public Object openPlane(final int imageIndex, final int planeIndex,
-    final int x, final int y, final int w, final int h)
-    throws FormatException, IOException
-  {
-    // NB: Readers use byte arrays by default as the native type.
-    return openBytes(imageIndex, planeIndex, x, y, w, h);
-  }
-
   /* @see Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, int, byte[] */
-  public byte[] readPlane(final RandomAccessInputStream s,
+  public P readPlane(final RandomAccessInputStream s,
     final int imageIndex, final int x, final int y, final int w, final int h,
-    final int scanlinePad, final byte[] buf) throws IOException
+    final int scanlinePad, final P plane) throws IOException
   {
     final int c = dMeta.getRGBChannelCount(imageIndex);
     final int bpp =
       FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
+    
+    byte[] bytes = plane.getBytes();
+    
     if (x == 0 && y == 0 && w == dMeta.getAxisLength(imageIndex, Axes.X) &&
       h == dMeta.getAxisLength(imageIndex, Axes.Y) && scanlinePad == 0)
     {
-      s.read(buf);
+      s.read(bytes);
     }
     else if (x == 0 && w == dMeta.getAxisLength(imageIndex, Axes.Y) &&
       scanlinePad == 0)
     {
       if (dMeta.isInterleaved(imageIndex)) {
         s.skipBytes(y * w * bpp * c);
-        s.read(buf, 0, h * w * bpp * c);
+        s.read(bytes, 0, h * w * bpp * c);
       }
       else {
         final int rowLen = w * bpp;
         for (int channel = 0; channel < c; channel++) {
           s.skipBytes(y * rowLen);
-          s.read(buf, channel * h * rowLen, h * rowLen);
+          s.read(bytes, channel * h * rowLen, h * rowLen);
           if (channel < c - 1) {
             // no need to skip bytes after reading final channel
             s.skipBytes((dMeta.getAxisLength(imageIndex, Axes.Y) - y - h) *
@@ -224,7 +213,7 @@ public abstract class AbstractReader<M extends Metadata>
         s.skipBytes(y * scanlineWidth * bpp * c);
         for (int row = 0; row < h; row++) {
           s.skipBytes(x * bpp * c);
-          s.read(buf, row * w * bpp * c, w * bpp * c);
+          s.read(bytes, row * w * bpp * c, w * bpp * c);
           if (row < h - 1) {
             // no need to skip bytes after reading final row
             s.skipBytes(bpp * c * (scanlineWidth - w - x));
@@ -236,7 +225,7 @@ public abstract class AbstractReader<M extends Metadata>
           s.skipBytes(y * scanlineWidth * bpp);
           for (int row = 0; row < h; row++) {
             s.skipBytes(x * bpp);
-            s.read(buf, channel * w * h * bpp + row * w * bpp, w * bpp);
+            s.read(bytes, channel * w * h * bpp + row * w * bpp, w * bpp);
             if (row < h - 1 || channel < c - 1) {
               // no need to skip bytes after reading final row of final channel
               s.skipBytes(bpp * (scanlineWidth - w - x));
@@ -250,11 +239,11 @@ public abstract class AbstractReader<M extends Metadata>
         }
       }
     }
-    return buf;
+    return plane;
   }
 
   /* @see Reader#openThumbBytes(int) */
-  public byte[] openThumbBytes(final int imageIndex, final int planeIndex)
+  public P openThumbPlane(final int imageIndex, final int planeIndex)
     throws FormatException, IOException
   {
     FormatTools.assertStream(in, true, 1);
@@ -288,7 +277,8 @@ public abstract class AbstractReader<M extends Metadata>
     if(in == null) setSource(meta.getSource());
     
     try {
-      getFormat().findSourceTranslator(DatasetMetadata.class).translate(meta, dMeta);
+      getFormat().findSourceTranslator(DefaultDatasetMetadata.class).
+        translate(meta, dMeta);
     } catch (FormatException e) {
       LOGGER.debug(e.getMessage());
     }
@@ -375,21 +365,21 @@ public abstract class AbstractReader<M extends Metadata>
     return dMeta.getPlaneCount(imageIndex);
   }
 
-  public Reader<Metadata>[] getUnderlyingReaders() {
+  public Reader<? extends Metadata, ? extends Plane>[] getUnderlyingReaders() {
     // TODO Auto-generated method stub
     return null;
+  }
+  
+  public P readPlane(final RandomAccessInputStream s,
+    final int imageIndex, final int x, final int y, final int w, final int h,
+    final P plane) throws IOException
+  {
+    return readPlane(s, imageIndex, x, y, w, h, 0, plane);
   }
 
   // -- AbstractReader Methods --
 
   private void init() {
     dMeta = new DefaultDatasetMetadata();
-  }
-
-  public byte[] readPlane(final RandomAccessInputStream s,
-    final int imageIndex, final int x, final int y, final int w, final int h,
-    final byte[] buf) throws IOException
-  {
-    return readPlane(s, imageIndex, x, y, w, h, 0, buf);
   }
 }

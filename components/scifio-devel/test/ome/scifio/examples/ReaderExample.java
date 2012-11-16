@@ -30,7 +30,7 @@ public class ReaderExample {
 			r.setMetadata(m);
 			r.setSource(testFile);
 
-			byte[] bytes = r.openBytes(0, 0);
+			byte[] bytes = r.openPlane(0, 0).getBytes();
 			r.close();
 
 			System.out.println("Num bytes:" + bytes.length);

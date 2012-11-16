@@ -356,7 +356,7 @@ public class OmeisImporter {
               log("Reading plane #" + ndx +
                 ": z=" + z + ", c=" + c + ", t=" + t);
             }
-            byte[] plane = reader.openBytes(i, ndx);
+            byte[] plane = reader.openPlane(i, ndx).getBytes();
             if (swap) { // swap endianness
               for (int b=0; b<plane.length; b+=bytesPerPixel) {
                 for (int k=0; k<bytesPerPixel/2; k++) {

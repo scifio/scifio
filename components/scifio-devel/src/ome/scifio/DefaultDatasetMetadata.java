@@ -36,7 +36,6 @@
 package ome.scifio;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -84,13 +83,23 @@ public class DefaultDatasetMetadata extends AbstractMetadata
     imageMeta = new ArrayList<DefaultImageMetadata>();
   }
   
-  public DefaultDatasetMetadata(final DefaultDatasetMetadata copy, final SCIFIO ctx) {
+  public DefaultDatasetMetadata(final List<ImageMetadata> list, final SCIFIO ctx) {
+    this(ctx);
+    
+    for(int i = 0; i < list.size(); i++) {
+      ImageMetadata core = list.get(i);
+      imageMeta.add(new DefaultImageMetadata(core));
+    }
+  }
+  
+  public DefaultDatasetMetadata(final DatasetMetadata<?> copy, final SCIFIO ctx) {
     super(ctx);
     
-    datasetMeta = (Hashtable<String, Object>) copy.datasetMeta.clone();
+    datasetMeta = (Hashtable<String, Object>) copy.getDatasetMetadata().clone();
     imageMeta = new ArrayList<DefaultImageMetadata>();
     
-    for (DefaultImageMetadata core : copy.imageMeta) {
+    for(int i = 0; i < copy.getImageCount(); i++) {
+      ImageMetadata core = copy.get(i);
       imageMeta.add(new DefaultImageMetadata(core));
     }
   }

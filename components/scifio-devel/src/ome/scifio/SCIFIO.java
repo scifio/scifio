@@ -62,7 +62,7 @@ public class SCIFIO {
   private final SCIFIOComponentFinder scf = new SCIFIOComponentFinder();
 
   private final Discoverer<SCIFIOFormat, Format<? extends Metadata, ? extends Checker<? extends Metadata>, 
-      ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata>, 
+      ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata, ? extends Plane>, 
       ? extends Writer<? extends Metadata>>> discoverer = new FormatDiscoverer();
 
   /**
@@ -89,8 +89,8 @@ public class SCIFIO {
    * Maps Reader classes to their containing format.
    * 
    */
-  private final Map<Class<? extends Reader<? extends Metadata>>, Format<?, ?, ?, ?, ?>> readerMap =
-      new HashMap<Class<? extends Reader<? extends Metadata>>, Format<?, ?, ?, ?, ?>>();
+  private final Map<Class<? extends Reader<? extends Metadata, ? extends Plane>>, Format<?, ?, ?, ?, ?>> readerMap =
+      new HashMap<Class<? extends Reader<? extends Metadata, ? extends Plane>>, Format<?, ?, ?, ?, ?>>();
 
   /**
    * Maps Writer classes to their containing formats.
@@ -187,7 +187,7 @@ public class SCIFIO {
    * Lookup method for the Reader map
    * 
    */
-  public <M extends Metadata, R extends Reader<M>> Format<M, ?, ?, R, ?> getFormatFromReader(
+  public <M extends Metadata, R extends Reader<M, ? extends Plane>> Format<M, ?, ?, R, ?> getFormatFromReader(
       final Class<R> readerClass) {
     @SuppressWarnings("unchecked")
     final Format<M, ?, ?, R, ?> format = (Format<M, ?, ?, R, ?>) readerMap
@@ -310,7 +310,7 @@ public class SCIFIO {
    * @throws FormatException
    * @throws IOException
    */
-  public Reader<?> initializeReader(final String id) throws FormatException,
+  public Reader<?, ? extends Plane> initializeReader(final String id) throws FormatException,
       IOException {
     return initializeReader(id, false);
   }
@@ -325,9 +325,9 @@ public class SCIFIO {
    * @throws FormatException
    * @throws IOException
    */
-  public Reader<?> initializeReader(final String id, final boolean openFile)
+  public Reader<?, ? extends Plane> initializeReader(final String id, final boolean openFile)
       throws FormatException, IOException {
-    final Reader<?> r = getFormat(id, openFile).createReader();
+    final Reader<?, ? extends Plane> r = getFormat(id, openFile).createReader();
     r.setSource(id);
     return r;
   }
@@ -422,13 +422,13 @@ public class SCIFIO {
       throws FormatException {
     if (formats == null) {
       List<Format<? extends Metadata, ? extends Checker<? extends Metadata>, 
-          ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata>,
+          ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata, ? extends Plane>,
           ? extends Writer<? extends Metadata>>> tmpFormats = discoverer.discover();
       formats = tmpFormats.toArray(new Format<?, ?, ?, ?, ?>[tmpFormats.size()]);
     }
 
     for (final Format<? extends Metadata, ? extends Checker<? extends Metadata>, 
-        ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata>, 
+        ? extends Parser<? extends Metadata>, ? extends Reader<? extends Metadata, ? extends Plane>, 
         ? extends Writer<? extends Metadata>> format : formats) {
       format.setContext(this);
       addFormat(format);

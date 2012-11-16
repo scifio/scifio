@@ -40,7 +40,7 @@ public abstract class SCIFIOBIFormatReader<T extends Metadata> extends SCIFIOFor
     throws FormatException, IOException
   {
     try {
-      return reader.openBytes(getSeries(), no, buf, x, y, w, h);
+      return reader.openPlane(getSeries(), no, buf, x, y, w, h);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);

@@ -21,7 +21,7 @@ public class TranslatorConvenienceExample {
 			out.delete();
 
 		SCIFIO ctx = null;
-		Reader<?> r = null;
+		Reader<?, ?> r = null;
 		Writer<?> w = null;
 
 		try {
@@ -35,7 +35,7 @@ public class TranslatorConvenienceExample {
 			
 			for(int i = 0; i < r.getImageCount(); i++) {
 				for(int j = 0; j < r.getPlaneCount(i); j++) {
-					bytes = r.openBytes(i, j);
+					bytes = r.openPlane(i, j).getBytes();
 					w.saveBytes(i, j, bytes);
 				}
 			}

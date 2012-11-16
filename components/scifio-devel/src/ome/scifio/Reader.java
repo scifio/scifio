@@ -42,28 +42,31 @@ import java.io.IOException;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
- * Interface for all SciFIO Readers.
+ * Interface for all SCIFIO Readers.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
+ * 
+ * @param <M> - {@link Metadata} used by this reader for reading images.
+ * @param <P> - {@link Plane} type returned by this reader.
  */
-public interface Reader<M extends Metadata> extends HasContext, HasFormat {
+public interface Reader<M extends Metadata, P extends Plane> extends HasContext, HasFormat {
 
   // -- Reader API methods --
 
   /**
    * Obtains the specified image plane from the current file as a byte array.
-   * @see #openBytes(int, byte[])
+   * @see #openPlane(int, int, P)
    */
-  byte[] openBytes(int imageIndex, int planeIndex)
+  P openPlane(int imageIndex, int planeIndex)
     throws FormatException, IOException;
 
   /**
    * Obtains a sub-image of the specified image plane,
    * whose upper-left corner is given by (x, y).
    */
-  byte[] openBytes(int imageIndex, int planeIndex, int x, int y, int w, int h)
+  P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException;
 
   /**
@@ -73,13 +76,13 @@ public interface Reader<M extends Metadata> extends HasContext, HasFormat {
    *
    * @param imageIndex the image index within the file.
    * @param planeIndex the plane index within the image.
-   * @param buf a pre-allocated buffer.
-   * @return the pre-allocated buffer <code>buf</code> for convenience.
+   * @param plane a pre-allocated Plane
+   * @return the pre-allocated Plane <code>plane</code> for convenience.
    * @throws FormatException if there was a problem parsing the metadata of the
    *   file.
    * @throws IOException if there was a problem reading the file.
    */
-  byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
+  P openPlane(int imageIndex, int planeIndex, P plane)
     throws FormatException, IOException;
 
   /**
@@ -88,36 +91,21 @@ public interface Reader<M extends Metadata> extends HasContext, HasFormat {
    *
    * @param imageIndex the image index within the file.
    * @param planeIndex the plane index within the image.
-   * @param buf a pre-allocated buffer.
+   * @param plane a pre-allocated Plane
    * @param dims a map of dimension labels (e.g., "x", "y") to the size of the
    *             corresponding dimension (e.g., sizeX, sizeY) 
-   * @return the pre-allocated buffer <code>buf</code> for convenience.
+   * @return the pre-allocated Plane <code>plane</code> for convenience.
    * @throws FormatException if there was a problem parsing the metadata of the
    *   file.
    * @throws IOException if there was a problem reading the file.
    */
-  byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x, int y,
+  P openPlane(int imageIndex, int planeIndex, P plane, int x, int y,
     int w, int h) throws FormatException, IOException;
 
   /**
-   * Obtains the specified image plane (or sub-image thereof) in the reader's
-   * native data structure. For most readers this is a byte array; however,
-   * some readers call external APIs that work with other types such as
-   * {@link java.awt.image.BufferedImage}. The openPlane method exists to
-   * maintain generality and efficiency while avoiding pollution of the API
-   * with AWT-specific logic.
-   *
-   * @see ome.scifio.FormatReader
-   * @see ome.scifio.in.BufferedImageReader
+   * Obtains a thumbnail for the specified image plane from the current file.
    */
-  Object openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
-    throws FormatException, IOException;
-
-  /**
-   * Obtains a thumbnail for the specified image plane from the current file,
-   * as a byte array.
-   */
-  byte[] openThumbBytes(int imageIndex, int planeIndex)
+  P openThumbPlane(int imageIndex, int planeIndex)
     throws FormatException, IOException;
 
   /** Specifies whether or not to force grouping in multi-file formats. */
@@ -148,12 +136,12 @@ public interface Reader<M extends Metadata> extends HasContext, HasFormat {
    * Retrieves all underlying readers.
    * Returns null if there are no underlying readers.
    */
-  Reader<Metadata>[] getUnderlyingReaders();
+  Reader<? extends Metadata, ? extends Plane>[] getUnderlyingReaders();
 
-  /** Returns the optimal sub-image width for use with openBytes. */
+  /** Returns the optimal sub-image width for use with {@link #openPlane}. */
   int getOptimalTileWidth(int imageIndex);
 
-  /** Returns the optimal sub-image height for use with openBytes. */
+  /** Returns the optimal sub-image height for use with {@link #openPlane}. */
   int getOptimalTileHeight(int imageIndex);
 
   /** Sets the Metadata for this Reader */
@@ -205,16 +193,26 @@ public interface Reader<M extends Metadata> extends HasContext, HasFormat {
   void close() throws IOException;
 
   /** Reads a raw plane from disk. */
-  byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
-    int w, int h, byte[] buf) throws IOException;
+  P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
+    int w, int h, P plane) throws IOException;
 
   /** Reads a raw plane from disk. */
-  byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
-    int w, int h, int scanlinePad, byte[] buf) throws IOException;
+  P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
+    int w, int h, int scanlinePad, P plane) throws IOException;
 
   /** Determines the number of planes in the current file. */
   int getPlaneCount(int imageIndex);
 
   /** Determines the number of images in the current file. */
   int getImageCount();
+  
+  /** 
+   * Creates a blank plane compatible with this reader.
+   * @param xOffset
+   * @param yOffset
+   * @param xLength
+   * @param yLength
+   * @return
+   */
+  P createPlane(int xOffset, int yOffset, int xLength, int yLength);
 }

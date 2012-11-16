@@ -131,7 +131,7 @@ public class ICSReader extends SCIFIOFormatReader {
     throws FormatException, IOException
   {
     try {
-      return reader.openBytes(series, no, buf, x, y, w, h);
+      return reader.openPlane(series, no, buf, x, y, w, h);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e.getCause());

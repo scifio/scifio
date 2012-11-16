@@ -75,6 +75,7 @@ import java.util.Hashtable;
 import ome.scifio.util.FormatTools;
 import ome.scifio.gui.Index16ColorModel;
 import ome.scifio.gui.SignedColorModel;
+import ome.scifio.BufferedImagePlane;
 import ome.scifio.FormatException;
 import ome.scifio.Reader;
 import ome.scifio.common.DataTools;
@@ -712,8 +713,9 @@ public final class AWTImageTools {
    * Creates an image from the given byte array, using the given
    * ome.scifio.Reader to retrieve additional information.
    */
-  public static BufferedImage openImage(byte[] buf, Reader<?> r, int w, int h,
-    int no) throws FormatException, IOException
+  public static BufferedImage openImage(byte[] buf, 
+      Reader<?, BufferedImagePlane> r, int w, int h, int no) 
+      throws FormatException, IOException
   {
     int pixelType = r.getDatasetMetadata().getPixelType(no);
     boolean little = r.getDatasetMetadata().isLittleEndian(no);

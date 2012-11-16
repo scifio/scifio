@@ -49,16 +49,17 @@ import ome.scifio.io.RandomAccessInputStream;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/DelegateReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/DelegateReader.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public abstract class DelegateReader <M extends Metadata> extends AbstractReader<M> {
+public abstract class DelegateReader <M extends Metadata, P extends Plane> 
+  extends AbstractReader<M, P> {
 
   /** Flag indicating whether to use legacy reader by default. */
   protected boolean useLegacy;
 
   /** Native reader. */
-  protected Reader<M> nativeReader;
+  protected Reader<M, P> nativeReader;
 
   /** Legacy reader. */
-  protected Reader<M> legacyReader;
+  protected Reader<M, P> legacyReader;
 
   /** Flag indicating that the native reader was successfully initialized. */
   protected boolean nativeReaderInitialized;
@@ -74,7 +75,7 @@ public abstract class DelegateReader <M extends Metadata> extends AbstractReader
   }
 
   /** Constructs a new delegate reader. */
-  public DelegateReader(Reader<M> nativeReader, Reader<M> legacyReader,
+  public DelegateReader(Reader<M, P> nativeReader, Reader<M, P> legacyReader,
     final SCIFIO ctx) {
     super(ctx);
     this.nativeReader = nativeReader;
@@ -108,46 +109,39 @@ public abstract class DelegateReader <M extends Metadata> extends AbstractReader
   
   // -- Reader API methods --
 
-  public byte[] openBytes(int imageIndex, int planeIndex)
+  public P openPlane(int imageIndex, int planeIndex)
     throws FormatException, IOException
   {
-    return useLegacy ? legacyReader.openBytes(imageIndex, planeIndex)
-      : nativeReader.openBytes(imageIndex, planeIndex);
+    return useLegacy ? legacyReader.openPlane(imageIndex, planeIndex)
+      : nativeReader.openPlane(imageIndex, planeIndex);
   }
 
-  public byte[] openBytes(int imageIndex, int planeIndex, int x, int y, int w,
-    int h) throws FormatException, IOException
-  {
-    return useLegacy ? legacyReader.openBytes(imageIndex, planeIndex, x, y, w, h) 
-      : nativeReader.openBytes(imageIndex, planeIndex, x, y, w, h);
-  }
-
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
-    throws FormatException, IOException
-  {
-    return useLegacy ? legacyReader.openBytes(imageIndex, planeIndex, buf) 
-      : nativeReader.openBytes(imageIndex, planeIndex, buf);
-  }
-
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x,
-    int y, int w, int h) throws FormatException, IOException
-  {
-    return useLegacy ? legacyReader.openBytes(imageIndex, planeIndex, buf, x, y, w, h) :
-      nativeReader.openBytes(imageIndex, planeIndex, buf, x, y, w, h);
-  }
-
-  public Object openPlane(int imageIndex, int planeIndex, int x, int y, int w,
+  public P openPlane(int imageIndex, int planeIndex, int x, int y, int w,
     int h) throws FormatException, IOException
   {
     return useLegacy ? legacyReader.openPlane(imageIndex, planeIndex, x, y, w, h) 
       : nativeReader.openPlane(imageIndex, planeIndex, x, y, w, h);
   }
 
-  public byte[] openThumbBytes(int imageIndex, int planeIndex)
+  public P openPlane(int imageIndex, int planeIndex, P plane)
     throws FormatException, IOException
   {
-    return useLegacy ? legacyReader.openThumbBytes(imageIndex, planeIndex) 
-      : nativeReader.openThumbBytes(imageIndex, planeIndex);
+    return useLegacy ? legacyReader.openPlane(imageIndex, planeIndex, plane) 
+      : nativeReader.openPlane(imageIndex, planeIndex, plane);
+  }
+
+  public P openPlane(int imageIndex, int planeIndex, P plane, int x,
+    int y, int w, int h) throws FormatException, IOException
+  {
+    return useLegacy ? legacyReader.openPlane(imageIndex, planeIndex, plane, x, y, w, h) :
+      nativeReader.openPlane(imageIndex, planeIndex, plane, x, y, w, h);
+  }
+
+  public P openThumbPlane(int imageIndex, int planeIndex)
+    throws FormatException, IOException
+  {
+    return useLegacy ? legacyReader.openThumbPlane(imageIndex, planeIndex) 
+      : nativeReader.openThumbPlane(imageIndex, planeIndex);
   }
 
   public void setGroupFiles(boolean group) {
@@ -175,7 +169,7 @@ public abstract class DelegateReader <M extends Metadata> extends AbstractReader
     return useLegacy ? legacyReader.getStream() : nativeReader.getStream();
   }
 
-  public Reader<Metadata>[] getUnderlyingReaders() {
+  public Reader<? extends Metadata, ? extends Plane>[] getUnderlyingReaders() {
     return useLegacy ? legacyReader.getUnderlyingReaders() : nativeReader.getUnderlyingReaders();
   }
 
@@ -240,18 +234,18 @@ public abstract class DelegateReader <M extends Metadata> extends AbstractReader
     else nativeReader.close();
   }
 
-  public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
-    int y, int w, int h, byte[] buf) throws IOException
+  public P readPlane(RandomAccessInputStream s, int imageIndex, int x,
+    int y, int w, int h, P plane) throws IOException
   {
-    return useLegacy ? legacyReader.readPlane(s, imageIndex, x, y, w, h, buf)
-      : nativeReader.readPlane(s, imageIndex, x, y, w, h, buf);
+    return useLegacy ? legacyReader.readPlane(s, imageIndex, x, y, w, h, plane)
+      : nativeReader.readPlane(s, imageIndex, x, y, w, h, plane);
   }
 
-  public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
-    int y, int w, int h, int scanlinePad, byte[] buf) throws IOException
+  public P readPlane(RandomAccessInputStream s, int imageIndex, int x,
+    int y, int w, int h, int scanlinePad, P plane) throws IOException
   {
-    return useLegacy ? legacyReader.readPlane(s, imageIndex, x, y, w, h, scanlinePad, buf)
-      : nativeReader.readPlane(s, imageIndex, x, y, w, h, scanlinePad, buf);
+    return useLegacy ? legacyReader.readPlane(s, imageIndex, x, y, w, h, scanlinePad, plane)
+      : nativeReader.readPlane(s, imageIndex, x, y, w, h, scanlinePad, plane);
   }
 
   public int getPlaneCount(int imageIndex) {

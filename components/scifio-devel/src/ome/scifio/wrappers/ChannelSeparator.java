@@ -42,6 +42,7 @@ import net.imglib2.meta.Axes;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.common.DataTools;
 import ome.scifio.io.RandomAccessInputStream;
@@ -55,21 +56,22 @@ import ome.scifio.util.ImageTools;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ChannelSeparator.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/ChannelSeparator.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
+public class ChannelSeparator<M extends Metadata, P extends Plane> extends ReaderWrapper<M, P> {
 
   // -- Utility methods --
 
   /** Converts the given reader into a ChannelSeparator, wrapping if needed. */
-  public static ChannelSeparator makeChannelSeparator(Reader r) {
-    if (r instanceof ChannelSeparator) return (ChannelSeparator) r;
-    return new ChannelSeparator(r);
+  public static <M extends Metadata, P extends Plane> ChannelSeparator<M, P>
+    makeChannelSeparator(Reader<M, P> r) {
+    if (r instanceof ChannelSeparator) return (ChannelSeparator<M, P>) r;
+    return new ChannelSeparator<M, P>(r);
   }
 
   // -- Fields --
 
   //TODO remove state..
   /** Last plane opened. */
-  private byte[] lastPlane;
+  private P lastPlane;
 
   /** Index of last plane opened. */
   private int lastPlaneIndex = -1;
@@ -95,7 +97,7 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
   public ChannelSeparator() { super(); }
 
   /** Constructs a ChannelSeparator with the given reader. */
-  public ChannelSeparator(Reader<M> r) { super(r); }
+  public ChannelSeparator(Reader<M, P> r) { super(r); }
   
   // -- ChannelSeparator API methods --
 
@@ -156,30 +158,30 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
   }
 
   /* @see Reader#openBytes(int, int) */
-  public byte[] openBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
-    return openBytes(imageIndex, planeIndex, 0, 0, datasetMeta().getAxisLength(imageIndex, Axes.X),
+  public P openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
+    return openPlane(imageIndex, planeIndex, 0, 0, datasetMeta().getAxisLength(imageIndex, Axes.X),
       datasetMeta().getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, int, byte[]) */
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
+  public P openPlane(int imageIndex, int planeIndex, P plane)
     throws FormatException, IOException
   {
-    return openBytes(imageIndex, planeIndex, buf, 0, 0, datasetMeta().getAxisLength(imageIndex, Axes.X),
+    return openPlane(imageIndex, planeIndex, plane, 0, 0, datasetMeta().getAxisLength(imageIndex, Axes.X),
       datasetMeta().getAxisLength(imageIndex, Axes.Y));
   }
 
   /* @see Reader#openBytes(int, int, int, int, int, int) */
-  public byte[] openBytes(int imageIndex, int planeIndex, int x, int y, int w, int h)
+  public P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    byte[] buf =
-      DataTools.allocate(w, h, FormatTools.getBytesPerPixel(datasetMeta().getPixelType(imageIndex)));
-    return openBytes(imageIndex, planeIndex, buf, x, y, w, h);
+    P plane = createPlane(x, y, w, h);
+
+    return openPlane(imageIndex, planeIndex, plane, x, y, w, h);
   }
 
   /* @see Reader#openBytes(int, byte[], int, int, int, int) */
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x, int y, int w, int h)
+  public P openPlane(int imageIndex, int planeIndex, P plane, int x, int y, int w, int h)
     throws FormatException, IOException
   {
     FormatTools.assertId(getCurrentFile(), true, 2);
@@ -211,9 +213,9 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
 
         int stripHeight = h / strips;
         int lastStripHeight = stripHeight + (h - (stripHeight * strips));
-        byte[] strip = strips == 1 ? buf : new byte[stripHeight * w * bpp];
+        byte[] strip = strips == 1 ? plane.getBytes() : new byte[stripHeight * w * bpp];
         for (int i=0; i<strips; i++) {
-          lastPlane = getReader().openBytes(imageIndex, source, x, y + i * stripHeight, w,
+          lastPlane = getReader().openPlane(imageIndex, source, x, y + i * stripHeight, w,
             i == strips - 1 ? lastStripHeight : stripHeight);
           lastPlaneIndex = source;
           lastImageIndex = imageIndex;
@@ -227,37 +229,38 @@ public class ChannelSeparator<M extends Metadata> extends ReaderWrapper<M> {
             strip = new byte[lastStripHeight * w * bpp];
           }
 
-          ImageTools.splitChannels(lastPlane, strip, channel, c, bpp,
+          ImageTools.splitChannels(lastPlane.getBytes(), strip, channel, c, bpp,
             false, datasetMeta().isInterleaved(imageIndex), strips == 1 ? w * h * bpp : strip.length);
           if (strips != 1) {
-            System.arraycopy(strip, 0, buf, i * stripHeight * w * bpp,
+            System.arraycopy(strip, 0, plane, i * stripHeight * w * bpp,
               strip.length);
           }
         }
       }
       else {
-        ImageTools.splitChannels(lastPlane, buf, channel, c, bpp,
+        ImageTools.splitChannels(lastPlane.getBytes(), plane.getBytes(), channel, c, bpp,
           false, datasetMeta().isInterleaved(imageIndex), w * h * bpp);
       }
 
-      return buf;
+      return plane;
     }
-    return getReader().openBytes(imageIndex, planeIndex, buf, x, y, w, h);
+    return getReader().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
   }
 
   /* @see Reader#openThumbBytes(int) */
-  public byte[] openThumbBytes(int imageIndex, int planeIndex) throws FormatException, IOException {
+  public P openThumbPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
     FormatTools.assertId(getCurrentFile(), true, 2);
 
     int source = getOriginalIndex(imageIndex, planeIndex);
-    byte[] thumb = getReader().openThumbBytes(imageIndex, planeIndex);
+    P thumb = getReader().openThumbPlane(imageIndex, planeIndex);
 
     int c = datasetMeta().getAxisLength(imageIndex, Axes.CHANNEL) /
       datasetMeta().getEffectiveSizeC(imageIndex);
     int channel = planeIndex % c;
     int bpp = FormatTools.getBytesPerPixel(datasetMeta().getPixelType(imageIndex));
 
-    return ImageTools.splitChannels(thumb, channel, c, bpp, false, false);
+    //TODO refactor for plane?
+    return ImageTools.splitChannels(thumb.getBytes(), channel, c, bpp, false, false);
   }
 
   /* @see Reader#close(boolean) */

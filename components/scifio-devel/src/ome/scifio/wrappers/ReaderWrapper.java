@@ -45,6 +45,7 @@ import ome.scifio.DelegateReader;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 import ome.scifio.io.RandomAccessInputStream;
@@ -58,12 +59,12 @@ import ome.scifio.io.RandomAccessInputStream;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/ReaderWrapper.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 // TODO should I annotate this?
-public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M> {
+public abstract class ReaderWrapper<M extends Metadata, P extends Plane> extends AbstractReader<M, P> {
 
   // -- Fields --
 
   /** Reader used to read the file. */
-  private Reader<M> reader;
+  private Reader<M, P> reader;
   
   // -- Constructors --
 
@@ -72,11 +73,11 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
     // TODO if annotated could find this format and then create a reader...
   }
   
-  public ReaderWrapper(Reader<M> r) {
+  public ReaderWrapper(Reader<M, P> r) {
     this(r, r == null ? null : r.getContext());
   }
   
-  public ReaderWrapper(Reader<M> r, SCIFIO ctx) {
+  public ReaderWrapper(Reader<M, P> r, SCIFIO ctx) {
     super(ctx);
     
     if(r == null) {
@@ -89,16 +90,16 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
   // -- ReaderWrapper API methods --
 
   /** Gets the wrapped reader. */
-  public Reader<M> getReader() { return reader; }
+  public Reader<M, P> getReader() { return reader; }
   
   /** Sets the wrapped reader. */
-  public void setReader(Reader<M> reader) { this.reader = reader; }
+  public void setReader(Reader<M, P> reader) { this.reader = reader; }
  
   /**
    * Unwraps nested wrapped readers until the core reader (i.e., not
    * a {@link ReaderWrapper} or {@link ImageReader}) is found.
    */
-  public Reader<M> unwrap() throws FormatException, IOException {
+  public Reader<M, P> unwrap() throws FormatException, IOException {
     return unwrap(null, null);
   }
 
@@ -109,7 +110,7 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
    * @param id Id to use as a basis when unwrapping any nested
    *   {@link ImageReader}s. If null, the current id is used.
    */
-  public Reader<M> unwrap(String id)
+  public Reader<M, P> unwrap(String id)
     throws FormatException, IOException
   {
     return unwrap(null, id);
@@ -123,10 +124,10 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
    * @param id Id to use as a basis when unwrapping any nested
    *   {@link ImageReader}s. If null, the current id is used.
    */
-  public Reader<M> unwrap(Class<? extends Reader<M>> readerClass,
+  public Reader<M, P> unwrap(Class<? extends Reader<M, P>> readerClass,
     String id) throws FormatException, IOException
   {
-    Reader<M> r = this;
+    Reader<M, P> r = this;
     while (r instanceof ReaderWrapper) {
       if (readerClass != null && readerClass.isInstance(r)) break;
       else r = ((ReaderWrapper) r).getReader();
@@ -148,10 +149,10 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
    *   reader stack will be replaced with instances of the given class.
    * @throws FormatException If something goes wrong during the duplication.
    */
-  public ReaderWrapper duplicate(
-    Class<? extends Reader<M>> imageReaderClass) throws FormatException
+  public ReaderWrapper<M, P> duplicate(
+    Class<? extends Reader<M, P>> imageReaderClass) throws FormatException
   {
-    ReaderWrapper wrapperCopy = duplicateRecurse(imageReaderClass);
+    ReaderWrapper<M, P> wrapperCopy = duplicateRecurse(imageReaderClass);
 
     // sync top-level configuration with original reader
     boolean normalized = isNormalized();
@@ -177,40 +178,34 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
   
   // -- Reader API methods -- 
 
-  public byte[] openBytes(int imageIndex, int planeIndex)
+  public P openPlane(int imageIndex, int planeIndex)
     throws FormatException, IOException
   {
-    return reader.openBytes(imageIndex, planeIndex);
+    return reader.openPlane(imageIndex, planeIndex);
   }
 
-  public byte[] openBytes(int imageIndex, int planeIndex, int x, int y, int w,
-    int h) throws FormatException, IOException
-  {
-    return reader.openBytes(imageIndex, planeIndex, x, y, w, h);
-  }
-
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
-    throws FormatException, IOException
-  {
-    return reader.openBytes(imageIndex, planeIndex, buf);
-  }
-
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x,
-    int y, int w, int h) throws FormatException, IOException
-  {
-    return reader.openBytes(imageIndex, planeIndex, buf, x, y, w, h);
-  }
-
-  public Object openPlane(int imageIndex, int planeIndex, int x, int y, int w,
+  public P openPlane(int imageIndex, int planeIndex, int x, int y, int w,
     int h) throws FormatException, IOException
   {
     return reader.openPlane(imageIndex, planeIndex, x, y, w, h);
   }
 
-  public byte[] openThumbBytes(int imageIndex, int planeIndex)
+  public P openPlane(int imageIndex, int planeIndex, P plane)
     throws FormatException, IOException
   {
-    return reader.openThumbBytes(imageIndex, planeIndex);
+    return reader.openPlane(imageIndex, planeIndex, plane);
+  }
+
+  public P openPlane(int imageIndex, int planeIndex, P plane, int x,
+    int y, int w, int h) throws FormatException, IOException
+  {
+    return reader.openPlane(imageIndex, planeIndex, plane, x, y, w, h);
+  }
+
+  public P openThumbPlane(int imageIndex, int planeIndex)
+    throws FormatException, IOException
+  {
+    return reader.openThumbPlane(imageIndex, planeIndex);
   }
 
   public void setGroupFiles(boolean group) {
@@ -237,7 +232,7 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
     return reader.getStream();
   }
 
-  public Reader<Metadata>[] getUnderlyingReaders() {
+  public Reader<? extends Metadata, ? extends Plane>[] getUnderlyingReaders() {
     return reader.getUnderlyingReaders();
   }
 
@@ -257,7 +252,7 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
     return reader.getMetadata();
   }
 
-  public DatasetMetadata getDatasetMetadata() {
+  public DatasetMetadata<?> getDatasetMetadata() {
     return reader.getDatasetMetadata();
   }
 
@@ -293,16 +288,16 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
     reader.close();
   }
 
-  public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
-    int y, int w, int h, byte[] buf) throws IOException
+  public P readPlane(RandomAccessInputStream s, int imageIndex, int x,
+    int y, int w, int h, P plane) throws IOException
   {
-    return reader.readPlane(s, imageIndex, x, y, w, h, buf);
+    return reader.readPlane(s, imageIndex, x, y, w, h, plane);
   }
 
-  public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
-    int y, int w, int h, int scanlinePad, byte[] buf) throws IOException
+  public P readPlane(RandomAccessInputStream s, int imageIndex, int x,
+    int y, int w, int h, int scanlinePad, P plane) throws IOException
   {
-    return reader.readPlane(s, imageIndex, x, y, w, h, scanlinePad, buf);
+    return reader.readPlane(s, imageIndex, x, y, w, h, scanlinePad, plane);
   }
 
   public int getPlaneCount(int imageIndex) {
@@ -313,12 +308,16 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
     return reader.getImageCount();
   }
   
+  public P createPlane(int xOffset, int yOffset, int xLength, int yLength) {
+    return reader.createPlane(xOffset, yOffset, xLength, yLength);
+  }
+  
   // -- Helper methods --
 
-  private ReaderWrapper<M> duplicateRecurse(
-    Class<? extends Reader<M>> imageReaderClass) throws FormatException
+  private ReaderWrapper<M, P> duplicateRecurse(
+    Class<? extends Reader<M, P>> imageReaderClass) throws FormatException
   {
-    Reader<M> childCopy = null;
+    Reader<M, P> childCopy = null;
     if (reader instanceof ReaderWrapper) {
       // found a nested reader layer; duplicate via recursion
       childCopy = ((ReaderWrapper) reader).duplicateRecurse(imageReaderClass);
@@ -334,8 +333,8 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
 
       // preserve reader-specific configuration with original reader
       if (reader instanceof DelegateReader) {
-        DelegateReader<M> delegateOriginal = (DelegateReader<M>) reader;
-        DelegateReader<M> delegateCopy = (DelegateReader<M>) childCopy;
+        DelegateReader<M, P> delegateOriginal = (DelegateReader<M, P>) reader;
+        DelegateReader<M, P> delegateCopy = (DelegateReader<M, P>) childCopy;
         delegateCopy.setLegacy(delegateOriginal.isLegacy());
       }
     }
@@ -357,7 +356,7 @@ public abstract class ReaderWrapper<M extends Metadata> extends AbstractReader<M
   
   // -- Helper Methods --
   
-  public DatasetMetadata datasetMeta() {
+  public DatasetMetadata<?> datasetMeta() {
     return getReader().getDatasetMetadata();
   }
   

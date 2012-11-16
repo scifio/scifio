@@ -50,6 +50,8 @@ import java.util.zip.DeflaterOutputStream;
 
 import javax.imageio.ImageIO;
 
+import net.imglib2.display.ColorTable;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.AbstractChecker;
@@ -58,6 +60,7 @@ import ome.scifio.AbstractMetadata;
 import ome.scifio.AbstractParser;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
+import ome.scifio.BufferedImagePlane;
 import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.CoreTranslator;
@@ -65,12 +68,11 @@ import ome.scifio.Field;
 import ome.scifio.FieldPrinter;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
-import ome.scifio.common.Constants;
 import ome.scifio.common.DataTools;
 import ome.scifio.discovery.SCIFIOFormat;
 import ome.scifio.discovery.SCIFIOTranslator;
 import ome.scifio.gui.AWTImageTools;
-import ome.scifio.gui.BIFormatReader;
+import ome.scifio.gui.BufferedImageReader;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.io.StreamTools;
@@ -213,32 +215,32 @@ public class APNGFormat
    *
    */
   public static class Checker extends AbstractChecker<Metadata> {
-
+  
     // -- Fields --
-
+  
     // -- Constructor --
-
+  
     /** Constructs a new APNGChecker */
     public Checker(final SCIFIO ctx) {
       super(ctx);
       suffixNecessary = false;
     }
-
+  
     public Checker() {
       this(null);
     }
-
+  
     // -- Checker API Methods --
-
+  
     /* @see ome.scifio.Checker#isFormat(RandomAccessInputStream stream) */
     @Override
     public boolean isFormat(final RandomAccessInputStream stream) throws IOException {
       final int blockLen = 8;
       if (!StreamTools.validStream(stream, blockLen, false)) return false;
-
+  
       final byte[] signature = new byte[blockLen];
       stream.read(signature);
-
+  
       if (signature[0] != (byte) 0x89 || signature[1] != 0x50 ||
         signature[2] != 0x4e || signature[3] != 0x47 || signature[4] != 0x0d ||
         signature[5] != 0x0a || signature[6] != 0x1a || signature[7] != 0x0a)
@@ -247,9 +249,9 @@ public class APNGFormat
       }
       return true;
     }
-
+  
     // -- MetadataHandler API Methods --
-
+  
     /* @see MetadataHandler#getMetadataTypes() */
     public Class<Metadata> getMetadataType() {
       return Metadata.class;
@@ -262,39 +264,40 @@ public class APNGFormat
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
-
+  
     // -- Fields --
-
+  
     // -- Constructor --
-
+  
     /** Constructs a new APNGParser. */
     public Parser() {
       this(null);
     }
-
+  
     public Parser(final SCIFIO ctx) {
       super(ctx);
     }
-
+  
     // -- Parser API Methods --
-
+  
     /* @see ome.scifio.AbstractParser#parse(RandomAccessInputStream stream) */
     @Override
     public Metadata parse(final RandomAccessInputStream stream)
       throws IOException, FormatException
     {
       super.parse(stream);
-
+  
       // check that this is a valid PNG file
       final byte[] signature = new byte[8];
       in.read(signature);
-
+  
       if (signature[0] != (byte) 0x89 || signature[1] != 0x50 ||
         signature[2] != 0x4e || signature[3] != 0x47 || signature[4] != 0x0d ||
         signature[5] != 0x0a || signature[6] != 0x1a || signature[7] != 0x0a)
       {
         throw new FormatException("Invalid PNG signature.");
       }
+  
       // For determining if the first frame is also the default image
       boolean sawFctl = false;
   
@@ -400,12 +403,12 @@ public class APNGFormat
    * images.
    * 
    */
-  public static class Reader extends BIFormatReader<Metadata> {
+  public static class Reader extends BufferedImageReader<Metadata> {
   
     // -- Fields --
   
     // Cached copy of the last plane that was returned.
-    private BufferedImage lastPlane;
+    private BufferedImagePlane lastPlane;
   
     // Plane index of the last plane that was returned.
     private int lastPlaneIndex = -1;
@@ -425,8 +428,8 @@ public class APNGFormat
     // -- Reader API Methods --
   
     /* @see ome.scifio.Reader#openPlane(int, int, int, int, int) */
-    @Override
-    public Object openPlane(final int imageIndex, final int planeIndex, final int x, final int y, final int w,
+    public BufferedImagePlane openPlane(final int imageIndex, final int planeIndex,
+      final BufferedImagePlane plane, final int x, final int y, final int w,
       final int h) throws FormatException, IOException
     {
       FormatTools.checkPlaneParameters(
@@ -434,42 +437,60 @@ public class APNGFormat
   
       // If the last processed (cached) plane is requested, return it
       if (planeIndex == lastPlaneIndex && lastPlane != null) {
-        return AWTImageTools.getSubimage(
-          lastPlane, dMeta.isLittleEndian(planeIndex), x, y, w, h);
+        return lastPlane;
+      }
+      else if (lastPlane == null) {
+        lastPlane = new BufferedImagePlane(getContext(), 
+            getDatasetMetadata().get(imageIndex), x, y, w, h);
+        
+        if (getDatasetMetadata().isIndexed(imageIndex)) {
+          APNGPLTEChunk plte = getMetadata().getPlte();
+          ColorTable ct = new ColorTable8(plte.getRed(), plte.getGreen(),
+              plte.getBlue());
+          lastPlane.setColorTable(ct);
+        }
       }
   
-      // The default frame is requested and we can use the standard Java ImageIO to extract it
+      // The default frame is requested and we can use the standard 
+      // Java ImageIO to extract it
       if (planeIndex == 0) {
         in.seek(0);
         final DataInputStream dis =
           new DataInputStream(new BufferedInputStream(in, 4096));
-        lastPlane = ImageIO.read(dis);
+        BufferedImage subImg = ImageIO.read(dis);
+        lastPlane.populate(getDatasetMetadata().get(imageIndex), subImg,
+            x, y, w, h);
+        
         lastPlaneIndex = 0;
-        if (x == 0 && y == 0 && w == dMeta.getAxisLength(imageIndex, Axes.X) &&
-          h == dMeta.getAxisLength(imageIndex, Axes.Y))
+        
+        if (x != 0 || y != 0 || w != dMeta.getAxisLength(imageIndex, Axes.X) ||
+          h != dMeta.getAxisLength(imageIndex, Axes.Y))
         {
-          return lastPlane;
+          // updates the data of lastPlane to a sub-image, by reference
+          subImg = AWTImageTools.getSubimage(
+              lastPlane.getData(), dMeta.isLittleEndian(planeIndex),
+              x, y, w, h);
         }
-        return AWTImageTools.getSubimage(
-          lastPlane, dMeta.isLittleEndian(imageIndex), x, y, w, h);
+
+        return lastPlane;
       }
   
       // For a non-default frame, the appropriate chunks will be used to create a new image,
       // which will be read with the standard Java ImageIO and pasted onto frame 0.
       final ByteArrayOutputStream stream = new ByteArrayOutputStream();
       stream.write(APNGFormat.PNG_SIGNATURE);
-
+  
       final int[] coords = metadata.getFctl().get(planeIndex).getFrameCoordinates();
       // process IHDR chunk
       final APNGIHDRChunk ihdr = metadata.getIhdr();
       processChunk(
         imageIndex, ihdr.getLength(), ihdr.getOffset(), coords, stream, true);
-
+  
       // process fcTL and fdAT chunks
       final APNGfcTLChunk fctl =
         metadata.getFctl().get(
           metadata.isSeparateDefault() ? planeIndex - 1 : planeIndex);
-
+  
       // fdAT chunks are converted to IDAT chunks, as we are essentially building a standalone single-frame image
       for (final APNGfdATChunk fdat : fctl.getFdatChunks()) {
         in.seek(fdat.getOffset() + 4);
@@ -487,7 +508,7 @@ public class APNGFormat
         stream.write(b);
         b = null;
       }
-
+  
       // process PLTE chunks
       final APNGPLTEChunk plte = metadata.getPlte();
       if (plte != null) {
@@ -499,42 +520,45 @@ public class APNGFormat
       final DataInputStream dis = new DataInputStream(new BufferedInputStream(s, 4096));
       final BufferedImage bi = ImageIO.read(dis);
       dis.close();
-
+  
       // Recover first plane
 
-      lastPlane = null;
       openPlane(
         imageIndex, 0, 0, 0, dMeta.getAxisLength(imageIndex, Axes.X),
         dMeta.getAxisLength(imageIndex, Axes.Y));
-      
+  
       // paste current image onto first plane
-
-      final WritableRaster firstRaster = lastPlane.getRaster();
+      // NB: last plane read was the first plane
+  
+      final WritableRaster firstRaster = lastPlane.getData().getRaster();
       final WritableRaster currentRaster = bi.getRaster();
-
+  
       firstRaster.setDataElements(coords[0], coords[1], currentRaster);
-      lastPlane =
-        new BufferedImage(lastPlane.getColorModel(), firstRaster, false, null);
+      BufferedImage bImg =
+        new BufferedImage(lastPlane.getData().getColorModel(), firstRaster, false, null);
+      
+      lastPlane.populate(getDatasetMetadata().get(imageIndex), bImg,
+          x, y, w, h);
+      
       lastPlaneIndex = planeIndex;
       return lastPlane;
     }
-    
+  
     // -- Helper methods --
-
+  
     private long computeCRC(final byte[] buf, final int len) {
       final CRC32 crc = new CRC32();
       crc.update(buf, 0, len);
       return crc.getValue();
     }
-
+  
     private void processChunk(final int imageIndex, final int length, final long offset,
       final int[] coords, final ByteArrayOutputStream stream, final boolean isIHDR)
       throws IOException
     {
       byte[] b = new byte[length + 12];
       DataTools.unpackBytes(length, b, 0, 4, dMeta.isLittleEndian(imageIndex));
-      final byte[] typeBytes = (isIHDR ? "IHDR".getBytes(Constants.ENCODING) :
-        "PLTE".getBytes(Constants.ENCODING));
+      final byte[] typeBytes = (isIHDR ? "IHDR".getBytes() : "PLTE".getBytes());
       System.arraycopy(typeBytes, 0, b, 4, 4);
       in.seek(offset);
       in.read(b, 8, b.length - 12);
@@ -551,7 +575,6 @@ public class APNGFormat
       b = null;
     }
   }
-
 
   /**
    * The SCIFIO file format writer for PNG and APNG files.
@@ -791,7 +814,7 @@ public class APNGFormat
       }
 
       final ByteArrayOutputStream s = new ByteArrayOutputStream();
-      s.write(chunk.getBytes(Constants.ENCODING));
+      s.write(chunk.getBytes());
       if (chunk.equals("fdAT")) {
         s.write(DataTools.intToBytes(nextSequenceNumber++, false));
       }
@@ -851,7 +874,7 @@ public class APNGFormat
       // write IEND chunk
       out.writeInt(0);
       out.writeBytes("IEND");
-      out.writeInt(crc("IEND".getBytes(Constants.ENCODING)));
+      out.writeInt(crc("IEND".getBytes()));
 
       // update frame count
       out.seek(numFramesPointer);
@@ -928,6 +951,12 @@ public class APNGFormat
   
       if (indexed) {
         ihdr.setColourType((byte) 0x2);
+        
+        /*
+         * NB: not necessary to preserve ColorTable when translating. If
+         * an image has a color table it will be parsed and included in
+         * whatever plane is returned by an openPlane call. So it doesn't
+         * also need to be preserved in the Metadata.
         byte[][] lut = null;
         try {
           lut = source.get8BitLookupTable(0);
@@ -941,7 +970,7 @@ public class APNGFormat
         catch (final IOException e) {
           LOGGER.error("IO error when finding 8bit lookup table", e);
         }
-  
+        */
       }
       else if (sizec == 2) {
         ihdr.setColourType((byte) 0x4);
@@ -1033,6 +1062,8 @@ public class APNGFormat
           break;
       }
   
+      /*
+       * TODO: destination metadata doesn't care about the LUT
       if (indexed) {
         final byte[][] lut = new byte[3][0];
   
@@ -1042,7 +1073,8 @@ public class APNGFormat
   
         imageMeta.setLut(lut);
       }
-  
+      */
+      
       final APNGacTLChunk actl = source.getActl();
       final int planeCount = actl == null ? 1 : actl.getNumFrames();
   
@@ -1062,7 +1094,7 @@ public class APNGFormat
       catch (final FormatException e) {
         LOGGER.error("Failed to find pixel type from bytes: " + (bpp/8), e);
       }
-      imageMeta.setRgb(rgb);
+      imageMeta.setRGB(rgb);
       imageMeta.setIndexed(indexed);
       imageMeta.setPlaneCount(planeCount);
       imageMeta.setLittleEndian(false);
