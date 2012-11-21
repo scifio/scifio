@@ -46,7 +46,7 @@ import ome.scifio.Format;
 
 /**
  * 
- * Sezpoz annotation to flag SCIFIO Checker components for discovery.
+ * Sezpoz annotation to flag SCIFIO {@link ome.scifio.Format}s for discovery.
  * 
  * @author Mark Hiner
  *
