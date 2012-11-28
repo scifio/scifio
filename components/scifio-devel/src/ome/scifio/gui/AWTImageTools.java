@@ -712,7 +712,7 @@ public final class AWTImageTools {
    * Creates an image from the given byte array, using the given
    * ome.scifio.Reader to retrieve additional information.
    */
-  public static BufferedImage openImage(byte[] buf, Reader r, int w, int h,
+  public static BufferedImage openImage(byte[] buf, Reader<?> r, int w, int h,
     int no) throws FormatException, IOException
   {
     int pixelType = r.getDatasetMetadata().getPixelType(no);
