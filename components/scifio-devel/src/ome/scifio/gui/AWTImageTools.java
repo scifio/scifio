@@ -714,15 +714,15 @@ public final class AWTImageTools {
    * ome.scifio.Reader to retrieve additional information.
    */
   public static BufferedImage openImage(byte[] buf, 
-      Reader<?, BufferedImagePlane> r, int w, int h, int no) 
+      Reader<?, BufferedImagePlane> r, int w, int h, int imageIndex) 
       throws FormatException, IOException
   {
-    int pixelType = r.getDatasetMetadata().getPixelType(no);
-    boolean little = r.getDatasetMetadata().isLittleEndian(no);
+    int pixelType = r.getDatasetMetadata().getPixelType(imageIndex);
+    boolean little = r.getDatasetMetadata().isLittleEndian(imageIndex);
     boolean normal = r.isNormalized();
-    int rgbChanCount = r.getDatasetMetadata().getRGBChannelCount(no);
-    boolean interleaved = r.getDatasetMetadata().isInterleaved(no);
-    boolean indexed = r.getDatasetMetadata().isIndexed(no);
+    int rgbChanCount = r.getDatasetMetadata().getRGBChannelCount(imageIndex);
+    boolean interleaved = r.getDatasetMetadata().isInterleaved(imageIndex);
+    boolean indexed = r.getDatasetMetadata().isIndexed(imageIndex);
 
     if (pixelType == FormatTools.FLOAT) {
       float[] f = (float[]) DataTools.makeDataArray(buf, 4, true, little);
@@ -760,7 +760,7 @@ public final class AWTImageTools {
 
     if (indexed && rgbChanCount == 1) {
       if (pixelType == FormatTools.UINT8 || pixelType == FormatTools.INT8) {
-        byte[][] table = r.getDatasetMetadata().get8BitLookupTable(no);
+        byte[][] table = r.getDatasetMetadata().get8BitLookupTable(imageIndex);
         if (table != null && table.length > 0 && table[0] != null) {
           int len = table[0].length;
           byte[] dummy = table.length < 3 ? new byte[len] : null;
@@ -773,12 +773,12 @@ public final class AWTImageTools {
       else if (pixelType == FormatTools.UINT16 ||
         pixelType == FormatTools.INT16)
       {
-        short[][] table = r.getDatasetMetadata().get16BitLookupTable(no);
+        short[][] table = r.getDatasetMetadata().get16BitLookupTable(imageIndex);
         if (table != null && table.length > 0 && table[0] != null) {
           model =
             new Index16ColorModel(
               16, table[0].length, table, r.getDatasetMetadata()
-                .isLittleEndian(no));
+                .isLittleEndian(imageIndex));
         }
       }
     }
