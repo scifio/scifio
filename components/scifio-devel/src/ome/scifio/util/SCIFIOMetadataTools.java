@@ -74,7 +74,7 @@ public class SCIFIOMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(DatasetMetadata src,
+  public static void verifyMinimumPopulated(DatasetMetadata<?> src,
     RandomAccessOutputStream out) throws FormatException
   {
     verifyMinimumPopulated(src, out, 0, 0);
@@ -87,7 +87,7 @@ public class SCIFIOMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(DatasetMetadata src,
+  public static void verifyMinimumPopulated(DatasetMetadata<?> src,
     RandomAccessOutputStream out, int imageIndex) throws FormatException
   {
     verifyMinimumPopulated(src, out, imageIndex, 0);
@@ -100,7 +100,7 @@ public class SCIFIOMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(DatasetMetadata src,
+  public static void verifyMinimumPopulated(DatasetMetadata<?> src,
     RandomAccessOutputStream out, int imageIndex, int planeIndex)
     throws FormatException
   {
