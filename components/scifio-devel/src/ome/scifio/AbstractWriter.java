@@ -54,9 +54,10 @@ import ome.scifio.util.SCIFIOMetadataTools;
 /**
  * Abstract superclass of all SCIFIO Writer components.
  *
+ * @author Mark Hiner
  */
-public abstract class AbstractWriter<M extends Metadata>
-  extends AbstractHasContext implements Writer<M> {
+public abstract class AbstractWriter<M extends TypedMetadata>
+  extends AbstractHasContext implements TypedWriter<M> {
 
   // -- Constants --
 
@@ -114,12 +115,35 @@ public abstract class AbstractWriter<M extends Metadata>
 
   // -- HasFormat API Methods --
 
-  @SuppressWarnings("unchecked")
-  public Format<M, ?, ?, ?, ?> getFormat() {
+  /*
+   * @see ome.scifio.HasFormat#getFormat()
+   */
+  public Format getFormat() {
     return getContext().getFormatFromWriter(getClass());
   }
 
   // -- Writer API Methods --
+  
+  /* @see ome.scifio.Writer#savePlane(int, int, Object) */
+  public void savePlane(final int imageIndex, final int planeIndex,
+    final Plane plane) throws FormatException, IOException
+  {
+    final int width = dMeta.getAxisLength(imageIndex, Axes.X);
+    final int height = dMeta.getAxisLength(imageIndex, Axes.Y);
+    savePlane(imageIndex, planeIndex, plane, 0, 0, width, height);
+  }
+  
+  /* @see ome.scifio.Writer#canDoStacks() */
+  public boolean canDoStacks() {
+    return false;
+  }
+  
+  /*
+   * @see ome.scifio.Writer#setMetadata(ome.scifio.Metadata)
+   */
+  public void setMetadata(Metadata meta) throws FormatException {
+    setMetadata(this.getFormat().<M>castToTypedMetadata(meta));
+  }
 
   /* @see ome.scifio.Writer#getMetadata() */
   public M getMetadata() {
@@ -130,17 +154,17 @@ public abstract class AbstractWriter<M extends Metadata>
   public DatasetMetadata<?> getDatasetMetadata() {
     return dMeta;
   }
-
-  /* @see ome.scifio.Writer#setStream(File) */
-  public void setDest(final File file) throws FormatException, IOException {
-    setDest(file.getName(), 0);
-  }
-
+  
   /* @see ome.scifio.Writer#setStream(String) */
   public void setDest(final String fileName)
     throws FormatException, IOException
   {
     setDest(new RandomAccessOutputStream(fileName), 0);
+  }
+
+  /* @see ome.scifio.Writer#setStream(File) */
+  public void setDest(final File file) throws FormatException, IOException {
+    setDest(file.getName(), 0);
   }
 
   /* @see ome.scifio.Writer#setStream(RandomAccessOutputStream) */
@@ -149,6 +173,13 @@ public abstract class AbstractWriter<M extends Metadata>
   {
     setDest(out, 0);
   }
+  
+  /* @see ome.scifio.Writer#setStream(String, int) */
+  public void setDest(final String fileName, final int imageIndex)
+    throws FormatException, IOException
+  {
+    setDest(new RandomAccessOutputStream(fileName));
+  }
 
   /* @see ome.scifio.Writer#setStream(File, int) */
 
@@ -156,13 +187,6 @@ public abstract class AbstractWriter<M extends Metadata>
     throws FormatException, IOException
   {
     setDest(file.getName());
-  }
-
-  /* @see ome.scifio.Writer#setStream(String, int) */
-  public void setDest(final String fileName, final int imageIndex)
-    throws FormatException, IOException
-  {
-    setDest(new RandomAccessOutputStream(fileName));
   }
 
   /* @see ome.scifio.Writer#setStream(RandomAccessOutputStream, int) */
@@ -181,41 +205,6 @@ public abstract class AbstractWriter<M extends Metadata>
   /* @see ome.scifio.Writer#getStream() */
   public RandomAccessOutputStream getStream() {
     return out;
-  }
-
-  /* @see ome.scifio.Writer#saveBytes(int, int, byte[]) */
-  public void saveBytes(final int imageIndex, final int planeIndex,
-    final byte[] buf) throws FormatException, IOException
-  {
-    final int width = dMeta.getAxisLength(imageIndex, Axes.X);
-    final int height = dMeta.getAxisLength(imageIndex, Axes.Y);
-    saveBytes(imageIndex, planeIndex, buf, 0, 0, width, height);
-  }
-
-  /* @see ome.scifio.Writer#savePlane(int, int, Object) */
-  public void savePlane(final int imageIndex, final int planeIndex,
-    final Object plane) throws FormatException, IOException
-  {
-    final int width = dMeta.getAxisLength(imageIndex, Axes.X);
-    final int height = dMeta.getAxisLength(imageIndex, Axes.Y);
-    savePlane(imageIndex, planeIndex, plane, 0, 0, width, height);
-  }
-
-  /* @see ome.scifio.Writer#savePlane(int, int, Object, int, int, int, int) */
-  public void savePlane(final int imageIndex, final int planeIndex,
-    final Object plane, final int x, final int y, final int w, final int h)
-    throws FormatException, IOException
-  {
-    // NB: Writer use byte arrays by default as the native type.
-    if (!(plane instanceof byte[])) {
-      throw new IllegalArgumentException("Object to save must be a byte[]");
-    }
-    saveBytes(imageIndex, planeIndex, (byte[]) plane, x, y, w, h);
-  }
-
-  /* @see ome.scifio.Writer#canDoStacks() */
-  public boolean canDoStacks() {
-    return false;
   }
 
   /* @see ome.scifio.Writer#setColorModel(ColorModel) */
@@ -276,16 +265,16 @@ public abstract class AbstractWriter<M extends Metadata>
     throw new FormatException("Invalid compression type: " + compress);
   }
 
-  /* @see ome.scifio.Writer#setCodecOptions(CodecOptions) */
-  public void setCodecOptions(final CodecOptions options) {
-    this.options = options;
-  }
-
   /* @see ome.scifio.Writer#getCompression() */
   public String getCompression() {
     return compression;
   }
 
+
+  /* @see ome.scifio.Writer#setCodecOptions(CodecOptions) */
+  public void setCodecOptions(final CodecOptions options) {
+    this.options = options;
+  }
   /* @see ome.scifio.Writer#changeOutputFile(String) */
   public void changeOutputFile(final String id)
     throws FormatException, IOException
@@ -304,63 +293,16 @@ public abstract class AbstractWriter<M extends Metadata>
     out = null;
     initialized = null;
   }
+  
+  // -- TypedWriter API Methods --
 
-  // -- Deprecated Writer API Methods --
-
-  /**
-   * @deprecated
-   * @see ome.scifio.Writer#saveBytes(byte[], boolean)
+  /*
+   * @see ome.scifio.TypedWriter#setMetadata(ome.scifio.TypedMetadata)
    */
-  @Deprecated
-  public void saveBytes(final byte[] bytes, final boolean last)
-    throws FormatException, IOException
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  /**
-   * @deprecated
-   * @see ome.scifio.Writer#saveBytes(byte[], int, boolean, boolean)
-   */
-  @Deprecated
-  public void saveBytes(final byte[] bytes, final int planeIndex,
-    final boolean lastInSeries, final boolean last)
-    throws FormatException, IOException
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  /**
-   * @deprecated
-   * @see ome.scifio.Writer#savePlane(Object, boolean)
-   */
-  @Deprecated
-  public void savePlane(final Object plane, final boolean last)
-    throws FormatException, IOException
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  /**
-   * @deprecated
-   * @see ome.scifio.Writer#savePlane(Object, int, boolean, boolean)
-   */
-  @Deprecated
-  public void savePlane(final Object plane, final int planeIndex,
-    final boolean lastInSeries, final boolean last)
-    throws FormatException, IOException
-  {
-    // TODO Auto-generated method stub
-
-  }
-
   public void setMetadata(final M meta) throws FormatException {
     this.metadata = meta;
-    Translator<M, DatasetMetadata> t =
-        getFormat().findSourceTranslator(DatasetMetadata.class);
+    Translator t =
+        getFormat().findSourceTranslator(dMeta);
     t.translate(meta, dMeta);
   }
 

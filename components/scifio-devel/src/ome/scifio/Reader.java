@@ -43,69 +43,87 @@ import ome.scifio.io.RandomAccessInputStream;
 
 /**
  * Interface for all SCIFIO Readers.
+ * <p>
+ * {@code Reader} components generate {@link ome.scifio.Plane} 
+ * representations of images via the {@link #openPlane} methods. These planes
+ * can then be used by calling software (e.g. for display) or passed to another
+ * method for writing to an output source (e.g. via the
+ * {@link ome.scifio.Writer#savePlane} methods).
+ * </p>
+ * <p>
+ * Before a {@code Reader} can be used, it must be initialized via
+ * {@link #setSource} and {@link #setMetadata} calls.
+ * </p>
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
  * 
- * @param <M> - {@link Metadata} used by this reader for reading images.
- * @param <P> - {@link Plane} type returned by this reader.
+ * @see ome.scifio.Plane
+ * @see ome.scifio.Writer#savePlane
+ * @author Mark Hiner
  */
-public interface Reader<M extends Metadata, P extends Plane> extends HasContext, HasFormat {
+public interface Reader extends HasContext, HasFormat {
 
   // -- Reader API methods --
 
   /**
-   * Obtains the specified image plane from the current file as a byte array.
-   * @see #openPlane(int, int, P)
-   */
-  P openPlane(int imageIndex, int planeIndex)
-    throws FormatException, IOException;
-
-  /**
-   * Obtains a sub-image of the specified image plane,
-   * whose upper-left corner is given by (x, y).
-   */
-  P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
-    throws FormatException, IOException;
-
-  /**
-   * Obtains the specified image plane from the current file into a
-   * pre-allocated byte array of
-   * (sizeX * sizeY * bytesPerPixel * RGB channel count).
-   *
-   * @param imageIndex the image index within the file.
+   * Creates a {@link ome.scifio.Plane} representation of the pixels at the
+   * specified indices.
+   * 
+   * @param imageIndex the image index within the dataset.
    * @param planeIndex the plane index within the image.
-   * @param plane a pre-allocated Plane
-   * @return the pre-allocated Plane <code>plane</code> for convenience.
-   * @throws FormatException if there was a problem parsing the metadata of the
-   *   file.
-   * @throws IOException if there was a problem reading the file.
+   * @return The complete {@code Plane} at the specified indices.
    */
-  P openPlane(int imageIndex, int planeIndex, P plane)
+  Plane openPlane(int imageIndex, int planeIndex)
     throws FormatException, IOException;
 
   /**
-   * Obtains a sub-image of the specified image plane
-   * into a pre-allocated byte array.
-   *
-   * @param imageIndex the image index within the file.
+   * Creates a {@link ome.scifio.Plane} representation of a desired sub-region
+   * from the pixels at the specified indices.
+   * 
+   * @param imageIndex the image index within the dataset.
    * @param planeIndex the plane index within the image.
-   * @param plane a pre-allocated Plane
-   * @param dims a map of dimension labels (e.g., "x", "y") to the size of the
-   *             corresponding dimension (e.g., sizeX, sizeY) 
-   * @return the pre-allocated Plane <code>plane</code> for convenience.
-   * @throws FormatException if there was a problem parsing the metadata of the
-   *   file.
-   * @throws IOException if there was a problem reading the file.
+   * @param x the X coordinate of the upper-left corner of the image tile.
+   * @param y the Y coordinate of the upper-left corner of the image tile.
+   * @param w the width (in pixels) of the image tile.
+   * @param h the height (in pixels) of the image tile.
+   * @return The desired sub-region at the specified indices.
    */
-  P openPlane(int imageIndex, int planeIndex, P plane, int x, int y,
+  Plane openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
+    throws FormatException, IOException;
+
+  /**
+   * Allows a single {@code Plane} object to be reused by reference when opening
+   * complete planes.
+   * 
+   * @see #openPlane(int, int)
+   * @throws IllegalArgumentException If the provided {@code Plane} type is
+   *         not compatible with this {@code Reader}.
+   */
+  Plane openPlane(int imageIndex, int planeIndex, Plane plane)
+    throws FormatException, IOException;
+
+  /**
+   * Allows a single {@code Plane} object to be reused by reference when opening
+   * sub-regions of planes.
+   * 
+   * @see #openPlane(int, int, int, int, int, int)
+   * @throws IllegalArgumentException If the provided {@code Plane} type is
+   *         not compatible with this {@code Reader}.
+   */
+  Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x, int y,
     int w, int h) throws FormatException, IOException;
 
   /**
-   * Obtains a thumbnail for the specified image plane from the current file.
+   * Obtains a thumbnail version of the {@code Plane} at the specified image
+   * and plane indices.
+   * 
+   * @param imageIndex the image index within the dataset.
+   * @param planeIndex the plane index within the image.
+   * @return A thumbnail version of the {@code Plane} at the specified indices.
    */
-  P openThumbPlane(int imageIndex, int planeIndex)
+  Plane openThumbPlane(int imageIndex, int planeIndex)
     throws FormatException, IOException;
 
   /** Specifies whether or not to force grouping in multi-file formats. */
@@ -136,7 +154,7 @@ public interface Reader<M extends Metadata, P extends Plane> extends HasContext,
    * Retrieves all underlying readers.
    * Returns null if there are no underlying readers.
    */
-  Reader<? extends Metadata, ? extends Plane>[] getUnderlyingReaders();
+  Reader[] getUnderlyingReaders();
 
   /** Returns the optimal sub-image width for use with {@link #openPlane}. */
   int getOptimalTileWidth(int imageIndex);
@@ -144,11 +162,22 @@ public interface Reader<M extends Metadata, P extends Plane> extends HasContext,
   /** Returns the optimal sub-image height for use with {@link #openPlane}. */
   int getOptimalTileHeight(int imageIndex);
 
-  /** Sets the Metadata for this Reader */
-  void setMetadata(M meta) throws IOException;
+  /**
+   * Sets the Metadata for this Reader.
+   * <p>
+   * NB: This method has accepts a general {@code Metadata} so that this
+   * signature can appear in the base interface for all {@code Readers}, but
+   * behavior if provided with a {@code Metadata} instance not associated with
+   * this {@code Reader} is undefined and should throw an exception.
+   * </p>
+   * 
+   * @throws IllegalArgumentException If the provided {@code Metadata} type is
+   *         not compatible with this {@code Reader}.
+   */
+  void setMetadata(Metadata meta) throws IOException;
 
   /** Gets the type-specific Metadata for this Reader */
-  M getMetadata();
+  Metadata getMetadata();
 
   /** Gets the core metadata for this Reader. */
   DatasetMetadata<?> getDatasetMetadata();
@@ -165,17 +194,17 @@ public interface Reader<M extends Metadata, P extends Plane> extends HasContext,
 
   /**
    * Sets the source for this reader to read from.
-   * @param file
-   * @throws IOException 
-   */
-  void setSource(File file) throws IOException;
-
-  /**
-   * Sets the source for this reader to read from.
    * @param fileName
    * @throws IOException 
    */
   void setSource(String fileName) throws IOException;
+  
+  /**
+   * Sets the source for this reader to read from.
+   * @param file
+   * @throws IOException 
+   */
+  void setSource(File file) throws IOException;
 
   /**
    * Sets the source for this reader to read from.
@@ -192,13 +221,21 @@ public interface Reader<M extends Metadata, P extends Plane> extends HasContext,
   /** Closes currently open file(s) and frees allocated memory. */
   void close() throws IOException;
 
-  /** Reads a raw plane from disk. */
-  P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
-    int w, int h, P plane) throws IOException;
+  /** 
+   * Reads a raw plane from disk.
+   * @throws IllegalArgumentException If the provided {@code Plane} type is
+   *         not compatible with this {@code Reader}.
+   */
+  Plane readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
+    int w, int h, Plane plane) throws IOException;
 
-  /** Reads a raw plane from disk. */
-  P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
-    int w, int h, int scanlinePad, P plane) throws IOException;
+  /**
+   * Reads a raw plane from disk. 
+   * @throws IllegalArgumentException If the provided {@code Plane} type is
+   *         not compatible with this {@code Reader}.
+   */
+  Plane readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
+    int w, int h, int scanlinePad, Plane plane) throws IOException;
 
   /** Determines the number of planes in the current file. */
   int getPlaneCount(int imageIndex);
@@ -214,5 +251,21 @@ public interface Reader<M extends Metadata, P extends Plane> extends HasContext,
    * @param yLength
    * @return
    */
-  P createPlane(int xOffset, int yOffset, int xLength, int yLength);
+  Plane createPlane(int xOffset, int yOffset, int xLength, int yLength);
+  
+  /**
+   * Convenience method for casting {@code Plane} implementations to the type
+   * associated with this {@code Reader}.
+   * <p>
+   * NB: this method will fail if the provided {@code Plane} is not compatible
+   * with this {@code Reader}.
+   * </p>
+   * 
+   * @param P The specific {@code Plane} implementation to return.
+   * @param plane The base {@link ome.scifio.Plane} to cast.
+   * @return The {@code Plane} argument cast to {@code P}.
+   * @throws IllegalArgumentException If the provided {@code Plane} type is
+   *         not compatible with this {@code Reader}.
+   */
+  <P extends Plane> P castToTypedPlane(Plane plane);
 }

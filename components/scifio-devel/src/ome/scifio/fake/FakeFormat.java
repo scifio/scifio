@@ -57,6 +57,7 @@ import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DataTools;
 import ome.scifio.discovery.DiscoverableHandle;
@@ -143,10 +144,25 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
 
   // -- Constructor --
   
+  /**
+   * Zero-parameter constructor to facilitate SezPoz discovery.
+   * 
+   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
+   * @throws FormatException
+   */
   public FakeFormat() throws FormatException {
     this(null);
   }
   
+  /**
+   * Constructs this {@code Format} and creates a two-way link with the
+   * provided context. This link will not be properly established if an
+   * instance of this {@code Format} already exists in the provided context.
+   * 
+   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
+   * @param ctx the context in which to create this format.
+   * @throws FormatException
+   */
   public FakeFormat(final SCIFIO ctx) throws FormatException {
     super(ctx, "Simulated data", "fake", Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
   }
@@ -199,7 +215,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    * Checker for Fake file format. Supported extension is ".fake"
    *
    */
-  public static class Checker extends AbstractChecker<Metadata> {
+  public static class Checker extends AbstractChecker {
 
     // -- Constructor --
     
@@ -505,12 +521,18 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     
     // -- Writer API Methods --
 
-    public void saveBytes(int imageIndex, int planeIndex, byte[] buf, int x,
+    /*
+     * @see ome.scifio.Writer#savePlane(int, int, ome.scifio.Plane, int, int, int, int)
+     */
+    public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
         int y, int w, int h) throws FormatException, IOException {
       // TODO Auto-generated method stub
       
     }
 
+    /*
+     * @see ome.scifio.Writer#setMetadata(ome.scifio.Metadata)
+     */
     public void setMetadata(Metadata meta) {
       // TODO Auto-generated method stub
       

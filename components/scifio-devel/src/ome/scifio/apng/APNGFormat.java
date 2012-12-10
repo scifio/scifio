@@ -67,6 +67,7 @@ import ome.scifio.CoreTranslator;
 import ome.scifio.Field;
 import ome.scifio.FieldPrinter;
 import ome.scifio.FormatException;
+import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DataTools;
 import ome.scifio.discovery.SCIFIOFormat;
@@ -92,10 +93,25 @@ public class APNGFormat
   
   // -- Constructor --
 
+  /**
+   * Zero-parameter constructor to facilitate SezPoz discovery.
+   * 
+   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
+   * @throws FormatException
+   */
   public APNGFormat() throws FormatException {
     this(null);
   }
   
+  /**
+   * Constructs this {@code Format} and creates a two-way link with the
+   * provided context. This link will not be properly established if an
+   * instance of this {@code Format} already exists in the provided context.
+   * 
+   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
+   * @param ctx the context in which to create this format.
+   * @throws FormatException
+   */
   public APNGFormat(final SCIFIO ctx) throws FormatException {
     super(ctx, "Animated PNG", "png", Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
   }
@@ -214,7 +230,7 @@ public class APNGFormat
    * (APNG) images.
    *
    */
-  public static class Checker extends AbstractChecker<Metadata> {
+  public static class Checker extends AbstractChecker {
   
     // -- Fields --
   
@@ -608,13 +624,13 @@ public class APNGFormat
 
     // -- Writer API Methods --
 
-    /**
-     * @see ome.scifio.Writer#saveBytes(int, byte[], int, int, int, int)
+    /*
+     * @see ome.scifio.Writer#savePlane(int, int, ome.scifio.Plane, int, int, int, int)
      */
-    public void saveBytes(final int imageIndex, final int planeIndex,
-        final byte[] buf, final int x, final int y, final int w, final int h)
+    public void savePlane(final int imageIndex, final int planeIndex,
+        final Plane plane, final int x, final int y, final int w, final int h)
         throws FormatException, IOException {
-      checkParams(imageIndex, planeIndex, buf, x, y, w, h);
+      checkParams(imageIndex, planeIndex, plane.getBytes(), x, y, w, h);
       if (!isFullPlane(imageIndex, x, y, w, h)) {
         throw new FormatException(
             "APNGWriter does not yet support saving image tiles.");
@@ -638,10 +654,10 @@ public class APNGFormat
 
       if (numFrames == 0) {
         // This is the first frame, and also the default image
-        writePixels(imageIndex, "IDAT", buf, x, y, w, h);
+        writePixels(imageIndex, "IDAT", plane.getBytes(), x, y, w, h);
       } else {
         writeFCTL(width, height, planeIndex);
-        writePixels(imageIndex, "fdAT", buf, x, y, w, h);
+        writePixels(imageIndex, "fdAT", plane.getBytes(), x, y, w, h);
       }
       numFrames++;
     }

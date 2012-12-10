@@ -49,6 +49,7 @@ import ome.scifio.FormatException;
 import ome.scifio.MetadataLevel;
 import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
+import ome.scifio.TypedTranslator;
 import ome.scifio.discovery.SCIFIOTranslator;
 import ome.scifio.ics.ICSFormat;
 import ome.xml.meta.FilterMetadata;
@@ -115,16 +116,14 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     filter.createRoot();
     
     DefaultDatasetMetadata dMeta = new DefaultDatasetMetadata();
-    Format<?,?,?,?,?> icsFormat = getContext().getFormatFromMetadata(source.getClass());
-    
-    Translator<ICSFormat.Metadata, DefaultDatasetMetadata> trans = null;
+    ICSFormat ics = getContext().<ICSFormat>getFormatFromClass(ICSFormat.class);
+
+    TypedTranslator<ICSFormat.Metadata, DefaultDatasetMetadata> trans = null;
     try {
-      trans = (Translator<ICSFormat.Metadata, DefaultDatasetMetadata>) 
-          icsFormat.findSourceTranslator(DefaultDatasetMetadata.class);
+      trans = ics.findSourceTranslator(dMeta);
     } catch (FormatException e) {
       throw new RuntimeException(e);
     }
-    
     trans.translate(source, dMeta);
     
     OMEXMLMetadataTools.populatePixels((MetadataStore)filter, dMeta, true);

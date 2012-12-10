@@ -43,7 +43,7 @@ import ome.scifio.gui.AWTImageTools;
 import ome.scifio.util.FormatTools;
 
 /**
- * A {@link Plane} implementation using a {@link BufferedImage} for the
+ * A {@link ome.scifio.Plane} implementation using a {@link BufferedImage} for the
  * underlying data representation.
  * 
  * @author Mark Hiner

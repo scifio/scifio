@@ -41,7 +41,8 @@ package ome.scifio;
  * with a workflow to DatasetMetadata (e.g. Translators that use
  * a specific type of Metadata to derive the more generic
  * DatasetMetadata object).
- *
+ * 
+ * @author Mark Hiner
  */
 public interface CoreTranslator {
 

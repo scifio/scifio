@@ -35,13 +35,18 @@
  */
 package ome.scifio;
 
-public abstract class ByteArrayReader<M extends Metadata>
+/**
+ * @author Mark Hiner
+ *
+ * @param <M>
+ */
+public abstract class ByteArrayReader<M extends TypedMetadata>
   extends AbstractReader<M, ByteArrayPlane> {
 
   // -- Constructor --
   
   public ByteArrayReader(SCIFIO ctx) {
-    super(ctx);
+    super(ctx, ByteArrayPlane.class);
   }
 
   // -- Reader API Methods --

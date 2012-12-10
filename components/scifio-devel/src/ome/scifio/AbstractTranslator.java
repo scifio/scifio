@@ -42,16 +42,30 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract superclass of all SCIFIO Translator components.
  *
+ * @author Mark Hiner
  */
-public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
-  extends AbstractHasContext implements Translator<M, N> {
+public abstract class AbstractTranslator<M extends TypedMetadata, N extends TypedMetadata>
+  extends AbstractHasContext implements TypedTranslator<M, N> {
 
   public AbstractTranslator(final SCIFIO ctx) {
     super(ctx);
   }
   
   // -- Translator API --
+  
+  /*
+   * @see ome.scifio.Translator#translate(ome.scifio.Metadata, ome.scifio.Metadata)
+   */
+  public void translate(Metadata source, Metadata destination) {
+   translate(source.getFormat().<M>castToTypedMetadata(source),
+       destination.getFormat().<N>castToTypedMetadata(destination));
+  }
 
+  // -- TypedTranslator API --
+  
+  /*
+   * @see ome.scifio.TypedTranslator#translate(ome.scifio.TypedMetadata, ome.scifio.TypedMetadata)
+   */
   public void translate(M source, N dest) {
     dest.setSource(source.getSource());
     
@@ -70,8 +84,7 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 
   // -- HasFormat API Methods --
 
-  @SuppressWarnings("unchecked")
-  public Format<M, ?, ?, ?, ?> getFormat() {
+  public Format getFormat() {
     return getContext().getFormatFromTranslator(getClass());
   }
 }

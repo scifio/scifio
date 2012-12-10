@@ -37,7 +37,7 @@
 package ome.scifio;
 
 /**
- * Super-interface for all SCIFIO components.
+ * Super-interface for all contextualized SCIFIO components.
  *
  * @author Mark Hiner
  *

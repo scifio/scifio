@@ -33,40 +33,31 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package ome.scifio.discovery;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
-import ome.scifio.Format;
-import ome.scifio.FormatException;
+package ome.scifio;
 
 /**
+ * Interface for all {@link ome.scifio.Translator} implementations that use
+ * generic parameters.
+ * <p>
+ * Generics allow each concrete {@code Translator} interface to type narrow
+ * the return types of {@code Translator} methods that return SCIFIO components.
+ * Additionally, parallel methods are defined that accept SCIFIO components,
+ * allowing the parameters to be type narrowed as well.
+ * </p>
+ * 
  * @author Mark Hiner
  *
+ * @param <M> The translation source's {@link ome.scifio.Metadata} type.
+ * @param <N> The translation destination's {@code Metadata} type.
  */
-public class FormatDiscoverer implements
-    Discoverer<SCIFIOFormat, Format> {
+public interface TypedTranslator<M extends TypedMetadata, N extends TypedMetadata> extends Translator {
 
-  // -- Discoverer API Methods --
-  
-  /* Builds a list of all discovered Formats */
-  public List<Format> discover() throws FormatException {
-    
-    final List<Format> formats = new ArrayList<Format>();
-
-    for (final IndexItem<SCIFIOFormat, Format> item : 
-      Index.load(SCIFIOFormat.class, Format.class)) {
-      try {
-        final Format format = item.instance();
-        formats.add(format);
-      } catch (final InstantiationException e) {
-        throw new FormatException(e);
-      }
-    }
-
-    return formats;
-  }
+  /**
+   * Generic-parameterized {@code translate} method, using 
+   * {@link ome.scifio.TypedMetadata} to avoid type erasure conflicts with
+   * {@link ome.scifio.Translator#translate(Metadata, Metadata)}.
+   * 
+   * @see {@link ome.scifio.Translator#translate(Metadata, Metadata)}
+   */
+  void translate(final M source, final N destination);
 }

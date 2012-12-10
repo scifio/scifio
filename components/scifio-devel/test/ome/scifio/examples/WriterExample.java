@@ -6,6 +6,7 @@ import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.Parser;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 import ome.scifio.Writer;
@@ -19,13 +20,13 @@ public class WriterExample {
 		String outFile = fnf.buildPath("testPNGOut.png");
 		
 		SCIFIO ctx = null;
-		Format<?, ?, ?, ?, ?> format = null;
-		Format<?, ?, ?, ?, ?> outFormat = null;
+		Format format = null;
+		Format outFormat = null;
 		
 		try {
 			ctx = new SCIFIO();
 			format = ctx.getFormat(testFile);
-			Parser<?> p = format.createParser();
+			Parser p = format.createParser();
 			Metadata m = p.parse(testFile);
 			Reader r = format.createReader();
 			r.setMetadata(m);
@@ -41,8 +42,8 @@ public class WriterExample {
 			
 			for(int i = 0; i < r.getImageCount(); i++) {
 				for(int j = 0; j < r.getPlaneCount(i); j++) {
-					byte[] bytes = r.openPlane(i, j).getBytes();
-					w.saveBytes(i, j, bytes);
+					Plane plane = r.openPlane(i, j);
+					w.savePlane(i, j, plane);
 				}
 			}
 			

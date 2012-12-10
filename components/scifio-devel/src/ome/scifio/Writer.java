@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package ome.scifio;
 
 import java.awt.image.ColorModel;
@@ -44,33 +43,45 @@ import ome.scifio.codec.CodecOptions;
 import ome.scifio.io.RandomAccessOutputStream;
 
 /**
- * Interface for all SciFIO writers.
+ * Interface for all SCIFIO writers.
+ * <p>
+ * Writer components are used to save {@link ome.scifio.Plane} objects (output
+ * from the {@link Reader#openPlane} methods) to a destination image location,
+ * via the {@link #savePlane} methods.
+ * </p>
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
+ * 
+ * @author Mark Hiner
+ * @see ome.scifio.Plane
+ * @see ome.scifio.Reader#openPlane
  */
-public interface Writer<M extends Metadata> extends HasContext, HasFormat {
+public interface Writer extends HasContext, HasFormat {
 
   // -- Writer API methods --
+
   /**
-   * Saves the given image to the current series in the current file.
+   * Saves the provided plane to the specified image and plane index of this
+   * {@code Writer's} destination image.
    *
-   * @param imageIndex the image index within the file.
+   * @param imageIndex the image index within the dataset.
    * @param planeIndex the plane index within the image.
-   * @param buf the byte array that represents the image.
+   * @param plane the pixels save
    * @throws FormatException if one of the parameters is invalid.
    * @throws IOException if there was a problem writing to the file.
    */
-  void saveBytes(final int imageIndex, final int planeIndex, byte[] buf)
+  void savePlane(final int imageIndex, final int planeIndex, Plane plane)
     throws FormatException, IOException;
 
   /**
-   * Saves the given image tile to the current series in the current file.
+   * Saves the specified tile (sub-region) of the provided plane to the specified
+   * image and plane index of this {@code Writer's} destination image.
    *
-   * @param imageIndex the image index within the file.
+   * @param imageIndex the image index within the dataset.
    * @param planeIndex the plane index within the image.
-   * @param buf the byte array that represents the image tile.
+   * @param plane the pixels save
    * @param x the X coordinate of the upper-left corner of the image tile.
    * @param y the Y coordinate of the upper-left corner of the image tile.
    * @param w the width (in pixels) of the image tile.
@@ -78,107 +89,102 @@ public interface Writer<M extends Metadata> extends HasContext, HasFormat {
    * @throws FormatException if one of the parameters is invalid.
    * @throws IOException if there was a problem writing to the file.
    */
-  void saveBytes(final int imageIndex, final int planeIndex, final byte[] buf,
+  void savePlane(final int imageIndex, final int planeIndex, final Plane plane,
     final int x, final int y, final int w, final int h)
     throws FormatException, IOException;
 
-  /**
-   * Saves the given image plane to the current series in the current file.
-   *
-   * @param imageIndex the image index within the file.
-   * @param planeIndex the plane index within the image.   * @param plane the image plane.
-   * @throws FormatException if one of the parameters is invalid.
-   * @throws IOException if there was a problem writing to the file.
-   */
-  void savePlane(int imageIndex, int planeIndex, Object plane)
-    throws FormatException, IOException;
 
-  /**
-   * Saves the given image plane to the current series in the current file.
-   *
-   * @param imageIndex the image index within the file.
-   * @param planeIndex the plane index within the image.   * @param plane the image plane.
-   * @param x the X coordinate of the upper-left corner of the image tile.
-   * @param y the Y coordinate of the upper-left corner of the image tile.
-   * @param w the width (in pixels) of the image tile.
-   * @param h the height (in pixels) of the image tile.
-   * @throws FormatException if one of the parameters is invalid.
-   * @throws IOException if there was a problem writing to the file.
+  /** 
+   * @return True if this {@code Writer} can save multiple images to a single file.
    */
-  void savePlane(int imageIndex, int planeIndex, Object plane, int x, int y,
-    int w, int h) throws FormatException, IOException;
-
-  /** Reports whether the writer can save multiple images to a single file. */
   boolean canDoStacks();
 
   /**
-   * Sets the metadata retrieval object from
-   * which to retrieve standardized metadata.
+   * Provides this {@code Writer} with a {@code Metadata} object to use when
+   * interpreting {@code Planes} during calls to {@link #savePlane}.
+   * <p>
+   * NB: This method has accepts a general {@code Metadata} so that this
+   * signature can appear in the base interface for all {@code Writers}, but
+   * behavior if provided with a {@code Metadata} instance not associated with
+   * this {@code Writer} is undefined and should throw an exception.
+   * </p>
+   * 
+   * @param meta The {@code Metadata} to associate with this {@code Writer}.
+   * @throws IllegalArgumentException If the provided {@code Metadata} type is
+   *         not compatible with this {@code Writer}.
    */
-  void setMetadata(M meta) throws FormatException;
+  void setMetadata(Metadata meta) throws FormatException;
 
   /**
-   * Retrieves the current metadata retrieval object for this writer. You can
-   * be assured that this method will <b>never</b> return a <code>null</code>
-   * metadata retrieval object.
-   * @return A metadata retrieval object.
+   * Gets the {@code Metadata} that will be used when saving planes.
+   * 
+   * @return The {@code Metadata} associated with this {@code Writer}.
    */
-  M getMetadata();
+  Metadata getMetadata();
 
-  /** Gets the core metadata for this Writer. */
+  /**
+   * Gets the format-agnostic {@code Metadata} representation that will be
+   * used when saving planes.
+   * 
+   *  @return The format-agnostic {@code Metadata} associated with this
+   *          {@code Writer}.
+   */
   DatasetMetadata<?> getDatasetMetadata();
 
   /**
-   * Sets the source for this reader to read from.
-   * @param file
-   * @throws IOException 
+   * Sets the source that will be written to during {@link #savePlane} calls.
+   * 
+   * @param fileName The name of an image source to be written.
+   */
+  void setDest(String fileName) throws FormatException, IOException;
+  
+  /**
+   * Sets the source that will be written to during {@link #savePlane} calls.
+   *
+   * @param file A file-based image source to write to.
    */
   void setDest(File file) throws FormatException, IOException;
 
   /**
-   * Sets the source for this reader to read from.
-   * @param fileName
-   * @throws IOException 
-   */
-  void setDest(String fileName) throws FormatException, IOException;
-
-  /**
-   * Sets the default input stream for this reader.
+   * Sets the source that will be written to during {@link #savePlane} calls.
    * 
-   * @param stream a RandomAccessInputStream for the source being read
+   * @param stream The image source to write to.
    */
   void setDest(RandomAccessOutputStream stream)
     throws FormatException, IOException;
-
+  
   /**
-   * Sets the source for this reader to read from.
-   * @param imageIndex the image index to use for initialization (default: 0)
-   * @param file
-   * @throws IOException 
-   */
-  void setDest(File file, int imageIndex) throws FormatException, IOException;
-
-  /**
-   * Sets the source for this reader to read from.
-   * @param imageIndex the image index to use for initialization (default: 0)
-   * @param fileName
-   * @throws IOException 
+   * Sets the source that will be written to during {@link #savePlane} calls.
+   * 
+   * @param fileName The name of an image source to be written.
+   * @param imageIndex The index of the source to write to (default = 0)
    */
   void setDest(String fileName, int imageIndex)
     throws FormatException, IOException;
 
   /**
-   * Sets the default input stream for this reader.
-   * @param imageIndex the image index to use for initialization (default: 0)
+   * Sets the source that will be written to during {@link #savePlane} calls.
+   *
+   * @param file A file-based image source to write to.
+   * @param imageIndex The index of the source to write to (default = 0)
+   */
+  void setDest(File file, int imageIndex) throws FormatException, IOException;
+
+  /**
+   * Sets the source that will be written to during {@link #savePlane} calls.
    * 
-   * @param stream a RandomAccessInputStream for the source being read
+   * @param stream The image source to write to.
+   * @param imageIndex The index of the source to write to (default = 0)
    */
   void setDest(RandomAccessOutputStream stream, int imageIndex)
     throws FormatException, IOException;
 
   /**
-   * Retrieves the current input stream for this reader.
-   * @return A RandomAccessInputStream
+   * Retrieves a reference to the output source that will be written to during
+   * {@link #savePlane} calls.
+   * 
+   * @return The {@code RandomAccessOutputStream} associated with this
+   *         {@code Writer}.
    */
   RandomAccessOutputStream getStream();
 
@@ -209,14 +215,14 @@ public interface Writer<M extends Metadata> extends HasContext, HasFormat {
   /** Sets the current compression type. */
   void setCompression(String compress) throws FormatException;
 
+  /** Gets the current compression type. */
+  String getCompression();
+
   /**
    * Sets the codec options.
    * @param options The options to set.
    */
   void setCodecOptions(CodecOptions options);
-
-  /** Gets the current compression type. */
-  String getCompression();
 
   /** Switch the output file for the current dataset. */
   void changeOutputFile(String id) throws FormatException, IOException;
@@ -230,31 +236,4 @@ public interface Writer<M extends Metadata> extends HasContext, HasFormat {
 
   /** Closes currently open file(s) and frees allocated memory. */
   void close() throws IOException;
-
-  // -- Deprecated methods --
-
-  /** @deprecated Please use saveBytes(int, byte[]) instead. */
-  @Deprecated
-  void saveBytes(byte[] bytes, boolean last)
-    throws FormatException, IOException;
-
-  /**
-   * @deprecated Please use saveBytes(int, byte[]) and setSeries(int) instead.
-   */
-  @Deprecated
-  void saveBytes(byte[] bytes, int planeIndex, boolean lastInSeries,
-    boolean last) throws FormatException, IOException;
-
-  /** @deprecated Please use savePlane(int, Object) instead. */
-  @Deprecated
-  void savePlane(Object plane, boolean last)
-    throws FormatException, IOException;
-
-  /**
-   * @deprecated Please use savePlane(int, Object) and setSeries(int) instead.
-   */
-  @Deprecated
-  void savePlane(Object plane, int planeIndex, boolean lastInSeries,
-    boolean last) throws FormatException, IOException;
-
 }

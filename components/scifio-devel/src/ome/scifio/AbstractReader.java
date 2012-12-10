@@ -51,9 +51,16 @@ import ome.scifio.util.FormatTools;
 /**
  * Abstract superclass of all SCIFIO reader components.
  *
+ * @author Mark Hiner
  */
-public abstract class AbstractReader<M extends Metadata, P extends Plane>
-  extends AbstractHasContext implements Reader<M, P> {
+/**
+ * @author temp
+ *
+ * @param <M>
+ * @param <P>
+ */
+public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlane<?>>
+  extends AbstractHasContext implements TypedReader<M, P> {
 
   // -- Constants --
 
@@ -87,19 +94,22 @@ public abstract class AbstractReader<M extends Metadata, P extends Plane>
 
   /** Whether this format supports multi-file datasets. */
   protected boolean hasCompanionFiles = false;
+  
+  private Class<P> planeClass;
 
   // -- Constructors --
 
   /** Constructs a reader with the given context */
-  public AbstractReader(final SCIFIO ctx)
+  public AbstractReader(final SCIFIO ctx, Class<P> planeClass)
   {
     super(ctx);
     init();
+    this.planeClass = planeClass;
   }
 
   // -- HasFormat API Methods --
 
-  public Format<M, ?, ?, ?, ?> getFormat() {
+  public Format getFormat() {
     return getContext().getFormatFromReader(getClass());
   }
 
@@ -107,17 +117,193 @@ public abstract class AbstractReader<M extends Metadata, P extends Plane>
 
   //TODO Merge common Reader and Writer API methods
 
-  /* @see Reader#setSource(File) */
+  /*
+   * @see ome.scifio.Reader#openPlane(int, int)
+   */
+  public P openPlane(final int imageIndex, final int planeNumber)
+    throws FormatException, IOException
+  {
+    return openPlane(
+      imageIndex, planeNumber, 0, 0, dMeta.getAxisLength(imageIndex, Axes.X),
+      dMeta.getAxisLength(imageIndex, Axes.Y));
+  }
+
+  /*
+   * @see ome.scifio.Reader#openPlane(int, int, int, int, int, int)
+   */
+  public P openPlane(final int imageIndex, final int planeIndex,
+    final int x, final int y, final int w, final int h)
+    throws FormatException, IOException
+  {
+    final int bpp =
+      FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
+    final int ch = dMeta.getRGBChannelCount(imageIndex);
+    final P plane = createPlane(w, h, ch, bpp);
+    return openPlane(imageIndex, planeIndex, plane, x, y, w, h);
+  }
+
+  /*
+   * @see ome.scifio.Reader#openPlane(int, int, ome.scifio.Plane)
+   */
+  public P openPlane(int imageIndex, int planeIndex, Plane plane)
+      throws FormatException, IOException {
+    return openPlane(imageIndex, planeIndex, castToTypedPlane(plane));
+  }
+
+  /*
+   * @see ome.scifio.Reader#openPlane(int, int, ome.scifio.Plane, int, int, int, int)
+   */
+  public P openPlane(int imageIndex, int planeIndex, Plane plane, int x,
+      int y, int w, int h) throws FormatException, IOException {
+    return openPlane(imageIndex, planeIndex, this.<P>castToTypedPlane(plane), x, y, w, h);
+  }
+
+  /*
+   * @see ome.scifio.Reader#openThumbPlane(int, int)
+   */
+  public P openThumbPlane(final int imageIndex, final int planeIndex)
+    throws FormatException, IOException
+  {
+    FormatTools.assertStream(in, true, 1);
+    /* TODO move FormatTools implementation here 
+    return FormatTools.openThumbBytes(this, no); */
+    return null;
+  }
+
+  /*
+   * @see ome.scifio.Reader#setGroupFiles(boolean)
+   */
+  public void setGroupFiles(final boolean groupFiles) {
+    group = groupFiles;
+  }
+
+  /*
+   * @see ome.scifio.Reader#isGroupFiles()
+   */
+  public boolean isGroupFiles() {
+    FormatTools.assertStream(in, false, 1);
+    return group;
+  }
+
+  /*
+   * @see ome.scifio.Reader#fileGroupOption(java.lang.String)
+   */
+  public int fileGroupOption(final String id)
+    throws FormatException, IOException
+  {
+    return FormatTools.CANNOT_GROUP;
+  }
+
+  /*
+   * @see ome.scifio.Reader#getCurrentFile()
+   */
+  public String getCurrentFile() {
+
+    FormatTools.assertStream(in, true, 1);
+    return in.getFileName();
+  }
+
+  /*
+   * @see ome.scifio.Reader#getDomains()
+   */
+  public String[] getDomains() {
+    return domains;
+  }
+
+  /*
+   * @see ome.scifio.Reader#getStream()
+   */
+  public RandomAccessInputStream getStream() {
+    return in;
+  }
+
+  /*
+   * @see ome.scifio.Reader#getUnderlyingReaders()
+   */
+  public Reader[] getUnderlyingReaders() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /*
+   * @see ome.scifio.Reader#getOptimalTileWidth(int)
+   */
+  public int getOptimalTileWidth(final int imageIndex) {
+    return dMeta.getAxisLength(imageIndex, Axes.Y);
+  }
+
+  /*
+   * @see ome.scifio.Reader#getOptimalTileHeight(int)
+   */
+  public int getOptimalTileHeight(final int imageIndex) {
+    final int bpp =
+      FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
+    final int maxHeight =
+      (1024 * 1024) /
+        (dMeta.getAxisLength(imageIndex, Axes.X) *
+          dMeta.getRGBChannelCount(imageIndex) * bpp);
+    return Math.min(maxHeight, dMeta.getAxisLength(imageIndex, Axes.X));
+  }
+
+  /*
+   * @see ome.scifio.Reader#setMetadata(ome.scifio.Metadata)
+   */
+  public void setMetadata(ome.scifio.Metadata meta) throws IOException {
+    setMetadata(getFormat().<M>castToTypedMetadata(meta));
+  }
+
+  /*
+   * @see ome.scifio.Reader#getMetadata()
+   */
+  public M getMetadata() {
+    return metadata;
+  }
+
+  /*
+   * @see ome.scifio.Reader#getDatasetMetadata()
+   */
+  public DatasetMetadata<?> getDatasetMetadata() {
+    return dMeta;
+  }
+
+  /*
+   * @see ome.scifio.Reader#setNormalized(boolean)
+   */
+  public void setNormalized(final boolean normalize) {
+    normalizeData = normalize;
+  }
+
+  /*
+   * @see ome.scifio.Reader#isNormalized()
+   */
+  public boolean isNormalized() {
+    return normalizeData;
+  }
+
+  /*
+   * @see ome.scifio.Reader#hasCompanionFiles()
+   */
+  public boolean hasCompanionFiles() {
+    return hasCompanionFiles;
+  }
+
+  /*
+   * @see ome.scifio.Reader#setSource(java.lang.String)
+   */
+  public void setSource(final String fileName) throws IOException {
+    setSource(new RandomAccessInputStream(fileName));
+  }
+  
+  /*
+   * @see ome.scifio.Reader#setSource(java.io.File)
+   */
   public void setSource(final File file) throws IOException {
     setSource(file.getName());
   }
 
-  /* @see Reader#setSource(String) */
-  public void setSource(final String fileName) throws IOException {
-    setSource(new RandomAccessInputStream(fileName));
-  }
-
-  /* @see Reader#setSource(RandomAccessInputStream) */
+  /*
+   * @see ome.scifio.Reader#setSource(ome.scifio.io.RandomAccessInputStream)
+   */
   public void setSource(final RandomAccessInputStream stream)
     throws IOException
   {
@@ -139,28 +325,72 @@ public abstract class AbstractReader<M extends Metadata, P extends Plane>
     }
   }
 
-  /* @see Reader#openBytes(int, int) */
-  public P openPlane(final int imageIndex, final int planeNumber)
-    throws FormatException, IOException
-  {
-    return openPlane(
-      imageIndex, planeNumber, 0, 0, dMeta.getAxisLength(imageIndex, Axes.X),
-      dMeta.getAxisLength(imageIndex, Axes.Y));
+  /*
+   * @see ome.scifio.Reader#close(boolean)
+   */
+  public void close(final boolean fileOnly) throws IOException {
+    if (in != null) in.close();
+    if (!fileOnly) {
+      in = null;
+    }
   }
 
-  /* @see Reader#openBytes(int, int, int, int, int, int) */
-  public P openPlane(final int imageIndex, final int planeIndex,
-    final int x, final int y, final int w, final int h)
-    throws FormatException, IOException
-  {
-    final int bpp =
-      FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
-    final int ch = dMeta.getRGBChannelCount(imageIndex);
-    final P plane = createPlane(w, h, ch, bpp);
-    return openPlane(imageIndex, planeIndex, plane, x, y, w, h);
+  /*
+   * @see ome.scifio.Reader#close()
+   */
+  public void close() throws IOException {
+    close(false);
   }
 
-  /* @see Reader#openBytes(int, int, byte[]) */
+  /*
+   * @see ome.scifio.Reader#readPlane(ome.scifio.io.RandomAccessInputStream, int, int, int, int, int, ome.scifio.Plane)
+   */
+  public Plane readPlane(RandomAccessInputStream s, int imageIndex, int x,
+      int y, int w, int h, Plane plane) throws IOException {
+    return readPlane(s, imageIndex, x, y, w, h, this.<P>castToTypedPlane(plane));
+  }
+
+  /*
+   * @see ome.scifio.Reader#readPlane(ome.scifio.io.RandomAccessInputStream, int, int, int, int, int, int, ome.scifio.Plane)
+   */
+  public Plane readPlane(RandomAccessInputStream s, int imageIndex, int x,
+      int y, int w, int h, int scanlinePad, Plane plane) throws IOException {
+    return readPlane(s, imageIndex, x, y, w, h, scanlinePad, this.<P>castToTypedPlane(plane));
+  }
+
+  /*
+   * @see ome.scifio.Reader#getPlaneCount(int)
+   */
+  public int getPlaneCount(final int imageIndex) {
+    return dMeta.getPlaneCount(imageIndex);
+  }
+
+  /*
+   * @see ome.scifio.Reader#getImageCount()
+   */
+  public int getImageCount() {
+    return dMeta.getImageCount();
+  }
+  
+  /*
+   * @see ome.scifio.Reader#castToTypedPlane(ome.scifio.Plane)
+   */
+  public <T extends Plane> T castToTypedPlane(Plane plane) {
+    if(!planeClass.isAssignableFrom(plane.getClass())) {
+      throw new IllegalArgumentException("Incompatible plane types. " +
+          "Attempted to cast: " + plane.getClass() + " to: " + planeClass);
+    }
+      
+    @SuppressWarnings("unchecked")
+    T p = (T)plane;
+    return p;
+  }
+  
+  // -- TypedReader API --
+
+  /*
+   * @see ome.scifio.TypedReader#openPlane(int, int, ome.scifio.DataPlane)
+   */
   public P openPlane(final int imageIndex, final int planeIndex,
     final P plane) throws FormatException, IOException
   {
@@ -169,8 +399,36 @@ public abstract class AbstractReader<M extends Metadata, P extends Plane>
       dMeta.getAxisLength(imageIndex, Axes.X),
       dMeta.getAxisLength(imageIndex, Axes.Y));
   }
+  
+  /*
+   * @see ome.scifio.TypedReader#setMetadata(ome.scifio.TypedMetadata)
+   */
+  public void setMetadata(final M meta) throws IOException {
+    metadata = meta;
+    dMeta = new DefaultDatasetMetadata();
+    if(in == null) setSource(meta.getSource());
+    
+    try {
+      getFormat().findSourceTranslator(dMeta).
+        translate(meta, dMeta);
+    } catch (FormatException e) {
+      LOGGER.debug(e.getMessage());
+    }
+  }
+  
+  /*
+   * @see ome.scifio.TypedReader#readPlane(ome.scifio.io.RandomAccessInputStream, int, int, int, int, int, ome.scifio.DataPlane)
+   */
+  public P readPlane(final RandomAccessInputStream s,
+    final int imageIndex, final int x, final int y, final int w, final int h,
+    final P plane) throws IOException
+  {
+    return readPlane(s, imageIndex, x, y, w, h, 0, plane);
+  }
 
-  /* @see Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, int, byte[] */
+  /*
+   * @see ome.scifio.TypedReader#readPlane(ome.scifio.io.RandomAccessInputStream, int, int, int, int, int, int, ome.scifio.DataPlane)
+   */
   public P readPlane(final RandomAccessInputStream s,
     final int imageIndex, final int x, final int y, final int w, final int h,
     final int scanlinePad, final P plane) throws IOException
@@ -241,140 +499,12 @@ public abstract class AbstractReader<M extends Metadata, P extends Plane>
     }
     return plane;
   }
-
-  /* @see Reader#openThumbBytes(int) */
-  public P openThumbPlane(final int imageIndex, final int planeIndex)
-    throws FormatException, IOException
-  {
-    FormatTools.assertStream(in, true, 1);
-    /* TODO move FormatTools implementation here 
-    return FormatTools.openThumbBytes(this, no); */
-    return null;
-  }
-
-  /* @see Reader#setGroupFiles(boolean) */
-  public void setGroupFiles(final boolean groupFiles) {
-    group = groupFiles;
-  }
-
-  /* @see Reader#isGroupFiles() */
-  public boolean isGroupFiles() {
-    FormatTools.assertStream(in, false, 1);
-    return group;
-  }
-
-  /* @see Reader#fileGroupOption(String) */
-  public int fileGroupOption(final String id)
-    throws FormatException, IOException
-  {
-    return FormatTools.CANNOT_GROUP;
-  }
-
-  /* @see Reader#setMetadata() */
-  public void setMetadata(final M meta) throws IOException {
-    metadata = meta;
-    dMeta = new DefaultDatasetMetadata();
-    if(in == null) setSource(meta.getSource());
     
-    try {
-      getFormat().findSourceTranslator(DefaultDatasetMetadata.class).
-        translate(meta, dMeta);
-    } catch (FormatException e) {
-      LOGGER.debug(e.getMessage());
-    }
-  }
-
-  /* @see Reader#getMetadata() */
-  public M getMetadata() {
-    return metadata;
-  }
-
-  /* @see Reader#getCurrentFile() */
-  public String getCurrentFile() {
-
-    FormatTools.assertStream(in, true, 1);
-    return in.getFileName();
-  }
-
-  /* @see Reader#close(boolean) */
-  public void close(final boolean fileOnly) throws IOException {
-    if (in != null) in.close();
-    if (!fileOnly) {
-      in = null;
-    }
-  }
-
-  /* @see Reader#hasCompanionFiles() */
-  public boolean hasCompanionFiles() {
-    return hasCompanionFiles;
-  }
-
-  /* @see Reader#close() */
-  public void close() throws IOException {
-    close(false);
-  }
-
-  /* @see Reader#isNormalized() */
-  public boolean isNormalized() {
-    return normalizeData;
-  }
-
-  /* @see Reader#setNormalized(boolean) */
-  public void setNormalized(final boolean normalize) {
-    normalizeData = normalize;
-  }
-
-  /* @see Reader#getOptimalTileWidth(int) */
-  public int getOptimalTileWidth(final int imageIndex) {
-    return dMeta.getAxisLength(imageIndex, Axes.Y);
-  }
-
-  /* @see Reader#getOptimalTileHeight(int) */
-  public int getOptimalTileHeight(final int imageIndex) {
-    final int bpp =
-      FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
-    final int maxHeight =
-      (1024 * 1024) /
-        (dMeta.getAxisLength(imageIndex, Axes.X) *
-          dMeta.getRGBChannelCount(imageIndex) * bpp);
-    return Math.min(maxHeight, dMeta.getAxisLength(imageIndex, Axes.X));
-  }
-
-  /* @see Reader#getDomains() */
-  public String[] getDomains() {
-    return domains;
-  }
-
-  /* @see Reader#getDatasetMetadata() */
-  public DatasetMetadata<?> getDatasetMetadata() {
-    return dMeta;
-  }
-
-  /* @see Reader#getStream() */
-  public RandomAccessInputStream getStream() {
-    return in;
-  }
-
-  /* @see Reader#getImageCount() */
-  public int getImageCount() {
-    return dMeta.getImageCount();
-  }
-
-  /* @see Reader#getPlaneCount(int) */
-  public int getPlaneCount(final int imageIndex) {
-    return dMeta.getPlaneCount(imageIndex);
-  }
-
-  public Reader<? extends Metadata, ? extends Plane>[] getUnderlyingReaders() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-  
-  public P readPlane(final RandomAccessInputStream s,
-    final int imageIndex, final int x, final int y, final int w, final int h,
-    final P plane) throws IOException
-  {
-    return readPlane(s, imageIndex, x, y, w, h, 0, plane);
+  /*
+   * @see ome.scifio.TypedReader#getPlaneClass()
+   */
+  public Class<P> getPlaneClass() {
+    return planeClass;
   }
 
   // -- AbstractReader Methods --

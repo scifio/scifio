@@ -62,6 +62,7 @@ import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.CoreTranslator;
 import ome.scifio.FormatException;
+import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DateTools;
 import ome.scifio.discovery.SCIFIOFormat;
@@ -80,10 +81,25 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
 
   // -- Constructor --
 
+  /**
+   * Zero-parameter constructor to facilitate SezPoz discovery.
+   * 
+   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
+   * @throws FormatException
+   */
   public ICSFormat() throws FormatException {
     this(null);
   }
 
+  /**
+   * Constructs this {@code Format} and creates a two-way link with the
+   * provided context. This link will not be properly established if an
+   * instance of this {@code Format} already exists in the provided context.
+   * 
+   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
+   * @param ctx the context in which to create this format.
+   * @throws FormatException
+   */
   public ICSFormat(final SCIFIO ctx) throws FormatException {
     super(ctx, "Image Cytometry Standard", new String[] {"ics", "ids"}, Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
   }
@@ -709,7 +725,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * SCIFIO file format Checker for ICS images.
    * 
    */
-  public static class Checker extends AbstractChecker<Metadata> {
+  public static class Checker extends AbstractChecker {
 
     // -- Constructor --
 
@@ -1133,12 +1149,14 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     // -- Writer API Methods --
   
-    /* @see ome.scifio.Writer#saveBytes(int, int, byte[], int, int, int, int */
-    public void saveBytes(final int imageIndex, final int planeIndex,
-        final byte[] buf, final int x, final int y, final int w, final int h)
+    /*
+     * @see ome.scifio.Writer#savePlane(int, int, ome.scifio.Plane, int, int, int, int)
+     */
+    public void savePlane(final int imageIndex, final int planeIndex,
+        final Plane plane, final int x, final int y, final int w, final int h)
             throws FormatException, IOException
     {
-      checkParams(imageIndex, planeIndex, buf, x, y, w, h);
+      checkParams(imageIndex, planeIndex, plane.getBytes(), x, y, w, h);
       
       int rgbChannels = cMeta.getRGBChannelCount(imageIndex);
 
@@ -1175,7 +1193,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       pixels.seek(pixelOffset + realIndex * planeSize);
       if (isFullPlane(imageIndex, x, y, w, h)
           && (interleaved || rgbChannels == 1)) {
-        pixels.write(buf);
+        pixels.write(plane.getBytes());
       }
       else {
         pixels.skipBytes(bytesPerPixel * rgbChannels * sizeX * y);
@@ -1185,7 +1203,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
             for (int c=0; c<rgbChannels; c++) {
               int index = interleaved ? rgbChannels * (row * w + col) + c :
                 w * (c * h + row) + col;
-              strip.write(buf, index * bytesPerPixel, bytesPerPixel);
+              strip.write(plane.getBytes(), index * bytesPerPixel, bytesPerPixel);
             }
           }
           pixels.skipBytes(bytesPerPixel * rgbChannels * x);

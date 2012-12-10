@@ -38,7 +38,7 @@ package ome.scifio;
 import net.imglib2.meta.Axes;
 
 /**
- * A naive {@link Plane} implementation that uses byte[] for its underlying
+ * A naive {@link ome.scifio.Plane} implementation that uses {@code byte[]} for its underlying
  * data type.
  * 
  * @author Mark Hiner

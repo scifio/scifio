@@ -33,63 +33,152 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package ome.scifio;
 
 import java.util.List;
 
 /**
- * Interface for all SciFIO formats.
+ * Interface for all SCIFIO formats.
+ * <p>
+ * The {@code Format} is a bag for all other SCIFIO components associated
+ * with image IO in a given image format. It acts as a bridge and a black box
+ * for allowing components to access each other.
+ * </p>
+ * <p>
+ * NB: {@code Formats} are singletons within a given {@link ome.scifio.SCIFIO}
+ * context. They can be automatically discovered via SezPoz when constructing a
+ * new context, and thus it is rare that they should be manually constructed.
+ * </p>
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
+ * 
+ * @author Mark Hiner
+ * @see ome.scifio.SCIFIO#getFormatFromClass(Class);
  */
-public interface Format<M extends Metadata, C extends Checker<M>,
-  P extends Parser<M>, R extends Reader<M, ? extends Plane>,
-  W extends Writer<M>>
-  extends HasContext, Comparable<Format<?, ?, ?, ?, ?>> {
+public interface Format
+  extends HasContext, Comparable<Format> {
 
   // -- Format API methods --
 
   /** Returns the priority of this format.  Used for comparison to other formats. */
   Double getPriority();
+  
+  /** Gets the name of this file format. */
+  String getFormatName();
+
+  /** Gets the default file suffixes for this file format. */
+  String[] getSuffixes();
+  
+  /** 
+   * Gets a list of all Trnaslator classes capable of translating to or from
+   * {@code Metadata} of this {@code Format}.
+   * @return
+   */
+  List<Class<? extends Translator>> getTranslatorClassList();
+  
+  /**
+   * Casts the provided {@link ome.scifio.Metadata} instance to the generic
+   * type of this method.
+   * <p>
+   * NB: This method will fail, throwing an exception, if provided with a
+   * {@code Metadata} implementation not associated with this {@code Format}.
+   * </p>
+   * <p>
+   * This method is intended to be used internally or by advanced developers
+   * within intermediate layers of SCIFIO code, where generic parameters may exist
+   * but types aren't guaranteed (e.g. because {@link ome.scifio.HasFormat#getFormat()}
+   * always returns an unparameterized {@link ome.scifio.Format}).
+   * </p>
+   * <p>
+   * This method should be invoked by providing a generic parameter, e.g.:
+   * </p>
+   * <p>
+   * {@code format.<M>castToTypedMetadata(meta)}.
+   * </p>
+   * <p>
+   * where the generic parameter will resolve to the Format's Metadata type. Any
+   * other use is unsupported and will throw an exception.
+   * </p>
+   * 
+   * @param M the Metadata type to cast. Should match this Format's Metadata
+   *        type.
+   * @param meta an unknown Metadata object that will be cast to a more
+   *        specific type
+   * @throws IllegalArgumentException if meta is not assignable from this
+   *         Format's Metadata type.
+   * @return The meta parameter, cast as an M.
+   * @see {@link ome.scifio.Format#createMetadata()}
+   * @see {@link ome.scifio.HasFormat#getFormat()}
+   */
+  <M extends Metadata> M castToTypedMetadata(Metadata meta);
 
   /**
    * Create the Metadata object associated with this format.
    * @return
    * @throws FormatException
    */
-  M createMetadata() throws FormatException;
+  Metadata createMetadata() throws FormatException;
 
   /**
    * Create the Checker object associated with this format.
    * @return
    * @throws FormatException
    */
-  C createChecker() throws FormatException;
+  Checker createChecker() throws FormatException;
 
   /**
    * Create the Parser object associated with this format.
    * @return
    * @throws FormatException
    */
-  P createParser() throws FormatException;
+  Parser createParser() throws FormatException;
 
   /**
    * Creates the Reader object associated with this format.
    * @return
    * @throws FormatException
    */
-  R createReader() throws FormatException;
+  Reader createReader() throws FormatException;
 
   /**
    * Creates the Writer object associated with this format.
    * @return
    * @throws FormatException
    */
-  W createWriter() throws FormatException;
+  Writer createWriter() throws FormatException;
+   
+  /**
+   * Returns the class of the Metadata associated with this format
+   * @return
+   */
+  Class<? extends Metadata> getMetadataClass();
 
+  /**
+   * Returns the class of the Checker associated with this format
+   * @return
+   */
+  Class<? extends Checker> getCheckerClass();
+
+  /**
+   * Returns the class of the Parser associated with this format
+   * @return
+   */
+  Class<? extends Parser> getParserClass();
+
+  /**
+   * Returns the class of the Reader associated with this format
+   * @return
+   */
+  Class<? extends Reader> getReaderClass();
+
+  /**
+   * Returns the class of the Writer associated with this format
+   * @return
+   */
+  Class<? extends Writer> getWriterClass();
+  
   /**
    * Returns a translator capable of translating from this format's Metadata
    * to the target Metadata class. (this format's Metadata is the source)
@@ -98,7 +187,7 @@ public interface Format<M extends Metadata, C extends Checker<M>,
    * @param targetMeta
    * @return
    */
-  <N extends Metadata> Translator<M, N> findSourceTranslator(Class<N> targetMeta)
+  Translator findSourceTranslator(Metadata targetMeta)
     throws FormatException;
 
   /**
@@ -109,53 +198,6 @@ public interface Format<M extends Metadata, C extends Checker<M>,
    * @param targetMeta
    * @return
    */
-  <N extends Metadata> Translator<N, M> findDestTranslator(Class<N> targetMeta)
+  Translator findDestTranslator(Metadata targetMeta)
     throws FormatException;
-
-  /**
-   * Returns a list of all known Translator classes that could potentially
-   * translate to or from this Format's Metadata object (e.g., Format to Core
-   * and Core to Format translators)
-   * 
-   * @return
-   * @throws FormatException
-   */
-  List<Class<Translator<?, ?>>> getTranslatorClassList();
-  
-  /** Gets the name of this file format. */
-  String getFormatName();
-
-  /** Gets the default file suffixes for this file format. */
-  String[] getSuffixes();
-  
-  /**
-   * Returns the class of the Metadata associated with this format
-   * @return
-   */
-  Class<M> getMetadataClass();
-
-  /**
-   * Returns the class of the Checker associated with this format
-   * @return
-   */
-  Class<C> getCheckerClass();
-
-  /**
-   * Returns the class of the Parser associated with this format
-   * @return
-   */
-  Class<P> getParserClass();
-
-  /**
-   * Returns the class of the Reader associated with this format
-   * @return
-   */
-  Class<R> getReaderClass();
-
-  /**
-   * Returns the class of the Writer associated with this format
-   * @return
-   */
-  Class<W> getWriterClass();
-
 }

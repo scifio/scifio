@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import ome.scifio.FormatException;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 import ome.scifio.Writer;
@@ -21,8 +22,8 @@ public class WriterConvenienceExample {
 			out.delete();
 
 		SCIFIO ctx = null;
-		Reader<?, ?> r = null;
-		Writer<?> w = null;
+		Reader r = null;
+		Writer w = null;
 
 		try {
 			ctx = new SCIFIO();
@@ -34,8 +35,8 @@ public class WriterConvenienceExample {
 			
 			for(int i = 0; i < r.getImageCount(); i++) {
 				for(int j = 0; j < r.getPlaneCount(i); j++) {
-					byte[] bytes = r.openPlane(i, j).getBytes();
-					w.saveBytes(i, j, bytes);
+					Plane plane = r.openPlane(i, j);
+					w.savePlane(i, j, plane);
 				}
 			}
 			

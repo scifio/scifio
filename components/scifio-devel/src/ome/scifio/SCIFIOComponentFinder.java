@@ -55,19 +55,17 @@ public class SCIFIOComponentFinder {
    * if takeFirst is set, returns the first matching Format.
    * Formats are searched in priority order
    */
-  public List<Format<?, ?, ?, ?, ?>> findFormats(final String id,
+  public List<Format> findFormats(final String id,
     final boolean openFile, final boolean takeFirst,
-    final List<Format<?, ?, ?, ?, ?>> formats) throws FormatException
+    final List<Format> formats) throws FormatException
   {
 
-    final PriorityQueue<Format<?, ?, ?, ?, ?>> formatPriorities =
-      new PriorityQueue<Format<?, ?, ?, ?, ?>>(formats);
-    final List<Format<?, ?, ?, ?, ?>> formatList =
-      new ArrayList<Format<?, ?, ?, ?, ?>>();
+    final PriorityQueue<Format> formatPriorities = new PriorityQueue<Format>(formats);
+    final List<Format> formatList = new ArrayList<Format>();
 
     boolean found = false;
     while (!formatPriorities.isEmpty() && (!found || !takeFirst)) {
-      final Format<?, ?, ?, ?, ?> format = formatPriorities.poll();
+      final Format format = formatPriorities.poll();
 
       if (format.createChecker().isFormat(id, openFile)) {
         found = true;

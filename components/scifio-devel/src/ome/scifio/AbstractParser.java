@@ -53,9 +53,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract superclass of all SCIFIO Parser components.
  *
+ * @author Mark Hiner
  */
-public abstract class AbstractParser<M extends Metadata>
-  extends AbstractHasContext implements Parser<M> {
+public abstract class AbstractParser<M extends TypedMetadata>
+  extends AbstractHasContext implements TypedParser<M> {
 
   // -- Constants --
 
@@ -90,70 +91,67 @@ public abstract class AbstractParser<M extends Metadata>
     super(ctx);
     dMeta = new DefaultDatasetMetadata();
   }
-
+  
   // -- HasFormat API Methods --
 
-  @SuppressWarnings("unchecked")
-  public Format<M, ?, ?, ?, ?> getFormat() {
+  public Format getFormat() {
     return getContext().getFormatFromParser(getClass());
   }
-
+  
   // -- Parser API Methods --
-
-  /* @see Parser#parse(File file) */
-  public M parse(final File file) throws IOException, FormatException {
-    return parse(file.getPath());
-  }
+  
 
   /* @see Parser#parse(String fileName) */
   public M parse(final String fileName) throws IOException, FormatException {
     return parse(new RandomAccessInputStream(fileName));
+  }
+  
+  /*
+   * @see ome.scifio.TypedParser#parse(java.io.File)
+   */
+  public M parse(final File file) throws IOException, FormatException {
+    return parse(file.getPath());
   }
 
   /* @see Parser#parse(RandomAccessInputStream stream) */
   public M parse(final RandomAccessInputStream stream)
     throws IOException, FormatException
   {
-    M meta = getFormat().createMetadata();
+    @SuppressWarnings("unchecked")
+    M meta = (M) getFormat().createMetadata();
     return parse(stream, meta);
   }
 
-  /* @see Parser#parse(File, M) */
-  public M parse(final File file, final M meta)
+  /*
+   * @see ome.scifio.Parser#parse(java.lang.String, ome.scifio.Metadata)
+   */
+  public M parse(final String fileName, final Metadata meta)
     throws IOException, FormatException
   {
-    return parse(file.getPath(), meta);
+    return parse(fileName, getFormat().<M>castToTypedMetadata(meta));
   }
-
-  /* @see Parser#parse(String, M) */
-  public M parse(final String fileName, final M meta)
+  
+  /*
+   * @see ome.scifio.Parser#parse(java.io.File, ome.scifio.Metadata)
+   */
+  public M parse(final File file, final Metadata meta)
     throws IOException, FormatException
   {
-    return parse(new RandomAccessInputStream(fileName), meta);
+    return parse(file, getFormat().<M>castToTypedMetadata(meta));
   }
 
-  /* @see Parser#parse(RandomAccessInputStream, M) */
-  public M parse(final RandomAccessInputStream stream, final M meta)
+  /*
+   * @see ome.scifio.Parser#parse(ome.scifio.io.RandomAccessInputStream, ome.scifio.Metadata)
+   */
+  public M parse(final RandomAccessInputStream stream, final Metadata meta)
     throws IOException, FormatException
   {
-    metadata = meta;
-    if (in == null || !in.getFileName().equals(stream.getFileName())) {
-      init(stream);
-
-      if (saveOriginalMetadata) {
-        //TODO store all metadata in OMEXML store.. or equivalent function? as per setId.. or handle via annotations
-      }
-    }
-    
-    //TODO relying on Abstract-level API
-    ((AbstractMetadata)metadata).filtered = filterMetadata;
-    ((AbstractMetadata)metadata).metadataOptions = metadataOptions;
-    if(metadata.getContext() == null) metadata.setContext(getContext());
-    metadata.setSource(stream);
-    return metadata;
+    return parse(stream, getFormat().<M>castToTypedMetadata(meta));
   }
 
-  /* @see Parser#close(boolean) */
+  /*
+   * @see ome.scifio.Parser#close(boolean)
+   */
   public void close(final boolean fileOnly) throws IOException {
     if (in != null) in.close();
     if (!fileOnly) {
@@ -161,28 +159,38 @@ public abstract class AbstractParser<M extends Metadata>
     }
   }
 
-  /* @see Parser#close() */
+  /*
+   * @see ome.scifio.Parser#close()
+   */
   public void close() throws IOException {
     close(false);
   }
 
-  /* @see Parser#setOriginalMetadataPopulated(boolean) */
+  /*
+   * @see ome.scifio.Parser#setOriginalMetadataPopulated(boolean)
+   */
   public void setOriginalMetadataPopulated(final boolean populate) {
     FormatTools.assertStream(in, false, 1);
     saveOriginalMetadata = populate;
   }
 
-  /* @see Parser#isOriginalMetadataPopulated() */
+  /*
+   * @see ome.scifio.Parser#isOriginalMetadataPopulated()
+   */
   public boolean isOriginalMetadataPopulated() {
     return saveOriginalMetadata;
   }
 
-  /* @see Parser#getUsedFiles() */
+  /*
+   * @see ome.scifio.Parser#getUsedFiles()
+   */
   public String[] getUsedFiles() {
     return getUsedFiles(false);
   }
 
-  /* @see Parser#getUsedFiles() */
+  /*
+   * @see ome.scifio.Parser#getUsedFiles(boolean)
+   */
   public String[] getUsedFiles(final boolean noPixels) {
     final Vector<String> files = new Vector<String>();
     for (int i = 0; i < dMeta.getImageCount(); i++) {
@@ -198,36 +206,48 @@ public abstract class AbstractParser<M extends Metadata>
     return files.toArray(new String[files.size()]);
   }
 
-  /* @see Parser#setMetadataFiltered(boolean) */
+  /*
+   * @see ome.scifio.Parser#setMetadataFiltered(boolean)
+   */
   public void setMetadataFiltered(final boolean filter) {
     FormatTools.assertStream(in, false, 1);
     filterMetadata = filter;
   }
 
-  /* @see Parser#isMetadataFiltered() */
+  /*
+   * @see ome.scifio.Parser#isMetadataFiltered()
+   */
   public boolean isMetadataFiltered() {
     return filterMetadata;
   }
 
-  /* @see Parser#getImageUsedFiles() */
+  /*
+   * @see ome.scifio.Parser#getImageUsedFiles(int)
+   */
   public String[] getImageUsedFiles(final int imageIndex) {
     return getImageUsedFiles(imageIndex, false);
   }
 
-  /* @see Parser#getImageUsedFiles(boolean) */
+  /*
+   * @see ome.scifio.Parser#getImageUsedFiles(int, boolean)
+   */
   public String[] getImageUsedFiles(final int imageIndex, final boolean noPixels)
   {
     return noPixels ? null : new String[] {in.getFileName()};
   }
 
-  /* @see Parser#getAdvancedUsedFiles(boolean) */
+  /*
+   * @see ome.scifio.Parser#getAdvancedUsedFiles(boolean)
+   */
   public FileInfo[] getAdvancedUsedFiles(final boolean noPixels) {
     final String[] files = getUsedFiles(noPixels);
     if (files == null) return null;
     return getFileInfo(files);
   }
 
-  /* @see Parser#getAdvancedSeriesUsedFiles(boolean) */
+  /*
+   * @see ome.scifio.Parser#getAdvancedImageUsedFiles(int, boolean)
+   */
   public FileInfo[] getAdvancedImageUsedFiles(final int imageIndex,
     final boolean noPixels)
   {
@@ -236,7 +256,7 @@ public abstract class AbstractParser<M extends Metadata>
     return getFileInfo(files);
   }
 
-  /* (non-Javadoc)
+  /*
    * @see ome.scifio.Parser#getSupportedMetadataLevels()
    */
   public Set<MetadataLevel> getSupportedMetadataLevels() {
@@ -247,73 +267,23 @@ public abstract class AbstractParser<M extends Metadata>
     return supportedLevels;
   }
 
-  /* (non-Javadoc)
+  /*
    * @see ome.scifio.Parser#getMetadataOptions()
    */
   public MetadataOptions getMetadataOptions() {
     return metadataOptions;
   }
 
-  /* (non-Javadoc)
+  /*
    * @see ome.scifio.Parser#setMetadataOptions(ome.scifio.MetadataOptions)
    */
   public void setMetadataOptions(final MetadataOptions options) {
     metadataOptions = options;
   }
 
-  // -- AbstractParser Methods --
-
-  /** Adds an entry to the global metadata table. */
-  public void addGlobalMeta(final String key, final Object value) {
-    addMeta(key, value, dMeta.getDatasetMetadata());
-  }
-
-  /** Adds an entry to the global metadata table. */
-  public void addGlobalMeta(final String key, final boolean value) {
-    addGlobalMeta(key, new Boolean(value));
-  }
-
-  /** Adds an entry to the global metadata table. */
-  public void addGlobalMeta(final String key, final byte value) {
-    addGlobalMeta(key, new Byte(value));
-  }
-
-  /** Adds an entry to the global metadata table. */
-  public void addGlobalMeta(final String key, final short value) {
-    addGlobalMeta(key, new Short(value));
-  }
-
-  /** Adds an entry to the global metadata table. */
-  public void addGlobalMeta(final String key, final int value) {
-    addGlobalMeta(key, new Integer(value));
-  }
-
-  /** Adds an entry to the global metadata table. */
-  public void addGlobalMeta(final String key, final long value) {
-    addGlobalMeta(key, new Long(value));
-  }
-
-  /** Adds an entry to the global metadata table. */
-  public void addGlobalMeta(final String key, final float value) {
-    addGlobalMeta(key, new Float(value));
-  }
-
-  /** Adds an entry to the global metadata table. */
-  public void addGlobalMeta(final String key, final double value) {
-    addGlobalMeta(key, new Double(value));
-  }
-
-  /** Adds an entry to the global metadata table. */
-  public void addGlobalMeta(final String key, final char value) {
-    addGlobalMeta(key, new Character(value));
-  }
-
-  /** Gets a value from the global metadata table. */
-  public Object getGlobalMeta(final String key) {
-    return dMeta.getDatasetMetadata().get(key);
-  }
-
-  /** Adds an entry to the specified Hashtable. */
+  /*
+   * @see ome.scifio.Parser#addMeta(java.lang.String, java.lang.Object, java.util.Hashtable)
+   */
   public void addMeta(String key, Object value,
     final Hashtable<String, Object> meta)
   {
@@ -366,6 +336,95 @@ public abstract class AbstractParser<M extends Metadata>
     }
 
     meta.put(key, val == null ? value : val);
+  }
+  
+  // -- TypedParser API Methods --
+
+  /* @see TypedParser#parse(String, M) */
+  public M parse(final String fileName, final M meta)
+    throws IOException, FormatException
+  {
+    return parse(new RandomAccessInputStream(fileName), meta);
+  }
+  
+  /* @see TypedParser#parse(File, M) */
+  public M parse(final File file, final M meta)
+    throws IOException, FormatException
+  {
+    return parse(file.getPath(), meta);
+  }
+
+  /* @see TypedParser#parse(RandomAccessInputStream, M) */
+  public M parse(final RandomAccessInputStream stream, final M meta)
+    throws IOException, FormatException
+  {
+    metadata = meta;
+    if (in == null || !in.getFileName().equals(stream.getFileName())) {
+      init(stream);
+
+      if (saveOriginalMetadata) {
+        //TODO store all metadata in OMEXML store.. or equivalent function? as per setId.. or handle via annotations
+      }
+    }
+    
+    //TODO relying on Abstract-level API
+    ((AbstractMetadata)metadata).filtered = filterMetadata;
+    ((AbstractMetadata)metadata).metadataOptions = metadataOptions;
+    if(metadata.getContext() == null) metadata.setContext(getContext());
+    metadata.setSource(stream);
+    return metadata;
+  }
+
+  // -- AbstractParser Methods --
+
+  /** Adds an entry to the global metadata table. */
+  public void addGlobalMeta(final String key, final Object value) {
+    addMeta(key, value, dMeta.getDatasetMetadata());
+  }
+
+  /** Adds an entry to the global metadata table. */
+  public void addGlobalMeta(final String key, final boolean value) {
+    addGlobalMeta(key, new Boolean(value));
+  }
+
+  /** Adds an entry to the global metadata table. */
+  public void addGlobalMeta(final String key, final byte value) {
+    addGlobalMeta(key, new Byte(value));
+  }
+
+  /** Adds an entry to the global metadata table. */
+  public void addGlobalMeta(final String key, final short value) {
+    addGlobalMeta(key, new Short(value));
+  }
+
+  /** Adds an entry to the global metadata table. */
+  public void addGlobalMeta(final String key, final int value) {
+    addGlobalMeta(key, new Integer(value));
+  }
+
+  /** Adds an entry to the global metadata table. */
+  public void addGlobalMeta(final String key, final long value) {
+    addGlobalMeta(key, new Long(value));
+  }
+
+  /** Adds an entry to the global metadata table. */
+  public void addGlobalMeta(final String key, final float value) {
+    addGlobalMeta(key, new Float(value));
+  }
+
+  /** Adds an entry to the global metadata table. */
+  public void addGlobalMeta(final String key, final double value) {
+    addGlobalMeta(key, new Double(value));
+  }
+
+  /** Adds an entry to the global metadata table. */
+  public void addGlobalMeta(final String key, final char value) {
+    addGlobalMeta(key, new Character(value));
+  }
+
+  /** Gets a value from the global metadata table. */
+  public Object getGlobalMeta(final String key) {
+    return dMeta.getDatasetMetadata().get(key);
   }
 
   /* Sets the input stream for this parser if provided a new stream */

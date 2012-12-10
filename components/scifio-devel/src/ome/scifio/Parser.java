@@ -46,103 +46,107 @@ import ome.scifio.MetadataOptions;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
- * Interface for all SciFIO Parsers.
+ * Interface for all SCIFIO Parsers.
+ * <p>
+ * {@code Parsers} are used to create type-specific {@link ome.scifio.Metadata}
+ * appropriate for their {@code Format} by reading from an image source.
+ * </p>
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
+ * 
+ * @author Mark Hiner
  */
-public interface Parser<M extends Metadata> extends HasContext, HasFormat {
+public interface Parser extends HasContext, HasFormat {
 
   // -- Parser API methods --
 
   /**
-   * Wraps the file corresponding to the given name in a File handle and returns parse(RandomAccessInputStream).
+   * Creates a {@code Metadata} object using the provided name of an image
+   * source.
    * 
-   * @param fileName Path to an image file to be parsed.  Parsers are typically
-   *   specific to the file type discovered here.
-   * @return most specific metadata for this type
-   * @throws IOException 
+   * @param fileName Name of the image source to parse.
+   * @return A new {@code Metadata} object of the appropriate type.
    */
-  M parse(String fileName) throws IOException, FormatException;
+  Metadata parse(String fileName) throws IOException, FormatException;
 
   /**
-   * Wraps the file in a File handle and returns parse(RandomAccessInputStream).
+   * Creates a {@code Metadata} object from the provided image file.
    * 
-   * @param file Path to an image file to be parsed.  Parsers are typically
-   *   specific to the file type discovered here.
-   * @return most specific metadata for this type
-   * @throws IOException 
+   * @param file a path to the image file to parse.
+   * @return A new {@code Metadata} object of the appropriate type.
    */
-  M parse(File file) throws IOException, FormatException;
+  Metadata parse(File file) throws IOException, FormatException;
 
   /**
-   * Returns the most specific Metadata object possible, for the provided RandomAccessInputStream.
+   * Creates a {@code Metadata} object from the provided image source.
    * 
-   * @param stream random access handle to the file to be parsed.
-   * @return most specific metadata for this type   
-   * @throws IOException 
+   * @param stream a random access handle to the image source to parse.
+   * @return A new {@code Metadata} object of the appropriate type. 
    */
-  M parse(RandomAccessInputStream stream) throws IOException, FormatException;
+  Metadata parse(RandomAccessInputStream stream) throws IOException, FormatException;
 
   /**
-   * See {@link Parser#parse(RandomAccessInputStream)}
-   * This method will parse into the provided Metadata object instead of
-   * creating a new Metadata.
+   * Parses metadata using the provided name of an image source, and writes
+   * to an existing {@code Metadata} object (overwriting may occur).
    * 
-   * @param fileName Path to an image file to be parsed.  Parsers are typically
-   *   specific to the file type discovered here.
-   * @return most specific metadata for this type
-   * @throws IOException 
+   * @param fileName Name of the image source to parse.
+   * @param meta A base {@code Metadata} to fill.
+   * @return The provided {@code Metadata} after parsing.
+   * @throws IllegalArgumentException if meta is not assignable from the
+   *         {@code Metadata} associated with this {@code Parser's Format}
    */
-  M parse(String fileName, M meta) throws IOException, FormatException;
+  Metadata parse(String fileName, Metadata meta) throws IOException, FormatException;
 
   /**
-   * See {@link Parser#parse(String)}
-   * This method will parse into the provided Metadata object instead of
-   * creating a new Metadata.
+   * Parses metadata from the provided file location to an existing
+   * {@code Metadata} object (overwriting may occur).
    * 
-   * @param file Path to an image file to be parsed.  Parsers are typically
-   *   specific to the file type discovered here.
-   * @return most specific metadata for this type
-   * @throws IOException 
+   * @param file a path to the image file to parse.
+   * @param meta A base {@code Metadata} to fill.
+   * @return The provided {@code Metadata} after parsing.
+   * @throws IllegalArgumentException if meta is not assignable from the
+   *         {@code Metadata} associated with this {@code Parser's Format}
    */
-  M parse(File file, M meta) throws IOException, FormatException;
+  Metadata parse(File file, Metadata meta) throws IOException, FormatException;
 
   /**
-   * See {@link Parser#parse(File)}
-   * This method will parse into the provided Metadata object instead of
-   * creating a new Metadata.
+   * Parses metadata from the provided image source to an existing
+   * {@code Metadata} object (overwriting may occur).
    * 
-   * NB: this is the bottom of the Parse hierarchy and should always be
-   * implicitly called. Thus this is the safest place to put code that
-   * should always be executed upon Parse.
-   * 
-   * @param stream random access handle to the file to be parsed.
-   * @return most specific metadata for this type   
-   * @throws IOException 
+   * @param stream a random access handle to the image source to parse.
+   * @param meta A base {@code Metadata} to fill.
+   * @return The provided {@code Metadata} after parsing.
+   * @throws IllegalArgumentException if meta is not assignable from the
+   *         {@code Metadata} associated with this {@code Parser's Format}
    */
-  M parse(RandomAccessInputStream stream, M meta)
+  Metadata parse(RandomAccessInputStream stream, Metadata meta)
     throws IOException, FormatException;
 
   /**
-   * Closes the currently open file. If the flag is set, this is all that
-   * happens; if unset, it is equivalent to calling
+   * Closes the currently open image source, with an option to free allocated
+   * memory.
+   * 
+   * @param fileOnly If true, will not try to free up memory from objects
+   *        associated with this source.
    */
   void close(boolean fileOnly) throws IOException;
 
-  /** Closes currently open file(s) and frees allocated memory. */
+  /** 
+   * Closes currently open source(s) and frees allocated memory.
+   */
   void close() throws IOException;
 
   /**
-   * Specifies whether or not to save proprietary metadata
-   * in the Metadata.
+   * Specifies whether or not this {@code Parser} should save proprietary
+   * metadata while parsing.
    */
   void setOriginalMetadataPopulated(boolean populate);
 
   /**
-   * Returns true if we should save proprietary metadata
-   * in the Metadata.
+   * Returns true if this {@code Parser} should save proprietary metadata
+   * while parsing.
    */
   boolean isOriginalMetadataPopulated();
 
@@ -194,9 +198,6 @@ public interface Parser<M extends Metadata> extends HasContext, HasFormat {
    */
   FileInfo[] getAdvancedImageUsedFiles(int imageIndex, boolean noPixels);
 
-  /** Adds an entry to the specified Hashtable */
-  void addMeta(String key, Object value, Hashtable<String, Object> meta);
-
   /** Returns a list of MetadataLevel options for determining the granularity of MetadataCollection */
   Set<MetadataLevel> getSupportedMetadataLevels();
 
@@ -205,4 +206,7 @@ public interface Parser<M extends Metadata> extends HasContext, HasFormat {
 
   /** Returns the MetadataOptions for this Parser */
   MetadataOptions getMetadataOptions();
+
+  /** Adds an entry to the specified Hashtable */
+  void addMeta(String key, Object value, Hashtable<String, Object> meta);
 }

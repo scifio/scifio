@@ -77,7 +77,6 @@ import ome.scifio.gui.Index16ColorModel;
 import ome.scifio.gui.SignedColorModel;
 import ome.scifio.BufferedImagePlane;
 import ome.scifio.FormatException;
-import ome.scifio.Reader;
 import ome.scifio.common.DataTools;
 import ome.scifio.util.ImageTools;
 
@@ -713,8 +712,8 @@ public final class AWTImageTools {
    * Creates an image from the given byte array, using the given
    * ome.scifio.Reader to retrieve additional information.
    */
-  public static BufferedImage openImage(byte[] buf, 
-      Reader<?, BufferedImagePlane> r, int w, int h, int imageIndex) 
+  public static BufferedImage openImage(BufferedImagePlane plane, 
+      BufferedImageReader<?> r, int w, int h, int imageIndex) 
       throws FormatException, IOException
   {
     int pixelType = r.getDatasetMetadata().getPixelType(imageIndex);
@@ -725,12 +724,12 @@ public final class AWTImageTools {
     boolean indexed = r.getDatasetMetadata().isIndexed(imageIndex);
 
     if (pixelType == FormatTools.FLOAT) {
-      float[] f = (float[]) DataTools.makeDataArray(buf, 4, true, little);
+      float[] f = (float[]) DataTools.makeDataArray(plane.getBytes(), 4, true, little);
       if (normal) f = DataTools.normalizeFloats(f);
       return makeImage(f, w, h, rgbChanCount, interleaved);
     }
     else if (pixelType == FormatTools.DOUBLE) {
-      double[] d = (double[]) DataTools.makeDataArray(buf, 8, true, little);
+      double[] d = (double[]) DataTools.makeDataArray(plane.getBytes(), 8, true, little);
       if (normal) d = DataTools.normalizeDoubles(d);
       return makeImage(d, w, h, rgbChanCount, interleaved);
     }
@@ -753,36 +752,15 @@ public final class AWTImageTools {
     int bpp = FormatTools.getBytesPerPixel(pixelType);
     BufferedImage b =
       makeImage(
-        buf, w, h, rgbChanCount, interleaved, bpp, false, little, signed);
+        plane.getBytes(), w, h, rgbChanCount, interleaved, bpp, false, little, signed);
     if (b == null) {
       throw new FormatException("Could not construct BufferedImage");
     }
 
     if (indexed && rgbChanCount == 1) {
-      if (pixelType == FormatTools.UINT8 || pixelType == FormatTools.INT8) {
-        byte[][] table = r.getDatasetMetadata().get8BitLookupTable(imageIndex);
-        if (table != null && table.length > 0 && table[0] != null) {
-          int len = table[0].length;
-          byte[] dummy = table.length < 3 ? new byte[len] : null;
-          byte[] red = table.length >= 1 ? table[0] : dummy;
-          byte[] green = table.length >= 2 ? table[1] : dummy;
-          byte[] blue = table.length >= 3 ? table[2] : dummy;
-          model = new IndexColorModel(8, len, red, green, blue);
-        }
-      }
-      else if (pixelType == FormatTools.UINT16 ||
-        pixelType == FormatTools.INT16)
-      {
-        short[][] table = r.getDatasetMetadata().get16BitLookupTable(imageIndex);
-        if (table != null && table.length > 0 && table[0] != null) {
-          model =
-            new Index16ColorModel(
-              16, table[0].length, table, r.getDatasetMetadata()
-                .isLittleEndian(imageIndex));
-        }
-      }
+      model = plane.getData().getColorModel();
     }
-
+    
     if (model != null) {
       WritableRaster raster =
         Raster.createWritableRaster(b.getSampleModel(), b.getRaster()

@@ -40,6 +40,7 @@ package ome.scifio;
  * Abstract superclass of all SCIFIO components that are children of
  * ome.scifio.HasContext.
  *
+ * @author Mark Hiner
  */
 public abstract class AbstractHasContext implements HasContext {
 

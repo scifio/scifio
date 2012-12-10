@@ -44,11 +44,12 @@ import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
 
 /**
- * Abstract superclass of all SCIFIO checker components. 
+ * Abstract superclass of all SCIFIO {@link ome.scifio.Checker} implementation. 
  *
+ * @author Mark Hiner
  */
-public abstract class AbstractChecker<M extends Metadata>
-  extends AbstractHasContext implements Checker<M> {
+public abstract class AbstractChecker
+  extends AbstractHasContext implements Checker {
 
   // -- Constants --
 
@@ -75,14 +76,7 @@ public abstract class AbstractChecker<M extends Metadata>
   {
     super(ctx);
   }
-
-  // -- HasFormat API --
-
-  @SuppressWarnings("unchecked")
-  public Format<M, ?, ?, ?, ?> getFormat() {
-    return getContext().getFormatFromChecker(getClass());
-  }
-
+  
   // -- Checker API Methods --
 
   /* @see Checker#isFormat(String name, boolean open) */
@@ -121,8 +115,17 @@ public abstract class AbstractChecker<M extends Metadata>
     }
   }
 
-  /* @see Checker#isFormat(byte[] block) */
-  public boolean isFormat(final byte[] block) {
+  /* @see Checker#isFormat(RandomAccessInputStream) */
+  public boolean isFormat(final RandomAccessInputStream stream)
+    throws IOException
+  {
+    return false;
+  }
+  
+  /*
+   * @see ome.scifio.Checker#checkHeader(byte[])
+   */
+  public boolean checkHeader(final byte[] block) {
     try {
       final RandomAccessInputStream stream = new RandomAccessInputStream(block);
       final boolean isFormat = isFormat(stream);
@@ -135,10 +138,9 @@ public abstract class AbstractChecker<M extends Metadata>
     return false;
   }
 
-  /* @see Checker#isFormat(RandomAccessInputStream) */
-  public boolean isFormat(final RandomAccessInputStream stream)
-    throws IOException
-  {
-    return false;
+  // -- HasFormat API --
+
+  public Format getFormat() {
+    return getContext().getFormatFromChecker(getClass());
   }
 }

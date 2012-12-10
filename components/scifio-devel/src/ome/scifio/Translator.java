@@ -33,30 +33,72 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package ome.scifio;
 
 /**
- * Interface for all SciFIO Translators.
- * Translates from Metadata type I to a new Metadata type
+ * Interface for all SCIFIO {@code Translators}.
+ * <p>
+ * Multiple {@code Translators} can be defined for a given {@code Format}.
+ * Each encodes a process for converting from one {@link ome.scifio.Metadata}
+ * type to another (where either the source or the destination is the {@code Metadata}
+ * type associated with this {@code Format}).
+ * </p>
+ * <p>
+ * The {@link #translate(Metadata, Metadata)} method always accepts an instance
+ * of both source and destination {@code Metadata}. This allows chaining of
+ * multiple translators (or other methods) to populate a single instance of
+ * {@code Metadata}.
+ * </p>
+ * <p>
+ * If no {@code Metadata} instance is readily available for translation, it
+ * can be created through the {@code Format}, and existing {@code Metadata}
+ * instances can be reset to ensure no previous information persists.
+ * </p>
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
+ * 
+ * @see ome.scifio.Format#createMetadata()
+ * @see ome.scifio.Metadata#reset(Class)
+ * @author Mark Hiner
  */
-public interface Translator<M extends Metadata, N extends Metadata>
+public interface Translator
   extends HasContext, HasFormat {
 
   // -- Translator API methods --
 
   /**
-   * Uses the type M Metadata object to build an instance of Metadata type N
+   * Uses the source {@code Metadata} to populate the destination {@code Metadata}
+   * <p>
+   * NB: this method accepts base {@code Metadata} parameters, but its behavior
+   * is undefined if at least one {@code Metadata} instance is not of the type
+   * associated with this {@code Translator's Format}. Neither can the other
+   * {@code Metadata} be arbitrary, as an appropriate {@code Translator} must
+   * be defined for the desired direction of translation. See 
+   * {@link ome.scifio.Format#getTranslatorClassList()} for a list of classes
+   * capable of translation with a given {@code Format's Metadata}.
+   * </p>
+   * <p>
+   * Note that the destination does not have to be empty, but can be built up
+   * through multiple translations. However each translation step is assumed
+   * to overwrite any previously existing data.
+   * </p>
+   * <p>
+   * For a reference to a fresh {@code Metadata} instance to use in translation,
+   * consider the {@link ome.scifio.Format#createMetadata()} and
+   * {@link ome.scifio.Metadata#reset(Class)} methods.
+   * </p>
    * 
-   * Note that N does not have to be a blank Metadata object, but such can be
-   * ensured by calling the reset() method ahead of time.
-   * 
-   * @param metaIn Metadata object of the Input type
-   * @return a new Metadtata object
+   * @param source {@code Metadata} to use to populate
+   * @param destination {@code Metadata} to be populated
+   * @see {@link ome.scifio.Format#createMetadata()}
+   * @see {@link ome.scifio.Metadata#reset(Class)}
+   * @see {@link ome.scifio.Format#getTranslatorClassList()}
+   * @throws IllegalArgumentException if the arguments don't match the
+   *         {@code Metadata} types used to query this {@code Translator}
+   *         (e.g. via the {@link ome.scifio.Format#findDestTranslator} or
+   *         {@link ome.scifio.Format#findSourceTranslator} methods).
    */
-  void translate(final M source, final N destination);
+  void translate(final Metadata source, final Metadata destination);
 }

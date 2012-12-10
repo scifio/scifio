@@ -45,11 +45,11 @@ import org.slf4j.LoggerFactory;
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 import ome.scifio.FormatException;
-import ome.scifio.Metadata;
-import ome.scifio.Translator;
+import ome.scifio.TypedMetadata;
+import ome.scifio.TypedTranslator;
 
-public class TranslatorDiscoverer<M extends Metadata, N extends Metadata>
-    implements Discoverer<SCIFIOTranslator, Translator<M, N>> {
+public class TranslatorDiscoverer<M extends TypedMetadata, N extends TypedMetadata>
+    implements Discoverer<SCIFIOTranslator, TypedTranslator<M, N>> {
 
   // -- Constants --
   
@@ -70,14 +70,14 @@ public class TranslatorDiscoverer<M extends Metadata, N extends Metadata>
   
   // -- Discoverer API Methods --
   
-  public List<Translator<M, N>> discover() throws FormatException {
-    List<Translator<M, N>> transList = new ArrayList<Translator<M, N>>();
+  public List<TypedTranslator<M, N>> discover() throws FormatException {
+    List<TypedTranslator<M, N>> transList = new ArrayList<TypedTranslator<M, N>>();
     for (@SuppressWarnings("rawtypes")
-    final IndexItem<SCIFIOTranslator, Translator> item : Index.load(
-        SCIFIOTranslator.class, Translator.class)) {
+    final IndexItem<SCIFIOTranslator, TypedTranslator> item : Index.load(
+        SCIFIOTranslator.class, TypedTranslator.class)) {
       if (metaInClass == item.annotation().metaIn()
           && metaOutClass == item.annotation().metaOut()) {
-        Translator<M, N> trans = null;
+        TypedTranslator<M, N> trans = null;
         try {
           trans = getInstance(item);
         }
@@ -94,8 +94,8 @@ public class TranslatorDiscoverer<M extends Metadata, N extends Metadata>
   // -- Helper Methods --
   
   @SuppressWarnings("unchecked")
-  private Translator<M, N> getInstance(
-      @SuppressWarnings("rawtypes") IndexItem<SCIFIOTranslator, Translator> item) throws InstantiationException {
+  private TypedTranslator<M, N> getInstance(
+    @SuppressWarnings("rawtypes") IndexItem<SCIFIOTranslator, TypedTranslator> item) throws InstantiationException {
     return item.instance();
   }
 }

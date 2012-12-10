@@ -33,40 +33,35 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package ome.scifio.discovery;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
-import ome.scifio.Format;
-import ome.scifio.FormatException;
+package ome.scifio;
 
 /**
+ * Interface for all {@link ome.scifio.Writer} implementations that use generic
+ * parameters.
+ * <p>
+ * Generics all each concrete {@code Writer} implementation to guarantee, by
+ * type narrowing, any methods that return SCIFIO components. Also, parallel
+ * methods that take SCIFIO component arguments are defined to be type
+ * narrowed.
+ * </p>
+ * 
  * @author Mark Hiner
  *
+ * @param <M> The {@link ome.scifio.Metadata} type associated with this Writer.
  */
-public class FormatDiscoverer implements
-    Discoverer<SCIFIOFormat, Format> {
+public interface TypedWriter<M extends TypedMetadata> extends Writer {
 
-  // -- Discoverer API Methods --
-  
-  /* Builds a list of all discovered Formats */
-  public List<Format> discover() throws FormatException {
-    
-    final List<Format> formats = new ArrayList<Format>();
+  /**
+   * Generic-parameterized {@code setMetadata} method, using 
+   * {@link ome.scifio.TypedMetadata} to avoid type erasure conflicts with
+   * {@link ome.scifio.Writer#setMetadata(Metadata)}.
+   * 
+   * @see {@link ome.scifio.Writer#parse(Metadata)}
+   */
+  void setMetadata(M meta) throws FormatException;
 
-    for (final IndexItem<SCIFIOFormat, Format> item : 
-      Index.load(SCIFIOFormat.class, Format.class)) {
-      try {
-        final Format format = item.instance();
-        formats.add(format);
-      } catch (final InstantiationException e) {
-        throw new FormatException(e);
-      }
-    }
-
-    return formats;
-  }
+  /*
+   * @see ome.scifio.Writer#getMetadata()
+   */
+  M getMetadata();
 }

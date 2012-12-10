@@ -49,17 +49,17 @@ import ome.scifio.io.RandomAccessInputStream;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/DelegateReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/DelegateReader.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public abstract class DelegateReader <M extends Metadata, P extends Plane> 
+public abstract class DelegateReader <M extends TypedMetadata, P extends DataPlane<?>> 
   extends AbstractReader<M, P> {
 
   /** Flag indicating whether to use legacy reader by default. */
   protected boolean useLegacy;
 
   /** Native reader. */
-  protected Reader<M, P> nativeReader;
+  protected TypedReader<M, P> nativeReader;
 
   /** Legacy reader. */
-  protected Reader<M, P> legacyReader;
+  protected TypedReader<M, P> legacyReader;
 
   /** Flag indicating that the native reader was successfully initialized. */
   protected boolean nativeReaderInitialized;
@@ -75,9 +75,9 @@ public abstract class DelegateReader <M extends Metadata, P extends Plane>
   }
 
   /** Constructs a new delegate reader. */
-  public DelegateReader(Reader<M, P> nativeReader, Reader<M, P> legacyReader,
+  public DelegateReader(TypedReader<M, P> nativeReader, TypedReader<M, P> legacyReader,
     final SCIFIO ctx) {
-    super(ctx);
+    super(ctx, null);
     this.nativeReader = nativeReader;
     this.legacyReader = legacyReader;
   }
@@ -103,8 +103,8 @@ public abstract class DelegateReader <M extends Metadata, P extends Plane>
   
   // -- HasFormat API methods --
   
-  public Format<M, ?, ?, ?, ?> getFormat() {
-    return (Format<M, ?, ?, ?, ?>) (useLegacy ? legacyReader.getFormat() : nativeReader.getFormat());
+  public Format getFormat() {
+    return useLegacy ? legacyReader.getFormat() : nativeReader.getFormat();
   }
   
   // -- Reader API methods --
@@ -169,7 +169,7 @@ public abstract class DelegateReader <M extends Metadata, P extends Plane>
     return useLegacy ? legacyReader.getStream() : nativeReader.getStream();
   }
 
-  public Reader<? extends Metadata, ? extends Plane>[] getUnderlyingReaders() {
+  public Reader[] getUnderlyingReaders() {
     return useLegacy ? legacyReader.getUnderlyingReaders() : nativeReader.getUnderlyingReaders();
   }
 
@@ -255,5 +255,9 @@ public abstract class DelegateReader <M extends Metadata, P extends Plane>
 
   public int getImageCount() {
     return useLegacy ? legacyReader.getImageCount() : nativeReader.getImageCount();
+  }
+  
+  public Class<P> getPlaneClass() {
+    return useLegacy ? legacyReader.getPlaneClass() : nativeReader.getPlaneClass();
   }
 }

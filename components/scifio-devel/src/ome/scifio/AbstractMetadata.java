@@ -44,8 +44,14 @@ import org.slf4j.LoggerFactory;
 
 import ome.scifio.io.RandomAccessInputStream;
 
+/**
+ * Abstract superclass of all SCIFIO {@link ome.scifio.Metadata} implementations
+ * 
+ * @author Mark Hiner
+ *
+ */
 public abstract class AbstractMetadata extends AbstractHasContext
-  implements Metadata {
+  implements TypedMetadata {
 
   // -- Constants --
 
@@ -60,7 +66,7 @@ public abstract class AbstractMetadata extends AbstractHasContext
 
   // -- HasFormat API Methods --
 
-  public Format<?, ?, ?, ?, ?> getFormat() {
+  public Format getFormat() {
     return getContext().getFormatFromMetadata(getClass());
   }
 

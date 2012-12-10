@@ -14,7 +14,7 @@ public class ReaderConvenienceExample {
 		String testFile = fnf.buildPath("testPNG.png");
 
     SCIFIO ctx = null;
-    Reader<?, ?> r = null;
+    Reader r = null;
 
     try {
       ctx = new SCIFIO();

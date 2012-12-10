@@ -7,6 +7,7 @@ import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.Parser;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
@@ -20,13 +21,13 @@ public class TranslatorExample {
 		String outFile = fnf.buildPath("testICStoPNG.png");
 		
 		SCIFIO ctx = null;
-		Format<?, ?, ?, ?, ?> inFormat = null;
-		Format<?, ?, ?, ?, ?> outFormat = null;
+		Format inFormat = null;
+		Format outFormat = null;
 		
 		try {
 			ctx = new SCIFIO();
 			inFormat = ctx.getFormat(testFile);
-			Parser<?> p = inFormat.createParser();
+			Parser p = inFormat.createParser();
 			Metadata metaIn = p.parse(testFile);
 			Reader reader = inFormat.createReader();
 			reader.setMetadata(metaIn);
@@ -35,10 +36,11 @@ public class TranslatorExample {
 			outFormat = ctx.getFormat(outFile);
 			Writer writer = outFormat.createWriter();
 			Metadata metaOut = outFormat.createMetadata();
-			Translator inToCore = inFormat.findSourceTranslator(DefaultDatasetMetadata.class);
-			DefaultDatasetMetadata datasetMeta = new DefaultDatasetMetadata();
+	    DefaultDatasetMetadata datasetMeta = new DefaultDatasetMetadata();
+
+			Translator inToCore = inFormat.findSourceTranslator(datasetMeta);
 			inToCore.translate(metaIn, datasetMeta);
-			Translator coreToDest = outFormat.findDestTranslator(DefaultDatasetMetadata.class);
+			Translator coreToDest = outFormat.findDestTranslator(datasetMeta);
 			coreToDest.translate(datasetMeta, metaOut);
 			writer.setMetadata(metaOut);
 			
@@ -49,8 +51,8 @@ public class TranslatorExample {
 			
 			for(int i = 0; i < reader.getImageCount(); i++) {
 				for(int j = 0; j < reader.getPlaneCount(i); j++) {
-					byte[] bytes = reader.openPlane(i, j).getBytes();
-					writer.saveBytes(i, j, bytes);
+					Plane plane = reader.openPlane(i, j);
+					writer.savePlane(i, j, plane);
 				}
 			}
 			

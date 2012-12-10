@@ -35,63 +35,67 @@
  */
 package ome.scifio;
 
+import java.io.File;
 import java.io.IOException;
 
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
- * Interface for all SCIFIO Checker objects.
+ * Interface for all {@link ome.scifio.Parser} implementations that use generic
+ * parameters.
  * <p>
- * {@code Checker} components are used to determine if the {@code Format}
- * they are associated with is compatibile with a given image. This is
- * accomplished via the {@link isFormat} methods.
+ * Generics allow each concrete {@code Parser} implementation to type narrow the
+ * return the type of {@code Metadata} from its {@link #Parse} methods, as well
+ * as the argument {@code Metadata} types for the same methods.
  * </p>
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="">Trac</a>,
- * <a href="">Gitweb</a></dd></dl>
  * 
  * @author Mark Hiner
+ *
+ * @param <M> The {@link ome.scifio.Metadata} type that will be returned by
+ *            this {@code Parser}.
  */
-public interface Checker extends HasContext, HasFormat {
+public interface TypedParser<M extends TypedMetadata> extends Parser {
 
-  // -- Checker API methods --
+  /*
+   * @see ome.scifio.Parser#parse(java.lang.String)
+   */
+  M parse(String fileName) throws IOException, FormatException;
+  
+  /*
+   * @see ome.scifio.Parser#parse(java.io.File)
+   */
+  M parse(File file) throws IOException, FormatException;
+  
+  /*
+   * @see ome.scifio.Parser#parse(ome.scifio.io.RandomAccessInputStream)
+   */
+  M parse(RandomAccessInputStream stream) throws IOException, FormatException;
   
   /**
-   * Checks if the provided image source is compatible with this {@code Format}.
-   * Will not open the image during this process.
+   * Generic-parameterized {@code parse} method, using 
+   * {@link ome.scifio.TypedMetadata} to avoid type erasure conflicts with
+   * {@link ome.scifio.Parser#parse(String, Metadata)}.
    * 
-   * @param name the name of an image source to check.
-   * @return True if the image source is compatible with this {@code Format}.
+   * @see {@link ome.scifio.Parser#parse(String, Metadata)}
    */
-  boolean isFormat(String name);
-  
-  /**
-   * Checks if the provided image source is compatible with this {@code Format}.
-   * If {@code open} is true and the source name is insufficient to determine
-   * the image type, the source may be opened for further analysis, or other
-   * relatively expensive file system operations (such as file existence
-   * tests and directory listings) may be performed.
-   *
-   * @param name the name of an image source to check.
-   * @param open if true, allows file access during the checking process.
-   * @return True if the image source is compatible with this {@code Format}.
-   */
-  boolean isFormat(String name, boolean open);
+  M parse(String fileName, M meta) throws IOException, FormatException;
 
   /**
-   * Checks if the given stream is a valid stream for this {@code Format}.
-   *  
-   * @param stream the image source to check.
-   * @return True if the image source is compatible.
-   */
-  boolean isFormat(RandomAccessInputStream stream) throws IOException;
-  
-  /**
-   * Checks if the given bytes are a valid header for this {@code Format}.
+   * Generic-parameterized {@code parse} method, using 
+   * {@link ome.scifio.TypedMetadata} to avoid type erasure conflicts with
+   * {@link ome.scifio.Parser#parse(File, Metadata)}.
    * 
-   * @param block the byte array to check.
-   * @return True if {@code block} is compatible with this {@code Format}.
+   * @see {@link ome.scifio.Parser#parse(File, Metadata)}
    */
-  boolean checkHeader(byte[] block);
+  M parse(File file, M meta) throws IOException, FormatException;
+
+  /**
+   * Generic-parameterized {@code parse} method, using 
+   * {@link ome.scifio.TypedMetadata} to avoid type erasure conflicts with
+   * {@link ome.scifio.Parser#parse(RandomAccessInputStream, Metadata)}.
+   * 
+   * @see {@link ome.scifio.Parser#parse(RandomAccessInputStream, Metadata)}
+   */
+  M parse(RandomAccessInputStream stream, M meta)
+    throws IOException, FormatException;
 }

@@ -17,14 +17,14 @@ public class ReaderExample {
 		String testFile = fnf.buildPath("testPNG.png");
 
 		SCIFIO ctx = null;
-		Format<?, ?, ?, ?, ?> format = null;
+		Format format = null;
 
 
 		try {
 			ctx = new SCIFIO();
 			
 			format = ctx.getFormat(testFile);
-			Parser<?> p = format.createParser();
+			Parser p = format.createParser();
 			Metadata m = p.parse(testFile);
 			Reader r = format.createReader();
 			r.setMetadata(m);
