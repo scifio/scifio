@@ -109,17 +109,17 @@ public class APNGFormat
   
     // -- Fields --
   
-    private List<APNGIDATChunk> idat;
+    private List<IDATChunk> idat;
   
-    private List<APNGfcTLChunk> fctl;
+    private List<FCTLChunk> fctl;
   
-    private APNGacTLChunk actl;
+    private ACTLChunk actl;
   
-    private APNGIHDRChunk ihdr;
+    private IHDRChunk ihdr;
   
-    private APNGPLTEChunk plte;
+    private PLTEChunk plte;
     
-    private APNGIENDChunk iend;
+    private IENDChunk iend;
   
     // true if the default image is not part of the animation
     private boolean separateDefault;
@@ -132,21 +132,21 @@ public class APNGFormat
   
     public Metadata(final SCIFIO context) {
       super(context);
-      fctl = new ArrayList<APNGfcTLChunk>();
-      idat = new ArrayList<APNGIDATChunk>();
+      fctl = new ArrayList<FCTLChunk>();
+      idat = new ArrayList<IDATChunk>();
     }
   
     // -- Getters and Setters --
   
-    public List<APNGIDATChunk> getIdat() {
+    public List<IDATChunk> getIdat() {
       return idat;
     }
   
-    public void setIdat(final List<APNGIDATChunk> idat) {
+    public void setIdat(final List<IDATChunk> idat) {
       this.idat = idat;
     }
   
-    public void addIdat(final APNGIDATChunk idat) {
+    public void addIdat(final IDATChunk idat) {
       this.idat.add(idat);
     }
   
@@ -158,43 +158,43 @@ public class APNGFormat
       return separateDefault;
     }
   
-    public List<APNGfcTLChunk> getFctl() {
+    public List<FCTLChunk> getFctl() {
       return fctl;
     }
   
-    public void setFctl(final List<APNGfcTLChunk> fctl) {
+    public void setFctl(final List<FCTLChunk> fctl) {
       this.fctl = fctl;
     }
   
-    public APNGacTLChunk getActl() {
+    public ACTLChunk getActl() {
       return actl;
     }
   
-    public void setActl(final APNGacTLChunk actl) {
+    public void setActl(final ACTLChunk actl) {
       this.actl = actl;
     }
   
-    public APNGIHDRChunk getIhdr() {
+    public IHDRChunk getIhdr() {
       return ihdr;
     }
   
-    public void setIhdr(final APNGIHDRChunk ihdr) {
+    public void setIhdr(final IHDRChunk ihdr) {
       this.ihdr = ihdr;
     }
   
-    public APNGPLTEChunk getPlte() {
+    public PLTEChunk getPlte() {
       return plte;
     }
   
-    public void setPlte(final APNGPLTEChunk plte) {
+    public void setPlte(final PLTEChunk plte) {
       this.plte = plte;
     }
     
-    public APNGIENDChunk getIend() {
+    public IENDChunk getIend() {
     return iend;
     }
   
-    public void setIend(APNGIENDChunk iend) {
+    public void setIend(IENDChunk iend) {
     this.iend = iend;
     }
   
@@ -204,8 +204,8 @@ public class APNGFormat
   /* @see Metadata#resetMeta() */
     public void reset() {
       super.reset(getClass());
-      fctl = new ArrayList<APNGfcTLChunk>();
-      idat = new ArrayList<APNGIDATChunk>();
+      fctl = new ArrayList<FCTLChunk>();
+      idat = new ArrayList<IDATChunk>();
     }
   }
 
@@ -315,52 +315,52 @@ public class APNGFormat
         APNGChunk chunk = null;
   
         if (type.equals("acTL")) {
-          chunk = new APNGacTLChunk();
-          ((APNGacTLChunk) chunk).setNumFrames(in.readInt());
-          ((APNGacTLChunk) chunk).setNumPlays(in.readInt());
-          metadata.setActl(((APNGacTLChunk) chunk));
+          chunk = new ACTLChunk();
+          ((ACTLChunk) chunk).setNumFrames(in.readInt());
+          ((ACTLChunk) chunk).setNumPlays(in.readInt());
+          metadata.setActl(((ACTLChunk) chunk));
         }
         else if (type.equals("fcTL")) {
           sawFctl = true;
-          chunk = new APNGfcTLChunk();
-          ((APNGfcTLChunk) chunk).setSequenceNumber(in.readInt());
-          ((APNGfcTLChunk) chunk).setWidth(in.readInt());
-          ((APNGfcTLChunk) chunk).setHeight(in.readInt());
-          ((APNGfcTLChunk) chunk).setxOffset(in.readInt());
-          ((APNGfcTLChunk) chunk).setyOffset(in.readInt());
-          ((APNGfcTLChunk) chunk).setDelayNum(in.readShort());
-          ((APNGfcTLChunk) chunk).setDelayDen(in.readShort());
-          ((APNGfcTLChunk) chunk).setDisposeOp(in.readByte());
-          ((APNGfcTLChunk) chunk).setBlendOp(in.readByte());
-          metadata.getFctl().add(((APNGfcTLChunk) chunk));
+          chunk = new FCTLChunk();
+          ((FCTLChunk) chunk).setSequenceNumber(in.readInt());
+          ((FCTLChunk) chunk).setWidth(in.readInt());
+          ((FCTLChunk) chunk).setHeight(in.readInt());
+          ((FCTLChunk) chunk).setxOffset(in.readInt());
+          ((FCTLChunk) chunk).setyOffset(in.readInt());
+          ((FCTLChunk) chunk).setDelayNum(in.readShort());
+          ((FCTLChunk) chunk).setDelayDen(in.readShort());
+          ((FCTLChunk) chunk).setDisposeOp(in.readByte());
+          ((FCTLChunk) chunk).setBlendOp(in.readByte());
+          metadata.getFctl().add(((FCTLChunk) chunk));
         }
         else if (type.equals("IDAT")) {
           metadata.setSeparateDefault(!sawFctl);
-          chunk = new APNGIDATChunk();
-          metadata.addIdat(((APNGIDATChunk) chunk));
+          chunk = new IDATChunk();
+          metadata.addIdat(((IDATChunk) chunk));
           in.skipBytes(length);
         }
         else if (type.equals("fdAT")) {
-          chunk = new APNGfdATChunk();
-          ((APNGfdATChunk) chunk).setSequenceNumber(in.readInt());
+          chunk = new FDATChunk();
+          ((FDATChunk) chunk).setSequenceNumber(in.readInt());
           metadata.getFctl()
             .get(metadata.getFctl().size() - 1)
-            .addChunk(((APNGfdATChunk) chunk));
+            .addChunk(((FDATChunk) chunk));
           in.skipBytes(length - 4);
         }
         else if (type.equals("IHDR")) {
-          chunk = new APNGIHDRChunk();
-          ((APNGIHDRChunk) chunk).setWidth(in.readInt());
-          ((APNGIHDRChunk) chunk).setHeight(in.readInt());
-          ((APNGIHDRChunk) chunk).setBitDepth(in.readByte());
-          ((APNGIHDRChunk) chunk).setColourType(in.readByte());
-          ((APNGIHDRChunk) chunk).setCompressionMethod(in.readByte());
-          ((APNGIHDRChunk) chunk).setFilterMethod(in.readByte());
-          ((APNGIHDRChunk) chunk).setInterlaceMethod(in.readByte());
-          metadata.setIhdr(((APNGIHDRChunk) chunk));
+          chunk = new IHDRChunk();
+          ((IHDRChunk) chunk).setWidth(in.readInt());
+          ((IHDRChunk) chunk).setHeight(in.readInt());
+          ((IHDRChunk) chunk).setBitDepth(in.readByte());
+          ((IHDRChunk) chunk).setColourType(in.readByte());
+          ((IHDRChunk) chunk).setCompressionMethod(in.readByte());
+          ((IHDRChunk) chunk).setFilterMethod(in.readByte());
+          ((IHDRChunk) chunk).setInterlaceMethod(in.readByte());
+          metadata.setIhdr(((IHDRChunk) chunk));
         }
         else if (type.equals("PLTE")) {
-          chunk = new APNGPLTEChunk();
+          chunk = new PLTEChunk();
           final byte[] red = new byte[length / 3];
           final byte[] blue = new byte[length / 3];
           final byte[] green = new byte[length / 3];
@@ -371,16 +371,16 @@ public class APNGFormat
             blue[i] = in.readByte();
           }
   
-          ((APNGPLTEChunk) chunk).setRed(red);
-          ((APNGPLTEChunk) chunk).setGreen(green);
-          ((APNGPLTEChunk) chunk).setBlue(blue);
+          ((PLTEChunk) chunk).setRed(red);
+          ((PLTEChunk) chunk).setGreen(green);
+          ((PLTEChunk) chunk).setBlue(blue);
   
-          metadata.setPlte(((APNGPLTEChunk) chunk));
+          metadata.setPlte(((PLTEChunk) chunk));
         }
         else if(type.equals("IEND")) {
-          chunk = new APNGIENDChunk();
+          chunk = new IENDChunk();
           in.skipBytes((int) (in.length() - in.getFilePointer()));
-          metadata.setIend((APNGIENDChunk) chunk);
+          metadata.setIend((IENDChunk) chunk);
         }
         else in.skipBytes(length);
   
@@ -444,7 +444,7 @@ public class APNGFormat
             getDatasetMetadata().get(imageIndex), x, y, w, h);
         
         if (getDatasetMetadata().isIndexed(imageIndex)) {
-          APNGPLTEChunk plte = getMetadata().getPlte();
+          PLTEChunk plte = getMetadata().getPlte();
           ColorTable ct = new ColorTable8(plte.getRed(), plte.getGreen(),
               plte.getBlue());
           lastPlane.setColorTable(ct);
@@ -482,17 +482,17 @@ public class APNGFormat
   
       final int[] coords = metadata.getFctl().get(planeIndex).getFrameCoordinates();
       // process IHDR chunk
-      final APNGIHDRChunk ihdr = metadata.getIhdr();
+      final IHDRChunk ihdr = metadata.getIhdr();
       processChunk(
         imageIndex, ihdr.getLength(), ihdr.getOffset(), coords, stream, true);
   
       // process fcTL and fdAT chunks
-      final APNGfcTLChunk fctl =
+      final FCTLChunk fctl =
         metadata.getFctl().get(
           metadata.isSeparateDefault() ? planeIndex - 1 : planeIndex);
   
       // fdAT chunks are converted to IDAT chunks, as we are essentially building a standalone single-frame image
-      for (final APNGfdATChunk fdat : fctl.getFdatChunks()) {
+      for (final FDATChunk fdat : fctl.getFdatChunks()) {
         in.seek(fdat.getOffset() + 4);
         byte[] b = new byte[fdat.getLength() + 8];
         DataTools.unpackBytes(
@@ -510,7 +510,7 @@ public class APNGFormat
       }
   
       // process PLTE chunks
-      final APNGPLTEChunk plte = metadata.getPlte();
+      final PLTEChunk plte = metadata.getPlte();
       if (plte != null) {
         processChunk(
           imageIndex, plte.getLength(), plte.getOffset(), coords, stream, false);
@@ -726,7 +726,7 @@ public class APNGFormat
 
         // write acTL chunk
 
-        final APNGacTLChunk actl = metadata.getActl();
+        final ACTLChunk actl = metadata.getActl();
 
         out.writeInt(8);
         out.writeBytes("acTL");
@@ -750,7 +750,7 @@ public class APNGFormat
     private void writeFCTL(final int width, final int height,
         final int planeIndex) throws IOException {
       out.writeInt(26);
-      final APNGfcTLChunk fctl = metadata.getFctl().get(
+      final FCTLChunk fctl = metadata.getFctl().get(
           metadata.isSeparateDefault() ? planeIndex - 1 : planeIndex);
       final byte[] b = new byte[30];
 
@@ -925,13 +925,13 @@ public class APNGFormat
     public void translate(final DefaultDatasetMetadata source, final Metadata dest) {
       super.translate(source, dest);
   
-      final APNGIHDRChunk ihdr =
-        dest.getIhdr() == null ? new APNGIHDRChunk() : dest.getIhdr();
-      final APNGPLTEChunk plte =
-        dest.getPlte() == null ? new APNGPLTEChunk() : dest.getPlte();
-      final APNGacTLChunk actl =
-        dest.getActl() == null ? new APNGacTLChunk() : dest.getActl();
-      final List<APNGfcTLChunk> fctl = new ArrayList<APNGfcTLChunk>();
+      final IHDRChunk ihdr =
+        dest.getIhdr() == null ? new IHDRChunk() : dest.getIhdr();
+      final PLTEChunk plte =
+        dest.getPlte() == null ? new PLTEChunk() : dest.getPlte();
+      final ACTLChunk actl =
+        dest.getActl() == null ? new ACTLChunk() : dest.getActl();
+      final List<FCTLChunk> fctl = new ArrayList<FCTLChunk>();
   
       dest.setIhdr(ihdr);
       dest.setPlte(plte);
@@ -988,7 +988,7 @@ public class APNGFormat
       actl.setNumFrames(source.getAxisLength(0, Axes.TIME));
   
       for (int i = 0; i < actl.getNumFrames(); i++) {
-        final APNGfcTLChunk frame = new APNGfcTLChunk();
+        final FCTLChunk frame = new FCTLChunk();
         frame.setHeight(ihdr.getHeight());
         frame.setWidth(ihdr.getWidth());
         frame.setxOffset(0);
@@ -1075,7 +1075,7 @@ public class APNGFormat
       }
       */
       
-      final APNGacTLChunk actl = source.getActl();
+      final ACTLChunk actl = source.getActl();
       final int planeCount = actl == null ? 1 : actl.getNumFrames();
   
       imageMeta.setAxisTypes(new AxisType[] {
@@ -1182,11 +1182,11 @@ public class APNGFormat
    * PNG or APNG image file.
    *
    */
-  public static class APNGIHDRChunk extends APNGChunk {
+  public static class IHDRChunk extends APNGChunk {
 
     // -- Constructor --
 
-    public APNGIHDRChunk() {
+    public IHDRChunk() {
       CHUNK_SIGNATURE = new byte[] {(byte) 0x49, 0x48, 0x44, 0x52};
     }
 
@@ -1279,11 +1279,11 @@ public class APNGFormat
    * image and is only present in certain ARGB color formats.
    *
    */
-  public static class APNGPLTEChunk extends APNGChunk {
+  public static class PLTEChunk extends APNGChunk {
   
     // -- Constructor --
   
-    public APNGPLTEChunk() {
+    public PLTEChunk() {
       CHUNK_SIGNATURE = new byte[] {(byte) 0x50, 0x4C, 0x54, 0x45};
     }
   
@@ -1334,7 +1334,7 @@ public class APNGFormat
    * the first frame of the animation).
    *
    */
-  public static class APNGfcTLChunk extends APNGChunk {
+  public static class FCTLChunk extends APNGChunk {
   
     // -- Fields --
   
@@ -1374,18 +1374,18 @@ public class APNGFormat
     @Field(label = "blend_op")
     private byte blendOp;
   
-    private final List<APNGfdATChunk> fdatChunks;
+    private final List<FDATChunk> fdatChunks;
   
     // -- Constructor --
   
-    public APNGfcTLChunk() {
-      fdatChunks = new ArrayList<APNGfdATChunk>();
+    public FCTLChunk() {
+      fdatChunks = new ArrayList<FDATChunk>();
       CHUNK_SIGNATURE = new byte[] {(byte) 0x66, 0x63, 0x54, 0x4C};
     }
   
     // -- Methods --
   
-    public void addChunk(final APNGfdATChunk chunk) {
+    public void addChunk(final FDATChunk chunk) {
       fdatChunks.add(chunk);
     }
   
@@ -1461,7 +1461,7 @@ public class APNGFormat
       this.blendOp = blendOp;
     }
   
-    public List<APNGfdATChunk> getFdatChunks() {
+    public List<FDATChunk> getFdatChunks() {
       return fdatChunks;
     }
   
@@ -1479,11 +1479,11 @@ public class APNGFormat
    * data for a single plane (the default image for the file).
    *
    */
-  public static class APNGIDATChunk extends APNGChunk {
+  public static class IDATChunk extends APNGChunk {
   
     // -- Constructor --
   
-    public APNGIDATChunk() {
+    public IDATChunk() {
       CHUNK_SIGNATURE = new byte[] {(byte) 0x49, 0x44, 0x41, 0x54};
     }
   
@@ -1500,11 +1500,11 @@ public class APNGFormat
    * sequence should be played.
    *
    */
-  public static class APNGacTLChunk extends APNGChunk {
+  public static class ACTLChunk extends APNGChunk {
   
     // -- Constructor --
   
-    public APNGacTLChunk() {
+    public ACTLChunk() {
       CHUNK_SIGNATURE = new byte[] {(byte) 0x61, 0x63, 0x54, 0x4C};
     }
   
@@ -1562,11 +1562,11 @@ public class APNGFormat
    * Each fdAT chunk is paired with an fcTL chunk.
    *
    */
-  public static class APNGfdATChunk extends APNGChunk {
+  public static class FDATChunk extends APNGChunk {
   
     // -- Constructor --
   
-    public APNGfdATChunk() {
+    public FDATChunk() {
       CHUNK_SIGNATURE = new byte[] {(byte) 0x66, 0x64, 0x41, 0x54};
     }
   
@@ -1594,10 +1594,10 @@ public class APNGFormat
    * @author Mark Hiner
    *
    */
-  public static class APNGIENDChunk extends APNGChunk {
+  public static class IENDChunk extends APNGChunk {
     
     // -- Constructor --
-    public APNGIENDChunk() {
+    public IENDChunk() {
       CHUNK_SIGNATURE = new byte[] {(byte) 0x49, 0x45, 0x4E, 0x44};
     }
   }
