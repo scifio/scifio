@@ -47,6 +47,7 @@ import loci.legacy.adapter.AdapterTools;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.Format;
 import ome.scifio.Metadata;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 import ome.scifio.io.Location;
@@ -118,44 +119,39 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
     context = ctx;
   }
 
-  public Format<?, ?, ?, ?, ?> getFormat() {
+  public Format getFormat() {
     throw new UnsupportedOperationException();
   }
 
-  public byte[] openPlane(int imageIndex, int planeIndex)
+  public Plane openPlane(int imageIndex, int planeIndex)
     throws ome.scifio.FormatException, IOException
   {
-    return reader.openBytes(imageIndex);
+    return reader.openBytes(planeIndex);
   }
 
-  public byte[] openPlane(int imageIndex, int planeIndex, int x, int y,
-    int w, int h) throws ome.scifio.FormatException, IOException
-  {
-    return reader.openBytes(imageIndex, x, y, w, h);
-  }
-
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf)
+  public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
     throws ome.scifio.FormatException, IOException
   {
-    return reader.openBytes(imageIndex, buf);
+    //TODO need to cache a byte array plane and create a helper method to wrap and return
+    return reader.openBytes(planeIndex, plane.getBytes());
   }
 
-  public byte[] openBytes(int imageIndex, int planeIndex, byte[] buf, int x,
+  public Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x,
     int y, int w, int h) throws ome.scifio.FormatException, IOException
   {
     return reader.openBytes(imageIndex, buf, x, y, w, h);
   }
 
-  public Object openPlane(int imageIndex, int planeIndex, int x, int y,
+  public Plane openPlane(int imageIndex, int planeIndex, int x, int y,
     int w, int h) throws ome.scifio.FormatException, IOException
   {
-    return reader.openPlane(imageIndex, x, y, w, h);
+    return reader.openPlane(planeIndex, x, y, w, h);
   }
 
-  public byte[] openThumbPlane(int imageIndex, int planeIndex)
+  public Plane openThumbPlane(int imageIndex, int planeIndex)
     throws ome.scifio.FormatException, IOException
   {
-    return reader.openThumbBytes(imageIndex);
+    return reader.openThumbBytes(planeIndex);
   }
 
   public void setGroupFiles(boolean group) {
@@ -274,14 +270,14 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
     reader.close();
   }
 
-  public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
-    int y, int w, int h, byte[] buf) throws IOException
+  public Plane readPlane(RandomAccessInputStream s, int imageIndex, int x,
+    int y, int w, int h, Plane plane) throws IOException
   {
     throw new UnsupportedOperationException();
   }
 
-  public byte[] readPlane(RandomAccessInputStream s, int imageIndex, int x,
-    int y, int w, int h, int scanlinePad, byte[] buf) throws IOException
+  public Plane readPlane(RandomAccessInputStream s, int imageIndex, int x,
+    int y, int w, int h, int scanlinePad, Plane plane) throws IOException
   {
     throw new UnsupportedOperationException();
   }
@@ -296,5 +292,15 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
 
   public IFormatReader getReader() {
     return reader;
+  }
+
+  public Plane createPlane(int xOffset, int yOffset, int xLength, int yLength) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public <P extends Plane> P castToTypedPlane(Plane plane) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

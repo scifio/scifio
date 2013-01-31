@@ -119,26 +119,26 @@ import ome.xml.model.enums.handlers.PulseEnumHandler;
  *
  */
 @Deprecated
-public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReader 
-  implements Wrapper<Reader<T>>
+public abstract class SCIFIOFormatReader extends FormatReader 
+  implements Wrapper<Reader>
   {
 
   // -- Fields --
   
   /** SCIFIO Format, used to generate the other components */
-  protected Format<?, ?, ?, ?, ?> format;
+  protected Format format;
 
   /** SCIFIO Checker for deference */
-  protected Checker<T> checker;
+  protected Checker checker;
 
   /** SCIFIO Parser for deference */
-  protected Parser<T> parser;
+  protected Parser parser;
 
   /** SCIFIO Reader for deference */
-  protected Reader<T> reader;
+  protected Reader reader;
 
   /** SCIFIO Translator for deference */
-  protected Translator<T, ome.scifio.DatasetMetadata> translator;
+  protected Translator translator;
 
   // -- Constructors --
 
@@ -152,7 +152,7 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   
   // -- Wrapper API methods --
   
-  public Reader<T> unwrap() {
+  public Reader unwrap() {
     return reader;
   }
 
@@ -538,6 +538,7 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   @Override
   public short[][] get16BitLookupTable() throws FormatException, IOException {
     try {
+      //TODO currently no way to access this in SCIFIO without opening a plane
       return reader.getDatasetMetadata().get16BitLookupTable(getSeries());
     }
     catch (ome.scifio.FormatException e) {
@@ -620,6 +621,7 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   @Override
   public byte[] openBytes(int no) throws FormatException, IOException {
     try {
+      //TODO need a cached plane to avoid creating new planes
       return reader.openPlane(getSeries(), no);
     }
     catch (ome.scifio.FormatException e) {
@@ -864,7 +866,7 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   @Deprecated
   @Override
   public Object getMetadataValue(String field) {
-    return reader.getDatasetMetadata().getMetadataValue(getSeries(), field);
+    return reader.getDatasetMetadata().getMetadataValue(field);
   }
 
   /* @see IFormatReader#getSeriesMetadataValue(String) */
@@ -1033,22 +1035,22 @@ public abstract class SCIFIOFormatReader<T extends Metadata> extends FormatReade
   // -- SCIFIO Utility Methods --
 
   /** Returns the SCIFIO reader being used for deferrment */
-  public ome.scifio.Reader<T> getReader() {
+  public ome.scifio.Reader getReader() {
     return reader;
   }
 
   /** Returns the SCIFIO checker being used for deferrment */
-  public Checker<T> getChecker() {
+  public Checker getChecker() {
     return checker;
   }
 
   /** Returns the SCIFIO parser being used for deferrment */
-  public Parser<T> getParser() {
+  public Parser getParser() {
     return parser;
   }
 
   /** Returns the SCIFIO translator being used for deferrment */
-  public Translator<T, ome.scifio.DatasetMetadata> getTranslator() {
+  public Translator getTranslator() {
     return translator;
   }
 

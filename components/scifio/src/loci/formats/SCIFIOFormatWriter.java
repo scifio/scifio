@@ -5,7 +5,9 @@ import java.io.IOException;
 
 import loci.formats.codec.CodecOptions;
 import loci.formats.meta.MetadataRetrieve;
+import ome.scifio.ByteArrayPlane;
 import ome.scifio.Metadata;
+import ome.scifio.Plane;
 import ome.scifio.Writer;
 
 /**
@@ -14,12 +16,19 @@ import ome.scifio.Writer;
  *
  */
 @Deprecated
-public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWriter {
+public abstract class SCIFIOFormatWriter extends FormatWriter {
 
   // -- Fields --
 
   /** Scifio Writer for deference */
-  protected Writer<T> writer;
+  protected Writer writer;
+  
+  
+  //TODO could make this a Plane and then cache either a ByteArrayPlane or BufferedImagePlane as needed
+  /**
+   * Cached ByteArrayPlane for reusing byte arrays with this writer
+   */
+  private ByteArrayPlane bPlane = null;
 
   /** */
   protected ome.scifio.DatasetMetadata cMeta;
@@ -54,7 +63,7 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
   public void saveBytes(int no, byte[] buf) throws FormatException, IOException
   {
     try {
-      writer.saveBytes(getSeries(), no, buf);
+      writer.savePlane(getSeries(), no, planeCheck(buf));
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -67,8 +76,12 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
   public void savePlane(int no, Object plane)
     throws FormatException, IOException
   {
+    // NB: Writers use byte arrays by default as the native type.
+    if (!(plane instanceof byte[])) {
+      throw new IllegalArgumentException("Object to save must be a byte[]");
+    }
     try {
-      writer.savePlane(getSeries(), no, plane);
+      writer.savePlane(getSeries(), no, planeCheck((byte[])plane));
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -86,7 +99,7 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
       throw new IllegalArgumentException("Object to save must be a byte[]");
     }
     try {
-      writer.savePlane(getSeries(), no, plane, x, y, w, h);
+      writer.savePlane(getSeries(), no, planeCheck((byte[])plane), x, y, w, h);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -255,7 +268,7 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
     throws FormatException, IOException
   {
     try {
-      writer.saveBytes(bytes, 0, last, last);
+      writer.savePlane(planeCheck(bytes));
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -271,7 +284,7 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
     boolean last) throws FormatException, IOException
   {
     try {
-      writer.saveBytes(bytes, series, lastInSeries, last);
+      writer.savePlane(bytes, series, lastInSeries, last);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -307,7 +320,7 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
       throw new IllegalArgumentException("Object to save must be a byte[]");
     }
     try {
-      writer.saveBytes((byte[]) plane, series, lastInSeries, last);
+      writer.savePlane(planeCheck((byte[])plane), series, lastInSeries, last);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -338,5 +351,15 @@ public abstract class SCIFIOFormatWriter<T extends Metadata> extends FormatWrite
   @Override
   public void close() throws IOException {
     writer.close();
+  }
+  
+  // -- Helper Methods --
+  
+  private Plane planeCheck(byte[] buf) {
+    if (bPlane == null)
+      bPlane = new ByteArrayPlane(writer.getContext());
+    
+    bPlane.populate(buf, xOffset, yOffset, xLength, yLength);
+    return bPlane;
   }
 }
