@@ -65,7 +65,6 @@ import ome.scifio.Field;
 import ome.scifio.FieldPrinter;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
-import ome.scifio.Translator;
 import ome.scifio.common.Constants;
 import ome.scifio.common.DataTools;
 import ome.scifio.discovery.SCIFIOFormat;
