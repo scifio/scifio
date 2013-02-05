@@ -36,6 +36,7 @@
 package loci.formats;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -1015,10 +1016,11 @@ public abstract class SCIFIOFormatReader extends FormatReader
       initFile(id);
       // NB: this has to happen after init file, instead of within init file
       // to allow the file to be parsed
-      core = new CoreMetadata[getSeriesCount()];
+      core = new ArrayList<CoreMetadata>();
       for (int i = 0; i < getSeriesCount(); i++) {
-        core[i] = new CoreMetadata(reader.getDatasetMetadata(), i);
-        core[i].orderCertain = true;
+        CoreMetadata c = new CoreMetadata(reader.getDatasetMetadata(), i);
+        c.orderCertain = true;
+        core.add(c);
       }
     }
     reader.setSource(id);
