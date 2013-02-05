@@ -36,6 +36,7 @@
 
 package ome.scifio.ics;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,9 +47,8 @@ import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 import net.imglib2.meta.Axes.CustomAxisType;
-
+import net.imglib2.meta.AxisType;
 import ome.scifio.AbstractChecker;
 import ome.scifio.AbstractFormat;
 import ome.scifio.AbstractMetadata;
@@ -60,14 +60,15 @@ import ome.scifio.CoreImageMetadata;
 import ome.scifio.CoreMetadata;
 import ome.scifio.CoreTranslator;
 import ome.scifio.FormatException;
-import ome.scifio.Metadata;
 import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
 import ome.scifio.discovery.SCIFIOFormat;
 import ome.scifio.discovery.SCIFIOTranslator;
 import ome.scifio.io.Location;
 import ome.scifio.io.RandomAccessInputStream;
+import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.util.FormatTools;
+import ome.scifio.util.SCIFIOMetadataTools;
 
 @SCIFIOFormat
 public class ICSFormat
@@ -581,6 +582,18 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     // -- Fields --
   
+    private long dimensionOffset;
+    private int dimensionLength;
+    private long pixelOffset;
+    private int lastPlane = -1;
+    private RandomAccessOutputStream pixels;
+    
+    // NB: write in ZTC order by default.  Certain software (e.g. Volocity)
+    //     lacks the capacity to import files with any other dimension
+    //     ordering.  Technically, this is not our problem, but it is
+    //     easy enough to work around and makes life easier for our users.
+    private String outputOrder = "XYZTC";
+    
     // -- Constructor --
   
     public Writer() {
@@ -588,24 +601,289 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
   
     public Writer(final SCIFIO ctx) {
-      super("Image Cytometry Standard", "ics", ctx);
+      super("Image Cytometry Standard", new String[] {"ids", "ics"}, ctx);
+    }
+    
+    // -- ICSWriter API methods --
+
+    /**
+     * Set the order in which dimensions should be written to the file.
+     * Valid values are specified in the documentation for
+     * {@link loci.formats.IFormatReader#getDimensionOrder()}
+     *
+     * By default, the ordering is "XYZTC".
+     */
+    public void setOutputOrder(String outputOrder) {
+      this.outputOrder = outputOrder;
     }
   
     // -- Writer API Methods --
   
+    /* @see ome.scifio.Writer#saveBytes(int, int, byte[], int, int, int, int */
     public void saveBytes(final int imageIndex, final int planeIndex,
-      final byte[] buf, final int x, final int y, final int w, final int h)
-        throws FormatException, IOException
-        {
-      // TODO Auto-generated method stub
-  
+        final byte[] buf, final int x, final int y, final int w, final int h)
+            throws FormatException, IOException
+    {
+      checkParams(imageIndex, planeIndex, buf, x, y, w, h);
+      
+      int rgbChannels = cMeta.getRGBChannelCount(imageIndex);
+
+      int sizeZ = cMeta.getAxisLength(imageIndex, Axes.Z);
+      int sizeC = cMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+      if (rgbChannels <= sizeC) {
+        sizeC /= rgbChannels;
+      }
+      
+      int sizeT = cMeta.getAxisLength(imageIndex, Axes.TIME);
+      int planes = sizeZ * sizeC * sizeT;
+
+      int[] coords =
+          FormatTools.getZCTCoords(outputOrder, sizeZ, sizeC, sizeT,
+              planes, imageIndex);
+      int realIndex =
+          FormatTools.getIndex(outputOrder, sizeZ, sizeC, sizeT,
+          planes, coords[0], coords[1], coords[2]);
+
+      int sizeX = cMeta.getAxisLength(imageIndex, Axes.X);
+      int sizeY = cMeta.getAxisLength(imageIndex, Axes.Y);
+      int pixelType = cMeta.getPixelType(imageIndex);
+      int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
+      int planeSize = sizeX * sizeY * rgbChannels * bytesPerPixel;
+
+      if(!initialized[planeIndex][realIndex]) {
+        initialized[planeIndex][realIndex] = true;
+
+        if (!isFullPlane(imageIndex, x, y, w, h)) {
+          pixels.seek(pixelOffset + (realIndex + 1) * planeSize);
         }
+      }
+      
+      pixels.seek(pixelOffset + realIndex * planeSize);
+      if (isFullPlane(imageIndex, x, y, w, h)
+          && (interleaved || rgbChannels == 1)) {
+        pixels.write(buf);
+      }
+      else {
+        pixels.skipBytes(bytesPerPixel * rgbChannels * sizeX * y);
+        for (int row=0; row<h; row++) {
+          ByteArrayOutputStream strip = new ByteArrayOutputStream();
+          for (int col=0; col<w; col++) {
+            for (int c=0; c<rgbChannels; c++) {
+              int index = interleaved ? rgbChannels * (row * w + col) + c :
+                w * (c * h + row) + col;
+              strip.write(buf, index * bytesPerPixel, bytesPerPixel);
+            }
+          }
+          pixels.skipBytes(bytesPerPixel * rgbChannels * x);
+          pixels.write(strip.toByteArray());
+          pixels.skipBytes(bytesPerPixel * rgbChannels * (sizeX - w- x));
+        }
+      }
+      lastPlane = realIndex;
+    }
+    
+    /* @see ome.scifio.Writer#caDoStacks() */
+    public boolean canDoStacks() { return true; };
   
-    /* @see ome.scifio.Writer#setMetadata(M) */
+    /* @see ome.scifio.Writer#setMetadata(Metadata) */
     public void setMetadata(final Metadata meta) {
       super.setMetadata(meta, new ICSCoreTranslator());
     }
+    
+    /* @see ome.scifio.Writer#getPixelTypes(String) */
+    public int[] getPixelTypes(String codec) {
+      return new int[] {FormatTools.INT8, FormatTools.UINT8, FormatTools.INT16,
+        FormatTools.UINT16, FormatTools.INT32, FormatTools.UINT32,
+        FormatTools.FLOAT};
+    }
+    
+    /* @see ome.scifio.Writer#close() */
+    public void close(int imageIndex) throws IOException {
+      if (lastPlane != cMeta.getPlaneCount(imageIndex) - 1 && out != null) {
+        overwriteDimensions(cMeta, imageIndex);
+      }
+
+      super.close();
+      pixelOffset = 0;
+      lastPlane = -1;
+      dimensionOffset = 0;
+      dimensionLength = 0;
+      if (pixels != null) {
+        pixels.close();
+      }
+      pixels = null;
+    }
   
+    public void setDest(final RandomAccessOutputStream out, final int imageIndex)
+      throws FormatException, IOException {
+      super.setDest(out, imageIndex);
+      initialize(imageIndex);
+    }
+    
+    // -- Helper methods --
+    
+    private void initialize(final int imageIndex) throws FormatException,
+      IOException {
+      String currentId = this.getMetadata().idsId != null ? 
+          this.getMetadata().idsId : this.getMetadata().icsId;
+      
+      if (checkSuffix(this.getMetadata().idsId, "ids")) {
+        String metadataFile = currentId.substring(0, currentId.lastIndexOf("."));
+        metadataFile += ".ics";
+        if(out != null) out.close();
+        out = new RandomAccessOutputStream(metadataFile);
+      }
+
+      if (out.length() == 0) {
+        out.writeBytes("\t\n");
+        if (checkSuffix(currentId, "ids")) {
+          out.writeBytes("ics_version\t1.0\n");
+        }
+        else {
+          out.writeBytes("ics_version\t2.0\n");
+        }
+        out.writeBytes("filename\t" + currentId + "\n");
+        out.writeBytes("layout\tparameters\t6\n");
+
+        CoreMetadata meta = cMeta;
+        SCIFIOMetadataTools.verifyMinimumPopulated(meta, pixels);
+
+        int pixelType = meta.getPixelType(imageIndex);
+
+        dimensionOffset = out.getFilePointer();
+        int[] sizes = overwriteDimensions(meta, imageIndex);
+        dimensionLength = (int) (out.getFilePointer() - dimensionOffset);
+
+        if (validBits != 0) {
+          out.writeBytes("layout\tsignificant_bits\t" + validBits + "\n");
+        }
+
+        boolean signed = FormatTools.isSigned(pixelType);
+        boolean littleEndian = meta.isLittleEndian(imageIndex);
+
+        out.writeBytes("representation\tformat\t" +
+            (pixelType == FormatTools.FLOAT ? "real\n" : "integer\n"));
+        out.writeBytes("representation\tsign\t" +
+            (signed ? "signed\n" : "unsigned\n"));
+        out.writeBytes("representation\tcompression\tuncompressed\n");
+        out.writeBytes("representation\tbyte_order\t");
+        for (int i=0; i<sizes[0]/8; i++) {
+          if ((littleEndian &&
+              (sizes[0] < 32 || pixelType == FormatTools.FLOAT)) ||
+              (!littleEndian && sizes[0] >= 32 && pixelType != FormatTools.FLOAT))
+          {
+            out.writeBytes((i + 1) + "\t");
+          }
+          else {
+            out.writeBytes(((sizes[0] / 8) - i) + "\t");
+          }
+        }
+
+        out.writeBytes("\nparameter\tscale\t1.000000\t");
+
+        StringBuffer units = new StringBuffer();
+        for (int i=0; i<outputOrder.length(); i++) {
+          char dim = outputOrder.charAt(i);
+          Number value = 1.0;
+          if (dim == 'X') {
+            if (meta.getAxisIndex(imageIndex, Axes.X) != -1) {
+              value = meta.getAxisLength(imageIndex, Axes.X);
+            }
+            units.append("micrometers\t");
+          }
+          else if (dim == 'Y') {
+            if (meta.getAxisIndex(imageIndex, Axes.Y) != -1) {
+              value = meta.getAxisLength(imageIndex, Axes.Y);
+            }
+            units.append("micrometers\t");
+          }
+          else if (dim == 'Z') {
+            if (meta.getAxisIndex(imageIndex, Axes.Z) != -1) {
+              value = meta.getAxisLength(imageIndex, Axes.X);
+            }
+            units.append("micrometers\t");
+          }
+          else if (dim == 'T') {
+            if (meta.getAxisIndex(imageIndex, Axes.TIME) != -1) {
+              value = meta.getAxisLength(imageIndex, Axes.TIME);
+            };
+            units.append("seconds\t");
+          }
+          out.writeBytes(value + "\t");
+        }
+
+        out.writeBytes("\nparameter\tunits\tbits\t" + units.toString() + "\n");
+        out.writeBytes("\nend\n");
+        pixelOffset = out.getFilePointer();
+      }
+      else if (checkSuffix(currentId, "ics")) {
+        RandomAccessInputStream in = new RandomAccessInputStream(currentId);
+        in.findString("\nend\n");
+        pixelOffset = in.getFilePointer();
+        in.close();
+      }
+
+      if (checkSuffix(currentId, "ids")) {
+        pixelOffset = 0;
+      }
+
+      if (pixels == null) {
+        pixels = new RandomAccessOutputStream(currentId);
+      }
+    }
+    
+    private int[] overwriteDimensions(CoreMetadata meta, int imageIndex) throws IOException {
+      out.seek(dimensionOffset);
+      int sizeX = meta.getAxisLength(imageIndex, Axes.X);
+      int sizeY = meta.getAxisLength(imageIndex, Axes.Y);
+      int z = meta.getAxisLength(imageIndex, Axes.Z);
+      int c = meta.getAxisLength(imageIndex, Axes.CHANNEL);
+      int t = meta.getAxisLength(imageIndex, Axes.TIME);
+      int pixelType = meta.getPixelType(imageIndex);
+      int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
+      int rgbChannels = meta.getRGBChannelCount(imageIndex);
+
+      if (lastPlane < 0) lastPlane = z * c * t - 1;
+      int[] pos =
+        FormatTools.getZCTCoords(outputOrder, z, c, t, z * c * t, lastPlane);
+      lastPlane = -1;
+
+      StringBuffer dimOrder = new StringBuffer();
+      int[] sizes = new int[6];
+      int nextSize = 0;
+      sizes[nextSize++] = 8 * bytesPerPixel;
+
+      if (rgbChannels > 1) {
+        dimOrder.append("ch\t");
+        sizes[nextSize++] = pos[1] + 1;
+      }
+
+      for (int i=0; i<outputOrder.length(); i++) {
+        if (outputOrder.charAt(i) == 'X') sizes[nextSize++] = sizeX;
+        else if (outputOrder.charAt(i) == 'Y') sizes[nextSize++] = sizeY;
+        else if (outputOrder.charAt(i) == 'Z') sizes[nextSize++] = pos[0] + 1;
+        else if (outputOrder.charAt(i) == 'T') sizes[nextSize++] = pos[2] + 1;
+        else if (outputOrder.charAt(i) == 'C' && dimOrder.indexOf("ch") == -1) {
+          sizes[nextSize++] = pos[1] + 1;
+          dimOrder.append("ch");
+        }
+        if (outputOrder.charAt(i) != 'C') {
+          dimOrder.append(String.valueOf(outputOrder.charAt(i)).toLowerCase());
+        }
+        dimOrder.append("\t");
+      }
+      out.writeBytes("layout\torder\tbits\t" + dimOrder.toString() + "\n");
+      out.writeBytes("layout\tsizes\t");
+      for (int i=0; i<sizes.length; i++) {
+        out.writeBytes(sizes[i] + "\t");
+      }
+      while ((out.getFilePointer() - dimensionOffset) < dimensionLength - 1) {
+        out.writeBytes(" ");
+      }
+      out.writeBytes("\n");
+
+      return sizes;
+    }
   }
 
   /**
