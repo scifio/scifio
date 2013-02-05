@@ -47,6 +47,7 @@ import ome.scifio.Reader;
 import ome.scifio.common.DateTools;
 import ome.scifio.io.Location;
 import ome.scifio.services.DependencyException;
+import ome.scifio.services.ServiceException;
 import ome.scifio.services.ServiceFactory;
 import ome.scifio.util.FormatTools;
 import ome.xml.model.*;
@@ -147,6 +148,18 @@ public class OMEXMLMetadataTools {
         OMEXMLService service =
           new ServiceFactory().getInstance(OMEXMLService.class);
         if (service.isOMEXMLRoot(store.getRoot())) {
+          //TODO any way or reason to access a base store?
+          if(service.isOMEXMLMetadata(store)) {
+            OMEXMLMetadata omeMeta;
+            try {
+              omeMeta = service.getOMEMetadata(service.asRetrieve(store));
+              omeMeta.resolveReferences();
+            }
+            catch (ServiceException e) {
+              LOGGER.warn("Failed to resolve references", e);
+            }
+          }
+          
           OME root = (OME) store.getRoot();
           BinData bin = root.getImage(i).getPixels().getBinData(0);
           bin.setLength(new NonNegativeLong(0L));
