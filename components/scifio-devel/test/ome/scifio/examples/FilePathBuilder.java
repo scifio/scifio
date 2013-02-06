@@ -16,7 +16,7 @@ public class FilePathBuilder {
 		
 		StringTokenizer stk = new StringTokenizer(loc, "/");
 		String tkn = null;
-		while(stk.hasMoreTokens() && !(tkn = stk.nextToken()).equals("scifio")) {
+		while(stk.hasMoreTokens() && !(tkn = stk.nextToken()).equals("scifio-devel")) {
 			found += tkn + "/";
 		}
 		found += tkn + "/test/ome/scifio/examples/" + s;
