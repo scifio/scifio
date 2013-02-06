@@ -172,7 +172,8 @@ public class SCIFIO {
    */
   public <M extends Metadata> boolean addFormat(
       final Format format) {
-    if(formatMap.get(format.getClass()) == null)
+    // already have an entry for this format
+    if(formatMap.get(format.getClass()) != null)
       return false;
     
     formats.add(format);
