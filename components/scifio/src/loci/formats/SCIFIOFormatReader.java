@@ -759,7 +759,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
     if (no < 0 || no >= getSeriesCount()) {
       throw new IllegalArgumentException("Invalid series: " + no);
     }
-    series = no;
+    super.setSeries(no);
   }
 
   /* @see IFormatReader#getSeries() */
