@@ -406,7 +406,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    */
   public void setMetadata(final M meta) throws IOException {
     metadata = meta;
-    dMeta = new DefaultDatasetMetadata();
+    dMeta = new DefaultDatasetMetadata(getContext());
     if(in == null) setSource(meta.getSource());
     
     try {
