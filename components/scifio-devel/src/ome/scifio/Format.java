@@ -112,7 +112,7 @@ public interface Format
    * @see {@link ome.scifio.Format#createMetadata()}
    * @see {@link ome.scifio.HasFormat#getFormat()}
    */
-  <M extends Metadata> M castToTypedMetadata(Metadata meta);
+//  <M extends Metadata> M castToTypedMetadata(Metadata meta);
 
   /**
    * Create the Metadata object associated with this format.

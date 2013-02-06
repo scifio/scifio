@@ -50,7 +50,7 @@ import net.imglib2.meta.AxisType;
  * @author Mark Hiner
  *
  */
-public interface DatasetMetadata extends Metadata {
+public interface DatasetMetadata extends TypedMetadata {
 
   /** Looks up the dataset metadata value for the provided key. */
   Object getMetadataValue(String field);

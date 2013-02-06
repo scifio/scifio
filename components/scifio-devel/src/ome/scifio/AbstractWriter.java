@@ -142,7 +142,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
    * @see ome.scifio.Writer#setMetadata(ome.scifio.Metadata)
    */
   public void setMetadata(Metadata meta) throws FormatException {
-    setMetadata(this.getFormat().<M>castToTypedMetadata(meta));
+    setMetadata(SCIFIOMetadataTools.<M>castMeta(meta));
   }
 
   /* @see ome.scifio.Writer#getMetadata() */

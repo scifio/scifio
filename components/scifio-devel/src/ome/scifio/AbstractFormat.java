@@ -47,6 +47,7 @@ import net.java.sezpoz.IndexItem;
 import ome.scifio.discovery.Discoverer;
 import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.discovery.TranslatorDiscoverer;
+import ome.scifio.util.SCIFIOMetadataTools;
 
 /**
  * Abstract superclass of all SCIFIO components that implement
@@ -157,17 +158,6 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
     return translatorClassList;
   }
   
-  /* @see Format#castToTypedMetadata(Metadata) */
-  public <T extends Metadata> T castToTypedMetadata(Metadata meta) {
-    if(!getMetadataClass().isAssignableFrom(meta.getClass())) {
-      throw new IllegalArgumentException("Incompatible metadata types. " +
-      		"Attempted to cast: " + meta.getClass() + " to: " + getMetadataClass());
-    }
-    @SuppressWarnings("unchecked")
-    T m = (T)meta;
-    return m;
-  }
-  
   /*
    * @see ome.scifio.Format#createMetadata()
    */
@@ -243,7 +233,7 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
    */
   public Translator findSourceTranslator(Metadata targetMeta)
        throws FormatException {
-    return this.findSourceTranslator(targetMeta.getFormat().<TypedMetadata>castToTypedMetadata(targetMeta));
+    return this.findSourceTranslator(SCIFIOMetadataTools.<TypedMetadata>castMeta(targetMeta));
   }
   
   /*
@@ -251,7 +241,7 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
    */
   public Translator findDestTranslator(Metadata targetMeta)
       throws FormatException {
-    return this.findDestTranslator(targetMeta.getFormat().<TypedMetadata>castToTypedMetadata(targetMeta));
+    return this.findDestTranslator(SCIFIOMetadataTools.<TypedMetadata>castMeta(targetMeta));
   }
   
   // -- Helper Methods --

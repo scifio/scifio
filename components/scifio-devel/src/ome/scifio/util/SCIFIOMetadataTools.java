@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.Metadata;
 import ome.scifio.io.RandomAccessOutputStream;
 
 /**
@@ -66,6 +67,13 @@ public class SCIFIOMetadataTools {
   private SCIFIOMetadataTools() { }
   
   // -- Utility Methods -- DatasetMetadata -- 
+  
+  @SuppressWarnings("unchecked")
+  public static <M extends Metadata> M castMeta(Metadata meta) {
+    //TODO need to check for safe casting here.. 
+    
+    return (M)meta;
+  }
   
   /**
    * Checks whether the given metadata object has the minimum metadata

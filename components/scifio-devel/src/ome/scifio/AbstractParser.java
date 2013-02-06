@@ -46,6 +46,7 @@ import java.util.Vector;
 import ome.scifio.common.DataTools;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
+import ome.scifio.util.SCIFIOMetadataTools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +129,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
   public M parse(final String fileName, final Metadata meta)
     throws IOException, FormatException
   {
-    return parse(fileName, getFormat().<M>castToTypedMetadata(meta));
+    return parse(fileName, SCIFIOMetadataTools.<M>castMeta(meta));
   }
   
   /*
@@ -137,7 +138,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
   public M parse(final File file, final Metadata meta)
     throws IOException, FormatException
   {
-    return parse(file, getFormat().<M>castToTypedMetadata(meta));
+    return parse(file, SCIFIOMetadataTools.<M>castMeta(meta));
   }
 
   /*
@@ -146,7 +147,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
   public M parse(final RandomAccessInputStream stream, final Metadata meta)
     throws IOException, FormatException
   {
-    return parse(stream, getFormat().<M>castToTypedMetadata(meta));
+    return parse(stream, SCIFIOMetadataTools.<M>castMeta(meta));
   }
 
   /*

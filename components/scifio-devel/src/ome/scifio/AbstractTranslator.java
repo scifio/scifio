@@ -36,6 +36,8 @@
 
 package ome.scifio;
 
+import ome.scifio.util.SCIFIOMetadataTools;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,8 +59,8 @@ public abstract class AbstractTranslator<M extends TypedMetadata, N extends Type
    * @see ome.scifio.Translator#translate(ome.scifio.Metadata, ome.scifio.Metadata)
    */
   public void translate(Metadata source, Metadata destination) {
-   translate(source.getFormat().<M>castToTypedMetadata(source),
-       destination.getFormat().<N>castToTypedMetadata(destination));
+   translate(SCIFIOMetadataTools.<M>castMeta(source),
+       SCIFIOMetadataTools.<N>castMeta(destination));
   }
 
   // -- TypedTranslator API --

@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import ome.scifio.FormatException;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
+import ome.scifio.util.SCIFIOMetadataTools;
 
 /**
  * Abstract superclass of all SCIFIO reader components.
@@ -249,7 +250,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#setMetadata(ome.scifio.Metadata)
    */
   public void setMetadata(ome.scifio.Metadata meta) throws IOException {
-    setMetadata(getFormat().<M>castToTypedMetadata(meta));
+    setMetadata(SCIFIOMetadataTools.<M>castMeta(meta));
   }
 
   /*
