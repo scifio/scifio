@@ -599,8 +599,8 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       
       rgb = FakeUtils.getIntValue(fakeMap.get(RGB), rgb);
 
-      thumbSizeX = FakeUtils.getIntValue(fakeMap.get(THUMB_X), thumbSizeX);
-      thumbSizeY = FakeUtils.getIntValue(fakeMap.get(THUMB_Y), thumbSizeY);
+      thumbSizeX = FakeUtils.getIntValue(fakeMap.get(THUMB_X), sizeX);
+      thumbSizeY = FakeUtils.getIntValue(fakeMap.get(THUMB_Y), sizeY);
       String mappedPType = fakeMap.get(PIXEL_TYPE);
       pixelType = FormatTools.pixelTypeFromString(mappedPType == null ? DEFAULT_PIXEL_TYPE : mappedPType);
       bitsPerPixel = FormatTools.getBitsPerPixel(pixelType);
