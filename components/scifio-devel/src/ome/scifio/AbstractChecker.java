@@ -92,7 +92,6 @@ public abstract class AbstractChecker
     if (suffixNecessary || suffixSufficient) {
       // it's worth checking the file extension
       final boolean suffixMatch = FormatTools.checkSuffix(name, getFormat().getSuffixes());
-      ;
 
       // if suffix match is required but it doesn't match, failure
       if (suffixNecessary && !suffixMatch) return false;
