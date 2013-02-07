@@ -139,7 +139,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     final int bpp =
       FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
     final int ch = dMeta.getRGBChannelCount(imageIndex);
-    final P plane = createPlane(w, h, ch, bpp);
+    final P plane = createPlane(x, y, w, h);
     return openPlane(imageIndex, planeIndex, plane, x, y, w, h);
   }
 
