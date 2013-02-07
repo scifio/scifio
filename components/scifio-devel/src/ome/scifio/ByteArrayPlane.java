@@ -55,7 +55,7 @@ public class ByteArrayPlane extends AbstractPlane<byte[]> {
   public ByteArrayPlane(SCIFIO ctx, ImageMetadata meta, int xOffset,
       int yOffset, int xLength, int yLength) {
     super(ctx, meta, xOffset, yOffset, xLength, yLength);
-    setData(new byte[xLength * yLength * (getImageMetadata().getBitsPerPixel() / 8) * meta.getAxisLength(Axes.CHANNEL)]);
+    setData(new byte[xLength * yLength * (getImageMetadata().getBitsPerPixel() / 8) * meta.getRGBChannelCount()]);
   }
   
   // -- Plane API methods --

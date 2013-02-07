@@ -139,18 +139,11 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
   }
 
   public int getEffectiveSizeC(final int imageIndex) {
-    final int sizeZT =
-      getAxisLength(imageIndex, Axes.Z) * getAxisLength(imageIndex, Axes.TIME);
-    if (sizeZT == 0) return 0;
-    return getPlaneCount(imageIndex) / sizeZT;
+    return imageMeta.get(imageIndex).getEffectiveSizeC();
   }
 
   public int getRGBChannelCount(final int imageIndex) {
-    if(!isRGB(imageIndex)) return 1;
-    
-    final int effSizeC = getEffectiveSizeC(imageIndex);
-    if (effSizeC == 0) return 0;
-    return getAxisLength(imageIndex, Axes.CHANNEL) / effSizeC;
+    return imageMeta.get(imageIndex).getRGBChannelCount();
   }
 
   public boolean isLittleEndian(final int imageIndex) {

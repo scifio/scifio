@@ -209,6 +209,10 @@ public interface ImageMetadata {
    * another image.
    */
   boolean isThumbnail();
+  
+  int getEffectiveSizeC();
+  
+  int getRGBChannelCount();
 
   /**
    * Gets the type of the (zero-indexed) specified plane.

@@ -39,6 +39,7 @@ package ome.scifio;
 import java.util.Arrays;
 import java.util.Hashtable;
 
+import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 /**
@@ -337,6 +338,20 @@ public class DefaultImageMetadata implements ImageMetadata {
   public static long getSerialversionuid() {
     return serialVersionUID;
   }
+
+  public int getEffectiveSizeC() {
+    final int sizeZT = getAxisLength(Axes.Z)* getAxisLength(Axes.TIME);
+    if(sizeZT == 0) return 0;
+    return getPlaneCount() / sizeZT;
+  }
+
+  public int getRGBChannelCount() {
+    if (!isRGB()) return 1;
+    
+    final int effC = getEffectiveSizeC();
+    if (effC == 0) return 0;
+    return getAxisLength(Axes.CHANNEL) / effC;
+  } 
   
   /**
    * Gets the type of the (zero-indexed) specified plane.
