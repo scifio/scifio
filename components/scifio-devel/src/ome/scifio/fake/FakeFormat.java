@@ -396,6 +396,13 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       super(ctx);
     }
     
+    // -- FakeFormat.Reader API Methods --
+    
+    public ColorTable getLastColorTable() {
+      ColorTable[] luts = getMetadata().getLut();
+      return luts == null ? null : luts[ac];
+    }
+    
     // -- Reader API methods --
 
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex, 

@@ -38,6 +38,10 @@ package loci.formats.in;
 
 import java.io.IOException;
 
+import net.imglib2.display.ColorTable;
+import net.imglib2.display.ColorTable16;
+import net.imglib2.display.ColorTable8;
+
 import ome.scifio.Metadata;
 import ome.scifio.fake.FakeFormat;
 
@@ -105,7 +109,29 @@ public class FakeReader extends SCIFIOFormatReader {
   }
 
   // -- IFormatReader API methods --
-
+  
+  /* @see IFormatReader#get8BitLookupTable() */
+  @Deprecated
+  @Override
+  public byte[][] get8BitLookupTable() throws FormatException, IOException {
+    FakeFormat.Reader r = ((FakeFormat.Reader)reader);
+    ColorTable lut = r.getLastColorTable();
+    
+    return lut == null ? null : 
+      (ColorTable8.class.isAssignableFrom(lut.getClass())) ? ((ColorTable8)lut).getValues() : null;
+  }
+  
+  /* @see IFormatReader#get8BitLookupTable() */
+  @Deprecated
+  @Override
+  public short[][] get16BitLookupTable() throws FormatException, IOException {
+    FakeFormat.Reader r = ((FakeFormat.Reader)reader);
+    ColorTable lut = r.getLastColorTable();
+    
+    return lut == null ? null : 
+      (ColorTable16.class.isAssignableFrom(lut.getClass())) ? ((ColorTable16)lut).getValues() : null;
+  }
+  
   // -- Internal FormatReader API methods --
 
   /* @see loci.formats.FormatReader#initFile(String) */
