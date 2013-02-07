@@ -115,6 +115,6 @@ public abstract class AbstractFilter<T> implements Filter {
    * @see java.lang.Comparable#compareTo(java.lang.Object)
    */
   public int compareTo(Filter n) {
-    return n.getPriority().compareTo(getPriority());
+    return getPriority().compareTo(n.getPriority());
   }
 }
