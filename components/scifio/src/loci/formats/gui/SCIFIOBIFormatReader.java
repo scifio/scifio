@@ -34,6 +34,18 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
 
   // -- IFormatReader API methods --
   
+  /*
+   * @see loci.formats.SCIFIOFormatReader#openPlane(int, int, int, int, int)
+   */
+  public Object openPlane(int no, int x, int y, int w, int h) throws FormatException, IOException {
+    try {
+      return ((BufferedImagePlane)(plane = reader.openPlane(getSeries(), no, x, y, w, h))).getData();
+    }
+    catch (ome.scifio.FormatException e) {
+      throw new FormatException(e);
+    }
+  } 
+  
   /** Reads a raw plane from disk. */
   @Deprecated
   @Override
