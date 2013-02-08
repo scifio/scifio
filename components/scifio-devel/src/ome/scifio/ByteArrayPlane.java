@@ -35,8 +35,6 @@
  */
 package ome.scifio;
 
-import net.imglib2.meta.Axes;
-
 /**
  * A naive {@link ome.scifio.Plane} implementation that uses {@code byte[]} for its underlying
  * data type.
@@ -44,7 +42,7 @@ import net.imglib2.meta.Axes;
  * @author Mark Hiner
  *
  */
-public class ByteArrayPlane extends AbstractPlane<byte[]> {
+public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 
   // -- Constructor --
   

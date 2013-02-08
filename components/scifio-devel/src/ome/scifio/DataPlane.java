@@ -63,6 +63,12 @@ public interface DataPlane<T> extends Plane {
   T getData();
   
   /**
+   * @param plane
+   * @return
+   */
+  DataPlane<T> populate(DataPlane<T> plane);
+  
+  /**
    * 
    * 
    * @param data

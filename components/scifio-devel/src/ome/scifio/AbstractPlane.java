@@ -43,7 +43,7 @@ import net.imglib2.display.ColorTable;
  * @author Mark Hiner
  *
  */
-public abstract class AbstractPlane<T> extends AbstractHasContext 
+public abstract class AbstractPlane<T, P extends DataPlane<T>> extends AbstractHasContext 
   implements DataPlane<T> {
 
   // -- Fields --
@@ -141,16 +141,24 @@ public abstract class AbstractPlane<T> extends AbstractHasContext
     return yLength;
   }
   
-  public Plane populate(Plane p) {
+  public P populate(Plane p) {
     return populate(p.getImageMetadata(), p.getxOffset(),
                     p.getyOffset(), p.getxLength(), p.getyLength());
+  }
+  
+  /*
+   * @see ome.scifio.DataPlane#populate(ome.scifio.DataPlane)
+   */
+  public P populate(DataPlane<T> plane) {
+    return populate(plane.getImageMetadata(), plane.getData(), plane.getxOffset(),
+        plane.getyOffset(), plane.getxLength(), plane.getyLength());
   }
   
   /*
    * @see ome.scifio.Plane#initialize(ome.scifio.ImageMetadata, int, int, int,
    *      int)
    */
-  public Plane populate(ImageMetadata meta, int xOffset, int yOffset,
+  public P populate(ImageMetadata meta, int xOffset, int yOffset,
       int xLength, int yLength) {
     return populate(meta, null, xOffset, yOffset, xLength, yLength);
   }
@@ -159,7 +167,7 @@ public abstract class AbstractPlane<T> extends AbstractHasContext
    * @see ome.scifio.Plane#initialize(ome.scifio.ImageMetadata, int, int, int,
    *      int)
    */
-  public DataPlane<T> populate(T data, int xOffset, int yOffset,
+  public P populate(T data, int xOffset, int yOffset,
       int xLength, int yLength) {
     return populate(null, data, xOffset, yOffset, xLength, yLength);
   }
@@ -168,7 +176,7 @@ public abstract class AbstractPlane<T> extends AbstractHasContext
    * @see ome.scifio.Plane#initialize(ome.scifio.ImageMetadata, int, int, int,
    *      int)
    */
-  public DataPlane<T> populate(ImageMetadata meta, T data, int xOffset, int yOffset,
+  public P populate(ImageMetadata meta, T data, int xOffset, int yOffset,
       int xLength, int yLength) {
     setImageMetadata(meta);
     setData(data);
@@ -176,7 +184,10 @@ public abstract class AbstractPlane<T> extends AbstractHasContext
     setyOffset(yOffset);
     setxLength(xLength);
     setyLength(yLength);
-    return this;
+    
+    @SuppressWarnings("unchecked")
+    P pl = (P) this;
+    return pl;
   }
   
   /*

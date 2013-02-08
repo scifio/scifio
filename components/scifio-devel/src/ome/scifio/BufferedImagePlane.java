@@ -49,7 +49,7 @@ import ome.scifio.util.FormatTools;
  * @author Mark Hiner
  *
  */
-public class BufferedImagePlane extends AbstractPlane<BufferedImage> {
+public class BufferedImagePlane extends AbstractPlane<BufferedImage, BufferedImagePlane> {
 
   // -- Constructor --
   
