@@ -132,8 +132,7 @@ public class ICSReader extends SCIFIOFormatReader {
   /* @see loci.formats.IFormatReader#close(boolean) */
   @Deprecated
   public void close(boolean fileOnly) throws IOException {
-    parser.close(fileOnly);
-    reader.close(fileOnly);
+    super.close(fileOnly);
     plane = null;
   }
 

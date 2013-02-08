@@ -745,6 +745,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   public void close(boolean fileOnly) throws IOException {
     parser.close(fileOnly);
     reader.close(fileOnly);
+    super.close(fileOnly);
   }
 
   /* @see IFormatReader#getSeriesCount() */
@@ -1079,14 +1080,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
       }
     }
     reader.setSource(id);
-  }
-
-  /* @see IFormatHandler#close() */
-  @Deprecated
-  @Override
-  public void close() throws IOException {
-    parser.close();
-    reader.close();
   }
 
   // -- SCIFIO Utility Methods --
