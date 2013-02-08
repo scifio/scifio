@@ -76,7 +76,9 @@ import ome.scifio.util.FormatTools;
 import ome.scifio.gui.Index16ColorModel;
 import ome.scifio.gui.SignedColorModel;
 import ome.scifio.BufferedImagePlane;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.Reader;
 import ome.scifio.common.DataTools;
 import ome.scifio.util.ImageTools;
 
@@ -713,15 +715,17 @@ public final class AWTImageTools {
    * ome.scifio.Reader to retrieve additional information.
    */
   public static BufferedImage openImage(BufferedImagePlane plane, 
-      BufferedImageReader<?> r, int w, int h, int imageIndex) 
+      Reader r, int w, int h, int imageIndex) 
       throws FormatException, IOException
   {
-    int pixelType = r.getDatasetMetadata().getPixelType(imageIndex);
-    boolean little = r.getDatasetMetadata().isLittleEndian(imageIndex);
+    DatasetMetadata meta = r.getDatasetMetadata();
+    
+    int pixelType = meta.getPixelType(imageIndex);
+    boolean little = meta.isLittleEndian(imageIndex);
     boolean normal = r.isNormalized();
-    int rgbChanCount = r.getDatasetMetadata().getRGBChannelCount(imageIndex);
-    boolean interleaved = r.getDatasetMetadata().isInterleaved(imageIndex);
-    boolean indexed = r.getDatasetMetadata().isIndexed(imageIndex);
+    int rgbChanCount = meta.getRGBChannelCount(imageIndex);
+    boolean interleaved = meta.isInterleaved(imageIndex);
+    boolean indexed = meta.isIndexed(imageIndex);
 
     if (pixelType == FormatTools.FLOAT) {
       float[] f = (float[]) DataTools.makeDataArray(plane.getBytes(), 4, true, little);

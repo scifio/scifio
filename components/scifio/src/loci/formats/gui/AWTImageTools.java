@@ -461,14 +461,14 @@ public final class AWTImageTools {
     try {
       Reader scReader = AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r);
       
-      if (!BufferedImageReader.class.isAssignableFrom(scReader.getClass()))
+      if (!BufferedImageReader.class.isAssignableFrom(r.getClass()))
         return null;
       
+      // TODO instead of instantiating a new blank plane, it needs to be constructed using the data from r...
       BufferedImagePlane plane = new BufferedImagePlane(scReader.getContext());
       plane.populate(scReader.getDatasetMetadata().get(r.getSeries()), 0, 0, w, h);
      
-      return ome.scifio.gui.AWTImageTools.openImage(plane, 
-          (ome.scifio.gui.BufferedImageReader<?>)scReader, w, h, r.getSeries());
+      return ome.scifio.gui.AWTImageTools.openImage(plane, scReader, w, h, r.getSeries());
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
