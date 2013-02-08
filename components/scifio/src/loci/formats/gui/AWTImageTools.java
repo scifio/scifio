@@ -48,6 +48,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 
 import ome.scifio.BufferedImagePlane;
+import ome.scifio.ByteArrayPlane;
 import ome.scifio.Reader;
 import ome.xml.model.primitives.PositiveInteger;
 
@@ -459,17 +460,14 @@ public final class AWTImageTools {
     int w, int h) throws FormatException, IOException
   {
     try {
-      Reader scReader = AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r);
-      
       if (!BufferedImageReader.class.isAssignableFrom(r.getClass()))
         return null;
       
-      // TODO instead of instantiating a new blank plane, it needs to be constructed using the buffer...
-      BufferedImagePlane plane = new BufferedImagePlane(scReader.getContext());
+      Reader scReader = AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r);
       
-      BufferedImage bi = makeImage(buf, w, h, FormatTools.isSigned(r.getPixelType()));
-      plane.populate(scReader.getDatasetMetadata().get(r.getSeries()), bi, 0, 0, w, h);
-     
+      ByteArrayPlane plane = new ByteArrayPlane(scReader.getContext());
+      plane.populate(scReader.getDatasetMetadata().get(r.getSeries()), buf, 0, 0, w, h);
+      
       return ome.scifio.gui.AWTImageTools.openImage(plane, scReader, w, h, r.getSeries());
     }
     catch (ome.scifio.FormatException e) {

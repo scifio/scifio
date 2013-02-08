@@ -78,6 +78,7 @@ import ome.scifio.gui.SignedColorModel;
 import ome.scifio.BufferedImagePlane;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.common.DataTools;
 import ome.scifio.util.ImageTools;
@@ -714,7 +715,7 @@ public final class AWTImageTools {
    * Creates an image from the given byte array, using the given
    * ome.scifio.Reader to retrieve additional information.
    */
-  public static BufferedImage openImage(BufferedImagePlane plane, 
+  public static BufferedImage openImage(Plane plane, 
       Reader r, int w, int h, int imageIndex) 
       throws FormatException, IOException
   {
@@ -761,8 +762,8 @@ public final class AWTImageTools {
       throw new FormatException("Could not construct BufferedImage");
     }
 
-    if (indexed && rgbChanCount == 1) {
-      model = plane.getData().getColorModel();
+    if (indexed && rgbChanCount == 1 && BufferedImagePlane.class.isAssignableFrom(plane.getClass())) {
+      model = ((BufferedImagePlane)plane).getData().getColorModel();
     }
     
     if (model != null) {

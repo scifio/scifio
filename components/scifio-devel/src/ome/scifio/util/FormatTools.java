@@ -1058,16 +1058,16 @@ public class FormatTools {
       r.exec("import ome.scifio.gui.AWTImageTools");
 
       int planeSize = getPlaneSize(reader, imageIndex);
-      byte[] plane = null;
+      Plane plane = null;
       if (planeSize < 0) {
         int width = reader.getDatasetMetadata().getThumbSizeX(imageIndex) * 4;
         int height = reader.getDatasetMetadata().getThumbSizeY(imageIndex) * 4;
         int x = (reader.getDatasetMetadata().getAxisLength(imageIndex, Axes.X) - width) / 2;
         int y = (reader.getDatasetMetadata().getAxisLength(imageIndex, Axes.Y) - height) / 2;
-        plane = reader.openPlane(imageIndex, planeIndex, x, y, width, height).getBytes();
+        plane = reader.openPlane(imageIndex, planeIndex, x, y, width, height);
       }
       else {
-        plane = reader.openPlane(imageIndex, planeIndex).getBytes();
+        plane = reader.openPlane(imageIndex, planeIndex);
       }
 
       r.setVar("plane", plane);
@@ -1077,7 +1077,8 @@ public class FormatTools {
       r.setVar("thumbSizeX", reader.getDatasetMetadata().getThumbSizeX(imageIndex));
       r.setVar("thumbSizeY", reader.getDatasetMetadata().getThumbSizeY(imageIndex));
       r.setVar("little", reader.getDatasetMetadata().isLittleEndian(imageIndex));
-      r.exec("img = AWTImageTools.openImage(plane, reader, sizeX, sizeY)");
+      r.setVar("imageIndex", imageIndex);
+      r.exec("img = AWTImageTools.openImage(plane, reader, sizeX, sizeY, imageIndex)");
       r.exec("img = AWTImageTools.makeUnsigned(img)");
       r.exec("thumb = AWTImageTools.scale(img, thumbSizeX, thumbSizeY, false)");
       bytes = (byte[][]) r.exec("AWTImageTools.getPixelBytes(thumb, little)");
