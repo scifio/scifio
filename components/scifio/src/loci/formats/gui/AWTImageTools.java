@@ -464,9 +464,11 @@ public final class AWTImageTools {
       if (!BufferedImageReader.class.isAssignableFrom(r.getClass()))
         return null;
       
-      // TODO instead of instantiating a new blank plane, it needs to be constructed using the data from r...
+      // TODO instead of instantiating a new blank plane, it needs to be constructed using the buffer...
       BufferedImagePlane plane = new BufferedImagePlane(scReader.getContext());
-      plane.populate(scReader.getDatasetMetadata().get(r.getSeries()), 0, 0, w, h);
+      
+      BufferedImage bi = makeImage(buf, w, h, FormatTools.isSigned(r.getPixelType()));
+      plane.populate(scReader.getDatasetMetadata().get(r.getSeries()), bi, 0, 0, w, h);
      
       return ome.scifio.gui.AWTImageTools.openImage(plane, scReader, w, h, r.getSeries());
     }
