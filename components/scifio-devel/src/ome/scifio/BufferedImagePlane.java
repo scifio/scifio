@@ -60,19 +60,8 @@ public class BufferedImagePlane extends AbstractPlane<BufferedImage> {
   public BufferedImagePlane(SCIFIO ctx, ImageMetadata meta, int xOffset,
       int yOffset, int xLength, int yLength) {
     super(ctx, meta, xOffset, yOffset, xLength, yLength);
-    
-    byte[] bytes = new byte[xLength * yLength * 
-                      (getImageMetadata().getBitsPerPixel() / 8) *
-                      meta.getAxisLength(Axes.CHANNEL)];
-    
-    int type = meta.getPixelType();
-    boolean signed = type == FormatTools.INT8 || type == FormatTools.INT16 ||
-                     type == FormatTools.INT32;
-    
-    BufferedImage img = AWTImageTools.makeImage(bytes, xLength, yLength,
-                        signed);
-    
-    setData(img);
+   
+    populate(meta, xOffset, yOffset, xLength, yLength);
   }
 
   // -- Plane API methods --
@@ -89,5 +78,26 @@ public class BufferedImagePlane extends AbstractPlane<BufferedImage> {
   public byte[] getBytes() {
     return AWTImageTools.getBytes(getData(), false);
   }
+  
+  /*
+   * @see ome.scifio.AbstractPlane#populate(ome.scifio.ImageMetadata, int, int, int, int)
+   */
+  public BufferedImagePlane populate(ImageMetadata meta, BufferedImage data, int xOffset, int yOffset,
+      int xLength, int yLength) {
+    
+    if (data == null) {
+      byte[] bytes = new byte[xLength * yLength * 
+                              (meta.getBitsPerPixel() / 8) *
+                              meta.getRGBChannelCount()];
 
+      int type = meta.getPixelType();
+      boolean signed = type == FormatTools.INT8 || type == FormatTools.INT16 ||
+          type == FormatTools.INT32;
+
+      data = AWTImageTools.makeImage(bytes, xLength, yLength,
+          signed);
+    }
+    
+    return (BufferedImagePlane) super.populate(meta, data, xOffset, yOffset, xLength, yLength);
+  }
 }
