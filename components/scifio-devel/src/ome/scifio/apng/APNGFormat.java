@@ -453,17 +453,20 @@ public class APNGFormat
   
       // If the last processed (cached) plane is requested, return it
       if (planeIndex == lastPlaneIndex && lastPlane != null) {
-        return lastPlane;
+        return plane.populate(lastPlane);
       }
       else if (lastPlane == null) {
-        lastPlane = new BufferedImagePlane(getContext(), 
-            getDatasetMetadata().get(imageIndex), x, y, w, h);
-        
+        lastPlane = plane;
+//        lastPlane = new BufferedImagePlane(getContext(), 
+//            getDatasetMetadata().get(imageIndex), x, y, w, h);
+//        
         if (getDatasetMetadata().isIndexed(imageIndex)) {
           PLTEChunk plte = getMetadata().getPlte();
-          ColorTable ct = new ColorTable8(plte.getRed(), plte.getGreen(),
-              plte.getBlue());
-          lastPlane.setColorTable(ct);
+          if (plte != null) {
+            ColorTable ct = new ColorTable8(plte.getRed(), plte.getGreen(),
+                plte.getBlue());
+            lastPlane.setColorTable(ct);
+          }
         }
       }
   
@@ -488,7 +491,7 @@ public class APNGFormat
               x, y, w, h);
         }
 
-        return lastPlane;
+        return plane.populate(lastPlane);
       }
   
       // For a non-default frame, the appropriate chunks will be used to create a new image,
@@ -557,7 +560,7 @@ public class APNGFormat
           x, y, w, h);
       
       lastPlaneIndex = planeIndex;
-      return lastPlane;
+      return plane.populate(lastPlane);
     }
   
     // -- Helper methods --
