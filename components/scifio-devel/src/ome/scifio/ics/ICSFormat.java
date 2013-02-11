@@ -880,8 +880,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     private void findCompanion(final String id)
       throws IOException, FormatException
       {
-      metadata.icsId = id;
-      metadata.idsId = id;
       String icsId = id, idsId = id;
       final int dot = id.lastIndexOf(".");
       final String ext = dot < 0 ? "" : id.substring(dot + 1).toLowerCase();
@@ -898,24 +896,23 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         icsId = new String(c);
       }
   
-      if (icsId == null) throw new FormatException("No ICS file found.");
       final Location icsFile = new Location(icsId);
       if (!icsFile.exists()) throw new FormatException("ICS file not found.");
-  
+      metadata.icsId = icsId;
+
       // check if we have a v2 ICS file - means there is no companion IDS file
       final RandomAccessInputStream f = new RandomAccessInputStream(icsId);
       String version = f.readString(17).trim();
       f.close();
       
       if (version.equals("ics_version\t2.0")) {
-        in = new RandomAccessInputStream(icsId);
         metadata.versionTwo = true;
+        metadata.idsId = icsId;
+        in = new RandomAccessInputStream(icsId);
       }
       else {
-        if (idsId == null) throw new FormatException("No IDS file found.");
         final Location idsFile = new Location(idsId);
         if (!idsFile.exists()) throw new FormatException("IDS file does not exist.");
-        //currentIdsId = idsId;
         metadata.idsId = idsId;
         in = new RandomAccessInputStream(idsId);
       }
