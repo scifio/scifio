@@ -40,6 +40,7 @@ import java.io.IOException;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatReader;
+import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
 
 import ome.scifio.Metadata;
@@ -47,6 +48,7 @@ import ome.scifio.Translator;
 import ome.scifio.ics.ICSFormat;
 import ome.xml.meta.IMetadata;
 import ome.xml.meta.OMEMetadata;
+import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.meta.OMEXMLMetadataImpl;
 import ome.xml.meta.OMEXMLMetadataTools;
 
@@ -167,7 +169,11 @@ public class ICSReader extends SCIFIOFormatReader {
       throw new FormatException(e.getCause());
     }
     
-    setMetadataStore((loci.formats.meta.MetadataStore) omeMeta.getRoot());
+    loci.formats.ome.OMEXMLMetadata omeStore = new loci.formats.ome.OMEXMLMetadataImpl();
+    omeStore.setRoot(omeMeta.getRoot().getRoot());
+    
+//TODO can't set this here, because currentId is already set.
+//    setMetadataStore(omeStore);
   }
 
   // -- Helper methods --
