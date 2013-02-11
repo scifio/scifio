@@ -210,15 +210,17 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public String getDate() {
       String date = null;
       String[] kv = findValueForKey("history date", "history created on", "history creation date");
-      if (kv[0].equalsIgnoreCase("history date") ||
-        kv[0].equalsIgnoreCase("history created on"))
-      {
-        if (kv[1].indexOf(" ") > 0) {
-          date = kv[1].substring(0, kv[1].lastIndexOf(" "));
+      if (kv != null) {
+        if(kv[0].equalsIgnoreCase("history date") ||
+            kv[0].equalsIgnoreCase("history created on"))
+        {
+          if (kv[1].indexOf(" ") > 0) {
+            date = kv[1].substring(0, kv[1].lastIndexOf(" "));
+          }
         }
-      }
-      else if (kv[0].equalsIgnoreCase("history creation date")) {
-        date = kv[1];
+        else if (kv[0].equalsIgnoreCase("history creation date")) {
+          date = kv[1];
+        }
       }
       
       if(date != null)
@@ -228,22 +230,22 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
     
     public String getDescription() {
-      return findValueForKey("history other text")[1];
+      return findStringValueForKey("history other text");
     }
     
     public String getMicroscopeModel() {
-      return findValueForKey("history microscope")[1];
+      return findStringValueForKey("history microscope");
     }
     
     public String getMicroscopeManufacturer() {
-      return findValueForKey("history manufacturer")[1];
+      return findStringValueForKey("history manufacturer");
     }
     
     public boolean getLifetime() {
       String[] kv = findValueForKey("history type");
       boolean lifetime = false;
-      if (kv[1].equalsIgnoreCase("time resolved") ||
-        kv[1].equalsIgnoreCase("FluorescenceLifetime"))
+      if (kv != null && (kv[1].equalsIgnoreCase("time resolved") ||
+        kv[1].equalsIgnoreCase("FluorescenceLifetime")))
       {
         lifetime = true;
       }
@@ -251,23 +253,23 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
     
     public String getExperimentType() {
-      return findValueForKey("history type")[1];
+      return findStringValueForKey("history type");
     }
     
     public Double[] getPixelSizes() {
       String[] kv = findValueForKey("parameter scale");
-      return kv[1] == null ? null : splitDoubles(kv[1]);
+      return kv == null ? null : splitDoubles(kv[1]);
     }
     
     public String[] getUnits() {
       String[] kv = findValueForKey("parameter units");
-      return kv[1] == null ? null : kv[1].split("\\s+");
+      return kv == null ? null : kv[1].split("\\s+");
     }
     
     public String[] getAxes() {
       String[] kv = findValueForKey("layout order");
       String[] axes = null;
-      if (kv[1] != null) {
+      if (kv != null) {
         StringTokenizer t = new StringTokenizer(kv[1]);
         axes = new String[t.countTokens()];
         for(int n = 0; n < axes.length; n++) {
@@ -278,9 +280,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
     
     public double[] getAxesSizes() {
-      String[] kv = findValueForKey("history extents");
+      String[] kv = findValueForKey("layout sizes");
       double[] sizes = null;
-      if(kv[1] != null) {
+      if(kv != null) {
         String[] lengths = kv[1].split(" ");
         sizes = new double[lengths.length];
         for(int n = 0; n < sizes.length; n++) {
@@ -294,15 +296,32 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       return sizes;
     }
     
+    public double[] getPhysicalPixelSizes() {
+      String[] kv = findValueForKey("history extents");
+      double[] sizes = null;
+      if(kv != null) {
+        String[] lengths = kv[1].split(" ");
+        sizes = new double[lengths.length];
+        for(int n = 0; n < sizes.length; n++) {
+          try { 
+            sizes[n] = Double.parseDouble(lengths[n].trim());
+          } catch (NumberFormatException e) {
+            LOGGER.debug("Could not parse pixel sizes", e);
+          }
+        }
+      }
+      return sizes;
+    }
+    
     public Double[] getTimestamps() {
       String[] kv = findValueForKey("parameter t");
-      return kv[1] == null ? null : splitDoubles(kv[1]);
+      return kv == null ? null : splitDoubles(kv[1]);
     }
     
     public Hashtable<Integer, String> getChannelNames() {
       String[] kv = findValueForKey("parameter ch");
       Hashtable<Integer, String> channelNames = new Hashtable<Integer, String>();
-      if(kv[1] != null) {
+      if(kv != null) {
         String[] names = kv[1].split(" ");
         for (int n = 0; n < names.length; n++) {
           channelNames.put(new Integer(n), names[n].trim());
@@ -313,20 +332,20 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     
     public void addStepChannel(Hashtable<Integer, String> channelNames) {
       String[] kv = findValueIteration("history step", "name");
-      if(kv[1] != null)
+      if(kv != null)
         channelNames.put(new Integer(kv[0].substring(12, kv[0].indexOf(" ", 12))), kv[1]);
     }
     
     public void addCubeChannel(Hashtable<Integer, String> channelNames) {
       String[] kv = findValueForKey("history cube");
-      if(kv[1] != null)
+      if(kv != null)
         channelNames.put(new Integer(channelNames.size()), kv[1]);
     }
     
     public Hashtable<Integer, Double> getPinholes() {
       String[] kv = findValueForKey("sensor s_params PinholeRadius");
       Hashtable<Integer, Double> pinholes = new Hashtable<Integer, Double>();
-      if(kv[1] != null) {
+      if(kv != null) {
         String pins[] = kv[1].split(" ");
         int channel = 0;
         for(int n = 0; n < pins.length; n++) {
@@ -344,7 +363,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public Integer[] getEMWaves() {
       String[] kv = findValueForKey("sensor s_params LambdaEm");
       Integer[] emWaves = null;
-      if(kv[1] != null) {
+      if(kv != null) {
         String[] waves = kv[1].split(" ");
         emWaves = new Integer[waves.length];
         for (int n = 0; n < emWaves.length; n++) {
@@ -361,7 +380,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public Integer[] getEMSingleton() {
       String[] kv = findValueForKey("history cube emm nm");
       Integer[] emWaves = null;
-      if(kv[1] != null) {
+      if(kv != null) {
         emWaves = new Integer[1];
         emWaves[0] = new Integer(kv[1].split(" ")[1].trim());
       }
@@ -371,7 +390,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public Integer[] getEXWaves() {
       String[] kv = findValueForKey("sensor s_params LambdaEx");
       Integer[] exWaves = null;
-      if (kv[1] != null) {
+      if (kv != null) {
         String[] waves = kv[1].split(" ");
         exWaves = new Integer[waves.length];
         for (int n = 0; n < exWaves.length; n++) {
@@ -388,7 +407,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public Integer[] getEXSingleton() {
       String[] kv = findValueForKey("history cube exc nm");
       Integer[] exWaves = null;
-      if(kv[1] != null) {
+      if(kv != null) {
         exWaves = new Integer[1];
         exWaves[0] = new Integer(kv[1].split(" ")[1].trim());
       }
@@ -398,7 +417,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public Hashtable<Integer, Integer> getWavelengths() {
       String[] kv = findValueForKey("history Wavelength*");
       Hashtable<Integer, Integer> wavelengths = new Hashtable<Integer, Integer>();
-      if(kv[1] != null) {
+      if(kv != null) {
         String[] waves = kv[1].split(" ");
         for(int n = 0; n < waves.length; n++) {
           wavelengths.put(new Integer(n), new Integer(waves[n]));
@@ -409,7 +428,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     
     public void addLaserWavelength(Hashtable<Integer, Integer> wavelengths) {
       String[] kv = findValueIteration("history laser", "wavelength");
-      if(kv[1] != null) {
+      if(kv != null) {
         int laser = Integer.parseInt(kv[0].substring(13, kv[0].indexOf(" ", 13))) - 1;
         kv[1] = kv[1].replaceAll("nm", "").trim();
         try {
@@ -421,95 +440,90 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
     
     public String getByteOrder() {
-      return findValueForKey("representation byte_order")[1];
+      return findStringValueForKey("representation byte_order");
     }
     
     public String getRepFormat() {
-      return findValueForKey("representation format")[1];
+      return findStringValueForKey("representation format");
     }
     
     public String getCompression() {
-      return findValueForKey("representation compression")[1];
+      return findStringValueForKey("representation compression");
     }
     
     public boolean isSigned() {
-      String signed = findValueForKey("representation sign")[1];
+      String signed = findStringValueForKey("representation sign");
       return signed != null && signed.equals("signed");
     }
     
     public String getLaserManufacturer() {
-      return findValueForKey("history laser manufacturer")[1];
+      return findStringValueForKey("history laser manufacturer");
     }
     
     public String getLaserModel() {
-      return findValueForKey("history laser model")[1];
+      return findStringValueForKey("history laser model");
     }
     
     public Double getLaserRepetitionRate() {
-      return new Double(findValueForKey("history laser model")[1]);
+      return findDoubleValueForKey("history laser model");
     }
     
     public Double getLaserPower() {
-      return new Double(findValueForKey("history laser power")[1]);
+      return findDoubleValueForKey("history laser power");
     }
     
     public String getDichroicModel() {
-      return findValueForKey("history filterset dichroic name")[1];
+      return findStringValueForKey("history filterset dichroic name");
     }
     
     public String getExcitationModel() {
-      return findValueForKey("history filterset exc name")[1];
+      return findStringValueForKey("history filterset exc name");
     }
     
     public String getEmissionModel() {
-      return findValueForKey("history filterset emm name")[1];
+      return findStringValueForKey("history filterset emm name");
     }
     
     public String getFilterSetModel() {
-      return findValueForKey("history filterset")[1];
+      return findStringValueForKey("history filterset");
     }
     
     public String getObjectiveModel() {
-      return findValueForKey("history objective type", "history objective")[1];
+      return findStringValueForKey("history objective type", "history objective");
     }
     
     public String getImmersion() {
-      return findValueForKey("history objective immersion")[1];
+      return findStringValueForKey("history objective immersion");
     }
     
     public Double getLensNA() {
-      return new Double(findValueForKey("history objective NA")[1]);
+      return findDoubleValueForKey("history objective NA");
     }
     
     public Double getWorkingDistance() {
-      return new Double(findValueForKey("history objective WorkingDistance")[1]);
+      return findDoubleValueForKey("history objective WorkingDistance");
     }
     
     public Double getMagnification() {
-      return new Double(findValueForKey("history objective magnification", "history objective mag")[1]);
+      return findDoubleValueForKey("history objective magnification", "history objective mag");
     }
     
     public String getDetectorManufacturer() {
-      return findValueForKey("history camera manufacturer")[1];
+      return findStringValueForKey("history camera manufacturer");
     }
     
     public String getDetectorModel() {
-      return findValueForKey("history camera model")[1];
+      return findStringValueForKey("history camera model");
     }
     
     public Integer getBitsPerPixel() {
-      String[] kv = findValueForKey("layout significant_bits");
-      Integer bpp = null;
-      if(kv[1] != null) {
-        bpp = new Integer(kv[1]);
-      }
-      return bpp;
+      return findIntValueForKey("layout significant_bits");
     }
     
     public Hashtable<Integer, Double> getGains() {
       String[] kv = findValueForKey("history gain");
       Hashtable<Integer, Double> gains = new Hashtable<Integer, Double>();
-      if(kv[1] != null) {
+      if(kv != null) {
         Integer n = new Integer(0);
         try{ 
           n = new Integer(kv[0].substring(12).trim());
@@ -522,13 +536,13 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
     
     public String getAuthorLastName() {
-      return findValueForKey("history author", "history experimenter")[1];
+      return findStringValueForKey("history author", "history experimenter");
     }
     
     public Double[] getStagePositions() {
       String[] kv = findValueForKey("history stage_xyzum");
       Double[] stagePos = null;
-      if(kv[1] != null) {
+      if(kv != null) {
         String[] positions = kv[1].split(" ");
         stagePos = new Double[positions.length];
         for(int n = 0; n < stagePos.length; n++) {
@@ -543,21 +557,21 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
     
     public Double getStageX() {
-      return new Double(findValueForKey("history stage positionx")[1]);
+      return findDoubleValueForKey("history stage positionx");
     }
     
     public Double getStageY() {
-      return new Double(findValueForKey("history stage positiony")[1]);
+      return findDoubleValueForKey("history stage positiony");
     }
     
     public Double getStageZ() {
-      return new Double(findValueForKey("history stage positionz")[1]);
+      return findDoubleValueForKey("history stage positionz");
     }
     
     public Double getExposureTime() {
       String[] kv = findValueForKey("history Exposure");
       Double exposureTime = null;
-      if (kv[1] != null) {
+      if (kv != null) {
         String expTime = kv[1];
         if(expTime.indexOf(" ") != -1) {
           exposureTime = new Double(expTime.indexOf(" "));
@@ -598,6 +612,24 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       return returnValue.toString();
     }
     
+    private Double findDoubleValueForKey(String... keys) {
+      String kv[] = findValueForKey(keys);
+      
+      return kv == null ? null : new Double(kv[1]);
+    }
+    
+    private Integer findIntValueForKey(String... keys) {
+      String kv[] = findValueForKey(keys);
+      
+      return kv == null ? null : new Integer(kv[1]);
+    }
+    
+    private String findStringValueForKey(String... keys) {
+      String kv[] = findValueForKey(keys);
+      
+      return kv == null ? null : kv[1];
+    }
+    
     /*
      * Checks the list of keys for non-null values in the global hashtable.
      * 
@@ -613,7 +645,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         if(value != null) return new String[]{key, value};
       }
       
-      return new String[]{null, null};
+      return null;
     }
     
     /*
@@ -631,7 +663,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
           return new String[]{key, keyValPairs.get(key)};
       }
       
-      return new String[]{null, null};
+      return null;
     }
 
     /*
