@@ -226,18 +226,20 @@ public class CoreMetadata implements Cloneable {
     int xIndex = -1, yIndex = -1, cIndex = -1, tIndex = -1, zIndex = -1;
     
     for(int i = 0; i < axes.length; i++) {
-      switch((Axes)axes[i]) {
-      case X: xIndex = i;
-        break;
-      case Y: yIndex = i;
-        break;
-      case Z: zIndex = i;
-        break;
-      case CHANNEL: cIndex = i;
-        break;
-      case TIME: tIndex = i;
-        break;
-      default:
+      if(axes[i].equals(Axes.X)) {
+        xIndex = i;
+      }
+      else if (axes[i].equals(Axes.Y)) {
+        yIndex = i;
+      }
+      else if (axes[i].equals(Axes.Z)) {
+        zIndex = i;
+      }
+      else if(axes[i].equals(Axes.CHANNEL)) {
+        cIndex = i;
+      }
+      else if (axes[i].equals(Axes.TIME)) {
+        tIndex = i;
       }
     }
     
