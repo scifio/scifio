@@ -37,12 +37,14 @@ package loci.formats;
 
 import java.util.Hashtable;
 
+import ome.scifio.AbstractImageMetadata;
+
 import net.imglib2.meta.AxisType;
 import loci.legacy.adapter.Wrapper;
 
 /**
  * This class is used for delegation in the Legacy
- * to Modern direction. It can be used in method singatures
+ * to Modern direction. It can be used in method signatures
  * expecting an {@link ome.scifio.ImageMetadata} - or,
  * more significantly, stored within an {@link ome.scifio.DatasetMetadata}
  *  - but delegates all functionality to the wrapped @{link loci.formats.CoreMetadata}
@@ -50,8 +52,7 @@ import loci.legacy.adapter.Wrapper;
  * @author Mark Hiner
  *
  */
-public class CoreMetadataWrapper extends ome.scifio.DefaultImageMetadata
-  implements Wrapper<CoreMetadata> 
+public class CoreMetadataWrapper extends AbstractImageMetadata implements Wrapper<CoreMetadata> 
 {
 
   // -- Fields --
@@ -73,10 +74,6 @@ public class CoreMetadataWrapper extends ome.scifio.DefaultImageMetadata
   // -- CoreImageMetadata methods --
   
   // -- Setters -- 
-
-  public void setLut(final byte[][] lut) {
-    throw new UnsupportedOperationException();
-  }
 
   public void setThumbSizeX(final int thumbSizeX) {
     coreMeta.thumbSizeX = thumbSizeX;
@@ -106,7 +103,7 @@ public class CoreMetadataWrapper extends ome.scifio.DefaultImageMetadata
     coreMeta.orderCertain = orderCertain;
   }
 
-  public void setRgb(final boolean rgb) {
+  public void setRGB(final boolean rgb) {
     coreMeta.rgb = rgb;
   }
 
@@ -260,7 +257,7 @@ public class CoreMetadataWrapper extends ome.scifio.DefaultImageMetadata
     return coreMeta.orderCertain;
   }
 
-  public boolean isRgb() {
+  public boolean isRGB() {
     return coreMeta.rgb;
   }
 
@@ -290,5 +287,59 @@ public class CoreMetadataWrapper extends ome.scifio.DefaultImageMetadata
 
   public boolean isThumbnail() {
     return coreMeta.thumbnail;
+  }
+
+  public void setChannelLengths(int[] cLengths) {
+    coreMeta.cLengths = cLengths;
+  }
+
+  public void setChannelTypes(String[] cTypes) {
+    coreMeta.cTypes = cTypes;
+  }
+
+  public int[] getChannelLengths() {
+    return coreMeta.cLengths;
+  }
+
+  public String[] getChannelTypes() {
+    return coreMeta.cTypes;
+  }
+
+//  public AxisType getAxisType(int planeIndex) {
+//    // TODO Auto-generated method stub
+//    return null;
+//  }
+//
+//  public int getAxisLength(int planeIndex) {
+//    // TODO Auto-generated method stub
+//    return 0;
+//  }
+//
+//  public int getAxisLength(AxisType t) {
+//    // TODO Auto-generated method stub
+//    return 0;
+//  }
+//
+//  public int getAxisIndex(AxisType type) {
+//    // TODO Auto-generated method stub
+//    return 0;
+//  }
+//
+//  public AxisType[] getAxes() {
+//    // TODO Auto-generated method stub
+//    return null;
+//  }
+//
+//  public int[] getAxesLengths() {
+//    // TODO Auto-generated method stub
+//    return null;
+//  }
+
+  public void addAxis(AxisType type) {
+    throw new UnsupportedOperationException("Can not add axes to legacy CoreMetadata.");
+  }
+
+  public void addAxis(AxisType type, int value) {
+    throw new UnsupportedOperationException("Can not add axes to legacy CoreMetadata.");
   }
 }
