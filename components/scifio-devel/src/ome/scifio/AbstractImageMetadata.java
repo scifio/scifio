@@ -47,20 +47,24 @@ import net.imglib2.meta.AxisType;
  */
 public abstract class AbstractImageMetadata implements ImageMetadata {
 
+  // -- Constants --
+  
+  /** Default thumbnail width and height. */
+  protected static final int THUMBNAIL_DIMENSION = 128;
 
   // -- Fields --
-
+  
   /** Number of planes in this image */
   @Field(label = "planeCount")
   private int planeCount;
 
   /** Width (in pixels) of thumbnail planes in this image. */
   @Field(label = "thumbSizeX")
-  private int thumbSizeX;
+  private int thumbSizeX = 0;
 
   /** Height (in pixels) of thumbnail planes in this image. */
   @Field(label = "thumbSizeY")
-  private int thumbSizeY;
+  private int thumbSizeY = 0;
 
   /**
    * Describes the number of bytes per pixel.  Must be one of the <i>static</i>
@@ -266,11 +270,38 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   }
 
   public int getThumbSizeX() {
-    return thumbSizeX;
+    int thumbX = thumbSizeX;
+    
+    if (thumbX == 0) {
+      int sx = getAxisLength(Axes.X);
+      int sy = getAxisLength(Axes.Y);
+      
+      if (sx < THUMBNAIL_DIMENSION && sy < THUMBNAIL_DIMENSION)
+        thumbX = sx;
+      else if (sx > sy) thumbX = THUMBNAIL_DIMENSION;
+      else if (sy > 0) thumbX = sx * THUMBNAIL_DIMENSION / sy;
+      if (thumbSizeX == 0) thumbX = 1;
+    }
+    
+    return thumbX;
   }
 
   public int getThumbSizeY() {
-    return thumbSizeY;
+    int thumbY = thumbSizeY;
+    
+    if (thumbY == 0) {
+      int sx = getAxisLength(Axes.X);
+      int sy = getAxisLength(Axes.Y);
+      thumbY = 1;
+      
+      if (sx < THUMBNAIL_DIMENSION && sy < THUMBNAIL_DIMENSION)
+        thumbY = sy;
+      else if (sy > sx) thumbY = THUMBNAIL_DIMENSION;
+      else if (sx > 0) thumbY = sy * THUMBNAIL_DIMENSION / sx;
+      if (thumbY == 0) thumbY = 1;
+    }
+    
+    return thumbY;
   }
 
   public int getPixelType() {
