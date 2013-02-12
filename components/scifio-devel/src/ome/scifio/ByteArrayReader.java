@@ -35,6 +35,10 @@
  */
 package ome.scifio;
 
+import java.io.IOException;
+
+import ome.scifio.util.FormatTools;
+
 /**
  * @author Mark Hiner
  *
@@ -51,6 +55,24 @@ public abstract class ByteArrayReader<M extends TypedMetadata>
 
   // -- Reader API Methods --
   
+  /*
+   * @see ome.scifio.Reader#openThumbPlane(int, int)
+   */
+  public ByteArrayPlane openThumbPlane(final int imageIndex, final int planeIndex)
+    throws FormatException, IOException
+  {
+    FormatTools.assertStream(in, true, 1);
+    ByteArrayPlane plane = createPlane(0, 0,
+        getDatasetMetadata().getThumbSizeX(imageIndex), getDatasetMetadata().getThumbSizeY(imageIndex));
+    
+    plane.setData(FormatTools.openThumbBytes(this, imageIndex, planeIndex));
+    
+    return plane;
+  } 
+  
+  /*
+   * @see ome.scifio.TypedReader#createPlane(int, int, int, int)
+   */
   public ByteArrayPlane createPlane(int xOffset, int yOffset, int xLength,
       int yLength) {
     return new ByteArrayPlane(getContext(), getDatasetMetadata().get(0),

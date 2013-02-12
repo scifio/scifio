@@ -776,6 +776,34 @@ public final class AWTImageTools {
     return b;
   }
 
+  /**
+   * Creates a thumbnail image from the provided plane, scaling it to the 
+   * specified thumbnail dimensions.
+   * 
+   * @param plane
+   * @param r
+   * @param w
+   * @param h
+   * @param thumbX
+   * @param thumbY
+   * @param imageIndex
+   * @return
+   * @throws FormatException
+   * @throws IOException
+   */
+  public static BufferedImage openThumbImage(Plane plane, 
+      Reader r, int imageIndex, int w, int h, int thumbSizeX, int thumbSizeY, boolean pad) 
+      throws FormatException, IOException
+  {
+   
+    BufferedImage img = AWTImageTools.openImage(plane, r, w, h, imageIndex);
+    img = AWTImageTools.makeUnsigned(img);
+    img = AWTImageTools.scale(img, thumbSizeX, thumbSizeY, pad);
+    
+    return img;
+  }
+  
+  
   // -- Data extraction --
 
   /**

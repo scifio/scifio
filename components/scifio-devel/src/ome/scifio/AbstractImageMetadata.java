@@ -280,7 +280,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
         thumbX = sx;
       else if (sx > sy) thumbX = THUMBNAIL_DIMENSION;
       else if (sy > 0) thumbX = sx * THUMBNAIL_DIMENSION / sy;
-      if (thumbSizeX == 0) thumbX = 1;
+      if (thumbX == 0) thumbX = 1;
     }
     
     return thumbX;

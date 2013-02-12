@@ -67,9 +67,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(Reader.class);
 
-  /** Default thumbnail width and height. */
-  protected static final int THUMBNAIL_DIMENSION = 128;
-
   // -- Fields --
 
   /** Type-specific Metadata values. */
@@ -157,18 +154,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   public P openPlane(int imageIndex, int planeIndex, Plane plane, int x,
       int y, int w, int h) throws FormatException, IOException {
     return openPlane(imageIndex, planeIndex, this.<P>castToTypedPlane(plane), x, y, w, h);
-  }
-
-  /*
-   * @see ome.scifio.Reader#openThumbPlane(int, int)
-   */
-  public P openThumbPlane(final int imageIndex, final int planeIndex)
-    throws FormatException, IOException
-  {
-    FormatTools.assertStream(in, true, 1);
-    /* TODO move FormatTools implementation here 
-    return FormatTools.openThumbBytes(this, no); */
-    return null;
   }
 
   /*

@@ -36,10 +36,16 @@
 
 package ome.scifio.gui;
 
+import java.io.IOException;
+
+import net.imglib2.meta.Axes;
+
 import ome.scifio.AbstractReader;
 import ome.scifio.BufferedImagePlane;
+import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
 import ome.scifio.TypedMetadata;
+import ome.scifio.util.FormatTools;
 
 /**
  * BufferedImageReader is the superclass for file format readers
@@ -61,6 +67,25 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
   }
   
   // -- Reader API Methods --
+  
+  /*
+   * @see ome.scifio.Reader#openThumbPlane(int, int)
+   */
+  public BufferedImagePlane openThumbPlane(final int imageIndex, final int planeIndex)
+    throws FormatException, IOException
+  {
+    FormatTools.assertStream(in, true, 1);
+    int w = getDatasetMetadata().getAxisLength(imageIndex, Axes.X);
+    int h = getDatasetMetadata().getAxisLength(imageIndex, Axes.Y);
+    int thumbX = getDatasetMetadata().getThumbSizeX(imageIndex);
+    int thumbY = getDatasetMetadata().getThumbSizeY(imageIndex);
+    
+    BufferedImagePlane plane = createPlane(0, 0, thumbX, thumbY);
+    
+    plane.setData(AWTImageTools.openThumbImage(plane, this, imageIndex, w, h, thumbX, thumbY, false));
+    
+    return plane;
+  } 
   
   /*
    * @see ome.scifio.Reader#createPlane(int, int, int, int)

@@ -1078,9 +1078,9 @@ public class FormatTools {
       r.setVar("thumbSizeY", reader.getDatasetMetadata().getThumbSizeY(imageIndex));
       r.setVar("little", reader.getDatasetMetadata().isLittleEndian(imageIndex));
       r.setVar("imageIndex", imageIndex);
-      r.exec("img = AWTImageTools.openImage(plane, reader, sizeX, sizeY, imageIndex)");
-      r.exec("img = AWTImageTools.makeUnsigned(img)");
-      r.exec("thumb = AWTImageTools.scale(img, thumbSizeX, thumbSizeY, false)");
+      r.exec("thumb = AWTImageTools.openThumbImage(plane, reader, imageIndex, sizeX, sizeY," +
+      		" thumbSizeX, thumbSizeY, false)");
+      
       bytes = (byte[][]) r.exec("AWTImageTools.getPixelBytes(thumb, little)");
     }
     catch (ReflectException exc) {
