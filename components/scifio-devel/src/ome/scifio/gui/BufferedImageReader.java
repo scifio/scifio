@@ -36,8 +36,6 @@
 
 package ome.scifio.gui;
 
-import java.awt.image.BufferedImage;
-
 import ome.scifio.AbstractReader;
 import ome.scifio.BufferedImagePlane;
 import ome.scifio.SCIFIO;
@@ -72,11 +70,4 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
     return new BufferedImagePlane(getContext(), getDatasetMetadata().get(0),
         xOffset, yOffset, xLength, yLength);
   }
-
-  // -- BufferedImageReader methods --
-
-  public Class<?> getNativeDataType() {
-    return BufferedImage.class;
-  }
-
 }
