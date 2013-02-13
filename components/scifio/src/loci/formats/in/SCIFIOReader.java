@@ -50,7 +50,9 @@ import ome.scifio.gui.BufferedImageReader;
 
 import loci.common.RandomAccessInputStream;
 import loci.formats.FormatException;
+import loci.formats.MetadataTools;
 import loci.formats.gui.SCIFIOBIFormatReader;
+import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
 
 /**
@@ -72,8 +74,6 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
   
   private Map<Format, Integer> formatIndex;
   
-  private int cachedIndex = -1;
-
   // -- Constructor --
   
   public SCIFIOReader() {
@@ -119,18 +119,18 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
     if (index >= 0) updateIndex(index);
   }
   
-//  /* @see IFormatReader#close(boolean) */
-//  @Deprecated
-//  @Override
-//  public void close() throws IOException {
-//    int index = -1;
-//    if (format != null) index = formatIndex.get(format);
-//    for (int i=0; i<formats.size(); i++) {
-//      updateIndex(i);
-//      super.close();
-//    }
-//    if (index >= 0) updateIndex(index);
-//  }
+  /* @see IFormatReader#close(boolean) */
+  @Deprecated
+  @Override
+  public void close() throws IOException {
+    int index = -1;
+    if (format != null) index = formatIndex.get(format);
+    for (int i=0; i<formats.size(); i++) {
+      updateIndex(i);
+      super.close();
+    }
+    if (index >= 0) updateIndex(index);
+  }
   
   /*
    * @see loci.formats.SCIFIOFormatReader#isThisType(java.lang.String, boolean)
@@ -144,7 +144,7 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
       updateIndex(i);
       isThisType = isThisType || super.isThisType(name, true);
     }
-    
+    if (index >= 0) updateIndex(index);
     return isThisType;
   }
   
@@ -210,6 +210,16 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
       updateIndex(formatIndex.get(fmt));
       
       super.setId(id);
+      
+      //TODO should really move this to format specific translator behavior
+      // reinitialize the MetadataStore
+      MetadataStore store = makeFilterMetadata();
+      MetadataTools.populatePixels(store, this);
+      
+      for (int s=0; s<getSeriesCount(); s++) {
+        String imageName = id.substring(0, id.lastIndexOf(".")) + (s > 0 ? (s + 1) : "");
+        store.setImageName(imageName, s);
+      }
     } catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
     }
