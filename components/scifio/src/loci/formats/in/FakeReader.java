@@ -108,22 +108,12 @@ public class FakeReader extends SCIFIOFormatReader {
     }
   }
   
-  // -- Internal FormatReader API methods --
+  // -- IFormatReader API methods --
 
   /* @see loci.formats.FormatReader#initFile(String) */
   @Override
-  protected void initFile(String id) throws FormatException, IOException {
-    super.initFile(id);
-    
-    Metadata meta = null;
-    
-    try {
-      meta = parser.parse(id);
-    } catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-    
-    reader.setMetadata(meta);
+  public void setId(String id) throws FormatException, IOException {
+    super.setId(id);
     
     // reinitialize the MetadataStore
     MetadataStore store = makeFilterMetadata();
