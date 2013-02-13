@@ -71,7 +71,7 @@ public class APNGReader extends SCIFIOBIFormatReader {
     super("Animated PNG", "png");
 
     try {
-      format = new APNGFormat(LegacyContext.get());
+      format = LegacyContext.get().getFormatFromClass(APNGFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();
@@ -89,7 +89,6 @@ public class APNGReader extends SCIFIOBIFormatReader {
   @Deprecated
   public void setId(String id) throws FormatException, IOException {
     super.setId(id);
-
     
     MetadataStore store = makeFilterMetadata();
     MetadataTools.populatePixels(store, this);

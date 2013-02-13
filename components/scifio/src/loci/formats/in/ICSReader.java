@@ -77,7 +77,7 @@ public class ICSReader extends SCIFIOFormatReader {
     super("Image Cytometry Standard", new String[] {"ics", "ids"});
     
     try {
-      format = new ICSFormat(LegacyContext.get());
+      format = LegacyContext.get().getFormatFromClass(ICSFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();
