@@ -37,8 +37,10 @@ package loci.formats;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 
 import loci.common.Location;
@@ -984,7 +986,15 @@ public abstract class SCIFIOFormatReader extends FormatReader
     //TODO this isn't implemented yet..
     return AdapterTools.getAdapter(CoreMetadataAdapter.class).getLegacy(reader.getDatasetMetadata());
   }
-
+  
+  /*
+   * @see loci.formats.FormatReader#getCoreMetadataList()
+   */
+  @Deprecated
+  @Override
+  public List<CoreMetadata> getCoreMetadataList() {
+    return Arrays.asList(getCoreMetadata());
+  }
   /* @see IFormatReader#setMetadataFiltered(boolean) */
   @Deprecated
   @Override
