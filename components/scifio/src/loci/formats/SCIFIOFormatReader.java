@@ -58,6 +58,7 @@ import net.imglib2.meta.Axes;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.Checker;
 import ome.scifio.Format;
+import ome.scifio.HasColorTable;
 import ome.scifio.Metadata;
 import ome.scifio.Parser;
 import ome.scifio.Plane;
@@ -560,26 +561,34 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public byte[][] get8BitLookupTable() throws FormatException, IOException {
-    if(plane == null) return null;
-    else {
-      ColorTable ct = plane.getColorTable();
-      if(ct == null || !(ColorTable8.class.isAssignableFrom(ct.getClass()))) return null;
-      else
-        return ((ColorTable8)ct).getValues();
-    }
+    Metadata m = reader.getMetadata();
+    ColorTable ct = null;
+    
+    if (HasColorTable.class.isAssignableFrom(m.getClass()))
+      ct = ((HasColorTable)m).getColorTable(); 
+    else if (plane != null) 
+      ct = plane.getColorTable();
+    
+    if(ct == null || !(ColorTable8.class.isAssignableFrom(ct.getClass()))) return null;
+    else
+      return ((ColorTable8)ct).getValues();
   }
 
   /* @see IFormatReader#get16BitLookupTable() */
   @Deprecated
   @Override
   public short[][] get16BitLookupTable() throws FormatException, IOException {
-    if(plane == null) return null;
-    else {
-      ColorTable ct = plane.getColorTable();
-      if(ct == null || !(ColorTable16.class.isAssignableFrom(ct.getClass()))) return null;
-      else
-        return ((ColorTable16)ct).getValues();
-    }
+    Metadata m = reader.getMetadata();
+    ColorTable ct = null;
+    
+    if (HasColorTable.class.isAssignableFrom(m.getClass()))
+      ct = ((HasColorTable)m).getColorTable(); 
+    else if (plane != null) 
+      ct = plane.getColorTable();
+    
+    if(ct == null || !(ColorTable16.class.isAssignableFrom(ct.getClass()))) return null;
+    else
+      return ((ColorTable16)ct).getValues();
   }
 
   /* @see IFormatReader#getChannelDimLengths() */

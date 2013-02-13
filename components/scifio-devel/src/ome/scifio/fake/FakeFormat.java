@@ -57,6 +57,7 @@ import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.HasColorTable;
 import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DataTools;
@@ -174,10 +175,13 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    * </br></br>
    * Fake specification should be accessed by {@link Metadata#getSource()}
    */
-  public static class Metadata extends AbstractMetadata {
+  public static class Metadata extends AbstractMetadata implements HasColorTable {
     
     // -- Fields --
     
+    /** Channel of last opened image plane. */
+    private int ac = 0;
+
     private ColorTable[] lut;
     
     private int[][] valueToIndex;
@@ -193,6 +197,14 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     }
     
     // -- FakeFormat.Metadata methods --
+    
+    public int getLastChannel() {
+      return ac;
+    }
+    
+    public void setLastChannel(int c) {
+      ac = c;
+    }
 
     public ColorTable[] getLut() {
       return lut;
@@ -208,6 +220,12 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
 
     public void setValueToIndex(int[][] valueToIndex) {
       this.valueToIndex = valueToIndex;
+    }
+    
+    // -- HasColorTable Methods --
+
+    public ColorTable getColorTable() {
+      return lut == null ? null : lut[ac];
     }
   }
   
@@ -366,10 +384,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
         }
         // NB: Other pixel types will have null LUTs.
       }
-      
 
-      
-      
       return meta;
     }
   }
@@ -381,11 +396,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    */
   public static class Reader extends ByteArrayReader<Metadata> {
     
-    // -- Fields --
-    
-    /** Channel of last opened image plane. */
-    private int ac = 0;
-    
     // -- Constructor --
     
     public Reader() {
@@ -394,13 +404,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     
     public Reader(final SCIFIO ctx) {
       super(ctx);
-    }
-    
-    // -- FakeFormat.Reader API Methods --
-    
-    public ColorTable getLastColorTable() {
-      ColorTable[] luts = getMetadata().getLut();
-      return luts == null ? null : luts[ac];
     }
     
     // -- Reader API methods --
@@ -428,7 +431,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       
       final int[] zct = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
       final int zIndex = zct[0], cIndex = zct[1], tIndex = zct[2];
-      ac = cIndex;
+      getMetadata().setLastChannel(cIndex);
 
       // integer types start gradient at the smallest value
       long min = signed ? (long) -Math.pow(2, 8 * bpp - 1) : 0;
@@ -471,10 +474,10 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
 
             // if indexed color with non-null LUT, convert value to index
             if (indexed && lut != null) {
-              int modValue = lut[ac].getLength();
-              plane.setColorTable(lut[ac]);
+              int modValue = lut[getMetadata().getLastChannel()].getLength();
+              plane.setColorTable(lut[getMetadata().getLastChannel()]);
               
-              if (valueToIndex != null) pixel = valueToIndex[ac][(int) (pixel % modValue)];
+              if (valueToIndex != null) pixel = valueToIndex[getMetadata().getLastChannel()][(int) (pixel % modValue)];
             }
 
             // scale pixel value by the scale factor
@@ -515,9 +518,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
      */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
-      
-      if (!fileOnly)
-        ac = 0;
     }
   }
   
