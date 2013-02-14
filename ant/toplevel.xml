@@ -451,7 +451,7 @@ Type "ant -p" for a list of targets.
     <ant dir="components/scifio" target="test"/>
   </target>
 
-  <!-- SCIFIO -->
+  <!-- SCIFIO-DEV -->
 
   <target name="deps-scifio-devel"
     depends="jar-ome-xml"/>
