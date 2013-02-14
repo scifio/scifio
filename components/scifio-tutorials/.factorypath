@@ -1,0 +1,4 @@
+<factorypath>
+    <factorypathentry kind="PLUGIN" id="org.eclipse.modisco.infra.discovery.core" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/java/sezpoz/sezpoz/1.9/sezpoz-1.9.jar" enabled="true" runInBatchMode="true"/>
+</factorypath>

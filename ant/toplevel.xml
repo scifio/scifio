@@ -538,6 +538,42 @@ Type "ant -p" for a list of targets.
     <ant dir="components/scifio-tools" target="test"/>
   </target>
 
+  <!-- SCIFIO Tutorials -->
+
+  <target name="deps-scifio-tutorials"
+    depends="jar-scifio-devel" />
+
+  <target name="compile-scifio-tutorials" depends="deps-scifio-tutorials"
+    description="compile classes for SCIFIO tutorials">
+    <ant dir="components/scifio-tutorials" target="scifio-tutorials.compile"/>
+  </target>
+
+  <target name="jar-scifio-tutorials" depends="deps-scifio-tutorials"
+    description="generate JAR file for SCIFIO tutorials">
+    <ant dir="components/scifio-tutorials" target="scifio-tutorials.jar"/>
+  </target>
+
+  <target name="osgi-scifio-tutorials" depends="jar-scifio-tutorials"
+    description="generate OSGi bundle for SCIFIO tutorials">
+    <ant dir="components/scifio-tutorials" target="scifio-tutorials.osgi"/>
+  </target>
+
+  <target name="findbugs-scifio-tutorials" depends="jar-scifio-tutorials"
+    description="run findbugs on SCIFIO tutorials">
+    <ant dir="components/scifio-tutorials" target="scifio-tutorials.findbugs"/>
+  </target>
+
+  <target name="clean-scifio-tutorials"
+    depends="clean-ome-xml"
+    description="remove build files for SCIFIO tutorials">
+    <ant dir="components/scifio-tutorials" target="scifio-tutorials.clean"/>
+  </target>
+
+  <target name="test-scifio-tutorials" depends="jar-scifio-tutorials"
+    description="compile and run tests for SCIFIO tutorials">
+    <ant dir="components/scifio-tutorials" target="test"/>
+  </target>
+
   <!-- Bio-Formats -->
 
   <target name="deps-formats"
