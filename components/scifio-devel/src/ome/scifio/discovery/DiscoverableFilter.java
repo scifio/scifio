@@ -2,7 +2,7 @@
  * #%L
  * OME SCIFIO package for reading and converting scientific file formats.
  * %%
- * Copyright (C) 2005 - 2012 Open Microscopy Environment:
+ * Copyright (C) 2005 - 2013 Open Microscopy Environment:
  *   - Board of Regents of the University of Wisconsin-Madison
  *   - Glencoe Software, Inc.
  *   - University of Dundee
@@ -59,5 +59,13 @@ public @interface DiscoverableFilter {
   
   Class<?> wrappedClass();
   
-  boolean isDefaultEnabled();
+  /**
+   * Returns true if this Filter should be enabled by default.
+   * <p>
+   * Default value is false.
+   * </p>
+   * 
+   * @return
+   */
+  boolean isDefaultEnabled() default false;
 }
