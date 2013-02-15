@@ -205,6 +205,7 @@ public class SCIFIO {
         .getTranslatorClassList()) {
       translatorMap.put(translatorClass, format);
     }
+    if (format.getContext() == null) format.setContext(this);
     return true;
   }
 
