@@ -75,8 +75,9 @@ public class TranslatorDiscoverer<M extends TypedMetadata, N extends TypedMetada
     for (@SuppressWarnings("rawtypes")
     final IndexItem<DiscoverableTranslator, TypedTranslator> item : Index.load(
         DiscoverableTranslator.class, TypedTranslator.class)) {
-      if (metaInClass == item.annotation().metaIn()
-          && metaOutClass == item.annotation().metaOut()) {
+      if (
+          item.annotation().metaIn().isAssignableFrom(metaInClass)
+          && item.annotation().metaOut().isAssignableFrom(metaOutClass)) {
         TypedTranslator<M, N> trans = null;
         try {
           trans = getInstance(item);

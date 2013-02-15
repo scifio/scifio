@@ -58,7 +58,6 @@ import ome.scifio.AbstractWriter;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
 import ome.scifio.DatasetMetadata;
-import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.CoreTranslator;
 import ome.scifio.FormatException;
@@ -2023,9 +2022,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * metadata type.
    * 
    */
-  @DiscoverableTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
+  @DiscoverableTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreICSTranslator
-  extends AbstractTranslator<DefaultDatasetMetadata, Metadata>
+  extends AbstractTranslator<DatasetMetadata, Metadata>
   implements CoreTranslator {
   
     // -- Constructors --
@@ -2041,7 +2040,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Translator API Methods --
   
     @Override
-    public void translate(final DefaultDatasetMetadata source, final Metadata destination)
+    public void translate(final DatasetMetadata source, final Metadata destination)
     {
       super.translate(source, destination);
       // note that the destination fields will preserve their default values
@@ -2145,9 +2144,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * to the SCIFIO Core metadata type. 
    *
    */
-  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
+  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
   public static class ICSCoreTranslator
-  extends AbstractTranslator<Metadata, DefaultDatasetMetadata>
+  extends AbstractTranslator<Metadata, DatasetMetadata>
   implements CoreTranslator {
 
     private Metadata curSource;
@@ -2165,7 +2164,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Translator API Methods --
 
     @Override
-    public void translate(final Metadata source, final DefaultDatasetMetadata destination)
+    public void translate(final Metadata source, final DatasetMetadata destination)
     {
       super.translate(source, destination);
       final DefaultImageMetadata imageMeta = new DefaultImageMetadata();

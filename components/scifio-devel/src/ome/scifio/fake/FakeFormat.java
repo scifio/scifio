@@ -53,7 +53,6 @@ import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
-import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
@@ -560,9 +559,9 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   /**
    * Translator from Fake metadata to {@link DatasetMetadata}.
    */
-  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
+  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
   public static class FakeCoreTranslator 
-  extends AbstractTranslator<Metadata, DefaultDatasetMetadata> {
+  extends AbstractTranslator<Metadata, DatasetMetadata> {
     
     // -- Constants --
 
@@ -582,7 +581,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Translator API Methods --
     
     @Override
-    public void translate(final Metadata source, final DefaultDatasetMetadata destination) {
+    public void translate(final Metadata source, final DatasetMetadata destination) {
       super.translate(source, destination);
       
       int sizeX = DEFAULT_SIZE_X;
@@ -691,9 +690,9 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   /**
    * Translator from {@link DatasetMetadata} to Fake Metadata.
    */
-  @DiscoverableTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
+  @DiscoverableTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreFakeTranslator 
-  extends AbstractTranslator<DefaultDatasetMetadata, Metadata> {
+  extends AbstractTranslator<DatasetMetadata, Metadata> {
 
     // -- Constructor --
     
@@ -708,7 +707,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Translator API Methods --
     
     @Override
-    public void translate(final DefaultDatasetMetadata source, final Metadata destination) {
+    public void translate(final DatasetMetadata source, final Metadata destination) {
       super.translate(source, destination);
       
       String fakeId = NAME + "=" + source.getSource().getFileName();

@@ -61,7 +61,7 @@ import ome.scifio.AbstractParser;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
 import ome.scifio.BufferedImagePlane;
-import ome.scifio.DefaultDatasetMetadata;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.CoreTranslator;
 import ome.scifio.Field;
@@ -936,9 +936,9 @@ public class APNGFormat
    * to write it can not be guaranteed valid.
    *
    */
-  @DiscoverableTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
+  @DiscoverableTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreAPNGTranslator
-    extends AbstractTranslator<DefaultDatasetMetadata, Metadata> {
+    extends AbstractTranslator<DatasetMetadata, Metadata> {
   
     // -- Constructors --
     
@@ -953,7 +953,7 @@ public class APNGFormat
     // -- Translator API Methods -- 
     
     @Override
-    public void translate(final DefaultDatasetMetadata source, final Metadata dest) {
+    public void translate(final DatasetMetadata source, final Metadata dest) {
       super.translate(source, dest);
   
       final IHDRChunk ihdr =
@@ -1041,9 +1041,9 @@ public class APNGFormat
    * (APNG) images to the Core SCIFIO image type.
    *
    */
-  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
+  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
   public static class APNGCoreTranslator
-    extends AbstractTranslator<Metadata, DefaultDatasetMetadata>
+    extends AbstractTranslator<Metadata, DatasetMetadata>
     implements CoreTranslator {
   
     // -- Constructors --
@@ -1059,7 +1059,7 @@ public class APNGFormat
     // -- Translator API Methods --
   
     @Override
-    public void translate(final Metadata source, final DefaultDatasetMetadata dest) {
+    public void translate(final Metadata source, final DatasetMetadata dest) {
       super.translate(source, dest);
       final DefaultImageMetadata imageMeta = new DefaultImageMetadata();
       dest.add(imageMeta);
