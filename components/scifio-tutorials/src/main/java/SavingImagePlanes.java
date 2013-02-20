@@ -29,7 +29,7 @@ import ome.scifio.Writer;
  * @author Mark Hiner
  *
  */
-public class SavingImages {
+public class SavingImagePlanes {
 
   public static void main(final String... args) throws FormatException, IOException {
     // In this tutorial, we're going to make our little .fake sample image
@@ -64,6 +64,8 @@ public class SavingImages {
         writer.savePlane(i, j, reader.openPlane(i, j));
       }
     }
+    // Note that this code is for illustration purposes only. 
+    // A more general solution would need higher level API that could account for larger planes, etc..
     
     // close our components now that we're done
     reader.close();
