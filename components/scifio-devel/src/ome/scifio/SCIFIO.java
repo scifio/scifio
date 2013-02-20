@@ -469,20 +469,29 @@ public class SCIFIO extends SortablePlugin {
     Metadata destMeta = null;
 
     // if dest is a different format than source, translate..
-    if (sFormat != dFormat) {
+    if (sFormat == dFormat) {
+      // otherwise we can directly cast, since they are the same types
+      destMeta = castMeta(sourceMeta, destMeta);
+      
+    } else if (dFormat.findDestTranslator(sourceMeta) != null) {
+      // Can directly translate between these formats
+      
+      destMeta = dFormat.createMetadata();
+      
+      dFormat.findDestTranslator(sourceMeta).translate(sourceMeta, destMeta);
+      
+    } else {
+      // Have to translate to and from DatasetMetadata
       destMeta = dFormat.createMetadata();
       
       // TODO should probably make this general wrt DatasetMetadata,
       // but that also requires having a general way to instantiate DatasetMetadata
-      final DefaultDatasetMetadata transMeta = new DefaultDatasetMetadata(getContext());
+      final DatasetMetadata transMeta = new DefaultDatasetMetadata(getContext());
       final Translator transToCore = sFormat.findSourceTranslator(transMeta);
       final Translator transFromCore = dFormat.findDestTranslator(transMeta);
       transMeta.setSource(new RandomAccessInputStream(getContext(), source));
       transToCore.translate(sourceMeta, transMeta);
       transFromCore.translate(transMeta, destMeta);
-    } else {
-      // otherwise we can directly cast, since they are the same types
-      destMeta = castMeta(sourceMeta, destMeta);
     }
 
     final Writer writer = dFormat.createWriter();
