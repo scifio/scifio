@@ -43,6 +43,7 @@ import java.util.Map;
 
 import ome.scifio.ScifioPlugin;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
@@ -63,6 +64,11 @@ import org.scijava.service.Service;
  */
 @Plugin(type = Service.class)
 public class PluginAttributeService extends AbstractService {
+  
+  // -- Parameters --
+  
+  @Parameter
+  PluginService pluginService;
 
   /**
    * As {@link org.scijava.plugin.PluginService#createInstancesOfType(Class)}
@@ -73,7 +79,7 @@ public class PluginAttributeService extends AbstractService {
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
     PluginInfo<PT> plugin = getPlugin(type, andPairs, orPairs);
     
-    return getContext().getService(PluginService.class).createInstance(plugin);
+    return pluginService.createInstance(plugin);
   }
   
   /**
@@ -94,7 +100,7 @@ public class PluginAttributeService extends AbstractService {
   public <PT extends ScifioPlugin> List<PluginInfo<PT>> getPluginsOfType(
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
     // Get the unfiltered plugin list
-    List<PluginInfo<PT>> plugins = getContext().getPluginIndex().getPlugins(type);
+    List<PluginInfo<PT>> plugins = pluginService.getPluginsOfType(type);
     
     // The list of filtered plugins we will return.
     List<PluginInfo<PT>> filteredPlugins = new ArrayList<PluginInfo<PT>>();

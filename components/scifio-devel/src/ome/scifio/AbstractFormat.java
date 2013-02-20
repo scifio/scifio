@@ -243,8 +243,7 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
     kvPairs.put(Translator.SOURCE, metadataClass.getName());
     kvPairs.put(Translator.DEST, metadataClass.getName());
     
-    return getContext().getService(PluginClassService.class).
-        getPluginClasses(Translator.class, null, kvPairs);
+    return getContext().getService(PluginClassService.class).getPluginClasses(Translator.class, null, kvPairs);
   }
 
   /**

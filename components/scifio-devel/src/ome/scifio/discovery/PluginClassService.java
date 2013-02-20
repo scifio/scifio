@@ -42,6 +42,7 @@ import java.util.Map;
 
 import ome.scifio.ScifioPlugin;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.service.AbstractService;
@@ -56,6 +57,14 @@ import org.scijava.service.Service;
 @Plugin(type = Service.class)
 public class PluginClassService extends AbstractService {
   
+  // -- Parameters --
+  
+  @Parameter
+  PluginAttributeService pluginAttributeService;
+  
+  
+  // -- PluginClassService Methods --
+  
   /**
    * Convenience method for obtaining a list of Classes instead of PluginInfo objects.
    */
@@ -67,7 +76,7 @@ public class PluginClassService extends AbstractService {
    * As {@link #getPluginClasses(Class)} but with key,value pair parameters for filtering.
    */
   public <PT extends ScifioPlugin> List<Class<? extends PT>> getPluginClasses(Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
-    List<PluginInfo<PT>> pluginInfos = getContext().getService(PluginAttributeService.class).getPluginsOfType(type, andPairs, orPairs);
+    List<PluginInfo<PT>> pluginInfos = pluginAttributeService.getPluginsOfType(type, andPairs, orPairs);
         
     List<Class<? extends PT>> pluginClasses = new ArrayList<Class<? extends PT>>();
     

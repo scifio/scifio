@@ -39,6 +39,7 @@ import java.io.IOException;
 
 import ome.scifio.filters.ReaderFilter;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
@@ -47,7 +48,7 @@ import org.scijava.service.Service;
  * @author Mark Hiner
  *
  */
-@Plugin(type=Service.class)
+@Plugin(type=Service.class, priority=Priority.LOW_PRIORITY)
 public class DefaultInitializeService extends AbstractService implements InitializeService {
 
   /**

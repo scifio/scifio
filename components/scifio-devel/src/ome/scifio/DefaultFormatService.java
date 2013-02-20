@@ -41,8 +41,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.scijava.Context;
+import ome.scifio.discovery.PluginClassService;
+
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
@@ -53,11 +55,21 @@ import org.scijava.service.Service;
  * @author Mark Hiner
  *
  */
-@Plugin(type=Service.class, priority=Priority.LAST_PRIORITY)
+@Plugin(type=Service.class, priority=Priority.LOW_PRIORITY)
 public class DefaultFormatService extends AbstractService implements FormatService {
 
   // TODO: consider using thread-safe ArrayList using java.util.Collections
-
+  
+  // -- Parameters --
+  
+  @Parameter
+  PluginService pluginService;
+  
+  // NB: This service does not explicitly use a pluginClassService, but it is required to load
+  // Formats in the initialize() method.
+  @Parameter
+  PluginClassService pluginClassService;
+  
   // -- Fields --
 
   /**
@@ -364,32 +376,14 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   public List<Format> getAllFormats() {
     return formats;
   }
-  
-  // -- Contextual API Methods --
-  
-  /*
-   * @see org.scijava.AbstractContextual#setContext(org.scijava.Context)
-   */
-  public void setContext(Context context) {
-    super.setContext(context);
-    
-    processFormats((Format[])null);
-  }
 
-  // -- Helper Methods --
+  // -- Service API Methods --
   
-  /*
-   * Processes each format in the provided list. If the list is null,
-   * discovers available Formats
-   */
-  private void processFormats(Format... formats) {
-    if (formats == null) {
+  public void initialize() {
       List<Format> tmpFormats = 
-          getContext().getService(PluginService.class).createInstancesOfType(Format.class);
-      formats = tmpFormats.toArray(new Format[tmpFormats.size()]);
-    }
+          pluginService.createInstancesOfType(Format.class);
 
-    for (final Format format : formats) {
+    for (final Format format : tmpFormats.toArray(new Format[tmpFormats.size()])) {
       addFormat(format);
     }
   }

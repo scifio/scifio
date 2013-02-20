@@ -36,6 +36,8 @@
 
 package ome.scifio;
 
+import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
@@ -59,14 +61,24 @@ import org.scijava.service.Service;
  * 
  * @author Mark Hiner
  */
-@Plugin(type=Service.class)
+@Plugin(type=Service.class, priority=Priority.LOW_PRIORITY)
 public class DefaultSCIFIO extends AbstractService implements SCIFIO {
+  
+  // -- Parameters --
+  
+  @Parameter
+  private InitializeService initializeService;
+  
+  @Parameter
+  private FormatService formatService;
+  
+  // -- SCIFIO API Methods --
 
   public InitializeService initializer() {
-    return getContext().getService(InitializeService.class);
+    return initializeService;
   }
 
   public FormatService formats() {
-    return getContext().getService(FormatService.class);
+    return formatService;
   }
 }
