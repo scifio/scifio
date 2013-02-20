@@ -1026,7 +1026,7 @@ public class APNGFormat
         ihdr.setColourType((byte) 0x3);
       }
   
-      actl.setNumFrames(source.getAxisLength(0, Axes.TIME));
+      actl.setNumFrames(source.getPlaneCount(0));
   
       for (int i = 0; i < actl.getNumFrames(); i++) {
         final FCTLChunk frame = new FCTLChunk();
