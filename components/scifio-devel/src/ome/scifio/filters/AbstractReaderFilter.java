@@ -400,7 +400,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
    * @see ome.scifio.Reader#castToTypedPlane(ome.scifio.Plane)
    */
   public <P extends Plane> P castToTypedPlane(Plane plane) {
-    return getParent().castToTypedPlane(plane);
+    return getParent().<P>castToTypedPlane(plane);
   }
   
   // -- HasFormat API MEthods --
