@@ -118,6 +118,10 @@ public class APNGFormat
    *
    */
   public static class Metadata extends AbstractMetadata {
+    
+    // -- Constants --
+    
+    public static final String DEFAULT_KEY = "separate default";
   
     // -- Fields --
   
@@ -1031,7 +1035,8 @@ public class APNGFormat
         fctl.add(frame);
       }
   
-      dest.setSeparateDefault(true);
+      Object separateDefault = source.getImageMetadataValue(0, Metadata.DEFAULT_KEY);
+      dest.setSeparateDefault(separateDefault == null ? false : (Boolean)separateDefault);
     }
   }
 
@@ -1135,6 +1140,8 @@ public class APNGFormat
       imageMeta.setMetadataComplete(false);
   
       imageMeta.setThumbnail(false);
+      
+      dest.putImageMeta(0, Metadata.DEFAULT_KEY, source.isSeparateDefault());
       //coreMeta.setThumbSizeX(source.thumbSizeX);
       //coreMeta.setThumbSizeY(source.thumbSizeY);
   
