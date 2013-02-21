@@ -24,6 +24,7 @@ import ome.scifio.FormatException;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 import ome.scifio.Writer;
+import ome.scifio.io.Location;
 
 /**
  * Tutorial demonstrating use of the Writer component.
@@ -44,6 +45,9 @@ public class T1cSavingImagePlanes {
 
     // We'll need a path to write to
     String outPath = "SCIFIOTutorial.png";
+    
+    Location l = new Location(context, outPath);
+    if (l.exists()) l.delete();
     
     // We'll need a reader for the input image
     Reader reader = context.getService(SCIFIO.class).initializer().initializeReader(sampleImage);
