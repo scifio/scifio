@@ -79,7 +79,7 @@ public class PluginAttributeService extends AbstractService {
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
     PluginInfo<PT> plugin = getPlugin(type, andPairs, orPairs);
     
-    return pluginService.createInstance(plugin);
+    return plugin == null ? null : pluginService.createInstance(plugin);
   }
   
   /**
@@ -87,9 +87,10 @@ public class PluginAttributeService extends AbstractService {
    * but with key,value pair parameters to allow for filtering based on
    * {@code Attr} annotation.
    */
-  public <PT extends ScifioPlugin, P extends PT> PluginInfo<PT> getPlugin(
+  public <PT extends ScifioPlugin> PluginInfo<PT> getPlugin(
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
-    return getPluginsOfType(type, andPairs, orPairs).get(0);
+    List<PluginInfo<PT>> pluginList = getPluginsOfType(type, andPairs, orPairs);
+    return pluginList.size() > 0 ? pluginList.get(0) : null;
   }
   
   /**
