@@ -47,6 +47,7 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import ome.scifio.discovery.DiscoverableService;
 import ome.scifio.services.AbstractService;
 import ome.scifio.services.ServiceException;
 import ome.scifio.util.FormatTools;
@@ -89,6 +90,8 @@ import org.xml.sax.SAXException;
  *
  * @author callan
  */
+@DiscoverableService(interfaceName = "ome.xml.services.OMEXMLService", 
+               implementationName = "ome.xml.services.OMEXMLServiceImpl")
 public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 {
 
