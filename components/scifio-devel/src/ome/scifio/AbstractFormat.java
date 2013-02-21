@@ -294,6 +294,9 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
     TypedTranslator<S, T> trans = 
         (TypedTranslator<S, T>) getContext().getService(PluginAttributeService.class).
         createInstance(Translator.class, kvPairs, null);
+   
+    if (trans != null)
+      trans.setFormat(this);
     
     return trans;
   }
