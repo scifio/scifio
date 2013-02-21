@@ -14,17 +14,14 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package main.java;
+package ome.scifio.tutorials;
 
 /**
- * A guide to using SezPoz for discovery in SCIFIO.
+ * Tutorial on obtaining OME-XML using SCIFIO.
  * 
  * @author Mark Hiner
  *
  */
-public class DiscoveryTutorial {
+public class T1dOpeningOMEXML {
 
-  public static void main(final String... args) {
-     
-  }
 }

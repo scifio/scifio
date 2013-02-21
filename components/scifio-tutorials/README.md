@@ -20,12 +20,21 @@ Or build and run from the command line...
 ... via Maven:
 
     mvn
-    mvn exec:java -Dexec.mainClass=main.java.IntroToSCIFIO
+    mvn exec:java -Dexec.mainClass=ome.scifio.tutorials.T1aIntroToSCIFIO
 
 ... via ant (from the Bio-Formats top-level)
 
     ant jar-scifio-tutorials
-    java -cp jar/*:artifacts/* main.java.IntroToSCIFIO
+    java -cp jar/*:artifacts/* ome.scifio.tutorials.T1aIntroToSCIFIO
+
+TUTORIAL ORDER
+-------------
+
+The tutorials are named in a suggested order for execution:
+  * Tutorials 1a-d focus on basic image IO using convenience methods
+  * Tutorials 2a-b cover individual component use
+  * Tutorials 3a-c explain the discovery mechanism and defining
+    your own SCIFIO Formats and components.
 
 LICENSING
 ---------

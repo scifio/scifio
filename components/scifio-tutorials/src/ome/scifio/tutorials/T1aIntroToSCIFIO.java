@@ -14,7 +14,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package main.java;
+package ome.scifio.tutorials;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +33,7 @@ import ome.scifio.SCIFIO;
  * @author Mark Hiner
  *
  */
-public class IntroToSCIFIO {
+public class T1aIntroToSCIFIO {
   
   public static void main(final String... agrs) throws FormatException, IOException {
     // The first step when working with SCIFIO is to create a context.

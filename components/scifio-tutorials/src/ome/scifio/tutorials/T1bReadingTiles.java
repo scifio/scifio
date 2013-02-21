@@ -14,12 +14,17 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
+package ome.scifio.tutorials;
 
-package main.java;
+/**
+ * Tutorial using the SCIFIO API to open image tiles.
+ * 
+ * @author Mark Hiner
+ *
+ */
+public class T1bReadingTiles {
 
-public class ReaderExample {
-
-  public static void main(String[] args) {
-    System.out.println("Hello world");
+  public static void main(final String... args) {
+    
   }
 }

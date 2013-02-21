@@ -14,7 +14,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package main.java;
+package ome.scifio.tutorials;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -40,7 +40,7 @@ import ome.scifio.fake.FakeFormat;
  * @author Mark Hiner
  *
  */
-public class TranslatingMetadata { 
+public class T3cTranslatingMetadata { 
   
   public static void main(final String... args) throws FormatException, IOException {
     // In the CustomFormats tutorial we demonstrated the process of defining

@@ -14,7 +14,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package main.java;
+package ome.scifio.tutorials;
 
 import java.io.IOException;
 
@@ -31,7 +31,7 @@ import ome.scifio.fake.FakeFormat;
  * @author Mark Hiner
  *
  */
-public class TypedComponents {
+public class T2bTypedComponents {
 
   public static void main(final String... args) throws FormatException, IOException {
     // In IntroToSCIFIO we saw the general case of image opening, but what

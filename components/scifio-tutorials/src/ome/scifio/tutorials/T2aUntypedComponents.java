@@ -14,7 +14,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package main.java;
+package ome.scifio.tutorials;
 
 import java.io.IOException;
 
@@ -35,7 +35,7 @@ import ome.scifio.SCIFIO;
  * @author Mark Hiner
  *
  */
-public class UntypedComponents {
+public class T2aUntypedComponents {
 
   public static void main(final String... args) throws FormatException, IOException {
     // In IntroToSCIFIO we used a convenience method to obtain an initialized

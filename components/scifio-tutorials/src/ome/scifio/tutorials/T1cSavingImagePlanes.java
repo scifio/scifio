@@ -14,7 +14,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package main.java;
+package ome.scifio.tutorials;
 
 import java.io.IOException;
 
@@ -31,7 +31,7 @@ import ome.scifio.Writer;
  * @author Mark Hiner
  *
  */
-public class SavingImagePlanes {
+public class T1cSavingImagePlanes {
 
   public static void main(final String... args) throws FormatException, IOException {
     // In this tutorial, we're going to make our little .fake sample image

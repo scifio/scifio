@@ -14,7 +14,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package main.java;
+package ome.scifio.tutorials;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -43,7 +43,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * @author Mark Hiner
  *
  */
-public class CustomFormats {
+public class T3bCustomFormats {
 
   // Before looking at the main method, take a look at the SampleFormat defined
   // below.
