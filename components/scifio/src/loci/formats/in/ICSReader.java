@@ -144,13 +144,10 @@ public class ICSReader extends SCIFIOFormatReader {
     OMEMetadata omeMeta = new OMEMetadata(omeRoot);
     omeMeta.setContext(reader.getContext());
 
-    try {
-      Translator t = reader.getFormat().findSourceTranslator(omeMeta);
-      
-      t.translate(reader.getMetadata(), omeMeta);
-    } catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
+    Translator t = reader.getContext().getService(SCIFIO.class).translators()
+                    .findTranslator(reader.getMetadata(), omeMeta);
+
+    t.translate(reader.getMetadata(), omeMeta);
     
     loci.formats.ome.OMEXMLMetadata omeStore = new loci.formats.ome.OMEXMLMetadataImpl();
     omeStore.setRoot(omeMeta.getRoot().getRoot());

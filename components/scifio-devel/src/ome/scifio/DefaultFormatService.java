@@ -39,44 +39,30 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.TreeSet;
 
-import ome.scifio.discovery.PluginClassService;
 
-import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
-import org.scijava.service.Service;
 
 /**
- * Note: has to run after PluginService
+ * Maps component classes to their associated format
+ * 
  * @author Mark Hiner
  *
  */
-@Plugin(type=Service.class, priority=Priority.LOW_PRIORITY)
+@Plugin(type=FormatService.class)
 public class DefaultFormatService extends AbstractService implements FormatService {
 
-  // TODO: consider using thread-safe ArrayList using java.util.Collections
-  
   // -- Parameters --
   
   @Parameter
-  PluginService pluginService;
-  
-  // NB: This service does not explicitly use a pluginClassService, but it is required to load
-  // Formats in the initialize() method.
-  @Parameter
-  PluginClassService pluginClassService;
+  private PluginService pluginService;
   
   // -- Fields --
-
-  /**
-   * Used to generate lists of SCIFIO components that can support a given
-   * input.
-   */
-  private final SCIFIOComponentFinder scf = new SCIFIOComponentFinder();
 
   /**
    * List of all formats known to this context.
@@ -116,14 +102,6 @@ public class DefaultFormatService extends AbstractService implements FormatServi
    */
   private final Map<Class<? extends Writer>, Format> writerMap =
       new HashMap<Class<? extends Writer>, Format>();
-
-  /**
-   * 
-   * Maps Translator classes to their parent Format instance.
-   * 
-   */
-  private final Map<Class<? extends Translator>, Format> translatorMap =
-      new HashMap<Class<? extends Translator>, Format>();
 
   /**
    * Maps Metadata classes to their parent Format instance.
@@ -172,10 +150,6 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     writerMap.put(format.getWriterClass(), format);
     formatMap.put(format.getClass(), format);
     metadataMap.put(format.getMetadataClass(), format);
-    for (final Class<? extends Translator> translatorClass : format
-        .getTranslatorClassList()) {
-      translatorMap.put(translatorClass, format);
-    }
     if (format.getContext() == null) format.setContext(getContext());
     return true;
   }
@@ -194,10 +168,6 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     writerMap.remove(format.getWriterClass());
     metadataMap.remove(format.getMetadataClass());
     formatMap.remove(format.getClass());
-    for (final Class<? extends Translator> translatorClass : format
-        .getTranslatorClassList()) {
-      translatorMap.remove(translatorClass);
-    }
     return formats.remove(format);
   }
   
@@ -225,28 +195,25 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   
   @SuppressWarnings("unchecked")
   public Format getFormatFromComponent(final Class<?> componentClass) {
-   Format fmt = null;
-    
-   if (Reader.class.isAssignableFrom(componentClass)) {
-     fmt = getFormatFromReader((Class<? extends Reader>)componentClass);
-   }
-   else if (Writer.class.isAssignableFrom(componentClass)) {
-     fmt = getFormatFromWriter((Class<? extends Writer>)componentClass);
-   }
-   else if (Translator.class.isAssignableFrom(componentClass)) {
-     fmt = getFormatFromTranslator((Class<? extends Translator>)componentClass);
-   }
-   else if (Metadata.class.isAssignableFrom(componentClass)) {
-     fmt = getFormatFromMetadata((Class<? extends Metadata>)componentClass);
-   }
-   else if (Parser.class.isAssignableFrom(componentClass)) {
-     fmt = getFormatFromParser((Class<? extends Parser>)componentClass);
-   }
-   else if (Checker.class.isAssignableFrom(componentClass)) {
-     fmt = getFormatFromChecker((Class<? extends Checker>)componentClass);
-   }
-   
-   return fmt;
+    Format fmt = null;
+
+    if (Reader.class.isAssignableFrom(componentClass)) {
+      fmt = getFormatFromReader((Class<? extends Reader>)componentClass);
+    }
+    else if (Writer.class.isAssignableFrom(componentClass)) {
+      fmt = getFormatFromWriter((Class<? extends Writer>)componentClass);
+    }
+    else if (Metadata.class.isAssignableFrom(componentClass)) {
+      fmt = getFormatFromMetadata((Class<? extends Metadata>)componentClass);
+    }
+    else if (Parser.class.isAssignableFrom(componentClass)) {
+      fmt = getFormatFromParser((Class<? extends Parser>)componentClass);
+    }
+    else if (Checker.class.isAssignableFrom(componentClass)) {
+      fmt = getFormatFromChecker((Class<? extends Checker>)componentClass);
+    }
+
+    return fmt;
   }
 
   /**
@@ -306,20 +273,6 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   }
 
   /**
-   * {@code Format} lookup method using the {@code Translator} component.
-   * 
-   * @param writerClass the class of the {@code Translator} component for the 
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
-   */
-  public <T extends Translator> Format getFormatFromTranslator(
-      final Class<T> translatorClass) {
-    final Format format = translatorMap.get(translatorClass);
-    return format;
-  }
-
-  /**
    * {@code Format} lookup method using the {@code Metadata} component.
    * 
    * @param writerClass the class of the {@code Metadata} component for the 
@@ -352,7 +305,7 @@ public class DefaultFormatService extends AbstractService implements FormatServi
    */
   public Format getFormat(final String id, final boolean open)
       throws FormatException {
-    return scf.findFormats(id, open, true, formats).get(0);
+    return getFormatList(id, open).get(0);
   }
 
   /**
@@ -365,7 +318,24 @@ public class DefaultFormatService extends AbstractService implements FormatServi
    */
   public List<Format> getFormatList(final String id,
       final boolean open) throws FormatException {
-    return scf.findFormats(id, open, false, formats);
+    
+    final PriorityQueue<Format> formatPriorities = new PriorityQueue<Format>(formats);
+    final List<Format> formatList = new ArrayList<Format>();
+
+    boolean found = false;
+    while (!formatPriorities.isEmpty() && !found) {
+      final Format format = formatPriorities.poll();
+
+      if (format.createChecker().isFormat(id, open)) {
+        found = true;
+        formatList.add(format);
+      }
+    }
+
+    if (formatList.isEmpty())
+      throw new FormatException(id + ": No supported format found.");
+
+    return formatList;
   }
 
   /**
@@ -406,11 +376,9 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   // -- Service API Methods --
   
   public void initialize() {
-      List<Format> tmpFormats = 
-          pluginService.createInstancesOfType(Format.class);
-
-    for (final Format format : tmpFormats.toArray(new Format[tmpFormats.size()])) {
-      addFormat(format);
+    for (Format format : pluginService.createInstancesOfType(Format.class))
+    {
+      addFormat(format); 
     }
   }
 }

@@ -384,12 +384,10 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     dMeta = getContext().getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
     if(in == null) setSource(meta.getSource());
     
-    try {
-      getFormat().findSourceTranslator(dMeta).
-        translate(meta, dMeta);
-    } catch (FormatException e) {
-      LOGGER.debug(e.getMessage());
-    }
+    Translator t = getContext().getService(SCIFIO.class).
+                    translators().findTranslator(meta, dMeta);
+    
+    t.translate(meta, dMeta);
   }
   
   /*

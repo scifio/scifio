@@ -37,6 +37,7 @@ package ome.scifio;
 
 import java.util.List;
 
+import org.scijava.Priority;
 import org.scijava.service.Service;
 
 /**
@@ -44,6 +45,10 @@ import org.scijava.service.Service;
  *
  */
 public interface FormatService extends Service {
+  
+  // -- Priority constant --
+  
+  public static final double PRIORITY = Priority.LOW_PRIORITY;
   
   /**
    * Returns a complete list of all suffixes supported within this context. 
@@ -137,16 +142,6 @@ public interface FormatService extends Service {
    *         the {@code Format} was not found.
    */
   <P extends Parser> Format getFormatFromParser(Class<P> parserClass);
-
-  /**
-   * {@code Format} lookup method using the {@code Translator} component.
-   * 
-   * @param writerClass the class of the {@code Translator} component for the 
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
-   */
-  <T extends Translator> Format getFormatFromTranslator(Class<T> translatorClass);
 
   /**
    * {@code Format} lookup method using the {@code Metadata} component.

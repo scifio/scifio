@@ -38,6 +38,7 @@ package ome.scifio;
 
 import ome.scifio.util.SCIFIOMetadataTools;
 
+import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hiner
  */
 public abstract class AbstractTranslator<M extends TypedMetadata, N extends TypedMetadata>
-  extends AbstractHasFormat implements TypedTranslator<M, N> {
+  extends SortablePlugin implements TypedTranslator<M, N> {
   
   // -- Translator API --
   
@@ -71,6 +72,12 @@ public abstract class AbstractTranslator<M extends TypedMetadata, N extends Type
       ((AbstractMetadata)dest).setFiltered(source.isFiltered());
       ((AbstractMetadata)dest).setMetadataOptions(source.getMetadataOptions());
     }
+  }
+  
+  // -- Service API methods --
+  
+  public void initialize() {
+    
   }
   
   // -- Constants --

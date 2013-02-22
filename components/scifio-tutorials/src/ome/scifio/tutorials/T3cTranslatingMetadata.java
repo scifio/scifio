@@ -56,25 +56,25 @@ public class T3cTranslatingMetadata {
     Context context = new Context();
     String sampleImage = "8bit-signed&pixelType=uint8&indexed=true&rgb=3&sizeZ=3&sizeC=3&sizeT=7&sizeY=50.fake";
     
+    // We will get a reference to the SCIFIO context for reuse
+    SCIFIO scifio = context.getService(SCIFIO.class);
+    
+    
     // First let's get a handle on a compatible Format, and parse the sample
     // image's Metadata
-    Format format = context.getService(SCIFIO.class).formats().getFormat(sampleImage);
+    Format format = scifio.formats().getFormat(sampleImage);
     Metadata input = format.createParser().parse(sampleImage);
     
     // Now that we have some Metadata, let's find the MischeviousTranslator we defined
     // below.
     Translator t = null;
     
-    // This method will find a translator that can translate from the target
-    // Metadata to the Format's Metadata type.
-    t = format.findDestTranslator(input);
-    
-    // And this method will do the reverse, returning a translator from the
-    // Format's Metadata to the provided Metadata's type.
-    t = format.findSourceTranslator(input);
-    
-    // Both of these methods involve querying the translators discovered by
-    // the format's context, thus the annotations on the Translator below.
+    // The translators() method in the SCIFIO service returns a TranslatorService
+    // instance, which can be used to find compatible Translators between the
+    // provided metadata types. In this case, since our sample translator 
+    // goes to and from FakeFormat.Metadata, we provide this type as
+    // both parameters to the findTranslator method.
+    t = scifio.translators().findTranslator(input, input);
     
     // To try the MischeviousTranslator out, let's get another copy
     // of this image's Metadata.

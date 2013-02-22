@@ -35,17 +35,36 @@
  */
 package ome.scifio;
 
-import org.scijava.service.Service;
+import java.util.HashMap;
+import java.util.Map;
+
+import ome.scifio.discovery.PluginAttributeService;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
 
 /**
  * @author Mark Hiner
  *
  */
-public interface SCIFIO extends Service {
+@Plugin(type=TranslatorService.class)
+public class DefaultTranslatorService extends AbstractService implements TranslatorService {
+  
+  // -- Parameters --
+  @Parameter
+  private PluginAttributeService attributeService;
+  
+  // -- TranslatorService API Methods --
 
-  InitializeService initializer();
-  
-  FormatService formats();
-  
-  TranslatorService translators();
+  public Translator findTranslator(Metadata source, Metadata dest) {
+    Map<String, String> kvPairs = new HashMap<String,String>();
+    kvPairs.put(Translator.SOURCE, source.getFormatName());
+    kvPairs.put(Translator.DEST, dest.getFormatName());
+    
+    Translator t = attributeService.createInstance(Translator.class, kvPairs, null);
+    
+    return t;
+  }
+
 }

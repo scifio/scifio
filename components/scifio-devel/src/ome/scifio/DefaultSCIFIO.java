@@ -36,7 +36,6 @@
 
 package ome.scifio;
 
-import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -61,7 +60,7 @@ import org.scijava.service.Service;
  * 
  * @author Mark Hiner
  */
-@Plugin(type=Service.class, priority=Priority.LOW_PRIORITY)
+@Plugin(type=Service.class)
 public class DefaultSCIFIO extends AbstractService implements SCIFIO {
   
   // -- Parameters --
@@ -72,6 +71,9 @@ public class DefaultSCIFIO extends AbstractService implements SCIFIO {
   @Parameter
   private FormatService formatService;
   
+  @Parameter
+  private TranslatorService translatorService;
+  
   // -- SCIFIO API Methods --
 
   public InitializeService initializer() {
@@ -80,5 +82,9 @@ public class DefaultSCIFIO extends AbstractService implements SCIFIO {
 
   public FormatService formats() {
     return formatService;
+  }
+  
+  public TranslatorService translators() {
+    return translatorService;
   }
 }

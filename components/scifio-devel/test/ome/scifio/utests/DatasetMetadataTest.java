@@ -46,6 +46,7 @@ import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.Parser;
 import ome.scifio.SCIFIO;
+import ome.scifio.Translator;
 import ome.scifio.fake.FakeFormat;
 
 import org.scijava.Context;
@@ -108,6 +109,7 @@ public class DatasetMetadataTest {
   private void initializeMeta(String id) throws IOException, FormatException {
     Metadata m = p.parse(id);
     dm.reset(dm.getClass());
-    f.findSourceTranslator(dm).translate(m, dm);
+    Translator trans = context.getService(SCIFIO.class).translators().findTranslator(m, dm);
+    trans.translate(m, dm);
   }
 }

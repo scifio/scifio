@@ -36,19 +36,9 @@
 
 package ome.scifio;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.scijava.Context;
 import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ome.scifio.discovery.PluginAttributeService;
-import ome.scifio.discovery.PluginClassService;
-import ome.scifio.util.SCIFIOMetadataTools;
 
 /**
  * Abstract superclass of all SCIFIO components that implement
@@ -78,8 +68,6 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
   private Class<R> readerClass;
   private Class<W> writerClass;
 
-  private final List<Class<? extends Translator>> translatorClassList = new ArrayList<Class<? extends Translator>>();
-
   // -- Constructor --
 
   public AbstractFormat(String formatName, String suffix,
@@ -99,26 +87,6 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
     readerClass = rClass;
     writerClass = wClass;
   }
-  
-  // -- TypedFormat API Methods --
-
-  /*
-   * @see ome.scifio.TypedFormat#findSourceTranslator(ome.scifio.TypedMetadata)
-   */
-  public <N extends TypedMetadata> TypedTranslator<M, N> findSourceTranslator(
-      final N targetMeta) throws FormatException {
-    
-    return this.<M,N>findTranslator(getFormatName(), targetMeta.getFormatName());
-  }
-
-  /*
-   * @see ome.scifio.TypedFormat#findDestTranslator(ome.scifio.TypedMetadata)
-   */
-  public <N extends TypedMetadata> TypedTranslator<N, M> findDestTranslator(
-      final N targetMeta) throws FormatException {
-    
-    return this.<N,M>findTranslator(targetMeta.getFormatName(), getFormatName());
-  }
 
   // -- Format API Methods --
 
@@ -130,11 +98,6 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
   /* @see Format#getSuffixes() */
   public String[] getSuffixes() {
     return suffixes.clone();
-  }
-
-  /* @see Format#getTranslatorclassList() */
-  public List<Class<? extends Translator>> getTranslatorClassList() {
-    return translatorClassList;
   }
   
   /*
@@ -207,44 +170,7 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
     return writerClass;
   }
   
-  /*
-   * @see ome.scifio.Format#findSourceTranslator(ome.scifio.Metadata)
-   */
-  public Translator findSourceTranslator(Metadata targetMeta)
-       throws FormatException {
-    return this.findSourceTranslator(SCIFIOMetadataTools.<TypedMetadata>castMeta(targetMeta));
-  }
-  
-  /*
-   * @see ome.scifio.Format#findDestTranslator(ome.scifio.Metadata)
-   */
-  public Translator findDestTranslator(Metadata targetMeta)
-      throws FormatException {
-    return this.findDestTranslator(SCIFIOMetadataTools.<TypedMetadata>castMeta(targetMeta));
-  }
-  
-  // -- Contextual API Methods --
-  
-  /*
-   * @see org.scijava.AbstractContextual#setContext(org.scijava.Context)
-   */
-  public void setContext(Context context) {
-    super.setContext(context);
-    translatorClassList.addAll(findTranslatorClassList());
-  }
-  
   // -- Helper Methods --
-
-  /**
-   * Populates the list of Translators associated with this Format
-   */
-  private List<Class<? extends Translator>> findTranslatorClassList() {
-    Map<String, String> kvPairs = new HashMap<String,String>();
-    kvPairs.put(Translator.SOURCE, metadataClass.getName());
-    kvPairs.put(Translator.DEST, metadataClass.getName());
-    
-    return getContext().getService(PluginClassService.class).getPluginClasses(Translator.class, null, kvPairs);
-  }
 
   /**
    * Returns a SCIFIO component from its object. Also sets its context based
@@ -278,22 +204,5 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
     } catch (IllegalAccessException e) {
       throw new FormatException(e);
     }
-  }
-  
-  /*
-   * Returns a translator object translating from metaIn to metaOut
-   */
-  private <S extends TypedMetadata, T extends TypedMetadata> TypedTranslator<S, T> 
-  findTranslator(final String inFormat, final String outFormat) throws FormatException {
-    Map<String, String> kvPairs = new HashMap<String,String>();
-    kvPairs.put(Translator.SOURCE, inFormat);
-    kvPairs.put(Translator.DEST, outFormat);
-    
-    @SuppressWarnings("unchecked")
-    TypedTranslator<S, T> trans = 
-        (TypedTranslator<S, T>) getContext().getService(PluginAttributeService.class).
-        createInstance(Translator.class, kvPairs, null);
-    
-    return trans;
   }
 }

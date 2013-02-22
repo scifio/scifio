@@ -291,8 +291,8 @@ public abstract class AbstractWriter<M extends TypedMetadata>
    */
   public void setMetadata(final M meta) throws FormatException {
     this.metadata = meta;
-    Translator t =
-        getFormat().findSourceTranslator(dMeta);
+    Translator t = getContext().getService(SCIFIO.class).
+                    translators().findTranslator(meta, dMeta);
     t.translate(meta, dMeta);
   }
 

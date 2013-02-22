@@ -132,21 +132,22 @@ public class DefaultInitializeService extends AbstractService implements Initial
       throws FormatException, IOException {
     Metadata destMeta = null;
     
+    final SCIFIO scifio = getContext().getService(SCIFIO.class);
+    
     final Format sFormat = sourceMeta.getFormat();
-    final Format dFormat = getContext().getService(SCIFIO.class).formats().getFormat(destination, false);
+    final Format dFormat = scifio.formats().getFormat(destination, false);
 
     // if dest is a different format than source, translate..
     if (sFormat == dFormat) {
       // otherwise we can directly cast, since they are the same types
       destMeta = castMeta(sourceMeta, destMeta);
       
-    } else if (dFormat.findDestTranslator(sourceMeta) != null) {
+    } else if (scifio.translators().findTranslator(sourceMeta, destMeta) != null) {
       // Can directly translate between these formats
       
       destMeta = dFormat.createMetadata();
-      
-      dFormat.findDestTranslator(sourceMeta).translate(sourceMeta, destMeta);
-      
+      scifio.translators().findTranslator(sourceMeta, destMeta)
+            .translate(sourceMeta, destMeta);
     } else {
       // Have to translate to and from DatasetMetadata
       destMeta = dFormat.createMetadata();
@@ -155,8 +156,8 @@ public class DefaultInitializeService extends AbstractService implements Initial
       // but that also requires having a general way to instantiate DatasetMetadata
       //FIXME: get rid of DatasetMetadata class
       final DatasetMetadata transMeta = pluginService.createInstancesOfType(DatasetMetadata.class).get(0);
-      final Translator transToCore = sFormat.findSourceTranslator(transMeta);
-      final Translator transFromCore = dFormat.findDestTranslator(transMeta);
+      final Translator transToCore = scifio.translators().findTranslator(sourceMeta, transMeta);
+      final Translator transFromCore = scifio.translators().findTranslator(transMeta, destMeta);
 //TODO unnecessary?     transMeta.setSource(new RandomAccessInputStream(getContext(), source));
       transToCore.translate(sourceMeta, transMeta);
       transFromCore.translate(transMeta, destMeta);

@@ -50,8 +50,8 @@ import net.imglib2.meta.Axes;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.MetadataLevel;
+import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
-import ome.scifio.TypedTranslator;
 import ome.scifio.ics.ICSFormat;
 import ome.xml.meta.FilterMetadata;
 import ome.xml.meta.IMetadata;
@@ -106,21 +106,16 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     FilterMetadata filter = new FilterMetadata(store, source.isFiltered());
     filter.createRoot();
     
+    //FIXME: no more datasetmetadata
     DatasetMetadata dMeta = getContext().getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
-    ICSFormat ics = (ICSFormat) getFormat();
 
-    TypedTranslator<ICSFormat.Metadata, DatasetMetadata> trans = null;
-    try {
-      trans = ics.findSourceTranslator(dMeta);
-    } catch (FormatException e) {
-      throw new RuntimeException(e);
-    }
+    Translator trans = getContext().getService(SCIFIO.class).translators().findTranslator(source, dMeta);
+    
     trans.translate(source, dMeta);
     
     getContext().getService(OMEXMLMetadataService.class).populatePixels((MetadataStore)filter, dMeta, true);
     
     store.setImageName(imageName, 0);
-
     
     // populate date data
     

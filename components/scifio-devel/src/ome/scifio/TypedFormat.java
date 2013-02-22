@@ -106,42 +106,4 @@ public interface TypedFormat<M extends TypedMetadata, C extends Checker,
    * @see ome.scifio.Format#getWriterClass()
    */
   Class<W> getWriterClass();
-  
-  /**
-   * Finds a {@code Translator} implementation capable of translating from this
-   * {@code Format} to a target {@code Metadata} type.
-   * <p>
-   * NB: this method requires an instance of the target {@code Metadata} to
-   * avoid type erasure issues that would arise with {@code Class<N>}. If
-   * needed, the {@link #createMetadata()} method is a convenient way of
-   * providing such an instance.
-   * </p>
-   * 
-   * @param <N> the {@code Metadata} type of the destination metadata.
-   * @param targetMeta an instance of the destination metadata.
-   * @return A {@code Translator} instance capable of translating from this 
-   *         {@code Formats} metadata to the target.
-   * @see {@link #createMetadata()}
-   */
-  <N extends TypedMetadata> TypedTranslator<M, N> findSourceTranslator(N targetMeta)
-    throws FormatException;
-
-  /**
-   * Finds a {@code Translator} implementation capable of translating from a
-   * target {@code Metadata} type to this {@code Format}.
-   * <p>
-   * NB: this method requires an instance of the target {@code Metadata} to
-   * avoid type erasure issues that would arise with {@code Class<N>}. If
-   * needed, the {@link #createMetadata()} method is a convenient way of
-   * providing such an instance.
-   * </p>
-   * 
-   * @param <N> the {@code Metadata} type of the source metadata.
-   * @param targetMeta an instance of the source metadata.
-   * @return A {@code Translator} instance capable of translating from this 
-   *         {@code Formats} metadata to the target.
-   * @see {@link #createMetadata()}
-   */
-  <N extends TypedMetadata> TypedTranslator<N, M> findDestTranslator(N targetMeta)
-    throws FormatException;
 }

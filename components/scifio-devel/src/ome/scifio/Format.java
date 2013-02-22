@@ -35,10 +35,7 @@
  */
 package ome.scifio;
 
-import java.util.List;
-
 import org.scijava.Contextual;
-import org.scijava.Prioritized;
 
 /**
  * Interface for all SCIFIO formats.
@@ -60,7 +57,7 @@ import org.scijava.Prioritized;
  * @author Mark Hiner
  * @see ome.scifio.SCIFIO#getFormatFromClass(Class);
  */
-public interface Format extends ScifioPlugin, Contextual, Prioritized {
+public interface Format extends ScifioPlugin, Contextual {
   
   // -- Format API methods --
 
@@ -69,13 +66,6 @@ public interface Format extends ScifioPlugin, Contextual, Prioritized {
 
   /** Gets the default file suffixes for this file format. */
   String[] getSuffixes();
-  
-  /** 
-   * Gets a list of all Trnaslator classes capable of translating to or from
-   * {@code Metadata} of this {@code Format}.
-   * @return
-   */
-  List<Class<? extends Translator>> getTranslatorClassList();
   
   /**
    * Casts the provided {@link ome.scifio.Metadata} instance to the generic
@@ -177,26 +167,4 @@ public interface Format extends ScifioPlugin, Contextual, Prioritized {
    * @return
    */
   Class<? extends Writer> getWriterClass();
-  
-  /**
-   * Returns a translator capable of translating from this format's Metadata
-   * to the target Metadata class. (this format's Metadata is the source)
-   * 
-   * @param <N>
-   * @param targetMeta
-   * @return
-   */
-  Translator findSourceTranslator(Metadata targetMeta)
-    throws FormatException;
-
-  /**
-   * Returns a translator capable of translating from the target Metadata to this
-   * format's Metadata (this Format's metadata is the destination).
-   * 
-   * @param <N>
-   * @param targetMeta
-   * @return
-   */
-  Translator findDestTranslator(Metadata targetMeta)
-    throws FormatException;
 }

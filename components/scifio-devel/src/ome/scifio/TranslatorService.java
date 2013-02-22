@@ -38,14 +38,20 @@ package ome.scifio;
 import org.scijava.service.Service;
 
 /**
+ * Service for finding appropriate Translators to convert between Metadata types.
+ * 
  * @author Mark Hiner
  *
  */
-public interface SCIFIO extends Service {
-
-  InitializeService initializer();
+public interface TranslatorService extends Service {
   
-  FormatService formats();
-  
-  TranslatorService translators();
+  /**
+   * Returns a translator capable of translating from the source Metadata to
+   * the dest Metadata type, or null if no such Translator exists.
+   * 
+   * @param <N>
+   * @param targetMeta
+   * @return
+   */
+  Translator findTranslator(Metadata source, Metadata dest);
 }
