@@ -462,14 +462,17 @@ public class FormatTools {
    * to the given rasterized index value.
    */
   public static int[] getZCTCoords(Reader reader, int imageIndex, int planeIndex) {
-    DatasetMetadata core = reader.getDatasetMetadata();
-    int zSize = core.getAxisLength(imageIndex, Axes.Z);
-    int cSize = core.getEffectiveSizeC(imageIndex);
-    int tSize = core.getAxisLength(imageIndex, Axes.TIME);
-    int numPlanes = core.getPlaneCount(imageIndex);
+    return getZCTCoords(reader.getDatasetMetadata(), imageIndex, planeIndex);
+  }
+  
+  public static int[] getZCTCoords(DatasetMetadata meta, int imageIndex, int planeIndex) {
+    int zSize = meta.getAxisLength(imageIndex, Axes.Z);
+    int cSize = meta.getEffectiveSizeC(imageIndex);
+    int tSize = meta.getAxisLength(imageIndex, Axes.TIME);
+    int numPlanes = meta.getPlaneCount(imageIndex);
 
     return getZCTCoords(
-      findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, numPlanes, imageIndex, planeIndex);
+      findDimensionOrder(meta, imageIndex), zSize, cSize, tSize, numPlanes, imageIndex, planeIndex);
   }
   
   /**
