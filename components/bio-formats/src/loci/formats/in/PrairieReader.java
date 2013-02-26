@@ -47,9 +47,11 @@ import loci.formats.in.PrairieMetadata.Sequence;
 import loci.formats.meta.MetadataStore;
 import loci.formats.tiff.IFD;
 import loci.formats.tiff.TiffParser;
+import loci.legacy.context.LegacyContext;
 import ome.scifio.common.Constants;
 import ome.scifio.common.DateTools;
 import ome.scifio.io.Location;
+import ome.scifio.io.LocationService;
 import ome.scifio.xml.XMLTools;
 import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
@@ -145,7 +147,7 @@ public class PrairieReader extends FormatReader {
   public boolean isThisType(String name, boolean open) {
     if (!open) return false; // not allowed to touch the file system
 
-    Location file = new Location(name).getAbsoluteFile();
+    Location file = new Location(LegacyContext.get(), name).getAbsoluteFile();
     Location parent = file.getParentFile();
 
     String prefix = file.getName();
@@ -160,10 +162,10 @@ public class PrairieReader extends FormatReader {
 
     // check for appropriately named XML file
 
-    Location xml = new Location(parent, prefix + ".xml");
+    Location xml = new Location(LegacyContext.get(), parent, prefix + ".xml");
     while (!xml.exists() && prefix.indexOf("_") != -1) {
       prefix = prefix.substring(0, prefix.lastIndexOf("_"));
-      xml = new Location(parent, prefix + ".xml");
+      xml = new Location(LegacyContext.get(), parent, prefix + ".xml");
     }
 
     boolean validXML = false;
@@ -319,11 +321,11 @@ public class PrairieReader extends FormatReader {
     tiff = new TiffReader();
 
     if (checkSuffix(id, XML_SUFFIX)) {
-      xmlFile = new Location(id);
+      xmlFile = new Location(LegacyContext.get(), id);
       findCFGFile();
     }
     else if (checkSuffix(id, CFG_SUFFIX)) {
-      cfgFile = new Location(id);
+      cfgFile = new Location(LegacyContext.get(), id);
       findXMLFile();
     }
     else {
@@ -751,10 +753,11 @@ public class PrairieReader extends FormatReader {
     final File file = new File(currentId).getAbsoluteFile();
     final File parent = file.getParentFile();
     final String[] listing = file.exists() ? parent.list() :
-      Location.getIdMap().keySet().toArray(new String[0]);
+      LegacyContext.get().getService(LocationService.class)
+                .getIdMap().keySet().toArray(new String[0]);
     for (final String name : listing) {
       if (checkSuffix(name, suffix)) {
-        return new Location(new File(parent, name));
+        return new Location(LegacyContext.get(), new File(parent, name));
       }
     }
     return null;
