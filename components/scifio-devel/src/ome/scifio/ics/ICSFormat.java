@@ -1142,15 +1142,15 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     {
       checkParams(imageIndex, planeIndex, plane.getBytes(), x, y, w, h);
       
-      int rgbChannels = cMeta.getRGBChannelCount(imageIndex);
+      int rgbChannels = dMeta.getRGBChannelCount(imageIndex);
 
-      int sizeZ = cMeta.getAxisLength(imageIndex, Axes.Z);
-      int sizeC = cMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+      int sizeZ = dMeta.getAxisLength(imageIndex, Axes.Z);
+      int sizeC = dMeta.getAxisLength(imageIndex, Axes.CHANNEL);
       if (rgbChannels <= sizeC) {
         sizeC /= rgbChannels;
       }
       
-      int sizeT = cMeta.getAxisLength(imageIndex, Axes.TIME);
+      int sizeT = dMeta.getAxisLength(imageIndex, Axes.TIME);
       int planes = sizeZ * sizeC * sizeT;
 
       int[] coords =
