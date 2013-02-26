@@ -108,6 +108,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     
     //FIXME: no more datasetmetadata
     DatasetMetadata dMeta = getContext().getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
+    dMeta.setSource(source.getSource());
 
     Translator trans = getContext().getService(SCIFIO.class).translators().findTranslator(source, dMeta);
     

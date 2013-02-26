@@ -156,6 +156,8 @@ public class DefaultInitializeService extends AbstractService implements Initial
       // but that also requires having a general way to instantiate DatasetMetadata
       //FIXME: get rid of DatasetMetadata class
       final DatasetMetadata transMeta = pluginService.createInstancesOfType(DatasetMetadata.class).get(0);
+      transMeta.setSource(sourceMeta.getSource());
+      
       final Translator transToCore = scifio.translators().findTranslator(sourceMeta, transMeta);
       final Translator transFromCore = scifio.translators().findTranslator(transMeta, destMeta);
 //TODO unnecessary?     transMeta.setSource(new RandomAccessInputStream(getContext(), source));

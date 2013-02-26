@@ -382,6 +382,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     metadata = meta;
     //FIXME: get rid of datasetmetadata class
     dMeta = getContext().getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
+    dMeta.setSource(meta.getSource());
+    
     if(in == null) setSource(meta.getSource());
     
     Translator t = getContext().getService(SCIFIO.class).
