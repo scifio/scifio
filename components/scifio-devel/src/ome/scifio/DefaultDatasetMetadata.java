@@ -66,10 +66,4 @@ public class DefaultDatasetMetadata extends AbstractDatasetMetadata
   public DefaultDatasetMetadata(final DatasetMetadata copy) {
     super(copy);
   }
-  
-  // -- Metadata API Methods --
-  
-  public String getFormatName() {
-    return DatasetMetadata.FORMAT_NAME;
-  }
 }

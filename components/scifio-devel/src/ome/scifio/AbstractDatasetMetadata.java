@@ -429,6 +429,10 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
     datasetMeta = new Hashtable<String, Object>();
     imageMeta = new ArrayList<ImageMetadata>();
   }
+  
+  public String getFormatName() {
+    return DatasetMetadata.FORMAT_NAME;
+  }
 
   /*
   public boolean isSingleFile() {
