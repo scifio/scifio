@@ -101,7 +101,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   /** Constructs a reader with the given context */
   public AbstractReader(Class<P> planeClass)
   {
-    init();
     this.planeClass = planeClass;
   }
 
@@ -481,11 +480,5 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    */
   public Class<P> getPlaneClass() {
     return planeClass;
-  }
-
-  // -- AbstractReader Methods --
-
-  private void init() {
-    dMeta = new DefaultDatasetMetadata();
   }
 }
