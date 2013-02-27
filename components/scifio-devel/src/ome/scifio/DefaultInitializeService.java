@@ -130,12 +130,12 @@ public class DefaultInitializeService extends AbstractService implements Initial
    */
   public Writer initializeWriter(Metadata sourceMeta, String destination)
       throws FormatException, IOException {
-    Metadata destMeta = null;
     
     final SCIFIO scifio = getContext().getService(SCIFIO.class);
     
     final Format sFormat = sourceMeta.getFormat();
     final Format dFormat = scifio.formats().getFormat(destination, false);
+    Metadata destMeta = dFormat.createMetadata();
 
     // if dest is a different format than source, translate..
     if (sFormat == dFormat) {
