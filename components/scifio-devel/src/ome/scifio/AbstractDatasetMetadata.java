@@ -210,7 +210,7 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
    * @return The axis/plane count
    */
   public int getAxisCount(final int imageIndex) {
-    return imageMeta.get(imageIndex).getAxisLengths().length;
+    return imageMeta.get(imageIndex).getAxesLengths().length;
   }
 
   /**

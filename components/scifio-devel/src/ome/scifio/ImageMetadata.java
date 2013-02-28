@@ -159,15 +159,6 @@ public interface ImageMetadata {
   /** Returns the name of each subdimension of C. */
   String[] getChannelTypes();
 
-  /** 
-   * Returns the Axes types for this image. 
-   * Order is implied by ordering within this array.
-   */
-  AxisType[] getAxisTypes();
-
-  /** Returns the lengths of each axis. Order is parallel of axisTypes. */
-  int[] getAxisLengths();
-
   /**
    * Returns true if we are confident that the
    * dimension order is correct.

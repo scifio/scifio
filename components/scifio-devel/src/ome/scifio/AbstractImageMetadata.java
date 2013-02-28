@@ -158,8 +158,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   public AbstractImageMetadata(ImageMetadata copy) {
     imageMetadata = (Hashtable<String, Object>) copy.getImageMetadata().clone();
     
-    axisLengths = copy.getAxisLengths().clone();
-    axisTypes = copy.getAxisTypes().clone();
+    axisLengths = copy.getAxesLengths().clone();
+    axisTypes = copy.getAxes().clone();
     bitsPerPixel = copy.getBitsPerPixel();
     cLengths = copy.getChannelLengths().clone();
     cTypes = copy.getChannelTypes().clone();
@@ -320,11 +320,11 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     return cTypes;
   }
 
-  public AxisType[] getAxisTypes() {
+  public AxisType[] getAxes() {
     return axisTypes;
   }
 
-  public int[] getAxisLengths() {
+  public int[] getAxesLengths() {
     return axisLengths;
   }
 
@@ -390,7 +390,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @return Type of the desired plane.
    */
   public AxisType getAxisType(final int planeIndex) {
-    return getAxisTypes()[planeIndex];
+    return getAxes()[planeIndex];
   }
 
   /**
@@ -402,7 +402,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public int getAxisLength(final int planeIndex) {
     //TOOD magic number
-    return planeIndex == -1 ? 0 : getAxisLengths()[planeIndex];
+    return planeIndex == -1 ? 0 : getAxesLengths()[planeIndex];
   }
   
   /**
@@ -429,41 +429,10 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @return The index of the desired axis or -1 if not found.
    */
   public int getAxisIndex(final AxisType type) {
-    for (int i = 0; i < getAxisTypes().length; i++) {
-      if (getAxisTypes()[i] == type) return i;
+    for (int i = 0; i < getAxes().length; i++) {
+      if (getAxes()[i] == type) return i;
     }
     return -1; // throw exception?
-  }
-  
-  /**
-   * Returns an array of the types for axes associated with
-   * the specified image index. Order is consistent with the
-   * axis length (int) array returned by 
-   * {@link DatasetMetadata#getAxesLengths(int)}.
-   * </br></br>
-   * AxisType order is sorted and represents order within the image.
-   * 
-   * @param imageIndex - index for multi-image sources
-   * @return An array of AxisTypes in the order they appear.
-   */
-  public AxisType[] getAxes() {
-    AxisType[] axes = getAxisTypes();
-    return Arrays.copyOf(axes, axes.length);
-  }
-  
-  /**
-   * Returns an array of the lengths for axes associated with
-   * the specified image index.
-   * 
-   * Ordering is consistent with the 
-   * AxisType array returned by {@link DatasetMetadata#getAxes(int)}.
-   * 
-   * @param imageIndex
-   * @return
-   */
-  public int[] getAxesLengths() {
-    int[] lengths = getAxisLengths();
-    return Arrays.copyOf(lengths, lengths.length);
   }
 
   /**
@@ -489,8 +458,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public void addAxis(final AxisType type, final int value)
   {
-    final int[] axisLengths = getAxisLengths();
-    final AxisType[] axisTypes = getAxisTypes();
+    final int[] axisLengths = getAxesLengths();
+    final AxisType[] axisTypes = getAxes();
     final int[] tmpAxisLength = new int[axisLengths.length + 1];
     final AxisType[] tmpAxisTypes = new AxisType[axisTypes.length + 1];
 

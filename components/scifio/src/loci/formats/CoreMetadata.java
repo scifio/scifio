@@ -222,7 +222,7 @@ public class CoreMetadata implements Cloneable {
   }
   
   public CoreMetadata(ome.scifio.ImageMetadata imgMeta) {
-    AxisType[] axes = imgMeta.getAxisTypes();
+    AxisType[] axes = imgMeta.getAxes();
     int xIndex = -1, yIndex = -1, cIndex = -1, tIndex = -1, zIndex = -1;
     
     for(int i = 0; i < axes.length; i++) {
@@ -243,11 +243,11 @@ public class CoreMetadata implements Cloneable {
       }
     }
     
-    sizeX = xIndex == -1 ? 1 : imgMeta.getAxisLengths()[xIndex];
-    sizeY = yIndex == -1 ? 1 : imgMeta.getAxisLengths()[yIndex];
-    sizeZ = zIndex == -1 ? 1 : imgMeta.getAxisLengths()[zIndex];
-    sizeC = cIndex == -1 ? 1 : imgMeta.getAxisLengths()[cIndex];
-    sizeT = tIndex == -1 ? 1 : imgMeta.getAxisLengths()[tIndex];
+    sizeX = xIndex == -1 ? 1 : imgMeta.getAxesLengths()[xIndex];
+    sizeY = yIndex == -1 ? 1 : imgMeta.getAxesLengths()[yIndex];
+    sizeZ = zIndex == -1 ? 1 : imgMeta.getAxesLengths()[zIndex];
+    sizeC = cIndex == -1 ? 1 : imgMeta.getAxesLengths()[cIndex];
+    sizeT = tIndex == -1 ? 1 : imgMeta.getAxesLengths()[tIndex];
     thumbSizeX = imgMeta.getThumbSizeX();
     thumbSizeY = imgMeta.getThumbSizeY();
     pixelType = imgMeta.getPixelType();
@@ -255,7 +255,7 @@ public class CoreMetadata implements Cloneable {
     imageCount = imgMeta.getPlaneCount();
     cLengths = imgMeta.getChannelLengths();
     cTypes = imgMeta.getChannelTypes();
-    dimensionOrder = ome.scifio.util.FormatTools.findDimensionOrder(imgMeta.getAxisTypes());
+    dimensionOrder = ome.scifio.util.FormatTools.findDimensionOrder(imgMeta.getAxes());
     orderCertain = imgMeta.isOrderCertain();
     rgb = imgMeta.isRGB();
     littleEndian = imgMeta.isLittleEndian();
