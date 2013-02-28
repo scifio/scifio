@@ -48,6 +48,17 @@ package loci.legacy.adapter;
  * This is a low level wrapping specificaiton, thus the only
  * provided API is for retrieval of the wrapped object.
  * </p>
+ * <p>
+ * NB: Best practice is to wrap a weak reference to the actual
+ * wrapped object. This will prevent unreachable strong reference
+ * cycles from avoiding garbage collection.
+ * </p>
+ * <p>
+ * NB: if your wrapper has a constructor that would creates a new
+ * wrapped object anonymously, create a strong reference within
+ * the scope of the constructor and map it to the object
+ * being constructed (via getModern or getLegacy).
+ * </p>
  * 
  * @author Mark Hiner
  *

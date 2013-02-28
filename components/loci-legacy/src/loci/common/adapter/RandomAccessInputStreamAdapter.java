@@ -37,6 +37,7 @@
 package loci.common.adapter;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
 import loci.common.RandomAccessInputStream;
@@ -90,7 +91,7 @@ public class RandomAccessInputStreamAdapter
     // -- Fields --
     
     /* Legacy RandomAccessInputStream for delegation */
-    private RandomAccessInputStream rais;
+    private WeakReference<RandomAccessInputStream> rais;
     
     // -- Constructors --
    
@@ -134,14 +135,14 @@ public class RandomAccessInputStreamAdapter
     /** Wrapper constructor. */
     public LegacyWrapper(RandomAccessInputStream rais) {
       super(LegacyContext.get());
-      this.rais = rais;
+      this.rais = new WeakReference<RandomAccessInputStream>(rais);
     }
     
     // -- Wrapper API Methods --
 
     /* @see Wrapper#unwrap() */
     public RandomAccessInputStream unwrap() {
-      return rais;
+      return rais.get();
     }
     
     // -- RandomAccessStream API --
@@ -152,7 +153,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#seek(long)
      */
     public void seek(long pos) throws IOException {
-      rais.seek(pos);
+      unwrap().seek(pos);
     }
 
     /**
@@ -161,7 +162,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#length()
      */
     public long length() throws IOException {
-      return rais.length();
+      return unwrap().length();
     }
 
     /**
@@ -170,7 +171,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#setLength(long)
      */
     public void setLength(long newLength) throws IOException {
-      rais.setLength(newLength);
+      unwrap().setLength(newLength);
     }
 
     /**
@@ -179,7 +180,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#getFilePointer()
      */
     public long getFilePointer() throws IOException {
-      return rais.getFilePointer();
+      return unwrap().getFilePointer();
     }
 
     /**
@@ -187,7 +188,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#close()
      */
     public void close() throws IOException {
-      rais.close();
+      unwrap().close();
     }
 
     /**
@@ -195,7 +196,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#order(boolean)
      */
     public void order(boolean little) {
-      rais.order(little);
+      unwrap().order(little);
     }
 
     /**
@@ -203,7 +204,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#isLittleEndian()
      */
     public boolean isLittleEndian() {
-      return rais.isLittleEndian();
+      return unwrap().isLittleEndian();
     }
 
     /**
@@ -213,7 +214,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readString(java.lang.String)
      */
     public String readString(String lastChars) throws IOException {
-      return rais.readString(lastChars);
+      return unwrap().readString(lastChars);
     }
 
     /**
@@ -223,7 +224,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#findString(java.lang.String[])
      */
     public String findString(String... terminators) throws IOException {
-      return rais.findString(terminators);
+      return unwrap().findString(terminators);
     }
 
     /**
@@ -236,7 +237,7 @@ public class RandomAccessInputStreamAdapter
     public String findString(boolean saveString, String... terminators)
       throws IOException
     {
-      return rais.findString(saveString, terminators);
+      return unwrap().findString(saveString, terminators);
     }
 
     /**
@@ -249,7 +250,7 @@ public class RandomAccessInputStreamAdapter
     public String findString(int blockSize, String... terminators)
       throws IOException
     {
-      return rais.findString(blockSize, terminators);
+      return unwrap().findString(blockSize, terminators);
     }
 
     /**
@@ -263,7 +264,7 @@ public class RandomAccessInputStreamAdapter
     public String findString(boolean saveString, int blockSize,
       String... terminators) throws IOException
     {
-      return rais.findString(saveString, blockSize, terminators);
+      return unwrap().findString(saveString, blockSize, terminators);
     }
 
     /**
@@ -272,7 +273,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readBoolean()
      */
     public boolean readBoolean() throws IOException {
-      return rais.readBoolean();
+      return unwrap().readBoolean();
     }
 
     /**
@@ -281,7 +282,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readByte()
      */
     public byte readByte() throws IOException {
-      return rais.readByte();
+      return unwrap().readByte();
     }
 
     /**
@@ -290,7 +291,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readChar()
      */
     public char readChar() throws IOException {
-      return rais.readChar();
+      return unwrap().readChar();
     }
 
     /**
@@ -299,7 +300,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readDouble()
      */
     public double readDouble() throws IOException {
-      return rais.readDouble();
+      return unwrap().readDouble();
     }
 
     /**
@@ -308,7 +309,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readFloat()
      */
     public float readFloat() throws IOException {
-      return rais.readFloat();
+      return unwrap().readFloat();
     }
 
     /**
@@ -317,7 +318,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readInt()
      */
     public int readInt() throws IOException {
-      return rais.readInt();
+      return unwrap().readInt();
     }
 
     /**
@@ -326,7 +327,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readLine()
      */
     public String readLine() throws IOException {
-      return rais.readLine();
+      return unwrap().readLine();
     }
 
     /**
@@ -335,7 +336,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readCString()
      */
     public String readCString() throws IOException {
-      return rais.readCString();
+      return unwrap().readCString();
     }
 
     /**
@@ -345,7 +346,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readString(int)
      */
     public String readString(int n) throws IOException {
-      return rais.readString(n);
+      return unwrap().readString(n);
     }
 
     /**
@@ -354,7 +355,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readLong()
      */
     public long readLong() throws IOException {
-      return rais.readLong();
+      return unwrap().readLong();
     }
 
     /**
@@ -363,7 +364,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readShort()
      */
     public short readShort() throws IOException {
-      return rais.readShort();
+      return unwrap().readShort();
     }
 
     /**
@@ -372,7 +373,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readUnsignedByte()
      */
     public int readUnsignedByte() throws IOException {
-      return rais.readUnsignedByte();
+      return unwrap().readUnsignedByte();
     }
 
     /**
@@ -381,7 +382,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readUnsignedShort()
      */
     public int readUnsignedShort() throws IOException {
-      return rais.readUnsignedShort();
+      return unwrap().readUnsignedShort();
     }
 
     /**
@@ -390,7 +391,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readUTF()
      */
     public String readUTF() throws IOException {
-      return rais.readUTF();
+      return unwrap().readUTF();
     }
 
     /**
@@ -400,7 +401,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#read(byte[])
      */
     public int read(byte[] array) throws IOException {
-      return rais.read(array);
+      return unwrap().read(array);
     }
 
     /**
@@ -412,7 +413,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#read(byte[], int, int)
      */
     public int read(byte[] array, int offset, int n) throws IOException {
-      return rais.read(array, offset, n);
+      return unwrap().read(array, offset, n);
     }
 
     /**
@@ -422,7 +423,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#read(java.nio.ByteBuffer)
      */
     public int read(ByteBuffer buf) throws IOException {
-      return rais.read(buf);
+      return unwrap().read(buf);
     }
 
     /**
@@ -434,7 +435,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#read(java.nio.ByteBuffer, int, int)
      */
     public int read(ByteBuffer buf, int offset, int n) throws IOException {
-      return rais.read(buf, offset, n);
+      return unwrap().read(buf, offset, n);
     }
 
     /**
@@ -443,7 +444,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readFully(byte[])
      */
     public void readFully(byte[] array) throws IOException {
-      rais.readFully(array);
+      unwrap().readFully(array);
     }
 
     /**
@@ -454,7 +455,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#readFully(byte[], int, int)
      */
     public void readFully(byte[] array, int offset, int n) throws IOException {
-      rais.readFully(array, offset, n);
+      unwrap().readFully(array, offset, n);
     }
 
     /**
@@ -463,7 +464,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#read()
      */
     public int read() throws IOException {
-      return rais.read();
+      return unwrap().read();
     }
 
     /**
@@ -472,7 +473,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#available()
      */
     public int available() throws IOException {
-      return rais.available();
+      return unwrap().available();
     }
 
     /**
@@ -480,7 +481,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#mark(int)
      */
     public void mark(int readLimit) {
-      rais.mark(readLimit);
+      unwrap().mark(readLimit);
     }
 
     /**
@@ -488,7 +489,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#markSupported()
      */
     public boolean markSupported() {
-      return rais.markSupported();
+      return unwrap().markSupported();
     }
 
     /**
@@ -496,24 +497,7 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#reset()
      */
     public void reset() throws IOException {
-      rais.reset();
-    }
-
-    /**
-     * @param obj
-     * @return
-     * @see loci.common.RandomAccessInputStream#equals(java.lang.Object)
-     */
-    public boolean equals(Object obj) {
-      return rais.equals(obj);
-    }
-
-    /**
-     * @return
-     * @see loci.common.RandomAccessInputStream#hashCode()
-     */
-    public int hashCode() {
-      return rais.hashCode();
+      unwrap().reset();
     }
 
     /**
@@ -523,7 +507,7 @@ public class RandomAccessInputStreamAdapter
      * @see java.io.InputStream#skip(long)
      */
     public long skip(long arg0) throws IOException {
-      return rais.skip(arg0);
+      return unwrap().skip(arg0);
     }
 
     /**
@@ -533,17 +517,32 @@ public class RandomAccessInputStreamAdapter
      * @see loci.common.RandomAccessInputStream#skipBytes(int)
      */
     public int skipBytes(int n) throws IOException {
-      return rais.skipBytes(n);
+      return unwrap().skipBytes(n);
     }
 
-    /**
-     * @return
-     * @see loci.common.RandomAccessInputStream#toString()
-     */
-    public String toString() {
-      return rais.toString();
-    }
-        
-    // -- Object delegators --
+    // -- Object delegators --//    /**
+//    /**
+//     * @return
+//     * @see loci.common.RandomAccessInputStream#toString()
+//     */
+//    public String toString() {
+//      return unwrap().toString();
+//    }
+//    /**
+//     * @param obj
+//     * @return
+//     * @see loci.common.RandomAccessInputStream#equals(java.lang.Object)
+//     */
+//    public boolean equals(Object obj) {
+//      return unwrap().equals(obj);
+//    }
+//
+//    /**
+//     * @return
+//     * @see loci.common.RandomAccessInputStream#hashCode()
+//     */
+//    public int hashCode() {
+//      return unwrap().hashCode();
+//    }        
   }
 }

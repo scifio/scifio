@@ -36,6 +36,8 @@
 
 package loci.common.adapter;
 
+import java.lang.ref.WeakReference;
+
 import loci.common.enumeration.CodedEnum;
 import loci.legacy.adapter.AbstractLegacyAdapter;
 import loci.legacy.adapter.Wrapper;
@@ -87,43 +89,43 @@ public class CodedEnumAdapter extends
     
     // -- Fields --
     
-    private CodedEnum ce;
+    private WeakReference<CodedEnum> ce;
     
     // -- Constructor --
     
     public LegacyWrapper(CodedEnum ce) {
-      this.ce = ce;
+      this.ce = new WeakReference<CodedEnum>(ce);
     }
     
     // -- Wrapper API Methods --
     
     /* @see Wrapper#unwrap() */
     public CodedEnum unwrap() {
-      return ce;
+      return ce.get();
     }
     
     // -- CodedEnum API Methods --
     
     public int getCode() {
-      return ce.getCode();
+      return unwrap().getCode();
     }
     
-    // -- Object delegators --
-
-    @Override
-    public boolean equals(Object obj) {
-      return ce.equals(obj);
-    }
-    
-    @Override
-    public int hashCode() {
-      return ce.hashCode();
-    }
-    
-    @Override
-    public String toString() {
-      return ce.toString();
-    }
+//    // -- Object delegators --
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//      return unwrap().equals(obj);
+//    }
+//    
+//    @Override
+//    public int hashCode() {
+//      return unwrap().hashCode();
+//    }
+//    
+//    @Override
+//    public String toString() {
+//      return unwrap().toString();
+//    }
   }
   
   /**
@@ -140,42 +142,42 @@ public class CodedEnumAdapter extends
     
     // -- Fields --
 
-    private ome.scifio.enumeration.CodedEnum ce;
+    private WeakReference<ome.scifio.enumeration.CodedEnum> ce;
 
     // -- Constructor --
 
     public ModernWrapper(ome.scifio.enumeration.CodedEnum ce) {
-      this.ce = ce;
+      this.ce = new WeakReference<ome.scifio.enumeration.CodedEnum>(ce);
     }
     
     // -- Wrapper API Methods --
     
     /* @see Wrapper#unwrap() */
     public ome.scifio.enumeration.CodedEnum unwrap() {
-      return ce;
+      return ce.get();
     }
     
     // -- CodedEnum API Methods --
 
     public int getCode() {
-      return ce.getCode();
+      return unwrap().getCode();
     }
     
-    // -- Object delegators --
-
-    @Override
-    public boolean equals(Object obj) {
-      return ce.equals(obj);
-    }
-    
-    @Override
-    public int hashCode() {
-      return ce.hashCode();
-    }
-    
-    @Override
-    public String toString() {
-      return ce.toString();
-    }
+//    // -- Object delegators --
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//      return unwrap().equals(obj);
+//    }
+//    
+//    @Override
+//    public int hashCode() {
+//      return unwrap().hashCode();
+//    }
+//    
+//    @Override
+//    public String toString() {
+//      return unwrap().toString();
+//    }
   }
 }

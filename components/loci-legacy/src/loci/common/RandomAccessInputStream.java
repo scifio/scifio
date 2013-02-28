@@ -39,9 +39,11 @@ package loci.common;
 import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
 import loci.common.adapter.IRandomAccessAdapter;
+import loci.common.adapter.RandomAccessInputStreamAdapter;
 import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
 import loci.legacy.context.LegacyContext;
@@ -67,7 +69,7 @@ public class RandomAccessInputStream extends InputStream
 
   // -- Fields --
 
-  private ome.scifio.io.RandomAccessInputStream rais;
+  private WeakReference<ome.scifio.io.RandomAccessInputStream> rais;
 
   // -- Constructors --
 
@@ -76,12 +78,23 @@ public class RandomAccessInputStream extends InputStream
    * around the given file.
    */
   public RandomAccessInputStream(String file) throws IOException {
-    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), file);
+    ome.scifio.io.RandomAccessInputStream stream =
+        new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), file);
+
+    AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).mapModern(stream, this);
+    
+    rais = new WeakReference<ome.scifio.io.RandomAccessInputStream>(stream);
   }
 
   /** Constructs a random access stream around the given handle. */
   public RandomAccessInputStream(IRandomAccess handle) throws IOException {
-    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle));
+    ome.scifio.io.RandomAccessInputStream stream =
+        new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(),
+            AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle));
+
+    AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).mapModern(stream, this);
+    
+    rais = new WeakReference<ome.scifio.io.RandomAccessInputStream>(stream);
   }
 
   /**
@@ -91,24 +104,35 @@ public class RandomAccessInputStream extends InputStream
   public RandomAccessInputStream(IRandomAccess handle, String file)
     throws IOException
   {
-    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle), file);
+    ome.scifio.io.RandomAccessInputStream stream  =
+        new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(),
+        AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle), file);
+
+    AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).mapModern(stream, this);
+    
+    rais = new WeakReference<ome.scifio.io.RandomAccessInputStream>(stream);
   }
 
   /** Constructs a random access stream around the given byte array. */
   public RandomAccessInputStream(byte[] array) throws IOException {
-    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), array);
+    ome.scifio.io.RandomAccessInputStream stream  =
+        new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), array);
+
+    AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).mapModern(stream, this);
+    
+    rais = new WeakReference<ome.scifio.io.RandomAccessInputStream>(stream);
   }
   
   /** Wrapper constructor. */
   public RandomAccessInputStream(ome.scifio.io.RandomAccessInputStream rais) {
-    this.rais = rais;
+    this.rais = new WeakReference<ome.scifio.io.RandomAccessInputStream>(rais);
   }
   
   // -- Wrapper API Methods --
   
   /* @see Wrapper#unwrap() */
   public ome.scifio.io.RandomAccessInputStream unwrap() {
-    return rais;
+    return rais.get();
   }
 
   // -- RandomAccessInputStream API methods --
@@ -119,17 +143,17 @@ public class RandomAccessInputStream extends InputStream
    * @see loci.common.Constants#ENCODING
    */
   public void setEncoding(String encoding) {
-    rais.setEncoding(encoding);
+    unwrap().setEncoding(encoding);
   }
 
   /** Seeks to the given offset within the stream. */
   public void seek(long pos) throws IOException {
-    rais.seek(pos);
+    unwrap().seek(pos);
   }
 
   /** Gets the number of bytes in the file. */
   public long length() throws IOException {
-    return rais.length();
+    return unwrap().length();
   }
 
   /**
@@ -141,27 +165,27 @@ public class RandomAccessInputStream extends InputStream
    * Passing in a negative value will reset the length to the stream's real length.
    */
   public void setLength(long newLength) throws IOException {
-    rais.setLength(newLength);
+    unwrap().setLength(newLength);
   }
 
   /** Gets the current (absolute) file pointer. */
   public long getFilePointer() throws IOException {
-    return rais.getFilePointer();
+    return unwrap().getFilePointer();
   }
 
   /** Closes the streams. */
   public void close() throws IOException {
-    rais.close();
+    unwrap().close();
   }
 
   /** Sets the endianness of the stream. */
   public void order(boolean little) {
-    rais.order(little);
+    unwrap().order(little);
   }
 
   /** Gets the endianness of the stream. */
   public boolean isLittleEndian() {
-    return rais.isLittleEndian();
+    return unwrap().isLittleEndian();
   }
 
   /**
@@ -170,7 +194,7 @@ public class RandomAccessInputStream extends InputStream
    * @see #findString(String...)
    */
   public String readString(String lastChars) throws IOException {
-    return rais.readString(lastChars);
+    return unwrap().readString(lastChars);
   }
 
   /**
@@ -183,7 +207,7 @@ public class RandomAccessInputStream extends InputStream
    *   terminating sequence is found.
    */
   public String findString(String... terminators) throws IOException {
-    return rais.findString(terminators);
+    return unwrap().findString(terminators);
   }
 
   /**
@@ -204,7 +228,7 @@ public class RandomAccessInputStream extends InputStream
   public String findString(boolean saveString, String... terminators)
     throws IOException
   {
-    return rais.findString(saveString, terminators);
+    return unwrap().findString(saveString, terminators);
   }
 
   /**
@@ -221,7 +245,7 @@ public class RandomAccessInputStream extends InputStream
   public String findString(int blockSize, String... terminators)
     throws IOException
   {
-    return rais.findString(blockSize, terminators);
+    return unwrap().findString(blockSize, terminators);
   }
 
   /**
@@ -243,158 +267,158 @@ public class RandomAccessInputStream extends InputStream
   public String findString(boolean saveString, int blockSize,
     String... terminators) throws IOException
   {
-    return rais.findString(saveString, blockSize, terminators);
+    return unwrap().findString(saveString, blockSize, terminators);
   }
 
   // -- DataInput API methods --
 
   /** Read an input byte and return true if the byte is nonzero. */
   public boolean readBoolean() throws IOException {
-    return rais.readBoolean();
+    return unwrap().readBoolean();
   }
 
   /** Read one byte and return it. */
   public byte readByte() throws IOException {
-    return rais.readByte();
+    return unwrap().readByte();
   }
 
   /** Read an input char. */
   public char readChar() throws IOException {
-    return rais.readChar();
+    return unwrap().readChar();
   }
 
   /** Read eight bytes and return a double value. */
   public double readDouble() throws IOException {
-    return rais.readDouble();
+    return unwrap().readDouble();
   }
 
   /** Read four bytes and return a float value. */
   public float readFloat() throws IOException {
-    return rais.readFloat();
+    return unwrap().readFloat();
   }
 
   /** Read four input bytes and return an int value. */
   public int readInt() throws IOException {
-    return rais.readInt();
+    return unwrap().readInt();
   }
 
   /** Read the next line of text from the input stream. */
   public String readLine() throws IOException {
-    return rais.readLine();
+    return unwrap().readLine();
   }
 
   /** Read a string of arbitrary length, terminated by a null char. */
   public String readCString() throws IOException {
-    return rais.readCString();
+    return unwrap().readCString();
   }
 
   /** Read a string of up to length n. */
   public String readString(int n) throws IOException {
-    return rais.readString(n);
+    return unwrap().readString(n);
   }
 
   /** Read eight input bytes and return a long value. */
   public long readLong() throws IOException {
-    return rais.readLong();
+    return unwrap().readLong();
   }
 
   /** Read two input bytes and return a short value. */
   public short readShort() throws IOException {
-    return rais.readShort();
+    return unwrap().readShort();
   }
 
   /** Read an input byte and zero extend it appropriately. */
   public int readUnsignedByte() throws IOException {
-    return rais.readUnsignedByte();
+    return unwrap().readUnsignedByte();
   }
 
   /** Read two bytes and return an int in the range 0 through 65535. */
   public int readUnsignedShort() throws IOException {
-    return rais.readUnsignedShort();
+    return unwrap().readUnsignedShort();
   }
 
   /** Read a string that has been encoded using a modified UTF-8 format. */
   public String readUTF() throws IOException {
-    return rais.readUTF();
+    return unwrap().readUTF();
   }
 
   /** Skip n bytes within the stream. */
   public int skipBytes(int n) throws IOException {
-    return rais.skipBytes(n);
+    return unwrap().skipBytes(n);
   }
 
   /** Read bytes from the stream into the given array. */
   public int read(byte[] array) throws IOException {
-    return rais.read(array);
+    return unwrap().read(array);
   }
 
   /**
    * Read n bytes from the stream into the given array at the specified offset.
    */
   public int read(byte[] array, int offset, int n) throws IOException {
-    return rais.read(array, offset, n);
+    return unwrap().read(array, offset, n);
   }
 
   /** Read bytes from the stream into the given buffer. */
   public int read(ByteBuffer buf) throws IOException {
-    return rais.read(buf);
+    return unwrap().read(buf);
   }
 
   /**
    * Read n bytes from the stream into the given buffer at the specified offset.
    */
   public int read(ByteBuffer buf, int offset, int n) throws IOException {
-    return rais.read(buf, offset, n);
+    return unwrap().read(buf, offset, n);
   }
 
   /** Read bytes from the stream into the given array. */
   public void readFully(byte[] array) throws IOException {
-    rais.readFully(array);
+    unwrap().readFully(array);
   }
 
   /**
    * Read n bytes from the stream into the given array at the specified offset.
    */
   public void readFully(byte[] array, int offset, int n) throws IOException {
-    rais.readFully(array, offset, n);
+    unwrap().readFully(array, offset, n);
   }
 
   // -- InputStream API methods --
 
   public int read() throws IOException {
-    return rais.read();
+    return unwrap().read();
   }
 
   public int available() throws IOException {
-    return rais.available();
+    return unwrap().available();
   }
 
   public void mark(int readLimit) {
-    rais.mark(readLimit);
+    unwrap().mark(readLimit);
   }
 
   public boolean markSupported() {
-    return rais.markSupported();
+    return unwrap().markSupported();
   }
 
   public void reset() throws IOException {
-    rais.reset();
+    unwrap().reset();
   }
 
-  // -- Object delegators --
-
-  @Override
-  public boolean equals(Object obj) {
-    return rais.equals(obj);
-  }
-  
-  @Override
-  public int hashCode() {
-    return rais.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return rais.toString();
-  }
+//  // -- Object delegators --
+//
+//  @Override
+//  public boolean equals(Object obj) {
+//    return unwrap().equals(obj);
+//  }
+//  
+//  @Override
+//  public int hashCode() {
+//    return unwrap().hashCode();
+//  }
+//  
+//  @Override
+//  public String toString() {
+//    return unwrap().toString();
+//  }
 }

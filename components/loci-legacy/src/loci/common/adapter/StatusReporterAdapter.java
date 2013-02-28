@@ -36,10 +36,13 @@
 
 package loci.common.adapter;
 
+import java.lang.ref.WeakReference;
+
 import loci.common.StatusEvent;
 import loci.common.StatusListener;
 import loci.common.StatusReporter;
 import loci.legacy.adapter.AbstractLegacyAdapter;
+import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
 
 /**
@@ -89,53 +92,51 @@ public class StatusReporterAdapter extends
     
     // -- Fields --
     
-    private StatusReporter sr;
-    
-    private StatusListenerAdapter adapter = new StatusListenerAdapter();
+    private WeakReference<StatusReporter> sr;
     
     // -- Constructor --
     
     public LegacyWrapper(StatusReporter sr) {
-      this.sr = sr;
+      this.sr = new WeakReference<StatusReporter>(sr);
     }
     
     // -- Wrapper API Methods --
     
     /* @see Wrapper#unwrap() */
     public StatusReporter unwrap() {
-      return sr;
+      return sr.get();
     }
     
     // -- StatusReporter API Methods --
 
     public void addStatusListener(ome.scifio.common.StatusListener l) {
-      sr.addStatusListener(adapter.getLegacy(l));
+      unwrap().addStatusListener(AdapterTools.getAdapter(StatusListenerAdapter.class).getLegacy(l));
     }
 
     public void removeStatusListener(ome.scifio.common.StatusListener l) {
-      sr.removeStatusListener(adapter.getLegacy(l));
+      unwrap().removeStatusListener(AdapterTools.getAdapter(StatusListenerAdapter.class).getLegacy(l));
     }
 
     public void notifyListeners(ome.scifio.common.StatusEvent e) {
-      sr.notifyListeners(new StatusEvent(e));
+      unwrap().notifyListeners(new StatusEvent(e));
     }
     
-    // -- Object delegators --
-
-    @Override
-    public boolean equals(Object obj) {
-      return sr.equals(obj);
-    }
-    
-    @Override
-    public int hashCode() {
-      return sr.hashCode();
-    }
-    
-    @Override
-    public String toString() {
-      return sr.toString();
-    }
+//    // -- Object delegators --
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//      return unwrap().equals(obj);
+//    }
+//    
+//    @Override
+//    public int hashCode() {
+//      return unwrap().hashCode();
+//    }
+//    
+//    @Override
+//    public String toString() {
+//      return unwrap().toString();
+//    }
   }
   
   /**
@@ -153,52 +154,50 @@ public class StatusReporterAdapter extends
     
     // -- Fields --
 
-    private ome.scifio.common.StatusReporter sr;
+    private WeakReference<ome.scifio.common.StatusReporter> sr;
     
-    private StatusListenerAdapter adapter = new StatusListenerAdapter();
-
     // -- Constructor --
 
     public ModernWrapper(ome.scifio.common.StatusReporter sr) {
-      this.sr = sr;
+      this.sr = new WeakReference<ome.scifio.common.StatusReporter>(sr);
     }
     
     // -- Wrapper API Methods --
     
     /* @see wrapper#unwrap() */
     public ome.scifio.common.StatusReporter unwrap() {
-      return sr;
+      return sr.get();
     }
     
     // -- StatusReporter API Methods --
 
     public void addStatusListener(StatusListener l) {
-      sr.addStatusListener(adapter.getModern(l));
+      unwrap().addStatusListener(AdapterTools.getAdapter(StatusListenerAdapter.class).getModern(l));
     }
 
     public void removeStatusListener(StatusListener l) {
-      sr.removeStatusListener(adapter.getModern(l));
+      unwrap().removeStatusListener(AdapterTools.getAdapter(StatusListenerAdapter.class).getModern(l));
     }
 
     public void notifyListeners(StatusEvent e) {
-      sr.notifyListeners(e.getEvent());
+      unwrap().notifyListeners(e.getEvent());
     }
     
     // -- Object delegators --
-
-    @Override
-    public boolean equals(Object obj) {
-      return sr.equals(obj);
-    }
-    
-    @Override
-    public int hashCode() {
-      return sr.hashCode();
-    }
-    
-    @Override
-    public String toString() {
-      return sr.toString();
-    }
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//      return unwrap().equals(obj);
+//    }
+//    
+//    @Override
+//    public int hashCode() {
+//      return unwrap().hashCode();
+//    }
+//    
+//    @Override
+//    public String toString() {
+//      return unwrap().toString();
+//    }
   }
 }

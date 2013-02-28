@@ -36,6 +36,8 @@
 
 package loci.common.adapter;
 
+import java.lang.ref.WeakReference;
+
 import loci.common.StatusEvent;
 import loci.common.StatusListener;
 import loci.legacy.adapter.AbstractLegacyAdapter;
@@ -88,43 +90,43 @@ public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener,
     
     // -- Fields --
     
-    private StatusListener sl;
+    private WeakReference<StatusListener> sl;
     
     // -- Constructor --
     
     public LegacyWrapper(StatusListener sl) {
-      this.sl = sl;
+      this.sl = new WeakReference<StatusListener>(sl);
     }
     
     // -- Wrapper API Methods --
     
     /* @see Wrapper#unwrap() */
     public StatusListener unwrap() {
-      return sl;
+      return sl.get();
     }
     
     // -- StatusListener API --
 
     public void statusUpdated(ome.scifio.common.StatusEvent e) {
-      sl.statusUpdated(new StatusEvent(e));
+      unwrap().statusUpdated(new StatusEvent(e));
     }
     
-    // -- Object delegators --
-
-    @Override
-    public boolean equals(Object obj) {
-      return sl.equals(obj);
-    }
-    
-    @Override
-    public int hashCode() {
-      return sl.hashCode();
-    }
-    
-    @Override
-    public String toString() {
-      return sl.toString();
-    }
+//    // -- Object delegators --
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//      return unwrap().equals(obj);
+//    }
+//    
+//    @Override
+//    public int hashCode() {
+//      return unwrap().hashCode();
+//    }
+//    
+//    @Override
+//    public String toString() {
+//      return unwrap().toString();
+//    }
   }
   
   /**
@@ -141,42 +143,42 @@ public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener,
     
     // -- Fields --
 
-    private ome.scifio.common.StatusListener sl;
+    private WeakReference<ome.scifio.common.StatusListener> sl;
 
     // -- Constructor --
 
     public ModernWrapper(ome.scifio.common.StatusListener sl) {
-      this.sl = sl;
+      this.sl = new WeakReference<ome.scifio.common.StatusListener>(sl);
     }
     
     // -- Wrapper API Methods --
     
     /* @see Wrapper#unwrap() */
     public ome.scifio.common.StatusListener unwrap() {
-      return sl;
+      return sl.get();
     }
 
     // -- StatusListener API --
 
     public void statusUpdated(loci.common.StatusEvent e) {
-      sl.statusUpdated(e.getEvent());
+      unwrap().statusUpdated(e.getEvent());
     }
     
-    // -- Object delegators --
-
-    @Override
-    public boolean equals(Object obj) {
-      return sl.equals(obj);
-    }
-    
-    @Override
-    public int hashCode() {
-      return sl.hashCode();
-    }
-    
-    @Override
-    public String toString() {
-      return sl.toString();
-    }
+//    // -- Object delegators --
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//      return unwrap().equals(obj);
+//    }
+//    
+//    @Override
+//    public int hashCode() {
+//      return unwrap().hashCode();
+//    }
+//    
+//    @Override
+//    public String toString() {
+//      return unwrap().toString();
+//    }
   }
 }

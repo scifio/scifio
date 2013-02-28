@@ -37,6 +37,7 @@
 package loci.common.adapter;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -91,203 +92,203 @@ public class IRandomAccessAdapter extends
     
     // -- Fields --
     
-    private IRandomAccess ira;
+    private WeakReference<IRandomAccess> ira;
     
     // -- Constructor --
     
     public LegacyWrapper(IRandomAccess ira) {
-      this.ira = ira;
+      this.ira = new WeakReference<IRandomAccess>(ira);
     }
     
     // -- Wrapper API Methods --
     
     /* @see Wrapper#unwrap() */
     public IRandomAccess unwrap() {
-      return ira;
+      return ira.get();
     }
     
     // -- IRandomAccess API --
 
     public void close() throws IOException {
-      ira.close();
+      unwrap().close();
     }
 
     public long getFilePointer() throws IOException {
-      return ira.getFilePointer();
+      return unwrap().getFilePointer();
     }
 
     public long length() throws IOException {
-      return ira.length();
+      return unwrap().length();
     }
 
     public ByteOrder getOrder() {
-      return ira.getOrder();
+      return unwrap().getOrder();
     }
 
     public int read(byte[] b) throws IOException {
-      return ira.read(b);
+      return unwrap().read(b);
     }
 
     public int read(byte[] b, int off, int len) throws IOException {
-      return ira.read(b, off, len);
+      return unwrap().read(b, off, len);
     }
 
     public int read(ByteBuffer buffer) throws IOException {
-      return ira.read(buffer);
+      return unwrap().read(buffer);
     }
 
     public int read(ByteBuffer buffer, int offset, int len) throws IOException {
-      return ira.read(buffer, offset, len);
+      return unwrap().read(buffer, offset, len);
     }
 
     public boolean readBoolean() throws IOException {
-      return ira.readBoolean();
+      return unwrap().readBoolean();
     }
 
     public byte readByte() throws IOException {
-      return ira.readByte();
+      return unwrap().readByte();
     }
 
     public char readChar() throws IOException {
-      return ira.readChar();
+      return unwrap().readChar();
     }
 
     public double readDouble() throws IOException {
-      return ira.readDouble();
+      return unwrap().readDouble();
     }
 
     public float readFloat() throws IOException {
-      return ira.readFloat();
+      return unwrap().readFloat();
     }
 
     public void readFully(byte[] b, int off, int len) throws IOException {
-      ira.readFully(b, off, len);
+      unwrap().readFully(b, off, len);
     }
 
     public void readFully(byte[] b) throws IOException {
-      ira.readFully(b);
+      unwrap().readFully(b);
     }
 
     public int readInt() throws IOException {
-      return ira.readInt();
+      return unwrap().readInt();
     }
 
     public String readLine() throws IOException {
-      return ira.readLine();
+      return unwrap().readLine();
     }
 
     public long readLong() throws IOException {
-      return ira.readLong();
+      return unwrap().readLong();
     }
 
     public short readShort() throws IOException {
-      return ira.readShort();
+      return unwrap().readShort();
     }
 
     public String readUTF() throws IOException {
-      return ira.readUTF();
+      return unwrap().readUTF();
     }
 
     public int readUnsignedByte() throws IOException {
-      return ira.readUnsignedByte();
+      return unwrap().readUnsignedByte();
     }
 
     public int readUnsignedShort() throws IOException {
-      return ira.readUnsignedShort();
+      return unwrap().readUnsignedShort();
     }
 
     public void setOrder(ByteOrder order) {
-      ira.setOrder(order);
+      unwrap().setOrder(order);
     }
 
     public void seek(long pos) throws IOException {
-      ira.seek(pos);
+      unwrap().seek(pos);
     }
 
     public int skipBytes(int n) throws IOException {
-      return ira.skipBytes(n);
+      return unwrap().skipBytes(n);
     }
 
     public void write(byte[] b, int off, int len) throws IOException {
-      ira.write(b, off, len);
+      unwrap().write(b, off, len);
     }
 
     public void write(byte[] b) throws IOException {
-      ira.write(b);
+      unwrap().write(b);
     }
 
     public void write(ByteBuffer buf) throws IOException {
-      ira.write(buf);
+      unwrap().write(buf);
     }
 
     public void write(ByteBuffer buf, int off, int len) throws IOException {
-      ira.write(buf, off, len);
+      unwrap().write(buf, off, len);
     }
 
     public void write(int b) throws IOException {
-      ira.write(b);
+      unwrap().write(b);
     }
 
     public void writeBoolean(boolean v) throws IOException {
-      ira.writeBoolean(v);
+      unwrap().writeBoolean(v);
     }
 
     public void writeByte(int v) throws IOException {
-      ira.writeByte(v);
+      unwrap().writeByte(v);
     }
 
     public void writeBytes(String s) throws IOException {
-      ira.writeBytes(s);
+      unwrap().writeBytes(s);
     }
 
     public void writeChar(int v) throws IOException {
-      ira.writeChar(v);
+      unwrap().writeChar(v);
     }
 
     public void writeChars(String s) throws IOException {
-      ira.writeChars(s);
+      unwrap().writeChars(s);
     }
 
     public void writeDouble(double v) throws IOException {
-      ira.writeDouble(v);
+      unwrap().writeDouble(v);
     }
 
     public void writeFloat(float v) throws IOException {
-      ira.writeFloat(v);
+      unwrap().writeFloat(v);
     }
 
     public void writeInt(int v) throws IOException {
-      ira.writeInt(v);
+      unwrap().writeInt(v);
     }
 
     public void writeLong(long v) throws IOException {
-      ira.writeLong(v);
+      unwrap().writeLong(v);
     }
 
     public void writeShort(int v) throws IOException {
-      ira.writeShort(v);
+      unwrap().writeShort(v);
     }
 
     public void writeUTF(String s) throws IOException {
-      ira.writeUTF(s);
+      unwrap().writeUTF(s);
     }
     
-    // -- Object delegators --
-
-    @Override
-    public boolean equals(Object obj) {
-      return ira.equals(obj);
-    }
-    
-    @Override
-    public int hashCode() {
-      return ira.hashCode();
-    }
-    
-    @Override
-    public String toString() {
-      return ira.toString();
-    }
+//    // -- Object delegators --
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//      return unwrap().equals(obj);
+//    }
+//    
+//    @Override
+//    public int hashCode() {
+//      return unwrap().hashCode();
+//    }
+//    
+//    @Override
+//    public String toString() {
+//      return unwrap().toString();
+//    }
   }
   
   /**
@@ -304,202 +305,202 @@ public class IRandomAccessAdapter extends
     
     // -- Fields --
 
-    private ome.scifio.io.IRandomAccess ira;
+    private WeakReference<ome.scifio.io.IRandomAccess> ira;
 
     // -- Constructor --
 
     public ModernWrapper(ome.scifio.io.IRandomAccess ira) {
-      this.ira = ira;
+      this.ira = new WeakReference<ome.scifio.io.IRandomAccess>(ira);
     }
     
     // -- Wrapper API Methods --
 
     /* @see Wrapper#unwrap() */
     public ome.scifio.io.IRandomAccess unwrap() {
-      return ira;
+      return ira.get();
     }
 
     // -- IRandomAccess API Methods --
 
     public boolean readBoolean() throws IOException {
-      return ira.readBoolean();
+      return unwrap().readBoolean();
     }
 
     public byte readByte() throws IOException {
-      return ira.readByte();
+      return unwrap().readByte();
     }
 
     public char readChar() throws IOException {
-      return ira.readChar();
+      return unwrap().readChar();
     }
 
     public double readDouble() throws IOException {
-      return ira.readDouble();
+      return unwrap().readDouble();
     }
 
     public float readFloat() throws IOException {
-      return ira.readFloat();
+      return unwrap().readFloat();
     }
 
     public void readFully(byte[] b) throws IOException {
-      ira.readFully(b);
+      unwrap().readFully(b);
     }
 
     public void readFully(byte[] b, int off, int len) throws IOException {
-      ira.readFully(b, off, len);
+      unwrap().readFully(b, off, len);
     }
 
     public int readInt() throws IOException {
-      return ira.readInt();
+      return unwrap().readInt();
     }
 
     public String readLine() throws IOException {
-      return ira.readLine();
+      return unwrap().readLine();
     }
 
     public long readLong() throws IOException {
-      return ira.readLong();
+      return unwrap().readLong();
     }
 
     public short readShort() throws IOException {
-      return ira.readShort();
+      return unwrap().readShort();
     }
 
     public String readUTF() throws IOException {
-      return ira.readUTF();
+      return unwrap().readUTF();
     }
 
     public int readUnsignedByte() throws IOException {
-      return ira.readUnsignedByte();
+      return unwrap().readUnsignedByte();
     }
 
     public int readUnsignedShort() throws IOException {
-      return ira.readUnsignedShort();
+      return unwrap().readUnsignedShort();
     }
 
     public int skipBytes(int n) throws IOException {
-      return ira.skipBytes(n);
+      return unwrap().skipBytes(n);
     }
 
     public void write(int b) throws IOException {
-      ira.write(b);
+      unwrap().write(b);
     }
 
     public void write(byte[] b) throws IOException {
-      ira.write(b);
+      unwrap().write(b);
     }
 
     public void write(byte[] b, int off, int len) throws IOException {
-      ira.write(b, off, len);
+      unwrap().write(b, off, len);
     }
 
     public void writeBoolean(boolean v) throws IOException {
-      ira.writeBoolean(v);
+      unwrap().writeBoolean(v);
     }
 
     public void writeByte(int v) throws IOException {
-      ira.writeByte(v);
+      unwrap().writeByte(v);
     }
 
     public void writeBytes(String s) throws IOException {
-      ira.writeBytes(s);
+      unwrap().writeBytes(s);
     }
 
     public void writeChar(int v) throws IOException {
-      ira.writeChar(v);
+      unwrap().writeChar(v);
     }
 
     public void writeChars(String s) throws IOException {
-      ira.writeChars(s);
+      unwrap().writeChars(s);
     }
 
     public void writeDouble(double v) throws IOException {
-      ira.writeDouble(v);
+      unwrap().writeDouble(v);
     }
 
     public void writeFloat(float v) throws IOException {
-      ira.writeFloat(v);
+      unwrap().writeFloat(v);
     }
 
     public void writeInt(int v) throws IOException {
-      ira.writeInt(v);
+      unwrap().writeInt(v);
     }
 
     public void writeLong(long v) throws IOException {
-      ira.writeLong(v);
+      unwrap().writeLong(v);
     }
 
     public void writeShort(int v) throws IOException {
-      ira.writeShort(v);
+      unwrap().writeShort(v);
     }
 
     public void writeUTF(String s) throws IOException {
-      ira.writeUTF(s);
+      unwrap().writeUTF(s);
     }
 
     public void close() throws IOException {
-      ira.close();
+      unwrap().close();
     }
 
     public long getFilePointer() throws IOException {
-      return ira.getFilePointer();
+      return unwrap().getFilePointer();
     }
 
     public long length() throws IOException {
-      return ira.length();
+      return unwrap().length();
     }
 
     public ByteOrder getOrder() {
-      return ira.getOrder();
+      return unwrap().getOrder();
     }
 
     public void setOrder(ByteOrder order) {
-      ira.setOrder(order);
+      unwrap().setOrder(order);
     }
 
     public int read(byte[] b) throws IOException {
-      return ira.read(b);
+      return unwrap().read(b);
     }
 
     public int read(byte[] b, int off, int len) throws IOException {
-      return ira.read(b, off, len);
+      return unwrap().read(b, off, len);
     }
 
     public int read(ByteBuffer buffer) throws IOException {
-      return ira.read(buffer);
+      return unwrap().read(buffer);
     }
 
     public int read(ByteBuffer buffer, int offset, int len) throws IOException {
-      return ira.read(buffer, offset, len);
+      return unwrap().read(buffer, offset, len);
     }
 
     public void seek(long pos) throws IOException {
-      ira.seek(pos);
+      unwrap().seek(pos);
     }
 
     public void write(ByteBuffer buf) throws IOException {
-      ira.write(buf);
+      unwrap().write(buf);
     }
 
     public void write(ByteBuffer buf, int off, int len) throws IOException {
-      ira.write(buf, off, len);
+      unwrap().write(buf, off, len);
     }
     
-    // -- Object delegators --
-
-    @Override
-    public boolean equals(Object obj) {
-      return ira.equals(obj);
-    }
-    
-    @Override
-    public int hashCode() {
-      return ira.hashCode();
-    }
-    
-    @Override
-    public String toString() {
-      return ira.toString();
-    }
+//    // -- Object delegators --
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//      return unwrap().equals(obj);
+//    }
+//    
+//    @Override
+//    public int hashCode() {
+//      return unwrap().hashCode();
+//    }
+//    
+//    @Override
+//    public String toString() {
+//      return unwrap().toString();
+//    }
   }
 }

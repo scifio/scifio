@@ -35,10 +35,13 @@
  */
 package loci.formats;
 
+import java.lang.ref.WeakReference;
 import java.util.Hashtable;
 
 import ome.scifio.AbstractImageMetadata;
+import ome.scifio.ImageMetadata;
 
+import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import loci.legacy.adapter.Wrapper;
 
@@ -52,23 +55,27 @@ import loci.legacy.adapter.Wrapper;
  * @author Mark Hiner
  *
  */
-public class CoreMetadataWrapper extends AbstractImageMetadata implements Wrapper<CoreMetadata> 
+public class CoreMetadataWrapper extends AbstractImageMetadata
+  implements Wrapper<CoreMetadata>, ImageMetadata
 {
 
   // -- Fields --
   
-  private CoreMetadata coreMeta;
+  private WeakReference<CoreMetadata> coreMeta;
+  
+  private int[] lengths = new int[5];
+  private AxisType[] types = new AxisType[5];
   
   // -- Constructor --
   
   public CoreMetadataWrapper(CoreMetadata cMeta) {
-    coreMeta = cMeta;
+    coreMeta = new WeakReference<CoreMetadata>(cMeta);
   }
   
   // -- Wrapper API Methods --
 
   public CoreMetadata unwrap() {
-    return coreMeta;
+    return coreMeta.get();
   }
   
   // -- CoreImageMetadata methods --
@@ -76,83 +83,83 @@ public class CoreMetadataWrapper extends AbstractImageMetadata implements Wrappe
   // -- Setters -- 
 
   public void setThumbSizeX(final int thumbSizeX) {
-    coreMeta.thumbSizeX = thumbSizeX;
+    unwrap().thumbSizeX = thumbSizeX;
   }
 
   public void setThumbSizeY(final int thumbSizeY) {
-    coreMeta.thumbSizeY = thumbSizeY;
+    unwrap().thumbSizeY = thumbSizeY;
   }
 
   public void setPixelType(final int pixelType) {
-    coreMeta.pixelType = pixelType;
+    unwrap().pixelType = pixelType;
   }
 
   public void setBitsPerPixel(final int bitsPerPixel) {
-    coreMeta.bitsPerPixel = bitsPerPixel;
+    unwrap().bitsPerPixel = bitsPerPixel;
   }
 
   public void setcLengths(final int[] cLengths) {
-    coreMeta.cLengths = cLengths;
+    unwrap().cLengths = cLengths;
   }
 
   public void setcTypes(final String[] cTypes) {
-    coreMeta.cTypes = cTypes;
+    unwrap().cTypes = cTypes;
   }
 
   public void setOrderCertain(final boolean orderCertain) {
-    coreMeta.orderCertain = orderCertain;
+    unwrap().orderCertain = orderCertain;
   }
 
   public void setRGB(final boolean rgb) {
-    coreMeta.rgb = rgb;
+    unwrap().rgb = rgb;
   }
 
   public void setLittleEndian(final boolean littleEndian) {
-    coreMeta.littleEndian = littleEndian;
+    unwrap().littleEndian = littleEndian;
   }
 
   public void setInterleaved(final boolean interleaved) {
-    coreMeta.interleaved = interleaved;
+    unwrap().interleaved = interleaved;
   }
 
   public void setIndexed(final boolean indexed) {
-    coreMeta.indexed = indexed;
+    unwrap().indexed = indexed;
   }
 
   public void setFalseColor(final boolean falseColor) {
-    coreMeta.falseColor = falseColor;
+    unwrap().falseColor = falseColor;
   }
 
   public void setMetadataComplete(final boolean metadataComplete) {
-    coreMeta.metadataComplete = metadataComplete;
+    unwrap().metadataComplete = metadataComplete;
   }
 
   public void setImageMetadata(final Hashtable<String, Object> imageMetadata) {
-    coreMeta.seriesMetadata = imageMetadata;
+    unwrap().seriesMetadata = imageMetadata;
   }
 
   public void setThumbnail(final boolean thumbnail) {
-    coreMeta.thumbnail = thumbnail;
+    unwrap().thumbnail = thumbnail;
   }
 
   public void setAxisTypes(final AxisType[] axisTypes) {
-    coreMeta.dimensionOrder = 
+    unwrap().dimensionOrder = 
         ome.scifio.util.FormatTools.findDimensionOrder(axisTypes);
   }
 
   public void setAxisLengths(final int[] axisLengths) {
     
     for(int i = 0; i < 5; i++) {
-      switch(coreMeta.dimensionOrder.charAt(i)) {
-      case 'X': coreMeta.sizeX = axisLengths[i];
+      switch(unwrap().dimensionOrder.charAt(i)) {
+      case 'X': unwrap().sizeX = axisLengths[i];
         break;
-      case 'Y': coreMeta.sizeY = axisLengths[i];
+      case 'Y': unwrap().sizeY = axisLengths[i];
         break;
-      case 'Z': coreMeta.sizeZ = axisLengths[i];
+      case 'Z': unwrap().sizeZ = axisLengths[i];
         break;
-      case 'C': coreMeta.sizeC = axisLengths[i];
+      case 'C': unwrap().sizeC = axisLengths[i];
         break;
-      case 'T': coreMeta.sizeT = axisLengths[i];
+      case 'T': unwrap().sizeT = axisLengths[i];
         break;
       default:
       }
@@ -161,15 +168,15 @@ public class CoreMetadataWrapper extends AbstractImageMetadata implements Wrappe
 
   public void setAxisLength(final AxisType axis, final int length) {
     switch(axis.getLabel().toUpperCase().charAt(0)) {
-    case 'X': coreMeta.sizeX = length;
+    case 'X': unwrap().sizeX = length;
       break;
-    case 'Y': coreMeta.sizeY = length;
+    case 'Y': unwrap().sizeY = length;
       break;
-    case 'Z': coreMeta.sizeZ = length;
+    case 'Z': unwrap().sizeZ = length;
       break;
-    case 'C': coreMeta.sizeC = length;
+    case 'C': unwrap().sizeC = length;
       break;
-    case 'T': coreMeta.sizeT = length;
+    case 'T': unwrap().sizeT = length;
       break;
     default:
     }
@@ -178,25 +185,25 @@ public class CoreMetadataWrapper extends AbstractImageMetadata implements Wrappe
   public void setAxisType(final int index, final AxisType axis) {
     String order = "";
     
-    for(int i = 0; i < coreMeta.dimensionOrder.length(); i++) {
+    for(int i = 0; i < unwrap().dimensionOrder.length(); i++) {
       if(i == index) {
         order += axis.getLabel().toUpperCase().charAt(0);
       }
       else
-        order += coreMeta.dimensionOrder.charAt(i);
+        order += unwrap().dimensionOrder.charAt(i);
     }
       
-    coreMeta.dimensionOrder = order;
+    unwrap().dimensionOrder = order;
   }
 
   public void setPlaneCount(final int planeCount) {
-    coreMeta.imageCount = planeCount;
+    unwrap().imageCount = planeCount;
   }
   
   // -- Getters --
     
   public int getPlaneCount() {
-    return coreMeta.imageCount;
+    return unwrap().imageCount;
   }
 
   public byte[][] getLut() {
@@ -204,136 +211,107 @@ public class CoreMetadataWrapper extends AbstractImageMetadata implements Wrappe
   }
 
   public int getThumbSizeX() {
-    return coreMeta.thumbSizeX;
+    int thumbX = unwrap().thumbSizeX;
+    
+    if (thumbX == 0) {
+      int sx = getAxisLength(Axes.X);
+      int sy = getAxisLength(Axes.Y);
+      
+      if (sx < THUMBNAIL_DIMENSION && sy < THUMBNAIL_DIMENSION)
+        thumbX = sx;
+      else if (sx > sy) thumbX = THUMBNAIL_DIMENSION;
+      else if (sy > 0) thumbX = sx * THUMBNAIL_DIMENSION / sy;
+      if (thumbX == 0) thumbX = 1;
+    }
+    
+    return thumbX;
   }
 
   public int getThumbSizeY() {
-    return coreMeta.thumbSizeY;
+    int thumbY = unwrap().thumbSizeY;
+    
+    if (thumbY == 0) {
+      int sx = getAxisLength(Axes.X);
+      int sy = getAxisLength(Axes.Y);
+      thumbY = 1;
+      
+      if (sx < THUMBNAIL_DIMENSION && sy < THUMBNAIL_DIMENSION)
+        thumbY = sy;
+      else if (sy > sx) thumbY = THUMBNAIL_DIMENSION;
+      else if (sx > 0) thumbY = sy * THUMBNAIL_DIMENSION / sx;
+      if (thumbY == 0) thumbY = 1;
+    }
+    
+    return thumbY;
   }
 
   public int getPixelType() {
-    return coreMeta.pixelType;
+    return unwrap().pixelType;
   }
 
   public int getBitsPerPixel() {
-    return coreMeta.bitsPerPixel;
+    return unwrap().bitsPerPixel;
   }
 
   public int[] getcLengths() {
-    return coreMeta.cLengths;
+    return unwrap().cLengths;
   }
 
   public String[] getcTypes() {
-    return coreMeta.cTypes;
-  }
-
-  public AxisType[] getAxisTypes() {
-    return ome.scifio.util.FormatTools.findDimensionList(coreMeta.dimensionOrder);
-  }
-
-  public int[] getAxisLengths() {
-    int[] lengths = new int[5];
-    
-    lengths[0] = coreMeta.sizeX;
-    lengths[1] = coreMeta.sizeY;
-    
-    for(int i = 2; i < 5; i++) {
-      switch(coreMeta.dimensionOrder.charAt(i)) {
-      case 'Z': lengths[i] = coreMeta.sizeZ;
-        break;
-      case 'C': lengths[i] = coreMeta.sizeC;
-        break;
-      case 'T': lengths[i] = coreMeta.sizeT;
-        break;
-      default:
-        lengths[i] = 1;
-      }
-    }
-    
-    return lengths;
+    return unwrap().cTypes;
   }
 
   public boolean isOrderCertain() {
-    return coreMeta.orderCertain;
+    return unwrap().orderCertain;
   }
 
   public boolean isRGB() {
-    return coreMeta.rgb;
+    return unwrap().rgb;
   }
 
   public boolean isLittleEndian() {
-    return coreMeta.littleEndian;
+    return unwrap().littleEndian;
   }
 
   public boolean isInterleaved() {
-    return coreMeta.interleaved;
+    return unwrap().interleaved;
   }
 
   public boolean isIndexed() {
-    return coreMeta.indexed;
+    return unwrap().indexed;
   }
 
   public boolean isFalseColor() {
-    return coreMeta.falseColor;
+    return unwrap().falseColor;
   }
 
   public boolean isMetadataComplete() {
-    return coreMeta.metadataComplete;
+    return unwrap().metadataComplete;
   }
 
   public Hashtable<String, Object> getImageMetadata() {
-    return coreMeta.seriesMetadata;
+    return unwrap().seriesMetadata;
   }
 
   public boolean isThumbnail() {
-    return coreMeta.thumbnail;
+    return unwrap().thumbnail;
   }
 
   public void setChannelLengths(int[] cLengths) {
-    coreMeta.cLengths = cLengths;
+    unwrap().cLengths = cLengths;
   }
 
   public void setChannelTypes(String[] cTypes) {
-    coreMeta.cTypes = cTypes;
+    unwrap().cTypes = cTypes;
   }
 
   public int[] getChannelLengths() {
-    return coreMeta.cLengths;
+    return unwrap().cLengths;
   }
 
   public String[] getChannelTypes() {
-    return coreMeta.cTypes;
+    return unwrap().cTypes;
   }
-
-//  public AxisType getAxisType(int planeIndex) {
-//    // TODO Auto-generated method stub
-//    return null;
-//  }
-//
-//  public int getAxisLength(int planeIndex) {
-//    // TODO Auto-generated method stub
-//    return 0;
-//  }
-//
-//  public int getAxisLength(AxisType t) {
-//    // TODO Auto-generated method stub
-//    return 0;
-//  }
-//
-//  public int getAxisIndex(AxisType type) {
-//    // TODO Auto-generated method stub
-//    return 0;
-//  }
-//
-//  public AxisType[] getAxes() {
-//    // TODO Auto-generated method stub
-//    return null;
-//  }
-//
-//  public int[] getAxesLengths() {
-//    // TODO Auto-generated method stub
-//    return null;
-//  }
 
   public void addAxis(AxisType type) {
     throw new UnsupportedOperationException("Can not add axes to legacy CoreMetadata.");
@@ -341,5 +319,68 @@ public class CoreMetadataWrapper extends AbstractImageMetadata implements Wrappe
 
   public void addAxis(AxisType type, int value) {
     throw new UnsupportedOperationException("Can not add axes to legacy CoreMetadata.");
+  }
+
+  public AxisType getAxisType(int planeIndex) {
+    return getAxes()[planeIndex];
+  }
+
+  public int getAxisLength(int planeIndex) {
+    return getAxesLengths()[planeIndex];
+  }
+
+  public int getAxisLength(AxisType t) {
+    int index = getAxisIndex(t);
+    
+    if (index == -1) return -1;
+    else return getAxesLengths()[index];
+  }
+
+  public int getAxisIndex(AxisType type) {
+    AxisType[] axes = getAxes();
+    
+    for (int i=0; i<5; i++) {
+      if (axes[i].equals(type)) return i;
+    }
+    
+    return -1;
+  }
+
+  public AxisType[] getAxes() {
+    types[0] = Axes.X;
+    types[1] = Axes.Y;
+    
+    for (int i=2; i<5; i++) {
+      switch(unwrap().dimensionOrder.charAt(i)) {
+      case 'Z': types[i] = Axes.Z;
+        break;
+      case 'C': types[i] = Axes.CHANNEL;
+        break;
+      case 'T': types[i] = Axes.TIME;
+        break;
+      default: types[i] = Axes.UNKNOWN;
+      }
+    }
+    
+    return types;
+  }
+
+  public int[] getAxesLengths() {
+    lengths[0] = unwrap().sizeX;
+    lengths[1] = unwrap().sizeY;
+    
+    for(int i = 2; i < 5; i++) {
+      switch(unwrap().dimensionOrder.charAt(i)) {
+      case 'Z': lengths[i] = unwrap().sizeZ;
+        break;
+      case 'C': lengths[i] = unwrap().sizeC;
+        break;
+      case 'T': lengths[i] = unwrap().sizeT;
+        break;
+      default:
+        lengths[i] = 1;
+      }
+    }
+    return lengths;
   }
 }

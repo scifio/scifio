@@ -63,6 +63,7 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
   
   private WeakHashMap<L, M> legacyToModern = new WeakHashMap<L, M>();
   private WeakHashMap<M, L> modernToLegacy = new WeakHashMap<M, L>();
+  
 
   // -- LegacyAdapter API --
 
@@ -82,11 +83,12 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
     M fakeModern;
     synchronized (legacyToModern) {
       fakeModern = legacyToModern.get(trueLegacy);
-      if (fakeModern == null) {
+      if (fakeModern == null ) {
         fakeModern = wrapToModern(trueLegacy);
         legacyToModern.put(trueLegacy, fakeModern);
       }
     }
+    
     return fakeModern;
   }
 
@@ -111,7 +113,27 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
         modernToLegacy.put(trueModern, fakeLegacy);
       }
     }
+    
     return fakeLegacy;
+  }
+  
+  
+  /*
+   * @see loci.legacy.adapter.LegacyAdapter#mapModern(java.lang.Object, java.lang.Object)
+   */
+  public void mapModern(M modern, L legacy) {
+    synchronized (legacyToModern) {
+      legacyToModern.put(legacy, modern);
+    }
+  }
+  
+  /*
+   * @see loci.legacy.adapter.LegacyAdapter#mapLegacy(java.lang.Object, java.lang.Object)
+   */
+  public void mapLegacy(L legacy, M modern) {
+    synchronized (modernToLegacy) {
+      modernToLegacy.put(modern, legacy);
+    }
   }
 
   /* See LegacyAdapter#clear() */

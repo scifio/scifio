@@ -38,7 +38,9 @@ package loci.formats;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
+import java.util.List;
 
 import net.imglib2.meta.Axes;
 
@@ -92,19 +94,26 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   
   // -- Fields --
   
-  private final IFormatReader reader;
+  private final WeakReference<IFormatReader> reader;
+  
+  // this reference allows the list of CoreMetadata returned by the wrapped reader
+  // to exist beyond the scope of a getDatasetMetadata() call, if the reader
+  // type dynamically generates its CoreMetadata list. This field will still
+  // be garbage collected with this wrapper, allowing its wrapper to
+  // eventually be GC'd as well.
+  private List<CoreMetadata> meta;
 
   // -- Constructor --
   
   public SCIFIOReaderWrapper(Context context, IFormatReader reader) {
     setContext(context);
-    this.reader = reader;
+    this.reader = new WeakReference<IFormatReader>(reader);
   }
   
   // -- Wrapper API Methods --
   
   public IFormatReader unwrap() {
-    return reader;
+    return reader.get();
   }
 
   // -- ome.scifio.Reader API --
@@ -122,7 +131,7 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   {
     Plane plane = null;
     DatasetMetadata m = getDatasetMetadata();
-    Object o = reader.openPlane(planeIndex, 0, 0, m.getAxisLength(imageIndex, Axes.X),
+    Object o = unwrap().openPlane(planeIndex, 0, 0, m.getAxisLength(imageIndex, Axes.X),
         m.getAxisLength(imageIndex, Axes.Y));
 
     if(BufferedImage.class.isAssignableFrom(o.getClass())) {
@@ -147,11 +156,11 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
     if (ByteArrayPlane.class.isAssignableFrom(plane.getClass())) {
       bp = (ByteArrayPlane)plane;
       buf = bp.getData();
-      reader.openBytes(imageIndex, buf);
+      unwrap().openBytes(imageIndex, buf);
     }
     else {
       bp = new ByteArrayPlane(getContext());
-      buf = reader.openBytes(imageIndex);
+      buf = unwrap().openBytes(imageIndex);
       DatasetMetadata m = getDatasetMetadata();
       bp.populate(m.get(imageIndex), buf, 0, 0, 
           m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
@@ -168,11 +177,11 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
     if (ByteArrayPlane.class.isAssignableFrom(plane.getClass())) {
       bp = (ByteArrayPlane)plane;
       buf = bp.getData();
-      reader.openBytes(imageIndex, buf, x, y, w, h);
+      unwrap().openBytes(imageIndex, buf, x, y, w, h);
     }
     else {
       bp = new ByteArrayPlane(getContext());
-      buf = reader.openBytes(imageIndex, x, y, w, h);
+      buf = unwrap().openBytes(imageIndex, x, y, w, h);
       DatasetMetadata m = getDatasetMetadata();
       bp.populate(m.get(imageIndex), buf, 0, 0, 
           m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
@@ -186,7 +195,7 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   {
     ByteArrayPlane bp = new ByteArrayPlane(getContext());
     DatasetMetadata m = getDatasetMetadata();
-    bp.populate(m.get(imageIndex), reader.openBytes(planeIndex, x, y, w, h), 0, 0, 
+    bp.populate(m.get(imageIndex), unwrap().openBytes(planeIndex, x, y, w, h), 0, 0, 
         m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
     
     return bp;
@@ -197,35 +206,35 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   {
     ByteArrayPlane bp = new ByteArrayPlane(getContext());
     DatasetMetadata m = getDatasetMetadata();
-    bp.populate(m.get(imageIndex), reader.openThumbBytes(planeIndex), 0, 0, 
+    bp.populate(m.get(imageIndex), unwrap().openThumbBytes(planeIndex), 0, 0, 
         m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
     return bp;
   }
 
   public void setGroupFiles(boolean group) {
-    reader.setGroupFiles(group);
+    unwrap().setGroupFiles(group);
   }
 
   public boolean isGroupFiles() {
-    return reader.isGroupFiles();
+    return unwrap().isGroupFiles();
   }
 
   public int fileGroupOption(String id)
     throws ome.scifio.FormatException, IOException
   {
-    return reader.fileGroupOption(id);
+    return unwrap().fileGroupOption(id);
   }
 
   public String getCurrentFile() {
-    return reader.getCurrentFile();
+    return unwrap().getCurrentFile();
   }
 
   public String[] getDomains() {
-    return reader.getDomains();
+    return unwrap().getDomains();
   }
 
   public int[] getZCTCoords(int imageIndex, int index) {
-    return reader.getZCTCoords(index);
+    return unwrap().getZCTCoords(index);
   }
 
   public RandomAccessInputStream getStream() {
@@ -233,7 +242,7 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
     RandomAccessInputStream stream = null;
     
     try {
-      Field in = reader.getClass().getDeclaredField("in");
+      Field in = unwrap().getClass().getDeclaredField("in");
       in.setAccessible(true);
       loci.common.RandomAccessInputStream legacyStream = 
           (loci.common.RandomAccessInputStream) in.get(reader);
@@ -255,7 +264,7 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   }
 
   public Reader[] getUnderlyingReaders() {
-    IFormatReader[] iReaders = reader.getUnderlyingReaders();
+    IFormatReader[] iReaders = unwrap().getUnderlyingReaders();
     Reader[] sReaders = new Reader[iReaders.length];
     
     for(int i = 0; i < iReaders.length; i++) {
@@ -266,11 +275,11 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   }
 
   public int getOptimalTileWidth(int imageIndex) {
-    return reader.getOptimalTileWidth();
+    return unwrap().getOptimalTileWidth();
   }
 
   public int getOptimalTileHeight(int imageIndex) {
-    return reader.getOptimalTileHeight();
+    return unwrap().getOptimalTileHeight();
   }
 
   public void setMetadata(Metadata meta) throws IOException {
@@ -282,8 +291,11 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   }
 
   public DatasetMetadata getDatasetMetadata() {
+    // cache the wrapped CoreMetadata list.
+    meta = unwrap().getCoreMetadataList();
+    
     DatasetMetadata cMeta = AdapterTools.getAdapter(CoreMetadataAdapter.class).
-        getModern(reader.getCoreMetadataList());
+        getModern(meta);
     
     RandomAccessInputStream metaStream = cMeta.getSource();
     
@@ -292,27 +304,27 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
       cMeta.setSource(getStream());
       
       if (cMeta.getDatasetName() == null)
-        cMeta.setDatasetName(reader.getCurrentFile());
+        cMeta.setDatasetName(unwrap().getCurrentFile());
     }
 
     return cMeta;
   }
 
   public void setNormalized(boolean normalize) {
-    reader.setNormalized(normalize);
+    unwrap().setNormalized(normalize);
   }
 
   public boolean isNormalized() {
-    return reader.isNormalized();
+    return unwrap().isNormalized();
   }
 
   public boolean hasCompanionFiles() {
-    return reader.hasCompanionFiles();
+    return unwrap().hasCompanionFiles();
   }
 
   public void setSource(File file) throws IOException {
     try {
-      reader.setId(file.getAbsolutePath());
+      unwrap().setId(file.getAbsolutePath());
     }
     catch (FormatException e) {
       LOGGER.debug("Format error when creating a RAIS: " + file.getAbsolutePath(), e);
@@ -321,7 +333,7 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
 
   public void setSource(String fileName) throws IOException {
     try {
-      reader.setId(fileName);
+      unwrap().setId(fileName);
     }
     catch (FormatException e) {
       LOGGER.debug("Format error when creating a RAIS: " + fileName, e);
@@ -330,7 +342,7 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
 
   public void setSource(RandomAccessInputStream stream) throws IOException {
     try {
-      reader.setId(stream.getFileName());
+      unwrap().setId(stream.getFileName());
     }
     catch (FormatException e) {
       LOGGER.debug("Format error when creating a RAIS: " + stream.getFileName(), e);
@@ -338,7 +350,7 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   }
 
   public void close(boolean fileOnly) throws IOException {
-    reader.close(fileOnly);
+    unwrap().close(fileOnly);
   }
 
   public void close() throws IOException {
@@ -358,15 +370,15 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   }
 
   public int getPlaneCount(int imageIndex) {
-    return reader.getImageCount();
+    return unwrap().getImageCount();
   }
 
   public int getImageCount() {
-    return reader.getSeriesCount();
+    return unwrap().getSeriesCount();
   }
 
   public IFormatReader getReader() {
-    return reader;
+    return unwrap();
   }
 
   public Plane createPlane(int xOffset, int yOffset, int xLength, int yLength) {

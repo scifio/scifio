@@ -35,6 +35,8 @@
  */
 package loci.formats;
 
+import java.lang.ref.WeakReference;
+
 import ome.scifio.ImageMetadata;
 import loci.legacy.adapter.Wrapper;
 
@@ -54,19 +56,19 @@ public class ImageMetadataWrapper extends CoreMetadata
 
   // -- Fields --
   
-  private ImageMetadata imageMeta;
+  private WeakReference<ImageMetadata> imageMeta;
   
   // -- Constructor --
   
   ImageMetadataWrapper(ImageMetadata imageMeta) {
     super(imageMeta);
     
-    this.imageMeta = imageMeta;
+    this.imageMeta = new WeakReference<ImageMetadata>(imageMeta);
   }
   
   // -- Wrapper API methods --
   
   public ImageMetadata unwrap() {
-    return imageMeta;
+    return imageMeta.get();
   }
 }
