@@ -96,6 +96,8 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   
   private final WeakReference<IFormatReader> reader;
   
+  private WeakReference<RandomAccessInputStream> stream;
+  
   // this reference allows the list of CoreMetadata returned by the wrapped reader
   // to exist beyond the scope of a getDatasetMetadata() call, if the reader
   // type dynamically generates its CoreMetadata list. This field will still
@@ -239,28 +241,48 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
 
   public RandomAccessInputStream getStream() {
     
-    RandomAccessInputStream stream = null;
-    
-    try {
-      Field in = unwrap().getClass().getDeclaredField("in");
-      in.setAccessible(true);
-      loci.common.RandomAccessInputStream legacyStream = 
-          (loci.common.RandomAccessInputStream) in.get(reader);
-      
-      stream = AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).
-              getModern(legacyStream);
-      
-    } catch (SecurityException e) {
-      LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
-    } catch (NoSuchFieldException e) {
-      LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
-    } catch (IllegalArgumentException e) {
-      LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
-    } catch (IllegalAccessException e) {
-      LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
-    }
+    if (stream == null || stream.get() == null) {
 
-    return stream;
+      try {
+        FormatReader fReader = null;
+
+        if (ReaderWrapper.class.isAssignableFrom(unwrap().getClass())) {
+          fReader = (FormatReader) ((ReaderWrapper)unwrap()).unwrap(FormatReader.class, null);
+        }
+        else if (FormatReader.class.isAssignableFrom(unwrap().getClass())) {
+          fReader = (FormatReader)unwrap();
+        }
+
+        if (fReader == null) return null;
+
+        Field in = FormatReader.class.getDeclaredField("in");
+        in.setAccessible(true);
+        loci.common.RandomAccessInputStream legacyStream = 
+            (loci.common.RandomAccessInputStream) in.get(fReader);
+        in.setAccessible(false);
+        
+        if (legacyStream == null) return null;
+
+        stream = new WeakReference<RandomAccessInputStream>(
+            AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).
+            getModern(legacyStream));
+
+      } catch (SecurityException e) {
+        LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
+      } catch (NoSuchFieldException e) {
+        LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
+      } catch (IllegalArgumentException e) {
+        LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
+      } catch (IllegalAccessException e) {
+        LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
+      } catch (FormatException e) {
+        LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
+      } catch (IOException e) {
+        LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
+      }
+    }
+    
+    return stream.get();
   }
 
   public Reader[] getUnderlyingReaders() {
