@@ -45,8 +45,8 @@ import loci.legacy.context.LegacyContext;
 import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
 import ome.scifio.ics.ICSFormat;
-import ome.xml.meta.IMetadata;
 import ome.xml.meta.OMEMetadata;
+import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.meta.OMEXMLMetadataImpl;
 import ome.xml.meta.OMEXMLMetadataService;
 
@@ -136,7 +136,7 @@ public class ICSReader extends SCIFIOFormatReader {
   public void setId(String id) throws FormatException, IOException {
  // ARG for testing protected void oldInitFile(String id) throws FormatException, IOException {
     super.setId(id);
-    IMetadata omeRoot = new OMEXMLMetadataImpl() ;
+    OMEXMLMetadata omeRoot = new OMEXMLMetadataImpl() ;
     omeRoot.createRoot();
     LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(omeRoot, reader.getDatasetMetadata());
     omeRoot.setImageName(id, 0);

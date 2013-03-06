@@ -54,10 +54,9 @@ import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
 import ome.scifio.ics.ICSFormat;
 import ome.xml.meta.FilterMetadata;
-import ome.xml.meta.IMetadata;
 import ome.xml.meta.MetadataStore;
 import ome.xml.meta.OMEMetadata;
-import ome.xml.meta.OMEXMLMetadataImpl;
+import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.meta.OMEXMLMetadataService;
 import ome.scifio.util.FormatTools;
 import ome.xml.model.primitives.PositiveFloat;
@@ -83,7 +82,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
   {
     super.translate(source, destination);
 
-    IMetadata store = new OMEXMLMetadataImpl();
+    OMEXMLMetadata store = destination.getRoot();
     boolean lifetime = false;
     int imageIndex = 0; //TODO correct index?
     Double[] pixelSizes = null, timestamps = null, stagePos = null;

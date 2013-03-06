@@ -37,6 +37,10 @@
 package ome.xml.meta;
 
 import ome.scifio.AbstractMetadata;
+import ome.scifio.services.DependencyException;
+import ome.scifio.services.ServiceException;
+import ome.scifio.services.ServiceFactory;
+import ome.xml.services.OMEXMLService;
 
 /**
  * ome.scifio.Metadata class representing the OME schema.
@@ -53,7 +57,7 @@ public class OMEMetadata extends AbstractMetadata {
   // -- Fields --
   
   /** OME core */
-  protected IMetadata root;
+  protected OMEXMLMetadata root;
 
   // -- Constructor --
   
@@ -61,7 +65,19 @@ public class OMEMetadata extends AbstractMetadata {
     this(null);
   }
   
-  public OMEMetadata(IMetadata root) {
+  public OMEMetadata(OMEXMLMetadata root) {
+    if (root == null) {
+      try {
+        ServiceFactory factory = new ServiceFactory();
+        OMEXMLService service = factory.getInstance(OMEXMLService.class);
+        root = service.createOMEXMLMetadata();
+      } catch (ServiceException e) {
+        LOGGER.debug("Failed to get OME-XML Service", e);
+      } catch (DependencyException e) {
+        LOGGER.debug("Missing OME-XML dependency", e);
+      }
+    }
+    
     this.root = root;
   }
   
@@ -73,11 +89,11 @@ public class OMEMetadata extends AbstractMetadata {
   
   // -- Helper Methods --
   
-  public void setRoot(IMetadata root) {
+  public void setRoot(OMEXMLMetadata root) {
     this.root = root;
   }
 
-  public IMetadata getRoot() {
+  public OMEXMLMetadata getRoot() {
     return root;
   }
   
