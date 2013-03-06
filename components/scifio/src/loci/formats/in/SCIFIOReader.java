@@ -236,6 +236,38 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
     if (index >= 0) updateIndex(index);
   }
   
+  public void setOriginalMetadataPopulated(boolean populate) {
+    for (Parser parser : parsers) {
+      parser.setOriginalMetadataPopulated(populate);
+    }
+  }
+
+  public void setMetadataFiltered(boolean filter) {
+    for (Parser parser : parsers) {
+      parser.setMetadataFiltered(filter);
+    }
+  }
+  
+  public void setMetadataOptions(MetadataOptions options) {
+    ome.scifio.MetadataOptions sOpts = new ome.scifio.DefaultMetadataOptions();
+
+    switch(options.getMetadataLevel()) {
+      case ALL:
+        sOpts.setMetadataLevel(ome.scifio.MetadataLevel.ALL);
+        break;
+      case NO_OVERLAYS:
+        sOpts.setMetadataLevel(ome.scifio.MetadataLevel.NO_OVERLAYS);
+        break;
+      case MINIMUM:
+        sOpts.setMetadataLevel(ome.scifio.MetadataLevel.MINIMUM);
+        break;
+    }
+    
+    for (Parser parser : parsers) {
+      parser.setMetadataOptions(sOpts);
+    }
+  }
+  
   public void setGroupFiles(boolean group) {
     int index = -1;
     if (format != null) index = formatIndex.get(format);
@@ -246,6 +278,18 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
     }
     
     if (index >= 0) updateIndex(index);
+  }
+  
+  public boolean isOriginalMetadataPopulated() {
+    if (parser == null) return false;
+    
+    return super.isOriginalMetadataPopulated();
+  }
+  
+  public boolean isMetadataFiltered() {
+    if (parser == null) return false;
+    
+    return super.isMetadataFiltered();
   }
   
   /*
