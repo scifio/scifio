@@ -165,14 +165,18 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
   }
 
   public int[] getChannelDimLengths(final int imageIndex) {
-    if (imageMeta.get(imageIndex).getChannelLengths() == null)
-      return new int[] {getAxisLength(imageIndex, Axes.CHANNEL)};
+    if (imageMeta.get(imageIndex).getChannelLengths() == null) {
+      imageMeta.get(imageIndex).setChannelLengths(
+          new int[] {getAxisLength(imageIndex, Axes.CHANNEL)});
+    }
     return imageMeta.get(imageIndex).getChannelLengths();
   }
 
   public String[] getChannelDimTypes(final int imageIndex) {
-    if (imageMeta.get(imageIndex).getChannelTypes() == null)
-      return new String[] {FormatTools.CHANNEL};
+    if (imageMeta.get(imageIndex).getChannelTypes() == null) {
+      imageMeta.get(imageIndex).setChannelTypes(
+          new String[] {FormatTools.CHANNEL});
+    }
     return imageMeta.get(imageIndex).getChannelTypes();
   }
 
