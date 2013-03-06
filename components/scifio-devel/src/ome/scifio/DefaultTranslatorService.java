@@ -57,6 +57,9 @@ public class DefaultTranslatorService extends AbstractService implements Transla
   
   // -- TranslatorService API Methods --
 
+  /*
+   * @see ome.scifio.TranslatorService#findTranslator(ome.scifio.Metadata, ome.scifio.Metadata)
+   */
   public Translator findTranslator(Metadata source, Metadata dest) {
     Map<String, String> kvPairs = new HashMap<String,String>();
     kvPairs.put(Translator.SOURCE, source.getFormatName());
@@ -65,6 +68,19 @@ public class DefaultTranslatorService extends AbstractService implements Transla
     Translator t = attributeService.createInstance(Translator.class, kvPairs, null);
     
     return t;
+  }
+
+  /*
+   * @see ome.scifio.TranslatorService#translate(ome.scifio.Metadata, ome.scifio.Metadata)
+   */
+  public boolean translate(Metadata source, Metadata dest) {
+    Translator t = findTranslator(source, dest);
+    
+    if (t == null) return false;
+    
+    t.translate(source, dest);
+    
+    return true;
   }
 
 }

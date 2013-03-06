@@ -54,4 +54,14 @@ public interface TranslatorService extends Service {
    * @return
    */
   Translator findTranslator(Metadata source, Metadata dest);
+  
+  /**
+   * Convenience method to immediately translate from the source Metadata
+   * to the dest Metadata type.
+   * 
+   * Returns true if translation was successful, and false otherwise.
+   * @param source
+   * @param dest
+   */
+  boolean translate(Metadata source, Metadata dest);
 }
