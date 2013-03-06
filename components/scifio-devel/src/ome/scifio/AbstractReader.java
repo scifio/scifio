@@ -123,10 +123,20 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     final int x, final int y, final int w, final int h)
     throws FormatException, IOException
   {
-    final int bpp =
-      FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
-    final int ch = dMeta.getRGBChannelCount(imageIndex);
-    final P plane = createPlane(x, y, w, h);
+    P plane = null;
+    
+    try {
+      plane = createPlane(x, y, w, h);
+    }
+    catch (IllegalArgumentException e) {
+      throw new FormatException("Image plane too large. Only 2GB of data can " +
+          "be extracted at one time. You can workaround the problem by opening " +
+          "the plane in tiles; for further details, see: " +
+          "http://www.openmicroscopy.org/site/support/faq/bio-formats/" +
+          "i-see-an-outofmemory-or-negativearraysize-error-message-when-" +
+          "attempting-to-open-an-svs-or-jpeg-2000-file.-what-does-this-mean", e);
+    }
+ 
     return openPlane(imageIndex, planeIndex, plane, x, y, w, h);
   }
 
@@ -203,7 +213,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#getOptimalTileWidth(int)
    */
   public int getOptimalTileWidth(final int imageIndex) {
-    return dMeta.getAxisLength(imageIndex, Axes.Y);
+    return dMeta.getAxisLength(imageIndex, Axes.X);
   }
 
   /*
@@ -216,7 +226,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
       (1024 * 1024) /
         (dMeta.getAxisLength(imageIndex, Axes.X) *
           dMeta.getRGBChannelCount(imageIndex) * bpp);
-    return Math.min(maxHeight, dMeta.getAxisLength(imageIndex, Axes.X));
+    return Math.min(maxHeight, dMeta.getAxisLength(imageIndex, Axes.Y));
   }
 
   /*
