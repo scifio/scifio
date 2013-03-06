@@ -62,7 +62,6 @@ import ome.scifio.Translator;
 import ome.scifio.TypedToDatasetTranslator;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
-import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.common.DateTools;
@@ -74,7 +73,7 @@ import ome.scifio.util.FormatTools;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
-@Plugin(type = Format.class)
+@Plugin(type = ICSFormat.class)
 public class ICSFormat
 extends
 AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,

@@ -68,7 +68,6 @@ import ome.scifio.DatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.Field;
 import ome.scifio.FieldPrinter;
-import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.common.DataTools;
@@ -82,7 +81,7 @@ import ome.scifio.util.FormatTools;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.Attr;
 
-@Plugin(type = Format.class)
+@Plugin(type = APNGFormat.class)
 public class APNGFormat
   extends
   AbstractFormat<APNGFormat.Metadata, APNGFormat.Checker,

@@ -56,7 +56,6 @@ import ome.scifio.ByteArrayReader;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.DatasetToTypedTranslator;
 import ome.scifio.DefaultImageMetadata;
-import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.HasColorTable;
 import ome.scifio.Plane;
@@ -93,7 +92,7 @@ import org.slf4j.Logger;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/FakeReader.java">Trac</a>
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/FakeReader.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@Plugin(type = Format.class)
+@Plugin(type = FakeFormat.class)
 public class FakeFormat
 extends
 AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
