@@ -43,6 +43,7 @@ import java.nio.ByteBuffer;
 
 import loci.common.adapter.IRandomAccessAdapter;
 import loci.legacy.adapter.AdapterTools;
+import loci.legacy.adapter.Wrapper;
 import loci.legacy.context.LegacyContext;
 
 /**
@@ -52,7 +53,8 @@ import loci.legacy.context.LegacyContext;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/RandomAccessOutputStream.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/RandomAccessOutputStream.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class RandomAccessOutputStream extends OutputStream implements DataOutput
+public class RandomAccessOutputStream extends OutputStream 
+  implements DataOutput, Wrapper<ome.scifio.io.RandomAccessOutputStream>
 {
   // -- Fields --
 
@@ -81,49 +83,49 @@ public class RandomAccessOutputStream extends OutputStream implements DataOutput
 
   /** Seeks to the given offset within the stream. */
   public void seek(long pos) throws IOException {
-    raos.seek(pos);
+    unwrap().seek(pos);
   }
 
   /** Returns the current offset within the stream. */
   public long getFilePointer() throws IOException {
-    return raos.getFilePointer();
+    return unwrap().getFilePointer();
   }
 
   /** Returns the length of the file. */
   public long length() throws IOException {
-    return raos.length();
+    return unwrap().length();
   }
 
   /** Advances the current offset by the given number of bytes. */
   public void skipBytes(int skip) throws IOException {
-    raos.skipBytes(skip);
+    unwrap().skipBytes(skip);
   }
 
   /** Sets the endianness of the stream. */
   public void order(boolean little) {
-    raos.order(little);
+    unwrap().order(little);
   }
 
   /** Gets the endianness of the stream. */
   public boolean isLittleEndian() {
-    return raos.isLittleEndian();
+    return unwrap().isLittleEndian();
   }
 
   /** Writes the given string followed by a newline character. */
   public void writeLine(String s) throws IOException {
-    raos.writeLine(s);
+    unwrap().writeLine(s);
   }
 
   // -- DataOutput API methods --
 
   /* @see java.io.DataOutput#write(byte[]) */
   public void write(byte[] b) throws IOException {
-    raos.write(b);
+    unwrap().write(b);
   }
 
   /* @see java.io.DataOutput#write(byte[], int, int) */
   public void write(byte[] b, int off, int len) throws IOException {
-    raos.write(b, off, len);
+    unwrap().write(b, off, len);
   }
 
   /**
@@ -132,7 +134,7 @@ public class RandomAccessOutputStream extends OutputStream implements DataOutput
    * @throws IOException If there is an error writing to the stream.
    */
   public void write(ByteBuffer b) throws IOException {
-    raos.write(b);
+    unwrap().write(b);
   }
 
   /**
@@ -142,95 +144,104 @@ public class RandomAccessOutputStream extends OutputStream implements DataOutput
    * @throws IOException If there is an error writing to the stream.
    */
   public void write(ByteBuffer b, int off, int len) throws IOException {
-    raos.write(b, off, len);
+    unwrap().write(b, off, len);
   }
 
   /* @see java.io.DataOutput#write(int) */
   public void write(int b) throws IOException {
-    raos.write(b);
+    unwrap().write(b);
   }
 
   /* @see java.io.DataOutput#writeBoolean(boolean) */
   public void writeBoolean(boolean v) throws IOException {
-    raos.writeBoolean(v);
+    unwrap().writeBoolean(v);
   }
 
   /* @see java.io.DataOutput#writeByte(int) */
   public void writeByte(int v) throws IOException {
-    raos.writeByte(v);
+    unwrap().writeByte(v);
   }
 
   /* @see java.io.DataOutput#writeBytes(String) */
   public void writeBytes(String s) throws IOException {
-    raos.writeBytes(s);
+    unwrap().writeBytes(s);
   }
 
   /* @see java.io.DataOutput#writeChar(int) */
   public void writeChar(int v) throws IOException {
-    raos.writeChar(v);
+    unwrap().writeChar(v);
   }
 
   /* @see java.io.DataOutput#writeChars(String) */
   public void writeChars(String s) throws IOException {
-    raos.writeChars(s);
+    unwrap().writeChars(s);
   }
 
   /* @see java.io.DataOutput#writeDouble(double) */
   public void writeDouble(double v) throws IOException {
-    raos.writeDouble(v);
+    unwrap().writeDouble(v);
   }
 
   /* @see java.io.DataOutput#writeFloat(float) */
   public void writeFloat(float v) throws IOException {
-    raos.writeFloat(v);
+    unwrap().writeFloat(v);
   }
 
   /* @see java.io.DataOutput#writeInt(int) */
   public void writeInt(int v) throws IOException {
-    raos.writeInt(v);
+    unwrap().writeInt(v);
   }
 
   /* @see java.io.DataOutput#writeLong(long) */
   public void writeLong(long v) throws IOException {
-    raos.writeLong(v);
+    unwrap().writeLong(v);
   }
 
   /* @see java.io.DataOutput#writeShort(int) */
   public void writeShort(int v) throws IOException {
-    raos.writeShort(v);
+    unwrap().writeShort(v);
   }
 
   /* @see java.io.DataOutput#writeUTF(String) */
   public void writeUTF(String str) throws IOException {
-    raos.writeUTF(str);
+    unwrap().writeUTF(str);
   }
 
   // -- OutputStream API methods --
 
   /* @see java.io.OutputStream#close() */
   public void close() throws IOException {
-    raos.close();
+    unwrap().close();
   }
 
   /* @see java.io.OutputStream#flush() */
   public void flush() throws IOException { 
-    raos.flush();
+    unwrap().flush();
   }
 
+  // -- Wrapper API Methods --
+  
+  /*
+   * @see loci.legacy.adapter.Wrapper#unwrap()
+   */
+  public ome.scifio.io.RandomAccessOutputStream unwrap() {
+    return raos;
+  }
+  
   // -- Object delegators --
-
-  @Override
-  public boolean equals(Object obj) {
-    return raos.equals(obj);
-  }
-  
-  @Override
-  public int hashCode() {
-    return raos.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return raos.toString();
-  }
+//
+//  @Override
+//  public boolean equals(Object obj) {
+//    return unwrap().equals(obj);
+//  }
+//  
+//  @Override
+//  public int hashCode() {
+//    return unwrap().hashCode();
+//  }
+//  
+//  @Override
+//  public String toString() {
+//    return unwrap().toString();
+//  }
 }
