@@ -74,7 +74,7 @@ public class ZipHandle extends StreamHandle {
    * @throws HandleException if the given file is not a Zip file.
    */
   public ZipHandle(String file, ZipEntry entry) throws IOException {
-    super(new ome.scifio.io.ZipHandle(file, entry));
+    super(new ome.scifio.io.ZipHandle(LegacyContext.get(), file, entry));
   }
 
   // -- ZipHandle API methods --

@@ -96,12 +96,9 @@ public class ZipHandle extends StreamHandle {
    *
    * @throws HandleException if the given file is not a Zip file.
    */
-  public ZipHandle(String file, ZipEntry entry) throws IOException {
-    super();
+  public ZipHandle(Context context, String file, ZipEntry entry) throws IOException {
+    super(context);
 
-    seekToEntry();
-    resetStream();
-    populateLength();
     setFile(file, entry);
   }
 
