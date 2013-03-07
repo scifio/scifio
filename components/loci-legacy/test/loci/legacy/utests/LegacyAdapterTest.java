@@ -36,12 +36,19 @@
 package loci.legacy.utests;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertNull;
+
 import loci.common.adapter.IRandomAccessAdapter;
+import loci.legacy.adapter.Wrapper;
 
 import ome.scifio.io.ByteArrayHandle;
 import ome.scifio.io.IRandomAccess;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -79,8 +86,15 @@ public class LegacyAdapterTest {
   public void testGetCurrent() throws IOException {
     legacyIRA = new loci.common.ByteArrayHandle(BYTES);
     currentIRA = adapter.getModern(legacyIRA);
+    
+    System.gc();
 
-    testEquality();
+    // verify that the linkage between the legacy and modern
+    // classes wasn't lost.
+    isEqual(currentIRA, adapter.getModern(legacyIRA));
+    
+    // legacyIRA should be a wrapper.. verify:
+    isEqual(currentIRA, ((Wrapper<?>)legacyIRA).unwrap());
   }
   
   @Test
@@ -88,7 +102,38 @@ public class LegacyAdapterTest {
     currentIRA = new ome.scifio.io.ByteArrayHandle(BYTES);
     legacyIRA = adapter.getLegacy(currentIRA);
 
-    testEquality();
+    System.gc();
+    
+    // verify that the linkage between the legacy and modern
+    // classes wasn't lost.
+    isEqual(legacyIRA, adapter.getLegacy(currentIRA));
+  }
+  
+  @Test
+  public void testWeakRefs() throws IOException {
+    currentIRA = new ome.scifio.io.ByteArrayHandle(BYTES);
+    WeakReference<loci.common.IRandomAccess> weakIRA =
+      new WeakReference<loci.common.IRandomAccess> (adapter.getLegacy(currentIRA));
+    
+    System.gc();
+    
+    // make sure the weak reference was preserved
+    assertNotNull(weakIRA.get());
+    
+    // make sure when the original object is GC'd, the weak reference is as well
+    
+    currentIRA.close();
+    currentIRA = null;
+    
+    // NB: this test can not be relied upon because System.gc() does
+    // not guarantee immediate garbage collection. This code just
+    // illustrates that the reference should eventually be gc'd
+    // after this point.
+    
+//    System.gc();
+//    System.runFinalization();
+//    
+//    assertNull(weakIRA.get());
   }
   
   // -- Null tests -- (null in --> null out)
@@ -109,14 +154,16 @@ public class LegacyAdapterTest {
     assertEquals(legacyIRA, null);
   }
   
-  private void testEquality() {
-    isEqual(legacyIRA, adapter.getLegacy(currentIRA));
-    isEqual(adapter.getModern(legacyIRA), currentIRA);
-  }
-  
   private void isEqual(Object ob1, Object ob2) {
     boolean test = ob1 == ob2;
     
     assertEquals(test, true);
+  }
+  
+  @AfterMethod
+  public void tearDown() throws IOException {
+    if (legacyIRA != null) legacyIRA.close();
+    if (currentIRA != null) currentIRA.close();
+    adapter.clear();
   }
 }
