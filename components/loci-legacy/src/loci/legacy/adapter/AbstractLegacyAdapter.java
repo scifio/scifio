@@ -83,10 +83,10 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
     M fakeModern;
     synchronized (legacyToModern) {
       fakeModern = legacyToModern.get(trueLegacy);
-      if (fakeModern == null ) {
-        fakeModern = wrapToModern(trueLegacy);
-        legacyToModern.put(trueLegacy, fakeModern);
-      }
+    }
+    if (fakeModern == null ) {
+      fakeModern = wrapToModern(trueLegacy);
+      mapLegacy(trueLegacy, fakeModern);
     }
     
     return fakeModern;
@@ -108,10 +108,10 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
     L fakeLegacy;
     synchronized (modernToLegacy) {
       fakeLegacy = modernToLegacy.get(trueModern);
-      if (fakeLegacy == null) {
-        fakeLegacy = wrapToLegacy(trueModern);
-        modernToLegacy.put(trueModern, fakeLegacy);
-      }
+    }
+    if (fakeLegacy == null) {
+      fakeLegacy = wrapToLegacy(trueModern);
+      mapModern(trueModern, fakeLegacy);
     }
     
     return fakeLegacy;
@@ -121,21 +121,21 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
   /*
    * @see loci.legacy.adapter.LegacyAdapter#mapModern(java.lang.Object, java.lang.Object)
    */
-  public void mapModern(M modern, L legacy) {
-    synchronized (legacyToModern) {
-      legacyToModern.put(legacy, modern);
+  public void mapModern(M modernKey, L legacyValue) {
+    synchronized (modernToLegacy) {
+      modernToLegacy.put(modernKey, legacyValue);
     }
   }
   
   /*
    * @see loci.legacy.adapter.LegacyAdapter#mapLegacy(java.lang.Object, java.lang.Object)
    */
-  public void mapLegacy(L legacy, M modern) {
-    synchronized (modernToLegacy) {
-      modernToLegacy.put(modern, legacy);
+  public void mapLegacy(L legacyKey, M modernValue) {
+    synchronized (legacyToModern) {
+      legacyToModern.put(legacyKey, modernValue);
     }
   }
-
+  
   /* See LegacyAdapter#clear() */
   public void clear() {
     synchronized (legacyToModern) {

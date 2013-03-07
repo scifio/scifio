@@ -94,22 +94,22 @@ public interface LegacyAdapter <L, M> {
   M getModern(L legacy);
   
   /**
-   * Adds a strong reference to the provided modern object, mapped to a weak
-   * reference to the legacy object.
+   * Maps the provided modernKey (weakly) to the provided
+   * legacyValue.
    * 
    * @param modern
    * @param legacy
    */
-  void mapModern(M modern, L legacy);
+  void mapModern(M modernKey, L legacyValue);
   
   /**
-   * Adds a strong reference to the provided legacy object, mapped to a weak
-   * reference to the modern object.
+   * Maps the provided legacyKey (weakly) to the provided
+   * modernValue.
    * 
    * @param modern
    * @param legacy
    */
-  void mapLegacy(L legacy, M modern);
+  void mapLegacy(L legacyKey, M modernValue);
 
   /**
    * Resets any mappings in this adapter.
