@@ -68,15 +68,8 @@ public class BZip2Handle extends StreamHandle {
    * @throws HandleException if the given file is not a BZip2 file.
    */
   public BZip2Handle(String file) throws IOException {
-    try {
-      sHandle = new ome.scifio.io.BZip2Handle(LegacyContext.get(), file);
-    } catch (IOException e) {
-      if (e instanceof ome.scifio.io.HandleException)
-        throw (HandleException)e;
-      
-      throw e;
-    }
-  }
+    super(new ome.scifio.io.BZip2Handle(LegacyContext.get(), file));
+  } 
 
   // -- BZip2Handle API methods --
 
@@ -95,7 +88,7 @@ public class BZip2Handle extends StreamHandle {
     Object[] o = null;
     
     try {
-      pmi.invokeProtected(sHandle, "invokeProtected", c, o);
+      pmi.invokeProtected(unwrap(), "invokeProtected", c, o);
     }
     catch (InvocationTargetException e) {
       pmi.unwrapException(e, IOException.class);

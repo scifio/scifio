@@ -67,7 +67,7 @@ public class GZipHandle extends StreamHandle {
    * @throws HandleException if the given file name is not a GZip file.
    */
   public GZipHandle(String file) throws IOException {
-    sHandle = new ome.scifio.io.GZipHandle(LegacyContext.get(), file);
+    super(new ome.scifio.io.GZipHandle(LegacyContext.get(), file));
   }
 
   // -- GZipHandle API methods --
@@ -87,7 +87,7 @@ public class GZipHandle extends StreamHandle {
     Object[] o = null;
     
     try {
-      pmi.invokeProtected(sHandle, "resetStream", c, o);
+      pmi.invokeProtected(unwrap(), "resetStream", c, o);
     }
     catch (InvocationTargetException e) {
       pmi.unwrapException(e, IOException.class);

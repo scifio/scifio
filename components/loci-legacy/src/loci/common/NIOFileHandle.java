@@ -44,11 +44,11 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
 /**
- * A legacy delegator class for ome.scifio.io.NIOFileHandle.
+ * A legacy delegator class for ome.scifio.io.NIOFileunwrap().
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/NIOFileHandle.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/NIOFileHandle.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/NIOFileunwrap().java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/NIOFileunwrap().java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @see IRandomAccess
  * @see java.io.RandomAccessFile
@@ -72,7 +72,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
    */
   public NIOFileHandle(File file, String mode, int bufferSize) 
     throws IOException {
-    handle = new ome.scifio.io.NIOFileHandle(file, mode, bufferSize);
+    super(new ome.scifio.io.NIOFileHandle(file, mode, bufferSize));
   }
 
   /**
@@ -80,7 +80,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
    * optionally to write to, the file specified by the File argument.
    */
   public NIOFileHandle(File file, String mode) throws IOException {
-    handle = new ome.scifio.io.NIOFileHandle(file, mode);
+    super(new ome.scifio.io.NIOFileHandle(file, mode));
   }
 
   /**
@@ -88,7 +88,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
    * optionally to write to, a file with the specified name.
    */
   public NIOFileHandle(String name, String mode) throws IOException {
-    handle = new ome.scifio.io.NIOFileHandle(name, mode);
+    super(new ome.scifio.io.NIOFileHandle(name, mode));
   }
 
   // -- NIOFileHandle API methods --
@@ -115,229 +115,229 @@ public class NIOFileHandle extends AbstractNIOHandle {
 
   // -- FileHandle and Channel API methods --
 
-  /** Gets the random access file object backing this FileHandle. */
-  public RandomAccessFile getRandomAccessFile() { return ((ome.scifio.io.NIOFileHandle)handle).getRandomAccessFile(); }
+  /** Gets the random access file object backing this Fileunwrap(). */
+  public RandomAccessFile getRandomAccessFile() { return ((ome.scifio.io.NIOFileHandle)unwrap()).getRandomAccessFile(); }
 
-  /** Gets the FileChannel from this FileHandle. */
-  public FileChannel getFileChannel() { return ((ome.scifio.io.NIOFileHandle)handle).getFileChannel(); }
+  /** Gets the FileChannel from this Fileunwrap(). */
+  public FileChannel getFileChannel() { return ((ome.scifio.io.NIOFileHandle)unwrap()).getFileChannel(); }
 
   /** Gets the current buffer size. */
-  public int getBufferSize() { return ((ome.scifio.io.NIOFileHandle)handle).getBufferSize(); }
+  public int getBufferSize() { return ((ome.scifio.io.NIOFileHandle)unwrap()).getBufferSize(); }
 
   // -- AbstractNIOHandle API methods --
 
-  /* @see AbstractNIOHandle.setLength(long) */
+  /* @see AbstractNIOunwrap().setLength(long) */
   public void setLength(long length) throws IOException {
-    ((ome.scifio.io.NIOFileHandle)handle).setLength(length);
+    ((ome.scifio.io.NIOFileHandle)unwrap()).setLength(length);
   }
 
   // -- IRandomAccess API methods --
 
   /* @see IRandomAccess.close() */
   public void close() throws IOException {
-    handle.close();
+    unwrap().close();
   }
 
   /* @see IRandomAccess.getFilePointer() */
   public long getFilePointer() throws IOException {
-    return handle.getFilePointer();
+    return unwrap().getFilePointer();
   }
 
   /* @see IRandomAccess.length() */
   public long length() throws IOException {
-    return handle.length();
+    return unwrap().length();
   }
 
   /* @see IRandomAccess.getOrder() */
   public ByteOrder getOrder() {
-    return handle.getOrder();
+    return unwrap().getOrder();
   }
 
   /* @see IRandomAccess.setOrder(ByteOrder) */
   public void setOrder(ByteOrder order) {
-    handle.setOrder(order);
+    unwrap().setOrder(order);
   }
 
   /* @see IRandomAccess.read(byte[]) */
   public int read(byte[] b) throws IOException {
-    return handle.read(b);
+    return unwrap().read(b);
   }
 
   /* @see IRandomAccess.read(byte[], int, int) */
   public int read(byte[] b, int off, int len) throws IOException {
-    return handle.read(b, off, len);
+    return unwrap().read(b, off, len);
   }
 
   /* @see IRandomAccess.read(ByteBuffer) */
   public int read(ByteBuffer buf) throws IOException {
-    return handle.read(buf);
+    return unwrap().read(buf);
   }
 
   /* @see IRandomAccess.read(ByteBuffer, int, int) */
   public int read(ByteBuffer buf, int off, int len) throws IOException {
-    return handle.read(buf, off, len);
+    return unwrap().read(buf, off, len);
   }
 
   /* @see IRandomAccess.seek(long) */
   public void seek(long pos) throws IOException {
-    handle.seek(pos);
+    unwrap().seek(pos);
   }
 
   /* @see java.io.DataInput.readBoolean() */
   public boolean readBoolean() throws IOException {
-    return handle.readBoolean();
+    return unwrap().readBoolean();
   }
 
   /* @see java.io.DataInput.readByte() */
   public byte readByte() throws IOException {
-    return handle.readByte();
+    return unwrap().readByte();
   }
 
   /* @see java.io.DataInput.readChar() */
   public char readChar() throws IOException {
-    return handle.readChar();
+    return unwrap().readChar();
   }
 
   /* @see java.io.DataInput.readDouble() */
   public double readDouble() throws IOException {
-    return handle.readDouble();
+    return unwrap().readDouble();
   }
 
   /* @see java.io.DataInput.readFloat() */
   public float readFloat() throws IOException {
-    return handle.readFloat();
+    return unwrap().readFloat();
   }
 
   /* @see java.io.DataInput.readFully(byte[]) */
   public void readFully(byte[] b) throws IOException {
-    handle.readFully(b);
+    unwrap().readFully(b);
   }
 
   /* @see java.io.DataInput.readFully(byte[], int, int) */
   public void readFully(byte[] b, int off, int len) throws IOException {
-    handle.readFully(b, off, len);
+    unwrap().readFully(b, off, len);
   }
 
   /* @see java.io.DataInput.readInt() */
   public int readInt() throws IOException {
-    return handle.readInt();
+    return unwrap().readInt();
   }
 
   /* @see java.io.DataInput.readLine() */
   public String readLine() throws IOException {
-    return handle.readLine();
+    return unwrap().readLine();
   }
 
   /* @see java.io.DataInput.readLong() */
   public long readLong() throws IOException {
-    return handle.readLong();
+    return unwrap().readLong();
   }
 
   /* @see java.io.DataInput.readShort() */
   public short readShort() throws IOException {
-    return handle.readShort();
+    return unwrap().readShort();
   }
 
   /* @see java.io.DataInput.readUnsignedByte() */
   public int readUnsignedByte() throws IOException {
-    return handle.readUnsignedByte();
+    return unwrap().readUnsignedByte();
   }
 
   /* @see java.io.DataInput.readUnsignedShort() */
   public int readUnsignedShort() throws IOException {
-    return handle.readUnsignedShort();
+    return unwrap().readUnsignedShort();
   }
 
   /* @see java.io.DataInput.readUTF() */
   public String readUTF() throws IOException {
-    return handle.readUTF();
+    return unwrap().readUTF();
   }
 
   /* @see java.io.DataInput.skipBytes(int) */
   public int skipBytes(int n) throws IOException {
-    return handle.skipBytes(n);
+    return unwrap().skipBytes(n);
   }
 
   // -- DataOutput API methods --
 
   /* @see java.io.DataOutput.write(byte[]) */
   public void write(byte[] b) throws IOException {
-    handle.write(b);
+    unwrap().write(b);
   }
 
   /* @see java.io.DataOutput.write(byte[], int, int) */
   public void write(byte[] b, int off, int len) throws IOException {
-    handle.write(b, off, len);
+    unwrap().write(b, off, len);
   }
 
   /* @see IRandomAccess.write(ByteBuffer) */
   public void write(ByteBuffer buf) throws IOException {
-    handle.write(buf);
+    unwrap().write(buf);
   }
 
   /* @see IRandomAccess.write(ByteBuffer, int, int) */
   public void write(ByteBuffer buf, int off, int len) throws IOException {
-    handle.write(buf, off, len);
+    unwrap().write(buf, off, len);
   }
 
   /* @see java.io.DataOutput.write(int b) */
   public void write(int b) throws IOException {
-    handle.write(b);
+    unwrap().write(b);
   }
 
   /* @see java.io.DataOutput.writeBoolean(boolean) */
   public void writeBoolean(boolean v) throws IOException {
-    handle.writeBoolean(v);
+    unwrap().writeBoolean(v);
   }
 
   /* @see java.io.DataOutput.writeByte(int) */
   public void writeByte(int v) throws IOException {
-    handle.writeByte(v);
+    unwrap().writeByte(v);
   }
 
   /* @see java.io.DataOutput.writeBytes(String) */
   public void writeBytes(String s) throws IOException {
-    handle.writeBytes(s);
+    unwrap().writeBytes(s);
   }
 
   /* @see java.io.DataOutput.writeChar(int) */
   public void writeChar(int v) throws IOException {
-    handle.writeChar(v);
+    unwrap().writeChar(v);
   }
 
   /* @see java.io.DataOutput.writeChars(String) */
   public void writeChars(String s) throws IOException {
-    handle.writeChars(s);
+    unwrap().writeChars(s);
   }
 
   /* @see java.io.DataOutput.writeDouble(double) */
   public void writeDouble(double v) throws IOException {
-    handle.writeDouble(v);
+    unwrap().writeDouble(v);
   }
 
   /* @see java.io.DataOutput.writeFloat(float) */
   public void writeFloat(float v) throws IOException {
-    handle.writeFloat(v);
+    unwrap().writeFloat(v);
   }
 
   /* @see java.io.DataOutput.writeInt(int) */
   public void writeInt(int v) throws IOException {
-    handle.writeInt(v);
+    unwrap().writeInt(v);
   }
 
   /* @see java.io.DataOutput.writeLong(long) */
   public void writeLong(long v) throws IOException {
-    handle.writeLong(v);
+    unwrap().writeLong(v);
   }
 
   /* @see java.io.DataOutput.writeShort(int) */
   public void writeShort(int v) throws IOException {
-    handle.writeShort(v);
+    unwrap().writeShort(v);
   }
 
   /* @see java.io.DataOutput.writeUTF(String)  */
   public void writeUTF(String str) throws IOException {
-    handle.writeUTF(str);
+    unwrap().writeUTF(str);
   }
 
 }

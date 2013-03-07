@@ -64,7 +64,7 @@ public class ZipHandle extends StreamHandle {
   // -- Constructor --
 
   public ZipHandle(String file) throws IOException {
-    sHandle = new ome.scifio.io.ZipHandle(LegacyContext.get(), file);
+    super(new ome.scifio.io.ZipHandle(LegacyContext.get(), file));
   }
 
   /**
@@ -74,7 +74,7 @@ public class ZipHandle extends StreamHandle {
    * @throws HandleException if the given file is not a Zip file.
    */
   public ZipHandle(String file, ZipEntry entry) throws IOException {
-    sHandle = new ome.scifio.io.ZipHandle(file, entry);
+    super(new ome.scifio.io.ZipHandle(file, entry));
   }
 
   // -- ZipHandle API methods --
@@ -88,24 +88,24 @@ public class ZipHandle extends StreamHandle {
 
   /** Get the name of the backing Zip entry. */
   public String getEntryName() {
-    return ((ome.scifio.io.ZipHandle)sHandle).getEntryName();
+    return ((ome.scifio.io.ZipHandle)unwrap()).getEntryName();
   }
 
   /** Returns the DataInputStream corresponding to the backing Zip entry. */
   public DataInputStream getInputStream() {
-    return ((ome.scifio.io.ZipHandle)sHandle).getInputStream();
+    return ((ome.scifio.io.ZipHandle)unwrap()).getInputStream();
   }
 
   /** Returns the number of entries. */
   public int getEntryCount() {
-    return ((ome.scifio.io.ZipHandle)sHandle).getEntryCount();
+    return ((ome.scifio.io.ZipHandle)unwrap()).getEntryCount();
   }
 
   // -- IRandomAccess API methods --
 
   /* @see IRandomAccess#close() */
   public void close() throws IOException {
-    sHandle.close();
+    unwrap().close();
   }
 
   // -- StreamHandle API methods --
@@ -116,7 +116,7 @@ public class ZipHandle extends StreamHandle {
     Object[] o = null;
     
     try {
-      pmi.invokeProtected(sHandle, "resetStream", c, o);
+      pmi.invokeProtected(unwrap(), "resetStream", c, o);
     }
     catch (InvocationTargetException e) {
       pmi.unwrapException(e, IOException.class);

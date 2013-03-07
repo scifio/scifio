@@ -67,14 +67,14 @@ public class URLHandle extends StreamHandle {
    * Constructs a new URLHandle using the given URL.
    */
   public URLHandle(String url) throws IOException {
-    sHandle = new ome.scifio.io.URLHandle(LegacyContext.get(), url);
+    super(new ome.scifio.io.URLHandle(LegacyContext.get(), url));
   }
 
   // -- IRandomAccess API methods --
 
   /* @see IRandomAccess#seek(long) */
   public void seek(long pos) throws IOException {
-    sHandle.seek(pos);
+    unwrap().seek(pos);
   }
 
   // -- StreamHandle API methods --
@@ -85,7 +85,7 @@ public class URLHandle extends StreamHandle {
     Object[] o = null;
     
     try {
-      pmi.invokeProtected(sHandle, "resetStream", c, o);
+      pmi.invokeProtected(unwrap(), "resetStream", c, o);
     }
     catch (InvocationTargetException e) {
       pmi.unwrapException(e, IOException.class);

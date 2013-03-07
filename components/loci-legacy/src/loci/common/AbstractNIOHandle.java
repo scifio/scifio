@@ -37,6 +37,11 @@
 package loci.common;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+
+import loci.common.adapter.IRandomAccessAdapter;
+import loci.legacy.adapter.AdapterTools;
+import loci.legacy.adapter.Wrapper;
 
 /**
  * A legacy delegator to ome.scifio.io.AbstractNIOHandle.
@@ -50,7 +55,7 @@ import java.io.IOException;
  *
  * @author Chris Allan <callan at blackcat dot ca>
  */
-public abstract class AbstractNIOHandle implements IRandomAccess {
+public abstract class AbstractNIOHandle implements IRandomAccess, Wrapper<ome.scifio.io.AbstractNIOHandle> {
 
   /** Error message to be used when instantiating an EOFException. */
   protected static final String EOF_ERROR_MSG =
@@ -60,9 +65,16 @@ public abstract class AbstractNIOHandle implements IRandomAccess {
 
   // -- Fields --
 
-  protected ome.scifio.io.AbstractNIOHandle handle;
+  private WeakReference<? extends ome.scifio.io.AbstractNIOHandle> handle;
   
   // -- Constructors --
+  
+  AbstractNIOHandle() { }
+  
+  AbstractNIOHandle(ome.scifio.io.AbstractNIOHandle handle) {
+    this.handle = new WeakReference<ome.scifio.io.AbstractNIOHandle>(handle);
+    AdapterTools.getAdapter(IRandomAccessAdapter.class).mapLegacy(this, handle);
+  }
 
   // -- AbstractNIOHandle methods --
 
@@ -101,19 +113,25 @@ public abstract class AbstractNIOHandle implements IRandomAccess {
    */
   protected abstract void setLength(long length) throws IOException;
   
-  // -- Object Delegators --
+  // -- Wrapper API methods --
   
-  @Override
-  public boolean equals(Object obj) {
-    return handle.equals(obj);
+  public ome.scifio.io.AbstractNIOHandle unwrap() {
+    return handle.get();
   }
-
-  @Override
-  public int hashCode() {
-    return handle.hashCode();
-  }
-  @Override
-  public String toString() {
-    return handle.toString();
-  }
+  
+  // -- Object Delegators --
+//  
+//  @Override
+//  public boolean equals(Object obj) {
+//    return handle.equals(obj);
+//  }
+//
+//  @Override
+//  public int hashCode() {
+//    return handle.hashCode();
+//  }
+//  @Override
+//  public String toString() {
+//    return handle.toString();
+//  }
 }
