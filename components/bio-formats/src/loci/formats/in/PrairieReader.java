@@ -753,8 +753,8 @@ public class PrairieReader extends FormatReader {
     final File file = new File(currentId).getAbsoluteFile();
     final File parent = file.getParentFile();
     final String[] listing = file.exists() ? parent.list() :
-      LegacyContext.get().getService(LocationService.class)
-                .getIdMap().keySet().toArray(new String[0]);
+      LegacyContext.getSCIFIO().locations().getIdMap().
+        keySet().toArray(new String[0]);
     for (final String name : listing) {
       if (checkSuffix(name, suffix)) {
         return new Location(LegacyContext.get(), new File(parent, name));

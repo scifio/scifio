@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import ome.scifio.SCIFIO;
 import ome.scifio.common.Constants;
 
 import org.scijava.Context;
@@ -229,7 +230,8 @@ public class ZipHandle extends StreamHandle {
   }
 
   private IRandomAccess getHandle(String file) throws IOException {
-    return getContext().getService(LocationService.class).getHandle(file, false, false);
+    SCIFIO scifio = new SCIFIO(getContext());
+    return scifio.locations().getHandle(file, false, false);
   }
 
   private RandomAccessInputStream openStream(String file)

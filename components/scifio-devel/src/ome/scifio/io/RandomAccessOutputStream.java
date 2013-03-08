@@ -42,6 +42,8 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import ome.scifio.SCIFIO;
+
 import org.scijava.Context;
 
 
@@ -68,7 +70,8 @@ public class RandomAccessOutputStream extends OutputStream implements DataOutput
    * @throws IOException If there is a problem opening the file.
    */
   public RandomAccessOutputStream(Context context, String file) throws IOException {
-    outputFile = context.getService(LocationService.class).getHandle(file, true);
+    SCIFIO scifio = new SCIFIO(context);
+    outputFile = scifio.locations().getHandle(file, true);
   }
 
   /**

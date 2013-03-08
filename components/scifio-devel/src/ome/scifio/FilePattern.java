@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  */
-public class FilePattern extends SortablePlugin {
+public class FilePattern {
 
   // -- Constants --
 
@@ -102,6 +102,8 @@ public class FilePattern extends SortablePlugin {
 
   /** Whether or not this FilePattern represents a regular expression. */
   private boolean isRegex = false;
+  
+  private SCIFIO scifio;
 
   // -- Constructors --
 
@@ -120,7 +122,7 @@ public class FilePattern extends SortablePlugin {
 
   /** Creates a pattern object for files with the given pattern string. */
   public FilePattern(Context context, String pattern) {
-    setContext(context);
+    scifio = new SCIFIO(context);
     this.pattern = pattern;
     valid = false;
     if (pattern == null) {
@@ -181,7 +183,7 @@ public class FilePattern extends SortablePlugin {
     buildFiles("", num, fileList);
     files = fileList.toArray(new String[0]);
 
-    if (files.length == 0 && new Location(getContext(), pattern).exists()) {
+    if (files.length == 0 && new Location(scifio.getContext(), pattern).exists()) {
       files = new String[] {pattern};
     }
 
@@ -279,7 +281,7 @@ public class FilePattern extends SortablePlugin {
     if (blocks.length == 0) {
       // regex pattern
 
-      if (new Location(getContext(), pattern).exists()) {
+      if (new Location(scifio.getContext(), pattern).exists()) {
         fileList.add(pattern);
         return;
       }
@@ -303,8 +305,8 @@ public class FilePattern extends SortablePlugin {
         dir = pattern.substring(0, endNotRegex);
         end = endNotRegex;
       }
-      if (dir.equals("") || !new Location(getContext(), dir).exists()) {
-        files = getContext().getService(LocationService.class).getIdMap().keySet().toArray(new String[0]);
+      if (dir.equals("") || !new Location(scifio.getContext(), dir).exists()) {
+        files = scifio.locations().getIdMap().keySet().toArray(new String[0]);
         if (files.length == 0) {
           dir = ".";
           files = getAllFiles(dir);
@@ -326,7 +328,7 @@ public class FilePattern extends SortablePlugin {
       }
 
       for (String f : files) {
-        Location path = new Location(getContext(), dir, f);
+        Location path = new Location(scifio.getContext(), dir, f);
         if (regex.matcher(f).matches() ||
           regex.matcher(path.getAbsolutePath()).matches())
         {
@@ -356,11 +358,11 @@ public class FilePattern extends SortablePlugin {
   private String[] getAllFiles(String dir) {
     ArrayList<String> files = new ArrayList<String>();
 
-    Location root = new Location(getContext(), dir);
+    Location root = new Location(scifio.getContext(), dir);
     String[] children = root.list();
 
     for (String child : children) {
-      Location file = new Location(getContext(), root, child);
+      Location file = new Location(scifio.getContext(), root, child);
       if (file.isDirectory()) {
         String[] grandchildren = getAllFiles(file.getAbsolutePath());
         for (String g : grandchildren) {

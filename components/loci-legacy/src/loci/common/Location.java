@@ -102,7 +102,7 @@ public class Location {
    * original values.
    */
   public static void reset() {
-    LegacyContext.get().getService(LocationService.class).reset();
+    LegacyContext.getSCIFIO().locations().reset();
   }
 
   /**
@@ -122,7 +122,7 @@ public class Location {
    * @param cache - true to turn cacheing on, false to leave it off.
    */
   public static void cacheDirectoryListings(boolean cache) {
-    LegacyContext.get().getService(LocationService.class).cacheDirectoryListings(cache);
+    LegacyContext.getSCIFIO().locations().cacheDirectoryListings(cache);
   }
 
   /**
@@ -132,7 +132,7 @@ public class Location {
    * seconds.
    */
   public static void setCacheDirectoryTimeout(double sec) {
-    LegacyContext.get().getService(LocationService.class).setCacheDirectoryTimeout(sec);
+    LegacyContext.getSCIFIO().locations().setCacheDirectoryTimeout(sec);
   }
 
   /**
@@ -141,14 +141,14 @@ public class Location {
    * Do this if directory contents might have changed in a significant way.
    */
   public static void clearDirectoryListingsCache() {
-    LegacyContext.get().getService(LocationService.class).clearDirectoryListingsCache();
+    LegacyContext.getSCIFIO().locations().clearDirectoryListingsCache();
   }
 
   /**
    * Remove any cached directory listings that have expired.
    */
   public static void cleanStaleCacheEntries() {
-    LegacyContext.get().getService(LocationService.class).cleanStaleCacheEntries();
+    LegacyContext.getSCIFIO().locations().cleanStaleCacheEntries();
   }
 
   /**
@@ -162,7 +162,7 @@ public class Location {
    * @see #getMappedId(String)
    */
   public static void mapId(String id, String filename) {
-    LegacyContext.get().getService(LocationService.class).mapId(id, filename);
+    LegacyContext.getSCIFIO().locations().mapId(id, filename);
   }
 
   /** Maps the given id to the given IRandomAccess object. */
@@ -180,7 +180,7 @@ public class Location {
    * @see #mapId(String, String)
    */
   public static String getMappedId(String id) {
-    return LegacyContext.get().getService(LocationService.class).getMappedId(id);
+    return LegacyContext.getSCIFIO().locations().getMappedId(id);
   }
 
   /** Gets the random access handle for the given id. */
@@ -191,7 +191,7 @@ public class Location {
 
   /** Return the id mapping. */
   public static HashMap<String, Object> getIdMap() { 
-    return LegacyContext.get().getService(LocationService.class).getIdMap();
+    return LegacyContext.getSCIFIO().locations().getIdMap();
   }
 
   /**
@@ -200,7 +200,7 @@ public class Location {
    * @throws IllegalArgumentException if the given HashMap is null.
    */
   public static void setIdMap(HashMap<String, Object> map) {
-    LegacyContext.get().getService(LocationService.class).setIdMap(map);
+    LegacyContext.getSCIFIO().locations().setIdMap(map);
   }
 
   /**
@@ -243,7 +243,7 @@ public class Location {
    *           if the id is not valid.
    */
   public static void checkValidId(String id) throws IOException {
-    LegacyContext.get().getService(LocationService.class).checkValidId(id);
+    LegacyContext.getSCIFIO().locations().checkValidId(id);
   }
 
   /**

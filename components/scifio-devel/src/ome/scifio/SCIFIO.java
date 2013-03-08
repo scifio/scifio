@@ -35,6 +35,8 @@
  */
 package ome.scifio;
 
+import ome.scifio.io.LocationService;
+
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
 
@@ -49,6 +51,8 @@ public class SCIFIO extends AbstractContextual {
   private InitializeService initializeService = null;
   private FormatService formatService = null;
   private TranslatorService translatorService = null;
+  private LocationService locationService = null;
+
   
   // -- Constructors --
   
@@ -73,6 +77,7 @@ public class SCIFIO extends AbstractContextual {
     initializeService = context.getService(InitializeService.class);
     formatService = context.getService(FormatService.class);
     translatorService = context.getService(TranslatorService.class);
+    locationService = context.getService(LocationService.class);
   }
   
   // -- Service Accessors --
@@ -87,5 +92,9 @@ public class SCIFIO extends AbstractContextual {
   
   public TranslatorService translators() {
     return translatorService;
+  }
+  
+  public LocationService locations() {
+    return locationService;
   }
 }

@@ -44,10 +44,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 
+import ome.scifio.SCIFIO;
 import ome.scifio.common.Constants;
 
 import org.scijava.Context;
-import org.scijava.Contextual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Melissa Linkert melissa at glencoesoftware.com
  * @author Curtis Rueden ctrueden at wisc.edu
  */
-public class RandomAccessInputStream extends InputStream implements DataInput, Contextual {
+public class RandomAccessInputStream extends InputStream implements DataInput {
 
   // -- Constants --
 
@@ -83,8 +83,6 @@ public class RandomAccessInputStream extends InputStream implements DataInput, C
 
   protected IRandomAccess raf;
   
-  protected Context context;
-
   /** The file name. */
   protected final String file;
 
@@ -93,13 +91,13 @@ public class RandomAccessInputStream extends InputStream implements DataInput, C
   protected long markedPos = -1;
 
   protected String encoding = Constants.ENCODING;
+  
+  private SCIFIO scifio;
 
   // -- Constructors --
 
-  protected RandomAccessInputStream(Context context) {
-    setContext(context);
-    raf = null;
-    file = null;
+  protected RandomAccessInputStream(Context context) throws IOException {
+    this(context, null, null);
   }
   
   /**
@@ -107,7 +105,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput, C
    * around the given file.
    */
   public RandomAccessInputStream(Context context, String file) throws IOException {
-    this(context, context.getService(LocationService.class).getHandle(file), file);
+    this(context,new SCIFIO(context).locations().getHandle(file), file);
   }
 
   /** Constructs a random access stream around the given handle. */
@@ -122,13 +120,13 @@ public class RandomAccessInputStream extends InputStream implements DataInput, C
   public RandomAccessInputStream(Context context, IRandomAccess handle, String file)
     throws IOException
   {
+    scifio = new SCIFIO(context);
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("RandomAccessInputStream {} OPEN", hashCode());
     }
-    setContext(context);
+    this.file = file;
     raf = handle;
     raf.setOrder(ByteOrder.BIG_ENDIAN);
-    this.file = file;
     seek(0);
     length = -1;
   }
@@ -183,7 +181,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput, C
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("RandomAccessInputStream {} CLOSE", hashCode());
     }
-    if (context.getService(LocationService.class).getMappedFile(file) != null) return;
+    if (scifio.locations().getMappedFile(file) != null) return;
     if (raf != null) raf.close();
     raf = null;
     markedPos = -1;
@@ -513,15 +511,4 @@ public class RandomAccessInputStream extends InputStream implements DataInput, C
   public String getFileName() {
     return this.file;
   }
-  
-  // -- Contextual API Methods --
-
-  public Context getContext() {
-    return context;
-  }
-
-  public void setContext(Context context) {
-    this.context = context;
-  }
-
 }
