@@ -18,13 +18,10 @@ package ome.scifio.tutorials;
 
 import java.io.IOException;
 
-import org.scijava.Context;
-
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.Parser;
-import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 import ome.scifio.xml.XMLTools;
 import ome.xml.meta.OMEMetadata;
@@ -48,7 +45,7 @@ public class T1dOpeningOMEXML {
     T1cSavingImagePlanes.main(new String[]{});
     
     // We'll need a context for discovering formats and translators
-    Context context = new Context();
+    SCIFIO scifio = new SCIFIO();
     
     // Now we can reference that image via the path:
     String outPath = "SCIFIOTutorial.png";
@@ -65,7 +62,7 @@ public class T1dOpeningOMEXML {
     // be quite reasonable. But if we ONLY want the Metadata, it's really doing more than
     // we need. We just need a Parser:
     
-    Format format = context.getService(SCIFIO.class).formats().getFormat(outPath);
+    Format format = scifio.formats().getFormat(outPath);
     Parser parser = format.createParser();
     
     // You can see a more in-depth treatment of individual components in T2a and T2b.
@@ -77,7 +74,7 @@ public class T1dOpeningOMEXML {
     
     OMEMetadata omexml = new OMEMetadata();
     
-    context.getService(SCIFIO.class).translators().translate(meta, omexml);
+    scifio.translators().translate(meta, omexml);
     
     // Now that we have our OME-XML we can print it:
     String xml = omexml.getRoot().dumpXML();

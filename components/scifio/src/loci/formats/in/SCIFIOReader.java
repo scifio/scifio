@@ -46,7 +46,6 @@ import ome.scifio.Checker;
 import ome.scifio.Format;
 import ome.scifio.Parser;
 import ome.scifio.Reader;
-import ome.scifio.SCIFIO;
 import ome.scifio.gui.BufferedImageReader;
 
 import loci.common.RandomAccessInputStream;
@@ -78,13 +77,13 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
   // -- Constructor --
   
   public SCIFIOReader() {
-    super("SCIFIO General Reader", LegacyContext.get().getService(SCIFIO.class).formats().getSuffixes());
+    super("SCIFIO General Reader", LegacyContext.getSCIFIO().formats().getSuffixes());
     
     readers = new ArrayList<Reader>();
     checkers = new ArrayList<Checker>();
     parsers = new ArrayList<Parser>();
     
-    formats = LegacyContext.get().getService(SCIFIO.class).formats().getAllFormats();
+    formats = LegacyContext.getSCIFIO().formats().getAllFormats();
     
     formatIndex = new HashMap<Format, Integer>();
     
@@ -202,7 +201,7 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
    */
   public void setId(String id) throws FormatException, IOException {
     try {
-      Format fmt = LegacyContext.get().getService(SCIFIO.class).formats().getFormat(id);
+      Format fmt = LegacyContext.getSCIFIO().formats().getFormat(id);
       
       if (!format.equals(fmt)) {
         close();

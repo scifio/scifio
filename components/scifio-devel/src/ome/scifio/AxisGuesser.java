@@ -400,7 +400,9 @@ public class AxisGuesser {
           // read dimensional information from first file
           LOGGER.info("Reading first file ");
           
-          Reader reader = context.getService(SCIFIO.class).initializer().initializeReader(id);
+          SCIFIO scifio = new SCIFIO(context);
+          
+          Reader reader = scifio.initializer().initializeReader(id);
           String dimOrder = FormatTools.findDimensionOrder(reader.getDatasetMetadata(), 0);
           int sizeZ = reader.getDatasetMetadata().getAxisLength(0, Axes.Z);
           int sizeT = reader.getDatasetMetadata().getAxisLength(0, Axes.TIME);

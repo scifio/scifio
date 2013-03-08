@@ -10,9 +10,13 @@ import org.scijava.plugin.SortablePlugin;
  */
 public abstract class AbstractHasFormat extends SortablePlugin implements HasFormat {
   
+  private SCIFIO scifio;
+  
   // -- HasFormat API --
 
   public Format getFormat() {
-    return getContext().getService(SCIFIO.class).formats().getFormatFromComponent(getClass());
+    if (scifio == null) scifio = new SCIFIO(getContext());
+    
+    return scifio.formats().getFormatFromComponent(getClass());
   }
 }

@@ -18,8 +18,6 @@ package ome.scifio.tutorials;
 
 import java.io.IOException;
 
-import org.scijava.Context;
-
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
@@ -37,11 +35,11 @@ public class T2bTypedComponents {
     // In IntroToSCIFIO we saw the general case of image opening, but what
     // if we know exactly what kind of image we're working with?
     
-    final Context context = new Context();
+    SCIFIO scifio = new SCIFIO();
     String sampleImage = "8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=3&rgb=3&indexed=true&sizeT=7&sizeY=50.fake";
 
     // This time, since we know we have a .fake image, we'll get a handle to the Fake format.
-    FakeFormat fakeFormat = context.getService(SCIFIO.class).formats().getFormatFromClass(FakeFormat.class);
+    FakeFormat fakeFormat = scifio.formats().getFormatFromClass(FakeFormat.class);
     
     // Two important points here:
     // 1 - getformatFromClass is overloaded. You can use any component's class

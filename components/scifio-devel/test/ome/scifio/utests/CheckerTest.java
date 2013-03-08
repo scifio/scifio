@@ -72,7 +72,8 @@ public class CheckerTest {
   @BeforeMethod
   public void setUp() throws FormatException {
     context = new Context();
-    Format f = context.getService(SCIFIO.class).formats().getFormat(id);
+    SCIFIO scifio = new SCIFIO();
+    Format f = scifio.formats().getFormat(id);
     c = f.createChecker();
     fc = new FakeChecker();
     fc.setContext(context);
@@ -179,7 +180,8 @@ public class CheckerTest {
     //FIXME: index over all components? make Format.createComponent work more like services where
     // you can have a list of components returned... maybe? Or not..
     public Format getFormat() {
-      return getContext().getService(SCIFIO.class).formats().getFormatFromClass(FakeFormat.class);
+      SCIFIO scifio = new SCIFIO(getContext());
+      return scifio.formats().getFormatFromClass(FakeFormat.class);
     }
   }
 }

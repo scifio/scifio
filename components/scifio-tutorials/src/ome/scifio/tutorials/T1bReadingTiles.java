@@ -24,8 +24,6 @@ import ome.scifio.FormatException;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 
-import org.scijava.Context;
-
 /**
  * Tutorial using the SCIFIO API to open image tiles.
  * 
@@ -37,14 +35,14 @@ public class T1bReadingTiles {
 
   public static void main(final String... args) throws FormatException, IOException {
     
-    // As always we'll need a context for this tutorial
-    Context context = new Context();
+    // As always we'll need a SCIFIO for this tutorial
+    SCIFIO scifio = new SCIFIO();
     
     // This time we're going to set up a huge image path
     String hugeImage = "hugePlane&sizeX=70000&sizeY=80000.fake";
     
     // We initialize a reader as we did before
-    Reader reader = context.getService(SCIFIO.class).initializer().initializeReader(hugeImage);
+    Reader reader = scifio.initializer().initializeReader(hugeImage);
     
     // Now we'll try the naive thing, and just open all the planes in this dataset.
     try {

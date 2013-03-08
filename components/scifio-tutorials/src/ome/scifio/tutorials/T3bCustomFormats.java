@@ -19,7 +19,6 @@ package ome.scifio.tutorials;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 import ome.scifio.AbstractChecker;
@@ -58,7 +57,7 @@ public class T3bCustomFormats {
     // ------------------------------------------------------------------------
     
     // Let's start by creating a new context as we have in the other tutorials:
-    Context context = new Context();
+    SCIFIO scifio = new SCIFIO();
     
     // ... and a sample image path:
     String sampleImage = "notAnImage.scifiosmpl";
@@ -67,7 +66,7 @@ public class T3bCustomFormats {
     // all available Formats. As SampleFormat below was annotated as a @Plugin
     // it should be available to our context, directly:
     
-    Format format = context.getService(SCIFIO.class).formats().getFormat(sampleImage);
+    Format format = scifio.formats().getFormat(sampleImage);
     System.out.println("SampleFormat found via FormatService: " + (format != null));
     
     // Using the FormatService provides access to a consistent singleton Format within
@@ -83,7 +82,7 @@ public class T3bCustomFormats {
     // populate its context. But what we really want to do is ensure the
     // context's FormatService knows about our sFormat:
     
-    context.getService(SCIFIO.class).formats().addFormat(sFormat);
+    scifio.formats().addFormat(sFormat);
     
     // Now our SampleFormat will be properly contextualized, and
     // this particular instance will serve as a singleton within the

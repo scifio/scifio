@@ -38,7 +38,6 @@ package loci.formats.in;
 
 import java.io.IOException;
 
-import ome.scifio.SCIFIO;
 import ome.scifio.fake.FakeFormat;
 
 import loci.formats.FormatException;
@@ -94,7 +93,7 @@ public class FakeReader extends SCIFIOFormatReader {
     super("Simulated data", "fake");
   
     try {
-      format = LegacyContext.get().getService(SCIFIO.class).formats().getFormatFromClass(FakeFormat.class);
+      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(FakeFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();

@@ -57,6 +57,10 @@ public class DefaultInitializeService extends AbstractService implements Initial
   
   @Parameter
   PluginService pluginService;
+  
+  // -- Fields --
+  
+  private SCIFIO scifio;
 
   
   // -- InitializeService API Methods --	
@@ -85,7 +89,8 @@ public class DefaultInitializeService extends AbstractService implements Initial
    */
   public ReaderFilter initializeReader(final String id, final boolean openFile)
       throws FormatException, IOException {
-    final Reader r = getContext().getService(SCIFIO.class).formats().getFormat(id, openFile).createReader();
+    
+    final Reader r = scifio.formats().getFormat(id, openFile).createReader();
     r.setSource(id);
     return new ReaderFilter(r);
   }
@@ -118,7 +123,8 @@ public class DefaultInitializeService extends AbstractService implements Initial
   public Writer initializeWriter(
       final String source, final String destination,
       final boolean openSource) throws FormatException, IOException {
-    final Format sFormat = getContext().getService(SCIFIO.class).formats().getFormat(source, openSource);
+    
+    final Format sFormat = scifio.formats().getFormat(source, openSource);
     final Parser parser = sFormat.createParser();
     final Metadata sourceMeta = parser.parse(source);
     
@@ -130,8 +136,6 @@ public class DefaultInitializeService extends AbstractService implements Initial
    */
   public Writer initializeWriter(Metadata sourceMeta, String destination)
       throws FormatException, IOException {
-    
-    final SCIFIO scifio = getContext().getService(SCIFIO.class);
     
     final Format sFormat = sourceMeta.getFormat();
     final Format dFormat = scifio.formats().getFormat(destination, false);
@@ -170,6 +174,12 @@ public class DefaultInitializeService extends AbstractService implements Initial
     writer.setDest(destination);
 
     return writer;
+  }
+  
+  // -- Service API Methods --
+  
+  public void initialize() {
+    scifio = new SCIFIO(getContext());
   }
   
   // -- Helper Methods --

@@ -35,17 +35,57 @@
  */
 package ome.scifio;
 
-import org.scijava.service.Service;
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
 
 /**
  * @author Mark Hiner
  *
  */
-public interface SCIFIO extends Service {
+public class SCIFIO extends AbstractContextual {
+  
+  // -- Fields --
+  
+  private InitializeService initializeService = null;
+  private FormatService formatService = null;
+  private TranslatorService translatorService = null;
+  
+  // -- Constructors --
+  
+  /** Creates a new SCIFIO application context with all available services. */
+  public SCIFIO() {
+    this(new Context());
+  }
 
-  InitializeService initializer();
+  /**
+   * Creates a new SCIFIO application context.
+   *
+   * @param empty If true, the context will be empty; otherwise, it will be
+   * initialized with all available services.
+   */
+  public SCIFIO(boolean empty) {
+    this(new Context(empty));
+  }
   
-  FormatService formats();
+  public SCIFIO(Context context) {
+    setContext(context);
+    
+    initializeService = context.getService(InitializeService.class);
+    formatService = context.getService(FormatService.class);
+    translatorService = context.getService(TranslatorService.class);
+  }
   
-  TranslatorService translators();
+  // -- Service Accessors --
+  
+  public InitializeService initializer() {
+    return initializeService;
+  }
+  
+  public FormatService formats() {
+    return formatService;
+  }
+  
+  public TranslatorService translators() {
+    return translatorService;
+  }
 }

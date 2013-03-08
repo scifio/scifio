@@ -19,7 +19,6 @@ package ome.scifio.tutorials;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.scijava.Context;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
@@ -52,13 +51,9 @@ public class T3cTranslatingMetadata {
     // height, width, etc. Without translators, a Format is isolated and 
     // can not be converted to other (e.g. open-source) formats.
     
-    // As usual, we start by creating a context and our trusty sample image.
-    Context context = new Context();
+    // As usual, we start by creating a SCIFIO and our trusty sample image.
+    SCIFIO scifio = new SCIFIO();
     String sampleImage = "8bit-signed&pixelType=uint8&indexed=true&rgb=3&sizeZ=3&sizeC=3&sizeT=7&sizeY=50.fake";
-    
-    // We will get a reference to the SCIFIO context for reuse
-    SCIFIO scifio = context.getService(SCIFIO.class);
-    
     
     // First let's get a handle on a compatible Format, and parse the sample
     // image's Metadata

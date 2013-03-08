@@ -66,6 +66,7 @@ import org.testng.annotations.Test;
 public class DatasetMetadataTest {
 
   private Context context;
+  private SCIFIO scifio;
   private Parser p;
   private Format f;
   private DatasetMetadata dm;
@@ -76,7 +77,8 @@ public class DatasetMetadataTest {
   @BeforeMethod
   public void setUp() throws FormatException {
     context = new Context();
-    f = context.getService(SCIFIO.class).formats().getFormatFromClass(FakeFormat.class);
+    scifio = new SCIFIO(context);
+    f = scifio.formats().getFormatFromClass(FakeFormat.class);
     p = f.createParser();
     //FIXME: no more datasetmetadata class
     dm = context.getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
@@ -109,7 +111,7 @@ public class DatasetMetadataTest {
   private void initializeMeta(String id) throws IOException, FormatException {
     Metadata m = p.parse(id);
     dm.reset(dm.getClass());
-    Translator trans = context.getService(SCIFIO.class).translators().findTranslator(m, dm);
+    Translator trans = scifio.translators().findTranslator(m, dm);
     trans.translate(m, dm);
   }
 }

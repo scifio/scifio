@@ -35,6 +35,8 @@
  */
 package loci.legacy.context;
 
+import ome.scifio.SCIFIO;
+
 import org.scijava.Context;
 
 /**
@@ -52,11 +54,19 @@ public final class LegacyContext {
   //-- Constants --
 
   private static Context context = null;
+  private static SCIFIO scifio = null;
  
   public static Context get() {
     if (context == null) {
       context = new Context();
     }
     return context;
+  }
+  
+  public static SCIFIO getSCIFIO() {
+    if (scifio == null) {
+      scifio = new SCIFIO(get());
+    }
+    return scifio;
   }
 }

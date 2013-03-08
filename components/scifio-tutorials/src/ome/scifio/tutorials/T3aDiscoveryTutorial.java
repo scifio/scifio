@@ -51,8 +51,8 @@ public class T3aDiscoveryTutorial {
     // To explore these concepts more practically, we will start by creating a context:    
     Context context = new Context();
     
-    // Now, let's get this context's SCIFIO service:
-    SCIFIO scifio = context.getService(SCIFIO.class);
+    // Now, let's get a SCIFIO to work with:
+    SCIFIO scifio = new SCIFIO(context);
     
     // The SCIFIO service was created as a convenience entry point to access the
     // other commonly required services. For example, if we want to work with
@@ -62,7 +62,7 @@ public class T3aDiscoveryTutorial {
     // Note that this service could also have been retrieved from the context itself, and
     // because it is a service you would get the same instance back:
     
-    FormatService fService2 = context.getService(FormatService.class);
+    FormatService fService2 = scifio.formats();
     System.out.println("Format services are equal: " + (fService == fService2));
     
     // Note that FormatService is an interface. If you look at ome.scifio.DefaultFormatService
@@ -82,9 +82,12 @@ public class T3aDiscoveryTutorial {
     Format format2 = fService2.getFormat(sampleImage);
     System.out.println("Formats from FormatService are equal: " + (format == format2));
     
+    // We'll look at creating plugins now. To do so we'll want to use the PluginService:
+    PluginService pluginService = context.getService(PluginService.class);
+    
     // However, that is special behavior of the FormatService in particular. If we were manually
     // querying a Format plugin from the context, it would return a new instance:
-    Format format3 = context.getService(PluginService.class).createInstancesOfType(FakeFormat.class).get(0);
+    Format format3 = pluginService.createInstancesOfType(FakeFormat.class).get(0);
     
     System.out.println("Formats from the context are equal: " + (format == format3));
     
@@ -96,7 +99,7 @@ public class T3aDiscoveryTutorial {
     
     Format format4 = null;
     
-    for (Format f : context.getService(PluginService.class).createInstancesOfType(Format.class)) {
+    for (Format f : pluginService.createInstancesOfType(Format.class)) {
       if (f.getClass().equals(FakeFormat.class))
         format4 = f;
     }
