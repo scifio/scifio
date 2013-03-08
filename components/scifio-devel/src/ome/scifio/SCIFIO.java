@@ -52,6 +52,7 @@ public class SCIFIO extends AbstractContextual {
   private FormatService formatService = null;
   private TranslatorService translatorService = null;
   private LocationService locationService = null;
+  private FilePatternService filePatternService= null;
 
   
   // -- Constructors --
@@ -78,6 +79,7 @@ public class SCIFIO extends AbstractContextual {
     formatService = context.getService(FormatService.class);
     translatorService = context.getService(TranslatorService.class);
     locationService = context.getService(LocationService.class);
+    filePatternService = context.getService(FilePatternService.class);
   }
   
   // -- Service Accessors --
@@ -96,5 +98,9 @@ public class SCIFIO extends AbstractContextual {
   
   public LocationService locations() {
     return locationService;
+  }
+  
+  public FilePatternService patterns() {
+    return filePatternService;
   }
 }

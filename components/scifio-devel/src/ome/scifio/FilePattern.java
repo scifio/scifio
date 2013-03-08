@@ -45,10 +45,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import ome.scifio.io.Location;
-import ome.scifio.io.LocationService;
 
 import org.scijava.Context;
-import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +107,7 @@ public class FilePattern {
 
   /** Creates a pattern object using the given file as a template. */
   public FilePattern(Context context, Location file) { 
-    this(context, context.getService(FilePatternService.class).findPattern(file));
+    this(context, new SCIFIO(context).patterns().findPattern(file));
   }
 
   /**
@@ -117,7 +115,7 @@ public class FilePattern {
    * filename and directory path as a template.
    */
   public FilePattern(Context context, String name, String dir) {
-    this(context, context.getService(FilePatternService.class).findPattern(name, dir));
+    this(context, new SCIFIO(context).patterns().findPattern(name, dir));
   }
 
   /** Creates a pattern object for files with the given pattern string. */
@@ -382,12 +380,12 @@ public class FilePattern {
   /** Method for testing file pattern logic. */
   public static void main(String[] args) {
     String pat = null;
-    Context context = new Context();
+    SCIFIO scifio = new SCIFIO();
     if (args.length > 0) {
       // test file pattern detection based on the given file on disk
-      Location file = new Location(context, args[0]);
+      Location file = new Location(scifio.getContext(), args[0]);
       LOGGER.info("File = {}", file.getAbsoluteFile());
-      pat = context.getService(FilePatternService.class).findPattern(file);
+      pat = scifio.patterns().findPattern(file);
     }
     else {
       // test file pattern detection from a virtual file list
@@ -405,12 +403,12 @@ public class FilePattern {
           }
         }
       }
-      pat = context.getService(FilePatternService.class).findPattern(nameList[1], null, nameList);
+      pat = scifio.patterns().findPattern(nameList[1], null, nameList);
     }
     if (pat == null) LOGGER.info("No pattern found.");
     else {
       LOGGER.info("Pattern = {}", pat);
-      FilePattern fp = new FilePattern(context, pat);
+      FilePattern fp = new FilePattern(scifio.getContext(), pat);
       if (fp.isValid()) {
         LOGGER.info("Pattern is valid.");
         LOGGER.info("Files:");
