@@ -35,18 +35,26 @@
  */
 package ome.scifio;
 
+import org.scijava.plugin.SortablePlugin;
+
 /**
- * Abstract super class for HasFormat implementations
+ * Abstract superclass for HasSCIFIO implementations.
  * 
  * @author Mark Hiner
  *
  */
-public abstract class AbstractHasFormat extends AbstractHasSCIFIO
-  implements HasFormat {
-  
-  // -- HasFormat API --
+public class AbstractHasSCIFIO extends SortablePlugin
+  implements HasSCIFIO
+{
 
-  public Format getFormat() {
-    return scifio().formats().getFormatFromComponent(getClass());
+  /* Cached SCIFIO reference. */
+  private SCIFIO scifio;
+  
+  // -- HasSCIFIO API Methods --
+  
+  public SCIFIO scifio() {
+    if (scifio == null) scifio = new SCIFIO(getContext());
+    
+    return scifio;
   }
 }

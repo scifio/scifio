@@ -45,7 +45,6 @@ import java.util.List;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Context;
-import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +52,7 @@ import loci.legacy.adapter.CommonAdapter;
 import loci.legacy.adapter.Wrapper;
 import loci.legacy.adapter.AdapterTools;
 
+import ome.scifio.AbstractHasSCIFIO;
 import ome.scifio.BufferedImagePlane;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.DatasetMetadata;
@@ -86,7 +86,9 @@ import ome.scifio.io.RandomAccessInputStream;
  * 
  * @author Mark Hiner
  */
-public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Reader, Wrapper<IFormatReader> {
+public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
+  implements ome.scifio.Reader, Wrapper<IFormatReader>
+{
   
   // -- Constants --
   

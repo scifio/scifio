@@ -381,11 +381,12 @@ public class AxisGuesser {
 
   /** Method for testing pattern guessing logic. */
   public static void main(String[] args, Context context) throws FormatException, IOException {
+    SCIFIO scifio = new SCIFIO(context);
     Location file = args.length < 1 ?
       new Location(context, System.getProperty("user.dir")).listFiles()[0] :
       new Location(context, args[0]);
     LOGGER.info("File = {}", file.getAbsoluteFile());
-    String pat = context.getService(FilePatternService.class).findPattern(file);
+    String pat = scifio.patterns().findPattern(file);
     if (pat == null) LOGGER.info("No pattern found.");
     else {
       LOGGER.info("Pattern = {}", pat);
@@ -399,9 +400,6 @@ public class AxisGuesser {
         else {
           // read dimensional information from first file
           LOGGER.info("Reading first file ");
-          
-          SCIFIO scifio = new SCIFIO(context);
-          
           Reader reader = scifio.initializer().initializeReader(id);
           String dimOrder = FormatTools.findDimensionOrder(reader.getDatasetMetadata(), 0);
           int sizeZ = reader.getDatasetMetadata().getAxisLength(0, Axes.Z);

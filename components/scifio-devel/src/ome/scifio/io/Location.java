@@ -44,11 +44,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-import ome.scifio.SCIFIO;
+import ome.scifio.AbstractHasSCIFIO;
 import ome.scifio.common.Constants;
 
 import org.scijava.Context;
-import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Location.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Location.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class Location extends SortablePlugin {
+public class Location extends AbstractHasSCIFIO {
 
   // -- Constants --
 
@@ -75,28 +74,26 @@ public class Location extends SortablePlugin {
   private boolean isURL = true;
   private URL url;
   private File file;
-  private SCIFIO scifio;
 
 
   // -- Constructors --
   
   public Location(Context context) {
     setContext(context);
-    scifio = new SCIFIO(context);
   }
 
   public Location(Context context, String pathname) {
     this(context);
     LOGGER.trace("Location({})", pathname);
     try {
-      url = new URL(scifio.locations().getMappedId(pathname));
+      url = new URL(scifio().locations().getMappedId(pathname));
     }
     catch (MalformedURLException e) {
       LOGGER.trace("Location is not a URL", e);
       isURL = false;
     }
     if (!isURL) file = 
-        new File(scifio.locations().getMappedId(pathname));
+        new File(scifio().locations().getMappedId(pathname));
   }
 
   public Location(Context context, File file) {
@@ -126,7 +123,7 @@ public class Location extends SortablePlugin {
     String key = getAbsolutePath() + Boolean.toString(noHiddenFiles);
     String [] result = null;
 
-    result = scifio.locations().getCachedListing(key);
+    result = scifio().locations().getCachedListing(key);
     if (result != null) return result;
     
     ArrayList<String> files = new ArrayList<String>();
@@ -178,7 +175,7 @@ public class Location extends SortablePlugin {
     }
     result = files.toArray(new String[files.size()]);
     
-    scifio.locations().putCachedListing(key, result);
+    scifio().locations().putCachedListing(key, result);
     
     return result;
   }
@@ -284,9 +281,9 @@ public class Location extends SortablePlugin {
       }
     }
     if (file.exists()) return true;
-    if (scifio.locations().getMappedFile(file.getPath()) != null) return true;
+    if (scifio().locations().getMappedFile(file.getPath()) != null) return true;
 
-    String mappedId = scifio.locations().getMappedId(file.getPath());
+    String mappedId = scifio().locations().getMappedId(file.getPath());
     return mappedId != null && new File(mappedId).exists();
   }
 

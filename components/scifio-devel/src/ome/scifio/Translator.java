@@ -35,8 +35,6 @@
  */
 package ome.scifio;
 
-import org.scijava.Contextual;
-
 /**
  * Interface for all SCIFIO {@code Translators}.
  * <p>
@@ -65,7 +63,7 @@ import org.scijava.Contextual;
  * @see ome.scifio.Metadata#reset(Class)
  * @author Mark Hiner
  */
-public interface Translator extends ScifioPlugin, Contextual {
+public interface Translator extends ScifioPlugin, HasSCIFIO {
 
   // -- Fields --
   

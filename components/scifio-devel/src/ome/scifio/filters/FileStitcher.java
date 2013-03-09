@@ -51,7 +51,6 @@ import ome.scifio.AxisGuesser;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
 import ome.scifio.DefaultImageMetadata;
-import ome.scifio.FilePatternService;
 import ome.scifio.ImageMetadata;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FilePattern;
@@ -59,7 +58,6 @@ import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.io.Location;
-import ome.scifio.io.LocationService;
 import ome.scifio.util.FormatTools;
 
 /**
@@ -220,7 +218,7 @@ public class FileStitcher extends AbstractReaderFilter {
   }
 
   public FilePattern findPattern(String id) {
-    return new FilePattern(getContext(), getContext().getService(FilePatternService.class).findPattern(id));
+    return new FilePattern(getContext(), scifio().patterns().findPattern(id));
   }
 
   /**
@@ -230,16 +228,16 @@ public class FileStitcher extends AbstractReaderFilter {
   public String[] findPatterns(String id) {
     if (!patternIds) {
       // find the containing patterns
-      HashMap<String, Object> map = getContext().getService(LocationService.class).getIdMap();
+      HashMap<String, Object> map = scifio().locations().getIdMap();
       if (map.containsKey(id)) {
         // search ID map for pattern, rather than files on disk
         String[] idList = new String[map.size()];
         map.keySet().toArray(idList);
-        return getContext().getService(FilePatternService.class).findSeriesPatterns(id, null, idList);
+        return scifio().patterns().findSeriesPatterns(id, null, idList);
       }
       else {
         // id is an unmapped file path; look to similar files on disk
-        return getContext().getService(FilePatternService.class).findSeriesPatterns(id);
+        return scifio().patterns().findSeriesPatterns(id);
       }
     }
     if (doNotChangePattern) {
@@ -435,7 +433,7 @@ public class FileStitcher extends AbstractReaderFilter {
     }
     else {
       patternIds =
-        !new Location(getContext(), id).exists() && getContext().getService(LocationService.class).getMappedId(id).equals(id);
+        !new Location(getContext(), id).exists() && scifio().locations().getMappedId(id).equals(id);
     }
 
     boolean mustGroup = false;

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hiner
  */
 public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker, P extends TypedParser<M>, R extends TypedReader<M, ? extends DataPlane<?>>, W extends TypedWriter<M>>
-    extends SortablePlugin implements TypedFormat<M, C, P, R, W> {
+    extends AbstractHasSCIFIO implements TypedFormat<M, C, P, R, W> {
   
   // -- Constants --
 

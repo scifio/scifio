@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hiner
  */
 public abstract class AbstractTranslator<M extends TypedMetadata, N extends TypedMetadata>
-  extends SortablePlugin implements TypedTranslator<M, N> {
+  extends AbstractHasSCIFIO implements TypedTranslator<M, N> {
   
   // -- Translator API --
   

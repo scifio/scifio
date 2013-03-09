@@ -50,7 +50,6 @@ import net.imglib2.meta.Axes;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.MetadataLevel;
-import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
 import ome.scifio.ics.ICSFormat;
 import ome.xml.meta.FilterMetadata;
@@ -109,9 +108,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     DatasetMetadata dMeta = getContext().getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
     dMeta.setSource(source.getSource());
     
-    SCIFIO scifio = new SCIFIO(getContext());
-
-    Translator trans = scifio.translators().findTranslator(source, dMeta);
+    Translator trans = scifio().translators().findTranslator(source, dMeta);
     
     trans.translate(source, dMeta);
     

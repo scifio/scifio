@@ -57,7 +57,7 @@ import org.scijava.Contextual;
  * @author Mark Hiner
  * @see ome.scifio.SCIFIO#getFormatFromClass(Class);
  */
-public interface Format extends ScifioPlugin, Contextual {
+public interface Format extends ScifioPlugin, HasSCIFIO {
   
   // -- Format API methods --
 

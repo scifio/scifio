@@ -35,18 +35,21 @@
  */
 package ome.scifio;
 
+import org.scijava.Contextual;
+
 /**
- * Abstract super class for HasFormat implementations
+ * Convenience interface for caching and returning a SCIFIO instance.
  * 
  * @author Mark Hiner
  *
  */
-public abstract class AbstractHasFormat extends AbstractHasSCIFIO
-  implements HasFormat {
+public interface HasSCIFIO extends Contextual { 
   
-  // -- HasFormat API --
-
-  public Format getFormat() {
-    return scifio().formats().getFormatFromComponent(getClass());
-  }
+  /**
+   * Returns the cached SCIFIO instance.
+   * 
+   * @return
+   */
+  public SCIFIO scifio();
+  
 }

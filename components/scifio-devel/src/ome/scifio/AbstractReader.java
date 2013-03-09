@@ -411,9 +411,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
       dMeta = getContext().getService(PluginService.class).
               createInstancesOfType(DatasetMetadata.class).get(0);
       
-      SCIFIO scifio = new SCIFIO(getContext());
-    
-      Translator t = scifio.translators().findTranslator(meta, dMeta);
+      Translator t = scifio().translators().findTranslator(meta, dMeta);
 
       t.translate(meta, dMeta);
     }

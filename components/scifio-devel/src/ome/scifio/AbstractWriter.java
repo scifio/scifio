@@ -299,9 +299,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
     
     metadata = meta;
     
-    SCIFIO scifio = new SCIFIO(getContext());
-    
-    Translator t = scifio.translators().findTranslator(meta, dMeta);
+    Translator t = scifio().translators().findTranslator(meta, dMeta);
     t.translate(meta, dMeta);
   }
 

@@ -35,7 +35,8 @@
  */
 package ome.scifio.filters;
 
-import org.scijava.plugin.SortablePlugin;
+import ome.scifio.AbstractHasSCIFIO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> - Parent data type of this filter.
  */
-public abstract class AbstractFilter<T> extends SortablePlugin implements Filter {
+public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Filter {
 
   // -- Constants --
 
