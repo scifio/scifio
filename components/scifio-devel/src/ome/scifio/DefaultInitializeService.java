@@ -58,10 +58,11 @@ public class DefaultInitializeService extends AbstractService implements Initial
   @Parameter
   PluginService pluginService;
   
-  // -- Fields --
+  @Parameter
+  FormatService formatService;
   
-  private SCIFIO scifio;
-
+  @Parameter
+  TranslatorService translatorService;
   
   // -- InitializeService API Methods --	
 
@@ -90,7 +91,7 @@ public class DefaultInitializeService extends AbstractService implements Initial
   public ReaderFilter initializeReader(final String id, final boolean openFile)
       throws FormatException, IOException {
     
-    final Reader r = scifio.formats().getFormat(id, openFile).createReader();
+    final Reader r = formatService.getFormat(id, openFile).createReader();
     r.setSource(id);
     return new ReaderFilter(r);
   }
@@ -124,7 +125,7 @@ public class DefaultInitializeService extends AbstractService implements Initial
       final String source, final String destination,
       final boolean openSource) throws FormatException, IOException {
     
-    final Format sFormat = scifio.formats().getFormat(source, openSource);
+    final Format sFormat = formatService.getFormat(source, openSource);
     final Parser parser = sFormat.createParser();
     final Metadata sourceMeta = parser.parse(source);
     
@@ -138,7 +139,7 @@ public class DefaultInitializeService extends AbstractService implements Initial
       throws FormatException, IOException {
     
     final Format sFormat = sourceMeta.getFormat();
-    final Format dFormat = scifio.formats().getFormat(destination, false);
+    final Format dFormat = formatService.getFormat(destination, false);
     Metadata destMeta = dFormat.createMetadata();
 
     // if dest is a different format than source, translate..
@@ -146,11 +147,11 @@ public class DefaultInitializeService extends AbstractService implements Initial
       // otherwise we can directly cast, since they are the same types
       destMeta = castMeta(sourceMeta, destMeta);
       
-    } else if (scifio.translators().findTranslator(sourceMeta, destMeta) != null) {
+    } else if (translatorService.findTranslator(sourceMeta, destMeta) != null) {
       // Can directly translate between these formats
       
       destMeta = dFormat.createMetadata();
-      scifio.translators().findTranslator(sourceMeta, destMeta)
+      translatorService.findTranslator(sourceMeta, destMeta)
             .translate(sourceMeta, destMeta);
     } else {
       // Have to translate to and from DatasetMetadata
@@ -162,8 +163,8 @@ public class DefaultInitializeService extends AbstractService implements Initial
       final DatasetMetadata transMeta = pluginService.createInstancesOfType(DatasetMetadata.class).get(0);
       transMeta.setSource(sourceMeta.getSource());
       
-      final Translator transToCore = scifio.translators().findTranslator(sourceMeta, transMeta);
-      final Translator transFromCore = scifio.translators().findTranslator(transMeta, destMeta);
+      final Translator transToCore = translatorService.findTranslator(sourceMeta, transMeta);
+      final Translator transFromCore = translatorService.findTranslator(transMeta, destMeta);
 //TODO unnecessary?     transMeta.setSource(new RandomAccessInputStream(getContext(), source));
       transToCore.translate(sourceMeta, transMeta);
       transFromCore.translate(transMeta, destMeta);
@@ -174,12 +175,6 @@ public class DefaultInitializeService extends AbstractService implements Initial
     writer.setDest(destination);
 
     return writer;
-  }
-  
-  // -- Service API Methods --
-  
-  public void initialize() {
-    scifio = new SCIFIO(getContext());
   }
   
   // -- Helper Methods --
