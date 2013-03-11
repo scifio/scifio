@@ -38,7 +38,7 @@ package ome.scifio;
 import java.util.HashMap;
 import java.util.Map;
 
-import ome.scifio.discovery.PluginAttributeService;
+import ome.scifio.services.PluginAttributeService;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
