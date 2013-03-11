@@ -32,9 +32,8 @@ import loci.ome.io.OMEReader;
 import loci.ome.io.OMEWriter;
 import loci.ome.io.OmeroReader;
 
-import ome.scifio.discovery.DiscoverableService;
-
 import org.openmicroscopy.ds.dto.Image;
+import org.scijava.plugin.Plugin;
 
 /**
  * <dl><dt><b>Source code:</b></dt>
@@ -43,8 +42,7 @@ import org.openmicroscopy.ds.dto.Image;
  *
  * @author callan
  */
-@DiscoverableService(interfaceName = "loci.ome.io.services.OMEReaderWriterService", 
-               implementationName = "loci.ome.io.services.OMEReaderWriterServiceImpl")
+@Plugin(type=OMEReaderWriterService.class)
 public class OMEReaderWriterServiceImpl extends AbstractService
   implements OMEReaderWriterService
 {

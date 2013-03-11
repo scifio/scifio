@@ -38,6 +38,7 @@ package ome.xml.meta;
 
 import net.imglib2.meta.Axes;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
@@ -46,12 +47,11 @@ import org.slf4j.LoggerFactory;
 
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.FormatService;
 import ome.scifio.Reader;
 import ome.scifio.common.DateTools;
 import ome.scifio.io.Location;
-import ome.scifio.services.DependencyException;
 import ome.scifio.services.ServiceException;
-import ome.scifio.services.ServiceFactory;
 import ome.scifio.util.FormatTools;
 import ome.xml.model.*;
 import ome.xml.model.enums.Correction;
@@ -95,6 +95,11 @@ public class DefaultOMEXMLMetadataService extends AbstractService
   // -- Static fields --
 
   private boolean defaultDateEnabled = true;
+  
+  // -- Parameters --
+  
+  @Parameter
+  FormatService formatService;
   
   // -- Utility methods - OME-XML --
 
@@ -149,30 +154,24 @@ public class DefaultOMEXMLMetadataService extends AbstractService
         ySize, zSize, cSize, tSize,
         meta.getRGBChannelCount(i));
 
-      try {
-        OMEXMLService service =
-          new ServiceFactory().getInstance(OMEXMLService.class);
-        if (service.isOMEXMLRoot(store.getRoot())) {
-          //TODO any way or reason to access a base store?
-          if(service.isOMEXMLMetadata(store)) {
-            OMEXMLMetadata omeMeta;
-            try {
-              omeMeta = service.getOMEMetadata(service.asRetrieve(store));
-              omeMeta.resolveReferences();
-            }
-            catch (ServiceException e) {
-              LOGGER.warn("Failed to resolve references", e);
-            }
+      OMEXMLService service = formatService.getInstance(OMEXMLService.class);
+      if (service.isOMEXMLRoot(store.getRoot())) {
+        //TODO any way or reason to access a base store?
+        if(service.isOMEXMLMetadata(store)) {
+          OMEXMLMetadata omeMeta;
+          try {
+            omeMeta = service.getOMEMetadata(service.asRetrieve(store));
+            omeMeta.resolveReferences();
           }
-          
-          OME root = (OME) store.getRoot();
-          BinData bin = root.getImage(i).getPixels().getBinData(0);
-          bin.setLength(new NonNegativeLong(0L));
-          store.setRoot(root);
+          catch (ServiceException e) {
+            LOGGER.warn("Failed to resolve references", e);
+          }
         }
-      }
-      catch (DependencyException exc) {
-        LOGGER.warn("Failed to set BinData.Length", exc);
+
+        OME root = (OME) store.getRoot();
+        BinData bin = root.getImage(i).getPixels().getBinData(0);
+        bin.setLength(new NonNegativeLong(0L));
+        store.setRoot(root);
       }
 
       if (doPlane) {

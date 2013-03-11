@@ -36,9 +36,9 @@
 
 package ome.scifio.io.utests;
 
-import static org.testng.AssertJUnit.assertNotNull;
-import ome.scifio.services.DependencyException;
-import ome.scifio.services.ServiceFactory;
+import static org.testng.AssertJUnit.assertNull;
+import ome.scifio.FormatService;
+import ome.scifio.SCIFIO;
 import ome.xml.services.OMEXMLService;
 
 import org.testng.annotations.BeforeMethod;
@@ -53,17 +53,18 @@ import org.testng.annotations.Test;
  */
 public class MissingOMEXMLServiceTest {
 
-  private ServiceFactory sf;
+  private FormatService formatService;
 
   @BeforeMethod
-  public void setUp() throws DependencyException {
-    sf = new ServiceFactory();
+  public void setUp() {
+    SCIFIO scifio = new SCIFIO();
+    formatService = scifio.formats();
   }
 
-  @Test(expectedExceptions={DependencyException.class})
-  public void testInstantiate() throws DependencyException {
-    OMEXMLService service = sf.getInstance(OMEXMLService.class);
-    assertNotNull(service);
+  @Test
+  public void testInstantiate() {
+    OMEXMLService service = formatService.getInstance(OMEXMLService.class);
+    assertNull(service);
   }
 
 }

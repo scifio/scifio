@@ -48,14 +48,12 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import net.imglib2.meta.Axes;
+import ome.scifio.AbstractHasSCIFIO;
 import ome.scifio.FormatException;
 import ome.scifio.Parser;
 import ome.scifio.Reader;
-import ome.scifio.SCIFIO;
 import ome.scifio.common.Constants;
-import ome.scifio.services.DependencyException;
 import ome.scifio.services.ServiceException;
-import ome.scifio.services.ServiceFactory;
 import ome.scifio.util.FormatTools;
 import ome.scifio.filters.ChannelFiller;
 import ome.scifio.filters.ChannelSeparator;
@@ -66,7 +64,6 @@ import ome.xml.r2003fc.ome.OMENode;
 import ome.xml.services.OMEXMLService;
 
 import org.scijava.Context;
-import org.scijava.plugin.SortablePlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -81,7 +78,7 @@ import org.w3c.dom.Element;
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Ilya Goldberg igg at nih.gov
  */
-public class OmeisImporter extends SortablePlugin {
+public class OmeisImporter extends AbstractHasSCIFIO {
 
   // -- Constants --
 
@@ -112,8 +109,6 @@ public class OmeisImporter extends SortablePlugin {
 
   private boolean stitch;
   
-  private SCIFIO scifio;
-
   // -- Constructor --
 
   public OmeisImporter(Context context) {
@@ -122,7 +117,6 @@ public class OmeisImporter extends SortablePlugin {
 
   public OmeisImporter(Context context, boolean stitchFiles)  {
     setContext(context);
-    scifio = new SCIFIO(context);
     stitch = stitchFiles;
     
     // TODO replace this with a general-purpose reader instantiated in the context
@@ -142,11 +136,9 @@ public class OmeisImporter extends SortablePlugin {
     if (stitch) reader = rf.enable(FileStitcher.class);
 
     try {
-      ServiceFactory factory = new ServiceFactory();
-      OMEXMLService service = factory.getInstance(OMEXMLService.class);
+      OMEXMLService service = scifio().formats().getInstance(OMEXMLService.class);
       omexmlMeta = (ome.xml.meta.AbstractOMEXMLMetadata) service.createOMEXMLMetadata();
     }
-    catch (DependencyException de) { }
     catch (ServiceException se) { }
   }
 
@@ -174,7 +166,7 @@ public class OmeisImporter extends SortablePlugin {
       Hashtable fileInfo = getFileInfo(fileIds[i]);
       ids[i] = (String) fileInfo.get("Name");
       String path = getLocalFilePath(fileIds[i]);
-      scifio.locations().mapId(ids[i], path);
+      scifio().locations().mapId(ids[i], path);
     }
 
     // check types and groups
@@ -233,12 +225,12 @@ public class OmeisImporter extends SortablePlugin {
       Hashtable fileInfo = getFileInfo(fileIds[i]);
       ids[i] = (String) fileInfo.get("Name");
       String path = getLocalFilePath(fileIds[i]);
-      scifio.locations().mapId(ids[i], path);
+      scifio().locations().mapId(ids[i], path);
     }
 
     // read file group
     String id = ids[0];
-    String path = scifio.locations().getMappedId(id);
+    String path = scifio().locations().getMappedId(id);
     if (DEBUG) log("Reading file '" + id + "' --> " + path);
 
     // verify that all given file IDs were grouped by the reader

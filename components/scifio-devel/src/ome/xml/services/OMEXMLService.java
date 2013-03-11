@@ -38,8 +38,8 @@ package ome.xml.services;
 
 import java.util.Hashtable;
 
-import ome.scifio.services.Service;
 import ome.scifio.services.ServiceException;
+import ome.scifio.services.TypedService;
 
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.MetadataStore;
@@ -52,7 +52,7 @@ import ome.xml.meta.OMEXMLMetadata;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/services/OMEXMLService.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/services/OMEXMLService.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public interface OMEXMLService extends Service {
+public interface OMEXMLService extends TypedService {
 
   /**
    * Retrieves the latest supported version of the OME-XML schema.
@@ -63,7 +63,7 @@ public interface OMEXMLService extends Service {
    * Transforms the given OME-XML string to the latest supported version of
    * of the OME-XML schema.
    */
-  public String transformToLatestVersion(String xml) throws ServiceException;
+  public String transformToLatestVersion(String xml);
 
   /**
    * Creates an OME-XML metadata object using reflection, to avoid
@@ -84,8 +84,7 @@ public interface OMEXMLService extends Service {
    * @throws ServiceException If there is an error creating the OME-XML
    * metadata object.
    */
-  public OMEXMLMetadata createOMEXMLMetadata(String xml)
-    throws ServiceException;
+  public OMEXMLMetadata createOMEXMLMetadata(String xml) throws ServiceException;
 
   /**
    * Creates an OME-XML metadata object using reflection, to avoid
@@ -102,8 +101,7 @@ public interface OMEXMLService extends Service {
    * @throws ServiceException If there is an error creating the OME-XML
    * metadata object.
    */
-  public OMEXMLMetadata createOMEXMLMetadata(String xml, String version)
-    throws ServiceException;
+  public OMEXMLMetadata createOMEXMLMetadata(String xml, String version) throws ServiceException;
 
   /**
    * Constructs an OME root node.
@@ -141,8 +139,7 @@ public interface OMEXMLService extends Service {
    * @throws ServiceException If there is an error creating the OME-XML
    * metadata object.
    */
-  public OMEXMLMetadata getOMEMetadata(MetadataRetrieve src)
-    throws ServiceException;
+  public OMEXMLMetadata getOMEMetadata(MetadataRetrieve src) throws ServiceException;
 
   /**
    * Extracts an OME-XML metadata string from the given metadata object,
@@ -150,8 +147,7 @@ public interface OMEXMLService extends Service {
    * @throws ServiceException If there is an error creating the OME-XML
    * metadata object.
    */
-  public String getOMEXML(MetadataRetrieve src)
-    throws ServiceException;
+  public String getOMEXML(MetadataRetrieve src) throws ServiceException;
 
   /**
    * Attempts to validate the given OME-XML string using
@@ -200,8 +196,7 @@ public interface OMEXMLService extends Service {
    * @throws ServiceException If there is an error creating the OME-XML
    * metadata object.
    */
-  public void convertMetadata(String xml, MetadataStore dest)
-    throws ServiceException;
+  public void convertMetadata(String xml, MetadataStore dest) throws ServiceException;
 
   /**
    * Copies information from a metadata retrieval object

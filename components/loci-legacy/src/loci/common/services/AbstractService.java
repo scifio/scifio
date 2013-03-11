@@ -44,7 +44,9 @@ package loci.common.services;
  *
  * @author callan
  */
-public abstract class AbstractService implements Service {
+public abstract class AbstractService 
+  extends org.scijava.service.AbstractService implements Service
+{
 
   /**
    * Checks a given class dependency at runtime to ensure that a given class

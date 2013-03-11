@@ -47,8 +47,6 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import ome.scifio.discovery.DiscoverableService;
-import ome.scifio.services.AbstractService;
 import ome.scifio.services.ServiceException;
 import ome.scifio.util.FormatTools;
 import ome.scifio.xml.XMLTools;
@@ -60,7 +58,6 @@ import ome.xml.meta.MetadataStore;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.meta.OMEXMLMetadataImpl;
-import ome.xml.meta.DefaultOMEXMLMetadataService;
 import ome.xml.meta.OMEXMLMetadataService;
 import ome.xml.model.BinData;
 import ome.xml.model.Channel;
@@ -74,6 +71,8 @@ import ome.xml.model.Pixels;
 import ome.xml.model.StructuredAnnotations;
 import ome.xml.model.XMLAnnotation;
 
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -90,8 +89,7 @@ import org.xml.sax.SAXException;
  *
  * @author callan
  */
-@DiscoverableService(interfaceName = "ome.xml.services.OMEXMLService", 
-               implementationName = "ome.xml.services.OMEXMLServiceImpl")
+@Plugin(type=OMEXMLService.class)
 public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 {
 
@@ -145,20 +143,13 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
   private static final String SCHEMA_PATH =
     "http://www.openmicroscopy.org/Schemas/OME/";
 
-  /**
-   * Default constructor.
-   */
-  public OMEXMLServiceImpl() {
-    checkClassDependency(ome.xml.model.OMEModelObject.class);
-  }
-
   /** @see OMEXMLService#getLatestVersion() */
   public String getLatestVersion() {
     return OMEXMLFactory.LATEST_VERSION;
   }
 
   /** @see OMEXMLService#transformToLatestVersion(String) */
-  public String transformToLatestVersion(String xml) throws ServiceException {
+  public String transformToLatestVersion(String xml) {
     String version = getOMEXMLVersion(xml);
     if (version.equals(getLatestVersion())) return xml;
     LOGGER.debug("Attempting to update XML with version: {}", version);
@@ -286,22 +277,23 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
     return null;
   }
 
-  /** @see OMEXMLService#createOMEXMLMetadata() */
-  public OMEXMLMetadata createOMEXMLMetadata() throws ServiceException {
+  /** @throws ServiceException 
+   * @see OMEXMLService#createOMEXMLMetadata() */
+  public OMEXMLMetadata createOMEXMLMetadata() throws ServiceException  {
     return createOMEXMLMetadata(null);
   }
 
-  /** @see OMEXMLService#createOMEXMLMetadata(java.lang.String) */
-  public OMEXMLMetadata createOMEXMLMetadata(String xml)
-    throws ServiceException {
+  /** @throws ServiceException 
+   * @see OMEXMLService#createOMEXMLMetadata(java.lang.String) */
+  public OMEXMLMetadata createOMEXMLMetadata(String xml) throws ServiceException {
     return createOMEXMLMetadata(xml, null);
   }
 
   /**
+   * @throws ServiceException 
    * @see OMEXMLService#createOMEXMLMetadata(java.lang.String, java.lang.String)
    */
-  public OMEXMLMetadata createOMEXMLMetadata(String xml, String version)
-    throws ServiceException {
+  public OMEXMLMetadata createOMEXMLMetadata(String xml, String version) throws ServiceException {
     if (xml != null) {
       xml = XMLTools.sanitizeXML(xml);
     }
@@ -313,7 +305,8 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
     return meta;
   }
 
-  /** @see OMEXMLService#createOMEXMLRoot(java.lang.String) */
+  /** @throws ServiceException 
+   * @see OMEXMLService#createOMEXMLRoot(java.lang.String) */
   public Object createOMEXMLRoot(String xml) throws ServiceException {
     return createRoot(transformToLatestVersion(xml));
   }
@@ -334,21 +327,22 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
    * classes should not leak out of the interface.
    * @param xml String of XML to create the root node from.
    * @return An ome.xml.model.OMEModelObject subclass root node.
+   * @throws ServiceException 
    * @throws IOException If there is an error reading from the string.
    * @throws SAXException If there is an error parsing the XML.
    * @throws ParserConfigurationException If there is an error preparing the
    * parsing infrastructure.
    */
   private OMEModelObject createRoot(String xml) throws ServiceException {
-    try {
       OMEModel model = new OMEModelImpl();
-      OME ome = new OME(XMLTools.parseDOM(xml).getDocumentElement(), model);
+      OME ome = null;
+      try {
+        ome = new OME(XMLTools.parseDOM(xml).getDocumentElement(), model);
+      } catch (Exception e) {
+        throw new ServiceException(e);
+      }
       model.resolveReferences();
       return ome;
-    }
-    catch (Exception e) {
-      throw new ServiceException(e);
-    }
   }
 
   /** @see OMEXMLService#getOMEXMLVersion(java.lang.Object) */
@@ -379,9 +373,9 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
     return null;
   }
 
-  /** @see OMEXMLService#getOMEMetadata(loci.formats.meta.MetadataRetrieve) */
-  public OMEXMLMetadata getOMEMetadata(MetadataRetrieve src)
-    throws ServiceException {
+  /** @throws ServiceException 
+   * @see OMEXMLService#getOMEMetadata(loci.formats.meta.MetadataRetrieve) */
+  public OMEXMLMetadata getOMEMetadata(MetadataRetrieve src) throws ServiceException {
     // check if the metadata is already an OME-XML metadata object
     if (src instanceof OMEXMLMetadata) return (OMEXMLMetadata) src;
 
@@ -392,7 +386,8 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
     return omexmlMeta;
   }
 
-  /** @see OMEXMLService#getOMEXML(loci.formats.meta.MetadataRetrieve) */
+  /** @throws ServiceException 
+   * @see OMEXMLService#getOMEXML(loci.formats.meta.MetadataRetrieve) */
   public String getOMEXML(MetadataRetrieve src) throws ServiceException {
     OMEXMLMetadata omexmlMeta = getOMEMetadata(src);
     String xml = omexmlMeta.dumpXML();
@@ -538,10 +533,10 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
   }
 
   /**
+   * @throws ServiceException 
    * @see OMEXMLService#convertMetadata(java.lang.String, loci.formats.meta.MetadataStore)
    */
-  public void convertMetadata(String xml, MetadataStore dest)
-    throws ServiceException {
+  public void convertMetadata(String xml, MetadataStore dest) throws ServiceException {
     OMEModelObject ome = createRoot(transformToLatestVersion(xml));
     String rootVersion = getOMEXMLVersion(ome);
     String storeVersion = getOMEXMLVersion(dest);

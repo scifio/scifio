@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 
-import ome.scifio.discovery.DiscoverableService;
+import org.scijava.plugin.Plugin;
 
 import loci.common.services.AbstractService;
 import loci.common.services.DependencyException;
@@ -55,8 +55,7 @@ import com.luratech.lwf.lwfDecoder;
  *
  * @author callan
  */
-@DiscoverableService(interfaceName = "loci.formats.services.LuraWaveService", 
-               implementationName = "loci.formats.services.LuraWaveServiceImpl")
+@Plugin(type=LuraWaveService.class)
 public class LuraWaveServiceImpl extends AbstractService
   implements LuraWaveService {
 

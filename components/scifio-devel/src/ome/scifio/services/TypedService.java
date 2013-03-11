@@ -36,26 +36,17 @@
 
 package ome.scifio.services;
 
+import org.scijava.service.Service;
 
 /**
+ * Marker interface for Format-specific services.
+ * 
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/services/AbstractService.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/services/AbstractService.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/services/Service.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/services/Service.java;hb=HEAD">Gitweb</a></dd></dl>
  *
- * @author callan
+ * @author Mark Hiner
  */
-public abstract class AbstractService implements Service {
-
-  /**
-   * Checks a given class dependency at runtime to ensure that a given class
-   * will be available. This method is expected to be called at least once by
-   * all service implementations.
-   * @param klass A class that this service depends upon.
-   */
-  protected void checkClassDependency(Class<? extends Object> klass) {
-    // Just need *something* here to trigger a ClassNotFoundException if the
-    // class isn't on the classpath.
-    klass.getName();
-  }
+public interface TypedService extends Service {
 
 }

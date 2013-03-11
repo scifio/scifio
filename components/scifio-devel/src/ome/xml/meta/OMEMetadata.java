@@ -37,9 +37,7 @@
 package ome.xml.meta;
 
 import ome.scifio.AbstractMetadata;
-import ome.scifio.services.DependencyException;
 import ome.scifio.services.ServiceException;
-import ome.scifio.services.ServiceFactory;
 import ome.xml.services.OMEXMLService;
 
 /**
@@ -68,13 +66,10 @@ public class OMEMetadata extends AbstractMetadata {
   public OMEMetadata(OMEXMLMetadata root) {
     if (root == null) {
       try {
-        ServiceFactory factory = new ServiceFactory();
-        OMEXMLService service = factory.getInstance(OMEXMLService.class);
+        OMEXMLService service = scifio().formats().getInstance(OMEXMLService.class);
         root = service.createOMEXMLMetadata();
       } catch (ServiceException e) {
         LOGGER.debug("Failed to get OME-XML Service", e);
-      } catch (DependencyException e) {
-        LOGGER.debug("Missing OME-XML dependency", e);
       }
     }
     

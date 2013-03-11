@@ -58,7 +58,6 @@ import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
 import loci.formats.ome.OMEXMLMetadata;
 import loci.formats.ome.OMEXMLMetadataImpl;
-import ome.scifio.discovery.DiscoverableService;
 import ome.xml.OMEXMLFactory;
 import ome.xml.model.BinData;
 import ome.xml.model.Channel;
@@ -72,6 +71,7 @@ import ome.xml.model.Pixels;
 import ome.xml.model.StructuredAnnotations;
 import ome.xml.model.XMLAnnotation;
 
+import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -88,8 +88,7 @@ import org.xml.sax.SAXException;
  *
  * @author callan
  */
-@DiscoverableService(interfaceName = "loci.formats.services.OMEXMLService", 
-               implementationName = "loci.formats.services.OMEXMLServiceImpl")
+@Plugin(type=OMEXMLService.class)
 public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 {
 

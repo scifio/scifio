@@ -37,6 +37,8 @@ package ome.scifio;
 
 import java.util.List;
 
+import ome.scifio.services.TypedService;
+
 import org.scijava.Priority;
 import org.scijava.service.Service;
 
@@ -208,4 +210,13 @@ public interface FormatService extends Service {
    * @return
    */
   List<Format> getAllFormats();
+  
+  /**
+   * Convenience method to obtain TypedService instances within the current
+   * context.
+   * 
+   * @param type
+   * @return
+   */
+  <T extends TypedService> T getInstance(Class<T> type);
 }

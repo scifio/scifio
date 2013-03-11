@@ -43,6 +43,8 @@ import java.util.PriorityQueue;
 import java.util.TreeSet;
 
 
+import ome.scifio.services.TypedService;
+
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -371,6 +373,13 @@ public class DefaultFormatService extends AbstractService implements FormatServi
    */
   public List<Format> getAllFormats() {
     return formats;
+  }
+  
+  /*
+   * @see ome.scifio.FormatService#getInstance(java.lang.Class)
+   */
+  public <T extends TypedService> T getInstance(Class<T> type) { 
+    return getContext().getService(type);
   }
 
   // -- Service API Methods --

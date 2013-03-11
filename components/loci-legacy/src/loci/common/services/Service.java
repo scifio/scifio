@@ -36,6 +36,8 @@
 
 package loci.common.services;
 
+import ome.scifio.services.TypedService;
+
 /**
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/services/Service.java">Trac</a>,
@@ -43,6 +45,6 @@ package loci.common.services;
  *
  * @author callan
  */
-public interface Service extends ome.scifio.services.Service {
+public interface Service extends TypedService {
 
 }
