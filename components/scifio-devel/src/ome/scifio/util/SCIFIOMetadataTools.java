@@ -43,7 +43,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.io.RandomAccessOutputStream;
@@ -82,7 +81,7 @@ public class SCIFIOMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(DatasetMetadata src,
+  public static void verifyMinimumPopulated(Metadata src,
     RandomAccessOutputStream out) throws FormatException
   {
     verifyMinimumPopulated(src, out, 0, 0);
@@ -95,7 +94,7 @@ public class SCIFIOMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(DatasetMetadata src,
+  public static void verifyMinimumPopulated(Metadata src,
     RandomAccessOutputStream out, int imageIndex) throws FormatException
   {
     verifyMinimumPopulated(src, out, imageIndex, 0);
@@ -108,7 +107,7 @@ public class SCIFIOMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(DatasetMetadata src,
+  public static void verifyMinimumPopulated(Metadata src,
     RandomAccessOutputStream out, int imageIndex, int planeIndex)
     throws FormatException
   {

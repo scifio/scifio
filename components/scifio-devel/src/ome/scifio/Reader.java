@@ -179,9 +179,6 @@ public interface Reader extends HasFormat {
   /** Gets the type-specific Metadata for this Reader */
   Metadata getMetadata();
 
-  /** Gets the core metadata for this Reader. */
-  DatasetMetadata getDatasetMetadata();
-
   //TODO remove normalization methods
   /** Specifies whether or not to normalize float data. */
   void setNormalized(boolean normalize);

@@ -41,8 +41,9 @@ import java.util.List;
 
 import net.imglib2.meta.AxisType;
 
-import ome.scifio.AbstractDatasetMetadata;
+import ome.scifio.AbstractMetadata;
 import ome.scifio.ImageMetadata;
+import ome.scifio.Metadata;
 
 import loci.legacy.adapter.Wrapper;
 
@@ -55,8 +56,8 @@ import loci.legacy.adapter.Wrapper;
  * @author Mark Hiner
  *
  */
-public class CoreMetadataListWrapper extends AbstractDatasetMetadata
-  implements ome.scifio.DatasetMetadata, Wrapper<List<CoreMetadata>>
+public class CoreMetadataListWrapper extends AbstractMetadata
+  implements Metadata, Wrapper<List<CoreMetadata>>
 {
 
   // -- Fields --

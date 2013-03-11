@@ -41,6 +41,8 @@ import java.util.Hashtable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.DefaultImageMetadata;
+import ome.scifio.ImageMetadata;
+import ome.scifio.Metadata;
 
 /**
  * Encompasses core metadata values.
@@ -217,7 +219,7 @@ public class CoreMetadata implements Cloneable {
     resolutionCount = c.resolutionCount;
   }
 
-  public CoreMetadata(ome.scifio.DatasetMetadata scmeta, int series) {
+  public CoreMetadata(Metadata scmeta, int series) {
     this(scmeta.get(series));
   }
   
@@ -270,13 +272,11 @@ public class CoreMetadata implements Cloneable {
   // -- CoreMetadata methods --
 
   /**
-   * Converts this CoreMetadata object to an ome.scifio.CoreMetadata.
+   * Converts this CoreMetadata object to an ome.scifio.ImageMetadata.
    * 
    */
-  public ome.scifio.DefaultImageMetadata convert() {
-    ome.scifio.DefaultDatasetMetadata cMeta = new ome.scifio.DefaultDatasetMetadata();      
-    DefaultImageMetadata coreImg = new DefaultImageMetadata();
-
+  public ome.scifio.ImageMetadata convert() {
+    ImageMetadata imgMeta = new DefaultImageMetadata();
 
     int[] axisLengths = new int[5];
     AxisType[] axisTypes = new AxisType[5];
@@ -311,27 +311,27 @@ public class CoreMetadata implements Cloneable {
       }
     }
 
-    coreImg.setAxisLengths(axisLengths);
-    coreImg.setAxisTypes(axisTypes);
-    coreImg.setPlaneCount(planeCount);
+    imgMeta.setAxisLengths(axisLengths);
+    imgMeta.setAxisTypes(axisTypes);
+    imgMeta.setPlaneCount(planeCount);
 
-    coreImg.setThumbSizeX(thumbSizeX);
-    coreImg.setThumbSizeY(thumbSizeY);
-    coreImg.setPixelType(pixelType);
-    coreImg.setBitsPerPixel(bitsPerPixel);
-    coreImg.setChannelLengths(cLengths);
-    coreImg.setChannelTypes(cTypes);
-    coreImg.setOrderCertain(orderCertain);
-    coreImg.setRGB(rgb);
-    coreImg.setLittleEndian(littleEndian);
-    coreImg.setInterleaved(interleaved);
-    coreImg.setIndexed(indexed);
-    coreImg.setFalseColor(falseColor);
-    coreImg.setMetadataComplete(metadataComplete);
-    coreImg.setImageMetadata(seriesMetadata);
-    coreImg.setThumbnail(thumbnail);
+    imgMeta.setThumbSizeX(thumbSizeX);
+    imgMeta.setThumbSizeY(thumbSizeY);
+    imgMeta.setPixelType(pixelType);
+    imgMeta.setBitsPerPixel(bitsPerPixel);
+    imgMeta.setChannelLengths(cLengths);
+    imgMeta.setChannelTypes(cTypes);
+    imgMeta.setOrderCertain(orderCertain);
+    imgMeta.setRGB(rgb);
+    imgMeta.setLittleEndian(littleEndian);
+    imgMeta.setInterleaved(interleaved);
+    imgMeta.setIndexed(indexed);
+    imgMeta.setFalseColor(falseColor);
+    imgMeta.setMetadataComplete(metadataComplete);
+    imgMeta.setImageMetadata(seriesMetadata);
+    imgMeta.setThumbnail(thumbnail);
 
-    return coreImg;
+    return imgMeta;
   }
 
   // -- Object methods --

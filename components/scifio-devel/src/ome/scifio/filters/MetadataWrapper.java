@@ -38,8 +38,8 @@ package ome.scifio.filters;
 import java.util.Hashtable;
 
 import net.imglib2.meta.AxisType;
-import ome.scifio.DatasetMetadata;
 import ome.scifio.ImageMetadata;
+import ome.scifio.Metadata;
 import ome.scifio.ScifioPlugin;
 
 /**
@@ -58,8 +58,8 @@ import ome.scifio.ScifioPlugin;
  * @see ome.scifio.discovery.DiscoverableMetadataWrapper
  * @see ome.scifio.filters.AbstractReaderFilter
  */
-public interface DatasetMetadataWrapper
-  extends DatasetMetadata, ScifioPlugin { 
+public interface MetadataWrapper
+  extends Metadata, ScifioPlugin { 
   
   public static final String METADATA_KEY = "Metadata Wrapper";
   public static final String METADATA_VALUE = "java.lang.Object";
@@ -69,7 +69,7 @@ public interface DatasetMetadataWrapper
    * 
    * @return
    */
-  DatasetMetadata unwrap();
+  Metadata unwrap();
   
   /**
    * Sets the {@code DatasetMetadata} this wrapper will delegate to.
@@ -78,7 +78,7 @@ public interface DatasetMetadataWrapper
    * 
    * @param meta
    */
-  void wrap(DatasetMetadata meta);
+  void wrap(Metadata meta);
   
   void addAxis(final int imageIndex, final AxisType type, boolean passUp);
   

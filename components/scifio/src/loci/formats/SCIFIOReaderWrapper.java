@@ -55,7 +55,6 @@ import loci.legacy.adapter.AdapterTools;
 import ome.scifio.AbstractHasSCIFIO;
 import ome.scifio.BufferedImagePlane;
 import ome.scifio.ByteArrayPlane;
-import ome.scifio.DatasetMetadata;
 import ome.scifio.Format;
 import ome.scifio.Metadata;
 import ome.scifio.Plane;
@@ -102,7 +101,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   private WeakReference<RandomAccessInputStream> stream;
   
   // this reference allows the list of CoreMetadata returned by the wrapped reader
-  // to exist beyond the scope of a getDatasetMetadata() call, if the reader
+  // to exist beyond the scope of a getMetadata() call, if the reader
   // type dynamically generates its CoreMetadata list. This field will still
   // be garbage collected with this wrapper, allowing its wrapper to
   // eventually be GC'd as well.
@@ -135,7 +134,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     throws ome.scifio.FormatException, IOException
   {
     Plane plane = null;
-    DatasetMetadata m = getDatasetMetadata();
+    Metadata m = getMetadata();
     Object o = unwrap().openPlane(planeIndex, 0, 0, m.getAxisLength(imageIndex, Axes.X),
         m.getAxisLength(imageIndex, Axes.Y));
 
@@ -166,7 +165,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     else {
       bp = new ByteArrayPlane(getContext());
       buf = unwrap().openBytes(imageIndex);
-      DatasetMetadata m = getDatasetMetadata();
+      Metadata m = getMetadata();
       bp.populate(m.get(imageIndex), buf, 0, 0, 
           m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
     }
@@ -187,7 +186,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     else {
       bp = new ByteArrayPlane(getContext());
       buf = unwrap().openBytes(imageIndex, x, y, w, h);
-      DatasetMetadata m = getDatasetMetadata();
+      Metadata m = getMetadata();
       bp.populate(m.get(imageIndex), buf, 0, 0, 
           m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
     }
@@ -199,7 +198,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     int w, int h) throws ome.scifio.FormatException, IOException
   {
     ByteArrayPlane bp = new ByteArrayPlane(getContext());
-    DatasetMetadata m = getDatasetMetadata();
+    Metadata m = getMetadata();
     bp.populate(m.get(imageIndex), unwrap().openBytes(planeIndex, x, y, w, h), 0, 0, 
         m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
     
@@ -210,7 +209,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     throws ome.scifio.FormatException, IOException
   {
     ByteArrayPlane bp = new ByteArrayPlane(getContext());
-    DatasetMetadata m = getDatasetMetadata();
+    Metadata m = getMetadata();
     bp.populate(m.get(imageIndex), unwrap().openThumbBytes(planeIndex), 0, 0, 
         m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
     return bp;
@@ -311,15 +310,10 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   public Metadata getMetadata() {
-    throw new UnsupportedOperationException();
-  }
-
-  public DatasetMetadata getDatasetMetadata() {
     // cache the wrapped CoreMetadata list.
     meta = unwrap().getCoreMetadataList();
     
-
-    DatasetMetadata cMeta = FormatAdapter.get(meta);
+    Metadata cMeta = FormatAdapter.get(meta);
     
     RandomAccessInputStream metaStream = cMeta.getSource();
     

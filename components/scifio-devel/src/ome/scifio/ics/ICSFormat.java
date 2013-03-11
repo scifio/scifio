@@ -57,10 +57,8 @@ import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
-import ome.scifio.DatasetToTypedTranslator;
+import ome.scifio.ImageMetadata;
 import ome.scifio.Translator;
-import ome.scifio.TypedToDatasetTranslator;
-import ome.scifio.DatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
@@ -70,6 +68,7 @@ import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.util.FormatTools;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
@@ -109,6 +108,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    *
    */
   public static class Metadata extends AbstractMetadata {
+    
+    // -- Static Constants
+    public static final String CNAME = "ome.scifio.ics.ICSFormat$Metadata";
   
     // -- Fields -- 
   
@@ -136,14 +138,192 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public Metadata() {
       keyValPairs = new Hashtable<String, String>();
     }
-  
-    // -- Helper Methods --
-  
+    
+    // -- Metadata API Methods --
+    
     /* @see Metadata#resetMeta() */
     public void reset() {
       super.reset(getClass());
       keyValPairs = new Hashtable<String, String>();
     }
+    
+    
+    /*
+     * @see ome.scifio.AbstractMetadata#populateImageMetadata()
+     */
+    public void populateImageMetadata() {
+      // Common metadata population
+      
+      final ImageMetadata imageMeta = new DefaultImageMetadata();
+      add(imageMeta);
+      final int index = getImageCount() - 1;
+
+      imageMeta.setRGB(false);
+
+      // find axis sizes
+
+      double[] axesSizes = getAxesSizes();
+      String[] axes = getAxes();
+      
+      AxisType[] axisTypes = null;
+      int[] axisLengths = null;
+
+      
+      int bitsPerPixel = 0;
+
+      axisLengths = new int[axesSizes.length];
+
+      for (int n = 0; n < axisLengths.length; n++) {
+        axisLengths[n] = new Double(axesSizes[n]).intValue();
+      }
+
+      axisTypes = new AxisType[axes.length];
+
+      final Vector<Integer> channelLengths = new Vector<Integer>();
+      final Vector<String> channelTypes = new Vector<String>();
+
+      for (int n = 0; n < axisTypes.length; n++) {
+        final String axis = axes[n].toLowerCase();
+        if (axis.equals("x")) {
+          axisTypes[n] = Axes.X;
+        }
+        else if (axis.equals("y")) {
+          axisTypes[n] = Axes.Y;
+        }
+        else if (axis.equals("z")) {
+          axisTypes[n] = Axes.Z;
+        }
+        else if (axis.equals("t")) {
+          axisTypes[n] = Axes.TIME;
+        }
+        else if (axis.startsWith("c")) {
+          axisTypes[n] = Axes.CHANNEL;
+          channelTypes.add(FormatTools.CHANNEL);
+          channelLengths.add(axisLengths[n]);
+        }
+        else if (axis.startsWith("p")) {
+          axisTypes[n] = Axes.PHASE;
+          channelTypes.add(FormatTools.PHASE);
+          channelLengths.add(axisLengths[n]);
+        }
+        else if (axis.startsWith("f")) {
+          axisTypes[n] = Axes.FREQUENCY;
+          channelTypes.add(FormatTools.FREQUENCY);
+          channelLengths.add(axisLengths[n]);
+        }
+        else if (axis.equals("bits")) {
+          axisTypes[n] = new CustomAxisType("bits");
+          bitsPerPixel = axisLengths[n];
+          while (bitsPerPixel % 8 != 0)
+            bitsPerPixel++;
+          if (bitsPerPixel == 24 || bitsPerPixel == 48) bitsPerPixel /= 3;
+        }
+        else {
+          axisTypes[n] = Axes.UNKNOWN;
+          channelTypes.add("");
+          channelLengths.add(axisLengths[n]);
+        }
+      }
+
+      if(getBitsPerPixel() != null)
+        bitsPerPixel = getBitsPerPixel();
+      
+      setBitsPerPixel(index, bitsPerPixel);
+
+      imageMeta.setAxisLengths(axisLengths);
+      imageMeta.setAxisTypes(axisTypes);
+      //storedRGB = getSizeX() == 0;
+
+      if (channelLengths.size() == 0) {
+        channelLengths.add(new Integer(1));
+        channelTypes.add(FormatTools.CHANNEL);
+      }
+
+      final int[] cLengths = new int[channelLengths.size()];
+      final String[] cTypes = new String[channelLengths.size()];
+
+      for (int i = 0; i < channelLengths.size(); i++) {
+        cLengths[i] = channelLengths.get(i);
+        cTypes[i] = channelTypes.get(i);
+      }
+
+      imageMeta.setChannelLengths(cLengths);
+      imageMeta.setChannelTypes(cTypes);
+
+      if (getAxisIndex(index, Axes.Z) == -1) {
+        addAxis(index, Axes.Z, 1);
+      }
+      if (getAxisIndex(index, Axes.CHANNEL) == -1) {
+        addAxis(index, Axes.CHANNEL, 1);
+      }
+      if (getAxisIndex(index, Axes.TIME) == -1) {
+        addAxis(index, Axes.TIME, 1);
+      }
+
+      if (getAxisLength(index, Axes.Z) == 0)
+        imageMeta.setAxisLength(Axes.Z, 1);
+      if (getAxisLength(index, Axes.CHANNEL) == 0)
+        imageMeta.setAxisLength(Axes.CHANNEL, 1);
+      if (getAxisLength(index, Axes.TIME) == 0)
+        imageMeta.setAxisLength(Axes.TIME, 1);
+
+      imageMeta.setPlaneCount(getAxisLength(0, Axes.Z) *
+          getAxisLength(0, Axes.TIME));
+
+      imageMeta.setInterleaved(isRGB(0));
+      //TODO coreMeta.imageCount = getSizeZ() * getSizeT();
+      //TODO if (destination.isRGB(0)) coreMeta.imageCount *= getSizeC();
+      setIndexed(index, false);
+      setFalseColor(index, false);
+      setMetadataComplete(index, true);
+      setLittleEndian(index, true);
+
+      boolean lifetime = getLifetime();
+
+      // HACK - support for Gray Institute at Oxford's ICS lifetime data
+      if (lifetime) {
+        final int binCount = getAxisLength(index, Axes.Z);
+        imageMeta.setAxisLength(
+          Axes.Z, (getAxisLength(index, Axes.CHANNEL)));
+        imageMeta.setAxisLength(Axes.CHANNEL, binCount);
+        imageMeta.setChannelLengths(new int[] {binCount});
+        imageMeta.setChannelTypes(new String[] {FormatTools.LIFETIME});
+        final int cIndex = getAxisIndex(index, Axes.CHANNEL);
+        final int zIndex = getAxisIndex(index, Axes.Z);
+        imageMeta.setAxisType(cIndex, Axes.Z);
+        imageMeta.setAxisType(zIndex, Axes.CHANNEL);
+      }
+
+      final String byteOrder = getByteOrder();
+      final String rFormat = getRepFormat();
+      final String compression = getCompression();
+
+      if (byteOrder != null) {
+        final String firstByte = byteOrder.split(" ")[0];
+        final int first = Integer.parseInt(firstByte);
+        imageMeta.setLittleEndian(rFormat.equals("real") ? first == 1 : first != 1);
+      }
+
+      final boolean gzip =
+        (compression == null) ? false : compression.equals("gzip");
+
+      final int bytes = bitsPerPixel / 8;
+
+      if (bitsPerPixel < 32)
+        imageMeta.setLittleEndian(!isLittleEndian(0));
+
+      final boolean floatingPt = rFormat.equals("real");
+      final boolean signed = isSigned();
+
+      try {
+        imageMeta.setPixelType(FormatTools.pixelTypeFromBytes(bytes, signed, floatingPt));
+      }
+      catch (final FormatException e) {
+        LOGGER.error("Could not get pixel type from bytes: " + bytes, e);
+      }
+    }
+    
+    // -- Helper Methods --
   
     /**
      * Convenience method to directly access the hashtable.
@@ -764,9 +944,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     @Override
     public Metadata parse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
-      {
-  
+    {
       findCompanion(stream, meta);
+      super.parse(stream, meta);
   
       final RandomAccessInputStream reader =
         new RandomAccessInputStream(getContext(), meta.getIcsId());
@@ -811,18 +991,12 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         }
         line = reader.readString(ICSUtils.NL);
       }
-      reader.close();
-
-      if (stream.getFileName() != null) {
-        String id = meta.isVersionTwo() ? meta.icsId : meta.idsId;
-        
-        if (!stream.getFileName().equals(id)) {
-          stream.close();
-          stream = new RandomAccessInputStream(getContext(), id);
-        }
-      }
       
-      super.parse(stream, meta);
+      reader.close();
+      in.close();
+      
+      String id = meta.isVersionTwo() ? meta.icsId : meta.idsId;
+      in = new RandomAccessInputStream(getContext(), id);
       
       if (meta.versionTwo) {
         String s = in.readString(ICSUtils.NL);
@@ -834,6 +1008,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       
       in.seek(0);
       
+      meta.setSource(in);
+      
       meta.hasInstrumentData =
         nullKeyCheck(new String[] {
           "history cube emm nm", "history cube exc nm", "history objective NA",
@@ -841,6 +1017,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
           "history objective mag", "history objective WorkingDistance",
           "history objective type", "history objective",
         "history objective immersion"});
+      
+      metadata.populateImageMetadata();
       
       return metadata;
     }
@@ -948,9 +1126,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         this, imageIndex, planeIndex, plane.getData().length, x, y, w, h);
   
       final int bpp =
-        FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
+        FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
       final int len = FormatTools.getPlaneSize(this, imageIndex);
-      final int pixel = bpp * dMeta.getRGBChannelCount(imageIndex);
+      final int pixel = bpp * getMetadata().getRGBChannelCount(imageIndex);
       final int rowLen = FormatTools.getPlaneSize(this, w, 1, imageIndex);
   
       final int[] coordinates = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
@@ -990,7 +1168,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
           data =
             new byte[len *
-                     (storedRGB ? dMeta.getAxisLength(imageIndex, Axes.CHANNEL) : 1)];
+                     (storedRGB ? getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) : 1)];
           int toRead = data.length;
           while (toRead > 0) {
             toRead -= gzipStream.read(data, data.length - toRead, toRead);
@@ -999,12 +1177,12 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       }
   
       final int sizeC =
-        lifetime ? 1 : dMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+        lifetime ? 1 : getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
   
       final int channelLengths = 0;
   
-      if (!dMeta.isRGB(imageIndex) &&
-        dMeta.getChannelDimLengths(imageIndex).length == 1 && storedRGB)
+      if (!getMetadata().isRGB(imageIndex) &&
+          getMetadata().getChannelDimLengths(imageIndex).length == 1 && storedRGB)
       {
         // channels are stored interleaved, but because there are more than we
         // can display as RGB, we need to separate them
@@ -1013,7 +1191,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
             FormatTools.getIndex(
                 this, imageIndex, coordinates[0], 0, coordinates[2]));
         if (!gzip && data == null) {
-          data = new byte[len * dMeta.getAxisLength(imageIndex, Axes.CHANNEL)];
+          data = new byte[len * getMetadata().getAxisLength(imageIndex, Axes.CHANNEL)];
           getStream().read(data);
         }
         else if (!gzip &&
@@ -1025,8 +1203,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         for (int row = y; row < h + y; row++) {
           for (int col = x; col < w + x; col++) {
             int src =
-                bpp * ((planeIndex % dMeta.getAxisLength(imageIndex, Axes.CHANNEL))
-                    + sizeC * (row * (row * dMeta.getAxisLength(imageIndex, Axes.X) + col)));
+                bpp * ((planeIndex % getMetadata().getAxisLength(imageIndex, Axes.CHANNEL))
+                    + sizeC * (row * (row * getMetadata().getAxisLength(imageIndex, Axes.X) + col)));
             int dest = bpp * ((row - y) * w + (col - x));
             System.arraycopy(data, src, plane.getBytes(), dest, bpp); 
           }
@@ -1099,7 +1277,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public String[] getDomains() {
       FormatTools.assertStream(getStream(), true, 0);
       final String[] domain = new String[] {FormatTools.GRAPHICS_DOMAIN};
-      if (dMeta.getChannelDimLengths(0).length > 1) {
+      if (getMetadata().getChannelDimLengths(0).length > 1) {
         domain[0] = FormatTools.FLIM_DOMAIN;
       }
       else if (metadata.hasInstrumentData) {
@@ -1157,15 +1335,15 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     {
       checkParams(imageIndex, planeIndex, plane.getBytes(), x, y, w, h);
       
-      int rgbChannels = dMeta.getRGBChannelCount(imageIndex);
+      int rgbChannels = getMetadata().getRGBChannelCount(imageIndex);
 
-      int sizeZ = dMeta.getAxisLength(imageIndex, Axes.Z);
-      int sizeC = dMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+      int sizeZ = getMetadata().getAxisLength(imageIndex, Axes.Z);
+      int sizeC = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
       if (rgbChannels <= sizeC) {
         sizeC /= rgbChannels;
       }
       
-      int sizeT = dMeta.getAxisLength(imageIndex, Axes.TIME);
+      int sizeT = getMetadata().getAxisLength(imageIndex, Axes.TIME);
       int planes = sizeZ * sizeC * sizeT;
 
       int[] coords =
@@ -1175,9 +1353,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
           FormatTools.getIndex(outputOrder, sizeZ, sizeC, sizeT,
           planes, coords[0], coords[1], coords[2]);
 
-      int sizeX = dMeta.getAxisLength(imageIndex, Axes.X);
-      int sizeY = dMeta.getAxisLength(imageIndex, Axes.Y);
-      int pixelType = dMeta.getPixelType(imageIndex);
+      int sizeX = getMetadata().getAxisLength(imageIndex, Axes.X);
+      int sizeY = getMetadata().getAxisLength(imageIndex, Axes.Y);
+      int pixelType = getMetadata().getPixelType(imageIndex);
       int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
       int planeSize = sizeX * sizeY * rgbChannels * bytesPerPixel;
 
@@ -1225,8 +1403,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     
     /* @see ome.scifio.Writer#close() */
     public void close(int imageIndex) throws IOException {
-      if (lastPlane != dMeta.getPlaneCount(imageIndex) - 1 && out != null) {
-        overwriteDimensions(dMeta, imageIndex);
+      if (lastPlane != getMetadata().getPlaneCount(imageIndex) - 1 && out != null) {
+        overwriteDimensions(getMetadata(), imageIndex);
       }
 
       super.close();
@@ -1290,7 +1468,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         out.writeBytes("filename\t" + currentId + "\n");
         out.writeBytes("layout\tparameters\t6\n");
 
-        DatasetMetadata meta = dMeta;
+        Metadata meta = getMetadata();
         //SCIFIOMetadataTools.verifyMinimumPopulated(meta, pixels);
 
         int pixelType = meta.getPixelType(imageIndex);
@@ -1377,7 +1555,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       }
     }
     
-    private int[] overwriteDimensions(DatasetMetadata meta, int imageIndex) throws IOException {
+    private int[] overwriteDimensions(Metadata meta, int imageIndex) throws IOException {
       out.seek(dimensionOffset);
       int sizeX = meta.getAxisLength(imageIndex, Axes.X);
       int sizeY = meta.getAxisLength(imageIndex, Axes.Y);
@@ -1988,32 +2166,34 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
   }
 
-  /**
-   * SCIFIO file format Translator for ICS Metadata objects to the SCIFIO Core
-   * metadata type.
-   * 
-   */
-   @Plugin(type = DatasetToTypedTranslator.class, attrs = 
-     {@Attr(name = Translator.SOURCE, value = DatasetMetadata.FORMAT_NAME),
-     @Attr(name = Translator.DEST, value = ICSFormat.FORMAT_NAME)})
-  public static class CoreICSTranslator
-  extends AbstractTranslator<DatasetMetadata, Metadata>
-  implements DatasetToTypedTranslator {
-     
+ /**
+  * SCIFIO file format Translator for ICS Metadata objects to the SCIFIO Core
+  * metadata type.
+  * 
+  */
+  @Plugin(type = Translator.class, attrs = 
+    {@Attr(name = ICSTranslator.SOURCE, value = ome.scifio.Metadata.CNAME),
+    @Attr(name = ICSTranslator.DEST, value = Metadata.CNAME)},
+    priority = Priority.LOW_PRIORITY)
+  public static class ICSTranslator
+  extends AbstractTranslator<ome.scifio.Metadata, Metadata>
+  {
+    // -- Static Constants --
+
+    public static final String DEST_VALUE = "ome.scifio.ics.ICSFormat.Metadata";
+
     // -- Translator API Methods --
-  
-    @Override
-    public void translate(final DatasetMetadata source, final Metadata destination)
+
+    public void translate()
     {
-      super.translate(source, destination);
       // note that the destination fields will preserve their default values
       // only the keyValPairs will be modified
-  
+ 
       Hashtable<String, String> keyValPairs = null;
-      if (destination == null || destination.getKeyValPairs() == null) keyValPairs =
+      if (dest == null || dest.getKeyValPairs() == null) keyValPairs =
         new Hashtable<String, String>();
       else 
-        keyValPairs = destination.getKeyValPairs();
+        keyValPairs = dest.getKeyValPairs();
   
       final int numAxes = source.getAxisCount(0);
   
@@ -2097,207 +2277,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
       keyValPairs.put("representation byte_order", byteOrder);
   
-      destination.setKeyValPairs(keyValPairs);
-    }
-  
-  }
-
-  /**
-   * SCIFIO file format Translator for ICS Metadata objects
-   * to the SCIFIO Core metadata type. 
-   *
-   */
-   @Plugin(type = TypedToDatasetTranslator.class, attrs = 
-     {@Attr(name = Translator.SOURCE, value = ICSFormat.FORMAT_NAME),
-     @Attr(name = Translator.DEST, value = DatasetMetadata.FORMAT_NAME)})
-  public static class ICSCoreTranslator
-  extends AbstractTranslator<Metadata, DatasetMetadata>
-  implements TypedToDatasetTranslator {
-
-    private Metadata curSource;
-
-    // -- Translator API Methods --
-
-    @Override
-    public void translate(final Metadata source, final DatasetMetadata destination)
-    {
-      super.translate(source, destination);
-      final DefaultImageMetadata imageMeta = new DefaultImageMetadata();
-      destination.add(imageMeta);
-      final int index = destination.getImageCount() - 1;
-
-      curSource = source;
-
-      imageMeta.setRGB(false);
-
-      // find axis sizes
-
-      double[] axesSizes = source.getAxesSizes();
-      String[] axes = source.getAxes();
-      
-      AxisType[] axisTypes = null;
-      int[] axisLengths = null;
-
-      
-      int bitsPerPixel = 0;
-
-      axisLengths = new int[axesSizes.length];
-
-      for (int n = 0; n < axisLengths.length; n++) {
-        axisLengths[n] = new Double(axesSizes[n]).intValue();
-      }
-
-      axisTypes = new AxisType[axes.length];
-
-      final Vector<Integer> channelLengths = new Vector<Integer>();
-      final Vector<String> channelTypes = new Vector<String>();
-
-      for (int n = 0; n < axisTypes.length; n++) {
-        final String axis = axes[n].toLowerCase();
-        if (axis.equals("x")) {
-          axisTypes[n] = Axes.X;
-        }
-        else if (axis.equals("y")) {
-          axisTypes[n] = Axes.Y;
-        }
-        else if (axis.equals("z")) {
-          axisTypes[n] = Axes.Z;
-        }
-        else if (axis.equals("t")) {
-          axisTypes[n] = Axes.TIME;
-        }
-        else if (axis.startsWith("c")) {
-          axisTypes[n] = Axes.CHANNEL;
-          channelTypes.add(FormatTools.CHANNEL);
-          channelLengths.add(axisLengths[n]);
-        }
-        else if (axis.startsWith("p")) {
-          axisTypes[n] = Axes.PHASE;
-          channelTypes.add(FormatTools.PHASE);
-          channelLengths.add(axisLengths[n]);
-        }
-        else if (axis.startsWith("f")) {
-          axisTypes[n] = Axes.FREQUENCY;
-          channelTypes.add(FormatTools.FREQUENCY);
-          channelLengths.add(axisLengths[n]);
-        }
-        else if (axis.equals("bits")) {
-          axisTypes[n] = new CustomAxisType("bits");
-          bitsPerPixel = axisLengths[n];
-          while (bitsPerPixel % 8 != 0)
-            bitsPerPixel++;
-          if (bitsPerPixel == 24 || bitsPerPixel == 48) bitsPerPixel /= 3;
-        }
-        else {
-          axisTypes[n] = Axes.UNKNOWN;
-          channelTypes.add("");
-          channelLengths.add(axisLengths[n]);
-        }
-      }
-
-      if(source.getBitsPerPixel() != null)
-        bitsPerPixel = source.getBitsPerPixel();
-      
-      destination.setBitsPerPixel(index, bitsPerPixel);
-
-      imageMeta.setAxisLengths(axisLengths);
-      imageMeta.setAxisTypes(axisTypes);
-      //storedRGB = getSizeX() == 0;
-
-      if (channelLengths.size() == 0) {
-        channelLengths.add(new Integer(1));
-        channelTypes.add(FormatTools.CHANNEL);
-      }
-
-      final int[] cLengths = new int[channelLengths.size()];
-      final String[] cTypes = new String[channelLengths.size()];
-
-      for (int i = 0; i < channelLengths.size(); i++) {
-        cLengths[i] = channelLengths.get(i);
-        cTypes[i] = channelTypes.get(i);
-      }
-
-      imageMeta.setChannelLengths(cLengths);
-      imageMeta.setChannelTypes(cTypes);
-
-      if (destination.getAxisIndex(index, Axes.Z) == -1) {
-        destination.addAxis(index, Axes.Z, 1);
-      }
-      if (destination.getAxisIndex(index, Axes.CHANNEL) == -1) {
-        destination.addAxis(index, Axes.CHANNEL, 1);
-      }
-      if (destination.getAxisIndex(index, Axes.TIME) == -1) {
-        destination.addAxis(index, Axes.TIME, 1);
-      }
-
-      if (destination.getAxisLength(index, Axes.Z) == 0)
-        imageMeta.setAxisLength(Axes.Z, 1);
-      if (destination.getAxisLength(index, Axes.CHANNEL) == 0)
-        imageMeta.setAxisLength(Axes.CHANNEL, 1);
-      if (destination.getAxisLength(index, Axes.TIME) == 0)
-        imageMeta.setAxisLength(Axes.TIME, 1);
-
-      imageMeta.setPlaneCount(destination.getAxisLength(0, Axes.Z) *
-        destination.getAxisLength(0, Axes.TIME));
-
-      imageMeta.setInterleaved(destination.isRGB(0));
-      //TODO coreMeta.imageCount = getSizeZ() * getSizeT();
-      //TODO if (destination.isRGB(0)) coreMeta.imageCount *= getSizeC();
-      destination.setIndexed(index, false);
-      destination.setFalseColor(index, false);
-      destination.setMetadataComplete(index, true);
-      destination.setLittleEndian(index, true);
-
-      boolean lifetime = source.getLifetime();
-
-      // HACK - support for Gray Institute at Oxford's ICS lifetime data
-      if (lifetime) {
-        final int binCount = destination.getAxisLength(index, Axes.Z);
-        imageMeta.setAxisLength(
-          Axes.Z, (destination.getAxisLength(index, Axes.CHANNEL)));
-        imageMeta.setAxisLength(Axes.CHANNEL, binCount);
-        imageMeta.setChannelLengths(new int[] {binCount});
-        imageMeta.setChannelTypes(new String[] {FormatTools.LIFETIME});
-        final int cIndex = destination.getAxisIndex(index, Axes.CHANNEL);
-        final int zIndex = destination.getAxisIndex(index, Axes.Z);
-        imageMeta.setAxisType(cIndex, Axes.Z);
-        imageMeta.setAxisType(zIndex, Axes.CHANNEL);
-      }
-
-      final String byteOrder = source.getByteOrder();
-      final String rFormat = source.getRepFormat();
-      final String compression = source.getCompression();
-
-      if (byteOrder != null) {
-        final String firstByte = byteOrder.split(" ")[0];
-        final int first = Integer.parseInt(firstByte);
-        imageMeta.setLittleEndian(rFormat.equals("real") ? first == 1 : first != 1);
-      }
-
-      final boolean gzip =
-        (compression == null) ? false : compression.equals("gzip");
-
-      final int bytes = bitsPerPixel / 8;
-
-      if (bitsPerPixel < 32)
-        imageMeta.setLittleEndian(!destination.isLittleEndian(0));
-
-      final boolean floatingPt = rFormat.equals("real");
-      final boolean signed = source.isSigned();
-
-      try {
-        imageMeta.setPixelType(FormatTools.pixelTypeFromBytes(bytes, signed, floatingPt));
-      }
-      catch (final FormatException e) {
-        LOGGER.error("Could not get pixel type from bytes: " + bytes, e);
-      }
-
-    }
-
-    // -- Helper Methods --
-
-    StringTokenizer getTknz(final String target) {
-      return new StringTokenizer(curSource.get(target));
+      dest.setKeyValPairs(keyValPairs);
     }
   }
 }

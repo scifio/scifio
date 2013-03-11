@@ -102,19 +102,19 @@ public class ICSReader extends SCIFIOFormatReader {
   /* @see loci.formats.IFormatReader#getChannelDimLengths() */
   @Deprecated
   public int[] getChannelDimLengths() {
-    return reader.getDatasetMetadata().getChannelDimLengths(series);
+    return reader.getMetadata().getChannelDimLengths(series);
   }
 
   /* @see loci.formats.IFormatReader#getChannelDimTypes() */
   @Deprecated
   public String[] getChannelDimTypes() {
-    return reader.getDatasetMetadata().getChannelDimTypes(series);
+    return reader.getMetadata().getChannelDimTypes(series);
   }
 
   /* @see loci.formats.IFormatReader#isInterleaved(int) */
   @Deprecated
   public boolean isInterleaved(int subC) {
-    return reader.getDatasetMetadata().isInterleaved(series);
+    return reader.getMetadata().isInterleaved(series);
   }
 
   /* @see loci.formats.IFormatReader#fileGroupOption(String) */
@@ -138,7 +138,7 @@ public class ICSReader extends SCIFIOFormatReader {
     super.setId(id);
     OMEXMLMetadata omeRoot = new OMEXMLMetadataImpl() ;
     omeRoot.createRoot();
-    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(omeRoot, reader.getDatasetMetadata());
+    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(omeRoot, reader.getMetadata());
     omeRoot.setImageName(id, 0);
     
     OMEMetadata omeMeta = new OMEMetadata(omeRoot);

@@ -40,17 +40,17 @@ import org.scijava.plugin.Plugin;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import ome.scifio.DatasetMetadata;
+import ome.scifio.Metadata;
 import ome.scifio.util.FormatTools;
 
 /**
  * @author Mark Hiner
  *
  */
-@Plugin(type=DatasetMetadataWrapper.class, attrs={
+@Plugin(type=MetadataWrapper.class, attrs={
   @Attr(name=ChannelFillerMetadata.METADATA_KEY, value=ChannelFillerMetadata.METADATA_VALUE)
   })
-public class ChannelFillerMetadata extends AbstractDatasetMetadataWrapper {
+public class ChannelFillerMetadata extends AbstractMetadataWrapper {
   
   // -- Constants --
   
@@ -68,7 +68,7 @@ public class ChannelFillerMetadata extends AbstractDatasetMetadataWrapper {
     this(null);
   }
   
-  public ChannelFillerMetadata(DatasetMetadata metadata) {
+  public ChannelFillerMetadata(Metadata metadata) {
     super(metadata);
   }
   

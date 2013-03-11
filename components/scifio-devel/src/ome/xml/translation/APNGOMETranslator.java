@@ -40,7 +40,6 @@ import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 import ome.scifio.FormatException;
-import ome.scifio.Translator;
 import ome.scifio.apng.APNGFormat;
 import ome.scifio.util.FormatTools;
 import ome.xml.meta.OMEMetadata;
@@ -53,17 +52,15 @@ import ome.xml.meta.OMEXMLMetadataService;
  * @author Mark Hiner
  */
 @Plugin(type = OMETranslator.class, attrs = {
-  @Attr(name = Translator.SOURCE, value = APNGFormat.FORMAT_NAME),
-  @Attr(name = Translator.DEST, value = OMEMetadata.FORMAT_NAME)
+  @Attr(name = APNGOMETranslator.SOURCE, value = APNGFormat.Metadata.CNAME),
+  @Attr(name = APNGOMETranslator.DEST, value = OMEMetadata.CNAME)
 })
 public class APNGOMETranslator extends OMETranslator<APNGFormat.Metadata> {
 
   // -- Translator API Methods --
 
   @Override
-  public void translate(final APNGFormat.Metadata source, final OMEMetadata destination) {
-    super.translate(source, destination);
-
+  public void translate() {
     int sizeC = 1;
 
     switch (source.getIhdr().getColourType()) {
@@ -102,11 +99,11 @@ public class APNGOMETranslator extends OMETranslator<APNGFormat.Metadata> {
     final String imageName = "";
 
     getContext().getService(OMEXMLMetadataService.class).populateMetadata(
-      (ome.xml.meta.IMetadata)destination.getRoot(), series, imageName, littleEndian, dimOrder,
+      (ome.xml.meta.IMetadata)dest.getRoot(), series, imageName, littleEndian, dimOrder,
       pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
 
     if (source.getFctl() != null && source.getFctl().size() > 0)
-      destination.getRoot().setPixelsTimeIncrement(
+      dest.getRoot().setPixelsTimeIncrement(
         (double) source.getFctl().get(0).getDelayNum() /
           source.getFctl().get(0).getDelayDen(), 0);
   }

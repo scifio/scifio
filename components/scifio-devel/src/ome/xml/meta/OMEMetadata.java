@@ -51,6 +51,7 @@ public class OMEMetadata extends AbstractMetadata {
   // -- Constants --
   
   public static final String FORMAT_NAME = "OME-XML"; 
+  public static final String CNAME = "ome.xml.meta.OMEMetadata";
   
   // -- Fields --
   
@@ -64,15 +65,6 @@ public class OMEMetadata extends AbstractMetadata {
   }
   
   public OMEMetadata(OMEXMLMetadata root) {
-    if (root == null) {
-      try {
-        OMEXMLService service = scifio().formats().getInstance(OMEXMLService.class);
-        root = service.createOMEXMLMetadata();
-      } catch (ServiceException e) {
-        LOGGER.debug("Failed to get OME-XML Service", e);
-      }
-    }
-    
     this.root = root;
   }
   
@@ -89,6 +81,14 @@ public class OMEMetadata extends AbstractMetadata {
   }
 
   public OMEXMLMetadata getRoot() {
+    if (root == null) {
+      OMEXMLService service = scifio().formats().getInstance(OMEXMLService.class);
+      try {
+        root = service.createOMEXMLMetadata();
+      } catch (ServiceException e) {
+        LOGGER.debug("Failed to get OME-XML Service", e);
+      }
+    }
     return root;
   }
   

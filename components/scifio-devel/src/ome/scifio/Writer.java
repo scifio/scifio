@@ -123,15 +123,6 @@ public interface Writer extends HasFormat {
   Metadata getMetadata();
 
   /**
-   * Gets the format-agnostic {@code Metadata} representation that will be
-   * used when saving planes.
-   * 
-   *  @return The format-agnostic {@code Metadata} associated with this
-   *          {@code Writer}.
-   */
-  DatasetMetadata getDatasetMetadata();
-
-  /**
    * Sets the source that will be written to during {@link #savePlane} calls.
    * 
    * @param fileName The name of an image source to be written.

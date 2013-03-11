@@ -62,8 +62,8 @@ public class DefaultTranslatorService extends AbstractService implements Transla
    */
   public Translator findTranslator(Metadata source, Metadata dest) {
     Map<String, String> kvPairs = new HashMap<String,String>();
-    kvPairs.put(Translator.SOURCE, source.getFormatName());
-    kvPairs.put(Translator.DEST, dest.getFormatName());
+    kvPairs.put(Translator.SOURCE, source.getClass().getName());
+    kvPairs.put(Translator.DEST, dest.getClass().getName());
     
     Translator t = attributeService.createInstance(Translator.class, kvPairs, null);
     

@@ -68,9 +68,6 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   /** Type-specific Metadata values. */
   protected M metadata;
 
-  /** Core Metadata values */
-  protected DefaultDatasetMetadata dMeta;
-
   /** Frame rate to use when writing in frames per second, if applicable. */
   protected int fps = 10;
 
@@ -104,22 +101,14 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   /** Current file. */
   protected RandomAccessOutputStream out;
 
-  // -- Constructors --
-
-  /** Constructs a writer with the given context */
-  public AbstractWriter()
-  {
-    init();
-  }
-
   // -- Writer API Methods --
   
   /* @see ome.scifio.Writer#savePlane(int, int, Object) */
   public void savePlane(final int imageIndex, final int planeIndex,
     final Plane plane) throws FormatException, IOException
   {
-    final int width = dMeta.getAxisLength(imageIndex, Axes.X);
-    final int height = dMeta.getAxisLength(imageIndex, Axes.Y);
+    final int width = metadata.getAxisLength(imageIndex, Axes.X);
+    final int height = metadata.getAxisLength(imageIndex, Axes.Y);
     savePlane(imageIndex, planeIndex, plane, 0, 0, width, height);
   }
   
@@ -140,11 +129,6 @@ public abstract class AbstractWriter<M extends TypedMetadata>
     return metadata;
   }
 
-  /* @see ome.scifio.Writer#getDatasetMetadata() */
-  public DatasetMetadata getDatasetMetadata() {
-    return dMeta;
-  }
-  
   /* @see ome.scifio.Writer#setStream(String) */
   public void setDest(final String fileName)
     throws FormatException, IOException
@@ -281,7 +265,6 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   public void close() throws IOException {
     if (out != null) out.close();
     if (metadata != null) metadata.close();
-    if (dMeta != null) dMeta.close();
     out = null;
     initialized = null;
   }
@@ -294,37 +277,29 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   public void setMetadata(final M meta) throws FormatException {
     if (metadata != null && metadata != meta) {
       meta.close();
-      dMeta.close();
     }
     
     metadata = meta;
-    
-    Translator t = scifio().translators().findTranslator(meta, dMeta);
-    t.translate(meta, dMeta);
   }
 
   // -- Helper methods --
-
-  private void init() {
-    this.dMeta = new DefaultDatasetMetadata();
-  }
 
   /** Sets up the initialized array and ensures this Writer is ready for writing */
   private void initialize(final int imageIndex)
     throws FormatException, IOException
   {
-    SCIFIOMetadataTools.verifyMinimumPopulated(dMeta, out);
-    initialized = new boolean[dMeta.getImageCount()][];
-    for (int i = 0; i < dMeta.getImageCount(); i++) {
+    SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
+    initialized = new boolean[metadata.getImageCount()][];
+    for (int i = 0; i < metadata.getImageCount(); i++) {
       initialized[i] = new boolean[getPlaneCount(i)];
     }
   }
 
   /** Retrieve the total number of planes in the current series. */
   protected int getPlaneCount(final int imageIndex) {
-    final int z = dMeta.getAxisLength(imageIndex, Axes.Z);
-    final int t = dMeta.getAxisLength(imageIndex, Axes.TIME);
-    final int c = dMeta.getEffectiveSizeC(imageIndex);
+    final int z = metadata.getAxisLength(imageIndex, Axes.Z);
+    final int t = metadata.getAxisLength(imageIndex, Axes.TIME);
+    final int c = metadata.getEffectiveSizeC(imageIndex);
     return z * c * t;
   }
 
@@ -335,8 +310,8 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   protected boolean isFullPlane(final int imageIndex, final int x, final int y,
     final int w, final int h)
   {
-    final int sizeX = dMeta.getAxisLength(imageIndex, Axes.X);
-    final int sizeY = dMeta.getAxisLength(imageIndex, Axes.Y);
+    final int sizeX = metadata.getAxisLength(imageIndex, Axes.X);
+    final int sizeY = metadata.getAxisLength(imageIndex, Axes.Y);
     return x == 0 && y == 0 && w == sizeX && h == sizeY;
   }
 
@@ -349,12 +324,12 @@ public abstract class AbstractWriter<M extends TypedMetadata>
     final byte[] buf, final int x, final int y, final int w, final int h)
     throws FormatException
   {
-    SCIFIOMetadataTools.verifyMinimumPopulated(dMeta, out, imageIndex, planeIndex);
+    SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out, imageIndex, planeIndex);
 
     if (buf == null) throw new FormatException("Buffer cannot be null.");
-    final int z = dMeta.getAxisLength(imageIndex, Axes.Z);
-    final int t = dMeta.getAxisLength(imageIndex, Axes.TIME);
-    final int c = dMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+    final int z = metadata.getAxisLength(imageIndex, Axes.Z);
+    final int t = metadata.getAxisLength(imageIndex, Axes.TIME);
+    final int c = metadata.getAxisLength(imageIndex, Axes.CHANNEL);
     final int planes = z * c * t;
 
     if (planeIndex < 0)
@@ -365,8 +340,8 @@ public abstract class AbstractWriter<M extends TypedMetadata>
         "Plane index:%d must be < %d", planeIndex, planes));
     }
 
-    final int sizeX = dMeta.getAxisLength(imageIndex, Axes.X);
-    final int sizeY = dMeta.getAxisLength(imageIndex, Axes.Y);
+    final int sizeX = metadata.getAxisLength(imageIndex, Axes.X);
+    final int sizeY = metadata.getAxisLength(imageIndex, Axes.Y);
     if (x < 0)
       throw new FormatException(String.format("X:%d must be >= 0", x));
     if (y < 0)
@@ -388,7 +363,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
       throw new FormatException(String.format(
         "(h:%d + y:%d) must be <= %d", h, y, sizeY));
 
-    final int pixelType = dMeta.getPixelType(imageIndex);
+    final int pixelType = metadata.getPixelType(imageIndex);
     final int bpp = FormatTools.getBytesPerPixel(pixelType);
     int samples = bpp <= 0 ? 1 : bpp;
     final int minSize = bpp * w * h * samples;

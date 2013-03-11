@@ -35,21 +35,22 @@
  */
 package ome.scifio.filters;
 
+import ome.scifio.Metadata;
+
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import ome.scifio.DatasetMetadata;
 
 /**
  * @author Mark Hiner
  *
  */
-@Plugin(type=DatasetMetadataWrapper.class, attrs={
+@Plugin(type=MetadataWrapper.class, attrs={
   @Attr(name=ChannelSeparatorMetadata.METADATA_KEY, value=ChannelSeparatorMetadata.METADATA_VALUE)
   })
-public class ChannelSeparatorMetadata extends AbstractDatasetMetadataWrapper {
+public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
   
   // -- Constants --
   
@@ -67,7 +68,7 @@ public class ChannelSeparatorMetadata extends AbstractDatasetMetadataWrapper {
     this(null);
   }
   
-  public ChannelSeparatorMetadata(DatasetMetadata metadata) {
+  public ChannelSeparatorMetadata(Metadata metadata) {
     super(metadata);
   }
   

@@ -116,8 +116,8 @@ public class T3cTranslatingMetadata {
    * 
    */
   @Plugin(type = Translator.class, attrs = {
-    @Attr(name = Translator.DEST, value = FakeFormat.FORMAT_NAME),
-    @Attr(name = Translator.SOURCE, value = FakeFormat.FORMAT_NAME)
+    @Attr(name = MischeviousTranslator.DEST, value = FakeFormat.Metadata.CNAME),
+    @Attr(name = MischeviousTranslator.SOURCE, value = FakeFormat.Metadata.CNAME)
   })
   public static class MischeviousTranslator
   extends AbstractTranslator<FakeFormat.Metadata, FakeFormat.Metadata>
@@ -125,24 +125,35 @@ public class T3cTranslatingMetadata {
     
     // -- Translator API methods --
     
-    // This method is the actual workhorse of the Translator. Objects are passed
+    
+    // Objects are passed
     // by reference to allow non-destructive translation, so multiple
     // translation calls could be invoked in succession to collaboratively
     // populate a single Metadata object.
     // If you prefer to ensure your Metadata is fresh, call the destination's
     // reset() method.
-    public void translate(final FakeFormat.Metadata source, final FakeFormat.Metadata destination) {
-      super.translate(source, destination);
+    public void translate(Metadata source, Metadata dest) {
+      System.out.println("In the Translate(Metadata, Metadata) method");
+
+      super.translate(source, dest);
       
-      // And now we're feeling particularly chaotic and decide to translate
-      // only a ColorTable filled with useless values.
-      ColorTable ct = source.getColorTable();
+      System.out.println("Translation complete! But we can do post-translation actions still.");
+      
+      // And now we're feeling particularly chaotic and decide to mangle
+      // the output's ColorTable, filling it with useless values.
+      ColorTable ct = ((FakeFormat.Metadata)source).getColorTable();
       byte[][] bytes = new byte[ct.getComponentCount()][ct.getLength()];
       
       for(byte[] b : bytes)
         Arrays.fill(b, (byte)0x2a);
       
-      destination.setLut(new ColorTable[]{new ColorTable8(bytes)});
+      ((FakeFormat.Metadata)dest).setLut(new ColorTable[]{new ColorTable8(bytes)});
+    }
+
+    // This method is the actual workhorse of the Translator. Using the protected
+    // and properly type cast fields, source and dest, we can perform translation.
+    protected void translate() {
+      System.out.println("Translating source: " + source + " to dest: " + dest);
     }
   }
 }

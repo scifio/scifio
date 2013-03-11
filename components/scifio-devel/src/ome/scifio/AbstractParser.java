@@ -71,9 +71,6 @@ public abstract class AbstractParser<M extends TypedMetadata>
   /** Type-specific metadata values. */
   protected M metadata;
 
-  /** Core metadata values. */
-  protected DefaultDatasetMetadata dMeta;
-
   /** Name of current file. */
   protected String currentId;
 
@@ -86,12 +83,6 @@ public abstract class AbstractParser<M extends TypedMetadata>
   /** Metadata parsing options. */
   protected MetadataOptions metadataOptions = new DefaultMetadataOptions();
 
-  // -- Constructors --
-
-  public AbstractParser() {
-    dMeta = new DefaultDatasetMetadata();
-  }
-  
   // -- Parser API Methods --
   
   /* @see Parser#parse(String fileName) */
@@ -152,7 +143,6 @@ public abstract class AbstractParser<M extends TypedMetadata>
   public void close(final boolean fileOnly) throws IOException {
     if (in != null) in.close();
     if (metadata != null) metadata.close();
-    if (dMeta != null) dMeta.close();
     if (!fileOnly) {
       in = null;
     }
@@ -192,7 +182,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
    */
   public String[] getUsedFiles(final boolean noPixels) {
     final Vector<String> files = new Vector<String>();
-    for (int i = 0; i < dMeta.getImageCount(); i++) {
+    for (int i = 0; i < metadata.getImageCount(); i++) {
       final String[] s = getImageUsedFiles(i, noPixels);
       if (s != null) {
         for (final String file : s) {
@@ -382,8 +372,8 @@ public abstract class AbstractParser<M extends TypedMetadata>
     }
     
     //TODO relying on Abstract-level API
-    ((AbstractMetadata)metadata).filtered = filterMetadata;
-    ((AbstractMetadata)metadata).metadataOptions = metadataOptions;
+    metadata.setFiltered(filterMetadata);
+    metadata.setMetadataOptions(metadataOptions);
     if(metadata.getContext() == null) metadata.setContext(getContext());
     metadata.setSource(stream);
     return metadata;
@@ -393,7 +383,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
   /** Adds an entry to the global metadata table. */
   public void addGlobalMeta(final String key, final Object value) {
-    addMeta(key, value, dMeta.getDatasetMetadata());
+    addMeta(key, value, metadata.getDatasetMetadata());
   }
 
   /** Adds an entry to the global metadata table. */
@@ -438,7 +428,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
   /** Gets a value from the global metadata table. */
   public Object getGlobalMeta(final String key) {
-    return dMeta.getDatasetMetadata().get(key);
+    return metadata.getDatasetMetadata().get(key);
   }
 
   /* Sets the input stream for this parser if provided a new stream */

@@ -222,11 +222,6 @@
 	    	<class name="ome.scifio.utests.CheckerTest"/>
     	</classes>
     </test>
-    <test name="DatasetMetadataTest">
-    	<classes>
-	    	<class name="ome.scifio.utests.DatasetMetadataTest"/>
-    	</classes>
-    </test>
     <test name="DiscoveryTest">
     	<classes>
 	    	<class name="ome.scifio.discovery.utests.DiscoveryTest"/>

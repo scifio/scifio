@@ -75,8 +75,8 @@ import java.util.Hashtable;
 import ome.scifio.util.FormatTools;
 import ome.scifio.gui.Index16ColorModel;
 import ome.scifio.gui.SignedColorModel;
+import ome.scifio.Metadata;
 import ome.scifio.BufferedImagePlane;
-import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
@@ -719,7 +719,7 @@ public final class AWTImageTools {
       Reader r, int w, int h, int imageIndex) 
       throws FormatException, IOException
   {
-    DatasetMetadata meta = r.getDatasetMetadata();
+    Metadata meta = r.getMetadata();
     
     int pixelType = meta.getPixelType(imageIndex);
     boolean little = meta.isLittleEndian(imageIndex);

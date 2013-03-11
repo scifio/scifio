@@ -291,5 +291,13 @@ public interface ImageMetadata {
    * @param value
    */
   void addAxis(final AxisType type, final int value);
+  
+  /**
+   * Returns a copy of this ImageMetadata.
+   * 
+   * @param toCopy
+   * @return
+   */
+  ImageMetadata copy();
 
 }

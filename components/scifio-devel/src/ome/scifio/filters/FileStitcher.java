@@ -52,9 +52,9 @@ import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.ImageMetadata;
-import ome.scifio.DatasetMetadata;
 import ome.scifio.FilePattern;
 import ome.scifio.FormatException;
+import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.io.Location;
@@ -158,8 +158,8 @@ public class FileStitcher extends AbstractReaderFilter {
   }
 
   /* @see Reader#getDatasetMetadata() */
-  public DatasetMetadata getExternalsMetadata(int imageIndex, int planeIndex) {
-    return getExternalsReader(imageIndex, planeIndex).getDatasetMetadata();
+  public Metadata getExternalsMetadata(int imageIndex, int planeIndex) {
+    return getExternalsReader(imageIndex, planeIndex).getMetadata();
   }
 
   /** Gets the local reader index for use with the given image plane. */
@@ -331,7 +331,7 @@ public class FileStitcher extends AbstractReaderFilter {
     Reader r = getReader(imageIndex, pos[0]);
     int ino = pos[1];
 
-    if (ino < r.getDatasetMetadata().getPlaneCount(imageIndex)) 
+    if (ino < r.getMetadata().getPlaneCount(imageIndex)) 
       return r.openPlane(imageIndex, ino, plane, parentPlane.getxOffset(), 
           parentPlane.getyOffset(), parentPlane.getxLength(), parentPlane.getyLength());
 
@@ -361,7 +361,7 @@ public class FileStitcher extends AbstractReaderFilter {
 
     Reader r = getReader(imageIndex, planeIndex);
     int ino = getAdjustedIndex(imageIndex, planeIndex);
-    if (ino < r.getDatasetMetadata().getPlaneCount(imageIndex)) return r.openThumbPlane(imageIndex, ino);
+    if (ino < r.getMetadata().getPlaneCount(imageIndex)) return r.openThumbPlane(imageIndex, ino);
 
     // return a blank image to cover for the fact that
     // this file does not contain enough image planes
@@ -402,10 +402,10 @@ public class FileStitcher extends AbstractReaderFilter {
   public int[] getZCTCoords(int imageIndex, int planeIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
     return noStitch ? FormatTools.getZCTCoords(getParent(), imageIndex, planeIndex) :
-      FormatTools.getZCTCoords(FormatTools.findDimensionOrder(getDatasetMetadata(), imageIndex),
-      getDatasetMetadata().getAxisLength(imageIndex, Axes.Z), getDatasetMetadata().getEffectiveSizeC(imageIndex),
-      getDatasetMetadata().getAxisLength(imageIndex, Axes.TIME), getDatasetMetadata().getPlaneCount(imageIndex),
-      imageIndex, planeIndex);
+      FormatTools.getZCTCoords(FormatTools.findDimensionOrder(getMetadata(), imageIndex),
+          getMetadata().getAxisLength(imageIndex, Axes.Z), getMetadata().getEffectiveSizeC(imageIndex),
+          getMetadata().getAxisLength(imageIndex, Axes.TIME), getMetadata().getPlaneCount(imageIndex),
+          imageIndex, planeIndex);
   }
 
   
@@ -493,11 +493,11 @@ public class FileStitcher extends AbstractReaderFilter {
       return;
     }
 
-    AxisGuesser guesser = new AxisGuesser(fp, FormatTools.findDimensionOrder(getDatasetMetadata(), imageIndex),
-      getParent().getDatasetMetadata().getAxisLength(imageIndex, Axes.Z),
-      getParent().getDatasetMetadata().getAxisLength(imageIndex, Axes.TIME),
-      getParent().getDatasetMetadata().getEffectiveSizeC(imageIndex),
-      getParent().getDatasetMetadata().isOrderCertain(imageIndex));
+    AxisGuesser guesser = new AxisGuesser(fp, FormatTools.findDimensionOrder(getMetadata(), imageIndex),
+      getParent().getMetadata().getAxisLength(imageIndex, Axes.Z),
+      getParent().getMetadata().getAxisLength(imageIndex, Axes.TIME),
+      getParent().getMetadata().getEffectiveSizeC(imageIndex),
+      getParent().getMetadata().isOrderCertain(imageIndex));
 
     // use the dimension order recommended by the axis guesser
     ((DimensionSwapper) getParent()).swapDimensions(imageIndex,
@@ -555,7 +555,7 @@ public class FileStitcher extends AbstractReaderFilter {
     
     for (int i=0; i<imageCount; i++) {
       Reader rr = getReader(i, 0);
-      DatasetMetadata rrMeta = rr.getDatasetMetadata();
+      Metadata rrMeta = rr.getMetadata();
       DefaultImageMetadata iMeta = new DefaultImageMetadata(rrMeta.get(i));
       imgMeta.add(iMeta);
 
@@ -570,9 +570,9 @@ public class FileStitcher extends AbstractReaderFilter {
     // order may need to be adjusted
     for (int i=0; i<imageCount; i++) {
       AxisGuesser ag = externals.get(getExternalSeries(i)).getAxisGuesser();
-      FormatTools.setDimensionOrder(getDatasetMetadata(), i,
+      FormatTools.setDimensionOrder(getMetadata(), i,
         FormatTools.findDimensionList(ag.getAdjustedOrder()));
-      getDatasetMetadata().setOrderCertain(i, ag.isCertain());
+      getMetadata().setOrderCertain(i, ag.isCertain());
       computeAxisLengths(i);
     }
   }
@@ -607,9 +607,9 @@ public class FileStitcher extends AbstractReaderFilter {
       numT++;
     }
 
-    getDatasetMetadata().setAxisLength(sno, Axes.Z, sizeZ[sno]);
-    getDatasetMetadata().setAxisLength(sno, Axes.CHANNEL, sizeC[sno]);
-    getDatasetMetadata().setAxisLength(sno, Axes.TIME, sizeT[sno]);
+    getMetadata().setAxisLength(sno, Axes.Z, sizeZ[sno]);
+    getMetadata().setAxisLength(sno, Axes.CHANNEL, sizeC[sno]);
+    getMetadata().setAxisLength(sno, Axes.TIME, sizeT[sno]);
     lenZ[sno] = new int[numZ + 1];
     lenC[sno] = new int[numC + 1];
     lenT[sno] = new int[numT + 1];
@@ -620,15 +620,15 @@ public class FileStitcher extends AbstractReaderFilter {
     for (int i=0, z=1, c=1, t=1; i<count.length; i++) {
       switch (axes[i]) {
         case AxisGuesser.Z_AXIS:
-          getDatasetMetadata().setAxisLength(sno, Axes.Z, getDatasetMetadata().getAxisLength(sno, Axes.Z) * count[i]);
+          getMetadata().setAxisLength(sno, Axes.Z, getMetadata().getAxisLength(sno, Axes.Z) * count[i]);
           lenZ[sno][z++] = count[i];
           break;
         case AxisGuesser.C_AXIS:
-          getDatasetMetadata().setAxisLength(sno, Axes.CHANNEL, getDatasetMetadata().getAxisLength(sno, Axes.CHANNEL) * count[i]);
+          getMetadata().setAxisLength(sno, Axes.CHANNEL, getMetadata().getAxisLength(sno, Axes.CHANNEL) * count[i]);
           lenC[sno][c++] = count[i];
           break;
         case AxisGuesser.T_AXIS:
-          getDatasetMetadata().setAxisLength(sno, Axes.TIME, getDatasetMetadata().getAxisLength(sno, Axes.TIME) * count[i]);
+          getMetadata().setAxisLength(sno, Axes.TIME, getMetadata().getAxisLength(sno, Axes.TIME) * count[i]);
           lenT[sno][t++] = count[i];
           break;
         case AxisGuesser.S_AXIS:
@@ -639,8 +639,8 @@ public class FileStitcher extends AbstractReaderFilter {
       }
     }
 
-    int[] cLengths = getParent().getDatasetMetadata().getChannelDimLengths(sno);
-    String[] cTypes = getParent().getDatasetMetadata().getChannelDimTypes(sno);
+    int[] cLengths = getParent().getMetadata().getChannelDimLengths(sno);
+    String[] cTypes = getParent().getMetadata().getChannelDimTypes(sno);
     int cCount = 0;
     for (int i=0; i<cLengths.length; i++) {
       if (cLengths[i] > 1) cCount++;
@@ -649,12 +649,12 @@ public class FileStitcher extends AbstractReaderFilter {
       if (lenC[sno][i] > 1) cCount++;
     }
     if (cCount == 0) {
-      getDatasetMetadata().setChannelDimLengths(sno, new int[] {1});
-      getDatasetMetadata().setChannelDimTypes(sno, new String[] {FormatTools.CHANNEL});
+      getMetadata().setChannelDimLengths(sno, new int[] {1});
+      getMetadata().setChannelDimTypes(sno, new String[] {FormatTools.CHANNEL});
     }
     else {
-      getDatasetMetadata().setChannelDimLengths(sno, new int[cCount]);
-      getDatasetMetadata().setChannelDimTypes(sno, new String[cCount]);
+      getMetadata().setChannelDimLengths(sno, new int[cCount]);
+      getMetadata().setChannelDimTypes(sno, new String[cCount]);
     }
     int c = 0;
     for (int i=0; i<cLengths.length; i++) {
@@ -668,16 +668,16 @@ public class FileStitcher extends AbstractReaderFilter {
       cLengths[c] = lenC[sno][i];
       cTypes[c] = FormatTools.CHANNEL;
     }
-    int[] oldCLengths = getDatasetMetadata().getChannelDimLengths(sno);
-    String[] oldCTypes = getDatasetMetadata().getChannelDimTypes(sno);
+    int[] oldCLengths = getMetadata().getChannelDimLengths(sno);
+    String[] oldCTypes = getMetadata().getChannelDimTypes(sno);
     
     for(; c<oldCLengths.length; c++) {
       cLengths[c] = oldCLengths[c];
       cTypes[c] = oldCTypes[c];
     }
     
-    getDatasetMetadata().setChannelDimLengths(sno, cLengths);
-    getDatasetMetadata().setChannelDimTypes(sno, cTypes);
+    getMetadata().setChannelDimLengths(sno, cLengths);
+    getMetadata().setChannelDimTypes(sno, cTypes);
   }
 
   /**
@@ -725,7 +725,7 @@ public class FileStitcher extends AbstractReaderFilter {
 
     int fno = FormatTools.positionToRaster(count, pos);
     DimensionSwapper r = getExternalsReader(sno, fno);
-    DatasetMetadata datasetMeta = r.getDatasetMetadata();
+    Metadata datasetMeta = r.getMetadata();
     
     int ino;
     if (posZ[0] < datasetMeta.getAxisLength(sno, Axes.Z) && 
@@ -745,7 +745,7 @@ public class FileStitcher extends AbstractReaderFilter {
   protected void initReader(int imageIndex, int fno) {
     int external = getExternalSeries(imageIndex);
     DimensionSwapper r = externals.get(external).getReaders()[fno];
-    DatasetMetadata c = r.getDatasetMetadata();
+    Metadata c = r.getMetadata();
     try {
       if (r.getCurrentFile() == null) {
         r.setGroupFiles(false);
@@ -802,7 +802,7 @@ public class FileStitcher extends AbstractReaderFilter {
       }
       readers[0].setSource(files[0]);
 
-      DatasetMetadata c = readers[0].getDatasetMetadata();
+      Metadata c = readers[0].getMetadata();
       
       ag = new AxisGuesser(this.pattern, FormatTools.findDimensionOrder(c, 0),
         c.getAxisLength(0, Axes.Z), c.getAxisLength(0, Axes.TIME),

@@ -43,14 +43,11 @@ import java.util.List;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginService;
 
 import net.imglib2.meta.Axes;
 
-import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.MetadataLevel;
-import ome.scifio.Translator;
 import ome.scifio.ics.ICSFormat;
 import ome.xml.meta.FilterMetadata;
 import ome.xml.meta.MetadataStore;
@@ -69,19 +66,17 @@ import ome.xml.model.primitives.Timestamp;
  * @author hinerm
  */
 @Plugin(type = OMETranslator.class, attrs = {
-  @Attr(name = Translator.SOURCE, value = ICSFormat.FORMAT_NAME),
-  @Attr(name = Translator.DEST, value = OMEMetadata.FORMAT_NAME)
+  @Attr(name = ICSOMETranslator.SOURCE, value = ICSFormat.Metadata.CNAME),
+  @Attr(name = ICSOMETranslator.DEST, value = OMEMetadata.CNAME)
 })
 public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
-
+  
   // -- Translator API --
 
   @Override
-  public void translate(final ICSFormat.Metadata source, final OMEMetadata destination)
+  public void translate()
   {
-    super.translate(source, destination);
-
-    OMEXMLMetadata store = destination.getRoot();
+    OMEXMLMetadata store = dest.getRoot();
     boolean lifetime = false;
     int imageIndex = 0; //TODO correct index?
     Double[] pixelSizes = null, timestamps = null, stagePos = null;
@@ -105,14 +100,8 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     filter.createRoot();
     
     //FIXME: no more datasetmetadata
-    DatasetMetadata dMeta = getContext().getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
-    dMeta.setSource(source.getSource());
     
-    Translator trans = scifio().translators().findTranslator(source, dMeta);
-    
-    trans.translate(source, dMeta);
-    
-    getContext().getService(OMEXMLMetadataService.class).populatePixels((MetadataStore)filter, dMeta, true);
+    getContext().getService(OMEXMLMetadataService.class).populatePixels((MetadataStore)filter, source, true);
     
     store.setImageName(imageName, 0);
     
@@ -238,7 +227,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
             sizes[0]);
         }
         if (sizes.length > 1) {
-          sizes[1] /= dMeta.getAxisLength(imageIndex, Axes.Y);
+          sizes[1] /= source.getAxisLength(imageIndex, Axes.Y);
           if (sizes[1] > 0) {
             store.setPixelsPhysicalSizeY(new PositiveFloat(sizes[1]), 0);
           }
@@ -256,16 +245,16 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     
     if (timestamps != null) {
       for (int t=0; t<timestamps.length; t++) {
-        if (t >= dMeta.getAxisLength(imageIndex, Axes.TIME)) break; // ignore superfluous timestamps
+        if (t >= source.getAxisLength(imageIndex, Axes.TIME)) break; // ignore superfluous timestamps
         if (timestamps[t] == null) continue; // ignore missing timestamp
         double deltaT = timestamps[t];
         if (Double.isNaN(deltaT)) continue; // ignore invalid timestamp
         // assign timestamp to all relevant planes
-        for (int z=0; z<dMeta.getAxisLength(imageIndex, Axes.Z); z++) {
-          for (int c=0; c<dMeta.getEffectiveSizeC(imageIndex); c++) {
-            int index = FormatTools.getIndex(FormatTools.findDimensionOrder(dMeta, imageIndex), imageIndex,
-              dMeta.getAxisLength(imageIndex,  Axes.Z), dMeta.getEffectiveSizeC(imageIndex),
-              dMeta.getAxisLength(imageIndex, Axes.TIME), z, c, t);
+        for (int z=0; z<source.getAxisLength(imageIndex, Axes.Z); z++) {
+          for (int c=0; c<source.getEffectiveSizeC(imageIndex); c++) {
+            int index = FormatTools.getIndex(FormatTools.findDimensionOrder(source, imageIndex), imageIndex,
+                source.getAxisLength(imageIndex,  Axes.Z), source.getEffectiveSizeC(imageIndex),
+                source.getAxisLength(imageIndex, Axes.TIME), z, c, t);
             store.setPlaneDeltaT(deltaT, 0, index);
           }
         }
@@ -292,7 +281,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
       exWaves = source.getEXSingleton();
     }
     
-    for (int i=0; i<dMeta.getEffectiveSizeC(imageIndex); i++) {
+    for (int i=0; i<source.getEffectiveSizeC(imageIndex); i++) {
       if (channelNames.containsKey(i)) {
         store.setChannelName(channelNames.get(i), 0, i);
       }
@@ -474,7 +463,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
 
     for (Integer key : gains.keySet()) {
       int index = key.intValue();
-      if (index < dMeta.getEffectiveSizeC(imageIndex)) {
+      if (index < source.getEffectiveSizeC(imageIndex)) {
         store.setDetectorSettingsGain(gains.get(key), 0, index);
         store.setDetectorSettingsID(detectorID, 0, index);
       }
@@ -509,12 +498,12 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     exposureTime = source.getExposureTime();
     
     if (exposureTime != null) {
-      for (int i=0; i<dMeta.getImageCount(); i++) {
+      for (int i=0; i<source.getImageCount(); i++) {
         store.setPlaneExposureTime(exposureTime, 0, i);
       }
     }
     
-    destination.setRoot(store);
+    dest.setRoot(store);
   }
   
   // -- Helper methods --

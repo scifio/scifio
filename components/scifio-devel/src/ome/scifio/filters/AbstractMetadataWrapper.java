@@ -38,9 +38,9 @@ package ome.scifio.filters;
 import java.util.Hashtable;
 
 import net.imglib2.meta.AxisType;
-import ome.scifio.AbstractDatasetMetadata;
-import ome.scifio.DatasetMetadata;
+import ome.scifio.AbstractMetadata;
 import ome.scifio.ImageMetadata;
+import ome.scifio.Metadata;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -58,24 +58,24 @@ import ome.scifio.io.RandomAccessInputStream;
  * 
  * @author Mark Hiner
  * 
- * @see ome.scifio.filters.DatasetMetadataWrapper
+ * @see ome.scifio.filters.MetadataWrapper
  * @see ome.scifio.discovery.DiscoverableMetadataWrapper
  * @see ome.scifio.filters.AbstractReaderFilter
  */
-public abstract class AbstractDatasetMetadataWrapper extends AbstractDatasetMetadata
-  implements DatasetMetadataWrapper {
+public abstract class AbstractMetadataWrapper extends AbstractMetadata
+  implements MetadataWrapper {
 
   // -- Fields --
   
-  private DatasetMetadata meta;
+  private Metadata meta;
   
   // -- Constructor --
   
-  public AbstractDatasetMetadataWrapper() {
+  public AbstractMetadataWrapper() {
     this(null);
   }
   
-  public AbstractDatasetMetadataWrapper(DatasetMetadata metadata) {
+  public AbstractMetadataWrapper(Metadata metadata) {
     meta = metadata;
   }
   
@@ -84,14 +84,14 @@ public abstract class AbstractDatasetMetadataWrapper extends AbstractDatasetMeta
   /*
    * @see ome.scifio.wrappers.DatasetMetadataWrapper#unwrap()
    */
-  public DatasetMetadata unwrap() {
+  public Metadata unwrap() {
     return meta;
   }
   
   /*
    * @see ome.scifio.filters.DatasetMetadataWrapper#wrap(ome.scifio.DatasetMetadata)
    */
-  public void wrap(DatasetMetadata meta) {
+  public void wrap(Metadata meta) {
     this.meta = meta;
   }
   
@@ -335,7 +335,7 @@ public abstract class AbstractDatasetMetadataWrapper extends AbstractDatasetMeta
   }
   
   public void reset() {
-    super.reset();
+    super.reset(getClass());
     meta.reset(meta.getClass());
   }
   

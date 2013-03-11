@@ -38,8 +38,8 @@ package ome.xml.meta;
 
 import org.scijava.service.Service;
 
-import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.Metadata;
 import ome.scifio.Reader;
 import ome.xml.model.enums.Correction;
 import ome.xml.model.enums.DetectorType;
@@ -54,14 +54,14 @@ public interface OMEXMLMetadataService extends Service {
    * Populates the 'pixels' element of the given metadata store, using core
    * metadata from the given reader.
    */
-  void populatePixels(MetadataStore store, DatasetMetadata meta);
+  void populatePixels(MetadataStore store, Metadata meta);
 
   /**
    * Populates the 'pixels' element of the given metadata store, using core
    * metadata from the given reader.  If the 'doPlane' flag is set,
    * then the 'plane' elements will be populated as well.
    */
-  void populatePixels(MetadataStore store, DatasetMetadata meta, boolean doPlane);
+  void populatePixels(MetadataStore store, Metadata meta, boolean doPlane);
 
   /**
    * Populates the 'pixels' element of the given metadata store, using core
@@ -70,7 +70,7 @@ public interface OMEXMLMetadataService extends Service {
    * If the 'doImageName' flag is set, then the image name will be populated
    * as well.  By default, 'doImageName' is true.
    */
-  void populatePixels(MetadataStore store, DatasetMetadata meta,
+  void populatePixels(MetadataStore store, Metadata meta,
       boolean doPlane, boolean doImageName);
 
   /**
@@ -88,7 +88,7 @@ public interface OMEXMLMetadataService extends Service {
 
   /**
    * Populates the given {@link MetadataStore}, for the specified imageIndex, using
-   * the values from the provided {@link DatasetMetadata}.
+   * the values from the provided {@link Metadata}.
    * <p>
    * After calling this method, the metadata store will be sufficiently
    * populated for use with an {@link IFormatWriter} (assuming it is also a
@@ -96,7 +96,7 @@ public interface OMEXMLMetadataService extends Service {
    * </p>
    */
   void populateMetadata(MetadataStore store, int imageIndex, String imageName,
-      DatasetMetadata datasetMeta);
+      Metadata datasetMeta);
 
   /**
    * Populates the given {@link MetadataStore}, for the specified imageIndex, using

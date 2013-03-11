@@ -464,7 +464,7 @@ public final class AWTImageTools {
       Reader scReader = FormatAdapter.get(r);
       
       ByteArrayPlane plane = new ByteArrayPlane(scReader.getContext());
-      plane.populate(scReader.getDatasetMetadata().get(r.getSeries()), buf, 0, 0, w, h);
+      plane.populate(scReader.getMetadata().get(r.getSeries()), buf, 0, 0, w, h);
       
       return ome.scifio.gui.AWTImageTools.openImage(plane, scReader, w, h, r.getSeries());
     }

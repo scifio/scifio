@@ -278,12 +278,12 @@ public class OmeisImporter extends AbstractHasSCIFIO {
     for (int i=0; i<imageCount; i++) {
 
       // gather pixels information for this series
-      int sizeX = reader.getDatasetMetadata().getAxisLength(i, Axes.X);
-      int sizeY = reader.getDatasetMetadata().getAxisLength(i, Axes.Y);
-      int sizeZ = reader.getDatasetMetadata().getAxisLength(i, Axes.Z);
-      int sizeC = reader.getDatasetMetadata().getAxisLength(i, Axes.CHANNEL);
-      int sizeT = reader.getDatasetMetadata().getAxisLength(i, Axes.TIME);
-      int pixelType = reader.getDatasetMetadata().getPixelType(i);
+      int sizeX = reader.getMetadata().getAxisLength(i, Axes.X);
+      int sizeY = reader.getMetadata().getAxisLength(i, Axes.Y);
+      int sizeZ = reader.getMetadata().getAxisLength(i, Axes.Z);
+      int sizeC = reader.getMetadata().getAxisLength(i, Axes.CHANNEL);
+      int sizeT = reader.getMetadata().getAxisLength(i, Axes.TIME);
+      int pixelType = reader.getMetadata().getPixelType(i);
       int bytesPerPixel;
       boolean isSigned, isFloat;
       switch (pixelType) {
@@ -331,7 +331,7 @@ public class OmeisImporter extends AbstractHasSCIFIO {
           throw new FormatException("Unknown pixel type for '" +
             id + "' series #" + i + ": " + pixelType);
       }
-      boolean little = reader.getDatasetMetadata().isLittleEndian(i);
+      boolean little = reader.getMetadata().isLittleEndian(i);
       boolean swap = doLittle != little && bytesPerPixel > 1 && !isFloat;
 
       // ask OMEIS to allocate new pixels file

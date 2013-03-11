@@ -38,7 +38,6 @@ package ome.scifio;
 
 import ome.scifio.util.SCIFIOMetadataTools;
 
-import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,41 +46,39 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hiner
  */
-public abstract class AbstractTranslator<M extends TypedMetadata, N extends TypedMetadata>
-  extends AbstractHasSCIFIO implements TypedTranslator<M, N> {
+public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
+  extends AbstractHasSCIFIO implements Translator {
+  
+  // -- Constants --
+
+  protected static final Logger LOGGER =
+    LoggerFactory.getLogger(Translator.class);
+  
+  protected M source;
+  protected N dest;
   
   // -- Translator API --
   
   /*
    * @see ome.scifio.Translator#translate(ome.scifio.Metadata, ome.scifio.Metadata)
    */
-  public void translate(Metadata source, Metadata destination) {
-   translate(SCIFIOMetadataTools.<M>castMeta(source),
-       SCIFIOMetadataTools.<N>castMeta(destination));
-  }
-
-  // -- TypedTranslator API --
-  
-  /*
-   * @see ome.scifio.TypedTranslator#translate(ome.scifio.TypedMetadata, ome.scifio.TypedMetadata)
-   */
-  public void translate(M source, N dest) {
+  public void translate(Metadata source, Metadata dest) {
+    this.source = SCIFIOMetadataTools.<M>castMeta(source);
+    this.dest = SCIFIOMetadataTools.<N>castMeta(dest);
+    
     dest.setSource(source.getSource());
+    dest.setFiltered(source.isFiltered());
+    dest.setMetadataOptions(source.getMetadataOptions());
     
-    if(dest.getClass().isAssignableFrom(AbstractMetadata.class)) {
-      ((AbstractMetadata)dest).setFiltered(source.isFiltered());
-      ((AbstractMetadata)dest).setMetadataOptions(source.getMetadataOptions());
-    }
+    translate();
+    dest.populateImageMetadata();
   }
   
-  // -- Service API methods --
+  // -- AbstractTranslator API --
   
-  public void initialize() {
-    
-  }
-  
-  // -- Constants --
-
-  protected static final Logger LOGGER =
-    LoggerFactory.getLogger(Translator.class);
+  /**
+   * Abstract method to override and perform actual translation,
+   * using source and dest parameters.
+   */
+  protected abstract void translate();
 }

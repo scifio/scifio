@@ -53,7 +53,7 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
   {
     if (plane == null || !(BufferedImagePlane.class.isAssignableFrom(plane.getClass()))) {
       plane = new BufferedImagePlane(reader.getContext());
-      plane.populate(reader.getDatasetMetadata().get(getSeries()), x, y, w, h);
+      plane.populate(reader.getMetadata().get(getSeries()), x, y, w, h);
     }
     
     return reader.readPlane(
@@ -69,7 +69,7 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
   {
     if (plane == null || !(BufferedImagePlane.class.isAssignableFrom(plane.getClass()))) {
       plane = new BufferedImagePlane(reader.getContext());
-      plane.populate(reader.getDatasetMetadata().get(getSeries()), x, y, w, h);
+      plane.populate(reader.getMetadata().get(getSeries()), x, y, w, h);
     }
     
     return reader.readPlane(

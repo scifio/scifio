@@ -63,7 +63,7 @@ public abstract class ByteArrayReader<M extends TypedMetadata>
   {
     FormatTools.assertStream(getStream(), true, 1);
     ByteArrayPlane plane = createPlane(0, 0,
-        getDatasetMetadata().getThumbSizeX(imageIndex), getDatasetMetadata().getThumbSizeY(imageIndex));
+        getMetadata().getThumbSizeX(imageIndex), getMetadata().getThumbSizeY(imageIndex));
     
     plane.setData(FormatTools.openThumbBytes(this, imageIndex, planeIndex));
     
@@ -75,7 +75,7 @@ public abstract class ByteArrayReader<M extends TypedMetadata>
    */
   public ByteArrayPlane createPlane(int xOffset, int yOffset, int xLength,
       int yLength) {
-    return new ByteArrayPlane(getContext(), getDatasetMetadata().get(0),
+    return new ByteArrayPlane(getContext(), getMetadata().get(0),
         xOffset, yOffset, xLength, yLength);
   }
   

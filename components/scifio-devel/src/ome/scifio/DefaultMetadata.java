@@ -35,29 +35,27 @@
  */
 package ome.scifio;
 
+import java.util.List;
+
 /**
- * Interface for all {@link ome.scifio.Translator} implementations that use
- * generic parameters.
- * <p>
- * Generics allow each concrete {@code Translator} interface to type narrow
- * the return types of {@code Translator} methods that return SCIFIO components.
- * Additionally, parallel methods are defined that accept SCIFIO components,
- * allowing the parameters to be type narrowed as well.
- * </p>
+ * A dummy Metadata implementation. Holds no format-specific information.
  * 
  * @author Mark Hiner
  *
- * @param <M> The translation source's {@link ome.scifio.Metadata} type.
- * @param <N> The translation destination's {@code Metadata} type.
  */
-public interface TypedTranslator<M extends TypedMetadata, N extends TypedMetadata> extends Translator {
+public class DefaultMetadata extends AbstractMetadata {
 
-  /**
-   * Generic-parameterized {@code translate} method, using 
-   * {@link ome.scifio.TypedMetadata} to avoid type erasure conflicts with
-   * {@link ome.scifio.Translator#translate(Metadata, Metadata)}.
-   * 
-   * @see {@link ome.scifio.Translator#translate(Metadata, Metadata)}
-   */
-  void translate(final M source, final N destination);
+  // -- Constructors --
+  
+  public DefaultMetadata() {
+    super();
+  }
+  
+  public DefaultMetadata(final Metadata copy) {
+    super(copy);
+  }
+  
+  public DefaultMetadata(final List<ImageMetadata> list) {
+    super(list);
+  }
 }

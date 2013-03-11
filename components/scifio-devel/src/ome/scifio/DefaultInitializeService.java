@@ -147,29 +147,13 @@ public class DefaultInitializeService extends AbstractService implements Initial
       // otherwise we can directly cast, since they are the same types
       destMeta = castMeta(sourceMeta, destMeta);
       
-    } else if (translatorService.findTranslator(sourceMeta, destMeta) != null) {
-      // Can directly translate between these formats
-      
-      destMeta = dFormat.createMetadata();
-      translatorService.findTranslator(sourceMeta, destMeta)
-            .translate(sourceMeta, destMeta);
     } else {
-      // Have to translate to and from DatasetMetadata
+      // Attempt to directly translate between these formats
+      
       destMeta = dFormat.createMetadata();
-      
-      // TODO should probably make this general wrt DatasetMetadata,
-      // but that also requires having a general way to instantiate DatasetMetadata
-      //FIXME: get rid of DatasetMetadata class
-      final DatasetMetadata transMeta = pluginService.createInstancesOfType(DatasetMetadata.class).get(0);
-      transMeta.setSource(sourceMeta.getSource());
-      
-      final Translator transToCore = translatorService.findTranslator(sourceMeta, transMeta);
-      final Translator transFromCore = translatorService.findTranslator(transMeta, destMeta);
-//TODO unnecessary?     transMeta.setSource(new RandomAccessInputStream(getContext(), source));
-      transToCore.translate(sourceMeta, transMeta);
-      transFromCore.translate(transMeta, destMeta);
-    }
-
+      translatorService.translate(sourceMeta, destMeta);
+    } 
+    
     final Writer writer = dFormat.createWriter();
     writer.setMetadata(destMeta);
     writer.setDest(destination);

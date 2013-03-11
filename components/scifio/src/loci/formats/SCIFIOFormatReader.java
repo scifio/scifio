@@ -264,7 +264,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   protected void addSeriesMeta(String key, Object value) {
-    addMeta(key, value, reader.getDatasetMetadata().getImageMetadata(getSeries()));
+    addMeta(key, value, reader.getMetadata().getImageMetadata(getSeries()));
   }
 
   /** Adds an entry to the metadata table for the current series. */
@@ -327,7 +327,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   protected Object getSeriesMeta(String key) {
-    return reader.getDatasetMetadata().getImageMetadata(getSeries()).get(key);
+    return reader.getMetadata().getImageMetadata(getSeries()).get(key);
   }
 
   /** Reads a raw plane from disk. */
@@ -338,7 +338,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   {
     if(plane == null || !(ByteArrayPlane.class.isAssignableFrom(plane.getClass()))) {
       plane = new ByteArrayPlane(reader.getContext());
-      ((ByteArrayPlane)plane).populate(reader.getDatasetMetadata().get(getSeries()), buf,
+      ((ByteArrayPlane)plane).populate(reader.getMetadata().get(getSeries()), buf,
           x, y, w, h);
       
       return reader.readPlane(
@@ -361,7 +361,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   {
     if(plane == null || !(ByteArrayPlane.class.isAssignableFrom(plane.getClass()))) {
       plane = new ByteArrayPlane(reader.getContext());
-      ((ByteArrayPlane)plane).populate(reader.getDatasetMetadata().get(getSeries()), buf,
+      ((ByteArrayPlane)plane).populate(reader.getMetadata().get(getSeries()), buf,
           x, y, w, h);
       
       return reader.readPlane(
@@ -464,63 +464,63 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public int getImageCount() {
-    return reader.getDatasetMetadata().getPlaneCount(getSeries());
+    return reader.getMetadata().getPlaneCount(getSeries());
   }
 
   /* @see IFormatReader#isRGB() */
   @Deprecated
   @Override
   public boolean isRGB() {
-    return reader.getDatasetMetadata().isRGB(getSeries());
+    return reader.getMetadata().isRGB(getSeries());
   }
 
   /* @see IFormatReader#getSizeX() */
   @Deprecated
   @Override
   public int getSizeX() {
-    return reader.getDatasetMetadata().getAxisLength(getSeries(), Axes.X);
+    return reader.getMetadata().getAxisLength(getSeries(), Axes.X);
   }
 
   /* @see IFormatReader#getSizeY() */
   @Deprecated
   @Override
   public int getSizeY() {
-    return reader.getDatasetMetadata().getAxisLength(getSeries(), Axes.Y);
+    return reader.getMetadata().getAxisLength(getSeries(), Axes.Y);
   }
 
   /* @see IFormatReader#getSizeZ() */
   @Deprecated
   @Override
   public int getSizeZ() {
-    return reader.getDatasetMetadata().getAxisLength(getSeries(), Axes.Z);
+    return reader.getMetadata().getAxisLength(getSeries(), Axes.Z);
   }
 
   /* @see IFormatReader#getSizeC() */
   @Deprecated
   @Override
   public int getSizeC() {
-    return reader.getDatasetMetadata().getAxisLength(getSeries(), Axes.CHANNEL);
+    return reader.getMetadata().getAxisLength(getSeries(), Axes.CHANNEL);
   }
 
   /* @see IFormatReader#getSizeT() */
   @Deprecated
   @Override
   public int getSizeT() {
-    return reader.getDatasetMetadata().getAxisLength(getSeries(), Axes.TIME);
+    return reader.getMetadata().getAxisLength(getSeries(), Axes.TIME);
   }
 
   /* @see IFormatReader#getPixelType() */
   @Deprecated
   @Override
   public int getPixelType() {
-    return reader.getDatasetMetadata().getPixelType(getSeries());
+    return reader.getMetadata().getPixelType(getSeries());
   }
 
   /* @see IFormatReader#getBitsPerPixel() */
   @Deprecated
   @Override
   public int getBitsPerPixel() {
-    return reader.getDatasetMetadata().getBitsPerPixel(getSeries());
+    return reader.getMetadata().getBitsPerPixel(getSeries());
   }
 
   /* @see IFormatReader#getEffectiveSizeC() */
@@ -546,14 +546,14 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public boolean isIndexed() {
-    return reader.getDatasetMetadata().isIndexed(getSeries());
+    return reader.getMetadata().isIndexed(getSeries());
   }
 
   /* @see IFormatReader#isFalseColor() */
   @Deprecated
   @Override
   public boolean isFalseColor() {
-    return reader.getDatasetMetadata().isFalseColor(getSeries());
+    return reader.getMetadata().isFalseColor(getSeries());
   }
 
   /* @see IFormatReader#get8BitLookupTable() */
@@ -594,35 +594,35 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public int[] getChannelDimLengths() {
-    return reader.getDatasetMetadata().getChannelDimLengths(getSeries());
+    return reader.getMetadata().getChannelDimLengths(getSeries());
   }
 
   /* @see IFormatReader#getChannelDimTypes() */
   @Deprecated
   @Override
   public String[] getChannelDimTypes() {
-    return reader.getDatasetMetadata().getChannelDimTypes(getSeries());
+    return reader.getMetadata().getChannelDimTypes(getSeries());
   }
 
   /* @see IFormatReader#getThumbSizeX() */
   @Deprecated
   @Override
   public int getThumbSizeX() {
-    return reader.getDatasetMetadata().getThumbSizeX(getSeries());
+    return reader.getMetadata().getThumbSizeX(getSeries());
   }
 
   /* @see IFormatReader#getThumbSizeY() */
   @Deprecated
   @Override
   public int getThumbSizeY() {
-    return reader.getDatasetMetadata().getThumbSizeY(getSeries());
+    return reader.getMetadata().getThumbSizeY(getSeries());
   }
 
   /* @see IFormatReader.isLittleEndian() */
   @Deprecated
   @Override
   public boolean isLittleEndian() {
-    return reader.getDatasetMetadata().isLittleEndian(getSeries());
+    return reader.getMetadata().isLittleEndian(getSeries());
   }
 
   /* @see IFormatReader#getDimensionOrder() */
@@ -636,28 +636,28 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public boolean isOrderCertain() {
-    return reader.getDatasetMetadata().isOrderCertain(getSeries());
+    return reader.getMetadata().isOrderCertain(getSeries());
   }
 
   /* @see IFormatReader#isThumbnailSeries() */
   @Deprecated
   @Override
   public boolean isThumbnailSeries() {
-    return reader.getDatasetMetadata().isThumbnailImage(getSeries());
+    return reader.getMetadata().isThumbnailImage(getSeries());
   }
 
   /* @see IFormatReader#isInterleaved() */
   @Deprecated
   @Override
   public boolean isInterleaved() {
-    return reader.getDatasetMetadata().isInterleaved(0);
+    return reader.getMetadata().isInterleaved(0);
   }
 
   /* @see IFormatReader#isInterleaved(int) */
   @Deprecated
   @Override
   public boolean isInterleaved(int subC) {
-    return reader.getDatasetMetadata().isInterleaved(getSeries());
+    return reader.getMetadata().isInterleaved(getSeries());
   }
 
   /* @see IFormatReader#openBytes(int) */
@@ -718,7 +718,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
       if(plane == null || !(ByteArrayPlane.class.isAssignableFrom(plane.getClass()))) {
         plane = new ByteArrayPlane(reader.getContext());
       }
-      ((ByteArrayPlane)plane).populate(reader.getDatasetMetadata().get(getSeries()), buf,
+      ((ByteArrayPlane)plane).populate(reader.getMetadata().get(getSeries()), buf,
           x, y, w, h);
       return reader.openPlane(getSeries(), no, plane, x, y, w, h).getBytes();
     }
@@ -763,7 +763,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public int getSeriesCount() {
-    return reader.getDatasetMetadata().getImageCount();
+    return reader.getMetadata().getImageCount();
   }
 
   /* @see IFormatReader#setSeries(int) */
@@ -804,7 +804,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public boolean isMetadataComplete() {
-    return reader.getDatasetMetadata().isMetadataComplete(getSeries());
+    return reader.getMetadata().isMetadataComplete(getSeries());
   }
 
   /* @see IFormatReader#setNormalized(boolean) */
@@ -934,28 +934,28 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public Object getMetadataValue(String field) {
-    return reader.getDatasetMetadata().getMetadataValue(field);
+    return reader.getMetadata().getMetadataValue(field);
   }
 
   /* @see IFormatReader#getSeriesMetadataValue(String) */
   @Deprecated
   @Override
   public Object getSeriesMetadataValue(String field) {
-    return reader.getDatasetMetadata().getImageMetadataValue(getSeries(), field);
+    return reader.getMetadata().getImageMetadataValue(getSeries(), field);
   }
 
   /* @see IFormatReader#getGlobalMetadata() */
   @Deprecated
   @Override
   public Hashtable<String, Object> getGlobalMetadata() {
-    return reader.getDatasetMetadata().getDatasetMetadata();
+    return reader.getMetadata().getDatasetMetadata();
   }
 
   /* @see IFormatReader#getSeriesMetadata() */
   @Deprecated
   @Override
   public Hashtable<String, Object> getSeriesMetadata() {
-    return reader.getDatasetMetadata().getImageMetadata(getSeries());
+    return reader.getMetadata().getImageMetadata(getSeries());
   }
 
   @Deprecated
@@ -982,8 +982,9 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public List<CoreMetadata> getCoreMetadataList() {
-    return FormatAdapter.get(reader.getDatasetMetadata());
+    return FormatAdapter.get(reader.getMetadata());
   }
+
   /* @see IFormatReader#setMetadataFiltered(boolean) */
   @Deprecated
   @Override
@@ -1094,7 +1095,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
       // to allow the file to be parsed
       core = new ArrayList<CoreMetadata>();
       for (int i = 0; i < getSeriesCount(); i++) {
-        CoreMetadata c = new CoreMetadata(reader.getDatasetMetadata(), i);
+        CoreMetadata c = new CoreMetadata(reader.getMetadata(), i);
         c.orderCertain = true;
         core.add(c);
       }

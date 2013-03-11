@@ -41,7 +41,6 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
-import org.scijava.plugin.PluginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,9 +71,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
   /** Type-specific Metadata values. */
   protected M metadata;
-
-  /** Core Metadata values. */
-  protected DatasetMetadata dMeta;
 
   /** Whether or not to group multi-file formats. */
   protected boolean group = true;
@@ -112,8 +108,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     throws FormatException, IOException
   {
     return openPlane(
-      imageIndex, planeNumber, 0, 0, dMeta.getAxisLength(imageIndex, Axes.X),
-      dMeta.getAxisLength(imageIndex, Axes.Y));
+      imageIndex, planeNumber, 0, 0, metadata.getAxisLength(imageIndex, Axes.X),
+      metadata.getAxisLength(imageIndex, Axes.Y));
   }
 
   /*
@@ -213,7 +209,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#getOptimalTileWidth(int)
    */
   public int getOptimalTileWidth(final int imageIndex) {
-    return dMeta.getAxisLength(imageIndex, Axes.X);
+    return metadata.getAxisLength(imageIndex, Axes.X);
   }
 
   /*
@@ -221,12 +217,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    */
   public int getOptimalTileHeight(final int imageIndex) {
     final int bpp =
-      FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
+      FormatTools.getBytesPerPixel(metadata.getPixelType(imageIndex));
     final int maxHeight =
       (1024 * 1024) /
-        (dMeta.getAxisLength(imageIndex, Axes.X) *
-          dMeta.getRGBChannelCount(imageIndex) * bpp);
-    return Math.min(maxHeight, dMeta.getAxisLength(imageIndex, Axes.Y));
+        (metadata.getAxisLength(imageIndex, Axes.X) *
+            metadata.getRGBChannelCount(imageIndex) * bpp);
+    return Math.min(maxHeight, metadata.getAxisLength(imageIndex, Axes.Y));
   }
 
   /*
@@ -241,13 +237,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    */
   public M getMetadata() {
     return metadata;
-  }
-
-  /*
-   * @see ome.scifio.Reader#getDatasetMetadata()
-   */
-  public DatasetMetadata getDatasetMetadata() {
-    return dMeta;
   }
 
   /*
@@ -322,11 +311,9 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    */
   public void close(final boolean fileOnly) throws IOException {
     if (metadata != null) metadata.close();
-    if (dMeta != null) dMeta.close();
     
     if (!fileOnly) {
       metadata = null;
-      dMeta = null;
     }
   }
 
@@ -357,14 +344,14 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#getPlaneCount(int)
    */
   public int getPlaneCount(final int imageIndex) {
-    return dMeta.getPlaneCount(imageIndex);
+    return metadata.getPlaneCount(imageIndex);
   }
 
   /*
    * @see ome.scifio.Reader#getImageCount()
    */
   public int getImageCount() {
-    return dMeta.getImageCount();
+    return metadata.getImageCount();
   }
   
   /*
@@ -391,8 +378,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   {
     return openPlane(
       imageIndex, planeIndex, plane, 0, 0,
-      dMeta.getAxisLength(imageIndex, Axes.X),
-      dMeta.getAxisLength(imageIndex, Axes.Y));
+      metadata.getAxisLength(imageIndex, Axes.X),
+      metadata.getAxisLength(imageIndex, Axes.Y));
   }
   
   /*
@@ -403,18 +390,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
       close();
     }
     
-    if (metadata == null)
-      metadata = meta;
-      
-    //FIXME: get rid of datasetmetadata class
-    if (dMeta == null) {
-      dMeta = getContext().getService(PluginService.class).
-              createInstancesOfType(DatasetMetadata.class).get(0);
-      
-      Translator t = scifio().translators().findTranslator(meta, dMeta);
-
-      t.translate(meta, dMeta);
-    }
+    if (metadata == null) metadata = meta;
   }
   
   /*
@@ -434,21 +410,21 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     final int imageIndex, final int x, final int y, final int w, final int h,
     final int scanlinePad, final P plane) throws IOException
   {
-    final int c = dMeta.getRGBChannelCount(imageIndex);
+    final int c = metadata.getRGBChannelCount(imageIndex);
     final int bpp =
-      FormatTools.getBytesPerPixel(dMeta.getPixelType(imageIndex));
+      FormatTools.getBytesPerPixel(metadata.getPixelType(imageIndex));
     
     byte[] bytes = plane.getBytes();
     
-    if (x == 0 && y == 0 && w == dMeta.getAxisLength(imageIndex, Axes.X) &&
-      h == dMeta.getAxisLength(imageIndex, Axes.Y) && scanlinePad == 0)
+    if (x == 0 && y == 0 && w == metadata.getAxisLength(imageIndex, Axes.X) &&
+      h == metadata.getAxisLength(imageIndex, Axes.Y) && scanlinePad == 0)
     {
       s.read(bytes);
     }
-    else if (x == 0 && w == dMeta.getAxisLength(imageIndex, Axes.Y) &&
+    else if (x == 0 && w == metadata.getAxisLength(imageIndex, Axes.Y) &&
       scanlinePad == 0)
     {
-      if (dMeta.isInterleaved(imageIndex)) {
+      if (metadata.isInterleaved(imageIndex)) {
         s.skipBytes(y * w * bpp * c);
         s.read(bytes, 0, h * w * bpp * c);
       }
@@ -459,7 +435,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
           s.read(bytes, channel * h * rowLen, h * rowLen);
           if (channel < c - 1) {
             // no need to skip bytes after reading final channel
-            s.skipBytes((dMeta.getAxisLength(imageIndex, Axes.Y) - y - h) *
+            s.skipBytes((metadata.getAxisLength(imageIndex, Axes.Y) - y - h) *
               rowLen);
           }
         }
@@ -467,8 +443,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     }
     else {
       final int scanlineWidth =
-        dMeta.getAxisLength(imageIndex, Axes.Y) + scanlinePad;
-      if (dMeta.isInterleaved(imageIndex)) {
+          metadata.getAxisLength(imageIndex, Axes.Y) + scanlinePad;
+      if (metadata.isInterleaved(imageIndex)) {
         s.skipBytes(y * scanlineWidth * bpp * c);
         for (int row = 0; row < h; row++) {
           s.skipBytes(x * bpp * c);
@@ -493,7 +469,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
           if (channel < c - 1) {
             // no need to skip bytes after reading final channel
             s.skipBytes(scanlineWidth * bpp *
-              (dMeta.getAxisLength(imageIndex, Axes.Y) - y - h));
+              (metadata.getAxisLength(imageIndex, Axes.Y) - y - h));
           }
         }
       }

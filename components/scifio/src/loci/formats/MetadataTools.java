@@ -39,10 +39,8 @@ package loci.formats;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.scijava.plugin.PluginService;
-
-import ome.scifio.DatasetMetadata;
-import ome.scifio.DefaultDatasetMetadata;
+import ome.scifio.DefaultMetadata;
+import ome.scifio.Metadata;
 import ome.scifio.Reader;
 import ome.xml.meta.OMEXMLMetadataService;
 
@@ -84,7 +82,7 @@ public final class MetadataTools {
    * metadata from the given reader.
    */
   public static void populatePixels(MetadataStore store, IFormatReader r) {
-    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, getDatasetMetadata(r));
+    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, getMetadata(r));
   }
 
   /**
@@ -95,7 +93,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane)
   {
-    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, getDatasetMetadata(r), doPlane);
+    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, getMetadata(r), doPlane);
   }
 
   /**
@@ -108,9 +106,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane, boolean doImageName)
   {
-    Reader reader = (Reader) AdapterTools.get(r);
-    
-    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, getDatasetMetadata(r), doPlane, doImageName);
+    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, getMetadata(r), doPlane, doImageName);
   }
 
   /**
@@ -142,20 +138,18 @@ public final class MetadataTools {
    * </p>
    */
   public static void populateMetadata(MetadataStore store, int series,
-    String imageName, loci.formats.CoreMetadata coreMeta)
+    String imageName, CoreMetadata coreMeta)
   {
-    ome.scifio.DatasetMetadata cMeta = 
-        LegacyContext.get().getService(PluginService.class).createInstancesOfType(DefaultDatasetMetadata.class).get(0);
+    Metadata meta = new DefaultMetadata(); 
     
-    
-    // Fake an ome.scifio.CoreMetadata array, with the converted coreMetadata at index series
+    // Fake an ome.scifio.Metadata array, with the converted coreMetadata at index series
     for(int i=0; i<series; i++)
-      cMeta.add(null);
+      meta.add(null);
     
-    cMeta.add(coreMeta.convert());
+    meta.add(coreMeta.convert());
     
     LegacyContext.get().getService(OMEXMLMetadataService.class).populateMetadata((ome.xml.meta.MetadataStore)store, 
-      series, imageName, cMeta);
+      series, imageName, meta);
   }
   
   /**
@@ -468,10 +462,10 @@ public final class MetadataTools {
   
   // -- Helper Methods --
   
-  private static DatasetMetadata getDatasetMetadata(IFormatReader r) {
+  private static Metadata getMetadata(IFormatReader r) {
     Reader reader = FormatAdapter.get(r);
     
-    return reader.getDatasetMetadata();
+    return reader.getMetadata();
   }
 
 }

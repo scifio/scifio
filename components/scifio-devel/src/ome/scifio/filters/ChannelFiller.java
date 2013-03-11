@@ -44,8 +44,8 @@ import net.imglib2.display.ColorTable;
 
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
-import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.common.DataTools;
 
@@ -94,7 +94,7 @@ public class ChannelFiller extends AbstractReaderFilter {
   /** Returns true if the indices are being factored out. */
   public boolean isFilled(int imageIndex) {
     if(metaCheck())
-      return ((ChannelFillerMetadata)getDatasetMetadata()).isFilled(imageIndex);
+      return ((ChannelFillerMetadata)getMetadata()).isFilled(imageIndex);
     
     return false;
   }
@@ -102,7 +102,7 @@ public class ChannelFiller extends AbstractReaderFilter {
   /** Toggles whether the indices should be factored out. */
   public void setFilled(boolean filled) {
     if(metaCheck())
-      ((ChannelFillerMetadata)getDatasetMetadata()).setFilled(filled);
+      ((ChannelFillerMetadata)getMetadata()).setFilled(filled);
   }
   
   // -- Filter API Methods --
@@ -205,13 +205,13 @@ public class ChannelFiller extends AbstractReaderFilter {
     byte[] buf = plane.getBytes();
     int pt = 0;
     
-    int bytesPerIndex = getDatasetMetadata().getBitsPerPixel(imageIndex) / 8;
+    int bytesPerIndex = getMetadata().getBitsPerPixel(imageIndex) / 8;
     
-    if (getDatasetMetadata().isInterleaved(imageIndex)) {
+    if (getMetadata().isInterleaved(imageIndex)) {
       for (int i=0; i<index.length / bytesPerIndex; i++) {
         for (int j=0; j<lutLength; j++) {
           int iVal = DataTools.bytesToInt(index, i * bytesPerIndex, bytesPerIndex,
-                     getDatasetMetadata().isLittleEndian(imageIndex));
+              getMetadata().isLittleEndian(imageIndex));
           buf[pt++] = (byte) lut.get(j, iVal);
         }
       }
@@ -220,7 +220,7 @@ public class ChannelFiller extends AbstractReaderFilter {
       for (int j=0; j<lutLength; j++) {
         for (int i=0; i<index.length / bytesPerIndex; i++) {
           int iVal = DataTools.bytesToInt(index, i * bytesPerIndex, bytesPerIndex,
-                     getDatasetMetadata().isLittleEndian(imageIndex));
+              getMetadata().isLittleEndian(imageIndex));
           buf[pt++] = (byte) lut.get(j, iVal);
         }
       }
@@ -238,7 +238,7 @@ public class ChannelFiller extends AbstractReaderFilter {
   }
   
   private boolean metaCheck() {
-    DatasetMetadata meta = getDatasetMetadata();
+    Metadata meta = getMetadata();
     
     return meta.getClass().isAssignableFrom(ChannelFillerMetadata.class);
   }

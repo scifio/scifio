@@ -43,7 +43,6 @@ import org.scijava.Context;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
-import ome.scifio.DatasetMetadata;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
@@ -70,13 +69,13 @@ import ome.scifio.io.RandomAccessInputStream;
  * @see ome.scifio.filters.Filter
  * @see ome.scifio.discovery.DiscoverableFilter
  * @see ome.scifio.discovery.DiscoverableMetadataWrapper
- * @see ome.scifio.filters.AbstractDatasetMetadataWrapper
+ * @see ome.scifio.filters.AbstractMetadataWrapper
  */
 public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implements Reader {
 
   // -- Fields --
   
-  private DatasetMetadata wrappedMeta = null;
+  private Metadata wrappedMeta = null;
   
   // -- Constructor --
   
@@ -115,8 +114,8 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
   /**
    * @return
    */
-  public DatasetMetadata getParentMeta() {
-    return getParent().getDatasetMetadata();
+  public Metadata getParentMeta() {
+    return getParent().getMetadata();
   }
   
   // -- Filter API Methods --
@@ -133,21 +132,21 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
     //TODO Maybe cache this result so we don't have to discover every time setparent is called
     // because it will be called frequently, given how MasterFilterHelper is implemented
     
-    List<PluginInfo<DatasetMetadataWrapper>> wrapperInfos =
-        getContext().getPluginIndex().getPlugins(DatasetMetadataWrapper.class);
+    List<PluginInfo<MetadataWrapper>> wrapperInfos =
+        getContext().getPluginIndex().getPlugins(MetadataWrapper.class);
     
     // look for a compatible MetadataWrapper class
-    for (PluginInfo<DatasetMetadataWrapper> info : wrapperInfos) {
-      String wrapperClassName = info.get(DatasetMetadataWrapper.METADATA_KEY);
+    for (PluginInfo<MetadataWrapper> info : wrapperInfos) {
+      String wrapperClassName = info.get(MetadataWrapper.METADATA_KEY);
       
       if (wrapperClassName != null) {
         Class<?> wrapperClass;
         try {
           wrapperClass = Class.forName(wrapperClassName);
           if (wrapperClass.isAssignableFrom(getClass())) {
-            DatasetMetadataWrapper metaWrapper = 
+            MetadataWrapper metaWrapper = 
                 getContext().getService(PluginService.class).createInstance(info);
-            metaWrapper.wrap(r.getDatasetMetadata());
+            metaWrapper.wrap(r.getMetadata());
             wrappedMeta = metaWrapper;
             return;
           }
@@ -158,7 +157,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
     }
 
     // No Filter-specific wrapper found
-    wrappedMeta = r.getDatasetMetadata();
+    wrappedMeta = r.getMetadata();
   }
   
   /*
@@ -294,7 +293,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
   /*
    * @see ome.scifio.Reader#getDatasetMetadata()
    */
-  public DatasetMetadata getDatasetMetadata() {
+  public Metadata getDatasetMetadata() {
     return wrappedMeta;
   }
 

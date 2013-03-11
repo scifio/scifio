@@ -61,10 +61,8 @@ import ome.scifio.AbstractParser;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
 import ome.scifio.BufferedImagePlane;
-import ome.scifio.DatasetToTypedTranslator;
+import ome.scifio.ImageMetadata;
 import ome.scifio.Translator;
-import ome.scifio.TypedToDatasetTranslator;
-import ome.scifio.DatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.Field;
 import ome.scifio.FieldPrinter;
@@ -78,6 +76,7 @@ import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.io.StreamTools;
 import ome.scifio.util.FormatTools;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.Attr;
 
@@ -120,6 +119,7 @@ public class APNGFormat
     // -- Constants --
     
     public static final String DEFAULT_KEY = "separate default";
+    public static final String CNAME = "ome.scifio.apng.APNGFormat$Metadata";
   
     // -- Fields --
   
@@ -143,6 +143,95 @@ public class APNGFormat
     public Metadata() {
       fctl = new ArrayList<FCTLChunk>();
       idat = new ArrayList<IDATChunk>();
+    }
+    
+    // -- Metadata API Methods --
+    
+    public void populateImageMetadata() {
+      
+      final ImageMetadata imageMeta = new DefaultImageMetadata();
+      add(imageMeta);
+  
+      imageMeta.setInterleaved(false);
+      imageMeta.setOrderCertain(true);
+      imageMeta.setFalseColor(true);
+  
+      imageMeta.setIndexed(false);
+  
+      boolean indexed = false;
+      boolean rgb = true;
+      int sizec = 1;
+  
+      switch (getIhdr().getColourType()) {
+        case 0x0:
+          rgb = false;
+          break;
+        case 0x2:
+          indexed = true;
+          sizec = 3;
+          break;
+        case 0x3:
+          break;
+        case 0x4:
+          rgb = false;
+          sizec = 2;
+          break;
+        case 0x6:
+          sizec = 4;
+          break;
+      }
+  
+      /*
+       * TODO: destination metadata doesn't care about the LUT
+      if (indexed) {
+        final byte[][] lut = new byte[3][0];
+  
+        lut[0] = source.getPlte().getRed();
+        lut[1] = source.getPlte().getGreen();
+        lut[2] = source.getPlte().getBlue();
+  
+        imageMeta.setLut(lut);
+      }
+      */
+      
+      final ACTLChunk actl = getActl();
+      final int planeCount = actl == null ? 1 : actl.getNumFrames();
+  
+      imageMeta.setAxisTypes(new AxisType[] {
+          Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME, Axes.Z});
+      imageMeta.setAxisLengths(new int[] {
+          getIhdr().getWidth(), getIhdr().getHeight(), sizec,
+          planeCount, 1});
+  
+      final int bpp = getIhdr().getBitDepth();
+  
+      imageMeta.setBitsPerPixel(bpp);
+      try {
+        imageMeta.setPixelType(FormatTools.pixelTypeFromBytes(
+          bpp / 8, false, false));
+      }
+      catch (final FormatException e) {
+        LOGGER.error("Failed to find pixel type from bytes: " + (bpp/8), e);
+      }
+      imageMeta.setRGB(rgb);
+      imageMeta.setIndexed(indexed);
+      imageMeta.setPlaneCount(planeCount);
+      imageMeta.setLittleEndian(false);
+  
+      // Some anciliary chunks may not have been parsed
+      imageMeta.setMetadataComplete(false);
+  
+      imageMeta.setThumbnail(false);
+      
+      putImageMeta(0, Metadata.DEFAULT_KEY, isSeparateDefault());
+      //coreMeta.setThumbSizeX(source.thumbSizeX);
+      //coreMeta.setThumbSizeY(source.thumbSizeY);
+  
+      //coreMeta.setcLengths(source.cLengths);
+      //coreMeta.setcTypes(source.cTypes);
+  
+      //TODO could generate this via fields?
+      //coreMeta.setImageMetadata(source.imageMetadata);
     }
   
     // -- Getters and Setters --
@@ -384,6 +473,8 @@ public class APNGFormat
       stream.seek(0);
       super.parse(stream, meta);
       
+      metadata.populateImageMetadata();
+      
       return metadata;
     }
   }
@@ -422,7 +513,7 @@ public class APNGFormat
 //        lastPlane = new BufferedImagePlane(getContext(), 
 //            getDatasetMetadata().get(imageIndex), x, y, w, h);
 //        
-        if (getDatasetMetadata().isIndexed(imageIndex)) {
+        if (getMetadata().isIndexed(imageIndex)) {
           PLTEChunk plte = getMetadata().getPlte();
           if (plte != null) {
             ColorTable ct = new ColorTable8(plte.getRed(), plte.getGreen(),
@@ -439,17 +530,17 @@ public class APNGFormat
         final DataInputStream dis =
           new DataInputStream(new BufferedInputStream(getStream(), 4096));
         BufferedImage subImg = ImageIO.read(dis);
-        lastPlane.populate(getDatasetMetadata().get(imageIndex), subImg,
+        lastPlane.populate(getMetadata().get(imageIndex), subImg,
             x, y, w, h);
         
         lastPlaneIndex = 0;
         
-        if (x != 0 || y != 0 || w != dMeta.getAxisLength(imageIndex, Axes.X) ||
-          h != dMeta.getAxisLength(imageIndex, Axes.Y))
+        if (x != 0 || y != 0 || w != getMetadata().getAxisLength(imageIndex, Axes.X) ||
+          h != getMetadata().getAxisLength(imageIndex, Axes.Y))
         {
           // updates the data of lastPlane to a sub-image, by reference
           subImg = AWTImageTools.getSubimage(
-              lastPlane.getData(), dMeta.isLittleEndian(planeIndex),
+              lastPlane.getData(), getMetadata().isLittleEndian(planeIndex),
               x, y, w, h);
         }
 
@@ -477,7 +568,7 @@ public class APNGFormat
         getStream().seek(fdat.getOffset() + 4);
         byte[] b = new byte[fdat.getLength() + 8];
         DataTools.unpackBytes(
-          fdat.getLength() - 4, b, 0, 4, dMeta.isLittleEndian(imageIndex));
+          fdat.getLength() - 4, b, 0, 4, getMetadata().isLittleEndian(imageIndex));
         b[4] = 'I';
         b[5] = 'D';
         b[6] = 'A';
@@ -485,7 +576,7 @@ public class APNGFormat
         getStream().read(b, 8, b.length - 12);
         final int crc = (int) computeCRC(b, b.length - 4);
         DataTools.unpackBytes(
-          crc, b, b.length - 4, 4, dMeta.isLittleEndian(imageIndex));
+          crc, b, b.length - 4, 4, getMetadata().isLittleEndian(imageIndex));
         stream.write(b);
         b = null;
       }
@@ -505,8 +596,8 @@ public class APNGFormat
       // Recover first plane
 
       openPlane(
-        imageIndex, 0, 0, 0, dMeta.getAxisLength(imageIndex, Axes.X),
-        dMeta.getAxisLength(imageIndex, Axes.Y));
+        imageIndex, 0, 0, 0, getMetadata().getAxisLength(imageIndex, Axes.X),
+        getMetadata().getAxisLength(imageIndex, Axes.Y));
   
       // paste current image onto first plane
       // NB: last plane read was the first plane
@@ -518,7 +609,7 @@ public class APNGFormat
       BufferedImage bImg =
         new BufferedImage(lastPlane.getData().getColorModel(), firstRaster, false, null);
       
-      lastPlane.populate(getDatasetMetadata().get(imageIndex), bImg,
+      lastPlane.populate(getMetadata().get(imageIndex), bImg,
           x, y, w, h);
       
       lastPlaneIndex = planeIndex;
@@ -550,20 +641,20 @@ public class APNGFormat
       throws IOException
     {
       byte[] b = new byte[length + 12];
-      DataTools.unpackBytes(length, b, 0, 4, dMeta.isLittleEndian(imageIndex));
+      DataTools.unpackBytes(length, b, 0, 4, getMetadata().isLittleEndian(imageIndex));
       final byte[] typeBytes = (isIHDR ? "IHDR".getBytes() : "PLTE".getBytes());
       System.arraycopy(typeBytes, 0, b, 4, 4);
       getStream().seek(offset);
       getStream().read(b, 8, b.length - 12);
       if (isIHDR) {
         DataTools.unpackBytes(
-          coords[2], b, 8, 4, dMeta.isLittleEndian(imageIndex));
+          coords[2], b, 8, 4, getMetadata().isLittleEndian(imageIndex));
         DataTools.unpackBytes(
-          coords[3], b, 12, 4, dMeta.isLittleEndian(imageIndex));
+          coords[3], b, 12, 4, getMetadata().isLittleEndian(imageIndex));
       }
       final int crc = (int) computeCRC(b, b.length - 4);
       DataTools.unpackBytes(
-        crc, b, b.length - 4, 4, dMeta.isLittleEndian(imageIndex));
+        crc, b, b.length - 4, 4, getMetadata().isLittleEndian(imageIndex));
       stream.write(b);
       b = null;
     }
@@ -603,8 +694,8 @@ public class APNGFormat
             "APNGWriter does not yet support saving image tiles.");
       }
 
-      final int width = dMeta.getAxisLength(imageIndex, Axes.X);
-      final int height = dMeta.getAxisLength(imageIndex, Axes.Y);
+      final int width = getMetadata().getAxisLength(imageIndex, Axes.X);
+      final int height = getMetadata().getAxisLength(imageIndex, Axes.Y);
 
       if (!initialized[imageIndex][planeIndex]) {
         if (numFrames == 0) {
@@ -666,14 +757,14 @@ public class APNGFormat
     private void initialize(final int imageIndex) throws FormatException,
         IOException {
       if (out.length() == 0) {
-        final int width = dMeta.getAxisLength(imageIndex, Axes.X);
-        final int height = dMeta.getAxisLength(imageIndex, Axes.Y);
-        final int bytesPerPixel = FormatTools.getBytesPerPixel(dMeta
-            .getPixelType(imageIndex));
-        final int nChannels = dMeta.getAxisLength(imageIndex, Axes.CHANNEL);
+        final int width = getMetadata().getAxisLength(imageIndex, Axes.X);
+        final int height = getMetadata().getAxisLength(imageIndex, Axes.Y);
+        final int bytesPerPixel = FormatTools.getBytesPerPixel(
+            getMetadata() .getPixelType(imageIndex));
+        final int nChannels = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
         final boolean indexed = getColorModel() != null
             && (getColorModel() instanceof IndexColorModel);
-        littleEndian = dMeta.isLittleEndian(imageIndex);
+        littleEndian = getMetadata().isLittleEndian(imageIndex);
 
         // write 8-byte PNG signature
         out.write(APNGFormat.PNG_SIGNATURE);
@@ -787,8 +878,8 @@ public class APNGFormat
     private void writePixels(final int imageIndex, final String chunk,
         final byte[] stream, final int x, final int y, final int width,
         final int height) throws FormatException, IOException {
-      final int sizeC = dMeta.getAxisLength(imageIndex, Axes.CHANNEL);
-      final int pixelType = dMeta.getPixelType(imageIndex);
+      final int sizeC = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+      final int pixelType = getMetadata().getPixelType(imageIndex);
       final boolean signed = FormatTools.isSigned(pixelType);
 
       if (!isFullPlane(imageIndex, x, y, width, height)) {
@@ -875,7 +966,7 @@ public class APNGFormat
   }
 
   /**
-   * This class can be used for translating Metadata in the Core SCIFIO format
+   * This class can be used for translating any ome.scifio.TypedMetadata
    * to Metadata for writing Animated Portable Network Graphics (APNG)
    * files.
    * 
@@ -888,19 +979,20 @@ public class APNGFormat
    * to write it can not be guaranteed valid.
    *
    */
-  @Plugin(type = DatasetToTypedTranslator.class, attrs = 
-    {@Attr(name = Translator.DEST, value = APNGFormat.FORMAT_NAME),
-    @Attr(name = Translator.SOURCE, value = DatasetMetadata.FORMAT_NAME)})
-  public static class CoreAPNGTranslator
-    extends AbstractTranslator<DatasetMetadata, Metadata>
-    implements DatasetToTypedTranslator {
+  @Plugin(type = Translator.class, attrs = 
+    {@Attr(name = APNGTranslator.SOURCE, value = ome.scifio.Metadata.CNAME),
+     @Attr(name = APNGTranslator.DEST, value = Metadata.CNAME)},
+    priority = Priority.LOW_PRIORITY)
+  public static class APNGTranslator
+    extends AbstractTranslator<ome.scifio.Metadata, Metadata>
+  {
+    // -- Static Constants --
+    
+    public static final String DEST_VALUE = "ome.scifio.apng.APNGFormat.Metadata";
   
     // -- Translator API Methods -- 
     
-    @Override
-    public void translate(final DatasetMetadata source, final Metadata dest) {
-      super.translate(source, dest);
-  
+    public void translate() {
       final IHDRChunk ihdr =
         dest.getIhdr() == null ? new IHDRChunk() : dest.getIhdr();
       final PLTEChunk plte =
@@ -979,109 +1071,6 @@ public class APNGFormat
   
       Object separateDefault = source.getImageMetadataValue(0, Metadata.DEFAULT_KEY);
       dest.setSeparateDefault(separateDefault == null ? false : (Boolean)separateDefault);
-    }
-  }
-
-  /**
-   * File format SCIFIO Translator for Animated Portable Network Graphics
-   * (APNG) images to the Core SCIFIO image type.
-   *
-   */
-  @Plugin(type = DatasetToTypedTranslator.class, attrs = 
-    {@Attr(name = Translator.SOURCE, value = APNGFormat.FORMAT_NAME),
-    @Attr(name = Translator.DEST, value = DatasetMetadata.FORMAT_NAME)})
-  public static class APNGCoreTranslator
-    extends AbstractTranslator<Metadata, DatasetMetadata>
-    implements TypedToDatasetTranslator {
-  
-    // -- Translator API Methods --
-  
-    @Override
-    public void translate(final Metadata source, final DatasetMetadata dest) {
-      super.translate(source, dest);
-      final DefaultImageMetadata imageMeta = new DefaultImageMetadata();
-      dest.add(imageMeta);
-  
-      imageMeta.setInterleaved(false);
-      imageMeta.setOrderCertain(true);
-      imageMeta.setFalseColor(true);
-  
-      imageMeta.setIndexed(false);
-  
-      boolean indexed = false;
-      boolean rgb = true;
-      int sizec = 1;
-  
-      switch (source.getIhdr().getColourType()) {
-        case 0x0:
-          rgb = false;
-          break;
-        case 0x2:
-          indexed = true;
-          sizec = 3;
-          break;
-        case 0x3:
-          break;
-        case 0x4:
-          rgb = false;
-          sizec = 2;
-          break;
-        case 0x6:
-          sizec = 4;
-          break;
-      }
-  
-      /*
-       * TODO: destination metadata doesn't care about the LUT
-      if (indexed) {
-        final byte[][] lut = new byte[3][0];
-  
-        lut[0] = source.getPlte().getRed();
-        lut[1] = source.getPlte().getGreen();
-        lut[2] = source.getPlte().getBlue();
-  
-        imageMeta.setLut(lut);
-      }
-      */
-      
-      final ACTLChunk actl = source.getActl();
-      final int planeCount = actl == null ? 1 : actl.getNumFrames();
-  
-      imageMeta.setAxisTypes(new AxisType[] {
-          Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME, Axes.Z});
-      imageMeta.setAxisLengths(new int[] {
-          source.getIhdr().getWidth(), source.getIhdr().getHeight(), sizec,
-          planeCount, 1});
-  
-      final int bpp = source.getIhdr().getBitDepth();
-  
-      imageMeta.setBitsPerPixel(bpp);
-      try {
-        imageMeta.setPixelType(FormatTools.pixelTypeFromBytes(
-          bpp / 8, false, false));
-      }
-      catch (final FormatException e) {
-        LOGGER.error("Failed to find pixel type from bytes: " + (bpp/8), e);
-      }
-      imageMeta.setRGB(rgb);
-      imageMeta.setIndexed(indexed);
-      imageMeta.setPlaneCount(planeCount);
-      imageMeta.setLittleEndian(false);
-  
-      // Some anciliary chunks may not have been parsed
-      imageMeta.setMetadataComplete(false);
-  
-      imageMeta.setThumbnail(false);
-      
-      dest.putImageMeta(0, Metadata.DEFAULT_KEY, source.isSeparateDefault());
-      //coreMeta.setThumbSizeX(source.thumbSizeX);
-      //coreMeta.setThumbSizeY(source.thumbSizeY);
-  
-      //coreMeta.setcLengths(source.cLengths);
-      //coreMeta.setcTypes(source.cTypes);
-  
-      //TODO could generate this via fields?
-      //coreMeta.setImageMetadata(source.imageMetadata);
     }
   }
 

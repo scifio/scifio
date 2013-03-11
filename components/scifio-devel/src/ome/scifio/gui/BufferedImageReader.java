@@ -74,10 +74,10 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
     throws FormatException, IOException
   {
     FormatTools.assertStream(getStream(), true, 1);
-    int w = getDatasetMetadata().getAxisLength(imageIndex, Axes.X);
-    int h = getDatasetMetadata().getAxisLength(imageIndex, Axes.Y);
-    int thumbX = getDatasetMetadata().getThumbSizeX(imageIndex);
-    int thumbY = getDatasetMetadata().getThumbSizeY(imageIndex);
+    int w = getMetadata().getAxisLength(imageIndex, Axes.X);
+    int h = getMetadata().getAxisLength(imageIndex, Axes.Y);
+    int thumbX = getMetadata().getThumbSizeX(imageIndex);
+    int thumbY = getMetadata().getThumbSizeY(imageIndex);
     
     BufferedImagePlane plane = createPlane(0, 0, thumbX, thumbY);
     
@@ -91,7 +91,7 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
    */
   public BufferedImagePlane createPlane(int xOffset, int yOffset, int xLength,
       int yLength) {
-    return new BufferedImagePlane(getContext(), getDatasetMetadata().get(0),
+    return new BufferedImagePlane(getContext(), getMetadata().get(0),
         xOffset, yOffset, xLength, yLength);
   }
 }

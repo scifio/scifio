@@ -54,4 +54,10 @@ public class DefaultImageMetadata extends AbstractImageMetadata {
     super(copy);
   }
 
+  // -- ImageMetadata API Methods --
+  
+  public ImageMetadata copy() {
+    return new DefaultImageMetadata(this);
+  }
+
 }

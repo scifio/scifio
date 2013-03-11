@@ -42,17 +42,17 @@ import org.scijava.plugin.Plugin;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import ome.scifio.DatasetMetadata;
+import ome.scifio.Metadata;
 import ome.scifio.util.FormatTools;
 
 /**
  * @author Mark Hiner
  *
  */
-@Plugin(type=DatasetMetadataWrapper.class, attrs={
+@Plugin(type=MetadataWrapper.class, attrs={
   @Attr(name=FileStitcherMetadata.METADATA_KEY, value=FileStitcherMetadata.METADATA_VALUE)
   })
-public class FileStitcherMetadata extends AbstractDatasetMetadataWrapper {
+public class FileStitcherMetadata extends AbstractMetadataWrapper {
   
   // -- Constants --
   
@@ -67,7 +67,7 @@ public class FileStitcherMetadata extends AbstractDatasetMetadataWrapper {
     this(null);
   }
   
-  public FileStitcherMetadata(DatasetMetadata metadata) {
+  public FileStitcherMetadata(Metadata metadata) {
     super(metadata);
   }
   

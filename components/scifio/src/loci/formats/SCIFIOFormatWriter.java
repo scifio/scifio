@@ -8,6 +8,7 @@ import net.imglib2.meta.Axes;
 import loci.formats.codec.CodecOptions;
 import loci.formats.meta.MetadataRetrieve;
 import ome.scifio.ByteArrayPlane;
+import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Writer;
 
@@ -32,7 +33,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
   private ByteArrayPlane bPlane = null;
 
   /** */
-  protected ome.scifio.DatasetMetadata cMeta;
+  protected Metadata meta;
 
   // -- Constructor --
 
@@ -65,8 +66,8 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
   {
     try {
       writer.savePlane(getSeries(), no, planeCheck(buf, 0, 0,
-          writer.getDatasetMetadata().getAxisLength(getSeries(), Axes.X),
-          writer.getDatasetMetadata().getAxisLength(getSeries(), Axes.Y)));
+          writer.getMetadata().getAxisLength(getSeries(), Axes.X),
+          writer.getMetadata().getAxisLength(getSeries(), Axes.Y)));
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -85,8 +86,8 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
     }
     try {
       writer.savePlane(getSeries(), no, planeCheck((byte[])plane, 0, 0,
-          writer.getDatasetMetadata().getAxisLength(getSeries(), Axes.X),
-          writer.getDatasetMetadata().getAxisLength(getSeries(), Axes.Y)));
+          writer.getMetadata().getAxisLength(getSeries(), Axes.X),
+          writer.getMetadata().getAxisLength(getSeries(), Axes.Y)));
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -116,10 +117,10 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
   @Override
   public void setSeries(int series) throws FormatException {
     if (series < 0) throw new FormatException("Series must be > 0.");
-    if (series >= writer.getDatasetMetadata().getImageCount()) {
+    if (series >= writer.getMetadata().getImageCount()) {
       throw new FormatException("Series is '" + series +
         "' but MetadataRetrieve only defines " +
-        writer.getDatasetMetadata().getImageCount() + " series.");
+        writer.getMetadata().getImageCount() + " series.");
     }
     this.series = series;
   }
@@ -134,21 +135,21 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
   @Deprecated
   @Override
   public void setInterleaved(boolean interleaved) {
-    writer.getDatasetMetadata().setInterleaved(getSeries(), interleaved);
+    writer.getMetadata().setInterleaved(getSeries(), interleaved);
   }
 
   /* @see IFormatWriter#isInterleaved() */
   @Deprecated
   @Override
   public boolean isInterleaved() {
-    return writer.getDatasetMetadata().isInterleaved(getSeries());
+    return writer.getMetadata().isInterleaved(getSeries());
   }
 
   /* @see IFormatWriter#setValidBitsPerPixel(int) */
   @Deprecated
   @Override
   public void setValidBitsPerPixel(int bits) {
-    writer.getDatasetMetadata().setBitsPerPixel(getSeries(), bits);
+    writer.getMetadata().setBitsPerPixel(getSeries(), bits);
   }
 
   /* @see IFormatWriter#canDoStacks() */
@@ -275,8 +276,8 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
 //  {
 //    try {
 //      writer.savePlane(planeCheck(bytes, 0, 0,
-//          writer.getDatasetMetadata().getAxisLength(getSeries(), Axes.X),
-//          writer.getDatasetMetadata().getAxisLength(getSeries(), Axes.Y)));
+//          writer.getMetadata().getAxisLength(getSeries(), Axes.X),
+//          writer.getMetadata().getAxisLength(getSeries(), Axes.Y)));
 //    }
 //    catch (ome.scifio.FormatException e) {
 //      throw new FormatException(e);
@@ -369,7 +370,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
     if (bPlane == null)
       bPlane = new ByteArrayPlane(writer.getContext());
     
-    bPlane.populate(writer.getDatasetMetadata().get(getSeries()), buf, x, y, w, h);
+    bPlane.populate(writer.getMetadata().get(getSeries()), buf, x, y, w, h);
     return bPlane;
   }
 }

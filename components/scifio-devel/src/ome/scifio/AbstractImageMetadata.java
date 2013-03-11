@@ -35,7 +35,6 @@
  */
 package ome.scifio;
 
-import java.util.Arrays;
 import java.util.Hashtable;
 
 import net.imglib2.meta.Axes;

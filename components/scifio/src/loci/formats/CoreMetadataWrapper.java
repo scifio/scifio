@@ -383,4 +383,8 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
     }
     return lengths;
   }
+
+  public ImageMetadata copy() {
+    return unwrap().convert();
+  }
 }

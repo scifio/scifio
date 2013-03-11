@@ -37,7 +37,7 @@ package ome.scifio.filters;
 
 import java.util.Set;
 
-import ome.scifio.DatasetMetadata;
+import ome.scifio.Metadata;
 import ome.scifio.Reader;
 
 /**
@@ -113,7 +113,7 @@ public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<R
   
   // -- Reader API Methods --
   
-  public DatasetMetadata getDatasetMetadata() {
-    return fHelper.getParent().getDatasetMetadata();
+  public Metadata getMetadata() {
+    return fHelper.getParent().getMetadata();
   }
 }

@@ -38,20 +38,21 @@ package ome.scifio.filters;
 
 import java.util.List;
 
+import ome.scifio.Metadata;
+
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 import net.imglib2.meta.AxisType;
-import ome.scifio.DatasetMetadata;
 
 /**
  * @author Mark Hiner
  *
  */
-@Plugin(type=DatasetMetadataWrapper.class, attrs={
+@Plugin(type=MetadataWrapper.class, attrs={
   @Attr(name=DimensionSwapperMetadata.METADATA_KEY, value=DimensionSwapperMetadata.METADATA_VALUE)
   })
-public class DimensionSwapperMetadata extends AbstractDatasetMetadataWrapper {
+public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
   
   // -- Constants --
   
@@ -66,7 +67,7 @@ public class DimensionSwapperMetadata extends AbstractDatasetMetadataWrapper {
     this(null);
   }
   
-  public DimensionSwapperMetadata(DatasetMetadata metadata) {
+  public DimensionSwapperMetadata(Metadata metadata) {
     super(metadata);
   }
   

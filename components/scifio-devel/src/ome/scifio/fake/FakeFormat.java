@@ -53,14 +53,11 @@ import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
-import ome.scifio.DatasetMetadata;
-import ome.scifio.DatasetToTypedTranslator;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.HasColorTable;
 import ome.scifio.Plane;
 import ome.scifio.Translator;
-import ome.scifio.TypedToDatasetTranslator;
 import ome.scifio.common.DataTools;
 import ome.scifio.io.IStreamAccess;
 import ome.scifio.io.Location;
@@ -69,6 +66,7 @@ import ome.scifio.io.StreamHandle;
 import ome.scifio.util.FormatTools;
 
 import org.scijava.Context;
+import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
@@ -172,6 +170,10 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    */
   public static class Metadata extends AbstractMetadata implements HasColorTable {
     
+    // -- Static Constants --
+    
+    public static final String CNAME = "ome.scifio.fake.FakeFormat$Metadata";
+    
     // -- Fields --
     
     /** Channel of last opened image plane. */
@@ -212,31 +214,10 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     public ColorTable getColorTable() {
       return lut == null ? null : lut[ac];
     }
-  }
-  
-  /**
-   * Checker for Fake file format. Supported extension is ".fake"
-   *
-   */
-  public static class Checker extends AbstractChecker {
+    
+    // -- Metadata API Methods --
 
-  }
-  
-  /**
-   * Parser for Fake file format. The file suffix is sufficient for
-   * detection - as the name is the only aspect of a Fake file
-   * that is guaranteed to exist.
-   *
-   */
-  public static class Parser extends AbstractParser<Metadata> {
-    
-    // -- Parser API Methods --
-    
-    /* @See Parser#Parse(RandomAccessInputStream, M) */
-    @Override
-    public Metadata parse(RandomAccessInputStream stream, Metadata meta)
-      throws IOException, FormatException {
-      
+    public void populateImageMetadata() {
       int sizeX = DEFAULT_SIZE_X;
       int sizeY = DEFAULT_SIZE_Y;
       int sizeZ = DEFAULT_SIZE_Z;
@@ -252,7 +233,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       int imageCount = 1;
       int lutLength = DEFAULT_LUT_LENGTH;
       
-      HashMap<String, String> fakeMap = FakeUtils.extractFakeInfo(getContext(), stream.getFileName());
+      HashMap<String, String> fakeMap = FakeUtils.extractFakeInfo(getContext(), getDatasetName());
       
       sizeX = FakeUtils.getIntValue(fakeMap.get(SIZE_X), sizeX);
       sizeY = FakeUtils.getIntValue(fakeMap.get(SIZE_Y), sizeY);
@@ -271,31 +252,32 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       imageCount = FakeUtils.getIntValue(fakeMap.get(SERIES), imageCount);
       lutLength = FakeUtils.getIntValue(fakeMap.get(LUT_LENGTH), lutLength);
       
-      // Sanity checking
-      if (sizeX < 1) throw new FormatException("Invalid sizeX: " + sizeX);
-      if (sizeY < 1) throw new FormatException("Invalid sizeY: " + sizeY);
-      if (sizeZ < 1) throw new FormatException("Invalid sizeZ: " + sizeZ);
-      if (sizeC < 1) throw new FormatException("Invalid sizeC: " + sizeC);
-      if (sizeT < 1) throw new FormatException("Invalid sizeT: " + sizeT);
-      if (thumbSizeX < 0) {
-        throw new FormatException("Invalid thumbSizeX: " + thumbSizeX);
-      }
-      if (thumbSizeY < 0) {
-        throw new FormatException("Invalid thumbSizeY: " + thumbSizeY);
-      }
-      if (rgb < 1 || rgb > sizeC || sizeC % rgb != 0) {
-        throw new FormatException("Invalid sizeC/rgb combination: " +
-          sizeC + "/" + rgb);
-      }
-      if (falseColor && !indexed) {
-        throw new FormatException("False color images must be indexed");
-      }
-      if (imageCount < 1) {
-        throw new FormatException("Invalid seriesCount: " + imageCount);
-      }
-      if (lutLength < 1) {
-        throw new FormatException("Invalid lutLength: " + lutLength);
-      }
+      // TODO not sure how to handle error handling here yet
+//      // Sanity checking
+//      if (sizeX < 1) throw new FormatException("Invalid sizeX: " + sizeX);
+//      if (sizeY < 1) throw new FormatException("Invalid sizeY: " + sizeY);
+//      if (sizeZ < 1) throw new FormatException("Invalid sizeZ: " + sizeZ);
+//      if (sizeC < 1) throw new FormatException("Invalid sizeC: " + sizeC);
+//      if (sizeT < 1) throw new FormatException("Invalid sizeT: " + sizeT);
+//      if (thumbSizeX < 0) {
+//        throw new FormatException("Invalid thumbSizeX: " + thumbSizeX);
+//      }
+//      if (thumbSizeY < 0) {
+//        throw new FormatException("Invalid thumbSizeY: " + thumbSizeY);
+//      }
+//      if (rgb < 1 || rgb > sizeC || sizeC % rgb != 0) {
+//        throw new FormatException("Invalid sizeC/rgb combination: " +
+//          sizeC + "/" + rgb);
+//      }
+//      if (falseColor && !indexed) {
+//        throw new FormatException("False color images must be indexed");
+//      }
+//      if (imageCount < 1) {
+//        throw new FormatException("Invalid seriesCount: " + imageCount);
+//      }
+//      if (lutLength < 1) {
+//        throw new FormatException("Invalid lutLength: " + lutLength);
+//      }
       
       // for indexed color images, create lookup tables
       if (indexed) {
@@ -340,16 +322,115 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
           }
         }
         
-        meta.setLut(luts);
+        setLut(luts);
         
         if(valueToIndex != null) {
           FakeUtils.createInverseIndexMap(indexToValue, valueToIndex);
-          meta.setValueToIndex(valueToIndex);
+          setValueToIndex(valueToIndex);
         }
         // NB: Other pixel types will have null LUTs.
       }
       
+      
+      // General metadata population
+      
+      int bitsPerPixel = 0; // default
+      String dimOrder = DEFAULT_DIMENSION_ORDER;
+      boolean orderCertain = true;
+      boolean little = true;
+      boolean interleaved = false;
+      boolean metadataComplete = true;
+      boolean thumbnail = false;
+      double scaleFactor = DEFAULT_SCALE_FACTOR;
+
+      bitsPerPixel = FormatTools.getBitsPerPixel(pixelType);
+      bitsPerPixel = FakeUtils.getIntValue(fakeMap.get(BITS_PER_PIXEL), bitsPerPixel);
+      dimOrder = fakeMap.get(DIM_ORDER) == null ? dimOrder : fakeMap.get(DIM_ORDER).toUpperCase();
+
+      little = FakeUtils.getBoolValue(fakeMap.get(LITTLE_ENDIAN), little);
+      interleaved = FakeUtils.getBoolValue(fakeMap.get(INTERLEAVED), interleaved);
+      metadataComplete = FakeUtils.getBoolValue(fakeMap.get(META_COMPLETE), metadataComplete);
+      thumbnail = FakeUtils.getBoolValue(fakeMap.get(THUMBNAIL), thumbnail);
+      orderCertain = FakeUtils.getBoolValue(fakeMap.get(ORDER_CERTAIN), orderCertain);
+
+      scaleFactor = FakeUtils.getDoubleValue(fakeMap.get(SCALE_FACTOR), scaleFactor);
+      
+      AxisType[] axes = FormatTools.findDimensionList(dimOrder);
+      int[] axisLengths = new int[axes.length];
+      
+      for(int i = 0; i < axes.length; i++) {
+        AxisType t = axes[i];
+        if(t.equals(Axes.X))
+          axisLengths[i] = sizeX;
+        else if(t.equals(Axes.Y))
+          axisLengths[i] = sizeY;
+        else if(t.equals(Axes.Z))
+          axisLengths[i] = sizeZ;
+        else if(t.equals(Axes.CHANNEL))
+          axisLengths[i] = sizeC;
+        else if(t.equals(Axes.TIME))
+          axisLengths[i] = sizeT;
+        else
+          axisLengths[i] = -1; // Unknown axis
+      }
+
+      putDatasetMeta(SCALE_FACTOR, scaleFactor);
+      putDatasetMeta(LUT_LENGTH, lutLength);
+      
+      int numImages = 1;
+      numImages =  FakeUtils.getIntValue(fakeMap.get(SERIES), numImages);
+      
+      int effSizeC = sizeC / rgb;
+      
+      for(int i = 0; i < numImages; i++) {
+        DefaultImageMetadata imageMeta = new DefaultImageMetadata();
+
+        imageMeta.setAxisTypes(axes);
+        imageMeta.setAxisLengths(axisLengths);
+        imageMeta.setPixelType(pixelType);
+        imageMeta.setThumbSizeX(thumbSizeX);
+        imageMeta.setThumbSizeY(thumbSizeY);
+        imageMeta.setIndexed(indexed);
+        imageMeta.setFalseColor(falseColor);
+        imageMeta.setRGB(rgb > 1);
+        imageMeta.setLittleEndian(little);
+        imageMeta.setInterleaved(interleaved);
+        imageMeta.setMetadataComplete(metadataComplete);
+        imageMeta.setThumbnail(thumbnail);
+        imageMeta.setOrderCertain(orderCertain);
+        imageMeta.setBitsPerPixel(bitsPerPixel);
+        imageMeta.setPlaneCount(sizeZ * effSizeC * sizeT);
+        
+        add(imageMeta);
+      }
+    }
+  }
+  
+  /**
+   * Checker for Fake file format. Supported extension is ".fake"
+   *
+   */
+  public static class Checker extends AbstractChecker {
+
+  }
+  
+  /**
+   * Parser for Fake file format. The file suffix is sufficient for
+   * detection - as the name is the only aspect of a Fake file
+   * that is guaranteed to exist.
+   *
+   */
+  public static class Parser extends AbstractParser<Metadata> {
+    
+    // -- Parser API Methods --
+    
+    /* @See Parser#Parse(RandomAccessInputStream, M) */
+    @Override
+    public Metadata parse(RandomAccessInputStream stream, Metadata meta)
+      throws IOException, FormatException {
       meta = super.parse(stream, meta);
+      
+      meta.populateImageMetadata();
 
       return meta;
     }
@@ -370,18 +451,18 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
           plane.getData().length, x, y, w, h);
 
-      DatasetMetadata dMeta = getDatasetMetadata();
-      plane.setImageMetadata(dMeta.get(imageIndex));
+      Metadata meta = getMetadata();
+      plane.setImageMetadata(meta.get(imageIndex));
       
-      final int pixelType = dMeta.getPixelType(imageIndex);
+      final int pixelType = meta.getPixelType(imageIndex);
       final int bpp = FormatTools.getBytesPerPixel(pixelType);
       final boolean signed = FormatTools.isSigned(pixelType);
       final boolean floating = FormatTools.isFloatingPoint(pixelType);
-      final int rgb = dMeta.getRGBChannelCount(imageIndex);
-      final boolean indexed = dMeta.isIndexed(imageIndex);
-      final boolean little = dMeta.isLittleEndian(imageIndex);
-      final boolean interleaved = dMeta.isInterleaved(imageIndex);
-      final int scaleFactor = ((Double)dMeta.getMetadataValue(SCALE_FACTOR)).intValue();
+      final int rgb = meta.getRGBChannelCount(imageIndex);
+      final boolean indexed = meta.isIndexed(imageIndex);
+      final boolean little = meta.isLittleEndian(imageIndex);
+      final boolean interleaved = meta.isInterleaved(imageIndex);
+      final int scaleFactor = ((Double)meta.getMetadataValue(SCALE_FACTOR)).intValue();
       final ColorTable[] lut = getMetadata().getLut();
       final int[][] valueToIndex = getMetadata().getValueToIndex();
       
@@ -504,140 +585,19 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   }
   
   /**
-   * Translator from Fake metadata to {@link DatasetMetadata}.
-   */
-  @Plugin(type = TypedToDatasetTranslator.class, attrs = 
-    {@Attr(name = Translator.SOURCE, value = FakeFormat.FORMAT_NAME),
-    @Attr(name = Translator.DEST, value = DatasetMetadata.FORMAT_NAME)})
-  public static class FakeCoreTranslator 
-    extends AbstractTranslator<Metadata, DatasetMetadata>
-    implements TypedToDatasetTranslator {
-    
-    // -- Translator API Methods --
-    
-    @Override
-    public void translate(final Metadata source, final DatasetMetadata destination) {
-      super.translate(source, destination);
-      
-      int sizeX = DEFAULT_SIZE_X;
-      int sizeY = DEFAULT_SIZE_Y;
-      int sizeZ = DEFAULT_SIZE_Z;
-      int sizeC = DEFAULT_SIZE_C;
-      int sizeT = DEFAULT_SIZE_T;
-      int rgb = DEFAULT_RGB_CHANNEL_COUNT;
-      int thumbSizeX = DEFAULT_THUMB_SIZE_X;
-      int thumbSizeY = DEFAULT_THUMB_SIZE_Y;
-      int pixelType = FormatTools.pixelTypeFromString(DEFAULT_PIXEL_TYPE);
-      int bitsPerPixel = 0; // default
-      String dimOrder = DEFAULT_DIMENSION_ORDER;
-      boolean orderCertain = true;
-      boolean little = true;
-      boolean interleaved = false;
-      boolean indexed = false;
-      boolean falseColor = false;
-      boolean metadataComplete = true;
-      boolean thumbnail = false;
-      double scaleFactor = DEFAULT_SCALE_FACTOR;
-
-      int lutLength = DEFAULT_LUT_LENGTH;
-      
-      HashMap<String, String> fakeMap = FakeUtils.extractFakeInfo(getContext(), destination.getDatasetName());
-      
-      sizeX = FakeUtils.getIntValue(fakeMap.get(SIZE_X), sizeX);
-      sizeY = FakeUtils.getIntValue(fakeMap.get(SIZE_Y), sizeY);
-      sizeZ = FakeUtils.getIntValue(fakeMap.get(SIZE_Z), sizeZ);
-      sizeC = FakeUtils.getIntValue(fakeMap.get(SIZE_C), sizeC);
-      sizeT = FakeUtils.getIntValue(fakeMap.get(SIZE_T), sizeT);
-      
-      rgb = FakeUtils.getIntValue(fakeMap.get(RGB), rgb);
-
-      thumbSizeX = FakeUtils.getIntValue(fakeMap.get(THUMB_X), sizeX);
-      thumbSizeY = FakeUtils.getIntValue(fakeMap.get(THUMB_Y), sizeY);
-      String mappedPType = fakeMap.get(PIXEL_TYPE);
-      pixelType = FormatTools.pixelTypeFromString(mappedPType == null ? DEFAULT_PIXEL_TYPE : mappedPType);
-      bitsPerPixel = FormatTools.getBitsPerPixel(pixelType);
-      bitsPerPixel = FakeUtils.getIntValue(fakeMap.get(BITS_PER_PIXEL), bitsPerPixel);
-      dimOrder = fakeMap.get(DIM_ORDER) == null ? dimOrder : fakeMap.get(DIM_ORDER).toUpperCase();
-
-      indexed = FakeUtils.getBoolValue(fakeMap.get(INDEXED), indexed);
-      falseColor = FakeUtils.getBoolValue(fakeMap.get(FALSE_COLOR), falseColor);
-      little = FakeUtils.getBoolValue(fakeMap.get(LITTLE_ENDIAN), little);
-      interleaved = FakeUtils.getBoolValue(fakeMap.get(INTERLEAVED), interleaved);
-      metadataComplete = FakeUtils.getBoolValue(fakeMap.get(META_COMPLETE), metadataComplete);
-      thumbnail = FakeUtils.getBoolValue(fakeMap.get(THUMBNAIL), thumbnail);
-      orderCertain = FakeUtils.getBoolValue(fakeMap.get(ORDER_CERTAIN), orderCertain);
-
-      lutLength = FakeUtils.getIntValue(fakeMap.get(LUT_LENGTH), lutLength);
-      scaleFactor = FakeUtils.getDoubleValue(fakeMap.get(SCALE_FACTOR), scaleFactor);
-      
-      AxisType[] axes = FormatTools.findDimensionList(dimOrder);
-      int[] axisLengths = new int[axes.length];
-      
-      for(int i = 0; i < axes.length; i++) {
-        AxisType t = axes[i];
-        if(t.equals(Axes.X))
-          axisLengths[i] = sizeX;
-        else if(t.equals(Axes.Y))
-          axisLengths[i] = sizeY;
-        else if(t.equals(Axes.Z))
-          axisLengths[i] = sizeZ;
-        else if(t.equals(Axes.CHANNEL))
-          axisLengths[i] = sizeC;
-        else if(t.equals(Axes.TIME))
-          axisLengths[i] = sizeT;
-        else
-          axisLengths[i] = -1; // Unknown axis
-      }
-
-      destination.putDatasetMeta(SCALE_FACTOR, scaleFactor);
-      destination.putDatasetMeta(LUT_LENGTH, lutLength);
-      
-      int numImages = 1;
-      numImages =  FakeUtils.getIntValue(fakeMap.get(SERIES), numImages);
-      
-      int effSizeC = sizeC / rgb;
-      
-      for(int i = 0; i < numImages; i++) {
-        DefaultImageMetadata imageMeta = new DefaultImageMetadata();
-
-        imageMeta.setAxisTypes(axes);
-        imageMeta.setAxisLengths(axisLengths);
-        imageMeta.setPixelType(pixelType);
-        imageMeta.setThumbSizeX(thumbSizeX);
-        imageMeta.setThumbSizeY(thumbSizeY);
-        imageMeta.setIndexed(indexed);
-        imageMeta.setFalseColor(falseColor);
-        imageMeta.setRGB(rgb > 1);
-        imageMeta.setLittleEndian(little);
-        imageMeta.setInterleaved(interleaved);
-        imageMeta.setMetadataComplete(metadataComplete);
-        imageMeta.setThumbnail(thumbnail);
-        imageMeta.setOrderCertain(orderCertain);
-        imageMeta.setBitsPerPixel(bitsPerPixel);
-        imageMeta.setPlaneCount(sizeZ * effSizeC * sizeT);
-        
-        destination.add(imageMeta);
-      }
-    }
-    
-  }
-  
-  /**
    * Translator from {@link DatasetMetadata} to Fake Metadata.
    */
-  @Plugin(type = DatasetToTypedTranslator.class, attrs = 
-    {@Attr(name = Translator.SOURCE, value = DatasetMetadata.FORMAT_NAME),
-    @Attr(name = Translator.DEST, value = FakeFormat.FORMAT_NAME)})
-  public static class CoreFakeTranslator 
-    extends AbstractTranslator<DatasetMetadata, Metadata>
-    implements DatasetToTypedTranslator {
+  @Plugin(type = Translator.class, attrs = 
+    {@Attr(name = FakeTranslator.SOURCE, value = ome.scifio.Metadata.CNAME),
+     @Attr(name = FakeTranslator.DEST, value = Metadata.CNAME)},
+    priority = Priority.LOW_PRIORITY)
+  public static class FakeTranslator 
+    extends AbstractTranslator<ome.scifio.Metadata, Metadata>
+  {
 
     // -- Translator API Methods --
     
-    @Override
-    public void translate(final DatasetMetadata source, final Metadata destination) {
-      super.translate(source, destination);
-      
+    public void translate() {
       String fakeId = NAME + "=" + source.getDatasetName();
       
       fakeId = FakeUtils.appendToken(fakeId, SIZE_X, Integer.toString(source.getAxisLength(0, Axes.X)));
@@ -675,8 +635,8 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       fakeId += ".fake";
       
       try {
-        destination.close();
-        destination.setSource(new RandomAccessInputStream(getContext(), new Handle(fakeId), fakeId));
+        dest.close();
+        dest.setSource(new RandomAccessInputStream(getContext(), new Handle(fakeId), fakeId));
       }
       catch (IOException e) {
         LOGGER.debug("Failed to create RAIS: " + fakeId, e);

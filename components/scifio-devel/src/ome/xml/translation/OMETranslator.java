@@ -37,8 +37,8 @@
 package ome.xml.translation;
 
 
-import ome.scifio.AbstractMetadata;
 import ome.scifio.AbstractTranslator;
+import ome.scifio.Metadata;
 import ome.xml.meta.OMEMetadata;
 
 /**
@@ -51,12 +51,15 @@ import ome.xml.meta.OMEMetadata;
  * @author Mark Hiner
  *
  */
-public abstract class OMETranslator<M extends AbstractMetadata>
+public abstract class OMETranslator<M extends Metadata>
   extends AbstractTranslator<M, OMEMetadata> {
+  
+  // -- Static Constants --
+  
+  public static final String DEST_VALUE = "ome.xml.meta.OMEMetadata";
 
   // -- Translator API Methods --
 
-  @Override
   public void translate(final M source, final OMEMetadata destination) {
     super.translate(source, destination);
   }

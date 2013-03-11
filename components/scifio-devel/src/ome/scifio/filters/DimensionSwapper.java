@@ -46,8 +46,8 @@ import org.scijava.plugin.Plugin;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.util.FormatTools;
 
@@ -108,24 +108,24 @@ public class DimensionSwapper extends AbstractReaderFilter {
     }
 
     if (newOrder.indexOf(Axes.CHANNEL) != oldOrder.indexOf(Axes.CHANNEL)
-      && getDatasetMetadata().getRGBChannelCount(imageIndex) > 1) {
+      && getMetadata().getRGBChannelCount(imageIndex) > 1) {
       throw new IllegalArgumentException(
         "Cannot swap C dimension when RGB channel count > 1");
     }
 
     //core.currentOrder[series] = order;
     if (metaCheck() && 
-        !(((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder() == null)) {
-      ((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder()[imageIndex] = 
-          Arrays.asList(getDatasetMetadata().getAxes(imageIndex));
+        !(((DimensionSwapperMetadata)getMetadata()).getOutputOrder() == null)) {
+      ((DimensionSwapperMetadata)getMetadata()).getOutputOrder()[imageIndex] = 
+          Arrays.asList(getMetadata().getAxes(imageIndex));
     }
     
-    FormatTools.setDimensionOrder(getDatasetMetadata(), imageIndex, newOrder.toArray(new AxisType[newOrder.size()]));
+    FormatTools.setDimensionOrder(getMetadata(), imageIndex, newOrder.toArray(new AxisType[newOrder.size()]));
 
     if (newOrder.indexOf(Axes.CHANNEL) != oldOrder.indexOf(Axes.CHANNEL)) {
       // C was overridden; clear the sub-C dimensional metadata
-      getDatasetMetadata().setChannelDimLengths(imageIndex, new int[] {getDimensionLength(imageIndex, Axes.CHANNEL)});
-      getDatasetMetadata().setChannelDimTypes(imageIndex, new String[] {FormatTools.CHANNEL});
+      getMetadata().setChannelDimLengths(imageIndex, new int[] {getDimensionLength(imageIndex, Axes.CHANNEL)});
+      getMetadata().setChannelDimTypes(imageIndex, new String[] {FormatTools.CHANNEL});
     }
   }
 
@@ -143,18 +143,18 @@ public class DimensionSwapper extends AbstractReaderFilter {
     FormatTools.assertId(getCurrentFile(), true, 2);
     
     if (metaCheck() && 
-        !(((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder() == null))
-      ((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder()[imageIndex] = outputOrder;
+        !(((DimensionSwapperMetadata)getMetadata()).getOutputOrder() == null))
+      ((DimensionSwapperMetadata)getMetadata()).getOutputOrder()[imageIndex] = outputOrder;
   }
 
   public List<AxisType> getInputOrder(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return Arrays.asList(getDatasetMetadata().getAxes(imageIndex));
+    return Arrays.asList(getMetadata().getAxes(imageIndex));
   }
   
   public int getDimensionLength(int imageIndex, AxisType t) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return getDatasetMetadata().getAxisLength(imageIndex, t);
+    return getMetadata().getAxisLength(imageIndex, t);
   }
 
   public List<AxisType> getDimensionOrder(int imageIndex) {
@@ -162,7 +162,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
     List<AxisType> outOrder = null;
     
     if(metaCheck()) {
-      outOrder = ((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder()[imageIndex];
+      outOrder = ((DimensionSwapperMetadata)getMetadata()).getOutputOrder()[imageIndex];
     }
     if (outOrder != null) return outOrder;
     return getInputOrder(imageIndex);
@@ -177,16 +177,16 @@ public class DimensionSwapper extends AbstractReaderFilter {
   protected void setSourceHelper(String source) {
     String oldFile = getCurrentFile();
     if (!source.equals(oldFile) || metaCheck() && 
-        (((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder() == null ||
-        ((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder().length != getImageCount()))
+        (((DimensionSwapperMetadata)getMetadata()).getOutputOrder() == null ||
+        ((DimensionSwapperMetadata)getMetadata()).getOutputOrder().length != getImageCount()))
     {
-      ((DimensionSwapperMetadata)getDatasetMetadata()).setOutputOrder(new ArrayList[getImageCount()]);
+      ((DimensionSwapperMetadata)getMetadata()).setOutputOrder(new ArrayList[getImageCount()]);
 
       // NB: Create our own copy of the DatasetMetadata,
       // which we can manipulate safely.
       //TODO should be a copy method
       if(metaCheck())
-        ((DimensionSwapperMetadata)getDatasetMetadata()).wrap(getParent().getDatasetMetadata());
+        ((DimensionSwapperMetadata)getMetadata()).wrap(getParent().getMetadata());
     }
   }
   
@@ -235,7 +235,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
   /* @see Reader#getDatasetMetadata() */
   @Override
-  public DatasetMetadata getDatasetMetadata() {
+  public Metadata getDatasetMetadata() {
     FormatTools.assertId(getCurrentFile(), true, 2);
     return super.getDatasetMetadata();
   }
@@ -243,7 +243,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
   // -- Helper methods --
   
   private boolean metaCheck() {
-    return DimensionSwapperMetadata.class.isAssignableFrom(getDatasetMetadata().getClass());
+    return DimensionSwapperMetadata.class.isAssignableFrom(getMetadata().getClass());
   }
 
   protected int reorder(int imageIndex, int planeIndex) {
@@ -255,7 +255,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
      
     return FormatTools.getReorderedIndex(FormatTools.findDimensionOrder(inputAxes),
       FormatTools.findDimensionOrder(outputAxes), getDimensionLength(imageIndex, Axes.Z),
-      getDatasetMetadata().getEffectiveSizeC(imageIndex), getDimensionLength(imageIndex, Axes.TIME),
-      getDatasetMetadata().getPlaneCount(imageIndex), imageIndex, planeIndex);
+      getMetadata().getEffectiveSizeC(imageIndex), getDimensionLength(imageIndex, Axes.TIME),
+      getMetadata().getPlaneCount(imageIndex), imageIndex, planeIndex);
   }
 }

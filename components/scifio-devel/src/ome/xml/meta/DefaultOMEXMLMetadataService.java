@@ -45,9 +45,9 @@ import org.scijava.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.FormatService;
+import ome.scifio.Metadata;
 import ome.scifio.Reader;
 import ome.scifio.common.DateTools;
 import ome.scifio.io.Location;
@@ -107,7 +107,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
    * Populates the 'pixels' element of the given metadata store, using core
    * metadata from the given reader.
    */
-  public void populatePixels(MetadataStore store, DatasetMetadata meta) {
+  public void populatePixels(MetadataStore store, Metadata meta) {
     populatePixels(store, meta, false, true);
   }
 
@@ -116,7 +116,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
    * metadata from the given reader.  If the 'doPlane' flag is set,
    * then the 'plane' elements will be populated as well.
    */
-  public void populatePixels(MetadataStore store, DatasetMetadata meta,
+  public void populatePixels(MetadataStore store, Metadata meta,
     boolean doPlane)
   {
     populatePixels(store, meta, doPlane, true);
@@ -129,7 +129,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
    * If the 'doImageName' flag is set, then the image name will be populated
    * as well.  By default, 'doImageName' is true.
    */
-  public void populatePixels(MetadataStore store, DatasetMetadata meta,
+  public void populatePixels(MetadataStore store, Metadata meta,
     boolean doPlane, boolean doImageName)
   {
     if (store == null || meta == null) return;
@@ -214,7 +214,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
    * </p>
    */
   public void populateMetadata(MetadataStore store, int imageIndex,
-    String imageName, DatasetMetadata datasetMeta)
+    String imageName, Metadata datasetMeta)
   {
     
     int sizeX = datasetMeta.getAxisLength(imageIndex, Axes.X);
@@ -255,7 +255,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
   }
 
   public void populatePixelsOnly(MetadataStore store, Reader r) {
-    DatasetMetadata dMeta = r.getDatasetMetadata();
+    Metadata dMeta = r.getMetadata();
 
     for (int imageIndex=0; imageIndex<r.getImageCount(); imageIndex++) {
       String pixelType = FormatTools.getPixelTypeString(dMeta.getPixelType(imageIndex));

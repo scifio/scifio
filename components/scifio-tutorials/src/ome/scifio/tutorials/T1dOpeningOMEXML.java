@@ -73,6 +73,7 @@ public class T1dOpeningOMEXML {
     // to:
     
     OMEMetadata omexml = new OMEMetadata();
+    omexml.setContext(scifio.getContext());
     
     scifio.translators().translate(meta, omexml);
     

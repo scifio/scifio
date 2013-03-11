@@ -19,8 +19,8 @@ package ome.scifio.tutorials;
 import java.io.IOException;
 
 import net.imglib2.meta.Axes;
-import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
+import ome.scifio.Metadata;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
 
@@ -60,7 +60,7 @@ public class T1bReadingTiles {
     
     // We'll need some basic information about this dataset, so let's get a reference to
     // its metadata.
-    DatasetMetadata meta = reader.getDatasetMetadata();
+    Metadata meta = reader.getMetadata();
     
     for (int i=0; i<reader.getImageCount(); i++) {
       

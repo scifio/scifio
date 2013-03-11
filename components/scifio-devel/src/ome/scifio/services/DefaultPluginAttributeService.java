@@ -58,6 +58,14 @@ import org.scijava.service.Service;
  * all key,value pairs in {@code andPairs}, and at least one of
  * any key, value pairs in {@code orPairs}.
  * </p>
+ * <p>
+ * NB: attributes are assumed to be classes, and "matching" is equivalent to
+ * passing an "isAssignableFrom" test. So it is possible to have multiple
+ * "matches", in the case of both specific and general attribute
+ * types. Typically you should set plugins with specific parameters
+ * to have higher priority than those with general parameters,
+ * so they are checked first.
+ * </p>
  * 
  * @author Mark Hiner
  *
@@ -121,8 +129,17 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
         
         while (!matchedOr && keyIter.hasNext()) {
           String key = keyIter.next();
+          Class<?> c1 = null;
+          Class<?> c2 = null;
           
-          if (orPairs.get(key).equals(info.get(key)))
+          try {
+            c1 = Class.forName(orPairs.get(key));
+            c2 = Class.forName(info.get(key));
+          } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Class name attribute was invalid or not found.", e);
+          }
+          
+          if (c2.isAssignableFrom(c1))
             matchedOr = true;
         }
         
@@ -137,8 +154,17 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
         
         while(valid && keyIter.hasNext()) {
           String key = keyIter.next();
+          Class<?> c1 = null;
+          Class<?> c2 = null;
           
-          if (!(andPairs.get(key).equals(info.get(key))))
+          try {
+            c1 = Class.forName(andPairs.get(key));
+            c2 = Class.forName(info.get(key));
+          } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Class name attribute was invalid or not found.", e);
+          }
+          
+          if (!c2.isAssignableFrom(c1))
             valid = false;
         }
       }
