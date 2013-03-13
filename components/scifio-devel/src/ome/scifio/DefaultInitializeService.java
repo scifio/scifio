@@ -154,6 +154,8 @@ public class DefaultInitializeService extends AbstractService implements Initial
       translatorService.translate(sourceMeta, destMeta);
     } 
     
+    destMeta.setDatasetName(destination);
+    
     final Writer writer = dFormat.createWriter();
     writer.setMetadata(destMeta);
     writer.setDest(destination);
