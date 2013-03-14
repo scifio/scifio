@@ -55,6 +55,7 @@ import ome.scifio.common.DateTools;
 import ome.scifio.io.Location;
 import ome.scifio.services.ServiceException;
 import ome.scifio.util.FormatTools;
+import ome.scifio.util.SCIFIOMetadataTools;
 import ome.xml.model.*;
 import ome.xml.model.enums.Correction;
 import ome.xml.model.enums.DetectorType;
@@ -582,5 +583,14 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     String pixelType = retrieve.getPixelsType(imageIndex).getValue();
     
     int rgbCCount = retrieve.getChannelSamplesPerPixel(imageIndex, 0).getValue();
+    
+    SCIFIOMetadataTools.populateDimensions(iMeta, dimensionOrder,
+        sizeX, sizeY, sizeZ, sizeC, sizeT);
+    
+    iMeta.setLittleEndian(little);
+    iMeta.setPixelType(FormatTools.pixelTypeFromString(pixelType));
+    if (rgbCCount > 0) iMeta.setRGB(true);
+    
+    iMeta.setPlaneCount(retrieve.getPlaneCount(imageIndex));
   }
 }
