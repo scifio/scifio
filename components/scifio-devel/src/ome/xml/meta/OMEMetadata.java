@@ -36,6 +36,8 @@
 
 package ome.xml.meta;
 
+import org.scijava.Context;
+
 import ome.scifio.AbstractMetadata;
 import ome.scifio.services.ServiceException;
 import ome.xml.services.OMEXMLService;
@@ -64,7 +66,12 @@ public class OMEMetadata extends AbstractMetadata {
     this(null);
   }
   
-  public OMEMetadata(OMEXMLMetadata root) {
+  public OMEMetadata(Context context) {
+    this(context, null);
+  }
+  
+  public OMEMetadata(Context context, OMEXMLMetadata root) {
+    setContext(context);
     setRoot(root);
   }
   

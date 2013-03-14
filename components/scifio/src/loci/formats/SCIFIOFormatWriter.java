@@ -7,6 +7,7 @@ import net.imglib2.meta.Axes;
 
 import loci.formats.codec.CodecOptions;
 import loci.formats.meta.MetadataRetrieve;
+import loci.legacy.context.LegacyContext;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.Format;
 import ome.scifio.Metadata;
@@ -361,7 +362,8 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
         		"instance ome.xml.meta.OMEXMLMetadata. Instead, got: " +
             retrieve.getClass());
       }
-      OMEMetadata omeMeta = new OMEMetadata((ome.xml.meta.OMEXMLMetadata)retrieve);
+      OMEMetadata omeMeta = new OMEMetadata(LegacyContext.get(),
+          (ome.xml.meta.OMEXMLMetadata)retrieve);
       
       // convert the metadata retrieve to ICSMetadata
       writer.scifio().translators().translate(omeMeta, meta);
