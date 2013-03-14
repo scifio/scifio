@@ -40,10 +40,14 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ome.scifio.FormatException;
+import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
 import ome.scifio.io.RandomAccessOutputStream;
 
@@ -125,6 +129,85 @@ public class SCIFIOMetadataTools {
       throw new FormatException("Axiscount #" + imageIndex + " is 0");
     }
   }
+  
+  /**
+   * Populates the provided ImageMetadata's axis types and lengths using
+   * the provided dimension order and sizes.
+   * 
+   * @param iMeta
+   * @param dimensionOrder
+   * @param sizes
+   */
+  public static void populateDimensions(ImageMetadata iMeta, String dimensionOrder,
+      int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT)
+  {
+    int[] axisLengths = new int[5];
+    
+    for (int i=0; i<5; i++) {
+      switch (dimensionOrder.toUpperCase().charAt(i)) {
+      case 'X': axisLengths[i] = sizeX;
+        break;
+      case 'Y': axisLengths[i] = sizeY;
+        break;
+      case 'Z': axisLengths[i] = sizeZ;
+        break;
+      case 'C': axisLengths[i] = sizeC;
+        break;
+      case 'T': axisLengths[i] = sizeT;
+        break;
+      }
+    }
+    
+    populateDimensions(iMeta, dimensionOrder, axisLengths);
+  }
+  
+  /**
+   * Populates the provided ImageMetadata's axis types and lengths using
+   * the provided dimension order and sizes.
+   * 
+   * @param iMeta
+   * @param dimensionOrder
+   * @param sizes
+   */
+  public static void populateDimensions(ImageMetadata iMeta, String dimensionOrder,
+      int... lengths)
+  {
+    AxisType[] axes = new AxisType[dimensionOrder.length()];
+
+    for (int i=0; i<dimensionOrder.length(); i++) {
+      switch (dimensionOrder.toUpperCase().charAt(i)) {
+      case 'X': axes[i] = Axes.X;
+      break;
+      case 'Y': axes[i] = Axes.Y;
+      break;
+      case 'Z': axes[i] = Axes.Z;
+      break;
+      case 'C': axes[i] = Axes.CHANNEL;
+      break;
+      case 'T': axes[i] = Axes.TIME;
+      break;
+      default: axes[i] = Axes.UNKNOWN;
+      }
+    }
+    
+    populateDimensions(iMeta, axes, lengths);
+  }
+  
+  /**
+   * Populates the provided ImageMetadata's axis types and lengths using
+   * the provided axis types and sizes.
+   * 
+   * @param iMeta
+   * @param dimensionOrder
+   * @param sizes
+   */
+  public static void populateDimensions(ImageMetadata iMeta, AxisType[] axes,
+      int... lengths)
+  {
+    iMeta.setAxisLengths(lengths);
+    iMeta.setAxisTypes(axes);
+  }
+  
   
   // Utility methods -- original metadata --
 
