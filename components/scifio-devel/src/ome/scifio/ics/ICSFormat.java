@@ -2178,10 +2178,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   public static class ICSTranslator
   extends AbstractTranslator<ome.scifio.Metadata, Metadata>
   {
-    // -- Static Constants --
-
-    public static final String DEST_VALUE = "ome.scifio.ics.ICSFormat.Metadata";
-
     // -- Translator API Methods --
 
     public void translate()

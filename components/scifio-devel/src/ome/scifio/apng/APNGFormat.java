@@ -986,10 +986,6 @@ public class APNGFormat
   public static class APNGTranslator
     extends AbstractTranslator<ome.scifio.Metadata, Metadata>
   {
-    // -- Static Constants --
-    
-    public static final String DEST_VALUE = "ome.scifio.apng.APNGFormat.Metadata";
-  
     // -- Translator API Methods -- 
     
     public void translate() {
