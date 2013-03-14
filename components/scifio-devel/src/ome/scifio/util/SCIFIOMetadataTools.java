@@ -145,16 +145,17 @@ public class SCIFIOMetadataTools {
     
     for (int i=0; i<5; i++) {
       switch (dimensionOrder.toUpperCase().charAt(i)) {
-      case 'X': axisLengths[i] = sizeX;
+      case 'X': axisLengths[i] = Math.max(sizeX, 1);
         break;
-      case 'Y': axisLengths[i] = sizeY;
+      case 'Y': axisLengths[i] = Math.max(sizeY, 1);
         break;
-      case 'Z': axisLengths[i] = sizeZ;
+      case 'Z': axisLengths[i] = Math.max(sizeZ, 1);
         break;
-      case 'C': axisLengths[i] = sizeC;
+      case 'C': axisLengths[i] = Math.max(sizeC, 1);
         break;
-      case 'T': axisLengths[i] = sizeT;
+      case 'T': axisLengths[i] = Math.max(sizeT, 1);
         break;
+      default: axisLengths[i] = 1;
       }
     }
     
