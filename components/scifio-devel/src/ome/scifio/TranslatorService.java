@@ -56,6 +56,16 @@ public interface TranslatorService extends Service {
   Translator findTranslator(Metadata source, Metadata dest);
   
   /**
+   * Returns a translator capable of translating from the source Metadata to
+   * the dest Metadata type, or null if no such Translator exists.
+   * 
+   * @param <N>
+   * @param targetMeta
+   * @return
+   */
+  Translator findTranslator(Class<?> source, Class<?> dest);
+  
+  /**
    * Convenience method to immediately translate from the source Metadata
    * to the dest Metadata type.
    * 
