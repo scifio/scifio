@@ -36,22 +36,23 @@
 
 package ome.xml.translation;
 
+import ome.scifio.AbstractTranslator;
 import ome.scifio.Metadata;
-import ome.xml.meta.OMEMetadata;
+import ome.scifio.Translator;
 
 /**
- * Abstract base class for all ome.scifio.Translators that translate from
- * an OMEMetadata object.
+ * Abstract base class for all ome.scifio.Translators.
  * 
  * @author Mark Hiner
  *
  */
-public abstract class FromOMETranslator<M extends Metadata>
-  extends OMETranslator<OMEMetadata, M> {
+public abstract class OMETranslator<M extends Metadata, N extends Metadata>
+  extends AbstractTranslator<M, N>
+{
 
-  // -- Translator API Methods --
-  
-  public void translate(final OMEMetadata source, M destination) {
-    super.translate(source, destination);
+  protected void translate() {
+    Translator t = scifio().translators().findTranslator(Metadata.class, dest.getClass());
+    
+    t.translate(source, dest);
   }
 }

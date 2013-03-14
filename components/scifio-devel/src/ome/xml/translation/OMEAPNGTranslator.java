@@ -55,8 +55,16 @@ public class OMEAPNGTranslator extends FromOMETranslator<APNGFormat.Metadata> {
 
   @Override
   protected void translate() {
+    super.translate();
     
-    // then reverse the apngome translator
+    if (dest.getFctl() != null && dest.getFctl().size() > 0) {
+      short tIncrement = Short.parseShort(
+          Double.toString(
+              source.getRoot().getPixelsTimeIncrement(0)));
+      
+      dest.getFctl().get(0).setDelayNum(tIncrement);
+      dest.getFctl().get(0).setDelayDen((short) 1);
+    }
   }
 
 }

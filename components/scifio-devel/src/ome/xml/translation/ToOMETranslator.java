@@ -37,7 +37,6 @@
 package ome.xml.translation;
 
 
-import ome.scifio.AbstractTranslator;
 import ome.scifio.Metadata;
 import ome.xml.meta.OMEMetadata;
 
@@ -49,7 +48,7 @@ import ome.xml.meta.OMEMetadata;
  *
  */
 public abstract class ToOMETranslator<M extends Metadata>
-  extends AbstractTranslator<M, OMEMetadata> {
+  extends OMETranslator<M, OMEMetadata> {
   
   // -- Translator API Methods --
 
