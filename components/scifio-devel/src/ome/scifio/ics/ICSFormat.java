@@ -40,6 +40,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -372,6 +373,198 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     public Hashtable<String, String> getKeyValPairs() {
       return keyValPairs;
+    }
+    
+    // -- Mapping method --
+    
+    public void put(String key, String value) {
+      keyValPairs.put(key, value);
+    }
+    
+    public void putDate(String value) {
+      put("history date", value);
+    }
+    
+    public void putDescription(String value) {
+      put("history other text", value);
+    }
+    
+    public void putMicroscopeModel(String value) {
+      put("history microscope", value);
+    }
+    
+    public void putMicroscopeManufacturer(String value) {
+      put("history manufacturer", value);
+    }
+
+    public void putExperimentType(String value) {
+      put("history type", value);
+    }
+    
+    public void putLifetime(boolean lifetime) {
+      if (lifetime) put("history type", "time resolved");
+    }
+    
+    public void putPixelSizes(Double[] pixelSizes) {
+      put("parameter scale", merge(pixelSizes));
+    }
+    
+    public void putUnits(String[] units) {
+      put("parameter units", merge(units));
+    }
+    
+    public void putAxes(String[] axes) {
+      put("layout order", merge(axes));
+    }
+    
+    public void putAxesSizes(double[] axesSizes) {
+      put("layout sizes", mergePrimitiveDoubles(axesSizes));
+    }
+    
+    public void putPhysicalPixelSizes(double[] physSizes) {
+      put("history extents", mergePrimitiveDoubles(physSizes));
+    }
+    
+    public void putTimestamps(Double[] timeStamp) {
+      put("parameter t", merge(timeStamp));
+     
+    }
+    
+    public void putChannelNames(Hashtable<Integer, String> cNames)
+   {
+      put("parameter ch", merge(cNames.values()));
+    }
+    
+    public void putPinholes(Hashtable<Integer, Double> pins) {
+      put("sensor s_params PinholeRadius", merge(pins.values()));
+    }
+    
+    public void putEMWaves(Integer[] emWaves) {
+      put("sensor s_params LambdaEm", merge(emWaves));
+    }
+    
+    public void putEMSingleton(Integer[] em) {
+      put("history cube emm nm", merge(em));
+    }
+    
+    public void putEXWaves(Integer[] exWaves) {
+      put("sensor s_params LambdaEx", merge(exWaves));
+    }
+    
+    public void putEXSingleton(Integer[] ex) {
+      put("history cube exc nm", merge(ex));
+    }
+    
+    public void putWavelengths(Hashtable<Integer, Integer> waves) {
+      put("history Wavelength*", merge(waves.values()));
+    }
+    
+    public void putByteOrder(String byteOrder) {
+      put("representation byte_order", byteOrder);
+    }
+    
+    public void putRepFormat(String repFormat) {
+      put("representation format", repFormat);
+    }
+    
+    public void putCompression(String cmp) {
+      put("representation compression", cmp);
+    }
+    
+    public void putSigned(boolean signed) {
+      put("representation sign", String.valueOf(signed));
+    }
+    
+    public void putLaserManufacturer(String laserMan) {
+      put("history laser manufacturer", laserMan);
+    }
+    
+    public void putLaserModel(String laserMod) {
+      put("history laser model", laserMod);
+    }
+    
+    public void putLaserRepetitionRate(Double laserRep) {
+      put("history laser model", laserRep.toString());
+    }
+    
+    public void putLaserPower(Double laserPower) {
+      put("history laser power", laserPower.toString());
+    }
+    
+    public void putDichroicModel(String diModel) {
+      put("history filterset dichroic name", diModel);
+    }
+    
+    public void putExcitationModel(String exModel) {
+      put("history filterset exc name", exModel);
+    }
+    
+    public void putEmissionModel(String emModel) {
+      put("history filterset emm name", emModel);
+    }
+    
+    public void putFilterSetModel(String fltrModel) {
+      put("history filterset", fltrModel);
+    }
+    
+    public void putObjectiveModel(String objModel) {
+      put("history objective type", objModel);
+    }
+    
+    public void putImmersion(String immersion) {
+      put("history objective immersion", immersion);
+    }
+    
+    public void putLensNA(Double lensNA) {
+      put("history objective NA", lensNA.toString());
+    }
+    
+    public void putWorkingDistance(Double wd) {
+      put("history objective WorkingDistance", wd.toString());
+    }
+    
+    public void putMagnification(Double mag) {
+      put("history objective magnification", mag.toString());
+    }
+    
+    public void putDetectorManufacturer(String detMan) {
+      put("history camera manufacturer", detMan);
+    }
+    
+    public void putDetectorModel(String detModel) {
+      put("history camera model", detModel);
+    }
+    
+    public void putBitsPerPixel(Integer bpp) {
+      put("layout significant_bits", bpp.toString());
+    }
+    
+    public void putGains(Hashtable<Integer, Double> gains) {
+      put("history gain", merge(gains.values()));
+    }
+    
+    public void putAuthorLastName(String lastName) {
+      put("history author", lastName);
+    }
+    
+    public void putStagePositions(Double[] positions) {
+      put("history stage_xyzum", merge(positions));
+    }
+    
+    public void putStageX(Double stageX) {
+      put("history stage positionx", stageX.toString());
+    }
+    
+    public void putStageY(Double stageY) {
+      put("history stage positiony", stageY.toString());
+    }
+    
+    public void putStageZ(Double stageZ) {
+      put("history stage positionz", stageZ.toString());
+    }
+    
+    public void putExposureTime(Double expTime) {
+      put("history Exposure", expTime.toString());
     }
     
     // -- Accessor methods for dynamically retrieving common metadata --
@@ -919,6 +1112,30 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         }
       }
       return values;
+    }
+    
+    private String mergePrimitiveDoubles(double... doubles) {
+      
+      Double[] d = new Double[doubles.length];
+      
+      for (int i=0; i<doubles.length; i++)
+        d[i] = doubles[i];
+      
+      return this.merge(d);
+    }
+    
+    private <T> String merge(Collection<T> collection) {
+      @SuppressWarnings("unchecked")
+      T[] array = (T[]) collection.toArray();
+      return merge(array);
+    }
+    
+    private <T> String merge(T... values) {
+      String s = "";
+      
+      for (T v : values) s += (v.toString() + " ");
+      
+      return s;
     }
   }
 
