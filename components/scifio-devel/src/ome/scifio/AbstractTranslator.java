@@ -54,23 +54,20 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
   protected static final Logger LOGGER =
     LoggerFactory.getLogger(Translator.class);
   
-  protected M source;
-  protected N dest;
-  
   // -- Translator API --
   
   /*
    * @see ome.scifio.Translator#translate(ome.scifio.Metadata, ome.scifio.Metadata)
    */
   public void translate(Metadata source, Metadata dest) {
-    this.source = SCIFIOMetadataTools.<M>castMeta(source);
-    this.dest = SCIFIOMetadataTools.<N>castMeta(dest);
+    M typedSource = SCIFIOMetadataTools.<M>castMeta(source);
+    N typedDest = SCIFIOMetadataTools.<N>castMeta(dest);
     
     dest.setSource(source.getSource());
     dest.setFiltered(source.isFiltered());
     dest.setMetadataOptions(source.getMetadataOptions());
     
-    translate();
+    typedTranslate(typedSource, typedDest);
     dest.populateImageMetadata();
   }
   
@@ -80,5 +77,5 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
    * Abstract method to override and perform actual translation,
    * using source and dest parameters.
    */
-  protected abstract void translate();
+  protected abstract void typedTranslate(M source, N dest);
 }

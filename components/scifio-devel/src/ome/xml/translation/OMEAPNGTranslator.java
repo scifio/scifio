@@ -56,8 +56,8 @@ attrs = {
 public class OMEAPNGTranslator extends FromOMETranslator<APNGFormat.Metadata> {
 
   @Override
-  protected void translate() {
-    super.translate();
+  protected void typedTranslate(OMEMetadata source, APNGFormat.Metadata dest) {
+    super.typedTranslate(source, dest);
     
     if (dest.getFctl() != null && dest.getFctl().size() > 0) {
       short tIncrement = Short.parseShort(

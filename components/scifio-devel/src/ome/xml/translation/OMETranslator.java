@@ -50,7 +50,7 @@ public abstract class OMETranslator<M extends Metadata, N extends Metadata>
   extends AbstractTranslator<M, N>
 {
 
-  protected void translate() {
+  protected void typedTranslate(M source, N dest) {
     Translator t = scifio().translators().findTranslator(Metadata.class, dest.getClass());
     
     t.translate(source, dest);

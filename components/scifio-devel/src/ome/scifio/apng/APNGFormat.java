@@ -988,7 +988,7 @@ public class APNGFormat
   {
     // -- Translator API Methods -- 
     
-    public void translate() {
+    public void typedTranslate(ome.scifio.Metadata source, Metadata dest) {
       final IHDRChunk ihdr =
         dest.getIhdr() == null ? new IHDRChunk() : dest.getIhdr();
       final PLTEChunk plte =

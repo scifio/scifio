@@ -152,7 +152,7 @@ public class T3cTranslatingMetadata {
 
     // This method is the actual workhorse of the Translator. Using the protected
     // and properly type cast fields, source and dest, we can perform translation.
-    protected void translate() {
+    protected void typedTranslate(FakeFormat.Metadata source, FakeFormat.Metadata dest) {
       System.out.println("Translating source: " + source + " to dest: " + dest);
     }
   }

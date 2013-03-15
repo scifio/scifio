@@ -65,8 +65,8 @@ attrs = {
 public class OMEICSTranslator extends FromOMETranslator<ICSFormat.Metadata> {
 
   @Override
-  protected void translate() {
-    super.translate();
+  protected void typedTranslate(OMEMetadata source, ICSFormat.Metadata dest) {
+    super.typedTranslate(source, dest);
     
     MetadataRetrieve retrieve = source.getRoot();
     

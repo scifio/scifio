@@ -2402,7 +2402,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   {
     // -- Translator API Methods --
 
-    public void translate()
+    public void typedTranslate(ome.scifio.Metadata source, Metadata dest)
     {
       // note that the destination fields will preserve their default values
       // only the keyValPairs will be modified

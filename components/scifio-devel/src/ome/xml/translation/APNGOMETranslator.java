@@ -62,7 +62,7 @@ public class APNGOMETranslator extends ToOMETranslator<APNGFormat.Metadata> {
   // -- Translator API Methods --
 
   @Override
-  public void translate() {
+  public void typedTranslate(APNGFormat.Metadata source, OMEMetadata dest) {
     int sizeC = 1;
 
     switch (source.getIhdr().getColourType()) {

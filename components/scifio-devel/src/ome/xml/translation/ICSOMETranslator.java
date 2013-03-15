@@ -76,7 +76,7 @@ public class ICSOMETranslator extends ToOMETranslator<ICSFormat.Metadata> {
   // -- Translator API --
 
   @Override
-  public void translate()
+  public void typedTranslate(ICSFormat.Metadata source, OMEMetadata dest)
   {
     OMEXMLMetadata store = dest.getRoot();
     boolean lifetime = false;

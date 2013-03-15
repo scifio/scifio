@@ -597,7 +597,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
 
     // -- Translator API Methods --
     
-    public void translate() {
+    public void typedTranslate(ome.scifio.Metadata source, Metadata dest) {
       String fakeId = NAME + "=" + source.getDatasetName();
       
       fakeId = FakeUtils.appendToken(fakeId, SIZE_X, Integer.toString(source.getAxisLength(0, Axes.X)));
