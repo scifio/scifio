@@ -368,7 +368,8 @@ public abstract class AbstractWriter<M extends TypedMetadata>
 
     final int pixelType = metadata.getPixelType(imageIndex);
     final int bpp = FormatTools.getBytesPerPixel(pixelType);
-    int samples = bpp <= 0 ? 1 : bpp;
+    int samples = metadata.getRGBChannelCount(imageIndex);
+    if (samples == 0) samples = 1;
     final int minSize = bpp * w * h * samples;
     if (buf.length < minSize) {
       throw new FormatException("Buffer is too small; expected " + minSize +
