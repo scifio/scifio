@@ -98,11 +98,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     super(ICSFormat.FORMAT_NAME, new String[] {"ics", "ids"}, Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
   }
   
-  // -- Accessor methods for private classes --
-  
-  public boolean isVersionTwo(Metadata m) {
-    return (m instanceof Metadata) && ((Metadata)m).isVersionTwo();
-  }
 
   /**
    * SCIFIO Metadata object for ICS images. 
@@ -1154,6 +1149,16 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
+    
+    // -- ICSFormat.Parser Methods --
+    
+    // returns true if the provided id is a version 2 ics id.
+    public boolean isVersionTwo(String id) throws IOException {
+      RandomAccessInputStream f = new RandomAccessInputStream(getContext(), id);
+      boolean singleFile = f.readString(17).trim().equals("ics_version\t2.0");
+      f.close();
+      return singleFile;
+    }
   
     // -- Parser API Methods --
   

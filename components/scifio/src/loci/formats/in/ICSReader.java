@@ -38,6 +38,7 @@ package loci.formats.in;
 
 import java.io.IOException;
 
+import loci.common.RandomAccessInputStream;
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatReader;
 import loci.legacy.context.LegacyContext;
@@ -90,7 +91,7 @@ public class ICSReader extends SCIFIOFormatReader {
   /* @see loci.formats.IFormatReader#isSingleFile(String) */
   @Deprecated
   public boolean isSingleFile(String id) throws FormatException, IOException {
-    return ((ICSFormat)format).isVersionTwo((ICSFormat.Metadata) reader.getMetadata());
+    return ((ICSFormat.Parser)parser).isVersionTwo(id);
   }
 
   /* @see loci.formats.IFormatReader#getDomains() */
