@@ -595,7 +595,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     iMeta.setLittleEndian(little);
     iMeta.setPixelType(FormatTools.pixelTypeFromString(pixelType));
     iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
-    if (rgbCCount > 0) iMeta.setRGB(true);
+    if (rgbCCount > 1) iMeta.setRGB(true);
     
     iMeta.setPlaneCount(sizeZ * (sizeC / rgbCCount) * sizeT);
   }
