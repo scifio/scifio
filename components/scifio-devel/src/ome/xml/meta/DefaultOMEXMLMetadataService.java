@@ -556,9 +556,14 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     meta.setDatasetName(retrieve.getImageName(0));
     
     for (int i=0; i<retrieve.getImageCount(); i++) {
-      ImageMetadata iMeta = new DefaultImageMetadata();
+      ImageMetadata iMeta; 
+      if (i >= meta.getImageCount()) {
+        iMeta = new DefaultImageMetadata();
+        meta.add(iMeta);
+      }
+      else iMeta = meta.get(i);
+      
       populateImageMetadata(retrieve, i, iMeta);
-      meta.add(iMeta);
     }
   }
   
