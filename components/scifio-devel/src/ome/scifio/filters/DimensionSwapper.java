@@ -34,9 +34,8 @@
  * #L%
  */
 
-package ome.scifio.wrappers;
+package ome.scifio.filters;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,12 +44,10 @@ import java.util.List;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.DatasetMetadata;
-import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.FormatException;
-import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
-import ome.scifio.io.RandomAccessInputStream;
+import ome.scifio.discovery.DiscoverableFilter;
 import ome.scifio.util.FormatTools;
 
 /**
@@ -62,31 +59,13 @@ import ome.scifio.util.FormatTools;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/DimensionSwapper.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/DimensionSwapper.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class DimensionSwapper<M extends Metadata, P extends Plane> extends ReaderWrapper<M, P> {
-
-  // -- Utility methods --
-
-  /** Converts the given reader into a DimensionSwapper, wrapping if needed. */
-  public static <M extends Metadata, P extends Plane> DimensionSwapper<M, P> makeDimensionSwapper(Reader<M, P> r) {
-    if (r instanceof DimensionSwapper) return (DimensionSwapper<M, P>) r;
-    return new DimensionSwapper<M, P>(r);
-  }
-
-  // -- Fields --
-
-  /** Core metadata associated with this dimension swapper. */
-  private DatasetMetadata<?> core;
-
-  // -- Constructors --
-
-  /** Constructs a DimensionSwapper around a new image reader. */
-  public DimensionSwapper() { super(); }
-
-  /** Constructs a DimensionSwapper with the given reader. */
-  public DimensionSwapper(Reader<M, P> r) { super(r); }
-
-  private List<AxisType>[] outputOrder;
-
+@DiscoverableFilter(wrappedClass = Reader.class)
+public class DimensionSwapper extends AbstractReaderFilter {
+  
+  // -- Constants --
+  
+  public static final Double PRIORITY = 4.0;
+  
   // -- DimensionSwapper API methods --
 
   /**
@@ -107,8 +86,8 @@ public class DimensionSwapper<M extends Metadata, P extends Plane> extends Reade
     List<AxisType> oldOrder = getDimensionOrder(imageIndex);
     
     if (newOrder.size() != oldOrder.size()) {
-      throw new IllegalArgumentException("newOrder is unexpected length (" +
-        newOrder.size() + ")");
+      throw new IllegalArgumentException("newOrder is unexpected length: " +
+        newOrder.size() + "; expected: " + oldOrder.size());
     }
     
     for(int i=0; i<newOrder.size(); i++) {
@@ -120,26 +99,28 @@ public class DimensionSwapper<M extends Metadata, P extends Plane> extends Reade
       throw new IllegalArgumentException("X is not in first two positions");
     }
     if(newOrder.get(0) != Axes.Y && newOrder.get(1) != Axes.Y)  {
-      throw new IllegalArgumentException("Y in unexpected position");
+      throw new IllegalArgumentException("Y is not in first two positions");
     }
 
     if (newOrder.indexOf(Axes.CHANNEL) != oldOrder.indexOf(Axes.CHANNEL)
-      && core.getRGBChannelCount(imageIndex) > 1) {
+      && getDatasetMetadata().getRGBChannelCount(imageIndex) > 1) {
       throw new IllegalArgumentException(
         "Cannot swap C dimension when RGB channel count > 1");
     }
 
     //core.currentOrder[series] = order;
-    if (outputOrder[imageIndex] == null) {
-      outputOrder[imageIndex] = Arrays.asList(core.getAxes(imageIndex));
+    if (metaCheck() && 
+        !(((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder() == null)) {
+      ((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder()[imageIndex] = 
+          Arrays.asList(getDatasetMetadata().getAxes(imageIndex));
     }
     
-    FormatTools.setDimensionOrder(core, imageIndex, newOrder.toArray(new AxisType[newOrder.size()]));
+    FormatTools.setDimensionOrder(getDatasetMetadata(), imageIndex, newOrder.toArray(new AxisType[newOrder.size()]));
 
     if (newOrder.indexOf(Axes.CHANNEL) != oldOrder.indexOf(Axes.CHANNEL)) {
       // C was overridden; clear the sub-C dimensional metadata
-      core.setChannelDimLengths(imageIndex, new int[] {getDimensionLength(imageIndex, Axes.CHANNEL)});
-      core.setChannelDimTypes(imageIndex, new String[] {FormatTools.CHANNEL});
+      getDatasetMetadata().setChannelDimLengths(imageIndex, new int[] {getDimensionLength(imageIndex, Axes.CHANNEL)});
+      getDatasetMetadata().setChannelDimTypes(imageIndex, new String[] {FormatTools.CHANNEL});
     }
   }
 
@@ -155,56 +136,91 @@ public class DimensionSwapper<M extends Metadata, P extends Plane> extends Reade
    */
   public void setOutputOrder(int imageIndex, List<AxisType> outputOrder) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    this.outputOrder[imageIndex] = outputOrder;
+    
+    if (metaCheck() && 
+        !(((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder() == null))
+      ((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder()[imageIndex] = outputOrder;
   }
 
   public List<AxisType> getInputOrder(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return Arrays.asList(core.getAxes(imageIndex));
+    return Arrays.asList(getDatasetMetadata().getAxes(imageIndex));
   }
   
   public int getDimensionLength(int imageIndex, AxisType t) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return core.getAxisLength(imageIndex, t);
+    return getDatasetMetadata().getAxisLength(imageIndex, t);
   }
 
   public List<AxisType> getDimensionOrder(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    List<AxisType> outOrder = outputOrder[imageIndex];
+    List<AxisType> outOrder = null;
+    
+    if(metaCheck()) {
+      outOrder = ((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder()[imageIndex];
+    }
     if (outOrder != null) return outOrder;
     return getInputOrder(imageIndex);
+  }
+  
+  // -- AbstractReaderFilter API Methods --
+  
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#setSourceHelper()
+   */
+  @Override
+  protected void setSourceHelper(String source) {
+    String oldFile = getCurrentFile();
+    if (!source.equals(oldFile) || metaCheck() && 
+        (((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder() == null ||
+        ((DimensionSwapperMetadata)getDatasetMetadata()).getOutputOrder().length != getImageCount()))
+    {
+      ((DimensionSwapperMetadata)getDatasetMetadata()).setOutputOrder(new ArrayList[getImageCount()]);
+
+      // NB: Create our own copy of the DatasetMetadata,
+      // which we can manipulate safely.
+      //TODO should be a copy method
+      if(metaCheck())
+        ((DimensionSwapperMetadata)getDatasetMetadata()).wrap(getParent().getDatasetMetadata());
+    }
+  }
+  
+  // -- Filter API Methods --
+  
+  public Double getPriority() {
+    return DimensionSwapper.PRIORITY;
   }
 
   // -- Reader API methods --
 
-  /* @see Reader#openBytes(int) */
-  public P openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
+  /* @see Reader#openPlane(int) */
+  public Plane openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
     return super.openPlane(imageIndex, reorder(imageIndex, planeIndex));
   }
 
-  /* @see Reader#openBytes(int, int, int, int, int) */
-  public P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
+  /* @see Reader#openPlane(int, int, int, int, int) */
+  public Plane openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
   {
     return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), x, y, w, h);
   }
 
-  /* @see Reader#openBytes(int, byte[]) */
-  public P openBytes(int imageIndex, int planeIndex, P plane)
+  /* @see Reader#openPlane(int, byte[]) */
+  public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
     throws FormatException, IOException
   {
     return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane);
   }
 
-  /* @see Reader#openBytes(int, byte[], int, int, int, int) */
-  public P openBytes(int imageIndex, int planeIndex, P plane, int x, int y, int w, int h)
+  /* @see Reader#openPlane(int, byte[], int, int, int, int) */
+  public Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x, int y, int w, int h)
     throws FormatException, IOException
   {
     return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane, x, y, w, h);
   }
 
   /* @see Reader#openThumbImage(int) */
-  public P openThumbPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
+  public Plane openThumbPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
     return super.openThumbPlane(imageIndex, reorder(imageIndex, planeIndex));
   }
 
@@ -220,38 +236,16 @@ public class DimensionSwapper<M extends Metadata, P extends Plane> extends Reade
 
   /* @see Reader#getDatasetMetadata() */
   @Override
-  public DatasetMetadata<?> getDatasetMetadata() {
+  public DatasetMetadata getDatasetMetadata() {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    return core;
-  }
-
-  /* @see Reader#setSource(String) */
-  public void setSource(String id) throws IOException {
-    setSource(new RandomAccessInputStream(id));
-  }
-  
-  /* @see Reader#setSource(File) */
-  public void setSource(File file) throws IOException {
-    setSource(new RandomAccessInputStream(file.getAbsolutePath()));
-  }
-  
-  /* @see Reader#setSource(RandomAccessInputStream) */
-  public void setSource(RandomAccessInputStream stream) throws IOException {
-    super.setSource(stream);
-    String oldFile = getCurrentFile();
-    if (!stream.getFileName().equals(oldFile) || outputOrder == null ||
-      outputOrder.length != getReader().getImageCount())
-    {
-      outputOrder = new ArrayList[getReader().getImageCount()];
-
-      // NB: Create our own copy of the DatasetMetadata,
-      // which we can manipulate safely.
-      //TODO should be a copy method
-      core = new DefaultDatasetMetadata(getReader().getDatasetMetadata(), getReader().getContext());
-    }
+    return super.getDatasetMetadata();
   }
 
   // -- Helper methods --
+  
+  private boolean metaCheck() {
+    return DimensionSwapperMetadata.class.isAssignableFrom(getDatasetMetadata().getClass());
+  }
 
   protected int reorder(int imageIndex, int planeIndex) {
     if (getInputOrder(imageIndex) == null) return planeIndex;
@@ -262,8 +256,7 @@ public class DimensionSwapper<M extends Metadata, P extends Plane> extends Reade
      
     return FormatTools.getReorderedIndex(FormatTools.findDimensionOrder(inputAxes),
       FormatTools.findDimensionOrder(outputAxes), getDimensionLength(imageIndex, Axes.Z),
-      core.getEffectiveSizeC(imageIndex), getDimensionLength(imageIndex, Axes.TIME),
-      core.getPlaneCount(imageIndex), imageIndex, planeIndex);
+      getDatasetMetadata().getEffectiveSizeC(imageIndex), getDimensionLength(imageIndex, Axes.TIME),
+      getDatasetMetadata().getPlaneCount(imageIndex), imageIndex, planeIndex);
   }
-
 }

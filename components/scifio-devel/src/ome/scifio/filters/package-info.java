@@ -33,4 +33,4 @@
  * @author Mark Hiner
  *
  */
-package ome.scifio.wrappers;
+package ome.scifio.filters;

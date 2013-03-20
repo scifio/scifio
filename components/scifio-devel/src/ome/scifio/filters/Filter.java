@@ -1,0 +1,96 @@
+/*
+ * #%L
+ * OME SCIFIO package for reading and converting scientific file formats.
+ * %%
+ * Copyright (C) 2005 - 2012 Open Microscopy Environment:
+ *   - Board of Regents of the University of Wisconsin-Madison
+ *   - Glencoe Software, Inc.
+ *   - University of Dundee
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are
+ * those of the authors and should not be interpreted as representing official
+ * policies, either expressed or implied, of any organization.
+ * #L%
+ */
+package ome.scifio.filters;
+
+/**
+ * Interface for modifying object behavior. Equivalent to wrapping/decorating.
+ * <p>
+ * NB: {@link #getPriority()} is intended to be used to determine a natural
+ * order for {@link java.lang.Comparable#compareTo(Object)}.
+ * </p>
+ * <p>
+ * Concrete {@code Filter} implementations should also extend the class
+ * they wrap, allowing the Filter to be used in the same way the wrapped class
+ * would be.
+ * </p>
+ * 
+ * @author Mark Hiner
+ *
+ */
+public interface Filter extends Comparable<Filter> {
+
+  /**
+   * Sets the object which this filter augments.
+   * 
+   * @param parent
+   */
+  void setParent(Object parent);
+  
+  /**
+   * Returns the object this filter augments.
+   * 
+   * @return
+   */
+  Object getParent();
+  
+  /**
+   * Returns the priority for this filter.
+   * <p>
+   * The natural ordering of {@code Filters} is determined by the
+   * {@link #compareTo(Filter)} method. But regardless of this result, if a
+   * {@code Filter} comes "before" another {@code Filter}, the latter should
+   * return its result to the former, which can then modify and continue to pass
+   * said result up the {@code Filter} stack.
+   * </p>
+   * 
+   * @return
+   */
+  Double getPriority();
+  
+  /**
+   * Returns true if this filter is capable of wrapping instances of the
+   * provided class.
+   * 
+   * @param c
+   * @return
+   */
+  boolean isCompatible(Class<?> c);
+  
+  /**
+   * Clears any configuration performed on this filter.
+   */
+  void reset();
+}

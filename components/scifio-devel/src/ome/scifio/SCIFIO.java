@@ -45,6 +45,7 @@ import java.util.Map;
 import ome.scifio.discovery.Discoverer;
 import ome.scifio.discovery.FormatDiscoverer;
 import ome.scifio.discovery.DiscoverableFormat;
+import ome.scifio.filters.ReaderFilter;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -374,7 +375,7 @@ public class SCIFIO {
    * @param id Name of the image source to be read.
    * @return An initialized {@code Reader}.
    */
-  public Reader initializeReader(final String id) throws FormatException,
+  public ReaderFilter initializeReader(final String id) throws FormatException,
       IOException {
     return initializeReader(id, false);
   }
@@ -389,11 +390,11 @@ public class SCIFIO {
    *        parsing.
    * @return An initialized {@code Reader}.
    */
-  public Reader initializeReader(final String id, final boolean openFile)
+  public ReaderFilter initializeReader(final String id, final boolean openFile)
       throws FormatException, IOException {
     final Reader r = getFormat(id, openFile).createReader();
     r.setSource(id);
-    return r;
+    return new ReaderFilter(r);
   }
 
   /**
