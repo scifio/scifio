@@ -57,9 +57,10 @@ import ome.scifio.services.DependencyException;
 import ome.scifio.services.ServiceException;
 import ome.scifio.services.ServiceFactory;
 import ome.scifio.util.FormatTools;
-import ome.scifio.wrappers.ChannelFiller;
-import ome.scifio.wrappers.ChannelSeparator;
-import ome.scifio.wrappers.FileStitcher;
+import ome.scifio.filters.ChannelFiller;
+import ome.scifio.filters.ChannelSeparator;
+import ome.scifio.filters.FileStitcher;
+import ome.scifio.filters.ReaderFilter;
 import ome.xml.DOMUtil;
 import ome.xml.r2003fc.ome.OMENode;
 import ome.xml.services.OMEXMLService;
@@ -117,7 +118,13 @@ public class OmeisImporter {
 
   public OmeisImporter(boolean stitchFiles)  {
     stitch = stitchFiles;
-    reader = new ChannelSeparator(new ChannelFiller());
+    
+    // TODO replace this with a general-purpose reader instantiated in the context
+    ReaderFilter rf = new ReaderFilter(null);
+    reader = rf;
+    
+    rf.enable(ChannelFiller.class);
+    rf.enable(ChannelSeparator.class);
     
     try {
       parser = reader.getFormat().createParser();
@@ -126,7 +133,7 @@ public class OmeisImporter {
       if(DEBUG) log("Failed to create a parser for format: " + reader.getFormat() + e.getMessage());
     }
     
-    if (stitch) reader = new FileStitcher(reader);
+    if (stitch) reader = rf.enable(FileStitcher.class);
 
     try {
       ServiceFactory factory = new ServiceFactory();
