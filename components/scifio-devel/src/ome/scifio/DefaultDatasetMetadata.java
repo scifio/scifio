@@ -113,6 +113,10 @@ public class DefaultDatasetMetadata extends AbstractMetadata
   public Hashtable<String, Object> getImageMetadata(final int imageIndex) {
     return imageMeta.get(imageIndex).getImageMetadata();
   }
+  
+  public DefaultImageMetadata get(int imageIndex) {
+    return imageMeta.get(imageIndex);
+  }
 
   public int getImageCount() {
     return imageMeta.size();

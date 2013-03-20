@@ -66,6 +66,9 @@ public interface DatasetMetadata<M extends ImageMetadata> extends Metadata {
 
   /** Returns the collection of metadata for the specified image. */
   Hashtable<String, Object> getImageMetadata(int imageIndex);
+  
+  /** Returns the ImageMetadata at the given index. */
+  M get(int imageIndex);
 
   /** Returns the number of images in this dataset. */
   int getImageCount();
