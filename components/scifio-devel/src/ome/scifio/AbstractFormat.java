@@ -100,7 +100,14 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
     readerClass = rClass;
     writerClass = wClass;
     findTranslatorClassList();
-    ctx.addFormat(this);
+    if (ctx != null) ctx.addFormat(this);
+  }
+  
+  // -- HasContext API Methods --
+  
+  public void setContext(final SCIFIO ctx) {
+   super.setContext(ctx);
+   ctx.addFormat(this);
   }
   
   // -- TypedFormat API Methods --
