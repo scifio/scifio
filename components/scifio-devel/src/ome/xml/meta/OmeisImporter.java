@@ -55,6 +55,7 @@ import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
 import loci.formats.MetadataTools;
 import loci.formats.services.OMEXMLService;
+import ome.scifio.common.Constants;
 import ome.scifio.io.Location;
 import ome.scifio.services.DependencyException;
 import ome.scifio.services.ServiceException;
@@ -398,7 +399,7 @@ public class OmeisImporter {
 
     // output OME-XML to standard output
     xml.close();
-    String xmlString = new String(xml.toByteArray());
+    String xmlString = new String(xml.toByteArray(), Constants.ENCODING);
     if (DEBUG) log(xmlString);
     if (http) printHttpResponseHeader();
     System.out.println(xmlString);
@@ -575,7 +576,7 @@ public class OmeisImporter {
 
     // call OMEIS via HTTP
     BufferedReader in = new BufferedReader(
-      new InputStreamReader(new URL(url).openStream()));
+      new InputStreamReader(new URL(url).openStream(), Constants.ENCODING));
     Vector v = new Vector();
     while (true) {
       String line = in.readLine();
