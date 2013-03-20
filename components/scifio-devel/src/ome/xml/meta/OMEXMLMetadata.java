@@ -36,8 +36,6 @@
 
 package ome.xml.meta;
 
-import java.util.Hashtable;
-
 /**
  * A utility class for constructing and manipulating OME-XML DOMs.
  *
@@ -53,6 +51,7 @@ public interface OMEXMLMetadata extends IMetadata {
    * Dumps the given OME-XML DOM tree to a string.
    * @return OME-XML as a string.
    */
-  public String dumpXML();
-
+  String dumpXML();
+  
+  int resolveReferences();
 }
