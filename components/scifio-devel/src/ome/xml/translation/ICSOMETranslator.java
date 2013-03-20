@@ -50,7 +50,7 @@ import ome.scifio.MetadataLevel;
 import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
 import ome.scifio.TypedTranslator;
-import ome.scifio.discovery.SCIFIOTranslator;
+import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.ics.ICSFormat;
 import ome.xml.meta.FilterMetadata;
 import ome.xml.meta.IMetadata;
@@ -69,7 +69,7 @@ import ome.xml.model.primitives.Timestamp;
  * 
  * @author hinerm
  */
-@SCIFIOTranslator(metaIn = ICSFormat.Metadata.class, metaOut = OMEMetadata.class)
+@DiscoverableTranslator(metaIn = ICSFormat.Metadata.class, metaOut = OMEMetadata.class)
 public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
 
   // -- Constructors -- 

@@ -32,7 +32,7 @@ import loci.common.services.Service;
 
 import ome.metakit.MetakitException;
 import ome.metakit.MetakitReader;
-import ome.scifio.discovery.SCIFIOService;
+import ome.scifio.discovery.DiscoverableService;
 
 /**
  * Implementation of MetakitService for interacting with the
@@ -42,7 +42,7 @@ import ome.scifio.discovery.SCIFIOService;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/services/MetakitServiceImpl.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/services/MetakitServiceImpl.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@SCIFIOService(interfaceName = "loci.formats.services.MetakitService", 
+@DiscoverableService(interfaceName = "loci.formats.services.MetakitService", 
 implementationName = "loci.formats.services.MetakitServiceImpl")
 public class MetakitServiceImpl implements MetakitService {
 

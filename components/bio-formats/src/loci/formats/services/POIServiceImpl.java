@@ -32,7 +32,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
-import ome.scifio.discovery.SCIFIOService;
+import ome.scifio.discovery.DiscoverableService;
 
 import loci.common.RandomAccessInputStream;
 import loci.common.services.AbstractService;
@@ -48,7 +48,7 @@ import loci.poi.poifs.filesystem.POIFSFileSystem;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/services/POIServiceImpl.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/services/POIServiceImpl.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@SCIFIOService(interfaceName = "loci.formats.services.POIService", 
+@DiscoverableService(interfaceName = "loci.formats.services.POIService", 
                implementationName = "loci.formats.services.POIServiceImpl")
 public class POIServiceImpl extends AbstractService implements POIService {
 

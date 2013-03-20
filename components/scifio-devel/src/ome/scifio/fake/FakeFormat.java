@@ -61,8 +61,8 @@ import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DataTools;
 import ome.scifio.discovery.DiscoverableHandle;
-import ome.scifio.discovery.SCIFIOFormat;
-import ome.scifio.discovery.SCIFIOTranslator;
+import ome.scifio.discovery.DiscoverableFormat;
+import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.io.Location;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.io.StreamHandle;
@@ -89,7 +89,7 @@ import org.slf4j.Logger;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/FakeReader.java">Trac</a>
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/FakeReader.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@SCIFIOFormat
+@DiscoverableFormat
 public class FakeFormat
 extends
 AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
@@ -542,7 +542,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   /**
    * Translator from Fake metadata to {@link DatasetMetadata}.
    */
-  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
+  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
   public static class FakeCoreTranslator 
   extends AbstractTranslator<Metadata, DefaultDatasetMetadata> {
     
@@ -674,7 +674,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   /**
    * Translator from {@link DatasetMetadata} to Fake Metadata.
    */
-  @SCIFIOTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
+  @DiscoverableTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreFakeTranslator 
   extends AbstractTranslator<DefaultDatasetMetadata, Metadata> {
 

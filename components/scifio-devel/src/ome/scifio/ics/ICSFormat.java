@@ -65,14 +65,14 @@ import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DateTools;
-import ome.scifio.discovery.SCIFIOFormat;
-import ome.scifio.discovery.SCIFIOTranslator;
+import ome.scifio.discovery.DiscoverableFormat;
+import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.io.Location;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.util.FormatTools;
 
-@SCIFIOFormat
+@DiscoverableFormat
 public class ICSFormat
 extends
 AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
@@ -1994,7 +1994,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * metadata type.
    * 
    */
-  @SCIFIOTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
+  @DiscoverableTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreICSTranslator
   extends AbstractTranslator<DefaultDatasetMetadata, Metadata>
   implements CoreTranslator {
@@ -2116,7 +2116,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * to the SCIFIO Core metadata type. 
    *
    */
-  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
+  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
   public static class ICSCoreTranslator
   extends AbstractTranslator<Metadata, DefaultDatasetMetadata>
   implements CoreTranslator {

@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package ome.scifio.discovery;
 
 import java.lang.annotation.ElementType;
@@ -41,21 +40,32 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import ome.scifio.services.Service;
 import net.java.sezpoz.Indexable;
-import ome.scifio.Metadata;
-import ome.scifio.Translator;
 
 /**
  * 
- * Sezpoz annotation to mark SCIFIO Translators for discovery.
+ * Sezpoz annotation to mark SCIFIO Services for discovery.
  * 
  * @author Mark Hiner
+ * 
+ * @see ome.scifio.services.Service
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Indexable(type = Translator.class)
-public @interface SCIFIOTranslator {
-  Class<? extends Metadata> metaIn();
+@Indexable(type = Service.class)
+public @interface DiscoverableService {
+  
+  /**
+   * Fully qualified ome.scifio.services.Service extending interface name.
+   * @return
+   */
+  String interfaceName();
 
-  Class<? extends Metadata> metaOut();
+  /**
+   * Fully qualified class name of the annotated class.
+   * 
+   * @return
+   */
+  String implementationName();
 }

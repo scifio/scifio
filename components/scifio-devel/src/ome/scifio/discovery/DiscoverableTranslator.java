@@ -33,40 +33,40 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package ome.scifio.discovery;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
-import ome.scifio.Format;
-import ome.scifio.FormatException;
+import net.java.sezpoz.Indexable;
+import ome.scifio.Metadata;
+import ome.scifio.Translator;
 
 /**
+ * 
+ * Sezpoz annotation to mark SCIFIO Translators for discovery.
+ * 
  * @author Mark Hiner
- *
  */
-public class FormatDiscoverer implements
-    Discoverer<DiscoverableFormat, Format> {
-
-  // -- Discoverer API Methods --
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Indexable(type = Translator.class)
+public @interface DiscoverableTranslator {
   
-  /* Builds a list of all discovered Formats */
-  public List<Format> discover() throws FormatException {
-    
-    final List<Format> formats = new ArrayList<Format>();
+  /**
+   * Type of the {@code Metadata} accepted by this translator.
+   * 
+   * @return
+   */
+  Class<? extends Metadata> metaIn();
 
-    for (final IndexItem<DiscoverableFormat, Format> item : 
-      Index.load(DiscoverableFormat.class, Format.class)) {
-      try {
-        final Format format = item.instance();
-        formats.add(format);
-      } catch (final InstantiationException e) {
-        throw new FormatException(e);
-      }
-    }
-
-    return formats;
-  }
+  /**
+   * Type of the {@code Metadata} returned by this translator.
+   * 
+   * @return
+   */
+  Class<? extends Metadata> metaOut();
 }

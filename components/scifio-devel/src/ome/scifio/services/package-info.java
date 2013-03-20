@@ -9,7 +9,7 @@
  *  is prohibitive to external development, as per {@code readers.txt} in 
  *  {@link ome.scifio}. Instead, all services are now discoverable via
  *  <a href="http://sezpoz.java.net/">SezPoz</a>. New services should be
- *  annotated using {@link ome.scifio.discovery.SCIFIOService}.
+ *  annotated using {@link ome.scifio.discovery.DiscoverableService}.
  *  </li>
  * </ul>
  * 
@@ -22,6 +22,6 @@
  * </ul>
  * 
  * @author Mark Hiner
- * @see ome.scifio.discovery.SCIFIOService
+ * @see ome.scifio.discovery.DiscoverableService
  */
 package ome.scifio.services;

@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package ome.scifio.discovery;
 
 import java.lang.annotation.ElementType;
@@ -40,20 +41,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import ome.scifio.services.Service;
 import net.java.sezpoz.Indexable;
+import ome.scifio.Format;
 
 /**
  * 
- * Sezpoz annotation to mark SCIFIO Services for discovery.
+ * Sezpoz annotation to flag SCIFIO {@link ome.scifio.Format}s for discovery.
  * 
  * @author Mark Hiner
+ *
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Indexable(type = Service.class)
-public @interface SCIFIOService {
-  String interfaceName();
+@Indexable(type = Format.class)
+public @interface DiscoverableFormat {
 
-  String implementationName();
 }

@@ -44,7 +44,7 @@ import java.util.Map;
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 
-import ome.scifio.discovery.SCIFIOService;
+import ome.scifio.discovery.DiscoverableService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,8 +97,8 @@ public class ServiceFactory {
    */
   public ServiceFactory(boolean findLegacy) throws DependencyException {
     for(
-    final IndexItem<SCIFIOService, Service> item :
-    Index.load(SCIFIOService.class, Service.class)) {
+    final IndexItem<DiscoverableService, Service> item :
+    Index.load(DiscoverableService.class, Service.class)) {
       
       String interfaceName = item.annotation().interfaceName();
       String implementationName = item.annotation().implementationName();

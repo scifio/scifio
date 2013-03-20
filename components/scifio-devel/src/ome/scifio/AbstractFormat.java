@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 import net.java.sezpoz.Index;
 import net.java.sezpoz.IndexItem;
 import ome.scifio.discovery.Discoverer;
-import ome.scifio.discovery.SCIFIOTranslator;
+import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.discovery.TranslatorDiscoverer;
 
 /**
@@ -257,8 +257,8 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
       throws FormatException {
     final List<Class<? extends Translator>> translatorList = new ArrayList<Class<? extends Translator>>();
     for (
-    final IndexItem<SCIFIOTranslator, Translator> item : Index.load(
-        SCIFIOTranslator.class, Translator.class)) {
+    final IndexItem<DiscoverableTranslator, Translator> item : Index.load(
+        DiscoverableTranslator.class, Translator.class)) {
       if (metadataClass == item.annotation().metaIn()
           || metadataClass == item.annotation().metaOut()) {
         Class<? extends Translator> trans;
@@ -313,7 +313,7 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
    */
   private <S extends TypedMetadata, T extends TypedMetadata> TypedTranslator<S, T> 
   findTranslator(final Class<S> metaIn, final Class<T> metaOut) throws FormatException {
-    Discoverer<SCIFIOTranslator, TypedTranslator<S, T>> disc = 
+    Discoverer<DiscoverableTranslator, TypedTranslator<S, T>> disc = 
         new TranslatorDiscoverer<S,T>(metaIn, metaOut);
     TypedTranslator<S, T> translator = disc.discover().get(0);
     translator.setContext(getContext());

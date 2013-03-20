@@ -49,7 +49,7 @@ import ome.scifio.TypedMetadata;
 import ome.scifio.TypedTranslator;
 
 public class TranslatorDiscoverer<M extends TypedMetadata, N extends TypedMetadata>
-    implements Discoverer<SCIFIOTranslator, TypedTranslator<M, N>> {
+    implements Discoverer<DiscoverableTranslator, TypedTranslator<M, N>> {
 
   // -- Constants --
   
@@ -73,8 +73,8 @@ public class TranslatorDiscoverer<M extends TypedMetadata, N extends TypedMetada
   public List<TypedTranslator<M, N>> discover() throws FormatException {
     List<TypedTranslator<M, N>> transList = new ArrayList<TypedTranslator<M, N>>();
     for (@SuppressWarnings("rawtypes")
-    final IndexItem<SCIFIOTranslator, TypedTranslator> item : Index.load(
-        SCIFIOTranslator.class, TypedTranslator.class)) {
+    final IndexItem<DiscoverableTranslator, TypedTranslator> item : Index.load(
+        DiscoverableTranslator.class, TypedTranslator.class)) {
       if (metaInClass == item.annotation().metaIn()
           && metaOutClass == item.annotation().metaOut()) {
         TypedTranslator<M, N> trans = null;
@@ -95,7 +95,7 @@ public class TranslatorDiscoverer<M extends TypedMetadata, N extends TypedMetada
   
   @SuppressWarnings("unchecked")
   private TypedTranslator<M, N> getInstance(
-    @SuppressWarnings("rawtypes") IndexItem<SCIFIOTranslator, TypedTranslator> item) throws InstantiationException {
+    @SuppressWarnings("rawtypes") IndexItem<DiscoverableTranslator, TypedTranslator> item) throws InstantiationException {
     return item.instance();
   }
 }

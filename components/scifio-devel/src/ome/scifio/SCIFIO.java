@@ -44,7 +44,7 @@ import java.util.Map;
 
 import ome.scifio.discovery.Discoverer;
 import ome.scifio.discovery.FormatDiscoverer;
-import ome.scifio.discovery.SCIFIOFormat;
+import ome.scifio.discovery.DiscoverableFormat;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -78,7 +78,7 @@ public class SCIFIO {
    */
   private final SCIFIOComponentFinder scf = new SCIFIOComponentFinder();
 
-  private final Discoverer<SCIFIOFormat, Format> discoverer = new FormatDiscoverer();
+  private final Discoverer<DiscoverableFormat, Format> discoverer = new FormatDiscoverer();
 
   /**
    * List of all formats known to this context.

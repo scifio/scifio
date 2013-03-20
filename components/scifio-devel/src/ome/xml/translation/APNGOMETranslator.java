@@ -39,7 +39,7 @@ package ome.xml.translation;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
 import ome.scifio.apng.APNGFormat;
-import ome.scifio.discovery.SCIFIOTranslator;
+import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.util.FormatTools;
 import ome.xml.meta.OMEMetadata;
 
@@ -49,7 +49,7 @@ import ome.xml.meta.OMEMetadata;
  * 
  * @author Mark Hiner
  */
-@SCIFIOTranslator(metaIn = APNGFormat.Metadata.class, metaOut = OMEMetadata.class)
+@DiscoverableTranslator(metaIn = APNGFormat.Metadata.class, metaOut = OMEMetadata.class)
 public class APNGOMETranslator extends OMETranslator<APNGFormat.Metadata> {
 
   // -- Constructors --

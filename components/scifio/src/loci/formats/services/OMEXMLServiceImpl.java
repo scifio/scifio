@@ -58,7 +58,7 @@ import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
 import loci.formats.ome.OMEXMLMetadata;
 import loci.formats.ome.OMEXMLMetadataImpl;
-import ome.scifio.discovery.SCIFIOService;
+import ome.scifio.discovery.DiscoverableService;
 import ome.xml.OMEXMLFactory;
 import ome.xml.model.BinData;
 import ome.xml.model.Channel;
@@ -88,7 +88,7 @@ import org.xml.sax.SAXException;
  *
  * @author callan
  */
-@SCIFIOService(interfaceName = "loci.formats.services.OMEXMLService", 
+@DiscoverableService(interfaceName = "loci.formats.services.OMEXMLService", 
                implementationName = "loci.formats.services.OMEXMLServiceImpl")
 public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 {

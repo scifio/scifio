@@ -32,7 +32,7 @@ import loci.ome.io.OMEReader;
 import loci.ome.io.OMEWriter;
 import loci.ome.io.OmeroReader;
 
-import ome.scifio.discovery.SCIFIOService;
+import ome.scifio.discovery.DiscoverableService;
 
 import org.openmicroscopy.ds.dto.Image;
 
@@ -43,7 +43,7 @@ import org.openmicroscopy.ds.dto.Image;
  *
  * @author callan
  */
-@SCIFIOService(interfaceName = "loci.ome.io.services.OMEReaderWriterService", 
+@DiscoverableService(interfaceName = "loci.ome.io.services.OMEReaderWriterService", 
                implementationName = "loci.ome.io.services.OMEReaderWriterServiceImpl")
 public class OMEReaderWriterServiceImpl extends AbstractService
   implements OMEReaderWriterService

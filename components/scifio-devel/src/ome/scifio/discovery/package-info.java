@@ -6,11 +6,11 @@
  * For a class to be discovered by SezPoz, it must be annotated. The default
  * annotations provided are:
  * <ul>
- *  <li>{@link SCIFIOFormat}: for annotating {@link ome.scifio.Format} concrete
+ *  <li>{@link DiscoverableFormat}: for annotating {@link ome.scifio.Format} concrete
  *  implementations.</li>
- *  <li>{@link SCIFIOService}: for annotating 
+ *  <li>{@link DiscoverableService}: for annotating 
  *  {@link ome.scifio.services.Service} concrete implementations.</li>
- *  <li>{@link SCIFIOTranslator}: for annotating {@link ome.scifio.Translator}
+ *  <li>{@link DiscoverableTranslator}: for annotating {@link ome.scifio.Translator}
  *  concrete implementations.</li>
  * </ul>
  * </p>

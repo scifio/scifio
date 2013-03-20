@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package ome.scifio.discovery;
 
 import java.lang.annotation.ElementType;
@@ -42,18 +41,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.java.sezpoz.Indexable;
-import ome.scifio.Format;
+import ome.scifio.filters.DatasetMetadataWrapper;
+import ome.scifio.filters.Filter;
 
 /**
  * 
- * Sezpoz annotation to flag SCIFIO {@link ome.scifio.Format}s for discovery.
+ * Sezpoz annotation to mark MetadataWrappers for discovery.
  * 
  * @author Mark Hiner
- *
+ * 
+ * @see ome.scifio.filters.Filter
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Indexable(type = Format.class)
-public @interface SCIFIOFormat {
+@Indexable(type = DatasetMetadataWrapper.class)
+public @interface DiscoverableMetadataWrapper {
 
+  /**
+   * The concrete class of the {@code Filter} type intended to use this
+   * Metadata wrapper.
+   * 
+   * @return
+   */
+  Class<? extends Filter> filterType();
 }

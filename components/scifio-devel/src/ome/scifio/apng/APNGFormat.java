@@ -70,8 +70,8 @@ import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DataTools;
-import ome.scifio.discovery.SCIFIOFormat;
-import ome.scifio.discovery.SCIFIOTranslator;
+import ome.scifio.discovery.DiscoverableFormat;
+import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.gui.AWTImageTools;
 import ome.scifio.gui.BufferedImageReader;
 import ome.scifio.io.RandomAccessInputStream;
@@ -79,7 +79,7 @@ import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.io.StreamTools;
 import ome.scifio.util.FormatTools;
 
-@SCIFIOFormat
+@DiscoverableFormat
 public class APNGFormat
   extends
   AbstractFormat<APNGFormat.Metadata, APNGFormat.Checker,
@@ -921,7 +921,7 @@ public class APNGFormat
    * to write it can not be guaranteed valid.
    *
    */
-  @SCIFIOTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
+  @DiscoverableTranslator(metaIn = DefaultDatasetMetadata.class, metaOut = Metadata.class)
   public static class CoreAPNGTranslator
     extends AbstractTranslator<DefaultDatasetMetadata, Metadata> {
   
@@ -1026,7 +1026,7 @@ public class APNGFormat
    * (APNG) images to the Core SCIFIO image type.
    *
    */
-  @SCIFIOTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
+  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DefaultDatasetMetadata.class)
   public static class APNGCoreTranslator
     extends AbstractTranslator<Metadata, DefaultDatasetMetadata>
     implements CoreTranslator {
