@@ -179,7 +179,7 @@ public interface DatasetMetadata extends Metadata {
    * can be used in other Axes methods for looking up lengths, etc...
    * </br></br>
    * This method can also be used as an existence check for the
-   * targe AxisType.
+   * target AxisType.
    * 
    * @param imageIndex - index for multi-image files
    * @param type - axis type to look up
@@ -314,6 +314,11 @@ public interface DatasetMetadata extends Metadata {
    * within the specified image has been parsed.
    */
   void setMetadataComplete(int imageIndex, boolean metadataComplete);
+  
+  /**
+   * Adds the provided image metadata to this dataset metadata
+   */
+  void add(final ImageMetadata meta);
 
   /** Sets a collection of non-core metadata associated with the specified image. */
   void setImageMetadata(int imageIndex, Hashtable<String, Object> meta);
