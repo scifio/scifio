@@ -36,6 +36,7 @@
 
 package ome.scifio;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import net.imglib2.meta.AxisType;
@@ -335,6 +336,129 @@ public class DefaultImageMetadata implements ImageMetadata {
 
   public static long getSerialversionuid() {
     return serialVersionUID;
+  }
+  
+  /**
+   * Gets the type of the (zero-indexed) specified plane.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param planeIndex - index of the desired plane within the specified image
+   * @return Type of the desired plane.
+   */
+  public AxisType getAxisType(final int planeIndex) {
+    return getAxisTypes()[planeIndex];
+  }
+
+  /**
+   * Gets the length of the (zero-indexed) specified plane.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param planeIndex - index of the desired plane within the specified image
+   * @return Length of the desired plane.
+   */
+  public int getAxisLength(final int planeIndex) {
+    return planeIndex == -1 ? 0 : getAxisLengths()[planeIndex];
+  }
+  
+  /**
+   * A convenience method for looking up the length of an axis
+   * based on its type. No knowledge of plane ordering is necessary.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param t - desired axis type
+   * @return
+   */
+  public int getAxisLength(final AxisType t) {
+    return getAxisLength(getAxisIndex(t));
+  }
+
+  /**
+   * Returns the array index for the specified AxisType. This index
+   * can be used in other Axes methods for looking up lengths, etc...
+   * </br></br>
+   * This method can also be used as an existence check for the
+   * targe AxisType.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param type - axis type to look up
+   * @return The index of the desired axis or -1 if not found.
+   */
+  public int getAxisIndex(final AxisType type) {
+    for (int i = 0; i < getAxisTypes().length; i++) {
+      if (getAxisTypes()[i] == type) return i;
+    }
+    return -1; // throw exception?
+  }
+  
+  /**
+   * Returns an array of the types for axes associated with
+   * the specified image index. Order is consistent with the
+   * axis length (int) array returned by 
+   * {@link DatasetMetadata#getAxesLengths(int)}.
+   * </br></br>
+   * AxisType order is sorted and represents order within the image.
+   * 
+   * @param imageIndex - index for multi-image sources
+   * @return An array of AxisTypes in the order they appear.
+   */
+  public AxisType[] getAxes() {
+    AxisType[] axes = getAxisTypes();
+    return Arrays.copyOf(axes, axes.length);
+  }
+  
+  /**
+   * Returns an array of the lengths for axes associated with
+   * the specified image index.
+   * 
+   * Ordering is consistent with the 
+   * AxisType array returned by {@link DatasetMetadata#getAxes(int)}.
+   * 
+   * @param imageIndex
+   * @return
+   */
+  public int[] getAxesLengths() {
+    int[] lengths = getAxisLengths();
+    return Arrays.copyOf(lengths, lengths.length);
+  }
+
+  /**
+   * Appends the provided AxisType to the current AxisType array
+   * and creates corresponding length = 0 entry in the axis lengths
+   * array.
+   * 
+   * @param imageIndex
+   * @param type
+   */
+  public void addAxis(final AxisType type) {
+    addAxis(type, 0);
+  }
+
+  /**
+   * Appends the provided AxisType to the current AxisType array
+   * and creates a corresponding entry with the specified value in
+   * axis lengths.
+   * 
+   * @param imageIndex
+   * @param type
+   * @param value
+   */
+  public void addAxis(final AxisType type, final int value)
+  {
+    final int[] axisLengths = getAxisLengths();
+    final AxisType[] axisTypes = getAxisTypes();
+    final int[] tmpAxisLength = new int[axisLengths.length + 1];
+    final AxisType[] tmpAxisTypes = new AxisType[axisTypes.length + 1];
+
+    for (int i = 0; i < axisLengths.length; i++) {
+      tmpAxisLength[i] = axisLengths[i];
+      tmpAxisTypes[i] = axisTypes[i];
+    }
+
+    tmpAxisLength[tmpAxisLength.length - 1] = value;
+    tmpAxisTypes[tmpAxisTypes.length - 1] = type;
+
+    setAxisLengths(tmpAxisLength);
+    setAxisTypes(tmpAxisTypes);
   }
 
   // -- Object API --

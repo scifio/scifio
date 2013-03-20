@@ -226,7 +226,7 @@ public class DefaultDatasetMetadata extends AbstractMetadata
    * @return Type of the desired plane.
    */
   public AxisType getAxisType(final int imageIndex, final int planeIndex) {
-    return imageMeta.get(imageIndex).getAxisTypes()[planeIndex];
+    return imageMeta.get(imageIndex).getAxisType(planeIndex);
   }
 
   /**
@@ -237,7 +237,7 @@ public class DefaultDatasetMetadata extends AbstractMetadata
    * @return Length of the desired plane.
    */
   public int getAxisLength(final int imageIndex, final int planeIndex) {
-    return imageMeta.get(imageIndex).getAxisLengths()[planeIndex];
+    return imageMeta.get(imageIndex).getAxisLength(planeIndex);
   }
   
   /**
@@ -249,7 +249,7 @@ public class DefaultDatasetMetadata extends AbstractMetadata
    * @return
    */
   public int getAxisLength(final int imageIndex, final AxisType t) {
-    return getAxisLength(imageIndex, getAxisIndex(imageIndex, t));
+    return imageMeta.get(imageIndex).getAxisLength(t);
   }
 
   /**
@@ -264,10 +264,7 @@ public class DefaultDatasetMetadata extends AbstractMetadata
    * @return The index of the desired axis or -1 if not found.
    */
   public int getAxisIndex(final int imageIndex, final AxisType type) {
-    for (int i = 0; i < imageMeta.get(imageIndex).getAxisTypes().length; i++) {
-      if (imageMeta.get(imageIndex).getAxisTypes()[i] == type) return i;
-    }
-    return -1; // throw exception?
+    return imageMeta.get(imageIndex).getAxisIndex(type);
   }
   
   /**
@@ -282,8 +279,7 @@ public class DefaultDatasetMetadata extends AbstractMetadata
    * @return An array of AxisTypes in the order they appear.
    */
   public AxisType[] getAxes(int imageIndex) {
-    AxisType[] axes = imageMeta.get(imageIndex).getAxisTypes();
-    return Arrays.copyOf(axes, axes.length);
+    return imageMeta.get(imageIndex).getAxes();
   }
   
   /**
@@ -297,8 +293,7 @@ public class DefaultDatasetMetadata extends AbstractMetadata
    * @return
    */
   public int[] getAxesLengths(int imageIndex) {
-    int[] lengths = imageMeta.get(imageIndex).getAxisLengths();
-    return Arrays.copyOf(lengths, lengths.length);
+    return imageMeta.get(imageIndex).getAxesLengths();
   }
 
   /**
@@ -310,7 +305,7 @@ public class DefaultDatasetMetadata extends AbstractMetadata
    * @param type
    */
   public void addAxis(final int imageIndex, final AxisType type) {
-    addAxis(imageIndex, type, 0);
+    imageMeta.get(imageIndex).addAxis(type);
   }
 
   /**
@@ -324,21 +319,7 @@ public class DefaultDatasetMetadata extends AbstractMetadata
    */
   public void addAxis(final int imageIndex, final AxisType type, final int value)
   {
-    final int[] axisLengths = imageMeta.get(imageIndex).getAxisLengths();
-    final AxisType[] axisTypes = imageMeta.get(imageIndex).getAxisTypes();
-    final int[] tmpAxisLength = new int[axisLengths.length + 1];
-    final AxisType[] tmpAxisTypes = new AxisType[axisTypes.length + 1];
-
-    for (int i = 0; i < axisLengths.length; i++) {
-      tmpAxisLength[i] = axisLengths[i];
-      tmpAxisTypes[i] = axisTypes[i];
-    }
-
-    tmpAxisLength[tmpAxisLength.length - 1] = value;
-    tmpAxisTypes[tmpAxisTypes.length - 1] = type;
-
-    imageMeta.get(imageIndex).setAxisLengths(tmpAxisLength);
-    imageMeta.get(imageIndex).setAxisTypes(tmpAxisTypes);
+    imageMeta.get(imageIndex).addAxis(type, value);
   }
 
   public boolean isOrderCertain(final int imageIndex) {

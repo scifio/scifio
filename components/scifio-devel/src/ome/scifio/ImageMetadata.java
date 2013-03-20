@@ -35,6 +35,7 @@
  */
 package ome.scifio;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import net.imglib2.meta.AxisType;
@@ -208,5 +209,92 @@ public interface ImageMetadata {
    * another image.
    */
   boolean isThumbnail();
+
+  /**
+   * Gets the type of the (zero-indexed) specified plane.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param planeIndex - index of the desired plane within the specified image
+   * @return Type of the desired plane.
+   */
+  AxisType getAxisType(final int planeIndex);
+
+  /**
+   * Gets the length of the (zero-indexed) specified plane.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param planeIndex - index of the desired plane within the specified image
+   * @return Length of the desired plane.
+   */
+  int getAxisLength(final int planeIndex);
+  
+  /**
+   * A convenience method for looking up the length of an axis
+   * based on its type. No knowledge of plane ordering is necessary.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param t - desired axis type
+   * @return
+   */
+  int getAxisLength(final AxisType t);
+
+  /**
+   * Returns the array index for the specified AxisType. This index
+   * can be used in other Axes methods for looking up lengths, etc...
+   * </br></br>
+   * This method can also be used as an existence check for the
+   * targe AxisType.
+   * 
+   * @param imageIndex - index for multi-image files
+   * @param type - axis type to look up
+   * @return The index of the desired axis or -1 if not found.
+   */
+  int getAxisIndex(final AxisType type);
+  
+  /**
+   * Returns an array of the types for axes associated with
+   * the specified image index. Order is consistent with the
+   * axis length (int) array returned by 
+   * {@link DatasetMetadata#getAxesLengths(int)}.
+   * </br></br>
+   * AxisType order is sorted and represents order within the image.
+   * 
+   * @param imageIndex - index for multi-image sources
+   * @return An array of AxisTypes in the order they appear.
+   */
+  AxisType[] getAxes();
+  
+  /**
+   * Returns an array of the lengths for axes associated with
+   * the specified image index.
+   * 
+   * Ordering is consistent with the 
+   * AxisType array returned by {@link DatasetMetadata#getAxes(int)}.
+   * 
+   * @param imageIndex
+   * @return
+   */
+  int[] getAxesLengths();
+
+  /**
+   * Appends the provided AxisType to the current AxisType array
+   * and creates corresponding length = 0 entry in the axis lengths
+   * array.
+   * 
+   * @param imageIndex
+   * @param type
+   */
+  void addAxis(final AxisType type);
+
+  /**
+   * Appends the provided AxisType to the current AxisType array
+   * and creates a corresponding entry with the specified value in
+   * axis lengths.
+   * 
+   * @param imageIndex
+   * @param type
+   * @param value
+   */
+  void addAxis(final AxisType type, final int value);
 
 }
