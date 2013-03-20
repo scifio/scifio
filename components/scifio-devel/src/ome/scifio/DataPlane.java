@@ -71,7 +71,7 @@ public interface DataPlane<T> extends Plane {
    * @param xLength
    * @param yLength
    */
-  void populate(T data, int xOffset, int yOffset, int xLength, int yLength);
+  DataPlane<T> populate(T data, int xOffset, int yOffset, int xLength, int yLength);
   
   /**
    * 
@@ -83,6 +83,6 @@ public interface DataPlane<T> extends Plane {
    * @param xLength
    * @param yLength
    */
-  void populate(ImageMetadata meta, T data, int xOffset, int yOffset, 
+  DataPlane<T> populate(ImageMetadata meta, T data, int xOffset, int yOffset, 
       int xLength, int yLength);
 }

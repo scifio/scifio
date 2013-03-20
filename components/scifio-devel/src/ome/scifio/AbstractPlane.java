@@ -141,29 +141,34 @@ public abstract class AbstractPlane<T> extends AbstractHasContext
     return yLength;
   }
   
-  /*
-   * @see ome.scifio.Plane#initialize(ome.scifio.ImageMetadata, int, int, int,
-   *      int)
-   */
-  public void populate(ImageMetadata meta, int xOffset, int yOffset,
-      int xLength, int yLength) {
-    populate(meta, null, xOffset, yOffset, xLength, yLength);
+  public Plane populate(Plane p) {
+    return populate(p.getImageMetadata(), p.getxOffset(),
+                    p.getyOffset(), p.getxLength(), p.getyLength());
   }
   
   /*
    * @see ome.scifio.Plane#initialize(ome.scifio.ImageMetadata, int, int, int,
    *      int)
    */
-  public void populate(T data, int xOffset, int yOffset,
+  public Plane populate(ImageMetadata meta, int xOffset, int yOffset,
       int xLength, int yLength) {
-    populate(null, data, xOffset, yOffset, xLength, yLength);
+    return populate(meta, null, xOffset, yOffset, xLength, yLength);
   }
   
   /*
    * @see ome.scifio.Plane#initialize(ome.scifio.ImageMetadata, int, int, int,
    *      int)
    */
-  public void populate(ImageMetadata meta, T data, int xOffset, int yOffset,
+  public DataPlane<T> populate(T data, int xOffset, int yOffset,
+      int xLength, int yLength) {
+    return populate(null, data, xOffset, yOffset, xLength, yLength);
+  }
+  
+  /*
+   * @see ome.scifio.Plane#initialize(ome.scifio.ImageMetadata, int, int, int,
+   *      int)
+   */
+  public DataPlane<T> populate(ImageMetadata meta, T data, int xOffset, int yOffset,
       int xLength, int yLength) {
     setImageMetadata(meta);
     setData(data);
@@ -171,6 +176,7 @@ public abstract class AbstractPlane<T> extends AbstractHasContext
     setyOffset(yOffset);
     setxLength(xLength);
     setyLength(yLength);
+    return this;
   }
   
   /*

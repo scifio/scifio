@@ -117,8 +117,14 @@ public interface Plane extends HasContext {
    * @param xLength
    * @param yLength
    */
-  void populate(ImageMetadata meta, int xOffset, int yOffset, int xLength,
+  Plane populate(ImageMetadata meta, int xOffset, int yOffset, int xLength,
        int yLength);
+  
+  /**
+   * @param p
+   * @return
+   */
+  Plane populate(Plane p);
   
   
   /**
