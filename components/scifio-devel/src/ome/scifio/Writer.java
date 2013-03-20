@@ -129,7 +129,7 @@ public interface Writer extends HasContext, HasFormat {
    *  @return The format-agnostic {@code Metadata} associated with this
    *          {@code Writer}.
    */
-  DatasetMetadata<?> getDatasetMetadata();
+  DatasetMetadata getDatasetMetadata();
 
   /**
    * Sets the source that will be written to during {@link #savePlane} calls.

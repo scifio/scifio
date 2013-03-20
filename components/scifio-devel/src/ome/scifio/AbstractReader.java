@@ -262,7 +262,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   /*
    * @see ome.scifio.Reader#getDatasetMetadata()
    */
-  public DatasetMetadata<?> getDatasetMetadata() {
+  public DatasetMetadata getDatasetMetadata() {
     return dMeta;
   }
 

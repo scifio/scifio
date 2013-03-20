@@ -404,7 +404,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
           plane.getData().length, x, y, w, h);
 
-      DatasetMetadata<?> dMeta = getDatasetMetadata();
+      DatasetMetadata dMeta = getDatasetMetadata();
       plane.setImageMetadata(dMeta.get(imageIndex));
       
       final int pixelType = dMeta.getPixelType(imageIndex);

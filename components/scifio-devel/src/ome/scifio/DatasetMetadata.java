@@ -50,7 +50,7 @@ import net.imglib2.meta.AxisType;
  * @author Mark Hiner
  *
  */
-public interface DatasetMetadata<M extends ImageMetadata> extends Metadata {
+public interface DatasetMetadata extends Metadata {
 
   /** Looks up the dataset metadata value for the provided key. */
   Object getMetadataValue(String field);
@@ -68,7 +68,7 @@ public interface DatasetMetadata<M extends ImageMetadata> extends Metadata {
   Hashtable<String, Object> getImageMetadata(int imageIndex);
   
   /** Returns the ImageMetadata at the given index. */
-  M get(int imageIndex);
+  ImageMetadata get(int imageIndex);
 
   /** Returns the number of images in this dataset. */
   int getImageCount();

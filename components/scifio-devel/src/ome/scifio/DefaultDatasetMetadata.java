@@ -55,7 +55,7 @@ import ome.scifio.util.FormatTools;
  *
  */
 public class DefaultDatasetMetadata extends AbstractMetadata 
-  implements DatasetMetadata<DefaultImageMetadata> {
+  implements DatasetMetadata {
 
   // -- Fields --
 
@@ -92,7 +92,7 @@ public class DefaultDatasetMetadata extends AbstractMetadata
     }
   }
   
-  public DefaultDatasetMetadata(final DatasetMetadata<?> copy, final SCIFIO ctx) {
+  public DefaultDatasetMetadata(final DatasetMetadata copy, final SCIFIO ctx) {
     super(ctx);
     
     datasetMeta = (Hashtable<String, Object>) copy.getDatasetMetadata().clone();

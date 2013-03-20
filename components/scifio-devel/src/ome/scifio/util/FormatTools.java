@@ -385,7 +385,7 @@ public class FormatTools {
    * @param imageIndex
    * @return
    */
-  public static String findDimensionOrder(DatasetMetadata<?> core, int imageIndex) {
+  public static String findDimensionOrder(DatasetMetadata core, int imageIndex) {
     return findDimensionOrder(core.getAxes(imageIndex));
   }
   
@@ -440,7 +440,7 @@ public class FormatTools {
    * @param imageIndex
    * @param order
    */
-  public static void setDimensionOrder(DatasetMetadata<?> core, int imageIndex, AxisType... order) {
+  public static void setDimensionOrder(DatasetMetadata core, int imageIndex, AxisType... order) {
     int[] axisLengths = new int[core.getAxisCount(imageIndex)];
     
     int i = 0;
@@ -462,7 +462,7 @@ public class FormatTools {
    * to the given rasterized index value.
    */
   public static int[] getZCTCoords(Reader reader, int imageIndex, int planeIndex) {
-    DatasetMetadata<?> core = reader.getDatasetMetadata();
+    DatasetMetadata core = reader.getDatasetMetadata();
     int zSize = core.getAxisLength(imageIndex, Axes.Z);
     int cSize = core.getEffectiveSizeC(imageIndex);
     int tSize = core.getAxisLength(imageIndex, Axes.TIME);
@@ -555,7 +555,7 @@ public class FormatTools {
   public static int getReorderedIndex(Reader reader, int imageIndex,
     String newOrder, int newIndex) throws FormatException
   {
-    DatasetMetadata<?> core = reader.getDatasetMetadata();
+    DatasetMetadata core = reader.getDatasetMetadata();
     int zSize = core.getAxisLength(imageIndex, Axes.Z);
     int cSize = core.getEffectiveSizeC(imageIndex);
     int tSize = core.getAxisLength(imageIndex, Axes.TIME);

@@ -180,7 +180,7 @@ public interface Reader extends HasContext, HasFormat {
   Metadata getMetadata();
 
   /** Gets the core metadata for this Reader. */
-  DatasetMetadata<?> getDatasetMetadata();
+  DatasetMetadata getDatasetMetadata();
 
   //TODO remove normalization methods
   /** Specifies whether or not to normalize float data. */

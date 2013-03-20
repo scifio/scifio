@@ -151,7 +151,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   }
 
   /* @see ome.scifio.Writer#getDatasetMetadata() */
-  public DatasetMetadata<?> getDatasetMetadata() {
+  public DatasetMetadata getDatasetMetadata() {
     return dMeta;
   }
   

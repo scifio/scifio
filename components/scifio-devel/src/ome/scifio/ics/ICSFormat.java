@@ -1291,7 +1291,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         out.writeBytes("filename\t" + currentId + "\n");
         out.writeBytes("layout\tparameters\t6\n");
 
-        DatasetMetadata<?> meta = dMeta;
+        DatasetMetadata meta = dMeta;
         //SCIFIOMetadataTools.verifyMinimumPopulated(meta, pixels);
 
         int pixelType = meta.getPixelType(imageIndex);
@@ -1378,7 +1378,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       }
     }
     
-    private int[] overwriteDimensions(DatasetMetadata<?> meta, int imageIndex) throws IOException {
+    private int[] overwriteDimensions(DatasetMetadata meta, int imageIndex) throws IOException {
       out.seek(dimensionOffset);
       int sizeX = meta.getAxisLength(imageIndex, Axes.X);
       int sizeY = meta.getAxisLength(imageIndex, Axes.Y);
