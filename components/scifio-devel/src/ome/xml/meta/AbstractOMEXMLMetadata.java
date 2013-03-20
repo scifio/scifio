@@ -37,6 +37,7 @@
 package ome.xml.meta;
 
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -50,6 +51,8 @@ import ome.xml.DOMUtil;
 import ome.xml.model.OME;
 import ome.xml.model.OMEModelObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -78,6 +81,9 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
     //"http://www.openmicroscopy.org/Schemas/OME/2012-06/ome.xsd";
     "https://raw.github.com/openmicroscopy/openmicroscopy/schema-2012-06/components/specification/InProgress/ome.xsd";
 
+  protected static final Logger LOGGER =
+    LoggerFactory.getLogger(AbstractOMEXMLMetadata.class);
+  
   // -- Fields --
 
   /** The root element of OME-XML. */
@@ -116,6 +122,9 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
       return os.toString(Constants.ENCODING);
     }
     catch (TransformerException exc) {
+      LOGGER.warn("Failed to create OME-XML", exc);
+    } catch (UnsupportedEncodingException e) {
+      LOGGER.warn("Failed to create OME-XML", exc);
     }
     return null;
   }
