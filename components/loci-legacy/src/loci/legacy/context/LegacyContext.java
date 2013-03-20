@@ -44,7 +44,7 @@ import ome.scifio.SCIFIO;
 /**
  * Provides a single context for legacy classes.
  * <p>
- * This is functionally equivalent to the legacy bheavior
+ * This is functionally equivalent to the legacy behavior
  * of a single, static loading of readers by ImageReader.
  * </p>
  * 
@@ -57,15 +57,16 @@ public final class LegacyContext {
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(SCIFIO.class);
   
-  private static SCIFIO context;
+  private static SCIFIO context = null;
   
   public static SCIFIO get() {
-    if(context == null)
+    if(context == null) {
       try {
         context = new SCIFIO();
       } catch (FormatException e) {
         LOGGER.debug("Error creating SCIFIO context", e);
       }
+    }
     return context;
   }
 }
