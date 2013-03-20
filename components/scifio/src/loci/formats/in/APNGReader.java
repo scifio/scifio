@@ -83,73 +83,11 @@ public class APNGReader extends SCIFIOBIFormatReader {
 
   // -- IFormatReader API methods --
 
-  /* @see loci.formats.IFormatReader#get8BitLookupTable() */
-  @Deprecated
-  public byte[][] get8BitLookupTable() throws IOException, FormatException {
-    try {
-      return reader.getDatasetMetadata().get8BitLookupTable(getSeries());
-    } catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-  }
-
-  /* @see IFormatReader#openBytes(int) */
-  @Override
-  @Deprecated
-  public byte[] openBytes(int no) throws FormatException, IOException {
-    try {
-      return reader.openPlane(getSeries(), no);
-    }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-  }
-
-  /* @see IFormatReader#openBytes(int, byte[]) */
-  @Override
-  @Deprecated
-  public byte[] openBytes(int no, byte[] buf)
-    throws FormatException, IOException
-  {
-    try {
-      return reader.openPlane(this.getSeries(), no, buf);
-    }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-  }
-
-  /* @see IFormatReader#openBytes(int, int, int, int, int) */
-  @Override
-  @Deprecated
-  public byte[] openBytes(int no, int x, int y, int w, int h)
-    throws FormatException, IOException
-  {
-    try {
-      return reader.openPlane(this.getSeries(), no, x, y, w, h);
-    }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-  }
-
-  /* @see loci.formats.IFormatReader#openPlane(int, int, int, int, int int) */
-  @Deprecated
-  public Object openPlane(int no, int x, int y, int w, int h)
-    throws FormatException, IOException
-  {
-    try {
-      return reader.openPlane(this.getSeries(), no, x, y, w, h);
-    }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-  }
-
   /* @see loci.formats.IFormatReader#close(boolean) */
   public void close(boolean fileOnly) throws IOException {
     parser.close(fileOnly);
     reader.close(fileOnly);
+    plane = null;
   }
 
   // -- Internal FormatReader methods --

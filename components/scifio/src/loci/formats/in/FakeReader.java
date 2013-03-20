@@ -106,40 +106,6 @@ public class FakeReader extends SCIFIOFormatReader {
 
   // -- IFormatReader API methods --
 
-  /* @see IFormatReader#get8BitLookupTable() */
-  @Override
-  public byte[][] get8BitLookupTable() throws FormatException, IOException {
-    try {
-      return reader.getDatasetMetadata().get8BitLookupTable(getSeries());
-    } catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-  }
-
-  /* @see IFormatReader#get16BitLookupTable() */
-  @Override
-  public short[][] get16BitLookupTable() throws FormatException, IOException {
-    try {
-      return reader.getDatasetMetadata().get16BitLookupTable(getSeries());
-    } catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-  }
-
-  /**
-   * @see loci.formats.IFormatReader#openBytes(int, byte[], int, int, int, int)
-   */
-  @Override
-  public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
-    throws FormatException, IOException
-  {
-    try {
-      return reader.openPlane(getSeries(), no, buf, x, y, w, h);
-    } catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-  }
-
   // -- Internal FormatReader API methods --
 
   /* @see loci.formats.FormatReader#initFile(String) */

@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Set;
 
 import loci.common.Location;
@@ -52,14 +51,17 @@ import loci.formats.meta.FilterMetadata;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
+import net.imglib2.display.ColorTable;
+import net.imglib2.display.ColorTable16;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
+import ome.scifio.ByteArrayPlane;
 import ome.scifio.Checker;
 import ome.scifio.Format;
-import ome.scifio.Metadata;
 import ome.scifio.Parser;
+import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.Translator;
-import ome.scifio.io.ByteArrayHandle;
 import ome.xml.model.enums.AcquisitionMode;
 import ome.xml.model.enums.ArcType;
 import ome.xml.model.enums.Binning;
@@ -125,6 +127,11 @@ public abstract class SCIFIOFormatReader extends FormatReader
   {
 
   // -- Fields --
+  
+  /**
+   * Caches the last plane returned by this reader.
+   */
+  protected Plane plane;
   
   /** SCIFIO Format, used to generate the other components */
   protected Format format;
@@ -327,8 +334,21 @@ public abstract class SCIFIOFormatReader extends FormatReader
   protected byte[] readPlane(RandomAccessInputStream s, int x, int y, int w,
     int h, byte[] buf) throws IOException
   {
-    return reader.readPlane(AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
-        getSeries(), x, y, w, h, buf);
+    if(plane == null || !(ByteArrayPlane.class.isAssignableFrom(plane.getClass()))) {
+      plane = new ByteArrayPlane(reader.getContext());
+      ((ByteArrayPlane)plane).populate(reader.getDatasetMetadata().get(getSeries()), buf,
+          x, y, w, h);
+      
+      return reader.readPlane(
+          AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+          getSeries(), x, y, w, h, plane).getBytes();
+    }
+    else {
+      ((ByteArrayPlane)plane).populate(buf, x, y, w, h);
+      return reader.readPlane(
+          AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+          getSeries(), x, y, w, h, plane).getBytes();
+    }
   }
 
   /** Reads a raw plane from disk. */
@@ -337,8 +357,21 @@ public abstract class SCIFIOFormatReader extends FormatReader
   protected byte[] readPlane(RandomAccessInputStream s, int x, int y, int w,
     int h, int scanlinePad, byte[] buf) throws IOException
   {
-    return reader.readPlane(AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
-        getSeries(), x, y, w, h, buf);
+    if(plane == null || !(ByteArrayPlane.class.isAssignableFrom(plane.getClass()))) {
+      plane = new ByteArrayPlane(reader.getContext());
+      ((ByteArrayPlane)plane).populate(reader.getDatasetMetadata().get(getSeries()), buf,
+          x, y, w, h);
+      
+      return reader.readPlane(
+          AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+          getSeries(), x, y, w, h, scanlinePad, plane).getBytes();
+    }
+    else {
+      ((ByteArrayPlane)plane).populate(buf, x, y, w, h);
+      return reader.readPlane(
+          AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+          getSeries(), x, y, w, h, scanlinePad, plane).getBytes();
+    }
   }
 
   /** Return a properly configured loci.formats.meta.FilterMetadata. */
@@ -415,7 +448,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public boolean isThisType(byte[] block) {
-    return checker.isFormat(block);
+    return checker.isFormat(new String(block));
   }
 
   /* @see IFormatReader#isThisType(RandomAccessInputStream) */
@@ -526,11 +559,12 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public byte[][] get8BitLookupTable() throws FormatException, IOException {
-    try {
-      return reader.getDatasetMetadata().get8BitLookupTable(getSeries());
-    }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
+    if(plane == null) return null;
+    else {
+      ColorTable ct = plane.getColorTable();
+      if(ct == null || !(ColorTable8.class.isAssignableFrom(ct.getClass()))) return null;
+      else
+        return ((ColorTable8)ct).getValues();
     }
   }
 
@@ -538,12 +572,12 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public short[][] get16BitLookupTable() throws FormatException, IOException {
-    try {
-      //TODO currently no way to access this in SCIFIO without opening a plane
-      return reader.getDatasetMetadata().get16BitLookupTable(getSeries());
-    }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
+    if(plane == null) return null;
+    else {
+      ColorTable ct = plane.getColorTable();
+      if(ct == null || !(ColorTable16.class.isAssignableFrom(ct.getClass()))) return null;
+      else
+        return ((ColorTable16)ct).getValues();
     }
   }
 
@@ -622,8 +656,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Override
   public byte[] openBytes(int no) throws FormatException, IOException {
     try {
-      //TODO need a cached plane to avoid creating new planes
-      return reader.openPlane(getSeries(), no);
+      return (plane = reader.openPlane(getSeries(), no)).getBytes();
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -637,7 +670,13 @@ public abstract class SCIFIOFormatReader extends FormatReader
     throws FormatException, IOException
   {
     try {
-      return reader.openPlane(getSeries(), no, buf);
+      if(plane == null || !(ByteArrayPlane.class.isAssignableFrom(plane.getClass()))) {
+        return (plane = reader.openPlane(getSeries(), no)).getBytes();
+      }
+      else {
+        ((ByteArrayPlane)plane).setData(buf);
+        return reader.openPlane(getSeries(), no, plane).getBytes();
+      }
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -651,16 +690,32 @@ public abstract class SCIFIOFormatReader extends FormatReader
     throws FormatException, IOException
   {
     try {
-      return reader.openPlane(getSeries(), no, x, y, w, h);
+      return (plane = reader.openPlane(getSeries(), no, x, y, w, h)).getBytes();
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
     }
   }
 
-  /* @see IFormatReader#openBytes(int, byte[], int, int, int, int) */
-  public abstract byte[] openBytes(int no, byte[] buf, int x, int y, int w,
-    int h) throws FormatException, IOException;
+  /**
+   * @see loci.formats.IFormatReader#openBytes(int, byte[], int, int, int, int)
+   */
+  @Deprecated
+  public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
+    throws FormatException, IOException
+  {
+    try {
+      if(plane == null || !(ByteArrayPlane.class.isAssignableFrom(plane.getClass()))) {
+        plane = new ByteArrayPlane(reader.getContext());
+      }
+      ((ByteArrayPlane)plane).populate(reader.getDatasetMetadata().get(getSeries()), buf,
+          x, y, w, h);
+      return reader.openPlane(getSeries(), no, plane, x, y, w, h).getBytes();
+    }
+    catch (ome.scifio.FormatException e) {
+      throw new FormatException(e.getCause());
+    }
+  }
 
   /* @see IFormatReader#openPlane(int, int, int, int, int int) */
   @Deprecated
@@ -677,7 +732,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Override
   public byte[] openThumbBytes(int no) throws FormatException, IOException {
     try {
-      return reader.openThumbPlane(getSeries(), no);
+      return (plane = reader.openThumbPlane(getSeries(), no)).getBytes();
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);

@@ -47,6 +47,8 @@ import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 
+import ome.scifio.BufferedImagePlane;
+import ome.scifio.Reader;
 import ome.xml.model.primitives.PositiveInteger;
 
 import loci.formats.FormatException;
@@ -457,8 +459,16 @@ public final class AWTImageTools {
     int w, int h) throws FormatException, IOException
   {
     try {
-      return ome.scifio.gui.AWTImageTools.openImage(buf, 
-          AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r), w, h, r.getSeries());
+      Reader scReader = AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r);
+      
+      if (!BufferedImageReader.class.isAssignableFrom(scReader.getClass()))
+        return null;
+      
+      BufferedImagePlane plane = new BufferedImagePlane(scReader.getContext());
+      plane.populate(scReader.getDatasetMetadata().get(r.getSeries()), 0, 0, w, h);
+     
+      return ome.scifio.gui.AWTImageTools.openImage(plane, 
+          (ome.scifio.gui.BufferedImageReader<?>)scReader, w, h, r.getSeries());
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);

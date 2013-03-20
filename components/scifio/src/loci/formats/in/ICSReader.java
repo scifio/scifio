@@ -123,21 +123,6 @@ public class ICSReader extends SCIFIOFormatReader {
     return ome.scifio.util.FormatTools.MUST_GROUP;
   }
 
-  /**
-   * @see loci.formats.IFormatReader#openBytes(int, byte[], int, int, int, int)
-   */
-  @Deprecated
-  public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
-    throws FormatException, IOException
-  {
-    try {
-      return reader.openPlane(series, no, buf, x, y, w, h);
-    }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-  }
-
   /* @see loci.formats.IFormatReader#getSeriesUsedFiles(boolean) */
   @Deprecated
   public String[] getSeriesUsedFiles(boolean noPixels) {
@@ -149,6 +134,7 @@ public class ICSReader extends SCIFIOFormatReader {
   public void close(boolean fileOnly) throws IOException {
     parser.close(fileOnly);
     reader.close(fileOnly);
+    plane = null;
   }
 
   // -- Internal FormatReader API methods --
@@ -175,7 +161,7 @@ public class ICSReader extends SCIFIOFormatReader {
     OMEMetadata omeMeta = new OMEMetadata(reader.getContext(), omeRoot);
 
     try {
-      Translator t = reader.getFormat().findSourceTranslator(OMEMetadata.class);
+      Translator t = reader.getFormat().findSourceTranslator(omeMeta);
       
       t.translate(meta, omeMeta);
     } catch (ome.scifio.FormatException e) {

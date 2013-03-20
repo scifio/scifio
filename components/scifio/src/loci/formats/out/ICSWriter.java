@@ -52,7 +52,7 @@ import loci.formats.SCIFIOFormatWriter;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/ICSWriter.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 @Deprecated
-public class ICSWriter extends SCIFIOFormatWriter<ICSFormat.Metadata> {
+public class ICSWriter extends SCIFIOFormatWriter {
 
   // -- Fields --
 
@@ -86,7 +86,7 @@ public class ICSWriter extends SCIFIOFormatWriter<ICSFormat.Metadata> {
   {
 
     try {
-      writer.saveBytes(getSeries(), no, buf, x, y, w, h);
+      writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }

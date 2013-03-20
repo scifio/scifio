@@ -37,20 +37,21 @@ package loci.formats;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+
+import net.imglib2.meta.Axes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import loci.legacy.adapter.Wrapper;
 import loci.legacy.adapter.AdapterTools;
+import ome.scifio.ByteArrayPlane;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.Format;
 import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
-import ome.scifio.io.Location;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -126,32 +127,74 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
   public Plane openPlane(int imageIndex, int planeIndex)
     throws ome.scifio.FormatException, IOException
   {
-    return reader.openBytes(planeIndex);
+    ByteArrayPlane bp = new ByteArrayPlane(getContext());
+    DatasetMetadata m = getDatasetMetadata();
+    bp.populate(m.get(imageIndex), reader.openBytes(planeIndex), 0, 0, 
+        m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
+    return bp;
   }
 
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
     throws ome.scifio.FormatException, IOException
   {
-    //TODO need to cache a byte array plane and create a helper method to wrap and return
-    return reader.openBytes(planeIndex, plane.getBytes());
+    byte[] buf = null;
+    ByteArrayPlane bp = null;
+    if (ByteArrayPlane.class.isAssignableFrom(plane.getClass())) {
+      bp = (ByteArrayPlane)plane;
+      buf = bp.getData();
+      reader.openBytes(imageIndex, buf);
+    }
+    else {
+      bp = new ByteArrayPlane(getContext());
+      buf = reader.openBytes(imageIndex);
+      DatasetMetadata m = getDatasetMetadata();
+      bp.populate(m.get(imageIndex), buf, 0, 0, 
+          m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
+    }
+    
+    return bp;
   }
 
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x,
     int y, int w, int h) throws ome.scifio.FormatException, IOException
   {
-    return reader.openBytes(imageIndex, buf, x, y, w, h);
+    byte[] buf = null;
+    ByteArrayPlane bp = null;
+    if (ByteArrayPlane.class.isAssignableFrom(plane.getClass())) {
+      bp = (ByteArrayPlane)plane;
+      buf = bp.getData();
+      reader.openBytes(imageIndex, buf, x, y, w, h);
+    }
+    else {
+      bp = new ByteArrayPlane(getContext());
+      buf = reader.openBytes(imageIndex, x, y, w, h);
+      DatasetMetadata m = getDatasetMetadata();
+      bp.populate(m.get(imageIndex), buf, 0, 0, 
+          m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
+    }
+    
+    return bp;
   }
 
   public Plane openPlane(int imageIndex, int planeIndex, int x, int y,
     int w, int h) throws ome.scifio.FormatException, IOException
   {
-    return reader.openPlane(planeIndex, x, y, w, h);
+    ByteArrayPlane bp = new ByteArrayPlane(getContext());
+    DatasetMetadata m = getDatasetMetadata();
+    bp.populate(m.get(imageIndex), reader.openBytes(planeIndex, x, y, w, h), 0, 0, 
+        m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
+    
+    return bp;
   }
 
   public Plane openThumbPlane(int imageIndex, int planeIndex)
     throws ome.scifio.FormatException, IOException
   {
-    return reader.openThumbBytes(planeIndex);
+    ByteArrayPlane bp = new ByteArrayPlane(getContext());
+    DatasetMetadata m = getDatasetMetadata();
+    bp.populate(m.get(imageIndex), reader.openThumbBytes(planeIndex), 0, 0, 
+        m.getAxisLength(imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
+    return bp;
   }
 
   public void setGroupFiles(boolean group) {
@@ -268,6 +311,7 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
 
   public void close() throws IOException {
     reader.close();
+    stream.close();
   }
 
   public Plane readPlane(RandomAccessInputStream s, int imageIndex, int x,

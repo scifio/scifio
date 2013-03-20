@@ -38,8 +38,6 @@ package loci.formats.out;
 
 import java.io.IOException;
 
-import ome.scifio.apng.APNGFormat;
-
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
 
@@ -50,7 +48,7 @@ import loci.formats.SCIFIOFormatWriter;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/APNGWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/APNGWriter.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class APNGWriter extends SCIFIOFormatWriter<APNGFormat.Metadata> {
+public class APNGWriter extends SCIFIOFormatWriter {
 
   // -- Constants --
 
@@ -73,7 +71,7 @@ public class APNGWriter extends SCIFIOFormatWriter<APNGFormat.Metadata> {
     throws FormatException, IOException
   {
     try {
-      writer.saveBytes(getSeries(), no, buf, x, y, w, h);
+      writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
