@@ -217,9 +217,8 @@ public class CoreMetadata implements Cloneable {
     resolutionCount = c.resolutionCount;
   }
 
-  public CoreMetadata(ome.scifio.DefaultDatasetMetadata scmeta, int series) {
-    this(scmeta.getImageMetadata().toArray(
-        new ome.scifio.ImageMetadata[scmeta.getImageCount()])[series]);
+  public CoreMetadata(ome.scifio.DatasetMetadata scmeta, int series) {
+    this(scmeta.get(series));
   }
   
   public CoreMetadata(ome.scifio.ImageMetadata imgMeta) {

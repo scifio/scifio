@@ -35,7 +35,7 @@
  */
 package loci.formats;
 
-import ome.scifio.DefaultImageMetadata;
+import ome.scifio.ImageMetadata;
 import loci.legacy.adapter.AbstractLegacyAdapter;
 
 /**
@@ -51,17 +51,17 @@ import loci.legacy.adapter.AbstractLegacyAdapter;
  *
  */
 public class CoreImageMetadataAdapter extends 
-AbstractLegacyAdapter<CoreMetadata, DefaultImageMetadata> {
+AbstractLegacyAdapter<CoreMetadata, ImageMetadata> {
 
   // -- LegacyWrapper API Methods --
   
   @Override
-  protected CoreMetadata wrapToLegacy(DefaultImageMetadata modern) {
+  protected CoreMetadata wrapToLegacy(ImageMetadata modern) {
     return new ImageMetadataWrapper(modern);
   }
 
   @Override
-  protected DefaultImageMetadata wrapToModern(CoreMetadata legacy) {
+  protected ImageMetadata wrapToModern(CoreMetadata legacy) {
     return new CoreMetadataWrapper(legacy);
   }
 
