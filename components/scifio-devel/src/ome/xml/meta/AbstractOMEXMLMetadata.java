@@ -44,6 +44,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import ome.scifio.common.Constants;
+
 import ome.xml.DOMUtil;
 import ome.xml.model.OME;
 import ome.xml.model.OMEModelObject;
@@ -111,7 +113,7 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
       r.setAttribute("xsi:schemaLocation", OME.NAMESPACE + " " + SCHEMA);
       doc.appendChild(r);
       DOMUtil.writeXML(os, doc);
-      return os.toString();
+      return os.toString(Constants.ENCODING);
     }
     catch (TransformerException exc) {
     }
