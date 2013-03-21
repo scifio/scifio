@@ -99,17 +99,4 @@ public class APNGWriter extends SCIFIOFormatWriter {
   public int[] getPixelTypes(String codec) {
     return writer.getPixelTypes(codec);
   }
-
-  // -- IFormatHandler API methods --
-
-  /* @see loci.formats.IFormatHandler#setId(String) */
-  @Deprecated
-  public void setId(String id) throws FormatException, IOException {
-    try {
-      writer.setDest(id);
-    }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e);
-    }
-  }
 }

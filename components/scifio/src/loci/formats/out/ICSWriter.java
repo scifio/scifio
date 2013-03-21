@@ -109,17 +109,9 @@ public class ICSWriter extends SCIFIOFormatWriter {
 
   // -- IFormatHandler API methods --
 
-  /* @see loci.formats.IFormatHandler#setId(String) */
-  public void setId(String id) throws FormatException, IOException {
-    try {
-      writer.setDest(id);
-    } catch (ome.scifio.FormatException e) {
-      throw (FormatException)e;
-    }
-  }
-
   /* @see loci.formats.IFormatHandler#close() */
   public void close() throws IOException {
+    super.close();
     ((ICSFormat.Writer)writer).close(getSeries());
   }
 

@@ -12,6 +12,7 @@ import ome.scifio.Format;
 import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Writer;
+import ome.xml.meta.OMEMetadata;
 
 /**
  * Abstract superclass of all biological file format writers.
@@ -349,9 +350,25 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
     if (id.equals(currentId)) return;
     writer.close();
     currentId = id;
-    
     try {
-      writer.setMetadata(writer.getFormat().createParser().parse(id));
+      Metadata meta = writer.getFormat().createMetadata();
+      MetadataRetrieve retrieve = getMetadataRetrieve();
+      
+      if (!ome.xml.meta.OMEXMLMetadata.class.
+          isAssignableFrom(retrieve.getClass()))
+      {
+        throw new FormatException("MetadataRetrieve was not an " +
+        		"instance ome.xml.meta.OMEXMLMetadata. Instead, got: " +
+            retrieve.getClass());
+      }
+      OMEMetadata omeMeta = new OMEMetadata((ome.xml.meta.OMEXMLMetadata)retrieve);
+      
+      // convert the metadata retrieve to ICSMetadata
+      writer.scifio().translators().translate(omeMeta, meta);
+
+      meta.setDatasetName(id);
+      
+      writer.setMetadata(meta);
       writer.setDest(id);
     }
     catch (ome.scifio.FormatException e) {
