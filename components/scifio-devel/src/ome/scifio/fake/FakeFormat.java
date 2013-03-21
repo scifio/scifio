@@ -669,7 +669,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
         imageMeta.setAxisTypes(axes);
         imageMeta.setAxisLengths(axisLengths);
         imageMeta.setPixelType(pixelType);
-        imageMeta.setPlaneCount(sizeZ * sizeT);
         imageMeta.setThumbSizeX(thumbSizeX);
         imageMeta.setThumbSizeY(thumbSizeY);
         imageMeta.setIndexed(indexed);
