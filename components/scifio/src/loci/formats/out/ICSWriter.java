@@ -42,6 +42,7 @@ import ome.scifio.ics.ICSFormat;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
+import loci.legacy.context.LegacyContext;
 
 /**
  * ICSWriter is the file format writer for ICS files.  It writes ICS version 1
@@ -60,7 +61,13 @@ public class ICSWriter extends SCIFIOFormatWriter {
 
   public ICSWriter() {
     super("Image Cytometry Standard", new String[] {"ids", "ics"});
-    writer = new ICSFormat.Writer();
+    format = LegacyContext.getSCIFIO().formats().getFormatFromClass(ICSFormat.class);
+    try {
+      writer = format.createWriter();
+    }
+    catch (ome.scifio.FormatException e) {
+      LOGGER.warn("Failed to create APNGFormat components");
+    }
   }
 
   // -- ICSWriter API methods --

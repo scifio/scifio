@@ -38,8 +38,11 @@ package loci.formats.out;
 
 import java.io.IOException;
 
+import ome.scifio.apng.APNGFormat;
+
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
+import loci.legacy.context.LegacyContext;
 
 /**
  * APNGWriter is the file format writer for PNG and APNG files.
@@ -48,6 +51,7 @@ import loci.formats.SCIFIOFormatWriter;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/APNGWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/APNGWriter.java;hb=HEAD">Gitweb</a></dd></dl>
  */
+@Deprecated
 public class APNGWriter extends SCIFIOFormatWriter {
 
   // -- Constants --
@@ -58,7 +62,13 @@ public class APNGWriter extends SCIFIOFormatWriter {
 
   public APNGWriter() {
     super("Animated PNG", "png");
-    writer = new ome.scifio.apng.APNGFormat.Writer();
+    format = LegacyContext.getSCIFIO().formats().getFormatFromClass(APNGFormat.class);
+    try {
+      writer = format.createWriter() ;
+    }
+    catch (ome.scifio.FormatException e) {
+      LOGGER.warn("Failed to create APNGFormat components");
+    }
   }
 
   // -- IFormatWriter API methods --

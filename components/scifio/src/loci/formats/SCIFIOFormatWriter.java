@@ -8,6 +8,7 @@ import net.imglib2.meta.Axes;
 import loci.formats.codec.CodecOptions;
 import loci.formats.meta.MetadataRetrieve;
 import ome.scifio.ByteArrayPlane;
+import ome.scifio.Format;
 import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Writer;
@@ -24,6 +25,9 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
 
   /** Scifio Writer for deference */
   protected Writer writer;
+  
+  /** Scifio Format corresponding to this writer */
+  protected Format format;
   
   
   //TODO could make this a Plane and then cache either a ByteArrayPlane or BufferedImagePlane as needed
