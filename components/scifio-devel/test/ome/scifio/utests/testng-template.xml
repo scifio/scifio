@@ -34,7 +34,7 @@
   #L%
   -->
 
-<suite name="IO_Tests" parallel="@PARALLEL@">
+<suite name="SCIFIO_Tests" parallel="@PARALLEL@">
     <test name="ByteArrayHandle">
         <parameter name="provider" value="ByteArrayHandle"/>
         <groups>
@@ -216,6 +216,71 @@
       <classes>
         <class name="ome.scifio.common.utests.DataToolsTest"/>
       </classes>
+    </test>
+    <test name="CheckerTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.CheckerTest"/>
+    	</classes>
+    </test>
+    <test name="DatasetMetadataTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.DatasetMetadataTest"/>
+    	</classes>
+    </test>
+    <test name="DiscoveryTest">
+    	<classes>
+	    	<class name="ome.scifio.discovery.utests.DiscoveryTest"/>
+    	</classes>
+    </test>
+    <test name="FormatTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.FormatTest"/>
+    	</classes>
+    </test>
+    <test name="HasColorTableTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.HasColorTableTest"/>
+    	</classes>
+    </test>
+    <test name="HasContextTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.HasContextTest"/>
+    	</classes>
+    </test>
+    <test name="HasFormatTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.HasFormatTest"/>
+    	</classes>
+    </test>
+    <test name="MetadataTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.MetadataTest"/>
+    	</classes>
+    </test>
+    <test name="ParserTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.ParserTest"/>
+    	</classes>
+    </test>
+    <test name="PlaneTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.PlaneTest"/>
+    	</classes>
+    </test>
+    <test name="ReaderTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.ReaderTest"/>
+    	</classes>
+    </test>
+    <test name="TranslatorTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.TranslatorTest"/>
+    	</classes>
+    </test>
+    <test name="WriterTest">
+    	<classes>
+	    	<class name="ome.scifio.utests.WriterTest"/>
+    	</classes>
     </test>
     <!--
     <test name="Encoding">
