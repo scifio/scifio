@@ -47,6 +47,7 @@ import ome.scifio.util.FormatTools;
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.OMEMetadata;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
@@ -56,7 +57,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = FromOMETranslator.class, attrs = {
+@Plugin(type = FromOMETranslator.class, priority = Priority.HIGH_PRIORITY,
+attrs = {
   @Attr(name = OMEICSTranslator.SOURCE, value = OMEMetadata.CNAME),
   @Attr(name = OMEICSTranslator.DEST, value = ICSFormat.Metadata.CNAME)
 })

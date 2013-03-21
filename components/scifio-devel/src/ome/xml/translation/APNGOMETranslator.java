@@ -36,6 +36,7 @@
 
 package ome.xml.translation;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
@@ -51,7 +52,8 @@ import ome.xml.meta.OMEXMLMetadataService;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = ToOMETranslator.class, attrs = {
+@Plugin(type = ToOMETranslator.class, priority = Priority.HIGH_PRIORITY,
+attrs = {
   @Attr(name = APNGOMETranslator.SOURCE, value = APNGFormat.Metadata.CNAME),
   @Attr(name = APNGOMETranslator.DEST, value = OMEMetadata.CNAME)
 })

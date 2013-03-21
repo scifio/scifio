@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
@@ -65,7 +66,8 @@ import ome.xml.model.primitives.Timestamp;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = ToOMETranslator.class, attrs = {
+@Plugin(type = ToOMETranslator.class, priority = Priority.HIGH_PRIORITY,
+attrs = {
   @Attr(name = ICSOMETranslator.SOURCE, value = ICSFormat.Metadata.CNAME),
   @Attr(name = ICSOMETranslator.DEST, value = OMEMetadata.CNAME)
 })

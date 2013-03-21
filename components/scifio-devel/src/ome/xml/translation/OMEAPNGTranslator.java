@@ -38,6 +38,7 @@ package ome.xml.translation;
 import ome.scifio.apng.APNGFormat;
 import ome.xml.meta.OMEMetadata;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
@@ -47,7 +48,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = FromOMETranslator.class, attrs = {
+@Plugin(type = FromOMETranslator.class, priority = Priority.HIGH_PRIORITY,
+attrs = {
   @Attr(name = OMEAPNGTranslator.SOURCE, value = OMEMetadata.CNAME),
   @Attr(name = OMEAPNGTranslator.DEST, value = APNGFormat.Metadata.CNAME)
 })
