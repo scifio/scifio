@@ -71,7 +71,6 @@ import ome.scifio.FieldPrinter;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
-import ome.scifio.SCIFIO;
 import ome.scifio.common.DataTools;
 import ome.scifio.gui.AWTImageTools;
 import ome.scifio.gui.BufferedImageReader;
@@ -99,16 +98,6 @@ public class APNGFormat
   public static final String FORMAT_NAME = "Animated PNG";
   
   // -- Constructor --
-
-  /**
-   * Zero-parameter constructor to facilitate SezPoz discovery.
-   * 
-   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
-   * @throws FormatException
-   */
-  public APNGFormat() throws FormatException {
-    this(null);
-  }
   
   /**
    * Constructs this {@code Format} and creates a two-way link with the
@@ -119,8 +108,8 @@ public class APNGFormat
    * @param ctx the context in which to create this format.
    * @throws FormatException
    */
-  public APNGFormat(final SCIFIO ctx) throws FormatException {
-    super(ctx, APNGFormat.FORMAT_NAME, "png", Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
+  public APNGFormat() throws FormatException {
+    super(APNGFormat.FORMAT_NAME, "png", Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
   }
 
   /**

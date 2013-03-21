@@ -49,6 +49,7 @@ import ome.scifio.Parser;
 import ome.scifio.SCIFIO;
 import ome.scifio.fake.FakeFormat;
 
+import org.scijava.Context;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -63,7 +64,7 @@ import org.testng.annotations.Test;
 @Test(groups="datasetMetadataTests")
 public class DatasetMetadataTest {
 
-  private SCIFIO scifio;
+  private Context context;
   private Parser p;
   private Format f;
   private DatasetMetadata dm;
@@ -73,10 +74,10 @@ public class DatasetMetadataTest {
   
   @BeforeMethod
   public void setUp() throws FormatException {
-    scifio = new SCIFIO();
-    f = scifio.getFormatFromClass(FakeFormat.class);
+    context = new Context();
+    f = context.getService(SCIFIO.class).formats().getFormatFromClass(FakeFormat.class);
     p = f.createParser();
-    dm = new DefaultDatasetMetadata(scifio.getContext());
+    dm = new DefaultDatasetMetadata(context);
   }
   
   @Test
@@ -95,7 +96,7 @@ public class DatasetMetadataTest {
   
   @AfterMethod
   public void tearDown() {
-    scifio = null;
+    context = null;
     f = null;
     p = null;
     dm = null;

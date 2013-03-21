@@ -53,12 +53,12 @@ public class TranslatingMetadata {
     // can not be converted to other (e.g. open-source) formats.
     
     // As usual, we start by creating a context and our trusty sample image.
-    SCIFIO scifio = new SCIFIO();
+    Context context = new Context();
     String sampleImage = "8bit-signed&pixelType=uint8&indexed=true&rgb=3&sizeZ=3&sizeC=3&sizeT=7&sizeY=50.fake";
     
     // First let's get a handle on a compatible Format, and parse the sample
     // image's Metadata
-    Format format = scifio.getFormat(sampleImage);
+    Format format = context.getService(SCIFIO.class).formats().getFormat(sampleImage);
     Metadata input = format.createParser().parse(sampleImage);
     
     // Now that we have some Metadata, let's find the MischeviousTranslator we defined
@@ -73,8 +73,8 @@ public class TranslatingMetadata {
     // Format's Metadata to the provided Metadata's type.
     t = format.findSourceTranslator(input);
     
-    // destination, FakeFormat.findSourceTranslator and findDestTranslator
-    // will both return it when provided a FakeFormat.Metadata instance.
+    // Both of these methods involve querying the translators discovered by
+    // the format's context, thus the annotations on the Translator below.
     
     // To try the MischeviousTranslator out, let's get another copy
     // of this image's Metadata.
@@ -114,9 +114,10 @@ public class TranslatingMetadata {
    * Formats to be customized via plug-in, and facilitates Translator-only
    * plug-ins that introduce new open-exchange formats.
    * 
-   * Note the two annotation parameters: metaIn is used to determine the 
-   * class of the input Metadata of this Translator's translate() method,
-   * and metaOut is a flag for the output class.
+   * Note the two annotation attributes: Translator.DEST is used to determine the 
+   * format of the input Metadata of this Translator's translate() method,
+   * and Translator.SOURCE is a key for the output type. Without these annotations,
+   * this Translator could not be returned by Format#findSource or findDest translator.
    * 
    */
   @Plugin(type = Translator.class, attrs = {

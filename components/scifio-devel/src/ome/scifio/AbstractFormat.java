@@ -82,20 +82,15 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
 
   // -- Constructor --
 
-  public AbstractFormat(final SCIFIO scifio, String formatName, String suffix,
+  public AbstractFormat(String formatName, String suffix,
       Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass,
       Class<W> wClass) throws FormatException {
-    this(scifio, formatName, new String[]{suffix}, mClass, cClass, pClass, rClass, wClass);
+    this(formatName, new String[]{suffix}, mClass, cClass, pClass, rClass, wClass);
   }
   
-  public AbstractFormat(final SCIFIO scifio, String formatName, String[] suffixes,
+  public AbstractFormat(String formatName, String[] suffixes,
       Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass,
       Class<W> wClass) throws FormatException {
-    if (scifio != null) {
-      setContext(scifio.getContext()); 
-      scifio.addFormat(this);
-      translatorClassList.addAll(findTranslatorClassList());
-    }
     this.formatName = formatName;
     this.suffixes = suffixes == null ? new String[0] : suffixes;
     metadataClass = mClass;

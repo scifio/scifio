@@ -19,6 +19,8 @@ package main.java;
 import java.io.IOException;
 import java.util.List;
 
+import org.scijava.Context;
+
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
@@ -36,11 +38,11 @@ public class IntroToSCIFIO {
   public static void main(final String... agrs) throws FormatException, IOException {
     // The first step when working with SCIFIO is to create a context.
     // This is an instance of ome.scifio.SCIFIO, created as follows:
-    final SCIFIO scifio = new SCIFIO();
+    Context context = new Context();
     
     // This context provides access to all supported Format types, which
     // will allow corresponding images to be opened:
-    List<Format> formats = scifio.getAllFormats();
+    List<Format> formats = context.getService(SCIFIO.class).formats().getAllFormats();
     
     // ------------------------------------------------------------------------
     // COMPARISON WITH BIO-FORMATS 4.X
@@ -72,7 +74,7 @@ public class IntroToSCIFIO {
     // This method tells the context to check all of its known formats and
     // return an ome.scifio.Reader capable of opening the specified image's
     // planes.
-    Reader reader = scifio.initializeReader(sampleImage);
+    Reader reader = context.getService(SCIFIO.class).initializer().initializeReader(sampleImage);
     
     // Here we open the actual planes and store them for future use
     for (int i=0; i<planes.length; i++) {

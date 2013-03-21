@@ -33,17 +33,40 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package ome.scifio;
 
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
+ * 
+ * This class represents a contextual environment of SCIFIO components.
+ * <p>
+ * The context is the entry point for image IO operations. How this class
+ * is constructed determines which formats will be supported in this context.
+ * </p>
+ * <p>
+ * Many of the image IO steps can be abstracted by using the {@link #initializeReader}
+ * and {@link #initializeWriter} methods. Alternately, to use a specific {@link ome.scifio.Format}
+ * implementation, the {@link #getFormatFromClass(Class)} method can provide a 
+ * typed {@code Format} object.
+ * </p>
+ * <p>
+ * Note that all {@code Formats} are singletons in a given context.
+ * </p>
+ * 
  * @author Mark Hiner
- *
  */
-public interface SCIFIO extends Service {
+@Plugin(type=Service.class)
+public class DefaultSCIFIO extends AbstractService implements SCIFIO {
 
-  InitializeService initializer();
-  
-  FormatService formats();
+  public InitializeService initializer() {
+    return getContext().getService(InitializeService.class);
+  }
+
+  public FormatService formats() {
+    return getContext().getService(FormatService.class);
+  }
 }

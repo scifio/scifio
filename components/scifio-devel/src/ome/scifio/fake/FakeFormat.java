@@ -60,7 +60,6 @@ import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.HasColorTable;
 import ome.scifio.Plane;
-import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
 import ome.scifio.TypedToDatasetTranslator;
 import ome.scifio.common.DataTools;
@@ -152,16 +151,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   // -- Constructor --
   
   /**
-   * Zero-parameter constructor to facilitate SezPoz discovery.
-   * 
-   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
-   * @throws FormatException
-   */
-  public FakeFormat() throws FormatException {
-    this(null);
-  }
-  
-  /**
    * Constructs this {@code Format} and creates a two-way link with the
    * provided context. This link will not be properly established if an
    * instance of this {@code Format} already exists in the provided context.
@@ -170,8 +159,8 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    * @param ctx the context in which to create this format.
    * @throws FormatException
    */
-  public FakeFormat(final SCIFIO ctx) throws FormatException {
-    super(ctx, FakeFormat.FORMAT_NAME, "fake", Metadata.class, 
+  public FakeFormat() throws FormatException {
+    super(FakeFormat.FORMAT_NAME, "fake", Metadata.class, 
         Checker.class, Parser.class, Reader.class, Writer.class);
   }
 

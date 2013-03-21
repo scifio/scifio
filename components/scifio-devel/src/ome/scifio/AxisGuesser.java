@@ -42,6 +42,7 @@ import net.imglib2.meta.Axes;
 import ome.scifio.io.Location;
 import ome.scifio.util.FormatTools;
 
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -375,31 +376,31 @@ public class AxisGuesser {
   // -- Main method --
   
   public static void main(String[] args) throws FormatException, IOException {
-    main(args, new SCIFIO());
+    main(args, new Context());
   }
 
   /** Method for testing pattern guessing logic. */
-  public static void main(String[] args, SCIFIO scifio) throws FormatException, IOException {
+  public static void main(String[] args, Context context) throws FormatException, IOException {
     Location file = args.length < 1 ?
-      new Location(scifio.getContext(), System.getProperty("user.dir")).listFiles()[0] :
-      new Location(scifio.getContext(), args[0]);
+      new Location(context, System.getProperty("user.dir")).listFiles()[0] :
+      new Location(context, args[0]);
     LOGGER.info("File = {}", file.getAbsoluteFile());
-    String pat = scifio.getContext().getService(FilePatternService.class).findPattern(file);
+    String pat = context.getService(FilePatternService.class).findPattern(file);
     if (pat == null) LOGGER.info("No pattern found.");
     else {
       LOGGER.info("Pattern = {}", pat);
-      FilePattern fp = new FilePattern(scifio.getContext(), pat);
+      FilePattern fp = new FilePattern(context, pat);
       if (fp.isValid()) {
         LOGGER.info("Pattern is valid.");
         String id = fp.getFiles()[0];
-        if (!new Location(scifio.getContext(), id).exists()) {
+        if (!new Location(context, id).exists()) {
           LOGGER.info("File '{}' does not exist.", id);
         }
         else {
           // read dimensional information from first file
           LOGGER.info("Reading first file ");
           
-          Reader reader = scifio.initializeReader(id);
+          Reader reader = context.getService(SCIFIO.class).initializer().initializeReader(id);
           String dimOrder = FormatTools.findDimensionOrder(reader.getDatasetMetadata(), 0);
           int sizeZ = reader.getDatasetMetadata().getAxisLength(0, Axes.Z);
           int sizeT = reader.getDatasetMetadata().getAxisLength(0, Axes.TIME);

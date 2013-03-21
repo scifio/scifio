@@ -18,6 +18,8 @@ package main.java;
 
 import java.io.IOException;
 
+import org.scijava.Context;
+
 import ome.scifio.FormatException;
 import ome.scifio.Reader;
 import ome.scifio.SCIFIO;
@@ -37,17 +39,17 @@ public class SavingImagePlanes {
     // it doesn't have a functional Writer, so we'll have to translate
     // to a different Format that can write our fake planes to disk.
     
-    SCIFIO scifio = new SCIFIO();
+    Context context = new Context();
     String sampleImage = "8bit-signed&pixelType=int8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50&sizeX=50.fake";
 
     // We'll need a path to write to
     String outPath = "SCIFIOTutorial.png";
     
     // We'll need a reader for the input image
-    Reader reader = scifio.initializeReader(sampleImage);
+    Reader reader = context.getService(SCIFIO.class).initializer().initializeReader(sampleImage);
     
     // .. and a writer for the output path
-    Writer writer = scifio.initializeWriter(sampleImage, outPath);
+    Writer writer = context.getService(SCIFIO.class).initializer().initializeWriter(sampleImage, outPath);
     
     // Note that these initialize methods are used for convenience.
     // Initializing a reader and a writer requires that you set the source

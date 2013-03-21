@@ -66,14 +66,14 @@ public class CheckerTest {
   private String falseId = "testFile.png";
   private Checker c;
   private FakeChecker fc;
-  private SCIFIO scifio;
+  private Context context;
   
   @BeforeMethod
   public void setUp() throws FormatException {
-    scifio = new SCIFIO();
-    Format f = scifio.getFormat(id);
+    context = new Context();
+    Format f = context.getService(SCIFIO.class).formats().getFormat(id);
     c = f.createChecker();
-    fc = new FakeChecker(scifio.getContext(), f);
+    fc = new FakeChecker(context, f);
   }
   
   @Test
@@ -89,7 +89,7 @@ public class CheckerTest {
     isFormat = c.isFormat(id, true);
     assertTrue(isFormat);
     
-    isFormat = c.isFormat(new RandomAccessInputStream(scifio.getContext(), id));
+    isFormat = c.isFormat(new RandomAccessInputStream(context, id));
     assertFalse(isFormat);
     
     isFormat = c.isFormat(falseId, false);
@@ -118,7 +118,7 @@ public class CheckerTest {
     isFormat = fc.isFormat(id, true);
     assertTrue(isFormat);
     
-    isFormat = fc.isFormat(new RandomAccessInputStream(scifio.getContext(), id));
+    isFormat = fc.isFormat(new RandomAccessInputStream(context, id));
     assertTrue(isFormat); 
     
     isFormat = fc.checkHeader(id.getBytes());
@@ -142,7 +142,7 @@ public class CheckerTest {
   
   @AfterMethod
   public void tearDown() {
-    scifio = null;
+    context = null;
     c = null;
     fc = null;
   }

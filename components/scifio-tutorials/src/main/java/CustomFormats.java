@@ -34,8 +34,6 @@ import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
-import ome.scifio.apng.APNGFormat;
-import ome.scifio.fake.FakeFormat;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -60,45 +58,36 @@ public class CustomFormats {
     // ------------------------------------------------------------------------
     
     // Let's start by creating a new context as we have in the other tutorials:
-    SCIFIO scifio = new SCIFIO();
+    Context context = new Context();
     
     // ... and a sample image path:
     String sampleImage = "notAnImage.scifiosmpl";
     
-    // Since we used the zero-parameter constructor for our context, it should
-    // have used SezPoz to discover all available Formats. As SampleFormat
-    // below was annotated as a @DiscoverableFormat it should be available to
-    // our context:
+    // When the Context was created, it automatically used SezPoz to discover 
+    // all available Formats. As SampleFormat below was annotated as a @Plugin
+    // it should be available to our context, directly:
     
-    Format format = scifio.getFormat(sampleImage);
-    System.out.println("SampleFormat found: " + (format != null));
+    Format format = context.getService(SCIFIO.class).formats().getFormat(sampleImage);
+    System.out.println("SampleFormat found via FormatService: " + (format != null));
     
-    // Next let's simulate an environment where SampleFormat wasn't
-    // automatically discovered - e.g., either because it wasn't
-    // marked @DiscoverableFormat or a context was created with a hard
-    // list of Formats:
-    scifio = new SCIFIO(new APNGFormat(), new FakeFormat());
+    // Using the FormatService provides access to a consistent singleton Format within
+    // the context.
     
-    // Now we should have a context that can support .png and .fake images,
-    // but not .scifiosmpl.
+    // Next let's suspend our disbelief and imagine that the SampleFormat was
+    // not annotated and thus not discovered automatically when constructing
+    // a context:
     
-    format = scifio.getFormat("test.png");
-    System.out.println("APNGFormat found: " + (format != null));
+    SampleFormat sFormat = new SampleFormat();
     
-    format = scifio.getFormat("test.fake");
-    System.out.println("FakeFormat found: " + (format != null));
+    // It may be tempting to call sFormat.setContext at this point to
+    // populate its context. But what we really want to do is ensure the
+    // context's FormatService knows about our sFormat:
     
-    try {
-      format = scifio.getFormat(sampleImage);
-    } catch(FormatException e) {
-      System.out.println(e);
-    }
+    context.getService(SCIFIO.class).formats().addFormat(sFormat);
     
-    // So let's add SampleFormat support to our context:
-    scifio.addFormat(new SampleFormat());
-    
-    format = scifio.getFormat(sampleImage);
-    System.out.println("SampleFormat is back: " + (format != null));
+    // Now our SampleFormat will be properly contextualized, and
+    // this particular instance will serve as a singleton within the
+    // FormatService of this context.
     
     // In closing, notice that the SampleFormat we defined lacks any
     // Translator objects. Translators would be defined within a Format
@@ -115,9 +104,13 @@ public class CustomFormats {
    * This is a non-functional Format which adds "support" for a fictional
    * ".scifiosmpl" image type.
    * 
-   * Note the annotation: DiscoverableFormat. Even though SampleFormat was
-   * not distributed with the SCIFIO .jar, this annotation allows it to be
-   * discovered with any other format when creating a new SCIFIO context.
+   * Note the annotation: Plugin. All Formats are plugins for the scijava
+   * Context, which allows them to be automatically discovered and instantiated
+   * as singletons whenever a Context is created.
+   * 
+   * Contexts also use a special type of plugin, Service, for performing operations
+   * within the scope of that context. The FormatService plugin deals with managing
+   * Formats within the context.
    *
    * @author Mark Hiner
    */
@@ -134,13 +127,9 @@ public class CustomFormats {
     // All classes that are discovered via SezPoz must have a zero-parameter
     // constructor.
     public SampleFormat() throws FormatException {
-     this(null); 
-    }
-    
-    public SampleFormat(SCIFIO ctx) throws FormatException {
       // This constructor is where we define the image formats that will be
       // supported by the components of this Format.
-      super(ctx, "Sample data", "scifiosmpl", Metadata.class, Checker.class,
+      super("Sample data", "scifiosmpl", Metadata.class, Checker.class,
           Parser.class, Reader.class, Writer.class);
     }
 

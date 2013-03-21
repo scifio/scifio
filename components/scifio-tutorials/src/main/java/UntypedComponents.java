@@ -18,6 +18,8 @@ package main.java;
 
 import java.io.IOException;
 
+import org.scijava.Context;
+
 import ome.scifio.Checker;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
@@ -41,12 +43,12 @@ public class UntypedComponents {
     // can also be accomplished manually through the SCIFIO components.
     
     // As always, we create a context and sample image path first
-    SCIFIO scifio = new SCIFIO();
+    Context context = new Context();
     String sampleImage = "8bit-signed&pixelType=int8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake";
 
     // This time we'll get a handle on the Format itself, which will allow us
     // to create the additional components.
-    Format format = scifio.getFormat(sampleImage);
+    Format format = context.getService(SCIFIO.class).formats().getFormat(sampleImage);
     
     // If we had been given a Format instead of the context, we can manually
     // check it's compatibility through a Checker component.
@@ -79,7 +81,7 @@ public class UntypedComponents {
     // both of these paths lead to the same Format, and will create a Reader
     // capable of reading the parsed Metadata
     reader = parser.getFormat().createReader();
-    reader = scifio.getFormatFromParser(parser.getClass()).createReader();
+    reader = context.getService(SCIFIO.class).formats().getFormatFromParser(parser.getClass()).createReader();
     
     // Unlike Formats within each context, component are never singletons and
     // thus we must re-initialize the reader.

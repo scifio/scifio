@@ -65,7 +65,6 @@ import ome.scifio.DefaultImageMetadata;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
-import ome.scifio.SCIFIO;
 import ome.scifio.common.DateTools;
 import ome.scifio.io.Location;
 import ome.scifio.io.RandomAccessInputStream;
@@ -88,17 +87,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   public static final String FORMAT_NAME = "Image Cytometry Standard";
 
   // -- Constructor --
-
-  /**
-   * Zero-parameter constructor to facilitate SezPoz discovery.
-   * 
-   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
-   * @throws FormatException
-   */
-  public ICSFormat() throws FormatException {
-    this(null);
-  }
-
   /**
    * Constructs this {@code Format} and creates a two-way link with the
    * provided context. This link will not be properly established if an
@@ -108,8 +96,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * @param ctx the context in which to create this format.
    * @throws FormatException
    */
-  public ICSFormat(final SCIFIO ctx) throws FormatException {
-    super(ctx, ICSFormat.FORMAT_NAME, new String[] {"ics", "ids"}, Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
+  public ICSFormat() throws FormatException {
+    super(ICSFormat.FORMAT_NAME, new String[] {"ics", "ids"}, Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
   }
   
   // -- Accessor methods for private classes --
