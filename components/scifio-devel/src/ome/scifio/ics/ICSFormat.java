@@ -119,6 +119,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     /** */
     protected boolean hasInstrumentData = false;
+    
+    /** True if this planes were stored in RGB order. */
+    private boolean storedRGB;
   
     /** ICS file name */
     protected String icsId = "";
@@ -143,17 +146,15 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       keyValPairs = new Hashtable<String, String>();
     }
     
-    
     /*
      * @see ome.scifio.AbstractMetadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       // Common metadata population
       
-      final ImageMetadata imageMeta = new DefaultImageMetadata();
-      add(imageMeta);
-      final int index = getImageCount() - 1;
-
+      if (getImageCount() == 0) add(new DefaultImageMetadata());
+      
+      final ImageMetadata imageMeta = get(0);
       imageMeta.setRGB(false);
 
       // find axis sizes
@@ -161,19 +162,13 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       double[] axesSizes = getAxesSizes();
       String[] axes = getAxes();
       
-      AxisType[] axisTypes = null;
-      int[] axisLengths = null;
+      AxisType[] axisTypes = new AxisType[axes.length];
+      int[] axisLengths = new int[axesSizes.length];
 
-      
       int bitsPerPixel = 0;
-
-      axisLengths = new int[axesSizes.length];
-
-      for (int n = 0; n < axisLengths.length; n++) {
-        axisLengths[n] = new Double(axesSizes[n]).intValue();
-      }
-
-      axisTypes = new AxisType[axes.length];
+      
+      imageMeta.setAxisLengths(axisLengths);
+      imageMeta.setAxisTypes(axisTypes);
 
       final Vector<Integer> channelLengths = new Vector<Integer>();
       final Vector<String> channelTypes = new Vector<String>();
@@ -182,57 +177,89 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         final String axis = axes[n].toLowerCase();
         if (axis.equals("x")) {
           axisTypes[n] = Axes.X;
+          axisLengths[n] = new Double(axesSizes[n]).intValue();
         }
         else if (axis.equals("y")) {
           axisTypes[n] = Axes.Y;
+          axisLengths[n] = new Double(axesSizes[n]).intValue();
         }
         else if (axis.equals("z")) {
           axisTypes[n] = Axes.Z;
+          axisLengths[n] = new Double(axesSizes[n]).intValue();
         }
         else if (axis.equals("t")) {
-          axisTypes[n] = Axes.TIME;
-        }
-        else if (axis.startsWith("c")) {
-          axisTypes[n] = Axes.CHANNEL;
-          channelTypes.add(FormatTools.CHANNEL);
-          channelLengths.add(axisLengths[n]);
-        }
-        else if (axis.startsWith("p")) {
-          axisTypes[n] = Axes.PHASE;
-          channelTypes.add(FormatTools.PHASE);
-          channelLengths.add(axisLengths[n]);
-        }
-        else if (axis.startsWith("f")) {
-          axisTypes[n] = Axes.FREQUENCY;
-          channelTypes.add(FormatTools.FREQUENCY);
-          channelLengths.add(axisLengths[n]);
+          int tIndex = imageMeta.getAxisIndex(Axes.TIME);
+          
+          if (tIndex == -1) {
+            axisTypes[n] = Axes.TIME;
+            axisLengths[n] = new Double(axesSizes[n]).intValue();
+          }
+          else
+            axisLengths[tIndex] *= new Double(axesSizes[n]).intValue();
         }
         else if (axis.equals("bits")) {
           axisTypes[n] = new CustomAxisType("bits");
-          bitsPerPixel = axisLengths[n];
-          while (bitsPerPixel % 8 != 0)
-            bitsPerPixel++;
+          bitsPerPixel = new Double(axesSizes[n]).intValue();
+          while (bitsPerPixel % 8 != 0) bitsPerPixel++;
           if (bitsPerPixel == 24 || bitsPerPixel == 48) bitsPerPixel /= 3;
+          axisLengths[n] = bitsPerPixel;
         }
         else {
-          axisTypes[n] = Axes.UNKNOWN;
-          channelTypes.add("");
-          channelLengths.add(axisLengths[n]);
+          int cIndex = imageMeta.getAxisIndex(Axes.CHANNEL);
+          
+          if (cIndex == -1) {
+            axisTypes[n] = Axes.CHANNEL;
+            axisLengths[n] = new Double(axesSizes[n]).intValue();
+          }
+          else {
+            axisLengths[cIndex] *= new Double(axesSizes[n]).intValue();
+          }
+          
+          if (imageMeta.getAxisIndex(Axes.X) == -1) {
+            setStoredRGB(true);
+            
+            int sizeC = imageMeta.getAxisLength(Axes.CHANNEL);
+            
+            imageMeta.setRGB(sizeC <= 4 && sizeC > 1);
+          }
+          
+          if  (axis.startsWith("c")) {
+            axisTypes[n] = Axes.CHANNEL;
+            channelTypes.add(FormatTools.CHANNEL);
+            channelLengths.add(axisLengths[n]);
+          }
+          else if (axis.startsWith("p")) {
+            axisTypes[n] = Axes.PHASE;
+            channelTypes.add(FormatTools.PHASE);
+            channelLengths.add(axisLengths[n]);
+          }
+          else if (axis.startsWith("f")) {
+            axisTypes[n] = Axes.FREQUENCY;
+            channelTypes.add(FormatTools.FREQUENCY);
+            channelLengths.add(axisLengths[n]);
+          }
+          else {
+            axisTypes[n] = Axes.UNKNOWN;
+            channelTypes.add("");
+            channelLengths.add(axisLengths[n]);
+          }
         }
       }
 
       if(getBitsPerPixel() != null)
         bitsPerPixel = getBitsPerPixel();
       
-      setBitsPerPixel(index, bitsPerPixel);
-
-      imageMeta.setAxisLengths(axisLengths);
-      imageMeta.setAxisTypes(axisTypes);
-      //storedRGB = getSizeX() == 0;
+      imageMeta.setBitsPerPixel(bitsPerPixel);
 
       if (channelLengths.size() == 0) {
         channelLengths.add(new Integer(1));
         channelTypes.add(FormatTools.CHANNEL);
+      }
+      
+      if (imageMeta.isRGB() && getEMWaves() != null && 
+          getEMWaves().length == imageMeta.getAxisLength(Axes.CHANNEL)) {
+        imageMeta.setRGB(false); 
+        setStoredRGB(true);
       }
 
       final int[] cLengths = new int[channelLengths.size()];
@@ -246,50 +273,70 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       imageMeta.setChannelLengths(cLengths);
       imageMeta.setChannelTypes(cTypes);
 
-      if (getAxisIndex(index, Axes.Z) == -1) {
-        addAxis(index, Axes.Z, 1);
+      if (imageMeta.getAxisIndex(Axes.Z) == -1) {
+        imageMeta.addAxis(Axes.Z, 1);
       }
-      if (getAxisIndex(index, Axes.CHANNEL) == -1) {
-        addAxis(index, Axes.CHANNEL, 1);
+      if (imageMeta.getAxisIndex(Axes.CHANNEL) == -1) {
+        imageMeta.addAxis(Axes.CHANNEL, 1);
       }
-      if (getAxisIndex(index, Axes.TIME) == -1) {
-        addAxis(index, Axes.TIME, 1);
+      if (imageMeta.getAxisIndex(Axes.TIME) == -1) {
+        imageMeta.addAxis(Axes.TIME, 1);
       }
 
-      if (getAxisLength(index, Axes.Z) == 0)
+      if (imageMeta.getAxisLength(Axes.Z) == 0)
         imageMeta.setAxisLength(Axes.Z, 1);
-      if (getAxisLength(index, Axes.CHANNEL) == 0)
+      if (imageMeta.getAxisLength(Axes.CHANNEL) == 0)
         imageMeta.setAxisLength(Axes.CHANNEL, 1);
-      if (getAxisLength(index, Axes.TIME) == 0)
+      if (imageMeta.getAxisLength(Axes.TIME) == 0)
         imageMeta.setAxisLength(Axes.TIME, 1);
+
+      imageMeta.setInterleaved(imageMeta.isRGB());
+      imageMeta.setIndexed(false);
+      imageMeta.setFalseColor(false);
+      imageMeta.setMetadataComplete(true);
+      imageMeta.setLittleEndian(true);
+
+      boolean lifetime = getLifetime();
+      String label = getLabels();
+
+      // HACK - support for Gray Institute at Oxford's ICS lifetime data
+      if (lifetime && label != null) {
+        int binCount = 0;
+        String newOrder = null;
+        
+        if (label.equalsIgnoreCase("t x y")) {
+          newOrder = "XYCZT";
+          imageMeta.setInterleaved(true);
+          binCount = imageMeta.getAxisLength(Axes.X);
+          imageMeta.setAxisLength(Axes.X, imageMeta.getAxisLength(Axes.Y));
+          imageMeta.setAxisLength(Axes.Y, imageMeta.getAxisLength(Axes.Z));
+          imageMeta.setAxisLength(Axes.Z, 1);
+        }
+        else if (label.equalsIgnoreCase("x y t")) {
+          newOrder = "XYCZT";
+          binCount = imageMeta.getAxisLength(Axes.Z);
+          imageMeta.setAxisLength(Axes.Z, 1);
+        }
+        else {
+          LOGGER.debug("Lifetime data, unexpected 'history labels' " + label);
+        }
+        
+        if (newOrder != null) {
+          imageMeta.setAxisTypes(FormatTools.findDimensionList(newOrder));
+          imageMeta.setAxisLength(Axes.CHANNEL, binCount);
+          setChannelDimLengths(0, new int[]{binCount});
+          setChannelDimTypes(0, new String[] {FormatTools.LIFETIME});
+        }
+      }
 
       imageMeta.setPlaneCount(getAxisLength(0, Axes.Z) *
           getAxisLength(0, Axes.TIME));
-
-      imageMeta.setInterleaved(isRGB(0));
-      //TODO coreMeta.imageCount = getSizeZ() * getSizeT();
-      //TODO if (destination.isRGB(0)) coreMeta.imageCount *= getSizeC();
-      setIndexed(index, false);
-      setFalseColor(index, false);
-      setMetadataComplete(index, true);
-      setLittleEndian(index, true);
-
-      boolean lifetime = getLifetime();
-
-      // HACK - support for Gray Institute at Oxford's ICS lifetime data
-      if (lifetime) {
-        final int binCount = getAxisLength(index, Axes.Z);
-        imageMeta.setAxisLength(
-          Axes.Z, (getAxisLength(index, Axes.CHANNEL)));
-        imageMeta.setAxisLength(Axes.CHANNEL, binCount);
-        imageMeta.setChannelLengths(new int[] {binCount});
-        imageMeta.setChannelTypes(new String[] {FormatTools.LIFETIME});
-        final int cIndex = getAxisIndex(index, Axes.CHANNEL);
-        final int zIndex = getAxisIndex(index, Axes.Z);
-        imageMeta.setAxisType(cIndex, Axes.Z);
-        imageMeta.setAxisType(zIndex, Axes.CHANNEL);
+      
+      if (!imageMeta.isRGB()) {
+        imageMeta.setPlaneCount(imageMeta.getPlaneCount() * 
+          imageMeta.getAxisLength(Axes.CHANNEL));
       }
-
+      
       final String byteOrder = getByteOrder();
       final String rFormat = getRepFormat();
       final String compression = getCompression();
@@ -297,7 +344,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       if (byteOrder != null) {
         final String firstByte = byteOrder.split(" ")[0];
         final int first = Integer.parseInt(firstByte);
-        imageMeta.setLittleEndian(rFormat.equals("real") ? first == 1 : first != 1);
+        boolean little = rFormat.equals("real") ? first == 1 : first != 1;
+        imageMeta.setLittleEndian(little);
       }
 
       final boolean gzip =
@@ -317,6 +365,16 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       catch (final FormatException e) {
         LOGGER.error("Could not get pixel type from bytes: " + bytes, e);
       }
+    }
+    
+    // -- ICSMetadata Methods --
+    
+    public boolean storedRGB() {
+      return storedRGB;
+    }
+    
+    public void setStoredRGB(boolean rgb) {
+      storedRGB = rgb;
     }
     
     // -- Helper Methods --
@@ -373,7 +431,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Mapping method --
     
     public void put(String key, String value) {
-      keyValPairs.put(key, value);
+      if (value != null) keyValPairs.put(key, value);
     }
     
     public void putDate(String value) {
@@ -607,6 +665,10 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         lifetime = true;
       }
       return lifetime;
+    }
+    
+    public String getLabels() {
+      return findStringValueForKey("history labels");
     }
     
     public String getExperimentType() {
@@ -1320,13 +1382,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     /** Whether or not the image is inverted along the Y axis. */
     private boolean invertY; //TODO only in oldInitFile
   
-    /** Whether or not the channels represent lifetime histogram bins. */
-    private boolean lifetime; //TODO only in oldInitFile
-  
     /** Image data. */
     private byte[] data;
-  
-    private boolean storedRGB = false; // TODO only in oldInitFile
   
     // -- Constructor --
   
@@ -1390,7 +1447,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
           data =
             new byte[len *
-                     (storedRGB ? getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) : 1)];
+                     (getMetadata().storedRGB() ? 
+                         getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) : 1)];
           int toRead = data.length;
           while (toRead > 0) {
             toRead -= gzipStream.read(data, data.length - toRead, toRead);
@@ -1398,13 +1456,13 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         }
       }
   
-      final int sizeC =
-        lifetime ? 1 : getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+      final int sizeC = getMetadata().getLifetime() ?
+        1 : getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
   
       final int channelLengths = 0;
   
       if (!getMetadata().isRGB(imageIndex) &&
-          getMetadata().getChannelDimLengths(imageIndex).length == 1 && storedRGB)
+          getMetadata().getChannelDimLengths(imageIndex).length == 1 && getMetadata().storedRGB())
       {
         // channels are stored interleaved, but because there are more than we
         // can display as RGB, we need to separate them
@@ -1465,10 +1523,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         data = null;
         gzip = false;
         invertY = false;
-        lifetime = false;
         prevImage = 0;
         //TODO hasInstrumentData = false;
-        storedRGB = false;
         if (gzipStream != null) {
           gzipStream.close();
         }
@@ -2408,7 +2464,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       // only the keyValPairs will be modified
  
       Hashtable<String, String> keyValPairs = null;
-      if (dest == null || dest.getKeyValPairs() == null) keyValPairs =
+      if (dest.getKeyValPairs() == null) keyValPairs =
         new Hashtable<String, String>();
       else 
         keyValPairs = dest.getKeyValPairs();
@@ -2479,7 +2535,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
           fPoint = true;
           signed = true;
           break;
-  
       }
   
       keyValPairs.put("representation sign", signed ? "signed" : "");
@@ -2492,6 +2547,11 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         byteOrder = fPoint ? "1" : "0";
       else
         byteOrder = fPoint ? "0" : "1";
+      
+      if (source.getBitsPerPixel(0) < 32) {
+        if (byteOrder.equals("0")) byteOrder = "1";
+        else byteOrder = "0";
+      }
   
       keyValPairs.put("representation byte_order", byteOrder);
   
