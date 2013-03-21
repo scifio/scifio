@@ -41,7 +41,6 @@ import java.nio.ByteBuffer;
 
 import loci.common.RandomAccessInputStream;
 import loci.legacy.adapter.AbstractLegacyAdapter;
-import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
 import loci.legacy.context.LegacyContext;
 
@@ -100,18 +99,17 @@ public class RandomAccessInputStreamAdapter
      * around the given file.
      */
     public LegacyWrapper(String file) throws IOException {
-//      super(file);
       super(LegacyContext.get());
-      rais = new RandomAccessInputStream(file);
+      throw new UnsupportedOperationException(
+          "Wrappers must be constructed using the objects they will wrap.");
     }
 
     /** Constructs a random access stream around the given handle. */
     public LegacyWrapper(ome.scifio.io.IRandomAccess handle) throws IOException {
 //      super(handle);
       super(LegacyContext.get());
-      rais = 
-        new RandomAccessInputStream(
-            AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(handle));
+      throw new UnsupportedOperationException(
+          "Wrappers must be constructed using the objects they will wrap.");
     }
 
     /**
@@ -121,23 +119,20 @@ public class RandomAccessInputStreamAdapter
     public LegacyWrapper(ome.scifio.io.IRandomAccess handle, String file)
       throws IOException
     {
-//      super(handle, file);
       super(LegacyContext.get());
-      rais = 
-        new RandomAccessInputStream(
-            AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(handle), file);
+      throw new UnsupportedOperationException(
+          "Wrappers must be constructed using the objects they will wrap.");
     }
 
     /** Constructs a random access stream around the given byte array. */
     public LegacyWrapper(byte[] array) throws IOException {
-//      super(array);
       super(LegacyContext.get());
-      rais = new RandomAccessInputStream(array);
+      throw new UnsupportedOperationException(
+          "Wrappers must be constructed using the objects they will wrap.");
     }
     
     /** Wrapper constructor. */
     public LegacyWrapper(RandomAccessInputStream rais) {
-//      super(rais);
       super(LegacyContext.get());
       this.rais = rais;
     }
