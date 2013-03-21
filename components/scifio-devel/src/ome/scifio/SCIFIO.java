@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import ome.scifio.discovery.Discoverer;
 import ome.scifio.discovery.FormatDiscoverer;
@@ -85,7 +86,7 @@ public class SCIFIO {
    * List of all formats known to this context.
    */
   private final List<Format> formats = new ArrayList<Format>();
-
+  
   /**
    * Maps Format classes to their instances.
    */
@@ -160,6 +161,23 @@ public class SCIFIO {
   // problems.
 
   // -- Public Methods --
+  
+  /**
+   * Returns a complete list of all suffixes supported within this context. 
+   * 
+   * @return
+   */
+  public String[] getSuffixes() {
+    TreeSet<String> ts = new TreeSet<String>();
+    
+    for (Format f : formats) {
+      for (String s : f.getSuffixes()) {
+        ts.add(s);
+      }
+    }
+    
+    return ts.toArray(new String[ts.size()]);
+  }
 
   /**
    * Makes the provided {@code Format} available for image IO operations in
@@ -367,6 +385,15 @@ public class SCIFIO {
   public List<Format> getFormatList(final String id)
       throws FormatException {
     return getFormatList(id, false);
+  }
+  
+  /**
+   * Returns a list of all Formats within this context.
+   * 
+   * @return
+   */
+  public List<Format> getAllFormats() {
+    return formats;
   }
 
   /**
