@@ -39,6 +39,7 @@ import java.awt.image.BufferedImage;
 
 import org.scijava.Context;
 
+import ome.scifio.common.DataTools;
 import ome.scifio.gui.AWTImageTools;
 
 /**
@@ -75,7 +76,27 @@ public class BufferedImagePlane extends AbstractPlane<BufferedImage, BufferedIma
    * </p>
    */
   public byte[] getBytes() {
-    return AWTImageTools.getBytes(getData(), false);
+    byte[] t = null;
+    
+    switch (getData().getColorModel().getComponentSize(0)) {
+    case 8:
+      t = AWTImageTools.getBytes(getData(), false);
+      break;
+    case 16:
+      short[][] ts = AWTImageTools.getShorts(getData());
+      t = new byte[ts.length * ts[0].length * 2];
+      for (int c=0; c<ts.length; c++) {
+        int offset = c * ts[c].length * 2;
+        for (int i=0; i<ts[c].length; i++) {
+          DataTools.unpackBytes(ts[c][i], t, offset, 2, getImageMetadata().isLittleEndian());
+          offset += 2;
+        }
+      }
+      break;
+  }
+    
+    
+    return t;
   }
   
   /*
