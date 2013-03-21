@@ -61,8 +61,8 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
 
   // -- Fields --
   
-  private WeakHashMap<L, WeakReference<M>> legacyToModern = new WeakHashMap<L, WeakReference<M>>();
-  private WeakHashMap<M, WeakReference<L>> modernToLegacy = new WeakHashMap<M, WeakReference<L>>();
+  private WeakHashMap<L, M> legacyToModern = new WeakHashMap<L, M>();
+  private WeakHashMap<M, L> modernToLegacy = new WeakHashMap<M, L>();
 
   // -- LegacyAdapter API --
 
@@ -81,13 +81,10 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
     L trueLegacy = legacy; // argument was actually a legacy object
     M fakeModern;
     synchronized (legacyToModern) {
-      WeakReference<M> wr = legacyToModern.get(trueLegacy);
-      if (wr == null || wr.get() == null) {
+      fakeModern = legacyToModern.get(trueLegacy);
+      if (fakeModern == null) {
         fakeModern = wrapToModern(trueLegacy);
-        legacyToModern.put(trueLegacy, new WeakReference<M>(fakeModern));
-      }
-      else {
-        fakeModern = wr.get();
+        legacyToModern.put(trueLegacy, fakeModern);
       }
     }
     return fakeModern;
@@ -108,13 +105,10 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
     M trueModern = modern; // argument was actually a modern object
     L fakeLegacy;
     synchronized (modernToLegacy) {
-      WeakReference<L> wr = modernToLegacy.get(trueModern);
-      if (wr == null || wr.get() == null) {
+      fakeLegacy = modernToLegacy.get(trueModern);
+      if (fakeLegacy == null) {
         fakeLegacy = wrapToLegacy(trueModern);
-        modernToLegacy.put(trueModern, new WeakReference<L>(fakeLegacy));
-      }
-      else {
-        fakeLegacy = wr.get();
+        modernToLegacy.put(trueModern, fakeLegacy);
       }
     }
     return fakeLegacy;
@@ -129,7 +123,6 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
       modernToLegacy.clear();
     }
   }
-  
 
   /**
    * Used Wraps the given modern object to a new instance of its legacy equivalent.
