@@ -172,6 +172,9 @@ public abstract class AbstractWriter<M extends TypedMetadata>
       throw new FormatException(
         "Can not set Destination without setting Metadata first.");
 
+    //FIXME
+    // set metadata.datasetName here when RAOS has better id handling
+    
     this.out = out;
     initialize(imageIndex);
   }
