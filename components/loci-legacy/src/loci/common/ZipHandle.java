@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.zip.ZipEntry;
 
+import loci.legacy.context.LegacyContext;
 import loci.utils.ProtectedMethodInvoker;
 
 /**
@@ -63,7 +64,7 @@ public class ZipHandle extends StreamHandle {
   // -- Constructor --
 
   public ZipHandle(String file) throws IOException {
-    sHandle = new ome.scifio.io.ZipHandle(file);
+    sHandle = new ome.scifio.io.ZipHandle(LegacyContext.getContext(), file);
   }
 
   /**
@@ -80,7 +81,7 @@ public class ZipHandle extends StreamHandle {
 
   /** Returns true if the given filename is a Zip file. */
   public static boolean isZipFile(String file) throws IOException {
-    ome.scifio.io.ZipHandle handle = new ome.scifio.io.ZipHandle();
+    ome.scifio.io.ZipHandle handle = new ome.scifio.io.ZipHandle(LegacyContext.getContext());
     
     return handle.isConstructable(file);
   }

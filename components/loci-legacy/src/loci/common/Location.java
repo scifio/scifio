@@ -42,8 +42,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
+import ome.scifio.io.LocationService;
+
 import loci.common.adapter.IRandomAccessAdapter;
 import loci.legacy.adapter.AdapterTools;
+import loci.legacy.context.LegacyContext;
 
 // HACK: for scan-deps.pl: The following packages are not actually "optional":
 // optional org.apache.log4j, optional org.slf4j.impl
@@ -68,19 +71,19 @@ public class Location {
   // -- Constructors --
 
   public Location(String pathname) {
-    loc = new ome.scifio.io.Location(pathname);
+    loc = new ome.scifio.io.Location(LegacyContext.getContext(), pathname);
   }
 
   public Location(File file) {
-    loc = new ome.scifio.io.Location(file);
+    loc = new ome.scifio.io.Location(LegacyContext.getContext(), file);
   }
 
   public Location(String parent, String child) {
-    loc = new ome.scifio.io.Location(parent, child);
+    loc = new ome.scifio.io.Location(LegacyContext.getContext(), parent, child);
   }
 
   public Location(Location parent, String child) {
-    loc = new ome.scifio.io.Location(parent.getAbsolutePath(), child);
+    loc = new ome.scifio.io.Location(LegacyContext.getContext(), parent.getAbsolutePath(), child);
   }
   
   // Private constructor for directly wrapping ome.scifio.io.Location
@@ -99,7 +102,7 @@ public class Location {
    * original values.
    */
   public static void reset() {
-    ome.scifio.io.Location.reset();
+    LegacyContext.getContext().getService(LocationService.class).reset();
   }
 
   /**
@@ -119,7 +122,7 @@ public class Location {
    * @param cache - true to turn cacheing on, false to leave it off.
    */
   public static void cacheDirectoryListings(boolean cache) {
-    ome.scifio.io.Location.cacheDirectoryListings(cache);
+    LegacyContext.getContext().getService(LocationService.class).cacheDirectoryListings(cache);
   }
 
   /**
@@ -129,7 +132,7 @@ public class Location {
    * seconds.
    */
   public static void setCacheDirectoryTimeout(double sec) {
-    ome.scifio.io.Location.setCacheDirectoryTimeout(sec);
+    LegacyContext.getContext().getService(LocationService.class).setCacheDirectoryTimeout(sec);
   }
 
   /**
@@ -138,14 +141,14 @@ public class Location {
    * Do this if directory contents might have changed in a significant way.
    */
   public static void clearDirectoryListingsCache() {
-    ome.scifio.io.Location.clearDirectoryListingsCache();
+    LegacyContext.getContext().getService(LocationService.class).clearDirectoryListingsCache();
   }
 
   /**
    * Remove any cached directory listings that have expired.
    */
   public static void cleanStaleCacheEntries() {
-    ome.scifio.io.Location.cleanStaleCacheEntries();
+    LegacyContext.getContext().getService(LocationService.class).cleanStaleCacheEntries();
   }
 
   /**
@@ -159,12 +162,12 @@ public class Location {
    * @see #getMappedId(String)
    */
   public static void mapId(String id, String filename) {
-    ome.scifio.io.Location.mapId(id, filename);
+    LegacyContext.getContext().getService(LocationService.class).mapId(id, filename);
   }
 
   /** Maps the given id to the given IRandomAccess object. */
   public static void mapFile(String id, IRandomAccess ira) {
-    ome.scifio.io.Location.mapFile(id, AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(ira));
+    LegacyContext.getContext().getService(LocationService.class).mapFile(id, AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(ira));
   }
 
   /**
@@ -177,18 +180,18 @@ public class Location {
    * @see #mapId(String, String)
    */
   public static String getMappedId(String id) {
-    return ome.scifio.io.Location.getMappedId(id);
+    return LegacyContext.getContext().getService(LocationService.class).getMappedId(id);
   }
 
   /** Gets the random access handle for the given id. */
   public static IRandomAccess getMappedFile(String id) {
     return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        ome.scifio.io.Location.getMappedFile(id));
+        LegacyContext.getContext().getService(LocationService.class).getMappedFile(id));
   }
 
   /** Return the id mapping. */
   public static HashMap<String, Object> getIdMap() { 
-    return ome.scifio.io.Location.getIdMap();
+    return LegacyContext.getContext().getService(LocationService.class).getIdMap();
   }
 
   /**
@@ -197,7 +200,7 @@ public class Location {
    * @throws IllegalArgumentException if the given HashMap is null.
    */
   public static void setIdMap(HashMap<String, Object> map) {
-    ome.scifio.io.Location.setIdMap(map);
+    LegacyContext.getContext().getService(LocationService.class).setIdMap(map);
   }
 
   /**
@@ -206,7 +209,7 @@ public class Location {
    */
   public static IRandomAccess getHandle(String id) throws IOException {
     return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        ome.scifio.io.Location.getHandle(id));
+        LegacyContext.getContext().getService(LocationService.class).getHandle(id));
   }
 
   /**
@@ -217,7 +220,7 @@ public class Location {
     throws IOException
   {
     return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        ome.scifio.io.Location.getHandle(id, writable, true));
+        LegacyContext.getContext().getService(LocationService.class).getHandle(id, writable, true));
   }
 
   /**
@@ -228,7 +231,7 @@ public class Location {
     boolean allowArchiveHandles) throws IOException
   {
     return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        ome.scifio.io.Location.getHandle(id, writable, allowArchiveHandles));
+        LegacyContext.getContext().getService(LocationService.class).getHandle(id, writable, allowArchiveHandles));
   }
   
   /**
@@ -240,7 +243,7 @@ public class Location {
    *           if the id is not valid.
    */
   public static void checkValidId(String id) throws IOException {
-    ome.scifio.io.Location.checkValidId(id);
+    LegacyContext.getContext().getService(LocationService.class).checkValidId(id);
   }
 
   /**

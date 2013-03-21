@@ -38,6 +38,8 @@ package loci.common;
 
 import java.io.IOException;
 
+import loci.legacy.context.LegacyContext;
+
 /**
  * A legacy delegator class for ome.scifio.common.DataTools.
  *
@@ -63,7 +65,7 @@ public final class DataTools {
 
   /** Reads the contents of the given file into a string. */
   public static String readFile(String id) throws IOException {
-    return ome.scifio.common.DataTools.readFile(id);
+    return ome.scifio.common.DataTools.readFile(LegacyContext.getContext(), id);
   }
 
   // -- Word decoding - bytes to primitive types --

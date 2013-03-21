@@ -39,6 +39,8 @@ package loci.common;
 import java.io.File;
 import java.io.IOException;
 
+import loci.legacy.context.LegacyContext;
+
 /**
  * Legacy delegator class for {@link ome.scifio.io.CaseInsensitiveLocation}
  *
@@ -52,22 +54,22 @@ public class CaseInsensitiveLocation extends Location {
 
   public CaseInsensitiveLocation(String pathname) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(pathname);
+    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.getContext(), pathname);
   }
 
   public CaseInsensitiveLocation(File file) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(file);
+    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.getContext(), file);
   }
 
   public CaseInsensitiveLocation(String parent, String child) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(parent, child);
+    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.getContext(), parent, child);
   }
 
   public CaseInsensitiveLocation(CaseInsensitiveLocation parent, String child) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation((ome.scifio.io.CaseInsensitiveLocation)parent.loc, child);
+    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.getContext(), (ome.scifio.io.CaseInsensitiveLocation)parent.loc, child);
   }
 
   // -- Methods --

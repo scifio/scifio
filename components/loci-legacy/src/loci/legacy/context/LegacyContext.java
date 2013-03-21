@@ -35,6 +35,7 @@
  */
 package loci.legacy.context;
 
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,16 +58,20 @@ public final class LegacyContext {
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(SCIFIO.class);
   
-  private static SCIFIO context = null;
+  private static SCIFIO scifio = null;
   
-  public static SCIFIO get() {
-    if(context == null) {
+  public static SCIFIO getSCIFIO() {
+    if(scifio == null) {
       try {
-        context = new SCIFIO();
+        scifio = new SCIFIO();
       } catch (FormatException e) {
         LOGGER.debug("Error creating SCIFIO context", e);
       }
     }
-    return context;
+    return scifio;
+  }
+ 
+  public static Context getContext() {
+    return getSCIFIO().getContext();
   }
 }

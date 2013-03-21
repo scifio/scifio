@@ -77,13 +77,13 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
   // -- Constructor --
   
   public SCIFIOReader() {
-    super("SCIFIO General Reader", LegacyContext.get().getSuffixes());
+    super("SCIFIO General Reader", LegacyContext.getSCIFIO().getSuffixes());
     
     readers = new ArrayList<Reader>();
     checkers = new ArrayList<Checker>();
     parsers = new ArrayList<Parser>();
     
-    formats = LegacyContext.get().getAllFormats();
+    formats = LegacyContext.getSCIFIO().getAllFormats();
     
     formatIndex = new HashMap<Format, Integer>();
     
@@ -201,7 +201,7 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
    */
   public void setId(String id) throws FormatException, IOException {
     try {
-      Format fmt = LegacyContext.get().getFormat(id);
+      Format fmt = LegacyContext.getSCIFIO().getFormat(id);
       
       if (!format.equals(fmt)) {
         close();

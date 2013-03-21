@@ -43,6 +43,7 @@ import loci.common.RandomAccessInputStream;
 import loci.legacy.adapter.AbstractLegacyAdapter;
 import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
+import loci.legacy.context.LegacyContext;
 
 /**
  * This class manages delegation between {@link loci.common.RandomAccessInputStream}
@@ -100,12 +101,14 @@ public class RandomAccessInputStreamAdapter
      */
     public LegacyWrapper(String file) throws IOException {
 //      super(file);
+      super(LegacyContext.getContext());
       rais = new RandomAccessInputStream(file);
     }
 
     /** Constructs a random access stream around the given handle. */
     public LegacyWrapper(ome.scifio.io.IRandomAccess handle) throws IOException {
 //      super(handle);
+      super(LegacyContext.getContext());
       rais = 
         new RandomAccessInputStream(
             AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(handle));
@@ -119,6 +122,7 @@ public class RandomAccessInputStreamAdapter
       throws IOException
     {
 //      super(handle, file);
+      super(LegacyContext.getContext());
       rais = 
         new RandomAccessInputStream(
             AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(handle), file);
@@ -127,12 +131,14 @@ public class RandomAccessInputStreamAdapter
     /** Constructs a random access stream around the given byte array. */
     public LegacyWrapper(byte[] array) throws IOException {
 //      super(array);
+      super(LegacyContext.getContext());
       rais = new RandomAccessInputStream(array);
     }
     
     /** Wrapper constructor. */
     public LegacyWrapper(RandomAccessInputStream rais) {
 //      super(rais);
+      super(LegacyContext.getContext());
       this.rais = rais;
     }
     

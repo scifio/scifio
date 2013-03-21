@@ -41,6 +41,8 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
+import org.scijava.Context;
+import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +55,6 @@ import ome.scifio.Format;
 import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
-import ome.scifio.SCIFIO;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -80,7 +81,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * 
  * @author Mark Hiner
  */
-public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatReader> {
+public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Reader, Wrapper<IFormatReader> {
   
   // -- Constants --
   
@@ -90,17 +91,16 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
   // -- Fields --
   
   private RandomAccessInputStream stream;
-  private SCIFIO context;
   private final IFormatReader reader;
 
   // -- Constructor --
   
-  public SCIFIOReaderWrapper(SCIFIO context, IFormatReader reader) {
-    this.context = context;
+  public SCIFIOReaderWrapper(Context context, IFormatReader reader) {
+    setContext(context);
     this.reader = reader;
     
     try {
-      this.stream = new RandomAccessInputStream(reader.getCurrentFile());
+      this.stream = new RandomAccessInputStream(getContext(), reader.getCurrentFile());
     } catch (IOException e) {
       LOGGER.debug("Failed to create a RAIS for file: " + reader.getCurrentFile(), e);
     }
@@ -114,14 +114,10 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
 
   // -- ome.scifio.Reader API --
   
-  public SCIFIO getContext() {
-    return context;
+  public void setFormat(Format format) {
+    throw new UnsupportedOperationException();
   }
-
-  public void setContext(SCIFIO ctx) {
-    context = ctx;
-  }
-
+  
   public Format getFormat() {
     throw new UnsupportedOperationException();
   }
@@ -246,7 +242,7 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
     Reader[] sReaders = new Reader[iReaders.length];
     
     for(int i = 0; i < iReaders.length; i++) {
-      sReaders[i] = new SCIFIOReaderWrapper(context, iReaders[i]);
+      sReaders[i] = new SCIFIOReaderWrapper(getContext(), iReaders[i]);
     }
     
     return sReaders;
@@ -291,7 +287,7 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
 
   public void setSource(File file) throws IOException {
     try {
-      this.stream = new RandomAccessInputStream(file.getAbsolutePath());
+      this.stream = new RandomAccessInputStream(getContext(), file.getAbsolutePath());
       reader.setId(file.getAbsolutePath());
     }
     catch (FormatException e) {
@@ -301,7 +297,7 @@ public class SCIFIOReaderWrapper implements ome.scifio.Reader, Wrapper<IFormatRe
 
   public void setSource(String fileName) throws IOException {
     try {
-      this.stream = new RandomAccessInputStream(fileName);
+      this.stream = new RandomAccessInputStream(getContext(), fileName);
       reader.setId(fileName);
     }
     catch (FormatException e) {

@@ -39,6 +39,7 @@ package loci.common;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import loci.legacy.context.LegacyContext;
 import loci.utils.ProtectedMethodInvoker;
 
 /**
@@ -66,7 +67,7 @@ public class URLHandle extends StreamHandle {
    * Constructs a new URLHandle using the given URL.
    */
   public URLHandle(String url) throws IOException {
-    sHandle = new ome.scifio.io.URLHandle(url);
+    sHandle = new ome.scifio.io.URLHandle(LegacyContext.getContext(), url);
   }
 
   // -- IRandomAccess API methods --

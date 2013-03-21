@@ -39,6 +39,7 @@ package loci.common;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import loci.legacy.context.LegacyContext;
 import loci.utils.ProtectedMethodInvoker;
 
 /**
@@ -68,7 +69,7 @@ public class BZip2Handle extends StreamHandle {
    */
   public BZip2Handle(String file) throws IOException {
     try {
-      sHandle = new ome.scifio.io.BZip2Handle(file);
+      sHandle = new ome.scifio.io.BZip2Handle(LegacyContext.getContext(), file);
     } catch (IOException e) {
       if (e instanceof ome.scifio.io.HandleException)
         throw (HandleException)e;
@@ -81,7 +82,7 @@ public class BZip2Handle extends StreamHandle {
 
   /** Returns true if the given filename is a BZip2 file. */
   public static boolean isBZip2File(String file) throws IOException {
-    ome.scifio.io.BZip2Handle handle = new ome.scifio.io.BZip2Handle();
+    ome.scifio.io.BZip2Handle handle = new ome.scifio.io.BZip2Handle(LegacyContext.getContext());
     
     return handle.isConstructable(file);
   }

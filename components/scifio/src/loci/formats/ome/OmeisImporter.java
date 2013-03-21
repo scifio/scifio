@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 
 import loci.formats.FormatException;
+import loci.legacy.context.LegacyContext;
 
 /**
  * A legacy delegator class for ome.xml.meta.OmeisImporter
@@ -65,11 +66,11 @@ public class OmeisImporter {
   // -- Constructor --
 
   public OmeisImporter() {
-    omeis = new ome.xml.meta.OmeisImporter();
+    omeis = new ome.xml.meta.OmeisImporter(LegacyContext.getContext());
   }
 
   public OmeisImporter(boolean stitchFiles) {
-    omeis = new ome.xml.meta.OmeisImporter(stitchFiles);
+    omeis = new ome.xml.meta.OmeisImporter(LegacyContext.getContext(), stitchFiles);
   }
 
   // -- OmeisImporter API methods - main functionality --

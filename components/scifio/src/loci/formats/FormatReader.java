@@ -58,6 +58,7 @@ import loci.formats.meta.IMetadata;
 import loci.formats.meta.MetadataStore;
 import loci.formats.ome.OMEXMLMetadata;
 import loci.formats.services.OMEXMLService;
+import loci.legacy.context.LegacyContext;
 
 import ome.xml.model.AffineTransform;
 import ome.xml.model.enums.AcquisitionMode;
@@ -113,7 +114,8 @@ import ome.xml.model.enums.handlers.MicroscopeTypeEnumHandler;
 import ome.xml.model.enums.handlers.NamingConventionEnumHandler;
 import ome.xml.model.enums.handlers.PixelTypeEnumHandler;
 import ome.xml.model.enums.handlers.PulseEnumHandler;
-import ome.xml.meta.OMEXMLMetadataTools;
+import ome.xml.meta.DefaultOMEXMLMetadataService;
+import ome.xml.meta.OMEXMLMetadataService;
 
 /**
  * Abstract superclass of all biological file format readers.
@@ -1473,7 +1475,7 @@ public abstract class FormatReader extends FormatHandler
    */
   protected Correction getCorrection(String value) throws FormatException {
     try {
-      return OMEXMLMetadataTools.getCorrection(value);
+      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getCorrection(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }
@@ -1487,7 +1489,7 @@ public abstract class FormatReader extends FormatHandler
    */
   protected DetectorType getDetectorType(String value) throws FormatException {
     try {
-      return OMEXMLMetadataTools.getDetectorType(value);
+      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getDetectorType(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }
@@ -1521,7 +1523,7 @@ public abstract class FormatReader extends FormatHandler
     throws FormatException
   {
     try {
-      return OMEXMLMetadataTools.getExperimentType(value);
+      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getExperimentType(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }
@@ -1633,7 +1635,7 @@ public abstract class FormatReader extends FormatHandler
    */
   protected Immersion getImmersion(String value) throws FormatException {
     try {
-      return OMEXMLMetadataTools.getImmersion(value);
+      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getImmersion(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }
@@ -1647,7 +1649,7 @@ public abstract class FormatReader extends FormatHandler
    */
   protected LaserMedium getLaserMedium(String value) throws FormatException {
     try {
-      return OMEXMLMetadataTools.getLaserMedium(value);
+      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getLaserMedium(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }
@@ -1661,7 +1663,7 @@ public abstract class FormatReader extends FormatHandler
    */
   protected LaserType getLaserType(String value) throws FormatException {
     try {
-      return OMEXMLMetadataTools.getLaserType(value);
+      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getLaserType(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }

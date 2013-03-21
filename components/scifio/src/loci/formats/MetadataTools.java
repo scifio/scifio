@@ -39,6 +39,8 @@ package loci.formats;
 import java.util.Hashtable;
 import java.util.Map;
 
+import ome.xml.meta.OMEXMLMetadataService;
+
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
@@ -78,7 +80,7 @@ public final class MetadataTools {
    * metadata from the given reader.
    */
   public static void populatePixels(MetadataStore store, IFormatReader r) {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata());
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata());
   }
 
   /**
@@ -89,7 +91,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata(), doPlane);
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata(), doPlane);
   }
 
   /**
@@ -102,7 +104,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane, boolean doImageName)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata(), doPlane, doImageName);
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata(), doPlane, doImageName);
   }
 
   /**
@@ -119,7 +121,7 @@ public final class MetadataTools {
     String pixelType, int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT,
     int samplesPerPixel)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populateMetadata(store, series, imageName, 
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).populateMetadata(store, series, imageName, 
       littleEndian, dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, 
       sizeT, samplesPerPixel);
   }
@@ -137,7 +139,7 @@ public final class MetadataTools {
     String imageName, loci.formats.CoreMetadata coreMeta)
   {
     ome.scifio.DefaultDatasetMetadata cMeta = 
-        new ome.scifio.DefaultDatasetMetadata(LegacyContext.get());
+        new ome.scifio.DefaultDatasetMetadata(LegacyContext.getContext());
     
     // Fake an ome.scifio.CoreMetadata array, with the converted coreMetadata at index series
     for(int i=0; i<series; i++)
@@ -145,7 +147,7 @@ public final class MetadataTools {
     
     cMeta.add(coreMeta.convert());
     
-    ome.xml.meta.OMEXMLMetadataTools.populateMetadata((ome.xml.meta.MetadataStore)store, 
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).populateMetadata((ome.xml.meta.MetadataStore)store, 
       series, imageName, cMeta);
   }
   
@@ -163,13 +165,13 @@ public final class MetadataTools {
     String pixelType, int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT,
     int samplesPerPixel)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populateMetadata(store, file, series, imageName,
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).populateMetadata(store, file, series, imageName,
       littleEndian, dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT,
       samplesPerPixel);
   }
 
   public static void populatePixelsOnly(MetadataStore store, IFormatReader r) {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixelsOnly(store,
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).populatePixelsOnly(store,
         AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r));
   }
 
@@ -177,7 +179,7 @@ public final class MetadataTools {
     boolean littleEndian, String dimensionOrder, String pixelType, int sizeX,
     int sizeY, int sizeZ, int sizeC, int sizeT, int samplesPerPixel)
   {
-    ome.xml.meta.OMEXMLMetadataTools.populatePixelsOnly(store, series, littleEndian,
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).populatePixelsOnly(store, series, littleEndian,
       dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT, 
       samplesPerPixel);
   }
@@ -188,7 +190,7 @@ public final class MetadataTools {
    * be "Detector:1:0".
    */
   public static String createLSID(String type, int... indices) {
-    return ome.xml.meta.OMEXMLMetadataTools.createLSID(type, indices);
+    return LegacyContext.getContext().getService(OMEXMLMetadataService.class).createLSID(type, indices);
   }
 
   /**
@@ -200,7 +202,7 @@ public final class MetadataTools {
     throws FormatException
   {
     try {
-      ome.xml.meta.OMEXMLMetadataTools.verifyMinimumPopulated(src);
+      LegacyContext.getContext().getService(OMEXMLMetadataService.class).verifyMinimumPopulated(src);
     }
     catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
@@ -216,7 +218,7 @@ public final class MetadataTools {
     throws FormatException
   {
     try {
-      ome.xml.meta.OMEXMLMetadataTools.verifyMinimumPopulated(src, n);
+      LegacyContext.getContext().getService(OMEXMLMetadataService.class).verifyMinimumPopulated(src, n);
     }
     catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
@@ -237,7 +239,7 @@ public final class MetadataTools {
    * @see #setDefaultCreationDate(MetadataStore, String, int)
    */
   public static void setDefaultDateEnabled(boolean enabled) {
-    ome.xml.meta.OMEXMLMetadataTools.setDefaultDateEnabled(enabled);
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).setDefaultDateEnabled(enabled);
   }
 
   /**
@@ -250,7 +252,7 @@ public final class MetadataTools {
   public static void setDefaultCreationDate(MetadataStore store, String id,
     int series)
   {
-    ome.xml.meta.OMEXMLMetadataTools.setDefaultCreationDate(store, id, series);
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).setDefaultCreationDate(store, id, series);
   }
 
   /**
@@ -258,7 +260,7 @@ public final class MetadataTools {
    * one of each of the following characters: 'X', 'Y', 'Z', 'C', 'T'.
    */
   public static String makeSaneDimensionOrder(String dimensionOrder) {
-    return ome.xml.meta.OMEXMLMetadataTools.makeSaneDimensionOrder(dimensionOrder);
+    return LegacyContext.getContext().getService(OMEXMLMetadataService.class).makeSaneDimensionOrder(dimensionOrder);
   }
 
   // -- Utility methods - original metadata --

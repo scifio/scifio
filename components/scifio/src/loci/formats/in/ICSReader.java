@@ -50,7 +50,8 @@ import ome.xml.meta.IMetadata;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.meta.OMEXMLMetadataImpl;
-import ome.xml.meta.OMEXMLMetadataTools;
+import ome.xml.meta.DefaultOMEXMLMetadataService;
+import ome.xml.meta.OMEXMLMetadataService;
 
 /**
  * ICSReader is the file format reader for ICS (Image Cytometry Standard)
@@ -77,7 +78,7 @@ public class ICSReader extends SCIFIOFormatReader {
     super("Image Cytometry Standard", new String[] {"ics", "ids"});
     
     try {
-      format = LegacyContext.get().getFormatFromClass(ICSFormat.class);
+      format = LegacyContext.getSCIFIO().getFormatFromClass(ICSFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();
@@ -140,7 +141,7 @@ public class ICSReader extends SCIFIOFormatReader {
     super.setId(id);
     IMetadata omeRoot = new OMEXMLMetadataImpl() ;
     omeRoot.createRoot();
-    OMEXMLMetadataTools.populatePixels(omeRoot, reader.getDatasetMetadata());
+    LegacyContext.getContext().getService(OMEXMLMetadataService.class).populatePixels(omeRoot, reader.getDatasetMetadata());
     omeRoot.setImageName(id, 0);
     
     OMEMetadata omeMeta = new OMEMetadata(reader.getContext(), omeRoot);

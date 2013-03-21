@@ -43,6 +43,7 @@ import java.nio.ByteBuffer;
 
 import loci.common.adapter.IRandomAccessAdapter;
 import loci.legacy.adapter.AdapterTools;
+import loci.legacy.context.LegacyContext;
 
 /**
  * A legacy delegator class for ome.scifio.io.RandomAccessOutputStream
@@ -65,7 +66,7 @@ public class RandomAccessOutputStream extends OutputStream implements DataOutput
    * @throws IOException If there is a problem opening the file.
    */
   public RandomAccessOutputStream(String file) throws IOException {
-    raos = new ome.scifio.io.RandomAccessOutputStream(file);
+    raos = new ome.scifio.io.RandomAccessOutputStream(LegacyContext.getContext(), file);
   }
 
   /**
