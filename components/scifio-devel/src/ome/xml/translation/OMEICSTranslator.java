@@ -46,6 +46,8 @@ import ome.scifio.ics.ICSFormat;
 import ome.scifio.util.FormatTools;
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.OMEMetadata;
+import ome.xml.model.primitives.PositiveFloat;
+import ome.xml.model.primitives.PositiveInteger;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Attr;
@@ -76,30 +78,67 @@ public class OMEICSTranslator extends FromOMETranslator<ICSFormat.Metadata> {
     
     if (options != null && options.getMetadataLevel() != MetadataLevel.MINIMUM) {
       dest.putDescription(retrieve.getImageDescription(0));
-      dest.putMicroscopeModel(retrieve.getMicroscopeModel(0));
-      dest.putMicroscopeManufacturer(retrieve.getMicroscopeManufacturer(0));
-      dest.putExperimentType(retrieve.getExperimentType(0).getValue());
+      
+      if (retrieve.getInstrumentCount() > 0) {
+        dest.putMicroscopeModel(retrieve.getMicroscopeModel(0));
+        dest.putMicroscopeManufacturer(retrieve.getMicroscopeManufacturer(0));
+        Hashtable<Integer, Integer> laserWaves = new Hashtable<Integer, Integer>();
+        
+        for (int i=0; i<retrieve.getLightSourceCount(0); i++) {
+          laserWaves.put(i, retrieve.getLaserWavelength(0, i).getValue());
+        }
+        
+        dest.putWavelengths(laserWaves);
+        dest.putLaserManufacturer(retrieve.getLaserManufacturer(0, 0));
+        dest.putLaserModel(retrieve.getLaserModel(0, 0));
+        dest.putLaserPower(retrieve.getLaserPower(0, 0));
+        dest.putLaserRepetitionRate(retrieve.getLaserRepetitionRate(0, 0));
+        
+        dest.putFilterSetModel(retrieve.getFilterSetModel(0, 0));
+        dest.putDichroicModel(retrieve.getDichroicModel(0, 0));
+        dest.putExcitationModel(retrieve.getFilterModel(0, 0));
+        dest.putEmissionModel(retrieve.getFilterModel(0, 1));
+        
+        dest.putObjectiveModel(retrieve.getObjectiveModel(0, 0));
+        dest.putImmersion(retrieve.getObjectiveImmersion(0, 0).getValue());
+        dest.putLensNA(retrieve.getObjectiveLensNA(0, 0));
+        dest.putWorkingDistance(retrieve.getObjectiveWorkingDistance(0, 0));
+        dest.putMagnification(retrieve.getObjectiveCalibratedMagnification(0, 0));
+        
+        dest.putDetectorManufacturer(retrieve.getDetectorManufacturer(0, 0));
+        dest.putDetectorModel(retrieve.getDetectorModel(0, 0));
+      }
+      
+      if (retrieve.getExperimentCount() > 0) {
+        dest.putExperimentType(retrieve.getExperimentType(0).getValue());
+        dest.putAuthorLastName(retrieve.getExperimenterLastName(0));
+      }
       
       Double[] pixelSizes = new Double[5];
       String[] axes = new String[5];
       String[] units = new String[5];
+      
       String order = retrieve.getPixelsDimensionOrder(0).getValue();
+      PositiveFloat sizex = retrieve.getPixelsPhysicalSizeX(0),
+          sizey = retrieve.getPixelsPhysicalSizeY(0),
+          sizez = retrieve.getPixelsPhysicalSizeZ(0);
+      Double sizet = retrieve.getPixelsTimeIncrement(0);
       
       for (int i=0; i<order.length(); i++) {
         switch (order.toUpperCase().charAt(i)) {
-        case 'X': pixelSizes[i] = retrieve.getPixelsPhysicalSizeX(0).getValue();
+        case 'X': pixelSizes[i] = sizex == null ? 1.0 : sizex.getValue();
                   axes[i] = "x";
                   units[i] = "um";
           break;
-        case 'Y': pixelSizes[i] = retrieve.getPixelsPhysicalSizeY(0).getValue();
+        case 'Y': pixelSizes[i] = sizey == null ? 1.0 : sizey.getValue();
                   axes[i] = "y";
                   units[i] = "um";
           break;
-        case 'Z': pixelSizes[i] = retrieve.getPixelsPhysicalSizeZ(0).getValue();
+        case 'Z': pixelSizes[i] = sizez == null ? 1.0 : sizez.getValue();
                   axes[i] = "z";
                   units[i] = "um";
           break;
-        case 'T': pixelSizes[i] = retrieve.getPixelsTimeIncrement(0);
+        case 'T': pixelSizes[i] = sizet == null ? 1.0 : sizet;
                   axes[i] = "t";
                   units[i] = "s";
           break;
@@ -117,79 +156,54 @@ public class OMEICSTranslator extends FromOMETranslator<ICSFormat.Metadata> {
       dest.putAxes(axes);
       dest.putUnits(units);
       
-      Double[] timestamps = new Double[source.getAxisLength(0, Axes.TIME)];
-      
-      for (int t=0; t<timestamps.length; t++) {
-        for (int z=0; z<source.getAxisLength(0, Axes.Z); z++) {
-          for (int c=0; c<source.getEffectiveSizeC(0); c++) {
-            int index = FormatTools.getIndex(FormatTools.findDimensionOrder(source, 0), 0,
-                source.getAxisLength(0,  Axes.Z), source.getEffectiveSizeC(0),
-                source.getAxisLength(0, Axes.TIME), z, c, t);
-            timestamps[t] = retrieve.getPlaneDeltaT(0, index);
+      if (retrieve.getPlaneCount(0) > 0) {
+        Double[] timestamps = new Double[source.getAxisLength(0, Axes.TIME)];
+
+        for (int t=0; t<timestamps.length; t++) {
+          for (int z=0; z<source.getAxisLength(0, Axes.Z); z++) {
+            for (int c=0; c<source.getEffectiveSizeC(0); c++) {
+              int index = FormatTools.getIndex(FormatTools.findDimensionOrder(source, 0), 
+                  source.getAxisLength(0,  Axes.Z), source.getEffectiveSizeC(0),
+                  source.getAxisLength(0, Axes.TIME), source.getPlaneCount(0), z, c, t);
+              timestamps[t] = retrieve.getPlaneDeltaT(0, index);
+            }
           }
         }
+
+        dest.putTimestamps(timestamps);
+        dest.putExposureTime(retrieve.getPlaneExposureTime(0, 0));
       }
-      
-      dest.putTimestamps(timestamps);
-      
+
       Hashtable<Integer, String> channelNames = new Hashtable<Integer, String>();
       Hashtable<Integer, Double> pinholes = new Hashtable<Integer, Double>();
       Hashtable<Integer, Double> gains = new Hashtable<Integer, Double>();
       List<Integer> emWaves = new ArrayList<Integer>();
       List<Integer> exWaves = new ArrayList<Integer>();
-      
+
       for (int i=0; i<source.getEffectiveSizeC(0); i++) {
         String cName = retrieve.getChannelName(0, i);
         if (cName != null) channelNames.put(i, cName);
-        
+
         Double pinSize = retrieve.getChannelPinholeSize(0, i);
         if (pinSize != null) pinholes.put(i, pinSize);
-        
-        Integer emWave = retrieve.getChannelEmissionWavelength(0, i).getValue();
-        if (emWave != null) emWaves.add(emWave);
-        
-        Integer exWave = retrieve.getChannelExcitationWavelength(0, i).getValue();
-        if (exWave != null) exWaves.add(exWave);
-        
-        Double chGain = retrieve.getDetectorSettingsGain(0, i);
-        if (chGain != null) gains.put(i, chGain);
+
+        PositiveInteger emWave = retrieve.getChannelEmissionWavelength(0, i);
+        if (emWave != null) emWaves.add(emWave.getValue());
+
+        PositiveInteger exWave = retrieve.getChannelExcitationWavelength(0, i);
+        if (exWave != null) exWaves.add(exWave.getValue());
+
+        if (retrieve.getInstrumentCount() > 0 && retrieve.getDetectorCount(0) > 0) {
+          Double chGain = retrieve.getDetectorSettingsGain(0, i);
+          if (chGain != null) gains.put(i, chGain);
+        }
       }
-      
+
       dest.putChannelNames(channelNames);
       dest.putPinholes(pinholes);
       dest.putEXWaves(exWaves.toArray(new Integer[exWaves.size()]));
       dest.putEMWaves(emWaves.toArray(new Integer[emWaves.size()]));
       dest.putGains(gains);
-      
-      Hashtable<Integer, Integer> laserWaves = new Hashtable<Integer, Integer>();
-      
-      for (int i=0; i<retrieve.getLightSourceCount(0); i++) {
-        laserWaves.put(i, retrieve.getLaserWavelength(0, i).getValue());
-      }
-      
-      dest.putWavelengths(laserWaves);
-      dest.putLaserManufacturer(retrieve.getLaserManufacturer(0, 0));
-      dest.putLaserModel(retrieve.getLaserModel(0, 0));
-      dest.putLaserPower(retrieve.getLaserPower(0, 0));
-      dest.putLaserRepetitionRate(retrieve.getLaserRepetitionRate(0, 0));
-      
-      dest.putFilterSetModel(retrieve.getFilterSetModel(0, 0));
-      dest.putDichroicModel(retrieve.getDichroicModel(0, 0));
-      dest.putExcitationModel(retrieve.getFilterModel(0, 0));
-      dest.putEmissionModel(retrieve.getFilterModel(0, 1));
-      
-      dest.putObjectiveModel(retrieve.getObjectiveModel(0, 0));
-      dest.putImmersion(retrieve.getObjectiveImmersion(0, 0).getValue());
-      dest.putLensNA(retrieve.getObjectiveLensNA(0, 0));
-      dest.putWorkingDistance(retrieve.getObjectiveWorkingDistance(0, 0));
-      dest.putMagnification(retrieve.getObjectiveCalibratedMagnification(0, 0));
-      
-      dest.putDetectorManufacturer(retrieve.getDetectorManufacturer(0, 0));
-      dest.putDetectorModel(retrieve.getDetectorModel(0, 0));
-      
-      dest.putAuthorLastName(retrieve.getExperimenterLastName(0));
-      
-      dest.putExposureTime(retrieve.getPlaneExposureTime(0, 0));
     }
   }
 }
