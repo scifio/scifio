@@ -562,6 +562,18 @@ public class APNGFormat
       lastPlaneIndex = planeIndex;
       return plane.populate(lastPlane);
     }
+    
+    /*
+     * @see ome.scifio.AbstractReader#close(boolean)
+     */
+    public void close(boolean fileOnly) throws IOException {
+      super.close(fileOnly);
+      
+      if (!fileOnly) {
+        lastPlane = null;
+        lastPlaneIndex = -1;
+      }
+    }
   
     // -- Helper methods --
   

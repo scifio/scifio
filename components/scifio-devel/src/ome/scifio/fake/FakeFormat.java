@@ -508,6 +508,17 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
 
       return plane;
     }
+    
+    /**
+     * @param fileOnly
+     * @throws IOException
+     */
+    public void close(boolean fileOnly) throws IOException {
+      super.close(fileOnly);
+      
+      if (!fileOnly)
+        ac = 0;
+    }
   }
   
   /**
