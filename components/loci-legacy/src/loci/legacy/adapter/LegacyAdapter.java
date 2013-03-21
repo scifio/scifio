@@ -36,6 +36,8 @@
 
 package loci.legacy.adapter;
 
+import org.scijava.plugin.SciJavaPlugin;
+
 /**
  * This interface represents adapter classes for delegating between equivalent "Legacy"
  * and "Modern" classes. Such delegation is intended to facilitate backwards
@@ -63,7 +65,7 @@ package loci.legacy.adapter;
  * @param <L> Legacy class
  * @param <M> Modern class
  */
-public interface LegacyAdapter <L, M> {
+public interface LegacyAdapter extends SciJavaPlugin {
 
   /**
    * Used to retrieve the legacy instance associated with a given
@@ -73,43 +75,52 @@ public interface LegacyAdapter <L, M> {
    * Modern to Legacy instances, as opposed to {@link LegacyAdapter#wrapToLegacy(M)} which will
    * naively always wrap.
    * </p>
-   * 
-   * @param modern - An instance of the modern class.
-   * @return The associated legacy instance.
-   */
-  L getLegacy(M modern);
-  
-  /**
    * Used to retrieve the modern instance associated with a given
    * legacy instance.
    * <p>
    * This is the method that should typically be invoked to convert from
    * Legacy to Modern instances, as opposed to {@link LegacyAdapter#wrapToModern(L)} which will
    * naively always wrap.
+   * 
+   * @param modern - An instance of the modern class.
+   * @return The associated legacy instance.
+   */
+  Object get(Object toAdapt);
+  
+  /**
+   * Wraps the provided object. If it's a legacy instance, a modern
+   * is returned. If it's a modern instance, a legacy is returned.
+   * <p>
+   * Returns null if the object type is not associated with this adapter.
    * </p>
    * 
-   * @param legacy - An instance of the legacy class.
-   * @return The associated modern instance.
+   * @param toWrap
+   * @return
    */
-  M getModern(L legacy);
+  Object wrap(Object toWrap);
   
   /**
-   * Maps the provided modernKey (weakly) to the provided
-   * legacyValue.
+   * Creates a weak(key):value mapping, so for the lifetime of the key,
+   * the value will always be returned if this adapter is queried.
    * 
-   * @param modern
-   * @param legacy
+   * @param key
+   * @param value
    */
-  void mapModern(M modernKey, L legacyValue);
+  void map(Object key, Object value);
   
   /**
-   * Maps the provided legacyKey (weakly) to the provided
-   * modernValue.
+   * Returns the class of the associated legacy type.
    * 
-   * @param modern
-   * @param legacy
+   * @return
    */
-  void mapLegacy(L legacyKey, M modernValue);
+  Class<?> getLegacyClass();
+  
+  /**
+   * Returns the class of the associated Modern type.
+   * 
+   * @return
+   */
+  Class<?> getModernClass();
 
   /**
    * Resets any mappings in this adapter.

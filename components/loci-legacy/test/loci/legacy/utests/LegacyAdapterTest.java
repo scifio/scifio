@@ -40,7 +40,6 @@ import java.lang.ref.WeakReference;
 
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertNull;
 
 import loci.common.adapter.IRandomAccessAdapter;
 import loci.legacy.adapter.Wrapper;
@@ -85,13 +84,13 @@ public class LegacyAdapterTest {
   @Test
   public void testGetCurrent() throws IOException {
     legacyIRA = new loci.common.ByteArrayHandle(BYTES);
-    currentIRA = adapter.getModern(legacyIRA);
+    currentIRA = (IRandomAccess) adapter.get(legacyIRA);
     
     System.gc();
 
     // verify that the linkage between the legacy and modern
     // classes wasn't lost.
-    isEqual(currentIRA, adapter.getModern(legacyIRA));
+    isEqual(currentIRA, adapter.get(legacyIRA));
     
     // legacyIRA should be a wrapper.. verify:
     isEqual(currentIRA, ((Wrapper<?>)legacyIRA).unwrap());
@@ -100,20 +99,21 @@ public class LegacyAdapterTest {
   @Test
   public void testGetLegacy() throws IOException {
     currentIRA = new ome.scifio.io.ByteArrayHandle(BYTES);
-    legacyIRA = adapter.getLegacy(currentIRA);
+    legacyIRA = (loci.common.IRandomAccess) adapter.get(currentIRA);
 
     System.gc();
     
     // verify that the linkage between the legacy and modern
     // classes wasn't lost.
-    isEqual(legacyIRA, adapter.getLegacy(currentIRA));
+    isEqual(legacyIRA, adapter.get(currentIRA));
   }
   
   @Test
   public void testWeakRefs() throws IOException {
     currentIRA = new ome.scifio.io.ByteArrayHandle(BYTES);
     WeakReference<loci.common.IRandomAccess> weakIRA =
-      new WeakReference<loci.common.IRandomAccess> (adapter.getLegacy(currentIRA));
+      new WeakReference<loci.common.IRandomAccess> (
+          (loci.common.IRandomAccess) adapter.get(currentIRA));
     
     System.gc();
     
@@ -141,7 +141,7 @@ public class LegacyAdapterTest {
   @Test
   public void testCurrentNull() {
     legacyIRA = null;
-    currentIRA = (ByteArrayHandle) adapter.getModern(legacyIRA);
+    currentIRA = (ByteArrayHandle) adapter.get(legacyIRA);
     
     assertEquals(currentIRA, null);
   }
@@ -149,7 +149,7 @@ public class LegacyAdapterTest {
   @Test
   public void testLegacyNull() {
     currentIRA = null;
-    legacyIRA = (loci.common.ByteArrayHandle) adapter.getLegacy(currentIRA);
+    legacyIRA = (loci.common.ByteArrayHandle) adapter.get(currentIRA);
     
     assertEquals(legacyIRA, null);
   }

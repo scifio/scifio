@@ -44,7 +44,6 @@ import net.imglib2.meta.AxisType;
 import ome.scifio.AbstractDatasetMetadata;
 import ome.scifio.ImageMetadata;
 
-import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
 
 /**
@@ -87,8 +86,7 @@ public class CoreMetadataListWrapper extends AbstractDatasetMetadata
   }
 
   public ImageMetadata get(int imageIndex) {
-    return AdapterTools.getAdapter(CoreImageMetadataAdapter.class).
-            getModern(unwrap().get(imageIndex));
+    return FormatAdapter.get(unwrap().get(imageIndex));
   }
 
   public int getImageCount() {

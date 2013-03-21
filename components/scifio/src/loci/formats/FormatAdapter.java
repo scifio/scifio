@@ -1,8 +1,8 @@
 /*
  * #%L
- * OME SCIFIO package for reading and converting scientific file formats.
+ * Legacy layer preserving compatibility between legacy Bio-Formats and SCIFIO.
  * %%
- * Copyright (C) 2005 - 2012 Open Microscopy Environment:
+ * Copyright (C) 2005 - 2013 Open Microscopy Environment:
  *   - Board of Regents of the University of Wisconsin-Madison
  *   - Glencoe Software, Inc.
  *   - University of Dundee
@@ -35,44 +35,52 @@
  */
 package loci.formats;
 
-import org.scijava.plugin.Plugin;
+import java.util.List;
 
+import loci.legacy.adapter.AdapterTools;
+import ome.scifio.ImageMetadata;
+import ome.scifio.Metadata;
 import ome.scifio.Reader;
-import loci.legacy.adapter.AbstractLegacyAdapter;
-import loci.legacy.context.LegacyContext;
 
 /**
- * This class manages delegation between {@link loci.formats.IFormatReader}
- * and {@link ome.scifio.Reader}.
- * <p>
- * Delegation is maintained by two WeakHashTables. See {@link AbstractLegacyAdapter}
- * </p>
- * <p>
- * Functionally, the delegation is handled in the Wrapper classes - currently
- * only for wrapping from loci.formats.IFormatReader to ome.scifio.Reader is 
- * supported.
- * </p>
+ * Provides type-safe adapting methods for loci.formats classes using
+ * AdapterTools.get().
+ * 
  * @author Mark Hiner
+ *
  */
-@Plugin(type=SCIFIOReaderAdapter.class)
-public class SCIFIOReaderAdapter extends AbstractLegacyAdapter<IFormatReader, ome.scifio.Reader> {
-  
-  // -- Constructor --
-  
-  public SCIFIOReaderAdapter() {
-    super(IFormatReader.class, ome.scifio.Reader.class);
-  }
+public final class FormatAdapter {
 
-  // -- LegacyAdapter API Methods --
+  // -- CoreImageMetadata Adapter Methods --
   
-  @Override
-  protected IFormatReader wrapToLegacy(Reader modern) {
-    throw new UnsupportedOperationException();
+  public static CoreMetadata get(ImageMetadata meta) {
+    return (CoreMetadata)AdapterTools.get(meta);
   }
-
-  @Override
-  protected Reader wrapToModern(IFormatReader legacy) {
-    return new SCIFIOReaderWrapper(LegacyContext.get(), legacy);
+  
+  public static ImageMetadata get(CoreMetadata meta) {
+    return (ImageMetadata)AdapterTools.get(meta);
   }
-
+  
+  // -- CoreMetadata Adapter methods --
+  
+  public static List<CoreMetadata> get(Metadata meta) {
+    @SuppressWarnings("unchecked")
+    List<CoreMetadata> metaList = (List<CoreMetadata>)AdapterTools.get(meta);
+    
+    return metaList;
+  }
+  
+  public static Metadata get(List<CoreMetadata> meta) {
+    return (Metadata)AdapterTools.get(meta);
+  }
+  
+  // -- SCIFIOReader Adapter Methods --
+  
+  public static IFormatReader get(Reader reader) {
+    return (IFormatReader)AdapterTools.get(reader);
+  }
+  
+  public static Reader get(IFormatReader reader) {
+    return (Reader)AdapterTools.get(reader);
+  }
 }

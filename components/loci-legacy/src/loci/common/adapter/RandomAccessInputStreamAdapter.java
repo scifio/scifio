@@ -40,6 +40,8 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
+import org.scijava.plugin.Plugin;
+
 import loci.common.RandomAccessInputStream;
 import loci.legacy.adapter.AbstractLegacyAdapter;
 import loci.legacy.adapter.Wrapper;
@@ -58,8 +60,15 @@ import loci.legacy.context.LegacyContext;
  * </p>
  * @author Mark Hiner
  */
+@Plugin(type=RandomAccessInputStreamAdapter.class)
 public class RandomAccessInputStreamAdapter
   extends AbstractLegacyAdapter<RandomAccessInputStream, ome.scifio.io.RandomAccessInputStream> {
+  
+  // -- Constructor --
+  
+  public RandomAccessInputStreamAdapter() {
+    super(RandomAccessInputStream.class, ome.scifio.io.RandomAccessInputStream.class);
+  }
 
   // -- LegacyAdapter API --
   
@@ -70,7 +79,11 @@ public class RandomAccessInputStreamAdapter
 
   /* @see LegacyAdapter#wrapToModern(L) */
   public ome.scifio.io.RandomAccessInputStream wrapToModern(RandomAccessInputStream legacy) {
-    return new LegacyWrapper(legacy);
+    try {
+      return new LegacyWrapper(legacy);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to create legacy wrapper", e);
+    }
   }
   
   // -- Delegation Classes --
@@ -132,8 +145,9 @@ public class RandomAccessInputStreamAdapter
           "Wrappers must be constructed using the objects they will wrap.");
     }
     
-    /** Wrapper constructor. */
-    public LegacyWrapper(RandomAccessInputStream rais) {
+    /** Wrapper constructor. 
+     * @throws IOException */
+    public LegacyWrapper(RandomAccessInputStream rais) throws IOException {
       super(LegacyContext.get());
       this.rais = new WeakReference<RandomAccessInputStream>(rais);
     }

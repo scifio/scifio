@@ -39,7 +39,6 @@ package loci.formats;
 import java.io.IOException;
 
 import loci.common.RandomAccessInputStream;
-import loci.common.adapter.RandomAccessInputStreamAdapter;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
@@ -47,8 +46,7 @@ import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
 import loci.formats.services.OMEXMLService;
 import loci.formats.services.OMEXMLServiceImpl;
-import loci.legacy.adapter.AdapterTools;
-import ome.scifio.SCIFIO;
+import loci.legacy.adapter.CommonAdapter;
 
 /**
  * A legacy delegator class for ome.scifio.util.FormatTools.
@@ -239,7 +237,7 @@ public final class FormatTools {
    * to the given Z, C and T coordinates.
    */
   public static int getIndex(IFormatReader reader, int z, int c, int t) {
-    return ome.scifio.util.FormatTools.getIndex(AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(reader),
+    return ome.scifio.util.FormatTools.getIndex(FormatAdapter.get(reader),
       reader.getSeries(), z, c, t);
   }
 
@@ -270,7 +268,7 @@ public final class FormatTools {
    */
   public static int[] getZCTCoords(IFormatReader reader, int index) {
 //    new OldToNewAdapter(CONTEXT, reader);
-    return ome.scifio.util.FormatTools.getZCTCoords(AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(reader),
+    return ome.scifio.util.FormatTools.getZCTCoords(FormatAdapter.get(reader),
       reader.getSeries(), index);
   }
 
@@ -303,7 +301,7 @@ public final class FormatTools {
     String newOrder, int newIndex) throws FormatException
   {
    try {
-    return ome.scifio.util.FormatTools.getReorderedIndex(AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(reader),
+    return ome.scifio.util.FormatTools.getReorderedIndex(FormatAdapter.get(reader),
       reader.getSeries(), newOrder, newIndex);
   }
   catch (ome.scifio.FormatException e) {
@@ -482,7 +480,7 @@ public final class FormatTools {
     int bufLength, int x, int y, int w, int h) throws FormatException
   {
     try {
-      ome.scifio.util.FormatTools.checkPlaneParameters(AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r),
+      ome.scifio.util.FormatTools.checkPlaneParameters(FormatAdapter.get(r),
         r.getSeries(), no, bufLength, x, y, w, h);
     }
     catch (ome.scifio.FormatException e) {
@@ -495,7 +493,7 @@ public final class FormatTools {
     throws FormatException
   {
     try {
-      ome.scifio.util.FormatTools.checkPlaneNumber(AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r),
+      ome.scifio.util.FormatTools.checkPlaneNumber(FormatAdapter.get(r),
         r.getSeries(), no);
     }
     catch (ome.scifio.FormatException e) {
@@ -508,7 +506,7 @@ public final class FormatTools {
     throws FormatException
   {
     try {
-      ome.scifio.util.FormatTools.checkTileSize(AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r),
+      ome.scifio.util.FormatTools.checkTileSize(FormatAdapter.get(r),
         x, y, w, h, r.getSeries());
     }
     catch (ome.scifio.FormatException e) {
@@ -520,7 +518,7 @@ public final class FormatTools {
     throws FormatException
   {
     try {
-      ome.scifio.util.FormatTools.checkBufferSize(r.getSeries(), AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r), len);
+      ome.scifio.util.FormatTools.checkBufferSize(r.getSeries(), FormatAdapter.get(r), len);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -536,7 +534,7 @@ public final class FormatTools {
     throws FormatException
   {
     try {
-      ome.scifio.util.FormatTools.checkBufferSize(AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r),
+      ome.scifio.util.FormatTools.checkBufferSize(FormatAdapter.get(r),
           len, w, h, r.getSeries());
     }
     catch (ome.scifio.FormatException e) {
@@ -553,19 +551,18 @@ public final class FormatTools {
   {
     //TODO can not fully read the stream as that would be bad.. need a better way of converting.
 //     Also this is destructive as it changes the position of the passed stream
-    return ome.scifio.util.FormatTools.validStream(
-        AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(stream), len, littleEndian);
+    return ome.scifio.util.FormatTools.validStream(CommonAdapter.get(stream), len, littleEndian);
   }
 
   /** Returns the size in bytes of a single plane. */
   public static int getPlaneSize(IFormatReader r) {
-    return ome.scifio.util.FormatTools.getPlaneSize(AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r),
+    return ome.scifio.util.FormatTools.getPlaneSize(FormatAdapter.get(r),
       r.getSeries());
   }
 
   /** Returns the size in bytes of a w * h tile. */
   public static int getPlaneSize(IFormatReader r, int w, int h) {
-    return ome.scifio.util.FormatTools.getPlaneSize(AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r),
+    return ome.scifio.util.FormatTools.getPlaneSize(FormatAdapter.get(r),
       w, h, r.getSeries());
   }
 
@@ -580,7 +577,7 @@ public final class FormatTools {
   {
     try {
       return ome.scifio.util.FormatTools.getFilename(series, image,
-          AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r), pattern);
+          FormatAdapter.get(r), pattern);
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -592,7 +589,7 @@ public final class FormatTools {
   {
     try {
       return ome.scifio.util.FormatTools.getFilenames(pattern,
-          AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r));
+          FormatAdapter.get(r));
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -604,7 +601,7 @@ public final class FormatTools {
   {
     try {
       return ome.scifio.util.FormatTools.getImagesPerFile(pattern,
-          AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r));
+          FormatAdapter.get(r));
     }
     catch (ome.scifio.FormatException e) {
       throw new FormatException(e);
@@ -647,7 +644,7 @@ public final class FormatTools {
   {
     try {
       return ome.scifio.util.FormatTools.openThumbBytes(
-          AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(reader),
+          FormatAdapter.get(reader),
           reader.getSeries(), no);
     }
     catch (ome.scifio.FormatException e) {
@@ -685,6 +682,10 @@ public final class FormatTools {
     catch (ServiceException se) {
       throw new FormatException(se);
     }
+    finally {
+      reader.close();
+    }
+    
     reader.setId(input);
 
     IFormatWriter writer = new ImageWriter();

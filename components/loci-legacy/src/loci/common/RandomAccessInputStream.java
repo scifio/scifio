@@ -42,9 +42,8 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
-import loci.common.adapter.IRandomAccessAdapter;
-import loci.common.adapter.RandomAccessInputStreamAdapter;
 import loci.legacy.adapter.AdapterTools;
+import loci.legacy.adapter.CommonAdapter;
 import loci.legacy.adapter.Wrapper;
 import loci.legacy.context.LegacyContext;
 
@@ -84,7 +83,7 @@ public class RandomAccessInputStream extends InputStream
   /** Constructs a random access stream around the given handle. */
   public RandomAccessInputStream(IRandomAccess handle) throws IOException {
     this(new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(),
-            AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle)));
+        CommonAdapter.get(handle)));
   }
 
   /**
@@ -95,7 +94,7 @@ public class RandomAccessInputStream extends InputStream
     throws IOException
   {
     this( new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(),
-        AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle), file));
+        CommonAdapter.get(handle), file));
   }
 
   /** Constructs a random access stream around the given byte array. */
@@ -106,7 +105,7 @@ public class RandomAccessInputStream extends InputStream
   /** Wrapper constructor. */
   public RandomAccessInputStream(ome.scifio.io.RandomAccessInputStream rais) {
     this.rais = new WeakReference<ome.scifio.io.RandomAccessInputStream>(rais);
-    AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).mapLegacy(this, rais);
+    AdapterTools.map(this, rais);
   }
   
   // -- Wrapper API Methods --

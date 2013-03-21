@@ -38,6 +38,8 @@ package loci.common.adapter;
 
 import java.lang.ref.WeakReference;
 
+import org.scijava.plugin.Plugin;
+
 import loci.common.enumeration.CodedEnum;
 import loci.legacy.adapter.AbstractLegacyAdapter;
 import loci.legacy.adapter.Wrapper;
@@ -57,8 +59,15 @@ import loci.legacy.adapter.Wrapper;
  * @author Mark Hiner
  *
  */
+@Plugin(type=CodedEnumAdapter.class)
 public class CodedEnumAdapter extends 
   AbstractLegacyAdapter<CodedEnum, ome.scifio.enumeration.CodedEnum> {
+  
+  // -- Constructor --
+  
+  public CodedEnumAdapter() {
+    super(CodedEnum.class, ome.scifio.enumeration.CodedEnum.class);
+  }
   
   // -- LegacyAdapter API Methods --
   

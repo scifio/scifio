@@ -41,7 +41,6 @@ import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import loci.common.adapter.IRandomAccessAdapter;
 import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
 
@@ -68,7 +67,7 @@ public abstract class StreamHandle implements IRandomAccess, Wrapper<ome.scifio.
   
   public StreamHandle(ome.scifio.io.StreamHandle handle) {
     sHandle = new WeakReference<ome.scifio.io.StreamHandle>(handle);
-    AdapterTools.getAdapter(IRandomAccessAdapter.class).mapLegacy(this, handle);
+    AdapterTools.map(this, handle);
   }
 
   // -- IRandomAccess API methods --

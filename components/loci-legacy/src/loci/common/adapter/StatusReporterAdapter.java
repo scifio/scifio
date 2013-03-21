@@ -38,11 +38,13 @@ package loci.common.adapter;
 
 import java.lang.ref.WeakReference;
 
+import org.scijava.plugin.Plugin;
+
 import loci.common.StatusEvent;
 import loci.common.StatusListener;
 import loci.common.StatusReporter;
 import loci.legacy.adapter.AbstractLegacyAdapter;
-import loci.legacy.adapter.AdapterTools;
+import loci.legacy.adapter.CommonAdapter;
 import loci.legacy.adapter.Wrapper;
 
 /**
@@ -60,8 +62,15 @@ import loci.legacy.adapter.Wrapper;
  * @author Mark Hiner
  *
  */
+@Plugin(type=StatusReporterAdapter.class)
 public class StatusReporterAdapter extends 
   AbstractLegacyAdapter<StatusReporter, ome.scifio.common.StatusReporter> {
+  
+  // -- Constructor --
+  
+  public StatusReporterAdapter() {
+    super(StatusReporter.class, ome.scifio.common.StatusReporter.class);
+  }
   
   //-- LegacyAdapter API Methods --
   
@@ -110,11 +119,11 @@ public class StatusReporterAdapter extends
     // -- StatusReporter API Methods --
 
     public void addStatusListener(ome.scifio.common.StatusListener l) {
-      unwrap().addStatusListener(AdapterTools.getAdapter(StatusListenerAdapter.class).getLegacy(l));
+      unwrap().addStatusListener(CommonAdapter.get(l));
     }
 
     public void removeStatusListener(ome.scifio.common.StatusListener l) {
-      unwrap().removeStatusListener(AdapterTools.getAdapter(StatusListenerAdapter.class).getLegacy(l));
+      unwrap().removeStatusListener(CommonAdapter.get(l));
     }
 
     public void notifyListeners(ome.scifio.common.StatusEvent e) {
@@ -172,11 +181,11 @@ public class StatusReporterAdapter extends
     // -- StatusReporter API Methods --
 
     public void addStatusListener(StatusListener l) {
-      unwrap().addStatusListener(AdapterTools.getAdapter(StatusListenerAdapter.class).getModern(l));
+      unwrap().addStatusListener(CommonAdapter.get(l));
     }
 
     public void removeStatusListener(StatusListener l) {
-      unwrap().removeStatusListener(AdapterTools.getAdapter(StatusListenerAdapter.class).getModern(l));
+      unwrap().removeStatusListener(CommonAdapter.get(l));
     }
 
     public void notifyListeners(StatusEvent e) {

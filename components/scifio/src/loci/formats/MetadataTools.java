@@ -41,7 +41,9 @@ import java.util.Map;
 
 import org.scijava.plugin.PluginService;
 
+import ome.scifio.DatasetMetadata;
 import ome.scifio.DefaultDatasetMetadata;
+import ome.scifio.Reader;
 import ome.xml.meta.OMEXMLMetadataService;
 
 import loci.common.services.DependencyException;
@@ -51,7 +53,6 @@ import loci.formats.meta.IMetadata;
 import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
 import loci.formats.services.OMEXMLService;
-import loci.legacy.adapter.AdapterTools;
 import loci.legacy.context.LegacyContext;
 
 
@@ -83,7 +84,7 @@ public final class MetadataTools {
    * metadata from the given reader.
    */
   public static void populatePixels(MetadataStore store, IFormatReader r) {
-    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata());
+    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, getDatasetMetadata(r));
   }
 
   /**
@@ -94,7 +95,7 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane)
   {
-    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata(), doPlane);
+    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, getDatasetMetadata(r), doPlane);
   }
 
   /**
@@ -107,7 +108,9 @@ public final class MetadataTools {
   public static void populatePixels(MetadataStore store, IFormatReader r,
     boolean doPlane, boolean doImageName)
   {
-    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r).getDatasetMetadata(), doPlane, doImageName);
+    Reader reader = (Reader) AdapterTools.get(r);
+    
+    LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(store, getDatasetMetadata(r), doPlane, doImageName);
   }
 
   /**
@@ -176,7 +179,7 @@ public final class MetadataTools {
 
   public static void populatePixelsOnly(MetadataStore store, IFormatReader r) {
     LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixelsOnly(store,
-        AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r));
+        FormatAdapter.get(r));
   }
 
   public static void populatePixelsOnly(MetadataStore store, int series,
@@ -461,6 +464,14 @@ public final class MetadataTools {
   public static boolean validateOMEXML(String xml, boolean pixelsHack) {
     if (omexmlService == null) return false;
     return omexmlService.validateOMEXML(xml, pixelsHack);
+  }
+  
+  // -- Helper Methods --
+  
+  private static DatasetMetadata getDatasetMetadata(IFormatReader r) {
+    Reader reader = FormatAdapter.get(r);
+    
+    return reader.getDatasetMetadata();
   }
 
 }

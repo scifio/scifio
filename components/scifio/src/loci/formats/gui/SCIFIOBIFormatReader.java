@@ -6,10 +6,9 @@ import java.io.IOException;
 import ome.scifio.BufferedImagePlane;
 
 import loci.common.RandomAccessInputStream;
-import loci.common.adapter.RandomAccessInputStreamAdapter;
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatReader;
-import loci.legacy.adapter.AdapterTools;
+import loci.legacy.adapter.CommonAdapter;
 
 /**
  * Abstract superclass for file format readers that use
@@ -58,7 +57,7 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
     }
     
     return reader.readPlane(
-        AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+        CommonAdapter.get(s),
         getSeries(), x, y, w, h, plane).getBytes();
   }
 
@@ -74,7 +73,7 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
     }
     
     return reader.readPlane(
-        AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+        CommonAdapter.get(s),
         getSeries(), x, y, w, h, scanlinePad, plane).getBytes();
   }
   

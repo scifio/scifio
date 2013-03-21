@@ -41,6 +41,8 @@ import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.scijava.plugin.Plugin;
+
 import loci.common.IRandomAccess;
 import loci.legacy.adapter.AbstractLegacyAdapter;
 import loci.legacy.adapter.Wrapper;
@@ -60,8 +62,15 @@ import loci.legacy.adapter.Wrapper;
  * @author Mark Hiner
  *
  */
+@Plugin(type=IRandomAccessAdapter.class)
 public class IRandomAccessAdapter extends 
   AbstractLegacyAdapter<IRandomAccess, ome.scifio.io.IRandomAccess> {
+  
+  // -- Constructor --
+  
+  public IRandomAccessAdapter() {
+    super(IRandomAccess.class, ome.scifio.io.IRandomAccess.class);
+  }
   
   // -- LegacyAdapter API Methods --
 

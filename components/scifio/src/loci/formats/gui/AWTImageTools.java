@@ -47,18 +47,16 @@ import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 
-import ome.scifio.BufferedImagePlane;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.Reader;
 import ome.xml.model.primitives.PositiveInteger;
 
+import loci.formats.FormatAdapter;
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
 import loci.formats.MetadataTools;
-import loci.formats.SCIFIOReaderAdapter;
 import loci.formats.meta.MetadataRetrieve;
-import loci.legacy.adapter.AdapterTools;
 
 /**
  * A legacy delegator class for ome.scifio.gui.AWTImageTools
@@ -463,7 +461,7 @@ public final class AWTImageTools {
       if (!BufferedImageReader.class.isAssignableFrom(r.getClass()))
         return null;
       
-      Reader scReader = AdapterTools.getAdapter(SCIFIOReaderAdapter.class).getModern(r);
+      Reader scReader = FormatAdapter.get(r);
       
       ByteArrayPlane plane = new ByteArrayPlane(scReader.getContext());
       plane.populate(scReader.getDatasetMetadata().get(r.getSeries()), buf, 0, 0, w, h);

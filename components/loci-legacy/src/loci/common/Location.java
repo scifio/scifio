@@ -42,10 +42,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
-import ome.scifio.io.LocationService;
-
-import loci.common.adapter.IRandomAccessAdapter;
-import loci.legacy.adapter.AdapterTools;
+import loci.legacy.adapter.CommonAdapter;
 import loci.legacy.context.LegacyContext;
 
 // HACK: for scan-deps.pl: The following packages are not actually "optional":
@@ -167,7 +164,7 @@ public class Location {
 
   /** Maps the given id to the given IRandomAccess object. */
   public static void mapFile(String id, IRandomAccess ira) {
-    LegacyContext.get().getService(LocationService.class).mapFile(id, AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(ira));
+    LegacyContext.getSCIFIO().locations().mapFile(id, CommonAdapter.get(ira));
   }
 
   /**
@@ -185,8 +182,8 @@ public class Location {
 
   /** Gets the random access handle for the given id. */
   public static IRandomAccess getMappedFile(String id) {
-    return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        LegacyContext.get().getService(LocationService.class).getMappedFile(id));
+    return CommonAdapter.get(
+        LegacyContext.getSCIFIO().locations().getMappedFile(id));
   }
 
   /** Return the id mapping. */
@@ -208,8 +205,8 @@ public class Location {
    * @see IRandomAccess
    */
   public static IRandomAccess getHandle(String id) throws IOException {
-    return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        LegacyContext.get().getService(LocationService.class).getHandle(id));
+    return CommonAdapter.get(
+        LegacyContext.getSCIFIO().locations().getHandle(id));
   }
 
   /**
@@ -219,8 +216,8 @@ public class Location {
   public static IRandomAccess getHandle(String id, boolean writable)
     throws IOException
   {
-    return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        LegacyContext.get().getService(LocationService.class).getHandle(id, writable, true));
+    return CommonAdapter.get(
+        LegacyContext.getSCIFIO().locations().getHandle(id, writable, true));
   }
 
   /**
@@ -230,8 +227,8 @@ public class Location {
   public static IRandomAccess getHandle(String id, boolean writable,
     boolean allowArchiveHandles) throws IOException
   {
-    return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        LegacyContext.get().getService(LocationService.class).getHandle(id, writable, allowArchiveHandles));
+    return CommonAdapter.get(
+        LegacyContext.getSCIFIO().locations().getHandle(id, writable, allowArchiveHandles));
   }
   
   /**

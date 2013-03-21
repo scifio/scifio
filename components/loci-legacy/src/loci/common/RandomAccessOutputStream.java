@@ -41,8 +41,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
-import loci.common.adapter.IRandomAccessAdapter;
-import loci.legacy.adapter.AdapterTools;
+import loci.legacy.adapter.CommonAdapter;
 import loci.legacy.adapter.Wrapper;
 import loci.legacy.context.LegacyContext;
 
@@ -76,7 +75,7 @@ public class RandomAccessOutputStream extends OutputStream
    * @param handle Handle to open the stream for.
    */
   public RandomAccessOutputStream(IRandomAccess handle) {
-    raos = new ome.scifio.io.RandomAccessOutputStream(AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle));
+    raos = new ome.scifio.io.RandomAccessOutputStream(CommonAdapter.get(handle));
   }
 
   // -- RandomAccessOutputStream API methods --

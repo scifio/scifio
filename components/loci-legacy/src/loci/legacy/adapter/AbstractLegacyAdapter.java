@@ -57,83 +57,60 @@ import java.util.WeakHashMap;
  * @author Mark Hiner
  *
  */
-public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M> {
-
+public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter {
+  
   // -- Fields --
   
   private WeakHashMap<L, M> legacyToModern = new WeakHashMap<L, M>();
   private WeakHashMap<M, L> modernToLegacy = new WeakHashMap<M, L>();
   
-
-  // -- LegacyAdapter API --
-
-  /* @see LegacyAdapter#getModern(L) */
-  public M getModern(L legacy) {
-    if (legacy == null) return null;
-    
-    // unwrap if able
-    if (legacy instanceof Wrapper) {
-      // object is wrapped
-      @SuppressWarnings("unchecked")
-      Wrapper<M> fakeLegacy = (Wrapper<M>) legacy;
-      M trueModern = fakeLegacy.unwrap();
-      return trueModern;
-    }
-    L trueLegacy = legacy; // argument was actually a legacy object
-    M fakeModern;
-    synchronized (legacyToModern) {
-      fakeModern = legacyToModern.get(trueLegacy);
-    }
-    if (fakeModern == null ) {
-      fakeModern = wrapToModern(trueLegacy);
-      mapLegacy(trueLegacy, fakeModern);
-    }
-    
-    return fakeModern;
-  }
-
-  /* @see LegacyAdapter#getLegacy(M) */
-  public L getLegacy(M modern) {
-    if (modern == null) return null;
-    
-    // unwrap if able
-    if (modern instanceof Wrapper) {
-      // object is wrapped
-      @SuppressWarnings("unchecked")
-      Wrapper<L> fakeModern = (Wrapper<L>) modern;
-      L trueLegacy = fakeModern.unwrap();
-      return trueLegacy;
-    }
-    M trueModern = modern; // argument was actually a modern object
-    L fakeLegacy;
-    synchronized (modernToLegacy) {
-      fakeLegacy = modernToLegacy.get(trueModern);
-    }
-    if (fakeLegacy == null) {
-      fakeLegacy = wrapToLegacy(trueModern);
-      mapModern(trueModern, fakeLegacy);
-    }
-    
-    return fakeLegacy;
+  private Class<L> legacyClass;
+  private Class<M> modernClass;
+  
+  // -- Constructor --
+  
+  public AbstractLegacyAdapter(Class<L> legacyClass, Class<M> modernClass) {
+    this.legacyClass = legacyClass;
+    this.modernClass = modernClass;
   }
   
+  // -- LegacyAdapter API --
+  
+  /*
+   * @see loci.legacy.adapter.LegacyAdapter#get(java.lang.Object)
+   */
+  public Object get(Object toAdapt) {
+    // Check if we were given a modern instance
+    M modern = modernCheck(toAdapt);
+    if (modern != null) return getTyped(modern, modernToLegacy);
+    
+    // Check for a legacy instance
+    L legacy = legacyCheck(toAdapt);
+    if (legacy != null) return getTyped(legacy, legacyToModern);
+    
+    return null;
+  }
   
   /*
    * @see loci.legacy.adapter.LegacyAdapter#mapModern(java.lang.Object, java.lang.Object)
    */
-  public void mapModern(M modernKey, L legacyValue) {
-    synchronized (modernToLegacy) {
-      modernToLegacy.put(modernKey, legacyValue);
+  public void map(Object key, Object value) {
+    // Check to see if we have a modern key with legacy value
+    M modern = modernCheck(key);
+    L legacy = legacyCheck(value);
+    
+    if (modern != null && legacy != null) {
+      // got the right types. Put them in the appropriate map.
+      mapTyped(modern, legacy, modernToLegacy);
+      return;
     }
-  }
-  
-  /*
-   * @see loci.legacy.adapter.LegacyAdapter#mapLegacy(java.lang.Object, java.lang.Object)
-   */
-  public void mapLegacy(L legacyKey, M modernValue) {
-    synchronized (legacyToModern) {
-      legacyToModern.put(legacyKey, modernValue);
-    }
+    
+    // Didn't have modern:legacy, so we try legacy:modern
+    modern = modernCheck(value);
+    legacy = legacyCheck(key);
+    
+    if (modern != null && legacy != null)
+      mapTyped(legacy, modern, legacyToModern);
   }
   
   /* See LegacyAdapter#clear() */
@@ -145,6 +122,35 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
       modernToLegacy.clear();
     }
   }
+  
+  /*
+   * @see loci.legacy.adapter.LegacyAdapter#wrap(java.lang.Object)
+   */
+  public Object wrap(Object toWrap) {
+    M modern = modernCheck(toWrap);
+    if (modern != null) return wrapToLegacy(modern);
+    
+    L legacy = legacyCheck(toWrap);
+    if (legacy != null) return wrapToModern(legacy);
+    
+    return null;
+  }
+  
+  /*
+   * @see loci.legacy.adapter.LegacyAdapter#getLegacyClass()
+   */
+  public Class<L> getLegacyClass() {
+    return legacyClass;
+  }
+  
+  /*
+   * @see loci.legacy.adapter.LegacyAdapter#getModernClass()
+   */
+  public Class<M> getModernClass() {
+    return modernClass;
+  }
+  
+  // -- Abstract API Methods --
 
   /**
    * Used Wraps the given modern object to a new instance of its legacy equivalent.
@@ -177,4 +183,80 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter<L, M>
    * @return A modern instance wrapping the provided legacy instance.
    */ 
   protected abstract M wrapToModern(L legacy);
+  
+  // -- Helper methods --
+  
+  private <T, S> T getTyped(S toAdapt, WeakHashMap<S, T> map) {
+    T ret = this.<T>wrapperCheck(toAdapt);
+    
+    if (ret != null) return ret;
+    
+    synchronized (map) {
+      ret = map.get(toAdapt);
+    }
+    
+    if (ret == null) {
+      ret = (T) wrap(toAdapt);
+      
+      synchronized(map) {
+        map.put(toAdapt, ret);
+      }
+    }
+    
+    return ret;
+  }
+  
+  /*
+   * Creates a key:value mapping in the provided HashMap.
+   * A thread-safe operation.
+   */
+  private <T, S> void mapTyped(T key, S value, WeakHashMap<T, S> map) {
+    synchronized (map) {
+      map.put(key, value);
+    }
+  }
+  
+  /*
+   * Returns the given object cast to an M, or null if the types are incompatible,
+   * or obj is null;
+   */
+  private M modernCheck(Object obj) {
+    return typeCheck(obj, modernClass);
+  }
+ 
+  /*
+   * Returns the given object cast to an M, or null if the types are incompatible,
+   * or obj is null;
+   */
+  private L legacyCheck(Object obj) {
+    return typeCheck(obj, legacyClass);
+  }
+  
+  /*
+   * Casts the provided obj to the specified typeClass if possible.
+   * Returns null if the cast wasn't allowed, or if obj is null.
+   */
+  private <T> T typeCheck(Object obj, Class<T> typeClass) {
+    if (obj == null) return null;
+    
+    if (!typeClass.isAssignableFrom(obj.getClass())) return null;
+    
+    @SuppressWarnings("unchecked")
+    T typed = (T)obj;
+    
+    return typed;
+  }
+  
+  /*
+   * Unwraps the provided object, if possible.
+   */
+  private <T> T wrapperCheck(Object obj) {
+    if (obj instanceof Wrapper) {
+      // object is a wrapper, so unwrap it
+      @SuppressWarnings("unchecked")
+      Wrapper<T> fake = (Wrapper<T>)obj;
+      return fake.unwrap();
+    }
+    return null;
+  }
 }

@@ -49,9 +49,10 @@ import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import loci.common.adapter.RandomAccessInputStreamAdapter;
+import loci.legacy.adapter.CommonAdapter;
 import loci.legacy.adapter.Wrapper;
 import loci.legacy.adapter.AdapterTools;
+
 import ome.scifio.BufferedImagePlane;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.DatasetMetadata;
@@ -264,8 +265,7 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
         if (legacyStream == null) return null;
 
         stream = new WeakReference<RandomAccessInputStream>(
-            AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).
-            getModern(legacyStream));
+            CommonAdapter.get(legacyStream));
 
       } catch (SecurityException e) {
         LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
@@ -316,8 +316,8 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
     // cache the wrapped CoreMetadata list.
     meta = unwrap().getCoreMetadataList();
     
-    DatasetMetadata cMeta = AdapterTools.getAdapter(CoreMetadataAdapter.class).
-        getModern(meta);
+
+    DatasetMetadata cMeta = FormatAdapter.get(meta);
     
     RandomAccessInputStream metaStream = cMeta.getSource();
     

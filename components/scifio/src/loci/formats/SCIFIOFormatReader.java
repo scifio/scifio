@@ -44,13 +44,12 @@ import java.util.Set;
 
 import loci.common.Location;
 import loci.common.RandomAccessInputStream;
-import loci.common.adapter.RandomAccessInputStreamAdapter;
 import loci.formats.in.DefaultMetadataOptions;
 import loci.formats.in.MetadataLevel;
 import loci.formats.in.MetadataOptions;
 import loci.formats.meta.FilterMetadata;
 import loci.formats.meta.MetadataStore;
-import loci.legacy.adapter.AdapterTools;
+import loci.legacy.adapter.CommonAdapter;
 import loci.legacy.adapter.Wrapper;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
@@ -343,13 +342,13 @@ public abstract class SCIFIOFormatReader extends FormatReader
           x, y, w, h);
       
       return reader.readPlane(
-          AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+          CommonAdapter.get(s),
           getSeries(), x, y, w, h, plane).getBytes();
     }
     else {
       ((ByteArrayPlane)plane).populate(buf, x, y, w, h);
       return reader.readPlane(
-          AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+          CommonAdapter.get(s),
           getSeries(), x, y, w, h, plane).getBytes();
     }
   }
@@ -366,13 +365,13 @@ public abstract class SCIFIOFormatReader extends FormatReader
           x, y, w, h);
       
       return reader.readPlane(
-          AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+          CommonAdapter.get(s),
           getSeries(), x, y, w, h, scanlinePad, plane).getBytes();
     }
     else {
       ((ByteArrayPlane)plane).populate(buf, x, y, w, h);
       return reader.readPlane(
-          AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(s),
+          CommonAdapter.get(s),
           getSeries(), x, y, w, h, scanlinePad, plane).getBytes();
     }
   }
@@ -458,8 +457,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public boolean isThisType(RandomAccessInputStream stream) throws IOException {
-    return checker.isFormat(
-        AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).getModern(stream));
+    return checker.isFormat(CommonAdapter.get(stream));
   }
 
   /* @see IFormatReader#getImageCount() */
@@ -984,7 +982,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public List<CoreMetadata> getCoreMetadataList() {
-    return AdapterTools.getAdapter(CoreMetadataAdapter.class).getLegacy(reader.getDatasetMetadata());
+    return FormatAdapter.get(reader.getDatasetMetadata());
   }
   /* @see IFormatReader#setMetadataFiltered(boolean) */
   @Deprecated

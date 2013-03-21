@@ -52,10 +52,40 @@ public final class AdapterTools {
   // -- Adapter Retrieval --
   
   /**
-   * Looks up the adapter instance 
-   * @return An adapter for converting between legacy and modern IRandomAccess objects
+   * Uses an appropriate LegacyAdapter, if it exists, to return a paired
+   * instance for the provided object. This allows the object to be used
+   * in contexts it was not originally developed for.
+   * 
+   * @param modern
+   * @return
    */
-  public static <T extends LegacyAdapter<?, ?>> T getAdapter(Class<T> adapterClass) {
+  public static Object get(Object toAdapt) {
+    return helper.get(toAdapt);
+  }
+
+  /**
+   * Uses an appropriate LegacyAdapter, if it exists, to map the
+   * provided key (weakly) to the provided value.
+   * 
+   * @param key
+   * @param value
+   */
+  public static void map(Object key, Object value) {
+    helper.map(key, value);
+  }
+  
+  // -- Deprecated Methods --
+  
+  /**
+   * Returns an instance of the requested adapter. This will always be
+   * the same instance for a given class, essentially creating a context
+   * for consistent mapping.
+   * 
+   * @param adapterClass
+   * @return
+   */
+  @Deprecated
+  public static <T extends LegacyAdapter> T getAdapter(Class<T> adapterClass) {
     return helper.getAdapter(adapterClass);
   }
 }

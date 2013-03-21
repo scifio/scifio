@@ -39,7 +39,6 @@ package loci.common;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-import loci.common.adapter.IRandomAccessAdapter;
 import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
 
@@ -73,7 +72,7 @@ public abstract class AbstractNIOHandle implements IRandomAccess, Wrapper<ome.sc
   
   AbstractNIOHandle(ome.scifio.io.AbstractNIOHandle handle) {
     this.handle = new WeakReference<ome.scifio.io.AbstractNIOHandle>(handle);
-    AdapterTools.getAdapter(IRandomAccessAdapter.class).mapLegacy(this, handle);
+    AdapterTools.map(this, handle);
   }
 
   // -- AbstractNIOHandle methods --

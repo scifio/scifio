@@ -35,6 +35,8 @@
  */
 package loci.formats;
 
+import org.scijava.plugin.Plugin;
+
 import ome.scifio.ImageMetadata;
 import loci.legacy.adapter.AbstractLegacyAdapter;
 
@@ -50,11 +52,18 @@ import loci.legacy.adapter.AbstractLegacyAdapter;
  * @author Mark Hiner
  *
  */
+@Plugin(type=CoreImageMetadataAdapter.class)
 public class CoreImageMetadataAdapter extends 
 AbstractLegacyAdapter<CoreMetadata, ImageMetadata> {
+  
+  // -- Constructor --
+  
+  public CoreImageMetadataAdapter() {
+    super(CoreMetadata.class, ImageMetadata.class);
+  }
 
   // -- LegacyWrapper API Methods --
-  
+
   @Override
   protected CoreMetadata wrapToLegacy(ImageMetadata modern) {
     return new ImageMetadataWrapper(modern);

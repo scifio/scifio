@@ -38,8 +38,9 @@ package loci.formats;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.scijava.plugin.Plugin;
+
 import loci.legacy.adapter.AbstractLegacyAdapter;
-import loci.legacy.adapter.AdapterTools;
 
 /**
  * {@link LegacyAdapter} for converting between instances of
@@ -52,8 +53,31 @@ import loci.legacy.adapter.AdapterTools;
  * @author Mark Hiner
  *
  */
+@Plugin(type=CoreMetadataAdapter.class)
 public class CoreMetadataAdapter extends 
   AbstractLegacyAdapter<List<loci.formats.CoreMetadata>, ome.scifio.DatasetMetadata> {
+  
+  // -- Constructor --
+  
+  private static Class<List<CoreMetadata>> metaClass = getListClass();
+
+  @SuppressWarnings("unchecked")
+  private static Class<List<CoreMetadata>> getListClass() {
+    // *** HACK *** to get around generic casting problems with javac/ant
+    List<CoreMetadata> tmpList = new ArrayList<CoreMetadata>();
+    Class<List<CoreMetadata>> tmpClass = (Class<List<CoreMetadata>>)tmpList.getClass();
+    
+    // NB: List is the top-level interface of ArrayList, but this is safer.
+    for (Class<?> c : tmpClass.getInterfaces()) {
+      if (List.class.isAssignableFrom(c)) tmpClass = (Class<List<CoreMetadata>>) c;
+    }
+    
+    return tmpClass;
+  }
+  
+  public CoreMetadataAdapter() {
+    super(metaClass, ome.scifio.DatasetMetadata.class);
+  }
 
   // -- LegacyAdapter API --
   
@@ -62,8 +86,7 @@ public class CoreMetadataAdapter extends
     List<CoreMetadata> legacyList = new ArrayList<CoreMetadata>();
     
     for (int i=0; i<modern.getImageCount(); i++) {
-      legacyList.add( 
-          AdapterTools.getAdapter(CoreImageMetadataAdapter.class).getLegacy(modern.get(i)));
+      legacyList.add(FormatAdapter.get(modern.get(i)));
     }
     
     return legacyList;

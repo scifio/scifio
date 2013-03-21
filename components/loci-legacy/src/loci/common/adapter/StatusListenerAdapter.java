@@ -38,6 +38,8 @@ package loci.common.adapter;
 
 import java.lang.ref.WeakReference;
 
+import org.scijava.plugin.Plugin;
+
 import loci.common.StatusEvent;
 import loci.common.StatusListener;
 import loci.legacy.adapter.AbstractLegacyAdapter;
@@ -59,7 +61,14 @@ import loci.legacy.adapter.Wrapper;
  * @author Mark Hiner
  *
  */
+@Plugin(type=StatusListenerAdapter.class)
 public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener, ome.scifio.common.StatusListener> {
+  
+  // -- Constructor --
+  
+  public StatusListenerAdapter() {
+    super(StatusListener.class, ome.scifio.common.StatusListener.class);
+  }
 
   //-- AbstractLegacyAdapter API Methods --
 

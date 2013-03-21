@@ -1,8 +1,8 @@
 /*
  * #%L
- * OME SCIFIO package for reading and converting scientific file formats.
+ * Legacy layer preserving compatibility between legacy Bio-Formats and SCIFIO.
  * %%
- * Copyright (C) 2005 - 2012 Open Microscopy Environment:
+ * Copyright (C) 2005 - 2013 Open Microscopy Environment:
  *   - Board of Regents of the University of Wisconsin-Madison
  *   - Glencoe Software, Inc.
  *   - University of Dundee
@@ -35,8 +35,14 @@
  */
 package loci.legacy.adapter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
+import loci.legacy.context.LegacyContext;
+
+import org.scijava.plugin.PluginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,30 +69,112 @@ public class AdapterHelper {
   /** Maps LegacyAdapter classes to an instance of that class, so that a single instance of 
    * each adapter is maintained.
    */
-  private HashMap<Class<? extends LegacyAdapter<?, ?>>, Object> adapterMap =
-         new HashMap<Class<? extends LegacyAdapter<?, ?>>, Object>();
+  private HashMap<Class<?>, LegacyAdapter> adapterIndex =
+      new HashMap<Class<?>, LegacyAdapter>();
+  
+  private List<LegacyAdapter> adapterList =
+      new ArrayList<LegacyAdapter>();
+
+  private HashMap<Class<? extends LegacyAdapter>, LegacyAdapter> classIndex =
+      new HashMap<Class<? extends LegacyAdapter>, LegacyAdapter>();
+  
+  // -- Constructor --
+  
+  public AdapterHelper() {
+    PluginService pService = LegacyContext.get().getService(PluginService.class);
+    adapterList = pService.createInstancesOfType(LegacyAdapter.class);
+    
+    for (LegacyAdapter adapter : adapterList) {
+      classIndex.put(adapter.getClass(), adapter);
+    }
+  }
   
   // -- Adapter Retrieval --
   
   /**
-   * Looks up the adapter instance 
-   * @return An adapter for converting between legacy and modern IRandomAccess objects
+   * Uses an appropriate LegacyAdapter, if it exists, to return a paired
+   * instance for the provided object. This allows the object to be used
+   * in contexts it was not originally developed for.
+   * 
+   * @param modern
+   * @return
+   */
+  public Object get(Object legacy) {
+    if (legacy == null) return null;
+    
+    LegacyAdapter adapter = getAdapterByObject(legacy.getClass());
+    
+    if (adapter == null) return null;
+    
+    return adapter.get(legacy);
+  }
+  
+  /**
+   * Uses an appropriate LegacyAdapter, if it exists, to map the
+   * provided key (weakly) to the provided value.
+   * 
+   * @param key
+   * @param value
+   */
+  public void map(Object key, Object value) {
+    LegacyAdapter adapter = getAdapterByObject(key.getClass());
+    
+    if (adapter != null)
+      adapter.map(key,  value);
+  }
+  
+  // -- Deprecated Methods --
+  
+  /**
+   * Looks up the cached adapter instance of the provided class type.
+   * @param adapterClass
+   * @return
+   */
+  @Deprecated
+  public <T extends LegacyAdapter> T getAdapter(Class<T> adapterClass) {
+    T adapter = this.<T>safeCast(classIndex.get(adapterClass));
+
+    return adapter;
+  }
+  
+  // -- Helper Methods --
+  
+  /*
+   * Convenience method for casting.
    */
   @SuppressWarnings("unchecked")
-  public <T extends LegacyAdapter<?, ?>> T getAdapter(Class<T> adapterClass) {    
-    T adapter = (T) adapterMap.get(adapterClass);
+  private <T> T safeCast(Object o) {
+    return (T)o;
+  }
+  
+  /*
+   * Returns an adapter capable of adapting to or from the provided
+   * class.
+   */
+  private LegacyAdapter getAdapterByObject(Class<?> objectClass) {
+    LegacyAdapter adapter = adapterIndex.get(objectClass);
     
-    if(adapter == null) {
-      try {
-        adapter = adapterClass.newInstance();
-        adapterMap.put(adapterClass, adapter);
-      } catch (InstantiationException e) {
-        LOGGER.debug("Failed to create a new instance of: " + adapterClass, e);
-      } catch (IllegalAccessException e) {
-        LOGGER.debug("Illegal acceess for class: " + adapterClass, e);
+    Iterator<LegacyAdapter> adapterIter = adapterList.iterator();
+    
+    /* If an adapter wasn't found, we don't have a mapping for this class
+     * yet. So we search the list.
+     */
+    while (adapter == null && adapterIter.hasNext()) {
+      LegacyAdapter tmpAdapter = adapterIter.next();
+      
+      Class<?> mclass = tmpAdapter.getModernClass();
+      Class<?>lclass = tmpAdapter.getLegacyClass();
+      
+      if (tmpAdapter.getModernClass().isAssignableFrom(objectClass) ||
+          tmpAdapter.getLegacyClass().isAssignableFrom(objectClass)) {
+
+        // Found an adapter, so index it under this class.
+        adapter = tmpAdapter;
+        adapterIndex.put(objectClass, adapter);
       }
     }
     
     return adapter;
   }
+
 }
