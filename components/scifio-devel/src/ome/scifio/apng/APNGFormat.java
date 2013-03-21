@@ -272,14 +272,12 @@ public class APNGFormat
   
     /* @see ome.scifio.AbstractParser#parse(RandomAccessInputStream stream) */
     @Override
-    public Metadata parse(final RandomAccessInputStream stream)
+    public Metadata parse(final RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
     {
-      super.parse(stream);
-  
       // check that this is a valid PNG file
       final byte[] signature = new byte[8];
-      in.read(signature);
+      stream.read(signature);
   
       if (signature[0] != (byte) 0x89 || signature[1] != 0x50 ||
         signature[2] != 0x4e || signature[3] != 0x47 || signature[4] != 0x0d ||
@@ -297,57 +295,57 @@ public class APNGFormat
       // 3) 'length' bytes of data
       // 4) 32 bit CRC
   
-      while (in.getFilePointer() < in.length()) {
-        final int length = in.readInt();
-        final String type = in.readString(4);
-        final long offset = in.getFilePointer();
+      while (stream.getFilePointer() < stream.length()) {
+        final int length = stream.readInt();
+        final String type = stream.readString(4);
+        final long offset = stream.getFilePointer();
   
         APNGChunk chunk = null;
   
         if (type.equals("acTL")) {
           chunk = new ACTLChunk();
-          ((ACTLChunk) chunk).setNumFrames(in.readInt());
-          ((ACTLChunk) chunk).setNumPlays(in.readInt());
-          metadata.setActl(((ACTLChunk) chunk));
+          ((ACTLChunk) chunk).setNumFrames(stream.readInt());
+          ((ACTLChunk) chunk).setNumPlays(stream.readInt());
+          meta.setActl(((ACTLChunk) chunk));
         }
         else if (type.equals("fcTL")) {
           sawFctl = true;
           chunk = new FCTLChunk();
-          ((FCTLChunk) chunk).setSequenceNumber(in.readInt());
-          ((FCTLChunk) chunk).setWidth(in.readInt());
-          ((FCTLChunk) chunk).setHeight(in.readInt());
-          ((FCTLChunk) chunk).setxOffset(in.readInt());
-          ((FCTLChunk) chunk).setyOffset(in.readInt());
-          ((FCTLChunk) chunk).setDelayNum(in.readShort());
-          ((FCTLChunk) chunk).setDelayDen(in.readShort());
-          ((FCTLChunk) chunk).setDisposeOp(in.readByte());
-          ((FCTLChunk) chunk).setBlendOp(in.readByte());
-          metadata.getFctl().add(((FCTLChunk) chunk));
+          ((FCTLChunk) chunk).setSequenceNumber(stream.readInt());
+          ((FCTLChunk) chunk).setWidth(stream.readInt());
+          ((FCTLChunk) chunk).setHeight(stream.readInt());
+          ((FCTLChunk) chunk).setxOffset(stream.readInt());
+          ((FCTLChunk) chunk).setyOffset(stream.readInt());
+          ((FCTLChunk) chunk).setDelayNum(stream.readShort());
+          ((FCTLChunk) chunk).setDelayDen(stream.readShort());
+          ((FCTLChunk) chunk).setDisposeOp(stream.readByte());
+          ((FCTLChunk) chunk).setBlendOp(stream.readByte());
+          meta.getFctl().add(((FCTLChunk) chunk));
         }
         else if (type.equals("IDAT")) {
-          metadata.setSeparateDefault(!sawFctl);
+          meta.setSeparateDefault(!sawFctl);
           chunk = new IDATChunk();
-          metadata.addIdat(((IDATChunk) chunk));
-          in.skipBytes(length);
+          meta.addIdat(((IDATChunk) chunk));
+          stream.skipBytes(length);
         }
         else if (type.equals("fdAT")) {
           chunk = new FDATChunk();
-          ((FDATChunk) chunk).setSequenceNumber(in.readInt());
-          metadata.getFctl()
-            .get(metadata.getFctl().size() - 1)
+          ((FDATChunk) chunk).setSequenceNumber(stream.readInt());
+          meta.getFctl()
+            .get(meta.getFctl().size() - 1)
             .addChunk(((FDATChunk) chunk));
-          in.skipBytes(length - 4);
+          stream.skipBytes(length - 4);
         }
         else if (type.equals("IHDR")) {
           chunk = new IHDRChunk();
-          ((IHDRChunk) chunk).setWidth(in.readInt());
-          ((IHDRChunk) chunk).setHeight(in.readInt());
-          ((IHDRChunk) chunk).setBitDepth(in.readByte());
-          ((IHDRChunk) chunk).setColourType(in.readByte());
-          ((IHDRChunk) chunk).setCompressionMethod(in.readByte());
-          ((IHDRChunk) chunk).setFilterMethod(in.readByte());
-          ((IHDRChunk) chunk).setInterlaceMethod(in.readByte());
-          metadata.setIhdr(((IHDRChunk) chunk));
+          ((IHDRChunk) chunk).setWidth(stream.readInt());
+          ((IHDRChunk) chunk).setHeight(stream.readInt());
+          ((IHDRChunk) chunk).setBitDepth(stream.readByte());
+          ((IHDRChunk) chunk).setColourType(stream.readByte());
+          ((IHDRChunk) chunk).setCompressionMethod(stream.readByte());
+          ((IHDRChunk) chunk).setFilterMethod(stream.readByte());
+          ((IHDRChunk) chunk).setInterlaceMethod(stream.readByte());
+          meta.setIhdr(((IHDRChunk) chunk));
         }
         else if (type.equals("PLTE")) {
           chunk = new PLTEChunk();
@@ -356,34 +354,37 @@ public class APNGFormat
           final byte[] green = new byte[length / 3];
   
           for (int i = 0; i < length; i += 3) {
-            red[i] = in.readByte();
-            green[i] = in.readByte();
-            blue[i] = in.readByte();
+            red[i] = stream.readByte();
+            green[i] = stream.readByte();
+            blue[i] = stream.readByte();
           }
   
           ((PLTEChunk) chunk).setRed(red);
           ((PLTEChunk) chunk).setGreen(green);
           ((PLTEChunk) chunk).setBlue(blue);
   
-          metadata.setPlte(((PLTEChunk) chunk));
+          meta.setPlte(((PLTEChunk) chunk));
         }
         else if(type.equals("IEND")) {
           chunk = new IENDChunk();
-          in.skipBytes((int) (in.length() - in.getFilePointer()));
-          metadata.setIend((IENDChunk) chunk);
+          stream.skipBytes((int) (stream.length() - stream.getFilePointer()));
+          meta.setIend((IENDChunk) chunk);
         }
-        else in.skipBytes(length);
+        else stream.skipBytes(length);
   
         if (chunk != null) {
           chunk.setOffset(offset);
           chunk.setLength(length);
         }
   
-        if (in.getFilePointer() < in.length() - 4) {
-          in.skipBytes(4); // skip the CRC
+        if (stream.getFilePointer() < stream.length() - 4) {
+          stream.skipBytes(4); // skip the CRC
         }
       }
   
+      stream.seek(0);
+      super.parse(stream, meta);
+      
       return metadata;
     }
   }
@@ -435,9 +436,9 @@ public class APNGFormat
       // The default frame is requested and we can use the standard 
       // Java ImageIO to extract it
       if (planeIndex == 0) {
-        in.seek(0);
+        getStream().seek(0);
         final DataInputStream dis =
-          new DataInputStream(new BufferedInputStream(in, 4096));
+          new DataInputStream(new BufferedInputStream(getStream(), 4096));
         BufferedImage subImg = ImageIO.read(dis);
         lastPlane.populate(getDatasetMetadata().get(imageIndex), subImg,
             x, y, w, h);
@@ -474,7 +475,7 @@ public class APNGFormat
   
       // fdAT chunks are converted to IDAT chunks, as we are essentially building a standalone single-frame image
       for (final FDATChunk fdat : fctl.getFdatChunks()) {
-        in.seek(fdat.getOffset() + 4);
+        getStream().seek(fdat.getOffset() + 4);
         byte[] b = new byte[fdat.getLength() + 8];
         DataTools.unpackBytes(
           fdat.getLength() - 4, b, 0, 4, dMeta.isLittleEndian(imageIndex));
@@ -482,7 +483,7 @@ public class APNGFormat
         b[5] = 'D';
         b[6] = 'A';
         b[7] = 'T';
-        in.read(b, 8, b.length - 12);
+        getStream().read(b, 8, b.length - 12);
         final int crc = (int) computeCRC(b, b.length - 4);
         DataTools.unpackBytes(
           crc, b, b.length - 4, 4, dMeta.isLittleEndian(imageIndex));
@@ -553,8 +554,8 @@ public class APNGFormat
       DataTools.unpackBytes(length, b, 0, 4, dMeta.isLittleEndian(imageIndex));
       final byte[] typeBytes = (isIHDR ? "IHDR".getBytes() : "PLTE".getBytes());
       System.arraycopy(typeBytes, 0, b, 4, 4);
-      in.seek(offset);
-      in.read(b, 8, b.length - 12);
+      getStream().seek(offset);
+      getStream().read(b, 8, b.length - 12);
       if (isIHDR) {
         DataTools.unpackBytes(
           coords[2], b, 8, 4, dMeta.isLittleEndian(imageIndex));

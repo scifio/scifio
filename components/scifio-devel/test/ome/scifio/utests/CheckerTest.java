@@ -91,8 +91,10 @@ public class CheckerTest {
     isFormat = c.isFormat(id, true);
     assertTrue(isFormat);
     
-    isFormat = c.isFormat(new RandomAccessInputStream(context, id));
+    RandomAccessInputStream stream = new RandomAccessInputStream(context, id);
+    isFormat = c.isFormat(stream);
     assertFalse(isFormat);
+    stream.close();
     
     isFormat = c.isFormat(falseId, false);
     assertFalse(isFormat);
@@ -120,8 +122,10 @@ public class CheckerTest {
     isFormat = fc.isFormat(id, true);
     assertTrue(isFormat);
     
-    isFormat = fc.isFormat(new RandomAccessInputStream(context, id));
+    RandomAccessInputStream stream = new RandomAccessInputStream(context, id);
+    isFormat = fc.isFormat(stream);
     assertTrue(isFormat); 
+    stream.close();
     
     isFormat = fc.checkHeader(id.getBytes());
     assertTrue(isFormat);

@@ -73,7 +73,7 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
   public BufferedImagePlane openThumbPlane(final int imageIndex, final int planeIndex)
     throws FormatException, IOException
   {
-    FormatTools.assertStream(in, true, 1);
+    FormatTools.assertStream(getStream(), true, 1);
     int w = getDatasetMetadata().getAxisLength(imageIndex, Axes.X);
     int h = getDatasetMetadata().getAxisLength(imageIndex, Axes.Y);
     int thumbX = getDatasetMetadata().getThumbSizeX(imageIndex);

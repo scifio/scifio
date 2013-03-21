@@ -43,6 +43,7 @@ import java.util.List;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
 
 /**
@@ -60,6 +61,8 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
   /** Contains a list of metadata objects for each image in this dataset */
   @Field(label = "imageMeta", isList = true)
   private List<ImageMetadata> imageMeta;
+  
+  private String datasetName = null;
 
   /**
    * 
@@ -91,6 +94,10 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
   }
 
   // -- Getters --
+  
+  public String getDatasetName() {
+    return datasetName;
+  }
 
   public Object getMetadataValue(final String field) {
     return datasetMeta.get(field);
@@ -302,6 +309,10 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
 
   // -- Setters --
   
+  public void setDatasetName(String name) {
+    datasetName = name;
+  }
+  
   public void putDatasetMeta(String key, Object value) {
     datasetMeta.put(key, value);
   }
@@ -432,6 +443,13 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
   
   public String getFormatName() {
     return DatasetMetadata.FORMAT_NAME;
+  }
+  
+  public void setSource(RandomAccessInputStream stream) {
+    super.setSource(stream);
+    
+    if (stream != null && stream.getFileName() != null)
+      setDatasetName(stream.getFileName());
   }
 
   /*

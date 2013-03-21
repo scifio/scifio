@@ -36,6 +36,7 @@
 
 package ome.scifio;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -115,6 +116,16 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   /* @see Metadata#getSource() */
   public RandomAccessInputStream getSource() {
     return source;
+  }
+  
+  public void close() {
+    if (source != null) {
+      try {
+        source.close();
+      } catch (IOException e) {
+        LOGGER.error("Failed to close stream in Metadata", e);
+      }
+    }
   }
   
   /* @see Metadata#isFiltered() */

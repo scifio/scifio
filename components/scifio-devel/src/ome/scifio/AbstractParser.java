@@ -96,14 +96,18 @@ public abstract class AbstractParser<M extends TypedMetadata>
   
   /* @see Parser#parse(String fileName) */
   public M parse(final String fileName) throws IOException, FormatException {
-    return parse(new RandomAccessInputStream(getContext(), fileName));
+    @SuppressWarnings("unchecked")
+    M meta = (M) getFormat().createMetadata();
+    return parse(fileName, meta);
   }
   
   /*
    * @see ome.scifio.TypedParser#parse(java.io.File)
    */
   public M parse(final File file) throws IOException, FormatException {
-    return parse(file.getPath());
+    @SuppressWarnings("unchecked")
+    M meta = (M) getFormat().createMetadata();
+    return parse(file, meta);
   }
 
   /* @see Parser#parse(RandomAccessInputStream stream) */
@@ -147,6 +151,8 @@ public abstract class AbstractParser<M extends TypedMetadata>
    */
   public void close(final boolean fileOnly) throws IOException {
     if (in != null) in.close();
+    if (metadata != null) metadata.close();
+    if (dMeta != null) dMeta.close();
     if (!fileOnly) {
       in = null;
     }
@@ -337,7 +343,22 @@ public abstract class AbstractParser<M extends TypedMetadata>
   public M parse(final String fileName, final M meta)
     throws IOException, FormatException
   {
-    return parse(new RandomAccessInputStream(getContext(), fileName), meta);
+    RandomAccessInputStream stream = null;
+    
+    if (in != null) {
+      if (in.getFileName().equals(fileName)) {
+        in.seek(0);
+        stream = in;
+      }
+      else {
+        close();
+      }
+    }
+    
+    if (stream == null)
+      stream = new RandomAccessInputStream(getContext(), fileName);
+    
+    return parse(stream, meta);
   }
   
   /* @see TypedParser#parse(File, M) */
@@ -432,7 +453,6 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
     close();
     in = stream;
-    metadata.setSource(in);
   }
 
   /* Builds a FileInfo array around the provided array of file names */

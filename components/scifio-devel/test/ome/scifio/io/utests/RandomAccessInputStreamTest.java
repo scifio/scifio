@@ -47,6 +47,7 @@ import ome.scifio.io.utests.providers.IRandomAccessProvider;
 import ome.scifio.io.utests.providers.IRandomAccessProviderFactory;
 
 import org.scijava.Context;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -142,6 +143,11 @@ public class RandomAccessInputStreamTest {
       }
       assertEquals(PAGE[(int) stream.getFilePointer()], stream.readByte());
     }
+  }
+  
+  @AfterMethod
+  public void tearDown() throws IOException {
+    stream.close();
   }
 
 }

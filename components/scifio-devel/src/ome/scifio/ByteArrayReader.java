@@ -61,7 +61,7 @@ public abstract class ByteArrayReader<M extends TypedMetadata>
   public ByteArrayPlane openThumbPlane(final int imageIndex, final int planeIndex)
     throws FormatException, IOException
   {
-    FormatTools.assertStream(in, true, 1);
+    FormatTools.assertStream(getStream(), true, 1);
     ByteArrayPlane plane = createPlane(0, 0,
         getDatasetMetadata().getThumbSizeX(imageIndex), getDatasetMetadata().getThumbSizeY(imageIndex));
     

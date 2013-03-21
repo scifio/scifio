@@ -763,15 +763,14 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     /* @see Parser#parse(RandomAccessInputStream) */
     @Override
-    public Metadata parse(final RandomAccessInputStream stream)
+    public Metadata parse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
       {
-      super.parse(stream);
   
-      if (stream.getFileName() != null) findCompanion(stream.getFileName());
+      findCompanion(stream, meta);
   
       final RandomAccessInputStream reader =
-        new RandomAccessInputStream(getContext(), metadata.getIcsId());
+        new RandomAccessInputStream(getContext(), meta.getIcsId());
   
       reader.seek(0);
       reader.readString(ICSUtils.NL);
@@ -809,30 +808,43 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
           final String k = key.toString().trim().replaceAll("\t", " ");
           final String v = value.toString().trim();
           addGlobalMeta(k, v);
-          metadata.keyValPairs.put(k.toLowerCase(), v);
+          meta.keyValPairs.put(k.toLowerCase(), v);
         }
         line = reader.readString(ICSUtils.NL);
       }
       reader.close();
-  
-      if (metadata.versionTwo) {
+
+      if (stream.getFileName() != null) {
+        String id = meta.isVersionTwo() ? meta.icsId : meta.idsId;
+        
+        if (!stream.getFileName().equals(id)) {
+          stream.close();
+          stream = new RandomAccessInputStream(getContext(), id);
+        }
+      }
+      
+      super.parse(stream, meta);
+      
+      if (meta.versionTwo) {
         String s = in.readString(ICSUtils.NL);
         while (!s.trim().equals("end"))
           s = in.readString(ICSUtils.NL);
       }
   
-      metadata.offset = in.getFilePointer();
-  
-      metadata.hasInstrumentData =
+      meta.offset = in.getFilePointer();
+      
+      in.seek(0);
+      
+      meta.hasInstrumentData =
         nullKeyCheck(new String[] {
           "history cube emm nm", "history cube exc nm", "history objective NA",
           "history stage xyzum", "history objective magnification",
           "history objective mag", "history objective WorkingDistance",
           "history objective type", "history objective",
         "history objective immersion"});
-  
+      
       return metadata;
-      }
+    }
   
     // -- Helper Methods --
   
@@ -847,12 +859,14 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
   
     /* Finds the companion file (ICS and IDS are companions) */
-    private void findCompanion(final String id)
+    private void findCompanion(final RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
       {
-      String icsId = id, idsId = id;
-      final int dot = id.lastIndexOf(".");
-      final String ext = dot < 0 ? "" : id.substring(dot + 1).toLowerCase();
+      if (stream.getFileName() == null) return;
+      
+      String icsId = stream.getFileName(), idsId = stream.getFileName();
+      final int dot = icsId.lastIndexOf(".");
+      final String ext = dot < 0 ? "" : icsId.substring(dot + 1).toLowerCase();
       if (ext.equals("ics")) {
         // convert C to D regardless of case
         final char[] c = idsId.toCharArray();
@@ -868,7 +882,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
       final Location icsFile = new Location(getContext(), icsId);
       if (!icsFile.exists()) throw new FormatException("ICS file not found.");
-      metadata.icsId = icsId;
+      meta.icsId = icsId;
 
       // check if we have a v2 ICS file - means there is no companion IDS file
       final RandomAccessInputStream f = new RandomAccessInputStream(getContext(), icsId);
@@ -876,15 +890,13 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       f.close();
       
       if (version.equals("ics_version\t2.0")) {
-        metadata.versionTwo = true;
-        metadata.idsId = icsId;
-        in = new RandomAccessInputStream(getContext(),icsId);
+        meta.versionTwo = true;
+        meta.idsId = icsId;
       }
       else {
         final Location idsFile = new Location(getContext(), idsId);
         if (!idsFile.exists()) throw new FormatException("IDS file does not exist.");
-        metadata.idsId = idsId;
-        in = new RandomAccessInputStream(getContext(),idsId);
+        meta.idsId = idsId;
       }
     }
   }
@@ -946,7 +958,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       final int[] prevCoordinates = FormatTools.getZCTCoords(this, imageIndex, prevImage);
   
       if (!gzip) {
-        in.seek(metadata.offset + planeIndex * (long) len);
+        getStream().seek(metadata.offset + planeIndex * (long) len);
       }
       else {
         long toSkip = (planeIndex - prevImage - 1) * (long) len;
@@ -967,7 +979,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
           catch (final IOException e) {
             // the 'gzip' flag is set erroneously
             gzip = false;
-            in.seek(metadata.offset + planeIndex * (long) len);
+            getStream().seek(metadata.offset + planeIndex * (long) len);
             gzipStream = null;
           }
         }
@@ -997,18 +1009,18 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       {
         // channels are stored interleaved, but because there are more than we
         // can display as RGB, we need to separate them
-        in.seek(metadata.offset +
+        getStream().seek(metadata.offset +
             (long) len *
             FormatTools.getIndex(
                 this, imageIndex, coordinates[0], 0, coordinates[2]));
         if (!gzip && data == null) {
           data = new byte[len * dMeta.getAxisLength(imageIndex, Axes.CHANNEL)];
-          in.read(data);
+          getStream().read(data);
         }
         else if (!gzip &&
             (coordinates[0] != prevCoordinates[0] || coordinates[2] != prevCoordinates[2]))
         {
-          in.read(data);
+          getStream().read(data);
         }
   
         for (int row = y; row < h + y; row++) {
@@ -1027,7 +1039,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         s.close();
       }
       else {
-        readPlane(in, imageIndex, x, y, w, h, plane);
+        readPlane(getStream(), imageIndex, x, y, w, h, plane);
       }
   
       if (invertY) {
@@ -1075,14 +1087,18 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     /* @see Reader#setSource(RandomAccessInputStream) */
     @Override
     public void setSource(final RandomAccessInputStream stream) throws IOException {
-      super.setSource(stream);
-      if(!getMetadata().versionTwo)
-        in = new RandomAccessInputStream(getContext(), getMetadata().idsId);
+      if(!getMetadata().versionTwo) {
+        stream.close();
+        setSource(new RandomAccessInputStream(getContext(), getMetadata().idsId));
+      }
+      else {
+        super.setSource(stream);
+      }
     }
   
     @Override
     public String[] getDomains() {
-      FormatTools.assertStream(in, true, 0);
+      FormatTools.assertStream(getStream(), true, 0);
       final String[] domain = new String[] {FormatTools.GRAPHICS_DOMAIN};
       if (dMeta.getChannelDimLengths(0).length > 1) {
         domain[0] = FormatTools.FLIM_DOMAIN;
@@ -1229,14 +1245,14 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public void setDest(final String id)
       throws FormatException, IOException {
       updateMetadataIds(id);
-      setDest(new RandomAccessOutputStream(getContext(), id), 0);
+      super.setDest(id);
     }
     
     @Override
     public void setDest(final String id, final int imageIndex)
       throws FormatException, IOException {
       updateMetadataIds(id);
-      setDest(new RandomAccessOutputStream(getContext(), id), imageIndex);
+      super.setDest(id, imageIndex);
     }
   
     @Override

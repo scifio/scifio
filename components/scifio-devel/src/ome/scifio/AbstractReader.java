@@ -82,9 +82,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   /** Whether or not to normalize float data. */
   protected boolean normalizeData;
 
-  /** Current file. */
-  protected RandomAccessInputStream in;
-
   /** List of domains in which this format is used. */
   protected String[] domains = new String[0];
 
@@ -160,7 +157,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#isGroupFiles()
    */
   public boolean isGroupFiles() {
-    FormatTools.assertStream(in, false, 1);
+    FormatTools.assertStream(getStream(), false, 1);
     return group;
   }
 
@@ -177,7 +174,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#getCurrentFile()
    */
   public String getCurrentFile() {
-    return in == null ? null : in.getFileName();
+    return getStream() == null ? null : getStream().getFileName();
   }
 
   /*
@@ -191,7 +188,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#getStream()
    */
   public RandomAccessInputStream getStream() {
-    return in;
+    return metadata == null ? null : metadata.getSource();
   }
 
   /*
@@ -268,7 +265,16 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#setSource(java.lang.String)
    */
   public void setSource(final String fileName) throws IOException {
-    setSource(new RandomAccessInputStream(getContext(), fileName));
+
+    if (getStream() != null && getStream().getFileName() != null &&
+        getStream().getFileName().equals(fileName)) {
+      getStream().seek(0);
+      return;
+    }
+    else {
+      close();
+      setSource(new RandomAccessInputStream(getContext(), fileName));
+    }
   }
   
   /*
@@ -284,10 +290,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   public void setSource(final RandomAccessInputStream stream)
     throws IOException
   {
-    in = stream;
-    currentId = stream.getFileName();
+    if (metadata != null && getStream() != stream)
+      close();
 
     if (metadata == null) {
+      currentId = stream.getFileName();
+      
       try {
         @SuppressWarnings("unchecked")
         final M meta = (M) getFormat().createParser().parse(stream);
@@ -303,9 +311,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#close(boolean)
    */
   public void close(final boolean fileOnly) throws IOException {
-    if (in != null) in.close();
+    if (metadata != null) metadata.close();
+    if (dMeta != null) dMeta.close();
+    
     if (!fileOnly) {
-      in = null;
+      metadata = null;
+      dMeta = null;
     }
   }
 
@@ -378,17 +389,23 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.TypedReader#setMetadata(ome.scifio.TypedMetadata)
    */
   public void setMetadata(final M meta) throws IOException {
-    metadata = meta;
+    if (metadata != null && metadata != meta) { 
+      close();
+    }
+    
+    if (metadata == null)
+      metadata = meta;
+      
     //FIXME: get rid of datasetmetadata class
-    dMeta = getContext().getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
-    dMeta.setSource(meta.getSource());
+    if (dMeta == null) {
+      dMeta = getContext().getService(PluginService.class).
+              createInstancesOfType(DatasetMetadata.class).get(0);
     
-    if(in == null) setSource(meta.getSource());
-    
-    Translator t = getContext().getService(SCIFIO.class).
-                    translators().findTranslator(meta, dMeta);
-    
-    t.translate(meta, dMeta);
+      Translator t = getContext().getService(SCIFIO.class).
+          translators().findTranslator(meta, dMeta);
+
+      t.translate(meta, dMeta);
+    }
   }
   
   /*

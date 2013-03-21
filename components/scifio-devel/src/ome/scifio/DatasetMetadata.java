@@ -57,6 +57,9 @@ public interface DatasetMetadata extends TypedMetadata, ScifioPlugin {
   public static final String FORMAT_NAME = "Dataset Metadata";
   
   // -- DatasetMetadata API Methods --
+  
+  /** Returns a String representation of this Dataset's name */
+  String getDatasetName();
 
   /** Looks up the dataset metadata value for the provided key. */
   Object getMetadataValue(String field);
@@ -262,6 +265,9 @@ public interface DatasetMetadata extends TypedMetadata, ScifioPlugin {
 
   /** Convenience method for storing metadata at the specified image-level. */
   void putImageMeta(int imageIndex, String key, Object value);
+
+  /** Sets the name for the current dataset */
+  void setDatasetName(String name);
 
   /** Sets width (in pixels) of thumbnail planes for the specified image. */
   void setThumbSizeX(int imageIndex, int thumbX);

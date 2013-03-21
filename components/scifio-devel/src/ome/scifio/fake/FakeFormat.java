@@ -237,7 +237,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     @Override
     public Metadata parse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException {
-      meta = super.parse(stream, meta);
       
       int sizeX = DEFAULT_SIZE_X;
       int sizeY = DEFAULT_SIZE_Y;
@@ -299,7 +298,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
         throw new FormatException("Invalid lutLength: " + lutLength);
       }
       
-      
       // for indexed color images, create lookup tables
       if (indexed) {
         int[][] indexToValue = null;
@@ -351,6 +349,8 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
         }
         // NB: Other pixel types will have null LUTs.
       }
+      
+      meta = super.parse(stream, meta);
 
       return meta;
     }
@@ -542,7 +542,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
 
       int lutLength = DEFAULT_LUT_LENGTH;
       
-      HashMap<String, String> fakeMap = FakeUtils.extractFakeInfo(getContext(), source.getSource().getFileName());
+      HashMap<String, String> fakeMap = FakeUtils.extractFakeInfo(getContext(), destination.getDatasetName());
       
       sizeX = FakeUtils.getIntValue(fakeMap.get(SIZE_X), sizeX);
       sizeY = FakeUtils.getIntValue(fakeMap.get(SIZE_Y), sizeY);
@@ -639,7 +639,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     public void translate(final DatasetMetadata source, final Metadata destination) {
       super.translate(source, destination);
       
-      String fakeId = NAME + "=" + source.getSource().getFileName();
+      String fakeId = NAME + "=" + source.getDatasetName();
       
       fakeId = FakeUtils.appendToken(fakeId, SIZE_X, Integer.toString(source.getAxisLength(0, Axes.X)));
       fakeId = FakeUtils.appendToken(fakeId, SIZE_Y, Integer.toString(source.getAxisLength(0, Axes.Y)));
@@ -676,6 +676,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       fakeId += ".fake";
       
       try {
+        destination.close();
         destination.setSource(new RandomAccessInputStream(getContext(), new Handle(fakeId), fakeId));
       }
       catch (IOException e) {

@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import ome.scifio.codec.CodecOptions;
 import ome.scifio.common.DataTools;
+import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.util.FormatTools;
 import ome.scifio.util.SCIFIOMetadataTools;
@@ -280,6 +281,8 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   /* @see ome.scifio.Writer#close() */
   public void close() throws IOException {
     if (out != null) out.close();
+    if (metadata != null) metadata.close();
+    if (dMeta != null) dMeta.close();
     out = null;
     initialized = null;
   }
@@ -290,7 +293,12 @@ public abstract class AbstractWriter<M extends TypedMetadata>
    * @see ome.scifio.TypedWriter#setMetadata(ome.scifio.TypedMetadata)
    */
   public void setMetadata(final M meta) throws FormatException {
-    this.metadata = meta;
+    if (metadata != null && metadata != meta) {
+      meta.close();
+      dMeta.close();
+    }
+    
+    metadata = meta;
     Translator t = getContext().getService(SCIFIO.class).
                     translators().findTranslator(meta, dMeta);
     t.translate(meta, dMeta);

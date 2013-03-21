@@ -36,6 +36,7 @@
 
 package ome.scifio;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import ome.scifio.io.RandomAccessInputStream;
@@ -68,6 +69,13 @@ public interface Metadata extends Serializable, HasFormat {
    * @param in
    */
   void setSource(RandomAccessInputStream in);
+  
+  /**
+   * Closes the RandomAccessInputStream associated with this Metadata
+   * @throws IOException 
+   * 
+   */
+  void close();
 
   /**
    * Returns the source used to generate this Metadata object.

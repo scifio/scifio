@@ -132,7 +132,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
 
       String imageName = null;
       if (doImageName) {
-        Location f = new Location(getContext(), meta.getSource().getFileName());
+        Location f = new Location(getContext(), meta.getDatasetName());
         imageName = f.getName();
       }
       String pixelType = FormatTools.getPixelTypeString(meta.getPixelType(i));
@@ -144,7 +144,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
       int cSize = meta.getAxisLength(i, Axes.CHANNEL);
       int tSize = meta.getAxisLength(i, Axes.TIME);
       
-      populateMetadata(store, meta.getSource().getFileName(), i, imageName,
+      populateMetadata(store, meta.getDatasetName(), i, imageName,
         meta.isLittleEndian(i), order, pixelType, xSize,
         ySize, zSize, cSize, tSize,
         meta.getRGBChannelCount(i));
