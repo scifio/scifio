@@ -58,6 +58,7 @@ import net.imglib2.meta.Axes;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.Checker;
 import ome.scifio.Format;
+import ome.scifio.Metadata;
 import ome.scifio.Parser;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
@@ -745,6 +746,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   public void close(boolean fileOnly) throws IOException {
     parser.close(fileOnly);
     reader.close(fileOnly);
+    plane = null;
     super.close(fileOnly);
   }
 
@@ -1068,8 +1070,19 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public void setId(String id) throws FormatException, IOException {
-    if (!id.equals(currentId)) {
-      initFile(id);
+    super.setId(id);
+    if (reader.getCurrentFile() == null || !reader.getCurrentFile().equals(currentId)) {
+      Metadata meta = null;
+      try {
+        meta = parser.parse(id);
+      }
+      catch (ome.scifio.FormatException e) {
+        throw new FormatException(e.getCause());
+      }
+      reader.setMetadata(meta);
+      reader.setSource(id);
+
+      
       // NB: this has to happen after init file, instead of within init file
       // to allow the file to be parsed
       core = new ArrayList<CoreMetadata>();
@@ -1079,7 +1092,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
         core.add(c);
       }
     }
-    reader.setSource(id);
   }
 
   // -- SCIFIO Utility Methods --

@@ -131,29 +131,13 @@ public class ICSReader extends SCIFIOFormatReader {
     return parser.getImageUsedFiles(series, noPixels);
   }
 
-  /* @see loci.formats.IFormatReader#close(boolean) */
-  @Deprecated
-  public void close(boolean fileOnly) throws IOException {
-    super.close(fileOnly);
-    plane = null;
-  }
-
   // -- Internal FormatReader API methods --
   
   /* @see loci.formats.FormatReader#initFile(String) */
   @Deprecated
-  protected void initFile(String id) throws FormatException, IOException {
+  public void setId(String id) throws FormatException, IOException {
  // ARG for testing protected void oldInitFile(String id) throws FormatException, IOException {
-    super.initFile(id);
-    Metadata meta = null;
-    try {
-      meta = parser.parse(id);
-    }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e.getCause());
-    }
-    
-    reader.setMetadata(meta);
+    super.setId(id);
     IMetadata omeRoot = new OMEXMLMetadataImpl() ;
     omeRoot.createRoot();
     OMEXMLMetadataTools.populatePixels(omeRoot, reader.getDatasetMetadata());
@@ -164,7 +148,7 @@ public class ICSReader extends SCIFIOFormatReader {
     try {
       Translator t = reader.getFormat().findSourceTranslator(omeMeta);
       
-      t.translate(meta, omeMeta);
+      t.translate(reader.getMetadata(), omeMeta);
     } catch (ome.scifio.FormatException e) {
       throw new FormatException(e.getCause());
     }
