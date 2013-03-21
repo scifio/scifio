@@ -137,6 +137,17 @@ public class APNGFormat
   
     // true if the default image is not part of the animation
     private boolean separateDefault;
+    
+    // Reproduces the imageMetadata littleEndian field..
+    // because APNG spec doesn't have its own little endian notation
+    // (all integers are supposed to be written big endian)
+    // so as an ImageMetadata field it can't be populated
+    // in a translate() method, which is for format-specific
+    // metadata only.
+    private boolean littleEndian = false;
+    
+    // true if the pixel bits are signed
+    private boolean signed = false;
   
     // -- Constructor --
   
@@ -145,12 +156,31 @@ public class APNGFormat
       idat = new ArrayList<IDATChunk>();
     }
     
+    // -- APNGMetadata API Methods --
+    
+    public boolean isSigned() {
+      return signed;
+    }
+    
+    public void setSigned(boolean signed) {
+      this.signed = signed;
+    }
+    
     // -- Metadata API Methods --
     
+    public boolean isLittleEndian(int imageIndex) {
+      return littleEndian;
+    }
+    
+    public void setLittleEndian(int imageIndex, boolean little) {
+      littleEndian = little;
+    }
+    
+    
     public void populateImageMetadata() {
+      if (getImageCount() == 0) add(new DefaultImageMetadata());
       
-      final ImageMetadata imageMeta = new DefaultImageMetadata();
-      add(imageMeta);
+      final ImageMetadata imageMeta = get(0);
   
       imageMeta.setInterleaved(false);
       imageMeta.setOrderCertain(true);
@@ -161,23 +191,28 @@ public class APNGFormat
       boolean indexed = false;
       boolean rgb = true;
       int sizec = 1;
+      
+      int bpp = getIhdr().getBitDepth();
   
       switch (getIhdr().getColourType()) {
         case 0x0:
           rgb = false;
           break;
         case 0x2:
-          indexed = true;
           sizec = 3;
           break;
         case 0x3:
+          indexed = true;
+          sizec = 3; // ?
           break;
         case 0x4:
           rgb = false;
           sizec = 2;
+          bpp *= 2;
           break;
         case 0x6:
           sizec = 4;
+          bpp *= 2;
           break;
       }
   
@@ -203,12 +238,10 @@ public class APNGFormat
           getIhdr().getWidth(), getIhdr().getHeight(), sizec,
           planeCount, 1});
   
-      final int bpp = getIhdr().getBitDepth();
-  
       imageMeta.setBitsPerPixel(bpp);
       try {
         imageMeta.setPixelType(FormatTools.pixelTypeFromBytes(
-          bpp / 8, false, false));
+          bpp / 8, isSigned(), false));
       }
       catch (final FormatException e) {
         LOGGER.error("Failed to find pixel type from bytes: " + (bpp/8), e);
@@ -216,7 +249,7 @@ public class APNGFormat
       imageMeta.setRGB(rgb);
       imageMeta.setIndexed(indexed);
       imageMeta.setPlaneCount(planeCount);
-      imageMeta.setLittleEndian(false);
+      imageMeta.setLittleEndian(isLittleEndian(0));
   
       // Some anciliary chunks may not have been parsed
       imageMeta.setMetadataComplete(false);
@@ -504,9 +537,13 @@ public class APNGFormat
       FormatTools.checkPlaneParameters(
         this, imageIndex, planeIndex, -1, x, y, w, h);
   
-      // If the last processed (cached) plane is requested, return it
+      // If the last processed (cached) plane is requested, return the 
+      // requested sub-image, but don't update the last plane (in case the
+      // full plane was not requested)
       if (planeIndex == lastPlaneIndex && lastPlane != null) {
-        return plane.populate(lastPlane);
+        BufferedImage subImage = AWTImageTools.getSubimage(lastPlane.getData(), 
+            getMetadata().isLittleEndian(imageIndex), x, y, w, h);
+        return plane.populate(subImage, x, y, w, h);
       }
       else if (lastPlane == null) {
         lastPlane = plane;
@@ -678,7 +715,6 @@ public class APNGFormat
     // Current sequence number, shared by fcTL and fdAT frames to indicate
     // ordering
     private int nextSequenceNumber;
-    private boolean littleEndian;
 
     // -- Writer API Methods --
 
@@ -742,7 +778,6 @@ public class APNGFormat
       numFrames = 0;
       numFramesPointer = 0;
       nextSequenceNumber = 0;
-      littleEndian = false;
     }
 
     /* @see ome.scifio.Writer#setDest(RandomAccessOutputStream, int) */
@@ -760,11 +795,10 @@ public class APNGFormat
         final int width = getMetadata().getAxisLength(imageIndex, Axes.X);
         final int height = getMetadata().getAxisLength(imageIndex, Axes.Y);
         final int bytesPerPixel = FormatTools.getBytesPerPixel(
-            getMetadata() .getPixelType(imageIndex));
+            getMetadata().getPixelType(imageIndex));
         final int nChannels = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
         final boolean indexed = getColorModel() != null
             && (getColorModel() instanceof IndexColorModel);
-        littleEndian = getMetadata().isLittleEndian(imageIndex);
 
         // write 8-byte PNG signature
         out.write(APNGFormat.PNG_SIGNATURE);
@@ -878,7 +912,9 @@ public class APNGFormat
     private void writePixels(final int imageIndex, final String chunk,
         final byte[] stream, final int x, final int y, final int width,
         final int height) throws FormatException, IOException {
-      final int sizeC = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+      
+      int samplesPerPixel = getMetadata().getRGBChannelCount(imageIndex);
+      
       final int pixelType = getMetadata().getPixelType(imageIndex);
       final boolean signed = FormatTools.isSigned(pixelType);
 
@@ -893,19 +929,19 @@ public class APNGFormat
         s.write(DataTools.intToBytes(nextSequenceNumber++, false));
       }
       final DeflaterOutputStream deflater = new DeflaterOutputStream(s);
-      final int planeSize = stream.length / sizeC;
+      final int planeSize = stream.length / samplesPerPixel;
       final int rowLen = stream.length / height;
-      final int bytesPerPixel = stream.length / (width * height * sizeC);
+      final int bytesPerPixel = stream.length / (width * height * samplesPerPixel);
       final byte[] rowBuf = new byte[rowLen];
       for (int i = 0; i < height; i++) {
         deflater.write(0);
         if (interleaved) {
-          if (littleEndian) {
-            for (int col = 0; col < width * sizeC; col++) {
-              final int offset = (i * sizeC * width + col)
+          if (getMetadata().isLittleEndian(0)) {
+            for (int col = 0; col < width * samplesPerPixel; col++) {
+              final int offset = (i * samplesPerPixel * width + col)
                   * bytesPerPixel;
               final int pixel = DataTools.bytesToInt(stream, offset,
-                  bytesPerPixel, littleEndian);
+                  bytesPerPixel, getMetadata().isLittleEndian(0));
               DataTools.unpackBytes(pixel, rowBuf, col
                   * bytesPerPixel, bytesPerPixel, false);
             }
@@ -914,18 +950,18 @@ public class APNGFormat
         } else {
           final int max = (int) Math.pow(2, bytesPerPixel * 8 - 1);
           for (int col = 0; col < width; col++) {
-            for (int c = 0; c < sizeC; c++) {
+            for (int c = 0; c < samplesPerPixel; c++) {
               final int offset = c * planeSize + (i * width + col)
                   * bytesPerPixel;
               int pixel = DataTools.bytesToInt(stream, offset,
-                  bytesPerPixel, littleEndian);
+                  bytesPerPixel, getMetadata().isLittleEndian(0));
               if (signed) {
                 if (pixel < max)
                   pixel += max;
                 else
                   pixel -= max;
               }
-              final int output = (col * sizeC + c) * bytesPerPixel;
+              final int output = (col * samplesPerPixel + c) * bytesPerPixel;
               DataTools.unpackBytes(pixel, rowBuf, output,
                   bytesPerPixel, false);
             }
@@ -1014,7 +1050,7 @@ public class APNGFormat
       final boolean indexed = source.isIndexed(0);
   
       if (indexed) {
-        ihdr.setColourType((byte) 0x2);
+        ihdr.setColourType((byte) 0x3);
         
         /*
          * NB: not necessary to preserve ColorTable when translating. If
@@ -1037,16 +1073,26 @@ public class APNGFormat
         */
       }
       else if (sizec == 2) {
+        // grayscale with alpha
         ihdr.setColourType((byte) 0x4);
+        // Each pixel is 2 samples. Bit depth is bits per sample
+        // and not per pixel. Thus we divide by 2.
+        ihdr.setBitDepth((byte)(ihdr.getBitDepth()  / 2));
       }
       else if (sizec == 4) {
+        // each pixel is an rgb triple, plus alpha
         ihdr.setColourType((byte) 0x6);
+        // Each pixel is 2 samples. Bit depth is bits per sample
+        // and not per pixel. Thus we divide by 2.
+        ihdr.setBitDepth((byte)(ihdr.getBitDepth()  / 2));
       }
       else if (!rgb) {
+        // grayscale image
         ihdr.setColourType((byte) 0x0);
       }
       else {
-        ihdr.setColourType((byte) 0x3);
+        // each pixel is an RGB triple
+        ihdr.setColourType((byte) 0x2);
       }
   
       actl.setNumFrames(source.getPlaneCount(0));
@@ -1064,6 +1110,14 @@ public class APNGFormat
         frame.setDisposeOp((byte) 0);
         fctl.add(frame);
       }
+      
+      //FIXME: all integers in apng should be written big endian per spec
+      // but for bio-formats endianness is supposed to be preserved... resolve?
+      dest.setLittleEndian(0, source.isLittleEndian(0));
+      
+      
+      boolean signed = FormatTools.isSigned(source.getPixelType(0));
+      dest.setSigned(signed);
   
       Object separateDefault = source.getImageMetadataValue(0, Metadata.DEFAULT_KEY);
       dest.setSeparateDefault(separateDefault == null ? false : (Boolean)separateDefault);
