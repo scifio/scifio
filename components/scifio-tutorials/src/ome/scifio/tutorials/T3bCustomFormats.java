@@ -145,14 +145,6 @@ public class T3bCustomFormats {
       @Field(label = "Sky color")
       private String color;
       
-      public Metadata() {
-        this(null, null);
-      }
-      
-      public Metadata(final Context context, final Format format) {
-        super(context, format);
-      }
-      
       public void setColor(String c) { 
         color = c;
       }
@@ -164,14 +156,6 @@ public class T3bCustomFormats {
     // overriddne, it will simply return an empty Metadata object.
     public static class Parser extends AbstractParser<Metadata> {
 
-      public Parser() {
-        this(null, null);
-      }
-
-      public Parser(final Context context, final Format format) {
-        super(context, format);
-      }
-      
       // Here we can populate a metadata object. Note that #parse is overridden
       // with a 1-parameter and 2-parameter version. The latter allows for non-
       // destructive, chain parsing and re-use of a single Metadata object.
@@ -196,13 +180,7 @@ public class T3bCustomFormats {
     // compatibility, that can be set here.
     public static class Checker extends AbstractChecker {
 
-      
       public Checker() {
-        this(null, null);
-      }
-
-      public Checker(final Context context, final Format format) {
-        super(context, format);
         suffixSufficient = true;
         suffixNecessary = true;
       }
@@ -215,14 +193,6 @@ public class T3bCustomFormats {
     // Here we extend ByteArrayReader, signifying that this reader will
     // return ByteArrayPlanes.
     public static class Reader extends ByteArrayReader<Metadata> {
-      
-      public Reader() {
-        this(null, null);
-      }
-      
-      public Reader(final Context context, final Format format) {
-        super(context, format);
-      }
 
       // Any openPlane signature that contains a Plane object should
       // attempt to update that plane (e.g. via plane.populate() calls)
@@ -245,14 +215,6 @@ public class T3bCustomFormats {
     // type of Plane is irrelevant for Writers, thanks to the
     // Plane.getBytes() method.
     public static class Writer extends AbstractWriter<Metadata> {
-
-      public Writer() {
-        this(null, null);
-      }
-      
-      public Writer(final Context context, final Format format) {
-        super(context, format);
-      }
 
       public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
           int y, int w, int h) throws FormatException, IOException {

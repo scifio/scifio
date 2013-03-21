@@ -71,7 +71,6 @@ import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.util.FormatTools;
 
-import org.scijava.Context;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
@@ -136,11 +135,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Constructor --
   
     public Metadata() {
-      this(null, null);
-    }
-  
-    public Metadata(final Context context, final Format format) {
-      super(context, format);
       keyValPairs = new Hashtable<String, String>();
     }
   
@@ -755,16 +749,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    */
   public static class Checker extends AbstractChecker {
 
-    // -- Constructor --
-
-    public Checker() {
-      this(null, null);
-    }
-
-    public Checker(final Context context, final Format format) {
-      super(context, format);
-    }
-
     // -- Checker API Methods --
 
   }
@@ -774,16 +758,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
-  
-    // -- Constructor --
-  
-    public Parser() {
-      this(null, null);
-    }
-  
-    public Parser(final Context context, final Format format) {
-      super(context, format);
-    }
   
     // -- Parser API Methods --
   
@@ -946,11 +920,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Constructor --
   
     public Reader() {
-      this(null, null);
-    }
-  
-    public Reader(final Context context, final Format format) {
-      super(context, format);
       domains =
         new String[] {
         FormatTools.LM_DOMAIN, FormatTools.FLIM_DOMAIN,
@@ -1148,17 +1117,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     //     ordering.  Technically, this is not our problem, but it is
     //     easy enough to work around and makes life easier for our users.
     private String outputOrder = "XYZTC";
-    
-    // -- Constructor --
-  
-    public Writer() {
-      this(null, null);
-    }
-  
-    public Writer(final Context context, final Format format) {
-      super(context, format);
-    }
-    
+
     // -- ICSWriter API methods --
 
     /**
@@ -2025,17 +1984,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   public static class CoreICSTranslator
   extends AbstractTranslator<DatasetMetadata, Metadata>
   implements DatasetToTypedTranslator {
-  
-    // -- Constructors --
-  
-    public CoreICSTranslator() {
-      this(null, null);
-    }
-  
-    public CoreICSTranslator(final Context context, final Format format) {
-      super(context, format);
-    }
-  
+     
     // -- Translator API Methods --
   
     @Override
@@ -2151,16 +2100,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   implements TypedToDatasetTranslator {
 
     private Metadata curSource;
-
-    // -- Constructors --
-
-    public ICSCoreTranslator() {
-      this(null, null);
-    }
-
-    public ICSCoreTranslator(final Context context, final Format format) {
-      super(context, format);
-    }
 
     // -- Translator API Methods --
 

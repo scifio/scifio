@@ -37,7 +37,8 @@ package ome.scifio;
 
 import java.util.List;
 
-import org.scijava.Context;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * Default implementation of {@link DatasetMetadata}.
@@ -48,25 +49,22 @@ import org.scijava.Context;
  * @author Mark Hiner
  *
  */
+@Plugin(type=DatasetMetadata.class, priority=Priority.HIGH_PRIORITY)
 public class DefaultDatasetMetadata extends AbstractDatasetMetadata 
   implements DatasetMetadata {
 
   // -- Constructors --
 
   public DefaultDatasetMetadata() {
-    super(null);
+    super();
   }
 
-  public DefaultDatasetMetadata(final Context context) {
-    super(context);
+  public DefaultDatasetMetadata(final List<ImageMetadata> list) {
+    super(list);
   }
   
-  public DefaultDatasetMetadata(final List<ImageMetadata> list, final Context context) {
-    super(list, context);
-  }
-  
-  public DefaultDatasetMetadata(final DatasetMetadata copy, final Context context) {
-    super(copy, context);
+  public DefaultDatasetMetadata(final DatasetMetadata copy) {
+    super(copy);
   }
   
   // -- Metadata API Methods --

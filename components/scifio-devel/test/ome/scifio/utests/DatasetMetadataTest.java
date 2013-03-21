@@ -41,7 +41,6 @@ import static org.testng.AssertJUnit.assertEquals;
 import java.io.IOException;
 
 import ome.scifio.DatasetMetadata;
-import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
@@ -50,6 +49,7 @@ import ome.scifio.SCIFIO;
 import ome.scifio.fake.FakeFormat;
 
 import org.scijava.Context;
+import org.scijava.plugin.PluginService;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -77,7 +77,8 @@ public class DatasetMetadataTest {
     context = new Context();
     f = context.getService(SCIFIO.class).formats().getFormatFromClass(FakeFormat.class);
     p = f.createParser();
-    dm = new DefaultDatasetMetadata(context);
+    //FIXME: no more datasetmetadata class
+    dm = context.getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
   }
   
   @Test

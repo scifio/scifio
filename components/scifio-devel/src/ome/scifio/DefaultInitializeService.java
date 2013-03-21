@@ -40,7 +40,9 @@ import java.io.IOException;
 import ome.scifio.filters.ReaderFilter;
 
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
@@ -50,6 +52,14 @@ import org.scijava.service.Service;
  */
 @Plugin(type=Service.class, priority=Priority.LOW_PRIORITY)
 public class DefaultInitializeService extends AbstractService implements InitializeService {
+
+  // -- Parameters --
+  
+  @Parameter
+  PluginService pluginService;
+
+  
+  // -- InitializeService API Methods --	
 
   /**
    * See {@link #initializeReader(String, boolean)}. Will not open the image
@@ -143,7 +153,8 @@ public class DefaultInitializeService extends AbstractService implements Initial
       
       // TODO should probably make this general wrt DatasetMetadata,
       // but that also requires having a general way to instantiate DatasetMetadata
-      final DatasetMetadata transMeta = new DefaultDatasetMetadata(getContext());
+      //FIXME: get rid of DatasetMetadata class
+      final DatasetMetadata transMeta = pluginService.createInstancesOfType(DatasetMetadata.class).get(0);
       final Translator transToCore = sFormat.findSourceTranslator(transMeta);
       final Translator transFromCore = dFormat.findDestTranslator(transMeta);
 //TODO unnecessary?     transMeta.setSource(new RandomAccessInputStream(getContext(), source));

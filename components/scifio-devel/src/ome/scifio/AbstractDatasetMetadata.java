@@ -41,8 +41,6 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.scijava.Context;
-
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.util.FormatTools;
@@ -69,29 +67,20 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
   private static final long serialVersionUID = 1L;
 
   // -- Constructors --
-
+  
   public AbstractDatasetMetadata() {
-    this(null);
-  }
-
-  public AbstractDatasetMetadata(final Context context) {
-    super(context, null);
     datasetMeta = new Hashtable<String, Object>();
     imageMeta = new ArrayList<ImageMetadata>();
   }
   
-  public AbstractDatasetMetadata(final List<ImageMetadata> list, final Context context) {
-    this(context);
-    
+  public AbstractDatasetMetadata(final List<ImageMetadata> list) {
     for(int i = 0; i < list.size(); i++) {
       ImageMetadata core = list.get(i);
       imageMeta.add(new DefaultImageMetadata(core));
     }
   }
   
-  public AbstractDatasetMetadata(final DatasetMetadata copy, final Context context) {
-    super(context, null);
-    
+  public AbstractDatasetMetadata(final DatasetMetadata copy) {
     datasetMeta = (Hashtable<String, Object>) copy.getDatasetMetadata().clone();
     imageMeta = new ArrayList<ImageMetadata>();
     

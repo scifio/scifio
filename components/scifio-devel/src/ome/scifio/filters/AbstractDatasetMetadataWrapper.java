@@ -76,7 +76,6 @@ public abstract class AbstractDatasetMetadataWrapper extends AbstractDatasetMeta
   }
   
   public AbstractDatasetMetadataWrapper(DatasetMetadata metadata) {
-    super(metadata == null ? null : metadata, metadata == null ? null : metadata.getContext());
     meta = metadata;
   }
   
@@ -330,6 +329,10 @@ public abstract class AbstractDatasetMetadataWrapper extends AbstractDatasetMeta
   
   
   // -- Metadata API Methods --
+  
+  public String getFormatName() {
+    return meta.getFormatName();
+  }
   
   public void reset() {
     super.reset();

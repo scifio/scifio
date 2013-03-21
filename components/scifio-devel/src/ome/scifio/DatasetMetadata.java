@@ -50,7 +50,7 @@ import net.imglib2.meta.AxisType;
  * @author Mark Hiner
  *
  */
-public interface DatasetMetadata extends TypedMetadata {
+public interface DatasetMetadata extends TypedMetadata, ScifioPlugin {
   
   // -- Fields --
   

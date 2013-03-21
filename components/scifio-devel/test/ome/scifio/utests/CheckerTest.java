@@ -46,6 +46,7 @@ import ome.scifio.Checker;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
+import ome.scifio.fake.FakeFormat;
 import ome.scifio.io.RandomAccessInputStream;
 
 import org.scijava.Context;
@@ -73,7 +74,8 @@ public class CheckerTest {
     context = new Context();
     Format f = context.getService(SCIFIO.class).formats().getFormat(id);
     c = f.createChecker();
-    fc = new FakeChecker(context, f);
+    fc = new FakeChecker();
+    fc.setContext(context);
   }
   
   @Test
@@ -155,16 +157,6 @@ public class CheckerTest {
    */
   private static class FakeChecker extends ome.scifio.fake.FakeFormat.Checker {
     
-    // -- Constructors --
-    
-    public FakeChecker() {
-      this(null, null);
-    }
-    
-    public FakeChecker(final Context context, final Format format) {
-      super(context, format);
-    }
-    
     // -- FakeChecker Methods --
     
     public void setSuffixSufficient(boolean s) {
@@ -174,6 +166,16 @@ public class CheckerTest {
     public boolean isFormat(final RandomAccessInputStream stream) throws IOException
     {
       return true;
+    }
+    
+    // -- HasFormat Methods --
+    
+    // When extending an existing component, the getFormat() method should be overriden to ensure
+    // the proper format is returned.
+    //FIXME: index over all components? make Format.createComponent work more like services where
+    // you can have a list of components returned... maybe? Or not..
+    public Format getFormat() {
+      return getContext().getService(SCIFIO.class).formats().getFormatFromClass(FakeFormat.class);
     }
   }
 }

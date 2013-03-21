@@ -88,6 +88,15 @@ public interface FormatService extends Service {
    *         {@code Format} was not found.
    */
   <F extends Format> F getFormatFromClass(Class<F> formatClass);
+  
+  /**
+   * Returns the Format compatible with this component class, or null if no matching
+   * Format can be found.
+   * 
+   * @param componentClass
+   * @return
+   */
+  Format getFormatFromComponent(final Class<?> componentClass);
 
   /**
    * {@code Format} lookup method using the {@code Reader} component

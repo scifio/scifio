@@ -39,7 +39,6 @@ package ome.scifio;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,12 +63,6 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   protected boolean filtered;
   
   protected MetadataOptions metadataOptions;
-
-  // -- Constructor --
-
-  public AbstractMetadata(final Context context, final Format format) {
-    super(context, format);
-  }
 
   // -- Metadata API Methods --
   

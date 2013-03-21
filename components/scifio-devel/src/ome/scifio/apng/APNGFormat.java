@@ -79,7 +79,6 @@ import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.io.StreamTools;
 import ome.scifio.util.FormatTools;
 
-import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.Attr;
 
@@ -143,11 +142,6 @@ public class APNGFormat
     // -- Constructor --
   
     public Metadata() {
-      this(null, null);
-    }
-  
-    public Metadata(final Context context, final Format format) {
-      super(context, format);
       fctl = new ArrayList<FCTLChunk>();
       idat = new ArrayList<IDATChunk>();
     }
@@ -232,18 +226,11 @@ public class APNGFormat
    */
   public static class Checker extends AbstractChecker {
   
-    // -- Fields --
-  
     // -- Constructor --
   
     /** Constructs a new APNGChecker */
-    public Checker(final Context context, final Format format) {
-      super(context, format);
-      suffixNecessary = false;
-    }
-  
     public Checker() {
-      this(null, null);
+      suffixNecessary = false;
     }
   
     // -- Checker API Methods --
@@ -280,20 +267,7 @@ public class APNGFormat
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
-  
-    // -- Fields --
-  
-    // -- Constructor --
-  
-    /** Constructs a new APNGParser. */
-    public Parser() {
-      this(null, null);
-    }
-  
-    public Parser(final Context context, final Format format) {
-      super(context, format);
-    }
-  
+
     // -- Parser API Methods --
   
     /* @see ome.scifio.AbstractParser#parse(RandomAccessInputStream stream) */
@@ -428,18 +402,6 @@ public class APNGFormat
   
     // Plane index of the last plane that was returned.
     private int lastPlaneIndex = -1;
-  
-    // -- Constructor --
-  
-    /** Constructs a new APNGReader. */
-  
-    public Reader() {
-      this(null, null);
-    }
-  
-    public Reader(final Context context, final Format format) {
-      super(context, format);
-    }
   
     // -- Reader API Methods --
   
@@ -626,16 +588,6 @@ public class APNGFormat
     // ordering
     private int nextSequenceNumber;
     private boolean littleEndian;
-
-    // -- Constructor --
-
-    public Writer() {
-      this(null, null);
-    }
-
-    public Writer(final Context context, final Format format) {
-      super(context, format);
-    }
 
     // -- Writer API Methods --
 
@@ -943,16 +895,6 @@ public class APNGFormat
     extends AbstractTranslator<DatasetMetadata, Metadata>
     implements DatasetToTypedTranslator {
   
-    // -- Constructors --
-    
-    public CoreAPNGTranslator() {
-      this(null, null);
-    }
-    
-    public CoreAPNGTranslator(final Context context, final Format format) {
-      super(context, format);
-    }
-    
     // -- Translator API Methods -- 
     
     @Override
@@ -1051,16 +993,6 @@ public class APNGFormat
   public static class APNGCoreTranslator
     extends AbstractTranslator<Metadata, DatasetMetadata>
     implements TypedToDatasetTranslator {
-  
-    // -- Constructors --
-  
-    public APNGCoreTranslator() {
-      this(null, null);
-    }
-  
-    public APNGCoreTranslator(final Context context, final Format format) {
-      super(context, format);
-    }
   
     // -- Translator API Methods --
   

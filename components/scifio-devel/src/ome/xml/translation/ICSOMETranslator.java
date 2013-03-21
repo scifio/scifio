@@ -41,14 +41,13 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.scijava.Context;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
 
 import net.imglib2.meta.Axes;
 
-import ome.scifio.DefaultDatasetMetadata;
-import ome.scifio.Format;
+import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.MetadataLevel;
 import ome.scifio.Translator;
@@ -76,19 +75,6 @@ import ome.xml.model.primitives.Timestamp;
   @Attr(name = Translator.DEST, value = OMEMetadata.FORMAT_NAME)
 })
 public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
-
-  // -- Constructors -- 
-
-  public ICSOMETranslator() {
-    this(null, null);
-  }
-
-  public ICSOMETranslator(final Context context, final Format format) {
-    super(context, format);
-  }
-  
-  // -- Fields --
-  
 
   // -- Translator API --
 
@@ -120,10 +106,10 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     FilterMetadata filter = new FilterMetadata(store, source.isFiltered());
     filter.createRoot();
     
-    DefaultDatasetMetadata dMeta = new DefaultDatasetMetadata();
+    DatasetMetadata dMeta = getContext().getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
     ICSFormat ics = (ICSFormat) getFormat();
 
-    TypedTranslator<ICSFormat.Metadata, DefaultDatasetMetadata> trans = null;
+    TypedTranslator<ICSFormat.Metadata, DatasetMetadata> trans = null;
     try {
       trans = ics.findSourceTranslator(dMeta);
     } catch (FormatException e) {

@@ -48,7 +48,6 @@ import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
 import ome.scifio.util.SCIFIOMetadataTools;
 
-import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,8 +88,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
   // -- Constructors --
 
-  public AbstractParser(final Context context, final Format format) {
-    super(context, format);
+  public AbstractParser() {
     dMeta = new DefaultDatasetMetadata();
   }
   

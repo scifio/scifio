@@ -36,11 +36,9 @@
 
 package ome.xml.translation;
 
-import org.scijava.Context;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
-import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Translator;
 import ome.scifio.apng.APNGFormat;
@@ -59,16 +57,6 @@ import ome.xml.meta.OMEXMLMetadataService;
   @Attr(name = Translator.DEST, value = OMEMetadata.FORMAT_NAME)
 })
 public class APNGOMETranslator extends OMETranslator<APNGFormat.Metadata> {
-
-  // -- Constructors --
-
-  public APNGOMETranslator() {
-    this(null, null);
-  }
-
-  public APNGOMETranslator(final Context context, final Format format) {
-    super(context, format);
-  }
 
   // -- Translator API Methods --
 

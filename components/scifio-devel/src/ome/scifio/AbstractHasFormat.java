@@ -1,6 +1,5 @@
 package ome.scifio;
 
-import org.scijava.Context;
 import org.scijava.plugin.SortablePlugin;
 
 /**
@@ -11,27 +10,9 @@ import org.scijava.plugin.SortablePlugin;
  */
 public abstract class AbstractHasFormat extends SortablePlugin implements HasFormat {
   
-  // -- Fields --
-  
-  private Format format;
-  
-  // -- Constructors --
-  
-  public AbstractHasFormat(final Context context, final Format format) {
-    setContext(context);
-    this.format = format;
-  }
-  
   // -- HasFormat API --
-  
-  public void setFormat(final Format format) {
-    if (format == null)
-      throw new UnsupportedOperationException("Can not set Format when Format is not null.");
-    
-    this.format = format;
-  }
 
   public Format getFormat() {
-    return format;
+    return getContext().getService(SCIFIO.class).formats().getFormatFromComponent(getClass());
   }
 }

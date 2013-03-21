@@ -39,6 +39,9 @@ package loci.formats;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.scijava.plugin.PluginService;
+
+import ome.scifio.DefaultDatasetMetadata;
 import ome.xml.meta.OMEXMLMetadataService;
 
 import loci.common.services.DependencyException;
@@ -138,8 +141,9 @@ public final class MetadataTools {
   public static void populateMetadata(MetadataStore store, int series,
     String imageName, loci.formats.CoreMetadata coreMeta)
   {
-    ome.scifio.DefaultDatasetMetadata cMeta = 
-        new ome.scifio.DefaultDatasetMetadata(LegacyContext.get());
+    ome.scifio.DatasetMetadata cMeta = 
+        LegacyContext.get().getService(PluginService.class).createInstancesOfType(DefaultDatasetMetadata.class).get(0);
+    
     
     // Fake an ome.scifio.CoreMetadata array, with the converted coreMetadata at index series
     for(int i=0; i<series; i++)

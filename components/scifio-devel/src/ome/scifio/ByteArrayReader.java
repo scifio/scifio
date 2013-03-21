@@ -37,8 +37,6 @@ package ome.scifio;
 
 import java.io.IOException;
 
-import org.scijava.Context;
-
 import ome.scifio.util.FormatTools;
 
 /**
@@ -51,8 +49,8 @@ public abstract class ByteArrayReader<M extends TypedMetadata>
 
   // -- Constructor --
   
-  public ByteArrayReader(final Context context, final Format format) {
-    super(context, format, ByteArrayPlane.class);
+  public ByteArrayReader() {
+    super(ByteArrayPlane.class);
   }
 
   // -- Reader API Methods --

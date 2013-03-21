@@ -222,6 +222,32 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     final F format = (F) formatMap.get(formatClass);
     return format;
   }
+  
+  @SuppressWarnings("unchecked")
+  public Format getFormatFromComponent(final Class<?> componentClass) {
+   Format fmt = null;
+    
+   if (Reader.class.isAssignableFrom(componentClass)) {
+     fmt = getFormatFromReader((Class<? extends Reader>)componentClass);
+   }
+   else if (Writer.class.isAssignableFrom(componentClass)) {
+     fmt = getFormatFromWriter((Class<? extends Writer>)componentClass);
+   }
+   else if (Translator.class.isAssignableFrom(componentClass)) {
+     fmt = getFormatFromTranslator((Class<? extends Translator>)componentClass);
+   }
+   else if (Metadata.class.isAssignableFrom(componentClass)) {
+     fmt = getFormatFromMetadata((Class<? extends Metadata>)componentClass);
+   }
+   else if (Parser.class.isAssignableFrom(componentClass)) {
+     fmt = getFormatFromParser((Class<? extends Parser>)componentClass);
+   }
+   else if (Checker.class.isAssignableFrom(componentClass)) {
+     fmt = getFormatFromChecker((Class<? extends Checker>)componentClass);
+   }
+   
+   return fmt;
+  }
 
   /**
    * {@code Format} lookup method using the {@code Reader} component

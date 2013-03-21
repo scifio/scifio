@@ -41,7 +41,7 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
-import org.scijava.Context;
+import org.scijava.plugin.PluginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +74,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   protected M metadata;
 
   /** Core Metadata values. */
-  protected DefaultDatasetMetadata dMeta;
+  protected DatasetMetadata dMeta;
 
   /** Whether or not to group multi-file formats. */
   protected boolean group = true;
@@ -99,9 +99,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   // -- Constructors --
 
   /** Constructs a reader with the given context */
-  public AbstractReader(final Context context, final Format format, Class<P> planeClass)
+  public AbstractReader(Class<P> planeClass)
   {
-    super(context, format);
     init();
     this.planeClass = planeClass;
   }
@@ -292,7 +291,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     if (metadata == null) {
       try {
         @SuppressWarnings("unchecked")
-        final M meta = (M) getFormat().createParser() .parse(stream);
+        final M meta = (M) getFormat().createParser().parse(stream);
         setMetadata(meta);
       }
       catch (final FormatException e) {
@@ -381,7 +380,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    */
   public void setMetadata(final M meta) throws IOException {
     metadata = meta;
-    dMeta = new DefaultDatasetMetadata(getContext());
+    //FIXME: get rid of datasetmetadata class
+    dMeta = getContext().getService(PluginService.class).createInstancesOfType(DatasetMetadata.class).get(0);
     if(in == null) setSource(meta.getSource());
     
     try {

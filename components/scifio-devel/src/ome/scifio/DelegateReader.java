@@ -78,7 +78,7 @@ public abstract class DelegateReader <M extends TypedMetadata, P extends DataPla
 
   /** Constructs a new delegate reader. */
   public DelegateReader(TypedReader<M, P> nativeReader, TypedReader<M, P> legacyReader) {
-    super(null, null, null);
+    super(null);
     this.nativeReader = nativeReader;
     this.legacyReader = legacyReader;
   }
@@ -103,11 +103,6 @@ public abstract class DelegateReader <M extends TypedMetadata, P extends DataPla
   }
   
   // -- HasFormat API methods --
-  
-  public void setFormat(Format format) {
-    if (useLegacy) legacyReader.setFormat(format); 
-    else nativeReader.setFormat(format);
-  }
   
   public Format getFormat() {
     return useLegacy ? legacyReader.getFormat() : nativeReader.getFormat();

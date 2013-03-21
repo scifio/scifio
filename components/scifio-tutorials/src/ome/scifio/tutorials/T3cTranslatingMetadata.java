@@ -128,17 +128,6 @@ public class T3cTranslatingMetadata {
   extends AbstractTranslator<FakeFormat.Metadata, FakeFormat.Metadata>
   {
     
-    // -- Constructors --
-
-    // These are the standard, minimal constructors for contextual components.
-    public MischeviousTranslator() {
-      this(null, null);
-    }
-    
-    public MischeviousTranslator(final Context context, final Format format) {
-      super(context, format);
-    }
-    
     // -- Translator API methods --
     
     // This method is the actual workhorse of the Translator. Objects are passed

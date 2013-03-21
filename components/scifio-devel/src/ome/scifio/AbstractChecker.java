@@ -38,7 +38,6 @@ package ome.scifio;
 
 import java.io.IOException;
 
-import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ome.scifio.io.RandomAccessInputStream;
@@ -69,14 +68,6 @@ public abstract class AbstractChecker
    * is sufficient to identify the file as an instance of this format.
    */
   protected boolean suffixSufficient = true;
-
-  // -- Constructors --
-
-  /** Constructs a checker with the given context */
-  public AbstractChecker(final Context context, final Format format)
-  {
-    super(context, format);
-  }
   
   // -- Checker API Methods --
 

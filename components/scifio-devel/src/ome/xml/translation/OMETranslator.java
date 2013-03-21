@@ -36,12 +36,9 @@
 
 package ome.xml.translation;
 
-import org.scijava.Context;
 
 import ome.scifio.AbstractMetadata;
 import ome.scifio.AbstractTranslator;
-import ome.scifio.Format;
-import ome.scifio.SCIFIO;
 import ome.xml.meta.OMEMetadata;
 
 /**
@@ -56,16 +53,6 @@ import ome.xml.meta.OMEMetadata;
  */
 public abstract class OMETranslator<M extends AbstractMetadata>
   extends AbstractTranslator<M, OMEMetadata> {
-
-  // -- Constructor --
-  
-  public OMETranslator() {
-    this(null, null);
-  }
-
-  public OMETranslator(final Context context, final Format format) {
-    super(context, format);
-  }
 
   // -- Translator API Methods --
 

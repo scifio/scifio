@@ -182,16 +182,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     
     private int[][] valueToIndex;
     
-    // -- Constructor --
-    
-    public Metadata() {
-      this(null, null);
-    }
-    
-    public Metadata(final Context context, final Format format) {
-      super(context, format);
-    }
-    
     // -- FakeFormat.Metadata methods --
     
     public int getLastChannel() {
@@ -231,15 +221,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    */
   public static class Checker extends AbstractChecker {
 
-    // -- Constructor --
-    
-    public Checker() {
-      this(null, null);
-    }
-    
-    public Checker(final Context context, final Format format) {
-      super(context, format);
-    }
   }
   
   /**
@@ -249,16 +230,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
-    
-    // -- Constructor -
-    
-    public Parser() {
-      this(null, null);
-    }
-    
-    public Parser(final Context context, final Format format) {
-      super(context, format);
-    }
     
     // -- Parser API Methods --
     
@@ -391,17 +362,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
-    // -- Constructor --
-    
-    public Reader() {
-      this(null, null);
-    }
-    
-    public Reader(final Context context, final Format format) {
-      super(context, format);
-    }
-    
+
     // -- Reader API methods --
 
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex, 
@@ -523,16 +484,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    */
   public static class Writer extends AbstractWriter<Metadata> {
 
-    // -- Constructor --
-    
-    public Writer() {
-      this(null, null);
-    }
-    
-    public Writer(final Context context, final Format format) {
-      super(context, format);
-    }
-    
     // -- Writer API Methods --
 
     /*
@@ -562,21 +513,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   public static class FakeCoreTranslator 
     extends AbstractTranslator<Metadata, DatasetMetadata>
     implements TypedToDatasetTranslator {
-    
-    // -- Constants --
-
-
-    // -- Fields --
-    
-    // -- Constructor --
-    
-    public FakeCoreTranslator() {
-      this(null, null);
-    }
-    
-    public FakeCoreTranslator(final Context context, final Format format) {
-      super(context, format);
-    }
     
     // -- Translator API Methods --
     
@@ -697,16 +633,6 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     extends AbstractTranslator<DatasetMetadata, Metadata>
     implements DatasetToTypedTranslator {
 
-    // -- Constructor --
-    
-    public CoreFakeTranslator() {
-      this(null, null);
-    }
-    
-    public CoreFakeTranslator(final Context context, final Format format) {
-      super(context, format);
-    }
-    
     // -- Translator API Methods --
     
     @Override

@@ -141,7 +141,8 @@ public class ICSReader extends SCIFIOFormatReader {
     LegacyContext.get().getService(OMEXMLMetadataService.class).populatePixels(omeRoot, reader.getDatasetMetadata());
     omeRoot.setImageName(id, 0);
     
-    OMEMetadata omeMeta = new OMEMetadata(reader.getContext(), omeRoot);
+    OMEMetadata omeMeta = new OMEMetadata(omeRoot);
+    omeMeta.setContext(reader.getContext());
 
     try {
       Translator t = reader.getFormat().findSourceTranslator(omeMeta);

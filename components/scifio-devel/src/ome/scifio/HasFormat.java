@@ -46,12 +46,6 @@ import org.scijava.Contextual;
  *
  */
 public interface HasFormat extends Contextual {
-  
-  /**
-   * Sets this instance's Format. Only useable if getFormat() == null.
-   * @param format
-   */
-  void setFormat(Format format);
 
   /**
    * Provides a link back to the format associated with this component.

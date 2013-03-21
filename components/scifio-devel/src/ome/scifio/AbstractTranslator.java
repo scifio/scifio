@@ -38,7 +38,6 @@ package ome.scifio;
 
 import ome.scifio.util.SCIFIOMetadataTools;
 
-import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,10 +48,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractTranslator<M extends TypedMetadata, N extends TypedMetadata>
   extends AbstractHasFormat implements TypedTranslator<M, N> {
-
-  public AbstractTranslator(final Context context, final Format format) {
-    super(context, format);
-  }
   
   // -- Translator API --
   

@@ -36,8 +36,6 @@
 
 package ome.xml.meta;
 
-import org.scijava.Context;
-
 import ome.scifio.AbstractMetadata;
 
 /**
@@ -59,12 +57,11 @@ public class OMEMetadata extends AbstractMetadata {
 
   // -- Constructor --
   
-  public OMEMetadata(IMetadata root) {
-    this(null, root);
+  public OMEMetadata() {
+    this(null);
   }
   
-  public OMEMetadata(Context context, IMetadata root) {
-    super(context, null);
+  public OMEMetadata(IMetadata root) {
     this.root = root;
   }
   

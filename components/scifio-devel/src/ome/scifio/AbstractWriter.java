@@ -42,7 +42,6 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
-import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,9 +107,8 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   // -- Constructors --
 
   /** Constructs a writer with the given context */
-  public AbstractWriter(final Context context, final Format format)
+  public AbstractWriter()
   {
-    super(context, format);
     init();
   }
 

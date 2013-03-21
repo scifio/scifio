@@ -403,12 +403,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
     return getParent().<P>castToTypedPlane(plane);
   }
   
-  // -- HasFormat API MEthods --
-
-  public void setFormat(Format format) {
-    getParent().setFormat(format);
-  }
-  
   /*
    * @see ome.scifio.HasFormat#getFormat()
    */
