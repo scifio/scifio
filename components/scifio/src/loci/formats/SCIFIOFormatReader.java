@@ -706,6 +706,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
     throws FormatException, IOException
   {
     try {
+      //TODO wrong check.. need to check the reader's plane compatibility type
       if(plane == null || !(ByteArrayPlane.class.isAssignableFrom(plane.getClass()))) {
         plane = new ByteArrayPlane(reader.getContext());
       }
@@ -1063,7 +1064,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Override
   public boolean isThisType(String name) {
     // if necessary, open the file for further analysis
-    return checker.isFormat(name, true);
+    return isThisType(name, true);
   }
 
   /* @see IFormatHandler#setId(String) */
