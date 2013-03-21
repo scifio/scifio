@@ -33,81 +33,33 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package ome.xml.translation;
 
-package ome.xml.meta;
+import net.imglib2.meta.Metadata;
+import ome.scifio.Translator;
+import ome.scifio.ics.ICSFormat;
+import ome.xml.meta.OMEMetadata;
 
-import ome.scifio.AbstractMetadata;
-import ome.scifio.services.ServiceException;
-import ome.xml.services.OMEXMLService;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 
 /**
- * ome.scifio.Metadata class representing the OME schema.
+ * Translator class from {@link ICSMetadata} to
+ * {@link OMEMetadata}.
  * 
  * @author Mark Hiner
- *
  */
-public class OMEMetadata extends AbstractMetadata {
-  
-  // -- Constants --
-  
-  public static final String FORMAT_NAME = "OME-XML"; 
-  public static final String CNAME = "ome.xml.meta.OMEMetadata";
-  
-  // -- Fields --
-  
-  /** OME core */
-  protected OMEXMLMetadata root;
-
-  // -- Constructor --
-  
-  public OMEMetadata() {
-    this(null);
-  }
-  
-  public OMEMetadata(OMEXMLMetadata root) {
-    setRoot(root);
-  }
-  
-  // -- Metadata API Methods --
-  
-  /*
-   * @see ome.scifio.AbstractMetadata#getFormatName()
-   */
-  public String getFormatName() {
-    return FORMAT_NAME;
-  }
-  
-  /*
-   * @see ome.scifio.AbstractMetadata#populateImageMetadata()
-   */
-  public void populateImageMetadata() {
-    getContext().getService(OMEXMLMetadataService.class).
-      populateMetadata(getRoot(), this);
-  }
-  
-  // -- Helper Methods --
-  
-  public void setRoot(OMEXMLMetadata root) {
-    this.root = root;
-    
-    if (root != null) populateImageMetadata();
-  }
-
-  public OMEXMLMetadata getRoot() {
-    if (root == null) {
-      OMEXMLService service = scifio().formats().getInstance(OMEXMLService.class);
-      try {
-        root = service.createOMEXMLMetadata();
-      } catch (ServiceException e) {
-        LOGGER.debug("Failed to get OME-XML Service", e);
-      }
-    }
-    return root;
-  }
+@Plugin(type = FromOMETranslator.class, attrs = {
+  @Attr(name = OMEICSTranslator.SOURCE, value = OMEMetadata.CNAME),
+  @Attr(name = OMEICSTranslator.DEST, value = ICSFormat.Metadata.CNAME)
+})
+public class OMEICSTranslator extends FromOMETranslator<ICSFormat.Metadata> {
 
   @Override
-  public void reset(Class<?> type) {
-    super.reset(this.getClass());
+  protected void translate() {
+    Translator t = scifio().translators().findTranslator(Metadata.class, dest.getClass());
+    
+    t.translate(source, dest);
   }
-  
+
 }

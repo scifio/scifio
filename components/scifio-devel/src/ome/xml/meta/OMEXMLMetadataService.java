@@ -39,6 +39,7 @@ package ome.xml.meta;
 import org.scijava.service.Service;
 
 import ome.scifio.FormatException;
+import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
 import ome.scifio.Reader;
 import ome.xml.model.enums.Correction;
@@ -223,5 +224,24 @@ public interface OMEXMLMetadataService extends Service {
    *  enumeration value is not found.
    */
   DetectorType getDetectorType(String value) throws FormatException;
+  
+  /**
+   * Uses the provided MetadataRetrieve to populate the format-agnostic
+   * image information in the provided Metadata object (that is, the
+   * ImageMetadata).
+   * 
+   * @param retrieve
+   * @param meta
+   */
+  void populateMetadata(MetadataRetrieve retrieve, Metadata meta);
 
+  /**
+   * Populates the provided ImageMetadata object using the specified
+   * image index into the MetadataRetrieve.
+   * 
+   * @param retrieve
+   * @param iMeta
+   */
+  void populateImageMetadata(MetadataRetrieve retrieve,
+      int imageIndex, ImageMetadata iMeta);
 }

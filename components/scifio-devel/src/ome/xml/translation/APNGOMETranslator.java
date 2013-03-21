@@ -51,11 +51,11 @@ import ome.xml.meta.OMEXMLMetadataService;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = OMETranslator.class, attrs = {
+@Plugin(type = ToOMETranslator.class, attrs = {
   @Attr(name = APNGOMETranslator.SOURCE, value = APNGFormat.Metadata.CNAME),
   @Attr(name = APNGOMETranslator.DEST, value = OMEMetadata.CNAME)
 })
-public class APNGOMETranslator extends OMETranslator<APNGFormat.Metadata> {
+public class APNGOMETranslator extends ToOMETranslator<APNGFormat.Metadata> {
 
   // -- Translator API Methods --
 

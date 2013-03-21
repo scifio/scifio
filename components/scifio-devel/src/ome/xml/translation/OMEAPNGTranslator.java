@@ -33,35 +33,30 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package ome.xml.translation;
 
-
-import ome.scifio.AbstractTranslator;
-import ome.scifio.Metadata;
+import ome.scifio.apng.APNGFormat;
 import ome.xml.meta.OMEMetadata;
 
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
 /**
- * Abstract base class for all ome.scifio.Translators that produce an
- * {@link OMEMetadata} object.
- * 
- * Contains any operations common to all translations involving OMEMetadata
- * (e.g. operations on the root)
+ * Translator class from {@link ICSMetadata} to
+ * {@link OMEMetadata}.
  * 
  * @author Mark Hiner
- *
  */
-public abstract class OMETranslator<M extends Metadata>
-  extends AbstractTranslator<M, OMEMetadata> {
-  
-  // -- Static Constants --
-  
-  public static final String DEST_VALUE = "ome.xml.meta.OMEMetadata";
+@Plugin(type = FromOMETranslator.class, attrs = {
+  @Attr(name = OMEAPNGTranslator.SOURCE, value = OMEMetadata.CNAME),
+  @Attr(name = OMEAPNGTranslator.DEST, value = APNGFormat.Metadata.CNAME)
+})
+public class OMEAPNGTranslator extends FromOMETranslator<APNGFormat.Metadata> {
 
-  // -- Translator API Methods --
-
-  public void translate(final M source, final OMEMetadata destination) {
-    super.translate(source, destination);
+  @Override
+  protected void translate() {
+    
+    // then reverse the apngome translator
   }
 
 }

@@ -34,80 +34,26 @@
  * #L%
  */
 
-package ome.xml.meta;
+package ome.xml.translation;
 
-import ome.scifio.AbstractMetadata;
-import ome.scifio.services.ServiceException;
-import ome.xml.services.OMEXMLService;
+
+import ome.scifio.AbstractTranslator;
+import ome.scifio.Metadata;
+import ome.xml.meta.OMEMetadata;
 
 /**
- * ome.scifio.Metadata class representing the OME schema.
+ * Abstract base class for all ome.scifio.Translators that translate to
+ * an OMEMetadata object.
  * 
  * @author Mark Hiner
  *
  */
-public class OMEMetadata extends AbstractMetadata {
+public abstract class ToOMETranslator<M extends Metadata>
+  extends AbstractTranslator<M, OMEMetadata> {
   
-  // -- Constants --
-  
-  public static final String FORMAT_NAME = "OME-XML"; 
-  public static final String CNAME = "ome.xml.meta.OMEMetadata";
-  
-  // -- Fields --
-  
-  /** OME core */
-  protected OMEXMLMetadata root;
+  // -- Translator API Methods --
 
-  // -- Constructor --
-  
-  public OMEMetadata() {
-    this(null);
+  public void translate(final M source, final OMEMetadata destination) {
+    super.translate(source, destination);
   }
-  
-  public OMEMetadata(OMEXMLMetadata root) {
-    setRoot(root);
-  }
-  
-  // -- Metadata API Methods --
-  
-  /*
-   * @see ome.scifio.AbstractMetadata#getFormatName()
-   */
-  public String getFormatName() {
-    return FORMAT_NAME;
-  }
-  
-  /*
-   * @see ome.scifio.AbstractMetadata#populateImageMetadata()
-   */
-  public void populateImageMetadata() {
-    getContext().getService(OMEXMLMetadataService.class).
-      populateMetadata(getRoot(), this);
-  }
-  
-  // -- Helper Methods --
-  
-  public void setRoot(OMEXMLMetadata root) {
-    this.root = root;
-    
-    if (root != null) populateImageMetadata();
-  }
-
-  public OMEXMLMetadata getRoot() {
-    if (root == null) {
-      OMEXMLService service = scifio().formats().getInstance(OMEXMLService.class);
-      try {
-        root = service.createOMEXMLMetadata();
-      } catch (ServiceException e) {
-        LOGGER.debug("Failed to get OME-XML Service", e);
-      }
-    }
-    return root;
-  }
-
-  @Override
-  public void reset(Class<?> type) {
-    super.reset(this.getClass());
-  }
-  
 }

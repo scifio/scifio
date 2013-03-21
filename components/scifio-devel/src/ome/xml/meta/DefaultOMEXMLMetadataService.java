@@ -45,8 +45,10 @@ import org.scijava.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ome.scifio.DefaultImageMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.FormatService;
+import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
 import ome.scifio.Reader;
 import ome.scifio.common.DateTools;
@@ -539,5 +541,46 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     catch (EnumerationException e) {
       throw new FormatException("DetectorType creation failed", e);
     }
+  }
+  
+  /**
+   * Uses the provided MetadataRetrieve to populate the format-agnostic
+   * image information in the provided Metadata object (that is, the
+   * ImageMetadata).
+   * 
+   * @param retrieve
+   * @param meta
+   */
+  public void populateMetadata(MetadataRetrieve retrieve, Metadata meta) {
+    meta.setDatasetName(retrieve.getImageName(0));
+    
+    for (int i=0; i<retrieve.getImageCount(); i++) {
+      ImageMetadata iMeta = new DefaultImageMetadata();
+      populateImageMetadata(retrieve, i, iMeta);
+      meta.add(iMeta);
+    }
+  }
+  
+  /**
+   * Populates the provided ImageMetadata object using the specified
+   * image index into the MetadataRetrieve.
+   * 
+   * @param retrieve
+   * @param iMeta
+   */
+  public void populateImageMetadata(MetadataRetrieve retrieve,
+      int imageIndex, ImageMetadata iMeta)
+  {
+    int sizeX = retrieve.getPixelsSizeX(imageIndex).getValue();
+    int sizeY = retrieve.getPixelsSizeY(imageIndex).getValue();
+    int sizeZ = retrieve.getPixelsSizeZ(imageIndex).getValue();
+    int sizeC = retrieve.getPixelsSizeC(imageIndex).getValue();
+    int sizeT = retrieve.getPixelsSizeZ(imageIndex).getValue();
+    
+    String dimensionOrder = retrieve.getPixelsDimensionOrder(imageIndex).getValue();
+    boolean little = !retrieve.getPixelsBinDataBigEndian(imageIndex, 0);
+    String pixelType = retrieve.getPixelsType(imageIndex).getValue();
+    
+    int rgbCCount = retrieve.getChannelSamplesPerPixel(imageIndex, 0).getValue();
   }
 }

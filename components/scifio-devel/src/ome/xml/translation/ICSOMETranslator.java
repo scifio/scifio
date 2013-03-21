@@ -63,13 +63,13 @@ import ome.xml.model.primitives.Timestamp;
  * Translator class from {@link ICSMetadata} to
  * {@link OMEMetadata}.
  * 
- * @author hinerm
+ * @author Mark Hiner
  */
-@Plugin(type = OMETranslator.class, attrs = {
+@Plugin(type = ToOMETranslator.class, attrs = {
   @Attr(name = ICSOMETranslator.SOURCE, value = ICSFormat.Metadata.CNAME),
   @Attr(name = ICSOMETranslator.DEST, value = OMEMetadata.CNAME)
 })
-public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
+public class ICSOMETranslator extends ToOMETranslator<ICSFormat.Metadata> {
   
   // -- Translator API --
 
