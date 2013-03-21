@@ -9,6 +9,7 @@ import loci.formats.codec.CodecOptions;
 import loci.formats.meta.MetadataRetrieve;
 import loci.legacy.context.LegacyContext;
 import ome.scifio.ByteArrayPlane;
+import ome.scifio.DefaultMetadataOptions;
 import ome.scifio.Format;
 import ome.scifio.Metadata;
 import ome.scifio.Plane;
@@ -364,6 +365,8 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
       }
       OMEMetadata omeMeta = new OMEMetadata(LegacyContext.get(),
           (ome.xml.meta.OMEXMLMetadata)retrieve);
+      
+      omeMeta.setMetadataOptions(new DefaultMetadataOptions());
       
       // convert the metadata retrieve to ICSMetadata
       writer.scifio().translators().translate(omeMeta, meta);
