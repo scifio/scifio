@@ -143,6 +143,22 @@ public class ICSReader extends SCIFIOFormatReader {
     omeRoot.setImageName(id, 0);
     
     OMEMetadata omeMeta = new OMEMetadata(reader.getContext(), omeRoot);
+    
+    ome.scifio.MetadataOptions options = null;
+    
+    switch (metadataOptions.getMetadataLevel()) {
+    case MINIMUM: options =
+        new ome.scifio.DefaultMetadataOptions(ome.scifio.MetadataLevel.MINIMUM);
+    break;
+    case NO_OVERLAYS: options =
+        new ome.scifio.DefaultMetadataOptions(ome.scifio.MetadataLevel.NO_OVERLAYS);
+    break;
+    case ALL: options =
+        new ome.scifio.DefaultMetadataOptions(ome.scifio.MetadataLevel.ALL);
+    break;
+    }
+    
+    omeMeta.setMetadataOptions(options);
 
     SCIFIO scifio = new SCIFIO(reader.getContext());
     
