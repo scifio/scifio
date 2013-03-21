@@ -86,16 +86,14 @@ public class BufferedImagePlane extends AbstractPlane<BufferedImage, BufferedIma
       int xLength, int yLength) {
     
     if (data == null) {
-      byte[] bytes = new byte[xLength * yLength * 
-                              (meta.getBitsPerPixel() / 8) *
-                              meta.getRGBChannelCount()];
+//      byte[] bytes = new byte[xLength * yLength * 
+//                              (meta.getBitsPerPixel() / 8) *
+//                              meta.getRGBChannelCount()];
 
       int type = meta.getPixelType();
-      boolean signed = type == FormatTools.INT8 || type == FormatTools.INT16 ||
-          type == FormatTools.INT32;
+//      boolean signed = FormatTools.isSigned(type);
 
-      data = AWTImageTools.makeImage(bytes, xLength, yLength,
-          signed);
+      data = AWTImageTools.blankImage(xLength, yLength, meta.getRGBChannelCount(), type);
     }
     
     return (BufferedImagePlane) super.populate(meta, data, xOffset, yOffset, xLength, yLength);
