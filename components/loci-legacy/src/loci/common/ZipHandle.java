@@ -64,7 +64,7 @@ public class ZipHandle extends StreamHandle {
   // -- Constructor --
 
   public ZipHandle(String file) throws IOException {
-    sHandle = new ome.scifio.io.ZipHandle(LegacyContext.getContext(), file);
+    sHandle = new ome.scifio.io.ZipHandle(LegacyContext.get(), file);
   }
 
   /**
@@ -81,7 +81,7 @@ public class ZipHandle extends StreamHandle {
 
   /** Returns true if the given filename is a Zip file. */
   public static boolean isZipFile(String file) throws IOException {
-    ome.scifio.io.ZipHandle handle = new ome.scifio.io.ZipHandle(LegacyContext.getContext());
+    ome.scifio.io.ZipHandle handle = new ome.scifio.io.ZipHandle(LegacyContext.get());
     
     return handle.isConstructable(file);
   }

@@ -63,7 +63,7 @@ public class SCIFIOReaderAdapter extends AbstractLegacyAdapter<IFormatReader, om
 
   @Override
   protected Reader wrapToModern(IFormatReader legacy) {
-    return new SCIFIOReaderWrapper(LegacyContext.getContext(), legacy);
+    return new SCIFIOReaderWrapper(LegacyContext.get(), legacy);
   }
 
 }

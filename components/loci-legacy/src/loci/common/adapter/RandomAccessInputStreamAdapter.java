@@ -101,14 +101,14 @@ public class RandomAccessInputStreamAdapter
      */
     public LegacyWrapper(String file) throws IOException {
 //      super(file);
-      super(LegacyContext.getContext());
+      super(LegacyContext.get());
       rais = new RandomAccessInputStream(file);
     }
 
     /** Constructs a random access stream around the given handle. */
     public LegacyWrapper(ome.scifio.io.IRandomAccess handle) throws IOException {
 //      super(handle);
-      super(LegacyContext.getContext());
+      super(LegacyContext.get());
       rais = 
         new RandomAccessInputStream(
             AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(handle));
@@ -122,7 +122,7 @@ public class RandomAccessInputStreamAdapter
       throws IOException
     {
 //      super(handle, file);
-      super(LegacyContext.getContext());
+      super(LegacyContext.get());
       rais = 
         new RandomAccessInputStream(
             AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(handle), file);
@@ -131,14 +131,14 @@ public class RandomAccessInputStreamAdapter
     /** Constructs a random access stream around the given byte array. */
     public LegacyWrapper(byte[] array) throws IOException {
 //      super(array);
-      super(LegacyContext.getContext());
+      super(LegacyContext.get());
       rais = new RandomAccessInputStream(array);
     }
     
     /** Wrapper constructor. */
     public LegacyWrapper(RandomAccessInputStream rais) {
 //      super(rais);
-      super(LegacyContext.getContext());
+      super(LegacyContext.get());
       this.rais = rais;
     }
     

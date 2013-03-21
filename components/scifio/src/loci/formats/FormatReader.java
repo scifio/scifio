@@ -93,19 +93,13 @@ import ome.xml.model.enums.handlers.ArcTypeEnumHandler;
 import ome.xml.model.enums.handlers.BinningEnumHandler;
 import ome.xml.model.enums.handlers.CompressionEnumHandler;
 import ome.xml.model.enums.handlers.ContrastMethodEnumHandler;
-import ome.xml.model.enums.handlers.CorrectionEnumHandler;
-import ome.xml.model.enums.handlers.DetectorTypeEnumHandler;
 import ome.xml.model.enums.handlers.DimensionOrderEnumHandler;
-import ome.xml.model.enums.handlers.ExperimentTypeEnumHandler;
 import ome.xml.model.enums.handlers.FilamentTypeEnumHandler;
 import ome.xml.model.enums.handlers.FillRuleEnumHandler;
 import ome.xml.model.enums.handlers.FilterTypeEnumHandler;
 import ome.xml.model.enums.handlers.FontFamilyEnumHandler;
 import ome.xml.model.enums.handlers.FontStyleEnumHandler;
 import ome.xml.model.enums.handlers.IlluminationTypeEnumHandler;
-import ome.xml.model.enums.handlers.ImmersionEnumHandler;
-import ome.xml.model.enums.handlers.LaserMediumEnumHandler;
-import ome.xml.model.enums.handlers.LaserTypeEnumHandler;
 import ome.xml.model.enums.handlers.LineCapEnumHandler;
 import ome.xml.model.enums.handlers.MarkerEnumHandler;
 import ome.xml.model.enums.handlers.MediumEnumHandler;
@@ -114,7 +108,6 @@ import ome.xml.model.enums.handlers.MicroscopeTypeEnumHandler;
 import ome.xml.model.enums.handlers.NamingConventionEnumHandler;
 import ome.xml.model.enums.handlers.PixelTypeEnumHandler;
 import ome.xml.model.enums.handlers.PulseEnumHandler;
-import ome.xml.meta.DefaultOMEXMLMetadataService;
 import ome.xml.meta.OMEXMLMetadataService;
 
 /**
@@ -1475,7 +1468,7 @@ public abstract class FormatReader extends FormatHandler
    */
   protected Correction getCorrection(String value) throws FormatException {
     try {
-      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getCorrection(value);
+      return LegacyContext.get().getService(OMEXMLMetadataService.class).getCorrection(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }
@@ -1489,7 +1482,7 @@ public abstract class FormatReader extends FormatHandler
    */
   protected DetectorType getDetectorType(String value) throws FormatException {
     try {
-      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getDetectorType(value);
+      return LegacyContext.get().getService(OMEXMLMetadataService.class).getDetectorType(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }
@@ -1523,7 +1516,7 @@ public abstract class FormatReader extends FormatHandler
     throws FormatException
   {
     try {
-      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getExperimentType(value);
+      return LegacyContext.get().getService(OMEXMLMetadataService.class).getExperimentType(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }
@@ -1635,7 +1628,7 @@ public abstract class FormatReader extends FormatHandler
    */
   protected Immersion getImmersion(String value) throws FormatException {
     try {
-      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getImmersion(value);
+      return LegacyContext.get().getService(OMEXMLMetadataService.class).getImmersion(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }
@@ -1649,7 +1642,7 @@ public abstract class FormatReader extends FormatHandler
    */
   protected LaserMedium getLaserMedium(String value) throws FormatException {
     try {
-      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getLaserMedium(value);
+      return LegacyContext.get().getService(OMEXMLMetadataService.class).getLaserMedium(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }
@@ -1663,7 +1656,7 @@ public abstract class FormatReader extends FormatHandler
    */
   protected LaserType getLaserType(String value) throws FormatException {
     try {
-      return LegacyContext.getContext().getService(OMEXMLMetadataService.class).getLaserType(value);
+      return LegacyContext.get().getService(OMEXMLMetadataService.class).getLaserType(value);
     } catch (ome.scifio.FormatException e) {
       throw (FormatException)e;
     }

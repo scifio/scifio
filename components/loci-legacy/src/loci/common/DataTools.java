@@ -65,7 +65,7 @@ public final class DataTools {
 
   /** Reads the contents of the given file into a string. */
   public static String readFile(String id) throws IOException {
-    return ome.scifio.common.DataTools.readFile(LegacyContext.getContext(), id);
+    return ome.scifio.common.DataTools.readFile(LegacyContext.get(), id);
   }
 
   // -- Word decoding - bytes to primitive types --

@@ -66,11 +66,11 @@ public class OmeisImporter {
   // -- Constructor --
 
   public OmeisImporter() {
-    omeis = new ome.xml.meta.OmeisImporter(LegacyContext.getContext());
+    omeis = new ome.xml.meta.OmeisImporter(LegacyContext.get());
   }
 
   public OmeisImporter(boolean stitchFiles) {
-    omeis = new ome.xml.meta.OmeisImporter(LegacyContext.getContext(), stitchFiles);
+    omeis = new ome.xml.meta.OmeisImporter(LegacyContext.get(), stitchFiles);
   }
 
   // -- OmeisImporter API methods - main functionality --

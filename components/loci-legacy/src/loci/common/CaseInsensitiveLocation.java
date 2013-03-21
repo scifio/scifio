@@ -54,22 +54,22 @@ public class CaseInsensitiveLocation extends Location {
 
   public CaseInsensitiveLocation(String pathname) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.getContext(), pathname);
+    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.get(), pathname);
   }
 
   public CaseInsensitiveLocation(File file) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.getContext(), file);
+    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.get(), file);
   }
 
   public CaseInsensitiveLocation(String parent, String child) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.getContext(), parent, child);
+    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.get(), parent, child);
   }
 
   public CaseInsensitiveLocation(CaseInsensitiveLocation parent, String child) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.getContext(), (ome.scifio.io.CaseInsensitiveLocation)parent.loc, child);
+    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.get(), (ome.scifio.io.CaseInsensitiveLocation)parent.loc, child);
   }
 
   // -- Methods --

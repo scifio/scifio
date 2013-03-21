@@ -67,7 +67,7 @@ public class URLHandle extends StreamHandle {
    * Constructs a new URLHandle using the given URL.
    */
   public URLHandle(String url) throws IOException {
-    sHandle = new ome.scifio.io.URLHandle(LegacyContext.getContext(), url);
+    sHandle = new ome.scifio.io.URLHandle(LegacyContext.get(), url);
   }
 
   // -- IRandomAccess API methods --

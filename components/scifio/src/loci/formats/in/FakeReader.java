@@ -38,11 +38,7 @@ package loci.formats.in;
 
 import java.io.IOException;
 
-import net.imglib2.display.ColorTable;
-import net.imglib2.display.ColorTable16;
-import net.imglib2.display.ColorTable8;
-
-import ome.scifio.Metadata;
+import ome.scifio.SCIFIO;
 import ome.scifio.fake.FakeFormat;
 
 import loci.formats.FormatException;
@@ -98,7 +94,7 @@ public class FakeReader extends SCIFIOFormatReader {
     super("Simulated data", "fake");
   
     try {
-      format = LegacyContext.getSCIFIO().getFormatFromClass(FakeFormat.class);
+      format = LegacyContext.get().getService(SCIFIO.class).formats().getFormatFromClass(FakeFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();

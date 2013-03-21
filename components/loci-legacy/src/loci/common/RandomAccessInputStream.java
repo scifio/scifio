@@ -76,12 +76,12 @@ public class RandomAccessInputStream extends InputStream
    * around the given file.
    */
   public RandomAccessInputStream(String file) throws IOException {
-    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.getContext(), file);
+    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), file);
   }
 
   /** Constructs a random access stream around the given handle. */
   public RandomAccessInputStream(IRandomAccess handle) throws IOException {
-    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.getContext(), AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle));
+    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle));
   }
 
   /**
@@ -91,12 +91,12 @@ public class RandomAccessInputStream extends InputStream
   public RandomAccessInputStream(IRandomAccess handle, String file)
     throws IOException
   {
-    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.getContext(), AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle), file);
+    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(handle), file);
   }
 
   /** Constructs a random access stream around the given byte array. */
   public RandomAccessInputStream(byte[] array) throws IOException {
-    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.getContext(), array);
+    rais = new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), array);
   }
   
   /** Wrapper constructor. */

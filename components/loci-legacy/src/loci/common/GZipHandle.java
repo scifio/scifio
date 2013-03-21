@@ -67,14 +67,14 @@ public class GZipHandle extends StreamHandle {
    * @throws HandleException if the given file name is not a GZip file.
    */
   public GZipHandle(String file) throws IOException {
-    sHandle = new ome.scifio.io.GZipHandle(LegacyContext.getContext(), file);
+    sHandle = new ome.scifio.io.GZipHandle(LegacyContext.get(), file);
   }
 
   // -- GZipHandle API methods --
 
   /** Returns true if the given filename is a gzip file. */
   public static boolean isGZipFile(String file) throws IOException {
-    ome.scifio.io.GZipHandle handle = new ome.scifio.io.GZipHandle(LegacyContext.getContext());
+    ome.scifio.io.GZipHandle handle = new ome.scifio.io.GZipHandle(LegacyContext.get());
     
     return handle.isConstructable(file);
   }

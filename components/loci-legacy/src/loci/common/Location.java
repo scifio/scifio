@@ -71,19 +71,19 @@ public class Location {
   // -- Constructors --
 
   public Location(String pathname) {
-    loc = new ome.scifio.io.Location(LegacyContext.getContext(), pathname);
+    loc = new ome.scifio.io.Location(LegacyContext.get(), pathname);
   }
 
   public Location(File file) {
-    loc = new ome.scifio.io.Location(LegacyContext.getContext(), file);
+    loc = new ome.scifio.io.Location(LegacyContext.get(), file);
   }
 
   public Location(String parent, String child) {
-    loc = new ome.scifio.io.Location(LegacyContext.getContext(), parent, child);
+    loc = new ome.scifio.io.Location(LegacyContext.get(), parent, child);
   }
 
   public Location(Location parent, String child) {
-    loc = new ome.scifio.io.Location(LegacyContext.getContext(), parent.getAbsolutePath(), child);
+    loc = new ome.scifio.io.Location(LegacyContext.get(), parent.getAbsolutePath(), child);
   }
   
   // Private constructor for directly wrapping ome.scifio.io.Location
@@ -102,7 +102,7 @@ public class Location {
    * original values.
    */
   public static void reset() {
-    LegacyContext.getContext().getService(LocationService.class).reset();
+    LegacyContext.get().getService(LocationService.class).reset();
   }
 
   /**
@@ -122,7 +122,7 @@ public class Location {
    * @param cache - true to turn cacheing on, false to leave it off.
    */
   public static void cacheDirectoryListings(boolean cache) {
-    LegacyContext.getContext().getService(LocationService.class).cacheDirectoryListings(cache);
+    LegacyContext.get().getService(LocationService.class).cacheDirectoryListings(cache);
   }
 
   /**
@@ -132,7 +132,7 @@ public class Location {
    * seconds.
    */
   public static void setCacheDirectoryTimeout(double sec) {
-    LegacyContext.getContext().getService(LocationService.class).setCacheDirectoryTimeout(sec);
+    LegacyContext.get().getService(LocationService.class).setCacheDirectoryTimeout(sec);
   }
 
   /**
@@ -141,14 +141,14 @@ public class Location {
    * Do this if directory contents might have changed in a significant way.
    */
   public static void clearDirectoryListingsCache() {
-    LegacyContext.getContext().getService(LocationService.class).clearDirectoryListingsCache();
+    LegacyContext.get().getService(LocationService.class).clearDirectoryListingsCache();
   }
 
   /**
    * Remove any cached directory listings that have expired.
    */
   public static void cleanStaleCacheEntries() {
-    LegacyContext.getContext().getService(LocationService.class).cleanStaleCacheEntries();
+    LegacyContext.get().getService(LocationService.class).cleanStaleCacheEntries();
   }
 
   /**
@@ -162,12 +162,12 @@ public class Location {
    * @see #getMappedId(String)
    */
   public static void mapId(String id, String filename) {
-    LegacyContext.getContext().getService(LocationService.class).mapId(id, filename);
+    LegacyContext.get().getService(LocationService.class).mapId(id, filename);
   }
 
   /** Maps the given id to the given IRandomAccess object. */
   public static void mapFile(String id, IRandomAccess ira) {
-    LegacyContext.getContext().getService(LocationService.class).mapFile(id, AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(ira));
+    LegacyContext.get().getService(LocationService.class).mapFile(id, AdapterTools.getAdapter(IRandomAccessAdapter.class).getModern(ira));
   }
 
   /**
@@ -180,18 +180,18 @@ public class Location {
    * @see #mapId(String, String)
    */
   public static String getMappedId(String id) {
-    return LegacyContext.getContext().getService(LocationService.class).getMappedId(id);
+    return LegacyContext.get().getService(LocationService.class).getMappedId(id);
   }
 
   /** Gets the random access handle for the given id. */
   public static IRandomAccess getMappedFile(String id) {
     return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        LegacyContext.getContext().getService(LocationService.class).getMappedFile(id));
+        LegacyContext.get().getService(LocationService.class).getMappedFile(id));
   }
 
   /** Return the id mapping. */
   public static HashMap<String, Object> getIdMap() { 
-    return LegacyContext.getContext().getService(LocationService.class).getIdMap();
+    return LegacyContext.get().getService(LocationService.class).getIdMap();
   }
 
   /**
@@ -200,7 +200,7 @@ public class Location {
    * @throws IllegalArgumentException if the given HashMap is null.
    */
   public static void setIdMap(HashMap<String, Object> map) {
-    LegacyContext.getContext().getService(LocationService.class).setIdMap(map);
+    LegacyContext.get().getService(LocationService.class).setIdMap(map);
   }
 
   /**
@@ -209,7 +209,7 @@ public class Location {
    */
   public static IRandomAccess getHandle(String id) throws IOException {
     return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        LegacyContext.getContext().getService(LocationService.class).getHandle(id));
+        LegacyContext.get().getService(LocationService.class).getHandle(id));
   }
 
   /**
@@ -220,7 +220,7 @@ public class Location {
     throws IOException
   {
     return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        LegacyContext.getContext().getService(LocationService.class).getHandle(id, writable, true));
+        LegacyContext.get().getService(LocationService.class).getHandle(id, writable, true));
   }
 
   /**
@@ -231,7 +231,7 @@ public class Location {
     boolean allowArchiveHandles) throws IOException
   {
     return AdapterTools.getAdapter(IRandomAccessAdapter.class).getLegacy(
-        LegacyContext.getContext().getService(LocationService.class).getHandle(id, writable, allowArchiveHandles));
+        LegacyContext.get().getService(LocationService.class).getHandle(id, writable, allowArchiveHandles));
   }
   
   /**
@@ -243,7 +243,7 @@ public class Location {
    *           if the id is not valid.
    */
   public static void checkValidId(String id) throws IOException {
-    LegacyContext.getContext().getService(LocationService.class).checkValidId(id);
+    LegacyContext.get().getService(LocationService.class).checkValidId(id);
   }
 
   /**

@@ -66,7 +66,7 @@ public class RandomAccessOutputStream extends OutputStream implements DataOutput
    * @throws IOException If there is a problem opening the file.
    */
   public RandomAccessOutputStream(String file) throws IOException {
-    raos = new ome.scifio.io.RandomAccessOutputStream(LegacyContext.getContext(), file);
+    raos = new ome.scifio.io.RandomAccessOutputStream(LegacyContext.get(), file);
   }
 
   /**
