@@ -184,9 +184,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#getCurrentFile()
    */
   public String getCurrentFile() {
-
-    FormatTools.assertStream(in, true, 1);
-    return in.getFileName();
+    return in == null ? null : in.getFileName();
   }
 
   /*
