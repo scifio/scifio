@@ -102,8 +102,7 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
       plane = reader.openPlane(getSeries(), no, x, y, w, h);
       byte[] retBytes = plane.getBytes();
       
-      if (buf.length == retBytes.length) System.arraycopy(retBytes, 0, buf, 0, buf.length);
-      else buf = retBytes;
+      System.arraycopy(retBytes, 0, buf, 0, Math.min(retBytes.length, buf.length));
       
       return buf;
     } catch (ome.scifio.FormatException e) {
