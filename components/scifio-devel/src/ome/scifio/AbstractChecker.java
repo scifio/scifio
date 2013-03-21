@@ -38,6 +38,7 @@ package ome.scifio;
 
 import java.io.IOException;
 
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ome.scifio.io.RandomAccessInputStream;
@@ -49,7 +50,7 @@ import ome.scifio.util.FormatTools;
  * @author Mark Hiner
  */
 public abstract class AbstractChecker
-  extends AbstractHasContext implements Checker {
+  extends AbstractHasFormat implements Checker {
 
   // -- Constants --
 
@@ -72,9 +73,9 @@ public abstract class AbstractChecker
   // -- Constructors --
 
   /** Constructs a checker with the given context */
-  public AbstractChecker(final SCIFIO ctx)
+  public AbstractChecker(final Context context, final Format format)
   {
-    super(ctx);
+    super(context, format);
   }
   
   // -- Checker API Methods --
@@ -103,7 +104,7 @@ public abstract class AbstractChecker
     // suffix matching was inconclusive; we need to analyze the file contents
     if (!open) return false; // not allowed to open any files
     try {
-      final RandomAccessInputStream stream = new RandomAccessInputStream(name);
+      final RandomAccessInputStream stream = new RandomAccessInputStream(getContext(), name);
       final boolean isFormat = isFormat(stream);
       stream.close();
       return isFormat;
@@ -126,7 +127,7 @@ public abstract class AbstractChecker
    */
   public boolean checkHeader(final byte[] block) {
     try {
-      final RandomAccessInputStream stream = new RandomAccessInputStream(block);
+      final RandomAccessInputStream stream = new RandomAccessInputStream(getContext(), block);
       final boolean isFormat = isFormat(stream);
       stream.close();
       return isFormat;
@@ -135,11 +136,5 @@ public abstract class AbstractChecker
       LOGGER.debug("", e);
     }
     return false;
-  }
-
-  // -- HasFormat API --
-
-  public Format getFormat() {
-    return getContext().getFormatFromChecker(getClass());
   }
 }

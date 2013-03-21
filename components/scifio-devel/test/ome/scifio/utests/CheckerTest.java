@@ -48,6 +48,7 @@ import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
 import ome.scifio.io.RandomAccessInputStream;
 
+import org.scijava.Context;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -65,13 +66,14 @@ public class CheckerTest {
   private String falseId = "testFile.png";
   private Checker c;
   private FakeChecker fc;
-  private SCIFIO ctx;
+  private SCIFIO scifio;
   
   @BeforeMethod
   public void setUp() throws FormatException {
-    ctx = new SCIFIO();
-    c = ctx.getFormat(id).createChecker();
-    fc = new FakeChecker(ctx);
+    scifio = new SCIFIO();
+    Format f = scifio.getFormat(id);
+    c = f.createChecker();
+    fc = new FakeChecker(scifio.getContext(), f);
   }
   
   @Test
@@ -87,7 +89,7 @@ public class CheckerTest {
     isFormat = c.isFormat(id, true);
     assertTrue(isFormat);
     
-    isFormat = c.isFormat(new RandomAccessInputStream(id));
+    isFormat = c.isFormat(new RandomAccessInputStream(scifio.getContext(), id));
     assertFalse(isFormat);
     
     isFormat = c.isFormat(falseId, false);
@@ -116,7 +118,7 @@ public class CheckerTest {
     isFormat = fc.isFormat(id, true);
     assertTrue(isFormat);
     
-    isFormat = fc.isFormat(new RandomAccessInputStream(id));
+    isFormat = fc.isFormat(new RandomAccessInputStream(scifio.getContext(), id));
     assertTrue(isFormat); 
     
     isFormat = fc.checkHeader(id.getBytes());
@@ -140,7 +142,7 @@ public class CheckerTest {
   
   @AfterMethod
   public void tearDown() {
-    ctx = null;
+    scifio = null;
     c = null;
     fc = null;
   }
@@ -156,11 +158,11 @@ public class CheckerTest {
     // -- Constructors --
     
     public FakeChecker() {
-      this(null);
+      this(null, null);
     }
     
-    public FakeChecker(SCIFIO ctx) {
-      super(ctx);
+    public FakeChecker(final Context context, final Format format) {
+      super(context, format);
     }
     
     // -- FakeChecker Methods --
@@ -173,10 +175,5 @@ public class CheckerTest {
     {
       return true;
     }
-    
-    public Format getFormat() {
-      return getContext().getFormatFromChecker(ome.scifio.fake.FakeFormat.Checker.class);
-    }
-    
   }
 }

@@ -53,7 +53,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * 
  * @author Mark Hiner
  */
-public interface Checker extends HasContext, HasFormat {
+public interface Checker extends HasFormat {
 
   // -- Checker API methods --
   

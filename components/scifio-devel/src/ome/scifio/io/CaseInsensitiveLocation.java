@@ -39,7 +39,8 @@ package ome.scifio.io;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
+
+import org.scijava.Context;
 
 /**
  * Case insensitive variant of Location.
@@ -56,20 +57,20 @@ public class CaseInsensitiveLocation extends Location {
 
   // -- Constructors (no caching) --
 
-  public CaseInsensitiveLocation(String pathname) throws IOException {
-    super(findCaseInsensitive(new File(pathname)));
+  public CaseInsensitiveLocation(Context context, String pathname) throws IOException {
+    super(context, findCaseInsensitive(new File(pathname)));
   }
 
-  public CaseInsensitiveLocation(File file) throws IOException {
-    super(findCaseInsensitive(file));
+  public CaseInsensitiveLocation(Context context, File file) throws IOException {
+    super(context, findCaseInsensitive(file));
   }
 
-  public CaseInsensitiveLocation(String parent, String child) throws IOException {
-    super(findCaseInsensitive(new File(parent + File.separator + child)));
+  public CaseInsensitiveLocation(Context context, String parent, String child) throws IOException {
+    super(context, findCaseInsensitive(new File(parent + File.separator + child)));
   }
 
-  public CaseInsensitiveLocation(CaseInsensitiveLocation parent, String child) throws IOException {
-    super(findCaseInsensitive(new File(parent.getAbsolutePath(), child)));
+  public CaseInsensitiveLocation(Context context, CaseInsensitiveLocation parent, String child) throws IOException {
+    super(context, findCaseInsensitive(new File(parent.getAbsolutePath(), child)));
   }
 
 

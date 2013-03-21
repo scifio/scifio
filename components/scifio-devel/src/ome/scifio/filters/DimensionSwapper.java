@@ -41,13 +41,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
-import ome.scifio.Reader;
-import ome.scifio.discovery.DiscoverableFilter;
 import ome.scifio.util.FormatTools;
 
 /**
@@ -59,12 +60,16 @@ import ome.scifio.util.FormatTools;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/DimensionSwapper.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/DimensionSwapper.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@DiscoverableFilter(wrappedClass = Reader.class)
+@Plugin(type=Filter.class, priority=DimensionSwapper.PRIORITY, attrs={
+  @Attr(name=DimensionSwapper.FILTER_KEY, value=DimensionSwapper.FILTER_VALUE),
+  @Attr(name=DimensionSwapper.ENABLED_KEY, value=DimensionSwapper.ENABLED_VAULE)
+  })
 public class DimensionSwapper extends AbstractReaderFilter {
   
   // -- Constants --
   
-  public static final Double PRIORITY = 4.0;
+  public static final double PRIORITY = 4.0;
+  public static final String FILTER_VALUE = "ome.scifio.Reader";
   
   // -- DimensionSwapper API methods --
 
@@ -185,12 +190,6 @@ public class DimensionSwapper extends AbstractReaderFilter {
     }
   }
   
-  // -- Filter API Methods --
-  
-  public Double getPriority() {
-    return DimensionSwapper.PRIORITY;
-  }
-
   // -- Reader API methods --
 
   /* @see Reader#openPlane(int) */

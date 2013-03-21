@@ -46,6 +46,7 @@ import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.io.utests.providers.IRandomAccessProvider;
 import ome.scifio.io.utests.providers.IRandomAccessProviderFactory;
 
+import org.scijava.Context;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -80,6 +81,7 @@ public class RandomAccessInputStreamTest {
 
   private RandomAccessInputStream stream;
   private IRandomAccess fileHandle;
+  private Context context;
 
   @Parameters({"provider"})
   @BeforeMethod
@@ -87,7 +89,8 @@ public class RandomAccessInputStreamTest {
     IRandomAccessProviderFactory factory = new IRandomAccessProviderFactory();
     IRandomAccessProvider instance = factory.getInstance(provider);
     fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
-    stream = new RandomAccessInputStream(fileHandle);
+    context = new Context();
+    stream = new RandomAccessInputStream(context, fileHandle);
   }
 
   @Test

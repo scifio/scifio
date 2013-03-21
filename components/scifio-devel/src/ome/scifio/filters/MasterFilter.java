@@ -37,6 +37,8 @@ package ome.scifio.filters;
 
 import java.util.Set;
 
+import org.scijava.Contextual;
+
 /**
  * An entry point for toggling and configuring {@link ome.scifio.filter.Filter}s.
  * <p>
@@ -66,7 +68,7 @@ import java.util.Set;
  * 
  * @see ome.scifio.filters.Filter
  */
-public interface MasterFilter<T> extends Filter {
+public interface MasterFilter<T extends Contextual> extends Filter {
 
   /**
    * Inserts an instance of the indicated filter class into the
@@ -107,11 +109,6 @@ public interface MasterFilter<T> extends Filter {
    * Returns the top of the filter stack.
    */
   Object getParent();
-  
-  /**
-   * This method is not used by MasterFilters.
-   */
-  Double getPriority() throws UnsupportedOperationException;
   
   /**
    * Disables all enabled filters maintained by this MasterFilter.

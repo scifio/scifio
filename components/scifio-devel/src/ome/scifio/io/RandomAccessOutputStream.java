@@ -42,6 +42,8 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.scijava.Context;
+
 
 
 /**
@@ -65,8 +67,8 @@ public class RandomAccessOutputStream extends OutputStream implements DataOutput
    * @param file Filename to open the stream for.
    * @throws IOException If there is a problem opening the file.
    */
-  public RandomAccessOutputStream(String file) throws IOException {
-    outputFile = Location.getHandle(file, true);
+  public RandomAccessOutputStream(Context context, String file) throws IOException {
+    outputFile = context.getService(LocationService.class).getHandle(file, true);
   }
 
   /**

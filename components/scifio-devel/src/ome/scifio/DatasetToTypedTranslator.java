@@ -33,44 +33,14 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package ome.scifio;
 
 /**
- * Abstract superclass of all SCIFIO components that are children of
- * ome.scifio.HasContext.
- *
+ * This interface serves as a flag to identify Translator classes
+ * that translate from DatsetMetadata to a concrete Typed Metadata.
  * @author Mark Hiner
+ *
  */
-public abstract class AbstractHasContext implements HasContext {
-
-  private transient SCIFIO context;
-
-  // -- Constructor --
-
-  public AbstractHasContext(final SCIFIO ctx) {
-    context = ctx;
-  }
-
-  // -- HasContext API --
-
-  public SCIFIO getContext() {
-    return context;
-  }
-
-  public void setContext(final SCIFIO ctx) {
-    if (context == null) {
-      context = ctx;
-    }
-    else {
-      throw new UnsupportedOperationException("Context can only be set once.");
-    }
-  }
-
-  // -- Default toString implementation --
-
-  public String toString() {
-    return new FieldPrinter(this).toString();
-  }
+public interface DatasetToTypedTranslator extends Translator {
 
 }

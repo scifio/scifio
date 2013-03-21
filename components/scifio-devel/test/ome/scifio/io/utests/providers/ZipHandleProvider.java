@@ -57,7 +57,7 @@ import ome.scifio.io.ZipHandle;
  * @see IRandomAccessProvider
  * @see ome.scifio.io.ZipHandle
  */
-class ZipHandleProvider implements IRandomAccessProvider {
+class ZipHandleProvider extends ContextualProvider implements IRandomAccessProvider {
 
   public IRandomAccess createMock(
       byte[] page, String mode, int bufferSize) throws IOException {
@@ -68,7 +68,7 @@ class ZipHandleProvider implements IRandomAccessProvider {
     out.write(page);
     out.close();
 
-    return new ZipHandle(pageFile.getAbsolutePath());
+    return new ZipHandle(getContext(), pageFile.getAbsolutePath());
   }
 
 }

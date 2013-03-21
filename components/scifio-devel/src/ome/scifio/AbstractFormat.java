@@ -37,16 +37,17 @@
 package ome.scifio;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.scijava.Context;
+import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
-import ome.scifio.discovery.Discoverer;
-import ome.scifio.discovery.DiscoverableTranslator;
-import ome.scifio.discovery.TranslatorDiscoverer;
+import ome.scifio.discovery.PluginAttributeService;
+import ome.scifio.discovery.PluginClassService;
 import ome.scifio.util.SCIFIOMetadataTools;
 
 /**
@@ -56,7 +57,7 @@ import ome.scifio.util.SCIFIOMetadataTools;
  * @author Mark Hiner
  */
 public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker, P extends TypedParser<M>, R extends TypedReader<M, ? extends DataPlane<?>>, W extends TypedWriter<M>>
-    extends AbstractHasContext implements TypedFormat<M, C, P, R, W> {
+    extends SortablePlugin implements TypedFormat<M, C, P, R, W> {
   
   // -- Constants --
 
@@ -79,20 +80,22 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
 
   private final List<Class<? extends Translator>> translatorClassList = new ArrayList<Class<? extends Translator>>();
 
-  private final Double priority = 0.0;
-
   // -- Constructor --
 
-  public AbstractFormat(final SCIFIO ctx, String formatName, String suffix,
+  public AbstractFormat(final SCIFIO scifio, String formatName, String suffix,
       Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass,
       Class<W> wClass) throws FormatException {
-    this(ctx, formatName, new String[]{suffix}, mClass, cClass, pClass, rClass, wClass);
+    this(scifio, formatName, new String[]{suffix}, mClass, cClass, pClass, rClass, wClass);
   }
   
-  public AbstractFormat(final SCIFIO ctx, String formatName, String[] suffixes,
+  public AbstractFormat(final SCIFIO scifio, String formatName, String[] suffixes,
       Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass,
       Class<W> wClass) throws FormatException {
-    super(ctx);
+    if (scifio != null) {
+      setContext(scifio.getContext()); 
+      scifio.addFormat(this);
+      translatorClassList.addAll(findTranslatorClassList());
+    }
     this.formatName = formatName;
     this.suffixes = suffixes == null ? new String[0] : suffixes;
     metadataClass = mClass;
@@ -100,15 +103,6 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
     parserClass = pClass;
     readerClass = rClass;
     writerClass = wClass;
-    findTranslatorClassList();
-    if (ctx != null) ctx.addFormat(this);
-  }
-  
-  // -- HasContext API Methods --
-  
-  public void setContext(final SCIFIO ctx) {
-   super.setContext(ctx);
-   ctx.addFormat(this);
   }
   
   // -- TypedFormat API Methods --
@@ -118,10 +112,8 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
    */
   public <N extends TypedMetadata> TypedTranslator<M, N> findSourceTranslator(
       final N targetMeta) throws FormatException {
-    @SuppressWarnings("unchecked")
-    Class<N> typedClass = (Class<N>)targetMeta.getClass();
     
-    return this.<M,N>findTranslator(metadataClass, typedClass);
+    return this.<M,N>findTranslator(getFormatName(), targetMeta.getFormatName());
   }
 
   /*
@@ -129,20 +121,12 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
    */
   public <N extends TypedMetadata> TypedTranslator<N, M> findDestTranslator(
       final N targetMeta) throws FormatException {
-    @SuppressWarnings("unchecked")
-    Class<N> typedClass = (Class<N>)targetMeta.getClass();
     
-    return this.<N,M>findTranslator(typedClass, metadataClass);
+    return this.<N,M>findTranslator(targetMeta.getFormatName(), getFormatName());
   }
 
   // -- Format API Methods --
 
-  /* @see Format#getPriority() */
-  public Double getPriority() {
-    return priority;
-  }
-
-  
   /* @see Format#getFormatName() */
   public String getFormatName() {
     return formatName;
@@ -244,31 +228,28 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
     return this.findDestTranslator(SCIFIOMetadataTools.<TypedMetadata>castMeta(targetMeta));
   }
   
+  // -- Contextual API Methods --
+  
+  /*
+   * @see org.scijava.AbstractContextual#setContext(org.scijava.Context)
+   */
+  public void setContext(Context context) {
+    super.setContext(context);
+    translatorClassList.addAll(findTranslatorClassList());
+  }
+  
   // -- Helper Methods --
 
   /**
    * Populates the list of Translators associated with this Format
    */
-  @SuppressWarnings("unchecked")
-  private List<Class<? extends Translator>> findTranslatorClassList()
-      throws FormatException {
-    final List<Class<? extends Translator>> translatorList = new ArrayList<Class<? extends Translator>>();
-    for (
-    final IndexItem<DiscoverableTranslator, Translator> item : Index.load(
-        DiscoverableTranslator.class, Translator.class)) {
-      if (metadataClass == item.annotation().metaIn()
-          || metadataClass == item.annotation().metaOut()) {
-        Class<? extends Translator> trans;
-        try {
-          trans = (Class<? extends Translator>) Class.forName(item
-              .className());
-          translatorList.add(trans);
-        } catch (final ClassNotFoundException e) {
-          throw new FormatException(e);
-        }
-      }
-    }
-    return translatorList;
+  private List<Class<? extends Translator>> findTranslatorClassList() {
+    Map<String, String> kvPairs = new HashMap<String,String>();
+    kvPairs.put(Translator.SOURCE, metadataClass.getName());
+    kvPairs.put(Translator.DEST, metadataClass.getName());
+    
+    return getContext().getService(PluginClassService.class).
+        getPluginClasses(Translator.class, null, kvPairs);
   }
 
   /**
@@ -280,10 +261,11 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
    * @return
    * @throws FormatException
    */
-  private <T extends HasContext> T createContextualObject(final Class<T> c)
+  private <T extends HasFormat> T createContextualObject(final Class<T> c)
       throws FormatException {
     final T t = createObject(c);
     t.setContext(getContext());
+    t.setFormat(this);
     return t;
   }
 
@@ -295,7 +277,7 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
    * @return
    * @throws FormatException
    */
-  private <T> T createObject(final Class<T> c) throws FormatException {
+  private <T extends HasFormat> T createObject(final Class<T> c) throws FormatException {
     try {
       return c.newInstance();
     } catch (InstantiationException e) {
@@ -309,17 +291,16 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
    * Returns a translator object translating from metaIn to metaOut
    */
   private <S extends TypedMetadata, T extends TypedMetadata> TypedTranslator<S, T> 
-  findTranslator(final Class<S> metaIn, final Class<T> metaOut) throws FormatException {
-    Discoverer<DiscoverableTranslator, TypedTranslator<S, T>> disc = 
-        new TranslatorDiscoverer<S,T>(metaIn, metaOut);
-    TypedTranslator<S, T> translator = disc.discover().get(0);
-    translator.setContext(getContext());
-    return translator;
-  }
-
-  // -- Comparable API Methods --
-  
-  public int compareTo(final Format format) {
-    return getPriority().compareTo(format.getPriority());
+  findTranslator(final String inFormat, final String outFormat) throws FormatException {
+    Map<String, String> kvPairs = new HashMap<String,String>();
+    kvPairs.put(Translator.SOURCE, inFormat);
+    kvPairs.put(Translator.DEST, outFormat);
+    
+    @SuppressWarnings("unchecked")
+    TypedTranslator<S, T> trans = 
+        (TypedTranslator<S, T>) getContext().getService(PluginAttributeService.class).
+        createInstance(Translator.class, kvPairs, null);
+    
+    return trans;
   }
 }

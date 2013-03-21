@@ -33,40 +33,18 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package ome.scifio.io.utests.providers;
 
-package ome.scifio.discovery;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import net.java.sezpoz.Indexable;
-import ome.scifio.Metadata;
-import ome.scifio.Translator;
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
 
 /**
- * 
- * Sezpoz annotation to mark SCIFIO Translators for discovery.
- * 
  * @author Mark Hiner
+ *
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Indexable(type = Translator.class)
-public @interface DiscoverableTranslator {
-  
-  /**
-   * Type of the {@code Metadata} accepted by this translator.
-   * 
-   * @return
-   */
-  Class<? extends Metadata> metaIn();
+public class ContextualProvider extends AbstractContextual {
 
-  /**
-   * Type of the {@code Metadata} returned by this translator.
-   * 
-   * @return
-   */
-  Class<? extends Metadata> metaOut();
+  public ContextualProvider() {
+    setContext(new Context());
+  }
 }

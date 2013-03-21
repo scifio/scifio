@@ -35,6 +35,8 @@
  */
 package ome.scifio;
 
+import org.scijava.Context;
+
 /**
  * A naive {@link ome.scifio.Plane} implementation that uses {@code byte[]} for its underlying
  * data type.
@@ -46,13 +48,13 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 
   // -- Constructor --
   
-  public ByteArrayPlane(SCIFIO ctx) {
-    super(ctx);
+  public ByteArrayPlane(final Context context) {
+    super(context);
   }
 
-  public ByteArrayPlane(SCIFIO ctx, ImageMetadata meta, int xOffset,
+  public ByteArrayPlane(final Context context, ImageMetadata meta, int xOffset,
       int yOffset, int xLength, int yLength) {
-    super(ctx, meta, xOffset, yOffset, xLength, yLength);
+    super(context, meta, xOffset, yOffset, xLength, yLength);
     setData(new byte[xLength * yLength * (getImageMetadata().getBitsPerPixel() / 8) * meta.getRGBChannelCount()]);
   }
   

@@ -37,12 +37,13 @@ package ome.scifio.filters;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
-import ome.scifio.discovery.DiscoverableFilter;
+import org.scijava.Contextual;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 
 /**
  * Helper class for {@link ome.scifio.filters.MasterFilter} implementations. Takes the place
@@ -72,41 +73,38 @@ import ome.scifio.discovery.DiscoverableFilter;
  * @see ome.scifio.filters.MasterFilter
  * @see ome.scifio.fitlers.Filter
  */
-public class MasterFilterHelper<T> extends AbstractFilter<T> implements MasterFilter<T> {
+public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> implements MasterFilter<T> {
 
   private T tail;
-  private HashMap<Class<? extends Filter>, IndexItem<DiscoverableFilter, Filter>> refMap =
-      new HashMap<Class<? extends Filter>, IndexItem<DiscoverableFilter, Filter>>();
+  private HashMap<Class<? extends Filter>, PluginInfo<Filter>> refMap =
+      new HashMap<Class<? extends Filter>, PluginInfo<Filter>>();
   private TreeSet<Filter> enabled =
       new TreeSet<Filter>();
   
   // -- Constructor --
   
-  public MasterFilterHelper() {
-    this(null, null);
-  }
-  
-  @SuppressWarnings("unchecked")
   public MasterFilterHelper(T wrapped, Class<? extends T> wrappedClass) {
     super(wrappedClass);
     tail = wrapped;
-
-    // load sezpoz annotated wrappers
-    for (final IndexItem<DiscoverableFilter, Filter> item : 
-      Index.load(DiscoverableFilter.class, Filter.class)) {
-      // check for matching class type
-      if(item.annotation().wrappedClass().isAssignableFrom(wrapped.getClass())) {
+    
+    setContext(wrapped.getContext());
+    List<PluginInfo<Filter>> filterInfos = getContext().getPluginIndex().getPlugins(Filter.class);
+    
+    // check for matching filter types
+    for (PluginInfo<Filter> info : filterInfos) {
+      String filterClassName = info.get(FILTER_KEY);
+      
+      if (filterClassName != null) {
+        Class<?> filterClass;
         try {
-          Class<? extends Filter> filterClass =
-              (Class<? extends Filter>) Class.forName(item.className());
-          
-          // cache item for future instantiation
-          refMap.put(filterClass, item);
-          
-          if(item.annotation().isDefaultEnabled()) enable(filterClass);
+          filterClass = Class.forName(filterClassName);
+          if (filterClass.isAssignableFrom(wrapped.getClass())) {
+            refMap.put(info.getPluginClass(), info);
+            String defaultEnabled = info.get(ENABLED_KEY);
+            if (Boolean.getBoolean(defaultEnabled)) enable(info.getPluginClass());
+          }
         } catch (ClassNotFoundException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          LOGGER.error("Failed to find class: " + filterClassName);
         }
       }
     }
@@ -120,21 +118,16 @@ public class MasterFilterHelper<T> extends AbstractFilter<T> implements MasterFi
    * @see ome.scifio.wrappers.WrapperController#enable(java.lang.Class)
    */
   public <F extends Filter> F enable(Class<F> filterClass) {
-    IndexItem<DiscoverableFilter, Filter> item = refMap.get(filterClass);
+    PluginInfo<Filter> item = refMap.get(filterClass);
     
     if(item != null) {
-      try {
-        @SuppressWarnings("unchecked")
-        F filter = (F) item.instance();
-        
-        enabled.add(filter);
-        updateParents();
-        
-        return filter;
-      } catch (InstantiationException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+      @SuppressWarnings("unchecked")
+      F filter = (F) getContext().getService(PluginService.class).createInstance(item);
+
+      enabled.add(filter);
+      updateParents();
+
+      return filter;
     }
     
     return null;
@@ -144,23 +137,18 @@ public class MasterFilterHelper<T> extends AbstractFilter<T> implements MasterFi
    * @see ome.scifio.wrappers.WrapperController#disable(java.lang.Class)
    */
   public boolean disable(Class<? extends Filter> filterClass) {
-    IndexItem<DiscoverableFilter, Filter> item = refMap.get(filterClass);
+    PluginInfo<Filter> item = refMap.get(filterClass);
     
     boolean disabled = false;
     
     if(item != null) {
-      try {
-        Filter filter = item.instance();
-        
-        enabled.remove(item);
-        updateParents();
+      Filter filter = getContext().getService(PluginService.class).createInstance(item);
 
-        filter.reset();
-        disabled = true;
-      } catch (InstantiationException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+      enabled.remove(item);
+      updateParents();
+
+      filter.reset();
+      disabled = true;
     }
     
     return disabled;
@@ -179,27 +167,10 @@ public class MasterFilterHelper<T> extends AbstractFilter<T> implements MasterFi
   }
   
   /*
-   * @see ome.scifio.filters.Filter#getPriority()
-   */
-  public Double getPriority() {
-    throw new UnsupportedOperationException("MasterFilters do not have a priority.");
-  }
-  
-  /*
    * @see ome.scifio.filters.MasterFilter#getFilterClasses()
    */
   public Set<Class<? extends Filter>> getFilterClasses() {
     return refMap.keySet();
-  }
-  
-  // -- Comparable API Methods --
-
-  /*
-   * @see java.lang.Comparable#compareTo(java.lang.Object)
-   */
-  @Override
-  public int compareTo(Filter arg0) {
-    return 0;
   }
   
   // -- Helper Methods --

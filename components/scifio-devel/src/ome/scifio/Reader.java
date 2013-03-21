@@ -63,7 +63,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * @see ome.scifio.Writer#savePlane
  * @author Mark Hiner
  */
-public interface Reader extends HasContext, HasFormat {
+public interface Reader extends HasFormat {
 
   // -- Reader API methods --
 

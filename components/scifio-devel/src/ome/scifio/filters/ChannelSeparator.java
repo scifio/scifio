@@ -37,14 +37,15 @@ package ome.scifio.filters;
 
 import java.io.IOException;
 
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
 import net.imglib2.meta.Axes;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
-import ome.scifio.Reader;
 import ome.scifio.common.DataTools;
-import ome.scifio.discovery.DiscoverableFilter;
 import ome.scifio.util.FormatTools;
 import ome.scifio.util.ImageTools;
 
@@ -55,12 +56,16 @@ import ome.scifio.util.ImageTools;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ChannelSeparator.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/ChannelSeparator.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@DiscoverableFilter(wrappedClass = Reader.class)
+@Plugin(type=Filter.class, priority=ChannelSeparator.PRIORITY, attrs={
+  @Attr(name=ChannelSeparator.FILTER_KEY, value=ChannelSeparator.FILTER_VALUE),
+  @Attr(name=ChannelSeparator.ENABLED_KEY, value=ChannelSeparator.ENABLED_VAULE)
+  })
 public class ChannelSeparator extends AbstractReaderFilter {
 
   // -- Constants --
   
-  public static final Double PRIORITY = 2.0;
+  public static final double PRIORITY = 2.0;
+  public static final String FILTER_VALUE = "ome.scifio.Reader";
   
   // -- Fields --
 
@@ -120,10 +125,6 @@ public class ChannelSeparator extends AbstractReaderFilter {
   
   // -- Filter API Methods --
 
-  public Double getPriority() {
-    return ChannelSeparator.PRIORITY;
-  }
-  
   /*
    */
   @Override

@@ -41,23 +41,25 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.scijava.Context;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
 import net.imglib2.meta.Axes;
 
 import ome.scifio.DefaultDatasetMetadata;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.MetadataLevel;
-import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
 import ome.scifio.TypedTranslator;
-import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.ics.ICSFormat;
 import ome.xml.meta.FilterMetadata;
 import ome.xml.meta.IMetadata;
 import ome.xml.meta.MetadataStore;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadataImpl;
-import ome.xml.meta.OMEXMLMetadataTools;
+import ome.xml.meta.OMEXMLMetadataService;
 import ome.scifio.util.FormatTools;
 import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
@@ -69,17 +71,20 @@ import ome.xml.model.primitives.Timestamp;
  * 
  * @author hinerm
  */
-@DiscoverableTranslator(metaIn = ICSFormat.Metadata.class, metaOut = OMEMetadata.class)
+@Plugin(type = OMETranslator.class, attrs = {
+  @Attr(name = Translator.SOURCE, value = ICSFormat.FORMAT_NAME),
+  @Attr(name = Translator.DEST, value = OMEMetadata.FORMAT_NAME)
+})
 public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
 
   // -- Constructors -- 
 
   public ICSOMETranslator() {
-    this(null);
+    this(null, null);
   }
 
-  public ICSOMETranslator(final SCIFIO ctx) {
-    super(ctx);
+  public ICSOMETranslator(final Context context, final Format format) {
+    super(context, format);
   }
   
   // -- Fields --
@@ -116,7 +121,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     filter.createRoot();
     
     DefaultDatasetMetadata dMeta = new DefaultDatasetMetadata();
-    ICSFormat ics = getContext().<ICSFormat>getFormatFromClass(ICSFormat.class);
+    ICSFormat ics = (ICSFormat) getFormat();
 
     TypedTranslator<ICSFormat.Metadata, DefaultDatasetMetadata> trans = null;
     try {
@@ -126,7 +131,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     }
     trans.translate(source, dMeta);
     
-    OMEXMLMetadataTools.populatePixels((MetadataStore)filter, dMeta, true);
+    getContext().getService(OMEXMLMetadataService.class).populatePixels((MetadataStore)filter, dMeta, true);
     
     store.setImageName(imageName, 0);
 
@@ -144,7 +149,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
       store.setImageDescription(description, 0);
 
       // link Instrument and Image
-      String instrumentID = OMEXMLMetadataTools.createLSID("Instrument", 0);
+      String instrumentID = getContext().getService(OMEXMLMetadataService.class).createLSID("Instrument", 0);
       store.setInstrumentID(instrumentID, 0);
       
       microscopeModel = source.getMicroscopeModel();
@@ -155,14 +160,14 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
 
       store.setImageInstrumentRef(instrumentID, 0);
 
-      store.setExperimentID(OMEXMLMetadataTools.createLSID("Experiment", 0), 0);
+      store.setExperimentID(getContext().getService(OMEXMLMetadataService.class).createLSID("Experiment", 0), 0);
       
       lifetime = source.getLifetime();
 
       experimentType = source.getExperimentType();
       
       try {
-        store.setExperimentType(OMEXMLMetadataTools.getExperimentType(experimentType), 0);
+        store.setExperimentType(getContext().getService(OMEXMLMetadataService.class).getExperimentType(experimentType), 0);
       } catch (FormatException e) {
         LOGGER.debug("Could not set experiment type", e);
       }
@@ -354,7 +359,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     Integer[] lasers = wavelengths.keySet().toArray(new Integer[0]);
     Arrays.sort(lasers);
     for (int i=0; i<lasers.length; i++) {
-      store.setLaserID(OMEXMLMetadataTools.createLSID("LightSource", 0, i), 0, i);
+      store.setLaserID(getContext().getService(OMEXMLMetadataService.class).createLSID("LightSource", 0, i), 0, i);
       if (wavelengths.get(lasers[i]) > 0) {
         store.setLaserWavelength(
           new PositiveInteger(wavelengths.get(lasers[i])), 0, i);
@@ -365,13 +370,13 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
       }
 
       try {
-        store.setLaserType(OMEXMLMetadataTools.getLaserType("Other"), 0, i);
+        store.setLaserType(getContext().getService(OMEXMLMetadataService.class).getLaserType("Other"), 0, i);
       } catch (FormatException e) {
         LOGGER.warn("Failed to set laser type", e);
       }
 
       try {
-        store.setLaserLaserMedium(OMEXMLMetadataTools.getLaserMedium("Other"), 0, i);
+        store.setLaserLaserMedium(getContext().getService(OMEXMLMetadataService.class).getLaserMedium("Other"), 0, i);
       } catch (FormatException e) {
         LOGGER.warn("Failed to set laser medium", e);
       }
@@ -383,15 +388,15 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     }
 
     if (lasers.length == 0 && laserManufacturer != null) {
-      store.setLaserID(OMEXMLMetadataTools.createLSID("LightSource", 0, 0), 0, 0);
+      store.setLaserID(getContext().getService(OMEXMLMetadataService.class).createLSID("LightSource", 0, 0), 0, 0);
 
       try {
-        store.setLaserType(OMEXMLMetadataTools.getLaserType("Other"), 0, 0);
+        store.setLaserType(getContext().getService(OMEXMLMetadataService.class).getLaserType("Other"), 0, 0);
       } catch (FormatException e) {
         LOGGER.warn("Failed to set laser type", e);
       }
       try {
-        store.setLaserLaserMedium(OMEXMLMetadataTools.getLaserMedium("Other"), 0, 0);
+        store.setLaserLaserMedium(getContext().getService(OMEXMLMetadataService.class).getLaserMedium("Other"), 0, 0);
       } catch (FormatException e) {
         LOGGER.warn("Failed to set laser medium", e);
       }
@@ -412,12 +417,12 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     emissionModel = source.getEmissionModel();
 
     if (filterSetModel != null) {
-      store.setFilterSetID(OMEXMLMetadataTools.createLSID("FilterSet", 0, 0), 0, 0);
+      store.setFilterSetID(getContext().getService(OMEXMLMetadataService.class).createLSID("FilterSet", 0, 0), 0, 0);
       store.setFilterSetModel(filterSetModel, 0, 0);
 
-      String dichroicID = OMEXMLMetadataTools.createLSID("Dichroic", 0, 0);
-      String emFilterID = OMEXMLMetadataTools.createLSID("Filter", 0, 0);
-      String exFilterID = OMEXMLMetadataTools.createLSID("Filter", 0, 1);
+      String dichroicID = getContext().getService(OMEXMLMetadataService.class).createLSID("Dichroic", 0, 0);
+      String emFilterID = getContext().getService(OMEXMLMetadataService.class).createLSID("Filter", 0, 0);
+      String exFilterID = getContext().getService(OMEXMLMetadataService.class).createLSID("Filter", 0, 1);
 
       store.setDichroicID(dichroicID, 0, 0);
       store.setDichroicModel(dichroicModel, 0, 0);
@@ -447,7 +452,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     if (objectiveModel != null) store.setObjectiveModel(objectiveModel, 0, 0);
     if (immersion == null) immersion = "Other";
     try {
-      store.setObjectiveImmersion(OMEXMLMetadataTools.getImmersion(immersion), 0, 0);
+      store.setObjectiveImmersion(getContext().getService(OMEXMLMetadataService.class).getImmersion(immersion), 0, 0);
     } catch (FormatException e) {
      LOGGER.warn("failed to set objective immersion", e);
     }
@@ -459,13 +464,13 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
       store.setObjectiveCalibratedMagnification(magnification, 0, 0);
     }
     try {
-      store.setObjectiveCorrection(OMEXMLMetadataTools.getCorrection("Other"), 0, 0);
+      store.setObjectiveCorrection(getContext().getService(OMEXMLMetadataService.class).getCorrection("Other"), 0, 0);
     } catch (FormatException e) {
       LOGGER.warn("Failed to store objective correction", e);
     }
 
     // link Objective to Image
-    String objectiveID = OMEXMLMetadataTools.createLSID("Objective", 0, 0);
+    String objectiveID = getContext().getService(OMEXMLMetadataService.class).createLSID("Objective", 0, 0);
     store.setObjectiveID(objectiveID, 0, 0);
     store.setObjectiveSettingsID(objectiveID, 0);
     
@@ -475,12 +480,12 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     
     detectorModel = source.getDetectorModel();
     
-    String detectorID = OMEXMLMetadataTools.createLSID("Detector", 0, 0);
+    String detectorID = getContext().getService(OMEXMLMetadataService.class).createLSID("Detector", 0, 0);
     store.setDetectorID(detectorID, 0, 0);
     store.setDetectorManufacturer(detectorManufacturer, 0, 0);
     store.setDetectorModel(detectorModel, 0, 0);
     try {
-      store.setDetectorType(OMEXMLMetadataTools.getDetectorType("Other"), 0, 0);
+      store.setDetectorType(getContext().getService(OMEXMLMetadataService.class).getDetectorType("Other"), 0, 0);
     } catch (FormatException e) {
       LOGGER.warn("Failed to store detector type", e);
     }
@@ -500,7 +505,7 @@ public class ICSOMETranslator extends OMETranslator<ICSFormat.Metadata> {
     lastName = source.getAuthorLastName();
     
     if (lastName != null) {
-      String experimenterID = OMEXMLMetadataTools.createLSID("Experimenter", 0);
+      String experimenterID = getContext().getService(OMEXMLMetadataService.class).createLSID("Experimenter", 0);
       store.setExperimenterID(experimenterID, 0);
       store.setExperimenterLastName(lastName, 0);
     }

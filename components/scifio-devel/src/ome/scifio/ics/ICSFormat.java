@@ -57,26 +57,35 @@ import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
+import ome.scifio.DatasetToTypedTranslator;
+import ome.scifio.Translator;
+import ome.scifio.TypedToDatasetTranslator;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
-import ome.scifio.CoreTranslator;
+import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DateTools;
-import ome.scifio.discovery.DiscoverableFormat;
-import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.io.Location;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.util.FormatTools;
 
-@DiscoverableFormat
+import org.scijava.Context;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
+@Plugin(type = Format.class)
 public class ICSFormat
 extends
 AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     ICSFormat.Parser, ICSFormat.Reader,
     ICSFormat.Writer> {
+  
+  // -- Constants --
+  
+  public static final String FORMAT_NAME = "Image Cytometry Standard";
 
   // -- Constructor --
 
@@ -100,7 +109,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * @throws FormatException
    */
   public ICSFormat(final SCIFIO ctx) throws FormatException {
-    super(ctx, "Image Cytometry Standard", new String[] {"ics", "ids"}, Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
+    super(ctx, ICSFormat.FORMAT_NAME, new String[] {"ics", "ids"}, Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
   }
   
   // -- Accessor methods for private classes --
@@ -139,11 +148,11 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Constructor --
   
     public Metadata() {
-      this(null);
+      this(null, null);
     }
   
-    public Metadata(SCIFIO ctx) {
-      super(ctx);
+    public Metadata(final Context context, final Format format) {
+      super(context, format);
       keyValPairs = new Hashtable<String, String>();
     }
   
@@ -761,11 +770,11 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Constructor --
 
     public Checker() {
-      this(null);
+      this(null, null);
     }
 
-    public Checker(final SCIFIO ctx) {
-      super(ctx);
+    public Checker(final Context context, final Format format) {
+      super(context, format);
     }
 
     // -- Checker API Methods --
@@ -781,11 +790,11 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Constructor --
   
     public Parser() {
-      this(null);
+      this(null, null);
     }
   
-    public Parser(final SCIFIO ctx) {
-      super(ctx);
+    public Parser(final Context context, final Format format) {
+      super(context, format);
     }
   
     // -- Parser API Methods --
@@ -800,7 +809,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       if (stream.getFileName() != null) findCompanion(stream.getFileName());
   
       final RandomAccessInputStream reader =
-        new RandomAccessInputStream(metadata.getIcsId());
+        new RandomAccessInputStream(getContext(), metadata.getIcsId());
   
       reader.seek(0);
       reader.readString(ICSUtils.NL);
@@ -895,25 +904,25 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         icsId = new String(c);
       }
   
-      final Location icsFile = new Location(icsId);
+      final Location icsFile = new Location(getContext(), icsId);
       if (!icsFile.exists()) throw new FormatException("ICS file not found.");
       metadata.icsId = icsId;
 
       // check if we have a v2 ICS file - means there is no companion IDS file
-      final RandomAccessInputStream f = new RandomAccessInputStream(icsId);
+      final RandomAccessInputStream f = new RandomAccessInputStream(getContext(), icsId);
       String version = f.readString(17).trim();
       f.close();
       
       if (version.equals("ics_version\t2.0")) {
         metadata.versionTwo = true;
         metadata.idsId = icsId;
-        in = new RandomAccessInputStream(icsId);
+        in = new RandomAccessInputStream(getContext(),icsId);
       }
       else {
-        final Location idsFile = new Location(idsId);
+        final Location idsFile = new Location(getContext(), idsId);
         if (!idsFile.exists()) throw new FormatException("IDS file does not exist.");
         metadata.idsId = idsId;
-        in = new RandomAccessInputStream(idsId);
+        in = new RandomAccessInputStream(getContext(),idsId);
       }
     }
   }
@@ -949,11 +958,11 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Constructor --
   
     public Reader() {
-      this(null);
+      this(null, null);
     }
   
-    public Reader(final SCIFIO ctx) {
-      super(ctx);
+    public Reader(final Context context, final Format format) {
+      super(context, format);
       domains =
         new String[] {
         FormatTools.LM_DOMAIN, FormatTools.FLIM_DOMAIN,
@@ -1056,7 +1065,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         }
       }
       else if (gzip) {
-        final RandomAccessInputStream s = new RandomAccessInputStream(data);
+        final RandomAccessInputStream s = new RandomAccessInputStream(getContext(),data);
         readPlane(s, imageIndex, x, y, w, h, plane);
         s.close();
       }
@@ -1111,7 +1120,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public void setSource(final RandomAccessInputStream stream) throws IOException {
       super.setSource(stream);
       if(!getMetadata().versionTwo)
-        in = new RandomAccessInputStream(getMetadata().idsId);
+        in = new RandomAccessInputStream(getContext(), getMetadata().idsId);
     }
   
     @Override
@@ -1155,11 +1164,11 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     // -- Constructor --
   
     public Writer() {
-      this(null);
+      this(null, null);
     }
   
-    public Writer(final SCIFIO ctx) {
-      super(ctx);
+    public Writer(final Context context, final Format format) {
+      super(context, format);
     }
     
     // -- ICSWriter API methods --
@@ -1273,14 +1282,14 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public void setDest(final String id)
       throws FormatException, IOException {
       updateMetadataIds(id);
-      setDest(new RandomAccessOutputStream(id), 0);
+      setDest(new RandomAccessOutputStream(getContext(), id), 0);
     }
     
     @Override
     public void setDest(final String id, final int imageIndex)
       throws FormatException, IOException {
       updateMetadataIds(id);
-      setDest(new RandomAccessOutputStream(id), imageIndex);
+      setDest(new RandomAccessOutputStream(getContext(), id), imageIndex);
     }
   
     @Override
@@ -1305,7 +1314,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       if (FormatTools.checkSuffix(getMetadata().idsId, "ids")) {
         String metadataFile = makeIcsId(currentId);
         if(out != null) out.close();
-        out = new RandomAccessOutputStream(metadataFile);
+        out = new RandomAccessOutputStream(getContext(), metadataFile);
       }
 
       if (out.length() == 0) {
@@ -1391,7 +1400,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         pixelOffset = out.getFilePointer();
       }
       else if (FormatTools.checkSuffix(currentId, "ics")) {
-        RandomAccessInputStream in = new RandomAccessInputStream(currentId);
+        RandomAccessInputStream in = new RandomAccessInputStream(getContext(), currentId);
         in.findString("\nend\n");
         pixelOffset = in.getFilePointer();
         in.close();
@@ -1402,7 +1411,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       }
 
       if (pixels == null) {
-        pixels = new RandomAccessOutputStream(currentId);
+        pixels = new RandomAccessOutputStream(getContext(), currentId);
       }
     }
     
@@ -2022,19 +2031,21 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * metadata type.
    * 
    */
-  @DiscoverableTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
+   @Plugin(type = DatasetToTypedTranslator.class, attrs = 
+     {@Attr(name = Translator.SOURCE, value = DatasetMetadata.FORMAT_NAME),
+     @Attr(name = Translator.DEST, value = ICSFormat.FORMAT_NAME)})
   public static class CoreICSTranslator
   extends AbstractTranslator<DatasetMetadata, Metadata>
-  implements CoreTranslator {
+  implements DatasetToTypedTranslator {
   
     // -- Constructors --
   
     public CoreICSTranslator() {
-      this(null);
+      this(null, null);
     }
   
-    public CoreICSTranslator(final SCIFIO ctx) {
-      super(ctx);
+    public CoreICSTranslator(final Context context, final Format format) {
+      super(context, format);
     }
   
     // -- Translator API Methods --
@@ -2144,21 +2155,23 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
    * to the SCIFIO Core metadata type. 
    *
    */
-  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
+   @Plugin(type = TypedToDatasetTranslator.class, attrs = 
+     {@Attr(name = Translator.SOURCE, value = ICSFormat.FORMAT_NAME),
+     @Attr(name = Translator.DEST, value = DatasetMetadata.FORMAT_NAME)})
   public static class ICSCoreTranslator
   extends AbstractTranslator<Metadata, DatasetMetadata>
-  implements CoreTranslator {
+  implements TypedToDatasetTranslator {
 
     private Metadata curSource;
 
     // -- Constructors --
 
     public ICSCoreTranslator() {
-      this(null);
+      this(null, null);
     }
 
-    public ICSCoreTranslator(final SCIFIO ctx) {
-      super(ctx);
+    public ICSCoreTranslator(final Context context, final Format format) {
+      super(context, format);
     }
 
     // -- Translator API Methods --

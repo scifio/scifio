@@ -40,6 +40,7 @@ import java.util.Hashtable;
 import net.imglib2.meta.AxisType;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.ImageMetadata;
+import ome.scifio.ScifioPlugin;
 
 /**
  * Wrapper for {@link ome.scifio.DatasetMetadata}. Used to create defensive copies of metadata for
@@ -58,7 +59,10 @@ import ome.scifio.ImageMetadata;
  * @see ome.scifio.filters.AbstractReaderFilter
  */
 public interface DatasetMetadataWrapper
-  extends DatasetMetadata { 
+  extends DatasetMetadata, ScifioPlugin { 
+  
+  public static final String METADATA_KEY = "Metadata Wrapper";
+  public static final String METADATA_VALUE = "java.lang.Object";
   
   /**
    * Returns the {@code DatasetMetadata} used for delegation by this wrapper.

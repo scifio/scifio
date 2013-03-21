@@ -42,6 +42,7 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ import ome.scifio.util.SCIFIOMetadataTools;
  * @author Mark Hiner
  */
 public abstract class AbstractWriter<M extends TypedMetadata>
-  extends AbstractHasContext implements TypedWriter<M> {
+  extends AbstractHasFormat implements TypedWriter<M> {
 
   // -- Constants --
 
@@ -107,19 +108,10 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   // -- Constructors --
 
   /** Constructs a writer with the given context */
-  public AbstractWriter(final SCIFIO ctx)
+  public AbstractWriter(final Context context, final Format format)
   {
-    super(ctx);
+    super(context, format);
     init();
-  }
-
-  // -- HasFormat API Methods --
-
-  /*
-   * @see ome.scifio.HasFormat#getFormat()
-   */
-  public Format getFormat() {
-    return getContext().getFormatFromWriter(getClass());
   }
 
   // -- Writer API Methods --
@@ -159,7 +151,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   public void setDest(final String fileName)
     throws FormatException, IOException
   {
-    setDest(new RandomAccessOutputStream(fileName), 0);
+    setDest(new RandomAccessOutputStream(getContext(), fileName), 0);
   }
 
   /* @see ome.scifio.Writer#setStream(File) */
@@ -178,7 +170,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   public void setDest(final String fileName, final int imageIndex)
     throws FormatException, IOException
   {
-    setDest(new RandomAccessOutputStream(fileName));
+    setDest(new RandomAccessOutputStream(getContext(), fileName));
   }
 
   /* @see ome.scifio.Writer#setStream(File, int) */

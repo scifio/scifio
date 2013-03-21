@@ -38,6 +38,8 @@ package ome.scifio;
 
 import java.io.Serializable;
 
+import org.scijava.Contextual;
+
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -50,7 +52,9 @@ import ome.scifio.io.RandomAccessInputStream;
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
  */
-public interface Metadata extends Serializable, HasFormat, HasContext {
+public interface Metadata extends Serializable, HasFormat, Contextual {
+  
+  String getFormatName();
 
   /**
    * Resets this Metadata object's values as though it had just been

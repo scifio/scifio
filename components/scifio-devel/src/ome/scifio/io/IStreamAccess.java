@@ -37,13 +37,17 @@ package ome.scifio.io;
 
 import java.io.IOException;
 
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+import org.scijava.plugin.SciJavaPlugin;
+
 /**
- * Interface for random access into String-compatible streams.
+ * Interface for random access into String-compatible streams, which are
+ * discoverable by the SciJava plugin framework.
  * 
  * @author Mark Hiner
- *
  */
-public interface IStreamAccess extends IRandomAccess {
+public interface IStreamAccess extends SciJavaPlugin, Contextual, Prioritized, IRandomAccess {
 
   /** 
    * Returns true if this handle can be constructed from

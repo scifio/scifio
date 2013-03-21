@@ -43,14 +43,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
 import ome.scifio.common.Constants;
-import ome.scifio.discovery.DiscoverableHandle;
 
+import org.scijava.Context;
+import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,37 +62,12 @@ import org.slf4j.LoggerFactory;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Location.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Location.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class Location {
+public class Location extends SortablePlugin {
 
   // -- Constants --
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Location.class);
 
-  // -- Static fields --
-
-  /** Map from given filenames to actual filenames. */
-  private static ThreadLocal<HashMap<String, Object>> idMap =
-    new ThreadLocal<HashMap<String, Object>>() {
-      protected HashMap<String, Object> initialValue() {
-        return new HashMap<String, Object>();
-      }
-  };
-
-  private static volatile boolean cacheListings = false;
-
-  // By default, cache for one hour.
-  private static volatile long cacheNanos = 60L * 60L * 1000L * 1000L * 1000L;
-
-  protected class ListingsResult {
-    public final String [] listing;
-    public final long time;
-    ListingsResult(String [] listing, long time) {
-      this.listing = listing;
-      this.time = time;
-    }
-  }
-  private static ConcurrentHashMap<String, ListingsResult> fileListings =
-    new ConcurrentHashMap<String, ListingsResult>();
 
   // -- Fields --
 
@@ -103,240 +75,39 @@ public class Location {
   private URL url;
   private File file;
 
+
   // -- Constructors --
 
-  public Location(String pathname) {
+  public Location(Context context, String pathname) {
     LOGGER.trace("Location({})", pathname);
+    setContext(context);
     try {
-      url = new URL(getMappedId(pathname));
+      url = new URL(getContext().getService(LocationService.class).getMappedId(pathname));
     }
     catch (MalformedURLException e) {
       LOGGER.trace("Location is not a URL", e);
       isURL = false;
     }
-    if (!isURL) file = new File(getMappedId(pathname));
+    if (!isURL) file = 
+        new File(getContext().getService(LocationService.class).getMappedId(pathname));
   }
 
-  public Location(File file) {
+  public Location(Context context, File file) {
+    setContext(context);
     LOGGER.trace("Location({})", file);
     isURL = false;
     this.file = file;
   }
 
-  public Location(String parent, String child) {
-    this(parent + File.separator + child);
+  public Location(Context context, String parent, String child) {
+    this(context, parent + File.separator + child);
   }
 
-  public Location(Location parent, String child) {
-    this(parent.getAbsolutePath(), child);
+  public Location(Context context, Location parent, String child) {
+    this(context, parent.getAbsolutePath(), child);
   }
 
-  // -- Location API methods --
-
-  /**
-   * Clear all caches and reset cache-related bookkeeping variables to their
-   * original values.
-   */
-  public static void reset() {
-    cacheListings = false;
-    cacheNanos = 60L * 60L * 1000L * 1000L * 1000L;
-    fileListings.clear();
-    getIdMap().clear();
-  }
-
-  /**
-   * Turn cacheing of directory listings on or off.
-   * Cacheing is turned off by default.
-   *
-   * Reasons to cache - directory listings over network shares
-   * can be very expensive, especially in HCS experiments with thousands
-   * of files in the same directory. Technically, if you use a directory
-   * listing and then go and access the file, you are using stale information.
-   * Unlike a database, there's no transactional integrity to file system
-   * operations, so the directory could change by the time you access the file.
-   *
-   * Reasons not to cache - the contents of the directories might change
-   * during the program invocation.
-   *
-   * @param cache - true to turn cacheing on, false to leave it off.
-   */
-  public static void cacheDirectoryListings(boolean cache) {
-    cacheListings = cache;
-  }
-
-  /**
-   * Cache directory listings for this many seconds before relisting.
-   *
-   * @param sec - use the cache if a directory list was done within this many
-   * seconds.
-   */
-  public static void setCacheDirectoryTimeout(double sec) {
-    cacheNanos = (long)(sec * 1000. * 1000. * 1000.);
-  }
-
-  /**
-   * Clear the directory listings cache.
-   *
-   * Do this if directory contents might have changed in a significant way.
-   */
-  public static void clearDirectoryListingsCache() {
-    fileListings = new ConcurrentHashMap<String, ListingsResult>();
-  }
-
-  /**
-   * Remove any cached directory listings that have expired.
-   */
-  public static void cleanStaleCacheEntries() {
-    long t = System.nanoTime() - cacheNanos;
-    ArrayList<String> staleKeys = new ArrayList<String>();
-    for (String key : fileListings.keySet()) {
-      if (fileListings.get(key).time < t) {
-        staleKeys.add(key);
-      }
-    }
-    for (String key : staleKeys) {
-      fileListings.remove(key);
-    }
-  }
-
-  /**
-   * Maps the given id to an actual filename on disk. Typically actual
-   * filenames are used for ids, making this step unnecessary, but in some
-   * cases it is useful; e.g., if the file has been renamed to conform to a
-   * standard naming scheme and the original file extension is lost, then
-   * using the original filename as the id assists format handlers with type
-   * identification and pattern matching, and the id can be mapped to the
-   * actual filename for reading the file's contents.
-   * @see #getMappedId(String)
-   */
-  public static void mapId(String id, String filename) {
-    if (id == null) return;
-    if (filename == null) getIdMap().remove(id);
-    else getIdMap().put(id, filename);
-    LOGGER.debug("Location.mapId: {} -> {}", id, filename);
-  }
-
-  /** Maps the given id to the given IRandomAccess object. */
-  public static void mapFile(String id, IRandomAccess ira) {
-    if (id == null) return;
-    if (ira == null) getIdMap().remove(id);
-    else getIdMap().put(id, ira);
-    LOGGER.debug("Location.mapFile: {} -> {}", id, ira);
-  }
-
-  /**
-   * Gets the actual filename on disk for the given id. Typically the id itself
-   * is the filename, but in some cases may not be; e.g., if OMEIS has renamed
-   * a file from its original name to a standard location such as Files/101,
-   * the original filename is useful for checking the file extension and doing
-   * pattern matching, but the renamed filename is required to read its
-   * contents.
-   * @see #mapId(String, String)
-   */
-  public static String getMappedId(String id) {
-    if (getIdMap() == null) return id;
-    String filename = null;
-    if (id != null && (getIdMap().get(id) instanceof String)) {
-      filename = (String) getIdMap().get(id);
-    }
-    return filename == null ? id : filename;
-  }
-
-  /** Gets the random access handle for the given id. */
-  public static IRandomAccess getMappedFile(String id) {
-    if (getIdMap() == null) return null;
-    IRandomAccess ira = null;
-    if (id != null && (getIdMap().get(id) instanceof IRandomAccess)) {
-      ira = (IRandomAccess) getIdMap().get(id);
-    }
-    return ira;
-  }
-
-  /** Return the id mapping. */
-  public static HashMap<String, Object> getIdMap() { return idMap.get(); }
-
-  /**
-   * Set the id mapping using the given HashMap.
-   *
-   * @throws IllegalArgumentException if the given HashMap is null.
-   */
-  public static void setIdMap(HashMap<String, Object> map) {
-    if (map == null) throw new IllegalArgumentException("map cannot be null");
-    idMap.set(map);
-  }
-
-  /**
-   * Gets an IRandomAccess object that can read from the given file.
-   * @see IRandomAccess
-   */
-  public static IRandomAccess getHandle(String id) throws IOException {
-    return getHandle(id, false);
-  }
-
-  /**
-   * Gets an IRandomAccess object that can read from or write to the given file.
-   * @see IRandomAccess
-   */
-  public static IRandomAccess getHandle(String id, boolean writable)
-    throws IOException
-  {
-    return getHandle(id, writable, true);
-  }
-
-  /**
-   * Gets an IRandomAccess object that can read from or write to the given file.
-   * @see IRandomAccess
-   */
-  public static IRandomAccess getHandle(String id, boolean writable,
-    boolean allowArchiveHandles) throws IOException
-  {
-    LOGGER.trace("getHandle(id = {}, writable = {})", id, writable);
-    IRandomAccess handle = getMappedFile(id);
-    if (handle == null) {
-      LOGGER.trace("no handle was mapped for this ID");
-      String mapId = getMappedId(id);
-
-      
-      for(final IndexItem<DiscoverableHandle, IStreamAccess> item :
-        Index.load(DiscoverableHandle.class, IStreamAccess.class)) {
-        try {
-          if (allowArchiveHandles && item.instance().isConstructable(id)) {
-            handle = item.instance();
-            ((IStreamAccess)handle).setFile(id);
-            break;
-          }
-        } catch (InstantiationException e) {
-          throw new HandleException(e);
-        }
-      }
-      
-      if (handle == null)
-        handle = new NIOFileHandle(mapId, writable ? "rw" : "r");
-      
-    }
-    LOGGER.trace("Location.getHandle: {} -> {}", id, handle);
-    return handle;
-  }
-
-  /**
-   * Checks that the given id points at a valid data stream.
-   * 
-   * @param id
-   *          The id string to validate.
-   * @throws IOException
-   *           if the id is not valid.
-   */
-  public static void checkValidId(String id) throws IOException {
-    if (getMappedFile(id) != null) {
-      // NB: The id maps directly to an IRandomAccess handle, so is valid. Do
-      // not destroy an existing mapped IRandomAccess handle by closing it.
-      return;
-    }
-    // NB: Try to actually open a handle to make sure it is valid. Close it
-    // afterward so we don't leave it dangling. The process of doing this will
-    // throw IOException if something goes wrong.
-    Location.getHandle(id).close();
-  }
+ 
 
   /**
    * Return a list of all of the files in this directory.  If 'noHiddenFiles' is
@@ -347,13 +118,10 @@ public class Location {
   public String[] list(boolean noHiddenFiles) {
     String key = getAbsolutePath() + Boolean.toString(noHiddenFiles);
     String [] result = null;
-    if (cacheListings) {
-      cleanStaleCacheEntries();
-      ListingsResult listingsResult = fileListings.get(key);
-      if (listingsResult != null) {
-        return listingsResult.listing;
-      }
-    }
+
+    result = getContext().getService(LocationService.class).getCachedListing(key);
+    if (result != null) return result;
+    
     ArrayList<String> files = new ArrayList<String>();
     if (isURL) {
       try {
@@ -377,7 +145,7 @@ public class Location {
             }
             s = s.substring(idx + 1);
             if (f.startsWith("?")) continue;
-            Location check = new Location(getAbsolutePath(), f);
+            Location check = new Location(getContext(), getAbsolutePath(), f);
             if (check.exists() && (!noHiddenFiles || !check.isHidden())) {
               files.add(check.getName());
             }
@@ -395,16 +163,16 @@ public class Location {
       if (f == null) return null;
       for (String name : f) {
         if (!noHiddenFiles || !(name.startsWith(".") ||
-          new Location(file.getAbsolutePath(), name).isHidden()))
+          new Location(getContext(), file.getAbsolutePath(), name).isHidden()))
         {
           files.add(name);
         }
       }
     }
     result = files.toArray(new String[files.size()]);
-    if (cacheListings) {
-      fileListings.put(key, new ListingsResult(result, System.nanoTime()));
-    }
+    
+    getContext().getService(LocationService.class).putCachedListing(key, result);
+    
     return result;
   }
 
@@ -509,15 +277,15 @@ public class Location {
       }
     }
     if (file.exists()) return true;
-    if (getMappedFile(file.getPath()) != null) return true;
+    if (getContext().getService(LocationService.class).getMappedFile(file.getPath()) != null) return true;
 
-    String mappedId = getMappedId(file.getPath());
+    String mappedId = getContext().getService(LocationService.class).getMappedId(file.getPath());
     return mappedId != null && new File(mappedId).exists();
   }
 
   /* @see java.io.File#getAbsoluteFile() */
   public Location getAbsoluteFile() {
-    return new Location(getAbsolutePath());
+    return new Location(getContext(), getAbsolutePath());
   }
 
   /* @see java.io.File#getAbsolutePath() */
@@ -527,7 +295,7 @@ public class Location {
 
   /* @see java.io.File#getCanonicalFile() */
   public Location getCanonicalFile() throws IOException {
-    return isURL ? getAbsoluteFile() : new Location(file.getCanonicalFile());
+    return isURL ? getAbsoluteFile() : new Location(getContext(), file.getCanonicalFile());
   }
 
   /**
@@ -573,7 +341,7 @@ public class Location {
 
   /* @see java.io.File#getParentFile() */
   public Location getParentFile() {
-    return new Location(getParent());
+    return new Location(getContext(), getParent());
   }
 
   /* @see java.io.File#getPath() */
@@ -680,7 +448,7 @@ public class Location {
     if (s == null) return null;
     Location[] f = new Location[s.length];
     for (int i=0; i<f.length; i++) {
-      f[i] = new Location(getAbsolutePath(), s[i]);
+      f[i] = new Location(getContext(), getAbsolutePath(), s[i]);
       f[i] = f[i].getAbsoluteFile();
     }
     return f;

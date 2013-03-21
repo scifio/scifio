@@ -39,6 +39,8 @@ package ome.scifio;
 import java.io.File;
 import java.io.IOException;
 
+import org.scijava.Context;
+
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -71,13 +73,12 @@ public abstract class DelegateReader <M extends TypedMetadata, P extends DataPla
 
   /** Constructs a new delegate reader. */
   public DelegateReader() {
-    this(null, null, null);
+    this(null, null);
   }
 
   /** Constructs a new delegate reader. */
-  public DelegateReader(TypedReader<M, P> nativeReader, TypedReader<M, P> legacyReader,
-    final SCIFIO ctx) {
-    super(ctx, null);
+  public DelegateReader(TypedReader<M, P> nativeReader, TypedReader<M, P> legacyReader) {
+    super(null, null, null);
     this.nativeReader = nativeReader;
     this.legacyReader = legacyReader;
   }
@@ -92,16 +93,21 @@ public abstract class DelegateReader <M extends TypedMetadata, P extends DataPla
   
   // -- HasContext API methods --
   
-  public SCIFIO getContext() {
+  public Context getContext() {
     return useLegacy ? legacyReader.getContext() : nativeReader.getContext();
   }
 
-  public void setContext(SCIFIO ctx) {
+  public void setContext(Context ctx) {
     if (useLegacy) legacyReader.setContext(ctx);
     else nativeReader.setContext(ctx);
   }
   
   // -- HasFormat API methods --
+  
+  public void setFormat(Format format) {
+    if (useLegacy) legacyReader.setFormat(format); 
+    else nativeReader.setFormat(format);
+  }
   
   public Format getFormat() {
     return useLegacy ? legacyReader.getFormat() : nativeReader.getFormat();

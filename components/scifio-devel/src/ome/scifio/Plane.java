@@ -35,6 +35,8 @@
  */
 package ome.scifio;
 
+import org.scijava.Contextual;
+
 import net.imglib2.display.ColorTable;
 
 /**
@@ -53,7 +55,7 @@ import net.imglib2.display.ColorTable;
  * @param <T> - the native data type used to store this plane's pixel
  *            information.
  */
-public interface Plane extends HasContext {
+public interface Plane extends Contextual {
 
   /**
    * Sets the ColorTable for this plane. ColorTables are used for indexed color

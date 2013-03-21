@@ -36,8 +36,9 @@
 
 package ome.xml.meta;
 
+import org.scijava.Context;
+
 import ome.scifio.AbstractMetadata;
-import ome.scifio.SCIFIO;
 
 /**
  * ome.scifio.Metadata class representing the OME schema.
@@ -46,6 +47,10 @@ import ome.scifio.SCIFIO;
  *
  */
 public class OMEMetadata extends AbstractMetadata {
+  
+  // -- Constants --
+  
+  public static final String FORMAT_NAME = "OME-XML"; 
   
   // -- Fields --
   
@@ -58,9 +63,15 @@ public class OMEMetadata extends AbstractMetadata {
     this(null, root);
   }
   
-  public OMEMetadata(SCIFIO ctx, IMetadata root) {
-    super(ctx);
+  public OMEMetadata(Context context, IMetadata root) {
+    super(context, null);
     this.root = root;
+  }
+  
+  // -- Metadata API Methods --
+  
+  public String getFormatName() {
+    return FORMAT_NAME;
   }
   
   // -- Helper Methods --

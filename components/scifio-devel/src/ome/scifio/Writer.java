@@ -58,7 +58,7 @@ import ome.scifio.io.RandomAccessOutputStream;
  * @see ome.scifio.Plane
  * @see ome.scifio.Reader#openPlane
  */
-public interface Writer extends HasContext, HasFormat {
+public interface Writer extends HasFormat {
 
   // -- Writer API methods --
 

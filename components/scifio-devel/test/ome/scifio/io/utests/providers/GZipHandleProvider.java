@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.scijava.Context;
+
 import ome.scifio.io.GZipHandle;
 import ome.scifio.io.IRandomAccess;
 
@@ -57,7 +59,7 @@ import ome.scifio.io.IRandomAccess;
  * @see IRandomAccessProvider
  * @see ome.scifio.io.GZipHandle
  */
-class GZipHandleProvider implements IRandomAccessProvider {
+class GZipHandleProvider extends ContextualProvider implements IRandomAccessProvider {
 
   public IRandomAccess createMock(
       byte[] page, String mode, int bufferSize) throws IOException {
@@ -67,7 +69,7 @@ class GZipHandleProvider implements IRandomAccessProvider {
     out.write(page);
     out.close();
 
-    return new GZipHandle(pageFile.getAbsolutePath());
+    return new GZipHandle(getContext(), pageFile.getAbsolutePath());
   }
 
 }

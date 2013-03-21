@@ -35,6 +35,9 @@
  */
 package ome.scifio;
 
+import org.scijava.Context;
+import org.scijava.plugin.SortablePlugin;
+
 import net.imglib2.display.ColorTable;
 
 /**
@@ -43,7 +46,7 @@ import net.imglib2.display.ColorTable;
  * @author Mark Hiner
  *
  */
-public abstract class AbstractPlane<T, P extends DataPlane<T>> extends AbstractHasContext 
+public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortablePlugin 
   implements DataPlane<T> {
 
   // -- Fields --
@@ -71,13 +74,13 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends AbstractH
   
   // -- Constructor --
   
-  public AbstractPlane(SCIFIO ctx) {
-    super(ctx);
+  public AbstractPlane(final Context context) {
+    setContext(context);
   }
 
-  public AbstractPlane(SCIFIO ctx, ImageMetadata meta, int xOffset,
+  public AbstractPlane(final Context context, ImageMetadata meta, int xOffset,
       int yOffset, int xLength, int yLength) {
-    super(ctx);
+    setContext(context);
     // TODO bounds checking?
     populate(meta, xOffset, yOffset, xLength, yLength);
   }

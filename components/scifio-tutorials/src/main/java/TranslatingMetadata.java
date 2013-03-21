@@ -19,6 +19,10 @@ package main.java;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.scijava.Context;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
@@ -28,7 +32,6 @@ import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
-import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.fake.FakeFormat;
 
 /**
@@ -116,7 +119,10 @@ public class TranslatingMetadata {
    * and metaOut is a flag for the output class.
    * 
    */
-  @DiscoverableTranslator(metaIn = FakeFormat.Metadata.class, metaOut = FakeFormat.Metadata.class)
+  @Plugin(type = Translator.class, attrs = {
+    @Attr(name = Translator.DEST, value = FakeFormat.FORMAT_NAME),
+    @Attr(name = Translator.SOURCE, value = FakeFormat.FORMAT_NAME)
+  })
   public static class MischeviousTranslator
   extends AbstractTranslator<FakeFormat.Metadata, FakeFormat.Metadata>
   {
@@ -125,11 +131,11 @@ public class TranslatingMetadata {
 
     // These are the standard, minimal constructors for contextual components.
     public MischeviousTranslator() {
-      this(null);
+      this(null, null);
     }
     
-    public MischeviousTranslator(SCIFIO ctx) {
-      super(ctx);
+    public MischeviousTranslator(final Context context, final Format format) {
+      super(context, format);
     }
     
     // -- Translator API methods --

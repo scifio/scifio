@@ -51,6 +51,12 @@ import net.imglib2.meta.AxisType;
  *
  */
 public interface DatasetMetadata extends TypedMetadata {
+  
+  // -- Fields --
+  
+  public static final String FORMAT_NAME = "Dataset Metadata";
+  
+  // -- DatasetMetadata API Methods --
 
   /** Looks up the dataset metadata value for the provided key. */
   Object getMetadataValue(String field);

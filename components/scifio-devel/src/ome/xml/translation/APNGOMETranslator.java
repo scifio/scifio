@@ -36,12 +36,17 @@
 
 package ome.xml.translation;
 
+import org.scijava.Context;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
+import ome.scifio.Format;
 import ome.scifio.FormatException;
-import ome.scifio.SCIFIO;
+import ome.scifio.Translator;
 import ome.scifio.apng.APNGFormat;
-import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.util.FormatTools;
 import ome.xml.meta.OMEMetadata;
+import ome.xml.meta.OMEXMLMetadataService;
 
 /**
  * Translator class from {@link APNGMetadata} to
@@ -49,17 +54,20 @@ import ome.xml.meta.OMEMetadata;
  * 
  * @author Mark Hiner
  */
-@DiscoverableTranslator(metaIn = APNGFormat.Metadata.class, metaOut = OMEMetadata.class)
+@Plugin(type = OMETranslator.class, attrs = {
+  @Attr(name = Translator.SOURCE, value = APNGFormat.FORMAT_NAME),
+  @Attr(name = Translator.DEST, value = OMEMetadata.FORMAT_NAME)
+})
 public class APNGOMETranslator extends OMETranslator<APNGFormat.Metadata> {
 
   // -- Constructors --
 
   public APNGOMETranslator() {
-    this(null);
+    this(null, null);
   }
 
-  public APNGOMETranslator(final SCIFIO ctx) {
-    super(ctx);
+  public APNGOMETranslator(final Context context, final Format format) {
+    super(context, format);
   }
 
   // -- Translator API Methods --
@@ -105,7 +113,7 @@ public class APNGOMETranslator extends OMETranslator<APNGFormat.Metadata> {
     final int samplesPerPixel = 1; // = sizeC / effectiveSizeC... just sizeC for APNG? #planes / Z * T
     final String imageName = "";
 
-    ome.xml.meta.OMEXMLMetadataTools.populateMetadata(
+    getContext().getService(OMEXMLMetadataService.class).populateMetadata(
       (ome.xml.meta.IMetadata)destination.getRoot(), series, imageName, littleEndian, dimOrder,
       pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
 

@@ -35,18 +35,28 @@
  */
 package ome.scifio.filters;
 
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.DatasetMetadata;
-import ome.scifio.discovery.DiscoverableMetadataWrapper;
 import ome.scifio.util.FormatTools;
 
 /**
  * @author Mark Hiner
  *
  */
-@DiscoverableMetadataWrapper(filterType = ChannelFiller.class)
+@Plugin(type=DatasetMetadataWrapper.class, attrs={
+  @Attr(name=ChannelFillerMetadata.METADATA_KEY, value=ChannelFillerMetadata.METADATA_VALUE)
+  })
 public class ChannelFillerMetadata extends AbstractDatasetMetadataWrapper {
+  
+  // -- Constants --
+  
+  public static final String METADATA_VALUE = "ome.scifio.filters.ChannelFiller";
+  
+  // -- Fields --
   
   private Boolean filled = null;
   

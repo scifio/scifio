@@ -40,6 +40,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.scijava.Context;
+
 import ome.scifio.io.BZip2Handle;
 import ome.scifio.io.IRandomAccess;
 
@@ -55,8 +57,8 @@ import ome.scifio.io.IRandomAccess;
  * @see IRandomAccessProvider
  * @see ome.scifio.io.BZip2Handle
  */
-class BZip2HandleProvider implements IRandomAccessProvider {
-
+class BZip2HandleProvider extends ContextualProvider implements IRandomAccessProvider {
+  
   public IRandomAccess createMock(
       byte[] page, String mode, int bufferSize) throws IOException {
     File pageFile = File.createTempFile("page", ".dat");
@@ -73,7 +75,7 @@ class BZip2HandleProvider implements IRandomAccessProvider {
     }
 
     pageFile = new File(pageFile.getAbsolutePath() + ".bz2");
-    return new BZip2Handle(pageFile.getAbsolutePath());
+    return new BZip2Handle(getContext(), pageFile.getAbsolutePath());
   }
 
 }

@@ -48,6 +48,7 @@ import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
 import ome.scifio.util.SCIFIOMetadataTools;
 
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hiner
  */
 public abstract class AbstractParser<M extends TypedMetadata>
-  extends AbstractHasContext implements TypedParser<M> {
+  extends AbstractHasFormat implements TypedParser<M> {
 
   // -- Constants --
 
@@ -88,23 +89,16 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
   // -- Constructors --
 
-  public AbstractParser(final SCIFIO ctx) {
-    super(ctx);
+  public AbstractParser(final Context context, final Format format) {
+    super(context, format);
     dMeta = new DefaultDatasetMetadata();
-  }
-  
-  // -- HasFormat API Methods --
-
-  public Format getFormat() {
-    return getContext().getFormatFromParser(getClass());
   }
   
   // -- Parser API Methods --
   
-
   /* @see Parser#parse(String fileName) */
   public M parse(final String fileName) throws IOException, FormatException {
-    return parse(new RandomAccessInputStream(fileName));
+    return parse(new RandomAccessInputStream(getContext(), fileName));
   }
   
   /*
@@ -345,7 +339,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
   public M parse(final String fileName, final M meta)
     throws IOException, FormatException
   {
-    return parse(new RandomAccessInputStream(fileName), meta);
+    return parse(new RandomAccessInputStream(getContext(), fileName), meta);
   }
   
   /* @see TypedParser#parse(File, M) */

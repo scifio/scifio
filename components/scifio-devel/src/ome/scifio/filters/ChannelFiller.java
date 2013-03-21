@@ -37,6 +37,9 @@ package ome.scifio.filters;
 
 import java.io.IOException;
 
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
 import net.imglib2.display.ColorTable;
 
 import ome.scifio.ByteArrayPlane;
@@ -44,9 +47,7 @@ import ome.scifio.ByteArrayReader;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
-import ome.scifio.Reader;
 import ome.scifio.common.DataTools;
-import ome.scifio.discovery.DiscoverableFilter;
 
 /**
  * For indexed color data representing true color, factors out
@@ -61,12 +62,16 @@ import ome.scifio.discovery.DiscoverableFilter;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ChannelFiller.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/ChannelFiller.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@DiscoverableFilter(wrappedClass = Reader.class)
+@Plugin(type=Filter.class, priority=ChannelFiller.PRIORITY, attrs={
+  @Attr(name=ChannelFiller.FILTER_KEY, value=ChannelFiller.FILTER_VALUE),
+  @Attr(name=ChannelFiller.ENABLED_KEY, value=ChannelFiller.ENABLED_VAULE)
+  })
 public class ChannelFiller extends AbstractReaderFilter {
 
   // -- Constants --
   
-  public static final Double PRIORITY = 1.0;
+  public static final double PRIORITY = 1.0;
+  public static final String FILTER_VALUE = "ome.scifio.Reader";
   
   // -- Fields --
 
@@ -101,13 +106,6 @@ public class ChannelFiller extends AbstractReaderFilter {
   }
   
   // -- Filter API Methods --
-  
-  /*
-   * @see ome.scifio.wrappers.PriorityNode#getPriority()
-   */
-  public Double getPriority() {
-    return ChannelFiller.PRIORITY;
-  }
   
   /*
    */

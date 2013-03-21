@@ -42,7 +42,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import ome.scifio.discovery.DiscoverableHandle;
+import org.scijava.Context;
+import org.scijava.plugin.Plugin;
 
 /**
  * Provides random access to URLs using the IRandomAccess interface.
@@ -58,7 +59,7 @@ import ome.scifio.discovery.DiscoverableHandle;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-@DiscoverableHandle
+@Plugin(type = IStreamAccess.class)
 public class URLHandle extends StreamHandle {
 
   // -- Fields --
@@ -80,11 +81,15 @@ public class URLHandle extends StreamHandle {
     super();
   }
   
+  public URLHandle(Context context) {
+    super(context);
+  }
+  
   /**
    * Constructs a new URLHandle using the given URL.
    */
-  public URLHandle(String url) throws IOException {
-    super();
+  public URLHandle(Context context, String url) throws IOException {
+    super(context);
     setURL(url);
   }
   

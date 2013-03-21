@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.scijava.plugin.SciJavaPlugin;
+
 /**
  * Interface for random access into structures (e.g., files or arrays).
  *

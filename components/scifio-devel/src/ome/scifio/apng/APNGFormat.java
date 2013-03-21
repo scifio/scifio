@@ -61,17 +61,18 @@ import ome.scifio.AbstractParser;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
 import ome.scifio.BufferedImagePlane;
+import ome.scifio.DatasetToTypedTranslator;
+import ome.scifio.Translator;
+import ome.scifio.TypedToDatasetTranslator;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.DefaultImageMetadata;
-import ome.scifio.CoreTranslator;
 import ome.scifio.Field;
 import ome.scifio.FieldPrinter;
+import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
 import ome.scifio.common.DataTools;
-import ome.scifio.discovery.DiscoverableFormat;
-import ome.scifio.discovery.DiscoverableTranslator;
 import ome.scifio.gui.AWTImageTools;
 import ome.scifio.gui.BufferedImageReader;
 import ome.scifio.io.RandomAccessInputStream;
@@ -79,7 +80,11 @@ import ome.scifio.io.RandomAccessOutputStream;
 import ome.scifio.io.StreamTools;
 import ome.scifio.util.FormatTools;
 
-@DiscoverableFormat
+import org.scijava.Context;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.Attr;
+
+@Plugin(type = Format.class)
 public class APNGFormat
   extends
   AbstractFormat<APNGFormat.Metadata, APNGFormat.Checker,
@@ -90,6 +95,8 @@ public class APNGFormat
 
   public static final byte[] PNG_SIGNATURE = new byte[] {
       (byte) 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
+  
+  public static final String FORMAT_NAME = "Animated PNG";
   
   // -- Constructor --
 
@@ -113,7 +120,7 @@ public class APNGFormat
    * @throws FormatException
    */
   public APNGFormat(final SCIFIO ctx) throws FormatException {
-    super(ctx, "Animated PNG", "png", Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
+    super(ctx, APNGFormat.FORMAT_NAME, "png", Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
   }
 
   /**
@@ -143,11 +150,11 @@ public class APNGFormat
     // -- Constructor --
   
     public Metadata() {
-      this(null);
+      this(null, null);
     }
   
-    public Metadata(final SCIFIO context) {
-      super(context);
+    public Metadata(final Context context, final Format format) {
+      super(context, format);
       fctl = new ArrayList<FCTLChunk>();
       idat = new ArrayList<IDATChunk>();
     }
@@ -237,13 +244,13 @@ public class APNGFormat
     // -- Constructor --
   
     /** Constructs a new APNGChecker */
-    public Checker(final SCIFIO ctx) {
-      super(ctx);
+    public Checker(final Context context, final Format format) {
+      super(context, format);
       suffixNecessary = false;
     }
   
     public Checker() {
-      this(null);
+      this(null, null);
     }
   
     // -- Checker API Methods --
@@ -287,11 +294,11 @@ public class APNGFormat
   
     /** Constructs a new APNGParser. */
     public Parser() {
-      this(null);
+      this(null, null);
     }
   
-    public Parser(final SCIFIO ctx) {
-      super(ctx);
+    public Parser(final Context context, final Format format) {
+      super(context, format);
     }
   
     // -- Parser API Methods --
@@ -434,11 +441,11 @@ public class APNGFormat
     /** Constructs a new APNGReader. */
   
     public Reader() {
-      this(null);
+      this(null, null);
     }
   
-    public Reader(final SCIFIO ctx) {
-      super(ctx);
+    public Reader(final Context context, final Format format) {
+      super(context, format);
     }
   
     // -- Reader API Methods --
@@ -535,7 +542,7 @@ public class APNGFormat
           imageIndex, plte.getLength(), plte.getOffset(), coords, stream, false);
       }
       final RandomAccessInputStream s =
-        new RandomAccessInputStream(stream.toByteArray());
+        new RandomAccessInputStream(getContext(), stream.toByteArray());
       final DataInputStream dis = new DataInputStream(new BufferedInputStream(s, 4096));
       final BufferedImage bi = ImageIO.read(dis);
       dis.close();
@@ -630,11 +637,11 @@ public class APNGFormat
     // -- Constructor --
 
     public Writer() {
-      this(null);
+      this(null, null);
     }
 
-    public Writer(final SCIFIO ctx) {
-      super(ctx);
+    public Writer(final Context context, final Format format) {
+      super(context, format);
     }
 
     // -- Writer API Methods --
@@ -936,18 +943,21 @@ public class APNGFormat
    * to write it can not be guaranteed valid.
    *
    */
-  @DiscoverableTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
+  @Plugin(type = DatasetToTypedTranslator.class, attrs = 
+    {@Attr(name = Translator.DEST, value = APNGFormat.FORMAT_NAME),
+    @Attr(name = Translator.SOURCE, value = DatasetMetadata.FORMAT_NAME)})
   public static class CoreAPNGTranslator
-    extends AbstractTranslator<DatasetMetadata, Metadata> {
+    extends AbstractTranslator<DatasetMetadata, Metadata>
+    implements DatasetToTypedTranslator {
   
     // -- Constructors --
     
     public CoreAPNGTranslator() {
-      this(null);
+      this(null, null);
     }
     
-    public CoreAPNGTranslator(SCIFIO ctx) {
-      super(ctx);
+    public CoreAPNGTranslator(final Context context, final Format format) {
+      super(context, format);
     }
     
     // -- Translator API Methods -- 
@@ -1041,19 +1051,21 @@ public class APNGFormat
    * (APNG) images to the Core SCIFIO image type.
    *
    */
-  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
+  @Plugin(type = DatasetToTypedTranslator.class, attrs = 
+    {@Attr(name = Translator.SOURCE, value = APNGFormat.FORMAT_NAME),
+    @Attr(name = Translator.DEST, value = DatasetMetadata.FORMAT_NAME)})
   public static class APNGCoreTranslator
     extends AbstractTranslator<Metadata, DatasetMetadata>
-    implements CoreTranslator {
+    implements TypedToDatasetTranslator {
   
     // -- Constructors --
   
     public APNGCoreTranslator() {
-      this(null);
+      this(null, null);
     }
   
-    public APNGCoreTranslator(final SCIFIO ctx) {
-      super(ctx);
+    public APNGCoreTranslator(final Context context, final Format format) {
+      super(context, format);
     }
   
     // -- Translator API Methods --

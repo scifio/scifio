@@ -47,7 +47,7 @@ import ome.scifio.Reader;
  * @see ome.scifio.Reader
  */
 public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<Reader> {
-
+  
   // -- Fields --
   
   private MasterFilterHelper<Reader> fHelper;
@@ -86,13 +86,6 @@ public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<R
 
   // -- Filter API Methods --
   
-  /*
-   * @see ome.scifio.filters.MasterFilter#getPriority()
-   */
-  public Double getPriority() {
-    return fHelper.getPriority();
-  }
-
   /*
    * @see ome.scifio.filters.MasterFilter#setParent(java.lang.Object)
    */

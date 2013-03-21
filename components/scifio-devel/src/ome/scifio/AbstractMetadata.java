@@ -39,6 +39,7 @@ package ome.scifio;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * @author Mark Hiner
  *
  */
-public abstract class AbstractMetadata extends AbstractHasContext
+public abstract class AbstractMetadata extends AbstractHasFormat
   implements TypedMetadata {
 
   // -- Constants --
@@ -64,19 +65,20 @@ public abstract class AbstractMetadata extends AbstractHasContext
   
   protected MetadataOptions metadataOptions;
 
-  // -- HasFormat API Methods --
-
-  public Format getFormat() {
-    return getContext().getFormatFromMetadata(getClass());
-  }
-
   // -- Constructor --
 
-  public AbstractMetadata(final SCIFIO ctx) {
-    super(ctx);
+  public AbstractMetadata(final Context context, final Format format) {
+    super(context, format);
   }
 
   // -- Metadata API Methods --
+  
+  /*
+   * @see ome.scifio.Metadata#getFormatName()
+   */
+  public String getFormatName() {
+    return getFormat().getFormatName();
+  }
 
   /* @see Metadata#resetMeta(Class<?>) */
   public void reset(final Class<?> type) {

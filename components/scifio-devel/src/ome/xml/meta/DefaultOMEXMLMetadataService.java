@@ -38,6 +38,9 @@ package ome.xml.meta;
 
 import net.imglib2.meta.Axes;
 
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,16 +83,18 @@ import ome.xml.services.OMEXMLService;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/MetadataTools.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/MetadataTools.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class OMEXMLMetadataTools {
+@Plugin(type = Service.class)
+public class DefaultOMEXMLMetadataService extends AbstractService
+  implements OMEXMLMetadataService {
   
   // -- Constants --
   
   private static final Logger LOGGER =
-    LoggerFactory.getLogger(OMEXMLMetadataTools.class);
+    LoggerFactory.getLogger(DefaultOMEXMLMetadataService.class);
   
   // -- Static fields --
 
-  private static boolean defaultDateEnabled = true;
+  private boolean defaultDateEnabled = true;
   
   // -- Utility methods - OME-XML --
 
@@ -97,7 +102,7 @@ public class OMEXMLMetadataTools {
    * Populates the 'pixels' element of the given metadata store, using core
    * metadata from the given reader.
    */
-  public static void populatePixels(MetadataStore store, DatasetMetadata meta) {
+  public void populatePixels(MetadataStore store, DatasetMetadata meta) {
     populatePixels(store, meta, false, true);
   }
 
@@ -106,7 +111,7 @@ public class OMEXMLMetadataTools {
    * metadata from the given reader.  If the 'doPlane' flag is set,
    * then the 'plane' elements will be populated as well.
    */
-  public static void populatePixels(MetadataStore store, DatasetMetadata meta,
+  public void populatePixels(MetadataStore store, DatasetMetadata meta,
     boolean doPlane)
   {
     populatePixels(store, meta, doPlane, true);
@@ -119,7 +124,7 @@ public class OMEXMLMetadataTools {
    * If the 'doImageName' flag is set, then the image name will be populated
    * as well.  By default, 'doImageName' is true.
    */
-  public static void populatePixels(MetadataStore store, DatasetMetadata meta,
+  public void populatePixels(MetadataStore store, DatasetMetadata meta,
     boolean doPlane, boolean doImageName)
   {
     if (store == null || meta == null) return;
@@ -127,7 +132,7 @@ public class OMEXMLMetadataTools {
 
       String imageName = null;
       if (doImageName) {
-        Location f = new Location(meta.getSource().getFileName());
+        Location f = new Location(getContext(), meta.getSource().getFileName());
         imageName = f.getName();
       }
       String pixelType = FormatTools.getPixelTypeString(meta.getPixelType(i));
@@ -191,7 +196,7 @@ public class OMEXMLMetadataTools {
    * {@link MetadataRetrieve}).
    * </p>
    */
-  public static void populateMetadata(MetadataStore store, int imageIndex,
+  public void populateMetadata(MetadataStore store, int imageIndex,
     String imageName, boolean littleEndian, String dimensionOrder,
     String pixelType, int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT,
     int samplesPerPixel)
@@ -210,7 +215,7 @@ public class OMEXMLMetadataTools {
    * {@link MetadataRetrieve}).
    * </p>
    */
-  public static void populateMetadata(MetadataStore store, int imageIndex,
+  public void populateMetadata(MetadataStore store, int imageIndex,
     String imageName, DatasetMetadata datasetMeta)
   {
     
@@ -239,7 +244,7 @@ public class OMEXMLMetadataTools {
    * {@link MetadataRetrieve}).
    * </p>
    */
-  public static void populateMetadata(MetadataStore store, String file,
+  public void populateMetadata(MetadataStore store, String file,
     int imageIndex, String imageName, boolean littleEndian, String dimensionOrder,
     String pixelType, int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT,
     int samplesPerPixel)
@@ -251,7 +256,7 @@ public class OMEXMLMetadataTools {
       sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
   }
 
-  public static void populatePixelsOnly(MetadataStore store, Reader r) {
+  public void populatePixelsOnly(MetadataStore store, Reader r) {
     DatasetMetadata dMeta = r.getDatasetMetadata();
 
     for (int imageIndex=0; imageIndex<r.getImageCount(); imageIndex++) {
@@ -265,7 +270,7 @@ public class OMEXMLMetadataTools {
     }
   }
 
-  public static void populatePixelsOnly(MetadataStore store, int imageIndex,
+  public void populatePixelsOnly(MetadataStore store, int imageIndex,
     boolean littleEndian, String dimensionOrder, String pixelType, int sizeX,
     int sizeY, int sizeZ, int sizeC, int sizeT, int samplesPerPixel)
   {
@@ -311,7 +316,7 @@ public class OMEXMLMetadataTools {
    * @param enabled See above.
    * @see #setDefaultCreationDate(MetadataStore, String, int)
    */
-  public static void setDefaultDateEnabled(boolean enabled) {
+  public void setDefaultDateEnabled(boolean enabled) {
     defaultDateEnabled = enabled;
   }
 
@@ -322,13 +327,13 @@ public class OMEXMLMetadataTools {
    *
    * @see #setDefaultDateEnabled(boolean)
    */
-  public static void setDefaultCreationDate(MetadataStore store, String id,
+  public void setDefaultCreationDate(MetadataStore store, String id,
     int imageIndex)
   {
     if (!defaultDateEnabled) {
       return;
     }
-    Location file = id == null ? null : new Location(id).getAbsoluteFile();
+    Location file = id == null ? null : new Location(getContext(), id).getAbsoluteFile();
     long time = System.currentTimeMillis();
     if (file != null && file.exists()) time = file.lastModified();
     store.setImageAcquisitionDate(new Timestamp(DateTools.convertDate(
@@ -340,7 +345,7 @@ public class OMEXMLMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(MetadataRetrieve src)
+  public void verifyMinimumPopulated(MetadataRetrieve src)
     throws FormatException
     {
     verifyMinimumPopulated(src, 0);
@@ -351,7 +356,7 @@ public class OMEXMLMetadataTools {
    * @throws FormatException if there is a missing metadata field,
    *   or the metadata object is uninitialized
    */
-  public static void verifyMinimumPopulated(MetadataRetrieve src, int n)
+  public void verifyMinimumPopulated(MetadataRetrieve src, int n)
     throws FormatException
     {
     if (src == null) {
@@ -406,7 +411,7 @@ public class OMEXMLMetadataTools {
    * Adjusts the given dimension order as needed so that it contains exactly
    * one of each of the following characters: 'X', 'Y', 'Z', 'C', 'T'.
    */
-  public static String makeSaneDimensionOrder(String dimensionOrder) {
+  public String makeSaneDimensionOrder(String dimensionOrder) {
     String order = dimensionOrder.toUpperCase();
     order = order.replaceAll("[^XYZCT]", "");
     String[] axes = new String[] {"X", "Y", "C", "Z", "T"};
@@ -424,7 +429,7 @@ public class OMEXMLMetadataTools {
    * For example, if the arguments are "Detector", 1, and 0, the LSID will
    * be "Detector:1:0".
    */
-  public static String createLSID(String type, int... indices) {
+  public String createLSID(String type, int... indices) {
     StringBuffer lsid = new StringBuffer(type);
     for (int index : indices) {
       lsid.append(":");
@@ -441,7 +446,7 @@ public class OMEXMLMetadataTools {
    * @throws ome.xml.model.enums.EnumerationException if an appropriate
    *  enumeration value is not found.
    */
-  public static ExperimentType getExperimentType(String value)
+  public ExperimentType getExperimentType(String value)
     throws FormatException
   {
     ExperimentTypeEnumHandler handler = new ExperimentTypeEnumHandler();
@@ -460,7 +465,7 @@ public class OMEXMLMetadataTools {
    * @throws ome.xml.model.enums.EnumerationException if an appropriate
    *  enumeration value is not found.
    */
-  public static LaserType getLaserType(String value) throws FormatException {
+  public LaserType getLaserType(String value) throws FormatException {
     LaserTypeEnumHandler handler = new LaserTypeEnumHandler();
     try {
       return (LaserType) handler.getEnumeration(value);
@@ -477,7 +482,7 @@ public class OMEXMLMetadataTools {
    * @throws ome.xml.model.enums.EnumerationException if an appropriate
    *  enumeration value is not found.
    */
-  public static LaserMedium getLaserMedium(String value) throws FormatException {
+  public LaserMedium getLaserMedium(String value) throws FormatException {
     LaserMediumEnumHandler handler = new LaserMediumEnumHandler();
     try {
       return (LaserMedium) handler.getEnumeration(value);
@@ -494,7 +499,7 @@ public class OMEXMLMetadataTools {
    * @throws ome.xml.model.enums.EnumerationException if an appropriate
    *  enumeration value is not found.
    */
-  public static Immersion getImmersion(String value) throws FormatException {
+  public Immersion getImmersion(String value) throws FormatException {
     ImmersionEnumHandler handler = new ImmersionEnumHandler();
     try {
       return (Immersion) handler.getEnumeration(value);
@@ -511,7 +516,7 @@ public class OMEXMLMetadataTools {
    * @throws ome.xml.model.enums.EnumerationException if an appropriate
    *  enumeration value is not found.
    */
-  public static Correction getCorrection(String value) throws FormatException {
+  public Correction getCorrection(String value) throws FormatException {
     CorrectionEnumHandler handler = new CorrectionEnumHandler();
     try {
       return (Correction) handler.getEnumeration(value);
@@ -528,7 +533,7 @@ public class OMEXMLMetadataTools {
    * @throws ome.xml.model.enums.EnumerationException if an appropriate
    *  enumeration value is not found.
    */
-  public static DetectorType getDetectorType(String value) throws FormatException {
+  public DetectorType getDetectorType(String value) throws FormatException {
     DetectorTypeEnumHandler handler = new DetectorTypeEnumHandler();
     try {
       return (DetectorType) handler.getEnumeration(value);

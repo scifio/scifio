@@ -379,27 +379,27 @@ public class AxisGuesser {
   }
 
   /** Method for testing pattern guessing logic. */
-  public static void main(String[] args, SCIFIO ctx) throws FormatException, IOException {
+  public static void main(String[] args, SCIFIO scifio) throws FormatException, IOException {
     Location file = args.length < 1 ?
-      new Location(System.getProperty("user.dir")).listFiles()[0] :
-      new Location(args[0]);
+      new Location(scifio.getContext(), System.getProperty("user.dir")).listFiles()[0] :
+      new Location(scifio.getContext(), args[0]);
     LOGGER.info("File = {}", file.getAbsoluteFile());
-    String pat = FilePattern.findPattern(file);
+    String pat = scifio.getContext().getService(FilePatternService.class).findPattern(file);
     if (pat == null) LOGGER.info("No pattern found.");
     else {
       LOGGER.info("Pattern = {}", pat);
-      FilePattern fp = new FilePattern(pat);
+      FilePattern fp = new FilePattern(scifio.getContext(), pat);
       if (fp.isValid()) {
         LOGGER.info("Pattern is valid.");
         String id = fp.getFiles()[0];
-        if (!new Location(id).exists()) {
+        if (!new Location(scifio.getContext(), id).exists()) {
           LOGGER.info("File '{}' does not exist.", id);
         }
         else {
           // read dimensional information from first file
           LOGGER.info("Reading first file ");
           
-          Reader reader = ctx.initializeReader(id);
+          Reader reader = scifio.initializeReader(id);
           String dimOrder = FormatTools.findDimensionOrder(reader.getDatasetMetadata(), 0);
           int sizeZ = reader.getDatasetMetadata().getAxisLength(0, Axes.Z);
           int sizeT = reader.getDatasetMetadata().getAxisLength(0, Axes.TIME);

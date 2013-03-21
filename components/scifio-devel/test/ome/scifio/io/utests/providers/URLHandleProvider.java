@@ -55,7 +55,7 @@ import ome.scifio.io.URLHandle;
  * @see IRandomAccessProvider
  * @see ome.scifio.io.URLHandle
  */
-class URLHandleProvider implements IRandomAccessProvider {
+class URLHandleProvider extends ContextualProvider implements IRandomAccessProvider {
 
   public IRandomAccess createMock(
       byte[] page, String mode, int bufferSize) throws IOException {
@@ -65,7 +65,7 @@ class URLHandleProvider implements IRandomAccessProvider {
     out.write(page);
     out.close();
 
-    return new URLHandle(f.toURL().toString());
+    return new URLHandle(getContext(), f.toURL().toString());
   }
 
 }

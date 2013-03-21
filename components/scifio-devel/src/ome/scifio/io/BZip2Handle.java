@@ -42,8 +42,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import ome.scifio.common.Constants;
-import ome.scifio.discovery.DiscoverableHandle;
 
+import org.scijava.Context;
+import org.scijava.plugin.Plugin;
 
 /**
  * StreamHandle implementation for reading from BZip2-compressed files
@@ -57,7 +58,7 @@ import ome.scifio.discovery.DiscoverableHandle;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-@DiscoverableHandle
+@Plugin(type = IStreamAccess.class)
 public class BZip2Handle extends StreamHandle {
 
   // -- Constructor --
@@ -70,14 +71,18 @@ public class BZip2Handle extends StreamHandle {
   public BZip2Handle() {
     super();
   }
+  
+  public BZip2Handle(Context context) {
+    super(context);
+  }
 
   /**
    * Construct a new BZip2Handle corresponding to the given file.
    *
    * @throws HandleException if the given file is not a BZip2 file.
    */
-  public BZip2Handle(String file) throws IOException {
-    super();
+  public BZip2Handle(Context context, String file) throws IOException {
+    super(context);
     setFile(file);
   }
 

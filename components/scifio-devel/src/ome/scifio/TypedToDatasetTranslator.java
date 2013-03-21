@@ -34,15 +34,14 @@
  * #L%
  */
 
-package ome.scifio.discovery;
+package ome.scifio;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-
-import ome.scifio.FormatException;
-
-public interface Discoverer<N extends Annotation, M> {
-
-  List<M> discover() throws FormatException;
+/**
+ * This interface serves as a flag to identify Translator classes
+ * that translate from a concrete Typed Metadata to DatsetMetadata.
+ * 
+ * @author Mark Hiner
+ */
+public interface TypedToDatasetTranslator extends Translator {
 
 }

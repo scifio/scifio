@@ -63,7 +63,7 @@ import org.testng.annotations.Test;
 @Test(groups="datasetMetadataTests")
 public class DatasetMetadataTest {
 
-  private SCIFIO ctx;
+  private SCIFIO scifio;
   private Parser p;
   private Format f;
   private DatasetMetadata dm;
@@ -73,10 +73,10 @@ public class DatasetMetadataTest {
   
   @BeforeMethod
   public void setUp() throws FormatException {
-    ctx = new SCIFIO();
-    f = ctx.getFormatFromClass(FakeFormat.class);
+    scifio = new SCIFIO();
+    f = scifio.getFormatFromClass(FakeFormat.class);
     p = f.createParser();
-    dm = new DefaultDatasetMetadata(ctx);
+    dm = new DefaultDatasetMetadata(scifio.getContext());
   }
   
   @Test
@@ -95,7 +95,7 @@ public class DatasetMetadataTest {
   
   @AfterMethod
   public void tearDown() {
-    ctx = null;
+    scifio = null;
     f = null;
     p = null;
     dm = null;

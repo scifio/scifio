@@ -1,4 +1,6 @@
 /**
+ * FIXME Rewrite this to reflect the usage of the SciJava plugin framework.
+ * 
  * Provides annotations for marking classes to be discovered via 
  * <a href="http://sezpoz.java.net/">SezPoz</a>, and
  * the classes for discovering them at runtime.

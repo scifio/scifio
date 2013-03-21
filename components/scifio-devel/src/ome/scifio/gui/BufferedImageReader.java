@@ -38,12 +38,14 @@ package ome.scifio.gui;
 
 import java.io.IOException;
 
+import org.scijava.Context;
+
 import net.imglib2.meta.Axes;
 
 import ome.scifio.AbstractReader;
 import ome.scifio.BufferedImagePlane;
+import ome.scifio.Format;
 import ome.scifio.FormatException;
-import ome.scifio.SCIFIO;
 import ome.scifio.TypedMetadata;
 import ome.scifio.util.FormatTools;
 
@@ -62,8 +64,8 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
   // -- Constructors --
 
   /** Constructs a new BIFormatReader. */
-  public BufferedImageReader(final SCIFIO ctx) {
-    super(ctx, BufferedImagePlane.class);
+  public BufferedImageReader(final Context context, final Format format) {
+    super(context, format, BufferedImagePlane.class);
   }
   
   // -- Reader API Methods --

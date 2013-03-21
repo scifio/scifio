@@ -52,7 +52,7 @@ import ome.scifio.FormatException;
 import ome.scifio.Parser;
 import ome.scifio.Reader;
 import ome.scifio.common.Constants;
-import ome.scifio.io.Location;
+import ome.scifio.io.LocationService;
 import ome.scifio.services.DependencyException;
 import ome.scifio.services.ServiceException;
 import ome.scifio.services.ServiceFactory;
@@ -65,6 +65,8 @@ import ome.xml.DOMUtil;
 import ome.xml.r2003fc.ome.OMENode;
 import ome.xml.services.OMEXMLService;
 
+import org.scijava.Context;
+import org.scijava.plugin.SortablePlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -79,7 +81,7 @@ import org.w3c.dom.Element;
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Ilya Goldberg igg at nih.gov
  */
-public class OmeisImporter {
+public class OmeisImporter extends SortablePlugin {
 
   // -- Constants --
 
@@ -112,11 +114,12 @@ public class OmeisImporter {
 
   // -- Constructor --
 
-  public OmeisImporter() {
-    this(true);
+  public OmeisImporter(Context context) {
+    this(context, true);
   }
 
-  public OmeisImporter(boolean stitchFiles)  {
+  public OmeisImporter(Context context, boolean stitchFiles)  {
+    setContext(context);
     stitch = stitchFiles;
     
     // TODO replace this with a general-purpose reader instantiated in the context
@@ -168,7 +171,7 @@ public class OmeisImporter {
       Hashtable fileInfo = getFileInfo(fileIds[i]);
       ids[i] = (String) fileInfo.get("Name");
       String path = getLocalFilePath(fileIds[i]);
-      Location.mapId(ids[i], path);
+      getContext().getService(LocationService.class).mapId(ids[i], path);
     }
 
     // check types and groups
@@ -227,12 +230,12 @@ public class OmeisImporter {
       Hashtable fileInfo = getFileInfo(fileIds[i]);
       ids[i] = (String) fileInfo.get("Name");
       String path = getLocalFilePath(fileIds[i]);
-      Location.mapId(ids[i], path);
+      getContext().getService(LocationService.class).mapId(ids[i], path);
     }
 
     // read file group
     String id = ids[0];
-    String path = Location.getMappedId(id);
+    String path = getContext().getService(LocationService.class).getMappedId(id);
     if (DEBUG) log("Reading file '" + id + "' --> " + path);
 
     // verify that all given file IDs were grouped by the reader
@@ -669,7 +672,7 @@ public class OmeisImporter {
     System.arraycopy(fileIds, 0, trimIds, 0, num);
     fileIds = trimIds;
 
-    OmeisImporter importer = new OmeisImporter(stitch);
+    OmeisImporter importer = new OmeisImporter(new Context(), stitch);
 
     // process the IDs
     try {

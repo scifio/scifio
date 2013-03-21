@@ -45,6 +45,7 @@ import java.io.IOException;
 import ome.scifio.io.HandleException;
 import ome.scifio.io.URLHandle;
 
+import org.scijava.Context;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -68,12 +69,14 @@ public class URLHandleTest {
   // -- Fields --
 
   private URLHandle fileHandle;
+  private Context context;
 
   // -- Setup methods --
 
   @BeforeMethod
   public void setup() throws IOException {
-    fileHandle = new URLHandle(WEBSITE);
+    context = new Context();
+    fileHandle = new URLHandle(context, WEBSITE);
   }
 
   // -- Test methods --

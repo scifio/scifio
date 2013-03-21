@@ -35,6 +35,7 @@
  */
 package ome.scifio.filters;
 
+import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> - Parent data type of this filter.
  */
-public abstract class AbstractFilter<T> implements Filter {
+public abstract class AbstractFilter<T> extends SortablePlugin implements Filter {
 
   // -- Constants --
 
@@ -107,14 +108,5 @@ public abstract class AbstractFilter<T> implements Filter {
    */
   public boolean isCompatible(Class<?> c) {
     return parentClass.isAssignableFrom(c);
-  }
-  
-  // -- Comparable API Methods --
-  
-  /*
-   * @see java.lang.Comparable#compareTo(java.lang.Object)
-   */
-  public int compareTo(Filter n) {
-    return getPriority().compareTo(n.getPriority());
   }
 }

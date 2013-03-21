@@ -46,6 +46,8 @@ import java.nio.ByteOrder;
 
 import ome.scifio.common.Constants;
 
+import org.scijava.Context;
+import org.scijava.Contextual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Melissa Linkert melissa at glencoesoftware.com
  * @author Curtis Rueden ctrueden at wisc.edu
  */
-public class RandomAccessInputStream extends InputStream implements DataInput {
+public class RandomAccessInputStream extends InputStream implements DataInput, Contextual {
 
   // -- Constants --
 
@@ -80,6 +82,8 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
   // -- Fields --
 
   protected IRandomAccess raf;
+  
+  protected Context context;
 
   /** The file name. */
   protected final String file;
@@ -92,7 +96,8 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 
   // -- Constructors --
 
-  protected RandomAccessInputStream() {
+  protected RandomAccessInputStream(Context context) {
+    setContext(context);
     raf = null;
     file = null;
   }
@@ -101,25 +106,26 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
    * Constructs a hybrid RandomAccessFile/DataInputStream
    * around the given file.
    */
-  public RandomAccessInputStream(String file) throws IOException {
-    this(Location.getHandle(file), file);
+  public RandomAccessInputStream(Context context, String file) throws IOException {
+    this(context, context.getService(LocationService.class).getHandle(file), file);
   }
 
   /** Constructs a random access stream around the given handle. */
-  public RandomAccessInputStream(IRandomAccess handle) throws IOException {
-    this(handle, null);
+  public RandomAccessInputStream(Context context, IRandomAccess handle) throws IOException {
+    this(context, handle, null);
   }
 
   /**
    * Constructs a random access stream around the given handle,
    * and with the associated file path.
    */
-  public RandomAccessInputStream(IRandomAccess handle, String file)
+  public RandomAccessInputStream(Context context, IRandomAccess handle, String file)
     throws IOException
   {
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("RandomAccessInputStream {} OPEN", hashCode());
     }
+    setContext(context);
     raf = handle;
     raf.setOrder(ByteOrder.BIG_ENDIAN);
     this.file = file;
@@ -128,8 +134,8 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
   }
 
   /** Constructs a random access stream around the given byte array. */
-  public RandomAccessInputStream(byte[] array) throws IOException {
-    this(new ByteArrayHandle(array));
+  public RandomAccessInputStream(Context context, byte[] array) throws IOException {
+    this(context, new ByteArrayHandle(array));
   }
 
   // -- RandomAccessInputStream API methods --
@@ -177,7 +183,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("RandomAccessInputStream {} CLOSE", hashCode());
     }
-    if (Location.getMappedFile(file) != null) return;
+    if (context.getService(LocationService.class).getMappedFile(file) != null) return;
     if (raf != null) raf.close();
     raf = null;
     markedPos = -1;
@@ -506,6 +512,16 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
   
   public String getFileName() {
     return this.file;
+  }
+  
+  // -- Contextual API Methods --
+
+  public Context getContext() {
+    return context;
+  }
+
+  public void setContext(Context context) {
+    this.context = context;
   }
 
 }

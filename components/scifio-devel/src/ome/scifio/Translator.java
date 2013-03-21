@@ -35,6 +35,8 @@
  */
 package ome.scifio;
 
+import org.scijava.Prioritized;
+
 /**
  * Interface for all SCIFIO {@code Translators}.
  * <p>
@@ -63,9 +65,13 @@ package ome.scifio;
  * @see ome.scifio.Metadata#reset(Class)
  * @author Mark Hiner
  */
-public interface Translator
-  extends HasContext, HasFormat {
+public interface Translator extends HasFormat, ScifioPlugin, Prioritized {
 
+  // -- Fields --
+  
+  public static final String SOURCE = "source";
+  public static final String DEST = "dest";
+  
   // -- Translator API methods --
 
   /**

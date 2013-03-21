@@ -19,6 +19,9 @@ package main.java;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.scijava.Context;
+import org.scijava.plugin.Plugin;
+
 import ome.scifio.AbstractChecker;
 import ome.scifio.AbstractFormat;
 import ome.scifio.AbstractMetadata;
@@ -32,7 +35,6 @@ import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
 import ome.scifio.apng.APNGFormat;
-import ome.scifio.discovery.DiscoverableFormat;
 import ome.scifio.fake.FakeFormat;
 import ome.scifio.io.RandomAccessInputStream;
 
@@ -119,7 +121,7 @@ public class CustomFormats {
    *
    * @author Mark Hiner
    */
-  @DiscoverableFormat
+  @Plugin(type = Format.class)
   public static class SampleFormat 
   extends AbstractFormat<SampleFormat.Metadata, SampleFormat.Checker, 
             SampleFormat.Parser, SampleFormat.Reader, SampleFormat.Writer> {
@@ -155,11 +157,11 @@ public class CustomFormats {
       private String color;
       
       public Metadata() {
-        this(null);
+        this(null, null);
       }
       
-      public Metadata(SCIFIO ctx) {
-        super(ctx);
+      public Metadata(final Context context, final Format format) {
+        super(context, format);
       }
       
       public void setColor(String c) { 
@@ -174,11 +176,11 @@ public class CustomFormats {
     public static class Parser extends AbstractParser<Metadata> {
 
       public Parser() {
-        this(null);
+        this(null, null);
       }
 
-      public Parser(SCIFIO ctx) {
-        super(ctx);
+      public Parser(final Context context, final Format format) {
+        super(context, format);
       }
       
       // Here we can populate a metadata object. Note that #parse is overridden
@@ -207,11 +209,11 @@ public class CustomFormats {
 
       
       public Checker() {
-        this(null);
+        this(null, null);
       }
 
-      public Checker(SCIFIO ctx) {
-        super(ctx);
+      public Checker(final Context context, final Format format) {
+        super(context, format);
         suffixSufficient = true;
         suffixNecessary = true;
       }
@@ -226,11 +228,11 @@ public class CustomFormats {
     public static class Reader extends ByteArrayReader<Metadata> {
       
       public Reader() {
-        this(null);
+        this(null, null);
       }
       
-      public Reader(SCIFIO ctx) {
-        super(ctx);
+      public Reader(final Context context, final Format format) {
+        super(context, format);
       }
 
       // Any openPlane signature that contains a Plane object should
@@ -256,11 +258,11 @@ public class CustomFormats {
     public static class Writer extends AbstractWriter<Metadata> {
 
       public Writer() {
-        this(null);
+        this(null, null);
       }
       
-      public Writer(SCIFIO ctx) {
-        super(ctx);
+      public Writer(final Context context, final Format format) {
+        super(context, format);
       }
 
       public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,

@@ -36,24 +36,47 @@
 
 package ome.scifio.discovery;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import net.java.sezpoz.Indexable;
-import ome.scifio.Format;
+import ome.scifio.ScifioPlugin;
+
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
- * 
- * Sezpoz annotation to flag SCIFIO {@link ome.scifio.Format}s for discovery.
+ * Service for obtaining a list of plugin classes
  * 
  * @author Mark Hiner
  *
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Indexable(type = Format.class)
-public @interface DiscoverableFormat {
+@Plugin(type = Service.class)
+public class PluginClassService extends AbstractService {
+  
+  /**
+   * Convenience method for obtaining a list of Classes instead of PluginInfo objects.
+   */
+  public <PT extends ScifioPlugin> List<Class<? extends PT>> getPluginClasses(Class<PT> type) {
+    return getPluginClasses(type, null, null);
+  }
+  
+  /**
+   * As {@link #getPluginClasses(Class)} but with key,value pair parameters for filtering.
+   */
+  public <PT extends ScifioPlugin> List<Class<? extends PT>> getPluginClasses(Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
+    List<PluginInfo<PT>> pluginInfos = getContext().getService(PluginAttributeService.class).getPluginsOfType(type, andPairs, orPairs);
+        
+    List<Class<? extends PT>> pluginClasses = new ArrayList<Class<? extends PT>>();
+    
+    for(PluginInfo<PT> pluginInfo : pluginInfos) {
+      pluginClasses.add(pluginInfo.getPluginClass());
+    }
+    
+    return pluginClasses;
+  }
+
 
 }

@@ -41,6 +41,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -48,14 +51,15 @@ import ome.scifio.AxisGuesser;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
 import ome.scifio.DefaultImageMetadata;
+import ome.scifio.FilePatternService;
 import ome.scifio.ImageMetadata;
 import ome.scifio.DatasetMetadata;
 import ome.scifio.FilePattern;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
-import ome.scifio.discovery.DiscoverableFilter;
 import ome.scifio.io.Location;
+import ome.scifio.io.LocationService;
 import ome.scifio.util.FormatTools;
 
 /**
@@ -66,12 +70,16 @@ import ome.scifio.util.FormatTools;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FileStitcher.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FileStitcher.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@DiscoverableFilter(wrappedClass = Reader.class)
+@Plugin(type=Filter.class, priority=FileStitcher.PRIORITY, attrs={
+  @Attr(name=FileStitcher.FILTER_KEY, value=FileStitcher.FILTER_VALUE),
+  @Attr(name=FileStitcher.ENABLED_KEY, value=FileStitcher.ENABLED_VAULE)
+  })
 public class FileStitcher extends AbstractReaderFilter {
 
   // -- Constants --
   
-  public static final Double PRIORITY = 3.0;
+  public static final double PRIORITY = 3.0;
+  public static final String FILTER_VALUE = "ome.scifio.Reader";
   
   // -- Fields --
 
@@ -212,7 +220,7 @@ public class FileStitcher extends AbstractReaderFilter {
   }
 
   public FilePattern findPattern(String id) {
-    return new FilePattern(FilePattern.findPattern(id));
+    return new FilePattern(getContext(), getContext().getService(FilePatternService.class).findPattern(id));
   }
 
   /**
@@ -222,26 +230,26 @@ public class FileStitcher extends AbstractReaderFilter {
   public String[] findPatterns(String id) {
     if (!patternIds) {
       // find the containing patterns
-      HashMap<String, Object> map = Location.getIdMap();
+      HashMap<String, Object> map = getContext().getService(LocationService.class).getIdMap();
       if (map.containsKey(id)) {
         // search ID map for pattern, rather than files on disk
         String[] idList = new String[map.size()];
         map.keySet().toArray(idList);
-        return FilePattern.findSeriesPatterns(id, null, idList);
+        return getContext().getService(FilePatternService.class).findSeriesPatterns(id, null, idList);
       }
       else {
         // id is an unmapped file path; look to similar files on disk
-        return FilePattern.findSeriesPatterns(id);
+        return getContext().getService(FilePatternService.class).findSeriesPatterns(id);
       }
     }
     if (doNotChangePattern) {
       return new String[] {id};
     }
     patternIds = false;
-    String[] patterns = findPatterns(new FilePattern(id).getFiles()[0]);
+    String[] patterns = findPatterns(new FilePattern(getContext(), id).getFiles()[0]);
     if (patterns.length == 0) patterns = new String[] {id};
     else {
-      FilePattern test = new FilePattern(patterns[0]);
+      FilePattern test = new FilePattern(getContext(), patterns[0]);
       if (test.getFiles().length == 0) patterns = new String[] {id};
     }
     patternIds = true;
@@ -265,10 +273,6 @@ public class FileStitcher extends AbstractReaderFilter {
   }
     
   // -- Filter API Methods --
-  
-  public Double getPriority() {
-    return FileStitcher.PRIORITY;
-  }
   
   /*
    */
@@ -425,13 +429,13 @@ public class FileStitcher extends AbstractReaderFilter {
   protected void initFile(String id, int imageIndex) throws FormatException, IOException {
     LOGGER.debug("initFile: {}", id);
 
-    FilePattern fp = new FilePattern(id);
+    FilePattern fp = new FilePattern(getContext(), id);
     if (!patternIds) {
       patternIds = fp.isValid() && fp.getFiles().length > 1;
     }
     else {
       patternIds =
-        !new Location(id).exists() && Location.getMappedId(id).equals(id);
+        !new Location(getContext(), id).exists() && getContext().getService(LocationService.class).getMappedId(id).equals(id);
     }
 
     boolean mustGroup = false;
@@ -465,9 +469,9 @@ public class FileStitcher extends AbstractReaderFilter {
     externals = new ArrayList<ExternalSeries>();
 
     for (int i=0; i<patterns.length; i++) {
-      externals.set(i, new ExternalSeries(new FilePattern(patterns[i])));
+      externals.set(i, new ExternalSeries(new FilePattern(getContext(), patterns[i])));
     }
-    fp = new FilePattern(patterns[0]);
+    fp = new FilePattern(getContext(), patterns[0]);
 
     getParent().close();
     getParent().setGroupFiles(group);
@@ -526,7 +530,7 @@ public class FileStitcher extends AbstractReaderFilter {
       // HACK: skip file existence check for fake files
       if (file.toLowerCase().endsWith(".fake")) continue;
 
-      if (!new Location(file).exists()) {
+      if (!new Location(getContext(), file).exists()) {
         throw new FormatException("File #" + i +
           " (" + file + ") does not exist.");
       }

@@ -43,6 +43,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.scijava.Context;
+import org.scijava.plugin.SortablePlugin;
+
 import ome.scifio.common.DataTools;
 
 
@@ -58,7 +61,7 @@ import ome.scifio.common.DataTools;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public abstract class StreamHandle implements IStreamAccess {
+public abstract class StreamHandle extends SortablePlugin implements IStreamAccess {
 
   // -- Fields --
 
@@ -84,13 +87,18 @@ public abstract class StreamHandle implements IStreamAccess {
   private ByteOrder order;
 
   // -- Constructor --
+  
+  public StreamHandle() {
+    this(null);
+  }
 
   /**
    * Construct a new StreamHandle.
    * The file pointer will be set to 0, and the byte ordering
    * will be big-endian.
    */
-  public StreamHandle() {
+  public StreamHandle(Context context) {
+    setContext(context);
     fp = 0;
     order = ByteOrder.BIG_ENDIAN;
     file = null;

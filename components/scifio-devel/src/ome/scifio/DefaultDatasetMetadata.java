@@ -37,6 +37,8 @@ package ome.scifio;
 
 import java.util.List;
 
+import org.scijava.Context;
+
 /**
  * Default implementation of {@link DatasetMetadata}.
  * <p>
@@ -55,15 +57,21 @@ public class DefaultDatasetMetadata extends AbstractDatasetMetadata
     super(null);
   }
 
-  public DefaultDatasetMetadata(final SCIFIO ctx) {
-    super(ctx);
+  public DefaultDatasetMetadata(final Context context) {
+    super(context);
   }
   
-  public DefaultDatasetMetadata(final List<ImageMetadata> list, final SCIFIO ctx) {
-    super(list, ctx);
+  public DefaultDatasetMetadata(final List<ImageMetadata> list, final Context context) {
+    super(list, context);
   }
   
-  public DefaultDatasetMetadata(final DatasetMetadata copy, final SCIFIO ctx) {
-    super(copy, ctx);
+  public DefaultDatasetMetadata(final DatasetMetadata copy, final Context context) {
+    super(copy, context);
+  }
+  
+  // -- Metadata API Methods --
+  
+  public String getFormatName() {
+    return DatasetMetadata.FORMAT_NAME;
   }
 }

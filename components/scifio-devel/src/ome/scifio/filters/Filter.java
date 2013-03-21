@@ -35,6 +35,11 @@
  */
 package ome.scifio.filters;
 
+import ome.scifio.ScifioPlugin;
+
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+
 /**
  * Interface for modifying object behavior. Equivalent to wrapping/decorating.
  * <p>
@@ -50,8 +55,13 @@ package ome.scifio.filters;
  * @author Mark Hiner
  *
  */
-public interface Filter extends Comparable<Filter> {
+public interface Filter extends ScifioPlugin, Prioritized, Contextual {
 
+  public static final String FILTER_KEY = "Filters";
+  public static final String FILTER_VALUE = "java.lang.Object";
+  public static final String ENABLED_KEY = "Enabled by default";
+  public static final String ENABLED_VAULE = "false";
+  
   /**
    * Sets the object which this filter augments.
    * 
@@ -65,20 +75,6 @@ public interface Filter extends Comparable<Filter> {
    * @return
    */
   Object getParent();
-  
-  /**
-   * Returns the priority for this filter.
-   * <p>
-   * The natural ordering of {@code Filters} is determined by the
-   * {@link #compareTo(Filter)} method. But regardless of this result, if a
-   * {@code Filter} comes "before" another {@code Filter}, the latter should
-   * return its result to the former, which can then modify and continue to pass
-   * said result up the {@code Filter} stack.
-   * </p>
-   * 
-   * @return
-   */
-  Double getPriority();
   
   /**
    * Returns true if this filter is capable of wrapping instances of the

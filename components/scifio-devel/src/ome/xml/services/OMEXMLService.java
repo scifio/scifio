@@ -43,6 +43,7 @@ import ome.scifio.services.ServiceException;
 
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.MetadataStore;
+import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 
 /**
@@ -179,7 +180,7 @@ public interface OMEXMLService extends Service {
    *   {@link loci.formats.ome.OMEXMLMetadata}.
    * @param metadata A hashtable containing metadata key/value pairs.
    */
-  public void populateOriginalMetadata(OMEXMLMetadata omexmlMeta,
+  public void populateOriginalMetadata(OMEMetadata omexmlMeta,
     Hashtable<String, Object> metadata);
 
   /**
@@ -190,7 +191,7 @@ public interface OMEXMLService extends Service {
    * @param key Metadata key to populate.
    * @param value Metadata value corresponding to the specified key.
    */
-  public void populateOriginalMetadata(OMEXMLMetadata omexmlMeta,
+  public void populateOriginalMetadata(OMEMetadata omexmlMeta,
     String key, String value);
 
   /**

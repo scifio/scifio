@@ -46,6 +46,7 @@ import ome.scifio.io.BZip2Handle;
 import ome.scifio.io.GZipHandle;
 import ome.scifio.io.ZipHandle;
 
+import org.scijava.Context;
 import org.testng.annotations.Test;
 
 /**
@@ -59,11 +60,13 @@ import org.testng.annotations.Test;
  */
 public class TypeDetectionTest {
 
+  private Context context = new Context();
+  
   @Test
   public void testBZip2TypeDetection() throws IOException {
     File invalidFile = File.createTempFile("invalid", ".bz2");
     invalidFile.deleteOnExit();
-    BZip2Handle handle = new BZip2Handle();
+    BZip2Handle handle = new BZip2Handle(context);
     assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
   }
 
@@ -71,7 +74,7 @@ public class TypeDetectionTest {
   public void testGZipTypeDetection() throws IOException {
     File invalidFile = File.createTempFile("invalid", ".gz");
     invalidFile.deleteOnExit();
-    GZipHandle handle = new GZipHandle();
+    GZipHandle handle = new GZipHandle(context);
     assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
   }
 
@@ -79,7 +82,7 @@ public class TypeDetectionTest {
   public void testZipTypeDetection() throws IOException {
     File invalidFile = File.createTempFile("invalid", ".zip");
     invalidFile.deleteOnExit();
-    ZipHandle handle = new ZipHandle();
+    ZipHandle handle = new ZipHandle(context);
     assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
   }
 }

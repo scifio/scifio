@@ -53,21 +53,26 @@ import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
-import ome.scifio.DefaultImageMetadata;
 import ome.scifio.DatasetMetadata;
+import ome.scifio.DatasetToTypedTranslator;
+import ome.scifio.DefaultImageMetadata;
+import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.HasColorTable;
 import ome.scifio.Plane;
 import ome.scifio.SCIFIO;
+import ome.scifio.Translator;
+import ome.scifio.TypedToDatasetTranslator;
 import ome.scifio.common.DataTools;
-import ome.scifio.discovery.DiscoverableHandle;
-import ome.scifio.discovery.DiscoverableFormat;
-import ome.scifio.discovery.DiscoverableTranslator;
+import ome.scifio.io.IStreamAccess;
 import ome.scifio.io.Location;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.io.StreamHandle;
 import ome.scifio.util.FormatTools;
 
+import org.scijava.Context;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 
 /**
@@ -89,7 +94,7 @@ import org.slf4j.Logger;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/FakeReader.java">Trac</a>
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/FakeReader.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@DiscoverableFormat
+@Plugin(type = Format.class)
 public class FakeFormat
 extends
 AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
@@ -97,6 +102,8 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
                FakeFormat.Writer> {
   
   // -- Constants --
+  
+  public static final String FORMAT_NAME = "Simulated data";
   
   public static final int BOX_SIZE = 10;
   public static final int DEFAULT_SIZE_X = 512;
@@ -164,7 +171,8 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    * @throws FormatException
    */
   public FakeFormat(final SCIFIO ctx) throws FormatException {
-    super(ctx, "Simulated data", "fake", Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
+    super(ctx, FakeFormat.FORMAT_NAME, "fake", Metadata.class, 
+        Checker.class, Parser.class, Reader.class, Writer.class);
   }
 
   /**
@@ -188,11 +196,11 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Constructor --
     
     public Metadata() {
-      this(null);
+      this(null, null);
     }
     
-    public Metadata(SCIFIO ctx) {
-      super(ctx);
+    public Metadata(final Context context, final Format format) {
+      super(context, format);
     }
     
     // -- FakeFormat.Metadata methods --
@@ -237,11 +245,11 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Constructor --
     
     public Checker() {
-      this(null);
+      this(null, null);
     }
     
-    public Checker(SCIFIO ctx) {
-      super(ctx);
+    public Checker(final Context context, final Format format) {
+      super(context, format);
     }
   }
   
@@ -256,11 +264,11 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Constructor -
     
     public Parser() {
-      this(null);
+      this(null, null);
     }
     
-    public Parser(final SCIFIO ctx) {
-      super(ctx);
+    public Parser(final Context context, final Format format) {
+      super(context, format);
     }
     
     // -- Parser API Methods --
@@ -286,7 +294,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       int imageCount = 1;
       int lutLength = DEFAULT_LUT_LENGTH;
       
-      HashMap<String, String> fakeMap = FakeUtils.extractFakeInfo(stream.getFileName());
+      HashMap<String, String> fakeMap = FakeUtils.extractFakeInfo(getContext(), stream.getFileName());
       
       sizeX = FakeUtils.getIntValue(fakeMap.get(SIZE_X), sizeX);
       sizeY = FakeUtils.getIntValue(fakeMap.get(SIZE_Y), sizeY);
@@ -398,11 +406,11 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Constructor --
     
     public Reader() {
-      this(null);
+      this(null, null);
     }
     
-    public Reader(final SCIFIO ctx) {
-      super(ctx);
+    public Reader(final Context context, final Format format) {
+      super(context, format);
     }
     
     // -- Reader API methods --
@@ -529,11 +537,11 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Constructor --
     
     public Writer() {
-      this(null);
+      this(null, null);
     }
     
-    public Writer(final SCIFIO ctx) {
-      super(ctx);
+    public Writer(final Context context, final Format format) {
+      super(context, format);
     }
     
     // -- Writer API Methods --
@@ -559,9 +567,12 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   /**
    * Translator from Fake metadata to {@link DatasetMetadata}.
    */
-  @DiscoverableTranslator(metaIn = Metadata.class, metaOut = DatasetMetadata.class)
+  @Plugin(type = TypedToDatasetTranslator.class, attrs = 
+    {@Attr(name = Translator.SOURCE, value = FakeFormat.FORMAT_NAME),
+    @Attr(name = Translator.DEST, value = DatasetMetadata.FORMAT_NAME)})
   public static class FakeCoreTranslator 
-  extends AbstractTranslator<Metadata, DatasetMetadata> {
+    extends AbstractTranslator<Metadata, DatasetMetadata>
+    implements TypedToDatasetTranslator {
     
     // -- Constants --
 
@@ -571,11 +582,11 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Constructor --
     
     public FakeCoreTranslator() {
-      this(null);
+      this(null, null);
     }
     
-    public FakeCoreTranslator(SCIFIO ctx) {
-      super(ctx);
+    public FakeCoreTranslator(final Context context, final Format format) {
+      super(context, format);
     }
     
     // -- Translator API Methods --
@@ -606,7 +617,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
 
       int lutLength = DEFAULT_LUT_LENGTH;
       
-      HashMap<String, String> fakeMap = FakeUtils.extractFakeInfo(source.getSource().getFileName());
+      HashMap<String, String> fakeMap = FakeUtils.extractFakeInfo(getContext(), source.getSource().getFileName());
       
       sizeX = FakeUtils.getIntValue(fakeMap.get(SIZE_X), sizeX);
       sizeY = FakeUtils.getIntValue(fakeMap.get(SIZE_Y), sizeY);
@@ -690,18 +701,21 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   /**
    * Translator from {@link DatasetMetadata} to Fake Metadata.
    */
-  @DiscoverableTranslator(metaIn = DatasetMetadata.class, metaOut = Metadata.class)
+  @Plugin(type = DatasetToTypedTranslator.class, attrs = 
+    {@Attr(name = Translator.SOURCE, value = DatasetMetadata.FORMAT_NAME),
+    @Attr(name = Translator.DEST, value = FakeFormat.FORMAT_NAME)})
   public static class CoreFakeTranslator 
-  extends AbstractTranslator<DatasetMetadata, Metadata> {
+    extends AbstractTranslator<DatasetMetadata, Metadata>
+    implements DatasetToTypedTranslator {
 
     // -- Constructor --
     
     public CoreFakeTranslator() {
-      this(null);
+      this(null, null);
     }
     
-    public CoreFakeTranslator(SCIFIO ctx) {
-      super(ctx);
+    public CoreFakeTranslator(final Context context, final Format format) {
+      super(context, format);
     }
     
     // -- Translator API Methods --
@@ -747,7 +761,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       fakeId += ".fake";
       
       try {
-        destination.setSource(new RandomAccessInputStream(new Handle(fakeId), fakeId));
+        destination.setSource(new RandomAccessInputStream(getContext(), new Handle(fakeId), fakeId));
       }
       catch (IOException e) {
         LOGGER.debug("Failed to create RAIS: " + fakeId, e);
@@ -760,7 +774,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
    * RAIS will never attempt file IO on a "*.fake" String, as this handle
    * is SezPoz-discoverable and handles specifically those files.
    */
-  @DiscoverableHandle
+	@Plugin(type = IStreamAccess.class)
   public static class Handle extends StreamHandle {
 
     // -- Constructor --
@@ -1025,11 +1039,13 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
      * @param fakePath
      * @return
      */
-    public static HashMap<String, String> extractFakeInfo(String fakePath) {
+    public static HashMap<String, String> extractFakeInfo(Context context, String fakePath) {
       HashMap<String, String> fakeMap = new HashMap<String, String>();
       
-      if (new Location(fakePath).exists()) {
-        fakePath = new Location(fakePath).getAbsoluteFile().getName();
+      Location loc = new Location(context, fakePath);
+      
+      if (loc.exists()) {
+        fakePath = loc.getAbsoluteFile().getName();
       }
       
       String noExt = fakePath.substring(0, fakePath.lastIndexOf("."));

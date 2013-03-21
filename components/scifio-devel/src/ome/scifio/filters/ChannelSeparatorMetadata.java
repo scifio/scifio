@@ -35,17 +35,27 @@
  */
 package ome.scifio.filters;
 
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.DatasetMetadata;
-import ome.scifio.discovery.DiscoverableMetadataWrapper;
 
 /**
  * @author Mark Hiner
  *
  */
-@DiscoverableMetadataWrapper(filterType = ChannelSeparator.class)
+@Plugin(type=DatasetMetadataWrapper.class, attrs={
+  @Attr(name=ChannelSeparatorMetadata.METADATA_KEY, value=ChannelSeparatorMetadata.METADATA_VALUE)
+  })
 public class ChannelSeparatorMetadata extends AbstractDatasetMetadataWrapper {
+  
+  // -- Constants --
+  
+  public static final String METADATA_VALUE = "ome.scifio.filters.ChannelSeparator";
+  
+  // -- Fields -- 
 
   private AxisType[] xyczt = new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME};
   private AxisType[] xyctz = new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME, Axes.Z}; 

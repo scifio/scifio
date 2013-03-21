@@ -36,6 +36,8 @@
 
 package ome.scifio;
 
+import org.scijava.Contextual;
+
 /**
  * Super-interface for SCIFIO components that only relate to a single
  * {@link ome.scifio.Format}.
@@ -43,7 +45,13 @@ package ome.scifio;
  * @author Mark Hiner
  *
  */
-public interface HasFormat {
+public interface HasFormat extends Contextual {
+  
+  /**
+   * Sets this instance's Format. Only useable if getFormat() == null.
+   * @param format
+   */
+  void setFormat(Format format);
 
   /**
    * Provides a link back to the format associated with this component.

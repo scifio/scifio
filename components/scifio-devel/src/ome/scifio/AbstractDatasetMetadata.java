@@ -41,6 +41,8 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.scijava.Context;
+
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.util.FormatTools;
@@ -72,14 +74,14 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
     this(null);
   }
 
-  public AbstractDatasetMetadata(final SCIFIO ctx) {
-    super(ctx);
+  public AbstractDatasetMetadata(final Context context) {
+    super(context, null);
     datasetMeta = new Hashtable<String, Object>();
     imageMeta = new ArrayList<ImageMetadata>();
   }
   
-  public AbstractDatasetMetadata(final List<ImageMetadata> list, final SCIFIO ctx) {
-    this(ctx);
+  public AbstractDatasetMetadata(final List<ImageMetadata> list, final Context context) {
+    this(context);
     
     for(int i = 0; i < list.size(); i++) {
       ImageMetadata core = list.get(i);
@@ -87,8 +89,8 @@ public abstract class AbstractDatasetMetadata extends AbstractMetadata implement
     }
   }
   
-  public AbstractDatasetMetadata(final DatasetMetadata copy, final SCIFIO ctx) {
-    super(ctx);
+  public AbstractDatasetMetadata(final DatasetMetadata copy, final Context context) {
+    super(context, null);
     
     datasetMeta = (Hashtable<String, Object>) copy.getDatasetMetadata().clone();
     imageMeta = new ArrayList<ImageMetadata>();

@@ -41,6 +41,7 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ import ome.scifio.util.SCIFIOMetadataTools;
  * @param <P>
  */
 public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlane<?>>
-  extends AbstractHasContext implements TypedReader<M, P> {
+  extends AbstractHasFormat implements TypedReader<M, P> {
 
   // -- Constants --
 
@@ -98,17 +99,11 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   // -- Constructors --
 
   /** Constructs a reader with the given context */
-  public AbstractReader(final SCIFIO ctx, Class<P> planeClass)
+  public AbstractReader(final Context context, final Format format, Class<P> planeClass)
   {
-    super(ctx);
+    super(context, format);
     init();
     this.planeClass = planeClass;
-  }
-
-  // -- HasFormat API Methods --
-
-  public Format getFormat() {
-    return getContext().getFormatFromReader(getClass());
   }
 
   // -- Reader API Methods --
@@ -275,7 +270,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    * @see ome.scifio.Reader#setSource(java.lang.String)
    */
   public void setSource(final String fileName) throws IOException {
-    setSource(new RandomAccessInputStream(fileName));
+    setSource(new RandomAccessInputStream(getContext(), fileName));
   }
   
   /*
@@ -297,10 +292,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     if (metadata == null) {
       try {
         @SuppressWarnings("unchecked")
-        final M meta =
-          (M) getContext().getFormatFromReader(getClass())
-            .createParser()
-            .parse(stream);
+        final M meta = (M) getFormat().createParser() .parse(stream);
         setMetadata(meta);
       }
       catch (final FormatException e) {

@@ -37,10 +37,9 @@ package ome.scifio;
 
 import java.awt.image.BufferedImage;
 
-import net.imglib2.meta.Axes;
+import org.scijava.Context;
 
 import ome.scifio.gui.AWTImageTools;
-import ome.scifio.util.FormatTools;
 
 /**
  * A {@link ome.scifio.Plane} implementation using a {@link BufferedImage} for the
@@ -53,13 +52,13 @@ public class BufferedImagePlane extends AbstractPlane<BufferedImage, BufferedIma
 
   // -- Constructor --
   
-  public BufferedImagePlane(SCIFIO ctx) {
-    super(ctx);
+  public BufferedImagePlane(final Context context) {
+    super(context);
   }
   
-  public BufferedImagePlane(SCIFIO ctx, ImageMetadata meta, int xOffset,
+  public BufferedImagePlane(final Context context, ImageMetadata meta, int xOffset,
       int yOffset, int xLength, int yLength) {
-    super(ctx, meta, xOffset, yOffset, xLength, yLength);
+    super(context, meta, xOffset, yOffset, xLength, yLength);
    
     populate(meta, xOffset, yOffset, xLength, yLength);
   }

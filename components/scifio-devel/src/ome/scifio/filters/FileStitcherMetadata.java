@@ -37,19 +37,26 @@ package ome.scifio.filters;
 
 import java.util.Hashtable;
 
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.DatasetMetadata;
-import ome.scifio.discovery.DiscoverableMetadataWrapper;
 import ome.scifio.util.FormatTools;
 
 /**
  * @author Mark Hiner
  *
  */
-@DiscoverableMetadataWrapper(filterType = FileStitcher.class)
+@Plugin(type=DatasetMetadataWrapper.class, attrs={
+  @Attr(name=FileStitcherMetadata.METADATA_KEY, value=FileStitcherMetadata.METADATA_VALUE)
+  })
 public class FileStitcherMetadata extends AbstractDatasetMetadataWrapper {
-
+  
+  // -- Constants --
+  
+  public static final String METADATA_VALUE = "ome.scifio.filters.FileStitcher";
   // -- Fields --
   
   boolean noStitch = true;

@@ -43,8 +43,9 @@ import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
 import ome.scifio.common.DataTools;
-import ome.scifio.discovery.DiscoverableHandle;
 
+import org.scijava.Context;
+import org.scijava.plugin.Plugin;
 
 /**
  * StreamHandle implementation for reading from gzip-compressed files
@@ -58,7 +59,7 @@ import ome.scifio.discovery.DiscoverableHandle;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-@DiscoverableHandle
+@Plugin(type = IStreamAccess.class)
 public class GZipHandle extends StreamHandle {
 
   // -- Constructor --
@@ -72,13 +73,17 @@ public class GZipHandle extends StreamHandle {
     super();
   }
   
+  public GZipHandle(Context context) {
+    super(context);
+  }
+  
   /**
    * Construct a new GZipHandle for the given file.
    *
    * @throws HandleException if the given file name is not a GZip file.
    */
-  public GZipHandle(String file) throws IOException {
-    super();
+  public GZipHandle(Context context, String file) throws IOException {
+    super(context);
     setFile(file);
   }
 

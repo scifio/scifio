@@ -40,6 +40,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormatSymbols;
 
+import org.scijava.Context;
+
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -67,8 +69,8 @@ public final class DataTools {
   // -- Data reading --
 
   /** Reads the contents of the given file into a string. */
-  public static String readFile(String id) throws IOException {
-    RandomAccessInputStream in = new RandomAccessInputStream(id);
+  public static String readFile(Context context, String id) throws IOException {
+    RandomAccessInputStream in = new RandomAccessInputStream(context, id);
     long idLen = in.length();
     if (idLen > Integer.MAX_VALUE) {
       throw new IOException("File too large");

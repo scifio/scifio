@@ -56,9 +56,11 @@ import ome.xml.meta.IMetadata;
 import ome.xml.meta.MetadataConverter;
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.MetadataStore;
+import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.meta.OMEXMLMetadataImpl;
-import ome.xml.meta.OMEXMLMetadataTools;
+import ome.xml.meta.DefaultOMEXMLMetadataService;
+import ome.xml.meta.OMEXMLMetadataService;
 import ome.xml.model.BinData;
 import ome.xml.model.Channel;
 import ome.xml.model.Image;
@@ -486,9 +488,10 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
   /**
    * @see OMEXMLService#populateOriginalMetadata(loci.formats.ome.OMEXMLMetadata, Hashtable)
    */
-  public void populateOriginalMetadata(OMEXMLMetadata omexmlMeta,
+  public void populateOriginalMetadata(OMEMetadata omeMeta,
     Hashtable<String, Object> metadata)
   {
+    OMEXMLMetadata omexmlMeta = (OMEXMLMetadata) omeMeta.getRoot();
     ((OMEXMLMetadataImpl) omexmlMeta).resolveReferences();
     OME root = (OME) omexmlMeta.getRoot();
     StructuredAnnotations annotations = root.getStructuredAnnotations();
@@ -497,7 +500,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 
     for (String key : metadata.keySet()) {
       OriginalMetadataAnnotation annotation = new OriginalMetadataAnnotation();
-      annotation.setID(OMEXMLMetadataTools.createLSID("Annotation", annotationIndex));
+      annotation.setID(omeMeta.getContext().getService(OMEXMLMetadataService.class).createLSID("Annotation", annotationIndex));
       annotation.setKey(key);
       annotation.setValue(metadata.get(key).toString());
       annotations.addXMLAnnotation(annotation);
@@ -511,9 +514,10 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
   /**
    * @see OMEXMLService#populateOriginalMetadata(loci.formats.ome.OMEXMLMetadata, java.lang.String, java.lang.String)
    */
-  public void populateOriginalMetadata(OMEXMLMetadata omexmlMeta,
+  public void populateOriginalMetadata(OMEMetadata omeMeta,
     String key, String value)
   {
+    OMEXMLMetadata omexmlMeta = (OMEXMLMetadata) omeMeta.getRoot();
     ((OMEXMLMetadataImpl) omexmlMeta).resolveReferences();
     OME root = (OME) omexmlMeta.getRoot();
     StructuredAnnotations annotations = root.getStructuredAnnotations();
@@ -521,7 +525,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
     int annotationIndex = annotations.sizeOfXMLAnnotationList();
 
     OriginalMetadataAnnotation annotation = new OriginalMetadataAnnotation();
-    annotation.setID(OMEXMLMetadataTools.createLSID("Annotation", annotationIndex));
+    annotation.setID(omeMeta.getContext().getService(OMEXMLMetadataService.class).createLSID("Annotation", annotationIndex));
     annotation.setKey(key);
     annotation.setValue(value);
     annotations.addXMLAnnotation(annotation);

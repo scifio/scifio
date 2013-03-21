@@ -43,11 +43,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import ome.scifio.discovery.Discoverer;
-import ome.scifio.discovery.FormatDiscoverer;
-import ome.scifio.discovery.DiscoverableFormat;
 import ome.scifio.filters.ReaderFilter;
 import ome.scifio.io.RandomAccessInputStream;
+
+import org.scijava.Context;
+import org.scijava.plugin.PluginService;
+import org.scijava.plugin.SortablePlugin;
 
 /**
  * 
@@ -68,7 +69,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * 
  * @author Mark Hiner
  */
-public class SCIFIO {
+public class SCIFIO extends SortablePlugin {
 
   // TODO: consider using thread-safe ArrayList using java.util.Collections
 
@@ -79,8 +80,6 @@ public class SCIFIO {
    * input.
    */
   private final SCIFIOComponentFinder scf = new SCIFIOComponentFinder();
-
-  private final Discoverer<DiscoverableFormat, Format> discoverer = new FormatDiscoverer();
 
   /**
    * List of all formats known to this context.
@@ -142,9 +141,17 @@ public class SCIFIO {
    * to discover all available {@code Formats}.
    */
   public SCIFIO() throws FormatException {
-    this((Format[]) null);
+    this(null, null);
   }
-
+  
+  /**
+   * Constructs a new context, using <a href="http://sezpoz.java.net/">SezPoz</a>
+   * to discover all available {@code Formats}.
+   */
+  public SCIFIO(final Context context) throws FormatException {
+    this(context, (Format[]) null);
+  }
+  
   /**
    * Constructs a context using the provided list of Formats.
    * <p>
@@ -152,13 +159,14 @@ public class SCIFIO {
    * </p>
    * @param formats the list of {@code Formats} to use in this context.
    */
-  public SCIFIO(final Format... formats)
-      throws FormatException {
+  public SCIFIO(final Format... formats) throws FormatException {
+    this(null, formats);
+  }
+  
+  public SCIFIO(final Context context, final Format... formats) throws FormatException {
+    setContext(context == null ? new Context() : context);
     processFormats(formats);
   }
-
-  // TODO: consider having SCIFIO implement List<Format>... but potential
-  // problems.
 
   // -- Public Methods --
   
@@ -205,7 +213,7 @@ public class SCIFIO {
         .getTranslatorClassList()) {
       translatorMap.put(translatorClass, format);
     }
-    if (format.getContext() == null) format.setContext(this);
+    if (format.getContext() == null) format.setContext(getContext());
     return true;
   }
 
@@ -466,10 +474,10 @@ public class SCIFIO {
       
       // TODO should probably make this general wrt DatasetMetadata,
       // but that also requires having a general way to instantiate DatasetMetadata
-      final DefaultDatasetMetadata transMeta = new DefaultDatasetMetadata(this);
+      final DefaultDatasetMetadata transMeta = new DefaultDatasetMetadata(getContext());
       final Translator transToCore = sFormat.findSourceTranslator(transMeta);
       final Translator transFromCore = dFormat.findDestTranslator(transMeta);
-      transMeta.setSource(new RandomAccessInputStream(source));
+      transMeta.setSource(new RandomAccessInputStream(getContext(), source));
       transToCore.translate(sourceMeta, transMeta);
       transFromCore.translate(transMeta, destMeta);
     } else {
@@ -505,14 +513,13 @@ public class SCIFIO {
   private void processFormats(Format... formats)
       throws FormatException {
     if (formats == null) {
-      List<Format> tmpFormats = discoverer.discover();
+      List<Format> tmpFormats = 
+          getContext().getService(PluginService.class).createInstancesOfType(Format.class);
       formats = tmpFormats.toArray(new Format[tmpFormats.size()]);
     }
 
     for (final Format format : formats) {
-      format.setContext(this);
       addFormat(format);
     }
   }
-
 }

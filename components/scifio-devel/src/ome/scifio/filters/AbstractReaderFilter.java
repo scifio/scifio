@@ -37,9 +37,11 @@ package ome.scifio.filters;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-import net.java.sezpoz.Index;
-import net.java.sezpoz.IndexItem;
+import org.scijava.Context;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 
 import ome.scifio.DatasetMetadata;
 import ome.scifio.Format;
@@ -47,8 +49,6 @@ import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
-import ome.scifio.SCIFIO;
-import ome.scifio.discovery.DiscoverableMetadataWrapper;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -133,21 +133,30 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
     //TODO Maybe cache this result so we don't have to discover every time setparent is called
     // because it will be called frequently, given how MasterFilterHelper is implemented
     
+    List<PluginInfo<DatasetMetadataWrapper>> wrapperInfos =
+        getContext().getPluginIndex().getPlugins(DatasetMetadataWrapper.class);
+    
     // look for a compatible MetadataWrapper class
-    for (final IndexItem<DiscoverableMetadataWrapper, DatasetMetadataWrapper> item : 
-      Index.load(DiscoverableMetadataWrapper.class, DatasetMetadataWrapper.class)) {
-      try {
-        if(getClass().isAssignableFrom(item.annotation().filterType())) {
-          DatasetMetadataWrapper metaWrapper = item.instance();
-          metaWrapper.wrap(r.getDatasetMetadata());
-          wrappedMeta = metaWrapper;
-          return;
+    for (PluginInfo<DatasetMetadataWrapper> info : wrapperInfos) {
+      String wrapperClassName = info.get(DatasetMetadataWrapper.METADATA_KEY);
+      
+      if (wrapperClassName != null) {
+        Class<?> wrapperClass;
+        try {
+          wrapperClass = Class.forName(wrapperClassName);
+          if (wrapperClass.isAssignableFrom(getClass())) {
+            DatasetMetadataWrapper metaWrapper = 
+                getContext().getService(PluginService.class).createInstance(info);
+            metaWrapper.wrap(r.getDatasetMetadata());
+            wrappedMeta = metaWrapper;
+            return;
+          }
+        } catch (ClassNotFoundException e) {
+          LOGGER.error("Failed to find class: " + wrapperClassName);
         }
-      } catch (final InstantiationException e) {
-        // TODO
       }
     }
-    
+
     // No Filter-specific wrapper found
     wrappedMeta = r.getDatasetMetadata();
   }
@@ -396,6 +405,10 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
   
   // -- HasFormat API MEthods --
 
+  public void setFormat(Format format) {
+    getParent().setFormat(format);
+  }
+  
   /*
    * @see ome.scifio.HasFormat#getFormat()
    */
@@ -408,14 +421,14 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
   /*
    * @see ome.scifio.HasContext#getContext()
    */
-  public SCIFIO getContext() {
+  public Context getContext() {
     return getParent().getContext();
   }
   
   /*
    * @see ome.scifio.HasContext#setContext(ome.scifio.SCIFIO)
    */
-  public void setContext(SCIFIO ctx) {
+  public void setContext(Context ctx) {
     getParent().setContext(ctx);
   }
 }

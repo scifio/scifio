@@ -47,6 +47,7 @@ import java.util.List;
 
 import ome.scifio.io.Location;
 
+import org.scijava.Context;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -68,11 +69,13 @@ public class LocationTest {
   private boolean[] isDirectory;
   private boolean[] isHidden;
   private String[] mode;
+  private Context context;
 
   // -- Setup methods --
 
   @BeforeMethod
   public void setup() throws IOException {
+    context = new Context();
     File tmpDirectory = new File(System.getProperty("java.io.tmpdir"),
       System.currentTimeMillis() + "-location-test");
     boolean success = tmpDirectory.mkdirs();
@@ -89,12 +92,12 @@ public class LocationTest {
     validFile.deleteOnExit();
 
     files = new Location[] {
-      new Location(validFile.getAbsolutePath()),
-      new Location(invalidPath),
-      new Location(tmpDirectory),
-      new Location("http://loci.wisc.edu/software/bio-formats"),
-      new Location("http://www.openmicroscopy.org/software/bio-formats"),
-      new Location(hiddenFile)
+      new Location(context, validFile.getAbsolutePath()),
+      new Location(context, invalidPath),
+      new Location(context, tmpDirectory),
+      new Location(context, "http://loci.wisc.edu/software/bio-formats"),
+      new Location(context, "http://www.openmicroscopy.org/software/bio-formats"),
+      new Location(context, hiddenFile)
     };
 
     exists = new boolean[] {
@@ -199,7 +202,7 @@ public class LocationTest {
       for (String child : unhiddenList) {
         assertEquals(files[i].getName(), complete.contains(child), true);
         assertEquals(files[i].getName(),
-          new Location(files[i], child).isHidden(), false);
+          new Location(context, files[i], child).isHidden(), false);
       }
 
       for (int f=0; f<fileList.length; f++) {

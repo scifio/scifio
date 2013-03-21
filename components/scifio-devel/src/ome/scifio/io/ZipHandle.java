@@ -44,8 +44,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import ome.scifio.common.Constants;
-import ome.scifio.discovery.DiscoverableHandle;
 
+import org.scijava.Context;
+import org.scijava.plugin.Plugin;
 
 /**
  * StreamHandle implementation for reading from Zip-compressed files
@@ -59,7 +60,7 @@ import ome.scifio.discovery.DiscoverableHandle;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-@DiscoverableHandle
+@Plugin(type = IStreamAccess.class)
 public class ZipHandle extends StreamHandle {
 
   // -- Fields --
@@ -79,9 +80,13 @@ public class ZipHandle extends StreamHandle {
   public ZipHandle() {
     super();
   }
+  
+  public ZipHandle(Context context) {
+    super(context);
+  }
 
-  public ZipHandle(String file) throws IOException {
-    super();
+  public ZipHandle(Context context, String file) throws IOException {
+    super(context);
     setFile(file);
   }
 
@@ -140,7 +145,7 @@ public class ZipHandle extends StreamHandle {
     
     in = openStream(file);
     zip = new ZipInputStream(in);
-    this.entryName = entry.getName();
+    entryName = entry.getName();
     entryCount = 1;
 
     seekToEntry();
@@ -193,8 +198,8 @@ public class ZipHandle extends StreamHandle {
     zip = new ZipInputStream(in);
     if (entryName != null) seekToEntry();
     setStream(new DataInputStream(new BufferedInputStream(
-      zip, RandomAccessInputStream.MAX_OVERHEAD * 10)));
-    getStream().mark(RandomAccessInputStream.MAX_OVERHEAD * 10);
+      zip, RandomAccessInputStream.MAX_OVERHEAD)));
+    getStream().mark(RandomAccessInputStream.MAX_OVERHEAD);
   }
 
   // -- IRandomAccess API methods --
@@ -226,14 +231,14 @@ public class ZipHandle extends StreamHandle {
     resetStream();
   }
 
-  private static IRandomAccess getHandle(String file) throws IOException {
-    return Location.getHandle(file, false, false);
+  private IRandomAccess getHandle(String file) throws IOException {
+    return getContext().getService(LocationService.class).getHandle(file, false, false);
   }
 
-  private static RandomAccessInputStream openStream(String file)
+  private RandomAccessInputStream openStream(String file)
     throws IOException
   {
-    return new RandomAccessInputStream(getHandle(file), file);
+    return new RandomAccessInputStream(getContext(), getHandle(file), file);
   }
 
 }

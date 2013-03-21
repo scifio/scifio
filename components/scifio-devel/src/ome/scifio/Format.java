@@ -37,6 +37,9 @@ package ome.scifio;
 
 import java.util.List;
 
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+
 /**
  * Interface for all SCIFIO formats.
  * <p>
@@ -57,14 +60,10 @@ import java.util.List;
  * @author Mark Hiner
  * @see ome.scifio.SCIFIO#getFormatFromClass(Class);
  */
-public interface Format
-  extends HasContext, Comparable<Format> {
-
+public interface Format extends ScifioPlugin, Contextual, Prioritized {
+  
   // -- Format API methods --
 
-  /** Returns the priority of this format.  Used for comparison to other formats. */
-  Double getPriority();
-  
   /** Gets the name of this file format. */
   String getFormatName();
 
