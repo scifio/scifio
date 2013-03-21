@@ -41,6 +41,7 @@ import java.util.List;
 
 import net.imglib2.meta.Axes;
 import ome.scifio.MetadataLevel;
+import ome.scifio.MetadataOptions;
 import ome.scifio.ics.ICSFormat;
 import ome.scifio.util.FormatTools;
 import ome.xml.meta.MetadataRetrieve;
@@ -69,7 +70,9 @@ public class OMEICSTranslator extends FromOMETranslator<ICSFormat.Metadata> {
     
     dest.putDate(retrieve.getImageAcquisitionDate(0).getValue());
     
-    if (source.getMetadataOptions().getMetadataLevel() != MetadataLevel.MINIMUM) {
+    MetadataOptions options = source.getMetadataOptions();
+    
+    if (options != null && options.getMetadataLevel() != MetadataLevel.MINIMUM) {
       dest.putDescription(retrieve.getImageDescription(0));
       dest.putMicroscopeModel(retrieve.getMicroscopeModel(0));
       dest.putMicroscopeManufacturer(retrieve.getMicroscopeManufacturer(0));
