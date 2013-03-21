@@ -37,7 +37,6 @@ package loci.formats;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -978,14 +977,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
     setSeries(oldSeries);
     return h;
   }
-
-  /* @see IFormatReader#getCoreMetadata() */
-  @Deprecated
-  @Override
-  public CoreMetadata[] getCoreMetadata() {
-    //TODO this isn't implemented yet..
-    return AdapterTools.getAdapter(CoreMetadataAdapter.class).getLegacy(reader.getDatasetMetadata());
-  }
   
   /*
    * @see loci.formats.FormatReader#getCoreMetadataList()
@@ -993,7 +984,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   @Deprecated
   @Override
   public List<CoreMetadata> getCoreMetadataList() {
-    return Arrays.asList(getCoreMetadata());
+    return AdapterTools.getAdapter(CoreMetadataAdapter.class).getLegacy(reader.getDatasetMetadata());
   }
   /* @see IFormatReader#setMetadataFiltered(boolean) */
   @Deprecated
@@ -1100,8 +1091,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
         throw new FormatException(e.getCause());
       }
       reader.setMetadata(meta);
-      reader.setSource(id);
-
       
       // NB: this has to happen after init file, instead of within init file
       // to allow the file to be parsed

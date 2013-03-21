@@ -38,6 +38,7 @@ package loci.formats;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import net.imglib2.meta.Axes;
 
@@ -46,6 +47,7 @@ import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import loci.common.adapter.RandomAccessInputStreamAdapter;
 import loci.legacy.adapter.Wrapper;
 import loci.legacy.adapter.AdapterTools;
 import ome.scifio.BufferedImagePlane;
@@ -90,7 +92,6 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   
   // -- Fields --
   
-  private RandomAccessInputStream stream;
   private final IFormatReader reader;
 
   // -- Constructor --
@@ -98,12 +99,6 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   public SCIFIOReaderWrapper(Context context, IFormatReader reader) {
     setContext(context);
     this.reader = reader;
-    
-    try {
-      this.stream = new RandomAccessInputStream(getContext(), reader.getCurrentFile());
-    } catch (IOException e) {
-      LOGGER.debug("Failed to create a RAIS for file: " + reader.getCurrentFile(), e);
-    }
   }
   
   // -- Wrapper API Methods --
@@ -234,6 +229,28 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   }
 
   public RandomAccessInputStream getStream() {
+    
+    RandomAccessInputStream stream = null;
+    
+    try {
+      Field in = reader.getClass().getDeclaredField("in");
+      in.setAccessible(true);
+      loci.common.RandomAccessInputStream legacyStream = 
+          (loci.common.RandomAccessInputStream) in.get(reader);
+      
+      stream = AdapterTools.getAdapter(RandomAccessInputStreamAdapter.class).
+              getModern(legacyStream);
+      
+    } catch (SecurityException e) {
+      LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
+    } catch (NoSuchFieldException e) {
+      LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
+    } catch (IllegalArgumentException e) {
+      LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
+    } catch (IllegalAccessException e) {
+      LOGGER.debug("Failed to create RandomAccessIputStream for id: " + getCurrentFile(), e);
+    }
+
     return stream;
   }
 
@@ -266,12 +283,20 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
 
   public DatasetMetadata getDatasetMetadata() {
     DatasetMetadata cMeta = AdapterTools.getAdapter(CoreMetadataAdapter.class).
-        getModern(reader.getCoreMetadata());
+        getModern(reader.getCoreMetadataList());
     
+    RandomAccessInputStream metaStream = cMeta.getSource();
+    
+    if (metaStream == null || metaStream.getFileName() == null
+        || !metaStream.getFileName().equals(getCurrentFile())) {
       cMeta.setSource(getStream());
-    
-      return cMeta;
+      
+      if (cMeta.getDatasetName() == null)
+        cMeta.setDatasetName(reader.getCurrentFile());
     }
+
+    return cMeta;
+  }
 
   public void setNormalized(boolean normalize) {
     reader.setNormalized(normalize);
@@ -287,7 +312,6 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
 
   public void setSource(File file) throws IOException {
     try {
-      this.stream = new RandomAccessInputStream(getContext(), file.getAbsolutePath());
       reader.setId(file.getAbsolutePath());
     }
     catch (FormatException e) {
@@ -297,7 +321,6 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
 
   public void setSource(String fileName) throws IOException {
     try {
-      this.stream = new RandomAccessInputStream(getContext(), fileName);
       reader.setId(fileName);
     }
     catch (FormatException e) {
@@ -307,7 +330,6 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
 
   public void setSource(RandomAccessInputStream stream) throws IOException {
     try {
-      this.stream = stream;
       reader.setId(stream.getFileName());
     }
     catch (FormatException e) {
@@ -320,8 +342,7 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   }
 
   public void close() throws IOException {
-    reader.close();
-    stream.close();
+    close(false);
   }
 
   public Plane readPlane(RandomAccessInputStream s, int imageIndex, int x,
@@ -349,12 +370,10 @@ public class SCIFIOReaderWrapper extends SortablePlugin implements ome.scifio.Re
   }
 
   public Plane createPlane(int xOffset, int yOffset, int xLength, int yLength) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException("ReaderWrapper has no associated Plane type");
   }
 
   public <P extends Plane> P castToTypedPlane(Plane plane) {
-    // TODO Auto-generated method stub
-    return null;
+    throw new UnsupportedOperationException("ReaderWrapper has no associated Plane type");
   }
 }

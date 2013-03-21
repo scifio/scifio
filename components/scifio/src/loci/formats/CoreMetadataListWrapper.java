@@ -35,6 +35,10 @@
  */
 package loci.formats;
 
+import java.util.List;
+
+import ome.scifio.DefaultDatasetMetadata;
+
 import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
 
@@ -47,27 +51,27 @@ import loci.legacy.adapter.Wrapper;
  * @author Mark Hiner
  *
  */
-public class CoreMetadataArrayWrapper extends ome.scifio.DefaultDatasetMetadata
-  implements Wrapper<CoreMetadata[]>
+public class CoreMetadataListWrapper extends DefaultDatasetMetadata
+  implements ome.scifio.DatasetMetadata, Wrapper<List<CoreMetadata>>
 {
 
   // -- Fields --
   
-  private CoreMetadata[] cMeta;
+  private List<CoreMetadata> cMeta;
   
   // -- Constructor --
   
-  public CoreMetadataArrayWrapper(CoreMetadata[] core) {
+  public CoreMetadataListWrapper(List<CoreMetadata> core) {
     cMeta = core;
     
-    for(int i = 0; i < cMeta.length; i++) {
-      add(AdapterTools.getAdapter(CoreImageMetadataAdapter.class).getModern(cMeta[i]));
+    for(int i = 0; i < cMeta.size(); i++) {
+      add(AdapterTools.getAdapter(CoreImageMetadataAdapter.class).getModern(cMeta.get(i)));
     }
   }
   
   // -- Wrapper API Methods --
   
-  public CoreMetadata[] unwrap() {
+  public List<CoreMetadata> unwrap() {
     return cMeta;
   }
 }
