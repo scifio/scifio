@@ -43,6 +43,7 @@ import ome.scifio.services.TranslatorService;
 
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
+import org.scijava.service.Service;
 
 /**
  * @author Mark Hiner
@@ -58,7 +59,6 @@ public class SCIFIO extends AbstractContextual {
   private LocationService locationService = null;
   private FilePatternService filePatternService= null;
 
-  
   // -- Constructors --
   
   /** Creates a new SCIFIO application context with all available services. */
@@ -78,33 +78,39 @@ public class SCIFIO extends AbstractContextual {
   
   public SCIFIO(Context context) {
     setContext(context);
-    
-    initializeService = context.getService(InitializeService.class);
-    formatService = context.getService(FormatService.class);
-    translatorService = context.getService(TranslatorService.class);
-    locationService = context.getService(LocationService.class);
-    filePatternService = context.getService(FilePatternService.class);
   }
   
   // -- Service Accessors --
   
   public InitializeService initializer() {
+  	initializeService = nullCheck(initializeService, InitializeService.class);
     return initializeService;
   }
   
   public FormatService formats() {
+  	formatService = nullCheck(formatService, FormatService.class);
     return formatService;
   }
   
   public TranslatorService translators() {
+  	translatorService = nullCheck(translatorService, TranslatorService.class);
     return translatorService;
   }
   
   public LocationService locations() {
+  	locationService = nullCheck(locationService, LocationService.class);
     return locationService;
   }
   
   public FilePatternService patterns() {
+  	filePatternService = nullCheck(filePatternService, FilePatternService.class);
     return filePatternService;
+  }
+  
+  // -- Helper Methods --
+  
+  private <S extends Service> S nullCheck(S service, Class<S> serviceClass) {
+  	if (service == null) service = getContext().getService(serviceClass);
+  	return service;
   }
 }
