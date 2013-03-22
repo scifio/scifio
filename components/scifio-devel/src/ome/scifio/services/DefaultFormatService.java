@@ -33,7 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package ome.scifio;
+package ome.scifio.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +43,13 @@ import java.util.PriorityQueue;
 import java.util.TreeSet;
 
 
-import ome.scifio.services.TypedService;
+import ome.scifio.Checker;
+import ome.scifio.Format;
+import ome.scifio.FormatException;
+import ome.scifio.Metadata;
+import ome.scifio.Parser;
+import ome.scifio.Reader;
+import ome.scifio.Writer;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

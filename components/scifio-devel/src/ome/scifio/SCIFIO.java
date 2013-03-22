@@ -36,6 +36,10 @@
 package ome.scifio;
 
 import ome.scifio.io.LocationService;
+import ome.scifio.services.FilePatternService;
+import ome.scifio.services.FormatService;
+import ome.scifio.services.InitializeService;
+import ome.scifio.services.TranslatorService;
 
 import org.scijava.AbstractContextual;
 import org.scijava.Context;

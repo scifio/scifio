@@ -33,11 +33,17 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package ome.scifio;
+package ome.scifio.services;
 
 import java.util.List;
 
-import ome.scifio.services.TypedService;
+import ome.scifio.Checker;
+import ome.scifio.Format;
+import ome.scifio.FormatException;
+import ome.scifio.Metadata;
+import ome.scifio.Parser;
+import ome.scifio.Reader;
+import ome.scifio.Writer;
 
 import org.scijava.Priority;
 import org.scijava.service.Service;

@@ -37,8 +37,8 @@
 package ome.scifio.io.utests;
 
 import static org.testng.AssertJUnit.assertNull;
-import ome.scifio.FormatService;
 import ome.scifio.SCIFIO;
+import ome.scifio.services.FormatService;
 import ome.xml.services.OMEXMLService;
 
 import org.testng.annotations.BeforeMethod;

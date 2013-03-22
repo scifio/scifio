@@ -33,7 +33,10 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package ome.scifio;
+package ome.scifio.services;
+
+import ome.scifio.Metadata;
+import ome.scifio.Translator;
 
 import org.scijava.service.Service;
 

@@ -34,7 +34,7 @@
  * #L%
  */
 
-package ome.scifio;
+package ome.scifio.services;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -43,6 +43,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import ome.scifio.AxisGuesser;
+import ome.scifio.FilePattern;
+import ome.scifio.NumberFilter;
 import ome.scifio.common.DataTools;
 import ome.scifio.io.Location;
 

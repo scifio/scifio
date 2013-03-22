@@ -47,12 +47,12 @@ import org.slf4j.LoggerFactory;
 
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.FormatException;
-import ome.scifio.FormatService;
 import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
 import ome.scifio.Reader;
 import ome.scifio.common.DateTools;
 import ome.scifio.io.Location;
+import ome.scifio.services.FormatService;
 import ome.scifio.services.ServiceException;
 import ome.scifio.util.FormatTools;
 import ome.scifio.util.SCIFIOMetadataTools;

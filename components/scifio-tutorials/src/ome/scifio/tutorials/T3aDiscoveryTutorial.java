@@ -18,9 +18,9 @@ package ome.scifio.tutorials;
 
 import ome.scifio.Format;
 import ome.scifio.FormatException;
-import ome.scifio.FormatService;
 import ome.scifio.SCIFIO;
 import ome.scifio.formats.FakeFormat;
+import ome.scifio.services.FormatService;
 
 import org.scijava.Context;
 import org.scijava.plugin.PluginService;

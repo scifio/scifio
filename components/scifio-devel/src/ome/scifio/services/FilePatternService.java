@@ -34,7 +34,7 @@
  * #L%
  */
 
-package ome.scifio;
+package ome.scifio.services;
 
 import java.io.File;
 

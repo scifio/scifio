@@ -33,12 +33,13 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package ome.scifio;
+package ome.scifio.services;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import ome.scifio.services.PluginAttributeService;
+import ome.scifio.Metadata;
+import ome.scifio.Translator;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
