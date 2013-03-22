@@ -35,7 +35,7 @@
  */
 package ome.xml.translation;
 
-import ome.scifio.apng.APNGFormat;
+import ome.scifio.formats.APNGFormat;
 import ome.xml.meta.OMEMetadata;
 
 import org.scijava.Priority;

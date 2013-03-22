@@ -34,7 +34,7 @@
  * #L%
  */
 
-package ome.scifio.ics;
+package ome.scifio.formats;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -106,7 +106,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   public static class Metadata extends AbstractMetadata {
     
     // -- Static Constants
-    public static final String CNAME = "ome.scifio.ics.ICSFormat$Metadata";
+    public static final String CNAME = "ome.scifio.formats.ICSFormat$Metadata";
   
     // -- Fields -- 
   

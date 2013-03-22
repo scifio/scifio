@@ -42,7 +42,7 @@ import java.util.List;
 import net.imglib2.meta.Axes;
 import ome.scifio.MetadataLevel;
 import ome.scifio.MetadataOptions;
-import ome.scifio.ics.ICSFormat;
+import ome.scifio.formats.ICSFormat;
 import ome.scifio.util.FormatTools;
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.OMEMetadata;

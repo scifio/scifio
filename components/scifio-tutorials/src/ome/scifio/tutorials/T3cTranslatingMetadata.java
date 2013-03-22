@@ -31,7 +31,7 @@ import ome.scifio.FormatException;
 import ome.scifio.Metadata;
 import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
-import ome.scifio.fake.FakeFormat;
+import ome.scifio.formats.FakeFormat;
 
 /**
  * Tutorial demonstrating translation between Metadata types.

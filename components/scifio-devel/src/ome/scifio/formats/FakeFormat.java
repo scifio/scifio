@@ -33,7 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package ome.scifio.fake;
+package ome.scifio.formats;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -172,7 +172,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     
     // -- Static Constants --
     
-    public static final String CNAME = "ome.scifio.fake.FakeFormat$Metadata";
+    public static final String CNAME = "ome.scifio.formats.FakeFormat$Metadata";
     
     // -- Fields --
     

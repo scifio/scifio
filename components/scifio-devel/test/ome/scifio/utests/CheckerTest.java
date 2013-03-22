@@ -46,7 +46,7 @@ import ome.scifio.Checker;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
-import ome.scifio.fake.FakeFormat;
+import ome.scifio.formats.FakeFormat;
 import ome.scifio.io.RandomAccessInputStream;
 
 import org.scijava.Context;
@@ -160,7 +160,7 @@ public class CheckerTest {
    * @author Mark Hiner
    *
    */
-  private static class FakeChecker extends ome.scifio.fake.FakeFormat.Checker {
+  private static class FakeChecker extends ome.scifio.formats.FakeFormat.Checker {
     
     // -- FakeChecker Methods --
     

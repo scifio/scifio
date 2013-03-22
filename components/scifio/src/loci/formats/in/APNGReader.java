@@ -38,7 +38,7 @@ package loci.formats.in;
 
 import java.io.IOException;
 
-import ome.scifio.apng.APNGFormat;
+import ome.scifio.formats.APNGFormat;
 
 import loci.formats.FormatException;
 import loci.formats.MetadataTools;

@@ -41,7 +41,7 @@ import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 import ome.scifio.FormatException;
-import ome.scifio.apng.APNGFormat;
+import ome.scifio.formats.APNGFormat;
 import ome.scifio.util.FormatTools;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadataService;

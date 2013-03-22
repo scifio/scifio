@@ -49,7 +49,7 @@ import net.imglib2.meta.Axes;
 
 import ome.scifio.FormatException;
 import ome.scifio.MetadataLevel;
-import ome.scifio.ics.ICSFormat;
+import ome.scifio.formats.ICSFormat;
 import ome.xml.meta.FilterMetadata;
 import ome.xml.meta.MetadataStore;
 import ome.xml.meta.OMEMetadata;

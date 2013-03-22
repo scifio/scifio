@@ -21,7 +21,7 @@ import java.io.IOException;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
-import ome.scifio.fake.FakeFormat;
+import ome.scifio.formats.FakeFormat;
 
 /**
  * Demonstrates accessing type-specific SCIFIO components.

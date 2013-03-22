@@ -38,7 +38,7 @@ package loci.formats.in;
 
 import java.io.IOException;
 
-import ome.scifio.fake.FakeFormat;
+import ome.scifio.formats.FakeFormat;
 
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
@@ -71,18 +71,18 @@ public class FakeReader extends SCIFIOFormatReader {
 
   // -- Constants --
 
-  public static final int BOX_SIZE = ome.scifio.fake.FakeFormat.BOX_SIZE;
+  public static final int BOX_SIZE = ome.scifio.formats.FakeFormat.BOX_SIZE;
 
-  public static final int DEFAULT_SIZE_X = ome.scifio.fake.FakeFormat.DEFAULT_SIZE_X;
-  public static final int DEFAULT_SIZE_Y = ome.scifio.fake.FakeFormat.DEFAULT_SIZE_Y;
-  public static final int DEFAULT_SIZE_Z = ome.scifio.fake.FakeFormat.DEFAULT_SIZE_Z;
-  public static final int DEFAULT_SIZE_C = ome.scifio.fake.FakeFormat.DEFAULT_SIZE_C;
-  public static final int DEFAULT_SIZE_T = ome.scifio.fake.FakeFormat.DEFAULT_SIZE_T;
-  public static final int DEFAULT_PIXEL_TYPE = FormatTools.pixelTypeFromString(ome.scifio.fake.FakeFormat.DEFAULT_PIXEL_TYPE);
+  public static final int DEFAULT_SIZE_X = ome.scifio.formats.FakeFormat.DEFAULT_SIZE_X;
+  public static final int DEFAULT_SIZE_Y = ome.scifio.formats.FakeFormat.DEFAULT_SIZE_Y;
+  public static final int DEFAULT_SIZE_Z = ome.scifio.formats.FakeFormat.DEFAULT_SIZE_Z;
+  public static final int DEFAULT_SIZE_C = ome.scifio.formats.FakeFormat.DEFAULT_SIZE_C;
+  public static final int DEFAULT_SIZE_T = ome.scifio.formats.FakeFormat.DEFAULT_SIZE_T;
+  public static final int DEFAULT_PIXEL_TYPE = FormatTools.pixelTypeFromString(ome.scifio.formats.FakeFormat.DEFAULT_PIXEL_TYPE);
   public static final int DEFAULT_RGB_CHANNEL_COUNT = 
-      ome.scifio.fake.FakeFormat.DEFAULT_RGB_CHANNEL_COUNT;
+      ome.scifio.formats.FakeFormat.DEFAULT_RGB_CHANNEL_COUNT;
   public static final String DEFAULT_DIMENSION_ORDER = 
-      ome.scifio.fake.FakeFormat.DEFAULT_DIMENSION_ORDER;
+      ome.scifio.formats.FakeFormat.DEFAULT_DIMENSION_ORDER;
 
   // -- Fields --
 

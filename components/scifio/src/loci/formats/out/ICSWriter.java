@@ -38,7 +38,7 @@ package loci.formats.out;
 
 import java.io.IOException;
 
-import ome.scifio.ics.ICSFormat;
+import ome.scifio.formats.ICSFormat;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;

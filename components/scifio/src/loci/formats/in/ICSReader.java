@@ -45,7 +45,7 @@ import loci.legacy.context.LegacyContext;
 
 import ome.scifio.SCIFIO;
 import ome.scifio.Translator;
-import ome.scifio.ics.ICSFormat;
+import ome.scifio.formats.ICSFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.meta.OMEXMLMetadataImpl;

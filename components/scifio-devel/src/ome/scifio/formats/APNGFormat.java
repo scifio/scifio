@@ -34,7 +34,7 @@
  * #L%
  */
 
-package ome.scifio.apng;
+package ome.scifio.formats;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
@@ -61,13 +61,13 @@ import ome.scifio.AbstractParser;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
 import ome.scifio.BufferedImagePlane;
-import ome.scifio.ImageMetadata;
-import ome.scifio.Translator;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.Field;
 import ome.scifio.FieldPrinter;
 import ome.scifio.FormatException;
+import ome.scifio.ImageMetadata;
 import ome.scifio.Plane;
+import ome.scifio.Translator;
 import ome.scifio.common.DataTools;
 import ome.scifio.gui.AWTImageTools;
 import ome.scifio.gui.BufferedImageReader;
@@ -77,8 +77,8 @@ import ome.scifio.io.StreamTools;
 import ome.scifio.util.FormatTools;
 
 import org.scijava.Priority;
-import org.scijava.plugin.Plugin;
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 
 @Plugin(type = APNGFormat.class)
 public class APNGFormat
@@ -119,7 +119,7 @@ public class APNGFormat
     // -- Constants --
     
     public static final String DEFAULT_KEY = "separate default";
-    public static final String CNAME = "ome.scifio.apng.APNGFormat$Metadata";
+    public static final String CNAME = "ome.scifio.formats.APNGFormat$Metadata";
   
     // -- Fields --
   
