@@ -36,7 +36,6 @@
 
 package ome.scifio;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.List;
@@ -46,11 +45,21 @@ import net.imglib2.meta.AxisType;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
- * Interface for all SciFIO Metadata objects.
+ * Interface for all SCIFIO Metadata objects.
  * Based on the format, a Metadata object can
  * be a single N-dimensional collection of bytes
  * (an image) or a list of multiple images.
+ * <p>
+ * NB: When defining a new Metadata implementation, you will likely want to
+ * create a corresponding {@link ome.scifio.Format} implementation. Also,
+ * at a minimum, a {@link ome.scifio.Translator} should be implemented
+ * that can convert between {@link ome.scifio.Metadata} and the new
+ * Metadata.
+ * </p>
  *
+ * @see ome.scifio.Translator
+ * @see ome.scifio.AbstractFormat
+ * 
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
@@ -59,12 +68,17 @@ public interface Metadata extends Serializable, HasFormat {
   
   // -- Static Constents --
   
+	/**
+	 * String representation of this classes package-qualified name.
+	 * <p>
+	 * Necessary for dynamic use annotations. All Metadata implementations
+	 * should override this constant.
+	 * </p>
+	 */
   public static final String CNAME = "ome.scifio.Metadata";
   
   // -- Metadata API --
   
-  String getFormatName();
-
   /**
    * Resets this Metadata object's values as though it had just been
    * instantiated.
@@ -76,21 +90,19 @@ public interface Metadata extends Serializable, HasFormat {
    * Note that calling this method does not affect the structure
    * of this Metadata object.
    * 
-   * @param in
+   * @param in - Input source for this Metadata
    */
   void setSource(RandomAccessInputStream in);
   
   /**
    * Closes the RandomAccessInputStream associated with this Metadata
-   * @throws IOException 
-   * 
    */
   void close();
 
   /**
    * Returns the source used to generate this Metadata object.
    * 
-   * @return
+   * @return - The associated RandomAccessInputStream
    */
   RandomAccessInputStream getSource();
   
@@ -98,7 +110,7 @@ public interface Metadata extends Serializable, HasFormat {
    * Returns whether or not filterMetadata was set when parsing this
    * Metadata object.
    * 
-   * @return
+   * @return True if Metadata was filtered when parsing
    */
   boolean isFiltered();
   
@@ -106,17 +118,17 @@ public interface Metadata extends Serializable, HasFormat {
    * Returns the MetadataOptions object that was used to parse this
    * Metadata.
    * 
-   * @return
+   * @return The MetadataOptions used to parse this Metadata
    */
   MetadataOptions getMetadataOptions();
   
   /**
-   * Generates general image metadata structures
+   * Generates format-agnostic image metadata structures
    * based on this instance's format-specific metadata.
    */
   void populateImageMetadata();
   
-  // -- DatasetMetadata API Methods --
+  // -- Format-agnostic Metadata API Methods --
   
   /** Returns a String representation of this Dataset's name */
   String getDatasetName();
@@ -136,7 +148,7 @@ public interface Metadata extends Serializable, HasFormat {
   /** Returns the collection of metadata for the specified image. */
   Hashtable<String, Object> getImageMetadata(int imageIndex);
   
-  /** Returns the ImageMetadata at the given index. */
+  /** Returns the ImageMetadata at the specified image within this dataset. */
   ImageMetadata get(int imageIndex);
   
   /** Returns the list of ImageMetadata associated with this dataset. */
@@ -149,7 +161,7 @@ public interface Metadata extends Serializable, HasFormat {
   int getPlaneCount(int imageIndex);
 
   /** 
-   * Returns true if the spcified image stores its channelsRGBRGBRGB...;
+   * Returns true if the spcified image stores its channels RGBRGBRGB... and
    * false if channels are stored RRR...GGG...BBB...
    */
   boolean isInterleaved(int imageIndex);
@@ -214,7 +226,7 @@ public interface Metadata extends Serializable, HasFormat {
    * specified image.
    * 
    * @param imageIndex - index for multi-image files
-   * @return The axis/plane count
+   * @return The axis count
    */
   int getAxisCount(int imageIndex);
 
@@ -242,16 +254,17 @@ public interface Metadata extends Serializable, HasFormat {
    * 
    * @param imageIndex - index for multi-image files
    * @param t - desired axis type
-   * @return
+   * @return Length of axis t
    */
   int getAxisLength(int imageIndex, AxisType t);
 
   /**
    * Returns the array index for the specified AxisType. This index
    * can be used in other Axes methods for looking up lengths, etc...
-   * </br></br>
+   * <p>
    * This method can also be used as an existence check for the
    * target AxisType.
+   * </p>
    * 
    * @param imageIndex - index for multi-image files
    * @param type - axis type to look up
@@ -263,9 +276,10 @@ public interface Metadata extends Serializable, HasFormat {
    * Returns an array of the types for axes associated with
    * the specified image index. Order is consistent with the
    * axis length (int) array returned by 
-   * {@link DatasetMetadata#getAxesLengths(int)}.
-   * </br></br>
+   * {@link #getAxesLengths(int)}.
+   * <p>
    * AxisType order is sorted and represents order within the image.
+   * </p>
    * 
    * @param imageIndex - index for multi-image sources
    * @return An array of AxisTypes in the order they appear.
@@ -275,12 +289,13 @@ public interface Metadata extends Serializable, HasFormat {
   /**
    * Returns an array of the lengths for axes associated with
    * the specified image index.
-   * 
+   * <p>
    * Ordering is consistent with the 
-   * AxisType array returned by {@link DatasetMetadata#getAxes(int)}.
+   * AxisType array returned by {@link #getAxes(int)}.
+   * </p>
    * 
-   * @param imageIndex
-   * @return
+   * @param imageIndex - index for multi-image sources
+   * @return Sorted axis length array
    */
   int[] getAxesLengths(int imageIndex);
 
@@ -289,8 +304,8 @@ public interface Metadata extends Serializable, HasFormat {
    * and creates corresponding length = 0 entry in the axis lengths
    * array.
    * 
-   * @param imageIndex
-   * @param type
+   * @param imageIndex - index for multi-image sources
+   * @param type - Type of the new axis
    */
   void addAxis(int imageIndex, AxisType type);
 
@@ -299,38 +314,48 @@ public interface Metadata extends Serializable, HasFormat {
    * and creates a corresponding entry with the specified value in
    * axis lengths.
    * 
-   * @param imageIndex
-   * @param type
-   * @param value
+   * @param imageIndex - index for multi-image sources
+   * @param type - Type of the new axis
+   * @param value - Value of the new axis
    */
   void addAxis(int imageIndex, AxisType type, int value);
 
   /**
    * Returns true if we are confident that the
    * dimension order is correct for the specified image.
+   * 
+   * @param imageIndex - index for multi-image sources
    */
   boolean isOrderCertain(int imageIndex);
 
   /** 
    * Returns true if the specified image is a lower-resolution copy of
    * another image.
+   * 
+   * @param imageIndex - index for multi-image sources
    */
   boolean isThumbnailImage(int imageIndex);
 
   /**
    * Returns true if we are confident that all of the metadata stored
    * within the specified image has been parsed.
+   * 
+   * @param imageIndex - index for multi-image sources
    */
   boolean isMetadataComplete(int imageIndex);
+  
+  /**
+   * Sets the name for this dataset.
+   * 
+   * @param name - the dataset name
+   */
+  void setDatasetName(String name);
 
   /** Convenience method for storing Dataset-level metadata. */
   void putDatasetMeta(String key, Object value);
 
   /** Convenience method for storing metadata at the specified image-level. */
   void putImageMeta(int imageIndex, String key, Object value);
-
-  /** Sets the name for the current dataset */
-  void setDatasetName(String name);
 
   /** Sets width (in pixels) of thumbnail planes for the specified image. */
   void setThumbSizeX(int imageIndex, int thumbX);

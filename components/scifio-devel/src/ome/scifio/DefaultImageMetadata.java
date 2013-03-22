@@ -37,10 +37,13 @@
 package ome.scifio;
 
 /**
- * Default implementation of {@link ImageMetadata}.
+ * Default implementation of {@link ImageMetadata}. No added functionality
+ * over {@link ome.scifo.AbstractImageMetadata}.
+ * 
+ * @see ome.scifio.ImageMetadata
+ * @see ome.scifio.AbstractImageMetadata
  * 
  * @author Mark Hiner
- *
  */
 public class DefaultImageMetadata extends AbstractImageMetadata {
   
@@ -56,6 +59,9 @@ public class DefaultImageMetadata extends AbstractImageMetadata {
 
   // -- ImageMetadata API Methods --
   
+  /*
+   * @see ome.scifio.ImageMetadata#copy()
+   */
   public ImageMetadata copy() {
     return new DefaultImageMetadata(this);
   }

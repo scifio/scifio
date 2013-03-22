@@ -45,6 +45,8 @@ package ome.scifio;
  * generics are used to encode this relationship between components.
  * </p>
  * 
+ * @see ome.scifio.Format
+ * 
  * @author Mark Hiner
  *
  * @param <M> The {@link ome.scifio.Metadata} type of this {@code Format}.
@@ -55,8 +57,9 @@ package ome.scifio;
  */
 public interface TypedFormat<M extends TypedMetadata, C extends Checker,
   P extends TypedParser<M>, R extends TypedReader<M, ? extends DataPlane<?>>,
-  W extends TypedWriter<M>> extends Format {
-
+  W extends TypedWriter<M>>
+  extends Format
+{
   /*
    * @see ome.scifio.Format#createMetadata()
    */

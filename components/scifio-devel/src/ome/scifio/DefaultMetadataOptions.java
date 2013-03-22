@@ -34,8 +34,6 @@
  * #L%
  */
 
-
-
 package ome.scifio;
 
 /**

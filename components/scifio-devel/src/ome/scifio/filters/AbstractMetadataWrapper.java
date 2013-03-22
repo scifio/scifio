@@ -330,10 +330,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
   
   // -- Metadata API Methods --
   
-  public String getFormatName() {
-    return meta.getFormatName();
-  }
-  
   public void reset() {
     super.reset(getClass());
     meta.reset(meta.getClass());

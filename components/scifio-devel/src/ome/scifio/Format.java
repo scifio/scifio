@@ -35,19 +35,18 @@
  */
 package ome.scifio;
 
-import org.scijava.Contextual;
-
 /**
  * Interface for all SCIFIO formats.
  * <p>
  * The {@code Format} is a bag for all other SCIFIO components associated
  * with image IO in a given image format. It acts as a bridge and a black box
- * for allowing components to access each other.
+ * for creating components, and facilitates component intercommunication.
  * </p>
  * <p>
- * NB: {@code Formats} are singletons within a given {@link ome.scifio.SCIFIO}
- * context. They can be automatically discovered via SezPoz when constructing a
- * new context, and thus it is rare that they should be manually constructed.
+ * {@code Formats} are typically accessed through the 
+ * {@link ome.scifio.services.FormatService}, which maintains a list of
+ * singleton {@code Formats} and has many convneience methods relating
+ * to their use.
  * </p>
  *
  * <dl><dt><b>Source code:</b></dt>
@@ -55,116 +54,95 @@ import org.scijava.Contextual;
  * <a href="">Gitweb</a></dd></dl>
  * 
  * @author Mark Hiner
- * @see ome.scifio.SCIFIO#getFormatFromClass(Class);
+ * 
+ * @see ome.scifio.SCIFIO
+ * @see ome.scifio.services.FormatService
  */
 public interface Format extends ScifioPlugin, HasSCIFIO {
   
   // -- Format API methods --
 
-  /** Gets the name of this file format. */
+  /** 
+   * Gets the name of this file format.
+   * 
+   * @return a String representation of this Format's name
+   */
   String getFormatName();
 
-  /** Gets the default file suffixes for this file format. */
-  String[] getSuffixes();
-  
   /**
-   * Casts the provided {@link ome.scifio.Metadata} instance to the generic
-   * type of this method.
-   * <p>
-   * NB: This method will fail, throwing an exception, if provided with a
-   * {@code Metadata} implementation not associated with this {@code Format}.
-   * </p>
-   * <p>
-   * This method is intended to be used internally or by advanced developers
-   * within intermediate layers of SCIFIO code, where generic parameters may exist
-   * but types aren't guaranteed (e.g. because {@link ome.scifio.HasFormat#getFormat()}
-   * always returns an unparameterized {@link ome.scifio.Format}).
-   * </p>
-   * <p>
-   * This method should be invoked by providing a generic parameter, e.g.:
-   * </p>
-   * <p>
-   * {@code format.<M>castToTypedMetadata(meta)}.
-   * </p>
-   * <p>
-   * where the generic parameter will resolve to the Format's Metadata type. Any
-   * other use is unsupported and will throw an exception.
-   * </p>
+   * Gets the default file suffixes for this file format.
    * 
-   * @param M the Metadata type to cast. Should match this Format's Metadata
-   *        type.
-   * @param meta an unknown Metadata object that will be cast to a more
-   *        specific type
-   * @throws IllegalArgumentException if meta is not assignable from this
-   *         Format's Metadata type.
-   * @return The meta parameter, cast as an M.
-   * @see {@link ome.scifio.Format#createMetadata()}
-   * @see {@link ome.scifio.HasFormat#getFormat()}
+   * @return an array of extensions associated with this Format
    */
-//  <M extends Metadata> M castToTypedMetadata(Metadata meta);
+  String[] getSuffixes();
 
   /**
-   * Create the Metadata object associated with this format.
-   * @return
+   * Create an instance of the Metadata associated with this format.
+   * 
+   * @return A new {@link ome.scifio.Metadata} instance compatible
+   *         with this Format's components
    * @throws FormatException
    */
   Metadata createMetadata() throws FormatException;
 
   /**
-   * Create the Checker object associated with this format.
-   * @return
+   * Create an instance of the Checker associated with this format.
+   * 
+   * @return A new {@link ome.scifio.Checker} instance which can
+   *         determine if sources are compatible with this Format.
    * @throws FormatException
    */
   Checker createChecker() throws FormatException;
 
   /**
-   * Create the Parser object associated with this format.
-   * @return
+   * Create an instance of the Parser associated with this format.
+   * 
+   * @return A new {@link ome.scifio.Parser} instance capable of
+   *         populating Metadata compatible with this Format.
    * @throws FormatException
    */
   Parser createParser() throws FormatException;
 
   /**
-   * Creates the Reader object associated with this format.
-   * @return
+   * Creates an instance of the Reader associated with this format.
+   * 
+   * @return A new {@link ome.scifio.Reader} instance capable of
+   *         reading datasets of this Format.
    * @throws FormatException
    */
   Reader createReader() throws FormatException;
 
   /**
-   * Creates the Writer object associated with this format.
-   * @return
+   * Creates an instance of the Writer associated with this format.
+   * 
+   * @return A new {@link ome.scifio.Writer} instance capable of
+   *         writing datasets of this Format.
    * @throws FormatException
    */
   Writer createWriter() throws FormatException;
    
   /**
-   * Returns the class of the Metadata associated with this format
-   * @return
+   * @return The class of the Metadata associated with this format
    */
   Class<? extends Metadata> getMetadataClass();
 
   /**
-   * Returns the class of the Checker associated with this format
-   * @return
+   * @return The class of the Checker associated with this format
    */
   Class<? extends Checker> getCheckerClass();
 
   /**
-   * Returns the class of the Parser associated with this format
-   * @return
+   * @return The class of the Parser associated with this format
    */
   Class<? extends Parser> getParserClass();
 
   /**
-   * Returns the class of the Reader associated with this format
-   * @return
+   * @return The class of the Reader associated with this format
    */
   Class<? extends Reader> getReaderClass();
 
   /**
-   * Returns the class of the Writer associated with this format
-   * @return
+   * @return The class of the Writer associated with this format
    */
   Class<? extends Writer> getWriterClass();
 }

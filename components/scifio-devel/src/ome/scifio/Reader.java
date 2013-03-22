@@ -60,7 +60,9 @@ import ome.scifio.io.RandomAccessInputStream;
  * <a href="">Gitweb</a></dd></dl>
  * 
  * @see ome.scifio.Plane
+ * @see ome.scifio.Metadata
  * @see ome.scifio.Writer#savePlane
+ * 
  * @author Mark Hiner
  */
 public interface Reader extends HasFormat {
@@ -205,7 +207,7 @@ public interface Reader extends HasFormat {
 
   /**
    * Sets the source for this reader to read from.
-   * @param in
+   * @param stream - The stream to read from
    */
   void setSource(RandomAccessInputStream stream) throws IOException;
 
@@ -242,11 +244,11 @@ public interface Reader extends HasFormat {
   
   /** 
    * Creates a blank plane compatible with this reader.
-   * @param xOffset
-   * @param yOffset
-   * @param xLength
-   * @param yLength
-   * @return
+   * @param xOffset - X offset of the Plane
+   * @param yOffset - Y offset of the Plane
+   * @param xLength - Width of the Plane
+   * @param yLength - Height of the Plane
+   * @return The created plane
    */
   Plane createPlane(int xOffset, int yOffset, int xLength, int yLength);
   
@@ -259,7 +261,7 @@ public interface Reader extends HasFormat {
    * </p>
    * 
    * @param P The specific {@code Plane} implementation to return.
-   * @param plane The base {@link ome.scifio.Plane} to cast.
+   * @param plane - The base {@link ome.scifio.Plane} to cast.
    * @return The {@code Plane} argument cast to {@code P}.
    * @throws IllegalArgumentException If the provided {@code Plane} type is
    *         not compatible with this {@code Reader}.

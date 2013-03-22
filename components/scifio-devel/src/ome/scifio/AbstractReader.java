@@ -50,15 +50,14 @@ import ome.scifio.util.FormatTools;
 import ome.scifio.util.SCIFIOMetadataTools;
 
 /**
- * Abstract superclass of all SCIFIO reader components.
+ * Abstract superclass of all SCIFIO {@link ome.scifio.Reader} implementations.
+ * 
+ * @see ome.scifio.Reader
+ * @see ome.scifio.HasFormat
+ * @see ome.scifio.Metadata
+ * @see ome.scifio.Plane
  *
  * @author Mark Hiner
- */
-/**
- * @author temp
- *
- * @param <M>
- * @param <P>
  */
 public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlane<?>>
   extends AbstractHasFormat implements TypedReader<M, P> {
@@ -69,7 +68,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
   // -- Fields --
 
-  /** Type-specific Metadata values. */
+  /** Metadata for the current image source. */
   protected M metadata;
 
   /** Whether or not to group multi-file formats. */
@@ -91,7 +90,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
   // -- Constructors --
 
-  /** Constructs a reader with the given context */
+  /** Constructs a reader and stores a reference to its plane type */
   public AbstractReader(Class<P> planeClass)
   {
     this.planeClass = planeClass;
@@ -107,8 +106,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   public P openPlane(final int imageIndex, final int planeNumber)
     throws FormatException, IOException
   {
-    return openPlane(
-      imageIndex, planeNumber, 0, 0, metadata.getAxisLength(imageIndex, Axes.X),
+    return openPlane(imageIndex, planeNumber, 0, 0,
+      metadata.getAxisLength(imageIndex, Axes.X),
       metadata.getAxisLength(imageIndex, Axes.Y));
   }
 
@@ -141,7 +140,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
    */
   public P openPlane(int imageIndex, int planeIndex, Plane plane)
       throws FormatException, IOException {
-    return openPlane(imageIndex, planeIndex, castToTypedPlane(plane));
+    return openPlane(imageIndex, planeIndex, this.<P>castToTypedPlane(plane));
   }
 
   /*
@@ -218,10 +217,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   public int getOptimalTileHeight(final int imageIndex) {
     final int bpp =
       FormatTools.getBytesPerPixel(metadata.getPixelType(imageIndex));
-    final int maxHeight =
-      (1024 * 1024) /
-        (metadata.getAxisLength(imageIndex, Axes.X) *
-            metadata.getRGBChannelCount(imageIndex) * bpp);
+    
+    final int width = metadata.getAxisLength(imageIndex, Axes.X);
+    final int rgbcCount = metadata.getRGBChannelCount(imageIndex);
+    
+    final int maxHeight = 
+      (1024 * 1024) / (width * rgbcCount * bpp);
     return Math.min(maxHeight, metadata.getAxisLength(imageIndex, Axes.Y));
   }
 

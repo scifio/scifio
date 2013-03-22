@@ -40,8 +40,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -55,10 +53,14 @@ import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
 
 /**
- * Abstract superclass of all SCIFIO {@link ome.scifio.Metadata} implementations
+ * Abstract superclass of all SCIFIO {@link ome.scifio.Metadata} implementations.
+ * 
+ * @see ome.scifio.Metadata
+ * @see ome.scifio.MetadataOptions
+ * @see ome.scifio.Parser
+ * @see ome.scifio.HasFormat
  * 
  * @author Mark Hiner
- *
  */
 public abstract class AbstractMetadata extends AbstractHasFormat
   implements TypedMetadata {
@@ -69,19 +71,23 @@ public abstract class AbstractMetadata extends AbstractHasFormat
 
   // -- Fields --
   
+  /* The image source associated with this Metadata. */
   private RandomAccessInputStream source;
   
+  /* Whether the Metadata should be filtered or not. */
   protected boolean filtered;
   
+  /* The MetadataOptions used when parsing this Metadata. */
   protected MetadataOptions metadataOptions;
 
-  /** Contains metadata key, value pairs for this dataset */
+  /* Contains metadata key, value pairs for this dataset */
   private Hashtable<String, Object> datasetMeta;
 
-  /** Contains a list of metadata objects for each image in this dataset */
+  /* Contains a list of metadata objects for each image in this dataset */
   @ome.scifio.Field(label = "imageMeta", isList = true)
   private List<ImageMetadata> imageMeta;
   
+  /* A string id for this dataset. */
   private String datasetName = null;
   
   // -- Constructors --
@@ -110,13 +116,6 @@ public abstract class AbstractMetadata extends AbstractHasFormat
 
   // -- Metadata API Methods --
   
-  /*
-   * @see ome.scifio.Metadata#getFormatName()
-   */
-  public String getFormatName() {
-    return getFormat().getFormatName();
-  }
-
   /* @see Metadata#resetMeta(Class<?>) */
   public void reset(final Class<?> type) {
     if (type == null || type == AbstractMetadata.class) return;
@@ -197,75 +196,129 @@ public abstract class AbstractMetadata extends AbstractHasFormat
     return datasetName;
   }
 
+  /*
+   * @see ome.scifio.Metadata#getMetadataValue(java.lang.String)
+   */
   public Object getMetadataValue(final String field) {
     return datasetMeta.get(field);
   }
 
+  /*
+   * @see ome.scifio.Metadata#getImageMetadataValue(int, java.lang.String)
+   */
   public Object getImageMetadataValue(final int imageIndex, final String field)
   {
     return imageMeta.get(imageIndex).getImageMetadata().get(field);
   }
 
+  /*
+   * @see ome.scifio.Metadata#getDatasetMetadata()
+   */
   public Hashtable<String, Object> getDatasetMetadata() {
     return datasetMeta;
   }
 
+  /*
+   * @see ome.scifio.Metadata#getImageMetadata(int)
+   */
   public Hashtable<String, Object> getImageMetadata(final int imageIndex) {
     return imageMeta.get(imageIndex).getImageMetadata();
   }
   
+  /*
+   * @see ome.scifio.Metadata#get(int)
+   */
   public ImageMetadata get(int imageIndex) {
     return imageMeta.get(imageIndex);
   }
   
+  /*
+   * @see ome.scifio.Metadata#getAll()
+   */
   public List<ImageMetadata> getAll() {
     return imageMeta;
   }
 
+  /*
+   * @see ome.scifio.Metadata#getImageCount()
+   */
   public int getImageCount() {
     return imageMeta.size();
   }
 
+  /*
+   * @see ome.scifio.Metadata#getPlaneCount(int)
+   */
   public int getPlaneCount(final int imageIndex) {
     return imageMeta.get(imageIndex).getPlaneCount();
   }
 
+  /*
+   * @see ome.scifio.Metadata#isInterleaved(int)
+   */
   public boolean isInterleaved(final int imageIndex) {
     return imageMeta.get(imageIndex).isInterleaved();
   }
 
+  /*
+   * @see ome.scifio.Metadata#getPixelType(int)
+   */
   public int getPixelType(final int imageIndex) {
     return imageMeta.get(imageIndex).getPixelType();
   }
 
+  /*
+   * @see ome.scifio.Metadata#getEffectiveSizeC(int)
+   */
   public int getEffectiveSizeC(final int imageIndex) {
     return imageMeta.get(imageIndex).getEffectiveSizeC();
   }
 
+  /*
+   * @see ome.scifio.Metadata#getRGBChannelCount(int)
+   */
   public int getRGBChannelCount(final int imageIndex) {
     return imageMeta.get(imageIndex).getRGBChannelCount();
   }
 
+  /*
+   * @see ome.scifio.Metadata#isLittleEndian(int)
+   */
   public boolean isLittleEndian(final int imageIndex) {
     return imageMeta.get(imageIndex).isLittleEndian();
   }
 
+  /*
+   * @see ome.scifio.Metadata#isIndexed(int)
+   */
   public boolean isIndexed(final int imageIndex) {
     return imageMeta.get(imageIndex).isIndexed();
   }
 
+  /*
+   * @see ome.scifio.Metadata#getBitsPerPixel(int)
+   */
   public int getBitsPerPixel(final int imageIndex) {
     return imageMeta.get(imageIndex).getBitsPerPixel();
   }
 
+  /*
+   * @see ome.scifio.Metadata#isRGB(int)
+   */
   public boolean isRGB(final int imageIndex) {
     return imageMeta.get(imageIndex).isRGB();
   }
 
+  /*
+   * @see ome.scifio.Metadata#isFalseColor(int)
+   */
   public boolean isFalseColor(final int imageIndex) {
     return imageMeta.get(imageIndex).isFalseColor();
   }
 
+  /*
+   * @see ome.scifio.Metadata#getChannelDimLengths(int)
+   */
   public int[] getChannelDimLengths(final int imageIndex) {
     if (imageMeta.get(imageIndex).getChannelLengths() == null) {
       imageMeta.get(imageIndex).setChannelLengths(
@@ -274,6 +327,9 @@ public abstract class AbstractMetadata extends AbstractHasFormat
     return imageMeta.get(imageIndex).getChannelLengths();
   }
 
+  /*
+   * @see ome.scifio.Metadata#getChannelDimTypes(int)
+   */
   public String[] getChannelDimTypes(final int imageIndex) {
     if (imageMeta.get(imageIndex).getChannelTypes() == null) {
       imageMeta.get(imageIndex).setChannelTypes(
@@ -282,267 +338,284 @@ public abstract class AbstractMetadata extends AbstractHasFormat
     return imageMeta.get(imageIndex).getChannelTypes();
   }
 
+  /*
+   * @see ome.scifio.Metadata#getThumbSizeX(int)
+   */
   public int getThumbSizeX(final int imageIndex) {
-    if (imageMeta.get(imageIndex).getThumbSizeX() == 0) {
-      final int sx = getAxisLength(imageIndex, Axes.X);
-      final int sy = getAxisLength(imageIndex, Axes.Y);
-      int thumbSizeX = 0;
-      if (sx > sy) thumbSizeX = FormatTools.THUMBNAIL_DIMENSION;
-      else if (sy > 0) thumbSizeX = sx * FormatTools.THUMBNAIL_DIMENSION / sy;
-      if (thumbSizeX == 0) thumbSizeX = 1;
-      return thumbSizeX;
-    }
     return imageMeta.get(imageIndex).getThumbSizeX();
   }
 
+  /*
+   * @see ome.scifio.Metadata#getThumbSizeY(int)
+   */
   public int getThumbSizeY(final int imageIndex) {
-    if (imageMeta.get(imageIndex).getThumbSizeX() == 0) {
-      final int sx = getAxisLength(imageIndex, Axes.X);
-      final int sy = getAxisLength(imageIndex, Axes.Y);
-      int thumbSizeY = 1;
-      if (sy > sx) thumbSizeY = FormatTools.THUMBNAIL_DIMENSION;
-      else if (sx > 0) thumbSizeY = sy * FormatTools.THUMBNAIL_DIMENSION / sx;
-      if (thumbSizeY == 0) thumbSizeY = 1;
-      return thumbSizeY;
-    }
     return imageMeta.get(imageIndex).getThumbSizeY();
   }
 
-  /**
-   * Returns the number of axes (planes) in the
-   * specified image.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @return The axis/plane count
+  /*
+   * @see ome.scifio.Metadata#getAxisCount(int)
    */
   public int getAxisCount(final int imageIndex) {
     return imageMeta.get(imageIndex).getAxesLengths().length;
   }
 
-  /**
-   * Gets the type of the (zero-indexed) specified plane.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param planeIndex - index of the desired plane within the specified image
-   * @return Type of the desired plane.
+  /*
+   * @see ome.scifio.Metadata#getAxisType(int, int)
    */
   public AxisType getAxisType(final int imageIndex, final int planeIndex) {
     return imageMeta.get(imageIndex).getAxisType(planeIndex);
   }
 
-  /**
-   * Gets the length of the (zero-indexed) specified plane.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param planeIndex - index of the desired plane within the specified image
-   * @return Length of the desired plane.
+  /*
+   * @see ome.scifio.Metadata#getAxisLength(int, int)
    */
   public int getAxisLength(final int imageIndex, final int planeIndex) {
     return imageMeta.get(imageIndex).getAxisLength(planeIndex);
   }
   
-  /**
-   * A convenience method for looking up the length of an axis
-   * based on its type. No knowledge of plane ordering is necessary.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param t - desired axis type
-   * @return
+  /*
+   * @see ome.scifio.Metadata#getAxisLength(int, net.imglib2.meta.AxisType)
    */
   public int getAxisLength(final int imageIndex, final AxisType t) {
     return imageMeta.get(imageIndex).getAxisLength(t);
   }
 
-  /**
-   * Returns the array index for the specified AxisType. This index
-   * can be used in other Axes methods for looking up lengths, etc...
-   * </br></br>
-   * This method can also be used as an existence check for the
-   * targe AxisType.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param type - axis type to look up
-   * @return The index of the desired axis or -1 if not found.
+  /*
+   * @see ome.scifio.Metadata#getAxisIndex(int, net.imglib2.meta.AxisType)
    */
   public int getAxisIndex(final int imageIndex, final AxisType type) {
     return imageMeta.get(imageIndex).getAxisIndex(type);
   }
-  
-  /**
-   * Returns an array of the types for axes associated with
-   * the specified image index. Order is consistent with the
-   * axis length (int) array returned by 
-   * {@link DatasetMetadata#getAxesLengths(int)}.
-   * </br></br>
-   * AxisType order is sorted and represents order within the image.
-   * 
-   * @param imageIndex - index for multi-image sources
-   * @return An array of AxisTypes in the order they appear.
+
+  /*
+   * @see ome.scifio.Metadata#getAxes(int)
    */
   public AxisType[] getAxes(int imageIndex) {
     return imageMeta.get(imageIndex).getAxes();
   }
-  
-  /**
-   * Returns an array of the lengths for axes associated with
-   * the specified image index.
-   * 
-   * Ordering is consistent with the 
-   * AxisType array returned by {@link DatasetMetadata#getAxes(int)}.
-   * 
-   * @param imageIndex
-   * @return
+
+  /*
+   * @see ome.scifio.Metadata#getAxesLengths(int)
    */
   public int[] getAxesLengths(int imageIndex) {
     return imageMeta.get(imageIndex).getAxesLengths();
   }
 
+  /*
+   * @see ome.scifio.Metadata#isOrderCertain(int)
+   */
   public boolean isOrderCertain(final int imageIndex) {
     return imageMeta.get(imageIndex).isOrderCertain();
   }
 
+  /*
+   * @see ome.scifio.Metadata#isThumbnailImage(int)
+   */
   public boolean isThumbnailImage(final int imageIndex) {
     return imageMeta.get(imageIndex).isThumbnail();
   }
 
+  /*
+   * @see ome.scifio.Metadata#isMetadataComplete(int)
+   */
   public boolean isMetadataComplete(final int imageIndex) {
     return imageMeta.get(imageIndex).isMetadataComplete();
-  }
-  
-  public Collection<ImageMetadata> getImageMetadata() {
-    return Collections.unmodifiableCollection(imageMeta);
   }
 
   // -- Setters --
   
+  /*
+   * @see ome.scifio.Metadata#setDatasetName(java.lang.String)
+   */
   public void setDatasetName(String name) {
     datasetName = name;
   }
   
+  /*
+   * @see ome.scifio.Metadata#putDatasetMeta(java.lang.String, java.lang.Object)
+   */
   public void putDatasetMeta(String key, Object value) {
     datasetMeta.put(key, value);
   }
   
+  /*
+   * @see ome.scifio.Metadata#putImageMeta(int, java.lang.String, java.lang.Object)
+   */
   public void putImageMeta(final int imageIndex, String key, Object value) {
     imageMeta.get(imageIndex).getImageMetadata().put(key, value);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setThumbSizeX(int, int)
+   */
   public void setThumbSizeX(final int imageIndex, final int thumbX) {
     imageMeta.get(imageIndex).setThumbSizeX(thumbX);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setThumbSizeY(int, int)
+   */
   public void setThumbSizeY(final int imageIndex, final int thumbY) {
     imageMeta.get(imageIndex).setThumbSizeY(thumbY);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setPixelType(int, int)
+   */
   public void setPixelType(final int imageIndex, final int type) {
     imageMeta.get(imageIndex).setPixelType(type);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setBitsPerPixel(int, int)
+   */
   public void setBitsPerPixel(final int imageIndex, final int bpp) {
     imageMeta.get(imageIndex).setBitsPerPixel(bpp);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setChannelDimLengths(int, int[])
+   */
   public void setChannelDimLengths(final int imageIndex, final int[] cLengths) {
     imageMeta.get(imageIndex).setChannelLengths(cLengths);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setChannelDimTypes(int, java.lang.String[])
+   */
   public void setChannelDimTypes(final int imageIndex, final String[] cTypes) {
     imageMeta.get(imageIndex).setChannelTypes(cTypes);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setOrderCertain(int, boolean)
+   */
   public void setOrderCertain(final int imageIndex, final boolean orderCertain)
   {
     imageMeta.get(imageIndex).setOrderCertain(orderCertain);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setRGB(int, boolean)
+   */
   public void setRGB(final int imageIndex, final boolean rgb) {
     imageMeta.get(imageIndex).setRGB(rgb);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setLittleEndian(int, boolean)
+   */
   public void setLittleEndian(final int imageIndex, final boolean littleEndian)
   {
     imageMeta.get(imageIndex).setLittleEndian(littleEndian);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setInterleaved(int, boolean)
+   */
   public void setInterleaved(final int imageIndex, final boolean interleaved) {
     imageMeta.get(imageIndex).setInterleaved(interleaved);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setIndexed(int, boolean)
+   */
   public void setIndexed(final int imageIndex, final boolean indexed) {
     imageMeta.get(imageIndex).setIndexed(indexed);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setFalseColor(int, boolean)
+   */
   public void setFalseColor(final int imageIndex, final boolean falseC) {
     imageMeta.get(imageIndex).setFalseColor(falseC);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setMetadataComplete(int, boolean)
+   */
   public void setMetadataComplete(final int imageIndex,
     final boolean metadataComplete)
   {
     imageMeta.get(imageIndex).setMetadataComplete(metadataComplete);
   }
   
+  /*
+   * @see ome.scifio.Metadata#setFiltered(boolean)
+   */
   public void setFiltered(boolean filtered) {
     this.filtered = filtered;
   }
   
+  /*
+   * @see ome.scifio.Metadata#setMetadataOptions(ome.scifio.MetadataOptions)
+   */
   public void setMetadataOptions(MetadataOptions opts) {
     metadataOptions = opts;
   }
 
+  /*
+   * @see ome.scifio.Metadata#add(ome.scifio.ImageMetadata)
+   */
   public void add(final ImageMetadata meta) {
     imageMeta.add(meta);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setImageMetadata(int, java.util.Hashtable)
+   */
   public void setImageMetadata(final int imageIndex,
     final Hashtable<String, Object> meta)
   {
     imageMeta.get(imageIndex).setImageMetadata(meta);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setThumbnailImage(int, boolean)
+   */
   public void setThumbnailImage(final int imageIndex, final boolean thumbnail) {
     imageMeta.get(imageIndex).setThumbnail(thumbnail);
   }
 
-  /**
-   * Appends the provided AxisType to the current AxisType array
-   * and creates corresponding length = 0 entry in the axis lengths
-   * array.
-   * 
-   * @param imageIndex
-   * @param type
+  /*
+   * @see ome.scifio.Metadata#addAxis(int, net.imglib2.meta.AxisType)
    */
   public void addAxis(final int imageIndex, final AxisType type) {
     imageMeta.get(imageIndex).addAxis(type);
   }
 
-  /**
-   * Appends the provided AxisType to the current AxisType array
-   * and creates a corresponding entry with the specified value in
-   * axis lengths.
-   * 
-   * @param imageIndex
-   * @param type
-   * @param value
+  /*
+   * @see ome.scifio.Metadata#addAxis(int, net.imglib2.meta.AxisType, int)
    */
   public void addAxis(final int imageIndex, final AxisType type, final int value)
   {
     imageMeta.get(imageIndex).addAxis(type, value);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setAxisTypes(int, net.imglib2.meta.AxisType[])
+   */
   public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
     imageMeta.get(imageIndex).setAxisTypes(axisTypes);
   }
   
+  /*
+   * @see ome.scifio.Metadata#setAxisType(int, int, net.imglib2.meta.AxisType)
+   */
   public void setAxisType(final int imageIndex, final int axisIndex, final AxisType axis) {
     imageMeta.get(imageIndex).setAxisType(axisIndex, axis);
   }
 
+  /*
+   * @see ome.scifio.Metadata#setAxisLengths(int, int[])
+   */
   public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
     imageMeta.get(imageIndex).setAxisLengths(axisLengths);
   }
   
+  /*
+   * @see ome.scifio.Metadata#setAxisLength(int, net.imglib2.meta.AxisType, int)
+   */
   public void setAxisLength(final int imageIndex, final AxisType axis, final int length) {
     imageMeta.get(imageIndex).setAxisLength(axis, length);
   }

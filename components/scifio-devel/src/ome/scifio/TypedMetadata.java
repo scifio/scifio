@@ -48,6 +48,7 @@ package ome.scifio;
  * </p>
  * 
  * @author Mark Hiner
+ * 
  * @see ome.scifio.Metadata
  */
 public interface TypedMetadata extends Metadata {

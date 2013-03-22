@@ -51,6 +51,8 @@ import ome.scifio.io.RandomAccessInputStream;
  * {@code Parsers} are used to create type-specific {@link ome.scifio.Metadata}
  * appropriate for their {@code Format} by reading from an image source.
  * </p>
+ * 
+ * @see ome.scifio.Format
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="">Trac</a>,
@@ -198,7 +200,9 @@ public interface Parser extends HasFormat {
    */
   FileInfo[] getAdvancedImageUsedFiles(int imageIndex, boolean noPixels);
 
-  /** Returns a list of MetadataLevel options for determining the granularity of MetadataCollection */
+  /**
+   * Returns a list of MetadataLevel options for determining the granularity 
+   * of MetadataCollection */
   Set<MetadataLevel> getSupportedMetadataLevels();
 
   /** Sets the MetadataOptions of this Parser */

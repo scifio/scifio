@@ -44,7 +44,10 @@ import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
 
 /**
- * Abstract superclass of all SCIFIO {@link ome.scifio.Checker} implementation. 
+ * Abstract superclass of all SCIFIO {@link ome.scifio.Checker} implementations. 
+ *
+ * @see ome.scifio.Checker
+ * @see ome.scifio.HasFormat
  *
  * @author Mark Hiner
  */
@@ -58,14 +61,17 @@ public abstract class AbstractChecker
   // -- Fields --
 
   /**
-   * Whether the file extension matching one of the reader's suffixes
-   * is necessary to identify the file as an instance of this format.
+   * Whether the file extension matching one of the format's suffixes
+   * is necessary to identify the file as a source compatible with this format.
    */
   protected boolean suffixNecessary = true;
 
   /**
-   * Whether the file extension matching one of the reader's suffixes
-   * is sufficient to identify the file as an instance of this format.
+   * Whether the file extension matching one of the format's suffixes
+   * is sufficient to identify the file as a source compatible with this format.
+   * <p>
+   * If false, the source will have to be read to determine compatibility.
+   * </p>
    */
   protected boolean suffixSufficient = true;
   

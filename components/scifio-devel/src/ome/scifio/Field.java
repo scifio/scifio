@@ -41,6 +41,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Field annotation. Used for flagging SCIFIO component fields 
+ * and differentiating Metadata source fields from Java fields.
+ * <p>
+ * The {@link #label()} method allows preservation of the
+ * original field name, without being restricted to the Java variable
+ * naming conventions.
+ * </p>
+ * 
+ * @see ome.scifio.Metadata
+ * 
+ * @author Mark Hiner
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Field {

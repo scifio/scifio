@@ -42,9 +42,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract superclass of all SCIFIO Translator components.
+ * Abstract superclass of all SCIFIO {@link ome.scifio.Translator} components.
+ * <p>
+ * NB: this class provides a special abstract method: {@code typedTranslate(Metadata, Metadata)}.
+ * That is the method which should be overridden when extending this class, and not
+ * {@link #translate(Metadata, Metadata)} - which has been set up to translate
+ * the type-general Metadata information, delegate to {@code typedTranslate},
+ * and then populate the ImageMetadata of the destination.
+ * </p>
  *
+ * @see ome.scifio.Translator
+ * @see ome.scifio.services.TranslatorService
+ * @see ome.scifio.Metadata
+ * 
  * @author Mark Hiner
+ * 
+ * @param <M> - The source Metadata type required by this Translator
+ * @param <N> - The destination Metadata type required by this Translator
  */
 public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
   extends AbstractHasSCIFIO implements Translator {
@@ -60,22 +74,36 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
    * @see ome.scifio.Translator#translate(ome.scifio.Metadata, ome.scifio.Metadata)
    */
   public void translate(Metadata source, Metadata dest) {
+  	// Cast the parameters to typed Metadata
     M typedSource = SCIFIOMetadataTools.<M>castMeta(source);
     N typedDest = SCIFIOMetadataTools.<N>castMeta(dest);
     
+    // Boilerplate for common Metadata fields
     dest.setSource(source.getSource());
     dest.setFiltered(source.isFiltered());
     dest.setMetadataOptions(source.getMetadataOptions());
     
+    // Type-dependent translation
     typedTranslate(typedSource, typedDest);
+    
+    // -- Post-translation hook --
+    // Update the source's ImageMetadata based on the translation results
     dest.populateImageMetadata();
   }
   
   // -- AbstractTranslator API --
   
   /**
-   * Abstract method to override and perform actual translation,
-   * using source and dest parameters.
+   * This method should contain the actual logic for populating the
+   * type-specific fields of the destination Metadata.
+   * <p>
+   * This separation of logic allows the translate(Metadata, Metadata) method
+   * to perform "pre" and "post" translation activities, while facilitating
+   * type-specific Metadata operations.
+   * </p>
+   * 
+   * @param source - Source Metadata
+   * @param dest - Destination Metadata
    */
   protected abstract void typedTranslate(M source, N dest);
 }

@@ -36,18 +36,33 @@
 
 package ome.scifio;
 
-import org.scijava.plugin.SortablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract superclass of all SCIFIO components that implement
- * ome.scifio.Format.
+ * Abstract superclass of all SCIFIO {@link ome.scifio.Format} implementations.
+ * 
+ * @see ome.scifio.Format
+ * @see ome.scifio.Metadata
+ * @see ome.scifio.Parser
+ * @see ome.scifio.Reader
+ * @see ome.scifio.Writer
+ * @see ome.scifio.Checker
+ * @see ome.scifio.services.FormatService
  * 
  * @author Mark Hiner
+ * 
+ * @param <M> - The Metadata type associated with this Format
+ * @param <C> - The Checker type associated with this Format
+ * @param <P> - The Parser type associated with this Format
+ * @param <R> - The Reader type associated with this Format
+ * @param <W> - The Writer type associated with this Format
  */
-public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker, P extends TypedParser<M>, R extends TypedReader<M, ? extends DataPlane<?>>, W extends TypedWriter<M>>
-    extends AbstractHasSCIFIO implements TypedFormat<M, C, P, R, W> {
+public abstract class AbstractFormat
+    <M extends TypedMetadata, C extends Checker, P extends TypedParser<M>,
+    R extends TypedReader<M, ? extends DataPlane<?>>, W extends TypedWriter<M>>
+    extends AbstractHasSCIFIO implements TypedFormat<M, C, P, R, W>
+{
   
   // -- Constants --
 
@@ -62,6 +77,7 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
   /** Valid suffixes for this file format. */
   protected String[] suffixes;
 
+  // Class references to the components of this Format
   private Class<M> metadataClass;
   private Class<C> checkerClass;
   private Class<P> parserClass;
@@ -72,13 +88,15 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
 
   public AbstractFormat(String formatName, String suffix,
       Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass,
-      Class<W> wClass) throws FormatException {
+      Class<W> wClass) throws FormatException
+  {
     this(formatName, new String[]{suffix}, mClass, cClass, pClass, rClass, wClass);
   }
   
   public AbstractFormat(String formatName, String[] suffixes,
       Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass,
-      Class<W> wClass) throws FormatException {
+      Class<W> wClass) throws FormatException
+  {
     this.formatName = formatName;
     this.suffixes = suffixes == null ? new String[0] : suffixes;
     metadataClass = mClass;
@@ -172,14 +190,9 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
   
   // -- Helper Methods --
 
-  /**
-   * Returns a SCIFIO component from its object. Also sets its context based
-   * on the current context.
-   * 
-   * @param <T>
-   * @param c
-   * @return
-   * @throws FormatException
+  /*
+   * Creates a SCIFIO component from its class. Also sets its context based
+   * on this format's context.
    */
   private <T extends HasFormat> T createContextualObject(final Class<T> c)
       throws FormatException {
@@ -188,13 +201,8 @@ public abstract class AbstractFormat<M extends TypedMetadata, C extends Checker,
     return t;
   }
 
-  /**
+  /*
    * Returns an instance of an object from its Class
-   * 
-   * @param <T>
-   * @param c
-   * @return
-   * @throws FormatException
    */
   private <T extends HasFormat> T createObject(final Class<T> c) throws FormatException {
     try {

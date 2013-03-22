@@ -35,7 +35,6 @@
  */
 package ome.scifio;
 
-import java.util.Arrays;
 import java.util.Hashtable;
 
 import net.imglib2.meta.AxisType;
@@ -43,11 +42,10 @@ import net.imglib2.meta.AxisType;
 /**
  * ImageMetadata stores the metadata for a single image
  * within a dataset. Here, information common to every
- * image type (e.g. height, width, index information)
- * can be stored in a standard way.
+ * format (e.g. height, width, index information)
+ * can be stored and retrieved in a standard way.
  * 
  * @author Mark Hiner
- *
  */
 public interface ImageMetadata {
 
@@ -196,13 +194,26 @@ public interface ImageMetadata {
   Hashtable<String, Object> getImageMetadata();
 
   /** 
-   * Returns whether or not this image is a lower-resolution copy of
+   * Determines whether or not this image is a lower-resolution copy of
    * another image.
+   * 
+   * @return true if this image is a thumbnail
    */
   boolean isThumbnail();
   
+  /**
+   * Calculates the effective number of non-RGB channels in this image.
+   * This value may be more useful than {@code getAxisLength(Axes.CHANNEL)}.
+   * 
+   * @return Count of non-RGB channels in this image.
+   */
   int getEffectiveSizeC();
   
+  /**
+   * Calculates the number of RGB channels in this image.
+   * 
+   * @return Count of RGB channels in this image.
+   */
   int getRGBChannelCount();
 
   /**
@@ -210,6 +221,7 @@ public interface ImageMetadata {
    * 
    * @param imageIndex - index for multi-image files
    * @param planeIndex - index of the desired plane within the specified image
+   * 
    * @return Type of the desired plane.
    */
   AxisType getAxisType(final int planeIndex);
@@ -217,8 +229,8 @@ public interface ImageMetadata {
   /**
    * Gets the length of the (zero-indexed) specified plane.
    * 
-   * @param imageIndex - index for multi-image files
-   * @param planeIndex - index of the desired plane within the specified image
+   * @param planeIndex - index of the desired plane within this image
+   * 
    * @return Length of the desired plane.
    */
   int getAxisLength(final int planeIndex);
@@ -227,20 +239,20 @@ public interface ImageMetadata {
    * A convenience method for looking up the length of an axis
    * based on its type. No knowledge of plane ordering is necessary.
    * 
-   * @param imageIndex - index for multi-image files
-   * @param t - desired axis type
-   * @return
+   * @param t - AxisType to look up
+   * 
+   * @return Length of axis t
    */
   int getAxisLength(final AxisType t);
 
   /**
    * Returns the array index for the specified AxisType. This index
    * can be used in other Axes methods for looking up lengths, etc...
-   * </br></br>
+   * <p>
    * This method can also be used as an existence check for the
-   * targe AxisType.
+   * target AxisType.
+   * </p>
    * 
-   * @param imageIndex - index for multi-image files
    * @param type - axis type to look up
    * @return The index of the desired axis or -1 if not found.
    */
@@ -249,25 +261,24 @@ public interface ImageMetadata {
   /**
    * Returns an array of the types for axes associated with
    * the specified image index. Order is consistent with the
-   * axis length (int) array returned by 
-   * {@link DatasetMetadata#getAxesLengths(int)}.
-   * </br></br>
+   * axis length (int) array returned by {@link #getAxesLengths()}.
+   * <p>
    * AxisType order is sorted and represents order within the image.
+   * </p>
    * 
-   * @param imageIndex - index for multi-image sources
-   * @return An array of AxisTypes in the order they appear.
+   * @return Sorted AxisType array
    */
   AxisType[] getAxes();
   
   /**
    * Returns an array of the lengths for axes associated with
    * the specified image index.
+   * <p>
+   * Ordering is consistent with the AxisType array returned by
+   * {@link #getAxes()}.
+   * </p>
    * 
-   * Ordering is consistent with the 
-   * AxisType array returned by {@link DatasetMetadata#getAxes(int)}.
-   * 
-   * @param imageIndex
-   * @return
+   * @return Sorted axis length array
    */
   int[] getAxesLengths();
 
@@ -276,8 +287,7 @@ public interface ImageMetadata {
    * and creates corresponding length = 0 entry in the axis lengths
    * array.
    * 
-   * @param imageIndex
-   * @param type
+   * @param type - Type of the new axis
    */
   void addAxis(final AxisType type);
 
@@ -286,17 +296,13 @@ public interface ImageMetadata {
    * and creates a corresponding entry with the specified value in
    * axis lengths.
    * 
-   * @param imageIndex
-   * @param type
-   * @param value
+   * @param type - Type of the new axis
+   * @param value - Value of the new axis
    */
   void addAxis(final AxisType type, final int value);
   
   /**
-   * Returns a copy of this ImageMetadata.
-   * 
-   * @param toCopy
-   * @return
+   * @return A new copy of this ImageMetadata.
    */
   ImageMetadata copy();
 

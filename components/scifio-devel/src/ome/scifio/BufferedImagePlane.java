@@ -43,11 +43,14 @@ import ome.scifio.common.DataTools;
 import ome.scifio.gui.AWTImageTools;
 
 /**
- * A {@link ome.scifio.Plane} implementation using a {@link BufferedImage} for the
+ * A {@link ome.scifio.Plane} implementation using a {@link java.awt.image.BufferedImage} for the
  * underlying data representation.
  * 
+ * @see ome.scifio.Plane
+ * @see ome.scifio.DataPlane
+ * @see java.awt.image.BufferedImage
+ * 
  * @author Mark Hiner
- *
  */
 public class BufferedImagePlane extends AbstractPlane<BufferedImage, BufferedImagePlane> {
 
@@ -58,7 +61,8 @@ public class BufferedImagePlane extends AbstractPlane<BufferedImage, BufferedIma
   }
   
   public BufferedImagePlane(final Context context, ImageMetadata meta, int xOffset,
-      int yOffset, int xLength, int yLength) {
+      int yOffset, int xLength, int yLength)
+  {
     super(context, meta, xOffset, yOffset, xLength, yLength);
    
     populate(meta, xOffset, yOffset, xLength, yLength);
@@ -74,48 +78,47 @@ public class BufferedImagePlane extends AbstractPlane<BufferedImage, BufferedIma
    * data will have an offset of:
    * <p><code>channelIndex * planeSize</code></p>
    * </p>
+   * 
+   * @return The byte[] extracted from this Plane's BufferedImage
    */
   public byte[] getBytes() {
     byte[] t = null;
     
     switch (getData().getColorModel().getComponentSize(0)) {
     case 8:
+    	// 8-bit types can directly delegate to AWTImageTools
       t = AWTImageTools.getBytes(getData(), false);
       break;
     case 16:
+    	// Here we need to unpack the channel arrays appropriately
       short[][] ts = AWTImageTools.getShorts(getData());
       t = new byte[ts.length * ts[0].length * 2];
       for (int c=0; c<ts.length; c++) {
         int offset = c * ts[c].length * 2;
         for (int i=0; i<ts[c].length; i++) {
-          DataTools.unpackBytes(ts[c][i], t, offset, 2, getImageMetadata().isLittleEndian());
-          offset += 2;
+        	DataTools.unpackBytes(ts[c][i], t, offset, 2, getImageMetadata().isLittleEndian());
+        	offset += 2;
         }
       }
       break;
-  }
-    
-    
+    }
+
     return t;
   }
   
   /*
    * @see ome.scifio.AbstractPlane#populate(ome.scifio.ImageMetadata, int, int, int, int)
    */
-  public BufferedImagePlane populate(ImageMetadata meta, BufferedImage data, int xOffset, int yOffset,
-      int xLength, int yLength) {
-    
+  public BufferedImagePlane populate(ImageMetadata meta, BufferedImage data,
+  		int xOffset, int yOffset, int xLength, int yLength)
+  {
     if (data == null) {
-//      byte[] bytes = new byte[xLength * yLength * 
-//                              (meta.getBitsPerPixel() / 8) *
-//                              meta.getRGBChannelCount()];
-
       int type = meta.getPixelType();
-//      boolean signed = FormatTools.isSigned(type);
 
+      // Create a blank image for this Plane's data
       data = AWTImageTools.blankImage(xLength, yLength, meta.getRGBChannelCount(), type);
     }
     
-    return (BufferedImagePlane) super.populate(meta, data, xOffset, yOffset, xLength, yLength);
+    return super.populate(meta, data, xOffset, yOffset, xLength, yLength);
   }
 }

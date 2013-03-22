@@ -38,10 +38,14 @@ package ome.scifio;
 import java.util.List;
 
 /**
- * A dummy Metadata implementation. Holds no format-specific information.
+ * A dummy {@link ome.scifio.Metadata} implementation. 
+ * Holds no format-specific information, and adds no functionality over
+ * {@link ome.scifio.AbstractMetadata}.
+ * 
+ * @see ome.scifio.Metadata
+ * @see ome.scifio.AbstractMetadata
  * 
  * @author Mark Hiner
- *
  */
 public class DefaultMetadata extends AbstractMetadata {
 

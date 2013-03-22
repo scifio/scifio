@@ -28,8 +28,7 @@
  *  disk.
  *  </li>
  *  <li>
- *  {@link ome.scifio.Translator} - converts between this format's metadata and another
- *  {@code Metadata} representation. Each individual 
+ *  {@link ome.scifio.Translator} - converts between two types of Metadata.
  *  {@code Translator} converts in a single direction. To avoid an NxN
  *  translation problem, typically {@code Translators} are only defined to
  *  and from format-agnostic {@code Metadata} representations.
@@ -37,26 +36,16 @@
  * </ul>
  * </p>
  * <p>
- * The {@link ome.scifio.SCIFIO} class allows contextualization of {@code Format} 
- * (and thus component) creation. All {@code Formats} are discoverable 
- * (see ome.scifio.discovery) via <a href="http://sezpoz.java.net/">SezPoz</a>
- * and convenience methods for instantiating component using this automatic
- * discovery mechanism can also be found in the SCIFIO class. </p>
+ * The {@link ome.scifio.SCIFIO} class wraps {@link org.scijava.Context} 
+ * instances and provides convenient access to many services.
  * </p>
  * <p>
- * This package also contains {@link ome.scifio.DatasetMetadata} and {@link ome.scifio.ImageMetadata} 
- * interfaces and default implementations. These classes are used as 
- * format-agnostic representations of image metadata. SCIFIO follows the OME
- *  syntax of what is an "image" - in that top-level is really a dataset, which
+ * This package also contains an {@link ome.scifio.ImageMetadata} 
+ * interface and default implementation. ImageMetadata is use as a 
+ * format-agnostic representation of common image attributes. SCIFIO follows the OME
+ * syntax of what is an "image" - in that top-level is really a dataset, which
  * are arbitrary lists of one or more images. Images are the pixel containers,
  * and metadata can exist at both the image and dataset level.
- * </p>
- * <p>
- * The {@code DatasetMetadata} and {@code ImageMetadata} classes
- * encode this hierarchy and provide basic information, such as image
- * dimensionality, color and index flags, etc. Translating format-specific
- * metadata to an agnostic representation creates a common ground for operating
- * on datasets.
  * </p>
  * 
  * <h3>Changes since Bio-Formats</h3>
@@ -71,7 +60,7 @@
  *  first, to ease the process of creating new formats by external developers,
  *  by designing each component to operate without consideration for how the
  *  others work. This modularity then facilitates extensibility. For example,
- *  SCIFIO comes with a simple {@code CoreMetadata} class that encapsulates a
+ *  SCIFIO comes with a simple {@code ImageMetadata} class that encapsulates a
  *  baseline of image attributes. To replace this generation with OME-XML could
  *  be as simple as adding a new {@code OMEXML-Translator} class to the
  *  classpath.
@@ -83,7 +72,7 @@
  *  </p>
  *  </li>
  *  <li>
- *  Adding a context ({@code SCIFIO}) object. In Bio-Formats, readers held
+ *  Leveraging the scijava-common Context. In Bio-Formats, readers held
  *  state (e.g. the current image index). In SCIFIO, as much as possible,
  *  state is removed from all components and stored in one central location
  *  (the context). This makes SCIFIO much more friendly for using in a
@@ -91,7 +80,13 @@
  *  software.
  *  <p>
  *  Note that all potentially context-sensitive components can access the
- *  context in which they were created via the {@link ome.scifio.HasContext} interace.
+ *  context in which they were created, via the {@link org.scijava.Contextual} interface.
+ *  </p>
+ *  <p>
+ *  Note also that the scijava-common Context provides a standard notion of
+ *  services. Thus the {@link ome.scifio.services} package has been heavily
+ *  reworked.
+ *  </p>
  *  </li>
  *  <li>
  *  Dataset and Image terminology. In Bio-Formats, a file was a collection of
@@ -153,6 +148,18 @@
  *  by a single object.
  *  </p>
  *  </li>
+ *  <li>
+ *  {@link ome.scifio.Plane}s. In Bio-Formats, readers always returned byte[],
+ *  or maybe Objects which were assumed to be BufferedImages. This left very
+ *  few hooks for manipulation of the resultant data. In SCIFIO we define
+ *  this relationship via the Plane hierarchy, which ties together the concept
+ *  of an image plane + ColorTable, and facilitates future extensibility, e.g.
+ *  via new Plane types.
+ *  <p>
+ *  Currently SCIFIO provides implementations for ByteArray and BufferedImage
+ *  planes, to mirror the behavior of Bio-Formats.
+ *  </p>
+ *  </li>
  * </ul>
  * 
  * <h3>Future plans</h3>
@@ -160,47 +167,8 @@
  * be implemented, pending discussion.
  * <ul>
  *  <li>
- *  Decouple {@link ome.scifio.Reader#openBytes} methods and byte arrays. This requires
- *  the creation of a new {@code Plane} interface that can be specialized
- *  (e.g. via {@code ByteArrayPlane} or {@code BufferedImagePlane}) while
- *  still providing a contractual translation to a byte array.
- *  <p>
- *  This will make these methods significantly more general and require little
- *  to no workaround for any future image format that doesn't explicitly use a
- *  byte[] to represent data.
- *  </p>
- *  <p>
- *  Furthermore, having a {@code Plane} object allows for more testing seams,
- *  and facilitates a tighter bind with color tables. In Bio-Formats, the
- *  color table accessors were in the reader but had no guarantee if a
- *  plane hadn't been read. In SCIFIO, we can eliminate the get8BitLookupTable
- *  and get16BitLookupTable methods completely and just return each plane
- *  as a set of pixel data + (generic) color table.
- *  </p>
- *  </li>
- *  <li>
- *  <p>
- *  ColorTable refactoring. SCIFIO will be converted to use the imglib2 
- *  {@link net.imglib2.display.ColorTable} to represent all ColorTables.
- *  In Bio-Formats there was always a 16-bit or 8-bit color table dichotomy.
- *  Eliminating such a dependency makes the software more flexible and
- *  extensible.
- *  </p>
- *  </li>
- *  <li>
- *  Generic hiding. The introduction of generics to the many components of
- *  SCIFIO is great for encoding their relationship, but at low levels when
- *  writing general image IO code, the final {@code Format} types shouldn't
- *  be required to be known. Thus wildcards are heavily relied upon, which can be
- *  confusing and frustrating - even prohibiting some syntax that one would
- *  reasonably expect to be valid.
- *  <p>
- *  Our intent is to hide the generics at the lowest interface levels, as was
- *  done in {@link net.imglib2.display.ColorTable}. This allows generics to be
- *  built into the middle layers of code and ensure compile-time safety, but
- *  without affecting the two most probable use cases when coding against SCIFIO:
- *  the interface and the concrete implementations.
- *  </p>
+ *  Translate more formats! The goal is to translate all the open source formats
+ *  that were supported by Bio-Formats by the end of May.
  *  </li>
  *  <li>
  *  Add default components. Currently implementing a new {@code Format}
@@ -265,7 +233,7 @@
  *  </li>
  *  <li>
  *  Create {@code OriginalMetadata} class. Currently both 
- *  {@code DatasetMetadata} and {@code ImageMetadata} maintain
+ *  {@code Metadata} and {@code ImageMetadata} maintain
  *  {@code HashTables} for general metadata storage. This should be
  *  standardized into a new class that works more intelligently in the SCIFIO
  *  framework.

@@ -38,10 +38,13 @@ package ome.scifio;
 import org.scijava.plugin.SortablePlugin;
 
 /**
- * Abstract superclass for HasSCIFIO implementations.
+ * Abstract superclass for all classes that implement
+ * {@link ome.scifio.HasSCIFIO}.
+ * 
+ * @see ome.scifio.HasSCIFIO
+ * @see ome.scifio.SCIFIO
  * 
  * @author Mark Hiner
- *
  */
 public class AbstractHasSCIFIO extends SortablePlugin
   implements HasSCIFIO
@@ -52,7 +55,11 @@ public class AbstractHasSCIFIO extends SortablePlugin
   
   // -- HasSCIFIO API Methods --
   
+  /*
+   * @see ome.scifio.HasSCIFIO#scifio()
+   */
   public SCIFIO scifio() {
+  	// Lazily creates a SCIFIO wrapping this instance's context
     if (scifio == null) scifio = new SCIFIO(getContext());
     
     return scifio;

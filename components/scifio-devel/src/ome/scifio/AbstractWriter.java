@@ -52,9 +52,15 @@ import ome.scifio.util.FormatTools;
 import ome.scifio.util.SCIFIOMetadataTools;
 
 /**
- * Abstract superclass of all SCIFIO Writer components.
+ * Abstract superclass of all SCIFIO {@link ome.scifio.Writer} implementations.
+ * 
+ * @see ome.scifio.Writer
+ * @see ome.scifio.HasFormat
+ * @see ome.scifio.Metadata
  *
  * @author Mark Hiner
+ * 
+ * @param <M> - The Metadata type required by this Writer.
  */
 public abstract class AbstractWriter<M extends TypedMetadata>
   extends AbstractHasFormat implements TypedWriter<M> {
@@ -65,7 +71,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
 
   // -- Fields --
 
-  /** Type-specific Metadata values. */
+  /** Metadata, of the output type, describing the input source. */
   protected M metadata;
 
   /** Frame rate to use when writing in frames per second, if applicable. */
@@ -98,7 +104,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   /** Whether or not we are writing planes sequentially. */
   protected boolean sequential;
 
-  /** Current file. */
+  /** Where the image should be written. */
   protected RandomAccessOutputStream out;
 
   // -- Writer API Methods --

@@ -41,10 +41,15 @@ import org.scijava.plugin.SortablePlugin;
 import net.imglib2.display.ColorTable;
 
 /**
- * Abstract superclass for {@link Plane} implementations in SCIFIO.
+ * Abstract superclass for {@link ome.scifio.Plane} implementations in SCIFIO.
+ * 
+ * @see ome.scifio.Plane
+ * @see ome.scifio.DataPlane
  * 
  * @author Mark Hiner
- *
+ * 
+ * @param <T> - The underlying data type used by this Plane
+ * @param <P> - A recursive reference to this concrete class
  */
 public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortablePlugin 
   implements DataPlane<T> {

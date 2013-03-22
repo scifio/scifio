@@ -40,9 +40,15 @@ import java.io.IOException;
 import ome.scifio.util.FormatTools;
 
 /**
+ * Abstract superclass for all {@link ome.scifio.Reader} implementations
+ * that return a {@link ome.scifio.ByteArrayPlane} when reading datasets.
+ * 
+ * @see ome.scifio.Reader
+ * @see ome.scifio.ByteArrayPlane
+ * 
  * @author Mark Hiner
  *
- * @param <M>
+ * @param <M> - The Metadata type required by this Reader.
  */
 public abstract class ByteArrayReader<M extends TypedMetadata>
   extends AbstractReader<M, ByteArrayPlane> {

@@ -61,13 +61,18 @@ package ome.scifio;
  * 
  * @see ome.scifio.Format#createMetadata()
  * @see ome.scifio.Metadata#reset(Class)
+ * @see ome.scifio.services.TranslatorService
+ * 
  * @author Mark Hiner
  */
 public interface Translator extends ScifioPlugin, HasSCIFIO {
 
   // -- Fields --
   
+	/** Source key flag, for use in annotations. */
   public static final String SOURCE = "source";
+
+  /** Destination key flag, for use in annotations. */
   public static final String DEST = "dest";
   
   // -- Translator API methods --

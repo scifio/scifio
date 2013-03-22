@@ -38,18 +38,25 @@ package ome.scifio;
 import org.scijava.Contextual;
 
 /**
- * Convenience interface for caching and returning a SCIFIO instance.
+ * Convenience interface for caching and returning a {@link ome.scifio.SCIFIO} instance.
+ * <p>
+ * The SCIFIO class is a convenience wrapper of the {@link org.scijava.Context}. It has no
+ * state and thus can be freely created around any Context, but there is some initialization
+ * overhead. Thus it can be preferrable to simply cache a SCIFIO reference. It also simplfies
+ * code, compared to manually constructing a new SCIFIO.
+ * </p>
+ * 
+ * @see ome.scifio.SCIFIO
+ * @see org.scijava.Context
  * 
  * @author Mark Hiner
- *
  */
 public interface HasSCIFIO extends Contextual { 
   
   /**
-   * Returns the cached SCIFIO instance.
+   * Returns the SCIFIO instance associated with this instance.
    * 
-   * @return
+   * @return The cached SCIFIO instance.
    */
   public SCIFIO scifio();
-  
 }

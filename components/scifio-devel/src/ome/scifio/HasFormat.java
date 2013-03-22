@@ -37,16 +37,19 @@
 package ome.scifio;
 
 /**
- * Super-interface for SCIFIO components that only relate to a single
+ * Super-interface for SCIFIO components that relate back to a 
  * {@link ome.scifio.Format}.
+ * 
+ * @see ome.scifio.Format
  *
  * @author Mark Hiner
- *
  */
 public interface HasFormat extends HasSCIFIO {
 
   /**
    * Provides a link back to the format associated with this component.
+   * 
+   * @return the associated Format
    */
   Format getFormat();
 

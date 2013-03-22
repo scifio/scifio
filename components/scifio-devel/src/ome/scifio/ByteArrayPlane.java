@@ -43,8 +43,10 @@ import org.scijava.Context;
  * A naive {@link ome.scifio.Plane} implementation that uses {@code byte[]} for its underlying
  * data type.
  * 
+ * @see ome.scifio.Plane
+ * @see ome.scifio.DataPlane
+ * 
  * @author Mark Hiner
- *
  */
 public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 

@@ -41,11 +41,13 @@ import java.lang.reflect.Modifier;
 import java.util.StringTokenizer;
 
 /**
- * This class can be used as a flag to ensure all SCIFIO objects are printed in a consistent
+ * This class can be used as a flag to ensure all SCIFIO components are printed in a consistent
  * manner via their toString methods.
  * 
  * This printing traverses up the dependency tree of the concrete implementation, and will also
- * follow paths down through fields (of any class in the hierarchy) that extend ScifioPrintable.
+ * follow paths down through {@link ome.scifio.Field}s (of any class in the hierarchy).
+ * 
+ * @see ome.scifio.Field
  * 
  * @author Mark Hiner
  *

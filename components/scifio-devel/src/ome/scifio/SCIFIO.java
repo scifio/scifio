@@ -46,13 +46,31 @@ import org.scijava.Context;
 import org.scijava.service.Service;
 
 /**
+ * Convenience {@link org.scijava.Context} wrapper.
+ * <p>
+ * Provides easy accessor methods for the SCIFIO-specific 
+ * {@link org.scijava.service.Service} implementations, bypassing the
+ * need to call the {@code getService(Service.class} method.
+ * </p>
+ * <p> 
+ * This class is intended to be a disposable wrapper that can easily
+ * be created and forgotten as needed.
+ * </p>
+ * 
+ * @see org.scijava.Context
+ * @see ome.scifio.services.InitializeService
+ * @see ome.scifio.services.FormatService
+ * @see ome.scifio.services.TranslatorService
+ * @see ome.scifio.services.LocationService
+ * @see ome.scifio.services.FilePatternService
+ * 
  * @author Mark Hiner
- *
  */
 public class SCIFIO extends AbstractContextual {
   
   // -- Fields --
   
+	// Cached services
   private InitializeService initializeService = null;
   private FormatService formatService = null;
   private TranslatorService translatorService = null;
@@ -67,7 +85,7 @@ public class SCIFIO extends AbstractContextual {
   }
 
   /**
-   * Creates a new SCIFIO application context.
+   * Creates a new SCIFIO application with zero or all services..
    *
    * @param empty If true, the context will be empty; otherwise, it will be
    * initialized with all available services.
@@ -76,32 +94,62 @@ public class SCIFIO extends AbstractContextual {
     this(new Context(empty));
   }
   
+  /**
+   * Creates a new SCIFIO wrapping the provided context.
+   * 
+   * @param context - The context to wrap
+   */
   public SCIFIO(Context context) {
     setContext(context);
   }
   
   // -- Service Accessors --
   
+  /**
+   * InitializeService accessor.
+   * 
+   * @return The InitializeService instance associated with the wrapped Context.
+   */
   public InitializeService initializer() {
   	initializeService = nullCheck(initializeService, InitializeService.class);
     return initializeService;
   }
   
+  /**
+   * FormatService accessor.
+   * 
+   * @return The FormatService instance associated with the wrapped Context.
+   */
   public FormatService formats() {
   	formatService = nullCheck(formatService, FormatService.class);
     return formatService;
   }
   
+  /**
+   * TranslatorService accessor.
+   * 
+   * @return The TranslatorService instance associated with the wrapped Context.
+   */
   public TranslatorService translators() {
   	translatorService = nullCheck(translatorService, TranslatorService.class);
     return translatorService;
   }
   
+  /**
+   * LocationService accessor.
+   * 
+   * @return The LocationService instance associated with the wrapped Context.
+   */
   public LocationService locations() {
   	locationService = nullCheck(locationService, LocationService.class);
     return locationService;
   }
   
+  /**
+   * FilePatternService accessor.
+   * 
+   * @return The FilePatternService instance associated with the wrapped Context.
+   */
   public FilePatternService patterns() {
   	filePatternService = nullCheck(filePatternService, FilePatternService.class);
     return filePatternService;
@@ -109,6 +157,7 @@ public class SCIFIO extends AbstractContextual {
   
   // -- Helper Methods --
   
+  /* Checks if the provided service is null. If so, queries the Context. */
   private <S extends Service> S nullCheck(S service, Class<S> serviceClass) {
   	if (service == null) service = getContext().getService(serviceClass);
   	return service;

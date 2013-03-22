@@ -41,8 +41,12 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 /**
+ * Abstract superclass of all {@link ome.scifio.ImageMetadata} implementations.
+ * 
+ * @see ome.scifio.ImageMetadata
+ * @see ome.scifio.DefaultImageMetadata
+ * 
  * @author Mark Hiner
- *
  */
 public abstract class AbstractImageMetadata implements ImageMetadata {
 
@@ -143,11 +147,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   @Field(label = "thumbnail")
   private boolean thumbnail;
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-
   // -- Constructors --
 
   public AbstractImageMetadata() {
@@ -178,74 +177,128 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
   // -- Setters -- 
 
+  /*
+   * @see ome.scifio.ImageMetadata#setThumbSizeX(int)
+   */
   public void setThumbSizeX(final int thumbSizeX) {
     this.thumbSizeX = thumbSizeX;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setThumbSizeY(int)
+   */
   public void setThumbSizeY(final int thumbSizeY) {
     this.thumbSizeY = thumbSizeY;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setPixelType(int)
+   */
   public void setPixelType(final int pixelType) {
     this.pixelType = pixelType;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setBitsPerPixel(int)
+   */
   public void setBitsPerPixel(final int bitsPerPixel) {
     this.bitsPerPixel = bitsPerPixel;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setChannelLengths(int[])
+   */
   public void setChannelLengths(final int[] cLengths) {
     this.cLengths = cLengths;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setChannelTypes(java.lang.String[])
+   */
   public void setChannelTypes(final String[] cTypes) {
     this.cTypes = cTypes;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setOrderCertain(boolean)
+   */
   public void setOrderCertain(final boolean orderCertain) {
     this.orderCertain = orderCertain;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setRGB(boolean)
+   */
   public void setRGB(final boolean rgb) {
     this.rgb = rgb;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setLittleEndian(boolean)
+   */
   public void setLittleEndian(final boolean littleEndian) {
     this.littleEndian = littleEndian;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setInterleaved(boolean)
+   */
   public void setInterleaved(final boolean interleaved) {
     this.interleaved = interleaved;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setIndexed(boolean)
+   */
   public void setIndexed(final boolean indexed) {
     this.indexed = indexed;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setFalseColor(boolean)
+   */
   public void setFalseColor(final boolean falseColor) {
     this.falseColor = falseColor;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setMetadataComplete(boolean)
+   */
   public void setMetadataComplete(final boolean metadataComplete) {
     this.metadataComplete = metadataComplete;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setImageMetadata(java.util.Hashtable)
+   */
   public void setImageMetadata(final Hashtable<String, Object> imageMetadata) {
     this.imageMetadata = imageMetadata;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setThumbnail(boolean)
+   */
   public void setThumbnail(final boolean thumbnail) {
     this.thumbnail = thumbnail;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setAxisTypes(net.imglib2.meta.AxisType[])
+   */
   public void setAxisTypes(final AxisType[] axisTypes) {
     this.axisTypes = axisTypes;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setAxisLengths(int[])
+   */
   public void setAxisLengths(final int[] axisLengths) {
     this.axisLengths = axisLengths;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setAxisLength(net.imglib2.meta.AxisType, int)
+   */
   public void setAxisLength(final AxisType axis, final int length) {
     for (int i = 0; i < axisTypes.length; i++) {
       if (axisTypes[i] == axis) {
@@ -254,23 +307,37 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     }
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setAxisType(int, net.imglib2.meta.AxisType)
+   */
   public void setAxisType(final int index, final AxisType axis) {
     axisTypes[index] = axis;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#setPlaneCount(int)
+   */
   public void setPlaneCount(final int planeCount) {
     this.planeCount = planeCount;
   }
   
   // -- Getters --
     
+  /*
+   * @see ome.scifio.ImageMetadata#getPlaneCount()
+   */
   public int getPlaneCount() {
     return planeCount;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#getThumbSizeX()
+   */
   public int getThumbSizeX() {
     int thumbX = thumbSizeX;
     
+    // If the X thumbSize isn't explicitly set, scale the actual width using
+    // the thumbnail dimension constant
     if (thumbX == 0) {
       int sx = getAxisLength(Axes.X);
       int sy = getAxisLength(Axes.Y);
@@ -285,9 +352,14 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     return thumbX;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#getThumbSizeY()
+   */
   public int getThumbSizeY() {
     int thumbY = thumbSizeY;
     
+    // If the Y thumbSize isn't explicitly set, scale the actual width using
+    // the thumbnail dimension constant
     if (thumbY == 0) {
       int sx = getAxisLength(Axes.X);
       int sy = getAxisLength(Axes.Y);
@@ -303,76 +375,123 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     return thumbY;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#getPixelType()
+   */
   public int getPixelType() {
     return pixelType;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#getBitsPerPixel()
+   */
   public int getBitsPerPixel() {
     return bitsPerPixel;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#getChannelLengths()
+   */
   public int[] getChannelLengths() {
     return cLengths;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#getChannelTypes()
+   */
   public String[] getChannelTypes() {
     return cTypes;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#getAxes()
+   */
   public AxisType[] getAxes() {
     return axisTypes;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#getAxesLengths()
+   */
   public int[] getAxesLengths() {
     return axisLengths;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#isOrderCertain()
+   */
   public boolean isOrderCertain() {
     return orderCertain;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#isRGB()
+   */
   public boolean isRGB() {
     return rgb;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#isLittleEndian()
+   */
   public boolean isLittleEndian() {
     return littleEndian;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#isInterleaved()
+   */
   public boolean isInterleaved() {
     return interleaved;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#isIndexed()
+   */
   public boolean isIndexed() {
     return indexed;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#isFalseColor()
+   */
   public boolean isFalseColor() {
     return falseColor;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#isMetadataComplete()
+   */
   public boolean isMetadataComplete() {
     return metadataComplete;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#getImageMetadata()
+   */
   public Hashtable<String, Object> getImageMetadata() {
     return imageMetadata;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#isThumbnail()
+   */
   public boolean isThumbnail() {
     return thumbnail;
   }
 
-  public static long getSerialversionuid() {
-    return serialVersionUID;
-  }
-
+  /*
+   * @see ome.scifio.ImageMetadata#getEffectiveSizeC()
+   */
   public int getEffectiveSizeC() {
     final int sizeZT = getAxisLength(Axes.Z)* getAxisLength(Axes.TIME);
     if(sizeZT == 0) return 0;
     return getPlaneCount() / sizeZT;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#getRGBChannelCount()
+   */
   public int getRGBChannelCount() {
     if (!isRGB()) return 1;
     
@@ -380,52 +499,30 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     if (effC == 0) return 0;
     return getAxisLength(Axes.CHANNEL) / effC;
   } 
-  
-  /**
-   * Gets the type of the (zero-indexed) specified plane.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param planeIndex - index of the desired plane within the specified image
-   * @return Type of the desired plane.
+
+  /*
+   * @see ome.scifio.ImageMetadata#getAxisType(int)
    */
   public AxisType getAxisType(final int planeIndex) {
     return getAxes()[planeIndex];
   }
 
-  /**
-   * Gets the length of the (zero-indexed) specified plane.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param planeIndex - index of the desired plane within the specified image
-   * @return Length of the desired plane.
+  /*
+   * @see ome.scifio.ImageMetadata#getAxisLength(int)
    */
   public int getAxisLength(final int planeIndex) {
-    //TOOD magic number
     return planeIndex == -1 ? 0 : getAxesLengths()[planeIndex];
   }
   
-  /**
-   * A convenience method for looking up the length of an axis
-   * based on its type. No knowledge of plane ordering is necessary.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param t - desired axis type
-   * @return
+  /*
+   * @see ome.scifio.ImageMetadata#getAxisLength(net.imglib2.meta.AxisType)
    */
   public int getAxisLength(final AxisType t) {
     return getAxisLength(getAxisIndex(t));
   }
 
-  /**
-   * Returns the array index for the specified AxisType. This index
-   * can be used in other Axes methods for looking up lengths, etc...
-   * </br></br>
-   * This method can also be used as an existence check for the
-   * targe AxisType.
-   * 
-   * @param imageIndex - index for multi-image files
-   * @param type - axis type to look up
-   * @return The index of the desired axis or -1 if not found.
+  /*
+   * @see ome.scifio.ImageMetadata#getAxisIndex(net.imglib2.meta.AxisType)
    */
   public int getAxisIndex(final AxisType type) {
     for (int i = 0; i < getAxes().length; i++) {
@@ -434,26 +531,15 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     return -1; // throw exception?
   }
 
-  /**
-   * Appends the provided AxisType to the current AxisType array
-   * and creates corresponding length = 0 entry in the axis lengths
-   * array.
-   * 
-   * @param imageIndex
-   * @param type
+  /*
+   * @see ome.scifio.ImageMetadata#addAxis(net.imglib2.meta.AxisType)
    */
   public void addAxis(final AxisType type) {
     addAxis(type, 0);
   }
 
-  /**
-   * Appends the provided AxisType to the current AxisType array
-   * and creates a corresponding entry with the specified value in
-   * axis lengths.
-   * 
-   * @param imageIndex
-   * @param type
-   * @param value
+  /*
+   * @see ome.scifio.ImageMetadata#addAxis(net.imglib2.meta.AxisType, int)
    */
   public void addAxis(final AxisType type, final int value)
   {
@@ -473,12 +559,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     setAxisLengths(tmpAxisLength);
     setAxisTypes(tmpAxisTypes);
   }
+  
+  // -- Serializable API Methods --
 
   // -- Object API --
   
   @Override
   public String toString() {
     return new FieldPrinter(this).toString();
-  } 
-
+  }
 }

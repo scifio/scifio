@@ -52,9 +52,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract superclass of all SCIFIO Parser components.
+ * Abstract superclass of all SCIFIO {@link ome.scifio.Parser} implementations.
+ * 
+ * @see ome.scifio.Parser
+ * @see ome.scifio.Metadata
+ * @see ome.scifio.HasFormat
  *
  * @author Mark Hiner
+ * 
+ * @param <M> - The Metadata type returned by this Parser.
  */
 public abstract class AbstractParser<M extends TypedMetadata>
   extends AbstractHasFormat implements TypedParser<M> {
@@ -65,13 +71,13 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
   // -- Fields --
 
-  /** Current file. */
+  /** Current image source. */
   protected RandomAccessInputStream in;
 
-  /** Type-specific metadata values. */
+  /** Metadata for the current source. */
   protected M metadata;
 
-  /** Name of current file. */
+  /** String id of current source. */
   protected String currentId;
 
   /** Whether or not to filter out invalid metadata. */
@@ -367,7 +373,8 @@ public abstract class AbstractParser<M extends TypedMetadata>
       init(stream);
 
       if (saveOriginalMetadata) {
-        //TODO store all metadata in OMEXML store.. or equivalent function? as per setId.. or handle via annotations
+        //TODO store all metadata in OMEXML store.. 
+      	// or equivalent function? as per setId.. or handle via annotations
       }
     }
     
@@ -434,6 +441,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
   /* Sets the input stream for this parser if provided a new stream */
   private void init(final RandomAccessInputStream stream) throws IOException {
 
+  	// Check to see if the stream is already open
     if (in != null) {
       final String[] s = getUsedFiles();
       for (int i = 0; i < s.length; i++) {

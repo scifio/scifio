@@ -55,6 +55,7 @@ import ome.scifio.io.RandomAccessOutputStream;
  * <a href="">Gitweb</a></dd></dl>
  * 
  * @author Mark Hiner
+ * 
  * @see ome.scifio.Plane
  * @see ome.scifio.Reader#openPlane
  */

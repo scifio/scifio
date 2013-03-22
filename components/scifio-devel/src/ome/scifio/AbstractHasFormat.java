@@ -36,17 +36,24 @@
 package ome.scifio;
 
 /**
- * Abstract super class for HasFormat implementations
+ * Abstract superclass for all classes that implement
+ * {@link ome.scifio.HasFormat}.
+ *
+ * @see ome.scifio.HasFormat
+ * @see ome.scifio.services.FormatService
  * 
  * @author Mark Hiner
- *
  */
 public abstract class AbstractHasFormat extends AbstractHasSCIFIO
   implements HasFormat {
   
   // -- HasFormat API --
 
+  /*
+   * @see ome.scifio.HasFormat#getFormat()
+   */
   public Format getFormat() {
+  	// All Format lookups go through the FormatService
     return scifio().formats().getFormatFromComponent(getClass());
   }
 }

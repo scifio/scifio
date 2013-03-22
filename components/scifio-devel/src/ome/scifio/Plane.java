@@ -50,10 +50,9 @@ import net.imglib2.display.ColorTable;
  * This interface guarantees that a Plane will have a ColorTable, and
  * the pixel data of a Plane can ultimately be converted to a byte[].
  * 
+ * @see net.imglib2.display.ColorTable
+ * 
  * @author Mark Hiner
- *
- * @param <T> - the native data type used to store this plane's pixel
- *            information.
  */
 public interface Plane extends Contextual {
 
@@ -91,40 +90,43 @@ public interface Plane extends Contextual {
   ImageMetadata getImageMetadata();
   
   /**
-   * @return
+   * @return The x offset of this Plane relative to the origin image
    */
   int getxOffset();
   
   /**
-   * @return
+   * @return The y offset of this Plane relative to the origin image
    */
   int getyOffset();
   
   /**
-   * @return
+   * @return The width of this Plane
    */
   int getxLength();
   
   /**
-   * @return
+   * @return The height of this plane
    */
   int getyLength();
   
   /**
+   * Populates this planes offsets, dimensions and Metadata.
    * 
-   * 
-   * @param meta
-   * @param xOffset
-   * @param yOffset
-   * @param xLength
-   * @param yLength
+   * @param meta - ImageMetadata to associate with this Plane
+   * @param xOffset - X offset for this Plane
+   * @param yOffset - Y offset for this Plane
+   * @param xLength - Width of this Plane
+   * @param yLength - Height of this Plane
+   * @return A reference to this Plane
    */
   Plane populate(ImageMetadata meta, int xOffset, int yOffset, int xLength,
        int yLength);
   
   /**
-   * @param p
-   * @return
+   * Populates this plane by copying the fields of the provided plane
+   * 
+   * @param p - A Plane to copy
+   * @return A reference to this Plane
    */
   Plane populate(Plane p);
   

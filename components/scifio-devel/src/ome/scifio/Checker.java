@@ -40,16 +40,19 @@ import java.io.IOException;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
- * Interface for all SCIFIO Checker objects.
+ * Interface for all SCIFIO Checker components.
  * <p>
  * {@code Checker} components are used to determine if the {@code Format}
  * they are associated with is compatibile with a given image. This is
- * accomplished via the {@link isFormat} methods.
+ * accomplished via the {@link #isFormat} methods.
  * </p>
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
+ *
+ * @see ome.scifio.Format
+ * @see ome.scifio.HasFormat
  * 
  * @author Mark Hiner
  */
@@ -59,21 +62,23 @@ public interface Checker extends HasFormat {
   
   /**
    * Checks if the provided image source is compatible with this {@code Format}.
-   * Will not open the image during this process.
+   * Will not open the source during this process.
    * 
-   * @param name the name of an image source to check.
+   * @param name path to the image source to check.
    * @return True if the image source is compatible with this {@code Format}.
    */
   boolean isFormat(String name);
   
   /**
    * Checks if the provided image source is compatible with this {@code Format}.
+   * <p>
    * If {@code open} is true and the source name is insufficient to determine
    * the image type, the source may be opened for further analysis, or other
    * relatively expensive file system operations (such as file existence
    * tests and directory listings) may be performed.
+   * </p>
    *
-   * @param name the name of an image source to check.
+   * @param name path to the image source to check.
    * @param open if true, allows file access during the checking process.
    * @return True if the image source is compatible with this {@code Format}.
    */
@@ -83,7 +88,8 @@ public interface Checker extends HasFormat {
    * Checks if the given stream is a valid stream for this {@code Format}.
    *  
    * @param stream the image source to check.
-   * @return True if the image source is compatible.
+   * @return True if {@code stream} is compatible with this {@code Format}.
+   * @throws IOException
    */
   boolean isFormat(RandomAccessInputStream stream) throws IOException;
   
