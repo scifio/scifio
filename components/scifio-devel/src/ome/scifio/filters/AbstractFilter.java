@@ -55,8 +55,10 @@ import org.slf4j.LoggerFactory;
  * </p>
  * 
  * @author Mark Hiner
+ * 
+ * @see ome.scifio.filters.Filter
  *
- * @param <T> - Parent data type of this filter.
+ * @param <T> - Parent type of this filter.
  */
 public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Filter {
 
@@ -66,7 +68,10 @@ public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Fil
   
   // -- Fields --
   
+  /* Parent to delegate to. */
   private T parent = null;
+  
+  /* For checking in setParent */
   private Class<? extends T> parentClass;
   
   // -- Constructor --
@@ -89,11 +94,11 @@ public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Fil
    */
   @SuppressWarnings("unchecked")
   public void setParent(Object parent) {
-    if(parentClass.isAssignableFrom(parent.getClass()))
+    if (parentClass.isAssignableFrom(parent.getClass()))
       this.parent = (T) parent;
     else {
-      throw new IllegalArgumentException("Invalid parent. Provided: " + parent.getClass() + 
-              " Expected: " + parentClass);
+      throw new IllegalArgumentException("Invalid parent. Provided: " +
+      				parent.getClass() + " Expected: " + parentClass);
     }
   }
   

@@ -58,9 +58,9 @@ import ome.scifio.io.RandomAccessInputStream;
  * as {@link ome.scifio.discovery.DiscoverableFilter} for discovery by {@code SezPoz}.
  * </p>
  * <p>
- * NB: This class attempts to locate a type-matching DatasetMetadataWrapper to protectively
- * wrap the wrapped {@code Reader}'s DatasetMetadata. If none is found, a reference to the
- * {@code Reader's} DatasetMetadata itself is used.
+ * NB: This class attempts to locate a type-matching MetadataWrapper to protectively
+ * wrap the wrapped {@code Reader}'s Metadata. If none is found, a reference to the
+ * {@code Reader's} Metadata itself is used.
  * </p>
  * 
  * @author Mark Hiner
@@ -71,16 +71,26 @@ import ome.scifio.io.RandomAccessInputStream;
  * @see ome.scifio.discovery.DiscoverableMetadataWrapper
  * @see ome.scifio.filters.AbstractMetadataWrapper
  */
-public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implements Reader {
+public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
+	implements Reader
+{
 
   // -- Fields --
   
+  /* Need to wrap each Reader's Metadata separately */
   private Metadata wrappedMeta = null;
+  
+  private Class<? extends Metadata> metaClass;
   
   // -- Constructor --
   
   public AbstractReaderFilter() {
+    this(null);
+  }
+  
+  public AbstractReaderFilter(Class<? extends Metadata> metaClass) {
     super(Reader.class);
+    this.metaClass = metaClass;
   }
   
   // -- AbstractReaderFilter API Methods --
@@ -112,9 +122,9 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
   }
   
   /**
-   * @return
+   * Convenience accessor for the parent's Metadata
    */
-  public Metadata getParentMeta() {
+  protected Metadata getParentMeta() {
     return getParent().getMetadata();
   }
   
@@ -281,19 +291,17 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
    */
   public void setMetadata(Metadata meta) throws IOException {
     getParent().setMetadata(meta);
+    
+    if (wrappedMeta instanceof MetadataWrapper) 
+      ((MetadataWrapper)wrappedMeta).wrap(meta);
+    else
+      wrappedMeta = meta;
   }
 
   /*
    * @see ome.scifio.Reader#getMetadata()
    */
   public Metadata getMetadata() {
-    return getParent().getMetadata();
-  }
-
-  /*
-   * @see ome.scifio.Reader#getDatasetMetadata()
-   */
-  public Metadata getDatasetMetadata() {
     return wrappedMeta;
   }
 
@@ -423,5 +431,14 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader> implem
    */
   public void setContext(Context ctx) {
     getParent().setContext(ctx);
+  }
+  
+  // -- Helper methods --
+  
+  /* Returns true if this filter's metdata can be cast to ChannelFillerMetadata */
+  protected boolean metaCheck() {
+    Metadata meta = getMetadata();
+    
+    return metaClass.isAssignableFrom(meta.getClass());
   }
 }

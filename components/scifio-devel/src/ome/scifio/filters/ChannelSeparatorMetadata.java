@@ -44,8 +44,13 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 /**
+ * {@link ome.scifio.filters.MetadataWrapper} implementation specifically
+ * for use with the {@link ome.scifio.filters.ChannelSeparator}.
+ * 
+ * @see ome.scifio.filters.MetadataWrapper
+ * @see ome.scifio.filters.ChannelSeparator
+ * 
  * @author Mark Hiner
- *
  */
 @Plugin(type=MetadataWrapper.class, attrs={
   @Attr(name=ChannelSeparatorMetadata.METADATA_KEY, value=ChannelSeparatorMetadata.METADATA_VALUE)
@@ -76,7 +81,7 @@ public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
   // -- Reader API Methods --
   
   /*
-   * @see ome.scifio.AbstractDatasetMetadata#isRGB(int)
+   * @see ome.scifio.AbstractMetadata#isRGB(int)
    */
   public boolean isRGB(int imageIndex) {
     return isIndexed(imageIndex) && !isFalseColor(imageIndex)
@@ -84,7 +89,7 @@ public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
   }
   
   /*
-   * @see ome.scifio.AbstractDatasetMetadata#getAxes(int)
+   * @see ome.scifio.AbstractMetadata#getAxes(int)
    */
   public AxisType[] getAxes(int imageIndex) {
     if (unwrap().isRGB(imageIndex) && !unwrap().isIndexed(imageIndex)) {

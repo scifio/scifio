@@ -45,7 +45,6 @@ import net.imglib2.display.ColorTable;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
 import ome.scifio.FormatException;
-import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.common.DataTools;
 
@@ -88,6 +87,12 @@ public class ChannelFiller extends AbstractReaderFilter {
    * Cached parent plane
    */
   private Plane parentPlane = null;
+  
+  // -- Constructor --
+  
+  public ChannelFiller() {
+    super(ChannelFillerMetadata.class);
+  }
 
   // -- ChannelFiller API --
 
@@ -108,6 +113,7 @@ public class ChannelFiller extends AbstractReaderFilter {
   // -- Filter API Methods --
   
   /*
+   * @see ome.scifio.filters.AbstractReaderFilter#isCompatible(java.lang.Class)
    */
   @Override
   public boolean isCompatible(Class<?> c) {
@@ -116,13 +122,17 @@ public class ChannelFiller extends AbstractReaderFilter {
 
   // -- Reader API methods --
 
-  /* @see Reader#openBytes(int) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#openPlane(int, int)
+   */
   @Override
   public Plane openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
     return openPlaneHelper(getParent().openPlane(imageIndex, planeIndex), null, imageIndex);
   }
 
-  /* @see Reader#openBytes(int, byte[]) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#openPlane(int, int, ome.scifio.Plane)
+   */
   @Override
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
     throws FormatException, IOException
@@ -132,7 +142,9 @@ public class ChannelFiller extends AbstractReaderFilter {
     return openPlaneHelper(parentPlane, plane, imageIndex);
   }
 
-  /* @see Reader#openBytes(int, int, int, int, int) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#openPlane(int, int, int, int, int, int)
+   */
   @Override
   public Plane openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
@@ -140,7 +152,9 @@ public class ChannelFiller extends AbstractReaderFilter {
     return openPlaneHelper(getParent().openPlane(imageIndex, planeIndex, x, y, w, h), null, imageIndex);
   }
 
-  /* @see Reader#openBytes(int, byte[], int, int, int, int) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#openPlane(int, int, ome.scifio.Plane, int, int, int, int)
+   */
   @Override
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x, int y, int w, int h)
     throws FormatException, IOException
@@ -174,7 +188,10 @@ public class ChannelFiller extends AbstractReaderFilter {
     cleanUp();
   }
   
-  /* */
+  /*
+   * This method performs the actual channel filling on the plane returned
+   * by the underlying reader component.
+   */
   protected Plane openPlaneHelper(Plane parentPlane, Plane plane, int imageIndex) {
     if(!isFilled(imageIndex)) return parentPlane;
     
@@ -236,11 +253,4 @@ public class ChannelFiller extends AbstractReaderFilter {
     lutLength = 0;
     filled = null;
   }
-  
-  private boolean metaCheck() {
-    Metadata meta = getMetadata();
-    
-    return meta.getClass().isAssignableFrom(ChannelFillerMetadata.class);
-  }
 }
-

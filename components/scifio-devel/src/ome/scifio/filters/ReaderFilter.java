@@ -41,7 +41,7 @@ import ome.scifio.Metadata;
 import ome.scifio.Reader;
 
 /**
- * {@link ome.scifio.wrappers.WrapperController} for wrapping {@link ome.scifio.Reader} components.
+ * {@link ome.scifio.filters.MasterFilter} for wrapping {@link ome.scifio.Reader} components.
  * 
  * @author Mark Hiner
  *
@@ -113,6 +113,9 @@ public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<R
   
   // -- Reader API Methods --
   
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#getMetadata()
+   */
   public Metadata getMetadata() {
     return fHelper.getParent().getMetadata();
   }

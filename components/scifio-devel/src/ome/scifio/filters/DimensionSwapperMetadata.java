@@ -46,8 +46,13 @@ import org.scijava.plugin.Plugin;
 import net.imglib2.meta.AxisType;
 
 /**
+ * {@link ome.scifio.filters.MetadataWrapper} implementation specifically
+ * for use with the {@link ome.scifio.filters.DimensionSwapper}.
+ * 
+ * @see ome.scifio.filters.MetadataWrapper
+ * @see ome.scifio.filters.DimensionSwapper
+ * 
  * @author Mark Hiner
- *
  */
 @Plugin(type=MetadataWrapper.class, attrs={
   @Attr(name=DimensionSwapperMetadata.METADATA_KEY, value=DimensionSwapperMetadata.METADATA_VALUE)
@@ -57,6 +62,7 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
   // -- Constants --
   
   public static final String METADATA_VALUE = "ome.scifio.filters.DimensionSwapper";
+  
   // -- Fields --
   
   private List<AxisType>[] outputOrder;
@@ -73,28 +79,54 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
   
   // -- DimensionSwapperMetadata API --
   
+  /**
+   * Gets the output order for this dataset. This is an array
+   * of axes configurations that will be returned when requested
+   * from this Metadata. It may be different than the parsed ("input")
+   * axes order for a given image.
+   * 
+   * @return The output order array for this dataset
+   */
   public List<AxisType>[] getOutputOrder() {
     return outputOrder;
   }
 
+  /**
+   * Sets the output order for this dataset. Each position of the provided
+   * array corresponds to the output order axes for that image index.
+   * 
+   * @param outputOrder - Array of output orders for this dataset
+   */
   public void setOutputOrder(List<AxisType>[] outputOrder) {
     this.outputOrder = outputOrder;
   }
   
-  // -- DatasetMetadata API Methods --
+  // -- Metadata API Methods --
   
+  /*
+   * @see ome.scifio.filters.AbstractMetadataWrapper#setChannelDimLengths(int, int[])
+   */
   public void setChannelDimLengths(final int imageIndex, final int[] cLengths) {
     super.setChannelDimLengths(imageIndex, cLengths, false);
   }
   
+  /*
+   * @see ome.scifio.filters.AbstractMetadataWrapper#setChannelDimTypes(int, java.lang.String[])
+   */
   public void setChannelDimTypes(final int imageIndex, final String[] cTypes) {
     super.setChannelDimTypes(imageIndex, cTypes, false);
   }
   
+  /*
+   * @see ome.scifio.filters.AbstractMetadataWrapper#setAxisLengths(int, int[])
+   */
   public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
     super.setAxisLengths(imageIndex, axisLengths, false);
   }
   
+  /*
+   * @see ome.scifio.filters.AbstractMetadataWrapper#setAxisTypes(int, net.imglib2.meta.AxisType[])
+   */
   public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
     super.setAxisTypes(imageIndex, axisTypes, false);
   }

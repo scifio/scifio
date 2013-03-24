@@ -75,11 +75,16 @@ import org.scijava.plugin.PluginService;
  */
 public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> implements MasterFilter<T> {
 
+  // The non-filter object ultimately delegated to
   private T tail;
+  
+  // Index to lookup filter classes. A given PluginInfo lazily instantiates
+  // a given filter, and caches the filter for future use.
   private HashMap<Class<? extends Filter>, PluginInfo<Filter>> refMap =
       new HashMap<Class<? extends Filter>, PluginInfo<Filter>>();
-  private TreeSet<Filter> enabled =
-      new TreeSet<Filter>();
+  
+  // A sorted set of enabled filters
+  private TreeSet<Filter> enabled = new TreeSet<Filter>();
   
   // -- Constructor --
   
@@ -112,10 +117,10 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
     setParent(tail);
   }
   
-  // -- WrapperController API Methods --
+  // -- MasterFilter API Methods --
   
   /*
-   * @see ome.scifio.wrappers.WrapperController#enable(java.lang.Class)
+   * @see ome.scifio.filters.MasterFilter#enable(java.lang.Class)
    */
   public <F extends Filter> F enable(Class<F> filterClass) {
     PluginInfo<Filter> item = refMap.get(filterClass);
@@ -134,7 +139,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
   }
 
   /*
-   * @see ome.scifio.wrappers.WrapperController#disable(java.lang.Class)
+   * @see ome.scifio.filters.MasterFilter#disable(java.lang.Class)
    */
   public boolean disable(Class<? extends Filter> filterClass) {
     PluginInfo<Filter> item = refMap.get(filterClass);

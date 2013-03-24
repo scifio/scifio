@@ -92,6 +92,12 @@ public class ChannelSeparator extends AbstractReaderFilter {
 
   /** Height of last plane opened. */
   private int lastPlaneHeight = -1;
+  
+  // -- Constructor --
+  
+  public ChannelSeparator() {
+    super(ChannelSeparatorMetadata.class);
+  }
 
   // -- ChannelSeparator API methods --
 
@@ -109,7 +115,7 @@ public class ChannelSeparator extends AbstractReaderFilter {
     int originalCount = getParent().getPlaneCount(imageIndex);
 
     if (planeCount == originalCount) return planeIndex;
-    int[] coords = getZCTCoords(imageIndex, planeIndex);
+    int[] coords = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
     coords[1] /= getParentMeta().getRGBChannelCount(imageIndex);
     return FormatTools.getIndex(getParent(), imageIndex, coords[0], coords[1], coords[2]);
   }
@@ -126,6 +132,7 @@ public class ChannelSeparator extends AbstractReaderFilter {
   // -- Filter API Methods --
 
   /*
+   * @see ome.scifio.filters.AbstractReaderFilter#isCompatible(java.lang.Class)
    */
   @Override
   public boolean isCompatible(Class<?> c) {
@@ -134,20 +141,26 @@ public class ChannelSeparator extends AbstractReaderFilter {
   
   // -- Reader API methods --
 
-  /* @see Reader#getImageCount(int) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#getPlaneCount(int)
+   */
   public int getPlaneCount(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
     return (getParentMeta().isRGB(imageIndex) && !getParentMeta().isIndexed(imageIndex) ?
       getParentMeta().getRGBChannelCount(imageIndex) : 1) * getParentMeta().getImageCount();
   }
 
-  /* @see Reader#openBytes(int, int) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#openPlane(int, int)
+   */
   public Plane openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
     return openPlaneHelper(
         getParent().openPlane(imageIndex, planeIndex), null, planeIndex, imageIndex);
   }
 
-  /* @see Reader#openBytes(int, int, byte[]) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#openPlane(int, int, ome.scifio.Plane)
+   */
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
     throws FormatException, IOException
   {
@@ -156,7 +169,9 @@ public class ChannelSeparator extends AbstractReaderFilter {
     return openPlaneHelper(parentPlane, plane, planeIndex, imageIndex);
   }
 
-  /* @see Reader#openBytes(int, int, int, int, int, int) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#openPlane(int, int, int, int, int, int)
+   */
   public Plane openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
   {
@@ -164,7 +179,9 @@ public class ChannelSeparator extends AbstractReaderFilter {
         getParent().openPlane(imageIndex, planeIndex, x, y, w, h), null, planeIndex, imageIndex);
   }
 
-  /* @see Reader#openBytes(int, byte[], int, int, int, int) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#openPlane(int, int, ome.scifio.Plane, int, int, int, int)
+   */
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x, int y, int w, int h)
     throws FormatException, IOException
   {
@@ -173,7 +190,9 @@ public class ChannelSeparator extends AbstractReaderFilter {
     return openPlaneHelper(parentPlane, plane, planeIndex, imageIndex);
   }
 
-  /* @see Reader#openThumbBytes(int) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#openThumbPlane(int, int)
+   */
   public Plane openThumbPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
     FormatTools.assertId(getCurrentFile(), true, 2);
 
@@ -190,20 +209,25 @@ public class ChannelSeparator extends AbstractReaderFilter {
     
     //TODO maybe these imageIndices should be source as well?
 
-    int c = getDatasetMetadata().getAxisLength(imageIndex, Axes.CHANNEL) /
+    int c = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) /
       getParentMeta().getEffectiveSizeC(imageIndex);
     int channel = planeIndex % c;
-    int bpp = FormatTools.getBytesPerPixel(getDatasetMetadata().getPixelType(imageIndex));
+    int bpp = FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
 
     ret.setData(ImageTools.splitChannels(thumb.getBytes(), channel, c, bpp, false, false));
     return ret;
   }
   
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#close()
+   */
   public void close() throws IOException {
     close(false);
   }
 
-  /* @see Reader#close(boolean) */
+  /*
+   * @see ome.scifio.filters.AbstractReaderFilter#close(boolean)
+   */
   public void close(boolean fileOnly) throws IOException {
     super.close(fileOnly);
     if (!fileOnly) {
@@ -211,13 +235,9 @@ public class ChannelSeparator extends AbstractReaderFilter {
     }
   }
   
-  /* @see Reader#getZCTCoords(int) */
-  public int[] getZCTCoords(int imageIndex, int index) {
-    return FormatTools.getZCTCoords(this, imageIndex, index);
-  }
-  
   // -- Helper Methods --
   
+  /* Resets local fields. */
   private void cleanUp() {
     parentPlane = null;
     lastPlane = null;
@@ -229,17 +249,21 @@ public class ChannelSeparator extends AbstractReaderFilter {
     lastPlaneHeight = -1;
   }
   
-  public Plane openPlaneHelper(Plane parentPlane, Plane plane, int planeIndex, int imageIndex)
+  /*
+   * This method performs the actual channel separation on the plane returned by the
+   * underlying reader component..
+   */
+  protected Plane openPlaneHelper(Plane parentPlane, Plane plane, int planeIndex, int imageIndex)
     throws FormatException, IOException
   {
     FormatTools.assertId(getCurrentFile(), true, 2);
     FormatTools.checkPlaneNumber(this, imageIndex, planeIndex);
     
     if (getParentMeta().isRGB(imageIndex) && !getParentMeta().isIndexed(imageIndex)) {
-      int c = getDatasetMetadata().getAxisLength(imageIndex, Axes.CHANNEL) / getParentMeta().getEffectiveSizeC(imageIndex);
+      int c = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) / getParentMeta().getEffectiveSizeC(imageIndex);
       int source = getOriginalIndex(imageIndex, planeIndex);
       int channel = planeIndex % c;
-      int bpp = FormatTools.getBytesPerPixel(getDatasetMetadata().getPixelType(imageIndex));
+      int bpp = FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
       int x = parentPlane.getxOffset(), y = parentPlane.getyOffset(), w = parentPlane.getxLength(), h = parentPlane.getyLength();
 
       if (plane == null || !isCompatible(plane.getClass())) {
@@ -287,7 +311,7 @@ public class ChannelSeparator extends AbstractReaderFilter {
           }
 
           ImageTools.splitChannels(lastPlane.getBytes(), strip, channel, c, bpp,
-              false, getDatasetMetadata().isInterleaved(imageIndex), strips == 1 ? w * h * bpp : strip.length);
+              false, getMetadata().isInterleaved(imageIndex), strips == 1 ? w * h * bpp : strip.length);
           if (strips != 1) {
             System.arraycopy(strip, 0, plane.getBytes(), i * stripHeight * w * bpp,
                 strip.length);
@@ -296,7 +320,7 @@ public class ChannelSeparator extends AbstractReaderFilter {
       }
       else {
         ImageTools.splitChannels(lastPlane.getBytes(), plane.getBytes(), channel, c, bpp,
-            false, getDatasetMetadata().isInterleaved(imageIndex), w * h * bpp);
+            false, getMetadata().isInterleaved(imageIndex), w * h * bpp);
       }
 
       return plane;

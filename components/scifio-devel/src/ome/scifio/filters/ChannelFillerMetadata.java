@@ -44,8 +44,13 @@ import ome.scifio.Metadata;
 import ome.scifio.util.FormatTools;
 
 /**
+ * {@link ome.scifio.filters.MetadataWrapper} implementation specifically
+ * for use with the {@link ome.scifio.filters.ChannelFiller}.
+ * 
+ * @see ome.scifio.filters.MetadataWrapper
+ * @see ome.scifio.filters.ChannelFiller
+ * 
  * @author Mark Hiner
- *
  */
 @Plugin(type=MetadataWrapper.class, attrs={
   @Attr(name=ChannelFillerMetadata.METADATA_KEY, value=ChannelFillerMetadata.METADATA_VALUE)
@@ -87,16 +92,16 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
   }
   
   /**
-   * @param length
+   * @param length - Number of components in the lut
    */
   public void setLutLength(int length) {
     lutLength = length;
   }
   
-  // -- DatasetMetadata API methods --
+  // -- Metadata API methods --
   
   /*
-   * @see ome.scifio.AbstractDatasetMetadata#isRGB(int)
+   * @see ome.scifio.AbstractMetadata#isRGB(int)
    */
   public boolean isRGB(int imageIndex) {
     if (!isFilled(imageIndex)) return super.isRGB(imageIndex);
@@ -104,7 +109,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
   }
   
   /*
-   * @see ome.scifio.AbstractDatasetMetadata#isIndexed(int)
+   * @see ome.scifio.AbstractMetadata#isIndexed(int)
    */
   public boolean isIndexed(int imageIndex) {
     if (!isFilled(imageIndex)) return super.isIndexed(imageIndex);
@@ -112,7 +117,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
   }
   
   /*
-   * @see ome.scifio.AbstractDatasetMetadata#getAxisLength(int, net.imglib2.meta.AxisType)
+   * @see ome.scifio.AbstractMetadata#getAxisLength(int, net.imglib2.meta.AxisType)
    */
   public int getAxisLength(int imageIndex, AxisType t) {
     int length = unwrap().getAxisLength(imageIndex, t);
@@ -124,7 +129,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
   }
   
   /*
-   * @see ome.scifio.AbstractDatasetMetadata#getChannelDimLengths(int)
+   * @see ome.scifio.AbstractMetadata#getChannelDimLengths(int)
    */
   public int[] getChannelDimLengths(int imageIndex) {
     int[] cLengths = getChannelDimLengths(imageIndex);
@@ -141,7 +146,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
   }
 
   /*
-   * @see ome.scifio.AbstractDatasetMetadata#getChannelDimTypes(int)
+   * @see ome.scifio.AbstractMetadata#getChannelDimTypes(int)
    */
   public String[] getChannelDimTypes(int imageIndex) {
     String[] cTypes = getChannelDimTypes(imageIndex);

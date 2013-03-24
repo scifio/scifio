@@ -5,6 +5,29 @@
  * <h3>Changes since Bio-Formats</h3>
  * <ul>
  *  <li>
+ *  Implemented SCIFIO {@link ome.scifio.filters.Filter}s. Filters are designed
+ *  to wrap arbitrary classes. An implementation is currently provided for 
+ *  Readers: {@link ome.scifio.filters.ReaderFilter}.
+ *  <p>
+ *  Filters are analogous to the ReaderWrappers of Bio-Formats, but function
+ *  a bit differently. In Bio-Formats, you would create a stack of ReaderWrappers
+ *  based on what functionality you wanted to add to a given Reader instance.
+ *  </p>
+ *  <p>
+ *  In SCIFIO, the Filters are discoverable plugins (via the scijava-common
+ *  Context). When you create a ReaderFilter (e.g. via 
+ *  {@link ome.scifio.services.InitializeService#initializeReader}) you get
+ *  the whole stack of discovered plugins. Each can be individually configured
+ *  to be enabled by default. This allows dynamic extensibility, as new 
+ *  Filters can be added to the classpath and automatically discovered
+ *  and enabled.
+ *  </p>
+ *  <p>
+ *  The ReaderFilter is then passed around and functions like a normal Reader.
+ *  But as plugins are enabled and disabled within the Filter, it automatically
+ *  maintains the stack (based on each Filter's priority), obviating the need
+ *  for user knowledge of a construction order.
+ *  </p>
  *  </li>
  * </ul>
  * 
@@ -13,20 +36,7 @@
  * be implemented, pending discussion.
  * <ul>
  *  <li>
- *  Define wrapping at the {@code Format} level. SCIFIO {@code Readers} are not
- *  equivalent to the reader classes in Bio-Formats; the true unit of wrapping
- *  should be the {@code Format} in SCIFIO.
- *  <p>
- *  A {@code FormatWrapper} would allow for individual component wrappers to be
- *  defined and logically tied together. For example, perhaps the
- *  {@code Reader} functionality is modified, and that requires a  parallel
- *  modification to the {@code Metadata}.
- *  </p>
- *  <p>
- *  When developing the Format wrappers, we must be careful not to interfere
- *  with the generic parameterization of the components, and their implicit
- *  contracts that come with having a context and a format.
- *  </p>
+ *  Implement Filters for the remaining component types.
  *  </li>
  * </ul>
  * 

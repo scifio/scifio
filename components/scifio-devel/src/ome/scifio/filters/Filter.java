@@ -65,14 +65,14 @@ public interface Filter extends ScifioPlugin, Prioritized, Contextual {
   /**
    * Sets the object which this filter augments.
    * 
-   * @param parent
+   * @param parent - The object wrapped by this filter
    */
   void setParent(Object parent);
   
   /**
    * Returns the object this filter augments.
    * 
-   * @return
+   * @return The object wrapped by this filter
    */
   Object getParent();
   
@@ -80,8 +80,8 @@ public interface Filter extends ScifioPlugin, Prioritized, Contextual {
    * Returns true if this filter is capable of wrapping instances of the
    * provided class.
    * 
-   * @param c
-   * @return
+   * @param c - Class to check compatibility
+   * @return True if this filter can call setParent on instances of c
    */
   boolean isCompatible(Class<?> c);
   

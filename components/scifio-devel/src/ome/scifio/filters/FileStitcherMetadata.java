@@ -46,8 +46,13 @@ import ome.scifio.Metadata;
 import ome.scifio.util.FormatTools;
 
 /**
+ * {@link ome.scifio.filters.MetadataWrapper} implementation specifically
+ * for use with the {@link ome.scifio.filters.FileStitcher}.
+ * 
+ * @see ome.scifio.filters.MetadataWrapper
+ * @see ome.scifio.filters.FileStitcher
+ * 
  * @author Mark Hiner
- *
  */
 @Plugin(type=MetadataWrapper.class, attrs={
   @Attr(name=FileStitcherMetadata.METADATA_KEY, value=FileStitcherMetadata.METADATA_VALUE)
@@ -74,39 +79,60 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
   // -- ChannelFillerMetadata API Methods --
   
   /**
-   * @param stitch
+   * @param stitch - Whether stitching is enabled
    */
   public void setStitching(boolean stitch) {
     noStitch = !stitch;
   }
   
-  // -- DatasetMetadata API Methods --
+  // -- Metadata API Methods --
   
+  /*
+   * @see ome.scifio.AbstractMetadata#isRGB(int)
+   */
   public boolean isRGB(int imageIndex) {
     return noStitch ? super.isRGB(imageIndex) : unwrap().isRGB(imageIndex);
   }
   
-  public int getDimensionLength(int imageIndex, AxisType t) {
+  /*
+   * @see ome.scifio.AbstractMetadata#getAxisLength(int, net.imglib2.meta.AxisType)
+   */
+  public int getAxisLength(int imageIndex, AxisType t) {
     return noStitch ? super.getAxisLength(imageIndex, t) :
       unwrap().getAxisLength(imageIndex, t);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#getPixelType(int)
+   */
   public int getPixelType(int imageIndex) {
     return noStitch ? super.getPixelType(imageIndex) : unwrap().getPixelType(imageIndex);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#getBitsPerPixel(int)
+   */
   public int getBitsPerPixel(int imageIndex) {
     return noStitch ? super.getBitsPerPixel(imageIndex) : unwrap().getBitsPerPixel(imageIndex);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#isIndexed(int)
+   */
   public boolean isIndexed(int imageIndex) {
     return noStitch ? super.isIndexed(imageIndex) : unwrap().isIndexed(imageIndex);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#isFalseColor(int)
+   */
   public boolean isFalseColor(int imageIndex) {
     return noStitch ? super.isFalseColor(imageIndex) : unwrap().isFalseColor(imageIndex);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#getChannelDimLengths(int)
+   */
   public int[] getChannelDimLengths(int imageIndex) {
     if (noStitch) return super.getChannelDimLengths(imageIndex);
     if (unwrap().getChannelDimLengths(imageIndex) == null) {
@@ -115,6 +141,9 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
     return unwrap().getChannelDimLengths(imageIndex);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#getChannelDimTypes(int)
+   */
   public String[] getChannelDimTypes(int imageIndex) {
     if (noStitch) return super.getChannelDimTypes(imageIndex);
     if (unwrap().getChannelDimTypes(imageIndex) == null) {
@@ -123,44 +152,70 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
     return unwrap().getChannelDimTypes(imageIndex);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#getThumbSizeX(int)
+   */
   public int getThumbSizeX(int imageIndex) {
     return noStitch ? super.getThumbSizeX(imageIndex) :
       unwrap().getThumbSizeX(imageIndex);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#getThumbSizeY(int)
+   */
   public int getThumbSizeY(int imageIndex) {
     return noStitch ? super.getThumbSizeY(imageIndex) :
       unwrap().getThumbSizeY(imageIndex);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#isLittleEndian(int)
+   */
   public boolean isLittleEndian(int imageIndex) {
     return noStitch ? super.isLittleEndian(imageIndex) :
       unwrap().isLittleEndian(imageIndex);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#isOrderCertain(int)
+   */
   public boolean isOrderCertain(int imageIndex) {
     return noStitch ? super.isOrderCertain(imageIndex) : unwrap().isOrderCertain(imageIndex);
   }
 
-  public boolean isThumbnailSeries(int imageIndex) {
+  /*
+   * @see ome.scifio.AbstractMetadata#isThumbnailImage(int)
+   */
+  public boolean isThumbnailImage(int imageIndex) {
     return noStitch ? super.isThumbnailImage(imageIndex) : unwrap().isThumbnailImage(imageIndex);
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#isInterleaved(int)
+   */
   public boolean isInterleaved(int imageIndex) {
     return noStitch ? super.isInterleaved(imageIndex) :
       unwrap().isInterleaved(imageIndex);
   }
 
+  /**
+   * @param imageIndex
+   * @return
+   */
   public String getDimensionOrder(int imageIndex) {
     return FormatTools.findDimensionOrder((noStitch ? this : unwrap()), imageIndex);
   }
 
-  /* @see Reader#getImageCount() */
+  /*
+   * @see ome.scifio.AbstractMetadata#getImageCount()
+   */
   public int getImageCount() {
     return noStitch ? super.getImageCount() : unwrap().getImageCount();
   }
   
-  /* @see Reader#getSeriesMetadata() */
+  /*
+   * @see ome.scifio.AbstractMetadata#getImageMetadata(int)
+   */
   public Hashtable<String, Object> getImageMetadata(int imageIndex) {
     return noStitch ? super.getImageMetadata(imageIndex) :
       unwrap().getImageMetadata(imageIndex);
@@ -279,5 +334,4 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
 //    }
 //    return infos;
 //  }
-  
 }

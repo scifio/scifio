@@ -70,14 +70,16 @@ import org.scijava.Contextual;
  */
 public interface MasterFilter<T extends Contextual> extends Filter {
 
+  // -- Master Filter methods --
+  
   /**
    * Inserts an instance of the indicated filter class into the
    * filter stack. Returns the filter instance associated with
    * this MasterFilter, which can be used for wrapper-specific 
    * configuration.
    * 
-   * @param wrapperClass
-   * @return
+   * @param filterClass - The type of filter to enable
+   * @return The enabled filter
    */
   <F extends Filter> F enable(Class<F> filterClass);
   
@@ -86,15 +88,15 @@ public interface MasterFilter<T extends Contextual> extends Filter {
    * if present. Clears any state in the cached instance of the specified
    * filter.
    * 
-   * @param wrapperClass
-   * @return true if the desired wrapper was disabled
+   * @param filterClass - The type of filter to disable
+   * @return true if the desired filter was disabled
    */
   boolean disable(Class<? extends Filter> filterClass);
   
   /**
    * Returns a list of all filter classes this MasterFilter can enable/disable.
    * 
-   * @return
+   * @return A list of discovered filters
    */
   Set<Class<? extends Filter>> getFilterClasses();
   

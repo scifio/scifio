@@ -43,42 +43,46 @@ import ome.scifio.Metadata;
 import ome.scifio.ScifioPlugin;
 
 /**
- * Wrapper for {@link ome.scifio.DatasetMetadata}. Used to create defensive copies of metadata for
+ * Wrapper for {@link ome.scifio.Metadata}. Used to create defensive copies of metadata for
  * manipulation by {@link ome.scifio.filters.ReaderFilter}s, while allowing for API modification
  * if needed.
  * <p>
  * If a Reader-based {@code Filter} requires special functionality from its Metadata,
- * a companion DatasetMetadataWrapper can be implemented. Concrete implementations
- * of this interface should always be annotated with {@code DiscoverableMetadataWrapper}
+ * a companion MetadataWrapper can be implemented. Concrete implementations
+ * of this interface should always be annotated with {@code Plugin}
  * so they can be dynamically found when constructing new {@code Filters}.
+ * </p>
+ * <p>
+ * NB: This interface duplicates the Metadata setter signatures, with the addition
+ * of a {@code passUp} flag. If this flag is true, the wrapped metadata will
+ * also have the corresponding value set. If not, only the wrapper will
+ * be modified.
  * </p>
  * 
  * @author Mark Hiner
  * 
- * @see ome.scifio.discovery.DiscoverableMetadataWrapper
  * @see ome.scifio.filters.AbstractReaderFilter
  */
-public interface MetadataWrapper
-  extends Metadata, ScifioPlugin { 
+public interface MetadataWrapper extends Metadata, ScifioPlugin { 
   
   public static final String METADATA_KEY = "Metadata Wrapper";
   public static final String METADATA_VALUE = "java.lang.Object";
   
   /**
-   * Returns the {@code DatasetMetadata} used for delegation by this wrapper.
-   * 
-   * @return
+   * @return The {@code Metadata} used for delegation by this wrapper.
    */
   Metadata unwrap();
   
   /**
-   * Sets the {@code DatasetMetadata} this wrapper will delegate to.
+   * Sets the {@code Metadata} this wrapper will delegate to.
    * Necessary for the sake of a zero-parameter constructor to allow
    * {@code SezPoz} discovery. 
    * 
-   * @param meta
+   * @param meta - The Metadata instance to wrap
    */
   void wrap(Metadata meta);
+  
+  // -- Setter Methods with passUp flag --
   
   void addAxis(final int imageIndex, final AxisType type, boolean passUp);
   
