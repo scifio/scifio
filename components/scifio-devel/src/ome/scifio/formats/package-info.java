@@ -10,6 +10,11 @@
  * <h3>Changes since Bio-Formats</h3>
  * <ul>
  *  <li>
+ *  In Bio-Formats, image input and output was separated by Reader and Writer
+ *  classes. Although these classes still exist in SCIFIO, some operations have
+ *  been split out (especially from the Reader) to other components. All of these
+ *  classes are collected under a single {@link ome.scifio.Format} as nested
+ *  classes.
  *  </li>
  * </ul>
  * 
@@ -18,7 +23,8 @@
  * be implemented, pending discussion.
  * <ul>
  *  <li>
- *  Move existing formats to this package.
+ *  Convert the remaining open source formats (in the scifio component, 
+ *  loci.formats.in  and loci.formats.out) to SCIFIO Formats.
  *  </li>
  * </ul>
  * 

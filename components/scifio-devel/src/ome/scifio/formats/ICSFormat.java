@@ -73,6 +73,14 @@ import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
+/**
+ * SCIFIO Format supporting the 
+ * <a href="http://en.wikipedia.org/wiki/Image_Cytometry_Standard">ICS</a>
+ * image format.
+ * 
+ * @author Mark Hiner
+ *
+ */
 @Plugin(type = ICSFormat.class)
 public class ICSFormat
 extends
@@ -85,19 +93,13 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   public static final String FORMAT_NAME = "Image Cytometry Standard";
 
   // -- Constructor --
-  /**
-   * Constructs this {@code Format} and creates a two-way link with the
-   * provided context. This link will not be properly established if an
-   * instance of this {@code Format} already exists in the provided context.
-   * 
-   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
-   * @param ctx the context in which to create this format.
-   * @throws FormatException
-   */
+  
   public ICSFormat() throws FormatException {
-    super(ICSFormat.FORMAT_NAME, new String[] {"ics", "ids"}, Metadata.class, Checker.class, Parser.class, Reader.class, Writer.class);
+    super(ICSFormat.FORMAT_NAME, new String[] {"ics", "ids"}, Metadata.class,
+    		  Checker.class, Parser.class, Reader.class, Writer.class);
   }
   
+  // -- Nested Classes --
 
   /**
    * SCIFIO Metadata object for ICS images. 
@@ -117,7 +119,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     /** Offset to pixel data */
     protected long offset = -1;
   
-    /** */
+    /** True if instrument information was discovered. */
     protected boolean hasInstrumentData = false;
     
     /** True if this planes were stored in RGB order. */
@@ -152,6 +154,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     public void populateImageMetadata() {
       // Common metadata population
       
+    	// Create ImageMetadata if it doesn't already exist
       if (getImageCount() == 0) add(new DefaultImageMetadata());
       
       final ImageMetadata imageMeta = get(0);
@@ -173,6 +176,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       final Vector<Integer> channelLengths = new Vector<Integer>();
       final Vector<String> channelTypes = new Vector<String>();
 
+      // interpret axis information
       for (int n = 0; n < axisTypes.length; n++) {
         final String axis = axes[n].toLowerCase();
         if (axis.equals("x")) {
@@ -428,7 +432,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       return keyValPairs;
     }
     
-    // -- Mapping method --
+    // -- Metadata population methods --
     
     public void put(String key, String value) {
       if (value != null) keyValPairs.put(key, value);
@@ -484,7 +488,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     }
     
     public void putChannelNames(Hashtable<Integer, String> cNames)
-   {
+    {
       put("parameter ch", merge(cNames.values()));
     }
     
@@ -1171,6 +1175,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       return values;
     }
     
+    // Converts an array of doubles to a space-delimited String
     private String mergePrimitiveDoubles(double... doubles) {
       
       Double[] d = new Double[doubles.length];
@@ -1181,12 +1186,14 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       return this.merge(d);
     }
     
+    // Converts a collection to a space-delimited String
     private <T> String merge(Collection<T> collection) {
       @SuppressWarnings("unchecked")
       T[] array = (T[]) collection.toArray();
       return merge(array);
     }
     
+    // Converts a generic array to a space-delimited String
     private <T> String merge(T... values) {
       String s = "";
       
@@ -1214,7 +1221,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     
     // -- ICSFormat.Parser Methods --
     
-    // returns true if the provided id is a version 2 ics id.
+    /**
+     * @return True if the provided id is a version 2 ics id.
+     */
     public boolean isVersionTwo(String id) throws IOException {
       RandomAccessInputStream f = new RandomAccessInputStream(getContext(), id);
       boolean singleFile = f.readString(17).trim().equals("ics_version\t2.0");
@@ -1224,7 +1233,10 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     // -- Parser API Methods --
   
-    /* @see Parser#parse(RandomAccessInputStream) */
+    /*
+     * @see ome.scifio.AbstractParser#parse(
+     * ome.scifio.io.RandomAccessInputStream, ome.scifio.Metadata)
+     */
     @Override
     public Metadata parse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
@@ -1239,7 +1251,8 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       reader.readString(ICSUtils.NL);
       String line = reader.readString(ICSUtils.NL);
   
-      // Extracts the keys, value pairs from each line and inserts them into the ICSMetadata object
+      // Extracts the key, value pairs from each line and
+      // inserts them into the ICSMetadata object
       while (line != null && !line.trim().equals("end") &&
         reader.getFilePointer() < reader.length() - 1)
       {
@@ -1319,10 +1332,10 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       return false;
     }
   
-    /* Finds the companion file (ICS and IDS are companions) */
+    /* Finds the companion file for a given stream (ICS and IDS are companions) */
     private void findCompanion(final RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
-      {
+    {
       if (stream.getFileName() == null) return;
       
       String icsId = stream.getFileName(), idsId = stream.getFileName();
@@ -1371,18 +1384,19 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     // -- Fields --
   
-    private int prevImage;
+  	/* Last read plane index. */
+    private int prevPlane;
   
-    /** Whether or not the pixels are GZIP-compressed. */
-  
+    /* Whether or not the pixels are GZIP-compressed. */
     private boolean gzip;
   
+    /* Cached GZIPInputStream */
     private GZIPInputStream gzipStream;
   
-    /** Whether or not the image is inverted along the Y axis. */
+    /* Whether or not the image is inverted along the Y axis. */
     private boolean invertY; //TODO only in oldInitFile
   
-    /** Image data. */
+    /* Image data. */
     private byte[] data;
   
     // -- Constructor --
@@ -1397,6 +1411,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
     // -- Reader API Methods --
   
+    /*
+     * @see ome.scifio.Reader#openPlane(int, int, Plane, int, int, int, int)
+     */
     public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
       final ByteArrayPlane plane, final int x, final int y, final int w, final int h)
         throws FormatException, IOException
@@ -1411,14 +1428,14 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       final int rowLen = FormatTools.getPlaneSize(this, w, 1, imageIndex);
   
       final int[] coordinates = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
-      final int[] prevCoordinates = FormatTools.getZCTCoords(this, imageIndex, prevImage);
+      final int[] prevCoordinates = FormatTools.getZCTCoords(this, imageIndex, prevPlane);
   
       if (!gzip) {
         getStream().seek(metadata.offset + planeIndex * (long) len);
       }
       else {
-        long toSkip = (planeIndex - prevImage - 1) * (long) len;
-        if (gzipStream == null || planeIndex <= prevImage) {
+        long toSkip = (planeIndex - prevPlane - 1) * (long) len;
+        if (gzipStream == null || planeIndex <= prevPlane) {
           FileInputStream fis = null;
           toSkip = planeIndex * (long) len;
           if (metadata.versionTwo) {
@@ -1510,12 +1527,12 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         }
       }
   
-      prevImage = planeIndex;
+      prevPlane = planeIndex;
   
       return plane;
     }
   
-    /* @see Reader#close(boolean) */
+    /* @see ome.scifio.Reader#close(boolean) */
     @Override
     public void close(final boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -1523,7 +1540,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
         data = null;
         gzip = false;
         invertY = false;
-        prevImage = 0;
+        prevPlane = 0;
         //TODO hasInstrumentData = false;
         if (gzipStream != null) {
           gzipStream.close();
@@ -1532,14 +1549,14 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       }
     }
   
-    /* @see Reader#setMetadata(Metadata) */
+    /* @see ome.scifio.Reader#setMetadata(Metadata) */
     @Override
     public void setMetadata(final Metadata meta) throws IOException {
       super.setMetadata(meta);
       gzip = metadata.get("representation compression").equals("gzip");
     }
   
-    /* @see Reader#setSource(RandomAccessInputStream) */
+    /* @see ome.scifio.Reader#setSource(RandomAccessInputStream) */
     @Override
     public void setSource(final RandomAccessInputStream stream) throws IOException {
       if(!getMetadata().versionTwo) {
@@ -1551,6 +1568,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       }
     }
   
+    /* @see ome.scifio.Reader#getDomains() */
     @Override
     public String[] getDomains() {
       FormatTools.assertStream(getStream(), true, 0);
@@ -1564,9 +1582,6 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
   
       return domain;
     }
-  
-    // -- ICSReader Methods --
-  
   }
 
   /**
@@ -1696,6 +1711,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       pixels = null;
     }
     
+    /*
+     * @see ome.scifio.Writer#setDest(java.lang.String)
+     */
     @Override
     public void setDest(final String id)
       throws FormatException, IOException {
@@ -1703,6 +1721,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       super.setDest(id);
     }
     
+    /*
+     * @see ome.scifio.Writer#setDest(java.lang.String, int)
+     */
     @Override
     public void setDest(final String id, final int imageIndex)
       throws FormatException, IOException {
@@ -1710,6 +1731,9 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
       super.setDest(id, imageIndex);
     }
   
+    /*
+     * @see ome.scifio.Writer#setDest(ome.scifio.io.RandomAccessOutputStream, int)
+     */
     @Override
     public void setDest(final RandomAccessOutputStream out, final int imageIndex)
       throws FormatException, IOException {
@@ -1719,6 +1743,7 @@ AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
     
     // -- Helper methods --
     
+    /* Sets the ICS Metadta icsId and idsId fields */
     private void updateMetadataIds(String id) {
       metadata.idsId = FormatTools.checkSuffix(id, "ids") ? id : makeIdsId(id);
       metadata.icsId = FormatTools.checkSuffix(id, "ics") ? id : makeIcsId(id);

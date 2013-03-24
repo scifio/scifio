@@ -72,8 +72,10 @@ import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 
 /**
- * FakeReader is the file format reader for faking input data.
- * It is mainly useful for testing.
+ * FakeFormat is the file format reader for faking input data.
+ * It is mainly useful for testing, as image sources can be defined in memory
+ * through String notation, without requiring an actual dataset to exist on disk.
+ * 
  * <p>Examples:<ul>
  *  <li>showinf 'multi-series&amp;series=11&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake' -series 9</li>
  *  <li>showinf '8bit-signed&amp;pixelType=int8&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake'</li>
@@ -95,7 +97,8 @@ public class FakeFormat
 extends
 AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
                FakeFormat.Parser, FakeFormat.Reader,
-               FakeFormat.Writer> {
+               FakeFormat.Writer>
+{
   
   // -- Constants --
   
@@ -147,26 +150,26 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
 
   // -- Constructor --
   
-  /**
-   * Constructs this {@code Format} and creates a two-way link with the
-   * provided context. This link will not be properly established if an
-   * instance of this {@code Format} already exists in the provided context.
-   * 
-   * @see ome.scifio.SCIFIO#getFormatFromClass(Class)
-   * @param ctx the context in which to create this format.
-   * @throws FormatException
-   */
   public FakeFormat() throws FormatException {
     super(FakeFormat.FORMAT_NAME, "fake", Metadata.class, 
         Checker.class, Parser.class, Reader.class, Writer.class);
   }
+  
+  // -- Nested Classes --
 
   /**
    * Metadata class for Fake format. Actually holds no information
    * about the "image" as everything is stored in the attached
    * RandomAccessInputStream.
-   * </br></br>
+   * <p>
    * Fake specification should be accessed by {@link Metadata#getSource()}
+   * </p>
+   * <p>
+   * NB: Because FakeFormat images can be dynamically constructed in memory,
+   * ColorTables can be generated before reading image planes.
+   * </p>
+   * 
+   * @see ome.scifio.HasColorTable
    */
   public static class Metadata extends AbstractMetadata implements HasColorTable {
     
@@ -185,38 +188,71 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     
     // -- FakeFormat.Metadata methods --
     
+    /**
+     * Gets the last read channel index
+     * 
+     * @return The last read channel
+     */
     public int getLastChannel() {
       return ac;
     }
     
+    /**
+     * Sets the last read channel index
+     * 
+     * @param c - Last read channel
+     */
     public void setLastChannel(int c) {
       ac = c;
     }
 
+    /**
+     * Gets the lookup table attached to this dataset
+     * 
+     * @return An array of RGB ColorTables. Indexed by plane number.
+     */
     public ColorTable[] getLut() {
       return lut;
     }
 
+    /**
+     * Sets the lookup table for this dataset.
+     * 
+     * @param lut - An array of RGB ColorTables. Indexed by plane number.
+     */
     public void setLut(ColorTable[] lut) {
       this.lut = lut;
     }
 
+    /**
+     * Gets the pixel value to index maps for this dataset
+     */
     public int[][] getValueToIndex() {
       return valueToIndex;
     }
 
+    /**
+     * Sets the pixel value to index maps for this dataset
+     */
     public void setValueToIndex(int[][] valueToIndex) {
       this.valueToIndex = valueToIndex;
     }
     
     // -- HasColorTable Methods --
 
+    /**
+     * Returns the current color table for this dataset
+     */
     public ColorTable getColorTable() {
       return lut == null ? null : lut[ac];
     }
     
     // -- Metadata API Methods --
 
+    /**
+     * Generates ImageMetadata based on the id of this
+     * dataset.
+     */
     public void populateImageMetadata() {
       int sizeX = DEFAULT_SIZE_X;
       int sizeY = DEFAULT_SIZE_Y;
@@ -358,6 +394,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       AxisType[] axes = FormatTools.findDimensionList(dimOrder);
       int[] axisLengths = new int[axes.length];
       
+      // Create axes arrays
       for(int i = 0; i < axes.length; i++) {
         AxisType t = axes[i];
         if(t.equals(Axes.X))
@@ -382,6 +419,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       
       int effSizeC = sizeC / rgb;
       
+      // set ImageMetadata
       for(int i = 0; i < numImages; i++) {
         DefaultImageMetadata imageMeta = new DefaultImageMetadata();
 
@@ -430,6 +468,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       throws IOException, FormatException {
       meta = super.parse(stream, meta);
       
+      // No reading to do. Everything can be determined from the provided stream's id.
       meta.populateImageMetadata();
 
       return meta;
@@ -549,9 +588,8 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
       return plane;
     }
     
-    /**
-     * @param fileOnly
-     * @throws IOException
+    /*
+     * @see ome.scifio.Reader#close(boolean)
      */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -585,7 +623,7 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   }
   
   /**
-   * Translator from {@link DatasetMetadata} to Fake Metadata.
+   * Translator from {@link ome.scifio.Metadata} to FakeFormat$Metadata.
    */
   @Plugin(type = Translator.class, attrs = 
     {@Attr(name = FakeTranslator.SOURCE, value = ome.scifio.Metadata.CNAME),
@@ -600,27 +638,27 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     public void typedTranslate(ome.scifio.Metadata source, Metadata dest) {
       String fakeId = NAME + "=" + source.getDatasetName();
       
-      fakeId = FakeUtils.appendToken(fakeId, SIZE_X, Integer.toString(source.getAxisLength(0, Axes.X)));
-      fakeId = FakeUtils.appendToken(fakeId, SIZE_Y, Integer.toString(source.getAxisLength(0, Axes.Y)));
-      fakeId = FakeUtils.appendToken(fakeId, SIZE_Z, Integer.toString(source.getAxisLength(0, Axes.Z)));
-      fakeId = FakeUtils.appendToken(fakeId, SIZE_C, Integer.toString(source.getAxisLength(0, Axes.CHANNEL)));
-      fakeId = FakeUtils.appendToken(fakeId, SIZE_T, Integer.toString(source.getAxisLength(0, Axes.TIME)));
+      fakeId = FakeUtils.appendToken(fakeId, SIZE_X, source.getAxisLength(0, Axes.X));
+      fakeId = FakeUtils.appendToken(fakeId, SIZE_Y, source.getAxisLength(0, Axes.Y));
+      fakeId = FakeUtils.appendToken(fakeId, SIZE_Z, source.getAxisLength(0, Axes.Z));
+      fakeId = FakeUtils.appendToken(fakeId, SIZE_C, source.getAxisLength(0, Axes.CHANNEL));
+      fakeId = FakeUtils.appendToken(fakeId, SIZE_T, source.getAxisLength(0, Axes.TIME));
 
-      fakeId = FakeUtils.appendToken(fakeId, THUMB_X, Integer.toString(source.getThumbSizeX(0)));
-      fakeId = FakeUtils.appendToken(fakeId, THUMB_Y, Integer.toString(source.getThumbSizeY(0)));
+      fakeId = FakeUtils.appendToken(fakeId, THUMB_X, source.getThumbSizeX(0));
+      fakeId = FakeUtils.appendToken(fakeId, THUMB_Y, source.getThumbSizeY(0));
 
-      fakeId = FakeUtils.appendToken(fakeId, PIXEL_TYPE, Integer.toString(source.getPixelType(0)));
-      fakeId = FakeUtils.appendToken(fakeId, BITS_PER_PIXEL, Integer.toString(source.getBitsPerPixel(0)));
+      fakeId = FakeUtils.appendToken(fakeId, PIXEL_TYPE, source.getPixelType(0));
+      fakeId = FakeUtils.appendToken(fakeId, BITS_PER_PIXEL, source.getBitsPerPixel(0));
       fakeId = FakeUtils.appendToken(fakeId, DIM_ORDER, FormatTools.findDimensionOrder(source, 0));
-      fakeId = FakeUtils.appendToken(fakeId, INDEXED, Boolean.toString(source.isIndexed(0)));
-      fakeId = FakeUtils.appendToken(fakeId, FALSE_COLOR, Boolean.toString(source.isFalseColor(0)));
-      fakeId = FakeUtils.appendToken(fakeId, LITTLE_ENDIAN, Boolean.toString(source.isLittleEndian(0)));
-      fakeId = FakeUtils.appendToken(fakeId, INTERLEAVED, Boolean.toString(source.isInterleaved(0)));
-      fakeId = FakeUtils.appendToken(fakeId, META_COMPLETE, Boolean.toString(source.isMetadataComplete(0)));
-      fakeId = FakeUtils.appendToken(fakeId, THUMBNAIL, Boolean.toString(source.isThumbnailImage(0)));
-      fakeId = FakeUtils.appendToken(fakeId, ORDER_CERTAIN, Boolean.toString(source.isOrderCertain(0)));
-      fakeId = FakeUtils.appendToken(fakeId, SERIES, Integer.toString(source.getImageCount()));
-      fakeId = FakeUtils.appendToken(fakeId, RGB, Integer.toString(source.getRGBChannelCount(0)));
+      fakeId = FakeUtils.appendToken(fakeId, INDEXED, source.isIndexed(0));
+      fakeId = FakeUtils.appendToken(fakeId, FALSE_COLOR, source.isFalseColor(0));
+      fakeId = FakeUtils.appendToken(fakeId, LITTLE_ENDIAN, source.isLittleEndian(0));
+      fakeId = FakeUtils.appendToken(fakeId, INTERLEAVED, source.isInterleaved(0));
+      fakeId = FakeUtils.appendToken(fakeId, META_COMPLETE, source.isMetadataComplete(0));
+      fakeId = FakeUtils.appendToken(fakeId, THUMBNAIL, source.isThumbnailImage(0));
+      fakeId = FakeUtils.appendToken(fakeId, ORDER_CERTAIN, source.isOrderCertain(0));
+      fakeId = FakeUtils.appendToken(fakeId, SERIES, source.getImageCount());
+      fakeId = FakeUtils.appendToken(fakeId, RGB, source.getRGBChannelCount(0));
       
       if(source.getMetadataValue(SCALE_FACTOR) != null) {
         double scaleFactor = (Double)source.getMetadataValue(SCALE_FACTOR);
@@ -911,8 +949,8 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
      * Parses the provided path and returns a mapping of all known
      * key/value pairs that were discovered.
      * 
-     * @param fakePath
-     * @return
+     * @param fakePath - A properly formatted .fake id
+     * @return A mapping of all discovered properties.
      */
     public static HashMap<String, String> extractFakeInfo(Context context, String fakePath) {
       HashMap<String, String> fakeMap = new HashMap<String, String>();
@@ -951,10 +989,30 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     }
     
     /**
-     * Appends the provided key:value pair to the provided base and returns
+     * Appends the provided key:boolean pair to the provided base and returns
      * the result.
      * 
-     * @return
+     * @return A formatted FakeFormat key:value pair
+     */
+    public static String appendToken(String base, String key, boolean value) {
+      return FakeUtils.appendToken(base, key, Boolean.toString(value));
+    }    
+    
+    /**
+     * Appends the provided key:int pair to the provided base and returns
+     * the result.
+     * 
+     * @return A formatted FakeFormat key:value pair
+     */
+    public static String appendToken(String base, String key, int value) {
+      return FakeUtils.appendToken(base, key, Integer.toString(value));
+    }    
+    
+    /**
+     * Appends the provided key:String pair to the provided base and returns
+     * the result.
+     * 
+     * @return A formatted FakeFormat key:value pair
      */
     public static String appendToken(String base, String key, String value) {
       base += TOKEN_SEPARATOR + key + "=" + value;
@@ -964,53 +1022,54 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
     // -- Value extraction methods --
     
     /**
-     * Returns the integer value of the passed String, or the provided
-     * int value if the String is null.
+     * Returns the integer value of the passed String, or the default
+     * int value if testValue is null.
      * 
-     * @param newValue
-     * @param oldValue
-     * @return
+     * @param testValue - Potential int value
+     * @param defaultValue - Value to use if testValue is null
+     * @return The int value parsed from testValue, or defaultValue
      */
-    public static int getIntValue(String newValue, int oldValue) {
-      if(newValue == null) return oldValue;
+    public static int getIntValue(String testValue, int defaultValue) {
+      if (testValue == null) return defaultValue;
       
-      return Integer.parseInt(newValue);
+      return Integer.parseInt(testValue);
     }
     
     /**
-     * Returns the double value of the passed String, or the provided
-     * double value if the String is null.
+     * Returns the double value of the passed String, or the default
+     * double value if testValue is null.
      * 
-     * @param newValue
-     * @param oldValue
-     * @return
+     * @param testValue - Potential double value
+     * @param defaultValue - Value to use if testValue is null
+     * @return The double value parsed from testValue, or defaultValue
      */
-    public static double getDoubleValue(String newValue, double oldValue) {
-      if(newValue == null) return oldValue;
+    public static double getDoubleValue(String testValue, double defaultValue) {
+      if (testValue == null) return defaultValue;
       
-      return Double.parseDouble(newValue);
+      return Double.parseDouble(testValue);
     }
     
     /**
-     * Returns the boolean value of the passed String, or the provided
-     * boolean value if the String is null.
+     * Returns the boolean value of the passed String, or the default
+     * boolean value if testValue is null.
      * 
-     * @param newValue
-     * @param oldValue
-     * @return
+     * @param testValue - Potential boolean value
+     * @param defaultValue - Value to use if testValue is null
+     * @return The boolean value parsed from testValue, or defaultValue
      */
-    public static boolean getBoolValue(String newValue, boolean oldValue) {
-      if(newValue == null) return oldValue;
+    public static boolean getBoolValue(String testValue, boolean oldValue) {
+      if (testValue == null) return oldValue;
       
-      return Boolean.parseBoolean(newValue);
+      return Boolean.parseBoolean(testValue);
     }
     
     /**
      * Populates a mapping between indicies and color values,
      * and the inverse mapping of color values to indicies.
-     * </br></br>
+     * <p>
      * NB: The array parameters will be modified by this method and should simply be
      * empty and initialized to the appropriate dimensions.
+     * </p>
      *
      * @param indexToValue - a channel size X num values array, mapping indicies to color values.
      * @param valueToIndex - a channel size X num values array, mapping color values to indicies.
