@@ -239,11 +239,11 @@ public class FileStitcher extends AbstractReaderFilter {
         // search ID map for pattern, rather than files on disk
         String[] idList = new String[map.size()];
         map.keySet().toArray(idList);
-        return scifio().patterns().findSeriesPatterns(id, null, idList);
+        return scifio().patterns().findImagePatterns(id, null, idList);
       }
       else {
         // id is an unmapped file path; look to similar files on disk
-        return scifio().patterns().findSeriesPatterns(id);
+        return scifio().patterns().findImagePatterns(id);
       }
     }
     if (doNotChangePattern) {

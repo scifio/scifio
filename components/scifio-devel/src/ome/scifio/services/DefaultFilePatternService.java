@@ -287,14 +287,21 @@ public class DefaultFilePatternService extends AbstractService implements FilePa
     return pattern.toString();
   }
 
-  public String[] findSeriesPatterns(String base) {
+  /*
+   * @see ome.scifio.services.FilePatternService#findSeriesPatterns(java.lang.String)
+   */
+  public String[] findImagePatterns(String base) {
     Location file = new Location(getContext(), base).getAbsoluteFile();
     Location parent = file.getParentFile();
     String[] list = parent.list(true);
-    return findSeriesPatterns(base, parent.getAbsolutePath(), list);
+    return findImagePatterns(base, parent.getAbsolutePath(), list);
   }
 
-  public String[] findSeriesPatterns(String base, String dir,
+  /*
+   * @see ome.scifio.services.FilePatternService#
+   * findSeriesPatterns(java.lang.String, java.lang.String, java.lang.String[])
+   */
+  public String[] findImagePatterns(String base, String dir,
     String[] nameList)
   {
     String baseSuffix = base.substring(base.lastIndexOf(File.separator) + 1);

@@ -100,8 +100,8 @@ public interface FilePatternService extends Service {
    */
   String findPattern(String[] names);
 
-  String[] findSeriesPatterns(String base);
+  String[] findImagePatterns(String base);
 
-  String[] findSeriesPatterns(String base, String dir, String[] nameList);
+  String[] findImagePatterns(String base, String dir, String[] nameList);
 
 }
