@@ -63,6 +63,10 @@ import ome.xml.services.OMEXMLMetadataService;
 /**
  * Translator class from {@link ICSMetadata} to
  * {@link OMEMetadata}.
+ * <p>
+ * NB: Plugin priority is set to high to be selected over the base
+ * {@link ome.scifio.Metadata} translator.
+ * </p>
  * 
  * @author Mark Hiner
  */
@@ -75,8 +79,11 @@ public class ICSOMETranslator extends ToOMETranslator<ICSFormat.Metadata> {
   
   // -- Translator API --
 
+  /*
+   * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+   */
   @Override
-  public void typedTranslate(ICSFormat.Metadata source, OMEMetadata dest)
+  protected void typedTranslate(ICSFormat.Metadata source, OMEMetadata dest)
   {
     OMEXMLMetadata store = dest.getRoot();
     boolean lifetime = false;

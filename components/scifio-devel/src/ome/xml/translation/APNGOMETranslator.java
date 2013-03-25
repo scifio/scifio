@@ -47,8 +47,12 @@ import ome.xml.meta.OMEMetadata;
 import ome.xml.services.OMEXMLMetadataService;
 
 /**
- * Translator class from {@link APNGMetadata} to
- * {@link OMEMetadata}
+ * Translator class from {@link ome.scifio.formats.APNGFormat.Metadata} to
+ * {@link ome.xml.meta.OMEMetadata}
+ * <p>
+ * NB: Plugin priority is set to high to be selected over the base
+ * {@link ome.scifio.Metadata} translator.
+ * </p>
  * 
  * @author Mark Hiner
  */
@@ -61,8 +65,11 @@ public class APNGOMETranslator extends ToOMETranslator<APNGFormat.Metadata> {
 
   // -- Translator API Methods --
 
+  /*
+   * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+   */
   @Override
-  public void typedTranslate(APNGFormat.Metadata source, OMEMetadata dest) {
+  protected void typedTranslate(APNGFormat.Metadata source, OMEMetadata dest) {
     int sizeC = 1;
 
     switch (source.getIhdr().getColourType()) {
@@ -88,16 +95,18 @@ public class APNGOMETranslator extends ToOMETranslator<APNGFormat.Metadata> {
     try {
       pixelType =
         FormatTools.getPixelTypeString(FormatTools.pixelTypeFromBytes(
-          source.getIhdr().getBitDepth() / 8, false, false));
+        source.getIhdr().getBitDepth() / 8, false, false));
     }
     catch (final FormatException e) {
-      LOGGER.debug("Failed to find pixel type from bytes: " + (source.getIhdr().getBitDepth() / 8), e);
+      LOGGER.debug("Failed to find pixel type from bytes: " +
+      (source.getIhdr().getBitDepth() / 8), e);
     }
     final boolean littleEndian = false;
     final int series = 0;
 
     //TODO what should these be in APNG?
-    final int samplesPerPixel = 1; // = sizeC / effectiveSizeC... just sizeC for APNG? #planes / Z * T
+    final int samplesPerPixel = 1;
+    // = sizeC / effectiveSizeC... just sizeC for APNG? #planes / Z * T
     final String imageName = "";
 
     getContext().getService(OMEXMLMetadataService.class).populateMetadata(
@@ -107,6 +116,6 @@ public class APNGOMETranslator extends ToOMETranslator<APNGFormat.Metadata> {
     if (source.getFctl() != null && source.getFctl().size() > 0)
       dest.getRoot().setPixelsTimeIncrement(
         (double) source.getFctl().get(0).getDelayNum() /
-          source.getFctl().get(0).getDelayDen(), 0);
+        source.getFctl().get(0).getDelayDen(), 0);
   }
 }

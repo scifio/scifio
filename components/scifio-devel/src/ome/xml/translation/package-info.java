@@ -1,6 +1,6 @@
 /**
- * Defines all translators from SCIFIO formats to 
- * {@link ome.xml.meta.OMEXMLMetadata}.
+ * Defines all {@link ome.scifio.Translator} implementations between SCIFIO
+ * {@link ome.scifio.Metadata} and {@link ome.xml.meta.OMEXMLMetadata}.
  * 
  * <h3>Changes since Bio-Formats</h3>
  * <ul>

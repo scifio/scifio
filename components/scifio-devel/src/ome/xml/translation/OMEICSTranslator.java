@@ -54,8 +54,12 @@ import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
- * Translator class from {@link ICSMetadata} to
- * {@link OMEMetadata}.
+ * Translator class from {@link ome.scifio.formats.ICSFormat.Metadata} to
+ * {@link ome.xml.meta.OMEMetadata}.
+ * <p>
+ * NB: Plugin priority is set to high to be selected over the base
+ * {@link ome.scifio.Metadata} translator.
+ * </p>
  * 
  * @author Mark Hiner
  */
@@ -66,6 +70,9 @@ attrs = {
 })
 public class OMEICSTranslator extends FromOMETranslator<ICSFormat.Metadata> {
 
+  /*
+   * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+   */
   @Override
   protected void typedTranslate(OMEMetadata source, ICSFormat.Metadata dest) {
     super.typedTranslate(source, dest);

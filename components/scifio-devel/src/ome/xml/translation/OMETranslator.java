@@ -41,7 +41,11 @@ import ome.scifio.Metadata;
 import ome.scifio.Translator;
 
 /**
- * Abstract base class for all ome.scifio.Translators.
+ * Abstract base class for all {@link ome.scifio.Translator} implementations
+ * that operate on {@link ome.xml.meta.OMEMetadata}.
+ * 
+ * @see ome.scifio.Translator
+ * @see ome.xml.meta.OMEMetadata
  * 
  * @author Mark Hiner
  *
@@ -50,6 +54,10 @@ public abstract class OMETranslator<M extends Metadata, N extends Metadata>
   extends AbstractTranslator<M, N>
 {
 
+  /*
+   * Before invoking the OME-specific translation, perform the base
+   * Metadata-level translation.
+   */
   protected void typedTranslate(M source, N dest) {
     Translator t = scifio().translators().findTranslator(Metadata.class, dest.getClass());
     

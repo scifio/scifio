@@ -36,7 +36,6 @@
 
 package ome.xml.translation;
 
-
 import ome.scifio.Metadata;
 import ome.xml.meta.OMEMetadata;
 
