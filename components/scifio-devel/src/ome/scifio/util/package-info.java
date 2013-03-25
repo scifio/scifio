@@ -1,5 +1,5 @@
 /**
- *  Provides utility classes for common, general operats on SCIFIO components.
+ *  Provides utility classes for common operations on or by SCIFIO components.
  *
  * <h3>Changes since Bio-Formats</h3>
  * <ul>

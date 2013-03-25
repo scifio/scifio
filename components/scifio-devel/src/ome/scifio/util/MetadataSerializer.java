@@ -44,6 +44,10 @@ import java.io.OutputStream;
 
 import ome.scifio.Metadata;
 
+/**
+ * Utility class for serializing and deserializing arbitrary Metadata
+ * objects.
+ */
 public class MetadataSerializer<M extends Metadata> {
 
   private Class<M> type;

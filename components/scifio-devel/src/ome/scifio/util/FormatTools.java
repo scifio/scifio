@@ -56,8 +56,6 @@ import ome.scifio.io.RandomAccessInputStream;
  * A collection of constants and utility methods applicable for all
  * cycles of image processing within SCIFIO.
  * 
- * @author Mark Hiner
- *
  */
 public class FormatTools {
 
@@ -368,25 +366,17 @@ public class FormatTools {
   /**
    * Returns the dimension order for the provided reader.
    * Currently limited to 5D orders.
-   * 
-   * @param r
-   * @param imageIndex
-   * @return
    */
   public static String findDimensionOrder(Reader r, int imageIndex) {
     return findDimensionOrder(r.getMetadata(), imageIndex);
   }
 
   /**
-   * Returns the dimension order for the provided DatasetMetadata object.
+   * Returns the dimension order for the provided Metadata object.
    * Currently limited to 5D orders.
-   * 
-   * @param core
-   * @param imageIndex
-   * @return
    */
-  public static String findDimensionOrder(Metadata core, int imageIndex) {
-    return findDimensionOrder(core.getAxes(imageIndex));
+  public static String findDimensionOrder(Metadata meta, int imageIndex) {
+    return findDimensionOrder(meta.getAxes(imageIndex));
   }
   
   public static String findDimensionOrder(AxisType[] axes) {
@@ -435,10 +425,6 @@ public class FormatTools {
   /**
    * Rearranges the ordering of the provided DatasetMetadata object, based on the
    * ording of the provided AxisTypes.
-   * 
-   * @param meta
-   * @param imageIndex
-   * @param order
    */
   public static void setDimensionOrder(Metadata meta, int imageIndex, AxisType... order) {
     int[] axisLengths = new int[meta.getAxisCount(imageIndex)];
@@ -762,6 +748,10 @@ public class FormatTools {
     }
   }
 
+  /**
+   * Checks that the given buffer length is long enough to hold planes
+   * of the specified image index, using the provided Reader.
+   */
   public static void checkBufferSize(int imageIndex, Reader r, int len)
     throws FormatException
   {

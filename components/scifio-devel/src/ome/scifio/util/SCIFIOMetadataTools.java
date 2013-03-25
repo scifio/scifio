@@ -52,11 +52,16 @@ import ome.scifio.Metadata;
 import ome.scifio.io.RandomAccessOutputStream;
 
 /**
- * A utility class for working with DatasetMetadata objects.
+ * A utility class for working with {@link ome.scifio.Metadata} objects.
+ *
+ * @see ome.scifio.Metadata
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/MetadataTools.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/MetadataTools.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @author Mark Hiner
+ * 
  */
 public class SCIFIOMetadataTools {
   
@@ -71,6 +76,14 @@ public class SCIFIOMetadataTools {
   
   // -- Utility Methods -- DatasetMetadata -- 
   
+  /**
+   * Casts the provided Metadata object to the generic type
+   * of this method.
+   * <p>
+   * Usage: To cast a Metadata instance to ConcreteMetadata, use:
+   * <p>{@code SCIFIOMetadataTools.<ConcreteMetadata>castMeta(meta)}</p>
+   * </p>
+   */
   @SuppressWarnings("unchecked")
   public static <M extends Metadata> M castMeta(Metadata meta) {
     //TODO need to check for safe casting here.. 
@@ -133,10 +146,6 @@ public class SCIFIOMetadataTools {
   /**
    * Populates the provided ImageMetadata's axis types and lengths using
    * the provided dimension order and sizes.
-   * 
-   * @param iMeta
-   * @param dimensionOrder
-   * @param sizes
    */
   public static void populateDimensions(ImageMetadata iMeta, String dimensionOrder,
       int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT)
@@ -165,10 +174,6 @@ public class SCIFIOMetadataTools {
   /**
    * Populates the provided ImageMetadata's axis types and lengths using
    * the provided dimension order and sizes.
-   * 
-   * @param iMeta
-   * @param dimensionOrder
-   * @param sizes
    */
   public static void populateDimensions(ImageMetadata iMeta, String dimensionOrder,
       int... lengths)
@@ -198,9 +203,9 @@ public class SCIFIOMetadataTools {
    * Populates the provided ImageMetadata's axis types and lengths using
    * the provided axis types and sizes.
    * 
-   * @param iMeta
-   * @param dimensionOrder
-   * @param sizes
+   * @param iMeta - ImageMetadata to populate
+   * @param axes - AxisTypes to set 
+   * @param lengths - Parallel axis length array
    */
   public static void populateDimensions(ImageMetadata iMeta, AxisType[] axes,
       int... lengths)
@@ -208,7 +213,6 @@ public class SCIFIOMetadataTools {
     iMeta.setAxisLengths(lengths);
     iMeta.setAxisTypes(axes);
   }
-  
   
   // Utility methods -- original metadata --
 

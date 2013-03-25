@@ -764,6 +764,7 @@ public final class ImageTools {
     return buf;
   }
 
+  /** Reorganizes the provided BGR buffer to be in RGB order. */
   public static void bgrToRgb(byte[] buf, boolean interleaved, int bpp, int c) {
     if (c < 3) return;
     if (interleaved) {
