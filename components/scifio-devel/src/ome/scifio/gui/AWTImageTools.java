@@ -540,6 +540,19 @@ public final class AWTImageTools {
     return null;
   }
 
+  /**
+   * Creates an RGB image from the given raw byte array,
+   * performing any necessary type conversions.
+   *
+   * @param data Array containing image data.
+   * @param c Nuber of channels. NB: Channels over 4 will be discarded.
+   * @param h Height of image plane.
+   * @param w Width of image plane.
+   * @param interleaved If set, the channels are assumed to be interleaved;
+   *   otherwise they are assumed to be sequential.
+   *   For example, for RGB data, the pattern "RGBRGBRGB..." is interleaved,
+   *   while "RRR...GGG...BBB..." is sequential.
+   */
   public static BufferedImage makeRGBImage(byte[] data, int c, int w, int h,
     boolean interleaved)
   {
@@ -562,6 +575,13 @@ public final class AWTImageTools {
     return constructImage(cc, DataBuffer.TYPE_INT, w, h, false, false, buffer);
   }
 
+  /**
+   * Creates an RGB image from the given raw byte array
+   *
+   * @param data Array containing channel-separated arrays of image data
+   * @param h Height of image plane.
+   * @param w Width of image plane.
+   */
   public static BufferedImage makeRGBImage(byte[][] data, int w, int h) {
     int[] buf = new int[data[0].length];
     int nBits = (data.length - 1) * 8;
@@ -712,8 +732,8 @@ public final class AWTImageTools {
   }
 
   /**
-   * Creates an image from the given byte array, using the given
-   * ome.scifio.Reader to retrieve additional information.
+   * Creates an image from the given Plane. Pulls additional image
+   * information from the provided Reader's Metadata.
    */
   public static BufferedImage openImage(Plane plane, 
       Reader r, int w, int h, int imageIndex) 
@@ -780,14 +800,14 @@ public final class AWTImageTools {
    * Creates a thumbnail image from the provided plane, scaling it to the 
    * specified thumbnail dimensions.
    * 
-   * @param plane
-   * @param r
-   * @param w
-   * @param h
-   * @param thumbX
-   * @param thumbY
-   * @param imageIndex
-   * @return
+   * @param plane - Plane to scale
+   * @param r - Reader used to open the provided Plane
+   * @param imageIndex - index of the image the plane was read from
+   * @param w - Plane width
+   * @param h - Plane height
+   * @param thumbX - width to scale to
+   * @param thumbY - height to scale to
+   * @param pad - whether to pad when scaling
    * @throws FormatException
    * @throws IOException
    */
@@ -802,7 +822,6 @@ public final class AWTImageTools {
     
     return img;
   }
-  
   
   // -- Data extraction --
 
@@ -2000,5 +2019,4 @@ public final class AWTImageTools {
     lut[2] = m.getBlues();
     return lut;
   }
-
 }

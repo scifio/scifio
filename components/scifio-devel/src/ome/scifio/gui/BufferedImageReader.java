@@ -81,7 +81,8 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
     
     BufferedImagePlane plane = createPlane(0, 0, thumbX, thumbY);
     
-    plane.setData(AWTImageTools.openThumbImage(createPlane(0, 0, w, h), this, imageIndex, w, h, thumbX, thumbY, false));
+    plane.setData(AWTImageTools.openThumbImage(createPlane(0, 0, w, h),
+    			        this, imageIndex, w, h, thumbX, thumbY, false));
     
     return plane;
   } 
@@ -90,7 +91,8 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
    * @see ome.scifio.Reader#createPlane(int, int, int, int)
    */
   public BufferedImagePlane createPlane(int xOffset, int yOffset, int xLength,
-      int yLength) {
+      int yLength)
+  {
     return new BufferedImagePlane(getContext(), getMetadata().get(0),
         xOffset, yOffset, xLength, yLength);
   }
