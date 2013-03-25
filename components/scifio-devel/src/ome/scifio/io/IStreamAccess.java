@@ -60,11 +60,10 @@ public interface IStreamAccess extends SciJavaPlugin, Contextual, Prioritized, I
   /**
    * Initializes the current handle using the provided file id.
    * 
-   * @param file
+   * @param file - A String path to the desired file.
    * @throws IOException
    */
   void setFile(String file) throws IOException;
-  
 
   /**
    * Close and reopen the stream; the stream pointer and mark should be

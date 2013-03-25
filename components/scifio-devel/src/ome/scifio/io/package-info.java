@@ -10,6 +10,10 @@
  *  and extracts many methods that were injected in an abstract layer in
  *  Bio-Formats.
  *  </li>
+ *  <li>
+ *  The static functionality in Location has been extracted to
+ *  {@link ome.scifio.services.LocationService}
+ *  </li>
  * </ul>
  * 
  * <h3>Future plans</h3>

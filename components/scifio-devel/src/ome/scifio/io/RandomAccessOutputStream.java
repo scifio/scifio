@@ -46,8 +46,6 @@ import ome.scifio.SCIFIO;
 
 import org.scijava.Context;
 
-
-
 /**
  * RandomAccessOutputStream provides methods for writing to files and
  * byte arrays.

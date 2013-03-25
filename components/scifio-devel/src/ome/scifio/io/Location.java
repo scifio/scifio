@@ -68,7 +68,6 @@ public class Location extends AbstractHasSCIFIO {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Location.class);
 
-
   // -- Fields --
 
   private boolean isURL = true;
@@ -110,8 +109,6 @@ public class Location extends AbstractHasSCIFIO {
   public Location(Context context, Location parent, String child) {
     this(context, parent.getAbsolutePath(), child);
   }
-
- 
 
   /**
    * Return a list of all of the files in this directory.  If 'noHiddenFiles' is
