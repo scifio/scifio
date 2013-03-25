@@ -51,6 +51,17 @@ import ome.xml.model.enums.Immersion;
 import ome.xml.model.enums.LaserMedium;
 import ome.xml.model.enums.LaserType;
 
+/**
+ * A utility class for working with metadata objects,
+ * including {@link ome.xml.meta.MetadataStore}, 
+ * {@link ome.xml.meta.MetadataRetrieve}, and OME-XML strings.
+ * Most of the methods require the optional {@link loci.formats.ome}
+ * package, and optional ome-xml.jar library, to be present at runtime.
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/MetadataTools.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/MetadataTools.java;hb=HEAD">Gitweb</a></dd></dl>
+ */
 public interface OMEXMLMetadataService extends Service {
 
   /**
@@ -99,7 +110,7 @@ public interface OMEXMLMetadataService extends Service {
    * </p>
    */
   void populateMetadata(MetadataStore store, int imageIndex, String imageName,
-      Metadata datasetMeta);
+      Metadata meta);
 
   /**
    * Populates the given {@link MetadataStore}, for the specified imageIndex, using
@@ -231,18 +242,12 @@ public interface OMEXMLMetadataService extends Service {
    * Uses the provided MetadataRetrieve to populate the format-agnostic
    * image information in the provided Metadata object (that is, the
    * ImageMetadata).
-   * 
-   * @param retrieve
-   * @param meta
    */
   void populateMetadata(MetadataRetrieve retrieve, Metadata meta);
 
   /**
    * Populates the provided ImageMetadata object using the specified
    * image index into the MetadataRetrieve.
-   * 
-   * @param retrieve
-   * @param iMeta
    */
   void populateImageMetadata(MetadataRetrieve retrieve,
       int imageIndex, ImageMetadata iMeta);

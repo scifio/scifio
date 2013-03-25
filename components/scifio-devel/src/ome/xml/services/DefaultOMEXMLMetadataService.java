@@ -77,16 +77,9 @@ import ome.xml.model.enums.handlers.LaserMediumEnumHandler;
 import ome.xml.model.enums.handlers.LaserTypeEnumHandler;
 import ome.xml.model.primitives.*;
 
+
 /**
- * A utility class for working with metadata objects,
- * including {@link MetadataStore}, {@link MetadataRetrieve},
- * and OME-XML strings.
- * Most of the methods require the optional {@link loci.formats.ome}
- * package, and optional ome-xml.jar library, to be present at runtime.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/MetadataTools.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/MetadataTools.java;hb=HEAD">Gitweb</a></dd></dl>
+ * Default implementation of {@link OMEXMLMetadataService}.
  */
 @Plugin(type = Service.class)
 public class DefaultOMEXMLMetadataService extends AbstractService
@@ -104,22 +97,21 @@ public class DefaultOMEXMLMetadataService extends AbstractService
   // -- Parameters --
   
   @Parameter
-  FormatService formatService;
+  private FormatService formatService;
   
   // -- Utility methods - OME-XML --
 
-  /**
-   * Populates the 'pixels' element of the given metadata store, using core
-   * metadata from the given reader.
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * populatePixels(ome.xml.meta.MetadataStore, ome.scifio.Metadata)
    */
   public void populatePixels(MetadataStore store, Metadata meta) {
     populatePixels(store, meta, false, true);
   }
 
-  /**
-   * Populates the 'pixels' element of the given metadata store, using core
-   * metadata from the given reader.  If the 'doPlane' flag is set,
-   * then the 'plane' elements will be populated as well.
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * populatePixels(ome.xml.meta.MetadataStore, ome.scifio.Metadata, boolean)
    */
   public void populatePixels(MetadataStore store, Metadata meta,
     boolean doPlane)
@@ -127,12 +119,9 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     populatePixels(store, meta, doPlane, true);
   }
 
-  /**
-   * Populates the 'pixels' element of the given metadata store, using core
-   * metadata from the given reader.  If the 'doPlane' flag is set,
-   * then the 'plane' elements will be populated as well.
-   * If the 'doImageName' flag is set, then the image name will be populated
-   * as well.  By default, 'doImageName' is true.
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * populatePixels(ome.xml.meta.MetadataStore, ome.scifio.Metadata, boolean, boolean)
    */
   public void populatePixels(MetadataStore store, Metadata meta,
     boolean doPlane, boolean doImageName)
@@ -190,14 +179,10 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
   }
 
-  /**
-   * Populates the given {@link MetadataStore}, for the specified imageIndex, using
-   * the provided values.
-   * <p>
-   * After calling this method, the metadata store will be sufficiently
-   * populated for use with an {@link IFormatWriter} (assuming it is also a
-   * {@link MetadataRetrieve}).
-   * </p>
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#populateMetadata(
+   * ome.xml.meta.MetadataStore, int, java.lang.String, boolean, 
+   * java.lang.String, java.lang.String, int, int, int, int, int, int)
    */
   public void populateMetadata(MetadataStore store, int imageIndex,
     String imageName, boolean littleEndian, String dimensionOrder,
@@ -209,43 +194,35 @@ public class DefaultOMEXMLMetadataService extends AbstractService
       samplesPerPixel);
   }
 
-  /**
-   * Populates the given {@link MetadataStore}, for the specified imageIndex, using
-   * the values from the provided {@link DatasetMetadata}.
-   * <p>
-   * After calling this method, the metadata store will be sufficiently
-   * populated for use with an {@link IFormatWriter} (assuming it is also a
-   * {@link MetadataRetrieve}).
-   * </p>
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#populateMetadata(
+   * ome.xml.meta.MetadataStore, int, java.lang.String, ome.scifio.Metadata)
    */
   public void populateMetadata(MetadataStore store, int imageIndex,
-    String imageName, Metadata datasetMeta)
+    String imageName, Metadata meta)
   {
     
-    int sizeX = datasetMeta.getAxisLength(imageIndex, Axes.X);
-    int sizeY = datasetMeta.getAxisLength(imageIndex, Axes.Y);
-    int sizeZ = datasetMeta.getAxisLength(imageIndex, Axes.Z);
-    int sizeC = datasetMeta.getAxisLength(imageIndex, Axes.CHANNEL);
-    int sizeT = datasetMeta.getAxisLength(imageIndex, Axes.TIME);
+    int sizeX = meta.getAxisLength(imageIndex, Axes.X);
+    int sizeY = meta.getAxisLength(imageIndex, Axes.Y);
+    int sizeZ = meta.getAxisLength(imageIndex, Axes.Z);
+    int sizeC = meta.getAxisLength(imageIndex, Axes.CHANNEL);
+    int sizeT = meta.getAxisLength(imageIndex, Axes.TIME);
     
     final String pixelType = 
-      FormatTools.getPixelTypeString(datasetMeta.getPixelType(imageIndex));
-    final int effSizeC = datasetMeta.getImageCount() / sizeZ / sizeT;
+      FormatTools.getPixelTypeString(meta.getPixelType(imageIndex));
+    final int effSizeC = meta.getImageCount() / sizeZ / sizeT;
     final int samplesPerPixel = sizeC / effSizeC;
     populateMetadata(store, null, imageIndex, imageName, 
-      datasetMeta.isLittleEndian(imageIndex), 
-      FormatTools.findDimensionOrder(datasetMeta, imageIndex), pixelType,
+      meta.isLittleEndian(imageIndex), 
+      FormatTools.findDimensionOrder(meta, imageIndex), pixelType,
       sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
   }
 
-  /**
-   * Populates the given {@link MetadataStore}, for the specified imageIndex, using
-   * the provided values.
-   * <p>
-   * After calling this method, the metadata store will be sufficiently
-   * populated for use with an {@link IFormatWriter} (assuming it is also a
-   * {@link MetadataRetrieve}).
-   * </p>
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * populateMetadata(ome.xml.meta.MetadataStore,
+   * java.lang.String, int, java.lang.String, boolean,
+   * java.lang.String, java.lang.String, int, int, int, int, int, int)
    */
   public void populateMetadata(MetadataStore store, String file,
     int imageIndex, String imageName, boolean littleEndian, String dimensionOrder,
@@ -259,6 +236,10 @@ public class DefaultOMEXMLMetadataService extends AbstractService
       sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
   }
 
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#populatePixelsOnly(
+   * ome.xml.meta.MetadataStore, ome.scifio.Reader)
+   */
   public void populatePixelsOnly(MetadataStore store, Reader r) {
     Metadata dMeta = r.getMetadata();
 
@@ -273,6 +254,11 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
   }
 
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#populatePixelsOnly(
+   * ome.xml.meta.MetadataStore, int, boolean, java.lang.String, 
+   * java.lang.String, int, int, int, int, int, int)
+   */
   public void populatePixelsOnly(MetadataStore store, int imageIndex,
     boolean littleEndian, String dimensionOrder, String pixelType, int sizeX,
     int sizeY, int sizeZ, int sizeC, int sizeT, int samplesPerPixel)
@@ -306,29 +292,16 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
   }
 
-  /**
-   * Disables the setting of a default creation date.
-   *
-   * By default, missing creation dates will be replaced with the corresponding
-   * file's last modification date, or the current time if the modification
-   * date is not available.
-   *
-   * Calling this method with the 'enabled' parameter set to 'false' causes
-   * missing creation dates to be left as null.
-   *
-   * @param enabled See above.
-   * @see #setDefaultCreationDate(MetadataStore, String, int)
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#setDefaultDateEnabled(boolean)
    */
   public void setDefaultDateEnabled(boolean enabled) {
     defaultDateEnabled = enabled;
   }
 
-  /**
-   * Sets a default creation date.  If the named file exists, then the creation
-   * date is set to the file's last modification date.  Otherwise, it is set
-   * to the current date.
-   *
-   * @see #setDefaultDateEnabled(boolean)
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * setDefaultCreationDate(ome.xml.meta.MetadataStore, java.lang.String, int)
    */
   public void setDefaultCreationDate(MetadataStore store, String id,
     int imageIndex)
@@ -343,21 +316,19 @@ public class DefaultOMEXMLMetadataService extends AbstractService
       time, DateTools.UNIX)), imageIndex);
   }
 
-  /**
-   *
-   * @throws FormatException if there is a missing metadata field,
-   *   or the metadata object is uninitialized
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * verifyMinimumPopulated(ome.xml.meta.MetadataRetrieve)
    */
   public void verifyMinimumPopulated(MetadataRetrieve src)
     throws FormatException
-    {
+  {
     verifyMinimumPopulated(src, 0);
-    }
+  }
 
-  /**
-   *
-   * @throws FormatException if there is a missing metadata field,
-   *   or the metadata object is uninitialized
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * verifyMinimumPopulated(ome.xml.meta.MetadataRetrieve, int)
    */
   public void verifyMinimumPopulated(MetadataRetrieve src, int n)
     throws FormatException
@@ -407,12 +378,11 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     if (src.getPixelsSizeZ(n) == null) {
       throw new FormatException("SizeZ #" + n + " is null");
     }
-    }
+  }
 
-
-  /**
-   * Adjusts the given dimension order as needed so that it contains exactly
-   * one of each of the following characters: 'X', 'Y', 'Z', 'C', 'T'.
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * makeSaneDimensionOrder(java.lang.String)
    */
   public String makeSaneDimensionOrder(String dimensionOrder) {
     String order = dimensionOrder.toUpperCase();
@@ -427,10 +397,9 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     return order;
   }
 
-  /**
-   * Constructs an LSID, given the object type and indices.
-   * For example, if the arguments are "Detector", 1, and 0, the LSID will
-   * be "Detector:1:0".
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * createLSID(java.lang.String, int[])
    */
   public String createLSID(String type, int... indices) {
     StringBuffer lsid = new StringBuffer(type);
@@ -441,13 +410,9 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     return lsid.toString();
   }
 
-
-  /**
-   * Retrieves an {@link ome.xml.model.enums.ExperimentType} enumeration
-   * value for the given String.
-   *
-   * @throws ome.xml.model.enums.EnumerationException if an appropriate
-   *  enumeration value is not found.
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * getExperimentType(java.lang.String)
    */
   public ExperimentType getExperimentType(String value)
     throws FormatException
@@ -461,12 +426,8 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
   }
 
-  /**
-   * Retrieves an {@link ome.xml.model.enums.LaserType} enumeration
-   * value for the given String.
-   *
-   * @throws ome.xml.model.enums.EnumerationException if an appropriate
-   *  enumeration value is not found.
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#getLaserType(java.lang.String)
    */
   public LaserType getLaserType(String value) throws FormatException {
     LaserTypeEnumHandler handler = new LaserTypeEnumHandler();
@@ -478,12 +439,8 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
   }
 
-  /**
-   * Retrieves an {@link ome.xml.model.enums.LaserMedium} enumeration
-   * value for the given String.
-   *
-   * @throws ome.xml.model.enums.EnumerationException if an appropriate
-   *  enumeration value is not found.
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#getLaserMedium(java.lang.String)
    */
   public LaserMedium getLaserMedium(String value) throws FormatException {
     LaserMediumEnumHandler handler = new LaserMediumEnumHandler();
@@ -495,12 +452,8 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
   }
   
-  /**
-   * Retrieves an {@link ome.xml.model.enums.Immersion} enumeration
-   * value for the given String.
-   *
-   * @throws ome.xml.model.enums.EnumerationException if an appropriate
-   *  enumeration value is not found.
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#getImmersion(java.lang.String)
    */
   public Immersion getImmersion(String value) throws FormatException {
     ImmersionEnumHandler handler = new ImmersionEnumHandler();
@@ -512,12 +465,8 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
   }
     
-  /**
-   * Retrieves an {@link ome.xml.model.enums.Correction} enumeration
-   * value for the given String.
-   *
-   * @throws ome.xml.model.enums.EnumerationException if an appropriate
-   *  enumeration value is not found.
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#getCorrection(java.lang.String)
    */
   public Correction getCorrection(String value) throws FormatException {
     CorrectionEnumHandler handler = new CorrectionEnumHandler();
@@ -529,12 +478,8 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
   }
   
-  /**
-   * Retrieves an {@link ome.xml.model.enums.DetectorType} enumeration
-   * value for the given String.
-   *
-   * @throws ome.xml.model.enums.EnumerationException if an appropriate
-   *  enumeration value is not found.
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#getDetectorType(java.lang.String)
    */
   public DetectorType getDetectorType(String value) throws FormatException {
     DetectorTypeEnumHandler handler = new DetectorTypeEnumHandler();
@@ -546,13 +491,9 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
   }
   
-  /**
-   * Uses the provided MetadataRetrieve to populate the format-agnostic
-   * image information in the provided Metadata object (that is, the
-   * ImageMetadata).
-   * 
-   * @param retrieve
-   * @param meta
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * populateMetadata(ome.xml.meta.MetadataRetrieve, ome.scifio.Metadata)
    */
   public void populateMetadata(MetadataRetrieve retrieve, Metadata meta) {
     meta.setDatasetName(retrieve.getImageName(0));
@@ -569,12 +510,9 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
   }
   
-  /**
-   * Populates the provided ImageMetadata object using the specified
-   * image index into the MetadataRetrieve.
-   * 
-   * @param retrieve
-   * @param iMeta
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#
+   * populateImageMetadata(ome.xml.meta.MetadataRetrieve, int, ome.scifio.ImageMetadata)
    */
   public void populateImageMetadata(MetadataRetrieve retrieve,
       int imageIndex, ImageMetadata iMeta)

@@ -1,10 +1,18 @@
 /**
- * Providies an implementation of the {@link ome.scifio.services.Service}
- * interface for OME-XML.
+ * Contains services facilitating the conversion between Metadata
+ * and OME-XML.
  * 
  * <h3>Changes since Bio-Formats</h3>
  * <ul>
  *  <li>
+ *  The {@link ome.xml.services.OMEXMLService} is now a scijava-common
+ *  {@link org.scijava.Context} plugin, and does not need to be instantiated
+ *  through a factory implementation.
+ *  </li>
+ *  <li>
+ *  Added an {@link ome.xml.services.OMEXMLMetadataService} to
+ *  provide static utility methods for converting between
+ *  {@link ome.scifio.Metadata} and the OME-XML schema.
  *  </li>
  * </ul>
  * 
