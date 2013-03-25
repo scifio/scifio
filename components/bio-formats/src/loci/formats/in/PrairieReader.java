@@ -51,7 +51,7 @@ import loci.legacy.context.LegacyContext;
 import ome.scifio.common.Constants;
 import ome.scifio.common.DateTools;
 import ome.scifio.io.Location;
-import ome.scifio.io.LocationService;
+import ome.scifio.services.LocationService;
 import ome.scifio.xml.XMLTools;
 import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;

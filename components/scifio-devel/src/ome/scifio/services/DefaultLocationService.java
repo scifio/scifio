@@ -34,13 +34,18 @@
  * #L%
  */
 
-package ome.scifio.io;
+package ome.scifio.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import ome.scifio.io.IRandomAccess;
+import ome.scifio.io.IStreamAccess;
+import ome.scifio.io.Location;
+import ome.scifio.io.NIOFileHandle;
 
 import org.scijava.InstantiableException;
 import org.scijava.service.Service;

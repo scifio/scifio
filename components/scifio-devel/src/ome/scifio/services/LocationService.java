@@ -34,10 +34,12 @@
  * #L%
  */
 
-package ome.scifio.io;
+package ome.scifio.services;
 
 import java.io.IOException;
 import java.util.HashMap;
+
+import ome.scifio.io.IRandomAccess;
 
 import org.scijava.service.Service;
 
