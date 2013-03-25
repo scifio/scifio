@@ -34,7 +34,7 @@
  * #L%
  */
 
-package ome.xml.meta;
+package ome.xml.services;
 
 import org.scijava.service.Service;
 
@@ -42,6 +42,8 @@ import ome.scifio.FormatException;
 import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
 import ome.scifio.Reader;
+import ome.xml.meta.MetadataRetrieve;
+import ome.xml.meta.MetadataStore;
 import ome.xml.model.enums.Correction;
 import ome.xml.model.enums.DetectorType;
 import ome.xml.model.enums.ExperimentType;

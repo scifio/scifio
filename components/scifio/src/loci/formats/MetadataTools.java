@@ -42,7 +42,7 @@ import java.util.Map;
 import ome.scifio.DefaultMetadata;
 import ome.scifio.Metadata;
 import ome.scifio.Reader;
-import ome.xml.meta.OMEXMLMetadataService;
+import ome.xml.services.OMEXMLMetadataService;
 
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;

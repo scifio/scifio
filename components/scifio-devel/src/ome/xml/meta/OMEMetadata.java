@@ -40,6 +40,7 @@ import org.scijava.Context;
 
 import ome.scifio.AbstractMetadata;
 import ome.scifio.services.ServiceException;
+import ome.xml.services.OMEXMLMetadataService;
 import ome.xml.services.OMEXMLService;
 
 /**

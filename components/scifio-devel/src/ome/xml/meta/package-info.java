@@ -21,7 +21,7 @@
  *  </li>
  *  <li>
  *  Because of the split between SCIFIO and OME-XML classes, the Bio-Formats
- *  tools class was split into {@link ome.xml.meta.DefaultOMEXMLMetadataService} and
+ *  tools class was split into {@link ome.xml.services.DefaultOMEXMLMetadataService} and
  *  {@link ome.scifio.util.SCIFIOMetadataTools}.
  *  </li>
  * </ul>

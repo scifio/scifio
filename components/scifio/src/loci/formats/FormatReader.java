@@ -108,7 +108,7 @@ import ome.xml.model.enums.handlers.MicroscopeTypeEnumHandler;
 import ome.xml.model.enums.handlers.NamingConventionEnumHandler;
 import ome.xml.model.enums.handlers.PixelTypeEnumHandler;
 import ome.xml.model.enums.handlers.PulseEnumHandler;
-import ome.xml.meta.OMEXMLMetadataService;
+import ome.xml.services.OMEXMLMetadataService;
 
 /**
  * Abstract superclass of all biological file format readers.

@@ -49,7 +49,7 @@ import ome.scifio.formats.ICSFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.meta.OMEXMLMetadataImpl;
-import ome.xml.meta.OMEXMLMetadataService;
+import ome.xml.services.OMEXMLMetadataService;
 
 /**
  * ICSReader is the file format reader for ICS (Image Cytometry Standard)

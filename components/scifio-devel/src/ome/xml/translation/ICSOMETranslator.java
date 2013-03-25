@@ -54,11 +54,11 @@ import ome.xml.meta.FilterMetadata;
 import ome.xml.meta.MetadataStore;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
-import ome.xml.meta.OMEXMLMetadataService;
 import ome.scifio.util.FormatTools;
 import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
 import ome.xml.model.primitives.Timestamp;
+import ome.xml.services.OMEXMLMetadataService;
 
 /**
  * Translator class from {@link ICSMetadata} to

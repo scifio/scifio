@@ -34,7 +34,7 @@
  * #L%
  */
 
-package ome.xml.meta;
+package ome.xml.services;
 
 import net.imglib2.meta.Axes;
 
@@ -56,6 +56,9 @@ import ome.scifio.services.FormatService;
 import ome.scifio.services.ServiceException;
 import ome.scifio.util.FormatTools;
 import ome.scifio.util.SCIFIOMetadataTools;
+import ome.xml.meta.MetadataRetrieve;
+import ome.xml.meta.MetadataStore;
+import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.*;
 import ome.xml.model.enums.Correction;
 import ome.xml.model.enums.DetectorType;
@@ -73,7 +76,6 @@ import ome.xml.model.enums.handlers.ImmersionEnumHandler;
 import ome.xml.model.enums.handlers.LaserMediumEnumHandler;
 import ome.xml.model.enums.handlers.LaserTypeEnumHandler;
 import ome.xml.model.primitives.*;
-import ome.xml.services.OMEXMLService;
 
 /**
  * A utility class for working with metadata objects,

@@ -44,7 +44,7 @@ import ome.scifio.FormatException;
 import ome.scifio.formats.APNGFormat;
 import ome.scifio.util.FormatTools;
 import ome.xml.meta.OMEMetadata;
-import ome.xml.meta.OMEXMLMetadataService;
+import ome.xml.services.OMEXMLMetadataService;
 
 /**
  * Translator class from {@link APNGMetadata} to
