@@ -163,7 +163,7 @@ public class OmeisImporter extends AbstractHasSCIFIO {
     // set up file path mappings
     String[] ids = new String[fileIds.length];
     for (int i=0; i<fileIds.length; i++) {
-      Hashtable fileInfo = getFileInfo(fileIds[i]);
+      Hashtable<String, String> fileInfo = getFileInfo(fileIds[i]);
       ids[i] = (String) fileInfo.get("Name");
       String path = getLocalFilePath(fileIds[i]);
       scifio().locations().mapId(ids[i], path);
@@ -222,7 +222,7 @@ public class OmeisImporter extends AbstractHasSCIFIO {
     // set up file path mappings
     String[] ids = new String[fileIds.length];
     for (int i=0; i<fileIds.length; i++) {
-      Hashtable fileInfo = getFileInfo(fileIds[i]);
+      Hashtable<String, String> fileInfo = getFileInfo(fileIds[i]);
       ids[i] = (String) fileInfo.get("Name");
       String path = getLocalFilePath(fileIds[i]);
       scifio().locations().mapId(ids[i], path);
@@ -443,12 +443,12 @@ public class OmeisImporter extends AbstractHasSCIFIO {
    * Gets information about the file corresponding to the given file ID.
    * @return hashtable containing the information as key/value pairs
    */
-  public Hashtable getFileInfo(int fileId) throws OmeisException {
+  public Hashtable<String, String> getFileInfo(int fileId) throws OmeisException {
     // ./omeis Method=FileInfo FileID=fid
     String[] s;
     try { s = omeis("FileInfo", "FileID=" + fileId); }
     catch (IOException exc) { throw new OmeisException(exc); }
-    Hashtable info = new Hashtable();
+    Hashtable<String, String> info = new Hashtable<String, String>();
     for (int i=0; i<s.length; i++) {
       int equals = s[i].indexOf("=");
       if (equals < 0) {
@@ -592,7 +592,7 @@ public class OmeisImporter extends AbstractHasSCIFIO {
     // call OMEIS via HTTP
     BufferedReader in = new BufferedReader(
       new InputStreamReader(new URL(url).openStream(), Constants.ENCODING));
-    Vector v = new Vector();
+    Vector<String> v = new Vector<String>();
     while (true) {
       String line = in.readLine();
       if (line == null) break;

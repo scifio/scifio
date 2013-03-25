@@ -44,7 +44,10 @@ import ome.xml.services.OMEXMLMetadataService;
 import ome.xml.services.OMEXMLService;
 
 /**
- * ome.scifio.Metadata class representing the OME schema.
+ * ome.scifio.Metadata class wrapping an OME-XML root.
+ * 
+ * @see ome.xml.meta.OMEXMLMetadata
+ * @see ome.scifio.Metadata
  * 
  * @author Mark Hiner
  *
@@ -95,12 +98,18 @@ public class OMEMetadata extends AbstractMetadata {
   
   // -- Helper Methods --
   
+  /**
+   * Sets the root for this Metadata
+   */
   public void setRoot(OMEXMLMetadata root) {
     this.root = root;
     
     if (root != null) populateImageMetadata();
   }
 
+  /**
+   * Returns the root of this Metadata
+   */
   public OMEXMLMetadata getRoot() {
     if (root == null) {
       OMEXMLService service = scifio().formats().getInstance(OMEXMLService.class);
@@ -113,9 +122,11 @@ public class OMEMetadata extends AbstractMetadata {
     return root;
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#reset(java.lang.Class)
+   */
   @Override
   public void reset(Class<?> type) {
     super.reset(this.getClass());
   }
-  
 }
