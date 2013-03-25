@@ -46,12 +46,12 @@ import loci.legacy.adapter.AbstractLegacyAdapter;
 
 /**
  * {@link LegacyAdapter} for converting between instances of
- * {@link ome.scifio.DatasetMetadata} and an array of {@link loci.formats.CoreMetadata}.
- * <p>
- * Since the legacy CoreMetadata objects were stored in an array, there is no class to
- * extend and no setter methods to override in the Modern -> Legacy direction. Thus 
- * any such delegation has to be managed by the {@link CoreImageMetadataAdapter}.
- * </p>
+ * {@link ome.scifio.Metadata} and a List of {@link loci.formats.CoreMetadata}.
+ * 
+ * @see loci.legacy.adapter.LegacyAdapter
+ * @see loci.formats.CoreMetadata
+ * @see ome.scifio.Metadata
+ * 
  * @author Mark Hiner
  *
  */

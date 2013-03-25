@@ -119,14 +119,19 @@ import ome.xml.model.enums.handlers.PixelTypeEnumHandler;
 import ome.xml.model.enums.handlers.PulseEnumHandler;
 
 /**
- * Abstract superclass of all biological file format writers.
- * Defers to ome.scifio.Reader
+ * Abstract superclass of all biological file format writers converted to
+ * SCIFIO components. Defers to an ome.scifio.Reader
+ * 
+ * @see ome.scifio.Reader
+ * 
+ * @author Mark Hiner
  *
+ * @deprecated see ome.scifio.Reader
  */
 @Deprecated
 public abstract class SCIFIOFormatReader extends FormatReader 
   implements Wrapper<Reader>
-  {
+{
 
   // -- Fields --
   
@@ -169,7 +174,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   // -- Internal FormatReader API methods --
 
   /** Returns true if the given file name is in the used files list. */
-  @Deprecated
   @Override
   protected boolean isUsedFile(String file) {
     String[] usedFiles = getUsedFiles();
@@ -182,7 +186,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /** Adds an entry to the specified Hashtable. */
-  @Deprecated
   @Override
   protected void addMeta(String key, Object value,
     Hashtable<String, Object> meta)
@@ -191,147 +194,126 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /** Adds an entry to the global metadata table. */
-  @Deprecated
   @Override
   protected void addGlobalMeta(String key, Object value) {
     addMeta(key, value, getGlobalMetadata());
   }
 
   /** Adds an entry to the global metadata table. */
-  @Deprecated
   @Override
   protected void addGlobalMeta(String key, boolean value) {
     addGlobalMeta(key, new Boolean(value));
   }
 
   /** Adds an entry to the global metadata table. */
-  @Deprecated
   @Override
   protected void addGlobalMeta(String key, byte value) {
     addGlobalMeta(key, new Byte(value));
   }
 
   /** Adds an entry to the global metadata table. */
-  @Deprecated
   @Override
   protected void addGlobalMeta(String key, short value) {
     addGlobalMeta(key, new Short(value));
   }
 
   /** Adds an entry to the global metadata table. */
-  @Deprecated
   @Override
   protected void addGlobalMeta(String key, int value) {
     addGlobalMeta(key, new Integer(value));
   }
 
   /** Adds an entry to the global metadata table. */
-  @Deprecated
   @Override
   protected void addGlobalMeta(String key, long value) {
     addGlobalMeta(key, new Long(value));
   }
 
   /** Adds an entry to the global metadata table. */
-  @Deprecated
   @Override
   protected void addGlobalMeta(String key, float value) {
     addGlobalMeta(key, new Float(value));
   }
 
   /** Adds an entry to the global metadata table. */
-  @Deprecated
   @Override
   protected void addGlobalMeta(String key, double value) {
     addGlobalMeta(key, new Double(value));
   }
 
   /** Adds an entry to the global metadata table. */
-  @Deprecated
   @Override
   protected void addGlobalMeta(String key, char value) {
     addGlobalMeta(key, new Character(value));
   }
 
   /** Gets a value from the global metadata table. */
-  @Deprecated
   @Override
   protected Object getGlobalMeta(String key) {
     return metadata.get(key);
   }
 
   /** Adds an entry to the metadata table for the current series. */
-  @Deprecated
   @Override
   protected void addSeriesMeta(String key, Object value) {
     addMeta(key, value, reader.getMetadata().getImageMetadata(getSeries()));
   }
 
   /** Adds an entry to the metadata table for the current series. */
-  @Deprecated
   @Override
   protected void addSeriesMeta(String key, boolean value) {
     addSeriesMeta(key, new Boolean(value));
   }
 
   /** Adds an entry to the metadata table for the current series. */
-  @Deprecated
   @Override
   protected void addSeriesMeta(String key, byte value) {
     addSeriesMeta(key, new Byte(value));
   }
 
   /** Adds an entry to the metadata table for the current series. */
-  @Deprecated
   @Override
   protected void addSeriesMeta(String key, short value) {
     addSeriesMeta(key, new Short(value));
   }
 
   /** Adds an entry to the metadata table for the current series. */
-  @Deprecated
   @Override
   protected void addSeriesMeta(String key, int value) {
     addSeriesMeta(key, new Integer(value));
   }
 
   /** Adds an entry to the metadata table for the current series. */
-  @Deprecated
   @Override
   protected void addSeriesMeta(String key, long value) {
     addSeriesMeta(key, new Long(value));
   }
 
   /** Adds an entry to the metadata table for the current series. */
-  @Deprecated
   @Override
   protected void addSeriesMeta(String key, float value) {
     addSeriesMeta(key, new Float(value));
   }
 
   /** Adds an entry to the metadata table for the current series. */
-  @Deprecated
   @Override
   protected void addSeriesMeta(String key, double value) {
     addSeriesMeta(key, new Double(value));
   }
 
   /** Adds an entry to the metadata table for the current series. */
-  @Deprecated
   @Override
   protected void addSeriesMeta(String key, char value) {
     addSeriesMeta(key, new Character(value));
   }
 
   /** Gets an entry from the metadata table for the current series. */
-  @Deprecated
   @Override
   protected Object getSeriesMeta(String key) {
     return reader.getMetadata().getImageMetadata(getSeries()).get(key);
   }
 
   /** Reads a raw plane from disk. */
-  @Deprecated
   @Override
   protected byte[] readPlane(RandomAccessInputStream s, int x, int y, int w,
     int h, byte[] buf) throws IOException
@@ -341,8 +323,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
       ((ByteArrayPlane)plane).populate(reader.getMetadata().get(getSeries()), buf,
           x, y, w, h);
       
-      return reader.readPlane(
-          CommonAdapter.get(s),
+      return reader.readPlane(CommonAdapter.get(s),
           getSeries(), x, y, w, h, plane).getBytes();
     }
     else {
@@ -354,7 +335,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /** Reads a raw plane from disk. */
-  @Deprecated
   @Override
   protected byte[] readPlane(RandomAccessInputStream s, int x, int y, int w,
     int h, int scanlinePad, byte[] buf) throws IOException
@@ -364,8 +344,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
       ((ByteArrayPlane)plane).populate(reader.getMetadata().get(getSeries()), buf,
           x, y, w, h);
       
-      return reader.readPlane(
-          CommonAdapter.get(s),
+      return reader.readPlane(CommonAdapter.get(s),
           getSeries(), x, y, w, h, scanlinePad, plane).getBytes();
     }
     else {
@@ -383,7 +362,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
 
   // -- IMetadataConfigurable API methods --
 
-  /* (non-Javadoc)
+  /* 
    * @see loci.formats.IMetadataConfigurable#getSupportedMetadataLevels()
    */
   public Set<MetadataLevel> getSupportedMetadataLevels() {
@@ -394,19 +373,17 @@ public abstract class SCIFIOFormatReader extends FormatReader
     return supportedLevels;
   }
 
-  /* (non-Javadoc)
+  /* 
    * @see loci.formats.IMetadataConfigurable#getMetadataOptions()
    */
-  @Deprecated
   @Override
   public MetadataOptions getMetadataOptions() {
     return metadataOptions;
   }
 
-  /* (non-Javadoc)
+  /* 
    * @see loci.formats.IMetadataConfigurable#setMetadataOptions(loci.formats.in.MetadataOptions)
    */
-  @Deprecated
   @Override
   public void setMetadataOptions(MetadataOptions options) {
     this.metadataOptions = options;
@@ -440,91 +417,78 @@ public abstract class SCIFIOFormatReader extends FormatReader
    * @param open If true, and the file extension is insufficient to determine
    *   the file type, the (existing) file is opened for further analysis.
    */
-  @Deprecated
   @Override
   public boolean isThisType(String name, boolean open) {
     return checker.isFormat(name, open);
   }
 
   /* @see IFormatReader#isThisType(byte[]) */
-  @Deprecated
   @Override
   public boolean isThisType(byte[] block) {
     return checker.isFormat(new String(block));
   }
 
   /* @see IFormatReader#isThisType(RandomAccessInputStream) */
-  @Deprecated
   @Override
   public boolean isThisType(RandomAccessInputStream stream) throws IOException {
     return checker.isFormat(CommonAdapter.get(stream));
   }
 
   /* @see IFormatReader#getImageCount() */
-  @Deprecated
   @Override
   public int getImageCount() {
     return reader.getMetadata().getPlaneCount(getSeries());
   }
 
   /* @see IFormatReader#isRGB() */
-  @Deprecated
   @Override
   public boolean isRGB() {
     return reader.getMetadata().isRGB(getSeries());
   }
 
   /* @see IFormatReader#getSizeX() */
-  @Deprecated
   @Override
   public int getSizeX() {
     return reader.getMetadata().getAxisLength(getSeries(), Axes.X);
   }
 
   /* @see IFormatReader#getSizeY() */
-  @Deprecated
   @Override
   public int getSizeY() {
     return reader.getMetadata().getAxisLength(getSeries(), Axes.Y);
   }
 
   /* @see IFormatReader#getSizeZ() */
-  @Deprecated
   @Override
   public int getSizeZ() {
     return reader.getMetadata().getAxisLength(getSeries(), Axes.Z);
   }
 
   /* @see IFormatReader#getSizeC() */
-  @Deprecated
   @Override
   public int getSizeC() {
     return reader.getMetadata().getAxisLength(getSeries(), Axes.CHANNEL);
   }
 
   /* @see IFormatReader#getSizeT() */
-  @Deprecated
   @Override
   public int getSizeT() {
     return reader.getMetadata().getAxisLength(getSeries(), Axes.TIME);
   }
 
   /* @see IFormatReader#getPixelType() */
-  @Deprecated
   @Override
   public int getPixelType() {
     return reader.getMetadata().getPixelType(getSeries());
   }
 
   /* @see IFormatReader#getBitsPerPixel() */
-  @Deprecated
   @Override
   public int getBitsPerPixel() {
     return reader.getMetadata().getBitsPerPixel(getSeries());
   }
 
   /* @see IFormatReader#getEffectiveSizeC() */
-  @Deprecated
   @Override
   public int getEffectiveSizeC() {
     // NB: by definition, imageCount == effectiveSizeC * sizeZ * sizeT
@@ -534,7 +498,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#getRGBChannelCount() */
-  @Deprecated
   @Override
   public int getRGBChannelCount() {
     int effSizeC = getEffectiveSizeC();
@@ -543,21 +506,18 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#isIndexed() */
-  @Deprecated
   @Override
   public boolean isIndexed() {
     return reader.getMetadata().isIndexed(getSeries());
   }
 
   /* @see IFormatReader#isFalseColor() */
-  @Deprecated
   @Override
   public boolean isFalseColor() {
     return reader.getMetadata().isFalseColor(getSeries());
   }
 
   /* @see IFormatReader#get8BitLookupTable() */
-  @Deprecated
   @Override
   public byte[][] get8BitLookupTable() throws FormatException, IOException {
     Metadata m = reader.getMetadata();
@@ -574,7 +534,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#get16BitLookupTable() */
-  @Deprecated
   @Override
   public short[][] get16BitLookupTable() throws FormatException, IOException {
     Metadata m = reader.getMetadata();
@@ -591,77 +550,67 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#getChannelDimLengths() */
-  @Deprecated
   @Override
   public int[] getChannelDimLengths() {
     return reader.getMetadata().getChannelDimLengths(getSeries());
   }
 
   /* @see IFormatReader#getChannelDimTypes() */
-  @Deprecated
   @Override
   public String[] getChannelDimTypes() {
     return reader.getMetadata().getChannelDimTypes(getSeries());
   }
 
   /* @see IFormatReader#getThumbSizeX() */
-  @Deprecated
   @Override
   public int getThumbSizeX() {
     return reader.getMetadata().getThumbSizeX(getSeries());
   }
 
   /* @see IFormatReader#getThumbSizeY() */
-  @Deprecated
   @Override
   public int getThumbSizeY() {
     return reader.getMetadata().getThumbSizeY(getSeries());
   }
 
   /* @see IFormatReader.isLittleEndian() */
-  @Deprecated
   @Override
   public boolean isLittleEndian() {
     return reader.getMetadata().isLittleEndian(getSeries());
   }
 
   /* @see IFormatReader#getDimensionOrder() */
-  @Deprecated
   @Override
   public String getDimensionOrder() {
     return ome.scifio.util.FormatTools.findDimensionOrder(reader, getSeries());
   }
 
   /* @see IFormatReader#isOrderCertain() */
-  @Deprecated
   @Override
   public boolean isOrderCertain() {
     return reader.getMetadata().isOrderCertain(getSeries());
   }
 
   /* @see IFormatReader#isThumbnailSeries() */
-  @Deprecated
   @Override
   public boolean isThumbnailSeries() {
     return reader.getMetadata().isThumbnailImage(getSeries());
   }
 
   /* @see IFormatReader#isInterleaved() */
-  @Deprecated
   @Override
   public boolean isInterleaved() {
-    return reader.getMetadata().isInterleaved(0);
+    return reader.getMetadata().isInterleaved(getSeries());
   }
 
   /* @see IFormatReader#isInterleaved(int) */
-  @Deprecated
   @Override
   public boolean isInterleaved(int subC) {
+  	//TODO no current equivalent for this method in SCIFIO
     return reader.getMetadata().isInterleaved(getSeries());
   }
 
   /* @see IFormatReader#openBytes(int) */
-  @Deprecated
   @Override
   public byte[] openBytes(int no) throws FormatException, IOException {
     try {
@@ -673,7 +622,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#openBytes(int, byte[]) */
-  @Deprecated
   @Override
   public byte[] openBytes(int no, byte[] buf)
     throws FormatException, IOException
@@ -693,7 +641,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#openBytes(int, int, int, int, int) */
-  @Deprecated
   @Override
   public byte[] openBytes(int no, int x, int y, int w, int h)
     throws FormatException, IOException
@@ -709,7 +656,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   /**
    * @see loci.formats.IFormatReader#openBytes(int, byte[], int, int, int, int)
    */
-  @Deprecated
   public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
     throws FormatException, IOException
   {
@@ -728,7 +674,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#openPlane(int, int, int, int, int int) */
-  @Deprecated
   @Override
   public Object openPlane(int no, int x, int y, int w, int h)
     throws FormatException, IOException
@@ -738,7 +683,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#openThumbBytes(int) */
-  @Deprecated
   @Override
   public byte[] openThumbBytes(int no) throws FormatException, IOException {
     try {
@@ -750,7 +694,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#close(boolean) */
-  @Deprecated
   @Override
   public void close(boolean fileOnly) throws IOException {
     parser.close(fileOnly);
@@ -760,7 +703,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#getSeriesCount() */
-  @Deprecated
   @Override
   public int getSeriesCount() {
     return reader.getMetadata().getImageCount();
@@ -780,42 +722,36 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#setGroupFiles(boolean) */
-  @Deprecated
   @Override
   public void setGroupFiles(boolean groupFiles) {
     reader.setGroupFiles(groupFiles);
   }
 
   /* @see IFormatReader#isGroupFiles() */
-  @Deprecated
   @Override
   public boolean isGroupFiles() {
     return reader.isGroupFiles();
   }
 
   /* @see IFormatReader#fileGroupOption(String) */
-  @Deprecated
   @Override
   public int fileGroupOption(String id) throws FormatException, IOException {
     return ome.scifio.util.FormatTools.CANNOT_GROUP;
   }
 
   /* @see IFormatReader#isMetadataComplete() */
-  @Deprecated
   @Override
   public boolean isMetadataComplete() {
     return reader.getMetadata().isMetadataComplete(getSeries());
   }
 
   /* @see IFormatReader#setNormalized(boolean) */
-  @Deprecated
   @Override
   public void setNormalized(boolean normalize) {
     reader.setNormalized(normalize);
   }
 
   /* @see IFormatReader#isNormalized() */
-  @Deprecated
   @Override
   public boolean isNormalized() {
     return reader.isNormalized();
@@ -840,49 +776,42 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#setOriginalMetadataPopulated(boolean) */
-  @Deprecated
   @Override
   public void setOriginalMetadataPopulated(boolean populate) {
     parser.setOriginalMetadataPopulated(populate);
   }
 
   /* @see IFormatReader#isOriginalMetadataPopulated() */
-  @Deprecated
   @Override
   public boolean isOriginalMetadataPopulated() {
     return parser.isOriginalMetadataPopulated();
   }
 
   /* @see IFormatReader#getUsedFiles() */
-  @Deprecated
   @Override
   public String[] getUsedFiles() {
     return parser.getUsedFiles();
   }
 
   /* @see IFormatReader#getUsedFiles() */
-  @Deprecated
   @Override
   public String[] getUsedFiles(boolean noPixels) {
     return parser.getUsedFiles(noPixels);
   }
 
   /* @see IFormatReader#getSeriesUsedFiles() */
-  @Deprecated
   @Override
   public String[] getSeriesUsedFiles() {
     return parser.getImageUsedFiles(getSeries());
   }
 
   /* @see IFormatReader#getSeriesUsedFiles(boolean) */
-  @Deprecated
   @Override
   public String[] getSeriesUsedFiles(boolean noPixels) {
     return parser.getImageUsedFiles(getSeries(), noPixels);
   }
 
   /* @see IFormatReader#getAdvancedUsedFiles(boolean) */
-  @Deprecated
   @Override
   public FileInfo[] getAdvancedUsedFiles(boolean noPixels) {
     ome.scifio.FileInfo[] tmpInfo = parser.getAdvancedUsedFiles(noPixels);
@@ -890,25 +819,11 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#getAdvancedSeriesUsedFiles(boolean) */
-  @Deprecated
   @Override
   public FileInfo[] getAdvancedSeriesUsedFiles(boolean noPixels) {
     ome.scifio.FileInfo[] tmpInfo =
       parser.getAdvancedImageUsedFiles(getSeries(), noPixels);
     return convertFileInfo(tmpInfo);
-  }
-
-  private FileInfo[] convertFileInfo(ome.scifio.FileInfo[] source) {
-    FileInfo[] info = new FileInfo[source.length];
-
-    for (int i = 0; i < source.length; i++) {
-      info[i] = new FileInfo();
-      info[i].filename = source[i].filename;
-      info[i].reader = source[i].reader;
-      info[i].usedToInitialize = source[i].usedToInitialize;
-    }
-
-    return info;
   }
 
   /* @see IFormatReader#getCurrentFile() */
@@ -917,48 +832,41 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#getIndex(int, int, int) */
-  @Deprecated
   @Override
   public int getIndex(int z, int c, int t) {
     return ome.scifio.util.FormatTools.getIndex(reader, getSeries(), z, c, t);
   }
 
   /* @see IFormatReader#getZCTCoords(int) */
-  @Deprecated
   @Override
   public int[] getZCTCoords(int index) {
     return ome.scifio.util.FormatTools.getZCTCoords(reader, getSeries(), index);
   }
 
   /* @see IFormatReader#getMetadataValue(String) */
-  @Deprecated
   @Override
   public Object getMetadataValue(String field) {
     return reader.getMetadata().getMetadataValue(field);
   }
 
   /* @see IFormatReader#getSeriesMetadataValue(String) */
-  @Deprecated
   @Override
   public Object getSeriesMetadataValue(String field) {
     return reader.getMetadata().getImageMetadataValue(getSeries(), field);
   }
 
   /* @see IFormatReader#getGlobalMetadata() */
-  @Deprecated
   @Override
   public Hashtable<String, Object> getGlobalMetadata() {
     return reader.getMetadata().getDatasetMetadata();
   }
 
   /* @see IFormatReader#getSeriesMetadata() */
-  @Deprecated
   @Override
   public Hashtable<String, Object> getSeriesMetadata() {
     return reader.getMetadata().getImageMetadata(getSeries());
   }
 
-  @Deprecated
   @Override
   public Hashtable<String, Object> getMetadata() {
     FormatTools.assertId(currentId, true, 1);
@@ -979,21 +887,18 @@ public abstract class SCIFIOFormatReader extends FormatReader
   /*
    * @see loci.formats.FormatReader#getCoreMetadataList()
    */
-  @Deprecated
   @Override
   public List<CoreMetadata> getCoreMetadataList() {
     return FormatAdapter.get(reader.getMetadata());
   }
 
   /* @see IFormatReader#setMetadataFiltered(boolean) */
-  @Deprecated
   @Override
   public void setMetadataFiltered(boolean filter) {
     parser.setMetadataFiltered(filter);
   }
 
   /* @see IFormatReader#isMetadataFiltered() */
-  @Deprecated
   @Override
   public boolean isMetadataFiltered() {
     return parser.isMetadataFiltered();
@@ -1036,7 +941,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#getPossibleDomains(String) */
-  @Deprecated
   @Override
   public String[] getPossibleDomains(String id)
     throws FormatException, IOException
@@ -1045,7 +949,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#getDomains() */
-  @Deprecated
   @Override
   public String[] getDomains() {
     FormatTools.assertId(currentId, true, 1);
@@ -1053,14 +956,12 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatReader#getOptimalTileWidth() */
-  @Deprecated
   @Override
   public int getOptimalTileWidth() {
     return reader.getOptimalTileWidth(getSeries());
   }
 
   /* @see IFormatReader#getOptimalTileHeight() */
-  @Deprecated
   @Override
   public int getOptimalTileHeight() {
     return reader.getOptimalTileHeight(getSeries());
@@ -1069,7 +970,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   // -- IFormatHandler API methods --
 
   /* @see IFormatHandler#isThisType(String) */
-  @Deprecated
   @Override
   public boolean isThisType(String name) {
     // if necessary, open the file for further analysis
@@ -1077,7 +977,6 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   /* @see IFormatHandler#setId(String) */
-  @Deprecated
   @Override
   public void setId(String id) throws FormatException, IOException {
     super.setId(id);
@@ -1100,6 +999,22 @@ public abstract class SCIFIOFormatReader extends FormatReader
         core.add(c);
       }
     }
+  }
+  
+  // -- Helper methods --
+  
+  // Converts ome.scifio.FileInfo to loci.formats.FileInfo
+  private FileInfo[] convertFileInfo(ome.scifio.FileInfo[] source) {
+    FileInfo[] info = new FileInfo[source.length];
+
+    for (int i = 0; i < source.length; i++) {
+      info[i] = new FileInfo();
+      info[i].filename = source[i].filename;
+      info[i].reader = source[i].reader;
+      info[i].usedToInitialize = source[i].usedToInitialize;
+    }
+
+    return info;
   }
 
   // -- SCIFIO Utility Methods --

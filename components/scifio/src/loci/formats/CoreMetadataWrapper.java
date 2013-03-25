@@ -49,8 +49,9 @@ import loci.legacy.adapter.Wrapper;
  * This class is used for delegation in the Legacy
  * to Modern direction. It can be used in method signatures
  * expecting an {@link ome.scifio.ImageMetadata} - or,
- * more significantly, stored within an {@link ome.scifio.DatasetMetadata}
- *  - but delegates all functionality to the wrapped @{link loci.formats.CoreMetadata}
+ * more significantly, stored within an {@link ome.scifio.Metadata}
+ * - but dynamically calculates all values using
+ * the wrapped @{link loci.formats.CoreMetadata}
  * 
  * @author Mark Hiner
  *
@@ -82,71 +83,108 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   
   // -- Setters -- 
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setThumbSizeX(int)
+   */
   public void setThumbSizeX(final int thumbSizeX) {
     unwrap().thumbSizeX = thumbSizeX;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setThumbSizeY(int)
+   */
   public void setThumbSizeY(final int thumbSizeY) {
     unwrap().thumbSizeY = thumbSizeY;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setPixelType(int)
+   */
   public void setPixelType(final int pixelType) {
     unwrap().pixelType = pixelType;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setBitsPerPixel(int)
+   */
   public void setBitsPerPixel(final int bitsPerPixel) {
     unwrap().bitsPerPixel = bitsPerPixel;
   }
 
-  public void setcLengths(final int[] cLengths) {
-    unwrap().cLengths = cLengths;
-  }
-
-  public void setcTypes(final String[] cTypes) {
-    unwrap().cTypes = cTypes;
-  }
-
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setOrderCertain(boolean)
+   */
   public void setOrderCertain(final boolean orderCertain) {
     unwrap().orderCertain = orderCertain;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setRGB(boolean)
+   */
   public void setRGB(final boolean rgb) {
     unwrap().rgb = rgb;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setLittleEndian(boolean)
+   */
   public void setLittleEndian(final boolean littleEndian) {
     unwrap().littleEndian = littleEndian;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setInterleaved(boolean)
+   */
   public void setInterleaved(final boolean interleaved) {
     unwrap().interleaved = interleaved;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setIndexed(boolean)
+   */
   public void setIndexed(final boolean indexed) {
     unwrap().indexed = indexed;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setFalseColor(boolean)
+   */
   public void setFalseColor(final boolean falseColor) {
     unwrap().falseColor = falseColor;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setMetadataComplete(boolean)
+   */
   public void setMetadataComplete(final boolean metadataComplete) {
     unwrap().metadataComplete = metadataComplete;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setImageMetadata(java.util.Hashtable)
+   */
   public void setImageMetadata(final Hashtable<String, Object> imageMetadata) {
     unwrap().seriesMetadata = imageMetadata;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setThumbnail(boolean)
+   */
   public void setThumbnail(final boolean thumbnail) {
     unwrap().thumbnail = thumbnail;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setAxisTypes(net.imglib2.meta.AxisType[])
+   */
   public void setAxisTypes(final AxisType[] axisTypes) {
     unwrap().dimensionOrder = 
         ome.scifio.util.FormatTools.findDimensionOrder(axisTypes);
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setAxisLengths(int[])
+   */
   public void setAxisLengths(final int[] axisLengths) {
     
     for(int i = 0; i < 5; i++) {
@@ -166,6 +204,9 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
     }
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setAxisLength(net.imglib2.meta.AxisType, int)
+   */
   public void setAxisLength(final AxisType axis, final int length) {
     switch(axis.getLabel().toUpperCase().charAt(0)) {
     case 'X': unwrap().sizeX = length;
@@ -182,6 +223,9 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
     }
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setAxisType(int, net.imglib2.meta.AxisType)
+   */
   public void setAxisType(final int index, final AxisType axis) {
     String order = "";
     
@@ -202,14 +246,16 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   
   // -- Getters --
     
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getPlaneCount()
+   */
   public int getPlaneCount() {
     return unwrap().imageCount;
   }
 
-  public byte[][] getLut() {
-    return null;
-  }
-
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getThumbSizeX()
+   */
   public int getThumbSizeX() {
     int thumbX = unwrap().thumbSizeX;
     
@@ -227,6 +273,9 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
     return thumbX;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getThumbSizeY()
+   */
   public int getThumbSizeY() {
     int thumbY = unwrap().thumbSizeY;
     
@@ -245,90 +294,142 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
     return thumbY;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getPixelType()
+   */
   public int getPixelType() {
     return unwrap().pixelType;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getBitsPerPixel()
+   */
   public int getBitsPerPixel() {
     return unwrap().bitsPerPixel;
   }
 
-  public int[] getcLengths() {
-    return unwrap().cLengths;
-  }
-
-  public String[] getcTypes() {
-    return unwrap().cTypes;
-  }
-
+  /*
+   * @see ome.scifio.AbstractImageMetadata#isOrderCertain()
+   */
   public boolean isOrderCertain() {
     return unwrap().orderCertain;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#isRGB()
+   */
   public boolean isRGB() {
     return unwrap().rgb;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#isLittleEndian()
+   */
   public boolean isLittleEndian() {
     return unwrap().littleEndian;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#isInterleaved()
+   */
   public boolean isInterleaved() {
     return unwrap().interleaved;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#isIndexed()
+   */
   public boolean isIndexed() {
     return unwrap().indexed;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#isFalseColor()
+   */
   public boolean isFalseColor() {
     return unwrap().falseColor;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#isMetadataComplete()
+   */
   public boolean isMetadataComplete() {
     return unwrap().metadataComplete;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getImageMetadata()
+   */
   public Hashtable<String, Object> getImageMetadata() {
     return unwrap().seriesMetadata;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#isThumbnail()
+   */
   public boolean isThumbnail() {
     return unwrap().thumbnail;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setChannelLengths(int[])
+   */
   public void setChannelLengths(int[] cLengths) {
     unwrap().cLengths = cLengths;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#setChannelTypes(java.lang.String[])
+   */
   public void setChannelTypes(String[] cTypes) {
     unwrap().cTypes = cTypes;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getChannelLengths()
+   */
   public int[] getChannelLengths() {
     return unwrap().cLengths;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getChannelTypes()
+   */
   public String[] getChannelTypes() {
     return unwrap().cTypes;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#addAxis(net.imglib2.meta.AxisType)
+   */
   public void addAxis(AxisType type) {
     throw new UnsupportedOperationException("Can not add axes to legacy CoreMetadata.");
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#addAxis(net.imglib2.meta.AxisType, int)
+   */
   public void addAxis(AxisType type, int value) {
     throw new UnsupportedOperationException("Can not add axes to legacy CoreMetadata.");
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getAxisType(int)
+   */
   public AxisType getAxisType(int planeIndex) {
     return getAxes()[planeIndex];
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getAxisLength(int)
+   */
   public int getAxisLength(int planeIndex) {
     return getAxesLengths()[planeIndex];
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getAxisLength(net.imglib2.meta.AxisType)
+   */
   public int getAxisLength(AxisType t) {
     int index = getAxisIndex(t);
     
@@ -336,6 +437,9 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
     else return getAxesLengths()[index];
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getAxisIndex(net.imglib2.meta.AxisType)
+   */
   public int getAxisIndex(AxisType type) {
     AxisType[] axes = getAxes();
     
@@ -346,6 +450,9 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
     return -1;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getAxes()
+   */
   public AxisType[] getAxes() {
     types[0] = Axes.X;
     types[1] = Axes.Y;
@@ -365,6 +472,9 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
     return types;
   }
 
+  /*
+   * @see ome.scifio.AbstractImageMetadata#getAxesLengths()
+   */
   public int[] getAxesLengths() {
     lengths[0] = unwrap().sizeX;
     lengths[1] = unwrap().sizeY;
@@ -384,6 +494,9 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
     return lengths;
   }
 
+  /*
+   * @see ome.scifio.ImageMetadata#copy()
+   */
   public ImageMetadata copy() {
     return unwrap().convert();
   }

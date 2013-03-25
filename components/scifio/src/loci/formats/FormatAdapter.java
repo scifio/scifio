@@ -46,6 +46,8 @@ import ome.scifio.Reader;
  * Provides type-safe adapting methods for loci.formats classes using
  * AdapterTools.get().
  * 
+ * @see loci.legacy.adapter.AdapterTools
+ * 
  * @author Mark Hiner
  *
  */
@@ -53,16 +55,25 @@ public final class FormatAdapter {
 
   // -- CoreImageMetadata Adapter Methods --
   
+  /**
+   * Maps ome.scifio.ImageMetadata to loci.formats.CoreMetadata
+   */
   public static CoreMetadata get(ImageMetadata meta) {
     return (CoreMetadata)AdapterTools.get(meta);
   }
   
+  /**
+   * Maps loci.formats.CoreMetadata to ome.scifio.ImageMetadata
+   */
   public static ImageMetadata get(CoreMetadata meta) {
     return (ImageMetadata)AdapterTools.get(meta);
   }
   
   // -- CoreMetadata Adapter methods --
   
+  /**
+   * Maps ome.scifio.Metadata to a java.util.List of loci.formats.CoreMetadata
+   */
   public static List<CoreMetadata> get(Metadata meta) {
     @SuppressWarnings("unchecked")
     List<CoreMetadata> metaList = (List<CoreMetadata>)AdapterTools.get(meta);
@@ -70,16 +81,25 @@ public final class FormatAdapter {
     return metaList;
   }
   
+  /**
+   * Maps a java.util.List of loci.formats.CoreMetadata to ome.scifio.Metadata 
+   */
   public static Metadata get(List<CoreMetadata> meta) {
     return (Metadata)AdapterTools.get(meta);
   }
   
   // -- SCIFIOReader Adapter Methods --
   
+  /**
+   * Maps ome.scifio.Reader to loci.formats.IFormatReader
+   */
   public static IFormatReader get(Reader reader) {
     return (IFormatReader)AdapterTools.get(reader);
   }
   
+  /**
+   * Maps loci.formats.IFormatReader to ome.scifio.Reader
+   */
   public static Reader get(IFormatReader reader) {
     return (Reader)AdapterTools.get(reader);
   }

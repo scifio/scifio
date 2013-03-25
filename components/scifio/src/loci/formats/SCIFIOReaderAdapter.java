@@ -42,16 +42,13 @@ import loci.legacy.adapter.AbstractLegacyAdapter;
 import loci.legacy.context.LegacyContext;
 
 /**
- * This class manages delegation between {@link loci.formats.IFormatReader}
+ * Manages delegation between {@link loci.formats.IFormatReader}
  * and {@link ome.scifio.Reader}.
- * <p>
- * Delegation is maintained by two WeakHashTables. See {@link AbstractLegacyAdapter}
- * </p>
- * <p>
- * Functionally, the delegation is handled in the Wrapper classes - currently
- * only for wrapping from loci.formats.IFormatReader to ome.scifio.Reader is 
- * supported.
- * </p>
+ * 
+ * @see loci.legacy.adapter.LegacyAdapter
+ * @see ome.scifio.Reader
+ * @see loci.formats.IFormatReader
+ * 
  * @author Mark Hiner
  */
 @Plugin(type=SCIFIOReaderAdapter.class)

@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 
 import loci.legacy.adapter.CommonAdapter;
 import loci.legacy.adapter.Wrapper;
-import loci.legacy.adapter.AdapterTools;
 
 import ome.scifio.AbstractHasSCIFIO;
 import ome.scifio.BufferedImagePlane;
@@ -63,25 +62,34 @@ import ome.scifio.io.RandomAccessInputStream;
 
 /**
  * This class is an adapter from ome.scifio.Reader for loci.formats.IFormatReader.
- * Using a "hasa" relationship, this class can be wrap an IFormatReader and be
- * passed to ome.scifio.* methods requiring an ome.scifio.Reader and allow
+ * Using a "hasa" relationship, this class can rap an IFormatReader and be
+ * passed to ome.scifio.* methods requiring an ome.scifio.Reader, allowing
  * calculations to proceed as normal.
- * 
+ * <p> 
  * This eliminates the need for redundant method signatures. Instead, the
  * adapter class can be used for direct delegation.
- * 
+ * </p>
+ * <p>
  * Note that not every method in ome.scifio.Reader has a direct analog in
  * IFormatReader.
- * 
+ * </p>
  * Unsupported methods:
- * - getFormat()
- * - getStream()
- * - setMetadata(ome.scifio.Metadata)
- * - getMetadata()
- * - readPlane(RandomAccessInputStream s, int imageIndex, int x,
- *     int y, int w, int h, byte[] buf)
- * - readlane(RandomAccessInputStream s, int imageIndex, int x,
- *   int y, int w, int h, int scanlinePad, byte[] buf)
+ * <ul>
+ * <li>
+ * {@link #getFormat()}
+ * </li>
+ * <li>
+ * {@link #setMetadata(ome.scifio.Metadata)}
+ * </li>
+ * <li>
+ * {@link #readPlane(RandomAccessInputStream s, int imageIndex, int x,
+ * int y, int w, int h, byte[] buf)}
+ * </li>
+ * <li>
+ * {@link #readlane(RandomAccessInputStream s, int imageIndex, int x,
+ * int y, int w, int h, int scanlinePad, byte[] buf)}
+ * </li>
+ * </ul>
  * 
  * @author Mark Hiner
  */
@@ -116,20 +124,25 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   
   // -- Wrapper API Methods --
   
+  /*
+   * @see loci.legacy.adapter.Wrapper#unwrap()
+   */
   public IFormatReader unwrap() {
     return reader.get();
   }
 
   // -- ome.scifio.Reader API --
   
-  public void setFormat(Format format) {
-    throw new UnsupportedOperationException();
-  }
-  
+  /*
+   * @see ome.scifio.HasFormat#getFormat()
+   */
   public Format getFormat() {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * @see ome.scifio.Reader#openPlane(int, int)
+   */
   public Plane openPlane(int imageIndex, int planeIndex)
     throws ome.scifio.FormatException, IOException
   {
@@ -152,6 +165,9 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     return plane;
   }
 
+  /*
+   * @see ome.scifio.Reader#openPlane(int, int, ome.scifio.Plane)
+   */
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
     throws ome.scifio.FormatException, IOException
   {
@@ -173,6 +189,9 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     return bp;
   }
 
+  /*
+   * @see ome.scifio.Reader#openPlane(int, int, ome.scifio.Plane, int, int, int, int)
+   */
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x,
     int y, int w, int h) throws ome.scifio.FormatException, IOException
   {
@@ -194,6 +213,9 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     return bp;
   }
 
+  /*
+   * @see ome.scifio.Reader#openPlane(int, int, int, int, int, int)
+   */
   public Plane openPlane(int imageIndex, int planeIndex, int x, int y,
     int w, int h) throws ome.scifio.FormatException, IOException
   {
@@ -205,6 +227,9 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     return bp;
   }
 
+  /*
+   * @see ome.scifio.Reader#openThumbPlane(int, int)
+   */
   public Plane openThumbPlane(int imageIndex, int planeIndex)
     throws ome.scifio.FormatException, IOException
   {
@@ -215,32 +240,46 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     return bp;
   }
 
+  /*
+   * @see ome.scifio.Reader#setGroupFiles(boolean)
+   */
   public void setGroupFiles(boolean group) {
     unwrap().setGroupFiles(group);
   }
 
+  /*
+   * @see ome.scifio.Reader#isGroupFiles()
+   */
   public boolean isGroupFiles() {
     return unwrap().isGroupFiles();
   }
 
+  /*
+   * @see ome.scifio.Reader#fileGroupOption(java.lang.String)
+   */
   public int fileGroupOption(String id)
     throws ome.scifio.FormatException, IOException
   {
     return unwrap().fileGroupOption(id);
   }
 
+  /*
+   * @see ome.scifio.Reader#getCurrentFile()
+   */
   public String getCurrentFile() {
     return unwrap().getCurrentFile();
   }
 
+  /*
+   * @see ome.scifio.Reader#getDomains()
+   */
   public String[] getDomains() {
     return unwrap().getDomains();
   }
 
-  public int[] getZCTCoords(int imageIndex, int index) {
-    return unwrap().getZCTCoords(index);
-  }
-
+  /*
+   * @see ome.scifio.Reader#getStream()
+   */
   public RandomAccessInputStream getStream() {
     
     if (stream == null || stream.get() == null) {
@@ -248,6 +287,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
       try {
         FormatReader fReader = null;
 
+        // Nneed to get a FormatReader reference to the wrapped Reader
         if (ReaderWrapper.class.isAssignableFrom(unwrap().getClass())) {
           fReader = (FormatReader) ((ReaderWrapper)unwrap()).unwrap(FormatReader.class, null);
         }
@@ -257,6 +297,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
 
         if (fReader == null) return null;
 
+        // Use reflection to extract the RandomAccessInputStream from the underlying reader
         Field in = FormatReader.class.getDeclaredField("in");
         in.setAccessible(true);
         loci.common.RandomAccessInputStream legacyStream = 
@@ -265,6 +306,8 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
         
         if (legacyStream == null) return null;
 
+        // Cache the reference if we found one, to avoid repeating this process in the future.
+        // Use a weak reference to avoid garbage collection issues.
         stream = new WeakReference<RandomAccessInputStream>(
             CommonAdapter.get(legacyStream));
 
@@ -286,6 +329,9 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     return stream.get();
   }
 
+  /*
+   * @see ome.scifio.Reader#getUnderlyingReaders()
+   */
   public Reader[] getUnderlyingReaders() {
     IFormatReader[] iReaders = unwrap().getUnderlyingReaders();
     Reader[] sReaders = new Reader[iReaders.length];
@@ -297,18 +343,30 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     return sReaders;
   }
 
+  /*
+   * @see ome.scifio.Reader#getOptimalTileWidth(int)
+   */
   public int getOptimalTileWidth(int imageIndex) {
     return unwrap().getOptimalTileWidth();
   }
 
+  /*
+   * @see ome.scifio.Reader#getOptimalTileHeight(int)
+   */
   public int getOptimalTileHeight(int imageIndex) {
     return unwrap().getOptimalTileHeight();
   }
 
+  /*
+   * @see ome.scifio.Reader#setMetadata(ome.scifio.Metadata)
+   */
   public void setMetadata(Metadata meta) throws IOException {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * @see ome.scifio.Reader#getMetadata()
+   */
   public Metadata getMetadata() {
     // cache the wrapped CoreMetadata list.
     meta = unwrap().getCoreMetadataList();
@@ -328,14 +386,23 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     return cMeta;
   }
 
+  /*
+   * @see ome.scifio.Reader#setNormalized(boolean)
+   */
   public void setNormalized(boolean normalize) {
     unwrap().setNormalized(normalize);
   }
 
+  /*
+   * @see ome.scifio.Reader#isNormalized()
+   */
   public boolean isNormalized() {
     return unwrap().isNormalized();
   }
 
+  /*
+   * @see ome.scifio.Reader#hasCompanionFiles()
+   */
   public boolean hasCompanionFiles() {
     return unwrap().hasCompanionFiles();
   }
@@ -349,6 +416,9 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     }
   }
 
+  /*
+   * @see ome.scifio.Reader#setSource(java.lang.String)
+   */
   public void setSource(String fileName) throws IOException {
     try {
       unwrap().setId(fileName);
@@ -358,6 +428,9 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     }
   }
 
+  /*
+   * @see ome.scifio.Reader#setSource(ome.scifio.io.RandomAccessInputStream)
+   */
   public void setSource(RandomAccessInputStream stream) throws IOException {
     try {
       unwrap().setId(stream.getFileName());
@@ -367,42 +440,63 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     }
   }
 
+  /*
+   * @see ome.scifio.Reader#close(boolean)
+   */
   public void close(boolean fileOnly) throws IOException {
     unwrap().close(fileOnly);
   }
 
+  /*
+   * @see ome.scifio.Reader#close()
+   */
   public void close() throws IOException {
     close(false);
   }
 
+  /*
+   * @see ome.scifio.Reader#readPlane(ome.scifio.io.RandomAccessInputStream, int, int, int, int, int, ome.scifio.Plane)
+   */
   public Plane readPlane(RandomAccessInputStream s, int imageIndex, int x,
     int y, int w, int h, Plane plane) throws IOException
   {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * @see ome.scifio.Reader#readPlane(
+   * ome.scifio.io.RandomAccessInputStream, int, int, int, int, int, int, ome.scifio.Plane)
+   */
   public Plane readPlane(RandomAccessInputStream s, int imageIndex, int x,
     int y, int w, int h, int scanlinePad, Plane plane) throws IOException
   {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * @see ome.scifio.Reader#getPlaneCount(int)
+   */
   public int getPlaneCount(int imageIndex) {
     return unwrap().getImageCount();
   }
 
+  /*
+   * @see ome.scifio.Reader#getImageCount()
+   */
   public int getImageCount() {
     return unwrap().getSeriesCount();
   }
 
-  public IFormatReader getReader() {
-    return unwrap();
-  }
-
+  /*
+   * @see ome.scifio.Reader#createPlane(int, int, int, int)
+   */
   public Plane createPlane(int xOffset, int yOffset, int xLength, int yLength) {
     throw new UnsupportedOperationException("ReaderWrapper has no associated Plane type");
   }
 
+  /*
+   * @see ome.scifio.Reader#castToTypedPlane(ome.scifio.Plane)
+   */
   public <P extends Plane> P castToTypedPlane(Plane plane) {
     throw new UnsupportedOperationException("ReaderWrapper has no associated Plane type");
   }

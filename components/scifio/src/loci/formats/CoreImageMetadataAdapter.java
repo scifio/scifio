@@ -43,12 +43,11 @@ import loci.legacy.adapter.AbstractLegacyAdapter;
 /**
  * {@link LegacyAdapter} for converting between instances of
  * {@link ome.scifio.ImageMetadata} and {@link loci.formats.CoreMetadata}.
- * <p>
- * Note that because of the presence of public fields, synchronization
- * between the layers can not be maintained in the Modern -> Legacy direction.
- * It is therefore assumed that any modification of the legacy CoreMetadata object
- * corrupts it.
- * </p>
+ * 
+ * @see loci.legacy.adapter.LegacyAdaptero
+ * @see ome.scifio.ImageMetadata
+ * @see loci.formats.CoreMetadata
+ * 
  * @author Mark Hiner
  *
  */

@@ -46,6 +46,13 @@ import loci.legacy.adapter.Wrapper;
  * expecting a {@link loci.formats.CoreMetadata} but
  * delegates all functionality to the wrapped
  * {@link ome.scifio.ImageMetadata}.
+ * <p>
+ * NB: because CoreMetadata contains public fields instead of
+ * accessor and setter methods, it can be populated once
+ * at construction, but can be kept synchronized with the
+ * wrapped ImageMetadata (e.g. by dynamically calculating
+ * field values).
+ * </p>
  * 
  * @author Mark Hiner
  *
