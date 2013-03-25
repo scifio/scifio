@@ -41,7 +41,10 @@ import ome.scifio.Translator;
 import org.scijava.service.Service;
 
 /**
- * Service for finding appropriate Translators to convert between Metadata types.
+ * Collection of methods for creating and using appropriate
+ * Translators to convert between Metadata types.
+ * 
+ * @see ome.scifio.Translator
  * 
  * @author Mark Hiner
  *
@@ -52,9 +55,10 @@ public interface TranslatorService extends Service {
    * Returns a translator capable of translating from the source Metadata to
    * the dest Metadata type, or null if no such Translator exists.
    * 
-   * @param <N>
-   * @param targetMeta
-   * @return
+   * @param source - Metadata to read from
+   * @param dest - Metadata to populate
+   * @return Translator whose translate method will accept these Metadata
+   * 				 instances
    */
   Translator findTranslator(Metadata source, Metadata dest);
   
@@ -62,19 +66,23 @@ public interface TranslatorService extends Service {
    * Returns a translator capable of translating from the source Metadata to
    * the dest Metadata type, or null if no such Translator exists.
    * 
-   * @param <N>
-   * @param targetMeta
-   * @return
+   * @param source - Metadata to read from
+   * @param dest - Metadata to populate
+   * @return Translator whose translate method will accept these Metadata
+   * 				 instances
    */
   Translator findTranslator(Class<?> source, Class<?> dest);
   
   /**
    * Convenience method to immediately translate from the source Metadata
-   * to the dest Metadata type.
+   * to the dest Metadata type, assuming an appropriate Translator is found.
+   * <p>
+   * Useful if you don't need a handle on the Translator itself.
+   * </p>
    * 
-   * Returns true if translation was successful, and false otherwise.
-   * @param source
-   * @param dest
+   * @param source - Metadata to read from
+   * @param dest - Metadata to populate
+   * @return true if translation was successful, and false otherwise.
    */
   boolean translate(Metadata source, Metadata dest);
 }

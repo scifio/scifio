@@ -45,6 +45,19 @@ import ome.scifio.filters.ReaderFilter;
 import org.scijava.service.Service;
 
 /**
+ * A collection of methods for initializing the
+ * IO components of SCIFIO (Readers and Writers). All parsing
+ * and Metadata setup is done automatically.
+ * <p>
+ * NB: The {@link #initializeReader()} line of methods return
+ * a {@link ome.scifio.filters.ReaderFilter} instead of a basic Reader.
+ * This is a convenience to allow filters to be enabled if desired.
+ * </p>
+ * 
+ * @see ome.scifio.Reader
+ * @see ome.scifio.Writer
+ * @see ome.scifio.filters.ReaderFilter
+ * 
  * @author Mark Hiner
  *
  */
@@ -70,7 +83,7 @@ public interface InitializeService extends Service {
    * @return An initialized {@code Reader}.
    */
   ReaderFilter initializeReader(String id, boolean openFile)
-      throws FormatException, IOException;
+    throws FormatException, IOException;
 
   /**
    * See {@link #initializeWriter(String, String, boolean)}. Will not open the
@@ -81,7 +94,7 @@ public interface InitializeService extends Service {
    * @return An initialized {@code Writer}.
    */
   Writer initializeWriter(String source, String destination)
-      throws FormatException, IOException;
+    throws FormatException, IOException;
 
   /**
    * Convenience method for creating a {@code Writer} component that is ready
@@ -96,8 +109,7 @@ public interface InitializeService extends Service {
    * @return An initialized {@code Writer}.
    */
   Writer initializeWriter(String source, String destination, boolean openSource)
-      throws FormatException, IOException;
-  
+    throws FormatException, IOException;
   
   /**
    * See {@link #initializeWriter(String, String, boolean)}. Will not open the
@@ -108,5 +120,5 @@ public interface InitializeService extends Service {
    * @return An initialized {@code Writer}.
    */
   Writer initializeWriter(Metadata sourceMeta, String destination)
-      throws FormatException, IOException;
+    throws FormatException, IOException;
 }

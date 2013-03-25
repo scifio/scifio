@@ -45,26 +45,28 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 
-/**
- * @author Mark Hiner
- *
- */
 @Plugin(type=TranslatorService.class)
 public class DefaultTranslatorService extends AbstractService implements TranslatorService {
   
   // -- Parameters --
+	
   @Parameter
   private PluginAttributeService attributeService;
   
   // -- TranslatorService API Methods --
 
   /*
-   * @see ome.scifio.TranslatorService#findTranslator(ome.scifio.Metadata, ome.scifio.Metadata)
+   * @see ome.scifio.TranslatorService#
+   * findTranslator(ome.scifio.Metadata, ome.scifio.Metadata)
    */
   public Translator findTranslator(Metadata source, Metadata dest) {
     return findTranslator(source.getClass(), dest.getClass());
   }
 
+  /*
+   * @see ome.scifio.services.TranslatorService#
+   * findTranslator(java.lang.Class, java.lang.Class)
+   */
   public Translator findTranslator(Class<?> source, Class<?> dest) {
     Map<String, String> kvPairs = new HashMap<String,String>();
     kvPairs.put(Translator.SOURCE, source.getName());
@@ -76,7 +78,8 @@ public class DefaultTranslatorService extends AbstractService implements Transla
   }
 
   /*
-   * @see ome.scifio.TranslatorService#translate(ome.scifio.Metadata, ome.scifio.Metadata)
+   * @see ome.scifio.TranslatorService#
+   * translate(ome.scifio.Metadata, ome.scifio.Metadata)
    */
   public boolean translate(Metadata source, Metadata dest) {
     Translator t = findTranslator(source, dest);

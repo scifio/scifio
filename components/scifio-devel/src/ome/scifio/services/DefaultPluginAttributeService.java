@@ -51,21 +51,8 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * Service for finding plugins with particular attribute values.
- * <p>
- * In each method signature, plugins will be returned if they
- * are annotated with {@link org.scijava.plugin.Attr}'s matching
- * all key,value pairs in {@code andPairs}, and at least one of
- * any key, value pairs in {@code orPairs}.
- * </p>
- * <p>
- * NB: attributes are assumed to be classes, and "matching" is equivalent to
- * passing an "isAssignableFrom" test. So it is possible to have multiple
- * "matches", in the case of both specific and general attribute
- * types. Typically you should set plugins with specific parameters
- * to have higher priority than those with general parameters,
- * so they are checked first.
- * </p>
+ * Default {@link ome.scifio.services.PluginAttributeService}
+ * implementation.
  * 
  * @author Mark Hiner
  *
@@ -76,12 +63,11 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
   // -- Parameters --
   
   @Parameter
-  PluginService pluginService;
+  private PluginService pluginService;
 
-  /**
-   * As {@link org.scijava.plugin.PluginService#createInstancesOfType(Class)}
-   * but with key,value pair parameters to allow for filtering based on
-   * {@code Attr} annotation.
+  /*
+   * @see ome.scifio.services.PluginAttributeService#
+   * createInstance(java.lang.Class, java.util.Map, java.util.Map)
    */
   public <PT extends ScifioPlugin> PT createInstance(
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
@@ -90,10 +76,9 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
     return plugin == null ? null : pluginService.createInstance(plugin);
   }
   
-  /**
-   * As {@link org.scijava.plugin.PluginService#getPlugin(Class)}
-   * but with key,value pair parameters to allow for filtering based on
-   * {@code Attr} annotation.
+  /*
+   * @see ome.scifio.services.PluginAttributeService#
+   * getPlugin(java.lang.Class, java.util.Map, java.util.Map)
    */
   public <PT extends ScifioPlugin> PluginInfo<PT> getPlugin(
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
@@ -101,10 +86,9 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
     return pluginList.size() > 0 ? pluginList.get(0) : null;
   }
   
-  /**
-   * As {@link org.scijava.plugin.PluginService#getPluginsOfType(Class)}
-   * but with key,value pair parameters to allow for filtering based on
-   * {@code Attr} annotation.
+  /*
+   * @see ome.scifio.services.PluginAttributeService#
+   * getPluginsOfType(java.lang.Class, java.util.Map, java.util.Map)
    */
   public <PT extends ScifioPlugin> List<PluginInfo<PT>> getPluginsOfType(
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
@@ -136,7 +120,8 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
             c1 = Class.forName(orPairs.get(key));
             c2 = Class.forName(info.get(key));
           } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("Class name attribute was invalid or not found.", e);
+            throw new IllegalArgumentException(
+            		"Class name attribute was invalid or not found.", e);
           }
           
           if (c2.isAssignableFrom(c1))
@@ -161,7 +146,8 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
             c1 = Class.forName(andPairs.get(key));
             c2 = Class.forName(info.get(key));
           } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("Class name attribute was invalid or not found.", e);
+            throw new IllegalArgumentException(
+            		"Class name attribute was invalid or not found.", e);
           }
           
           if (!c2.isAssignableFrom(c1))

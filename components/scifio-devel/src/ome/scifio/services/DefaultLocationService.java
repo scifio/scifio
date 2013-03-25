@@ -47,7 +47,6 @@ import ome.scifio.io.IStreamAccess;
 import ome.scifio.io.Location;
 import ome.scifio.io.NIOFileHandle;
 
-import org.scijava.InstantiableException;
 import org.scijava.service.Service;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -57,6 +56,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Default {@link ome.scifio.services.LocationService} implementation
+ * 
+ * @see ome.scifio.services.LocationService
+ * 
  * @author Mark Hiner
  *
  */
@@ -89,9 +92,8 @@ public class DefaultLocationService extends AbstractService implements LocationS
   
   // -- Location API methods --
 
-  /**
-   * Clear all caches and reset cache-related bookkeeping variables to their
-   * original values.
+  /*
+   * @see ome.scifio.services.LocationService#reset()
    */
   public void reset() {
     cacheNanos = 60L * 60L * 1000L * 1000L * 1000L;
@@ -99,47 +101,29 @@ public class DefaultLocationService extends AbstractService implements LocationS
     getIdMap().clear();
   }
 
-  /**
-   * Turn cacheing of directory listings on or off.
-   * Cacheing is turned off by default.
-   *
-   * Reasons to cache - directory listings over network shares
-   * can be very expensive, especially in HCS experiments with thousands
-   * of files in the same directory. Technically, if you use a directory
-   * listing and then go and access the file, you are using stale information.
-   * Unlike a database, there's no transactional integrity to file system
-   * operations, so the directory could change by the time you access the file.
-   *
-   * Reasons not to cache - the contents of the directories might change
-   * during the program invocation.
-   *
-   * @param cache - true to turn cacheing on, false to leave it off.
+  /*
+   * @see ome.scifio.services.LocationService#cacheDirectoryListings(boolean)
    */
   public void cacheDirectoryListings(boolean cache) {
     cacheListings = cache;
   }
 
-  /**
-   * Cache directory listings for this many seconds before relisting.
-   *
-   * @param sec - use the cache if a directory list was done within this many
-   * seconds.
+  /*
+   * @see ome.scifio.services.LocationService#setCacheDirectoryTimeout(double)
    */
   public void setCacheDirectoryTimeout(double sec) {
     cacheNanos = (long)(sec * 1000. * 1000. * 1000.);
   }
 
-  /**
-   * Clear the directory listings cache.
-   *
-   * Do this if directory contents might have changed in a significant way.
+  /*
+   * @see ome.scifio.services.LocationService#clearDirectoryListingsCache()
    */
   public void clearDirectoryListingsCache() {
     fileListings = new ConcurrentHashMap<String, ListingsResult>();
   }
 
-  /**
-   * Remove any cached directory listings that have expired.
+  /*
+   * @see ome.scifio.services.LocationService#cleanStaleCacheEntries()
    */
   public void cleanStaleCacheEntries() {
     long t = System.nanoTime() - cacheNanos;
@@ -154,15 +138,9 @@ public class DefaultLocationService extends AbstractService implements LocationS
     }
   }
 
-  /**
-   * Maps the given id to an actual filename on disk. Typically actual
-   * filenames are used for ids, making this step unnecessary, but in some
-   * cases it is useful; e.g., if the file has been renamed to conform to a
-   * standard naming scheme and the original file extension is lost, then
-   * using the original filename as the id assists format handlers with type
-   * identification and pattern matching, and the id can be mapped to the
-   * actual filename for reading the file's contents.
-   * @see #getMappedId(String)
+  /*
+   * @see ome.scifio.services.LocationService#
+   * mapId(java.lang.String, java.lang.String)
    */
   public void mapId(String id, String filename) {
     if (id == null) return;
@@ -171,7 +149,10 @@ public class DefaultLocationService extends AbstractService implements LocationS
     LOGGER.debug("Location.mapId: {} -> {}", id, filename);
   }
 
-  /** Maps the given id to the given IRandomAccess object. */
+  /*
+   * @see ome.scifio.services.LocationService#
+   * mapFile(java.lang.String, ome.scifio.io.IRandomAccess)
+   */
   public void mapFile(String id, IRandomAccess ira) {
     if (id == null) return;
     if (ira == null) getIdMap().remove(id);
@@ -179,14 +160,8 @@ public class DefaultLocationService extends AbstractService implements LocationS
     LOGGER.debug("Location.mapFile: {} -> {}", id, ira);
   }
 
-  /**
-   * Gets the actual filename on disk for the given id. Typically the id itself
-   * is the filename, but in some cases may not be; e.g., if OMEIS has renamed
-   * a file from its original name to a standard location such as Files/101,
-   * the original filename is useful for checking the file extension and doing
-   * pattern matching, but the renamed filename is required to read its
-   * contents.
-   * @see #mapId(String, String)
+  /*
+   * @see ome.scifio.services.LocationService#getMappedId(java.lang.String)
    */
   public String getMappedId(String id) {
     if (getIdMap() == null) return id;
@@ -197,7 +172,9 @@ public class DefaultLocationService extends AbstractService implements LocationS
     return filename == null ? id : filename;
   }
 
-  /** Gets the random access handle for the given id. */
+  /*
+   * @see ome.scifio.services.LocationService#getMappedFile(java.lang.String)
+   */
   public IRandomAccess getMappedFile(String id) {
     if (getIdMap() == null) return null;
     IRandomAccess ira = null;
@@ -207,30 +184,28 @@ public class DefaultLocationService extends AbstractService implements LocationS
     return ira;
   }
 
-  /** Return the id mapping. */
+  /*
+   * @see ome.scifio.services.LocationService#getIdMap()
+   */
   public HashMap<String, Object> getIdMap() { return idMap; }
 
-  /**
-   * Set the id mapping using the given HashMap.
-   *
-   * @throws IllegalArgumentException if the given HashMap is null.
+  /*
+   * @see ome.scifio.services.LocationService#setIdMap(java.util.HashMap)
    */
   public void setIdMap(HashMap<String, Object> map) {
     if (map == null) throw new IllegalArgumentException("map cannot be null");
     idMap = map;
   }
 
-  /**
-   * Gets an IRandomAccess object that can read from the given file.
-   * @see IRandomAccess
+  /*
+   * @see ome.scifio.services.LocationService#getHandle(java.lang.String)
    */
   public IRandomAccess getHandle(String id) throws IOException {
     return getHandle(id, false);
   }
 
-  /**
-   * Gets an IRandomAccess object that can read from or write to the given file.
-   * @see IRandomAccess
+  /*
+   * @see ome.scifio.services.LocationService#getHandle(java.lang.String, boolean)
    */
   public IRandomAccess getHandle(String id, boolean writable)
     throws IOException
@@ -238,9 +213,9 @@ public class DefaultLocationService extends AbstractService implements LocationS
     return getHandle(id, writable, true);
   }
 
-  /**
-   * Gets an IRandomAccess object that can read from or write to the given file.
-   * @see IRandomAccess
+  /*
+   * @see ome.scifio.services.LocationService#
+   * getHandle(java.lang.String, boolean, boolean)
    */
   public IRandomAccess getHandle(String id, boolean writable,
     boolean allowArchiveHandles) throws IOException
@@ -256,8 +231,9 @@ public class DefaultLocationService extends AbstractService implements LocationS
      
       if (allowArchiveHandles) {
         for (final PluginInfo<IStreamAccess> info : streamInfos) {
-          if (((IStreamAccess)(handle =
-              getContext().getService(PluginService.class).createInstance(info))).isConstructable(id)) {
+        	handle = 
+        			getContext().getService(PluginService.class).createInstance(info);
+          if (((IStreamAccess)handle).isConstructable(id)) {
             ((IStreamAccess)handle).setFile(id);
             break;
           }
@@ -273,13 +249,8 @@ public class DefaultLocationService extends AbstractService implements LocationS
     return handle;
   }
 
-  /**
-   * Checks that the given id points at a valid data stream.
-   * 
-   * @param id
-   *          The id string to validate.
-   * @throws IOException
-   *           if the id is not valid.
+  /*
+   * @see ome.scifio.services.LocationService#checkValidId(java.lang.String)
    */
   public void checkValidId(String id) throws IOException {
     if (getMappedFile(id) != null) {
@@ -293,6 +264,9 @@ public class DefaultLocationService extends AbstractService implements LocationS
     getHandle(id).close();
   }
   
+  /*
+   * @see ome.scifio.services.LocationService#getCachedListing(java.lang.String)
+   */
   public String[] getCachedListing(String key) {
     ListingsResult listingsResult = null;
     if (cacheListings) {
@@ -302,6 +276,10 @@ public class DefaultLocationService extends AbstractService implements LocationS
     return listingsResult == null ? null : listingsResult.listing;
   }
   
+  /*
+   * @see ome.scifio.services.LocationService#
+   * putCachedListing(java.lang.String, java.lang.String[])
+   */
   public void putCachedListing(String key, String[] listing) {
     if (cacheListings) {
       fileListings.put(key, new ListingsResult(listing, System.nanoTime()));

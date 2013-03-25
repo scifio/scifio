@@ -53,46 +53,41 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
+ * Default {@link InitializeService} implementation.
+ * 
+ * @see ome.scifio.services.InitializeService
+ * 
  * @author Mark Hiner
  *
  */
 @Plugin(type=Service.class, priority=Priority.LOW_PRIORITY)
-public class DefaultInitializeService extends AbstractService implements InitializeService {
-
+public class DefaultInitializeService extends AbstractService
+  implements InitializeService
+{
   // -- Parameters --
   
   @Parameter
-  PluginService pluginService;
+  private PluginService pluginService;
   
   @Parameter
-  FormatService formatService;
+  private FormatService formatService;
   
   @Parameter
-  TranslatorService translatorService;
+  private TranslatorService translatorService;
   
   // -- InitializeService API Methods --	
 
-  /**
-   * See {@link #initializeReader(String, boolean)}. Will not open the image
-   * source while parsing metadata.
-   * 
-   * @param id Name of the image source to be read.
-   * @return An initialized {@code Reader}.
+  /*
+   * @see ome.scifio.services.InitializeService#initializeReader(java.lang.String)
    */
   public ReaderFilter initializeReader(final String id) throws FormatException,
       IOException {
     return initializeReader(id, false);
   }
 
-  /**
-   * Convenience method for creating a {@code Reader} component that is ready
-   * to open planes of the provided image source. The reader's {@code Metadata}
-   * and source fields will be populated.
-   * 
-   * @param id Name of the image source to be read.
-   * @param openFile If true, the image source may be read during metadata
-   *        parsing.
-   * @return An initialized {@code Reader}.
+  /*
+   * @see ome.scifio.services.InitializeService#
+   * initializeReader(java.lang.String, boolean)
    */
   public ReaderFilter initializeReader(final String id, final boolean openFile)
       throws FormatException, IOException {
@@ -102,34 +97,24 @@ public class DefaultInitializeService extends AbstractService implements Initial
     return new ReaderFilter(r);
   }
 
-  /**
-   * See {@link #initializeWriter(String, String, boolean)}. Will not open the
-   * image source while parsing metadata.
-   * 
-   * @param source Name of the image source to use for parsing metadata.
-   * @param destination Name of the writing destination.
-   * @return An initialized {@code Writer}.
+  /*
+   * @see ome.scifio.services.InitializeService#
+   * initializeWriter(java.lang.String, java.lang.String)
    */
-  public Writer initializeWriter(
-      final String source, final String destination) throws FormatException, IOException {
+  public Writer initializeWriter( final String source, final String destination)
+    throws FormatException, IOException
+  {
     return initializeWriter(source, destination, false);
   }
   
-  /**
-   * Convenience method for creating a {@code Writer} component that is ready
-   * to save planes to the destination image. {@code Metadata} will be parsed
-   * from the source, translated to the destination's type if necessary, and
-   * set (along with the destination itself) on the resulting {@code Writer}.
-   * 
-   * @param source Name of the image source to use for parsing metadata.
-   * @param destination Name of the writing destination.
-   * @param openFile If true, the image source may be read during metadata
-   *        parsing.
-   * @return An initialized {@code Writer}.
+  /*
+   * @see ome.scifio.services.InitializeService#
+   * initializeWriter(java.lang.String, java.lang.String, boolean)
    */
   public Writer initializeWriter(
-      final String source, final String destination,
-      final boolean openSource) throws FormatException, IOException {
+    final String source, final String destination,
+    final boolean openSource) throws FormatException, IOException
+  {
     
     final Format sFormat = formatService.getFormat(source, openSource);
     final Parser parser = sFormat.createParser();
@@ -139,11 +124,12 @@ public class DefaultInitializeService extends AbstractService implements Initial
   }
 
   /*
-   * @see ome.scifio.InitializeService#initializeWriter(ome.scifio.Metadata, java.lang.String)
+   * @see ome.scifio.InitializeService#
+   * initializeWriter(ome.scifio.Metadata, java.lang.String)
    */
   public Writer initializeWriter(Metadata sourceMeta, String destination)
-      throws FormatException, IOException {
-    
+    throws FormatException, IOException
+  {
     final Format sFormat = sourceMeta.getFormat();
     final Format dFormat = formatService.getFormat(destination, false);
     Metadata destMeta = dFormat.createMetadata();

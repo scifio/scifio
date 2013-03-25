@@ -43,6 +43,11 @@ import org.scijava.service.Service;
 import ome.scifio.io.Location;
 
 /**
+ * A collection of utility methods to facilitate
+ * {@link ome.scifio.FilePattern} use.
+ * 
+ * @see ome.scifio.FilePattern
+ * 
  * @author Mark Hiner
  *
  */
@@ -95,13 +100,22 @@ public interface FilePatternService extends Service {
   /**
    * Generate a pattern from a list of file names.
    * The pattern generated will be a regular expression.
-   *
+   * <p>
    * Currently assumes that all file names are in the same directory.
+   * </p>
    */
   String findPattern(String[] names);
 
+  /**
+   * Finds the list of names matching the provided base and
+   * generates all patterns that match the list.
+   */
   String[] findImagePatterns(String base);
 
+  /**
+   * Generates a list of all the patterns that match the provided
+   * list of file names.
+   */
   String[] findImagePatterns(String base, String dir, String[] nameList);
 
 }

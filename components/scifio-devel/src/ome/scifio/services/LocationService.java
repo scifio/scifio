@@ -44,6 +44,13 @@ import ome.scifio.io.IRandomAccess;
 import org.scijava.service.Service;
 
 /**
+ * Contains methods for mapping files and ids, and generating
+ * {@link ome.scifio.io.IRandomAccess} handles for reading from
+ * these locations.
+ * 
+ * @see ome.scifio.io.Location
+ * @see ome.scifio.io.IRandomAccess
+ * 
  * @author Mark Hiner
  *
  */
@@ -134,19 +141,22 @@ public interface LocationService extends Service {
 
   /**
    * Gets an IRandomAccess object that can read from the given file.
-   * @see IRandomAccess
+   * 
+   * @see ome.scifio.io.IRandomAccess
    */
   IRandomAccess getHandle(String id) throws IOException;
 
   /**
    * Gets an IRandomAccess object that can read from or write to the given file.
-   * @see IRandomAccess
+   * 
+   * @see ome.scifio.io.IRandomAccess
    */
   IRandomAccess getHandle(String id, boolean writable) throws IOException;
 
   /**
    * Gets an IRandomAccess object that can read from or write to the given file.
-   * @see IRandomAccess
+   * 
+   * @see ome.scifio.io.IRandomAccess
    */
   IRandomAccess getHandle(String id, boolean writable,
       boolean allowArchiveHandles) throws IOException;
@@ -154,15 +164,19 @@ public interface LocationService extends Service {
   /**
    * Checks that the given id points at a valid data stream.
    * 
-   * @param id
-   *          The id string to validate.
-   * @throws IOException
-   *           if the id is not valid.
+   * @param id The id string to validate.
+   * @throws IOException if the id is not valid.
    */
   void checkValidId(String id) throws IOException;
 
+  /**
+   * Returns the set of listings for the provided
+   * key.
+   */
   String[] getCachedListing(String key);
 
+  /**
+   * Maps the set of listings to the provided key.
+   */
   void putCachedListing(String key, String[] listing);
-
 }

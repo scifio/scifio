@@ -49,8 +49,19 @@ import org.scijava.Priority;
 import org.scijava.service.Service;
 
 /**
+ * 
+ * A collection of methods for finding {@link ome.scifio.Format}
+ * instances given a child class, disovering available Formats,
+ * and managing the list of available Formats.
+ * <p>
+ * Also provides convenience methods for working with
+ * the Format-specific services.
+ * </p>
+ * 
+ * @see ome.scifio.Format
+ * @see FormatService#getInstance(Class)
+ * 
  * @author Mark Hiner
- *
  */
 public interface FormatService extends Service {
   
@@ -60,8 +71,6 @@ public interface FormatService extends Service {
   
   /**
    * Returns a complete list of all suffixes supported within this context. 
-   * 
-   * @return
    */
   String[] getSuffixes();
 
@@ -105,9 +114,6 @@ public interface FormatService extends Service {
   /**
    * Returns the Format compatible with this component class, or null if no matching
    * Format can be found.
-   * 
-   * @param componentClass
-   * @return
    */
   Format getFormatFromComponent(final Class<?> componentClass);
 
@@ -160,15 +166,6 @@ public interface FormatService extends Service {
    *         the {@code Format} was not found.
    */
   <M extends Metadata> Format getFormatFromMetadata(Class<M> metadataClass);
-  
-  /**
-   * {@code Format} lookup method using {@link Format#getFormatName()}
-   * equality.
-   * 
-   * @param formatName
-   * @return
-   */
-  Format getFormatFromFormatName(String formatName);
 
   /**
    * Returns the first Format known to be compatible with the source provided.
@@ -212,8 +209,6 @@ public interface FormatService extends Service {
 
   /**
    * Returns a list of all Formats within this context.
-   * 
-   * @return
    */
   List<Format> getAllFormats();
   
@@ -221,8 +216,8 @@ public interface FormatService extends Service {
    * Convenience method to obtain TypedService instances within the current
    * context.
    * 
-   * @param type
-   * @return
+   * @param type - Service type to instantiate
+   * @return An instance of the requested service
    */
   <T extends TypedService> T getInstance(Class<T> type);
 }

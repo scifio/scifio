@@ -54,40 +54,42 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
+ * Default {@link FilePatternService} implementation.
+ * 
+ * @see FilePatternService
+ * 
  * @author Mark Hiner
  *
  */
 @Plugin(type = Service.class)
-public class DefaultFilePatternService extends AbstractService implements FilePatternService {
+public class DefaultFilePatternService extends AbstractService 
+	implements FilePatternService
+{
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param path The file path to use as a template for the match.
+  /*
+   * @see ome.scifio.services.FilePatternService#findPattern(java.lang.String)
    */
   public String findPattern(String path) {
     return findPattern(new Location(getContext(), path));
   }
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param file The file to use as a template for the match.
+  /*
+   * @see ome.scifio.services.FilePatternService#findPattern(ome.scifio.io.Location)
    */
   public String findPattern(Location file) {
     return findPattern(file.getName(), file.getAbsoluteFile().getParent());
   }
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param file The file to use as a template for the match.
+
+  /*
+   * @see ome.scifio.services.FilePatternService#findPattern(java.io.File)
    */
   public String findPattern(File file) {
     return findPattern(file.getName(), file.getAbsoluteFile().getParent());
   }
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param name The filename to use as a template for the match.
-   * @param dir The directory in which to search for matching files.
+  /*
+   * @see ome.scifio.services.FilePatternService#findPattern(java.lang.String, java.lang.String)
    */
   public String findPattern(String name, String dir) {
     if (dir == null) dir = ""; // current directory
@@ -105,23 +107,17 @@ public class DefaultFilePatternService extends AbstractService implements FilePa
     return findPattern(name, dir, nameList);
   }
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param name The filename to use as a template for the match.
-   * @param dir The directory prefix to use for matching files.
-   * @param nameList The names through which to search for matching files.
+  /*
+   * @see ome.scifio.services.FilePatternService#
+   *   findPattern(java.lang.String, java.lang.String, java.lang.String[])
    */
   public String findPattern(String name, String dir, String[] nameList) {
     return findPattern(name, dir, nameList, null);
   }
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param name The filename to use as a template for the match.
-   * @param dir The directory prefix to use for matching files.
-   * @param nameList The names through which to search for matching files.
-   * @param excludeAxes The list of axis types which should be excluded from the
-   *  pattern.
+  /*
+   * @see ome.scifio.services.FilePatternService#
+   *   findPattern(java.lang.String, java.lang.String, java.lang.String[], int[])
    */
   public String findPattern(String name, String dir, String[] nameList,
     int[] excludeAxes)
@@ -261,11 +257,8 @@ public class DefaultFilePatternService extends AbstractService implements FilePa
     return sb.toString();
   }
 
-  /**
-   * Generate a pattern from a list of file names.
-   * The pattern generated will be a regular expression.
-   *
-   * Currently assumes that all file names are in the same directory.
+  /*
+   * @see ome.scifio.services.FilePatternService#findPattern(java.lang.String[])
    */
   public String findPattern(String[] names) {
     String dir =
@@ -288,7 +281,7 @@ public class DefaultFilePatternService extends AbstractService implements FilePa
   }
 
   /*
-   * @see ome.scifio.services.FilePatternService#findSeriesPatterns(java.lang.String)
+   * @see ome.scifio.services.FilePatternService#findImagePatterns(java.lang.String)
    */
   public String[] findImagePatterns(String base) {
     Location file = new Location(getContext(), base).getAbsoluteFile();
@@ -299,7 +292,7 @@ public class DefaultFilePatternService extends AbstractService implements FilePa
 
   /*
    * @see ome.scifio.services.FilePatternService#
-   * findSeriesPatterns(java.lang.String, java.lang.String, java.lang.String[])
+   * findImagePatterns(java.lang.String, java.lang.String, java.lang.String[])
    */
   public String[] findImagePatterns(String base, String dir,
     String[] nameList)

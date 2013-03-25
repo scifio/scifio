@@ -51,6 +51,14 @@ import org.scijava.service.Service;
  * all key,value pairs in {@code andPairs}, and at least one of
  * any key, value pairs in {@code orPairs}.
  * </p>
+ * <p>
+ * NB: attributes are assumed to be classes, and "matching" is equivalent to
+ * passing an "isAssignableFrom" test. So it is possible to have multiple
+ * "matches", in the case of both specific and general attribute
+ * types. Typically you should set plugins with specific parameters
+ * to have higher priority than those with general parameters,
+ * so they are checked first.
+ * </p>
  * 
  * @author Mark Hiner
  *
@@ -80,5 +88,4 @@ public interface PluginAttributeService extends Service {
    */
   <PT extends ScifioPlugin> List<PluginInfo<PT>> getPluginsOfType(
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs);
-
 }

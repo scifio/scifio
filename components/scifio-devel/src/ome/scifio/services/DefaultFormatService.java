@@ -57,7 +57,9 @@ import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
 /**
- * Maps component classes to their associated format
+ * Default {@link FormatService} implementation
+ * 
+ * @see ome.scifio.services.FormatService
  * 
  * @author Mark Hiner
  *
@@ -71,58 +73,51 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   private PluginService pluginService;
   
   // -- Fields --
-
-  /**
-   * List of all formats known to this context.
+  
+  /*
+   * A  list of all available Formats
    */
   private final List<Format> formats = new ArrayList<Format>();
   
-  /**
+  /*
    * Maps Format classes to their instances.
    */
   private final Map<Class<? extends Format>, Format> formatMap =
       new HashMap<Class<? extends Format>, Format>();
   
-  /**
+  /*
    * Maps Checker classes to their parent Format instance.
-   * 
    */
   private final Map<Class<? extends Checker>, Format> checkerMap =
       new HashMap<Class<? extends Checker>, Format>();
 
-  /**
+  /*
    * Maps Parser classes to their parent Format instance.
-   * 
    */
   private final Map<Class<? extends Parser>, Format> parserMap = 
       new HashMap<Class<? extends Parser>, Format>();
 
-  /**
+  /*
    * Maps Reader classes to their parent Format instance.
-   * 
    */
   private final Map<Class<? extends Reader>, Format> readerMap =
       new HashMap<Class<? extends Reader>, Format>();
 
-  /**
+  /*
    * Maps Writer classes to their parent Format instance.
-   * 
    */
   private final Map<Class<? extends Writer>, Format> writerMap =
       new HashMap<Class<? extends Writer>, Format>();
 
-  /**
+  /*
    * Maps Metadata classes to their parent Format instance.
-   * 
    */
   private final Map<Class<? extends Metadata>, Format> metadataMap = new HashMap<Class<? extends Metadata>, Format>();
 
   // -- FormatService API Methods --
   
-  /**
-   * Returns a complete list of all suffixes supported within this context. 
-   * 
-   * @return
+  /*
+   * @see FormatService#getSuffixes()
    */
   public String[] getSuffixes() {
     TreeSet<String> ts = new TreeSet<String>();
@@ -136,14 +131,8 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     return ts.toArray(new String[ts.size()]);
   }
 
-  /**
-   * Makes the provided {@code Format} available for image IO operations in
-   * this context.
-   * <p>
-   * No effect if the format is already known.
-   * </p>
-   * @param format a new {@code Format} to support in this context.
-   * @return True if the {@code Format} was added successfully.
+  /*
+   * @see FormatService#addFormat(Format)
    */
   public <M extends Metadata> boolean addFormat(
       final Format format) {
@@ -162,12 +151,8 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     return true;
   }
 
-  /**
-   * Removes the provided {@code Format} from this context, if it
-   * was previously available.
-   * 
-   * @param format the {@code Format} to stop supporting in this context.
-   * @return True if a format was successfully removed.
+  /*
+   * @see FormatService#removeFormat(Format)
    */
   public boolean removeFormat(final Format format) {
     checkerMap.remove(format.getCheckerClass());
@@ -179,28 +164,17 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     return formats.remove(format);
   }
   
-  /**
-   * Lookup method for the Format map. Use this method  when you want a concrete
-   * type reference instead of trying to construct a new {@code Format}.
-   * <p>
-   * NB: because SezPoz is used for automatic detection of {@code Formats} in
-   * SCIFIO, all concrete {@code Format} implementations have a zero-parameter
-   * constructor. If you manually invoke that constructor and then try to link
-   * your {@code Format} to an existing context, e.g. via the {@link #addFormat(Format)}
-   * method, it will fail if the {@code Format} was already discovered.
-   * The same principle is true if the context-based constructor is invoked. 
-   * </p>
-   * @param formatClass the class of the desired {@code Format}
-   * @return A reference to concrete class of the queried {@code Format}, or null if the 
-   *         {@code Format} was not found.
+  /*
+   * @see FormatService#getFormatFromClass(Class<? extends Format>)
    */
-  public <F extends Format> F getFormatFromClass(
-      final Class<F> formatClass) {
-    @SuppressWarnings("unchecked")
-    final F format = (F) formatMap.get(formatClass);
-    return format;
+  @SuppressWarnings("unchecked")
+  public <F extends Format> F getFormatFromClass(final Class<F> formatClass) {
+    return (F)formatMap.get(formatClass);
   }
   
+  /*
+   * @see FormatService#getFormatFromComponent(Class<?>)
+   */
   @SuppressWarnings("unchecked")
   public Format getFormatFromComponent(final Class<?> componentClass) {
     Format fmt = null;
@@ -224,105 +198,51 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     return fmt;
   }
 
-  /**
-   * {@code Format} lookup method using the {@code Reader} component
-   * 
-   * @param readerClass the class of the {@code Reader} component for the
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
+  /*
+   * @see FormatService#getFormatFromReader(Class<? extends Reader>)
    */
-  public <R extends Reader> Format getFormatFromReader(
-      final Class<R> readerClass) {
-    final Format format =  readerMap.get(readerClass);
-    return format;
+  public <R extends Reader> Format getFormatFromReader(final Class<R> readerClass) {
+    return readerMap.get(readerClass);
   }
 
-  /**
-   * {@code Format} lookup method using the {@code Writer} component.
-   * 
-   * @param writerClass the class of the {@code Writer} component for the 
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
+  /*
+   * @see FormatService#getFormatFromWriter(Class<? extends Writer>)
    */
-  public <W extends Writer> Format getFormatFromWriter(
-      final Class<W> writerClass) {
-    final Format format = writerMap.get(writerClass);
-    return format;
+  public <W extends Writer> Format getFormatFromWriter(final Class<W> writerClass) {
+    return writerMap.get(writerClass);
   }
 
-  /**
-   * {@code Format} lookup method using the {@code Checker} component.
-   * 
-   * @param writerClass the class of the {@code Checker} component for the 
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
+  /*
+   * @see FormatService#getFormatFromChecker(Class<? extends Checker>)
    */
-  public <C extends Checker> Format getFormatFromChecker(
-      final Class<C> checkerClass) {
-    final Format format = checkerMap.get(checkerClass);
-    return format;
+  public <C extends Checker> Format getFormatFromChecker(final Class<C> checkerClass) {
+    return checkerMap.get(checkerClass);
   }
 
-  /**
-   * {@code Format} lookup method using the {@code Parser} component.
-   * 
-   * @param writerClass the class of the {@code Parser} component for the 
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
+  /*
+   * @see FormatService#getFormatFromParser(Class<? extends Parser)
    */
-  public <P extends Parser> Format getFormatFromParser(
-      final Class<P> parserClass) {
-    final Format format = parserMap.get(parserClass);
-    return format;
+  public <P extends Parser> Format getFormatFromParser(final Class<P> parserClass) {
+    return parserMap.get(parserClass);
   }
 
-  /**
-   * {@code Format} lookup method using the {@code Metadata} component.
-   * 
-   * @param writerClass the class of the {@code Metadata} component for the 
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
+  /*
+   * @see FormatService#getFormatFromMetadata(Class<? extends Metadata>)
    */
-  public <M extends Metadata> Format getFormatFromMetadata(
-      final Class<M> metadataClass) {
-    final Format format = metadataMap.get(metadataClass);
-    return format;
-  }
-  
-  public Format getFormatFromFormatName(final String formatName) {
-    for (Format format : formats) {
-      if (format.getFormatName().equals(formatName))
-        return format;
-    }
-    
-    return null;
+  public <M extends Metadata> Format getFormatFromMetadata(final Class<M> metadataClass) {
+    return metadataMap.get(metadataClass);
   }
 
-  /**
-   * Returns the first Format known to be compatible with the source provided.
-   * Formats are checked in ascending order of their priority.
-   * 
-   * @param id the source
-   * @param open true if the source can be read while checking for compatibility.
-   * @return A Format reference compatible with the provided source.
+  /*
+   * @see FormatService#getFormat(String, boolean)
    */
   public Format getFormat(final String id, final boolean open)
       throws FormatException {
     return getFormatList(id, open).get(0);
   }
 
-  /**
-   * Returns a list of all formats that are compatible with the source
-   * provided, ordered by their priority.
-   * 
-   * @param id the source
-   * @param open true if the source can be read while checking for compatibility.
-   * @return A List of Format references compatible with the provided source.
+  /*
+   * @see FormatService#getFormatList(String, boolean)
    */
   public List<Format> getFormatList(final String id,
       final boolean open) throws FormatException {
@@ -347,35 +267,28 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   }
 
   /**
- * Returns the first Format known to be compatible with the source provided.
+   * Returns the first Format known to be compatible with the source provided.
    * Formats are checked in ascending order of their priority. The source is read
    * if necessary to determine compatibility.
    * 
    * @param id the source
-   * @return A  Format reference compatible with the provided source.
+   * @return A Format reference compatible with the provided source.
    */
   public Format getFormat(final String id)
       throws FormatException {
     return getFormat(id, false);
   }
 
-  /**
-   * Returns a list of all formats that are compatible with the source
-   * provided, ordered by their priority. The source is read
-   * if necessary to determine compatibility.
-   * 
-   * @param id the source
-   * @return An List of Format references compatible with the provided source.
+  /*
+   * @see FormatService#getformatList(String)
    */
   public List<Format> getFormatList(final String id)
       throws FormatException {
     return getFormatList(id, false);
   }
   
-  /**
-   * Returns a list of all Formats within this context.
-   * 
-   * @return
+  /*
+   * @see FormatService#getAllFormats()
    */
   public List<Format> getAllFormats() {
     return formats;
@@ -390,6 +303,9 @@ public class DefaultFormatService extends AbstractService implements FormatServi
 
   // -- Service API Methods --
   
+  /*
+   * Discovers the list of formats and creates singleton instances of each.
+   */
   public void initialize() {
     for (Format format : pluginService.createInstancesOfType(Format.class))
     {
