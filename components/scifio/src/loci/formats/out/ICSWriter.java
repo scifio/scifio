@@ -51,6 +51,8 @@ import loci.legacy.context.LegacyContext;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/ICSWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/ICSWriter.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated Use ome.scifio.formats.ICSFormat instead.
  */
 @Deprecated
 public class ICSWriter extends SCIFIOFormatWriter {
@@ -85,13 +87,12 @@ public class ICSWriter extends SCIFIOFormatWriter {
 
   // -- IFormatWriter API methods --
 
-  /**
+  /*
    * @see loci.formats.IFormatWriter#saveBytes(int, byte[], int, int, int, int)
    */
   public void saveBytes(int no, byte[] buf, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-
     try {
       writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
     } catch (ome.scifio.FormatException e) {

@@ -50,6 +50,8 @@ import loci.legacy.context.LegacyContext;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/APNGWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/APNGWriter.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated Use ome.scifio.formats.APNGFormat instead.
  */
 @Deprecated
 public class APNGWriter extends SCIFIOFormatWriter {
@@ -73,10 +75,9 @@ public class APNGWriter extends SCIFIOFormatWriter {
 
   // -- IFormatWriter API methods --
 
-  /**
+  /*
    * @see loci.formats.IFormatWriter#saveBytes(int, byte[], int, int, int, int)
    */
-  @Deprecated
   public void saveBytes(int no, byte[] buf, int x, int y, int w, int h)
     throws FormatException, IOException
   {
@@ -89,13 +90,11 @@ public class APNGWriter extends SCIFIOFormatWriter {
   }
 
   /* @see loci.formats.IFormatWriter#canDoStacks() */
-  @Deprecated
   public boolean canDoStacks() {
     return writer.canDoStacks();
   }
 
   /* @see loci.formats.IFormatWriter#getPixelTypes(String) */
-  @Deprecated
   public int[] getPixelTypes(String codec) {
     return writer.getPixelTypes(codec);
   }
