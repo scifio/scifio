@@ -42,7 +42,10 @@ package loci.common;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Region.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Region.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated see ome.scifio.common.Region
  */
+@Deprecated
 public class Region extends ome.scifio.common.Region {
 
   // -- Constructors --
@@ -59,23 +62,6 @@ public class Region extends ome.scifio.common.Region {
   
   public Region intersection(Region r) {
     return convertRegion(super.intersection(r));
-  }
-  
-  // -- Object delegators --
-
-  @Override
-  public boolean equals(Object obj) {
-    return super.equals(obj);
-  }
-  
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return super.toString();
   }
   
   // -- Helper Methods --

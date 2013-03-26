@@ -36,6 +36,8 @@
 
 package loci.common.xml;
 
+import loci.legacy.adapter.Wrapper;
+
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
@@ -47,8 +49,13 @@ import org.xml.sax.SAXParseException;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/ParserErrorHandler.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.xml.ParserErrorHandler
  */
-public class ParserErrorHandler implements ErrorHandler {
+@Deprecated
+public class ParserErrorHandler implements ErrorHandler,
+  Wrapper<ome.scifio.xml.ParserErrorHandler>
+{
 
   // -- Fields --
   
@@ -68,21 +75,10 @@ public class ParserErrorHandler implements ErrorHandler {
     eHandler.warning(e);
   }
   
-  // -- Object delegators --
+  // -- Wrapper API Methods --
 
-  @Override
-  public boolean equals(Object obj) {
-    return eHandler.equals(obj);
-  }
-  
-  @Override
-  public int hashCode() {
-    return eHandler.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return eHandler.toString();
+  public ome.scifio.xml.ParserErrorHandler unwrap() {
+    return eHandler;
   }
 
 }

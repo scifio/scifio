@@ -42,7 +42,10 @@ package loci.common;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/HandleException.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/HandleException.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated see ome.scifio.io.HandleException
  */
+@Deprecated
 public class HandleException extends ome.scifio.io.HandleException {
 
   public HandleException() { super(); }
@@ -52,23 +55,6 @@ public class HandleException extends ome.scifio.io.HandleException {
   }
   public HandleException(Throwable cause) {
     super(cause);
-  }
-  
-  // -- Object delegators --
-
-  @Override
-  public boolean equals(Object obj) {
-    return super.equals(obj);
-  }
-  
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return super.toString();
   }
 }
 

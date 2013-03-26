@@ -119,23 +119,6 @@ public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener,
     public void statusUpdated(ome.scifio.common.StatusEvent e) {
       unwrap().statusUpdated(new StatusEvent(e));
     }
-    
-//    // -- Object delegators --
-//
-//    @Override
-//    public boolean equals(Object obj) {
-//      return unwrap().equals(obj);
-//    }
-//    
-//    @Override
-//    public int hashCode() {
-//      return unwrap().hashCode();
-//    }
-//    
-//    @Override
-//    public String toString() {
-//      return unwrap().toString();
-//    }
   }
   
   /**
@@ -170,24 +153,7 @@ public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener,
     // -- StatusListener API --
 
     public void statusUpdated(loci.common.StatusEvent e) {
-      unwrap().statusUpdated(e.getEvent());
+      unwrap().statusUpdated(e.unwrap());
     }
-    
-//    // -- Object delegators --
-//
-//    @Override
-//    public boolean equals(Object obj) {
-//      return unwrap().equals(obj);
-//    }
-//    
-//    @Override
-//    public int hashCode() {
-//      return unwrap().hashCode();
-//    }
-//    
-//    @Override
-//    public String toString() {
-//      return unwrap().toString();
-//    }
   }
 }

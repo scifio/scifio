@@ -52,7 +52,10 @@ import loci.utils.ProtectedMethodInvoker;
  * @see StreamHandle
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.io.GZipHandle
  */
+@Deprecated
 public class GZipHandle extends StreamHandle {
 
   // -- Fields --

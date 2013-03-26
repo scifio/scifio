@@ -43,6 +43,7 @@ import java.net.URL;
 import java.util.HashMap;
 
 import loci.legacy.adapter.CommonAdapter;
+import loci.legacy.adapter.Wrapper;
 import loci.legacy.context.LegacyContext;
 
 // HACK: for scan-deps.pl: The following packages are not actually "optional":
@@ -54,8 +55,11 @@ import loci.legacy.context.LegacyContext;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Location.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Location.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated see ome.scifio.io.Location and ome.scifio.services.LocationService
  */
-public class Location {
+@Deprecated
+public class Location implements Wrapper<ome.scifio.io.Location> {
 
   // -- Constants --
 
@@ -491,5 +495,11 @@ public class Location {
    */
   public String toString() {
     return loc.toString();
+  }
+  
+  // -- Wrapper API Methods --
+
+  public ome.scifio.io.Location unwrap() {
+    return loc;
   }
 }

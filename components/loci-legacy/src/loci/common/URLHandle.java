@@ -54,7 +54,10 @@ import loci.utils.ProtectedMethodInvoker;
  * @see java.net.URLConnection
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.io.URLHandle
  */
+@Deprecated
 public class URLHandle extends StreamHandle {
 
   // -- Fields --
@@ -92,6 +95,4 @@ public class URLHandle extends StreamHandle {
       throw new IllegalStateException(e);
     }
   }
-
-  // -- Helper methods --
 }

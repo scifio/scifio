@@ -42,6 +42,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 
+import loci.legacy.adapter.Wrapper;
 import loci.utils.ProtectedMethodInvoker;
 
 /**
@@ -52,8 +53,11 @@ import loci.utils.ProtectedMethodInvoker;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/NIOByteBufferProvider.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Chris Allan <callan at blackcat dot ca>
+ * 
+ * @deprecated see ome.scifio.io.NIOByteBufferProvider
  */
-public class NIOByteBufferProvider {
+@Deprecated
+public class NIOByteBufferProvider implements Wrapper<ome.scifio.io.NIOByteBufferProvider> {
 
   // -- Constants --
 
@@ -135,5 +139,11 @@ public class NIOByteBufferProvider {
       pmi.unwrapException(e, IOException.class);
       throw new IllegalStateException(e);
     }
+  }
+  
+  // -- Wrapper API Methods
+
+  public ome.scifio.io.NIOByteBufferProvider unwrap() {
+    return buf;
   }
 }

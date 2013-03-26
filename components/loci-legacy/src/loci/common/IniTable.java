@@ -41,6 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import loci.legacy.adapter.Wrapper;
+
 /**
  * A legacy delegator class for ome.scifio.common.IniTable.
  * 
@@ -52,8 +54,13 @@ import java.util.Set;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/IniTable.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Curtis Rueden ctrueden at wisc.edu
+ * 
+ * @deprecated see ome.scifio.common.IniTable
  */
-public class IniTable extends HashMap<String, String> {
+@Deprecated
+public class IniTable extends HashMap<String, String>
+  implements Wrapper<ome.scifio.common.IniTable>
+{
 
   // -- Fields --
   
@@ -144,5 +151,11 @@ public class IniTable extends HashMap<String, String> {
 
   public Collection<String> values() {
     return table.values();
+  }
+
+  // -- Wrapper API Methods --
+  
+  public ome.scifio.common.IniTable unwrap() {
+    return table;
   }
 }

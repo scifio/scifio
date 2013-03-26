@@ -50,7 +50,10 @@ import loci.legacy.context.LegacyContext;
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Chris Allan callan at blackcat.ca
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.common.DataTools
  */
+@Deprecated
 public final class DataTools {
 
   // -- Constants --

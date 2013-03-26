@@ -42,7 +42,10 @@ package loci.common;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Constants.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Constants.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated see ome.scifio.common.Constants
  */
+@Deprecated
 public final class Constants {
 
   public static final String ENCODING = ome.scifio.common.Constants.ENCODING;

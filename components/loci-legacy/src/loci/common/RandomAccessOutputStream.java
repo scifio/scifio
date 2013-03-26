@@ -51,7 +51,10 @@ import loci.legacy.context.LegacyContext;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/RandomAccessOutputStream.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/RandomAccessOutputStream.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated see ome.scifio.io.RandomAccessOutputStream
  */
+@Deprecated
 public class RandomAccessOutputStream extends OutputStream 
   implements DataOutput, Wrapper<ome.scifio.io.RandomAccessOutputStream>
 {
@@ -226,21 +229,4 @@ public class RandomAccessOutputStream extends OutputStream
   public ome.scifio.io.RandomAccessOutputStream unwrap() {
     return raos;
   }
-  
-  // -- Object delegators --
-//
-//  @Override
-//  public boolean equals(Object obj) {
-//    return unwrap().equals(obj);
-//  }
-//  
-//  @Override
-//  public int hashCode() {
-//    return unwrap().hashCode();
-//  }
-//  
-//  @Override
-//  public String toString() {
-//    return unwrap().toString();
-//  }
 }

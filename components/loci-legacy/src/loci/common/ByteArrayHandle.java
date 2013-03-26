@@ -48,7 +48,10 @@ import java.nio.ByteOrder;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/ByteArrayunwrap().java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @see IRandomAccess
+ * 
+ * @deprecated see ome.scifio.io.ByteArrayHandle
  */
+@Deprecated
 public class ByteArrayHandle extends AbstractNIOHandle {
 
   // -- Constants --

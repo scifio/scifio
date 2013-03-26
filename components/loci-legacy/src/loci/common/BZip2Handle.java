@@ -52,7 +52,10 @@ import loci.utils.ProtectedMethodInvoker;
  * @see StreamHandle
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.io.BZip2Handle
  */
+@Deprecated
 public class BZip2Handle extends StreamHandle {
 
   // -- Fields --
@@ -95,6 +98,4 @@ public class BZip2Handle extends StreamHandle {
       throw new IllegalStateException(e);
     }
   }
-
-
 }

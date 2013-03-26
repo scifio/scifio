@@ -38,6 +38,8 @@ package loci.common;
 
 import java.io.IOException;
 
+import loci.legacy.adapter.Wrapper;
+
 /**
  * A legacy delegator class for ome.scifio.common.IniWriter.
  *
@@ -46,8 +48,11 @@ import java.io.IOException;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/IniWriter.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.common.IniWriter
  */
-public class IniWriter {
+@Deprecated
+public class IniWriter implements Wrapper<ome.scifio.common.IniWriter> {
 
   // -- Fields --
   
@@ -75,21 +80,10 @@ public class IniWriter {
   {
     writer.saveINI(ini.list, path, append);
   }
-
-  // -- Object delegators --
-
-  @Override
-  public boolean equals(Object obj) {
-    return writer.equals(obj);
-  }
   
-  @Override
-  public int hashCode() {
-    return writer.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return writer.toString();
+  // -- Wrapper API Methods
+
+  public ome.scifio.common.IniWriter unwrap() {
+    return writer;
   }
 }

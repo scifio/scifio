@@ -129,23 +129,6 @@ public class StatusReporterAdapter extends
     public void notifyListeners(ome.scifio.common.StatusEvent e) {
       unwrap().notifyListeners(new StatusEvent(e));
     }
-    
-//    // -- Object delegators --
-//
-//    @Override
-//    public boolean equals(Object obj) {
-//      return unwrap().equals(obj);
-//    }
-//    
-//    @Override
-//    public int hashCode() {
-//      return unwrap().hashCode();
-//    }
-//    
-//    @Override
-//    public String toString() {
-//      return unwrap().toString();
-//    }
   }
   
   /**
@@ -189,24 +172,7 @@ public class StatusReporterAdapter extends
     }
 
     public void notifyListeners(StatusEvent e) {
-      unwrap().notifyListeners(e.getEvent());
+      unwrap().notifyListeners(e.unwrap());
     }
-    
-    // -- Object delegators --
-//
-//    @Override
-//    public boolean equals(Object obj) {
-//      return unwrap().equals(obj);
-//    }
-//    
-//    @Override
-//    public int hashCode() {
-//      return unwrap().hashCode();
-//    }
-//    
-//    @Override
-//    public String toString() {
-//      return unwrap().toString();
-//    }
   }
 }

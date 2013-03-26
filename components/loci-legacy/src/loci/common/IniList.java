@@ -43,23 +43,31 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import loci.legacy.adapter.Wrapper;
+
 /**
  * A legacy delegator class for ome.scifio.common.IniList.
- * 
+ * <p>
  * Uses an "isa" relationship to preserve the inherited
  * methods from ArrayList.
- * 
+ * </p>
+ * <p>
  * Dummy method signatures for IniList-specific methods
  * are present to provide early warnings if these method
  * names change (which would break backwards compatibility).
- *
+ * </p>
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/IniList.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/IniList.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Curtis Rueden ctrueden at wisc.edu
+ * 
+ * @deprecated see ome.scifio.common.IniList
  */
-public class IniList extends ArrayList<IniTable> {
+@Deprecated
+public class IniList extends ArrayList<IniTable>
+  implements Wrapper<ome.scifio.common.IniList>
+{
   
   // -- Fields --
   
@@ -225,5 +233,11 @@ public class IniList extends ArrayList<IniTable> {
       tmpTables.add(convertTable(iter.next()));
     
     return tmpTables;
+  }
+  
+  // -- Wrapper API Methods --
+
+  public ome.scifio.common.IniList unwrap() {
+    return list;
   }
 }

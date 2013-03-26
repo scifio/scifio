@@ -36,6 +36,8 @@
 
 package loci.common.xml;
 
+import loci.legacy.adapter.Wrapper;
+
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
@@ -49,8 +51,12 @@ import org.xml.sax.SAXParseException;
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Chris Allan callan at blackcat.ca
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.xml.ValidationErrorHandler
  */
-public class ValidationErrorHandler implements ErrorHandler {
+@Deprecated
+public class ValidationErrorHandler implements ErrorHandler,
+  Wrapper<ome.scifio.xml.ValidationErrorHandler> {	
 
   // -- Fields --
   
@@ -74,21 +80,9 @@ public class ValidationErrorHandler implements ErrorHandler {
     handler.warning(e);
   }
   
-  // -- Object delegators --
-
-  @Override
-  public boolean equals(Object obj) {
-    return handler.equals(obj);
-  }
+  // -- Wrapper API Methods --
   
-  @Override
-  public int hashCode() {
-    return handler.hashCode();
+  public ome.scifio.xml.ValidationErrorHandler unwrap() {
+    return handler;
   }
-  
-  @Override
-  public String toString() {
-    return handler.toString();
-  }
-
 }

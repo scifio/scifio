@@ -60,7 +60,10 @@ import loci.legacy.context.LegacyContext;
  * @author Melissa Linkert melissa at glencoesoftware.com
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Mark Hiner
+ * 
+ * @deprecated see ome.scifio.io.RandomAccessInputStream
  */
+@Deprecated
 public class RandomAccessInputStream extends InputStream 
   implements DataInput, Wrapper<ome.scifio.io.RandomAccessInputStream> {
 
@@ -384,21 +387,4 @@ public class RandomAccessInputStream extends InputStream
   public void reset() throws IOException {
     unwrap().reset();
   }
-
-//  // -- Object delegators --
-//
-//  @Override
-//  public boolean equals(Object obj) {
-//    return unwrap().equals(obj);
-//  }
-//  
-//  @Override
-//  public int hashCode() {
-//    return unwrap().hashCode();
-//  }
-//  
-//  @Override
-//  public String toString() {
-//    return unwrap().toString();
-//  }
 }

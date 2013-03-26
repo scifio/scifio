@@ -39,6 +39,8 @@ package loci.common;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import loci.legacy.adapter.Wrapper;
+
 /**
  * A legacy delegator class for ome.scifio.common.IniParser.
  *
@@ -47,8 +49,11 @@ import java.io.IOException;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/IniParser.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Curtis Rueden ctrueden at wisc.edu
+ * 
+ * @deprecated see ome.scifio.common.IniParser
  */
-public class IniParser {
+@Deprecated
+public class IniParser implements Wrapper<ome.scifio.common.IniParser> {
 
   // -- Fields --
   
@@ -119,20 +124,9 @@ public class IniParser {
     return ome.scifio.common.IniParser.openTextResource(path, c);
   }
   
-  // -- Object delegators --
+  // -- Wrapper API Methods --
 
-  @Override
-  public boolean equals(Object obj) {
-    return parser.equals(obj);
-  }
-  
-  @Override
-  public int hashCode() {
-    return parser.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return parser.toString();
+  public ome.scifio.common.IniParser unwrap() {
+    return parser;
   }
 }

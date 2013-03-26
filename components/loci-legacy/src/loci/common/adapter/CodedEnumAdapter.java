@@ -118,23 +118,6 @@ public class CodedEnumAdapter extends
     public int getCode() {
       return unwrap().getCode();
     }
-    
-//    // -- Object delegators --
-//
-//    @Override
-//    public boolean equals(Object obj) {
-//      return unwrap().equals(obj);
-//    }
-//    
-//    @Override
-//    public int hashCode() {
-//      return unwrap().hashCode();
-//    }
-//    
-//    @Override
-//    public String toString() {
-//      return unwrap().toString();
-//    }
   }
   
   /**
@@ -171,22 +154,5 @@ public class CodedEnumAdapter extends
     public int getCode() {
       return unwrap().getCode();
     }
-    
-//    // -- Object delegators --
-//
-//    @Override
-//    public boolean equals(Object obj) {
-//      return unwrap().equals(obj);
-//    }
-//    
-//    @Override
-//    public int hashCode() {
-//      return unwrap().hashCode();
-//    }
-//    
-//    @Override
-//    public String toString() {
-//      return unwrap().toString();
-//    }
   }
 }

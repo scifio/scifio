@@ -46,7 +46,10 @@ package loci.common;
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Chris Allan callan at blackcat.ca
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.common.DateTools
  */
+@Deprecated
 public final class DateTools {
 
   // -- Constants --

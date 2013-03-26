@@ -161,402 +161,205 @@ public class RandomAccessInputStreamAdapter
     
     // -- RandomAccessStream API --
     
-    /**
-     * @param pos
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#seek(long)
-     */
+    @Override
     public void seek(long pos) throws IOException {
       unwrap().seek(pos);
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#length()
-     */
+    @Override
     public long length() throws IOException {
       return unwrap().length();
     }
 
-    /**
-     * @param newLength
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#setLength(long)
-     */
+    @Override
     public void setLength(long newLength) throws IOException {
       unwrap().setLength(newLength);
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#getFilePointer()
-     */
+    @Override
     public long getFilePointer() throws IOException {
       return unwrap().getFilePointer();
     }
-
-    /**
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#close()
-     */
+    
+    @Override
     public void close() throws IOException {
       unwrap().close();
     }
 
-    /**
-     * @param little
-     * @see loci.common.RandomAccessInputStream#order(boolean)
-     */
+    @Override
     public void order(boolean little) {
       unwrap().order(little);
     }
 
-    /**
-     * @return
-     * @see loci.common.RandomAccessInputStream#isLittleEndian()
-     */
+    @Override
     public boolean isLittleEndian() {
       return unwrap().isLittleEndian();
     }
 
-    /**
-     * @param lastChars
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readString(java.lang.String)
-     */
+    @Override
     public String readString(String lastChars) throws IOException {
       return unwrap().readString(lastChars);
     }
 
-    /**
-     * @param terminators
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#findString(java.lang.String[])
-     */
+    @Override
     public String findString(String... terminators) throws IOException {
       return unwrap().findString(terminators);
     }
 
-    /**
-     * @param saveString
-     * @param terminators
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#findString(boolean, java.lang.String[])
-     */
+    @Override
     public String findString(boolean saveString, String... terminators)
       throws IOException
     {
       return unwrap().findString(saveString, terminators);
     }
 
-    /**
-     * @param blockSize
-     * @param terminators
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#findString(int, java.lang.String[])
-     */
+    @Override
     public String findString(int blockSize, String... terminators)
       throws IOException
     {
       return unwrap().findString(blockSize, terminators);
     }
 
-    /**
-     * @param saveString
-     * @param blockSize
-     * @param terminators
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#findString(boolean, int, java.lang.String[])
-     */
+    @Override
     public String findString(boolean saveString, int blockSize,
       String... terminators) throws IOException
     {
       return unwrap().findString(saveString, blockSize, terminators);
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readBoolean()
-     */
+    @Override
     public boolean readBoolean() throws IOException {
       return unwrap().readBoolean();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readByte()
-     */
+    @Override
     public byte readByte() throws IOException {
       return unwrap().readByte();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readChar()
-     */
+    @Override
     public char readChar() throws IOException {
       return unwrap().readChar();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readDouble()
-     */
+    @Override
     public double readDouble() throws IOException {
       return unwrap().readDouble();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readFloat()
-     */
+    @Override
     public float readFloat() throws IOException {
       return unwrap().readFloat();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readInt()
-     */
+    @Override
     public int readInt() throws IOException {
       return unwrap().readInt();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readLine()
-     */
+    @Override
     public String readLine() throws IOException {
       return unwrap().readLine();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readCString()
-     */
+    @Override
     public String readCString() throws IOException {
       return unwrap().readCString();
     }
 
-    /**
-     * @param n
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readString(int)
-     */
+    @Override
     public String readString(int n) throws IOException {
       return unwrap().readString(n);
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readLong()
-     */
+    @Override
     public long readLong() throws IOException {
       return unwrap().readLong();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readShort()
-     */
+    @Override
     public short readShort() throws IOException {
       return unwrap().readShort();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readUnsignedByte()
-     */
+    @Override
     public int readUnsignedByte() throws IOException {
       return unwrap().readUnsignedByte();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readUnsignedShort()
-     */
+    @Override
     public int readUnsignedShort() throws IOException {
       return unwrap().readUnsignedShort();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readUTF()
-     */
+    @Override
     public String readUTF() throws IOException {
       return unwrap().readUTF();
     }
 
-    /**
-     * @param array
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#read(byte[])
-     */
+    @Override
     public int read(byte[] array) throws IOException {
       return unwrap().read(array);
     }
 
-    /**
-     * @param array
-     * @param offset
-     * @param n
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#read(byte[], int, int)
-     */
+    @Override
     public int read(byte[] array, int offset, int n) throws IOException {
       return unwrap().read(array, offset, n);
     }
 
-    /**
-     * @param buf
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#read(java.nio.ByteBuffer)
-     */
+    @Override
     public int read(ByteBuffer buf) throws IOException {
       return unwrap().read(buf);
     }
 
-    /**
-     * @param buf
-     * @param offset
-     * @param n
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#read(java.nio.ByteBuffer, int, int)
-     */
+    @Override
     public int read(ByteBuffer buf, int offset, int n) throws IOException {
       return unwrap().read(buf, offset, n);
     }
 
-    /**
-     * @param array
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readFully(byte[])
-     */
+    @Override
     public void readFully(byte[] array) throws IOException {
       unwrap().readFully(array);
     }
 
-    /**
-     * @param array
-     * @param offset
-     * @param n
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#readFully(byte[], int, int)
-     */
+    @Override
     public void readFully(byte[] array, int offset, int n) throws IOException {
       unwrap().readFully(array, offset, n);
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#read()
-     */
+    @Override
     public int read() throws IOException {
       return unwrap().read();
     }
 
-    /**
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#available()
-     */
+    @Override
     public int available() throws IOException {
       return unwrap().available();
     }
-
-    /**
-     * @param readLimit
-     * @see loci.common.RandomAccessInputStream#mark(int)
-     */
+    
+    @Override
     public void mark(int readLimit) {
       unwrap().mark(readLimit);
     }
 
-    /**
-     * @return
-     * @see loci.common.RandomAccessInputStream#markSupported()
-     */
+    @Override
     public boolean markSupported() {
       return unwrap().markSupported();
     }
 
-    /**
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#reset()
-     */
+    @Override
     public void reset() throws IOException {
       unwrap().reset();
     }
 
-    /**
-     * @param arg0
-     * @return
-     * @throws IOException
-     * @see java.io.InputStream#skip(long)
-     */
+    @Override
     public long skip(long arg0) throws IOException {
       return unwrap().skip(arg0);
     }
 
-    /**
-     * @param n
-     * @return
-     * @throws IOException
-     * @see loci.common.RandomAccessInputStream#skipBytes(int)
-     */
+    @Override
     public int skipBytes(int n) throws IOException {
       return unwrap().skipBytes(n);
     }
-
-    // -- Object delegators --//    /**
-//    /**
-//     * @return
-//     * @see loci.common.RandomAccessInputStream#toString()
-//     */
-//    public String toString() {
-//      return unwrap().toString();
-//    }
-//    /**
-//     * @param obj
-//     * @return
-//     * @see loci.common.RandomAccessInputStream#equals(java.lang.Object)
-//     */
-//    public boolean equals(Object obj) {
-//      return unwrap().equals(obj);
-//    }
-//
-//    /**
-//     * @return
-//     * @see loci.common.RandomAccessInputStream#hashCode()
-//     */
-//    public int hashCode() {
-//      return unwrap().hashCode();
-//    }        
   }
 }

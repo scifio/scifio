@@ -54,7 +54,10 @@ import java.nio.channels.FileChannel;
  * @see java.io.RandomAccessFile
  *
  * @author Chris Allan <callan at blackcat dot ca>
+ * 
+ * @deprecated see ome.scifio.io.NIOFileHandle
  */
+@Deprecated
 public class NIOFileHandle extends AbstractNIOHandle {
 
   // -- Constants --

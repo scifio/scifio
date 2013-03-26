@@ -54,7 +54,10 @@ import loci.utils.ProtectedMethodInvoker;
  * @see StreamHandle
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.io.ZipHandle
  */
+@Deprecated
 public class ZipHandle extends StreamHandle {
 
   // -- Fields --
@@ -123,6 +126,4 @@ public class ZipHandle extends StreamHandle {
       throw new IllegalStateException(e);
     } 
   }
-
-  // -- Helper methods --
 }

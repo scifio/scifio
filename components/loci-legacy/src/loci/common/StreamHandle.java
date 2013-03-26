@@ -54,7 +54,10 @@ import loci.legacy.adapter.Wrapper;
  * @see IRandomAccess
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.io.StreamHandle
  */
+@Deprecated
 public abstract class StreamHandle implements IRandomAccess, Wrapper<ome.scifio.io.StreamHandle> {
 
   // -- Fields --
@@ -286,23 +289,6 @@ public abstract class StreamHandle implements IRandomAccess, Wrapper<ome.scifio.
   public ome.scifio.io.StreamHandle unwrap() {
     return sHandle.get();
   }
-  
-  // -- Object Delegators --
-//  
-//  @Override
-//  public boolean equals(Object obj) {
-//    return unwrap().equals(obj);
-//  }
-//  
-//  @Override
-//  public int hashCode() {
-//    return unwrap().hashCode();
-//  }
-//  
-//  @Override
-//  public String toString() {
-//    return unwrap().toString();
-//  }
 
   // -- Helper methods --
 

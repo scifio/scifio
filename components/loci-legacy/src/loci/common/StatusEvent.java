@@ -36,14 +36,19 @@
 
 package loci.common;
 
+import loci.legacy.adapter.Wrapper;
+
 /**
  * A legacy delegator class for ome.scifio.common.StatusEvent.
  * 
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/StatusEvent.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/StatusEvent.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated see ome.scifio.common.StatusEvent
  */
-public class StatusEvent {
+@Deprecated
+public class StatusEvent implements Wrapper<ome.scifio.common.StatusEvent> {
 
   // -- Fields --
 
@@ -98,16 +103,9 @@ public class StatusEvent {
     return event.isWarning();
   }
 
-  // -- Object API methods --
-
-  @Override
-  public String toString() {
-    return event.toString();
-  }
+  // -- Wrapper API methods --
   
-  // -- Delegate Getter-
-  
-  public ome.scifio.common.StatusEvent getEvent() {
+  public ome.scifio.common.StatusEvent unwrap() {
     return event;
   }
 

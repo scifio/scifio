@@ -44,7 +44,10 @@ package loci.common;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/DebugTools.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Curtis Rueden ctrueden at wisc.edu
+ * 
+ * @deprecated see ome.scifio.common.DebugTools
  */
+@Deprecated
 public final class DebugTools {
 
   // -- Constructor --

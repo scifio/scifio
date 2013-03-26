@@ -53,7 +53,10 @@ import loci.legacy.adapter.Wrapper;
  * @see java.io.RandomAccessFile
  *
  * @author Chris Allan <callan at blackcat dot ca>
+ * 
+ * @deprecated see ome.scifio.io.AbstractNIOHandle
  */
+@Deprecated
 public abstract class AbstractNIOHandle implements IRandomAccess, Wrapper<ome.scifio.io.AbstractNIOHandle> {
 
   /** Error message to be used when instantiating an EOFException. */
@@ -93,8 +96,8 @@ public abstract class AbstractNIOHandle implements IRandomAccess, Wrapper<ome.sc
    * Ensures that the handle has the correct length to be written to and
    * extends it as required.
    * @param writeLength Number of bytes to write.
-   * @return <code>true</code> if the buffer has not required an extension.
-   * <code>false</code> otherwise.
+   * @return {@code true} if the buffer has not required an extension.
+   * {@code false} otherwise.
    * @throws IOException If there is an error changing the handle's length.
    */
   protected boolean validateLength(int writeLength) throws IOException {
@@ -117,20 +120,4 @@ public abstract class AbstractNIOHandle implements IRandomAccess, Wrapper<ome.sc
   public ome.scifio.io.AbstractNIOHandle unwrap() {
     return handle.get();
   }
-  
-  // -- Object Delegators --
-//  
-//  @Override
-//  public boolean equals(Object obj) {
-//    return handle.equals(obj);
-//  }
-//
-//  @Override
-//  public int hashCode() {
-//    return handle.hashCode();
-//  }
-//  @Override
-//  public String toString() {
-//    return handle.toString();
-//  }
 }

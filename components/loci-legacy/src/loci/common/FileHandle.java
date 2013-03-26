@@ -54,7 +54,10 @@ import java.nio.ByteOrder;
  * @see java.io.RandomAccessFile
  *
  * @author Curtis Rueden ctrueden at wisc.edu
+ * 
+ * @deprecated see ome.scifio.io.FileHandle
  */
+@Deprecated
 public class FileHandle implements IRandomAccess {
 
   // -- Fields --
@@ -291,22 +294,5 @@ public class FileHandle implements IRandomAccess {
 
   public void setOrder(ByteOrder order) {
     handle.setOrder(order);
-  }
-  
-  // -- Object delegators --
-
-  @Override
-  public boolean equals(Object obj) {
-    return handle.equals(obj);
-  }
-  
-  @Override
-  public int hashCode() {
-    return handle.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return handle.toString();
   }
 }

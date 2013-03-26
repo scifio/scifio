@@ -50,7 +50,10 @@ import java.nio.ByteOrder;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/IRandomAccess.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Curtis Rueden ctrueden at wisc.edu
+ * 
+ * @deprecated see ome.scifio.io.IRandomAccess
  */
+@Deprecated
 public interface IRandomAccess extends DataInput, DataOutput {
   /**
    * Closes this random access stream and releases

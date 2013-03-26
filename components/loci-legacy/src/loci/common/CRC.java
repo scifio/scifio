@@ -64,7 +64,10 @@ package loci.common;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/CRC.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/CRC.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated see ome.scifio.common.CRC
  */
+@Deprecated
 public class CRC {
 
   // -- Constants --
@@ -102,22 +105,4 @@ public class CRC {
   public void updateCRC(int inCh) {
     crc.updateCRC(inCh);
   }
-  
-  // -- Object delegators --
-
-  @Override
-  public boolean equals(Object obj) {
-    return crc.equals(obj);
-  }
-  
-  @Override
-  public int hashCode() {
-    return crc.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return crc.toString();
-  }
 }
-

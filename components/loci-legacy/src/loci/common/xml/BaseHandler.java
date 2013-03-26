@@ -38,6 +38,8 @@ package loci.common.xml;
 
 import java.io.IOException;
 
+import loci.legacy.adapter.Wrapper;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -50,8 +52,13 @@ import org.xml.sax.helpers.DefaultHandler;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/BaseHandler.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.xml.BaseHandler
  */
-public class BaseHandler extends DefaultHandler {
+@Deprecated
+public class BaseHandler extends DefaultHandler
+  implements Wrapper<ome.scifio.xml.BaseHandler>
+{
 
   // -- Fields --
   
@@ -64,21 +71,10 @@ public class BaseHandler extends DefaultHandler {
   {
     return handler.resolveEntity(publicId, systemId);
   }
-
-  // -- Object delegators --
-
-  @Override
-  public boolean equals(Object obj) {
-    return handler.equals(obj);
-  }
   
-  @Override
-  public int hashCode() {
-    return handler.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return handler.toString();
+  // -- Wrapper API Methods --
+
+  public ome.scifio.xml.BaseHandler unwrap() {
+    return handler;
   }
 }

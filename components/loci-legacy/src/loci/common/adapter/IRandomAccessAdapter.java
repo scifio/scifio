@@ -281,23 +281,6 @@ public class IRandomAccessAdapter extends
     public void writeUTF(String s) throws IOException {
       unwrap().writeUTF(s);
     }
-    
-//    // -- Object delegators --
-//
-//    @Override
-//    public boolean equals(Object obj) {
-//      return unwrap().equals(obj);
-//    }
-//    
-//    @Override
-//    public int hashCode() {
-//      return unwrap().hashCode();
-//    }
-//    
-//    @Override
-//    public String toString() {
-//      return unwrap().toString();
-//    }
   }
   
   /**
@@ -494,22 +477,5 @@ public class IRandomAccessAdapter extends
     public void write(ByteBuffer buf, int off, int len) throws IOException {
       unwrap().write(buf, off, len);
     }
-    
-//    // -- Object delegators --
-//
-//    @Override
-//    public boolean equals(Object obj) {
-//      return unwrap().equals(obj);
-//    }
-//    
-//    @Override
-//    public int hashCode() {
-//      return unwrap().hashCode();
-//    }
-//    
-//    @Override
-//    public String toString() {
-//      return unwrap().toString();
-//    }
   }
 }

@@ -44,7 +44,10 @@ package loci.common.enumeration;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/enumeration/EnumException.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author callan
+ * 
+ * @deprecated see ome.scifio.enumeration.EnumException
  */
+@Deprecated
 public class EnumException extends ome.scifio.enumeration.EnumException {
 
   private static final long serialVersionUID = -4969429871517178079L;
@@ -53,21 +56,4 @@ public class EnumException extends ome.scifio.enumeration.EnumException {
   public EnumException(String s) { super(s); }
   public EnumException(String s, Throwable cause) { super(s, cause); }
   public EnumException(Throwable cause) { super(cause); }
-  
-  // -- Object delegators --
-
-  @Override
-  public boolean equals(Object obj) {
-    return super.equals(obj);
-  }
-  
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
-  
-  @Override
-  public String toString() {
-    return super.toString();
-  }
 }
