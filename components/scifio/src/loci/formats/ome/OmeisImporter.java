@@ -51,7 +51,10 @@ import loci.legacy.context.LegacyContext;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Ilya Goldberg igg at nih.gov
+ * 
+ * @deprecated see ome.xml.meta.OmeisImporter
  */
+@Deprecated
 public class OmeisImporter {
 
   // -- Constants --
