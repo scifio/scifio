@@ -66,7 +66,10 @@ import loci.formats.meta.MetadataRetrieve;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/AWTImageTools.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Curtis Rueden ctrueden at wisc.edu
+ * 
+ * @deprecated see ome.scifio.gui.AWTImageTools
  */
+@Deprecated
 public final class AWTImageTools {
 
   // -- Constants --

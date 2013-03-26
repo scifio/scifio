@@ -46,7 +46,10 @@ import java.awt.image.DataBuffer;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/SignedByteBuffer.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.gui.SignedByteBuffer
  */
+@Deprecated
 public class SignedByteBuffer extends DataBuffer {
 
   // -- Fields --

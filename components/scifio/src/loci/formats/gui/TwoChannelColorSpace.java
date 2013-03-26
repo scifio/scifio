@@ -48,7 +48,10 @@ import java.lang.reflect.InvocationTargetException;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/TwoChannelColorSpace.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.gui.TwoChannelColorSpace
  */
+@Deprecated
 public class TwoChannelColorSpace extends ColorSpace {
 
   // -- Constants --

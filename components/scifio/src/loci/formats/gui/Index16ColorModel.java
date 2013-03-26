@@ -47,7 +47,10 @@ import java.io.IOException;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/Index16ColorModel.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/Index16ColorModel.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated see ome.scifio.gui.Index16ColorModel
  */
+@Deprecated
 public class Index16ColorModel extends ColorModel {
 
   // -- Fields --

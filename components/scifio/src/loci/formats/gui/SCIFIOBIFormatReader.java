@@ -15,6 +15,7 @@ import loci.legacy.adapter.CommonAdapter;
  * java.awt.image.BufferedImage as the native data type.
  * Defers to ome.scifio.in.BIFormatReader
  *
+ * @deprecated see ome.scifio.gui.BufferedImageReader
  */
 @Deprecated
 public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
@@ -46,7 +47,6 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
   } 
   
   /** Reads a raw plane from disk. */
-  @Deprecated
   @Override
   protected byte[] readPlane(RandomAccessInputStream s, int x, int y, int w,
     int h, byte[] buf) throws IOException
@@ -78,7 +78,6 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
   }
   
   /* @see IFormatReader#openBytes(int, byte[]) */
-  @Deprecated
   @Override
   public byte[] openBytes(int no, byte[] buf)
     throws FormatException, IOException
@@ -90,10 +89,9 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
     }
   }
   
-  /**
+  /*
    * @see loci.formats.IFormatReader#openBytes(int, byte[], int, int, int, int)
    */
-  @Deprecated
   @Override
   public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
     throws FormatException, IOException
