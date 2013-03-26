@@ -55,7 +55,15 @@ public final class LegacyContext {
 
   private static Context context = null;
   private static SCIFIO scifio = null;
+  
+  // -- LegacyContext API methods --
  
+  /**
+   * This method ensures a single context is used if all
+   * legacy code. It should always be called any time a context is needed.
+   * 
+   * @return A static org.scijava.Context
+   */
   public static Context get() {
     if (context == null) {
       context = new Context();
@@ -63,6 +71,14 @@ public final class LegacyContext {
     return context;
   }
   
+  /**
+   * Convenience method for statically caching a {@link ome.scifio.SCIFIO} instance.
+   * Use this method if you'd prefer not to construct a new SCIFIO each time, given
+   * that the context should always be the same (that is, this method is an alternative
+   * to {@code new SCIFIO(LegacyContext.get())}).
+   * 
+   * @return A static ome.scifio.SCIFIO wrapping the legacy context
+   */
   public static SCIFIO getSCIFIO() {
     if (scifio == null) {
       scifio = new SCIFIO(get());
