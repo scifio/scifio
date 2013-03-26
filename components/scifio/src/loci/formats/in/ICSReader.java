@@ -38,7 +38,6 @@ package loci.formats.in;
 
 import java.io.IOException;
 
-import loci.common.RandomAccessInputStream;
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatReader;
 import loci.legacy.context.LegacyContext;
@@ -63,7 +62,10 @@ import ome.xml.services.OMEXMLMetadataService;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/ICSReader.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated Use ome.scifio.formats.ICSFormat instead.
  */
+@Deprecated
 public class ICSReader extends SCIFIOFormatReader {
 
   // -- Fields --
@@ -71,7 +73,6 @@ public class ICSReader extends SCIFIOFormatReader {
   // -- Constructor --
 
   /** Constructs a new ICSReader. */
-  @Deprecated
   public ICSReader() {
     super("Image Cytometry Standard", new String[] {"ics", "ids"});
     
@@ -89,51 +90,16 @@ public class ICSReader extends SCIFIOFormatReader {
   // -- IFormatReader API methods --
 
   /* @see loci.formats.IFormatReader#isSingleFile(String) */
-  @Deprecated
   public boolean isSingleFile(String id) throws FormatException, IOException {
     return ((ICSFormat.Parser)parser).isVersionTwo(id);
   }
 
-  /* @see loci.formats.IFormatReader#getDomains() */
-  @Deprecated
-  public String[] getDomains() {
-    return reader.getDomains();
-  }
-
-  /* @see loci.formats.IFormatReader#getChannelDimLengths() */
-  @Deprecated
-  public int[] getChannelDimLengths() {
-    return reader.getMetadata().getChannelDimLengths(series);
-  }
-
-  /* @see loci.formats.IFormatReader#getChannelDimTypes() */
-  @Deprecated
-  public String[] getChannelDimTypes() {
-    return reader.getMetadata().getChannelDimTypes(series);
-  }
-
-  /* @see loci.formats.IFormatReader#isInterleaved(int) */
-  @Deprecated
-  public boolean isInterleaved(int subC) {
-    return reader.getMetadata().isInterleaved(series);
-  }
-
   /* @see loci.formats.IFormatReader#fileGroupOption(String) */
-  @Deprecated
   public int fileGroupOption(String id) throws FormatException, IOException {
     return ome.scifio.util.FormatTools.MUST_GROUP;
   }
 
-  /* @see loci.formats.IFormatReader#getSeriesUsedFiles(boolean) */
-  @Deprecated
-  public String[] getSeriesUsedFiles(boolean noPixels) {
-    return parser.getImageUsedFiles(series, noPixels);
-  }
-
-  // -- Internal FormatReader API methods --
-  
-  /* @see loci.formats.FormatReader#initFile(String) */
-  @Deprecated
+  @Override
   public void setId(String id) throws FormatException, IOException {
  // ARG for testing protected void oldInitFile(String id) throws FormatException, IOException {
     super.setId(id);
@@ -172,8 +138,4 @@ public class ICSReader extends SCIFIOFormatReader {
 //TODO can't set this here, because currentId is already set.
 //    setMetadataStore(omeStore);
   }
-
-  // -- Helper methods --
-
-  // -- Test methods --
 }

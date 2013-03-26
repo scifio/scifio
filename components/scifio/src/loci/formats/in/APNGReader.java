@@ -55,6 +55,8 @@ import loci.legacy.context.LegacyContext;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/APNGReader.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated Use ome.scifio.formats.APNGFormat instead.
  */
 @Deprecated
 public class APNGReader extends SCIFIOBIFormatReader {
@@ -82,10 +84,7 @@ public class APNGReader extends SCIFIOBIFormatReader {
 
   // -- IFormatReader API methods --
 
-  // -- Internal FormatReader methods --
-
-  /* @see loci.formats.FormatReader#initFile(String) */
-  @Deprecated
+  @Override
   public void setId(String id) throws FormatException, IOException {
     super.setId(id);
     
