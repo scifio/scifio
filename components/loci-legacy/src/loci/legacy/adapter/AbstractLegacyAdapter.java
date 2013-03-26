@@ -36,22 +36,25 @@
 
 package loci.legacy.adapter;
 
-import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 /**
  * Abstract superclass of all {@link LegacyAdapter} implementations.
  * <p>
- * Uses a {@link WeakHashMap} implementation for maintaining associations between
- * legacy and modern classes. "True" instances of each class map to wrappers of their
- * companion classes.
+ * Uses a {@link java.util.WeakHashMap} implementation for maintaining associations between
+ * legacy and modern classes. "True" instances of each class are keys mapping to their own
+ * wrappers.
  * </p>
  * <p>
- * NB: because wrappers are the values in the map, they must be expected to delegate to their key
- * objects (wrapper values wrap their keys). <br>WeakHashMaps are used to ensure garbage collection when
- * there are no other references to the Legacy/modern pairings. <br>However, since the values in each
- * pairing wraps the key, there is always a strong reference to each key. Thus we map each key 
- * to a {@link WeakReference} of the wrapper.
+ * NB: wrappers should wrap their targets via a @{link java.lang.ref.WeakReference}. Being a value
+ * in the WeakHashMap creates a strong reference to the wrapper. So if they also have a strong reference
+ * to their target (which is also their key in the map) it will be impossible to garbage collect them.
+ * </p>
+ * <p>
+ * Wrappers themselves should never open any files that need to be closed or perform other actions that
+ * would conflict with their transient nature. They have no control over when their wrapped object is
+ * garbage collected, and since the wrapped object doesn't know about the wrapper, its {@code close()}
+ * method will not cause the wrapper's to be called (for example).
  * </p>
  * 
  * @author Mark Hiner
@@ -88,11 +91,12 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter {
     L legacy = legacyCheck(toAdapt);
     if (legacy != null) return getTyped(legacy, legacyToModern);
     
+    // Not compatible with this adapter
     return null;
   }
   
   /*
-   * @see loci.legacy.adapter.LegacyAdapter#mapModern(java.lang.Object, java.lang.Object)
+   * @see loci.legacy.adapter.LegacyAdapter#map(java.lang.Object, java.lang.Object)
    */
   public void map(Object key, Object value) {
     // Check to see if we have a modern key with legacy value
@@ -124,19 +128,6 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter {
   }
   
   /*
-   * @see loci.legacy.adapter.LegacyAdapter#wrap(java.lang.Object)
-   */
-  public Object wrap(Object toWrap) {
-    M modern = modernCheck(toWrap);
-    if (modern != null) return wrapToLegacy(modern);
-    
-    L legacy = legacyCheck(toWrap);
-    if (legacy != null) return wrapToModern(legacy);
-    
-    return null;
-  }
-  
-  /*
    * @see loci.legacy.adapter.LegacyAdapter#getLegacyClass()
    */
   public Class<L> getLegacyClass() {
@@ -153,7 +144,24 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter {
   // -- Abstract API Methods --
 
   /**
-   * Used Wraps the given modern object to a new instance of its legacy equivalent.
+   * Delegates to {@link #wrapToModern(Object)} or {@link #wrapToLegacy(Object)}
+   * as appropriate.
+   * 
+   * @param toWrap - Object to wrap
+   * @return Wrapper of toWrap
+   */
+  protected Object wrap(Object toWrap) {
+    M modern = modernCheck(toWrap);
+    if (modern != null) return wrapToLegacy(modern);
+    
+    L legacy = legacyCheck(toWrap);
+    if (legacy != null) return wrapToModern(legacy);
+    
+    return null;
+  }
+  
+  /**
+   * Wraps the given modern object to a new instance of its legacy equivalent.
    * <p>
    * This is a "stupid" operation that always wraps to a new instance.
    * </p>
@@ -186,21 +194,27 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter {
   
   // -- Helper methods --
   
-  private <T, S> T getTyped(S toAdapt, WeakHashMap<S, T> map) {
-    T ret = this.<T>wrapperCheck(toAdapt);
+  // Gets the instance mapped to the toAdapt parameter.
+  // If no mapping exists, toAdapt is wrapped and a new mapping
+  // is created.
+  private <T, S> S getTyped(T toAdapt, WeakHashMap<T, S> map) {
+  	// First see if we were given a wrapper
+    S ret = this.<S>wrapperCheck(toAdapt);
     
     if (ret != null) return ret;
     
+    // Didn't have a wrapper, so we check if a mapping already exists
     synchronized (map) {
       ret = map.get(toAdapt);
     }
     
+    // No map was found, so we wrap and map toAdapt.
     if (ret == null) {
-      ret = (T) wrap(toAdapt);
+      @SuppressWarnings("unchecked")
+			S retVal = (S) wrap(toAdapt);
+      ret = retVal;
       
-      synchronized(map) {
-        map.put(toAdapt, ret);
-      }
+      this.<T, S>mapTyped(toAdapt, ret, map);
     }
     
     return ret;
@@ -225,7 +239,7 @@ public abstract class AbstractLegacyAdapter<L, M> implements LegacyAdapter {
   }
  
   /*
-   * Returns the given object cast to an M, or null if the types are incompatible,
+   * Returns the given object cast to an L, or null if the types are incompatible,
    * or obj is null;
    */
   private L legacyCheck(Object obj) {

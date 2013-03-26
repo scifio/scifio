@@ -35,7 +35,6 @@
  */
 package loci.legacy.adapter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Maintains a context of {@link LegacyAdapter}s for wrapping (and thereby delegating)
+ * Maintains a list of {@link LegacyAdapter}s for wrapping (and thereby delegating)
  * between Legacy classes and their Modern equivalents.
  * <p>
  * As adapters use HashTables to manage delegation between instances, this ensures
@@ -66,15 +65,16 @@ public class AdapterHelper {
   
   // -- Fields --
   
-  /** Maps LegacyAdapter classes to an instance of that class, so that a single instance of 
-   * each adapter is maintained.
+  /*
+   *  Maps Legacy and Modern classes to an instance of the adapter handling that class,
+   *  to facilitate quick lookup when adaptation is requested.
    */
   private HashMap<Class<?>, LegacyAdapter> adapterIndex =
       new HashMap<Class<?>, LegacyAdapter>();
-  
-  private List<LegacyAdapter> adapterList =
-      new ArrayList<LegacyAdapter>();
 
+  /*
+   * Maps LegacyAdapter classes to the corresponding instance of the adapter.
+   */
   private HashMap<Class<? extends LegacyAdapter>, LegacyAdapter> classIndex =
       new HashMap<Class<? extends LegacyAdapter>, LegacyAdapter>();
   
@@ -82,7 +82,7 @@ public class AdapterHelper {
   
   public AdapterHelper() {
     PluginService pService = LegacyContext.get().getService(PluginService.class);
-    adapterList = pService.createInstancesOfType(LegacyAdapter.class);
+    List<LegacyAdapter> adapterList = pService.createInstancesOfType(LegacyAdapter.class);
     
     for (LegacyAdapter adapter : adapterList) {
       classIndex.put(adapter.getClass(), adapter);
@@ -96,39 +96,45 @@ public class AdapterHelper {
    * instance for the provided object. This allows the object to be used
    * in contexts it was not originally developed for.
    * 
-   * @param modern
-   * @return
+   * @param toGet - A legacy or modern instance
+   * @return The corresponding modern or legacy instance
    */
-  public Object get(Object legacy) {
-    if (legacy == null) return null;
+  public Object get(Object toGet) {
+    if (toGet == null) return null;
     
-    LegacyAdapter adapter = getAdapterByObject(legacy.getClass());
+    // Look up the adapter
+    LegacyAdapter adapter = getAdapterByObject(toGet.getClass());
     
+    // If the adapter isn't null, delegate to it
     if (adapter == null) return null;
     
-    return adapter.get(legacy);
+    return adapter.get(toGet);
   }
   
   /**
    * Uses an appropriate LegacyAdapter, if it exists, to map the
    * provided key (weakly) to the provided value.
    * 
-   * @param key
-   * @param value
+   * @param key - Map key
+   * @param value - Map value
    */
   public void map(Object key, Object value) {
+  	// Look up the adapter
     LegacyAdapter adapter = getAdapterByObject(key.getClass());
     
-    if (adapter != null)
-      adapter.map(key,  value);
+    // If the adapter isn't null, perform the mapping
+    if (adapter != null) adapter.map(key,  value);
   }
   
   // -- Deprecated Methods --
   
   /**
    * Looks up the cached adapter instance of the provided class type.
-   * @param adapterClass
-   * @return
+   * 
+   * @param adapterClass - Class of the desired adapter
+   * @return An instance of the requested adapter
+   * 
+   * @deprecated Use {@link loci.legacy.AdapterTools#get(Object)}
    */
   @Deprecated
   public <T extends LegacyAdapter> T getAdapter(Class<T> adapterClass) {
@@ -154,16 +160,13 @@ public class AdapterHelper {
   private LegacyAdapter getAdapterByObject(Class<?> objectClass) {
     LegacyAdapter adapter = adapterIndex.get(objectClass);
     
-    Iterator<LegacyAdapter> adapterIter = adapterList.iterator();
+    Iterator<LegacyAdapter> adapterIter = classIndex.values().iterator();
     
     /* If an adapter wasn't found, we don't have a mapping for this class
      * yet. So we search the list.
      */
     while (adapter == null && adapterIter.hasNext()) {
       LegacyAdapter tmpAdapter = adapterIter.next();
-      
-      Class<?> mclass = tmpAdapter.getModernClass();
-      Class<?>lclass = tmpAdapter.getLegacyClass();
       
       if (tmpAdapter.getModernClass().isAssignableFrom(objectClass) ||
           tmpAdapter.getLegacyClass().isAssignableFrom(objectClass)) {

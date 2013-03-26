@@ -39,11 +39,18 @@ package loci.legacy.adapter;
  * Serves as a static context definition of {@link AdapterHelper} 
  * so that a consistent {@link LegacyAdapter} mapping can be maintained.
  * 
+ * @see loci.legacy.adapter.AdapterHelper
+ * 
  * @author Mark Hiner
  */
 public final class AdapterTools {
+	
+	// -- Fields --
 
+	// Helper for delegation
   private static AdapterHelper helper;
+  
+  // -- Static initializer --
   
   static {
     helper = new AdapterHelper();
@@ -56,8 +63,8 @@ public final class AdapterTools {
    * instance for the provided object. This allows the object to be used
    * in contexts it was not originally developed for.
    * 
-   * @param modern
-   * @return
+   * @param modern - Instance of a modern object
+   * @return Corresponding legacy object
    */
   public static Object get(Object toAdapt) {
     return helper.get(toAdapt);
@@ -67,8 +74,8 @@ public final class AdapterTools {
    * Uses an appropriate LegacyAdapter, if it exists, to map the
    * provided key (weakly) to the provided value.
    * 
-   * @param key
-   * @param value
+   * @param key - Mapped key
+   * @param value - Mapped value
    */
   public static void map(Object key, Object value) {
     helper.map(key, value);
@@ -81,8 +88,8 @@ public final class AdapterTools {
    * the same instance for a given class, essentially creating a context
    * for consistent mapping.
    * 
-   * @param adapterClass
-   * @return
+   * @param adapterClass - class of a LegacyAdapter implementation
+   * @return A singleton instance of the requested adapter
    */
   @Deprecated
   public static <T extends LegacyAdapter> T getAdapter(Class<T> adapterClass) {

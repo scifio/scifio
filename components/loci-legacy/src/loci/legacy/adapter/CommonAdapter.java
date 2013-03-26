@@ -45,6 +45,8 @@ import loci.common.enumeration.CodedEnum;
  * Provides type-safe adapting methods for loci.common classes using
  * AdapterTools.get().
  * 
+ * @see loci.legacy.AdapterTools
+ * 
  * @author Mark Hiner
  *
  */
@@ -52,50 +54,80 @@ public final class CommonAdapter {
 
   // -- CodedEnum adapter methods --
   
+  /**
+   * Maps ome.scifio.enumeration.CodedEnum to loci.common.enumeration.CodedEnum
+   */
   public static CodedEnum get(ome.scifio.enumeration.CodedEnum ce) {
     return (CodedEnum)AdapterTools.get(ce);
   }
   
+  /**
+   * Maps loci.common.enumeration.CodedEnum to ome.scifio.enumeration.CodedEnum
+   */
   public static ome.scifio.enumeration.CodedEnum get(CodedEnum ce) {
     return (ome.scifio.enumeration.CodedEnum)AdapterTools.get(ce);
   }
   
   // -- IRandomAccess adapter methods --
   
+  /**
+   * Maps ome.scifio.io.IRandomAccess to loci.common.IRandomAccess
+   */
   public static IRandomAccess get(ome.scifio.io.IRandomAccess ira) {
     return (IRandomAccess)AdapterTools.get(ira);
   }
   
+  /**
+   * Maps loci.common.IRandomAccess to ome.scifio.io.IRandomAccess
+   */
   public static ome.scifio.io.IRandomAccess get(IRandomAccess ira) {
     return (ome.scifio.io.IRandomAccess)AdapterTools.get(ira);
   }
   
   // -- RandomAccessInputStream adapter methods --
   
+  /**
+   * Maps ome.scifio.io.RandomAccessInputStream to loci.common.RandomAccessInputStream 
+   */
   public static RandomAccessInputStream get(ome.scifio.io.RandomAccessInputStream stream) {
     return (RandomAccessInputStream)AdapterTools.get(stream);
   }
   
+  /**
+   * Maps loci.common.RandomAccessInputStream to ome.scifio.io.RandomAccessInputStream 
+   */
   public static ome.scifio.io.RandomAccessInputStream get(RandomAccessInputStream stream) {
     return (ome.scifio.io.RandomAccessInputStream)AdapterTools.get(stream);
   }
   
   // -- StatusListener adapter methods --
   
+  /**
+   * Maps ome.scifio.common.StatusListener to loci.common.StatusListener
+   */
   public static StatusListener get(ome.scifio.common.StatusListener sl) {
     return (StatusListener)AdapterTools.get(sl);
   }
   
+  /**
+   * Maps loci.common.StatusListener to ome.scifio.common.StatusListener
+   */
   public static ome.scifio.common.StatusListener get(StatusListener sl) {
     return (ome.scifio.common.StatusListener)AdapterTools.get(sl);
   }
   
   // -- StatusReporter Adapter Methods --
   
+  /**
+   * Maps ome.scifio.common.StatusReporter to loci.common.StatusReporter
+   */
   public static StatusReporter get(ome.scifio.common.StatusReporter sr) {
     return (StatusReporter)AdapterTools.get(sr);
   }
   
+  /**
+   * Maps loci.common.StatusReporter to ome.scifio.common.StatusReporter
+   */
   public static ome.scifio.common.StatusReporter get(StatusReporter sr) {
     return (ome.scifio.common.StatusReporter)AdapterTools.get(sr);
   }

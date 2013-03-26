@@ -43,15 +43,12 @@ import org.scijava.plugin.SciJavaPlugin;
  * and "Modern" classes. Such delegation is intended to facilitate backwards
  * compatibility: given a subclass that extends or implements
  * a Legacy or Modern class, methods requiring the other can be executed
- * on instances of the subclass by using {@link LegacyAdapter#getLegacy(M)}
- *  or {@link LegacyAdapter#getModern(L) calls, as appropriate.
- * <p>
- * Delegation is done via mapping instances of legacy classes to instances
- * of modern classes.
- * </p>
+ * on instances of the subclass by using {@link LegacyAdapter#get()} calls.
  * <p>
  * This adapter is intended to be used to facilitate delegation between
- * interfaces, which can not themselves contain implementation.
+ * interfaces, which can not themselves contain implementation. Abstract and concrete
+ * classes can use a "hasa" relationship to delegate functionality. This is useful
+ * in conjunction with the {@link Wrapper} API.
  * </p>
  * <p>
  * NB: If a package contains extensions or implementations of a Legacy or
@@ -61,64 +58,34 @@ import org.scijava.plugin.SciJavaPlugin;
  * Modern-based implementation.
  * </p>
  * @author Mark Hiner
- *
- * @param <L> Legacy class
- * @param <M> Modern class
  */
 public interface LegacyAdapter extends SciJavaPlugin {
 
   /**
-   * Used to retrieve the legacy instance associated with a given
-   * modern instance.
-   * <p>
-   * This is the method that should typically be invoked to convert from
-   * Modern to Legacy instances, as opposed to {@link LegacyAdapter#wrapToLegacy(M)} which will
-   * naively always wrap.
-   * </p>
-   * Used to retrieve the modern instance associated with a given
-   * legacy instance.
-   * <p>
-   * This is the method that should typically be invoked to convert from
-   * Legacy to Modern instances, as opposed to {@link LegacyAdapter#wrapToModern(L)} which will
-   * naively always wrap.
+   * Used to retrieve the paired instance (legacy or modern) associated with a given
+   * object (modern or legacy).
    * 
-   * @param modern - An instance of the modern class.
-   * @return The associated legacy instance.
+   * @param toAdapt - Object for which to retrieve a paired instance
+   * @return The paired instance
    */
   Object get(Object toAdapt);
   
   /**
-   * Wraps the provided object. If it's a legacy instance, a modern
-   * is returned. If it's a modern instance, a legacy is returned.
-   * <p>
-   * Returns null if the object type is not associated with this adapter.
-   * </p>
-   * 
-   * @param toWrap
-   * @return
-   */
-  Object wrap(Object toWrap);
-  
-  /**
-   * Creates a weak(key):value mapping, so for the lifetime of the key,
+   * Creates a key:value mapping, so for the lifetime of the key,
    * the value will always be returned if this adapter is queried.
    * 
-   * @param key
-   * @param value
+   * @param key - Key entry
+   * @param value - Value entry
    */
   void map(Object key, Object value);
   
   /**
-   * Returns the class of the associated legacy type.
-   * 
-   * @return
+   * @return the class of the associated Legacy type.
    */
   Class<?> getLegacyClass();
   
   /**
-   * Returns the class of the associated Modern type.
-   * 
-   * @return
+   * @return the class of the associated Modern type.
    */
   Class<?> getModernClass();
 
@@ -126,5 +93,4 @@ public interface LegacyAdapter extends SciJavaPlugin {
    * Resets any mappings in this adapter.
    */
   void clear();
-
 }
