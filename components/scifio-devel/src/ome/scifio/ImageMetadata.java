@@ -305,5 +305,11 @@ public interface ImageMetadata {
    * @return A new copy of this ImageMetadata.
    */
   ImageMetadata copy();
-
+  
+  /**
+   * Populates this ImageMetadata using the provided instance.
+   * 
+   * @param toCopy - ImageMetadata to copy
+   */
+  void copy(ImageMetadata toCopy);
 }

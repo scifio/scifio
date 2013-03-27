@@ -154,25 +154,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   }
   
   public AbstractImageMetadata(ImageMetadata copy) {
-    imageMetadata = (Hashtable<String, Object>) copy.getImageMetadata().clone();
-    
-    axisLengths = copy.getAxesLengths().clone();
-    axisTypes = copy.getAxes().clone();
-    bitsPerPixel = copy.getBitsPerPixel();
-    cLengths = copy.getChannelLengths().clone();
-    cTypes = copy.getChannelTypes().clone();
-    falseColor = copy.isFalseColor();
-    indexed = copy.isIndexed();
-    interleaved = copy.isInterleaved();
-    littleEndian = copy.isLittleEndian();
-    metadataComplete = copy.isMetadataComplete();
-    orderCertain = copy.isOrderCertain();
-    pixelType = copy.getPixelType();
-    planeCount = copy.getPlaneCount();
-    rgb = copy.isRGB();
-    thumbnail = copy.isThumbnail();
-    thumbSizeX = copy.getThumbSizeX();
-    thumbSizeY = copy.getThumbSizeY();
+    copy(copy);
   }
 
   // -- Setters -- 
@@ -558,6 +540,28 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
     setAxisLengths(tmpAxisLength);
     setAxisTypes(tmpAxisTypes);
+  }
+  
+  public void copy(ImageMetadata toCopy) {
+    imageMetadata = (Hashtable<String, Object>) toCopy.getImageMetadata().clone();
+    
+    axisLengths = toCopy.getAxesLengths().clone();
+    axisTypes = toCopy.getAxes().clone();
+    bitsPerPixel = toCopy.getBitsPerPixel();
+    cLengths = toCopy.getChannelLengths().clone();
+    cTypes = toCopy.getChannelTypes().clone();
+    falseColor = toCopy.isFalseColor();
+    indexed = toCopy.isIndexed();
+    interleaved = toCopy.isInterleaved();
+    littleEndian = toCopy.isLittleEndian();
+    metadataComplete = toCopy.isMetadataComplete();
+    orderCertain = toCopy.isOrderCertain();
+    pixelType = toCopy.getPixelType();
+    planeCount = toCopy.getPlaneCount();
+    rgb = toCopy.isRGB();
+    thumbnail = toCopy.isThumbnail();
+    thumbSizeX = toCopy.getThumbSizeX();
+    thumbSizeY = toCopy.getThumbSizeY();
   }
   
   // -- Serializable API Methods --
