@@ -114,23 +114,47 @@ public class T3bCustomFormats {
    * @author Mark Hiner
    */
   @Plugin(type = Format.class)
-  public static class SampleFormat 
-  extends AbstractFormat<SampleFormat.Metadata, SampleFormat.Checker, 
-            SampleFormat.Parser, SampleFormat.Reader, SampleFormat.Writer> {
+  public static class SampleFormat extends AbstractFormat {
     // Note that we had to define each class that would be used by this Format.
     // Eventually this process will be simplified, with default implementations
     // for each component, so only components which will be over-written will
     // need to be defined (e.g. there's no reason to define a Writer for a
     // proprietary image format).
+
+    // -- Format API Methods --
+
+    // A lot of work is done for you in the AbstractFormat and Abstact component
+    // classes. But you will always need to implement these methods when defining
+    // a new Format.
     
-    // All classes that are discovered via SezPoz must have a zero-parameter
-    // constructor.
-    public SampleFormat() throws FormatException {
-      // This constructor is where we define the image formats that will be
-      // supported by the components of this Format.
-      super("Sample data", "scifiosmpl", Metadata.class, Checker.class,
-          Parser.class, Reader.class, Writer.class);
+    // First we have to declare a name for our Format.
+    public String getFormatName() {
+      return "Sample data";
     }
+
+    // Then we need to register what suffixes our Format is capable of opening.
+    // Note that you shouldn't put a separator ('.') in the extension Strings.
+    public String[] getSuffixes() {
+      return new String[]{"scifiosmpl"};
+    }
+
+    // Finally we specify what classes will be associated with this Format.
+    // SCIFIO convention is to implement these as nested classes within
+    // the owning Format, so related components are physically stored
+    // together. Any component type not declared here will revert to
+    // a Default implementation (e.g. ome.scifio.DefaultWriter). You should
+    // look at the Default implementations in ome.scifio and to determine
+    // which of these are sufficient for your needs.
+    // In this tutorial, we will provide examples of each component type,
+    // but note that we have not included our Checker in this class list
+    // - thus the DefaultChecker implementation will be used by this
+    // format (which performas basic extension checking).
+    public Class<?>[] getCustomClasses() {
+      return new Class<?>[]{Metadata.class,
+          Parser.class, Reader.class, Writer.class};
+    }
+    
+    // -- Nested classes --
 
     // Metadata doesn't have any methods that need to be implemented, it
     // is simply a bag of information.

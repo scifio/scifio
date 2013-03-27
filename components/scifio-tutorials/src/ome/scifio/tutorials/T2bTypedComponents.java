@@ -22,6 +22,8 @@ import ome.scifio.ByteArrayPlane;
 import ome.scifio.FormatException;
 import ome.scifio.SCIFIO;
 import ome.scifio.formats.FakeFormat;
+import ome.scifio.formats.FakeFormat.Parser;
+import ome.scifio.formats.FakeFormat.Reader;
 
 /**
  * Demonstrates accessing type-specific SCIFIO components.
@@ -55,8 +57,8 @@ public class T2bTypedComponents {
     // Formats provide access to all other components, and with a typed Format
     // you can create typed components:
     
-    FakeFormat.Reader reader = fakeFormat.createReader();
-    FakeFormat.Parser parser = fakeFormat.createParser();
+    FakeFormat.Reader reader = (Reader) fakeFormat.createReader();
+    FakeFormat.Parser parser = (Parser) fakeFormat.createParser();
     
     // Now that we have typed components, we can guarantee the return type
     // for many methods, and access type-specific API:
