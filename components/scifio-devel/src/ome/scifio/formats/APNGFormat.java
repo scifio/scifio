@@ -89,24 +89,27 @@ import org.scijava.plugin.Plugin;
  *
  */
 @Plugin(type = APNGFormat.class)
-public class APNGFormat
-  extends
-  AbstractFormat<APNGFormat.Metadata, APNGFormat.Checker,
-      APNGFormat.Parser, APNGFormat.Reader,
-      APNGFormat.Writer> {
+public class APNGFormat extends AbstractFormat {
  
   // -- Constants --
 
   public static final byte[] PNG_SIGNATURE = new byte[] {
       (byte) 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
   
-  public static final String FORMAT_NAME = "Animated PNG";
-  
-  // -- Constructor --
-  
-  public APNGFormat() throws FormatException {
-    super(APNGFormat.FORMAT_NAME, "png", Metadata.class,
-    		  Checker.class, Parser.class, Reader.class, Writer.class);
+  // -- Format API Methods --
+
+  /*
+   * @see ome.scifio.Format#getFormatName()
+   */
+  public String getFormatName() {
+    return  "Animated PNG";
+  }
+
+  /*
+   * @see ome.scifio.Format#getSuffixes()
+   */
+  public String[] getSuffixes() {
+    return new String[]{"png"};
   }
   
   // -- Nested Classes --

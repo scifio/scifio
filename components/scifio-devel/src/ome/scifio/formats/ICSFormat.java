@@ -82,21 +82,22 @@ import org.scijava.plugin.Plugin;
  *
  */
 @Plugin(type = ICSFormat.class)
-public class ICSFormat
-extends
-AbstractFormat<ICSFormat.Metadata, ICSFormat.Checker,
-    ICSFormat.Parser, ICSFormat.Reader,
-    ICSFormat.Writer> {
+public class ICSFormat extends AbstractFormat {
   
-  // -- Constants --
-  
-  public static final String FORMAT_NAME = "Image Cytometry Standard";
+  // -- Format API Methods --
 
-  // -- Constructor --
-  
-  public ICSFormat() throws FormatException {
-    super(ICSFormat.FORMAT_NAME, new String[] {"ics", "ids"}, Metadata.class,
-    		  Checker.class, Parser.class, Reader.class, Writer.class);
+  /*
+   * @see ome.scifio.Format#getFormatName()
+   */
+  public String getFormatName() {
+    return "Image Cytometry Standard";
+  }
+
+  /*
+   * @see ome.scifio.Format#getSuffixes()
+   */
+  public String[] getSuffixes() {
+    return new String[] {"ics", "ids"};
   }
   
   // -- Nested Classes --

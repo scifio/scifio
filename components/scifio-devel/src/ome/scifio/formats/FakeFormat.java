@@ -93,16 +93,10 @@ import org.slf4j.Logger;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/FakeReader.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 @Plugin(type = FakeFormat.class)
-public class FakeFormat
-extends
-AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
-               FakeFormat.Parser, FakeFormat.Reader,
-               FakeFormat.Writer>
+public class FakeFormat extends AbstractFormat
 {
   
   // -- Constants --
-  
-  public static final String FORMAT_NAME = "Simulated data";
   
   public static final int BOX_SIZE = 10;
   public static final int DEFAULT_SIZE_X = 512;
@@ -151,8 +145,23 @@ AbstractFormat<FakeFormat.Metadata, FakeFormat.Checker,
   // -- Constructor --
   
   public FakeFormat() throws FormatException {
-    super(FakeFormat.FORMAT_NAME, "fake", Metadata.class, 
-        Checker.class, Parser.class, Reader.class, Writer.class);
+    super();
+  }
+  
+  // -- Format API Methods --
+
+  /*
+   * @see ome.scifio.Format#getFormatName()
+   */
+  public String getFormatName() {
+    return "Simulated data";
+  }
+
+  /*
+   * @see ome.scifio.Format#getSuffixes()
+   */
+  public String[] getSuffixes() {
+    return new String[]{"fake"};
   }
   
   // -- Nested Classes --

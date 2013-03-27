@@ -82,37 +82,32 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   /*
    * Maps Format classes to their instances.
    */
-  private final Map<Class<? extends Format>, Format> formatMap =
-      new HashMap<Class<? extends Format>, Format>();
+  private final Map<Class<?>, Format> formatMap = new HashMap<Class<?>, Format>();
   
   /*
    * Maps Checker classes to their parent Format instance.
    */
-  private final Map<Class<? extends Checker>, Format> checkerMap =
-      new HashMap<Class<? extends Checker>, Format>();
+  private final Map<Class<?>, Format> checkerMap = new HashMap<Class<?>, Format>();
 
   /*
    * Maps Parser classes to their parent Format instance.
    */
-  private final Map<Class<? extends Parser>, Format> parserMap = 
-      new HashMap<Class<? extends Parser>, Format>();
+  private final Map<Class<?>, Format> parserMap = new HashMap<Class<?>, Format>();
 
   /*
    * Maps Reader classes to their parent Format instance.
    */
-  private final Map<Class<? extends Reader>, Format> readerMap =
-      new HashMap<Class<? extends Reader>, Format>();
+  private final Map<Class<?>, Format> readerMap = new HashMap<Class<?>, Format>();
 
   /*
    * Maps Writer classes to their parent Format instance.
    */
-  private final Map<Class<? extends Writer>, Format> writerMap =
-      new HashMap<Class<? extends Writer>, Format>();
+  private final Map<Class<?>, Format> writerMap = new HashMap<Class<?>, Format>();
 
   /*
    * Maps Metadata classes to their parent Format instance.
    */
-  private final Map<Class<? extends Metadata>, Format> metadataMap = new HashMap<Class<? extends Metadata>, Format>();
+  private final Map<Class<?>, Format> metadataMap = new HashMap<Class<?>, Format>();
 
   // -- FormatService API Methods --
   

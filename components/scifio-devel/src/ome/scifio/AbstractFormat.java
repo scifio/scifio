@@ -36,6 +36,9 @@
 
 package ome.scifio;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,17 +54,8 @@ import org.slf4j.LoggerFactory;
  * @see ome.scifio.services.FormatService
  * 
  * @author Mark Hiner
- * 
- * @param <M> - The Metadata type associated with this Format
- * @param <C> - The Checker type associated with this Format
- * @param <P> - The Parser type associated with this Format
- * @param <R> - The Reader type associated with this Format
- * @param <W> - The Writer type associated with this Format
  */
-public abstract class AbstractFormat
-    <M extends TypedMetadata, C extends Checker, P extends TypedParser<M>,
-    R extends TypedReader<M, ? extends DataPlane<?>>, W extends TypedWriter<M>>
-    extends AbstractHasSCIFIO implements TypedFormat<M, C, P, R, W>
+public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
 {
   
   // -- Constants --
@@ -71,120 +65,98 @@ public abstract class AbstractFormat
   
   // -- Fields --
 
-  /** Name of this file format. */
-  protected String formatName;
-
   /** Valid suffixes for this file format. */
   protected String[] suffixes;
 
   // Class references to the components of this Format
-  private Class<M> metadataClass;
-  private Class<C> checkerClass;
-  private Class<P> parserClass;
-  private Class<R> readerClass;
-  private Class<W> writerClass;
+  private Class<? extends Metadata> metadataClass;
+  private Class<? extends Checker> checkerClass;
+  private Class<? extends Parser> parserClass;
+  private Class<? extends Reader> readerClass;
+  private Class<? extends Writer> writerClass;
 
   // -- Constructor --
 
-  public AbstractFormat(String formatName, String suffix,
-      Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass,
-      Class<W> wClass) throws FormatException
+  public AbstractFormat()
   {
-    this(formatName, new String[]{suffix}, mClass, cClass, pClass, rClass, wClass);
-  }
-  
-  public AbstractFormat(String formatName, String[] suffixes,
-      Class<M> mClass, Class<C> cClass, Class<P> pClass, Class<R> rClass,
-      Class<W> wClass) throws FormatException
-  {
-    this.formatName = formatName;
-    this.suffixes = suffixes == null ? new String[0] : suffixes;
-    metadataClass = mClass;
-    checkerClass = cClass;
-    parserClass = pClass;
-    readerClass = rClass;
-    writerClass = wClass;
+    metadataClass = DefaultMetadata.class;
+    checkerClass = DefaultChecker.class;
+    parserClass = DefaultParser.class;
+    readerClass = DefaultReader.class;
+    writerClass = DefaultWriter.class;
+    
+    updateCustomClasses();
   }
 
   // -- Format API Methods --
-
-  /* @see Format#getFormatName() */
-  public String getFormatName() {
-    return formatName;
-  }
-
-  /* @see Format#getSuffixes() */
-  public String[] getSuffixes() {
-    return suffixes.clone();
-  }
   
   /*
    * @see ome.scifio.Format#createMetadata()
    */
-  public M createMetadata() throws FormatException {
+  public Metadata createMetadata() throws FormatException {
     return createContextualObject(getMetadataClass());
   }
 
   /*
    * @see ome.scifio.Format#createChecker()
    */
-  public C createChecker() throws FormatException {
+  public Checker createChecker() throws FormatException {
     return createContextualObject(getCheckerClass());
   }
 
   /*
    * @see ome.scifio.Format#createParser()
    */
-  public P createParser() throws FormatException {
+  public Parser createParser() throws FormatException {
     return createContextualObject(getParserClass());
   }
 
   /*
    * @see ome.scifio.Format#createReader()
    */
-  public R createReader() throws FormatException {
+  public Reader createReader() throws FormatException {
     return createContextualObject(getReaderClass());
   }
 
   /*
    * @see ome.scifio.Format#createWriter()
    */
-  public W createWriter() throws FormatException {
+  public Writer createWriter() throws FormatException {
     return createContextualObject(getWriterClass());
   }
   
   /*
    * @see ome.scifio.Format#getMetadataClass()
    */
-  public Class<M> getMetadataClass() {
+  public Class<? extends Metadata> getMetadataClass() {
     return metadataClass;
   }
 
   /*
    * @see ome.scifio.Format#getCheckerClass()
    */
-  public Class<C> getCheckerClass() {
+  public Class<? extends Checker> getCheckerClass() {
     return checkerClass;
   }
 
   /*
    * @see ome.scifio.Format#getParserClass()
    */
-  public Class<P> getParserClass() {
+  public Class<? extends Parser> getParserClass() {
     return parserClass;
   }
 
   /*
    * @see ome.scifio.Format#getReaderClass()
    */
-  public Class<R> getReaderClass() {
+  public Class<? extends Reader> getReaderClass() {
     return readerClass;
   }
 
   /*
    * @see ome.scifio.Format#getWriterClass()
    */
-  public Class<W> getWriterClass() {
+  public Class<? extends Writer> getWriterClass() {
     return writerClass;
   }
   
@@ -212,5 +184,52 @@ public abstract class AbstractFormat
     } catch (IllegalAccessException e) {
       throw new FormatException(e);
     }
+  }
+
+  /*
+   * Overrides the default classes with declared custom components.
+   */
+  @SuppressWarnings("unchecked")
+  private void updateCustomClasses() {
+    
+    for (Class<?> c : buildClassList()) {
+      if (Metadata.class.isAssignableFrom(c))
+        metadataClass = (Class<? extends Metadata>) c;
+      else if (Checker.class.isAssignableFrom(c))
+        checkerClass = (Class<? extends Checker>) c;
+      else if (Parser.class.isAssignableFrom(c))
+        parserClass = (Class<? extends Parser>) c;
+      else if (Reader.class.isAssignableFrom(c))
+        readerClass = (Class<? extends Reader>) c;
+      else if (Writer.class.isAssignableFrom(c))
+        writerClass = (Class<? extends Writer>) c;
+    }
+  }
+
+  /*
+   * Searches for all nested classes within this class and recursively
+   * adds them to a complete class list.
+   */
+  private List<Class<?>> buildClassList() {
+    Class<?>[] classes = this.getClass().getDeclaredClasses();
+    List<Class<?>> classList = new ArrayList<Class<?>>();
+    
+    for (Class<?> c : classes) {
+      check(c, classList);
+    }
+    
+    return classList;
+  }
+
+  /*
+   * Recursive method to add a class, and all nested classes declared in that
+   * class, to the provided list of classes.
+   */
+  private void check(Class<?> newClass, List<Class<?>> classList) {
+    classList.add(newClass);
+    
+    for (Class<?> c : newClass.getDeclaredClasses())
+      check(c, classList);
+    
   }
 }

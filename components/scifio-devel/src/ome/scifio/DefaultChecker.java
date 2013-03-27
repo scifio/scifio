@@ -36,77 +36,21 @@
 package ome.scifio;
 
 /**
- * Interface for all SCIFIO {@link ome.scifio.Format} implementations that
- * use generic parameters.
+ * Default {@link ome.scifio.Checker} implementation. Can perform basic extension
+ * checking to determine Format compatibility.
  * <p>
- * The SCIFIO component interfaces were written to be general and flexible.
- * Practically though, concrete implementations of a given component are only
- * going to interact with other components of the same {@code Format}. Thus
- * generics are used to encode this relationship between components.
+ * Equivalent to creating a checker with {@code suffixSufficient = true} and
+ * {@code suffixNecessary = true}.
+ * </p>
+ * <p>
+ * If a dataset needs to be opened to determine compatibility, a custom Checker
+ * must be implemented.
  * </p>
  * 
+ * @see ome.scifio.Checker
  * @see ome.scifio.Format
  * 
  * @author Mark Hiner
  *
- * @param <M> The {@link ome.scifio.Metadata} type of this {@code Format}.
- * @param <C> The {@link ome.scifio.Checker} type of this {@code Format}.
- * @param <P> The {@link ome.scifio.Parser} type of this {@code Format}.
- * @param <R> The {@link ome.scifio.Reader} type of this {@code Format}.
- * @param <W> The {@link ome.scifio.Writer} type of this {@code Format}.
  */
-public interface TypedFormat<M extends TypedMetadata, C extends Checker,
-  P extends TypedParser<M>, R extends TypedReader<M, ? extends DataPlane<?>>,
-  W extends TypedWriter<M>>
-  extends Format
-{
-  /*
-   * @see ome.scifio.Format#createMetadata()
-   */
-  M createMetadata() throws FormatException;
-
-  /*
-   * @see ome.scifio.Format#createChecker()
-   */
-  C createChecker() throws FormatException;
-
-  /*
-   * @see ome.scifio.Format#createParser()
-   */
-  P createParser() throws FormatException;
-
-  /*
-   * @see ome.scifio.Format#createReader()
-   */
-  R createReader() throws FormatException;
-
-  /*
-   * @see ome.scifio.Format#createWriter()
-   */
-  W createWriter() throws FormatException;
-   
-  /*
-   * @see ome.scifio.Format#getMetadataClass()
-   */
-  Class<M> getMetadataClass();
-
-  /*
-   * @see ome.scifio.Format#getCheckerClass()
-   */
-  Class<C> getCheckerClass();
-
-  /*
-   * @see ome.scifio.Format#getParserClass()
-   */
-  Class<P> getParserClass();
-
-  /*
-   * @see ome.scifio.Format#getReaderClass()
-   */
-  Class<R> getReaderClass();
-
-  /*
-   * @see ome.scifio.Format#getWriterClass()
-   */
-  Class<W> getWriterClass();
-}
+public class DefaultChecker extends AbstractChecker { }

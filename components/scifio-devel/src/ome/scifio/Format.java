@@ -45,7 +45,7 @@ package ome.scifio;
  * <p>
  * {@code Formats} are typically accessed through the 
  * {@link ome.scifio.services.FormatService}, which maintains a list of
- * singleton {@code Formats} and has many convneience methods relating
+ * singleton {@code Formats} and has many convenience methods relating
  * to their use.
  * </p>
  *
@@ -71,11 +71,25 @@ public interface Format extends ScifioPlugin, HasSCIFIO {
 
   /**
    * Gets the default file suffixes for this file format.
+   * <p>
+   * Sample valid suffixes:
+   * <ul>
+   *   <li>
+   *   png
+   *   </li>
+   *   <li>
+   *   avi
+   *   </li>
+   *   <li>
+   *   bmp
+   *   </li>
+   * </ul>
+   * </p>
    * 
    * @return an array of extensions associated with this Format
    */
-  String[] getSuffixes();
-
+  String[] getSuffixes();  
+  
   /**
    * Create an instance of the Metadata associated with this format.
    * 
@@ -124,25 +138,25 @@ public interface Format extends ScifioPlugin, HasSCIFIO {
   /**
    * @return The class of the Metadata associated with this format
    */
-  Class<? extends Metadata> getMetadataClass();
+  Class<?> getMetadataClass();
 
   /**
    * @return The class of the Checker associated with this format
    */
-  Class<? extends Checker> getCheckerClass();
+  Class<?> getCheckerClass();
 
   /**
    * @return The class of the Parser associated with this format
    */
-  Class<? extends Parser> getParserClass();
+  Class<?> getParserClass();
 
   /**
    * @return The class of the Reader associated with this format
    */
-  Class<? extends Reader> getReaderClass();
+  Class<?> getReaderClass();
 
   /**
    * @return The class of the Writer associated with this format
    */
-  Class<? extends Writer> getWriterClass();
+  Class<?> getWriterClass();
 }
