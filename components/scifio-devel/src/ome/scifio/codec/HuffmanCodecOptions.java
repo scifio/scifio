@@ -34,51 +34,17 @@
  * #L%
  */
 
-package loci.formats.in;
-
-import java.io.IOException;
-
-import ome.scifio.formats.AVIFormat;
-
-import loci.formats.FormatException;
-import loci.formats.MetadataTools;
-import loci.formats.SCIFIOFormatReader;
-import loci.formats.meta.MetadataStore;
-import loci.legacy.context.LegacyContext;
+package ome.scifio.codec;
 
 /**
- * AVIReader is the file format reader for AVI files.
- *
- * Much of this code was adapted from Wayne Rasband's AVI Movie Reader
- * plugin for ImageJ (available at http://rsb.info.nih.gov/ij).
+ * Options for compressing and decompressing Huffman data.
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/AVIReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/AVIReader.java;hb=HEAD">Gitweb</a></dd></dl>
- * 
- * @deprecated see ome.scifio.formats.AVIFormat
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/HuffmanCodecOptions.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/HuffmanCodecOptions.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@Deprecated
-public class AVIReader extends SCIFIOFormatReader {
+public class HuffmanCodecOptions extends CodecOptions {
 
-  public AVIReader() {
-    super("Audio Video Interleave", "avi");
-    
-    format = LegacyContext.getSCIFIO().formats().getFormatFromClass(AVIFormat.class);
-    try {
-      checker = format.createChecker();
-      parser = format.createParser();
-      reader = format.createReader();
-    } catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create AVIFormat components");
-    }
-  }
-  
-  @Override
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
-    
-    MetadataStore store = makeFilterMetadata();
-    MetadataTools.populatePixels(store, this);
-  }
+  public short[] table;
+
 }

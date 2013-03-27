@@ -34,68 +34,75 @@
  * #L%
  */
 
-package loci.formats.out;
-
-import java.io.IOException;
-
-import ome.scifio.formats.AVIFormat;
-
-import loci.formats.FormatException;
-import loci.formats.SCIFIOFormatWriter;
-import loci.legacy.context.LegacyContext;
+package ome.scifio.codec;
 
 /**
- * AVIWriter is the file format writer for AVI files.
- *
- * Much of this writer's code was adapted from Wayne Rasband's
- * AVI Movie Writer plugin for ImageJ
- * (available at http://rsb.info.nih.gov/ij/).
- *
+ * A growable array of bytes.
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/AVIWriter.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/AVIWriter.java;hb=HEAD">Gitweb</a></dd></dl>
- * 
- * @deprecated see ome.scifio.formats.AVIFormat
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/ByteVector.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/ByteVector.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
+ * @author Wayne Rasband wsr at nih.gov
  */
-@Deprecated
-public class AVIWriter extends SCIFIOFormatWriter {
+public class ByteVector {
+  private byte[] data;
+  private int size;
 
-  // -- Constructor --
-
-  public AVIWriter() {
-    super("Audio Video Interleave", "avi");
-    format = LegacyContext.getSCIFIO().formats().getFormatFromClass(AVIFormat.class);
-    try {
-      writer = format.createWriter();
-    }
-    catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create AVIFormat components");
-    }
+  public ByteVector() {
+    data = new byte[10];
+    size = 0;
   }
 
-  // -- IFormatWriter API methods --
+  public ByteVector(int initialSize) {
+    data = new byte[initialSize];
+    size = 0;
+  }
 
-  /**
-   * @see loci.formats.IFormatWriter#saveBytes(int, byte[], int, int, int, int)
-   */
-  public void saveBytes(int no, byte[] buf, int x, int y, int w, int h)
-    throws FormatException, IOException
-  {
-    try {
-      writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
+  public ByteVector(byte[] byteBuffer) {
+    data = byteBuffer;
+    size = 0;
+  }
+
+  public void add(byte x) {
+    while (size >= data.length) doubleCapacity();
+    data[size++] = x;
+  }
+
+  public int size() {
+    return size;
+  }
+
+  public byte get(int index) {
+    return data[index];
+  }
+
+  public void add(byte[] array) { add(array, 0, array.length); }
+
+  public void add(byte[] array, int off, int len) {
+    while (data.length < size + len) doubleCapacity();
+    if (len == 1) data[size] = array[off];
+    else if (len < 35) {
+      // for loop is faster for small number of elements
+      for (int i=0; i<len; i++) data[size + i] = array[off + i];
     }
-    catch (ome.scifio.FormatException e) {
-      throw new FormatException(e);
-    }
+    else System.arraycopy(array, off, data, size, len);
+    size += len;
   }
 
-  /* @see loci.formats.IFormatWriter#canDoStacks() */
-  public boolean canDoStacks() {
-    return writer.canDoStacks();
+  void doubleCapacity() {
+    byte[] tmp = new byte[data.length*2 + 1];
+    System.arraycopy(data, 0, tmp, 0, data.length);
+    data = tmp;
   }
 
-  /* @see loci.formats.IFormatWriter#getPixelTypes(String) */
-  public int[] getPixelTypes(String codec) {
-    return writer.getPixelTypes(codec);
+  public void clear() {
+    size = 0;
   }
+
+  public byte[] toByteArray() {
+    byte[] bytes = new byte[size];
+    System.arraycopy(data, 0, bytes, 0, size);
+    return bytes;
+  }
+
 }
