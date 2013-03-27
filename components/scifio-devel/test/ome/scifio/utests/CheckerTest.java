@@ -160,7 +160,7 @@ public class CheckerTest {
    * @author Mark Hiner
    *
    */
-  private static class FakeChecker extends ome.scifio.formats.FakeFormat.Checker {
+  private static class FakeChecker extends ome.scifio.DefaultChecker {
     
     // -- FakeChecker Methods --
     

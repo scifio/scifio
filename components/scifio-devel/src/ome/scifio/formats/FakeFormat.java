@@ -45,18 +45,15 @@ import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import ome.scifio.AbstractChecker;
 import ome.scifio.AbstractFormat;
 import ome.scifio.AbstractMetadata;
 import ome.scifio.AbstractParser;
 import ome.scifio.AbstractTranslator;
-import ome.scifio.AbstractWriter;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
 import ome.scifio.DefaultImageMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.HasColorTable;
-import ome.scifio.Plane;
 import ome.scifio.Translator;
 import ome.scifio.common.DataTools;
 import ome.scifio.io.IStreamAccess;
@@ -454,14 +451,6 @@ public class FakeFormat extends AbstractFormat
   }
   
   /**
-   * Checker for Fake file format. Supported extension is ".fake"
-   *
-   */
-  public static class Checker extends AbstractChecker {
-
-  }
-  
-  /**
    * Parser for Fake file format. The file suffix is sufficient for
    * detection - as the name is the only aspect of a Fake file
    * that is guaranteed to exist.
@@ -602,32 +591,6 @@ public class FakeFormat extends AbstractFormat
      */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
-    }
-  }
-  
-  /**
-   * Writer for the Fake file format.
-   *
-   */
-  public static class Writer extends AbstractWriter<Metadata> {
-
-    // -- Writer API Methods --
-
-    /*
-     * @see ome.scifio.Writer#savePlane(int, int, ome.scifio.Plane, int, int, int, int)
-     */
-    public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
-        int y, int w, int h) throws FormatException, IOException {
-      // TODO Auto-generated method stub
-      
-    }
-
-    /*
-     * @see ome.scifio.Writer#setMetadata(ome.scifio.Metadata)
-     */
-    public void setMetadata(Metadata meta) {
-      // TODO Auto-generated method stub
-      
     }
   }
   
