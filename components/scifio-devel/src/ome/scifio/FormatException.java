@@ -34,7 +34,7 @@
  * #L%
  */
 
-package loci.formats;
+package ome.scifio;
 
 /**
  * FormatException is the exception thrown when something
