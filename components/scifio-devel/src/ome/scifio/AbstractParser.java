@@ -383,6 +383,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
     metadata.setMetadataOptions(metadataOptions);
     if(metadata.getContext() == null) metadata.setContext(getContext());
     metadata.setSource(stream);
+    metadata.setDatasetName(stream.getFileName());
     return metadata;
   }
 
