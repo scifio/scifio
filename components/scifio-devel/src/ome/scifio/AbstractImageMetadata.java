@@ -527,10 +527,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   {
     final int[] axisLengths = getAxesLengths();
     final AxisType[] axisTypes = getAxes();
-    final int[] tmpAxisLength = new int[axisLengths.length + 1];
-    final AxisType[] tmpAxisTypes = new AxisType[axisTypes.length + 1];
+    int newLength = axisLengths == null ? 1 : axisLengths.length + 1;
+    
+    final int[] tmpAxisLength = new int[newLength];
+    final AxisType[] tmpAxisTypes = new AxisType[newLength];
 
-    for (int i = 0; i < axisLengths.length; i++) {
+    for (int i=0; i<newLength-1; i++) {
       tmpAxisLength[i] = axisLengths[i];
       tmpAxisTypes[i] = axisTypes[i];
     }
