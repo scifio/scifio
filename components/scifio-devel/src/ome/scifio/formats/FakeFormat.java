@@ -462,15 +462,8 @@ public class FakeFormat extends AbstractFormat
     
     /* @See Parser#Parse(RandomAccessInputStream, M) */
     @Override
-    public Metadata parse(RandomAccessInputStream stream, Metadata meta)
-      throws IOException, FormatException {
-      meta = super.parse(stream, meta);
-      
-      // No reading to do. Everything can be determined from the provided stream's id.
-      meta.populateImageMetadata();
-
-      return meta;
-    }
+    protected void typedParse(RandomAccessInputStream stream, Metadata meta)
+      throws IOException, FormatException { }
   }
   
   /**

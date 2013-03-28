@@ -384,8 +384,28 @@ public abstract class AbstractParser<M extends TypedMetadata>
     if(metadata.getContext() == null) metadata.setContext(getContext());
     metadata.setSource(stream);
     metadata.setDatasetName(stream.getFileName());
+    
+    typedParse(stream, meta);
+    
+    metadata.populateImageMetadata();
+    
     return metadata;
   }
+  
+  /**
+   * A helper method, called by {@link #parse(RandomAccessInputStream, TypedMetadata)}.
+   * Allows for boilerplate code to come after parsing, specifically calls to
+   * {@link Metadata#populateImageMetadata()}.
+   * <p>
+   * This method should be implemented to populate any format-specific Metadata.
+   * </p>
+   * <p>
+   * NB: if a Format requires type-specific parsing to occur before 
+   * the Abstract layer, Override {@code #parse(String, TypedMetadata)} instead.
+   * </p>
+   */
+  protected abstract void typedParse(RandomAccessInputStream stream, M meta)
+    throws IOException, FormatException;
 
   // -- AbstractParser Methods --
 

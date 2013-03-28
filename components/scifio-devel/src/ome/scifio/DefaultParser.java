@@ -35,6 +35,10 @@
  */
 package ome.scifio;
 
+import java.io.IOException;
+
+import ome.scifio.io.RandomAccessInputStream;
+
 /**
  * Default {@link ome.scifio.Parser} implementation.
  * 
@@ -61,4 +65,9 @@ package ome.scifio;
  * @author Mark Hiner
  *
  */
-public class DefaultParser extends AbstractParser<DefaultMetadata> { }
+public class DefaultParser extends AbstractParser<DefaultMetadata> {
+
+  @Override
+  protected void typedParse(RandomAccessInputStream stream, DefaultMetadata meta)
+      throws IOException, FormatException { }
+}

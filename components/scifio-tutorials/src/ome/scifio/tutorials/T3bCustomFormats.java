@@ -186,11 +186,10 @@ public class T3bCustomFormats {
       // e.g. String > File > RandomAccessInputStream, the RAIS is typically
       // the "authoritative" signature and last to execute. Thus it is the only
       // signature Overridden here.
-      public Metadata parse(final RandomAccessInputStream stream, final Metadata meta)
+      public void typedParse(final RandomAccessInputStream stream, final Metadata meta)
           throws IOException, FormatException 
       {
         meta.setColor("blue");
-        return super.parse(stream, meta);
       }
     }
 

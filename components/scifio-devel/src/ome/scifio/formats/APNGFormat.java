@@ -509,10 +509,12 @@ public class APNGFormat extends AbstractFormat {
       stream.seek(0);
       super.parse(stream, meta);
       
-      metadata.populateImageMetadata();
-      
       return metadata;
     }
+
+    @Override
+    protected void typedParse(RandomAccessInputStream stream, Metadata meta)
+        throws IOException, FormatException { /* NO-OP */ }
   }
 
   /**

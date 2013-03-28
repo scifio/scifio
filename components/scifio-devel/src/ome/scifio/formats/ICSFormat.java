@@ -1239,11 +1239,10 @@ public class ICSFormat extends AbstractFormat {
      * ome.scifio.io.RandomAccessInputStream, ome.scifio.Metadata)
      */
     @Override
-    public Metadata parse(RandomAccessInputStream stream, Metadata meta)
+    protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
     {
       findCompanion(stream, meta);
-      super.parse(stream, meta);
   
       final RandomAccessInputStream reader =
         new RandomAccessInputStream(getContext(), meta.getIcsId());
@@ -1315,10 +1314,6 @@ public class ICSFormat extends AbstractFormat {
           "history objective mag", "history objective WorkingDistance",
           "history objective type", "history objective",
         "history objective immersion"});
-      
-      metadata.populateImageMetadata();
-      
-      return metadata;
     }
   
     // -- Helper Methods --
