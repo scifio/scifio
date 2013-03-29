@@ -14,6 +14,7 @@ import ome.scifio.Format;
 import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Writer;
+import ome.scifio.io.RandomAccessInputStream;
 import ome.xml.meta.OMEMetadata;
 
 /**
@@ -349,7 +350,10 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
       omeMeta.setMetadataOptions(new DefaultMetadataOptions());
       
       // convert the metadata retrieve to ome.scifio.Metadata
+      RandomAccessInputStream stream = new RandomAccessInputStream(LegacyContext.get(), id);
+      omeMeta.setSource(stream);
       writer.scifio().translators().translate(omeMeta, meta);
+      stream.close();
 
       meta.setDatasetName(id);
       
