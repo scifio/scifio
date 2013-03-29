@@ -966,6 +966,60 @@ public abstract class SCIFIOFormatReader extends FormatReader
   public int getOptimalTileHeight() {
     return reader.getOptimalTileHeight(getSeries());
   }
+  
+  // -- Sub-resolution API methods --
+
+  public int seriesToCoreIndex(int series)
+  {
+    //TODO
+    return super.seriesToCoreIndex(series);
+  }
+
+  public int coreIndexToSeries(int index)
+  {
+    //TODO
+    return super.coreIndexToSeries(index);
+  }
+
+  /* @see IFormatReader#getResolutionCount() */
+  public int getResolutionCount() {
+    //TODO
+    return 0;
+  }
+
+  /* @see IFormatReader#setResolution(int) */
+  public void setResolution(int no) {
+    //TODO
+    super.setResolution(no);
+  }
+
+  /* @see IFormatReader#getResolution() */
+  public int getResolution() {
+    //TODO
+    return super.getResolution();
+  }
+
+  /* @see IFormatReader#hasFlattenedResolutions */
+  public boolean hasFlattenedResolutions() {
+    //TODO
+    return super.hasFlattenedResolutions();
+  }
+
+  /* @see IFormatReader#setFlattenedResolutions(boolean) */
+  public void setFlattenedResolutions(boolean flattened) {
+    //TODO
+    super.setFlattenedResolutions(flattened);
+  }
+
+  public int getCoreIndex() {
+    //TODO
+    return super.getCoreIndex();
+  }
+
+  public void setCoreIndex(int no) {
+    //TODO
+    super.setCoreIndex(no);
+  }
 
   // -- IFormatHandler API methods --
 
