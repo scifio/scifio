@@ -293,8 +293,6 @@ public class AVIFormat extends AbstractFormat {
     // -- Metadata API Methods --
     
     public void populateImageMetadata() {
-      super.populateImageMetadata();
-
       if (get(0) == null) add(new DefaultImageMetadata());
       
       ImageMetadata iMeta = get(0);

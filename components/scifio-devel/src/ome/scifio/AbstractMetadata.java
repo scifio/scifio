@@ -185,11 +185,6 @@ public abstract class AbstractMetadata extends AbstractHasFormat
     return metadataOptions;
   }
   
-  /*
-   * @see ome.scifio.Metadata#populateImageMetadata()
-   */
-  public void populateImageMetadata() { }
-
   // -- Getters --
   
   public String getDatasetName() {

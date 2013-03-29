@@ -473,6 +473,10 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     meta.setSource(source);
   }
   
+  public void populateImageMetadata() { 
+    meta.populateImageMetadata();
+  }
+  
   // -- Helper Reset Method --
   
   public void reset() {

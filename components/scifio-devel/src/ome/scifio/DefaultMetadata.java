@@ -62,4 +62,8 @@ public class DefaultMetadata extends AbstractMetadata {
   public DefaultMetadata(final List<ImageMetadata> list) {
     super(list);
   }
+  
+  // -- Metadata API methods --
+
+  public void populateImageMetadata() { }
 }

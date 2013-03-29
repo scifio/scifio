@@ -438,4 +438,9 @@ public class CoreMetadataListWrapper extends AbstractMetadata
   public void setAxisLength(int imageIndex, AxisType axis, int length) {
     get(imageIndex).setAxisLength(axis, length);
   }
+
+  /*
+   * @see ome.scifio.Metadata#populateImageMetadata()
+   */
+  public void populateImageMetadata() { }
 }

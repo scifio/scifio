@@ -171,6 +171,15 @@ public class T3bCustomFormats {
       public void setColor(String c) { 
         color = c;
       }
+
+      // This method must be implemented for each concrete Metadata class.
+      // Essentially, format-specific metadata is assumed to be populated
+      // during Parsing or Translation. From that metadata, ImageMetadata
+      // information, common to all formats - such as height, width, etc -
+      // can be populated here.
+      public void populateImageMetadata() {
+        color = "orange";
+      }
     }
 
     // The Parser also doesn't have any methods that explicitly
