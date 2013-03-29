@@ -282,11 +282,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @see ome.scifio.ImageMetadata#setAxisLength(net.imglib2.meta.AxisType, int)
    */
   public void setAxisLength(final AxisType axis, final int length) {
-    for (int i = 0; i < axisTypes.length; i++) {
-      if (axisTypes[i] == axis) {
-        axisLengths[i] = length;
-      }
-    }
+    int axisIndex = getAxisIndex(axis);
+    
+    if (axisIndex == -1)
+      addAxis(axis, length);
+    else
+      axisLengths[axisIndex] = length;
   }
 
   /*
@@ -507,6 +508,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @see ome.scifio.ImageMetadata#getAxisIndex(net.imglib2.meta.AxisType)
    */
   public int getAxisIndex(final AxisType type) {
+    if (getAxes() == null) return -1;
+    
     for (int i = 0; i < getAxes().length; i++) {
       if (getAxes()[i] == type) return i;
     }
