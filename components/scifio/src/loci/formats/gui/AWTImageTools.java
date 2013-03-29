@@ -47,6 +47,9 @@ import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 
+import net.imglib2.display.ColorTable16;
+import net.imglib2.display.ColorTable8;
+
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.Reader;
 import ome.xml.model.primitives.PositiveInteger;
@@ -468,6 +471,13 @@ public final class AWTImageTools {
       
       ByteArrayPlane plane = new ByteArrayPlane(scReader.getContext());
       plane.populate(scReader.getMetadata().get(r.getSeries()), buf, 0, 0, w, h);
+      
+      if (r.get8BitLookupTable() != null) {
+    	  plane.setColorTable(new ColorTable8(r.get8BitLookupTable()));
+      }
+      else if (r.get16BitLookupTable() != null) {
+    	  plane.setColorTable(new ColorTable16(r.get16BitLookupTable()));
+      }
       
       return ome.scifio.gui.AWTImageTools.openImage(plane, scReader, w, h, r.getSeries());
     }

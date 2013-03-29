@@ -72,6 +72,9 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import net.imglib2.display.ColorTable;
+import net.imglib2.display.ColorTable16;
+import net.imglib2.display.ColorTable8;
 import ome.scifio.util.FormatTools;
 import ome.scifio.gui.Index16ColorModel;
 import ome.scifio.gui.SignedColorModel;
@@ -781,6 +784,30 @@ public final class AWTImageTools {
     if (b == null) {
       throw new FormatException("Could not construct BufferedImage");
     }
+    
+    if (indexed && rgbChanCount == 1) {
+    	ColorTable ct = plane.getColorTable();
+    	
+        if (ColorTable8.class.isAssignableFrom(ct.getClass())) {
+          byte[][] table = ((ColorTable8)ct).getValues();
+          if (table != null && table.length > 0 && table[0] != null) {
+            int len = table[0].length;
+            byte[] dummy = table.length < 3 ? new byte[len] : null;
+            byte[] red = table.length >= 1 ? table[0] : dummy;
+            byte[] green = table.length >= 2 ? table[1] : dummy;
+            byte[] blue = table.length >= 3 ? table[2] : dummy;
+            model = new IndexColorModel(8, len, red, green, blue);
+          }
+        }
+        else if (ColorTable16.class.isAssignableFrom(ct.getClass()))
+        {
+          short[][] table = ((ColorTable16)ct).getValues();
+          if (table != null && table.length > 0 && table[0] != null) {
+            model = new Index16ColorModel(16, table[0].length, table,
+              meta.isLittleEndian(imageIndex));
+          }
+        }
+      }
 
     if (indexed && rgbChanCount == 1 && BufferedImagePlane.class.isAssignableFrom(plane.getClass())) {
       model = ((BufferedImagePlane)plane).getData().getColorModel();
