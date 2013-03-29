@@ -51,7 +51,6 @@ import ome.scifio.io.Location;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
-import org.scijava.service.Service;
 
 /**
  * Default {@link FilePatternService} implementation.
@@ -61,7 +60,7 @@ import org.scijava.service.Service;
  * @author Mark Hiner
  *
  */
-@Plugin(type = Service.class)
+@Plugin(type=FilePatternService.class)
 public class DefaultFilePatternService extends AbstractService 
 	implements FilePatternService
 {

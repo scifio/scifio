@@ -47,7 +47,6 @@ import ome.scifio.io.IStreamAccess;
 import ome.scifio.io.Location;
 import ome.scifio.io.NIOFileHandle;
 
-import org.scijava.service.Service;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
@@ -63,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hiner
  *
  */
-@Plugin(type = Service.class)
+@Plugin(type=LocationService.class)
 public class DefaultLocationService extends AbstractService implements LocationService {
   
   private static final Logger LOGGER = LoggerFactory.getLogger(Location.class);
