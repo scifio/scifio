@@ -828,7 +828,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
 
   /* @see IFormatReader#getCurrentFile() */
   public String getCurrentFile() {
-    return currentId;
+    return reader.getMetadata().getDatasetName();
   }
 
   /* @see IFormatReader#getIndex(int, int, int) */
