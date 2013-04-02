@@ -37,7 +37,7 @@
     <test name="MissingJAIIIOService">
         <groups/>
         <classes>
-            <class name="loci.formats.utests.MissingJAIIIOServiceTest"/>
+            <class name="ome.scifio.utests.MissingJAIIIOServiceTest"/>
         </classes>
         <packages/>
     </test>

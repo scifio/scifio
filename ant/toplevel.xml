@@ -454,7 +454,8 @@ Type "ant -p" for a list of targets.
   <!-- SCIFIO-DEV -->
 
   <target name="deps-scifio-devel"
-    depends="jar-ome-xml"/>
+    depends="jar-jai,
+      jar-ome-xml"/>
 
   <target name="compile-scifio-devel" depends="deps-scifio-devel"
     description="compile classes for SCIFIO-devel">

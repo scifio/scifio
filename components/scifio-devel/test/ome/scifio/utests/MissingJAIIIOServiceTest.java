@@ -34,13 +34,13 @@
  * #L%
  */
 
-package loci.formats.utests;
+package ome.scifio.utests;
 
-import static org.testng.AssertJUnit.assertNotNull;
-import loci.common.services.DependencyException;
-import loci.common.services.ServiceFactory;
-import loci.formats.services.JAIIIOService;
+import static org.testng.AssertJUnit.assertNull;
 
+import ome.scifio.services.JAIIIOService;
+
+import org.scijava.Context;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -53,17 +53,17 @@ import org.testng.annotations.Test;
  */
 public class MissingJAIIIOServiceTest {
 
-  private ServiceFactory sf;
-
+  private Context context;
+  
   @BeforeMethod
-  public void setUp() throws DependencyException {
-    sf = new ServiceFactory();
+  public void setUp() {
+    context = new Context();
   }
-
-  @Test(expectedExceptions={DependencyException.class})
-  public void testInstantiate() throws DependencyException {
-    JAIIIOService service = sf.getInstance(JAIIIOService.class);
-    assertNotNull(service);
+  
+  @Test
+  public void testInstantiate() {
+    JAIIIOService service = context.getService(JAIIIOService.class);
+    assertNull(service);
   }
 
 }
