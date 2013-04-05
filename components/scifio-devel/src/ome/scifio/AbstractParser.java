@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * @param <M> - The Metadata type returned by this Parser.
  */
 public abstract class AbstractParser<M extends TypedMetadata>
-  extends AbstractHasFormat implements TypedParser<M> {
+  extends AbstractGroupable implements TypedParser<M> {
 
   // -- Constants --
 
@@ -76,7 +76,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
   /** Metadata for the current source. */
   protected M metadata;
-
+  
   /** String id of current source. */
   protected String currentId;
 
@@ -250,7 +250,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
     if (files == null) return null;
     return getFileInfo(files);
   }
-
+  
   /*
    * @see ome.scifio.Parser#getSupportedMetadataLevels()
    */

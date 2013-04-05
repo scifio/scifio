@@ -60,7 +60,7 @@ import ome.scifio.util.SCIFIOMetadataTools;
  * @author Mark Hiner
  */
 public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlane<?>>
-  extends AbstractHasFormat implements TypedReader<M, P> {
+  extends AbstractGroupable implements TypedReader<M, P> {
 
   // -- Constants --
 
@@ -70,9 +70,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
   /** Metadata for the current image source. */
   protected M metadata;
-
-  /** Whether or not to group multi-file formats. */
-  protected boolean group = true;
 
   /** Whether or not to normalize float data. */
   protected boolean normalizeData;
@@ -149,30 +146,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   public P openPlane(int imageIndex, int planeIndex, Plane plane, int x,
       int y, int w, int h) throws FormatException, IOException {
     return openPlane(imageIndex, planeIndex, this.<P>castToTypedPlane(plane), x, y, w, h);
-  }
-
-  /*
-   * @see ome.scifio.Reader#setGroupFiles(boolean)
-   */
-  public void setGroupFiles(final boolean groupFiles) {
-    group = groupFiles;
-  }
-
-  /*
-   * @see ome.scifio.Reader#isGroupFiles()
-   */
-  public boolean isGroupFiles() {
-    FormatTools.assertStream(getStream(), false, 1);
-    return group;
-  }
-
-  /*
-   * @see ome.scifio.Reader#fileGroupOption(java.lang.String)
-   */
-  public int fileGroupOption(final String id)
-    throws FormatException, IOException
-  {
-    return FormatTools.CANNOT_GROUP;
   }
 
   /*

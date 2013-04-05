@@ -724,19 +724,23 @@ public abstract class SCIFIOFormatReader extends FormatReader
   /* @see IFormatReader#setGroupFiles(boolean) */
   @Override
   public void setGroupFiles(boolean groupFiles) {
-    reader.setGroupFiles(groupFiles);
+    parser.setGroupFiles(groupFiles);
   }
 
   /* @see IFormatReader#isGroupFiles() */
   @Override
   public boolean isGroupFiles() {
-    return reader.isGroupFiles();
+    return parser.isGroupFiles();
   }
 
   /* @see IFormatReader#fileGroupOption(String) */
   @Override
   public int fileGroupOption(String id) throws FormatException, IOException {
-    return ome.scifio.util.FormatTools.CANNOT_GROUP;
+    try {
+      return parser.fileGroupOption(id);
+    } catch (ome.scifio.FormatException e) {
+      throw new FormatException(e.getCause());
+    }
   }
 
   /* @see IFormatReader#isMetadataComplete() */

@@ -60,7 +60,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * 
  * @author Mark Hiner
  */
-public interface Parser extends HasFormat {
+public interface Parser extends HasFormat, Groupable {
 
   // -- Parser API methods --
 
