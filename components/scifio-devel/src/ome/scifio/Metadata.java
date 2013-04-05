@@ -68,13 +68,13 @@ public interface Metadata extends Serializable, HasFormat {
   
   // -- Static Constents --
   
-	/**
-	 * String representation of this classes package-qualified name.
-	 * <p>
-	 * Necessary for dynamic use annotations. All Metadata implementations
-	 * should override this constant.
-	 * </p>
-	 */
+  /**
+   * String representation of this classes package-qualified name.
+   * <p>
+   * Necessary for dynamic use annotations. All Metadata implementations should
+   * override this constant.
+   * </p>
+   */
   public static final String CNAME = "ome.scifio.Metadata";
   
   // -- Metadata API --
@@ -234,19 +234,19 @@ public interface Metadata extends Serializable, HasFormat {
    * Gets the type of the (zero-indexed) specified plane.
    * 
    * @param imageIndex - index for multi-image files
-   * @param planeIndex - index of the desired plane within the specified image
+   * @param axisIndex - index of the desired axis within the specified image
    * @return Type of the desired plane.
    */
-  AxisType getAxisType(int imageIndex, int planeIndex);
+  AxisType getAxisType(int imageIndex, int axisIndex);
 
   /**
    * Gets the length of the (zero-indexed) specified plane.
    * 
    * @param imageIndex - index for multi-image files
-   * @param planeIndex - index of the desired plane within the specified image
+   * @param axisIndex - index of the desired axis within the specified image
    * @return Length of the desired plane.
    */
-  int getAxisLength(int imageIndex, int planeIndex);
+  int getAxisLength(int imageIndex, int axisIndex);
 
   /**
    * A convenience method for looking up the length of an axis

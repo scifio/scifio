@@ -122,12 +122,12 @@ public interface ImageMetadata {
   void setAxisLengths(int[] axisLengths);
 
   /** 
-   * Sets the length for the specified axis, 
-   * if its type is present in the image. 
+   * Sets the length for the specified axis. Adds the axis if 
+   * if its type is not already present in the image. 
    */
   void setAxisLength(AxisType axis, int length);
 
-  /** Sets the type of the axis at the specified index. */
+  /** Sets the type of the axis at the specified index, as per {@link java.util.List#set(int, Object)}. */
   void setAxisType(int index, AxisType axis);
 
   /** Sets the number of planes within this image. */
@@ -219,21 +219,20 @@ public interface ImageMetadata {
   /**
    * Gets the type of the (zero-indexed) specified plane.
    * 
-   * @param imageIndex - index for multi-image files
-   * @param planeIndex - index of the desired plane within the specified image
+   * @param axisIndex - index of the desired axis within this image
    * 
    * @return Type of the desired plane.
    */
-  AxisType getAxisType(final int planeIndex);
+  AxisType getAxisType(final int axisIndex);
 
   /**
    * Gets the length of the (zero-indexed) specified plane.
    * 
-   * @param planeIndex - index of the desired plane within this image
+   * @param axisIndex - index of the desired axis within this image
    * 
    * @return Length of the desired plane.
    */
-  int getAxisLength(final int planeIndex);
+  int getAxisLength(final int axisIndex);
   
   /**
    * A convenience method for looking up the length of an axis
@@ -283,9 +282,7 @@ public interface ImageMetadata {
   int[] getAxesLengths();
 
   /**
-   * Appends the provided AxisType to the current AxisType array
-   * and creates corresponding length = 0 entry in the axis lengths
-   * array.
+   * Appends the provided AxisType to the current AxisTypes, with a length of 0.
    * 
    * @param type - Type of the new axis
    */
@@ -297,7 +294,7 @@ public interface ImageMetadata {
    * axis lengths.
    * 
    * @param type - Type of the new axis
-   * @param value - Value of the new axis
+   * @param value - length of the new axis
    */
   void addAxis(final AxisType type, final int value);
   

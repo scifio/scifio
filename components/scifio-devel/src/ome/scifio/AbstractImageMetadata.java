@@ -35,7 +35,13 @@
  */
 package ome.scifio;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+
+import ome.scifio.util.FormatTools;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -90,11 +96,14 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
   /** The Axes types for this image. Order is implied by ordering within this array */
   @Field(label = "dimTypes")
-  private AxisType[] axisTypes;
+  private List<AxisType> axisTypes;
+  
+  /** Cached axis length array to avoid creating new arrays constantly when querying axis lengths. */
+  private int[] cachedLengths = null;
 
   /** Lengths of each axis. Order is parallel of dimTypes. */
   @Field(label = "dimLengths")
-  private int[] axisLengths;
+  private HashMap<AxisType, Integer> axisLengths;
 
   /**
    * Indicates whether or not we are confident that the
@@ -151,6 +160,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
   public AbstractImageMetadata() {
     imageMetadata = new Hashtable<String, Object>();
+    axisTypes = new ArrayList<AxisType>();
+    axisLengths = new HashMap<AxisType, Integer>();
   }
   
   public AbstractImageMetadata(ImageMetadata copy) {
@@ -268,33 +279,37 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @see ome.scifio.ImageMetadata#setAxisTypes(net.imglib2.meta.AxisType[])
    */
   public void setAxisTypes(final AxisType[] axisTypes) {
-    this.axisTypes = axisTypes;
+    this.axisTypes = new ArrayList<AxisType>(Arrays.asList(axisTypes));
   }
 
   /*
    * @see ome.scifio.ImageMetadata#setAxisLengths(int[])
    */
   public void setAxisLengths(final int[] axisLengths) {
-    this.axisLengths = axisLengths;
+    if (axisLengths.length != axisTypes.size())
+      throw new IllegalArgumentException("Tried to set " + axisLengths.length +
+          " axis lengths, but " + axisTypes.size() + " axes present.");
+    
+    for (int i=0; i<axisTypes.size(); i++) {
+      this.axisLengths.put(axisTypes.get(i), axisLengths[i]);
+    }
   }
 
   /*
    * @see ome.scifio.ImageMetadata#setAxisLength(net.imglib2.meta.AxisType, int)
    */
   public void setAxisLength(final AxisType axis, final int length) {
-    int axisIndex = getAxisIndex(axis);
-    
-    if (axisIndex == -1)
-      addAxis(axis, length);
-    else
-      axisLengths[axisIndex] = length;
+    addAxis(axis, length);
   }
 
   /*
    * @see ome.scifio.ImageMetadata#setAxisType(int, net.imglib2.meta.AxisType)
    */
   public void setAxisType(final int index, final AxisType axis) {
-    axisTypes[index] = axis;
+    int length = axisLengths.remove(axisTypes.get(index));
+    
+    axisTypes.set(index, axis);
+    axisLengths.put(axis, length);
   }
 
   /*
@@ -376,6 +391,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @see ome.scifio.ImageMetadata#getChannelLengths()
    */
   public int[] getChannelLengths() {
+    if (cLengths == null) {
+      cLengths = new int[] {getAxisLength(Axes.CHANNEL)};
+    }
     return cLengths;
   }
 
@@ -383,6 +401,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @see ome.scifio.ImageMetadata#getChannelTypes()
    */
   public String[] getChannelTypes() {
+    if (cTypes == null) {
+      cTypes = new String[] {FormatTools.CHANNEL};
+    }
     return cTypes;
   }
 
@@ -390,14 +411,21 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @see ome.scifio.ImageMetadata#getAxes()
    */
   public AxisType[] getAxes() {
-    return axisTypes;
+    return axisTypes.toArray(new AxisType[axisTypes.size()]);
   }
 
   /*
    * @see ome.scifio.ImageMetadata#getAxesLengths()
    */
   public int[] getAxesLengths() {
-    return axisLengths;
+    if (cachedLengths == null || cachedLengths.length != axisLengths.size())
+      cachedLengths = new int[axisLengths.size()];
+    
+    for (int i=0; i<axisLengths.size(); i++) {
+      cachedLengths[i] = axisLengths.get(axisTypes.get(i));
+    }
+    
+    return cachedLengths;
   }
 
   /*
@@ -486,34 +514,37 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   /*
    * @see ome.scifio.ImageMetadata#getAxisType(int)
    */
-  public AxisType getAxisType(final int planeIndex) {
-    return getAxes()[planeIndex];
+  public AxisType getAxisType(final int axisIndex) {
+    return axisTypes.get(axisIndex);
   }
 
   /*
    * @see ome.scifio.ImageMetadata#getAxisLength(int)
    */
-  public int getAxisLength(final int planeIndex) {
-    return planeIndex == -1 ? 0 : getAxesLengths()[planeIndex];
+  public int getAxisLength(final int axisIndex) {
+    if (axisIndex < 0 || axisIndex >= axisTypes.size())
+      throw new IllegalArgumentException("Invalid axisIndex: " + axisIndex
+          + ". " + axisTypes.size() + " axes present.");
+
+    return axisLengths.get(axisTypes.get(axisIndex));
   }
-  
+
   /*
    * @see ome.scifio.ImageMetadata#getAxisLength(net.imglib2.meta.AxisType)
    */
   public int getAxisLength(final AxisType t) {
-    return getAxisLength(getAxisIndex(t));
+    if (axisLengths == null || !axisLengths.containsKey(t)) return 1;
+    
+    return axisLengths.get(t);
   }
 
   /*
    * @see ome.scifio.ImageMetadata#getAxisIndex(net.imglib2.meta.AxisType)
    */
   public int getAxisIndex(final AxisType type) {
-    if (getAxes() == null) return -1;
+    if (axisTypes == null) return -1;
     
-    for (int i = 0; i < getAxes().length; i++) {
-      if (getAxes()[i] == type) return i;
-    }
-    return -1; // throw exception?
+    return axisTypes.indexOf(type);
   }
 
   /*
@@ -528,30 +559,19 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public void addAxis(final AxisType type, final int value)
   {
-    final int[] axisLengths = getAxesLengths();
-    final AxisType[] axisTypes = getAxes();
-    int newLength = axisLengths == null ? 1 : axisLengths.length + 1;
+    if (axisTypes == null) axisTypes = new ArrayList<AxisType>();
     
-    final int[] tmpAxisLength = new int[newLength];
-    final AxisType[] tmpAxisTypes = new AxisType[newLength];
-
-    for (int i=0; i<newLength-1; i++) {
-      tmpAxisLength[i] = axisLengths[i];
-      tmpAxisTypes[i] = axisTypes[i];
-    }
-
-    tmpAxisLength[tmpAxisLength.length - 1] = value;
-    tmpAxisTypes[tmpAxisTypes.length - 1] = type;
-
-    setAxisLengths(tmpAxisLength);
-    setAxisTypes(tmpAxisTypes);
+    // See if the axis already exists
+    if (!axisTypes.contains(type)) axisTypes.add(type);
+    
+    axisLengths.put(type, value);
   }
   
   public void copy(ImageMetadata toCopy) {
     imageMetadata = (Hashtable<String, Object>) toCopy.getImageMetadata().clone();
     
-    axisLengths = toCopy.getAxesLengths().clone();
-    axisTypes = toCopy.getAxes().clone();
+    axisTypes = new ArrayList<AxisType>(Arrays.asList(toCopy.getAxes()));
+    setAxisLengths(toCopy.getAxesLengths().clone());
     bitsPerPixel = toCopy.getBitsPerPixel();
     cLengths = toCopy.getChannelLengths().clone();
     cTypes = toCopy.getChannelTypes().clone();
