@@ -356,6 +356,16 @@ public interface Metadata extends Serializable, HasFormat {
 
   /** Convenience method for storing metadata at the specified image-level. */
   void putImageMeta(int imageIndex, String key, Object value);
+  
+  /** 
+   * Convenience method for storing metadata at the specified image-level.
+   *  <p>
+   *  The provided key has multiple values associated with it. Thus the value
+   *  should be appended to an existing list, or a list created if it does not
+   *  already exist.
+   *  </p>
+   */
+  void putImageMetaList(int imageIndex, String key, Object value);
 
   /** Sets width (in pixels) of thumbnail planes for the specified image. */
   void setThumbSizeX(int imageIndex, int thumbX);

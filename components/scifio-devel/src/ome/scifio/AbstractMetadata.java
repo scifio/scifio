@@ -42,6 +42,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -438,6 +439,27 @@ public abstract class AbstractMetadata extends AbstractHasFormat
    */
   public void putImageMeta(final int imageIndex, String key, Object value) {
     imageMeta.get(imageIndex).getImageMetadata().put(key, value);
+  }
+  
+  /*
+   * @see ome.scifio.Metadata#putImageMetaList(int, java.lang.String, java.lang.Object)
+   */
+  @SuppressWarnings("unchecked")
+  public void putImageMetaList(int imageIndex, String key, Object value) {
+    Hashtable<String, Object> iMeta = getImageMetadata(imageIndex);
+    Object list = iMeta.get(key);
+    
+    if (list == null) list = new Vector<Object>();
+    
+    if (list instanceof Vector) ((Vector<Object>)list).add(value);
+    else {
+      Vector<Object> v = new Vector<Object>();
+      v.add(list);
+      v.add(value);
+      list = v;
+    }
+    
+    iMeta.put(key, list);
   }
 
   /*
