@@ -151,6 +151,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
     if (metadata != null) metadata.close();
     if (!fileOnly) {
       in = null;
+      currentId = null;
     }
   }
 
@@ -384,6 +385,8 @@ public abstract class AbstractParser<M extends TypedMetadata>
     if(metadata.getContext() == null) metadata.setContext(getContext());
     metadata.setSource(stream);
     metadata.setDatasetName(stream.getFileName());
+    
+    currentId = stream.getFileName();
     
     typedParse(stream, meta);
     
