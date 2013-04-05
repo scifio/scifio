@@ -146,6 +146,15 @@ public class SCIFIOMetadataTools {
   /**
    * Populates the provided ImageMetadata's axis types and lengths using
    * the provided dimension order and sizes.
+   * 
+   * @param iMeta - ImageMetadata to populate
+   * @param dimensionOrder - A serialized list of dimensions. Each character
+   *              is interpreted as an Axes enumeration (e.g. 'X' = 'x' = Axes.X)
+   * @param sizeX - Length of Axes.X
+   * @param sizeY - Length of Axes.Y
+   * @param sizeZ - Length of Axes.Z
+   * @param sizeC - Length of Axes.CHANNEL
+   * @param sizeT - Length of Axes.TIME
    */
   public static void populateDimensions(ImageMetadata iMeta, String dimensionOrder,
       int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT)
@@ -174,27 +183,16 @@ public class SCIFIOMetadataTools {
   /**
    * Populates the provided ImageMetadata's axis types and lengths using
    * the provided dimension order and sizes.
+   * 
+   * @param iMeta - ImageMetadata to populate
+   * @param dimensionOrder - A serialized list of dimensions. Each character
+   *              is interpreted as an Axes enumeration (e.g. 'X' = 'x' = Axes.X)
+   * @param lengths - An array of axis lengths, parallel to the dimensionOrder list
    */
   public static void populateDimensions(ImageMetadata iMeta, String dimensionOrder,
-      int... lengths)
+      int[] lengths)
   {
-    AxisType[] axes = new AxisType[dimensionOrder.length()];
-
-    for (int i=0; i<dimensionOrder.length(); i++) {
-      switch (dimensionOrder.toUpperCase().charAt(i)) {
-      case 'X': axes[i] = Axes.X;
-      break;
-      case 'Y': axes[i] = Axes.Y;
-      break;
-      case 'Z': axes[i] = Axes.Z;
-      break;
-      case 'C': axes[i] = Axes.CHANNEL;
-      break;
-      case 'T': axes[i] = Axes.TIME;
-      break;
-      default: axes[i] = Axes.UNKNOWN;
-      }
-    }
+    AxisType[] axes = FormatTools.findDimensionList(dimensionOrder);
     
     populateDimensions(iMeta, axes, lengths);
   }
@@ -208,10 +206,10 @@ public class SCIFIOMetadataTools {
    * @param lengths - Parallel axis length array
    */
   public static void populateDimensions(ImageMetadata iMeta, AxisType[] axes,
-      int... lengths)
+      int[] lengths)
   {
-    iMeta.setAxisLengths(lengths);
     iMeta.setAxisTypes(axes);
+    iMeta.setAxisLengths(lengths);
   }
   
   // Utility methods -- original metadata --
