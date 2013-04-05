@@ -382,7 +382,7 @@ public class FormatTools {
   public static String findDimensionOrder(AxisType[] axes) {
     String order = "";
     
-    //TODO currently this list is restricted to the traiditional 5D axes compatible with Bio-Formats
+    //TODO currently this list is restricted to the traditional 5D axes compatible with Bio-Formats
     ArrayList<AxisType> validAxes =
       new ArrayList<AxisType>(Arrays.asList(new AxisType[]{Axes.X, Axes.Y, Axes.Z, Axes.TIME, Axes.CHANNEL}));
 
@@ -391,6 +391,7 @@ public class FormatTools {
       if(validAxes.contains(type))
         order += axes[i].toString().charAt(0);
     }
+    
     return order;
   }
   
@@ -420,27 +421,6 @@ public class FormatTools {
     }
     
     return axes;
-  }
-  
-  /**
-   * Rearranges the ordering of the provided DatasetMetadata object, based on the
-   * ording of the provided AxisTypes.
-   */
-  public static void setDimensionOrder(Metadata meta, int imageIndex, AxisType... order) {
-    int[] axisLengths = new int[meta.getAxisCount(imageIndex)];
-    
-    int i = 0;
-    
-    for(AxisType t : order) {
-      int index = meta.getAxisIndex(imageIndex, t);
-      if(index != -1) {
-        axisLengths[i] = meta.getAxisLength(imageIndex, t);
-        i++;
-      }
-    }
-    
-    meta.setAxisLengths(imageIndex, axisLengths);
-    meta.setAxisTypes(imageIndex, order);
   }
 
   /**

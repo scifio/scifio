@@ -550,8 +550,7 @@ public class FileStitcher extends AbstractReaderFilter {
     // order may need to be adjusted
     for (int i=0; i<imageCount; i++) {
       AxisGuesser ag = externals.get(getExternalSeries(i)).getAxisGuesser();
-      FormatTools.setDimensionOrder(getMetadata(), i,
-        FormatTools.findDimensionList(ag.getAdjustedOrder()));
+      getMetadata().setAxisTypes(i, FormatTools.findDimensionList(ag.getAdjustedOrder()));
       getMetadata().setOrderCertain(i, ag.isCertain());
       computeAxisLengths(i);
     }

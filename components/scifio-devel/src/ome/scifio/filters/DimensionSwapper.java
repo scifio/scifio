@@ -126,7 +126,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
           Arrays.asList(getMetadata().getAxes(imageIndex));
     }
     
-    FormatTools.setDimensionOrder(getMetadata(), imageIndex,
+    getMetadata().setAxisTypes(imageIndex, 
         newOrder.toArray(new AxisType[newOrder.size()]));
 
     if (newOrder.indexOf(Axes.CHANNEL) != oldOrder.indexOf(Axes.CHANNEL)) {
