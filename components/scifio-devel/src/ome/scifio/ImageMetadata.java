@@ -111,6 +111,12 @@ public interface ImageMetadata {
    * another image.
    */
   void setThumbnail(boolean thumbnail);
+  
+  /**
+   * Convenience method to set both the axis types and lengths
+   * for this ImageMetadata.
+   */
+  void setAxes(AxisType[] axisTypes, int[] axisLengths);
 
   /** 
    * Sets the Axes types for this image. 
@@ -118,7 +124,12 @@ public interface ImageMetadata {
    */
   void setAxisTypes(AxisType[] axisTypes);
 
-  /** Sets the lengths of each axis. Order is parallel of axisTypes. */
+  /**
+   *  Sets the lengths of each axis. Order is parallel of axisTypes.
+   *  <p>
+   *  NB: axes must already exist for this method to be called.
+   *  Use {@link #setAxisTypes(AxisType[])} or {@link #setAxes}
+   */
   void setAxisLengths(int[] axisLengths);
 
   /** 

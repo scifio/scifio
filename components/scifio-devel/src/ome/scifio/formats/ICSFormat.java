@@ -171,8 +171,7 @@ public class ICSFormat extends AbstractFormat {
 
       int bitsPerPixel = 0;
       
-      imageMeta.setAxisLengths(axisLengths);
-      imageMeta.setAxisTypes(axisTypes);
+      imageMeta.setAxes(axisTypes, axisLengths);
 
       final Vector<Integer> channelLengths = new Vector<Integer>();
       final Vector<String> channelTypes = new Vector<String>();

@@ -276,6 +276,14 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   }
 
   /*
+   * @see ome.scifio.ImageMetadata#setAxes(net.imglib2.meta.AxisType[], int[])
+   */
+  public void setAxes(AxisType[] axisTypes, int[] axisLengths) {
+    setAxisTypes(axisTypes);
+    setAxisLengths(axisLengths);
+  }
+  
+  /*
    * @see ome.scifio.ImageMetadata#setAxisTypes(net.imglib2.meta.AxisType[])
    */
   public void setAxisTypes(final AxisType[] axisTypes) {
@@ -288,7 +296,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   public void setAxisLengths(final int[] axisLengths) {
     if (axisLengths.length != axisTypes.size())
       throw new IllegalArgumentException("Tried to set " + axisLengths.length +
-          " axis lengths, but " + axisTypes.size() + " axes present.");
+          " axis lengths, but " + axisTypes.size() + " axes present." +
+          " Call setAxisTypes first.");
     
     for (int i=0; i<axisTypes.size(); i++) {
       this.axisLengths.put(axisTypes.get(i), axisLengths[i]);

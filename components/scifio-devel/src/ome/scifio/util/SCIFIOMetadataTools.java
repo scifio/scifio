@@ -194,22 +194,7 @@ public class SCIFIOMetadataTools {
   {
     AxisType[] axes = FormatTools.findDimensionList(dimensionOrder);
     
-    populateDimensions(iMeta, axes, lengths);
-  }
-  
-  /**
-   * Populates the provided ImageMetadata's axis types and lengths using
-   * the provided axis types and sizes.
-   * 
-   * @param iMeta - ImageMetadata to populate
-   * @param axes - AxisTypes to set 
-   * @param lengths - Parallel axis length array
-   */
-  public static void populateDimensions(ImageMetadata iMeta, AxisType[] axes,
-      int[] lengths)
-  {
-    iMeta.setAxisTypes(axes);
-    iMeta.setAxisLengths(lengths);
+    iMeta.setAxes(axes, lengths);
   }
   
   // Utility methods -- original metadata --
