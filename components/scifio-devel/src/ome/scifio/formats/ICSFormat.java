@@ -166,57 +166,53 @@ public class ICSFormat extends AbstractFormat {
       double[] axesSizes = getAxesSizes();
       String[] axes = getAxes();
       
-      AxisType[] axisTypes = new AxisType[axes.length];
-      int[] axisLengths = new int[axesSizes.length];
+      // Reset the existing axes
+      imageMeta.setAxes(new AxisType[0], new int[0]);
 
       int bitsPerPixel = 0;
-      
-      imageMeta.setAxes(axisTypes, axisLengths);
 
       final Vector<Integer> channelLengths = new Vector<Integer>();
       final Vector<String> channelTypes = new Vector<String>();
 
       // interpret axis information
-      for (int n = 0; n < axisTypes.length; n++) {
+      for (int n = 0; n < axes.length; n++) {
         final String axis = axes[n].toLowerCase();
         if (axis.equals("x")) {
-          axisTypes[n] = Axes.X;
-          axisLengths[n] = new Double(axesSizes[n]).intValue();
+          imageMeta.addAxis(Axes.X, new Double(axesSizes[n]).intValue());
         }
         else if (axis.equals("y")) {
-          axisTypes[n] = Axes.Y;
-          axisLengths[n] = new Double(axesSizes[n]).intValue();
+          imageMeta.addAxis(Axes.Y, new Double(axesSizes[n]).intValue());
         }
         else if (axis.equals("z")) {
-          axisTypes[n] = Axes.Z;
-          axisLengths[n] = new Double(axesSizes[n]).intValue();
+          imageMeta.addAxis(Axes.Z, new Double(axesSizes[n]).intValue());
         }
         else if (axis.equals("t")) {
           int tIndex = imageMeta.getAxisIndex(Axes.TIME);
           
           if (tIndex == -1) {
-            axisTypes[n] = Axes.TIME;
-            axisLengths[n] = new Double(axesSizes[n]).intValue();
+            imageMeta.addAxis(Axes.TIME, new Double(axesSizes[n]).intValue());
           }
           else
-            axisLengths[tIndex] *= new Double(axesSizes[n]).intValue();
+            imageMeta.setAxisLength(Axes.TIME,
+                imageMeta.getAxisLength(Axes.TIME) *
+                new Double(axesSizes[n]).intValue());
         }
         else if (axis.equals("bits")) {
-          axisTypes[n] = new CustomAxisType("bits");
           bitsPerPixel = new Double(axesSizes[n]).intValue();
           while (bitsPerPixel % 8 != 0) bitsPerPixel++;
           if (bitsPerPixel == 24 || bitsPerPixel == 48) bitsPerPixel /= 3;
-          axisLengths[n] = bitsPerPixel;
+          imageMeta.addAxis(new CustomAxisType("bits"), bitsPerPixel);
         }
         else {
           int cIndex = imageMeta.getAxisIndex(Axes.CHANNEL);
           
           if (cIndex == -1) {
-            axisTypes[n] = Axes.CHANNEL;
-            axisLengths[n] = new Double(axesSizes[n]).intValue();
+            imageMeta.addAxis(Axes.CHANNEL, new Double(axesSizes[n]).intValue());
           }
           else {
-            axisLengths[cIndex] *= new Double(axesSizes[n]).intValue();
+            imageMeta.setAxisLength(Axes.CHANNEL,
+                imageMeta.getAxisLength(Axes.CHANNEL) *
+                new Double(axesSizes[n]).intValue());
           }
           
           if (imageMeta.getAxisIndex(Axes.X) == -1) {
@@ -228,24 +224,24 @@ public class ICSFormat extends AbstractFormat {
           }
           
           if  (axis.startsWith("c")) {
-            axisTypes[n] = Axes.CHANNEL;
+            imageMeta.setAxisType(n, Axes.CHANNEL);
             channelTypes.add(FormatTools.CHANNEL);
-            channelLengths.add(axisLengths[n]);
+            channelLengths.add(imageMeta.getAxisLength(Axes.CHANNEL));
           }
           else if (axis.startsWith("p")) {
-            axisTypes[n] = Axes.PHASE;
+            imageMeta.setAxisType(n, Axes.PHASE);
             channelTypes.add(FormatTools.PHASE);
-            channelLengths.add(axisLengths[n]);
+            channelLengths.add(imageMeta.getAxisLength(Axes.PHASE));
           }
           else if (axis.startsWith("f")) {
-            axisTypes[n] = Axes.FREQUENCY;
+            imageMeta.setAxisType(n, Axes.FREQUENCY);
             channelTypes.add(FormatTools.FREQUENCY);
-            channelLengths.add(axisLengths[n]);
+            channelLengths.add(imageMeta.getAxisLength(Axes.FREQUENCY));
           }
           else {
-            axisTypes[n] = Axes.UNKNOWN;
+            imageMeta.setAxisType(n, Axes.UNKNOWN);
             channelTypes.add("");
-            channelLengths.add(axisLengths[n]);
+            channelLengths.add(imageMeta.getAxisLength(Axes.UNKNOWN));
           }
         }
       }
