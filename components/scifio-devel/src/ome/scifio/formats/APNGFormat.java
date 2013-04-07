@@ -531,6 +531,12 @@ public class APNGFormat extends AbstractFormat {
   
     // Plane index of the last plane that was returned.
     private int lastPlaneIndex = -1;
+
+    // -- Constructor --
+    
+    public Reader() {
+      domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
+    }
   
     // -- Reader API Methods --
   
