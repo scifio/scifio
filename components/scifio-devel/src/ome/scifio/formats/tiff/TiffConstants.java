@@ -34,58 +34,38 @@
  * #L%
  */
 
-package loci.formats.in;
-
-import java.io.IOException;
-
-import ome.scifio.formats.EPSFormat;
-
-import loci.formats.FormatException;
-import loci.formats.MetadataTools;
-import loci.formats.SCIFIOFormatReader;
-import loci.formats.meta.MetadataStore;
-import loci.legacy.context.LegacyContext;
+package ome.scifio.formats.tiff;
 
 /**
- * Reader is the file format reader for Encapsulated PostScript (EPS) files.
- * Some regular PostScript files are also supported.
+ * Generally useful TIFF-related constants.
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/EPSReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/EPSReader.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/tiff/TiffConstants.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/tiff/TiffConstants.java;hb=HEAD">Gitweb</a></dd></dl>
  *
+ * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Eric Kjellman egkjellman at wisc.edu
  * @author Melissa Linkert melissa at glencoesoftware.com
- * 
- * @deprecated Use ome.scifio.formats.EPSReader instead.
+ * @author Chris Allan callan at blackcat.ca
  */
-@Deprecated
-public class EPSReader extends SCIFIOFormatReader {
+public final class TiffConstants {
+
+  // -- Constants --
+
+  /** The number of bytes in each IFD entry. */
+  public static final int BYTES_PER_ENTRY = 12;
+
+  /** The number of bytes in each IFD entry of a BigTIFF file. */
+  public static final int BIG_TIFF_BYTES_PER_ENTRY = 20;
+
+  // TIFF header constants
+  public static final int MAGIC_NUMBER = 42;
+  public static final int BIG_TIFF_MAGIC_NUMBER = 43;
+  public static final int LITTLE = 0x49;
+  public static final int BIG = 0x4d;
 
   // -- Constructor --
 
-  /** Constructs a new APNGReader. */
-  public EPSReader() {
-    super("Encapsulated PostScript", new String[] {"eps", "epsi", "ps"});
-
-    try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(EPSFormat.class);
-      checker = format.createChecker();
-      parser = format.createParser();
-      reader = format.createReader();
-    }
-    catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
-    }
-  }
-
-  // -- IFormatReader API methods --
-
-  @Override
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
-    
-    MetadataStore store = makeFilterMetadata();
-    MetadataTools.populatePixels(store, this);
-  }
+  private TiffConstants() { }
 
 }

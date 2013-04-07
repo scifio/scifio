@@ -33,59 +33,49 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package ome.xml.translation;
 
-package loci.formats.in;
-
-import java.io.IOException;
-
+import net.imglib2.meta.Axes;
 import ome.scifio.formats.EPSFormat;
+import ome.xml.meta.OMEMetadata;
+import ome.xml.meta.OMEXMLMetadata;
 
-import loci.formats.FormatException;
-import loci.formats.MetadataTools;
-import loci.formats.SCIFIOFormatReader;
-import loci.formats.meta.MetadataStore;
-import loci.legacy.context.LegacyContext;
+import org.scijava.Priority;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 
 /**
- * Reader is the file format reader for Encapsulated PostScript (EPS) files.
- * Some regular PostScript files are also supported.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/EPSReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/EPSReader.java;hb=HEAD">Gitweb</a></dd></dl>
- *
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * Translator class from {@link ome.scifio.formats.APNGFormat.Metadata} to
+ * {@link ome.xml.meta.OMEMetadata}.
+ * <p>
+ * NB: Plugin priority is set to high to be selected over the base
+ * {@link ome.scifio.Metadata} translator.
+ * </p>
  * 
- * @deprecated Use ome.scifio.formats.EPSReader instead.
+ * @author Mark Hiner
  */
-@Deprecated
-public class EPSReader extends SCIFIOFormatReader {
-
-  // -- Constructor --
-
-  /** Constructs a new APNGReader. */
-  public EPSReader() {
-    super("Encapsulated PostScript", new String[] {"eps", "epsi", "ps"});
-
-    try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(EPSFormat.class);
-      checker = format.createChecker();
-      parser = format.createParser();
-      reader = format.createReader();
-    }
-    catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
-    }
-  }
-
-  // -- IFormatReader API methods --
-
+@Plugin(type = FromOMETranslator.class, priority = Priority.HIGH_PRIORITY,
+attrs = {
+  @Attr(name = OMEEPSTranslator.SOURCE, value = OMEMetadata.CNAME),
+  @Attr(name = OMEEPSTranslator.DEST, value = EPSFormat.Metadata.CNAME)
+})
+public class OMEEPSTranslator extends FromOMETranslator<EPSFormat.Metadata> {
+  
+  /*
+   * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+   */
   @Override
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
+  protected void typedTranslate(OMEMetadata source, EPSFormat.Metadata dest) {
+    super.typedTranslate(source, dest);
     
-    MetadataStore store = makeFilterMetadata();
-    MetadataTools.populatePixels(store, this);
+    OMEXMLMetadata meta = source.getRoot();
+    
+    int sizeX = meta.getPixelsSizeX(0).getValue().intValue();
+    int sizeY = meta.getPixelsSizeY(0).getValue().intValue();
+    int sizeC = meta.getChannelSamplesPerPixel(0, 0).getValue().intValue();
+    
+    dest.setAxisLength(0, Axes.X, sizeX);
+    dest.setAxisLength(0, Axes.Y, sizeY);
+    dest.setAxisLength(0, Axes.CHANNEL, sizeC);
   }
-
 }

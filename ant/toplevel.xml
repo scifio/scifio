@@ -455,6 +455,7 @@ Type "ant -p" for a list of targets.
 
   <target name="deps-scifio-devel"
     depends="jar-jai,
+      jar-lwf-stubs,
       jar-ome-xml"/>
 
   <target name="compile-scifio-devel" depends="deps-scifio-devel"

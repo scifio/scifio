@@ -34,58 +34,52 @@
  * #L%
  */
 
-package loci.formats.in;
+package ome.scifio.formats.tiff;
 
 import java.io.IOException;
 
-import ome.scifio.formats.EPSFormat;
-
-import loci.formats.FormatException;
-import loci.formats.MetadataTools;
-import loci.formats.SCIFIOFormatReader;
-import loci.formats.meta.MetadataStore;
-import loci.legacy.context.LegacyContext;
+import ome.scifio.io.RandomAccessInputStream;
 
 /**
- * Reader is the file format reader for Encapsulated PostScript (EPS) files.
- * Some regular PostScript files are also supported.
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/EPSReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/EPSReader.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/tiff/OnDemandLongArray.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/tiff/OnDemandLongArray.java;hb=HEAD">Gitweb</a></dd></dl>
  *
- * @author Melissa Linkert melissa at glencoesoftware.com
- * 
- * @deprecated Use ome.scifio.formats.EPSReader instead.
+ * @author Melissa Linkert <melissa at glencoesoftware.com>
  */
-@Deprecated
-public class EPSReader extends SCIFIOFormatReader {
+public class OnDemandLongArray {
 
-  // -- Constructor --
+  private RandomAccessInputStream stream;
+  private int size;
+  private long start;
 
-  /** Constructs a new APNGReader. */
-  public EPSReader() {
-    super("Encapsulated PostScript", new String[] {"eps", "epsi", "ps"});
-
-    try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(EPSFormat.class);
-      checker = format.createChecker();
-      parser = format.createParser();
-      reader = format.createReader();
-    }
-    catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
-    }
+  public OnDemandLongArray(RandomAccessInputStream in) throws IOException {
+    stream = in;
+    start = stream.getFilePointer();
   }
 
-  // -- IFormatReader API methods --
+  public void setSize(int size) {
+    this.size = size;
+  }
 
-  @Override
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
-    
-    MetadataStore store = makeFilterMetadata();
-    MetadataTools.populatePixels(store, this);
+  public long get(int index) throws IOException {
+    long fp = stream.getFilePointer();
+    stream.seek(start + index * 8);
+    long value = stream.readLong();
+    stream.seek(fp);
+    return value;
+  }
+
+  public long size() {
+    return size;
+  }
+
+  public void close() throws IOException {
+    stream.close();
+    stream = null;
+    size = 0;
+    start = 0;
   }
 
 }

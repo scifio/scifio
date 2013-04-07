@@ -34,58 +34,17 @@
  * #L%
  */
 
-package loci.formats.in;
+package ome.scifio.formats.tiff;
 
-import java.io.IOException;
-
-import ome.scifio.formats.EPSFormat;
-
-import loci.formats.FormatException;
-import loci.formats.MetadataTools;
-import loci.formats.SCIFIOFormatReader;
-import loci.formats.meta.MetadataStore;
-import loci.legacy.context.LegacyContext;
+import java.util.ArrayList;
 
 /**
- * Reader is the file format reader for Encapsulated PostScript (EPS) files.
- * Some regular PostScript files are also supported.
+ * Data structure for working with a list of TIFF {@link IFD}s.
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/EPSReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/EPSReader.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/tiff/IFDList.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/tiff/IFDList.java;hb=HEAD">Gitweb</a></dd></dl>
  *
- * @author Melissa Linkert melissa at glencoesoftware.com
- * 
- * @deprecated Use ome.scifio.formats.EPSReader instead.
+ * @author Curtis Rueden ctrueden at wisc.edu
  */
-@Deprecated
-public class EPSReader extends SCIFIOFormatReader {
-
-  // -- Constructor --
-
-  /** Constructs a new APNGReader. */
-  public EPSReader() {
-    super("Encapsulated PostScript", new String[] {"eps", "epsi", "ps"});
-
-    try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(EPSFormat.class);
-      checker = format.createChecker();
-      parser = format.createParser();
-      reader = format.createReader();
-    }
-    catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
-    }
-  }
-
-  // -- IFormatReader API methods --
-
-  @Override
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
-    
-    MetadataStore store = makeFilterMetadata();
-    MetadataTools.populatePixels(store, this);
-  }
-
-}
+public class IFDList extends ArrayList<IFD> { }

@@ -34,58 +34,21 @@
  * #L%
  */
 
-package loci.formats.in;
-
-import java.io.IOException;
-
-import ome.scifio.formats.EPSFormat;
-
-import loci.formats.FormatException;
-import loci.formats.MetadataTools;
-import loci.formats.SCIFIOFormatReader;
-import loci.formats.meta.MetadataStore;
-import loci.legacy.context.LegacyContext;
+package ome.scifio.codec;
 
 /**
- * Reader is the file format reader for Encapsulated PostScript (EPS) files.
- * Some regular PostScript files are also supported.
+ * Options for compressing and decompressing Nikon NEF data.
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/EPSReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/EPSReader.java;hb=HEAD">Gitweb</a></dd></dl>
- *
- * @author Melissa Linkert melissa at glencoesoftware.com
- * 
- * @deprecated Use ome.scifio.formats.EPSReader instead.
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/NikonCodecOptions.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/NikonCodecOptions.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@Deprecated
-public class EPSReader extends SCIFIOFormatReader {
+public class NikonCodecOptions extends CodecOptions {
 
-  // -- Constructor --
+  public int[] curve;
 
-  /** Constructs a new APNGReader. */
-  public EPSReader() {
-    super("Encapsulated PostScript", new String[] {"eps", "epsi", "ps"});
+  public int[] vPredictor;
 
-    try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(EPSFormat.class);
-      checker = format.createChecker();
-      parser = format.createParser();
-      reader = format.createReader();
-    }
-    catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
-    }
-  }
-
-  // -- IFormatReader API methods --
-
-  @Override
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
-    
-    MetadataStore store = makeFilterMetadata();
-    MetadataTools.populatePixels(store, this);
-  }
+  public int split;
 
 }

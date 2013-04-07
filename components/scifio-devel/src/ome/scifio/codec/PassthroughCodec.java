@@ -34,58 +34,47 @@
  * #L%
  */
 
-package loci.formats.in;
+package ome.scifio.codec;
 
 import java.io.IOException;
 
-import ome.scifio.formats.EPSFormat;
-
-import loci.formats.FormatException;
-import loci.formats.MetadataTools;
-import loci.formats.SCIFIOFormatReader;
-import loci.formats.meta.MetadataStore;
-import loci.legacy.context.LegacyContext;
+import ome.scifio.FormatException;
+import ome.scifio.io.RandomAccessInputStream;
 
 /**
- * Reader is the file format reader for Encapsulated PostScript (EPS) files.
- * Some regular PostScript files are also supported.
+ * A codec which just returns the exact data it was given, performing no
+ * compression or decompression.
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/EPSReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/EPSReader.java;hb=HEAD">Gitweb</a></dd></dl>
- *
- * @author Melissa Linkert melissa at glencoesoftware.com
- * 
- * @deprecated Use ome.scifio.formats.EPSReader instead.
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/PassthroughCodec.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/PassthroughCodec.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@Deprecated
-public class EPSReader extends SCIFIOFormatReader {
+public class PassthroughCodec extends BaseCodec {
 
-  // -- Constructor --
-
-  /** Constructs a new APNGReader. */
-  public EPSReader() {
-    super("Encapsulated PostScript", new String[] {"eps", "epsi", "ps"});
-
-    try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(EPSFormat.class);
-      checker = format.createChecker();
-      parser = format.createParser();
-      reader = format.createReader();
-    }
-    catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
-    }
+  /* (non-Javadoc)
+   * @see loci.formats.codec.BaseCodec#decompress(byte[], loci.formats.codec.CodecOptions)
+   */
+  @Override
+  public byte[] decompress(byte[] data, CodecOptions options)
+      throws FormatException {
+    return data;
   }
 
-  // -- IFormatReader API methods --
-
+  /* (non-Javadoc)
+   * @see loci.formats.codec.BaseCodec#decompress(loci.common.RandomAccessInputStream, loci.formats.codec.CodecOptions)
+   */
   @Override
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
-    
-    MetadataStore store = makeFilterMetadata();
-    MetadataTools.populatePixels(store, this);
+  public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
+      throws FormatException, IOException {
+    throw new RuntimeException("Not implemented.");
+  }
+
+  /* (non-Javadoc)
+   * @see loci.formats.codec.Codec#compress(byte[], loci.formats.codec.CodecOptions)
+   */
+  public byte[] compress(byte[] data, CodecOptions options)
+      throws FormatException {
+    return data;
   }
 
 }

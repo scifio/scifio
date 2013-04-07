@@ -34,58 +34,60 @@
  * #L%
  */
 
-package loci.formats.in;
+package ome.scifio.codec;
 
+import java.io.EOFException;
 import java.io.IOException;
+import java.util.zip.Deflater;
+import java.util.zip.InflaterInputStream;
 
-import ome.scifio.formats.EPSFormat;
-
-import loci.formats.FormatException;
-import loci.formats.MetadataTools;
-import loci.formats.SCIFIOFormatReader;
-import loci.formats.meta.MetadataStore;
-import loci.legacy.context.LegacyContext;
+import ome.scifio.FormatException;
+import ome.scifio.io.RandomAccessInputStream;
 
 /**
- * Reader is the file format reader for Encapsulated PostScript (EPS) files.
- * Some regular PostScript files are also supported.
+ * This class implements ZLIB decompression.
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/EPSReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/EPSReader.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/ZlibCodec.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/ZlibCodec.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
- * 
- * @deprecated Use ome.scifio.formats.EPSReader instead.
  */
-@Deprecated
-public class EPSReader extends SCIFIOFormatReader {
+public class ZlibCodec extends BaseCodec {
 
-  // -- Constructor --
-
-  /** Constructs a new APNGReader. */
-  public EPSReader() {
-    super("Encapsulated PostScript", new String[] {"eps", "epsi", "ps"});
-
-    try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(EPSFormat.class);
-      checker = format.createChecker();
-      parser = format.createParser();
-      reader = format.createReader();
+  /* @see Codec#compress(byte[], CodecOptions) */
+  public byte[] compress(byte[] data, CodecOptions options)
+    throws FormatException
+  {
+    if (data == null || data.length == 0)
+      throw new IllegalArgumentException("No data to compress");
+    Deflater deflater = new Deflater();
+    deflater.setInput(data);
+    deflater.finish();
+    byte[] buf = new byte[8192];
+    ByteVector bytes = new ByteVector();
+    int r = 0;
+    // compress until eof reached
+    while ((r = deflater.deflate(buf, 0, buf.length)) > 0) {
+      bytes.add(buf, 0, r);
     }
-    catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
-    }
+    return bytes.toByteArray();
   }
 
-  // -- IFormatReader API methods --
-
-  @Override
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
-    
-    MetadataStore store = makeFilterMetadata();
-    MetadataTools.populatePixels(store, this);
+  /* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
+  public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
+    throws FormatException, IOException
+  {
+    InflaterInputStream i = new InflaterInputStream(in);
+    ByteVector bytes = new ByteVector();
+    byte[] buf = new byte[8192];
+    int r = 0;
+    // read until eof reached
+    try {
+      while ((r = i.read(buf, 0, buf.length)) > 0) bytes.add(buf, 0, r);
+    }
+    catch (EOFException e) { }
+    return bytes.toByteArray();
   }
 
 }
