@@ -170,6 +170,24 @@ public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
       throws FormatException {
     final T t = createObject(c);
     t.setContext(getContext());
+    
+    // if we are creating a Default component, we need to
+    // manually set its Format.
+    if (DefaultComponent.class.isAssignableFrom(t.getClass())) {
+      try {
+        java.lang.reflect.Field fmt = t.getClass().getDeclaredField("format");
+        fmt.setAccessible(true);
+        fmt.set(t, this);
+      } catch (NoSuchFieldException e) {
+        throw new FormatException("Failed to populate DefaultComponent field", e);
+      } catch (SecurityException e) {
+        throw new FormatException("Failed to populate DefaultComponent field", e);
+      } catch (IllegalArgumentException e) {
+        throw new FormatException("Failed to populate DefaultComponent field", e);
+      } catch (IllegalAccessException e) {
+        throw new FormatException("Failed to populate DefaultComponent field", e);
+      }
+    }
     return t;
   }
 

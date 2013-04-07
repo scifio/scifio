@@ -47,8 +47,14 @@ import java.util.List;
  * 
  * @author Mark Hiner
  */
-public class DefaultMetadata extends AbstractMetadata {
-
+public class DefaultMetadata extends AbstractMetadata 
+  implements DefaultComponent
+{
+  
+  // -- Fields --
+  
+  private Format format;
+  
   // -- Constructors --
   
   public DefaultMetadata() {
@@ -61,6 +67,13 @@ public class DefaultMetadata extends AbstractMetadata {
   
   public DefaultMetadata(final List<ImageMetadata> list) {
     super(list);
+  }
+  
+  // -- HasFormat API Methods --
+  
+  @Override
+  public Format getFormat() {
+    return format;
   }
   
   // -- Metadata API methods --

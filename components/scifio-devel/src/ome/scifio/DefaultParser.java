@@ -65,8 +65,25 @@ import ome.scifio.io.RandomAccessInputStream;
  * @author Mark Hiner
  *
  */
-public class DefaultParser extends AbstractParser<DefaultMetadata> {
+public class DefaultParser extends AbstractParser<DefaultMetadata>
+  implements DefaultComponent
+{
+  // -- Fields --
+  
+  private Format format;
+  
+  // -- HasFormatAPI Methods --
+  
+  @Override
+  public Format getFormat() {
+    return format;
+  }
+  
+  // -- AbstractParser API Methods --
 
+  /*
+   * Non-functional typedParse implementation.
+   */
   @Override
   protected void typedParse(RandomAccessInputStream stream, DefaultMetadata meta)
       throws IOException, FormatException { }

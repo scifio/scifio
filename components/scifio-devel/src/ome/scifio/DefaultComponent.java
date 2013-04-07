@@ -35,45 +35,10 @@
  */
 package ome.scifio;
 
-import java.io.IOException;
-
 /**
- * Non-functional default {@link ome.scifio.Reader} implementation. For use
- * in {@link ome.scifio.Format}s that do not need a Reader.
+ * Marker interface for default class implementations.
  * 
- * @see ome.scifio.Reader
- * @see ome.scifio.Format
- * 
- * @author Mark Hiner
+ * @author Mark Hiner hinerm at gmail.com
  *
  */
-public class DefaultReader extends ByteArrayReader<DefaultMetadata>
-  implements DefaultComponent
-{
-  
-  // -- Fields --
-  
-  private Format format;
-  
-  // -- HasFormat API Methods --
-  
-  @Override
-  public Format getFormat() {
-    return format;
-  }
-  
-  // -- Reader API Methods --
-  
-  /**
-   * Non-functional openPlane implementation.
-   * 
-   * @throws UnsupportedOperationException
-   */
-  public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
-      ByteArrayPlane plane, int x, int y, int w, int h) throws FormatException,
-      IOException
-  {
-    throw new UnsupportedOperationException("Trying to read using DefaultReader. " +
-        "Must implement a Reader specifically for this Format");
-  }
-}
+public interface DefaultComponent { }

@@ -47,10 +47,24 @@ import java.io.IOException;
  * @author Mark Hiner
  *
  */
-public class DefaultWriter extends AbstractWriter<DefaultMetadata> {
+public class DefaultWriter extends AbstractWriter<DefaultMetadata>
+  implements DefaultComponent
+{
+  // -- Fields --
+  
+  private Format format;
+  
+  // -- HasFormat API methods --
+  
+  @Override
+  public Format getFormat() {
+    return format;
+  }
+  
+  // -- Writer API Methods --
   
   /**
-   * Non-functional openPlane implementation.
+   * Non-functional savePlane implementation.
    * 
    * @throws UnsupportedOperationException
    */

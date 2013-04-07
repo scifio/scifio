@@ -53,4 +53,18 @@ package ome.scifio;
  * @author Mark Hiner
  *
  */
-public class DefaultChecker extends AbstractChecker { }
+public class DefaultChecker extends AbstractChecker 
+  implements DefaultComponent
+{
+  
+  // -- Fields --
+  
+  private Format format;
+  
+  // -- HasFormat API methods --
+
+  @Override
+  public Format getFormat() {
+    return format;
+  }
+}
