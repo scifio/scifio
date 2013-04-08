@@ -55,7 +55,7 @@
     <dependency>
       <groupId>net.java.sezpoz</groupId>
       <artifactId>sezpoz</artifactId>
-      <version>1.9</version>
+      <version>${sezpoz.version}</version>
     </dependency>
     <dependency>
       <groupId>${scijava-common.groupId}</groupId>
