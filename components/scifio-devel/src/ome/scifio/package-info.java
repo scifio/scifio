@@ -2,6 +2,10 @@
  * Provides the interfaces and default implementations for the components of
  * SCIFIO, and the context for instantiating these components.
  * <p>
+ * Please refer to the <a href="http://loci.wisc.edu/scifio/faq">FAQ</a> for
+ * answers to commonly asked questions.
+ * </p>
+ * <p>
  * Support for a given image format in SCIFIO is established by implementing
  * the {@link ome.scifio.Format} interface. Each Format consists of six types of
  * components:
@@ -31,9 +35,39 @@
  *  {@link ome.scifio.Translator} - converts between two types of Metadata.
  *  {@code Translator} converts in a single direction. To avoid an NxN
  *  translation problem, typically {@code Translators} are only defined to
- *  and from format-agnostic {@code Metadata} representations.
+ *  and from format-agnostic {@code Metadata} representations. Furthermore,
+ *  only writable Formats require translators to their Metadata type.
  *  </li>
  * </ul>
+ * </p>
+ * <p>
+ * The intended workflow in SCIFIO takes an image source through the following steps:
+ * <ol>
+ *  <li>
+ *  Use each discovered Format's Checker to determine if that Format is compatible with
+ *  the image source.
+ *  </li>
+ *  <li>
+ *  If a match is found, use a Parser to extract the format-specific Metadata from the
+ *  image source. Format-specific information is also used at this point to populate
+ *  the associated ImageMetadata information.
+ *  </li>
+ *  <li>
+ *  Now that we have a Metadata object, it can be attached to a Reader and used to open
+ *  image Planes.
+ *  </li>
+ *  <li>
+ *  If we want to save these planes to a different Format, we need to use Translators
+ *  to convert our parsed Metadata to the destination Metadata. This could be done by
+ *  translating  to and from an intermediary - e.g. an open exchange format, like OME-XML.
+ *  Or, it could be done by simply translating from the source's ImageMetadata to
+ *  the destination.
+ *  </li>
+ *  <li>
+ *  The translated Metadata is then attached to an appropriate Writer, and Planes opened
+ *  by the Reader are passed, as desired, to the Writer for saving to an output source.
+ *  </li>
+ * </ol>
  * </p>
  * <p>
  * The {@link ome.scifio.SCIFIO} class wraps {@link org.scijava.Context} 
