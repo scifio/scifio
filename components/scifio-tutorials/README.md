@@ -29,6 +29,9 @@ Or build and run from the command line...
 
 TUTORIAL ORDER
 -------------
+SCIFIO provides multiple paths to read and write images. Convenience
+methods are present to make the IO process as simple as possible. The
+individual components of SCIFIO allow more precise control.
 
 The tutorials are named in a suggested order for execution:
   * Tutorials 1a-d focus on basic image IO using convenience methods
