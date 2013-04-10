@@ -97,9 +97,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   @Field(label = "dimTypes")
   private List<AxisType> axisTypes;
   
-  /** Cached axis length array to avoid creating new arrays constantly when querying axis lengths. */
-  private int[] cachedLengths = null;
-
   /** Lengths of each axis. Order is parallel of dimTypes. */
   @Field(label = "dimLengths")
   private HashMap<AxisType, Integer> axisLengths;
@@ -417,14 +414,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @see ome.scifio.ImageMetadata#getAxesLengths()
    */
   public int[] getAxesLengths() {
-    if (cachedLengths == null || cachedLengths.length != axisLengths.size())
-      cachedLengths = new int[axisLengths.size()];
+    int[] lengths = new int[axisTypes.size()];
     
-    for (int i=0; i<axisLengths.size(); i++) {
-      cachedLengths[i] = axisLengths.get(axisTypes.get(i));
+    for (int i=0; i<axisTypes.size(); i++) {
+      lengths[i] = getAxisLength(axisTypes.get(i));
     }
     
-    return cachedLengths;
+    return lengths;
   }
 
   /*
