@@ -38,7 +38,6 @@ package ome.scifio;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 
 import ome.scifio.util.FormatTools;
@@ -145,21 +144,19 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   @Field(label = "metadataComplete")
   private boolean metadataComplete;
 
-  /** Non-core metadata associated with this series. */
-  @Field(label = "imageMetadata")
-  private Hashtable<String, Object> imageMetadata;
-
   /**
    * Indicates whether or not this series is a lower-resolution copy of
    * another series.
    */
   @Field(label = "thumbnail")
   private boolean thumbnail;
-
+  
+  /* A table of Field key, value pairs */
+  private MetaTable table;
+  
   // -- Constructors --
 
   public AbstractImageMetadata() {
-    imageMetadata = new Hashtable<String, Object>();
     axisTypes = new ArrayList<AxisType>();
     axisLengths = new HashMap<AxisType, Integer>();
   }
@@ -259,13 +256,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public void setMetadataComplete(final boolean metadataComplete) {
     this.metadataComplete = metadataComplete;
-  }
-
-  /*
-   * @see ome.scifio.ImageMetadata#setImageMetadata(java.util.Hashtable)
-   */
-  public void setImageMetadata(final Hashtable<String, Object> imageMetadata) {
-    this.imageMetadata = imageMetadata;
   }
 
   /*
@@ -487,13 +477,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   }
 
   /*
-   * @see ome.scifio.ImageMetadata#getImageMetadata()
-   */
-  public Hashtable<String, Object> getImageMetadata() {
-    return imageMetadata;
-  }
-
-  /*
    * @see ome.scifio.ImageMetadata#isThumbnail()
    */
   public boolean isThumbnail() {
@@ -577,7 +560,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   }
   
   public void copy(ImageMetadata toCopy) {
-    imageMetadata = (Hashtable<String, Object>) toCopy.getImageMetadata().clone();
+    table = new DefaultMetaTable(toCopy.getTable());
     
     axisTypes = new ArrayList<AxisType>(Arrays.asList(toCopy.getAxes()));
     setAxisLengths(toCopy.getAxesLengths().clone());
@@ -598,6 +581,23 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     thumbSizeY = toCopy.getThumbSizeY();
   }
   
+  // -- HasTable API Methods --
+
+  /*
+   * @see ome.scifio.HasMetaTable#getTable()
+   */
+  public MetaTable getTable() {
+    if (table == null) table = new DefaultMetaTable();
+    return table;
+  }
+
+  /*
+   * @see ome.scifio.HasMetaTable#setTable(ome.scifio.MetaTable)
+   */
+  public void setTable(MetaTable table) {
+    this.table = table;
+  }
+ 
   // -- Serializable API Methods --
 
   // -- Object API --

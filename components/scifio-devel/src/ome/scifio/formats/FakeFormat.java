@@ -417,8 +417,8 @@ public class FakeFormat extends AbstractFormat
           axisLengths[i] = -1; // Unknown axis
       }
 
-      putDatasetMeta(SCALE_FACTOR, scaleFactor);
-      putDatasetMeta(LUT_LENGTH, lutLength);
+      getTable().put(SCALE_FACTOR, scaleFactor);
+      getTable().put(LUT_LENGTH, lutLength);
       
       int numImages = 1;
       numImages =  FakeUtils.getIntValue(fakeMap.get(SERIES), numImages);
@@ -492,7 +492,7 @@ public class FakeFormat extends AbstractFormat
       final boolean indexed = meta.isIndexed(imageIndex);
       final boolean little = meta.isLittleEndian(imageIndex);
       final boolean interleaved = meta.isInterleaved(imageIndex);
-      final int scaleFactor = ((Double)meta.getMetadataValue(SCALE_FACTOR)).intValue();
+      final int scaleFactor = ((Double)meta.getTable().get(SCALE_FACTOR)).intValue();
       final ColorTable[] lut = getMetadata().getLut();
       final int[][] valueToIndex = getMetadata().getValueToIndex();
       
@@ -625,13 +625,13 @@ public class FakeFormat extends AbstractFormat
       fakeId = FakeUtils.appendToken(fakeId, SERIES, source.getImageCount());
       fakeId = FakeUtils.appendToken(fakeId, RGB, source.getRGBChannelCount(0));
       
-      if(source.getMetadataValue(SCALE_FACTOR) != null) {
-        double scaleFactor = (Double)source.getMetadataValue(SCALE_FACTOR);
+      if(source.getTable().get(SCALE_FACTOR) != null) {
+        double scaleFactor = (Double)source.getTable().get(SCALE_FACTOR);
         fakeId = FakeUtils.appendToken(fakeId, SCALE_FACTOR, Double.toString(scaleFactor));
       }
       
-      if(source.getMetadataValue(LUT_LENGTH) != null) {
-        int lutLength = (Integer)source.getMetadataValue(LUT_LENGTH);
+      if(source.getTable().get(LUT_LENGTH) != null) {
+        int lutLength = (Integer)source.getTable().get(LUT_LENGTH);
         fakeId = FakeUtils.appendToken(fakeId, LUT_LENGTH, Integer.toString(lutLength));
       }
       

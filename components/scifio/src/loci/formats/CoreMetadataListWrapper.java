@@ -38,11 +38,13 @@ package loci.formats;
 import java.lang.ref.WeakReference;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import net.imglib2.meta.AxisType;
 
 import ome.scifio.AbstractMetadata;
 import ome.scifio.ImageMetadata;
+import ome.scifio.MetaTable;
 import ome.scifio.Metadata;
 
 import loci.legacy.adapter.Wrapper;
@@ -85,20 +87,6 @@ public class CoreMetadataListWrapper extends AbstractMetadata
   public ImageMetadata get(int imageIndex) {
   	// Converts CoreMetadata to ImageMetadata
     return FormatAdapter.get(unwrap().get(imageIndex));
-  }
-  
-  /*
-   * @see ome.scifio.AbstractMetadata#getImageMetadataValue(int, java.lang.String)
-   */
-  public Object getImageMetadataValue(int imageIndex, String field) {
-    return get(imageIndex).getImageMetadata().get(field);
-  }
-
-  /*
-   * @see ome.scifio.AbstractMetadata#getImageMetadata(int)
-   */
-  public Hashtable<String, Object> getImageMetadata(int imageIndex) {
-    return get(imageIndex).getImageMetadata();
   }
 
   /*
@@ -293,13 +281,6 @@ public class CoreMetadataListWrapper extends AbstractMetadata
   }
 
   /*
-   * @see ome.scifio.AbstractMetadata#putImageMeta(int, java.lang.String, java.lang.Object)
-   */
-  public void putImageMeta(int imageIndex, String key, Object value) {
-    get(imageIndex).getImageMetadata().put(key, value);
-  }
-
-  /*
    * @see ome.scifio.AbstractMetadata#setThumbSizeX(int, int)
    */
   public void setThumbSizeX(int imageIndex, int thumbX) {
@@ -398,13 +379,6 @@ public class CoreMetadataListWrapper extends AbstractMetadata
   }
 
   /*
-   * @see ome.scifio.AbstractMetadata#setImageMetadata(int, java.util.Hashtable)
-   */
-  public void setImageMetadata(int imageIndex, Hashtable<String, Object> meta) {
-    get(imageIndex).setImageMetadata(meta);
-  }
-
-  /*
    * @see ome.scifio.AbstractMetadata#setThumbnailImage(int, boolean)
    */
   public void setThumbnailImage(int imageIndex, boolean thumbnail) {
@@ -443,4 +417,10 @@ public class CoreMetadataListWrapper extends AbstractMetadata
    * @see ome.scifio.Metadata#populateImageMetadata()
    */
   public void populateImageMetadata() { }
+
+  public MetaTable getTable() {
+    return null;
+  }
+
+  public void setTable(MetaTable table) { }
 }

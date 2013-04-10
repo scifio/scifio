@@ -35,8 +35,6 @@
  */
 package ome.scifio;
 
-import java.util.Hashtable;
-
 import net.imglib2.meta.AxisType;
 
 /**
@@ -47,7 +45,7 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Mark Hiner
  */
-public interface ImageMetadata {
+public interface ImageMetadata extends HasMetaTable {
 
   /** Sets width (in pixels) of thumbnail planes in this image. */
   void setThumbSizeX(int thumbSizeX);
@@ -102,9 +100,6 @@ public interface ImageMetadata {
    * within the image has been parsed.
    */
   void setMetadataComplete(boolean metadataComplete);
-
-  /** Sets a collection of non-core metadata associated with this image. */
-  void setImageMetadata(Hashtable<String, Object> imageMetadata);
 
   /** 
    * Sets whether or not this image is a lower-resolution copy of
@@ -200,9 +195,6 @@ public interface ImageMetadata {
    * within the image has been parsed.
    */
   boolean isMetadataComplete();
-
-  /** Returns a collection of non-core metadata associated with this image. */
-  Hashtable<String, Object> getImageMetadata();
 
   /** 
    * Determines whether or not this image is a lower-resolution copy of

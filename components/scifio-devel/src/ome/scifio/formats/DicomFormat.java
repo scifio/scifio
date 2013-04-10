@@ -1176,7 +1176,7 @@ public class DicomFormat extends AbstractFormat {
         if (level != MetadataLevel.MINIMUM) {
           // header exists, so we'll read it
           in.seek(0);
-          meta.putDatasetMeta("Header information", in.readString(128));
+          meta.getTable().put("Header information", in.readString(128));
           in.skipBytes(4);
         }
         location = 128;
@@ -1714,14 +1714,14 @@ public class DicomFormat extends AbstractFormat {
           int imageIndex = meta.getImageCount() - 1;
           
           Object v;
-          if ((v = meta.getImageMetadataValue(imageIndex, key)) != null) {
+          if ((v = meta.get(imageIndex).getTable().get(key)) != null) {
             // make sure that values are not overwritten
-            meta.getImageMetadata(imageIndex).remove(key);
-            meta.putImageMetaList(imageIndex, key, v);
-            meta.putImageMetaList(imageIndex, key, info);
+            meta.get(imageIndex).getTable().remove(key);
+            meta.get(imageIndex).getTable().putList(key, v);
+            meta.get(imageIndex).getTable().putList(key, info);
           }
           else {
-            meta.putImageMeta(imageIndex, key, info);
+            meta.get(imageIndex).getTable().put(key, info);
           }
         }
       }

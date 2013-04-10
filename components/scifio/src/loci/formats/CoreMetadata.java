@@ -41,7 +41,9 @@ import java.util.Hashtable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import ome.scifio.DefaultImageMetadata;
+import ome.scifio.DefaultMetaTable;
 import ome.scifio.ImageMetadata;
+import ome.scifio.MetaTable;
 import ome.scifio.Metadata;
 
 /**
@@ -265,7 +267,8 @@ public class CoreMetadata implements Cloneable {
     indexed = imgMeta.isIndexed();
     falseColor = imgMeta.isFalseColor();
     metadataComplete = imgMeta.isMetadataComplete();
-    seriesMetadata = imgMeta.getImageMetadata();
+    MetaTable table = imgMeta.getTable();
+    seriesMetadata = new Hashtable<String, Object>(table);
     thumbnail = imgMeta.isThumbnail();
   }
 
@@ -328,7 +331,10 @@ public class CoreMetadata implements Cloneable {
     imgMeta.setIndexed(indexed);
     imgMeta.setFalseColor(falseColor);
     imgMeta.setMetadataComplete(metadataComplete);
-    imgMeta.setImageMetadata(seriesMetadata);
+    
+    MetaTable table = new DefaultMetaTable(seriesMetadata);
+    
+    imgMeta.setTable(table);
     imgMeta.setThumbnail(thumbnail);
 
     return imgMeta;

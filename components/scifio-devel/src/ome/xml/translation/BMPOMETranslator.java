@@ -72,9 +72,9 @@ public class BMPOMETranslator extends ToOMETranslator<BMPFormat.Metadata> {
       // resolution is stored as pixels per meter; we want to convert to
       // microns per pixel
       
-      int pixelSizeX = (Integer) source.getMetadataValue("X resolution");
+      int pixelSizeX = (Integer) source.getTable().get("X resolution");
       
-      int pixelSizeY = (Integer) source.getMetadataValue("Y resolution");
+      int pixelSizeY = (Integer) source.getTable().get("Y resolution");
 
       double correctedX = pixelSizeX == 0 ? 0.0 : 1000000.0 / pixelSizeX;
       double correctedY = pixelSizeY == 0 ? 0.0 : 1000000.0 / pixelSizeY;

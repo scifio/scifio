@@ -40,18 +40,13 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
-import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import ome.scifio.io.RandomAccessInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ome.scifio.io.RandomAccessInputStream;
-import ome.scifio.util.FormatTools;
 
 /**
  * Abstract superclass of all SCIFIO {@link ome.scifio.Metadata} implementations.
@@ -81,15 +76,15 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   /* The MetadataOptions used when parsing this Metadata. */
   protected MetadataOptions metadataOptions;
 
-  /* Contains metadata key, value pairs for this dataset */
-  private Hashtable<String, Object> datasetMeta;
-
   /* Contains a list of metadata objects for each image in this dataset */
   @ome.scifio.Field(label = "imageMeta", isList = true)
   private List<ImageMetadata> imageMeta;
   
   /* A string id for this dataset. */
   private String datasetName = null;
+  
+  /* A table of Field key, value pairs */
+  private MetaTable table;
   
   // -- Constructors --
   
@@ -100,12 +95,12 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   public AbstractMetadata(final Metadata copy) {
     this(copy.getAll());
     
-    datasetMeta = (Hashtable<String, Object>) copy.getDatasetMetadata().clone();
+    table = new DefaultMetaTable(copy.getTable());
   }
   
   public AbstractMetadata(final List<ImageMetadata> list) {
     imageMeta = new ArrayList<ImageMetadata>();
-    datasetMeta = new Hashtable<String, Object>();
+    table = new DefaultMetaTable();
 
     if (list != null) {
       for(int i = 0; i < list.size(); i++) {
@@ -190,35 +185,6 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   
   public String getDatasetName() {
     return datasetName;
-  }
-
-  /*
-   * @see ome.scifio.Metadata#getMetadataValue(java.lang.String)
-   */
-  public Object getMetadataValue(final String field) {
-    return datasetMeta.get(field);
-  }
-
-  /*
-   * @see ome.scifio.Metadata#getImageMetadataValue(int, java.lang.String)
-   */
-  public Object getImageMetadataValue(final int imageIndex, final String field)
-  {
-    return imageMeta.get(imageIndex).getImageMetadata().get(field);
-  }
-
-  /*
-   * @see ome.scifio.Metadata#getDatasetMetadata()
-   */
-  public Hashtable<String, Object> getDatasetMetadata() {
-    return datasetMeta;
-  }
-
-  /*
-   * @see ome.scifio.Metadata#getImageMetadata(int)
-   */
-  public Hashtable<String, Object> getImageMetadata(final int imageIndex) {
-    return imageMeta.get(imageIndex).getImageMetadata();
   }
   
   /*
@@ -420,41 +386,6 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   }
   
   /*
-   * @see ome.scifio.Metadata#putDatasetMeta(java.lang.String, java.lang.Object)
-   */
-  public void putDatasetMeta(String key, Object value) {
-    datasetMeta.put(key, value);
-  }
-  
-  /*
-   * @see ome.scifio.Metadata#putImageMeta(int, java.lang.String, java.lang.Object)
-   */
-  public void putImageMeta(final int imageIndex, String key, Object value) {
-    imageMeta.get(imageIndex).getImageMetadata().put(key, value);
-  }
-  
-  /*
-   * @see ome.scifio.Metadata#putImageMetaList(int, java.lang.String, java.lang.Object)
-   */
-  @SuppressWarnings("unchecked")
-  public void putImageMetaList(int imageIndex, String key, Object value) {
-    Hashtable<String, Object> iMeta = getImageMetadata(imageIndex);
-    Object list = iMeta.get(key);
-    
-    if (list == null) list = new Vector<Object>();
-    
-    if (list instanceof Vector) ((Vector<Object>)list).add(value);
-    else {
-      Vector<Object> v = new Vector<Object>();
-      v.add(list);
-      v.add(value);
-      list = v;
-    }
-    
-    iMeta.put(key, list);
-  }
-
-  /*
    * @see ome.scifio.Metadata#setThumbSizeX(int, int)
    */
   public void setThumbSizeX(final int imageIndex, final int thumbX) {
@@ -571,15 +502,6 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   }
 
   /*
-   * @see ome.scifio.Metadata#setImageMetadata(int, java.util.Hashtable)
-   */
-  public void setImageMetadata(final int imageIndex,
-    final Hashtable<String, Object> meta)
-  {
-    imageMeta.get(imageIndex).setImageMetadata(meta);
-  }
-
-  /*
    * @see ome.scifio.Metadata#setThumbnailImage(int, boolean)
    */
   public void setThumbnailImage(final int imageIndex, final boolean thumbnail) {
@@ -627,6 +549,17 @@ public abstract class AbstractMetadata extends AbstractHasFormat
    */
   public void setAxisLength(final int imageIndex, final AxisType axis, final int length) {
     imageMeta.get(imageIndex).setAxisLength(axis, length);
+  }
+  
+  // -- HasMetaTable API Methods --
+  
+  public MetaTable getTable() {
+    if (table == null) table = new DefaultMetaTable();
+    return table;
+  }
+  
+  public void setTable(MetaTable table) {
+    this.table = table;
   }
 
   /* TODO

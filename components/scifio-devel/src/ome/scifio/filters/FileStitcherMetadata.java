@@ -212,14 +212,6 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
   public int getImageCount() {
     return noStitch ? super.getImageCount() : unwrap().getImageCount();
   }
-  
-  /*
-   * @see ome.scifio.AbstractMetadata#getImageMetadata(int)
-   */
-  public Hashtable<String, Object> getImageMetadata(int imageIndex) {
-    return noStitch ? super.getImageMetadata(imageIndex) :
-      unwrap().getImageMetadata(imageIndex);
-  }
 
   //TODO with new group files API
 //  public void setNormalized(boolean normalize) {

@@ -185,18 +185,10 @@ public abstract class SCIFIOFormatReader extends FormatReader
     return false;
   }
 
-  /** Adds an entry to the specified Hashtable. */
-  @Override
-  protected void addMeta(String key, Object value,
-    Hashtable<String, Object> meta)
-  {
-    parser.addMeta(key, value, meta);
-  }
-
   /** Adds an entry to the global metadata table. */
   @Override
   protected void addGlobalMeta(String key, Object value) {
-    addMeta(key, value, getGlobalMetadata());
+    reader.getMetadata().getTable().put(key, value);
   }
 
   /** Adds an entry to the global metadata table. */
@@ -256,7 +248,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   /** Adds an entry to the metadata table for the current series. */
   @Override
   protected void addSeriesMeta(String key, Object value) {
-    addMeta(key, value, reader.getMetadata().getImageMetadata(getSeries()));
+    reader.getMetadata().get(getSeries()).getTable().put(key, value);
   }
 
   /** Adds an entry to the metadata table for the current series. */
@@ -310,7 +302,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   /** Gets an entry from the metadata table for the current series. */
   @Override
   protected Object getSeriesMeta(String key) {
-    return reader.getMetadata().getImageMetadata(getSeries()).get(key);
+    return reader.getMetadata().get(getSeries()).getTable().get(key);
   }
 
   /** Reads a raw plane from disk. */
@@ -850,25 +842,25 @@ public abstract class SCIFIOFormatReader extends FormatReader
   /* @see IFormatReader#getMetadataValue(String) */
   @Override
   public Object getMetadataValue(String field) {
-    return reader.getMetadata().getMetadataValue(field);
+    return reader.getMetadata().getTable().get(field);
   }
 
   /* @see IFormatReader#getSeriesMetadataValue(String) */
   @Override
   public Object getSeriesMetadataValue(String field) {
-    return reader.getMetadata().getImageMetadataValue(getSeries(), field);
+    return reader.getMetadata().get(getSeries()).getTable().get(field);
   }
 
   /* @see IFormatReader#getGlobalMetadata() */
   @Override
   public Hashtable<String, Object> getGlobalMetadata() {
-    return reader.getMetadata().getDatasetMetadata();
+    return new Hashtable<String, Object>(reader.getMetadata().getTable());
   }
 
   /* @see IFormatReader#getSeriesMetadata() */
   @Override
   public Hashtable<String, Object> getSeriesMetadata() {
-    return reader.getMetadata().getImageMetadata(getSeries());
+    return new Hashtable<String, Object>(reader.getMetadata().get(getSeries()).getTable());
   }
 
   @Override

@@ -303,7 +303,7 @@ public class AVIFormat extends AbstractFormat {
       iMeta.setLittleEndian(true);
       iMeta.setInterleaved(getBmpBitsPerPixel() != 16);
 
-      putDatasetMeta("Compression", AVIUtils.getCodecName(getBmpCompression()));
+      getTable().put("Compression", AVIUtils.getCodecName(getBmpCompression()));
 
       if (getBmpCompression() == JPEG) {
         long fileOff = getOffsets().get(0).longValue();

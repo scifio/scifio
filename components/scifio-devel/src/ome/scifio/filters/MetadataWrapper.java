@@ -88,10 +88,6 @@ public interface MetadataWrapper extends Metadata, ScifioPlugin {
   
   void addAxis(final int imageIndex, final AxisType type, final int value, boolean passUp);
   
-  void putDatasetMeta(String key, Object value, boolean passUp);
-  
-  void putImageMeta(final int imageIndex, String key, Object value, boolean passUp);
-
   void setThumbSizeX(final int imageIndex, final int thumbX, boolean passUp);
 
   void setThumbSizeY(final int imageIndex, final int thumbY, boolean passUp);
@@ -119,8 +115,6 @@ public interface MetadataWrapper extends Metadata, ScifioPlugin {
   void setMetadataComplete(final int imageIndex, final boolean metadataComplete, boolean passUp);
   
   void add(final ImageMetadata meta, boolean passUp);
-
-  void setImageMetadata(final int imageIndex, final Hashtable<String, Object> meta, boolean passUp);
 
   void setThumbnailImage(final int imageIndex, final boolean thumbnail, boolean passUp);
 

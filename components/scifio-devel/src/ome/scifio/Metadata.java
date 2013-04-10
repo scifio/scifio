@@ -37,11 +37,10 @@
 package ome.scifio;
 
 import java.io.Serializable;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import net.imglib2.meta.AxisType;
-
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -64,7 +63,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
  */
-public interface Metadata extends Serializable, HasFormat {
+public interface Metadata extends Serializable, HasFormat, HasMetaTable {
   
   // -- Static Constents --
   
@@ -132,21 +131,6 @@ public interface Metadata extends Serializable, HasFormat {
   
   /** Returns a String representation of this Dataset's name */
   String getDatasetName();
-
-  /** Looks up the dataset metadata value for the provided key. */
-  Object getMetadataValue(String field);
-
-  /** 
-   * Looks up the image metadata value for the provided key and specified
-   * image index.
-   */
-  Object getImageMetadataValue(int imageIndex, String field);
-
-  /** Returns the collection of metadata for this dataset. */
-  Hashtable<String, Object> getDatasetMetadata();
-
-  /** Returns the collection of metadata for the specified image. */
-  Hashtable<String, Object> getImageMetadata(int imageIndex);
   
   /** Returns the ImageMetadata at the specified image within this dataset. */
   ImageMetadata get(int imageIndex);
@@ -351,22 +335,6 @@ public interface Metadata extends Serializable, HasFormat {
    */
   void setDatasetName(String name);
 
-  /** Convenience method for storing Dataset-level metadata. */
-  void putDatasetMeta(String key, Object value);
-
-  /** Convenience method for storing metadata at the specified image-level. */
-  void putImageMeta(int imageIndex, String key, Object value);
-  
-  /** 
-   * Convenience method for storing metadata at the specified image-level.
-   *  <p>
-   *  The provided key has multiple values associated with it. Thus the value
-   *  should be appended to an existing list, or a list created if it does not
-   *  already exist.
-   *  </p>
-   */
-  void putImageMetaList(int imageIndex, String key, Object value);
-
   /** Sets width (in pixels) of thumbnail planes for the specified image. */
   void setThumbSizeX(int imageIndex, int thumbX);
 
@@ -435,9 +403,6 @@ public interface Metadata extends Serializable, HasFormat {
    * Adds the provided image metadata to this dataset metadata
    */
   void add(final ImageMetadata meta);
-
-  /** Sets a collection of non-core metadata associated with the specified image. */
-  void setImageMetadata(int imageIndex, Hashtable<String, Object> meta);
 
   /** 
    * Sets whether or not the specified image is a lower-resolution copy of

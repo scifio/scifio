@@ -38,11 +38,8 @@ package ome.scifio;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.Set;
 
-import ome.scifio.MetadataLevel;
-import ome.scifio.MetadataOptions;
 import ome.scifio.io.RandomAccessInputStream;
 
 /**
@@ -212,5 +209,5 @@ public interface Parser extends HasFormat, Groupable {
   MetadataOptions getMetadataOptions();
 
   /** Adds an entry to the specified Hashtable */
-  void addMeta(String key, Object value, Hashtable<String, Object> meta);
+  void addMeta(String key, Object value, MetaTable meta);
 }

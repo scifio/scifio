@@ -39,7 +39,9 @@ import java.lang.ref.WeakReference;
 import java.util.Hashtable;
 
 import ome.scifio.AbstractImageMetadata;
+import ome.scifio.DefaultMetaTable;
 import ome.scifio.ImageMetadata;
+import ome.scifio.MetaTable;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -158,13 +160,6 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
    */
   public void setMetadataComplete(final boolean metadataComplete) {
     unwrap().metadataComplete = metadataComplete;
-  }
-
-  /*
-   * @see ome.scifio.AbstractImageMetadata#setImageMetadata(java.util.Hashtable)
-   */
-  public void setImageMetadata(final Hashtable<String, Object> imageMetadata) {
-    unwrap().seriesMetadata = imageMetadata;
   }
 
   /*
@@ -358,13 +353,6 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getImageMetadata()
-   */
-  public Hashtable<String, Object> getImageMetadata() {
-    return unwrap().seriesMetadata;
-  }
-
-  /*
    * @see ome.scifio.AbstractImageMetadata#isThumbnail()
    */
   public boolean isThumbnail() {
@@ -499,5 +487,21 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
    */
   public ImageMetadata copy() {
     return unwrap().convert();
+  }
+  
+  // -- HasMetaTable methods --
+
+  /*
+   * @see ome.scifio.HasMetaTable#getTable()
+   */
+  public MetaTable getTable() {
+    return new DefaultMetaTable(unwrap().seriesMetadata);
+  }
+
+  /*
+   * @see ome.scifio.HasMetaTable#setTable(ome.scifio.MetaTable)
+   */
+  public void setTable(MetaTable table) {
+    unwrap().seriesMetadata = new Hashtable<String, Object>(table);
   }
 }

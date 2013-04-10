@@ -35,11 +35,10 @@
  */
 package ome.scifio.filters;
 
-import java.util.Hashtable;
-
 import net.imglib2.meta.AxisType;
 import ome.scifio.AbstractMetadata;
 import ome.scifio.ImageMetadata;
+import ome.scifio.MetaTable;
 import ome.scifio.Metadata;
 import ome.scifio.io.RandomAccessInputStream;
 
@@ -111,19 +110,15 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
   }
   
   /*
-   * @see ome.scifio.filters.MetadataWrapper#putDatasetMeta(java.lang.String, java.lang.Object, boolean)
+   * @see ome.scifio.AbstractMetadata#getTable()
    */
-  public void putDatasetMeta(String key, Object value, boolean passUp) {
-    super.putDatasetMeta(key, value);
-    if (passUp) meta.putDatasetMeta(key, value);
+  public MetaTable getTable() {
+    return super.getTable();
   }
   
-  /*
-   * @see ome.scifio.filters.MetadataWrapper#putImageMeta(int, java.lang.String, java.lang.Object, boolean)
-   */
-  public void putImageMeta(final int imageIndex, String key, Object value, boolean passUp) {
-    super.putImageMeta(imageIndex, key, value);
-    if (passUp) meta.putImageMeta(imageIndex, key, value);
+  public void setTable(MetaTable table, boolean passUp) {
+    super.setTable(table);
+    if (passUp) meta.setTable(table);
   }
 
   /*
@@ -242,15 +237,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
   }
 
   /*
-   * @see ome.scifio.filters.MetadataWrapper#setImageMetadata(int, java.util.Hashtable, boolean)
-   */
-  public void setImageMetadata(final int imageIndex, final Hashtable<String, Object> meta, boolean passUp)
-  {
-    super.setImageMetadata(imageIndex, meta);
-    if (passUp) this.meta.setImageMetadata(imageIndex, meta);
-  }
-
-  /*
    * @see ome.scifio.filters.MetadataWrapper#setThumbnailImage(int, boolean, boolean)
    */
   public void setThumbnailImage(final int imageIndex, final boolean thumbnail, boolean passUp) {
@@ -303,20 +289,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
   public void addAxis(final int imageIndex, final AxisType type, final int value)
   {
     addAxis(imageIndex, type, value, true);
-  }
-  
-  /*
-   * @see ome.scifio.AbstractMetadata#putDatasetMeta(java.lang.String, java.lang.Object)
-   */
-  public void putDatasetMeta(String key, Object value) {
-    putDatasetMeta(key, value, true);
-  }
-  
-  /*
-   * @see ome.scifio.AbstractMetadata#putImageMeta(int, java.lang.String, java.lang.Object)
-   */
-  public void putImageMeta(final int imageIndex, String key, Object value) {
-    putImageMeta(imageIndex, key, value, true);
   }
 
   /*
@@ -418,14 +390,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
    */
   public void add(final ImageMetadata meta) {
     add(meta, true);
-  }
-
-  /*
-   * @see ome.scifio.AbstractMetadata#setImageMetadata(int, java.util.Hashtable)
-   */
-  public void setImageMetadata(final int imageIndex, final Hashtable<String, Object> meta)
-  {
-    setImageMetadata(imageIndex, meta, true);
   }
 
   /*

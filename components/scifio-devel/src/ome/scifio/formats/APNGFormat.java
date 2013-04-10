@@ -266,7 +266,7 @@ public class APNGFormat extends AbstractFormat {
   
       imageMeta.setThumbnail(false);
       
-      putImageMeta(0, Metadata.DEFAULT_KEY, isSeparateDefault());
+      get(0).getTable().put(Metadata.DEFAULT_KEY, isSeparateDefault());
       //TODO
       //coreMeta.setThumbSizeX(source.thumbSizeX);
       //coreMeta.setThumbSizeY(source.thumbSizeY);
@@ -1132,7 +1132,7 @@ public class APNGFormat extends AbstractFormat {
       boolean signed = FormatTools.isSigned(source.getPixelType(0));
       dest.setSigned(signed);
   
-      Object separateDefault = source.getImageMetadataValue(0, Metadata.DEFAULT_KEY);
+      Object separateDefault = source.get(0).getTable().get(Metadata.DEFAULT_KEY);
       dest.setSeparateDefault(separateDefault == null ? false : (Boolean)separateDefault);
     }
   }

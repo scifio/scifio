@@ -39,7 +39,6 @@ package ome.scifio;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Set;
 import java.util.Vector;
 
@@ -281,7 +280,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
    * @see ome.scifio.Parser#addMeta(java.lang.String, java.lang.Object, java.util.Hashtable)
    */
   public void addMeta(String key, Object value,
-    final Hashtable<String, Object> meta)
+    final MetaTable metaTable)
   {
     if (key == null || value == null /* || TODO !isMetadataCollected() */) {
       return;
@@ -331,7 +330,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
       if (string) value = val;
     }
 
-    meta.put(key, val == null ? value : val);
+    metaTable.put(key, val == null ? value : val);
   }
   
   // -- TypedParser API Methods --
@@ -414,7 +413,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
   /** Adds an entry to the global metadata table. */
   public void addGlobalMeta(final String key, final Object value) {
-    addMeta(key, value, metadata.getDatasetMetadata());
+    addMeta(key, value, metadata.getTable());
   }
 
   /** Adds an entry to the global metadata table. */
@@ -459,7 +458,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
   /** Gets a value from the global metadata table. */
   public Object getGlobalMeta(final String key) {
-    return metadata.getDatasetMetadata().get(key);
+    return metadata.getTable().get(key);
   }
 
   /* Sets the input stream for this parser if provided a new stream */
