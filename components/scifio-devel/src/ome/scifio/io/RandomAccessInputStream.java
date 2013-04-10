@@ -105,7 +105,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
    * around the given file.
    */
   public RandomAccessInputStream(Context context, String file) throws IOException {
-    this(context,new SCIFIO(context).locations().getHandle(file), file);
+    this(context,new SCIFIO(context).location().getHandle(file), file);
   }
 
   /** Constructs a random access stream around the given handle. */
@@ -181,7 +181,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
     if (LOGGER.isTraceEnabled()) {
       LOGGER.trace("RandomAccessInputStream {} CLOSE", hashCode());
     }
-    if (scifio.locations().getMappedFile(file) != null) return;
+    if (scifio.location().getMappedFile(file) != null) return;
     if (raf != null) raf.close();
     raf = null;
     markedPos = -1;

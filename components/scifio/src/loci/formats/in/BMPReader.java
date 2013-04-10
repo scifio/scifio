@@ -68,7 +68,7 @@ public class BMPReader extends SCIFIOFormatReader {
     super("Windows Bitmap", "bmp");
 
     try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(BMPFormat.class);
+      format = LegacyContext.getSCIFIO().format().getFormatFromClass(BMPFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();

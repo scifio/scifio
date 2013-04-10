@@ -73,7 +73,7 @@ public class CheckerTest {
   public void setUp() throws FormatException {
     context = new Context();
     SCIFIO scifio = new SCIFIO();
-    Format f = scifio.formats().getFormat(id);
+    Format f = scifio.format().getFormat(id);
     c = f.createChecker();
     fc = new FakeChecker();
     fc.setContext(context);
@@ -181,7 +181,7 @@ public class CheckerTest {
     // you can have a list of components returned... maybe? Or not..
     public Format getFormat() {
       SCIFIO scifio = new SCIFIO(getContext());
-      return scifio.formats().getFormatFromClass(FakeFormat.class);
+      return scifio.format().getFormatFromClass(FakeFormat.class);
     }
   }
 }

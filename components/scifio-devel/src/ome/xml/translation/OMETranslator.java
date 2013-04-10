@@ -59,7 +59,7 @@ public abstract class OMETranslator<M extends Metadata, N extends Metadata>
    * Metadata-level translation.
    */
   protected void typedTranslate(M source, N dest) {
-    Translator t = scifio().translators().findTranslator(Metadata.class, dest.getClass());
+    Translator t = scifio().translator().findTranslator(Metadata.class, dest.getClass());
     
     t.translate(source, dest);
   }

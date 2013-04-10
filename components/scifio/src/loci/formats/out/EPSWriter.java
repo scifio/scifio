@@ -62,7 +62,7 @@ public class EPSWriter extends SCIFIOFormatWriter {
 
   public EPSWriter() {
     super("Encapsulated PostScript", new String[] {"eps", "epsi"});
-    format = LegacyContext.getSCIFIO().formats().getFormatFromClass(EPSFormat.class);
+    format = LegacyContext.getSCIFIO().format().getFormatFromClass(EPSFormat.class);
     try {
       writer = format.createWriter() ;
     }

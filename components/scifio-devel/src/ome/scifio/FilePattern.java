@@ -107,7 +107,7 @@ public class FilePattern {
 
   /** Creates a pattern object using the given file as a template. */
   public FilePattern(Context context, Location file) { 
-    this(context, new SCIFIO(context).patterns().findPattern(file));
+    this(context, new SCIFIO(context).filePattern().findPattern(file));
   }
 
   /**
@@ -115,7 +115,7 @@ public class FilePattern {
    * filename and directory path as a template.
    */
   public FilePattern(Context context, String name, String dir) {
-    this(context, new SCIFIO(context).patterns().findPattern(name, dir));
+    this(context, new SCIFIO(context).filePattern().findPattern(name, dir));
   }
 
   /** Creates a pattern object for files with the given pattern string. */
@@ -304,7 +304,7 @@ public class FilePattern {
         end = endNotRegex;
       }
       if (dir.equals("") || !new Location(scifio.getContext(), dir).exists()) {
-        files = scifio.locations().getIdMap().keySet().toArray(new String[0]);
+        files = scifio.location().getIdMap().keySet().toArray(new String[0]);
         if (files.length == 0) {
           dir = ".";
           files = getAllFiles(dir);
@@ -385,7 +385,7 @@ public class FilePattern {
       // test file pattern detection based on the given file on disk
       Location file = new Location(scifio.getContext(), args[0]);
       LOGGER.info("File = {}", file.getAbsoluteFile());
-      pat = scifio.patterns().findPattern(file);
+      pat = scifio.filePattern().findPattern(file);
     }
     else {
       // test file pattern detection from a virtual file list
@@ -403,7 +403,7 @@ public class FilePattern {
           }
         }
       }
-      pat = scifio.patterns().findPattern(nameList[1], null, nameList);
+      pat = scifio.filePattern().findPattern(nameList[1], null, nameList);
     }
     if (pat == null) LOGGER.info("No pattern found.");
     else {

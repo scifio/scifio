@@ -57,7 +57,7 @@ public class T3cTranslatingMetadata {
     
     // First let's get a handle on a compatible Format, and parse the sample
     // image's Metadata
-    Format format = scifio.formats().getFormat(sampleImage);
+    Format format = scifio.format().getFormat(sampleImage);
     Metadata input = format.createParser().parse(sampleImage);
     
     // Now that we have some Metadata, let's find the MischeviousTranslator we defined
@@ -69,7 +69,7 @@ public class T3cTranslatingMetadata {
     // provided metadata types. In this case, since our sample translator 
     // goes to and from FakeFormat.Metadata, we provide this type as
     // both parameters to the findTranslator method.
-    t = scifio.translators().findTranslator(input, input);
+    t = scifio.translator().findTranslator(input, input);
     
     // To try the MischeviousTranslator out, let's get another copy
     // of this image's Metadata.

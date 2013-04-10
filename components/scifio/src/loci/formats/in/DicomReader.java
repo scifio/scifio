@@ -62,7 +62,7 @@ public class DicomReader extends SCIFIOFormatReader {
         "j2ki", "j2kr", "raw", "ima"});
 
     try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(DicomFormat.class);
+      format = LegacyContext.getSCIFIO().format().getFormatFromClass(DicomFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();

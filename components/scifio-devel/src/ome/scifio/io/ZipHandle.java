@@ -231,7 +231,7 @@ public class ZipHandle extends StreamHandle {
 
   private IRandomAccess getHandle(String file) throws IOException {
     SCIFIO scifio = new SCIFIO(getContext());
-    return scifio.locations().getHandle(file, false, false);
+    return scifio.location().getHandle(file, false, false);
   }
 
   private RandomAccessInputStream openStream(String file)

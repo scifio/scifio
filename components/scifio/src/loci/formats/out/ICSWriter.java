@@ -63,7 +63,7 @@ public class ICSWriter extends SCIFIOFormatWriter {
 
   public ICSWriter() {
     super("Image Cytometry Standard", new String[] {"ids", "ics"});
-    format = LegacyContext.getSCIFIO().formats().getFormatFromClass(ICSFormat.class);
+    format = LegacyContext.getSCIFIO().format().getFormatFromClass(ICSFormat.class);
     try {
       writer = format.createWriter();
     }

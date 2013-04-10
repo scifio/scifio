@@ -112,7 +112,7 @@ public class OMEMetadata extends AbstractMetadata {
    */
   public OMEXMLMetadata getRoot() {
     if (root == null) {
-      OMEXMLService service = scifio().formats().getInstance(OMEXMLService.class);
+      OMEXMLService service = scifio().format().getInstance(OMEXMLService.class);
       try {
         root = service.createOMEXMLMetadata();
       } catch (ServiceException e) {

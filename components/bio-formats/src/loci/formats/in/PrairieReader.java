@@ -51,7 +51,6 @@ import loci.legacy.context.LegacyContext;
 import ome.scifio.common.Constants;
 import ome.scifio.common.DateTools;
 import ome.scifio.io.Location;
-import ome.scifio.services.LocationService;
 import ome.scifio.xml.XMLTools;
 import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
@@ -753,7 +752,7 @@ public class PrairieReader extends FormatReader {
     final File file = new File(currentId).getAbsoluteFile();
     final File parent = file.getParentFile();
     final String[] listing = file.exists() ? parent.list() :
-      LegacyContext.getSCIFIO().locations().getIdMap().
+      LegacyContext.getSCIFIO().location().getIdMap().
         keySet().toArray(new String[0]);
     for (final String name : listing) {
       if (checkSuffix(name, suffix)) {

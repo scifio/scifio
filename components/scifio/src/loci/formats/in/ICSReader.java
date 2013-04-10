@@ -77,7 +77,7 @@ public class ICSReader extends SCIFIOFormatReader {
     super("Image Cytometry Standard", new String[] {"ics", "ids"});
     
     try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(ICSFormat.class);
+      format = LegacyContext.getSCIFIO().format().getFormatFromClass(ICSFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();
@@ -128,7 +128,7 @@ public class ICSReader extends SCIFIOFormatReader {
 
     SCIFIO scifio = new SCIFIO(reader.getContext());
     
-    Translator t = scifio.translators() .findTranslator(reader.getMetadata(), omeMeta);
+    Translator t = scifio.translator() .findTranslator(reader.getMetadata(), omeMeta);
 
     t.translate(reader.getMetadata(), omeMeta);
     

@@ -68,7 +68,7 @@ public class EPSReader extends SCIFIOFormatReader {
     super("Encapsulated PostScript", new String[] {"eps", "epsi", "ps"});
 
     try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(EPSFormat.class);
+      format = LegacyContext.getSCIFIO().format().getFormatFromClass(EPSFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();

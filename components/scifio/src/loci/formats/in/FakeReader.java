@@ -93,7 +93,7 @@ public class FakeReader extends SCIFIOFormatReader {
     super("Simulated data", "fake");
   
     try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(FakeFormat.class);
+      format = LegacyContext.getSCIFIO().format().getFormatFromClass(FakeFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();

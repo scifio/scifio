@@ -46,7 +46,7 @@ public class T2aUntypedComponents {
 
     // This time we'll get a handle on the Format itself, which will allow us
     // to create the additional components.
-    Format format = scifio.formats().getFormat(sampleImage);
+    Format format = scifio.format().getFormat(sampleImage);
     
     // If we had been given a Format instead of the context, we can manually
     // check it's compatibility through a Checker component.
@@ -79,7 +79,7 @@ public class T2aUntypedComponents {
     // both of these paths lead to the same Format, and will create a Reader
     // capable of reading the parsed Metadata
     reader = parser.getFormat().createReader();
-    reader = scifio.formats().getFormatFromParser(parser.getClass()).createReader();
+    reader = scifio.format().getFormatFromParser(parser.getClass()).createReader();
     
     // Unlike Formats within each context, component are never singletons and
     // thus we must re-initialize the reader.

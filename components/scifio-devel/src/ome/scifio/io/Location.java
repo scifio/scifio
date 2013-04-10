@@ -85,14 +85,14 @@ public class Location extends AbstractHasSCIFIO {
     this(context);
     LOGGER.trace("Location({})", pathname);
     try {
-      url = new URL(scifio().locations().getMappedId(pathname));
+      url = new URL(scifio().location().getMappedId(pathname));
     }
     catch (MalformedURLException e) {
       LOGGER.trace("Location is not a URL", e);
       isURL = false;
     }
     if (!isURL) file = 
-        new File(scifio().locations().getMappedId(pathname));
+        new File(scifio().location().getMappedId(pathname));
   }
 
   public Location(Context context, File file) {
@@ -120,7 +120,7 @@ public class Location extends AbstractHasSCIFIO {
     String key = getAbsolutePath() + Boolean.toString(noHiddenFiles);
     String [] result = null;
 
-    result = scifio().locations().getCachedListing(key);
+    result = scifio().location().getCachedListing(key);
     if (result != null) return result;
     
     ArrayList<String> files = new ArrayList<String>();
@@ -172,7 +172,7 @@ public class Location extends AbstractHasSCIFIO {
     }
     result = files.toArray(new String[files.size()]);
     
-    scifio().locations().putCachedListing(key, result);
+    scifio().location().putCachedListing(key, result);
     
     return result;
   }
@@ -278,9 +278,9 @@ public class Location extends AbstractHasSCIFIO {
       }
     }
     if (file.exists()) return true;
-    if (scifio().locations().getMappedFile(file.getPath()) != null) return true;
+    if (scifio().location().getMappedFile(file.getPath()) != null) return true;
 
-    String mappedId = scifio().locations().getMappedId(file.getPath());
+    String mappedId = scifio().location().getMappedId(file.getPath());
     return mappedId != null && new File(mappedId).exists();
   }
 

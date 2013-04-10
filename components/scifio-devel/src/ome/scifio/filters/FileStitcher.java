@@ -224,7 +224,7 @@ public class FileStitcher extends AbstractReaderFilter {
    * given id.
    */
   public FilePattern findPattern(String id) {
-    return new FilePattern(getContext(), scifio().patterns().findPattern(id));
+    return new FilePattern(getContext(), scifio().filePattern().findPattern(id));
   }
 
   /**
@@ -234,16 +234,16 @@ public class FileStitcher extends AbstractReaderFilter {
   public String[] findPatterns(String id) {
     if (!patternIds) {
       // find the containing patterns
-      HashMap<String, Object> map = scifio().locations().getIdMap();
+      HashMap<String, Object> map = scifio().location().getIdMap();
       if (map.containsKey(id)) {
         // search ID map for pattern, rather than files on disk
         String[] idList = new String[map.size()];
         map.keySet().toArray(idList);
-        return scifio().patterns().findImagePatterns(id, null, idList);
+        return scifio().filePattern().findImagePatterns(id, null, idList);
       }
       else {
         // id is an unmapped file path; look to similar files on disk
-        return scifio().patterns().findImagePatterns(id);
+        return scifio().filePattern().findImagePatterns(id);
       }
     }
     if (doNotChangePattern) {
@@ -413,7 +413,7 @@ public class FileStitcher extends AbstractReaderFilter {
     }
     else {
       patternIds =
-        !new Location(getContext(), id).exists() && scifio().locations().getMappedId(id).equals(id);
+        !new Location(getContext(), id).exists() && scifio().location().getMappedId(id).equals(id);
     }
 
     boolean mustGroup = false;

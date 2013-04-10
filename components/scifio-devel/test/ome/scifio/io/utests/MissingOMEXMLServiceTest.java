@@ -58,7 +58,7 @@ public class MissingOMEXMLServiceTest {
   @BeforeMethod
   public void setUp() {
     SCIFIO scifio = new SCIFIO();
-    formatService = scifio.formats();
+    formatService = scifio.format();
   }
 
   @Test

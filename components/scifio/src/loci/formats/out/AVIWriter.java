@@ -64,7 +64,7 @@ public class AVIWriter extends SCIFIOFormatWriter {
 
   public AVIWriter() {
     super("Audio Video Interleave", "avi");
-    format = LegacyContext.getSCIFIO().formats().getFormatFromClass(AVIFormat.class);
+    format = LegacyContext.getSCIFIO().format().getFormatFromClass(AVIFormat.class);
     try {
       writer = format.createWriter();
     }

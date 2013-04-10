@@ -41,9 +41,8 @@ import ome.scifio.services.InitializeService;
 import ome.scifio.services.LocationService;
 import ome.scifio.services.TranslatorService;
 
-import org.scijava.AbstractContextual;
+import org.scijava.AbstractGateway;
 import org.scijava.Context;
-import org.scijava.service.Service;
 
 /**
  * Convenience {@link org.scijava.Context} wrapper.
@@ -66,16 +65,7 @@ import org.scijava.service.Service;
  * 
  * @author Mark Hiner
  */
-public class SCIFIO extends AbstractContextual {
-  
-  // -- Fields --
-  
-	// Cached services
-  private InitializeService initializeService = null;
-  private FormatService formatService = null;
-  private TranslatorService translatorService = null;
-  private LocationService locationService = null;
-  private FilePatternService filePatternService= null;
+public class SCIFIO extends AbstractGateway {
 
   // -- Constructors --
   
@@ -111,8 +101,7 @@ public class SCIFIO extends AbstractContextual {
    * @return The InitializeService instance associated with the wrapped Context.
    */
   public InitializeService initializer() {
-  	initializeService = nullCheck(initializeService, InitializeService.class);
-    return initializeService;
+  	return get(InitializeService.class);
   }
   
   /**
@@ -120,9 +109,8 @@ public class SCIFIO extends AbstractContextual {
    * 
    * @return The FormatService instance associated with the wrapped Context.
    */
-  public FormatService formats() {
-  	formatService = nullCheck(formatService, FormatService.class);
-    return formatService;
+  public FormatService format() {
+  	return get(FormatService.class);
   }
   
   /**
@@ -130,9 +118,8 @@ public class SCIFIO extends AbstractContextual {
    * 
    * @return The TranslatorService instance associated with the wrapped Context.
    */
-  public TranslatorService translators() {
-  	translatorService = nullCheck(translatorService, TranslatorService.class);
-    return translatorService;
+  public TranslatorService translator() {
+  	return get(TranslatorService.class);
   }
   
   /**
@@ -140,9 +127,8 @@ public class SCIFIO extends AbstractContextual {
    * 
    * @return The LocationService instance associated with the wrapped Context.
    */
-  public LocationService locations() {
-  	locationService = nullCheck(locationService, LocationService.class);
-    return locationService;
+  public LocationService location() {
+  	return get(LocationService.class);
   }
   
   /**
@@ -150,16 +136,7 @@ public class SCIFIO extends AbstractContextual {
    * 
    * @return The FilePatternService instance associated with the wrapped Context.
    */
-  public FilePatternService patterns() {
-  	filePatternService = nullCheck(filePatternService, FilePatternService.class);
-    return filePatternService;
-  }
-  
-  // -- Helper Methods --
-  
-  /* Checks if the provided service is null. If so, queries the Context. */
-  private <S extends Service> S nullCheck(S service, Class<S> serviceClass) {
-  	if (service == null) service = getContext().getService(serviceClass);
-  	return service;
+  public FilePatternService filePattern() {
+    return get(FilePatternService.class);
   }
 }

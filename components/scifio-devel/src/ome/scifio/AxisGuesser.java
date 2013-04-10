@@ -386,7 +386,7 @@ public class AxisGuesser {
       new Location(context, System.getProperty("user.dir")).listFiles()[0] :
       new Location(context, args[0]);
     LOGGER.info("File = {}", file.getAbsoluteFile());
-    String pat = scifio.patterns().findPattern(file);
+    String pat = scifio.filePattern().findPattern(file);
     if (pat == null) LOGGER.info("No pattern found.");
     else {
       LOGGER.info("Pattern = {}", pat);

@@ -62,7 +62,7 @@ public class T1dOpeningOMEXML {
     // be quite reasonable. But if we ONLY want the Metadata, it's really doing more than
     // we need. We just need a Parser:
     
-    Format format = scifio.formats().getFormat(outPath);
+    Format format = scifio.format().getFormat(outPath);
     Parser parser = format.createParser();
     
     // You can see a more in-depth treatment of individual components in T2a and T2b.
@@ -75,7 +75,7 @@ public class T1dOpeningOMEXML {
     OMEMetadata omexml = new OMEMetadata();
     omexml.setContext(scifio.getContext());
     
-    scifio.translators().translate(meta, omexml);
+    scifio.translator().translate(meta, omexml);
     
     // Now that we have our OME-XML we can print it:
     String xml = omexml.getRoot().dumpXML();

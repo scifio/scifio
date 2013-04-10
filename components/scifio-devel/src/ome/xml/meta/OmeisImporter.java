@@ -136,7 +136,7 @@ public class OmeisImporter extends AbstractHasSCIFIO {
     if (stitch) reader = rf.enable(FileStitcher.class);
 
     try {
-      OMEXMLService service = scifio().formats().getInstance(OMEXMLService.class);
+      OMEXMLService service = scifio().format().getInstance(OMEXMLService.class);
       omexmlMeta = (ome.xml.meta.AbstractOMEXMLMetadata) service.createOMEXMLMetadata();
     }
     catch (ServiceException se) { }
@@ -166,7 +166,7 @@ public class OmeisImporter extends AbstractHasSCIFIO {
       Hashtable<String, String> fileInfo = getFileInfo(fileIds[i]);
       ids[i] = (String) fileInfo.get("Name");
       String path = getLocalFilePath(fileIds[i]);
-      scifio().locations().mapId(ids[i], path);
+      scifio().location().mapId(ids[i], path);
     }
 
     // check types and groups
@@ -225,12 +225,12 @@ public class OmeisImporter extends AbstractHasSCIFIO {
       Hashtable<String, String> fileInfo = getFileInfo(fileIds[i]);
       ids[i] = (String) fileInfo.get("Name");
       String path = getLocalFilePath(fileIds[i]);
-      scifio().locations().mapId(ids[i], path);
+      scifio().location().mapId(ids[i], path);
     }
 
     // read file group
     String id = ids[0];
-    String path = scifio().locations().getMappedId(id);
+    String path = scifio().location().getMappedId(id);
     if (DEBUG) log("Reading file '" + id + "' --> " + path);
 
     // verify that all given file IDs were grouped by the reader

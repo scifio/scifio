@@ -72,7 +72,7 @@ public class APNGReader extends SCIFIOBIFormatReader {
     super("Animated PNG", "png");
 
     try {
-      format = LegacyContext.getSCIFIO().formats().getFormatFromClass(APNGFormat.class);
+      format = LegacyContext.getSCIFIO().format().getFormatFromClass(APNGFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();

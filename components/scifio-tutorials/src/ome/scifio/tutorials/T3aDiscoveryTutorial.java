@@ -57,12 +57,12 @@ public class T3aDiscoveryTutorial {
     // The SCIFIO service was created as a convenience entry point to access the
     // other commonly required services. For example, if we want to work with
     // Formats, we can get a FormatService implementation:
-    FormatService fService = scifio.formats();
+    FormatService fService = scifio.format();
     
     // Note that this service could also have been retrieved from the context itself, and
     // because it is a service you would get the same instance back:
     
-    FormatService fService2 = scifio.formats();
+    FormatService fService2 = scifio.format();
     System.out.println("Format services are equal: " + (fService == fService2));
     
     // Note that FormatService is an interface. If you look at ome.scifio.DefaultFormatService

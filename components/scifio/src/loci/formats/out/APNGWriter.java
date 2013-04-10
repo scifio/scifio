@@ -64,7 +64,7 @@ public class APNGWriter extends SCIFIOFormatWriter {
 
   public APNGWriter() {
     super("Animated PNG", "png");
-    format = LegacyContext.getSCIFIO().formats().getFormatFromClass(APNGFormat.class);
+    format = LegacyContext.getSCIFIO().format().getFormatFromClass(APNGFormat.class);
     try {
       writer = format.createWriter() ;
     }

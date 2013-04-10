@@ -352,7 +352,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
       // convert the metadata retrieve to ome.scifio.Metadata
       RandomAccessInputStream stream = new RandomAccessInputStream(LegacyContext.get(), id);
       omeMeta.setSource(stream);
-      writer.scifio().translators().translate(omeMeta, meta);
+      writer.scifio().translator().translate(omeMeta, meta);
       stream.close();
 
       meta.setDatasetName(id);

@@ -66,7 +66,7 @@ public class T3bCustomFormats {
     // all available Formats. As SampleFormat below was annotated as a @Plugin
     // it should be available to our context, directly:
     
-    Format format = scifio.formats().getFormat(sampleImage);
+    Format format = scifio.format().getFormat(sampleImage);
     System.out.println("SampleFormat found via FormatService: " + (format != null));
     
     // Using the FormatService provides access to a consistent singleton Format within
@@ -82,7 +82,7 @@ public class T3bCustomFormats {
     // populate its context. But what we really want to do is ensure the
     // context's FormatService knows about our sFormat:
     
-    scifio.formats().addFormat(sFormat);
+    scifio.format().addFormat(sFormat);
     
     // Now our SampleFormat will be properly contextualized, and
     // this particular instance will serve as a singleton within the

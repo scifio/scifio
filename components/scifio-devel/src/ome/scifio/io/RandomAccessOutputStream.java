@@ -69,7 +69,7 @@ public class RandomAccessOutputStream extends OutputStream implements DataOutput
    */
   public RandomAccessOutputStream(Context context, String file) throws IOException {
     SCIFIO scifio = new SCIFIO(context);
-    outputFile = scifio.locations().getHandle(file, true);
+    outputFile = scifio.location().getHandle(file, true);
   }
 
   /**

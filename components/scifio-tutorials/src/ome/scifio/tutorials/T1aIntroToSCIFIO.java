@@ -49,7 +49,7 @@ public class T1aIntroToSCIFIO {
     
     // This context provides access to all supported Format types, which
     // will allow corresponding images to be opened:
-    List<Format> formats = scifio.formats().getAllFormats();
+    List<Format> formats = scifio.format().getAllFormats();
     
     // ------------------------------------------------------------------------
     // COMPARISON WITH BIO-FORMATS 4.X

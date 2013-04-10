@@ -103,7 +103,7 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
    * original values.
    */
   public static void reset() {
-    LegacyContext.getSCIFIO().locations().reset();
+    LegacyContext.getSCIFIO().location().reset();
   }
 
   /**
@@ -123,7 +123,7 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
    * @param cache - true to turn cacheing on, false to leave it off.
    */
   public static void cacheDirectoryListings(boolean cache) {
-    LegacyContext.getSCIFIO().locations().cacheDirectoryListings(cache);
+    LegacyContext.getSCIFIO().location().cacheDirectoryListings(cache);
   }
 
   /**
@@ -133,7 +133,7 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
    * seconds.
    */
   public static void setCacheDirectoryTimeout(double sec) {
-    LegacyContext.getSCIFIO().locations().setCacheDirectoryTimeout(sec);
+    LegacyContext.getSCIFIO().location().setCacheDirectoryTimeout(sec);
   }
 
   /**
@@ -142,14 +142,14 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
    * Do this if directory contents might have changed in a significant way.
    */
   public static void clearDirectoryListingsCache() {
-    LegacyContext.getSCIFIO().locations().clearDirectoryListingsCache();
+    LegacyContext.getSCIFIO().location().clearDirectoryListingsCache();
   }
 
   /**
    * Remove any cached directory listings that have expired.
    */
   public static void cleanStaleCacheEntries() {
-    LegacyContext.getSCIFIO().locations().cleanStaleCacheEntries();
+    LegacyContext.getSCIFIO().location().cleanStaleCacheEntries();
   }
 
   /**
@@ -163,12 +163,12 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
    * @see #getMappedId(String)
    */
   public static void mapId(String id, String filename) {
-    LegacyContext.getSCIFIO().locations().mapId(id, filename);
+    LegacyContext.getSCIFIO().location().mapId(id, filename);
   }
 
   /** Maps the given id to the given IRandomAccess object. */
   public static void mapFile(String id, IRandomAccess ira) {
-    LegacyContext.getSCIFIO().locations().mapFile(id, CommonAdapter.get(ira));
+    LegacyContext.getSCIFIO().location().mapFile(id, CommonAdapter.get(ira));
   }
 
   /**
@@ -181,18 +181,18 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
    * @see #mapId(String, String)
    */
   public static String getMappedId(String id) {
-    return LegacyContext.getSCIFIO().locations().getMappedId(id);
+    return LegacyContext.getSCIFIO().location().getMappedId(id);
   }
 
   /** Gets the random access handle for the given id. */
   public static IRandomAccess getMappedFile(String id) {
     return CommonAdapter.get(
-        LegacyContext.getSCIFIO().locations().getMappedFile(id));
+        LegacyContext.getSCIFIO().location().getMappedFile(id));
   }
 
   /** Return the id mapping. */
   public static HashMap<String, Object> getIdMap() { 
-    return LegacyContext.getSCIFIO().locations().getIdMap();
+    return LegacyContext.getSCIFIO().location().getIdMap();
   }
 
   /**
@@ -201,7 +201,7 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
    * @throws IllegalArgumentException if the given HashMap is null.
    */
   public static void setIdMap(HashMap<String, Object> map) {
-    LegacyContext.getSCIFIO().locations().setIdMap(map);
+    LegacyContext.getSCIFIO().location().setIdMap(map);
   }
 
   /**
@@ -210,7 +210,7 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
    */
   public static IRandomAccess getHandle(String id) throws IOException {
     return CommonAdapter.get(
-        LegacyContext.getSCIFIO().locations().getHandle(id));
+        LegacyContext.getSCIFIO().location().getHandle(id));
   }
 
   /**
@@ -221,7 +221,7 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
     throws IOException
   {
     return CommonAdapter.get(
-        LegacyContext.getSCIFIO().locations().getHandle(id, writable, true));
+        LegacyContext.getSCIFIO().location().getHandle(id, writable, true));
   }
 
   /**
@@ -232,7 +232,7 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
     boolean allowArchiveHandles) throws IOException
   {
     return CommonAdapter.get(
-        LegacyContext.getSCIFIO().locations().getHandle(id, writable, allowArchiveHandles));
+        LegacyContext.getSCIFIO().location().getHandle(id, writable, allowArchiveHandles));
   }
   
   /**
@@ -244,7 +244,7 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
    *           if the id is not valid.
    */
   public static void checkValidId(String id) throws IOException {
-    LegacyContext.getSCIFIO().locations().checkValidId(id);
+    LegacyContext.getSCIFIO().location().checkValidId(id);
   }
 
   /**

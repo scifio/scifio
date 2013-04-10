@@ -41,7 +41,7 @@ public class T2bTypedComponents {
     String sampleImage = "8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=3&rgb=3&indexed=true&sizeT=7&sizeY=50.fake";
 
     // This time, since we know we have a .fake image, we'll get a handle to the Fake format.
-    FakeFormat fakeFormat = scifio.formats().getFormatFromClass(FakeFormat.class);
+    FakeFormat fakeFormat = scifio.format().getFormatFromClass(FakeFormat.class);
     
     // Two important points here:
     // 1 - getformatFromClass is overloaded. You can use any component's class
