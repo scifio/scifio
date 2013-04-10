@@ -38,13 +38,12 @@ package loci.formats.in;
 
 import java.io.IOException;
 
-import loci.common.RandomAccessInputStream;
-import loci.formats.CoreMetadata;
 import loci.formats.FormatException;
-import loci.formats.FormatReader;
-import loci.formats.FormatTools;
 import loci.formats.MetadataTools;
+import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
+import loci.legacy.context.LegacyContext;
+import ome.scifio.formats.FITSFormat;
 
 /**
  * FitsReader is the file format reader for
@@ -55,111 +54,36 @@ import loci.formats.meta.MetadataStore;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/FitsReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/FitsReader.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated Use ome.scifio.formats.FITSFormat instead.
  */
-public class FitsReader extends FormatReader {
-
-  // -- Constants --
-
-  private static final int LINE_LENGTH = 80;
-
-  // -- Fields --
-
-  private long pixelOffset;
+@Deprecated
+public class FitsReader extends SCIFIOFormatReader {
 
   // -- Constructor --
 
   /** Constructs a new FitsReader. */
   public FitsReader() {
     super("Flexible Image Transport System", new String[] {"fits", "fts"});
-    domains =
-      new String[] {FormatTools.ASTRONOMY_DOMAIN, FormatTools.UNKNOWN_DOMAIN};
+    
+    try {
+      format = LegacyContext.getSCIFIO().format().getFormatFromClass(FITSFormat.class);
+      checker = format.createChecker();
+      parser = format.createParser();
+      reader = format.createReader();
+    }
+    catch (ome.scifio.FormatException e) {
+      LOGGER.warn("Failed to create APNGFormat components");
+    }
   }
-
+  
   // -- IFormatReader API methods --
 
-  /**
-   * @see loci.formats.IFormatReader#openBytes(int, byte[], int, int, int, int)
-   */
-  public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
-    throws FormatException, IOException
-  {
-    FormatTools.checkPlaneParameters(this, no, buf.length, x, y, w, h);
-
-    in.seek(pixelOffset + no * FormatTools.getPlaneSize(this));
-    readPlane(in, x, y, w, h, buf);
-    return buf;
-  }
-
-  /* @see loci.formats.IFormatReader#close(boolean) */
-  public void close(boolean fileOnly) throws IOException {
-    super.close(fileOnly);
-    if (!fileOnly) pixelOffset = 0;
-  }
-
-  // -- Internal FormatReader API methods --
-
-  /* @see loci.formats.FormatReader#initFile(String) */
-  protected void initFile(String id) throws FormatException, IOException {
-    super.initFile(id);
-    in = new RandomAccessInputStream(id);
-    CoreMetadata m = core.get(0);
-
-    String line = in.readString(LINE_LENGTH);
-    if (!line.startsWith("SIMPLE")) {
-      throw new FormatException("Unsupported FITS file.");
-    }
-
-    String key = "", value = "";
-    while (true) {
-      line = in.readString(LINE_LENGTH);
-
-      // parse key/value pair
-      int ndx = line.indexOf("=");
-      int comment = line.indexOf("/", ndx);
-      if (comment < 0) comment = line.length();
-
-      if (ndx >= 0) {
-        key = line.substring(0, ndx).trim();
-        value = line.substring(ndx + 1, comment).trim();
-      }
-      else key = line.trim();
-
-      // if the file has an extended header, "END" will appear twice
-      // the first time marks the end of the extended header
-      // the second time marks the end of the standard header
-      // image dimensions are only populated by the standard header
-      if (key.equals("END") && getSizeX() > 0) break;
-
-      if (key.equals("BITPIX")) {
-        int bits = Integer.parseInt(value);
-        boolean fp = bits < 0;
-        boolean signed = bits != 8;
-        bits = Math.abs(bits) / 8;
-        m.pixelType = FormatTools.pixelTypeFromBytes(bits, signed, fp);
-      }
-      else if (key.equals("NAXIS1")) m.sizeX = Integer.parseInt(value);
-      else if (key.equals("NAXIS2")) m.sizeY = Integer.parseInt(value);
-      else if (key.equals("NAXIS3")) m.sizeZ = Integer.parseInt(value);
-
-      addGlobalMeta(key, value);
-    }
-    while (in.read() == 0x20);
-    pixelOffset = in.getFilePointer() - 1;
-
-    m.sizeC = 1;
-    m.sizeT = 1;
-    if (getSizeZ() == 0) m.sizeZ = 1;
-    m.imageCount = m.sizeZ;
-    m.rgb = false;
-    m.littleEndian = false;
-    m.interleaved = false;
-    m.dimensionOrder = "XYZCT";
-    m.indexed = false;
-    m.falseColor = false;
-    m.metadataComplete = true;
-
+  @Override
+  public void setId(String id) throws FormatException, IOException {
+    super.setId(id);
+    
     MetadataStore store = makeFilterMetadata();
     MetadataTools.populatePixels(store, this);
   }
-
 }
