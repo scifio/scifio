@@ -341,7 +341,7 @@ public class APNGFormat extends AbstractFormat {
     
    /* @see ome.scifio.Metadata#reset() */
     public void reset() {
-      super.reset(getClass());
+      super.reset();
       fctl = new ArrayList<FCTLChunk>();
       idat = new ArrayList<IDATChunk>();
     }

@@ -145,7 +145,7 @@ public class ICSFormat extends AbstractFormat {
     
     /* @see Metadata#resetMeta() */
     public void reset() {
-      super.reset(getClass());
+      super.reset();
       keyValPairs = new Hashtable<String, String>();
     }
     

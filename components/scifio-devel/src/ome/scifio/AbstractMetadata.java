@@ -112,42 +112,10 @@ public abstract class AbstractMetadata extends AbstractHasFormat
 
   // -- Metadata API Methods --
   
-  /* @see Metadata#resetMeta(Class<?>) */
-  public void reset(final Class<?> type) {
-    if (type == null || type == AbstractMetadata.class) return;
-
-    for (final Field f : type.getDeclaredFields()) {
-      f.setAccessible(true);
-
-      if (Modifier.isFinal(f.getModifiers())) continue;
-      final Class<?> fieldType = f.getType();
-      try {
-        if (fieldType == boolean.class) f.set(this, false);
-        else if (fieldType == char.class) f.set(this, 0);
-        else if (fieldType == double.class) f.set(this, 0.0);
-        else if (fieldType == float.class) f.set(this, 0f);
-        else if (fieldType == int.class) f.set(this, 0);
-        else if (fieldType == long.class) f.set(this, 0l);
-        else if (fieldType == short.class) f.set(this, 0);
-        else f.set(this, null);
-      }
-      catch (final IllegalArgumentException e) {
-        LOGGER.debug(e.getMessage());
-      }
-      catch (final IllegalAccessException e) {
-        LOGGER.debug(e.getMessage());
-      }
-      
-      datasetMeta = new Hashtable<String, Object>();
-      imageMeta = new ArrayList<ImageMetadata>();
-
-      // check superclasses and interfaces
-      reset(type.getSuperclass());
-      for (final Class<?> c : type.getInterfaces()) {
-        reset(c);
-      }
-    }
+  public void reset() {
+    reset(getClass());
   }
+
 
   /* @see Metadata#setSource(RandomAccessInputStream) */
   public void setSource(final RandomAccessInputStream source) {
@@ -560,6 +528,45 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   
   public void setTable(MetaTable table) {
     this.table = table;
+  }
+  
+  // -- Helper methods --
+
+  /* @see Metadata#resetMeta(Class<?>) */
+  private void reset(final Class<?> type) {
+    if (type == null || type == AbstractMetadata.class) return;
+
+    for (final Field f : type.getDeclaredFields()) {
+      f.setAccessible(true);
+
+      if (Modifier.isFinal(f.getModifiers())) continue;
+      final Class<?> fieldType = f.getType();
+      try {
+        if (fieldType == boolean.class) f.set(this, false);
+        else if (fieldType == char.class) f.set(this, 0);
+        else if (fieldType == double.class) f.set(this, 0.0);
+        else if (fieldType == float.class) f.set(this, 0f);
+        else if (fieldType == int.class) f.set(this, 0);
+        else if (fieldType == long.class) f.set(this, 0l);
+        else if (fieldType == short.class) f.set(this, 0);
+        else f.set(this, null);
+      }
+      catch (final IllegalArgumentException e) {
+        LOGGER.debug(e.getMessage());
+      }
+      catch (final IllegalAccessException e) {
+        LOGGER.debug(e.getMessage());
+      }
+      
+      table = new DefaultMetaTable();
+      imageMeta = new ArrayList<ImageMetadata>();
+
+      // check superclasses and interfaces
+      reset(type.getSuperclass());
+      for (final Class<?> c : type.getInterfaces()) {
+        reset(c);
+      }
+    }
   }
 
   /* TODO

@@ -441,11 +441,12 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     meta.populateImageMetadata();
   }
   
-  // -- Helper Reset Method --
-  
+  /*
+   * @see ome.scifio.AbstractMetadata#reset()
+   */
   public void reset() {
-    super.reset(getClass());
-    meta.reset(meta.getClass());
+    super.reset();
+    meta.reset();
   }
 
 }

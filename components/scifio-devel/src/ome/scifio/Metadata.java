@@ -82,7 +82,7 @@ public interface Metadata extends Serializable, HasFormat, HasMetaTable {
    * Resets this Metadata object's values as though it had just been
    * instantiated.
    */
-  void reset(Class<?> type);
+  void reset();
 
   /**
    * Sets the input source attached to this Metadata object.
