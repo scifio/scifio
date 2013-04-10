@@ -71,7 +71,7 @@ import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
 
 /**
- * DicomReader is the file format reader for DICOM files.
+ * DICOMReader is the file format reader for DICOM files.
  * Much of this code is adapted from ImageJ's DICOM reader; see
  * http://rsb.info.nih.gov/ij/developer/source/ij/plugin/DICOM.java.html
  *
@@ -81,8 +81,8 @@ import ome.scifio.util.FormatTools;
  * 
  * @author Mark Hiner
  */
-@Plugin(type=DicomFormat.class)
-public class DicomFormat extends AbstractFormat {
+@Plugin(type=DICOMFormat.class)
+public class DICOMFormat extends AbstractFormat {
 
   // -- Constants --
 
@@ -738,7 +738,7 @@ public class DicomFormat extends AbstractFormat {
     // -- Constants --
     
     public static final String CNAME = 
-        "ome.scifio.formats.DicomFormat$Metadata";
+        "ome.scifio.formats.DICOMFormat$Metadata";
     
     // -- Fields --
     
@@ -1027,9 +1027,9 @@ public class DicomFormat extends AbstractFormat {
             add(m.get(0));
             sizeZ *= fileList.get(keys[i]).size();
           } catch (IOException e) {
-            LOGGER.error("Error creating Metadata from Dicom companion files.", e);
+            LOGGER.error("Error creating Metadata from DICOM companion files.", e);
           } catch (FormatException e) {
-            LOGGER.error("Error creating Metadata from Dicom companion files.", e);
+            LOGGER.error("Error creating Metadata from DICOM companion files.", e);
           }
 
         }
@@ -1089,7 +1089,7 @@ public class DicomFormat extends AbstractFormat {
       stream.seek(0);
 
       try {
-        int tag = DicomUtils.getNextTag(stream).get();
+        int tag = DICOMUtils.getNextTag(stream).get();
         return TYPES.get(new Integer(tag)) != null;
       }
       catch (NullPointerException e) { }
@@ -1195,7 +1195,7 @@ public class DicomFormat extends AbstractFormat {
           break;
         }
         LOGGER.debug("Reading tag from {}", in.getFilePointer());
-        DicomTag tag = DicomUtils.getNextTag(in, bigEndianTransferSyntax, oddLocations);
+        DICOMTag tag = DICOMUtils.getNextTag(in, bigEndianTransferSyntax, oddLocations);
         iMeta.setLittleEndian(tag.isLittleEndian());
 
         if (tag.getElementLength() <= 0) continue;
@@ -1571,7 +1571,7 @@ public class DicomFormat extends AbstractFormat {
       {
         long fp = stream.getFilePointer();
         if (fp + 4 >= stream.length() || fp < 0) break;
-        DicomTag tag = DicomUtils.getNextTag(stream);
+        DICOMTag tag = DICOMUtils.getNextTag(stream);
         String key = TYPES.get(new Integer(tag.get()));
         if ("Instance Number".equals(key)) {
           instance = stream.readString(tag.getElementLength()).trim();
@@ -1635,7 +1635,7 @@ public class DicomFormat extends AbstractFormat {
       }
     }
 
-    private void addInfo(Metadata meta, DicomTag tag, String value) throws IOException {
+    private void addInfo(Metadata meta, DICOMTag tag, String value) throws IOException {
       String oldValue = value;
       String info = getHeaderInfo(tag, value);
       
@@ -1736,11 +1736,11 @@ public class DicomFormat extends AbstractFormat {
       return s.substring(0, 4) + "," + s.substring(4);
     }
     
-    private void addInfo(Metadata meta, DicomTag tag, int value) throws IOException {
+    private void addInfo(Metadata meta, DICOMTag tag, int value) throws IOException {
       addInfo(meta, tag, Integer.toString(value));
     }
     
-    private String getHeaderInfo(DicomTag tag, String value) throws IOException {
+    private String getHeaderInfo(DICOMTag tag, String value) throws IOException {
       if (tag.get() == ITEM_DELIMINATION ||
           tag.get() == SEQUENCE_DELIMINATION) {
         tag.setInSequence(false);
@@ -1750,7 +1750,7 @@ public class DicomFormat extends AbstractFormat {
       int vr = tag.getVR();
 
       if (id != null) {
-        if (vr == DicomUtils.IMPLICIT_VR && id != null) {
+        if (vr == DICOMUtils.IMPLICIT_VR && id != null) {
           vr = (id.charAt(0) << 8) + id.charAt(1);
           tag.setVR(vr);
         }
@@ -1762,24 +1762,24 @@ public class DicomFormat extends AbstractFormat {
 
       boolean skip = false;
       switch (vr) {
-        case DicomUtils.AE:
-        case DicomUtils.AS:
-        case DicomUtils.AT:
-        case DicomUtils.CS:
-        case DicomUtils.DA:
-        case DicomUtils.DS:
-        case DicomUtils.DT:
-        case DicomUtils.IS:
-        case DicomUtils.LO:
-        case DicomUtils.LT:
-        case DicomUtils.PN:
-        case DicomUtils.SH:
-        case DicomUtils.ST:
-        case DicomUtils.TM:
-        case DicomUtils.UI:
+        case DICOMUtils.AE:
+        case DICOMUtils.AS:
+        case DICOMUtils.AT:
+        case DICOMUtils.CS:
+        case DICOMUtils.DA:
+        case DICOMUtils.DS:
+        case DICOMUtils.DT:
+        case DICOMUtils.IS:
+        case DICOMUtils.LO:
+        case DICOMUtils.LT:
+        case DICOMUtils.PN:
+        case DICOMUtils.SH:
+        case DICOMUtils.ST:
+        case DICOMUtils.TM:
+        case DICOMUtils.UI:
           value = in.readString(tag.getElementLength());
           break;
-        case DicomUtils.US:
+        case DICOMUtils.US:
           if (tag.getElementLength() == 2) value = Integer.toString(in.readShort());
           else {
             value = "";
@@ -1789,11 +1789,11 @@ public class DicomFormat extends AbstractFormat {
             }
           }
           break;
-        case DicomUtils.IMPLICIT_VR:
+        case DICOMUtils.IMPLICIT_VR:
           value = in.readString(tag.getElementLength());
           if (tag.getElementLength() <= 4 || tag.getElementLength() > 44) value = null;
           break;
-        case DicomUtils.SQ:
+        case DICOMUtils.SQ:
           value = "";
           boolean privateTag = ((tag.getElementLength() >> 16) & 1) != 0;
           if (tag.get() == ICON_IMAGE_SEQUENCE || privateTag) skip = true;
@@ -1998,9 +1998,9 @@ public class DicomFormat extends AbstractFormat {
     }
   }
   
-  // -- Dicom Helper Classes --
+  // -- DICOM Helper Classes --
   
-  private static class DicomUtils {
+  private static class DICOMUtils {
     
     private static final int AE = 0x4145, AS = 0x4153, AT = 0x4154, CS = 0x4353;
     private static final int DA = 0x4441, DS = 0x4453, DT = 0x4454, FD = 0x4644;
@@ -2012,25 +2012,25 @@ public class DicomFormat extends AbstractFormat {
 
     private static final int IMPLICIT_VR = 0x2d2d; 
     
-    private static DicomTag getNextTag(RandomAccessInputStream stream)
+    private static DICOMTag getNextTag(RandomAccessInputStream stream)
       throws FormatException, IOException
     {
       return getNextTag(stream, false);
     }
     
-    private static DicomTag getNextTag(RandomAccessInputStream stream,
+    private static DICOMTag getNextTag(RandomAccessInputStream stream,
         boolean bigEndianTransferSyntax) throws FormatException, IOException
     {
       return getNextTag(stream, false, false);
     }
     
-    private static DicomTag getNextTag(RandomAccessInputStream stream,
+    private static DICOMTag getNextTag(RandomAccessInputStream stream,
       boolean bigEndianTransferSyntax, boolean isOddLocations)
       throws FormatException, IOException
     {
       long fp = stream.getFilePointer();
       int groupWord = stream.readShort() & 0xffff;
-      DicomTag diTag = new DicomTag();
+      DICOMTag diTag = new DICOMTag();
       boolean littleEndian = true;
       
       if (groupWord == 0x0800 && bigEndianTransferSyntax) {
@@ -2040,7 +2040,7 @@ public class DicomFormat extends AbstractFormat {
       }
       else if (groupWord == 0xfeff || groupWord == 0xfffe) {
         stream.skipBytes(6);
-        return DicomUtils.getNextTag(stream, bigEndianTransferSyntax);
+        return DICOMUtils.getNextTag(stream, bigEndianTransferSyntax);
       }
 
       int elementWord = stream.readShort();
@@ -2100,7 +2100,7 @@ public class DicomFormat extends AbstractFormat {
       return diTag;
     }
     
-    private static int getLength(RandomAccessInputStream stream, DicomTag tag)
+    private static int getLength(RandomAccessInputStream stream, DICOMTag tag)
       throws IOException
     {
       byte[] b = new byte[4];
@@ -2177,7 +2177,7 @@ public class DicomFormat extends AbstractFormat {
     }
   }
   
-  public static class DicomTag {
+  public static class DICOMTag {
     private int elementLength = 0;
     private int tagValue;
     private int vr = 0;

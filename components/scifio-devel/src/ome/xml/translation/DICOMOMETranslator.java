@@ -41,14 +41,14 @@ import org.scijava.plugin.Plugin;
 
 import ome.scifio.MetadataLevel;
 import ome.scifio.common.DateTools;
-import ome.scifio.formats.DicomFormat;
+import ome.scifio.formats.DICOMFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.Timestamp;
 
 /**
- * Translator class from {@link ome.scifio.formats.DicomFormat.Metadata} to
+ * Translator class from {@link ome.scifio.formats.DICOMFormat.Metadata} to
  * {@link ome.xml.meta.OMEMetadata}
  * <p>
  * NB: Plugin priority is set to high to be selected over the base
@@ -59,10 +59,10 @@ import ome.xml.model.primitives.Timestamp;
  */
 @Plugin(type = ToOMETranslator.class, priority = Priority.HIGH_PRIORITY,
 attrs = {
-  @Attr(name = BMPOMETranslator.SOURCE, value = DicomFormat.Metadata.CNAME),
+  @Attr(name = BMPOMETranslator.SOURCE, value = DICOMFormat.Metadata.CNAME),
   @Attr(name = BMPOMETranslator.DEST, value = OMEMetadata.CNAME)
 })
-public class DicomOMETranslator extends ToOMETranslator<DicomFormat.Metadata> {
+public class DICOMOMETranslator extends ToOMETranslator<DICOMFormat.Metadata> {
   
   // -- Translator API Methods --
 
@@ -70,7 +70,7 @@ public class DicomOMETranslator extends ToOMETranslator<DicomFormat.Metadata> {
    * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
    */
   @Override
-  protected void typedTranslate(DicomFormat.Metadata source, OMEMetadata dest) {
+  protected void typedTranslate(DICOMFormat.Metadata source, OMEMetadata dest) {
     // The metadata store we're working with.
 
     String stamp = null;

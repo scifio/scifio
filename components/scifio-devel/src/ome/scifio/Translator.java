@@ -65,7 +65,7 @@ package ome.scifio;
  * 
  * @author Mark Hiner
  */
-public interface Translator extends ScifioPlugin, HasSCIFIO {
+public interface Translator extends SCIFIOPlugin, HasSCIFIO {
 
   // -- Fields --
   

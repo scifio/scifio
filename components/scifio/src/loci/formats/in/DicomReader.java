@@ -38,7 +38,7 @@ package loci.formats.in;
 
 import loci.formats.SCIFIOFormatReader;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.DicomFormat;
+import ome.scifio.formats.DICOMFormat;
 
 /**
  * DicomReader is the file format reader for DICOM files.
@@ -62,7 +62,7 @@ public class DicomReader extends SCIFIOFormatReader {
         "j2ki", "j2kr", "raw", "ima"});
 
     try {
-      format = LegacyContext.getSCIFIO().format().getFormatFromClass(DicomFormat.class);
+      format = LegacyContext.getSCIFIO().format().getFormatFromClass(DICOMFormat.class);
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();

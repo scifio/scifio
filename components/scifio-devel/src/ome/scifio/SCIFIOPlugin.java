@@ -43,5 +43,5 @@ import org.scijava.plugin.SciJavaPlugin;
  *
  * @author Curtis Rueden
  */
-public interface ScifioPlugin extends SciJavaPlugin {
+public interface SCIFIOPlugin extends SciJavaPlugin {
 }

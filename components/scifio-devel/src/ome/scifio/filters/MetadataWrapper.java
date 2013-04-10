@@ -40,7 +40,7 @@ import java.util.Hashtable;
 import net.imglib2.meta.AxisType;
 import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
-import ome.scifio.ScifioPlugin;
+import ome.scifio.SCIFIOPlugin;
 
 /**
  * Wrapper for {@link ome.scifio.Metadata}. Used to create defensive copies of metadata for
@@ -63,7 +63,7 @@ import ome.scifio.ScifioPlugin;
  * 
  * @see ome.scifio.filters.AbstractReaderFilter
  */
-public interface MetadataWrapper extends Metadata, ScifioPlugin { 
+public interface MetadataWrapper extends Metadata, SCIFIOPlugin { 
   
   public static final String METADATA_KEY = "Metadata Wrapper";
   public static final String METADATA_VALUE = "java.lang.Object";

@@ -38,7 +38,7 @@ package ome.scifio.services;
 import java.util.List;
 import java.util.Map;
 
-import ome.scifio.ScifioPlugin;
+import ome.scifio.SCIFIOPlugin;
 
 import org.scijava.plugin.PluginInfo;
 import org.scijava.service.Service;
@@ -70,7 +70,7 @@ public interface PluginAttributeService extends Service {
    * but with key,value pair parameters to allow for filtering based on
    * {@code Attr} annotation.
    */
-  <PT extends ScifioPlugin> PT createInstance(Class<PT> type,
+  <PT extends SCIFIOPlugin> PT createInstance(Class<PT> type,
       Map<String, String> andPairs, Map<String, String> orPairs);
 
   /**
@@ -78,7 +78,7 @@ public interface PluginAttributeService extends Service {
    * but with key,value pair parameters to allow for filtering based on
    * {@code Attr} annotation.
    */
-  <PT extends ScifioPlugin> PluginInfo<PT> getPlugin(Class<PT> type,
+  <PT extends SCIFIOPlugin> PluginInfo<PT> getPlugin(Class<PT> type,
       Map<String, String> andPairs, Map<String, String> orPairs);
 
   /**
@@ -86,6 +86,6 @@ public interface PluginAttributeService extends Service {
    * but with key,value pair parameters to allow for filtering based on
    * {@code Attr} annotation.
    */
-  <PT extends ScifioPlugin> List<PluginInfo<PT>> getPluginsOfType(
+  <PT extends SCIFIOPlugin> List<PluginInfo<PT>> getPluginsOfType(
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs);
 }

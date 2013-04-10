@@ -58,7 +58,7 @@ package ome.scifio;
  * @see ome.scifio.SCIFIO
  * @see ome.scifio.services.FormatService
  */
-public interface Format extends ScifioPlugin, HasSCIFIO {
+public interface Format extends SCIFIOPlugin, HasSCIFIO {
   
   // -- Format API methods --
 

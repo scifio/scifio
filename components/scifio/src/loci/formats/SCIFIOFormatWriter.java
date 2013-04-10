@@ -32,10 +32,10 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
 
   // -- Fields --
 
-  /** Scifio Writer for deference */
+  /** SCIFIO Writer for deference */
   protected Writer writer;
   
-  /** Scifio Format corresponding to this writer */
+  /** SCIFIO Format corresponding to this writer */
   protected Format format;
   
   //TODO could make this a Plane and then cache either a ByteArrayPlane or BufferedImagePlane as needed

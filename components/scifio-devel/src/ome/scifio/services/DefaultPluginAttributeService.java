@@ -41,7 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import ome.scifio.ScifioPlugin;
+import ome.scifio.SCIFIOPlugin;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -68,7 +68,7 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
    * @see ome.scifio.services.PluginAttributeService#
    * createInstance(java.lang.Class, java.util.Map, java.util.Map)
    */
-  public <PT extends ScifioPlugin> PT createInstance(
+  public <PT extends SCIFIOPlugin> PT createInstance(
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
     PluginInfo<PT> plugin = getPlugin(type, andPairs, orPairs);
     
@@ -79,7 +79,7 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
    * @see ome.scifio.services.PluginAttributeService#
    * getPlugin(java.lang.Class, java.util.Map, java.util.Map)
    */
-  public <PT extends ScifioPlugin> PluginInfo<PT> getPlugin(
+  public <PT extends SCIFIOPlugin> PluginInfo<PT> getPlugin(
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
     List<PluginInfo<PT>> pluginList = getPluginsOfType(type, andPairs, orPairs);
     return pluginList.size() > 0 ? pluginList.get(0) : null;
@@ -89,7 +89,7 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
    * @see ome.scifio.services.PluginAttributeService#
    * getPluginsOfType(java.lang.Class, java.util.Map, java.util.Map)
    */
-  public <PT extends ScifioPlugin> List<PluginInfo<PT>> getPluginsOfType(
+  public <PT extends SCIFIOPlugin> List<PluginInfo<PT>> getPluginsOfType(
       Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
     // Get the unfiltered plugin list
     List<PluginInfo<PT>> plugins = pluginService.getPluginsOfType(type);

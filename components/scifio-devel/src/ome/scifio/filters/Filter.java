@@ -35,7 +35,7 @@
  */
 package ome.scifio.filters;
 
-import ome.scifio.ScifioPlugin;
+import ome.scifio.SCIFIOPlugin;
 
 import org.scijava.Contextual;
 import org.scijava.Prioritized;
@@ -55,7 +55,7 @@ import org.scijava.Prioritized;
  * @author Mark Hiner
  *
  */
-public interface Filter extends ScifioPlugin, Prioritized, Contextual {
+public interface Filter extends SCIFIOPlugin, Prioritized, Contextual {
 
   public static final String FILTER_KEY = "Filters";
   public static final String FILTER_VALUE = "java.lang.Object";
