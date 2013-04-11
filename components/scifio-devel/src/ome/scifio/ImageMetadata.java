@@ -133,7 +133,11 @@ public interface ImageMetadata extends HasMetaTable {
    */
   void setAxisLength(AxisType axis, int length);
 
-  /** Sets the type of the axis at the specified index, as per {@link java.util.List#set(int, Object)}. */
+  /** 
+   * Sets the type of the axis at the specified index, if {@code axis} is not
+   * already defined. Otherwise the axes are re-ordered, per
+   * {@link java.util.List#add(int, Object)}.
+   */
   void setAxisType(int index, AxisType axis);
 
   /** Sets the number of planes within this image. */

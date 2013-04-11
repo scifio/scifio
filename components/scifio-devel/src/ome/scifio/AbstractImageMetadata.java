@@ -302,10 +302,20 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @see ome.scifio.ImageMetadata#setAxisType(int, net.imglib2.meta.AxisType)
    */
   public void setAxisType(final int index, final AxisType axis) {
-    int length = axisLengths.remove(axisTypes.get(index));
+    int oldIndex = getAxisIndex(axis);
     
-    axisTypes.set(index, axis);
-    axisLengths.put(axis, length);
+    // Replace existing axis
+    if (oldIndex == -1) {
+      int length = axisLengths.remove(axisTypes.get(index));
+
+      axisTypes.set(index, axis);
+      axisLengths.put(axis, length);
+    }
+    // Axis is already in the list. Move it here.
+    else {
+      axisTypes.remove(axis);
+      axisTypes.add(index, axis);
+    }
   }
 
   /*
@@ -555,6 +565,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     axisLengths.put(type, value);
   }
   
+  /*
+   * @see ome.scifio.ImageMetadata#copy(ome.scifio.ImageMetadata)
+   */
   public void copy(ImageMetadata toCopy) {
     table = new DefaultMetaTable(toCopy.getTable());
     
