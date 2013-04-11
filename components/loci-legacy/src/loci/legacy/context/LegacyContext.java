@@ -36,6 +36,16 @@
 package loci.legacy.context;
 
 import ome.scifio.SCIFIO;
+import ome.scifio.services.FilePatternService;
+import ome.scifio.services.FormatService;
+import ome.scifio.services.InitializeService;
+import ome.scifio.services.JAIIIOService;
+import ome.scifio.services.LocationService;
+import ome.scifio.services.LuraWaveService;
+import ome.scifio.services.TranslatorService;
+import ome.scifio.services.PluginAttributeService;
+import ome.xml.services.OMEXMLMetadataService;
+import ome.xml.services.OMEXMLService;
 
 import org.scijava.Context;
 
@@ -66,7 +76,11 @@ public final class LegacyContext {
    */
   public static Context get() {
     if (context == null) {
-      context = new Context();
+      context = new Context(FilePatternService.class, FormatService.class, 
+          InitializeService.class, LocationService.class,
+          PluginAttributeService.class, TranslatorService.class, 
+          OMEXMLMetadataService.class, OMEXMLService.class, JAIIIOService.class,
+          LuraWaveService.class);
     }
     return context;
   }
