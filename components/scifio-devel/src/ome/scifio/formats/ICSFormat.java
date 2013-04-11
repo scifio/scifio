@@ -236,6 +236,13 @@ public class ICSFormat extends AbstractFormat {
           }
         }
       }
+      
+      // Re-order axes if RGB
+      if (imageMeta.getAxisIndex(Axes.CHANNEL) >= 0 && 
+          imageMeta.getAxisIndex(Axes.CHANNEL) < imageMeta.getAxisIndex(Axes.Y))
+      {
+        imageMeta.setAxisType(imageMeta.getAxisIndex(Axes.Y), Axes.CHANNEL);
+      }
 
       if(getBitsPerPixel() != null)
         bitsPerPixel = getBitsPerPixel();
@@ -2491,10 +2498,11 @@ public class ICSFormat extends AbstractFormat {
   
       String order = "";
       String sizes = "";
-  
+      
       for (int i = 0; i < numAxes; i++) {
         final AxisType axis = source.getAxisType(0, i);
   
+        // flag for RGB images
         if (axis.equals(Axes.X)) {
           order += "x";
         }
@@ -2508,6 +2516,13 @@ public class ICSFormat extends AbstractFormat {
           order += "t";
         }
         else if (axis.equals(Axes.CHANNEL)) {
+          // ICS flag for RGB images
+          if (source.isRGB(0)) {
+            order = "c " + order;
+            sizes = source.getAxisLength(0, i) + " " + sizes;
+            continue;
+          }
+          
           order += "c";
         }
         else if (axis.equals(Axes.PHASE)) {

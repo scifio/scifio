@@ -122,7 +122,6 @@ public class OMEICSTranslator extends FromOMETranslator<ICSFormat.Metadata> {
       }
       
       Double[] pixelSizes = new Double[5];
-      String[] axes = new String[5];
       String[] units = new String[5];
       
       String order = retrieve.getPixelsDimensionOrder(0).getValue();
@@ -134,33 +133,26 @@ public class OMEICSTranslator extends FromOMETranslator<ICSFormat.Metadata> {
       for (int i=0; i<order.length(); i++) {
         switch (order.toUpperCase().charAt(i)) {
         case 'X': pixelSizes[i] = sizex == null ? 1.0 : sizex.getValue();
-                  axes[i] = "x";
                   units[i] = "um";
           break;
         case 'Y': pixelSizes[i] = sizey == null ? 1.0 : sizey.getValue();
-                  axes[i] = "y";
                   units[i] = "um";
           break;
         case 'Z': pixelSizes[i] = sizez == null ? 1.0 : sizez.getValue();
-                  axes[i] = "z";
                   units[i] = "um";
           break;
         case 'T': pixelSizes[i] = sizet == null ? 1.0 : sizet;
-                  axes[i] = "t";
                   units[i] = "s";
           break;
         case 'C': pixelSizes[i] = 1.0;
-                  axes[i] = "ch";
                   units[i] = "um";
           break;
         default: pixelSizes[i] = 1.0;
-                 axes[i] = "u";
                  units[i] = "um";
         }
       }
       
       dest.putPixelSizes(pixelSizes);
-      dest.putAxes(axes);
       dest.putUnits(units);
       
       if (retrieve.getPlaneCount(0) > 0) {
