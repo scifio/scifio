@@ -578,13 +578,6 @@ public class FakeFormat extends AbstractFormat
 
       return plane;
     }
-    
-    /*
-     * @see ome.scifio.Reader#close(boolean)
-     */
-    public void close(boolean fileOnly) throws IOException {
-      super.close(fileOnly);
-    }
   }
   
   /**

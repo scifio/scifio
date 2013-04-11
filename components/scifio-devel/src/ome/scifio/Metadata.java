@@ -63,7 +63,9 @@ import ome.scifio.io.RandomAccessInputStream;
  * <dd><a href="">Trac</a>,
  * <a href="">Gitweb</a></dd></dl>
  */
-public interface Metadata extends Serializable, HasFormat, HasMetaTable {
+public interface Metadata extends Serializable, HasFormat, HasSource,
+  HasMetaTable
+{
   
   // -- Static Constents --
   
@@ -77,12 +79,6 @@ public interface Metadata extends Serializable, HasFormat, HasMetaTable {
   public static final String CNAME = "ome.scifio.Metadata";
   
   // -- Metadata API --
-  
-  /**
-   * Resets this Metadata object's values as though it had just been
-   * instantiated.
-   */
-  void reset();
 
   /**
    * Sets the input source attached to this Metadata object.
@@ -92,11 +88,6 @@ public interface Metadata extends Serializable, HasFormat, HasMetaTable {
    * @param in - Input source for this Metadata
    */
   void setSource(RandomAccessInputStream in);
-  
-  /**
-   * Closes the RandomAccessInputStream associated with this Metadata
-   */
-  void close();
 
   /**
    * Returns the source used to generate this Metadata object.

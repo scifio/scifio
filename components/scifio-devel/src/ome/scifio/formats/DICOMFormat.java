@@ -974,26 +974,9 @@ public class DICOMFormat extends AbstractFormat {
 
     // -- Metadata API Methods --
     
-    public void close() {
-      oddLocations = false;
-      isJPEG = isJP2K = isRLE = isDeflate = false;
-      lut = null;
-      offsets = null;
-      shortLut = null;
-      maxPixelValue = 0;
-      rescaleSlope = 1.0;
-      rescaleIntercept = 0.0;
-      pixelSizeX = pixelSizeY = null;
-      pixelSizeZ = null;
-      imagesPerFile = 0;
-      fileList = null;
-      inverted = false;
-      date = time = imageType = null;
-      originalDate = originalTime = originalInstance = null;
-      originalSeries = 0;
-      companionFiles.clear();
-    }
-    
+    /*
+     * @see ome.scifio.Metadata#populateImageMetadata()
+     */
     public void populateImageMetadata() {
       LOGGER.info("Populating metadata");
 
@@ -1041,6 +1024,36 @@ public class DICOMFormat extends AbstractFormat {
         setAxisLength(i, Axes.TIME, 1);
         
         get(i).setPlaneCount(sizeZ);
+      }
+    }
+    
+    // -- HasSource API Methods --
+    
+    /*
+     * @see ome.scifio.AbstractMetadata#close(boolean)
+     */
+    public void close(boolean fileOnly) throws IOException {
+      super.close(fileOnly);
+      
+      if (!fileOnly) {
+        oddLocations = false;
+        isJPEG = isJP2K = isRLE = isDeflate = false;
+        lut = null;
+        offsets = null;
+        shortLut = null;
+        maxPixelValue = 0;
+        rescaleSlope = 1.0;
+        rescaleIntercept = 0.0;
+        pixelSizeX = pixelSizeY = null;
+        pixelSizeZ = null;
+        imagesPerFile = 0;
+        fileList = null;
+        inverted = false;
+        date = time = imageType = null;
+        originalDate = originalTime = originalInstance = null;
+        originalSeries = 0;
+        //TODO the resetting is a bit too aggressive, perhaps it should just clear out fields..
+        //companionFiles.clear();
       }
     }
   }

@@ -392,16 +392,24 @@ public class AVIFormat extends AbstractFormat {
       iMeta.addAxis(Axes.Z, 1);
     }
 
-    public void close(boolean fileOnly) {
-      super.close();
-      lastPlane = null;
-      lastPlaneIndex = -1;
-      bmpColorsUsed = bmpWidth = bmpCompression = bmpScanLineSize = 0;
-      bmpBitsPerPixel = 0;
-      bytesPerPlane = 0;
-      offsets = null;
-      lengths = null;
-      lut = null;
+    // -- HasSource API Methods --
+    
+    /*
+     * @see ome.scifio.AbstractMetadata#close(boolean)
+     */
+    public void close(boolean fileOnly) throws IOException {
+      super.close(fileOnly);
+      
+      if (!fileOnly) {
+        lastPlane = null;
+        lastPlaneIndex = -1;
+        bmpColorsUsed = bmpWidth = bmpCompression = bmpScanLineSize = 0;
+        bmpBitsPerPixel = 0;
+        bytesPerPlane = 0;
+        offsets = null;
+        lengths = null;
+        lut = null;
+      }
     }
   }
   

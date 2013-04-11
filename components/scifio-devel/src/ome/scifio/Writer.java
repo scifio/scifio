@@ -59,7 +59,7 @@ import ome.scifio.io.RandomAccessOutputStream;
  * @see ome.scifio.Plane
  * @see ome.scifio.Reader#openPlane
  */
-public interface Writer extends HasFormat {
+public interface Writer extends HasFormat, HasSource {
 
   // -- Writer API methods --
 
@@ -225,7 +225,4 @@ public interface Writer extends HasFormat {
    * will be slightly improved.
    */
   void setWriteSequentially(boolean sequential);
-
-  /** Closes currently open file(s) and frees allocated memory. */
-  void close() throws IOException;
 }

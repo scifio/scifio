@@ -33,45 +33,24 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package ome.scifio;
 
 import java.io.IOException;
 
-import ome.scifio.util.FormatTools;
-
 /**
- * Abstract super-class for all {@link ome.scifio.Groupable} components.
+ * Abstract implementation of the {@link HasSource} interface. Provides a
+ * default {@link #close()} implementation that calls {@code close(false)}.
  * 
- * @author Mark Hiner
- * 
- * @see ome.scifio.Groupable
+ * @author Mark Hiner hinerm at gmail.com
  *
  */
-public abstract class AbstractGroupable extends AbstractHasSource implements Groupable {
-
-  /** Whether or not to group multi-file formats. */
-  private boolean group = true;
-  
-  /*
-   * @see ome.scifio.Groupable#setGroupFiles(boolean)
-   */
-  public void setGroupFiles(final boolean groupFiles) {
-    group = groupFiles;
-  }
+public abstract class AbstractHasSource extends AbstractHasFormat implements HasSource {
 
   /*
-   * @see ome.scifio.Groupable#isGroupFiles()
+   * @see ome.scifio.HasSource#close()
    */
-  public boolean isGroupFiles() {
-    return group;
-  }
-
-  /*
-   * @see ome.scifio.Groupable#fileGroupOption(java.lang.String)
-   */
-  public int fileGroupOption(final String id)
-    throws FormatException, IOException
-  {
-    return FormatTools.CANNOT_GROUP;
+  public void close() throws IOException {
+    close(false);
   }
 }

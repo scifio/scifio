@@ -163,12 +163,20 @@ public class EPSFormat extends AbstractFormat {
       get(0).setPlaneCount(1);
     }
     
-    public void close() {
-      super.close();
-      isTiff = false;
-      ifds = null;
-      start = 0;
-      binary = false;
+    // -- HasSource API Methods --
+    
+    /*
+     * @see ome.scifio.AbstractMetadata#close(boolean)
+     */
+    public void close(boolean fileOnly) throws IOException {
+      super.close(fileOnly);
+      
+      if (!fileOnly) {
+        isTiff = false;
+        ifds = null;
+        start = 0;
+        binary = false;
+      }
     }
   }
   

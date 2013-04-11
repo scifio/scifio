@@ -156,18 +156,6 @@ public class BMPFormat extends AbstractFormat {
     // -- Metadata API Methods --
     
     /*
-     * @see ome.scifio.AbstractMetadata#close()
-     */
-    public void close() {
-      super.close();
-      
-      compression = 0;
-      global = 0;
-      palette = null;
-      invertY = false;
-    }
-
-    /*
      * @see ome.scifio.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
@@ -215,6 +203,22 @@ public class BMPFormat extends AbstractFormat {
       iMeta.setFalseColor(false);
     }
     
+    // -- HasSource API Methods --
+    
+    /*
+     * @see ome.scifio.AbstractMetadata#close()
+     */
+    public void close(boolean fileOnly) throws IOException {
+      super.close(fileOnly);
+      
+      if (!fileOnly) {
+        compression = 0;
+        global = 0;
+        palette = null;
+        invertY = false;
+      }
+    }
+
     // -- HasColorTable API Methods --
     
     /*

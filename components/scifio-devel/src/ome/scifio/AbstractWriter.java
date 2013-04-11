@@ -63,7 +63,7 @@ import ome.scifio.util.SCIFIOMetadataTools;
  * @param <M> - The Metadata type required by this Writer.
  */
 public abstract class AbstractWriter<M extends TypedMetadata>
-  extends AbstractHasFormat implements TypedWriter<M> {
+  extends AbstractHasSource implements TypedWriter<M> {
 
   // -- Constants --
 
@@ -173,7 +173,6 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   public void setDest(final RandomAccessOutputStream out, final int imageIndex)
     throws FormatException, IOException
   {
-    close();
     if (metadata == null)
       throw new FormatException(
         "Can not set Destination without setting Metadata first.");
@@ -269,14 +268,6 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   public void setWriteSequentially(final boolean sequential) {
     this.sequential = sequential;
   }
-
-  /* @see ome.scifio.Writer#close() */
-  public void close() throws IOException {
-    if (out != null) out.close();
-    if (metadata != null) metadata.close();
-    out = null;
-    initialized = null;
-  }
   
   // -- TypedWriter API Methods --
 
@@ -285,12 +276,36 @@ public abstract class AbstractWriter<M extends TypedMetadata>
    */
   public void setMetadata(final M meta) throws FormatException {
     if (metadata != null && metadata != meta) {
-      meta.close();
+      try {
+        metadata.close();
+      } catch (IOException e) {
+        throw new FormatException(e);
+      }
+    }
+    
+    if (out != null) {
+      try {
+        close();
+      } catch (IOException e) {
+        throw new FormatException(e);
+      }
     }
     
     metadata = meta;
   }
-
+  
+  // -- HasSource API Methods --
+  
+  /*
+   * @see ome.scifio.HasSource#close(boolean)
+   */
+  public void close(boolean fileOnly) throws IOException {
+    if (out != null) out.close();
+    if (metadata != null) metadata.close(fileOnly);
+    out = null;
+    initialized = null;
+  }
+  
   // -- Helper methods --
 
   /** Sets up the initialized array and ensures this Writer is ready for writing */

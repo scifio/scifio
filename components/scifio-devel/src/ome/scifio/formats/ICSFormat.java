@@ -143,12 +143,6 @@ public class ICSFormat extends AbstractFormat {
     
     // -- Metadata API Methods --
     
-    /* @see Metadata#resetMeta() */
-    public void reset() {
-      super.reset();
-      keyValPairs = new Hashtable<String, String>();
-    }
-    
     /*
      * @see ome.scifio.AbstractMetadata#populateImageMetadata()
      */
@@ -365,6 +359,17 @@ public class ICSFormat extends AbstractFormat {
       catch (final FormatException e) {
         LOGGER.error("Could not get pixel type from bytes: " + bytes, e);
       }
+    }
+    
+    // -- HasSource API Methods --
+    
+    /*
+     * @see ome.scifio.AbstractMetadata#close(boolean)
+     */
+    public void close(boolean fileOnly) throws IOException {
+      super.close(fileOnly);
+      
+      if (!fileOnly) keyValPairs = new Hashtable<String, String>();
     }
     
     // -- ICSMetadata Methods --

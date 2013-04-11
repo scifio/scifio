@@ -121,12 +121,4 @@ public class OMEMetadata extends AbstractMetadata {
     }
     return root;
   }
-
-  /*
-   * @see ome.scifio.AbstractMetadata#reset(java.lang.Class)
-   */
-  @Override
-  public void reset() {
-    super.reset();
-  }
 }

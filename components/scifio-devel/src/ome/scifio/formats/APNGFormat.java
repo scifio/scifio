@@ -336,14 +336,17 @@ public class APNGFormat extends AbstractFormat {
     public void setIend(IENDChunk iend) {
     this.iend = iend;
     }
-  
-    // -- Helper Methods --
     
+    // -- HasSource API Methods --
+  
    /* @see ome.scifio.Metadata#reset() */
-    public void reset() {
-      super.reset();
-      fctl = new ArrayList<FCTLChunk>();
-      idat = new ArrayList<IDATChunk>();
+    public void close(boolean fileOnly) throws IOException {
+      super.close(fileOnly);
+      
+      if (!fileOnly) {
+        fctl = new ArrayList<FCTLChunk>();
+        idat = new ArrayList<IDATChunk>();
+      }
     }
   }
 
@@ -780,22 +783,26 @@ public class APNGFormat extends AbstractFormat {
 
     // -- APNGWriter Methods --
 
-    /* @see ome.scifio.Writer#close() */
-    public void close() throws IOException {
-      if (out != null) {
-        writeFooter();
-      }
-      super.close();
-      numFrames = 0;
-      numFramesPointer = 0;
-      nextSequenceNumber = 0;
-    }
-
     /* @see ome.scifio.Writer#setDest(RandomAccessOutputStream, int) */
     public void setDest(final RandomAccessOutputStream out, final int imageIndex)
         throws FormatException, IOException {
       super.setDest(out, imageIndex);
       initialize(imageIndex);
+    }
+
+    // -- HasSource API Methods --
+    
+    /*
+     * @see ome.scifio.AbstractWriter#close(boolean)
+     */
+    public void close(boolean fileOnly) throws IOException {
+      if (out != null) {
+        writeFooter();
+      }
+      super.close(fileOnly);
+      numFrames = 0;
+      numFramesPointer = 0;
+      nextSequenceNumber = 0;
     }
 
     // -- Helper Methods --

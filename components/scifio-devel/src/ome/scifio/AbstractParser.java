@@ -143,25 +143,6 @@ public abstract class AbstractParser<M extends TypedMetadata>
   }
 
   /*
-   * @see ome.scifio.Parser#close(boolean)
-   */
-  public void close(final boolean fileOnly) throws IOException {
-    if (in != null) in.close();
-    if (metadata != null) metadata.close();
-    if (!fileOnly) {
-      in = null;
-      currentId = null;
-    }
-  }
-
-  /*
-   * @see ome.scifio.Parser#close()
-   */
-  public void close() throws IOException {
-    close(false);
-  }
-
-  /*
    * @see ome.scifio.Parser#setOriginalMetadataPopulated(boolean)
    */
   public void setOriginalMetadataPopulated(final boolean populate) {
@@ -394,6 +375,22 @@ public abstract class AbstractParser<M extends TypedMetadata>
     return metadata;
   }
   
+  // -- HasSource API Methods --
+
+  /*
+   * @see ome.scifio.Parser#close(boolean)
+   */
+  public void close(final boolean fileOnly) throws IOException {
+    if (in != null) in.close();
+    if (metadata != null) metadata.close(fileOnly);
+    if (!fileOnly) {
+      in = null;
+      currentId = null;
+    }
+  }
+
+  // -- AbstractParser Methods --
+  
   /**
    * A helper method, called by {@link #parse(RandomAccessInputStream, TypedMetadata)}.
    * Allows for boilerplate code to come after parsing, specifically calls to
@@ -408,9 +405,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
    */
   protected abstract void typedParse(RandomAccessInputStream stream, M meta)
     throws IOException, FormatException;
-
-  // -- AbstractParser Methods --
-
+  
   /** Adds an entry to the global metadata table. */
   public void addGlobalMeta(final String key, final Object value) {
     addMeta(key, value, metadata.getTable());

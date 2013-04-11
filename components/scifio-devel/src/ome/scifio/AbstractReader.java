@@ -280,23 +280,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     }
   }
 
-  /*
-   * @see ome.scifio.Reader#close(boolean)
-   */
-  public void close(final boolean fileOnly) throws IOException {
-    if (metadata != null) metadata.close();
-    
-    if (!fileOnly) {
-      metadata = null;
-    }
-  }
-
-  /*
-   * @see ome.scifio.Reader#close()
-   */
-  public void close() throws IOException {
-    close(false);
-  }
 
   /*
    * @see ome.scifio.Reader#readPlane(ome.scifio.io.RandomAccessInputStream, int, int, int, int, int, ome.scifio.Plane)
@@ -457,4 +440,18 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   public Class<P> getPlaneClass() {
     return planeClass;
   }
+
+  // -- HasSource Format API --
+  
+  /*
+   * @see ome.scifio.Reader#close(boolean)
+   */
+  public void close(final boolean fileOnly) throws IOException {
+    if (metadata != null) metadata.close(fileOnly);
+    
+    if (!fileOnly) {
+      metadata = null;
+      currentId = null;
+    }
+  } 
 }

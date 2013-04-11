@@ -65,7 +65,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * 
  * @author Mark Hiner
  */
-public interface Reader extends HasFormat, Groupable {
+public interface Reader extends HasFormat, HasSource, Groupable {
 
   // -- Reader API methods --
 
@@ -198,15 +198,6 @@ public interface Reader extends HasFormat, Groupable {
    * @param stream - The stream to read from
    */
   void setSource(RandomAccessInputStream stream) throws IOException;
-
-  /**
-   * Closes the currently open file. If the flag is set, this is all that
-   * happens; if unset, it is equivalent to calling
-   */
-  void close(boolean fileOnly) throws IOException;
-
-  /** Closes currently open file(s) and frees allocated memory. */
-  void close() throws IOException;
 
   /** 
    * Reads a raw plane from disk.

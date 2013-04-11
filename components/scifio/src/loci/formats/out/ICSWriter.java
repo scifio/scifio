@@ -112,7 +112,6 @@ public class ICSWriter extends SCIFIOFormatWriter {
 
   /* @see loci.formats.IFormatHandler#close() */
   public void close() throws IOException {
-    super.close();
     ((ICSFormat.Writer)writer).close(getSeries());
   }
 

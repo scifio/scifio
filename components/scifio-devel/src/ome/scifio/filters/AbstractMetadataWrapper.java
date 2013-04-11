@@ -35,6 +35,8 @@
  */
 package ome.scifio.filters;
 
+import java.io.IOException;
+
 import net.imglib2.meta.AxisType;
 import ome.scifio.AbstractMetadata;
 import ome.scifio.ImageMetadata;
@@ -441,12 +443,14 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     meta.populateImageMetadata();
   }
   
+  // -- HasSource API Methods --
+  
   /*
-   * @see ome.scifio.AbstractMetadata#reset()
+   * @see ome.scifio.AbstractMetadata#close(boolean)
    */
-  public void reset() {
-    super.reset();
-    meta.reset();
+  public void close(boolean fileOnly) throws IOException {
+    super.close(fileOnly);
+    meta.close(fileOnly);
   }
 
 }

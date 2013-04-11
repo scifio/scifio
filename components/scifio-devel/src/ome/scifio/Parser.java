@@ -57,7 +57,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * 
  * @author Mark Hiner
  */
-public interface Parser extends HasFormat, Groupable {
+public interface Parser extends HasFormat, HasSource, Groupable {
 
   // -- Parser API methods --
 
@@ -122,20 +122,6 @@ public interface Parser extends HasFormat, Groupable {
    */
   Metadata parse(RandomAccessInputStream stream, Metadata meta)
     throws IOException, FormatException;
-
-  /**
-   * Closes the currently open image source, with an option to free allocated
-   * memory.
-   * 
-   * @param fileOnly If true, will not try to free up memory from objects
-   *        associated with this source.
-   */
-  void close(boolean fileOnly) throws IOException;
-
-  /** 
-   * Closes currently open source(s) and frees allocated memory.
-   */
-  void close() throws IOException;
 
   /**
    * Specifies whether or not this {@code Parser} should save proprietary

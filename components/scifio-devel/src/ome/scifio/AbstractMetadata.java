@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Mark Hiner
  */
-public abstract class AbstractMetadata extends AbstractHasFormat
+public abstract class AbstractMetadata extends AbstractHasSource
   implements TypedMetadata {
 
   // -- Constants --
@@ -111,11 +111,6 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   }
 
   // -- Metadata API Methods --
-  
-  public void reset() {
-    reset(getClass());
-  }
-
 
   /* @see Metadata#setSource(RandomAccessInputStream) */
   public void setSource(final RandomAccessInputStream source) {
@@ -127,16 +122,6 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   /* @see Metadata#getSource() */
   public RandomAccessInputStream getSource() {
     return source;
-  }
-  
-  public void close() {
-    if (source != null) {
-      try {
-        source.close();
-      } catch (IOException e) {
-        LOGGER.error("Failed to close stream in Metadata", e);
-      }
-    }
   }
   
   /* @see Metadata#isFiltered() */
@@ -521,18 +506,36 @@ public abstract class AbstractMetadata extends AbstractHasFormat
   
   // -- HasMetaTable API Methods --
   
+  /*
+   * @see ome.scifio.HasMetaTable#getTable()
+   */
   public MetaTable getTable() {
     if (table == null) table = new DefaultMetaTable();
     return table;
   }
   
+  /*
+   * @see ome.scifio.HasMetaTable#setTable(ome.scifio.MetaTable)
+   */
   public void setTable(MetaTable table) {
     this.table = table;
   }
   
-  // -- Helper methods --
-
-  /* @see Metadata#resetMeta(Class<?>) */
+  // -- HasSource API Methods --
+  
+  /*
+   * @see ome.scifio.HasSource#close(boolean)
+   */
+  public void close(boolean fileOnly) throws IOException {
+    if (source != null) {
+        source.close();
+    }
+    
+    if (!fileOnly) reset(getClass());
+  }
+  
+  // -- Helper Methods --
+  
   private void reset(final Class<?> type) {
     if (type == null || type == AbstractMetadata.class) return;
 
@@ -541,6 +544,7 @@ public abstract class AbstractMetadata extends AbstractHasFormat
 
       if (Modifier.isFinal(f.getModifiers())) continue;
       final Class<?> fieldType = f.getType();
+      
       try {
         if (fieldType == boolean.class) f.set(this, false);
         else if (fieldType == char.class) f.set(this, 0);
@@ -560,7 +564,7 @@ public abstract class AbstractMetadata extends AbstractHasFormat
       
       table = new DefaultMetaTable();
       imageMeta = new ArrayList<ImageMetadata>();
-
+      
       // check superclasses and interfaces
       reset(type.getSuperclass());
       for (final Class<?> c : type.getInterfaces()) {

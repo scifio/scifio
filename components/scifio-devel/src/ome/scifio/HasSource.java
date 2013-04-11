@@ -33,45 +33,38 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package ome.scifio;
 
 import java.io.IOException;
 
-import ome.scifio.util.FormatTools;
-
 /**
- * Abstract super-class for all {@link ome.scifio.Groupable} components.
+ * Interface for components that can be attached to open image sources that
+ * should be closed to avoid resource leaks 
+ * (e.g. {@link ome.scifio.io.RandomAccessInputStream})
  * 
- * @author Mark Hiner
+ * @see ome.scifio.io.RandomAccessInputStream
+ * @see ome.scifio.io.RandomAccessOutputStream
  * 
- * @see ome.scifio.Groupable
+ * @author Mark Hiner hinerm at gmail.com
  *
  */
-public abstract class AbstractGroupable extends AbstractHasSource implements Groupable {
-
-  /** Whether or not to group multi-file formats. */
-  private boolean group = true;
+public interface HasSource {
   
-  /*
-   * @see ome.scifio.Groupable#setGroupFiles(boolean)
+  /**
+   * Closes the image source(s) associated with this component, with
+   * a toggle to determine if the component itself is reset.
+   * 
+   * @param fileOnly - If true, only the associated source(s) are closed.
    */
-  public void setGroupFiles(final boolean groupFiles) {
-    group = groupFiles;
-  }
-
-  /*
-   * @see ome.scifio.Groupable#isGroupFiles()
+  void close(boolean fileOnly) throws IOException;
+  
+  /**
+   * Closes the image source(s) associated with this component
+   * and resets the component to its default state.
+   * <p>
+   * Equivalent to calling {@code close(false)}.
+   * </p>
    */
-  public boolean isGroupFiles() {
-    return group;
-  }
-
-  /*
-   * @see ome.scifio.Groupable#fileGroupOption(java.lang.String)
-   */
-  public int fileGroupOption(final String id)
-    throws FormatException, IOException
-  {
-    return FormatTools.CANNOT_GROUP;
-  }
+  void close() throws IOException;
 }
