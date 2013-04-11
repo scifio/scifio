@@ -180,13 +180,17 @@ public class EPSFormat extends AbstractFormat {
     }
   }
   
+  /**
+   * @author Mark Hiner hinerm at gmail.com
+   *
+   */
   public static class Parser extends AbstractParser<Metadata> {
 
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
         throws IOException, FormatException
     {
-      if (meta.getImageCount() == 0) meta.add(new DefaultImageMetadata());
+      meta.createImageMetadata(1);
       
       ImageMetadata m = meta.get(0);
 

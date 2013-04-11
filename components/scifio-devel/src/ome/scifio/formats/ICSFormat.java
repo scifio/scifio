@@ -60,7 +60,6 @@ import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
 import ome.scifio.ImageMetadata;
 import ome.scifio.Translator;
-import ome.scifio.DefaultImageMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.common.DateTools;
@@ -148,9 +147,7 @@ public class ICSFormat extends AbstractFormat {
      */
     public void populateImageMetadata() {
       // Common metadata population
-      
-    	// Create ImageMetadata if it doesn't already exist
-      if (getImageCount() == 0) add(new DefaultImageMetadata());
+      createImageMetadata(1);
       
       final ImageMetadata imageMeta = get(0);
       imageMeta.setRGB(false);

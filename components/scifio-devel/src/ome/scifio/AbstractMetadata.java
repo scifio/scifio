@@ -504,6 +504,16 @@ public abstract class AbstractMetadata extends AbstractHasSource
     imageMeta.get(imageIndex).setAxisLength(axis, length);
   }
   
+  /*
+   * @see ome.scifio.Metadata#createImageMetadata(int)
+   */
+  public void createImageMetadata(int imageCount) {
+    imageMeta.clear();
+    
+    for (int i=0; i<imageCount; i++)
+      add(new DefaultImageMetadata());
+  }
+  
   // -- HasMetaTable API Methods --
   
   /*

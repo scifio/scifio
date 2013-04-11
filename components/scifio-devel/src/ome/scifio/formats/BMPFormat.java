@@ -255,7 +255,7 @@ public class BMPFormat extends AbstractFormat {
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
         throws IOException, FormatException
     {
-      if (meta.getImageCount() == 0) meta.add(new DefaultImageMetadata());
+      meta.createImageMetadata(1);
       
       ImageMetadata iMeta = meta.get(0);
       

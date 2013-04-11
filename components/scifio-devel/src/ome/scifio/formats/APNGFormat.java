@@ -61,7 +61,6 @@ import ome.scifio.AbstractParser;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.AbstractWriter;
 import ome.scifio.BufferedImagePlane;
-import ome.scifio.DefaultImageMetadata;
 import ome.scifio.Field;
 import ome.scifio.FieldPrinter;
 import ome.scifio.FormatException;
@@ -187,7 +186,7 @@ public class APNGFormat extends AbstractFormat {
      * @see ome.scifio.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
-      if (getImageCount() == 0) add(new DefaultImageMetadata());
+      createImageMetadata(1);
       
       final ImageMetadata imageMeta = get(0);
   
@@ -392,13 +391,11 @@ public class APNGFormat extends AbstractFormat {
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- Parser API Methods --
-  
-    /* @see ome.scifio.AbstractParser#parse(RandomAccessInputStream stream) */
+
     @Override
-    public Metadata parse(final RandomAccessInputStream stream, Metadata meta)
+    protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
-    {
-      // check that this is a valid PNG file
+    {  // check that this is a valid PNG file
       final byte[] signature = new byte[8];
       stream.read(signature);
   
@@ -426,7 +423,7 @@ public class APNGFormat extends AbstractFormat {
         APNGChunk chunk = null;
   
         if (type.equals("acTL")) {
-        	chunk = new ACTLChunk();
+          chunk = new ACTLChunk();
           ACTLChunk actl = (ACTLChunk)chunk;
           actl.setNumFrames(stream.readInt());
           actl.setNumPlays(stream.readInt());
@@ -508,16 +505,7 @@ public class APNGFormat extends AbstractFormat {
           stream.skipBytes(4); // skip the CRC
         }
       }
-  
-      stream.seek(0);
-      super.parse(stream, meta);
-      
-      return metadata;
     }
-
-    @Override
-    protected void typedParse(RandomAccessInputStream stream, Metadata meta)
-        throws IOException, FormatException { /* NO-OP */ }
   }
 
   /**

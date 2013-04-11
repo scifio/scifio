@@ -51,9 +51,9 @@ import ome.scifio.AbstractParser;
 import ome.scifio.AbstractTranslator;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
-import ome.scifio.DefaultImageMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.HasColorTable;
+import ome.scifio.ImageMetadata;
 import ome.scifio.Translator;
 import ome.scifio.common.DataTools;
 import ome.scifio.io.IStreamAccess;
@@ -425,9 +425,11 @@ public class FakeFormat extends AbstractFormat
       
       int effSizeC = sizeC / rgb;
       
+      createImageMetadata(numImages);
+      
       // set ImageMetadata
       for(int i = 0; i < numImages; i++) {
-        DefaultImageMetadata imageMeta = new DefaultImageMetadata();
+        ImageMetadata imageMeta = get(i);
 
         imageMeta.setAxisTypes(axes);
         imageMeta.setAxisLengths(axisLengths);
@@ -444,8 +446,6 @@ public class FakeFormat extends AbstractFormat
         imageMeta.setOrderCertain(orderCertain);
         imageMeta.setBitsPerPixel(bitsPerPixel);
         imageMeta.setPlaneCount(sizeZ * effSizeC * sizeT);
-        
-        add(imageMeta);
       }
     }
   }

@@ -293,8 +293,6 @@ public class AVIFormat extends AbstractFormat {
     // -- Metadata API Methods --
     
     public void populateImageMetadata() {
-      if (get(0) == null) add(new DefaultImageMetadata());
-      
       ImageMetadata iMeta = get(0);
       int sizeT = 0, sizeC = 0;
 
@@ -469,7 +467,7 @@ public class AVIFormat extends AbstractFormat {
       meta.setLengths(new Vector<Long>());
       meta.setOffsets(new Vector<Long>());
       
-      if (meta.getImageCount() <= 0) meta.add(new DefaultImageMetadata());
+      meta.createImageMetadata(1);
 
       while (stream.getFilePointer() < stream.length() - 8) {
         // NB: size x and size y are implicitly set here
@@ -1502,12 +1500,11 @@ public class AVIFormat extends AbstractFormat {
 
     @Override
     protected void typedTranslate(ome.scifio.Metadata source, Metadata dest) {
-      if (dest.getImageCount() < 1) dest.add(new DefaultImageMetadata());
-      
       Vector<Long> offsets = new Vector<Long>();
       Vector<Long> lengths = new Vector<Long>();
       dest.setOffsets(offsets);
       dest.setLengths(lengths);
+      dest.createImageMetadata(1);
       
       int sizeX = source.getAxisLength(0, Axes.X);
       int sizeY = source.getAxisLength(0, Axes.Y);

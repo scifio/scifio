@@ -38,7 +38,6 @@ package ome.scifio;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import net.imglib2.meta.AxisType;
 import ome.scifio.io.RandomAccessInputStream;
@@ -421,4 +420,11 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
    * if its type is present in the specified image. 
    */
   void setAxisLength(int imageIndex, AxisType axis, int length);
+  
+  /**
+   * Creates the specified number of blank ImageMetadata.
+   * 
+   * @param imageCount - Number of ImageMetadata to create.
+   */
+  void createImageMetadata(int imageCount);
 }

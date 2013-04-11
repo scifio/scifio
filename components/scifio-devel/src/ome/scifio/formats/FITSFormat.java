@@ -83,7 +83,7 @@ public class FITSFormat extends AbstractFormat {
   // -- Nested Classes --
   
   /**
-   * @author Mark hiner hinerm at gmail.com
+   * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata {
@@ -144,7 +144,7 @@ public class FITSFormat extends AbstractFormat {
   }
   
   /**
-   * @author Mark hiner hinerm at gmail.com
+   * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
@@ -153,6 +153,7 @@ public class FITSFormat extends AbstractFormat {
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException 
     {
+      meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
       
       String line = in.readString(LINE_LENGTH);
@@ -201,7 +202,7 @@ public class FITSFormat extends AbstractFormat {
   }
 
   /**
-   * @author Mark hiner hinerm at gmail.com
+   * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {

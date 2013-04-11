@@ -53,7 +53,6 @@ import ome.scifio.AbstractMetadata;
 import ome.scifio.AbstractParser;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
-import ome.scifio.DefaultImageMetadata;
 import ome.scifio.FilePattern;
 import ome.scifio.FormatException;
 import ome.scifio.HasColorTable;
@@ -1151,7 +1150,7 @@ public class DICOMFormat extends AbstractFormat {
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
         throws IOException, FormatException
     {
-      if (meta.getImageCount() < 1) meta.add(new DefaultImageMetadata());
+      meta.createImageMetadata(1);
       
       stream.order(true);
       
