@@ -79,7 +79,7 @@ public class CoreMetadataListWrapper extends AbstractMetadata
     return cMeta.get();
   }
   
-  // -- DatasetMetadata API Methods --
+  // -- Metadata API Methods --
 
   /*
    * @see ome.scifio.AbstractMetadata#get(int)
@@ -418,9 +418,17 @@ public class CoreMetadataListWrapper extends AbstractMetadata
    */
   public void populateImageMetadata() { }
 
+  // -- MetaTable API Methods --
+  
+  /*
+   * @see ome.scifio.AbstractMetadata#getTable()
+   */
   public MetaTable getTable() {
     return null;
   }
 
+  /*
+   * @see ome.scifio.AbstractMetadata#setTable(ome.scifio.MetaTable)
+   */
   public void setTable(MetaTable table) { }
 }
