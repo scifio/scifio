@@ -37,6 +37,8 @@ package loci.formats;
 
 import java.util.List;
 
+import loci.formats.in.MetadataLevel;
+import loci.formats.in.MetadataOptions;
 import loci.legacy.adapter.AdapterTools;
 import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
@@ -102,5 +104,21 @@ public final class FormatAdapter {
    */
   public static Reader get(IFormatReader reader) {
     return (Reader)AdapterTools.get(reader);
+  }
+  
+  // -- MetadataOptions Adapter Methods --
+  
+  /**
+   * Maps loci.formats.in.MetadataOptions to ome.scifio.MetadataOptions
+   */
+  public static ome.scifio.MetadataOptions get(MetadataOptions opts) {
+    return (ome.scifio.MetadataOptions)AdapterTools.get(opts);
+  }
+  
+  /**
+   * Maps ome.scifio.MetadataOptions to loci.formats.in.MetadataOptions
+   */
+  public static MetadataOptions get(ome.scifio.MetadataOptions opts) {
+    return (MetadataOptions)AdapterTools.get(opts);
   }
 }

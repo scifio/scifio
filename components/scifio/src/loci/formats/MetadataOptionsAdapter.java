@@ -34,42 +34,46 @@
  * #L%
  */
 
-package loci.formats.in;
+package loci.formats;
+
+import org.scijava.plugin.Plugin;
+
+import loci.formats.in.DefaultMetadataOptions;
+import loci.formats.in.MetadataOptions;
+import loci.legacy.adapter.AbstractLegacyAdapter;
+import loci.legacy.adapter.LegacyAdapter;
 
 /**
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/DefaultMetadataOptions.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/DefaultMetadataOptions.java;hb=HEAD">Gitweb</a></dd></dl>
- *
- * @author callan
+ * {@link LegacyAdapter} implementation for converting between
+ * ome.scifio.MetadataOptions and loci.formats.in.MetadataOptions.
  * 
- * @deprecated see ome.scifio.DefaultMetadataOptions
+ * @author Mark Hiner hinerm at gmail.com
+ * 
+ * @see ome.scifio.MetadataOptions
+ * @see loci.formats.in.MetadataOptions
  */
-@Deprecated
-public class DefaultMetadataOptions implements MetadataOptions {
+@Plugin(type=MetadataOptionsAdapter.class)
+public class MetadataOptionsAdapter extends
+  AbstractLegacyAdapter<MetadataOptions, ome.scifio.MetadataOptions>
+{
+  
+  // -- Constructor --
 
-  private MetadataLevel level;
+  public MetadataOptionsAdapter()
+  {
+    super(MetadataOptions.class, ome.scifio.MetadataOptions.class);
+  }
+  
+  // -- AbstractLegacyAdapter API Methods --
 
-  public DefaultMetadataOptions() {
-    this.level = MetadataLevel.ALL;
+  @Override
+  protected MetadataOptions wrapToLegacy(ome.scifio.MetadataOptions modern) {
+    return new DefaultMetadataOptions(MetadataLevelAdapter.get(modern.getMetadataLevel()));
   }
 
-  public DefaultMetadataOptions(MetadataLevel level) {
-    this.level = level;
+  @Override
+  protected ome.scifio.MetadataOptions wrapToModern(MetadataOptions legacy) {
+    return new ome.scifio.DefaultMetadataOptions(
+        MetadataLevelAdapter.get(legacy.getMetadataLevel()));
   }
-
-  /* (non-Javadoc)
-   * @see loci.formats.in.MetadataOptions#getMetadataLevel()
-   */
-  public MetadataLevel getMetadataLevel() {
-    return level;
-  }
-
-  /* (non-Javadoc)
-   * @see loci.formats.in.MetadataOptions#setMetadataLevel(loci.formats.in.MetadataLevel)
-   */
-  public void setMetadataLevel(MetadataLevel level) {
-    this.level = level;
-  }
-
 }

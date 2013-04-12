@@ -42,7 +42,10 @@ package loci.formats.in;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/MetadataOptions.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author callan
+ * 
+ * @deprecated see ome.scifio.MetadataOptions
  */
+@Deprecated
 public interface MetadataOptions {
 
   void setMetadataLevel(MetadataLevel level);

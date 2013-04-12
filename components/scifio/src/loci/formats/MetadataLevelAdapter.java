@@ -34,42 +34,36 @@
  * #L%
  */
 
-package loci.formats.in;
+package loci.formats;
+
+import ome.scifio.MetadataLevel;
 
 /**
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/DefaultMetadataOptions.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/DefaultMetadataOptions.java;hb=HEAD">Gitweb</a></dd></dl>
- *
- * @author callan
+ * Convenience class for converting between ome.scifio.MetadataLevel and
+ * loci.formats.in.MetadataLevel
  * 
- * @deprecated see ome.scifio.DefaultMetadataOptions
+ * @see ome.scifio.MetadataLevel
+ * @see ome.scifio.in.MetadataLevel
+ * 
+ * @author Mark Hiner hinerm at gmail.com
+ *
  */
-@Deprecated
-public class DefaultMetadataOptions implements MetadataOptions {
+public final class MetadataLevelAdapter {
 
-  private MetadataLevel level;
-
-  public DefaultMetadataOptions() {
-    this.level = MetadataLevel.ALL;
+  public static loci.formats.in.MetadataLevel get(MetadataLevel metadataLevel) {
+    switch (metadataLevel) {
+    case MINIMUM: return loci.formats.in.MetadataLevel.MINIMUM;
+    case NO_OVERLAYS: return loci.formats.in.MetadataLevel.NO_OVERLAYS;
+    default: return loci.formats.in.MetadataLevel.ALL;
+    }
   }
 
-  public DefaultMetadataOptions(MetadataLevel level) {
-    this.level = level;
-  }
-
-  /* (non-Javadoc)
-   * @see loci.formats.in.MetadataOptions#getMetadataLevel()
-   */
-  public MetadataLevel getMetadataLevel() {
-    return level;
-  }
-
-  /* (non-Javadoc)
-   * @see loci.formats.in.MetadataOptions#setMetadataLevel(loci.formats.in.MetadataLevel)
-   */
-  public void setMetadataLevel(MetadataLevel level) {
-    this.level = level;
+  public static MetadataLevel get(loci.formats.in.MetadataLevel metadataLevel) {
+    switch (metadataLevel) {
+    case MINIMUM: return MetadataLevel.MINIMUM;
+    case NO_OVERLAYS: return MetadataLevel.NO_OVERLAYS;
+    default: return MetadataLevel.ALL;
+    }
   }
 
 }

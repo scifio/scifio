@@ -380,21 +380,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   public void setMetadataOptions(MetadataOptions options) {
     this.metadataOptions = options;
     
-    ome.scifio.MetadataOptions sOpts = new ome.scifio.DefaultMetadataOptions();
-
-    switch(options.getMetadataLevel()) {
-      case ALL:
-        sOpts.setMetadataLevel(ome.scifio.MetadataLevel.ALL);
-        break;
-      case NO_OVERLAYS:
-        sOpts.setMetadataLevel(ome.scifio.MetadataLevel.NO_OVERLAYS);
-        break;
-      case MINIMUM:
-        sOpts.setMetadataLevel(ome.scifio.MetadataLevel.MINIMUM);
-        break;
-    }
-    
-    parser.setMetadataOptions(sOpts);
+    parser.setMetadataOptions(FormatAdapter.get(options));
   }
 
   // -- IFormatReader API methods --
