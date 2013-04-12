@@ -35,6 +35,8 @@
  */
 package ome.scifio;
 
+import org.scijava.Prioritized;
+
 /**
  * Interface for all SCIFIO formats.
  * <p>
@@ -58,7 +60,7 @@ package ome.scifio;
  * @see ome.scifio.SCIFIO
  * @see ome.scifio.services.FormatService
  */
-public interface Format extends SCIFIOPlugin, HasSCIFIO {
+public interface Format extends SCIFIOPlugin, Prioritized, HasSCIFIO {
   
   // -- Format API methods --
 
