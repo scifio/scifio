@@ -409,6 +409,17 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
   public <P extends Plane> P castToTypedPlane(Plane plane) {
     return getParent().<P>castToTypedPlane(plane);
   }
+
+  // -- Groupable API Methods --
+  
+  /*
+   * @see ome.scifio.Groupable#isSingleFile(java.lang.String)
+   */
+  public boolean isSingleFile(String id) throws FormatException, IOException {
+    return getParent().isSingleFile(id);
+  } 
+  
+  // -- HasFormat API Methods --
   
   /*
    * @see ome.scifio.HasFormat#getFormat()

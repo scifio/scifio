@@ -67,11 +67,26 @@ public abstract class AbstractGroupable extends AbstractHasSource implements Gro
   }
 
   /*
-   * @see ome.scifio.Groupable#fileGroupOption(java.lang.String)
+   * @see ome.scifio.Groupable#fileGroupOption(String)
    */
   public int fileGroupOption(final String id)
     throws FormatException, IOException
   {
     return FormatTools.CANNOT_GROUP;
+  }
+  
+  /*
+   * @see ome.scifio.Groupable#isSingleFile()
+   */
+  public boolean isSingleFile(final String id) throws FormatException, IOException
+  {
+    return true;
+  }
+
+  /*
+   * @see ome.scifio.Groupable#hasCompanionFiles()
+   */
+  public boolean hasCompanionFiles() {
+    return false;
   }
 }

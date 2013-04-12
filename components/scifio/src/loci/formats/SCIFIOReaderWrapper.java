@@ -500,4 +500,14 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   public <P extends Plane> P castToTypedPlane(Plane plane) {
     throw new UnsupportedOperationException("ReaderWrapper has no associated Plane type");
   }
+  
+  // -- Groupable API Methods --
+
+  /*
+   * @see ome.scifio.Groupable#isSingleFile(java.lang.String)
+   */
+  public boolean isSingleFile(String id) throws ome.scifio.FormatException,
+      IOException {
+    return unwrap().isSingleFile(id);
+  }
 }

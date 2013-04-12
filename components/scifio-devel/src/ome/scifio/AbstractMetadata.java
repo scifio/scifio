@@ -586,14 +586,4 @@ public abstract class AbstractMetadata extends AbstractHasSource
       }
     }
   }
-
-  /* TODO
-  public boolean isSingleFile() {
-    return this.size() <= 1;
-  }
-  
-  public boolean hasCompanionFiles() {
-    return false;
-  }
-  */
 }
