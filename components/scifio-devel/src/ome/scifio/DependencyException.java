@@ -51,10 +51,10 @@ import org.scijava.service.Service;
 public class DependencyException extends Exception
 {
   /** Serial for this version. */
-  private static final long serialVersionUID = -7836244849086491562L;
+  protected static final long serialVersionUID = -7836244849086491562L;
   
   /** The class that was used in a failed instantiation. */
-  private Class<? extends Service> failureClass;
+  protected Class<? extends Service> failureClass;
 
   /**
    * Default constructor.

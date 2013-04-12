@@ -45,14 +45,17 @@ package loci.common.services;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/services/DependencyException.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Chris Allan <callan at blackcat dot ca>
+ * 
+ * @deprecated see ome.scifio.DependencyException
  */
-public class DependencyException extends Exception
+@Deprecated
+public class DependencyException extends ome.scifio.DependencyException
 {
-  /** Serial for this version. */
-  private static final long serialVersionUID = -7836244849086491562L;
   
-  /** The class that was used in a failed instantiation. */
-  private Class<? extends Service> failureClass;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = ome.scifio.DependencyException.serialVersionUID;
 
   /**
    * Default constructor.
@@ -70,8 +73,7 @@ public class DependencyException extends Exception
    */
   public DependencyException(String message, Class<? extends Service> klass)
   {
-    super(message);
-    this.failureClass = klass;
+    super(message, klass);
   }
 
   /**
@@ -83,8 +85,7 @@ public class DependencyException extends Exception
   public DependencyException(String message, Class<? extends Service> klass,
       Throwable cause)
   {
-    super(message, cause);
-    this.failureClass = klass;
+    super(message, klass, cause);
   }
 
   /**
@@ -94,24 +95,5 @@ public class DependencyException extends Exception
   public DependencyException(Throwable cause)
   {
     super(cause);
-  }
-
-  /**
-   * Returns the class that was used during a failed instantiation.
-   * @return See above.
-   */
-  public Class<? extends Service> getFailureClass()
-  {
-    return failureClass;
-  }
-
-  @Override
-  public String toString()
-  {
-    if (failureClass == null)
-    {
-      return getMessage();
-    }
-    return getMessage() + " for " + failureClass;
   }
 }
