@@ -378,7 +378,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     {
       s.read(bytes);
     }
-    else if (x == 0 && w == metadata.getAxisLength(imageIndex, Axes.Y) &&
+    else if (x == 0 && w == metadata.getAxisLength(imageIndex, Axes.X) &&
       scanlinePad == 0)
     {
       if (metadata.isInterleaved(imageIndex)) {
@@ -400,7 +400,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     }
     else {
       final int scanlineWidth =
-          metadata.getAxisLength(imageIndex, Axes.Y) + scanlinePad;
+          metadata.getAxisLength(imageIndex, Axes.X) + scanlinePad;
       if (metadata.isInterleaved(imageIndex)) {
         s.skipBytes(y * scanlineWidth * bpp * c);
         for (int row = 0; row < h; row++) {
