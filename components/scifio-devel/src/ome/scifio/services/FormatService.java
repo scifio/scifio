@@ -169,6 +169,16 @@ public interface FormatService extends Service {
 
   /**
    * Returns the first Format known to be compatible with the source provided.
+   * Formats are checked in ascending order of their priority. The source is read
+   * if necessary to determine compatibility.
+   * 
+   * @param id the source
+   * @return A  Format reference compatible with the provided source.
+   */
+  Format getFormat(String id) throws FormatException;
+  
+  /**
+   * Returns the first Format known to be compatible with the source provided.
    * Formats are checked in ascending order of their priority.
    * 
    * @param id the source
@@ -179,26 +189,6 @@ public interface FormatService extends Service {
 
   /**
    * Returns a list of all formats that are compatible with the source
-   * provided, ordered by their priority.
-   * 
-   * @param id the source
-   * @param open true if the source can be read while checking for compatibility.
-   * @return A List of Format references compatible with the provided source.
-   */
-  List<Format> getFormatList(String id, boolean open) throws FormatException;
-
-  /**
-   * Returns the first Format known to be compatible with the source provided.
-   * Formats are checked in ascending order of their priority. The source is read
-   * if necessary to determine compatibility.
-   * 
-   * @param id the source
-   * @return A  Format reference compatible with the provided source.
-   */
-  Format getFormat(String id) throws FormatException;
-
-  /**
-   * Returns a list of all formats that are compatible with the source
    * provided, ordered by their priority. The source is read
    * if necessary to determine compatibility.
    * 
@@ -206,6 +196,17 @@ public interface FormatService extends Service {
    * @return An List of Format references compatible with the provided source.
    */
   List<Format> getFormatList(String id) throws FormatException;
+
+  /**
+   * Returns a list of all formats that are compatible with the source
+   * provided, ordered by their priority.
+   * 
+   * @param id the source
+   * @param open true if the source can be read while checking for compatibility.
+   * @param greedy if true, the search will terminate after finding the first compatible format
+   * @return A List of Format references compatible with the provided source.
+   */
+  List<Format> getFormatList(String id, boolean open, boolean greedy) throws FormatException;
 
   /**
    * Returns a list of all Formats within this context.

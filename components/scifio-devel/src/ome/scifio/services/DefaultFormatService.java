@@ -36,10 +36,10 @@
 package ome.scifio.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.TreeSet;
 
 
@@ -228,39 +228,6 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     return metadataMap.get(metadataClass);
   }
 
-  /*
-   * @see FormatService#getFormat(String, boolean)
-   */
-  public Format getFormat(final String id, final boolean open)
-      throws FormatException {
-    return getFormatList(id, open).get(0);
-  }
-
-  /*
-   * @see FormatService#getFormatList(String, boolean)
-   */
-  public List<Format> getFormatList(final String id,
-      final boolean open) throws FormatException {
-    
-    final PriorityQueue<Format> formatPriorities = new PriorityQueue<Format>(formats);
-    final List<Format> formatList = new ArrayList<Format>();
-
-    boolean found = false;
-    while (!formatPriorities.isEmpty() && !found) {
-      final Format format = formatPriorities.poll();
-
-      if (format.createChecker().isFormat(id, open)) {
-        found = true;
-        formatList.add(format);
-      }
-    }
-
-    if (formatList.isEmpty())
-      throw new FormatException(id + ": No supported format found.");
-
-    return formatList;
-  }
-
   /**
    * Returns the first Format known to be compatible with the source provided.
    * Formats are checked in ascending order of their priority. The source is read
@@ -273,13 +240,47 @@ public class DefaultFormatService extends AbstractService implements FormatServi
       throws FormatException {
     return getFormat(id, false);
   }
-
+  
+  /*
+   * @see FormatService#getFormat(String, boolean)
+   */
+  public Format getFormat(final String id, final boolean open)
+      throws FormatException {
+    return getFormatList(id, open, true).get(0);
+  }
+  
   /*
    * @see FormatService#getformatList(String)
    */
   public List<Format> getFormatList(final String id)
       throws FormatException {
-    return getFormatList(id, false);
+    return getFormatList(id, false, false);
+  }
+
+  /*
+   * @see FormatService#getFormatList(String, boolean, boolean)
+   */
+  public List<Format> getFormatList(final String id,
+    final boolean open, final boolean greedy) throws FormatException
+  {
+    
+    final List<Format> formatList = new ArrayList<Format>();
+
+    boolean found = false;
+    
+    for (int i=0; i<formats.size() && !found; i++) {
+      final Format format = formats.get(i);
+      if (format.createChecker().isFormat(id, open)) {
+        // if greedy is true, we can end after finding the first format
+        found = greedy;
+        formatList.add(format);
+      }
+    }
+
+    if (formatList.isEmpty())
+      throw new FormatException(id + ": No supported format found.");
+
+    return formatList;
   }
   
   /*
@@ -306,5 +307,7 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     {
       addFormat(format); 
     }
+    
+    Collections.sort(formats);
   }
 }
