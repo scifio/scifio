@@ -68,7 +68,7 @@ public class ICSWriter extends SCIFIOFormatWriter {
       writer = format.createWriter();
     }
     catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
+      LOGGER.warn("Failed to create ICSFormat components");
     }
   }
 
