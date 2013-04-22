@@ -3,11 +3,10 @@ package loci.formats;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 
-import net.imglib2.meta.Axes;
-
 import loci.formats.codec.CodecOptions;
 import loci.formats.meta.MetadataRetrieve;
 import loci.legacy.context.LegacyContext;
+import net.imglib2.meta.Axes;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.DefaultMetadataOptions;
 import ome.scifio.Format;
@@ -16,6 +15,7 @@ import ome.scifio.Plane;
 import ome.scifio.Writer;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.xml.meta.OMEMetadata;
+import ome.xml.meta.OMEXMLMetadata;
 
 /**
  * Abstract superclass of all biological file format writers that have been
@@ -166,6 +166,20 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
   @Override
   public void setMetadataRetrieve(MetadataRetrieve retrieve) {
      metadataRetrieve = retrieve;
+     
+     if (retrieve instanceof OMEXMLMetadata) {
+       OMEMetadata omeMeta = new OMEMetadata(LegacyContext.get(), (OMEXMLMetadata) retrieve);
+       
+       if (writer.getMetadata() == null) {
+         try {
+           Metadata m = format.createMetadata();
+           writer.setMetadata(format.createMetadata());
+           LegacyContext.getSCIFIO().translator().translate(omeMeta, writer.getMetadata());
+         } catch (ome.scifio.FormatException e) {
+           LOGGER.error("Failed to set SCIFIO Writer's Metadata", e);
+         }
+       }
+     }
   }
 
   /* @see IFormatWriter#getMetadataRetrieve() */
@@ -350,10 +364,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
       omeMeta.setMetadataOptions(new DefaultMetadataOptions());
       
       // convert the metadata retrieve to ome.scifio.Metadata
-      RandomAccessInputStream stream = new RandomAccessInputStream(LegacyContext.get(), id);
-      omeMeta.setSource(stream);
       writer.scifio().translator().translate(omeMeta, meta);
-      stream.close();
 
       meta.setDatasetName(id);
       
