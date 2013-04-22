@@ -159,6 +159,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   }
   
   public AbstractImageMetadata(ImageMetadata copy) {
+    this();
     copy(copy);
   }
 
