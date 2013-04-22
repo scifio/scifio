@@ -1525,7 +1525,8 @@ public class AVIFormat extends AbstractFormat {
       dest.setBmpScanLineSize(dest.getBmpWidth() * source.getRGBChannelCount(0));
       
       try {
-        offset = source.getSource().getFilePointer();
+        if (source.getSource() == null) offset = 0;
+        else offset = source.getSource().getFilePointer();
       } catch (IOException e) {
         LOGGER.error("Error retrieving AVI plane offset", e);
       }
