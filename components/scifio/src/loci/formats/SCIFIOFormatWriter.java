@@ -173,8 +173,8 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
        if (writer.getMetadata() == null) {
          try {
            Metadata m = format.createMetadata();
-           writer.setMetadata(format.createMetadata());
-           LegacyContext.getSCIFIO().translator().translate(omeMeta, writer.getMetadata());
+           LegacyContext.getSCIFIO().translator().translate(omeMeta, m);
+           writer.setMetadata(m);
          } catch (ome.scifio.FormatException e) {
            LOGGER.error("Failed to set SCIFIO Writer's Metadata", e);
          }
