@@ -949,7 +949,9 @@ public class FormatTools {
     filename = filename.replaceAll(T_NUM, String.valueOf(coordinates[2]));
     filename = filename.replaceAll(CHANNEL_NUM, String.valueOf(coordinates[1]));
 
-    String channelName = r.getMetadata().getAxisType(imageIndex, coordinates[1]).getLabel();
+    String[] channels = r.getMetadata().getChannelDimTypes(imageIndex);
+    String channelName =  channels == null || coordinates[1] >= channels.length ?
+        null : channels[coordinates[1]];
     if (channelName == null) channelName = String.valueOf(coordinates[1]);
     channelName = channelName.replaceAll("/", "_");
     channelName = channelName.replaceAll("\\\\", "_");
