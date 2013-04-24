@@ -159,7 +159,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
   /* @see IFormatWriter#canDoStacks() */
   @Override
   public boolean canDoStacks() {
-    return false;
+    return writer.canDoStacks();
   }
 
   /* @see IFormatWriter#setMetadataRetrieve(MetadataRetrieve) */

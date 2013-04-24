@@ -88,14 +88,4 @@ public class APNGWriter extends SCIFIOFormatWriter {
       throw new FormatException(e);
     }
   }
-
-  /* @see loci.formats.IFormatWriter#canDoStacks() */
-  public boolean canDoStacks() {
-    return writer.canDoStacks();
-  }
-
-  /* @see loci.formats.IFormatWriter#getPixelTypes(String) */
-  public int[] getPixelTypes(String codec) {
-    return writer.getPixelTypes(codec);
-  }
 }
