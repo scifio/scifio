@@ -45,7 +45,6 @@ import org.scijava.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ome.scifio.DefaultImageMetadata;
 import ome.scifio.FormatException;
 import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
@@ -498,15 +497,11 @@ public class DefaultOMEXMLMetadataService extends AbstractService
   public void populateMetadata(MetadataRetrieve retrieve, Metadata meta) {
     meta.setDatasetName(retrieve.getImageName(0));
     
-    for (int i=0; i<retrieve.getImageCount(); i++) {
-      ImageMetadata iMeta; 
-      if (i >= meta.getImageCount()) {
-        iMeta = new DefaultImageMetadata();
-        meta.add(iMeta);
-      }
-      else iMeta = meta.get(i);
-      
-      populateImageMetadata(retrieve, i, iMeta);
+    int numImages = retrieve.getImageCount();
+    meta.createImageMetadata(numImages);
+    
+    for (int i=0; i<numImages; i++) {
+      populateImageMetadata(retrieve, i, meta.get(i));
     }
   }
   
