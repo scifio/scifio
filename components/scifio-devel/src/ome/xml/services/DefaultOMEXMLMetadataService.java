@@ -522,7 +522,10 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     boolean little = !retrieve.getPixelsBinDataBigEndian(imageIndex, 0);
     String pixelType = retrieve.getPixelsType(imageIndex).getValue();
     
-    int rgbCCount = retrieve.getChannelSamplesPerPixel(imageIndex, 0).getValue();
+    PositiveInteger spp = retrieve.getChannelCount(imageIndex) <= 0 ? null :
+                          retrieve.getChannelSamplesPerPixel(imageIndex, 0);
+    
+    int rgbCCount = spp == null ? 1 : spp.getValue();
     
     SCIFIOMetadataTools.populateDimensions(iMeta, dimensionOrder,
         sizeX, sizeY, sizeZ, sizeC, sizeT);
