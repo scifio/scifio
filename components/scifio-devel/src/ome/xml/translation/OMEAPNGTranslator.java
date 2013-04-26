@@ -70,8 +70,8 @@ public class OMEAPNGTranslator extends FromOMETranslator<APNGFormat.Metadata> {
       Double timeIncrement = source.getRoot().getPixelsTimeIncrement(0);
       
       short tIncrement = 1;
-      if (timeIncrement != null)
-       Short.parseShort(Double.toString(timeIncrement));
+      if (timeIncrement != null && !timeIncrement.isNaN() && !timeIncrement.isInfinite())
+        Short.parseShort(Double.toString(timeIncrement));
       
       dest.getFctl().get(0).setDelayNum(tIncrement);
       dest.getFctl().get(0).setDelayDen((short) 1);
