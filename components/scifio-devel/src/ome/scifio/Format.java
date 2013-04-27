@@ -63,6 +63,19 @@ import org.scijava.Prioritized;
 public interface Format extends SCIFIOPlugin, Prioritized, HasSCIFIO {
   
   // -- Format API methods --
+  
+  /**
+   * Toggle whether this Format should be used when checking image compatibility.
+   * 
+   * @param enabled - if true, this Format will be used in image/IO. Default: true
+   * 
+   */
+  void setEnabled(boolean enabled);
+  
+  /**
+   * @return True if this Format is active when checking image compatibility.
+   */
+  boolean isEnabled();
 
   /** 
    * Gets the name of this file format.

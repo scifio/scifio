@@ -50,7 +50,10 @@ import loci.formats.FormatTools;
  *
  * @see NativeQTReader
  * @see LegacyQTReader
+ * 
+ * @deprecated see ome.scifio.formats.LegacyQTFormat and ome.scifio.formats.NativeQTFormat
  */
+@Deprecated
 public class QTReader extends DelegateReader {
 
   // -- Constructor --

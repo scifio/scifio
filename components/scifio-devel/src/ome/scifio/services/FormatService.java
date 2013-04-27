@@ -84,6 +84,16 @@ public interface FormatService extends Service {
    * @return True if the {@code Format} was added successfully.
    */
   <M extends Metadata> boolean addFormat(Format format);
+  
+  /**
+   * Creates mappings between this Format and its components.
+   */
+  void addComponents(final Format format);
+  
+  /**
+   * Removes any mappings involving this Format's components.
+   */
+  void removeComponents(final Format format);
 
   /**
    * Removes the provided {@code Format} from this context, if it

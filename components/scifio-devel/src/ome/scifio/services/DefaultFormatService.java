@@ -136,12 +136,9 @@ public class DefaultFormatService extends AbstractService implements FormatServi
       return false;
     
     formats.add(format);
-    checkerMap.put(format.getCheckerClass(), format);
-    parserMap.put(format.getParserClass(), format);
-    readerMap.put(format.getReaderClass(), format);
-    writerMap.put(format.getWriterClass(), format);
     formatMap.put(format.getClass(), format);
-    metadataMap.put(format.getMetadataClass(), format);
+
+    addComponents(format);
     if (format.getContext() == null) format.setContext(getContext());
     return true;
   }
@@ -150,13 +147,31 @@ public class DefaultFormatService extends AbstractService implements FormatServi
    * @see FormatService#removeFormat(Format)
    */
   public boolean removeFormat(final Format format) {
+    removeComponents(format);
+    formatMap.remove(format.getClass());
+    return formats.remove(format);
+  }
+  
+  /*
+   * @see ome.scifio.services.FormatService#addComponents(ome.scifio.Format)
+   */
+  public void addComponents(final Format format) {
+    checkerMap.put(format.getCheckerClass(), format);
+    parserMap.put(format.getParserClass(), format);
+    readerMap.put(format.getReaderClass(), format);
+    writerMap.put(format.getWriterClass(), format);
+    metadataMap.put(format.getMetadataClass(), format);
+  }
+  
+  /*
+   * @see ome.scifio.services.FormatService#removeComponents(ome.scifio.Format)
+   */
+  public void removeComponents(final Format format) {
     checkerMap.remove(format.getCheckerClass());
     parserMap.remove(format.getParserClass());
     readerMap.remove(format.getReaderClass());
     writerMap.remove(format.getWriterClass());
     metadataMap.remove(format.getMetadataClass());
-    formatMap.remove(format.getClass());
-    return formats.remove(format);
   }
   
   /*
@@ -270,7 +285,7 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     
     for (int i=0; i<formats.size() && !found; i++) {
       final Format format = formats.get(i);
-      if (format.createChecker().isFormat(id, open)) {
+      if (format.isEnabled() && format.createChecker().isFormat(id, open)) {
         // if greedy is true, we can end after finding the first format
         found = greedy;
         formatList.add(format);

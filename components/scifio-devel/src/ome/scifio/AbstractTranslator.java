@@ -82,6 +82,7 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
     dest.setSource(source.getSource());
     dest.setFiltered(source.isFiltered());
     dest.setMetadataOptions(source.getMetadataOptions());
+    dest.setDatasetName(source.getDatasetName());
     
     // Type-dependent translation
     typedTranslate(typedSource, typedDest);

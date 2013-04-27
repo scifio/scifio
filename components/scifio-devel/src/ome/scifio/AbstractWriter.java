@@ -139,7 +139,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   public void setDest(final String fileName)
     throws FormatException, IOException
   {
-    setDest(new RandomAccessOutputStream(getContext(), fileName), 0);
+    setDest(fileName, 0);
   }
 
   /* @see ome.scifio.Writer#setStream(File) */
@@ -158,6 +158,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   public void setDest(final String fileName, final int imageIndex)
     throws FormatException, IOException
   {
+    getMetadata().setDatasetName(fileName);
     setDest(new RandomAccessOutputStream(getContext(), fileName));
   }
 

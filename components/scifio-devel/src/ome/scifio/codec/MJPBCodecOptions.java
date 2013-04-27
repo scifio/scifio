@@ -34,59 +34,18 @@
  * #L%
  */
 
-package loci.formats.in;
-
-import java.io.IOException;
-
-import loci.formats.FormatException;
-import loci.formats.MetadataTools;
-import loci.formats.SCIFIOFormatReader;
-import loci.formats.meta.MetadataStore;
-import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.NativeQTFormat;
+package ome.scifio.codec;
 
 /**
- * NativeQTReader is the file format reader for QuickTime movie files.
- * It does not require any external libraries to be installed.
- *
- * Video codecs currently supported: raw, rle, jpeg, mjpb, rpza.
- * Additional video codecs will be added as time permits.
+ * Options for compressing and decompressing MJPB data.
  *
  * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/NativeQTReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/NativeQTReader.java;hb=HEAD">Gitweb</a></dd></dl>
- *
- * @author Melissa Linkert melissa at glencoesoftware.com
- * 
- * @deprecated see ome.scifio.formats.NativeQTFormat
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/MJPBCodecOptions.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/MJPBCodecOptions.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@Deprecated
-public class NativeQTReader extends SCIFIOFormatReader {
+public class MJPBCodecOptions extends CodecOptions {
 
-  // -- Constructor --
+  /** Indicates whether or not channels are interlaced. (READ/WRITE) */
+  public boolean interlaced;
 
-  /** Constructs a new QuickTime reader. */
-  public NativeQTReader() {
-    super("QuickTime", "mov");
-    
-    try {
-      format = LegacyContext.getSCIFIO().format().getFormatFromClass(NativeQTFormat.class);
-      checker = format.createChecker();
-      parser = format.createParser();
-      reader = format.createReader();
-    }
-    catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create NativeQTFormat components");
-    }
-  }
-
-  // -- IFormatReader API methods --
-
-  @Override
-  public void setId(String id) throws FormatException, IOException {
-    super.setId(id);
-    
-    MetadataStore store = makeFilterMetadata();
-    MetadataTools.populatePixels(store, this);
-  }
 }

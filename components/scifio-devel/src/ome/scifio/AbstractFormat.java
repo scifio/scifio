@@ -67,6 +67,8 @@ public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
 
   /** Valid suffixes for this file format. */
   protected String[] suffixes;
+  
+  private boolean enabled = true;
 
   // Class references to the components of this Format
   private Class<? extends Metadata> metadataClass;
@@ -89,6 +91,20 @@ public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
   }
 
   // -- Format API Methods --
+  
+  /*
+   * @see ome.scifio.Format#setEnabled(boolean)
+   */
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
+  
+  /*
+   * @see ome.scifio.Format#isEnabled()
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
   
   /*
    * @see ome.scifio.Format#createMetadata()
