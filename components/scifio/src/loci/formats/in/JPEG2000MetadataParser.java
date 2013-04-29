@@ -54,7 +54,10 @@ import loci.formats.codec.JPEG2000SegmentMarker;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/JPEG2000MetadataParser.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/JPEG2000MetadataParser.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated see ome.scifio.formats.JPEG2000Format.Parser
  */
+@Deprecated
 public class JPEG2000MetadataParser {
 
   // -- Constants --
