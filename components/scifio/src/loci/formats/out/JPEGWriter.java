@@ -36,7 +36,12 @@
 
 package loci.formats.out;
 
-import loci.formats.FormatTools;
+import java.io.IOException;
+
+import loci.formats.FormatException;
+import loci.formats.SCIFIOFormatWriter;
+import loci.legacy.context.LegacyContext;
+import ome.scifio.formats.JPEGFormat;
 
 /**
  * JPEGWriter is the file format writer for JPEG files.
@@ -44,20 +49,38 @@ import loci.formats.FormatTools;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/JPEGWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/JPEGWriter.java;hb=HEAD">Gitweb</a></dd></dl>
+ * 
+ * @deprecated see ome.scifio.formats.JPEGFormat
  */
-public class JPEGWriter extends ImageIOWriter {
+@Deprecated
+public class JPEGWriter extends SCIFIOFormatWriter {
 
   // -- Constructor --
 
   public JPEGWriter() {
-    super("JPEG", new String[] {"jpg", "jpeg", "jpe"}, "jpeg");
+    super("JPEG", new String[] {"jpg", "jpeg", "jpe"});
+    format = LegacyContext.getSCIFIO().format().getFormatFromClass(JPEGFormat.class);
+    try {
+      writer = format.createWriter() ;
+    }
+    catch (ome.scifio.FormatException e) {
+      LOGGER.warn("Failed to create JPEGFormat components");
+    }
   }
-
+  
   // -- IFormatWriter API methods --
 
-  /* @see loci.formats.IFormatWriter#getPixelTypes(String) */
-  public int[] getPixelTypes(String codec) {
-    return new int[] {FormatTools.UINT8};
+  /*
+   * @see loci.formats.IFormatWriter#saveBytes(int, byte[], int, int, int, int)
+   */
+  public void saveBytes(int no, byte[] buf, int x, int y, int w, int h)
+    throws FormatException, IOException
+  {
+    try {
+      writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
+    }
+    catch (ome.scifio.FormatException e) {
+      throw new FormatException(e);
+    }
   }
-
 }

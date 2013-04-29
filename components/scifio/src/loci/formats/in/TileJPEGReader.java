@@ -37,17 +37,13 @@
 package loci.formats.in;
 
 import java.io.IOException;
-import java.util.Hashtable;
 
-import loci.common.RandomAccessInputStream;
-import loci.common.Region;
-import loci.formats.CoreMetadata;
 import loci.formats.FormatException;
-import loci.formats.FormatReader;
-import loci.formats.FormatTools;
 import loci.formats.MetadataTools;
-import loci.formats.codec.JPEGTileDecoder;
+import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
+import loci.legacy.context.LegacyContext;
+import ome.scifio.formats.JPEGTileFormat;
 
 /**
  * Reader for decoding JPEG images using java.awt.Toolkit.
@@ -58,85 +54,35 @@ import loci.formats.meta.MetadataStore;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/TileJPEGReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/TileJPEGReader.java;hb=HEAD">Gitweb</a></dd></dl>
  * @author Melissa Linkert melissa at glencoesoftware.com
+ * 
+ * @deprecated see ome.scifio.formats.JPEGTileFormat
  */
-
-public class TileJPEGReader extends FormatReader {
-
-  // -- Fields --
-
-  private JPEGTileDecoder decoder;
+@Deprecated
+public class TileJPEGReader extends SCIFIOFormatReader {
 
   // -- Constructor --
 
   public TileJPEGReader() {
     super("Tile JPEG", new String[] {"jpg", "jpeg"});
-    domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
+
+    try {
+      format = LegacyContext.getSCIFIO().format().getFormatFromClass(JPEGTileFormat.class);
+      checker = format.createChecker();
+      parser = format.createParser();
+      reader = format.createReader();
+    }
+    catch (ome.scifio.FormatException e) {
+      LOGGER.warn("Failed to create JPEGTileFormat components");
+    }
   }
 
   // -- IFormatReader API methods --
 
-  /**
-   * @see loci.formats.IFormatReader#openBytes(int, byte[], int, int, int, int)
-   */
-  public byte[] openBytes(int no, byte[] buf, int x, int y, int w, int h)
-    throws FormatException, IOException
-  {
-    FormatTools.checkPlaneParameters(this, no, buf.length, x, y, w, h);
-
-    int c = getRGBChannelCount();
-
-    for (int ty=y; ty<y+h; ty++) {
-      byte[] scanline = decoder.getScanline(ty);
-      if (scanline == null) {
-        decoder.initialize(currentId, 0);
-        scanline = decoder.getScanline(ty);
-      }
-      System.arraycopy(scanline, c * x, buf, (ty - y) * c * w, c * w);
-    }
-
-    return buf;
-  }
-
-  /* @see loci.formats.IFormatReader#close(boolean) */
-  public void close(boolean fileOnly) throws IOException {
-    super.close(fileOnly);
-    if (!fileOnly) {
-      if (decoder != null) {
-        decoder.close();
-      }
-      decoder = null;
-    }
-  }
-
-  // -- Internal FormatReader API methods --
-
-  /* @see loci.formats.FormatReader#initFile(String) */
-  public void initFile(String id) throws FormatException, IOException {
-    super.initFile(id);
-
-    in = new RandomAccessInputStream(id);
-    decoder = new JPEGTileDecoder();
-    decoder.initialize(in, 0, 1, 0);
-
-    CoreMetadata m = core.get(0);
-
-    m.interleaved = true;
-    m.littleEndian = false;
-
-    m.sizeX = decoder.getWidth();
-    m.sizeY = decoder.getHeight();
-    m.sizeZ = 1;
-    m.sizeT = 1;
-    m.sizeC = decoder.getScanline(0).length / getSizeX();
-    m.rgb = getSizeC() > 1;
-    m.imageCount = 1;
-    m.pixelType = FormatTools.UINT8;
-    m.dimensionOrder = "XYCZT";
-    m.metadataComplete = true;
-    m.indexed = false;
+  @Override
+  public void setId(String id) throws FormatException, IOException {
+    super.setId(id);
 
     MetadataStore store = makeFilterMetadata();
     MetadataTools.populatePixels(store, this);
   }
-
 }
