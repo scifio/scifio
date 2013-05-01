@@ -1561,7 +1561,7 @@ public class ICSFormat extends AbstractFormat {
     public void setSource(final RandomAccessInputStream stream) throws IOException {
       if(!getMetadata().versionTwo) {
         stream.close();
-        setSource(new RandomAccessInputStream(getContext(), getMetadata().idsId));
+        super.setSource(new RandomAccessInputStream(getContext(), getMetadata().idsId));
       }
       else {
         super.setSource(stream);
