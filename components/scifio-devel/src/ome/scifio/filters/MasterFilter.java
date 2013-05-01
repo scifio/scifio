@@ -38,6 +38,7 @@ package ome.scifio.filters;
 import java.util.Set;
 
 import org.scijava.Contextual;
+import org.scijava.InstantiableException;
 
 /**
  * An entry point for toggling and configuring {@link ome.scifio.filter.Filter}s.
@@ -80,8 +81,9 @@ public interface MasterFilter<T extends Contextual> extends Filter {
    * 
    * @param filterClass - The type of filter to enable
    * @return The enabled filter
+   * @throws InstantiableException 
    */
-  <F extends Filter> F enable(Class<F> filterClass);
+  <F extends Filter> F enable(Class<F> filterClass) throws InstantiableException;
   
   /**
    * Removes the specified filter from the filter stack,
@@ -90,8 +92,9 @@ public interface MasterFilter<T extends Contextual> extends Filter {
    * 
    * @param filterClass - The type of filter to disable
    * @return true if the desired filter was disabled
+   * @throws InstantiableException 
    */
-  boolean disable(Class<? extends Filter> filterClass);
+  boolean disable(Class<? extends Filter> filterClass) throws InstantiableException;
   
   /**
    * Returns a list of all filter classes this MasterFilter can enable/disable.
@@ -111,6 +114,11 @@ public interface MasterFilter<T extends Contextual> extends Filter {
    * Returns the top of the filter stack.
    */
   Object getParent();
+  
+  /**
+   * Returns the base object (below the filter stack).
+   */
+  Object getTail();
   
   /**
    * Disables all enabled filters maintained by this MasterFilter.

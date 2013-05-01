@@ -64,6 +64,7 @@ import ome.xml.r2003fc.ome.OMENode;
 import ome.xml.services.OMEXMLService;
 
 import org.scijava.Context;
+import org.scijava.InstantiableException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -123,18 +124,19 @@ public class OmeisImporter extends AbstractHasSCIFIO {
     ReaderFilter rf = new ReaderFilter(null);
     reader = rf;
     
-    rf.enable(ChannelFiller.class);
-    rf.enable(ChannelSeparator.class);
-    
+ 
     try {
       parser = reader.getFormat().createParser();
+      rf.enable(ChannelFiller.class);
+      rf.enable(ChannelSeparator.class);
+      if (stitch) reader = rf.enable(FileStitcher.class);
     }
     catch (FormatException e) {
       if(DEBUG) log("Failed to create a parser for format: " + reader.getFormat() + e.getMessage());
+    } catch (InstantiableException e) {
+      if(DEBUG) log("Failed to enable plugins for format: " + reader.getFormat() + e.getMessage());
     }
     
-    if (stitch) reader = rf.enable(FileStitcher.class);
-
     try {
       OMEXMLService service = scifio().format().getInstance(OMEXMLService.class);
       omexmlMeta = (ome.xml.meta.AbstractOMEXMLMetadata) service.createOMEXMLMetadata();

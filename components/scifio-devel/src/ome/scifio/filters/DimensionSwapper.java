@@ -60,7 +60,7 @@ import ome.scifio.util.FormatTools;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/DimensionSwapper.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/DimensionSwapper.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@Plugin(type=Filter.class, priority=DimensionSwapper.PRIORITY, attrs={
+@Plugin(type=DimensionSwapper.class, priority=DimensionSwapper.PRIORITY, attrs={
   @Attr(name=DimensionSwapper.FILTER_KEY, value=DimensionSwapper.FILTER_VALUE),
   @Attr(name=DimensionSwapper.ENABLED_KEY, value=DimensionSwapper.ENABLED_VAULE)
   })

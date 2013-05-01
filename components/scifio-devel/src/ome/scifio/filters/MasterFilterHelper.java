@@ -42,8 +42,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.scijava.Contextual;
+import org.scijava.InstantiableException;
 import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
 
 /**
  * Helper class for {@link ome.scifio.filters.MasterFilter} implementations. Takes the place
@@ -78,10 +78,13 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
   // The non-filter object ultimately delegated to
   private T tail;
   
-  // Index to lookup filter classes. A given PluginInfo lazily instantiates
-  // a given filter, and caches the filter for future use.
+  // PluginInfo map allows lazy instantiation of individual plugins
   private HashMap<Class<? extends Filter>, PluginInfo<Filter>> refMap =
       new HashMap<Class<? extends Filter>, PluginInfo<Filter>>();
+  
+  // Instance map to maintain singletons of created plugins
+  private HashMap<Class<? extends Filter>, Filter> instanceMap =
+      new HashMap<Class<? extends Filter>, Filter>();
   
   // A sorted set of enabled filters
   private TreeSet<Filter> enabled = new TreeSet<Filter>();
@@ -104,12 +107,14 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
         try {
           filterClass = Class.forName(filterClassName);
           if (filterClass.isAssignableFrom(wrapped.getClass())) {
-            refMap.put(info.getPluginClass(), info);
+            refMap.put(info.getPluginType(), info);
             String defaultEnabled = info.get(ENABLED_KEY);
-            if (Boolean.getBoolean(defaultEnabled)) enable(info.getPluginClass());
+            if (Boolean.getBoolean(defaultEnabled)) enable(info.getPluginType());
           }
         } catch (ClassNotFoundException e) {
           LOGGER.error("Failed to find class: " + filterClassName);
+        } catch (InstantiableException e) {
+          LOGGER.error("Failed to create instance: " + filterClassName);
         }
       }
     }
@@ -122,41 +127,40 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
   /*
    * @see ome.scifio.filters.MasterFilter#enable(java.lang.Class)
    */
-  public <F extends Filter> F enable(Class<F> filterClass) {
-    PluginInfo<Filter> item = refMap.get(filterClass);
-    
-    if(item != null) {
-      @SuppressWarnings("unchecked")
-      F filter = (F) getContext().getService(PluginService.class).createInstance(item);
+  public <F extends Filter> F enable(Class<F> filterClass) throws InstantiableException {
+    @SuppressWarnings("unchecked")
+    F filter = (F) getFilter(filterClass);
 
+    if (filter != null) {
       enabled.add(filter);
       updateParents();
-
-      return filter;
     }
-    
-    return null;
+
+    return filter;
   }
 
   /*
    * @see ome.scifio.filters.MasterFilter#disable(java.lang.Class)
    */
-  public boolean disable(Class<? extends Filter> filterClass) {
-    PluginInfo<Filter> item = refMap.get(filterClass);
-    
+  public boolean disable(Class<? extends Filter> filterClass) throws InstantiableException {
+    Filter filter = getFilter(filterClass);
     boolean disabled = false;
-    
-    if(item != null) {
-      Filter filter = getContext().getService(PluginService.class).createInstance(item);
 
-      enabled.remove(item);
+    if (filter != null) {
+      enabled.remove(filter);
       updateParents();
-
       filter.reset();
       disabled = true;
     }
     
     return disabled;
+  }
+
+  /*
+   * @see ome.scifio.filters.MasterFilter#getTail()
+   */
+  public T getTail() {
+    return tail;
   }
   
   // -- Filter API Methods --
@@ -180,6 +184,24 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
   
   // -- Helper Methods --
   
+  // Helper method to check instanceMap first. If instanceMap is empty, create a new instance
+  // and set its priority.
+  private Filter getFilter(Class<? extends Filter> filterClass) throws InstantiableException {
+    Filter filter = instanceMap.get(filterClass);
+    
+    if (filter != null) return filter;
+    
+    PluginInfo<Filter> item = refMap.get(filterClass);
+    if(item != null) {
+      filter = item.createInstance();
+      filter.setPriority(item.getPriority());
+      //NB: didn't set context as parents aren't set yet
+      instanceMap.put(filterClass, filter);
+    }
+    
+    return filter;
+  }
+
   /*
    * Re-generates the hierarchical wrappings between each
    * enabled filter, based on their ordering per

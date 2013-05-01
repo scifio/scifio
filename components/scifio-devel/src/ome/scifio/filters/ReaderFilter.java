@@ -37,6 +37,8 @@ package ome.scifio.filters;
 
 import java.util.Set;
 
+import org.scijava.InstantiableException;
+
 import ome.scifio.Metadata;
 import ome.scifio.Reader;
 
@@ -67,14 +69,14 @@ public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<R
   /*
    * @see ome.scifio.filters.MasterFilter#enable(java.lang.Class)
    */
-  public <F extends Filter> F enable(Class<F> filterClass) {
+  public <F extends Filter> F enable(Class<F> filterClass) throws InstantiableException {
     return fHelper.enable(filterClass);
   }
 
   /*
    * @see ome.scifio.filters.MasterFilter#disable(java.lang.Class)
    */
-  public boolean disable(Class<? extends Filter> filterClass) {
+  public boolean disable(Class<? extends Filter> filterClass) throws InstantiableException {
     return fHelper.disable(filterClass);
   }
 
@@ -101,6 +103,11 @@ public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<R
   @Override
   public Reader getParent() {
     return fHelper.getParent();
+  }
+  
+  
+  public Reader getTail() {
+    return fHelper.getTail();
   }
   
   /*
