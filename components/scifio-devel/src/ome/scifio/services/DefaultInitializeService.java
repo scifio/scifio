@@ -74,6 +74,9 @@ public class DefaultInitializeService extends AbstractService
   @Parameter
   private TranslatorService translatorService;
   
+  @Parameter
+  private LocationService locationService;
+  
   // -- InitializeService API Methods --	
 
   /*
