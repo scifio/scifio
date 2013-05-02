@@ -70,6 +70,7 @@ import ome.xml.model.Pixels;
 import ome.xml.model.StructuredAnnotations;
 import ome.xml.model.XMLAnnotation;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.slf4j.Logger;
@@ -91,6 +92,9 @@ import org.xml.sax.SAXException;
 @Plugin(type=OMEXMLService.class)
 public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 {
+  
+  @Parameter
+  OMEXMLMetadataService omexmlMetadataService;
 
   public static final String NO_OME_XML_MSG =
     "ome-xml.jar is required to read OME-TIFF files.  " +
@@ -497,7 +501,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 
     for (String key : metadata.keySet()) {
       OriginalMetadataAnnotation annotation = new OriginalMetadataAnnotation();
-      annotation.setID(omeMeta.getContext().getService(OMEXMLMetadataService.class).createLSID("Annotation", annotationIndex));
+      annotation.setID(omexmlMetadataService.createLSID("Annotation", annotationIndex));
       annotation.setKey(key);
       annotation.setValue(metadata.get(key).toString());
       annotations.addXMLAnnotation(annotation);
@@ -522,7 +526,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
     int annotationIndex = annotations.sizeOfXMLAnnotationList();
 
     OriginalMetadataAnnotation annotation = new OriginalMetadataAnnotation();
-    annotation.setID(omeMeta.getContext().getService(OMEXMLMetadataService.class).createLSID("Annotation", annotationIndex));
+    annotation.setID(omexmlMetadataService.createLSID("Annotation", annotationIndex));
     annotation.setKey(key);
     annotation.setValue(value);
     annotations.addXMLAnnotation(annotation);
