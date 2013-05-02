@@ -209,7 +209,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     
     final String pixelType = 
       FormatTools.getPixelTypeString(meta.getPixelType(imageIndex));
-    final int effSizeC = meta.getImageCount() / sizeZ / sizeT;
+    final int effSizeC = meta.getPlaneCount(imageIndex) / sizeZ / sizeT;
     final int samplesPerPixel = sizeC / effSizeC;
     populateMetadata(store, null, imageIndex, imageName, 
       meta.isLittleEndian(imageIndex), 
