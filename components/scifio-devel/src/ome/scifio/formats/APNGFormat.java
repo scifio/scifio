@@ -545,19 +545,17 @@ public class APNGFormat extends AbstractFormat {
       if (planeIndex == lastPlaneIndex && lastPlane != null) {
         BufferedImage subImage = AWTImageTools.getSubimage(lastPlane.getData(), 
             getMetadata().isLittleEndian(imageIndex), x, y, w, h);
-        return plane.populate(subImage, x, y, w, h);
+        plane.setData(subImage);
+        return plane;
       }
       else if (lastPlane == null) {
-        lastPlane = plane;
-//        lastPlane = new BufferedImagePlane(getContext(), 
-//            getDatasetMetadata().get(imageIndex), x, y, w, h);
-//        
+        lastPlane = createPlane(x, y, w, h);
         if (getMetadata().isIndexed(imageIndex)) {
           PLTEChunk plte = getMetadata().getPlte();
           if (plte != null) {
             ColorTable ct = new ColorTable8(plte.getRed(), plte.getGreen(),
                 plte.getBlue());
-            lastPlane.setColorTable(ct);
+            plane.setColorTable(ct);
           }
         }
       }
@@ -574,16 +572,19 @@ public class APNGFormat extends AbstractFormat {
         
         lastPlaneIndex = 0;
         
+        plane.setData(lastPlane.getData());
+        
         if (x != 0 || y != 0 || w != getMetadata().getAxisLength(imageIndex, Axes.X) ||
           h != getMetadata().getAxisLength(imageIndex, Axes.Y))
         {
-          // updates the data of lastPlane to a sub-image, by reference
+          // updates the data of the plane to a sub-image, by reference
           subImg = AWTImageTools.getSubimage(
               lastPlane.getData(), getMetadata().isLittleEndian(planeIndex),
               x, y, w, h);
+          plane.setData(subImg);
         }
 
-        return plane.populate(lastPlane);
+        return plane;
       }
   
       // For a non-default frame, the appropriate chunks will be used to create a new image,
