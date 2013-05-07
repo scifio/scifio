@@ -45,7 +45,7 @@ import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
- * Translator class from {@link ome.scifio.formats.APNGFormat.Metadata} to
+ * Translator class from {@link ome.scifio.formats.EPSFormat.Metadata} to
  * {@link ome.xml.meta.OMEMetadata}.
  * <p>
  * NB: Plugin priority is set to high to be selected over the base

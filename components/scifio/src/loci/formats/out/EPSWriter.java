@@ -67,7 +67,7 @@ public class EPSWriter extends SCIFIOFormatWriter {
       writer = format.createWriter() ;
     }
     catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
+      LOGGER.warn("Failed to create EPSFormat components");
     }
   }
   

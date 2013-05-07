@@ -1,7 +1,6 @@
 package ome.xml.translation;
 
 import ome.scifio.Metadata;
-import ome.scifio.formats.APNGFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.services.OMEXMLMetadataService;
 

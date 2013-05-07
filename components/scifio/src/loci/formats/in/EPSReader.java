@@ -63,7 +63,7 @@ public class EPSReader extends SCIFIOFormatReader {
 
   // -- Constructor --
 
-  /** Constructs a new APNGReader. */
+  /** Constructs a new EPSReader. */
   public EPSReader() {
     super("Encapsulated PostScript", new String[] {"eps", "epsi", "ps"});
 
@@ -74,7 +74,7 @@ public class EPSReader extends SCIFIOFormatReader {
       reader = format.createReader();
     }
     catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
+      LOGGER.warn("Failed to create EPSFormat components");
     }
   }
 

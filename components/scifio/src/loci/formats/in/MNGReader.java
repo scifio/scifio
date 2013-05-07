@@ -73,7 +73,7 @@ public class MNGReader extends SCIFIOBIFormatReader {
       reader = format.createReader();
     }
     catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
+      LOGGER.warn("Failed to create MNGFormat components");
     }
   }
 

@@ -99,7 +99,7 @@ public class FakeReader extends SCIFIOFormatReader {
       reader = format.createReader();
     }
     catch (ome.scifio.FormatException e) {
-      LOGGER.warn("Failed to create APNGFormat components");
+      LOGGER.warn("Failed to create FakeFormat components");
     }
   }
   

@@ -112,7 +112,7 @@ public class BMPFormat extends AbstractFormat {
     
     // -- Constants --
 
-    public static final String CNAME = "ome.scifio.formats.APNGFormat$Metadata";
+    public static final String CNAME = "ome.scifio.formats.BMPFormat$Metadata";
 
     // -- Fields --
     
