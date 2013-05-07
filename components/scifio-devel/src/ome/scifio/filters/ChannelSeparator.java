@@ -69,9 +69,6 @@ public class ChannelSeparator extends AbstractReaderFilter {
   
   // -- Fields --
 
-  private Plane parentPlane = null;
-  
-  //TODO I think these can be condensed and referenced off of lastPlane
   /** Last plane opened. */
   private Plane lastPlane = null;
 
@@ -140,22 +137,17 @@ public class ChannelSeparator extends AbstractReaderFilter {
   }
   
   // -- Reader API methods --
-
-  /*
-   * @see ome.scifio.filters.AbstractReaderFilter#getPlaneCount(int)
-   */
+  
   public int getPlaneCount(int imageIndex) {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    return (getParentMeta().isRGB(imageIndex) && !getParentMeta().isIndexed(imageIndex) ?
-      getParentMeta().getRGBChannelCount(imageIndex) : 1) * getParentMeta().getImageCount();
+    return getMetadata().get(imageIndex).getPlaneCount();
   }
 
   /*
    * @see ome.scifio.filters.AbstractReaderFilter#openPlane(int, int)
    */
   public Plane openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
-    return openPlaneHelper(
-        getParent().openPlane(imageIndex, planeIndex), null, planeIndex, imageIndex);
+    return openPlane(planeIndex, imageIndex, 0, 0, getMetadata().getAxisLength(imageIndex, Axes.X),
+        getMetadata().getAxisLength(imageIndex, Axes.Y));
   }
 
   /*
@@ -164,9 +156,8 @@ public class ChannelSeparator extends AbstractReaderFilter {
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
     throws FormatException, IOException
   {
-    if (parentPlane == null) parentPlane = getParent().openPlane(imageIndex, planeIndex);
-    else getParent().openPlane(imageIndex, planeIndex, parentPlane);
-    return openPlaneHelper(parentPlane, plane, planeIndex, imageIndex);
+    return openPlane(planeIndex, imageIndex, plane, plane.getxOffset(), plane.getyOffset(),
+        plane.getxLength(), plane.getyLength());
   }
 
   /*
@@ -175,8 +166,7 @@ public class ChannelSeparator extends AbstractReaderFilter {
   public Plane openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    return openPlaneHelper(
-        getParent().openPlane(imageIndex, planeIndex, x, y, w, h), null, planeIndex, imageIndex);
+    return openPlane(imageIndex, planeIndex, createPlane(x, y, w, h), x, y, w, h);
   }
 
   /*
@@ -185,9 +175,75 @@ public class ChannelSeparator extends AbstractReaderFilter {
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    if (parentPlane == null) parentPlane = getParent().openPlane(imageIndex, planeIndex, x, y, w, h);
-    else getParent().openPlane(imageIndex, planeIndex, parentPlane, x, y, w, h);
-    return openPlaneHelper(parentPlane, plane, planeIndex, imageIndex);
+    FormatTools.assertId(getCurrentFile(), true, 2);
+    FormatTools.checkPlaneNumber(this, imageIndex, planeIndex);
+    
+    if (getParentMeta().isRGB(imageIndex) && !getParentMeta().isIndexed(imageIndex)) {
+      int c = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) / getParentMeta().getEffectiveSizeC(imageIndex);
+      int source = getOriginalIndex(imageIndex, planeIndex);
+      int channel = planeIndex % c;
+      int bpp = FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
+
+      if (plane == null || !isCompatible(plane.getClass())) {
+        ByteArrayPlane bp = new ByteArrayPlane(getContext());
+        byte[] buf =
+            DataTools.allocate(w, h, FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex)));
+        bp.populate(buf, x, y, w, h);
+        plane = bp;
+      }
+      
+      if (source != lastPlaneIndex || imageIndex != lastImageIndex ||
+          x != lastPlaneX || y != lastPlaneY || w != lastPlaneWidth ||
+          h != lastPlaneHeight)
+      {
+        
+        int strips = 1;
+
+        // check how big the original image is; if it's larger than the
+        // available memory, we will need to split it into strips
+
+        Runtime rt = Runtime.getRuntime();
+        long availableMemory = rt.freeMemory();
+        long planeSize = DataTools.safeMultiply64(w, h, bpp, c);
+
+        if (availableMemory < planeSize || planeSize > Integer.MAX_VALUE) {
+          strips = (int) Math.sqrt(h);
+        }
+
+        int stripHeight = h / strips;
+        int lastStripHeight = stripHeight + (h - (stripHeight * strips));
+        byte[] strip = strips == 1 ? plane.getBytes() : new byte[stripHeight * w * bpp];
+        for (int i=0; i<strips; i++) {
+          lastPlane = getParent().openPlane(imageIndex, source, x, y + i * stripHeight, w,
+            i == strips - 1 ? lastStripHeight : stripHeight);
+          lastPlaneIndex = source;
+          lastImageIndex = imageIndex;
+          lastPlaneX = x;
+          lastPlaneY = y + i * stripHeight;
+          lastPlaneWidth = w;
+          lastPlaneHeight = i == strips - 1 ? lastStripHeight : stripHeight;
+
+          if (strips != 1 && lastStripHeight != stripHeight && i == strips - 1)
+          {
+            strip = new byte[lastStripHeight * w * bpp];
+          }
+
+          ImageTools.splitChannels(lastPlane.getBytes(), strip, channel, c, bpp,
+              false, getMetadata().isInterleaved(imageIndex), strips == 1 ? w * h * bpp : strip.length);
+          if (strips != 1) {
+            System.arraycopy(strip, 0, plane.getBytes(), i * stripHeight * w * bpp,
+                strip.length);
+          }
+        }
+      }
+      else {
+        ImageTools.splitChannels(lastPlane.getBytes(), plane.getBytes(), channel, c, bpp,
+            false, getMetadata().isInterleaved(imageIndex), w * h * bpp);
+      }
+
+      return plane;
+    }
+    return getParent().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
   }
 
   /*
@@ -239,7 +295,6 @@ public class ChannelSeparator extends AbstractReaderFilter {
   
   /* Resets local fields. */
   private void cleanUp() {
-    parentPlane = null;
     lastPlane = null;
     lastPlaneIndex = -1;
     lastImageIndex = -1;
@@ -247,84 +302,5 @@ public class ChannelSeparator extends AbstractReaderFilter {
     lastPlaneY = -1;
     lastPlaneWidth = -1;
     lastPlaneHeight = -1;
-  }
-  
-  /*
-   * This method performs the actual channel separation on the plane returned by the
-   * underlying reader component..
-   */
-  protected Plane openPlaneHelper(Plane parentPlane, Plane plane, int planeIndex, int imageIndex)
-    throws FormatException, IOException
-  {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    FormatTools.checkPlaneNumber(this, imageIndex, planeIndex);
-    
-    if (getParentMeta().isRGB(imageIndex) && !getParentMeta().isIndexed(imageIndex)) {
-      int c = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) / getParentMeta().getEffectiveSizeC(imageIndex);
-      int source = getOriginalIndex(imageIndex, planeIndex);
-      int channel = planeIndex % c;
-      int bpp = FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
-      int x = parentPlane.getxOffset(), y = parentPlane.getyOffset(), w = parentPlane.getxLength(), h = parentPlane.getyLength();
-
-      if (plane == null || !isCompatible(plane.getClass())) {
-        ByteArrayPlane bp = new ByteArrayPlane(parentPlane.getContext());
-        bp.populate(parentPlane);
-        bp.setData(new byte[parentPlane.getBytes().length]);
-        
-        plane = bp;
-      }
-      
-      if (source != lastPlaneIndex || imageIndex != lastImageIndex ||
-          x != lastPlaneX || y != lastPlaneY || w != lastPlaneWidth ||
-          h != lastPlaneHeight)
-      {
-        int strips = 1;
-
-        // check how big the original image is; if it's larger than the
-        // available memory, we will need to split it into strips
-
-        Runtime rt = Runtime.getRuntime();
-        long availableMemory = rt.freeMemory();
-        long planeSize = DataTools.safeMultiply64(w, h, bpp, c);
-
-        if (availableMemory < planeSize || planeSize > Integer.MAX_VALUE) {
-          strips = (int) Math.sqrt(h);
-        }
-
-        int stripHeight = h / strips;
-        int lastStripHeight = stripHeight + (h - (stripHeight * strips));
-        byte[] strip = strips == 1 ? parentPlane.getBytes() : new byte[stripHeight * w * bpp];
-        for (int i=0; i<strips; i++) {
-          lastPlane = strips == 1 ? parentPlane : 
-              getParent().openPlane(imageIndex, source, x, y + i * stripHeight, w,
-                                    i == strips - 1 ? lastStripHeight : stripHeight);
-          lastPlaneIndex = source;
-          lastImageIndex = imageIndex;
-          lastPlaneX = x;
-          lastPlaneY = y + i * stripHeight;
-          lastPlaneWidth = w;
-          lastPlaneHeight = i == strips - 1 ? lastStripHeight : stripHeight;
-
-          if (strips != 1 && lastStripHeight != stripHeight && i == strips - 1)
-          {
-            strip = new byte[lastStripHeight * w * bpp];
-          }
-
-          ImageTools.splitChannels(lastPlane.getBytes(), strip, channel, c, bpp,
-              false, getMetadata().isInterleaved(imageIndex), strips == 1 ? w * h * bpp : strip.length);
-          if (strips != 1) {
-            System.arraycopy(strip, 0, plane.getBytes(), i * stripHeight * w * bpp,
-                strip.length);
-          }
-        }
-      }
-      else {
-        ImageTools.splitChannels(lastPlane.getBytes(), plane.getBytes(), channel, c, bpp,
-            false, getMetadata().isInterleaved(imageIndex), w * h * bpp);
-      }
-
-      return plane;
-    }
-    return parentPlane;
   }
 }

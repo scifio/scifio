@@ -92,6 +92,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
    */
   public void wrap(Metadata meta) {
     this.meta = meta;
+    populateImageMetadata();
   }
   
   /*

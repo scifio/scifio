@@ -35,6 +35,8 @@
  */
 package ome.scifio.filters;
 
+import ome.scifio.DefaultImageMetadata;
+import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
 
 import org.scijava.plugin.Attr;
@@ -77,20 +79,29 @@ public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
     super(metadata);
   }
   
+  // -- Metadata API Methods --
   
-  // -- Reader API Methods --
+  @Override
+  public void populateImageMetadata() {
+    Metadata m = unwrap();
+    createImageMetadata(0);
+    
+    for (int i=0; i<m.getImageCount(); i++) {
+      ImageMetadata iMeta = new DefaultImageMetadata(m.get(i));
+      if (iMeta.isRGB() && !iMeta.isIndexed()) iMeta.setPlaneCount(iMeta.getPlaneCount() * iMeta.getRGBChannelCount());
+      
+      add(iMeta, false);
+    }
+  }
   
-  /*
-   * @see ome.scifio.AbstractMetadata#isRGB(int)
-   */
+  @Override
   public boolean isRGB(int imageIndex) {
     return isIndexed(imageIndex) && !isFalseColor(imageIndex)
       && getAxisLength(imageIndex, Axes.CHANNEL) > 1;
   }
   
-  /*
-   * @see ome.scifio.AbstractMetadata#getAxes(int)
-   */
+
+  @Override
   public AxisType[] getAxes(int imageIndex) {
     if (unwrap().isRGB(imageIndex) && !unwrap().isIndexed(imageIndex)) {
       
