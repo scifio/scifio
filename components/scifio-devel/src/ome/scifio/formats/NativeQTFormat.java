@@ -469,12 +469,12 @@ public class NativeQTFormat extends AbstractFormat {
           }
         }
         
-        iMeta.setBitsPerPixel(meta.getBitsPerPixel());
-        
         // reset the stream, otherwise openBytes will try to read pixels
         // from the resource fork
         if (cachedStream != null) stream.close();
       }
+      
+      iMeta.setBitsPerPixel(meta.getBitsPerPixel());
     }
   }
   
