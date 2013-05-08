@@ -184,6 +184,7 @@ public class NRRDFormat extends AbstractFormat {
       iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) > 1);
       iMeta.setInterleaved(true);
       iMeta.setPlaneCount(iMeta.getAxisLength(Axes.Z) * iMeta.getAxisLength(Axes.TIME));
+      iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
       iMeta.setIndexed(false);
       iMeta.setFalseColor(false);
       iMeta.setMetadataComplete(true);
