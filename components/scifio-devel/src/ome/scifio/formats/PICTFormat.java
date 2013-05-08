@@ -226,6 +226,7 @@ public class PICTFormat extends AbstractFormat {
       iMeta.setMetadataComplete(true);
       iMeta.setInterleaved(false);
       iMeta.setPixelType(FormatTools.UINT8);
+      iMeta.setBitsPerPixel(8);
       iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) > 1);
       
       iMeta.setIndexed(!iMeta.isRGB() && lookup != null);
