@@ -53,6 +53,8 @@ import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.services.JAIIIOService;
 import ome.scifio.services.ServiceException;
 
+import org.scijava.Context;
+
 /**
  * This class implements JPEG 2000 compression and decompression.
  *
@@ -289,6 +291,15 @@ public class JPEG2000Codec extends BaseCodec {
     return rtn;
   }
 
+  // -- Contextual API Methods --
+  
+  @Override
+  public void setContext(Context context) {
+    super.setContext(context);
+    
+    initialize();
+  }
+  
   // -- Helper methods --
 
   /**
@@ -300,7 +311,7 @@ public class JPEG2000Codec extends BaseCodec {
    * @throws FormatException If there is an error initializing JAI ImageIO
    *   services.
    */
-  private void initialize() throws FormatException {
+  private void initialize() {
     if (service != null) return;
     service = getContext().getService(JAIIIOService.class);
   }
