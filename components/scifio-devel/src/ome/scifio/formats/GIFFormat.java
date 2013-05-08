@@ -37,15 +37,11 @@
 package ome.scifio.formats;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Vector;
-
-import org.scijava.plugin.Plugin;
 
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
-
 import ome.scifio.AbstractChecker;
 import ome.scifio.AbstractFormat;
 import ome.scifio.AbstractMetadata;
@@ -57,6 +53,8 @@ import ome.scifio.HasColorTable;
 import ome.scifio.ImageMetadata;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * @author Mark Hiner hinerm at gmail.com
@@ -92,6 +90,8 @@ public class GIFFormat extends AbstractFormat {
   public static class Metadata extends AbstractMetadata implements HasColorTable {
     
     // -- Fields --
+    
+    private ColorTable8 cachedTable;
 
     /** Global color table. */
     private int[] gct;
@@ -328,14 +328,19 @@ public class GIFFormat extends AbstractFormat {
      * @see ome.scifio.HasColorTable#getColorTable()
      */
     public ColorTable getColorTable() {
-      byte[][] table = new byte[3][act.length];
-      for (int i=0; i<act.length; i++) {
-        table[0][i] = (byte) ((act[i] >> 16) & 0xff);
-        table[1][i] = (byte) ((act[i] >> 8) & 0xff);
-        table[2][i] = (byte) (act[i] & 0xff);
+
+      if (cachedTable == null) {
+        byte[][] table = new byte[3][act.length];
+        for (int i=0; i<act.length; i++) {
+          table[0][i] = (byte) ((act[i] >> 16) & 0xff);
+          table[1][i] = (byte) ((act[i] >> 8) & 0xff);
+          table[2][i] = (byte) (act[i] & 0xff);
+        }
+        cachedTable = new ColorTable8(table);
+
       }
       
-      return new ColorTable8(table);
+      return cachedTable;
     }
     
   }
@@ -738,6 +743,7 @@ public class GIFFormat extends AbstractFormat {
     {
       byte[] buf = plane.getData();
       Metadata meta = getMetadata();
+      plane.setColorTable(meta.getColorTable());
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
           buf.length, x, y, w, h);
 
