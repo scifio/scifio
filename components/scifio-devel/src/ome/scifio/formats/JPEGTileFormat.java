@@ -149,7 +149,7 @@ public class JPEGTileFormat extends AbstractFormat {
     {
       JPEGTileDecoder decoder = new JPEGTileDecoder();
       meta.setDecoder(decoder);
-      decoder.initialize(in, 0, 1, 0);
+      decoder.initialize(getContext(), in, 0, 1, 0);
     }
   }
   
@@ -183,7 +183,7 @@ public class JPEGTileFormat extends AbstractFormat {
       for (int ty=y; ty<y+h; ty++) {
         byte[] scanline = meta.getDecoder().getScanline(ty);
         if (scanline == null) {
-          meta.getDecoder().initialize(getContext(), currentId, 0);
+          meta.getDecoder().initialize(getContext(), getStream().getFileName(), 0);
           scanline = meta.getDecoder().getScanline(ty);
         }
         System.arraycopy(scanline, c * x, buf, (ty - y) * c * w, c * w);

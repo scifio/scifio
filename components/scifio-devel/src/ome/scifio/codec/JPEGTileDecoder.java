@@ -75,22 +75,22 @@ public class JPEGTileDecoder {
 
   public void initialize(Context ctx, String id, int imageWidth) {
     try {
-      initialize(new RandomAccessInputStream(ctx, id), imageWidth);
+      initialize(ctx, new RandomAccessInputStream(ctx, id), imageWidth);
     }
     catch (IOException e) {
       LOGGER.debug("", e);
     }
   }
 
-  public void initialize(RandomAccessInputStream in, int imageWidth) {
-    initialize(in, 0, 0, imageWidth);
+  public void initialize(Context ctx, RandomAccessInputStream in, int imageWidth) {
+    initialize(ctx, in, 0, 0, imageWidth);
   }
 
-  public void initialize(RandomAccessInputStream in, int y, int h,
+  public void initialize(Context ctx, RandomAccessInputStream in, int y, int h,
     int imageWidth)
   {
     this.in = in;
-    tiles = new TileCache(y, h);
+    tiles = new TileCache(ctx, y, h);
 
     // pre-process the stream to make sure that the
     // image width and height are non-zero
@@ -281,11 +281,12 @@ public class JPEGTileDecoder {
 
     private int yy = 0, hh = 0;
 
-    public TileCache(int yy, int hh) {
+    public TileCache(Context ctx, int yy, int hh) {
       options.interleaved = true;
       options.littleEndian = false;
       this.yy = yy;
       this.hh = hh;
+      codec.setContext(ctx);
     }
 
     public void add(byte[] pixels, int x, int y, int w, int h)
