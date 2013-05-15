@@ -317,8 +317,9 @@ public class NativeQTFormat extends AbstractFormat {
       iMeta.setAxisLength(Axes.Z, 1);
       iMeta.setAxisLength(Axes.TIME, iMeta.getPlaneCount());
 
-      int bytes = (getBitsPerPixel(0) / 8) % 4;
+      int bytes = (getBitsPerPixel() / 8) % 4;
       iMeta.setPixelType(bytes == 2 ? FormatTools.UINT16 : FormatTools.UINT8);
+      iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
 
       iMeta.setLittleEndian(false);
       iMeta.setMetadataComplete(true);
@@ -473,8 +474,6 @@ public class NativeQTFormat extends AbstractFormat {
         // from the resource fork
         if (cachedStream != null) stream.close();
       }
-      
-      iMeta.setBitsPerPixel(meta.getBitsPerPixel());
     }
   }
   
@@ -1184,9 +1183,9 @@ public class NativeQTFormat extends AbstractFormat {
       
       // *** HACK *** the Metadata bitsPerPixel field doesn't really matter if we're translating to this format.
       // But it is used to determine RGB status.
-      dest.setBitsPerPixel(source.isRGB(0) ? 0 : 50);
+      int bpp = FormatTools.getBitsPerPixel(source.getPixelType(0)) == 8 ? 8 : 16;
       
-      dest.setBitsPerPixel(0, source.getBitsPerPixel(0));
+      dest.setBitsPerPixel(source.isRGB(0) ? bpp : (bpp * 5));
     }
   }
   
