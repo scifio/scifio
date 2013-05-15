@@ -477,7 +477,7 @@ public class APNGFormat extends AbstractFormat {
           final byte[] blue = new byte[length / 3];
           final byte[] green = new byte[length / 3];
   
-          for (int i = 0; i < length; i += 3) {
+          for (int i = 0; i < length / 3; i ++) {
             red[i] = stream.readByte();
             green[i] = stream.readByte();
             blue[i] = stream.readByte();
