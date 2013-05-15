@@ -291,6 +291,12 @@ public class ChannelSeparator extends AbstractReaderFilter {
     }
   }
   
+  @Override
+  public Plane createPlane(int xOffset, int yOffset, int xLength,
+    int yLength) {
+  return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
+}
+ 
   // -- Helper Methods --
   
   /* Resets local fields. */
