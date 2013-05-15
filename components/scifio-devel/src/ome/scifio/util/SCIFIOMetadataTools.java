@@ -40,16 +40,14 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
-import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ome.scifio.FormatException;
 import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
 import ome.scifio.io.RandomAccessOutputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for working with {@link ome.scifio.Metadata} objects.
@@ -141,6 +139,42 @@ public class SCIFIOMetadataTools {
     if (src.getAxisCount(0) == 0) {
       throw new FormatException("Axiscount #" + imageIndex + " is 0");
     }
+  }
+  
+  /**
+   * Populates the provided ImageMetadata. Automatically looks up
+   * bits per pixel for the provided pixel type.
+   */
+  public static void populate(ImageMetadata iMeta, String dimensionOrder,
+      int pixelType, int rgbCCount, boolean orderCertain,
+      boolean littleEndian, boolean indexed, boolean falseColor,
+      boolean metadataComplete, int sizeX, int sizeY, int sizeZ, int sizeC,
+      int sizeT)
+  {
+    populate(iMeta, dimensionOrder, pixelType, rgbCCount, FormatTools.getBitsPerPixel(pixelType),
+        orderCertain, littleEndian, indexed, falseColor, metadataComplete, sizeX,
+        sizeY, sizeZ, sizeC, sizeT);
+  }
+  
+  /**
+   * Populates the provided ImageMetadata.
+   */
+  public static void populate(ImageMetadata iMeta, String dimensionOrder,
+      int pixelType, int rgbCCount, int bitsPerPixel, boolean orderCertain,
+      boolean littleEndian, boolean indexed, boolean falseColor,
+      boolean metadataComplete, int sizeX, int sizeY, int sizeZ, int sizeC,
+      int sizeT)
+  {
+    iMeta.setPixelType(pixelType);
+    iMeta.setBitsPerPixel(bitsPerPixel);
+    iMeta.setOrderCertain(orderCertain);
+    iMeta.setRGB(rgbCCount > 1);
+    iMeta.setPlaneCount(sizeZ * sizeT * sizeC / rgbCCount);
+    iMeta.setLittleEndian(littleEndian);
+    iMeta.setIndexed(indexed);
+    iMeta.setFalseColor(falseColor);
+    iMeta.setMetadataComplete(metadataComplete);
+    populateDimensions(iMeta, dimensionOrder, sizeX, sizeY, sizeZ, sizeC, sizeT);
   }
   
   /**
