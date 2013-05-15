@@ -37,17 +37,16 @@ package ome.scifio.filters;
 
 import java.io.IOException;
 
-import org.scijava.plugin.Attr;
-import org.scijava.plugin.Plugin;
-
 import net.imglib2.meta.Axes;
 import ome.scifio.ByteArrayPlane;
-import ome.scifio.ByteArrayReader;
 import ome.scifio.FormatException;
 import ome.scifio.Plane;
 import ome.scifio.common.DataTools;
 import ome.scifio.util.FormatTools;
 import ome.scifio.util.ImageTools;
+
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 
 /**
  * Logic to automatically separate the channels in a file.
@@ -126,17 +125,6 @@ public class ChannelSeparator extends AbstractReaderFilter {
     cleanUp();
   }
   
-  // -- Filter API Methods --
-
-  /*
-   * @see ome.scifio.filters.AbstractReaderFilter#isCompatible(java.lang.Class)
-   */
-  @Override
-  public boolean isCompatible(Class<?> c) {
-    return ByteArrayReader.class.isAssignableFrom(c);
-  }
-  
-  // -- Reader API methods --
   
   public int getPlaneCount(int imageIndex) {
     return getMetadata().get(imageIndex).getPlaneCount();
@@ -184,7 +172,7 @@ public class ChannelSeparator extends AbstractReaderFilter {
       int channel = planeIndex % c;
       int bpp = FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
 
-      if (plane == null || !isCompatible(plane.getClass())) {
+      if (plane == null || !ByteArrayPlane.class.isAssignableFrom( plane.getClass() )) {
         ByteArrayPlane bp = new ByteArrayPlane(getContext());
         byte[] buf =
             DataTools.allocate(w, h, FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex)));
