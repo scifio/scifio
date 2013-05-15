@@ -555,7 +555,7 @@ public abstract class AbstractMetadata extends AbstractHasSource
       if (Modifier.isFinal(f.getModifiers())) continue;
       
       // only reset annotated fields
-      // TODO if (f.getAnnotation(ome.scifio.Field.class) == null) continue;
+      if (f.getAnnotation(ome.scifio.Field.class) == null) continue;
       
       final Class<?> fieldType = f.getType();
       
