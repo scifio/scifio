@@ -43,6 +43,7 @@ import net.imglib2.meta.Axes;
 import ome.scifio.AbstractReader;
 import ome.scifio.BufferedImagePlane;
 import ome.scifio.FormatException;
+import ome.scifio.ImageMetadata;
 import ome.scifio.TypedMetadata;
 import ome.scifio.util.FormatTools;
 
@@ -86,14 +87,22 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
     
     return plane;
   } 
-  
+
   /*
    * @see ome.scifio.Reader#createPlane(int, int, int, int)
    */
   public BufferedImagePlane createPlane(int xOffset, int yOffset, int xLength,
-      int yLength)
+    int yLength)
   {
-    return new BufferedImagePlane(getContext(), getMetadata().get(0),
-        xOffset, yOffset, xLength, yLength);
+    return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
+  }
+
+  /*
+   * @see ome.scifio.TypedReader#createPlane(int, int, int, int)
+   */
+  public BufferedImagePlane createPlane(ImageMetadata meta, int xOffset, int yOffset, int xLength,
+    int yLength)
+  {
+    return new BufferedImagePlane(getContext(), meta, xOffset, yOffset, xLength, yLength);
   }
 }

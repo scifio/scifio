@@ -39,16 +39,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.scijava.Context;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-
 import ome.scifio.Format;
 import ome.scifio.FormatException;
+import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.io.RandomAccessInputStream;
+
+import org.scijava.Context;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 
 /**
  * Abstract superclass for all {@link ome.scifio.filters.Filter} that
@@ -401,6 +402,13 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
    */
   public Plane createPlane(int xOffset, int yOffset, int xLength, int yLength) {
     return getParent().createPlane(xOffset, yOffset, xLength, yLength);
+  }
+  
+  /*
+   * @see ome.scifio.Reader#createPlane(ome.scifio.ImageMetadata, int, int, int, int)
+   */
+  public Plane createPlane(ImageMetadata meta, int xOffset, int yOffset, int xLength, int yLength) {
+    return getParent().createPlane(meta, xOffset, yOffset, xLength, yLength);
   }
 
   /*

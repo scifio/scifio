@@ -231,6 +231,18 @@ public interface Reader extends HasFormat, HasSource, Groupable {
    */
   Plane createPlane(int xOffset, int yOffset, int xLength, int yLength);
   
+  /** 
+   * Creates a blank plane compatible with this reader.
+   * 
+   * @param meta - ImageMetadata to use to populate the new plane.
+   * @param xOffset - X offset of the Plane
+   * @param yOffset - Y offset of the Plane
+   * @param xLength - Width of the Plane
+   * @param yLength - Height of the Plane
+   * @return The created plane
+   */
+  Plane createPlane(ImageMetadata meta, int xOffset, int yOffset, int xLength, int yLength);
+  
   /**
    * Convenience method for casting {@code Plane} implementations to the type
    * associated with this {@code Reader}.

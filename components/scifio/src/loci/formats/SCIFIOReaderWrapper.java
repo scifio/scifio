@@ -55,6 +55,7 @@ import ome.scifio.AbstractHasSCIFIO;
 import ome.scifio.BufferedImagePlane;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.Format;
+import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
@@ -491,6 +492,13 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
    * @see ome.scifio.Reader#createPlane(int, int, int, int)
    */
   public Plane createPlane(int xOffset, int yOffset, int xLength, int yLength) {
+    throw new UnsupportedOperationException("ReaderWrapper has no associated Plane type");
+  }
+  
+  /*
+   * @see ome.scifio.Reader#createPlane(ome.scifio.ImageMetadata, int, int, int, int)
+   */
+  public Plane createPlane(ImageMetadata meta, int xOffset, int yOffset, int xLength, int yLength) {
     throw new UnsupportedOperationException("ReaderWrapper has no associated Plane type");
   }
 

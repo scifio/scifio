@@ -81,8 +81,15 @@ public abstract class ByteArrayReader<M extends TypedMetadata>
    */
   public ByteArrayPlane createPlane(int xOffset, int yOffset, int xLength,
       int yLength) {
-    return new ByteArrayPlane(getContext(), getMetadata().get(0),
-        xOffset, yOffset, xLength, yLength);
+    return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
+  }
+  
+  /*
+   * @see ome.scifio.TypedReader#createPlane(int, int, int, int)
+   */
+  public ByteArrayPlane createPlane(ImageMetadata meta, int xOffset, int yOffset, int xLength,
+      int yLength) {
+    return new ByteArrayPlane(getContext(), meta, xOffset, yOffset, xLength, yLength);
   }
   
 }
