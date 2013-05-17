@@ -144,7 +144,7 @@ public class ChannelSeparator extends AbstractReaderFilter {
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
     throws FormatException, IOException
   {
-    return openPlane(planeIndex, imageIndex, plane, plane.getxOffset(), plane.getyOffset(),
+    return openPlane(imageIndex, planeIndex, plane, plane.getxOffset(), plane.getyOffset(),
         plane.getxLength(), plane.getyLength());
   }
 
