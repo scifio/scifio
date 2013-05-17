@@ -334,6 +334,20 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   public int getPlaneCount() {
     return planeCount;
   }
+  
+  
+  /*
+   * @see ome.scifio.ImageMetadata#getSize()
+   */
+  public long getSize() {
+    int size = 1;
+    
+    for (AxisType a : axisTypes) {
+      size *= getAxisLength(a);
+    }
+    
+    return size * getBitsPerPixel() / 8;
+  }
 
   /*
    * @see ome.scifio.ImageMetadata#getThumbSizeX()

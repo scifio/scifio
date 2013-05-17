@@ -118,7 +118,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
   void populateImageMetadata();
   
   // -- Format-agnostic Metadata API Methods --
-  
+
   /** Returns a String representation of this Dataset's name */
   String getDatasetName();
   
@@ -133,7 +133,13 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 
   /** Returns the number of planes in the specified image. */
   int getPlaneCount(int imageIndex);
-
+  
+  /** Returns the size, in bytes, of the current dataset. */
+  long getDatasetSize();
+  
+  /** Returns the size, in bytes, of the specified image. */
+  long getImageSize(int imageIndex);
+  
   /** 
    * Returns true if the spcified image stores its channels RGBRGBRGB... and
    * false if channels are stored RRR...GGG...BBB...

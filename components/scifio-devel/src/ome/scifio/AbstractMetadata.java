@@ -167,6 +167,24 @@ public abstract class AbstractMetadata extends AbstractHasSource
   public int getPlaneCount(final int imageIndex) {
     return imageMeta.get(imageIndex).getPlaneCount();
   }
+  
+  /*
+   * @see ome.scifio.Metadata#getDatasetSize()
+   */
+  public long getDatasetSize() {
+    int size = 0;
+    
+    for (int i=0; i<getAll().size(); i++) size += getImageSize(i);
+    
+    return size;
+  }
+  
+  /*
+   * @see ome.scifio.Metadata#getImageSize(int)
+   */
+  public long getImageSize(int imageIndex) {
+    return imageMeta.get(imageIndex).getSize();
+  }
 
   /*
    * @see ome.scifio.Metadata#isInterleaved(int)
