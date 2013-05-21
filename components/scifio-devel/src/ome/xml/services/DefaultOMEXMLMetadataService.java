@@ -495,9 +495,11 @@ public class DefaultOMEXMLMetadataService extends AbstractService
    * populateMetadata(ome.xml.meta.MetadataRetrieve, ome.scifio.Metadata)
    */
   public void populateMetadata(MetadataRetrieve retrieve, Metadata meta) {
-    meta.setDatasetName(retrieve.getImageName(0));
     
     int numImages = retrieve.getImageCount();
+    
+    if (numImages > 0) meta.setDatasetName(retrieve.getImageName(0));
+    
     meta.createImageMetadata(numImages);
     
     for (int i=0; i<numImages; i++) {
