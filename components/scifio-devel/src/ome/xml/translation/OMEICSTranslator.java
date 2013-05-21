@@ -48,6 +48,7 @@ import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
+import ome.xml.model.primitives.Timestamp;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Attr;
@@ -79,7 +80,9 @@ public class OMEICSTranslator extends FromOMETranslator<ICSFormat.Metadata> {
     
     MetadataRetrieve retrieve = source.getRoot();
     
-    dest.putDate(retrieve.getImageAcquisitionDate(0).getValue());
+    Timestamp ts = retrieve.getImageAcquisitionDate(0);
+    
+    if (ts != null) dest.putDate(ts.getValue());
     
     MetadataOptions options = source.getMetadataOptions();
     
