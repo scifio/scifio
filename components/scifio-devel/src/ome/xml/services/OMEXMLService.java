@@ -189,7 +189,16 @@ public interface OMEXMLService extends TypedService {
    */
   public void populateOriginalMetadata(OMEMetadata omexmlMeta,
     String key, String value);
-
+  
+  /**
+   * Parse any OriginalMetadata annotations from the given OME-XML metadata
+   * object and store them in a Hashtable.
+   *
+   * @param omexmlMeta An object of type
+   *   {@link loci.formats.ome.OMEXMLMetadata}.
+   */
+  public Hashtable<String, Object> getOriginalMetadata(OMEXMLMetadata omexmlMeta);
+  
   /**
    * Converts information from an OME-XML string (source)
    * into a metadata store (destination).

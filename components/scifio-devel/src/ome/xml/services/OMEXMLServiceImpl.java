@@ -534,7 +534,72 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
     root.setStructuredAnnotations(annotations);
     omexmlMeta.setRoot(root);
   }
+  
+  /*
+   * @see ome.xml.services.OMEXMLService#getOriginalMetadata(ome.xml.meta.OMEXMLMetadata)
+   */
+  public Hashtable<String, Object> getOriginalMetadata(OMEXMLMetadata omexmlMeta) {
+    OME root = (OME) omexmlMeta.getRoot();
+    StructuredAnnotations annotations = root.getStructuredAnnotations();
+    if (annotations == null) {
+      return null;
+    }
 
+    Hashtable<String, Object> metadata = new Hashtable<String, Object>();
+
+    for (int i=0; i<annotations.sizeOfXMLAnnotationList(); i++) {
+      XMLAnnotation annotation = annotations.getXMLAnnotation(i);
+      String xml = annotation.getValue();
+
+      try {
+        Document annotationRoot = XMLTools.parseDOM(xml);
+        NodeList metadataNodes =
+          annotationRoot.getElementsByTagName("OriginalMetadata");
+
+        for (int meta=0; meta<metadataNodes.getLength(); meta++) {
+          Element metadataNode = (Element) metadataNodes.item(meta);
+          NodeList keys =
+            metadataNode.getElementsByTagName("Key");
+          NodeList values =
+            metadataNode.getElementsByTagName("Value");
+
+          for (int q=0; q<keys.getLength(); q++) {
+            Node key = keys.item(q);
+            Node value = values.item(q);
+
+            metadata.put(key.getTextContent(), value.getTextContent());
+          }
+        }
+
+        if (metadataNodes.getLength() == 0) {
+          metadataNodes = annotationRoot.getDocumentElement().getChildNodes();
+
+          for (int meta=0; meta<metadataNodes.getLength(); meta++) {
+            Element node = (Element) metadataNodes.item(meta);
+            String name = node.getNodeName();
+
+            NamedNodeMap attrs = node.getAttributes();
+            Node value = attrs.getNamedItem("Value");
+            if (value != null) {
+              metadata.put(name, value.getNodeValue());
+            }
+          }
+        }
+      }
+      catch (ParserConfigurationException e) {
+        LOGGER.debug("Failed to parse OriginalMetadata", e);
+      }
+      catch (SAXException e) {
+        LOGGER.debug("Failed to parse OriginalMetadata", e);
+      }
+      catch (IOException e) {
+        LOGGER.debug("Failed to parse OriginalMetadata", e);
+      }
+    }
+
+    return metadata;
+  }
+  
   /**
    * @throws ServiceException 
    * @see OMEXMLService#convertMetadata(java.lang.String, loci.formats.meta.MetadataStore)
