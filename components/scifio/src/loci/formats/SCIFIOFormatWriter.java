@@ -169,6 +169,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
      
      if (retrieve instanceof OMEXMLMetadata) {
        OMEMetadata omeMeta = new OMEMetadata(LegacyContext.get(), (OMEXMLMetadata) retrieve);
+       omeMeta.populateImageMetadata();
        
        if (writer.getMetadata() == null) {
          try {
@@ -362,6 +363,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
           (ome.xml.meta.OMEXMLMetadata)retrieve);
       
       omeMeta.setMetadataOptions(new DefaultMetadataOptions());
+      omeMeta.populateImageMetadata();
       
       // convert the metadata retrieve to ome.scifio.Metadata
       writer.scifio().translator().translate(omeMeta, meta);

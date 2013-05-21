@@ -103,8 +103,6 @@ public class OMEMetadata extends AbstractMetadata {
    */
   public void setRoot(OMEXMLMetadata root) {
     this.root = root;
-    
-    if (root != null) populateImageMetadata();
   }
 
   /**
