@@ -308,13 +308,21 @@ public class OMEXMLFormat extends AbstractFormat {
       }
       
       LOGGER.info("Populating metadata");
-
+      
+      OMEMetadata omeMeta = meta.getOMEMeta();
       OMEXMLMetadata omexmlMeta = null;
+      if (omeMeta != null) omexmlMeta = meta.getOMEMeta().getRoot();
+      OMEXMLService service = scifio().format().getInstance(OMEXMLService.class);
 
       try {
-        OMEXMLService service = scifio().format().getInstance(OMEXMLService.class);
-        omexmlMeta = service.createOMEXMLMetadata(meta.getOmexml());
+
+        if (omexmlMeta == null) {
+          omexmlMeta = service.createOMEXMLMetadata(meta.getOmexml());
+          meta.setOMEMeta(new OMEMetadata(getContext(), omexmlMeta));
+        }
+        
         service.convertMetadata(meta.getOmexml(), omexmlMeta);
+
       }
       catch (ServiceException se) {
         throw new FormatException(se);
@@ -322,9 +330,6 @@ public class OMEXMLFormat extends AbstractFormat {
       
       for (int i=0; i<omexmlMeta.getImageCount(); i++)
         omexmlMeta.setImageName(stream.getFileName(), i);
-      
-      OMEMetadata omeMeta = new OMEMetadata(getContext(), omexmlMeta);
-      meta.setOMEMeta(omeMeta);
 
       meta.setSPW(omexmlMeta.getPlateCount() > 0);
       addGlobalMeta("Is SPW file", meta.isSPW());

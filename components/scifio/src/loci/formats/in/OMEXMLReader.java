@@ -43,7 +43,10 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
+import ome.scifio.Metadata;
+import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLFormat;
+import ome.xml.meta.OMEXMLMetadata;
 
 /**
  * OMEXMLReader is the file format reader for OME-XML files.
@@ -75,6 +78,31 @@ public class OMEXMLReader extends SCIFIOFormatReader {
     }
   }
 
+  // -- SCIFIOFormatReader API MEthods --
+  
+  @Override
+  protected void setupMetdata() { 
+    Metadata meta = reader.getMetadata();
+    
+    if (meta == null) {
+      try {
+        meta = reader.getFormat().createMetadata();
+        reader.setMetadata(meta);
+
+      } catch (ome.scifio.FormatException e) {
+        LOGGER.error("Exception creating OMEXML Metadata", e);
+      } catch (IOException e) {
+        LOGGER.error("Exception setting OMEXML Metadata", e);
+      }
+    }
+    
+    MetadataStore store = getMetadataStore();
+    
+    if (meta != null && store instanceof OMEXMLMetadata)
+      ((OMEXMLFormat.Metadata)meta).setOMEMeta(
+        new OMEMetadata(meta.getContext(), (OMEXMLMetadata) store));
+  }
+  
   // -- IFormatReader API methods --
 
   @Override
@@ -85,7 +113,4 @@ public class OMEXMLReader extends SCIFIOFormatReader {
     MetadataTools.populatePixels(store, this);
 //    service.convertMetadata(omexmlMeta, store);
   }
-
-
-
 }
