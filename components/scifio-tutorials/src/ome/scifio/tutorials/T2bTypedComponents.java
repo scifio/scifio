@@ -65,7 +65,7 @@ public class T2bTypedComponents {
     
     FakeFormat.Metadata meta = parser.parse(sampleImage);
     
-    System.out.println("Color table: " + meta.getColorTable());
+    System.out.println("Color table: " + meta.getColorTable(0, 0));
     
     reader.setMetadata(meta);
     

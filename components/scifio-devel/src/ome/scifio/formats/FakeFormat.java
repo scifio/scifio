@@ -249,7 +249,7 @@ public class FakeFormat extends AbstractFormat
     /**
      * Returns the current color table for this dataset
      */
-    public ColorTable getColorTable() {
+    public ColorTable getColorTable(int imageIndex, int planeIndex) {
       return lut == null ? null : lut[ac];
     }
     

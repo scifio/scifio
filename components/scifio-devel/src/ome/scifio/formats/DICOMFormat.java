@@ -954,7 +954,7 @@ public class DICOMFormat extends AbstractFormat {
 
     // -- ColorTable API Methods --
 
-    public ColorTable getColorTable() {
+    public ColorTable getColorTable(int imageIndex, int planeIndex) {
       int pixelType = getPixelType(0);
       
       switch (pixelType) {
@@ -1348,7 +1348,7 @@ public class DICOMFormat extends AbstractFormat {
       int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
       
       int planeSize = sizeX * sizeY * 
-          (meta.getColorTable() == null ? meta.getAxisLength(0, Axes.CHANNEL) : 1) 
+          (meta.getColorTable(0, 0) == null ? meta.getAxisLength(0, Axes.CHANNEL) : 1) 
           * bytesPerPixel;
       
       meta.setJP2K(isJP2K);

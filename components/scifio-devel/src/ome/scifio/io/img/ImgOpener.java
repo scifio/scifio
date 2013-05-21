@@ -805,6 +805,8 @@ public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
 
     Plane plane = null;
     for (int planeIndex = 0; planeIndex < planeCount; planeIndex++) {
+      
+      //TODO replace with StatusService use... needs to trigger in 
       notifyListeners(new StatusEvent(planeIndex, planeCount, "Reading plane "
           + (planeIndex + 1) + "/" + planeCount));
       if (plane == null)
@@ -820,7 +822,7 @@ public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
       // store color table
       if (HasColorTable.class.isAssignableFrom(r.getMetadata().getClass())) {
         imgPlus.setColorTable(
-            ((HasColorTable) r.getMetadata()).getColorTable(), planeIndex);
+            ((HasColorTable) r.getMetadata()).getColorTable(imageIndex, 0), planeIndex);
       }
     }
     if (computeMinMax)

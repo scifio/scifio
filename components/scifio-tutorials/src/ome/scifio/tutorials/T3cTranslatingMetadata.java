@@ -80,10 +80,10 @@ public class T3cTranslatingMetadata {
     
     // ... and observe the results
     System.out.println("100th element of input color table: " +
-        ((FakeFormat.Metadata)input).getColorTable().get(0, 100));
+        ((FakeFormat.Metadata)input).getColorTable(0, 0).get(0, 100));
     
     System.out.println("100th element of output color table: " +
-        ((FakeFormat.Metadata)output).getColorTable().get(0, 100));
+        ((FakeFormat.Metadata)output).getColorTable(0, 0).get(0, 100));
     
     // ------------------------------------------------------------------------
     // COMPARISON WITH BIO-FORMATS 4.X
@@ -141,7 +141,7 @@ public class T3cTranslatingMetadata {
       
       // And now we're feeling particularly chaotic and decide to mangle
       // the output's ColorTable, filling it with useless values.
-      ColorTable ct = ((FakeFormat.Metadata)source).getColorTable();
+      ColorTable ct = ((FakeFormat.Metadata)source).getColorTable(0, 0);
       byte[][] bytes = new byte[ct.getComponentCount()][ct.getLength()];
       
       for(byte[] b : bytes)

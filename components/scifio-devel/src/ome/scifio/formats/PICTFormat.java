@@ -248,7 +248,7 @@ public class PICTFormat extends AbstractFormat {
     
     // -- HasColorTable API Methods --
 
-    public ColorTable getColorTable() {
+    public ColorTable getColorTable(int imageIndex, int planeIndex) {
       return lookup == null ? null : new ColorTable8(lookup);
     }
 

@@ -189,7 +189,7 @@ public class BMPFormat extends AbstractFormat {
       iMeta.setPlaneCount(1);
       
       iMeta.setMetadataComplete(true);
-      iMeta.setIndexed(getColorTable() != null);
+      iMeta.setIndexed(getColorTable(0, 0) != null);
       
       if (iMeta.isIndexed()) {
         sizeC = 1;
@@ -224,7 +224,7 @@ public class BMPFormat extends AbstractFormat {
     /*
      * @see ome.scifio.HasColorTable#getColorTable()
      */
-    public ColorTable getColorTable() {
+    public ColorTable getColorTable(int imageIndex, int planeIndex) {
       return palette;
     }
   }
@@ -328,7 +328,7 @@ public class BMPFormat extends AbstractFormat {
       else if (nColors != 0) in.skipBytes(nColors * 4);
       
       if (getMetadataOptions().getMetadataLevel() != MetadataLevel.MINIMUM) {
-        addGlobalMeta("Indexed color", meta.getColorTable() != null);
+        addGlobalMeta("Indexed color", meta.getColorTable(0, 0) != null);
         addGlobalMeta("Image width", sizeX);
         addGlobalMeta("Image height", sizeY);
         addGlobalMeta("Bits per pixel", bpp);
@@ -428,7 +428,7 @@ public class BMPFormat extends AbstractFormat {
 
       BitBuffer bb = new BitBuffer(rawPlane);
 
-      ColorTable palette = meta.getColorTable();
+      ColorTable palette = meta.getColorTable(0, 0);
       plane.setColorTable(palette);
       
       int effectiveC = palette != null && palette.getLength() > 0 ? 1 : sizeC;

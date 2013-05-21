@@ -503,7 +503,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
     ColorTable ct = null;
     
     if (HasColorTable.class.isAssignableFrom(m.getClass()))
-      ct = ((HasColorTable)m).getColorTable(); 
+      ct = ((HasColorTable)m).getColorTable(getSeries(), 0); 
     else if (plane != null) 
       ct = plane.getColorTable();
     
@@ -519,7 +519,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
     ColorTable ct = null;
     
     if (HasColorTable.class.isAssignableFrom(m.getClass()))
-      ct = ((HasColorTable)m).getColorTable(); 
+      ct = ((HasColorTable)m).getColorTable(getSeries(), 0); 
     else if (plane != null) 
       ct = plane.getColorTable();
     

@@ -163,7 +163,7 @@ public class PCXFormat extends AbstractFormat {
     
     // -- HasColorTable API Methods -
 
-    public ColorTable getColorTable() {
+    public ColorTable getColorTable(int imageIndex, int planeIndex) {
       return lut;
     }
   }

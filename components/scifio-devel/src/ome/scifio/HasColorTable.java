@@ -54,5 +54,5 @@ public interface HasColorTable {
   /**
    * @return The ColorTable associated with this component.
    */
-  ColorTable getColorTable();
+  ColorTable getColorTable(int imageIndex, int planeIndex);
 }

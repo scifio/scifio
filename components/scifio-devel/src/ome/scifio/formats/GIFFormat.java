@@ -327,7 +327,7 @@ public class GIFFormat extends AbstractFormat {
     /*
      * @see ome.scifio.HasColorTable#getColorTable()
      */
-    public ColorTable getColorTable() {
+    public ColorTable getColorTable(int imageIndex, int planeIndex) {
 
       if (cachedTable == null) {
         byte[][] table = new byte[3][act.length];
@@ -743,7 +743,7 @@ public class GIFFormat extends AbstractFormat {
     {
       byte[] buf = plane.getData();
       Metadata meta = getMetadata();
-      plane.setColorTable(meta.getColorTable());
+      plane.setColorTable(meta.getColorTable(0, 0));
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
           buf.length, x, y, w, h);
 

@@ -285,7 +285,7 @@ public class AVIFormat extends AbstractFormat {
     
     // -- HasColorTable API Methods --
     
-    public ColorTable getColorTable() {
+    public ColorTable getColorTable(int imageIndex, int planeIndex) {
       return lut;
     }
     
@@ -335,7 +335,7 @@ public class AVIFormat extends AbstractFormat {
       }
       else if (getBytesPerPlane() == 0 || getBmpBitsPerPixel() == 24) {
         iMeta.setRGB(getBmpBitsPerPixel() > 8 || 
-            (getBmpCompression() != 0 && getColorTable() == null));
+            (getBmpCompression() != 0 && getColorTable(0, 0) == null));
         sizeC = iMeta.isRGB() ? 3 : 1;
       }
       else if (getBmpCompression() == MS_VIDEO) {
@@ -351,7 +351,7 @@ public class AVIFormat extends AbstractFormat {
       
       iMeta.setFalseColor(false);
       iMeta.setMetadataComplete(true);
-      iMeta.setIndexed(getColorTable() != null && !iMeta.isRGB());
+      iMeta.setIndexed(getColorTable(0, 0) != null && !iMeta.isRGB());
 
       iMeta.setBitsPerPixel(getBmpBitsPerPixel());
       if (getBmpBitsPerPixel() <= 8) {
@@ -831,7 +831,7 @@ public class AVIFormat extends AbstractFormat {
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, 
           buf.length, x, y, w, h);
       Metadata meta = getMetadata();
-      plane.setColorTable(meta.getColorTable());
+      plane.setColorTable(meta.getColorTable(0, 0));
 
       int bytes = FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
       double p = ((double) meta.getBmpScanLineSize()) / meta.getBmpBitsPerPixel();
@@ -1552,7 +1552,7 @@ public class AVIFormat extends AbstractFormat {
       dest.setBmpCompression(0);
       
       if (HasColorTable.class.isAssignableFrom(source.getClass())) {
-        ColorTable ct = ((HasColorTable)source).getColorTable();
+        ColorTable ct = ((HasColorTable)source).getColorTable(0, 0);
         dest.setBmpColorsUsed(ct.getLength());
       }
       

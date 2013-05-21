@@ -216,7 +216,7 @@ public class JPEG2000Format extends AbstractFormat {
     /*
      * @see ome.scifio.HasColorTable#getColorTable()
      */
-    public ColorTable getColorTable() {
+    public ColorTable getColorTable(int imageIndex, int planeIndex) {
       if (lut == null) return null;
       
       if (FormatTools.getBytesPerPixel(getPixelType(0)) == 1) {
