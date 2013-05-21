@@ -117,6 +117,7 @@ import ome.xml.model.enums.handlers.MicroscopeTypeEnumHandler;
 import ome.xml.model.enums.handlers.NamingConventionEnumHandler;
 import ome.xml.model.enums.handlers.PixelTypeEnumHandler;
 import ome.xml.model.enums.handlers.PulseEnumHandler;
+import ome.xml.services.OMEXMLMetadataService;
 
 /**
  * Abstract superclass of all biological file format writers converted to
@@ -1017,14 +1018,22 @@ public abstract class SCIFIOFormatReader extends FormatReader
   public void setId(String id) throws FormatException, IOException {
     super.setId(id);
     if (reader.getCurrentFile() == null || !reader.getCurrentFile().equals(currentId)) {
-      Metadata meta = null;
+      
+      setupMetdata();
+      Metadata meta = reader.getMetadata();
+      
       try {
-        meta = parser.parse(id);
+        if (meta == null) meta = reader.getFormat().createMetadata();
+
+        meta = parser.parse(id, meta);
       }
       catch (ome.scifio.FormatException e) {
         throw new FormatException(e.getCause());
       }
       reader.setMetadata(meta);
+      
+      reader.getContext().getService(OMEXMLMetadataService.class).
+        populateMetadata(getMetadataStore(), getSeries(), currentId, meta);
       
       // NB: this has to happen after init file, instead of within init file
       // to allow the file to be parsed
@@ -1054,6 +1063,13 @@ public abstract class SCIFIOFormatReader extends FormatReader
   }
 
   // -- SCIFIO Utility Methods --
+  
+  /** 
+   * Because the legacy workflow does not map perfectly to the SCIFIO workflow,
+   * some formats may need to perform additional steps before parsing to
+   * preserve correct behavior (e.g. attaching the metadata store).
+   */
+  protected void setupMetdata() { }
 
   /** Returns the SCIFIO reader being used for deferrment */
   public ome.scifio.Reader getReader() {
