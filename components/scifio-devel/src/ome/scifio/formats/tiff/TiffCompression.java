@@ -58,6 +58,7 @@ import ome.scifio.common.DataTools;
 import ome.scifio.enumeration.CodedEnum;
 import ome.scifio.enumeration.EnumException;
 
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -268,13 +269,15 @@ public enum TiffCompression implements CodedEnum {
   // -- TiffCompression methods - decompression --
 
   /** Decodes a strip of data. */
-  public byte[] decompress(byte[] input, CodecOptions options)
+  public byte[] decompress(Context ctx, byte[] input, CodecOptions options)
     throws FormatException, IOException
   {
     if (codec == null) {
       throw new UnsupportedCompressionException(
           "Sorry, " + getCodecName() + " compression mode is not supported");
     }
+    if (codec.getContext() == null) codec.setContext(ctx);
+    
     return codec.decompress(input, options);
   }
 

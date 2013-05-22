@@ -108,11 +108,12 @@ public class TiffParser extends AbstractContextual {
 
   /** Constructs a new TIFF parser from the given file name. */
   public TiffParser(Context context, String filename) throws IOException {
-    this(new RandomAccessInputStream(context, filename));
+    this(context, new RandomAccessInputStream(context, filename));
   }
 
   /** Constructs a new TIFF parser from the given input source. */
-  public TiffParser(RandomAccessInputStream in) {
+  public TiffParser(Context context, RandomAccessInputStream in) {
+    setContext(context);
     this.in = in;
     doCaching = true;
     try {
@@ -640,7 +641,7 @@ public class TiffParser extends AbstractContextual {
     int samplesPerPixel = ifd.getSamplesPerPixel();
     int planarConfig = ifd.getPlanarConfiguration();
     TiffCompression compression = ifd.getCompression();
-
+    
     long numTileCols = ifd.getTilesPerRow();
 
     int pixel = ifd.getBytesPerSample()[0];
@@ -695,9 +696,9 @@ public class TiffParser extends AbstractContextual {
       byte[] q = new byte[jpegTable.length + tile.length - 4];
       System.arraycopy(jpegTable, 0, q, 0, jpegTable.length - 2);
       System.arraycopy(tile, 2, q, jpegTable.length - 2, tile.length - 2);
-      tile = compression.decompress(q, codecOptions);
+      tile = compression.decompress(getContext(), q, codecOptions);
     }
-    else tile = compression.decompress(tile, codecOptions);
+    else tile = compression.decompress(getContext(), tile, codecOptions);
     TiffCompression.undifference(tile, ifd);
     unpackBytes(buf, 0, tile, ifd);
 

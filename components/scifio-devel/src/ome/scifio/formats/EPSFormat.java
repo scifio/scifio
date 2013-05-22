@@ -212,7 +212,7 @@ public class EPSFormat extends AbstractFormat {
         in.read(b);
 
         in = new RandomAccessInputStream(getContext(), b);
-        TiffParser tp = new TiffParser(in);
+        TiffParser tp = new TiffParser(getContext(), in);
         meta.setIfds(tp.getIFDs());
 
         IFD firstIFD = meta.getIfds().get(0);

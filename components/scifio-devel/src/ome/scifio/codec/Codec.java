@@ -38,6 +38,8 @@ package ome.scifio.codec;
 
 import java.io.IOException;
 
+import org.scijava.Contextual;
+
 import ome.scifio.FormatException;
 import ome.scifio.io.RandomAccessInputStream;
 
@@ -63,7 +65,7 @@ import ome.scifio.io.RandomAccessInputStream;
  *
  * @author Eric Kjellman egkjellman at wisc.edu
  */
-public interface Codec {
+public interface Codec extends Contextual {
 
   /**
    * Compresses a block of data.
