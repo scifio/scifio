@@ -325,23 +325,20 @@ public class JPEG2000Format extends AbstractFormat {
 
     /** List of comments stored in the file.*/
     private ArrayList<String> comments;
-
-    // -- Parser API Methods --
-
-    /*
-     * @see ome.scifio.AbstractParser#typedParse(ome.scifio.io.RandomAccessInputStream, ome.scifio.TypedMetadata)
-     */
-    @Override
-    protected void typedParse(RandomAccessInputStream stream, Metadata meta)
+    
+    // -- JPEG2000Parse methods --
+    
+    public void parse(RandomAccessInputStream stream, Metadata meta, long maximumReadOffset)
       throws IOException, FormatException
     {
+      
       meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
       
       int sizeX, sizeY, sizeC, pixelType;
       
       in = stream;
-      this.maximumReadOffset = stream.length();
+      this.maximumReadOffset = maximumReadOffset;
       comments = new ArrayList<String>();
       boolean isLittleEndian = stream.isLittleEndian();
       try {
@@ -391,6 +388,18 @@ public class JPEG2000Format extends AbstractFormat {
         }
       }
     }
+  
+  // -- Parser API Methods --
+
+  /*
+   * @see ome.scifio.AbstractParser#typedParse(ome.scifio.io.RandomAccessInputStream, ome.scifio.TypedMetadata)
+   */
+  @Override
+  protected void typedParse(RandomAccessInputStream stream, Metadata meta)
+    throws IOException, FormatException
+  {
+    parse(stream, meta, stream.length());
+  }
     
     /** Retrieves the offset to the first contiguous codestream. */
     public long getCodestreamOffset() {
