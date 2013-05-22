@@ -36,6 +36,7 @@
 
 package loci.formats.in;
 
+import ome.scifio.formats.TIFFFormat;
 import loci.formats.DelegateReader;
 
 /**
@@ -49,14 +50,17 @@ import loci.formats.DelegateReader;
  *
  * @see TiffReader
  * @see TiffJAIReader
+ * 
+ * @deprecated see ome.scifio.formats.TIFFFormat
  */
+@Deprecated
 public class TiffDelegateReader extends DelegateReader {
 
   // -- Constructor --
 
   /** Constructs a new TIFF reader. */
   public TiffDelegateReader() {
-    super("Tagged Image File Format", TiffReader.TIFF_SUFFIXES);
+    super("Tagged Image File Format", TIFFFormat.TIFF_SUFFIXES);
     nativeReader = new TiffReader();
     legacyReader = new TiffJAIReader();
     nativeReaderInitialized = false;
