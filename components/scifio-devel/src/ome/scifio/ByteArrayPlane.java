@@ -36,6 +36,7 @@
 package ome.scifio;
 
 import ome.scifio.common.DataTools;
+import ome.scifio.util.FormatTools;
 
 import org.scijava.Context;
 
@@ -62,7 +63,7 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 
     byte[] buf = null;
     
-    buf = DataTools.allocate(xLength, yLength, (getImageMetadata().getBitsPerPixel() / 8), meta.getRGBChannelCount());
+    buf = DataTools.allocate(xLength, yLength, FormatTools.getBytesPerPixel(getImageMetadata().getPixelType()), meta.getRGBChannelCount());
     
     setData(buf);
   }
