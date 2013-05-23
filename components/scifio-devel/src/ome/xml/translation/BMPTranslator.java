@@ -33,11 +33,10 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package ome.xml.translation;
 
 import ome.scifio.MetadataLevel;
-import ome.scifio.formats.NRRDFormat;
+import ome.scifio.formats.BMPFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.model.primitives.PositiveFloat;
 
@@ -46,53 +45,61 @@ import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
- * Translator class from {@link ome.scifio.formats.NRRDFormat.Metadata} to
- * {@link ome.xml.meta.OMEMetadata}
- * <p>
- * NB: Plugin priority is set to high to be selected over the base
- * {@link ome.scifio.Metadata} translator.
- * </p>
+ * Container class for translators between OME and BMP formats.
  * 
- * @author Mark Hiner
+ * @author Mark Hiner hinerm at gmail.com
+ *
  */
-@Plugin(type = ToOMETranslator.class, priority = Priority.HIGH_PRIORITY,
-attrs = {
-  @Attr(name = NRRDOMETranslator.SOURCE, value = NRRDFormat.Metadata.CNAME),
-  @Attr(name = NRRDOMETranslator.DEST, value = OMEMetadata.CNAME)
-})
-public class NRRDOMETranslator extends ToOMETranslator<NRRDFormat.Metadata> {
-  
-  // -- Translator API Methods --
+public class BMPTranslator {
 
-  @Override
-  protected void typedTranslate(NRRDFormat.Metadata source, OMEMetadata dest) {
+  /**
+   * Translator class from {@link ome.scifio.formats.BMPFormat.Metadata} to
+   * {@link ome.xml.meta.OMEMetadata}
+   * <p>
+   * NB: Plugin priority is set to high to be selected over the base
+   * {@link ome.scifio.Metadata} translator.
+   * </p>
+   * 
+   * @author Mark Hiner
+   */
+  @Plugin(type = ToOMETranslator.class, priority = Priority.HIGH_PRIORITY,
+      attrs = {
+    @Attr(name = BMPOMETranslator.SOURCE, value = BMPFormat.Metadata.CNAME),
+    @Attr(name = BMPOMETranslator.DEST, value = OMEMetadata.CNAME)
+  })
+  public static class BMPOMETranslator extends ToOMETranslator<BMPFormat.Metadata> {
 
-    if (source.getMetadataOptions().getMetadataLevel() != MetadataLevel.MINIMUM) {
-      
-      String[] pixelSizes = source.getPixelSizes();
-      
-      if (pixelSizes != null) {
-        for (int i=0; i<pixelSizes.length; i++) {
-          if (pixelSizes[i] == null) continue;
-          try {
-            Double d = new Double(pixelSizes[i].trim());
-            if (d > 0) {
-              if (i == 0) {
-                dest.getRoot().setPixelsPhysicalSizeX(new PositiveFloat(d), 0);
-              }
-              else if (i == 1) {
-                dest.getRoot().setPixelsPhysicalSizeY(new PositiveFloat(d), 0);
-              }
-              else if (i == 2) {
-                dest.getRoot().setPixelsPhysicalSizeZ(new PositiveFloat(d), 0);
-              }
-            }
-            else {
-              LOGGER.warn(
-                "Expected positive value for PhysicalSize; got {}", d);
-            }
-          }
-          catch (NumberFormatException e) { }
+    // -- Translator API Methods --
+
+    /*
+     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     */
+    @Override
+    protected void typedTranslate(BMPFormat.Metadata source, OMEMetadata dest) {
+      if (source.getMetadataOptions().getMetadataLevel() != MetadataLevel.MINIMUM) {
+        // resolution is stored as pixels per meter; we want to convert to
+        // microns per pixel
+
+        int pixelSizeX = (Integer) source.getTable().get("X resolution");
+
+        int pixelSizeY = (Integer) source.getTable().get("Y resolution");
+
+        double correctedX = pixelSizeX == 0 ? 0.0 : 1000000.0 / pixelSizeX;
+        double correctedY = pixelSizeY == 0 ? 0.0 : 1000000.0 / pixelSizeY;
+
+        if (correctedX > 0) {
+          dest.getRoot().setPixelsPhysicalSizeX(new PositiveFloat(correctedX), 0);
+        }
+        else {
+          LOGGER.warn("Expected positive value for PhysicalSizeX; got {}",
+              correctedX);
+        }
+        if (correctedY > 0) {
+          dest.getRoot().setPixelsPhysicalSizeY(new PositiveFloat(correctedY), 0);
+        }
+        else {
+          LOGGER.warn("Expected positive value for PhysicalSizeY; got {}",
+              correctedY);
         }
       }
     }

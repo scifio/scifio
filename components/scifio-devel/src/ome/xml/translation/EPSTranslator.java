@@ -45,37 +45,45 @@ import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
- * Translator class from {@link ome.scifio.formats.EPSFormat.Metadata} to
- * {@link ome.xml.meta.OMEMetadata}.
- * <p>
- * NB: Plugin priority is set to high to be selected over the base
- * {@link ome.scifio.Metadata} translator.
- * </p>
+ * Container class for translators between OME and EPS formats.
  * 
- * @author Mark Hiner
+ * @author Mark Hiner hinerm at gmail.com
+ *
  */
-@Plugin(type = FromOMETranslator.class, priority = Priority.HIGH_PRIORITY,
-attrs = {
-  @Attr(name = OMEEPSTranslator.SOURCE, value = OMEMetadata.CNAME),
-  @Attr(name = OMEEPSTranslator.DEST, value = EPSFormat.Metadata.CNAME)
-})
-public class OMEEPSTranslator extends FromOMETranslator<EPSFormat.Metadata> {
-  
-  /*
-   * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+public class EPSTranslator {
+  /**
+   * Translator class from {@link ome.scifio.formats.EPSFormat.Metadata} to
+   * {@link ome.xml.meta.OMEMetadata}.
+   * <p>
+   * NB: Plugin priority is set to high to be selected over the base
+   * {@link ome.scifio.Metadata} translator.
+   * </p>
+   * 
+   * @author Mark Hiner
    */
-  @Override
-  protected void typedTranslate(OMEMetadata source, EPSFormat.Metadata dest) {
-    super.typedTranslate(source, dest);
-    
-    OMEXMLMetadata meta = source.getRoot();
-    
-    int sizeX = meta.getPixelsSizeX(0).getValue().intValue();
-    int sizeY = meta.getPixelsSizeY(0).getValue().intValue();
-    int sizeC = meta.getChannelSamplesPerPixel(0, 0).getValue().intValue();
-    
-    dest.setAxisLength(0, Axes.X, sizeX);
-    dest.setAxisLength(0, Axes.Y, sizeY);
-    dest.setAxisLength(0, Axes.CHANNEL, sizeC);
+  @Plugin(type = FromOMETranslator.class, priority = Priority.HIGH_PRIORITY,
+      attrs = {
+    @Attr(name = OMEEPSTranslator.SOURCE, value = OMEMetadata.CNAME),
+    @Attr(name = OMEEPSTranslator.DEST, value = EPSFormat.Metadata.CNAME)
+  })
+  public static class OMEEPSTranslator extends FromOMETranslator<EPSFormat.Metadata> {
+
+    /*
+     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     */
+    @Override
+    protected void typedTranslate(OMEMetadata source, EPSFormat.Metadata dest) {
+      super.typedTranslate(source, dest);
+
+      OMEXMLMetadata meta = source.getRoot();
+
+      int sizeX = meta.getPixelsSizeX(0).getValue().intValue();
+      int sizeY = meta.getPixelsSizeY(0).getValue().intValue();
+      int sizeC = meta.getChannelSamplesPerPixel(0, 0).getValue().intValue();
+
+      dest.setAxisLength(0, Axes.X, sizeX);
+      dest.setAxisLength(0, Axes.Y, sizeY);
+      dest.setAxisLength(0, Axes.CHANNEL, sizeC);
+    }
   }
 }
