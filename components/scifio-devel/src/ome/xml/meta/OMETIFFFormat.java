@@ -1405,7 +1405,7 @@ public class OMETIFFFormat extends AbstractFormat {
       
       if (dest.getOmeMeta() == null) {
         OMEMetadata omeMeta = new OMEMetadata(getContext());
-        scifio().translator().translate(source, omeMeta);
+        scifio().translator().translate(source, omeMeta, true);
         dest.setOmeMeta(omeMeta);
       }
       
@@ -1413,7 +1413,7 @@ public class OMETIFFFormat extends AbstractFormat {
         TIFFFormat.Metadata tiffMeta = (TIFFFormat.Metadata) 
             scifio().format().getFormatFromClass(TIFFFormat.class).createMetadata();
         
-        scifio().translator().translate(source, tiffMeta);
+        scifio().translator().translate(source, tiffMeta, true);
         
         dest.setFirstIFD(tiffMeta.getIfds().get(0));
         

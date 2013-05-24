@@ -65,12 +65,20 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
   private PluginService pluginService;
 
   /*
+   * @see ome.scifio.services.PluginAttributeService#createInstance(java.lang.Class, java.util.Map, java.util.Map)
+   */
+  public <PT extends SCIFIOPlugin> PT createInstance(Class<PT> type,
+    Map<String, String> andPairs, Map<String, String> orPairs) {
+    return createInstance(type, andPairs, orPairs, false);
+  }
+  
+  /*
    * @see ome.scifio.services.PluginAttributeService#
    * createInstance(java.lang.Class, java.util.Map, java.util.Map)
    */
   public <PT extends SCIFIOPlugin> PT createInstance(
-      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
-    PluginInfo<PT> plugin = getPlugin(type, andPairs, orPairs);
+      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs, boolean exact) {
+    PluginInfo<PT> plugin = getPlugin(type, andPairs, orPairs, exact);
     
     return plugin == null ? null : pluginService.createInstance(plugin);
   }
@@ -80,8 +88,8 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
    * getPlugin(java.lang.Class, java.util.Map, java.util.Map)
    */
   public <PT extends SCIFIOPlugin> PluginInfo<PT> getPlugin(
-      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
-    List<PluginInfo<PT>> pluginList = getPluginsOfType(type, andPairs, orPairs);
+      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs, boolean exact) {
+    List<PluginInfo<PT>> pluginList = getPluginsOfType(type, andPairs, orPairs, exact);
     return pluginList.size() > 0 ? pluginList.get(0) : null;
   }
   
@@ -90,7 +98,7 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
    * getPluginsOfType(java.lang.Class, java.util.Map, java.util.Map)
    */
   public <PT extends SCIFIOPlugin> List<PluginInfo<PT>> getPluginsOfType(
-      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs) {
+      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs, boolean exact) {
     // Get the unfiltered plugin list
     List<PluginInfo<PT>> plugins = pluginService.getPluginsOfType(type);
     
@@ -123,7 +131,7 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
             		"Class name attribute was invalid or not found.", e);
           }
           
-          if (c2.isAssignableFrom(c1))
+          if (exact ? c2.equals(c1) : c2.isAssignableFrom(c1))
             matchedOr = true;
         }
         
@@ -149,7 +157,7 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
             		"Class name attribute was invalid or not found.", e);
           }
           
-          if (!c2.isAssignableFrom(c1))
+          if (!(exact ? c2.equals(c1) : c2.isAssignableFrom(c1)))
             valid = false;
         }
       }
@@ -160,4 +168,5 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
     
     return filteredPlugins;
   }
+
 }

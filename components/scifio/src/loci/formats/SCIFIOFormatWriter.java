@@ -174,7 +174,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
        if (writer.getMetadata() == null) {
          try {
            Metadata m = format.createMetadata();
-           LegacyContext.getSCIFIO().translator().translate(omeMeta, m);
+           LegacyContext.getSCIFIO().translator().translate(omeMeta, m, false);
            writer.setMetadata(m);
          } catch (ome.scifio.FormatException e) {
            LOGGER.error("Failed to set SCIFIO Writer's Metadata", e);
@@ -366,7 +366,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
       omeMeta.populateImageMetadata();
       
       // convert the metadata retrieve to ome.scifio.Metadata
-      writer.scifio().translator().translate(omeMeta, meta);
+      writer.scifio().translator().translate(omeMeta, meta, false);
 
       meta.setDatasetName(id);
       

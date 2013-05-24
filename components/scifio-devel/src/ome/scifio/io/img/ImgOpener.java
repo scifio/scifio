@@ -649,7 +649,7 @@ public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
 
     final OMEMetadata meta = new OMEMetadata();
     meta.setContext(getContext());
-    scifio().translator().translate(m, meta);
+    scifio().translator().translate(m, meta, false);
 
     final PositiveFloat xCalin = meta.getRoot().getPixelsPhysicalSizeX(0);
     final PositiveFloat yCalin = meta.getRoot().getPixelsPhysicalSizeY(0);

@@ -128,7 +128,7 @@ public class ICSReader extends SCIFIOFormatReader {
 
     SCIFIO scifio = new SCIFIO(reader.getContext());
     
-    Translator t = scifio.translator() .findTranslator(reader.getMetadata(), omeMeta);
+    Translator t = scifio.translator().findTranslator(reader.getMetadata(), omeMeta, true);
 
     t.translate(reader.getMetadata(), omeMeta);
     

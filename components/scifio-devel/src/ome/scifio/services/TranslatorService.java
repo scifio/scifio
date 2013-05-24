@@ -57,10 +57,12 @@ public interface TranslatorService extends Service {
    * 
    * @param source - Metadata to read from
    * @param dest - Metadata to populate
+   * @param boolean - true if a translator that exactly matches these Metadata is
+   *                  desired
    * @return Translator whose translate method will accept these Metadata
    * 				 instances
    */
-  Translator findTranslator(Metadata source, Metadata dest);
+  Translator findTranslator(Metadata source, Metadata dest, boolean exact);
   
   /**
    * Returns a translator capable of translating from the source Metadata to
@@ -68,10 +70,12 @@ public interface TranslatorService extends Service {
    * 
    * @param source - Metadata to read from
    * @param dest - Metadata to populate
+   * @param boolean - true if a translator that exactly matches these Metadata is
+   *                  desired
    * @return Translator whose translate method will accept these Metadata
    * 				 instances
    */
-  Translator findTranslator(Class<?> source, Class<?> dest);
+  Translator findTranslator(Class<?> source, Class<?> dest, boolean exact);
   
   /**
    * Convenience method to immediately translate from the source Metadata
@@ -82,7 +86,9 @@ public interface TranslatorService extends Service {
    * 
    * @param source - Metadata to read from
    * @param dest - Metadata to populate
+   * @param boolean - true if a translator that exactly matches these Metadata is
+   *                  desired
    * @return true if translation was successful, and false otherwise.
    */
-  boolean translate(Metadata source, Metadata dest);
+  boolean translate(Metadata source, Metadata dest, boolean exact);
 }

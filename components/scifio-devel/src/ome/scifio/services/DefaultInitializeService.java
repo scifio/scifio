@@ -145,7 +145,7 @@ public class DefaultInitializeService extends AbstractService
       // Attempt to directly translate between these formats
       
       destMeta = dFormat.createMetadata();
-      translatorService.translate(sourceMeta, destMeta);
+      translatorService.translate(sourceMeta, destMeta, false);
     } 
     
     destMeta.setDatasetName(destination);

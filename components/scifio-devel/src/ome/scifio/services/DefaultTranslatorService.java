@@ -59,20 +59,20 @@ public class DefaultTranslatorService extends AbstractService implements Transla
    * @see ome.scifio.TranslatorService#
    * findTranslator(ome.scifio.Metadata, ome.scifio.Metadata)
    */
-  public Translator findTranslator(Metadata source, Metadata dest) {
-    return findTranslator(source.getClass(), dest.getClass());
+  public Translator findTranslator(Metadata source, Metadata dest, boolean exact) {
+    return findTranslator(source.getClass(), dest.getClass(), exact);
   }
 
   /*
    * @see ome.scifio.services.TranslatorService#
    * findTranslator(java.lang.Class, java.lang.Class)
    */
-  public Translator findTranslator(Class<?> source, Class<?> dest) {
+  public Translator findTranslator(Class<?> source, Class<?> dest, boolean exact) {
     Map<String, String> kvPairs = new HashMap<String,String>();
     kvPairs.put(Translator.SOURCE, source.getName());
     kvPairs.put(Translator.DEST, dest.getName());
     
-    Translator t = attributeService.createInstance(Translator.class, kvPairs, null);
+    Translator t = attributeService.createInstance(Translator.class, kvPairs, null, exact);
     
     return t;
   }
@@ -81,8 +81,8 @@ public class DefaultTranslatorService extends AbstractService implements Transla
    * @see ome.scifio.TranslatorService#
    * translate(ome.scifio.Metadata, ome.scifio.Metadata)
    */
-  public boolean translate(Metadata source, Metadata dest) {
-    Translator t = findTranslator(source, dest);
+  public boolean translate(Metadata source, Metadata dest, boolean exact) {
+    Translator t = findTranslator(source, dest, exact);
     
     if (t == null) return false;
     

@@ -69,7 +69,7 @@ public class T3cTranslatingMetadata {
     // provided metadata types. In this case, since our sample translator 
     // goes to and from FakeFormat.Metadata, we provide this type as
     // both parameters to the findTranslator method.
-    t = scifio.translator().findTranslator(input, input);
+    t = scifio.translator().findTranslator(input, input, true);
     
     // To try the MischeviousTranslator out, let's get another copy
     // of this image's Metadata.

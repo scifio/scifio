@@ -68,24 +68,41 @@ public interface PluginAttributeService extends Service {
   /**
    * As {@link org.scijava.plugin.PluginService#createInstancesOfType(Class)}
    * but with key,value pair parameters to allow for filtering based on
-   * {@code Attr} annotation.
+   * {@code Attr} annotation. Returns the first possible match.
    */
   <PT extends SCIFIOPlugin> PT createInstance(Class<PT> type,
       Map<String, String> andPairs, Map<String, String> orPairs);
+  
+  /**
+   * As {@link org.scijava.plugin.PluginService#createInstancesOfType(Class)}
+   * but with key,value pair parameters to allow for filtering based on
+   * {@code Attr} annotation.
+   * 
+   * Returns the first possible match if exact == false, or the first specific
+   * match if exact == true.
+   */
+  <PT extends SCIFIOPlugin> PT createInstance(Class<PT> type,
+      Map<String, String> andPairs, Map<String, String> orPairs, boolean exact);
 
   /**
    * As {@link org.scijava.plugin.PluginService#getPlugin(Class)}
    * but with key,value pair parameters to allow for filtering based on
    * {@code Attr} annotation.
+   * 
+   * Returns the first possible match if exact == false, or the first specific
+   * match if exact == true.
    */
   <PT extends SCIFIOPlugin> PluginInfo<PT> getPlugin(Class<PT> type,
-      Map<String, String> andPairs, Map<String, String> orPairs);
+      Map<String, String> andPairs, Map<String, String> orPairs, boolean exact);
 
   /**
    * As {@link org.scijava.plugin.PluginService#getPluginsOfType(Class)}
    * but with key,value pair parameters to allow for filtering based on
    * {@code Attr} annotation.
+   * 
+   * Returns all possible match if exact == false, or all specific
+   * matches if exact == true.
    */
   <PT extends SCIFIOPlugin> List<PluginInfo<PT>> getPluginsOfType(
-      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs);
+      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs, boolean exact);
 }

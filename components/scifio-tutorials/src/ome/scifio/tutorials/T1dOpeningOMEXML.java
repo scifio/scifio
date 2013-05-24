@@ -75,7 +75,7 @@ public class T1dOpeningOMEXML {
     OMEMetadata omexml = new OMEMetadata();
     omexml.setContext(scifio.getContext());
     
-    scifio.translator().translate(meta, omexml);
+    scifio.translator().translate(meta, omexml, true);
     
     // Now that we have our OME-XML we can print it:
     String xml = omexml.getRoot().dumpXML();

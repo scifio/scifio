@@ -852,7 +852,7 @@ public class NativeQTFormat extends AbstractFormat {
         LegacyQTFormat legacyFormat = scifio().format().getFormatFromClass(LegacyQTFormat.class);
         legacy = (LegacyQTFormat.Writer)legacyFormat.createWriter();
         ome.scifio.Metadata legacyMeta = legacyFormat.createMetadata();
-        scifio().translator().translate(meta, legacyMeta);
+        scifio().translator().translate(meta, legacyMeta, false);
         
         legacy.setMetadata(legacyMeta);
 
