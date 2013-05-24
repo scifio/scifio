@@ -26,7 +26,6 @@
 package loci.tests.testng;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,7 +51,9 @@ import loci.formats.MetadataTools;
 import loci.formats.ReaderWrapper;
 import loci.formats.gui.AWTImageTools;
 import loci.formats.gui.BufferedImageReader;
-import loci.formats.in.*;
+import loci.formats.in.DicomReader;
+import loci.formats.in.OMETiffReader;
+import loci.formats.in.TiffDelegateReader;
 import loci.formats.meta.IMetadata;
 import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
@@ -1847,121 +1848,6 @@ public class FormatReaderTest {
             // TIFF reader is allowed to redundantly green-light files
             if (result && readers[j] instanceof TiffDelegateReader) continue;
 
-            // Bio-Rad reader is allowed to redundantly
-            // green-light PIC files from NRRD datasets
-            if (result && r instanceof NRRDReader &&
-              readers[j] instanceof BioRadReader)
-            {
-              String low = used[i].toLowerCase();
-              boolean isPic = low.endsWith(".pic") || low.endsWith(".pic.gz");
-              if (isPic) continue;
-            }
-
-            // Analyze reader is allowed to redundantly accept NIfTI files
-            if (result && r instanceof NiftiReader &&
-              readers[j] instanceof AnalyzeReader)
-            {
-              continue;
-            }
-
-            if (result && r instanceof MetamorphReader &&
-              readers[j] instanceof MetamorphTiffReader)
-            {
-              continue;
-            }
-
-            if (result && (readers[j] instanceof L2DReader) ||
-              ((r instanceof L2DReader) && (readers[j] instanceof GelReader) ||
-              readers[j] instanceof L2DReader))
-            {
-              continue;
-            }
-
-            // ND2Reader is allowed to accept JPEG-2000 files
-            if (result && r instanceof JPEG2000Reader &&
-              readers[j] instanceof ND2Reader)
-            {
-              continue;
-            }
-
-            if ((result && r instanceof APLReader &&
-              readers[j] instanceof SISReader) || (!result &&
-              r instanceof APLReader && readers[j] instanceof APLReader))
-            {
-              continue;
-            }
-
-            // Prairie datasets can consist of OME-TIFF files with
-            // extra metadata files, so it is acceptable for the OME-TIFF
-            // reader to pick up TIFFs from a Prairie dataset
-            if (result && r instanceof PrairieReader &&
-              readers[j] instanceof OMETiffReader)
-            {
-              continue;
-            }
-
-            if (result && r instanceof TrestleReader &&
-              (readers[j] instanceof JPEGReader ||
-              readers[j] instanceof PGMReader ||
-              readers[j] instanceof TiffDelegateReader))
-            {
-              continue;
-            }
-
-            if (result && ((r instanceof HitachiReader) ||
-              (readers[j] instanceof HitachiReader &&
-              (r instanceof TiffDelegateReader || r instanceof JPEGReader ||
-              r instanceof BMPReader))))
-            {
-              continue;
-            }
-
-            if (result && r instanceof BDReader && readers[j] instanceof BMPReader)
-            {
-              continue;
-            }
-
-            if (!result && readers[j] instanceof BDReader &&
-              (used[i].endsWith(".bmp") || used[i].endsWith(".adf") ||
-              used[i].endsWith(".txt") || used[i].endsWith(".roi")))
-            {
-              continue;
-            }
-
-            if (!result && r instanceof VolocityReader &&
-              readers[j] instanceof VolocityReader)
-            {
-              continue;
-            }
-
-            if (!result && r instanceof InCellReader &&
-              readers[j] instanceof InCellReader &&
-              !used[i].toLowerCase().endsWith(".xdce"))
-            {
-              continue;
-            }
-
-            if (!result && r instanceof BrukerReader &&
-              readers[j] instanceof BrukerReader &&
-              !used[i].toLowerCase().equals("acqp") &&
-              !used[i].toLowerCase().equals("fid"))
-            {
-              continue;
-            }
-
-            // Volocity reader is allowed to accept files of other formats
-            if (result && r instanceof VolocityReader) {
-              continue;
-            }
-
-            // DNG files can be picked up by both the Nikon reader and the
-            // DNG reader
-
-            if (result && r instanceof NikonReader &&
-              readers[j] instanceof DNGReader)
-            {
-              continue;
-            }
 
             // DICOM reader is not expected to pick up companion files
             if (!result && r instanceof DicomReader &&
@@ -1969,18 +1855,6 @@ public class FormatReaderTest {
             {
               continue;
             }
-
-            // AFI reader is not expected to pick up .svs files
-            if (r instanceof AFIReader && (readers[j] instanceof AFIReader ||
-              readers[j] instanceof SVSReader))
-            {
-              continue;
-            }
-
-            if (!result && readers[j] instanceof MIASReader) {
-              continue;
-            }
-
             boolean expected = r == readers[j];
             if (result != expected) {
               success = false;

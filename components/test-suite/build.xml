@@ -64,7 +64,7 @@ Type "ant -p" for a list of targets.
       <classpath>
         <pathelement location="${root.dir}/tools/"/><!-- log4j.properties -->
         <pathelement location="${classes.dir}"/>
-        <pathelement path="${component.runtime-cp}"/>
+        <pathelement path="${component.write-nobf-cp}"/>
       </classpath>
       <classfileset file="${classes.dir}/loci/tests/testng/ConversionTest.class"/>
     </testng>
