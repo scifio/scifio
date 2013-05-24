@@ -37,11 +37,8 @@ package ome.scifio.formats;
 
 import java.io.IOException;
 
-import org.scijava.plugin.Plugin;
-
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-
 import ome.scifio.AbstractFormat;
 import ome.scifio.AbstractMetadata;
 import ome.scifio.AbstractParser;
@@ -49,14 +46,20 @@ import ome.scifio.AbstractWriter;
 import ome.scifio.ByteArrayPlane;
 import ome.scifio.ByteArrayReader;
 import ome.scifio.DefaultImageMetadata;
+import ome.scifio.DefaultTranslator;
 import ome.scifio.FormatException;
 import ome.scifio.ImageMetadata;
 import ome.scifio.Plane;
+import ome.scifio.Translator;
 import ome.scifio.formats.tiff.IFD;
 import ome.scifio.formats.tiff.IFDList;
 import ome.scifio.formats.tiff.TiffParser;
 import ome.scifio.io.RandomAccessInputStream;
 import ome.scifio.util.FormatTools;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 
 /**
  * Reader is the file format reader for Encapsulated PostScript (EPS) files.
@@ -554,4 +557,18 @@ public class EPSFormat extends AbstractFormat {
       planeOffset = out.getFilePointer();
     }
   }
+  
+  /**
+   * Necessary dummy translator, so that an EPS-OMEXML translator can be used
+   * 
+   * @author Mark Hiner hinerm at gmail.com
+   *
+   */
+  @Plugin(type = Translator.class, attrs = 
+    {@Attr(name = EPSTranslator.SOURCE, value = ome.scifio.Metadata.CNAME),
+     @Attr(name = EPSTranslator.DEST, value = Metadata.CNAME)},
+    priority = Priority.LOW_PRIORITY)
+  public static class EPSTranslator
+    extends DefaultTranslator
+  { }
 }
