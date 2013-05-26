@@ -143,10 +143,31 @@ public class ZipHandle extends StreamHandle {
 
     in = openStream(file);
     zip = new ZipInputStream(in);
-    entryName = entry.getName();
-    entryCount = 1;
+    entryName = entry == null ? null : entry.getName();
+    entryCount = entryName == null ? 0 : 1;
 
-    seekToEntry();
+    if (entryName == null) {
+      // strip off .zip extension and directory prefix
+      String innerFile = file.substring(0, file.length() - 4);
+      int slash = innerFile.lastIndexOf(File.separator);
+      if (slash < 0) slash = innerFile.lastIndexOf("/");
+      if (slash >= 0) innerFile = innerFile.substring(slash + 1);
+
+      // look for Zip entry with same prefix as the Zip file itself
+      boolean matchFound = false;
+      while (true) {
+        ZipEntry ze = zip.getNextEntry();
+        if (ze == null) break;
+        if (entryName == null) entryName = ze.getName();
+        if (!matchFound && ze.getName().startsWith(innerFile)) {
+          // found entry with matching name
+          entryName = ze.getName();
+          matchFound = true;
+        }
+        entryCount++;
+      }
+    }
+
     resetStream();
     populateLength();
   }
@@ -154,35 +175,7 @@ public class ZipHandle extends StreamHandle {
   /* @see IStreamAccess#setFile(String) */
   @Override
   public void setFile(String file) throws IOException {
-    super.setFile(file);
-
-    in = openStream(file);
-    zip = new ZipInputStream(in);
-    entryName = null;
-    entryCount = 0;
-
-    // strip off .zip extension and directory prefix
-    String innerFile = file.substring(0, file.length() - 4);
-    int slash = innerFile.lastIndexOf(File.separator);
-    if (slash < 0) slash = innerFile.lastIndexOf("/");
-    if (slash >= 0) innerFile = innerFile.substring(slash + 1);
-
-    // look for Zip entry with same prefix as the Zip file itself
-    boolean matchFound = false;
-    while (true) {
-      ZipEntry ze = zip.getNextEntry();
-      if (ze == null) break;
-      if (entryName == null) entryName = ze.getName();
-      if (!matchFound && ze.getName().startsWith(innerFile)) {
-        // found entry with matching name
-        entryName = ze.getName();
-        matchFound = true;
-      }
-      entryCount++;
-    }
-    resetStream();
-
-    populateLength();
+    setFile(file, null);
   }
 
   /* @see IStreamAccess#resetStream() */
