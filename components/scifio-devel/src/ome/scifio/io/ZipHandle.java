@@ -175,7 +175,6 @@ public class ZipHandle extends StreamHandle {
     }
 
     resetStream();
-    populateLength();
   }
 
   /* @see IStreamAccess#setFile(String) */
@@ -206,6 +205,7 @@ public class ZipHandle extends StreamHandle {
     super.close();
     zip = null;
     entryName = null;
+    setLength(-1);
     if (in != null) in.close();
     in = null;
     entryCount = 0;
@@ -213,16 +213,37 @@ public class ZipHandle extends StreamHandle {
 
   // -- Helper methods --
 
+  /**
+   * Seeks to the relevant ZIP entry, populating the stream length accordingly.
+   */
   private void seekToEntry() throws IOException {
-    while (!entryName.equals(zip.getNextEntry().getName()));
+    while (true) {
+      ZipEntry entry = zip.getNextEntry();
+      if (entryName.equals(entry.getName())) {
+        if (getLength() < 0) populateLength(entry.getSize());
+        break;
+      }
+    }
   }
 
-  private void populateLength() throws IOException {
-    
-    int length = -1;
-    while (getStream().available() > 0) {
-      getStream().skip(1);
-      length++;
+  /** Sets the stream length, computing it by force if necessary. */
+  private void populateLength(final long size) throws IOException {
+    if (size >= 0) {
+      setLength(size);
+      return;
+    }
+     // size is unknown, so we must read the stream manually
+    long length = 0;
+    final DataInputStream stream = getStream();
+    while (true) {
+      long skipped = stream.skip(Long.MAX_VALUE);
+      if (skipped == 0) {
+        // NB: End of stream, we hope. Technically there is no contract for
+        // when skip(long) returns 0, but in practice it seems to be when end
+        // of stream is reached.
+        break;
+      }
+      length += skipped;
     }
     setLength(length);
     resetStream();
