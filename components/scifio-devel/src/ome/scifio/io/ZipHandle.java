@@ -72,7 +72,7 @@ public class ZipHandle extends StreamHandle {
   private int entryCount;
 
   // -- Constructor --
-  
+
   /**
    * Zero-parameter constructor. This instructor can be used first
    * to see if a given file is constructable from this handle. If so,
@@ -81,7 +81,7 @@ public class ZipHandle extends StreamHandle {
   public ZipHandle() {
     super();
   }
-  
+
   public ZipHandle(Context context) {
     super(context);
   }
@@ -119,7 +119,7 @@ public class ZipHandle extends StreamHandle {
   }
 
   // -- ZipHandle API methods --
-  
+
   /** Get the name of the backing Zip entry. */
   public String getEntryName() {
     return entryName;
@@ -134,13 +134,13 @@ public class ZipHandle extends StreamHandle {
   public int getEntryCount() {
     return entryCount;
   }
-  
+
   // -- IStreamAccess API methods --
-  
+
   /* @see IStreamAccess#setFile(String) */
   public void setFile(String file, ZipEntry entry) throws IOException {
     super.setFile(file);
-    
+
     in = openStream(file);
     zip = new ZipInputStream(in);
     entryName = entry.getName();
@@ -184,7 +184,7 @@ public class ZipHandle extends StreamHandle {
 
     populateLength();
   }
-  
+
   /* @see IStreamAccess#resetStream() */
   public void resetStream() throws IOException {
     if (getStream() != null) getStream().close();
