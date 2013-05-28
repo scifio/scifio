@@ -659,22 +659,22 @@ public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
     final Double xCal, yCal, zCal;
 
     if (xCalin == null)
-      xCal = Double.NaN;
+      xCal = 1.0;
     else
       xCal = xCalin.getValue();
 
     if (yCalin == null)
-      yCal = Double.NaN;
+      yCal = 1.0;
     else
       yCal = yCalin.getValue();
 
     if (zCalin == null)
-      zCal = Double.NaN;
+      zCal = 1.0;
     else
       zCal = zCalin.getValue();
 
     if (tCal == null)
-      tCal = Double.NaN;
+      tCal = 1.0;
 
     final List<Double> calibrationList = new ArrayList<Double>();
 
@@ -702,7 +702,7 @@ public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
         for (int c = 0; c < cDimLengths.length; c++) {
           final long len = cDimLengths[c];
           if (len > 1)
-            calibrationList.add(Double.NaN);
+            calibrationList.add(1.0);
         }
         break;
       }
