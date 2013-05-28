@@ -536,7 +536,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     int sizeY = retrieve.getPixelsSizeY(imageIndex).getValue();
     int sizeZ = retrieve.getPixelsSizeZ(imageIndex).getValue();
     int sizeC = retrieve.getPixelsSizeC(imageIndex).getValue();
-    int sizeT = retrieve.getPixelsSizeZ(imageIndex).getValue();
+    int sizeT = retrieve.getPixelsSizeT(imageIndex).getValue();
     
     String dimensionOrder = retrieve.getPixelsDimensionOrder(imageIndex).getValue();
     boolean little = !retrieve.getPixelsBinDataBigEndian(imageIndex, 0);
