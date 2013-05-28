@@ -54,6 +54,7 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import ome.scifio.AbstractHasSCIFIO;
 import ome.scifio.ByteArrayPlane;
+import ome.scifio.DefaultMetadata;
 import ome.scifio.Format;
 import ome.scifio.FormatException;
 import ome.scifio.Metadata;
@@ -153,7 +154,7 @@ public class ImgSaver extends AbstractHasSCIFIO implements StatusReporter {
 	public <T extends RealType<T> & NativeType<T>> void saveImg(final String id,
 		final Img<T> img) throws ImgIOException, IncompatibleTypeException
 	{
-		saveImg(id, ImgPlus.wrap(img));
+		saveImg(id, ImgPlus.wrap(img), 0);
 	}
 
 	/**
@@ -187,7 +188,7 @@ public class ImgSaver extends AbstractHasSCIFIO implements StatusReporter {
 		final Writer w, final Img<T> img) throws ImgIOException,
 		IncompatibleTypeException
 	{
-		saveImg(w, ImgPlus.wrap(img));
+		saveImg(w, ImgPlus.wrap(img), 0);
 	}
 
 	// TODO IFormatHandler needs to be promoted to be able to get the current
@@ -680,8 +681,17 @@ public class ImgSaver extends AbstractHasSCIFIO implements StatusReporter {
 		}
 
 		// TODO save composite channel count somewhere...
-		SCIFIOMetadataTools.populate(meta.get(imageIndex), dimOrder, pixelType, 1,
+		
+		DefaultMetadata imgplusMeta = new DefaultMetadata();
+		
+		imgplusMeta.createImageMetadata(imageIndex + 1);
+		
+		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), dimOrder, pixelType, 1,
 		    true, false, false, false, true, sizeX, sizeY, sizeZ, sizeC,
 		    sizeT);
+		
+		// Translate to trigger any format-specific translation
+		
+		scifio().translator().translate(imgplusMeta, meta, false);
 	}
 }
