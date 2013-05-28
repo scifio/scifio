@@ -37,14 +37,6 @@
 package ome.xml.services;
 
 import net.imglib2.meta.Axes;
-
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
-import org.scijava.service.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ome.scifio.FormatException;
 import ome.scifio.ImageMetadata;
 import ome.scifio.Metadata;
@@ -58,7 +50,9 @@ import ome.scifio.util.SCIFIOMetadataTools;
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.MetadataStore;
 import ome.xml.meta.OMEXMLMetadata;
-import ome.xml.model.*;
+import ome.xml.model.BinData;
+import ome.xml.model.OME;
+import ome.xml.model.enums.Binning;
 import ome.xml.model.enums.Correction;
 import ome.xml.model.enums.DetectorType;
 import ome.xml.model.enums.DimensionOrder;
@@ -68,13 +62,24 @@ import ome.xml.model.enums.Immersion;
 import ome.xml.model.enums.LaserMedium;
 import ome.xml.model.enums.LaserType;
 import ome.xml.model.enums.PixelType;
+import ome.xml.model.enums.handlers.BinningEnumHandler;
 import ome.xml.model.enums.handlers.CorrectionEnumHandler;
 import ome.xml.model.enums.handlers.DetectorTypeEnumHandler;
 import ome.xml.model.enums.handlers.ExperimentTypeEnumHandler;
 import ome.xml.model.enums.handlers.ImmersionEnumHandler;
 import ome.xml.model.enums.handlers.LaserMediumEnumHandler;
 import ome.xml.model.enums.handlers.LaserTypeEnumHandler;
-import ome.xml.model.primitives.*;
+import ome.xml.model.primitives.NonNegativeInteger;
+import ome.xml.model.primitives.NonNegativeLong;
+import ome.xml.model.primitives.PositiveInteger;
+import ome.xml.model.primitives.Timestamp;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -487,6 +492,19 @@ public class DefaultOMEXMLMetadataService extends AbstractService
     }
     catch (EnumerationException e) {
       throw new FormatException("DetectorType creation failed", e);
+    }
+  }
+  
+  /*
+   * @see ome.xml.services.OMEXMLMetadataService#getBinning(java.lang.String)
+   */
+  public Binning getBinning(String value) throws FormatException {
+    BinningEnumHandler handler = new BinningEnumHandler();
+    try {
+      return (Binning) handler.getEnumeration(value);
+    }
+    catch (EnumerationException e) {
+      throw new FormatException("Binning creation failed", e);
     }
   }
   

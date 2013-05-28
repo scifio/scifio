@@ -44,6 +44,7 @@ import ome.scifio.Metadata;
 import ome.scifio.Reader;
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.MetadataStore;
+import ome.xml.model.enums.Binning;
 import ome.xml.model.enums.Correction;
 import ome.xml.model.enums.DetectorType;
 import ome.xml.model.enums.ExperimentType;
@@ -237,6 +238,15 @@ public interface OMEXMLMetadataService extends Service {
    *  enumeration value is not found.
    */
   DetectorType getDetectorType(String value) throws FormatException;
+  
+  /**
+   * Retrieves an {@link ome.xml.model.enums.Binning} enumeration
+   * value for the given String.
+   *
+   * @throws ome.xml.model.enums.EnumerationException if an appropriate
+   *  enumeration value is not found.
+   */
+  Binning getBinning(String value) throws FormatException;
   
   /**
    * Uses the provided MetadataRetrieve to populate the format-agnostic
