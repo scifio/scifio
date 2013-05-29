@@ -64,9 +64,6 @@ import ome.scifio.Metadata;
 import ome.scifio.Plane;
 import ome.scifio.Reader;
 import ome.scifio.common.DataTools;
-import ome.scifio.common.StatusEvent;
-import ome.scifio.common.StatusListener;
-import ome.scifio.common.StatusReporter;
 import ome.scifio.filters.ChannelFiller;
 import ome.scifio.filters.ChannelSeparator;
 import ome.scifio.filters.ReaderFilter;
@@ -81,6 +78,7 @@ import ome.xml.services.OMEXMLService;
 
 import org.scijava.Context;
 import org.scijava.InstantiableException;
+import org.scijava.app.StatusService;
 
 /**
  * Reads in an {@link ImgPlus} using SCIFIO.
@@ -90,16 +88,12 @@ import org.scijava.InstantiableException;
  * @author Stephan Preibisch
  * @author Stephan Saalfeld
  */
-public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
+public class ImgOpener extends AbstractHasSCIFIO {
   
   // -- Constants --
   
   // % of available memory which an image can not exceed to be opened as a PlanarImg
   private static final double PLANAR_THRESHOLD = 0.75;
-
-  // -- Fields --
-
-  private final List<StatusListener> listeners = new ArrayList<StatusListener>();
 
   // -- static methods --
 
@@ -205,6 +199,21 @@ public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
   }
 
   // -- ImgOpener methods --
+
+  /**
+   * Reads in an {@link ImgPlus} from the first image of the given source.
+   * 
+   * @param id
+   *          - the location of the dataset to open
+   * @return - the {@link ImgPlus} or null
+   * @throws ImgIOException
+   *           if there is a problem reading the image data.
+   */
+  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String id)
+    throws ImgIOException
+  { 
+    return openImg(id, 0);
+  }
   
   /**
    * Reads in an {@link ImgPlus} from the specified index of the given source.
@@ -469,36 +478,14 @@ public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
       }
       final long endTime = System.currentTimeMillis();
       final float time = (endTime - startTime) / 1000f;
-      notifyListeners(new StatusEvent(planeCount, planeCount, id +
-          ": read " + planeCount + " planes in " + time + "s"));
+      getContext().getService(StatusService.class).
+        showStatus(id + ": read " + planeCount + " planes in " + time + "s");
     }
 
     return imgPlus;
   }
 
   // -- StatusReporter methods --
-
-  /** Adds a listener to those informed when progress occurs. */
-  public void addStatusListener(final StatusListener l) {
-    synchronized (listeners) {
-      listeners.add(l);
-    }
-  }
-
-  /** Removes a listener from those informed when progress occurs. */
-  public void removeStatusListener(final StatusListener l) {
-    synchronized (listeners) {
-      listeners.remove(l);
-    }
-  }
-
-  /** Notifies registered listeners of progress. */
-  public void notifyListeners(final StatusEvent e) {
-    synchronized (listeners) {
-      for (final StatusListener l : listeners)
-        l.statusUpdated(e);
-    }
-  }
 
   public static Reader createReader(ImgOpener io, final String id,
     final boolean openFile, final boolean computeMinMax)
@@ -594,7 +581,7 @@ public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
    */
   private Reader initializeReader(final String id, final boolean openFile,
     boolean computeMinMax) throws FormatException, IOException {
-    notifyListeners(new StatusEvent("Initializing " + id));
+    getContext().getService(StatusService.class).showStatus("Initializing " + id);
 
     return createReader(this, id, openFile, computeMinMax);
   }
@@ -804,11 +791,11 @@ public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
     final boolean isPlanar = planarAccess != null && compatibleTypes;
 
     Plane plane = null;
+    
+    StatusService statusService = getContext().getService(StatusService.class);
+    
     for (int planeIndex = 0; planeIndex < planeCount; planeIndex++) {
-      
-      //TODO replace with StatusService use... needs to trigger in 
-      notifyListeners(new StatusEvent(planeIndex, planeCount, "Reading plane "
-          + (planeIndex + 1) + "/" + planeCount));
+      statusService.showStatus(planeIndex + 1, planeCount, "Reading plane");
       if (plane == null)
         plane = r.openPlane(0, planeIndex);
       else {
@@ -985,5 +972,30 @@ public class ImgOpener extends AbstractHasSCIFIO implements StatusReporter {
     }
     return value;
   }
+  
+  // -- Deprecated Methos --
 
+  @Deprecated
+  public <T extends NativeType<T> & RealType<T>> ImgPlus<T>
+    openImg(String filename, ImgFactory<T> factory, T type) throws ImgIOException {
+    
+    Reader r;
+    try {
+      r = createReader(this, filename, false, true);
+    } catch (IOException e) {
+      throw new ImgIOException(e);
+    } catch (FormatException e) {
+      throw new ImgIOException(e);
+    }
+    
+    return openImg(r, 0, factory, type, true);
+  }
+
+  @Deprecated
+  public <T extends NativeType<T> & RealType<T>> ImgPlus<T> 
+    openImg(String absolutePath, ImgFactory<T> imgFactory)
+    throws ImgIOException
+  {
+    return openImg(absolutePath, imgFactory, null);
+  }
 }
