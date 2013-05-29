@@ -130,7 +130,13 @@ public class ZipHandle extends StreamHandle {
     return getStream();
   }
 
-  /** Returns the number of entries. */
+  /**
+   * Returns the number of entries.
+   * 
+   * @deprecated The value returned by this method is inconsistent, and not used
+   *             internally at all, either.
+   */
+  @Deprecated
   public int getEntryCount() {
     return entryCount;
   }
