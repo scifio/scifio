@@ -192,7 +192,7 @@ public class ZipHandle extends StreamHandle {
     }
     if (zip != null) zip.close();
     zip = new ZipInputStream(in);
-    if (entryName != null) seekToEntry();
+    seekToEntry();
     setStream(new DataInputStream(new BufferedInputStream(
       zip, RandomAccessInputStream.MAX_OVERHEAD)));
     getStream().mark(RandomAccessInputStream.MAX_OVERHEAD);
@@ -220,7 +220,8 @@ public class ZipHandle extends StreamHandle {
   private void seekToEntry() throws IOException {
     while (true) {
       ZipEntry entry = zip.getNextEntry();
-      if (entryName.equals(entry.getName())) {
+      if (entryName == null || entryName.equals(entry.getName())) {
+        // found the matching entry name (or first entry if the name is null)
         if (getLength() < 0) populateLength(entry.getSize());
         break;
       }
