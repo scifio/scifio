@@ -174,7 +174,6 @@ public class ZipFormat extends AbstractFormat {
       throws IOException, FormatException
     {
       String baseId = ZipUtilities.unzipId(scifio(), stream, meta.getMappedFiles());
-      stream.close();
       
       ome.scifio.Parser p = scifio().format().getFormat(baseId).createParser();
       p.setOriginalMetadataPopulated(isOriginalMetadataPopulated());
@@ -303,7 +302,6 @@ public class ZipFormat extends AbstractFormat {
       // NB: We need a raw handle on the ZIP data itself, not a ZipHandle.
       String id = stream.getFileName();
       IRandomAccess rawHandle = scifio.location().getHandle(id, false, false);
-      stream.close();
       return new RandomAccessInputStream(scifio.getContext(), rawHandle, id);
     }
   }
