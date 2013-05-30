@@ -66,13 +66,14 @@ public class ZipHandle extends StreamHandle {
 
   // -- Fields --
 
+  private boolean resetStream;
   private RandomAccessInputStream in;
   private ZipInputStream zip;
   private String entryName;
   private int entryCount;
 
   // -- Constructor --
-  
+
   /**
    * Zero-parameter constructor. This instructor can be used first
    * to see if a given file is constructable from this handle. If so,
@@ -81,7 +82,7 @@ public class ZipHandle extends StreamHandle {
   public ZipHandle() {
     super();
   }
-  
+
   public ZipHandle(Context context) {
     super(context);
   }
@@ -119,7 +120,7 @@ public class ZipHandle extends StreamHandle {
   }
 
   // -- ZipHandle API methods --
-  
+
   /** Get the name of the backing Zip entry. */
   public String getEntryName() {
     return entryName;
@@ -130,61 +131,61 @@ public class ZipHandle extends StreamHandle {
     return getStream();
   }
 
-  /** Returns the number of entries. */
+  /**
+   * Returns the number of entries.
+   * 
+   * @deprecated The value returned by this method is inconsistent, and not used
+   *             internally at all, either.
+   */
+  @Deprecated
   public int getEntryCount() {
     return entryCount;
   }
-  
+
   // -- IStreamAccess API methods --
-  
+
   /* @see IStreamAccess#setFile(String) */
   public void setFile(String file, ZipEntry entry) throws IOException {
     super.setFile(file);
     
+    setLength(-1);
+
     in = openStream(file);
     zip = new ZipInputStream(in);
-    entryName = entry.getName();
-    entryCount = 1;
+    entryName = entry == null ? null : entry.getName();
+    entryCount = entryName == null ? 0 : 1;
 
-    seekToEntry();
+    if (entryName == null) {
+      // strip off .zip extension and directory prefix
+      String innerFile = file.substring(0, file.length() - 4);
+      int slash = innerFile.lastIndexOf(File.separator);
+      if (slash < 0) slash = innerFile.lastIndexOf("/");
+      if (slash >= 0) innerFile = innerFile.substring(slash + 1);
+
+      // look for Zip entry with same prefix as the Zip file itself
+      boolean matchFound = false;
+      while (true) {
+        ZipEntry ze = zip.getNextEntry();
+        if (ze == null) break;
+        if (entryName == null) entryName = ze.getName();
+        if (!matchFound && ze.getName().startsWith(innerFile)) {
+          // found entry with matching name
+          entryName = ze.getName();
+          matchFound = true;
+        }
+        entryCount++;
+      }
+    }
+
     resetStream();
-    populateLength();
   }
 
   /* @see IStreamAccess#setFile(String) */
   @Override
   public void setFile(String file) throws IOException {
-    super.setFile(file);
-
-    in = openStream(file);
-    zip = new ZipInputStream(in);
-    entryName = null;
-    entryCount = 0;
-
-    // strip off .zip extension and directory prefix
-    String innerFile = file.substring(0, file.length() - 4);
-    int slash = innerFile.lastIndexOf(File.separator);
-    if (slash < 0) slash = innerFile.lastIndexOf("/");
-    if (slash >= 0) innerFile = innerFile.substring(slash + 1);
-
-    // look for Zip entry with same prefix as the Zip file itself
-    boolean matchFound = false;
-    while (true) {
-      ZipEntry ze = zip.getNextEntry();
-      if (ze == null) break;
-      if (entryName == null) entryName = ze.getName();
-      if (!matchFound && ze.getName().startsWith(innerFile)) {
-        // found entry with matching name
-        entryName = ze.getName();
-        matchFound = true;
-      }
-      entryCount++;
-    }
-    resetStream();
-
-    populateLength();
+    setFile(file, null);
   }
-  
+
   /* @see IStreamAccess#resetStream() */
   public void resetStream() throws IOException {
     if (getStream() != null) getStream().close();
@@ -194,19 +195,25 @@ public class ZipHandle extends StreamHandle {
     }
     if (zip != null) zip.close();
     zip = new ZipInputStream(in);
-    if (entryName != null) seekToEntry();
+
     setStream(new DataInputStream(new BufferedInputStream(
-      zip, RandomAccessInputStream.MAX_OVERHEAD)));
+        zip, RandomAccessInputStream.MAX_OVERHEAD)));
     getStream().mark(RandomAccessInputStream.MAX_OVERHEAD);
+    
+    seekToEntry();
+    
+    if (resetStream) resetStream();
   }
 
   // -- IRandomAccess API methods --
 
   /* @see IRandomAccess#close() */
+  @Override
   public void close() throws IOException {
     super.close();
     zip = null;
     entryName = null;
+    setLength(-1);
     if (in != null) in.close();
     in = null;
     entryCount = 0;
@@ -214,19 +221,45 @@ public class ZipHandle extends StreamHandle {
 
   // -- Helper methods --
 
+  /**
+   * Seeks to the relevant ZIP entry, populating the stream length accordingly.
+   */
   private void seekToEntry() throws IOException {
-    while (!entryName.equals(zip.getNextEntry().getName()));
+    resetStream = false;
+    
+    while (true) {
+      ZipEntry entry = zip.getNextEntry();
+      if (entryName == null || entryName.equals(entry.getName())) {
+        // found the matching entry name (or first entry if the name is null)
+        if (getLength() < 0) populateLength(entry.getSize());
+        break;
+      }
+    }
   }
 
-  private void populateLength() throws IOException {
-    
-    int length = -1;
-    while (getStream().available() > 0) {
-      getStream().skip(1);
-      length++;
+  /** Sets the stream length, computing it by force if necessary. */
+  private void populateLength(final long size) throws IOException {
+    if (size >= 0) {
+      setLength(size);
+      return;
     }
+     // size is unknown, so we must read the stream manually
+    long length = 0;
+    final DataInputStream stream = getStream();
+    while (true) {
+      long skipped = stream.skip(Long.MAX_VALUE);
+      if (skipped == 0) {
+        // NB: End of stream, we hope. Technically there is no contract for
+        // when skip(long) returns 0, but in practice it seems to be when end
+        // of stream is reached.
+        break;
+      }
+      length += skipped;
+    }
+    
     setLength(length);
-    resetStream();
+    
+    resetStream = true;
   }
 
   private IRandomAccess getHandle(String file) throws IOException {
