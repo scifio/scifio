@@ -66,6 +66,7 @@ public class ZipHandle extends StreamHandle {
 
   // -- Fields --
 
+  private boolean resetStream;
   private RandomAccessInputStream in;
   private ZipInputStream zip;
   private String entryName;
@@ -146,6 +147,8 @@ public class ZipHandle extends StreamHandle {
   /* @see IStreamAccess#setFile(String) */
   public void setFile(String file, ZipEntry entry) throws IOException {
     super.setFile(file);
+    
+    setLength(-1);
 
     in = openStream(file);
     zip = new ZipInputStream(in);
@@ -192,10 +195,14 @@ public class ZipHandle extends StreamHandle {
     }
     if (zip != null) zip.close();
     zip = new ZipInputStream(in);
-    seekToEntry();
+
     setStream(new DataInputStream(new BufferedInputStream(
-      zip, RandomAccessInputStream.MAX_OVERHEAD)));
+        zip, RandomAccessInputStream.MAX_OVERHEAD)));
     getStream().mark(RandomAccessInputStream.MAX_OVERHEAD);
+    
+    seekToEntry();
+    
+    if (resetStream) resetStream();
   }
 
   // -- IRandomAccess API methods --
@@ -218,6 +225,8 @@ public class ZipHandle extends StreamHandle {
    * Seeks to the relevant ZIP entry, populating the stream length accordingly.
    */
   private void seekToEntry() throws IOException {
+    resetStream = false;
+    
     while (true) {
       ZipEntry entry = zip.getNextEntry();
       if (entryName == null || entryName.equals(entry.getName())) {
@@ -247,8 +256,10 @@ public class ZipHandle extends StreamHandle {
       }
       length += skipped;
     }
+    
     setLength(length);
-    resetStream();
+    
+    resetStream = true;
   }
 
   private IRandomAccess getHandle(String file) throws IOException {
