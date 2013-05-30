@@ -34,7 +34,6 @@
  * #L%
  */
 
-
 package ome.scifio.io.img;
 
 import java.io.File;
