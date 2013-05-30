@@ -110,6 +110,8 @@ public class TIFFFormat extends AbstractFormat {
   public static class Metadata extends MinimalTIFFFormat.Metadata {
 
     // -- Fields --
+    
+    private boolean populateImageMetadata = true;
 
     // FIXME: these are duplicating metadata store information..
     private String creationDate;
@@ -246,10 +248,16 @@ public class TIFFFormat extends AbstractFormat {
     }
 
     // -- Metadata API Methods --
+    
+    @Override
+    public void createImageMetadata(int imageCount) {
+      populateImageMetadata = true;
+      super.createImageMetadata(imageCount);
+    }
 
     @Override
     public void populateImageMetadata() {
-      super.populateImageMetadata();
+      if (populateImageMetadata) super.populateImageMetadata();
       
       ImageMetadata m = get(0);
       
@@ -406,8 +414,12 @@ public class TIFFFormat extends AbstractFormat {
     }
 
     private void parseCommentImageJ(Metadata meta, String comment)
-        throws FormatException, IOException
-        {
+      throws FormatException, IOException
+    {
+      
+      meta.populateImageMetadata();
+      meta.populateImageMetadata = false;
+      
       int nl = comment.indexOf("\n");
       put("ImageJ", nl < 0 ? comment.substring(7) : comment.substring(7, nl));
       meta.getTable().remove("Comment");
