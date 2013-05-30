@@ -463,7 +463,6 @@ public class ImgOpener extends AbstractHasSCIFIO {
     imgPlus.setSource(id);
     imgPlus.initializeColorTables(r.getPlaneCount(imageIndex));
     
-    
     // If we have a planar img, read the planes now. Otherwise they
     // will be read on demand.
     if (PlanarImgFactory.class.isAssignableFrom(imgFactory.getClass())) {
@@ -480,6 +479,10 @@ public class ImgOpener extends AbstractHasSCIFIO {
       final float time = (endTime - startTime) / 1000f;
       getContext().getService(StatusService.class).
         showStatus(id + ": read " + planeCount + " planes in " + time + "s");
+    }
+    else {
+      getContext().getService(StatusService.class).
+        showStatus("Created CellImg for dynamic loading");
     }
 
     return imgPlus;
