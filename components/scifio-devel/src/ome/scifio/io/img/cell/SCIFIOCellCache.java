@@ -3,6 +3,7 @@ package ome.scifio.io.img.cell;
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 import ome.scifio.io.img.cell.SCIFIOImgCells.CellCache;
 import ome.scifio.io.img.cell.loaders.SCIFIOArrayLoader;
@@ -35,6 +36,8 @@ public class SCIFIOCellCache<A> implements CellCache<A> {
   }
 
   final protected SCIFIOArrayLoader<A> loader;
+  
+  private HashMap<Integer, Key> keyMap = new HashMap<Integer, Key>();
 
   // In-memory cache.
   final protected ConcurrentHashMap<Key, SoftReference<SCIFIOCell<A>>> map = new ConcurrentHashMap<Key, SoftReference<SCIFIOCell<A>>>();
@@ -44,7 +47,7 @@ public class SCIFIOCellCache<A> implements CellCache<A> {
   }
 
   public SCIFIOCell<A> get(int index) {
-    final Key k = new Key(index);
+    final Key k = getKey(index);
     SCIFIOCell<A> cell = checkCache(k);
 
     if (cell != null)
@@ -54,7 +57,7 @@ public class SCIFIOCellCache<A> implements CellCache<A> {
   }
 
   public SCIFIOCell<A> load(int index, int[] cellDims, long[] cellMin) {
-    final Key k = new Key(index);
+    final Key k = getKey(index);
     SCIFIOCell<A> cell = checkCache(k);
 
     if (cell != null) {
@@ -65,12 +68,25 @@ public class SCIFIOCellCache<A> implements CellCache<A> {
         cellMin));
 
     cache(k, cell);
-
+    
     int c = loader.getBitsPerElement();
     for (final int l : cellDims)
       c *= l;
 
     return cell;
+  }
+  
+  private Key getKey(int index) {
+    Integer k = index;
+    
+    Key key = keyMap.get(k);
+    
+    if (key == null) {
+      key = new Key(k);
+      keyMap.put(k, key);
+    }
+    
+    return key;
   }
   
   private void cache(Key k, SCIFIOCell<A> cell) {
@@ -88,8 +104,12 @@ public class SCIFIOCellCache<A> implements CellCache<A> {
     
     // Check the local cache
     SoftReference<SCIFIOCell<A>> ref = map.get(k);
-    if (ref != null)
+    boolean found = false;
+    
+    if (ref != null) {
       cell = ref.get();
+      found = true;
+    }
 
     return cell;
   }
