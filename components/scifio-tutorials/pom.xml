@@ -31,8 +31,8 @@
     <!-- NB: dependency:analyze has false warning about xml-apis:xml-apis. -->
 
     <dependency>
-      <groupId>scifio</groupId>
-      <artifactId>scifio-devel</artifactId>
+      <groupId>io.scif</groupId>
+      <artifactId>scifio</artifactId>
       <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
