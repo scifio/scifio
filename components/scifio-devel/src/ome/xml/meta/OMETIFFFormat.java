@@ -192,11 +192,11 @@ public class OMETIFFFormat extends AbstractFormat {
 
     // -- OMETIFFMetadata getters and setters --
 
-    public OMETIFFPlane[][] getInfo() {
+    public OMETIFFPlane[][] getPlaneInfo() {
       return info;
     }
 
-    public void setInfo(OMETIFFPlane[][] info) {
+    public void setPlaneInfo(OMETIFFPlane[][] info) {
       this.info = info;
     }
 
@@ -532,7 +532,7 @@ public class OMETIFFFormat extends AbstractFormat {
 
       super.parse(stream, meta);
       for (int s=0; s<meta.getImageCount(); s++) {
-        OMETIFFPlane[][] info = meta.getInfo();
+        OMETIFFPlane[][] info = meta.getPlaneInfo();
         
         try {
           if (!info[s][0].reader.getFormat().createChecker().isFormat(info[s][0].id)) {
@@ -634,7 +634,7 @@ public class OMETIFFFormat extends AbstractFormat {
       meta.createImageMetadata(imageCount);
       
       OMETIFFPlane[][] info = new OMETIFFPlane[imageCount][];
-      meta.setInfo(info);
+      meta.setPlaneInfo(info);
 
       int[] tileWidth = new int[imageCount];
       int[] tileHeight = new int[imageCount];
@@ -1014,7 +1014,7 @@ public class OMETIFFFormat extends AbstractFormat {
       throws io.scif.FormatException, IOException {
       Metadata meta = getMetadata();
       byte[] buf = plane.getBytes();
-      OMETIFFPlane[][] info = meta.getInfo();
+      OMETIFFPlane[][] info = meta.getPlaneInfo();
       
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
       meta.setLastPlane(planeIndex);
@@ -1423,7 +1423,7 @@ public class OMETIFFFormat extends AbstractFormat {
       }
       
       OMETIFFPlane[][] info = new OMETIFFPlane[source.getImageCount()][];
-      dest.setInfo(info);
+      dest.setPlaneInfo(info);
       
       List<Integer> samples = new ArrayList<Integer>();
       List<Boolean> adjustedSamples = new ArrayList<Boolean>();
