@@ -1,6 +1,6 @@
 package ome.xml.translation;
 
-import ome.scifio.Metadata;
+import io.scif.Metadata;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.services.OMEXMLMetadataService;
 
@@ -61,7 +61,7 @@ public class DefaultOMETranslator extends ToOMETranslator<Metadata> {
   // -- Translator API Methods --
 
   /*
-   * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+   * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
    */
   @Override
   protected void typedTranslate(Metadata source, OMEMetadata dest) {

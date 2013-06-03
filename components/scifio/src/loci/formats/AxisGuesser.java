@@ -51,10 +51,10 @@ import loci.legacy.context.LegacyContext;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.AxisGuesser
+ * @deprecated see io.scif.AxisGuesser
  */
 @Deprecated
-public class AxisGuesser extends ome.scifio.AxisGuesser {
+public class AxisGuesser extends io.scif.AxisGuesser {
   // -- Constructor --
 
   /**
@@ -83,8 +83,8 @@ public class AxisGuesser extends ome.scifio.AxisGuesser {
   /** Method for testing pattern guessing logic. */
   public static void main(String[] args) throws FormatException, IOException {
     try {
-      ome.scifio.AxisGuesser.main(args, LegacyContext.get());
-    } catch (ome.scifio.FormatException e) {
+      io.scif.AxisGuesser.main(args, LegacyContext.get());
+    } catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }

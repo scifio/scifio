@@ -35,15 +35,15 @@
  */
 package loci.legacy.context;
 
-import ome.scifio.SCIFIO;
-import ome.scifio.services.FilePatternService;
-import ome.scifio.services.FormatService;
-import ome.scifio.services.InitializeService;
-import ome.scifio.services.JAIIIOService;
-import ome.scifio.services.LocationService;
-import ome.scifio.services.LuraWaveService;
-import ome.scifio.services.TranslatorService;
-import ome.scifio.services.PluginAttributeService;
+import io.scif.SCIFIO;
+import io.scif.services.FilePatternService;
+import io.scif.services.FormatService;
+import io.scif.services.InitializeService;
+import io.scif.services.JAIIIOService;
+import io.scif.services.LocationService;
+import io.scif.services.LuraWaveService;
+import io.scif.services.PluginAttributeService;
+import io.scif.services.TranslatorService;
 import ome.xml.services.OMEXMLMetadataService;
 import ome.xml.services.OMEXMLService;
 
@@ -86,12 +86,12 @@ public final class LegacyContext {
   }
   
   /**
-   * Convenience method for statically caching a {@link ome.scifio.SCIFIO} instance.
+   * Convenience method for statically caching a {@link io.scif.SCIFIO} instance.
    * Use this method if you'd prefer not to construct a new SCIFIO each time, given
    * that the context should always be the same (that is, this method is an alternative
    * to {@code new SCIFIO(LegacyContext.get())}).
    * 
-   * @return A static ome.scifio.SCIFIO wrapping the legacy context
+   * @return A static io.scif.SCIFIO wrapping the legacy context
    */
   public static SCIFIO getSCIFIO() {
     if (scifio == null) {

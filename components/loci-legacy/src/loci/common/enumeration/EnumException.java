@@ -37,7 +37,7 @@
 package loci.common.enumeration;
 
 /**
- * A legacy wrapper class for ome.scifio.enumeration.EnumException.
+ * A legacy wrapper class for io.scif.enumeration.EnumException.
  * 
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/enumeration/EnumException.java">Trac</a>,
@@ -45,10 +45,10 @@ package loci.common.enumeration;
  *
  * @author callan
  * 
- * @deprecated see ome.scifio.enumeration.EnumException
+ * @deprecated see io.scif.enumeration.EnumException
  */
 @Deprecated
-public class EnumException extends ome.scifio.enumeration.EnumException {
+public class EnumException extends io.scif.enumeration.EnumException {
 
   private static final long serialVersionUID = -4969429871517178079L;
   

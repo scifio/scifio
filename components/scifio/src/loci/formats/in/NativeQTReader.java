@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.NativeQTFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,7 +45,6 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.NativeQTFormat;
 
 /**
  * NativeQTReader is the file format reader for QuickTime movie files.
@@ -58,7 +59,7 @@ import ome.scifio.formats.NativeQTFormat;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.formats.NativeQTFormat
+ * @deprecated see io.scif.formats.NativeQTFormat
  */
 @Deprecated
 public class NativeQTReader extends SCIFIOFormatReader {
@@ -75,7 +76,7 @@ public class NativeQTReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create NativeQTFormat components");
     }
   }

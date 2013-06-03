@@ -36,7 +36,7 @@
 
 package ome.xml.translation;
 
-import ome.scifio.formats.TIFFFormat;
+import io.scif.formats.TIFFFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.primitives.PositiveFloat;
@@ -59,11 +59,11 @@ public class TIFFTranslator {
   public static final double PRIORITY = Priority.HIGH_PRIORITY;
   
   /**
-   * Translator class from {@link ome.scifio.formats.TIFFFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.TIFFFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -78,7 +78,7 @@ public class TIFFTranslator {
     // -- Translator API Methods --
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(TIFFFormat.Metadata source, OMEMetadata dest) {
@@ -98,11 +98,11 @@ public class TIFFTranslator {
   }
   
   /**
-   * Translator class from {@link ome.scifio.formats.TIFFFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.TIFFFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}.
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -115,7 +115,7 @@ public class TIFFTranslator {
   public static class OMETIFFTranslator extends FromOMETranslator<TIFFFormat.Metadata> {
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(OMEMetadata source, TIFFFormat.Metadata dest) {

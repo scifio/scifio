@@ -48,13 +48,13 @@ import loci.legacy.adapter.Wrapper;
 /**
  * As interfaces can not contain implementation, this class manages
  * interface-level delegation between {@link loci.common.StatusListener} and
- * {@link ome.scifio.common.StatusListener}
+ * {@link io.scif.common.StatusListener}
  * <p>
  * Delegation is maintained by two WeakHashTables. See {@link AbstractLegacyAdapter}
  * </p>
  * <p>
  * Functionally, the delegation is handled in the nested classes - one for
- * wrapping from ome.scifio.common.StatusListener to loci.common.StatusListener,
+ * wrapping from io.scif.common.StatusListener to loci.common.StatusListener,
  * and one for the reverse direction.
  * </p>r the reverse direction.
  * 
@@ -62,23 +62,23 @@ import loci.legacy.adapter.Wrapper;
  *
  */
 @Plugin(type=StatusListenerAdapter.class)
-public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener, ome.scifio.common.StatusListener> {
+public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener, io.scif.common.StatusListener> {
   
   // -- Constructor --
   
   public StatusListenerAdapter() {
-    super(StatusListener.class, ome.scifio.common.StatusListener.class);
+    super(StatusListener.class, io.scif.common.StatusListener.class);
   }
 
   //-- AbstractLegacyAdapter API Methods --
 
   @Override
-  protected StatusListener wrapToLegacy(ome.scifio.common.StatusListener modern) {
+  protected StatusListener wrapToLegacy(io.scif.common.StatusListener modern) {
     return new ModernWrapper(modern);
   }
 
   @Override
-  protected ome.scifio.common.StatusListener wrapToModern(StatusListener legacy) {
+  protected io.scif.common.StatusListener wrapToModern(StatusListener legacy) {
     return new LegacyWrapper(legacy);
   }
 
@@ -86,7 +86,7 @@ public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener,
 
   /**
    * This class can be used to wrap loci.common.StatusListener
-   * objects and be passed to API expecting an ome.scifio.common.StatusListener
+   * objects and be passed to API expecting an io.scif.common.StatusListener
    * object.
    * <p>
    * All functionality is delegated to the loci-common implementation.
@@ -95,7 +95,7 @@ public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener,
    * @author Mark Hiner
    */
   public static class LegacyWrapper
-    implements ome.scifio.common.StatusListener, Wrapper<StatusListener> {
+    implements io.scif.common.StatusListener, Wrapper<StatusListener> {
     
     // -- Fields --
     
@@ -116,13 +116,13 @@ public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener,
     
     // -- StatusListener API --
 
-    public void statusUpdated(ome.scifio.common.StatusEvent e) {
+    public void statusUpdated(io.scif.common.StatusEvent e) {
       unwrap().statusUpdated(new StatusEvent(e));
     }
   }
   
   /**
-   * This class can be used to wrap ome.scifio.common.StatusListener
+   * This class can be used to wrap io.scif.common.StatusListener
    * objects and be passed to API expecting a loci.common.StatusListener
    * object.
    * <p>
@@ -131,22 +131,22 @@ public class StatusListenerAdapter extends AbstractLegacyAdapter<StatusListener,
    * 
    * @author Mark Hiner
    */
-  public static class ModernWrapper implements StatusListener, Wrapper<ome.scifio.common.StatusListener> {
+  public static class ModernWrapper implements StatusListener, Wrapper<io.scif.common.StatusListener> {
     
     // -- Fields --
 
-    private WeakReference<ome.scifio.common.StatusListener> sl;
+    private WeakReference<io.scif.common.StatusListener> sl;
 
     // -- Constructor --
 
-    public ModernWrapper(ome.scifio.common.StatusListener sl) {
-      this.sl = new WeakReference<ome.scifio.common.StatusListener>(sl);
+    public ModernWrapper(io.scif.common.StatusListener sl) {
+      this.sl = new WeakReference<io.scif.common.StatusListener>(sl);
     }
     
     // -- Wrapper API Methods --
     
     /* @see Wrapper#unwrap() */
-    public ome.scifio.common.StatusListener unwrap() {
+    public io.scif.common.StatusListener unwrap() {
       return sl.get();
     }
 

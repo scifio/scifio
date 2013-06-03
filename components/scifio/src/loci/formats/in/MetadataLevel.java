@@ -43,7 +43,7 @@ package loci.formats.in;
  *
  * @author callan
  * 
- * @deprecated see ome.scifio.MetadataLevel
+ * @deprecated see io.scif.MetadataLevel
  */
 @Deprecated
 public enum MetadataLevel {

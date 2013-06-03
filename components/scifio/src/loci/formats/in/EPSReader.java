@@ -36,9 +36,10 @@
 
 package loci.formats.in;
 
+import io.scif.formats.EPSFormat;
+
 import java.io.IOException;
 
-import ome.scifio.formats.EPSFormat;
 
 import loci.formats.FormatException;
 import loci.formats.MetadataTools;
@@ -56,7 +57,7 @@ import loci.legacy.context.LegacyContext;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated Use ome.scifio.formats.EPSReader instead.
+ * @deprecated Use io.scif.formats.EPSReader instead.
  */
 @Deprecated
 public class EPSReader extends SCIFIOFormatReader {
@@ -73,7 +74,7 @@ public class EPSReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create EPSFormat components");
     }
   }

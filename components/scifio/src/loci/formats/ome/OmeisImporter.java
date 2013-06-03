@@ -97,7 +97,7 @@ public class OmeisImporter {
     catch (ome.xml.meta.OmeisException e) {
       throw (OmeisException)e;
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }
@@ -117,7 +117,7 @@ public class OmeisImporter {
     catch (ome.xml.meta.OmeisException e) {
       throw (OmeisException)e;
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }

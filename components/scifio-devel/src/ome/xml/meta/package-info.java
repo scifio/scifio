@@ -1,6 +1,6 @@
 /**
  * Provides the flattened OME-XML schema structures for storing and
- * retrieving metadata, and a wrapping {@link ome.scifio.Metadata}
+ * retrieving metadata, and a wrapping {@link io.scif.Metadata}
  * implementation.
  * 
  * <h3>Changes since Bio-Formats</h3>
@@ -22,7 +22,7 @@
  *  <li>
  *  Because of the split between SCIFIO and OME-XML classes, the Bio-Formats
  *  tools class was split into {@link ome.xml.services.DefaultOMEXMLMetadataService} and
- *  {@link ome.scifio.util.SCIFIOMetadataTools}.
+ *  {@link io.scif.util.SCIFIOMetadataTools}.
  *  </li>
  * </ul>
  * 

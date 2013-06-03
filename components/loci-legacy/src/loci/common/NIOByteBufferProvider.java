@@ -46,7 +46,7 @@ import loci.legacy.adapter.Wrapper;
 import loci.utils.ProtectedMethodInvoker;
 
 /**
- * A legacy delegator class for ome.scifio.io.NIOByteBufferProvider.
+ * A legacy delegator class for io.scif.io.NIOByteBufferProvider.
  * 
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/NIOByteBufferProvider.java">Trac</a>,
@@ -54,16 +54,16 @@ import loci.utils.ProtectedMethodInvoker;
  *
  * @author Chris Allan <callan at blackcat dot ca>
  * 
- * @deprecated see ome.scifio.io.NIOByteBufferProvider
+ * @deprecated see io.scif.io.NIOByteBufferProvider
  */
 @Deprecated
-public class NIOByteBufferProvider implements Wrapper<ome.scifio.io.NIOByteBufferProvider> {
+public class NIOByteBufferProvider implements Wrapper<io.scif.io.NIOByteBufferProvider> {
 
   // -- Constants --
 
   // -- Fields --
 
-  private ome.scifio.io.NIOByteBufferProvider buf;
+  private io.scif.io.NIOByteBufferProvider buf;
   
   private ProtectedMethodInvoker pmi = new ProtectedMethodInvoker();
   
@@ -76,7 +76,7 @@ public class NIOByteBufferProvider implements Wrapper<ome.scifio.io.NIOByteBuffe
    * is to occur.
    */
   public NIOByteBufferProvider(FileChannel channel, MapMode mapMode) {
-    buf = new ome.scifio.io.NIOByteBufferProvider(channel, mapMode);
+    buf = new io.scif.io.NIOByteBufferProvider(channel, mapMode);
   }
 
   // -- NIOByteBufferProvider API Methods --
@@ -143,7 +143,7 @@ public class NIOByteBufferProvider implements Wrapper<ome.scifio.io.NIOByteBuffe
   
   // -- Wrapper API Methods
 
-  public ome.scifio.io.NIOByteBufferProvider unwrap() {
+  public io.scif.io.NIOByteBufferProvider unwrap() {
     return buf;
   }
 }

@@ -44,12 +44,12 @@ import java.io.InputStream;
 import loci.legacy.adapter.CommonAdapter;
 
 /**
- * A legacy delegator class for ome.scifio.io.NIOInputStream.
+ * A legacy delegator class for io.scif.io.NIOInputStream.
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/NIOInputStream.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/NIOInputStream.java;hb=HEAD">Gitweb</a></dd></dl>
  *
- * @deprecated ome.scifio.io.NIOInputStream
+ * @deprecated io.scif.io.NIOInputStream
  */
 @Deprecated
 public class NIOInputStream extends InputStream implements DataInput {
@@ -58,23 +58,23 @@ public class NIOInputStream extends InputStream implements DataInput {
 
   // -- Fields --
 
-  private ome.scifio.io.NIOInputStream stream;
+  private io.scif.io.NIOInputStream stream;
 
   // -- Constructors --
 
   /** Constructs an NIOInputStream around the given file. */
   public NIOInputStream(String filename) throws IOException {
-    stream = new ome.scifio.io.NIOInputStream(filename);
+    stream = new io.scif.io.NIOInputStream(filename);
   }
 
   /** Constructs a random access stream around the given handle. */
   public NIOInputStream(IRandomAccess handle) {
-    stream = new ome.scifio.io.NIOInputStream(CommonAdapter.get(handle));
+    stream = new io.scif.io.NIOInputStream(CommonAdapter.get(handle));
   }
 
   /** Constructs a random access stream around the given byte array. */
   public NIOInputStream(byte[] array) {
-    stream = new ome.scifio.io.NIOInputStream(array);
+    stream = new io.scif.io.NIOInputStream(array);
   }
 
   // -- NIOInputStream API methods --

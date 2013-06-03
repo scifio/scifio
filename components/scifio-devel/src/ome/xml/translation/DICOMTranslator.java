@@ -35,13 +35,14 @@
  */
 package ome.xml.translation;
 
+import io.scif.MetadataLevel;
+import io.scif.common.DateTools;
+import io.scif.formats.DICOMFormat;
+
 import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
-import ome.scifio.MetadataLevel;
-import ome.scifio.common.DateTools;
-import ome.scifio.formats.DICOMFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.primitives.PositiveFloat;
@@ -55,11 +56,11 @@ import ome.xml.model.primitives.Timestamp;
  */
 public class DICOMTranslator {
   /**
-   * Translator class from {@link ome.scifio.formats.DICOMFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.DICOMFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -74,7 +75,7 @@ public class DICOMTranslator {
     // -- Translator API Methods --
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(DICOMFormat.Metadata source, OMEMetadata dest) {

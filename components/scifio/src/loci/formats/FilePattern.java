@@ -62,10 +62,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.FilePattern
+ * @deprecated see io.scif.FilePattern
  */
 @Deprecated
-public class FilePattern extends ome.scifio.FilePattern {
+public class FilePattern extends io.scif.FilePattern {
 
   // -- Constants --
 

@@ -37,16 +37,16 @@
 package loci.common;
 
 /**
- * Legacy wrapper class for ome.scifio.common.ReflectException.
+ * Legacy wrapper class for io.scif.common.ReflectException.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/ReflectException.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/ReflectException.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.common.ReflectException
+ * @deprecated see io.scif.common.ReflectException
  */
 @Deprecated
-public class ReflectException extends ome.scifio.common.ReflectException {
+public class ReflectException extends io.scif.common.ReflectException {
   
   public ReflectException() { super(); }
   public ReflectException(String s) { super(s); }

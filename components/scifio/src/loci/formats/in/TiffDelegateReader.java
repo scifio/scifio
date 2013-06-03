@@ -36,7 +36,7 @@
 
 package loci.formats.in;
 
-import ome.scifio.formats.TIFFFormat;
+import io.scif.formats.TIFFFormat;
 import loci.formats.DelegateReader;
 
 /**
@@ -51,7 +51,7 @@ import loci.formats.DelegateReader;
  * @see TiffReader
  * @see TiffJAIReader
  * 
- * @deprecated see ome.scifio.formats.TIFFFormat
+ * @deprecated see io.scif.formats.TIFFFormat
  */
 @Deprecated
 public class TiffDelegateReader extends DelegateReader {

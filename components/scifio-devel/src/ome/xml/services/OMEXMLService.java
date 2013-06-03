@@ -36,10 +36,11 @@
 
 package ome.xml.services;
 
+import io.scif.services.ServiceException;
+import io.scif.services.TypedService;
+
 import java.util.Hashtable;
 
-import ome.scifio.services.ServiceException;
-import ome.scifio.services.TypedService;
 
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.MetadataStore;

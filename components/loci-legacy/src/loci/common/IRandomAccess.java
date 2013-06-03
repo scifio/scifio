@@ -43,7 +43,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * Legacy extension of ome.scifio.io.IRandomAccess.
+ * Legacy extension of io.scif.io.IRandomAccess.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/IRandomAccess.java">Trac</a>,
@@ -51,7 +51,7 @@ import java.nio.ByteOrder;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.io.IRandomAccess
+ * @deprecated see io.scif.io.IRandomAccess
  */
 @Deprecated
 public interface IRandomAccess extends DataInput, DataOutput {

@@ -43,7 +43,7 @@ import loci.legacy.context.LegacyContext;
 import loci.utils.ProtectedMethodInvoker;
 
 /**
- * A legacy delegator class for ome.scifio.io.URLHandle.
+ * A legacy delegator class for io.scif.io.URLHandle.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/URLHandle.java">Trac</a>,
@@ -55,7 +55,7 @@ import loci.utils.ProtectedMethodInvoker;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.io.URLHandle
+ * @deprecated see io.scif.io.URLHandle
  */
 @Deprecated
 public class URLHandle extends StreamHandle {
@@ -70,7 +70,7 @@ public class URLHandle extends StreamHandle {
    * Constructs a new URLHandle using the given URL.
    */
   public URLHandle(String url) throws IOException {
-    super(new ome.scifio.io.URLHandle(LegacyContext.get(), url));
+    super(new io.scif.io.URLHandle(LegacyContext.get(), url));
   }
 
   // -- IRandomAccess API methods --

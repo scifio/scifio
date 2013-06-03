@@ -43,7 +43,7 @@ import loci.legacy.context.LegacyContext;
 import loci.utils.ProtectedMethodInvoker;
 
 /**
- * A legacy delegator class for ome.scifio.io.GZipHandle.
+ * A legacy delegator class for io.scif.io.GZipHandle.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/GZipHandle.java">Trac</a>,
@@ -53,7 +53,7 @@ import loci.utils.ProtectedMethodInvoker;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.io.GZipHandle
+ * @deprecated see io.scif.io.GZipHandle
  */
 @Deprecated
 public class GZipHandle extends StreamHandle {
@@ -70,14 +70,14 @@ public class GZipHandle extends StreamHandle {
    * @throws HandleException if the given file name is not a GZip file.
    */
   public GZipHandle(String file) throws IOException {
-    super(new ome.scifio.io.GZipHandle(LegacyContext.get(), file));
+    super(new io.scif.io.GZipHandle(LegacyContext.get(), file));
   }
 
   // -- GZipHandle API methods --
 
   /** Returns true if the given filename is a gzip file. */
   public static boolean isGZipFile(String file) throws IOException {
-    ome.scifio.io.GZipHandle handle = new ome.scifio.io.GZipHandle(LegacyContext.get());
+    io.scif.io.GZipHandle handle = new io.scif.io.GZipHandle(LegacyContext.get());
     
     return handle.isConstructable(file);
   }

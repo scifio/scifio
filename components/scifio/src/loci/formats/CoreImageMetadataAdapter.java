@@ -35,17 +35,18 @@
  */
 package loci.formats;
 
+import io.scif.ImageMetadata;
+
 import org.scijava.plugin.Plugin;
 
-import ome.scifio.ImageMetadata;
 import loci.legacy.adapter.AbstractLegacyAdapter;
 
 /**
  * {@link LegacyAdapter} for converting between instances of
- * {@link ome.scifio.ImageMetadata} and {@link loci.formats.CoreMetadata}.
+ * {@link io.scif.ImageMetadata} and {@link loci.formats.CoreMetadata}.
  * 
  * @see loci.legacy.adapter.LegacyAdaptero
- * @see ome.scifio.ImageMetadata
+ * @see io.scif.ImageMetadata
  * @see loci.formats.CoreMetadata
  * 
  * @author Mark Hiner

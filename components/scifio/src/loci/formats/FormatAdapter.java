@@ -35,14 +35,15 @@
  */
 package loci.formats;
 
+import io.scif.ImageMetadata;
+import io.scif.Metadata;
+import io.scif.Reader;
+
 import java.util.List;
 
 import loci.formats.in.MetadataLevel;
 import loci.formats.in.MetadataOptions;
 import loci.legacy.adapter.AdapterTools;
-import ome.scifio.ImageMetadata;
-import ome.scifio.Metadata;
-import ome.scifio.Reader;
 
 /**
  * Provides type-safe adapting methods for loci.formats classes using
@@ -58,14 +59,14 @@ public final class FormatAdapter {
   // -- CoreImageMetadata Adapter Methods --
   
   /**
-   * Maps ome.scifio.ImageMetadata to loci.formats.CoreMetadata
+   * Maps io.scif.ImageMetadata to loci.formats.CoreMetadata
    */
   public static CoreMetadata get(ImageMetadata meta) {
     return (CoreMetadata)AdapterTools.get(meta);
   }
   
   /**
-   * Maps loci.formats.CoreMetadata to ome.scifio.ImageMetadata
+   * Maps loci.formats.CoreMetadata to io.scif.ImageMetadata
    */
   public static ImageMetadata get(CoreMetadata meta) {
     return (ImageMetadata)AdapterTools.get(meta);
@@ -74,7 +75,7 @@ public final class FormatAdapter {
   // -- CoreMetadata Adapter methods --
   
   /**
-   * Maps ome.scifio.Metadata to a java.util.List of loci.formats.CoreMetadata
+   * Maps io.scif.Metadata to a java.util.List of loci.formats.CoreMetadata
    */
   public static List<CoreMetadata> get(Metadata meta) {
     @SuppressWarnings("unchecked")
@@ -84,7 +85,7 @@ public final class FormatAdapter {
   }
   
   /**
-   * Maps a java.util.List of loci.formats.CoreMetadata to ome.scifio.Metadata 
+   * Maps a java.util.List of loci.formats.CoreMetadata to io.scif.Metadata 
    */
   public static Metadata get(List<CoreMetadata> meta) {
     return (Metadata)AdapterTools.get(meta);
@@ -93,14 +94,14 @@ public final class FormatAdapter {
   // -- SCIFIOReader Adapter Methods --
   
   /**
-   * Maps ome.scifio.Reader to loci.formats.IFormatReader
+   * Maps io.scif.Reader to loci.formats.IFormatReader
    */
   public static IFormatReader get(Reader reader) {
     return (IFormatReader)AdapterTools.get(reader);
   }
   
   /**
-   * Maps loci.formats.IFormatReader to ome.scifio.Reader
+   * Maps loci.formats.IFormatReader to io.scif.Reader
    */
   public static Reader get(IFormatReader reader) {
     return (Reader)AdapterTools.get(reader);
@@ -109,16 +110,16 @@ public final class FormatAdapter {
   // -- MetadataOptions Adapter Methods --
   
   /**
-   * Maps loci.formats.in.MetadataOptions to ome.scifio.MetadataOptions
+   * Maps loci.formats.in.MetadataOptions to io.scif.MetadataOptions
    */
-  public static ome.scifio.MetadataOptions get(MetadataOptions opts) {
-    return (ome.scifio.MetadataOptions)AdapterTools.get(opts);
+  public static io.scif.MetadataOptions get(MetadataOptions opts) {
+    return (io.scif.MetadataOptions)AdapterTools.get(opts);
   }
   
   /**
-   * Maps ome.scifio.MetadataOptions to loci.formats.in.MetadataOptions
+   * Maps io.scif.MetadataOptions to loci.formats.in.MetadataOptions
    */
-  public static MetadataOptions get(ome.scifio.MetadataOptions opts) {
+  public static MetadataOptions get(io.scif.MetadataOptions opts) {
     return (MetadataOptions)AdapterTools.get(opts);
   }
 }

@@ -53,7 +53,7 @@ import ome.xml.meta.OMETIFFFormat;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/OMETiffReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/OMETiffReader.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.OMETIFFFormat
+ * @deprecated see io.scif.formats.OMETIFFFormat
  */
 @Deprecated
 public class OMETiffReader extends SCIFIOFormatReader {
@@ -69,7 +69,7 @@ public class OMETiffReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create OMETIFFFormat components");
     }
   }

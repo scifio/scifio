@@ -35,6 +35,16 @@
  */
 package loci.formats;
 
+import io.scif.AbstractHasSCIFIO;
+import io.scif.BufferedImagePlane;
+import io.scif.ByteArrayPlane;
+import io.scif.Format;
+import io.scif.ImageMetadata;
+import io.scif.Metadata;
+import io.scif.Plane;
+import io.scif.Reader;
+import io.scif.io.RandomAccessInputStream;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -51,27 +61,18 @@ import org.slf4j.LoggerFactory;
 import loci.legacy.adapter.CommonAdapter;
 import loci.legacy.adapter.Wrapper;
 
-import ome.scifio.AbstractHasSCIFIO;
-import ome.scifio.BufferedImagePlane;
-import ome.scifio.ByteArrayPlane;
-import ome.scifio.Format;
-import ome.scifio.ImageMetadata;
-import ome.scifio.Metadata;
-import ome.scifio.Plane;
-import ome.scifio.Reader;
-import ome.scifio.io.RandomAccessInputStream;
 
 /**
- * This class is an adapter from ome.scifio.Reader for loci.formats.IFormatReader.
+ * This class is an adapter from io.scif.Reader for loci.formats.IFormatReader.
  * Using a "hasa" relationship, this class can rap an IFormatReader and be
- * passed to ome.scifio.* methods requiring an ome.scifio.Reader, allowing
+ * passed to io.scif.* methods requiring an io.scif.Reader, allowing
  * calculations to proceed as normal.
  * <p> 
  * This eliminates the need for redundant method signatures. Instead, the
  * adapter class can be used for direct delegation.
  * </p>
  * <p>
- * Note that not every method in ome.scifio.Reader has a direct analog in
+ * Note that not every method in io.scif.Reader has a direct analog in
  * IFormatReader.
  * </p>
  * Unsupported methods:
@@ -80,7 +81,7 @@ import ome.scifio.io.RandomAccessInputStream;
  * {@link #getFormat()}
  * </li>
  * <li>
- * {@link #setMetadata(ome.scifio.Metadata)}
+ * {@link #setMetadata(io.scif.Metadata)}
  * </li>
  * <li>
  * {@link #readPlane(RandomAccessInputStream s, int imageIndex, int x,
@@ -95,13 +96,13 @@ import ome.scifio.io.RandomAccessInputStream;
  * @author Mark Hiner
  */
 public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
-  implements ome.scifio.Reader, Wrapper<IFormatReader>
+  implements io.scif.Reader, Wrapper<IFormatReader>
 {
   
   // -- Constants --
   
   protected static final Logger LOGGER =
-      LoggerFactory.getLogger(ome.scifio.Reader.class);
+      LoggerFactory.getLogger(io.scif.Reader.class);
   
   // -- Fields --
   
@@ -132,20 +133,20 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
     return reader.get();
   }
 
-  // -- ome.scifio.Reader API --
+  // -- io.scif.Reader API --
   
   /*
-   * @see ome.scifio.HasFormat#getFormat()
+   * @see io.scif.HasFormat#getFormat()
    */
   public Format getFormat() {
     throw new UnsupportedOperationException();
   }
 
   /*
-   * @see ome.scifio.Reader#openPlane(int, int)
+   * @see io.scif.Reader#openPlane(int, int)
    */
   public Plane openPlane(int imageIndex, int planeIndex)
-    throws ome.scifio.FormatException, IOException
+    throws io.scif.FormatException, IOException
   {
     Plane plane = null;
     Metadata m = getMetadata();
@@ -167,10 +168,10 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#openPlane(int, int, ome.scifio.Plane)
+   * @see io.scif.Reader#openPlane(int, int, io.scif.Plane)
    */
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
-    throws ome.scifio.FormatException, IOException
+    throws io.scif.FormatException, IOException
   {
     byte[] buf = null;
     ByteArrayPlane bp = null;
@@ -191,10 +192,10 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#openPlane(int, int, ome.scifio.Plane, int, int, int, int)
+   * @see io.scif.Reader#openPlane(int, int, io.scif.Plane, int, int, int, int)
    */
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x,
-    int y, int w, int h) throws ome.scifio.FormatException, IOException
+    int y, int w, int h) throws io.scif.FormatException, IOException
   {
     byte[] buf = null;
     ByteArrayPlane bp = null;
@@ -215,10 +216,10 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#openPlane(int, int, int, int, int, int)
+   * @see io.scif.Reader#openPlane(int, int, int, int, int, int)
    */
   public Plane openPlane(int imageIndex, int planeIndex, int x, int y,
-    int w, int h) throws ome.scifio.FormatException, IOException
+    int w, int h) throws io.scif.FormatException, IOException
   {
     ByteArrayPlane bp = new ByteArrayPlane(getContext());
     Metadata m = getMetadata();
@@ -229,10 +230,10 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#openThumbPlane(int, int)
+   * @see io.scif.Reader#openThumbPlane(int, int)
    */
   public Plane openThumbPlane(int imageIndex, int planeIndex)
-    throws ome.scifio.FormatException, IOException
+    throws io.scif.FormatException, IOException
   {
     ByteArrayPlane bp = new ByteArrayPlane(getContext());
     Metadata m = getMetadata();
@@ -242,44 +243,44 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#setGroupFiles(boolean)
+   * @see io.scif.Reader#setGroupFiles(boolean)
    */
   public void setGroupFiles(boolean group) {
     unwrap().setGroupFiles(group);
   }
 
   /*
-   * @see ome.scifio.Reader#isGroupFiles()
+   * @see io.scif.Reader#isGroupFiles()
    */
   public boolean isGroupFiles() {
     return unwrap().isGroupFiles();
   }
 
   /*
-   * @see ome.scifio.Reader#fileGroupOption(java.lang.String)
+   * @see io.scif.Reader#fileGroupOption(java.lang.String)
    */
   public int fileGroupOption(String id)
-    throws ome.scifio.FormatException, IOException
+    throws io.scif.FormatException, IOException
   {
     return unwrap().fileGroupOption(id);
   }
 
   /*
-   * @see ome.scifio.Reader#getCurrentFile()
+   * @see io.scif.Reader#getCurrentFile()
    */
   public String getCurrentFile() {
     return unwrap().getCurrentFile();
   }
 
   /*
-   * @see ome.scifio.Reader#getDomains()
+   * @see io.scif.Reader#getDomains()
    */
   public String[] getDomains() {
     return unwrap().getDomains();
   }
 
   /*
-   * @see ome.scifio.Reader#getStream()
+   * @see io.scif.Reader#getStream()
    */
   public RandomAccessInputStream getStream() {
     
@@ -331,7 +332,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#getUnderlyingReaders()
+   * @see io.scif.Reader#getUnderlyingReaders()
    */
   public Reader[] getUnderlyingReaders() {
     IFormatReader[] iReaders = unwrap().getUnderlyingReaders();
@@ -345,28 +346,28 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#getOptimalTileWidth(int)
+   * @see io.scif.Reader#getOptimalTileWidth(int)
    */
   public int getOptimalTileWidth(int imageIndex) {
     return unwrap().getOptimalTileWidth();
   }
 
   /*
-   * @see ome.scifio.Reader#getOptimalTileHeight(int)
+   * @see io.scif.Reader#getOptimalTileHeight(int)
    */
   public int getOptimalTileHeight(int imageIndex) {
     return unwrap().getOptimalTileHeight();
   }
 
   /*
-   * @see ome.scifio.Reader#setMetadata(ome.scifio.Metadata)
+   * @see io.scif.Reader#setMetadata(io.scif.Metadata)
    */
   public void setMetadata(Metadata meta) throws IOException {
     throw new UnsupportedOperationException();
   }
 
   /*
-   * @see ome.scifio.Reader#getMetadata()
+   * @see io.scif.Reader#getMetadata()
    */
   public Metadata getMetadata() {
     // cache the wrapped CoreMetadata list.
@@ -388,21 +389,21 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#setNormalized(boolean)
+   * @see io.scif.Reader#setNormalized(boolean)
    */
   public void setNormalized(boolean normalize) {
     unwrap().setNormalized(normalize);
   }
 
   /*
-   * @see ome.scifio.Reader#isNormalized()
+   * @see io.scif.Reader#isNormalized()
    */
   public boolean isNormalized() {
     return unwrap().isNormalized();
   }
 
   /*
-   * @see ome.scifio.Reader#hasCompanionFiles()
+   * @see io.scif.Reader#hasCompanionFiles()
    */
   public boolean hasCompanionFiles() {
     return unwrap().hasCompanionFiles();
@@ -418,7 +419,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#setSource(java.lang.String)
+   * @see io.scif.Reader#setSource(java.lang.String)
    */
   public void setSource(String fileName) throws IOException {
     try {
@@ -430,7 +431,7 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#setSource(ome.scifio.io.RandomAccessInputStream)
+   * @see io.scif.Reader#setSource(io.scif.io.RandomAccessInputStream)
    */
   public void setSource(RandomAccessInputStream stream) throws IOException {
     try {
@@ -442,21 +443,21 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#close(boolean)
+   * @see io.scif.Reader#close(boolean)
    */
   public void close(boolean fileOnly) throws IOException {
     unwrap().close(fileOnly);
   }
 
   /*
-   * @see ome.scifio.Reader#close()
+   * @see io.scif.Reader#close()
    */
   public void close() throws IOException {
     close(false);
   }
 
   /*
-   * @see ome.scifio.Reader#readPlane(ome.scifio.io.RandomAccessInputStream, int, int, int, int, int, ome.scifio.Plane)
+   * @see io.scif.Reader#readPlane(io.scif.io.RandomAccessInputStream, int, int, int, int, int, io.scif.Plane)
    */
   public Plane readPlane(RandomAccessInputStream s, int imageIndex, int x,
     int y, int w, int h, Plane plane) throws IOException
@@ -465,8 +466,8 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#readPlane(
-   * ome.scifio.io.RandomAccessInputStream, int, int, int, int, int, int, ome.scifio.Plane)
+   * @see io.scif.Reader#readPlane(
+   * io.scif.io.RandomAccessInputStream, int, int, int, int, int, int, io.scif.Plane)
    */
   public Plane readPlane(RandomAccessInputStream s, int imageIndex, int x,
     int y, int w, int h, int scanlinePad, Plane plane) throws IOException
@@ -475,35 +476,35 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   }
 
   /*
-   * @see ome.scifio.Reader#getPlaneCount(int)
+   * @see io.scif.Reader#getPlaneCount(int)
    */
   public int getPlaneCount(int imageIndex) {
     return unwrap().getImageCount();
   }
 
   /*
-   * @see ome.scifio.Reader#getImageCount()
+   * @see io.scif.Reader#getImageCount()
    */
   public int getImageCount() {
     return unwrap().getSeriesCount();
   }
 
   /*
-   * @see ome.scifio.Reader#createPlane(int, int, int, int)
+   * @see io.scif.Reader#createPlane(int, int, int, int)
    */
   public Plane createPlane(int xOffset, int yOffset, int xLength, int yLength) {
     throw new UnsupportedOperationException("ReaderWrapper has no associated Plane type");
   }
   
   /*
-   * @see ome.scifio.Reader#createPlane(ome.scifio.ImageMetadata, int, int, int, int)
+   * @see io.scif.Reader#createPlane(io.scif.ImageMetadata, int, int, int, int)
    */
   public Plane createPlane(ImageMetadata meta, int xOffset, int yOffset, int xLength, int yLength) {
     throw new UnsupportedOperationException("ReaderWrapper has no associated Plane type");
   }
 
   /*
-   * @see ome.scifio.Reader#castToTypedPlane(ome.scifio.Plane)
+   * @see io.scif.Reader#castToTypedPlane(io.scif.Plane)
    */
   public <P extends Plane> P castToTypedPlane(Plane plane) {
     throw new UnsupportedOperationException("ReaderWrapper has no associated Plane type");
@@ -512,9 +513,9 @@ public class SCIFIOReaderWrapper extends AbstractHasSCIFIO
   // -- Groupable API Methods --
 
   /*
-   * @see ome.scifio.Groupable#isSingleFile(java.lang.String)
+   * @see io.scif.Groupable#isSingleFile(java.lang.String)
    */
-  public boolean isSingleFile(String id) throws ome.scifio.FormatException,
+  public boolean isSingleFile(String id) throws io.scif.FormatException,
       IOException {
     return unwrap().isSingleFile(id);
   }

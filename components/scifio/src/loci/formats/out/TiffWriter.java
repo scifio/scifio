@@ -36,6 +36,8 @@
 
 package loci.formats.out;
 
+import io.scif.formats.TIFFFormat;
+
 import java.io.IOException;
 
 import net.imglib2.meta.Axes;
@@ -44,7 +46,6 @@ import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
 import loci.formats.tiff.IFD;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.TIFFFormat;
 
 /**
  * TiffWriter is the file format writer for TIFF files.
@@ -53,7 +54,7 @@ import ome.scifio.formats.TIFFFormat;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/TiffWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/TiffWriter.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.TIFFFormat
+ * @deprecated see io.scif.formats.TIFFFormat
  */
 @Deprecated
 public class TiffWriter extends SCIFIOFormatWriter {
@@ -71,7 +72,7 @@ public class TiffWriter extends SCIFIOFormatWriter {
     try {
       writer = format.createWriter() ;
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create TIFFFormat components");
     }
   }
@@ -93,7 +94,7 @@ public class TiffWriter extends SCIFIOFormatWriter {
       ((TIFFFormat.Writer<?>)writer).savePlane(getSeries(), no, planeCheck(buf, 0, 0, w, h),
           null, 0, 0, w, h);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -112,7 +113,7 @@ public class TiffWriter extends SCIFIOFormatWriter {
       ((TIFFFormat.Writer<?>)writer).savePlane(getSeries(), i, planeCheck(buf, tileX, tileY, tileWidth, tileHeight),
           null, tileX, tileY, tileWidth, tileHeight);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -138,7 +139,7 @@ public class TiffWriter extends SCIFIOFormatWriter {
     try {
       writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }

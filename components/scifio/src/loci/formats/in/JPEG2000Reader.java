@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.JPEG2000Format;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,7 +45,6 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.JPEG2000Format;
 
 /**
  * JPEG2000Reader is the file format reader for JPEG-2000 images.
@@ -52,7 +53,7 @@ import ome.scifio.formats.JPEG2000Format;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/JPEG2000Reader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/JPEG2000Reader.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.JPEG2000Format
+ * @deprecated see io.scif.formats.JPEG2000Format
  */
 @Deprecated
 public class JPEG2000Reader extends SCIFIOFormatReader {
@@ -69,7 +70,7 @@ public class JPEG2000Reader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create JPEG2000Format components");
     }
   }

@@ -36,7 +36,7 @@
 
 package loci.common.services;
 
-import ome.scifio.services.TypedService;
+import io.scif.services.TypedService;
 
 /**
  * <dl><dt><b>Source code:</b></dt>

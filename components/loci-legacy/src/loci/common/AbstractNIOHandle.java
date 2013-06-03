@@ -43,7 +43,7 @@ import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
 
 /**
- * A legacy delegator to ome.scifio.io.AbstractNIOHandle.
+ * A legacy delegator to io.scif.io.AbstractNIOHandle.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/AbstractNIOHandle.java">Trac</a>,
@@ -54,10 +54,10 @@ import loci.legacy.adapter.Wrapper;
  *
  * @author Chris Allan <callan at blackcat dot ca>
  * 
- * @deprecated see ome.scifio.io.AbstractNIOHandle
+ * @deprecated see io.scif.io.AbstractNIOHandle
  */
 @Deprecated
-public abstract class AbstractNIOHandle implements IRandomAccess, Wrapper<ome.scifio.io.AbstractNIOHandle> {
+public abstract class AbstractNIOHandle implements IRandomAccess, Wrapper<io.scif.io.AbstractNIOHandle> {
 
   /** Error message to be used when instantiating an EOFException. */
   protected static final String EOF_ERROR_MSG =
@@ -67,14 +67,14 @@ public abstract class AbstractNIOHandle implements IRandomAccess, Wrapper<ome.sc
 
   // -- Fields --
 
-  private WeakReference<? extends ome.scifio.io.AbstractNIOHandle> handle;
+  private WeakReference<? extends io.scif.io.AbstractNIOHandle> handle;
   
   // -- Constructors --
   
   AbstractNIOHandle() { }
   
-  AbstractNIOHandle(ome.scifio.io.AbstractNIOHandle handle) {
-    this.handle = new WeakReference<ome.scifio.io.AbstractNIOHandle>(handle);
+  AbstractNIOHandle(io.scif.io.AbstractNIOHandle handle) {
+    this.handle = new WeakReference<io.scif.io.AbstractNIOHandle>(handle);
     AdapterTools.map(this, handle);
   }
 
@@ -117,7 +117,7 @@ public abstract class AbstractNIOHandle implements IRandomAccess, Wrapper<ome.sc
   
   // -- Wrapper API methods --
   
-  public ome.scifio.io.AbstractNIOHandle unwrap() {
+  public io.scif.io.AbstractNIOHandle unwrap() {
     return handle.get();
   }
 }

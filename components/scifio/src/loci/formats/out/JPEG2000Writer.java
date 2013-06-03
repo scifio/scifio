@@ -36,12 +36,13 @@
 
 package loci.formats.out;
 
+import io.scif.formats.JPEG2000Format;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.JPEG2000Format;
 
 /**
  * JPEG2000Writer is the file format writer for JPEG2000 files.
@@ -50,7 +51,7 @@ import ome.scifio.formats.JPEG2000Format;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/JPEG2000Writer.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/JPEG2000Writer.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.JPEG2000Format
+ * @deprecated see io.scif.formats.JPEG2000Format
  */
 @Deprecated
 public class JPEG2000Writer extends SCIFIOFormatWriter {
@@ -64,7 +65,7 @@ public class JPEG2000Writer extends SCIFIOFormatWriter {
     try {
       writer = format.createWriter() ;
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create JPEG2000Format components");
     }
   }
@@ -80,7 +81,7 @@ public class JPEG2000Writer extends SCIFIOFormatWriter {
     try {
       writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }

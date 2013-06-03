@@ -35,6 +35,16 @@
  */
 package loci.formats;
 
+import io.scif.ByteArrayPlane;
+import io.scif.Checker;
+import io.scif.Format;
+import io.scif.HasColorTable;
+import io.scif.Metadata;
+import io.scif.Parser;
+import io.scif.Plane;
+import io.scif.Reader;
+import io.scif.Translator;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,15 +65,6 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
-import ome.scifio.ByteArrayPlane;
-import ome.scifio.Checker;
-import ome.scifio.Format;
-import ome.scifio.HasColorTable;
-import ome.scifio.Metadata;
-import ome.scifio.Parser;
-import ome.scifio.Plane;
-import ome.scifio.Reader;
-import ome.scifio.Translator;
 import ome.xml.model.enums.AcquisitionMode;
 import ome.xml.model.enums.ArcType;
 import ome.xml.model.enums.Binning;
@@ -121,13 +122,13 @@ import ome.xml.services.OMEXMLMetadataService;
 
 /**
  * Abstract superclass of all biological file format writers converted to
- * SCIFIO components. Defers to an ome.scifio.Reader
+ * SCIFIO components. Defers to an io.scif.Reader
  * 
- * @see ome.scifio.Reader
+ * @see io.scif.Reader
  * 
  * @author Mark Hiner
  *
- * @deprecated see ome.scifio.Reader
+ * @deprecated see io.scif.Reader
  */
 @Deprecated
 public abstract class SCIFIOFormatReader extends FormatReader 
@@ -561,7 +562,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   /* @see IFormatReader#getDimensionOrder() */
   @Override
   public String getDimensionOrder() {
-    return ome.scifio.util.FormatTools.findDimensionOrder(reader, getSeries());
+    return io.scif.util.FormatTools.findDimensionOrder(reader, getSeries());
   }
 
   /* @see IFormatReader#isOrderCertain() */
@@ -595,7 +596,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
     try {
       return (plane = reader.openPlane(getSeries(), no)).getBytes();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -614,7 +615,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
         return reader.openPlane(getSeries(), no, plane).getBytes();
       }
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -627,7 +628,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
     try {
       return (plane = reader.openPlane(getSeries(), no, x, y, w, h)).getBytes();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -647,7 +648,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
           x, y, w, h);
       return reader.openPlane(getSeries(), no, plane, x, y, w, h).getBytes();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e.getCause());
     }
   }
@@ -667,7 +668,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
     try {
       return (plane = reader.openThumbPlane(getSeries(), no)).getBytes();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -717,7 +718,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   public int fileGroupOption(String id) throws FormatException, IOException {
     try {
       return parser.fileGroupOption(id);
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw new FormatException(e.getCause());
     }
   }
@@ -797,14 +798,14 @@ public abstract class SCIFIOFormatReader extends FormatReader
   /* @see IFormatReader#getAdvancedUsedFiles(boolean) */
   @Override
   public FileInfo[] getAdvancedUsedFiles(boolean noPixels) {
-    ome.scifio.FileInfo[] tmpInfo = parser.getAdvancedUsedFiles(noPixels);
+    io.scif.FileInfo[] tmpInfo = parser.getAdvancedUsedFiles(noPixels);
     return convertFileInfo(tmpInfo);
   }
 
   /* @see IFormatReader#getAdvancedSeriesUsedFiles(boolean) */
   @Override
   public FileInfo[] getAdvancedSeriesUsedFiles(boolean noPixels) {
-    ome.scifio.FileInfo[] tmpInfo =
+    io.scif.FileInfo[] tmpInfo =
       parser.getAdvancedImageUsedFiles(getSeries(), noPixels);
     return convertFileInfo(tmpInfo);
   }
@@ -817,13 +818,13 @@ public abstract class SCIFIOFormatReader extends FormatReader
   /* @see IFormatReader#getIndex(int, int, int) */
   @Override
   public int getIndex(int z, int c, int t) {
-    return ome.scifio.util.FormatTools.getIndex(reader, getSeries(), z, c, t);
+    return io.scif.util.FormatTools.getIndex(reader, getSeries(), z, c, t);
   }
 
   /* @see IFormatReader#getZCTCoords(int) */
   @Override
   public int[] getZCTCoords(int index) {
-    return ome.scifio.util.FormatTools.getZCTCoords(reader, getSeries(), index);
+    return io.scif.util.FormatTools.getZCTCoords(reader, getSeries(), index);
   }
 
   /* @see IFormatReader#getMetadataValue(String) */
@@ -860,7 +861,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
     for (int series = 0; series < getSeriesCount(); series++) {
       String name = "Series " + series;
       setSeries(series);
-      ome.scifio.util.SCIFIOMetadataTools.merge(getSeriesMetadata(), h, name + " ");
+      io.scif.util.SCIFIOMetadataTools.merge(getSeriesMetadata(), h, name + " ");
     }
 
     setSeries(oldSeries);
@@ -1027,7 +1028,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
 
         meta = parser.parse(id, meta);
       }
-      catch (ome.scifio.FormatException e) {
+      catch (io.scif.FormatException e) {
         throw new FormatException(e.getCause());
       }
       reader.setMetadata(meta);
@@ -1048,8 +1049,8 @@ public abstract class SCIFIOFormatReader extends FormatReader
   
   // -- Helper methods --
   
-  // Converts ome.scifio.FileInfo to loci.formats.FileInfo
-  private FileInfo[] convertFileInfo(ome.scifio.FileInfo[] source) {
+  // Converts io.scif.FileInfo to loci.formats.FileInfo
+  private FileInfo[] convertFileInfo(io.scif.FileInfo[] source) {
     FileInfo[] info = new FileInfo[source.length];
 
     for (int i = 0; i < source.length; i++) {
@@ -1072,7 +1073,7 @@ public abstract class SCIFIOFormatReader extends FormatReader
   protected void setupMetdata() { }
 
   /** Returns the SCIFIO reader being used for deferrment */
-  public ome.scifio.Reader getReader() {
+  public io.scif.Reader getReader() {
     return reader;
   }
 

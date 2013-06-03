@@ -14,17 +14,17 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package ome.scifio.tutorials;
+package io.scif.tutorials;
 
 import java.io.IOException;
 
-import ome.scifio.Checker;
-import ome.scifio.Format;
-import ome.scifio.FormatException;
-import ome.scifio.Metadata;
-import ome.scifio.Parser;
-import ome.scifio.Reader;
-import ome.scifio.SCIFIO;
+import io.scif.Checker;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.Metadata;
+import io.scif.Parser;
+import io.scif.Reader;
+import io.scif.SCIFIO;
 
 /**
  * Demonstrates how individual components can be used together instead of the

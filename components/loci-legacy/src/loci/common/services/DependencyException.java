@@ -46,16 +46,16 @@ package loci.common.services;
  *
  * @author Chris Allan <callan at blackcat dot ca>
  * 
- * @deprecated see ome.scifio.DependencyException
+ * @deprecated see io.scif.DependencyException
  */
 @Deprecated
-public class DependencyException extends ome.scifio.DependencyException
+public class DependencyException extends io.scif.DependencyException
 {
   
   /**
    * 
    */
-  private static final long serialVersionUID = ome.scifio.DependencyException.serialVersionUID;
+  private static final long serialVersionUID = io.scif.DependencyException.serialVersionUID;
 
   /**
    * Default constructor.

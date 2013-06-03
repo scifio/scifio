@@ -1,9 +1,10 @@
 package loci.formats.gui;
 
+import io.scif.BufferedImagePlane;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import ome.scifio.BufferedImagePlane;
 
 import loci.common.RandomAccessInputStream;
 import loci.formats.FormatException;
@@ -13,9 +14,9 @@ import loci.legacy.adapter.CommonAdapter;
 /**
  * Abstract superclass for file format readers that use
  * java.awt.image.BufferedImage as the native data type.
- * Defers to ome.scifio.in.BIFormatReader
+ * Defers to io.scif.in.BIFormatReader
  *
- * @deprecated see ome.scifio.gui.BufferedImageReader
+ * @deprecated see io.scif.gui.BufferedImageReader
  */
 @Deprecated
 public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
@@ -41,7 +42,7 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
     try {
       return ((BufferedImagePlane)(plane = reader.openPlane(getSeries(), no, x, y, w, h))).getData();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   } 
@@ -84,7 +85,7 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
   {
     try {
       return (plane = reader.openPlane(getSeries(), no)).getBytes();
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw new FormatException(e.getCause());
     }
   }
@@ -103,7 +104,7 @@ public abstract class SCIFIOBIFormatReader extends SCIFIOFormatReader {
       System.arraycopy(retBytes, 0, buf, 0, Math.min(retBytes.length, buf.length));
       
       return buf;
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw new FormatException(e.getCause());
     }
   }

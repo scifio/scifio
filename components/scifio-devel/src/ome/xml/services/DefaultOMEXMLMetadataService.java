@@ -36,17 +36,17 @@
 
 package ome.xml.services;
 
+import io.scif.FormatException;
+import io.scif.ImageMetadata;
+import io.scif.Metadata;
+import io.scif.Reader;
+import io.scif.common.DateTools;
+import io.scif.io.Location;
+import io.scif.services.FormatService;
+import io.scif.services.ServiceException;
+import io.scif.util.FormatTools;
+import io.scif.util.SCIFIOMetadataTools;
 import net.imglib2.meta.Axes;
-import ome.scifio.FormatException;
-import ome.scifio.ImageMetadata;
-import ome.scifio.Metadata;
-import ome.scifio.Reader;
-import ome.scifio.common.DateTools;
-import ome.scifio.io.Location;
-import ome.scifio.services.FormatService;
-import ome.scifio.services.ServiceException;
-import ome.scifio.util.FormatTools;
-import ome.scifio.util.SCIFIOMetadataTools;
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.MetadataStore;
 import ome.xml.meta.OMEXMLMetadata;
@@ -107,7 +107,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
 
   /*
    * @see ome.xml.services.OMEXMLMetadataService#
-   * populatePixels(ome.xml.meta.MetadataStore, ome.scifio.Metadata)
+   * populatePixels(ome.xml.meta.MetadataStore, io.scif.Metadata)
    */
   public void populatePixels(MetadataStore store, Metadata meta) {
     populatePixels(store, meta, false, true);
@@ -115,7 +115,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
 
   /*
    * @see ome.xml.services.OMEXMLMetadataService#
-   * populatePixels(ome.xml.meta.MetadataStore, ome.scifio.Metadata, boolean)
+   * populatePixels(ome.xml.meta.MetadataStore, io.scif.Metadata, boolean)
    */
   public void populatePixels(MetadataStore store, Metadata meta,
     boolean doPlane)
@@ -125,7 +125,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
 
   /*
    * @see ome.xml.services.OMEXMLMetadataService#
-   * populatePixels(ome.xml.meta.MetadataStore, ome.scifio.Metadata, boolean, boolean)
+   * populatePixels(ome.xml.meta.MetadataStore, io.scif.Metadata, boolean, boolean)
    */
   public void populatePixels(MetadataStore store, Metadata meta,
     boolean doPlane, boolean doImageName)
@@ -200,7 +200,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
 
   /*
    * @see ome.xml.services.OMEXMLMetadataService#populateMetadata(
-   * ome.xml.meta.MetadataStore, int, java.lang.String, ome.scifio.Metadata)
+   * ome.xml.meta.MetadataStore, int, java.lang.String, io.scif.Metadata)
    */
   public void populateMetadata(MetadataStore store, int imageIndex,
     String imageName, Metadata meta)
@@ -242,7 +242,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
 
   /*
    * @see ome.xml.services.OMEXMLMetadataService#populatePixelsOnly(
-   * ome.xml.meta.MetadataStore, ome.scifio.Reader)
+   * ome.xml.meta.MetadataStore, io.scif.Reader)
    */
   public void populatePixelsOnly(MetadataStore store, Reader r) {
     Metadata dMeta = r.getMetadata();
@@ -510,7 +510,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
   
   /*
    * @see ome.xml.services.OMEXMLMetadataService#
-   * populateMetadata(ome.xml.meta.MetadataRetrieve, ome.scifio.Metadata)
+   * populateMetadata(ome.xml.meta.MetadataRetrieve, io.scif.Metadata)
    */
   public void populateMetadata(MetadataRetrieve retrieve, Metadata meta) {
     
@@ -527,7 +527,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService
   
   /*
    * @see ome.xml.services.OMEXMLMetadataService#
-   * populateImageMetadata(ome.xml.meta.MetadataRetrieve, int, ome.scifio.ImageMetadata)
+   * populateImageMetadata(ome.xml.meta.MetadataRetrieve, int, io.scif.ImageMetadata)
    */
   public void populateImageMetadata(MetadataRetrieve retrieve,
       int imageIndex, ImageMetadata iMeta)

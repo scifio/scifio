@@ -36,9 +36,10 @@
 
 package loci.formats.out;
 
+import io.scif.formats.APNGFormat;
+
 import java.io.IOException;
 
-import ome.scifio.formats.APNGFormat;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
@@ -51,7 +52,7 @@ import loci.legacy.context.LegacyContext;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/APNGWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/APNGWriter.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated Use ome.scifio.formats.APNGFormat instead.
+ * @deprecated Use io.scif.formats.APNGFormat instead.
  */
 @Deprecated
 public class APNGWriter extends SCIFIOFormatWriter {
@@ -68,7 +69,7 @@ public class APNGWriter extends SCIFIOFormatWriter {
     try {
       writer = format.createWriter() ;
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create APNGFormat components");
     }
   }
@@ -84,7 +85,7 @@ public class APNGWriter extends SCIFIOFormatWriter {
     try {
       writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }

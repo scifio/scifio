@@ -25,6 +25,11 @@
 
 package loci.formats.in;
 
+import io.scif.common.Constants;
+import io.scif.common.DateTools;
+import io.scif.io.Location;
+import io.scif.xml.XMLTools;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,10 +53,6 @@ import loci.formats.meta.MetadataStore;
 import loci.formats.tiff.IFD;
 import loci.formats.tiff.TiffParser;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.common.Constants;
-import ome.scifio.common.DateTools;
-import ome.scifio.io.Location;
-import ome.scifio.xml.XMLTools;
 import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
 import ome.xml.model.primitives.Timestamp;

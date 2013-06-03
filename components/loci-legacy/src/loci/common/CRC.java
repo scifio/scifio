@@ -59,29 +59,29 @@
 package loci.common;
 
 /**
- * Legacy delegator class for ome.scifio.common.CRC.
+ * Legacy delegator class for io.scif.common.CRC.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/CRC.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/CRC.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.common.CRC
+ * @deprecated see io.scif.common.CRC
  */
 @Deprecated
 public class CRC {
 
   // -- Constants --
 
-  public static final int[] CRC_32_TABLE = ome.scifio.common.CRC.CRC_32_TABLE;
+  public static final int[] CRC_32_TABLE = io.scif.common.CRC.CRC_32_TABLE;
 
   // -- Fields --
 
-  private ome.scifio.common.CRC crc;
+  private io.scif.common.CRC crc;
 
   // -- Constructor --
 
   public CRC() {
-    crc = new ome.scifio.common.CRC();
+    crc = new io.scif.common.CRC();
   }
 
   // -- CRC API methods --

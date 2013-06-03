@@ -36,12 +36,13 @@
 
 package loci.formats.out;
 
+import io.scif.formats.LegacyQTFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.LegacyQTFormat;
 
 /**
  * LegacyQTWriter is a file format writer for QuickTime movies. It uses the
@@ -55,7 +56,7 @@ import ome.scifio.formats.LegacyQTFormat;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/LegacyQTWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/LegacyQTWriter.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.LegacyQTFormat
+ * @deprecated see io.scif.formats.LegacyQTFormat
  */
 @Deprecated
 public class LegacyQTWriter extends SCIFIOFormatWriter {
@@ -69,7 +70,7 @@ public class LegacyQTWriter extends SCIFIOFormatWriter {
     try {
       writer = format.createWriter() ;
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create LegacyQTFormat components");
     }
   }
@@ -91,7 +92,7 @@ public class LegacyQTWriter extends SCIFIOFormatWriter {
     try {
       writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }

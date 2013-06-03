@@ -36,15 +36,15 @@
 
 package ome.xml.translation;
 
-import ome.scifio.AbstractTranslator;
-import ome.scifio.Metadata;
-import ome.scifio.Translator;
+import io.scif.AbstractTranslator;
+import io.scif.Metadata;
+import io.scif.Translator;
 
 /**
- * Abstract base class for all {@link ome.scifio.Translator} implementations
+ * Abstract base class for all {@link io.scif.Translator} implementations
  * that operate on {@link ome.xml.meta.OMEMetadata}.
  * 
- * @see ome.scifio.Translator
+ * @see io.scif.Translator
  * @see ome.xml.meta.OMEMetadata
  * 
  * @author Mark Hiner

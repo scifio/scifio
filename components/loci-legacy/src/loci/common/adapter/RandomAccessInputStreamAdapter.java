@@ -49,36 +49,36 @@ import loci.legacy.context.LegacyContext;
 
 /**
  * This class manages delegation between {@link loci.common.RandomAccessInputStream}
- * and {@link ome.scifio.io.RandomAccessInputStream}.
+ * and {@link io.scif.io.RandomAccessInputStream}.
  * <p>
  * Delegation is maintained by two WeakHashTables. See {@link AbstractLegacyAdapter}
  * </p>
  * <p>
  * Functionally, the delegation is handled in the nested classes - one for
- * wrapping from ome.scifio.io.RandomAccessInputStream to
+ * wrapping from io.scif.io.RandomAccessInputStream to
  * loci.common.RandomAccessInputStream, and one for the reverse direction.
  * </p>
  * @author Mark Hiner
  */
 @Plugin(type=RandomAccessInputStreamAdapter.class)
 public class RandomAccessInputStreamAdapter
-  extends AbstractLegacyAdapter<RandomAccessInputStream, ome.scifio.io.RandomAccessInputStream> {
+  extends AbstractLegacyAdapter<RandomAccessInputStream, io.scif.io.RandomAccessInputStream> {
   
   // -- Constructor --
   
   public RandomAccessInputStreamAdapter() {
-    super(RandomAccessInputStream.class, ome.scifio.io.RandomAccessInputStream.class);
+    super(RandomAccessInputStream.class, io.scif.io.RandomAccessInputStream.class);
   }
 
   // -- LegacyAdapter API --
   
   /* @see LegacyAdapter#wrapToLegacy(M) */
-  public RandomAccessInputStream wrapToLegacy(ome.scifio.io.RandomAccessInputStream modern) {
+  public RandomAccessInputStream wrapToLegacy(io.scif.io.RandomAccessInputStream modern) {
     return new RandomAccessInputStream(modern);
   }
 
   /* @see LegacyAdapter#wrapToModern(L) */
-  public ome.scifio.io.RandomAccessInputStream wrapToModern(RandomAccessInputStream legacy) {
+  public io.scif.io.RandomAccessInputStream wrapToModern(RandomAccessInputStream legacy) {
     try {
       return new LegacyWrapper(legacy);
     } catch (IOException e) {
@@ -90,7 +90,7 @@ public class RandomAccessInputStreamAdapter
   
   /**
    * This class can be used to wrap loci.common.RandomAccessInputStream
-   * objects and be passed to API expecting an ome.scifio.io.RandomAccessInputStream
+   * objects and be passed to API expecting an io.scif.io.RandomAccessInputStream
    * object.
    * <p>
    * All functionality is delegated to the loci-common implementation.
@@ -98,7 +98,7 @@ public class RandomAccessInputStreamAdapter
    * 
    * @author Mark Hiner
    */
-  public static class LegacyWrapper extends ome.scifio.io.RandomAccessInputStream
+  public static class LegacyWrapper extends io.scif.io.RandomAccessInputStream
     implements Wrapper<RandomAccessInputStream> {
 
     // -- Fields --
@@ -119,7 +119,7 @@ public class RandomAccessInputStreamAdapter
     }
 
     /** Constructs a random access stream around the given handle. */
-    public LegacyWrapper(ome.scifio.io.IRandomAccess handle) throws IOException {
+    public LegacyWrapper(io.scif.io.IRandomAccess handle) throws IOException {
 //      super(handle);
       super(LegacyContext.get());
       throw new UnsupportedOperationException(
@@ -130,7 +130,7 @@ public class RandomAccessInputStreamAdapter
      * Constructs a random access stream around the given handle,
      * and with the associated file path.
      */
-    public LegacyWrapper(ome.scifio.io.IRandomAccess handle, String file)
+    public LegacyWrapper(io.scif.io.IRandomAccess handle, String file)
       throws IOException
     {
       super(LegacyContext.get());

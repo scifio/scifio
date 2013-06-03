@@ -1,5 +1,13 @@
 package loci.formats;
 
+import io.scif.ByteArrayPlane;
+import io.scif.DefaultMetadataOptions;
+import io.scif.Format;
+import io.scif.Metadata;
+import io.scif.Plane;
+import io.scif.Writer;
+import io.scif.io.RandomAccessInputStream;
+
 import java.awt.image.ColorModel;
 import java.io.IOException;
 
@@ -7,25 +15,18 @@ import loci.formats.codec.CodecOptions;
 import loci.formats.meta.MetadataRetrieve;
 import loci.legacy.context.LegacyContext;
 import net.imglib2.meta.Axes;
-import ome.scifio.ByteArrayPlane;
-import ome.scifio.DefaultMetadataOptions;
-import ome.scifio.Format;
-import ome.scifio.Metadata;
-import ome.scifio.Plane;
-import ome.scifio.Writer;
-import ome.scifio.io.RandomAccessInputStream;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 
 /**
  * Abstract superclass of all biological file format writers that have been
- * converted to SCIFIO components. Defers to an ome.scifio.Writer 
+ * converted to SCIFIO components. Defers to an io.scif.Writer 
  * 
- * @see ome.scifio.Writer
+ * @see io.scif.Writer
  * 
  * @author Mark Hiner
  *
- * @deprecated see ome.scifio.Writer
+ * @deprecated see io.scif.Writer
  */
 @Deprecated
 public abstract class SCIFIOFormatWriter extends FormatWriter {
@@ -65,7 +66,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
     try {
       writer.changeOutputFile(id);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -79,7 +80,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
           writer.getMetadata().getAxisLength(getSeries(), Axes.X),
           writer.getMetadata().getAxisLength(getSeries(), Axes.Y)));
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -98,7 +99,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
           writer.getMetadata().getAxisLength(getSeries(), Axes.X),
           writer.getMetadata().getAxisLength(getSeries(), Axes.Y)));
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -115,7 +116,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
     try {
       writer.savePlane(getSeries(), no, planeCheck((byte[])plane, x, y, w, h), x, y, w, h);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -176,7 +177,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
            Metadata m = format.createMetadata();
            LegacyContext.getSCIFIO().translator().translate(omeMeta, m, false);
            writer.setMetadata(m);
-         } catch (ome.scifio.FormatException e) {
+         } catch (io.scif.FormatException e) {
            LOGGER.error("Failed to set SCIFIO Writer's Metadata", e);
          }
        }
@@ -226,7 +227,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
     try {
       writer.setCompression(compress);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -283,7 +284,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
 //          writer.getMetadata().getAxisLength(getSeries(), Axes.X),
 //          writer.getMetadata().getAxisLength(getSeries(), Axes.Y)));
 //    }
-//    catch (ome.scifio.FormatException e) {
+//    catch (io.scif.FormatException e) {
 //      throw new FormatException(e);
 //    }
 //  }
@@ -299,7 +300,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
 //    try {
 //      writer.savePlane(bytes, series, lastInSeries, last);
 //    }
-//    catch (ome.scifio.FormatException e) {
+//    catch (io.scif.FormatException e) {
 //      throw new FormatException(e);
 //    }
 //  }
@@ -315,7 +316,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
 //    try {
 //      writer.savePlane(plane, 0, last, last);
 //    }
-//    catch (ome.scifio.FormatException e) {
+//    catch (io.scif.FormatException e) {
 //      throw new FormatException(e);
 //    }
 //  }
@@ -335,7 +336,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
 //    try {
 //      writer.savePlane(planeCheck((byte[])plane), series, lastInSeries, last);
 //    }
-//    catch (ome.scifio.FormatException e) {
+//    catch (io.scif.FormatException e) {
 //      throw new FormatException(e);
 //    }
 //  }
@@ -365,7 +366,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
       omeMeta.setMetadataOptions(new DefaultMetadataOptions());
       omeMeta.populateImageMetadata();
       
-      // convert the metadata retrieve to ome.scifio.Metadata
+      // convert the metadata retrieve to io.scif.Metadata
       writer.scifio().translator().translate(omeMeta, meta, false);
 
       meta.setDatasetName(id);
@@ -373,7 +374,7 @@ public abstract class SCIFIOFormatWriter extends FormatWriter {
       writer.setMetadata(meta);
       writer.setDest(id);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }

@@ -36,6 +36,9 @@
 
 package loci.formats.gui;
 
+import io.scif.ByteArrayPlane;
+import io.scif.Reader;
+
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
@@ -50,8 +53,6 @@ import java.io.IOException;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 
-import ome.scifio.ByteArrayPlane;
-import ome.scifio.Reader;
 import ome.xml.model.primitives.PositiveInteger;
 
 import loci.formats.FormatAdapter;
@@ -62,7 +63,7 @@ import loci.formats.MetadataTools;
 import loci.formats.meta.MetadataRetrieve;
 
 /**
- * A legacy delegator class for ome.scifio.gui.AWTImageTools
+ * A legacy delegator class for io.scif.gui.AWTImageTools
  * 
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/AWTImageTools.java">Trac</a>,
@@ -70,7 +71,7 @@ import loci.formats.meta.MetadataRetrieve;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.gui.AWTImageTools
+ * @deprecated see io.scif.gui.AWTImageTools
  */
 @Deprecated
 public final class AWTImageTools {
@@ -95,7 +96,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(byte[] data,
     int w, int h, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, signed);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, signed);
   }
 
   /**
@@ -110,7 +111,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(short[] data,
     int w, int h, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, signed);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, signed);
   }
 
   /**
@@ -125,7 +126,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(int[] data,
     int w, int h, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, signed);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, signed);
   }
 
   /**
@@ -136,7 +137,7 @@ public final class AWTImageTools {
    * @param h Height of image plane.
    */
   public static BufferedImage makeImage(float[] data, int w, int h) {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h);
   }
 
   /**
@@ -147,7 +148,7 @@ public final class AWTImageTools {
    * @param h Height of image plane.
    */
   public static BufferedImage makeImage(double[] data, int w, int h) {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h);
   }
 
   // -- Image construction - from 1D (interleaved or banded) data arrays --
@@ -169,7 +170,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(byte[] data,
     int w, int h, int c, boolean interleaved, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, c, interleaved, 
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, c, interleaved, 
       signed);
   }
 
@@ -190,7 +191,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(short[] data,
     int w, int h, int c, boolean interleaved, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, c, interleaved, signed);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, c, interleaved, signed);
   }
 
   /**
@@ -210,7 +211,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(int[] data,
     int w, int h, int c, boolean interleaved, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, c, interleaved, signed);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, c, interleaved, signed);
   }
 
   /**
@@ -228,7 +229,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(float[] data,
     int w, int h, int c, boolean interleaved)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, c, interleaved);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, c, interleaved);
   }
 
   /**
@@ -246,7 +247,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(double[] data,
     int w, int h, int c, boolean interleaved)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, c, interleaved);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, c, interleaved);
   }
 
   // -- Image construction - from 2D (banded) data arrays --
@@ -265,7 +266,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(byte[][] data,
     int w, int h, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, signed);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, signed);
   }
 
   /**
@@ -282,7 +283,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(short[][] data,
     int w, int h, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, signed);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, signed);
   }
 
   /**
@@ -299,7 +300,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(int[][] data,
     int w, int h, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, signed);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, signed);
   }
 
   /**
@@ -312,7 +313,7 @@ public final class AWTImageTools {
    * @param h Height of image plane.
    */
   public static BufferedImage makeImage(float[][] data, int w, int h) {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h);
   }
 
   /**
@@ -325,7 +326,7 @@ public final class AWTImageTools {
    * @param h Height of image plane.
    */
   public static BufferedImage makeImage(double[][] data, int w, int h) {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h);
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h);
   }
 
   // -- Image construction - with type conversion --
@@ -386,7 +387,7 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(byte[] data, int w, int h, int c,
     boolean interleaved, int bpp, boolean fp, boolean little, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, c, interleaved,
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, c, interleaved,
       bpp, fp, little, signed);
   }
 
@@ -407,14 +408,14 @@ public final class AWTImageTools {
   public static BufferedImage makeImage(byte[][] data,
     int w, int h, int bpp, boolean fp, boolean little, boolean signed)
   {
-    return ome.scifio.gui.AWTImageTools.makeImage(data, w, h, bpp, fp,
+    return io.scif.gui.AWTImageTools.makeImage(data, w, h, bpp, fp,
       little, signed);
   }
 
   public static BufferedImage makeRGBImage(byte[] data, int c, int w, int h,
     boolean interleaved)
   {
-    return ome.scifio.gui.AWTImageTools.makeRGBImage(data, c, w, h, interleaved);
+    return io.scif.gui.AWTImageTools.makeRGBImage(data, c, w, h, interleaved);
   }
 
   // -- Image construction - miscellaneous --
@@ -436,14 +437,14 @@ public final class AWTImageTools {
    * </ul>
    */
   public static BufferedImage blankImage(int w, int h, int c, int type) {
-    return ome.scifio.gui.AWTImageTools.blankImage(w, h, c, type);
+    return io.scif.gui.AWTImageTools.blankImage(w, h, c, type);
   }
 
   /** Creates an image with the given DataBuffer. */
   public static BufferedImage constructImage(int c, int type, int w,
     int h, boolean interleaved, boolean banded, DataBuffer buffer)
   {
-    return ome.scifio.gui.AWTImageTools.constructImage(c, type, w, h, 
+    return io.scif.gui.AWTImageTools.constructImage(c, type, w, h, 
       interleaved, banded, buffer);
   }
 
@@ -452,7 +453,7 @@ public final class AWTImageTools {
     int h, boolean interleaved, boolean banded, DataBuffer buffer,
     ColorModel colorModel)
   {
-    return ome.scifio.gui.AWTImageTools.constructImage(c, type, w, h, interleaved,
+    return io.scif.gui.AWTImageTools.constructImage(c, type, w, h, interleaved,
       banded, buffer, colorModel);
   }
 
@@ -479,9 +480,9 @@ public final class AWTImageTools {
     	  plane.setColorTable(new ColorTable16(r.get16BitLookupTable()));
       }
       
-      return ome.scifio.gui.AWTImageTools.openImage(plane, scReader, w, h, r.getSeries());
+      return io.scif.gui.AWTImageTools.openImage(plane, scReader, w, h, r.getSeries());
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -494,7 +495,7 @@ public final class AWTImageTools {
    * or double[][], depending on the image's transfer type.
    */
   public static Object getPixels(BufferedImage image) {
-    return ome.scifio.gui.AWTImageTools.getPixels(image);
+    return io.scif.gui.AWTImageTools.getPixels(image);
   }
 
   /**
@@ -506,7 +507,7 @@ public final class AWTImageTools {
   public static Object getPixels(BufferedImage image, int x, int y,
     int w, int h)
   {
-    return ome.scifio.gui.AWTImageTools.getPixels(image, x, y, w, h);
+    return io.scif.gui.AWTImageTools.getPixels(image, x, y, w, h);
   }
 
   /**
@@ -515,7 +516,7 @@ public final class AWTImageTools {
    * or double[][], depending on the raster's transfer type.
    */
   public static Object getPixels(WritableRaster raster) {
-    return ome.scifio.gui.AWTImageTools.getPixels(raster);
+    return io.scif.gui.AWTImageTools.getPixels(raster);
   }
 
   /**
@@ -526,89 +527,89 @@ public final class AWTImageTools {
   public static Object getPixels(WritableRaster raster, int x, int y,
     int w, int h)
   {
-    return ome.scifio.gui.AWTImageTools.getPixels(raster, x, y, w, h);
+    return io.scif.gui.AWTImageTools.getPixels(raster, x, y, w, h);
   }
 
   /** Extracts pixel data as arrays of unsigned bytes, one per channel. */
   public static byte[][] getBytes(BufferedImage image) {
-    return ome.scifio.gui.AWTImageTools.getBytes(image);
+    return io.scif.gui.AWTImageTools.getBytes(image);
   }
 
   /** Extracts pixel data as arrays of unsigned bytes, one per channel. */
   public static byte[][] getBytes(WritableRaster r) {
-    return ome.scifio.gui.AWTImageTools.getBytes(r);
+    return io.scif.gui.AWTImageTools.getBytes(r);
   }
 
   /** Extracts pixel data as arrays of unsigned bytes, one per channel. */
   public static byte[][] getBytes(WritableRaster r, int x, int y, int w, int h)
   {
-    return ome.scifio.gui.AWTImageTools.getBytes(r, x, y, w, h);
+    return io.scif.gui.AWTImageTools.getBytes(r, x, y, w, h);
   }
 
   /** Extracts pixel data as arrays of unsigned shorts, one per channel. */
   public static short[][] getShorts(BufferedImage image) {
-    return ome.scifio.gui.AWTImageTools.getShorts(image);
+    return io.scif.gui.AWTImageTools.getShorts(image);
   }
 
   /** Extracts pixel data as arrays of unsigned shorts, one per channel. */
   public static short[][] getShorts(WritableRaster r) {
-    return ome.scifio.gui.AWTImageTools.getShorts(r);
+    return io.scif.gui.AWTImageTools.getShorts(r);
   }
 
   /** Extracts pixel data as arrays of unsigned shorts, one per channel. */
   public static short[][] getShorts(WritableRaster r, int x, int y,
     int w, int h)
   {
-   return ome.scifio.gui.AWTImageTools.getShorts(r, x, y, w, h);
+   return io.scif.gui.AWTImageTools.getShorts(r, x, y, w, h);
   }
 
   /** Extracts pixel data as arrays of signed integers, one per channel. */
   public static int[][] getInts(BufferedImage image) {
-    return ome.scifio.gui.AWTImageTools.getInts(image);
+    return io.scif.gui.AWTImageTools.getInts(image);
   }
 
   /** Extracts pixel data as arrays of signed integers, one per channel. */
   public static int[][] getInts(WritableRaster r) {
-    return ome.scifio.gui.AWTImageTools.getInts(r);
+    return io.scif.gui.AWTImageTools.getInts(r);
   }
 
   /** Extracts pixel data as arrays of signed integers, one per channel. */
   public static int[][] getInts(WritableRaster r, int x, int y, int w, int h) {
-    return ome.scifio.gui.AWTImageTools.getInts(r, x, y, w, h);
+    return io.scif.gui.AWTImageTools.getInts(r, x, y, w, h);
   }
 
   /** Extracts pixel data as arrays of floats, one per channel. */
   public static float[][] getFloats(BufferedImage image) {
-    return ome.scifio.gui.AWTImageTools.getFloats(image);
+    return io.scif.gui.AWTImageTools.getFloats(image);
   }
 
   /** Extracts pixel data as arrays of floats, one per channel. */
   public static float[][] getFloats(WritableRaster r) {
-    return ome.scifio.gui.AWTImageTools.getFloats(r);
+    return io.scif.gui.AWTImageTools.getFloats(r);
   }
 
   /** Extracts pixel data as arrays of floats, one per channel. */
   public static float[][] getFloats(WritableRaster r, int x, int y,
     int w, int h)
   {
-    return ome.scifio.gui.AWTImageTools.getFloats(r, x, y, w, h);
+    return io.scif.gui.AWTImageTools.getFloats(r, x, y, w, h);
   }
 
   /** Extracts pixel data as arrays of doubles, one per channel. */
   public static double[][] getDoubles(BufferedImage image) {
-    return ome.scifio.gui.AWTImageTools.getDoubles(image);
+    return io.scif.gui.AWTImageTools.getDoubles(image);
   }
 
   /** Extracts pixel data as arrays of doubles, one per channel. */
   public static double[][] getDoubles(WritableRaster r) {
-    return ome.scifio.gui.AWTImageTools.getDoubles(r);
+    return io.scif.gui.AWTImageTools.getDoubles(r);
   }
 
   /** Extracts pixel data as arrays of doubles, one per channel. */
   public static double[][] getDoubles(WritableRaster r, int x, int y,
     int w, int h)
   {
-    return ome.scifio.gui.AWTImageTools.getDoubles(r, x, y, w, h);
+    return io.scif.gui.AWTImageTools.getDoubles(r, x, y, w, h);
   }
 
   /**
@@ -619,7 +620,7 @@ public final class AWTImageTools {
    * will have width * height * 2 bytes.
    */
   public static byte[][] getPixelBytes(BufferedImage img, boolean little) {
-    return ome.scifio.gui.AWTImageTools.getPixelBytes(img, little);
+    return io.scif.gui.AWTImageTools.getPixelBytes(img, little);
   }
 
   /**
@@ -630,7 +631,7 @@ public final class AWTImageTools {
    * will have width * height * 2 bytes.
    */
   public static byte[][] getPixelBytes(WritableRaster r, boolean little) {
-    return ome.scifio.gui.AWTImageTools.getPixelBytes(r, little);
+    return io.scif.gui.AWTImageTools.getPixelBytes(r, little);
   }
 
   /**
@@ -643,7 +644,7 @@ public final class AWTImageTools {
   public static byte[][] getPixelBytes(BufferedImage img, boolean little,
     int x, int y, int w, int h)
   {
-    return ome.scifio.gui.AWTImageTools.getPixelBytes(img, little, x, y, w, h);
+    return io.scif.gui.AWTImageTools.getPixelBytes(img, little, x, y, w, h);
   }
 
   /**
@@ -656,7 +657,7 @@ public final class AWTImageTools {
   public static byte[][] getPixelBytes(WritableRaster r, boolean little,
     int x, int y, int w, int h)
   {
-    return ome.scifio.gui.AWTImageTools.getPixelBytes(r, little, x, y, w, h);
+    return io.scif.gui.AWTImageTools.getPixelBytes(r, little, x, y, w, h);
   }
 
   /**
@@ -674,7 +675,7 @@ public final class AWTImageTools {
    * </ul>
    */
   public static int getPixelType(BufferedImage image) {
-    return ome.scifio.gui.AWTImageTools.getPixelType(image);
+    return io.scif.gui.AWTImageTools.getPixelType(image);
   }
 
   // -- Image conversion --
@@ -719,19 +720,19 @@ public final class AWTImageTools {
    * <a href="http://www.jguru.com/faq/view.jsp?EID=114602">a jGuru post</a>.
    */
   public static BufferedImage convertRenderedImage(RenderedImage img) {
-    return ome.scifio.gui.AWTImageTools.convertRenderedImage(img);
+    return io.scif.gui.AWTImageTools.convertRenderedImage(img);
   }
 
   /** Get the bytes from an image, merging the channels as necessary. */
   public static byte[] getBytes(BufferedImage img, boolean separated) {
-    return ome.scifio.gui.AWTImageTools.getBytes(img, separated);
+    return io.scif.gui.AWTImageTools.getBytes(img, separated);
   }
 
   /**
    * Converts the given BufferedImage into an image with unsigned pixel data.
    */
   public static BufferedImage makeUnsigned(BufferedImage img) {
-    return ome.scifio.gui.AWTImageTools.makeUnsigned(img);
+    return io.scif.gui.AWTImageTools.makeUnsigned(img);
   }
 
   // -- Image manipulation --
@@ -740,17 +741,17 @@ public final class AWTImageTools {
   public static BufferedImage getSubimage(BufferedImage image,
     boolean littleEndian, int x, int y, int w, int h)
   {
-    return ome.scifio.gui.AWTImageTools.getSubimage(image, littleEndian, x, y, w, h);
+    return io.scif.gui.AWTImageTools.getSubimage(image, littleEndian, x, y, w, h);
   }
 
   /** Splits the given multi-channel image into single-channel images. */
   public static BufferedImage[] splitChannels(BufferedImage image) {
-    return ome.scifio.gui.AWTImageTools.splitChannels(image);
+    return io.scif.gui.AWTImageTools.splitChannels(image);
   }
 
   /** Merges the given images into a single multi-channel image. */
   public static BufferedImage mergeChannels(BufferedImage[] images) {
-    return ome.scifio.gui.AWTImageTools.mergeChannels(images);
+    return io.scif.gui.AWTImageTools.mergeChannels(images);
   }
 
   /**
@@ -759,12 +760,12 @@ public final class AWTImageTools {
    */
   public static BufferedImage padImage(BufferedImage img, int width, int height)
   {
-    return ome.scifio.gui.AWTImageTools.padImage(img, width, height);
+    return io.scif.gui.AWTImageTools.padImage(img, width, height);
   }
 
   /** Perform autoscaling on the given BufferedImage. */
   public static BufferedImage autoscale(BufferedImage img) {
-    return ome.scifio.gui.AWTImageTools.autoscale(img);
+    return io.scif.gui.AWTImageTools.autoscale(img);
   }
 
   /**
@@ -773,7 +774,7 @@ public final class AWTImageTools {
    * If the BufferedImage has 8 bit data, then nothing happens.
    */
   public static BufferedImage autoscale(BufferedImage img, int min, int max) {
-    return ome.scifio.gui.AWTImageTools.autoscale(img, min, max);
+    return io.scif.gui.AWTImageTools.autoscale(img, min, max);
   }
 
   // -- Image scaling --
@@ -782,7 +783,7 @@ public final class AWTImageTools {
   public static BufferedImage copyScaled(BufferedImage source,
     BufferedImage target, Object hint)
   {
-    return ome.scifio.gui.AWTImageTools.copyScaled(source, target, hint);
+    return io.scif.gui.AWTImageTools.copyScaled(source, target, hint);
   }
 
   /**
@@ -792,7 +793,7 @@ public final class AWTImageTools {
   public static BufferedImage scale2D(BufferedImage image,
     int width, int height, Object hint, GraphicsConfiguration gc)
   {
-    return ome.scifio.gui.AWTImageTools.scale2D(image, width, height, hint, gc);
+    return io.scif.gui.AWTImageTools.scale2D(image, width, height, hint, gc);
   }
 
   /**
@@ -802,14 +803,14 @@ public final class AWTImageTools {
   public static BufferedImage scale2D(BufferedImage image,
     int width, int height, Object hint, ColorModel cm)
   {
-    return ome.scifio.gui.AWTImageTools.scale2D(image, width, height, hint, cm);
+    return io.scif.gui.AWTImageTools.scale2D(image, width, height, hint, cm);
   }
 
   /** Scales the image using the AWT Image API. */
   public static Image scaleAWT(BufferedImage source, int width,
     int height, int hint)
   {
-    return ome.scifio.gui.AWTImageTools.scaleAWT(source, width, height, hint);
+    return io.scif.gui.AWTImageTools.scaleAWT(source, width, height, hint);
   }
 
   /**
@@ -819,7 +820,7 @@ public final class AWTImageTools {
   public static BufferedImage scale(BufferedImage source,
     int width, int height, boolean pad)
   {
-    return ome.scifio.gui.AWTImageTools.scale(source, width, height, pad);
+    return io.scif.gui.AWTImageTools.scale(source, width, height, pad);
   }
 
   // -- AWT images --
@@ -829,7 +830,7 @@ public final class AWTImageTools {
    * If the AWT image is already a buffered image, no new object is created.
    */
   public static BufferedImage makeBuffered(Image image) {
-    return ome.scifio.gui.AWTImageTools.makeBuffered(image);
+    return io.scif.gui.AWTImageTools.makeBuffered(image);
   }
 
   /**
@@ -838,12 +839,12 @@ public final class AWTImageTools {
    * buffered image with the given color model, no new object is created.
    */
   public static BufferedImage makeBuffered(Image image, ColorModel cm) {
-    return ome.scifio.gui.AWTImageTools.makeBuffered(image, cm);
+    return io.scif.gui.AWTImageTools.makeBuffered(image, cm);
   }
 
   /** Ensures the given AWT image is fully loaded. */
   public static boolean loadImage(Image image) {
-    return ome.scifio.gui.AWTImageTools.loadImage(image);
+    return io.scif.gui.AWTImageTools.loadImage(image);
   }
 
   /**
@@ -851,7 +852,7 @@ public final class AWTImageTools {
    * waiting for it to finish loading if necessary.
    */
   public static Dimension getSize(Image image) {
-    return ome.scifio.gui.AWTImageTools.getSize(image);
+    return io.scif.gui.AWTImageTools.getSize(image);
   }
 
   // -- Graphics configuration --
@@ -864,41 +865,41 @@ public final class AWTImageTools {
   public static BufferedImage makeCompatible(BufferedImage image,
     GraphicsConfiguration gc)
   {
-    return ome.scifio.gui.AWTImageTools.makeCompatible(image, gc);
+    return io.scif.gui.AWTImageTools.makeCompatible(image, gc);
   }
 
   /** Gets the default graphics configuration for the environment. */
   public static GraphicsConfiguration getDefaultConfiguration() {
-    return ome.scifio.gui.AWTImageTools.getDefaultConfiguration();
+    return io.scif.gui.AWTImageTools.getDefaultConfiguration();
   }
 
   // -- Color model --
 
   /** Gets a color space for the given number of color components. */
   public static ColorSpace makeColorSpace(int c) {
-    return ome.scifio.gui.AWTImageTools.makeColorSpace(c);
+    return io.scif.gui.AWTImageTools.makeColorSpace(c);
   }
 
   /** Gets a color model for the given number of color components. */
   public static ColorModel makeColorModel(int c, int dataType) {
-    return ome.scifio.gui.AWTImageTools.makeColorModel(c, dataType);
+    return io.scif.gui.AWTImageTools.makeColorModel(c, dataType);
   }
 
   // -- Indexed color conversion --
 
   /** Converts an indexed color BufferedImage to an RGB BufferedImage. */
   public static BufferedImage indexedToRGB(BufferedImage img, boolean le) {
-    return ome.scifio.gui.AWTImageTools.indexedToRGB(img, le);
+    return io.scif.gui.AWTImageTools.indexedToRGB(img, le);
   }
 
   /** Converts an IndexColorModel to a 2D byte array. */
   public static byte[][] get8BitLookupTable(ColorModel model) {
-    return ome.scifio.gui.AWTImageTools.get8BitLookupTable(model);
+    return io.scif.gui.AWTImageTools.get8BitLookupTable(model);
   }
 
   /** Convers an Index16ColorModel to a 2D short array. */
   public static short[][] getLookupTable(ColorModel model) {
-    return ome.scifio.gui.AWTImageTools.getLookupTable(model);
+    return io.scif.gui.AWTImageTools.getLookupTable(model);
   }
 
 }

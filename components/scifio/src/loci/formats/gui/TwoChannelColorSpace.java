@@ -49,16 +49,16 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.gui.TwoChannelColorSpace
+ * @deprecated see io.scif.gui.TwoChannelColorSpace
  */
 @Deprecated
 public class TwoChannelColorSpace extends ColorSpace {
 
   // -- Constants --
 
-  public static final int CS_2C = ome.scifio.gui.TwoChannelColorSpace.CS_2C;
+  public static final int CS_2C = io.scif.gui.TwoChannelColorSpace.CS_2C;
   
-  private ome.scifio.gui.TwoChannelColorSpace cs;
+  private io.scif.gui.TwoChannelColorSpace cs;
 
   // -- Constructor --
 
@@ -73,7 +73,7 @@ public class TwoChannelColorSpace extends ColorSpace {
      */
     Class<?> tcccClass = null;
     try {
-      tcccClass = Class.forName("ome.scifio.util.TwoChannelColorSpace");
+      tcccClass = Class.forName("io.scif.util.TwoChannelColorSpace");
     }
     catch (ClassNotFoundException e) {
       e.printStackTrace();
@@ -87,7 +87,7 @@ public class TwoChannelColorSpace extends ColorSpace {
       
       if(pVec.length == 2 && pVec[0] == int.class && pVec[1] == int.class) {
         try {
-          cs = (ome.scifio.gui.TwoChannelColorSpace) constructor.newInstance(type, components);
+          cs = (io.scif.gui.TwoChannelColorSpace) constructor.newInstance(type, components);
         }
         catch (IllegalArgumentException e) {
           e.printStackTrace();

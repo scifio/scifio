@@ -36,9 +36,10 @@
 
 package loci.formats.out;
 
+import io.scif.formats.EPSFormat;
+
 import java.io.IOException;
 
-import ome.scifio.formats.EPSFormat;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
@@ -53,7 +54,7 @@ import loci.legacy.context.LegacyContext;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.formats.EPSFormat
+ * @deprecated see io.scif.formats.EPSFormat
  */
 @Deprecated
 public class EPSWriter extends SCIFIOFormatWriter {
@@ -66,7 +67,7 @@ public class EPSWriter extends SCIFIOFormatWriter {
     try {
       writer = format.createWriter() ;
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create EPSFormat components");
     }
   }
@@ -82,7 +83,7 @@ public class EPSWriter extends SCIFIOFormatWriter {
     try {
       writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }

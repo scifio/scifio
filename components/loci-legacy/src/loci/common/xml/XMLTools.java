@@ -54,7 +54,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * A legacy delegator class for ome.scifio.xml.XMLTools.
+ * A legacy delegator class for io.scif.xml.XMLTools.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/XMLTools.java">Trac</a>,
@@ -80,50 +80,50 @@ public final class XMLTools {
   public static Document parseDOM(File file)
     throws ParserConfigurationException, SAXException, IOException
   {
-    return ome.scifio.xml.XMLTools.parseDOM(file);
+    return io.scif.xml.XMLTools.parseDOM(file);
   }
 
   /** Parses a DOM from the given XML string. */
   public static Document parseDOM(String xml)
     throws ParserConfigurationException, SAXException, IOException
   {
-    return ome.scifio.xml.XMLTools.parseDOM(xml);
+    return io.scif.xml.XMLTools.parseDOM(xml);
   }
 
   /** Parses a DOM from the given XML input stream. */
   public static Document parseDOM(InputStream is)
     throws ParserConfigurationException, SAXException, IOException
   {
-    return ome.scifio.xml.XMLTools.parseDOM(is);
+    return io.scif.xml.XMLTools.parseDOM(is);
   }
 
   /** Converts the given DOM back to a string. */
   public static String getXML(Document doc)
     throws TransformerConfigurationException, TransformerException
   {
-    return ome.scifio.xml.XMLTools.getXML(doc);
+    return io.scif.xml.XMLTools.getXML(doc);
   }
 
   // -- Filtering --
 
   /** Escape special characters. */
   public static String escapeXML(String s) {
-    return ome.scifio.xml.XMLTools.escapeXML(s);
+    return io.scif.xml.XMLTools.escapeXML(s);
   }
 
   /** Remove invalid characters from an XML string. */
   public static String sanitizeXML(String s) {
-    return ome.scifio.xml.XMLTools.sanitizeXML(s);
+    return io.scif.xml.XMLTools.sanitizeXML(s);
   }
 
   /** Indents XML to be more readable. */
   public static String indentXML(String xml) {
-    return ome.scifio.xml.XMLTools.indentXML(xml);
+    return io.scif.xml.XMLTools.indentXML(xml);
   }
 
   /** Indents XML by the given spacing to be more readable. */
   public static String indentXML(String xml, int spacing) {
-    return ome.scifio.xml.XMLTools.indentXML(xml, spacing);
+    return io.scif.xml.XMLTools.indentXML(xml, spacing);
   }
 
   /**
@@ -131,7 +131,7 @@ public final class XMLTools {
    * injection into CDATA if the preserveCData flag is set.
    */
   public static String indentXML(String xml, boolean preserveCData) {
-    return ome.scifio.xml.XMLTools.indentXML(xml, preserveCData);
+    return io.scif.xml.XMLTools.indentXML(xml, preserveCData);
   }
 
   /**
@@ -141,7 +141,7 @@ public final class XMLTools {
   public static String indentXML(String xml, int spacing,
     boolean preserveCData)
   {
-    return ome.scifio.xml.XMLTools.indentXML(xml, spacing, preserveCData);
+    return io.scif.xml.XMLTools.indentXML(xml, spacing, preserveCData);
   }
 
   // -- Parsing --
@@ -150,7 +150,7 @@ public final class XMLTools {
   public static Hashtable<String, String> parseXML(String xml)
     throws IOException
   {
-    return ome.scifio.xml.XMLTools.parseXML(xml);
+    return io.scif.xml.XMLTools.parseXML(xml);
   }
 
   /**
@@ -159,7 +159,7 @@ public final class XMLTools {
   public static void parseXML(String xml, DefaultHandler handler)
     throws IOException
   {
-    ome.scifio.xml.XMLTools.parseXML(xml, handler);
+    io.scif.xml.XMLTools.parseXML(xml, handler);
   }
 
   /**
@@ -170,7 +170,7 @@ public final class XMLTools {
   public static void parseXML(RandomAccessInputStream stream,
     DefaultHandler handler) throws IOException
   {
-    ome.scifio.xml.XMLTools.parseXML((InputStream)stream, handler);
+    io.scif.xml.XMLTools.parseXML((InputStream)stream, handler);
   }
 
   /**
@@ -180,7 +180,7 @@ public final class XMLTools {
   public static void parseXML(byte[] xml, DefaultHandler handler)
     throws IOException
   {
-    ome.scifio.xml.XMLTools.parseXML(xml, handler);
+    io.scif.xml.XMLTools.parseXML(xml, handler);
   }
 
   /**
@@ -190,7 +190,7 @@ public final class XMLTools {
   public static void parseXML(InputStream xml, DefaultHandler handler)
     throws IOException
   {
-    ome.scifio.xml.XMLTools.parseXML(xml, handler);
+    io.scif.xml.XMLTools.parseXML(xml, handler);
   }
 
   // -- XSLT --
@@ -199,26 +199,26 @@ public final class XMLTools {
   public static Templates getStylesheet(String resourcePath,
     Class<?> sourceClass)
   {
-    return ome.scifio.xml.XMLTools.getStylesheet(resourcePath, sourceClass);
+    return io.scif.xml.XMLTools.getStylesheet(resourcePath, sourceClass);
   }
 
   /** Replaces NS:tag with NS_tag for undeclared namespaces */
   public static String avoidUndeclaredNamespaces(String xml) {
-    return ome.scifio.xml.XMLTools.avoidUndeclaredNamespaces(xml);
+    return io.scif.xml.XMLTools.avoidUndeclaredNamespaces(xml);
   }
 
   /** Transforms the given XML string using the specified XSLT stylesheet. */
   public static String transformXML(String xml, Templates xslt)
     throws IOException
   {
-    return ome.scifio.xml.XMLTools.transformXML(xml, xslt);
+    return io.scif.xml.XMLTools.transformXML(xml, xslt);
   }
 
   /** Transforms the given XML data using the specified XSLT stylesheet. */
   public static String transformXML(Source xmlSource, Templates xslt)
     throws IOException
   {
-    return ome.scifio.xml.XMLTools.transformXML(xmlSource, xslt);
+    return io.scif.xml.XMLTools.transformXML(xmlSource, xslt);
   }
 
   // -- Validation --
@@ -230,7 +230,7 @@ public final class XMLTools {
    * @return whether or not validation was successful.
    */
   public static boolean validateXML(String xml) {
-    return ome.scifio.xml.XMLTools.validateXML(xml);
+    return io.scif.xml.XMLTools.validateXML(xml);
   }
 
   /**
@@ -241,7 +241,7 @@ public final class XMLTools {
    * @return whether or not validation was successful.
    */
   public static boolean validateXML(String xml, String label) {
-    return ome.scifio.xml.XMLTools.validateXML(xml, label);
+    return io.scif.xml.XMLTools.validateXML(xml, label);
   }
 
   // -- Helper class --

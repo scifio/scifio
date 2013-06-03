@@ -36,9 +36,10 @@
 
 package loci.formats.out;
 
+import io.scif.formats.ICSFormat;
+
 import java.io.IOException;
 
-import ome.scifio.formats.ICSFormat;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
@@ -52,7 +53,7 @@ import loci.legacy.context.LegacyContext;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/ICSWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/ICSWriter.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated Use ome.scifio.formats.ICSFormat instead.
+ * @deprecated Use io.scif.formats.ICSFormat instead.
  */
 @Deprecated
 public class ICSWriter extends SCIFIOFormatWriter {
@@ -67,7 +68,7 @@ public class ICSWriter extends SCIFIOFormatWriter {
     try {
       writer = format.createWriter();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create ICSFormat components");
     }
   }
@@ -95,7 +96,7 @@ public class ICSWriter extends SCIFIOFormatWriter {
   {
     try {
       writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }

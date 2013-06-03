@@ -36,18 +36,19 @@
 
 package ome.xml.meta;
 
+import io.scif.AbstractMetadata;
+import io.scif.services.ServiceException;
+
 import org.scijava.Context;
 
-import ome.scifio.AbstractMetadata;
-import ome.scifio.services.ServiceException;
 import ome.xml.services.OMEXMLMetadataService;
 import ome.xml.services.OMEXMLService;
 
 /**
- * ome.scifio.Metadata class wrapping an OME-XML root.
+ * io.scif.Metadata class wrapping an OME-XML root.
  * 
  * @see ome.xml.meta.OMEXMLMetadata
- * @see ome.scifio.Metadata
+ * @see io.scif.Metadata
  * 
  * @author Mark Hiner
  *
@@ -82,14 +83,14 @@ public class OMEMetadata extends AbstractMetadata {
   // -- Metadata API Methods --
   
   /*
-   * @see ome.scifio.AbstractMetadata#getFormatName()
+   * @see io.scif.AbstractMetadata#getFormatName()
    */
   public String getFormatName() {
     return FORMAT_NAME;
   }
   
   /*
-   * @see ome.scifio.AbstractMetadata#populateImageMetadata()
+   * @see io.scif.AbstractMetadata#populateImageMetadata()
    */
   public void populateImageMetadata() {
     getContext().getService(OMEXMLMetadataService.class).

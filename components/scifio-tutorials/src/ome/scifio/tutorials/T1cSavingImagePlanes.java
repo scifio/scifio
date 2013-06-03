@@ -14,15 +14,15 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package ome.scifio.tutorials;
+package io.scif.tutorials;
 
 import java.io.IOException;
 
-import ome.scifio.FormatException;
-import ome.scifio.Reader;
-import ome.scifio.SCIFIO;
-import ome.scifio.Writer;
-import ome.scifio.io.Location;
+import io.scif.FormatException;
+import io.scif.Reader;
+import io.scif.SCIFIO;
+import io.scif.Writer;
+import io.scif.io.Location;
 
 /**
  * Tutorial demonstrating use of the Writer component.

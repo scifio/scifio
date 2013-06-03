@@ -36,6 +36,18 @@
 
 package ome.xml.meta;
 
+import io.scif.AbstractHasSCIFIO;
+import io.scif.FormatException;
+import io.scif.Parser;
+import io.scif.Reader;
+import io.scif.common.Constants;
+import io.scif.filters.ChannelFiller;
+import io.scif.filters.ChannelSeparator;
+import io.scif.filters.FileStitcher;
+import io.scif.filters.ReaderFilter;
+import io.scif.services.ServiceException;
+import io.scif.util.FormatTools;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -48,17 +60,6 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import net.imglib2.meta.Axes;
-import ome.scifio.AbstractHasSCIFIO;
-import ome.scifio.FormatException;
-import ome.scifio.Parser;
-import ome.scifio.Reader;
-import ome.scifio.common.Constants;
-import ome.scifio.services.ServiceException;
-import ome.scifio.util.FormatTools;
-import ome.scifio.filters.ChannelFiller;
-import ome.scifio.filters.ChannelSeparator;
-import ome.scifio.filters.FileStitcher;
-import ome.scifio.filters.ReaderFilter;
 import ome.xml.DOMUtil;
 import ome.xml.r2003fc.ome.OMENode;
 import ome.xml.services.OMEXMLService;

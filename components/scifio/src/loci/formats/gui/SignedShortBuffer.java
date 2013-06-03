@@ -40,7 +40,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferShort;
 
 /**
- * Legacy delegator class for ome.scifio.gui.SignedShortBuffer.
+ * Legacy delegator class for io.scif.gui.SignedShortBuffer.
  *
  * SignedShortBuffer serves the same purpose as java.awt.image.DataBufferShort;
  * the only difference is that SignedShortBuffer's getType() method
@@ -52,45 +52,45 @@ import java.awt.image.DataBufferShort;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/SignedShortBuffer.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/SignedShortBuffer.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.gui.SignedShortBuffer
+ * @deprecated see io.scif.gui.SignedShortBuffer
  */
 @Deprecated
 public class SignedShortBuffer extends DataBuffer {
 
   // -- Fields --
   
-  private ome.scifio.gui.SignedShortBuffer sb;
+  private io.scif.gui.SignedShortBuffer sb;
 
   // -- Constructors --
 
   public SignedShortBuffer(int size) {
     super(DataBuffer.TYPE_USHORT, size);
-    sb = new ome.scifio.gui.SignedShortBuffer(size);
+    sb = new io.scif.gui.SignedShortBuffer(size);
   }
 
   public SignedShortBuffer(int size, int numbanks) {
     super(DataBuffer.TYPE_USHORT, size, numbanks);
-    sb = new ome.scifio.gui.SignedShortBuffer(size, numbanks);
+    sb = new io.scif.gui.SignedShortBuffer(size, numbanks);
   }
 
   public SignedShortBuffer(short[] data, int size) {
     super(DataBuffer.TYPE_USHORT, size);
-    sb = new ome.scifio.gui.SignedShortBuffer(data, size);
+    sb = new io.scif.gui.SignedShortBuffer(data, size);
   }
 
   public SignedShortBuffer(short[] data, int size, int offset) {
     super(DataBuffer.TYPE_USHORT, size, 1, offset);
-    sb = new ome.scifio.gui.SignedShortBuffer(data, size, offset);
+    sb = new io.scif.gui.SignedShortBuffer(data, size, offset);
   }
 
   public SignedShortBuffer(short[][] data, int size) {
     super(DataBuffer.TYPE_USHORT, size, data.length);
-    sb = new ome.scifio.gui.SignedShortBuffer(data, size);
+    sb = new io.scif.gui.SignedShortBuffer(data, size);
   }
 
   public SignedShortBuffer(short[][] data, int size, int[] offsets) {
     super(DataBuffer.TYPE_USHORT, size, data.length, offsets);
-    sb = new ome.scifio.gui.SignedShortBuffer(data, size, offsets);
+    sb = new io.scif.gui.SignedShortBuffer(data, size, offsets);
   }
 
   // -- DataBuffer API methods --

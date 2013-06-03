@@ -36,6 +36,10 @@
 
 package ome.xml.services;
 
+import io.scif.services.ServiceException;
+import io.scif.util.FormatTools;
+import io.scif.xml.XMLTools;
+
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
@@ -47,9 +51,6 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import ome.scifio.services.ServiceException;
-import ome.scifio.util.FormatTools;
-import ome.scifio.xml.XMLTools;
 import ome.xml.OMEXMLFactory;
 import ome.xml.meta.IMetadata;
 import ome.xml.meta.MetadataConverter;

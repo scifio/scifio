@@ -50,15 +50,15 @@ package loci.formats;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FilePatternBlock.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FilePatternBlock.java;hb=HEAD">Gitweb</a></dd></dl>
  *
- * @deprecated see ome.scifio.FilePatternBlock
+ * @deprecated see io.scif.FilePatternBlock
  */
 @Deprecated
-public class FilePatternBlock extends ome.scifio.FilePatternBlock {
+public class FilePatternBlock extends io.scif.FilePatternBlock {
 
   // -- Constants --
 
-  public static final String BLOCK_START = ome.scifio.FilePatternBlock.BLOCK_START;
-  public static final String BLOCK_END = ome.scifio.FilePatternBlock.BLOCK_END;
+  public static final String BLOCK_START = io.scif.FilePatternBlock.BLOCK_START;
+  public static final String BLOCK_END = io.scif.FilePatternBlock.BLOCK_END;
 
   // -- Constructor --
 

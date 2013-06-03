@@ -44,7 +44,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * A legacy delegator class for ome.scifio.io.FileHandle.
+ * A legacy delegator class for io.scif.io.FileHandle.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/FileHandle.java">Trac</a>,
@@ -55,14 +55,14 @@ import java.nio.ByteOrder;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.io.FileHandle
+ * @deprecated see io.scif.io.FileHandle
  */
 @Deprecated
 public class FileHandle implements IRandomAccess {
 
   // -- Fields --
 
-  private ome.scifio.io.FileHandle handle;
+  private io.scif.io.FileHandle handle;
 
   // -- Constructors --
 
@@ -71,7 +71,7 @@ public class FileHandle implements IRandomAccess {
    * optionally to write to, the file specified by the File argument.
    */
   public FileHandle(File file, String mode) throws FileNotFoundException {
-    handle = new ome.scifio.io.FileHandle(file, mode);
+    handle = new io.scif.io.FileHandle(file, mode);
   }
 
   /**
@@ -79,7 +79,7 @@ public class FileHandle implements IRandomAccess {
    * optionally to write to, a file with the specified name.
    */
   public FileHandle(String name, String mode) throws FileNotFoundException {
-    handle = new ome.scifio.io.FileHandle(name, mode);
+    handle = new io.scif.io.FileHandle(name, mode);
   }
 
   // -- FileHandle API methods --

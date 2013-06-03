@@ -36,15 +36,16 @@
 
 package loci.formats;
 
+import io.scif.DefaultImageMetadata;
+import io.scif.DefaultMetaTable;
+import io.scif.ImageMetadata;
+import io.scif.MetaTable;
+import io.scif.Metadata;
+
 import java.util.Hashtable;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import ome.scifio.DefaultImageMetadata;
-import ome.scifio.DefaultMetaTable;
-import ome.scifio.ImageMetadata;
-import ome.scifio.MetaTable;
-import ome.scifio.Metadata;
 
 /**
  * Encompasses core metadata values.
@@ -225,7 +226,7 @@ public class CoreMetadata implements Cloneable {
     this(scmeta.get(series));
   }
   
-  public CoreMetadata(ome.scifio.ImageMetadata imgMeta) {
+  public CoreMetadata(io.scif.ImageMetadata imgMeta) {
     AxisType[] axes = imgMeta.getAxes();
     int xIndex = -1, yIndex = -1, cIndex = -1, tIndex = -1, zIndex = -1;
     
@@ -259,7 +260,7 @@ public class CoreMetadata implements Cloneable {
     imageCount = imgMeta.getPlaneCount();
     cLengths = imgMeta.getChannelLengths();
     cTypes = imgMeta.getChannelTypes();
-    dimensionOrder = ome.scifio.util.FormatTools.findDimensionOrder(imgMeta.getAxes());
+    dimensionOrder = io.scif.util.FormatTools.findDimensionOrder(imgMeta.getAxes());
     orderCertain = imgMeta.isOrderCertain();
     rgb = imgMeta.isRGB();
     littleEndian = imgMeta.isLittleEndian();
@@ -275,10 +276,10 @@ public class CoreMetadata implements Cloneable {
   // -- CoreMetadata methods --
 
   /**
-   * Converts this CoreMetadata object to an ome.scifio.ImageMetadata.
+   * Converts this CoreMetadata object to an io.scif.ImageMetadata.
    * 
    */
-  public ome.scifio.ImageMetadata convert() {
+  public io.scif.ImageMetadata convert() {
     ImageMetadata imgMeta = new DefaultImageMetadata();
 
     int[] axisLengths = new int[5];

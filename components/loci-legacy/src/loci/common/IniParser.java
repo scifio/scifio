@@ -42,7 +42,7 @@ import java.io.IOException;
 import loci.legacy.adapter.Wrapper;
 
 /**
- * A legacy delegator class for ome.scifio.common.IniParser.
+ * A legacy delegator class for io.scif.common.IniParser.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/IniParser.java">Trac</a>,
@@ -50,19 +50,19 @@ import loci.legacy.adapter.Wrapper;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.common.IniParser
+ * @deprecated see io.scif.common.IniParser
  */
 @Deprecated
-public class IniParser implements Wrapper<ome.scifio.common.IniParser> {
+public class IniParser implements Wrapper<io.scif.common.IniParser> {
 
   // -- Fields --
   
-  private ome.scifio.common.IniParser parser;
+  private io.scif.common.IniParser parser;
   
   // -- Constructor --
   
   public IniParser() {
-    parser = new ome.scifio.common.IniParser();
+    parser = new io.scif.common.IniParser();
   }
 
   // -- IniParser API methods --
@@ -116,17 +116,17 @@ public class IniParser implements Wrapper<ome.scifio.common.IniParser> {
 
   /** Opens a buffered reader for the given resource. */
   public static BufferedReader openTextResource(String path) {
-    return ome.scifio.common.IniParser.openTextResource(path, IniParser.class);
+    return io.scif.common.IniParser.openTextResource(path, IniParser.class);
   }
 
   /** Opens a buffered reader for the given resource. */
   public static BufferedReader openTextResource(String path, Class<?> c) {
-    return ome.scifio.common.IniParser.openTextResource(path, c);
+    return io.scif.common.IniParser.openTextResource(path, c);
   }
   
   // -- Wrapper API Methods --
 
-  public ome.scifio.common.IniParser unwrap() {
+  public io.scif.common.IniParser unwrap() {
     return parser;
   }
 }

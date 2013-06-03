@@ -45,35 +45,35 @@ import loci.legacy.adapter.LegacyAdapter;
 
 /**
  * {@link LegacyAdapter} implementation for converting between
- * ome.scifio.MetadataOptions and loci.formats.in.MetadataOptions.
+ * io.scif.MetadataOptions and loci.formats.in.MetadataOptions.
  * 
  * @author Mark Hiner hinerm at gmail.com
  * 
- * @see ome.scifio.MetadataOptions
+ * @see io.scif.MetadataOptions
  * @see loci.formats.in.MetadataOptions
  */
 @Plugin(type=MetadataOptionsAdapter.class)
 public class MetadataOptionsAdapter extends
-  AbstractLegacyAdapter<MetadataOptions, ome.scifio.MetadataOptions>
+  AbstractLegacyAdapter<MetadataOptions, io.scif.MetadataOptions>
 {
   
   // -- Constructor --
 
   public MetadataOptionsAdapter()
   {
-    super(MetadataOptions.class, ome.scifio.MetadataOptions.class);
+    super(MetadataOptions.class, io.scif.MetadataOptions.class);
   }
   
   // -- AbstractLegacyAdapter API Methods --
 
   @Override
-  protected MetadataOptions wrapToLegacy(ome.scifio.MetadataOptions modern) {
+  protected MetadataOptions wrapToLegacy(io.scif.MetadataOptions modern) {
     return new DefaultMetadataOptions(MetadataLevelAdapter.get(modern.getMetadataLevel()));
   }
 
   @Override
-  protected ome.scifio.MetadataOptions wrapToModern(MetadataOptions legacy) {
-    return new ome.scifio.DefaultMetadataOptions(
+  protected io.scif.MetadataOptions wrapToModern(MetadataOptions legacy) {
+    return new io.scif.DefaultMetadataOptions(
         MetadataLevelAdapter.get(legacy.getMetadataLevel()));
   }
 }

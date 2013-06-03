@@ -35,13 +35,14 @@
  */
 package loci.formats;
 
+import io.scif.AbstractImageMetadata;
+import io.scif.DefaultMetaTable;
+import io.scif.ImageMetadata;
+import io.scif.MetaTable;
+
 import java.lang.ref.WeakReference;
 import java.util.Hashtable;
 
-import ome.scifio.AbstractImageMetadata;
-import ome.scifio.DefaultMetaTable;
-import ome.scifio.ImageMetadata;
-import ome.scifio.MetaTable;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -50,8 +51,8 @@ import loci.legacy.adapter.Wrapper;
 /**
  * This class is used for delegation in the Legacy
  * to Modern direction. It can be used in method signatures
- * expecting an {@link ome.scifio.ImageMetadata} - or,
- * more significantly, stored within an {@link ome.scifio.Metadata}
+ * expecting an {@link io.scif.ImageMetadata} - or,
+ * more significantly, stored within an {@link io.scif.Metadata}
  * - but dynamically calculates all values using
  * the wrapped @{link loci.formats.CoreMetadata}
  * 
@@ -86,99 +87,99 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   // -- Setters -- 
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setThumbSizeX(int)
+   * @see io.scif.AbstractImageMetadata#setThumbSizeX(int)
    */
   public void setThumbSizeX(final int thumbSizeX) {
     unwrap().thumbSizeX = thumbSizeX;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setThumbSizeY(int)
+   * @see io.scif.AbstractImageMetadata#setThumbSizeY(int)
    */
   public void setThumbSizeY(final int thumbSizeY) {
     unwrap().thumbSizeY = thumbSizeY;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setPixelType(int)
+   * @see io.scif.AbstractImageMetadata#setPixelType(int)
    */
   public void setPixelType(final int pixelType) {
     unwrap().pixelType = pixelType;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setBitsPerPixel(int)
+   * @see io.scif.AbstractImageMetadata#setBitsPerPixel(int)
    */
   public void setBitsPerPixel(final int bitsPerPixel) {
     unwrap().bitsPerPixel = bitsPerPixel;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setOrderCertain(boolean)
+   * @see io.scif.AbstractImageMetadata#setOrderCertain(boolean)
    */
   public void setOrderCertain(final boolean orderCertain) {
     unwrap().orderCertain = orderCertain;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setRGB(boolean)
+   * @see io.scif.AbstractImageMetadata#setRGB(boolean)
    */
   public void setRGB(final boolean rgb) {
     unwrap().rgb = rgb;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setLittleEndian(boolean)
+   * @see io.scif.AbstractImageMetadata#setLittleEndian(boolean)
    */
   public void setLittleEndian(final boolean littleEndian) {
     unwrap().littleEndian = littleEndian;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setInterleaved(boolean)
+   * @see io.scif.AbstractImageMetadata#setInterleaved(boolean)
    */
   public void setInterleaved(final boolean interleaved) {
     unwrap().interleaved = interleaved;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setIndexed(boolean)
+   * @see io.scif.AbstractImageMetadata#setIndexed(boolean)
    */
   public void setIndexed(final boolean indexed) {
     unwrap().indexed = indexed;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setFalseColor(boolean)
+   * @see io.scif.AbstractImageMetadata#setFalseColor(boolean)
    */
   public void setFalseColor(final boolean falseColor) {
     unwrap().falseColor = falseColor;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setMetadataComplete(boolean)
+   * @see io.scif.AbstractImageMetadata#setMetadataComplete(boolean)
    */
   public void setMetadataComplete(final boolean metadataComplete) {
     unwrap().metadataComplete = metadataComplete;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setThumbnail(boolean)
+   * @see io.scif.AbstractImageMetadata#setThumbnail(boolean)
    */
   public void setThumbnail(final boolean thumbnail) {
     unwrap().thumbnail = thumbnail;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setAxisTypes(net.imglib2.meta.AxisType[])
+   * @see io.scif.AbstractImageMetadata#setAxisTypes(net.imglib2.meta.AxisType[])
    */
   public void setAxisTypes(final AxisType[] axisTypes) {
     unwrap().dimensionOrder = 
-        ome.scifio.util.FormatTools.findDimensionOrder(axisTypes);
+        io.scif.util.FormatTools.findDimensionOrder(axisTypes);
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setAxisLengths(int[])
+   * @see io.scif.AbstractImageMetadata#setAxisLengths(int[])
    */
   public void setAxisLengths(final int[] axisLengths) {
     
@@ -200,7 +201,7 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setAxisLength(net.imglib2.meta.AxisType, int)
+   * @see io.scif.AbstractImageMetadata#setAxisLength(net.imglib2.meta.AxisType, int)
    */
   public void setAxisLength(final AxisType axis, final int length) {
     switch(axis.getLabel().toUpperCase().charAt(0)) {
@@ -219,7 +220,7 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setAxisType(int, net.imglib2.meta.AxisType)
+   * @see io.scif.AbstractImageMetadata#setAxisType(int, net.imglib2.meta.AxisType)
    */
   public void setAxisType(final int index, final AxisType axis) {
     String order = "";
@@ -242,14 +243,14 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   // -- Getters --
     
   /*
-   * @see ome.scifio.AbstractImageMetadata#getPlaneCount()
+   * @see io.scif.AbstractImageMetadata#getPlaneCount()
    */
   public int getPlaneCount() {
     return unwrap().imageCount;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getThumbSizeX()
+   * @see io.scif.AbstractImageMetadata#getThumbSizeX()
    */
   public int getThumbSizeX() {
     int thumbX = unwrap().thumbSizeX;
@@ -269,7 +270,7 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getThumbSizeY()
+   * @see io.scif.AbstractImageMetadata#getThumbSizeY()
    */
   public int getThumbSizeY() {
     int thumbY = unwrap().thumbSizeY;
@@ -290,133 +291,133 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getPixelType()
+   * @see io.scif.AbstractImageMetadata#getPixelType()
    */
   public int getPixelType() {
     return unwrap().pixelType;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getBitsPerPixel()
+   * @see io.scif.AbstractImageMetadata#getBitsPerPixel()
    */
   public int getBitsPerPixel() {
     return unwrap().bitsPerPixel;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#isOrderCertain()
+   * @see io.scif.AbstractImageMetadata#isOrderCertain()
    */
   public boolean isOrderCertain() {
     return unwrap().orderCertain;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#isRGB()
+   * @see io.scif.AbstractImageMetadata#isRGB()
    */
   public boolean isRGB() {
     return unwrap().rgb;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#isLittleEndian()
+   * @see io.scif.AbstractImageMetadata#isLittleEndian()
    */
   public boolean isLittleEndian() {
     return unwrap().littleEndian;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#isInterleaved()
+   * @see io.scif.AbstractImageMetadata#isInterleaved()
    */
   public boolean isInterleaved() {
     return unwrap().interleaved;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#isIndexed()
+   * @see io.scif.AbstractImageMetadata#isIndexed()
    */
   public boolean isIndexed() {
     return unwrap().indexed;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#isFalseColor()
+   * @see io.scif.AbstractImageMetadata#isFalseColor()
    */
   public boolean isFalseColor() {
     return unwrap().falseColor;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#isMetadataComplete()
+   * @see io.scif.AbstractImageMetadata#isMetadataComplete()
    */
   public boolean isMetadataComplete() {
     return unwrap().metadataComplete;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#isThumbnail()
+   * @see io.scif.AbstractImageMetadata#isThumbnail()
    */
   public boolean isThumbnail() {
     return unwrap().thumbnail;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setChannelLengths(int[])
+   * @see io.scif.AbstractImageMetadata#setChannelLengths(int[])
    */
   public void setChannelLengths(int[] cLengths) {
     unwrap().cLengths = cLengths;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#setChannelTypes(java.lang.String[])
+   * @see io.scif.AbstractImageMetadata#setChannelTypes(java.lang.String[])
    */
   public void setChannelTypes(String[] cTypes) {
     unwrap().cTypes = cTypes;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getChannelLengths()
+   * @see io.scif.AbstractImageMetadata#getChannelLengths()
    */
   public int[] getChannelLengths() {
     return unwrap().cLengths;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getChannelTypes()
+   * @see io.scif.AbstractImageMetadata#getChannelTypes()
    */
   public String[] getChannelTypes() {
     return unwrap().cTypes;
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#addAxis(net.imglib2.meta.AxisType)
+   * @see io.scif.AbstractImageMetadata#addAxis(net.imglib2.meta.AxisType)
    */
   public void addAxis(AxisType type) {
     throw new UnsupportedOperationException("Can not add axes to legacy CoreMetadata.");
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#addAxis(net.imglib2.meta.AxisType, int)
+   * @see io.scif.AbstractImageMetadata#addAxis(net.imglib2.meta.AxisType, int)
    */
   public void addAxis(AxisType type, int value) {
     throw new UnsupportedOperationException("Can not add axes to legacy CoreMetadata.");
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getAxisType(int)
+   * @see io.scif.AbstractImageMetadata#getAxisType(int)
    */
   public AxisType getAxisType(int planeIndex) {
     return getAxes()[planeIndex];
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getAxisLength(int)
+   * @see io.scif.AbstractImageMetadata#getAxisLength(int)
    */
   public int getAxisLength(int planeIndex) {
     return getAxesLengths()[planeIndex];
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getAxisLength(net.imglib2.meta.AxisType)
+   * @see io.scif.AbstractImageMetadata#getAxisLength(net.imglib2.meta.AxisType)
    */
   public int getAxisLength(AxisType t) {
     int index = getAxisIndex(t);
@@ -426,7 +427,7 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getAxisIndex(net.imglib2.meta.AxisType)
+   * @see io.scif.AbstractImageMetadata#getAxisIndex(net.imglib2.meta.AxisType)
    */
   public int getAxisIndex(AxisType type) {
     AxisType[] axes = getAxes();
@@ -439,7 +440,7 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getAxes()
+   * @see io.scif.AbstractImageMetadata#getAxes()
    */
   public AxisType[] getAxes() {
     types[0] = Axes.X;
@@ -461,7 +462,7 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   }
 
   /*
-   * @see ome.scifio.AbstractImageMetadata#getAxesLengths()
+   * @see io.scif.AbstractImageMetadata#getAxesLengths()
    */
   public int[] getAxesLengths() {
     lengths[0] = unwrap().sizeX;
@@ -483,7 +484,7 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   }
 
   /*
-   * @see ome.scifio.ImageMetadata#copy()
+   * @see io.scif.ImageMetadata#copy()
    */
   public ImageMetadata copy() {
     return unwrap().convert();
@@ -492,14 +493,14 @@ public class CoreMetadataWrapper extends AbstractImageMetadata
   // -- HasMetaTable methods --
 
   /*
-   * @see ome.scifio.HasMetaTable#getTable()
+   * @see io.scif.HasMetaTable#getTable()
    */
   public MetaTable getTable() {
     return new DefaultMetaTable(unwrap().seriesMetadata);
   }
 
   /*
-   * @see ome.scifio.HasMetaTable#setTable(ome.scifio.MetaTable)
+   * @see io.scif.HasMetaTable#setTable(io.scif.MetaTable)
    */
   public void setTable(MetaTable table) {
     unwrap().seriesMetadata = new Hashtable<String, Object>(table);

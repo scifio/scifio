@@ -35,17 +35,18 @@
  */
 package ome.xml.translation;
 
+import io.scif.FormatException;
+import io.scif.MetadataLevel;
+import io.scif.MetadataOptions;
+import io.scif.formats.ICSFormat;
+import io.scif.util.FormatTools;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
 import net.imglib2.meta.Axes;
-import ome.scifio.FormatException;
-import ome.scifio.MetadataLevel;
-import ome.scifio.MetadataOptions;
-import ome.scifio.formats.ICSFormat;
-import ome.scifio.util.FormatTools;
 import ome.xml.meta.FilterMetadata;
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.MetadataStore;
@@ -69,11 +70,11 @@ import org.scijava.plugin.Plugin;
 public class ICSTranslator {
 
   /**
-   * Translator class from {@link ome.scifio.formats.ICSFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.ICSFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}.
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -86,7 +87,7 @@ public class ICSTranslator {
   public static class OMEICSTranslator extends FromOMETranslator<ICSFormat.Metadata> {
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(OMEMetadata source, ICSFormat.Metadata dest) {
@@ -229,7 +230,7 @@ public class ICSTranslator {
    * {@link OMEMetadata}.
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -244,7 +245,7 @@ public class ICSTranslator {
     // -- Translator API --
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(ICSFormat.Metadata source, OMEMetadata dest)

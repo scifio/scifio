@@ -14,16 +14,16 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package ome.scifio.tutorials;
+package io.scif.tutorials;
 
 import java.io.IOException;
 
-import ome.scifio.Format;
-import ome.scifio.FormatException;
-import ome.scifio.Metadata;
-import ome.scifio.Parser;
-import ome.scifio.SCIFIO;
-import ome.scifio.xml.XMLTools;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.Metadata;
+import io.scif.Parser;
+import io.scif.SCIFIO;
+import io.scif.xml.XMLTools;
 import ome.xml.meta.OMEMetadata;
 
 /**

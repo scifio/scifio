@@ -41,7 +41,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * Legacy delegator class for ome.scifio.io.ByteArrayunwrap().
+ * Legacy delegator class for io.scif.io.ByteArrayunwrap().
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/ByteArrayunwrap().java">Trac</a>,
@@ -49,7 +49,7 @@ import java.nio.ByteOrder;
  *
  * @see IRandomAccess
  * 
- * @deprecated see ome.scifio.io.ByteArrayHandle
+ * @deprecated see io.scif.io.ByteArrayHandle
  */
 @Deprecated
 public class ByteArrayHandle extends AbstractNIOHandle {
@@ -65,11 +65,11 @@ public class ByteArrayHandle extends AbstractNIOHandle {
    * write to, the bytes specified by the byte[] argument.
    */
   public ByteArrayHandle(byte[] bytes) {
-    super(new ome.scifio.io.ByteArrayHandle(bytes));
+    super(new io.scif.io.ByteArrayHandle(bytes));
   }
 
   public ByteArrayHandle(ByteBuffer bytes) {
-    super(new ome.scifio.io.ByteArrayHandle(bytes));
+    super(new io.scif.io.ByteArrayHandle(bytes));
   }
 
   /**
@@ -77,19 +77,19 @@ public class ByteArrayHandle extends AbstractNIOHandle {
    * @param capacity Number of bytes to initially allocate.
    */
   public ByteArrayHandle(int capacity) {
-    super(new ome.scifio.io.ByteArrayHandle(capacity));
+    super(new io.scif.io.ByteArrayHandle(capacity));
   }
 
   /** Creates a random access byte stream to write to a byte array. */
   public ByteArrayHandle() {
-    super(new ome.scifio.io.ByteArrayHandle());
+    super(new io.scif.io.ByteArrayHandle());
   }
 
   // -- ByteArrayHandle API methods --
 
   /** Gets the byte array backing this Fileunwrap(). */
   public byte[] getBytes() {
-    return ((ome.scifio.io.ByteArrayHandle)unwrap()).getBytes();
+    return ((io.scif.io.ByteArrayHandle)unwrap()).getBytes();
   }
 
   /**
@@ -99,31 +99,31 @@ public class ByteArrayHandle extends AbstractNIOHandle {
    * @return Backing buffer of this unwrap().
    */
   public ByteBuffer getByteBuffer() {
-    return ((ome.scifio.io.ByteArrayHandle)unwrap()).getByteBuffer();
+    return ((io.scif.io.ByteArrayHandle)unwrap()).getByteBuffer();
   }
 
   // -- AbstractNIOHandle API methods --
 
   /* @see AbstractNIOunwrap().setLength(long) */
   public void setLength(long length) throws IOException {
-    ((ome.scifio.io.ByteArrayHandle)unwrap()).setLength(length);
+    ((io.scif.io.ByteArrayHandle)unwrap()).setLength(length);
   }
 
   // -- IRandomAccess API methods --
 
   /* @see IRandomAccess.close() */
   public void close() {
-    ((ome.scifio.io.ByteArrayHandle)unwrap()).close();
+    ((io.scif.io.ByteArrayHandle)unwrap()).close();
   }
 
   /* @see IRandomAccess.getFilePointer() */
   public long getFilePointer() {
-    return ((ome.scifio.io.ByteArrayHandle)unwrap()).getFilePointer();
+    return ((io.scif.io.ByteArrayHandle)unwrap()).getFilePointer();
   }
 
   /* @see IRandomAccess.length() */
   public long length() {
-    return ((ome.scifio.io.ByteArrayHandle)unwrap()).length();
+    return ((io.scif.io.ByteArrayHandle)unwrap()).length();
   }
 
   /* @see IRandomAccess.read(byte[]) */

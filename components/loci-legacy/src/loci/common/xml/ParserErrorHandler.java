@@ -42,7 +42,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
 /**
- * A legacy delegator class for ome.scifio.xml.ParserErrorHandler
+ * A legacy delegator class for io.scif.xml.ParserErrorHandler
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/ParserErrorHandler.java">Trac</a>,
@@ -50,16 +50,16 @@ import org.xml.sax.SAXParseException;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.xml.ParserErrorHandler
+ * @deprecated see io.scif.xml.ParserErrorHandler
  */
 @Deprecated
 public class ParserErrorHandler implements ErrorHandler,
-  Wrapper<ome.scifio.xml.ParserErrorHandler>
+  Wrapper<io.scif.xml.ParserErrorHandler>
 {
 
   // -- Fields --
   
-  private ome.scifio.xml.ParserErrorHandler eHandler = new ome.scifio.xml.ParserErrorHandler ();
+  private io.scif.xml.ParserErrorHandler eHandler = new io.scif.xml.ParserErrorHandler ();
   
   // -- Methods --
   
@@ -77,7 +77,7 @@ public class ParserErrorHandler implements ErrorHandler,
   
   // -- Wrapper API Methods --
 
-  public ome.scifio.xml.ParserErrorHandler unwrap() {
+  public io.scif.xml.ParserErrorHandler unwrap() {
     return eHandler;
   }
 

@@ -44,7 +44,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
 /**
- * A legacy delegator class for ome.scifio.io.NIOFileunwrap().
+ * A legacy delegator class for io.scif.io.NIOFileunwrap().
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/NIOFileunwrap().java">Trac</a>,
@@ -55,7 +55,7 @@ import java.nio.channels.FileChannel;
  *
  * @author Chris Allan <callan at blackcat dot ca>
  * 
- * @deprecated see ome.scifio.io.NIOFileHandle
+ * @deprecated see io.scif.io.NIOFileHandle
  */
 @Deprecated
 public class NIOFileHandle extends AbstractNIOHandle {
@@ -75,7 +75,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
    */
   public NIOFileHandle(File file, String mode, int bufferSize) 
     throws IOException {
-    super(new ome.scifio.io.NIOFileHandle(file, mode, bufferSize));
+    super(new io.scif.io.NIOFileHandle(file, mode, bufferSize));
   }
 
   /**
@@ -83,7 +83,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
    * optionally to write to, the file specified by the File argument.
    */
   public NIOFileHandle(File file, String mode) throws IOException {
-    super(new ome.scifio.io.NIOFileHandle(file, mode));
+    super(new io.scif.io.NIOFileHandle(file, mode));
   }
 
   /**
@@ -91,7 +91,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
    * optionally to write to, a file with the specified name.
    */
   public NIOFileHandle(String name, String mode) throws IOException {
-    super(new ome.scifio.io.NIOFileHandle(name, mode));
+    super(new io.scif.io.NIOFileHandle(name, mode));
   }
 
   // -- NIOFileHandle API methods --
@@ -103,7 +103,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
    * NIOFileHandle(File, String) constructors will use this buffer size.
    */
   public static void setDefaultBufferSize(int size) {
-    ome.scifio.io.NIOFileHandle.setDefaultBufferSize(size);
+    io.scif.io.NIOFileHandle.setDefaultBufferSize(size);
   }
 
   /**
@@ -113,25 +113,25 @@ public class NIOFileHandle extends AbstractNIOHandle {
    * NIOFileHandle(File, String) constructors will use this buffer size.
    */
   public static void setDefaultReadWriteBufferSize(int size) {
-    ome.scifio.io.NIOFileHandle.setDefaultReadWriteBufferSize(size);
+    io.scif.io.NIOFileHandle.setDefaultReadWriteBufferSize(size);
   }
 
   // -- FileHandle and Channel API methods --
 
   /** Gets the random access file object backing this Fileunwrap(). */
-  public RandomAccessFile getRandomAccessFile() { return ((ome.scifio.io.NIOFileHandle)unwrap()).getRandomAccessFile(); }
+  public RandomAccessFile getRandomAccessFile() { return ((io.scif.io.NIOFileHandle)unwrap()).getRandomAccessFile(); }
 
   /** Gets the FileChannel from this Fileunwrap(). */
-  public FileChannel getFileChannel() { return ((ome.scifio.io.NIOFileHandle)unwrap()).getFileChannel(); }
+  public FileChannel getFileChannel() { return ((io.scif.io.NIOFileHandle)unwrap()).getFileChannel(); }
 
   /** Gets the current buffer size. */
-  public int getBufferSize() { return ((ome.scifio.io.NIOFileHandle)unwrap()).getBufferSize(); }
+  public int getBufferSize() { return ((io.scif.io.NIOFileHandle)unwrap()).getBufferSize(); }
 
   // -- AbstractNIOHandle API methods --
 
   /* @see AbstractNIOunwrap().setLength(long) */
   public void setLength(long length) throws IOException {
-    ((ome.scifio.io.NIOFileHandle)unwrap()).setLength(length);
+    ((io.scif.io.NIOFileHandle)unwrap()).setLength(length);
   }
 
   // -- IRandomAccess API methods --

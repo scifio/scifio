@@ -35,6 +35,9 @@
  */
 package loci.legacy.utests;
 
+import io.scif.io.ByteArrayHandle;
+import io.scif.io.IRandomAccess;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
@@ -44,8 +47,6 @@ import static org.testng.AssertJUnit.assertNotNull;
 import loci.common.adapter.IRandomAccessAdapter;
 import loci.legacy.adapter.Wrapper;
 
-import ome.scifio.io.ByteArrayHandle;
-import ome.scifio.io.IRandomAccess;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -98,7 +99,7 @@ public class LegacyAdapterTest {
   
   @Test
   public void testGetLegacy() throws IOException {
-    currentIRA = new ome.scifio.io.ByteArrayHandle(BYTES);
+    currentIRA = new io.scif.io.ByteArrayHandle(BYTES);
     legacyIRA = (loci.common.IRandomAccess) adapter.get(currentIRA);
 
     System.gc();
@@ -110,7 +111,7 @@ public class LegacyAdapterTest {
   
   @Test
   public void testWeakRefs() throws IOException {
-    currentIRA = new ome.scifio.io.ByteArrayHandle(BYTES);
+    currentIRA = new io.scif.io.ByteArrayHandle(BYTES);
     WeakReference<loci.common.IRandomAccess> weakIRA =
       new WeakReference<loci.common.IRandomAccess> (
           (loci.common.IRandomAccess) adapter.get(currentIRA));

@@ -36,9 +36,9 @@
 
 package loci.formats.in;
 
+import io.scif.formats.DICOMFormat;
 import loci.formats.SCIFIOFormatReader;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.DICOMFormat;
 
 /**
  * DicomReader is the file format reader for DICOM files.
@@ -48,7 +48,7 @@ import ome.scifio.formats.DICOMFormat;
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/DicomReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/DicomReader.java;hb=HEAD">Gitweb</a></dd></dl>
- * @deprecated see ome.scifio.formats.DicomFormat
+ * @deprecated see io.scif.formats.DicomFormat
  */
 @Deprecated
 public class DicomReader extends SCIFIOFormatReader {
@@ -67,7 +67,7 @@ public class DicomReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create DicomFormat components");
     }
   }

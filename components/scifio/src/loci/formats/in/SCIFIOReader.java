@@ -35,6 +35,12 @@
  */
 package loci.formats.in;
 
+import io.scif.Checker;
+import io.scif.Format;
+import io.scif.Parser;
+import io.scif.Reader;
+import io.scif.gui.BufferedImageReader;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,11 +48,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ome.scifio.Checker;
-import ome.scifio.Format;
-import ome.scifio.Parser;
-import ome.scifio.Reader;
-import ome.scifio.gui.BufferedImageReader;
 
 import loci.common.RandomAccessInputStream;
 import loci.formats.FormatException;
@@ -56,7 +57,7 @@ import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
 
 /**
- * General purpose reader that can delegate to any discoverable {@link ome.scifio.Reader}.
+ * General purpose reader that can delegate to any discoverable {@link io.scif.Reader}.
  * 
  * @author Mark Hiner
  *
@@ -96,7 +97,7 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
         checkers.add(fmt.createChecker());
         parsers.add(fmt.createParser());
         
-      } catch (ome.scifio.FormatException e) {
+      } catch (io.scif.FormatException e) {
         LOGGER.warn("Exception while creating SCIFIOReader components: " + e);
       }
       
@@ -220,7 +221,7 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
         String imageName = id.substring(0, id.lastIndexOf(".")) + (s > 0 ? (s + 1) : "");
         store.setImageName(imageName, s);
       }
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -248,17 +249,17 @@ public class SCIFIOReader extends SCIFIOBIFormatReader {
   }
   
   public void setMetadataOptions(MetadataOptions options) {
-    ome.scifio.MetadataOptions sOpts = new ome.scifio.DefaultMetadataOptions();
+    io.scif.MetadataOptions sOpts = new io.scif.DefaultMetadataOptions();
 
     switch(options.getMetadataLevel()) {
       case ALL:
-        sOpts.setMetadataLevel(ome.scifio.MetadataLevel.ALL);
+        sOpts.setMetadataLevel(io.scif.MetadataLevel.ALL);
         break;
       case NO_OVERLAYS:
-        sOpts.setMetadataLevel(ome.scifio.MetadataLevel.NO_OVERLAYS);
+        sOpts.setMetadataLevel(io.scif.MetadataLevel.NO_OVERLAYS);
         break;
       case MINIMUM:
-        sOpts.setMetadataLevel(ome.scifio.MetadataLevel.MINIMUM);
+        sOpts.setMetadataLevel(io.scif.MetadataLevel.MINIMUM);
         break;
     }
     

@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.PGMFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,7 +45,6 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.PGMFormat;
 
 /**
  * PGMReader is the file format reader for Portable Gray Map (PGM) images.
@@ -54,7 +55,7 @@ import ome.scifio.formats.PGMFormat;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/PGMReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/PGMReader.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.PGMFormat
+ * @deprecated see io.scif.formats.PGMFormat
  */
 @Deprecated
 public class PGMReader extends SCIFIOFormatReader {
@@ -71,7 +72,7 @@ public class PGMReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create PGMFormat components");
     }
   }

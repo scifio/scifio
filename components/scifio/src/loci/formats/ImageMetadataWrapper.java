@@ -35,9 +35,10 @@
  */
 package loci.formats;
 
+import io.scif.ImageMetadata;
+
 import java.lang.ref.WeakReference;
 
-import ome.scifio.ImageMetadata;
 import loci.legacy.adapter.Wrapper;
 
 /**
@@ -45,7 +46,7 @@ import loci.legacy.adapter.Wrapper;
  * to Legacy direction. It can be used in method signatures
  * expecting a {@link loci.formats.CoreMetadata} but
  * delegates all functionality to the wrapped
- * {@link ome.scifio.ImageMetadata}.
+ * {@link io.scif.ImageMetadata}.
  * <p>
  * NB: because CoreMetadata contains public fields instead of
  * accessor and setter methods, it can be populated once

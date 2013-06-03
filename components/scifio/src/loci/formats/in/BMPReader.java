@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.BMPFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,7 +45,6 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.BMPFormat;
 
 /**
  * BMPReader is the file format reader for Microsoft Bitmap (BMP) files.
@@ -56,7 +57,7 @@ import ome.scifio.formats.BMPFormat;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.formats.BMPFormat
+ * @deprecated see io.scif.formats.BMPFormat
  */
 @Deprecated
 public class BMPReader extends SCIFIOFormatReader {
@@ -73,7 +74,7 @@ public class BMPReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create BMPFormat components");
     }
   }

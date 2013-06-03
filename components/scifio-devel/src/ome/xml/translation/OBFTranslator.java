@@ -1,10 +1,11 @@
 package ome.xml.translation;
 
+import io.scif.ImageMetadata;
+import io.scif.formats.OBFFormat;
+
 import java.util.List;
 
 import net.imglib2.meta.Axes;
-import ome.scifio.ImageMetadata;
-import ome.scifio.formats.OBFFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.model.primitives.PositiveFloat;
 
@@ -21,11 +22,11 @@ import org.scijava.plugin.Plugin;
 public class OBFTranslator {
 
   /**
-   * Translator class from {@link ome.scifio.formats.OBFFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.OBFFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner

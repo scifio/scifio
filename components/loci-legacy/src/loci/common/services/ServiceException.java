@@ -46,7 +46,7 @@ package loci.common.services;
  *
  * @author Chris Allan <callan at blackcat dot ca>
  */
-public class ServiceException extends ome.scifio.services.ServiceException
+public class ServiceException extends io.scif.services.ServiceException
 {
   /** Serial for this version. */
   private static final long serialVersionUID = 7402442944895106504L;

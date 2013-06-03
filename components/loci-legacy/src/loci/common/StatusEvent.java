@@ -39,45 +39,45 @@ package loci.common;
 import loci.legacy.adapter.Wrapper;
 
 /**
- * A legacy delegator class for ome.scifio.common.StatusEvent.
+ * A legacy delegator class for io.scif.common.StatusEvent.
  * 
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/StatusEvent.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/StatusEvent.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.common.StatusEvent
+ * @deprecated see io.scif.common.StatusEvent
  */
 @Deprecated
-public class StatusEvent implements Wrapper<ome.scifio.common.StatusEvent> {
+public class StatusEvent implements Wrapper<io.scif.common.StatusEvent> {
 
   // -- Fields --
 
-  private ome.scifio.common.StatusEvent event;
+  private io.scif.common.StatusEvent event;
 
   // -- Constructor --
 
   /** Constructs a status event. */
   public StatusEvent(String message) {
-    event = new ome.scifio.common.StatusEvent(message);
+    event = new io.scif.common.StatusEvent(message);
   }
 
   /** Constructs a status event. */
   public StatusEvent(String message, boolean warn) {
-    event = new ome.scifio.common.StatusEvent(message, warn);
+    event = new io.scif.common.StatusEvent(message, warn);
   }
 
   /** Constructs a status event. */
   public StatusEvent(int progress, int maximum, String message) {
-    event = new ome.scifio.common.StatusEvent(progress, maximum, message);
+    event = new io.scif.common.StatusEvent(progress, maximum, message);
   }
 
   /** Constructs a status event. */
   public StatusEvent(int progress, int maximum, String message, boolean warn) {
-    event = new ome.scifio.common.StatusEvent(progress, maximum, message, warn);
+    event = new io.scif.common.StatusEvent(progress, maximum, message, warn);
   }
   
-  /** Constructs a loci.common.StatusEvent from an ome.scifio.common.StatusEvent */
-  public StatusEvent(ome.scifio.common.StatusEvent e) {
+  /** Constructs a loci.common.StatusEvent from an io.scif.common.StatusEvent */
+  public StatusEvent(io.scif.common.StatusEvent e) {
     this.event = e;
   }
 
@@ -105,7 +105,7 @@ public class StatusEvent implements Wrapper<ome.scifio.common.StatusEvent> {
 
   // -- Wrapper API methods --
   
-  public ome.scifio.common.StatusEvent unwrap() {
+  public io.scif.common.StatusEvent unwrap() {
     return event;
   }
 

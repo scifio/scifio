@@ -35,8 +35,8 @@
  */
 package ome.xml.translation;
 
-import ome.scifio.MetadataLevel;
-import ome.scifio.formats.BMPFormat;
+import io.scif.MetadataLevel;
+import io.scif.formats.BMPFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.model.primitives.PositiveFloat;
 
@@ -53,11 +53,11 @@ import org.scijava.plugin.Plugin;
 public class BMPTranslator {
 
   /**
-   * Translator class from {@link ome.scifio.formats.BMPFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.BMPFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -72,7 +72,7 @@ public class BMPTranslator {
     // -- Translator API Methods --
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(BMPFormat.Metadata source, OMEMetadata dest) {

@@ -42,20 +42,20 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 
 /**
- * Legacy delegator class for ome.scifio.gui.UnsignedIntColorModel
+ * Legacy delegator class for io.scif.gui.UnsignedIntColorModel
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/UnsignedIntColorModel.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/UnsignedIntColorModel.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.gui.UnsignedIntColorModel
+ * @deprecated see io.scif.gui.UnsignedIntColorModel
  */
 @Deprecated
 public class UnsignedIntColorModel extends ColorModel {
 
   // -- Fields --
 
-  private ome.scifio.gui.UnsignedIntColorModel cm;
+  private io.scif.gui.UnsignedIntColorModel cm;
 
   // -- Constructors --
 
@@ -65,7 +65,7 @@ public class UnsignedIntColorModel extends ColorModel {
     super(pixelBits, makeBitArray(nChannels, pixelBits),
       AWTImageTools.makeColorSpace(nChannels), nChannels == 4, false,
       ColorModel.TRANSLUCENT, dataType);
-    cm = new ome.scifio.gui.UnsignedIntColorModel(pixelBits, dataType, nChannels);
+    cm = new io.scif.gui.UnsignedIntColorModel(pixelBits, dataType, nChannels);
   }
 
   // -- ColorModel API methods --

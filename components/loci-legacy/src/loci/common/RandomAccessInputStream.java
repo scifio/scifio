@@ -48,9 +48,9 @@ import loci.legacy.adapter.Wrapper;
 import loci.legacy.context.LegacyContext;
 
 /**
- * A legacy wrapper/delegator class for ome.scifio.io.RandomAccessInputStream.
+ * A legacy wrapper/delegator class for io.scif.io.RandomAccessInputStream.
  * <p>
- * This class can be used to convert an ome.scifio.io.RandomAccessInputStream
+ * This class can be used to convert an io.scif.io.RandomAccessInputStream
  * to a loci.common.RandomAccessInputStream for the purpose of backwards compatibility.
  * </p>
  * <dl><dt><b>Source code:</b></dt>
@@ -61,17 +61,17 @@ import loci.legacy.context.LegacyContext;
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Mark Hiner
  * 
- * @deprecated see ome.scifio.io.RandomAccessInputStream
+ * @deprecated see io.scif.io.RandomAccessInputStream
  */
 @Deprecated
 public class RandomAccessInputStream extends InputStream 
-  implements DataInput, Wrapper<ome.scifio.io.RandomAccessInputStream> {
+  implements DataInput, Wrapper<io.scif.io.RandomAccessInputStream> {
 
   // -- Constants --
 
   // -- Fields --
 
-  private WeakReference<ome.scifio.io.RandomAccessInputStream> rais;
+  private WeakReference<io.scif.io.RandomAccessInputStream> rais;
 
   // -- Constructors --
 
@@ -80,12 +80,12 @@ public class RandomAccessInputStream extends InputStream
    * around the given file.
    */
   public RandomAccessInputStream(String file) throws IOException {
-    this(new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), file));
+    this(new io.scif.io.RandomAccessInputStream(LegacyContext.get(), file));
   }
 
   /** Constructs a random access stream around the given handle. */
   public RandomAccessInputStream(IRandomAccess handle) throws IOException {
-    this(new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(),
+    this(new io.scif.io.RandomAccessInputStream(LegacyContext.get(),
         CommonAdapter.get(handle)));
   }
 
@@ -96,25 +96,25 @@ public class RandomAccessInputStream extends InputStream
   public RandomAccessInputStream(IRandomAccess handle, String file)
     throws IOException
   {
-    this( new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(),
+    this( new io.scif.io.RandomAccessInputStream(LegacyContext.get(),
         CommonAdapter.get(handle), file));
   }
 
   /** Constructs a random access stream around the given byte array. */
   public RandomAccessInputStream(byte[] array) throws IOException {
-    this( new ome.scifio.io.RandomAccessInputStream(LegacyContext.get(), array));
+    this( new io.scif.io.RandomAccessInputStream(LegacyContext.get(), array));
   }
   
   /** Wrapper constructor. */
-  public RandomAccessInputStream(ome.scifio.io.RandomAccessInputStream rais) {
-    this.rais = new WeakReference<ome.scifio.io.RandomAccessInputStream>(rais);
+  public RandomAccessInputStream(io.scif.io.RandomAccessInputStream rais) {
+    this.rais = new WeakReference<io.scif.io.RandomAccessInputStream>(rais);
     AdapterTools.map(this, rais);
   }
   
   // -- Wrapper API Methods --
   
   /* @see Wrapper#unwrap() */
-  public ome.scifio.io.RandomAccessInputStream unwrap() {
+  public io.scif.io.RandomAccessInputStream unwrap() {
     return rais.get();
   }
 

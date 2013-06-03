@@ -37,7 +37,7 @@
 package loci.common;
 
 /**
- * A legacy wrapper for ome.scifio.common.StatusReporter
+ * A legacy wrapper for io.scif.common.StatusReporter
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/StatusReporter.java">Trac</a>,
@@ -45,7 +45,7 @@ package loci.common;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.common.StatusReporter
+ * @deprecated see io.scif.common.StatusReporter
  */
 @Deprecated
 public interface StatusReporter {

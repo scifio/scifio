@@ -39,7 +39,7 @@ Type "ant -p" for a list of targets.
   <target name="test-no-jai" depends="compile-tests"
     description="run missing JAI ImageIO JAR tests" if="doTests">
     <copy tofile="${build.dir}/testng.xml" overwrite="true"
-      file="${tests.dir}/ome/scifio/utests/testng-no-jai.xml"/>
+      file="${tests.dir}/io/scif/utests/testng-no-jai.xml"/>
     <testng failureProperty="failedTest">
       <classpath>
         <pathelement location="${root.dir}/tools/"/><!-- log4j.properties -->
@@ -56,7 +56,7 @@ Type "ant -p" for a list of targets.
   <target name="test-no-ome-xml" depends="compile-tests"
     description="run missing OME-XML JAR tests" if="doTests">
     <copy tofile="${build.dir}/testng.xml" overwrite="true"
-      file="${tests.dir}/ome/scifio/utests/testng-no-ome-xml.xml"/>
+      file="${tests.dir}/io/scif/utests/testng-no-ome-xml.xml"/>
     <testng failureProperty="failedTest">
       <classpath>
         <pathelement location="${root.dir}/tools/"/><!-- log4j.properties -->

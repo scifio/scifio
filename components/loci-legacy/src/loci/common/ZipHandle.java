@@ -45,7 +45,7 @@ import loci.legacy.context.LegacyContext;
 import loci.utils.ProtectedMethodInvoker;
 
 /**
- * A legacy delegator class for ome.scifio.io.ZipHandle.
+ * A legacy delegator class for io.scif.io.ZipHandle.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/ZipHandle.java">Trac</a>,
@@ -55,7 +55,7 @@ import loci.utils.ProtectedMethodInvoker;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.io.ZipHandle
+ * @deprecated see io.scif.io.ZipHandle
  */
 @Deprecated
 public class ZipHandle extends StreamHandle {
@@ -67,7 +67,7 @@ public class ZipHandle extends StreamHandle {
   // -- Constructor --
 
   public ZipHandle(String file) throws IOException {
-    super(new ome.scifio.io.ZipHandle(LegacyContext.get(), file));
+    super(new io.scif.io.ZipHandle(LegacyContext.get(), file));
   }
 
   /**
@@ -77,31 +77,31 @@ public class ZipHandle extends StreamHandle {
    * @throws HandleException if the given file is not a Zip file.
    */
   public ZipHandle(String file, ZipEntry entry) throws IOException {
-    super(new ome.scifio.io.ZipHandle(LegacyContext.get(), file, entry));
+    super(new io.scif.io.ZipHandle(LegacyContext.get(), file, entry));
   }
 
   // -- ZipHandle API methods --
 
   /** Returns true if the given filename is a Zip file. */
   public static boolean isZipFile(String file) throws IOException {
-    ome.scifio.io.ZipHandle handle = new ome.scifio.io.ZipHandle(LegacyContext.get());
+    io.scif.io.ZipHandle handle = new io.scif.io.ZipHandle(LegacyContext.get());
     
     return handle.isConstructable(file);
   }
 
   /** Get the name of the backing Zip entry. */
   public String getEntryName() {
-    return ((ome.scifio.io.ZipHandle)unwrap()).getEntryName();
+    return ((io.scif.io.ZipHandle)unwrap()).getEntryName();
   }
 
   /** Returns the DataInputStream corresponding to the backing Zip entry. */
   public DataInputStream getInputStream() {
-    return ((ome.scifio.io.ZipHandle)unwrap()).getInputStream();
+    return ((io.scif.io.ZipHandle)unwrap()).getInputStream();
   }
 
   /** Returns the number of entries. */
   public int getEntryCount() {
-    return ((ome.scifio.io.ZipHandle)unwrap()).getEntryCount();
+    return ((io.scif.io.ZipHandle)unwrap()).getEntryCount();
   }
 
   // -- IRandomAccess API methods --

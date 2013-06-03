@@ -1469,7 +1469,7 @@ public abstract class FormatReader extends FormatHandler
   protected Correction getCorrection(String value) throws FormatException {
     try {
       return LegacyContext.get().getService(OMEXMLMetadataService.class).getCorrection(value);
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }
@@ -1483,7 +1483,7 @@ public abstract class FormatReader extends FormatHandler
   protected DetectorType getDetectorType(String value) throws FormatException {
     try {
       return LegacyContext.get().getService(OMEXMLMetadataService.class).getDetectorType(value);
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }
@@ -1517,7 +1517,7 @@ public abstract class FormatReader extends FormatHandler
   {
     try {
       return LegacyContext.get().getService(OMEXMLMetadataService.class).getExperimentType(value);
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }
@@ -1629,7 +1629,7 @@ public abstract class FormatReader extends FormatHandler
   protected Immersion getImmersion(String value) throws FormatException {
     try {
       return LegacyContext.get().getService(OMEXMLMetadataService.class).getImmersion(value);
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }
@@ -1643,7 +1643,7 @@ public abstract class FormatReader extends FormatHandler
   protected LaserMedium getLaserMedium(String value) throws FormatException {
     try {
       return LegacyContext.get().getService(OMEXMLMetadataService.class).getLaserMedium(value);
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }
@@ -1657,7 +1657,7 @@ public abstract class FormatReader extends FormatHandler
   protected LaserType getLaserType(String value) throws FormatException {
     try {
       return LegacyContext.get().getService(OMEXMLMetadataService.class).getLaserType(value);
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }

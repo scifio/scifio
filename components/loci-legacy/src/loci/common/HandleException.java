@@ -37,16 +37,16 @@
 package loci.common;
 
 /**
- * A legacy delegator class for ome.scifio.io.HandleException.
+ * A legacy delegator class for io.scif.io.HandleException.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/HandleException.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/HandleException.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.io.HandleException
+ * @deprecated see io.scif.io.HandleException
  */
 @Deprecated
-public class HandleException extends ome.scifio.io.HandleException {
+public class HandleException extends io.scif.io.HandleException {
 
   public HandleException() { super(); }
   public HandleException(String s) { super(s); }

@@ -50,16 +50,16 @@ import loci.legacy.context.LegacyContext;
 // optional org.apache.log4j, optional org.slf4j.impl
 
 /**
- * A legacy delegator class for ome.scifio.io.Location.
+ * A legacy delegator class for io.scif.io.Location.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Location.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Location.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.io.Location and ome.scifio.services.LocationService
+ * @deprecated see io.scif.io.Location and io.scif.services.LocationService
  */
 @Deprecated
-public class Location implements Wrapper<ome.scifio.io.Location> {
+public class Location implements Wrapper<io.scif.io.Location> {
 
   // -- Constants --
 
@@ -67,28 +67,28 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
 
   // -- Fields --
 
-  protected ome.scifio.io.Location loc;
+  protected io.scif.io.Location loc;
 
   // -- Constructors --
 
   public Location(String pathname) {
-    loc = new ome.scifio.io.Location(LegacyContext.get(), pathname);
+    loc = new io.scif.io.Location(LegacyContext.get(), pathname);
   }
 
   public Location(File file) {
-    loc = new ome.scifio.io.Location(LegacyContext.get(), file);
+    loc = new io.scif.io.Location(LegacyContext.get(), file);
   }
 
   public Location(String parent, String child) {
-    loc = new ome.scifio.io.Location(LegacyContext.get(), parent, child);
+    loc = new io.scif.io.Location(LegacyContext.get(), parent, child);
   }
 
   public Location(Location parent, String child) {
-    loc = new ome.scifio.io.Location(LegacyContext.get(), parent.getAbsolutePath(), child);
+    loc = new io.scif.io.Location(LegacyContext.get(), parent.getAbsolutePath(), child);
   }
   
-  // Private constructor for directly wrapping ome.scifio.io.Location
-  private Location(ome.scifio.io.Location location) {
+  // Private constructor for directly wrapping io.scif.io.Location
+  private Location(io.scif.io.Location location) {
     loc = location;
   }
   
@@ -468,7 +468,7 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
    * If this is not a directory, return null.
    */
   public Location[] listFiles() {
-    ome.scifio.io.Location[] locs = loc.listFiles();
+    io.scif.io.Location[] locs = loc.listFiles();
     if(locs == null) return null;
     
     Location[] files = new Location[locs.length];
@@ -499,7 +499,7 @@ public class Location implements Wrapper<ome.scifio.io.Location> {
   
   // -- Wrapper API Methods --
 
-  public ome.scifio.io.Location unwrap() {
+  public io.scif.io.Location unwrap() {
     return loc;
   }
 }

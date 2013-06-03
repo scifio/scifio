@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.MNGFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,7 +45,6 @@ import loci.formats.MetadataTools;
 import loci.formats.gui.SCIFIOBIFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.MNGFormat;
 
 /**
  * MNGReader is the file format reader for Multiple Network Graphics (MNG)
@@ -53,7 +54,7 @@ import ome.scifio.formats.MNGFormat;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/MNGReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/MNGReader.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.MNGFormat
+ * @deprecated see io.scif.formats.MNGFormat
  */
 @Deprecated
 public class MNGReader extends SCIFIOBIFormatReader {
@@ -72,7 +73,7 @@ public class MNGReader extends SCIFIOBIFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create MNGFormat components");
     }
   }

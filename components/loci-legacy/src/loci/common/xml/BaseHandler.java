@@ -45,7 +45,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * A legacy delegator class for ome.scifio.xml.BaseHandler.
+ * A legacy delegator class for io.scif.xml.BaseHandler.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/BaseHandler.java">Trac</a>,
@@ -53,16 +53,16 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.xml.BaseHandler
+ * @deprecated see io.scif.xml.BaseHandler
  */
 @Deprecated
 public class BaseHandler extends DefaultHandler
-  implements Wrapper<ome.scifio.xml.BaseHandler>
+  implements Wrapper<io.scif.xml.BaseHandler>
 {
 
   // -- Fields --
   
-  protected ome.scifio.xml.BaseHandler handler = new ome.scifio.xml.BaseHandler();
+  protected io.scif.xml.BaseHandler handler = new io.scif.xml.BaseHandler();
 
   // -- DefaultHandler API methods --
 
@@ -74,7 +74,7 @@ public class BaseHandler extends DefaultHandler
   
   // -- Wrapper API Methods --
 
-  public ome.scifio.xml.BaseHandler unwrap() {
+  public io.scif.xml.BaseHandler unwrap() {
     return handler;
   }
 }

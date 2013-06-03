@@ -39,7 +39,7 @@ package loci.formats.gui;
 import java.awt.image.DataBuffer;
 
 /**
- * Legacy delegator class for ome.scifio.gui.SignedByteBuffer
+ * Legacy delegator class for io.scif.gui.SignedByteBuffer
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/SignedByteBuffer.java">Trac</a>,
@@ -47,27 +47,27 @@ import java.awt.image.DataBuffer;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.gui.SignedByteBuffer
+ * @deprecated see io.scif.gui.SignedByteBuffer
  */
 @Deprecated
 public class SignedByteBuffer extends DataBuffer {
 
   // -- Fields --
   
-  private ome.scifio.gui.SignedByteBuffer bb;
+  private io.scif.gui.SignedByteBuffer bb;
   
   // -- Constructors --
 
   /** Construct a new buffer of signed bytes using the given byte array.  */
   public SignedByteBuffer(byte[] dataArray, int size) {
     super(DataBuffer.TYPE_BYTE, size);
-    bb = new ome.scifio.gui.SignedByteBuffer(dataArray, size);
+    bb = new io.scif.gui.SignedByteBuffer(dataArray, size);
   }
 
   /** Construct a new buffer of signed bytes using the given 2D byte array. */
   public SignedByteBuffer(byte[][] dataArray, int size) {
     super(DataBuffer.TYPE_BYTE, size);
-    bb = new ome.scifio.gui.SignedByteBuffer(dataArray, size);
+    bb = new io.scif.gui.SignedByteBuffer(dataArray, size);
   }
   
   // -- SignedByteBuffer API --

@@ -46,21 +46,21 @@ import loci.legacy.adapter.Wrapper;
 import loci.legacy.context.LegacyContext;
 
 /**
- * A legacy delegator class for ome.scifio.io.RandomAccessOutputStream
+ * A legacy delegator class for io.scif.io.RandomAccessOutputStream
  * 
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/RandomAccessOutputStream.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/RandomAccessOutputStream.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.io.RandomAccessOutputStream
+ * @deprecated see io.scif.io.RandomAccessOutputStream
  */
 @Deprecated
 public class RandomAccessOutputStream extends OutputStream 
-  implements DataOutput, Wrapper<ome.scifio.io.RandomAccessOutputStream>
+  implements DataOutput, Wrapper<io.scif.io.RandomAccessOutputStream>
 {
   // -- Fields --
 
-  private ome.scifio.io.RandomAccessOutputStream raos;
+  private io.scif.io.RandomAccessOutputStream raos;
 
   // -- Constructor --
 
@@ -70,7 +70,7 @@ public class RandomAccessOutputStream extends OutputStream
    * @throws IOException If there is a problem opening the file.
    */
   public RandomAccessOutputStream(String file) throws IOException {
-    raos = new ome.scifio.io.RandomAccessOutputStream(LegacyContext.get(), file);
+    raos = new io.scif.io.RandomAccessOutputStream(LegacyContext.get(), file);
   }
 
   /**
@@ -78,7 +78,7 @@ public class RandomAccessOutputStream extends OutputStream
    * @param handle Handle to open the stream for.
    */
   public RandomAccessOutputStream(IRandomAccess handle) {
-    raos = new ome.scifio.io.RandomAccessOutputStream(CommonAdapter.get(handle));
+    raos = new io.scif.io.RandomAccessOutputStream(CommonAdapter.get(handle));
   }
 
   // -- RandomAccessOutputStream API methods --
@@ -226,7 +226,7 @@ public class RandomAccessOutputStream extends OutputStream
   /*
    * @see loci.legacy.adapter.Wrapper#unwrap()
    */
-  public ome.scifio.io.RandomAccessOutputStream unwrap() {
+  public io.scif.io.RandomAccessOutputStream unwrap() {
     return raos;
   }
 }

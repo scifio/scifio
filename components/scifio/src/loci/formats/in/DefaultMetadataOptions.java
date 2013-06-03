@@ -43,7 +43,7 @@ package loci.formats.in;
  *
  * @author callan
  * 
- * @deprecated see ome.scifio.DefaultMetadataOptions
+ * @deprecated see io.scif.DefaultMetadataOptions
  */
 @Deprecated
 public class DefaultMetadataOptions implements MetadataOptions {

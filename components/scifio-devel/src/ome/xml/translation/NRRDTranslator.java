@@ -36,8 +36,8 @@
 
 package ome.xml.translation;
 
-import ome.scifio.MetadataLevel;
-import ome.scifio.formats.NRRDFormat;
+import io.scif.MetadataLevel;
+import io.scif.formats.NRRDFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.model.primitives.PositiveFloat;
 
@@ -54,11 +54,11 @@ import org.scijava.plugin.Plugin;
 public class NRRDTranslator {
 
   /**
-   * Translator class from {@link ome.scifio.formats.NRRDFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.NRRDFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner

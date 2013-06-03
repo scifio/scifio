@@ -36,8 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.TIFFFormat;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.TIFFFormat;
 
 /**
  * TiffReader is the file format reader for regular TIFF files,
@@ -50,7 +50,7 @@ import ome.scifio.formats.TIFFFormat;
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.formats.TIFFFormat
+ * @deprecated see io.scif.formats.TIFFFormat
  */
 @Deprecated
 public class TiffReader extends BaseTiffReader {
@@ -71,7 +71,7 @@ public class TiffReader extends BaseTiffReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create TIFFFormat components");
     }
   }

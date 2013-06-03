@@ -36,6 +36,9 @@
 
 package loci.formats.in;
 
+import io.scif.formats.MicromanagerFormat;
+import io.scif.formats.MicromanagerFormat.Metadata;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,8 +46,6 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.MicromanagerFormat;
-import ome.scifio.formats.MicromanagerFormat.Metadata;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 
@@ -55,7 +56,7 @@ import ome.xml.meta.OMEXMLMetadata;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/MicromanagerReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/MicromanagerReader.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.MicromanagerFormat
+ * @deprecated see io.scif.formats.MicromanagerFormat
  */
 @Deprecated
 public class MicromanagerReader extends SCIFIOFormatReader {
@@ -72,7 +73,7 @@ public class MicromanagerReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create MicromanagerFormat components");
     }
   }
@@ -87,7 +88,7 @@ public class MicromanagerReader extends SCIFIOFormatReader {
       
       try {
         ((MicromanagerFormat.Parser)parser).populateMetadataStore(jsonData, (Metadata) reader.getMetadata(), meta);
-      } catch (ome.scifio.FormatException e) {
+      } catch (io.scif.FormatException e) {
         LOGGER.error("Error populating MetadataStore using Micromanager Metadata", e);
       }
     }

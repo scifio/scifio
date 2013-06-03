@@ -45,7 +45,7 @@ import loci.legacy.adapter.AdapterTools;
 import loci.legacy.adapter.Wrapper;
 
 /**
- * Legacy delegator class for ome.scifio.io.StreamHandle.
+ * Legacy delegator class for io.scif.io.StreamHandle.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/StreamHandle.java">Trac</a>,
@@ -55,21 +55,21 @@ import loci.legacy.adapter.Wrapper;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.io.StreamHandle
+ * @deprecated see io.scif.io.StreamHandle
  */
 @Deprecated
-public abstract class StreamHandle implements IRandomAccess, Wrapper<ome.scifio.io.StreamHandle> {
+public abstract class StreamHandle implements IRandomAccess, Wrapper<io.scif.io.StreamHandle> {
 
   // -- Fields --
 
-  private WeakReference<? extends ome.scifio.io.StreamHandle> sHandle;
+  private WeakReference<? extends io.scif.io.StreamHandle> sHandle;
 
   // -- Constructor --
   
   public StreamHandle() { }
   
-  public StreamHandle(ome.scifio.io.StreamHandle handle) {
-    sHandle = new WeakReference<ome.scifio.io.StreamHandle>(handle);
+  public StreamHandle(io.scif.io.StreamHandle handle) {
+    sHandle = new WeakReference<io.scif.io.StreamHandle>(handle);
     AdapterTools.map(this, handle);
   }
 
@@ -286,7 +286,7 @@ public abstract class StreamHandle implements IRandomAccess, Wrapper<ome.scifio.
   
   // -- Wrapper API Methods --
   
-  public ome.scifio.io.StreamHandle unwrap() {
+  public io.scif.io.StreamHandle unwrap() {
     return sHandle.get();
   }
 

@@ -14,26 +14,26 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package ome.scifio.tutorials;
+package io.scif.tutorials;
 
 import java.io.IOException;
 import java.util.Arrays;
 
 import org.scijava.plugin.Plugin;
 
-import ome.scifio.AbstractChecker;
-import ome.scifio.AbstractFormat;
-import ome.scifio.AbstractMetadata;
-import ome.scifio.AbstractParser;
-import ome.scifio.AbstractWriter;
-import ome.scifio.ByteArrayPlane;
-import ome.scifio.ByteArrayReader;
-import ome.scifio.Field;
-import ome.scifio.Format;
-import ome.scifio.FormatException;
-import ome.scifio.Plane;
-import ome.scifio.SCIFIO;
-import ome.scifio.io.RandomAccessInputStream;
+import io.scif.AbstractChecker;
+import io.scif.AbstractFormat;
+import io.scif.AbstractMetadata;
+import io.scif.AbstractParser;
+import io.scif.AbstractWriter;
+import io.scif.ByteArrayPlane;
+import io.scif.ByteArrayReader;
+import io.scif.Field;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.Plane;
+import io.scif.SCIFIO;
+import io.scif.io.RandomAccessInputStream;
 
 /**
  * Tutorial demonstrating defining your own image Format, and how to
@@ -142,8 +142,8 @@ public class T3bCustomFormats {
     // SCIFIO convention is to implement these as nested classes within
     // the owning Format, so related components are physically stored
     // together. Any component type not declared here will revert to
-    // a Default implementation (e.g. ome.scifio.DefaultWriter). You should
-    // look at the Default implementations in ome.scifio and to determine
+    // a Default implementation (e.g. io.scif.DefaultWriter). You should
+    // look at the Default implementations in io.scif and to determine
     // which of these are sufficient for your needs.
     // In this tutorial, we will provide examples of each component type,
     // but note that we have not included our Checker in this class list
@@ -160,7 +160,7 @@ public class T3bCustomFormats {
     // is simply a bag of information.
     public static class Metadata extends AbstractMetadata {
 
-      // The ome.scifio.Field notation flags fields as significant for a
+      // The io.scif.Field notation flags fields as significant for a
       // Metadata class, and is intended to represent the original state
       // of the metadata as it would be found in the image source.
       // The label tag allows preservation of naming schemes that would

@@ -14,7 +14,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package ome.scifio.tutorials;
+package io.scif.tutorials;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -25,13 +25,13 @@ import org.scijava.plugin.Plugin;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
-import ome.scifio.AbstractTranslator;
-import ome.scifio.Format;
-import ome.scifio.FormatException;
-import ome.scifio.Metadata;
-import ome.scifio.SCIFIO;
-import ome.scifio.Translator;
-import ome.scifio.formats.FakeFormat;
+import io.scif.AbstractTranslator;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.Metadata;
+import io.scif.SCIFIO;
+import io.scif.Translator;
+import io.scif.formats.FakeFormat;
 
 /**
  * Tutorial demonstrating translation between Metadata types.
@@ -91,7 +91,7 @@ public class T3cTranslatingMetadata {
     // To convert between image formats, common metadata was stored in
     // loci.formats.CoreMetadata, and format-specific metadata was converted to
     // OME-XML which could then be used to write an OME-TIFF out.
-    // In SCIFIO, we provide ome.scifio.DatasetMetadata to record certain
+    // In SCIFIO, we provide io.scif.DatasetMetadata to record certain
     // common image characteristics, but any number of open-exchange formats
     // could be devised. It would just be a matter of defining translators
     // for converting from other image formats to the open format.

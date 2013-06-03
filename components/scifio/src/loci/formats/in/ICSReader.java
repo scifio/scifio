@@ -36,15 +36,16 @@
 
 package loci.formats.in;
 
+import io.scif.SCIFIO;
+import io.scif.Translator;
+import io.scif.formats.ICSFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatReader;
 import loci.legacy.context.LegacyContext;
 
-import ome.scifio.SCIFIO;
-import ome.scifio.Translator;
-import ome.scifio.formats.ICSFormat;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.meta.OMEXMLMetadataImpl;
@@ -63,7 +64,7 @@ import ome.xml.services.OMEXMLMetadataService;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated Use ome.scifio.formats.ICSFormat instead.
+ * @deprecated Use io.scif.formats.ICSFormat instead.
  */
 @Deprecated
 public class ICSReader extends SCIFIOFormatReader {
@@ -82,7 +83,7 @@ public class ICSReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create ICSFormat components");
     }
   }
@@ -96,7 +97,7 @@ public class ICSReader extends SCIFIOFormatReader {
 
   /* @see loci.formats.IFormatReader#fileGroupOption(String) */
   public int fileGroupOption(String id) throws FormatException, IOException {
-    return ome.scifio.util.FormatTools.MUST_GROUP;
+    return io.scif.util.FormatTools.MUST_GROUP;
   }
 
   @Override
@@ -110,17 +111,17 @@ public class ICSReader extends SCIFIOFormatReader {
     
     OMEMetadata omeMeta = new OMEMetadata(reader.getContext(), omeRoot);
     
-    ome.scifio.MetadataOptions options = null;
+    io.scif.MetadataOptions options = null;
     
     switch (metadataOptions.getMetadataLevel()) {
     case MINIMUM: options =
-        new ome.scifio.DefaultMetadataOptions(ome.scifio.MetadataLevel.MINIMUM);
+        new io.scif.DefaultMetadataOptions(io.scif.MetadataLevel.MINIMUM);
     break;
     case NO_OVERLAYS: options =
-        new ome.scifio.DefaultMetadataOptions(ome.scifio.MetadataLevel.NO_OVERLAYS);
+        new io.scif.DefaultMetadataOptions(io.scif.MetadataLevel.NO_OVERLAYS);
     break;
     case ALL: options =
-        new ome.scifio.DefaultMetadataOptions(ome.scifio.MetadataLevel.ALL);
+        new io.scif.DefaultMetadataOptions(io.scif.MetadataLevel.ALL);
     break;
     }
     

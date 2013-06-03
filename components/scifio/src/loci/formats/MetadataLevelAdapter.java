@@ -36,14 +36,14 @@
 
 package loci.formats;
 
-import ome.scifio.MetadataLevel;
+import io.scif.MetadataLevel;
 
 /**
- * Convenience class for converting between ome.scifio.MetadataLevel and
+ * Convenience class for converting between io.scif.MetadataLevel and
  * loci.formats.in.MetadataLevel
  * 
- * @see ome.scifio.MetadataLevel
- * @see ome.scifio.in.MetadataLevel
+ * @see io.scif.MetadataLevel
+ * @see io.scif.in.MetadataLevel
  * 
  * @author Mark Hiner hinerm at gmail.com
  *

@@ -44,7 +44,7 @@ import java.util.Set;
 import loci.legacy.adapter.Wrapper;
 
 /**
- * A legacy delegator class for ome.scifio.common.IniTable.
+ * A legacy delegator class for io.scif.common.IniTable.
  * 
  * Uses an "isa" relationship to preserve the inherited methods
  * of IniTable from HashMap.
@@ -55,35 +55,35 @@ import loci.legacy.adapter.Wrapper;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.common.IniTable
+ * @deprecated see io.scif.common.IniTable
  */
 @Deprecated
 public class IniTable extends HashMap<String, String>
-  implements Wrapper<ome.scifio.common.IniTable>
+  implements Wrapper<io.scif.common.IniTable>
 {
 
   // -- Fields --
   
-  private ome.scifio.common.IniTable table;
+  private io.scif.common.IniTable table;
   
   // -- Constants --
   
   /** Key to use for storing header value (in brackets). */
-  public static final String HEADER_KEY = ome.scifio.common.IniTable.HEADER_KEY;
+  public static final String HEADER_KEY = io.scif.common.IniTable.HEADER_KEY;
   
   // -- Constructor --
   
   public IniTable() {
-    table = new ome.scifio.common.IniTable();
+    table = new io.scif.common.IniTable();
   }
   
   // -- Accessors --
 
-  public ome.scifio.common.IniTable getTable() {
+  public io.scif.common.IniTable getTable() {
     return table;
   }
 
-  public void setTable(ome.scifio.common.IniTable table) {
+  public void setTable(io.scif.common.IniTable table) {
     this.table = table;
   }
   
@@ -155,7 +155,7 @@ public class IniTable extends HashMap<String, String>
 
   // -- Wrapper API Methods --
   
-  public ome.scifio.common.IniTable unwrap() {
+  public io.scif.common.IniTable unwrap() {
     return table;
   }
 }

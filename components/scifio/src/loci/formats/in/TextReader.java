@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.TextFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -44,7 +46,6 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.TextFormat;
 
 /**
  * Reader for text files containing tables of data. All image planes
@@ -60,7 +61,7 @@ import ome.scifio.formats.TextFormat;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.formats.TextFormat
+ * @deprecated see io.scif.formats.TextFormat
  */
 @Deprecated
 public class TextReader extends SCIFIOFormatReader {
@@ -77,7 +78,7 @@ public class TextReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create TextFormat components");
     }
   }

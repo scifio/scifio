@@ -50,13 +50,13 @@ import loci.legacy.adapter.Wrapper;
 /**
  * As interfaces can not contain implementation, this class manages
  * interface-level delegation between {@link loci.common.IRandomAccess} and
- * {@link ome.scifio.io.IRandomAccess}
+ * {@link io.scif.io.IRandomAccess}
  * <p>
  * Delegation is maintained by two WeakHashTables. See {@link AbstractLegacyAdapter}
  * </p>
  * <p>
  * Functionally, the delegation is handled in the nested classes - one for
- * wrapping from ome.scifio.io.IRandomAccess to loci.common.IRandomAccess,
+ * wrapping from io.scif.io.IRandomAccess to loci.common.IRandomAccess,
  * and one for the reverse direction.
  * </p>
  * @author Mark Hiner
@@ -64,23 +64,23 @@ import loci.legacy.adapter.Wrapper;
  */
 @Plugin(type=IRandomAccessAdapter.class)
 public class IRandomAccessAdapter extends 
-  AbstractLegacyAdapter<IRandomAccess, ome.scifio.io.IRandomAccess> {
+  AbstractLegacyAdapter<IRandomAccess, io.scif.io.IRandomAccess> {
   
   // -- Constructor --
   
   public IRandomAccessAdapter() {
-    super(IRandomAccess.class, ome.scifio.io.IRandomAccess.class);
+    super(IRandomAccess.class, io.scif.io.IRandomAccess.class);
   }
   
   // -- LegacyAdapter API Methods --
 
   @Override
-  protected IRandomAccess wrapToLegacy(ome.scifio.io.IRandomAccess modern) {
+  protected IRandomAccess wrapToLegacy(io.scif.io.IRandomAccess modern) {
     return new ModernWrapper(modern);
   }
 
   @Override
-  protected ome.scifio.io.IRandomAccess wrapToModern(IRandomAccess legacy) {
+  protected io.scif.io.IRandomAccess wrapToModern(IRandomAccess legacy) {
     return new LegacyWrapper(legacy);
   }
   
@@ -88,7 +88,7 @@ public class IRandomAccessAdapter extends
 
   /**
    * This class can be used to wrap loci.common.IRandomAccess
-   * objects and be passed to API expecting an ome.scifio.io.IRandomAccess
+   * objects and be passed to API expecting an io.scif.io.IRandomAccess
    * object.
    * <p>
    * All functionality is delegated to the loci-common implementation.
@@ -97,7 +97,7 @@ public class IRandomAccessAdapter extends
    * @author Mark Hiner
    */
   public static class LegacyWrapper
-    implements ome.scifio.io.IRandomAccess, Wrapper<IRandomAccess> {
+    implements io.scif.io.IRandomAccess, Wrapper<IRandomAccess> {
     
     // -- Fields --
     
@@ -284,7 +284,7 @@ public class IRandomAccessAdapter extends
   }
   
   /**
-   * This class can be used to wrap ome.scifio.io.IRandomAccess
+   * This class can be used to wrap io.scif.io.IRandomAccess
    * objects and be passed to API expecting a loci.common.IRandomAccess
    * object.
    * <p>
@@ -293,22 +293,22 @@ public class IRandomAccessAdapter extends
    * 
    * @author Mark Hiner
    */
-  public static class ModernWrapper implements IRandomAccess, Wrapper<ome.scifio.io.IRandomAccess> {
+  public static class ModernWrapper implements IRandomAccess, Wrapper<io.scif.io.IRandomAccess> {
     
     // -- Fields --
 
-    private WeakReference<ome.scifio.io.IRandomAccess> ira;
+    private WeakReference<io.scif.io.IRandomAccess> ira;
 
     // -- Constructor --
 
-    public ModernWrapper(ome.scifio.io.IRandomAccess ira) {
-      this.ira = new WeakReference<ome.scifio.io.IRandomAccess>(ira);
+    public ModernWrapper(io.scif.io.IRandomAccess ira) {
+      this.ira = new WeakReference<io.scif.io.IRandomAccess>(ira);
     }
     
     // -- Wrapper API Methods --
 
     /* @see Wrapper#unwrap() */
-    public ome.scifio.io.IRandomAccess unwrap() {
+    public io.scif.io.IRandomAccess unwrap() {
       return ira.get();
     }
 

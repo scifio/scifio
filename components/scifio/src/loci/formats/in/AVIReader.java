@@ -36,9 +36,10 @@
 
 package loci.formats.in;
 
+import io.scif.formats.AVIFormat;
+
 import java.io.IOException;
 
-import ome.scifio.formats.AVIFormat;
 
 import loci.formats.FormatException;
 import loci.formats.MetadataTools;
@@ -56,7 +57,7 @@ import loci.legacy.context.LegacyContext;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/AVIReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/AVIReader.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.AVIFormat
+ * @deprecated see io.scif.formats.AVIFormat
  */
 @Deprecated
 public class AVIReader extends SCIFIOFormatReader {
@@ -69,7 +70,7 @@ public class AVIReader extends SCIFIOFormatReader {
       checker = format.createChecker();
       parser = format.createParser();
       reader = format.createReader();
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create AVIFormat components");
     }
   }

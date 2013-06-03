@@ -36,16 +36,17 @@
 
 package ome.xml.translation;
 
+import io.scif.FormatException;
+import io.scif.MetadataLevel;
+import io.scif.common.DateTools;
+import io.scif.formats.MicromanagerFormat;
+import io.scif.formats.MicromanagerFormat.Metadata;
+import io.scif.formats.MicromanagerFormat.Position;
+import io.scif.io.Location;
+
 import java.io.IOException;
 import java.util.Vector;
 
-import ome.scifio.FormatException;
-import ome.scifio.MetadataLevel;
-import ome.scifio.common.DateTools;
-import ome.scifio.formats.MicromanagerFormat;
-import ome.scifio.formats.MicromanagerFormat.Metadata;
-import ome.scifio.formats.MicromanagerFormat.Position;
-import ome.scifio.io.Location;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.primitives.PositiveFloat;
@@ -66,10 +67,10 @@ public class MicromanagerTranslator {
 
   /**
    * Translator class from {@link ome.xml.meta.OMEMetadata} to
-   * {@link ome.scifio.formats.MicromanagerFormat.Metadata}.
+   * {@link io.scif.formats.MicromanagerFormat.Metadata}.
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -82,7 +83,7 @@ public class MicromanagerTranslator {
   public static class MicromanagerOMETranslator extends ToOMETranslator<MicromanagerFormat.Metadata> {
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(MicromanagerFormat.Metadata source, OMEMetadata dest) {

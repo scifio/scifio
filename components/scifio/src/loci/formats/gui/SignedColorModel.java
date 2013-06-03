@@ -42,20 +42,20 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 
 /**
- * Legacy delegator class for ome.scifio.gui.SignedColorModel.
+ * Legacy delegator class for io.scif.gui.SignedColorModel.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/SignedColorModel.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/SignedColorModel.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.gui.SignedColorModel
+ * @deprecated see io.scif.gui.SignedColorModel
  */
 @Deprecated
 public class SignedColorModel extends ColorModel {
 
   // -- Fields --
 
-  private ome.scifio.gui.SignedColorModel cm;
+  private io.scif.gui.SignedColorModel cm;
 
   // -- Constructors --
 
@@ -65,7 +65,7 @@ public class SignedColorModel extends ColorModel {
     super(pixelBits, makeBitArray(nChannels, pixelBits),
       AWTImageTools.makeColorSpace(nChannels), nChannels == 4, false,
       ColorModel.TRANSLUCENT, dataType);
-    cm = new ome.scifio.gui.SignedColorModel(pixelBits, dataType, nChannels);
+    cm = new io.scif.gui.SignedColorModel(pixelBits, dataType, nChannels);
   }
 
   // -- ColorModel API methods --

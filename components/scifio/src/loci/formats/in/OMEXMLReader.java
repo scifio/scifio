@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.Metadata;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,7 +45,6 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.Metadata;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.meta.OMEXMLFormat;
 import ome.xml.meta.OMEXMLMetadata;
@@ -73,7 +74,7 @@ public class OMEXMLReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create OMEXMLFormat components");
     }
   }
@@ -89,7 +90,7 @@ public class OMEXMLReader extends SCIFIOFormatReader {
         meta = reader.getFormat().createMetadata();
         reader.setMetadata(meta);
 
-      } catch (ome.scifio.FormatException e) {
+      } catch (io.scif.FormatException e) {
         LOGGER.error("Exception creating OMEXML Metadata", e);
       } catch (IOException e) {
         LOGGER.error("Exception setting OMEXML Metadata", e);

@@ -43,7 +43,7 @@ package loci.formats;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FileInfo.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FileInfo.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.FileInfo
+ * @deprecated see io.scif.FileInfo
  */
 @Deprecated
-public class FileInfo extends ome.scifio.FileInfo { }
+public class FileInfo extends io.scif.FileInfo { }

@@ -50,13 +50,13 @@ import loci.legacy.adapter.Wrapper;
 /**
  * As interfaces can not contain implementation, this class manages
  * interface-level delegation between {@link loci.common.StatusReporter} and
- * {@link ome.scifio.common.StatusReporter}
+ * {@link io.scif.common.StatusReporter}
  * <p>
  * Delegation is maintained by two WeakHashTables. See {@link AbstractLegacyAdapter}
  * </p>
  * <p>
  * Functionally, the delegation is handled in the nested classes - one for
- * wrapping from ome.scifio.common.StatusReporter to loci.common.StatusReporter,
+ * wrapping from io.scif.common.StatusReporter to loci.common.StatusReporter,
  * and one for the reverse direction.
  * </p>
  * @author Mark Hiner
@@ -64,23 +64,23 @@ import loci.legacy.adapter.Wrapper;
  */
 @Plugin(type=StatusReporterAdapter.class)
 public class StatusReporterAdapter extends 
-  AbstractLegacyAdapter<StatusReporter, ome.scifio.common.StatusReporter> {
+  AbstractLegacyAdapter<StatusReporter, io.scif.common.StatusReporter> {
   
   // -- Constructor --
   
   public StatusReporterAdapter() {
-    super(StatusReporter.class, ome.scifio.common.StatusReporter.class);
+    super(StatusReporter.class, io.scif.common.StatusReporter.class);
   }
   
   //-- LegacyAdapter API Methods --
   
   @Override
-  protected StatusReporter wrapToLegacy(ome.scifio.common.StatusReporter modern) {
+  protected StatusReporter wrapToLegacy(io.scif.common.StatusReporter modern) {
     return new ModernWrapper(modern);
   }
 
   @Override
-  protected ome.scifio.common.StatusReporter wrapToModern(StatusReporter legacy) {
+  protected io.scif.common.StatusReporter wrapToModern(StatusReporter legacy) {
     return new LegacyWrapper(legacy);
   }
  
@@ -88,7 +88,7 @@ public class StatusReporterAdapter extends
 
   /**
    * This class can be used to wrap loci.common.StatusReporter
-   * objects and be passed to API expecting an ome.scifio.common.StatusReporter
+   * objects and be passed to API expecting an io.scif.common.StatusReporter
    * object.
    * <p>
    * All functionality is delegated to the loci-common implementation.
@@ -97,7 +97,7 @@ public class StatusReporterAdapter extends
    * @author Mark Hiner
    */
   public static class LegacyWrapper 
-    implements ome.scifio.common.StatusReporter, Wrapper<StatusReporter> {
+    implements io.scif.common.StatusReporter, Wrapper<StatusReporter> {
     
     // -- Fields --
     
@@ -118,21 +118,21 @@ public class StatusReporterAdapter extends
     
     // -- StatusReporter API Methods --
 
-    public void addStatusListener(ome.scifio.common.StatusListener l) {
+    public void addStatusListener(io.scif.common.StatusListener l) {
       unwrap().addStatusListener(CommonAdapter.get(l));
     }
 
-    public void removeStatusListener(ome.scifio.common.StatusListener l) {
+    public void removeStatusListener(io.scif.common.StatusListener l) {
       unwrap().removeStatusListener(CommonAdapter.get(l));
     }
 
-    public void notifyListeners(ome.scifio.common.StatusEvent e) {
+    public void notifyListeners(io.scif.common.StatusEvent e) {
       unwrap().notifyListeners(new StatusEvent(e));
     }
   }
   
   /**
-   * This class can be used to wrap ome.scifio.common.StatusReporter
+   * This class can be used to wrap io.scif.common.StatusReporter
    * objects and be passed to API expecting a loci.common.StatusReporter
    * object.
    * <p>
@@ -142,22 +142,22 @@ public class StatusReporterAdapter extends
    * @author Mark Hiner
    */
   public static class ModernWrapper
-    implements StatusReporter, Wrapper<ome.scifio.common.StatusReporter> {
+    implements StatusReporter, Wrapper<io.scif.common.StatusReporter> {
     
     // -- Fields --
 
-    private WeakReference<ome.scifio.common.StatusReporter> sr;
+    private WeakReference<io.scif.common.StatusReporter> sr;
     
     // -- Constructor --
 
-    public ModernWrapper(ome.scifio.common.StatusReporter sr) {
-      this.sr = new WeakReference<ome.scifio.common.StatusReporter>(sr);
+    public ModernWrapper(io.scif.common.StatusReporter sr) {
+      this.sr = new WeakReference<io.scif.common.StatusReporter>(sr);
     }
     
     // -- Wrapper API Methods --
     
     /* @see wrapper#unwrap() */
-    public ome.scifio.common.StatusReporter unwrap() {
+    public io.scif.common.StatusReporter unwrap() {
       return sr.get();
     }
     

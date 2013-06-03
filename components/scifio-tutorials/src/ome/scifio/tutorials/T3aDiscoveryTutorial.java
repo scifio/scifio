@@ -14,13 +14,13 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package ome.scifio.tutorials;
+package io.scif.tutorials;
 
-import ome.scifio.Format;
-import ome.scifio.FormatException;
-import ome.scifio.SCIFIO;
-import ome.scifio.formats.FakeFormat;
-import ome.scifio.services.FormatService;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.SCIFIO;
+import io.scif.formats.FakeFormat;
+import io.scif.services.FormatService;
 
 import org.scijava.Context;
 import org.scijava.plugin.PluginService;
@@ -39,7 +39,7 @@ public class T3aDiscoveryTutorial {
     // context instance is a container for two general types of discoverables:
     // - org.scijava.plugin.Plugin. Typically plugins are classified by "type",
     //    a common interface, with different instances of that type required
-    //    depending on the situation. ome.scifio.Format and ome.scifio.Translator
+    //    depending on the situation. io.scif.Format and io.scif.Translator
     //    are types of plugins you may want to discover in SCIFIO.
     // - org.scijava.service.Service. Services act more like static utility
     //    classes within their parent context. Each is instantiated once
@@ -65,7 +65,7 @@ public class T3aDiscoveryTutorial {
     FormatService fService2 = scifio.format();
     System.out.println("Format services are equal: " + (fService == fService2));
     
-    // Note that FormatService is an interface. If you look at ome.scifio.DefaultFormatService
+    // Note that FormatService is an interface. If you look at io.scif.DefaultFormatService
     // you'll see that it's annotated as a Plugin with type=FormatService.class. This
     // allows it to be discovered by the context as a FormatService instance.
     // If more than one class on the classpath was similarly annotated, the context
@@ -115,7 +115,7 @@ public class T3aDiscoveryTutorial {
     // For a discussion of how to define your own services, take a look at
     // T3bCustomFormats
     
-    // For examples of using and querying attributes, look at ome.scifioDefaultTranslatorService,
-    // ome.scifio.PluginAttributeService and the Translator implementations.
+    // For examples of using and querying attributes, look at io.scifDefaultTranslatorService,
+    // io.scif.PluginAttributeService and the Translator implementations.
   }
 }

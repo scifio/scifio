@@ -37,16 +37,16 @@
 package loci.common;
 
 /**
- * A legacy delegator class for ome.scifio.common.Region.
+ * A legacy delegator class for io.scif.common.Region.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Region.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Region.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.common.Region
+ * @deprecated see io.scif.common.Region
  */
 @Deprecated
-public class Region extends ome.scifio.common.Region {
+public class Region extends io.scif.common.Region {
 
   // -- Constructors --
   
@@ -69,21 +69,21 @@ public class Region extends ome.scifio.common.Region {
   /*
    * ---HACK---
    * Returns a loci.common Region based on the provided
-   *  {@link ome.scifio.common.Region}.
+   *  {@link io.scif.common.Region}.
    *  
    *  This is necessary because loci.common.Region has to directly
-   *  extend ome.scifio.common.Region, because of the public field
+   *  extend io.scif.common.Region, because of the public field
    *  contract that was established in this class.
    *  
    *  Extension was not sufficient for full backwards compatibility,
-   *  as ome.scifio.common.Region#intersection always returns an
-   *  ome.scifio.common.Region which can not be safely cast to a loci.common
+   *  as io.scif.common.Region#intersection always returns an
+   *  io.scif.common.Region which can not be safely cast to a loci.common
    *  Region.
    *  
    *  Thus this method constructs a loci.common Region assuming the base
-   *  ome.scifio.common.Region was provided.
+   *  io.scif.common.Region was provided.
    */
-  private Region convertRegion(ome.scifio.common.Region r) {
+  private Region convertRegion(io.scif.common.Region r) {
     return new Region(r.x, r.y, r.width, r.height);
   }
 

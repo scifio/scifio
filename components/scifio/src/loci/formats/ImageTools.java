@@ -37,7 +37,7 @@
 package loci.formats;
 
 /**
- * A legacy delegator class for ome.scifio.util.ImageTools.
+ * A legacy delegator class for io.scif.util.ImageTools.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ImageTools.java">Trac</a>,
@@ -45,7 +45,7 @@ package loci.formats;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.util.ImageTools
+ * @deprecated see io.scif.util.ImageTools
  */
 @Deprecated
 public final class ImageTools {
@@ -63,7 +63,7 @@ public final class ImageTools {
   public static byte[][] make24Bits(Object pixels, int w, int h,
     boolean interleaved, boolean reverse)
   {
-    return ome.scifio.util.ImageTools.make24Bits(pixels, w, h, interleaved, reverse);
+    return io.scif.util.ImageTools.make24Bits(pixels, w, h, interleaved, reverse);
   }
 
   /**
@@ -77,7 +77,7 @@ public final class ImageTools {
   public static byte[][] make24Bits(Object pixels, int w, int h,
     boolean interleaved, boolean reverse, Double min, Double max)
   {
-    return ome.scifio.util.ImageTools.make24Bits(pixels, w, h, interleaved, reverse, min, max);
+    return io.scif.util.ImageTools.make24Bits(pixels, w, h, interleaved, reverse, min, max);
   }
 
   /**
@@ -87,7 +87,7 @@ public final class ImageTools {
   public static int[] make24Bits(Object pixels, int w, int h,
     boolean interleaved)
   {
-    return ome.scifio.util.ImageTools.make24Bits(pixels, w, h, interleaved);
+    return io.scif.util.ImageTools.make24Bits(pixels, w, h, interleaved);
   }
 
   /**
@@ -103,7 +103,7 @@ public final class ImageTools {
   public static int[] make24Bits(Object pixels, int w, int h,
     boolean interleaved, Double min, Double max)
   {
-    return ome.scifio.util.ImageTools.make24Bits(pixels, w, h, interleaved, min, max);
+    return io.scif.util.ImageTools.make24Bits(pixels, w, h, interleaved, min, max);
   }
 
   // -- Image manipulation --
@@ -116,7 +116,7 @@ public final class ImageTools {
   public static byte[] splitChannels(byte[] array, int index, int c, int bytes,
     boolean reverse, boolean interleaved)
   {
-    return ome.scifio.util.ImageTools.splitChannels(array, index, c, bytes, reverse, interleaved);
+    return io.scif.util.ImageTools.splitChannels(array, index, c, bytes, reverse, interleaved);
   }
 
   /**
@@ -133,7 +133,7 @@ public final class ImageTools {
   public static byte[] splitChannels(byte[] array, byte[] rtn, int index, int c,
     int bytes, boolean reverse, boolean interleaved, int channelLength)
   {
-    return ome.scifio.util.ImageTools.splitChannels(array, rtn, index, c, bytes,
+    return io.scif.util.ImageTools.splitChannels(array, rtn, index, c, bytes,
       reverse, interleaved, channelLength);
   }
 
@@ -144,7 +144,7 @@ public final class ImageTools {
   public static byte[] padImage(byte[] b, boolean interleaved, int c,
     int oldWidth, int width, int height)
   {
-    return ome.scifio.util.ImageTools.padImage(b, interleaved, c, oldWidth, width, height);
+    return io.scif.util.ImageTools.padImage(b, interleaved, c, oldWidth, width, height);
   }
 
   /**
@@ -154,7 +154,7 @@ public final class ImageTools {
   public static short[] padImage(short[] b, boolean interleaved, int c,
     int oldWidth, int width, int height)
   {
-    return ome.scifio.util.ImageTools.padImage(b, interleaved, c, oldWidth, width, height);
+    return io.scif.util.ImageTools.padImage(b, interleaved, c, oldWidth, width, height);
   }
 
   /**
@@ -164,7 +164,7 @@ public final class ImageTools {
   public static int[] padImage(int[] b, boolean interleaved, int c,
     int oldWidth, int width, int height)
   {
-    return ome.scifio.util.ImageTools.padImage(b, interleaved, c, oldWidth, width, height);
+    return io.scif.util.ImageTools.padImage(b, interleaved, c, oldWidth, width, height);
   }
 
   /**
@@ -174,7 +174,7 @@ public final class ImageTools {
   public static float[] padImage(float[] b, boolean interleaved, int c,
     int oldWidth, int width, int height)
   {
-    return ome.scifio.util.ImageTools.padImage(b, interleaved, c, oldWidth, width, height);
+    return io.scif.util.ImageTools.padImage(b, interleaved, c, oldWidth, width, height);
   }
 
   /**
@@ -184,7 +184,7 @@ public final class ImageTools {
   public static double[] padImage(double[] b, boolean interleaved, int c,
     int oldWidth, int width, int height)
   {
-    return ome.scifio.util.ImageTools.padImage(b, interleaved, c, oldWidth, width, height);
+    return io.scif.util.ImageTools.padImage(b, interleaved, c, oldWidth, width, height);
   }
 
   /**
@@ -195,20 +195,20 @@ public final class ImageTools {
   public static byte[] autoscale(byte[] b, int min, int max, int bpp,
     boolean little)
   {
-    return ome.scifio.util.ImageTools.autoscale(b, min, max, bpp, little);
+    return io.scif.util.ImageTools.autoscale(b, min, max, bpp, little);
   }
 
   /** Scan a plane for the channel min and max values. */
   public static Double[] scanData(byte[] plane, int bits, boolean littleEndian)
   {
-    return ome.scifio.util.ImageTools.scanData(plane, bits, littleEndian);
+    return io.scif.util.ImageTools.scanData(plane, bits, littleEndian);
   }
 
   public static byte[] getSubimage(byte[] src, byte[] dest, int originalWidth,
     int originalHeight, int x, int y, int w, int h, int bpp, int channels,
     boolean interleaved)
   {
-    return ome.scifio.util.ImageTools.getSubimage(src, dest, originalWidth, originalHeight,
+    return io.scif.util.ImageTools.getSubimage(src, dest, originalWidth, originalHeight,
       x, y, w, h, bpp, channels, interleaved);
   }
 
@@ -216,23 +216,23 @@ public final class ImageTools {
 
   /** Converts a LUT and an array of indices into an array of RGB tuples. */
   public static byte[][] indexedToRGB(byte[][] lut, byte[] b) {
-    return ome.scifio.util.ImageTools.indexedToRGB(lut, b);
+    return io.scif.util.ImageTools.indexedToRGB(lut, b);
   }
 
   /** Converts a LUT and an array of indices into an array of RGB tuples. */
   public static short[][] indexedToRGB(short[][] lut, byte[] b, boolean le) {
-    return ome.scifio.util.ImageTools.indexedToRGB(lut, b, le);
+    return io.scif.util.ImageTools.indexedToRGB(lut, b, le);
   }
 
   public static byte[] interpolate(short[] s, byte[] buf, int[] bayerPattern,
     int width, int height, boolean littleEndian)
   {
-    return ome.scifio.util.ImageTools.interpolate(s, buf, bayerPattern, width,
+    return io.scif.util.ImageTools.interpolate(s, buf, bayerPattern, width,
       height, littleEndian);
   }
 
   public static void bgrToRgb(byte[] buf, boolean interleaved, int bpp, int c) {
-    ome.scifio.util.ImageTools.bgrToRgb(buf, interleaved, bpp, c);
+    io.scif.util.ImageTools.bgrToRgb(buf, interleaved, bpp, c);
   }
 
 }

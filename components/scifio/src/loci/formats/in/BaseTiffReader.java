@@ -36,11 +36,12 @@
 
 package loci.formats.in;
 
+import io.scif.formats.TIFFFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
 import loci.formats.tiff.IFD;
-import ome.scifio.formats.TIFFFormat;
 
 
 /**
@@ -54,7 +55,7 @@ import ome.scifio.formats.TIFFFormat;
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.formats.TIFFFormat.BaseTiffParser
+ * @deprecated see io.scif.formats.TIFFFormat.BaseTiffParser
  */
 @Deprecated
 public abstract class BaseTiffReader extends MinimalTiffReader {

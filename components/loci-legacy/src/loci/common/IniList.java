@@ -46,7 +46,7 @@ import java.util.ListIterator;
 import loci.legacy.adapter.Wrapper;
 
 /**
- * A legacy delegator class for ome.scifio.common.IniList.
+ * A legacy delegator class for io.scif.common.IniList.
  * <p>
  * Uses an "isa" relationship to preserve the inherited
  * methods from ArrayList.
@@ -62,16 +62,16 @@ import loci.legacy.adapter.Wrapper;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.common.IniList
+ * @deprecated see io.scif.common.IniList
  */
 @Deprecated
 public class IniList extends ArrayList<IniTable>
-  implements Wrapper<ome.scifio.common.IniList>
+  implements Wrapper<io.scif.common.IniList>
 {
   
   // -- Fields --
   
-  public ome.scifio.common.IniList list = new ome.scifio.common.IniList();
+  public io.scif.common.IniList list = new io.scif.common.IniList();
   
   // -- Delegators --
 
@@ -216,7 +216,7 @@ public class IniList extends ArrayList<IniTable>
   
   // -- Helper methods --
   
-  private IniTable convertTable(ome.scifio.common.IniTable table) {
+  private IniTable convertTable(io.scif.common.IniTable table) {
     if (table == null) return null;
     
     IniTable t = new IniTable();
@@ -225,7 +225,7 @@ public class IniList extends ArrayList<IniTable>
   }
   
   private ArrayList<IniTable> convertList() {
-    Iterator<ome.scifio.common.IniTable> iter = list.iterator();
+    Iterator<io.scif.common.IniTable> iter = list.iterator();
     
     ArrayList<IniTable> tmpTables = new ArrayList<IniTable>();
     
@@ -237,7 +237,7 @@ public class IniList extends ArrayList<IniTable>
   
   // -- Wrapper API Methods --
 
-  public ome.scifio.common.IniList unwrap() {
+  public io.scif.common.IniList unwrap() {
     return list;
   }
 }

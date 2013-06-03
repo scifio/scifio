@@ -35,29 +35,30 @@
  */
 package loci.formats;
 
+import io.scif.Reader;
+
 import org.scijava.plugin.Plugin;
 
-import ome.scifio.Reader;
 import loci.legacy.adapter.AbstractLegacyAdapter;
 import loci.legacy.context.LegacyContext;
 
 /**
  * Manages delegation between {@link loci.formats.IFormatReader}
- * and {@link ome.scifio.Reader}.
+ * and {@link io.scif.Reader}.
  * 
  * @see loci.legacy.adapter.LegacyAdapter
- * @see ome.scifio.Reader
+ * @see io.scif.Reader
  * @see loci.formats.IFormatReader
  * 
  * @author Mark Hiner
  */
 @Plugin(type=SCIFIOReaderAdapter.class)
-public class SCIFIOReaderAdapter extends AbstractLegacyAdapter<IFormatReader, ome.scifio.Reader> {
+public class SCIFIOReaderAdapter extends AbstractLegacyAdapter<IFormatReader, io.scif.Reader> {
   
   // -- Constructor --
   
   public SCIFIOReaderAdapter() {
-    super(IFormatReader.class, ome.scifio.Reader.class);
+    super(IFormatReader.class, io.scif.Reader.class);
   }
 
   // -- LegacyAdapter API Methods --

@@ -35,9 +35,9 @@
  */
 package ome.xml.translation;
 
-import ome.scifio.FormatException;
-import ome.scifio.formats.APNGFormat;
-import ome.scifio.util.FormatTools;
+import io.scif.FormatException;
+import io.scif.formats.APNGFormat;
+import io.scif.util.FormatTools;
 import ome.xml.meta.OMEMetadata;
 import ome.xml.services.OMEXMLMetadataService;
 
@@ -54,11 +54,11 @@ import org.scijava.plugin.Plugin;
 public class APNGTranslator {
 
   /**
-   * Translator class from {@link ome.scifio.formats.APNGFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.APNGFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}.
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -71,7 +71,7 @@ public class APNGTranslator {
   public static class OMEAPNGTranslator extends FromOMETranslator<APNGFormat.Metadata> {
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(OMEMetadata source, APNGFormat.Metadata dest) {
@@ -93,11 +93,11 @@ public class APNGTranslator {
 
 
   /**
-   * Translator class from {@link ome.scifio.formats.APNGFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.APNGFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -112,7 +112,7 @@ public class APNGTranslator {
     // -- Translator API Methods --
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(APNGFormat.Metadata source, OMEMetadata dest) {

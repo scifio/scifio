@@ -36,12 +36,13 @@
 
 package loci.formats.out;
 
+import io.scif.formats.JavaFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.JavaFormat;
 
 /**
  * JavaWriter is the file format writer for Java source code.
@@ -51,7 +52,7 @@ import ome.scifio.formats.JavaFormat;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/JavaWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/JavaWriter.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprectaed see ome.scifio.formats.JavaFormat
+ * @deprectaed see io.scif.formats.JavaFormat
  */
 @Deprecated
 public class JavaWriter extends SCIFIOFormatWriter {
@@ -64,7 +65,7 @@ public class JavaWriter extends SCIFIOFormatWriter {
     try {
       writer = format.createWriter();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create JavaFormat components");
     }
   }
@@ -79,7 +80,7 @@ public class JavaWriter extends SCIFIOFormatWriter {
   {
     try {
       writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
-    } catch (ome.scifio.FormatException e) {
+    } catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }

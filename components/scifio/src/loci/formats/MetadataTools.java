@@ -36,12 +36,13 @@
 
 package loci.formats;
 
+import io.scif.DefaultMetadata;
+import io.scif.Metadata;
+import io.scif.Reader;
+
 import java.util.Hashtable;
 import java.util.Map;
 
-import ome.scifio.DefaultMetadata;
-import ome.scifio.Metadata;
-import ome.scifio.Reader;
 import ome.xml.services.OMEXMLMetadataService;
 
 import loci.common.services.DependencyException;
@@ -145,7 +146,7 @@ public final class MetadataTools {
   {
     Metadata meta = new DefaultMetadata(); 
     
-    // Fake an ome.scifio.Metadata array, with the converted coreMetadata at index series
+    // Fake an io.scif.Metadata array, with the converted coreMetadata at index series
     for(int i=0; i<series; i++)
       meta.add(null);
     
@@ -208,7 +209,7 @@ public final class MetadataTools {
     try {
       LegacyContext.get().getService(OMEXMLMetadataService.class).verifyMinimumPopulated(src);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }
@@ -224,7 +225,7 @@ public final class MetadataTools {
     try {
       LegacyContext.get().getService(OMEXMLMetadataService.class).verifyMinimumPopulated(src, n);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw (FormatException)e;
     }
   }
@@ -271,7 +272,7 @@ public final class MetadataTools {
 
   /** Gets a sorted list of keys from the given hashtable. */
   public static String[] keys(Hashtable<String, Object> meta) {
-    return ome.scifio.util.SCIFIOMetadataTools.keys(meta);
+    return io.scif.util.SCIFIOMetadataTools.keys(meta);
   }
 
   /**
@@ -281,7 +282,7 @@ public final class MetadataTools {
   public static void merge(Map<String, Object> src, Map<String, Object> dest,
     String prefix)
   {
-    ome.scifio.util.SCIFIOMetadataTools.merge(src, dest, prefix);
+    io.scif.util.SCIFIOMetadataTools.merge(src, dest, prefix);
   }
 
   // -- Deprecated methods --

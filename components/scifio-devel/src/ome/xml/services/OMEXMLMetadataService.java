@@ -36,12 +36,13 @@
 
 package ome.xml.services;
 
+import io.scif.FormatException;
+import io.scif.ImageMetadata;
+import io.scif.Metadata;
+import io.scif.Reader;
+
 import org.scijava.service.Service;
 
-import ome.scifio.FormatException;
-import ome.scifio.ImageMetadata;
-import ome.scifio.Metadata;
-import ome.scifio.Reader;
 import ome.xml.meta.MetadataRetrieve;
 import ome.xml.meta.MetadataStore;
 import ome.xml.model.enums.Binning;

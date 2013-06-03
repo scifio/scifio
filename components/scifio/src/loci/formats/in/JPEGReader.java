@@ -36,11 +36,11 @@
 
 package loci.formats.in;
 
+import io.scif.formats.JPEGFormat;
 import loci.formats.DelegateReader;
 import loci.formats.FormatTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.JPEGFormat;
 
 /**
  * JPEGReader is the file format reader for JPEG images.
@@ -51,7 +51,7 @@ import ome.scifio.formats.JPEGFormat;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.formats.JPEGFormat
+ * @deprecated see io.scif.formats.JPEGFormat
  */
 @Deprecated
 public class JPEGReader extends DelegateReader {
@@ -81,7 +81,7 @@ public class JPEGReader extends DelegateReader {
         parser = format.createParser();
         reader = format.createReader();
       }
-      catch (ome.scifio.FormatException e) {
+      catch (io.scif.FormatException e) {
         LOGGER.warn("Failed to create JPEGFormat components");
       }
     }

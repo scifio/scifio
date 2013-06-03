@@ -14,18 +14,18 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package ome.scifio.tutorials;
+package io.scif.tutorials;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.scijava.Context;
 
-import ome.scifio.Format;
-import ome.scifio.FormatException;
-import ome.scifio.Plane;
-import ome.scifio.Reader;
-import ome.scifio.SCIFIO;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.Plane;
+import io.scif.Reader;
+import io.scif.SCIFIO;
 
 /**
  * An introduction to the SCIFIO API. Demonstrates basic plane reading.
@@ -37,7 +37,7 @@ public class T1aIntroToSCIFIO {
   
   public static void main(final String... agrs) throws FormatException, IOException {
     // The first step when working with SCIFIO is to create a context.
-    // This is an instance of ome.scifio.SCIFIO, created as follows:
+    // This is an instance of io.scif.SCIFIO, created as follows:
     SCIFIO scifio = new SCIFIO();
     
     // The SCIFIO class is designed to be a convenience wrapper for an
@@ -73,13 +73,13 @@ public class T1aIntroToSCIFIO {
     // The path to our sample image
     String sampleImage = "8bit-signed&pixelType=int8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake";
     
-    // Planes read from images in SCIFIO are returned as ome.scifio.Plane
+    // Planes read from images in SCIFIO are returned as io.scif.Plane
     // objects, agnostic of the underlying data type (e.g. byte[] or
     // java.awt.BufferedImage)
     Plane[] planes = new Plane[3];
     
     // This method tells the context to check all of its known formats and
-    // return an ome.scifio.Reader capable of opening the specified image's
+    // return an io.scif.Reader capable of opening the specified image's
     // planes.
     Reader reader = scifio.initializer().initializeReader(sampleImage);
     
@@ -113,7 +113,7 @@ public class T1aIntroToSCIFIO {
       displayImage(p.getBytes());
   }
   
-  // Dummy method for demonstrating ome.scifio.Plane#getBytes()
+  // Dummy method for demonstrating io.scif.Plane#getBytes()
   private static void displayImage(byte[] bytes) {
     System.out.println(bytes + " " + bytes.length);
   }

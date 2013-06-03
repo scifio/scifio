@@ -40,13 +40,13 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * A legacy delegator class for ome.scifio.common.ReflectedUniverse 
+ * A legacy delegator class for io.scif.common.ReflectedUniverse 
  * 
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/ReflectedUniverse.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/ReflectedUniverse.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.common.ReflectedUniverse
+ * @deprecated see io.scif.common.ReflectedUniverse
  */
 @Deprecated
 public class ReflectedUniverse {
@@ -55,13 +55,13 @@ public class ReflectedUniverse {
 
   // -- Fields --
 
-  private ome.scifio.common.ReflectedUniverse  unv;
+  private io.scif.common.ReflectedUniverse  unv;
   
   // -- Constructors --
 
   /** Constructs a new reflected universe. */
   public ReflectedUniverse() { 
-    unv = new ome.scifio.common.ReflectedUniverse();
+    unv = new io.scif.common.ReflectedUniverse();
   }
 
   /**
@@ -70,12 +70,12 @@ public class ReflectedUniverse {
    * (in addition to the CLASSPATH).
    */
   public ReflectedUniverse(URL[] urls) {
-    unv = new ome.scifio.common.ReflectedUniverse (urls);
+    unv = new io.scif.common.ReflectedUniverse (urls);
   }
 
   /** Constructs a new reflected universe that uses the given class loader. */
   public ReflectedUniverse(ClassLoader loader) {
-    unv = new ome.scifio.common.ReflectedUniverse (loader);
+    unv = new io.scif.common.ReflectedUniverse (loader);
   }
 
   // -- Utility methods --
@@ -85,7 +85,7 @@ public class ReflectedUniverse {
    * specified class for the purposes of reflection.
    */
   public static boolean isInstance(Class<?> c, Object o) {
-    return ome.scifio.common.ReflectedUniverse .isInstance(c, o);
+    return io.scif.common.ReflectedUniverse .isInstance(c, o);
   }
 
   // -- ReflectedUniverse API methods --
@@ -124,7 +124,7 @@ public class ReflectedUniverse {
     try {
       return unv.exec(command);
     }
-    catch (ome.scifio.common.ReflectException e) {
+    catch (io.scif.common.ReflectException e) {
       throw new ReflectException(e.getCause());
     }
   }
@@ -182,7 +182,7 @@ public class ReflectedUniverse {
     try {
       return unv.getVar(varName);
     }
-    catch (ome.scifio.common.ReflectException e) {
+    catch (io.scif.common.ReflectException e) {
        throw (ReflectException)e;
     }
   }
@@ -203,6 +203,6 @@ public class ReflectedUniverse {
    * Allows exploration of a reflected universe in an interactive environment.
    */
   public static void main(String[] args) throws IOException {
-    ome.scifio.common.ReflectedUniverse.main(args);
+    io.scif.common.ReflectedUniverse.main(args);
   }
 }

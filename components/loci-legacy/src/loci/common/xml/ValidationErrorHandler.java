@@ -42,7 +42,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
 /**
- * A legacy delegator class for ome.scifio.xml.ValidationErrorHandler
+ * A legacy delegator class for io.scif.xml.ValidationErrorHandler
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/ValidationErrorHandler.java">Trac</a>,
@@ -52,15 +52,15 @@ import org.xml.sax.SAXParseException;
  * @author Chris Allan callan at blackcat.ca
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.xml.ValidationErrorHandler
+ * @deprecated see io.scif.xml.ValidationErrorHandler
  */
 @Deprecated
 public class ValidationErrorHandler implements ErrorHandler,
-  Wrapper<ome.scifio.xml.ValidationErrorHandler> {	
+  Wrapper<io.scif.xml.ValidationErrorHandler> {	
 
   // -- Fields --
   
-  private ome.scifio.xml.ValidationErrorHandler handler = new ome.scifio.xml.ValidationErrorHandler();
+  private io.scif.xml.ValidationErrorHandler handler = new io.scif.xml.ValidationErrorHandler();
   
   // -- ValidatorErrorHandler API -- 
   
@@ -82,7 +82,7 @@ public class ValidationErrorHandler implements ErrorHandler,
   
   // -- Wrapper API Methods --
   
-  public ome.scifio.xml.ValidationErrorHandler unwrap() {
+  public io.scif.xml.ValidationErrorHandler unwrap() {
     return handler;
   }
 }

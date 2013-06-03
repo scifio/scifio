@@ -36,6 +36,8 @@
 
 package ome.xml.meta;
 
+import io.scif.common.Constants;
+
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 
@@ -44,7 +46,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import ome.scifio.common.Constants;
 
 import ome.xml.DOMUtil;
 import ome.xml.model.OME;

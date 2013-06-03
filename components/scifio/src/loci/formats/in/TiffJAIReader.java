@@ -36,6 +36,9 @@
 
 package loci.formats.in;
 
+import io.scif.formats.TIFFFormat;
+import io.scif.formats.TIFFJAIFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,8 +46,6 @@ import loci.formats.MetadataTools;
 import loci.formats.gui.SCIFIOBIFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.TIFFFormat;
-import ome.scifio.formats.TIFFJAIFormat;
 
 /**
  * TiffJAIReader is a file format reader for TIFF images. It uses the
@@ -59,7 +60,7 @@ import ome.scifio.formats.TIFFJAIFormat;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.formats.TIFFJAIFormat
+ * @deprecated see io.scif.formats.TIFFJAIFormat
  */
 @Deprecated
 public class TiffJAIReader extends SCIFIOBIFormatReader {
@@ -76,7 +77,7 @@ public class TiffJAIReader extends SCIFIOBIFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create TIFFJAIFormat components");
     }
   }

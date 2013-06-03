@@ -39,13 +39,13 @@ package loci.common;
 import java.util.EventListener;
 
 /**
- * A legacy wrapper for ome.scifio.common.StatusListener.
+ * A legacy wrapper for io.scif.common.StatusListener.
  * 
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/StatusListener.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/StatusListener.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.common.StatusListener
+ * @deprecated see io.scif.common.StatusListener
  */
 @Deprecated
 public interface StatusListener extends EventListener {

@@ -35,15 +35,16 @@
  */
 package ome.xml.filters;
 
+import io.scif.FormatException;
+import io.scif.Plane;
+import io.scif.common.DataTools;
+import io.scif.filters.AbstractReaderFilter;
+import io.scif.util.FormatTools;
+
 import java.io.IOException;
 import java.util.Arrays;
 
 import net.imglib2.meta.Axes;
-import ome.scifio.FormatException;
-import ome.scifio.Plane;
-import ome.scifio.common.DataTools;
-import ome.scifio.filters.AbstractReaderFilter;
-import ome.scifio.util.FormatTools;
 import ome.xml.meta.IMinMaxStore;
 
 import org.scijava.plugin.Attr;
@@ -64,7 +65,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
   
   // -- Constants --
   
-  public static final String FILTER_VALUE = "ome.scifio.Reader";
+  public static final String FILTER_VALUE = "io.scif.Reader";
   
   // -- Fields --
 
@@ -240,7 +241,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
   @Override
   public Plane openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
-    ome.scifio.Metadata m = getMetadata();
+    io.scif.Metadata m = getMetadata();
     return openPlane(imageIndex, planeIndex, 0, 0, m.getAxisLength(imageIndex, Axes.X),
         m.getAxisLength(imageIndex, Axes.Y));
   }
@@ -249,7 +250,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
   public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
     throws FormatException, IOException
   {
-    ome.scifio.Metadata m = getMetadata();
+    io.scif.Metadata m = getMetadata();
     return openPlane(imageIndex, planeIndex, plane, 0, 0, m.getAxisLength(imageIndex, Axes.X),
         m.getAxisLength(imageIndex, Axes.Y));
   }
@@ -307,7 +308,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
     if (buf == null) return;
     initMinMax();
 
-    ome.scifio.Metadata m = getMetadata();
+    io.scif.Metadata m = getMetadata();
     int numRGB = m.getRGBChannelCount(imageIndex);
     int pixelType = m.getPixelType(imageIndex);
     int bpp = FormatTools.getBytesPerPixel(pixelType);
@@ -383,7 +384,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
    * @throws IOException Not actually thrown.
    */
   protected void initMinMax() throws FormatException, IOException {
-    ome.scifio.Metadata m = getMetadata();
+    io.scif.Metadata m = getMetadata();
     int imageCount = m.getImageCount();
 
     if (chanMin == null) {

@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.NRRDFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,7 +45,6 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.NRRDFormat;
 
 /**
  * File format reader for NRRD files; see http://teem.sourceforge.net/nrrd.
@@ -52,7 +53,7 @@ import ome.scifio.formats.NRRDFormat;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/NRRDReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/NRRDReader.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.NRRDFormat
+ * @deprecated see io.scif.formats.NRRDFormat
  */
 @Deprecated
 public class NRRDReader extends SCIFIOFormatReader {
@@ -71,7 +72,7 @@ public class NRRDReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create NRRDFormat components");
     }
   }

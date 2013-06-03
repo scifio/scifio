@@ -49,13 +49,13 @@ import loci.formats.services.OMEXMLServiceImpl;
 import loci.legacy.adapter.CommonAdapter;
 
 /**
- * A legacy delegator class for ome.scifio.util.FormatTools.
+ * A legacy delegator class for io.scif.util.FormatTools.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FormatTools.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FormatTools.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.util.FormatTools.
+ * @deprecated see io.scif.util.FormatTools.
  */
 @Deprecated
 public final class FormatTools {
@@ -63,28 +63,28 @@ public final class FormatTools {
   // -- Constants - pixel types --
 
   /** Identifies the <i>INT8</i> data type used to store pixel values. */
-  public static final int INT8 = ome.scifio.util.FormatTools.INT8;
+  public static final int INT8 = io.scif.util.FormatTools.INT8;
 
   /** Identifies the <i>UINT8</i> data type used to store pixel values. */
-  public static final int UINT8 = ome.scifio.util.FormatTools.UINT8;
+  public static final int UINT8 = io.scif.util.FormatTools.UINT8;
 
   /** Identifies the <i>INT16</i> data type used to store pixel values. */
-  public static final int INT16 = ome.scifio.util.FormatTools.INT16;
+  public static final int INT16 = io.scif.util.FormatTools.INT16;
 
   /** Identifies the <i>UINT16</i> data type used to store pixel values. */
-  public static final int UINT16 = ome.scifio.util.FormatTools.UINT16;
+  public static final int UINT16 = io.scif.util.FormatTools.UINT16;
 
   /** Identifies the <i>INT32</i> data type used to store pixel values. */
-  public static final int INT32 = ome.scifio.util.FormatTools.INT32;
+  public static final int INT32 = io.scif.util.FormatTools.INT32;
 
   /** Identifies the <i>UINT32</i> data type used to store pixel values. */
-  public static final int UINT32 = ome.scifio.util.FormatTools.UINT32;
+  public static final int UINT32 = io.scif.util.FormatTools.UINT32;
 
   /** Identifies the <i>FLOAT</i> data type used to store pixel values. */
-  public static final int FLOAT = ome.scifio.util.FormatTools.FLOAT;
+  public static final int FLOAT = io.scif.util.FormatTools.FLOAT;
 
   /** Identifies the <i>DOUBLE</i> data type used to store pixel values. */
-  public static final int DOUBLE = ome.scifio.util.FormatTools.DOUBLE;
+  public static final int DOUBLE = io.scif.util.FormatTools.DOUBLE;
 
   // -- Constants - dimensional labels --
 
@@ -92,53 +92,53 @@ public final class FormatTools {
    * Identifies the <i>Channel</i> dimensional type,
    * representing a generic channel dimension.
    */
-  public static final String CHANNEL = ome.scifio.util.FormatTools.CHANNEL;
+  public static final String CHANNEL = io.scif.util.FormatTools.CHANNEL;
 
   /**
    * Identifies the <i>Spectra</i> dimensional type,
    * representing a dimension consisting of spectral channels.
    */
-  public static final String SPECTRA = ome.scifio.util.FormatTools.SPECTRA;
+  public static final String SPECTRA = io.scif.util.FormatTools.SPECTRA;
 
   /**
    * Identifies the <i>Lifetime</i> dimensional type,
    * representing a dimension consisting of a lifetime histogram.
    */
-  public static final String LIFETIME = ome.scifio.util.FormatTools.LIFETIME;
+  public static final String LIFETIME = io.scif.util.FormatTools.LIFETIME;
 
   /**
    * Identifies the <i>Polarization</i> dimensional type,
    * representing a dimension consisting of polarization states.
    */
-  public static final String POLARIZATION = ome.scifio.util.FormatTools.POLARIZATION;
+  public static final String POLARIZATION = io.scif.util.FormatTools.POLARIZATION;
 
   /**
    * Identifies the <i>Phase</i> dimensional type,
    * representing a dimension consisting of phases.
    */
-  public static final String PHASE = ome.scifio.util.FormatTools.PHASE;
+  public static final String PHASE = io.scif.util.FormatTools.PHASE;
 
   /**
    * Identifies the <i>Frequency</i> dimensional type,
    * representing a dimension consisting of frequencies.
    */
-  public static final String FREQUENCY = ome.scifio.util.FormatTools.FREQUENCY;
+  public static final String FREQUENCY = io.scif.util.FormatTools.FREQUENCY;
 
   // -- Constants - miscellaneous --
 
   /** File grouping options. */
-  public static final int MUST_GROUP = ome.scifio.util.FormatTools.MUST_GROUP;
-  public static final int CAN_GROUP = ome.scifio.util.FormatTools.CAN_GROUP;
-  public static final int CANNOT_GROUP = ome.scifio.util.FormatTools.CANNOT_GROUP;
+  public static final int MUST_GROUP = io.scif.util.FormatTools.MUST_GROUP;
+  public static final int CAN_GROUP = io.scif.util.FormatTools.CAN_GROUP;
+  public static final int CANNOT_GROUP = io.scif.util.FormatTools.CANNOT_GROUP;
 
   /** Patterns to be used when constructing a pattern for output filenames. */
-  public static final String SERIES_NUM = ome.scifio.util.FormatTools.SERIES_NUM;
-  public static final String SERIES_NAME = ome.scifio.util.FormatTools.SERIES_NAME;
-  public static final String CHANNEL_NUM = ome.scifio.util.FormatTools.CHANNEL_NUM;
-  public static final String CHANNEL_NAME = ome.scifio.util.FormatTools.CHANNEL_NAME;
-  public static final String Z_NUM = ome.scifio.util.FormatTools.Z_NUM;
-  public static final String T_NUM = ome.scifio.util.FormatTools.T_NUM;
-  public static final String TIMESTAMP = ome.scifio.util.FormatTools.TIMESTAMP;
+  public static final String SERIES_NUM = io.scif.util.FormatTools.SERIES_NUM;
+  public static final String SERIES_NAME = io.scif.util.FormatTools.SERIES_NAME;
+  public static final String CHANNEL_NUM = io.scif.util.FormatTools.CHANNEL_NUM;
+  public static final String CHANNEL_NAME = io.scif.util.FormatTools.CHANNEL_NAME;
+  public static final String Z_NUM = io.scif.util.FormatTools.Z_NUM;
+  public static final String T_NUM = io.scif.util.FormatTools.T_NUM;
+  public static final String TIMESTAMP = io.scif.util.FormatTools.TIMESTAMP;
 
   // -- Constants - versioning --
 
@@ -147,87 +147,87 @@ public final class FormatTools {
    * @deprecated After Git move, deprecated in favour of {@link #VCS_REVISION}.
    */
   @Deprecated
-  public static final String SVN_REVISION = ome.scifio.util.FormatTools.SVN_REVISION;
+  public static final String SVN_REVISION = io.scif.util.FormatTools.SVN_REVISION;
 
   /** Current VCS revision. */
-  public static final String VCS_REVISION = ome.scifio.util.FormatTools.VCS_REVISION;
+  public static final String VCS_REVISION = io.scif.util.FormatTools.VCS_REVISION;
 
   /** Date on which this release was built. */
-  public static final String DATE = ome.scifio.util.FormatTools.DATE;
+  public static final String DATE = io.scif.util.FormatTools.DATE;
 
   /** Version number of this release. */
-  public static final String VERSION = ome.scifio.util.FormatTools.VERSION;
+  public static final String VERSION = io.scif.util.FormatTools.VERSION;
 
   // -- Constants - domains --
 
   /** Identifies the high content screening domain. */
-  public static final String HCS_DOMAIN = ome.scifio.util.FormatTools.HCS_DOMAIN;
+  public static final String HCS_DOMAIN = io.scif.util.FormatTools.HCS_DOMAIN;
 
   /** Identifies the light microscopy domain. */
-  public static final String LM_DOMAIN = ome.scifio.util.FormatTools.LM_DOMAIN;
+  public static final String LM_DOMAIN = io.scif.util.FormatTools.LM_DOMAIN;
 
   /** Identifies the electron microscopy domain. */
-  public static final String EM_DOMAIN = ome.scifio.util.FormatTools.EM_DOMAIN;
+  public static final String EM_DOMAIN = io.scif.util.FormatTools.EM_DOMAIN;
 
   /** Identifies the scanning probe microscopy domain. */
-  public static final String SPM_DOMAIN = ome.scifio.util.FormatTools.SPM_DOMAIN;
+  public static final String SPM_DOMAIN = io.scif.util.FormatTools.SPM_DOMAIN;
 
   /** Identifies the scanning electron microscopy domain. */
-  public static final String SEM_DOMAIN = ome.scifio.util.FormatTools.SEM_DOMAIN;
+  public static final String SEM_DOMAIN = io.scif.util.FormatTools.SEM_DOMAIN;
 
   /** Identifies the fluorescence-lifetime domain. */
-  public static final String FLIM_DOMAIN = ome.scifio.util.FormatTools.FLIM_DOMAIN;
+  public static final String FLIM_DOMAIN = io.scif.util.FormatTools.FLIM_DOMAIN;
 
   /** Identifies the medical imaging domain. */
-  public static final String MEDICAL_DOMAIN = ome.scifio.util.FormatTools.MEDICAL_DOMAIN;
+  public static final String MEDICAL_DOMAIN = io.scif.util.FormatTools.MEDICAL_DOMAIN;
 
   /** Identifies the histology domain. */
-  public static final String HISTOLOGY_DOMAIN = ome.scifio.util.FormatTools.HISTOLOGY_DOMAIN;
+  public static final String HISTOLOGY_DOMAIN = io.scif.util.FormatTools.HISTOLOGY_DOMAIN;
 
   /** Identifies the gel and blot imaging domain. */
-  public static final String GEL_DOMAIN = ome.scifio.util.FormatTools.GEL_DOMAIN;
+  public static final String GEL_DOMAIN = io.scif.util.FormatTools.GEL_DOMAIN;
 
   /** Identifies the astronomy domain. */
-  public static final String ASTRONOMY_DOMAIN = ome.scifio.util.FormatTools.ASTRONOMY_DOMAIN;
+  public static final String ASTRONOMY_DOMAIN = io.scif.util.FormatTools.ASTRONOMY_DOMAIN;
 
   /**
    * Identifies the graphics domain.
    * This includes formats used exclusively by analysis software.
    */
-  public static final String GRAPHICS_DOMAIN = ome.scifio.util.FormatTools.GRAPHICS_DOMAIN;
+  public static final String GRAPHICS_DOMAIN = io.scif.util.FormatTools.GRAPHICS_DOMAIN;
 
   /** Identifies an unknown domain. */
-  public static final String UNKNOWN_DOMAIN = ome.scifio.util.FormatTools.UNKNOWN_DOMAIN;
+  public static final String UNKNOWN_DOMAIN = io.scif.util.FormatTools.UNKNOWN_DOMAIN;
 
   /** List of non-graphics domains. */
-  public static final String[] NON_GRAPHICS_DOMAINS = ome.scifio.util.FormatTools.NON_GRAPHICS_DOMAINS;
+  public static final String[] NON_GRAPHICS_DOMAINS = io.scif.util.FormatTools.NON_GRAPHICS_DOMAINS;
 
   /** List of non-HCS domains. */
-  public static final String[] NON_HCS_DOMAINS = ome.scifio.util.FormatTools.NON_HCS_DOMAINS;
+  public static final String[] NON_HCS_DOMAINS = io.scif.util.FormatTools.NON_HCS_DOMAINS;
 
   /**
    * List of domains that do not require special handling.  Domains that
    * require special handling are {@link #GRAPHICS_DOMAIN} and
    * {@link #HCS_DOMAIN}.
    */
-  public static final String[] NON_SPECIAL_DOMAINS = ome.scifio.util.FormatTools.NON_SPECIAL_DOMAINS;
+  public static final String[] NON_SPECIAL_DOMAINS = io.scif.util.FormatTools.NON_SPECIAL_DOMAINS;
 
   /** List of all supported domains. */
-  public static final String[] ALL_DOMAINS = ome.scifio.util.FormatTools.ALL_DOMAINS;
+  public static final String[] ALL_DOMAINS = io.scif.util.FormatTools.ALL_DOMAINS;
 
   // -- Constants - web pages --
 
   /** URL of Bio-Formats web page. */
   public static final String URL_BIO_FORMATS =
-    ome.scifio.util.FormatTools.URL_BIO_FORMATS;
+    io.scif.util.FormatTools.URL_BIO_FORMATS;
 
   /** URL of 'Bio-Formats as a Java Library' web page. */
   public static final String URL_BIO_FORMATS_LIBRARIES =
-    ome.scifio.util.FormatTools.URL_BIO_FORMATS_LIBRARIES;
+    io.scif.util.FormatTools.URL_BIO_FORMATS_LIBRARIES;
 
   /** URL of OME-TIFF web page. */
   public static final String URL_OME_TIFF =
-    ome.scifio.util.FormatTools.URL_OME_TIFF;
+    io.scif.util.FormatTools.URL_OME_TIFF;
 
   // -- Constructor --
 
@@ -240,7 +240,7 @@ public final class FormatTools {
    * to the given Z, C and T coordinates.
    */
   public static int getIndex(IFormatReader reader, int z, int c, int t) {
-    return ome.scifio.util.FormatTools.getIndex(FormatAdapter.get(reader),
+    return io.scif.util.FormatTools.getIndex(FormatAdapter.get(reader),
       reader.getSeries(), z, c, t);
   }
 
@@ -261,7 +261,7 @@ public final class FormatTools {
   public static int getIndex(String order, int zSize, int cSize, int tSize,
     int num, int z, int c, int t)
   {
-    return ome.scifio.util.FormatTools.getIndex(order, zSize, cSize, tSize, num, z, c, t);
+    return io.scif.util.FormatTools.getIndex(order, zSize, cSize, tSize, num, z, c, t);
   }
 
 
@@ -271,7 +271,7 @@ public final class FormatTools {
    */
   public static int[] getZCTCoords(IFormatReader reader, int index) {
 //    new OldToNewAdapter(CONTEXT, reader);
-    return ome.scifio.util.FormatTools.getZCTCoords(FormatAdapter.get(reader),
+    return io.scif.util.FormatTools.getZCTCoords(FormatAdapter.get(reader),
       reader.getSeries(), index);
   }
 
@@ -290,7 +290,7 @@ public final class FormatTools {
   public static int[] getZCTCoords(String order,
     int zSize, int cSize, int tSize, int num, int index)
   {
-    return ome.scifio.util.FormatTools.getZCTCoords(order, zSize, cSize, tSize, num, 0, index);
+    return io.scif.util.FormatTools.getZCTCoords(order, zSize, cSize, tSize, num, 0, index);
   }
 
   /**
@@ -304,10 +304,10 @@ public final class FormatTools {
     String newOrder, int newIndex) throws FormatException
   {
    try {
-    return ome.scifio.util.FormatTools.getReorderedIndex(FormatAdapter.get(reader),
+    return io.scif.util.FormatTools.getReorderedIndex(FormatAdapter.get(reader),
       reader.getSeries(), newOrder, newIndex);
   }
-  catch (ome.scifio.FormatException e) {
+  catch (io.scif.FormatException e) {
     throw new FormatException(e);
   }
   }
@@ -330,7 +330,7 @@ public final class FormatTools {
   public static int getReorderedIndex(String origOrder, String newOrder,
     int zSize, int cSize, int tSize, int num, int newIndex)
   {
-    return ome.scifio.util.FormatTools.getReorderedIndex(origOrder, newOrder, 
+    return io.scif.util.FormatTools.getReorderedIndex(origOrder, newOrder, 
       zSize, cSize, tSize, num, 0, newIndex);
   }
 
@@ -342,7 +342,7 @@ public final class FormatTools {
    * @return rasterized index value
    */
   public static int positionToRaster(int[] lengths, int[] pos) {
-    return ome.scifio.util.FormatTools.positionToRaster(lengths, pos);
+    return io.scif.util.FormatTools.positionToRaster(lengths, pos);
   }
 
   /**
@@ -353,7 +353,7 @@ public final class FormatTools {
    * @return position along each dimensional axis
    */
   public static int[] rasterToPosition(int[] lengths, int raster) {
-    return ome.scifio.util.FormatTools.rasterToPosition(lengths, raster);
+    return io.scif.util.FormatTools.rasterToPosition(lengths, raster);
   }
 
   /**
@@ -365,7 +365,7 @@ public final class FormatTools {
    * @return position along each dimensional axis
    */
   public static int[] rasterToPosition(int[] lengths, int raster, int[] pos) {
-    return ome.scifio.util.FormatTools.rasterToPosition(lengths, raster, pos);
+    return io.scif.util.FormatTools.rasterToPosition(lengths, raster, pos);
   }
 
   /**
@@ -373,7 +373,7 @@ public final class FormatTools {
    * with the given lengths.
    */
   public static int getRasterLength(int[] lengths) {
-    return ome.scifio.util.FormatTools.getRasterLength(lengths);
+    return io.scif.util.FormatTools.getRasterLength(lengths);
   }
 
   // -- Utility methods - pixel types --
@@ -384,7 +384,7 @@ public final class FormatTools {
    * @return type enumeration value for use with class constants.
    */
   public static int pixelTypeFromString(String pixelTypeAsString) {
-    return ome.scifio.util.FormatTools.pixelTypeFromString(pixelTypeAsString);
+    return io.scif.util.FormatTools.pixelTypeFromString(pixelTypeAsString);
   }
 
   /**
@@ -393,7 +393,7 @@ public final class FormatTools {
    * @return string value for human-readable output.
    */
   public static String getPixelTypeString(int pixelType) {
-    return ome.scifio.util.FormatTools.getPixelTypeString(pixelType);
+    return io.scif.util.FormatTools.getPixelTypeString(pixelType);
   }
 
   /**
@@ -404,7 +404,7 @@ public final class FormatTools {
    * @see IFormatReader#getPixelType()
    */
   public static int getBytesPerPixel(int pixelType) {
-    return ome.scifio.util.FormatTools.getBytesPerPixel(pixelType);
+    return io.scif.util.FormatTools.getBytesPerPixel(pixelType);
   }
 
   /**
@@ -415,7 +415,7 @@ public final class FormatTools {
    * @see #getBytesPerPixel(int)
    */
   public static int getBytesPerPixel(String pixelType) {
-    return ome.scifio.util.FormatTools.getBytesPerPixel(pixelType);
+    return io.scif.util.FormatTools.getBytesPerPixel(pixelType);
   }
 
   /**
@@ -426,7 +426,7 @@ public final class FormatTools {
    * @see IFormatReader#getPixelType()
    */
   public static boolean isFloatingPoint(int pixelType) {
-    return ome.scifio.util.FormatTools.isFloatingPoint(pixelType);
+    return io.scif.util.FormatTools.isFloatingPoint(pixelType);
   }
 
   /**
@@ -437,7 +437,7 @@ public final class FormatTools {
    * @see IFormatReader#getPixelType()
    */
   public static boolean isSigned(int pixelType) {
-    return ome.scifio.util.FormatTools.isSigned(pixelType);
+    return io.scif.util.FormatTools.isSigned(pixelType);
   }
 
   /**
@@ -451,9 +451,9 @@ public final class FormatTools {
     throws FormatException
   {
     try {
-      return ome.scifio.util.FormatTools.pixelTypeFromBytes(bytes, signed, fp);
+      return io.scif.util.FormatTools.pixelTypeFromBytes(bytes, signed, fp);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -470,7 +470,7 @@ public final class FormatTools {
    *   to suppress output of the calling method name.
    */
   public static void assertId(String currentId, boolean notNull, int depth) {
-    ome.scifio.util.FormatTools.assertId(currentId, notNull, depth);
+    io.scif.util.FormatTools.assertId(currentId, notNull, depth);
   }
 
   /**
@@ -483,10 +483,10 @@ public final class FormatTools {
     int bufLength, int x, int y, int w, int h) throws FormatException
   {
     try {
-      ome.scifio.util.FormatTools.checkPlaneParameters(FormatAdapter.get(r),
+      io.scif.util.FormatTools.checkPlaneParameters(FormatAdapter.get(r),
         r.getSeries(), no, bufLength, x, y, w, h);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -496,10 +496,10 @@ public final class FormatTools {
     throws FormatException
   {
     try {
-      ome.scifio.util.FormatTools.checkPlaneNumber(FormatAdapter.get(r),
+      io.scif.util.FormatTools.checkPlaneNumber(FormatAdapter.get(r),
         r.getSeries(), no);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -509,10 +509,10 @@ public final class FormatTools {
     throws FormatException
   {
     try {
-      ome.scifio.util.FormatTools.checkTileSize(FormatAdapter.get(r),
+      io.scif.util.FormatTools.checkTileSize(FormatAdapter.get(r),
         x, y, w, h, r.getSeries());
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -521,9 +521,9 @@ public final class FormatTools {
     throws FormatException
   {
     try {
-      ome.scifio.util.FormatTools.checkBufferSize(r.getSeries(), FormatAdapter.get(r), len);
+      io.scif.util.FormatTools.checkBufferSize(r.getSeries(), FormatAdapter.get(r), len);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -537,10 +537,10 @@ public final class FormatTools {
     throws FormatException
   {
     try {
-      ome.scifio.util.FormatTools.checkBufferSize(FormatAdapter.get(r),
+      io.scif.util.FormatTools.checkBufferSize(FormatAdapter.get(r),
           len, w, h, r.getSeries());
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -554,18 +554,18 @@ public final class FormatTools {
   {
     //TODO can not fully read the stream as that would be bad.. need a better way of converting.
 //     Also this is destructive as it changes the position of the passed stream
-    return ome.scifio.util.FormatTools.validStream(CommonAdapter.get(stream), len, littleEndian);
+    return io.scif.util.FormatTools.validStream(CommonAdapter.get(stream), len, littleEndian);
   }
 
   /** Returns the size in bytes of a single plane. */
   public static int getPlaneSize(IFormatReader r) {
-    return ome.scifio.util.FormatTools.getPlaneSize(FormatAdapter.get(r),
+    return io.scif.util.FormatTools.getPlaneSize(FormatAdapter.get(r),
       r.getSeries());
   }
 
   /** Returns the size in bytes of a w * h tile. */
   public static int getPlaneSize(IFormatReader r, int w, int h) {
-    return ome.scifio.util.FormatTools.getPlaneSize(FormatAdapter.get(r),
+    return io.scif.util.FormatTools.getPlaneSize(FormatAdapter.get(r),
       w, h, r.getSeries());
   }
 
@@ -579,10 +579,10 @@ public final class FormatTools {
     String pattern) throws FormatException, IOException
   {
     try {
-      return ome.scifio.util.FormatTools.getFilename(series, image,
+      return io.scif.util.FormatTools.getFilename(series, image,
           FormatAdapter.get(r), pattern);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -591,10 +591,10 @@ public final class FormatTools {
     throws FormatException, IOException
   {
     try {
-      return ome.scifio.util.FormatTools.getFilenames(pattern,
+      return io.scif.util.FormatTools.getFilenames(pattern,
           FormatAdapter.get(r));
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -603,10 +603,10 @@ public final class FormatTools {
     throws FormatException, IOException
   {
     try {
-      return ome.scifio.util.FormatTools.getImagesPerFile(pattern,
+      return io.scif.util.FormatTools.getImagesPerFile(pattern,
           FormatAdapter.get(r));
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -646,11 +646,11 @@ public final class FormatTools {
     throws FormatException, IOException
   {
     try {
-      return ome.scifio.util.FormatTools.openThumbBytes(
+      return io.scif.util.FormatTools.openThumbBytes(
           FormatAdapter.get(reader),
           reader.getSeries(), no);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }
@@ -750,6 +750,6 @@ public final class FormatTools {
   }
 
   public static long[] defaultMinMax(int pixelType) {
-    return ome.scifio.util.FormatTools.defaultMinMax(pixelType);
+    return io.scif.util.FormatTools.defaultMinMax(pixelType);
   }
 }

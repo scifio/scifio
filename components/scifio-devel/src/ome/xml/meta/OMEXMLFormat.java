@@ -36,37 +36,38 @@
 
 package ome.xml.meta;
 
+import io.scif.AbstractChecker;
+import io.scif.AbstractFormat;
+import io.scif.AbstractMetadata;
+import io.scif.AbstractParser;
+import io.scif.AbstractTranslator;
+import io.scif.AbstractWriter;
+import io.scif.ByteArrayPlane;
+import io.scif.ByteArrayReader;
+import io.scif.FormatException;
+import io.scif.MissingLibraryException;
+import io.scif.Plane;
+import io.scif.Translator;
+import io.scif.codec.Base64Codec;
+import io.scif.codec.CodecOptions;
+import io.scif.codec.CompressionType;
+import io.scif.codec.JPEG2000Codec;
+import io.scif.codec.JPEGCodec;
+import io.scif.codec.ZlibCodec;
+import io.scif.common.Constants;
+import io.scif.io.CBZip2InputStream;
+import io.scif.io.RandomAccessInputStream;
+import io.scif.services.ServiceException;
+import io.scif.util.FormatTools;
+import io.scif.util.ImageTools;
+import io.scif.xml.BaseHandler;
+import io.scif.xml.XMLTools;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Vector;
 
 import net.imglib2.meta.Axes;
-import ome.scifio.AbstractChecker;
-import ome.scifio.AbstractFormat;
-import ome.scifio.AbstractMetadata;
-import ome.scifio.AbstractParser;
-import ome.scifio.AbstractTranslator;
-import ome.scifio.AbstractWriter;
-import ome.scifio.ByteArrayPlane;
-import ome.scifio.ByteArrayReader;
-import ome.scifio.FormatException;
-import ome.scifio.MissingLibraryException;
-import ome.scifio.Plane;
-import ome.scifio.Translator;
-import ome.scifio.codec.Base64Codec;
-import ome.scifio.codec.CodecOptions;
-import ome.scifio.codec.CompressionType;
-import ome.scifio.codec.JPEG2000Codec;
-import ome.scifio.codec.JPEGCodec;
-import ome.scifio.codec.ZlibCodec;
-import ome.scifio.common.Constants;
-import ome.scifio.io.CBZip2InputStream;
-import ome.scifio.io.RandomAccessInputStream;
-import ome.scifio.services.ServiceException;
-import ome.scifio.util.FormatTools;
-import ome.scifio.util.ImageTools;
-import ome.scifio.xml.BaseHandler;
-import ome.scifio.xml.XMLTools;
 import ome.xml.services.OMEXMLMetadataService;
 import ome.xml.services.OMEXMLService;
 import ome.xml.services.OMEXMLServiceImpl;
@@ -105,14 +106,14 @@ public class OMEXMLFormat extends AbstractFormat {
   // -- Format API Methods --
 
   /*
-   * @see ome.scifio.Format#getFormatName()
+   * @see io.scif.Format#getFormatName()
    */
   public String getFormatName() {
     return "OME-XML";
   }
 
   /*
-   * @see ome.scifio.Format#getSuffixes()
+   * @see io.scif.Format#getSuffixes()
    */
   public String[] getSuffixes() {
     return new String[]{"ome"};
@@ -121,10 +122,10 @@ public class OMEXMLFormat extends AbstractFormat {
   // -- Nested Classes --
 
   /**
-   * ome.scifio.Metadata class wrapping an OME-XML root.
+   * io.scif.Metadata class wrapping an OME-XML root.
    * 
    * @see ome.xml.meta.OMEXMLMetadata
-   * @see ome.scifio.Metadata
+   * @see io.scif.Metadata
    * 
    * @author Mark Hiner
    *
@@ -202,14 +203,14 @@ public class OMEXMLFormat extends AbstractFormat {
     // -- Metadata API Methods --
 
     /*
-     * @see ome.scifio.AbstractMetadata#getFormatName()
+     * @see io.scif.AbstractMetadata#getFormatName()
      */
     public String getFormatName() {
       return FORMAT_NAME;
     }
 
     /*
-     * @see ome.scifio.AbstractMetadata#populateImageMetadata()
+     * @see io.scif.AbstractMetadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       getContext().getService(OMEXMLMetadataService.class).
@@ -351,7 +352,7 @@ public class OMEXMLFormat extends AbstractFormat {
     // -- Reader API Methods --
 
     /*
-     * @see ome.scifio.TypedReader#openPlane(int, int, ome.scifio.DataPlane, int, int, int, int)
+     * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
       ByteArrayPlane plane, int x, int y, int w, int h)
@@ -463,7 +464,7 @@ public class OMEXMLFormat extends AbstractFormat {
     // -- Writer API Methods --
     
     /*
-     * @see ome.scifio.Writer#savePlane(int, int, ome.scifio.Plane, int, int, int, int)
+     * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
      */
     public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
       int y, int w, int h) throws FormatException, IOException
@@ -622,13 +623,13 @@ public class OMEXMLFormat extends AbstractFormat {
   }
   
   @Plugin(type = Translator.class, attrs = 
-    {@Attr(name = OMEXMLTranslator.SOURCE, value = ome.scifio.Metadata.CNAME),
+    {@Attr(name = OMEXMLTranslator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = OMEXMLTranslator.DEST, value = Metadata.CNAME)},
     priority = Priority.LOW_PRIORITY) 
   public static class OMEXMLTranslator
-    extends AbstractTranslator<ome.scifio.Metadata, Metadata>
+    extends AbstractTranslator<io.scif.Metadata, Metadata>
   {
-    public void typedTranslate(ome.scifio.Metadata source, Metadata dest) {
+    public void typedTranslate(io.scif.Metadata source, Metadata dest) {
       OMEXMLMetadata root = new OMEXMLMetadataImpl();
       OMEMetadata meta = new OMEMetadata(getContext(), root);
       OMEXMLMetadataService service = scifio().get(OMEXMLMetadataService.class);

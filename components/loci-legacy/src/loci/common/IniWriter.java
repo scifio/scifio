@@ -41,7 +41,7 @@ import java.io.IOException;
 import loci.legacy.adapter.Wrapper;
 
 /**
- * A legacy delegator class for ome.scifio.common.IniWriter.
+ * A legacy delegator class for io.scif.common.IniWriter.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/IniWriter.java">Trac</a>,
@@ -49,19 +49,19 @@ import loci.legacy.adapter.Wrapper;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.common.IniWriter
+ * @deprecated see io.scif.common.IniWriter
  */
 @Deprecated
-public class IniWriter implements Wrapper<ome.scifio.common.IniWriter> {
+public class IniWriter implements Wrapper<io.scif.common.IniWriter> {
 
   // -- Fields --
   
-  private ome.scifio.common.IniWriter writer;
+  private io.scif.common.IniWriter writer;
   
   // -- Constructor --
   
   public IniWriter() {
-    writer = new ome.scifio.common.IniWriter();
+    writer = new io.scif.common.IniWriter();
   }
 
   // -- IniWriter API methods --
@@ -83,7 +83,7 @@ public class IniWriter implements Wrapper<ome.scifio.common.IniWriter> {
   
   // -- Wrapper API Methods
 
-  public ome.scifio.common.IniWriter unwrap() {
+  public io.scif.common.IniWriter unwrap() {
     return writer;
   }
 }

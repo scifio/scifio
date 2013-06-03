@@ -51,11 +51,11 @@ import org.scijava.plugin.Plugin;
 public class OMETIFFTranslator {
   
   /**
-   * Translator class from {@link ome.scifio.formats.OMETIFFFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.OMETIFFFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -70,7 +70,7 @@ public class OMETIFFTranslator {
     // -- Translator API Methods --
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(OMETIFFFormat.Metadata source, OMEMetadata dest) {
@@ -80,11 +80,11 @@ public class OMETIFFTranslator {
   }
   
   /**
-   * Translator class from {@link ome.scifio.formats.OMETIFFFormat.Metadata} to
+   * Translator class from {@link io.scif.formats.OMETIFFFormat.Metadata} to
    * {@link ome.xml.meta.OMEMetadata}.
    * <p>
    * NB: Plugin priority is set to high to be selected over the base
-   * {@link ome.scifio.Metadata} translator.
+   * {@link io.scif.Metadata} translator.
    * </p>
    * 
    * @author Mark Hiner
@@ -97,7 +97,7 @@ public class OMETIFFTranslator {
   public static class OMETIFFtoOMETranslator extends FromOMETranslator<OMETIFFFormat.Metadata> {
 
     /*
-     * @see OMETranslator#typedTranslate(ome.scifio.Metadata, ome.scifio.Metadata)
+     * @see OMETranslator#typedTranslate(io.scif.Metadata, io.scif.Metadata)
      */
     @Override
     protected void typedTranslate(OMEMetadata source, OMETIFFFormat.Metadata dest) {

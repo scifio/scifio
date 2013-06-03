@@ -42,13 +42,13 @@ import java.io.IOException;
 import loci.legacy.context.LegacyContext;
 
 /**
- * Legacy delegator class for {@link ome.scifio.io.CaseInsensitiveLocation}
+ * Legacy delegator class for {@link io.scif.io.CaseInsensitiveLocation}
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/CaseInsensitiveLocation.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/CaseInsensitiveLocation.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.io.CaseInsensitiveLocation
+ * @deprecated see io.scif.io.CaseInsensitiveLocation
  */
 @Deprecated
 public class CaseInsensitiveLocation extends Location {
@@ -57,22 +57,22 @@ public class CaseInsensitiveLocation extends Location {
 
   public CaseInsensitiveLocation(String pathname) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.get(), pathname);
+    loc = new io.scif.io.CaseInsensitiveLocation(LegacyContext.get(), pathname);
   }
 
   public CaseInsensitiveLocation(File file) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.get(), file);
+    loc = new io.scif.io.CaseInsensitiveLocation(LegacyContext.get(), file);
   }
 
   public CaseInsensitiveLocation(String parent, String child) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.get(), parent, child);
+    loc = new io.scif.io.CaseInsensitiveLocation(LegacyContext.get(), parent, child);
   }
 
   public CaseInsensitiveLocation(CaseInsensitiveLocation parent, String child) throws IOException {
     super();
-    loc = new ome.scifio.io.CaseInsensitiveLocation(LegacyContext.get(), (ome.scifio.io.CaseInsensitiveLocation)parent.loc, child);
+    loc = new io.scif.io.CaseInsensitiveLocation(LegacyContext.get(), (io.scif.io.CaseInsensitiveLocation)parent.loc, child);
   }
 
   // -- Methods --
@@ -81,7 +81,7 @@ public class CaseInsensitiveLocation extends Location {
    * Remove (invalidate) cached content all directories.
    */
   public static void invalidateCache() {
-    ome.scifio.io.CaseInsensitiveLocation.invalidateCache();
+    io.scif.io.CaseInsensitiveLocation.invalidateCache();
   }
 
   /**
@@ -89,6 +89,6 @@ public class CaseInsensitiveLocation extends Location {
    * @param dir the directory to remove,
    */
   public static void invalidateCache(File dir) {
-    ome.scifio.io.CaseInsensitiveLocation.invalidateCache(dir);
+    io.scif.io.CaseInsensitiveLocation.invalidateCache(dir);
   }
 }

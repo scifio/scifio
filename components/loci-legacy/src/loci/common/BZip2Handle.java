@@ -43,7 +43,7 @@ import loci.legacy.context.LegacyContext;
 import loci.utils.ProtectedMethodInvoker;
 
 /**
- * Legacy delegator class for ome.scifio.io.BZip2Handle.
+ * Legacy delegator class for io.scif.io.BZip2Handle.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/BZip2Handle.java">Trac</a>,
@@ -53,14 +53,14 @@ import loci.utils.ProtectedMethodInvoker;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.io.BZip2Handle
+ * @deprecated see io.scif.io.BZip2Handle
  */
 @Deprecated
 public class BZip2Handle extends StreamHandle {
 
   // -- Fields --
   
-  // ome.scifio.io.BZip2Handle instance for delegation
+  // io.scif.io.BZip2Handle instance for delegation
   private ProtectedMethodInvoker pmi = new ProtectedMethodInvoker();
   
   // -- Constructor --
@@ -71,14 +71,14 @@ public class BZip2Handle extends StreamHandle {
    * @throws HandleException if the given file is not a BZip2 file.
    */
   public BZip2Handle(String file) throws IOException {
-    super(new ome.scifio.io.BZip2Handle(LegacyContext.get(), file));
+    super(new io.scif.io.BZip2Handle(LegacyContext.get(), file));
   } 
 
   // -- BZip2Handle API methods --
 
   /** Returns true if the given filename is a BZip2 file. */
   public static boolean isBZip2File(String file) throws IOException {
-    ome.scifio.io.BZip2Handle handle = new ome.scifio.io.BZip2Handle(LegacyContext.get());
+    io.scif.io.BZip2Handle handle = new io.scif.io.BZip2Handle(LegacyContext.get());
     
     return handle.isConstructable(file);
   }

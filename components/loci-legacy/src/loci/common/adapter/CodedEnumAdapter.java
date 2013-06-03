@@ -47,13 +47,13 @@ import loci.legacy.adapter.Wrapper;
 /**
  * As interfaces can not contain implementation, this class manages
  * interface-level delegation between {@link loci.common.enumeration.CodedEnum} and
- * {@link ome.scifio.enumeration.CodedEnum}
+ * {@link io.scif.enumeration.CodedEnum}
  * <p>
  * Delegation is maintained by two WeakHashTables. See {@link AbstractLegacyAdapter}
  * </p>
  * <p>
  * Functionally, the delegation is handled in the nested classes - one for
- * wrapping from ome.scifio.common.enumeration.CodedEnum
+ * wrapping from io.scif.common.enumeration.CodedEnum
  * to loci.common.enumeration.CodedEnum, and one for the reverse direction.
  * </p>
  * @author Mark Hiner
@@ -61,23 +61,23 @@ import loci.legacy.adapter.Wrapper;
  */
 @Plugin(type=CodedEnumAdapter.class)
 public class CodedEnumAdapter extends 
-  AbstractLegacyAdapter<CodedEnum, ome.scifio.enumeration.CodedEnum> {
+  AbstractLegacyAdapter<CodedEnum, io.scif.enumeration.CodedEnum> {
   
   // -- Constructor --
   
   public CodedEnumAdapter() {
-    super(CodedEnum.class, ome.scifio.enumeration.CodedEnum.class);
+    super(CodedEnum.class, io.scif.enumeration.CodedEnum.class);
   }
   
   // -- LegacyAdapter API Methods --
   
   @Override
-  protected CodedEnum wrapToLegacy(ome.scifio.enumeration.CodedEnum modern) {
+  protected CodedEnum wrapToLegacy(io.scif.enumeration.CodedEnum modern) {
     return new ModernWrapper(modern);
   }
 
   @Override
-  protected ome.scifio.enumeration.CodedEnum wrapToModern(CodedEnum legacy) {
+  protected io.scif.enumeration.CodedEnum wrapToModern(CodedEnum legacy) {
     return new LegacyWrapper(legacy);
   }
 
@@ -85,7 +85,7 @@ public class CodedEnumAdapter extends
 
   /**
    * This class can be used to wrap loci.common.enumeration.CodedEnum
-   * objects and be passed to API expecting an ome.scifio.enumeration.CodedEnum
+   * objects and be passed to API expecting an io.scif.enumeration.CodedEnum
    * object.
    * <p>
    * All functionality is delegated to the loci-common implementation.
@@ -94,7 +94,7 @@ public class CodedEnumAdapter extends
    * @author Mark Hiner
    */
   public static class LegacyWrapper 
-    implements ome.scifio.enumeration.CodedEnum, Wrapper<CodedEnum> {
+    implements io.scif.enumeration.CodedEnum, Wrapper<CodedEnum> {
     
     // -- Fields --
     
@@ -121,7 +121,7 @@ public class CodedEnumAdapter extends
   }
   
   /**
-   * This class can be used to wrap ome.scifio.enumeration.CodedEnum
+   * This class can be used to wrap io.scif.enumeration.CodedEnum
    * objects and be passed to API expecting a loci.common.enumeration.CodedEnum
    * object.
    * <p>
@@ -130,22 +130,22 @@ public class CodedEnumAdapter extends
    * 
    * @author Mark Hiner
    */
-  public static class ModernWrapper implements CodedEnum, Wrapper<ome.scifio.enumeration.CodedEnum> {
+  public static class ModernWrapper implements CodedEnum, Wrapper<io.scif.enumeration.CodedEnum> {
     
     // -- Fields --
 
-    private WeakReference<ome.scifio.enumeration.CodedEnum> ce;
+    private WeakReference<io.scif.enumeration.CodedEnum> ce;
 
     // -- Constructor --
 
-    public ModernWrapper(ome.scifio.enumeration.CodedEnum ce) {
-      this.ce = new WeakReference<ome.scifio.enumeration.CodedEnum>(ce);
+    public ModernWrapper(io.scif.enumeration.CodedEnum ce) {
+      this.ce = new WeakReference<io.scif.enumeration.CodedEnum>(ce);
     }
     
     // -- Wrapper API Methods --
     
     /* @see Wrapper#unwrap() */
-    public ome.scifio.enumeration.CodedEnum unwrap() {
+    public io.scif.enumeration.CodedEnum unwrap() {
       return ce.get();
     }
     

@@ -14,16 +14,16 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package ome.scifio.tutorials;
+package io.scif.tutorials;
 
 import java.io.IOException;
 
-import ome.scifio.ByteArrayPlane;
-import ome.scifio.FormatException;
-import ome.scifio.SCIFIO;
-import ome.scifio.formats.FakeFormat;
-import ome.scifio.formats.FakeFormat.Parser;
-import ome.scifio.formats.FakeFormat.Reader;
+import io.scif.ByteArrayPlane;
+import io.scif.FormatException;
+import io.scif.SCIFIO;
+import io.scif.formats.FakeFormat;
+import io.scif.formats.FakeFormat.Parser;
+import io.scif.formats.FakeFormat.Reader;
 
 /**
  * Demonstrates accessing type-specific SCIFIO components.

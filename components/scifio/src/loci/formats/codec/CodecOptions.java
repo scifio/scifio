@@ -37,16 +37,16 @@
 package loci.formats.codec;
 
 /**
- * Legacy delegator class for ome.scifio.codec.CodecOptions.
+ * Legacy delegator class for io.scif.codec.CodecOptions.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/CodecOptions.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/CodecOptions.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.codec.CodecOptions
+ * @deprecated see io.scif.codec.CodecOptions
  */
 @Deprecated
-public class CodecOptions extends ome.scifio.codec.CodecOptions {
+public class CodecOptions extends io.scif.codec.CodecOptions {
   // -- Constructors --
 
   /** Construct a new CodecOptions. */
@@ -59,7 +59,7 @@ public class CodecOptions extends ome.scifio.codec.CodecOptions {
     super(options);
   }
   
-  private CodecOptions(ome.scifio.codec.CodecOptions options) {
+  private CodecOptions(io.scif.codec.CodecOptions options) {
     super(options);
   }
 
@@ -67,7 +67,7 @@ public class CodecOptions extends ome.scifio.codec.CodecOptions {
 
   /** Return CodecOptions with reasonable default values. */
   public static CodecOptions getDefaultOptions() {
-    return new CodecOptions(ome.scifio.codec.CodecOptions.getDefaultOptions());
+    return new CodecOptions(io.scif.codec.CodecOptions.getDefaultOptions());
   }
 
 }

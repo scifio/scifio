@@ -63,7 +63,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Legacy delegator class for ome.scifio.io.CBZip2InputStream.
+ * Legacy delegator class for io.scif.io.CBZip2InputStream.
  *
  * <p>Instances of this class are not threadsafe.</p>
  *
@@ -71,14 +71,14 @@ import java.io.InputStream;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/CBZip2InputStream.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/CBZip2InputStream.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.io.CBZip2InputStream
+ * @deprecated see io.scif.io.CBZip2InputStream
  */
 @Deprecated
 public class CBZip2InputStream extends InputStream {
 
   // -- Fields --
   
-  private ome.scifio.io.CBZip2InputStream cbzStream;
+  private io.scif.io.CBZip2InputStream cbzStream;
 
   // -- Constructor --
 
@@ -98,7 +98,7 @@ public class CBZip2InputStream extends InputStream {
    *   if <tt>in == null</tt>
    */
   public CBZip2InputStream(final InputStream in) throws IOException {
-    cbzStream = new ome.scifio.io.CBZip2InputStream(in);
+    cbzStream = new io.scif.io.CBZip2InputStream(in);
   }
   
   // -- InputStream API --

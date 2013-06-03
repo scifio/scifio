@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.MinimalTIFFFormat;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -46,7 +48,6 @@ import loci.formats.meta.MetadataStore;
 import loci.formats.tiff.IFDList;
 import loci.formats.tiff.TiffParser;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.MinimalTIFFFormat;
 
 /**
  * MinimalTiffReader is the superclass for file format readers compatible with
@@ -58,7 +59,7 @@ import ome.scifio.formats.MinimalTIFFFormat;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.formats.MinimalTIFFFormat
+ * @deprecated see io.scif.formats.MinimalTIFFFormat
  */
 @Deprecated
 public class MinimalTiffReader extends SCIFIOFormatReader {
@@ -109,7 +110,7 @@ public class MinimalTiffReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create MinimalTIFFFormat components");
     }
   }

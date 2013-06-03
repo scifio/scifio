@@ -46,7 +46,7 @@
 
 package loci.formats.meta;
 
-import ome.scifio.common.DataTools;
+import io.scif.common.DataTools;
 
 import ome.xml.model.*;
 import ome.xml.model.enums.*;

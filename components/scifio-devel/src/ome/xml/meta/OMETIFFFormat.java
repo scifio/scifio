@@ -36,6 +36,34 @@
 
 package ome.xml.meta;
 
+import io.scif.AbstractChecker;
+import io.scif.AbstractFormat;
+import io.scif.AbstractParser;
+import io.scif.AbstractTranslator;
+import io.scif.ByteArrayPlane;
+import io.scif.ByteArrayReader;
+import io.scif.DefaultImageMetadata;
+import io.scif.DependencyException;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.ImageMetadata;
+import io.scif.Plane;
+import io.scif.SCIFIO;
+import io.scif.Translator;
+import io.scif.formats.MinimalTIFFFormat;
+import io.scif.formats.TIFFFormat;
+import io.scif.formats.tiff.IFD;
+import io.scif.formats.tiff.IFDList;
+import io.scif.formats.tiff.PhotoInterp;
+import io.scif.formats.tiff.TiffIFDEntry;
+import io.scif.formats.tiff.TiffParser;
+import io.scif.formats.tiff.TiffSaver;
+import io.scif.io.Location;
+import io.scif.io.RandomAccessInputStream;
+import io.scif.io.RandomAccessOutputStream;
+import io.scif.services.ServiceException;
+import io.scif.util.FormatTools;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,33 +79,6 @@ import java.util.Vector;
 
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
-import ome.scifio.AbstractChecker;
-import ome.scifio.AbstractFormat;
-import ome.scifio.AbstractParser;
-import ome.scifio.AbstractTranslator;
-import ome.scifio.ByteArrayPlane;
-import ome.scifio.ByteArrayReader;
-import ome.scifio.DefaultImageMetadata;
-import ome.scifio.DependencyException;
-import ome.scifio.Format;
-import ome.scifio.FormatException;
-import ome.scifio.ImageMetadata;
-import ome.scifio.Plane;
-import ome.scifio.SCIFIO;
-import ome.scifio.Translator;
-import ome.scifio.formats.MinimalTIFFFormat;
-import ome.scifio.formats.TIFFFormat;
-import ome.scifio.formats.tiff.IFD;
-import ome.scifio.formats.tiff.IFDList;
-import ome.scifio.formats.tiff.PhotoInterp;
-import ome.scifio.formats.tiff.TiffIFDEntry;
-import ome.scifio.formats.tiff.TiffParser;
-import ome.scifio.formats.tiff.TiffSaver;
-import ome.scifio.io.Location;
-import ome.scifio.io.RandomAccessInputStream;
-import ome.scifio.io.RandomAccessOutputStream;
-import ome.scifio.services.ServiceException;
-import ome.scifio.util.FormatTools;
 import ome.xml.model.primitives.NonNegativeInteger;
 import ome.xml.model.primitives.PositiveInteger;
 import ome.xml.model.primitives.Timestamp;
@@ -107,14 +108,14 @@ public class OMETIFFFormat extends AbstractFormat {
   // -- Format API Methods --
   
   /*
-   * @see ome.scifio.Format#getFormatName()
+   * @see io.scif.Format#getFormatName()
    */
   public String getFormatName() {
     return "OME-TIFF";
   }
 
   /*
-   * @see ome.scifio.Format#getSuffixes()
+   * @see io.scif.Format#getSuffixes()
    */
   public String[] getSuffixes() {
     return new String[] {"ome.tif", "ome.tiff"};
@@ -258,7 +259,7 @@ public class OMETIFFFormat extends AbstractFormat {
     // -- Metadata API Methods --
     
     /*
-     * @see ome.scifio.Metadata#populateImageMetadata()
+     * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
 
@@ -565,8 +566,8 @@ public class OMETIFFFormat extends AbstractFormat {
     // -- Abstract Parser API Methods --
     
     @Override
-    protected void typedParse(ome.scifio.io.RandomAccessInputStream stream,
-      Metadata meta) throws IOException, ome.scifio.FormatException {
+    protected void typedParse(io.scif.io.RandomAccessInputStream stream,
+      Metadata meta) throws IOException, io.scif.FormatException {
       // normalize file name
       String id = stream.getFileName();
       
@@ -1006,11 +1007,11 @@ public class OMETIFFFormat extends AbstractFormat {
     }
 
     /*
-     * @see ome.scifio.TypedReader#openPlane(int, int, ome.scifio.DataPlane, int, int, int, int)
+     * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
       ByteArrayPlane plane, int x, int y, int w, int h)
-      throws ome.scifio.FormatException, IOException {
+      throws io.scif.FormatException, IOException {
       Metadata meta = getMetadata();
       byte[] buf = plane.getBytes();
       OMETIFFPlane[][] info = meta.getInfo();
@@ -1085,7 +1086,7 @@ public class OMETIFFFormat extends AbstractFormat {
     }
     
     /*
-     * @see ome.scifio.Writer#savePlane(int, int, ome.scifio.Plane, int, int, int, int)
+     * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
      */
     public void savePlane(final int imageIndex, final int planeIndex, final Plane plane,
       final int x, final int y, final int w, final int h)
@@ -1095,7 +1096,7 @@ public class OMETIFFFormat extends AbstractFormat {
     }
 
     public void savePlane(int imageIndex, int planeIndex, Plane plane, IFD ifd, int x,
-      int y, int w, int h) throws ome.scifio.FormatException, IOException {
+      int y, int w, int h) throws io.scif.FormatException, IOException {
       if (imageMap == null) imageMap = new ArrayList<Integer>();
       if (!imageMap.contains(imageIndex)) {
         imageMap.add(new Integer(imageIndex));
@@ -1377,7 +1378,7 @@ public class OMETIFFFormat extends AbstractFormat {
   }
 
   /**
-   * This class can be used for translating any ome.scifio.Metadata
+   * This class can be used for translating any io.scif.Metadata
    * to Metadata for writing OME-TIFF.
    * files.
    * <p>
@@ -1393,15 +1394,15 @@ public class OMETIFFFormat extends AbstractFormat {
    * </p>
    */
   @Plugin(type = Translator.class, attrs = 
-    {@Attr(name = OMETIFFTranslator.SOURCE, value = ome.scifio.Metadata.CNAME),
+    {@Attr(name = OMETIFFTranslator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = OMETIFFTranslator.DEST, value = Metadata.CNAME)},
     priority = TIFFFormat.PRIORITY + 1)
   public static class OMETIFFTranslator
-    extends AbstractTranslator<ome.scifio.Metadata, Metadata>
+    extends AbstractTranslator<io.scif.Metadata, Metadata>
   {
     // -- Translator API Methods -- 
     
-    public void typedTranslate(ome.scifio.Metadata source, Metadata dest) {
+    public void typedTranslate(io.scif.Metadata source, Metadata dest) {
       
       if (dest.getOmeMeta() == null) {
         OMEMetadata omeMeta = new OMEMetadata(getContext());

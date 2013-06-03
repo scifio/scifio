@@ -14,15 +14,15 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  * #L%
  */
-package ome.scifio.tutorials;
+package io.scif.tutorials;
 
 import java.io.IOException;
 
 import net.imglib2.meta.Axes;
-import ome.scifio.FormatException;
-import ome.scifio.Metadata;
-import ome.scifio.Reader;
-import ome.scifio.SCIFIO;
+import io.scif.FormatException;
+import io.scif.Metadata;
+import io.scif.Reader;
+import io.scif.SCIFIO;
 
 /**
  * Tutorial using the SCIFIO API to open image tiles.

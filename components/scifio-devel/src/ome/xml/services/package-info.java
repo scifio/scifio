@@ -12,7 +12,7 @@
  *  <li>
  *  Added an {@link ome.xml.services.OMEXMLMetadataService} to
  *  provide static utility methods for converting between
- *  {@link ome.scifio.Metadata} and the OME-XML schema.
+ *  {@link io.scif.Metadata} and the OME-XML schema.
  *  </li>
  * </ul>
  * 

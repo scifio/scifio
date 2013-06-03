@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.JPEGTileFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,7 +45,6 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.JPEGTileFormat;
 
 /**
  * Reader for decoding JPEG images using java.awt.Toolkit.
@@ -55,7 +56,7 @@ import ome.scifio.formats.JPEGTileFormat;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/TileJPEGReader.java;hb=HEAD">Gitweb</a></dd></dl>
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.formats.JPEGTileFormat
+ * @deprecated see io.scif.formats.JPEGTileFormat
  */
 @Deprecated
 public class TileJPEGReader extends SCIFIOFormatReader {
@@ -71,7 +72,7 @@ public class TileJPEGReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create JPEGTileFormat components");
     }
   }

@@ -44,7 +44,7 @@ package loci.formats;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/UnsupportedCompressionException.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/UnsupportedCompressionException.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.UnsupportedCompressionException
+ * @deprecated see io.scif.UnsupportedCompressionException
  */
 @Deprecated
 public class UnsupportedCompressionException extends FormatException {

@@ -36,9 +36,10 @@
 
 package loci.formats.in;
 
+import io.scif.formats.APNGFormat;
+
 import java.io.IOException;
 
-import ome.scifio.formats.APNGFormat;
 
 import loci.formats.FormatException;
 import loci.formats.MetadataTools;
@@ -56,7 +57,7 @@ import loci.legacy.context.LegacyContext;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated Use ome.scifio.formats.APNGFormat instead.
+ * @deprecated Use io.scif.formats.APNGFormat instead.
  */
 @Deprecated
 public class APNGReader extends SCIFIOBIFormatReader {
@@ -77,7 +78,7 @@ public class APNGReader extends SCIFIOBIFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create APNGFormat components");
     }
   }

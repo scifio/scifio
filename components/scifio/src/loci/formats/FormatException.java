@@ -38,18 +38,18 @@ package loci.formats;
 
 /**
  * A legacy delegator class (via an "isa" relationship) with
- * ome.scifio.FormatException.
+ * io.scif.FormatException.
  *
- * @see ome.scifio.FormatException
+ * @see io.scif.FormatException
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FormatException.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FormatException.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.FormatException
+ * @deprecated see io.scif.FormatException
  */
 @Deprecated
-public class FormatException extends ome.scifio.FormatException {
+public class FormatException extends io.scif.FormatException {
 
   public FormatException() { super(); }
   public FormatException(String s) { super(s); }

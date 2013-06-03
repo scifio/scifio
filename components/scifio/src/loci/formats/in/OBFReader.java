@@ -34,6 +34,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.OBFFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -41,7 +43,6 @@ import loci.formats.MetadataTools;
 import loci.formats.SCIFIOFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.OBFFormat;
 
 /**
  * OBFReader is the file format reader for Imspector OBF files.
@@ -52,7 +53,7 @@ import ome.scifio.formats.OBFFormat;
  *
  * @author Bjoern Thiel bjoern.thiel at mpibpc.mpg.de
  * 
- * @deprecated see ome.scifio.formats.OBFFormat
+ * @deprecated see io.scif.formats.OBFFormat
  */
 @Deprecated
 public class OBFReader extends SCIFIOFormatReader
@@ -71,7 +72,7 @@ public class OBFReader extends SCIFIOFormatReader
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create OBFFormat components");
     }
 	}

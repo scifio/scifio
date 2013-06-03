@@ -37,7 +37,7 @@
 package loci.common;
 
 /**
- * A legacy delegator class for ome.scifio.common.DebugTools.
+ * A legacy delegator class for io.scif.common.DebugTools.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/DebugTools.java">Trac</a>,
@@ -45,7 +45,7 @@ package loci.common;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  * 
- * @deprecated see ome.scifio.common.DebugTools
+ * @deprecated see io.scif.common.DebugTools
  */
 @Deprecated
 public final class DebugTools {
@@ -58,7 +58,7 @@ public final class DebugTools {
 
   /** Extracts the given exception's corresponding stack trace to a string. */
   public static String getStackTrace(Throwable t) {
-    return ome.scifio.common.DebugTools.getStackTrace(t);
+    return io.scif.common.DebugTools.getStackTrace(t);
   }
 
   /**
@@ -70,7 +70,7 @@ public final class DebugTools {
    * @return true iff logging was successfully enabled
    */
   public static synchronized boolean enableLogging(String level) {
-    return ome.scifio.common.DebugTools.enableLogging(level);
+    return io.scif.common.DebugTools.enableLogging(level);
   }
   
   /**
@@ -78,7 +78,7 @@ public final class DebugTools {
    * static fields, returning the first matching field's name.
    */
   public static String getFieldName(Class<?> c, int value) {
-    return ome.scifio.common.DebugTools.getFieldName(c, value);
+    return io.scif.common.DebugTools.getFieldName(c, value);
   }
 
 }

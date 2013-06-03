@@ -38,7 +38,7 @@
 
 import java.lang.reflect.Method;
 
-import ome.scifio.common.ReflectedUniverse;
+import io.scif.common.ReflectedUniverse;
 
 /**
  * A benchmark for Java reflection performance.

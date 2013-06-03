@@ -35,10 +35,11 @@
  */
 package loci.formats;
 
+import io.scif.Metadata;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import ome.scifio.Metadata;
 
 import org.scijava.plugin.Plugin;
 
@@ -46,11 +47,11 @@ import loci.legacy.adapter.AbstractLegacyAdapter;
 
 /**
  * {@link LegacyAdapter} for converting between instances of
- * {@link ome.scifio.Metadata} and a List of {@link loci.formats.CoreMetadata}.
+ * {@link io.scif.Metadata} and a List of {@link loci.formats.CoreMetadata}.
  * 
  * @see loci.legacy.adapter.LegacyAdapter
  * @see loci.formats.CoreMetadata
- * @see ome.scifio.Metadata
+ * @see io.scif.Metadata
  * 
  * @author Mark Hiner
  *
@@ -95,7 +96,7 @@ public class CoreMetadataAdapter extends
   }
 
   @Override
-  protected ome.scifio.Metadata wrapToModern(List<loci.formats.CoreMetadata> legacy) {
+  protected io.scif.Metadata wrapToModern(List<loci.formats.CoreMetadata> legacy) {
     return new CoreMetadataListWrapper(legacy);
   }
 }

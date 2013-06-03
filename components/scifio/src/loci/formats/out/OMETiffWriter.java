@@ -46,7 +46,7 @@ import ome.xml.meta.OMETIFFFormat;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/OMETiffWriter.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/OMETiffWriter.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.OMETIFFFormat
+ * @deprecated see io.scif.formats.OMETIFFFormat
  */
 @Deprecated
 public class OMETiffWriter extends TiffWriter {
@@ -59,7 +59,7 @@ public class OMETiffWriter extends TiffWriter {
     try {
       writer = format.createWriter() ;
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create OMETIFFFormat components");
     }
   }

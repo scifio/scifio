@@ -36,12 +36,13 @@
 
 package loci.formats.out;
 
+import io.scif.formats.NativeQTFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
 import loci.formats.SCIFIOFormatWriter;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.NativeQTFormat;
 
 /**
  * QTWriter is the file format writer for uncompressed QuickTime movie files.
@@ -52,7 +53,7 @@ import ome.scifio.formats.NativeQTFormat;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.formats.NativeQTFormat
+ * @deprecated see io.scif.formats.NativeQTFormat
  */
 @Deprecated
 public class QTWriter extends SCIFIOFormatWriter {
@@ -67,7 +68,7 @@ public class QTWriter extends SCIFIOFormatWriter {
     try {
       writer = format.createWriter();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create NativeQTFormat components");
     }
   }
@@ -89,7 +90,7 @@ public class QTWriter extends SCIFIOFormatWriter {
     try {
       writer.savePlane(getSeries(), no, planeCheck(buf, x, y, w, h), x, y, w, h);
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       throw new FormatException(e);
     }
   }

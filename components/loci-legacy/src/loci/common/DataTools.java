@@ -41,7 +41,7 @@ import java.io.IOException;
 import loci.legacy.context.LegacyContext;
 
 /**
- * A legacy delegator class for ome.scifio.common.DataTools.
+ * A legacy delegator class for io.scif.common.DataTools.
  *
  * <dl><dt><b>Source code:</b></dt>
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/DataTools.java">Trac</a>,
@@ -51,7 +51,7 @@ import loci.legacy.context.LegacyContext;
  * @author Chris Allan callan at blackcat.ca
  * @author Melissa Linkert melissa at glencoesoftware.com
  * 
- * @deprecated see ome.scifio.common.DataTools
+ * @deprecated see io.scif.common.DataTools
  */
 @Deprecated
 public final class DataTools {
@@ -68,7 +68,7 @@ public final class DataTools {
 
   /** Reads the contents of the given file into a string. */
   public static String readFile(String id) throws IOException {
-    return ome.scifio.common.DataTools.readFile(LegacyContext.get(), id);
+    return io.scif.common.DataTools.readFile(LegacyContext.get(), id);
   }
 
   // -- Word decoding - bytes to primitive types --
@@ -81,7 +81,7 @@ public final class DataTools {
   public static short bytesToShort(byte[] bytes, int off, int len,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToShort(bytes, off, little);
+    return io.scif.common.DataTools.bytesToShort(bytes, off, little);
   }
 
   /**
@@ -90,7 +90,7 @@ public final class DataTools {
    * the MSBs are all assumed to be zero (regardless of endianness).
    */
   public static short bytesToShort(byte[] bytes, int off, boolean little) {
-    return ome.scifio.common.DataTools.bytesToShort(bytes, off, little);
+    return io.scif.common.DataTools.bytesToShort(bytes, off, little);
   }
 
   /**
@@ -99,7 +99,7 @@ public final class DataTools {
    * assumed to be zero (regardless of endianness).
    */
   public static short bytesToShort(byte[] bytes, boolean little) {
-    return ome.scifio.common.DataTools.bytesToShort(bytes, little);
+    return io.scif.common.DataTools.bytesToShort(bytes, little);
   }
 
   /**
@@ -110,7 +110,7 @@ public final class DataTools {
   public static short bytesToShort(short[] bytes, int off, int len,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToShort(bytes, off, len, little);
+    return io.scif.common.DataTools.bytesToShort(bytes, off, len, little);
   }
 
   /**
@@ -119,7 +119,7 @@ public final class DataTools {
    * the MSBs are all assumed to be zero (regardless of endianness).
    */
   public static short bytesToShort(short[] bytes, int off, boolean little) {
-    return ome.scifio.common.DataTools.bytesToShort(bytes, off, little);
+    return io.scif.common.DataTools.bytesToShort(bytes, off, little);
   }
 
   /**
@@ -128,7 +128,7 @@ public final class DataTools {
    * assumed to be zero (regardless of endianness).
    */
   public static short bytesToShort(short[] bytes, boolean little) {
-    return ome.scifio.common.DataTools.bytesToShort(bytes, little);
+    return io.scif.common.DataTools.bytesToShort(bytes, little);
   }
 
   /**
@@ -139,7 +139,7 @@ public final class DataTools {
   public static int bytesToInt(byte[] bytes, int off, int len,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToInt(bytes, off, len, little);
+    return io.scif.common.DataTools.bytesToInt(bytes, off, len, little);
   }
 
   /**
@@ -148,7 +148,7 @@ public final class DataTools {
    * the MSBs are all assumed to be zero (regardless of endianness).
    */
   public static int bytesToInt(byte[] bytes, int off, boolean little) {
-    return ome.scifio.common.DataTools.bytesToInt(bytes, off, little);
+    return io.scif.common.DataTools.bytesToInt(bytes, off, little);
   }
 
   /**
@@ -157,7 +157,7 @@ public final class DataTools {
    * assumed to be zero (regardless of endianness).
    */
   public static int bytesToInt(byte[] bytes, boolean little) {
-    return ome.scifio.common.DataTools.bytesToInt(bytes, little);
+    return io.scif.common.DataTools.bytesToInt(bytes, little);
   }
 
   /**
@@ -168,7 +168,7 @@ public final class DataTools {
   public static int bytesToInt(short[] bytes, int off, int len,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToInt(bytes, off, len, little);
+    return io.scif.common.DataTools.bytesToInt(bytes, off, len, little);
   }
 
   /**
@@ -177,7 +177,7 @@ public final class DataTools {
    * the MSBs are all assumed to be zero (regardless of endianness).
    */
   public static int bytesToInt(short[] bytes, int off, boolean little) {
-    return ome.scifio.common.DataTools.bytesToInt(bytes, off, little);
+    return io.scif.common.DataTools.bytesToInt(bytes, off, little);
   }
 
   /**
@@ -186,7 +186,7 @@ public final class DataTools {
    * assumed to be zero (regardless of endianness).
    */
   public static int bytesToInt(short[] bytes, boolean little) {
-    return ome.scifio.common.DataTools.bytesToInt(bytes, little);
+    return io.scif.common.DataTools.bytesToInt(bytes, little);
   }
 
   /**
@@ -197,7 +197,7 @@ public final class DataTools {
   public static float bytesToFloat(byte[] bytes, int off, int len,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToFloat(bytes, off, len, little);
+    return io.scif.common.DataTools.bytesToFloat(bytes, off, len, little);
   }
 
   /**
@@ -206,7 +206,7 @@ public final class DataTools {
    * the MSBs are all assumed to be zero (regardless of endianness).
    */
   public static float bytesToFloat(byte[] bytes, int off, boolean little) {
-    return ome.scifio.common.DataTools.bytesToFloat(bytes, off, little);
+    return io.scif.common.DataTools.bytesToFloat(bytes, off, little);
   }
 
   /**
@@ -215,7 +215,7 @@ public final class DataTools {
    * assumed to be zero (regardless of endianness).
    */
   public static float bytesToFloat(byte[] bytes, boolean little) {
-    return ome.scifio.common.DataTools.bytesToFloat(bytes, little);
+    return io.scif.common.DataTools.bytesToFloat(bytes, little);
   }
 
   /**
@@ -226,7 +226,7 @@ public final class DataTools {
   public static float bytesToFloat(short[] bytes, int off, int len,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToFloat(bytes, off, len, little);
+    return io.scif.common.DataTools.bytesToFloat(bytes, off, len, little);
   }
 
   /**
@@ -235,7 +235,7 @@ public final class DataTools {
    * the MSBs are all assumed to be zero (regardless of endianness).
    */
   public static float bytesToFloat(short[] bytes, int off, boolean little) {
-    return ome.scifio.common.DataTools.bytesToFloat(bytes, off, little);
+    return io.scif.common.DataTools.bytesToFloat(bytes, off, little);
   }
 
   /**
@@ -244,7 +244,7 @@ public final class DataTools {
    * assumed to be zero (regardless of endianness).
    */
   public static float bytesToFloat(short[] bytes, boolean little) {
-    return ome.scifio.common.DataTools.bytesToFloat(bytes, little);
+    return io.scif.common.DataTools.bytesToFloat(bytes, little);
   }
 
   /**
@@ -255,7 +255,7 @@ public final class DataTools {
   public static long bytesToLong(byte[] bytes, int off, int len,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToLong(bytes, off, len, little);
+    return io.scif.common.DataTools.bytesToLong(bytes, off, len, little);
   }
 
   /**
@@ -264,7 +264,7 @@ public final class DataTools {
    * the MSBs are all assumed to be zero (regardless of endianness).
    */
   public static long bytesToLong(byte[] bytes, int off, boolean little) {
-    return ome.scifio.common.DataTools.bytesToLong(bytes, off, little);
+    return io.scif.common.DataTools.bytesToLong(bytes, off, little);
   }
 
   /**
@@ -273,7 +273,7 @@ public final class DataTools {
    * assumed to be zero (regardless of endianness).
    */
   public static long bytesToLong(byte[] bytes, boolean little) {
-    return ome.scifio.common.DataTools.bytesToLong(bytes, little);
+    return io.scif.common.DataTools.bytesToLong(bytes, little);
   }
 
   /**
@@ -284,7 +284,7 @@ public final class DataTools {
   public static long bytesToLong(short[] bytes, int off, int len,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToLong(bytes, off, len, little);
+    return io.scif.common.DataTools.bytesToLong(bytes, off, len, little);
   }
 
   /**
@@ -293,7 +293,7 @@ public final class DataTools {
    * the MSBs are all assumed to be zero (regardless of endianness).
    */
   public static long bytesToLong(short[] bytes, int off, boolean little) {
-    return ome.scifio.common.DataTools.bytesToLong(bytes, off, little);
+    return io.scif.common.DataTools.bytesToLong(bytes, off, little);
   }
 
   /**
@@ -302,7 +302,7 @@ public final class DataTools {
    * assumed to be zero (regardless of endianness).
    */
   public static long bytesToLong(short[] bytes, boolean little) {
-    return ome.scifio.common.DataTools.bytesToLong(bytes, little);
+    return io.scif.common.DataTools.bytesToLong(bytes, little);
   }
 
   /**
@@ -313,7 +313,7 @@ public final class DataTools {
   public static double bytesToDouble(byte[] bytes, int off, int len,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToDouble(bytes, off, len, little);
+    return io.scif.common.DataTools.bytesToDouble(bytes, off, len, little);
   }
 
   /**
@@ -324,7 +324,7 @@ public final class DataTools {
   public static double bytesToDouble(byte[] bytes, int off,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToDouble(bytes, off, little);
+    return io.scif.common.DataTools.bytesToDouble(bytes, off, little);
   }
 
   /**
@@ -333,7 +333,7 @@ public final class DataTools {
    * assumed to be zero (regardless of endianness).
    */
   public static double bytesToDouble(byte[] bytes, boolean little) {
-    return ome.scifio.common.DataTools.bytesToDouble(bytes, little);
+    return io.scif.common.DataTools.bytesToDouble(bytes, little);
   }
 
   /**
@@ -344,7 +344,7 @@ public final class DataTools {
   public static double bytesToDouble(short[] bytes, int off, int len,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToDouble(bytes, off, len, little);
+    return io.scif.common.DataTools.bytesToDouble(bytes, off, len, little);
   }
 
   /**
@@ -355,7 +355,7 @@ public final class DataTools {
   public static double bytesToDouble(short[] bytes, int off,
     boolean little)
   {
-    return ome.scifio.common.DataTools.bytesToDouble(bytes, off, little);
+    return io.scif.common.DataTools.bytesToDouble(bytes, off, little);
   }
 
   /**
@@ -364,69 +364,69 @@ public final class DataTools {
    * assumed to be zero (regardless of endianness).
    */
   public static double bytesToDouble(short[] bytes, boolean little) {
-    return ome.scifio.common.DataTools.bytesToDouble(bytes, little);
+    return io.scif.common.DataTools.bytesToDouble(bytes, little);
   }
 
   /** Translates the given byte array into a String of hexadecimal digits. */
   public static String bytesToHex(byte[] b) {
-    return ome.scifio.common.DataTools.bytesToHex(b);
+    return io.scif.common.DataTools.bytesToHex(b);
   }
 
   /** Normalize the decimal separator for the user's locale. */
   public static String sanitizeDouble(String value) {
-    return ome.scifio.common.DataTools.sanitizeDouble(value);
+    return io.scif.common.DataTools.sanitizeDouble(value);
   }
 
   // -- Word decoding - primitive types to bytes --
 
   /** Translates the short value into an array of two bytes. */
   public static byte[] shortToBytes(short value, boolean little) {
-    return ome.scifio.common.DataTools.shortToBytes(value, little);
+    return io.scif.common.DataTools.shortToBytes(value, little);
   }
 
   /** Translates the int value into an array of four bytes. */
   public static byte[] intToBytes(int value, boolean little) {
-    return ome.scifio.common.DataTools.intToBytes(value, little);
+    return io.scif.common.DataTools.intToBytes(value, little);
   }
 
   /** Translates the float value into an array of four bytes. */
   public static byte[] floatToBytes(float value, boolean little) {
-    return ome.scifio.common.DataTools.floatToBytes(value, little);
+    return io.scif.common.DataTools.floatToBytes(value, little);
   }
 
   /** Translates the long value into an array of eight bytes. */
   public static byte[] longToBytes(long value, boolean little) {
-    return ome.scifio.common.DataTools.longToBytes(value, little);
+    return io.scif.common.DataTools.longToBytes(value, little);
   }
 
   /** Translates the double value into an array of eight bytes. */
   public static byte[] doubleToBytes(double value, boolean little) {
-    return ome.scifio.common.DataTools.doubleToBytes(value, little);
+    return io.scif.common.DataTools.doubleToBytes(value, little);
   }
 
   /** Translates an array of short values into an array of byte values. */
   public static byte[] shortsToBytes(short[] values, boolean little) {
-    return ome.scifio.common.DataTools.shortsToBytes(values, little);
+    return io.scif.common.DataTools.shortsToBytes(values, little);
   }
 
   /** Translates an array of int values into an array of byte values. */
   public static byte[] intsToBytes(int[] values, boolean little) {
-    return ome.scifio.common.DataTools.intsToBytes(values, little);
+    return io.scif.common.DataTools.intsToBytes(values, little);
   }
 
   /** Translates an array of float values into an array of byte values. */
   public static byte[] floatsToBytes(float[] values, boolean little) {
-    return ome.scifio.common.DataTools.floatsToBytes(values, little);
+    return io.scif.common.DataTools.floatsToBytes(values, little);
   }
 
   /** Translates an array of long values into an array of byte values. */
   public static byte[] longsToBytes(long[] values, boolean little) {
-    return ome.scifio.common.DataTools.longsToBytes(values, little);
+    return io.scif.common.DataTools.longsToBytes(values, little);
   }
 
   /** Translates an array of double values into an array of byte values. */
   public static byte[] doublesToBytes(double[] values, boolean little) {
-    return ome.scifio.common.DataTools.doublesToBytes(values, little);
+    return io.scif.common.DataTools.doublesToBytes(values, little);
   }
 
   /** @deprecated Use {@link #unpackBytes(long, byte[], int, int, boolean) */
@@ -434,7 +434,7 @@ public final class DataTools {
   public static void unpackShort(short value, byte[] buf, int ndx,
     boolean little)
   {
-    ome.scifio.common.DataTools.unpackShort(value, buf, ndx, little);
+    io.scif.common.DataTools.unpackShort(value, buf, ndx, little);
   }
 
   /**
@@ -447,7 +447,7 @@ public final class DataTools {
   public static void unpackBytes(long value, byte[] buf, int ndx,
     int nBytes, boolean little)
   {
-    ome.scifio.common.DataTools.unpackBytes(value, buf, ndx, nBytes, little);
+    io.scif.common.DataTools.unpackBytes(value, buf, ndx, nBytes, little);
   }
 
   /**
@@ -462,7 +462,7 @@ public final class DataTools {
   public static Object makeDataArray(byte[] b,
     int bpp, boolean fp, boolean little)
   {
-    return ome.scifio.common.DataTools.makeDataArray(b, bpp, fp, little);
+    return io.scif.common.DataTools.makeDataArray(b, bpp, fp, little);
   }
 
   /**
@@ -474,7 +474,7 @@ public final class DataTools {
   public static Object makeDataArray(byte[] b,
     int bpp, boolean fp, boolean little, boolean signed)
   {
-    return ome.scifio.common.DataTools.makeDataArray(b, bpp, fp, little, signed);
+    return io.scif.common.DataTools.makeDataArray(b, bpp, fp, little, signed);
   }
 
   /**
@@ -496,33 +496,33 @@ public final class DataTools {
   public static Object makeDataArray2D(byte[] b,
     int bpp, boolean fp, boolean little, int height)
   {
-    return ome.scifio.common.DataTools.makeDataArray2D(b, bpp, fp, little, height);
+    return io.scif.common.DataTools.makeDataArray2D(b, bpp, fp, little, height);
   }
 
   // -- Byte swapping --
 
   public static short swap(short x) {
-    return ome.scifio.common.DataTools.swap(x);
+    return io.scif.common.DataTools.swap(x);
   }
 
   public static char swap(char x) {
-    return ome.scifio.common.DataTools.swap(x);
+    return io.scif.common.DataTools.swap(x);
   }
 
   public static int swap(int x) {
-    return ome.scifio.common.DataTools.swap(x);
+    return io.scif.common.DataTools.swap(x);
   }
 
   public static long swap(long x) {
-    return ome.scifio.common.DataTools.swap(x);
+    return io.scif.common.DataTools.swap(x);
   }
 
   public static float swap(float x) {
-    return ome.scifio.common.DataTools.swap(x);
+    return io.scif.common.DataTools.swap(x);
   }
 
   public static double swap(double x) {
-    return ome.scifio.common.DataTools.swap(x);
+    return io.scif.common.DataTools.swap(x);
   }
 
   // -- Strings --
@@ -533,22 +533,22 @@ public final class DataTools {
    */
   @Deprecated
   public static String getHexString(byte[] b) {
-    return ome.scifio.common.DataTools.getHexString(b);
+    return io.scif.common.DataTools.getHexString(b);
   }
 
   /** Remove null bytes from a string. */
   public static String stripString(String toStrip) {
-    return ome.scifio.common.DataTools.stripString(toStrip);
+    return io.scif.common.DataTools.stripString(toStrip);
   }
 
   /** Check if two filenames have the same prefix. */
   public static boolean samePrefix(String s1, String s2) {
-    return ome.scifio.common.DataTools.samePrefix(s1, s2);
+    return io.scif.common.DataTools.samePrefix(s1, s2);
   }
 
   /** Remove unprintable characters from the given string. */
   public static String sanitize(String s) {
-    return ome.scifio.common.DataTools.sanitize(s);
+    return io.scif.common.DataTools.sanitize(s);
   }
 
   // -- Normalization --
@@ -558,7 +558,7 @@ public final class DataTools {
    * and the maximum value maps to 1.0.
    */
   public static float[] normalizeFloats(float[] data) {
-    return ome.scifio.common.DataTools.normalizeFloats(data);
+    return io.scif.common.DataTools.normalizeFloats(data);
   }
 
   /**
@@ -566,7 +566,7 @@ public final class DataTools {
    * and the maximum value maps to 1.0.
    */
   public static double[] normalizeDoubles(double[] data) {
-    return ome.scifio.common.DataTools.normalizeDoubles(data);
+    return io.scif.common.DataTools.normalizeDoubles(data);
   }
 
   // -- Array handling --
@@ -582,7 +582,7 @@ public final class DataTools {
    *           zero or negative
    */
   public static byte[] allocate(int... sizes) throws IllegalArgumentException {
-    return ome.scifio.common.DataTools.allocate(sizes);
+    return io.scif.common.DataTools.allocate(sizes);
   }
 
   /**
@@ -598,7 +598,7 @@ public final class DataTools {
   public static int safeMultiply32(int... sizes)
     throws IllegalArgumentException
   {
-    return ome.scifio.common.DataTools.safeMultiply32(sizes);
+    return io.scif.common.DataTools.safeMultiply32(sizes);
   }
 
   /**
@@ -614,12 +614,12 @@ public final class DataTools {
   public static long safeMultiply64(long... sizes)
     throws IllegalArgumentException
   {
-    return ome.scifio.common.DataTools.safeMultiply64(sizes);
+    return io.scif.common.DataTools.safeMultiply64(sizes);
   }
 
   /** Returns true if the given value is contained in the given array. */
   public static boolean containsValue(int[] array, int value) {
-    return ome.scifio.common.DataTools.containsValue(array, value);
+    return io.scif.common.DataTools.containsValue(array, value);
   }
 
   /**
@@ -627,7 +627,7 @@ public final class DataTools {
    * array. If the value is not in the array, returns -1.
    */
   public static int indexOf(int[] array, int value) {
-    return ome.scifio.common.DataTools.indexOf(array, value);
+    return io.scif.common.DataTools.indexOf(array, value);
   }
 
   /**
@@ -635,21 +635,21 @@ public final class DataTools {
    * Object array. If the value is not in the array, returns -1.
    */
   public static int indexOf(Object[] array, Object value) {
-    return ome.scifio.common.DataTools.indexOf(array, value);
+    return io.scif.common.DataTools.indexOf(array, value);
   }
 
   // -- Signed data conversion --
 
   public static byte[] makeSigned(byte[] b) {
-    return ome.scifio.common.DataTools.makeSigned(b);
+    return io.scif.common.DataTools.makeSigned(b);
   }
 
   public static short[] makeSigned(short[] s) {
-    return ome.scifio.common.DataTools.makeSigned(s);
+    return io.scif.common.DataTools.makeSigned(s);
   }
 
   public static int[] makeSigned(int[] i) {
-    return ome.scifio.common.DataTools.makeSigned(i);
+    return io.scif.common.DataTools.makeSigned(i);
   }
 
 }

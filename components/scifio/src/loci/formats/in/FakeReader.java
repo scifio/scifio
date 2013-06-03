@@ -36,9 +36,10 @@
 
 package loci.formats.in;
 
+import io.scif.formats.FakeFormat;
+
 import java.io.IOException;
 
-import ome.scifio.formats.FakeFormat;
 
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
@@ -71,18 +72,18 @@ public class FakeReader extends SCIFIOFormatReader {
 
   // -- Constants --
 
-  public static final int BOX_SIZE = ome.scifio.formats.FakeFormat.BOX_SIZE;
+  public static final int BOX_SIZE = io.scif.formats.FakeFormat.BOX_SIZE;
 
-  public static final int DEFAULT_SIZE_X = ome.scifio.formats.FakeFormat.DEFAULT_SIZE_X;
-  public static final int DEFAULT_SIZE_Y = ome.scifio.formats.FakeFormat.DEFAULT_SIZE_Y;
-  public static final int DEFAULT_SIZE_Z = ome.scifio.formats.FakeFormat.DEFAULT_SIZE_Z;
-  public static final int DEFAULT_SIZE_C = ome.scifio.formats.FakeFormat.DEFAULT_SIZE_C;
-  public static final int DEFAULT_SIZE_T = ome.scifio.formats.FakeFormat.DEFAULT_SIZE_T;
-  public static final int DEFAULT_PIXEL_TYPE = FormatTools.pixelTypeFromString(ome.scifio.formats.FakeFormat.DEFAULT_PIXEL_TYPE);
+  public static final int DEFAULT_SIZE_X = io.scif.formats.FakeFormat.DEFAULT_SIZE_X;
+  public static final int DEFAULT_SIZE_Y = io.scif.formats.FakeFormat.DEFAULT_SIZE_Y;
+  public static final int DEFAULT_SIZE_Z = io.scif.formats.FakeFormat.DEFAULT_SIZE_Z;
+  public static final int DEFAULT_SIZE_C = io.scif.formats.FakeFormat.DEFAULT_SIZE_C;
+  public static final int DEFAULT_SIZE_T = io.scif.formats.FakeFormat.DEFAULT_SIZE_T;
+  public static final int DEFAULT_PIXEL_TYPE = FormatTools.pixelTypeFromString(io.scif.formats.FakeFormat.DEFAULT_PIXEL_TYPE);
   public static final int DEFAULT_RGB_CHANNEL_COUNT = 
-      ome.scifio.formats.FakeFormat.DEFAULT_RGB_CHANNEL_COUNT;
+      io.scif.formats.FakeFormat.DEFAULT_RGB_CHANNEL_COUNT;
   public static final String DEFAULT_DIMENSION_ORDER = 
-      ome.scifio.formats.FakeFormat.DEFAULT_DIMENSION_ORDER;
+      io.scif.formats.FakeFormat.DEFAULT_DIMENSION_ORDER;
 
   // -- Fields --
 
@@ -98,7 +99,7 @@ public class FakeReader extends SCIFIOFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create FakeFormat components");
     }
   }

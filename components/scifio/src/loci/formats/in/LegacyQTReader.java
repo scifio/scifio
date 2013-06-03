@@ -36,6 +36,8 @@
 
 package loci.formats.in;
 
+import io.scif.formats.LegacyQTFormat;
+
 import java.io.IOException;
 
 import loci.formats.FormatException;
@@ -43,7 +45,6 @@ import loci.formats.MetadataTools;
 import loci.formats.gui.SCIFIOBIFormatReader;
 import loci.formats.meta.MetadataStore;
 import loci.legacy.context.LegacyContext;
-import ome.scifio.formats.LegacyQTFormat;
 
 /**
  * LegacyQTReader is a file format reader for QuickTime movie files.
@@ -56,7 +57,7 @@ import ome.scifio.formats.LegacyQTFormat;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/LegacyQTReader.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/LegacyQTReader.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
- * @deprecated see ome.scifio.formats.LegacyQTFormat
+ * @deprecated see io.scif.formats.LegacyQTFormat
  */
 @Deprecated
 public class LegacyQTReader extends SCIFIOBIFormatReader {
@@ -73,7 +74,7 @@ public class LegacyQTReader extends SCIFIOBIFormatReader {
       parser = format.createParser();
       reader = format.createReader();
     }
-    catch (ome.scifio.FormatException e) {
+    catch (io.scif.FormatException e) {
       LOGGER.warn("Failed to create LegacyQTFormat components");
     }
   }
