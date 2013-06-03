@@ -45,9 +45,9 @@
 
   <properties>
     <!-- NB: Pin to SNAPSHOT version of SCIFIO. For the moment,
-         io.scif:scifio:0.1.0-SNAPSHOT is part of this multi-module
+         io.scif:scifio:0.2.0-SNAPSHOT is part of this multi-module
          reactor, so the SNAPSHOT coupling is safe in this case. -->
-    <scifio.version>0.1.0-SNAPSHOT</scifio.version>
+    <scifio.version>0.2.0-SNAPSHOT</scifio.version>
 
     <project.rootdir>${basedir}</project.rootdir>
   </properties>
