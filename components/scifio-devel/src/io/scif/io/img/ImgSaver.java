@@ -44,15 +44,10 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Writer;
 import io.scif.common.DataTools;
-import io.scif.common.StatusEvent;
-import io.scif.common.StatusListener;
-import io.scif.common.StatusReporter;
 import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.imglib2.exception.ImgLibException;
 import net.imglib2.exception.IncompatibleTypeException;
@@ -66,18 +61,15 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import ome.xml.model.primitives.PositiveFloat;
 
+import org.scijava.app.StatusService;
+
 /**
  * Writes out an {@link ImgPlus} using SCIFIO.
  * 
  * @author Mark Hiner
  * @author Curtis Rueden
  */
-public class ImgSaver extends AbstractHasSCIFIO implements StatusReporter {
-
-	// -- Fields --
-
-	private final List<StatusListener> listeners =
-		new ArrayList<StatusListener>();
+public class ImgSaver extends AbstractHasSCIFIO {
 
 	// -- ImgSaver methods --
 
@@ -425,34 +417,10 @@ public class ImgSaver extends AbstractHasSCIFIO implements StatusReporter {
 
 		final long endTime = System.currentTimeMillis();
 		final float time = (endTime - startTime) / 1000f;
-		notifyListeners(new StatusEvent(sliceCount, sliceCount, id + ": wrote " +
-			sliceCount + " planes in " + time + " s"));
+		getContext().getService(StatusService.class).showStatus(sliceCount, sliceCount, id + ": wrote " +
+			sliceCount + " planes in " + time + " s");
 	}
-
-	// -- StatusReporter methods --
-
-	/** Adds a listener to those informed when progress occurs. */
-	public void addStatusListener(final StatusListener l) {
-		synchronized (listeners) {
-			listeners.add(l);
-		}
-	}
-
-	/** Removes a listener from those informed when progress occurs. */
-	public void removeStatusListener(final StatusListener l) {
-		synchronized (listeners) {
-			listeners.remove(l);
-		}
-	}
-
-	/** Notifies registered listeners of progress. */
-	public void notifyListeners(final StatusEvent e) {
-		synchronized (listeners) {
-			for (final StatusListener l : listeners)
-				l.statusUpdated(e);
-		}
-	}
-
+	
 	// -- Helper Methods --
 
 	/* Counts the number of slices in the provided ImgPlus.
@@ -514,8 +482,8 @@ public class ImgSaver extends AbstractHasSCIFIO implements StatusReporter {
 
 			// iterate over each plane
 			for (int planeIndex = 0; planeIndex < planeCount; planeIndex++) {
-				notifyListeners(new StatusEvent(planeIndex, planeCount,
-					"Saving plane " + (planeIndex + 1) + "/" + planeCount));
+				getContext().getService(StatusService.class).showStatus(planeIndex, planeCount,
+					"Saving plane " + (planeIndex + 1) + "/" + planeCount);
 
 				final Object curPlane =
 					planarImg.getPlane(planeIndex).getCurrentStorageArray();
@@ -611,7 +579,7 @@ public class ImgSaver extends AbstractHasSCIFIO implements StatusReporter {
 	private <T extends RealType<T> & NativeType<T>> void populateMeta(
 		final Metadata meta, final ImgPlus<T> img, int imageIndex) throws ImgIOException
 	{
-		notifyListeners(new StatusEvent("Initializing " + img.getName()));
+		getContext().getService(StatusService.class).showStatus("Initializing " + img.getName());
 
 		final int pixelType = ImgIOUtils.makeType(img.firstElement());
 
