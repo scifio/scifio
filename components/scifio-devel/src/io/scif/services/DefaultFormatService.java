@@ -36,12 +36,14 @@
 package io.scif.services;
 
 import io.scif.Checker;
+import io.scif.DefaultWriter;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Parser;
 import io.scif.Reader;
 import io.scif.Writer;
+import io.scif.util.FormatTools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -225,6 +227,29 @@ public class DefaultFormatService extends AbstractService implements FormatServi
    */
   public <W extends Writer> Format getFormatFromWriter(final Class<W> writerClass) {
     return writerMap.get(writerClass);
+  }
+  
+  /*
+   * @see io.scif.services.FormatService#getFormatByExtension(java.lang.String)
+   */
+  public Writer getWriterByExtension(String fileId) throws FormatException {
+    boolean matched = false;
+    
+    Writer w = null;
+
+    for (int i=0; !matched && i<formats.size(); i++) {
+      Format f = formats.get(i);
+      
+      if (FormatTools.checkSuffix(fileId,f.getSuffixes())) {
+        
+        if (!DefaultWriter.class.isAssignableFrom(f.getWriterClass())) {
+          w = f.createWriter();
+          matched = true;
+        }
+      }
+    }
+    
+    return w;
   }
 
   /*

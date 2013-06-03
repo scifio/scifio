@@ -552,9 +552,8 @@ public class ImgSaver extends AbstractHasSCIFIO {
     Metadata meta = null;
 	  
 		try {
-	    format = scifio().format().getFormat(id);
-	    writer = format.createWriter();
-	    meta = format.createMetadata();
+	    writer =  scifio().format().getWriterByExtension(id);
+	    meta = writer.getFormat().createMetadata();
 
 	    populateMeta(meta, img, imageIndex);
 

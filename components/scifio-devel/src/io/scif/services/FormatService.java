@@ -147,6 +147,17 @@ public interface FormatService extends Service {
    *         the {@code Format} was not found.
    */
   <W extends Writer> Format getFormatFromWriter(Class<W> writerClass);
+  
+  /**
+   * {@code Writer} lookup method using exclusively the supported suffix
+   * list. This bypasses the {@code Checker} logic, and thus does not guarantee
+   * the associated {@code Format} can read image sources of the provided type.
+   * 
+   * @param extension
+   * @return
+   * @throws FormatException 
+   */
+  Writer getWriterByExtension(String fileId) throws FormatException;
 
   /**
    * {@code Format} lookup method using the {@code Checker} component.
