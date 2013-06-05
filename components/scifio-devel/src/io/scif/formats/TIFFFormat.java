@@ -1484,7 +1484,7 @@ public class TIFFFormat extends AbstractFormat {
       
       ImageMetadata m = source.get(0);
       
-      for (int i=0; i<m.getAxisLength(Axes.TIME); i++) ifds.add(new IFD());
+      for (int i=0; i< m.getPlaneCount(); i++) ifds.add(new IFD());
       
       IFD firstIFD = ifds.get(0);
       
