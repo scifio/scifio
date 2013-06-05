@@ -72,7 +72,6 @@ import java.util.StringTokenizer;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 
-import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
@@ -81,7 +80,7 @@ public class TIFFFormat extends AbstractFormat {
 
   // -- Constants --
 
-  public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
+  public static final double PRIORITY = MinimalTIFFFormat.PRIORITY + 1;
   public static final String[] COMPANION_SUFFIXES = {"xml", "txt"};
   public static final String[] TIFF_SUFFIXES =
     {"tif", "tiff", "tf2", "tf8", "btf"};

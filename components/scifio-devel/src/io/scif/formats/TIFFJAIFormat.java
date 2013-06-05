@@ -70,7 +70,7 @@ import org.scijava.plugin.Plugin;
  * <a href="http://java.sun.com/products/java-media/jai/forDevelopers/samples/MultiPageRead.java">this example</a>.
  *
  */
-@Plugin(type = TIFFJAIFormat.class, priority = TIFFFormat.PRIORITY - 1)
+@Plugin(type = TIFFJAIFormat.class, priority = MinimalTIFFFormat.PRIORITY - 1)
 public class TIFFJAIFormat extends AbstractFormat{
 
   // -- Format API methods --

@@ -77,8 +77,10 @@ import net.imglib2.meta.Axes;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-@Plugin(type = MinimalTIFFFormat.class, priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = MinimalTIFFFormat.class, priority = MinimalTIFFFormat.PRIORITY)
 public class MinimalTIFFFormat extends AbstractFormat {
+  
+  public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
   
   // -- Format API Methods --
 

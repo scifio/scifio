@@ -86,7 +86,6 @@ import ome.xml.services.OMEXMLMetadataService;
 import ome.xml.services.OMEXMLService;
 
 import org.scijava.Context;
-import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
@@ -97,8 +96,12 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner hinerm at gmail.com
  *
  */
-@Plugin(type = OMETIFFFormat.class, priority = TIFFFormat.PRIORITY + 1)
+@Plugin(type = OMETIFFFormat.class, priority = OMETIFFFormat.PRIORITY)
 public class OMETIFFFormat extends AbstractFormat {
+  
+  // -- Constants --
+  
+  public static final double PRIORITY = TIFFFormat.PRIORITY + 1;
   
   // -- Fields --
   
@@ -1396,7 +1399,7 @@ public class OMETIFFFormat extends AbstractFormat {
   @Plugin(type = Translator.class, attrs = 
     {@Attr(name = OMETIFFTranslator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = OMETIFFTranslator.DEST, value = Metadata.CNAME)},
-    priority = TIFFFormat.PRIORITY + 1)
+    priority = OMETIFFFormat.PRIORITY)
   public static class OMETIFFTranslator
     extends AbstractTranslator<io.scif.Metadata, Metadata>
   {
