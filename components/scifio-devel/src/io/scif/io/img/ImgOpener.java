@@ -38,7 +38,6 @@ package io.scif.io.img;
 
 import io.scif.AbstractHasSCIFIO;
 import io.scif.FormatException;
-import io.scif.HasColorTable;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
@@ -596,7 +595,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
     final int sizeY = m.getAxisLength(0, Axes.Y);
     final int sizeZ = m.getAxisLength(0, Axes.Z);
     final int sizeT = m.getAxisLength(0, Axes.TIME);
-    final String[] cDimTypes = m.getChannelDimTypes(0);
+    final int sizeC = m.getEffectiveSizeC(0);
     final String dimOrder = FormatTools.findDimensionOrder(m, 0);
     final List<AxisType> dimTypes = new ArrayList<AxisType>();
 
@@ -604,11 +603,11 @@ public class ImgOpener extends AbstractHasSCIFIO {
     for (final char dim : dimOrder.toCharArray()) {
       switch (dim) {
       case 'X':
-        if (sizeX > 1)
+        if (sizeX > 0)
           dimTypes.add(Axes.X);
         break;
       case 'Y':
-        if (sizeY > 1)
+        if (sizeY > 0)
           dimTypes.add(Axes.Y);
         break;
       case 'Z':
@@ -620,7 +619,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
           dimTypes.add(Axes.TIME);
         break;
       case 'C':
-        if (cDimTypes.length > 0)
+        if (sizeC > 1)
           dimTypes.add(Axes.CHANNEL);
         break;
       }
@@ -811,10 +810,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
         populatePlane(r, imageIndex, planeIndex, plane.getBytes(), imgPlus);
 
       // store color table
-      if (HasColorTable.class.isAssignableFrom(r.getMetadata().getClass())) {
-        imgPlus.setColorTable(
-            ((HasColorTable) r.getMetadata()).getColorTable(imageIndex, 0), planeIndex);
-      }
+      imgPlus.setColorTable(plane.getColorTable(), planeIndex);
     }
     if (computeMinMax)
       populateMinMax(r, imgPlus, imageIndex);
