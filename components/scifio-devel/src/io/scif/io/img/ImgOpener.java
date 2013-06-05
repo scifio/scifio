@@ -38,7 +38,6 @@ package io.scif.io.img;
 
 import io.scif.AbstractHasSCIFIO;
 import io.scif.FormatException;
-import io.scif.HasColorTable;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
@@ -811,10 +810,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
         populatePlane(r, imageIndex, planeIndex, plane.getBytes(), imgPlus);
 
       // store color table
-      if (HasColorTable.class.isAssignableFrom(r.getMetadata().getClass())) {
-        imgPlus.setColorTable(
-            ((HasColorTable) r.getMetadata()).getColorTable(imageIndex, 0), planeIndex);
-      }
+      imgPlus.setColorTable(plane.getColorTable(), planeIndex);
     }
     if (computeMinMax)
       populateMinMax(r, imgPlus, imageIndex);
