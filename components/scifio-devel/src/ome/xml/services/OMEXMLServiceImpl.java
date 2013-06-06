@@ -107,7 +107,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 
   // -- Stylesheet names --
 
-  private static final String XSLT_PATH = "/loci/formats/meta/";
+  private static final String XSLT_PATH = "/ome/xml/meta/";
   private static final String XSLT_REORDER = XSLT_PATH + "reorder-2008-09.xsl";
   private static final String XSLT_2003FC =
     XSLT_PATH + "2003-FC-to-2008-09.xsl";

@@ -108,6 +108,9 @@
     <testSourceDirectory>${basedir}/test</testSourceDirectory>
     <resources>
       <resource>
+        <directory>${basedir}/src/ome/xml/meta/</directory>
+      </resource>
+      <resource>
         <directory>${basedir}/src</directory>
         <excludes>
           <exclude>**/*.java</exclude>
