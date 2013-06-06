@@ -50,16 +50,17 @@ import org.scijava.plugin.Plugin;
 public class SCIFIOApp extends AbstractApp {
 
   public static final String NAME = "SCIFIO";
-  
+
   public String getTitle() {
     return NAME;
   }
 
   public String getGroupId() {
-    return "loci";
+    return "io.scif";
   }
 
   public String getArtifactId() {
-    return "scifio-devel";
-  } 
+    return "scifio";
+  }
+
 }
