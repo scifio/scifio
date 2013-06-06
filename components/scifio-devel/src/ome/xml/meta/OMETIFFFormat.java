@@ -992,13 +992,11 @@ public class OMETIFFFormat extends AbstractFormat {
 
     @Override
     public int getOptimalTileWidth(int imageIndex) {
-      FormatTools.assertId(currentId, true, 1);
       return getMetadata().getTileWidth()[imageIndex];
     }
 
     @Override
     public int getOptimalTileHeight(int imageIndex) {
-      FormatTools.assertId(currentId, true, 1);
       return getMetadata().getTileHeight()[imageIndex];
     }
     
