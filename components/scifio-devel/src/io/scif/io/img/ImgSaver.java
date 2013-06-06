@@ -39,7 +39,6 @@ package io.scif.io.img;
 import io.scif.AbstractHasSCIFIO;
 import io.scif.ByteArrayPlane;
 import io.scif.DefaultMetadata;
-import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Writer;
@@ -133,9 +132,10 @@ public class ImgSaver extends AbstractHasSCIFIO {
 
 	/**
 	 * saveImg is the entry point for saving an {@link ImgPlus} The goal is to get
-	 * to an {@link IFormatWriter} and {@link ImgPlus} which are then passed to
-	 * writePlanes. These saveImg signatures facilitate multiple pathways to that
-	 * goal. This method is called when a String id and {@linl Img} are provided.
+	 * to a {@link Writer} and {@link ImgPlus} which are then passed to
+	 * {@link #writePlanes}. These saveImg signatures facilitate multiple pathways
+	 * to that goal. This method is called when a String id and {@link Img} are
+	 * provided.
 	 * 
 	 * @param <T>
 	 * @param id
@@ -168,7 +168,7 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	}
 
 	/**
-	 * {@link IFormatWriter} and {@link Img} provided
+	 * {@link Writer} and {@link Img} provided
 	 * 
 	 * @param <T>
 	 * @param w
@@ -188,7 +188,7 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	// pending that, these two IFormatWriter methods are not guaranteed to be
 	// useful
 	/**
-	 * {@link IFormatWriter} provided. {@link ImgPlus} provided, or wrapped
+	 * {@link Writer} provided. {@link ImgPlus} provided, or wrapped
 	 * provided {@link Img}.
 	 * 
 	 * @param <T>
@@ -540,14 +540,13 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	}
 
 	/**
-	 * Creates a new {@link IFormatWriter} with an unpopulated MetadataStore and
+	 * Creates a new {@link Writer} with an unpopulated MetadataStore and
 	 * sets its id to the provided String.
 	 */
 	private <T extends RealType<T> & NativeType<T>> Writer
 		initializeWriter(final String id, final ImgPlus<T> img, int imageIndex)
 			throws ImgIOException
 	{
-    Format format = null;
     Writer writer = null;
     Metadata meta = null;
 	  

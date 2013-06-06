@@ -50,7 +50,7 @@ public class AbstractHasSCIFIO extends SortablePlugin
   implements HasSCIFIO
 {
 
-  /* Cached SCIFIO reference. */
+  /** Cached SCIFIO reference. */
   private SCIFIO scifio;
   
   // -- HasSCIFIO API Methods --
