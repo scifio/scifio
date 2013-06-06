@@ -120,7 +120,7 @@
           <libraries>
             <library>${project.groupId}:ome-xml:jar:${project.version}</library>
             <library>${project.groupId}:loci-legacy:jar:${project.version}</library>
-            <library>${project.groupId}:scifio-devel:jar:${project.version}</library>
+            <library>${scifio.groupId}:scifio:jar:${scifio.version}</library>
           </libraries>
         </configuration>
       </plugin>
