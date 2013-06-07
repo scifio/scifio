@@ -36,7 +36,9 @@
 
 package io.scif.io.img.cell;
 
+import io.scif.Metadata;
 import io.scif.Reader;
+import io.scif.common.DataTools;
 import io.scif.filters.ReaderFilter;
 import io.scif.io.img.cell.loaders.BitArrayLoader;
 import io.scif.io.img.cell.loaders.ByteArrayLoader;
@@ -47,6 +49,7 @@ import io.scif.io.img.cell.loaders.IntArrayLoader;
 import io.scif.io.img.cell.loaders.LongArrayLoader;
 import io.scif.io.img.cell.loaders.SCIFIOArrayLoader;
 import io.scif.io.img.cell.loaders.ShortArrayLoader;
+import io.scif.util.FormatTools;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.basictypeaccess.array.BitArray;
@@ -58,6 +61,7 @@ import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.img.cell.AbstractCellImgFactory;
+import net.imglib2.meta.Axes;
 import net.imglib2.type.NativeType;
 
 /**
@@ -176,8 +180,9 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
     
     if (r instanceof ReaderFilter) r = ((ReaderFilter)r).getTail();
     
-    defaultCellDimensions = new int[] { r.getOptimalTileWidth(0),
-        r.getOptimalTileHeight(0), 1, 1, 1 };
+    int[] cellXY = getOptimalCellXY(reader);
+    
+    defaultCellDimensions = new int[] {cellXY[0], cellXY[1], 1, 1, 1 };
   }
 
   @Override
@@ -188,6 +193,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
       super.finalize();
     }
   }
+  
+  // -- Helper Methods --
 
   private <A, L extends SCIFIOArrayLoader<A>>
     SCIFIOCellImg<T, A, SCIFIOCell<A>> createInstance(L loader,
@@ -199,5 +206,94 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
     return new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(
         c, entitiesPerPixel, dimensions, cellSize));
 
+  }
+  
+  // -- Static helper methods --
+  
+  /**
+   * See {@link #getOptimalCellXY(Reader, int, int)}. Defaults
+   * to {@link Reader#getOptimalTileHeight(int)} and 
+   * {@link Reader#getOptimalTileWidth(int)}.
+   * 
+   * @throws IllegalArgumentException if no cell can be found
+   *         that fits in 2MB
+   * 
+   * @return an array containing the optimal celll width in [0]
+   *         and height in [1];
+   */
+  public static int[] getOptimalCellXY(Reader reader) {
+    return getOptimalCellXY(reader, reader.getOptimalTileWidth(0),
+    reader.getOptimalTileHeight(0));
+  }
+  
+  /**
+   * Returns optimal default cell dimensions given a reader
+   * with an open dataset and a base tileWidth and tileHeight.
+   * Negative height/width are set to 1 and expanded. Height/width
+   * > the x, y sizes are capped to x, y. The algorithm used
+   * tries to return strips in multiples of the given tile dimensions, but
+   * will expand horizontally to fill the complete image, and will
+   * expand vertically to the size of the image if memory permits.
+   * <p>
+   * Will not return cell sizes > 2MB.
+   * </p>
+   * 
+   * @throws IllegalArgumentException if no cell can be found
+   *         that fits in 2MB
+   * 
+   * @return an array containing the optimal celll width in [0]
+   *         and height in [1];
+   */
+  public static int[] getOptimalCellXY(Reader reader, int tileWidth, int tileHeight) {
+    // No cell will occupy more than 2MB
+    int maxBytes = 2 * 1024 * 1024;
+    
+    Metadata meta = reader.getMetadata();
+    
+    int sizeX = meta.getAxisLength(0, Axes.X);
+    int sizeY = meta.getAxisLength(0, Axes.Y);
+    
+    // Invalid sizes default to 1, 1, which are automatically expanded.
+    if (tileWidth <= 0) tileWidth = 1;
+    if (tileHeight <= 0) tileHeight = 1;
+    
+    // Similarly, if the tiles are too big, cap them
+    if (tileHeight > sizeX) tileHeight = sizeX;
+    if (tileWidth > sizeY) tileWidth = sizeY;
+    
+    int cellWidth = -1, cellHeight = -1;
+    int bpp = FormatTools.getBytesPerPixel(meta.getPixelType(0));
+    
+    // Compute the size, in bytes, of a single tile. We do not consider RGB
+    // channel count because ChannelSeparator is assumed.
+    int tileSize = DataTools.safeMultiply32(tileWidth, tileHeight, bpp);
+    
+    // Tile is too large
+    if (tileSize > maxBytes) 
+      throw new IllegalArgumentException("Tiles too large: " + tileSize 
+          + ". Please use a tile size < 2MB");
+    
+    // Determine how many tiles we have to work with
+    int numTiles = maxBytes / tileSize;
+    
+    // How many tiles wide can we make our strips
+    int tilesWide = Math.min(sizeX / tileWidth, numTiles);
+    
+    // Compute cellWidth
+    cellWidth = tilesWide * tileWidth;
+    
+    if (cellWidth < sizeX && numTiles > tilesWide)
+      cellWidth = sizeX;
+
+    // How many strips of tiles can we make
+    int tilesHigh = Math.min(maxBytes / (cellWidth * tileHeight * bpp), sizeY / tileHeight);
+
+    // compute cellHeight
+    cellHeight = tilesHigh * tileHeight;
+    
+    if (cellHeight < sizeY && maxBytes > cellWidth * sizeY * bpp)
+      cellHeight = sizeY;
+    
+    return new int[]{cellWidth, cellHeight};
   }
 }
