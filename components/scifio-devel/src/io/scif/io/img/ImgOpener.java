@@ -190,7 +190,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
   // -- Constructors --
 
   public ImgOpener() {
-    this(new Context(InitializeService.class, TranslatorService.class,
+    this(new Context(StatusService.class, InitializeService.class, TranslatorService.class,
         OMEXMLService.class));
   }
 
