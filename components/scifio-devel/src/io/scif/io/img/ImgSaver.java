@@ -460,6 +460,8 @@ public class ImgSaver extends AbstractHasSCIFIO {
 
 		final PlanarImg<T, ?> planarImg = (PlanarImg<T, ?>) planarAccess;
 		final int planeCount = planarImg.numSlices();
+		final int rgbChannelCount = w.getMetadata().getRGBChannelCount(imageIndex);
+		final boolean interleaved = w.getMetadata().isInterleaved(imageIndex);
 
 		if (img.numDimensions() > 0) {
 			final Class<?> arrayType =
@@ -481,37 +483,9 @@ public class ImgSaver extends AbstractHasSCIFIO {
 			}
 
 			// iterate over each plane
-			for (int planeIndex = 0; planeIndex < planeCount; planeIndex++) {
+			for (int planeIndex = 0; planeIndex < planeCount; planeIndex += rgbChannelCount) {
 				getContext().getService(StatusService.class).showStatus(planeIndex, planeCount,
-					"Saving plane " + (planeIndex + 1) + "/" + planeCount);
-
-				final Object curPlane =
-					planarImg.getPlane(planeIndex).getCurrentStorageArray();
-
-				// Convert current plane if necessary
-				if (arrayType == int[].class) {
-					plane = DataTools.intsToBytes((int[]) curPlane, false);
-				}
-				else if (arrayType == byte[].class) {
-					plane = (byte[]) curPlane;
-				}
-				else if (arrayType == short[].class) {
-					plane = DataTools.shortsToBytes((short[]) curPlane, false);
-				}
-				else if (arrayType == long[].class) {
-					plane = DataTools.longsToBytes((long[]) curPlane, false);
-				}
-				else if (arrayType == double[].class) {
-					plane = DataTools.doublesToBytes((double[]) curPlane, false);
-				}
-				else if (arrayType == float[].class) {
-					plane = DataTools.floatsToBytes((float[]) curPlane, false);
-				}
-				else {
-					throw new IncompatibleTypeException(new ImgLibException(),
-						"PlanarImgs of type " + planarImg.getPlane(0).getClass() +
-							" not supported.");
-				}
+					"Saving plane " + (planeIndex + 1) + "/" + (planeCount / rgbChannelCount));
 
 				// save bytes
 				try {
@@ -519,7 +493,46 @@ public class ImgSaver extends AbstractHasSCIFIO {
 				  ByteArrayPlane bap = new ByteArrayPlane(getContext(), meta.get(imageIndex),
 				      0, 0, meta.getAxisLength(imageIndex, Axes.X),
 				      meta.getAxisLength(imageIndex, Axes.Y));
-				  bap.setData(plane);
+				  
+				  for (int channelIndex = planeIndex; channelIndex < planeIndex + rgbChannelCount; channelIndex++) {
+				    final Object curPlane =
+				        planarImg.getPlane(channelIndex).getCurrentStorageArray();
+
+				    // Convert current plane if necessary
+				    if (arrayType == int[].class) {
+				      plane = DataTools.intsToBytes((int[]) curPlane, false);
+				    }
+				    else if (arrayType == byte[].class) {
+				      plane = (byte[]) curPlane;
+				    }
+				    else if (arrayType == short[].class) {
+				      plane = DataTools.shortsToBytes((short[]) curPlane, false);
+				    }
+				    else if (arrayType == long[].class) {
+				      plane = DataTools.longsToBytes((long[]) curPlane, false);
+				    }
+				    else if (arrayType == double[].class) {
+				      plane = DataTools.doublesToBytes((double[]) curPlane, false);
+				    }
+				    else if (arrayType == float[].class) {
+				      plane = DataTools.floatsToBytes((float[]) curPlane, false);
+				    }
+				    else {
+				      throw new IncompatibleTypeException(new ImgLibException(),
+				          "PlanarImgs of type " + planarImg.getPlane(0).getClass() +
+				          " not supported.");
+				    }
+
+				    if (interleaved) {
+	            for (int i=0; i<plane.length; i++) {
+	              bap.getData()[(i * rgbChannelCount) + channelIndex] = plane[i];
+	            }
+				    }
+				    else {
+				      System.arraycopy(plane, 0, bap.getData(), channelIndex * plane.length, plane.length);
+				    }
+				  }
+
 					w.savePlane(imageIndex, planeIndex, bap);
 				}
 				catch (final FormatException e) {
@@ -650,9 +663,11 @@ public class ImgSaver extends AbstractHasSCIFIO {
 		
 		DefaultMetadata imgplusMeta = new DefaultMetadata();
 		
+		int rgbChannelCount = img.getCompositeChannelCount();
+		
 		imgplusMeta.createImageMetadata(imageIndex + 1);
 		
-		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), dimOrder, pixelType, 1,
+		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), dimOrder, pixelType, rgbChannelCount,
 		    true, false, false, false, true, sizeX, sizeY, sizeZ, sizeC,
 		    sizeT);
 		
