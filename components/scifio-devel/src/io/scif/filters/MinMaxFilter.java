@@ -33,19 +33,17 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package ome.xml.filters;
+package io.scif.filters;
 
 import io.scif.FormatException;
 import io.scif.Plane;
 import io.scif.common.DataTools;
-import io.scif.filters.AbstractReaderFilter;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
 import java.util.Arrays;
 
 import net.imglib2.meta.Axes;
-import ome.xml.meta.IMinMaxStore;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
@@ -83,28 +81,6 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
   /** Number of planes for which min/max computations have been completed. */
   protected int[] minMaxDone;
-
-  /** Consumer of channel global minima and maxima */
-  protected IMinMaxStore minMaxStore;
-  
-
-  /**
-   * Sets the active min-max store for the calculator. Whenever a channel's
-   * global minimum and maximum calculation has been completed this store is
-   * notified.
-   * @param store See above.
-   */
-  public void setMinMaxStore(IMinMaxStore store) {
-    minMaxStore = store;
-  }
-
-  /**
-   * Retrieves the current active min-max store for the calculator.
-   * @return See above.
-   */
-  public IMinMaxStore getMinMaxStore() {
-    return minMaxStore;
-  }
 
   // -- MinMaxCalculator API methods --
 
@@ -368,13 +344,6 @@ public class MinMaxFilter extends AbstractReaderFilter {
       }
     }
     minMaxDone[imageIndex] = Math.max(minMaxDone[imageIndex], planeIndex + 1);
-
-    if (minMaxDone[imageIndex] == getImageCount() && minMaxStore != null) {
-      for (int c=0; c<m.getAxisLength(imageIndex, Axes.CHANNEL); c++) {
-        minMaxStore.setChannelGlobalMinMax(c, chanMin[imageIndex][c],
-          chanMax[imageIndex][c], imageIndex);
-      }
-    }
   }
 
   /**
