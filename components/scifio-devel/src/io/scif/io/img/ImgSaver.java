@@ -43,6 +43,7 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Writer;
 import io.scif.common.DataTools;
+import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.File;
@@ -467,7 +468,7 @@ public class ImgSaver extends AbstractHasSCIFIO {
 			final Class<?> arrayType =
 				planarImg.getPlane(0).getCurrentStorageArray().getClass();
 
-			byte[] plane = null;
+			byte[] sourcePlane = null;
 			
 			// if we know this image will pass to SCIFIO to be saved,
 			// then delete the old file if it exists
@@ -490,7 +491,7 @@ public class ImgSaver extends AbstractHasSCIFIO {
 				// save bytes
 				try {
 				  Metadata meta = w.getMetadata();
-				  ByteArrayPlane bap = new ByteArrayPlane(getContext(), meta.get(imageIndex),
+				  ByteArrayPlane destPlane = new ByteArrayPlane(getContext(), meta.get(imageIndex),
 				      0, 0, meta.getAxisLength(imageIndex, Axes.X),
 				      meta.getAxisLength(imageIndex, Axes.Y));
 				  
@@ -500,22 +501,22 @@ public class ImgSaver extends AbstractHasSCIFIO {
 
 				    // Convert current plane if necessary
 				    if (arrayType == int[].class) {
-				      plane = DataTools.intsToBytes((int[]) curPlane, false);
+				      sourcePlane = DataTools.intsToBytes((int[]) curPlane, false);
 				    }
 				    else if (arrayType == byte[].class) {
-				      plane = (byte[]) curPlane;
+				      sourcePlane = (byte[]) curPlane;
 				    }
 				    else if (arrayType == short[].class) {
-				      plane = DataTools.shortsToBytes((short[]) curPlane, false);
+				      sourcePlane = DataTools.shortsToBytes((short[]) curPlane, false);
 				    }
 				    else if (arrayType == long[].class) {
-				      plane = DataTools.longsToBytes((long[]) curPlane, false);
+				      sourcePlane = DataTools.longsToBytes((long[]) curPlane, false);
 				    }
 				    else if (arrayType == double[].class) {
-				      plane = DataTools.doublesToBytes((double[]) curPlane, false);
+				      sourcePlane = DataTools.doublesToBytes((double[]) curPlane, false);
 				    }
 				    else if (arrayType == float[].class) {
-				      plane = DataTools.floatsToBytes((float[]) curPlane, false);
+				      sourcePlane = DataTools.floatsToBytes((float[]) curPlane, false);
 				    }
 				    else {
 				      throw new IncompatibleTypeException(new ImgLibException(),
@@ -524,16 +525,18 @@ public class ImgSaver extends AbstractHasSCIFIO {
 				    }
 
 				    if (interleaved) {
-	            for (int i=0; i<plane.length; i++) {
-	              bap.getData()[(i * rgbChannelCount) + channelIndex] = plane[i];
+				      int bpp = FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
+				      
+	            for (int i=0; i<sourcePlane.length / bpp; i += bpp) {
+	              System.arraycopy(sourcePlane, i, destPlane.getData(), ((i * rgbChannelCount) + channelIndex) * bpp, bpp);
 	            }
 				    }
 				    else {
-				      System.arraycopy(plane, 0, bap.getData(), channelIndex * plane.length, plane.length);
+				      System.arraycopy(sourcePlane, 0, destPlane.getData(), channelIndex * sourcePlane.length, sourcePlane.length);
 				    }
 				  }
 
-					w.savePlane(imageIndex, planeIndex, bap);
+					w.savePlane(imageIndex, planeIndex, destPlane);
 				}
 				catch (final FormatException e) {
 					throw new ImgIOException(e);
