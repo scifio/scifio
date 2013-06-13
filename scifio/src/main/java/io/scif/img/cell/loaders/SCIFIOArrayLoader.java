@@ -33,39 +33,23 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package io.scif.io.img.cell.loaders;
 
-import io.scif.Metadata;
-import io.scif.Reader;
-import io.scif.common.DataTools;
-import net.imglib2.img.basictypeaccess.array.ShortArray;
+package io.scif.img.cell.loaders;
 
-public class ShortArrayLoader extends AbstractArrayLoader< ShortArray >
+import io.scif.img.cell.SCIFIOCellImg;
+
+
+/**
+ * Interface for requesting arrays from SCIFIO {@link io.scif.Reader}s
+ * by {@link SCIFIOCellImg}s.
+ * 
+ * @author Mark Hiner hinerm at gmail.com
+ */
+public interface SCIFIOArrayLoader< A >
 {
-	public ShortArrayLoader(Reader reader) {
-    super(reader);
-  }
+  int getBitsPerElement();
 
-  @Override
-  protected void convertBytes(ShortArray data, byte[] bytes, int planesRead) {
-    Metadata meta = reader().getMetadata();
-    
-    int bpp = meta.getBitsPerPixel(0) / 8;
-    int offset = planesRead * (bytes.length / bpp);
-    
-    int idx = 0;
-    
-    for (int i=0; i<bytes.length; i+=bpp) {
-      data.setValue(offset + idx++, DataTools.bytesToShort(bytes, i, bpp, meta.isLittleEndian(0)));
-    }
-  }
-  
-	public ShortArray emptyArray( final int[] dimensions )
-	{
-		return new ShortArray( countEntities(dimensions) );
-	}
+  A loadArray( int[] dimensions, long[] min );
 
-	public int getBitsPerElement() {
-		return 16;
-	}
+  A emptyArray( final int[] dimensions );
 }

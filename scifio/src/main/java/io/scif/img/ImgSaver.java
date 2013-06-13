@@ -34,7 +34,7 @@
  * #L%
  */
 
-package io.scif.io.img;
+package io.scif.img;
 
 import io.scif.AbstractHasSCIFIO;
 import io.scif.ByteArrayPlane;

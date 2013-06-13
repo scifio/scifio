@@ -33,46 +33,39 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
-package io.scif.io.img.cell.loaders;
+package io.scif.img.cell.loaders;
 
 import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.common.DataTools;
-import net.imglib2.img.basictypeaccess.array.LongArray;
+import net.imglib2.img.basictypeaccess.array.ShortArray;
 
-/**
- * {@link SCIFIOArrayLoader} implementation for {@link LongArray}
- * types.
- * 
- * @author Mark Hiner hinerm at gmail.com
- *
- */
-public class LongArrayLoader extends AbstractArrayLoader< LongArray >
+public class ShortArrayLoader extends AbstractArrayLoader< ShortArray >
 {
-  public LongArrayLoader (Reader reader) {
+	public ShortArrayLoader(Reader reader) {
     super(reader);
   }
 
   @Override
-  protected void convertBytes(LongArray data, byte[] bytes, int planesRead) {
+  protected void convertBytes(ShortArray data, byte[] bytes, int planesRead) {
     Metadata meta = reader().getMetadata();
     
     int bpp = meta.getBitsPerPixel(0) / 8;
     int offset = planesRead * (bytes.length / bpp);
+    
     int idx = 0;
     
     for (int i=0; i<bytes.length; i+=bpp) {
-      data.setValue(offset + idx++, DataTools.bytesToLong(bytes, i, bpp, meta.isLittleEndian(0)));
+      data.setValue(offset + idx++, DataTools.bytesToShort(bytes, i, bpp, meta.isLittleEndian(0)));
     }
   }
   
-  public LongArray emptyArray( final int[] dimensions )
-  {
-    return new LongArray( countEntities(dimensions) );
-  }
+	public ShortArray emptyArray( final int[] dimensions )
+	{
+		return new ShortArray( countEntities(dimensions) );
+	}
 
-  public int getBitsPerElement() {
-    return 64;
-  }
+	public int getBitsPerElement() {
+		return 16;
+	}
 }

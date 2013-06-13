@@ -36,9 +36,9 @@
 
 package io.scif.io.utests;
 
-import io.scif.io.img.IO;
-import io.scif.io.img.ImgIOException;
-import io.scif.io.img.ImgOpener;
+import io.scif.img.IO;
+import io.scif.img.ImgIOException;
+import io.scif.img.ImgOpener;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;

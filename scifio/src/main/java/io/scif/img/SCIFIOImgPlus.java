@@ -34,38 +34,78 @@
  * #L%
  */
 
-package io.scif.io.img.cell.loaders;
+package io.scif.img;
 
-import io.scif.Reader;
-import net.imglib2.img.basictypeaccess.array.ByteArray;
+import io.scif.FormatException;
+import io.scif.img.cell.SCIFIOCellImg;
+
+import java.io.IOException;
+
+import net.imglib2.display.ColorTable;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.AxisType;
+import net.imglib2.meta.Metadata;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link ByteArray}
- * types.
+ * SCIFIO extension of {@link ImgPlus} that adds
+ * {@link #getColorTable(int, int)} API for
+ * specifying both the plane and image index.
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
-public class ByteArrayLoader extends AbstractArrayLoader< ByteArray >
-{
-  public ByteArrayLoader (Reader reader) {
-    super(reader);
+public class SCIFIOImgPlus<T> extends ImgPlus<T> {
+
+  // -- Constructors --
+
+  public SCIFIOImgPlus(final Img<T> img) {
+    super(img);
   }
 
-  @Override
-  protected void convertBytes(ByteArray data, byte[] bytes, int planesRead) {
-    int offset = planesRead * bytes.length;
-    for (int i=offset; i < offset + bytes.length; i++) {
-      data.setValue(i, bytes[i - offset]);
-    }
+  public SCIFIOImgPlus(final Img<T> img, final String name) {
+    super(img, name);
+  }
+
+  public SCIFIOImgPlus(final Img<T> img, final String name, final AxisType[] axes) {
+    super(img, name, axes);
+  }
+
+  public SCIFIOImgPlus(final Img<T> img, final Metadata metadata) {
+    super(img, metadata);
+  }
+
+  public SCIFIOImgPlus(final Img<T> img, final String name, final AxisType[] axes,
+    final double[] cal)
+  {
+    super(img, name, axes, cal);
   }
   
-  public ByteArray emptyArray( final int[] dimensions )
-  {
-    return new ByteArray( countEntities(dimensions) );
+  @Override
+  public ColorTable getColorTable(final int planeIndex) {
+    return getColorTable(0, planeIndex);
   }
-
-  public int getBitsPerElement() {
-    return 8;
+  
+  /**
+   * @param imageIndex - Image index to look up the color table
+   * @param planeIndex - Plane index of the desired color table
+   * @return The ColorTable of the underlying dataset at the specified indices.
+   */
+  public ColorTable getColorTable(int imageIndex, final int planeIndex) {
+    ColorTable table = super.getColorTable(planeIndex);
+    
+    if (table == null && SCIFIOCellImg.class.isAssignableFrom(getImg().getClass()))
+    {
+      try {
+        table = ((SCIFIOCellImg<?, ?, ?>)getImg()).getColorTable(imageIndex, planeIndex);
+      } catch (FormatException e) {
+        return null;
+      } catch (IOException e) {
+        return null;
+      }
+      
+      setColorTable(table, planeIndex);
+    }
+    
+    return table;
   }
 }

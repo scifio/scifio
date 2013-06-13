@@ -34,14 +34,14 @@
  * #L%
  */
 
-package io.scif.io.img.cell.utests;
+package io.scif.img.cell.utests;
 
 import static org.testng.AssertJUnit.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.fail;
 import io.scif.Reader;
 import io.scif.SCIFIO;
-import io.scif.io.img.cell.SCIFIOCellImgFactory;
+import io.scif.img.cell.SCIFIOCellImgFactory;
 
 import java.io.IOException;
 

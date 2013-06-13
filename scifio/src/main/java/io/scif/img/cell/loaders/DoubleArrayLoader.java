@@ -1,4 +1,3 @@
-
 /*
  * #%L
  * SCIFIO library for reading and converting scientific file formats.
@@ -35,28 +34,28 @@
  * #L%
  */
 
-package io.scif.io.img.cell.loaders;
+package io.scif.img.cell.loaders;
 
 import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.common.DataTools;
-import net.imglib2.img.basictypeaccess.array.IntArray;
+import net.imglib2.img.basictypeaccess.array.DoubleArray;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link IntArray}
+ * {@link SCIFIOArrayLoader} implementation for {@link DoubleArray}
  * types.
  * 
  * @author Mark Hiner hinerm at gmail.com
  *
  */
-public class IntArrayLoader extends AbstractArrayLoader< IntArray >
+public class DoubleArrayLoader extends AbstractArrayLoader< DoubleArray >
 {
-  public IntArrayLoader (Reader reader) {
+  public DoubleArrayLoader (Reader reader) {
     super(reader);
   }
 
   @Override
-  protected void convertBytes(IntArray data, byte[] bytes, int planesRead) {
+  protected void convertBytes(DoubleArray data, byte[] bytes, int planesRead) {
     Metadata meta = reader().getMetadata();
     
     int bpp = meta.getBitsPerPixel(0) / 8;
@@ -64,16 +63,16 @@ public class IntArrayLoader extends AbstractArrayLoader< IntArray >
     int idx = 0;
     
     for (int i=0; i<bytes.length; i+=bpp) {
-      data.setValue(offset + idx++, DataTools.bytesToInt(bytes, i, bpp, meta.isLittleEndian(0)));
+      data.setValue(offset + idx++, DataTools.bytesToDouble(bytes, i, bpp, meta.isLittleEndian(0)));
     }
   }
   
-  public IntArray emptyArray( final int[] dimensions )
+  public DoubleArray emptyArray( final int[] dimensions )
   {
-    return new IntArray( countEntities(dimensions) );
+    return new DoubleArray( countEntities(dimensions) );
   }
 
   public int getBitsPerElement() {
-    return 32;
+    return 64;
   }
 }

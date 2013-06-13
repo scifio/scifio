@@ -34,45 +34,45 @@
  * #L%
  */
 
-package io.scif.io.img.cell.loaders;
+package io.scif.img.cell.loaders;
 
+import io.scif.Metadata;
 import io.scif.Reader;
-import net.imglib2.img.basictypeaccess.array.BitArray;
+import io.scif.common.DataTools;
+import net.imglib2.img.basictypeaccess.array.FloatArray;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link BitArray}
+ * {@link SCIFIOArrayLoader} implementation for {@link FloatArray}
  * types.
  * 
  * @author Mark Hiner hinerm at gmail.com
  *
  */
-public class BitArrayLoader extends AbstractArrayLoader< BitArray >
+public class FloatArrayLoader extends AbstractArrayLoader< FloatArray >
 {
-  public BitArrayLoader (Reader reader) {
+  public FloatArrayLoader (Reader reader) {
     super(reader);
   }
 
   @Override
-  protected void convertBytes(BitArray data, byte[] bytes, int planesRead) {
-    int offset = planesRead * bytes.length * 8;
+  protected void convertBytes(FloatArray data, byte[] bytes, int planesRead) {
+    Metadata meta = reader().getMetadata();
     
-    for (int i=0; i<bytes.length; i++) {
-      byte b = bytes[i];
-      
-      for (int j=0; j<8; j++) {
-        int idx = (i * 8) + j;
-        data.setValue(offset + idx, (b & 0x01) == 1);
-        b = (byte) (b >> 1);
-      }
+    int bpp = meta.getBitsPerPixel(0) / 8;
+    int offset = planesRead * (bytes.length / bpp);
+    int idx = 0;
+    
+    for (int i=0; i<bytes.length; i+=bpp) {
+      data.setValue(offset + idx++, DataTools.bytesToFloat(bytes, i, bpp, meta.isLittleEndian(0)));
     }
   }
   
-  public BitArray emptyArray( final int[] dimensions )
+  public FloatArray emptyArray( final int[] dimensions )
   {
-    return new BitArray( countEntities(dimensions) );
+    return new FloatArray( countEntities(dimensions) );
   }
 
   public int getBitsPerElement() {
-    return 1;
+    return 32;
   }
 }

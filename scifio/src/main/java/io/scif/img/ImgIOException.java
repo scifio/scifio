@@ -34,45 +34,29 @@
  * #L%
  */
 
-package io.scif.io.img.cell.loaders;
+package io.scif.img;
 
-import io.scif.Metadata;
-import io.scif.Reader;
-import io.scif.common.DataTools;
-import net.imglib2.img.basictypeaccess.array.FloatArray;
+import net.imglib2.exception.ImgLibException;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link FloatArray}
- * types.
+ * Exception indicating something went wrong during I/O.
  * 
- * @author Mark Hiner hinerm at gmail.com
- *
+ * @author Stephan Preibisch
+ * @author Stephan Saalfeld
+ * @author Curtis Rueden
  */
-public class FloatArrayLoader extends AbstractArrayLoader< FloatArray >
-{
-  public FloatArrayLoader (Reader reader) {
-    super(reader);
-  }
+public class ImgIOException extends ImgLibException {
 
-  @Override
-  protected void convertBytes(FloatArray data, byte[] bytes, int planesRead) {
-    Metadata meta = reader().getMetadata();
-    
-    int bpp = meta.getBitsPerPixel(0) / 8;
-    int offset = planesRead * (bytes.length / bpp);
-    int idx = 0;
-    
-    for (int i=0; i<bytes.length; i+=bpp) {
-      data.setValue(offset + idx++, DataTools.bytesToFloat(bytes, i, bpp, meta.isLittleEndian(0)));
-    }
-  }
-  
-  public FloatArray emptyArray( final int[] dimensions )
-  {
-    return new FloatArray( countEntities(dimensions) );
-  }
+	public ImgIOException(final Object obj, final String message) {
+		super(obj.getClass().getCanonicalName() + ": " + message);
+	}
 
-  public int getBitsPerElement() {
-    return 32;
-  }
+	public ImgIOException(final Throwable t) {
+		super(t);
+	}
+
+	public ImgIOException(final String s) {
+		super(s);
+	}
+
 }

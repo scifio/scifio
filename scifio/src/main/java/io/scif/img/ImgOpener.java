@@ -34,7 +34,7 @@
  * #L%
  */
 
-package io.scif.io.img;
+package io.scif.img;
 
 import io.scif.AbstractHasSCIFIO;
 import io.scif.Format;
@@ -47,10 +47,10 @@ import io.scif.filters.ChannelFiller;
 import io.scif.filters.ChannelSeparator;
 import io.scif.filters.MinMaxFilter;
 import io.scif.filters.ReaderFilter;
-import io.scif.io.img.ImgOptions.CheckMode;
-import io.scif.io.img.ImgOptions.ImgType;
-import io.scif.io.img.ImgOptions.Subregion;
-import io.scif.io.img.cell.SCIFIOCellImgFactory;
+import io.scif.img.ImgOptions.CheckMode;
+import io.scif.img.ImgOptions.ImgType;
+import io.scif.img.ImgOptions.Subregion;
+import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.services.InitializeService;
 import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;

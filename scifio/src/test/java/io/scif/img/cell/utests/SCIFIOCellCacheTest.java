@@ -34,39 +34,26 @@
  * #L%
  */
 
-package io.scif.io.img.cell.loaders;
+package io.scif.img.cell.utests;
 
-import io.scif.Reader;
-import net.imglib2.img.basictypeaccess.array.CharArray;
+import io.scif.img.cell.SCIFIOCellCache;
+
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link CharArray}
- * types.
+ * Unit tests for {@link SCIFIOCellCache}
  * 
  * @author Mark Hiner hinerm at gmail.com
  *
  */
-public class CharArrayLoader extends AbstractArrayLoader< CharArray >
-{
-  public CharArrayLoader (Reader reader) {
-    super(reader);
-  }
+@Test(groups="cellTests")
+public class SCIFIOCellCacheTest {
 
-  @Override
-  protected void convertBytes(CharArray data, byte[] bytes, int planesRead) {
-    int offset = planesRead * bytes.length;
-    
-    for (int i=0; i<bytes.length; i++) {
-      data.setValue(offset + i, (char)bytes[i]);
-    }
-  }
+  @BeforeMethod
+  public void setUp() { }
   
-  public CharArray emptyArray( final int[] dimensions )
-  {
-    return new CharArray( countEntities(dimensions) );
-  }
-
-  public int getBitsPerElement() {
-    return 8;
-  }
+  @AfterMethod
+  public void tearDown() { }
 }

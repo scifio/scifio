@@ -34,7 +34,7 @@
  * #L%
  */
 
-package io.scif.io.img;
+package io.scif.img;
 
 import io.scif.util.FormatTools;
 

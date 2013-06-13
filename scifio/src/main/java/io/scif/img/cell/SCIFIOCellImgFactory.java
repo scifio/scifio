@@ -34,21 +34,21 @@
  * #L%
  */
 
-package io.scif.io.img.cell;
+package io.scif.img.cell;
 
 import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.common.DataTools;
 import io.scif.filters.ReaderFilter;
-import io.scif.io.img.cell.loaders.BitArrayLoader;
-import io.scif.io.img.cell.loaders.ByteArrayLoader;
-import io.scif.io.img.cell.loaders.CharArrayLoader;
-import io.scif.io.img.cell.loaders.DoubleArrayLoader;
-import io.scif.io.img.cell.loaders.FloatArrayLoader;
-import io.scif.io.img.cell.loaders.IntArrayLoader;
-import io.scif.io.img.cell.loaders.LongArrayLoader;
-import io.scif.io.img.cell.loaders.SCIFIOArrayLoader;
-import io.scif.io.img.cell.loaders.ShortArrayLoader;
+import io.scif.img.cell.loaders.BitArrayLoader;
+import io.scif.img.cell.loaders.ByteArrayLoader;
+import io.scif.img.cell.loaders.CharArrayLoader;
+import io.scif.img.cell.loaders.DoubleArrayLoader;
+import io.scif.img.cell.loaders.FloatArrayLoader;
+import io.scif.img.cell.loaders.IntArrayLoader;
+import io.scif.img.cell.loaders.LongArrayLoader;
+import io.scif.img.cell.loaders.SCIFIOArrayLoader;
+import io.scif.img.cell.loaders.ShortArrayLoader;
 import io.scif.util.FormatTools;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;

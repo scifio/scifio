@@ -34,45 +34,45 @@
  * #L%
  */
 
-package io.scif.io.img.cell;
+package io.scif.img.cell.loaders;
 
-import java.io.Serializable;
-
-import net.imglib2.img.cell.AbstractCell;
+import io.scif.Metadata;
+import io.scif.Reader;
+import io.scif.common.DataTools;
+import net.imglib2.img.basictypeaccess.array.LongArray;
 
 /**
- * {@link AbstractCell} implenetation. Stores the actual byte array for
- * a given cell position.
+ * {@link SCIFIOArrayLoader} implementation for {@link LongArray}
+ * types.
  * 
  * @author Mark Hiner hinerm at gmail.com
+ *
  */
-public class SCIFIOCell<A> extends AbstractCell<A> implements Serializable {
-  private static final long serialVersionUID = 660070520155729477L;
-
-  public SCIFIOCell(final int[] dimensions, final long[] min, final A data) {
-    super(dimensions, min);
-    this.data = data;
-  }
-
-  private final A data;
-
-  public A getData() {
-    return data;
+public class LongArrayLoader extends AbstractArrayLoader< LongArray >
+{
+  public LongArrayLoader (Reader reader) {
+    super(reader);
   }
 
   @Override
-  public boolean equals(final Object other) {
-    if (this == other)
-      return true;
-    if (other instanceof SCIFIOCell<?>) {
-      return data.toString().equals(
-          ((SCIFIOCell<?>) other).getData().toString());
+  protected void convertBytes(LongArray data, byte[] bytes, int planesRead) {
+    Metadata meta = reader().getMetadata();
+    
+    int bpp = meta.getBitsPerPixel(0) / 8;
+    int offset = planesRead * (bytes.length / bpp);
+    int idx = 0;
+    
+    for (int i=0; i<bytes.length; i+=bpp) {
+      data.setValue(offset + idx++, DataTools.bytesToLong(bytes, i, bpp, meta.isLittleEndian(0)));
     }
-    return false;
+  }
+  
+  public LongArray emptyArray( final int[] dimensions )
+  {
+    return new LongArray( countEntities(dimensions) );
   }
 
-  @Override
-  public int hashCode() {
-    return data.toString().hashCode();
+  public int getBitsPerElement() {
+    return 64;
   }
 }

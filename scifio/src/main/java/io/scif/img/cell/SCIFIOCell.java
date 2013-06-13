@@ -34,29 +34,45 @@
  * #L%
  */
 
-package io.scif.io.img;
+package io.scif.img.cell;
 
-import net.imglib2.exception.ImgLibException;
+import java.io.Serializable;
+
+import net.imglib2.img.cell.AbstractCell;
 
 /**
- * Exception indicating something went wrong during I/O.
+ * {@link AbstractCell} implenetation. Stores the actual byte array for
+ * a given cell position.
  * 
- * @author Stephan Preibisch
- * @author Stephan Saalfeld
- * @author Curtis Rueden
+ * @author Mark Hiner hinerm at gmail.com
  */
-public class ImgIOException extends ImgLibException {
+public class SCIFIOCell<A> extends AbstractCell<A> implements Serializable {
+  private static final long serialVersionUID = 660070520155729477L;
 
-	public ImgIOException(final Object obj, final String message) {
-		super(obj.getClass().getCanonicalName() + ": " + message);
-	}
+  public SCIFIOCell(final int[] dimensions, final long[] min, final A data) {
+    super(dimensions, min);
+    this.data = data;
+  }
 
-	public ImgIOException(final Throwable t) {
-		super(t);
-	}
+  private final A data;
 
-	public ImgIOException(final String s) {
-		super(s);
-	}
+  public A getData() {
+    return data;
+  }
 
+  @Override
+  public boolean equals(final Object other) {
+    if (this == other)
+      return true;
+    if (other instanceof SCIFIOCell<?>) {
+      return data.toString().equals(
+          ((SCIFIOCell<?>) other).getData().toString());
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return data.toString().hashCode();
+  }
 }

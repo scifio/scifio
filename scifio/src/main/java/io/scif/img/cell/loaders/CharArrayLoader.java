@@ -34,45 +34,39 @@
  * #L%
  */
 
-package io.scif.io.img.cell.loaders;
+package io.scif.img.cell.loaders;
 
-import io.scif.Metadata;
 import io.scif.Reader;
-import io.scif.common.DataTools;
-import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import net.imglib2.img.basictypeaccess.array.CharArray;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link DoubleArray}
+ * {@link SCIFIOArrayLoader} implementation for {@link CharArray}
  * types.
  * 
  * @author Mark Hiner hinerm at gmail.com
  *
  */
-public class DoubleArrayLoader extends AbstractArrayLoader< DoubleArray >
+public class CharArrayLoader extends AbstractArrayLoader< CharArray >
 {
-  public DoubleArrayLoader (Reader reader) {
+  public CharArrayLoader (Reader reader) {
     super(reader);
   }
 
   @Override
-  protected void convertBytes(DoubleArray data, byte[] bytes, int planesRead) {
-    Metadata meta = reader().getMetadata();
+  protected void convertBytes(CharArray data, byte[] bytes, int planesRead) {
+    int offset = planesRead * bytes.length;
     
-    int bpp = meta.getBitsPerPixel(0) / 8;
-    int offset = planesRead * (bytes.length / bpp);
-    int idx = 0;
-    
-    for (int i=0; i<bytes.length; i+=bpp) {
-      data.setValue(offset + idx++, DataTools.bytesToDouble(bytes, i, bpp, meta.isLittleEndian(0)));
+    for (int i=0; i<bytes.length; i++) {
+      data.setValue(offset + i, (char)bytes[i]);
     }
   }
   
-  public DoubleArray emptyArray( final int[] dimensions )
+  public CharArray emptyArray( final int[] dimensions )
   {
-    return new DoubleArray( countEntities(dimensions) );
+    return new CharArray( countEntities(dimensions) );
   }
 
   public int getBitsPerElement() {
-    return 64;
+    return 8;
   }
 }

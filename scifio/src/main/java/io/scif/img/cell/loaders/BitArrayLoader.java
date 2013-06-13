@@ -34,22 +34,45 @@
  * #L%
  */
 
-package io.scif.io.img.cell.loaders;
+package io.scif.img.cell.loaders;
 
-import io.scif.io.img.cell.SCIFIOCellImg;
-
+import io.scif.Reader;
+import net.imglib2.img.basictypeaccess.array.BitArray;
 
 /**
- * Interface for requesting arrays from SCIFIO {@link io.scif.Reader}s
- * by {@link SCIFIOCellImg}s.
+ * {@link SCIFIOArrayLoader} implementation for {@link BitArray}
+ * types.
  * 
  * @author Mark Hiner hinerm at gmail.com
+ *
  */
-public interface SCIFIOArrayLoader< A >
+public class BitArrayLoader extends AbstractArrayLoader< BitArray >
 {
-  int getBitsPerElement();
+  public BitArrayLoader (Reader reader) {
+    super(reader);
+  }
 
-  A loadArray( int[] dimensions, long[] min );
+  @Override
+  protected void convertBytes(BitArray data, byte[] bytes, int planesRead) {
+    int offset = planesRead * bytes.length * 8;
+    
+    for (int i=0; i<bytes.length; i++) {
+      byte b = bytes[i];
+      
+      for (int j=0; j<8; j++) {
+        int idx = (i * 8) + j;
+        data.setValue(offset + idx, (b & 0x01) == 1);
+        b = (byte) (b >> 1);
+      }
+    }
+  }
+  
+  public BitArray emptyArray( final int[] dimensions )
+  {
+    return new BitArray( countEntities(dimensions) );
+  }
 
-  A emptyArray( final int[] dimensions );
+  public int getBitsPerElement() {
+    return 1;
+  }
 }

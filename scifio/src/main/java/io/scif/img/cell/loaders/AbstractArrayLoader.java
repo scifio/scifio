@@ -34,7 +34,7 @@
  * #L%
  */
 
-package io.scif.io.img.cell.loaders;
+package io.scif.img.cell.loaders;
 
 import io.scif.FormatException;
 import io.scif.Metadata;

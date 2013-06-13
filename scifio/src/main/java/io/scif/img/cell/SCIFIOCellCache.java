@@ -34,10 +34,10 @@
  * #L%
  */
 
-package io.scif.io.img.cell;
+package io.scif.img.cell;
 
-import io.scif.io.img.cell.SCIFIOImgCells.CellCache;
-import io.scif.io.img.cell.loaders.SCIFIOArrayLoader;
+import io.scif.img.cell.SCIFIOImgCells.CellCache;
+import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 
 import java.io.Serializable;
 import java.lang.ref.SoftReference;

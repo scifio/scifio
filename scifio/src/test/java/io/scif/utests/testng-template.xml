@@ -279,8 +279,8 @@
     </test>
     <test name="CellTest">
       <classes>
-        <class name="io.scif.io.img.cell.utests.SCIFIOCellImgFactoryTest"/>
-        <class name="io.scif.io.img.cell.utests.SCIFIOCellCacheTest"/>
+        <class name="io.scif.img.cell.utests.SCIFIOCellImgFactoryTest"/>
+        <class name="io.scif.img.cell.utests.SCIFIOCellCacheTest"/>
       </classes>
     </test>
     <!--

@@ -34,7 +34,7 @@
  * #L%
  */
 
-package io.scif.io.img;
+package io.scif.img;
 
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.cell.CellImgFactory;
