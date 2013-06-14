@@ -42,7 +42,6 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
-import io.scif.common.DataTools;
 import io.scif.filters.ChannelFiller;
 import io.scif.filters.ChannelSeparator;
 import io.scif.filters.MinMaxFilter;
@@ -60,7 +59,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.imglib2.RandomAccess;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
@@ -102,6 +100,64 @@ public class ImgOpener extends AbstractHasSCIFIO {
 
   public ImgOpener(Context ctx) {
     setContext(ctx);
+  }
+  
+  // -- Static methods --
+
+  /** Compiles an N-dimensional list of axis lengths from the given reader. */
+  public static long[] getDimLengths(final Metadata m, ImgOptions imgOptions) {
+    int imageIndex = imgOptions.getIndex();
+    final long sizeX = m.getAxisLength(imageIndex, Axes.X);
+    final long sizeY = m.getAxisLength(imageIndex, Axes.Y);
+    final long sizeZ = m.getAxisLength(imageIndex, Axes.Z);
+    final long sizeT = m.getAxisLength(imageIndex, Axes.TIME);
+    // final String[] cDimTypes = r.getChannelDimTypes();
+    // final int[] cDimLengths = m.getChannelDimLengths(0);
+    final long sizeC = m.getEffectiveSizeC(imageIndex);
+    String dimOrder = FormatTools.findDimensionOrder(m, imageIndex);
+
+    final List<Long> dimLengthsList = new ArrayList<Long>();
+
+    // add core dimensions
+    for (int i = 0; i < dimOrder.length(); i++) {
+      final char dim = dimOrder.charAt(i);
+      switch (dim) {
+      case 'X':
+        if (sizeX > 0)
+          dimLengthsList.add(sizeX);
+        break;
+      case 'Y':
+        if (sizeY > 0)
+          dimLengthsList.add(sizeY);
+        break;
+      case 'Z':
+        if (sizeZ > 1)
+          dimLengthsList.add(sizeZ);
+        break;
+      case 'T':
+        if (sizeT > 1)
+          dimLengthsList.add(sizeT);
+        break;
+      case 'C':
+        if (sizeC > 1)
+          dimLengthsList.add(sizeC);
+        break;
+      }
+    }
+
+    // convert result to primitive array
+    final long[] dimLengths = new long[dimLengthsList.size()];
+    
+    Subregion subregion = imgOptions.getSubRegion();
+    
+    for (int i = 0; i < dimLengths.length; i++) {
+      
+      if (subregion != null && i < subregion.getDimensionCount())
+        dimLengths[i] = subregion.getLengths()[i];
+      else
+        dimLengths[i] = dimLengthsList.get(i);
+    }
+    return dimLengths;
   }
 
   // -- ImgOpener methods --
@@ -333,15 +389,16 @@ public class ImgOpener extends AbstractHasSCIFIO {
     
     boolean fitsInMemory = Runtime.getRuntime().freeMemory() * MEMORY_THRESHOLD > m.getDatasetSize();
     
-    ImgMode imgType = imgOptions.getImgType();
+    ImgMode imgMode = imgOptions.getImgMode();
     
-    if (!fitsInMemory && imgType.equals(ImgMode.AUTO) || imgType.equals(ImgMode.CELL))
+    if (!fitsInMemory)
       tmpFactory = new SCIFIOCellImgFactory<T>();
-    else if (imgType.equals(ImgMode.AUTO) || imgType.equals(ImgMode.CELL_PLANAR)
-         || imgType.equals(ImgMode.PLANAR))
+    else if (imgMode.equalsMode(ImgMode.AUTO) || imgMode.equalsMode(ImgMode.PLANAR))
       tmpFactory = new PlanarImgFactory<T>();
-    else if (imgType.equals(ImgMode.ARRAY))
+    else if (imgMode.equalsMode(ImgMode.ARRAY))
       tmpFactory = new ArrayImgFactory<T>();
+    else if (imgMode.equalsMode(ImgMode.CELL))
+      tmpFactory = new SCIFIOCellImgFactory<T>();
 
     return tmpFactory.imgFactory(type);
   }
@@ -370,62 +427,6 @@ public class ImgOpener extends AbstractHasSCIFIO {
       throw new FormatException(e);
     }
     return r;
-  }
-
-  /** Compiles an N-dimensional list of axis lengths from the given reader. */
-  private long[] getDimLengths(final Metadata m, ImgOptions imgOptions) {
-    int imageIndex = imgOptions.getIndex();
-    final long sizeX = m.getAxisLength(imageIndex, Axes.X);
-    final long sizeY = m.getAxisLength(imageIndex, Axes.Y);
-    final long sizeZ = m.getAxisLength(imageIndex, Axes.Z);
-    final long sizeT = m.getAxisLength(imageIndex, Axes.TIME);
-    // final String[] cDimTypes = r.getChannelDimTypes();
-    // final int[] cDimLengths = m.getChannelDimLengths(0);
-    final long sizeC = m.getEffectiveSizeC(imageIndex);
-    String dimOrder = FormatTools.findDimensionOrder(m, imageIndex);
-
-    final List<Long> dimLengthsList = new ArrayList<Long>();
-
-    // add core dimensions
-    for (int i = 0; i < dimOrder.length(); i++) {
-      final char dim = dimOrder.charAt(i);
-      switch (dim) {
-      case 'X':
-        if (sizeX > 0)
-          dimLengthsList.add(sizeX);
-        break;
-      case 'Y':
-        if (sizeY > 0)
-          dimLengthsList.add(sizeY);
-        break;
-      case 'Z':
-        if (sizeZ > 1)
-          dimLengthsList.add(sizeZ);
-        break;
-      case 'T':
-        if (sizeT > 1)
-          dimLengthsList.add(sizeT);
-        break;
-      case 'C':
-        if (sizeC > 1)
-          dimLengthsList.add(sizeC);
-        break;
-      }
-    }
-
-    // convert result to primitive array
-    final long[] dimLengths = new long[dimLengthsList.size()];
-    
-    Subregion subregion = imgOptions.getSubRegion();
-    
-    for (int i = 0; i < dimLengths.length; i++) {
-      
-      if (subregion != null && i < subregion.getDimensionCount())
-        dimLengths[i] = subregion.getLengths()[i];
-      else
-        dimLengths[i] = dimLengthsList.get(i);
-    }
-    return dimLengths;
   }
   
   /** Compiles an N-dimensional list of axis types from the given reader. */
@@ -637,6 +638,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
     StatusService statusService = getContext().getService(StatusService.class);
     
     Subregion subregion = imgOptions.getSubRegion();
+    boolean checkSubregion = subregion != null;
     
     int x, y, w,  h, zPos, cPos, tPos;
     
@@ -674,14 +676,14 @@ public class ImgOpener extends AbstractHasSCIFIO {
       AxisType axisType = axes[axisIndex++];
 
       if (axisType.equals(Axes.X)) {
-        if (dimsPlaced < subregion.getDimensionCount()) {
+        if (checkSubregion && dimsPlaced < subregion.getDimensionCount()) {
           x = (int)subregion.getOffsets()[dimsPlaced]; 
           w = (int)subregion.getLengths()[dimsPlaced]; 
           dimsPlaced++;
         }
       }
       else if (axisType.equals(Axes.Y)) {
-        if (dimsPlaced < subregion.getDimensionCount()) {
+        if (checkSubregion && dimsPlaced < subregion.getDimensionCount()) {
           y = (int)subregion.getOffsets()[dimsPlaced]; 
           h = (int)subregion.getLengths()[dimsPlaced];
           dimsPlaced++;
@@ -691,7 +693,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
         int cStart = 0;
         int c = meta.getAxisLength(imageIndex, Axes.CHANNEL);
         
-        if (dimsPlaced < subregion.getDimensionCount()) {
+        if (checkSubregion && dimsPlaced < subregion.getDimensionCount()) {
           cStart = (int)subregion.getOffsets()[dimsPlaced]; 
           c = (int)subregion.getLengths()[dimsPlaced]; 
           dimsPlaced++;
@@ -706,7 +708,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
         int zStart = 0;
         int z = meta.getAxisLength(imageIndex, Axes.Z);
 
-        if (dimsPlaced < subregion.getDimensionCount()) {
+        if (checkSubregion && dimsPlaced < subregion.getDimensionCount()) {
           zStart = (int)subregion.getOffsets()[dimsPlaced]; 
           z = (int)subregion.getLengths()[dimsPlaced]; 
           dimsPlaced++;
@@ -721,7 +723,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
         int tStart = 0;
         int t = meta.getAxisLength(imageIndex, Axes.TIME);
         
-        if (dimsPlaced < subregion.getDimensionCount()) {
+        if (checkSubregion && dimsPlaced < subregion.getDimensionCount()) {
           tStart = (int)subregion.getOffsets()[dimsPlaced]; 
           t = (int)subregion.getLengths()[dimsPlaced]; 
           dimsPlaced++;
@@ -735,6 +737,17 @@ public class ImgOpener extends AbstractHasSCIFIO {
     }
 
     int currentPlane = 0;
+    
+    PlaneConverter converter = imgOptions.getPlaneConverter();
+    
+    if (converter == null) {
+      // if it's we have a PlanarAccess we can use a PlanarAccess converter, otherwise
+      // we can use a more general RandomAccess approach
+      if (isPlanar) {
+        converter = new PlanarAccessConverter();
+      }
+      else converter = new RandomAccessConverter();
+    }
     
     // We have to manually reset the 2nd and 3rd indices after the inner loops
     int idx1 = index[1];
@@ -757,10 +770,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
           }
           
           // copy the data to the ImgPlus
-          if (isPlanar)
-            populatePlane(r, currentPlane, plane.getBytes(), planarAccess);
-          else
-            populatePlane(r, imageIndex, currentPlane, plane.getBytes(), imgPlus, imgOptions);
+          converter.populatePlane(r.getMetadata(), imageIndex, currentPlane, plane.getBytes(), imgPlus, imgOptions);
 
           // store color table
           imgPlus.setColorTable(plane.getColorTable(), currentPlane);
@@ -773,68 +783,6 @@ public class ImgOpener extends AbstractHasSCIFIO {
 
     if (imgOptions.isComputeMinMax())
       populateMinMax(r, imgPlus, imageIndex);
-  }
-
-  /** Populates plane by reference using {@link PlanarAccess} interface. */
-  @SuppressWarnings("unchecked")
-  private void populatePlane(final Reader r, final int no, final byte[] plane,
-    @SuppressWarnings("rawtypes") final PlanarAccess planarAccess) {
-    Metadata m = r.getMetadata();
-    final int pixelType = m.getPixelType(0);
-    final int bpp = FormatTools.getBytesPerPixel(pixelType);
-    final boolean fp = FormatTools.isFloatingPoint(pixelType);
-    final boolean little = m.isLittleEndian(0);
-    Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
-    if (planeArray == plane) {
-      // array was returned by reference; make a copy
-      final byte[] planeCopy = new byte[plane.length];
-      System.arraycopy(plane, 0, planeCopy, 0, plane.length);
-      planeArray = planeCopy;
-    }
-    planarAccess.setPlane(no, ImgIOUtils.makeArray(planeArray));
-  }
-
-  /**
-   * Uses a cursor to populate the plane. This solution is general and works
-   * regardless of container, but at the expense of performance both now and
-   * later.
-   */
-  private <T extends RealType<T>> void populatePlane(final Reader r,
-    int imageIndex, final int planeIndex, final byte[] plane,
-    final ImgPlus<T> img, ImgOptions imgOptions) {
-    Metadata m = r.getMetadata();
-    final int pixelType = m.getPixelType(imageIndex);
-    final boolean little = m.isLittleEndian(imageIndex);
-
-    final long[] dimLengths = getDimLengths(m, imgOptions);
-    final long[] pos = new long[dimLengths.length];
-
-    final int planeX = 0;
-    final int planeY = 1;
-
-    getPosition(r, planeIndex, pos);
-
-    final int sX = (int) img.dimension(0);
-    final int sY = (int) img.dimension(1);
-
-    final RandomAccess<T> randomAccess = img.randomAccess();
-
-    int index = 0;
-
-    for (int y = 0; y < sY; ++y) {
-      pos[planeX] = 0;
-      pos[planeY] = y;
-
-      randomAccess.setPosition(pos);
-
-      for (int x = 1; x < sX; ++x) {
-        randomAccess.get().setReal(
-            decodeWord(plane, index++, pixelType, little));
-        randomAccess.fwd(planeX);
-      }
-
-      randomAccess.get().setReal(decodeWord(plane, index++, pixelType, little));
-    }
   }
 
   private void populateMinMax(final Reader r, final ImgPlus<?> imgPlus,
@@ -853,82 +801,5 @@ public class ImgOpener extends AbstractHasSCIFIO {
       imgPlus.setChannelMinimum(c, min == null ? Double.NaN : min);
       imgPlus.setChannelMaximum(c, max == null ? Double.NaN : max);
     }
-  }
-
-  /** Copies the current dimensional position into the given array. */
-  private void getPosition(final Reader r, final int no, final long[] pos) {
-    Metadata m = r.getMetadata();
-    final long sizeX = m.getAxisLength(0, Axes.X);
-    final long sizeY = m.getAxisLength(0, Axes.Y);
-    final long sizeZ = m.getAxisLength(0, Axes.Z);
-    final long sizeT = m.getAxisLength(0, Axes.TIME);
-    final int[] cDimLengths = m.getChannelDimLengths(0);
-    final String dimOrder = FormatTools.findDimensionOrder(m, 0);
-
-    final int[] zct = FormatTools.getZCTCoords(m, 0, no);
-
-    int index = 0;
-    for (int i = 0; i < dimOrder.length(); i++) {
-      final char dim = dimOrder.charAt(i);
-      switch (dim) {
-      case 'X':
-        if (sizeX > 1)
-          index++; // NB: Leave X axis position alone.
-        break;
-      case 'Y':
-        if (sizeY > 1)
-          index++; // NB: Leave Y axis position alone.
-        break;
-      case 'Z':
-        if (sizeZ > 1)
-          pos[index++] = zct[0];
-        break;
-      case 'T':
-        if (sizeT > 1)
-          pos[index++] = zct[2];
-        break;
-      case 'C':
-        final int[] cPos = FormatTools.rasterToPosition(cDimLengths, zct[1]);
-        for (int c = 0; c < cDimLengths.length; c++) {
-          if (cDimLengths[c] > 1)
-            pos[index++] = cPos[c];
-        }
-        break;
-      }
-    }
-  }
-
-  private static double decodeWord(final byte[] plane, final int index,
-    final int pixelType, final boolean little) {
-    final double value;
-    switch (pixelType) {
-    case FormatTools.UINT8:
-      value = plane[index] & 0xff;
-      break;
-    case FormatTools.INT8:
-      value = plane[index];
-      break;
-    case FormatTools.UINT16:
-      value = DataTools.bytesToShort(plane, 2 * index, 2, little) & 0xffff;
-      break;
-    case FormatTools.INT16:
-      value = DataTools.bytesToShort(plane, 2 * index, 2, little);
-      break;
-    case FormatTools.UINT32:
-      value = DataTools.bytesToInt(plane, 4 * index, 4, little) & 0xffffffffL;
-      break;
-    case FormatTools.INT32:
-      value = DataTools.bytesToInt(plane, 4 * index, 4, little);
-      break;
-    case FormatTools.FLOAT:
-      value = DataTools.bytesToFloat(plane, 4 * index, 4, little);
-      break;
-    case FormatTools.DOUBLE:
-      value = DataTools.bytesToDouble(plane, 8 * index, 8, little);
-      break;
-    default:
-      value = Double.NaN;
-    }
-    return value;
   }
 }

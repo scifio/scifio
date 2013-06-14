@@ -88,9 +88,31 @@ public class ImgOptions {
     ARRAY,
     AUTO,
     CELL,
-    CELL_ARRAY,
-    CELL_PLANAR,
-    PLANAR;
+    PLANAR,
+    CELL_ARRAY(CELL, ARRAY),
+    CELL_PLANAR(CELL, PLANAR);
+    
+    private ImgMode[] equivalentModes;
+    
+    
+    private ImgMode() {
+      equivalentModes = new ImgMode[]{this};
+    }
+    
+    // Constructor allowing for a single mode to declare all equivalent modes
+    private ImgMode(ImgMode... equivalentModes) {
+      this.equivalentModes = equivalentModes;
+    }
+    
+    public boolean equalsMode(ImgMode that) {
+      for (ImgMode thisMode : this.equivalentModes) {
+        for (ImgMode thatMode : that.equivalentModes) {
+          if (thisMode.equals(thatMode)) return true;
+        }
+      }
+      
+      return false;
+    }
   }
   
   /**
@@ -160,8 +182,11 @@ public class ImgOptions {
   // Image index
   private int index;
   
-  // -- Constructor --
+  // Custom plane converter
+  private PlaneConverter planeConverter;
   
+  // -- Constructor --
+
   public ImgOptions() {
     reset();
   }
@@ -179,6 +204,7 @@ public class ImgOptions {
     computeMinMax = false;
     index = 0;
     subRegion = null;
+    planeConverter = null;
     
     return this;
   }
@@ -278,4 +304,23 @@ public class ImgOptions {
     this.subRegion = new Subregion(offsets, lengths);
     return this;
   }
+  
+  
+  /**
+   * @return A custom plane converter. Default: {@code null}
+   */
+  public PlaneConverter getPlaneConverter() {
+    return planeConverter;
+  }
+
+  /**
+   * @param planeConverter Sets a PlaneConverter to use when opening 
+   *   datasets. This is useful when using a custom Img type.
+   * @return A reference to this ImgOptions instance.
+   */
+  public ImgOptions setPlaneConverter(PlaneConverter planeConverter) {
+    this.planeConverter = planeConverter;
+    return this;
+  }
+
 }
