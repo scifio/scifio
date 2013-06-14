@@ -341,7 +341,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @see io.scif.ImageMetadata#getSize()
    */
   public long getSize() {
-    int size = 1;
+    long size = 1;
     
     for (AxisType a : axisTypes) {
       size *= getAxisLength(a);
