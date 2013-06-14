@@ -60,26 +60,36 @@ public class ImgOptions {
    * Access type options for opening datasets.
    * <ul>
    *   <li>
-   *   {@link ImgType#ARRAY} will attempt to use {@link ArrayImgFactory}
+   *   {@link ImgMode#ARRAY} will attempt to use {@link ArrayImgFactory}
    *   </li>
    *   <li>
-   *   {@link ImgType#AUTO} allows the program to decide, e.g. based on available memory.
+   *   {@link ImgMode#AUTO} allows the program to decide, e.g. based on available memory.
    *   </li>
    *   <li>
-   *   {@link ImgType#CELL} will attempt to use {@link CellImgFactory}
+   *   {@link ImgMode#CELL} will attempt to use {@link CellImgFactory}
    *   </li>
    *   <li>
-   *   {@link ImgType#PLANAR} will attempt to use {@link PlanarImgFactory}
+   *   {@link ImgMode#CELL_ARRAY} will {@link ArrayImgFactory} if the image
+   *   fits in memory, and {@link CellImgFactory} if it does not.
+   *   </li>
+   *   <li>
+   *   {@link ImgMode#CELL_PLANAR} will use {@link PlanarImgFactory} if the
+   *   image fits in memory, and {@link CellImgFactory} if it does not.
+   *   </li>
+   *   <li>
+   *   {@link ImgMode#PLANAR} will attempt to use {@link PlanarImgFactory}
    *   </li>
    * </ul>
    * 
    * @author Mark Hiner
    *
    */
-  public static enum ImgType {
+  public static enum ImgMode {
     ARRAY,
     AUTO,
     CELL,
+    CELL_ARRAY,
+    CELL_PLANAR,
     PLANAR;
   }
   
@@ -136,7 +146,7 @@ public class ImgOptions {
   
   // If true, planarEnabled returns true. If false, cellEnabled returns true.
   // If null, both planar/cell enabled will return false.
-  private ImgType imgType;
+  private ImgMode imgMode;
   
   // Whether or not a source can be opened when checking format compatibility
   private CheckMode checkMode;
@@ -164,7 +174,7 @@ public class ImgOptions {
    * @return A reference to this ImgOptions
    */
   public ImgOptions reset() {
-    imgType = ImgType.AUTO;
+    imgMode = ImgMode.AUTO;
     checkMode = CheckMode.SHALLOW;
     computeMinMax = false;
     index = 0;
@@ -177,20 +187,20 @@ public class ImgOptions {
   
   /**
    * @return The access type to attempt to open the dataset
-   *         with. Default: ImgType.AUTO, which allows the calling
+   *         with. Default: imgMode.AUTO, which allows the calling
    *         program to decide.
    */
-  public ImgType getImgType() {
-    return imgType;
+  public ImgMode getImgMode() {
+    return imgMode;
   }
 
   /**
-   * @param imgType The access type to use when opening the
+   * @param imgMode The access type to use when opening the
    *        dataset.
    * @return A reference to this ImgOptions instance
    */
-  public ImgOptions setImgType(ImgType imgType) {
-    this.imgType = imgType;
+  public ImgOptions setImgMode(ImgMode imgMode) {
+    this.imgMode = imgMode;
     return this;
   }
 

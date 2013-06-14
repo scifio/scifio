@@ -48,7 +48,7 @@ import io.scif.filters.ChannelSeparator;
 import io.scif.filters.MinMaxFilter;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.ImgOptions.CheckMode;
-import io.scif.img.ImgOptions.ImgType;
+import io.scif.img.ImgOptions.ImgMode;
 import io.scif.img.ImgOptions.Subregion;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.services.InitializeService;
@@ -333,14 +333,15 @@ public class ImgOpener extends AbstractHasSCIFIO {
     
     boolean fitsInMemory = Runtime.getRuntime().freeMemory() * MEMORY_THRESHOLD > m.getDatasetSize();
     
-    ImgType imgType = imgOptions.getImgType();
+    ImgMode imgType = imgOptions.getImgType();
     
-    if (!fitsInMemory && imgType.equals(ImgType.AUTO) || imgType.equals(ImgType.CELL))
+    if (!fitsInMemory && imgType.equals(ImgMode.AUTO) || imgType.equals(ImgMode.CELL))
       tmpFactory = new SCIFIOCellImgFactory<T>();
-    else if (imgType.equals(ImgType.AUTO) || imgType.equals(ImgType.ARRAY))
-      tmpFactory = new ArrayImgFactory<T>();
-    else if (imgType.equals(ImgType.PLANAR))
+    else if (imgType.equals(ImgMode.AUTO) || imgType.equals(ImgMode.CELL_PLANAR)
+         || imgType.equals(ImgMode.PLANAR))
       tmpFactory = new PlanarImgFactory<T>();
+    else if (imgType.equals(ImgMode.ARRAY))
+      tmpFactory = new ArrayImgFactory<T>();
 
     return tmpFactory.imgFactory(type);
   }
