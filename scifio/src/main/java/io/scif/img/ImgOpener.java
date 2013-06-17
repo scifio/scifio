@@ -190,7 +190,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
    * @throws ImgIOException
    *           if there is a problem reading the image data.
    */
-  public <T extends RealType<T>> ImgPlus<T> openImg(String source)
+  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source)
     throws ImgIOException
   { 
     return openImg(source, (T)null);
@@ -207,7 +207,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
    * @throws ImgIOException
    *           if there is a problem reading the image data.
    */
-  public <T extends RealType<T>> ImgPlus<T> openImg(String source, T type) throws ImgIOException
+  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, T type) throws ImgIOException
   {
     return openImg(source, type, new ImgOptions());
   }
@@ -226,7 +226,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
    * @throws ImgIOException
    *           if there is a problem reading the image data.
    */
-  public <T extends RealType<T>> ImgPlus<T> openImg(final String source, final ImgOptions imgOptions)
+  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(final String source, final ImgOptions imgOptions)
     throws ImgIOException
   {
     return openImg(source, null, imgOptions);
@@ -245,15 +245,14 @@ public class ImgOpener extends AbstractHasSCIFIO {
    * @throws ImgIOException
    *           if there is a problem reading the image data.
    */
-  public <T extends RealType<T>> ImgPlus<T> openImg(
+  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
     final String source, T type, final ImgOptions imgOptions)
     throws ImgIOException {
     try {
       final Reader r = createReader(source, imgOptions);
       if (type == null) type = ImgIOUtils.makeType(r.getMetadata().getPixelType(imgOptions.getIndex()));
       
-      @SuppressWarnings("unchecked")
-      ImgFactory<T> imgFactory = (ImgFactory<T>)createFactory(r.getMetadata(), imgOptions);
+      ImgFactory<T> imgFactory = createFactory(r.getMetadata(), imgOptions);
       
       return openImg(r, type, imgFactory, imgOptions);
       

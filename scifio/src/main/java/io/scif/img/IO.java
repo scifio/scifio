@@ -38,6 +38,8 @@ package io.scif.img;
 
 import io.scif.Reader;
 import io.scif.Writer;
+import io.scif.img.ImgOpener;
+import io.scif.img.ImgSaver;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
@@ -111,7 +113,7 @@ public final class IO {
    *           - if file could not be found, if it is too big for the memory or
    *           if it is incompatible with the opener
    */
-  public static ImgPlus<?> open(final String source)
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(final String source)
   {
     return open(source, 0);
   }
@@ -134,9 +136,9 @@ public final class IO {
    *           - if file could not be found, if it is too big for the memory or
    *           if it is incompatible with the opener
    */
-  public static ImgPlus<?> open(final String source, int imageIndex)
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(final String source, int imageIndex)
   {
-    return open(source, imageIndex, null);
+    return open(source, imageIndex, (T)null);
   }
 
   /**
@@ -221,7 +223,7 @@ public final class IO {
    *           - if file could not be found, if it is too big for the memory or
    *           if it is incompatible with the opener
    */
-  public static <T extends RealType<T>> ImgPlus<T> open(
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(
     final String source, int imageIndex, T type)
   {
     try {
@@ -235,7 +237,7 @@ public final class IO {
   /**
    * @see {@link ImgOpener#openImg(String)}
    */
-  public static <T extends RealType<T>> ImgPlus<T> openImg(String source) {
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source) {
     try {
       return new ImgOpener().openImg(source);
     } catch (ImgIOException e) {
@@ -247,7 +249,7 @@ public final class IO {
   /**
    * @see {@link ImgOpener#openImg(String, RealType)}
    */
-  public static <T extends RealType<T>> ImgPlus<T> openImg(String source, T type) {
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, T type) {
     try {
       return new ImgOpener().openImg(source, type);
     } catch (ImgIOException e) {
@@ -259,7 +261,7 @@ public final class IO {
   /**
    * @see {@link ImgOpener#openImg(String, ImgOptions)}
    */
-  public static <T extends RealType<T>> ImgPlus<T> openImg(String source, ImgOptions imgOptions) {
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, ImgOptions imgOptions) {
     try {
       return new ImgOpener().openImg(source, imgOptions);
     } catch (ImgIOException e) {
@@ -271,7 +273,7 @@ public final class IO {
   /**
    * @see {@link ImgOpener#openImg(String, RealType, ImgOptions)}
    */
-  public static <T extends RealType<T>> ImgPlus<T> openImg(String source, T type, ImgOptions imgOptions) {
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, T type, ImgOptions imgOptions) {
     try {
       return new ImgOpener().openImg(source, type, imgOptions);
     } catch (ImgIOException e) {
