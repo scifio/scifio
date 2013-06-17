@@ -11,36 +11,19 @@
     <version>1.44</version>
   </parent>
 
-  <groupId>loci</groupId>
+  <groupId>io.scif</groupId>
   <artifactId>pom-scifio</artifactId>
-  <version>4.5-SNAPSHOT</version>
+  <version>0.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Bio-Formats projects</name>
-  <description>Umbrella project for SCIFIO and Bio-Formats software projects.</description>
+  <name>SCIFIO projects</name>
+  <description>Umbrella project for SCIFIO software projects.</description>
   <url>http://www.openmicroscopy.org/site/products/bio-formats</url>
   <inceptionYear>2005</inceptionYear>
 
   <modules>
-    <module>components/forks/jai</module>
-    <module>components/forks/mdbtools</module>
-    <module>components/forks/poi</module>
-    <module>components/autogen</module>
-    <module>components/bio-formats</module>
-    <module>components/loci-legacy</module>
-    <module>components/loci-common</module>
-    <module>components/loci-plugins</module>
-    <module>components/loci-tools</module>
-    <module>components/metakit</module>
-    <module>components/ome-io</module>
-    <module>components/ome-plugins</module>
-    <module>components/ome-tools</module>
-    <module>components/ome-xml</module>
-    <module>components/scifio</module>
-    <module>components/scifio-devel</module>
-    <module>components/scifio-tools</module>
-    <module>components/test-suite</module>
-    <module>components/stubs/lwf-stubs</module>
+    <module>scifio</module>
+    <module>tutorials</module>
   </modules>
 
   <properties>
@@ -48,16 +31,15 @@
          io.scif:scifio:0.2.1-SNAPSHOT is part of this multi-module
          reactor, so the SNAPSHOT coupling is safe in this case. -->
     <scifio.version>0.2.1-SNAPSHOT</scifio.version>
+    <bio-formats.version>4.5-SNAPSHOT</bio-formats.version>
 
     <project.rootdir>${basedir}</project.rootdir>
   </properties>
 
   <build>
-    <sourceDirectory>${project.basedir}/src</sourceDirectory>
-    <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
     <resources>
       <resource>
-        <directory>${project.basedir}/src</directory>
+        <directory>${project.basedir}/src/main/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
           <exclude>**/package.html</exclude>
@@ -66,7 +48,7 @@
     </resources>
     <testResources>
       <testResource>
-        <directory>${project.basedir}/test</directory>
+        <directory>${project.basedir}/test/main/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
           <exclude>**/package.html</exclude>
@@ -101,10 +83,10 @@
           <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
           <canUpdateDescription>true</canUpdateDescription>
           <roots>
-            <root>src</root>
+            <root>src/main/java</root>
             <root>target/generated-sources</root>
             <root>target/processed-sources</root>
-            <root>test</root>
+            <root>test/main/java</root>
             <root>utils</root>
             <root>doc</root>
             <root>cppwrap</root>
@@ -119,7 +101,7 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <javadocDirectory>${project.basedir}/src</javadocDirectory>
+          <javadocDirectory>${project.basedir}/src/main/java</javadocDirectory>
         </configuration>
       </plugin>
     </plugins>
