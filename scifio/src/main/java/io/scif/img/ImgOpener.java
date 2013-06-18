@@ -48,7 +48,6 @@ import io.scif.filters.MinMaxFilter;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.ImgOptions.CheckMode;
 import io.scif.img.ImgOptions.ImgMode;
-import io.scif.img.ImgOptions.Subregion;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.services.InitializeService;
 import io.scif.services.TranslatorService;
@@ -59,6 +58,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imglib2.Interval;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
@@ -148,12 +148,12 @@ public class ImgOpener extends AbstractHasSCIFIO {
     // convert result to primitive array
     final long[] dimLengths = new long[dimLengthsList.size()];
     
-    Subregion subregion = imgOptions.getSubRegion();
+    Interval interval = imgOptions.getInterval();
     
     for (int i = 0; i < dimLengths.length; i++) {
       
-      if (subregion != null && i < subregion.getDimensionCount())
-        dimLengths[i] = subregion.getLengths()[i];
+      if (interval != null && i < interval.numDimensions())
+        dimLengths[i] = interval.dimension(i);
       else
         dimLengths[i] = dimLengthsList.get(i);
     }
@@ -636,8 +636,8 @@ public class ImgOpener extends AbstractHasSCIFIO {
     
     StatusService statusService = getContext().getService(StatusService.class);
     
-    Subregion subregion = imgOptions.getSubRegion();
-    boolean checkSubregion = subregion != null;
+    Interval interval = imgOptions.getInterval();
+    boolean checkSubregion = interval != null;
     
     int x, y, w,  h, zPos, cPos, tPos;
     
@@ -675,16 +675,16 @@ public class ImgOpener extends AbstractHasSCIFIO {
       AxisType axisType = axes[axisIndex++];
 
       if (axisType.equals(Axes.X)) {
-        if (checkSubregion && dimsPlaced < subregion.getDimensionCount()) {
-          x = (int)subregion.getOffsets()[dimsPlaced]; 
-          w = (int)subregion.getLengths()[dimsPlaced]; 
+        if (checkSubregion && dimsPlaced < interval.numDimensions()) {
+          x = (int)interval.min(dimsPlaced); 
+          w = (int)interval.max(dimsPlaced); 
           dimsPlaced++;
         }
       }
       else if (axisType.equals(Axes.Y)) {
-        if (checkSubregion && dimsPlaced < subregion.getDimensionCount()) {
-          y = (int)subregion.getOffsets()[dimsPlaced]; 
-          h = (int)subregion.getLengths()[dimsPlaced];
+        if (checkSubregion && dimsPlaced < interval.numDimensions()) {
+          y = (int)interval.min(dimsPlaced); 
+          h = (int)interval.max(dimsPlaced);
           dimsPlaced++;
         }
       }
@@ -692,9 +692,9 @@ public class ImgOpener extends AbstractHasSCIFIO {
         int cStart = 0;
         int c = meta.getAxisLength(imageIndex, Axes.CHANNEL);
         
-        if (checkSubregion && dimsPlaced < subregion.getDimensionCount()) {
-          cStart = (int)subregion.getOffsets()[dimsPlaced]; 
-          c = (int)subregion.getLengths()[dimsPlaced]; 
+        if (checkSubregion && dimsPlaced < interval.numDimensions()) {
+          cStart = (int)interval.min(dimsPlaced); 
+          c = (int)interval.max(dimsPlaced); 
           dimsPlaced++;
         }
         
@@ -707,9 +707,9 @@ public class ImgOpener extends AbstractHasSCIFIO {
         int zStart = 0;
         int z = meta.getAxisLength(imageIndex, Axes.Z);
 
-        if (checkSubregion && dimsPlaced < subregion.getDimensionCount()) {
-          zStart = (int)subregion.getOffsets()[dimsPlaced]; 
-          z = (int)subregion.getLengths()[dimsPlaced]; 
+        if (checkSubregion && dimsPlaced < interval.numDimensions()) {
+          zStart = (int)interval.min(dimsPlaced); 
+          z = (int)interval.max(dimsPlaced); 
           dimsPlaced++;
         }
         
@@ -722,9 +722,9 @@ public class ImgOpener extends AbstractHasSCIFIO {
         int tStart = 0;
         int t = meta.getAxisLength(imageIndex, Axes.TIME);
         
-        if (checkSubregion && dimsPlaced < subregion.getDimensionCount()) {
-          tStart = (int)subregion.getOffsets()[dimsPlaced]; 
-          t = (int)subregion.getLengths()[dimsPlaced]; 
+        if (checkSubregion && dimsPlaced < interval.numDimensions()) {
+          tStart = (int)interval.min(dimsPlaced); 
+          t = (int)interval.max(dimsPlaced); 
           dimsPlaced++;
         }
         

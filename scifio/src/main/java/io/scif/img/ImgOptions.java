@@ -36,6 +36,7 @@
 
 package io.scif.img;
 
+import net.imglib2.Interval;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
@@ -135,37 +136,6 @@ public class ImgOptions {
     SHALLOW;
   }
   
-  /**
-   * Helper class to keep track of dimensional constraints
-   * for subregion specification
-   * 
-   * @author Mark Hiner
-   *
-   */
-  public static class Subregion {
-    private long[] offsets;
-    private long[] lengths;
-    private int dimensionCount;
-
-    public Subregion(long[] offsets, long[] lengths) {
-      this.offsets = offsets;
-      this.lengths = lengths;
-      dimensionCount = Math.min(offsets.length, lengths.length);
-    }    
-
-    public long[] getOffsets() {
-      return offsets;
-    }
-
-    public long[] getLengths() {
-      return lengths;
-    }
-
-    public int getDimensionCount() {
-      return dimensionCount;
-    }
-}
-  
   // If true, planarEnabled returns true. If false, cellEnabled returns true.
   // If null, both planar/cell enabled will return false.
   private ImgMode imgMode;
@@ -174,7 +144,7 @@ public class ImgOptions {
   private CheckMode checkMode;
   
   // sub-region specification for opening portions of an image
-  private Subregion subRegion;
+  private Interval interval;
   
   // Whether or not to use a MinMaxFilter
   private boolean computeMinMax;
@@ -203,7 +173,7 @@ public class ImgOptions {
     checkMode = CheckMode.SHALLOW;
     computeMinMax = false;
     index = 0;
-    subRegion = null;
+    interval = null;
     planeConverter = null;
     
     return this;
@@ -291,17 +261,16 @@ public class ImgOptions {
    * 
    * @return An Subregion specifying dimension offsets and lengths. Default: null
    */
-  public Subregion getSubRegion() {
-    return subRegion;
+  public Interval getInterval() {
+    return interval;
   }
 
   /**
-   * @param offsets subregion offsets
-   * @param lengths subregion lengths
+   * @param interval Region constraints for any image to open
    * @return A reference to this ImgOptions instance.
    */
-  public ImgOptions setSubRegion(long[] offsets, long[] lengths) {
-    this.subRegion = new Subregion(offsets, lengths);
+  public ImgOptions setInterval(Interval interval) {
+    this.interval = interval;
     return this;
   }
   
