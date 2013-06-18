@@ -116,7 +116,7 @@
     </resources>
     <testResources>
       <testResource>
-        <directory>${basedir}/test/main/java</directory>
+        <directory>${basedir}/src/test/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
           <exclude>**/package.html</exclude>
@@ -138,11 +138,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <suiteXmlFiles>
-            <suiteXmlFile>test/main/java/io/scif/utests/testng-template.xml</suiteXmlFile>
+            <suiteXmlFile>src/test/java/io/scif/utests/testng-template.xml</suiteXmlFile>
           </suiteXmlFiles>
-          <additionalClasspathElements>
-            <additionalClasspathElement>${project.rootdir}/ant/</additionalClasspathElement>
-          </additionalClasspathElements>
         </configuration>
       </plugin>
       <plugin>
@@ -181,7 +178,7 @@
             <root>src/main/java</root>
             <root>target/generated-sources</root>
             <root>target/processed-sources</root>
-            <root>test/main/java</root>
+            <root>src/test/java</root>
             <root>utils</root>
             <root>doc</root>
             <root>cppwrap</root>

@@ -48,7 +48,7 @@
     </resources>
     <testResources>
       <testResource>
-        <directory>${project.basedir}/test/main/java</directory>
+        <directory>${project.basedir}/src/test/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
           <exclude>**/package.html</exclude>
@@ -86,7 +86,7 @@
             <root>src/main/java</root>
             <root>target/generated-sources</root>
             <root>target/processed-sources</root>
-            <root>test/main/java</root>
+            <root>src/test/java</root>
             <root>utils</root>
             <root>doc</root>
             <root>cppwrap</root>
