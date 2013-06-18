@@ -53,7 +53,7 @@ public class ByteArrayLoader extends AbstractArrayLoader< ByteArray >
   }
 
   @Override
-  protected void convertBytes(ByteArray data, byte[] bytes, int planesRead) {
+  public void convertBytes(ByteArray data, byte[] bytes, int planesRead) {
     int offset = planesRead * bytes.length;
     
     System.arraycopy(bytes, 0, data.getCurrentStorageArray(), offset, bytes.length);

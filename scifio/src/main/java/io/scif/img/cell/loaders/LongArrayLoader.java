@@ -55,7 +55,7 @@ public class LongArrayLoader extends AbstractArrayLoader< LongArray >
   }
 
   @Override
-  protected void convertBytes(LongArray data, byte[] bytes, int planesRead) {
+  public void convertBytes(LongArray data, byte[] bytes, int planesRead) {
     Metadata meta = reader().getMetadata();
     
     int bpp = meta.getBitsPerPixel(0) / 8;

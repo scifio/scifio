@@ -37,6 +37,7 @@
 package io.scif.img;
 
 import io.scif.Metadata;
+import io.scif.Reader;
 import io.scif.common.DataTools;
 import io.scif.util.FormatTools;
 import net.imglib2.RandomAccess;
@@ -59,9 +60,12 @@ public class RandomAccessConverter implements PlaneConverter {
    * regardless of container, but at the expense of performance both now and
    * later.
    */
-  public <T extends RealType<T>> void populatePlane(final Metadata m,
+  public <T extends RealType<T>> void populatePlane(final Reader reader,
     int imageIndex, final int planeIndex, final byte[] plane,
     final ImgPlus<T> img, ImgOptions imgOptions) {
+	
+	Metadata m = reader.getMetadata();
+	
     final int pixelType = m.getPixelType(imageIndex);
     final boolean little = m.isLittleEndian(imageIndex);
 

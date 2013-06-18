@@ -631,6 +631,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
 
     // populate planes
     final boolean isPlanar = planarAccess != null && compatibleTypes;
+    final boolean isArray = ImgIOUtils.getArrayAccess(imgPlus) != null && compatibleTypes;
 
     Plane plane = null;
     
@@ -742,7 +743,10 @@ public class ImgOpener extends AbstractHasSCIFIO {
     if (converter == null) {
       // if it's we have a PlanarAccess we can use a PlanarAccess converter, otherwise
       // we can use a more general RandomAccess approach
-      if (isPlanar) {
+      if (isArray) {
+        converter = new ArrayDataAccessConverter();
+      }
+      else if (isPlanar) {
         converter = new PlanarAccessConverter();
       }
       else converter = new RandomAccessConverter();
@@ -769,7 +773,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
           }
           
           // copy the data to the ImgPlus
-          converter.populatePlane(r.getMetadata(), imageIndex, currentPlane, plane.getBytes(), imgPlus, imgOptions);
+          converter.populatePlane(r, imageIndex, currentPlane, plane.getBytes(), imgPlus, imgOptions);
 
           // store color table
           imgPlus.setColorTable(plane.getColorTable(), currentPlane);
@@ -779,7 +783,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
       }
       index[1] = idx1;
     }
-
+    
     if (imgOptions.isComputeMinMax())
       populateMinMax(r, imgPlus, imageIndex);
   }

@@ -55,7 +55,7 @@ public class DoubleArrayLoader extends AbstractArrayLoader< DoubleArray >
   }
 
   @Override
-  protected void convertBytes(DoubleArray data, byte[] bytes, int planesRead) {
+  public void convertBytes(DoubleArray data, byte[] bytes, int planesRead) {
     Metadata meta = reader().getMetadata();
     
     int bpp = meta.getBitsPerPixel(0) / 8;

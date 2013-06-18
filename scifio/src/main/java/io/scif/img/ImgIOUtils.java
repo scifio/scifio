@@ -48,9 +48,9 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
@@ -156,6 +156,16 @@ public final class ImgIOUtils {
 	{
 		if (img.getImg() instanceof PlanarAccess) {
 			return (PlanarAccess<ArrayDataAccess<?>>) img.getImg();
+		}
+		return null;
+	}
+	
+	/** Obtains array access instance backing the given img, if any. */
+	public static ArrayImg<?, ?> getArrayAccess(
+		final ImgPlus<?> img)
+	{
+		if (img.getImg() instanceof ArrayImg) {
+			return (ArrayImg<?, ?>) img.getImg();
 		}
 		return null;
 	}

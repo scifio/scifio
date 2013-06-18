@@ -185,7 +185,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
     return numEntities;
   }
   
-  protected abstract void convertBytes(A data, byte[] bytes, int planesRead);
+  public abstract void convertBytes(A data, byte[] bytes, int planesRead);
 
   protected Reader reader() {
     return reader;

@@ -46,8 +46,8 @@ public class ShortArrayLoader extends AbstractArrayLoader< ShortArray >
     super(reader);
   }
 
-  @Override
-  protected void convertBytes(ShortArray data, byte[] bytes, int planesRead) {
+	@Override
+  public void convertBytes(ShortArray data, byte[] bytes, int planesRead) {
     Metadata meta = reader().getMetadata();
     
     int bpp = meta.getBitsPerPixel(0) / 8;

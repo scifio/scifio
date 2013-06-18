@@ -53,7 +53,7 @@ public class CharArrayLoader extends AbstractArrayLoader< CharArray >
   }
 
   @Override
-  protected void convertBytes(CharArray data, byte[] bytes, int planesRead) {
+  public void convertBytes(CharArray data, byte[] bytes, int planesRead) {
     int offset = planesRead * bytes.length;
     
     for (int i=0; i<bytes.length; i++) {

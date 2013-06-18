@@ -36,7 +36,6 @@
 
 package io.scif.img;
 
-import io.scif.Metadata;
 import io.scif.Reader;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
@@ -51,13 +50,13 @@ import net.imglib2.type.numeric.RealType;
 public interface PlaneConverter {
 
    /**
-   * @param meta Metadata instance for the source plane
+   * @param reader Reader that was used to open the source plane
    * @param imageIndex image index within the dataset
    * @param planeIndex plane index within the image
    * @param source the opened plane
    * @param dest the ImgPlus to populate
    * @param imgOptions ImgOptions for opening this plane
    */
-  <T extends RealType<T>> void populatePlane(Metadata meta, int imageIndex, int planeIndex,
+  <T extends RealType<T>> void populatePlane(Reader reader, int imageIndex, int planeIndex,
       byte[] source, ImgPlus<T> dest, ImgOptions imgOptions);
 }

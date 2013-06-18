@@ -55,7 +55,7 @@ public class FloatArrayLoader extends AbstractArrayLoader< FloatArray >
   }
 
   @Override
-  protected void convertBytes(FloatArray data, byte[] bytes, int planesRead) {
+  public void convertBytes(FloatArray data, byte[] bytes, int planesRead) {
     Metadata meta = reader().getMetadata();
     
     int bpp = meta.getBitsPerPixel(0) / 8;

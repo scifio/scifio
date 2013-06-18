@@ -53,7 +53,7 @@ public class BitArrayLoader extends AbstractArrayLoader< BitArray >
   }
 
   @Override
-  protected void convertBytes(BitArray data, byte[] bytes, int planesRead) {
+  public void convertBytes(BitArray data, byte[] bytes, int planesRead) {
     int offset = planesRead * bytes.length * 8;
     
     for (int i=0; i<bytes.length; i++) {
