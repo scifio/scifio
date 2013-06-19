@@ -53,6 +53,30 @@ import org.scijava.service.Service;
  */
 public interface LuraWaveService extends Service {
 
+  // -- Constants --
+  
+  /** System property to check for the LuraWave license code. */
+  public static final String LICENSE_PROPERTY = "lurawave.license";
+
+  /** Message displayed if the LuraWave LWF decoder library is not found. */
+  public static final String NO_LURAWAVE_MSG =
+    "The LuraWave decoding library, lwf_jsdk2.6.jar, is required to decode " +
+    "this file.\r\nPlease make sure it is present in your classpath.";
+
+  /** Message to display if no LuraWave license code is given. */
+  public static final String NO_LICENSE_MSG =
+    "No LuraWave license code was specified.\r\nPlease set one in the " +
+    LICENSE_PROPERTY + " system property (e.g., with -D" + LICENSE_PROPERTY +
+    "=XXXX from the command line).";
+
+  /** Message to display if an invalid LuraWave license code is given. */
+  public static final String INVALID_LICENSE_MSG = "Invalid license code: ";
+
+  /** Identifying field in stub class. */
+  public static final String STUB_FIELD = "IS_STUB";
+  
+  // -- API Methods --
+  
   /**
    * Overrides the license code to use when initializing the LuraWave decoder.
    * By default the license code is loaded from the "lurawave.license" system

@@ -43,7 +43,6 @@ import io.scif.UnsupportedCompressionException;
 import io.scif.common.DataTools;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.services.LuraWaveService;
-import io.scif.services.LuraWaveServiceImpl;
 import io.scif.services.ServiceException;
 
 import java.io.BufferedInputStream;
@@ -105,10 +104,10 @@ public class LuraWaveCodec extends BaseCodec {
       service.initialize(stream);
     }
     catch (DependencyException e) {
-      throw new FormatException(LuraWaveServiceImpl.NO_LICENSE_MSG, e);
+      throw new FormatException(LuraWaveService.NO_LICENSE_MSG, e);
     }
     catch (ServiceException e) {
-      throw new FormatException(LuraWaveServiceImpl.INVALID_LICENSE_MSG, e);
+      throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
     }
     catch (IOException e) {
       throw new FormatException(e);
@@ -125,7 +124,7 @@ public class LuraWaveCodec extends BaseCodec {
         service.decodeToMemoryGray8(image8, -1, 1024, 0);
       }
       catch (ServiceException e) {
-        throw new FormatException(LuraWaveServiceImpl.INVALID_LICENSE_MSG, e);
+        throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
       }
       return image8;
     }
@@ -135,7 +134,7 @@ public class LuraWaveCodec extends BaseCodec {
         service.decodeToMemoryGray16(image16, 0, -1, 1024, 0, 1, w, 0, 0, w, h);
       }
       catch (ServiceException e) {
-        throw new FormatException(LuraWaveServiceImpl.INVALID_LICENSE_MSG, e);
+        throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
       }
 
       byte[] output = new byte[w * h * 2];
@@ -163,7 +162,7 @@ public class LuraWaveCodec extends BaseCodec {
     service = getContext().getService(LuraWaveService.class);
 
     if (service == null)
-      throw new MissingLibraryException(LuraWaveServiceImpl.NO_LURAWAVE_MSG);
+      throw new MissingLibraryException(LuraWaveService.NO_LURAWAVE_MSG);
   }
 
 }
