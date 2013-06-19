@@ -108,25 +108,11 @@
 
   <mailingLists>
     <mailingList>
-      <name>LOCI Software</name>
-      <subscribe>https://lists.wisc.edu/read/all_forums/subscribe?name=locisoftware</subscribe>
-      <unsubscribe>https://lists.wisc.edu/read/?forum=locisoftware</unsubscribe>
-      <post>locisoftware@lists.wisc.edu</post>
-      <archive>https://lists.wisc.edu/read/?forum=locisoftware</archive>
-    </mailingList>
-    <mailingList>
-      <name>OME-users</name>
-      <subscribe>http://lists.openmicroscopy.org.uk/mailman/listinfo/ome-users/</subscribe>
-      <unsubscribe>http://lists.openmicroscopy.org.uk/mailman/listinfo/ome-users/</unsubscribe>
-      <post>ome-users@lists.openmicroscopy.org.uk</post>
-      <archive>http://lists.openmicroscopy.org.uk/pipermail/ome-users/</archive>
-    </mailingList>
-    <mailingList>
-      <name>OME-devel</name>
-      <subscribe>http://lists.openmicroscopy.org.uk/mailman/listinfo/ome-devel/</subscribe>
-      <unsubscribe>http://lists.openmicroscopy.org.uk/mailman/listinfo/ome-devel/</unsubscribe>
-      <post>ome-devel@lists.openmicroscopy.org.uk</post>
-      <archive>http://lists.openmicroscopy.org.uk/pipermail/ome-devel/</archive>
+      <name>SciJava</name>
+      <subscribe>https://groups.google.com/forum/?fromgroups#!forum/scijava</subscribe>
+      <unsubscribe>https://groups.google.com/forum/?fromgroups#!forum/scijava</unsubscribe>
+      <post>scijava@googlegroups.com</post>
+      <archive>https://groups.google.com/forum/?fromgroups#!forum/scijava</archive>
     </mailingList>
   </mailingLists>
 

@@ -104,16 +104,6 @@
     </plugins>
   </build>
 
-  <mailingLists>
-    <mailingList>
-      <name>SciJava</name>
-      <subscribe>https://groups.google.com/forum/?fromgroups#!forum/scijava</subscribe>
-      <unsubscribe>https://groups.google.com/forum/?fromgroups#!forum/scijava</unsubscribe>
-      <post>scijava@googlegroups.com</post>
-      <archive>https://groups.google.com/forum/?fromgroups#!forum/scijava</archive>
-    </mailingList>
-  </mailingLists>
-
   <scm>
     <connection>scm:git:git://github.com/scifio/scifio</connection>
     <developerConnection>scm:git:git@github.com:scifio/scifio</developerConnection>
