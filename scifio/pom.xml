@@ -20,7 +20,7 @@
     <dependency>
       <groupId>${scifio.groupId}</groupId>
       <artifactId>jai_imageio</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>${jai-imageio.version}</version>
     </dependency>
     <dependency>
       <groupId>${bio-formats.groupId}</groupId>

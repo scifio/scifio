@@ -27,6 +27,7 @@
   </modules>
 
   <properties>
+    <jai-imageio.version>1.0.0-SNAPSHOT</jai-imageio.version>
     <project.rootdir>${basedir}</project.rootdir>
   </properties>
 
