@@ -15,8 +15,6 @@
 
   <name>SCIFIO Tutorials</name>
   <description>Tutorials for the SCIFIO API.</description>
-  <url>http://loci.wisc.edu/software</url>
-  <inceptionYear>2013</inceptionYear>
 
   <licenses>
     <license>

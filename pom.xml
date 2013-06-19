@@ -18,8 +18,8 @@
 
   <name>SCIFIO projects</name>
   <description>Umbrella project for SCIFIO software projects.</description>
-  <url>http://loci.wisc.edu/software/scifio</url>
-  <inceptionYear>2013</inceptionYear>
+  <url>http://scif.io/</url>
+  <inceptionYear>2011</inceptionYear>
 
   <modules>
     <module>scifio</module>

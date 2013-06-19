@@ -12,8 +12,6 @@
 
   <name>SCIFIO</name>
   <description>SCIFIO is a next generation library for scientific image format I/O.</description>
-  <url>http://scif.io/</url>
-  <inceptionYear>2011</inceptionYear>
 
   <licenses>
     <license>
