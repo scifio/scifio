@@ -16,21 +16,10 @@
   <dependencies>
     <!-- NB: dependency:analyze has false warning about xml-apis:xml-apis. -->
 
-    <!-- NB: Use of Bio-Formats namespace is transitional only. -->
     <dependency>
       <groupId>${scifio.groupId}</groupId>
       <artifactId>jai_imageio</artifactId>
       <version>${jai-imageio.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${bio-formats.groupId}</groupId>
-      <artifactId>lwf-stubs</artifactId>
-      <version>${bio-formats.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${bio-formats.groupId}</groupId>
-      <artifactId>ome-xml</artifactId>
-      <version>${bio-formats.version}</version>
     </dependency>
 
     <dependency>
