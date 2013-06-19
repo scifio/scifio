@@ -45,122 +45,90 @@ import net.imglib2.img.planar.PlanarImgFactory;
  * An options class intended for use when opening Imgs, e.g. by
  * {@link ImgOpener}.
  * <p>
- * Mutator methods will return a reference to the ImgOptions instance,
- * allowing for chaining, such as:
- *   <p>
- *   {@code new ImgOptions().usePlanarImg().computeMinMax()}
- *   </p>
+ * Mutator methods will return a reference to the ImgOptions instance, allowing
+ * for chaining, such as:
+ * <p>
+ * {@code new ImgOptions().usePlanarImg().computeMinMax()}
+ * </p>
  * </p>
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
+ * 
  */
 public class ImgOptions {
-  
+
   /**
    * Access type options for opening datasets.
    * <ul>
-   *   <li>
-   *   {@link ImgMode#ARRAY} will attempt to use {@link ArrayImgFactory}
-   *   </li>
-   *   <li>
-   *   {@link ImgMode#AUTO} allows the program to decide, e.g. based on available memory.
-   *   </li>
-   *   <li>
-   *   {@link ImgMode#CELL} will attempt to use {@link CellImgFactory}
-   *   </li>
-   *   <li>
-   *   {@link ImgMode#CELL_ARRAY} will {@link ArrayImgFactory} if the image
-   *   fits in memory, and {@link CellImgFactory} if it does not.
-   *   </li>
-   *   <li>
-   *   {@link ImgMode#CELL_PLANAR} will use {@link PlanarImgFactory} if the
-   *   image fits in memory, and {@link CellImgFactory} if it does not.
-   *   </li>
-   *   <li>
-   *   {@link ImgMode#PLANAR} will attempt to use {@link PlanarImgFactory}
-   *   </li>
+   * <li>
+   * {@link ImgMode#ARRAY} will attempt to use {@link ArrayImgFactory}</li>
+   * <li>
+   * {@link ImgMode#AUTO} allows the program to decide, e.g. based on available
+   * memory.</li>
+   * <li>
+   * {@link ImgMode#CELL} will attempt to use {@link CellImgFactory}</li>
+   * <li>
+   * {@link ImgMode#CELL_ARRAY} will {@link ArrayImgFactory} if the image fits
+   * in memory, and {@link CellImgFactory} if it does not.</li>
+   * <li>
+   * {@link ImgMode#CELL_PLANAR} will use {@link PlanarImgFactory} if the image
+   * fits in memory, and {@link CellImgFactory} if it does not.</li>
+   * <li>
+   * {@link ImgMode#PLANAR} will attempt to use {@link PlanarImgFactory}</li>
    * </ul>
    * 
    * @author Mark Hiner
-   *
+   * 
    */
   public static enum ImgMode {
-    ARRAY,
-    AUTO,
-    CELL,
-    PLANAR,
-    CELL_ARRAY(CELL, ARRAY),
-    CELL_PLANAR(CELL, PLANAR);
-    
-    private ImgMode[] equivalentModes;
-    
-    
-    private ImgMode() {
-      equivalentModes = new ImgMode[]{this};
-    }
-    
-    // Constructor allowing for a single mode to declare all equivalent modes
-    private ImgMode(ImgMode... equivalentModes) {
-      this.equivalentModes = equivalentModes;
-    }
-    
-    public boolean equalsMode(ImgMode that) {
-      for (ImgMode thisMode : this.equivalentModes) {
-        for (ImgMode thatMode : that.equivalentModes) {
-          if (thisMode.equals(thatMode)) return true;
-        }
-      }
-      
-      return false;
-    }
+    ARRAY, AUTO, CELL, PLANAR;
   }
-  
+
   /**
    * Options for checking format compatibility.
    * <ul>
-   *   <li>
-   *   {@link CheckMode#DEEP} may open the dataset source
-   *   to make this determination.
-   *   </li>
-   *   <li>
-   *   {@link CheckMode#SHALLOW} will never open a source.
-   *   </li>
+   * <li>
+   * {@link CheckMode#DEEP} may open the dataset source to make this
+   * determination.</li>
+   * <li>
+   * {@link CheckMode#SHALLOW} will never open a source.</li>
    * </ul>
    * 
    * @author Mark Hiner
-   *
+   * 
    */
   public static enum CheckMode {
-    DEEP,
-    SHALLOW;
+    DEEP, SHALLOW;
   }
-  
+
   // If true, planarEnabled returns true. If false, cellEnabled returns true.
   // If null, both planar/cell enabled will return false.
-  private ImgMode imgMode;
-  
+  private ImgMode[] imgModes;
+
   // Whether or not a source can be opened when checking format compatibility
   private CheckMode checkMode;
-  
+
   // sub-region specification for opening portions of an image
   private Interval interval;
-  
+
   // Whether or not to use a MinMaxFilter
   private boolean computeMinMax;
-  
+
   // Image index
   private int index;
-  
+
   // Custom plane converter
   private PlaneConverter planeConverter;
   
+  // Custom heuristic for choosing an ImgFactory
+  private ImgFactoryHeuristic imgFactoryHeuristic;
+
   // -- Constructor --
 
   public ImgOptions() {
     reset();
   }
-  
+
   // -- ImgOptions Methods --
 
   /**
@@ -169,47 +137,49 @@ public class ImgOptions {
    * @return A reference to this ImgOptions
    */
   public ImgOptions reset() {
-    imgMode = ImgMode.AUTO;
+    imgModes = new ImgMode[] { ImgMode.AUTO };
     checkMode = CheckMode.SHALLOW;
     computeMinMax = false;
     index = 0;
     interval = null;
     planeConverter = null;
-    
+    imgFactoryHeuristic = null;
+
     return this;
   }
-  
+
   // -- Getters and Setters --
   
   /**
-   * @return The access type to attempt to open the dataset
-   *         with. Default: imgMode.AUTO, which allows the calling
-   *         program to decide.
+   * @return The access type to attempt to open the dataset with. Default:
+   *         imgMode.AUTO, which allows the calling program to decide.
    */
-  public ImgMode getImgMode() {
-    return imgMode;
+  public ImgMode[] getImgModes() {
+    return imgModes;
   }
 
   /**
-   * @param imgMode The access type to use when opening the
-   *        dataset.
+   * @param imgModes
+   *          A list of ImgMode access types. How these are interpreted is up to
+   *          the ImgFactoryHeuristic, but it is reasonable to expect modes
+   *          listed earlier to be preferred.
    * @return A reference to this ImgOptions instance
    */
-  public ImgOptions setImgMode(ImgMode imgMode) {
-    this.imgMode = imgMode;
+  public ImgOptions setImgModes(ImgMode... imgModes) {
+    this.imgModes = imgModes;
     return this;
   }
 
   /**
-   * @return Mode to use when checking image format. Default:
-   *         CheckMode.SHALLOW, which will not open sources.
+   * @return Mode to use when checking image format. Default: CheckMode.SHALLOW,
+   *         which will not open sources.
    */
   public CheckMode getCheckMode() {
     return checkMode;
   }
 
   /**
-   * @param checkMode 
+   * @param checkMode
    * @return A reference to this ImgOptions instance
    */
   public ImgOptions setCheckMode(CheckMode checkMode) {
@@ -218,16 +188,16 @@ public class ImgOptions {
   }
 
   /**
-   * @return True if the image should be scaled to its
-   *         min and max intensities. Default: false
+   * @return True if the image should be scaled to its min and max intensities.
+   *         Default: false
    */
   public boolean isComputeMinMax() {
     return computeMinMax;
   }
 
   /**
-   * @param computeMinMax Whether or not images should be
-   *             scaled to min/max intensities.
+   * @param computeMinMax
+   *          Whether or not images should be scaled to min/max intensities.
    * @return A reference to this ImgOptions instance
    */
   public ImgOptions setComputeMinMax(boolean computeMinMax) {
@@ -243,38 +213,42 @@ public class ImgOptions {
   }
 
   /**
-   * @param index Image index to open.x
+   * @param index
+   *          Image index to open.x
    * @return A reference to this ImgOptions instance
-   * @throws IllegalArgumentException If index < 0
+   * @throws IllegalArgumentException
+   *           If index < 0
    */
   public ImgOptions setIndex(int index) {
-    if (index < 0) throw new IllegalArgumentException("Invalid index: " + index + ". Must be >= 0");
+    if (index < 0)
+      throw new IllegalArgumentException("Invalid index: " + index
+          + ". Must be >= 0");
     this.index = index;
     return this;
   }
 
   /**
    * Returns an array of dimension lengths. This may be of a different
-   * dimensionality than the underlying image, in which case
-   * the lengths are assume to be in the natural ordering of the
-   * image.
+   * dimensionality than the underlying image, in which case the lengths are
+   * assume to be in the natural ordering of the image.
    * 
-   * @return An Subregion specifying dimension offsets and lengths. Default: null
+   * @return An Subregion specifying dimension offsets and lengths. Default:
+   *         null
    */
   public Interval getInterval() {
     return interval;
   }
 
   /**
-   * @param interval Region constraints for any image to open
+   * @param interval
+   *          Region constraints for any image to open
    * @return A reference to this ImgOptions instance.
    */
   public ImgOptions setInterval(Interval interval) {
     this.interval = interval;
     return this;
   }
-  
-  
+
   /**
    * @return A custom plane converter. Default: {@code null}
    */
@@ -283,12 +257,30 @@ public class ImgOptions {
   }
 
   /**
-   * @param planeConverter Sets a PlaneConverter to use when opening 
-   *   datasets. This is useful when using a custom Img type.
+   * @param planeConverter
+   *          Sets a PlaneConverter to use when opening datasets. This is useful
+   *          when using a custom Img type.
    * @return A reference to this ImgOptions instance.
    */
   public ImgOptions setPlaneConverter(PlaneConverter planeConverter) {
     this.planeConverter = planeConverter;
+    return this;
+  }
+  
+  /**
+   * @return The ImgFactoryHeuristic to use when selecting an ImgFactory. Default: {@code null}
+   */
+  public ImgFactoryHeuristic getImgFactoryHeuristic() {
+    return imgFactoryHeuristic;
+  }
+  
+  /**
+   * @param imgFactoryHeuristic Heuristic to use when selecting an ImgFactory. Will
+   *        not be used if an ImgFactory is provided to the ImgOpener.
+   * @return A reference to this ImgOptions instance.
+   */
+  public ImgOptions setImgFactoryHeuristic(ImgFactoryHeuristic imgFactoryHeuristic) {
+    this.imgFactoryHeuristic = imgFactoryHeuristic;
     return this;
   }
 

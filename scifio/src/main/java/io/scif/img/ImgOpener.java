@@ -47,7 +47,6 @@ import io.scif.filters.ChannelSeparator;
 import io.scif.filters.MinMaxFilter;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.ImgOptions.CheckMode;
-import io.scif.img.ImgOptions.ImgMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.services.InitializeService;
 import io.scif.services.TranslatorService;
@@ -63,10 +62,8 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.img.cell.AbstractCellImgFactory;
-import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
@@ -86,12 +83,7 @@ import org.scijava.app.StatusService;
  * @author Stephan Saalfeld
  */
 public class ImgOpener extends AbstractHasSCIFIO {
-  
-  // -- Constants --
-  
-  // % of available memory to trigger opening as a CellImg, if surpassed
-  private static final double MEMORY_THRESHOLD = 0.75;
-  
+
   // -- Constructors --
 
   public ImgOpener() {
@@ -101,7 +93,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
   public ImgOpener(Context ctx) {
     setContext(ctx);
   }
-  
+
   // -- Static methods --
 
   /** Compiles an N-dimensional list of axis lengths from the given reader. */
@@ -147,11 +139,11 @@ public class ImgOpener extends AbstractHasSCIFIO {
 
     // convert result to primitive array
     final long[] dimLengths = new long[dimLengthsList.size()];
-    
+
     Interval interval = imgOptions.getInterval();
-    
+
     for (int i = 0; i < dimLengths.length; i++) {
-      
+
       if (interval != null && i < interval.numDimensions())
         dimLengths[i] = interval.dimension(i);
       else
@@ -161,16 +153,13 @@ public class ImgOpener extends AbstractHasSCIFIO {
   }
 
   // -- ImgOpener methods --
-  
+
   /**
-  * @param source
+   * @param source
    *          - the location of the dataset to assess
-   * @return The number of images in the specified
-   * dataset.
+   * @return The number of images in the specified dataset.
    */
-  public int getImageCount(String source)
-    throws ImgIOException
-  {
+  public int getImageCount(String source) throws ImgIOException {
     try {
       Format format = scifio().format().getFormat(source);
       return format.createParser().parse(source).getImageCount();
@@ -190,72 +179,79 @@ public class ImgOpener extends AbstractHasSCIFIO {
    * @throws ImgIOException
    *           if there is a problem reading the image data.
    */
-  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source)
-    throws ImgIOException
-  { 
-    return openImg(source, (T)null);
+  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
+      String source) throws ImgIOException {
+    return openImg(source, (T) null);
   }
-  
+
   /**
    * Reads in an {@link ImgPlus} from the first image of the given source.
    * 
    * @param source
    *          - the location of the dataset to open
-   * @param type -
-   *          The {@link Type} T of the output {@link ImgPlus}.
-   * @return - the {@link ImgPlus} or null
-   * @throws ImgIOException
-   *           if there is a problem reading the image data.
-   */
-  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, T type) throws ImgIOException
-  {
-    return openImg(source, type, new ImgOptions());
-  }
-
-  /**
-   * Reads in an {@link ImgPlus} from the specified index of the given source. Can
-   * specify a variety of {@link ImgOptions}.
-   * 
-   * @param source
-   *          - the location of the dataset to open
-   * @param imageIndex - the index within the dataset to open
-   * @param type -
-   *          The {@link Type} T of the output {@link ImgPlus}.
-   * @param imgOptions - {@link ImgOptions} to use when opening this dataset
-   * @return - the {@link ImgPlus} or null
-   * @throws ImgIOException
-   *           if there is a problem reading the image data.
-   */
-  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(final String source, final ImgOptions imgOptions)
-    throws ImgIOException
-  {
-    return openImg(source, null, imgOptions);
-  }
-  
-  /**
-   * Reads in an {@link ImgPlus} from the specified index of the given source. Can specify
-   * the Type that should be opened.
-   * 
-   * @param source
-   *          - the location of the dataset to open
-   * @param type -
-   *          The {@link Type} T of the output {@link ImgPlus}.
-   * @param imgOptions - {@link ImgOptions} to use when opening this dataset
+   * @param type
+   *          - The {@link Type} T of the output {@link ImgPlus}.
    * @return - the {@link ImgPlus} or null
    * @throws ImgIOException
    *           if there is a problem reading the image data.
    */
   public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-    final String source, T type, final ImgOptions imgOptions)
-    throws ImgIOException {
+      String source, T type) throws ImgIOException {
+    return openImg(source, type, new ImgOptions());
+  }
+
+  /**
+   * Reads in an {@link ImgPlus} from the specified index of the given source.
+   * Can specify a variety of {@link ImgOptions}.
+   * 
+   * @param source
+   *          - the location of the dataset to open
+   * @param imageIndex
+   *          - the index within the dataset to open
+   * @param type
+   *          - The {@link Type} T of the output {@link ImgPlus}.
+   * @param imgOptions
+   *          - {@link ImgOptions} to use when opening this dataset
+   * @return - the {@link ImgPlus} or null
+   * @throws ImgIOException
+   *           if there is a problem reading the image data.
+   */
+  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
+      final String source, final ImgOptions imgOptions) throws ImgIOException {
+    return openImg(source, null, imgOptions);
+  }
+
+  /**
+   * Reads in an {@link ImgPlus} from the specified index of the given source.
+   * Can specify the Type that should be opened.
+   * 
+   * @param source
+   *          - the location of the dataset to open
+   * @param type
+   *          - The {@link Type} T of the output {@link ImgPlus}.
+   * @param imgOptions
+   *          - {@link ImgOptions} to use when opening this dataset
+   * @return - the {@link ImgPlus} or null
+   * @throws ImgIOException
+   *           if there is a problem reading the image data.
+   */
+  public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
+      final String source, T type, final ImgOptions imgOptions)
+      throws ImgIOException {
     try {
       final Reader r = createReader(source, imgOptions);
-      if (type == null) type = ImgIOUtils.makeType(r.getMetadata().getPixelType(imgOptions.getIndex()));
+      if (type == null)
+        type = ImgIOUtils.makeType(r.getMetadata().getPixelType(
+            imgOptions.getIndex()));
       
-      ImgFactory<T> imgFactory = createFactory(r.getMetadata(), imgOptions);
+      ImgFactoryHeuristic heuristic = imgOptions.getImgFactoryHeuristic();
       
+      if (heuristic == null) heuristic = new DefaultImgFactoryHeuristic();
+
+      ImgFactory<T> imgFactory = heuristic.createFactory(r.getMetadata(), imgOptions.getImgModes());
+
       return openImg(r, type, imgFactory, imgOptions);
-      
+
     } catch (final FormatException e) {
       throw new ImgIOException(e);
     } catch (final IOException e) {
@@ -268,46 +264,46 @@ public class ImgOpener extends AbstractHasSCIFIO {
   /**
    * @param source
    *          - the location of the dataset to open
-   * @param imgFactory -
-   *          The {@link ImgFactory} to use for creating the resultant
-   *          {@link ImgPlus}.   * @return - the {@link ImgPlus} or null
+   * @param imgFactory
+   *          - The {@link ImgFactory} to use for creating the resultant
+   *          {@link ImgPlus}. * @return - the {@link ImgPlus} or null
    * @throws ImgIOException
    *           if there is a problem reading the image data.
    */
-  public <T extends RealType<T>> ImgPlus<T>
-    openImg(String source, ImgFactory<T> imgFactory)
-    throws ImgIOException
-  {
+  public <T extends RealType<T>> ImgPlus<T> openImg(String source,
+      ImgFactory<T> imgFactory) throws ImgIOException {
     return openImg(source, imgFactory, null);
   }
-  
+
   /**
    * @param source
    *          - the location of the dataset to open
-   * @param imgFactory -
-   *          The {@link ImgFactory} to use for creating the resultant
+   * @param imgFactory
+   *          - The {@link ImgFactory} to use for creating the resultant
    *          {@link ImgPlus}.
-   * @param type -
-   *          The {@link Type} T of the output {@link ImgPlus}, which must match
-   *          the typing of the {@link ImgFactory}.
+   * @param type
+   *          - The {@link Type} T of the output {@link ImgPlus}, which must
+   *          match the typing of the {@link ImgFactory}.
    * @return - the {@link ImgPlus} or null
    * @throws ImgIOException
    *           if there is a problem reading the image data.
    */
-  public <T extends RealType<T>> ImgPlus<T>
-    openImg(String source, ImgFactory<T> imgFactory, T type) throws ImgIOException {
-    
+  public <T extends RealType<T>> ImgPlus<T> openImg(String source,
+      ImgFactory<T> imgFactory, T type) throws ImgIOException {
+
     Reader r;
-    ImgOptions imgOptions =  new ImgOptions().setComputeMinMax(true);
+    ImgOptions imgOptions = new ImgOptions().setComputeMinMax(true);
     try {
       r = createReader(source, imgOptions);
-      if (type == null) type = ImgIOUtils.makeType(r.getMetadata().getPixelType(imgOptions.getIndex()));
+      if (type == null)
+        type = ImgIOUtils.makeType(r.getMetadata().getPixelType(
+            imgOptions.getIndex()));
     } catch (IOException e) {
       throw new ImgIOException(e);
     } catch (FormatException e) {
       throw new ImgIOException(e);
     }
-    
+
     return openImg(r, type, imgFactory, imgOptions);
   }
 
@@ -316,25 +312,26 @@ public class ImgOpener extends AbstractHasSCIFIO {
    * using the given {@link ImgFactory} to construct the {@link Img}. The
    * {@link Type} T to read is defined by the third parameter.
    * 
-   * @param reader -
-   *          An initialized {@link Reader} to use for reading image data.
-   * @param imgFactory -
-   *          The {@link ImgFactory} to use for creating the resultant
+   * @param reader
+   *          - An initialized {@link Reader} to use for reading image data.
+   * @param imgFactory
+   *          - The {@link ImgFactory} to use for creating the resultant
    *          {@link ImgPlus}.
-   * @param type -
-   *          The {@link Type} T of the output {@link ImgPlus}, which must match
-   *          the typing of the {@link ImgFactory}.
-   * @param imgOptions - {@link ImgOptions} to use when opening this dataset
+   * @param type
+   *          - The {@link Type} T of the output {@link ImgPlus}, which must
+   *          match the typing of the {@link ImgFactory}.
+   * @param imgOptions
+   *          - {@link ImgOptions} to use when opening this dataset
    * @return - the {@link ImgPlus} or null
-
+   * 
    * @throws ImgIOException
    *           if there is a problem reading the image data.
    */
-  public <T extends RealType<T>> ImgPlus<T> openImg(
-    final Reader reader, final T type,
-    final ImgFactory<T> imgFactory, final ImgOptions imgOptions) throws ImgIOException {
+  public <T extends RealType<T>> ImgPlus<T> openImg(final Reader reader,
+      final T type, final ImgFactory<T> imgFactory, final ImgOptions imgOptions)
+      throws ImgIOException {
     final int imageIndex = imgOptions.getIndex();
-    
+
     // create image and read metadata
     final long[] dimLengths = getDimLengths(reader.getMetadata(), imgOptions);
     if (SCIFIOCellImgFactory.class.isAssignableFrom(imgFactory.getClass())) {
@@ -346,14 +343,13 @@ public class ImgOpener extends AbstractHasSCIFIO {
     String id = reader.getCurrentFile();
     imgPlus.setSource(id);
     imgPlus.initializeColorTables(reader.getPlaneCount(imageIndex));
-    
+
     // If we have a planar img, read the planes now. Otherwise they
     // will be read on demand.
     if (AbstractCellImgFactory.class.isAssignableFrom(imgFactory.getClass())) {
-      getContext().getService(StatusService.class).
-      showStatus("Created CellImg for dynamic loading");
-    }
-    else {
+      getContext().getService(StatusService.class).showStatus(
+          "Created CellImg for dynamic loading");
+    } else {
       final float startTime = System.currentTimeMillis();
       final int planeCount = reader.getPlaneCount(imageIndex);
       try {
@@ -365,56 +361,31 @@ public class ImgOpener extends AbstractHasSCIFIO {
       }
       final long endTime = System.currentTimeMillis();
       final float time = (endTime - startTime) / 1000f;
-      getContext().getService(StatusService.class).
-        showStatus(id + ": read " + planeCount + " planes in " + time + "s");
+      getContext().getService(StatusService.class).showStatus(
+          id + ": read " + planeCount + " planes in " + time + "s");
     }
 
     return imgPlus;
   }
-  
-  // -- Helper methods --
-  
-  /**
-   * @param m - Metadata for the associated dataset
-   * @param imgOptions - Options to use when creating this Factory
-   * @return - An initialized ImgFactory
-   */
-  private <T extends RealType<T> & NativeType<T>> ImgFactory<T> createFactory(Metadata m, final ImgOptions imgOptions)
-    throws IncompatibleTypeException
-  {
-    ImgFactory<T> tmpFactory = null;
-    
-    T type = ImgIOUtils.makeType(m.getPixelType(0));
-    
-    boolean fitsInMemory = Runtime.getRuntime().freeMemory() * MEMORY_THRESHOLD > m.getDatasetSize();
-    
-    ImgMode imgMode = imgOptions.getImgMode();
-    
-    if (!fitsInMemory)
-      tmpFactory = new SCIFIOCellImgFactory<T>();
-    else if (imgMode.equalsMode(ImgMode.AUTO) || imgMode.equalsMode(ImgMode.PLANAR))
-      tmpFactory = new PlanarImgFactory<T>();
-    else if (imgMode.equalsMode(ImgMode.ARRAY))
-      tmpFactory = new ArrayImgFactory<T>();
-    else if (imgMode.equalsMode(ImgMode.CELL))
-      tmpFactory = new SCIFIOCellImgFactory<T>();
 
-    return tmpFactory.imgFactory(type);
-  }
-  
+  // -- Helper methods --
+
   /**
-   * @param io - An ImgOpener instance
-   * @param source - Dataset source to open
-   * @param imgOptions - Options object for opening this dataset
+   * @param io
+   *          - An ImgOpener instance
+   * @param source
+   *          - Dataset source to open
+   * @param imgOptions
+   *          - Options object for opening this dataset
    * @return A Reader initialized to open the specified id
    */
-  private Reader createReader(final String source,
-    final ImgOptions imgOptions)
-    throws FormatException, IOException {
-    
+  private Reader createReader(final String source, final ImgOptions imgOptions)
+      throws FormatException, IOException {
+
     boolean openFile = imgOptions.getCheckMode().equals(CheckMode.DEEP);
     boolean computeMinMax = imgOptions.isComputeMinMax();
-    getContext().getService(StatusService.class).showStatus("Initializing " + source);
+    getContext().getService(StatusService.class).showStatus(
+        "Initializing " + source);
 
     ReaderFilter r = scifio().initializer().initializeReader(source, openFile);
 
@@ -427,7 +398,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
     }
     return r;
   }
-  
+
   /** Compiles an N-dimensional list of axis types from the given reader. */
   private AxisType[] getDimTypes(final Metadata m) {
     final int sizeX = m.getAxisLength(0, Axes.X);
@@ -551,7 +522,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
    * corresponding to the specified initialized {@link Reader}.
    */
   private <T extends RealType<T>> ImgPlus<T> makeImgPlus(final Img<T> img,
-    final Reader r) throws ImgIOException {
+      final Reader r) throws ImgIOException {
     final String id = r.getCurrentFile();
     final File idFile = new File(id);
     final String name = idFile.exists() ? idFile.getName() : id;
@@ -606,8 +577,8 @@ public class ImgOpener extends AbstractHasSCIFIO {
    * {@link Img}.
    */
   private <T extends RealType<T>> void readPlanes(final Reader r,
-    int imageIndex, final T type, final ImgPlus<T> imgPlus,
-    final ImgOptions imgOptions) throws FormatException, IOException {
+      int imageIndex, final T type, final ImgPlus<T> imgPlus,
+      final ImgOptions imgOptions) throws FormatException, IOException {
     // TODO - create better container types; either:
     // 1) an array container type using one byte array per plane
     // 2) as #1, but with an Reader reference reading planes on demand
@@ -631,23 +602,24 @@ public class ImgOpener extends AbstractHasSCIFIO {
 
     // populate planes
     final boolean isPlanar = planarAccess != null && compatibleTypes;
-    final boolean isArray = ImgIOUtils.getArrayAccess(imgPlus) != null && compatibleTypes;
+    final boolean isArray = ImgIOUtils.getArrayAccess(imgPlus) != null
+        && compatibleTypes;
 
     Plane plane = null;
-    
+
     StatusService statusService = getContext().getService(StatusService.class);
-    
+
     Interval interval = imgOptions.getInterval();
     boolean checkSubregion = interval != null;
-    
-    int x, y, w,  h, zPos, cPos, tPos;
-    
+
+    int x, y, w, h, zPos, cPos, tPos;
+
     // Z,C,T offsets and maximum values
-    int[] index = new int[]{0, 0, 0};
-    int[] bound = new int[]{1, 1, 1};
-    
+    int[] index = new int[] { 0, 0, 0 };
+    int[] bound = new int[] { 1, 1, 1 };
+
     Metadata meta = r.getMetadata();
-    
+
     // Set the base
     x = y = w = h = 0;
     w = meta.getAxisLength(imageIndex, Axes.X);
@@ -657,17 +629,17 @@ public class ImgOpener extends AbstractHasSCIFIO {
     // this will result in index[xPos] = 0 for looking up the plane index,
     // equivalent to a length of 1 for that axis.
     zPos = cPos = tPos = 2;
-    
+
     // subregion dimension index
     int dimsPlaced = 0;
-    
+
     // CZT index
     int cztPlaced = 0;
-    
+
     // current axis
     int axisIndex = 0;
     AxisType[] axes = meta.getAxes(imageIndex);
-    
+
     // Total # planes in this subregion
     int planeCount = 1;
 
@@ -677,58 +649,54 @@ public class ImgOpener extends AbstractHasSCIFIO {
 
       if (axisType.equals(Axes.X)) {
         if (checkSubregion && dimsPlaced < interval.numDimensions()) {
-          x = (int)interval.min(dimsPlaced); 
-          w = (int)interval.max(dimsPlaced); 
+          x = (int) interval.min(dimsPlaced);
+          w = (int) interval.max(dimsPlaced);
           dimsPlaced++;
         }
-      }
-      else if (axisType.equals(Axes.Y)) {
+      } else if (axisType.equals(Axes.Y)) {
         if (checkSubregion && dimsPlaced < interval.numDimensions()) {
-          y = (int)interval.min(dimsPlaced); 
-          h = (int)interval.max(dimsPlaced);
+          y = (int) interval.min(dimsPlaced);
+          h = (int) interval.max(dimsPlaced);
           dimsPlaced++;
         }
-      }
-      else if (axisType.equals(Axes.CHANNEL)) {
+      } else if (axisType.equals(Axes.CHANNEL)) {
         int cStart = 0;
         int c = meta.getAxisLength(imageIndex, Axes.CHANNEL);
-        
+
         if (checkSubregion && dimsPlaced < interval.numDimensions()) {
-          cStart = (int)interval.min(dimsPlaced); 
-          c = (int)interval.max(dimsPlaced); 
+          cStart = (int) interval.min(dimsPlaced);
+          c = (int) interval.max(dimsPlaced);
           dimsPlaced++;
         }
-        
+
         index[cztPlaced] = cStart;
         bound[cztPlaced] = cStart + c;
         cPos = cztPlaced++;
         planeCount *= c;
-      }
-      else if (axisType.equals(Axes.Z)) {
+      } else if (axisType.equals(Axes.Z)) {
         int zStart = 0;
         int z = meta.getAxisLength(imageIndex, Axes.Z);
 
         if (checkSubregion && dimsPlaced < interval.numDimensions()) {
-          zStart = (int)interval.min(dimsPlaced); 
-          z = (int)interval.max(dimsPlaced); 
+          zStart = (int) interval.min(dimsPlaced);
+          z = (int) interval.max(dimsPlaced);
           dimsPlaced++;
         }
-        
+
         index[cztPlaced] = zStart;
         bound[cztPlaced] = zStart + z;
         zPos = cztPlaced++;
         planeCount *= z;
-      }
-      else if (axisType.equals(Axes.TIME)) {
+      } else if (axisType.equals(Axes.TIME)) {
         int tStart = 0;
         int t = meta.getAxisLength(imageIndex, Axes.TIME);
-        
+
         if (checkSubregion && dimsPlaced < interval.numDimensions()) {
-          tStart = (int)interval.min(dimsPlaced); 
-          t = (int)interval.max(dimsPlaced); 
+          tStart = (int) interval.min(dimsPlaced);
+          t = (int) interval.max(dimsPlaced);
           dimsPlaced++;
         }
-        
+
         index[cztPlaced] = tStart;
         bound[cztPlaced] = tStart + t;
         tPos = cztPlaced++;
@@ -737,21 +705,21 @@ public class ImgOpener extends AbstractHasSCIFIO {
     }
 
     int currentPlane = 0;
-    
+
     PlaneConverter converter = imgOptions.getPlaneConverter();
-    
+
     if (converter == null) {
-      // if it's we have a PlanarAccess we can use a PlanarAccess converter, otherwise
+      // if it's we have a PlanarAccess we can use a PlanarAccess converter,
+      // otherwise
       // we can use a more general RandomAccess approach
       if (isArray) {
         converter = new ArrayDataAccessConverter();
-      }
-      else if (isPlanar) {
+      } else if (isPlanar) {
         converter = new PlanarAccessConverter();
-      }
-      else converter = new RandomAccessConverter();
+      } else
+        converter = new RandomAccessConverter();
     }
-    
+
     // We have to manually reset the 2nd and 3rd indices after the inner loops
     int idx1 = index[1];
     int idx2 = index[2];
@@ -762,18 +730,21 @@ public class ImgOpener extends AbstractHasSCIFIO {
         for (; index[2]<bound[2]; index[2]++) {
           
           // get the plane index in the underlying dataset
-          int planeIndex = FormatTools.getIndex(r, imageIndex, index[zPos], index[cPos], index[tPos]);
-          statusService.showStatus(currentPlane + 1, planeCount, "Reading plane");
-          
+          int planeIndex = FormatTools.getIndex(r, imageIndex, index[zPos],
+              index[cPos], index[tPos]);
+          statusService.showStatus(currentPlane + 1, planeCount,
+              "Reading plane");
+
           // open the subregion of the current plane
           if (plane == null)
             plane = r.openPlane(imageIndex, planeIndex, x, y, w, h);
           else {
             r.openPlane(0, planeIndex, plane, x, y, w, h);
           }
-          
+
           // copy the data to the ImgPlus
-          converter.populatePlane(r, imageIndex, currentPlane, plane.getBytes(), imgPlus, imgOptions);
+          converter.populatePlane(r, imageIndex, currentPlane,
+              plane.getBytes(), imgPlus, imgOptions);
 
           // store color table
           imgPlus.setColorTable(plane.getColorTable(), currentPlane);
@@ -789,7 +760,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
   }
 
   private void populateMinMax(final Reader r, final ImgPlus<?> imgPlus,
-    int imageIndex) throws FormatException, IOException {
+      int imageIndex) throws FormatException, IOException {
     final int sizeC = r.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
     final ReaderFilter rf = (ReaderFilter) r;
     MinMaxFilter minMax = null;
