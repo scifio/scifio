@@ -1,72 +1,91 @@
-# Bio-Formats
+# SCIFIO
 
-[![Build Status](https://travis-ci.org/openmicroscopy/bioformats.png)](http://travis-ci.org/openmicroscopy/bioformats)
-
-Bio-Formats is a standalone Java library for reading and writing life sciences
-image file formats. It is capable of parsing both pixels and metadata for a
-large number of formats, as well as writing to several formats.
+SCIFIO is an extensible Java framework for reading and writing images. This core
+package supports parsing pixels and metadata for a collection of open formats.
+Additional formats can be supported simply by downloading SCIFIO plug-ins and
+including them in your project.
 
 
 Purpose
 -------
 
-Bio-Formats' primary purpose is to convert proprietary microscopy data into 
-an open standard called the OME data model, particularly into the OME-TIFF 
-file format. See the [statement of purpose](http://www.openmicroscopy.org/site/support/bio-formats/about/index.html) 
-for a thorough explanation and rationale.
+SCIFIO's primary purpose is to provide a clear convention for supporting image
+input and output. By lowering the barrier for adding new image formats, all
+SCIFIO-backed software will grow more versatile and powerful.
 
 
 Supported formats
 -----------------
 
-Bio-Formats supports [more than a hundred file
-formats](http://www.openmicroscopy.org/site/support/bio-formats/supported-formats.html).
+The SCIFIO core includes support for:
+* APNG
+* AVI
+* BMP
+* DICOM
+* EPS
+* FITS
+* GIF
+* ICS
+* JPEG
+* JPEG2000
+* Quicktime
+* MNG
+* Micromanager
+* NRRD
+* TIFF
+* OBF
+* PCX
+* PGM
+* PIC
+* Zipped images
 
+Additionally, [Bio-Formats](http://www.openmicroscopy.org/site/products/bio-formats)
+is available as a SCIFIO plug-in for supporting hundreds of additional proprietary
+formats.
 
 For users
 ---------
 
-[Many software
-packages](http://www.openmicroscopy.org/site/support/bio-formats/users/index.html)
-use Bio-Formats to read and write microscopy formats.
+[ImageJ2](http://developer.imagej.net/) is a leading adopter of SCIFIO. Additionally,
+any product that uses Bio-Formats will support SCIFIO plug-ins as well.
 
 
 For developers
 --------------
 
-You can use Bio-Formats to easily [support these formats in your
-software](http://www.openmicroscopy.org/site/support/bio-formats/developers/java-library.html).
+See the included Tutorials module for a step-by-step introduction to the SCIFIO API.
 
 
 More information
 ----------------
 
-For more information, see the [Bio-Formats web
-site](http://www.openmicroscopy.org/site/products/bio-formats).
+For more information, see the [SCIFIO web site](http://loci.wisc.edu/software/scifio).
+
+Mailing lists
+------------
+
+* Please use [ome-users](ome-users@lists.openmicroscopy.org.uk) for any SCIFIO or
+  Bio-Formats questions.
 
 
-Pull request testing
+Contributing to SCIFIO
 --------------------
 
-We welcome pull requests from anyone, but ask that you please verify the
-following before submitting a pull request:
+SCIFIO is an open product and anyone is welcome to submit pull requests to the
+[SCIFIO repository](https://github.com/scifio/scifio). Although, with SCIFIO's
+dynamic extensibility, you don't need to make upstream changes to get your
+formats into user's hands.
 
- * verify that the branch merges cleanly into ```develop```
- * verify that the branch compiles with the ```clean jars tools``` Ant targets
- * verify that the branch compiles using Maven
- * verify that the branch does not use syntax or API specific to Java 1.6+
- * if you are making any build system or packaging changes, verify that
-   [OMERO](https://github.com/openmicroscopy/openmicroscopy) builds when the
-   ```components/bioformats``` submodule is pointed to your branch
- * run the unit tests (```ant test```) and correct any failures
- * test at least one file in each affected format, using the ```showinf```
-   command
- * internal developers only: [run the data
-   tests](http://www.openmicroscopy.org/site/support/bio-formats/developers/commit-testing.html).
-   against directories corresponding to the affected format(s), as well as the
-   test_per_commit directory
- * make sure that your commits contain the correct authorship information and,
-   if necessary, a signed-off-by line
- * make sure that the commit messages or pull request comment contains
-   sufficient information for the reviewer(s) to understand what problem was
-   fixed and how to test it
+If you are interested in submitting a pull request though, that's great! All we ask
+is that you check:
+
+* mvn clean test
+
+from the top level.
+
+If you're adding a new feature, it would be fantastic if you
+could write a unit test for it! You can add your test to:
+
+* src/test/java/io/scif/utests/testng-template.xml
+
+to have it run by the SCIFIO test suite.

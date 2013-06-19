@@ -18,8 +18,8 @@
 
   <name>SCIFIO projects</name>
   <description>Umbrella project for SCIFIO software projects.</description>
-  <url>http://www.openmicroscopy.org/site/products/bio-formats</url>
-  <inceptionYear>2005</inceptionYear>
+  <url>http://loci.wisc.edu/software/scifio</url>
+  <inceptionYear>2013</inceptionYear>
 
   <modules>
     <module>scifio</module>
