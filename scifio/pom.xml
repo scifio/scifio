@@ -101,58 +101,6 @@
           </suiteXmlFiles>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>loci.maven.plugins</groupId>
-        <artifactId>cppwrap-maven-plugin</artifactId>
-        <version>1.1.0</version>
-        <configuration>
-          <headerFile>cppwrap/header.txt</headerFile>
-          <conflictsFile>cppwrap/conflicts.txt</conflictsFile>
-          <coreFile>cppwrap/core.txt</coreFile>
-          <sourceDir>cppwrap</sourceDir>
-          <libraries>
-            <!-- NB: Use of Bio-Formats namespace is transitional only. -->
-            <library>${bio-formats.groupId}:ome-xml:jar:${bio-formats.version}</library>
-          </libraries>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <licenseName>scifio</licenseName>
-          <projectName>SCIFIO library for reading and converting scientific file formats.</projectName>
-          <licenseResolver>file://${project.rootdir}/license</licenseResolver>
-          <organizationName>Open Microscopy Environment:
-  - Board of Regents of the University of Wisconsin-Madison
-  - Glencoe Software, Inc.
-  - University of Dundee</organizationName>
-          <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
-          <canUpdateDescription>true</canUpdateDescription>
-          <roots>
-            <root>src/main/java</root>
-            <root>target/generated-sources</root>
-            <root>target/processed-sources</root>
-            <root>src/test/java</root>
-            <root>utils</root>
-            <root>doc</root>
-            <root>cppwrap</root>
-          </roots>
-          <excludes>
-            <exclude>*package-info.java</exclude>
-            <exclude>*AggregateMetadata.java</exclude>
-            <exclude>*DummyMetadata.java</exclude>
-            <exclude>*FilterMetadata.java</exclude>
-            <exclude>*MetadataRetrieve.java</exclude>
-            <exclude>*MetadataStore.java</exclude>
-            <exclude>*OMEXMLMetadataImpl.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
