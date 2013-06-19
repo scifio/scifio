@@ -202,7 +202,7 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <javadocDirectory>${basedir}/src/main/java</javadocDirectory>
+          <javadocDirectory>${basedir}/src/javadoc/java</javadocDirectory>
         </configuration>
       </plugin>
     </plugins>
