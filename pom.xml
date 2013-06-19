@@ -27,12 +27,6 @@
   </modules>
 
   <properties>
-    <!-- NB: Pin to SNAPSHOT version of SCIFIO. For the moment,
-         io.scif:scifio:0.2.1-SNAPSHOT is part of this multi-module
-         reactor, so the SNAPSHOT coupling is safe in this case. -->
-    <scifio.version>0.2.1-SNAPSHOT</scifio.version>
-    <bio-formats.version>4.5-SNAPSHOT</bio-formats.version>
-
     <project.rootdir>${basedir}</project.rootdir>
   </properties>
 
