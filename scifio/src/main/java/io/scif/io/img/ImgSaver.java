@@ -59,7 +59,6 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
-import ome.xml.model.primitives.PositiveFloat;
 
 import org.scijava.app.StatusService;
 
@@ -611,8 +610,7 @@ public class ImgSaver extends AbstractHasSCIFIO {
 
 		// Populate physical pixel sizes
 		for (int i=0; i<axes.length; i++) {
-		  AxisType axis = axes[i];
-		  PositiveFloat physicalSize = null;
+//		  AxisType axis = axes[i];
 
 		  //TODO need to decide how to handle physical pixel sizes in SCIFIO...
 //		  if (Axes.X.equals(axis)) {
