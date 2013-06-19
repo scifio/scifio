@@ -104,13 +104,6 @@
     </plugins>
   </build>
 
-  <scm>
-    <connection>scm:git:git://github.com/scifio/scifio</connection>
-    <developerConnection>scm:git:git@github.com:scifio/scifio</developerConnection>
-    <tag>HEAD</tag>
-    <url>http://github.com/scifio/scifio</url>
-  </scm>
-
   <developers>
     <developer>
       <id>hinerm</id>

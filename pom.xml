@@ -117,10 +117,10 @@
   </mailingLists>
 
   <scm>
-    <connection>scm:git:git://github.com/openmicroscopy/bioformats.git</connection>
-    <developerConnection>scm:git:git@github.com:openmicroscopy/bioformats.git</developerConnection>
+    <connection>scm:git:git://github.com/scifio/scifio</connection>
+    <developerConnection>scm:git:git@github.com:scifio/scifio</developerConnection>
     <tag>HEAD</tag>
-    <url>http://github.com/openmicroscopy/bioformats</url>
+    <url>http://github.com/scifio/scifio</url>
   </scm>
 
   <!-- NB: for parent project -->
