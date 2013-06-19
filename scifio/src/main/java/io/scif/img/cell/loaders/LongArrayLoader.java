@@ -38,7 +38,10 @@ package io.scif.img.cell.loaders;
 
 import io.scif.Metadata;
 import io.scif.Reader;
-import io.scif.common.DataTools;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import net.imglib2.img.basictypeaccess.array.LongArray;
 
 /**
@@ -60,11 +63,10 @@ public class LongArrayLoader extends AbstractArrayLoader< LongArray >
     
     int bpp = meta.getBitsPerPixel(0) / 8;
     int offset = planesRead * (bytes.length / bpp);
-    int idx = 0;
+    ByteBuffer bb = ByteBuffer.wrap(bytes);
     
-    for (int i=0; i<bytes.length; i+=bpp) {
-      data.setValue(offset + idx++, DataTools.bytesToLong(bytes, i, bpp, meta.isLittleEndian(0)));
-    }
+    bb.order(meta.isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+    bb.asLongBuffer().get(data.getCurrentStorageArray(), offset, bytes.length / bpp);
   }
   
   public LongArray emptyArray( final int[] dimensions )

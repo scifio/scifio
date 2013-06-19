@@ -36,6 +36,9 @@
 
 package io.scif.img.cell.loaders;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import io.scif.Reader;
 import net.imglib2.img.basictypeaccess.array.CharArray;
 
@@ -55,10 +58,11 @@ public class CharArrayLoader extends AbstractArrayLoader< CharArray >
   @Override
   public void convertBytes(CharArray data, byte[] bytes, int planesRead) {
     int offset = planesRead * bytes.length;
+
+    ByteBuffer bb = ByteBuffer.wrap(bytes);
     
-    for (int i=0; i<bytes.length; i++) {
-      data.setValue(offset + i, (char)bytes[i]);
-    }
+    bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+    bb.asCharBuffer().get(data.getCurrentStorageArray(), offset, bytes.length);
   }
   
   public CharArray emptyArray( final int[] dimensions )
