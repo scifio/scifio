@@ -82,7 +82,6 @@
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
           <licenseName>cc0</licenseName>
-          <licenseResolver>${project.baseUri}/../../license</licenseResolver>
           <projectName>Tutorials for SCIFIO API</projectName>
         </configuration>
       </plugin>
