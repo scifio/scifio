@@ -197,11 +197,6 @@
     </plugins>
   </build>
 
-  <organization>
-    <name>SCIFIO</name>
-    <url>http://scif.io/</url>
-  </organization>
-
   <issueManagement>
     <system>GitHub Issues</system>
     <url>https://github.com/scifio/scifio/issues</url>
