@@ -113,7 +113,7 @@
 
   <ciManagement>
     <system>Jenkins</system>
-    <url>http://hudson.openmicroscopy.org.uk/</url>
+    <url>http://jenkins.imagej.net/view/SCIFIO/</url>
   </ciManagement>
 
   <mailingLists>

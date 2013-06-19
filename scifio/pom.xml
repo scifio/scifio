@@ -218,11 +218,6 @@
     <url>https://github.com/scifio/scifio/issues</url>
   </issueManagement>
 
-  <ciManagement>
-    <system>Jenkins</system>
-    <url>http://jenkins.imagej.net/view/SCIFIO/</url>
-  </ciManagement>
-
   <mailingLists>
     <mailingList>
       <name>SciJava</name>
