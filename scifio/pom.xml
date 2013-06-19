@@ -13,13 +13,6 @@
   <name>SCIFIO</name>
   <description>SCIFIO is a next generation library for scientific image format I/O.</description>
 
-  <licenses>
-    <license>
-      <name>Simplified BSD License</name>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
   <dependencies>
     <!-- NB: dependency:analyze has false warning about xml-apis:xml-apis. -->
 

@@ -83,6 +83,13 @@
     </plugins>
   </build>
 
+  <licenses>
+    <license>
+      <name>Simplified BSD License</name>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <organization>
     <name>SCIFIO</name>
     <url>http://scif.io/</url>
