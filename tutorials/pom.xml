@@ -9,7 +9,6 @@
     <groupId>io.scif</groupId>
     <artifactId>pom-scifio</artifactId>
     <version>0.2.1-SNAPSHOT</version>
-    <relativePath>..</relativePath>
   </parent>
 
   <artifactId>scifio-tutorials</artifactId>
