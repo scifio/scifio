@@ -96,8 +96,8 @@
   </organization>
 
   <issueManagement>
-    <system>Trac</system>
-    <url>http://trac.openmicroscopy.org.uk/ome/wiki/BioFormats</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/scifio/scifio/issues</url>
   </issueManagement>
 
   <ciManagement>

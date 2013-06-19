@@ -197,11 +197,6 @@
     </plugins>
   </build>
 
-  <issueManagement>
-    <system>GitHub Issues</system>
-    <url>https://github.com/scifio/scifio/issues</url>
-  </issueManagement>
-
   <mailingLists>
     <mailingList>
       <name>SciJava</name>
