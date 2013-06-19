@@ -90,17 +90,6 @@
     </plugins>
   </build>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <javadocDirectory>${project.basedir}/src/javadoc/java</javadocDirectory>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
-
   <organization>
     <name>Open Microscopy Environment</name>
     <url>http://www.openmicroscopy.org/</url>
