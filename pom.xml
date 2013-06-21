@@ -23,8 +23,16 @@
 
   <modules>
     <module>scifio</module>
-    <module>tutorials</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>tutorials</id>
+      <modules>
+        <module>tutorials</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <properties>
     <jai-imageio.version>1.0.1</jai-imageio.version>
