@@ -43,6 +43,8 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Writer;
 import io.scif.common.DataTools;
+import io.scif.services.InitializeService;
+import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
@@ -60,6 +62,8 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
+
+import org.scijava.Context;
 import org.scijava.app.StatusService;
 
 /**
@@ -70,6 +74,16 @@ import org.scijava.app.StatusService;
  */
 public class ImgSaver extends AbstractHasSCIFIO {
 
+  // -- Constructors --
+  
+  public ImgSaver() {
+    this(new Context(StatusService.class, InitializeService.class, TranslatorService.class));
+  }
+  
+  public ImgSaver(Context context) {
+    setContext(context);
+  }
+  
 	// -- ImgSaver methods --
 
 	/**
@@ -610,7 +624,8 @@ public class ImgSaver extends AbstractHasSCIFIO {
 
 		// Populate physical pixel sizes
 		for (int i=0; i<axes.length; i++) {
-//		  AxisType axis = axes[i];
+		  AxisType axis = axes[i];
+//		  PositiveFloat physicalSize = null;
 
 		  //TODO need to decide how to handle physical pixel sizes in SCIFIO...
 //		  if (Axes.X.equals(axis)) {
