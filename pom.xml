@@ -8,56 +8,33 @@
   <parent>
     <groupId>org.scijava</groupId>
     <artifactId>pom-scijava</artifactId>
-    <version>1.44</version>
+    <version>1.48</version>
   </parent>
 
-  <groupId>loci</groupId>
+  <groupId>io.scif</groupId>
   <artifactId>pom-scifio</artifactId>
-  <version>4.5-SNAPSHOT</version>
+  <version>0.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Bio-Formats projects</name>
-  <description>Umbrella project for SCIFIO and Bio-Formats software projects.</description>
-  <url>http://www.openmicroscopy.org/site/products/bio-formats</url>
-  <inceptionYear>2005</inceptionYear>
+  <name>SCIFIO projects</name>
+  <description>Umbrella project for SCIFIO software projects.</description>
+  <url>http://scif.io/</url>
+  <inceptionYear>2011</inceptionYear>
 
   <modules>
-    <module>components/forks/jai</module>
-    <module>components/forks/mdbtools</module>
-    <module>components/forks/poi</module>
-    <module>components/autogen</module>
-    <module>components/bio-formats</module>
-    <module>components/loci-legacy</module>
-    <module>components/loci-common</module>
-    <module>components/loci-plugins</module>
-    <module>components/loci-tools</module>
-    <module>components/metakit</module>
-    <module>components/ome-io</module>
-    <module>components/ome-plugins</module>
-    <module>components/ome-tools</module>
-    <module>components/ome-xml</module>
-    <module>components/scifio</module>
-    <module>components/scifio-devel</module>
-    <module>components/scifio-tools</module>
-    <module>components/test-suite</module>
-    <module>components/stubs/lwf-stubs</module>
+    <module>scifio</module>
+    <module>tutorials</module>
   </modules>
 
   <properties>
-    <!-- NB: Pin to SNAPSHOT version of SCIFIO. For the moment,
-         io.scif:scifio:0.2.1-SNAPSHOT is part of this multi-module
-         reactor, so the SNAPSHOT coupling is safe in this case. -->
-    <scifio.version>0.2.1-SNAPSHOT</scifio.version>
-
+    <jai-imageio.version>1.0.1</jai-imageio.version>
     <project.rootdir>${basedir}</project.rootdir>
   </properties>
 
   <build>
-    <sourceDirectory>${project.basedir}/src</sourceDirectory>
-    <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
     <resources>
       <resource>
-        <directory>${project.basedir}/src</directory>
+        <directory>${project.basedir}/src/main/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
           <exclude>**/package.html</exclude>
@@ -66,7 +43,7 @@
     </resources>
     <testResources>
       <testResource>
-        <directory>${project.basedir}/test</directory>
+        <directory>${project.basedir}/src/test/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
           <exclude>**/package.html</exclude>
@@ -92,83 +69,87 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
-          <licenseName>gpl_v2</licenseName>
+          <licenseName>scifio</licenseName>
           <licenseResolver>file://${project.rootdir}/license</licenseResolver>
+          <projectName>SCIFIO library for reading and converting scientific file formats.</projectName>
           <organizationName>Open Microscopy Environment:
   - Board of Regents of the University of Wisconsin-Madison
   - Glencoe Software, Inc.
   - University of Dundee</organizationName>
           <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
           <canUpdateDescription>true</canUpdateDescription>
-          <roots>
-            <root>src</root>
-            <root>target/generated-sources</root>
-            <root>target/processed-sources</root>
-            <root>test</root>
-            <root>utils</root>
-            <root>doc</root>
-            <root>cppwrap</root>
-          </roots>
+          <canUpdateCopyright>true</canUpdateCopyright>
         </configuration>
       </plugin>
     </plugins>
   </build>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <javadocDirectory>${project.basedir}/src</javadocDirectory>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
+  <licenses>
+    <license>
+      <name>Simplified BSD License</name>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
   <organization>
-    <name>Open Microscopy Environment</name>
-    <url>http://www.openmicroscopy.org/</url>
+    <name>SCIFIO</name>
+    <url>http://scif.io/</url>
   </organization>
 
+  <developers>
+    <developer>
+      <id>hinerm</id>
+      <name>Mark Hiner</name>
+      <email>hinerm@gmail.edu</email>
+      <url>http://developer.imagej.net/users/hinerm</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+    </developer>
+    <developer>
+      <id>curtis</id>
+      <name>Curtis Rueden</name>
+      <email>ctrueden@wisc.edu</email>
+      <url>http://loci.wisc.edu/people/curtis-rueden</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+    </developer>
+  </developers>
+
   <issueManagement>
-    <system>Trac</system>
-    <url>http://trac.openmicroscopy.org.uk/ome/wiki/BioFormats</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/scifio/scifio/issues</url>
   </issueManagement>
 
   <ciManagement>
     <system>Jenkins</system>
-    <url>http://hudson.openmicroscopy.org.uk/</url>
+    <url>http://jenkins.imagej.net/view/SCIFIO/</url>
   </ciManagement>
 
   <mailingLists>
     <mailingList>
-      <name>LOCI Software</name>
-      <subscribe>https://lists.wisc.edu/read/all_forums/subscribe?name=locisoftware</subscribe>
-      <unsubscribe>https://lists.wisc.edu/read/?forum=locisoftware</unsubscribe>
-      <post>locisoftware@lists.wisc.edu</post>
-      <archive>https://lists.wisc.edu/read/?forum=locisoftware</archive>
-    </mailingList>
-    <mailingList>
-      <name>OME-users</name>
-      <subscribe>http://lists.openmicroscopy.org.uk/mailman/listinfo/ome-users/</subscribe>
-      <unsubscribe>http://lists.openmicroscopy.org.uk/mailman/listinfo/ome-users/</unsubscribe>
-      <post>ome-users@lists.openmicroscopy.org.uk</post>
-      <archive>http://lists.openmicroscopy.org.uk/pipermail/ome-users/</archive>
-    </mailingList>
-    <mailingList>
-      <name>OME-devel</name>
-      <subscribe>http://lists.openmicroscopy.org.uk/mailman/listinfo/ome-devel/</subscribe>
-      <unsubscribe>http://lists.openmicroscopy.org.uk/mailman/listinfo/ome-devel/</unsubscribe>
-      <post>ome-devel@lists.openmicroscopy.org.uk</post>
-      <archive>http://lists.openmicroscopy.org.uk/pipermail/ome-devel/</archive>
+      <name>SciJava</name>
+      <subscribe>https://groups.google.com/forum/?fromgroups#!forum/scijava</subscribe>
+      <unsubscribe>https://groups.google.com/forum/?fromgroups#!forum/scijava</unsubscribe>
+      <post>scijava@googlegroups.com</post>
+      <archive>https://groups.google.com/forum/?fromgroups#!forum/scijava</archive>
     </mailingList>
   </mailingLists>
 
   <scm>
-    <connection>scm:git:git://github.com/openmicroscopy/bioformats.git</connection>
-    <developerConnection>scm:git:git@github.com:openmicroscopy/bioformats.git</developerConnection>
+    <connection>scm:git:git://github.com/scifio/scifio</connection>
+    <developerConnection>scm:git:git@github.com:scifio/scifio</developerConnection>
     <tag>HEAD</tag>
-    <url>http://github.com/openmicroscopy/bioformats</url>
+    <url>http://github.com/scifio/scifio</url>
   </scm>
 
   <!-- NB: for parent project -->

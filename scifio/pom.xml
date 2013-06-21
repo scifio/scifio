@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.scif</groupId>
+    <artifactId>pom-scifio</artifactId>
+    <version>0.2.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>scifio</artifactId>
+
+  <name>SCIFIO Core</name>
+  <description>SCIFIO is a next generation library for scientific image format I/O.</description>
+
+  <dependencies>
+    <!-- NB: dependency:analyze has false warning about xml-apis:xml-apis. -->
+
+    <dependency>
+      <groupId>${scifio.groupId}</groupId>
+      <artifactId>jai_imageio</artifactId>
+      <version>${jai-imageio.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${imglib2.groupId}</groupId>
+      <artifactId>imglib2</artifactId>
+      <version>${imglib2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${scijava-common.groupId}</groupId>
+      <artifactId>scijava-common</artifactId>
+      <version>${scijava-common.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.5.10</version>
+    </dependency>
+
+    <dependency>
+      <!-- NB: We want this, despite warning from dependency:analyze. -->
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <!-- NB: We want this, despite warning from dependency:analyze. -->
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.5.10</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <!-- NB: We want this, despite warning from dependency:analyze. -->
+      <groupId>xalan</groupId>
+      <artifactId>serializer</artifactId>
+      <version>2.7.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <!-- NB: We want this, despite warning from dependency:analyze. -->
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.7.1</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>5.12.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <project.rootdir>${basedir}/..</project.rootdir>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <suiteXmlFiles>
+            <suiteXmlFile>src/test/java/io/scif/utests/testng-template.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- NB: for parent project -->
+  <repositories>
+    <repository>
+      <id>imagej.releases</id>
+      <url>http://maven.imagej.net/content/repositories/releases</url>
+    </repository>
+    <repository>
+      <id>imagej.snapshots</id>
+      <url>http://maven.imagej.net/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
+
+</project>
