@@ -1,0 +1,80 @@
+/*
+ * #%L
+ * OME SCIFIO package for reading and converting scientific file formats.
+ * %%
+ * Copyright (C) 2005 - 2013 Open Microscopy Environment:
+ *   - Board of Regents of the University of Wisconsin-Madison
+ *   - Glencoe Software, Inc.
+ *   - University of Dundee
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are
+ * those of the authors and should not be interpreted as representing official
+ * policies, either expressed or implied, of any organization.
+ * #L%
+ */
+
+package io.scif.img;
+
+import io.scif.Metadata;
+import io.scif.Reader;
+import io.scif.common.DataTools;
+import io.scif.util.FormatTools;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.img.basictypeaccess.PlanarAccess;
+import net.imglib2.type.numeric.RealType;
+
+/**
+ * {@link PlaneConverter} implementation specialized for
+ * populating {@link PlanarAccess} instances.
+ * 
+ * @author Mark Hiner hinerm at gmail.com
+ *
+ */
+public class PlanarAccessConverter implements PlaneConverter {
+  
+  /** Populates plane by reference using {@link PlanarAccess} interface. */
+  @SuppressWarnings("unchecked")
+  public <T extends RealType<T>> void populatePlane(final Reader reader, final int imageIndex, 
+      final int planeIndex, final byte[] plane, final ImgPlus<T> planarImg,
+      ImgOptions imgOptions) {
+	
+	Metadata m = reader.getMetadata();
+	  
+    @SuppressWarnings("rawtypes")
+    PlanarAccess planarAccess = ImgIOUtils.getPlanarAccess(planarImg);
+    final int pixelType = m.getPixelType(imageIndex);
+    final int bpp = FormatTools.getBytesPerPixel(pixelType);
+    final boolean fp = FormatTools.isFloatingPoint(pixelType);
+    final boolean little = m.isLittleEndian(imageIndex);
+    Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
+    if (planeArray == plane) {
+      // array was returned by reference; make a copy
+      final byte[] planeCopy = new byte[plane.length];
+      System.arraycopy(plane, 0, planeCopy, 0, plane.length);
+      planeArray = planeCopy;
+    }
+    planarAccess.setPlane(planeIndex, ImgIOUtils.makeArray(planeArray));
+  }
+
+}

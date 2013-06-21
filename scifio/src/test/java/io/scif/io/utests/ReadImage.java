@@ -36,8 +36,9 @@
 
 package io.scif.io.utests;
 
-import io.scif.io.img.ImgIOException;
-import io.scif.io.img.ImgOpener;
+import io.scif.img.IO;
+import io.scif.img.ImgIOException;
+import io.scif.img.ImgOpener;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
@@ -73,14 +74,14 @@ public class ReadImage {
 		// read all arguments using auto-detected type with default container
 		System.out.println("== AUTO-DETECTED TYPE, DEFAULT CONTAINER ==");
 		for (final String id : ids) {
-		  final ImgPlus<T> img = imageOpener.openImg(id, 0);
+		  final ImgPlus<T> img = imageOpener.openImg(id);
 		  reportInformation(img);
 		}
 		
     // read all arguments using auto-detected type with default container
     System.out.println("== AUTO-DETECTED TYPE, CELL CONTAINER ==");
     for (final String id : ids) {
-      final ImgPlus<T> img = imageOpener.openImg(id, 0, false);
+      final ImgPlus<T> img = imageOpener.openImg(id);
       reportInformation(img);
     }
 
@@ -96,7 +97,7 @@ public class ReadImage {
 		System.out.println();
 		System.out.println("== FLOAT TYPE, DEFAULT CONTAINER ==");
 		for (final String arg : args) {
-		  final ImgPlus<FloatType> img = ImgOpener.openFloat(arg, 0);
+		  final ImgPlus<FloatType> img = IO.openFloat(arg, 0);
 		  reportInformation(img);
 		}
 		
@@ -104,7 +105,7 @@ public class ReadImage {
     System.out.println();
     System.out.println("== DOUBLE TYPE, DEFAULT CONTAINER ==");
     for (final String arg : args) {
-      final ImgPlus<DoubleType> img = ImgOpener.openDouble(arg, 0);
+      final ImgPlus<DoubleType> img = IO.openDouble(arg, 0);
       reportInformation(img);
     }
 	}

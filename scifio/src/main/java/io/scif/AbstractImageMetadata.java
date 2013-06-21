@@ -35,6 +35,7 @@
  */
 package io.scif;
 
+import io.scif.common.DataTools;
 import io.scif.util.FormatTools;
 
 import java.util.ArrayList;
@@ -341,13 +342,15 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    * @see io.scif.ImageMetadata#getSize()
    */
   public long getSize() {
-    int size = 1;
+    long size = 1;
     
     for (AxisType a : axisTypes) {
-      size *= getAxisLength(a);
+      size = DataTools.safeMultiply64(size, getAxisLength(a));
     }
     
-    return size * getBitsPerPixel() / 8;
+    int bytesPerPixel = getBitsPerPixel() / 8;
+    
+    return DataTools.safeMultiply64(size, bytesPerPixel);
   }
 
   /*
