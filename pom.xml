@@ -142,11 +142,11 @@
 
   <mailingLists>
     <mailingList>
-      <name>SciJava</name>
-      <subscribe>https://groups.google.com/forum/?fromgroups#!forum/scijava</subscribe>
-      <unsubscribe>https://groups.google.com/forum/?fromgroups#!forum/scijava</unsubscribe>
-      <post>scijava@googlegroups.com</post>
-      <archive>https://groups.google.com/forum/?fromgroups#!forum/scijava</archive>
+      <name>SCIFIO</name>
+      <subscribe>http://scif.io/mailman/listinfo/scifio</subscribe>
+      <unsubscribe>http://scif.io/mailman/listinfo/scifio</unsubscribe>
+      <post>scifio@scif.io</post>
+      <archive>http://scif.io/pipermail/scifio/</archive>
     </mailingList>
   </mailingLists>
 
