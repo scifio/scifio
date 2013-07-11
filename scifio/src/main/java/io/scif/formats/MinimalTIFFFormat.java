@@ -574,7 +574,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
     @Override
     public ByteArrayPlane openThumbPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
-      FormatTools.assertId(currentId, true, 1);
       Metadata meta = getMetadata();
       IFDList thumbnailIFDs = meta.getThumbnailIFDs();
       if (thumbnailIFDs == null || thumbnailIFDs.size() <= planeIndex) {
