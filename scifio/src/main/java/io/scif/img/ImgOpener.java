@@ -311,6 +311,10 @@ public class ImgOpener extends AbstractHasSCIFIO {
    * Reads in an {@link ImgPlus} from the given initialized {@link Reader},
    * using the given {@link ImgFactory} to construct the {@link Img}. The
    * {@link Type} T to read is defined by the third parameter.
+   * <p>
+   * NB: Any Reader provided must be wrapped by a {@link ChannelSeparator}
+   * filter.
+   * </p>
    * 
    * @param reader
    *          - An initialized {@link Reader} to use for reading image data.
