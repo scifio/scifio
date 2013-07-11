@@ -160,7 +160,7 @@ public class TIFFFormat extends AbstractFormat {
     }
 
     public Double getPhysicalSizeZ() {
-      return physicalSizeZ;
+      return physicalSizeZ == null ? 1.0 : physicalSizeZ;
     }
 
     public void setPhysicalSizeZ(Double physicalSizeZ) {
@@ -168,7 +168,7 @@ public class TIFFFormat extends AbstractFormat {
     }
 
     public Double getTimeIncrement() {
-      return timeIncrement;
+      return timeIncrement == null ? 1.0 : timeIncrement;
     }
 
     public void setTimeIncrement(Double timeIncrement) {
