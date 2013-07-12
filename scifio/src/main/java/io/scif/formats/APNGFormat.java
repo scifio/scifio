@@ -193,7 +193,7 @@ public class APNGFormat extends AbstractFormat {
   
       imageMeta.setInterleaved(false);
       imageMeta.setOrderCertain(true);
-      imageMeta.setFalseColor(true);
+      imageMeta.setFalseColor(false);
   
       imageMeta.setIndexed(false);
   
@@ -212,7 +212,7 @@ public class APNGFormat extends AbstractFormat {
           break;
         case 0x3:
           indexed = true;
-          sizec = 3; // ?
+          sizec = 1;
           break;
         case 0x4:
           rgb = false;
