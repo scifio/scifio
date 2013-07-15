@@ -40,6 +40,7 @@ import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.common.DataTools;
 import io.scif.filters.ReaderFilter;
+import io.scif.img.cell.cache.CacheService;
 import io.scif.img.cell.loaders.BitArrayLoader;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.CharArrayLoader;
@@ -52,6 +53,7 @@ import io.scif.img.cell.loaders.ShortArrayLoader;
 import io.scif.util.FormatTools;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
+import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.basictypeaccess.array.CharArray;
@@ -63,6 +65,8 @@ import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.img.cell.AbstractCellImgFactory;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.NativeType;
+
+
 
 /**
  * {@link AbstractCellImgFactory} implementation for working with
@@ -196,12 +200,16 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
   
   // -- Helper Methods --
 
-  private <A, L extends SCIFIOArrayLoader<A>>
+  private <A extends ArrayDataAccess<?>, L extends SCIFIOArrayLoader<A>>
     SCIFIOCellImg<T, A, SCIFIOCell<A>> createInstance(L loader,
       long[] dimensions, final int entitiesPerPixel) {
     dimensions = checkDimensions(dimensions);
     final int[] cellSize = checkCellSize(defaultCellDimensions, dimensions);
-    final SCIFIOCellCache<A> c = new SCIFIOCellCache<A>(loader);
+
+    @SuppressWarnings("unchecked")
+    CacheService<SCIFIOCell<?>> service = reader.getContext().getServiceIndex().getService(CacheService.class);
+    
+    final SCIFIOCellCache<A> c = new SCIFIOCellCache<A>(service, loader); 
 
     return new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(
         c, entitiesPerPixel, dimensions, cellSize));

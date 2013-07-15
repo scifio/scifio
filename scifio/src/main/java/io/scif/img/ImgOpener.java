@@ -48,6 +48,7 @@ import io.scif.filters.MinMaxFilter;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.ImgOptions.CheckMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
+import io.scif.img.cell.cache.CacheService;
 import io.scif.services.InitializeService;
 import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
@@ -87,7 +88,8 @@ public class ImgOpener extends AbstractHasSCIFIO {
   // -- Constructors --
 
   public ImgOpener() {
-    this(new Context(StatusService.class, InitializeService.class, TranslatorService.class));
+    this(new Context(StatusService.class, InitializeService.class, TranslatorService.class,
+        CacheService.class));
   }
 
   public ImgOpener(Context ctx) {
