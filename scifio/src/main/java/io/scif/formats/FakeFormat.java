@@ -114,6 +114,9 @@ public class FakeFormat extends AbstractFormat
   
   public static final Logger LOGGER = null;
   
+  private static final String DEFAULT_NAME = "Untitled";
+  private static final String TOKEN_SEPARATOR = "&";
+
   // -- Allowed keys --
   
   private static final String SIZE_X = "sizeX";
@@ -138,7 +141,6 @@ public class FakeFormat extends AbstractFormat
   private static final String SERIES = "series";
   private static final String RGB = "rgb";
   private static final String NAME = "name";
-  private static final String TOKEN_SEPARATOR = "&";
 
   // -- Constructor --
   
@@ -923,17 +925,18 @@ public class FakeFormat extends AbstractFormat
       String noExt = fakePath.substring(0, fakePath.lastIndexOf("."));
       String[] tokens = noExt.split(TOKEN_SEPARATOR);
       
-      boolean named = false;
-      
       // parse tokens from filename
       for (String token : tokens) {
-        if (!named) {
-          // first token is the image name
-          fakeMap.put(NAME, token);
-          named = true;
-          continue;
-        }
         int equals = token.indexOf("=");
+        if (!fakeMap.containsKey(NAME)) {
+          if (equals < 0) {
+            // first token is the image name
+            fakeMap.put(NAME, token);
+            continue;
+          }
+          // no name was given; use a default one
+          fakeMap.put(NAME, DEFAULT_NAME);
+        }
         if (equals < 0) {
           //TODO  LOGGER.warn("ignoring token: {}", token);
           continue;
