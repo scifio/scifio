@@ -37,6 +37,7 @@
 package io.scif.img.cell;
 
 import net.imglib2.img.Img;
+import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.cell.AbstractCells;
 import net.imglib2.img.list.AbstractListImg;
 import net.imglib2.util.IntervalIndexer;
@@ -47,9 +48,9 @@ import net.imglib2.util.IntervalIndexer;
  * 
  * @author Mark Hiner hinerm at gmail.com
  */
-public class SCIFIOImgCells<A> extends
+public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
     AbstractCells<A, SCIFIOCell<A>, SCIFIOImgCells<A>.CachedCells> {
-  public static interface CellCache<A> {
+  public static interface CellCache<A extends ArrayDataAccess<?>> {
     /**
      * Get the cell at a specified index.
      * 

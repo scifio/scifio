@@ -66,7 +66,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
   }
   
   public A loadArray(int[] dimensions, long[] min) {
-    synchronized( reader )
+    synchronized(reader)
     {
       Metadata meta = reader.getMetadata();
  
@@ -91,7 +91,6 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
       int tMax = tIndex == -1 ? 1 : dimensions[tIndex] + tSlice;
       int cMax = cIndex == -1 ? 1 : dimensions[cIndex] + cSlice;
 
-      A data = emptyArray(dimensions);
       Plane tmpPlane = null;
       
       int planeSize = -1;
@@ -139,7 +138,18 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
       int h = yIndex == -1 ? 1 : dimensions[yIndex];
       
       int i1 = index[1], i2 = index[2];
+
+      boolean success = false;
       
+      A data  = null;
+      
+      while (!success) {
+        try {
+          data = emptyArray(dimensions);
+          success = true;
+        } catch (OutOfMemoryError e) { }
+      }
+        
       try {
         for (; index[0]<iterBounds[0][1]; index[0]++) {
           for (; index[1]<iterBounds[1][1]; index[1]++) {
@@ -147,16 +157,21 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
               int z = index[zctOrder.indexOf('Z')];
               int c = index[zctOrder.indexOf('C')];
               int t = index[zctOrder.indexOf('T')];
-              
+
               int planeIndex = FormatTools.getIndex(reader, 0, z, c, t);
               
-              if (tmpPlane == null) tmpPlane = reader.openPlane(0, planeIndex, x, y, w, h);
-              else tmpPlane = reader.openPlane(0, planeIndex, tmpPlane, x, y, w, h);
-              
+              success = false;
+              while (!success) {
+                try {
+                  if (tmpPlane == null) tmpPlane = reader.openPlane(0, planeIndex, x, y, w, h);
+                  else tmpPlane = reader.openPlane(0, planeIndex, tmpPlane, x, y, w, h);
+                  success = true;
+                } catch (OutOfMemoryError e) { }
+              } 
               if (planeSize == -1) planeSize = tmpPlane.getBytes().length;
-              
+
               convertBytes(data, tmpPlane.getBytes(), planesRead);
-              
+
               planesRead++;
             }
             index[2] = i2;

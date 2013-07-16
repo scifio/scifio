@@ -37,12 +37,13 @@
 package io.scif.img.cell;
 
 import io.scif.img.cell.SCIFIOImgCells.CellCache;
+import io.scif.img.cell.cache.CacheService;
 import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 
-import java.io.Serializable;
 import java.lang.ref.SoftReference;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.HashMap;
+
+import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 
 
 /**
@@ -52,47 +53,39 @@ import java.util.HashMap;
  * @author Mark Hiner hinerm at gmail.com
  *
  */
-public class SCIFIOCellCache<A> implements CellCache<A> {
+public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<A> { 
 
-  public static class Key implements Serializable {
-    private static final long serialVersionUID = 6660872720885948546L;
-    // NB: cache is per image so index is unique, no worries about clashing
-    final int index;
-
-    public Key(final int index) {
-      this.index = index;
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-      if (this == other)
-        return true;
-      if (!(other instanceof SCIFIOCellCache.Key))
-        return false;
-      final Key that = (Key) other;
-      return (this.index == that.index);
-    }
-
-    @Override
-    public int hashCode() {
-      return index;
-    }
-  }
-
+  // -- Fields --
+ 
   final protected SCIFIOArrayLoader<A> loader;
   
-  private HashMap<Integer, Key> keyMap = new HashMap<Integer, Key>();
-
+  // TODO: would be nice to replace this with another soft reference cache that was more configurable
+  // e.g. controlling max elements and such.
   // In-memory cache.
-  final protected ConcurrentHashMap<Key, SoftReference<SCIFIOCell<A>>> map = new ConcurrentHashMap<Key, SoftReference<SCIFIOCell<A>>>();
+  final protected ConcurrentHashMap<Integer, SoftReference<SCIFIOCell<A>>> map =
+      new ConcurrentHashMap<Integer, SoftReference<SCIFIOCell<A>>>();
+  
+  final private CacheService<SCIFIOCell<?>> cacheService; 
 
-  public SCIFIOCellCache(final SCIFIOArrayLoader<A> loader) {
+  // -- Constructor --
+  
+  /**
+   * Creates a new SCIFIOCellCache and makes it available to the current CacheService
+   */
+  public SCIFIOCellCache(CacheService<SCIFIOCell<?>> service, final SCIFIOArrayLoader<A> loader) {
     this.loader = loader;
+    cacheService = service;
+    cacheService.addCache(this.toString());
   }
+  
+  // -- CellCache API -- 
 
+  /**
+   * Returns the SCIFIOCell at the specified index from this cache, or 
+   * null if index has not been loaded yet.
+   */
   public SCIFIOCell<A> get(int index) {
-    final Key k = getKey(index);
-    SCIFIOCell<A> cell = checkCache(k);
+    SCIFIOCell<A> cell = checkCache(this.toString(), index); 
 
     if (cell != null)
       return cell;
@@ -100,18 +93,25 @@ public class SCIFIOCellCache<A> implements CellCache<A> {
     return null;
   }
 
+  /**
+   * Loads the cell at the specified index within the specified cell
+   * dimensionality, at the specified origin
+   * 
+   * @param index - linearized cell index to load
+   * @param cellDims - lengths of each axis of a cell
+   * @param cellMin - origin position of each cell axis
+   */
   public SCIFIOCell<A> load(int index, int[] cellDims, long[] cellMin) {
-    final Key k = getKey(index);
-    SCIFIOCell<A> cell = checkCache(k);
+    SCIFIOCell<A> cell = checkCache(this.toString(), index); 
 
     if (cell != null) {
       return cell;
     }
 
-    cell = new SCIFIOCell<A>(cellDims, cellMin, loader.loadArray(cellDims,
-        cellMin));
-
-    cache(k, cell);
+    cell = new SCIFIOCell<A>(cacheService, this.toString(), index, cellDims, cellMin,
+        loader.loadArray(cellDims, cellMin));
+    
+    cache(cacheService.getKey(this.toString(), index), cell); 
     
     int c = loader.getBitsPerElement();
     for (final int l : cellDims)
@@ -120,33 +120,45 @@ public class SCIFIOCellCache<A> implements CellCache<A> {
     return cell;
   }
   
-  private Key getKey(int index) {
-    Integer k = index;
-    
-    Key key = keyMap.get(k);
-    
-    if (key == null) {
-      key = new Key(k);
-      keyMap.put(k, key);
-    }
-    
-    return key;
-  }
+  @Override
+  public void finalize() {
+    cacheService.clearCache(this.toString());
+  } 
   
-  private void cache(Key k, SCIFIOCell<A> cell) {
+  // -- Helper Methods --
+  
+  // Maps a soft reference to the given cell
+  private void cache(Integer k, SCIFIOCell<A> cell) { 
     map.put(k, new SoftReference<SCIFIOCell<A>>(cell));
   }
 
-  private SCIFIOCell<A> checkCache(Key k) {
+  /*
+   * First checks the local (weak) map. If empty, cache service is checked - which can
+   * potentially deserialize from disk.
+   */
+  @SuppressWarnings("unchecked")
+  private SCIFIOCell<A> checkCache(String id, int index) { 
     SCIFIOCell<A> cell = null;
-    
+
+    Integer k = cacheService.getKey(id, index);
+      
     // Check the local cache
     SoftReference<SCIFIOCell<A>> ref = map.get(k);
-    boolean found = false;
     
     if (ref != null) {
       cell = ref.get();
-      found = true;
+    }
+    else {
+      map.remove(k);
+    } 
+    
+    // Check the cache manager
+    if (cell == null) {
+      cell = (SCIFIOCell<A>) cacheService.retrieve(id, index);
+      
+      if (cell != null) { 
+        map.put(k, new SoftReference<SCIFIOCell<A>>(cell));
+      }
     }
 
     return cell;
