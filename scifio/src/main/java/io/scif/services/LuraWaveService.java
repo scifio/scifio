@@ -41,12 +41,13 @@ import io.scif.DependencyException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.scijava.Optional;
 import org.scijava.service.Service;
 
 /**
  * @author callan
  */
-public interface LuraWaveService extends Service {
+public interface LuraWaveService extends Service, Optional {
 
 	// -- Constants --
 
