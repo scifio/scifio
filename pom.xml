@@ -34,6 +34,7 @@
   <properties>
     <jai-imageio.version>1.0.1</jai-imageio.version>
     <project.rootdir>${basedir}</project.rootdir>
+    <scijava-common.version>1.5.1-SNAPSHOT</scijava-common.version>
   </properties>
 
   <build>
