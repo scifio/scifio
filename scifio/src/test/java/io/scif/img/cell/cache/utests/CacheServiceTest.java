@@ -81,6 +81,10 @@ public class CacheServiceTest {
   public void tearDown() {
     // clear all cached entries
     cs.clearAllCaches();
+    // reset any configuration options in case tests failed
+    cs.setMaxBytesOnDisk(Long.MAX_VALUE);
+    cs.enable(true);
+    cs.cacheAll(false);
   }
 
   // -- Tests --
@@ -129,6 +133,8 @@ public class CacheServiceTest {
     
     // Verify our cell was cleared from the cache service
     assertNull(cs.retrieve(cache1.toString(), 0));
+    
+    enableCells(false, cell);
   }
 
   // As cacheAndRetrieve but allowing caching of clean objects
@@ -146,8 +152,7 @@ public class CacheServiceTest {
     // Verify the cell was cached
     assertEquals(cell, cs.retrieve(cache1.toString(), 0));
     
-    // Restore setting
-    cs.cacheAll(false);
+    enableCells(false, cell);
   }
   
   // As cacheAll but testing enabled/disabled
@@ -245,6 +250,7 @@ public class CacheServiceTest {
     
     // Clear the cache and try caching cell 2 again
     cs.clearCache(cache1.toString());
+    enableCells(true, cell1, cell2);
     assertTrue(cs.cache(cache1.toString(), 1, cell2));
   
     // Verify cache state
@@ -255,8 +261,12 @@ public class CacheServiceTest {
     cs.setMaxBytesOnDisk(Long.MAX_VALUE);
     assertTrue(cs.cache(cache1.toString(), 0, cell1));
     assertTrue(cs.cache(cache1.toString(), 1, cell2));
-    assertEquals(cell1, cs.retrieve(cache1.toString(), 0));
-    assertEquals(cell2, cs.retrieve(cache1.toString(), 1));
+    SCIFIOCell<ByteArray> cell1b = (SCIFIOCell<ByteArray>) cs.retrieve(cache1.toString(), 0);
+    SCIFIOCell<ByteArray> cell2b = (SCIFIOCell<ByteArray>) cs.retrieve(cache1.toString(), 1);
+    assertTrue(cell1.equals(cell1b));
+    assertTrue(cell2.equals(cell2b));
+    
+    enableCells(false, cell1, cell2);
   }
   
   // Basic workflow retrieving multiple cells
@@ -292,6 +302,7 @@ public class CacheServiceTest {
     
     // Clear all caches
     cs.clearAllCaches();
+    enableCells(true, cell1a, cell1b, cell2a, cell2b);
     
     // Try caching the retrieved cells
     assertFalse(cs.cache(cache1.toString(), 0, cell1b));
@@ -324,5 +335,11 @@ public class CacheServiceTest {
   private SCIFIOCellCache<ByteArray> makeCache(long bytes)
     throws FormatException, IOException {
     return makeCache(makeFakeFile(bytes));
+  }
+
+  private void enableCells(boolean enabled, SCIFIOCell<?>... cells) {
+    for (SCIFIOCell<?> cell : cells) {
+      if (cell != null) cell.cacheOnFinalize(enabled);
+    }
   }
 }
