@@ -38,6 +38,7 @@ package io.scif.img.cell.cache.utests;
 
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertNull;
 import static org.testng.AssertJUnit.assertTrue;
 import io.scif.FormatException;
@@ -47,10 +48,13 @@ import io.scif.img.cell.SCIFIOCell;
 import io.scif.img.cell.SCIFIOCellCache;
 import io.scif.img.cell.cache.CacheService;
 import io.scif.img.cell.loaders.ByteArrayLoader;
+import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
+import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 
 import org.testng.annotations.AfterMethod;
@@ -67,12 +71,17 @@ import org.testng.annotations.Test;
 @Test(groups="cacheTests")
 public class CacheServiceTest {
   
+  // -- Constants --
+  
+  // max time, in ms, to wait for cache
+  private static final long TIMEOUT = 10000l;
+  
   // -- Fields --
   
-  private SCIFIO scifio = new SCIFIO();
+  private static SCIFIO scifio = new SCIFIO();
   
   @SuppressWarnings("unchecked")
-  private CacheService<SCIFIOCell<?>> cs =
+  private static CacheService<SCIFIOCell<?>> cs =
     scifio.getContext().getService(CacheService.class);
   
   // -- Post-test hooks --
@@ -176,47 +185,78 @@ public class CacheServiceTest {
 
     // Verify the cell was cached
     assertEquals(cell, cs.retrieve(cache1.toString(), 0));
-
-    // restore the settings
-    cs.cacheAll(false);
+    
+    enableCells(false, cell);
   }
   
-  // As cacheAndRetrieve but detecting dirty status by comparing hashes
+  // Test caching with forced garbage collection to ensure
+  // finalization. Should automatically cache in the CacheService
+  @SuppressWarnings("unchecked")
   @Test
-  public void testDirtyHashes() throws FormatException, IOException {
-    SCIFIOCellCache<ByteArray> cache1 = makeCache(128l * 128l);
-    SCIFIOCell<ByteArray> cell = cache1.load(0, new int[]{128, 128}, new long[]{0l, 0l});
-
-    // Modify the data without telling the cell we'll be doing so
-    cell.getData().setValue(130, (byte) 0xace);
-
-    // Cell is modified but not flagged dirty so this shouldn't cache
-    assertFalse(cs.cache(cache1.toString(), 0, cell));
+  public void testFinalization() throws FormatException, IOException {
+    TestCellCache<ByteArray> cache = makeTestCache(256l * 256l);
     
-    // Verify the cell wasn't cached
-    assertNull(cs.retrieve(cache1.toString(), 0));
+    SCIFIOCell<ByteArray> cell = cache.load(0, new int[]{128, 128}, new long[]{0l, 0l});
+    WeakReference<SCIFIOCell<ByteArray>> ref = new WeakReference<SCIFIOCell<ByteArray>>(cell);
+    // First, test with no modifications to the cell
+    cell = null;
+    cache.remove(0);
     
-    // Check the hashes to dirty the cell
-    cell.updateDirtyFlag();
-    
-    // Cache the dirtied cell
-    assertTrue(cs.cache(cache1.toString(), 0, cell));
-
-    // Verify the cell was cached
-    assertEquals(cell, cs.retrieve(cache1.toString(), 0));
-  }
+    // wait for reference to clear
+    long time = System.currentTimeMillis();
+    while (ref.get() != null && System.currentTimeMillis() - time < TIMEOUT) {
+      System.gc();
+    }
   
-  // Test erroneous API use
-  @Test
-  public void testMisuesCases() {
-    // Fish for exceptions by dropping a cache that wasn't added
-    cs.dropCache("fdsajklrewa");
-    
-    // Verify null getting from a cache that doesn't exist
-    assertNull(cs.retrieve("drsarewa", 432));
-  }
+    // Cell shouldn't have cached since it was unmodified
+    assertNull(cs.retrieve(cache.toString(), 0));
   
+    // reload the cell
+    cell = cache.load(0, new int[]{128, 128}, new long[]{0l, 0l});
+  
+    // dirty it
+    cell.getData().setValue(42, (byte)0xace);
+    
+    // Wait for the cell to clear again 
+    cell = null;
+    cache.remove(0);
+    time = System.currentTimeMillis();
+    while (ref.get() != null && System.currentTimeMillis() - time < TIMEOUT) {
+      System.gc();
+    }
+    
+    // Wait for finalization
+    time = System.currentTimeMillis();
+    while ( (cell = (SCIFIOCell<ByteArray>)cs.retrieve(cache.toString(), 0)) == null
+        && System.currentTimeMillis() - time < TIMEOUT) { }
+    
+    // Cell should have cached since it was modified
+    assertNotNull(cell);
+    
+    // Cell should  be removed from the cache now (it will be re-cached if GC'd again)
+    assertNull(cs.retrieve(cache.toString(), 0));
+  
+    // repeat to ensure multiple cachings work
+    cell = null;
+    cache.remove(0);
+    time = System.currentTimeMillis();
+    while (ref.get() != null && System.currentTimeMillis() - time < TIMEOUT) {
+      System.gc();
+    }
+    
+    // Wait for finalization
+    time = System.currentTimeMillis();
+    while ((cell = (SCIFIOCell<ByteArray>)cs.retrieve(cache.toString(), 0)) == null
+        && System.currentTimeMillis() - time < TIMEOUT) { }
+  
+    // Cell should have cached again as it is still modified relative to what's on disk
+    assertNotNull(cell);
+    
+    enableCells(false, cell);
+  }
+
   // Check the memory limit methods
+  @SuppressWarnings("unchecked")
   @Test
   public void testMemoryControls() throws FormatException, IOException {
     // Make a cache with a 100MB dataset
@@ -268,6 +308,16 @@ public class CacheServiceTest {
     
     enableCells(false, cell1, cell2);
   }
+
+  // Test erroneous API use
+  @Test
+  public void testMisuesCases() {
+    // Fish for exceptions by dropping a cache that wasn't added
+    cs.dropCache("fdsajklrewa");
+    
+    // Verify null getting from a cache that doesn't exist
+    assertNull(cs.retrieve("drsarewa", 432));
+  }
   
   // Basic workflow retrieving multiple cells
   @Test
@@ -305,12 +355,14 @@ public class CacheServiceTest {
     enableCells(true, cell1a, cell1b, cell2a, cell2b);
     
     // Try caching the retrieved cells
-    assertFalse(cs.cache(cache1.toString(), 0, cell1b));
-    assertFalse(cs.cache(cache1.toString(), 1, cell2b));
+    assertTrue(cs.cache(cache1.toString(), 0, cell1b));
+    assertTrue(cs.cache(cache1.toString(), 1, cell2b));
     
-    // Should have failed, as these cells were freshly loaded and not dirty
-    assertNull(cs.retrieve(cache1.toString(), 0));
-    assertNull(cs.retrieve(cache1.toString(), 1));
+    // Should have succeeded, as these cells are still modified from what was on disk
+    assertNotNull(cs.retrieve(cache1.toString(), 0));
+    assertNotNull(cs.retrieve(cache1.toString(), 1));
+    
+    enableCells(false, cell1a, cell1b, cell2a, cell2b);
   }
   
   // -- Helper methods --
@@ -319,6 +371,12 @@ public class CacheServiceTest {
   private String makeFakeFile(long bytes) {
     long dim = Math.round(Math.sqrt(bytes));
     return "testImg&sizeX=" + dim + "&sizeY=" + dim + ".fake";
+  }
+  
+  // Creates a SCIFIOCellCache anonymously for a file of the specified size
+  private SCIFIOCellCache<ByteArray> makeCache(long bytes)
+    throws FormatException, IOException {
+    return makeCache(makeFakeFile(bytes));
   }
   
   // Creates a SCIFIOCellCache for the given id
@@ -330,11 +388,16 @@ public class CacheServiceTest {
         new SCIFIOCellCache<ByteArray>(cs, loader);
     return cellCache;
   }
-  
-  // Creates a SCIFIOCellCache anonymously for a file of the specified size
-  private SCIFIOCellCache<ByteArray> makeCache(long bytes)
+
+  // Creates a TestCellCache for the given id
+  private TestCellCache<ByteArray> makeTestCache(long bytes)
     throws FormatException, IOException {
-    return makeCache(makeFakeFile(bytes));
+    String id = makeFakeFile(bytes);
+    ReaderFilter rf = scifio.initializer().initializeReader(id, true);
+    ByteArrayLoader loader = new ByteArrayLoader(rf);
+    TestCellCache<ByteArray> cellCache = 
+        new TestCellCache<ByteArray>(cs, loader);
+    return cellCache;
   }
 
   private void enableCells(boolean enabled, SCIFIOCell<?>... cells) {
@@ -342,4 +405,22 @@ public class CacheServiceTest {
       if (cell != null) cell.cacheOnFinalize(enabled);
     }
   }
+  
+  // --  HelperClass --
+  
+  private static class TestCellCache<A extends ArrayDataAccess<?>> extends SCIFIOCellCache<A> {
+
+    public TestCellCache(CacheService<SCIFIOCell<?>> service, SCIFIOArrayLoader<A> loader) {
+      super(service, loader);
+    }
+    
+    // Removes the specified cell index if present
+    public void remove(int index) {
+      Integer k = cs.getKey(this.toString(), index);
+      
+      map.remove(k);
+    }
+    
+  }
+  
 }
