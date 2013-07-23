@@ -56,24 +56,14 @@ import org.scijava.service.Service;
 @Plugin(type = Service.class)
 public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 
-  // -- Constants -- 
-  
-  /**
-   *  Number of modifications that are made to the DB before committing
-   */
-  public static final int CACHE_BUFFER = 100;
-  
   // -- Fields --
-  
-  // Disk-backed database to for writing
+
+  // Disk-backed database for writing
   private DB db;
   
   // List of caches
   private Set<String> caches = new TreeSet<String>();
 
-  // Modification tracker
-  private int commits = 0;
-  
   // Maximum cache size, in bytes
   private long maxCacheSize = Long.MAX_VALUE;
 
@@ -130,7 +120,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       if (enabled() && !diskFull()) {
         cache.put(getKey(cacheId, index), object);
         success = true;
-        commit();
+        db.commit();
       }
     }
     return success;
@@ -163,8 +153,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       cell.setCacheId(cacheId);
       cell.setIndex(index);
       cell.setService(this);
-      
-      commit();
+      db.commit();
     }
     
     return cell;
@@ -194,12 +183,6 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   }
   
   // -- Helper Methods --
-  
-  private void commit() {
-    //NB: the more frequently a commit is made, the worse performance, but the less memory usage.
-    if (++commits > CACHE_BUFFER) {
-      commits = 0;
-      db.commit();
     }
   }
 }
