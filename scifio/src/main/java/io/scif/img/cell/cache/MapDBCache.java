@@ -69,12 +69,27 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 
   // -- CacheService API Methods --
   
-  /*
+  /**
    * @see io.scifio.io.img.cell.CacheService#clearCache(java.lang.String)
+   * <p>
+   * NB: Disables caching on finalize in cleared cells. This is done to prevent
+   * immortal cells. Caching must be re-enabled per-cell if desired.
+   * </p>
    */
   public void clearCache(String cacheId) {
     if (caches.contains(cacheId)) {
-      db.getHashMap(cacheId).clear();
+      
+      HTreeMap<?, ?> cache = db.getHashMap(cacheId);
+      for (Object k : cache.keySet()) {
+        ((SCIFIOCell<?>)cache.get(k)).cacheOnFinalize(false);
+      }
+      
+      // ***HACK***
+      // Cache clearing is a little funky. size() > 0 does not seem to always
+      // follow cache.isEmpty(). This loop guarantees the cache is completely empty
+      // before this method closes.
+      while(cache.size() > 0) { cache.clear(); }
+      db.commit();
     }
   }
   
