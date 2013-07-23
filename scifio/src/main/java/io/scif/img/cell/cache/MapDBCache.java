@@ -125,6 +125,12 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
     object.update();
     if (caches.contains(cacheId) && (cacheAll() || object.dirty())) {
       
+      // Check to see if we have the latest version of this cell already
+      SCIFIOCell<?> cell = getCell(cacheId, index);
+      if (cell != null && cell.equals(object)) return success;
+      
+      // Store the provided cell
+      
       HTreeMap<Object, Object> cache = db.getHashMap(cacheId);
       
       // Will another object fit?
@@ -145,29 +151,11 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
    * @see io.scifio.io.img.cell.CacheService#get(java.lang.String, int)
    */
   public SCIFIOCell<?> retrieve(String cacheId, int index) {
-    
-    Integer key = getKey(cacheId, index);
-    
-    SCIFIOCell<?> cell = null;
-    HTreeMap<?, ?> cache = db.getHashMap(cacheId);
-    
-    boolean success = false;
 
-    // wait for memory to clear and the read to succeed
-    while (!success) {
-      try {
-        if (cache.containsKey(key)) {
-          cell = (SCIFIOCell<?>) cache.get(key);
-        }
-        success = true;
-      } catch (OutOfMemoryError e) { }
-    }
+    SCIFIOCell<?> cell = getCell(cacheId, index);
     
     if (cell != null) {
-      cache.remove(key);
-      cell.setCacheId(cacheId);
-      cell.setIndex(index);
-      cell.setService(this);
+      db.getHashMap(cacheId).remove(getKey(cacheId, index));
       db.commit();
     }
     
@@ -198,6 +186,32 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   }
   
   // -- Helper Methods --
+    
+  private SCIFIOCell<?> getCell(String cacheId, int index) {
+    Integer key = getKey(cacheId, index);
+    
+    SCIFIOCell<?> cell = null;
+    HTreeMap<?, ?> cache = db.getHashMap(cacheId);
+    
+    boolean success = false;
+    
+    // wait for memory to clear and the read to succeed
+    while (!success) {
+      try {
+        if (cache.containsKey(key)) {
+          cell = (SCIFIOCell<?>) cache.get(key);
+        }
+        success = true;
+      } catch (OutOfMemoryError e) { }
     }
+    
+    if (cell != null) {
+      cell.setCacheId(cacheId);
+      cell.setIndex(index);
+      cell.setService(this);
+      cell.cacheOnFinalize(true); 
+    }
+    
+    return cell;
   }
 }
