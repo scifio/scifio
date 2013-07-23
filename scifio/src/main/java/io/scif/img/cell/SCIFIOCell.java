@@ -67,6 +67,7 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> im
   private transient CacheService<SCIFIOCell<?>> service; // hook used to cache during finalization
   private transient String cacheId; // needed for this cell's hashcode
   private transient int index; // needed for this cell's hashcode
+  private transient boolean enabled; // whether or not this cell should be cached
   
   // -- Persistent fields --
   private A data;
@@ -85,11 +86,19 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> im
     this.service = service;
     this.cacheId = cacheId;
     this.index = index;
+    enabled = true;
     markClean(); 
   }
   
   // -- SCIFIOCell Methods --
   
+  /**
+   * Sets whether or not this cell tries to cache itself when no references
+   * to it remain.
+   */
+  public void cacheOnFinalize(boolean e) {
+    enabled = e;
+  }
 
   /**
    * @return the data stored in this cell
@@ -191,9 +200,8 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> im
   
   @Override
   public void finalize() {
-    if (!dirty()) updateDirtyFlag();
-   // Writes this cell to disk as it's garbage collected
-    service.cache(cacheId, index, this);
+    // Writes this cell to disk as it's garbage collected
+    if (enabled) service.cache(cacheId, index, this);
   }
   
   // -- Helper Methods --
