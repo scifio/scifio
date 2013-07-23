@@ -59,6 +59,8 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<
  
   final protected SCIFIOArrayLoader<A> loader;
   
+  final private String cacheId = this.toString();
+  
   // TODO: would be nice to replace this with another soft reference cache that was more configurable
   // e.g. controlling max elements and such.
   // In-memory cache.
@@ -75,7 +77,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<
   public SCIFIOCellCache(CacheService<SCIFIOCell<?>> service, final SCIFIOArrayLoader<A> loader) {
     this.loader = loader;
     cacheService = service;
-    cacheService.addCache(this.toString());
+    cacheService.addCache(cacheId);
   }
   
   // -- CellCache API -- 
@@ -85,7 +87,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<
    * null if index has not been loaded yet.
    */
   public SCIFIOCell<A> get(int index) {
-    SCIFIOCell<A> cell = checkCache(this.toString(), index); 
+    SCIFIOCell<A> cell = checkCache(cacheId, index); 
 
     if (cell != null)
       return cell;
@@ -102,16 +104,16 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<
    * @param cellMin - origin position of each cell axis
    */
   public SCIFIOCell<A> load(int index, int[] cellDims, long[] cellMin) {
-    SCIFIOCell<A> cell = checkCache(this.toString(), index); 
+    SCIFIOCell<A> cell = checkCache(cacheId, index); 
 
     if (cell != null) {
       return cell;
     }
 
-    cell = new SCIFIOCell<A>(cacheService, this.toString(), index, cellDims, cellMin,
+    cell = new SCIFIOCell<A>(cacheService, cacheId, index, cellDims, cellMin,
         loader.loadArray(cellDims, cellMin));
     
-    cache(cacheService.getKey(this.toString(), index), cell); 
+    cache(cacheService.getKey(cacheId, index), cell); 
     
     int c = loader.getBitsPerElement();
     for (final int l : cellDims)
@@ -122,7 +124,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<
   
   @Override
   public void finalize() {
-    cacheService.clearCache(this.toString());
+    cacheService.clearCache(cacheId);
   } 
   
   // -- Helper Methods --

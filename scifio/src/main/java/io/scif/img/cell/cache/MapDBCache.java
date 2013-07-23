@@ -56,35 +56,40 @@ import org.scijava.service.Service;
 @Plugin(type = Service.class)
 public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 
-  // -- Constants -- 
-  
-  /**
-   *  Number of modifications that are made to the DB before committing
-   */
-  public static final int CACHE_BUFFER = 100;
-  
   // -- Fields --
-  
-  // Disk-backed database to for writing
+
+  // Disk-backed database for writing
   private DB db;
   
   // List of caches
   private Set<String> caches = new TreeSet<String>();
 
-  // Modification tracker
-  private int commits = 0;
-  
   // Maximum cache size, in bytes
   private long maxCacheSize = Long.MAX_VALUE;
 
   // -- CacheService API Methods --
   
-  /*
+  /**
    * @see io.scifio.io.img.cell.CacheService#clearCache(java.lang.String)
+   * <p>
+   * NB: Disables caching on finalize in cleared cells. This is done to prevent
+   * immortal cells. Caching must be re-enabled per-cell if desired.
+   * </p>
    */
   public void clearCache(String cacheId) {
     if (caches.contains(cacheId)) {
-      db.getHashMap(cacheId).clear();
+      
+      HTreeMap<?, ?> cache = db.getHashMap(cacheId);
+      for (Object k : cache.keySet()) {
+        ((SCIFIOCell<?>)cache.get(k)).cacheOnFinalize(false);
+      }
+      
+      // ***HACK***
+      // Cache clearing is a little funky. size() > 0 does not seem to always
+      // follow cache.isEmpty(). This loop guarantees the cache is completely empty
+      // before this method closes.
+      while(cache.size() > 0) { cache.clear(); }
+      db.commit();
     }
   }
   
@@ -117,7 +122,14 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
    */
   public boolean cache(String cacheId, int index, SCIFIOCell<?> object) {
     boolean success = false;
+    object.update();
     if (caches.contains(cacheId) && (cacheAll() || object.dirty())) {
+      
+      // Check to see if we have the latest version of this cell already
+      SCIFIOCell<?> cell = getCell(cacheId, index);
+      if (cell != null && cell.equals(object)) return success;
+      
+      // Store the provided cell
       
       HTreeMap<Object, Object> cache = db.getHashMap(cacheId);
       
@@ -127,13 +139,9 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       
       // If the cache is enabled and there's room on disk, cache and commit
       if (enabled() && !diskFull()) {
-        // We recompute the hash at time of storage to set this 
-        // as the "clean" state.
-        object.computeHash();
-
         cache.put(getKey(cacheId, index), object);
         success = true;
-        commit();
+        db.commit();
       }
     }
     return success;
@@ -143,31 +151,12 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
    * @see io.scifio.io.img.cell.CacheService#get(java.lang.String, int)
    */
   public SCIFIOCell<?> retrieve(String cacheId, int index) {
-    
-    Integer key = getKey(cacheId, index);
-    
-    SCIFIOCell<?> cell = null;
-    HTreeMap<?, ?> cache = db.getHashMap(cacheId);
-    
-    boolean success = false;
 
-    // wait for memory to clear and the read to succeed
-    while (!success) {
-      try {
-        if (cache.containsKey(key)) {
-          cell = (SCIFIOCell<?>) cache.get(key);
-        }
-        success = true;
-      } catch (OutOfMemoryError e) { }
-    }
+    SCIFIOCell<?> cell = getCell(cacheId, index);
     
     if (cell != null) {
-      cache.remove(key);
-      cell.setCacheId(cacheId);
-      cell.setIndex(index);
-      cell.setService(this);
-      
-      commit();
+      db.getHashMap(cacheId).remove(getKey(cacheId, index));
+      db.commit();
     }
     
     return cell;
@@ -197,12 +186,32 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   }
   
   // -- Helper Methods --
-  
-  private void commit() {
-    //NB: the more frequently a commit is made, the worse performance, but the less memory usage.
-    if (++commits > CACHE_BUFFER) {
-      commits = 0;
-      db.commit();
+    
+  private SCIFIOCell<?> getCell(String cacheId, int index) {
+    Integer key = getKey(cacheId, index);
+    
+    SCIFIOCell<?> cell = null;
+    HTreeMap<?, ?> cache = db.getHashMap(cacheId);
+    
+    boolean success = false;
+    
+    // wait for memory to clear and the read to succeed
+    while (!success) {
+      try {
+        if (cache.containsKey(key)) {
+          cell = (SCIFIOCell<?>) cache.get(key);
+        }
+        success = true;
+      } catch (OutOfMemoryError e) { }
     }
+    
+    if (cell != null) {
+      cell.setCacheId(cacheId);
+      cell.setIndex(index);
+      cell.setService(this);
+      cell.cacheOnFinalize(true); 
+    }
+    
+    return cell;
   }
 }
