@@ -117,6 +117,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
    */
   public boolean cache(String cacheId, int index, SCIFIOCell<?> object) {
     boolean success = false;
+    object.update();
     if (caches.contains(cacheId) && (cacheAll() || object.dirty())) {
       
       HTreeMap<Object, Object> cache = db.getHashMap(cacheId);
@@ -127,10 +128,6 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       
       // If the cache is enabled and there's room on disk, cache and commit
       if (enabled() && !diskFull()) {
-        // We recompute the hash at time of storage to set this 
-        // as the "clean" state.
-        object.computeHash();
-
         cache.put(getKey(cacheId, index), object);
         success = true;
         commit();

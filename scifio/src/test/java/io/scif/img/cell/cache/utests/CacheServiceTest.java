@@ -101,7 +101,7 @@ public class CacheServiceTest {
     assertNull(cs.retrieve(cache1.toString(), 0));
     
     // Dirty the cell
-    cell.getDataDirty().setValue(130, (byte) 0xace);
+    cell.getData().setValue(130, (byte) 0xace);
     
     // Cache the dirtied cell
     assertTrue(cs.cache(cache1.toString(), 0, cell));
@@ -119,7 +119,7 @@ public class CacheServiceTest {
     assertEquals(cell, cs.retrieve(cache1.toString(), 0));
     
     // Dirty the cell again
-    cell.getDataDirty().setValue(130, (byte) 0xace);
+    cell.getData().setValue(130, (byte) 0xace);
     
     // Cache the dirtied cell again
     assertTrue(cs.cache(cache1.toString(), 0, cell));
@@ -224,38 +224,35 @@ public class CacheServiceTest {
     SCIFIOCell<ByteArray> cell1 = cache1.load(0, new int[]{2048, 2048}, new long[]{0l, 0l});
     
     // Dirty and cache the cell
-    cell1.getDataDirty();
+    cell1.getData().setValue(130, (byte) 0xace);
     assertTrue(cs.cache(cache1.toString(), 0, cell1));
     
     // Grab another 4MB chunk of the dataset
     SCIFIOCell<ByteArray> cell2 = cache1.load(1, new int[]{2048, 2048}, new long[]{2048l, 0l});
     
     // dirty the new cell
-    cell2.getDataDirty();
+    cell2.getData().setValue(130, (byte) 0xace);
     
     // Caching should fail
     assertFalse(cs.cache(cache1.toString(), 1, cell2));
-
+  
     // Verify the first cell was cached and the second cell wasn't
     assertEquals(cell1, cs.retrieve(cache1.toString(), 0));
     assertNull(cs.retrieve(cache1.toString(), 1));
     
     // Re-cache cell 1
-    cell1.getDataDirty();
     assertTrue(cs.cache(cache1.toString(), 0, cell1));
     
     // Clear the cache and try caching cell 2 again
     cs.clearCache(cache1.toString());
     assertTrue(cs.cache(cache1.toString(), 1, cell2));
-   
+  
     // Verify cache state
     assertEquals(cell2, cs.retrieve(cache1.toString(), 1));
     assertNull(cs.retrieve(cache1.toString(), 0));
-
+  
     // Up the max bytes on disk and try caching both cells
     cs.setMaxBytesOnDisk(Long.MAX_VALUE);
-    cell1.getDataDirty();
-    cell2.getDataDirty();
     assertTrue(cs.cache(cache1.toString(), 0, cell1));
     assertTrue(cs.cache(cache1.toString(), 1, cell2));
     assertEquals(cell1, cs.retrieve(cache1.toString(), 0));
@@ -275,8 +272,8 @@ public class CacheServiceTest {
     assertTrue(Arrays.equals(cell1a.getData().getCurrentStorageArray(), cell2a.getData().getCurrentStorageArray()));
     
     // Dirty and modify the arrays
-    cell1a.getDataDirty().setValue(42, (byte)0xace);
-    cell2a.getDataDirty().setValue(4242, (byte)0xbeefeed);
+    cell1a.getData().setValue(42, (byte)0xace);
+    cell2a.getData().setValue(4242, (byte)0xbeefeed);
     
     // Cache the arrays
     assertTrue(cs.cache(cache1.toString(), 0, cell1a));

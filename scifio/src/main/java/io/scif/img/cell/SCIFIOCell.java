@@ -61,21 +61,22 @@ import net.imglib2.img.cell.AbstractCell;
 public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> implements Serializable {
   private static final long serialVersionUID = 660070520155729477L;
 
-  // These fields are transient to speed up serialization/deserialization. they are
-  // readily available for setting when the Cell is loaded again
-  private transient CacheService<SCIFIOCell<?>> service;
-  private transient String cacheId;
-  private transient int index;
-  private transient boolean dirty;
+  // -- Transient Fields --
+  // These fields are transient to speed up serialization/deserialization.
+  // They should be available externally when the cell is deserialized.
+  private transient CacheService<SCIFIOCell<?>> service; // hook used to cache during finalization
+  private transient String cacheId; // needed for this cell's hashcode
+  private transient int index; // needed for this cell's hashcode
   
-  // element size in bytes
-  private int cleanHash;
-  private long elementSize = -1L; 
+  // -- Persistent fields --
   private A data;
+  private int currentHash; // current hash of data
+  private int cleanHash; // hash of data, unmodified
+  private long elementSize = -1L; // element size, in bytes
   
   // -- Constructors --
   
-  public SCIFIOCell() { dirty = false; } 
+  public SCIFIOCell() { } 
   
   public SCIFIOCell(CacheService<SCIFIOCell<?>> service, String cacheId, int index,
     final int[] dimensions, final long[] min, final A data) { 
@@ -84,30 +85,16 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> im
     this.service = service;
     this.cacheId = cacheId;
     this.index = index;
-    dirty = false;
-    
-    if (cleanHash == -1) cleanHash = 0; 
-    computeHash(); 
+    markClean(); 
   }
   
   // -- SCIFIOCell Methods --
+  
 
   /**
    * @return the data stored in this cell
    */
   public A getData() {
-    return data;
-  }
-  
-  /**
-   * Data accessor and dirties this cell. Use this
-   * instead of {@link #getData()} if the data will
-   * be modified.
-   * 
-   * @return  the data stored in this cell
-   */
-  public A getDataDirty() {
-    dirty = true;
     return data;
   }
   
@@ -133,20 +120,20 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> im
   }
   
   /**
-   * Computes a hash of the actual stored data and sets this as
-   * the "clean" state. This hash can be used later to determine
-   * if the data has changed or not (if the data is dirty).
+   * Sets the current state of this cell, as determined by the
+   * hashcode of its underlying data, as the "clean" state.
    */
-  public void computeHash() {
+  public void markClean() {
     // Take a hash of the underlying data. If this is different
     // at finalization, we know this cell is dirty and should be
     // serialized.
     cleanHash = computeHash(data);
-    dirty = false;
     
     // If data isn't an ArrayAccess object, this will cause it to always
     // look dirty compared to future computeHash calls.
     if (cleanHash == -1) cleanHash = 0;
+    
+    currentHash = cleanHash;
   }
   
   /**
@@ -161,28 +148,32 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> im
    * @return True if this cell has been modified since creation
    */
   public boolean dirty() {
-    return dirty;
+    return !(currentHash == cleanHash);
   }
   
   /**
-   * Forces the dirty flag to be checked, which may involve
-   * computing the hash of the current stored data.
+   * Forces this cell to determine if it is dirty or not by computing
+   * the hash of its underlying data.
    */
-  public void updateDirtyFlag() {
-    // if dirty == false no need to recompute the hash
-    dirty = dirty || cleanHash != computeHash(data);
+  public void update() {
+    currentHash = computeHash(data);
   }
   
   // -- Object method overrides --
   
+  /**
+   * Two SCIFIOCells are equal iff they come from the 
+   * same cache, with the same index, and have the same
+   * data state.
+   */
   @Override
   public boolean equals(final Object other) {
     if (this == other)
       return true;
     if (other instanceof SCIFIOCell<?>) {
       SCIFIOCell<?> otherCell = (SCIFIOCell<?>)other;
-      return cacheId.toString().equals(otherCell.cacheId.toString()) &&
-        (index == otherCell.index); 
+      return cacheId.equals(otherCell.cacheId) &&
+        (index == otherCell.index) && currentHash == otherCell.currentHash; 
     }
     return false;
   }
