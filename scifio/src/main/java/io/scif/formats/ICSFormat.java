@@ -62,7 +62,6 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 
 import net.imglib2.meta.Axes;
@@ -163,9 +162,6 @@ public class ICSFormat extends AbstractFormat {
 
       int bitsPerPixel = 0;
 
-      final Vector<Integer> channelLengths = new Vector<Integer>();
-      final Vector<String> channelTypes = new Vector<String>();
-
       // interpret axis information
       for (int n = 0; n < axes.length; n++) {
         final String axis = axes[n].toLowerCase();
@@ -217,23 +213,15 @@ public class ICSFormat extends AbstractFormat {
           
           if  (axis.startsWith("c")) {
             imageMeta.setAxisType(n, Axes.CHANNEL);
-            channelTypes.add(FormatTools.CHANNEL);
-            channelLengths.add(imageMeta.getAxisLength(Axes.CHANNEL));
           }
           else if (axis.startsWith("p")) {
             imageMeta.setAxisType(n, Axes.PHASE);
-            channelTypes.add(FormatTools.PHASE);
-            channelLengths.add(imageMeta.getAxisLength(Axes.PHASE));
           }
           else if (axis.startsWith("f")) {
             imageMeta.setAxisType(n, Axes.FREQUENCY);
-            channelTypes.add(FormatTools.FREQUENCY);
-            channelLengths.add(imageMeta.getAxisLength(Axes.FREQUENCY));
           }
           else {
             imageMeta.setAxisType(n, Axes.UNKNOWN);
-            channelTypes.add("");
-            channelLengths.add(imageMeta.getAxisLength(Axes.UNKNOWN));
           }
         }
       }
@@ -250,27 +238,11 @@ public class ICSFormat extends AbstractFormat {
       
       imageMeta.setBitsPerPixel(bitsPerPixel);
 
-      if (channelLengths.size() == 0) {
-        channelLengths.add(new Integer(1));
-        channelTypes.add(FormatTools.CHANNEL);
-      }
-      
       if (imageMeta.isRGB() && getEMWaves() != null && 
           getEMWaves().length == imageMeta.getAxisLength(Axes.CHANNEL)) {
         imageMeta.setRGB(false); 
         setStoredRGB(true);
       }
-
-      final int[] cLengths = new int[channelLengths.size()];
-      final String[] cTypes = new String[channelLengths.size()];
-
-      for (int i = 0; i < channelLengths.size(); i++) {
-        cLengths[i] = channelLengths.get(i);
-        cTypes[i] = channelTypes.get(i);
-      }
-
-      imageMeta.setChannelLengths(cLengths);
-      imageMeta.setChannelTypes(cTypes);
 
       if (imageMeta.getAxisIndex(Axes.Z) == -1) {
         imageMeta.addAxis(Axes.Z, 1);
@@ -321,10 +293,9 @@ public class ICSFormat extends AbstractFormat {
         }
         
         if (newOrder != null) {
+          // FIXME: Make sure this works.
           imageMeta.setAxisTypes(FormatTools.findDimensionList(newOrder));
-          imageMeta.setAxisLength(Axes.CHANNEL, binCount);
-          setChannelDimLengths(0, new int[]{binCount});
-          setChannelDimTypes(0, new String[] {FormatTools.LIFETIME});
+          imageMeta.setAxisLength(Axes.LIFETIME, binCount);
         }
       }
 
@@ -1474,13 +1445,13 @@ public class ICSFormat extends AbstractFormat {
         }
       }
   
+      // FIXME: Why not getMetadata().getSizeC()?
       final int sizeC = getMetadata().getLifetime() ?
         1 : getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
   
-      final int channelLengths = 0;
-  
+      // FIXME: This logic needs to be reworked!
       if (!getMetadata().isRGB(imageIndex) &&
-          getMetadata().getChannelDimLengths(imageIndex).length == 1 && getMetadata().storedRGB())
+          getMetadata().storedRGB())
       {
         // channels are stored interleaved, but because there are more than we
         // can display as RGB, we need to separate them
@@ -1574,7 +1545,7 @@ public class ICSFormat extends AbstractFormat {
     public String[] getDomains() {
       FormatTools.assertStream(getStream(), true, 0);
       final String[] domain = new String[] {FormatTools.GRAPHICS_DOMAIN};
-      if (getMetadata().getChannelDimLengths(0).length > 1) {
+      if (getMetadata().getAxisLength(0, Axes.LIFETIME) > 1) {
         domain[0] = FormatTools.FLIM_DOMAIN;
       }
       else if (metadata.hasInstrumentData) {
@@ -2548,7 +2519,7 @@ public class ICSFormat extends AbstractFormat {
   
       keyValPairs.put("layout significant_bits", "" + source.getBitsPerPixel(0));
   
-      if(source.getChannelDimTypes(0).equals(FormatTools.LIFETIME))
+      if (source.getAxisLength(0, Axes.LIFETIME) > 1)
         keyValPairs.put("history type", "time resolved");
   
       boolean signed = false;

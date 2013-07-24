@@ -105,8 +105,6 @@ public class ImgOpener extends AbstractHasSCIFIO {
     final long sizeY = m.getAxisLength(imageIndex, Axes.Y);
     final long sizeZ = m.getAxisLength(imageIndex, Axes.Z);
     final long sizeT = m.getAxisLength(imageIndex, Axes.TIME);
-    // final String[] cDimTypes = r.getChannelDimTypes();
-    // final int[] cDimLengths = m.getChannelDimLengths(0);
     final long sizeC = m.getEffectiveSizeC(imageIndex);
     String dimOrder = FormatTools.findDimensionOrder(m, imageIndex);
 
@@ -450,7 +448,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
     final int sizeY = m.getAxisLength(0, Axes.Y);
     final int sizeZ = m.getAxisLength(0, Axes.Z);
     final int sizeT = m.getAxisLength(0, Axes.TIME);
-    final int[] cDimLengths = m.getChannelDimLengths(0);
+    final int sizeC = m.getAxisLength(0, Axes.CHANNEL);
     final String dimOrder = FormatTools.findDimensionOrder(m, 0);
 
     // FIXME: need physical pixel sizes in SCIFIO..
@@ -463,7 +461,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
 //    final PositiveFloat zCalin = meta.getRoot().getPixelsPhysicalSizeZ(0);
 //    Double tCal = meta.getRoot().getPixelsTimeIncrement(0);
 
-    final Double xCal = 1.0, yCal = 1.0, zCal = 1.0, tCal = 1.0;
+    final Double xCal = 1.0, yCal = 1.0, zCal = 1.0, tCal = 1.0, cCal = 1.0;
 
 //    if (xCalin == null)
 //      xCal = 1.0;
@@ -506,11 +504,8 @@ public class ImgOpener extends AbstractHasSCIFIO {
           calibrationList.add(tCal);
         break;
       case 'C':
-        for (int c = 0; c < cDimLengths.length; c++) {
-          final long len = cDimLengths[c];
-          if (len > 1)
-            calibrationList.add(1.0);
-        }
+        if (sizeC > 1)
+          calibrationList.add(cCal);
         break;
       }
     }

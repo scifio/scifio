@@ -616,46 +616,6 @@ public class FileStitcher extends AbstractReaderFilter {
             i + ": " + axes[i]);
       }
     }
-
-    int[] cLengths = getParent().getMetadata().getChannelDimLengths(sno);
-    String[] cTypes = getParent().getMetadata().getChannelDimTypes(sno);
-    int cCount = 0;
-    for (int i=0; i<cLengths.length; i++) {
-      if (cLengths[i] > 1) cCount++;
-    }
-    for (int i=1; i<lenC[sno].length; i++) {
-      if (lenC[sno][i] > 1) cCount++;
-    }
-    if (cCount == 0) {
-      getMetadata().setChannelDimLengths(sno, new int[] {1});
-      getMetadata().setChannelDimTypes(sno, new String[] {FormatTools.CHANNEL});
-    }
-    else {
-      getMetadata().setChannelDimLengths(sno, new int[cCount]);
-      getMetadata().setChannelDimTypes(sno, new String[cCount]);
-    }
-    int c = 0;
-    for (int i=0; i<cLengths.length; i++) {
-      if (cLengths[i] == 1) continue;
-      cLengths[c] = cLengths[i];
-      cTypes[c] = cTypes[i];
-      c++;
-    }
-    for (int i=1; i<lenC[sno].length; i++) {
-      if (lenC[sno][i] == 1) continue;
-      cLengths[c] = lenC[sno][i];
-      cTypes[c] = FormatTools.CHANNEL;
-    }
-    int[] oldCLengths = getMetadata().getChannelDimLengths(sno);
-    String[] oldCTypes = getMetadata().getChannelDimTypes(sno);
-    
-    for(; c<oldCLengths.length; c++) {
-      cLengths[c] = oldCLengths[c];
-      cTypes[c] = oldCTypes[c];
-    }
-    
-    getMetadata().setChannelDimLengths(sno, cLengths);
-    getMetadata().setChannelDimTypes(sno, cTypes);
   }
 
   /**

@@ -62,12 +62,6 @@ public interface ImageMetadata extends HasMetaTable {
   /** Sets the number of valid bits per pixel. */
   void setBitsPerPixel(int bitsPerPixel);
 
-  /** Sets the length of each subdimension of C. */
-  void setChannelLengths(int[] cLengths);
-
-  /** Sets the name of each subdimension of C. */
-  void setChannelTypes(String[] cTypes);
-
   /**
    * Sets whether or not we are confident that the
    * dimension order is correct.
@@ -163,12 +157,6 @@ public interface ImageMetadata extends HasMetaTable {
 
   /** Returns the number of valid bits per pixel. */
   int getBitsPerPixel();
-
-  /** Returns the length of each subdimension of C. */
-  int[] getChannelLengths();
-
-  /** Returns the name of each subdimension of C. */
-  String[] getChannelTypes();
 
   /**
    * Returns true if we are confident that the

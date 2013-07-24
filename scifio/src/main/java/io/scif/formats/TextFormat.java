@@ -299,7 +299,7 @@ public class TextFormat extends AbstractFormat {
       
       // allocate memory for image data
       final int sizeZ = 1, sizeT = 1; // no Z or T for now
-      final int sizeC = meta.getChannelDimTypes(0).length;
+      final int sizeC = meta.getChannels().length;
       final int planeCount = sizeZ * sizeC * sizeT;
       final int planeSize = iMeta.getAxisLength(Axes.X) * iMeta.getAxisLength(Axes.Y);
       float[][] data = new float[planeCount][planeSize];
@@ -551,7 +551,7 @@ public class TextFormat extends AbstractFormat {
           channelsList.add(token);
         }
       }
-      meta.setChannelDimTypes(0, channelsList.toArray(new String[0]));
+      meta.setChannels(channelsList.toArray(new String[0]));
     }
     
     private static String[] getNextLine(List<String> lines, Metadata meta) {

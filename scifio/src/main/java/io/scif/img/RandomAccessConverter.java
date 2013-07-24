@@ -107,7 +107,7 @@ public class RandomAccessConverter implements PlaneConverter {
     final long sizeY = m.getAxisLength(0, Axes.Y);
     final long sizeZ = m.getAxisLength(0, Axes.Z);
     final long sizeT = m.getAxisLength(0, Axes.TIME);
-    final int[] cDimLengths = m.getChannelDimLengths(imageIndex);
+    final long sizeC = m.getAxisLength(0, Axes.CHANNEL);
     final String dimOrder = FormatTools.findDimensionOrder(m, imageIndex);
 
     final int[] zct = FormatTools.getZCTCoords(m, imageIndex, planeIndex);
@@ -133,11 +133,8 @@ public class RandomAccessConverter implements PlaneConverter {
           pos[index++] = zct[2];
         break;
       case 'C':
-        final int[] cPos = FormatTools.rasterToPosition(cDimLengths, zct[1]);
-        for (int c = 0; c < cDimLengths.length; c++) {
-          if (cDimLengths[c] > 1)
-            pos[index++] = cPos[c];
-        }
+        if (sizeC > 1)
+          pos[index++] = zct[1];
         break;
       }
     }

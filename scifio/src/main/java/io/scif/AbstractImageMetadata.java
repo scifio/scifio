@@ -36,13 +36,11 @@
 package io.scif;
 
 import io.scif.common.DataTools;
-import io.scif.util.FormatTools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -86,14 +84,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   /** Number of valid bits per pixel. */
   @Field(label = "bitsPerPixel")
   private int bitsPerPixel;
-
-  /** Length of each subdimension of C. */
-  @Field(label = "cLengths")
-  private int[] cLengths;
-
-  /** Name of each subdimension of C. */
-  @Field(label = "cTypes")
-  private String[] cTypes;
 
   /** The Axes types for this image. Order is implied by ordering within this array */
   @Field(label = "dimTypes")
@@ -193,20 +183,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public void setBitsPerPixel(final int bitsPerPixel) {
     this.bitsPerPixel = bitsPerPixel;
-  }
-
-  /*
-   * @see io.scif.ImageMetadata#setChannelLengths(int[])
-   */
-  public void setChannelLengths(final int[] cLengths) {
-    this.cLengths = cLengths;
-  }
-
-  /*
-   * @see io.scif.ImageMetadata#setChannelTypes(java.lang.String[])
-   */
-  public void setChannelTypes(final String[] cTypes) {
-    this.cTypes = cTypes;
   }
 
   /*
@@ -413,26 +389,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   }
 
   /*
-   * @see io.scif.ImageMetadata#getChannelLengths()
-   */
-  public int[] getChannelLengths() {
-    if (cLengths == null) {
-      cLengths = new int[] {getAxisLength(Axes.CHANNEL)};
-    }
-    return cLengths;
-  }
-
-  /*
-   * @see io.scif.ImageMetadata#getChannelTypes()
-   */
-  public String[] getChannelTypes() {
-    if (cTypes == null) {
-      cTypes = new String[] {FormatTools.CHANNEL};
-    }
-    return cTypes;
-  }
-
-  /*
    * @see io.scif.ImageMetadata#getAxes()
    */
   public AxisType[] getAxes() {
@@ -593,8 +549,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     axisTypes = new ArrayList<AxisType>(Arrays.asList(toCopy.getAxes()));
     setAxisLengths(toCopy.getAxesLengths().clone());
     bitsPerPixel = toCopy.getBitsPerPixel();
-    cLengths = toCopy.getChannelLengths().clone();
-    cTypes = toCopy.getChannelTypes().clone();
     falseColor = toCopy.isFalseColor();
     indexed = toCopy.isIndexed();
     interleaved = toCopy.isInterleaved();

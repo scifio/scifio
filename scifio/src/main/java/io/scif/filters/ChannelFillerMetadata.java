@@ -128,39 +128,5 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 
     return (!isFilled(imageIndex)) ? length : length * lutLength; 
   }
-  
-  /*
-   * @see io.scif.AbstractMetadata#getChannelDimLengths(int)
-   */
-  public int[] getChannelDimLengths(int imageIndex) {
-    int[] cLengths = getChannelDimLengths(imageIndex);
-    if (!isFilled(imageIndex)) return cLengths;
 
-    // in the case of a single channel, replace rather than append
-    if (cLengths.length == 1 && cLengths[0] == 1) cLengths = new int[0];
-
-    // append filled dimension to channel dim lengths
-    int[] newLengths = new int[1 + cLengths.length];
-    newLengths[0] = lutLength;
-    System.arraycopy(cLengths, 0, newLengths, 1, cLengths.length);
-    return newLengths;
-  }
-
-  /*
-   * @see io.scif.AbstractMetadata#getChannelDimTypes(int)
-   */
-  public String[] getChannelDimTypes(int imageIndex) {
-    String[] cTypes = getChannelDimTypes(imageIndex);
-    if (!isFilled(imageIndex)) return cTypes;
-
-    // in the case of a single channel, leave type unchanged
-    int[] cLengths = getChannelDimLengths(imageIndex);
-    if (cLengths.length == 1 && cLengths[0] == 1) return cTypes;
-
-    // append filled dimension to channel dim types
-    String[] newTypes = new String[1 + cTypes.length];
-    newTypes[0] = FormatTools.CHANNEL;
-    System.arraycopy(cTypes, 0, newTypes, 1, cTypes.length);
-    return newTypes;
-  }
 }

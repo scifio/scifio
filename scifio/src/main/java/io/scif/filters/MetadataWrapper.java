@@ -97,10 +97,6 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 
   void setBitsPerPixel(final int imageIndex, final int bpp, boolean passUp);
 
-  void setChannelDimLengths(final int imageIndex, final int[] cLengths, boolean passUp);
-
-  void setChannelDimTypes(final int imageIndex, final String[] cTypes, boolean passUp);
-
   void setOrderCertain(final int imageIndex, final boolean orderCertain, boolean passUp);
 
   void setRGB(final int imageIndex, final boolean rgb, boolean passUp);

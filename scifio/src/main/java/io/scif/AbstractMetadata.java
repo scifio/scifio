@@ -251,20 +251,6 @@ public abstract class AbstractMetadata extends AbstractHasSource
   }
 
   /*
-   * @see io.scif.Metadata#getChannelDimLengths(int)
-   */
-  public int[] getChannelDimLengths(final int imageIndex) {
-    return imageMeta.get(imageIndex).getChannelLengths();
-  }
-
-  /*
-   * @see io.scif.Metadata#getChannelDimTypes(int)
-   */
-  public String[] getChannelDimTypes(final int imageIndex) {
-    return imageMeta.get(imageIndex).getChannelTypes();
-  }
-
-  /*
    * @see io.scif.Metadata#getThumbSizeX(int)
    */
   public int getThumbSizeX(final int imageIndex) {
@@ -383,20 +369,6 @@ public abstract class AbstractMetadata extends AbstractHasSource
    */
   public void setBitsPerPixel(final int imageIndex, final int bpp) {
     imageMeta.get(imageIndex).setBitsPerPixel(bpp);
-  }
-
-  /*
-   * @see io.scif.Metadata#setChannelDimLengths(int, int[])
-   */
-  public void setChannelDimLengths(final int imageIndex, final int[] cLengths) {
-    imageMeta.get(imageIndex).setChannelLengths(cLengths);
-  }
-
-  /*
-   * @see io.scif.Metadata#setChannelDimTypes(int, java.lang.String[])
-   */
-  public void setChannelDimTypes(final int imageIndex, final String[] cTypes) {
-    imageMeta.get(imageIndex).setChannelTypes(cTypes);
   }
 
   /*

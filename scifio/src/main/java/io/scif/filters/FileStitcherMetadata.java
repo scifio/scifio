@@ -132,28 +132,6 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
   }
 
   /*
-   * @see io.scif.AbstractMetadata#getChannelDimLengths(int)
-   */
-  public int[] getChannelDimLengths(int imageIndex) {
-    if (noStitch) return super.getChannelDimLengths(imageIndex);
-    if (unwrap().getChannelDimLengths(imageIndex) == null) {
-      return new int[] {unwrap().getAxisLength(imageIndex, Axes.CHANNEL)};
-    }
-    return unwrap().getChannelDimLengths(imageIndex);
-  }
-
-  /*
-   * @see io.scif.AbstractMetadata#getChannelDimTypes(int)
-   */
-  public String[] getChannelDimTypes(int imageIndex) {
-    if (noStitch) return super.getChannelDimTypes(imageIndex);
-    if (unwrap().getChannelDimTypes(imageIndex) == null) {
-      return new String[] {FormatTools.CHANNEL};
-    }
-    return unwrap().getChannelDimTypes(imageIndex);
-  }
-
-  /*
    * @see io.scif.AbstractMetadata#getThumbSizeX(int)
    */
   public int getThumbSizeX(int imageIndex) {

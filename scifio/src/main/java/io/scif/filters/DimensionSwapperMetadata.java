@@ -105,20 +105,6 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
   // -- Metadata API Methods --
   
   /*
-   * @see io.scif.filters.AbstractMetadataWrapper#setChannelDimLengths(int, int[])
-   */
-  public void setChannelDimLengths(final int imageIndex, final int[] cLengths) {
-    super.setChannelDimLengths(imageIndex, cLengths, false);
-  }
-  
-  /*
-   * @see io.scif.filters.AbstractMetadataWrapper#setChannelDimTypes(int, java.lang.String[])
-   */
-  public void setChannelDimTypes(final int imageIndex, final String[] cTypes) {
-    super.setChannelDimTypes(imageIndex, cTypes, false);
-  }
-  
-  /*
    * @see io.scif.filters.AbstractMetadataWrapper#setAxisLengths(int, int[])
    */
   public void setAxisLengths(final int imageIndex, final int[] axisLengths) {

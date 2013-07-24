@@ -158,22 +158,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
   }
 
   /*
-   * @see io.scif.filters.MetadataWrapper#setChannelDimLengths(int, int[], boolean)
-   */
-  public void setChannelDimLengths(final int imageIndex, final int[] cLengths, boolean passUp) {
-    super.setChannelDimLengths(imageIndex, cLengths);
-    if (passUp) meta.setChannelDimLengths(imageIndex, cLengths);
-  }
-
-  /*
-   * @see io.scif.filters.MetadataWrapper#setChannelDimTypes(int, java.lang.String[], boolean)
-   */
-  public void setChannelDimTypes(final int imageIndex, final String[] cTypes, boolean passUp) {
-    super.setChannelDimTypes(imageIndex, cTypes);
-    if (passUp) meta.setChannelDimTypes(imageIndex, cTypes);
-  }
-
-  /*
    * @see io.scif.filters.MetadataWrapper#setOrderCertain(int, boolean, boolean)
    */
   public void setOrderCertain(final int imageIndex, final boolean orderCertain, boolean passUp)
@@ -321,20 +305,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
    */
   public void setBitsPerPixel(final int imageIndex, final int bpp) {
     setBitsPerPixel(imageIndex, bpp, true);
-  }
-
-  /*
-   * @see io.scif.AbstractMetadata#setChannelDimLengths(int, int[])
-   */
-  public void setChannelDimLengths(final int imageIndex, final int[] cLengths) {
-    setChannelDimLengths(imageIndex, cLengths, true);
-  }
-
-  /*
-   * @see io.scif.AbstractMetadata#setChannelDimTypes(int, java.lang.String[])
-   */
-  public void setChannelDimTypes(final int imageIndex, final String[] cTypes) {
-    setChannelDimTypes(imageIndex, cTypes, true);
   }
 
   /*

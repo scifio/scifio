@@ -190,12 +190,6 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
   /** Returns true if we can ignore the color map (if present) for the specified image. */
   boolean isFalseColor(int imageIndex);
 
-  /** Returns the length of each subdimension of C for the specified image. */
-  int[] getChannelDimLengths(int imageIndex);
-
-  /** Returns the name of each subdimension of C for the specified image. */
-  String[] getChannelDimTypes(int imageIndex);
-
   /** Returns the width (in pixles) of the thumbnail planes in the specified image. */
   int getThumbSizeX(int imageIndex);
 
@@ -347,12 +341,6 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 
   /** Sets the number of valid bits per pixel for the specified image. */
   void setBitsPerPixel(int imageIndex, int bpp);
-
-  /** Sets the length of each subdimension of C for the specified image. */
-  void setChannelDimLengths(int imageIndex, int[] cLengths);
-
-  /** Sets the name of each subdimension of C for the specified image. */
-  void setChannelDimTypes(int imageIndex, String[] cTypes);
 
   /**
    * Sets whether or not we are confident that the
