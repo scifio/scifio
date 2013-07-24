@@ -58,7 +58,7 @@ import net.imglib2.meta.AxisType;
  * cycles of image processing within SCIFIO.
  * 
  */
-public class FormatTools {
+public final class FormatTools {
 
   // -- Constants --
   
@@ -268,6 +268,7 @@ public class FormatTools {
   // -- Constructor --
 
   private FormatTools() {
+    // NB: Prevent instantiation of utility class.
   }
   
   // Utility methods -- dimensional positions --
