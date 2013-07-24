@@ -111,44 +111,6 @@ public final class FormatTools {
     return pixelTypes;
   }
 
-  // -- Constants - dimensional labels --
-
-  /**
-   * Identifies the <i>Channel</i> dimensional type,
-   * representing a generic channel dimension.
-   */
-  public static final String CHANNEL = "Channel";
-
-  /**
-   * Identifies the <i>Spectra</i> dimensional type,
-   * representing a dimension consisting of spectral channels.
-   */
-  public static final String SPECTRA = "Spectra";
-
-  /**
-   * Identifies the <i>Lifetime</i> dimensional type,
-   * representing a dimension consisting of a lifetime histogram.
-   */
-  public static final String LIFETIME = "Lifetime";
-
-  /**
-   * Identifies the <i>Polarization</i> dimensional type,
-   * representing a dimension consisting of polarization states.
-   */
-  public static final String POLARIZATION = "Polarization";
-
-  /**
-   * Identifies the <i>Phase</i> dimensional type,
-   * representing a dimension consisting of phases.
-   */
-  public static final String PHASE = "Phase";
-
-  /**
-   * Identifies the <i>Frequency</i> dimensional type,
-   * representing a dimension consisting of frequencies.
-   */
-  public static final String FREQUENCY = "Frequency";
-
   // -- Constants - miscellaneous --
 
   /** File grouping options. */
@@ -164,24 +126,6 @@ public final class FormatTools {
   public static final String Z_NUM = "%z";
   public static final String T_NUM = "%t";
   public static final String TIMESTAMP = "%A";
-
-  // -- Constants - versioning --
-
-  /**
-   * Current SVN revision.
-   * @deprecated After Git move, deprecated in favour of {@link #VCS_REVISION}.
-   */
-  @Deprecated
-  public static final String SVN_REVISION = "@vcs.revision@";
-
-  /** Current VCS revision. */
-  public static final String VCS_REVISION = "@vcs.revision@";
-
-  /** Date on which this release was built. */
-  public static final String DATE = "@date@";
-
-  /** Version number of this release. */
-  public static final String VERSION = "4.5-DEV";
 
   // -- Constants - domains --
 
@@ -251,19 +195,6 @@ public final class FormatTools {
       HCS_DOMAIN, LM_DOMAIN, EM_DOMAIN, SPM_DOMAIN, SEM_DOMAIN, FLIM_DOMAIN,
       MEDICAL_DOMAIN, HISTOLOGY_DOMAIN, GEL_DOMAIN, ASTRONOMY_DOMAIN,
       GRAPHICS_DOMAIN, UNKNOWN_DOMAIN};
-
-  // -- Constants - web pages --
-
-  /** URL of Bio-Formats web page. */
-  public static final String URL_BIO_FORMATS =
-    "http://www.openmicroscopy.org/site/products/bio-formats";
-
-  /** URL of 'Bio-Formats as a Java Library' web page. */
-  public static final String URL_BIO_FORMATS_LIBRARIES =
-    "http://www.openmicroscopy.org/site/support/bio-formats/developers/java-library.html";
-
-  /** URL of OME-TIFF web page. */
-  public static final String URL_OME_TIFF = "http://ome-xml.org/wiki/OmeTiff";
 
   // -- Constructor --
 
