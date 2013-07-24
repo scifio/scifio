@@ -38,7 +38,7 @@ package io.scif;
 
 /**
  * Default implementation of {@link ImageMetadata}. No added functionality
- * over {@link ome.scifo.AbstractImageMetadata}.
+ * over {@link io.scif.AbstractImageMetadata}.
  * 
  * @see io.scif.ImageMetadata
  * @see io.scif.AbstractImageMetadata
