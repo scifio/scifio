@@ -81,39 +81,39 @@ public class AxisGuesser {
   public static final int S_AXIS = 4;
 
   /** Prefix endings indicating space dimension. */
-  protected static final String[] Z = {
+  private static final String[] Z = {
     "fp", "sec", "z", "zs", "focal", "focalplane"
   };
 
   /** Prefix endings indicating time dimension. */
-  protected static final String[] T = {"t", "tl", "tp", "time"};
+  private static final String[] T = {"t", "tl", "tp", "time"};
 
   /** Prefix endings indicating channel dimension. */
-  protected static final String[] C = {"c", "ch", "w", "wavelength"};
+  private static final String[] C = {"c", "ch", "w", "wavelength"};
 
   /** Prefix endings indicating series dimension. */
-  protected static final String[] S = {"s", "series", "sp"};
+  private static final String[] S = {"s", "series", "sp"};
 
-  protected static final String ONE = "1";
-  protected static final String TWO = "2";
-  protected static final String THREE = "3";
+  private static final String ONE = "1";
+  private static final String TWO = "2";
+  private static final String THREE = "3";
 
   // -- Fields --
 
   /** File pattern identifying dimensional axis blocks. */
-  protected FilePattern fp;
+  private FilePattern fp;
 
   /** Original ordering of internal dimensional axes. */
-  protected String dimOrder;
+  private String dimOrder;
 
   /** Adjusted ordering of internal dimensional axes. */
-  protected String newOrder;
+  private String newOrder;
 
   /** Guessed axis types. */
-  protected int[] axisTypes;
+  private int[] axisTypes;
 
   /** Whether the guesser is confident that all axis types are correct. */
-  protected boolean certain;
+  private boolean certain;
 
   // -- Constructor --
 
