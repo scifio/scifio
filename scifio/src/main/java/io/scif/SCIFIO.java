@@ -35,6 +35,7 @@
  */
 package io.scif;
 
+import io.scif.app.SCIFIOApp;
 import io.scif.services.FilePatternService;
 import io.scif.services.FormatService;
 import io.scif.services.InitializeService;
@@ -90,7 +91,7 @@ public class SCIFIO extends AbstractGateway {
    * @param context - The context to wrap
    */
   public SCIFIO(Context context) {
-    setContext(context);
+    super(SCIFIOApp.NAME, context);
   }
   
   // -- Service Accessors --
