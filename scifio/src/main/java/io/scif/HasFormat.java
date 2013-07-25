@@ -44,7 +44,7 @@ package io.scif;
  *
  * @author Mark Hiner
  */
-public interface HasFormat extends HasSCIFIO {
+public interface HasFormat extends SCIFIOComponent {
 
   /**
    * Provides a link back to the format associated with this component.

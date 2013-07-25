@@ -36,7 +36,7 @@
 
 package io.scif.io;
 
-import io.scif.AbstractHasSCIFIO;
+import io.scif.AbstractSCIFIOComponent;
 import io.scif.common.Constants;
 
 import java.io.File;
@@ -46,7 +46,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-
 
 import org.scijava.Context;
 import org.slf4j.Logger;
@@ -63,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Location.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Location.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class Location extends AbstractHasSCIFIO {
+public class Location extends AbstractSCIFIOComponent {
 
   // -- Constants --
 

@@ -55,7 +55,8 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Mark Hiner
  */
-public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
+public abstract class AbstractFormat extends AbstractSCIFIOComponent
+  implements Format
 {
 
   // -- Constants --

@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * @param <N> - The destination Metadata type required by this Translator
  */
 public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
-  extends AbstractHasSCIFIO implements Translator {
+  extends AbstractSCIFIOComponent implements Translator {
 
   // -- Constants --
 

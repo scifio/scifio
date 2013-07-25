@@ -36,7 +36,7 @@
 
 package io.scif.img;
 
-import io.scif.AbstractHasSCIFIO;
+import io.scif.AbstractSCIFIOComponent;
 import io.scif.ByteArrayPlane;
 import io.scif.DefaultMetadata;
 import io.scif.FormatException;
@@ -62,7 +62,6 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
-
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 
@@ -72,7 +71,7 @@ import org.scijava.app.StatusService;
  * @author Mark Hiner
  * @author Curtis Rueden
  */
-public class ImgSaver extends AbstractHasSCIFIO {
+public class ImgSaver extends AbstractSCIFIOComponent {
 
   // -- Constructors --
 

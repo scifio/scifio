@@ -65,7 +65,7 @@ package io.scif;
  * 
  * @author Mark Hiner
  */
-public interface Translator extends SCIFIOPlugin, HasSCIFIO {
+public interface Translator extends SCIFIOComponent, SCIFIOPlugin, HasSCIFIO {
 
   // -- Fields --
 

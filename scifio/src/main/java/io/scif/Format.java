@@ -60,7 +60,7 @@ import org.scijava.Prioritized;
  * @see io.scif.SCIFIO
  * @see io.scif.services.FormatService
  */
-public interface Format extends SCIFIOPlugin, Prioritized, HasSCIFIO {
+public interface Format extends SCIFIOComponent, SCIFIOPlugin, Prioritized {
 
   // -- Format API methods --
 

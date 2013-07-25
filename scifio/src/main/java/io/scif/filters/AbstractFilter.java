@@ -35,7 +35,7 @@
  */
 package io.scif.filters;
 
-import io.scif.AbstractHasSCIFIO;
+import io.scif.AbstractSCIFIOComponent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,9 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> - Parent type of this filter.
  */
-public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Filter {
+public abstract class AbstractFilter<T> extends AbstractSCIFIOComponent
+  implements Filter
+{
 
   // -- Constants --
 

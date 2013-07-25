@@ -44,7 +44,7 @@ package io.scif;
  * 
  * @author Mark Hiner
  */
-public abstract class AbstractHasFormat extends AbstractHasSCIFIO
+public abstract class AbstractHasFormat extends AbstractSCIFIOComponent
   implements HasFormat {
 
   // -- HasFormat API --

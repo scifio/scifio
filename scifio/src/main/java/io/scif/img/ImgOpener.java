@@ -36,7 +36,7 @@
 
 package io.scif.img;
 
-import io.scif.AbstractHasSCIFIO;
+import io.scif.AbstractSCIFIOComponent;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
@@ -83,7 +83,7 @@ import org.scijava.app.StatusService;
  * @author Stephan Preibisch
  * @author Stephan Saalfeld
  */
-public class ImgOpener extends AbstractHasSCIFIO {
+public class ImgOpener extends AbstractSCIFIOComponent {
 
   // -- Constructors --
 
