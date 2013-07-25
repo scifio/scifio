@@ -957,7 +957,7 @@ public final class FormatTools {
     // NB: Dependency on AWT here is unfortunate, but very difficult to
     // eliminate in general. We use reflection to limit class loading
     // problems with AWT on Mac OS X.
-    ReflectedUniverse r = new ReflectedUniverse();
+    ReflectedUniverse r = new ReflectedUniverse(reader.log());
     byte[][] bytes = null;
     try {
       r.exec("import io.scif.gui.AWTImageTools");
