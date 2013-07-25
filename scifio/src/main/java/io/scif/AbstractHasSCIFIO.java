@@ -46,7 +46,7 @@ import org.scijava.plugin.SortablePlugin;
  * 
  * @author Mark Hiner
  */
-public class AbstractHasSCIFIO extends SortablePlugin
+public abstract class AbstractHasSCIFIO extends SortablePlugin
   implements HasSCIFIO
 {
 
