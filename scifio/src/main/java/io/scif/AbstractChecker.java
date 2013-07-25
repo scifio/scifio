@@ -108,7 +108,7 @@ public abstract class AbstractChecker
       return isFormat;
     }
     catch (final IOException exc) {
-      LOGGER.debug("", exc);
+      log().debug("", exc);
       return false;
     }
   }
@@ -131,7 +131,7 @@ public abstract class AbstractChecker
       return isFormat;
     }
     catch (final IOException e) {
-      LOGGER.debug("", e);
+      log().debug("", e);
     }
     return false;
   }
