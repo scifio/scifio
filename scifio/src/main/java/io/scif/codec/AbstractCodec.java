@@ -36,14 +36,13 @@
 
 package io.scif.codec;
 
+import io.scif.AbstractSCIFIOComponent;
 import io.scif.FormatException;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 import java.util.Random;
 
-
-import org.scijava.AbstractContextual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +60,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Eric Kjellman egkjellman at wisc.edu
  */
-public abstract class AbstractCodec extends AbstractContextual implements Codec {
+public abstract class AbstractCodec extends AbstractSCIFIOComponent
+  implements Codec
+{
 
   // -- Constants --
 

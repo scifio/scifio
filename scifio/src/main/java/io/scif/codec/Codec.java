@@ -37,13 +37,15 @@
 package io.scif.codec;
 
 import io.scif.FormatException;
+import io.scif.SCIFIOComponent;
+import io.scif.SCIFIOPlugin;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
-import org.scijava.Contextual;
-
-
+import org.scijava.Prioritized;
+import org.scijava.plugin.HasPluginInfo;
+import org.scijava.plugin.SingletonPlugin;
 
 /**
  * This class is an interface for any kind of compression or decompression.
@@ -66,7 +68,9 @@ import org.scijava.Contextual;
  *
  * @author Eric Kjellman egkjellman at wisc.edu
  */
-public interface Codec extends Contextual {
+public interface Codec extends SCIFIOComponent, Prioritized, HasPluginInfo,
+  SingletonPlugin, SCIFIOPlugin
+{
 
   /**
    * Compresses a block of data.
