@@ -90,6 +90,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <argLine>-Dapple.awt.UIElement="true"</argLine>
           <suiteXmlFiles>
             <suiteXmlFile>src/test/java/io/scif/utests/testng-template.xml</suiteXmlFile>
           </suiteXmlFiles>
