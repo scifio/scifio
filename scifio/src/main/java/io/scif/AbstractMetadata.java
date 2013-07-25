@@ -561,10 +561,10 @@ public abstract class AbstractMetadata extends AbstractHasSource
         else f.set(this, null);
       }
       catch (final IllegalArgumentException e) {
-        LOGGER.debug(e.getMessage());
+        log().debug(e.getMessage());
       }
       catch (final IllegalAccessException e) {
-        LOGGER.debug(e.getMessage());
+        log().debug(e.getMessage());
       }
 
       table = new DefaultMetaTable();
