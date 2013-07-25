@@ -33,30 +33,32 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import org.scijava.Contextual;
 
 /**
- * Convenience interface for caching and returning a {@link io.scif.SCIFIO} instance.
+ * Convenience interface for caching and returning a {@link SCIFIO} instance.
  * <p>
- * The SCIFIO class is a convenience wrapper of the {@link org.scijava.Context}. It has no
- * state and thus can be freely created around any Context, but there is some initialization
- * overhead. Thus it can be preferrable to simply cache a SCIFIO reference. It also simplfies
- * code, compared to manually constructing a new SCIFIO.
+ * The SCIFIO class is a convenience wrapper of the {@link org.scijava.Context}.
+ * It has no state and thus can be freely created around any Context, but there
+ * is some initialization overhead. Thus it can be preferable to simply cache a
+ * SCIFIO reference. It also simplifies code, compared to manually constructing
+ * a new SCIFIO.
  * </p>
  * 
+ * @author Mark Hiner
  * @see io.scif.SCIFIO
  * @see org.scijava.Context
- * 
- * @author Mark Hiner
  */
-public interface HasSCIFIO extends Contextual { 
-  
+public interface HasSCIFIO extends Contextual {
+
   /**
    * Returns the SCIFIO instance associated with this instance.
    * 
    * @return The cached SCIFIO instance.
    */
   public SCIFIO scifio();
+
 }
