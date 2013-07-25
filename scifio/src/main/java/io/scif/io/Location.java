@@ -51,9 +51,6 @@ import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// HACK: for scan-deps.pl: The following packages are not actually "optional":
-// optional org.apache.log4j, optional org.slf4j.impl
-
 /**
  * Pseudo-extension of java.io.File that supports reading over HTTP.
  * It is strongly recommended that you use this instead of java.io.File.
