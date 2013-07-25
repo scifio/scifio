@@ -44,6 +44,7 @@ import java.io.IOException;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Context;
+import org.scijava.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -383,24 +384,25 @@ public class AxisGuesser {
   /** Method for testing pattern guessing logic. */
   public static void main(String[] args, Context context) throws FormatException, IOException {
     SCIFIO scifio = new SCIFIO(context);
+    LogService log = scifio.log();
     Location file = args.length < 1 ?
       new Location(context, System.getProperty("user.dir")).listFiles()[0] :
       new Location(context, args[0]);
-    LOGGER.info("File = {}", file.getAbsoluteFile());
+    log.info("File = " + file.getAbsoluteFile());
     String pat = scifio.filePattern().findPattern(file);
-    if (pat == null) LOGGER.info("No pattern found.");
+    if (pat == null) log.info("No pattern found.");
     else {
-      LOGGER.info("Pattern = {}", pat);
+      log.info("Pattern = " + pat);
       FilePattern fp = new FilePattern(context, pat);
       if (fp.isValid()) {
-        LOGGER.info("Pattern is valid.");
+        log.info("Pattern is valid.");
         String id = fp.getFiles()[0];
         if (!new Location(context, id).exists()) {
-          LOGGER.info("File '{}' does not exist.", id);
+          log.info("File '" + id + "' does not exist.");
         }
         else {
           // read dimensional information from first file
-          LOGGER.info("Reading first file ");
+          log.info("Reading first file ");
           Reader reader = scifio.initializer().initializeReader(id);
           String dimOrder = FormatTools.findDimensionOrder(reader.getMetadata(), 0);
           int sizeZ = reader.getMetadata().getAxisLength(0, Axes.Z);
@@ -408,12 +410,12 @@ public class AxisGuesser {
           int sizeC = reader.getMetadata().getAxisLength(0, Axes.CHANNEL);
           boolean certain = reader.getMetadata().isOrderCertain(0);
           reader.close();
-          LOGGER.info("[done]");
-          LOGGER.info("\tdimOrder = {} ({})",
-            dimOrder, certain ? "certain" : "uncertain");
-          LOGGER.info("\tsizeZ = {}", sizeZ);
-          LOGGER.info("\tsizeT = {}", sizeT);
-          LOGGER.info("\tsizeC = {}", sizeC);
+          log.info("[done]");
+          log.info("\tdimOrder = " + dimOrder + " (" +
+            (certain ? "certain" : "uncertain") + ")");
+          log.info("\tsizeZ = " + sizeZ);
+          log.info("\tsizeT = " + sizeT);
+          log.info("\tsizeC = " + sizeC);
 
           // guess axes
           AxisGuesser ag = new AxisGuesser(fp,
@@ -425,7 +427,7 @@ public class AxisGuesser {
           int[] axes = ag.getAxisTypes();
           String newOrder = ag.getAdjustedOrder();
           boolean isCertain = ag.isCertain();
-          LOGGER.info("Axis types:");
+          log.info("Axis types:");
           for (int i=0; i<blocks.length; i++) {
             String axis;
             switch (axes[i]) {
@@ -441,16 +443,16 @@ public class AxisGuesser {
               default:
                 axis = "?";
             }
-            LOGGER.info("\t{}\t{} (prefix = {})",
-              new Object[] {blocks[i], axis, prefixes[i]});
+            log.info("\t" + blocks[i] + "\t" + axis +
+              " (prefix = " + prefixes[i] + ")");
           }
           if (!dimOrder.equals(newOrder)) {
-            LOGGER.info("Adjusted dimension order = {} ({})",
-              newOrder, isCertain ? "certain" : "uncertain");
+            log.info("Adjusted dimension order = " + newOrder +
+              " (" + (isCertain ? "certain" : "uncertain") + ")");
           }
         }
       }
-      else LOGGER.info("Pattern is invalid: {}", fp.getErrorMessage());
+      else log.info("Pattern is invalid: " + fp.getErrorMessage());
     }
   }
 
