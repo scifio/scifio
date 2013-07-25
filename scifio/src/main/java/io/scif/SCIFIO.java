@@ -36,6 +36,7 @@
 package io.scif;
 
 import io.scif.app.SCIFIOApp;
+import io.scif.codec.CodecService;
 import io.scif.services.FilePatternService;
 import io.scif.services.FormatService;
 import io.scif.services.InitializeService;
@@ -140,4 +141,14 @@ public class SCIFIO extends AbstractGateway {
   public FilePatternService filePattern() {
     return get(FilePatternService.class);
   }
+
+  /**
+   * CodecService accessor.
+   * 
+   * @return The CodecService instance associated with the wrapped Context.
+   */
+  public CodecService codec() {
+    return get(CodecService.class);
+  }
+
 }
