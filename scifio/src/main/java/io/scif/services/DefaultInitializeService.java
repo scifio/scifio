@@ -78,7 +78,7 @@ public class DefaultInitializeService extends AbstractService
   @Parameter
   private LocationService locationService;
 
-  // -- InitializeService API Methods --	
+  // -- InitializeService API Methods --
 
   /*
    * @see io.scif.services.InitializeService#initializeReader(java.lang.String)

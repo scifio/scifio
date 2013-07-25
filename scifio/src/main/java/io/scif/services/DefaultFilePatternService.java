@@ -63,7 +63,7 @@ import org.scijava.service.AbstractService;
  */
 @Plugin(type=FilePatternService.class)
 public class DefaultFilePatternService extends AbstractService
-	implements FilePatternService
+  implements FilePatternService
 {
 
   /*

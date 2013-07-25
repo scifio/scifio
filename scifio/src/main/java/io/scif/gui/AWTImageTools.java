@@ -787,8 +787,8 @@ public final class AWTImageTools {
     }
 
     if (indexed && rgbChanCount == 1) {
-    	ColorTable ct = plane.getColorTable();
-    	
+      ColorTable ct = plane.getColorTable();
+
         if (ColorTable8.class.isAssignableFrom(ct.getClass())) {
           byte[][] table = ((ColorTable8)ct).getValues();
           if (table != null && table.length > 0 && table[0] != null) {

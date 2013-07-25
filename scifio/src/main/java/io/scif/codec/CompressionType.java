@@ -93,7 +93,7 @@ public enum CompressionType implements CodedEnum {
     CompressionType toReturn = lookup.get(code);
     if (toReturn == null) {
       throw new EnumException("Unable to find CompressionType with code: " +
-      		""+code);
+          ""+code);
     }
     return toReturn;
   }

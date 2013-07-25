@@ -129,7 +129,7 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
             c2 = Class.forName(info.get(key));
           } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException(
-            		"Class name attribute was invalid or not found.", e);
+                "Class name attribute was invalid or not found.", e);
           }
 
           if (exact ? c2.equals(c1) : c2.isAssignableFrom(c1))
@@ -155,7 +155,7 @@ public class DefaultPluginAttributeService extends AbstractService implements Pl
             c2 = Class.forName(info.get(key));
           } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException(
-            		"Class name attribute was invalid or not found.", e);
+                "Class name attribute was invalid or not found.", e);
           }
 
           if (!(exact ? c2.equals(c1) : c2.isAssignableFrom(c1)))

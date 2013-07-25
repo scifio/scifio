@@ -53,7 +53,7 @@ public abstract class AbstractHasFormat extends AbstractHasSCIFIO
    * @see io.scif.HasFormat#getFormat()
    */
   public Format getFormat() {
-  	// All Format lookups go through the FormatService
+    // All Format lookups go through the FormatService
     return scifio().format().getFormatFromComponent(getClass());
   }
 }

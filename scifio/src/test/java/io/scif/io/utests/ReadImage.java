@@ -55,29 +55,29 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class ReadImage {
 
-	public static <T extends RealType<T> & NativeType<T>> void main(
-		final String[] args) throws ImgIOException
-	{
-		final ImgOpener imageOpener = new ImgOpener();
+  public static <T extends RealType<T> & NativeType<T>> void main(
+    final String[] args) throws ImgIOException
+  {
+    final ImgOpener imageOpener = new ImgOpener();
 
-		final String[] ids;
-		if (args.length == 0) {
-			final String userHome = System.getProperty("user.home");
-			ids = new String[] {
-//				userHome + "/data/Spindle_Green_d3d.dv",
-				userHome + "/data/mitosis-test.ipw",
-//				userHome + "/data/test_greys.lif",
-				userHome + "/data/slice1_810nm_40x_z1_pcc100_scanin_20s_01.sdt" };
-		}
-		else ids = args;
+    final String[] ids;
+    if (args.length == 0) {
+      final String userHome = System.getProperty("user.home");
+      ids = new String[] {
+//        userHome + "/data/Spindle_Green_d3d.dv",
+        userHome + "/data/mitosis-test.ipw",
+//        userHome + "/data/test_greys.lif",
+        userHome + "/data/slice1_810nm_40x_z1_pcc100_scanin_20s_01.sdt" };
+    }
+    else ids = args;
 
-		// read all arguments using auto-detected type with default container
-		System.out.println("== AUTO-DETECTED TYPE, DEFAULT CONTAINER ==");
-		for (final String id : ids) {
-		  final ImgPlus<T> img = imageOpener.openImg(id);
-		  reportInformation(img);
-		}
-		
+    // read all arguments using auto-detected type with default container
+    System.out.println("== AUTO-DETECTED TYPE, DEFAULT CONTAINER ==");
+    for (final String id : ids) {
+      final ImgPlus<T> img = imageOpener.openImg(id);
+      reportInformation(img);
+    }
+
     // read all arguments using auto-detected type with default container
     System.out.println("== AUTO-DETECTED TYPE, CELL CONTAINER ==");
     for (final String id : ids) {
@@ -85,22 +85,22 @@ public class ReadImage {
       reportInformation(img);
     }
 
-		// read all arguments using FloatType with ArrayContainer
-//		System.out.println();
-//		System.out.println("== FLOAT TYPE, ARRAY CONTAINER ==");
-//		for (final String arg : args) {
-//		  final ImgPlus<FloatType> img = ImgOpener.openFloat(arg, 0);
-//		  reportInformation(img);
-//		}
+    // read all arguments using FloatType with ArrayContainer
+//    System.out.println();
+//    System.out.println("== FLOAT TYPE, ARRAY CONTAINER ==");
+//    for (final String arg : args) {
+//      final ImgPlus<FloatType> img = ImgOpener.openFloat(arg, 0);
+//      reportInformation(img);
+//    }
 
-		// read all arguments using FloatType with PlanarImg
-		System.out.println();
-		System.out.println("== FLOAT TYPE, DEFAULT CONTAINER ==");
-		for (final String arg : args) {
-		  final ImgPlus<FloatType> img = IO.openFloat(arg, 0);
-		  reportInformation(img);
-		}
-		
+    // read all arguments using FloatType with PlanarImg
+    System.out.println();
+    System.out.println("== FLOAT TYPE, DEFAULT CONTAINER ==");
+    for (final String arg : args) {
+      final ImgPlus<FloatType> img = IO.openFloat(arg, 0);
+      reportInformation(img);
+    }
+
     // read all arguments using FloatType with PlanarImg
     System.out.println();
     System.out.println("== DOUBLE TYPE, DEFAULT CONTAINER ==");
@@ -108,17 +108,17 @@ public class ReadImage {
       final ImgPlus<DoubleType> img = IO.openDouble(arg, 0);
       reportInformation(img);
     }
-	}
+  }
 
-	/** Prints out some useful information about the {@link Img}. */
-	public static <T extends RealType<T>> void
-		reportInformation(final Img<T> img)
-	{
-		System.out.println(img);
-		final Cursor<T> cursor = img.cursor();
-		cursor.fwd();
-		System.out.println("\tType = " + cursor.get().getClass().getName());
-		System.out.println("\tImg = " + img.getClass().getName());
-	}
+  /** Prints out some useful information about the {@link Img}. */
+  public static <T extends RealType<T>> void
+    reportInformation(final Img<T> img)
+  {
+    System.out.println(img);
+    final Cursor<T> cursor = img.cursor();
+    cursor.fwd();
+    System.out.println("\tType = " + cursor.get().getClass().getName());
+    System.out.println("\tImg = " + img.getClass().getName());
+  }
 
 }

@@ -48,7 +48,7 @@ import java.awt.image.Raster;
  * {@link java.awt.image.BufferedImage}.
  */
 public class BufferedImageTools {
-	
+
   /**
    * Gets the pixel type of the given image.
    * @return One of the following types:<ul>

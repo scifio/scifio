@@ -74,7 +74,7 @@ import org.scijava.plugin.PluginService;
  * @see io.scif.filters.AbstractMetadataWrapper
  */
 public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
-	implements Reader
+  implements Reader
 {
 
   // -- Fields --

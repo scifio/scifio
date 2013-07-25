@@ -63,9 +63,9 @@ public class RandomAccessConverter implements PlaneConverter {
   public <T extends RealType<T>> void populatePlane(final Reader reader,
     int imageIndex, final int planeIndex, final byte[] plane,
     final ImgPlus<T> img, ImgOptions imgOptions) {
-	
-	Metadata m = reader.getMetadata();
-	
+
+  Metadata m = reader.getMetadata();
+
     final int pixelType = m.getPixelType(imageIndex);
     final boolean little = m.isLittleEndian(imageIndex);
 

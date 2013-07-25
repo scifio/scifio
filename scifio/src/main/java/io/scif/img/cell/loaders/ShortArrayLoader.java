@@ -53,11 +53,11 @@ import net.imglib2.img.basictypeaccess.array.ShortArray;
  */
 public class ShortArrayLoader extends AbstractArrayLoader< ShortArray >
 {
-	public ShortArrayLoader(Reader reader) {
+  public ShortArrayLoader(Reader reader) {
     super(reader);
   }
 
-	@Override
+  @Override
   public void convertBytes(ShortArray data, byte[] bytes, int planesRead) {
     Metadata meta = reader().getMetadata();
 
@@ -70,12 +70,12 @@ public class ShortArrayLoader extends AbstractArrayLoader< ShortArray >
     bb.asShortBuffer().get(data.getCurrentStorageArray(), offset, bytes.length / bpp);
   }
 
-	public ShortArray emptyArray( final int[] dimensions )
-	{
-		return new ShortArray( countEntities(dimensions) );
-	}
+  public ShortArray emptyArray( final int[] dimensions )
+  {
+    return new ShortArray( countEntities(dimensions) );
+  }
 
-	public int getBitsPerElement() {
-		return 16;
-	}
+  public int getBitsPerElement() {
+    return 16;
+  }
 }

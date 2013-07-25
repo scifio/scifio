@@ -74,7 +74,7 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
    * @see io.scif.Translator#translate(io.scif.Metadata, io.scif.Metadata)
    */
   public void translate(Metadata source, Metadata dest) {
-  	// Cast the parameters to typed Metadata
+    // Cast the parameters to typed Metadata
     M typedSource = SCIFIOMetadataTools.<M>castMeta(source);
     N typedDest = SCIFIOMetadataTools.<N>castMeta(dest);
 

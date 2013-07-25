@@ -1356,7 +1356,7 @@ public class ICSFormat extends AbstractFormat {
 
     // -- Fields --
 
-  	/* Last read plane index. */
+    /* Last read plane index. */
     private int prevPlane;
 
     /* Whether or not the pixels are GZIP-compressed. */

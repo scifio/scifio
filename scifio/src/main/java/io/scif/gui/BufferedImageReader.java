@@ -84,7 +84,7 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
     BufferedImagePlane plane = createPlane(0, 0, thumbX, thumbY);
 
     plane.setData(AWTImageTools.openThumbImage(openPlane(imageIndex, planeIndex),
-    			        this, imageIndex, w, h, thumbX, thumbY, false));
+                  this, imageIndex, w, h, thumbX, thumbY, false));
 
     return plane;
   }

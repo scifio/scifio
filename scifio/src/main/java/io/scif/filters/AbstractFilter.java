@@ -98,7 +98,7 @@ public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Fil
       this.parent = (T) parent;
     else {
       throw new IllegalArgumentException("Invalid parent. Provided: " +
-      				parent.getClass() + " Expected: " + parentClass);
+              parent.getClass() + " Expected: " + parentClass);
     }
   }
 

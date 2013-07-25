@@ -60,7 +60,7 @@ public interface TranslatorService extends Service {
    * @param boolean - true if a translator that exactly matches these Metadata is
    *                  desired
    * @return Translator whose translate method will accept these Metadata
-   * 				 instances
+   *          instances
    */
   Translator findTranslator(Metadata source, Metadata dest, boolean exact);
 
@@ -73,7 +73,7 @@ public interface TranslatorService extends Service {
    * @param boolean - true if a translator that exactly matches these Metadata is
    *                  desired
    * @return Translator whose translate method will accept these Metadata
-   * 				 instances
+   *          instances
    */
   Translator findTranslator(Class<?> source, Class<?> dest, boolean exact);
 

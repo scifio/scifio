@@ -648,7 +648,7 @@ public class FakeFormat extends AbstractFormat
    * RAIS will never attempt file IO on a "*.fake" String, as this handle
    * is SezPoz-discoverable and handles specifically those files.
    */
-	@Plugin(type = IStreamAccess.class)
+  @Plugin(type = IStreamAccess.class)
   public static class Handle extends StreamHandle {
 
     // -- Constructor --

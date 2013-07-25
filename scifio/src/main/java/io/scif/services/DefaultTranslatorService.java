@@ -50,7 +50,7 @@ import org.scijava.service.AbstractService;
 public class DefaultTranslatorService extends AbstractService implements TranslatorService {
 
   // -- Parameters --
-	
+
   @Parameter
   private PluginAttributeService attributeService;
 

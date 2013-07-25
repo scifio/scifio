@@ -102,7 +102,7 @@ public class SCIFIO extends AbstractGateway {
    * @return The InitializeService instance associated with the wrapped Context.
    */
   public InitializeService initializer() {
-  	return get(InitializeService.class);
+    return get(InitializeService.class);
   }
 
   /**
@@ -111,7 +111,7 @@ public class SCIFIO extends AbstractGateway {
    * @return The FormatService instance associated with the wrapped Context.
    */
   public FormatService format() {
-  	return get(FormatService.class);
+    return get(FormatService.class);
   }
 
   /**
@@ -120,7 +120,7 @@ public class SCIFIO extends AbstractGateway {
    * @return The TranslatorService instance associated with the wrapped Context.
    */
   public TranslatorService translator() {
-  	return get(TranslatorService.class);
+    return get(TranslatorService.class);
   }
 
   /**
@@ -129,7 +129,7 @@ public class SCIFIO extends AbstractGateway {
    * @return The LocationService instance associated with the wrapped Context.
    */
   public LocationService location() {
-  	return get(LocationService.class);
+    return get(LocationService.class);
   }
 
   /**

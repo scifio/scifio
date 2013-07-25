@@ -69,7 +69,7 @@ public interface Translator extends SCIFIOPlugin, HasSCIFIO {
 
   // -- Fields --
 
-	/** Source key flag, for use in annotations. */
+  /** Source key flag, for use in annotations. */
   public static final String SOURCE = "source";
 
   /** Destination key flag, for use in annotations. */

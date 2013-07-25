@@ -58,9 +58,9 @@ public class PlanarAccessConverter implements PlaneConverter {
   public <T extends RealType<T>> void populatePlane(final Reader reader, final int imageIndex,
       final int planeIndex, final byte[] plane, final ImgPlus<T> planarImg,
       ImgOptions imgOptions) {
-	
-	Metadata m = reader.getMetadata();
-	
+
+  Metadata m = reader.getMetadata();
+
     @SuppressWarnings("rawtypes")
     PlanarAccess planarAccess = ImgIOUtils.getPlanarAccess(planarImg);
     final int pixelType = m.getPixelType(imageIndex);

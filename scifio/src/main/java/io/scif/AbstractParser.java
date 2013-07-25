@@ -356,7 +356,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
       if (saveOriginalMetadata) {
         //TODO store all metadata in OMEXML store..
-      	// or equivalent function? as per setId.. or handle via annotations
+        // or equivalent function? as per setId.. or handle via annotations
       }
     }
 
@@ -460,7 +460,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
   /* Sets the input stream for this parser if provided a new stream */
   private void init(final RandomAccessInputStream stream) throws IOException {
 
-  	// Check to see if the stream is already open
+    // Check to see if the stream is already open
     if (in != null) {
       final String[] s = getUsedFiles();
       for (int i = 0; i < s.length; i++) {

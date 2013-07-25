@@ -115,7 +115,7 @@ public final class DebugTools {
   public static String getFieldName(Class<?> c, int value) {
     Field[] fields = c.getDeclaredFields();
     for (int i=0; i<fields.length; i++) {
-    	if (!Modifier.isStatic(fields[i].getModifiers())) continue;
+      if (!Modifier.isStatic(fields[i].getModifiers())) continue;
       fields[i].setAccessible(true);
       try {
         if (fields[i].getInt(null) == value) return fields[i].getName();
