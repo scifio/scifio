@@ -212,7 +212,7 @@ public class MicromanagerFormat extends AbstractFormat {
         checker = scifio().format().getFormatFromClass(MinimalTIFFFormat.class).createChecker();
         return checker.isFormat(stream);
       } catch (FormatException e) {
-        LOGGER.error("Failed to create a MinimalTIFFChecker", e);
+        log().error("Failed to create a MinimalTIFFChecker", e);
         return false;
       }
     }
@@ -254,7 +254,7 @@ public class MicromanagerFormat extends AbstractFormat {
       Vector<Position> positions = new Vector<Position>();
       meta.setPositions(positions);
 
-      LOGGER.info("Reading metadata file");
+      log().info("Reading metadata file");
 
       // find metadata.txt
 
@@ -345,7 +345,7 @@ public class MicromanagerFormat extends AbstractFormat {
       ImageMetadata ms = meta.get(posIndex);
       String parent = new Location(getContext(), p.metadataFile).getParent();
 
-      LOGGER.info("Finding image file names");
+      log().info("Finding image file names");
 
       // find the name of a TIFF file
       p.tiffs = new Vector<String>();
@@ -405,7 +405,7 @@ public class MicromanagerFormat extends AbstractFormat {
       //
       // }
 
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
 
       Vector<Double> stamps = new Vector<Double>();
       p.voltage = new Vector<Double>();
@@ -620,7 +620,7 @@ public class MicromanagerFormat extends AbstractFormat {
      * Populate the list of TIFF files using the given file name as a pattern.
      */
     private void buildTIFFList(Metadata meta, int posIndex, String baseTiff) {
-      LOGGER.info("Building list of TIFFs");
+      log().info("Building list of TIFFs");
       Position p = meta.getPositions().get(posIndex);
       String prefix = "";
       if (baseTiff.indexOf(File.separator) != -1) {
@@ -736,7 +736,8 @@ public class MicromanagerFormat extends AbstractFormat {
         tiffReader.setSource(file);
         return tiffReader.openPlane(imageIndex, 0, plane, x, y, w, h);
       }
-      LOGGER.warn("File for image #{} ({}) is missing.", planeIndex, file);
+      log().warn("File for image #" + planeIndex +
+        " (" + file + ") is missing.");
       return plane;
     }
 
@@ -781,7 +782,7 @@ public class MicromanagerFormat extends AbstractFormat {
         tiffReader.setSource(file);
       }
       catch (Exception e) {
-        LOGGER.debug("", e);
+        log().debug("", e);
       }
     }
 

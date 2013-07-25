@@ -147,7 +147,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
     @Override
     protected void typedParse(RandomAccessInputStream stream, M meta)
       throws IOException, FormatException {
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
       DataInputStream dis = new DataInputStream(stream);
       BufferedImage img = ImageIO.read(dis);
       dis.close();

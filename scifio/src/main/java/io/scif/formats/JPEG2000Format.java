@@ -352,14 +352,14 @@ public class JPEG2000Format extends AbstractFormat {
       }
 
       if (isRawCodestream()) {
-        LOGGER.info("Codestream is raw, using codestream dimensions.");
+        log().info("Codestream is raw, using codestream dimensions.");
         sizeX = getCodestreamSizeX();
         sizeY = getCodestreamSizeY();
         sizeC = getCodestreamSizeC();
         pixelType = getCodestreamPixelType();
       }
       else {
-        LOGGER.info("Codestream is JP2 boxed, using header dimensions.");
+        log().info("Codestream is JP2 boxed, using header dimensions.");
         sizeX = getHeaderSizeX();
         sizeY = getHeaderSizeY();
         sizeC = getHeaderSizeC();
@@ -419,7 +419,7 @@ public class JPEG2000Format extends AbstractFormat {
     private void parseBoxes(Metadata meta) throws IOException {
       long originalPos = in.getFilePointer(), nextPos = 0;
       long pos = originalPos;
-      LOGGER.trace("Parsing JPEG 2000 boxes at {}", pos);
+      log().trace("Parsing JPEG 2000 boxes at " + pos);
       int length = 0, boxCode;
       JPEG2000BoxType boxType;
 
@@ -429,7 +429,7 @@ public class JPEG2000Format extends AbstractFormat {
         boxCode = in.readInt();
         boxType = JPEG2000BoxType.get(boxCode);
         if (boxType == JPEG2000BoxType.SIGNATURE_WRONG_ENDIANNESS) {
-          LOGGER.trace("Swapping endianness during box parsing.");
+          log().trace("Swapping endianness during box parsing.");
           in.order(!in.isLittleEndian());
           length = DataTools.swap(length);
         }
@@ -438,12 +438,12 @@ public class JPEG2000Format extends AbstractFormat {
           length -= 8;
         }
         if (boxType == null) {
-          LOGGER.warn("Unknown JPEG 2000 box 0x{} at {}",
-              Integer.toHexString(boxCode), pos);
+          log().warn("Unknown JPEG 2000 box 0x" +
+            Integer.toHexString(boxCode) + " at " + pos);
           if (pos == originalPos) {
             in.seek(originalPos);
             if (JPEG2000SegmentMarker.get(in.readUnsignedShort()) != null) {
-              LOGGER.info("File is a raw codestream not a JP2.");
+              log().info("File is a raw codestream not a JP2.");
               isRawCodestream = true;
               in.seek(originalPos);
               parseContiguousCodestream(meta, in.length());
@@ -451,14 +451,15 @@ public class JPEG2000Format extends AbstractFormat {
           }
         }
         else {
-          LOGGER.trace("Found JPEG 2000 '{}' box at {}", boxType.getName(), pos);
+          log().trace("Found JPEG 2000 '" +
+            boxType.getName() + "' box at " + pos);
           switch (boxType) {
             case CONTIGUOUS_CODESTREAM: {
               try {
                 parseContiguousCodestream(meta, length == 0 ? in.length() : length);
               }
               catch (Exception e) {
-                LOGGER.warn("Could not parse contiguous codestream.", e);
+                log().warn("Could not parse contiguous codestream.", e);
               }
               break;
             }
@@ -506,10 +507,10 @@ public class JPEG2000Format extends AbstractFormat {
         }
         // Exit or seek to the next metadata box
         if (nextPos < 0 || nextPos >= maximumReadOffset || length == 0) {
-          LOGGER.trace("Exiting box parser loop.");
+          log().trace("Exiting box parser loop.");
           break;
         }
-        LOGGER.trace("Seeking to next box at {}", nextPos);
+        log().trace("Seeking to next box at " + nextPos);
         in.seek(nextPos);
       }
     }
@@ -527,8 +528,8 @@ public class JPEG2000Format extends AbstractFormat {
       JPEG2000SegmentMarker segmentMarker;
       int segmentMarkerCode = 0, segmentLength = 0;
       long pos = in.getFilePointer(), nextPos = 0;
-      LOGGER.trace("Parsing JPEG 2000 contiguous codestream of length {} at {}",
-          length, pos);
+      log().trace("Parsing JPEG 2000 contiguous codestream of length " +
+        length + " at " + pos);
       long maximumReadOffset = pos + length;
       boolean terminate = false;
       while (pos < maximumReadOffset && !terminate) {
@@ -536,7 +537,7 @@ public class JPEG2000Format extends AbstractFormat {
         segmentMarkerCode = in.readUnsignedShort();
         segmentMarker = JPEG2000SegmentMarker.get(segmentMarkerCode);
         if (segmentMarker == JPEG2000SegmentMarker.SOC_WRONG_ENDIANNESS) {
-          LOGGER.trace("Swapping endianness during segment marker parsing.");
+          log().trace("Swapping endianness during segment marker parsing.");
           in.order(!in.isLittleEndian());
           segmentMarkerCode = JPEG2000SegmentMarker.SOC.getCode();
           segmentMarker = JPEG2000SegmentMarker.SOC;
@@ -555,12 +556,12 @@ public class JPEG2000Format extends AbstractFormat {
         }
         nextPos = pos + segmentLength + 2;
         if (segmentMarker == null) {
-          LOGGER.warn("Unknown JPEG 2000 segment marker 0x{} at {}",
-              Integer.toHexString(segmentMarkerCode), pos);
+          log().warn("Unknown JPEG 2000 segment marker 0x" +
+            Integer.toHexString(segmentMarkerCode) + " at " + pos);
         }
         else {
-          if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(String.format(
+          if (log().isTrace()) {
+            log().trace(String.format(
                 "Found JPEG 2000 segment marker '%s' of length %d at %d",
                 segmentMarker.getName(), segmentLength, pos));
           }
@@ -575,11 +576,11 @@ public class JPEG2000Format extends AbstractFormat {
               //  * Capability (uint16)
               in.skipBytes(2);
               codestreamSizeX = in.readInt();
-              LOGGER.trace("Read reference grid width {} at {}", codestreamSizeX,
-                  in.getFilePointer());
+              log().trace("Read reference grid width " +
+                codestreamSizeX + " at " + in.getFilePointer());
               codestreamSizeY = in.readInt();
-              LOGGER.trace("Read reference grid height {} at {}", codestreamSizeY,
-                  in.getFilePointer());
+              log().trace("Read reference grid height " +
+                codestreamSizeY + " at " + in.getFilePointer());
               // Skipping:
               //  * Horizontal image offset (uint32)
               //  * Vertical image offset (uint32)
@@ -589,13 +590,13 @@ public class JPEG2000Format extends AbstractFormat {
               //  * Vertical tile offset (uint32)
               in.skipBytes(24);
               codestreamSizeC = in.readShort();
-              LOGGER.trace("Read total components {} at {}",
-                  codestreamSizeC, in.getFilePointer());
+              log().trace("Read total components " +
+                codestreamSizeC + " at " + in.getFilePointer());
               int type = in.read();
               in.skipBytes(3);
               codestreamPixelType = convertPixelType(type);
-              LOGGER.trace("Read codestream pixel type {} at {}",
-                  codestreamPixelType, in.getFilePointer());
+              log().trace("Read codestream pixel type " +
+                codestreamPixelType + " at " + in.getFilePointer());
               break;
             }
             case COD: {
@@ -606,8 +607,8 @@ public class JPEG2000Format extends AbstractFormat {
               //  * Multiple component transform (uint8)
               in.skipBytes(5);
               meta.setResolutionLevels(in.readUnsignedByte());
-              LOGGER.trace("Found number of resolution levels {} at {} ",
-                  meta.getResolutionLevels(), in.getFilePointer());
+              log().trace("Found number of resolution levels " +
+                meta.getResolutionLevels() + " at " + in.getFilePointer());
               break;
             }
             case COM:
@@ -619,10 +620,10 @@ public class JPEG2000Format extends AbstractFormat {
         }
         // Exit or seek to the next metadata box
         if (nextPos < 0 || nextPos >= maximumReadOffset || terminate) {
-          LOGGER.trace("Exiting segment marker parse loop.");
+          log().trace("Exiting segment marker parse loop.");
           break;
         }
-        LOGGER.trace("Seeking to next segment marker at {}", nextPos);
+        log().trace("Seeking to next segment marker at " + nextPos);
         in.seek(nextPos);
       }
     }

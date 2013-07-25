@@ -978,7 +978,7 @@ public class DICOMFormat extends AbstractFormat {
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
 
       //TODO this isn't going to work because each parsing will
       // get the same filelist size and repeat infinitely
@@ -1010,9 +1010,9 @@ public class DICOMFormat extends AbstractFormat {
             add(m.get(0));
             sizeZ *= fileList.get(keys[i]).size();
           } catch (IOException e) {
-            LOGGER.error("Error creating Metadata from DICOM companion files.", e);
+            log().error("Error creating Metadata from DICOM companion files.", e);
           } catch (FormatException e) {
-            LOGGER.error("Error creating Metadata from DICOM companion files.", e);
+            log().error("Error creating Metadata from DICOM companion files.", e);
           }
 
         }
@@ -1181,7 +1181,7 @@ public class DICOMFormat extends AbstractFormat {
 
       // some DICOM files have a 128 byte header followed by a 4 byte identifier
 
-      LOGGER.info("Verifying DICOM format");
+      log().info("Verifying DICOM format");
       MetadataLevel level = getMetadataOptions().getMetadataLevel();
 
       in.seek(128);
@@ -1196,7 +1196,7 @@ public class DICOMFormat extends AbstractFormat {
       }
       else in.seek(0);
 
-      LOGGER.info("Reading tags");
+      log().info("Reading tags");
 
       long baseOffset = 0;
 
@@ -1207,7 +1207,7 @@ public class DICOMFormat extends AbstractFormat {
         if (in.getFilePointer() + 4 >= in.length()) {
           break;
         }
-        LOGGER.debug("Reading tag from {}", in.getFilePointer());
+        log().debug("Reading tag from " + in.getFilePointer());
         DICOMTag tag = DICOMUtils.getNextTag(in, bigEndianTransferSyntax, oddLocations);
         iMeta.setLittleEndian(tag.isLittleEndian());
 
@@ -1215,8 +1215,8 @@ public class DICOMFormat extends AbstractFormat {
 
         oddLocations = (location & 1) != 0;
 
-        LOGGER.debug("  tag={} len={} fp=",
-          new Object[] {tag.get(), tag.getElementLength(), in.getFilePointer()});
+        log().debug("  tag=" + tag.get() + " len=" + tag.getElementLength() +
+          " fp=" + in.getFilePointer());
 
         String s = null;
         switch (tag.get()) {
@@ -1360,7 +1360,7 @@ public class DICOMFormat extends AbstractFormat {
       meta.setMaxPixelValue(maxPixelValue);
       meta.setOddLocations(oddLocations);
 
-      LOGGER.info("Calculating image offsets");
+      log().info("Calculating image offsets");
 
       // calculate the offset to each plane
 
@@ -1446,7 +1446,7 @@ public class DICOMFormat extends AbstractFormat {
     // -- Helper methods --
 
     private void makeFileList() throws FormatException, IOException {
-      LOGGER.info("Building file list");
+      log().info("Building file list");
 
       if (metadata.getFileList() == null && metadata.getOriginalInstance() != null &&
           metadata.getOriginalDate() != null && metadata.getOriginalTime() != null &&
@@ -1550,7 +1550,7 @@ public class DICOMFormat extends AbstractFormat {
       Arrays.sort(files);
       for (String f : files) {
         String file = new Location(getContext(), dir, f).getAbsolutePath();
-        LOGGER.debug("Checking file {}", file);
+        log().debug("Checking file " + file);
         if (!f.equals(currentId) && !file.equals(currentId) &&
           getFormat().createChecker().isFormat(file) &&
           Arrays.binarySearch(patternFiles, file) >= 0)

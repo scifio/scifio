@@ -127,7 +127,7 @@ public class FITSFormat extends AbstractFormat {
           iMeta.setAxisLength(Axes.Z, (int) ((getSource().length() - pixelOffset) / planeSize));
         }
       } catch (IOException e) {
-        LOGGER.error("Failed to determine input stream length", e);
+        log().error("Failed to determine input stream length", e);
       }
 
       iMeta.setPlaneCount(iMeta.getAxisLength(Axes.Z));

@@ -210,7 +210,7 @@ public class ZipFormat extends AbstractFormat {
         reader = scifio().format().getFormat(baseId).createReader();
         reader.setSource(baseId);
       } catch (FormatException e) {
-        LOGGER.error("Failed to set delegate Reader's source", e);
+        log().error("Failed to set delegate Reader's source", e);
       }
     }
 
@@ -226,7 +226,7 @@ public class ZipFormat extends AbstractFormat {
         reader = scifio().initializer().initializeReader(baseId);
         meta.setMetadata(reader.getMetadata());
       } catch (FormatException e) {
-        LOGGER.error("Failed to initialize delegate Reader", e);
+        log().error("Failed to initialize delegate Reader", e);
       }
     }
 

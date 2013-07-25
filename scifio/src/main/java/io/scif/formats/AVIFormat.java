@@ -313,15 +313,15 @@ public class AVIFormat extends AbstractFormat {
           nBytes = AVIUtils.extractCompression(this, options, getSource(), null, 0).length /
           (iMeta.getAxisLength(Axes.X) * iMeta.getAxisLength(Axes.Y));
         } catch (IOException e) {
-          LOGGER.error("IOException while decompressing", e);
+          log().error("IOException while decompressing", e);
         } catch (FormatException e) {
-          LOGGER.error("FormatException while decompressing", e);
+          log().error("FormatException while decompressing", e);
         }
 
         try {
           getSource().seek(fileOff);
         } catch (IOException e) {
-          LOGGER.error("Error seeking to position: " + fileOff, e);
+          log().error("Error seeking to position: " + fileOff, e);
         }
 
         if (getBmpCompression() == 16) {
@@ -363,7 +363,7 @@ public class AVIFormat extends AbstractFormat {
         iMeta.setPixelType(FormatTools.UINT8);
       }
       else {
-        LOGGER.error(
+        log().error(
           "Unknown matching for pixel bit width of: " + getBmpBitsPerPixel());
       }
 
@@ -461,7 +461,7 @@ public class AVIFormat extends AbstractFormat {
     {
       stream.order(true);
 
-      LOGGER.info("Verifying AVI format");
+      log().info("Verifying AVI format");
 
       meta.setLastPlaneIndex(-1);
       meta.setLengths(new Vector<Long>());
@@ -474,7 +474,7 @@ public class AVIFormat extends AbstractFormat {
         readChunk(meta);
       }
 
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
 
     }
 
@@ -516,7 +516,7 @@ public class AVIFormat extends AbstractFormat {
       pos = in.getFilePointer();
       long spos = pos;
 
-      LOGGER.info("Searching for image data");
+      log().info("Searching for image data");
 
       while ((in.length() - in.getFilePointer()) > 4) {
         listString = in.readString(4);
@@ -1538,7 +1538,7 @@ public class AVIFormat extends AbstractFormat {
         if (source.getSource() == null) offset = 0;
         else offset = source.getSource().getFilePointer();
       } catch (IOException e) {
-        LOGGER.error("Error retrieving AVI plane offset", e);
+        log().error("Error retrieving AVI plane offset", e);
       }
 
       for (int i=0; i<source.getPlaneCount(0); i++) {

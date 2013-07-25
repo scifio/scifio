@@ -638,7 +638,7 @@ public class FakeFormat extends AbstractFormat
         dest.setSource(new RandomAccessInputStream(getContext(), new Handle(fakeId), fakeId));
       }
       catch (IOException e) {
-        LOGGER.debug("Failed to create RAIS: " + fakeId, e);
+        log().debug("Failed to create RAIS: " + fakeId, e);
       }
     }
   }
@@ -938,7 +938,7 @@ public class FakeFormat extends AbstractFormat
           fakeMap.put(NAME, DEFAULT_NAME);
         }
         if (equals < 0) {
-          //TODO  LOGGER.warn("ignoring token: {}", token);
+          //TODO  log().warn("ignoring token: " + token);
           continue;
         }
         String key = token.substring(0, equals);

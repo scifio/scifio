@@ -179,13 +179,13 @@ public class LegacyQTFormat extends AbstractFormat {
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
         throws IOException, FormatException {
-      LOGGER.info("Checking for QuickTime Java");
+      log().info("Checking for QuickTime Java");
 
       LegacyQTTools tools = LegacyQTUtils.getTools();
       ReflectedUniverse r = LegacyQTUtils.getUniverse();
       tools.checkQTLibrary();
 
-      LOGGER.info("Reading movie dimensions");
+      log().info("Reading movie dimensions");
       try {
         r.exec("QTSession.open()");
 
@@ -307,7 +307,7 @@ public class LegacyQTFormat extends AbstractFormat {
       }
     }
     catch (ReflectException e) {
-      LOGGER.debug("Failed to close QuickTime session", e);
+      log().debug("Failed to close QuickTime session", e);
     }
   }
 
@@ -451,7 +451,7 @@ public class LegacyQTFormat extends AbstractFormat {
           r.exec("imgDesc = seq.getDescription()");
         }
         catch (ReflectException e) {
-          LOGGER.debug("", e);
+          log().debug("", e);
           throw new FormatException("Legacy QuickTime writer failed", e);
         }
       }
@@ -525,7 +525,7 @@ public class LegacyQTFormat extends AbstractFormat {
           "rate, imgDesc, one, sync)");
       }
       catch (ReflectException e) {
-        LOGGER.debug("", e);
+        log().debug("", e);
         throw new FormatException("Legacy QuickTime writer failed", e);
       }
 
@@ -542,7 +542,7 @@ public class LegacyQTFormat extends AbstractFormat {
           r.exec("QTSession.close()");
         }
         catch (ReflectException e) {
-          LOGGER.debug("", e);
+          log().debug("", e);
           throw new FormatException("Legacy QuickTime writer failed", e);
         }
         close();

@@ -309,7 +309,7 @@ public class TIFFFormat extends AbstractFormat {
       IFDList ifds = meta.getIfds();
       String comment = ifds.get(0).getComment();
 
-      LOGGER.info("Checking comment style");
+      log().info("Checking comment style");
 
       // check for reusable proprietary tags (65000-65535),
       // which may contain additional metadata
@@ -565,7 +565,7 @@ public class TIFFFormat extends AbstractFormat {
           meta.setPhysicalSizeZ(zDepth);
         }
         else {
-          LOGGER.warn("Expected positive value for PhysicalSizeZ; got {}",
+          log().warn("Expected positive value for PhysicalSizeZ; got " +
               zDepth);
         }
       }
@@ -614,7 +614,7 @@ public class TIFFFormat extends AbstractFormat {
         return Integer.parseInt(s);
       }
       catch (NumberFormatException e) {
-        LOGGER.debug("Failed to parse integer value", e);
+        log().debug("Failed to parse integer value", e);
       }
       return 0;
     }
@@ -624,7 +624,7 @@ public class TIFFFormat extends AbstractFormat {
         return Double.parseDouble(s);
       }
       catch (NumberFormatException e) {
-        LOGGER.debug("Failed to parse floating point value", e);
+        log().debug("Failed to parse floating point value", e);
       }
       return 0;
     }
@@ -974,7 +974,7 @@ public class TIFFFormat extends AbstractFormat {
      * sub-classes that override the getters for pixel set array size, etc.
      */
     protected void initMetadataStore(Metadata meta) throws FormatException {
-      LOGGER.info("Populating OME metadata");
+      log().info("Populating OME metadata");
 
       IFD firstIFD = meta.getIfds().get(0);
 
@@ -983,7 +983,7 @@ public class TIFFFormat extends AbstractFormat {
       String creationDate = getImageCreationDate(meta);
       String date = DateTools.formatDate(creationDate, DATE_FORMATS);
       if (creationDate != null && date == null) {
-        LOGGER.warn("unknown creation date format: {}", creationDate);
+        log().warn("unknown creation date format: " + creationDate);
       }
 
       meta.setCreationDate(date);
@@ -1017,13 +1017,13 @@ public class TIFFFormat extends AbstractFormat {
           meta.setPhysicalSizeX(pixX);
         }
         else {
-          LOGGER.warn("Expected positive value for PhysicalSizeX; got {}", pixX);
+          log().warn("Expected positive value for PhysicalSizeX; got " + pixX);
         }
         if (pixY > 0 && pixX < Double.POSITIVE_INFINITY) {
           meta.setPhysicalSizeY(pixY);
         }
         else {
-          LOGGER.warn("Expected positive value for PhysicalSizeY; got {}", pixY);
+          log().warn("Expected positive value for PhysicalSizeY; got " + pixY);
         }
         //        meta.setPixelsPhysicalSizeZ(null, 0);
       }

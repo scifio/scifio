@@ -291,7 +291,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
         }
       } catch (FormatException e) {
-        LOGGER.error("Error populating TIFF image metadata", e);
+        log().error("Error populating TIFF image metadata", e);
       }
     }
 
@@ -302,7 +302,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
           return (int) thumbnailIFDs.get(0).getImageWidth();
         }
         catch (FormatException e) {
-          LOGGER.debug("Could not retrieve thumbnail width", e);
+          log().debug("Could not retrieve thumbnail width", e);
         }
       }
       return super.getThumbSizeX(imageIndex);
@@ -315,7 +315,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
           return (int) thumbnailIFDs.get(0).getImageLength();
         }
         catch (FormatException e) {
-          LOGGER.debug("Could not retrieve thumbnail height", e);
+          log().debug("Could not retrieve thumbnail height", e);
         }
       }
       return super.getThumbSizeY(imageIndex);
@@ -333,7 +333,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
               }
             }
             catch (FormatException e) {
-              LOGGER.debug("", e);
+              log().debug("", e);
             }
           }
         }
@@ -407,7 +407,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
           table = new ColorTable8(table8);
         }
       } catch (FormatException e) {
-        LOGGER.error("Failed to get IFD int array", e);
+        log().error("Failed to get IFD int array", e);
       }
       return table;
     }
@@ -452,7 +452,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
       boolean little = littleEndian.booleanValue();
       in.order(little);
 
-      LOGGER.info("Reading IFDs");
+      log().info("Reading IFDs");
 
       IFDList allIFDs = tiffParser.getIFDs();
 
@@ -477,7 +477,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
         }
       }
 
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
 
 
       tiffParser.setAssumeEqualStrips(meta.isEqualStrips());
@@ -485,7 +485,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
         tiffParser.fillInIFD(ifd);
         if (ifd.getCompression() == TiffCompression.JPEG_2000
             || ifd.getCompression() == TiffCompression.JPEG_2000_LOSSY) {
-          LOGGER.debug("Found IFD with JPEG 2000 compression");
+          log().debug("Found IFD with JPEG 2000 compression");
           long[] stripOffsets = ifd.getStripOffsets();
           long[] stripByteCounts = ifd.getStripByteCounts();
 
@@ -497,8 +497,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
             ((JPEG2000Format.Parser)jp2kFormat.createParser()).parse(stream, jp2kMeta, stripOffset + stripByteCounts[0]);
             meta.setResolutionLevels(jp2kMeta.getResolutionLevels());
             if (meta.getResolutionLevels() != null && !meta.isNoSubresolutions()) {
-              if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(String.format(
+              if (log().isDebug()) {
+                log().debug(String.format(
                     "Original resolution IFD Levels %d %dx%d Tile %dx%d",
                     meta.getResolutionLevels(), ifd.getImageWidth(), ifd.getImageLength(),
                     ifd.getTileWidth(), ifd.getTileLength()));
@@ -539,8 +539,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
                 newIFD.put(IFD.IMAGE_LENGTH, newImageLength);
                 newIFD.put(IFD.TILE_WIDTH, newTileWidth);
                 newIFD.put(IFD.TILE_LENGTH, newTileLength);
-                if (LOGGER.isDebugEnabled()) {
-                  LOGGER.debug(String.format(
+                if (log().isDebug()) {
+                  log().debug(String.format(
                       "Added JPEG 2000 sub-resolution IFD Level %d %dx%d " +
                       "Tile %dx%d", resolutionLevel, newImageWidth,
                       newImageLength, newTileWidth, newTileLength));
@@ -550,7 +550,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
             }
           }
           else {
-            LOGGER.warn("IFD has no strip offsets!");
+            log().warn("IFD has no strip offsets!");
           }
         }
       }
@@ -699,7 +699,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
         return (int) getMetadata().getIfds().get(0).getTileWidth();
       }
       catch (FormatException e) {
-        LOGGER.debug("Could not retrieve tile width", e);
+        log().debug("Could not retrieve tile width", e);
       }
       return super.getOptimalTileWidth(imageIndex);
     }
@@ -711,7 +711,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
         return (int) getMetadata().getIfds().get(0).getTileLength();
       }
       catch (FormatException e) {
-        LOGGER.debug("Could not retrieve tile height", e);
+        log().debug("Could not retrieve tile height", e);
       }
       return super.getOptimalTileHeight(imageIndex);
     }
@@ -728,7 +728,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
       j2kCodecOptions.resolution = 0;
       //FIXME: resolution levels
 //      j2kCodecOptions.resolution = Math.abs(getCoreIndex() - resolutionLevels);
-      LOGGER.debug("Using JPEG 2000 resolution level {}",
+      log().debug("Using JPEG 2000 resolution level " +
           j2kCodecOptions.resolution);
       meta.getTiffParser().setCodecOptions(j2kCodecOptions);
     }

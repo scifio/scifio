@@ -137,7 +137,7 @@ public class TIFFJAIFormat extends AbstractFormat{
       try {
         img = openBufferedImage(this, 0);
       } catch (FormatException e) {
-        LOGGER.error("Invalid image stream", e);
+        log().error("Invalid image stream", e);
         return;
       }
 
@@ -178,11 +178,11 @@ public class TIFFJAIFormat extends AbstractFormat{
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException {
-      LOGGER.info("Checking for JAI");
+      log().info("Checking for JAI");
       ReflectedUniverse r = null;
 
       try {
-        r = new ReflectedUniverse();
+        r = new ReflectedUniverse(log());
         r.exec("import javax.media.jai.NullOpImage");
         r.exec("import javax.media.jai.OpImage");
         r.exec("import com.sun.media.jai.codec.FileSeekableStream");
@@ -197,7 +197,7 @@ public class TIFFJAIFormat extends AbstractFormat{
 
       String id = stream.getFileName();
 
-      LOGGER.info("Reading movie dimensions");
+      log().info("Reading movie dimensions");
 
       // map Location to File or RandomAccessFile, if possible
       IRandomAccess ira = scifio().location().getMappedFile(id);

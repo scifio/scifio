@@ -338,7 +338,7 @@ public class PICTFormat extends AbstractFormat {
     private boolean drivePictDecoder(Metadata meta, int opcode)
       throws FormatException, IOException
     {
-      LOGGER.debug("drivePictDecoder({}) @ {}", opcode, in.getFilePointer());
+      log().debug("drivePictDecoder(" + opcode + ") @ " + in.getFilePointer());
 
       switch (opcode) {
         case PICT_BITSRGN:  // rowBytes must be < 8
@@ -386,7 +386,7 @@ public class PICTFormat extends AbstractFormat {
         default:
           if (opcode < 0) {
             //throw new FormatException("Invalid opcode: " + opcode);
-            LOGGER.warn("Invalid opcode: {}", opcode);
+            log().warn("Invalid opcode: " + opcode);
           }
       }
 
@@ -403,7 +403,7 @@ public class PICTFormat extends AbstractFormat {
     /** Extracts the image data in a PICT pixmap structure. */
     private void handlePixmap(Metadata meta, int opcode) throws FormatException, IOException {
       readImageHeader(meta, opcode);
-      LOGGER.debug("handlePixmap({})", opcode);
+      log().debug("handlePixmap(" + opcode + ")");
 
       int pixelSize = in.readShort();
       int compCount = in.readShort();
@@ -456,8 +456,8 @@ public class PICTFormat extends AbstractFormat {
     private void handlePixmap(Metadata meta, int pixelSize, int compCount)
       throws FormatException, IOException
     {
-      LOGGER.debug("handlePixmap({}, {}, {})",
-        new Object[] {meta.getRowBytes(), pixelSize, compCount});
+      log().debug("handlePixmap(" + meta.getRowBytes() + ", " +
+        pixelSize + ", " + compCount + ")");
       int rawLen;
       byte[] buf;  // row raw bytes
       byte[] uBuf = null;  // row uncompressed data
@@ -488,7 +488,8 @@ public class PICTFormat extends AbstractFormat {
       }
 
       if (!compressed) {
-        LOGGER.debug("Pixel data is uncompressed (pixelSize={}).", pixelSize);
+        log().debug("Pixel data is uncompressed (pixelSize=" +
+          pixelSize + ").");
         buf = new byte[bufSize];
         for (int row=0; row<meta.getAxisLength(0, Axes.X); row++) {
           in.read(buf, 0, meta.getRowBytes());
@@ -513,8 +514,8 @@ public class PICTFormat extends AbstractFormat {
         }
       }
       else {
-        LOGGER.debug("Pixel data is compressed (pixelSize={}; compCount={}).",
-          pixelSize, compCount);
+        log().debug("Pixel data is compressed (pixelSize=" + pixelSize +
+          "; compCount=" + compCount + ").");
         buf = new byte[bufSize + 1 + bufSize / 128];
         for (int row=0; row<meta.getAxisLength(0, Axes.Y); row++) {
           if (meta.getRowBytes() > 250) rawLen = in.readShort();
@@ -593,8 +594,7 @@ public class PICTFormat extends AbstractFormat {
     private void expandPixels(int bitSize, byte[] ib, byte[] ob, int outLen)
       throws FormatException
     {
-      LOGGER.debug("expandPixels({}, {}, {}, {})",
-        new Object[] {bitSize, ib.length, ob.length, outLen});
+      log().debug("expandPixels(" + bitSize + ", " + ib.length + ", " + ob.length + ", " + outLen + ")");
       if (bitSize == 1) {
         int remainder = outLen % 8;
         int max = outLen / 8;
@@ -645,7 +645,7 @@ public class PICTFormat extends AbstractFormat {
 
     /** PackBits variant that outputs an int array. */
     private void unpackBits(byte[] ib, int[] ob) {
-      LOGGER.debug("unpackBits(...)");
+      log().debug("unpackBits(...)");
       int i = 0;
       int b;
       int rep;

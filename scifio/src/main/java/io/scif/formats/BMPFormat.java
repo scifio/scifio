@@ -160,7 +160,7 @@ public class BMPFormat extends AbstractFormat {
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
 
       int bpp = getBitsPerPixel(0);
       ImageMetadata iMeta = get(0);
@@ -286,11 +286,11 @@ public class BMPFormat extends AbstractFormat {
       iMeta.addAxis(Axes.Y, sizeY);
 
       if (sizeX < 1) {
-        LOGGER.trace("Invalid width: {}; using the absolute value", sizeX);
+        log().trace("Invalid width: " + sizeX + "; using the absolute value");
         sizeX = Math.abs(sizeX);
       }
       if (sizeY < 1) {
-        LOGGER.trace("Invalid height: {}; using the absolute value", sizeY);
+        log().trace("Invalid height: " + sizeY + "; using the absolute value");
         sizeY = Math.abs(sizeY);
         meta.setInvertY(true);
       }

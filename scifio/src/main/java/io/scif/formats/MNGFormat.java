@@ -190,7 +190,7 @@ public class MNGFormat extends AbstractFormat {
         throws IOException, FormatException {
       in.order(false);
 
-      LOGGER.info("Verifying MNG format");
+      log().info("Verifying MNG format");
 
       MNGDatasetInfo datasetInfo = new MNGDatasetInfo();
       datasetInfo.imageInfo.add(new MNGImageInfo());
@@ -201,7 +201,7 @@ public class MNGFormat extends AbstractFormat {
         throw new FormatException("Invalid MNG file.");
       }
 
-      LOGGER.info("Reading dimensions");
+      log().info("Reading dimensions");
 
       in.skipBytes(32);
 
@@ -209,7 +209,7 @@ public class MNGFormat extends AbstractFormat {
       int maxIterations = 0;
       int currentIteration = 0;
 
-      LOGGER.info("Finding image offsets");
+      log().info("Finding image offsets");
 
       // read sequence of [len, code, value] tags
 
@@ -250,7 +250,7 @@ public class MNGFormat extends AbstractFormat {
         in.seek(fp + len + 4);
       }
 
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
 
       // easiest way to get image dimensions is by opening the first plane
 

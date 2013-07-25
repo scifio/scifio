@@ -198,7 +198,7 @@ public class EPSFormat extends AbstractFormat {
 
       ImageMetadata m = meta.get(0);
 
-      LOGGER.info("Verifying EPS format");
+      log().info("Verifying EPS format");
 
       String line = in.readLine();
       if (!line.trim().startsWith("%!PS")) {
@@ -242,7 +242,7 @@ public class EPSFormat extends AbstractFormat {
         return;
       }
 
-      LOGGER.info("Finding image data");
+      log().info("Finding image data");
 
       meta.setBinary(false);
 
@@ -263,7 +263,7 @@ public class EPSFormat extends AbstractFormat {
               m.setAxisLength(Axes.Y, Integer.parseInt(t[1]));
             }
             catch (NumberFormatException exc) {
-              LOGGER.debug("Could not parse image dimensions", exc);
+              log().debug("Could not parse image dimensions", exc);
               m.setAxisLength(Axes.CHANNEL, Integer.parseInt(t[3]));
             }
           }
@@ -429,7 +429,7 @@ public class EPSFormat extends AbstractFormat {
         }
       }
       catch (FormatException e) {
-        LOGGER.debug("Could not retrieve tile width", e);
+        log().debug("Could not retrieve tile width", e);
       }
       return super.getOptimalTileWidth(imageIndex);
     }
@@ -441,7 +441,7 @@ public class EPSFormat extends AbstractFormat {
         }
       }
       catch (FormatException e) {
-        LOGGER.debug("Could not retrieve tile height", e);
+        log().debug("Could not retrieve tile height", e);
       }
       return super.getOptimalTileHeight(imageIndex);
     }

@@ -253,7 +253,7 @@ public class APNGFormat extends AbstractFormat {
           bpp / 8, isSigned(), false));
       }
       catch (final FormatException e) {
-        LOGGER.error("Failed to find pixel type from bytes: " + (bpp/8), e);
+        log().error("Failed to find pixel type from bytes: " + (bpp/8), e);
       }
 
       imageMeta.setRGB(rgb);
@@ -1075,10 +1075,10 @@ public class APNGFormat extends AbstractFormat {
           plte.setBlue(lut[2]);
         }
         catch (final FormatException e) {
-          LOGGER.error("Format error when finding 8bit lookup table", e);
+          log().error("Format error when finding 8bit lookup table", e);
         }
         catch (final IOException e) {
-          LOGGER.error("IO error when finding 8bit lookup table", e);
+          log().error("IO error when finding 8bit lookup table", e);
         }
         */
       }

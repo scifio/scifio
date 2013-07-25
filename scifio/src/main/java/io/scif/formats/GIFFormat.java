@@ -384,7 +384,7 @@ public class GIFFormat extends AbstractFormat {
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
     {
-      LOGGER.info("Verifying GIF format");
+      log().info("Verifying GIF format");
 
       stream.order(true);
       meta.setImages(new Vector<byte[]>());
@@ -396,7 +396,7 @@ public class GIFFormat extends AbstractFormat {
         throw new FormatException("Not a valid GIF file.");
       }
 
-      LOGGER.info("Reading dimensions");
+      log().info("Reading dimensions");
 
       meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
@@ -414,7 +414,7 @@ public class GIFFormat extends AbstractFormat {
         meta.setGct(readLut(gctSize));
       }
 
-      LOGGER.info("Reading data blocks");
+      log().info("Reading data blocks");
 
       boolean done = false;
       while (!done) {
@@ -691,7 +691,7 @@ public class GIFFormat extends AbstractFormat {
           }
         }
         catch (IOException e) {
-          LOGGER.trace("Truncated block", e);
+          log().trace("Truncated block", e);
         }
       }
       return n;

@@ -201,7 +201,7 @@ public class PCXFormat extends AbstractFormat {
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
     {
-      LOGGER.info("Reading file header");
+      log().info("Reading file header");
 
       meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
