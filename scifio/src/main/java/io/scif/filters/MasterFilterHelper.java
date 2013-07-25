@@ -112,9 +112,9 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
             if (Boolean.getBoolean(defaultEnabled)) enable(info.getPluginType());
           }
         } catch (ClassNotFoundException e) {
-          LOGGER.error("Failed to find class: " + filterClassName);
+          log().error("Failed to find class: " + filterClassName);
         } catch (InstantiableException e) {
-          LOGGER.error("Failed to create instance: " + filterClassName);
+          log().error("Failed to create instance: " + filterClassName);
         }
       }
     }

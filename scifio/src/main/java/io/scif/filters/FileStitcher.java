@@ -406,7 +406,7 @@ public class FileStitcher extends AbstractReaderFilter {
 
   /** Initializes the given file or file pattern. */
   protected void initFile(String id, int imageIndex) throws FormatException, IOException {
-    LOGGER.debug("initFile: {}", id);
+    log().debug("initFile: " + id);
 
     FilePattern fp = new FilePattern(getContext(), id);
     if (!patternIds) {
@@ -701,7 +701,7 @@ public class FileStitcher extends AbstractReaderFilter {
       r.setOutputOrder(imageIndex, Arrays.asList(FormatTools.findDimensionList(newOrder)));
     }
     catch (IOException e) {
-      LOGGER.debug("", e);
+      log().debug("", e);
     }
   }
 

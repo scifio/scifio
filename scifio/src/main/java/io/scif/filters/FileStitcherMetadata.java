@@ -239,10 +239,10 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
 //          }
 //        }
 //        catch (FormatException e) {
-//          LOGGER.debug("", e);
+//          log().debug("", e);
 //        }
 //        catch (IOException e) {
-//          LOGGER.debug("", e);
+//          log().debug("", e);
 //        }
 //      }
 //    }
@@ -274,10 +274,10 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
 //        infos[i].reader = ((DimensionSwapper) reader).unwrap().getClass();
 //      }
 //      catch (FormatException e) {
-//        LOGGER.debug("", e);
+//        log().debug("", e);
 //      }
 //      catch (IOException e) {
-//        LOGGER.debug("", e);
+//        log().debug("", e);
 //      }
 //      infos[i].usedToInitialize = files[i].endsWith(getCurrentFile());
 //    }
@@ -296,10 +296,10 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
 //        infos[i].reader = ((DimensionSwapper) reader).unwrap().getClass();
 //      }
 //      catch (FormatException e) {
-//        LOGGER.debug("", e);
+//        log().debug("", e);
 //      }
 //      catch (IOException e) {
-//        LOGGER.debug("", e);
+//        log().debug("", e);
 //      }
 //      infos[i].usedToInitialize = files[i].endsWith(getCurrentFile());
 //    }

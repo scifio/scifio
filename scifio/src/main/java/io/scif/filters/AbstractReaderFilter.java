@@ -163,7 +163,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
             return;
           }
         } catch (ClassNotFoundException e) {
-          LOGGER.error("Failed to find class: " + wrapperClassName);
+          log().error("Failed to find class: " + wrapperClassName);
         }
       }
     }
