@@ -50,16 +50,16 @@ import java.util.Vector;
  *
  */
 public class DefaultMetaTable extends HashMap<String, Object> implements MetaTable {
-  
+
   // -- Constructors --
-  
+
   /**
    * Basic constructor
    */
   public DefaultMetaTable() {
-    
+
   }
-  
+
   /**
    * Construct a MetaTable and populate it using an existing map.
    */
@@ -67,7 +67,7 @@ public class DefaultMetaTable extends HashMap<String, Object> implements MetaTab
     for (String k : copy.keySet())
       put(k, copy.get(k));
   }
-  
+
   // -- MetaTable API Methods --
 
   /*

@@ -41,7 +41,7 @@
  * <ul>
  *  <li>
  *  Implemented SCIFIO {@link io.scif.filters.Filter}s. Filters are designed
- *  to wrap arbitrary classes. An implementation is currently provided for 
+ *  to wrap arbitrary classes. An implementation is currently provided for
  *  Readers: {@link io.scif.filters.ReaderFilter}.
  *  <p>
  *  Filters are analogous to the ReaderWrappers of Bio-Formats, but function
@@ -50,10 +50,10 @@
  *  </p>
  *  <p>
  *  In SCIFIO, the Filters are discoverable plugins (via the scijava-common
- *  Context). When you create a ReaderFilter (e.g. via 
+ *  Context). When you create a ReaderFilter (e.g. via
  *  {@link io.scif.services.InitializeService#initializeReader}) you get
  *  the whole stack of discovered plugins. Each can be individually configured
- *  to be enabled by default. This allows dynamic extensibility, as new 
+ *  to be enabled by default. This allows dynamic extensibility, as new
  *  Filters can be added to the classpath and automatically discovered
  *  and enabled.
  *  </p>

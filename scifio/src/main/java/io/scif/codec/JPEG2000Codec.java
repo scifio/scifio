@@ -293,14 +293,14 @@ public class JPEG2000Codec extends BaseCodec {
   }
 
   // -- Contextual API Methods --
-  
+
   @Override
   public void setContext(Context context) {
     super.setContext(context);
-    
+
     initialize();
   }
-  
+
   // -- Helper methods --
 
   /**

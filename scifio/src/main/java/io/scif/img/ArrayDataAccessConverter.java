@@ -71,12 +71,12 @@ public class ArrayDataAccessConverter implements PlaneConverter {
     ArrayImg<?, ?> arrayImg = (ArrayImg<?, ?>) dest.getImg();
 
     Object store = arrayImg.update(null);
-    
+
     //FIXME actually do need to pass a reader w/ metadata to the loader
-    
+
     //FIXME loaders are faster than byte buffers but of course slower than a direct system.arraycopy call, and slower still than passing the array directly.
     // however that simply may not be feasible given the variety of data types.
-    
+
     if (store instanceof BitArray) {
       BitArrayLoader loader = new BitArrayLoader(reader);
       loader.convertBytes((BitArray)store, source, planeIndex);
@@ -100,7 +100,7 @@ public class ArrayDataAccessConverter implements PlaneConverter {
     else if (store instanceof DoubleArray) {
       DoubleArrayLoader loader = new DoubleArrayLoader(reader);
       loader.convertBytes((DoubleArray)store, source, planeIndex);
-    } 
+    }
     else if (store instanceof FloatArray) {
       FloatArrayLoader loader = new FloatArrayLoader(reader);
       loader.convertBytes((FloatArray)store, source, planeIndex);

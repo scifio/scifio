@@ -61,16 +61,16 @@ public class IntArrayLoader extends AbstractArrayLoader< IntArray >
   @Override
   public void convertBytes(IntArray data, byte[] bytes, int planesRead) {
     Metadata meta = reader().getMetadata();
-    
+
     int bpp = meta.getBitsPerPixel(0) / 8;
     int offset = planesRead * (bytes.length / bpp);
 
     ByteBuffer bb = ByteBuffer.wrap(bytes);
-    
+
     bb.order(meta.isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
     bb.asIntBuffer().get(data.getCurrentStorageArray(), offset, bytes.length / bpp);
   }
-  
+
   public IntArray emptyArray( final int[] dimensions )
   {
     return new IntArray( countEntities(dimensions) );

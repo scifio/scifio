@@ -68,13 +68,13 @@ package io.scif;
 public interface Translator extends SCIFIOPlugin, HasSCIFIO {
 
   // -- Fields --
-  
+
 	/** Source key flag, for use in annotations. */
   public static final String SOURCE = "source";
 
   /** Destination key flag, for use in annotations. */
   public static final String DEST = "dest";
-  
+
   // -- Translator API methods --
 
   /**
@@ -84,7 +84,7 @@ public interface Translator extends SCIFIOPlugin, HasSCIFIO {
    * is undefined if at least one {@code Metadata} instance is not of the type
    * associated with this {@code Translator's Format}. Neither can the other
    * {@code Metadata} be arbitrary, as an appropriate {@code Translator} must
-   * be defined for the desired direction of translation. See 
+   * be defined for the desired direction of translation. See
    * {@link io.scif.Format#getTranslatorClassList()} for a list of classes
    * capable of translation with a given {@code Format's Metadata}.
    * </p>

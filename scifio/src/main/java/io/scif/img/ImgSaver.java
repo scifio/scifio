@@ -75,15 +75,15 @@ import org.scijava.app.StatusService;
 public class ImgSaver extends AbstractHasSCIFIO {
 
   // -- Constructors --
-  
+
   public ImgSaver() {
     this(new Context(StatusService.class, InitializeService.class, TranslatorService.class));
   }
-  
+
   public ImgSaver(Context context) {
     setContext(context);
   }
-  
+
 	// -- ImgSaver methods --
 
 	/**
@@ -507,7 +507,7 @@ public class ImgSaver extends AbstractHasSCIFIO {
 				  ByteArrayPlane destPlane = new ByteArrayPlane(getContext(), meta.get(imageIndex),
 				      0, 0, meta.getAxisLength(imageIndex, Axes.X),
 				      meta.getAxisLength(imageIndex, Axes.Y));
-				  
+				
 				  for (int channelIndex = planeIndex; channelIndex < planeIndex + rgbChannelCount; channelIndex++) {
 				    final Object curPlane =
 				        planarImg.getPlane(channelIndex).getCurrentStorageArray();
@@ -539,7 +539,7 @@ public class ImgSaver extends AbstractHasSCIFIO {
 
 				    if (interleaved) {
 				      int bpp = FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
-				      
+				
 	            for (int i=0; i<sourcePlane.length / bpp; i += bpp) {
 	              System.arraycopy(sourcePlane, i, destPlane.getData(), ((i * rgbChannelCount) + channelIndex) * bpp, bpp);
 	            }
@@ -578,7 +578,7 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	{
     Writer writer = null;
     Metadata meta = null;
-	  
+	
 		try {
 	    writer =  scifio().format().getWriterByExtension(id);
 	    meta = writer.getFormat().createMetadata();

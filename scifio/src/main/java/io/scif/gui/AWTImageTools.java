@@ -739,12 +739,12 @@ public final class AWTImageTools {
    * Creates an image from the given Plane. Pulls additional image
    * information from the provided Reader's Metadata.
    */
-  public static BufferedImage openImage(Plane plane, 
-      Reader r, int w, int h, int imageIndex) 
+  public static BufferedImage openImage(Plane plane,
+      Reader r, int w, int h, int imageIndex)
       throws FormatException, IOException
   {
     Metadata meta = r.getMetadata();
-    
+
     int pixelType = meta.getPixelType(imageIndex);
     boolean little = meta.isLittleEndian(imageIndex);
     boolean normal = r.isNormalized();
@@ -785,7 +785,7 @@ public final class AWTImageTools {
     if (b == null) {
       throw new FormatException("Could not construct BufferedImage");
     }
-    
+
     if (indexed && rgbChanCount == 1) {
     	ColorTable ct = plane.getColorTable();
     	
@@ -813,7 +813,7 @@ public final class AWTImageTools {
     if (indexed && rgbChanCount == 1 && BufferedImagePlane.class.isAssignableFrom(plane.getClass())) {
       model = ((BufferedImagePlane)plane).getData().getColorModel();
     }
-    
+
     if (model != null) {
       WritableRaster raster =
         Raster.createWritableRaster(b.getSampleModel(), b.getRaster()
@@ -825,7 +825,7 @@ public final class AWTImageTools {
   }
 
   /**
-   * Creates a thumbnail image from the provided plane, scaling it to the 
+   * Creates a thumbnail image from the provided plane, scaling it to the
    * specified thumbnail dimensions.
    * 
    * @param plane - Plane to scale
@@ -839,18 +839,18 @@ public final class AWTImageTools {
    * @throws FormatException
    * @throws IOException
    */
-  public static BufferedImage openThumbImage(Plane plane, 
-      Reader r, int imageIndex, int w, int h, int thumbSizeX, int thumbSizeY, boolean pad) 
+  public static BufferedImage openThumbImage(Plane plane,
+      Reader r, int imageIndex, int w, int h, int thumbSizeX, int thumbSizeY, boolean pad)
       throws FormatException, IOException
   {
-   
+
     BufferedImage img = AWTImageTools.openImage(plane, r, w, h, imageIndex);
     img = AWTImageTools.makeUnsigned(img);
     img = AWTImageTools.scale(img, thumbSizeX, thumbSizeY, pad);
-    
+
     return img;
   }
-  
+
   // -- Data extraction --
 
   /**

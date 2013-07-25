@@ -65,9 +65,9 @@ import org.slf4j.LoggerFactory;
  */
 @Plugin(type=LocationService.class)
 public class DefaultLocationService extends AbstractService implements LocationService {
-  
+
   private static final Logger LOGGER = LoggerFactory.getLogger(Location.class);
- 
+
   // -- Static fields --
 
   /** Map from given filenames to actual filenames. */
@@ -75,7 +75,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
     new HashMap<String, Object>();
 
   private volatile boolean cacheListings = false;
-  
+
   // By default, cache for one hour.
   private volatile long cacheNanos = 60L * 60L * 1000L * 1000L * 1000L;
 
@@ -89,7 +89,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
   }
   private ConcurrentHashMap<String, ListingsResult> fileListings =
     new ConcurrentHashMap<String, ListingsResult>();
-  
+
   // -- Location API methods --
 
   /*
@@ -226,12 +226,12 @@ public class DefaultLocationService extends AbstractService implements LocationS
       LOGGER.trace("no handle was mapped for this ID");
       String mapId = getMappedId(id);
 
-      final List<PluginInfo<IStreamAccess>> streamInfos = 
+      final List<PluginInfo<IStreamAccess>> streamInfos =
           getContext().getPluginIndex().getPlugins(IStreamAccess.class);
-     
+
       if (allowArchiveHandles) {
         for (final PluginInfo<IStreamAccess> info : streamInfos) {
-        	handle = 
+        	handle =
         			getContext().getService(PluginService.class).createInstance(info);
           if (((IStreamAccess)handle).isConstructable(id)) {
             ((IStreamAccess)handle).setFile(id);
@@ -240,10 +240,10 @@ public class DefaultLocationService extends AbstractService implements LocationS
           handle = null;
         }
       }
-      
+
       if (handle == null)
         handle = new NIOFileHandle(mapId, writable ? "rw" : "r");
-      
+
     }
     LOGGER.trace("Location.getHandle: {} -> {}", id, handle);
     return handle;
@@ -263,7 +263,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
     // throw IOException if something goes wrong.
     getHandle(id).close();
   }
-  
+
   /*
    * @see io.scif.services.LocationService#getCachedListing(java.lang.String)
    */
@@ -275,7 +275,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
     }
     return listingsResult == null ? null : listingsResult.listing;
   }
-  
+
   /*
    * @see io.scif.services.LocationService#
    * putCachedListing(java.lang.String, java.lang.String[])

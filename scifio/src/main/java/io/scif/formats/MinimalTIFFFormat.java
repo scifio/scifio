@@ -79,9 +79,9 @@ import net.imglib2.meta.Axes;
  */
 @Plugin(type = MinimalTIFFFormat.class, priority = MinimalTIFFFormat.PRIORITY)
 public class MinimalTIFFFormat extends AbstractFormat {
-  
+
   public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
-  
+
   // -- Format API Methods --
 
   public String getFormatName() {
@@ -91,9 +91,9 @@ public class MinimalTIFFFormat extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[] {"tif", "tiff"};
   }
-  
+
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -129,13 +129,13 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
     /** Codec options to use when decoding JPEG 2000 data. */
     private JPEG2000CodecOptions j2kCodecOptions;
-    
+
     // -- Constants --
-    
+
     public static final String CNAME = "io.scif.formats.MinimalTiffFormat$Metadata";
-    
+
     // -- MinimalTIFFMetadata getters and setters --
-    
+
     public IFDList getIfds() {
       return ifds;
     }
@@ -215,7 +215,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
     public void setJ2kCodecOptions(JPEG2000CodecOptions j2kCodecOptions) {
       this.j2kCodecOptions = j2kCodecOptions;
     }
-    
+
     // -- Metadata API Methods --
 
     public void populateImageMetadata() {
@@ -233,11 +233,11 @@ public class MinimalTIFFFormat extends AbstractFormat {
         ms0.setInterleaved(false);
         ms0.setLittleEndian(firstIFD.isLittleEndian());
 
-        ms0.setAxisLength(Axes.X, (int) firstIFD.getImageWidth()); 
-        ms0.setAxisLength(Axes.Y, (int) firstIFD.getImageLength()); 
-        ms0.setAxisLength(Axes.CHANNEL, ms0.isRGB() ? samples : 1); 
-        ms0.setAxisLength(Axes.Z, 1); 
-        ms0.setAxisLength(Axes.TIME, ifds.size()); 
+        ms0.setAxisLength(Axes.X, (int) firstIFD.getImageWidth());
+        ms0.setAxisLength(Axes.Y, (int) firstIFD.getImageLength());
+        ms0.setAxisLength(Axes.CHANNEL, ms0.isRGB() ? samples : 1);
+        ms0.setAxisLength(Axes.Z, 1);
+        ms0.setAxisLength(Axes.TIME, ifds.size());
 
         ms0.setPixelType(firstIFD.getPixelType());
         ms0.setMetadataComplete(true);
@@ -294,7 +294,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
         LOGGER.error("Error populating TIFF image metadata", e);
       }
     }
-    
+
     @Override
     public int getThumbSizeX(int imageIndex) {
       if (thumbnailIFDs != null && thumbnailIFDs.size() > 0) {
@@ -320,7 +320,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
       }
       return super.getThumbSizeY(imageIndex);
     }
-    
+
     @Override
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -347,14 +347,14 @@ public class MinimalTIFFFormat extends AbstractFormat {
       }
     }
 
-    
+
     // -- HasColorTable API methods --
 
     /* @see loci.formats.IFormatReader#get16BitLookupTable() */
     public ColorTable getColorTable(int imageIndex, int planeIndex) {
       if (ifds == null || lastPlane < 0 || lastPlane > ifds.size()) return null;
       IFD lastIFD = ifds.get(lastPlane);
-      
+
       ColorTable table = null;
       try {
 
@@ -412,23 +412,23 @@ public class MinimalTIFFFormat extends AbstractFormat {
       return table;
     }
   }
-  
+
   public static class Checker extends AbstractChecker {
-    
+
     // -- Constructor --
-    
+
     public Checker() {
       suffixNecessary = false;
     }
-    
+
     // -- Checker API Methods --
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream stream) {
       return new TiffParser(getContext(), stream).isValidHeader();
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -436,7 +436,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
   public static class Parser<M extends Metadata> extends AbstractParser<M> {
 
     // -- Parser API Methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, M meta)
       throws IOException, FormatException {
@@ -444,7 +444,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
       tiffParser.setDoCaching(false);
       tiffParser.setUse64BitOffsets(meta.isUse64Bit());
       meta.setTiffParser(tiffParser);
-      
+
       Boolean littleEndian = tiffParser.checkHeader();
       if (littleEndian == null) {
         throw new FormatException("Invalid TIFF file");
@@ -462,10 +462,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
       IFDList ifds = new IFDList();
       IFDList thumbnailIFDs = new IFDList();
-      
+
       meta.setIfds(ifds);
       meta.setThumbnailIFDs(thumbnailIFDs);
-      
+
       for (IFD ifd : allIFDs) {
         Number subfile = (Number) ifd.getIFDValue(IFD.NEW_SUBFILE_TYPE);
         int subfileType = subfile == null ? 0 : subfile.intValue();
@@ -555,7 +555,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
         }
       }
     }
-    
+
   }
 
   /**
@@ -563,9 +563,9 @@ public class MinimalTIFFFormat extends AbstractFormat {
    *
    */
   public static class Reader<M extends Metadata> extends ByteArrayReader<M> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
@@ -604,15 +604,15 @@ public class MinimalTIFFFormat extends AbstractFormat {
                             meta.getThumbSizeY(imageIndex) *
                             meta.getRGBChannelCount(imageIndex) *
                             FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex))];
-      
+
       ByteArrayPlane plane = new ByteArrayPlane(getContext());
       buf = tiffParser.getSamples(thumbnailIFDs.get(planeIndex), buf);
       plane.populate(meta.get(imageIndex), buf, 0, 0,
           meta.getThumbSizeX(imageIndex), meta.getThumbSizeY(imageIndex));
-      
+
       return plane;
     }
-    
+
     /*
      * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
@@ -623,9 +623,9 @@ public class MinimalTIFFFormat extends AbstractFormat {
       byte[] buf = plane.getBytes();
       IFDList ifds = meta.getIfds();
       TiffParser tiffParser = meta.getTiffParser();
-      
+
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
-      
+
       IFD firstIFD = ifds.get(0);
       meta.setLastPlane(planeIndex);
       IFD ifd = ifds.get(planeIndex);
@@ -715,7 +715,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
       }
       return super.getOptimalTileHeight(imageIndex);
     }
-    
+
     /**
      * Sets the resolution level when we have JPEG 2000 compressed data.
      * @param ifd The active IFD that is being used in our current

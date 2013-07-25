@@ -72,14 +72,14 @@ import org.testng.annotations.Test;
  */
 @Test(groups="cellTests")
 public class SCIFIOCellImgFactoryTest {
-  
+
   // -- Context fields --
-  
+
   private Context ctx;
   private SCIFIO scifio;
-  
+
   // -- Constructor --
-  
+
   public SCIFIOCellImgFactoryTest() {
     ctx = new Context();
     scifio = new SCIFIO(ctx);
@@ -118,48 +118,48 @@ public class SCIFIOCellImgFactoryTest {
 
     close(reader);
   }
-  
+
   @Test
   public void cellMediumPlaneSizeTest() {
     String id = "cellTest&sizeX=512&sizeY=512.fake";
     Reader reader = getReader(id);
-    
+
     // Tile == image size, should come back unchanged
     testCellXY(reader, 512, 512, 512, 512);
-    
+
     // Expanding tiles vertically
     testCellXY(reader, 512, 16, 512, 512);
-    
+
     // expanding tiles horizontally
     testCellXY(reader, 16, 512, 512, 512);
-    
+
     // small expansion, non-factor
     testCellXY(reader, 511, 511, 512, 512);
-    
+
     // non-factor expansion, vertical
     testCellXY(reader, 511, 15, 512, 512);
-    
+
     // non-factor expansion, horizontal
     testCellXY(reader, 15, 511, 512, 512);
-    
+
     // mixed factor/non-factor expansion, horizontal
     testCellXY(reader, 511, 16, 512, 512);
-    
+
     // small tile expansion
     testCellXY(reader, 16, 16, 512, 512);
-    
+
     // small tile, mixed factor/non-factor
     testCellXY(reader, 16, 15, 512, 512);
-    
+
     close(reader);
   }
-  
+
   @Test
   public void cellMediumPlaneSizeRGBTest() {
     String id = "cellTest&sizeX=512&sizeY=512&RGB=3.fake";
     Reader reader = getReader(id);
-    
-    // NB: All these tests should be identical as 
+
+    // NB: All these tests should be identical as
     // cellMediumPlaneSizeTest. The fact that this
     // image is RGB shouldn't affect any tile size
     // calculations, because ChannelSeparator use
@@ -173,20 +173,20 @@ public class SCIFIOCellImgFactoryTest {
     testCellXY(reader, 511, 16, 512, 512);
     testCellXY(reader, 16, 16, 512, 512);
     testCellXY(reader, 16, 15, 512, 512);
-    
+
     close(reader);
   }
-  
+
   @Test
   public void cellMediumPlaneSize16BitTest() {
     String id = "cellTest&sizeX=512&sizeY=512&pixelType=int16.fake";
     Reader reader = getReader(id);
-    
-    // NB: These tests are identical to 
+
+    // NB: These tests are identical to
     // cellMediumPlaneSizeTest.
     // 512 x 512 x 2 bytes per pixel should
     // still be under 2MB, so the whole image
-    // will always be returned as the 
+    // will always be returned as the
     // optimal cell size.
     testCellXY(reader, 512, 512, 512, 512);
     testCellXY(reader, 512, 16, 512, 512);
@@ -197,34 +197,34 @@ public class SCIFIOCellImgFactoryTest {
     testCellXY(reader, 511, 16, 512, 512);
     testCellXY(reader, 16, 16, 512, 512);
     testCellXY(reader, 16, 15, 512, 512);
-    
+
     close(reader);
   }
-  
+
   @Test
   public void cellLargePlaneSizeTest() {
     String id = "cellTest&sizeX=4096&sizeY=4096.fake";
     Reader reader = getReader(id);
-    
+
     // even factor plane, expands horizontally
     testCellXY(reader, 512, 512, 4096, 512);
-    
+
     // even factor horizontal strip. expands horizontally
     // first, then vertically.
     testCellXY(reader, 512, 16, 4096, 512);
-    
+
     // Same as above even though strips are vertical
     testCellXY(reader, 16, 512, 4096, 512);
-    
+
     // Unit vertical strips. Should expand horizontally
     testCellXY(reader, 1, 4096, 512, 4096);
-    
+
     // Unit horizontal strips. Should expand vertically.
     testCellXY(reader, 4096, 1, 4096, 512);
-    
+
     // Small tile. Expands horizontally first, then vertically
     testCellXY(reader, 16, 16, 4096, 512);
-    
+
     close(reader);
   }
 
@@ -232,8 +232,8 @@ public class SCIFIOCellImgFactoryTest {
   public void cellLargePlaneSizeRGBTest() {
     String id = "cellTest&sizeX=4096&sizeY=4096&RGB=3.fake";
     Reader reader = getReader(id);
-    
-    // NB: These tests are identical to 
+
+    // NB: These tests are identical to
     // cellLargePlaneSizeTest. The fact that this
     // image is RGB shouldn't affect any tile size
     // calculations, because ChannelSeparator use
@@ -244,45 +244,45 @@ public class SCIFIOCellImgFactoryTest {
     testCellXY(reader, 1, 4096, 512, 4096);
     testCellXY(reader, 4096, 1, 4096, 512);
     testCellXY(reader, 16, 16, 4096, 512);
-    
+
     close(reader);
   }
-  
+
   @Test
   public void cellLargePlaneSize16BitTest() {
     String id = "cellTest&sizeX=4096&sizeY=4096&pixelType=int16.fake";
     Reader reader = getReader(id);
-    
+
     // NB: These are the same tile sizes as
     // the cellLargePlaneSizeTest. However,
     // the 2 bytes per pixel will change how
     // the cell sizes are calculated
-    
+
     // Expands horizontally. The 512 height
     // limits expansion
     testCellXY(reader, 512, 512, 2048, 512);
-    
+
     // Expands horizontally first, then vertically
     testCellXY(reader, 512, 16, 4096, 256);
-    
+
     // Expands horizontally. The 512 height
     // limits expansion
     testCellXY(reader, 16, 512, 2048, 512);
-    
+
     // expands horizontally as much as possible
     testCellXY(reader, 1, 4096, 256, 4096);
-    
+
     // expands vertically as much as possible
     testCellXY(reader, 4096, 1, 4096, 256);
-    
+
     // expands horizontally first, then vertically
     testCellXY(reader, 16, 16, 4096, 256);
-    
+
     close(reader);
   }
 
   // -- Helper methods --
-  
+
   // Tests the cell sizes given the indicated tileX and tileY sizes,
   // and compares to the target cell sizes
   private void testCellXY(Reader r, int tileX, int tileY,
@@ -292,20 +292,20 @@ public class SCIFIOCellImgFactoryTest {
     assertEquals(targetCellX, cellXY[0]);
     assertEquals(targetCellY, cellXY[1]);
   }
-  
+
   // Gets a reader for the given id, failing on exception
   private Reader getReader(String id) {
     Reader r = null;
-    
+
     try {
       r =  scifio.initializer().initializeReader(id);
-    } catch(Exception e) { 
+    } catch(Exception e) {
       fail(e.getMessage());
     }
-    
+
     return r;
   }
-  
+
   // Closes the given reader, failing on exception
   private void close(Reader r) {
     try {

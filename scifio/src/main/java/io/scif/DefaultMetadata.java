@@ -38,7 +38,7 @@ package io.scif;
 import java.util.List;
 
 /**
- * A dummy {@link io.scif.Metadata} implementation. 
+ * A dummy {@link io.scif.Metadata} implementation.
  * Holds no format-specific information, and adds no functionality over
  * {@link io.scif.AbstractMetadata}.
  * 
@@ -47,35 +47,35 @@ import java.util.List;
  * 
  * @author Mark Hiner
  */
-public class DefaultMetadata extends AbstractMetadata 
+public class DefaultMetadata extends AbstractMetadata
   implements DefaultComponent
 {
-  
+
   // -- Fields --
-  
+
   private Format format;
-  
+
   // -- Constructors --
-  
+
   public DefaultMetadata() {
     super();
   }
-  
+
   public DefaultMetadata(final Metadata copy) {
     super(copy);
   }
-  
+
   public DefaultMetadata(final List<ImageMetadata> list) {
     super(list);
   }
-  
+
   // -- HasFormat API Methods --
-  
+
   @Override
   public Format getFormat() {
     return format;
   }
-  
+
   // -- Metadata API methods --
 
   public void populateImageMetadata() { }

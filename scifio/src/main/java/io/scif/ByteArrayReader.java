@@ -55,13 +55,13 @@ public abstract class ByteArrayReader<M extends TypedMetadata>
   extends AbstractReader<M, ByteArrayPlane> {
 
   // -- Constructor --
-  
+
   public ByteArrayReader() {
     super(ByteArrayPlane.class);
   }
 
   // -- Reader API Methods --
-  
+
   /*
    * @see io.scif.Reader#openThumbPlane(int, int)
    */
@@ -71,12 +71,12 @@ public abstract class ByteArrayReader<M extends TypedMetadata>
     FormatTools.assertStream(getStream(), true, 1);
     ByteArrayPlane plane = createPlane(0, 0,
         getMetadata().getThumbSizeX(imageIndex), getMetadata().getThumbSizeY(imageIndex));
-    
+
     plane.setData(FormatTools.openThumbBytes(this, imageIndex, planeIndex));
-    
+
     return plane;
-  } 
-  
+  }
+
   /*
    * @see io.scif.TypedReader#createPlane(int, int, int, int)
    */
@@ -84,7 +84,7 @@ public abstract class ByteArrayReader<M extends TypedMetadata>
       int yLength) {
     return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
   }
-  
+
   /*
    * @see io.scif.TypedReader#createPlane(int, int, int, int)
    */
@@ -92,5 +92,5 @@ public abstract class ByteArrayReader<M extends TypedMetadata>
       int yLength) {
     return new ByteArrayPlane(getContext(), meta, xOffset, yOffset, xLength, yLength);
   }
-  
+
 }

@@ -64,31 +64,31 @@ import net.imglib2.meta.AxisType;
  * 
  * @see io.scif.filters.AbstractReaderFilter
  */
-public interface MetadataWrapper extends Metadata, SCIFIOPlugin { 
-  
+public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
+
   public static final String METADATA_KEY = "Metadata Wrapper";
   public static final String METADATA_VALUE = "java.lang.Object";
-  
+
   /**
    * @return The {@code Metadata} used for delegation by this wrapper.
    */
   Metadata unwrap();
-  
+
   /**
    * Sets the {@code Metadata} this wrapper will delegate to.
    * Necessary for the sake of a zero-parameter constructor to allow
-   * {@code SezPoz} discovery. 
+   * {@code SezPoz} discovery.
    * 
    * @param meta - The Metadata instance to wrap
    */
   void wrap(Metadata meta);
-  
+
   // -- Setter Methods with passUp flag --
-  
+
   void addAxis(final int imageIndex, final AxisType type, boolean passUp);
-  
+
   void addAxis(final int imageIndex, final AxisType type, final int value, boolean passUp);
-  
+
   void setThumbSizeX(final int imageIndex, final int thumbX, boolean passUp);
 
   void setThumbSizeY(final int imageIndex, final int thumbY, boolean passUp);
@@ -110,16 +110,16 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
   void setFalseColor(final int imageIndex, final boolean falseC, boolean passUp);
 
   void setMetadataComplete(final int imageIndex, final boolean metadataComplete, boolean passUp);
-  
+
   void add(final ImageMetadata meta, boolean passUp);
 
   void setThumbnailImage(final int imageIndex, final boolean thumbnail, boolean passUp);
 
   void setAxisTypes(final int imageIndex, final AxisType[] axisTypes, boolean passUp);
-  
+
   void setAxisType(final int imageIndex, final int axisIndex, final AxisType axis, boolean passUp);
 
   void setAxisLengths(final int imageIndex, final int[] axisLengths, boolean passUp);
-  
+
   void setAxisLength(final int imageIndex, final AxisType axis, final int length, boolean passUp);
 }

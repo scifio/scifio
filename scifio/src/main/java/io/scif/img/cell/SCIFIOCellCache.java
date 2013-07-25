@@ -53,24 +53,24 @@ import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
  * @author Mark Hiner hinerm at gmail.com
  *
  */
-public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<A> { 
+public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<A> {
 
   // -- Fields --
- 
+
   final protected SCIFIOArrayLoader<A> loader;
-  
+
   final private String cacheId = this.toString();
-  
+
   // TODO: would be nice to replace this with another soft reference cache that was more configurable
   // e.g. controlling max elements and such.
   // In-memory cache.
   final protected ConcurrentHashMap<Integer, SoftReference<SCIFIOCell<A>>> map =
       new ConcurrentHashMap<Integer, SoftReference<SCIFIOCell<A>>>();
-  
-  final private CacheService<SCIFIOCell<?>> cacheService; 
+
+  final private CacheService<SCIFIOCell<?>> cacheService;
 
   // -- Constructor --
-  
+
   /**
    * Creates a new SCIFIOCellCache and makes it available to the current CacheService
    */
@@ -79,15 +79,15 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<
     cacheService = service;
     cacheService.addCache(cacheId);
   }
-  
-  // -- CellCache API -- 
+
+  // -- CellCache API --
 
   /**
-   * Returns the SCIFIOCell at the specified index from this cache, or 
+   * Returns the SCIFIOCell at the specified index from this cache, or
    * null if index has not been loaded yet.
    */
   public SCIFIOCell<A> get(int index) {
-    SCIFIOCell<A> cell = checkCache(cacheId, index); 
+    SCIFIOCell<A> cell = checkCache(cacheId, index);
 
     if (cell != null)
       return cell;
@@ -104,7 +104,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<
    * @param cellMin - origin position of each cell axis
    */
   public SCIFIOCell<A> load(int index, int[] cellDims, long[] cellMin) {
-    SCIFIOCell<A> cell = checkCache(cacheId, index); 
+    SCIFIOCell<A> cell = checkCache(cacheId, index);
 
     if (cell != null) {
       return cell;
@@ -112,25 +112,25 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<
 
     cell = new SCIFIOCell<A>(cacheService, cacheId, index, cellDims, cellMin,
         loader.loadArray(cellDims, cellMin));
-    
-    cache(cacheService.getKey(cacheId, index), cell); 
-    
+
+    cache(cacheService.getKey(cacheId, index), cell);
+
     int c = loader.getBitsPerElement();
     for (final int l : cellDims)
       c *= l;
 
     return cell;
   }
-  
+
   @Override
   public void finalize() {
     cacheService.clearCache(cacheId);
-  } 
-  
+  }
+
   // -- Helper Methods --
-  
+
   // Maps a soft reference to the given cell
-  private void cache(Integer k, SCIFIOCell<A> cell) { 
+  private void cache(Integer k, SCIFIOCell<A> cell) {
     map.put(k, new SoftReference<SCIFIOCell<A>>(cell));
   }
 
@@ -139,26 +139,26 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements CellCache<
    * potentially deserialize from disk.
    */
   @SuppressWarnings("unchecked")
-  private SCIFIOCell<A> checkCache(String id, int index) { 
+  private SCIFIOCell<A> checkCache(String id, int index) {
     SCIFIOCell<A> cell = null;
 
     Integer k = cacheService.getKey(id, index);
-      
+
     // Check the local cache
     SoftReference<SCIFIOCell<A>> ref = map.get(k);
-    
+
     if (ref != null) {
       cell = ref.get();
     }
     else {
       map.remove(k);
-    } 
-    
+    }
+
     // Check the cache manager
     if (cell == null) {
       cell = (SCIFIOCell<A>) cacheService.retrieve(id, index);
-      
-      if (cell != null) { 
+
+      if (cell != null) {
         map.put(k, new SoftReference<SCIFIOCell<A>>(cell));
       }
     }

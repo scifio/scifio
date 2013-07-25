@@ -69,10 +69,10 @@ import net.imglib2.display.ColorTable;
 public class ChannelFiller extends AbstractReaderFilter {
 
   // -- Constants --
-  
+
   public static final double PRIORITY = 1.0;
   public static final String FILTER_VALUE = "io.scif.Reader";
-  
+
   // -- Fields --
 
   /**
@@ -83,14 +83,14 @@ public class ChannelFiller extends AbstractReaderFilter {
 
   /** Number of LUT components. */
   protected int lutLength = 0;
-  
+
   /**
    * Cached parent plane
    */
   private Plane parentPlane = null;
-  
+
   // -- Constructor --
-  
+
   public ChannelFiller() {
     super(ChannelFillerMetadata.class);
   }
@@ -101,7 +101,7 @@ public class ChannelFiller extends AbstractReaderFilter {
   public boolean isFilled(int imageIndex) {
     if(metaCheck())
       return ((ChannelFillerMetadata)getMetadata()).isFilled(imageIndex);
-    
+
     return false;
   }
 
@@ -110,9 +110,9 @@ public class ChannelFiller extends AbstractReaderFilter {
     if(metaCheck())
       ((ChannelFillerMetadata)getMetadata()).setFilled(filled);
   }
-  
+
   // -- Filter API Methods --
-  
+
   /*
    * @see io.scif.filters.AbstractReaderFilter#isCompatible(java.lang.Class)
    */
@@ -164,20 +164,20 @@ public class ChannelFiller extends AbstractReaderFilter {
     else getParent().openPlane(imageIndex, planeIndex, parentPlane, x, y, w, h);
     return openPlaneHelper(parentPlane, plane, imageIndex);
   }
-  
+
   /*
    * @see io.scif.filters.AbstractReaderFilter#close()
    */
   public void close() throws IOException {
     close(false);
   }
-  
+
   /*
    * @see io.scif.filters.AbstractReaderFilter#close(boolean)
    */
   public void close(boolean fileOnly) throws IOException {
     super.close(fileOnly);
-    
+
     if (!fileOnly)
       cleanUp();
   }
@@ -188,14 +188,14 @@ public class ChannelFiller extends AbstractReaderFilter {
   protected void setSourceHelper(String source) {
     cleanUp();
   }
-  
+
   /*
    * This method performs the actual channel filling on the plane returned
    * by the underlying reader component.
    */
   protected Plane openPlaneHelper(Plane parentPlane, Plane plane, int imageIndex) {
     if(!isFilled(imageIndex)) return parentPlane;
-    
+
     // TODO: The pixel type should change to match the available color table.
     // That is, even if the indices are uint8, if the color table is 16-bit,
     // The pixel type should change to uint16. Similarly, if the indices are
@@ -203,28 +203,28 @@ public class ChannelFiller extends AbstractReaderFilter {
     // should change to uint8.
 
     // TODO: This logic below is opaque and could use some comments.
-    
+
     ColorTable lut = parentPlane.getColorTable();
     byte[] index = parentPlane.getBytes();
-    
+
     // update lutLength based on the read plane
     lutLength = parentPlane.getColorTable().getComponentCount();
-    
+
     if(metaCheck()) ((ChannelFillerMetadata)getMetadata()).setLutLength(lutLength);
-    
+
     if (plane == null || !isCompatible(plane.getClass())) {
       ByteArrayPlane bp = new ByteArrayPlane(parentPlane.getContext());
       bp.populate(parentPlane);
       bp.setData(new byte[lutLength * index.length]);
-      
+
       plane = bp;
     }
 
     byte[] buf = plane.getBytes();
     int pt = 0;
-    
+
     int bytesPerIndex = getMetadata().getBitsPerPixel(imageIndex) / 8;
-    
+
     if (getMetadata().isInterleaved(imageIndex)) {
       for (int i=0; i<index.length / bytesPerIndex; i++) {
         for (int j=0; j<lutLength; j++) {
@@ -243,12 +243,12 @@ public class ChannelFiller extends AbstractReaderFilter {
         }
       }
     }
-    
+
     return plane;
   }
-  
+
   // -- Helper Methods --
-  
+
   private void cleanUp() {
     parentPlane = null;
     lutLength = 0;

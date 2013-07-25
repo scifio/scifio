@@ -59,7 +59,7 @@ import org.scijava.Context;
  * @see io.scif.io.BZip2Handle
  */
 class BZip2HandleProvider extends ContextualProvider implements IRandomAccessProvider {
-  
+
   public IRandomAccess createMock(
       byte[] page, String mode, int bufferSize) throws IOException {
     File pageFile = File.createTempFile("page", ".dat");

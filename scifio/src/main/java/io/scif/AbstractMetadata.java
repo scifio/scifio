@@ -67,38 +67,38 @@ public abstract class AbstractMetadata extends AbstractHasSource
   protected static final Logger LOGGER = LoggerFactory.getLogger(Metadata.class);
 
   // -- Fields --
-  
+
   /* The image source associated with this Metadata. */
   private RandomAccessInputStream source;
-  
+
   /* Whether the Metadata should be filtered or not. */
   protected boolean filtered;
-  
+
   /* The MetadataOptions used when parsing this Metadata. */
   protected MetadataOptions metadataOptions;
 
   /* Contains a list of metadata objects for each image in this dataset */
   @io.scif.Field(label = "imageMeta", isList = true)
   private List<ImageMetadata> imageMeta;
-  
+
   /* A string id for this dataset. */
   private String datasetName = null;
-  
+
   /* A table of Field key, value pairs */
   private MetaTable table;
-  
+
   // -- Constructors --
-  
+
   public AbstractMetadata() {
     this((List<ImageMetadata>)null);
   }
-  
+
   public AbstractMetadata(final Metadata copy) {
     this(copy.getAll());
-    
+
     table = new DefaultMetaTable(copy.getTable());
   }
-  
+
   public AbstractMetadata(final List<ImageMetadata> list) {
     imageMeta = new ArrayList<ImageMetadata>();
     table = new DefaultMetaTable();
@@ -116,7 +116,7 @@ public abstract class AbstractMetadata extends AbstractHasSource
   /* @see Metadata#setSource(RandomAccessInputStream) */
   public void setSource(final RandomAccessInputStream source) {
     this.source = source;
-    
+
     if (source != null) setDatasetName(source.getFileName());
   }
 
@@ -124,30 +124,30 @@ public abstract class AbstractMetadata extends AbstractHasSource
   public RandomAccessInputStream getSource() {
     return source;
   }
-  
+
   /* @see Metadata#isFiltered() */
   public boolean isFiltered() {
     return filtered;
   }
-  
+
   /* @see Metadata#getMetadataOptions() */
   public MetadataOptions getMetadataOptions() {
     return metadataOptions;
   }
-  
+
   // -- Getters --
-  
+
   public String getDatasetName() {
     return datasetName;
   }
-  
+
   /*
    * @see io.scif.Metadata#get(int)
    */
   public ImageMetadata get(int imageIndex) {
     return imageMeta.get(imageIndex);
   }
-  
+
   /*
    * @see io.scif.Metadata#getAll()
    */
@@ -168,18 +168,18 @@ public abstract class AbstractMetadata extends AbstractHasSource
   public int getPlaneCount(final int imageIndex) {
     return imageMeta.get(imageIndex).getPlaneCount();
   }
-  
+
   /*
    * @see io.scif.Metadata#getDatasetSize()
    */
   public long getDatasetSize() {
     int size = 0;
-    
+
     for (int i=0; i<getAll().size(); i++) size += getImageSize(i);
-    
+
     return size;
   }
-  
+
   /*
    * @see io.scif.Metadata#getImageSize(int)
    */
@@ -284,7 +284,7 @@ public abstract class AbstractMetadata extends AbstractHasSource
   public int getAxisLength(final int imageIndex, final int planeIndex) {
     return imageMeta.get(imageIndex).getAxisLength(planeIndex);
   }
-  
+
   /*
    * @see io.scif.Metadata#getAxisLength(int, net.imglib2.meta.AxisType)
    */
@@ -335,14 +335,14 @@ public abstract class AbstractMetadata extends AbstractHasSource
   }
 
   // -- Setters --
-  
+
   /*
    * @see io.scif.Metadata#setDatasetName(java.lang.String)
    */
   public void setDatasetName(String name) {
     datasetName = name;
   }
-  
+
   /*
    * @see io.scif.Metadata#setThumbSizeX(int, int)
    */
@@ -423,14 +423,14 @@ public abstract class AbstractMetadata extends AbstractHasSource
   {
     imageMeta.get(imageIndex).setMetadataComplete(metadataComplete);
   }
-  
+
   /*
    * @see io.scif.Metadata#setFiltered(boolean)
    */
   public void setFiltered(boolean filtered) {
     this.filtered = filtered;
   }
-  
+
   /*
    * @see io.scif.Metadata#setMetadataOptions(io.scif.MetadataOptions)
    */
@@ -473,7 +473,7 @@ public abstract class AbstractMetadata extends AbstractHasSource
   public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
     imageMeta.get(imageIndex).setAxisTypes(axisTypes);
   }
-  
+
   /*
    * @see io.scif.Metadata#setAxisType(int, int, net.imglib2.meta.AxisType)
    */
@@ -487,26 +487,26 @@ public abstract class AbstractMetadata extends AbstractHasSource
   public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
     imageMeta.get(imageIndex).setAxisLengths(axisLengths);
   }
-  
+
   /*
    * @see io.scif.Metadata#setAxisLength(int, net.imglib2.meta.AxisType, int)
    */
   public void setAxisLength(final int imageIndex, final AxisType axis, final int length) {
     imageMeta.get(imageIndex).setAxisLength(axis, length);
   }
-  
+
   /*
    * @see io.scif.Metadata#createImageMetadata(int)
    */
   public void createImageMetadata(int imageCount) {
     imageMeta.clear();
-    
+
     for (int i=0; i<imageCount; i++)
       add(new DefaultImageMetadata());
   }
-  
+
   // -- HasMetaTable API Methods --
-  
+
   /*
    * @see io.scif.HasMetaTable#getTable()
    */
@@ -514,16 +514,16 @@ public abstract class AbstractMetadata extends AbstractHasSource
     if (table == null) table = new DefaultMetaTable();
     return table;
   }
-  
+
   /*
    * @see io.scif.HasMetaTable#setTable(io.scif.MetaTable)
    */
   public void setTable(MetaTable table) {
     this.table = table;
   }
-  
+
   // -- HasSource API Methods --
-  
+
   /*
    * @see io.scif.HasSource#close(boolean)
    */
@@ -531,12 +531,12 @@ public abstract class AbstractMetadata extends AbstractHasSource
     if (source != null) {
         source.close();
     }
-    
+
     if (!fileOnly) reset(getClass());
   }
-  
+
   // -- Helper Methods --
-  
+
   private void reset(final Class<?> type) {
     if (type == null || type == AbstractMetadata.class) return;
 
@@ -544,12 +544,12 @@ public abstract class AbstractMetadata extends AbstractHasSource
       f.setAccessible(true);
 
       if (Modifier.isFinal(f.getModifiers())) continue;
-      
+
       // only reset annotated fields
       if (f.getAnnotation(io.scif.Field.class) == null) continue;
-      
+
       final Class<?> fieldType = f.getType();
-      
+
       try {
         if (fieldType == boolean.class) f.set(this, false);
         else if (fieldType == char.class) f.set(this, 0);
@@ -566,10 +566,10 @@ public abstract class AbstractMetadata extends AbstractHasSource
       catch (final IllegalAccessException e) {
         LOGGER.debug(e.getMessage());
       }
-      
+
       table = new DefaultMetaTable();
       imageMeta = new ArrayList<ImageMetadata>();
-      
+
       // check superclasses and interfaces
       reset(type.getSuperclass());
       for (final Class<?> c : type.getInterfaces()) {

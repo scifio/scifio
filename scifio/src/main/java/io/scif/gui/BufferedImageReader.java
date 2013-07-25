@@ -66,9 +66,9 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
   public BufferedImageReader() {
     super(BufferedImagePlane.class);
   }
-  
+
   // -- Reader API Methods --
-  
+
   /*
    * @see io.scif.Reader#openThumbPlane(int, int)
    */
@@ -80,14 +80,14 @@ public abstract class BufferedImageReader<M extends TypedMetadata>
     int h = getMetadata().getAxisLength(imageIndex, Axes.Y);
     int thumbX = getMetadata().getThumbSizeX(imageIndex);
     int thumbY = getMetadata().getThumbSizeY(imageIndex);
-    
+
     BufferedImagePlane plane = createPlane(0, 0, thumbX, thumbY);
-    
+
     plane.setData(AWTImageTools.openThumbImage(openPlane(imageIndex, planeIndex),
     			        this, imageIndex, w, h, thumbX, thumbY, false));
-    
+
     return plane;
-  } 
+  }
 
   /*
    * @see io.scif.Reader#createPlane(int, int, int, int)

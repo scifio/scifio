@@ -50,20 +50,20 @@ import java.io.IOException;
 public class DefaultReader extends ByteArrayReader<DefaultMetadata>
   implements DefaultComponent
 {
-  
+
   // -- Fields --
-  
+
   private Format format;
-  
+
   // -- HasFormat API Methods --
-  
+
   @Override
   public Format getFormat() {
     return format;
   }
-  
+
   // -- Reader API Methods --
-  
+
   /**
    * Non-functional openPlane implementation.
    * 

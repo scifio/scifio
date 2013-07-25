@@ -71,26 +71,26 @@ import org.scijava.service.AbstractService;
 public class DefaultFormatService extends AbstractService implements FormatService {
 
   // -- Parameters --
-  
+
   @Parameter
   private PluginService pluginService;
-  
+
   //NB: needed for JEPG2000 format, which is a core format
   @Parameter
   private JAIIIOService jaiiioService;
-  
+
   // -- Fields --
-  
+
   /*
    * A  list of all available Formats
    */
   private final List<Format> formats = new ArrayList<Format>();
-  
+
   /*
    * Maps Format classes to their instances.
    */
   private final Map<Class<?>, Format> formatMap = new HashMap<Class<?>, Format>();
-  
+
   /*
    * Maps Checker classes to their parent Format instance.
    */
@@ -117,19 +117,19 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   private final Map<Class<?>, Format> metadataMap = new HashMap<Class<?>, Format>();
 
   // -- FormatService API Methods --
-  
+
   /*
    * @see FormatService#getSuffixes()
    */
   public String[] getSuffixes() {
     TreeSet<String> ts = new TreeSet<String>();
-    
+
     for (Format f : formats) {
       for (String s : f.getSuffixes()) {
         ts.add(s);
       }
     }
-    
+
     return ts.toArray(new String[ts.size()]);
   }
 
@@ -141,7 +141,7 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     // already have an entry for this format
     if(formatMap.get(format.getClass()) != null)
       return false;
-    
+
     formats.add(format);
     formatMap.put(format.getClass(), format);
 
@@ -158,7 +158,7 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     formatMap.remove(format.getClass());
     return formats.remove(format);
   }
-  
+
   /*
    * @see io.scif.services.FormatService#addComponents(io.scif.Format)
    */
@@ -169,7 +169,7 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     writerMap.put(format.getWriterClass(), format);
     metadataMap.put(format.getMetadataClass(), format);
   }
-  
+
   /*
    * @see io.scif.services.FormatService#removeComponents(io.scif.Format)
    */
@@ -180,7 +180,7 @@ public class DefaultFormatService extends AbstractService implements FormatServi
     writerMap.remove(format.getWriterClass());
     metadataMap.remove(format.getMetadataClass());
   }
-  
+
   /*
    * @see FormatService#getFormatFromClass(Class<? extends Format>)
    */
@@ -188,7 +188,7 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   public <F extends Format> F getFormatFromClass(final Class<F> formatClass) {
     return (F)formatMap.get(formatClass);
   }
-  
+
   /*
    * @see FormatService#getFormatFromComponent(Class<?>)
    */
@@ -228,27 +228,27 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   public <W extends Writer> Format getFormatFromWriter(final Class<W> writerClass) {
     return writerMap.get(writerClass);
   }
-  
+
   /*
    * @see io.scif.services.FormatService#getFormatByExtension(java.lang.String)
    */
   public Writer getWriterByExtension(String fileId) throws FormatException {
     boolean matched = false;
-    
+
     Writer w = null;
 
     for (int i=0; !matched && i<formats.size(); i++) {
       Format f = formats.get(i);
-      
+
       if (FormatTools.checkSuffix(fileId,f.getSuffixes())) {
-        
+
         if (!DefaultWriter.class.isAssignableFrom(f.getWriterClass())) {
           w = f.createWriter();
           matched = true;
         }
       }
     }
-    
+
     return w;
   }
 
@@ -285,7 +285,7 @@ public class DefaultFormatService extends AbstractService implements FormatServi
       throws FormatException {
     return getFormat(id, false);
   }
-  
+
   /*
    * @see FormatService#getFormat(String, boolean)
    */
@@ -293,7 +293,7 @@ public class DefaultFormatService extends AbstractService implements FormatServi
       throws FormatException {
     return getFormatList(id, open, true).get(0);
   }
-  
+
   /*
    * @see FormatService#getformatList(String)
    */
@@ -308,11 +308,11 @@ public class DefaultFormatService extends AbstractService implements FormatServi
   public List<Format> getFormatList(final String id,
     final boolean open, final boolean greedy) throws FormatException
   {
-    
+
     final List<Format> formatList = new ArrayList<Format>();
 
     boolean found = false;
-    
+
     for (int i=0; i<formats.size() && !found; i++) {
       final Format format = formats.get(i);
       if (format.isEnabled() && format.createChecker().isFormat(id, open)) {
@@ -327,32 +327,32 @@ public class DefaultFormatService extends AbstractService implements FormatServi
 
     return formatList;
   }
-  
+
   /*
    * @see FormatService#getAllFormats()
    */
   public List<Format> getAllFormats() {
     return formats;
   }
-  
+
   /*
    * @see io.scif.FormatService#getInstance(java.lang.Class)
    */
-  public <T extends TypedService> T getInstance(Class<T> type) { 
+  public <T extends TypedService> T getInstance(Class<T> type) {
     return getContext().getService(type);
   }
 
   // -- Service API Methods --
-  
+
   /*
    * Discovers the list of formats and creates singleton instances of each.
    */
   public void initialize() {
     for (Format format : pluginService.createInstancesOfType(Format.class))
     {
-      addFormat(format); 
+      addFormat(format);
     }
-    
+
     Collections.sort(formats);
   }
 }

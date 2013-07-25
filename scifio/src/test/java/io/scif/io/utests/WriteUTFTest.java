@@ -93,7 +93,7 @@ public class WriteUTFTest {
   public void testLength() throws IOException {
     assertEquals(10, fileHandle.length());
   }
-  
+
   @Test
   public void testWriteSequential() throws IOException {
     fileHandle.writeUTF("\u00A9");  // Copyright sign (2 bytes)

@@ -65,7 +65,7 @@ import org.scijava.plugin.Plugin;
 public class JPEGFormat extends ImageIOFormat {
 
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -81,21 +81,21 @@ public class JPEGFormat extends ImageIOFormat {
   }
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends ImageIOFormat.Metadata {
-    
+
     // -- Metadata API Methods --
-    
+
     public void close(boolean fileOnly) throws IOException {
       scifio().location().mapId(getDatasetName(), null);
       super.close(fileOnly);
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -103,17 +103,17 @@ public class JPEGFormat extends ImageIOFormat {
   public static class Checker extends AbstractChecker {
 
     // -- Constants --
-    
+
     private static final int MAX_SIZE = 8192;
     // -- Constructor --
-    
+
     public Checker() {
       suffixNecessary = false;
       suffixSufficient = false;
     }
-    
+
     // -- Checker API Methods --
-    
+
     @Override
     public boolean isFormat(String name, boolean open) {
       if (open) {
@@ -122,7 +122,7 @@ public class JPEGFormat extends ImageIOFormat {
 
       return FormatTools.checkSuffix(name, getFormat().getSuffixes());
     }
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
       final int blockLen = 4;
@@ -136,10 +136,10 @@ public class JPEGFormat extends ImageIOFormat {
       {
         return false;
       }
-      
+
       try {
         io.scif.Metadata m = getFormat().createParser().parse(stream);
-        
+
         // Need to check dimension lengths
         if (m.getAxisLength(0, Axes.X) > MAX_SIZE && m.getAxisLength(0, Axes.Y) > MAX_SIZE)
         {
@@ -154,16 +154,16 @@ public class JPEGFormat extends ImageIOFormat {
       return true;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Parser extends ImageIOFormat.Parser<Metadata> {
 
- 
+
     @Override
-    public void typedParse(RandomAccessInputStream stream, Metadata meta) 
+    public void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
     {
       String id = stream.getFileName();
@@ -224,13 +224,13 @@ public class JPEGFormat extends ImageIOFormat {
       currentId = id;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends ImageIOFormat.Reader<Metadata> { }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -238,16 +238,16 @@ public class JPEGFormat extends ImageIOFormat {
   public static class Writer extends ImageIOFormat.Writer<Metadata> {
 
     // -- Constructor --
-    
+
     public Writer() {
       super("jpeg");
     }
-    
+
     // -- Writer API methods --
 
     @Override
     public int[] getPixelTypes(String codec) {
       return new int[] {FormatTools.UINT8};
-    } 
+    }
   }
 }

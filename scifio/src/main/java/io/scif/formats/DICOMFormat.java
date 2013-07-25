@@ -87,11 +87,11 @@ public class DICOMFormat extends AbstractFormat {
   // -- Constants --
 
   public static final String DICOM_MAGIC_STRING = "DICM";
-  
+
   private static final Hashtable<Integer, String> TYPES = buildTypes();
 
   // -- Format API Methods --
-  
+
   public String getFormatName() {
     return "DICOM";
   }
@@ -100,7 +100,7 @@ public class DICOMFormat extends AbstractFormat {
     return new String[]{"dic", "dcm", "dicom", "jp2",
         "j2ki", "j2kr", "raw", "ima"};
   }
-  
+
   // -- Static Helper methods --
 
   /**
@@ -726,9 +726,9 @@ public class DICOMFormat extends AbstractFormat {
 
     return dict;
   }
-  
+
   // -- Nested Classes --
-  
+
   /**
    * @author Mark Hiner
    *
@@ -736,12 +736,12 @@ public class DICOMFormat extends AbstractFormat {
   public static class Metadata extends AbstractMetadata implements HasColorTable {
 
     // -- Constants --
-    
-    public static final String CNAME = 
+
+    public static final String CNAME =
         "io.scif.formats.DICOMFormat$Metadata";
-    
+
     // -- Fields --
-    
+
     byte[][] lut = null;
     short[][] shortLut = null;
     private ColorTable8 lut8;
@@ -754,21 +754,21 @@ public class DICOMFormat extends AbstractFormat {
     private boolean oddLocations = false;
     private int maxPixelValue;
     private int imagesPerFile = 0;
-    private double rescaleSlope = 1.0, rescaleIntercept = 0.0; 
+    private double rescaleSlope = 1.0, rescaleIntercept = 0.0;
     private Hashtable<Integer, Vector<String>> fileList;
     private boolean inverted = false;
-    
+
     private String pixelSizeX, pixelSizeY;
     private Double pixelSizeZ;
- 
+
     private String date, time, imageType;
     private String originalDate, originalTime, originalInstance;
     private int originalSeries;
-    
+
     private Vector<String> companionFiles = new Vector<String>();
-    
+
     // Getters and Setters
-    
+
     public long[] getOffsets() {
       return offsets;
     }
@@ -776,7 +776,7 @@ public class DICOMFormat extends AbstractFormat {
     public void setOffsets(long[] offsets) {
       this.offsets = offsets;
     }
-    
+
     public double getRescaleSlope() {
       return rescaleSlope;
     }
@@ -957,7 +957,7 @@ public class DICOMFormat extends AbstractFormat {
 
     public ColorTable getColorTable(int imageIndex, int planeIndex) {
       int pixelType = getPixelType(0);
-      
+
       switch (pixelType) {
       case FormatTools.INT8:
       case FormatTools.UINT8:
@@ -968,19 +968,19 @@ public class DICOMFormat extends AbstractFormat {
         if (shortLut != null && lut16 == null) lut16 = new ColorTable16(shortLut);
         return lut16;
       }
-      
+
       return null;
     }
 
     // -- Metadata API Methods --
-    
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       LOGGER.info("Populating metadata");
 
-      //TODO this isn't going to work because each parsing will 
+      //TODO this isn't going to work because each parsing will
       // get the same filelist size and repeat infinitely
       int seriesCount = fileList.size();
 
@@ -992,7 +992,7 @@ public class DICOMFormat extends AbstractFormat {
         int sizeZ = 0;
         if (seriesCount == 1) {
           sizeZ = getOffsets().length * fileList.get(keys[i]).size();
-          
+
           setAxisTypes(0, FormatTools.findDimensionList("XYCZT"));
 
           setRGB(i, getAxisLength(i, Axes.CHANNEL) > 1);
@@ -1016,25 +1016,25 @@ public class DICOMFormat extends AbstractFormat {
           }
 
         }
-        
+
         if (sizeC == 0) sizeC = 1;
-        
+
         setAxisLength(i, Axes.CHANNEL, sizeC);
         setAxisLength(i, Axes.Z, sizeZ);
         setAxisLength(i, Axes.TIME, 1);
-        
+
         get(i).setPlaneCount(sizeZ);
       }
     }
-    
+
     // -- HasSource API Methods --
-    
+
     /*
      * @see io.scif.AbstractMetadata#close(boolean)
      */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
-      
+
       if (!fileOnly) {
         oddLocations = false;
         isJPEG = isJP2K = isRLE = isDeflate = false;
@@ -1057,13 +1057,13 @@ public class DICOMFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner
    *
    */
   public static class Checker extends AbstractChecker {
-    
+
     // -- Constants --
 
     private static final String[] DICOM_SUFFIXES = {
@@ -1071,7 +1071,7 @@ public class DICOMFormat extends AbstractFormat {
     };
 
     // -- Constructor --
-    
+
     public Checker() {
       suffixSufficient = false;
       suffixNecessary = false;
@@ -1107,10 +1107,10 @@ public class DICOMFormat extends AbstractFormat {
       }
       catch (NullPointerException e) { }
       catch (FormatException e) { }
-      return false; 
+      return false;
     }
   }
-  
+
   /**
    * @author Mark Hiner
    *
@@ -1138,30 +1138,30 @@ public class DICOMFormat extends AbstractFormat {
     private static final int ITEM = 0xFFFEE000;
     private static final int ITEM_DELIMINATION = 0xFFFEE00D;
     private static final int SEQUENCE_DELIMINATION = 0xFFFEE0DD;
-    private static final int PIXEL_DATA = 0x7FE00010; 
+    private static final int PIXEL_DATA = 0x7FE00010;
 
     // -- Parser API Methods --
-    
+
     @Override
     public int fileGroupOption(String id) throws FormatException, IOException {
       return FormatTools.CAN_GROUP;
-    } 
-    
+    }
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
         throws IOException, FormatException
     {
       meta.createImageMetadata(1);
-      
+
       stream.order(true);
-      
+
       ImageMetadata iMeta = meta.get(0);
-      
+
       // look for companion files
       Vector<String> companionFiles = new Vector<String>();
       attachCompanionFiles(companionFiles);
       meta.setCompanionFiles(companionFiles);
-      
+
       int location = 0;
       boolean isJP2K = false;
       boolean isJPEG = false;
@@ -1172,8 +1172,8 @@ public class DICOMFormat extends AbstractFormat {
       int imagesPerFile = 0;
       boolean bigEndianTransferSyntax = false;
       long[] offsets = null;
-      
-      
+
+
       int sizeX = 0;
       int sizeY = 0;
       int bitsPerPixel = 0;
@@ -1195,7 +1195,7 @@ public class DICOMFormat extends AbstractFormat {
         location = 128;
       }
       else in.seek(0);
-      
+
       LOGGER.info("Reading tags");
 
       long baseOffset = 0;
@@ -1333,7 +1333,7 @@ public class DICOMFormat extends AbstractFormat {
       if (imagesPerFile == 0) imagesPerFile = 1;
 
       int bpp = bitsPerPixel;
-      
+
       while (bitsPerPixel % 8 != 0) bitsPerPixel++;
       if (bitsPerPixel == 24 || bitsPerPixel == 48) {
         bitsPerPixel /= 3;
@@ -1342,16 +1342,16 @@ public class DICOMFormat extends AbstractFormat {
 
       int pixelType =
         FormatTools.pixelTypeFromBytes(bitsPerPixel / 8, signed, false);
-      
+
       iMeta.setBitsPerPixel(bpp);
       iMeta.setPixelType(pixelType);
-      
+
       int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
-      
+
       int planeSize = sizeX * sizeY * 
-          (meta.getColorTable(0, 0) == null ? meta.getAxisLength(0, Axes.CHANNEL) : 1) 
+          (meta.getColorTable(0, 0) == null ? meta.getAxisLength(0, Axes.CHANNEL) : 1)
           * bytesPerPixel;
-      
+
       meta.setJP2K(isJP2K);
       meta.setJPEG(isJPEG);
       meta.setImagesPerFile(imagesPerFile);
@@ -1359,7 +1359,7 @@ public class DICOMFormat extends AbstractFormat {
       meta.setDeflate(isDeflate);
       meta.setMaxPixelValue(maxPixelValue);
       meta.setOddLocations(oddLocations);
-      
+
       LOGGER.info("Calculating image offsets");
 
       // calculate the offset to each plane
@@ -1376,7 +1376,7 @@ public class DICOMFormat extends AbstractFormat {
 
       offsets = new long[imagesPerFile];
       meta.setOffsets(offsets);
-      
+
       for (int i=0; i<imagesPerFile; i++) {
         if (isRLE) {
           if (i == 0) in.seek(baseOffset);
@@ -1430,7 +1430,7 @@ public class DICOMFormat extends AbstractFormat {
 
       makeFileList();
     }
-    
+
     public String[] getImageUsedFiles(int imageIndex, boolean noPixels) {
       FormatTools.assertId(currentId, true, 1);
       if (noPixels || metadata.getFileList() == null) return null;
@@ -1442,9 +1442,9 @@ public class DICOMFormat extends AbstractFormat {
       }
       return files == null ? null : files.toArray(new String[files.size()]);
     }
-    
+
     // -- Helper methods --
-    
+
     private void makeFileList() throws FormatException, IOException {
       LOGGER.info("Building file list");
 
@@ -1494,7 +1494,7 @@ public class DICOMFormat extends AbstractFormat {
             }
           }
         }
-        
+
         metadata.setFileList(fileList);
       }
       else if (metadata.getFileList() == null) {
@@ -1504,7 +1504,7 @@ public class DICOMFormat extends AbstractFormat {
         metadata.setFileList(fileList);
       }
     }
-    
+
     /**
      * DICOM datasets produced by:
      * http://www.ct-imaging.de/index.php/en/ct-systeme-e/mikro-ct-e.html
@@ -1532,7 +1532,7 @@ public class DICOMFormat extends AbstractFormat {
         }
       }
     }
-    
+
     /**
      * Scan the given directory for files that belong to this dataset.
      */
@@ -1559,7 +1559,7 @@ public class DICOMFormat extends AbstractFormat {
         }
       }
     }
-    
+
     /**
      * Determine if the given file belongs in the same dataset as this file.
      */
@@ -1651,7 +1651,7 @@ public class DICOMFormat extends AbstractFormat {
     private void addInfo(Metadata meta, DICOMTag tag, String value) throws IOException {
       String oldValue = value;
       String info = getHeaderInfo(tag, value);
-      
+
 
       if (info != null && tag.get() != ITEM) {
         info = info.trim();
@@ -1673,7 +1673,7 @@ public class DICOMFormat extends AbstractFormat {
             meta.setRGB(0, false);
             meta.lut = new byte[3][];
             meta.shortLut = new short[3][];
-           
+
           }
           else if (info.startsWith("MONOCHROME")) {
             meta.setInverted(info.endsWith("1"));
@@ -1725,7 +1725,7 @@ public class DICOMFormat extends AbstractFormat {
         if (((tag.get() & 0xffff0000) >> 16) != 0x7fe0) {
           key = formatTag(tag.get()) + " " + key;
           int imageIndex = meta.getImageCount() - 1;
-          
+
           Object v;
           if ((v = meta.get(imageIndex).getTable().get(key)) != null) {
             // make sure that values are not overwritten
@@ -1738,9 +1738,9 @@ public class DICOMFormat extends AbstractFormat {
           }
         }
       }
-      
+
     }
-    
+
     private String formatTag(int tag) {
       String s = Integer.toHexString(tag);
       while (s.length() < 8) {
@@ -1748,11 +1748,11 @@ public class DICOMFormat extends AbstractFormat {
       }
       return s.substring(0, 4) + "," + s.substring(4);
     }
-    
+
     private void addInfo(Metadata meta, DICOMTag tag, int value) throws IOException {
       addInfo(meta, tag, Integer.toString(value));
     }
-    
+
     private String getHeaderInfo(DICOMTag tag, String value) throws IOException {
       if (tag.get() == ITEM_DELIMINATION ||
           tag.get() == SEQUENCE_DELIMINATION) {
@@ -1839,9 +1839,9 @@ public class DICOMFormat extends AbstractFormat {
       domains = new String[] {FormatTools.MEDICAL_DOMAIN};
       hasCompanionFiles = true;
     }
-    
+
     // -- Reader API Methods --
-    
+
     /*
      * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane,
      * int, int, int, int)
@@ -1850,9 +1850,9 @@ public class DICOMFormat extends AbstractFormat {
       ByteArrayPlane plane, int x, int y, int w, int h)
       throws FormatException, IOException
     {
-      FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, 
+      FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
           plane.getData().length, x, y, w, h);
-      
+
       Metadata meta = getMetadata();
       Hashtable<Integer, Vector<String>> fileList = meta.getFileList();
 
@@ -2010,11 +2010,11 @@ public class DICOMFormat extends AbstractFormat {
       return plane;
     }
   }
-  
+
   // -- DICOM Helper Classes --
-  
+
   private static class DICOMUtils {
-    
+
     private static final int AE = 0x4145, AS = 0x4153, AT = 0x4154, CS = 0x4353;
     private static final int DA = 0x4441, DS = 0x4453, DT = 0x4454, FD = 0x4644;
     private static final int FL = 0x464C, IS = 0x4953, LO = 0x4C4F, LT = 0x4C54;
@@ -2023,20 +2023,20 @@ public class DICOMFormat extends AbstractFormat {
     private static final int US = 0x5553, UT = 0x5554, OB = 0x4F42, OW = 0x4F57;
     private static final int SQ = 0x5351, UN = 0x554E, QQ = 0x3F3F;
 
-    private static final int IMPLICIT_VR = 0x2d2d; 
-    
+    private static final int IMPLICIT_VR = 0x2d2d;
+
     private static DICOMTag getNextTag(RandomAccessInputStream stream)
       throws FormatException, IOException
     {
       return getNextTag(stream, false);
     }
-    
+
     private static DICOMTag getNextTag(RandomAccessInputStream stream,
         boolean bigEndianTransferSyntax) throws FormatException, IOException
     {
       return getNextTag(stream, false, false);
     }
-    
+
     private static DICOMTag getNextTag(RandomAccessInputStream stream,
       boolean bigEndianTransferSyntax, boolean isOddLocations)
       throws FormatException, IOException
@@ -2045,7 +2045,7 @@ public class DICOMFormat extends AbstractFormat {
       int groupWord = stream.readShort() & 0xffff;
       DICOMTag diTag = new DICOMTag();
       boolean littleEndian = true;
-      
+
       if (groupWord == 0x0800 && bigEndianTransferSyntax) {
         littleEndian = false;
         groupWord = 0x0008;
@@ -2109,10 +2109,10 @@ public class DICOMFormat extends AbstractFormat {
       }
       diTag.setTagValue(tag);
       diTag.setLittleEndian(littleEndian);
-      
+
       return diTag;
     }
-    
+
     private static int getLength(RandomAccessInputStream stream, DICOMTag tag)
       throws IOException
     {
@@ -2127,7 +2127,7 @@ public class DICOMFormat extends AbstractFormat {
       // match the known codes. It is possible that these two
       // bytes are part of a 32-bit length for an implicit VR.
 
-      
+
       int vr = ((b[0] & 0xff) << 8) | (b[1] & 0xff);
       tag.setVR(vr);
       switch (vr) {
@@ -2189,7 +2189,7 @@ public class DICOMFormat extends AbstractFormat {
       }
     }
   }
-  
+
   public static class DICOMTag {
     private int elementLength = 0;
     private int tagValue;
@@ -2197,7 +2197,7 @@ public class DICOMFormat extends AbstractFormat {
     private boolean inSequence = false;
     private int location = 0;
     private boolean littleEndian;
- 
+
     public int getLocation() {
       return location;
     }
@@ -2205,11 +2205,11 @@ public class DICOMFormat extends AbstractFormat {
     public void setLocation(int location) {
       this.location = location;
     }
-    
+
     public void addLocation(int offset) {
       location += offset;
     }
-    
+
     public int getVR() {
       return vr;
     }
@@ -2217,23 +2217,23 @@ public class DICOMFormat extends AbstractFormat {
     public void setVR(int vr) {
       this.vr = vr;
     }
-    
+
     public int getElementLength() {
       return elementLength;
     }
-    
+
     public void setElementLength(int elementLength) {
       this.elementLength = elementLength;
     }
-    
+
     public void incrementElementLength() {
       elementLength++;
     }
-    
+
     public int get() {
       return tagValue;
     }
-    
+
     public void setTagValue(int tagValue) {
       this.tagValue = tagValue;
     }

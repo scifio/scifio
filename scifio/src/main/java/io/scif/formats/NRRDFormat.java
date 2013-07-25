@@ -70,7 +70,7 @@ import org.scijava.plugin.Plugin;
 public class NRRDFormat extends AbstractFormat {
 
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -86,15 +86,15 @@ public class NRRDFormat extends AbstractFormat {
   }
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata {
-    
+
     // -- Constants --
-    
+
     public static final String CNAME = "io.scif.formats.NRRDFormat$Metadata";
 
     // -- Fields --
@@ -110,22 +110,22 @@ public class NRRDFormat extends AbstractFormat {
 
     /** Helper format for reading pixel data. */
     private io.scif.Reader helper;
-    
+
     private String[] pixelSizes;
 
     private boolean lookForCompanion = true;
     private boolean initializeHelper = false;
-    
+
     // -- NRRDMetadata getters and setters --
 
     public void setHelper(io.scif.Reader reader) {
       helper = reader;
     }
-    
+
     public io.scif.Reader getHelper() {
       return helper;
     }
-    
+
     public String getDataFile() {
       return dataFile;
     }
@@ -173,15 +173,15 @@ public class NRRDFormat extends AbstractFormat {
     public void setInitializeHelper(boolean initializeHelper) {
       this.initializeHelper = initializeHelper;
     }
-    
+
     // -- Metadata API methods --
-    
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
-      
+
       iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) > 1);
       iMeta.setInterleaved(true);
       iMeta.setPlaneCount(iMeta.getAxisLength(Axes.Z) * iMeta.getAxisLength(Axes.TIME));
@@ -190,7 +190,7 @@ public class NRRDFormat extends AbstractFormat {
       iMeta.setFalseColor(false);
       iMeta.setMetadataComplete(true);
     }
-    
+
     /* @see loci.formats.IFormatReader#close(boolean) */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -203,19 +203,19 @@ public class NRRDFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Checker extends AbstractChecker {
-    
+
     // -- Constants --
-    
+
     public static final String NRRD_MAGIC_STRING = "NRRD";
 
     // -- Checker API Methods --
-    
+
     @Override
     public boolean isFormat(String name, boolean open) {
       if (super.isFormat(name, open)) return true;
@@ -234,15 +234,15 @@ public class NRRDFormat extends AbstractFormat {
       header = new Location(getContext(), name + ".nhdr");
       return header.exists();
     }
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
       final int blockLen = NRRD_MAGIC_STRING.length();
       if (!FormatTools.validStream(stream, blockLen, false)) return false;
       return stream.readString(blockLen).startsWith(NRRD_MAGIC_STRING);
-    } 
+    }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -250,7 +250,7 @@ public class NRRDFormat extends AbstractFormat {
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- Parser API Methods --
-    
+
     @Override
     public String[] getImageUsedFiles(int imageIndex, boolean noPixels) {
       FormatTools.assertId(currentId, true, 1);
@@ -261,14 +261,14 @@ public class NRRDFormat extends AbstractFormat {
       if (metadata.getDataFile() == null) return new String[] {currentId};
       return new String[] {currentId, metadata.getDataFile()};
     }
-    
+
     // -- Abstract Parser API Methods --
- 
+
     public Metadata parse(RandomAccessInputStream stream, Metadata meta)
-      throws IOException, FormatException 
+      throws IOException, FormatException
     {
       String id = stream.getFileName();
-      
+
       // make sure we actually have the .nrrd/.nhdr file
       if (!FormatTools.checkSuffix(id, "nhdr") && !FormatTools.checkSuffix(id, "nrrd")) {
         id += ".nhdr";
@@ -281,12 +281,12 @@ public class NRRDFormat extends AbstractFormat {
         id = new Location(getContext(), id).getAbsolutePath();
       }
       stream.close();
-      
+
       stream = new RandomAccessInputStream(getContext(), id);
 
       return super.parse(stream, meta);
     }
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
@@ -297,7 +297,7 @@ public class NRRDFormat extends AbstractFormat {
 
       meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
-      
+
       iMeta.setAxisLength(Axes.X, 1);
       iMeta.setAxisLength(Axes.Y, 1);
       iMeta.setAxisLength(Axes.Z, 1);
@@ -389,8 +389,8 @@ public class NRRDFormat extends AbstractFormat {
         }
         meta.setInitializeHelper(!meta.getEncoding().equals("raw"));
       }
-      
-      
+
+
       if (meta.isInitializeHelper()) {
         // Find the highest priority non-NRRD format that can support the current
         // image and cache it as a helper
@@ -406,74 +406,74 @@ public class NRRDFormat extends AbstractFormat {
         helper.setSource(meta.getDataFile());
         meta.setHelper(helper);
 
-        scifio().format().addFormat(nrrd); 
+        scifio().format().addFormat(nrrd);
       }
     }
-    
+
     // -- Groupable API Methods --
-    
+
     @Override
     public boolean hasCompanionFiles() {
       return true;
     }
-    
+
     @Override
     public boolean isSingleFile(String id) throws FormatException, IOException {
       return FormatTools.checkSuffix(id, "nrrd");
     }
-    
+
     @Override
     public int fileGroupOption(String id) throws FormatException, IOException {
       return FormatTools.MUST_GROUP;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.UNKNOWN_DOMAIN};
     }
-    
+
     // -- Groupable API Methods --
-    
+
     @Override
     public boolean hasCompanionFiles() {
       return true;
     }
-    
+
     @Override
     public boolean isSingleFile(String id) throws FormatException, IOException {
       return FormatTools.checkSuffix(id, "nrrd");
     }
-    
+
     @Override
     public int fileGroupOption(String id) throws FormatException, IOException {
       return FormatTools.MUST_GROUP;
     }
-    
+
     // -- Reader API Methods --
-    
+
     @Override
     public int getOptimalTileHeight(int imageIndex) {
       return getMetadata().getAxisLength(imageIndex, Axes.Y);
     }
-    
+
     /*
      * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
-      ByteArrayPlane plane, int x, int y, int w, int h) 
+      ByteArrayPlane plane, int x, int y, int w, int h)
       throws FormatException, IOException
     {
       byte[] buf = plane.getData();
       Metadata meta = getMetadata();
-      
+
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
 
 
@@ -498,17 +498,17 @@ public class NRRDFormat extends AbstractFormat {
         s.close();
         return plane;
       }
-      
+
       // open the data file using our helper format
       if (meta.isInitializeHelper() && meta.getDataFile() != null &&
           meta.getHelper() != null)
-      { 
+      {
         meta.getHelper().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
         return plane;
       }
-      
+
       throw new FormatException("Could not find a supporting Format");
     }
-    
+
   }
 }

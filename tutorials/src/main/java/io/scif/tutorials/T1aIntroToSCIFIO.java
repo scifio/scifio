@@ -34,23 +34,23 @@ import io.scif.SCIFIO;
  *
  */
 public class T1aIntroToSCIFIO {
-  
+
   public static void main(final String... agrs) throws FormatException, IOException {
     // The first step when working with SCIFIO is to create a context.
     // This is an instance of io.scif.SCIFIO, created as follows:
     SCIFIO scifio = new SCIFIO();
-    
+
     // The SCIFIO class is designed to be a convenience wrapper for an
     // org.scijava.Context. In typical use you will may already have a context
     // available. Instead of using the zero-parameter SCIFIO constructor,
     // which creates a brand new context, you would construct it as follows:
     Context context = new Context(); // our pre-existing context
     scifio = new SCIFIO(context);
-    
+
     // This context provides access to all supported Format types, which
     // will allow corresponding images to be opened:
     List<Format> formats = scifio.format().getAllFormats();
-    
+
     // ------------------------------------------------------------------------
     // COMPARISON WITH BIO-FORMATS 4.X
     // Bio-Formats 4.X used a single aggregated reader class:
@@ -66,28 +66,28 @@ public class T1aIntroToSCIFIO {
     // each context allows separate loading of Formats, for differentiated
     // environments.
     // ------------------------------------------------------------------------
-    
+
     // Let's look at a sample scenario where we have an image path and we just
     // want to open the first 3 planes as simply as possible:
-    
+
     // The path to our sample image
     String sampleImage = "8bit-signed&pixelType=int8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake";
-    
+
     // Planes read from images in SCIFIO are returned as io.scif.Plane
     // objects, agnostic of the underlying data type (e.g. byte[] or
     // java.awt.BufferedImage)
     Plane[] planes = new Plane[3];
-    
+
     // This method tells the context to check all of its known formats and
     // return an io.scif.Reader capable of opening the specified image's
     // planes.
     Reader reader = scifio.initializer().initializeReader(sampleImage);
-    
+
     // Here we open the actual planes and store them for future use
     for (int i=0; i<planes.length; i++) {
       planes[i] = reader.openPlane(0, i);
     }
-    
+
     // ------------------------------------------------------------------------
     // COMPARISON WITH BIO-FORMATS 4.X
     // In Bio-Formats 4.X, planes were opened via a reader.openBytes call which
@@ -104,15 +104,15 @@ public class T1aIntroToSCIFIO {
     // specifies the plane number - which would result in returning the
     // first 3 C, Z or T planes depending on the ordering of the image.
     // ------------------------------------------------------------------------
-    
+
     // Now that we have image planes, suppose we want to display them.
     // In Bio-Formats 4.X, planes were returned as byte[]'s. This data
     // structure is still available in SCIFIO:
-    
+
     for (Plane p : planes)
       displayImage(p.getBytes());
   }
-  
+
   // Dummy method for demonstrating io.scif.Plane#getBytes()
   private static void displayImage(byte[] bytes) {
     System.out.println(bytes + " " + bytes.length);

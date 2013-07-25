@@ -62,7 +62,7 @@ public class ServiceException extends Exception
 
   /**
    * Default constructor.
-   * @param message Error message. 
+   * @param message Error message.
    * @param cause Upstream exception.
    */
   public ServiceException(String message, Throwable cause)

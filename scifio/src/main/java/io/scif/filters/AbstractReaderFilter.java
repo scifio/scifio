@@ -78,25 +78,25 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 {
 
   // -- Fields --
-  
+
   /* Need to wrap each Reader's Metadata separately */
   private Metadata wrappedMeta = null;
-  
+
   private Class<? extends Metadata> metaClass;
-  
+
   // -- Constructor --
-  
+
   public AbstractReaderFilter() {
     this(null);
   }
-  
+
   public AbstractReaderFilter(Class<? extends Metadata> metaClass) {
     super(Reader.class);
     this.metaClass = metaClass;
   }
-  
+
   // -- AbstractReaderFilter API Methods --
-  
+
   /**
    * Allows code to be executed regardless of which {@link #setSource()}
    * signature is called.
@@ -105,58 +105,58 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
    *                 {@code setSource} series.
    */
   protected void setSourceHelper(String source) {
-    
+
   }
-  
+
   /**
    * Allows code to be executed regardless of which {@link #openPlane()}
    * signature is called.
    */
   protected void openPlaneHelper() {
-    
+
   }
-  
+
   /**
    * Allows code to be executed regardless of which {@link #readPlane()}
    * signature is called.
    */
   protected void readPlaneHelper() {
   }
-  
+
   /**
    * Convenience accessor for the parent's Metadata
    */
   protected Metadata getParentMeta() {
     return getParent().getMetadata();
   }
-  
+
   // -- Filter API Methods --
-  
+
   /*
    * @see io.scif.filters.AbstractFilter#setParent(java.lang.Object)
    */
   @Override
   public void setParent(Object parent) {
     super.setParent(parent);
-    
+
     Reader r = (Reader) parent;
-    
+
     //TODO Maybe cache this result so we don't have to discover every time setparent is called
     // because it will be called frequently, given how MasterFilterHelper is implemented
-    
+
     List<PluginInfo<MetadataWrapper>> wrapperInfos =
         getContext().getPluginIndex().getPlugins(MetadataWrapper.class);
-    
+
     // look for a compatible MetadataWrapper class
     for (PluginInfo<MetadataWrapper> info : wrapperInfos) {
       String wrapperClassName = info.get(MetadataWrapper.METADATA_KEY);
-      
+
       if (wrapperClassName != null) {
         Class<?> wrapperClass;
         try {
           wrapperClass = Class.forName(wrapperClassName);
           if (wrapperClass.isAssignableFrom(getClass())) {
-            MetadataWrapper metaWrapper = 
+            MetadataWrapper metaWrapper =
                 getContext().getService(PluginService.class).createInstance(info);
             metaWrapper.wrap(r.getMetadata());
             wrappedMeta = metaWrapper;
@@ -171,14 +171,14 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
     // No Filter-specific wrapper found
     wrappedMeta = r.getMetadata();
   }
-  
+
   /*
    * @see io.scif.filters.Filter#isCompatible(java.lang.Class)
    */
   public boolean isCompatible(Class<?> c) {
     return Reader.class.isAssignableFrom(c);
   }
-  
+
   // -- Reader API Methods --
 
   /*
@@ -293,8 +293,8 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
    */
   public void setMetadata(Metadata meta) throws IOException {
     getParent().setMetadata(meta);
-    
-    if (wrappedMeta instanceof MetadataWrapper) 
+
+    if (wrappedMeta instanceof MetadataWrapper)
       ((MetadataWrapper)wrappedMeta).wrap(meta);
     else
       wrappedMeta = meta;
@@ -404,7 +404,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
   public Plane createPlane(int xOffset, int yOffset, int xLength, int yLength) {
     return getParent().createPlane(xOffset, yOffset, xLength, yLength);
   }
-  
+
   /*
    * @see io.scif.Reader#createPlane(io.scif.ImageMetadata, int, int, int, int)
    */
@@ -420,45 +420,45 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
   }
 
   // -- Groupable API Methods --
-  
+
   /*
    * @see io.scif.Groupable#isSingleFile(java.lang.String)
    */
   public boolean isSingleFile(String id) throws FormatException, IOException {
     return getParent().isSingleFile(id);
-  } 
-  
+  }
+
   // -- HasFormat API Methods --
-  
+
   /*
    * @see io.scif.HasFormat#getFormat()
    */
   public Format getFormat() {
     return getParent().getFormat();
   }
-  
+
   // -- HasContext API Methods --
-  
+
   /*
    * @see io.scif.HasContext#getContext()
    */
   public Context getContext() {
     return getParent().getContext();
   }
-  
+
   /*
    * @see io.scif.HasContext#setContext(io.scif.SCIFIO)
    */
   public void setContext(Context ctx) {
     getParent().setContext(ctx);
   }
-  
+
   // -- Helper methods --
-  
+
   /* Returns true if this filter's metdata can be cast to ChannelFillerMetadata */
   protected boolean metaCheck() {
     Metadata meta = getMetadata();
-    
+
     return metaClass.isAssignableFrom(meta.getClass());
   }
 }

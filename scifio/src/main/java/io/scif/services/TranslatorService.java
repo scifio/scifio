@@ -50,7 +50,7 @@ import org.scijava.service.Service;
  *
  */
 public interface TranslatorService extends Service {
-  
+
   /**
    * Returns a translator capable of translating from the source Metadata to
    * the dest Metadata type, or null if no such Translator exists.
@@ -63,7 +63,7 @@ public interface TranslatorService extends Service {
    * 				 instances
    */
   Translator findTranslator(Metadata source, Metadata dest, boolean exact);
-  
+
   /**
    * Returns a translator capable of translating from the source Metadata to
    * the dest Metadata type, or null if no such Translator exists.
@@ -76,7 +76,7 @@ public interface TranslatorService extends Service {
    * 				 instances
    */
   Translator findTranslator(Class<?> source, Class<?> dest, boolean exact);
-  
+
   /**
    * Convenience method to immediately translate from the source Metadata
    * to the dest Metadata type, assuming an appropriate Translator is found.

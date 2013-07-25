@@ -71,7 +71,7 @@ public class MSRLECodec extends BaseCodec {
   public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
     throws FormatException, IOException
   {
-    if (in == null) 
+    if (in == null)
       throw new IllegalArgumentException("No data to decompress.");
     if (options == null) options = CodecOptions.getDefaultOptions();
 

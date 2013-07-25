@@ -96,7 +96,7 @@ public class ReadCharTest {
 
   @Test
   public void testSequentialReadChar() throws IOException {
-    char[] expectedValues = new char[] { 
+    char[] expectedValues = new char[] {
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
         'j', 'k', 'l', 'm', 'n', 'o', 'p'
     };

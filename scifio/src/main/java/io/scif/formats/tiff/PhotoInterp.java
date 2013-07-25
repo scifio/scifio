@@ -130,7 +130,7 @@ public enum PhotoInterp implements CodedEnum {
   }
 
   /**
-   * Retrieves the given name of the photometric interpretation. 
+   * Retrieves the given name of the photometric interpretation.
    * @return See above.
    */
   public String getName() {

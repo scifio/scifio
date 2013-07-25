@@ -130,7 +130,7 @@ public interface Writer extends HasFormat, HasSource {
    * @param fileName The name of an image source to be written.
    */
   void setDest(String fileName) throws FormatException, IOException;
-  
+
   /**
    * Sets the source that will be written to during {@link #savePlane} calls.
    *
@@ -145,7 +145,7 @@ public interface Writer extends HasFormat, HasSource {
    */
   void setDest(RandomAccessOutputStream stream)
     throws FormatException, IOException;
-  
+
   /**
    * Sets the source that will be written to during {@link #savePlane} calls.
    * 

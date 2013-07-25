@@ -48,11 +48,11 @@ import org.scijava.Context;
 /**
  * Convenience {@link org.scijava.Context} wrapper.
  * <p>
- * Provides easy accessor methods for the SCIFIO-specific 
+ * Provides easy accessor methods for the SCIFIO-specific
  * {@link org.scijava.service.Service} implementations, bypassing the
  * need to call the {@code getService(Service.class} method.
  * </p>
- * <p> 
+ * <p>
  * This class is intended to be a disposable wrapper that can easily
  * be created and forgotten as needed.
  * </p>
@@ -69,7 +69,7 @@ import org.scijava.Context;
 public class SCIFIO extends AbstractGateway {
 
   // -- Constructors --
-  
+
   /** Creates a new SCIFIO application context with all available services. */
   public SCIFIO() {
     this(new Context());
@@ -84,7 +84,7 @@ public class SCIFIO extends AbstractGateway {
   public SCIFIO(boolean empty) {
     this(new Context(empty));
   }
-  
+
   /**
    * Creates a new SCIFIO wrapping the provided context.
    * 
@@ -93,9 +93,9 @@ public class SCIFIO extends AbstractGateway {
   public SCIFIO(Context context) {
     super(SCIFIOApp.NAME, context);
   }
-  
+
   // -- Service Accessors --
-  
+
   /**
    * InitializeService accessor.
    * 
@@ -104,7 +104,7 @@ public class SCIFIO extends AbstractGateway {
   public InitializeService initializer() {
   	return get(InitializeService.class);
   }
-  
+
   /**
    * FormatService accessor.
    * 
@@ -113,7 +113,7 @@ public class SCIFIO extends AbstractGateway {
   public FormatService format() {
   	return get(FormatService.class);
   }
-  
+
   /**
    * TranslatorService accessor.
    * 
@@ -122,7 +122,7 @@ public class SCIFIO extends AbstractGateway {
   public TranslatorService translator() {
   	return get(TranslatorService.class);
   }
-  
+
   /**
    * LocationService accessor.
    * 
@@ -131,7 +131,7 @@ public class SCIFIO extends AbstractGateway {
   public LocationService location() {
   	return get(LocationService.class);
   }
-  
+
   /**
    * FilePatternService accessor.
    * 

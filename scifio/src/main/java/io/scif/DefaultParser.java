@@ -70,16 +70,16 @@ public class DefaultParser extends AbstractParser<DefaultMetadata>
   implements DefaultComponent
 {
   // -- Fields --
-  
+
   private Format format;
-  
+
   // -- HasFormatAPI Methods --
-  
+
   @Override
   public Format getFormat() {
     return format;
   }
-  
+
   // -- AbstractParser API Methods --
 
   /*

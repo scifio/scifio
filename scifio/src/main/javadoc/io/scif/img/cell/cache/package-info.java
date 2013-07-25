@@ -39,7 +39,7 @@
  * <p>
  * When a service is obtained, the following cache configuration options can be used:
  * <ul>
- *   <li>{@link io.scif.img.cell.cache.CacheService#enable(boolean)} to enable or 
+ *   <li>{@link io.scif.img.cell.cache.CacheService#enable(boolean)} to enable or
  *   disable caching.</li>
  *   <li>{@link io.scif.img.cell.cache.CacheService#setMaxBytesOnDisk(long)} to
  *   limit the amount of disk space used by the cache (argument in bytes)</li>

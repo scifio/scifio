@@ -40,8 +40,8 @@
  * <h3>Changes since Bio-Formats</h3>
  * <ul>
  *  <li>
- *  Removed {@code services.txt}. A text file maintaining the current services 
- *  is prohibitive to external development, as per {@code readers.txt} in 
+ *  Removed {@code services.txt}. A text file maintaining the current services
+ *  is prohibitive to external development, as per {@code readers.txt} in
  *  {@link io.scif}. Instead, all services are now managed through the
  *  scijava-common {@link org.scijava.Context}. New services should be
  *  annotated using {@link io.scif.services.TypedService}.

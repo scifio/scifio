@@ -69,7 +69,7 @@ public class CheckerTest {
   private Checker c;
   private FakeChecker fc;
   private Context context;
-  
+
   @BeforeMethod
   public void setUp() throws FormatException {
     context = new Context();
@@ -79,29 +79,29 @@ public class CheckerTest {
     fc = new FakeChecker();
     fc.setContext(context);
   }
-  
+
   @Test
   public void isFormatTests() throws IOException {
     boolean isFormat = false;
-    
+
     isFormat = c.isFormat(id);
     assertTrue(isFormat);
-    
+
     isFormat = c.isFormat(id, false);
     assertTrue(isFormat);
-    
+
     isFormat = c.isFormat(id, true);
     assertTrue(isFormat);
-    
+
     RandomAccessInputStream stream = new RandomAccessInputStream(context, id);
     isFormat = c.isFormat(stream);
     assertFalse(isFormat);
     stream.close();
-    
+
     isFormat = c.isFormat(falseId, false);
     assertFalse(isFormat);
   }
-  
+
   @Test
   public void checkHeaderTest() {
     boolean isFormat = false;
@@ -109,52 +109,52 @@ public class CheckerTest {
     isFormat = c.checkHeader(id.getBytes());
     assertFalse(isFormat);
   }
-  
+
   @Test
   public void suffixSufficientTests() throws IOException {
     fc.setSuffixSufficient(false);
     boolean isFormat = false;
-    
+
     isFormat = fc.isFormat(id);
     assertTrue(isFormat);
-    
+
     isFormat = fc.isFormat(id, false);
     assertFalse(isFormat);
-    
+
     isFormat = fc.isFormat(id, true);
     assertTrue(isFormat);
-    
+
     RandomAccessInputStream stream = new RandomAccessInputStream(context, id);
     isFormat = fc.isFormat(stream);
-    assertTrue(isFormat); 
+    assertTrue(isFormat);
     stream.close();
-    
+
     isFormat = fc.checkHeader(id.getBytes());
     assertTrue(isFormat);
   }
-  
+
   @Test
   public void hasContextTests() {
     assertNotNull(c.getContext());
   }
-  
+
   public void hasFormatTests() {
     Format format = c.getFormat();
-    
+
     assertNotNull(format);
-    
+
     if (format != null) {
       assertEquals(c.getFormat().getCheckerClass(), c.getClass());
     }
   }
-  
+
   @AfterMethod
   public void tearDown() {
     context = null;
     c = null;
     fc = null;
   }
-  
+
   /*
    * Private inner class for testing suffix flags.
    * 
@@ -162,20 +162,20 @@ public class CheckerTest {
    *
    */
   private static class FakeChecker extends io.scif.DefaultChecker {
-    
+
     // -- FakeChecker Methods --
-    
+
     public void setSuffixSufficient(boolean s) {
       suffixSufficient = s;
     }
-    
+
     public boolean isFormat(final RandomAccessInputStream stream) throws IOException
     {
       return true;
     }
-    
+
     // -- HasFormat Methods --
-    
+
     // When extending an existing component, the getFormat() method should be overriden to ensure
     // the proper format is returned.
     //FIXME: index over all components? make Format.createComponent work more like services where

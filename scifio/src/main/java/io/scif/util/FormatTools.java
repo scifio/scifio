@@ -61,9 +61,9 @@ import net.imglib2.meta.AxisType;
 public final class FormatTools {
 
   // -- Constants --
-  
+
   public static final String[] COMPRESSION_SUFFIXES = {"bz2", "gz"};
-  
+
   // -- Constants - Thumbnail dimensions --
 
   /** Default height and width for thumbnails. */
@@ -201,9 +201,9 @@ public final class FormatTools {
   private FormatTools() {
     // NB: Prevent instantiation of utility class.
   }
-  
+
   // Utility methods -- dimensional positions --
-  
+
   /**
    * Gets the rasterized index corresponding
    * to the given Z, C and T coordinates.
@@ -217,7 +217,7 @@ public final class FormatTools {
     return getIndex(
       findDimensionOrder(reader, imageIndex), zSize, cSize, tSize, numPlanes, z, c, t);
   }
-  
+
   /**
    * Gets the rasterized index corresponding
    * to the given Z, C and T coordinates.
@@ -311,10 +311,10 @@ public final class FormatTools {
   public static String findDimensionOrder(Metadata meta, int imageIndex) {
     return findDimensionOrder(meta.getAxes(imageIndex));
   }
-  
+
   public static String findDimensionOrder(AxisType[] axes) {
     String order = "";
-    
+
     //TODO currently this list is restricted to the traditional 5D axes compatible with Bio-Formats
     ArrayList<AxisType> validAxes =
       new ArrayList<AxisType>(Arrays.asList(new AxisType[]{Axes.X, Axes.Y, Axes.Z, Axes.TIME, Axes.CHANNEL}));
@@ -324,10 +324,10 @@ public final class FormatTools {
       if(validAxes.contains(type))
         order += axes[i].toString().charAt(0);
     }
-    
+
     return order;
   }
-  
+
   /**
    * Attempts to convert the provided String dimension order to an array
    * of AxisTypes.
@@ -336,7 +336,7 @@ public final class FormatTools {
    */
   public static AxisType[] findDimensionList(String dimensionOrder) {
     AxisType[] axes = new AxisType[dimensionOrder.length()];
-    
+
     for(int i = 0; i < dimensionOrder.length(); i++) {
       switch(dimensionOrder.toUpperCase().charAt(i)) {
         case 'X': axes[i] = Axes.X;
@@ -352,7 +352,7 @@ public final class FormatTools {
         default: axes[i] = Axes.UNKNOWN;
       }
     }
-    
+
     return axes;
   }
 
@@ -363,7 +363,7 @@ public final class FormatTools {
   public static int[] getZCTCoords(Reader reader, int imageIndex, int planeIndex) {
     return getZCTCoords(reader.getMetadata(), imageIndex, planeIndex);
   }
-  
+
   public static int[] getZCTCoords(Metadata meta, int imageIndex, int planeIndex) {
     int zSize = meta.getAxisLength(imageIndex, Axes.Z);
     int cSize = meta.getEffectiveSizeC(imageIndex);
@@ -373,7 +373,7 @@ public final class FormatTools {
     return getZCTCoords(
       findDimensionOrder(meta, imageIndex), zSize, cSize, tSize, numPlanes, imageIndex, planeIndex);
   }
-  
+
   /**
    * Gets the Z, C and T coordinates corresponding to the given rasterized
    * index value.
@@ -462,11 +462,11 @@ public final class FormatTools {
     int cSize = meta.getEffectiveSizeC(imageIndex);
     int tSize = meta.getAxisLength(imageIndex, Axes.TIME);
     int numPlanes = meta.getPlaneCount(imageIndex);
-    
+
     return getReorderedIndex(findDimensionOrder(reader, imageIndex), newOrder,
       zSize, cSize, tSize, numPlanes, imageIndex, newIndex);
   }
-  
+
   /**
    * Converts index from one dimension order to another.
    * This method is useful for shuffling the planar order around
@@ -489,8 +489,8 @@ public final class FormatTools {
     return getIndex(origOrder,
       zSize, cSize, tSize, numPlanes, zct[0], zct[1], zct[2]);
   }
-  
-  
+
+
   /**
    * Computes a unique 1-D index corresponding
    * to the given multidimensional position.
@@ -550,7 +550,7 @@ public final class FormatTools {
   }
 
   // -- Utility methods - sanity checking
-  
+
   /**
    * Asserts that the current file is either null, or not, according to the
    * given flag. If the assertion fails, an IllegalStateException is thrown.
@@ -582,8 +582,8 @@ public final class FormatTools {
     }
     else header = "";
     throw new IllegalStateException(header + msg);
-  } 
-  
+  }
+
   /**
    * Asserts that the current file is either null, or not, according to the
    * given flag. If the assertion fails, an IllegalStateException is thrown.
@@ -635,7 +635,7 @@ public final class FormatTools {
     checkTileSize(r, x, y, w, h, imageIndex);
     if (bufLength >= 0) checkBufferSize(r, bufLength, w, h, imageIndex);
   }
-  
+
   /** Checks that the given plane number is valid for the given reader. */
   public static void checkPlaneNumber(Reader r, int imageIndex, int planeIndex)
     throws FormatException
@@ -647,7 +647,7 @@ public final class FormatTools {
       r.getMetadata().getSeries() + ", */"planeCount=" + planeIndex + ")");
     }
   }
-  
+
   /** Checks that the given tile size is valid for the given reader. */
   public static void checkTileSize(Reader r, int x, int y, int w, int h,
     int imageIndex) throws FormatException
@@ -672,7 +672,7 @@ public final class FormatTools {
       r, len, r.getMetadata().getAxisLength(imageIndex, Axes.X),
       r.getMetadata().getAxisLength(imageIndex, Axes.Y), imageIndex);
   }
-  
+
   /**
    * Checks that the given buffer size is large enough to hold a w * h
    * image as returned by the given reader.
@@ -687,7 +687,7 @@ public final class FormatTools {
         size + ").");
     }
   }
-  
+
   /**
    * Returns true if the given RandomAccessInputStream conatins at least
    * 'len' bytes.
@@ -699,14 +699,14 @@ public final class FormatTools {
     stream.order(littleEndian);
     return stream.length() >= len;
   }
-  
+
   /** Returns the size in bytes of a single plane. */
   public static int getPlaneSize(Reader r, int imageIndex) {
     return getPlaneSize(
       r, r.getMetadata().getAxisLength(imageIndex, Axes.X),
       r.getMetadata().getAxisLength(imageIndex, Axes.Y), imageIndex);
   }
-  
+
   /** Returns the size in bytes of a w * h tile. */
   public static int getPlaneSize(Reader r, int w, int h, int imageIndex) {
     return w * h * r.getMetadata().getRGBChannelCount(imageIndex) *
@@ -856,9 +856,9 @@ public final class FormatTools {
         throw new FormatException("Unsupported byte depth: " + bytes);
     }
   }
-  
+
   // -- Utility methods -- export
-  
+
   /**
    * @throws FormatException Never actually thrown.
    * @throws IOException Never actually thrown.
@@ -903,10 +903,10 @@ public final class FormatTools {
 
     filename = filename.replaceAll(TIMESTAMP, date);
     */
-    
+
     return filename;
   }
-  
+
   /**
    * @throws FormatException
    * @throws IOException
@@ -938,10 +938,10 @@ public final class FormatTools {
       totalPlanes += r.getMetadata().getPlaneCount(series);
     }
     return totalPlanes / filenames.length;
-  } 
-  
+  }
+
   // -- Utility methods -- other
-  
+
   /**
    * Default implementation for {@link IFormatReader#openThumbBytes}.
    *
@@ -985,7 +985,7 @@ public final class FormatTools {
       r.setVar("imageIndex", imageIndex);
       r.exec("thumb = AWTImageTools.openThumbImage(plane, reader, imageIndex, sizeX, sizeY," +
       		" thumbSizeX, thumbSizeY, false)");
-      
+
       bytes = (byte[][]) r.exec("AWTImageTools.getPixelBytes(thumb, little)");
     }
     catch (ReflectException exc) {
@@ -1012,9 +1012,9 @@ public final class FormatTools {
     }
     return rtn;
   }
-  
+
   // -- Conversion convenience methods --
-  
+
   /**
    * Convenience method for writing all of the images and metadata obtained
    * from the specified Reader into the specified Writer.
@@ -1030,16 +1030,16 @@ public final class FormatTools {
     String outputFile)
     throws FormatException, IOException
   {
-    
+
     Plane p = null;
-    
+
     for(int i = 0; i < input.getImageCount(); i++) {
       for(int j = 0; j < input.getPlaneCount(i); j++) {
         p = input.openPlane(i, j);
         output.savePlane(i, j, p);
       }
     }
-    
+
     input.close();
     output.close();
   }
@@ -1092,7 +1092,7 @@ public final class FormatTools {
     long[] values = {min, max};
     return values;
   }
-  
+
   /** Performs suffix matching for the given filename. */
   public static boolean checkSuffix(final String name, final String suffix) {
     return checkSuffix(name, new String[] {suffix});

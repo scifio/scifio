@@ -145,7 +145,7 @@ public class RandomAccessInputStreamTest {
       assertEquals(PAGE[(int) stream.getFilePointer()], stream.readByte());
     }
   }
-  
+
   @AfterMethod
   public void tearDown() throws IOException {
     stream.close();

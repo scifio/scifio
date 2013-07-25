@@ -90,7 +90,7 @@ public class WriteBytesTest {
   public void testLength() throws IOException {
     assertEquals(8, fileHandle.length());
   }
-  
+
   @Test
   public void testWriteSequential() throws IOException {
     fileHandle.writeBytes("ab");

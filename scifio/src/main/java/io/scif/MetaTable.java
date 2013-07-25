@@ -41,13 +41,13 @@ import java.util.Map;
 /**
  * Marker interface for a String : Object {@link Map}. Provides helper methods
  * as needed (e.g. {@link #putList(String, Object)} for mapping keys with many
- * values). 
+ * values).
  * 
  * @author Mark hiner hinerm at gmail.com
  *
  */
 public interface MetaTable extends Map<String, Object> {
-  
+
   /**
    * Special {@link #put(String, Object)} implementation. Treats the
    * provided value as a list item. The previous value(s) is not overwritten,

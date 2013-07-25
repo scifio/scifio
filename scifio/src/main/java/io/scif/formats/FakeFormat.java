@@ -93,9 +93,9 @@ import org.slf4j.Logger;
 @Plugin(type = FakeFormat.class)
 public class FakeFormat extends AbstractFormat
 {
-  
+
   // -- Constants --
-  
+
   public static final int BOX_SIZE = 10;
   public static final int DEFAULT_SIZE_X = 512;
   public static final int DEFAULT_SIZE_Y = 512;
@@ -109,16 +109,16 @@ public class FakeFormat extends AbstractFormat
   public static final int DEFAULT_LUT_LENGTH = 3;
   public static final int DEFAULT_SCALE_FACTOR = 1;
   public static final String DEFAULT_DIMENSION_ORDER = "XYZCT";
-  
+
   private static final long SEED = 0xcafebabe;
-  
+
   public static final Logger LOGGER = null;
-  
+
   private static final String DEFAULT_NAME = "Untitled";
   private static final String TOKEN_SEPARATOR = "&";
 
   // -- Allowed keys --
-  
+
   private static final String SIZE_X = "sizeX";
   private static final String SIZE_Y = "sizeY";
   private static final String SIZE_Z = "sizeZ";
@@ -137,17 +137,17 @@ public class FakeFormat extends AbstractFormat
   private static final String THUMBNAIL = "thumbnail";
   private static final String ORDER_CERTAIN = "orderCertain";
   private static final String LUT_LENGTH = "lutLength";
-  private static final String SCALE_FACTOR = "scaleFactor";  
+  private static final String SCALE_FACTOR = "scaleFactor";
   private static final String SERIES = "series";
   private static final String RGB = "rgb";
   private static final String NAME = "name";
 
   // -- Constructor --
-  
+
   public FakeFormat() throws FormatException {
     super();
   }
-  
+
   // -- Format API Methods --
 
   /*
@@ -163,7 +163,7 @@ public class FakeFormat extends AbstractFormat
   public String[] getSuffixes() {
     return new String[]{"fake"};
   }
-  
+
   // -- Nested Classes --
 
   /**
@@ -181,22 +181,22 @@ public class FakeFormat extends AbstractFormat
    * @see io.scif.HasColorTable
    */
   public static class Metadata extends AbstractMetadata implements HasColorTable {
-    
+
     // -- Static Constants --
-    
+
     public static final String CNAME = "io.scif.formats.FakeFormat$Metadata";
-    
+
     // -- Fields --
-    
+
     /** Channel of last opened image plane. */
     private int ac = 0;
 
     private ColorTable[] lut;
-    
+
     private int[][] valueToIndex;
-    
+
     // -- FakeFormat.Metadata methods --
-    
+
     /**
      * Gets the last read channel index
      * 
@@ -205,7 +205,7 @@ public class FakeFormat extends AbstractFormat
     public int getLastChannel() {
       return ac;
     }
-    
+
     /**
      * Sets the last read channel index
      * 
@@ -246,7 +246,7 @@ public class FakeFormat extends AbstractFormat
     public void setValueToIndex(int[][] valueToIndex) {
       this.valueToIndex = valueToIndex;
     }
-    
+
     // -- HasColorTable Methods --
 
     /**
@@ -255,7 +255,7 @@ public class FakeFormat extends AbstractFormat
     public ColorTable getColorTable(int imageIndex, int planeIndex) {
       return lut == null ? null : lut[ac];
     }
-    
+
     // -- Metadata API Methods --
 
     /**
@@ -274,12 +274,12 @@ public class FakeFormat extends AbstractFormat
       boolean indexed = false;
       boolean falseColor = false;
       int pixelType = FormatTools.pixelTypeFromString(DEFAULT_PIXEL_TYPE);
-      
+
       int imageCount = 1;
       int lutLength = DEFAULT_LUT_LENGTH;
-      
+
       HashMap<String, String> fakeMap = FakeUtils.extractFakeInfo(getContext(), getDatasetName());
-      
+
       sizeX = FakeUtils.getIntValue(fakeMap.get(SIZE_X), sizeX);
       sizeY = FakeUtils.getIntValue(fakeMap.get(SIZE_Y), sizeY);
       sizeZ = FakeUtils.getIntValue(fakeMap.get(SIZE_Z), sizeZ);
@@ -296,7 +296,7 @@ public class FakeFormat extends AbstractFormat
 
       imageCount = FakeUtils.getIntValue(fakeMap.get(SERIES), imageCount);
       lutLength = FakeUtils.getIntValue(fakeMap.get(LUT_LENGTH), lutLength);
-      
+
       // TODO not sure how to handle error handling here yet
 //      // Sanity checking
 //      if (sizeX < 1) throw new FormatException("Invalid sizeX: " + sizeX);
@@ -323,13 +323,13 @@ public class FakeFormat extends AbstractFormat
 //      if (lutLength < 1) {
 //        throw new FormatException("Invalid lutLength: " + lutLength);
 //      }
-      
+
       // for indexed color images, create lookup tables
       if (indexed) {
         int[][] indexToValue = null;
         int[][] valueToIndex = null;
         ColorTable[] luts = null;
-        
+
         if (pixelType == FormatTools.UINT8) {
           // create 8-bit LUTs
           final int num = 256;
@@ -366,19 +366,19 @@ public class FakeFormat extends AbstractFormat
             luts[c] = new ColorTable16(lutShorts);
           }
         }
-        
+
         setLut(luts);
-        
+
         if(valueToIndex != null) {
           FakeUtils.createInverseIndexMap(indexToValue, valueToIndex);
           setValueToIndex(valueToIndex);
         }
         // NB: Other pixel types will have null LUTs.
       }
-      
-      
+
+
       // General metadata population
-      
+
       int bitsPerPixel = 0; // default
       String dimOrder = DEFAULT_DIMENSION_ORDER;
       boolean orderCertain = true;
@@ -399,10 +399,10 @@ public class FakeFormat extends AbstractFormat
       orderCertain = FakeUtils.getBoolValue(fakeMap.get(ORDER_CERTAIN), orderCertain);
 
       scaleFactor = FakeUtils.getDoubleValue(fakeMap.get(SCALE_FACTOR), scaleFactor);
-      
+
       AxisType[] axes = FormatTools.findDimensionList(dimOrder);
       int[] axisLengths = new int[axes.length];
-      
+
       // Create axes arrays
       for(int i = 0; i < axes.length; i++) {
         AxisType t = axes[i];
@@ -422,14 +422,14 @@ public class FakeFormat extends AbstractFormat
 
       getTable().put(SCALE_FACTOR, scaleFactor);
       getTable().put(LUT_LENGTH, lutLength);
-      
+
       int numImages = 1;
       numImages =  FakeUtils.getIntValue(fakeMap.get(SERIES), numImages);
-      
+
       int effSizeC = sizeC / rgb;
-      
+
       createImageMetadata(numImages);
-      
+
       // set ImageMetadata
       for(int i = 0; i < numImages; i++) {
         ImageMetadata imageMeta = get(i);
@@ -452,7 +452,7 @@ public class FakeFormat extends AbstractFormat
       }
     }
   }
-  
+
   /**
    * Parser for Fake file format. The file suffix is sufficient for
    * detection - as the name is the only aspect of a Fake file
@@ -460,15 +460,15 @@ public class FakeFormat extends AbstractFormat
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
-    
+
     // -- Parser API Methods --
-    
+
     /* @See Parser#Parse(RandomAccessInputStream, M) */
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException { }
   }
-  
+
   /**
    * Reader for the Fake file format. Pixel values are simulated
    * based on the specified dimensions and qualities of the "image."
@@ -478,15 +478,15 @@ public class FakeFormat extends AbstractFormat
 
     // -- Reader API methods --
 
-    public ByteArrayPlane openPlane(int imageIndex, int planeIndex, 
-        ByteArrayPlane plane, int x, int y, int w, int h) 
+    public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
+        ByteArrayPlane plane, int x, int y, int w, int h)
         throws FormatException, IOException {
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
           plane.getData().length, x, y, w, h);
 
       Metadata meta = getMetadata();
       plane.setImageMetadata(meta.get(imageIndex));
-      
+
       final int pixelType = meta.getPixelType(imageIndex);
       final int bpp = FormatTools.getBytesPerPixel(pixelType);
       final boolean signed = FormatTools.isSigned(pixelType);
@@ -498,7 +498,7 @@ public class FakeFormat extends AbstractFormat
       final int scaleFactor = ((Double)meta.getTable().get(SCALE_FACTOR)).intValue();
       final ColorTable[] lut = getMetadata().getLut();
       final int[][] valueToIndex = getMetadata().getValueToIndex();
-      
+
       final int[] zct = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
       final int zIndex = zct[0], cIndex = zct[1], tIndex = zct[2];
       getMetadata().setLastChannel(cIndex);
@@ -546,7 +546,7 @@ public class FakeFormat extends AbstractFormat
             if (indexed && lut != null) {
               int modValue = lut[getMetadata().getLastChannel()].getLength();
               plane.setColorTable(lut[getMetadata().getLastChannel()]);
-              
+
               if (valueToIndex != null) pixel = valueToIndex[getMetadata().getLastChannel()][(int) (pixel % modValue)];
             }
 
@@ -582,23 +582,23 @@ public class FakeFormat extends AbstractFormat
       return plane;
     }
   }
-  
+
   /**
    * Translator from {@link io.scif.Metadata} to FakeFormat$Metadata.
    */
-  @Plugin(type = Translator.class, attrs = 
+  @Plugin(type = Translator.class, attrs =
     {@Attr(name = FakeTranslator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = FakeTranslator.DEST, value = Metadata.CNAME)},
     priority = Priority.LOW_PRIORITY)
-  public static class FakeTranslator 
+  public static class FakeTranslator
     extends AbstractTranslator<io.scif.Metadata, Metadata>
   {
 
     // -- Translator API Methods --
-    
+
     public void typedTranslate(io.scif.Metadata source, Metadata dest) {
       String fakeId = NAME + "=" + source.getDatasetName();
-      
+
       fakeId = FakeUtils.appendToken(fakeId, SIZE_X, source.getAxisLength(0, Axes.X));
       fakeId = FakeUtils.appendToken(fakeId, SIZE_Y, source.getAxisLength(0, Axes.Y));
       fakeId = FakeUtils.appendToken(fakeId, SIZE_Z, source.getAxisLength(0, Axes.Z));
@@ -620,19 +620,19 @@ public class FakeFormat extends AbstractFormat
       fakeId = FakeUtils.appendToken(fakeId, ORDER_CERTAIN, source.isOrderCertain(0));
       fakeId = FakeUtils.appendToken(fakeId, SERIES, source.getImageCount());
       fakeId = FakeUtils.appendToken(fakeId, RGB, source.getRGBChannelCount(0));
-      
+
       if(source.getTable().get(SCALE_FACTOR) != null) {
         double scaleFactor = (Double)source.getTable().get(SCALE_FACTOR);
         fakeId = FakeUtils.appendToken(fakeId, SCALE_FACTOR, Double.toString(scaleFactor));
       }
-      
+
       if(source.getTable().get(LUT_LENGTH) != null) {
         int lutLength = (Integer)source.getTable().get(LUT_LENGTH);
         fakeId = FakeUtils.appendToken(fakeId, LUT_LENGTH, Integer.toString(lutLength));
       }
-      
+
       fakeId += ".fake";
-      
+
       try {
         dest.close();
         dest.setSource(new RandomAccessInputStream(getContext(), new Handle(fakeId), fakeId));
@@ -642,7 +642,7 @@ public class FakeFormat extends AbstractFormat
       }
     }
   }
-  
+
   /**
    * A special IRandomAccess handle for Fake files. This will ensure a
    * RAIS will never attempt file IO on a "*.fake" String, as this handle
@@ -652,23 +652,23 @@ public class FakeFormat extends AbstractFormat
   public static class Handle extends StreamHandle {
 
     // -- Constructor --
-    
+
     public Handle() throws IOException {
       this("");
     }
-    
+
     /**
      * Constructs a FakeHandle around the provided id.
      * No action needs to be taken except setting the file
-     * field, as the id does not represetnt a real object. 
+     * field, as the id does not represetnt a real object.
      */
     public Handle(String id) throws IOException {
       super();
       setFile(id);
     }
-    
+
     // -- IStreamAccess API Methods --
-    
+
     public boolean isConstructable(String id) throws IOException {
       return id.endsWith("fake");
     }
@@ -676,96 +676,96 @@ public class FakeFormat extends AbstractFormat
     public void resetStream() throws IOException {
       // no-op as there is no backing stream
     }
-    
+
     // -- IRandomAccess API Methods --
-    
+
     /* @see IRandomAccess#read(byte[]) */
     @Override
     public int read(byte[] b) throws IOException {
       // no-op
       return 0;
     }
-    
+
     /* @see IRandomAccess#read(byte[], int, int) */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
       // no-op
       return 0;
     }
-    
+
     /* @see IRandomAccess#read(ByteBuffer) */
     @Override
     public int read(ByteBuffer buffer) throws IOException {
       // no-op
       return 0;
     }
-    
+
     /* @see IRandomAccess#read(ByteBuffer, int, int) */
     @Override
     public int read(ByteBuffer buffer, int off, int len) throws IOException {
       return 0;
     }
-    
+
     /* @see IRandomAccess#seek(long) */
     @Override
     public void seek(long pos) throws IOException {
       // no-op
     }
-    
+
     /* @see IRandomAccess.write(ByteBuffer) */
     @Override
     public void write(ByteBuffer buf) throws IOException {
       // no-op
     }
-    
+
     /* @see IRandomAccess.write(ByteBuffer, int, int) */
     @Override
     public void write(ByteBuffer buf, int off, int len) throws IOException {
       // no-op
     }
-    
+
     // -- DataInput API Methods --
-    
+
     /* @see java.io.DataInput#readChar() */
     @Override
     public char readChar() throws IOException {
       // no-op
       return 0;
     }
-    
+
     /* @see java.io.DataInput#readDouble() */
     @Override
     public double readDouble() throws IOException {
       // no-op
       return 0.0;
     }
-    
+
     /* @see java.io.DataInput#readFloat() */
     @Override
     public float readFloat() throws IOException {
       // no-op
       return 0f;
     }
-    
+
     /* @see java.io.DataInput#readFully(byte[]) */
     @Override
     public void readFully(byte[] b) throws IOException {
       // no-op
     }
-    
+
     /* @see java.io.DataInput#readFully(byte[], int, int) */
     @Override
     public void readFully(byte[] b, int off, int len) throws IOException {
       // no-op
     }
-    
+
     /* @see java.io.DataInput#readInt() */
     @Override
     public int readInt() throws IOException {
       // no-op
       return 0;
     }
-    
+
     /* @see java.io.DataInput#readLine() */
     public String readLine() throws IOException {
       throw new IOException("Unimplemented");
@@ -899,13 +899,13 @@ public class FakeFormat extends AbstractFormat
       // no-op
     }
   }
-  
+
   /**
    * Helper methods for the Fake file format. Methods are provided for parsing
    * the key:value pairs from the name of a Fake file.
    */
   public static class FakeUtils {
-    
+
     /**
      * Parses the provided path and returns a mapping of all known
      * key/value pairs that were discovered.
@@ -915,16 +915,16 @@ public class FakeFormat extends AbstractFormat
      */
     public static HashMap<String, String> extractFakeInfo(Context context, String fakePath) {
       HashMap<String, String> fakeMap = new HashMap<String, String>();
-      
+
       Location loc = new Location(context, fakePath);
-      
+
       if (loc.exists()) {
         fakePath = loc.getAbsoluteFile().getName();
       }
-      
+
       String noExt = fakePath.substring(0, fakePath.lastIndexOf("."));
       String[] tokens = noExt.split(TOKEN_SEPARATOR);
-      
+
       // parse tokens from filename
       for (String token : tokens) {
         int equals = token.indexOf("=");
@@ -943,13 +943,13 @@ public class FakeFormat extends AbstractFormat
         }
         String key = token.substring(0, equals);
         String value = token.substring(equals + 1);
-        
+
         fakeMap.put(key, value);
       }
-      
+
       return fakeMap;
     }
-    
+
     /**
      * Appends the provided key:boolean pair to the provided base and returns
      * the result.
@@ -958,8 +958,8 @@ public class FakeFormat extends AbstractFormat
      */
     public static String appendToken(String base, String key, boolean value) {
       return FakeUtils.appendToken(base, key, Boolean.toString(value));
-    }    
-    
+    }
+
     /**
      * Appends the provided key:int pair to the provided base and returns
      * the result.
@@ -968,8 +968,8 @@ public class FakeFormat extends AbstractFormat
      */
     public static String appendToken(String base, String key, int value) {
       return FakeUtils.appendToken(base, key, Integer.toString(value));
-    }    
-    
+    }
+
     /**
      * Appends the provided key:String pair to the provided base and returns
      * the result.
@@ -980,9 +980,9 @@ public class FakeFormat extends AbstractFormat
       base += TOKEN_SEPARATOR + key + "=" + value;
       return base;
     }
-    
+
     // -- Value extraction methods --
-    
+
     /**
      * Returns the integer value of the passed String, or the default
      * int value if testValue is null.
@@ -993,10 +993,10 @@ public class FakeFormat extends AbstractFormat
      */
     public static int getIntValue(String testValue, int defaultValue) {
       if (testValue == null) return defaultValue;
-      
+
       return Integer.parseInt(testValue);
     }
-    
+
     /**
      * Returns the double value of the passed String, or the default
      * double value if testValue is null.
@@ -1007,10 +1007,10 @@ public class FakeFormat extends AbstractFormat
      */
     public static double getDoubleValue(String testValue, double defaultValue) {
       if (testValue == null) return defaultValue;
-      
+
       return Double.parseDouble(testValue);
     }
-    
+
     /**
      * Returns the boolean value of the passed String, or the default
      * boolean value if testValue is null.
@@ -1021,10 +1021,10 @@ public class FakeFormat extends AbstractFormat
      */
     public static boolean getBoolValue(String testValue, boolean oldValue) {
       if (testValue == null) return oldValue;
-      
+
       return Boolean.parseBoolean(testValue);
     }
-    
+
     /**
      * Populates a mapping between indicies and color values,
      * and the inverse mapping of color values to indicies.
@@ -1041,7 +1041,7 @@ public class FakeFormat extends AbstractFormat
       createIndexValueMap(indexToValue);
       createInverseIndexMap(indexToValue, valueToIndex);
     }
-    
+
     /**
      * Populates the given array with a random mapping of indices to values.
      * 
@@ -1053,7 +1053,7 @@ public class FakeFormat extends AbstractFormat
         shuffle(c, indexToValue[c]);
       }
     }
-    
+
     /**
      * Populates an array with inverse mapping of values and indices,
      * drawn from a base index:value mapping.
@@ -1063,7 +1063,7 @@ public class FakeFormat extends AbstractFormat
      */
     public static void createInverseIndexMap(final int[][] indexToValue, int[][] valueToIndex) {
       sizeCheck(indexToValue, valueToIndex);
-      
+
       for (int c=0; c<indexToValue.length; c++) {
         for (int index=0; index<indexToValue[0].length; index++) {
           int value = indexToValue[c][index];
@@ -1071,7 +1071,7 @@ public class FakeFormat extends AbstractFormat
         }
       }
     }
-    
+
     /** Fisher-Yates shuffle with constant seeds to ensure reproducibility. */
     public static void shuffle(int c, int[] array) {
       Random r = new Random(SEED + c);
@@ -1082,7 +1082,7 @@ public class FakeFormat extends AbstractFormat
         array[i - 1] = tmp;
       }
     }
-    
+
     /* Verifies two arrays are of the same size. */
     private static void sizeCheck(int[][] array1, int[][] array2) {
       if(array1.length != array2.length || array1[0].length != array2[0].length)

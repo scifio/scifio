@@ -108,7 +108,7 @@ public class BitWriter {
    *   '0' and '1' appear in the string.
    */
   public void write(String bitString) {
-    if (bitString == null) 
+    if (bitString == null)
       throw new IllegalArgumentException("The string cannot be null.");
     for (int i = 0; i < bitString.length(); i++) {
       if ('1' == bitString.charAt(i)) {

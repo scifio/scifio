@@ -100,7 +100,7 @@ public interface ImageMetadata extends HasMetaTable {
    * another image.
    */
   void setThumbnail(boolean thumbnail);
-  
+
   /**
    * Convenience method to set both the axis types and lengths
    * for this ImageMetadata.
@@ -108,7 +108,7 @@ public interface ImageMetadata extends HasMetaTable {
   void setAxes(AxisType[] axisTypes, int[] axisLengths);
 
   /** 
-   * Sets the Axes types for this image. 
+   * Sets the Axes types for this image.
    * Order is implied by ordering within this array
    */
   void setAxisTypes(AxisType[] axisTypes);
@@ -122,8 +122,8 @@ public interface ImageMetadata extends HasMetaTable {
   void setAxisLengths(int[] axisLengths);
 
   /** 
-   * Sets the length for the specified axis. Adds the axis if 
-   * if its type is not already present in the image. 
+   * Sets the length for the specified axis. Adds the axis if
+   * if its type is not already present in the image.
    */
   void setAxisLength(AxisType axis, int length);
 
@@ -139,7 +139,7 @@ public interface ImageMetadata extends HasMetaTable {
 
   /** Returns the number of planes within this image. */
   int getPlaneCount();
-  
+
   /** Returns the size, in bytes, of all planes in this image. */
   long getSize();
 
@@ -198,7 +198,7 @@ public interface ImageMetadata extends HasMetaTable {
    * @return true if this image is a thumbnail
    */
   boolean isThumbnail();
-  
+
   /**
    * Calculates the effective number of non-RGB channels in this image.
    * This value may be more useful than {@code getAxisLength(Axes.CHANNEL)}.
@@ -206,7 +206,7 @@ public interface ImageMetadata extends HasMetaTable {
    * @return Count of non-RGB channels in this image.
    */
   int getEffectiveSizeC();
-  
+
   /**
    * Calculates the number of RGB channels in this image.
    * 
@@ -231,7 +231,7 @@ public interface ImageMetadata extends HasMetaTable {
    * @return Length of the desired plane.
    */
   int getAxisLength(final int axisIndex);
-  
+
   /**
    * A convenience method for looking up the length of an axis
    * based on its type. No knowledge of plane ordering is necessary.
@@ -254,7 +254,7 @@ public interface ImageMetadata extends HasMetaTable {
    * @return The index of the desired axis or -1 if not found.
    */
   int getAxisIndex(final AxisType type);
-  
+
   /**
    * Returns an array of the types for axes associated with
    * the specified image index. Order is consistent with the
@@ -266,7 +266,7 @@ public interface ImageMetadata extends HasMetaTable {
    * @return Sorted AxisType array
    */
   AxisType[] getAxes();
-  
+
   /**
    * Returns an array of the lengths for axes associated with
    * the specified image index.
@@ -295,12 +295,12 @@ public interface ImageMetadata extends HasMetaTable {
    * @param value - length of the new axis
    */
   void addAxis(final AxisType type, final int value);
-  
+
   /**
    * @return A new copy of this ImageMetadata.
    */
   ImageMetadata copy();
-  
+
   /**
    * Populates this ImageMetadata using the provided instance.
    * 

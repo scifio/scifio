@@ -90,7 +90,7 @@ public class DataToolsTest {
 		assertSafeMultiply32Fail("Array size too large: 65536 x 32768", 65536,
 			32768);
   }
-  
+
   @Test
   public void testSafeMultiply64() {
   	// test vacuous edge cases

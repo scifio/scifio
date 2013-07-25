@@ -75,7 +75,7 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = EPSFormat.class)
 public class EPSFormat extends AbstractFormat {
-  
+
   // -- Format API Methods --
 
   public String getFormatName() {
@@ -85,39 +85,39 @@ public class EPSFormat extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[] {"eps", "epsi", "ps"};
   }
-  
+
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata {
     // -- Constants --
-    
+
     public static final String CNAME = "io.scif.formats.EPSFormat$Metadata";
-    
+
     // -- Fields --
-    
+
     /** Starting line of pixel data. */
     private int start;
 
     /** Flag indicating binary data. */
     private boolean binary;
-    
+
     private boolean isTiff;
     private IFDList ifds;
-    
+
     // -- Constructor --
-    
+
     public Metadata() {
       super();
       add(new DefaultImageMetadata());
       setLittleEndian(0, true);
     }
-    
+
     // -- Field accessors and setters
-    
+
     public IFDList getIfds() {
       return ifds;
     }
@@ -149,32 +149,32 @@ public class EPSFormat extends AbstractFormat {
     public void setTiff(boolean isTiff) {
       this.isTiff = isTiff;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     public void populateImageMetadata() {
       if (getAxisLength(0, Axes.CHANNEL) == 0) setAxisLength(0, Axes.CHANNEL, 1);
 
       setAxisLength(0, Axes.Z, 1);
       setAxisLength(0, Axes.TIME, 1);
-      
+
       if (getPixelType(0) == 0) setPixelType(0, FormatTools.UINT8);
-      
+
       setBitsPerPixel(0, FormatTools.getBitsPerPixel(getPixelType(0)));
-      
+
       setRGB(0, getAxisLength(0, Axes.CHANNEL) == 3);
       setInterleaved(0, true);
       get(0).setPlaneCount(1);
     }
-    
+
     // -- HasSource API Methods --
-    
+
     /*
      * @see io.scif.AbstractMetadata#close(boolean)
      */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
-      
+
       if (!fileOnly) {
         isTiff = false;
         ifds = null;
@@ -183,7 +183,7 @@ public class EPSFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -195,7 +195,7 @@ public class EPSFormat extends AbstractFormat {
         throws IOException, FormatException
     {
       meta.createImageMetadata(1);
-      
+
       ImageMetadata m = meta.get(0);
 
       LOGGER.info("Verifying EPS format");
@@ -220,16 +220,16 @@ public class EPSFormat extends AbstractFormat {
         meta.setIfds(tp.getIFDs());
 
         IFD firstIFD = meta.getIfds().get(0);
-        
+
         m.setAxisLength(Axes.X, (int)firstIFD.getImageWidth());
         m.setAxisLength(Axes.Y, (int)firstIFD.getImageLength());
         m.setAxisLength(Axes.CHANNEL, firstIFD.getSamplesPerPixel());
         m.setAxisLength(Axes.Z, 1);
         m.setAxisLength(Axes.TIME, 1);
-        
+
         if (m.getAxisLength(Axes.CHANNEL) == 2)
           m.setAxisLength(Axes.CHANNEL, 4);
-        
+
         m.setLittleEndian(firstIFD.isLittleEndian());
         m.setInterleaved(true);
         m.setRGB(m.getAxisLength(Axes.CHANNEL) > 1);
@@ -250,7 +250,7 @@ public class EPSFormat extends AbstractFormat {
       int lineNum = 1;
 
       line = in.readLine().trim();
-      
+
       m.setAxisTypes(new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL});
 
       while (line != null && !line.equals("%%EOF")) {
@@ -306,7 +306,7 @@ public class EPSFormat extends AbstractFormat {
         else if (line.startsWith("%ImageData:")) {
           line = line.substring(11);
           String[] t = line.split(" ");
-          
+
           m.setAxisLength(Axes.X, Integer.parseInt(t[0]));
           m.setAxisLength(Axes.Y, Integer.parseInt(t[1]));
           m.setAxisLength(Axes.CHANNEL, Integer.parseInt(t[3]));
@@ -323,28 +323,28 @@ public class EPSFormat extends AbstractFormat {
 
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
 
     // -- Reader API Methods --
-    
+
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
         ByteArrayPlane plane, int x, int y, int w, int h)
         throws FormatException, IOException
     {
       byte[] buf = plane.getData();
       Metadata meta = getMetadata();
-      
+
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
 
       if (meta.isTiff()) {
@@ -421,7 +421,7 @@ public class EPSFormat extends AbstractFormat {
       }
       return plane;
     }
-    
+
     public int getOptimalTileWidth(int imageIndex) {
       try {
         if (getMetadata().isTiff) {
@@ -446,13 +446,13 @@ public class EPSFormat extends AbstractFormat {
       return super.getOptimalTileHeight(imageIndex);
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Writer extends AbstractWriter<Metadata> {
-    
+
     // -- Constants --
 
     private static final String DUMMY_PIXEL = "00";
@@ -460,13 +460,13 @@ public class EPSFormat extends AbstractFormat {
     // -- Fields --
 
     private long planeOffset = 0;
-    
+
     // -- Writer API Methods --
-    
+
     public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
         int y, int w, int h) throws FormatException, IOException
     {
-      
+
       byte[] buf = plane.getBytes();
       checkParams(imageIndex, planeIndex, buf, x, y, w, h);
 
@@ -531,7 +531,7 @@ public class EPSFormat extends AbstractFormat {
       int width = getMetadata().getAxisLength(imageIndex, Axes.X);
       int height = getMetadata().getAxisLength(imageIndex, Axes.Y);
       int nChannels = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
-      
+
       out.writeBytes("%!PS-Adobe-2.0 EPSF-1.2\n");
       out.writeBytes("%%Title: " + getMetadata().getDatasetName() + "\n");
       out.writeBytes("%%Creator: OME Bio-Formats\n");
@@ -558,14 +558,14 @@ public class EPSFormat extends AbstractFormat {
       planeOffset = out.getFilePointer();
     }
   }
-  
+
   /**
    * Necessary dummy translator, so that an EPS-OMEXML translator can be used
    * 
    * @author Mark Hiner hinerm at gmail.com
    *
    */
-  @Plugin(type = Translator.class, attrs = 
+  @Plugin(type = Translator.class, attrs =
     {@Attr(name = EPSTranslator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = EPSTranslator.DEST, value = Metadata.CNAME)},
     priority = Priority.LOW_PRIORITY)

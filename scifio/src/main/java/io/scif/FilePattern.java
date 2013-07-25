@@ -101,13 +101,13 @@ public class FilePattern {
 
   /** Whether or not this FilePattern represents a regular expression. */
   private boolean isRegex = false;
-  
+
   private SCIFIO scifio;
 
   // -- Constructors --
 
   /** Creates a pattern object using the given file as a template. */
-  public FilePattern(Context context, Location file) { 
+  public FilePattern(Context context, Location file) {
     this(context, new SCIFIO(context).filePattern().findPattern(file));
   }
 

@@ -68,7 +68,7 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JavaFormat.class)
 public class JavaFormat extends AbstractFormat {
-  
+
   // -- Format API Methods --
 
   /*
@@ -86,7 +86,7 @@ public class JavaFormat extends AbstractFormat {
   }
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -94,14 +94,14 @@ public class JavaFormat extends AbstractFormat {
   public static class Writer extends AbstractWriter<DefaultMetadata> {
 
     // -- Writer API methods --
-    
+
     public void setDest(RandomAccessOutputStream stream, int imageIndex)
       throws FormatException, IOException
     {
       super.setDest(stream, imageIndex);
-      if (out.length() == 0) writeHeader(); 
+      if (out.length() == 0) writeHeader();
     }
-    
+
     /*
      * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
      */
@@ -110,7 +110,7 @@ public class JavaFormat extends AbstractFormat {
     {
       byte[] buf = plane.getBytes();
       Metadata meta = getMetadata();
-      
+
       checkParams(imageIndex, planeIndex, buf, x, y, w, h);
       if (!isFullPlane(imageIndex, x, y, w, h)) {
         throw new FormatException(
@@ -136,7 +136,7 @@ public class JavaFormat extends AbstractFormat {
       writePlane(varName, getType(array), w, h);
 
     }
-    
+
     @Override
     public boolean canDoStacks() { return true; }
 
@@ -158,7 +158,7 @@ public class JavaFormat extends AbstractFormat {
       if (out != null) writeFooter();
       super.close();
     }
-    
+
     // -- Helper methods --
 
     protected void writeHeader() throws IOException {
@@ -175,7 +175,7 @@ public class JavaFormat extends AbstractFormat {
       out.writeLine("public class " + className + " {");
       out.writeLine("");
     }
-    
+
     protected void writePlane(String varName, ArrayPlus type, int w, int h)
       throws IOException
     {
@@ -198,7 +198,7 @@ public class JavaFormat extends AbstractFormat {
     protected void writeFooter() throws IOException {
       out.writeLine("}");
     }
-    
+
     private ArrayPlus getType(Object array) {
       ArrayPlus type = null;
       if (array instanceof byte[]) {
@@ -222,44 +222,44 @@ public class JavaFormat extends AbstractFormat {
       return type;
     }
   }
-  
+
   // -- Helper classes --
 
   private interface ArrayPlus {
     String label();
     String value(int index);
   }
-  
+
   private static class ByteArrayPlus extends ByteArray implements ArrayPlus {
     public ByteArrayPlus(byte[] data) { super(data); }
     public String label() { return "byte"; }
     public String value(int index) { return String.valueOf(getValue(index)); }
   }
-  
+
   private static class IntArrayPlus extends IntArray implements ArrayPlus {
     public IntArrayPlus(int[] data) { super(data); }
     public String label() { return "int"; }
     public String value(int index) { return String.valueOf(getValue(index)); }
   }
-  
+
   private static class ShortArrayPlus extends ShortArray implements ArrayPlus {
     public ShortArrayPlus(short[] data) { super(data); }
     public String label() { return "short"; }
     public String value(int index) { return String.valueOf(getValue(index)); }
   }
-  
+
   private static class LongArrayPlus extends LongArray implements ArrayPlus {
     public LongArrayPlus(long[] data) { super(data); }
     public String label() { return "long"; }
     public String value(int index) { return String.valueOf(getValue(index)); }
   }
-  
+
   private static class FloatArrayPlus extends FloatArray implements ArrayPlus {
     public FloatArrayPlus(float[] data) { super(data); }
     public String label() { return "float"; }
     public String value(int index) { return String.valueOf(getValue(index)); }
   }
-  
+
   private static class DoubleArrayPlus extends DoubleArray implements ArrayPlus {
     public DoubleArrayPlus(double[] data) { super(data); };
     public String label() { return "double"; }

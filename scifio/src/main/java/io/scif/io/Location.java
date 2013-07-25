@@ -77,7 +77,7 @@ public class Location extends AbstractHasSCIFIO {
 
 
   // -- Constructors --
-  
+
   public Location(Context context) {
     setContext(context);
   }
@@ -92,7 +92,7 @@ public class Location extends AbstractHasSCIFIO {
       LOGGER.trace("Location is not a URL", e);
       isURL = false;
     }
-    if (!isURL) file = 
+    if (!isURL) file =
         new File(scifio().location().getMappedId(pathname));
   }
 
@@ -123,7 +123,7 @@ public class Location extends AbstractHasSCIFIO {
 
     result = scifio().location().getCachedListing(key);
     if (result != null) return result;
-    
+
     ArrayList<String> files = new ArrayList<String>();
     if (isURL) {
       try {
@@ -172,9 +172,9 @@ public class Location extends AbstractHasSCIFIO {
       }
     }
     result = files.toArray(new String[files.size()]);
-    
+
     scifio().location().putCachedListing(key, result);
-    
+
     return result;
   }
 

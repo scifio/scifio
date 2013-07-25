@@ -51,18 +51,18 @@ public class DefaultWriter extends AbstractWriter<DefaultMetadata>
   implements DefaultComponent
 {
   // -- Fields --
-  
+
   private Format format;
-  
+
   // -- HasFormat API methods --
-  
+
   @Override
   public Format getFormat() {
     return format;
   }
-  
+
   // -- Writer API Methods --
-  
+
   /**
    * Non-functional savePlane implementation.
    * 

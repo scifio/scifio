@@ -54,7 +54,7 @@ import org.scijava.service.Service;
 public interface LuraWaveService extends Service {
 
   // -- Constants --
-  
+
   /** System property to check for the LuraWave license code. */
   public static final String LICENSE_PROPERTY = "lurawave.license";
 
@@ -74,9 +74,9 @@ public interface LuraWaveService extends Service {
 
   /** Identifying field in stub class. */
   public static final String STUB_FIELD = "IS_STUB";
-  
+
   // -- API Methods --
-  
+
   /**
    * Overrides the license code to use when initializing the LuraWave decoder.
    * By default the license code is loaded from the "lurawave.license" system

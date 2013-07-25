@@ -76,7 +76,7 @@ import org.scijava.plugin.Plugin;
  * AVIReader is the file format reader for AVI files.
  *
  * Much of this code was adapted from Wayne Rasband's AVI Movie Reader
- * plugin for ImageJ (available at 
+ * plugin for ImageJ (available at
  * <a href="http://rsb.info.nih.gov/ij">http://rsb.info.nih.gov/ij</a>).
  *
  * <dl><dt><b>Source code:</b></dt>
@@ -87,17 +87,17 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = AVIFormat.class)
 public class AVIFormat extends AbstractFormat {
-  
+
   // -- Supported compression types --
-  
+
   private static final int MSRLE = 1;
   private static final int MS_VIDEO = 1296126531;
   //private static final int CINEPAK = 1684633187;
   private static final int JPEG = 1196444237;
   private static final int Y8 = 538982489;
-  
+
   // -- Constants --
-  
+
   /** Huffman table for MJPEG data. */
   private static final byte[] MJPEG_HUFFMAN_TABLE = new byte[] {
     (byte) 0xff, (byte) 0xc4, 1, (byte) 0xa2, 0, 0, 1, 5, 1, 1, 1, 1, 1, 1, 0,
@@ -151,9 +151,9 @@ public class AVIFormat extends AbstractFormat {
     (byte) 0xf2, (byte) 0xf3, (byte) 0xf4, (byte) 0xf5, (byte) 0xf6,
     (byte) 0xf7, (byte) 0xf8, (byte) 0xf9, (byte) 0xfa
   };
-  
+
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -170,128 +170,128 @@ public class AVIFormat extends AbstractFormat {
 
   // -- Nested Classes --
 
-  public static class Metadata extends AbstractMetadata 
+  public static class Metadata extends AbstractMetadata
     implements HasColorTable
   {
-    
+
     // -- Constants --
     public static final String CNAME = "io.scif.formats.AVIFormat$Metadata";
 
     // -- AVI Metadata --
-    
+
     /* Offset to each plane. */
     private Vector<Long> offsets;
 
     /* Number of bytes in each plane. */
     private Vector<Long> lengths;
-    
+
     private short bmpBitsPerPixel;
     private int bmpCompression, bmpScanLineSize;
     private int bmpColorsUsed, bmpWidth;
-    
+
     private int bytesPerPlane;
-    
+
     private ColorTable lut;
-    
+
     // -- Cached plane --
-    
+
     private ByteArrayPlane lastPlane;
     private int lastPlaneIndex;
-    
+
     // -- Metadata Accessors --
-    
+
     public short getBmpBitsPerPixel() {
       return bmpBitsPerPixel;
     }
-    
+
     public void setBmpBitsPerPixel(short bmpBitsPerPixel) {
       this.bmpBitsPerPixel = bmpBitsPerPixel;
     }
-    
+
     public int getBmpCompression() {
       return bmpCompression;
     }
-    
+
     public void setBmpCompression(int bmpCompression) {
       this.bmpCompression = bmpCompression;
     }
-    
+
     public int getBmpScanLineSize() {
       return bmpScanLineSize;
     }
-    
+
     public void setBmpScanLineSize(int bmpScanLineSize) {
       this.bmpScanLineSize = bmpScanLineSize;
     }
-    
+
     public Vector<Long> getOffsets() {
       return offsets;
     }
-    
+
     public void setOffsets(Vector<Long> offsets) {
       this.offsets = offsets;
     }
-    
+
     public Vector<Long> getLengths() {
       return lengths;
     }
-    
+
     public void setLengths(Vector<Long> lengths) {
       this.lengths = lengths;
     }
-    
+
     public int getBmpColorsUsed() {
       return bmpColorsUsed;
     }
-    
+
     public void setBmpColorsUsed(int bmpColorsUsed) {
       this.bmpColorsUsed = bmpColorsUsed;
     }
-    
+
     public int getBmpWidth() {
       return bmpWidth;
     }
-    
+
     public void setBmpWidth(int bmpWidth) {
       this.bmpWidth = bmpWidth;
     }
-    
+
     public ByteArrayPlane getLastPlane() {
       return lastPlane;
     }
-    
+
     public byte[] getLastPlaneBytes() {
       return lastPlane == null ? null : lastPlane.getBytes();
     }
-    
+
     public void setLastPlane(ByteArrayPlane lastPlane) {
       this.lastPlane = lastPlane;
     }
-    
+
     public int getLastPlaneIndex() {
       return lastPlaneIndex;
     }
-    
+
     public void setLastPlaneIndex(int lastPlaneIndex) {
       this.lastPlaneIndex = lastPlaneIndex;
     }
-    
+
     public int getBytesPerPlane() {
       return bytesPerPlane;
     }
-    
+
     public void setBytesPerPlane(int bytesPerPlane) {
       this.bytesPerPlane = bytesPerPlane;
     }
-    
+
     // -- HasColorTable API Methods --
-    
+
     public ColorTable getColorTable(int imageIndex, int planeIndex) {
       return lut;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
       int sizeT = 0, sizeC = 0;
@@ -307,7 +307,7 @@ public class AVIFormat extends AbstractFormat {
         long fileOff = getOffsets().get(0).longValue();
 
         CodecOptions options = AVIUtils.createCodecOptions(this, 0, 0);
-        
+
         int nBytes = 0;
         try {
           nBytes = AVIUtils.extractCompression(this, options, getSource(), null, 0).length /
@@ -317,7 +317,7 @@ public class AVIFormat extends AbstractFormat {
         } catch (FormatException e) {
           LOGGER.error("FormatException while decompressing", e);
         }
-        
+
         try {
           getSource().seek(fileOff);
         } catch (IOException e) {
@@ -335,7 +335,7 @@ public class AVIFormat extends AbstractFormat {
         iMeta.setRGB(true);
       }
       else if (getBytesPerPlane() == 0 || getBmpBitsPerPixel() == 24) {
-        iMeta.setRGB(getBmpBitsPerPixel() > 8 || 
+        iMeta.setRGB(getBmpBitsPerPixel() > 8 ||
             (getBmpCompression() != 0 && getColorTable(0, 0) == null));
         sizeC = iMeta.isRGB() ? 3 : 1;
       }
@@ -349,7 +349,7 @@ public class AVIFormat extends AbstractFormat {
             * (getBmpBitsPerPixel() / 8));
         iMeta.setRGB(sizeC > 1);
       }
-      
+
       iMeta.setFalseColor(false);
       iMeta.setMetadataComplete(true);
       iMeta.setIndexed(getColorTable(0, 0) != null && !iMeta.isRGB());
@@ -369,7 +369,7 @@ public class AVIFormat extends AbstractFormat {
 
       if (getBmpCompression() != 0) iMeta.setPixelType(FormatTools.UINT8);
 
-      int effectiveWidth = (int) (getBmpScanLineSize() / 
+      int effectiveWidth = (int) (getBmpScanLineSize() /
           (getBmpBitsPerPixel() / 8));
       if (effectiveWidth == 0) {
         effectiveWidth = iMeta.getAxisLength(Axes.X);
@@ -386,18 +386,18 @@ public class AVIFormat extends AbstractFormat {
         iMeta.addAxis(Axes.TIME, sizeT);
         iMeta.addAxis(Axes.CHANNEL, sizeC);
       }
-      
+
       iMeta.addAxis(Axes.Z, 1);
     }
 
     // -- HasSource API Methods --
-    
+
     /*
      * @see io.scif.AbstractMetadata#close(boolean)
      */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
-      
+
       if (!fileOnly) {
         lastPlane = null;
         lastPlaneIndex = -1;
@@ -410,25 +410,25 @@ public class AVIFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner
    *
    */
   public static class Checker extends AbstractChecker {
-    
+
     // -- Constants --
-    
+
     public static final String AVI_MAGIC_STRING = "RIFF";
-    
+
     // -- Constructor --
-    
+
     public Checker() {
       suffixNecessary = false;
     }
-    
+
     // -- Checker API Methods --
-    
+
     /*
      * @see io.scif.Checker#isFormat(io.scif.io.RandomAccessInputStream)
      */
@@ -440,46 +440,46 @@ public class AVIFormat extends AbstractFormat {
       String format = stream.readString(4);
       return type.equals(AVI_MAGIC_STRING) && format.equals("AVI ");
     }
- 
+
   }
-  
+
   /**
    * @author Mark Hiner
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
-    
+
     // -- Fields --
     private String type = "error";
     private String fcc = "error";
     private int size = -1;
-    
+
     // -- Parser API Methods --
-    
+
     protected void typedParse(final RandomAccessInputStream stream,
         final Metadata meta) throws IOException, FormatException
     {
       stream.order(true);
-      
+
       LOGGER.info("Verifying AVI format");
-      
+
       meta.setLastPlaneIndex(-1);
       meta.setLengths(new Vector<Long>());
       meta.setOffsets(new Vector<Long>());
-      
+
       meta.createImageMetadata(1);
 
       while (stream.getFilePointer() < stream.length() - 8) {
         // NB: size x and size y are implicitly set here
         readChunk(meta);
       }
-      
+
       LOGGER.info("Populating metadata");
-      
+
     }
-    
+
     // -- Helper Methods --
-    
+
     private void readChunkHeader() throws IOException {
       readTypeAndSize();
       fcc = in.readString(4);
@@ -494,7 +494,7 @@ public class AVIFormat extends AbstractFormat {
       String listString;
 
       long pos;
-      
+
       readChunkHeader();
       ImageMetadata m = meta.get(0);
 
@@ -685,7 +685,7 @@ public class AVIFormat extends AbstractFormat {
                         lut[2][i] = (byte) i;
                       }
                     }
-                    
+
                     meta.lut = new ColorTable8(lut[0], lut[1], lut[2]);
                   }
 
@@ -807,15 +807,15 @@ public class AVIFormat extends AbstractFormat {
         pos = in.getFilePointer();
       }
     }
-    
+
   }
-  
+
   /**
    * @author Mark Hiner
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
@@ -829,7 +829,7 @@ public class AVIFormat extends AbstractFormat {
     {
       byte[] buf = plane.getBytes();
 
-      FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, 
+      FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
           buf.length, x, y, w, h);
       Metadata meta = getMetadata();
       plane.setColorTable(meta.getColorTable(0, 0));
@@ -872,7 +872,7 @@ public class AVIFormat extends AbstractFormat {
         for (int row=h; row>=y; row--) {
           bb.skipBits(meta.getBmpBitsPerPixel() * x);
           for (int col=0; col<len; col++) {
-            buf[(row - y) * len + col] = 
+            buf[(row - y) * len + col] =
                 (byte) bb.getBits(meta.getBmpBitsPerPixel());
           }
           bb.skipBits(meta.getBmpBitsPerPixel() * 
@@ -897,7 +897,7 @@ public class AVIFormat extends AbstractFormat {
         if (meta.getBmpBitsPerPixel() == 24 || meta.getBmpBitsPerPixel() == 32) {
           for (int i=0; i<buf.length / meta.getRGBChannelCount(imageIndex); i++) {
             byte r = buf[i * meta.getRGBChannelCount(imageIndex) + 2];
-            buf[i * meta.getRGBChannelCount(imageIndex) + 2] = 
+            buf[i * meta.getRGBChannelCount(imageIndex) + 2] =
                 buf[i * meta.getRGBChannelCount(imageIndex)];
             buf[i * meta.getRGBChannelCount(imageIndex)] = r;
           }
@@ -928,13 +928,13 @@ public class AVIFormat extends AbstractFormat {
 
       if (meta.getBmpBitsPerPixel() == 16 && meta.isRGB(imageIndex)) {
         // channels are stored as BGR, need to swap them
-        ImageTools.bgrToRgb(plane.getBytes(), meta.isInterleaved(imageIndex), 
+        ImageTools.bgrToRgb(plane.getBytes(), meta.isInterleaved(imageIndex),
             2, meta.getRGBChannelCount(imageIndex));
       }
 
       return plane;
     }
-    
+
     // -- Helper methods --
 
     private ByteArrayPlane uncompress(int imageIndex, int planeIndex,
@@ -952,7 +952,7 @@ public class AVIFormat extends AbstractFormat {
 
         //TODO if not full plane, open the full plane and then decompress
 
-        ByteArrayPlane tmpPlane = createPlane(0, 0, 
+        ByteArrayPlane tmpPlane = createPlane(0, 0,
             meta.getAxisLength(imageIndex, Axes.X), meta.getAxisLength(imageIndex, Axes.Y));
 
         if (options.previousImage == null && meta.getBmpCompression() != JPEG) {
@@ -965,21 +965,21 @@ public class AVIFormat extends AbstractFormat {
         long fileOff = meta.getOffsets().get(planeIndex).longValue();
         getStream().seek(fileOff);
 
-        buf = 
+        buf =
             AVIUtils.extractCompression(meta, options, getStream(), tmpPlane, planeIndex);
       }
-      
+
       int rowLen = FormatTools.getPlaneSize(this, w, 1, imageIndex);
       int bytes = FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
       int inputRowLen = FormatTools.getPlaneSize(this,
           meta.getAxisLength(imageIndex, Axes.X), 1, imageIndex);
-      
+
       for (int row=0; row<h; row++) {
         System.arraycopy(buf, (row + y) * inputRowLen + x * bytes, plane.getBytes(),
           row * rowLen, rowLen);
       }
-      
-      
+
+
       return plane;
     }
   }
@@ -989,7 +989,7 @@ public class AVIFormat extends AbstractFormat {
    *
    */
   public static class Writer extends AbstractWriter<Metadata> {
-    
+
     // -- Constants --
 
     private static final long SAVE_MOVI = 4092;
@@ -1017,7 +1017,7 @@ public class AVIFormat extends AbstractFormat {
     private static final long PADDING_BYTES = 4076 - SAVE_JUNK_SIG;
     private static final long SAVE_LIST2_SIZE = 4088;
     private static final String DATA_SIGNATURE = "00db";
-    
+
     // -- Fields --
 
     private int planesWritten = 0;
@@ -1030,21 +1030,21 @@ public class AVIFormat extends AbstractFormat {
     private long idx1Pos;
     private long endPos;
     private long saveidx1Length;
-    
+
     // -- Writer API Methods --
-    
+
     public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
         int y, int w, int h) throws FormatException, IOException
     {
       Metadata meta = getMetadata();
       byte[] buf = plane.getBytes();
-      
+
       checkParams(imageIndex, planeIndex, buf, x, y, w, h);
       if (!isFullPlane(imageIndex, x, y, w, h)) {
         throw new FormatException(
           "AVIWriter does not yet support saving image tiles.");
       }
-      
+
       int nChannels = meta.getAxisLength(imageIndex, Axes.CHANNEL);
 
       if (!initialized[imageIndex][planeIndex]) {
@@ -1142,15 +1142,15 @@ public class AVIFormat extends AbstractFormat {
       out.seek(FRAME_OFFSET_2);
       out.writeInt(planesWritten);
     }
-    
+
     @Override
     public boolean canDoStacks() { return true; }
 
     @Override
     public int[] getPixelTypes(String codec) {
       return new int[] {FormatTools.UINT8};
-    } 
-    
+    }
+
     @Override
     public void close() throws IOException {
       super.close();
@@ -1163,23 +1163,23 @@ public class AVIFormat extends AbstractFormat {
       endPos = 0;
       saveidx1Length = 0;
     }
-    
+
     @Override
     public void setDest(final RandomAccessOutputStream out, final int imageIndex)
         throws FormatException, IOException {
       super.setDest(out, imageIndex);
       initialize(imageIndex);
     }
-    
+
     // -- Helper Methods --
-    
+
     private void initialize(int imageIndex) throws IOException {
       savedbLength = new Vector<Long>();
-      
+
       Metadata meta = getMetadata();
 
       if (out.length() > 0) {
-        RandomAccessInputStream in = 
+        RandomAccessInputStream in =
             new RandomAccessInputStream(getContext(), meta.getDatasetName());
         in.order(true);
         in.seek(FRAME_OFFSET);
@@ -1495,12 +1495,12 @@ public class AVIFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner
    *
    */
-  @Plugin(type = Translator.class, attrs = 
+  @Plugin(type = Translator.class, attrs =
     {@Attr(name = Translator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = Translator.DEST, value = Metadata.CNAME)},
     priority = Priority.LOW_PRIORITY)
@@ -1515,53 +1515,53 @@ public class AVIFormat extends AbstractFormat {
       dest.setOffsets(offsets);
       dest.setLengths(lengths);
       dest.createImageMetadata(1);
-      
+
       int sizeX = source.getAxisLength(0, Axes.X);
       int sizeY = source.getAxisLength(0, Axes.Y);
       int bpp = source.getBitsPerPixel(0);
       long length = sizeX * sizeY * source.getEffectiveSizeC(0) * bpp;
       long offset = 0;
-      
+
       dest.setAxisLength(0, Axes.X, sizeX);
       dest.setAxisLength(0, Axes.Y, sizeY);
-      
+
       int npad = sizeX % 4;
-      
+
       if (npad != 0) sizeX += (4 - npad);
-      
+
       dest.setBmpBitsPerPixel((short) (bpp * source.getRGBChannelCount(0)));
-      
+
       dest.setBmpWidth(sizeX * (bpp / 8));
       dest.setBmpScanLineSize(dest.getBmpWidth() * source.getRGBChannelCount(0));
-      
+
       try {
         if (source.getSource() == null) offset = 0;
         else offset = source.getSource().getFilePointer();
       } catch (IOException e) {
         LOGGER.error("Error retrieving AVI plane offset", e);
       }
-      
+
       for (int i=0; i<source.getPlaneCount(0); i++) {
         offsets.add(offset);
-        
+
         lengths.add(length);
         offset += length;
       }
-      
+
       dest.setBmpColorsUsed((int) Math.pow(2.0, bpp));
-      
+
       dest.setBmpCompression(0);
-      
+
       if (HasColorTable.class.isAssignableFrom(source.getClass())) {
         ColorTable ct = ((HasColorTable)source).getColorTable(0, 0);
         dest.setBmpColorsUsed(ct.getLength());
       }
-      
+
 
       dest.setBytesPerPlane((int)length / 8);
     }
   }
-  
+
   /*
    * Utility Helper class
    */
@@ -1579,8 +1579,8 @@ public class AVIFormat extends AbstractFormat {
       options.interleaved = meta.isInterleaved(imageIndex);
       options.littleEndian = meta.isLittleEndian(imageIndex);
       return options;
-    }    
-    
+    }
+
     private static String getCodecName(final int bmpCompression) {
       switch (bmpCompression) {
         case 0:
@@ -1597,15 +1597,15 @@ public class AVIFormat extends AbstractFormat {
           return "Unknown";
       }
     }
-    
+
     public static byte[] extractCompression(Metadata meta, CodecOptions options,
         RandomAccessInputStream stream, ByteArrayPlane plane, int planeIndex)
         throws IOException, FormatException
     {
       int bmpCompression = meta.getBmpCompression();
-      
+
       byte[] buf = null;
-          
+
       if (bmpCompression == MSRLE) {
         byte[] b = new byte[(int) meta.getLengths().get(planeIndex).longValue()];
         stream.read(b);
@@ -1652,7 +1652,7 @@ public class AVIFormat extends AbstractFormat {
         if (motionJPEG) {
           // transform YCbCr data to RGB
           // see http://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
-          
+
           buf = plane.getBytes();
 
           for (int i=0; i<buf.length; i+=3) {
@@ -1706,7 +1706,7 @@ public class AVIFormat extends AbstractFormat {
         throw new UnsupportedCompressionException(
           bmpCompression + " not supported");
       }
-      
+
       return buf;
     }
   }

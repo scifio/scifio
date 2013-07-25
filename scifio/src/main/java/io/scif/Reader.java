@@ -45,7 +45,7 @@ import java.io.IOException;
 /**
  * Interface for all SCIFIO Readers.
  * <p>
- * {@code Reader} components generate {@link io.scif.Plane} 
+ * {@code Reader} components generate {@link io.scif.Plane}
  * representations of images via the {@link #openPlane} methods. These planes
  * can then be used by calling software (e.g. for display) or passed to another
  * method for writing to an output source (e.g. via the
@@ -183,14 +183,14 @@ public interface Reader extends HasFormat, HasSource, Groupable {
   /**
    * Sets the source for this reader to read from.
    * @param fileName
-   * @throws IOException 
+   * @throws IOException
    */
   void setSource(String fileName) throws IOException;
-  
+
   /**
    * Sets the source for this reader to read from.
    * @param file
-   * @throws IOException 
+   * @throws IOException
    */
   void setSource(File file) throws IOException;
 
@@ -209,7 +209,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
     int w, int h, Plane plane) throws IOException;
 
   /**
-   * Reads a raw plane from disk. 
+   * Reads a raw plane from disk.
    * @throws IllegalArgumentException If the provided {@code Plane} type is
    *         not compatible with this {@code Reader}.
    */
@@ -221,7 +221,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
   /** Determines the number of images in the current file. */
   int getImageCount();
-  
+
   /** 
    * Creates a blank plane compatible with this reader.
    * @param xOffset - X offset of the Plane
@@ -231,7 +231,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
    * @return The created plane
    */
   Plane createPlane(int xOffset, int yOffset, int xLength, int yLength);
-  
+
   /** 
    * Creates a blank plane compatible with this reader.
    * 
@@ -243,7 +243,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
    * @return The created plane
    */
   Plane createPlane(ImageMetadata meta, int xOffset, int yOffset, int xLength, int yLength);
-  
+
   /**
    * Convenience method for casting {@code Plane} implementations to the type
    * associated with this {@code Reader}.

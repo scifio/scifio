@@ -56,12 +56,12 @@ import net.imglib2.meta.AxisType;
 public abstract class AbstractImageMetadata implements ImageMetadata {
 
   // -- Constants --
-  
+
   /** Default thumbnail width and height. */
   protected static final int THUMBNAIL_DIMENSION = 128;
 
   // -- Fields --
-  
+
   /** Number of planes in this image */
   @Field(label = "planeCount")
   private int planeCount;
@@ -88,7 +88,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   /** The Axes types for this image. Order is implied by ordering within this array */
   @Field(label = "dimTypes")
   private List<AxisType> axisTypes;
-  
+
   /** Lengths of each axis. Order is parallel of dimTypes. */
   @Field(label = "dimLengths")
   private HashMap<AxisType, Integer> axisLengths;
@@ -139,23 +139,23 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   @Field(label = "thumbnail")
   private boolean thumbnail;
-  
+
   /* A table of Field key, value pairs */
   private MetaTable table;
-  
+
   // -- Constructors --
 
   public AbstractImageMetadata() {
     axisTypes = new ArrayList<AxisType>();
     axisLengths = new HashMap<AxisType, Integer>();
   }
-  
+
   public AbstractImageMetadata(ImageMetadata copy) {
     this();
     copy(copy);
   }
 
-  // -- Setters -- 
+  // -- Setters --
 
   /*
    * @see io.scif.ImageMetadata#setThumbSizeX(int)
@@ -248,7 +248,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     setAxisTypes(axisTypes);
     setAxisLengths(axisLengths);
   }
-  
+
   /*
    * @see io.scif.ImageMetadata#setAxisTypes(net.imglib2.meta.AxisType[])
    */
@@ -264,7 +264,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
       throw new IllegalArgumentException("Tried to set " + axisLengths.length +
           " axis lengths, but " + axisTypes.size() + " axes present." +
           " Call setAxisTypes first.");
-    
+
     for (int i=0; i<axisTypes.size(); i++) {
       this.axisLengths.put(axisTypes.get(i), axisLengths[i]);
     }
@@ -282,7 +282,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public void setAxisType(final int index, final AxisType axis) {
     int oldIndex = getAxisIndex(axis);
-    
+
     // Replace existing axis
     if (oldIndex == -1) {
       int length = axisLengths.remove(axisTypes.get(index));
@@ -303,29 +303,29 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   public void setPlaneCount(final int planeCount) {
     this.planeCount = planeCount;
   }
-  
+
   // -- Getters --
-    
+
   /*
    * @see io.scif.ImageMetadata#getPlaneCount()
    */
   public int getPlaneCount() {
     return planeCount;
   }
-  
-  
+
+
   /*
    * @see io.scif.ImageMetadata#getSize()
    */
   public long getSize() {
     long size = 1;
-    
+
     for (AxisType a : axisTypes) {
       size = DataTools.safeMultiply64(size, getAxisLength(a));
     }
-    
+
     int bytesPerPixel = getBitsPerPixel() / 8;
-    
+
     return DataTools.safeMultiply64(size, bytesPerPixel);
   }
 
@@ -334,20 +334,20 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public int getThumbSizeX() {
     int thumbX = thumbSizeX;
-    
+
     // If the X thumbSize isn't explicitly set, scale the actual width using
     // the thumbnail dimension constant
     if (thumbX == 0) {
       int sx = getAxisLength(Axes.X);
       int sy = getAxisLength(Axes.Y);
-      
+
       if (sx < THUMBNAIL_DIMENSION && sy < THUMBNAIL_DIMENSION)
         thumbX = sx;
       else if (sx > sy) thumbX = THUMBNAIL_DIMENSION;
       else if (sy > 0) thumbX = sx * THUMBNAIL_DIMENSION / sy;
       if (thumbX == 0) thumbX = 1;
     }
-    
+
     return thumbX;
   }
 
@@ -356,21 +356,21 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public int getThumbSizeY() {
     int thumbY = thumbSizeY;
-    
+
     // If the Y thumbSize isn't explicitly set, scale the actual width using
     // the thumbnail dimension constant
     if (thumbY == 0) {
       int sx = getAxisLength(Axes.X);
       int sy = getAxisLength(Axes.Y);
       thumbY = 1;
-      
+
       if (sx < THUMBNAIL_DIMENSION && sy < THUMBNAIL_DIMENSION)
         thumbY = sy;
       else if (sy > sx) thumbY = THUMBNAIL_DIMENSION;
       else if (sx > 0) thumbY = sy * THUMBNAIL_DIMENSION / sx;
       if (thumbY == 0) thumbY = 1;
     }
-    
+
     return thumbY;
   }
 
@@ -400,11 +400,11 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public int[] getAxesLengths() {
     int[] lengths = new int[axisTypes.size()];
-    
+
     for (int i=0; i<axisTypes.size(); i++) {
       lengths[i] = getAxisLength(axisTypes.get(i));
     }
-    
+
     return lengths;
   }
 
@@ -478,11 +478,11 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public int getRGBChannelCount() {
     if (!isRGB()) return 1;
-    
+
     final int effC = getEffectiveSizeC();
     if (effC == 0) return 0;
     return getAxisLength(Axes.CHANNEL) / effC;
-  } 
+  }
 
   /*
    * @see io.scif.ImageMetadata#getAxisType(int)
@@ -507,7 +507,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public int getAxisLength(final AxisType t) {
     if (axisLengths == null || !axisLengths.containsKey(t)) return 1;
-    
+
     return axisLengths.get(t);
   }
 
@@ -516,7 +516,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
    */
   public int getAxisIndex(final AxisType type) {
     if (axisTypes == null) return -1;
-    
+
     return axisTypes.indexOf(type);
   }
 
@@ -533,19 +533,19 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   public void addAxis(final AxisType type, final int value)
   {
     if (axisTypes == null) axisTypes = new ArrayList<AxisType>();
-    
+
     // See if the axis already exists
     if (!axisTypes.contains(type)) axisTypes.add(type);
-    
+
     axisLengths.put(type, value);
   }
-  
+
   /*
    * @see io.scif.ImageMetadata#copy(io.scif.ImageMetadata)
    */
   public void copy(ImageMetadata toCopy) {
     table = new DefaultMetaTable(toCopy.getTable());
-    
+
     axisTypes = new ArrayList<AxisType>(Arrays.asList(toCopy.getAxes()));
     setAxisLengths(toCopy.getAxesLengths().clone());
     bitsPerPixel = toCopy.getBitsPerPixel();
@@ -562,7 +562,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
     thumbSizeX = toCopy.getThumbSizeX();
     thumbSizeY = toCopy.getThumbSizeY();
   }
-  
+
   // -- HasTable API Methods --
 
   /*
@@ -579,11 +579,11 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
   public void setTable(MetaTable table) {
     this.table = table;
   }
- 
+
   // -- Serializable API Methods --
 
   // -- Object API --
-  
+
   @Override
   public String toString() {
     return new FieldPrinter(this).toString();

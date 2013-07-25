@@ -47,30 +47,30 @@ import org.scijava.service.Service;
  *
  */
 public interface CacheService<T extends Serializable> extends Service {
-  
+
   /**
    * Removes all entries from the specified cache
    * @param cacheId cache name to clear
    */
   void clearCache(String cacheId);
-  
+
   /**
    * Removes all entries for all caches
    */
   void clearAllCaches();
-  
+
   /**
    * Closes and removes the specified cache.
    * @param cacheId cache name to remove
    */
   void dropCache(String cacheId);
-  
+
   /**
    * Creates a cache using the specified id
    * @param cacheId cache to create
    */
   void addCache(String cacheId);
-  
+
   /**
    * Caches the provided object. The cacheId and index
    * are used as a hash key.
@@ -85,7 +85,7 @@ public interface CacheService<T extends Serializable> extends Service {
    * @return true if the object was cached successfully
    */
   boolean cache(String cacheId, int index, T object);
-  
+
   /**
    * Removes and returns the object at the desired
    * index from the specified index.
@@ -95,7 +95,7 @@ public interface CacheService<T extends Serializable> extends Service {
    * @return The cached object for the specified id and index
    */
   T retrieve(String cacheId, int index);
-  
+
   /**
    * @param cacheId - Cache the desired object belongs to
    * @param index - Index in the cache of the desired object
@@ -110,18 +110,18 @@ public interface CacheService<T extends Serializable> extends Service {
    * @param maxBytes - max bytes usable by this manager's disk stores.
    */
   void setMaxBytesOnDisk(long maxBytes);
-  
+
   /**
    * @return True if this CacheService can write to disk.
    */
   boolean enabled();
-  
+
   /**
    * @param enabled If true, disk caching will be enabled. If false,
    *        no writes to disk will occur.
    */
   void enable(boolean enabled);
-  
+
   /**
    * @param enabled If true, all records will be cached, not just
    *        those that are dirty.

@@ -74,7 +74,7 @@ import org.scijava.plugin.Plugin;
 public class TIFFJAIFormat extends AbstractFormat{
 
   // -- Format API methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -88,9 +88,9 @@ public class TIFFJAIFormat extends AbstractFormat{
   public String[] getSuffixes() {
     return scifio().format().getFormatFromClass(TIFFFormat.class).getSuffixes();
   }
-  
+
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -101,13 +101,13 @@ public class TIFFJAIFormat extends AbstractFormat{
 
     /** Reflection tool for JAI calls. */
     private ReflectedUniverse r;
-    
+
     private int numPages;
-    
+
     // -- Constants --
-    
+
     public static final String CNAME = "io.scif.formats.TIFFJAIFormat$Metadata";
-    
+
     // -- TIFFJAIMetadata getters and setters --
 
     public ReflectedUniverse universe() {
@@ -117,7 +117,7 @@ public class TIFFJAIFormat extends AbstractFormat{
     public void setUniverse(ReflectedUniverse r) {
       this.r = r;
     }
-    
+
     public int getNumPages() {
       return numPages;
     }
@@ -148,9 +148,9 @@ public class TIFFJAIFormat extends AbstractFormat{
       m.setAxisLength(Axes.CHANNEL, img.getSampleModel().getNumBands());
       m.setAxisLength(Axes.Z, 1);
       m.setAxisLength(Axes.TIME, numPages);
-      
+
       m.setRGB(m.getAxisLength(Axes.CHANNEL) > 1);
-      
+
       m.setPixelType(AWTImageTools.getPixelType(img));
       m.setBitsPerPixel(FormatTools.getBitsPerPixel(m.getPixelType()));
       m.setInterleaved(true);
@@ -160,7 +160,7 @@ public class TIFFJAIFormat extends AbstractFormat{
       m.setFalseColor(false);
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -174,13 +174,13 @@ public class TIFFJAIFormat extends AbstractFormat{
       "Please install JAI from https://jai.dev.java.net/";
 
     // -- Parser API Methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException {
       LOGGER.info("Checking for JAI");
       ReflectedUniverse r = null;
-      
+
       try {
         r = new ReflectedUniverse();
         r.exec("import javax.media.jai.NullOpImage");
@@ -192,9 +192,9 @@ public class TIFFJAIFormat extends AbstractFormat{
       catch (ReflectException exc) {
         throw new MissingLibraryException(NO_JAI_MSG, exc);
       }
-      
+
       meta.setUniverse(r);
-      
+
       String id = stream.getFileName();
 
       LOGGER.info("Reading movie dimensions");
@@ -236,23 +236,23 @@ public class TIFFJAIFormat extends AbstractFormat{
         throw new FormatException("Invalid page count: " + numPages);
       }
     }
-    
+
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends BufferedImageReader<Metadata> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
-    
+
     // -- Reader API methods --
-    
+
     /*
      * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
@@ -265,7 +265,7 @@ public class TIFFJAIFormat extends AbstractFormat{
       return plane;
     }
   }
-  
+
   // -- Helper methods --
 
   /** Obtains a BufferedImage from the given data source using JAI. */

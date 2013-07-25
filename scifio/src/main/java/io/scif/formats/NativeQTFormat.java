@@ -99,7 +99,7 @@ public class NativeQTFormat extends AbstractFormat {
   };
 
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -115,16 +115,16 @@ public class NativeQTFormat extends AbstractFormat {
   }
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata {
     // -- Constants --
-    
+
     public static final String CNAME = "io.scif.formats.NativeQTFormat$Metadata";
-    
+
     // -- Fields --
 
     /** Offset to start of pixel data. */
@@ -303,15 +303,15 @@ public class NativeQTFormat extends AbstractFormat {
     public void setFlip(boolean flip) {
       this.flip = flip;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
-      
+
       iMeta.setRGB(getBitsPerPixel() < 40);
       iMeta.setAxisLength(Axes.CHANNEL, iMeta.isRGB() ? 3 : 1);
       iMeta.setInterleaved(iMeta.isRGB());
@@ -327,7 +327,7 @@ public class NativeQTFormat extends AbstractFormat {
       iMeta.setIndexed(false);
       iMeta.setFalseColor(false);
     }
-    
+
     @Override
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -344,22 +344,22 @@ public class NativeQTFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Checker extends AbstractChecker {
-    
+
     // -- Constructor --
-    
+
     public Checker() {
       suffixNecessary = false;
 
     }
-    
+
     // -- Checker API Methods --
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
       final int blockLen = 64;
@@ -377,7 +377,7 @@ public class NativeQTFormat extends AbstractFormat {
         s.indexOf("mdat") >= 0 || s.indexOf("ftypqt") >= 0;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -385,7 +385,7 @@ public class NativeQTFormat extends AbstractFormat {
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- Parser API Methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
         throws IOException, FormatException {
@@ -394,16 +394,16 @@ public class NativeQTFormat extends AbstractFormat {
       Vector<Integer> offsets = new Vector<Integer>();
       Vector<Integer> chunkSizes = new Vector<Integer>();
       RandomAccessInputStream cachedStream = null;
-      
+
       meta.setOffsets(offsets);
       meta.setChunkSizes(chunkSizes);
       meta.createImageMetadata(1);
       LOGGER.info("Parsing tags");
 
       NativeQTUtils.parse(stream, meta, 0, 0, stream.length());
-      
+
       ImageMetadata iMeta = meta.get(0);
-      
+
       iMeta.setPlaneCount(offsets.size());
 
       if (chunkSizes.size() < iMeta.getPlaneCount() && chunkSizes.size() > 0) {
@@ -470,22 +470,22 @@ public class NativeQTFormat extends AbstractFormat {
             }
           }
         }
-        
+
         // reset the stream, otherwise openBytes will try to read pixels
         // from the resource fork
         if (cachedStream != null) stream.close();
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
@@ -496,7 +496,7 @@ public class NativeQTFormat extends AbstractFormat {
       ByteArrayPlane plane, int x, int y, int w, int h)
       throws FormatException, IOException
     {
-      
+
       Metadata meta = getMetadata();
       byte[] buf = plane.getData();
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
@@ -599,7 +599,7 @@ public class NativeQTFormat extends AbstractFormat {
       return plane;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -672,11 +672,11 @@ public class NativeQTFormat extends AbstractFormat {
     protected boolean needLegacy = false;
 
     private LegacyQTFormat.Writer legacy;
-    
+
     private int numWritten = 0;
-    
+
     // -- Constructor --
-    
+
     public Writer() {
       LegacyQTTools tools = new LegacyQTTools();
       if (tools.canDoQT()) {
@@ -684,11 +684,11 @@ public class NativeQTFormat extends AbstractFormat {
             CompressionType.UNCOMPRESSED.getCompression(),
           // NB: Writing to Motion JPEG-B with QTJava seems to be broken.
           /*"Motion JPEG-B",*/
-            CompressionType.CINEPAK.getCompression(), 
-            CompressionType.ANIMATION.getCompression(), 
-            CompressionType.H_263.getCompression(), 
-            CompressionType.SORENSON.getCompression(), 
-            CompressionType.SORENSON_3.getCompression(), 
+            CompressionType.CINEPAK.getCompression(),
+            CompressionType.ANIMATION.getCompression(),
+            CompressionType.H_263.getCompression(),
+            CompressionType.SORENSON.getCompression(),
+            CompressionType.SORENSON_3.getCompression(),
             CompressionType.MPEG_4.getCompression()
         };
       }
@@ -722,9 +722,9 @@ public class NativeQTFormat extends AbstractFormat {
      * </ul>
      */
     public void setQuality(int quality) { this.quality = quality; }
-    
+
     // -- Writer API methods --
-    
+
     public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
       int y, int w, int h) throws FormatException, IOException
     {
@@ -807,7 +807,7 @@ public class NativeQTFormat extends AbstractFormat {
           out.skipBytes(nChannels * (width - w - x));
         }
       }
-      numWritten++;      
+      numWritten++;
     }
 
     @Override
@@ -817,7 +817,7 @@ public class NativeQTFormat extends AbstractFormat {
     public int[] getPixelTypes(String codec) {
       return new int[] {FormatTools.UINT8};
     }
-    
+
     @Override
     public void close() throws IOException {
       if (out != null) writeFooter();
@@ -828,7 +828,7 @@ public class NativeQTFormat extends AbstractFormat {
       pad = 0;
       numWritten = 0;
     }
-    
+
     /**
      * Sets the source that will be written to during {@link #savePlane} calls.
      * 
@@ -854,7 +854,7 @@ public class NativeQTFormat extends AbstractFormat {
         legacy = (LegacyQTFormat.Writer)legacyFormat.createWriter();
         io.scif.Metadata legacyMeta = legacyFormat.createMetadata();
         scifio().translator().translate(meta, legacyMeta, false);
-        
+
         legacy.setMetadata(legacyMeta);
 
         legacy.setCodec(codec);
@@ -1162,36 +1162,36 @@ public class NativeQTFormat extends AbstractFormat {
       out.writeBytes(type);
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
-  @Plugin(type = Translator.class, attrs = 
+  @Plugin(type = Translator.class, attrs =
     {@Attr(name = NativeQTTranslator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = NativeQTTranslator.DEST, value = Metadata.CNAME)},
     priority = Priority.LOW_PRIORITY)
   public static class NativeQTTranslator
     extends AbstractTranslator<io.scif.Metadata, Metadata>
   {
-    // -- Translator API Methods -- 
-    
+    // -- Translator API Methods --
+
     public void typedTranslate(io.scif.Metadata source, Metadata dest) {
       dest.createImageMetadata(1);
       dest.get(0).setPlaneCount(source.getPlaneCount(0));
       dest.setAxisLength(0, Axes.X, source.getAxisLength(0, Axes.X));
       dest.setAxisLength(0, Axes.Y, source.getAxisLength(0, Axes.Y));
-      
+
       // *** HACK *** the Metadata bitsPerPixel field doesn't really matter if we're translating to this format.
       // But it is used to determine RGB status.
       int bpp = FormatTools.getBitsPerPixel(source.getPixelType(0)) == 8 ? 8 : 16;
-      
+
       dest.setBitsPerPixel(source.isRGB(0) ? bpp : (bpp * 5));
     }
   }
-  
+
   // -- Helper class --
-  
+
   private static class NativeQTUtils {
 
     /** Parse all of the atoms in the file. */
@@ -1371,7 +1371,7 @@ public class NativeQTFormat extends AbstractFormat {
                 int planesPerChunk = stream.readInt();
                 int id = stream.readInt();
 
-                if (id == 2) meta.setAltPlanes(meta.getAltPlanes() + 
+                if (id == 2) meta.setAltPlanes(meta.getAltPlanes() +
                     planesPerChunk * (chunk - prevChunk));
 
                 prevChunk = chunk;

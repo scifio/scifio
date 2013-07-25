@@ -37,7 +37,7 @@
 package io.scif;
 
 /**
- * Super-interface for SCIFIO components that relate back to a 
+ * Super-interface for SCIFIO components that relate back to a
  * {@link io.scif.Format}.
  * 
  * @see io.scif.Format

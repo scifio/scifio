@@ -65,7 +65,7 @@ public class QTRLECodec extends BaseCodec {
   public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
     throws FormatException, IOException
   {
-    if (in == null) 
+    if (in == null)
       throw new IllegalArgumentException("No data to decompress.");
     byte[] b = new byte[(int) (in.length() - in.getFilePointer())];
     in.read(b);

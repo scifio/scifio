@@ -48,12 +48,12 @@ import org.scijava.service.AbstractService;
 
 @Plugin(type=TranslatorService.class)
 public class DefaultTranslatorService extends AbstractService implements TranslatorService {
-  
+
   // -- Parameters --
 	
   @Parameter
   private PluginAttributeService attributeService;
-  
+
   // -- TranslatorService API Methods --
 
   /*
@@ -72,9 +72,9 @@ public class DefaultTranslatorService extends AbstractService implements Transla
     Map<String, String> kvPairs = new HashMap<String,String>();
     kvPairs.put(Translator.SOURCE, source.getName());
     kvPairs.put(Translator.DEST, dest.getName());
-    
+
     Translator t = attributeService.createInstance(Translator.class, kvPairs, null, exact);
-    
+
     return t;
   }
 
@@ -84,11 +84,11 @@ public class DefaultTranslatorService extends AbstractService implements Transla
    */
   public boolean translate(Metadata source, Metadata dest, boolean exact) {
     Translator t = findTranslator(source, dest, exact);
-    
+
     if (t == null) return false;
-    
+
     t.translate(source, dest);
-    
+
     return true;
   }
 }

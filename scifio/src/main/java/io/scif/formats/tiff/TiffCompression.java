@@ -121,7 +121,7 @@ public enum TiffCompression implements CodedEnum {
         throws FormatException {
       return getCompressionCodecOptions(ifd, null);
     }
-    
+
     @Override
     public CodecOptions getCompressionCodecOptions(IFD ifd, CodecOptions opt)
     throws FormatException {
@@ -147,7 +147,7 @@ public enum TiffCompression implements CodedEnum {
     {
       return getCompressionCodecOptions(ifd, null);
     }
-    
+
     @Override
     public CodecOptions getCompressionCodecOptions(IFD ifd, CodecOptions opt)
     throws FormatException {
@@ -174,7 +174,7 @@ public enum TiffCompression implements CodedEnum {
     {
       return getCompressionCodecOptions(ifd, null);
     }
-    
+
     @Override
     public CodecOptions getCompressionCodecOptions(IFD ifd, CodecOptions opt)
     throws FormatException {
@@ -192,7 +192,7 @@ public enum TiffCompression implements CodedEnum {
       }
       return j2k;
     }
- 
+
   },
   NIKON(34713, new NikonCodec(), "Nikon"),
   LURAWAVE(65535, new LuraWaveCodec(), "LuraWave");
@@ -278,7 +278,7 @@ public enum TiffCompression implements CodedEnum {
           "Sorry, " + getCodecName() + " compression mode is not supported");
     }
     if (codec.getContext() == null) codec.setContext(ctx);
-    
+
     return codec.decompress(input, options);
   }
 
@@ -347,7 +347,7 @@ public enum TiffCompression implements CodedEnum {
     options.signed = false;
     return options;
   }
-  
+
   /** Encodes a strip of data. */
   public byte[] compress(byte[] input, CodecOptions options)
     throws FormatException, IOException

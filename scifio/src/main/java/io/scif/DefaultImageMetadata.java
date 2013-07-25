@@ -46,19 +46,19 @@ package io.scif;
  * @author Mark Hiner
  */
 public class DefaultImageMetadata extends AbstractImageMetadata {
-  
+
   // -- Constructors --
-  
+
   public DefaultImageMetadata() {
     super();
   }
-  
+
   public DefaultImageMetadata(ImageMetadata copy) {
     super(copy);
   }
 
   // -- ImageMetadata API Methods --
-  
+
   /*
    * @see io.scif.ImageMetadata#copy()
    */

@@ -51,34 +51,34 @@ import net.imglib2.display.ColorTable;
  * @param <T> - The underlying data type used by this Plane
  * @param <P> - A recursive reference to this concrete class
  */
-public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortablePlugin 
+public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortablePlugin
   implements DataPlane<T> {
 
   // -- Fields --
-  
+
   /** Native pixel data for this plane. */
   private T data = null;
-  
+
   /** Color look-up table for this plane. */
   private ColorTable lut = null;
-  
+
   /** Metadata describing the underlying image. */
   private ImageMetadata meta = null;
-  
+
   /** X-axis offset into the underlying image. */
   private int xOffset = 0;
-  
+
   /** Y-axis offset into the underlying image. */
   private int yOffset = 0;
-  
+
   /** Length of the plane in the X-axis. */
   private int xLength = 0;
-  
+
   /** Length of the plane in the Y-axis. */
   private int yLength = 0;
-  
+
   // -- Constructor --
-  
+
   public AbstractPlane(final Context context) {
     setContext(context);
   }
@@ -89,38 +89,38 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortableP
     // TODO bounds checking?
     populate(meta, xOffset, yOffset, xLength, yLength);
   }
-  
+
   // -- DataPlane API methods --
-  
+
   /* @see DataPlane#setData(T) */
   public void setData(T data) {
     this.data = data;
   }
-  
+
   /* @see DataPlane#getData() */
   public T getData() {
     return data;
   }
-  
+
   // -- Plane API methods --
 
   /* @see Plane#setColorTable(ColorTable) */
   public void setColorTable(ColorTable lut) {
     this.lut = lut;
   }
-  
+
   /* @see Plane#getColorTable() */
   public ColorTable getColorTable() {
     return lut;
   }
-  
+
   /*
    * @see io.scif.Plane#getImageMetadata()
    */
   public ImageMetadata getImageMetadata() {
     return meta;
   }
-  
+
   /*
    * @see io.scif.Plane#getxOffset()
    */
@@ -148,12 +148,12 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortableP
   public int getyLength() {
     return yLength;
   }
-  
+
   public P populate(Plane p) {
     return populate(p.getImageMetadata(), p.getxOffset(),
                     p.getyOffset(), p.getxLength(), p.getyLength());
   }
-  
+
   /*
    * @see io.scif.DataPlane#populate(io.scif.DataPlane)
    */
@@ -161,7 +161,7 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortableP
     return populate(plane.getImageMetadata(), plane.getData(), plane.getxOffset(),
         plane.getyOffset(), plane.getxLength(), plane.getyLength());
   }
-  
+
   /*
    * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
    *      int)
@@ -170,7 +170,7 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortableP
       int xLength, int yLength) {
     return populate(meta, null, xOffset, yOffset, xLength, yLength);
   }
-  
+
   /*
    * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
    *      int)
@@ -179,7 +179,7 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortableP
       int xLength, int yLength) {
     return populate(null, data, xOffset, yOffset, xLength, yLength);
   }
-  
+
   /*
    * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
    *      int)
@@ -192,12 +192,12 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortableP
     setyOffset(yOffset);
     setxLength(xLength);
     setyLength(yLength);
-    
+
     @SuppressWarnings("unchecked")
     P pl = (P) this;
     return pl;
   }
-  
+
   /*
    * @see io.scif.Plane#setImageMetadata(io.scif.ImageMetadata)
    */

@@ -66,9 +66,9 @@ import net.imglib2.meta.AxisType;
 public interface Metadata extends Serializable, HasFormat, HasSource,
   HasMetaTable
 {
-  
+
   // -- Static Constents --
-  
+
   /**
    * String representation of this classes package-qualified name.
    * <p>
@@ -77,7 +77,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
    * </p>
    */
   public static final String CNAME = "io.scif.Metadata";
-  
+
   // -- Metadata API --
 
   /**
@@ -95,7 +95,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
    * @return - The associated RandomAccessInputStream
    */
   RandomAccessInputStream getSource();
-  
+
   /**
    * Returns whether or not filterMetadata was set when parsing this
    * Metadata object.
@@ -103,7 +103,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
    * @return True if Metadata was filtered when parsing
    */
   boolean isFiltered();
-  
+
   /**
    * Returns the MetadataOptions object that was used to parse this
    * Metadata.
@@ -111,21 +111,21 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
    * @return The MetadataOptions used to parse this Metadata
    */
   MetadataOptions getMetadataOptions();
-  
+
   /**
    * Generates format-agnostic image metadata structures
    * based on this instance's format-specific metadata.
    */
   void populateImageMetadata();
-  
+
   // -- Format-agnostic Metadata API Methods --
 
   /** Returns a String representation of this Dataset's name */
   String getDatasetName();
-  
+
   /** Returns the ImageMetadata at the specified image within this dataset. */
   ImageMetadata get(int imageIndex);
-  
+
   /** Returns the list of ImageMetadata associated with this dataset. */
   List<ImageMetadata> getAll();
 
@@ -134,13 +134,13 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 
   /** Returns the number of planes in the specified image. */
   int getPlaneCount(int imageIndex);
-  
+
   /** Returns the size, in bytes, of the current dataset. */
   long getDatasetSize();
-  
+
   /** Returns the size, in bytes, of the specified image. */
   long getImageSize(int imageIndex);
-  
+
   /** 
    * Returns true if the spcified image stores its channels RGBRGBRGB... and
    * false if channels are stored RRR...GGG...BBB...
@@ -171,7 +171,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 
   /**
    * Returns true if for the specified image, each pixel's bytes are in little
-   * endian order. 
+   * endian order.
    */
   boolean isLittleEndian(int imageIndex);
 
@@ -250,7 +250,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
   /**
    * Returns an array of the types for axes associated with
    * the specified image index. Order is consistent with the
-   * axis length (int) array returned by 
+   * axis length (int) array returned by
    * {@link #getAxesLengths(int)}.
    * <p>
    * AxisType order is sorted and represents order within the image.
@@ -265,7 +265,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
    * Returns an array of the lengths for axes associated with
    * the specified image index.
    * <p>
-   * Ordering is consistent with the 
+   * Ordering is consistent with the
    * AxisType array returned by {@link #getAxes(int)}.
    * </p>
    * 
@@ -318,7 +318,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
    * @param imageIndex - index for multi-image sources
    */
   boolean isMetadataComplete(int imageIndex);
-  
+
   /**
    * Sets the name for this dataset.
    * 
@@ -371,10 +371,10 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 
   /** Sets whether or not we can ignore the color map (if present) of the specified image. */
   void setFalseColor(int imageIndex, boolean falseC);
-  
+
   /** Sets whether this metadata was filtered when parsed. */
   void setFiltered(boolean filtered);
-  
+
   /** Sets the metadata options that were used during parsing. */
   void setMetadataOptions(MetadataOptions opts);
 
@@ -383,7 +383,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
    * within the specified image has been parsed.
    */
   void setMetadataComplete(int imageIndex, boolean metadataComplete);
-  
+
   /**
    * Adds the provided image metadata to this dataset metadata
    */
@@ -396,7 +396,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
   void setThumbnailImage(int imageIndex, boolean thumbnail);
 
   /** 
-   * Sets the Axes types for the specified image. 
+   * Sets the Axes types for the specified image.
    * Order is implied by ordering within this array
    */
   void setAxisTypes(int imageIndex, AxisType[] axisTypes);
@@ -411,11 +411,11 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
   void setAxisLengths(int imageIndex, int[] axisLengths);
 
   /** 
-   * Sets the length for the specified axis, 
-   * if its type is present in the specified image. 
+   * Sets the length for the specified axis,
+   * if its type is present in the specified image.
    */
   void setAxisLength(int imageIndex, AxisType axis, int length);
-  
+
   /**
    * Creates the specified number of blank ImageMetadata.
    * 

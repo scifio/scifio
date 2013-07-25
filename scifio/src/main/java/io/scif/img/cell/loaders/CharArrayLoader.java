@@ -60,11 +60,11 @@ public class CharArrayLoader extends AbstractArrayLoader< CharArray >
     int offset = planesRead * bytes.length;
 
     ByteBuffer bb = ByteBuffer.wrap(bytes);
-    
+
     bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
     bb.asCharBuffer().get(data.getCurrentStorageArray(), offset, bytes.length);
   }
-  
+
   public CharArray emptyArray( final int[] dimensions )
   {
     return new CharArray( countEntities(dimensions) );

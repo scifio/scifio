@@ -62,7 +62,7 @@ import org.testng.annotations.Test;
 public class TypeDetectionTest {
 
   private Context context = new Context();
-  
+
   @Test
   public void testBZip2TypeDetection() throws IOException {
     File invalidFile = File.createTempFile("invalid", ".bz2");

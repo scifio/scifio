@@ -70,7 +70,7 @@ import org.scijava.plugin.Plugin;
 public class OBFFormat extends AbstractFormat {
 
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -86,25 +86,25 @@ public class OBFFormat extends AbstractFormat {
   }
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata {
-    
+
     // -- Constants --
-    
+
     public static final String CNAME = "io.scif.formats.OBFFormat$Metadata";
 
     // -- Fields --
-    
+
     private Frame currentInflatedFrame = new Frame();
     private Inflater inflater = new Inflater();
     private List<Stack> stacks = new ArrayList<Stack>();
 
     // -- OBFMetadata getters and setters --
-    
+
     public Frame getCurrentInflatedFrame() {
       return currentInflatedFrame;
     }
@@ -128,15 +128,15 @@ public class OBFFormat extends AbstractFormat {
     public void setStacks(List<Stack> stacks) {
       this.stacks = stacks;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
-      
+
       iMeta.setIndexed(false);
       iMeta.setRGB(false);
       iMeta.setInterleaved(false);
@@ -151,53 +151,53 @@ public class OBFFormat extends AbstractFormat {
       stacks = new ArrayList<Stack>();
       currentInflatedFrame = new Frame();
       inflater = new Inflater();
-      
+
       super.close(fileOnly);
     }
   }
-  
+
   public static class Checker extends AbstractChecker {
-    
+
     // -- Constants --
 
     private static final int FILE_VERSION = 1;
-    
+
     // -- Constructor --
-    
+
     public Checker() {
       suffixNecessary = false;
       suffixSufficient = false;
     }
-    
+
     // -- Checker API Methods --
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
       final int fileVersion = OBFUtilities.getFileVersion(stream);
-      
+
       return fileVersion >= 0 && fileVersion <= FILE_VERSION;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
-    
+
     private static final int STACK_VERSION = 3;
     private static final String STACK_MAGIC_STRING = "OMAS_BF_STACK\n";
     private static final int MAXIMAL_NUMBER_OF_DIMENSIONS = 15;
 
     // -- AbstractParser API Methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
     {
       meta.getCurrentInflatedFrame().setImageIndex(-1);
       meta.getCurrentInflatedFrame().setNumber(-1);
-      
+
       final int fileVersion = OBFUtilities.getFileVersion(stream);
 
       long stackPosition = stream.readLong();
@@ -216,9 +216,9 @@ public class OBFFormat extends AbstractFormat {
         while (stackPosition != 0);
       }
     }
-    
+
     // -- Helper Methods --
-    
+
     private long initStack(long current, int fileVersion) throws FormatException, IOException
     {
       in.seek(current);
@@ -227,7 +227,7 @@ public class OBFFormat extends AbstractFormat {
       final short magicNumber = in.readShort();
       final int version = in.readInt();
 
-      if (magicString.equals(STACK_MAGIC_STRING) && magicNumber == 
+      if (magicString.equals(STACK_MAGIC_STRING) && magicNumber ==
           OBFUtilities.MAGIC_NUMBER && version <= STACK_VERSION)
       {
         ImageMetadata iMeta = metadata.get(0);
@@ -278,7 +278,7 @@ public class OBFFormat extends AbstractFormat {
 
         final int type = in.readInt();
         iMeta.setPixelType(OBFUtilities.getPixelType(type));
-        iMeta.setPixelType(OBFUtilities.getBitsPerPixel(type)); 
+        iMeta.setPixelType(OBFUtilities.getBitsPerPixel(type));
 
         Stack stack = new Stack();
 
@@ -383,7 +383,7 @@ public class OBFFormat extends AbstractFormat {
         throw new FormatException("Unsupported stack format");
       }
     }
-    
+
     private long getLength(long length) throws FormatException
     {
       if (length >= 0)
@@ -406,31 +406,31 @@ public class OBFFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Reader API Methods --
-    
+
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
       ByteArrayPlane plane, int x, int y, int w, int h)
       throws FormatException, IOException
     {
       Metadata meta = getMetadata();
       byte[] buffer = plane.getBytes();
-      
+
       final int rows = meta.getAxisLength(imageIndex, Axes.Y);
       final int columns = meta.getAxisLength(imageIndex, Axes.X);
       final int bytesPerPixel = meta.getBitsPerPixel(imageIndex) / 8;
-      
+
       final Stack stack = meta.getStacks().get(imageIndex);
       if (stack.isCompression())
       {
         Frame cInflatedFrame = meta.getCurrentInflatedFrame();
-        
+
         if (imageIndex != cInflatedFrame.getImageIndex())
         {
           cInflatedFrame.setBytes(new byte[rows * columns * bytesPerPixel]);
@@ -450,7 +450,7 @@ public class OBFFormat extends AbstractFormat {
             getStream().seek(stack.getPosition());
             meta.getInflater().reset();
           }
-          
+
           byte[] input = new byte[8192];
           while (planeIndex != cInflatedFrame.getNumber())
           {
@@ -503,26 +503,26 @@ public class OBFFormat extends AbstractFormat {
           getStream().read(buffer, row * w * bytesPerPixel, w * bytesPerPixel);
         }
       }
-      
+
       return plane;
     }
   }
-  
+
   // -- Helper Classes --
-  
+
   private static class OBFUtilities {
-    
+
     // -- Constants --
-    
+
     private static final short MAGIC_NUMBER = (short) 0xFFFF;
     private static final boolean LITTLE_ENDIAN = true;
     private static final String FILE_MAGIC_STRING = "OMAS_BF\n";
 
     // -- Utility methods --
-    
+
     public static int getPixelType(int type) throws FormatException
     {
-      switch (type) 
+      switch (type)
       {
       case 0x01: return FormatTools.UINT8;
       case 0x02: return FormatTools.INT8;
@@ -538,7 +538,7 @@ public class OBFFormat extends AbstractFormat {
 
     public static int getBitsPerPixel(int type) throws FormatException
     {
-      switch (type) 
+      switch (type)
       {
       case 0x01:
       case 0x02: return 8;
@@ -551,7 +551,7 @@ public class OBFFormat extends AbstractFormat {
       default: throw new FormatException("Unsupported data type " + type);
       }
     }
-    
+
     public static int getFileVersion(RandomAccessInputStream stream) throws IOException
     {
       stream.seek(0);
@@ -574,17 +574,17 @@ public class OBFFormat extends AbstractFormat {
       return - 1;
     }
   }
-  
+
   private static class Stack
   {
     // -- Fields --
-    
+
     private long position;
     private long length;
     private boolean compression;
-    
+
     // -- Getters and Setters --
-    
+
     public long getPosition() {
       return position;
     }
@@ -604,7 +604,7 @@ public class OBFFormat extends AbstractFormat {
       this.compression = compression;
     }
   }
-  
+
   private static class Frame
   {
     // -- Fields --
@@ -612,7 +612,7 @@ public class OBFFormat extends AbstractFormat {
     private byte[] bytes;
     private int imageIndex;
     private int number;
-    
+
     // -- Getters and Setters --
 
     public byte[] getBytes() {

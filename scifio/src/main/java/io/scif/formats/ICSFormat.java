@@ -73,7 +73,7 @@ import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
- * SCIFIO Format supporting the 
+ * SCIFIO Format supporting the
  * <a href="http://en.wikipedia.org/wiki/Image_Cytometry_Standard">ICS</a>
  * image format.
  * 
@@ -82,7 +82,7 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = ICSFormat.class)
 public class ICSFormat extends AbstractFormat {
-  
+
   // -- Format API Methods --
 
   /*
@@ -98,57 +98,57 @@ public class ICSFormat extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[] {"ics", "ids"};
   }
-  
+
   // -- Nested Classes --
 
   /**
-   * SCIFIO Metadata object for ICS images. 
+   * SCIFIO Metadata object for ICS images.
    *
    */
   public static class Metadata extends AbstractMetadata {
-    
+
     // -- Static Constants
     public static final String CNAME = "io.scif.formats.ICSFormat$Metadata";
-  
-    // -- Fields -- 
-  
+
+    // -- Fields --
+
     /** Whether this file is ICS version 2,
      *  and thus does not have an IDS companion */
     protected boolean versionTwo = false;
-  
+
     /** Offset to pixel data */
     protected long offset = -1;
-  
+
     /** True if instrument information was discovered. */
     protected boolean hasInstrumentData = false;
-    
+
     /** True if this planes were stored in RGB order. */
     private boolean storedRGB;
-  
+
     /** ICS file name */
     protected String icsId = "";
-  
+
     /** IDS file name */
     protected String idsId = "";
-  
+
     /** ICS Metadata */
     protected Hashtable<String, String> keyValPairs;
-  
+
     // -- Constructor --
-  
+
     public Metadata() {
       keyValPairs = new Hashtable<String, String>();
     }
-    
+
     // -- Metadata API Methods --
-    
+
     /*
      * @see io.scif.AbstractMetadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       // Common metadata population
       createImageMetadata(1);
-      
+
       final ImageMetadata imageMeta = get(0);
       imageMeta.setRGB(false);
 
@@ -156,7 +156,7 @@ public class ICSFormat extends AbstractFormat {
 
       double[] axesSizes = getAxesSizes();
       String[] axes = getAxes();
-      
+
       // Reset the existing axes
       imageMeta.setAxes(new AxisType[0], new int[0]);
 
@@ -176,7 +176,7 @@ public class ICSFormat extends AbstractFormat {
         }
         else if (axis.equals("t")) {
           int tIndex = imageMeta.getAxisIndex(Axes.TIME);
-          
+
           if (tIndex == -1) {
             imageMeta.addAxis(Axes.TIME, new Double(axesSizes[n]).intValue());
           }
@@ -193,7 +193,7 @@ public class ICSFormat extends AbstractFormat {
         }
         else {
           int cIndex = imageMeta.getAxisIndex(Axes.CHANNEL);
-          
+
           if (cIndex == -1) {
             imageMeta.addAxis(Axes.CHANNEL, new Double(axesSizes[n]).intValue());
           }
@@ -202,15 +202,15 @@ public class ICSFormat extends AbstractFormat {
                 imageMeta.getAxisLength(Axes.CHANNEL) *
                 new Double(axesSizes[n]).intValue());
           }
-          
+
           if (imageMeta.getAxisIndex(Axes.X) == -1) {
             setStoredRGB(true);
-            
+
             int sizeC = imageMeta.getAxisLength(Axes.CHANNEL);
-            
+
             imageMeta.setRGB(sizeC <= 4 && sizeC > 1);
           }
-          
+
           if  (axis.startsWith("c")) {
             imageMeta.setAxisType(n, Axes.CHANNEL);
           }
@@ -225,9 +225,9 @@ public class ICSFormat extends AbstractFormat {
           }
         }
       }
-      
+
       // Re-order axes if RGB
-      if (imageMeta.getAxisIndex(Axes.CHANNEL) >= 0 && 
+      if (imageMeta.getAxisIndex(Axes.CHANNEL) >= 0 &&
           imageMeta.getAxisIndex(Axes.CHANNEL) < imageMeta.getAxisIndex(Axes.Y))
       {
         imageMeta.setAxisType(imageMeta.getAxisIndex(Axes.Y), Axes.CHANNEL);
@@ -235,12 +235,12 @@ public class ICSFormat extends AbstractFormat {
 
       if(getBitsPerPixel() != null)
         bitsPerPixel = getBitsPerPixel();
-      
+
       imageMeta.setBitsPerPixel(bitsPerPixel);
 
-      if (imageMeta.isRGB() && getEMWaves() != null && 
+      if (imageMeta.isRGB() && getEMWaves() != null &&
           getEMWaves().length == imageMeta.getAxisLength(Axes.CHANNEL)) {
-        imageMeta.setRGB(false); 
+        imageMeta.setRGB(false);
         setStoredRGB(true);
       }
 
@@ -274,7 +274,7 @@ public class ICSFormat extends AbstractFormat {
       if (lifetime && label != null) {
         int binCount = 0;
         String newOrder = null;
-        
+
         if (label.equalsIgnoreCase("t x y")) {
           newOrder = "XYCZT";
           imageMeta.setInterleaved(true);
@@ -291,7 +291,7 @@ public class ICSFormat extends AbstractFormat {
         else {
           LOGGER.debug("Lifetime data, unexpected 'history labels' " + label);
         }
-        
+
         if (newOrder != null) {
           // FIXME: Make sure this works.
           imageMeta.setAxisTypes(FormatTools.findDimensionList(newOrder));
@@ -301,12 +301,12 @@ public class ICSFormat extends AbstractFormat {
 
       imageMeta.setPlaneCount(getAxisLength(0, Axes.Z) *
           getAxisLength(0, Axes.TIME));
-      
+
       if (!imageMeta.isRGB()) {
         imageMeta.setPlaneCount(imageMeta.getPlaneCount() * 
           imageMeta.getAxisLength(Axes.CHANNEL));
       }
-      
+
       final String byteOrder = getByteOrder();
       final String rFormat = getRepFormat();
       final String compression = getCompression();
@@ -336,30 +336,30 @@ public class ICSFormat extends AbstractFormat {
         LOGGER.error("Could not get pixel type from bytes: " + bytes, e);
       }
     }
-    
+
     // -- HasSource API Methods --
-    
+
     /*
      * @see io.scif.AbstractMetadata#close(boolean)
      */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
-      
+
       if (!fileOnly) keyValPairs = new Hashtable<String, String>();
     }
-    
+
     // -- ICSMetadata Methods --
-    
+
     public boolean storedRGB() {
       return storedRGB;
     }
-    
+
     public void setStoredRGB(boolean rgb) {
       storedRGB = rgb;
     }
-    
+
     // -- Helper Methods --
-  
+
     /**
      * Convenience method to directly access the hashtable.
      * @param key
@@ -368,65 +368,65 @@ public class ICSFormat extends AbstractFormat {
     public String get(final String key) {
       return keyValPairs.get(key);
     }
-  
+
     public String getIcsId() {
       return icsId;
     }
-  
+
     public void setIcsId(final String icsId) {
       this.icsId = icsId;
     }
-  
+
     public String getIdsId() {
       return idsId;
     }
-  
+
     public void setIdsId(final String idsId) {
       this.idsId = idsId;
     }
-  
+
     public boolean hasInstrumentData() {
       return hasInstrumentData;
     }
-  
+
     public void setHasInstrumentData(final boolean hasInstrumentData) {
       this.hasInstrumentData = hasInstrumentData;
     }
-  
+
     public boolean isVersionTwo() {
       return versionTwo;
     }
-  
+
     public void setVersionTwo(final boolean versionTwo) {
       this.versionTwo = versionTwo;
     }
-  
+
     public void setKeyValPairs(Hashtable<String, String> keyValPairs) {
       this.keyValPairs = keyValPairs;
     }
-  
+
     public Hashtable<String, String> getKeyValPairs() {
       return keyValPairs;
     }
-    
+
     // -- Metadata population methods --
-    
+
     public void put(String key, String value) {
       if (value != null) keyValPairs.put(key, value);
     }
-    
+
     public void putDate(String value) {
       put("history date", value);
     }
-    
+
     public void putDescription(String value) {
       put("history other text", value);
     }
-    
+
     public void putMicroscopeModel(String value) {
       put("history microscope", value);
     }
-    
+
     public void putMicroscopeManufacturer(String value) {
       put("history manufacturer", value);
     }
@@ -434,175 +434,175 @@ public class ICSFormat extends AbstractFormat {
     public void putExperimentType(String value) {
       put("history type", value);
     }
-    
+
     public void putLifetime(boolean lifetime) {
       if (lifetime) put("history type", "time resolved");
     }
-    
+
     public void putPixelSizes(Double[] pixelSizes) {
       put("parameter scale", merge(pixelSizes));
     }
-    
+
     public void putUnits(String[] units) {
       put("parameter units", merge(units));
     }
-    
+
     public void putAxes(String[] axes) {
       put("layout order", merge(axes));
     }
-    
+
     public void putAxesSizes(double[] axesSizes) {
       put("layout sizes", mergePrimitiveDoubles(axesSizes));
     }
-    
+
     public void putPhysicalPixelSizes(double[] physSizes) {
       put("history extents", mergePrimitiveDoubles(physSizes));
     }
-    
+
     public void putTimestamps(Double[] timeStamp) {
       put("parameter t", merge(timeStamp));
-     
+
     }
-    
+
     public void putChannelNames(Hashtable<Integer, String> cNames)
     {
       put("parameter ch", merge(cNames.values()));
     }
-    
+
     public void putPinholes(Hashtable<Integer, Double> pins) {
       put("sensor s_params PinholeRadius", merge(pins.values()));
     }
-    
+
     public void putEMWaves(Integer[] emWaves) {
       put("sensor s_params LambdaEm", merge(emWaves));
     }
-    
+
     public void putEMSingleton(Integer[] em) {
       put("history cube emm nm", merge(em));
     }
-    
+
     public void putEXWaves(Integer[] exWaves) {
       put("sensor s_params LambdaEx", merge(exWaves));
     }
-    
+
     public void putEXSingleton(Integer[] ex) {
       put("history cube exc nm", merge(ex));
     }
-    
+
     public void putWavelengths(Hashtable<Integer, Integer> waves) {
       put("history Wavelength*", merge(waves.values()));
     }
-    
+
     public void putByteOrder(String byteOrder) {
       put("representation byte_order", byteOrder);
     }
-    
+
     public void putRepFormat(String repFormat) {
       put("representation format", repFormat);
     }
-    
+
     public void putCompression(String cmp) {
       put("representation compression", cmp);
     }
-    
+
     public void putSigned(boolean signed) {
       put("representation sign", String.valueOf(signed));
     }
-    
+
     public void putLaserManufacturer(String laserMan) {
       put("history laser manufacturer", laserMan);
     }
-    
+
     public void putLaserModel(String laserMod) {
       put("history laser model", laserMod);
     }
-    
+
     public void putLaserRepetitionRate(Double laserRep) {
       put("history laser model", laserRep.toString());
     }
-    
+
     public void putLaserPower(Double laserPower) {
       put("history laser power", laserPower.toString());
     }
-    
+
     public void putDichroicModel(String diModel) {
       put("history filterset dichroic name", diModel);
     }
-    
+
     public void putExcitationModel(String exModel) {
       put("history filterset exc name", exModel);
     }
-    
+
     public void putEmissionModel(String emModel) {
       put("history filterset emm name", emModel);
     }
-    
+
     public void putFilterSetModel(String fltrModel) {
       put("history filterset", fltrModel);
     }
-    
+
     public void putObjectiveModel(String objModel) {
       put("history objective type", objModel);
     }
-    
+
     public void putImmersion(String immersion) {
       put("history objective immersion", immersion);
     }
-    
+
     public void putLensNA(Double lensNA) {
       put("history objective NA", lensNA.toString());
     }
-    
+
     public void putWorkingDistance(Double wd) {
       put("history objective WorkingDistance", wd.toString());
     }
-    
+
     public void putMagnification(Double mag) {
       put("history objective magnification", mag.toString());
     }
-    
+
     public void putDetectorManufacturer(String detMan) {
       put("history camera manufacturer", detMan);
     }
-    
+
     public void putDetectorModel(String detModel) {
       put("history camera model", detModel);
     }
-    
+
     public void putBitsPerPixel(Integer bpp) {
       put("layout significant_bits", bpp.toString());
     }
-    
+
     public void putGains(Hashtable<Integer, Double> gains) {
       put("history gain", merge(gains.values()));
     }
-    
+
     public void putAuthorLastName(String lastName) {
       put("history author", lastName);
     }
-    
+
     public void putStagePositions(Double[] positions) {
       put("history stage_xyzum", merge(positions));
     }
-    
+
     public void putStageX(Double stageX) {
       put("history stage positionx", stageX.toString());
     }
-    
+
     public void putStageY(Double stageY) {
       put("history stage positiony", stageY.toString());
     }
-    
+
     public void putStageZ(Double stageZ) {
       put("history stage positionz", stageZ.toString());
     }
-    
+
     public void putExposureTime(Double expTime) {
       put("history Exposure", expTime.toString());
     }
-    
+
     // -- Accessor methods for dynamically retrieving common metadata --
-    
+
     public String getDate() {
       String date = null;
       String[] kv = findValueForKey("history date", "history created on", "history creation date");
@@ -618,25 +618,25 @@ public class ICSFormat extends AbstractFormat {
           date = kv[1];
         }
       }
-      
+
       if(date != null)
         date = DateTools.formatDate(date, ICSFormat.ICSUtils.DATE_FORMATS);
-      
+
       return date;
     }
-    
+
     public String getDescription() {
       return findStringValueForKey("history other text");
     }
-    
+
     public String getMicroscopeModel() {
       return findStringValueForKey("history microscope");
     }
-    
+
     public String getMicroscopeManufacturer() {
       return findStringValueForKey("history manufacturer");
     }
-    
+
     public boolean getLifetime() {
       String[] kv = findValueForKey("history type");
       boolean lifetime = false;
@@ -647,25 +647,25 @@ public class ICSFormat extends AbstractFormat {
       }
       return lifetime;
     }
-    
+
     public String getLabels() {
       return findStringValueForKey("history labels");
     }
-    
+
     public String getExperimentType() {
       return findStringValueForKey("history type");
     }
-    
+
     public Double[] getPixelSizes() {
       String[] kv = findValueForKey("parameter scale");
       return kv == null ? null : splitDoubles(kv[1]);
     }
-    
+
     public String[] getUnits() {
       String[] kv = findValueForKey("parameter units");
       return kv == null ? null : kv[1].split("\\s+");
     }
-    
+
     public String[] getAxes() {
       String[] kv = findValueForKey("layout order");
       String[] axes = null;
@@ -678,7 +678,7 @@ public class ICSFormat extends AbstractFormat {
       }
       return axes;
     }
-    
+
     public double[] getAxesSizes() {
       String[] kv = findValueForKey("layout sizes");
       double[] sizes = null;
@@ -686,7 +686,7 @@ public class ICSFormat extends AbstractFormat {
         String[] lengths = kv[1].split(" ");
         sizes = new double[lengths.length];
         for(int n = 0; n < sizes.length; n++) {
-          try { 
+          try {
             sizes[n] = Double.parseDouble(lengths[n].trim());
           } catch (NumberFormatException e) {
             LOGGER.debug("Could not parse axis length", e);
@@ -695,7 +695,7 @@ public class ICSFormat extends AbstractFormat {
       }
       return sizes;
     }
-    
+
     public double[] getPhysicalPixelSizes() {
       String[] kv = findValueForKey("history extents");
       double[] sizes = null;
@@ -703,7 +703,7 @@ public class ICSFormat extends AbstractFormat {
         String[] lengths = kv[1].split(" ");
         sizes = new double[lengths.length];
         for(int n = 0; n < sizes.length; n++) {
-          try { 
+          try {
             sizes[n] = Double.parseDouble(lengths[n].trim());
           } catch (NumberFormatException e) {
             LOGGER.debug("Could not parse pixel sizes", e);
@@ -712,12 +712,12 @@ public class ICSFormat extends AbstractFormat {
       }
       return sizes;
     }
-    
+
     public Double[] getTimestamps() {
       String[] kv = findValueForKey("parameter t");
       return kv == null ? null : splitDoubles(kv[1]);
     }
-    
+
     public Hashtable<Integer, String> getChannelNames() {
       String[] kv = findValueForKey("parameter ch");
       Hashtable<Integer, String> channelNames = new Hashtable<Integer, String>();
@@ -729,19 +729,19 @@ public class ICSFormat extends AbstractFormat {
       }
       return channelNames;
     }
-    
+
     public void addStepChannel(Hashtable<Integer, String> channelNames) {
       String[] kv = findValueIteration("history step", "name");
       if(kv != null)
         channelNames.put(new Integer(kv[0].substring(12, kv[0].indexOf(" ", 12))), kv[1]);
     }
-    
+
     public void addCubeChannel(Hashtable<Integer, String> channelNames) {
       String[] kv = findValueForKey("history cube");
       if(kv != null)
         channelNames.put(new Integer(channelNames.size()), kv[1]);
     }
-    
+
     public Hashtable<Integer, Double> getPinholes() {
       String[] kv = findValueForKey("sensor s_params PinholeRadius");
       Hashtable<Integer, Double> pinholes = new Hashtable<Integer, Double>();
@@ -759,7 +759,7 @@ public class ICSFormat extends AbstractFormat {
       }
       return pinholes;
     }
-    
+
     public Integer[] getEMWaves() {
       String[] kv = findValueForKey("sensor s_params LambdaEm");
       Integer[] emWaves = null;
@@ -776,7 +776,7 @@ public class ICSFormat extends AbstractFormat {
       }
       return emWaves;
     }
-    
+
     public Integer[] getEMSingleton() {
       String[] kv = findValueForKey("history cube emm nm");
       Integer[] emWaves = null;
@@ -786,7 +786,7 @@ public class ICSFormat extends AbstractFormat {
       }
       return emWaves;
     }
-    
+
     public Integer[] getEXWaves() {
       String[] kv = findValueForKey("sensor s_params LambdaEx");
       Integer[] exWaves = null;
@@ -803,7 +803,7 @@ public class ICSFormat extends AbstractFormat {
       }
       return exWaves;
     }
-    
+
     public Integer[] getEXSingleton() {
       String[] kv = findValueForKey("history cube exc nm");
       Integer[] exWaves = null;
@@ -813,7 +813,7 @@ public class ICSFormat extends AbstractFormat {
       }
       return exWaves;
     }
-    
+
     public Hashtable<Integer, Integer> getWavelengths() {
       String[] kv = findValueForKey("history Wavelength*");
       Hashtable<Integer, Integer> wavelengths = new Hashtable<Integer, Integer>();
@@ -825,7 +825,7 @@ public class ICSFormat extends AbstractFormat {
       }
       return wavelengths;
     }
-    
+
     public void addLaserWavelength(Hashtable<Integer, Integer> wavelengths) {
       String[] kv = findValueIteration("history laser", "wavelength");
       if(kv != null) {
@@ -838,94 +838,94 @@ public class ICSFormat extends AbstractFormat {
         }
       }
     }
-    
+
     public String getByteOrder() {
       return findStringValueForKey("representation byte_order");
     }
-    
+
     public String getRepFormat() {
       return findStringValueForKey("representation format");
     }
-    
+
     public String getCompression() {
       return findStringValueForKey("representation compression");
     }
-    
+
     public boolean isSigned() {
       String signed = findStringValueForKey("representation sign");
       return signed != null && signed.equals("signed");
     }
-    
+
     public String getLaserManufacturer() {
       return findStringValueForKey("history laser manufacturer");
     }
-    
+
     public String getLaserModel() {
       return findStringValueForKey("history laser model");
     }
-    
+
     public Double getLaserRepetitionRate() {
       return findDoubleValueForKey("history laser model");
     }
-    
+
     public Double getLaserPower() {
       return findDoubleValueForKey("history laser power");
     }
-    
+
     public String getDichroicModel() {
       return findStringValueForKey("history filterset dichroic name");
     }
-    
+
     public String getExcitationModel() {
       return findStringValueForKey("history filterset exc name");
     }
-    
+
     public String getEmissionModel() {
       return findStringValueForKey("history filterset emm name");
     }
-    
+
     public String getFilterSetModel() {
       return findStringValueForKey("history filterset");
     }
-    
+
     public String getObjectiveModel() {
       return findStringValueForKey("history objective type", "history objective");
     }
-    
+
     public String getImmersion() {
       return findStringValueForKey("history objective immersion");
     }
-    
+
     public Double getLensNA() {
       return findDoubleValueForKey("history objective NA");
     }
-    
+
     public Double getWorkingDistance() {
       return findDoubleValueForKey("history objective WorkingDistance");
     }
-    
+
     public Double getMagnification() {
       return findDoubleValueForKey("history objective magnification", "history objective mag");
     }
-    
+
     public String getDetectorManufacturer() {
       return findStringValueForKey("history camera manufacturer");
     }
-    
+
     public String getDetectorModel() {
       return findStringValueForKey("history camera model");
     }
-    
+
     public Integer getBitsPerPixel() {
       return findIntValueForKey("layout significant_bits");
     }
-    
+
     public Hashtable<Integer, Double> getGains() {
       String[] kv = findValueForKey("history gain");
       Hashtable<Integer, Double> gains = new Hashtable<Integer, Double>();
       if(kv != null) {
         Integer n = new Integer(0);
-        try{ 
+        try{
           n = new Integer(kv[0].substring(12).trim());
           n = new Integer(n.intValue() - 1);
         }
@@ -934,11 +934,11 @@ public class ICSFormat extends AbstractFormat {
       }
       return gains;
     }
-    
+
     public String getAuthorLastName() {
       return findStringValueForKey("history author", "history experimenter");
     }
-    
+
     public Double[] getStagePositions() {
       String[] kv = findValueForKey("history stage_xyzum");
       Double[] stagePos = null;
@@ -955,19 +955,19 @@ public class ICSFormat extends AbstractFormat {
       }
       return stagePos;
     }
-    
+
     public Double getStageX() {
       return findDoubleValueForKey("history stage positionx");
     }
-    
+
     public Double getStageY() {
       return findDoubleValueForKey("history stage positiony");
     }
-    
+
     public Double getStageZ() {
       return findDoubleValueForKey("history stage positionz");
     }
-    
+
     public Double getExposureTime() {
       String[] kv = findValueForKey("history Exposure");
       Double exposureTime = null;
@@ -976,10 +976,10 @@ public class ICSFormat extends AbstractFormat {
         if(expTime.indexOf(" ") != -1) {
           exposureTime = new Double(expTime.indexOf(" "));
         }
-      } 
+      }
       return exposureTime;
     }
-    
+
     // -- Helper methods for finding key values --
 
     /* Given a list of tokens and an array of lists of regular expressions, tries
@@ -1011,25 +1011,25 @@ public class ICSFormat extends AbstractFormat {
       }
       return returnValue.toString();
     }
-    
+
     private Double findDoubleValueForKey(String... keys) {
       String kv[] = findValueForKey(keys);
-      
+
       return kv == null ? null : new Double(kv[1]);
     }
-    
+
     private Integer findIntValueForKey(String... keys) {
       String kv[] = findValueForKey(keys);
-      
+
       return kv == null ? null : new Integer(kv[1]);
     }
-    
+
     private String findStringValueForKey(String... keys) {
       String kv[] = findValueForKey(keys);
-      
+
       return kv == null ? null : kv[1];
     }
-    
+
     /*
      * Checks the list of keys for non-null values in the global hashtable.
      * 
@@ -1044,25 +1044,25 @@ public class ICSFormat extends AbstractFormat {
         String value = keyValPairs.get(key);
         if(value != null) return new String[]{key, value};
       }
-      
+
       return null;
     }
-    
+
     /*
      * Iterates through the key set, looking for a key that starts
      * and/or ends with the provided partial keys.
      * 
-     * Returns an array containing the first matching key and its 
+     * Returns an array containing the first matching key and its
      * corresponding value if found, and an empty array otherwise.
      * 
      */
     private String[] findValueIteration (String starts, String ends) {
-      
+
       for (String key : keyValPairs.keySet()) {
         if ((starts == null || key.startsWith(starts)) && (ends == null || key.endsWith(ends)))
           return new String[]{key, keyValPairs.get(key)};
       }
-      
+
       return null;
     }
 
@@ -1135,7 +1135,7 @@ public class ICSFormat extends AbstractFormat {
       }
       return returnValue;
     }
-    
+
     /** Splits the given string into a list of {@link Double}s. */
     private Double[] splitDoubles(String v) {
       StringTokenizer t = new StringTokenizer(v);
@@ -1151,31 +1151,31 @@ public class ICSFormat extends AbstractFormat {
       }
       return values;
     }
-    
+
     // Converts an array of doubles to a space-delimited String
     private String mergePrimitiveDoubles(double... doubles) {
-      
+
       Double[] d = new Double[doubles.length];
-      
+
       for (int i=0; i<doubles.length; i++)
         d[i] = doubles[i];
-      
+
       return this.merge(d);
     }
-    
+
     // Converts a collection to a space-delimited String
     private <T> String merge(Collection<T> collection) {
       @SuppressWarnings("unchecked")
       T[] array = (T[]) collection.toArray();
       return merge(array);
     }
-    
+
     // Converts a generic array to a space-delimited String
     private <T> String merge(T... values) {
       String s = "";
-      
+
       for (T v : values) s += (v.toString() + " ");
-      
+
       return s;
     }
   }
@@ -1191,13 +1191,13 @@ public class ICSFormat extends AbstractFormat {
   }
 
   /**
-   * SCIFIO file format Parser for ICS images. 
+   * SCIFIO file format Parser for ICS images.
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
-    
+
     // -- ICSFormat.Parser Methods --
-    
+
     /**
      * @return True if the provided id is a version 2 ics id.
      */
@@ -1207,9 +1207,9 @@ public class ICSFormat extends AbstractFormat {
       f.close();
       return singleFile;
     }
-  
+
     // -- Parser API Methods --
-  
+
     /*
      * @see io.scif.AbstractParser#parse(
      * io.scif.io.RandomAccessInputStream, io.scif.Metadata)
@@ -1219,14 +1219,14 @@ public class ICSFormat extends AbstractFormat {
       throws IOException, FormatException
     {
       findCompanion(stream, meta);
-  
+
       final RandomAccessInputStream reader =
         new RandomAccessInputStream(getContext(), meta.getIcsId());
-  
+
       reader.seek(0);
       reader.readString(ICSUtils.NL);
       String line = reader.readString(ICSUtils.NL);
-  
+
       // Extracts the key, value pairs from each line and
       // inserts them into the ICSMetadata object
       while (line != null && !line.trim().equals("end") &&
@@ -1238,7 +1238,7 @@ public class ICSFormat extends AbstractFormat {
         for (int q = 0; q < tokens.length; q++) {
           tokens[q] = tokens[q].trim();
           if (tokens[q].length() == 0) continue;
-  
+
           boolean foundValue = true;
           for (int i = 0; i < ICSUtils.CATEGORIES.length; i++) {
             if (tokens[q].matches(ICSUtils.CATEGORIES[i])) {
@@ -1251,7 +1251,7 @@ public class ICSFormat extends AbstractFormat {
             key.append(" ");
             continue;
           }
-  
+
           final StringBuffer value = new StringBuffer(tokens[q++]);
           for (; q < tokens.length; q++) {
             value.append(" ");
@@ -1264,25 +1264,25 @@ public class ICSFormat extends AbstractFormat {
         }
         line = reader.readString(ICSUtils.NL);
       }
-      
+
       reader.close();
       in.close();
-      
+
       String id = meta.isVersionTwo() ? meta.icsId : meta.idsId;
       in = new RandomAccessInputStream(getContext(), id);
-      
+
       if (meta.versionTwo) {
         String s = in.readString(ICSUtils.NL);
         while (!s.trim().equals("end"))
           s = in.readString(ICSUtils.NL);
       }
-  
+
       meta.offset = in.getFilePointer();
-      
+
       in.seek(0);
-      
+
       meta.setSource(in);
-      
+
       meta.hasInstrumentData =
         nullKeyCheck(new String[] {
           "history cube emm nm", "history cube exc nm", "history objective NA",
@@ -1291,9 +1291,9 @@ public class ICSFormat extends AbstractFormat {
           "history objective type", "history objective",
         "history objective immersion"});
     }
-  
+
     // -- Helper Methods --
-  
+
     /* Returns true if any of the keys in testKeys has a non-null value */
     private boolean nullKeyCheck(final String[] testKeys) {
       for (final String key : testKeys) {
@@ -1303,13 +1303,13 @@ public class ICSFormat extends AbstractFormat {
       }
       return false;
     }
-  
+
     /* Finds the companion file for a given stream (ICS and IDS are companions) */
     private void findCompanion(final RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
     {
       if (stream.getFileName() == null) return;
-      
+
       String icsId = stream.getFileName(), idsId = stream.getFileName();
       final int dot = icsId.lastIndexOf(".");
       final String ext = dot < 0 ? "" : icsId.substring(dot + 1).toLowerCase();
@@ -1325,7 +1325,7 @@ public class ICSFormat extends AbstractFormat {
         c[c.length - 2]--;
         icsId = new String(c);
       }
-  
+
       final Location icsFile = new Location(getContext(), icsId);
       if (!icsFile.exists()) throw new FormatException("ICS file not found.");
       meta.icsId = icsId;
@@ -1334,7 +1334,7 @@ public class ICSFormat extends AbstractFormat {
       final RandomAccessInputStream f = new RandomAccessInputStream(getContext(), icsId);
       String version = f.readString(17).trim();
       f.close();
-      
+
       if (version.equals("ics_version\t2.0")) {
         meta.versionTwo = true;
         meta.idsId = icsId;
@@ -1353,26 +1353,26 @@ public class ICSFormat extends AbstractFormat {
    * 
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-  
+
     // -- Fields --
-  
+
   	/* Last read plane index. */
     private int prevPlane;
-  
+
     /* Whether or not the pixels are GZIP-compressed. */
     private boolean gzip;
-  
+
     /* Cached GZIPInputStream */
     private GZIPInputStream gzipStream;
-  
+
     /* Whether or not the image is inverted along the Y axis. */
     private boolean invertY; //TODO only in oldInitFile
-  
+
     /* Image data. */
     private byte[] data;
-  
+
     // -- Constructor --
-  
+
     public Reader() {
       domains =
         new String[] {
@@ -1380,9 +1380,9 @@ public class ICSFormat extends AbstractFormat {
         FormatTools.UNKNOWN_DOMAIN};
       hasCompanionFiles = true;
     }
-  
+
     // -- Reader API Methods --
-  
+
     /*
      * @see io.scif.Reader#openPlane(int, int, Plane, int, int, int, int)
      */
@@ -1392,16 +1392,16 @@ public class ICSFormat extends AbstractFormat {
         {
       FormatTools.checkPlaneParameters(
         this, imageIndex, planeIndex, plane.getData().length, x, y, w, h);
-  
+
       final int bpp =
         FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
       final int len = FormatTools.getPlaneSize(this, imageIndex);
       final int pixel = bpp * getMetadata().getRGBChannelCount(imageIndex);
       final int rowLen = FormatTools.getPlaneSize(this, w, 1, imageIndex);
-  
+
       final int[] coordinates = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
       final int[] prevCoordinates = FormatTools.getZCTCoords(this, imageIndex, prevPlane);
-  
+
       if (!gzip) {
         getStream().seek(metadata.offset + planeIndex * (long) len);
       }
@@ -1428,15 +1428,15 @@ public class ICSFormat extends AbstractFormat {
             gzipStream = null;
           }
         }
-  
+
         if (gzipStream != null) {
           while (toSkip > 0) {
             toSkip -= gzipStream.skip(toSkip);
           }
-  
+
           data =
             new byte[len *
-                     (getMetadata().storedRGB() ? 
+                     (getMetadata().storedRGB() ?
                          getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) : 1)];
           int toRead = data.length;
           while (toRead > 0) {
@@ -1444,11 +1444,11 @@ public class ICSFormat extends AbstractFormat {
           }
         }
       }
-  
+
       // FIXME: Why not getMetadata().getSizeC()?
       final int sizeC = getMetadata().getLifetime() ?
         1 : getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
-  
+
       // FIXME: This logic needs to be reworked!
       if (!getMetadata().isRGB(imageIndex) &&
           getMetadata().storedRGB())
@@ -1468,14 +1468,14 @@ public class ICSFormat extends AbstractFormat {
         {
           getStream().read(data);
         }
-  
+
         for (int row = y; row < h + y; row++) {
           for (int col = x; col < w + x; col++) {
             int src =
                 bpp * ((planeIndex % getMetadata().getAxisLength(imageIndex, Axes.CHANNEL))
                     + sizeC * (row * (row * getMetadata().getAxisLength(imageIndex, Axes.X) + col)));
             int dest = bpp * ((row - y) * w + (col - x));
-            System.arraycopy(data, src, plane.getBytes(), dest, bpp); 
+            System.arraycopy(data, src, plane.getBytes(), dest, bpp);
           }
         }
       }
@@ -1487,7 +1487,7 @@ public class ICSFormat extends AbstractFormat {
       else {
         readPlane(getStream(), imageIndex, x, y, w, h, plane);
       }
-  
+
       if (invertY) {
         final byte[] row = new byte[rowLen];
         for (int r = 0; r < h / 2; r++) {
@@ -1498,12 +1498,12 @@ public class ICSFormat extends AbstractFormat {
           System.arraycopy(row, 0, plane.getBytes(), bottomOffset, rowLen);
         }
       }
-  
+
       prevPlane = planeIndex;
-  
+
       return plane;
     }
-  
+
     /* @see io.scif.Reader#close(boolean) */
     @Override
     public void close(final boolean fileOnly) throws IOException {
@@ -1520,14 +1520,14 @@ public class ICSFormat extends AbstractFormat {
         gzipStream = null;
       }
     }
-  
+
     /* @see io.scif.Reader#setMetadata(Metadata) */
     @Override
     public void setMetadata(final Metadata meta) throws IOException {
       super.setMetadata(meta);
       gzip = metadata.get("representation compression").equals("gzip");
     }
-  
+
     /* @see io.scif.Reader#setSource(RandomAccessInputStream) */
     @Override
     public void setSource(final RandomAccessInputStream stream) throws IOException {
@@ -1539,7 +1539,7 @@ public class ICSFormat extends AbstractFormat {
         super.setSource(stream);
       }
     }
-  
+
     /* @see io.scif.Reader#getDomains() */
     @Override
     public String[] getDomains() {
@@ -1551,7 +1551,7 @@ public class ICSFormat extends AbstractFormat {
       else if (metadata.hasInstrumentData) {
         domain[0] = FormatTools.LM_DOMAIN;
       }
-  
+
       return domain;
     }
   }
@@ -1561,15 +1561,15 @@ public class ICSFormat extends AbstractFormat {
    *
    */
   public static class Writer extends AbstractWriter<Metadata> {
-  
+
     // -- Fields --
-  
+
     private long dimensionOffset;
     private int dimensionLength;
     private long pixelOffset;
     private int lastPlane = -1;
     private RandomAccessOutputStream pixels;
-    
+
     // NB: write in ZTC order by default.  Certain software (e.g. Volocity)
     //     lacks the capacity to import files with any other dimension
     //     ordering.  Technically, this is not our problem, but it is
@@ -1588,9 +1588,9 @@ public class ICSFormat extends AbstractFormat {
     public void setOutputOrder(String outputOrder) {
       this.outputOrder = outputOrder;
     }
-  
+
     // -- Writer API Methods --
-  
+
     /*
      * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
      */
@@ -1599,7 +1599,7 @@ public class ICSFormat extends AbstractFormat {
             throws FormatException, IOException
     {
       checkParams(imageIndex, planeIndex, plane.getBytes(), x, y, w, h);
-      
+
       int rgbChannels = getMetadata().getRGBChannelCount(imageIndex);
 
       int sizeZ = getMetadata().getAxisLength(imageIndex, Axes.Z);
@@ -1607,7 +1607,7 @@ public class ICSFormat extends AbstractFormat {
       if (rgbChannels <= sizeC) {
         sizeC /= rgbChannels;
       }
-      
+
       int sizeT = getMetadata().getAxisLength(imageIndex, Axes.TIME);
       int planes = sizeZ * sizeC * sizeT;
 
@@ -1631,7 +1631,7 @@ public class ICSFormat extends AbstractFormat {
           pixels.seek(pixelOffset + (realIndex + 1) * planeSize);
         }
       }
-      
+
       pixels.seek(pixelOffset + realIndex * planeSize);
       if (isFullPlane(imageIndex, x, y, w, h)
           && (interleaved || rgbChannels == 1)) {
@@ -1655,17 +1655,17 @@ public class ICSFormat extends AbstractFormat {
       }
       lastPlane = realIndex;
     }
-    
+
     /* @see io.scif.Writer#caDoStacks() */
     public boolean canDoStacks() { return true; };
-    
+
     /* @see io.scif.Writer#getPixelTypes(String) */
     public int[] getPixelTypes(String codec) {
       return new int[] {FormatTools.INT8, FormatTools.UINT8, FormatTools.INT16,
         FormatTools.UINT16, FormatTools.INT32, FormatTools.UINT32,
         FormatTools.FLOAT};
     }
-    
+
     /* @see io.scif.Writer#close() */
     public void close(int imageIndex) throws IOException {
       if (lastPlane != getMetadata().getPlaneCount(imageIndex) - 1 && out != null) {
@@ -1682,7 +1682,7 @@ public class ICSFormat extends AbstractFormat {
       }
       pixels = null;
     }
-    
+
     /*
      * @see io.scif.Writer#setDest(java.lang.String)
      */
@@ -1692,7 +1692,7 @@ public class ICSFormat extends AbstractFormat {
       updateMetadataIds(id);
       super.setDest(id);
     }
-    
+
     /*
      * @see io.scif.Writer#setDest(java.lang.String, int)
      */
@@ -1702,7 +1702,7 @@ public class ICSFormat extends AbstractFormat {
       updateMetadataIds(id);
       super.setDest(id, imageIndex);
     }
-  
+
     /*
      * @see io.scif.Writer#setDest(io.scif.io.RandomAccessOutputStream, int)
      */
@@ -1712,20 +1712,20 @@ public class ICSFormat extends AbstractFormat {
       super.setDest(out, imageIndex);
       initialize(imageIndex);
     }
-    
+
     // -- Helper methods --
-    
+
     /* Sets the ICS Metadta icsId and idsId fields */
     private void updateMetadataIds(String id) {
       metadata.idsId = FormatTools.checkSuffix(id, "ids") ? id : makeIdsId(id);
       metadata.icsId = FormatTools.checkSuffix(id, "ics") ? id : makeIcsId(id);
     }
-    
+
     private void initialize(final int imageIndex) throws FormatException,
       IOException {
-      String currentId = getMetadata().idsId != null ? 
+      String currentId = getMetadata().idsId != null ?
           getMetadata().idsId : getMetadata().icsId;
-      
+
       if (FormatTools.checkSuffix(getMetadata().idsId, "ids")) {
         String metadataFile = makeIcsId(currentId);
         if(out != null) out.close();
@@ -1829,7 +1829,7 @@ public class ICSFormat extends AbstractFormat {
         pixels = new RandomAccessOutputStream(getContext(), currentId);
       }
     }
-    
+
     private int[] overwriteDimensions(Metadata meta, int imageIndex) throws IOException {
       out.seek(dimensionOffset);
       int sizeX = meta.getAxisLength(imageIndex, Axes.X);
@@ -1882,17 +1882,17 @@ public class ICSFormat extends AbstractFormat {
 
       return sizes;
     }
-    
+
     /* Turns the provided id into a .ics path */
     private String makeIcsId(String idsId) {
       return setIdExtension(idsId, ".ics");
     }
-    
+
     /* Turns the provided id into a .ids path */
     private String makeIdsId(String icsId) {
       return setIdExtension(icsId, ".ids");
     }
-    
+
     /* Replaces the current extension of the provided id with the
      * provided extension
      */
@@ -2446,7 +2446,7 @@ public class ICSFormat extends AbstractFormat {
   * metadata type.
   * 
   */
-  @Plugin(type = Translator.class, attrs = 
+  @Plugin(type = Translator.class, attrs =
     {@Attr(name = ICSTranslator.SOURCE, value = io.scif.Metadata.CNAME),
     @Attr(name = ICSTranslator.DEST, value = Metadata.CNAME)},
     priority = Priority.LOW_PRIORITY)
@@ -2459,21 +2459,21 @@ public class ICSFormat extends AbstractFormat {
     {
       // note that the destination fields will preserve their default values
       // only the keyValPairs will be modified
- 
+
       Hashtable<String, String> keyValPairs = null;
       if (dest.getKeyValPairs() == null) keyValPairs =
         new Hashtable<String, String>();
-      else 
+      else
         keyValPairs = dest.getKeyValPairs();
-  
+
       final int numAxes = source.getAxisCount(0);
-  
+
       String order = "";
       String sizes = "";
-      
+
       for (int i = 0; i < numAxes; i++) {
         final AxisType axis = source.getAxisType(0, i);
-  
+
         // flag for RGB images
         if (axis.equals(Axes.X)) {
           order += "x";
@@ -2494,7 +2494,7 @@ public class ICSFormat extends AbstractFormat {
             sizes = source.getAxisLength(0, i) + " " + sizes;
             continue;
           }
-          
+
           order += "c";
         }
         else if (axis.equals(Axes.PHASE)) {
@@ -2509,22 +2509,22 @@ public class ICSFormat extends AbstractFormat {
           else
             order += "u";
         }
-  
+
         order += " ";
         sizes += source.getAxisLength(0, i) + " ";
       }
-  
+
       keyValPairs.put("layout sizes", sizes);
       keyValPairs.put("layout order", order);
-  
+
       keyValPairs.put("layout significant_bits", "" + source.getBitsPerPixel(0));
-  
+
       if (source.getAxisLength(0, Axes.LIFETIME) > 1)
         keyValPairs.put("history type", "time resolved");
-  
+
       boolean signed = false;
       boolean fPoint = false;
-  
+
       switch (source.getPixelType(0)) {
         case FormatTools.INT8:
         case FormatTools.INT16:
@@ -2541,25 +2541,25 @@ public class ICSFormat extends AbstractFormat {
           signed = true;
           break;
       }
-  
+
       keyValPairs.put("representation sign", signed ? "signed" : "");
       keyValPairs.put("representation format", fPoint ? "real" : "");
       keyValPairs.put("representation compression", "");
-  
+
       String byteOrder = "0";
-  
+
       if(source.isLittleEndian(0))
         byteOrder = fPoint ? "1" : "0";
       else
         byteOrder = fPoint ? "0" : "1";
-      
+
       if (source.getBitsPerPixel(0) < 32) {
         if (byteOrder.equals("0")) byteOrder = "1";
         else byteOrder = "0";
       }
-  
+
       keyValPairs.put("representation byte_order", byteOrder);
-  
+
       dest.setKeyValPairs(keyValPairs);
     }
   }

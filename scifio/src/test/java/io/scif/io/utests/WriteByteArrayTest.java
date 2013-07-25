@@ -76,7 +76,7 @@ public class WriteByteArrayTest {
   private static final int BUFFER_SIZE = 1024;
 
   private IRandomAccess fileHandle;
-  
+
   private boolean checkGrowth;
 
   @Parameters({"provider", "checkGrowth"})
@@ -93,7 +93,7 @@ public class WriteByteArrayTest {
   public void testLength() throws IOException {
     assertEquals(16, fileHandle.length());
   }
-  
+
   @Test
   public void testWriteSequential() throws IOException {
     for (int i = 0; i < 16; i++) {

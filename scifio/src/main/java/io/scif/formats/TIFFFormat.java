@@ -110,7 +110,7 @@ public class TIFFFormat extends AbstractFormat {
   public static class Metadata extends MinimalTIFFFormat.Metadata {
 
     // -- Fields --
-    
+
     private boolean populateImageMetadata = true;
 
     // FIXME: these are duplicating metadata store information..
@@ -248,7 +248,7 @@ public class TIFFFormat extends AbstractFormat {
     }
 
     // -- Metadata API Methods --
-    
+
     @Override
     public void createImageMetadata(int imageCount) {
       populateImageMetadata = true;
@@ -258,10 +258,10 @@ public class TIFFFormat extends AbstractFormat {
     @Override
     public void populateImageMetadata() {
       if (populateImageMetadata) super.populateImageMetadata();
-      
+
       ImageMetadata m = get(0);
-      
-      if (getIfds().size() > 1) m.setOrderCertain(false); 
+
+      if (getIfds().size() > 1) m.setOrderCertain(false);
     }
 
     @Override
@@ -416,10 +416,10 @@ public class TIFFFormat extends AbstractFormat {
     private void parseCommentImageJ(Metadata meta, String comment)
       throws FormatException, IOException
     {
-      
+
       meta.populateImageMetadata();
       meta.populateImageMetadata = false;
-      
+
       int nl = comment.indexOf("\n");
       put("ImageJ", nl < 0 ? comment.substring(7) : comment.substring(7, nl));
       meta.getTable().remove("Comment");
@@ -427,7 +427,7 @@ public class TIFFFormat extends AbstractFormat {
 
       int z = 1, t = 1;
       int c = meta.getAxisLength(0, Axes.CHANNEL);
-      
+
       IFDList ifds = meta.getIfds();
 
       if (ifds.get(0).containsKey(IMAGEJ_TAG)) {
@@ -475,19 +475,19 @@ public class TIFFFormat extends AbstractFormat {
       if (z * c * t == c && meta.isRGB(0)) {
         t = meta.getPlaneCount(0);
       }
-      
+
       ImageMetadata m = meta.get(0);
       m.setAxisTypes(FormatTools.findDimensionList("XYCZT"));
 
       if (z * t * (m.isRGB() ? 1 : c) == ifds.size()) {
-        m.setAxisLength(Axes.Z, z); 
-        m.setAxisLength(Axes.TIME, t); 
-        m.setAxisLength(Axes.CHANNEL, m.isRGB() ? m.getAxisLength(Axes.CHANNEL) : c); 
+        m.setAxisLength(Axes.Z, z);
+        m.setAxisLength(Axes.TIME, t);
+        m.setAxisLength(Axes.CHANNEL, m.isRGB() ? m.getAxisLength(Axes.CHANNEL) : c);
       }
       else if (z * c * t == ifds.size() && m.isRGB()) {
-        m.setAxisLength(Axes.Z, z); 
-        m.setAxisLength(Axes.TIME, t); 
-        m.setAxisLength(Axes.CHANNEL, m.getAxisLength(Axes.CHANNEL) * c); 
+        m.setAxisLength(Axes.Z, z);
+        m.setAxisLength(Axes.TIME, t);
+        m.setAxisLength(Axes.CHANNEL, m.getAxisLength(Axes.CHANNEL) * c);
       }
       else if (ifds.size() == 1 && z * t > ifds.size() &&
           ifds.get(0).getCompression() == TiffCompression.UNCOMPRESSED)
@@ -533,19 +533,19 @@ public class TIFFFormat extends AbstractFormat {
         }
 
         if (z * c * t == ifds.size()) {
-          m.setAxisLength(Axes.Z, z); 
-          m.setAxisLength(Axes.TIME, t); 
-          m.setAxisLength(Axes.CHANNEL, c); 
+          m.setAxisLength(Axes.Z, z);
+          m.setAxisLength(Axes.TIME, t);
+          m.setAxisLength(Axes.CHANNEL, c);
         }
         else if (z * t == ifds.size()) {
-          m.setAxisLength(Axes.Z, z); 
-          m.setAxisLength(Axes.TIME, t); 
+          m.setAxisLength(Axes.Z, z);
+          m.setAxisLength(Axes.TIME, t);
         }
         else m.setAxisLength(Axes.Z, ifds.size());
         m.setPlaneCount(ifds.size());
       }
       else {
-        m.setAxisLength(Axes.TIME, ifds.size()); 
+        m.setAxisLength(Axes.TIME, ifds.size());
         m.setPlaneCount(ifds.size());
       }
     }
@@ -1146,7 +1146,7 @@ public class TIFFFormat extends AbstractFormat {
       };
       isBigTiff = false;
     }
-    
+
     // -- TIFFWriter API Methods --
 
     /**
@@ -1156,7 +1156,7 @@ public class TIFFFormat extends AbstractFormat {
     public void setBigTiff(boolean bigTiff) {
       isBigTiff = bigTiff;
     }
-    
+
     /**
      * Saves the given image to the specified (possibly already open) file.
      * The IFD hashtable allows specification of TIFF parameters such as bit
@@ -1200,7 +1200,7 @@ public class TIFFFormat extends AbstractFormat {
     }
 
     // -- Writer API Methods --
-    
+
     @Override
     public void setDest(RandomAccessOutputStream dest, int imageIndex) throws FormatException, IOException {
       super.setDest(dest, imageIndex);
@@ -1233,7 +1233,7 @@ public class TIFFFormat extends AbstractFormat {
 
       savePlane(imageIndex, planeIndex, plane, ifd, x, y, w, h);
     }
-    
+
     /* @see loci.formats.IFormatWriter#canDoStacks(String) */
     public boolean canDoStacks() { return true; }
 
@@ -1252,7 +1252,7 @@ public class TIFFFormat extends AbstractFormat {
         FormatTools.UINT16, FormatTools.INT32, FormatTools.UINT32,
         FormatTools.FLOAT, FormatTools.DOUBLE};
     }
-    
+
     @Override
     public int getPlaneCount(int imageIndex) {
       Metadata meta = getMetadata();
@@ -1265,7 +1265,7 @@ public class TIFFFormat extends AbstractFormat {
       }
       return super.getPlaneCount(imageIndex);
     }
-    
+
     @Override
     public void close() throws IOException {
       super.close();
@@ -1273,9 +1273,9 @@ public class TIFFFormat extends AbstractFormat {
         in.close();
       }
     }
-    
+
     // -- Helper methods --
-    
+
     /**
      * Sets the compression code for the specified IFD.
      * 
@@ -1302,7 +1302,7 @@ public class TIFFFormat extends AbstractFormat {
       if (v == null)
         ifd.put(new Integer(IFD.COMPRESSION), compressType.getCode());
     }
-    
+
 
 
     /**
@@ -1356,7 +1356,7 @@ public class TIFFFormat extends AbstractFormat {
         for (int i=0; i<c; i++) {
           byte[] b = ImageTools.splitChannels(buf, i, c, bytesPerPixel,
             false, interleaved);
-          
+
           ByteArrayPlane bp = new ByteArrayPlane(getContext());
           bp.populate(getMetadata().get(imageIndex), b, x, y, w, h);
 
@@ -1418,7 +1418,7 @@ public class TIFFFormat extends AbstractFormat {
       else {
         out.seek((Long) ifd.get(IFD.REUSE));
       }
-      
+
       ifd.putIFDValue(IFD.PLANAR_CONFIGURATION,
         interleaved || meta.getRGBChannelCount(imageIndex) == 1 ? 1 : 2);
 
@@ -1434,7 +1434,7 @@ public class TIFFFormat extends AbstractFormat {
       }
       return index;
     }
-    
+
     private void setupTiffSaver(int imageIndex) throws IOException {
       out.close();
       Metadata meta = getMetadata();
@@ -1452,7 +1452,7 @@ public class TIFFFormat extends AbstractFormat {
     }
 
   }
-  
+
   /**
    * This class can be used for translating any io.scif.Metadata
    * to Metadata for writing TIFF.
@@ -1469,25 +1469,25 @@ public class TIFFFormat extends AbstractFormat {
    * to write it can not be guaranteed valid.
    * </p>
    */
-  @Plugin(type = Translator.class, attrs = 
+  @Plugin(type = Translator.class, attrs =
     {@Attr(name = TIFFTranslator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = TIFFTranslator.DEST, value = Metadata.CNAME)},
     priority = TIFFFormat.PRIORITY)
   public static class TIFFTranslator
     extends AbstractTranslator<io.scif.Metadata, Metadata>
   {
-    // -- Translator API Methods -- 
-    
+    // -- Translator API Methods --
+
     public void typedTranslate(io.scif.Metadata source, Metadata dest) {
       IFDList ifds = new IFDList();
       dest.setIfds(ifds);
-      
+
       ImageMetadata m = source.get(0);
-      
+
       for (int i=0; i< m.getPlaneCount(); i++) ifds.add(new IFD());
-      
+
       IFD firstIFD = ifds.get(0);
-      
+
       firstIFD.putIFDValue(IFD.BITS_PER_SAMPLE, new int[]{m.getBitsPerPixel()});
       firstIFD.putIFDValue(IFD.SAMPLE_FORMAT, FormatTools.isSigned(m.getPixelType()) ? 2 : 1);
       firstIFD.putIFDValue(IFD.LITTLE_ENDIAN, m.isLittleEndian());
@@ -1499,16 +1499,16 @@ public class TIFFFormat extends AbstractFormat {
       if (m.isRGB()) firstIFD.putIFDValue(IFD.PHOTOMETRIC_INTERPRETATION, PhotoInterp.RGB);
       if (m.isIndexed() && HasColorTable.class.isAssignableFrom(source.getClass())) {
         firstIFD.putIFDValue(IFD.PHOTOMETRIC_INTERPRETATION, PhotoInterp.RGB_PALETTE);
-        
+
         ColorTable table = ((HasColorTable)source).getColorTable(0, 0);
         int[] flattenedTable = new int[table.getComponentCount() * table.getLength()];
-        
+
         for (int i=0; i<table.getComponentCount(); i++) {
           for (int j=0; j<table.getLength(); j++) {
             flattenedTable[(i * table.getLength()) + j] = table.get(i, j);
           }
         }
-        
+
         firstIFD.putIFDValue(IFD.COLOR_MAP, flattenedTable);
       }
     }

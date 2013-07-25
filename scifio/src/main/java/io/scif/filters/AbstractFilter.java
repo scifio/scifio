@@ -67,15 +67,15 @@ public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Fil
   protected static final Logger LOGGER = LoggerFactory.getLogger(Filter.class);
   
   // -- Fields --
-  
+
   /* Parent to delegate to. */
   private T parent = null;
-  
+
   /* For checking in setParent */
   private Class<? extends T> parentClass;
-  
+
   // -- Constructor --
-  
+
   public AbstractFilter(Class<? extends T> parentClass) {
     this.parentClass = parentClass;
   }
@@ -101,14 +101,14 @@ public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Fil
       				parent.getClass() + " Expected: " + parentClass);
     }
   }
-  
+
   /*
    * @see io.scif.filters.Filter#reset()
    */
   public void reset() {
     parent = null;
   }
-  
+
   /*
    * @see io.scif.filters.Filter#isCompatible(java.lang.Class)
    */

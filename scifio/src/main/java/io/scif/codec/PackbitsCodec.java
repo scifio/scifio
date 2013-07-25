@@ -77,7 +77,7 @@ public class PackbitsCodec extends BaseCodec {
     throws FormatException, IOException
   {
     if (options == null) options = CodecOptions.getDefaultOptions();
-    if (in == null) 
+    if (in == null)
       throw new IllegalArgumentException("No data to decompress.");
     long fp = in.getFilePointer();
     // Adapted from the TIFF 6.0 specification, page 42.

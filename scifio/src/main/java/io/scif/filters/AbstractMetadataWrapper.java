@@ -66,28 +66,28 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 {
 
   // -- Fields --
-  
+
   private Metadata meta;
-  
+
   // -- Constructor --
-  
+
   public AbstractMetadataWrapper() {
     this(null);
   }
-  
+
   public AbstractMetadataWrapper(Metadata metadata) {
     meta = metadata;
   }
-  
+
   // -- MetadataWrapper API Methods --
-  
+
   /*
    * @see io.scif.filters.MetadataWrapper#unwrap()
    */
   public Metadata unwrap() {
     return meta;
   }
-  
+
   /*
    * @see io.scif.filters.MetadataWrapper#wrap(io.scif.Metadata)
    */
@@ -95,7 +95,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     this.meta = meta;
     populateImageMetadata();
   }
-  
+
   /*
    * @see io.scif.filters.MetadataWrapper#addAxis(int, net.imglib2.meta.AxisType, boolean)
    */
@@ -103,7 +103,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     super.addAxis(imageIndex, type);
     if (passUp) meta.addAxis(imageIndex, type);
   }
-  
+
   /*
    * @see io.scif.filters.MetadataWrapper#addAxis(int, net.imglib2.meta.AxisType, int, boolean)
    */
@@ -112,14 +112,14 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     super.addAxis(imageIndex, type, value);
     if (passUp) meta.addAxis(imageIndex, type, value);
   }
-  
+
   /*
    * @see io.scif.AbstractMetadata#getTable()
    */
   public MetaTable getTable() {
     return super.getTable();
   }
-  
+
   public void setTable(MetaTable table, boolean passUp) {
     super.setTable(table);
     if (passUp) meta.setTable(table);
@@ -215,7 +215,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     super.setMetadataComplete(imageIndex, metadataComplete);
     if (passUp) meta.setMetadataComplete(imageIndex, metadataComplete);
   }
-  
+
   /*
    * @see io.scif.filters.MetadataWrapper#add(io.scif.ImageMetadata, boolean)
    */
@@ -239,7 +239,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     super.setAxisTypes(imageIndex, axisTypes);
     if (passUp) meta.setAxisTypes(imageIndex, axisTypes);
   }
-  
+
   /*
    * @see io.scif.filters.MetadataWrapper#setAxisType(int, int, net.imglib2.meta.AxisType, boolean)
    */
@@ -255,7 +255,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     super.setAxisLengths(imageIndex, axisLengths);
     if (passUp) meta.setAxisLengths(imageIndex, axisLengths);
   }
-  
+
   /*
    * @see io.scif.filters.MetadataWrapper#setAxisLength(int, net.imglib2.meta.AxisType, int, boolean)
    */
@@ -263,14 +263,14 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     super.setAxisLength(imageIndex, axis, length);
     if (passUp) meta.setAxisLength(imageIndex, axis, length);
   }
-  
+
   /*
    * @see io.scif.AbstractMetadata#addAxis(int, net.imglib2.meta.AxisType)
    */
   public void addAxis(final int imageIndex, final AxisType type) {
     addAxis(imageIndex, type, true);
   }
-  
+
   /*
    * @see io.scif.AbstractMetadata#addAxis(int, net.imglib2.meta.AxisType, int)
    */
@@ -358,7 +358,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
   {
     setMetadataComplete(imageIndex, metadataComplete, true);
   }
-  
+
   /*
    * @see io.scif.AbstractMetadata#add(io.scif.ImageMetadata)
    */
@@ -379,7 +379,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
   public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
     setAxisTypes(imageIndex, axisTypes, true);
   }
-  
+
   /*
    * @see io.scif.AbstractMetadata#setAxisType(int, int, net.imglib2.meta.AxisType)
    */
@@ -393,16 +393,16 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
   public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
     setAxisLengths(imageIndex, axisLengths, true);
   }
-  
+
   /*
    * @see io.scif.AbstractMetadata#setAxisLength(int, net.imglib2.meta.AxisType, int)
    */
   public void setAxisLength(final int imageIndex, final AxisType axis, final int length) {
     setAxisLength(imageIndex, axis, length, true);
   }
-  
+
   // -- Metadata API Methods --
-  
+
   /*
    * @see io.scif.AbstractMetadata#setSource(io.scif.io.RandomAccessInputStream)
    */
@@ -410,13 +410,13 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
     super.setSource(source);
     meta.setSource(source);
   }
-  
-  public void populateImageMetadata() { 
+
+  public void populateImageMetadata() {
     meta.populateImageMetadata();
   }
-  
+
   // -- HasSource API Methods --
-  
+
   /*
    * @see io.scif.AbstractMetadata#close(boolean)
    */

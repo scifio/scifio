@@ -121,9 +121,9 @@ public class LegacyQTTools {
       StringTokenizer st = new StringTokenizer(windir, ";");
 
       Context ctx = new Context(LocationService.class, DefaultLocationService.class);
-      
+
       while (st.hasMoreTokens()) {
-        
+
         Location f = new Location(ctx, st.nextToken(), "QTJava.zip");
         if (f.exists()) {
           try {

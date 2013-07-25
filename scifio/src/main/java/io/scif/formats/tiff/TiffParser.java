@@ -642,7 +642,7 @@ public class TiffParser extends AbstractContextual {
     int samplesPerPixel = ifd.getSamplesPerPixel();
     int planarConfig = ifd.getPlanarConfiguration();
     TiffCompression compression = ifd.getCompression();
-    
+
     long numTileCols = ifd.getTilesPerRow();
 
     int pixel = ifd.getBytesPerSample()[0];

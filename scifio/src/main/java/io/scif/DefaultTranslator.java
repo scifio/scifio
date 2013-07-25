@@ -53,7 +53,7 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  *
  */
-@Plugin(type = Translator.class, attrs = 
+@Plugin(type = Translator.class, attrs =
 {@Attr(name = DefaultTranslator.SOURCE, value = Metadata.CNAME),
 @Attr(name = DefaultTranslator.DEST, value = Metadata.CNAME)},
 priority = Priority.VERY_LOW_PRIORITY)
@@ -62,12 +62,12 @@ public class DefaultTranslator extends AbstractTranslator<Metadata, Metadata> {
   @Override
   protected void typedTranslate(Metadata source, Metadata dest) {
     List<ImageMetadata> metaList = source.getAll();
-    
+
     dest.createImageMetadata(metaList.size());
-    
+
     for (int i=0; i<metaList.size(); i++) {
       ImageMetadata sourceMeta = metaList.get(i);
-      
+
       // Need to add a new ImageMetadata
       if (i >= dest.getImageCount()) {
         dest.add(new DefaultImageMetadata(sourceMeta));

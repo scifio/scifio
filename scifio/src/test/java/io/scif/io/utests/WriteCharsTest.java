@@ -92,7 +92,7 @@ public class WriteCharsTest {
   public void testLength() throws IOException {
     assertEquals(16, fileHandle.length());
   }
-  
+
   @Test
   public void testWriteSequential() throws IOException {
     fileHandle.writeChars("ab");

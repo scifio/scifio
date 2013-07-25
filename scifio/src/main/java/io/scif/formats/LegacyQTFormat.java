@@ -83,9 +83,9 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = LegacyQTFormat.class, priority = Priority.LOW_PRIORITY)
 public class LegacyQTFormat extends AbstractFormat {
-  
+
   // -- Format API methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -99,19 +99,19 @@ public class LegacyQTFormat extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[]{"mov"};
   }
-  
+
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata {
-    
+
     // -- Constants --
-    
+
     public static final String CNAME = "io.scif.formats.LegacyQTFormat$Metadata";
-    
+
     // -- Fields --
 
     /** Time offset for each frame. */
@@ -119,9 +119,9 @@ public class LegacyQTFormat extends AbstractFormat {
 
     /** Image containing current frame. */
     protected Image image;
-    
+
     // -- LegacyQTMetadata getters and setters --
-    
+
     public int[] getTimes() {
       return times;
     }
@@ -137,19 +137,19 @@ public class LegacyQTFormat extends AbstractFormat {
     public void setImage(Image image) {
       this.image = image;
     }
-    
+
     // -- Metadata API Methods --
 
     public void populateImageMetadata() {
       BufferedImage img = AWTImageTools.makeBuffered(image);
       ImageMetadata iMeta = get(0);
-      
+
       iMeta.setAxisLength(Axes.X, img.getWidth());
       iMeta.setAxisLength(Axes.Y, img.getHeight());
       iMeta.setAxisLength(Axes.CHANNEL, img.getRaster().getNumBands());
       iMeta.setAxisLength(Axes.TIME, iMeta.getPlaneCount());
       iMeta.setAxisLength(Axes.Z, 1);
-      
+
       iMeta.setPixelType(AWTImageTools.getPixelType(img));
       iMeta.setRGB(true);
       iMeta.setInterleaved(false);
@@ -157,7 +157,7 @@ public class LegacyQTFormat extends AbstractFormat {
       iMeta.setIndexed(false);
       iMeta.setFalseColor(false);
     }
-    
+
     @Override
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -173,14 +173,14 @@ public class LegacyQTFormat extends AbstractFormat {
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
-    
+
     // -- Parser API Methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
         throws IOException, FormatException {
       LOGGER.info("Checking for QuickTime Java");
-      
+
       LegacyQTTools tools = LegacyQTUtils.getTools();
       ReflectedUniverse r = LegacyQTUtils.getUniverse();
       tools.checkQTLibrary();
@@ -234,18 +234,18 @@ public class LegacyQTFormat extends AbstractFormat {
           time = q.intValue();
         }
         while (time >= 0);
-        
+
         meta.createImageMetadata(1);
         ImageMetadata iMeta = meta.get(0);
 
         iMeta.setPlaneCount(v.size());
-        
+
         int[] times = new int[iMeta.getPlaneCount()];
         for (int i=0; i<times.length; i++) {
           q = v.elementAt(i);
           times[i] = q.intValue();
         }
-        
+
         meta.setTimes(times);
       }
       catch (ReflectException e) {
@@ -253,7 +253,7 @@ public class LegacyQTFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -261,20 +261,20 @@ public class LegacyQTFormat extends AbstractFormat {
   public static class Reader extends BufferedImageReader<Metadata> {
 
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
-    
+
     // -- Reader API Methods --
-    
+
     public BufferedImagePlane openPlane(int imageIndex, int planeIndex,
        BufferedImagePlane plane, int x, int y, int w, int h)
       throws FormatException, IOException
     {
       ReflectedUniverse r = LegacyQTUtils.getUniverse();
       Metadata meta = getMetadata();
-      
+
       // paint frame into image
       try {
         r.setVar("time", meta.getTimes()[planeIndex]);
@@ -287,16 +287,16 @@ public class LegacyQTFormat extends AbstractFormat {
       }
       BufferedImage bimg = AWTImageTools.getSubimage(AWTImageTools.makeBuffered(meta.getImage()),
         meta.isLittleEndian(imageIndex), x, y, w, h);
-      
+
       plane.populate(meta.get(imageIndex), bimg, x,  y,  w,  h);
       return plane;
     }
   }
-  
+
   public void close(boolean fileOnly) throws IOException {
     try {
       ReflectedUniverse r = LegacyQTUtils.getUniverse();
-      
+
       if (r != null && r.getVar("openMovieFile") != null) {
         r.exec("openMovieFile.close()");
         if (!fileOnly) {
@@ -310,7 +310,7 @@ public class LegacyQTFormat extends AbstractFormat {
       LOGGER.debug("Failed to close QuickTime session", e);
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -346,7 +346,7 @@ public class LegacyQTFormat extends AbstractFormat {
     private int height;
 
     private int[] pixels2 = null;
-    
+
     // -- LegacyQTWriter API methods --
 
     /**
@@ -373,7 +373,7 @@ public class LegacyQTFormat extends AbstractFormat {
      * </ul>
      */
     public void setQuality(int quality) { this.quality = quality; }
-    
+
     // -- Writer API Methods --
 
     public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
@@ -381,7 +381,7 @@ public class LegacyQTFormat extends AbstractFormat {
     {
       BufferedImage img = null;
       Metadata meta = getMetadata();
-      
+
       if (!(plane instanceof BufferedImagePlane)) {
         int type = meta.getPixelType(imageIndex);
         img = AWTImageTools.makeImage(plane.getBytes(), meta.getAxisLength(imageIndex, Axes.X),
@@ -548,7 +548,7 @@ public class LegacyQTFormat extends AbstractFormat {
         close();
       }
     }
-    
+
     @Override
     public boolean canDoStacks() { return true; }
 
@@ -562,24 +562,24 @@ public class LegacyQTFormat extends AbstractFormat {
       pixels2 = null;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
-  @Plugin(type = Translator.class, attrs = 
+  @Plugin(type = Translator.class, attrs =
     {@Attr(name = LegacyQTTranslator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = LegacyQTTranslator.DEST, value = Metadata.CNAME)},
     priority = Priority.LOW_PRIORITY)
   public static class LegacyQTTranslator
     extends AbstractTranslator<io.scif.Metadata, Metadata>
   {
-    // -- Translator API Methods -- 
-    
+    // -- Translator API Methods --
+
     public void typedTranslate(io.scif.Metadata source, Metadata dest) {
       dest.createImageMetadata(1);
       dest.get(0).setPlaneCount(source.getPlaneCount(0));
-      
+
       int w = source.getAxisLength(0, Axes.X);
       int h = source.getAxisLength(0, Axes.Y);
       int bpp = source.getBitsPerPixel(0) / 8;
@@ -587,33 +587,33 @@ public class LegacyQTFormat extends AbstractFormat {
       boolean fp = FormatTools.isFloatingPoint(source.getPixelType(0));
       boolean little = source.isLittleEndian(0);
       boolean signed = FormatTools.isSigned(source.getPixelType(0));
-      
+
       Image img = AWTImageTools.makeImage(data, w, h, bpp, fp, little, signed);
-      
+
       dest.setImage(img);
     }
-  } 
-  
+  }
+
   // -- Utility class --
-  
+
   private static class LegacyQTUtils {
     // -- Fields --
-    
+
     /** Instance of LegacyQTTools to handle QuickTime for Java detection. */
     private static LegacyQTTools tools;
-    
+
     /** Reflection tool for QuickTime for Java calls. */
     private static ReflectedUniverse r;
-    
+
     public static LegacyQTTools getTools() {
       if (tools == null) tools = new LegacyQTTools();
-      
+
       return tools;
     }
-    
+
     public static ReflectedUniverse getUniverse() {
       if (r == null) r = getTools().getUniverse();
-      
+
       return r;
     }
   }

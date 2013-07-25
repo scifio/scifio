@@ -375,7 +375,7 @@ public class AxisGuesser {
   }
 
   // -- Main method --
-  
+
   public static void main(String[] args) throws FormatException, IOException {
     main(args, new Context());
   }

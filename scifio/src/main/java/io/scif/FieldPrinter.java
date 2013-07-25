@@ -53,7 +53,7 @@ import java.util.StringTokenizer;
  *
  */
 public class FieldPrinter {
-  
+
   private final Object obj;
 
   public FieldPrinter(Object o) {
@@ -72,11 +72,11 @@ public class FieldPrinter {
     private String dumpString(Class<?> type) {
       if (type == null) return "";
 
-      
+
       final StringBuilder sb = new StringBuilder();
-      
+
       sb.append("--" + type + "--\n");
-      
+
       // iterate over fields
       sb.append("{\n");
 
@@ -86,7 +86,7 @@ public class FieldPrinter {
         final int mods = f.getModifiers();
         if (Modifier.isFinal(mods)) continue;
         if (Modifier.isStatic(mods)) continue;
-        
+
         final String name = f.getName();
         final Object value;
         try {
@@ -107,7 +107,7 @@ public class FieldPrinter {
       sb.append(indent(dumpString(type.getSuperclass())));
       return sb.toString();
     }
-    
+
     /*
      * Adds one tab to each line in the provided string
      */

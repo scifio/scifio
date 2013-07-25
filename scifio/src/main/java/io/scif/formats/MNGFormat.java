@@ -68,7 +68,7 @@ import org.scijava.plugin.Plugin;
 public class MNGFormat extends AbstractFormat {
 
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -84,21 +84,21 @@ public class MNGFormat extends AbstractFormat {
   }
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata {
-    
+
     // -- Fields --
 
     private MNGDatasetInfo datasetInfo;
 
     private boolean isJNG = false;
-    
+
     // -- MNGMetadata getters and setters --
-    
+
     public MNGDatasetInfo getDatasetInfo() {
       return datasetInfo;
     }
@@ -114,7 +114,7 @@ public class MNGFormat extends AbstractFormat {
     public void setJNG(boolean isJNG) {
       this.isJNG = isJNG;
     }
-    
+
     // -- Metadata API methods --
 
     /*
@@ -145,7 +145,7 @@ public class MNGFormat extends AbstractFormat {
         setAxisLength(i, Axes.TIME, getPlaneCount(i));
       }
     }
-    
+
     /*
      * @see io.scif.AbstractMetadata#close(boolean)
      */
@@ -157,26 +157,26 @@ public class MNGFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Checker extends AbstractChecker {
-    
+
     // -- Constants --
-    
+
     public static final long MNG_MAGIC_BYTES = 0x8a4d4e470d0a1a0aL;
-    
+
     // -- Checker API Methods --
-    
+
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
       final int blockLen = 8;
       if (!FormatTools.validStream(stream, blockLen, false)) return false;
       return stream.readLong() == MNG_MAGIC_BYTES;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -184,7 +184,7 @@ public class MNGFormat extends AbstractFormat {
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- AbstractParser API Methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
         throws IOException, FormatException {
@@ -288,7 +288,7 @@ public class MNGFormat extends AbstractFormat {
       if (keys.length == 0) {
         throw new FormatException("Pixel data not found.");
       }
-      
+
       datasetInfo.imageInfo.clear();
       int imageCount = keys.length;
 
@@ -301,9 +301,9 @@ public class MNGFormat extends AbstractFormat {
       datasetInfo.keys = keys;
       meta.setDatasetInfo(datasetInfo);
     }
-    
+
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -311,13 +311,13 @@ public class MNGFormat extends AbstractFormat {
   public static class Reader extends BufferedImageReader<Metadata> {
 
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
-    
+
     // -- Reader API Methods --
-    
+
     /*
      * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
@@ -336,14 +336,14 @@ public class MNGFormat extends AbstractFormat {
       // BytePackedRaster is used
       img = AWTImageTools.getSubimage(img, getMetadata().isLittleEndian(imageIndex),
           x, y, w, h);
-      
+
       plane.setData(img);
       return plane;
     }
   }
-  
+
   // -- Helper Methods --
-  
+
   private static BufferedImage readImage(Metadata meta, long end) throws IOException {
     int headerSize = meta.isJNG() ? 0 : 8;
     byte[] b = new byte[(int) (end - meta.getSource().getFilePointer() + headerSize)];
@@ -360,14 +360,14 @@ public class MNGFormat extends AbstractFormat {
     }
     return ImageIO.read(new ByteArrayInputStream(b));
   }
-  
+
   // -- Helper classes --
 
   private static class MNGDatasetInfo {
     public Vector<MNGImageInfo> imageInfo = new Vector<MNGImageInfo>();
     public String[] keys;
   }
-  
+
   private static class MNGImageInfo {
     public Vector<Long> offsets = new Vector<Long>();
     public Vector<Long> lengths = new Vector<Long>();

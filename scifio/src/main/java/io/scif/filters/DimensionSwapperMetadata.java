@@ -59,27 +59,27 @@ import net.imglib2.meta.AxisType;
   @Attr(name=DimensionSwapperMetadata.METADATA_KEY, value=DimensionSwapperMetadata.METADATA_VALUE)
   })
 public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
-  
+
   // -- Constants --
-  
+
   public static final String METADATA_VALUE = "io.scif.filters.DimensionSwapper";
-  
+
   // -- Fields --
-  
+
   private List<AxisType>[] outputOrder;
 
   // -- Constructors --
-  
+
   public DimensionSwapperMetadata() {
     this(null);
   }
-  
+
   public DimensionSwapperMetadata(Metadata metadata) {
     super(metadata);
   }
-  
+
   // -- DimensionSwapperMetadata API --
-  
+
   /**
    * Gets the output order for this dataset. This is an array
    * of axes configurations that will be returned when requested
@@ -101,16 +101,16 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
   public void setOutputOrder(List<AxisType>[] outputOrder) {
     this.outputOrder = outputOrder;
   }
-  
+
   // -- Metadata API Methods --
-  
+
   /*
    * @see io.scif.filters.AbstractMetadataWrapper#setAxisLengths(int, int[])
    */
   public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
     super.setAxisLengths(imageIndex, axisLengths, false);
   }
-  
+
   /*
    * @see io.scif.filters.AbstractMetadataWrapper#setAxisTypes(int, net.imglib2.meta.AxisType[])
    */

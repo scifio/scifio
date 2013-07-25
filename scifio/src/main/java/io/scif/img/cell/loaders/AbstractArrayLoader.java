@@ -64,26 +64,26 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
   {
     this.reader = reader;
   }
-  
+
   public A loadArray(int[] dimensions, long[] min) {
     synchronized(reader)
     {
       Metadata meta = reader.getMetadata();
- 
+
       StringBuilder dimOrder = new StringBuilder(FormatTools.findDimensionOrder(meta, 0).toUpperCase());
-      
+
       if (meta.getAxisLength(0, Axes.X) == 1) dimOrder = dimOrder.deleteCharAt(dimOrder.indexOf("X"));
       if (meta.getAxisLength(0, Axes.Y) == 1) dimOrder = dimOrder.deleteCharAt(dimOrder.indexOf("Y"));
       if (meta.getAxisLength(0, Axes.Z) == 1) dimOrder = dimOrder.deleteCharAt(dimOrder.indexOf("Z"));
       if (meta.getEffectiveSizeC(0) == 1) dimOrder = dimOrder.deleteCharAt(dimOrder.indexOf("C"));
       if (meta.getAxisLength(0, Axes.TIME) == 1) dimOrder = dimOrder.deleteCharAt(dimOrder.indexOf("T"));
-      
+
       int xIndex = dimOrder.indexOf("X");
       int yIndex = dimOrder.indexOf("Y");
       int zIndex = dimOrder.indexOf("Z");
       int cIndex = dimOrder.indexOf("C");
       int tIndex = dimOrder.indexOf("T");
-      
+
       int zSlice = new Long(zIndex == -1 ? 0 : min[zIndex]).intValue();
       int tSlice = new Long(tIndex == -1 ? 0 : min[tIndex]).intValue();
       int cSlice = new Long(cIndex == -1 ? 0 : min[cIndex]).intValue();
@@ -92,9 +92,9 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
       int cMax = cIndex == -1 ? 1 : dimensions[cIndex] + cSlice;
 
       Plane tmpPlane = null;
-      
+
       int planeSize = -1;
-      
+
       int[][] iterBounds = null;
       String zctOrder = "";
 
@@ -128,28 +128,28 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
           iterBounds = getBounds(cSlice, cMax, tSlice, tMax, zSlice, zMax);
         }
       }
-      
+
       int planesRead = 0;
       int[] index = new int[]{iterBounds[0][0], iterBounds[1][0], iterBounds[2][0]};
-      
+
       int x = new Long(xIndex == -1 ? 0 : min[xIndex]).intValue();
       int y = new Long(yIndex == -1 ? 0 : min[yIndex]).intValue();
       int w = xIndex == -1 ? 1 : dimensions[xIndex];
       int h = yIndex == -1 ? 1 : dimensions[yIndex];
-      
+
       int i1 = index[1], i2 = index[2];
 
       boolean success = false;
-      
+
       A data  = null;
-      
+
       while (!success) {
         try {
           data = emptyArray(dimensions);
           success = true;
         } catch (OutOfMemoryError e) { }
       }
-        
+
       try {
         for (; index[0]<iterBounds[0][1]; index[0]++) {
           for (; index[1]<iterBounds[1][1]; index[1]++) {
@@ -159,7 +159,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
               int t = index[zctOrder.indexOf('T')];
 
               int planeIndex = FormatTools.getIndex(reader, 0, z, c, t);
-              
+
               success = false;
               while (!success) {
                 try {
@@ -167,7 +167,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
                   else tmpPlane = reader.openPlane(0, planeIndex, tmpPlane, x, y, w, h);
                   success = true;
                 } catch (OutOfMemoryError e) { }
-              } 
+              }
               if (planeSize == -1) planeSize = tmpPlane.getBytes().length;
 
               convertBytes(data, tmpPlane.getBytes(), planesRead);
@@ -183,7 +183,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
       } catch (IOException e) {
         throw new IllegalStateException("Could not open a plane for the given dimensions", e);
       }
-      
+
       return data;
     }
   }
@@ -199,7 +199,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A>
       numEntities *= dimensions[ i ];
     return numEntities;
   }
-  
+
   public abstract void convertBytes(A data, byte[] bytes, int planesRead);
 
   protected Reader reader() {

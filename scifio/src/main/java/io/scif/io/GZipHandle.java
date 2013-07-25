@@ -73,11 +73,11 @@ public class GZipHandle extends StreamHandle {
   public GZipHandle() {
     super();
   }
-  
+
   public GZipHandle(Context context) {
     super(context);
   }
-  
+
   /**
    * Construct a new GZipHandle for the given file.
    *
@@ -111,7 +111,7 @@ public class GZipHandle extends StreamHandle {
   }
 
   // -- IStreamAccess API methods --
-  
+
   /* @see IStreamAccess#setFile(String) */
   public void setFile(String file) throws IOException {
     super.setFile(file);
@@ -129,7 +129,7 @@ public class GZipHandle extends StreamHandle {
     }
 
     setLength(length);
-    
+
     resetStream();
   }
 

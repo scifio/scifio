@@ -60,7 +60,7 @@ import java.io.IOException;
 public interface Checker extends HasFormat {
 
   // -- Checker API methods --
-  
+
   /**
    * Checks if the provided image source is compatible with this {@code Format}.
    * Will not open the source during this process.
@@ -69,7 +69,7 @@ public interface Checker extends HasFormat {
    * @return True if the image source is compatible with this {@code Format}.
    */
   boolean isFormat(String name);
-  
+
   /**
    * Checks if the provided image source is compatible with this {@code Format}.
    * <p>
@@ -93,7 +93,7 @@ public interface Checker extends HasFormat {
    * @throws IOException
    */
   boolean isFormat(RandomAccessInputStream stream) throws IOException;
-  
+
   /**
    * Checks if the given bytes are a valid header for this {@code Format}.
    * 

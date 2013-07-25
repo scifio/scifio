@@ -60,7 +60,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 
   // Disk-backed database for writing
   private DB db;
-  
+
   // List of caches
   private Set<String> caches = new TreeSet<String>();
 
@@ -68,7 +68,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   private long maxCacheSize = Long.MAX_VALUE;
 
   // -- CacheService API Methods --
-  
+
   /**
    * @see io.scifio.io.img.cell.CacheService#clearCache(java.lang.String)
    * <p>
@@ -78,12 +78,12 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
    */
   public void clearCache(String cacheId) {
     if (caches.contains(cacheId)) {
-      
+
       HTreeMap<?, ?> cache = db.getHashMap(cacheId);
       for (Object k : cache.keySet()) {
         ((SCIFIOCell<?>)cache.get(k)).cacheOnFinalize(false);
       }
-      
+
       // ***HACK***
       // Cache clearing is a little funky. size() > 0 does not seem to always
       // follow cache.isEmpty(). This loop guarantees the cache is completely empty
@@ -92,7 +92,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       db.commit();
     }
   }
-  
+
   /*
    * @see io.scif.img.cell.cache.CacheService#clearAllCaches()
    */
@@ -109,14 +109,14 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       caches.remove(cacheId);
     }
   }
-  
+
   /*
    * @see io.scif.io.img.cell.cache.CacheService#addCache(java.lang.String)
    */
   public void addCache(String cacheId) {
     caches.add(cacheId);
   }
-  
+
   /*
    * @see io.scifio.io.img.cell.CacheService#cache(java.lang.String, int, java.io.Serializable)
    */
@@ -124,19 +124,19 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
     boolean success = false;
     object.update();
     if (caches.contains(cacheId) && (cacheAll() || object.dirty())) {
-      
+
       // Check to see if we have the latest version of this cell already
       SCIFIOCell<?> cell = getCell(cacheId, index);
       if (cell != null && cell.equals(object)) return success;
-      
+
       // Store the provided cell
-      
+
       HTreeMap<Object, Object> cache = db.getHashMap(cacheId);
-      
+
       // Will another object fit?
       if ((cache.size() + 1) * object.getElementSize() < maxCacheSize) diskIsFull(false);
       else diskIsFull(true);
-      
+
       // If the cache is enabled and there's room on disk, cache and commit
       if (enabled() && !diskFull()) {
         cache.put(getKey(cacheId, index), object);
@@ -153,22 +153,22 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   public SCIFIOCell<?> retrieve(String cacheId, int index) {
 
     SCIFIOCell<?> cell = getCell(cacheId, index);
-    
+
     if (cell != null) {
       db.getHashMap(cacheId).remove(getKey(cacheId, index));
       db.commit();
     }
-    
+
     return cell;
   }
-  
+
   @Override
   public void setMaxBytesOnDisk(long maxBytes) {
     maxCacheSize = maxBytes;
   }
-  
+
   // -- Service API Methods --
-  
+
   @Override
   public void initialize() {
       db = DBMaker.newTempFileDB()
@@ -178,23 +178,23 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
           .deleteFilesAfterClose()
           .make();
   }
-  
+
   @Override
   public void dispose() {
     clearAllCaches();
     db.close();
   }
-  
+
   // -- Helper Methods --
-    
+
   private SCIFIOCell<?> getCell(String cacheId, int index) {
     Integer key = getKey(cacheId, index);
-    
+
     SCIFIOCell<?> cell = null;
     HTreeMap<?, ?> cache = db.getHashMap(cacheId);
-    
+
     boolean success = false;
-    
+
     // wait for memory to clear and the read to succeed
     while (!success) {
       try {
@@ -204,14 +204,14 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
         success = true;
       } catch (OutOfMemoryError e) { }
     }
-    
+
     if (cell != null) {
       cell.setCacheId(cacheId);
       cell.setIndex(index);
       cell.setService(this);
-      cell.cacheOnFinalize(true); 
+      cell.cacheOnFinalize(true);
     }
-    
+
     return cell;
   }
 }

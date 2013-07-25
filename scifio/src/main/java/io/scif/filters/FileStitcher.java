@@ -76,17 +76,17 @@ import net.imglib2.meta.AxisType;
 public class FileStitcher extends AbstractReaderFilter {
 
   // -- Constants --
-  
+
   public static final double PRIORITY = 3.0;
   public static final String FILTER_VALUE = "io.scif.Reader";
-  
+
   // -- Fields --
 
   /**
    * Cached parent plane
    */
   private Plane parentPlane = null;
-  
+
   /**
    * Whether string ids given should be treated
    * as file patterns rather than single file paths.
@@ -97,7 +97,7 @@ public class FileStitcher extends AbstractReaderFilter {
 
   /** Dimensional axis lengths per file. */
   private int[] sizeZ, sizeC, sizeT;
-  
+
   /** Component lengths for each axis type. */
   private int[][] lenZ, lenC, lenT;
 
@@ -105,7 +105,7 @@ public class FileStitcher extends AbstractReaderFilter {
   private boolean group = true;
 
   private List<ExternalSeries> externals;
-  
+
   // -- Constructors --
 
   /** Constructs a FileStitcher around a new image reader. */
@@ -147,7 +147,7 @@ public class FileStitcher extends AbstractReaderFilter {
     int fno = q[0];
     return getReader(imageIndex, fno);
   }
-  
+
   /**
    * Gets the reader that should be used with the given series and image plane.
    */
@@ -260,7 +260,7 @@ public class FileStitcher extends AbstractReaderFilter {
     patternIds = true;
     return patterns;
   }
-  
+
   // -- AbstractReaderFilter API Methods --
 
   /* lutLength is 0 until a plane is opened */
@@ -276,9 +276,9 @@ public class FileStitcher extends AbstractReaderFilter {
       e.printStackTrace();
     }
   }
-    
+
   // -- Filter API Methods --
-  
+
   /**
    * FileStitcher is only compatible with ByteArray formats.
    */
@@ -313,7 +313,7 @@ public class FileStitcher extends AbstractReaderFilter {
   public Plane openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
   {
-    return openPlaneHelper(imageIndex, planeIndex, 
+    return openPlaneHelper(imageIndex, planeIndex,
         getParent().openPlane(imageIndex, planeIndex, x, y, w, h), null);
 
   }
@@ -328,7 +328,7 @@ public class FileStitcher extends AbstractReaderFilter {
     else getParent().openPlane(imageIndex, planeIndex, parentPlane, x, y, w, h);
     return openPlaneHelper(imageIndex, planeIndex, parentPlane, plane);
   }
-  
+
   /* TODO not sure how this logic ties in
   public Object openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
     throws FormatException, IOException
@@ -389,7 +389,7 @@ public class FileStitcher extends AbstractReaderFilter {
     }
     return list.toArray(new Reader[0]);
   }
-  
+
   /**
    * FileStitcher-specific implementation of {@link FormatTools#getZCTCoords}.
    */
@@ -525,15 +525,15 @@ public class FileStitcher extends AbstractReaderFilter {
     lenT = new int[imageCount][];
 
     // analyze first file; assume each file has the same parameters
-    
+
 //  TODO seems unnecessary?
 //  core = new DefaultMetadata();
-    
+
     //TODO globalMetadata?
-    
+
     List<ImageMetadata> imgMeta = new ArrayList<ImageMetadata>();
 
-    
+
     for (int i=0; i<imageCount; i++) {
       Reader rr = getReader(i, 0);
       Metadata rrMeta = rr.getMetadata();
@@ -544,7 +544,7 @@ public class FileStitcher extends AbstractReaderFilter {
       sizeC[i] = rrMeta.getAxisLength(i, Axes.CHANNEL);
       sizeT[i] = rrMeta.getAxisLength(i, Axes.TIME);
     }
-    
+
 //    TODO seems unnecessary?
 //    core = new DefaultMetadata(imgMeta);
 
@@ -664,9 +664,9 @@ public class FileStitcher extends AbstractReaderFilter {
     int fno = FormatTools.positionToRaster(count, pos);
     DimensionSwapper r = getExternalsReader(sno, fno);
     Metadata datasetMeta = r.getMetadata();
-    
+
     int ino;
-    if (posZ[0] < datasetMeta.getAxisLength(sno, Axes.Z) && 
+    if (posZ[0] < datasetMeta.getAxisLength(sno, Axes.Z) &&
       posC[0] <  datasetMeta.getAxisLength(sno, Axes.CHANNEL) &&
       posT[0] <  datasetMeta.getAxisLength(sno, Axes.TIME))
     {
@@ -690,7 +690,7 @@ public class FileStitcher extends AbstractReaderFilter {
       }
       r.setSource(externals.get(external).getFiles()[fno]);
       List<AxisType> axes = ((DimensionSwapper) getParent()).getInputOrder(imageIndex);
-      
+
       String newOrder = FormatTools.findDimensionOrder(axes.toArray(new AxisType[axes.size()]));
       if ((externals.get(external).getFiles().length > 1 || !c.isOrderCertain(imageIndex)) &&
         (c.getRGBChannelCount(imageIndex) == 1 ||
@@ -704,17 +704,17 @@ public class FileStitcher extends AbstractReaderFilter {
       LOGGER.debug("", e);
     }
   }
-  
+
   public Plane openPlaneHelper(int imageIndex, int planeIndex, Plane parentPlane, Plane plane)
     throws FormatException, IOException
   {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    
+
     if (plane == null || !isCompatible(plane.getClass())) {
       ByteArrayPlane bp = new ByteArrayPlane(parentPlane.getContext());
       bp.populate(parentPlane);
       bp.setData(new byte[parentPlane.getBytes().length]);
-      
+
       plane = bp;
     }
 
@@ -722,8 +722,8 @@ public class FileStitcher extends AbstractReaderFilter {
     Reader r = getReader(imageIndex, pos[0]);
     int ino = pos[1];
 
-    if (ino < r.getMetadata().getPlaneCount(imageIndex)) 
-      return r.openPlane(imageIndex, ino, plane, parentPlane.getxOffset(), 
+    if (ino < r.getMetadata().getPlaneCount(imageIndex))
+      return r.openPlane(imageIndex, ino, plane, parentPlane.getxOffset(),
           parentPlane.getyOffset(), parentPlane.getxLength(), parentPlane.getyLength());
 
     // return a blank image to cover for the fact that
@@ -764,7 +764,7 @@ public class FileStitcher extends AbstractReaderFilter {
       readers[0].setSource(files[0]);
 
       Metadata c = readers[0].getMetadata();
-      
+
       ag = new AxisGuesser(this.pattern, FormatTools.findDimensionOrder(c, 0),
         c.getAxisLength(0, Axes.Z), c.getAxisLength(0, Axes.TIME),
         c.getAxisLength(0, Axes.CHANNEL), c.isOrderCertain(0));

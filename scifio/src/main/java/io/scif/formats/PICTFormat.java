@@ -102,21 +102,21 @@ public class PICTFormat extends AbstractFormat {
       }
     }
   }
-  
+
   // -- Fields --
-  
+
   private boolean legacy;
-  
+
   // -- PICTFormat API --
-  
+
   public void setLegacy(boolean legacy) {
     this.legacy = legacy;
   }
-  
+
   public boolean isLegacy() {
     return legacy;
   }
-  
+
   // -- Format API Methods --
   /*
    * @see io.scif.Format#getFormatName()
@@ -133,7 +133,7 @@ public class PICTFormat extends AbstractFormat {
   }
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -159,7 +159,7 @@ public class PICTFormat extends AbstractFormat {
 
     private boolean legacy = false;
     private Vector<Long> jpegOffsets = new Vector<Long>();
-    
+
     // -- PICTFormat Metadata getters and setters --
 
     public int getRowBytes() {
@@ -209,18 +209,18 @@ public class PICTFormat extends AbstractFormat {
     public void setJpegOffsets(Vector<Long> jpegOffsets) {
       this.jpegOffsets = jpegOffsets;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
-      
+
       if (iMeta.getAxisIndex(Axes.CHANNEL) == -1)
         iMeta.setAxisLength(Axes.CHANNEL, 1);
-      
+
       iMeta.setAxisLength(Axes.Z, 1);
       iMeta.setAxisLength(Axes.TIME, 1);
-      
+
       iMeta.setLittleEndian(false);
       iMeta.setPlaneCount(1);
       iMeta.setFalseColor(false);
@@ -229,7 +229,7 @@ public class PICTFormat extends AbstractFormat {
       iMeta.setPixelType(FormatTools.UINT8);
       iMeta.setBitsPerPixel(8);
       iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) > 1);
-      
+
       iMeta.setIndexed(!iMeta.isRGB() && lookup != null);
     }
 
@@ -246,7 +246,7 @@ public class PICTFormat extends AbstractFormat {
         else jpegOffsets = new Vector<Long>();
       }
     }
-    
+
     // -- HasColorTable API Methods --
 
     public ColorTable getColorTable(int imageIndex, int planeIndex) {
@@ -254,7 +254,7 @@ public class PICTFormat extends AbstractFormat {
     }
 
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -262,7 +262,7 @@ public class PICTFormat extends AbstractFormat {
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- Parser API methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
@@ -273,10 +273,10 @@ public class PICTFormat extends AbstractFormat {
       stream.seek(518);
       short sizeY = stream.readShort();
       short sizeX = stream.readShort();
-      
+
       iMeta.setAxisLength(Axes.X, sizeX);
       iMeta.setAxisLength(Axes.Y, sizeY);
-      
+
       Vector strips = new Vector();
       byte[][] lookup = null;
       boolean versionOne = false;
@@ -331,7 +331,7 @@ public class PICTFormat extends AbstractFormat {
       }
       while (drivePictDecoder(meta, opcode));
     }
-    
+
     // -- Helper methods --
 
     /** Handles the opcodes in the PICT file. */
@@ -392,7 +392,7 @@ public class PICTFormat extends AbstractFormat {
 
       return in.getFilePointer() < in.length();
     }
-    
+
 
     /** Extract the image data in a PICT bitmap structure. */
     private void handleBitmap(Metadata meta, int opcode) throws FormatException, IOException {
@@ -674,21 +674,21 @@ public class PICTFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
 
     // -- Reader API Methods --
-    
+
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
       ByteArrayPlane plane, int x, int y, int w, int h)
       throws FormatException, IOException
@@ -790,6 +790,6 @@ public class PICTFormat extends AbstractFormat {
       }
       return plane;
     }
-    
+
   }
 }

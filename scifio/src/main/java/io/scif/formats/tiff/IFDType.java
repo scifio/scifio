@@ -76,7 +76,7 @@ public enum IFDType implements CodedEnum {
 
   /** Number of bytes per element of this type. */
   private int bytesPerElement;
-  
+
   private static final Map<Integer,IFDType> lookup =
     new HashMap<Integer,IFDType>();
 

@@ -81,7 +81,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
   // -- Fields --
 
   protected IRandomAccess raf;
-  
+
   /** The file name. */
   protected final String file;
 
@@ -90,7 +90,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
   protected long markedPos = -1;
 
   protected String encoding = Constants.ENCODING;
-  
+
   private SCIFIO scifio;
 
   // -- Constructors --
@@ -98,7 +98,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
   protected RandomAccessInputStream(Context context) throws IOException {
     this(context, null, null);
   }
-  
+
   /**
    * Constructs a hybrid RandomAccessFile/DataInputStream
    * around the given file.
@@ -506,7 +506,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
     if (markedPos < 0) throw new IOException("No mark set");
     seek(markedPos);
   }
-  
+
   public String getFileName() {
     return this.file;
   }

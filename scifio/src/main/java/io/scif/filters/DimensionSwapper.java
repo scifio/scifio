@@ -66,18 +66,18 @@ import net.imglib2.meta.AxisType;
   @Attr(name=DimensionSwapper.ENABLED_KEY, value=DimensionSwapper.ENABLED_VAULE)
   })
 public class DimensionSwapper extends AbstractReaderFilter {
-  
+
   // -- Constants --
-  
+
   public static final double PRIORITY = 4.0;
   public static final String FILTER_VALUE = "io.scif.Reader";
-  
+
   // -- Contructor --
-  
+
   public DimensionSwapper() {
     super(DimensionSwapperMetadata.class);
   }
-  
+
   // -- DimensionSwapper API methods --
 
   /**
@@ -96,12 +96,12 @@ public class DimensionSwapper extends AbstractReaderFilter {
     if (newOrder == null) throw new IllegalArgumentException("order is null");
 
     List<AxisType> oldOrder = getDimensionOrder(imageIndex);
-    
+
     if (newOrder.size() != oldOrder.size()) {
       throw new IllegalArgumentException("newOrder is unexpected length: " +
         newOrder.size() + "; expected: " + oldOrder.size());
     }
-    
+
     for(int i=0; i<newOrder.size(); i++) {
       if(!oldOrder.contains(newOrder.get(i)))
         throw new IllegalArgumentException("newOrder specifies different axes");
@@ -121,13 +121,13 @@ public class DimensionSwapper extends AbstractReaderFilter {
     }
 
     //core.currentOrder[series] = order;
-    if (metaCheck() && 
+    if (metaCheck() &&
         !(((DimensionSwapperMetadata)getMetadata()).getOutputOrder() == null)) {
-      ((DimensionSwapperMetadata)getMetadata()).getOutputOrder()[imageIndex] = 
+      ((DimensionSwapperMetadata)getMetadata()).getOutputOrder()[imageIndex] =
           Arrays.asList(getMetadata().getAxes(imageIndex));
     }
-    
-    getMetadata().setAxisTypes(imageIndex, 
+
+    getMetadata().setAxisTypes(imageIndex,
         newOrder.toArray(new AxisType[newOrder.size()]));
   }
 
@@ -143,8 +143,8 @@ public class DimensionSwapper extends AbstractReaderFilter {
    */
   public void setOutputOrder(int imageIndex, List<AxisType> outputOrder) {
     FormatTools.assertId(getCurrentFile(), true, 2);
-    
-    if (metaCheck() && 
+
+    if (metaCheck() &&
         !(((DimensionSwapperMetadata)getMetadata()).getOutputOrder() == null))
       ((DimensionSwapperMetadata)getMetadata()).getOutputOrder()[imageIndex] =
         outputOrder;
@@ -158,7 +158,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
     FormatTools.assertId(getCurrentFile(), true, 2);
     return Arrays.asList(getMetadata().getAxes(imageIndex));
   }
-  
+
   /**
    * Returns the length of a given axis.
    */
@@ -173,23 +173,23 @@ public class DimensionSwapper extends AbstractReaderFilter {
   public List<AxisType> getDimensionOrder(int imageIndex) {
     FormatTools.assertId(getCurrentFile(), true, 2);
     List<AxisType> outOrder = null;
-    
+
     if(metaCheck()) {
       outOrder = ((DimensionSwapperMetadata)getMetadata()).getOutputOrder()[imageIndex];
     }
     if (outOrder != null) return outOrder;
     return getInputOrder(imageIndex);
   }
-  
+
   // -- AbstractReaderFilter API Methods --
-  
+
   /*
    * @see io.scif.filters.AbstractReaderFilter#setSourceHelper()
    */
   @Override
   protected void setSourceHelper(String source) {
     String oldFile = getCurrentFile();
-    if (!source.equals(oldFile) || metaCheck() && 
+    if (!source.equals(oldFile) || metaCheck() &&
         (((DimensionSwapperMetadata)getMetadata()).getOutputOrder() == null ||
         ((DimensionSwapperMetadata)getMetadata()).getOutputOrder().length != getImageCount()))
     {
@@ -202,7 +202,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
         ((DimensionSwapperMetadata)getMetadata()).wrap(getParent().getMetadata());
     }
   }
-  
+
   // -- Reader API methods --
 
   /*
@@ -256,7 +256,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
   }
 
   // -- Helper methods --
-  
+
   /* Reorders the ImageMetadata axes associated with this filter */
   protected int reorder(int imageIndex, int planeIndex) {
     if (getInputOrder(imageIndex) == null) return planeIndex;
@@ -264,7 +264,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
     AxisType[] outputAxes = outputOrder.toArray(new AxisType[outputOrder.size()]);
     List<AxisType> inputOrder = getInputOrder(imageIndex);
     AxisType[] inputAxes = inputOrder.toArray(new AxisType[inputOrder.size()]);
-     
+
     return FormatTools.getReorderedIndex(FormatTools.findDimensionOrder(inputAxes),
       FormatTools.findDimensionOrder(outputAxes), getDimensionLength(imageIndex, Axes.Z),
       getMetadata().getEffectiveSizeC(imageIndex), getDimensionLength(imageIndex, Axes.TIME),
