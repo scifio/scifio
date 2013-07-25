@@ -47,7 +47,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
@@ -68,7 +69,10 @@ public class DefaultLocationService extends AbstractService implements LocationS
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Location.class);
 
-  // -- Static fields --
+  // -- Fields --
+
+  @Parameter
+  private LogService log;
 
   /** Map from given filenames to actual filenames. */
   private HashMap<String, Object> idMap =
@@ -146,7 +150,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
     if (id == null) return;
     if (filename == null) getIdMap().remove(id);
     else getIdMap().put(id, filename);
-    LOGGER.debug("Location.mapId: {} -> {}", id, filename);
+    log.debug("Location.mapId: " + id + " -> " + filename);
   }
 
   /*
@@ -157,7 +161,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
     if (id == null) return;
     if (ira == null) getIdMap().remove(id);
     else getIdMap().put(id, ira);
-    LOGGER.debug("Location.mapFile: {} -> {}", id, ira);
+    log.debug("Location.mapFile: " + id + " -> " + ira);
   }
 
   /*
@@ -220,10 +224,10 @@ public class DefaultLocationService extends AbstractService implements LocationS
   public IRandomAccess getHandle(String id, boolean writable,
     boolean allowArchiveHandles) throws IOException
   {
-    LOGGER.trace("getHandle(id = {}, writable = {})", id, writable);
+    log.trace("getHandle(id = " + id + ", writable = " + writable + ")");
     IRandomAccess handle = getMappedFile(id);
     if (handle == null) {
-      LOGGER.trace("no handle was mapped for this ID");
+      log.trace("no handle was mapped for this ID");
       String mapId = getMappedId(id);
 
       final List<PluginInfo<IStreamAccess>> streamInfos =
@@ -245,7 +249,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
         handle = new NIOFileHandle(mapId, writable ? "rw" : "r");
 
     }
-    LOGGER.trace("Location.getHandle: {} -> {}", id, handle);
+    log.trace("Location.getHandle: " + id + " -> " + handle);
     return handle;
   }
 
