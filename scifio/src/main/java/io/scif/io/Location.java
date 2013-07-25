@@ -80,12 +80,12 @@ public class Location extends AbstractSCIFIOComponent {
 
   public Location(Context context, String pathname) {
     this(context);
-    LOGGER.trace("Location({})", pathname);
+    log().trace("Location(" + pathname + ")");
     try {
       url = new URL(scifio().location().getMappedId(pathname));
     }
     catch (MalformedURLException e) {
-      LOGGER.trace("Location is not a URL", e);
+      log().trace("Location is not a URL", e);
       isURL = false;
     }
     if (!isURL) file =
@@ -94,7 +94,7 @@ public class Location extends AbstractSCIFIOComponent {
 
   public Location(Context context, File file) {
     this(context);
-    LOGGER.trace("Location({})", file);
+    log().trace("Location(" + file + ")");
     isURL = false;
     this.file = file;
   }
@@ -151,7 +151,7 @@ public class Location extends AbstractSCIFIOComponent {
         }
       }
       catch (IOException e) {
-        LOGGER.trace("Could not retrieve directory listing", e);
+        log().trace("Could not retrieve directory listing", e);
         return null;
       }
     }
@@ -270,7 +270,7 @@ public class Location extends AbstractSCIFIOComponent {
         return true;
       }
       catch (IOException e) {
-        LOGGER.trace("Failed to retrieve content from URL", e);
+        log().trace("Failed to retrieve content from URL", e);
         return false;
       }
     }
@@ -403,7 +403,7 @@ public class Location extends AbstractSCIFIOComponent {
         return url.openConnection().getLastModified();
       }
       catch (IOException e) {
-        LOGGER.trace("Could not determine URL's last modification time", e);
+        log().trace("Could not determine URL's last modification time", e);
         return 0;
       }
     }
@@ -420,7 +420,7 @@ public class Location extends AbstractSCIFIOComponent {
         return url.openConnection().getContentLength();
       }
       catch (IOException e) {
-        LOGGER.trace("Could not determine URL's content length", e);
+        log().trace("Could not determine URL's content length", e);
         return 0;
       }
     }
