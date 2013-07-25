@@ -59,6 +59,6 @@ public interface HasSCIFIO extends Contextual {
    * 
    * @return The cached SCIFIO instance.
    */
-  public SCIFIO scifio();
+  SCIFIO scifio();
 
 }
