@@ -56,7 +56,7 @@ import java.io.IOException;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class PackbitsCodec extends BaseCodec {
+public class PackbitsCodec extends AbstractCodec {
 
   /* @see Codec#compress(byte[], CodecOptions) */
   public byte[] compress(byte[] data, CodecOptions options)

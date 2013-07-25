@@ -53,7 +53,7 @@ import java.io.IOException;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class Base64Codec extends BaseCodec {
+public class Base64Codec extends AbstractCodec {
 
   // Base64 alphabet and codes
 

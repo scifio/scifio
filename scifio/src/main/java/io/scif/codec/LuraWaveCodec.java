@@ -62,7 +62,7 @@ import java.io.IOException;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  */
-public class LuraWaveCodec extends BaseCodec {
+public class LuraWaveCodec extends AbstractCodec {
 
   // -- Fields --
 

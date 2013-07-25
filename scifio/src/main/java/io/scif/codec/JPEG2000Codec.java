@@ -65,7 +65,7 @@ import org.scijava.Context;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/JPEG2000Codec.java;hb=HEAD">Gitweb</a></dd></dl>
  * </dl>
  */
-public class JPEG2000Codec extends BaseCodec {
+public class JPEG2000Codec extends AbstractCodec {
 
   // -- Fields --
 

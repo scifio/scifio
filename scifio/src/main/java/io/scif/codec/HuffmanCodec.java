@@ -53,7 +53,7 @@ import java.util.HashMap;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class HuffmanCodec extends BaseCodec {
+public class HuffmanCodec extends AbstractCodec {
 
   // -- Constants --
 

@@ -54,7 +54,7 @@ import java.util.Vector;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class LosslessJPEGCodec extends BaseCodec {
+public class LosslessJPEGCodec extends AbstractCodec {
 
   // -- Constants --
 

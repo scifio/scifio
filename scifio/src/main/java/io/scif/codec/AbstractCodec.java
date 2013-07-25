@@ -61,12 +61,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Eric Kjellman egkjellman at wisc.edu
  */
-public abstract class BaseCodec extends AbstractContextual implements Codec {
+public abstract class AbstractCodec extends AbstractContextual implements Codec {
 
   // -- Constants --
 
   protected static final Logger LOGGER =
-    LoggerFactory.getLogger(BaseCodec.class);
+    LoggerFactory.getLogger(AbstractCodec.class);
 
   // -- BaseCodec API methods --
 

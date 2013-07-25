@@ -54,7 +54,7 @@ import java.util.zip.InflaterInputStream;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class ZlibCodec extends BaseCodec {
+public class ZlibCodec extends AbstractCodec {
 
   /* @see Codec#compress(byte[], CodecOptions) */
   public byte[] compress(byte[] data, CodecOptions options)
