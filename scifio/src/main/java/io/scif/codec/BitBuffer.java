@@ -38,6 +38,8 @@ package io.scif.codec;
 
 import java.util.Random;
 
+import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,6 +197,8 @@ public class BitBuffer {
    * @param args Ignored.
    */
   public static void main(String[] args) {
+    final LogService log = new StderrLogService();
+
     int trials = 50000;
     int[] nums = new int[trials];
     int[] len = new int[trials];
@@ -202,8 +206,8 @@ public class BitBuffer {
     int totallen = 0;
 
     Random r = new Random();
-    LOGGER.info("Generating {} trials.", trials);
-    LOGGER.info("Writing to byte array");
+    log.info("Generating " + trials + " trials.");
+    log.info("Writing to byte array");
     // we want the trials to be able to be all possible bit lengths.
     // r.nextInt() by itself is not sufficient... in 50000 trials it would be
     // extremely unlikely to produce bit strings of 1 bit.
@@ -224,15 +228,15 @@ public class BitBuffer {
     }
     BitBuffer bb = new BitBuffer(bw.toByteArray());
     int readint;
-    LOGGER.info("Reading from BitBuffer");
+    log.info("Reading from BitBuffer");
     // Randomly skip or read bytes
     for (int i = 0; i < trials; i++) {
       int c = r.nextInt(100);
       if (c > 50) {
         readint = bb.getBits(len[i]);
         if (readint != nums[i]) {
-          LOGGER.info("Error at #{}: {} received, {} expected.",
-            new Object[] {i, readint, nums[i]});
+          log.info("Error at #" + i + ": " +
+            readint + " received, " + nums[i] + " expected.");
         }
       }
       else {
@@ -240,13 +244,13 @@ public class BitBuffer {
       }
     }
     // Test reading past end of buffer.
-    LOGGER.info("Testing end of buffer");
+    log.info("Testing end of buffer");
     bb = new BitBuffer(bw.toByteArray());
     // The total length could be mid byte. Add one byte to test.
     bb.skipBits(totallen + 8);
     int read = bb.getBits(1);
     if (-1 != read) {
-      LOGGER.info("-1 expected at end of buffer, {} received.", read);
+      log.info("-1 expected at end of buffer, " + read + " received.");
     }
   }
 }

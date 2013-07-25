@@ -48,8 +48,8 @@ import java.awt.image.ImageProducer;
 import java.io.IOException;
 import java.util.Hashtable;
 
-
 import org.scijava.Context;
+import org.scijava.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +71,7 @@ public class JPEGTileDecoder {
   private TileConsumer consumer;
   private TileCache tiles;
   private RandomAccessInputStream in;
+  private LogService log;
 
   // -- JPEGTileDecoder API methods --
 
@@ -79,7 +80,7 @@ public class JPEGTileDecoder {
       initialize(ctx, new RandomAccessInputStream(ctx, id), imageWidth);
     }
     catch (IOException e) {
-      LOGGER.debug("", e);
+      log.debug("", e);
     }
   }
 
@@ -91,6 +92,7 @@ public class JPEGTileDecoder {
     int imageWidth)
   {
     this.in = in;
+    log = ctx.getService(LogService.class);
     tiles = new TileCache(ctx, y, h);
 
     // pre-process the stream to make sure that the
@@ -151,10 +153,10 @@ public class JPEGTileDecoder {
       return tiles.get(0, y, consumer.getWidth(), 1);
     }
     catch (FormatException e) {
-      LOGGER.debug("", e);
+      log.debug("", e);
     }
     catch (IOException e) {
-      LOGGER.debug("", e);
+      log.debug("", e);
     }
     return null;
   }
@@ -174,7 +176,7 @@ public class JPEGTileDecoder {
       }
     }
     catch (IOException e) {
-      LOGGER.debug("", e);
+      log.debug("", e);
     }
     tiles = null;
     consumer = null;
@@ -222,8 +224,8 @@ public class JPEGTileDecoder {
     public void setPixels(int x, int y, int w, int h, ColorModel model,
       byte[] pixels, int off, int scanSize)
     {
-      LOGGER.debug("Storing row {} of {} ({}%)", new Object[] {y, height,
-        ((double) y / height) * 100.0});
+      final double percent = ((double) y / height) * 100.0;
+      log.debug("Storing row " + y + " of " + height + " (" + percent + "%)");
       if (y >= (yy + hh)) {
         imageComplete(0);
         return;
@@ -233,18 +235,19 @@ public class JPEGTileDecoder {
         tiles.add(pixels, x, y, w, h);
       }
       catch (FormatException e) {
-        LOGGER.debug("", e);
+        log.debug("", e);
       }
       catch (IOException e) {
-        LOGGER.debug("", e);
+        log.debug("", e);
       }
     }
 
     public void setPixels(int x, int y, int w, int h, ColorModel model,
       int[] pixels, int off, int scanSize)
     {
-      LOGGER.debug("Storing row {} of {} ({}%)", new Object[] {y, (yy + hh),
-        ((double) y / (yy + hh)) * 100.0});
+      final double percent = ((double) y / (yy + hh)) * 100.0;
+      log.debug("Storing row " + y + " of " +
+        (yy + hh) + " (" + percent + "%)");
       if (y >= (yy + hh)) {
         imageComplete(0);
         return;
@@ -254,10 +257,10 @@ public class JPEGTileDecoder {
         tiles.add(pixels, x, y, w, h);
       }
       catch (FormatException e) {
-        LOGGER.debug("", e);
+        log.debug("", e);
       }
       catch (IOException e) {
-        LOGGER.debug("", e);
+        log.debug("", e);
       }
     }
 
