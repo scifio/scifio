@@ -44,6 +44,7 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * Decompresses lossless JPEG images.
@@ -54,6 +55,7 @@ import java.util.Vector;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
+@Plugin(type = Codec.class)
 public class LosslessJPEGCodec extends AbstractCodec {
 
   // -- Constants --

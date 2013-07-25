@@ -50,7 +50,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-
+import org.scijava.plugin.Plugin;
 
 /**
  * This class implements JPEG compression and decompression.
@@ -59,6 +59,7 @@ import javax.imageio.ImageIO;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/JPEGCodec.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/JPEGCodec.java;hb=HEAD">Gitweb</a></dd></dl>
  */
+@Plugin(type = Codec.class)
 public class JPEGCodec extends AbstractCodec {
 
   /**

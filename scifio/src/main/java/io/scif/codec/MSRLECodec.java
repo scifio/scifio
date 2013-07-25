@@ -42,6 +42,7 @@ import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * Methods for compressing and decompressing data using Microsoft RLE.
@@ -50,6 +51,7 @@ import java.io.IOException;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/MSRLECodec.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/MSRLECodec.java;hb=HEAD">Gitweb</a></dd></dl>
  */
+@Plugin(type = Codec.class)
 public class MSRLECodec extends AbstractCodec {
 
   /* @see Codec#compress(byte[], CodecOptions) */

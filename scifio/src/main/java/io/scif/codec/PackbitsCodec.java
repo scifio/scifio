@@ -44,7 +44,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-
+import org.scijava.plugin.Plugin;
 
 /**
  * This class implements packbits decompression. Compression is not yet
@@ -56,6 +56,7 @@ import java.io.IOException;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
+@Plugin(type = Codec.class)
 public class PackbitsCodec extends AbstractCodec {
 
   /* @see Codec#compress(byte[], CodecOptions) */

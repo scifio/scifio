@@ -53,8 +53,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-
 import org.scijava.Context;
+import org.scijava.plugin.Plugin;
 
 /**
  * This class implements JPEG 2000 compression and decompression.
@@ -65,6 +65,7 @@ import org.scijava.Context;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/JPEG2000Codec.java;hb=HEAD">Gitweb</a></dd></dl>
  * </dl>
  */
+@Plugin(type = Codec.class)
 public class JPEG2000Codec extends AbstractCodec {
 
   // -- Fields --

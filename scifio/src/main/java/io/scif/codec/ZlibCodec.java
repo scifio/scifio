@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.util.zip.Deflater;
 import java.util.zip.InflaterInputStream;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * This class implements ZLIB decompression.
@@ -54,6 +55,7 @@ import java.util.zip.InflaterInputStream;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
+@Plugin(type = Codec.class)
 public class ZlibCodec extends AbstractCodec {
 
   /* @see Codec#compress(byte[], CodecOptions) */

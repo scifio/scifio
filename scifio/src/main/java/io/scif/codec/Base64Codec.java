@@ -41,6 +41,7 @@ import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * Implements encoding (compress) and decoding (decompress) methods
@@ -53,6 +54,7 @@ import java.io.IOException;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
+@Plugin(type = Codec.class)
 public class Base64Codec extends AbstractCodec {
 
   // Base64 alphabet and codes

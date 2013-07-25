@@ -42,6 +42,7 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * This is an optimized LZW codec for use with TIFF files.
@@ -84,6 +85,7 @@ import java.util.Arrays;
  *
  * @author Mikhail Kovtun mikhail.kovtun at duke.edu
  */
+@Plugin(type = Codec.class)
 public class LZWCodec extends AbstractCodec {
 
   /**

@@ -43,6 +43,7 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * This class implements Huffman decoding.
@@ -53,6 +54,7 @@ import java.util.HashMap;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
+@Plugin(type = Codec.class)
 public class HuffmanCodec extends AbstractCodec {
 
   // -- Constants --
