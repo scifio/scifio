@@ -75,7 +75,7 @@ public class CacheServiceTest {
   // -- Constants --
   
   // max time, in ms, to wait for cache
-  private static final long TIMEOUT = 10000l;
+  private static final long TIMEOUT = 15000l;
   
   // -- Fields --
   
@@ -283,7 +283,7 @@ public class CacheServiceTest {
     assertEquals(CacheResult.DISK_FULL, cs.cache(cache1.toString(), 1, cell2));
   
     // Verify the first cell was cached and the second cell wasn't
-    assertEquals(cell1, cs.retrieve(cache1.toString(), 0));
+    assertEquals(cell1, cs.retrieveNoRecache(cache1.toString(), 0));
     assertNull(cs.retrieve(cache1.toString(), 1));
     
     // Re-cache cell 1

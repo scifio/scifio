@@ -55,7 +55,7 @@ import org.scijava.service.Service;
  */
 @Plugin(type = Service.class)
 public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
-
+	
   // -- Fields --
 	
   // Disk-backed database for writing
@@ -78,17 +78,15 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
    */
   public void clearCache(String cacheId) {
     if (caches.contains(cacheId)) {
-      
       HTreeMap<?, ?> cache = db.getHashMap(cacheId);
+      
+      // Disable re-caching in all cells of this cache and remove them.
       for (Object k : cache.keySet()) {
-        ((SCIFIOCell<?>)cache.get(k)).cacheOnFinalize(false);
+      	SCIFIOCell<?> cell = getCellFromCache(cache, (Integer) k);
+      	cell.cacheOnFinalize(false);
+      	cache.remove(k);
       }
       
-      // ***HACK***
-      // Cache clearing is a little funky. size() > 0 does not seem to always
-      // follow cache.isEmpty(). This loop guarantees the cache is completely empty
-      // before this method closes.
-      while(cache.size() > 0) { cache.clear(); }
       db.commit();
     }
   }
@@ -122,7 +120,6 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
    */
   public CacheResult cache(String cacheId, int index, SCIFIOCell<?> object) {
     object.update();
-    
     if (!(cacheAll() || object.dirty())) {
     	return CacheResult.NOT_DIRTY;
     }
@@ -152,6 +149,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       else {
         cache.put(getKey(cacheId, index), object);
         db.commit();
+        object.cacheOnFinalize(false);
       }
     }
     return CacheResult.SUCCESS;
@@ -167,6 +165,20 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
     if (cell != null) {
       db.getHashMap(cacheId).remove(getKey(cacheId, index));
       db.commit();
+    }
+    
+    return cell;
+  }
+  
+  /*
+   * @see io.scifio.io.img.cell.CacheService#get(java.lang.String, int)
+   */
+  public SCIFIOCell<?> retrieveNoRecache(String cacheId, int index) {
+
+    SCIFIOCell<?> cell = retrieve(cacheId, index);
+    
+    if (cell != null) {
+    	cell.cacheOnFinalize(false);
     }
     
     return cell;
@@ -200,9 +212,22 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   private SCIFIOCell<?> getCell(String cacheId, int index) {
     Integer key = getKey(cacheId, index);
     
-    SCIFIOCell<?> cell = null;
     HTreeMap<?, ?> cache = db.getHashMap(cacheId);
     
+    SCIFIOCell<?> cell = getCellFromCache(cache, key);
+    
+    if (cell != null) {
+      cell.setCacheId(cacheId);
+      cell.setIndex(index);
+      cell.setService(this);
+      cell.cacheOnFinalize(true); 
+    }
+    
+    return cell;
+  }
+  
+  private SCIFIOCell<?> getCellFromCache(HTreeMap<?, ?> cache, int key) {
+    SCIFIOCell<?> cell = null;
     boolean success = false;
     
     // wait for memory to clear and the read to succeed
@@ -214,14 +239,6 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
         success = true;
       } catch (OutOfMemoryError e) { }
     }
-    
-    if (cell != null) {
-      cell.setCacheId(cacheId);
-      cell.setIndex(index);
-      cell.setService(this);
-      cell.cacheOnFinalize(true); 
-    }
-    
     return cell;
   }
 }

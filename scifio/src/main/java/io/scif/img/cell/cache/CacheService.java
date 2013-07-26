@@ -89,12 +89,30 @@ public interface CacheService<T extends Serializable> extends Service {
   /**
    * Removes and returns the object at the desired
    * index from the specified index.
+   * <p>
+   * NB: the cell returned from this method 
+   * will automatically attempt to re-cache itself
+   * when finalized. To disable this feature,
+   * use {@link #retrieveNoRecache(String, int)}.
+   * </p>
    * 
    * @param cacheId - Cache the desired object belongs to
    * @param index - Index in the cache of the desired object
    * @return The cached object for the specified id and index
    */
   T retrieve(String cacheId, int index);
+  
+  /**
+   * Removes and returns the object at the desired
+   * index from the specified index and disable
+   * that cell's automatic re-caching. Useful for
+   * anonymous retrieval.
+   * 
+   * @param cacheId - Cache the desired object belongs to
+   * @param index - Index in the cache of the desired object
+   * @return The cached object for the specified id and index
+   */
+  T retrieveNoRecache(String cacheId, int index);
   
   /**
    * @param cacheId - Cache the desired object belongs to
