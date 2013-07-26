@@ -78,13 +78,13 @@ public class TiffSaver extends AbstractContextual {
   // -- Fields --
 
   /** Output stream to use when saving TIFF data. */
-  protected RandomAccessOutputStream out;
+  private RandomAccessOutputStream out;
 
   /** Output filename. */
-  protected String filename;
+  private String filename;
 
   /** Output bytes. */
-  protected ByteArrayHandle bytes;
+  private ByteArrayHandle bytes;
 
   /** Whether or not to write BigTIFF data. */
   private boolean bigTiff = false;
