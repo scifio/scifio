@@ -51,8 +51,8 @@ supporting hundreds of additional proprietary formats.
 For users
 ---------
 
-[ImageJ2](http://developer.imagej.net/) is a leading adopter of SCIFIO. Additionally,
-any product that uses Bio-Formats will support SCIFIO plugins as well.
+[ImageJ2](https://github.com/imagej/imagej) and
+[Fiji](https://github.com/fiji/fiji) use SCIFIO for image I/O.
 
 
 For developers
