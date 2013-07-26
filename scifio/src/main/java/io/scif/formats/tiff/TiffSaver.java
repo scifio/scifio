@@ -51,9 +51,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 
-
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
+import org.scijava.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +93,8 @@ public class TiffSaver extends AbstractContextual {
   /** The codec options if set. */
   private CodecOptions options;
 
+  private LogService log;
+
   // -- Constructors --
 
   /**
@@ -122,6 +124,7 @@ public class TiffSaver extends AbstractContextual {
     this.out = out;
     this.filename = filename;
     setContext(ctx);
+    log = ctx.getService(LogService.class);
   }
 
   /**
@@ -279,7 +282,7 @@ public class TiffSaver extends AbstractContextual {
       boolean copyDirectly)
   throws FormatException, IOException
   {
-    LOGGER.debug("Attempting to write image.");
+    log.debug("Attempting to write image.");
     //b/c method is public should check parameters again
     if (buf == null) {
       throw new FormatException("Image data cannot be null");
@@ -381,8 +384,8 @@ public class TiffSaver extends AbstractContextual {
       codecOptions.channels = interleaved ? nChannels : 1;
 
       strips[strip] = compression.compress(strips[strip], codecOptions);
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(String.format("Compressed strip %d/%d length %d",
+      if (log.isDebug()) {
+        log.debug(String.format("Compressed strip %d/%d length %d",
             strip + 1, nStrips, strips[strip].length));
       }
     }
@@ -409,7 +412,7 @@ public class TiffSaver extends AbstractContextual {
   private void writeImageIFD(IFD ifd, int no, byte[][] strips,
       int nChannels, boolean last, int x, int y)
   throws FormatException, IOException {
-    LOGGER.debug("Attempting to write image IFD.");
+    log.debug("Attempting to write image IFD.");
     int tilesPerRow = (int) ifd.getTilesPerRow();
     int tilesPerColumn = (int) ifd.getTilesPerColumn();
     boolean interleaved = ifd.getPlanarConfiguration() == 1;
@@ -430,11 +433,11 @@ public class TiffSaver extends AbstractContextual {
       try {
         TiffParser parser = new TiffParser(getContext(), in);
         long[] ifdOffsets = parser.getIFDOffsets();
-        LOGGER.debug("IFD offsets: {}", Arrays.toString(ifdOffsets));
+        log.debug("IFD offsets: " + Arrays.toString(ifdOffsets));
         if (no < ifdOffsets.length) {
           out.seek(ifdOffsets[no]);
-          LOGGER.debug("Reading IFD from {} in non-sequential write.",
-              ifdOffsets[no]);
+          log.debug("Reading IFD from " +
+            ifdOffsets[no] + " in non-sequential write.");
           ifd = parser.getIFD(ifdOffsets[no]);
         }
       }
@@ -501,8 +504,8 @@ public class TiffSaver extends AbstractContextual {
       int thisOffset = firstOffset + i;
       offsets.set(thisOffset, out.getFilePointer());
       byteCounts.set(thisOffset, new Long(strips[i].length));
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(String.format(
+      if (log.isDebug()) {
+        log.debug(String.format(
             "Writing tile/strip %d/%d size: %d offset: %d",
             thisOffset + 1, totalTiles, byteCounts.get(thisOffset),
             offsets.get(thisOffset)));
@@ -518,21 +521,21 @@ public class TiffSaver extends AbstractContextual {
       ifd.putIFDValue(IFD.STRIP_OFFSETS, toPrimitiveArray(offsets));
     }
     long endFP = out.getFilePointer();
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Offset before IFD write: {} Seeking to: {}",
-          out.getFilePointer(), fp);
+    if (log.isDebug()) {
+      log.debug("Offset before IFD write: " +
+        out.getFilePointer() + " Seeking to: " + fp);
     }
     out.seek(fp);
 
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Writing tile/strip offsets: {}",
+    if (log.isDebug()) {
+      log.debug("Writing tile/strip offsets: " +
           Arrays.toString(toPrimitiveArray(offsets)));
-      LOGGER.debug("Writing tile/strip byte counts: {}",
+      log.debug("Writing tile/strip byte counts: " +
           Arrays.toString(toPrimitiveArray(byteCounts)));
     }
     writeIFD(ifd, last ? 0 : endFP);
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Offset after IFD write: {}", out.getFilePointer());
+    if (log.isDebug()) {
+      log.debug("Offset after IFD write: " + out.getFilePointer());
     }
   }
 
@@ -751,8 +754,8 @@ public class TiffSaver extends AbstractContextual {
   {
     if (raf == null)
       throw new FormatException("Output cannot be null");
-    LOGGER.debug("overwriteIFDValue (ifd={}; tag={}; value={})",
-      new Object[] {ifd, tag, value});
+    log.debug("overwriteIFDValue (ifd=" + ifd +
+      "; tag=" + tag + "; value=" + value + ")");
 
     raf.seek(0);
     TiffParser parser = new TiffParser(getContext(), raf);
@@ -817,33 +820,33 @@ public class TiffSaver extends AbstractContextual {
           newCount = ifdBuf.readInt();
           newOffset = ifdBuf.readInt();
         }
-        LOGGER.debug("overwriteIFDValue:");
-        LOGGER.debug("\told ({});", entry);
-        LOGGER.debug("\tnew: (tag={}; type={}; count={}; offset={})",
-          new Object[] {newTag, newType, newCount, newOffset});
+        log.debug("overwriteIFDValue:");
+        log.debug("\told (" + entry + ");");
+        log.debug("\tnew: (tag=" + newTag + "; type=" + newType +
+          "; count=" + newCount + "; offset=" + newOffset + ")");
 
         // determine the best way to overwrite the old entry
         if (extraBuf.length() == 0) {
           // new entry is inline; if old entry wasn't, old data is orphaned
           // do not override new offset value since data is inline
-          LOGGER.debug("overwriteIFDValue: new entry is inline");
+          log.debug("overwriteIFDValue: new entry is inline");
         }
         else if (entry.getValueOffset() + entry.getValueCount() *
           entry.getType().getBytesPerElement() == raf.length())
         {
           // old entry was already at EOF; overwrite it
           newOffset = entry.getValueOffset();
-          LOGGER.debug("overwriteIFDValue: old entry is at EOF");
+          log.debug("overwriteIFDValue: old entry is at EOF");
         }
         else if (newCount <= entry.getValueCount()) {
           // new entry is as small or smaller than old entry; overwrite it
           newOffset = entry.getValueOffset();
-          LOGGER.debug("overwriteIFDValue: new entry is <= old entry");
+          log.debug("overwriteIFDValue: new entry is <= old entry");
         }
         else {
           // old entry was elsewhere; append to EOF, orphaning old entry
           newOffset = raf.length();
-          LOGGER.debug("overwriteIFDValue: old entry will be orphaned");
+          log.debug("overwriteIFDValue: old entry will be orphaned");
         }
 
         // overwrite old entry
