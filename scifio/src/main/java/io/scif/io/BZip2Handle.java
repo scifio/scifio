@@ -43,8 +43,8 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-
 import org.scijava.Context;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -108,7 +108,8 @@ public class BZip2Handle extends StreamHandle {
     while (skipped < 2) {
       skipped += bis.skip(2 - skipped);
     }
-    setStream(new DataInputStream(new CBZip2InputStream(bis)));
+    LogService log = getContext().getService(LogService.class);
+    setStream(new DataInputStream(new CBZip2InputStream(bis, log)));
   }
 
   // -- IStreamAccess API methods --

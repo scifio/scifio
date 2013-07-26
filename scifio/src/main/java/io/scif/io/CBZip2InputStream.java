@@ -64,8 +64,7 @@ import io.scif.common.CRC;
 import java.io.IOException;
 import java.io.InputStream;
 
-
-
+import org.scijava.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,12 +160,12 @@ public class CBZip2InputStream extends InputStream {
   private static final Logger LOGGER =
     LoggerFactory.getLogger(CBZip2InputStream.class);
 
-  private static void reportCRCError() {
+  private void reportCRCError() {
     // The clean way would be to throw an exception.
     //throw new IOException("crc error");
 
     // Just print a message, like the previous versions of this class did
-    LOGGER.error("BZip2 CRC error");
+    log.error("BZip2 CRC error");
   }
 
   private void makeMaps() {
@@ -207,6 +206,8 @@ public class CBZip2InputStream extends InputStream {
   private int nInUse;
 
   private InputStream in;
+
+  private LogService log;
 
   private int currentChar = -1;
 
@@ -257,10 +258,13 @@ public class CBZip2InputStream extends InputStream {
    * @throws NullPointerException
    *   if <tt>in == null</tt>
    */
-  public CBZip2InputStream(final InputStream in) throws IOException {
+  public CBZip2InputStream(final InputStream in, final LogService log)
+    throws IOException
+  {
     super();
 
     this.in = in;
+    this.log = log;
     init();
   }
 
