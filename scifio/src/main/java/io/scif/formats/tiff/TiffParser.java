@@ -100,7 +100,6 @@ public class TiffParser extends AbstractContextual {
   /** Cached first IFD in the current file. */
   private IFD firstIFD;
 
-  private int ifdCount = 0;
 
   /** Codec options to be used when decoding compressed pixel data. */
   private CodecOptions codecOptions = CodecOptions.getDefaultOptions();
@@ -319,7 +318,6 @@ public class TiffParser extends AbstractContextual {
     for (int i=0; i<f.length; i++) {
       f[i] = offsets.get(i).longValue();
     }
-    ifdCount = f.length;
 
     return f;
   }
