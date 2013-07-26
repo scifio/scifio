@@ -39,9 +39,10 @@ The SCIFIO core includes support for:
 * PIC
 * Zipped images
 
-Additionally, [Bio-Formats](http://www.openmicroscopy.org/site/products/bio-formats)
-is available as a SCIFIO plug-in for supporting hundreds of additional proprietary
-formats.
+Additionally,
+[Bio-Formats](http://www.openmicroscopy.org/site/products/bio-formats) is
+[available as a SCIFIO plug-in](https://github.com/scifio/scifio-bf-compat) for
+supporting hundreds of additional proprietary formats.
 
 For users
 ---------
