@@ -49,9 +49,9 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Vector;
 
-
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
+import org.scijava.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +100,7 @@ public class TiffParser extends AbstractContextual {
   /** Cached first IFD in the current file. */
   private IFD firstIFD;
 
+  private LogService log;
 
   /** Codec options to be used when decoding compressed pixel data. */
   private CodecOptions codecOptions = CodecOptions.getDefaultOptions();
@@ -114,6 +115,7 @@ public class TiffParser extends AbstractContextual {
   /** Constructs a new TIFF parser from the given input source. */
   public TiffParser(Context context, RandomAccessInputStream in) {
     setContext(context);
+    log = context.getService(LogService.class);
     this.in = in;
     doCaching = true;
     try {
@@ -387,10 +389,10 @@ public class TiffParser extends AbstractContextual {
     ifd.put(new Integer(IFD.BIG_TIFF), new Boolean(bigTiff));
 
     // read in directory entries for this IFD
-    LOGGER.trace("getIFDs: seeking IFD at {}", offset);
+    log.trace("getIFDs: seeking IFD at " + offset);
     in.seek(offset);
     long numEntries = bigTiff ? in.readLong() : in.readUnsignedShort();
-    LOGGER.trace("getIFDs: {} directory entries to read", numEntries);
+    log.trace("getIFDs: " + numEntries + " directory entries to read");
     if (numEntries == 0 || numEntries == 1) return ifd;
 
     int bytesPerEntry = bigTiff ?
@@ -405,7 +407,7 @@ public class TiffParser extends AbstractContextual {
         entry = readTiffIFDEntry();
       }
       catch (EnumException e) {
-        LOGGER.debug("", e);
+        log.debug("", e);
       }
       if (entry == null) break;
       int count = entry.getValueCount();
@@ -424,8 +426,8 @@ public class TiffParser extends AbstractContextual {
       if (count * bpe + pointer > inputLen) {
         int oldCount = count;
         count = (int) ((inputLen - pointer) / bpe);
-        LOGGER.trace("getIFDs: truncated {} array elements for tag {}",
-          (oldCount - count), tag);
+        log.trace("getIFDs: truncated " + (oldCount - count) +
+          " array elements for tag " + tag);
         if (count < 0) count = oldCount;
       }
       if (count < 0 || count > in.length()) break;
@@ -467,8 +469,8 @@ public class TiffParser extends AbstractContextual {
     int count = entry.getValueCount();
     long offset = entry.getValueOffset();
 
-    LOGGER.trace("Reading entry {} from {}; type={}, count={}",
-      new Object[] {entry.getTag(), offset, type, count});
+    log.trace("Reading entry " + entry.getTag() + " from " + offset +
+      "; type=" + type + ", count=" + count);
 
     if (offset >= in.length()) {
       return null;
@@ -682,7 +684,8 @@ public class TiffParser extends AbstractContextual {
     }
     byte[] tile = new byte[(int) stripByteCounts[countIndex]];
 
-    LOGGER.debug("Reading tile Length {} Offset {}", tile.length, stripOffset);
+    log.debug("Reading tile Length " +
+      tile.length + " Offset " + stripOffset);
     in.seek(stripOffset);
     in.read(tile);
 
@@ -744,7 +747,7 @@ public class TiffParser extends AbstractContextual {
     long width, long height, int overlapX, int overlapY)
     throws FormatException, IOException
   {
-    LOGGER.trace("parsing IFD entries");
+    log.trace("parsing IFD entries");
 
     // get internal non-IFD entries
     boolean littleEndian = ifd.isLittleEndian();
@@ -755,7 +758,7 @@ public class TiffParser extends AbstractContextual {
     long tileWidth = ifd.getTileWidth();
     long tileLength = ifd.getTileLength();
     if (tileLength <= 0) {
-      LOGGER.trace("Tile length is {}; setting it to {}", tileLength, height);
+      log.trace("Tile length is " + tileLength + "; setting it to " + height);
       tileLength = height;
     }
 
@@ -767,7 +770,7 @@ public class TiffParser extends AbstractContextual {
     int pixel = ifd.getBytesPerSample()[0];
     int effectiveChannels = planarConfig == 2 ? 1 : samplesPerPixel;
 
-    if (LOGGER.isTraceEnabled()) {
+    if (log.isTrace()) {
       ifd.printIFD();
     }
 
@@ -788,8 +791,8 @@ public class TiffParser extends AbstractContextual {
     int numSamples = (int) (width * height);
 
     // read in image strips
-    LOGGER.trace("reading image data (samplesPerPixel={}; numSamples={})",
-      samplesPerPixel, numSamples);
+    log.trace("reading image data (samplesPerPixel=" +
+      samplesPerPixel + "; numSamples=" + numSamples + ")");
 
     TiffCompression compression = ifd.getCompression();
 
@@ -946,7 +949,7 @@ public class TiffParser extends AbstractContextual {
        entryType = IFDType.get(in.readUnsignedShort());
     }
     catch (EnumException e) {
-      LOGGER.error("Error reading IFD type at: {}", in.getFilePointer());
+      log.error("Error reading IFD type at: " + in.getFilePointer());
       throw e;
     }
 
@@ -993,10 +996,9 @@ public class TiffParser extends AbstractContextual {
       sampleCount /= nChannels;
     }
 
-    LOGGER.trace(
-      "unpacking {} samples (startIndex={}; totalBits={}; numBytes={})",
-      new Object[] {sampleCount, startIndex, nChannels * bitsPerSample[0],
-      bytes.length});
+    log.trace("unpacking " + sampleCount + " samples (startIndex=" +
+      startIndex + "; totalBits=" + (nChannels * bitsPerSample[0]) +
+      "; numBytes=" + bytes.length + ")");
 
     long imageWidth = ifd.getImageWidth();
     long imageHeight = ifd.getImageLength();
