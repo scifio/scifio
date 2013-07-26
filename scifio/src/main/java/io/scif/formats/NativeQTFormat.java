@@ -71,6 +71,7 @@ import java.util.Vector;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
@@ -398,9 +399,9 @@ public class NativeQTFormat extends AbstractFormat {
       meta.setOffsets(offsets);
       meta.setChunkSizes(chunkSizes);
       meta.createImageMetadata(1);
-      LOGGER.info("Parsing tags");
+      log().info("Parsing tags");
 
-      NativeQTUtils.parse(stream, meta, 0, 0, stream.length());
+      NativeQTUtils.parse(stream, meta, 0, 0, stream.length(), log());
 
       ImageMetadata iMeta = meta.get(0);
 
@@ -410,7 +411,7 @@ public class NativeQTFormat extends AbstractFormat {
         iMeta.setPlaneCount(chunkSizes.size());
       }
 
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
       String id = stream.getFileName();
 
       // this handles the case where the data and resource forks have been
@@ -428,42 +429,44 @@ public class NativeQTFormat extends AbstractFormat {
         else base = id;
 
         Location f = new Location(getContext(), base + ".qtr");
-        LOGGER.debug("Searching for research fork:");
+        log().debug("Searching for research fork:");
         if (f.exists()) {
-          LOGGER.debug("\t Found: {}", f);
+          log().debug("\t Found: " + f);
           if (in != null) in.close();
           in = new RandomAccessInputStream(getContext(), f.getAbsolutePath());
 
           NativeQTUtils.stripHeader(stream);
-          NativeQTUtils.parse(stream, meta, 0, 0, in.length());
+          NativeQTUtils.parse(stream, meta, 0, 0, in.length(), log());
           meta.get(0).setPlaneCount(offsets.size());
         }
         else {
-          LOGGER.debug("\tAbsent: {}", f);
+          log().debug("\tAbsent: " + f);
           f = new Location(getContext(), id.substring(0,
             id.lastIndexOf(File.separator) + 1) + "._" +
             id.substring(base.lastIndexOf(File.separator) + 1));
           if (f.exists()) {
-            LOGGER.debug("\t Found: {}", f);
+            log().debug("\t Found: " + f);
             cachedStream = stream;
             stream = new RandomAccessInputStream(getContext(), f.getAbsolutePath());
             NativeQTUtils.stripHeader(stream);
-            NativeQTUtils.parse(stream, meta, 0, stream.getFilePointer(), stream.length());
+            NativeQTUtils.parse(stream, meta, 0, stream.getFilePointer(),
+              stream.length(), log());
             meta.get(0).setPlaneCount(offsets.size());
           }
           else {
-            LOGGER.debug("\tAbsent: {}", f);
+            log().debug("\tAbsent: " + f);
             f = new Location(getContext(), id + "/..namedfork/rsrc");
             if (f.exists()) {
-              LOGGER.debug("\t Found: {}", f);
+              log().debug("\t Found: " + f);
               cachedStream = stream;
               stream = new RandomAccessInputStream(getContext(), f.getAbsolutePath());
               NativeQTUtils.stripHeader(stream);
-              NativeQTUtils.parse(stream, meta, 0, stream.getFilePointer(), stream.length());
+              NativeQTUtils.parse(stream, meta, 0, stream.getFilePointer(),
+                stream.length(), log());
               meta.get(0).setPlaneCount(offsets.size());
             }
             else {
-              LOGGER.debug("\tAbsent: {}", f);
+              log().debug("\tAbsent: " + f);
               throw new FormatException("QuickTime resource fork not found. " +
                 " To avoid this issue, please flatten your QuickTime movies " +
                 "before importing with Bio-Formats.");
@@ -1195,7 +1198,8 @@ public class NativeQTFormat extends AbstractFormat {
   private static class NativeQTUtils {
 
     /** Parse all of the atoms in the file. */
-    private static void parse(RandomAccessInputStream stream, Metadata meta, int depth, long offset, long length)
+    private static void parse(RandomAccessInputStream stream, Metadata meta,
+      int depth, long offset, long length, LogService log)
       throws FormatException, IOException
     {
       while (offset < length) {
@@ -1213,15 +1217,15 @@ public class NativeQTFormat extends AbstractFormat {
         }
 
         if (atomSize < 0) {
-          LOGGER.warn("QTReader: invalid atom size: {}", atomSize);
+          log.warn("QTReader: invalid atom size: " + atomSize);
         }
 
-        LOGGER.debug("Seeking to {}; atomType={}; atomSize={}",
-          new Object[] {offset, atomType, atomSize});
+        log.debug("Seeking to " + offset + "; atomType=" + atomType + "; atomSize=" + atomSize);
 
         // if this is a container atom, parse the children
         if (isContainer(atomType)) {
-          parse(stream, meta, depth++, stream.getFilePointer(), offset + atomSize);
+          parse(stream, meta, depth++, stream.getFilePointer(),
+            offset + atomSize, log);
         }
         else {
           if (atomSize == 0) atomSize = stream.length();
@@ -1273,7 +1277,7 @@ public class NativeQTFormat extends AbstractFormat {
 
               RandomAccessInputStream oldIn = stream;
               stream = new RandomAccessInputStream(meta.getContext(), output);
-              parse(stream, meta, 0, 0, output.length);
+              parse(stream, meta, 0, 0, output.length, log);
               stream.close();
               stream = oldIn;
             }
@@ -1394,7 +1398,7 @@ public class NativeQTFormat extends AbstractFormat {
 
         // if a 'udta' atom, skip ahead 4 bytes
         if (atomType.equals("udta")) offset += 4;
-        print(depth, atomSize, atomType);
+        print(depth, atomSize, atomType, log);
       }
     }
 
@@ -1407,11 +1411,13 @@ public class NativeQTFormat extends AbstractFormat {
     }
 
     /** Debugging method; prints information on an atom. */
-    private static void print(int depth, long size, String type) {
+    private static void print(int depth, long size, String type,
+      LogService log)
+    {
       StringBuffer sb = new StringBuffer();
       for (int i=0; i<depth; i++) sb.append(" ");
       sb.append(type + " : [" + size + "]");
-      LOGGER.debug(sb.toString());
+      log.debug(sb.toString());
     }
 
     /** Uncompresses an image plane according to the the codec identifier. */
