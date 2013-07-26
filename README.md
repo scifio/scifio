@@ -1,4 +1,5 @@
-# SCIFIO
+SCIFIO
+======
 
 SCIFIO (SCientific Image Format Input & Output) is an extensible Java framework
 for reading and writing images, particularly N-dimensional scientific images.
