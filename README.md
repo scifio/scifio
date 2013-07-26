@@ -98,7 +98,7 @@ upstream changes to get your formats into users' hands. However, if you are
 interested in submitting a pull request, that's great!
 All we ask is that you check:
 
-* mvn clean test
+    mvn clean test
 
 from the top level.
 
