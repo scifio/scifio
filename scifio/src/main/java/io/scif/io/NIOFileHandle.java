@@ -85,34 +85,34 @@ public class NIOFileHandle extends AbstractNIOHandle {
   // -- Fields --
 
   /** The random access file object backing this FileHandle. */
-  protected RandomAccessFile raf;
+  private RandomAccessFile raf;
 
   /** The file channel backed by the random access file. */
-  protected FileChannel channel;
+  private FileChannel channel;
 
   /** The absolute position within the file. */
-  protected long position = 0;
+  private long position = 0;
 
   /** The absolute position of the start of the buffer. */
-  protected long bufferStartPosition = 0;
+  private long bufferStartPosition = 0;
 
   /** The buffer size. */
-  protected int bufferSize;
+  private int bufferSize;
 
   /** The buffer itself. */
-  protected ByteBuffer buffer;
+  private ByteBuffer buffer;
 
   /** Whether or not the file is opened read/write. */
-  protected boolean isReadWrite = false;
+  private boolean isReadWrite = false;
 
   /** The default map mode for the file. */
-  protected FileChannel.MapMode mapMode = FileChannel.MapMode.READ_ONLY;
+  private FileChannel.MapMode mapMode = FileChannel.MapMode.READ_ONLY;
 
   /** The buffer's byte ordering. */
-  protected ByteOrder order;
+  private ByteOrder order;
 
   /** Provider class for NIO byte buffers, allocated or memory mapped. */
-  protected NIOByteBufferProvider byteBufferProvider;
+  private NIOByteBufferProvider byteBufferProvider;
 
   // -- Constructors --
 
