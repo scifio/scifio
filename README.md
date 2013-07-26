@@ -90,13 +90,13 @@ Mailing lists
 Contributing to SCIFIO
 ----------------------
 
-SCIFIO is an open product and anyone is welcome to submit pull requests to the
-[SCIFIO repository](https://github.com/scifio/scifio). Although, with SCIFIO's
-dynamic extensibility, you don't need to make upstream changes to get your
-formats into user's hands.
+SCIFIO is an open project and anyone is very welcome to submit pull requests
+to the [SCIFIO repository](https://github.com/scifio/scifio).
 
-If you are interested in submitting a pull request though, that's great! All we ask
-is that you check:
+With SCIFIO's focus on extensibility, you typically will not need to make
+upstream changes to get your formats into users' hands. However, if you are
+interested in submitting a pull request, that's great!
+All we ask is that you check:
 
 * mvn clean test
 
