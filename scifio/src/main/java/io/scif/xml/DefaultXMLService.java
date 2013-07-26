@@ -158,7 +158,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
     // Java XML factories are not declared to be thread safe
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder db = factory.newDocumentBuilder();
-    db.setErrorHandler(new ParserErrorHandler());
+    db.setErrorHandler(new ParserErrorHandler(log));
     return db.parse(in);
   }
 
@@ -528,7 +528,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
     SAXSource source = new SAXSource(is);
 
     // validate the XML
-    ValidationErrorHandler errorHandler = new ValidationErrorHandler();
+    ValidationErrorHandler errorHandler = new ValidationErrorHandler(log);
     validator.setErrorHandler(errorHandler);
     try {
       validator.validate(source);

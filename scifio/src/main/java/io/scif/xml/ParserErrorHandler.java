@@ -36,6 +36,9 @@
 
 package io.scif.xml;
 
+import io.scif.HasLog;
+
+import org.scijava.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ErrorHandler;
@@ -50,21 +53,35 @@ import org.xml.sax.SAXParseException;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class ParserErrorHandler implements ErrorHandler {
+public class ParserErrorHandler implements ErrorHandler, HasLog {
 
   private static final Logger LOGGER =
     LoggerFactory.getLogger(ParserErrorHandler.class);
 
+  private final LogService log;
+
+  public ParserErrorHandler(LogService log) {
+    this.log = log;
+  }
+
+  // -- ParserErrorHandler API methods --
+
   public void error(SAXParseException e) {
-    LOGGER.debug(e.getMessage());
+    log().debug(e.getMessage());
   }
 
   public void fatalError(SAXParseException e) {
-    LOGGER.debug(e.getMessage());
+    log().debug(e.getMessage());
   }
 
   public void warning(SAXParseException e) {
-    LOGGER.debug(e.getMessage());
+    log().debug(e.getMessage());
+  }
+
+  // -- HasLog API methods --
+
+  public LogService log() {
+    return log;
   }
 
 }
