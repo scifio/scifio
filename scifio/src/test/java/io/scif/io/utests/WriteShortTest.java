@@ -37,14 +37,11 @@
 package io.scif.io.utests;
 
 import static org.testng.AssertJUnit.assertEquals;
-
 import io.scif.io.IRandomAccess;
-
-import java.io.IOException;
-
-
 import io.scif.io.utests.providers.IRandomAccessProvider;
 import io.scif.io.utests.providers.IRandomAccessProviderFactory;
+
+import java.io.IOException;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
@@ -53,171 +50,175 @@ import org.testng.annotations.Test;
 
 /**
  * Tests for reading shorts from a loci.common.IRandomAccess.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/test/loci/common/utests/WriteShortTest.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/test/loci/common/utests/WriteShortTest.java;hb=HEAD">Gitweb</a></dd></dl>
- *
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/test/loci/common/utests/WriteShortTest.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/test/loci/common/utests/WriteShortTest.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
+ * 
  * @see io.scif.io.IRandomAccess
  */
-@Test(groups="writeTests")
+@Test(groups = "writeTests")
 public class WriteShortTest {
 
-  private static final byte[] PAGE = new byte[] {
-    // 16-bit shorts
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
-  };
+	private static final byte[] PAGE = new byte[] {
+		// 16-bit shorts
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00 };
 
-  private static final String MODE = "rw";
+	private static final String MODE = "rw";
 
-  private static final int BUFFER_SIZE = 1024;
+	private static final int BUFFER_SIZE = 1024;
 
-  private IRandomAccess fileHandle;
+	private IRandomAccess fileHandle;
 
-  private boolean checkGrowth;
+	private boolean checkGrowth;
 
-  @Parameters({"provider", "checkGrowth"})
-  @BeforeMethod
-  public void setUp(String provider, @Optional("false") String checkGrowth)
-    throws IOException {
-    this.checkGrowth = Boolean.parseBoolean(checkGrowth);
-    IRandomAccessProviderFactory factory = new IRandomAccessProviderFactory();
-    IRandomAccessProvider instance = factory.getInstance(provider);
-    fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
-  }
+	@Parameters({ "provider", "checkGrowth" })
+	@BeforeMethod
+	public void setUp(final String provider,
+		@Optional("false") final String checkGrowth) throws IOException
+	{
+		this.checkGrowth = Boolean.parseBoolean(checkGrowth);
+		final IRandomAccessProviderFactory factory =
+			new IRandomAccessProviderFactory();
+		final IRandomAccessProvider instance = factory.getInstance(provider);
+		fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
+	}
 
-  @Test(groups="initialLengthTest")
-  public void testLength() throws IOException {
-    assertEquals(32, fileHandle.length());
-  }
+	@Test(groups = "initialLengthTest")
+	public void testLength() throws IOException {
+		assertEquals(32, fileHandle.length());
+	}
 
-  @Test
-  public void testSequential() throws IOException {
-    fileHandle.writeShort(1);
-    if (checkGrowth) {
-      assertEquals(2, fileHandle.length());
-    }
-    fileHandle.writeShort(3842);
-    if (checkGrowth) {
-      assertEquals(4, fileHandle.length());
-    }
-    fileHandle.writeShort(3);
-    if (checkGrowth) {
-      assertEquals(6, fileHandle.length());
-    }
-    fileHandle.writeShort(3844);
-    if (checkGrowth) {
-      assertEquals(8, fileHandle.length());
-    }
-    fileHandle.writeShort(5);
-    if (checkGrowth) {
-      assertEquals(10, fileHandle.length());
-    }
-    fileHandle.writeShort(3846);
-    if (checkGrowth) {
-      assertEquals(12, fileHandle.length());
-    }
-    fileHandle.writeShort(7);
-    if (checkGrowth) {
-      assertEquals(14, fileHandle.length());
-    }
-    fileHandle.writeShort(3848);
-    if (checkGrowth) {
-      assertEquals(16, fileHandle.length());
-    }
-    fileHandle.writeShort(9);
-    if (checkGrowth) {
-      assertEquals(18, fileHandle.length());
-    }
-    fileHandle.writeShort(3850);
-    if (checkGrowth) {
-      assertEquals(20, fileHandle.length());
-    }
-    fileHandle.writeShort(11);
-    if (checkGrowth) {
-      assertEquals(22, fileHandle.length());
-    }
-    fileHandle.writeShort(3852);
-    if (checkGrowth) {
-      assertEquals(24, fileHandle.length());
-    }
-    fileHandle.writeShort(13);
-    if (checkGrowth) {
-      assertEquals(26, fileHandle.length());
-    }
-    fileHandle.writeShort(-1);
-    if (checkGrowth) {
-      assertEquals(28, fileHandle.length());
-    }
-    fileHandle.writeShort(15);
-    if (checkGrowth) {
-      assertEquals(30, fileHandle.length());
-    }
-    fileHandle.writeShort(-2);
-    if (checkGrowth) {
-      assertEquals(32, fileHandle.length());
-    }
-    fileHandle.seek(0);
-    assertEquals(1, fileHandle.readShort());
-    assertEquals(3842, fileHandle.readShort());
-    assertEquals(3, fileHandle.readShort());
-    assertEquals(3844, fileHandle.readShort());
-    assertEquals(5, fileHandle.readShort());
-    assertEquals(3846, fileHandle.readShort());
-    assertEquals(7, fileHandle.readShort());
-    assertEquals(3848, fileHandle.readShort());
-    assertEquals(9, fileHandle.readShort());
-    assertEquals(3850, fileHandle.readShort());
-    assertEquals(11, fileHandle.readShort());
-    assertEquals(3852, fileHandle.readShort());
-    assertEquals(13, fileHandle.readShort());
-    assertEquals(-1, fileHandle.readShort());
-    assertEquals(15, fileHandle.readShort());
-    assertEquals(-2, fileHandle.readShort());
-  }
+	@Test
+	public void testSequential() throws IOException {
+		fileHandle.writeShort(1);
+		if (checkGrowth) {
+			assertEquals(2, fileHandle.length());
+		}
+		fileHandle.writeShort(3842);
+		if (checkGrowth) {
+			assertEquals(4, fileHandle.length());
+		}
+		fileHandle.writeShort(3);
+		if (checkGrowth) {
+			assertEquals(6, fileHandle.length());
+		}
+		fileHandle.writeShort(3844);
+		if (checkGrowth) {
+			assertEquals(8, fileHandle.length());
+		}
+		fileHandle.writeShort(5);
+		if (checkGrowth) {
+			assertEquals(10, fileHandle.length());
+		}
+		fileHandle.writeShort(3846);
+		if (checkGrowth) {
+			assertEquals(12, fileHandle.length());
+		}
+		fileHandle.writeShort(7);
+		if (checkGrowth) {
+			assertEquals(14, fileHandle.length());
+		}
+		fileHandle.writeShort(3848);
+		if (checkGrowth) {
+			assertEquals(16, fileHandle.length());
+		}
+		fileHandle.writeShort(9);
+		if (checkGrowth) {
+			assertEquals(18, fileHandle.length());
+		}
+		fileHandle.writeShort(3850);
+		if (checkGrowth) {
+			assertEquals(20, fileHandle.length());
+		}
+		fileHandle.writeShort(11);
+		if (checkGrowth) {
+			assertEquals(22, fileHandle.length());
+		}
+		fileHandle.writeShort(3852);
+		if (checkGrowth) {
+			assertEquals(24, fileHandle.length());
+		}
+		fileHandle.writeShort(13);
+		if (checkGrowth) {
+			assertEquals(26, fileHandle.length());
+		}
+		fileHandle.writeShort(-1);
+		if (checkGrowth) {
+			assertEquals(28, fileHandle.length());
+		}
+		fileHandle.writeShort(15);
+		if (checkGrowth) {
+			assertEquals(30, fileHandle.length());
+		}
+		fileHandle.writeShort(-2);
+		if (checkGrowth) {
+			assertEquals(32, fileHandle.length());
+		}
+		fileHandle.seek(0);
+		assertEquals(1, fileHandle.readShort());
+		assertEquals(3842, fileHandle.readShort());
+		assertEquals(3, fileHandle.readShort());
+		assertEquals(3844, fileHandle.readShort());
+		assertEquals(5, fileHandle.readShort());
+		assertEquals(3846, fileHandle.readShort());
+		assertEquals(7, fileHandle.readShort());
+		assertEquals(3848, fileHandle.readShort());
+		assertEquals(9, fileHandle.readShort());
+		assertEquals(3850, fileHandle.readShort());
+		assertEquals(11, fileHandle.readShort());
+		assertEquals(3852, fileHandle.readShort());
+		assertEquals(13, fileHandle.readShort());
+		assertEquals(-1, fileHandle.readShort());
+		assertEquals(15, fileHandle.readShort());
+		assertEquals(-2, fileHandle.readShort());
+	}
 
-  @Test
-  public void testSeekForward() throws IOException {
-    fileHandle.seek(8);
-    fileHandle.writeShort(5);
-    if (checkGrowth) {
-      assertEquals(10, fileHandle.length());
-    }
-    fileHandle.writeShort(3846);
-    if (checkGrowth) {
-      assertEquals(12, fileHandle.length());
-    }
-    fileHandle.seek(8);
-    assertEquals(5, fileHandle.readShort());
-    assertEquals(3846, fileHandle.readShort());
-  }
+	@Test
+	public void testSeekForward() throws IOException {
+		fileHandle.seek(8);
+		fileHandle.writeShort(5);
+		if (checkGrowth) {
+			assertEquals(10, fileHandle.length());
+		}
+		fileHandle.writeShort(3846);
+		if (checkGrowth) {
+			assertEquals(12, fileHandle.length());
+		}
+		fileHandle.seek(8);
+		assertEquals(5, fileHandle.readShort());
+		assertEquals(3846, fileHandle.readShort());
+	}
 
-  @Test
-  public void testReset() throws IOException {
-    fileHandle.writeShort(1);
-    if (checkGrowth) {
-      assertEquals(2, fileHandle.length());
-    }
-    fileHandle.writeShort(3842);
-    if (checkGrowth) {
-      assertEquals(4, fileHandle.length());
-    }
-    fileHandle.seek(0);
-    assertEquals(1, fileHandle.readShort());
-    assertEquals(3842, fileHandle.readShort());
-    fileHandle.seek(0);
-    fileHandle.writeShort(5);
-    fileHandle.writeShort(3846);
-    fileHandle.seek(0);
-    assertEquals(5, fileHandle.readShort());
-    assertEquals(3846, fileHandle.readShort());
-  }
+	@Test
+	public void testReset() throws IOException {
+		fileHandle.writeShort(1);
+		if (checkGrowth) {
+			assertEquals(2, fileHandle.length());
+		}
+		fileHandle.writeShort(3842);
+		if (checkGrowth) {
+			assertEquals(4, fileHandle.length());
+		}
+		fileHandle.seek(0);
+		assertEquals(1, fileHandle.readShort());
+		assertEquals(3842, fileHandle.readShort());
+		fileHandle.seek(0);
+		fileHandle.writeShort(5);
+		fileHandle.writeShort(3846);
+		fileHandle.seek(0);
+		assertEquals(5, fileHandle.readShort());
+		assertEquals(3846, fileHandle.readShort());
+	}
 
 }

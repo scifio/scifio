@@ -58,224 +58,229 @@ import org.scijava.plugin.Plugin;
 
 /**
  * @author Mark Hiner hinerm at gmail.com
- *
  */
 @Plugin(type = PGMFormat.class)
 public class PGMFormat extends AbstractFormat {
 
-  // -- Format API Methods --
-  
-  /*
-   * @see io.scif.Format#getFormatName()
-   */
-  public String getFormatName() {
-    return "Portable Gray Map";
-  }
+	// -- Format API Methods --
 
-  /*
-   * @see io.scif.Format#getSuffixes()
-   */
-  public String[] getSuffixes() {
-    return new String[]{"pgm"};
-  }
+	/*
+	 * @see io.scif.Format#getFormatName()
+	 */
+	public String getFormatName() {
+		return "Portable Gray Map";
+	}
 
-  // -- Nested classes --
-  
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Metadata extends AbstractMetadata {
-    
-    // -- Fields --
-    
-    private boolean rawBits;
+	/*
+	 * @see io.scif.Format#getSuffixes()
+	 */
+	public String[] getSuffixes() {
+		return new String[] { "pgm" };
+	}
 
-    /** Offset to pixel data. */
-    private long offset;
-    
-    // -- PGMMetadata getters and setters --
+	// -- Nested classes --
 
-    public boolean isRawBits() {
-      return rawBits;
-    }
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Metadata extends AbstractMetadata {
 
-    public void setRawBits(boolean rawBits) {
-      this.rawBits = rawBits;
-    }
+		// -- Fields --
 
-    public long getOffset() {
-      return offset;
-    }
+		private boolean rawBits;
 
-    public void setOffset(long offset) {
-      this.offset = offset;
-    }
-    
-    // -- Metadata API Methods --
-    
-    public void populateImageMetadata() {
-      ImageMetadata iMeta = get(0);
-      iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
-      
-      iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) == 3);
-      iMeta.setAxisLength(Axes.Z, 1);
-      iMeta.setAxisLength(Axes.TIME, 1);
-      iMeta.setLittleEndian(true);
-      iMeta.setInterleaved(false);
-      iMeta.setPlaneCount(1);
-      iMeta.setIndexed(false);
-      iMeta.setFalseColor(false);
-      iMeta.setMetadataComplete(true);
-    }
-    
-    /* @see loci.formats.IFormatReader#close(boolean) */
-    public void close(boolean fileOnly) throws IOException {
-      super.close(fileOnly);
-      if (!fileOnly) {
-        setRawBits(false);
-        setOffset(0);
-      }
-    }
-  }
-  
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Checker extends AbstractChecker {
-    
-    // -- Constants --
-    
-    public static final char PGM_MAGIC_CHAR = 'P';
+		/** Offset to pixel data. */
+		private long offset;
 
-    // -- Constructor --
-    
-    public Checker() {
-      suffixNecessary = false;
-    }
-    
-    // -- Checker API Methods --
-    
-    @Override
-    public boolean isFormat(RandomAccessInputStream stream) throws IOException {
-      final int blockLen = 2;
-      if (!FormatTools.validStream(stream, blockLen, false)) return false;
-      return stream.read() == PGM_MAGIC_CHAR &&
-        Character.isDigit((char) stream.read());
-    }
-    
-  }
-  
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Parser extends AbstractParser<Metadata> {
+		// -- PGMMetadata getters and setters --
 
-    // -- Parser API Methods --
+		public boolean isRawBits() {
+			return rawBits;
+		}
 
-    @Override
-    protected void typedParse(RandomAccessInputStream stream, Metadata meta)
-      throws IOException, FormatException
-    {
-      String magic = stream.readLine().trim();
+		public void setRawBits(final boolean rawBits) {
+			this.rawBits = rawBits;
+		}
 
-      boolean isBlackAndWhite = false;
-      
-      meta.createImageMetadata(1);
-      ImageMetadata iMeta = meta.get(0);
+		public long getOffset() {
+			return offset;
+		}
 
-      String line = readNextLine();
+		public void setOffset(final long offset) {
+			this.offset = offset;
+		}
 
-      line = line.replaceAll("[^0-9]", " ");
-      int space = line.indexOf(" ");
-      iMeta.setAxisLength(Axes.X, Integer.parseInt(line.substring(0, space).trim()));
-      iMeta.setAxisLength(Axes.Y, Integer.parseInt(line.substring(space + 1).trim()));
-      
-      meta.setRawBits(magic.equals("P4") || magic.equals("P5") || magic.equals("P6"));
-      
-      iMeta.setAxisLength(Axes.CHANNEL, (magic.equals("P3") || magic.equals("P6")) ? 3 : 1);
-      isBlackAndWhite = magic.equals("P1") || magic.equals("P4");
+		// -- Metadata API Methods --
 
-      if (!isBlackAndWhite) {
-        int max = Integer.parseInt(readNextLine());
-        if (max > 255) iMeta.setPixelType(FormatTools.UINT16);
-        else iMeta.setPixelType(FormatTools.UINT8);
-      }
+		public void populateImageMetadata() {
+			final ImageMetadata iMeta = get(0);
+			iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
 
-      meta.setOffset(stream.getFilePointer());
+			iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) == 3);
+			iMeta.setAxisLength(Axes.Z, 1);
+			iMeta.setAxisLength(Axes.TIME, 1);
+			iMeta.setLittleEndian(true);
+			iMeta.setInterleaved(false);
+			iMeta.setPlaneCount(1);
+			iMeta.setIndexed(false);
+			iMeta.setFalseColor(false);
+			iMeta.setMetadataComplete(true);
+		}
 
-      addGlobalMeta("Black and white", isBlackAndWhite);
-    }
-    
-    // -- Helper Methods --
+		/* @see loci.formats.IFormatReader#close(boolean) */
+		@Override
+		public void close(final boolean fileOnly) throws IOException {
+			super.close(fileOnly);
+			if (!fileOnly) {
+				setRawBits(false);
+				setOffset(0);
+			}
+		}
+	}
 
-    private String readNextLine() throws IOException {
-      String line = in.readLine().trim();
-      while (line.startsWith("#") || line.length() == 0) {
-        line = in.readLine().trim();
-      }
-      return line;
-    }
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Checker extends AbstractChecker {
 
-  }
-  
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Reader extends ByteArrayReader<Metadata> {
+		// -- Constants --
 
-    // -- Constructor --
-    
-    public Reader() {
-      domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
-    }
-    
-    // -- Reader API methods --
-    
-    /*
-     * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-     */
-    public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
-      ByteArrayPlane plane, int x, int y, int w, int h)
-      throws FormatException, IOException
-    {
-      byte[] buf = plane.getData();
-      Metadata meta = getMetadata();
-      FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
+		public static final char PGM_MAGIC_CHAR = 'P';
 
-      getStream().seek(meta.getOffset());
-      if (meta.isRawBits()) {
-        readPlane(getStream(), imageIndex, x, y, w, h, plane);
-      }
-      else {
-        ByteArrayHandle handle = new ByteArrayHandle();
-        RandomAccessOutputStream out = new RandomAccessOutputStream(handle);
-        out.order(meta.isLittleEndian(imageIndex));
+		// -- Constructor --
 
-        while (getStream().getFilePointer() < getStream().length()) {
-          String line = getStream().readLine().trim();
-          line = line.replaceAll("[^0-9]", " ");
-          StringTokenizer t = new StringTokenizer(line, " ");
-          while (t.hasMoreTokens()) {
-            int q = Integer.parseInt(t.nextToken().trim());
-            if (meta.getPixelType(imageIndex) == FormatTools.UINT16) {
-              out.writeShort(q);
-            }
-            else out.writeByte(q);
-          }
-        }
+		public Checker() {
+			suffixNecessary = false;
+		}
 
-        out.close();
-        RandomAccessInputStream s = new RandomAccessInputStream(getContext(), handle);
-        s.seek(0);
-        readPlane(s, imageIndex, x, y, w, h, plane);
-        s.close();
-      }
+		// -- Checker API Methods --
 
-      return plane;
-    }
-  }
+		@Override
+		public boolean isFormat(final RandomAccessInputStream stream)
+			throws IOException
+		{
+			final int blockLen = 2;
+			if (!FormatTools.validStream(stream, blockLen, false)) return false;
+			return stream.read() == PGM_MAGIC_CHAR &&
+				Character.isDigit((char) stream.read());
+		}
+
+	}
+
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Parser extends AbstractParser<Metadata> {
+
+		// -- Parser API Methods --
+
+		@Override
+		protected void typedParse(final RandomAccessInputStream stream,
+			final Metadata meta) throws IOException, FormatException
+		{
+			final String magic = stream.readLine().trim();
+
+			boolean isBlackAndWhite = false;
+
+			meta.createImageMetadata(1);
+			final ImageMetadata iMeta = meta.get(0);
+
+			String line = readNextLine();
+
+			line = line.replaceAll("[^0-9]", " ");
+			final int space = line.indexOf(" ");
+			iMeta.setAxisLength(Axes.X, Integer.parseInt(line.substring(0, space)
+				.trim()));
+			iMeta.setAxisLength(Axes.Y, Integer.parseInt(line.substring(space + 1)
+				.trim()));
+
+			meta.setRawBits(magic.equals("P4") || magic.equals("P5") ||
+				magic.equals("P6"));
+
+			iMeta.setAxisLength(Axes.CHANNEL, (magic.equals("P3") || magic
+				.equals("P6")) ? 3 : 1);
+			isBlackAndWhite = magic.equals("P1") || magic.equals("P4");
+
+			if (!isBlackAndWhite) {
+				final int max = Integer.parseInt(readNextLine());
+				if (max > 255) iMeta.setPixelType(FormatTools.UINT16);
+				else iMeta.setPixelType(FormatTools.UINT8);
+			}
+
+			meta.setOffset(stream.getFilePointer());
+
+			addGlobalMeta("Black and white", isBlackAndWhite);
+		}
+
+		// -- Helper Methods --
+
+		private String readNextLine() throws IOException {
+			String line = in.readLine().trim();
+			while (line.startsWith("#") || line.length() == 0) {
+				line = in.readLine().trim();
+			}
+			return line;
+		}
+
+	}
+
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Reader extends ByteArrayReader<Metadata> {
+
+		// -- Constructor --
+
+		public Reader() {
+			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		}
+
+		// -- Reader API methods --
+
+		/*
+		 * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
+		 */
+		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+			final ByteArrayPlane plane, final int x, final int y, final int w,
+			final int h) throws FormatException, IOException
+		{
+			final byte[] buf = plane.getData();
+			final Metadata meta = getMetadata();
+			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
+				buf.length, x, y, w, h);
+
+			getStream().seek(meta.getOffset());
+			if (meta.isRawBits()) {
+				readPlane(getStream(), imageIndex, x, y, w, h, plane);
+			}
+			else {
+				final ByteArrayHandle handle = new ByteArrayHandle();
+				final RandomAccessOutputStream out =
+					new RandomAccessOutputStream(handle);
+				out.order(meta.isLittleEndian(imageIndex));
+
+				while (getStream().getFilePointer() < getStream().length()) {
+					String line = getStream().readLine().trim();
+					line = line.replaceAll("[^0-9]", " ");
+					final StringTokenizer t = new StringTokenizer(line, " ");
+					while (t.hasMoreTokens()) {
+						final int q = Integer.parseInt(t.nextToken().trim());
+						if (meta.getPixelType(imageIndex) == FormatTools.UINT16) {
+							out.writeShort(q);
+						}
+						else out.writeByte(q);
+					}
+				}
+
+				out.close();
+				final RandomAccessInputStream s =
+					new RandomAccessInputStream(getContext(), handle);
+				s.seek(0);
+				readPlane(s, imageIndex, x, y, w, h, plane);
+				s.close();
+			}
+
+			return plane;
+		}
+	}
 }

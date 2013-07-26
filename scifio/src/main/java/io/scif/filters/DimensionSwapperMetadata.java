@@ -40,81 +40,81 @@ import io.scif.Metadata;
 
 import java.util.List;
 
+import net.imglib2.meta.AxisType;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
-import net.imglib2.meta.AxisType;
-
 /**
- * {@link io.scif.filters.MetadataWrapper} implementation specifically
- * for use with the {@link io.scif.filters.DimensionSwapper}.
+ * {@link io.scif.filters.MetadataWrapper} implementation specifically for use
+ * with the {@link io.scif.filters.DimensionSwapper}.
  * 
  * @see io.scif.filters.MetadataWrapper
  * @see io.scif.filters.DimensionSwapper
- * 
  * @author Mark Hiner
  */
-@Plugin(type=MetadataWrapper.class, attrs={
-  @Attr(name=DimensionSwapperMetadata.METADATA_KEY, value=DimensionSwapperMetadata.METADATA_VALUE)
-  })
+@Plugin(type = MetadataWrapper.class, attrs = { @Attr(
+	name = DimensionSwapperMetadata.METADATA_KEY,
+	value = DimensionSwapperMetadata.METADATA_VALUE) })
 public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
-  
-  // -- Constants --
-  
-  public static final String METADATA_VALUE = "io.scif.filters.DimensionSwapper";
-  
-  // -- Fields --
-  
-  private List<AxisType>[] outputOrder;
 
-  // -- Constructors --
-  
-  public DimensionSwapperMetadata() {
-    this(null);
-  }
-  
-  public DimensionSwapperMetadata(Metadata metadata) {
-    super(metadata);
-  }
-  
-  // -- DimensionSwapperMetadata API --
-  
-  /**
-   * Gets the output order for this dataset. This is an array
-   * of axes configurations that will be returned when requested
-   * from this Metadata. It may be different than the parsed ("input")
-   * axes order for a given image.
-   * 
-   * @return The output order array for this dataset
-   */
-  public List<AxisType>[] getOutputOrder() {
-    return outputOrder;
-  }
+	// -- Constants --
 
-  /**
-   * Sets the output order for this dataset. Each position of the provided
-   * array corresponds to the output order axes for that image index.
-   * 
-   * @param outputOrder - Array of output orders for this dataset
-   */
-  public void setOutputOrder(List<AxisType>[] outputOrder) {
-    this.outputOrder = outputOrder;
-  }
-  
-  // -- Metadata API Methods --
-  
-  /*
-   * @see io.scif.filters.AbstractMetadataWrapper#setAxisLengths(int, int[])
-   */
-  public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
-    super.setAxisLengths(imageIndex, axisLengths, false);
-  }
-  
-  /*
-   * @see io.scif.filters.AbstractMetadataWrapper#setAxisTypes(int, net.imglib2.meta.AxisType[])
-   */
-  public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
-    super.setAxisTypes(imageIndex, axisTypes, false);
-  }
+	public static final String METADATA_VALUE =
+		"io.scif.filters.DimensionSwapper";
+
+	// -- Fields --
+
+	private List<AxisType>[] outputOrder;
+
+	// -- Constructors --
+
+	public DimensionSwapperMetadata() {
+		this(null);
+	}
+
+	public DimensionSwapperMetadata(final Metadata metadata) {
+		super(metadata);
+	}
+
+	// -- DimensionSwapperMetadata API --
+
+	/**
+	 * Gets the output order for this dataset. This is an array of axes
+	 * configurations that will be returned when requested from this Metadata. It
+	 * may be different than the parsed ("input") axes order for a given image.
+	 * 
+	 * @return The output order array for this dataset
+	 */
+	public List<AxisType>[] getOutputOrder() {
+		return outputOrder;
+	}
+
+	/**
+	 * Sets the output order for this dataset. Each position of the provided array
+	 * corresponds to the output order axes for that image index.
+	 * 
+	 * @param outputOrder - Array of output orders for this dataset
+	 */
+	public void setOutputOrder(final List<AxisType>[] outputOrder) {
+		this.outputOrder = outputOrder;
+	}
+
+	// -- Metadata API Methods --
+
+	/*
+	 * @see io.scif.filters.AbstractMetadataWrapper#setAxisLengths(int, int[])
+	 */
+	@Override
+	public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
+		super.setAxisLengths(imageIndex, axisLengths, false);
+	}
+
+	/*
+	 * @see io.scif.filters.AbstractMetadataWrapper#setAxisTypes(int, net.imglib2.meta.AxisType[])
+	 */
+	@Override
+	public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
+		super.setAxisTypes(imageIndex, axisTypes, false);
+	}
 }

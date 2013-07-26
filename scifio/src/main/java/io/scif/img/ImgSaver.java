@@ -62,7 +62,6 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
-
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 
@@ -74,16 +73,17 @@ import org.scijava.app.StatusService;
  */
 public class ImgSaver extends AbstractHasSCIFIO {
 
-  // -- Constructors --
-  
-  public ImgSaver() {
-    this(new Context(StatusService.class, InitializeService.class, TranslatorService.class));
-  }
-  
-  public ImgSaver(Context context) {
-    setContext(context);
-  }
-  
+	// -- Constructors --
+
+	public ImgSaver() {
+		this(new Context(StatusService.class, InitializeService.class,
+			TranslatorService.class));
+	}
+
+	public ImgSaver(final Context context) {
+		setContext(context);
+	}
+
 	// -- ImgSaver methods --
 
 	/**
@@ -174,7 +174,8 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	 * @throws IncompatibleTypeException
 	 */
 	public <T extends RealType<T> & NativeType<T>> void saveImg(final String id,
-		final ImgPlus<T> img, int imageIndex) throws ImgIOException, IncompatibleTypeException
+		final ImgPlus<T> img, final int imageIndex) throws ImgIOException,
+		IncompatibleTypeException
 	{
 		img.setSource(id);
 		img.setName(new File(id).getName());
@@ -190,9 +191,8 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public <T extends RealType<T> & NativeType<T>> void saveImg(
-		final Writer w, final Img<T> img) throws ImgIOException,
-		IncompatibleTypeException
+	public <T extends RealType<T> & NativeType<T>> void saveImg(final Writer w,
+		final Img<T> img) throws ImgIOException, IncompatibleTypeException
 	{
 		saveImg(w, ImgPlus.wrap(img), 0);
 	}
@@ -202,8 +202,8 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	// pending that, these two IFormatWriter methods are not guaranteed to be
 	// useful
 	/**
-	 * {@link Writer} provided. {@link ImgPlus} provided, or wrapped
-	 * provided {@link Img}.
+	 * {@link Writer} provided. {@link ImgPlus} provided, or wrapped provided
+	 * {@link Img}.
 	 * 
 	 * @param <T>
 	 * @param w
@@ -211,8 +211,8 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public <T extends RealType<T> & NativeType<T>> void saveImg(
-		final Writer w, final ImgPlus<T> img, int imageIndex) throws ImgIOException,
+	public <T extends RealType<T> & NativeType<T>> void saveImg(final Writer w,
+		final ImgPlus<T> img, final int imageIndex) throws ImgIOException,
 		IncompatibleTypeException
 	{
 		saveImg(w, img, imageIndex, true);
@@ -407,10 +407,9 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	// -- Helper methods --
 
 	/* Entry point for writePlanes method, the actual workhorse to save pixels to disk */
-	private <T extends RealType<T> & NativeType<T>> void
-		saveImg(final Writer w, final ImgPlus<T> img, final int imageIndex,
-			final boolean initializeWriter) throws ImgIOException,
-			IncompatibleTypeException
+	private <T extends RealType<T> & NativeType<T>> void saveImg(final Writer w,
+		final ImgPlus<T> img, final int imageIndex, final boolean initializeWriter)
+		throws ImgIOException, IncompatibleTypeException
 	{
 
 		// use the ImgPlus to calculate necessary metadata if
@@ -431,10 +430,10 @@ public class ImgSaver extends AbstractHasSCIFIO {
 
 		final long endTime = System.currentTimeMillis();
 		final float time = (endTime - startTime) / 1000f;
-		getContext().getService(StatusService.class).showStatus(sliceCount, sliceCount, id + ": wrote " +
-			sliceCount + " planes in " + time + " s");
+		getContext().getService(StatusService.class).showStatus(sliceCount,
+			sliceCount, id + ": wrote " + sliceCount + " planes in " + time + " s");
 	}
-	
+
 	// -- Helper Methods --
 
 	/* Counts the number of slices in the provided ImgPlus.
@@ -462,8 +461,8 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	 * @throws IncompatibleTypeException
 	 */
 	@SuppressWarnings("unchecked")
-	private <T extends RealType<T> & NativeType<T>> void writePlanes(
-		Writer w, final ImgPlus<T> img, final int imageIndex) throws ImgIOException,
+	private <T extends RealType<T> & NativeType<T>> void writePlanes(Writer w,
+		final ImgPlus<T> img, final int imageIndex) throws ImgIOException,
 		IncompatibleTypeException
 	{
 		final PlanarAccess<?> planarAccess = ImgIOUtils.getPlanarAccess(img);
@@ -482,7 +481,7 @@ public class ImgSaver extends AbstractHasSCIFIO {
 				planarImg.getPlane(0).getCurrentStorageArray().getClass();
 
 			byte[] sourcePlane = null;
-			
+
 			// if we know this image will pass to SCIFIO to be saved,
 			// then delete the old file if it exists
 			if (arrayType == int[].class || arrayType == byte[].class ||
@@ -497,57 +496,69 @@ public class ImgSaver extends AbstractHasSCIFIO {
 			}
 
 			// iterate over each plane
-			for (int planeIndex = 0; planeIndex < planeCount; planeIndex += rgbChannelCount) {
-				getContext().getService(StatusService.class).showStatus(planeIndex, planeCount,
-					"Saving plane " + (planeIndex + 1) + "/" + (planeCount / rgbChannelCount));
+			for (int planeIndex = 0; planeIndex < planeCount; planeIndex +=
+				rgbChannelCount)
+			{
+				getContext().getService(StatusService.class).showStatus(
+					planeIndex,
+					planeCount,
+					"Saving plane " + (planeIndex + 1) + "/" +
+						(planeCount / rgbChannelCount));
 
 				// save bytes
 				try {
-				  Metadata meta = w.getMetadata();
-				  ByteArrayPlane destPlane = new ByteArrayPlane(getContext(), meta.get(imageIndex),
-				      0, 0, meta.getAxisLength(imageIndex, Axes.X),
-				      meta.getAxisLength(imageIndex, Axes.Y));
-				  
-				  for (int channelIndex = planeIndex; channelIndex < planeIndex + rgbChannelCount; channelIndex++) {
-				    final Object curPlane =
-				        planarImg.getPlane(channelIndex).getCurrentStorageArray();
+					final Metadata meta = w.getMetadata();
+					final ByteArrayPlane destPlane =
+						new ByteArrayPlane(getContext(), meta.get(imageIndex), 0, 0, meta
+							.getAxisLength(imageIndex, Axes.X), meta.getAxisLength(
+							imageIndex, Axes.Y));
 
-				    // Convert current plane if necessary
-				    if (arrayType == int[].class) {
-				      sourcePlane = DataTools.intsToBytes((int[]) curPlane, false);
-				    }
-				    else if (arrayType == byte[].class) {
-				      sourcePlane = (byte[]) curPlane;
-				    }
-				    else if (arrayType == short[].class) {
-				      sourcePlane = DataTools.shortsToBytes((short[]) curPlane, false);
-				    }
-				    else if (arrayType == long[].class) {
-				      sourcePlane = DataTools.longsToBytes((long[]) curPlane, false);
-				    }
-				    else if (arrayType == double[].class) {
-				      sourcePlane = DataTools.doublesToBytes((double[]) curPlane, false);
-				    }
-				    else if (arrayType == float[].class) {
-				      sourcePlane = DataTools.floatsToBytes((float[]) curPlane, false);
-				    }
-				    else {
-				      throw new IncompatibleTypeException(new ImgLibException(),
-				          "PlanarImgs of type " + planarImg.getPlane(0).getClass() +
-				          " not supported.");
-				    }
+					for (int channelIndex = planeIndex; channelIndex < planeIndex +
+						rgbChannelCount; channelIndex++)
+					{
+						final Object curPlane =
+							planarImg.getPlane(channelIndex).getCurrentStorageArray();
 
-				    if (interleaved) {
-				      int bpp = FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
-				      
-	            for (int i=0; i<sourcePlane.length / bpp; i += bpp) {
-	              System.arraycopy(sourcePlane, i, destPlane.getData(), ((i * rgbChannelCount) + channelIndex) * bpp, bpp);
-	            }
-				    }
-				    else {
-				      System.arraycopy(sourcePlane, 0, destPlane.getData(), channelIndex * sourcePlane.length, sourcePlane.length);
-				    }
-				  }
+						// Convert current plane if necessary
+						if (arrayType == int[].class) {
+							sourcePlane = DataTools.intsToBytes((int[]) curPlane, false);
+						}
+						else if (arrayType == byte[].class) {
+							sourcePlane = (byte[]) curPlane;
+						}
+						else if (arrayType == short[].class) {
+							sourcePlane = DataTools.shortsToBytes((short[]) curPlane, false);
+						}
+						else if (arrayType == long[].class) {
+							sourcePlane = DataTools.longsToBytes((long[]) curPlane, false);
+						}
+						else if (arrayType == double[].class) {
+							sourcePlane =
+								DataTools.doublesToBytes((double[]) curPlane, false);
+						}
+						else if (arrayType == float[].class) {
+							sourcePlane = DataTools.floatsToBytes((float[]) curPlane, false);
+						}
+						else {
+							throw new IncompatibleTypeException(new ImgLibException(),
+								"PlanarImgs of type " + planarImg.getPlane(0).getClass() +
+									" not supported.");
+						}
+
+						if (interleaved) {
+							final int bpp =
+								FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
+
+							for (int i = 0; i < sourcePlane.length / bpp; i += bpp) {
+								System.arraycopy(sourcePlane, i, destPlane.getData(),
+									((i * rgbChannelCount) + channelIndex) * bpp, bpp);
+							}
+						}
+						else {
+							System.arraycopy(sourcePlane, 0, destPlane.getData(),
+								channelIndex * sourcePlane.length, sourcePlane.length);
+						}
+					}
 
 					w.savePlane(imageIndex, planeIndex, destPlane);
 				}
@@ -569,25 +580,25 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	}
 
 	/**
-	 * Creates a new {@link Writer} with an unpopulated MetadataStore and
-	 * sets its id to the provided String.
+	 * Creates a new {@link Writer} with an unpopulated MetadataStore and sets its
+	 * id to the provided String.
 	 */
-	private <T extends RealType<T> & NativeType<T>> Writer
-		initializeWriter(final String id, final ImgPlus<T> img, int imageIndex)
-			throws ImgIOException
+	private <T extends RealType<T> & NativeType<T>> Writer initializeWriter(
+		final String id, final ImgPlus<T> img, final int imageIndex)
+		throws ImgIOException
 	{
-    Writer writer = null;
-    Metadata meta = null;
-	  
+		Writer writer = null;
+		Metadata meta = null;
+
 		try {
-	    writer =  scifio().format().getWriterByExtension(id);
-	    meta = writer.getFormat().createMetadata();
+			writer = scifio().format().getWriterByExtension(id);
+			meta = writer.getFormat().createMetadata();
 
-	    populateMeta(meta, img, imageIndex);
+			populateMeta(meta, img, imageIndex);
 
-	    writer.setMetadata(meta);
+			writer.setMetadata(meta);
 
-	    writer.setDest(id);
+			writer.setDest(id);
 		}
 		catch (final FormatException e) {
 			throw new ImgIOException(e);
@@ -604,9 +615,11 @@ public class ImgSaver extends AbstractHasSCIFIO {
 	 * necessary for writing.
 	 */
 	private <T extends RealType<T> & NativeType<T>> void populateMeta(
-		final Metadata meta, final ImgPlus<T> img, int imageIndex) throws ImgIOException
+		final Metadata meta, final ImgPlus<T> img, final int imageIndex)
+		throws ImgIOException
 	{
-		getContext().getService(StatusService.class).showStatus("Initializing " + img.getName());
+		getContext().getService(StatusService.class).showStatus(
+			"Initializing " + img.getName());
 
 		final int pixelType = ImgIOUtils.makeType(img.firstElement());
 
@@ -623,11 +636,11 @@ public class ImgSaver extends AbstractHasSCIFIO {
 		dimOrder = guessDimOrder(axes, oldLengths, axisLengths);
 
 		// Populate physical pixel sizes
-		for (int i=0; i<axes.length; i++) {
-		  AxisType axis = axes[i];
+		for (int i = 0; i < axes.length; i++) {
+			final AxisType axis = axes[i];
 //		  PositiveFloat physicalSize = null;
 
-		  //TODO need to decide how to handle physical pixel sizes in SCIFIO...
+			// TODO need to decide how to handle physical pixel sizes in SCIFIO...
 //		  if (Axes.X.equals(axis)) {
 //		    physicalSize = new PositiveFloat(img.calibration(i));
 //		    meta.setPixelsPhysicalSizeX(physicalSize, imageIndex);
@@ -643,7 +656,7 @@ public class ImgSaver extends AbstractHasSCIFIO {
 		}
 
 		if (dimOrder == null) throw new ImgIOException(
-		    "Image has more than 5 dimensions in an order that could not be compressed.");
+			"Image has more than 5 dimensions in an order that could not be compressed.");
 
 		// TODO if size C, Z, T and dimension order are populated we won't
 		// overwrite them.
@@ -656,39 +669,39 @@ public class ImgSaver extends AbstractHasSCIFIO {
 		int sizeX = 0, sizeY = 0, sizeZ = 0, sizeC = 0, sizeT = 0;
 
 		for (int i = 0; i < dimOrder.length(); i++) {
-		  switch (dimOrder.charAt(i)) {
-		  case 'X':
-		    sizeX = new Long(axisLengths[i]).intValue();
-		    break;
-		  case 'Y':
-		    sizeY = new Long(axisLengths[i]).intValue();
-		    break;
-		  case 'Z':
-		    sizeZ = new Long(axisLengths[i]).intValue();
-		    break;
-		  case 'C':
-		    sizeC = new Long(axisLengths[i]).intValue();
-		    break;
-		  case 'T':
-		    sizeT = new Long(axisLengths[i]).intValue();
-		    break;
-		  }
+			switch (dimOrder.charAt(i)) {
+				case 'X':
+					sizeX = new Long(axisLengths[i]).intValue();
+					break;
+				case 'Y':
+					sizeY = new Long(axisLengths[i]).intValue();
+					break;
+				case 'Z':
+					sizeZ = new Long(axisLengths[i]).intValue();
+					break;
+				case 'C':
+					sizeC = new Long(axisLengths[i]).intValue();
+					break;
+				case 'T':
+					sizeT = new Long(axisLengths[i]).intValue();
+					break;
+			}
 		}
 
 		// TODO save composite channel count somewhere...
-		
-		DefaultMetadata imgplusMeta = new DefaultMetadata();
-		
-		int rgbChannelCount = img.getCompositeChannelCount();
-		
+
+		final DefaultMetadata imgplusMeta = new DefaultMetadata();
+
+		final int rgbChannelCount = img.getCompositeChannelCount();
+
 		imgplusMeta.createImageMetadata(imageIndex + 1);
-		
-		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), dimOrder, pixelType, rgbChannelCount,
-		    true, false, false, false, true, sizeX, sizeY, sizeZ, sizeC,
-		    sizeT);
-		
+
+		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), dimOrder,
+			pixelType, rgbChannelCount, true, false, false, false, true, sizeX,
+			sizeY, sizeZ, sizeC, sizeT);
+
 		// Translate to trigger any format-specific translation
-		
+
 		scifio().translator().translate(imgplusMeta, meta, false);
 	}
 }

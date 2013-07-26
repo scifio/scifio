@@ -42,81 +42,84 @@ import java.io.File;
 
 import org.scijava.service.Service;
 
-
 /**
- * A collection of utility methods to facilitate
- * {@link io.scif.FilePattern} use.
+ * A collection of utility methods to facilitate {@link io.scif.FilePattern}
+ * use.
  * 
  * @see io.scif.FilePattern
- * 
  * @author Mark Hiner
- *
  */
 public interface FilePatternService extends Service {
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param path The file path to use as a template for the match.
-   */
-  String findPattern(String path);
+	/**
+	 * Identifies the group pattern from a given file within that group.
+	 * 
+	 * @param path The file path to use as a template for the match.
+	 */
+	String findPattern(String path);
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param file The file to use as a template for the match.
-   */
-  String findPattern(Location file);
+	/**
+	 * Identifies the group pattern from a given file within that group.
+	 * 
+	 * @param file The file to use as a template for the match.
+	 */
+	String findPattern(Location file);
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param file The file to use as a template for the match.
-   */
-  String findPattern(File file);
+	/**
+	 * Identifies the group pattern from a given file within that group.
+	 * 
+	 * @param file The file to use as a template for the match.
+	 */
+	String findPattern(File file);
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param name The filename to use as a template for the match.
-   * @param dir The directory in which to search for matching files.
-   */
-  String findPattern(String name, String dir);
+	/**
+	 * Identifies the group pattern from a given file within that group.
+	 * 
+	 * @param name The filename to use as a template for the match.
+	 * @param dir The directory in which to search for matching files.
+	 */
+	String findPattern(String name, String dir);
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param name The filename to use as a template for the match.
-   * @param dir The directory prefix to use for matching files.
-   * @param nameList The names through which to search for matching files.
-   */
-  String findPattern(String name, String dir, String[] nameList);
+	/**
+	 * Identifies the group pattern from a given file within that group.
+	 * 
+	 * @param name The filename to use as a template for the match.
+	 * @param dir The directory prefix to use for matching files.
+	 * @param nameList The names through which to search for matching files.
+	 */
+	String findPattern(String name, String dir, String[] nameList);
 
-  /**
-   * Identifies the group pattern from a given file within that group.
-   * @param name The filename to use as a template for the match.
-   * @param dir The directory prefix to use for matching files.
-   * @param nameList The names through which to search for matching files.
-   * @param excludeAxes The list of axis types which should be excluded from the
-   *  pattern.
-   */
-  String findPattern(String name, String dir, String[] nameList,
-      int[] excludeAxes);
+	/**
+	 * Identifies the group pattern from a given file within that group.
+	 * 
+	 * @param name The filename to use as a template for the match.
+	 * @param dir The directory prefix to use for matching files.
+	 * @param nameList The names through which to search for matching files.
+	 * @param excludeAxes The list of axis types which should be excluded from the
+	 *          pattern.
+	 */
+	String findPattern(String name, String dir, String[] nameList,
+		int[] excludeAxes);
 
-  /**
-   * Generate a pattern from a list of file names.
-   * The pattern generated will be a regular expression.
-   * <p>
-   * Currently assumes that all file names are in the same directory.
-   * </p>
-   */
-  String findPattern(String[] names);
+	/**
+	 * Generate a pattern from a list of file names. The pattern generated will be
+	 * a regular expression.
+	 * <p>
+	 * Currently assumes that all file names are in the same directory.
+	 * </p>
+	 */
+	String findPattern(String[] names);
 
-  /**
-   * Finds the list of names matching the provided base and
-   * generates all patterns that match the list.
-   */
-  String[] findImagePatterns(String base);
+	/**
+	 * Finds the list of names matching the provided base and generates all
+	 * patterns that match the list.
+	 */
+	String[] findImagePatterns(String base);
 
-  /**
-   * Generates a list of all the patterns that match the provided
-   * list of file names.
-   */
-  String[] findImagePatterns(String base, String dir, String[] nameList);
+	/**
+	 * Generates a list of all the patterns that match the provided list of file
+	 * names.
+	 */
+	String[] findImagePatterns(String base, String dir, String[] nameList);
 
 }

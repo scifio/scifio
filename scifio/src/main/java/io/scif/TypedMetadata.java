@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 /**
@@ -48,7 +49,6 @@ package io.scif;
  * </p>
  * 
  * @author Mark Hiner
- * 
  * @see io.scif.Metadata
  */
 public interface TypedMetadata extends Metadata {

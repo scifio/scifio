@@ -33,14 +33,15 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 /**
  * Interface for all SCIFIO {@code Translators}.
  * <p>
- * Multiple {@code Translators} can be defined for a given {@code Format}.
- * Each encodes a process for converting from one {@link io.scif.Metadata}
- * type to another (where either the source or the destination is the {@code Metadata}
+ * Multiple {@code Translators} can be defined for a given {@code Format}. Each
+ * encodes a process for converting from one {@link io.scif.Metadata} type to
+ * another (where either the source or the destination is the {@code Metadata}
  * type associated with this {@code Format}).
  * </p>
  * <p>
@@ -50,64 +51,64 @@ package io.scif;
  * {@code Metadata}.
  * </p>
  * <p>
- * If no {@code Metadata} instance is readily available for translation, it
- * can be created through the {@code Format}, and existing {@code Metadata}
+ * If no {@code Metadata} instance is readily available for translation, it can
+ * be created through the {@code Format}, and existing {@code Metadata}
  * instances can be reset to ensure no previous information persists.
  * </p>
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="">Trac</a>,
- * <a href="">Gitweb</a></dd></dl>
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href="">Trac</a>, <a href="">Gitweb</a></dd>
+ * </dl>
  * 
  * @see io.scif.Format#createMetadata()
  * @see io.scif.Metadata#reset(Class)
  * @see io.scif.services.TranslatorService
- * 
  * @author Mark Hiner
  */
 public interface Translator extends SCIFIOPlugin, HasSCIFIO {
 
-  // -- Fields --
-  
+	// -- Fields --
+
 	/** Source key flag, for use in annotations. */
-  public static final String SOURCE = "source";
+	public static final String SOURCE = "source";
 
-  /** Destination key flag, for use in annotations. */
-  public static final String DEST = "dest";
-  
-  // -- Translator API methods --
+	/** Destination key flag, for use in annotations. */
+	public static final String DEST = "dest";
 
-  /**
-   * Uses the source {@code Metadata} to populate the destination {@code Metadata}
-   * <p>
-   * NB: this method accepts base {@code Metadata} parameters, but its behavior
-   * is undefined if at least one {@code Metadata} instance is not of the type
-   * associated with this {@code Translator's Format}. Neither can the other
-   * {@code Metadata} be arbitrary, as an appropriate {@code Translator} must
-   * be defined for the desired direction of translation. See 
-   * {@link io.scif.Format#getTranslatorClassList()} for a list of classes
-   * capable of translation with a given {@code Format's Metadata}.
-   * </p>
-   * <p>
-   * Note that the destination does not have to be empty, but can be built up
-   * through multiple translations. However each translation step is assumed
-   * to overwrite any previously existing data.
-   * </p>
-   * <p>
-   * For a reference to a fresh {@code Metadata} instance to use in translation,
-   * consider the {@link io.scif.Format#createMetadata()} and
-   * {@link io.scif.Metadata#reset(Class)} methods.
-   * </p>
-   * 
-   * @param source {@code Metadata} to use to populate
-   * @param destination {@code Metadata} to be populated
-   * @see {@link io.scif.Format#createMetadata()}
-   * @see {@link io.scif.Metadata#reset(Class)}
-   * @see {@link io.scif.Format#getTranslatorClassList()}
-   * @throws IllegalArgumentException if the arguments don't match the
-   *         {@code Metadata} types used to query this {@code Translator}
-   *         (e.g. via the {@link io.scif.Format#findDestTranslator} or
-   *         {@link io.scif.Format#findSourceTranslator} methods).
-   */
-  void translate(final Metadata source, final Metadata destination);
+	// -- Translator API methods --
+
+	/**
+	 * Uses the source {@code Metadata} to populate the destination
+	 * {@code Metadata}
+	 * <p>
+	 * NB: this method accepts base {@code Metadata} parameters, but its behavior
+	 * is undefined if at least one {@code Metadata} instance is not of the type
+	 * associated with this {@code Translator's Format}. Neither can the other
+	 * {@code Metadata} be arbitrary, as an appropriate {@code Translator} must be
+	 * defined for the desired direction of translation. See
+	 * {@link io.scif.Format#getTranslatorClassList()} for a list of classes
+	 * capable of translation with a given {@code Format's Metadata}.
+	 * </p>
+	 * <p>
+	 * Note that the destination does not have to be empty, but can be built up
+	 * through multiple translations. However each translation step is assumed to
+	 * overwrite any previously existing data.
+	 * </p>
+	 * <p>
+	 * For a reference to a fresh {@code Metadata} instance to use in translation,
+	 * consider the {@link io.scif.Format#createMetadata()} and
+	 * {@link io.scif.Metadata#reset(Class)} methods.
+	 * </p>
+	 * 
+	 * @param source {@code Metadata} to use to populate
+	 * @param destination {@code Metadata} to be populated
+	 * @see {@link io.scif.Format#createMetadata()}
+	 * @see {@link io.scif.Metadata#reset(Class)}
+	 * @see {@link io.scif.Format#getTranslatorClassList()}
+	 * @throws IllegalArgumentException if the arguments don't match the
+	 *           {@code Metadata} types used to query this {@code Translator}
+	 *           (e.g. via the {@link io.scif.Format#findDestTranslator} or
+	 *           {@link io.scif.Format#findSourceTranslator} methods).
+	 */
+	void translate(final Metadata source, final Metadata destination);
 }

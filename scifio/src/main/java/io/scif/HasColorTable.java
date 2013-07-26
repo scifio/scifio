@@ -33,26 +33,27 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import net.imglib2.display.ColorTable;
 
 /**
- * Interface for SCIFIO components that load {@link net.imglib2.display.ColorTable}s during parsing.
+ * Interface for SCIFIO components that load
+ * {@link net.imglib2.display.ColorTable}s during parsing.
  * <p>
- * NB: It is up to concrete Format components to choose to implement this interface.
+ * NB: It is up to concrete Format components to choose to implement this
+ * interface.
  * </p>
  * 
  * @see io.scif.Parser
  * @see net.imglib2.display.ColorTable
- * 
  * @author Mark Hiner
- *
  */
 public interface HasColorTable {
 
-  /**
-   * @return The ColorTable associated with this component.
-   */
-  ColorTable getColorTable(int imageIndex, int planeIndex);
+	/**
+	 * @return The ColorTable associated with this component.
+	 */
+	ColorTable getColorTable(int imageIndex, int planeIndex);
 }

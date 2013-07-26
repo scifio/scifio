@@ -53,268 +53,272 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-
 import org.scijava.Context;
 
 /**
  * This class implements JPEG 2000 compression and decompression.
- *
  * <dl>
  * <dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/JPEG2000Codec.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/JPEG2000Codec.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/JPEG2000Codec.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/JPEG2000Codec.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
  * </dl>
  */
 public class JPEG2000Codec extends BaseCodec {
 
-  // -- Fields --
+	// -- Fields --
 
-  private JAIIIOService service;
+	private JAIIIOService service;
 
-  // -- Codec API methods --
+	// -- Codec API methods --
 
-  /**
-   * The CodecOptions parameter should have the following fields set:
-   *  {@link CodecOptions#width width}
-   *  {@link CodecOptions#height height}
-   *  {@link CodecOptions#bitsPerSample bitsPerSample}
-   *  {@link CodecOptions#channels channels}
-   *  {@link CodecOptions#interleaved interleaved}
-   *  {@link CodecOptions#littleEndian littleEndian}
-   *  {@link CodecOptions#lossless lossless}
-   *
-   * @see Codec#compress(byte[], CodecOptions)
-   */
-  public byte[] compress(byte[] data, CodecOptions options)
-    throws FormatException
-  {
-    if (data == null || data.length == 0) return data;
-    initialize();
+	/**
+	 * The CodecOptions parameter should have the following fields set:
+	 * {@link CodecOptions#width width} {@link CodecOptions#height height}
+	 * {@link CodecOptions#bitsPerSample bitsPerSample}
+	 * {@link CodecOptions#channels channels} {@link CodecOptions#interleaved
+	 * interleaved} {@link CodecOptions#littleEndian littleEndian}
+	 * {@link CodecOptions#lossless lossless}
+	 * 
+	 * @see Codec#compress(byte[], CodecOptions)
+	 */
+	public byte[] compress(final byte[] data, final CodecOptions options)
+		throws FormatException
+	{
+		if (data == null || data.length == 0) return data;
+		initialize();
 
-    JPEG2000CodecOptions j2kOptions;
-    if (options instanceof JPEG2000CodecOptions) {
-      j2kOptions = (JPEG2000CodecOptions) options;
-    }
-    else {
-      j2kOptions = (JPEG2000CodecOptions)
-        JPEG2000CodecOptions.getDefaultOptions(options);
-    }
+		JPEG2000CodecOptions j2kOptions;
+		if (options instanceof JPEG2000CodecOptions) {
+			j2kOptions = (JPEG2000CodecOptions) options;
+		}
+		else {
+			j2kOptions = JPEG2000CodecOptions.getDefaultOptions(options);
+		}
 
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    BufferedImage img = null;
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		BufferedImage img = null;
 
-    int next = 0;
+		int next = 0;
 
-    // NB: Construct BufferedImages manually, rather than using
-    // AWTImageTools.makeImage. The AWTImageTools.makeImage methods construct
-    // images that are not properly handled by the JPEG2000 writer.
-    // Specifically, 8-bit multi-channel images are constructed with type
-    // DataBuffer.TYPE_INT (so a single int is used to store all of the
-    // channels for a specific pixel).
+		// NB: Construct BufferedImages manually, rather than using
+		// AWTImageTools.makeImage. The AWTImageTools.makeImage methods construct
+		// images that are not properly handled by the JPEG2000 writer.
+		// Specifically, 8-bit multi-channel images are constructed with type
+		// DataBuffer.TYPE_INT (so a single int is used to store all of the
+		// channels for a specific pixel).
 
-    int plane = j2kOptions.width * j2kOptions.height;
+		final int plane = j2kOptions.width * j2kOptions.height;
 
-    if (j2kOptions.bitsPerSample == 8) {
-      byte[][] b = new byte[j2kOptions.channels][plane];
-      if (j2kOptions.interleaved) {
-        for (int q=0; q<plane; q++) {
-          for (int c=0; c<j2kOptions.channels; c++) {
-            b[c][q] = data[next++];
-          }
-        }
-      }
-      else {
-        for (int c=0; c<j2kOptions.channels; c++) {
-          System.arraycopy(data, c * plane, b[c], 0, plane);
-        }
-      }
-      DataBuffer buffer = new DataBufferByte(b, plane);
-      img = AWTImageTools.constructImage(b.length, DataBuffer.TYPE_BYTE,
-        j2kOptions.width, j2kOptions.height, false, true, buffer,
-        j2kOptions.colorModel);
-    }
-    else if (j2kOptions.bitsPerSample == 16) {
-      short[][] s = new short[j2kOptions.channels][plane];
-      if (j2kOptions.interleaved) {
-        for (int q=0; q<plane; q++) {
-          for (int c=0; c<j2kOptions.channels; c++) {
-            s[c][q] = DataTools.bytesToShort(data, next, 2,
-              j2kOptions.littleEndian);
-            next += 2;
-          }
-        }
-      }
-      else {
-        for (int c=0; c<j2kOptions.channels; c++) {
-          for (int q=0; q<plane; q++) {
-            s[c][q] = DataTools.bytesToShort(data, next, 2,
-              j2kOptions.littleEndian);
-            next += 2;
-          }
-        }
-      }
-      DataBuffer buffer = new DataBufferUShort(s, plane);
-      img = AWTImageTools.constructImage(s.length, DataBuffer.TYPE_USHORT,
-        j2kOptions.width, j2kOptions.height, false, true, buffer,
-        j2kOptions.colorModel);
-    }
-    else if (j2kOptions.bitsPerSample == 32) {
-      int[][] s = new int[j2kOptions.channels][plane];
-      if (j2kOptions.interleaved) {
-        for (int q=0; q<plane; q++) {
-          for (int c=0; c<j2kOptions.channels; c++) {
-            s[c][q] = DataTools.bytesToInt(data, next, 4,
-              j2kOptions.littleEndian);
-            next += 4;
-          }
-        }
-      }
-      else {
-        for (int c=0; c<j2kOptions.channels; c++) {
-          for (int q=0; q<plane; q++) {
-            s[c][q] = DataTools.bytesToInt(data, next, 4,
-              j2kOptions.littleEndian);
-            next += 4;
-          }
-        }
-      }
+		if (j2kOptions.bitsPerSample == 8) {
+			final byte[][] b = new byte[j2kOptions.channels][plane];
+			if (j2kOptions.interleaved) {
+				for (int q = 0; q < plane; q++) {
+					for (int c = 0; c < j2kOptions.channels; c++) {
+						b[c][q] = data[next++];
+					}
+				}
+			}
+			else {
+				for (int c = 0; c < j2kOptions.channels; c++) {
+					System.arraycopy(data, c * plane, b[c], 0, plane);
+				}
+			}
+			final DataBuffer buffer = new DataBufferByte(b, plane);
+			img =
+				AWTImageTools.constructImage(b.length, DataBuffer.TYPE_BYTE,
+					j2kOptions.width, j2kOptions.height, false, true, buffer,
+					j2kOptions.colorModel);
+		}
+		else if (j2kOptions.bitsPerSample == 16) {
+			final short[][] s = new short[j2kOptions.channels][plane];
+			if (j2kOptions.interleaved) {
+				for (int q = 0; q < plane; q++) {
+					for (int c = 0; c < j2kOptions.channels; c++) {
+						s[c][q] =
+							DataTools.bytesToShort(data, next, 2, j2kOptions.littleEndian);
+						next += 2;
+					}
+				}
+			}
+			else {
+				for (int c = 0; c < j2kOptions.channels; c++) {
+					for (int q = 0; q < plane; q++) {
+						s[c][q] =
+							DataTools.bytesToShort(data, next, 2, j2kOptions.littleEndian);
+						next += 2;
+					}
+				}
+			}
+			final DataBuffer buffer = new DataBufferUShort(s, plane);
+			img =
+				AWTImageTools.constructImage(s.length, DataBuffer.TYPE_USHORT,
+					j2kOptions.width, j2kOptions.height, false, true, buffer,
+					j2kOptions.colorModel);
+		}
+		else if (j2kOptions.bitsPerSample == 32) {
+			final int[][] s = new int[j2kOptions.channels][plane];
+			if (j2kOptions.interleaved) {
+				for (int q = 0; q < plane; q++) {
+					for (int c = 0; c < j2kOptions.channels; c++) {
+						s[c][q] =
+							DataTools.bytesToInt(data, next, 4, j2kOptions.littleEndian);
+						next += 4;
+					}
+				}
+			}
+			else {
+				for (int c = 0; c < j2kOptions.channels; c++) {
+					for (int q = 0; q < plane; q++) {
+						s[c][q] =
+							DataTools.bytesToInt(data, next, 4, j2kOptions.littleEndian);
+						next += 4;
+					}
+				}
+			}
 
-      DataBuffer buffer = new UnsignedIntBuffer(s, plane);
-      img = AWTImageTools.constructImage(s.length, DataBuffer.TYPE_INT,
-        j2kOptions.width, j2kOptions.height, false, true, buffer,
-        j2kOptions.colorModel);
-    }
+			final DataBuffer buffer = new UnsignedIntBuffer(s, plane);
+			img =
+				AWTImageTools.constructImage(s.length, DataBuffer.TYPE_INT,
+					j2kOptions.width, j2kOptions.height, false, true, buffer,
+					j2kOptions.colorModel);
+		}
 
-    try {
-      service.writeImage(out, img, j2kOptions);
-    }
-    catch (IOException e) {
-      throw new FormatException("Could not compress JPEG-2000 data.", e);
-    }
-    catch (ServiceException e) {
-      throw new FormatException("Could not compress JPEG-2000 data.", e);
-    }
+		try {
+			service.writeImage(out, img, j2kOptions);
+		}
+		catch (final IOException e) {
+			throw new FormatException("Could not compress JPEG-2000 data.", e);
+		}
+		catch (final ServiceException e) {
+			throw new FormatException("Could not compress JPEG-2000 data.", e);
+		}
 
-    return out.toByteArray();
-  }
+		return out.toByteArray();
+	}
 
-  /**
-   * The CodecOptions parameter should have the following fields set:
-   * {@link CodecOptions#interleaved interleaved}
-   * {@link CodecOptions#littleEndian littleEndian}
-   *
-   * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
-   */
-  public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
-    throws FormatException, IOException
-  {
-    if (in == null) {
-      throw new IllegalArgumentException("No data to decompress.");
-    }
-    if (options == null || !(options instanceof JPEG2000CodecOptions)) {
-      options = JPEG2000CodecOptions.getDefaultOptions(options);
-    }
+	/**
+	 * The CodecOptions parameter should have the following fields set:
+	 * {@link CodecOptions#interleaved interleaved}
+	 * {@link CodecOptions#littleEndian littleEndian}
+	 * 
+	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
+	 */
+	@Override
+	public byte[] decompress(final RandomAccessInputStream in,
+		CodecOptions options) throws FormatException, IOException
+	{
+		if (in == null) {
+			throw new IllegalArgumentException("No data to decompress.");
+		}
+		if (options == null || !(options instanceof JPEG2000CodecOptions)) {
+			options = JPEG2000CodecOptions.getDefaultOptions(options);
+		}
 
-    byte[] buf = null;
-    long fp = in.getFilePointer();
-    if (options.maxBytes == 0) {
-      buf = new byte[(int) (in.length() - fp)];
-    }
-    else {
-      buf = new byte[(int) (options.maxBytes - fp)];
-    }
-    in.read(buf);
-    return decompress(buf, options);
-  }
+		byte[] buf = null;
+		final long fp = in.getFilePointer();
+		if (options.maxBytes == 0) {
+			buf = new byte[(int) (in.length() - fp)];
+		}
+		else {
+			buf = new byte[(int) (options.maxBytes - fp)];
+		}
+		in.read(buf);
+		return decompress(buf, options);
+	}
 
-  /**
-   * The CodecOptions parameter should have the following fields set:
-   * {@link CodecOptions#interleaved interleaved}
-   * {@link CodecOptions#littleEndian littleEndian}
-   *
-   * @see Codec#decompress(byte[], CodecOptions)
-   */
-  public byte[] decompress(byte[] buf, CodecOptions options)
-    throws FormatException
-  {
-    initialize();
+	/**
+	 * The CodecOptions parameter should have the following fields set:
+	 * {@link CodecOptions#interleaved interleaved}
+	 * {@link CodecOptions#littleEndian littleEndian}
+	 * 
+	 * @see Codec#decompress(byte[], CodecOptions)
+	 */
+	@Override
+	public byte[] decompress(final byte[] buf, CodecOptions options)
+		throws FormatException
+	{
+		initialize();
 
-    if (options == null || !(options instanceof JPEG2000CodecOptions)) {
-      options = JPEG2000CodecOptions.getDefaultOptions(options);
-    }
-    else {
-      options = new JPEG2000CodecOptions(options);
-    }
+		if (options == null || !(options instanceof JPEG2000CodecOptions)) {
+			options = JPEG2000CodecOptions.getDefaultOptions(options);
+		}
+		else {
+			options = new JPEG2000CodecOptions(options);
+		}
 
-    byte[][] single = null;
-    WritableRaster b = null;
-    int bpp = options.bitsPerSample / 8;
+		byte[][] single = null;
+		WritableRaster b = null;
+		int bpp = options.bitsPerSample / 8;
 
-    try {
-      ByteArrayInputStream bis = new ByteArrayInputStream(buf);
-      b = (WritableRaster) service.readRaster(
-          bis, (JPEG2000CodecOptions) options);
-      single = AWTImageTools.getPixelBytes(b, options.littleEndian);
-      bpp = single[0].length / (b.getWidth() * b.getHeight());
+		try {
+			final ByteArrayInputStream bis = new ByteArrayInputStream(buf);
+			b =
+				(WritableRaster) service
+					.readRaster(bis, (JPEG2000CodecOptions) options);
+			single = AWTImageTools.getPixelBytes(b, options.littleEndian);
+			bpp = single[0].length / (b.getWidth() * b.getHeight());
 
-      bis.close();
-      b = null;
-    }
-    catch (IOException e) {
-      throw new FormatException("Could not decompress JPEG2000 image. Please " +
-        "make sure that jai_imageio.jar is installed.", e);
-    }
-    catch (ServiceException e) {
-      throw new FormatException("Could not decompress JPEG2000 image. Please " +
-        "make sure that jai_imageio.jar is installed.", e);
-    }
+			bis.close();
+			b = null;
+		}
+		catch (final IOException e) {
+			throw new FormatException("Could not decompress JPEG2000 image. Please "
+				+ "make sure that jai_imageio.jar is installed.", e);
+		}
+		catch (final ServiceException e) {
+			throw new FormatException("Could not decompress JPEG2000 image. Please "
+				+ "make sure that jai_imageio.jar is installed.", e);
+		}
 
-    if (single.length == 1) return single[0];
-    byte[] rtn = new byte[single.length * single[0].length];
-    if (options.interleaved) {
-      int next = 0;
-      for (int i=0; i<single[0].length/bpp; i++) {
-        for (int j=0; j<single.length; j++) {
-          for (int bb=0; bb<bpp; bb++) {
-            rtn[next++] = single[j][i * bpp + bb];
-          }
-        }
-      }
-    }
-    else {
-      for (int i=0; i<single.length; i++) {
-        System.arraycopy(single[i], 0, rtn, i * single[0].length,
-          single[i].length);
-      }
-    }
-    single = null;
+		if (single.length == 1) return single[0];
+		final byte[] rtn = new byte[single.length * single[0].length];
+		if (options.interleaved) {
+			int next = 0;
+			for (int i = 0; i < single[0].length / bpp; i++) {
+				for (int j = 0; j < single.length; j++) {
+					for (int bb = 0; bb < bpp; bb++) {
+						rtn[next++] = single[j][i * bpp + bb];
+					}
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < single.length; i++) {
+				System.arraycopy(single[i], 0, rtn, i * single[0].length,
+					single[i].length);
+			}
+		}
+		single = null;
 
-    return rtn;
-  }
+		return rtn;
+	}
 
-  // -- Contextual API Methods --
-  
-  @Override
-  public void setContext(Context context) {
-    super.setContext(context);
-    
-    initialize();
-  }
-  
-  // -- Helper methods --
+	// -- Contextual API Methods --
 
-  /**
-   * Initializes the JAI ImageIO dependency service. This is called at the
-   * beginning of the {@link #compress} and {@link #decompress} methods to
-   * avoid having the constructor's method definition contain a checked
-   * exception.
-   *
-   * @throws FormatException If there is an error initializing JAI ImageIO
-   *   services.
-   */
-  private void initialize() {
-    if (service != null) return;
-    service = getContext().getService(JAIIIOService.class);
-  }
+	@Override
+	public void setContext(final Context context) {
+		super.setContext(context);
+
+		initialize();
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * Initializes the JAI ImageIO dependency service. This is called at the
+	 * beginning of the {@link #compress} and {@link #decompress} methods to avoid
+	 * having the constructor's method definition contain a checked exception.
+	 * 
+	 * @throws FormatException If there is an error initializing JAI ImageIO
+	 *           services.
+	 */
+	private void initialize() {
+		if (service != null) return;
+		service = getContext().getService(JAIIIOService.class);
+	}
 
 }

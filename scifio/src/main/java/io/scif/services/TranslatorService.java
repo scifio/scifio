@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.services;
 
 import io.scif.Metadata;
@@ -41,54 +42,52 @@ import io.scif.Translator;
 import org.scijava.service.Service;
 
 /**
- * Collection of methods for creating and using appropriate
- * Translators to convert between Metadata types.
+ * Collection of methods for creating and using appropriate Translators to
+ * convert between Metadata types.
  * 
  * @see io.scif.Translator
- * 
  * @author Mark Hiner
- *
  */
 public interface TranslatorService extends Service {
-  
-  /**
-   * Returns a translator capable of translating from the source Metadata to
-   * the dest Metadata type, or null if no such Translator exists.
-   * 
-   * @param source - Metadata to read from
-   * @param dest - Metadata to populate
-   * @param boolean - true if a translator that exactly matches these Metadata is
-   *                  desired
-   * @return Translator whose translate method will accept these Metadata
-   * 				 instances
-   */
-  Translator findTranslator(Metadata source, Metadata dest, boolean exact);
-  
-  /**
-   * Returns a translator capable of translating from the source Metadata to
-   * the dest Metadata type, or null if no such Translator exists.
-   * 
-   * @param source - Metadata to read from
-   * @param dest - Metadata to populate
-   * @param boolean - true if a translator that exactly matches these Metadata is
-   *                  desired
-   * @return Translator whose translate method will accept these Metadata
-   * 				 instances
-   */
-  Translator findTranslator(Class<?> source, Class<?> dest, boolean exact);
-  
-  /**
-   * Convenience method to immediately translate from the source Metadata
-   * to the dest Metadata type, assuming an appropriate Translator is found.
-   * <p>
-   * Useful if you don't need a handle on the Translator itself.
-   * </p>
-   * 
-   * @param source - Metadata to read from
-   * @param dest - Metadata to populate
-   * @param boolean - true if a translator that exactly matches these Metadata is
-   *                  desired
-   * @return true if translation was successful, and false otherwise.
-   */
-  boolean translate(Metadata source, Metadata dest, boolean exact);
+
+	/**
+	 * Returns a translator capable of translating from the source Metadata to the
+	 * dest Metadata type, or null if no such Translator exists.
+	 * 
+	 * @param source - Metadata to read from
+	 * @param dest - Metadata to populate
+	 * @param boolean - true if a translator that exactly matches these Metadata
+	 *        is desired
+	 * @return Translator whose translate method will accept these Metadata
+	 *         instances
+	 */
+	Translator findTranslator(Metadata source, Metadata dest, boolean exact);
+
+	/**
+	 * Returns a translator capable of translating from the source Metadata to the
+	 * dest Metadata type, or null if no such Translator exists.
+	 * 
+	 * @param source - Metadata to read from
+	 * @param dest - Metadata to populate
+	 * @param boolean - true if a translator that exactly matches these Metadata
+	 *        is desired
+	 * @return Translator whose translate method will accept these Metadata
+	 *         instances
+	 */
+	Translator findTranslator(Class<?> source, Class<?> dest, boolean exact);
+
+	/**
+	 * Convenience method to immediately translate from the source Metadata to the
+	 * dest Metadata type, assuming an appropriate Translator is found.
+	 * <p>
+	 * Useful if you don't need a handle on the Translator itself.
+	 * </p>
+	 * 
+	 * @param source - Metadata to read from
+	 * @param dest - Metadata to populate
+	 * @param boolean - true if a translator that exactly matches these Metadata
+	 *        is desired
+	 * @return true if translation was successful, and false otherwise.
+	 */
+	boolean translate(Metadata source, Metadata dest, boolean exact);
 }

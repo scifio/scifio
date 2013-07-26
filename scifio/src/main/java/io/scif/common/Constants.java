@@ -38,15 +38,19 @@ package io.scif.common;
 
 /**
  * Constants that are used within many classes in loci.common.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Constants.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Constants.java;hb=HEAD">Gitweb</a></dd></dl>
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Constants.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Constants.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
  */
 public final class Constants {
 
-  public static final String ENCODING = "UTF-8";
+	public static final String ENCODING = "UTF-8";
 
-  public static final double EPSILON = 0.000001;
+	public static final double EPSILON = 0.000001;
 
 }

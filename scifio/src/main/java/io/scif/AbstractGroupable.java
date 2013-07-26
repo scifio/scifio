@@ -33,61 +33,62 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
-
 /**
  * Abstract super-class for all {@link io.scif.Groupable} components.
  * 
  * @author Mark Hiner
- * 
  * @see io.scif.Groupable
- *
  */
-public abstract class AbstractGroupable extends AbstractHasSource implements Groupable {
+public abstract class AbstractGroupable extends AbstractHasSource implements
+	Groupable
+{
 
-  /** Whether or not to group multi-file formats. */
-  private boolean group = true;
-  
-  /*
-   * @see io.scif.Groupable#setGroupFiles(boolean)
-   */
-  public void setGroupFiles(final boolean groupFiles) {
-    group = groupFiles;
-  }
+	/** Whether or not to group multi-file formats. */
+	private boolean group = true;
 
-  /*
-   * @see io.scif.Groupable#isGroupFiles()
-   */
-  public boolean isGroupFiles() {
-    return group;
-  }
+	/*
+	 * @see io.scif.Groupable#setGroupFiles(boolean)
+	 */
+	public void setGroupFiles(final boolean groupFiles) {
+		group = groupFiles;
+	}
 
-  /*
-   * @see io.scif.Groupable#fileGroupOption(String)
-   */
-  public int fileGroupOption(final String id)
-    throws FormatException, IOException
-  {
-    return FormatTools.CANNOT_GROUP;
-  }
-  
-  /*
-   * @see io.scif.Groupable#isSingleFile()
-   */
-  public boolean isSingleFile(final String id) throws FormatException, IOException
-  {
-    return true;
-  }
+	/*
+	 * @see io.scif.Groupable#isGroupFiles()
+	 */
+	public boolean isGroupFiles() {
+		return group;
+	}
 
-  /*
-   * @see io.scif.Groupable#hasCompanionFiles()
-   */
-  public boolean hasCompanionFiles() {
-    return false;
-  }
+	/*
+	 * @see io.scif.Groupable#fileGroupOption(String)
+	 */
+	public int fileGroupOption(final String id) throws FormatException,
+		IOException
+	{
+		return FormatTools.CANNOT_GROUP;
+	}
+
+	/*
+	 * @see io.scif.Groupable#isSingleFile()
+	 */
+	public boolean isSingleFile(final String id) throws FormatException,
+		IOException
+	{
+		return true;
+	}
+
+	/*
+	 * @see io.scif.Groupable#hasCompanionFiles()
+	 */
+	public boolean hasCompanionFiles() {
+		return false;
+	}
 }

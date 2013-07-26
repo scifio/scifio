@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.formats;
 
 import io.scif.AbstractChecker;
@@ -41,7 +42,6 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
-import io.scif.DefaultImageMetadata;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
@@ -54,410 +54,415 @@ import io.scif.util.ImageTools;
 
 import java.io.IOException;
 
-import org.scijava.plugin.Plugin;
-
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 
+import org.scijava.plugin.Plugin;
 
 /**
- * BMPReader is the file format reader for Microsoft Bitmap (BMP) files.
- * See <a href="http://astronomy.swin.edu.au/~pbourke/dataformats/bmp/">
- * http://astronomy.swin.edu.au/~pbourke/dataformats/bmp/</a>
- * for a nice description of the BMP file format.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/BMPReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/BMPReader.java;hb=HEAD">Gitweb</a></dd></dl>
- *
+ * BMPReader is the file format reader for Microsoft Bitmap (BMP) files. See <a
+ * href="http://astronomy.swin.edu.au/~pbourke/dataformats/bmp/">
+ * http://astronomy.swin.edu.au/~pbourke/dataformats/bmp/</a> for a nice
+ * description of the BMP file format.
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/BMPReader.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/BMPReader.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
+ * 
  * @author Mark Hiner
  */
-@Plugin(type=BMPFormat.class)
+@Plugin(type = BMPFormat.class)
 public class BMPFormat extends AbstractFormat {
-  
-  // -- Constants --
-  
-  public static final String BMP_MAGIC_STRING = "BM";
-  
-  // -- Compression types --
-  
-  private static final int RAW = 0;
-  private static final int RLE_8 = 1;
-  private static final int RLE_4 = 2;
-  private static final int RGB_MASK = 3;
 
-  // -- Format API MEthods --
-  
-  /*
-   * @see io.scif.Format#getFormatName()
-   */
-  public String getFormatName() {
-    return "Windows Bitmap";
-  }
+	// -- Constants --
 
-  /*
-   * @see io.scif.Format#getSuffixes()
-   */
-  public String[] getSuffixes() {
-    return new String[]{"bmp"};
-  }
+	public static final String BMP_MAGIC_STRING = "BM";
 
-  // -- Nested Classes --
-  
-  /**
-  * @author Mark Hiner
-   *
-   */
-  public static class Metadata extends AbstractMetadata implements HasColorTable {
-    
-    // -- Constants --
+	// -- Compression types --
 
-    public static final String CNAME = "io.scif.formats.BMPFormat$Metadata";
+	private static final int RAW = 0;
+	private static final int RLE_8 = 1;
+	private static final int RLE_4 = 2;
+	private static final int RGB_MASK = 3;
 
-    // -- Fields --
-    
-    /** The palette for indexed color images. */
-    private ColorTable8 palette;
+	// -- Format API MEthods --
 
-    /** Compression type */
-    private int compression;
+	/*
+	 * @see io.scif.Format#getFormatName()
+	 */
+	public String getFormatName() {
+		return "Windows Bitmap";
+	}
 
-    /** Offset to image data. */
-    private long global;
+	/*
+	 * @see io.scif.Format#getSuffixes()
+	 */
+	public String[] getSuffixes() {
+		return new String[] { "bmp" };
+	}
 
-    private boolean invertY = false;
+	// -- Nested Classes --
 
-    // -- Getters and Setters --
-    
-    public int getCompression() {
-      return compression;
-    }
+	/**
+	 * @author Mark Hiner
+	 */
+	public static class Metadata extends AbstractMetadata implements
+		HasColorTable
+	{
 
-    public void setCompression(int compression) {
-      this.compression = compression;
-    }
+		// -- Constants --
 
-    public long getGlobal() {
-      return global;
-    }
+		public static final String CNAME = "io.scif.formats.BMPFormat$Metadata";
 
-    public void setGlobal(long global) {
-      this.global = global;
-    }
+		// -- Fields --
 
-    public boolean isInvertY() {
-      return invertY;
-    }
+		/** The palette for indexed color images. */
+		private ColorTable8 palette;
 
-    public void setInvertY(boolean invertY) {
-      this.invertY = invertY;
-    }
-    
-    // -- Metadata API Methods --
-    
-    /*
-     * @see io.scif.Metadata#populateImageMetadata()
-     */
-    public void populateImageMetadata() {
-      LOGGER.info("Populating metadata");
+		/** Compression type */
+		private int compression;
 
-      int bpp = getBitsPerPixel(0);
-      ImageMetadata iMeta = get(0);
-      
-      int sizeC = bpp != 24 ? 1 : 3;
-      
-      if (bpp == 32) sizeC = 4;
-      if (bpp > 8) bpp /= sizeC;
-      
-      iMeta.setBitsPerPixel(bpp);
+		/** Offset to image data. */
+		private long global;
 
-      
-      switch (bpp) {
-        case 16:
-          iMeta.setPixelType(FormatTools.UINT16);
-          break;
-        case 32:
-          iMeta.setPixelType(FormatTools.UINT32);
-          break;
-        default:
-          iMeta.setPixelType(FormatTools.UINT8);
-      }
+		private boolean invertY = false;
 
-      iMeta.setRGB(sizeC > 1);
-      iMeta.setLittleEndian(true);
-      iMeta.setInterleaved(true);
-      iMeta.setPlaneCount(1);
-      
-      iMeta.setMetadataComplete(true);
-      iMeta.setIndexed(getColorTable(0, 0) != null);
-      
-      if (iMeta.isIndexed()) {
-        sizeC = 1;
-        iMeta.setRGB(false);
-      }
-      
-      iMeta.addAxis(Axes.CHANNEL, sizeC);
-      iMeta.addAxis(Axes.Z, 1);
-      iMeta.addAxis(Axes.TIME, 1);
-      
-      iMeta.setFalseColor(false);
-    }
-    
-    // -- HasSource API Methods --
-    
-    /*
-     * @see io.scif.AbstractMetadata#close()
-     */
-    public void close(boolean fileOnly) throws IOException {
-      super.close(fileOnly);
-      
-      if (!fileOnly) {
-        compression = 0;
-        global = 0;
-        palette = null;
-        invertY = false;
-      }
-    }
+		// -- Getters and Setters --
 
-    // -- HasColorTable API Methods --
-    
-    /*
-     * @see io.scif.HasColorTable#getColorTable()
-     */
-    public ColorTable getColorTable(int imageIndex, int planeIndex) {
-      return palette;
-    }
-  }
-  
-  /**
-   * @author Mark Hiner
-   *
-   */
-  public static class Checker extends AbstractChecker {
-    
-    public boolean isFormat(final RandomAccessInputStream stream)
-      throws IOException
-   {
-     final int blockLen = 2;
-     if (!FormatTools.validStream(stream, blockLen, false)) return false;
-     return stream.readString(blockLen).startsWith(BMP_MAGIC_STRING);
-   }
-  }
-    
-  
-  /**
-  * @author Mark Hiner
-   *
-   */
-  public static class Parser extends AbstractParser<Metadata> {
+		public int getCompression() {
+			return compression;
+		}
 
-    @Override
-    protected void typedParse(RandomAccessInputStream stream, Metadata meta)
-        throws IOException, FormatException
-    {
-      meta.createImageMetadata(1);
-      
-      ImageMetadata iMeta = meta.get(0);
-      
-      stream.order(true);
-      
-      // read the first header - 14 bytes
-      
-      addGlobalMeta("Magic identifier", in.readString(2));
+		public void setCompression(final int compression) {
+			this.compression = compression;
+		}
 
-      addGlobalMeta("File size (in bytes)", in.readInt());
-      in.skipBytes(4);
-      
-      meta.setGlobal(in.readInt());
-      
-      // read the second header - 40 bytes
+		public long getGlobal() {
+			return global;
+		}
 
-      in.skipBytes(4);
-      
-      int sizeX = 0, sizeY = 0;
-      
-      // get the dimensions
-      
-      sizeX = in.readInt();
-      sizeY = in.readInt();
-      
-      iMeta.addAxis(Axes.X, sizeX);
-      iMeta.addAxis(Axes.Y, sizeY);
-      
-      if (sizeX < 1) {
-        LOGGER.trace("Invalid width: {}; using the absolute value", sizeX);
-        sizeX = Math.abs(sizeX);
-      }
-      if (sizeY < 1) {
-        LOGGER.trace("Invalid height: {}; using the absolute value", sizeY);
-        sizeY = Math.abs(sizeY);
-        meta.setInvertY(true);
-      }
-      
-      addGlobalMeta("Color planes", in.readShort());
-      
-      short bpp = in.readShort();
-      
-      iMeta.setBitsPerPixel(bpp);
-      
-      meta.setCompression(in.readInt());
-      
-      in.skipBytes(4);
-      int pixelSizeX = in.readInt();
-      int pixelSizeY = in.readInt();
-      int nColors = in.readInt();
-      if (nColors == 0 && bpp != 32 && bpp != 24) {
-        nColors = bpp < 8 ? 1 << bpp : 256;
-      }
-      in.skipBytes(4);
-      
-      // read the palette, if it exists
-      
-      if (nColors != 0 && bpp == 8) {
-        byte[][] palette = new byte[3][256];
+		public void setGlobal(final long global) {
+			this.global = global;
+		}
 
-        for (int i=0; i<nColors; i++) {
-          for (int j=palette.length-1; j>=0; j--) {
-            palette[j][i] = in.readByte();
-          }
-          in.skipBytes(1);
-        }
-        
-        meta.palette = new ColorTable8(palette);
-      }
-      else if (nColors != 0) in.skipBytes(nColors * 4);
-      
-      if (getMetadataOptions().getMetadataLevel() != MetadataLevel.MINIMUM) {
-        addGlobalMeta("Indexed color", meta.getColorTable(0, 0) != null);
-        addGlobalMeta("Image width", sizeX);
-        addGlobalMeta("Image height", sizeY);
-        addGlobalMeta("Bits per pixel", bpp);
-        String comp = "invalid";
+		public boolean isInvertY() {
+			return invertY;
+		}
 
-        switch (meta.getCompression()) {
-          case RAW:
-            comp = "None";
-            break;
-          case RLE_8:
-            comp = "8 bit run length encoding";
-            break;
-          case RLE_4:
-            comp = "4 bit run length encoding";
-            break;
-          case RGB_MASK:
-            comp = "RGB bitmap with mask";
-            break;
-        }
+		public void setInvertY(final boolean invertY) {
+			this.invertY = invertY;
+		}
 
-        addGlobalMeta("Compression type", comp);
-        addGlobalMeta("X resolution", pixelSizeX);
-        addGlobalMeta("Y resolution", pixelSizeY);
-      }
-    }
-  }
-  
-  /**
-  * @author Mark Hiner
-   *
-   */
-  public static class Reader extends ByteArrayReader<Metadata> {
-    
-    // -- Constructor --
-    
-    public Reader() {
-      domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
-    }
+		// -- Metadata API Methods --
 
-    // -- Reader API Methods --
-    
-    /*
-     * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-     */
-    public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
-        ByteArrayPlane plane, int x, int y, int w, int h)
-        throws FormatException, IOException
-    {
-      Metadata meta = getMetadata();
-      
-      byte[] buf = plane.getData();
-      int compression = meta.getCompression();
-      int bpp = meta.getBitsPerPixel(imageIndex);
-      int sizeX = meta.getAxisLength(imageIndex, Axes.X);
-      int sizeY = meta.getAxisLength(imageIndex, Axes.Y);
-      int sizeC = meta.getAxisLength(imageIndex, Axes.CHANNEL);
-      
-      FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-          buf.length, x, y, w, h);
-      
-      if (compression != RAW && getStream().length() <
-          FormatTools.getPlaneSize(this, imageIndex))
-      {
-        throw new UnsupportedCompressionException(compression + " not supported");
-      }
+		/*
+		 * @see io.scif.Metadata#populateImageMetadata()
+		 */
+		public void populateImageMetadata() {
+			LOGGER.info("Populating metadata");
 
-      int rowsToSkip = meta.isInvertY() ? y : sizeY - (h + y);
-      int rowLength = sizeX * (meta.isIndexed(imageIndex) ? 1 : sizeC);
-      getStream().seek(meta.getGlobal() + rowsToSkip * rowLength);
+			int bpp = getBitsPerPixel(0);
+			final ImageMetadata iMeta = get(0);
 
-      int pad = ((rowLength * bpp) / 8) % 2;
-      if (pad == 0) pad = ((rowLength * bpp) / 8) % 4;
-      else pad *= sizeC;
-      int planeSize = sizeX * sizeC * h;
-      if (bpp >= 8) planeSize *= (bpp / 8);
-      else planeSize /= (8 / bpp);
-      planeSize += pad * h;
-      if (planeSize + getStream().getFilePointer() > getStream().length()) {
-        planeSize -= (pad * h);
+			int sizeC = bpp != 24 ? 1 : 3;
 
-        // sometimes we have RGB images with a single padding byte
-        if (planeSize + sizeY + getStream().getFilePointer() <=
-            getStream().length())
-        {
-          pad = 1;
-          planeSize += h;
-        }
-        else {
-          pad = 0;
-        }
-      }
+			if (bpp == 32) sizeC = 4;
+			if (bpp > 8) bpp /= sizeC;
 
-      getStream().skipBytes(rowsToSkip * pad);
+			iMeta.setBitsPerPixel(bpp);
 
-      byte[] rawPlane = new byte[planeSize];
-      getStream().read(rawPlane);
+			switch (bpp) {
+				case 16:
+					iMeta.setPixelType(FormatTools.UINT16);
+					break;
+				case 32:
+					iMeta.setPixelType(FormatTools.UINT32);
+					break;
+				default:
+					iMeta.setPixelType(FormatTools.UINT8);
+			}
 
-      BitBuffer bb = new BitBuffer(rawPlane);
+			iMeta.setRGB(sizeC > 1);
+			iMeta.setLittleEndian(true);
+			iMeta.setInterleaved(true);
+			iMeta.setPlaneCount(1);
 
-      ColorTable palette = meta.getColorTable(0, 0);
-      plane.setColorTable(palette);
-      
-      int effectiveC = palette != null && palette.getLength() > 0 ? 1 : sizeC;
-      for (int row=h-1; row>=0; row--) {
-        int rowIndex = meta.isInvertY() ? h - 1 - row : row;
-        bb.skipBits(x * bpp * effectiveC);
-        for (int i=0; i<w*effectiveC; i++) {
-          if (bpp <= 8) {
-            buf[rowIndex * w * effectiveC + i] = (byte) (bb.getBits(bpp) & 0xff);
-          }
-          else {
-            for (int b=0; b<bpp/8; b++) {
-              buf[(bpp / 8) * (rowIndex * w * effectiveC + i) + b] =
-                (byte) (bb.getBits(8) & 0xff);
-            }
-          }
-        }
-        if (row > 0) {
-          bb.skipBits((sizeX - w - x) * bpp * effectiveC + pad*8);
-        }
-      }
+			iMeta.setMetadataComplete(true);
+			iMeta.setIndexed(getColorTable(0, 0) != null);
 
-      if (meta.getRGBChannelCount(imageIndex) > 1) {
-        ImageTools.bgrToRgb(buf, meta.isInterleaved(imageIndex), 1,
-            meta.getRGBChannelCount(imageIndex));
-      }
-      return plane;
-    }
-    
-  }
+			if (iMeta.isIndexed()) {
+				sizeC = 1;
+				iMeta.setRGB(false);
+			}
+
+			iMeta.addAxis(Axes.CHANNEL, sizeC);
+			iMeta.addAxis(Axes.Z, 1);
+			iMeta.addAxis(Axes.TIME, 1);
+
+			iMeta.setFalseColor(false);
+		}
+
+		// -- HasSource API Methods --
+
+		/*
+		 * @see io.scif.AbstractMetadata#close()
+		 */
+		@Override
+		public void close(final boolean fileOnly) throws IOException {
+			super.close(fileOnly);
+
+			if (!fileOnly) {
+				compression = 0;
+				global = 0;
+				palette = null;
+				invertY = false;
+			}
+		}
+
+		// -- HasColorTable API Methods --
+
+		/*
+		 * @see io.scif.HasColorTable#getColorTable()
+		 */
+		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
+		{
+			return palette;
+		}
+	}
+
+	/**
+	 * @author Mark Hiner
+	 */
+	public static class Checker extends AbstractChecker {
+
+		@Override
+		public boolean isFormat(final RandomAccessInputStream stream)
+			throws IOException
+		{
+			final int blockLen = 2;
+			if (!FormatTools.validStream(stream, blockLen, false)) return false;
+			return stream.readString(blockLen).startsWith(BMP_MAGIC_STRING);
+		}
+	}
+
+	/**
+	 * @author Mark Hiner
+	 */
+	public static class Parser extends AbstractParser<Metadata> {
+
+		@Override
+		protected void typedParse(final RandomAccessInputStream stream,
+			final Metadata meta) throws IOException, FormatException
+		{
+			meta.createImageMetadata(1);
+
+			final ImageMetadata iMeta = meta.get(0);
+
+			stream.order(true);
+
+			// read the first header - 14 bytes
+
+			addGlobalMeta("Magic identifier", in.readString(2));
+
+			addGlobalMeta("File size (in bytes)", in.readInt());
+			in.skipBytes(4);
+
+			meta.setGlobal(in.readInt());
+
+			// read the second header - 40 bytes
+
+			in.skipBytes(4);
+
+			int sizeX = 0, sizeY = 0;
+
+			// get the dimensions
+
+			sizeX = in.readInt();
+			sizeY = in.readInt();
+
+			iMeta.addAxis(Axes.X, sizeX);
+			iMeta.addAxis(Axes.Y, sizeY);
+
+			if (sizeX < 1) {
+				LOGGER.trace("Invalid width: {}; using the absolute value", sizeX);
+				sizeX = Math.abs(sizeX);
+			}
+			if (sizeY < 1) {
+				LOGGER.trace("Invalid height: {}; using the absolute value", sizeY);
+				sizeY = Math.abs(sizeY);
+				meta.setInvertY(true);
+			}
+
+			addGlobalMeta("Color planes", in.readShort());
+
+			final short bpp = in.readShort();
+
+			iMeta.setBitsPerPixel(bpp);
+
+			meta.setCompression(in.readInt());
+
+			in.skipBytes(4);
+			final int pixelSizeX = in.readInt();
+			final int pixelSizeY = in.readInt();
+			int nColors = in.readInt();
+			if (nColors == 0 && bpp != 32 && bpp != 24) {
+				nColors = bpp < 8 ? 1 << bpp : 256;
+			}
+			in.skipBytes(4);
+
+			// read the palette, if it exists
+
+			if (nColors != 0 && bpp == 8) {
+				final byte[][] palette = new byte[3][256];
+
+				for (int i = 0; i < nColors; i++) {
+					for (int j = palette.length - 1; j >= 0; j--) {
+						palette[j][i] = in.readByte();
+					}
+					in.skipBytes(1);
+				}
+
+				meta.palette = new ColorTable8(palette);
+			}
+			else if (nColors != 0) in.skipBytes(nColors * 4);
+
+			if (getMetadataOptions().getMetadataLevel() != MetadataLevel.MINIMUM) {
+				addGlobalMeta("Indexed color", meta.getColorTable(0, 0) != null);
+				addGlobalMeta("Image width", sizeX);
+				addGlobalMeta("Image height", sizeY);
+				addGlobalMeta("Bits per pixel", bpp);
+				String comp = "invalid";
+
+				switch (meta.getCompression()) {
+					case RAW:
+						comp = "None";
+						break;
+					case RLE_8:
+						comp = "8 bit run length encoding";
+						break;
+					case RLE_4:
+						comp = "4 bit run length encoding";
+						break;
+					case RGB_MASK:
+						comp = "RGB bitmap with mask";
+						break;
+				}
+
+				addGlobalMeta("Compression type", comp);
+				addGlobalMeta("X resolution", pixelSizeX);
+				addGlobalMeta("Y resolution", pixelSizeY);
+			}
+		}
+	}
+
+	/**
+	 * @author Mark Hiner
+	 */
+	public static class Reader extends ByteArrayReader<Metadata> {
+
+		// -- Constructor --
+
+		public Reader() {
+			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		}
+
+		// -- Reader API Methods --
+
+		/*
+		 * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
+		 */
+		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+			final ByteArrayPlane plane, final int x, final int y, final int w,
+			final int h) throws FormatException, IOException
+		{
+			final Metadata meta = getMetadata();
+
+			final byte[] buf = plane.getData();
+			final int compression = meta.getCompression();
+			final int bpp = meta.getBitsPerPixel(imageIndex);
+			final int sizeX = meta.getAxisLength(imageIndex, Axes.X);
+			final int sizeY = meta.getAxisLength(imageIndex, Axes.Y);
+			final int sizeC = meta.getAxisLength(imageIndex, Axes.CHANNEL);
+
+			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
+				buf.length, x, y, w, h);
+
+			if (compression != RAW &&
+				getStream().length() < FormatTools.getPlaneSize(this, imageIndex))
+			{
+				throw new UnsupportedCompressionException(compression +
+					" not supported");
+			}
+
+			final int rowsToSkip = meta.isInvertY() ? y : sizeY - (h + y);
+			final int rowLength = sizeX * (meta.isIndexed(imageIndex) ? 1 : sizeC);
+			getStream().seek(meta.getGlobal() + rowsToSkip * rowLength);
+
+			int pad = ((rowLength * bpp) / 8) % 2;
+			if (pad == 0) pad = ((rowLength * bpp) / 8) % 4;
+			else pad *= sizeC;
+			int planeSize = sizeX * sizeC * h;
+			if (bpp >= 8) planeSize *= (bpp / 8);
+			else planeSize /= (8 / bpp);
+			planeSize += pad * h;
+			if (planeSize + getStream().getFilePointer() > getStream().length()) {
+				planeSize -= (pad * h);
+
+				// sometimes we have RGB images with a single padding byte
+				if (planeSize + sizeY + getStream().getFilePointer() <= getStream()
+					.length())
+				{
+					pad = 1;
+					planeSize += h;
+				}
+				else {
+					pad = 0;
+				}
+			}
+
+			getStream().skipBytes(rowsToSkip * pad);
+
+			final byte[] rawPlane = new byte[planeSize];
+			getStream().read(rawPlane);
+
+			final BitBuffer bb = new BitBuffer(rawPlane);
+
+			final ColorTable palette = meta.getColorTable(0, 0);
+			plane.setColorTable(palette);
+
+			final int effectiveC =
+				palette != null && palette.getLength() > 0 ? 1 : sizeC;
+			for (int row = h - 1; row >= 0; row--) {
+				final int rowIndex = meta.isInvertY() ? h - 1 - row : row;
+				bb.skipBits(x * bpp * effectiveC);
+				for (int i = 0; i < w * effectiveC; i++) {
+					if (bpp <= 8) {
+						buf[rowIndex * w * effectiveC + i] =
+							(byte) (bb.getBits(bpp) & 0xff);
+					}
+					else {
+						for (int b = 0; b < bpp / 8; b++) {
+							buf[(bpp / 8) * (rowIndex * w * effectiveC + i) + b] =
+								(byte) (bb.getBits(8) & 0xff);
+						}
+					}
+				}
+				if (row > 0) {
+					bb.skipBits((sizeX - w - x) * bpp * effectiveC + pad * 8);
+				}
+			}
+
+			if (meta.getRGBChannelCount(imageIndex) > 1) {
+				ImageTools.bgrToRgb(buf, meta.isInterleaved(imageIndex), 1, meta
+					.getRGBChannelCount(imageIndex));
+			}
+			return plane;
+		}
+
+	}
 }

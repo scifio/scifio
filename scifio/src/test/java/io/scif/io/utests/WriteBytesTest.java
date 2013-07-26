@@ -37,14 +37,11 @@
 package io.scif.io.utests;
 
 import static org.testng.AssertJUnit.assertEquals;
-
 import io.scif.io.IRandomAccess;
-
-import java.io.IOException;
-
-
 import io.scif.io.utests.providers.IRandomAccessProvider;
 import io.scif.io.utests.providers.IRandomAccessProviderFactory;
+
+import java.io.IOException;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
@@ -53,101 +50,106 @@ import org.testng.annotations.Test;
 
 /**
  * Tests for writing bytes to a loci.common.IRandomAccess.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/test/loci/common/utests/WriteBytesTest.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/test/loci/common/utests/WriteBytesTest.java;hb=HEAD">Gitweb</a></dd></dl>
- *
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/test/loci/common/utests/WriteBytesTest.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/test/loci/common/utests/WriteBytesTest.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
+ * 
  * @see io.scif.io.IRandomAccess
  */
-@Test(groups="writeTests")
+@Test(groups = "writeTests")
 public class WriteBytesTest {
 
-  private static final byte[] PAGE = new byte[] {
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-  };
+	private static final byte[] PAGE = new byte[] { (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, };
 
-  private static final String MODE = "rw";
+	private static final String MODE = "rw";
 
-  private static final int BUFFER_SIZE = 1024;
+	private static final int BUFFER_SIZE = 1024;
 
-  private IRandomAccess fileHandle;
+	private IRandomAccess fileHandle;
 
-  private boolean checkGrowth;
+	private boolean checkGrowth;
 
-  @Parameters({"provider", "checkGrowth"})
-  @BeforeMethod
-  public void setUp(String provider, @Optional("false") String checkGrowth)
-    throws IOException {
-    this.checkGrowth = Boolean.parseBoolean(checkGrowth);
-    IRandomAccessProviderFactory factory = new IRandomAccessProviderFactory();
-    IRandomAccessProvider instance = factory.getInstance(provider);
-    fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
-  }
+	@Parameters({ "provider", "checkGrowth" })
+	@BeforeMethod
+	public void setUp(final String provider,
+		@Optional("false") final String checkGrowth) throws IOException
+	{
+		this.checkGrowth = Boolean.parseBoolean(checkGrowth);
+		final IRandomAccessProviderFactory factory =
+			new IRandomAccessProviderFactory();
+		final IRandomAccessProvider instance = factory.getInstance(provider);
+		fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
+	}
 
-  @Test(groups="initialLengthTest")
-  public void testLength() throws IOException {
-    assertEquals(8, fileHandle.length());
-  }
-  
-  @Test
-  public void testWriteSequential() throws IOException {
-    fileHandle.writeBytes("ab");
-    if (checkGrowth) {
-      assertEquals(2, fileHandle.length());
-    }
-    fileHandle.writeBytes("cd");
-    if (checkGrowth) {
-      assertEquals(4, fileHandle.length());
-    }
-    fileHandle.writeBytes("ef");
-    if (checkGrowth) {
-      assertEquals(6, fileHandle.length());
-    }
-    fileHandle.writeBytes("gh");
-    assertEquals(8, fileHandle.length());
-    fileHandle.seek(0);
-    for (byte i = (byte) 0x61; i < 0x69; i++) {
-      assertEquals(i, fileHandle.readByte());
-    }
-  }
+	@Test(groups = "initialLengthTest")
+	public void testLength() throws IOException {
+		assertEquals(8, fileHandle.length());
+	}
 
-  @Test
-  public void testWrite() throws IOException {
-    fileHandle.writeBytes("ab");
-    assertEquals(2, fileHandle.getFilePointer());
-    if (checkGrowth) {
-      assertEquals(2, fileHandle.length());
-    }
-    fileHandle.seek(0);
-    assertEquals((byte) 0x61, fileHandle.readByte());
-    assertEquals((byte) 0x62, fileHandle.readByte());
-  }
+	@Test
+	public void testWriteSequential() throws IOException {
+		fileHandle.writeBytes("ab");
+		if (checkGrowth) {
+			assertEquals(2, fileHandle.length());
+		}
+		fileHandle.writeBytes("cd");
+		if (checkGrowth) {
+			assertEquals(4, fileHandle.length());
+		}
+		fileHandle.writeBytes("ef");
+		if (checkGrowth) {
+			assertEquals(6, fileHandle.length());
+		}
+		fileHandle.writeBytes("gh");
+		assertEquals(8, fileHandle.length());
+		fileHandle.seek(0);
+		for (byte i = (byte) 0x61; i < 0x69; i++) {
+			assertEquals(i, fileHandle.readByte());
+		}
+	}
 
-  @Test
-  public void testWriteOffEnd() throws IOException {
-    fileHandle.seek(8);
-    fileHandle.writeBytes("wx");
-    assertEquals(10, fileHandle.getFilePointer());
-    assertEquals(10, fileHandle.length());
-    fileHandle.seek(8);
-    assertEquals((byte) 0x77, fileHandle.readByte());
-    assertEquals((byte) 0x78, fileHandle.readByte());
-  }
+	@Test
+	public void testWrite() throws IOException {
+		fileHandle.writeBytes("ab");
+		assertEquals(2, fileHandle.getFilePointer());
+		if (checkGrowth) {
+			assertEquals(2, fileHandle.length());
+		}
+		fileHandle.seek(0);
+		assertEquals((byte) 0x61, fileHandle.readByte());
+		assertEquals((byte) 0x62, fileHandle.readByte());
+	}
 
-  @Test
-  public void testWriteTwiceOffEnd() throws IOException {
-    fileHandle.seek(8);
-    fileHandle.writeBytes("wx");
-    fileHandle.writeBytes("yz");
-    assertEquals(12, fileHandle.getFilePointer());
-    assertEquals(12, fileHandle.length());
-    fileHandle.seek(8);
-    assertEquals((byte) 0x77, fileHandle.readByte());
-    assertEquals((byte) 0x78, fileHandle.readByte());
-    assertEquals((byte) 0x79, fileHandle.readByte());
-    assertEquals((byte) 0x7A, fileHandle.readByte());
-  }
+	@Test
+	public void testWriteOffEnd() throws IOException {
+		fileHandle.seek(8);
+		fileHandle.writeBytes("wx");
+		assertEquals(10, fileHandle.getFilePointer());
+		assertEquals(10, fileHandle.length());
+		fileHandle.seek(8);
+		assertEquals((byte) 0x77, fileHandle.readByte());
+		assertEquals((byte) 0x78, fileHandle.readByte());
+	}
+
+	@Test
+	public void testWriteTwiceOffEnd() throws IOException {
+		fileHandle.seek(8);
+		fileHandle.writeBytes("wx");
+		fileHandle.writeBytes("yz");
+		assertEquals(12, fileHandle.getFilePointer());
+		assertEquals(12, fileHandle.length());
+		fileHandle.seek(8);
+		assertEquals((byte) 0x77, fileHandle.readByte());
+		assertEquals((byte) 0x78, fileHandle.readByte());
+		assertEquals((byte) 0x79, fileHandle.readByte());
+		assertEquals((byte) 0x7A, fileHandle.readByte());
+	}
 
 }

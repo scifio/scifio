@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.filters;
 
 import io.scif.Metadata;
@@ -42,89 +43,94 @@ import java.util.Set;
 
 import org.scijava.InstantiableException;
 
-
 /**
- * {@link io.scif.filters.MasterFilter} for wrapping {@link io.scif.Reader} components.
+ * {@link io.scif.filters.MasterFilter} for wrapping {@link io.scif.Reader}
+ * components.
  * 
  * @author Mark Hiner
- *
  * @see io.scif.Reader
  */
-public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<Reader> {
-  
-  // -- Fields --
-  
-  private MasterFilterHelper<Reader> fHelper;
-  
-  // -- Constructor --
-  
-  /**
-   * @param r - Reader to be wrapped
-   */
-  public ReaderFilter(Reader r) {
-    fHelper = new MasterFilterHelper<Reader>(r, Reader.class);
-  }
-  
-  // -- MasterFilter API Methods --
+public class ReaderFilter extends AbstractReaderFilter implements
+	MasterFilter<Reader>
+{
 
-  /*
-   * @see io.scif.filters.MasterFilter#enable(java.lang.Class)
-   */
-  public <F extends Filter> F enable(Class<F> filterClass) throws InstantiableException {
-    return fHelper.enable(filterClass);
-  }
+	// -- Fields --
 
-  /*
-   * @see io.scif.filters.MasterFilter#disable(java.lang.Class)
-   */
-  public boolean disable(Class<? extends Filter> filterClass) throws InstantiableException {
-    return fHelper.disable(filterClass);
-  }
+	private final MasterFilterHelper<Reader> fHelper;
 
-  /*
-   * @see io.scif.filters.MasterFilter#getFilterClasses()
-   */
-  public Set<Class<? extends Filter>> getFilterClasses() {
-    return fHelper.getFilterClasses();
-  }
+	// -- Constructor --
 
-  // -- Filter API Methods --
-  
-  /*
-   * @see io.scif.filters.MasterFilter#setParent(java.lang.Object)
-   */
-  @Override
-  public void setParent(Object parent) {
-    fHelper.setParent(parent);
-  }
-  
-  /*
-   * @see io.scif.filters.MasterFilter#getParent()
-   */
-  @Override
-  public Reader getParent() {
-    return fHelper.getParent();
-  }
-  
-  
-  public Reader getTail() {
-    return fHelper.getTail();
-  }
-  
-  /*
-   * @see io.scif.filters.MasterFilter#reset()
-   */
-  @Override
-  public void reset() {
-    fHelper.reset();
-  }
-  
-  // -- Reader API Methods --
-  
-  /*
-   * @see io.scif.filters.AbstractReaderFilter#getMetadata()
-   */
-  public Metadata getMetadata() {
-    return fHelper.getParent().getMetadata();
-  }
+	/**
+	 * @param r - Reader to be wrapped
+	 */
+	public ReaderFilter(final Reader r) {
+		fHelper = new MasterFilterHelper<Reader>(r, Reader.class);
+	}
+
+	// -- MasterFilter API Methods --
+
+	/*
+	 * @see io.scif.filters.MasterFilter#enable(java.lang.Class)
+	 */
+	public <F extends Filter> F enable(final Class<F> filterClass)
+		throws InstantiableException
+	{
+		return fHelper.enable(filterClass);
+	}
+
+	/*
+	 * @see io.scif.filters.MasterFilter#disable(java.lang.Class)
+	 */
+	public boolean disable(final Class<? extends Filter> filterClass)
+		throws InstantiableException
+	{
+		return fHelper.disable(filterClass);
+	}
+
+	/*
+	 * @see io.scif.filters.MasterFilter#getFilterClasses()
+	 */
+	public Set<Class<? extends Filter>> getFilterClasses() {
+		return fHelper.getFilterClasses();
+	}
+
+	// -- Filter API Methods --
+
+	/*
+	 * @see io.scif.filters.MasterFilter#setParent(java.lang.Object)
+	 */
+	@Override
+	public void setParent(final Object parent) {
+		fHelper.setParent(parent);
+	}
+
+	/*
+	 * @see io.scif.filters.MasterFilter#getParent()
+	 */
+	@Override
+	public Reader getParent() {
+		return fHelper.getParent();
+	}
+
+	public Reader getTail() {
+		return fHelper.getTail();
+	}
+
+	/*
+	 * @see io.scif.filters.MasterFilter#reset()
+	 */
+	@Override
+	public void reset() {
+		fHelper.reset();
+	}
+
+	// -- Reader API Methods --
+
+	/*
+	 * @see io.scif.filters.AbstractReaderFilter#getMetadata()
+	 */
+	@Override
+	public Metadata getMetadata() {
+		return fHelper.getParent().getMetadata();
+	}
 }

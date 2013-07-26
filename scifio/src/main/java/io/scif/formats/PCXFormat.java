@@ -50,259 +50,266 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
-import org.scijava.plugin.Plugin;
-
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 
+import org.scijava.plugin.Plugin;
+
 /**
- * PCXReader is the file format reader for PCX files (originally used by
- * PC Paintbrush; now used in Zeiss' LSM Image Browser).
- * See http://www.qzx.com/pc-gpe/pcx.txt
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/PCXReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/PCXReader.java;hb=HEAD">Gitweb</a></dd></dl>
+ * PCXReader is the file format reader for PCX files (originally used by PC
+ * Paintbrush; now used in Zeiss' LSM Image Browser). See
+ * http://www.qzx.com/pc-gpe/pcx.txt
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/PCXReader.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/PCXReader.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
  * 
  * @author Mark Hiner
  * @author Melissa Linkert
- *
  */
 @Plugin(type = PCXFormat.class)
 public class PCXFormat extends AbstractFormat {
 
-  // -- Format API Methods --
-  
-  /*
-   * @see io.scif.Format#getFormatName()
-   */
-  public String getFormatName() {
-    return "PCX";
-  }
+	// -- Format API Methods --
 
-  /*
-   * @see io.scif.Format#getSuffixes()
-   */
-  public String[] getSuffixes() {
-    return new String[]{"pcx"};
-  }
-  
-  // -- Nested Classes --
-  
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Metadata extends AbstractMetadata implements HasColorTable {
-    
-    // -- Fields --
+	/*
+	 * @see io.scif.Format#getFormatName()
+	 */
+	public String getFormatName() {
+		return "PCX";
+	}
 
-    /** Offset to pixel data. */
-    private long offset;
+	/*
+	 * @see io.scif.Format#getSuffixes()
+	 */
+	public String[] getSuffixes() {
+		return new String[] { "pcx" };
+	}
 
-    /** Number of bytes per scan line - may be different than image width. */
-    private int bytesPerLine;
+	// -- Nested Classes --
 
-    private int nColorPlanes;
-    private ColorTable8 lut;
-    
-    // -- PCXMetadata getters and setters --
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Metadata extends AbstractMetadata implements
+		HasColorTable
+	{
 
-    public long getOffset() {
-      return offset;
-    }
+		// -- Fields --
 
-    public void setOffset(long offset) {
-      this.offset = offset;
-    }
+		/** Offset to pixel data. */
+		private long offset;
 
-    public int getBytesPerLine() {
-      return bytesPerLine;
-    }
+		/** Number of bytes per scan line - may be different than image width. */
+		private int bytesPerLine;
 
-    public void setBytesPerLine(int bytesPerLine) {
-      this.bytesPerLine = bytesPerLine;
-    }
+		private int nColorPlanes;
+		private ColorTable8 lut;
 
-    public int getnColorPlanes() {
-      return nColorPlanes;
-    }
+		// -- PCXMetadata getters and setters --
 
-    public void setnColorPlanes(int nColorPlanes) {
-      this.nColorPlanes = nColorPlanes;
-    }
-    
-    // -- Metadata API methods --
-    
-    /*
-     * @see io.scif.Metadata#populateImageMetadata()
-     */
-    public void populateImageMetadata() {
-      
-      ImageMetadata iMeta = get(0);
-      iMeta.setAxisLength(Axes.CHANNEL, nColorPlanes);
-      iMeta.setAxisLength(Axes.Z, 1);
-      iMeta.setAxisLength(Axes.TIME, 1);
-      iMeta.setRGB(nColorPlanes > 1);
-      iMeta.setPlaneCount(1);
-      iMeta.setPixelType(FormatTools.UINT8);
-      iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
-      iMeta.setInterleaved(false);
-    }
-    
-    @Override
-    public void close(boolean fileOnly) throws IOException {
-      super.close(fileOnly);
-      if (!fileOnly) {
-        offset = 0;
-        bytesPerLine = 0;
-        nColorPlanes = 0;
-        lut = null;
-      }
-    }
-    
-    // -- HasColorTable API Methods -
+		public long getOffset() {
+			return offset;
+		}
 
-    public ColorTable getColorTable(int imageIndex, int planeIndex) {
-      return lut;
-    }
-  }
-  
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Checker extends AbstractChecker {
-    
-    // -- Constants -- 
-    
-    public static final byte PCX_MAGIC_BYTE = 10;
+		public void setOffset(final long offset) {
+			this.offset = offset;
+		}
 
-    // -- Checker API Methods --
-    
-    @Override
-    public boolean isFormat(RandomAccessInputStream stream) throws IOException {
-      final int blockLen = 1;
-      if (!FormatTools.validStream(stream, blockLen, false)) return false;
-      return stream.read() == PCX_MAGIC_BYTE;
-    }
-  }
-  
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Parser extends AbstractParser<Metadata> {
+		public int getBytesPerLine() {
+			return bytesPerLine;
+		}
 
-    // -- Parser API Methods --
-    
-    @Override
-    protected void typedParse(RandomAccessInputStream stream, Metadata meta)
-      throws IOException, FormatException 
-    {
-      LOGGER.info("Reading file header");
+		public void setBytesPerLine(final int bytesPerLine) {
+			this.bytesPerLine = bytesPerLine;
+		}
 
-      meta.createImageMetadata(1);
-      ImageMetadata iMeta = meta.get(0);
-      
-      iMeta.setLittleEndian(true);
-      stream.order(true);
-      stream.seek(1);
-      int version = stream.read();
-      stream.skipBytes(1);
-      int bitsPerPixel = stream.read();
-      int xMin = stream.readShort();
-      int yMin = stream.readShort();
-      int xMax = stream.readShort();
-      int yMax = stream.readShort();
+		public int getnColorPlanes() {
+			return nColorPlanes;
+		}
 
-      iMeta.setAxisLength(Axes.X, xMax - xMin);
-      iMeta.setAxisLength(Axes.Y, yMax - yMin);
+		public void setnColorPlanes(final int nColorPlanes) {
+			this.nColorPlanes = nColorPlanes;
+		}
 
-      stream.skipBytes(version == 5 ? 53 : 51);
+		// -- Metadata API methods --
 
-      meta.setnColorPlanes(stream.read());
-      meta.setBytesPerLine(stream.readShort());
-      int paletteType = stream.readShort();
+		/*
+		 * @see io.scif.Metadata#populateImageMetadata()
+		 */
+		public void populateImageMetadata() {
 
-      meta.setOffset(stream.getFilePointer() + 58);
-      
-      if (version == 5 && meta.getnColorPlanes() == 1) {
-        stream.seek(stream.length() - 768);
-        byte[][] lut = new byte[3][256];
-        for (int i=0; i<lut[0].length; i++) {
-          for (int j=0; j<lut.length; j++) {
-            lut[j][i] = stream.readByte();
-          }
-        }
-        
-        meta.lut = new ColorTable8(lut);
-        iMeta.setIndexed(true);
-      }
+			final ImageMetadata iMeta = get(0);
+			iMeta.setAxisLength(Axes.CHANNEL, nColorPlanes);
+			iMeta.setAxisLength(Axes.Z, 1);
+			iMeta.setAxisLength(Axes.TIME, 1);
+			iMeta.setRGB(nColorPlanes > 1);
+			iMeta.setPlaneCount(1);
+			iMeta.setPixelType(FormatTools.UINT8);
+			iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
+			iMeta.setInterleaved(false);
+		}
 
-      addGlobalMeta("Palette type", paletteType);
-    }
-    
-  }
+		@Override
+		public void close(final boolean fileOnly) throws IOException {
+			super.close(fileOnly);
+			if (!fileOnly) {
+				offset = 0;
+				bytesPerLine = 0;
+				nColorPlanes = 0;
+				lut = null;
+			}
+		}
 
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Reader extends ByteArrayReader<Metadata> {
-    
-    // -- Constructor --
-    
-    public Reader() {
-      domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
-    }
+		// -- HasColorTable API Methods -
 
-    // -- Reader API Methods --
-  
-    /*
-     * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-     */
-    public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
-      ByteArrayPlane plane, int x, int y, int w, int h)
-      throws FormatException, IOException 
-    {
-      Metadata meta = getMetadata();
-      byte[] buf = plane.getData();
-      
-      FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
+		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
+		{
+			return lut;
+		}
+	}
 
-      getStream().seek(meta.getOffset());
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Checker extends AbstractChecker {
 
-      // PCX uses a simple RLE compression algorithm
+		// -- Constants --
 
-      byte[] b = new byte[meta.getBytesPerLine() * meta.getAxisLength(imageIndex, Axes.Y) * meta.getnColorPlanes()];
-      int pt = 0;
-      while (pt < b.length) {
-        int val = getStream().read() & 0xff;
-        if (((val & 0xc0) >> 6) == 3) {
-          int len = val & 0x3f;
-          val = getStream().read() & 0xff;
-          for (int q=0; q<len; q++) {
-            b[pt++] = (byte) val;
-            if ((pt % meta.getBytesPerLine()) == 0) {
-              break;
-            }
-          }
-        }
-        else b[pt++] = (byte) (val & 0xff);
-      }
+		public static final byte PCX_MAGIC_BYTE = 10;
 
-      int src = y * meta.getnColorPlanes() * meta.getBytesPerLine();
-      for (int row=0; row<h; row++) {
-        int rowOffset = row * meta.getnColorPlanes() * meta.getBytesPerLine();
-        for (int c=0; c<meta.getnColorPlanes(); c++) {
-          System.arraycopy(b, src + rowOffset + x, buf, c * w * h + row * w, w);
-          rowOffset += meta.getBytesPerLine();
-        }
-      }
+		// -- Checker API Methods --
 
-      return plane;
-    }
-  }
+		@Override
+		public boolean isFormat(final RandomAccessInputStream stream)
+			throws IOException
+		{
+			final int blockLen = 1;
+			if (!FormatTools.validStream(stream, blockLen, false)) return false;
+			return stream.read() == PCX_MAGIC_BYTE;
+		}
+	}
+
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Parser extends AbstractParser<Metadata> {
+
+		// -- Parser API Methods --
+
+		@Override
+		protected void typedParse(final RandomAccessInputStream stream,
+			final Metadata meta) throws IOException, FormatException
+		{
+			LOGGER.info("Reading file header");
+
+			meta.createImageMetadata(1);
+			final ImageMetadata iMeta = meta.get(0);
+
+			iMeta.setLittleEndian(true);
+			stream.order(true);
+			stream.seek(1);
+			final int version = stream.read();
+			stream.skipBytes(1);
+			final int bitsPerPixel = stream.read();
+			final int xMin = stream.readShort();
+			final int yMin = stream.readShort();
+			final int xMax = stream.readShort();
+			final int yMax = stream.readShort();
+
+			iMeta.setAxisLength(Axes.X, xMax - xMin);
+			iMeta.setAxisLength(Axes.Y, yMax - yMin);
+
+			stream.skipBytes(version == 5 ? 53 : 51);
+
+			meta.setnColorPlanes(stream.read());
+			meta.setBytesPerLine(stream.readShort());
+			final int paletteType = stream.readShort();
+
+			meta.setOffset(stream.getFilePointer() + 58);
+
+			if (version == 5 && meta.getnColorPlanes() == 1) {
+				stream.seek(stream.length() - 768);
+				final byte[][] lut = new byte[3][256];
+				for (int i = 0; i < lut[0].length; i++) {
+					for (int j = 0; j < lut.length; j++) {
+						lut[j][i] = stream.readByte();
+					}
+				}
+
+				meta.lut = new ColorTable8(lut);
+				iMeta.setIndexed(true);
+			}
+
+			addGlobalMeta("Palette type", paletteType);
+		}
+
+	}
+
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Reader extends ByteArrayReader<Metadata> {
+
+		// -- Constructor --
+
+		public Reader() {
+			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		}
+
+		// -- Reader API Methods --
+
+		/*
+		 * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
+		 */
+		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+			final ByteArrayPlane plane, final int x, final int y, final int w,
+			final int h) throws FormatException, IOException
+		{
+			final Metadata meta = getMetadata();
+			final byte[] buf = plane.getData();
+
+			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
+				buf.length, x, y, w, h);
+
+			getStream().seek(meta.getOffset());
+
+			// PCX uses a simple RLE compression algorithm
+
+			final byte[] b =
+				new byte[meta.getBytesPerLine() *
+					meta.getAxisLength(imageIndex, Axes.Y) * meta.getnColorPlanes()];
+			int pt = 0;
+			while (pt < b.length) {
+				int val = getStream().read() & 0xff;
+				if (((val & 0xc0) >> 6) == 3) {
+					final int len = val & 0x3f;
+					val = getStream().read() & 0xff;
+					for (int q = 0; q < len; q++) {
+						b[pt++] = (byte) val;
+						if ((pt % meta.getBytesPerLine()) == 0) {
+							break;
+						}
+					}
+				}
+				else b[pt++] = (byte) (val & 0xff);
+			}
+
+			final int src = y * meta.getnColorPlanes() * meta.getBytesPerLine();
+			for (int row = 0; row < h; row++) {
+				int rowOffset = row * meta.getnColorPlanes() * meta.getBytesPerLine();
+				for (int c = 0; c < meta.getnColorPlanes(); c++) {
+					System.arraycopy(b, src + rowOffset + x, buf, c * w * h + row * w, w);
+					rowOffset += meta.getBytesPerLine();
+				}
+			}
+
+			return plane;
+		}
+	}
 }

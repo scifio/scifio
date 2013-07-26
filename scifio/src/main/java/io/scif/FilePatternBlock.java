@@ -39,143 +39,145 @@ package io.scif;
 import java.math.BigInteger;
 
 /**
- * FilePatternBlock represents a single block in a {@link loci.formats.FilePattern}.
- *
- * Examples:
+ * FilePatternBlock represents a single block in a
+ * {@link loci.formats.FilePattern}. Examples:
  * <ul>
- *   <li>&lt;1-12&gt;</li>
- *   <li>&lt;A-H&gt;</li>
- *   <li>&lt;R,G,B&gt;</li>
+ * <li>&lt;1-12&gt;</li>
+ * <li>&lt;A-H&gt;</li>
+ * <li>&lt;R,G,B&gt;</li>
  * </ul>
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FilePatternBlock.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FilePatternBlock.java;hb=HEAD">Gitweb</a></dd></dl>
- *
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FilePatternBlock.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FilePatternBlock.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
  */
 public class FilePatternBlock {
 
-  // -- Constants --
+	// -- Constants --
 
-  public static final String BLOCK_START = "<";
-  public static final String BLOCK_END = ">";
+	public static final String BLOCK_START = "<";
+	public static final String BLOCK_END = ">";
 
-  // -- Fields --
+	// -- Fields --
 
-  /** Elements within this block, e.g. ["R", "G", "B"] or ["1", "2", "3"]. */
-  private String[] elements;
+	/** Elements within this block, e.g. ["R", "G", "B"] or ["1", "2", "3"]. */
+	private String[] elements;
 
-  /** Whether or not this is a fixed-width block. */
-  private boolean fixed;
+	/** Whether or not this is a fixed-width block. */
+	private boolean fixed;
 
-  /** The number of leading zeroes. */
-  private int zeroes;
+	/** The number of leading zeroes. */
+	private int zeroes;
 
-  /** String representation of this block. */
-  private String block;
+	/** String representation of this block. */
+	private final String block;
 
-  private BigInteger begin = null, end = null, step = null;
+	private BigInteger begin = null, end = null, step = null;
 
-  // -- Constructor --
+	// -- Constructor --
 
-  public FilePatternBlock(String block) {
-    this.block = block;
-    explode();
-  }
+	public FilePatternBlock(final String block) {
+		this.block = block;
+		explode();
+	}
 
-  // -- FilePatternBlock API methods --
+	// -- FilePatternBlock API methods --
 
-  public String[] getElements() {
-    return elements;
-  }
+	public String[] getElements() {
+		return elements;
+	}
 
-  public String getBlock() {
-    return block;
-  }
+	public String getBlock() {
+		return block;
+	}
 
-  public boolean isFixed() {
-    return fixed;
-  }
+	public boolean isFixed() {
+		return fixed;
+	}
 
-  public BigInteger getFirst() {
-    return begin;
-  }
+	public BigInteger getFirst() {
+		return begin;
+	}
 
-  public BigInteger getLast() {
-    return end;
-  }
+	public BigInteger getLast() {
+		return end;
+	}
 
-  public BigInteger getStep() {
-    return step;
-  }
+	public BigInteger getStep() {
+		return step;
+	}
 
-  // -- Helper methods --
+	// -- Helper methods --
 
-  private void explode() {
-    int dash = block.indexOf("-");
-    String b, e, s;
-    if (dash < 0) {
-      // check if this is an enumerated list
-      int comma = block.indexOf(",");
-      if (comma > 0) {
-        elements = block.substring(1, block.length() - 1).split(",");
-        return;
-      }
-      else {
-        // no range and not a list; assume entire block is a single value
-        b = e = block.substring(1, block.length() - 1);
-        s = "1";
-      }
-    }
-    else {
-      int colon = block.indexOf(":");
-      b = block.substring(1, dash);
-      if (colon < 0) {
-        e = block.substring(dash + 1, block.length() - 1);
-        s = "1";
-      }
-      else {
-        e = block.substring(dash + 1, colon);
-        s = block.substring(colon + 1, block.length() - 1);
-      }
-    }
+	private void explode() {
+		final int dash = block.indexOf("-");
+		String b, e, s;
+		if (dash < 0) {
+			// check if this is an enumerated list
+			final int comma = block.indexOf(",");
+			if (comma > 0) {
+				elements = block.substring(1, block.length() - 1).split(",");
+				return;
+			}
+			else {
+				// no range and not a list; assume entire block is a single value
+				b = e = block.substring(1, block.length() - 1);
+				s = "1";
+			}
+		}
+		else {
+			final int colon = block.indexOf(":");
+			b = block.substring(1, dash);
+			if (colon < 0) {
+				e = block.substring(dash + 1, block.length() - 1);
+				s = "1";
+			}
+			else {
+				e = block.substring(dash + 1, colon);
+				s = block.substring(colon + 1, block.length() - 1);
+			}
+		}
 
-    boolean numeric = true;
+		boolean numeric = true;
 
-    try {
-      begin = new BigInteger(b);
-      end = new BigInteger(e);
-      step = new BigInteger(s);
-    }
-    catch (NumberFormatException exc) {
-      numeric = false;
-      begin = new BigInteger(b, 26);
-      end = new BigInteger(e, 26);
-      step = new BigInteger(s, 26);
-    }
+		try {
+			begin = new BigInteger(b);
+			end = new BigInteger(e);
+			step = new BigInteger(s);
+		}
+		catch (final NumberFormatException exc) {
+			numeric = false;
+			begin = new BigInteger(b, 26);
+			end = new BigInteger(e, 26);
+			step = new BigInteger(s, 26);
+		}
 
-    fixed = b.length() == e.length();
-    zeroes = 0;
-    for (zeroes=0; zeroes<e.length(); zeroes++) {
-      if (e.charAt(zeroes) != '0') break;
-    }
+		fixed = b.length() == e.length();
+		zeroes = 0;
+		for (zeroes = 0; zeroes < e.length(); zeroes++) {
+			if (e.charAt(zeroes) != '0') break;
+		}
 
-    int count = end.subtract(begin).divide(step).intValue() + 1;
-    elements = new String[count];
+		final int count = end.subtract(begin).divide(step).intValue() + 1;
+		elements = new String[count];
 
-    for (int i=0; i<count; i++) {
-      BigInteger v = begin.add(step.multiply(BigInteger.valueOf(i)));
-      String value = numeric ? v.toString() : v.toString(26);
-      if (!numeric) {
-        if (Character.isLowerCase(b.charAt(0))) value = value.toLowerCase();
-        else value = value.toUpperCase();
-      }
-      int padChars = fixed ? e.length() - value.length() : 0;
-      elements[i] = value;
-      for (int j=0; j<padChars; j++) {
-        elements[i] = "0" + elements[i];
-      }
-    }
-  }
+		for (int i = 0; i < count; i++) {
+			final BigInteger v = begin.add(step.multiply(BigInteger.valueOf(i)));
+			String value = numeric ? v.toString() : v.toString(26);
+			if (!numeric) {
+				if (Character.isLowerCase(b.charAt(0))) value = value.toLowerCase();
+				else value = value.toUpperCase();
+			}
+			final int padChars = fixed ? e.length() - value.length() : 0;
+			elements[i] = value;
+			for (int j = 0; j < padChars; j++) {
+				elements[i] = "0" + elements[i];
+			}
+		}
+	}
 
 }

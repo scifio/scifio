@@ -33,34 +33,34 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import java.io.IOException;
 
 /**
- * Interface for components that can group multiple files together (e.g.
- * for Parsing metadata or reading pixels)
+ * Interface for components that can group multiple files together (e.g. for
+ * Parsing metadata or reading pixels)
  * 
  * @author Mark Hiner
- *
  */
 public interface Groupable {
 
-  /** Specifies whether or not to force grouping in multi-file formats. */
-  void setGroupFiles(boolean group);
+	/** Specifies whether or not to force grouping in multi-file formats. */
+	void setGroupFiles(boolean group);
 
-  /** Returns true if we should group files in multi-file formats.*/
-  boolean isGroupFiles();
+	/** Returns true if we should group files in multi-file formats. */
+	boolean isGroupFiles();
 
-  /**
-   * Returns an int indicating that we cannot, must, or might group the files
-   * in a given dataset.
-   */
-  int fileGroupOption(String id) throws FormatException, IOException;
-  
-  /** Returns true if this is a single-file format. */
-  boolean isSingleFile(String id) throws FormatException, IOException;
-  
-  /** Returns true if this format supports multi-file datasets. */
-  boolean hasCompanionFiles();
+	/**
+	 * Returns an int indicating that we cannot, must, or might group the files in
+	 * a given dataset.
+	 */
+	int fileGroupOption(String id) throws FormatException, IOException;
+
+	/** Returns true if this is a single-file format. */
+	boolean isSingleFile(String id) throws FormatException, IOException;
+
+	/** Returns true if this format supports multi-file datasets. */
+	boolean hasCompanionFiles();
 }

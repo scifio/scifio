@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.filters;
 
 import io.scif.AbstractHasSCIFIO;
@@ -43,76 +44,76 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract superclass for {@link io.scif.filters.Filter} implementations.
  * <p>
- * NB: the {@link #compareTo(Filter)} implementation provided produces
- * a natural ordering in descending order of {@link #getPriority()}.
+ * NB: the {@link #compareTo(Filter)} implementation provided produces a natural
+ * ordering in descending order of {@link #getPriority()}.
  * </p>
  * <p>
- * NB: the {@link #setParent(Object)} method can not be typed narrowed with generics
- * due to erasure. Type checking is performed during this call, however,
- * to guarantee type safety for the cached {@link #parent} instance. An
- * {@link IllegalArgumentException} will be thrown if provided the wrong
- * type of parent for this filter.
+ * NB: the {@link #setParent(Object)} method can not be typed narrowed with
+ * generics due to erasure. Type checking is performed during this call,
+ * however, to guarantee type safety for the cached {@link #parent} instance. An
+ * {@link IllegalArgumentException} will be thrown if provided the wrong type of
+ * parent for this filter.
  * </p>
  * 
  * @author Mark Hiner
- * 
  * @see io.scif.filters.Filter
- *
  * @param <T> - Parent type of this filter.
  */
-public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Filter {
+public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements
+	Filter
+{
 
-  // -- Constants --
+	// -- Constants --
 
-  protected static final Logger LOGGER = LoggerFactory.getLogger(Filter.class);
-  
-  // -- Fields --
-  
-  /* Parent to delegate to. */
-  private T parent = null;
-  
-  /* For checking in setParent */
-  private Class<? extends T> parentClass;
-  
-  // -- Constructor --
-  
-  public AbstractFilter(Class<? extends T> parentClass) {
-    this.parentClass = parentClass;
-  }
+	protected static final Logger LOGGER = LoggerFactory.getLogger(Filter.class);
 
-  // -- Filter API Methods --
+	// -- Fields --
 
-  /*
-   * @see io.scif.filters.Filter#getParent()
-   */
-  public T getParent() {
-    return parent;
-  }
+	/* Parent to delegate to. */
+	private T parent = null;
 
-  /*
-   * @see io.scif.filters.Filter#setParent(java.lang.Object)
-   */
-  @SuppressWarnings("unchecked")
-  public void setParent(Object parent) {
-    if (parentClass.isAssignableFrom(parent.getClass()))
-      this.parent = (T) parent;
-    else {
-      throw new IllegalArgumentException("Invalid parent. Provided: " +
-      				parent.getClass() + " Expected: " + parentClass);
-    }
-  }
-  
-  /*
-   * @see io.scif.filters.Filter#reset()
-   */
-  public void reset() {
-    parent = null;
-  }
-  
-  /*
-   * @see io.scif.filters.Filter#isCompatible(java.lang.Class)
-   */
-  public boolean isCompatible(Class<?> c) {
-    return parentClass.isAssignableFrom(c);
-  }
+	/* For checking in setParent */
+	private final Class<? extends T> parentClass;
+
+	// -- Constructor --
+
+	public AbstractFilter(final Class<? extends T> parentClass) {
+		this.parentClass = parentClass;
+	}
+
+	// -- Filter API Methods --
+
+	/*
+	 * @see io.scif.filters.Filter#getParent()
+	 */
+	public T getParent() {
+		return parent;
+	}
+
+	/*
+	 * @see io.scif.filters.Filter#setParent(java.lang.Object)
+	 */
+	@SuppressWarnings("unchecked")
+	public void setParent(final Object parent) {
+		if (parentClass.isAssignableFrom(parent.getClass())) this.parent =
+			(T) parent;
+		else {
+			throw new IllegalArgumentException("Invalid parent. Provided: " +
+				parent.getClass() + " Expected: " + parentClass);
+		}
+	}
+
+	/*
+	 * @see io.scif.filters.Filter#reset()
+	 */
+	public void reset() {
+		parent = null;
+	}
+
+	/*
+	 * @see io.scif.filters.Filter#isCompatible(java.lang.Class)
+	 */
+	public boolean isCompatible(final Class<?> c) {
+		return parentClass.isAssignableFrom(c);
+	}
 }

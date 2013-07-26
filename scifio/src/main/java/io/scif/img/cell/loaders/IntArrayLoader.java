@@ -1,4 +1,3 @@
-
 /*
  * #%L
  * SCIFIO library for reading and converting scientific file formats.
@@ -46,37 +45,38 @@ import java.nio.ByteOrder;
 import net.imglib2.img.basictypeaccess.array.IntArray;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link IntArray}
- * types.
+ * {@link SCIFIOArrayLoader} implementation for {@link IntArray} types.
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
-public class IntArrayLoader extends AbstractArrayLoader< IntArray >
-{
-  public IntArrayLoader (Reader reader) {
-    super(reader);
-  }
+public class IntArrayLoader extends AbstractArrayLoader<IntArray> {
 
-  @Override
-  public void convertBytes(IntArray data, byte[] bytes, int planesRead) {
-    Metadata meta = reader().getMetadata();
-    
-    int bpp = meta.getBitsPerPixel(0) / 8;
-    int offset = planesRead * (bytes.length / bpp);
+	public IntArrayLoader(final Reader reader) {
+		super(reader);
+	}
 
-    ByteBuffer bb = ByteBuffer.wrap(bytes);
-    
-    bb.order(meta.isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-    bb.asIntBuffer().get(data.getCurrentStorageArray(), offset, bytes.length / bpp);
-  }
-  
-  public IntArray emptyArray( final int[] dimensions )
-  {
-    return new IntArray( countEntities(dimensions) );
-  }
+	@Override
+	public void convertBytes(final IntArray data, final byte[] bytes,
+		final int planesRead)
+	{
+		final Metadata meta = reader().getMetadata();
 
-  public int getBitsPerElement() {
-    return 32;
-  }
+		final int bpp = meta.getBitsPerPixel(0) / 8;
+		final int offset = planesRead * (bytes.length / bpp);
+
+		final ByteBuffer bb = ByteBuffer.wrap(bytes);
+
+		bb.order(meta.isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN
+			: ByteOrder.BIG_ENDIAN);
+		bb.asIntBuffer().get(data.getCurrentStorageArray(), offset,
+			bytes.length / bpp);
+	}
+
+	public IntArray emptyArray(final int[] dimensions) {
+		return new IntArray(countEntities(dimensions));
+	}
+
+	public int getBitsPerElement() {
+		return 32;
+	}
 }

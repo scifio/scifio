@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.discovery.utests;
 
 import org.testng.annotations.Test;
@@ -41,9 +42,8 @@ import org.testng.annotations.Test;
  * Unit tests for all discoverable (via sezpoz) classes in SCIFIO.
  * 
  * @author Mark Hiner
- *
  */
-@Test(groups="discoveryTests")
+@Test(groups = "discoveryTests")
 public class DiscoveryTest {
 
 }

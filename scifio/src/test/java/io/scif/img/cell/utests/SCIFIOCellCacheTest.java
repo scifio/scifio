@@ -46,14 +46,13 @@ import org.testng.annotations.Test;
  * Unit tests for {@link SCIFIOCellCache}
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
-@Test(groups="cellTests")
+@Test(groups = "cellTests")
 public class SCIFIOCellCacheTest {
 
-  @BeforeMethod
-  public void setUp() { }
-  
-  @AfterMethod
-  public void tearDown() { }
+	@BeforeMethod
+	public void setUp() {}
+
+	@AfterMethod
+	public void tearDown() {}
 }

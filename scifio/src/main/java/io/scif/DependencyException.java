@@ -41,79 +41,84 @@ import org.scijava.service.Service;
 /**
  * Exception thrown when there is an object instantiation error or error
  * processing dependencies.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/services/DependencyException.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/services/DependencyException.java;hb=HEAD">Gitweb</a></dd></dl>
- *
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/services/DependencyException.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/services/DependencyException.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
+ * 
  * @author Chris Allan <callan at blackcat dot ca>
  */
-public class DependencyException extends Exception
-{
-  /** Serial for this version. */
-  protected static final long serialVersionUID = -7836244849086491562L;
-  
-  /** The class that was used in a failed instantiation. */
-  protected Class<? extends Service> failureClass;
+public class DependencyException extends Exception {
 
-  /**
-   * Default constructor.
-   * @param message Error message.
-   */
-  public DependencyException(String message)
-  {
-    super(message);
-  }
+	/** Serial for this version. */
+	protected static final long serialVersionUID = -7836244849086491562L;
 
-  /**
-   * Default constructor.
-   * @param message Error message. 
-   * @param klass Failed instantiation class.
-   */
-  public DependencyException(String message, Class<? extends Service> klass)
-  {
-    super(message);
-    this.failureClass = klass;
-  }
+	/** The class that was used in a failed instantiation. */
+	protected Class<? extends Service> failureClass;
 
-  /**
-   * Default constructor.
-   * @param message Error message. 
-   * @param klass Failed instantiation class.
-   * @param cause Upstream exception.
-   */
-  public DependencyException(String message, Class<? extends Service> klass,
-      Throwable cause)
-  {
-    super(message, cause);
-    this.failureClass = klass;
-  }
+	/**
+	 * Default constructor.
+	 * 
+	 * @param message Error message.
+	 */
+	public DependencyException(final String message) {
+		super(message);
+	}
 
-  /**
-   * Default constructor.
-   * @param cause Upstream exception.
-   */
-  public DependencyException(Throwable cause)
-  {
-    super(cause);
-  }
+	/**
+	 * Default constructor.
+	 * 
+	 * @param message Error message.
+	 * @param klass Failed instantiation class.
+	 */
+	public DependencyException(final String message,
+		final Class<? extends Service> klass)
+	{
+		super(message);
+		this.failureClass = klass;
+	}
 
-  /**
-   * Returns the class that was used during a failed instantiation.
-   * @return See above.
-   */
-  public Class<? extends Service> getFailureClass()
-  {
-    return failureClass;
-  }
+	/**
+	 * Default constructor.
+	 * 
+	 * @param message Error message.
+	 * @param klass Failed instantiation class.
+	 * @param cause Upstream exception.
+	 */
+	public DependencyException(final String message,
+		final Class<? extends Service> klass, final Throwable cause)
+	{
+		super(message, cause);
+		this.failureClass = klass;
+	}
 
-  @Override
-  public String toString()
-  {
-    if (failureClass == null)
-    {
-      return getMessage();
-    }
-    return getMessage() + " for " + failureClass;
-  }
+	/**
+	 * Default constructor.
+	 * 
+	 * @param cause Upstream exception.
+	 */
+	public DependencyException(final Throwable cause) {
+		super(cause);
+	}
+
+	/**
+	 * Returns the class that was used during a failed instantiation.
+	 * 
+	 * @return See above.
+	 */
+	public Class<? extends Service> getFailureClass() {
+		return failureClass;
+	}
+
+	@Override
+	public String toString() {
+		if (failureClass == null) {
+			return getMessage();
+		}
+		return getMessage() + " for " + failureClass;
+	}
 }

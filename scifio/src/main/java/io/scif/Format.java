@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import org.scijava.Prioritized;
@@ -40,138 +41,131 @@ import org.scijava.Prioritized;
 /**
  * Interface for all SCIFIO formats.
  * <p>
- * The {@code Format} is a bag for all other SCIFIO components associated
- * with image IO in a given image format. It acts as a bridge and a black box
- * for creating components, and facilitates component intercommunication.
+ * The {@code Format} is a bag for all other SCIFIO components associated with
+ * image IO in a given image format. It acts as a bridge and a black box for
+ * creating components, and facilitates component intercommunication.
  * </p>
  * <p>
- * {@code Formats} are typically accessed through the 
- * {@link io.scif.services.FormatService}, which maintains a list of
- * singleton {@code Formats} and has many convenience methods relating
- * to their use.
+ * {@code Formats} are typically accessed through the
+ * {@link io.scif.services.FormatService}, which maintains a list of singleton
+ * {@code Formats} and has many convenience methods relating to their use.
  * </p>
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="">Trac</a>,
- * <a href="">Gitweb</a></dd></dl>
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href="">Trac</a>, <a href="">Gitweb</a></dd>
+ * </dl>
  * 
  * @author Mark Hiner
- * 
  * @see io.scif.SCIFIO
  * @see io.scif.services.FormatService
  */
 public interface Format extends SCIFIOPlugin, Prioritized, HasSCIFIO {
-  
-  // -- Format API methods --
-  
-  /**
-   * Toggle whether this Format should be used when checking image compatibility.
-   * 
-   * @param enabled - if true, this Format will be used in image/IO. Default: true
-   * 
-   */
-  void setEnabled(boolean enabled);
-  
-  /**
-   * @return True if this Format is active when checking image compatibility.
-   */
-  boolean isEnabled();
 
-  /** 
-   * Gets the name of this file format.
-   * 
-   * @return a String representation of this Format's name
-   */
-  String getFormatName();
+	// -- Format API methods --
 
-  /**
-   * Gets the default file suffixes for this file format.
-   * <p>
-   * Sample valid suffixes:
-   * <ul>
-   *   <li>
-   *   png
-   *   </li>
-   *   <li>
-   *   avi
-   *   </li>
-   *   <li>
-   *   bmp
-   *   </li>
-   * </ul>
-   * </p>
-   * 
-   * @return an array of extensions associated with this Format
-   */
-  String[] getSuffixes();  
-  
-  /**
-   * Create an instance of the Metadata associated with this format.
-   * 
-   * @return A new {@link io.scif.Metadata} instance compatible
-   *         with this Format's components
-   * @throws FormatException
-   */
-  Metadata createMetadata() throws FormatException;
+	/**
+	 * Toggle whether this Format should be used when checking image
+	 * compatibility.
+	 * 
+	 * @param enabled - if true, this Format will be used in image/IO. Default:
+	 *          true
+	 */
+	void setEnabled(boolean enabled);
 
-  /**
-   * Create an instance of the Checker associated with this format.
-   * 
-   * @return A new {@link io.scif.Checker} instance which can
-   *         determine if sources are compatible with this Format.
-   * @throws FormatException
-   */
-  Checker createChecker() throws FormatException;
+	/**
+	 * @return True if this Format is active when checking image compatibility.
+	 */
+	boolean isEnabled();
 
-  /**
-   * Create an instance of the Parser associated with this format.
-   * 
-   * @return A new {@link io.scif.Parser} instance capable of
-   *         populating Metadata compatible with this Format.
-   * @throws FormatException
-   */
-  Parser createParser() throws FormatException;
+	/**
+	 * Gets the name of this file format.
+	 * 
+	 * @return a String representation of this Format's name
+	 */
+	String getFormatName();
 
-  /**
-   * Creates an instance of the Reader associated with this format.
-   * 
-   * @return A new {@link io.scif.Reader} instance capable of
-   *         reading datasets of this Format.
-   * @throws FormatException
-   */
-  Reader createReader() throws FormatException;
+	/**
+	 * Gets the default file suffixes for this file format.
+	 * <p>
+	 * Sample valid suffixes:
+	 * <ul>
+	 * <li>png</li>
+	 * <li>avi</li>
+	 * <li>bmp</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * @return an array of extensions associated with this Format
+	 */
+	String[] getSuffixes();
 
-  /**
-   * Creates an instance of the Writer associated with this format.
-   * 
-   * @return A new {@link io.scif.Writer} instance capable of
-   *         writing datasets of this Format.
-   * @throws FormatException
-   */
-  Writer createWriter() throws FormatException;
-   
-  /**
-   * @return The class of the Metadata associated with this format
-   */
-  Class<?> getMetadataClass();
+	/**
+	 * Create an instance of the Metadata associated with this format.
+	 * 
+	 * @return A new {@link io.scif.Metadata} instance compatible with this
+	 *         Format's components
+	 * @throws FormatException
+	 */
+	Metadata createMetadata() throws FormatException;
 
-  /**
-   * @return The class of the Checker associated with this format
-   */
-  Class<?> getCheckerClass();
+	/**
+	 * Create an instance of the Checker associated with this format.
+	 * 
+	 * @return A new {@link io.scif.Checker} instance which can determine if
+	 *         sources are compatible with this Format.
+	 * @throws FormatException
+	 */
+	Checker createChecker() throws FormatException;
 
-  /**
-   * @return The class of the Parser associated with this format
-   */
-  Class<?> getParserClass();
+	/**
+	 * Create an instance of the Parser associated with this format.
+	 * 
+	 * @return A new {@link io.scif.Parser} instance capable of populating
+	 *         Metadata compatible with this Format.
+	 * @throws FormatException
+	 */
+	Parser createParser() throws FormatException;
 
-  /**
-   * @return The class of the Reader associated with this format
-   */
-  Class<?> getReaderClass();
+	/**
+	 * Creates an instance of the Reader associated with this format.
+	 * 
+	 * @return A new {@link io.scif.Reader} instance capable of reading datasets
+	 *         of this Format.
+	 * @throws FormatException
+	 */
+	Reader createReader() throws FormatException;
 
-  /**
-   * @return The class of the Writer associated with this format
-   */
-  Class<?> getWriterClass();
+	/**
+	 * Creates an instance of the Writer associated with this format.
+	 * 
+	 * @return A new {@link io.scif.Writer} instance capable of writing datasets
+	 *         of this Format.
+	 * @throws FormatException
+	 */
+	Writer createWriter() throws FormatException;
+
+	/**
+	 * @return The class of the Metadata associated with this format
+	 */
+	Class<?> getMetadataClass();
+
+	/**
+	 * @return The class of the Checker associated with this format
+	 */
+	Class<?> getCheckerClass();
+
+	/**
+	 * @return The class of the Parser associated with this format
+	 */
+	Class<?> getParserClass();
+
+	/**
+	 * @return The class of the Reader associated with this format
+	 */
+	Class<?> getReaderClass();
+
+	/**
+	 * @return The class of the Writer associated with this format
+	 */
+	Class<?> getWriterClass();
 }

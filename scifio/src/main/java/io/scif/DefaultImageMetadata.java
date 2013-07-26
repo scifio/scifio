@@ -37,33 +37,32 @@
 package io.scif;
 
 /**
- * Default implementation of {@link ImageMetadata}. No added functionality
- * over {@link io.scif.AbstractImageMetadata}.
+ * Default implementation of {@link ImageMetadata}. No added functionality over
+ * {@link io.scif.AbstractImageMetadata}.
  * 
  * @see io.scif.ImageMetadata
  * @see io.scif.AbstractImageMetadata
- * 
  * @author Mark Hiner
  */
 public class DefaultImageMetadata extends AbstractImageMetadata {
-  
-  // -- Constructors --
-  
-  public DefaultImageMetadata() {
-    super();
-  }
-  
-  public DefaultImageMetadata(ImageMetadata copy) {
-    super(copy);
-  }
 
-  // -- ImageMetadata API Methods --
-  
-  /*
-   * @see io.scif.ImageMetadata#copy()
-   */
-  public ImageMetadata copy() {
-    return new DefaultImageMetadata(this);
-  }
+	// -- Constructors --
+
+	public DefaultImageMetadata() {
+		super();
+	}
+
+	public DefaultImageMetadata(final ImageMetadata copy) {
+		super(copy);
+	}
+
+	// -- ImageMetadata API Methods --
+
+	/*
+	 * @see io.scif.ImageMetadata#copy()
+	 */
+	public ImageMetadata copy() {
+		return new DefaultImageMetadata(this);
+	}
 
 }

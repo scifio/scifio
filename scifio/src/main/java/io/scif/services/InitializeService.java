@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.services;
 
 import io.scif.FormatException;
@@ -42,84 +43,81 @@ import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
 
-
 import org.scijava.service.Service;
 
 /**
- * A collection of methods for initializing the
- * IO components of SCIFIO (Readers and Writers). All parsing
- * and Metadata setup is done automatically.
+ * A collection of methods for initializing the IO components of SCIFIO (Readers
+ * and Writers). All parsing and Metadata setup is done automatically.
  * <p>
- * NB: The {@link #initializeReader()} line of methods return
- * a {@link io.scif.filters.ReaderFilter} instead of a basic Reader.
- * This is a convenience to allow filters to be enabled if desired.
+ * NB: The {@link #initializeReader()} line of methods return a
+ * {@link io.scif.filters.ReaderFilter} instead of a basic Reader. This is a
+ * convenience to allow filters to be enabled if desired.
  * </p>
  * 
  * @see io.scif.Reader
  * @see io.scif.Writer
  * @see io.scif.filters.ReaderFilter
- * 
  * @author Mark Hiner
- *
  */
 public interface InitializeService extends Service {
 
-  /**
-   * See {@link #initializeReader(String, boolean)}. Will not open the image
-   * source while parsing metadata.
-   * 
-   * @param id Name of the image source to be read.
-   * @return An initialized {@code Reader}.
-   */
-  ReaderFilter initializeReader(String id) throws FormatException, IOException;
+	/**
+	 * See {@link #initializeReader(String, boolean)}. Will not open the image
+	 * source while parsing metadata.
+	 * 
+	 * @param id Name of the image source to be read.
+	 * @return An initialized {@code Reader}.
+	 */
+	ReaderFilter initializeReader(String id) throws FormatException, IOException;
 
-  /**
-   * Convenience method for creating a {@code Reader} component that is ready
-   * to open planes of the provided image source. The reader's {@code Metadata}
-   * and source fields will be populated.
-   * 
-   * @param id Name of the image source to be read.
-   * @param openFile If true, the image source may be read during metadata
-   *        parsing.
-   * @return An initialized {@code Reader}.
-   */
-  ReaderFilter initializeReader(String id, boolean openFile)
-    throws FormatException, IOException;
+	/**
+	 * Convenience method for creating a {@code Reader} component that is ready to
+	 * open planes of the provided image source. The reader's {@code Metadata} and
+	 * source fields will be populated.
+	 * 
+	 * @param id Name of the image source to be read.
+	 * @param openFile If true, the image source may be read during metadata
+	 *          parsing.
+	 * @return An initialized {@code Reader}.
+	 */
+	ReaderFilter initializeReader(String id, boolean openFile)
+		throws FormatException, IOException;
 
-  /**
-   * See {@link #initializeWriter(String, String, boolean)}. Will not open the
-   * image source while parsing metadata.
-   * 
-   * @param source Name of the image source to use for parsing metadata.
-   * @param destination Name of the writing destination.
-   * @return An initialized {@code Writer}.
-   */
-  Writer initializeWriter(String source, String destination)
-    throws FormatException, IOException;
+	/**
+	 * See {@link #initializeWriter(String, String, boolean)}. Will not open the
+	 * image source while parsing metadata.
+	 * 
+	 * @param source Name of the image source to use for parsing metadata.
+	 * @param destination Name of the writing destination.
+	 * @return An initialized {@code Writer}.
+	 */
+	Writer initializeWriter(String source, String destination)
+		throws FormatException, IOException;
 
-  /**
-   * Convenience method for creating a {@code Writer} component that is ready
-   * to save planes to the destination image. {@code Metadata} will be parsed
-   * from the source, translated to the destination's type if necessary, and
-   * set (along with the destination itself) on the resulting {@code Writer}.
-   * 
-   * @param source Name of the image source to use for parsing metadata.
-   * @param destination Name of the writing destination.
-   * @param openFile If true, the image source may be read during metadata
-   *        parsing.
-   * @return An initialized {@code Writer}.
-   */
-  Writer initializeWriter(String source, String destination, boolean openSource)
-    throws FormatException, IOException;
-  
-  /**
-   * See {@link #initializeWriter(String, String, boolean)}. Will not open the
-   * image source while parsing metadata.
-   * 
-   * @param source Name of the image source to use for parsing metadata.
-   * @param destination Name of the writing destination.
-   * @return An initialized {@code Writer}.
-   */
-  Writer initializeWriter(Metadata sourceMeta, String destination)
-    throws FormatException, IOException;
+	/**
+	 * Convenience method for creating a {@code Writer} component that is ready to
+	 * save planes to the destination image. {@code Metadata} will be parsed from
+	 * the source, translated to the destination's type if necessary, and set
+	 * (along with the destination itself) on the resulting {@code Writer}.
+	 * 
+	 * @param source Name of the image source to use for parsing metadata.
+	 * @param destination Name of the writing destination.
+	 * @param openFile If true, the image source may be read during metadata
+	 *          parsing.
+	 * @return An initialized {@code Writer}.
+	 */
+	Writer
+		initializeWriter(String source, String destination, boolean openSource)
+			throws FormatException, IOException;
+
+	/**
+	 * See {@link #initializeWriter(String, String, boolean)}. Will not open the
+	 * image source while parsing metadata.
+	 * 
+	 * @param source Name of the image source to use for parsing metadata.
+	 * @param destination Name of the writing destination.
+	 * @return An initialized {@code Writer}.
+	 */
+	Writer initializeWriter(Metadata sourceMeta, String destination)
+		throws FormatException, IOException;
 }

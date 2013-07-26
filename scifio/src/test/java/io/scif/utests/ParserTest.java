@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.utests;
 
 import org.testng.annotations.Test;
@@ -41,9 +42,8 @@ import org.testng.annotations.Test;
  * Unit tests for {@link io.scif.Parser} interface methods.
  * 
  * @author Mark Hiner
- *
  */
-@Test(groups="parserTests")
+@Test(groups = "parserTests")
 public class ParserTest {
 
 }

@@ -38,11 +38,15 @@ package io.scif.formats.tiff;
 
 /**
  * Generally useful TIFF-related constants.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/tiff/TiffConstants.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/tiff/TiffConstants.java;hb=HEAD">Gitweb</a></dd></dl>
- *
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/tiff/TiffConstants.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/tiff/TiffConstants.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
+ * 
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Eric Kjellman egkjellman at wisc.edu
  * @author Melissa Linkert melissa at glencoesoftware.com
@@ -50,22 +54,22 @@ package io.scif.formats.tiff;
  */
 public final class TiffConstants {
 
-  // -- Constants --
+	// -- Constants --
 
-  /** The number of bytes in each IFD entry. */
-  public static final int BYTES_PER_ENTRY = 12;
+	/** The number of bytes in each IFD entry. */
+	public static final int BYTES_PER_ENTRY = 12;
 
-  /** The number of bytes in each IFD entry of a BigTIFF file. */
-  public static final int BIG_TIFF_BYTES_PER_ENTRY = 20;
+	/** The number of bytes in each IFD entry of a BigTIFF file. */
+	public static final int BIG_TIFF_BYTES_PER_ENTRY = 20;
 
-  // TIFF header constants
-  public static final int MAGIC_NUMBER = 42;
-  public static final int BIG_TIFF_MAGIC_NUMBER = 43;
-  public static final int LITTLE = 0x49;
-  public static final int BIG = 0x4d;
+	// TIFF header constants
+	public static final int MAGIC_NUMBER = 42;
+	public static final int BIG_TIFF_MAGIC_NUMBER = 43;
+	public static final int LITTLE = 0x49;
+	public static final int BIG = 0x4d;
 
-  // -- Constructor --
+	// -- Constructor --
 
-  private TiffConstants() { }
+	private TiffConstants() {}
 
 }

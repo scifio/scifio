@@ -40,31 +40,31 @@ import io.scif.Reader;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link ByteArray}
- * types.
+ * {@link SCIFIOArrayLoader} implementation for {@link ByteArray} types.
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
-public class ByteArrayLoader extends AbstractArrayLoader< ByteArray >
-{
-  public ByteArrayLoader (Reader reader) {
-    super(reader);
-  }
+public class ByteArrayLoader extends AbstractArrayLoader<ByteArray> {
 
-  @Override
-  public void convertBytes(ByteArray data, byte[] bytes, int planesRead) {
-    int offset = planesRead * bytes.length;
-    
-    System.arraycopy(bytes, 0, data.getCurrentStorageArray(), offset, bytes.length);
-  }
-  
-  public ByteArray emptyArray( final int[] dimensions )
-  {
-    return new ByteArray( countEntities(dimensions) );
-  }
+	public ByteArrayLoader(final Reader reader) {
+		super(reader);
+	}
 
-  public int getBitsPerElement() {
-    return 8;
-  }
+	@Override
+	public void convertBytes(final ByteArray data, final byte[] bytes,
+		final int planesRead)
+	{
+		final int offset = planesRead * bytes.length;
+
+		System.arraycopy(bytes, 0, data.getCurrentStorageArray(), offset,
+			bytes.length);
+	}
+
+	public ByteArray emptyArray(final int[] dimensions) {
+		return new ByteArray(countEntities(dimensions));
+	}
+
+	public int getBitsPerElement() {
+		return 8;
+	}
 }

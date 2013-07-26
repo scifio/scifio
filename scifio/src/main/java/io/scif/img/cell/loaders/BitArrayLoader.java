@@ -40,39 +40,38 @@ import io.scif.Reader;
 import net.imglib2.img.basictypeaccess.array.BitArray;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link BitArray}
- * types.
+ * {@link SCIFIOArrayLoader} implementation for {@link BitArray} types.
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
-public class BitArrayLoader extends AbstractArrayLoader< BitArray >
-{
-  public BitArrayLoader (Reader reader) {
-    super(reader);
-  }
+public class BitArrayLoader extends AbstractArrayLoader<BitArray> {
 
-  @Override
-  public void convertBytes(BitArray data, byte[] bytes, int planesRead) {
-    int offset = planesRead * bytes.length * 8;
-    
-    for (int i=0; i<bytes.length; i++) {
-      byte b = bytes[i];
-      
-      for (int j=0; j<8; j++) {
-        int idx = (i * 8) + j;
-        data.setValue(offset + idx, (b & 0x01) == 1);
-        b = (byte) (b >> 1);
-      }
-    }
-  }
-  
-  public BitArray emptyArray( final int[] dimensions )
-  {
-    return new BitArray( countEntities(dimensions) );
-  }
+	public BitArrayLoader(final Reader reader) {
+		super(reader);
+	}
 
-  public int getBitsPerElement() {
-    return 1;
-  }
+	@Override
+	public void convertBytes(final BitArray data, final byte[] bytes,
+		final int planesRead)
+	{
+		final int offset = planesRead * bytes.length * 8;
+
+		for (int i = 0; i < bytes.length; i++) {
+			byte b = bytes[i];
+
+			for (int j = 0; j < 8; j++) {
+				final int idx = (i * 8) + j;
+				data.setValue(offset + idx, (b & 0x01) == 1);
+				b = (byte) (b >> 1);
+			}
+		}
+	}
+
+	public BitArray emptyArray(final int[] dimensions) {
+		return new BitArray(countEntities(dimensions));
+	}
+
+	public int getBitsPerElement() {
+		return 1;
+	}
 }

@@ -41,25 +41,29 @@ import org.xml.sax.SAXParseException;
 
 /**
  * Used by various XMLTools methods to handle XML parsing errors.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/ParserErrorHandler.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/ParserErrorHandler.java;hb=HEAD">Gitweb</a></dd></dl>
- *
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/ParserErrorHandler.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/ParserErrorHandler.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
+ * 
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class ParserErrorHandler implements ErrorHandler {
 
-  public void error(SAXParseException e) {
-    XMLTools.LOGGER.debug(e.getMessage());
-  }
+	public void error(final SAXParseException e) {
+		XMLTools.LOGGER.debug(e.getMessage());
+	}
 
-  public void fatalError(SAXParseException e) {
-    XMLTools.LOGGER.debug(e.getMessage());
-  }
+	public void fatalError(final SAXParseException e) {
+		XMLTools.LOGGER.debug(e.getMessage());
+	}
 
-  public void warning(SAXParseException e) {
-    XMLTools.LOGGER.debug(e.getMessage());
-  }
+	public void warning(final SAXParseException e) {
+		XMLTools.LOGGER.debug(e.getMessage());
+	}
 
 }

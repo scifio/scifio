@@ -53,209 +53,214 @@ import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.img.cell.AbstractCell;
 
 /**
- * {@link AbstractCell} implenetation. Stores the actual byte array for
- * a given cell position.
+ * {@link AbstractCell} implenetation. Stores the actual byte array for a given
+ * cell position.
  * 
  * @author Mark Hiner hinerm at gmail.com
  */
-public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> implements Serializable {
-  private static final long serialVersionUID = 660070520155729477L;
+public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A>
+	implements Serializable
+{
 
-  // -- Transient Fields --
-  // These fields are transient to speed up serialization/deserialization.
-  // They should be available externally when the cell is deserialized.
-  private transient CacheService<SCIFIOCell<?>> service; // hook used to cache during finalization
-  private transient String cacheId; // needed for this cell's hashcode
-  private transient int index; // needed for this cell's hashcode
-  private transient boolean enabled; // whether or not this cell should be cached
-  
-  // -- Persistent fields --
-  private A data;
-  private int currentHash; // current hash of data
-  private int cleanHash; // hash of data, unmodified
-  private long elementSize = -1L; // element size, in bytes
-  
-  // -- Constructors --
-  
-  public SCIFIOCell() { } 
-  
-  public SCIFIOCell(CacheService<SCIFIOCell<?>> service, String cacheId, int index,
-    final int[] dimensions, final long[] min, final A data) { 
-    super(dimensions, min);
-    this.data = data;
-    this.service = service;
-    this.cacheId = cacheId;
-    this.index = index;
-    enabled = true;
-    markClean(); 
-  }
-  
-  // -- SCIFIOCell Methods --
-  
-  /**
-   * Sets whether or not this cell tries to cache itself when no references
-   * to it remain.
-   */
-  public void cacheOnFinalize(boolean e) {
-    enabled = e;
-  }
+	private static final long serialVersionUID = 660070520155729477L;
 
-  /**
-   * @return the data stored in this cell
-   */
-  public A getData() {
-    return data;
-  }
-  
-  /**
-   * @param service CacheService reference
-   */
-  public void setService(CacheService<SCIFIOCell<?>> service) {
-    this.service = service;
-  }
+	// -- Transient Fields --
+	// These fields are transient to speed up serialization/deserialization.
+	// They should be available externally when the cell is deserialized.
+	private transient CacheService<SCIFIOCell<?>> service; // hook used to cache
+																													// during finalization
+	private transient String cacheId; // needed for this cell's hashcode
+	private transient int index; // needed for this cell's hashcode
+	private transient boolean enabled; // whether or not this cell should be
+																			// cached
 
-  /**
-   * @param cacheId Identifier for the cache storing this cell.
-   */
-  public void setCacheId(String cacheId) {
-    this.cacheId = cacheId;
-  }
+	// -- Persistent fields --
+	private A data;
+	private int currentHash; // current hash of data
+	private int cleanHash; // hash of data, unmodified
+	private long elementSize = -1L; // element size, in bytes
 
-  /**
-   * @param index Linear index of this cell in its cache
-   */
-  public void setIndex(int index) {
-    this.index = index;
-  }
-  
-  /**
-   * Sets the current state of this cell, as determined by the
-   * hashcode of its underlying data, as the "clean" state.
-   */
-  public void markClean() {
-    // Take a hash of the underlying data. If this is different
-    // at finalization, we know this cell is dirty and should be
-    // serialized.
-    cleanHash = computeHash(data);
-    
-    // If data isn't an ArrayAccess object, this will cause it to always
-    // look dirty compared to future computeHash calls.
-    if (cleanHash == -1) cleanHash = 0;
-    
-    currentHash = cleanHash;
-  }
-  
-  /**
-   * @return Size of the stored data object, in bytes, or
-   *         -1 if size not known.
-   */
-  public long getElementSize() {
-    return elementSize;
-  }
-  
-  /**
-   * @return True if this cell has been modified since creation
-   */
-  public boolean dirty() {
-    return !(currentHash == cleanHash);
-  }
-  
-  /**
-   * Forces this cell to determine if it is dirty or not by computing
-   * the hash of its underlying data.
-   */
-  public void update() {
-    currentHash = computeHash(data);
-  }
-  
-  // -- Object method overrides --
-  
-  /**
-   * Two SCIFIOCells are equal iff they come from the 
-   * same cache, with the same index, and have the same
-   * data state.
-   */
-  @Override
-  public boolean equals(final Object other) {
-    if (this == other)
-      return true;
-    if (other instanceof SCIFIOCell<?>) {
-      SCIFIOCell<?> otherCell = (SCIFIOCell<?>)other;
-      return cacheId.equals(otherCell.cacheId) &&
-        (index == otherCell.index) && currentHash == otherCell.currentHash; 
-    }
-    return false;
-  }
+	// -- Constructors --
 
-  @Override
-  public int hashCode() {
-    // Taken from Effective Java 2nd edition
-    int result = 17;
-    result = 31 * result + index;
-    result = 31 * result + cacheId.hashCode();
-    result = 31 * result + data.hashCode();
-    
-    return result; 
-  }
-  
-  @Override
-  public void finalize() {
-    // Writes this cell to disk as it's garbage collected
-    if (enabled) service.cache(cacheId, index, this);
-  }
-  
-  // -- Helper Methods --
-  
-  // Computes a hash of the provided data object.
-  // Also computes the size of the data object
-  private int computeHash(ArrayDataAccess<?> data) {
-    int hashCode = -1;
-    
-    if (data instanceof ByteArray) {
-      byte[] bytes = ((ByteArray)data).getCurrentStorageArray();
-      computedataSize(8l * bytes.length);
-      hashCode = Arrays.hashCode(bytes);
-    }
-    else if (data instanceof BitArray) {
-      int[] bytes = ((BitArray)data).getCurrentStorageArray();
-      computedataSize((long)Integer.SIZE * bytes.length);
-      hashCode = Arrays.hashCode(bytes);
-    }
-    else if (data instanceof CharArray) {
-      char[] bytes = ((CharArray)data).getCurrentStorageArray();
-      computedataSize(8l * bytes.length);
-      hashCode = Arrays.hashCode(bytes);
-    }
-    else if (data instanceof DoubleArray) {
-      double[] bytes = ((DoubleArray)data).getCurrentStorageArray();
-      computedataSize(64l * bytes.length);
-      hashCode = Arrays.hashCode(bytes);
-    }
-    else if (data instanceof IntArray) {
-      int[] bytes = ((IntArray)data).getCurrentStorageArray();
-      computedataSize(32l * bytes.length);
-      hashCode = Arrays.hashCode(bytes);
-    }
-    else if (data instanceof FloatArray) {
-      float[] bytes = ((FloatArray)data).getCurrentStorageArray();
-      computedataSize(32l * bytes.length);
-      hashCode = Arrays.hashCode(bytes);
-    }
-    else if (data instanceof ShortArray) {
-      short[] bytes = ((ShortArray)data).getCurrentStorageArray();
-      computedataSize(16l * bytes.length);
-      hashCode = Arrays.hashCode(bytes);
-    }
-    else if (data instanceof LongArray) {
-      long[] bytes = ((LongArray)data).getCurrentStorageArray();
-      computedataSize(64l * bytes.length);
-      hashCode = Arrays.hashCode(bytes);
-    }
-    
-    return hashCode;
-  }
-  
-  private void computedataSize(long bits) {
-    elementSize = bits / 8;
-  } 
+	public SCIFIOCell() {}
+
+	public SCIFIOCell(final CacheService<SCIFIOCell<?>> service,
+		final String cacheId, final int index, final int[] dimensions,
+		final long[] min, final A data)
+	{
+		super(dimensions, min);
+		this.data = data;
+		this.service = service;
+		this.cacheId = cacheId;
+		this.index = index;
+		enabled = true;
+		markClean();
+	}
+
+	// -- SCIFIOCell Methods --
+
+	/**
+	 * Sets whether or not this cell tries to cache itself when no references to
+	 * it remain.
+	 */
+	public void cacheOnFinalize(final boolean e) {
+		enabled = e;
+	}
+
+	/**
+	 * @return the data stored in this cell
+	 */
+	@Override
+	public A getData() {
+		return data;
+	}
+
+	/**
+	 * @param service CacheService reference
+	 */
+	public void setService(final CacheService<SCIFIOCell<?>> service) {
+		this.service = service;
+	}
+
+	/**
+	 * @param cacheId Identifier for the cache storing this cell.
+	 */
+	public void setCacheId(final String cacheId) {
+		this.cacheId = cacheId;
+	}
+
+	/**
+	 * @param index Linear index of this cell in its cache
+	 */
+	public void setIndex(final int index) {
+		this.index = index;
+	}
+
+	/**
+	 * Sets the current state of this cell, as determined by the hashcode of its
+	 * underlying data, as the "clean" state.
+	 */
+	public void markClean() {
+		// Take a hash of the underlying data. If this is different
+		// at finalization, we know this cell is dirty and should be
+		// serialized.
+		cleanHash = computeHash(data);
+
+		// If data isn't an ArrayAccess object, this will cause it to always
+		// look dirty compared to future computeHash calls.
+		if (cleanHash == -1) cleanHash = 0;
+
+		currentHash = cleanHash;
+	}
+
+	/**
+	 * @return Size of the stored data object, in bytes, or -1 if size not known.
+	 */
+	public long getElementSize() {
+		return elementSize;
+	}
+
+	/**
+	 * @return True if this cell has been modified since creation
+	 */
+	public boolean dirty() {
+		return !(currentHash == cleanHash);
+	}
+
+	/**
+	 * Forces this cell to determine if it is dirty or not by computing the hash
+	 * of its underlying data.
+	 */
+	public void update() {
+		currentHash = computeHash(data);
+	}
+
+	// -- Object method overrides --
+
+	/**
+	 * Two SCIFIOCells are equal iff they come from the same cache, with the same
+	 * index, and have the same data state.
+	 */
+	@Override
+	public boolean equals(final Object other) {
+		if (this == other) return true;
+		if (other instanceof SCIFIOCell<?>) {
+			final SCIFIOCell<?> otherCell = (SCIFIOCell<?>) other;
+			return cacheId.equals(otherCell.cacheId) && (index == otherCell.index) &&
+				currentHash == otherCell.currentHash;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		// Taken from Effective Java 2nd edition
+		int result = 17;
+		result = 31 * result + index;
+		result = 31 * result + cacheId.hashCode();
+		result = 31 * result + data.hashCode();
+
+		return result;
+	}
+
+	@Override
+	public void finalize() {
+		// Writes this cell to disk as it's garbage collected
+		if (enabled) service.cache(cacheId, index, this);
+	}
+
+	// -- Helper Methods --
+
+	// Computes a hash of the provided data object.
+	// Also computes the size of the data object
+	private int computeHash(final ArrayDataAccess<?> data) {
+		int hashCode = -1;
+
+		if (data instanceof ByteArray) {
+			final byte[] bytes = ((ByteArray) data).getCurrentStorageArray();
+			computedataSize(8l * bytes.length);
+			hashCode = Arrays.hashCode(bytes);
+		}
+		else if (data instanceof BitArray) {
+			final int[] bytes = ((BitArray) data).getCurrentStorageArray();
+			computedataSize((long) Integer.SIZE * bytes.length);
+			hashCode = Arrays.hashCode(bytes);
+		}
+		else if (data instanceof CharArray) {
+			final char[] bytes = ((CharArray) data).getCurrentStorageArray();
+			computedataSize(8l * bytes.length);
+			hashCode = Arrays.hashCode(bytes);
+		}
+		else if (data instanceof DoubleArray) {
+			final double[] bytes = ((DoubleArray) data).getCurrentStorageArray();
+			computedataSize(64l * bytes.length);
+			hashCode = Arrays.hashCode(bytes);
+		}
+		else if (data instanceof IntArray) {
+			final int[] bytes = ((IntArray) data).getCurrentStorageArray();
+			computedataSize(32l * bytes.length);
+			hashCode = Arrays.hashCode(bytes);
+		}
+		else if (data instanceof FloatArray) {
+			final float[] bytes = ((FloatArray) data).getCurrentStorageArray();
+			computedataSize(32l * bytes.length);
+			hashCode = Arrays.hashCode(bytes);
+		}
+		else if (data instanceof ShortArray) {
+			final short[] bytes = ((ShortArray) data).getCurrentStorageArray();
+			computedataSize(16l * bytes.length);
+			hashCode = Arrays.hashCode(bytes);
+		}
+		else if (data instanceof LongArray) {
+			final long[] bytes = ((LongArray) data).getCurrentStorageArray();
+			computedataSize(64l * bytes.length);
+			hashCode = Arrays.hashCode(bytes);
+		}
+
+		return hashCode;
+	}
+
+	private void computedataSize(final long bits) {
+		elementSize = bits / 8;
+	}
 }

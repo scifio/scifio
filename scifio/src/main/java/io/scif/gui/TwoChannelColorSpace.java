@@ -40,68 +40,80 @@ import java.awt.color.ColorSpace;
 
 /**
  * ColorSpace for 2-channel images.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/TwoChannelColorSpace.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/TwoChannelColorSpace.java;hb=HEAD">Gitweb</a></dd></dl>
- *
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/gui/TwoChannelColorSpace.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/gui/TwoChannelColorSpace.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
+ * 
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class TwoChannelColorSpace extends ColorSpace {
 
-  // -- Constants --
+	// -- Constants --
 
-  public static final int CS_2C = -1;
+	public static final int CS_2C = -1;
 
-  private static final int NUM_COMPONENTS = 2;
+	private static final int NUM_COMPONENTS = 2;
 
-  // -- Constructor --
+	// -- Constructor --
 
-  protected TwoChannelColorSpace(int type, int components) {
-    super(type, components);
-  }
+	protected TwoChannelColorSpace(final int type, final int components) {
+		super(type, components);
+	}
 
-  // -- ColorSpace API methods --
+	// -- ColorSpace API methods --
 
-  public float[] fromCIEXYZ(float[] color) {
-    ColorSpace rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-    return rgb.fromCIEXYZ(toRGB(color));
-  }
+	@Override
+	public float[] fromCIEXYZ(final float[] color) {
+		final ColorSpace rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+		return rgb.fromCIEXYZ(toRGB(color));
+	}
 
-  public float[] fromRGB(float[] rgb) {
-    return new float[] {rgb[0], rgb[1]};
-  }
+	@Override
+	public float[] fromRGB(final float[] rgb) {
+		return new float[] { rgb[0], rgb[1] };
+	}
 
-  public static ColorSpace getInstance(int colorSpace) {
-    if (colorSpace == CS_2C) {
-      return new TwoChannelColorSpace(ColorSpace.TYPE_2CLR, NUM_COMPONENTS);
-    }
-    return ColorSpace.getInstance(colorSpace);
-  }
+	public static ColorSpace getInstance(final int colorSpace) {
+		if (colorSpace == CS_2C) {
+			return new TwoChannelColorSpace(ColorSpace.TYPE_2CLR, NUM_COMPONENTS);
+		}
+		return ColorSpace.getInstance(colorSpace);
+	}
 
-  public String getName(int idx) {
-    return idx == 0 ? "Red" : "Green";
-  }
+	@Override
+	public String getName(final int idx) {
+		return idx == 0 ? "Red" : "Green";
+	}
 
-  public int getNumComponents() {
-    return NUM_COMPONENTS;
-  }
+	@Override
+	public int getNumComponents() {
+		return NUM_COMPONENTS;
+	}
 
-  public int getType() {
-    return ColorSpace.TYPE_2CLR;
-  }
+	@Override
+	public int getType() {
+		return ColorSpace.TYPE_2CLR;
+	}
 
-  public boolean isCS_sRGB() {
-    return false;
-  }
+	@Override
+	public boolean isCS_sRGB() {
+		return false;
+	}
 
-  public float[] toCIEXYZ(float[] color) {
-    ColorSpace rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-    return rgb.toCIEXYZ(toRGB(color));
-  }
+	@Override
+	public float[] toCIEXYZ(final float[] color) {
+		final ColorSpace rgb = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+		return rgb.toCIEXYZ(toRGB(color));
+	}
 
-  public float[] toRGB(float[] color) {
-    return new float[] {color[0], color[1], 0};
-  }
+	@Override
+	public float[] toRGB(final float[] color) {
+		return new float[] { color[0], color[1], 0 };
+	}
 
 }

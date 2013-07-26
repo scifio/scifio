@@ -37,7 +37,6 @@
 package io.scif.io.utests;
 
 import static org.testng.AssertJUnit.assertEquals;
-
 import io.scif.io.BZip2Handle;
 import io.scif.io.GZipHandle;
 import io.scif.io.ZipHandle;
@@ -45,45 +44,47 @@ import io.scif.io.ZipHandle;
 import java.io.File;
 import java.io.IOException;
 
-
-
 import org.scijava.Context;
 import org.testng.annotations.Test;
 
 /**
  * Tests compressed IRandomAccess implementation type detection.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/test/loci/common/utests/TypeDetectionTest.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/test/loci/common/utests/TypeDetectionTest.java;hb=HEAD">Gitweb</a></dd></dl>
- *
+ * <dl>
+ * <dt><b>Source code:</b></dt>
+ * <dd><a href=
+ * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/test/loci/common/utests/TypeDetectionTest.java"
+ * >Trac</a>, <a href=
+ * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/test/loci/common/utests/TypeDetectionTest.java;hb=HEAD"
+ * >Gitweb</a></dd>
+ * </dl>
+ * 
  * @see loci.common.IRandomAcess
  */
 public class TypeDetectionTest {
 
-  private Context context = new Context();
-  
-  @Test
-  public void testBZip2TypeDetection() throws IOException {
-    File invalidFile = File.createTempFile("invalid", ".bz2");
-    invalidFile.deleteOnExit();
-    BZip2Handle handle = new BZip2Handle(context);
-    assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
-  }
+	private final Context context = new Context();
 
-  @Test
-  public void testGZipTypeDetection() throws IOException {
-    File invalidFile = File.createTempFile("invalid", ".gz");
-    invalidFile.deleteOnExit();
-    GZipHandle handle = new GZipHandle(context);
-    assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
-  }
+	@Test
+	public void testBZip2TypeDetection() throws IOException {
+		final File invalidFile = File.createTempFile("invalid", ".bz2");
+		invalidFile.deleteOnExit();
+		final BZip2Handle handle = new BZip2Handle(context);
+		assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
+	}
 
-  @Test
-  public void testZipTypeDetection() throws IOException {
-    File invalidFile = File.createTempFile("invalid", ".zip");
-    invalidFile.deleteOnExit();
-    ZipHandle handle = new ZipHandle(context);
-    assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
-  }
+	@Test
+	public void testGZipTypeDetection() throws IOException {
+		final File invalidFile = File.createTempFile("invalid", ".gz");
+		invalidFile.deleteOnExit();
+		final GZipHandle handle = new GZipHandle(context);
+		assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
+	}
+
+	@Test
+	public void testZipTypeDetection() throws IOException {
+		final File invalidFile = File.createTempFile("invalid", ".zip");
+		invalidFile.deleteOnExit();
+		final ZipHandle handle = new ZipHandle(context);
+		assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
+	}
 }

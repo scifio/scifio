@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.services;
 
 import io.scif.Checker;
@@ -45,202 +46,206 @@ import io.scif.Writer;
 
 import java.util.List;
 
-
 import org.scijava.Priority;
 import org.scijava.service.Service;
 
 /**
- * 
- * A collection of methods for finding {@link io.scif.Format}
- * instances given a child class, disovering available Formats,
- * and managing the list of available Formats.
+ * A collection of methods for finding {@link io.scif.Format} instances given a
+ * child class, disovering available Formats, and managing the list of available
+ * Formats.
  * <p>
- * Also provides convenience methods for working with
- * the Format-specific services.
+ * Also provides convenience methods for working with the Format-specific
+ * services.
  * </p>
  * 
  * @see io.scif.Format
  * @see FormatService#getInstance(Class)
- * 
  * @author Mark Hiner
  */
 public interface FormatService extends Service {
-  
-  // -- Priority constant --
-  
-  public static final double PRIORITY = Priority.LOW_PRIORITY;
-  
-  /**
-   * Returns a complete list of all suffixes supported within this context. 
-   */
-  String[] getSuffixes();
 
-  /**
-   * Makes the provided {@code Format} available for image IO operations in
-   * this context.
-   * <p>
-   * No effect if the format is already known.
-   * </p>
-   * @param format a new {@code Format} to support in this context.
-   * @return True if the {@code Format} was added successfully.
-   */
-  <M extends Metadata> boolean addFormat(Format format);
-  
-  /**
-   * Creates mappings between this Format and its components.
-   */
-  void addComponents(final Format format);
-  
-  /**
-   * Removes any mappings involving this Format's components.
-   */
-  void removeComponents(final Format format);
+	// -- Priority constant --
 
-  /**
-   * Removes the provided {@code Format} from this context, if it
-   * was previously available.
-   * 
-   * @param format the {@code Format} to stop supporting in this context.
-   * @return True if a format was successfully removed.
-   */
-  boolean removeFormat(Format format);
+	public static final double PRIORITY = Priority.LOW_PRIORITY;
 
-  /**
-   * Lookup method for the Format map. Use this method  when you want a concrete
-   * type reference instead of trying to construct a new {@code Format}.
-   * <p>
-   * NB: because SezPoz is used for automatic detection of {@code Formats} in
-   * SCIFIO, all concrete {@code Format} implementations have a zero-parameter
-   * constructor. If you manually invoke that constructor and then try to link
-   * your {@code Format} to an existing context, e.g. via the {@link #addFormat(Format)}
-   * method, it will fail if the {@code Format} was already discovered.
-   * The same principle is true if the context-based constructor is invoked. 
-   * </p>
-   * @param formatClass the class of the desired {@code Format}
-   * @return A reference to concrete class of the queried {@code Format}, or null if the 
-   *         {@code Format} was not found.
-   */
-  <F extends Format> F getFormatFromClass(Class<F> formatClass);
-  
-  /**
-   * Returns the Format compatible with this component class, or null if no matching
-   * Format can be found.
-   */
-  Format getFormatFromComponent(final Class<?> componentClass);
+	/**
+	 * Returns a complete list of all suffixes supported within this context.
+	 */
+	String[] getSuffixes();
 
-  /**
-   * {@code Format} lookup method using the {@code Reader} component
-   * 
-   * @param readerClass the class of the {@code Reader} component for the
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
-   */
-  <R extends Reader> Format getFormatFromReader(Class<R> readerClass);
+	/**
+	 * Makes the provided {@code Format} available for image IO operations in this
+	 * context.
+	 * <p>
+	 * No effect if the format is already known.
+	 * </p>
+	 * 
+	 * @param format a new {@code Format} to support in this context.
+	 * @return True if the {@code Format} was added successfully.
+	 */
+	<M extends Metadata> boolean addFormat(Format format);
 
-  /**
-   * {@code Format} lookup method using the {@code Writer} component.
-   * 
-   * @param writerClass the class of the {@code Writer} component for the 
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
-   */
-  <W extends Writer> Format getFormatFromWriter(Class<W> writerClass);
-  
-  /**
-   * {@code Writer} lookup method using exclusively the supported suffix
-   * list. This bypasses the {@code Checker} logic, and thus does not guarantee
-   * the associated {@code Format} can read image sources of the provided type.
-   * 
-   * @param extension
-   * @return
-   * @throws FormatException 
-   */
-  Writer getWriterByExtension(String fileId) throws FormatException;
+	/**
+	 * Creates mappings between this Format and its components.
+	 */
+	void addComponents(final Format format);
 
-  /**
-   * {@code Format} lookup method using the {@code Checker} component.
-   * 
-   * @param writerClass the class of the {@code Checker} component for the 
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
-   */
-  <C extends Checker> Format getFormatFromChecker(Class<C> checkerClass);
+	/**
+	 * Removes any mappings involving this Format's components.
+	 */
+	void removeComponents(final Format format);
 
-  /**
-   * {@code Format} lookup method using the {@code Parser} component.
-   * 
-   * @param writerClass the class of the {@code Parser} component for the 
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
-   */
-  <P extends Parser> Format getFormatFromParser(Class<P> parserClass);
+	/**
+	 * Removes the provided {@code Format} from this context, if it was previously
+	 * available.
+	 * 
+	 * @param format the {@code Format} to stop supporting in this context.
+	 * @return True if a format was successfully removed.
+	 */
+	boolean removeFormat(Format format);
 
-  /**
-   * {@code Format} lookup method using the {@code Metadata} component.
-   * 
-   * @param writerClass the class of the {@code Metadata} component for the 
-   *        desired {@code Format}
-   * @return A reference to the queried {@code Format}, or null if
-   *         the {@code Format} was not found.
-   */
-  <M extends Metadata> Format getFormatFromMetadata(Class<M> metadataClass);
+	/**
+	 * Lookup method for the Format map. Use this method when you want a concrete
+	 * type reference instead of trying to construct a new {@code Format}.
+	 * <p>
+	 * NB: because SezPoz is used for automatic detection of {@code Formats} in
+	 * SCIFIO, all concrete {@code Format} implementations have a zero-parameter
+	 * constructor. If you manually invoke that constructor and then try to link
+	 * your {@code Format} to an existing context, e.g. via the
+	 * {@link #addFormat(Format)} method, it will fail if the {@code Format} was
+	 * already discovered. The same principle is true if the context-based
+	 * constructor is invoked.
+	 * </p>
+	 * 
+	 * @param formatClass the class of the desired {@code Format}
+	 * @return A reference to concrete class of the queried {@code Format}, or
+	 *         null if the {@code Format} was not found.
+	 */
+	<F extends Format> F getFormatFromClass(Class<F> formatClass);
 
-  /**
-   * Returns the first Format known to be compatible with the source provided.
-   * Formats are checked in ascending order of their priority. The source is read
-   * if necessary to determine compatibility.
-   * 
-   * @param id the source
-   * @return A  Format reference compatible with the provided source.
-   */
-  Format getFormat(String id) throws FormatException;
-  
-  /**
-   * Returns the first Format known to be compatible with the source provided.
-   * Formats are checked in ascending order of their priority.
-   * 
-   * @param id the source
-   * @param open true if the source can be read while checking for compatibility.
-   * @return A Format reference compatible with the provided source.
-   */
-  Format getFormat(String id, boolean open) throws FormatException;
+	/**
+	 * Returns the Format compatible with this component class, or null if no
+	 * matching Format can be found.
+	 */
+	Format getFormatFromComponent(final Class<?> componentClass);
 
-  /**
-   * Returns a list of all formats that are compatible with the source
-   * provided, ordered by their priority. The source is read
-   * if necessary to determine compatibility.
-   * 
-   * @param id the source
-   * @return An List of Format references compatible with the provided source.
-   */
-  List<Format> getFormatList(String id) throws FormatException;
+	/**
+	 * {@code Format} lookup method using the {@code Reader} component
+	 * 
+	 * @param readerClass the class of the {@code Reader} component for the
+	 *          desired {@code Format}
+	 * @return A reference to the queried {@code Format}, or null if the
+	 *         {@code Format} was not found.
+	 */
+	<R extends Reader> Format getFormatFromReader(Class<R> readerClass);
 
-  /**
-   * Returns a list of all formats that are compatible with the source
-   * provided, ordered by their priority.
-   * 
-   * @param id the source
-   * @param open true if the source can be read while checking for compatibility.
-   * @param greedy if true, the search will terminate after finding the first compatible format
-   * @return A List of Format references compatible with the provided source.
-   */
-  List<Format> getFormatList(String id, boolean open, boolean greedy) throws FormatException;
+	/**
+	 * {@code Format} lookup method using the {@code Writer} component.
+	 * 
+	 * @param writerClass the class of the {@code Writer} component for the
+	 *          desired {@code Format}
+	 * @return A reference to the queried {@code Format}, or null if the
+	 *         {@code Format} was not found.
+	 */
+	<W extends Writer> Format getFormatFromWriter(Class<W> writerClass);
 
-  /**
-   * Returns a list of all Formats within this context.
-   */
-  List<Format> getAllFormats();
-  
-  /**
-   * Convenience method to obtain TypedService instances within the current
-   * context.
-   * 
-   * @param type - Service type to instantiate
-   * @return An instance of the requested service
-   */
-  <T extends TypedService> T getInstance(Class<T> type);
+	/**
+	 * {@code Writer} lookup method using exclusively the supported suffix list.
+	 * This bypasses the {@code Checker} logic, and thus does not guarantee the
+	 * associated {@code Format} can read image sources of the provided type.
+	 * 
+	 * @param extension
+	 * @return
+	 * @throws FormatException
+	 */
+	Writer getWriterByExtension(String fileId) throws FormatException;
+
+	/**
+	 * {@code Format} lookup method using the {@code Checker} component.
+	 * 
+	 * @param writerClass the class of the {@code Checker} component for the
+	 *          desired {@code Format}
+	 * @return A reference to the queried {@code Format}, or null if the
+	 *         {@code Format} was not found.
+	 */
+	<C extends Checker> Format getFormatFromChecker(Class<C> checkerClass);
+
+	/**
+	 * {@code Format} lookup method using the {@code Parser} component.
+	 * 
+	 * @param writerClass the class of the {@code Parser} component for the
+	 *          desired {@code Format}
+	 * @return A reference to the queried {@code Format}, or null if the
+	 *         {@code Format} was not found.
+	 */
+	<P extends Parser> Format getFormatFromParser(Class<P> parserClass);
+
+	/**
+	 * {@code Format} lookup method using the {@code Metadata} component.
+	 * 
+	 * @param writerClass the class of the {@code Metadata} component for the
+	 *          desired {@code Format}
+	 * @return A reference to the queried {@code Format}, or null if the
+	 *         {@code Format} was not found.
+	 */
+	<M extends Metadata> Format getFormatFromMetadata(Class<M> metadataClass);
+
+	/**
+	 * Returns the first Format known to be compatible with the source provided.
+	 * Formats are checked in ascending order of their priority. The source is
+	 * read if necessary to determine compatibility.
+	 * 
+	 * @param id the source
+	 * @return A Format reference compatible with the provided source.
+	 */
+	Format getFormat(String id) throws FormatException;
+
+	/**
+	 * Returns the first Format known to be compatible with the source provided.
+	 * Formats are checked in ascending order of their priority.
+	 * 
+	 * @param id the source
+	 * @param open true if the source can be read while checking for
+	 *          compatibility.
+	 * @return A Format reference compatible with the provided source.
+	 */
+	Format getFormat(String id, boolean open) throws FormatException;
+
+	/**
+	 * Returns a list of all formats that are compatible with the source provided,
+	 * ordered by their priority. The source is read if necessary to determine
+	 * compatibility.
+	 * 
+	 * @param id the source
+	 * @return An List of Format references compatible with the provided source.
+	 */
+	List<Format> getFormatList(String id) throws FormatException;
+
+	/**
+	 * Returns a list of all formats that are compatible with the source provided,
+	 * ordered by their priority.
+	 * 
+	 * @param id the source
+	 * @param open true if the source can be read while checking for
+	 *          compatibility.
+	 * @param greedy if true, the search will terminate after finding the first
+	 *          compatible format
+	 * @return A List of Format references compatible with the provided source.
+	 */
+	List<Format> getFormatList(String id, boolean open, boolean greedy)
+		throws FormatException;
+
+	/**
+	 * Returns a list of all Formats within this context.
+	 */
+	List<Format> getAllFormats();
+
+	/**
+	 * Convenience method to obtain TypedService instances within the current
+	 * context.
+	 * 
+	 * @param type - Service type to instantiate
+	 * @return An instance of the requested service
+	 */
+	<T extends TypedService> T getInstance(Class<T> type);
 }

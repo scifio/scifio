@@ -33,13 +33,13 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.File;
 import java.io.IOException;
-
 
 /**
  * Interface for all {@link io.scif.Parser} implementations that use generic
@@ -51,52 +51,51 @@ import java.io.IOException;
  * </p>
  * 
  * @author Mark Hiner
- *
- * @param <M> The {@link io.scif.Metadata} type that will be returned by
- *            this {@code Parser}.
+ * @param <M> The {@link io.scif.Metadata} type that will be returned by this
+ *          {@code Parser}.
  */
 public interface TypedParser<M extends TypedMetadata> extends Parser {
 
-  /*
-   * @see io.scif.Parser#parse(java.lang.String)
-   */
-  M parse(String fileName) throws IOException, FormatException;
-  
-  /*
-   * @see io.scif.Parser#parse(java.io.File)
-   */
-  M parse(File file) throws IOException, FormatException;
-  
-  /*
-   * @see io.scif.Parser#parse(io.scif.io.RandomAccessInputStream)
-   */
-  M parse(RandomAccessInputStream stream) throws IOException, FormatException;
-  
-  /**
-   * Generic-parameterized {@code parse} method, using 
-   * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-   * {@link io.scif.Parser#parse(String, Metadata)}.
-   * 
-   * @see {@link io.scif.Parser#parse(String, Metadata)}
-   */
-  M parse(String fileName, M meta) throws IOException, FormatException;
+	/*
+	 * @see io.scif.Parser#parse(java.lang.String)
+	 */
+	M parse(String fileName) throws IOException, FormatException;
 
-  /**
-   * Generic-parameterized {@code parse} method, using 
-   * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-   * {@link io.scif.Parser#parse(File, Metadata)}.
-   * 
-   * @see {@link io.scif.Parser#parse(File, Metadata)}
-   */
-  M parse(File file, M meta) throws IOException, FormatException;
+	/*
+	 * @see io.scif.Parser#parse(java.io.File)
+	 */
+	M parse(File file) throws IOException, FormatException;
 
-  /**
-   * Generic-parameterized {@code parse} method, using 
-   * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-   * {@link io.scif.Parser#parse(RandomAccessInputStream, Metadata)}.
-   * 
-   * @see {@link io.scif.Parser#parse(RandomAccessInputStream, Metadata)}
-   */
-  M parse(RandomAccessInputStream stream, M meta)
-    throws IOException, FormatException;
+	/*
+	 * @see io.scif.Parser#parse(io.scif.io.RandomAccessInputStream)
+	 */
+	M parse(RandomAccessInputStream stream) throws IOException, FormatException;
+
+	/**
+	 * Generic-parameterized {@code parse} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Parser#parse(String, Metadata)}.
+	 * 
+	 * @see {@link io.scif.Parser#parse(String, Metadata)}
+	 */
+	M parse(String fileName, M meta) throws IOException, FormatException;
+
+	/**
+	 * Generic-parameterized {@code parse} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Parser#parse(File, Metadata)}.
+	 * 
+	 * @see {@link io.scif.Parser#parse(File, Metadata)}
+	 */
+	M parse(File file, M meta) throws IOException, FormatException;
+
+	/**
+	 * Generic-parameterized {@code parse} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Parser#parse(RandomAccessInputStream, Metadata)}.
+	 * 
+	 * @see {@link io.scif.Parser#parse(RandomAccessInputStream, Metadata)}
+	 */
+	M parse(RandomAccessInputStream stream, M meta) throws IOException,
+		FormatException;
 }

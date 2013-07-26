@@ -33,93 +33,101 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.filters;
 
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.SCIFIOPlugin;
-
-import java.util.Hashtable;
-
 import net.imglib2.meta.AxisType;
 
 /**
- * Wrapper for {@link io.scif.Metadata}. Used to create defensive copies of metadata for
- * manipulation by {@link io.scif.filters.ReaderFilter}s, while allowing for API modification
- * if needed.
+ * Wrapper for {@link io.scif.Metadata}. Used to create defensive copies of
+ * metadata for manipulation by {@link io.scif.filters.ReaderFilter}s, while
+ * allowing for API modification if needed.
  * <p>
- * If a Reader-based {@code Filter} requires special functionality from its Metadata,
- * a companion MetadataWrapper can be implemented. Concrete implementations
- * of this interface should always be annotated with {@code Plugin}
- * so they can be dynamically found when constructing new {@code Filters}.
+ * If a Reader-based {@code Filter} requires special functionality from its
+ * Metadata, a companion MetadataWrapper can be implemented. Concrete
+ * implementations of this interface should always be annotated with
+ * {@code Plugin} so they can be dynamically found when constructing new
+ * {@code Filters}.
  * </p>
  * <p>
- * NB: This interface duplicates the Metadata setter signatures, with the addition
- * of a {@code passUp} flag. If this flag is true, the wrapped metadata will
- * also have the corresponding value set. If not, only the wrapper will
- * be modified.
+ * NB: This interface duplicates the Metadata setter signatures, with the
+ * addition of a {@code passUp} flag. If this flag is true, the wrapped metadata
+ * will also have the corresponding value set. If not, only the wrapper will be
+ * modified.
  * </p>
  * 
  * @author Mark Hiner
- * 
  * @see io.scif.filters.AbstractReaderFilter
  */
-public interface MetadataWrapper extends Metadata, SCIFIOPlugin { 
-  
-  public static final String METADATA_KEY = "Metadata Wrapper";
-  public static final String METADATA_VALUE = "java.lang.Object";
-  
-  /**
-   * @return The {@code Metadata} used for delegation by this wrapper.
-   */
-  Metadata unwrap();
-  
-  /**
-   * Sets the {@code Metadata} this wrapper will delegate to.
-   * Necessary for the sake of a zero-parameter constructor to allow
-   * {@code SezPoz} discovery. 
-   * 
-   * @param meta - The Metadata instance to wrap
-   */
-  void wrap(Metadata meta);
-  
-  // -- Setter Methods with passUp flag --
-  
-  void addAxis(final int imageIndex, final AxisType type, boolean passUp);
-  
-  void addAxis(final int imageIndex, final AxisType type, final int value, boolean passUp);
-  
-  void setThumbSizeX(final int imageIndex, final int thumbX, boolean passUp);
+public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 
-  void setThumbSizeY(final int imageIndex, final int thumbY, boolean passUp);
+	public static final String METADATA_KEY = "Metadata Wrapper";
+	public static final String METADATA_VALUE = "java.lang.Object";
 
-  void setPixelType(final int imageIndex, final int type, boolean passUp);
+	/**
+	 * @return The {@code Metadata} used for delegation by this wrapper.
+	 */
+	Metadata unwrap();
 
-  void setBitsPerPixel(final int imageIndex, final int bpp, boolean passUp);
+	/**
+	 * Sets the {@code Metadata} this wrapper will delegate to. Necessary for the
+	 * sake of a zero-parameter constructor to allow {@code SezPoz} discovery.
+	 * 
+	 * @param meta - The Metadata instance to wrap
+	 */
+	void wrap(Metadata meta);
 
-  void setOrderCertain(final int imageIndex, final boolean orderCertain, boolean passUp);
+	// -- Setter Methods with passUp flag --
 
-  void setRGB(final int imageIndex, final boolean rgb, boolean passUp);
+	void addAxis(final int imageIndex, final AxisType type, boolean passUp);
 
-  void setLittleEndian(final int imageIndex, final boolean littleEndian, boolean passUp);
+	void addAxis(final int imageIndex, final AxisType type, final int value,
+		boolean passUp);
 
-  void setInterleaved(final int imageIndex, final boolean interleaved, boolean passUp);
+	void setThumbSizeX(final int imageIndex, final int thumbX, boolean passUp);
 
-  void setIndexed(final int imageIndex, final boolean indexed, boolean passUp);
+	void setThumbSizeY(final int imageIndex, final int thumbY, boolean passUp);
 
-  void setFalseColor(final int imageIndex, final boolean falseC, boolean passUp);
+	void setPixelType(final int imageIndex, final int type, boolean passUp);
 
-  void setMetadataComplete(final int imageIndex, final boolean metadataComplete, boolean passUp);
-  
-  void add(final ImageMetadata meta, boolean passUp);
+	void setBitsPerPixel(final int imageIndex, final int bpp, boolean passUp);
 
-  void setThumbnailImage(final int imageIndex, final boolean thumbnail, boolean passUp);
+	void setOrderCertain(final int imageIndex, final boolean orderCertain,
+		boolean passUp);
 
-  void setAxisTypes(final int imageIndex, final AxisType[] axisTypes, boolean passUp);
-  
-  void setAxisType(final int imageIndex, final int axisIndex, final AxisType axis, boolean passUp);
+	void setRGB(final int imageIndex, final boolean rgb, boolean passUp);
 
-  void setAxisLengths(final int imageIndex, final int[] axisLengths, boolean passUp);
-  
-  void setAxisLength(final int imageIndex, final AxisType axis, final int length, boolean passUp);
+	void setLittleEndian(final int imageIndex, final boolean littleEndian,
+		boolean passUp);
+
+	void setInterleaved(final int imageIndex, final boolean interleaved,
+		boolean passUp);
+
+	void setIndexed(final int imageIndex, final boolean indexed, boolean passUp);
+
+	void
+		setFalseColor(final int imageIndex, final boolean falseC, boolean passUp);
+
+	void setMetadataComplete(final int imageIndex,
+		final boolean metadataComplete, boolean passUp);
+
+	void add(final ImageMetadata meta, boolean passUp);
+
+	void setThumbnailImage(final int imageIndex, final boolean thumbnail,
+		boolean passUp);
+
+	void setAxisTypes(final int imageIndex, final AxisType[] axisTypes,
+		boolean passUp);
+
+	void setAxisType(final int imageIndex, final int axisIndex,
+		final AxisType axis, boolean passUp);
+
+	void setAxisLengths(final int imageIndex, final int[] axisLengths,
+		boolean passUp);
+
+	void setAxisLength(final int imageIndex, final AxisType axis,
+		final int length, boolean passUp);
 }

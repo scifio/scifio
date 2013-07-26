@@ -33,84 +33,85 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.filters;
 
 import io.scif.DefaultImageMetadata;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-
 /**
- * {@link io.scif.filters.MetadataWrapper} implementation specifically
- * for use with the {@link io.scif.filters.ChannelSeparator}.
+ * {@link io.scif.filters.MetadataWrapper} implementation specifically for use
+ * with the {@link io.scif.filters.ChannelSeparator}.
  * 
  * @see io.scif.filters.MetadataWrapper
  * @see io.scif.filters.ChannelSeparator
- * 
  * @author Mark Hiner
  */
-@Plugin(type=MetadataWrapper.class, attrs={
-  @Attr(name=ChannelSeparatorMetadata.METADATA_KEY, value=ChannelSeparatorMetadata.METADATA_VALUE)
-  })
+@Plugin(type = MetadataWrapper.class, attrs = { @Attr(
+	name = ChannelSeparatorMetadata.METADATA_KEY,
+	value = ChannelSeparatorMetadata.METADATA_VALUE) })
 public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
-  
-  // -- Constants --
-  
-  public static final String METADATA_VALUE = "io.scif.filters.ChannelSeparator";
-  
-  // -- Fields -- 
 
-  private AxisType[] xyczt = new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME};
-  private AxisType[] xyctz = new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME, Axes.Z}; 
-  
-  
-  // -- Constructors --
-  
-  public ChannelSeparatorMetadata() {
-    this(null);
-  }
-  
-  public ChannelSeparatorMetadata(Metadata metadata) {
-    super(metadata);
-  }
-  
-  // -- Metadata API Methods --
-  
-  @Override
-  public void populateImageMetadata() {
-    Metadata m = unwrap();
-    createImageMetadata(0);
-    
-    for (int i=0; i<m.getImageCount(); i++) {
-      ImageMetadata iMeta = new DefaultImageMetadata(m.get(i));
-      if (iMeta.isRGB() && !iMeta.isIndexed()) iMeta.setPlaneCount(iMeta.getPlaneCount() * iMeta.getRGBChannelCount());
-      
-      add(iMeta, false);
-    }
-  }
-  
-  @Override
-  public boolean isRGB(int imageIndex) {
-    return isIndexed(imageIndex) && !isFalseColor(imageIndex)
-      && getAxisLength(imageIndex, Axes.CHANNEL) > 1;
-  }
-  
+	// -- Constants --
 
-  @Override
-  public AxisType[] getAxes(int imageIndex) {
-    if (unwrap().isRGB(imageIndex) && !unwrap().isIndexed(imageIndex)) {
-      
-      if (unwrap().getAxisIndex(imageIndex, Axes.TIME) > unwrap().getAxisIndex(imageIndex, Axes.Z))
-        return xyczt;
-      else
-        return xyctz;
-      
-    }
-    return unwrap().getAxes(imageIndex);
-  }
+	public static final String METADATA_VALUE =
+		"io.scif.filters.ChannelSeparator";
+
+	// -- Fields --
+
+	private final AxisType[] xyczt = new AxisType[] { Axes.X, Axes.Y,
+		Axes.CHANNEL, Axes.Z, Axes.TIME };
+	private final AxisType[] xyctz = new AxisType[] { Axes.X, Axes.Y,
+		Axes.CHANNEL, Axes.TIME, Axes.Z };
+
+	// -- Constructors --
+
+	public ChannelSeparatorMetadata() {
+		this(null);
+	}
+
+	public ChannelSeparatorMetadata(final Metadata metadata) {
+		super(metadata);
+	}
+
+	// -- Metadata API Methods --
+
+	@Override
+	public void populateImageMetadata() {
+		final Metadata m = unwrap();
+		createImageMetadata(0);
+
+		for (int i = 0; i < m.getImageCount(); i++) {
+			final ImageMetadata iMeta = new DefaultImageMetadata(m.get(i));
+			if (iMeta.isRGB() && !iMeta.isIndexed()) iMeta.setPlaneCount(iMeta
+				.getPlaneCount() *
+				iMeta.getRGBChannelCount());
+
+			add(iMeta, false);
+		}
+	}
+
+	@Override
+	public boolean isRGB(final int imageIndex) {
+		return isIndexed(imageIndex) && !isFalseColor(imageIndex) &&
+			getAxisLength(imageIndex, Axes.CHANNEL) > 1;
+	}
+
+	@Override
+	public AxisType[] getAxes(final int imageIndex) {
+		if (unwrap().isRGB(imageIndex) && !unwrap().isIndexed(imageIndex)) {
+
+			if (unwrap().getAxisIndex(imageIndex, Axes.TIME) > unwrap().getAxisIndex(
+				imageIndex, Axes.Z)) return xyczt;
+			else return xyctz;
+
+		}
+		return unwrap().getAxes(imageIndex);
+	}
 }

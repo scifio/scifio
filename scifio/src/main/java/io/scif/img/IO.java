@@ -38,8 +38,6 @@ package io.scif.img;
 
 import io.scif.Reader;
 import io.scif.Writer;
-import io.scif.img.ImgOpener;
-import io.scif.img.ImgSaver;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
@@ -57,310 +55,334 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A static utility class for easy access to {@link ImgSaver} and {@link ImgOpener}
- * methods. Also includes type-convenience methods for quickly opening
- * various image types.
+ * A static utility class for easy access to {@link ImgSaver} and
+ * {@link ImgOpener} methods. Also includes type-convenience methods for quickly
+ * opening various image types.
  * <p>
- * NB: No exceptions are thrown by any methods in this class. Instead they are all
- * caught, logged, and null is returned.
+ * NB: No exceptions are thrown by any methods in this class. Instead they are
+ * all caught, logged, and null is returned.
  * </p>
  * <p>
  * NB: Each of these methods occurs in its own {@link Context}
  * </p>
  * 
  * @author Mark Hiner
- *
  */
 public final class IO {
 
-  // -- Static fields --
-  
-  private static Logger logger = LoggerFactory.getLogger(IO.class);
-  
-  // -- Static IO Methods --
-  
-  /**
-   * @param source
-   *          - the location of the dataset to assess
-   * @return - The number of images in the specified dataset, or 0
-   *            if an error occurred.
-   */
-  public static int imageCount(final String source) {
-    try {
-      return new ImgOpener().getImageCount(source);
-    } catch (ImgIOException e) {
-      logger.error("Failed to get image count for source: " + source, e);
-      return 0;
-    }
-  }
-  
-  // -- Static ImgOpener methods --
+	// -- Static fields --
 
-  /**
-   * Opens an {@link Img} in a format it is in (unsigned byte, float, int, ...)
-   * using the respective {@link RealType}. It returns an {@link ImgPlus} which
-   * contains the Calibration and name.
-   * <p>
-   * The {@link Img} containing the data could be either a
-   * {@link PlanarImg}, {@link ArrayImg} or {@link CellImg}.
-   * </p>
-   * 
-   * @param source
-   *          - the location of the dataset to open
-   * @return - the {@link ImgPlus} or null if an exception is caught
-   * 
-   * @throws ImgIOException
-   *           - if file could not be found, if it is too big for the memory or
-   *           if it is incompatible with the opener
-   */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(final String source)
-  {
-    return open(source, 0);
-  }
+	private static Logger logger = LoggerFactory.getLogger(IO.class);
 
-  /**
-   * Opens an {@link Img} in a format it is in (unsigned byte, float, int, ...)
-   * using the respective {@link RealType}. It returns an {@link ImgPlus} which
-   * contains the Calibration and name.
-   * <p>
-   * The {@link Img} containing the data could be either a
-   * {@link PlanarImg} or {@link CellImg}.
-   * </p>
-   * 
-   * @param source
-   *          - the location of the dataset to open
-   * @param imageIndex - the index within the dataset to open
-   * @return - the {@link ImgPlus} or null if an exception is caught
-   * 
-   * @throws ImgIOException
-   *           - if file could not be found, if it is too big for the memory or
-   *           if it is incompatible with the opener
-   */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(final String source, int imageIndex)
-  {
-    return open(source, imageIndex, (T)null);
-  }
+	// -- Static IO Methods --
 
-  /**
-   * Opens an {@link Img} as {@link FloatType}. It returns an {@link ImgPlus}
-   * which contains the Calibration and name.
-   * <p>
-   * The {@link Img} containing the data could be either a
-   * {@link PlanarImg}, {@link ArrayImg} or {@link CellImg}.
-   * </p>
-   * 
-   * @param source
-   *          - the location of the dataset to open
-   * @param imageIndex - the index within the dataset to open
-   * @return - the {@link ImgPlus} or null if an exception is caught
-   * 
-   * @throws ImgIOException
-   *           - if file could not be found or is too big for the memory
-   */
-  public static ImgPlus<FloatType> openFloat(final String source, int imageIndex) 
-  {
-    return open(source, imageIndex, new FloatType());
-  }
+	/**
+	 * @param source - the location of the dataset to assess
+	 * @return - The number of images in the specified dataset, or 0 if an error
+	 *         occurred.
+	 */
+	public static int imageCount(final String source) {
+		try {
+			return new ImgOpener().getImageCount(source);
+		}
+		catch (final ImgIOException e) {
+			logger.error("Failed to get image count for source: " + source, e);
+			return 0;
+		}
+	}
 
-  /**
-   * Opens an {@link Img} as {@link DoubleType}. It returns an {@link ImgPlus}
-   * which contains the Calibration and name.
-   * <p>
-   * The {@link Img} containing the data could be either a
-   * {@link PlanarImg}, {@link ArrayImg} or {@link CellImg}.
-   * </p>
-   * 
-   * @param source
-   *          - the location of the dataset to open
-   * @param imageIndex - the index within the dataset to open
-   * @return - the {@link ImgPlus} or null if an exception is caught
-   * 
-   * @throws ImgIOException
-   *           - if file could not be found or is too big for the memory
-   */
-  public static ImgPlus<DoubleType> openDouble(final String source, int imageIndex)
-  {
-    return open(source, imageIndex, new DoubleType());
-  }
-  
-  /**
-   * Opens an {@link Img} as {@link UnsignedByteType}. It returns an {@link ImgPlus}
-   * which contains the Calibration and name.
-   * <p>
-   * The {@link Img} containing the data could be either a
-   * {@link PlanarImg}, {@link ArrayImg} or {@link CellImg}.
-   * </p>
-   * 
-   * @param source
-   *          - the location of the dataset to open
-   * @param imageIndex - the index within the dataset to open
-   * @return - the {@link ImgPlus} or null if an exception is caught
-   * 
-   * @throws ImgIOException
-   *           - if file could not be found or is too big for the memory
-   */
-  public static ImgPlus<UnsignedByteType> openUnsignedByte(final String source, int imageIndex)
-  {
-    return open(source, imageIndex, new UnsignedByteType());
-  }
+	// -- Static ImgOpener methods --
 
-  /**
-   * Opens an {@link Img} in a format it is in (unsigned byte, float, int, ...)
-   * using the respective {@link RealType}. It returns an {@link ImgPlus} which
-   * contains the Calibration and name.
-   * <p>
-   * The {@link Img} containing the data could be either a
-   * {@link PlanarImg}, {@link ArrayImg} or {@link CellImg}.
-   * </p>
-   * 
-   * @param source
-   *          - the location of the dataset to open
-   * @param imageIndex - the index within the dataset to open
-   * @param type - the real type to use to open the image
-   * @return - the {@link ImgPlus} or null if an exception is caught
-   * 
-   * @throws ImgIOException
-   *           - if file could not be found, if it is too big for the memory or
-   *           if it is incompatible with the opener
-   */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(
-    final String source, int imageIndex, T type)
-  {
-    try {
-      return new ImgOpener().openImg(source, type, new ImgOptions().setIndex(imageIndex));
-    } catch (Exception e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
-  }
-    
-  /**
-   * @see {@link ImgOpener#openImg(String)}
-   */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source) {
-    try {
-      return new ImgOpener().openImg(source);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
-  }
-  
-  /**
-   * @see {@link ImgOpener#openImg(String, RealType)}
-   */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, T type) {
-    try {
-      return new ImgOpener().openImg(source, type);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
-  }
-  
-  /**
-   * @see {@link ImgOpener#openImg(String, ImgOptions)}
-   */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, ImgOptions imgOptions) {
-    try {
-      return new ImgOpener().openImg(source, imgOptions);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
-  }
-  
-  /**
-   * @see {@link ImgOpener#openImg(String, RealType, ImgOptions)}
-   */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, T type, ImgOptions imgOptions) {
-    try {
-      return new ImgOpener().openImg(source, type, imgOptions);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
-  }
-  
-  /**
-   * @see {@link ImgOpener#openImg(String, ImgFactory)}
-   */
-  public static <T extends RealType<T>> ImgPlus<T> openImg(String source, ImgFactory<T> imgFactory) {
-    try {
-      return new ImgOpener().openImg(source, imgFactory);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
-  }
-  
-  /**
-   * @see {@link ImgOpener#openImg(String, ImgFactory, RealType)}
-   */
-  public static <T extends RealType<T>> ImgPlus<T> openImg(String source, ImgFactory<T> imgFactory, T type) {
-    try {
-      return new ImgOpener().openImg(source, imgFactory, type);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
-  }
-  
-  /**
-   * @see {@link ImgOpener#openImg(Reader, RealType, ImgFactory, ImgOptions)}
-   */
-  public static <T extends RealType<T>> ImgPlus<T> openImg(Reader reader, T type, ImgFactory<T> imgFactory, ImgOptions imgOptions) {
-    try {
-      return new ImgOpener().openImg(reader, type, imgFactory, imgOptions);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image", e);
-      return null;
-    }
-  }
-  
-  // -- Static ImgSaver methods --
+	/**
+	 * Opens an {@link Img} in a format it is in (unsigned byte, float, int, ...)
+	 * using the respective {@link RealType}. It returns an {@link ImgPlus} which
+	 * contains the Calibration and name.
+	 * <p>
+	 * The {@link Img} containing the data could be either a {@link PlanarImg},
+	 * {@link ArrayImg} or {@link CellImg}.
+	 * </p>
+	 * 
+	 * @param source - the location of the dataset to open
+	 * @return - the {@link ImgPlus} or null if an exception is caught
+	 * @throws ImgIOException - if file could not be found, if it is too big for
+	 *           the memory or if it is incompatible with the opener
+	 */
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(
+		final String source)
+	{
+		return open(source, 0);
+	}
 
-  /**
-   * @see {@link ImgSaver#saveImg(String, Img)}
-   */
-  public static <T extends RealType<T> & NativeType<T>> void saveImg(String dest, Img<T> img) {
-    try {
-      new ImgSaver().saveImg(dest, img);
-    } catch (Exception e) {
-      logger.error("Failed to write image : " + dest, e);
-    }
-  }
-  
-  /**
-   * @see {@link ImgSaver#saveImg(String, ImgPlus, int)}
-   */
-  <T extends RealType<T> & NativeType<T>> void saveImg(String dest, ImgPlus<T> imgPlus, int imageIndex) {
-    try {
-      new ImgSaver().saveImg(dest, imgPlus, imageIndex);
-    } catch (Exception e) {
-      logger.error("Failed to write image : " + dest, e);
-    } 
-  }
-  
-  /**
-   * @see {@link ImgSaver#saveImg(Writer, Img)}
-   */
-  <T extends RealType<T> & NativeType<T>> void saveImg(Writer writer, Img<T> imgPlus) {
-    try {
-      new ImgSaver().saveImg(writer, imgPlus);
-    } catch (Exception e) {
-      logger.error("Failed to write image", e);
-    }
-  }
-  
-  /**
-   * @see {@link ImgSaver#saveImg(Writer, ImgPlus, int)}
-   */
-  <T extends RealType<T> & NativeType<T>> void saveImg(Writer writer, ImgPlus<T> imgPlus, int imageIndex) {
-    try {
-      new ImgSaver().saveImg(writer, imgPlus, imageIndex);
-    } catch (Exception e) {
-      logger.error("Failed to write image", e);
-    }
-  }
+	/**
+	 * Opens an {@link Img} in a format it is in (unsigned byte, float, int, ...)
+	 * using the respective {@link RealType}. It returns an {@link ImgPlus} which
+	 * contains the Calibration and name.
+	 * <p>
+	 * The {@link Img} containing the data could be either a {@link PlanarImg} or
+	 * {@link CellImg}.
+	 * </p>
+	 * 
+	 * @param source - the location of the dataset to open
+	 * @param imageIndex - the index within the dataset to open
+	 * @return - the {@link ImgPlus} or null if an exception is caught
+	 * @throws ImgIOException - if file could not be found, if it is too big for
+	 *           the memory or if it is incompatible with the opener
+	 */
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(
+		final String source, final int imageIndex)
+	{
+		return open(source, imageIndex, (T) null);
+	}
+
+	/**
+	 * Opens an {@link Img} as {@link FloatType}. It returns an {@link ImgPlus}
+	 * which contains the Calibration and name.
+	 * <p>
+	 * The {@link Img} containing the data could be either a {@link PlanarImg},
+	 * {@link ArrayImg} or {@link CellImg}.
+	 * </p>
+	 * 
+	 * @param source - the location of the dataset to open
+	 * @param imageIndex - the index within the dataset to open
+	 * @return - the {@link ImgPlus} or null if an exception is caught
+	 * @throws ImgIOException - if file could not be found or is too big for the
+	 *           memory
+	 */
+	public static ImgPlus<FloatType> openFloat(final String source,
+		final int imageIndex)
+	{
+		return open(source, imageIndex, new FloatType());
+	}
+
+	/**
+	 * Opens an {@link Img} as {@link DoubleType}. It returns an {@link ImgPlus}
+	 * which contains the Calibration and name.
+	 * <p>
+	 * The {@link Img} containing the data could be either a {@link PlanarImg},
+	 * {@link ArrayImg} or {@link CellImg}.
+	 * </p>
+	 * 
+	 * @param source - the location of the dataset to open
+	 * @param imageIndex - the index within the dataset to open
+	 * @return - the {@link ImgPlus} or null if an exception is caught
+	 * @throws ImgIOException - if file could not be found or is too big for the
+	 *           memory
+	 */
+	public static ImgPlus<DoubleType> openDouble(final String source,
+		final int imageIndex)
+	{
+		return open(source, imageIndex, new DoubleType());
+	}
+
+	/**
+	 * Opens an {@link Img} as {@link UnsignedByteType}. It returns an
+	 * {@link ImgPlus} which contains the Calibration and name.
+	 * <p>
+	 * The {@link Img} containing the data could be either a {@link PlanarImg},
+	 * {@link ArrayImg} or {@link CellImg}.
+	 * </p>
+	 * 
+	 * @param source - the location of the dataset to open
+	 * @param imageIndex - the index within the dataset to open
+	 * @return - the {@link ImgPlus} or null if an exception is caught
+	 * @throws ImgIOException - if file could not be found or is too big for the
+	 *           memory
+	 */
+	public static ImgPlus<UnsignedByteType> openUnsignedByte(final String source,
+		final int imageIndex)
+	{
+		return open(source, imageIndex, new UnsignedByteType());
+	}
+
+	/**
+	 * Opens an {@link Img} in a format it is in (unsigned byte, float, int, ...)
+	 * using the respective {@link RealType}. It returns an {@link ImgPlus} which
+	 * contains the Calibration and name.
+	 * <p>
+	 * The {@link Img} containing the data could be either a {@link PlanarImg},
+	 * {@link ArrayImg} or {@link CellImg}.
+	 * </p>
+	 * 
+	 * @param source - the location of the dataset to open
+	 * @param imageIndex - the index within the dataset to open
+	 * @param type - the real type to use to open the image
+	 * @return - the {@link ImgPlus} or null if an exception is caught
+	 * @throws ImgIOException - if file could not be found, if it is too big for
+	 *           the memory or if it is incompatible with the opener
+	 */
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(
+		final String source, final int imageIndex, final T type)
+	{
+		try {
+			return new ImgOpener().openImg(source, type, new ImgOptions()
+				.setIndex(imageIndex));
+		}
+		catch (final Exception e) {
+			logger.error("Failed to open image for source: " + source, e);
+			return null;
+		}
+	}
+
+	/**
+	 * @see {@link ImgOpener#openImg(String)}
+	 */
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
+		final String source)
+	{
+		try {
+			return new ImgOpener().openImg(source);
+		}
+		catch (final ImgIOException e) {
+			logger.error("Failed to open image for source: " + source, e);
+			return null;
+		}
+	}
+
+	/**
+	 * @see {@link ImgOpener#openImg(String, RealType)}
+	 */
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
+		final String source, final T type)
+	{
+		try {
+			return new ImgOpener().openImg(source, type);
+		}
+		catch (final ImgIOException e) {
+			logger.error("Failed to open image for source: " + source, e);
+			return null;
+		}
+	}
+
+	/**
+	 * @see {@link ImgOpener#openImg(String, ImgOptions)}
+	 */
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
+		final String source, final ImgOptions imgOptions)
+	{
+		try {
+			return new ImgOpener().openImg(source, imgOptions);
+		}
+		catch (final ImgIOException e) {
+			logger.error("Failed to open image for source: " + source, e);
+			return null;
+		}
+	}
+
+	/**
+	 * @see {@link ImgOpener#openImg(String, RealType, ImgOptions)}
+	 */
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
+		final String source, final T type, final ImgOptions imgOptions)
+	{
+		try {
+			return new ImgOpener().openImg(source, type, imgOptions);
+		}
+		catch (final ImgIOException e) {
+			logger.error("Failed to open image for source: " + source, e);
+			return null;
+		}
+	}
+
+	/**
+	 * @see {@link ImgOpener#openImg(String, ImgFactory)}
+	 */
+	public static <T extends RealType<T>> ImgPlus<T> openImg(final String source,
+		final ImgFactory<T> imgFactory)
+	{
+		try {
+			return new ImgOpener().openImg(source, imgFactory);
+		}
+		catch (final ImgIOException e) {
+			logger.error("Failed to open image for source: " + source, e);
+			return null;
+		}
+	}
+
+	/**
+	 * @see {@link ImgOpener#openImg(String, ImgFactory, RealType)}
+	 */
+	public static <T extends RealType<T>> ImgPlus<T> openImg(final String source,
+		final ImgFactory<T> imgFactory, final T type)
+	{
+		try {
+			return new ImgOpener().openImg(source, imgFactory, type);
+		}
+		catch (final ImgIOException e) {
+			logger.error("Failed to open image for source: " + source, e);
+			return null;
+		}
+	}
+
+	/**
+	 * @see {@link ImgOpener#openImg(Reader, RealType, ImgFactory, ImgOptions)}
+	 */
+	public static <T extends RealType<T>> ImgPlus<T> openImg(final Reader reader,
+		final T type, final ImgFactory<T> imgFactory, final ImgOptions imgOptions)
+	{
+		try {
+			return new ImgOpener().openImg(reader, type, imgFactory, imgOptions);
+		}
+		catch (final ImgIOException e) {
+			logger.error("Failed to open image", e);
+			return null;
+		}
+	}
+
+	// -- Static ImgSaver methods --
+
+	/**
+	 * @see {@link ImgSaver#saveImg(String, Img)}
+	 */
+	public static <T extends RealType<T> & NativeType<T>> void saveImg(
+		final String dest, final Img<T> img)
+	{
+		try {
+			new ImgSaver().saveImg(dest, img);
+		}
+		catch (final Exception e) {
+			logger.error("Failed to write image : " + dest, e);
+		}
+	}
+
+	/**
+	 * @see {@link ImgSaver#saveImg(String, ImgPlus, int)}
+	 */
+	<T extends RealType<T> & NativeType<T>> void saveImg(final String dest,
+		final ImgPlus<T> imgPlus, final int imageIndex)
+	{
+		try {
+			new ImgSaver().saveImg(dest, imgPlus, imageIndex);
+		}
+		catch (final Exception e) {
+			logger.error("Failed to write image : " + dest, e);
+		}
+	}
+
+	/**
+	 * @see {@link ImgSaver#saveImg(Writer, Img)}
+	 */
+	<T extends RealType<T> & NativeType<T>> void saveImg(final Writer writer,
+		final Img<T> imgPlus)
+	{
+		try {
+			new ImgSaver().saveImg(writer, imgPlus);
+		}
+		catch (final Exception e) {
+			logger.error("Failed to write image", e);
+		}
+	}
+
+	/**
+	 * @see {@link ImgSaver#saveImg(Writer, ImgPlus, int)}
+	 */
+	<T extends RealType<T> & NativeType<T>> void saveImg(final Writer writer,
+		final ImgPlus<T> imgPlus, final int imageIndex)
+	{
+		try {
+			new ImgSaver().saveImg(writer, imgPlus, imageIndex);
+		}
+		catch (final Exception e) {
+			logger.error("Failed to write image", e);
+		}
+	}
 }
