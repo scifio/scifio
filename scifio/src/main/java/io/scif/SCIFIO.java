@@ -43,6 +43,7 @@ import io.scif.services.FormatService;
 import io.scif.services.InitializeService;
 import io.scif.services.LocationService;
 import io.scif.services.TranslatorService;
+import io.scif.xml.XMLService;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
@@ -159,6 +160,15 @@ public class SCIFIO extends AbstractGateway {
    */
   public TiffService tiff() {
     return get(TiffService.class);
+  }
+
+  /**
+   * XMLService accessor.
+   * 
+   * @return The XMLService instance associated with the wrapped Context.
+   */
+  public XMLService xml() {
+    return get(XMLService.class);
   }
 
 }

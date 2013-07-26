@@ -51,7 +51,6 @@ import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.xml.BaseHandler;
-import io.scif.xml.XMLTools;
 
 import java.io.File;
 import java.io.IOException;
@@ -676,10 +675,10 @@ public class MicromanagerFormat extends AbstractFormat {
     private void parseXMLFile(Metadata meta, int imageIndex) throws IOException {
       Position p = meta.getPositions().get(imageIndex);
       String xmlData = DataTools.readFile(getContext(), p.xmlFile);
-      xmlData = XMLTools.sanitizeXML(xmlData);
+      xmlData = scifio().xml().sanitizeXML(xmlData);
 
       DefaultHandler handler = new MicromanagerHandler();
-      XMLTools.parseXML(xmlData, handler);
+      scifio().xml().parseXML(xmlData, handler);
     }
 
     // -- Helper classes --

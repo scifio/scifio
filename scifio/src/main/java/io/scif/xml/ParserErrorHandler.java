@@ -36,6 +36,8 @@
 
 package io.scif.xml;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
@@ -50,16 +52,19 @@ import org.xml.sax.SAXParseException;
  */
 public class ParserErrorHandler implements ErrorHandler {
 
+  private static final Logger LOGGER =
+    LoggerFactory.getLogger(ParserErrorHandler.class);
+
   public void error(SAXParseException e) {
-    XMLTools.LOGGER.debug(e.getMessage());
+    LOGGER.debug(e.getMessage());
   }
 
   public void fatalError(SAXParseException e) {
-    XMLTools.LOGGER.debug(e.getMessage());
+    LOGGER.debug(e.getMessage());
   }
 
   public void warning(SAXParseException e) {
-    XMLTools.LOGGER.debug(e.getMessage());
+    LOGGER.debug(e.getMessage());
   }
 
 }

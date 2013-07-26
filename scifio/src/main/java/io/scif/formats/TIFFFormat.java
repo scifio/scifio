@@ -63,7 +63,6 @@ import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
-import io.scif.xml.XMLTools;
 
 import java.io.IOException;
 import java.util.Hashtable;
@@ -330,10 +329,11 @@ public class TIFFFormat extends AbstractFormat {
                   DataTools.stripString(new String(b, Constants.ENCODING));
               if (metadata.indexOf("xml") != -1) {
                 metadata = metadata.substring(metadata.indexOf("<"));
-                metadata = "<root>" + XMLTools.sanitizeXML(metadata) + "</root>";
+                metadata = "<root>" +
+                  scifio().xml().sanitizeXML(metadata) + "</root>";
                 try {
                   Hashtable<String, String> xmlMetadata =
-                      XMLTools.parseXML(metadata);
+                      scifio().xml().parseXML(metadata);
                   for (String key : xmlMetadata.keySet()) {
                     addGlobalMeta(key, xmlMetadata.get(key));
                   }

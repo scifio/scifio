@@ -36,6 +36,8 @@
 
 package io.scif.xml;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
@@ -52,6 +54,9 @@ import org.xml.sax.SAXParseException;
  */
 public class ValidationErrorHandler implements ErrorHandler {
 
+  private static final Logger LOGGER =
+    LoggerFactory.getLogger(ValidationErrorHandler.class);
+
   private int errors = 0;
 
   public boolean ok() { return errors == 0; }
@@ -59,17 +64,17 @@ public class ValidationErrorHandler implements ErrorHandler {
   public int getErrorCount() { return errors; }
 
   public void error(SAXParseException e) {
-    XMLTools.LOGGER.error(e.getMessage());
+    LOGGER.error(e.getMessage());
     errors++;
   }
 
   public void fatalError(SAXParseException e) {
-    XMLTools.LOGGER.error(e.getMessage());
+    LOGGER.error(e.getMessage());
     errors++;
   }
 
   public void warning(SAXParseException e) {
-    XMLTools.LOGGER.warn(e.getMessage());
+    LOGGER.warn(e.getMessage());
     errors++;
   }
 
