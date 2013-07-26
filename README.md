@@ -5,7 +5,7 @@ for reading and writing images, particularly N-dimensional scientific images.
 
 This core package supports parsing pixels and metadata for a collection of open
 formats. Additional formats can be supported simply by downloading SCIFIO
-plug-ins and including them in your project.
+plugins and including them in your project.
 
 
 Purpose
@@ -43,14 +43,14 @@ The SCIFIO core includes support for:
 
 Additionally,
 [Bio-Formats](http://www.openmicroscopy.org/site/products/bio-formats) is
-[available as a SCIFIO plug-in](https://github.com/scifio/scifio-bf-compat) for
+[available as a SCIFIO plugin](https://github.com/scifio/scifio-bf-compat) for
 supporting hundreds of additional proprietary formats.
 
 For users
 ---------
 
 [ImageJ2](http://developer.imagej.net/) is a leading adopter of SCIFIO. Additionally,
-any product that uses Bio-Formats will support SCIFIO plug-ins as well.
+any product that uses Bio-Formats will support SCIFIO plugins as well.
 
 
 For developers
