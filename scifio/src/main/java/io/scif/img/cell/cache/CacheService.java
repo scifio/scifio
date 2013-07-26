@@ -82,9 +82,9 @@ public interface CacheService<T extends Serializable> extends Service {
    * @param cacheId - Cache this object belongs to
    * @param index - Index in the cache of this object
    * @param object - object to store
-   * @return true if the object was cached successfully
+   * @return CacheResult based on the outcome
    */
-  boolean cache(String cacheId, int index, T object);
+  CacheResult cache(String cacheId, int index, T object);
   
   /**
    * Removes and returns the object at the desired

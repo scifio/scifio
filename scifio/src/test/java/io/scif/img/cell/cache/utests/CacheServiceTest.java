@@ -46,6 +46,7 @@ import io.scif.SCIFIO;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.cell.SCIFIOCell;
 import io.scif.img.cell.SCIFIOCellCache;
+import io.scif.img.cell.cache.CacheResult;
 import io.scif.img.cell.cache.CacheService;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.SCIFIOArrayLoader;
@@ -108,7 +109,7 @@ public class CacheServiceTest {
     SCIFIOCell<ByteArray> cell = cache1.load(0, new int[]{128, 128}, new long[]{0l, 0l});
 
     // Cell is unmodified so this shouldn't cache
-    assertFalse(cs.cache(cache1.toString(), 0, cell));
+    assertEquals(CacheResult.NOT_DIRTY, cs.cache(cache1.toString(), 0, cell));
     
     // Verify the cell wasn't cached
     assertNull(cs.retrieve(cache1.toString(), 0));
@@ -117,7 +118,7 @@ public class CacheServiceTest {
     cell.getData().setValue(130, (byte) 0xace);
     
     // Cache the dirtied cell
-    assertTrue(cs.cache(cache1.toString(), 0, cell));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 0, cell));
     
     // Try loading the wrong cell position
     assertNull(cs.retrieve(cache1.toString(), 1));
@@ -135,7 +136,7 @@ public class CacheServiceTest {
     cell.getData().setValue(130, (byte) 0xace);
     
     // Cache the dirtied cell again
-    assertTrue(cs.cache(cache1.toString(), 0, cell));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 0, cell));
     
     // Clear cache 1
     cs.clearCache(cache1.toString());
@@ -156,7 +157,7 @@ public class CacheServiceTest {
     cs.cacheAll(true);
 
     // Should be able to cache even though the cell isn't dirty
-    assertTrue(cs.cache(cache1.toString(), 0, cell));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 0, cell));
  
     // Verify the cell was cached
     assertEquals(cell, cs.retrieve(cache1.toString(), 0));
@@ -174,14 +175,14 @@ public class CacheServiceTest {
     cs.enable(false);
     
     // Caching should be disabled
-    assertFalse(cs.cache(cache1.toString(), 0, cell));
+    assertEquals(CacheResult.CACHE_DISABLED, cs.cache(cache1.toString(), 0, cell));
     
     // Verify the cell wasn't cached
     assertNull(cs.retrieve(cache1.toString(), 0));
     
     // Re-enable the cache
     cs.enable(true);
-    assertTrue(cs.cache(cache1.toString(), 0, cell));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 0, cell));
 
     // Verify the cell was cached
     assertEquals(cell, cs.retrieve(cache1.toString(), 0));
@@ -270,7 +271,7 @@ public class CacheServiceTest {
     
     // Dirty and cache the cell
     cell1.getData().setValue(130, (byte) 0xace);
-    assertTrue(cs.cache(cache1.toString(), 0, cell1));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 0, cell1));
     
     // Grab another 4MB chunk of the dataset
     SCIFIOCell<ByteArray> cell2 = cache1.load(1, new int[]{2048, 2048}, new long[]{2048l, 0l});
@@ -279,19 +280,19 @@ public class CacheServiceTest {
     cell2.getData().setValue(130, (byte) 0xace);
     
     // Caching should fail
-    assertFalse(cs.cache(cache1.toString(), 1, cell2));
+    assertEquals(CacheResult.DISK_FULL, cs.cache(cache1.toString(), 1, cell2));
   
     // Verify the first cell was cached and the second cell wasn't
     assertEquals(cell1, cs.retrieve(cache1.toString(), 0));
     assertNull(cs.retrieve(cache1.toString(), 1));
     
     // Re-cache cell 1
-    assertTrue(cs.cache(cache1.toString(), 0, cell1));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 0, cell1));
     
     // Clear the cache and try caching cell 2 again
     cs.clearCache(cache1.toString());
     enableCells(true, cell1, cell2);
-    assertTrue(cs.cache(cache1.toString(), 1, cell2));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 1, cell2));
   
     // Verify cache state
     assertEquals(cell2, cs.retrieve(cache1.toString(), 1));
@@ -299,8 +300,8 @@ public class CacheServiceTest {
   
     // Up the max bytes on disk and try caching both cells
     cs.setMaxBytesOnDisk(Long.MAX_VALUE);
-    assertTrue(cs.cache(cache1.toString(), 0, cell1));
-    assertTrue(cs.cache(cache1.toString(), 1, cell2));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 0, cell1));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 1, cell2));
     SCIFIOCell<ByteArray> cell1b = (SCIFIOCell<ByteArray>) cs.retrieve(cache1.toString(), 0);
     SCIFIOCell<ByteArray> cell2b = (SCIFIOCell<ByteArray>) cs.retrieve(cache1.toString(), 1);
     assertTrue(cell1.equals(cell1b));
@@ -336,8 +337,8 @@ public class CacheServiceTest {
     cell2a.getData().setValue(4242, (byte)0xbeefeed);
     
     // Cache the arrays
-    assertTrue(cs.cache(cache1.toString(), 0, cell1a));
-    assertTrue(cs.cache(cache1.toString(), 1, cell2a));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 0, cell1a));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 1, cell2a));
     
     // RetrieveSCIFIOCell<ByteArray> cell1a  the cells
     @SuppressWarnings("unchecked")
@@ -355,8 +356,8 @@ public class CacheServiceTest {
     enableCells(true, cell1a, cell1b, cell2a, cell2b);
     
     // Try caching the retrieved cells
-    assertTrue(cs.cache(cache1.toString(), 0, cell1b));
-    assertTrue(cs.cache(cache1.toString(), 1, cell2b));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 0, cell1b));
+    assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 1, cell2b));
     
     // Should have succeeded, as these cells are still modified from what was on disk
     assertNotNull(cs.retrieve(cache1.toString(), 0));

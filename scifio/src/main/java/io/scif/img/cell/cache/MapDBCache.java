@@ -57,7 +57,7 @@ import org.scijava.service.Service;
 public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 
   // -- Fields --
-
+	
   // Disk-backed database for writing
   private DB db;
   
@@ -120,14 +120,19 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   /*
    * @see io.scifio.io.img.cell.CacheService#cache(java.lang.String, int, java.io.Serializable)
    */
-  public boolean cache(String cacheId, int index, SCIFIOCell<?> object) {
-    boolean success = false;
+  public CacheResult cache(String cacheId, int index, SCIFIOCell<?> object) {
     object.update();
-    if (caches.contains(cacheId) && (cacheAll() || object.dirty())) {
-      
+    
+    if (!(cacheAll() || object.dirty())) {
+    	return CacheResult.NOT_DIRTY;
+    }
+    else if (!caches.contains(cacheId)) {
+    	return CacheResult.CACHE_NOT_FOUND;
+    }
+    else {
       // Check to see if we have the latest version of this cell already
       SCIFIOCell<?> cell = getCell(cacheId, index);
-      if (cell != null && cell.equals(object)) return success;
+      if (cell != null && cell.equals(object)) return CacheResult.DUPLICATE_FOUND;
       
       // Store the provided cell
       
@@ -138,13 +143,18 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       else diskIsFull(true);
       
       // If the cache is enabled and there's room on disk, cache and commit
-      if (enabled() && !diskFull()) {
+      if (!enabled()) {
+      	return CacheResult.CACHE_DISABLED;
+      }
+      else if (diskFull()) {
+      	return CacheResult.DISK_FULL;
+      }
+      else {
         cache.put(getKey(cacheId, index), object);
-        success = true;
         db.commit();
       }
     }
-    return success;
+    return CacheResult.SUCCESS;
   }
 
   /*
@@ -186,7 +196,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   }
   
   // -- Helper Methods --
-    
+  
   private SCIFIOCell<?> getCell(String cacheId, int index) {
     Integer key = getKey(cacheId, index);
     
