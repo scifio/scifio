@@ -37,6 +37,7 @@
 package io.scif.formats.tiff;
 
 import io.scif.FormatException;
+import io.scif.SCIFIO;
 import io.scif.codec.CodecOptions;
 import io.scif.io.ByteArrayHandle;
 import io.scif.io.RandomAccessInputStream;
@@ -93,6 +94,7 @@ public class TiffSaver extends AbstractContextual {
   /** The codec options if set. */
   private CodecOptions options;
 
+  private SCIFIO scifio;
   private LogService log;
 
   // -- Constructors --
@@ -124,7 +126,8 @@ public class TiffSaver extends AbstractContextual {
     this.out = out;
     this.filename = filename;
     setContext(ctx);
-    log = ctx.getService(LogService.class);
+    scifio = new SCIFIO(ctx);
+    log = scifio.log();
   }
 
   /**

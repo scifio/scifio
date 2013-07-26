@@ -37,6 +37,7 @@
 package io.scif.formats.tiff;
 
 import io.scif.FormatException;
+import io.scif.SCIFIO;
 import io.scif.codec.BitBuffer;
 import io.scif.codec.CodecOptions;
 import io.scif.common.Constants;
@@ -100,6 +101,7 @@ public class TiffParser extends AbstractContextual {
   /** Cached first IFD in the current file. */
   private IFD firstIFD;
 
+  private SCIFIO scifio;
   private LogService log;
 
   /** Codec options to be used when decoding compressed pixel data. */
@@ -115,7 +117,8 @@ public class TiffParser extends AbstractContextual {
   /** Constructs a new TIFF parser from the given input source. */
   public TiffParser(Context context, RandomAccessInputStream in) {
     setContext(context);
-    log = context.getService(LogService.class);
+    scifio = new SCIFIO(context);
+    log = scifio.log();
     this.in = in;
     doCaching = true;
     try {
