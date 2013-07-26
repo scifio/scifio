@@ -102,9 +102,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
   /** The buffer itself. */
   private ByteBuffer buffer;
 
-  /** Whether or not the file is opened read/write. */
-  private boolean isReadWrite = false;
-
   /** The default map mode for the file. */
   private FileChannel.MapMode mapMode = FileChannel.MapMode.READ_ONLY;
 
@@ -125,7 +122,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
     this.bufferSize = bufferSize;
     validateMode(mode);
     if (mode.equals("rw")) {
-      isReadWrite = true;
       mapMode = FileChannel.MapMode.READ_WRITE;
     }
     raf = new RandomAccessFile(file, mode);
