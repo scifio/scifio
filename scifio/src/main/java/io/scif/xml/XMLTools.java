@@ -79,8 +79,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-
-
+import org.scijava.log.StderrLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -523,7 +522,8 @@ public final class XMLTools {
 
     // get path to schema from root element using SAX
     LOGGER.info("Parsing schema path");
-    ValidationSAXHandler saxHandler = new ValidationSAXHandler();
+    ValidationSAXHandler saxHandler =
+      new ValidationSAXHandler(new StderrLogService());//TEMP
     try {
       // Java XML factories are not declared to be thread safe
       SAXParserFactory factory = SAXParserFactory.newInstance();

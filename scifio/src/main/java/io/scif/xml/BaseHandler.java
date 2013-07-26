@@ -38,9 +38,9 @@ package io.scif.xml;
 
 import java.io.IOException;
 
+import org.scijava.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -59,12 +59,18 @@ public class BaseHandler extends DefaultHandler {
   private static final Logger LOGGER =
     LoggerFactory.getLogger(BaseHandler.class);
 
+  private final LogService log;
+
+  public BaseHandler(LogService log) {
+    this.log = log;
+  }
+
   // -- DefaultHandler API methods --
 
   public InputSource resolveEntity(String publicId, String systemId)
     throws IOException, SAXException
   {
-    LOGGER.debug("Ignoring: {}, {}", publicId, systemId);
+    log.debug("Ignoring: " + publicId + ", " + systemId);
     return new InputSource(new java.io.StringReader(""));
   }
 

@@ -38,6 +38,7 @@ package io.scif.xml;
 
 import java.util.StringTokenizer;
 
+import org.scijava.log.LogService;
 import org.xml.sax.Attributes;
 
 
@@ -53,14 +54,22 @@ import org.xml.sax.Attributes;
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 /**  */
-class ValidationSAXHandler extends BaseHandler {
+public class ValidationSAXHandler extends BaseHandler {
+
   private String schemaPath;
   private boolean first;
+
+  public ValidationSAXHandler(LogService log) {
+    super(log);
+  }
+
   public String getSchemaPath() { return schemaPath; }
+
   public void startDocument() {
     schemaPath = null;
     first = true;
   }
+
   public void startElement(String uri,
     String localName, String qName, Attributes attributes)
   {
@@ -90,4 +99,5 @@ class ValidationSAXHandler extends BaseHandler {
       }
     }
   }
+
 }

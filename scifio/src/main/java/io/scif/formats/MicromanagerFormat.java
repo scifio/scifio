@@ -685,7 +685,10 @@ public class MicromanagerFormat extends AbstractFormat {
     // -- Helper classes --
 
     /** SAX handler for parsing Acqusition.xml. */
-    class MicromanagerHandler extends BaseHandler {
+    private class MicromanagerHandler extends BaseHandler {
+      public MicromanagerHandler() {
+        super(log());
+      }
       public void startElement(String uri, String localName, String qName,
         Attributes attributes)
       {
