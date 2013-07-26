@@ -37,6 +37,7 @@ package io.scif;
 
 import io.scif.app.SCIFIOApp;
 import io.scif.codec.CodecService;
+import io.scif.formats.tiff.TiffService;
 import io.scif.services.FilePatternService;
 import io.scif.services.FormatService;
 import io.scif.services.InitializeService;
@@ -149,6 +150,15 @@ public class SCIFIO extends AbstractGateway {
    */
   public CodecService codec() {
     return get(CodecService.class);
+  }
+
+  /**
+   * TiffService accessor.
+   * 
+   * @return The TiffService instance associated with the wrapped Context.
+   */
+  public TiffService tiff() {
+    return get(TiffService.class);
   }
 
 }
