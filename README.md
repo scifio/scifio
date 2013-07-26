@@ -47,6 +47,7 @@ Additionally,
 [available as a SCIFIO plugin](https://github.com/scifio/scifio-bf-compat) for
 supporting hundreds of additional proprietary formats.
 
+
 For users
 ---------
 
@@ -64,6 +65,7 @@ More information
 ----------------
 
 For more information, see the [SCIFIO web site](http://loci.wisc.edu/software/scifio).
+
 
 Mailing lists
 ------------
