@@ -287,7 +287,7 @@ public class ICSFormat extends AbstractFormat {
           imageMeta.setAxisLength(Axes.Z, 1);
         }
         else {
-          LOGGER.debug("Lifetime data, unexpected 'history labels' " + label);
+          log().debug("Lifetime data, unexpected 'history labels' " + label);
         }
 
         if (newOrder != null) {
@@ -327,7 +327,7 @@ public class ICSFormat extends AbstractFormat {
         imageMeta.setPixelType(FormatTools.pixelTypeFromBytes(bytes, signed, floatingPt));
       }
       catch (final FormatException e) {
-        LOGGER.error("Could not get pixel type from bytes: " + bytes, e);
+        log().error("Could not get pixel type from bytes: " + bytes, e);
       }
     }
 
@@ -683,7 +683,7 @@ public class ICSFormat extends AbstractFormat {
           try {
             sizes[n] = Double.parseDouble(lengths[n].trim());
           } catch (NumberFormatException e) {
-            LOGGER.debug("Could not parse axis length", e);
+            log().debug("Could not parse axis length", e);
           }
         }
       }
@@ -700,7 +700,7 @@ public class ICSFormat extends AbstractFormat {
           try {
             sizes[n] = Double.parseDouble(lengths[n].trim());
           } catch (NumberFormatException e) {
-            LOGGER.debug("Could not parse pixel sizes", e);
+            log().debug("Could not parse pixel sizes", e);
           }
         }
       }
@@ -747,7 +747,7 @@ public class ICSFormat extends AbstractFormat {
           try {
             pinholes.put(new Integer(channel++), new Double(pins[n]));
           } catch (NumberFormatException e) {
-            LOGGER.debug("Could not parse pinhole", e);
+            log().debug("Could not parse pinhole", e);
           }
         }
       }
@@ -764,7 +764,7 @@ public class ICSFormat extends AbstractFormat {
           try {
             emWaves[n] = new Integer((int) Double.parseDouble(waves[n]));
           } catch (NumberFormatException e) {
-            LOGGER.debug("Could not parse emission wavelength", e);
+            log().debug("Could not parse emission wavelength", e);
           }
         }
       }
@@ -791,7 +791,7 @@ public class ICSFormat extends AbstractFormat {
           try {
             exWaves[n] = new Integer((int) Double.parseDouble(waves[n]));
           } catch (NumberFormatException e) {
-            LOGGER.debug("Could not parse excitation wavelength", e);
+            log().debug("Could not parse excitation wavelength", e);
           }
         }
       }
@@ -828,7 +828,7 @@ public class ICSFormat extends AbstractFormat {
         try {
           wavelengths.put(new Integer(laser), new Integer(kv[1]));
         } catch (NumberFormatException e) {
-          LOGGER.debug("Could not parse wavelength", e);
+          log().debug("Could not parse wavelength", e);
         }
       }
     }
@@ -943,7 +943,7 @@ public class ICSFormat extends AbstractFormat {
           try {
             stagePos[n] = new Double(positions[n]);
           } catch (NumberFormatException e) {
-            LOGGER.debug("Could not parse stage position", e);
+            log().debug("Could not parse stage position", e);
           }
         }
       }
@@ -1138,7 +1138,7 @@ public class ICSFormat extends AbstractFormat {
           values[n] = new Double(token);
         }
         catch (NumberFormatException e) {
-          LOGGER.debug("Could not parse double value '{}'", token, e);
+          log().debug("Could not parse double value '" + token + "'", e);
         }
       }
       return values;
