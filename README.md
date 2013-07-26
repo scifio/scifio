@@ -81,8 +81,10 @@ For more information, see the [SCIFIO web site](http://scif.io/).
 Mailing lists
 -------------
 
-* Please use [ome-users](ome-users@lists.openmicroscopy.org.uk) for any SCIFIO or
-  Bio-Formats questions.
+* [scifio@scif.io](http://scif.io/mailman/listinfo/scifio):
+  for SCIFIO questions.
+* [ome-users](http://lists.openmicroscopy.org.uk/mailman/listinfo/ome-users/):
+  for questions about Bio-Formats.
 
 
 Contributing to SCIFIO
