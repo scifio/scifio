@@ -58,9 +58,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.scijava.plugin.Plugin;
-
 import net.imglib2.meta.Axes;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.Plugin;
 
 
 /**
@@ -252,7 +253,7 @@ public class TextFormat extends AbstractFormat {
       try {
         meta = (Metadata) getFormat().createMetadata();
       } catch (FormatException e) {
-        LOGGER.error("Failed to create TextMetadata", e);
+        log().error("Failed to create TextMetadata", e);
         return false;
       }
       meta.createImageMetadata(1);
@@ -262,7 +263,7 @@ public class TextFormat extends AbstractFormat {
       if (line == null) return false;
       int headerRows = 0;
       try {
-        headerRows = TextUtils.parseFileHeader(lines, meta);
+        headerRows = TextUtils.parseFileHeader(lines, meta, log());
       }
       catch (FormatException e) { }
       return headerRows > 0;
@@ -290,12 +291,12 @@ public class TextFormat extends AbstractFormat {
       ImageMetadata iMeta = meta.get(0);
 
       // read file into memory
-      LOGGER.info("Reading file");
+      log().info("Reading file");
       List<String> lines = readFile(stream.getFileName());
 
       // parse file header
-      LOGGER.info("Parsing file header");
-      final int headerRows = TextUtils.parseFileHeader(lines, meta);
+      log().info("Parsing file header");
+      final int headerRows = TextUtils.parseFileHeader(lines, meta, log());
 
       // allocate memory for image data
       final int sizeZ = 1, sizeT = 1; // no Z or T for now
@@ -327,14 +328,14 @@ public class TextFormat extends AbstractFormat {
         String[] tokens = TextUtils.getNextLine(lines, meta);
         if (tokens == null) break; // eof
         if (tokens.length != meta.getRowLength()) {
-          LOGGER.warn("Ignoring deviant row #" + meta.getRow());
+          log().warn("Ignoring deviant row #" + meta.getRow());
           continue;
         }
 
         // parse values from row
         boolean success = TextUtils.getRowData(tokens, rowData);
         if (!success) {
-          LOGGER.warn("Ignoring non-numeric row #" + meta.getRow());
+          log().warn("Ignoring non-numeric row #" + meta.getRow());
           continue;
         }
 
@@ -396,9 +397,9 @@ public class TextFormat extends AbstractFormat {
         // some time has passed; report progress
         if (len > 0) {
           int percent = (int) (100 * pos / len);
-          LOGGER.info("Reading line " + no + " (" + percent + "%)");
+          log().info("Reading line " + no + " (" + percent + "%)");
         }
-        else LOGGER.info("Reading line " + no);
+        else log().info("Reading line " + no);
         time = t;
       }
       return time;
@@ -459,7 +460,9 @@ public class TextFormat extends AbstractFormat {
      *
      * @return number of rows in the header
      */
-    private static int parseFileHeader(List<String> lines, Metadata meta) throws FormatException {
+    private static int parseFileHeader(List<String> lines, Metadata meta,
+      LogService log) throws FormatException
+    {
       String[] lastTokens = null;
       double[] rowData = null;
       while (true) {
@@ -477,7 +480,7 @@ public class TextFormat extends AbstractFormat {
 
           // try to parse the first data row
           if (getRowData(tokens, rowData)) {
-            LOGGER.info("Found header on line " + (meta.getRow() - 1));
+            log.info("Found header on line " + (meta.getRow() - 1));
             // looks like tabular data; assume previous line is the header
             parseHeaderRow(lastTokens, meta);
             break;
