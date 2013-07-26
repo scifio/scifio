@@ -68,14 +68,14 @@ For more information, see the [SCIFIO web site](http://loci.wisc.edu/software/sc
 
 
 Mailing lists
-------------
+-------------
 
 * Please use [ome-users](ome-users@lists.openmicroscopy.org.uk) for any SCIFIO or
   Bio-Formats questions.
 
 
 Contributing to SCIFIO
---------------------
+----------------------
 
 SCIFIO is an open product and anyone is welcome to submit pull requests to the
 [SCIFIO repository](https://github.com/scifio/scifio). Although, with SCIFIO's
