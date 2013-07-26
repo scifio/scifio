@@ -77,7 +77,7 @@ public class TiffParser extends AbstractContextual {
   // -- Fields --
 
   /** Input source from which to parse TIFF data. */
-  protected RandomAccessInputStream in;
+  private RandomAccessInputStream in;
 
   /** Cached tile buffer to avoid re-allocations when reading tiles. */
   private byte[] cachedTileBuffer;
@@ -939,7 +939,34 @@ public class TiffParser extends AbstractContextual {
     return buf;
   }
 
-  // -- Utility methods - byte stream decoding --
+  public TiffIFDEntry readTiffIFDEntry() throws IOException {
+    int entryTag = in.readUnsignedShort();
+
+    // Parse the entry's "Type"
+    IFDType entryType;
+    try {
+       entryType = IFDType.get(in.readUnsignedShort());
+    }
+    catch (EnumException e) {
+      LOGGER.error("Error reading IFD type at: {}", in.getFilePointer());
+      throw e;
+    }
+
+    // Parse the entry's "ValueCount"
+    int valueCount = bigTiff ? (int) in.readLong() : in.readInt();
+    if (valueCount < 0) {
+      throw new RuntimeException("Count of '" + valueCount + "' unexpected.");
+    }
+
+    int nValueBytes = valueCount * entryType.getBytesPerElement();
+    int threshhold = bigTiff ? 8 : 4;
+    long offset = nValueBytes > threshhold ?
+      getNextOffset(0) : in.getFilePointer();
+
+    return new TiffIFDEntry(entryTag, entryType, valueCount, offset);
+  }
+
+  // -- Helper methods - byte stream decoding --
 
   /**
    * Extracts pixel information from the given byte array according to the
@@ -947,7 +974,7 @@ public class TiffParser extends AbstractContextual {
    * entry values, and the specified byte ordering.
    * No error checking is performed.
    */
-  public static void unpackBytes(byte[] samples, int startIndex, byte[] bytes,
+  private void unpackBytes(byte[] samples, int startIndex, byte[] bytes,
     IFD ifd) throws FormatException
   {
     boolean planar = ifd.getPlanarConfiguration() == 2;
@@ -1117,7 +1144,7 @@ public class TiffParser extends AbstractContextual {
    * is read and possibly adjusted for a possible carry-over from the previous
    * offset.
    */
-  long getNextOffset(long previous) throws IOException {
+  private long getNextOffset(long previous) throws IOException {
     if (bigTiff || fakeBigTiff) {
       return in.readLong();
     }
@@ -1130,33 +1157,6 @@ public class TiffParser extends AbstractContextual {
       offset += 0x100000000L;
     }
     return offset;
-  }
-
-  TiffIFDEntry readTiffIFDEntry() throws IOException {
-    int entryTag = in.readUnsignedShort();
-
-    // Parse the entry's "Type"
-    IFDType entryType;
-    try {
-       entryType = IFDType.get(in.readUnsignedShort());
-    }
-    catch (EnumException e) {
-      LOGGER.error("Error reading IFD type at: {}", in.getFilePointer());
-      throw e;
-    }
-
-    // Parse the entry's "ValueCount"
-    int valueCount = bigTiff ? (int) in.readLong() : in.readInt();
-    if (valueCount < 0) {
-      throw new RuntimeException("Count of '" + valueCount + "' unexpected.");
-    }
-
-    int nValueBytes = valueCount * entryType.getBytesPerElement();
-    int threshhold = bigTiff ? 8 : 4;
-    long offset = nValueBytes > threshhold ?
-      getNextOffset(0) : in.getFilePointer();
-
-    return new TiffIFDEntry(entryTag, entryType, valueCount, offset);
   }
 
 }
