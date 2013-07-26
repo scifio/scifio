@@ -701,9 +701,9 @@ public class TiffParser extends AbstractContextual {
       byte[] q = new byte[jpegTable.length + tile.length - 4];
       System.arraycopy(jpegTable, 0, q, 0, jpegTable.length - 2);
       System.arraycopy(tile, 2, q, jpegTable.length - 2, tile.length - 2);
-      tile = compression.decompress(getContext(), q, codecOptions);
+      tile = compression.decompress(scifio.codec(), q, codecOptions);
     }
-    else tile = compression.decompress(getContext(), tile, codecOptions);
+    else tile = compression.decompress(scifio.codec(), tile, codecOptions);
     scifio.tiff().undifference(tile, ifd);
     unpackBytes(buf, 0, tile, ifd);
 

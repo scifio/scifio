@@ -40,6 +40,7 @@ import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
 import io.scif.codec.Codec;
 import io.scif.codec.CodecOptions;
+import io.scif.codec.CodecService;
 import io.scif.codec.JPEG2000Codec;
 import io.scif.codec.JPEG2000CodecOptions;
 import io.scif.codec.JPEGCodec;
@@ -49,7 +50,6 @@ import io.scif.codec.NikonCodec;
 import io.scif.codec.PackbitsCodec;
 import io.scif.codec.PassthroughCodec;
 import io.scif.codec.ZlibCodec;
-import io.scif.common.DataTools;
 import io.scif.enumeration.CodedEnum;
 import io.scif.enumeration.EnumException;
 
@@ -58,8 +58,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-
-import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,20 +75,22 @@ import org.slf4j.LoggerFactory;
  */
 public enum TiffCompression implements CodedEnum {
 
+  // TODO: Make TIFF compression logic extensible, not a hardcoded enum!
+
   // (TIFF code, codec, codec name)
-  DEFAULT_UNCOMPRESSED(0, new PassthroughCodec(), "Uncompressed"),
-  UNCOMPRESSED(1, new PassthroughCodec(), "Uncompressed"),
+  DEFAULT_UNCOMPRESSED(0, PassthroughCodec.class, "Uncompressed"),
+  UNCOMPRESSED(1, PassthroughCodec.class, "Uncompressed"),
   CCITT_1D(2, null, "CCITT Group 3 1-Dimensional Modified Huffman"),
   GROUP_3_FAX(3, null, "CCITT T.4 bi-level encoding (Group 3 Fax)"),
   GROUP_4_FAX(4, null, "CCITT T.6 bi-level encoding (Group 4 Fax)"),
-  LZW(5, new LZWCodec(), "LZW"),
-  OLD_JPEG(6, new JPEGCodec(), "Old JPEG"),
-  JPEG(7, new JPEGCodec(), "JPEG"),
-  PACK_BITS(32773, new PackbitsCodec(), "PackBits"),
-  PROPRIETARY_DEFLATE(32946, new ZlibCodec(), "Deflate (Zlib)"),
-  DEFLATE(8, new ZlibCodec(), "Deflate (Zlib)"),
+  LZW(5, LZWCodec.class, "LZW"),
+  OLD_JPEG(6, JPEGCodec.class, "Old JPEG"),
+  JPEG(7, JPEGCodec.class, "JPEG"),
+  PACK_BITS(32773, PackbitsCodec.class, "PackBits"),
+  PROPRIETARY_DEFLATE(32946, ZlibCodec.class, "Deflate (Zlib)"),
+  DEFLATE(8, ZlibCodec.class, "Deflate (Zlib)"),
   THUNDERSCAN(32809, null, "Thunderscan"),
-  JPEG_2000(33003, new JPEG2000Codec(), "JPEG-2000") {
+  JPEG_2000(33003, JPEG2000Codec.class, "JPEG-2000") {
     @Override
     public CodecOptions getCompressionCodecOptions(IFD ifd)
         throws FormatException {
@@ -115,7 +115,7 @@ public enum TiffCompression implements CodedEnum {
       return j2k;
     }
   },
-  JPEG_2000_LOSSY(33004, new JPEG2000Codec(), "JPEG-2000 Lossy") {
+  JPEG_2000_LOSSY(33004, JPEG2000Codec.class, "JPEG-2000 Lossy") {
     @Override
     public CodecOptions getCompressionCodecOptions(IFD ifd)
         throws FormatException {
@@ -140,7 +140,7 @@ public enum TiffCompression implements CodedEnum {
       return j2k;
     }
   },
-  ALT_JPEG2000(33005, new JPEG2000Codec(), "JPEG-2000") {
+  ALT_JPEG2000(33005, JPEG2000Codec.class, "JPEG-2000") {
     @Override
     public CodecOptions getCompressionCodecOptions(IFD ifd)
         throws FormatException
@@ -166,8 +166,8 @@ public enum TiffCompression implements CodedEnum {
       return j2k;
     }
   },
-  ALT_JPEG(33007, new JPEGCodec(), "JPEG"),
-  OLYMPUS_JPEG2000(34712, new JPEG2000Codec(), "JPEG-2000") {
+  ALT_JPEG(33007, JPEGCodec.class, "JPEG"),
+  OLYMPUS_JPEG2000(34712, JPEG2000Codec.class, "JPEG-2000") {
     @Override
     public CodecOptions getCompressionCodecOptions(IFD ifd)
         throws FormatException
@@ -194,8 +194,8 @@ public enum TiffCompression implements CodedEnum {
     }
 
   },
-  NIKON(34713, new NikonCodec(), "Nikon"),
-  LURAWAVE(65535, new LuraWaveCodec(), "LuraWave");
+  NIKON(34713, NikonCodec.class, "Nikon"),
+  LURAWAVE(65535, LuraWaveCodec.class, "LuraWave");
 
   // -- Constants --
 
@@ -206,7 +206,7 @@ public enum TiffCompression implements CodedEnum {
   private int code;
 
   /** TIFF compression codec. */
-  private Codec codec;
+  private Class<? extends Codec> codecClass;
 
   /** Name of the TIFF compression codec. */
   private String codecName;
@@ -229,12 +229,14 @@ public enum TiffCompression implements CodedEnum {
   /**
    * Default constructor.
    * @param code Integer "code" for the TIFF compression type.
-   * @param codec TIFF compression codec.
+   * @param codecClass TIFF compression codec.
    * @param codecName String name of the compression type.
    */
-  private TiffCompression(int code, Codec codec, String codecName) {
+  private TiffCompression(int code, Class<? extends Codec> codecClass,
+    String codecName)
+  {
     this.code = code;
-    this.codec = codec;
+    this.codecClass = codecClass;
     this.codecName = codecName;
   }
 
@@ -270,15 +272,15 @@ public enum TiffCompression implements CodedEnum {
   // -- TiffCompression methods - decompression --
 
   /** Decodes a strip of data. */
-  public byte[] decompress(Context ctx, byte[] input, CodecOptions options)
-    throws FormatException, IOException
+  public byte[] decompress(CodecService codecService, byte[] input,
+    CodecOptions options) throws FormatException, IOException
   {
-    if (codec == null) {
+    if (codecClass == null) {
       throw new UnsupportedCompressionException(
           "Sorry, " + getCodecName() + " compression mode is not supported");
     }
-    if (codec.getContext() == null) codec.setContext(ctx);
 
+    final Codec codec = codecService.getCodec(codecClass);
     return codec.decompress(input, options);
   }
 
@@ -319,13 +321,14 @@ public enum TiffCompression implements CodedEnum {
   }
 
   /** Encodes a strip of data. */
-  public byte[] compress(byte[] input, CodecOptions options)
-    throws FormatException, IOException
+  public byte[] compress(CodecService codecService, byte[] input,
+    CodecOptions options) throws FormatException, IOException
   {
-    if (codec == null) {
+    if (codecClass == null) {
       throw new FormatException(
           "Sorry, " + getCodecName() + " compression mode is not supported");
     }
+    final Codec codec = codecService.getCodec(codecClass);
     return codec.compress(input, options);
   }
 

@@ -386,7 +386,8 @@ public class TiffSaver extends AbstractContextual {
       codecOptions.width = tileWidth;
       codecOptions.channels = interleaved ? nChannels : 1;
 
-      strips[strip] = compression.compress(strips[strip], codecOptions);
+      strips[strip] = compression.compress(scifio.codec(),
+        strips[strip], codecOptions);
       if (log.isDebug()) {
         log.debug(String.format("Compressed strip %d/%d length %d",
             strip + 1, nStrips, strips[strip].length));
