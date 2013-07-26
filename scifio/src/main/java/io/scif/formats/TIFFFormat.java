@@ -520,7 +520,7 @@ public class TIFFFormat extends AbstractFormat {
         ifds = new IFDList();
         ifds.add(firstIFD);
         for (int i=1; i<totalPlanes; i++) {
-          IFD ifd = new IFD(firstIFD);
+          IFD ifd = new IFD(firstIFD, log());
           ifds.add(ifd);
           long[] prevOffsets = ifds.get(i - 1).getStripOffsets();
           long[] offsets = new long[stripOffsets.length];
@@ -1181,7 +1181,7 @@ public class TIFFFormat extends AbstractFormat {
     {
       byte[] buf = plane.getBytes();
       if (checkParams) checkParams(imageIndex, planeIndex, buf, x, y, w, h);
-      if (ifd == null) ifd = new IFD();
+      if (ifd == null) ifd = new IFD(log());
       int type = getMetadata().getPixelType(imageIndex);
       int index = planeIndex;
       // This operation is synchronized
@@ -1214,7 +1214,7 @@ public class TIFFFormat extends AbstractFormat {
      */
     public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
       int y, int w, int h) throws FormatException, IOException {
-      IFD ifd = new IFD();
+      IFD ifd = new IFD(log());
       if (!sequential) {
         TiffParser parser = new TiffParser(getContext(), getMetadata().getDatasetName());
         try {
@@ -1484,7 +1484,7 @@ public class TIFFFormat extends AbstractFormat {
 
       ImageMetadata m = source.get(0);
 
-      for (int i=0; i< m.getPlaneCount(); i++) ifds.add(new IFD());
+      for (int i=0; i< m.getPlaneCount(); i++) ifds.add(new IFD(log()));
 
       IFD firstIFD = ifds.get(0);
 

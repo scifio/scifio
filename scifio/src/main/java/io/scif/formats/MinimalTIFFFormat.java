@@ -506,7 +506,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
               IFDList theseSubResolutionIFDs = new IFDList();
               meta.getSubResolutionIFDs().add(theseSubResolutionIFDs);
               for (int level = 1; level <= meta.getResolutionLevels(); level++) {
-                IFD newIFD = new IFD(ifd);
+                IFD newIFD = new IFD(ifd, log());
                 long imageWidth = ifd.getImageWidth();
                 long imageLength = ifd.getImageLength();
                 long tileWidth = ifd.getTileWidth();

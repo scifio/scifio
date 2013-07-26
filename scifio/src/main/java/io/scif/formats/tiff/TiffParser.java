@@ -382,7 +382,7 @@ public class TiffParser extends AbstractContextual {
   /** Gets the IFD stored at the given offset.  */
   public IFD getIFD(long offset) throws IOException {
     if (offset < 0 || offset >= in.length()) return null;
-    IFD ifd = new IFD();
+    IFD ifd = new IFD(log);
 
     // save little-endian flag to internal LITTLE_ENDIAN tag
     ifd.put(new Integer(IFD.LITTLE_ENDIAN), new Boolean(in.isLittleEndian()));
