@@ -64,7 +64,7 @@ See the included Tutorials module for a step-by-step introduction to the SCIFIO 
 More information
 ----------------
 
-For more information, see the [SCIFIO web site](http://loci.wisc.edu/software/scifio).
+For more information, see the [SCIFIO web site](http://scif.io/).
 
 
 Mailing lists
