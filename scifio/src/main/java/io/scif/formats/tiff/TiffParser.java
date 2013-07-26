@@ -689,7 +689,7 @@ public class TiffParser extends AbstractContextual {
     in.seek(stripOffset);
     in.read(tile);
 
-    codecOptions.maxBytes = (int) Math.max(size, tile.length);
+    codecOptions.maxBytes = Math.max(size, tile.length);
     codecOptions.ycbcr =
       ifd.getPhotometricInterpretation() == PhotoInterp.Y_CB_CR &&
       ifd.getIFDIntValue(IFD.Y_CB_CR_SUB_SAMPLING) == 1 && ycbcrCorrection;
@@ -823,7 +823,7 @@ public class TiffParser extends AbstractContextual {
         int firstTile = (int) ((y / tileLength) * numTileCols + column);
         int lastTile =
           (int) (((y + height) / tileLength) * numTileCols + column);
-        lastTile = (int) Math.min(lastTile, stripOffsets.length - 1);
+        lastTile = Math.min(lastTile, stripOffsets.length - 1);
 
         int offset = 0;
         for (int tile=firstTile; tile<=lastTile; tile++) {
@@ -893,8 +893,8 @@ public class TiffParser extends AbstractContextual {
 
         // adjust tile bounds, if necessary
 
-        int tileX = (int) Math.max(tileBounds.x, x);
-        int tileY = (int) Math.max(tileBounds.y, y);
+        int tileX = Math.max(tileBounds.x, x);
+        int tileY = Math.max(tileBounds.y, y);
         int realX = tileX % (int) (tileWidth - overlapX);
         int realY = tileY % (int) (tileLength - overlapY);
 
@@ -915,8 +915,8 @@ public class TiffParser extends AbstractContextual {
         realY *= rowLen;
 
         for (int q=0; q<effectiveChannels; q++) {
-          int src = (int) (q * tileSize) + realX + realY;
-          int dest = (int) (q * planeSize) + pixel * (tileX - x) +
+          int src = q * tileSize + realX + realY;
+          int dest = q * planeSize + pixel * (tileX - x) +
             outputRowLen * (tileY - y);
           if (planarConfig == 2) dest += (planeSize * (row / nrows));
 
