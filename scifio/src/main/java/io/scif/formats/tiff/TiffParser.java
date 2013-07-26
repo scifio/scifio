@@ -704,7 +704,7 @@ public class TiffParser extends AbstractContextual {
       tile = compression.decompress(getContext(), q, codecOptions);
     }
     else tile = compression.decompress(getContext(), tile, codecOptions);
-    TiffCompression.undifference(tile, ifd);
+    scifio.tiff().undifference(tile, ifd);
     unpackBytes(buf, 0, tile, ifd);
 
     if (planarConfig == 2 && !ifd.isTiled() && ifd.getSamplesPerPixel() > 1) {

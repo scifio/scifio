@@ -379,7 +379,7 @@ public class TiffSaver extends AbstractContextual {
     byte[][] strips = new byte[nStrips][];
     for (int strip=0; strip<nStrips; strip++) {
       strips[strip] = stripBuf[strip].toByteArray();
-      TiffCompression.difference(strips[strip], ifd);
+      scifio.tiff().difference(strips[strip], ifd);
       CodecOptions codecOptions = compression.getCompressionCodecOptions(
           ifd, options);
       codecOptions.height = tileHeight;
