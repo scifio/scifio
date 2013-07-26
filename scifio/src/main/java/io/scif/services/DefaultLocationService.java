@@ -40,6 +40,7 @@ import io.scif.io.IRandomAccess;
 import io.scif.io.IStreamAccess;
 import io.scif.io.Location;
 import io.scif.io.NIOFileHandle;
+import io.scif.io.NIOService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,6 +74,9 @@ public class DefaultLocationService extends AbstractService implements LocationS
 
   @Parameter
   private LogService log;
+
+  @Parameter
+  private NIOService nioService;
 
   /** Map from given filenames to actual filenames. */
   private HashMap<String, Object> idMap =
@@ -246,7 +250,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
       }
 
       if (handle == null)
-        handle = new NIOFileHandle(mapId, writable ? "rw" : "r");
+        handle = new NIOFileHandle(nioService, mapId, writable ? "rw" : "r");
 
     }
     log.trace("Location.getHandle: " + id + " -> " + handle);

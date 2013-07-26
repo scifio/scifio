@@ -34,44 +34,45 @@
  * #L%
  */
 
-package io.scif.io.utests.providers;
+package io.scif.io;
 
-import io.scif.io.IRandomAccess;
-import io.scif.io.NIOFileHandle;
-import io.scif.io.NIOService;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 
-import org.scijava.Context;
+import org.scijava.service.Service;
 
 /**
- * Implementation of IRandomAccessProvider that produces instances of
- * loci.common.NIOFileHandle.
- *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/test/loci/common/utests/providers/NIOFileHandleProvider.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/test/loci/common/utests/providers/NIOFileHandleProvider.java;hb=HEAD">Gitweb</a></dd></dl>
- *
- * @see IRandomAccessProvider
- * @see io.scif.io.NIOFileHandle
+ * Interface for services that work with the {@link java.nio} package,
+ * particularly NIO {@link ByteBuffer} objects.
+ * 
+ * @author Chris Allan
+ * @author Curtis Rueden
  */
-class NIOFileHandleProvider implements IRandomAccessProvider {
+public interface NIOService extends Service {
 
-  public IRandomAccess createMock(
-      byte[] page, String mode, int bufferSize) throws IOException {
-    File pageFile = File.createTempFile("page", ".dat");
-    OutputStream stream = new FileOutputStream(pageFile);
-    try {
-      stream.write(page);
-    } finally {
-      stream.close();
-    }
-    Context context = new Context(NIOService.class);
-    NIOService nioService = context.getService(NIOService.class);
-    return new NIOFileHandle(nioService, pageFile, mode, bufferSize);
-  }
+  /**
+   * Allocates or maps the desired file data into memory.
+   * <p>
+   * This method provides a facade to byte buffer allocation that enables
+   * <code>FileChannel.map()</code> usage on platforms where it's unlikely to
+   * give us problems and heap allocation where it is.
+   * </p>
+   * 
+   * @param channel File channel to allocate or map byte buffers from.
+   * @param mapMode The map mode. Required but only used if memory mapped I/O is
+   *          to occur.
+   * @param bufferStartPosition The absolute position of the start of the
+   *          buffer.
+   * @param newSize The buffer size.
+   * @return A newly allocated or mapped NIO byte buffer.
+   * @see "http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5092131"
+   * @see "http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6417205"
+   * @throws IOException If there is an issue mapping, aligning or allocating
+   *           the buffer.
+   */
+  ByteBuffer allocate(FileChannel channel, MapMode mapMode,
+    long bufferStartPosition, int newSize) throws IOException;
 
 }
