@@ -58,7 +58,18 @@ any product that uses Bio-Formats will support SCIFIO plugins as well.
 For developers
 --------------
 
-See the included Tutorials module for a step-by-step introduction to the SCIFIO API.
+Several software libraries use SCIFIO for image I/O:
+* SCIFIO has built-in support for opening and saving
+  [ImgLib2](https://github.com/imagej/imglib) data structures
+  (see the [io.scif.img](scifio/src/main/java/io/scif/img) package)
+* We have [updated Bio-Formats](https://github.com/scifio/bioformats) to
+  also support SCIFIO plugins, backwards compatibly with existing code.
+* [ITK](https://github.com/Kitware/ITK) has an
+  [ImageIO module](https://github.com/scifio/scifio-imageio)
+  for reading and writing images using SCIFIO.
+
+See the included [Tutorials module](tutorials) for a step-by-step introduction
+to the SCIFIO API.
 
 
 More information
