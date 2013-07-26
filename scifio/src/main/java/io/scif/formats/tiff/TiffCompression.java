@@ -282,36 +282,6 @@ public enum TiffCompression implements CodedEnum {
     return codec.decompress(input, options);
   }
 
-  /** Undoes in-place differencing according to the given predictor value. */
-  public static void undifference(byte[] input, IFD ifd)
-    throws FormatException
-  {
-    int predictor = ifd.getIFDIntValue(IFD.PREDICTOR, 1);
-    if (predictor == 2) {
-      LOGGER.debug("reversing horizontal differencing");
-      int[] bitsPerSample = ifd.getBitsPerSample();
-      int len = bitsPerSample.length;
-      long width = ifd.getImageWidth();
-      boolean little = ifd.isLittleEndian();
-      int planarConfig = ifd.getPlanarConfiguration();
-
-      int bytes = ifd.getBytesPerSample()[0];
-
-      if (planarConfig == 2 || bitsPerSample[len - 1] == 0) len = 1;
-      len *= bytes;
-
-      for (int b=0; b<=input.length-bytes; b+=bytes) {
-        if (b / len % width == 0) continue;
-        int value = DataTools.bytesToInt(input, b, bytes, little);
-        value += DataTools.bytesToInt(input, b - len, bytes, little);
-        DataTools.unpackBytes(value, input, b, bytes, little);
-      }
-    }
-    else if (predictor != 1) {
-      throw new FormatException("Unknown Predictor (" + predictor + ")");
-    }
-  }
-
   // -- TiffCompression methods - compression --
 
   /**
@@ -357,30 +327,6 @@ public enum TiffCompression implements CodedEnum {
           "Sorry, " + getCodecName() + " compression mode is not supported");
     }
     return codec.compress(input, options);
-  }
-
-  /** Performs in-place differencing according to the given predictor value. */
-  public static void difference(byte[] input, IFD ifd) throws FormatException {
-    int predictor = ifd.getIFDIntValue(IFD.PREDICTOR, 1);
-    if (predictor == 2) {
-      LOGGER.debug("performing horizontal differencing");
-      int[] bitsPerSample = ifd.getBitsPerSample();
-      long width = ifd.getImageWidth();
-      boolean little = ifd.isLittleEndian();
-      int planarConfig = ifd.getPlanarConfiguration();
-      int bytes = ifd.getBytesPerSample()[0];
-      int len = bytes * (planarConfig == 2 ? 1 : bitsPerSample.length);
-
-      for (int b=input.length-bytes; b>=0; b-=bytes) {
-        if (b / len % width == 0) continue;
-        int value = DataTools.bytesToInt(input, b, bytes, little);
-        value -= DataTools.bytesToInt(input, b - len, bytes, little);
-        DataTools.unpackBytes(value, input, b, bytes, little);
-      }
-    }
-    else if (predictor != 1) {
-      throw new FormatException("Unknown Predictor (" + predictor + ")");
-    }
   }
 
 }
