@@ -34,7 +34,7 @@
  * #L%
  */
 
-package io.scif.formats;
+package io.scif.formats.qt;
 
 import io.scif.AbstractFormat;
 import io.scif.AbstractMetadata;
@@ -49,9 +49,9 @@ import io.scif.Translator;
 import io.scif.common.DataTools;
 import io.scif.common.ReflectException;
 import io.scif.common.ReflectedUniverse;
+import io.scif.formats.qt.NativeQTFormat.Writer;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
-import io.scif.gui.LegacyQTTools;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;

@@ -34,7 +34,7 @@
  * #L%
  */
 
-package io.scif.formats;
+package io.scif.formats.qt;
 
 import io.scif.AbstractFormat;
 import io.scif.AbstractMetadata;
@@ -49,7 +49,6 @@ import io.scif.codec.JPEGCodec;
 import io.scif.codec.PackbitsCodec;
 import io.scif.common.DataTools;
 import io.scif.gui.AWTImageTools;
-import io.scif.gui.LegacyQTTools;
 import io.scif.io.ByteArrayHandle;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;

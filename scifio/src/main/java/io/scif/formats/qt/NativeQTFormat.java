@@ -34,7 +34,7 @@
  * #L%
  */
 
-package io.scif.formats;
+package io.scif.formats.qt;
 
 import io.scif.AbstractChecker;
 import io.scif.AbstractFormat;
@@ -57,7 +57,6 @@ import io.scif.codec.MJPBCodecOptions;
 import io.scif.codec.QTRLECodec;
 import io.scif.codec.RPZACodec;
 import io.scif.codec.ZlibCodec;
-import io.scif.gui.LegacyQTTools;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;

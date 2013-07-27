@@ -34,7 +34,7 @@
  * #L%
  */
 
-package io.scif.gui;
+package io.scif.formats.qt;
 
 import io.scif.FormatException;
 import io.scif.MissingLibraryException;
