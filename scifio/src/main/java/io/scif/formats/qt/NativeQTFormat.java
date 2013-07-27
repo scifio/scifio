@@ -680,8 +680,7 @@ public class NativeQTFormat extends AbstractFormat {
     // -- Constructor --
 
     public Writer() {
-      LegacyQTTools tools = new LegacyQTTools();
-      if (tools.canDoQT()) {
+      if (scifio().qtJava().canDoQT()) {
         compressionTypes = new String[] {
             CompressionType.UNCOMPRESSED.getCompression(),
           // NB: Writing to Motion JPEG-B with QTJava seems to be broken.

@@ -37,6 +37,7 @@ package io.scif;
 
 import io.scif.app.SCIFIOApp;
 import io.scif.codec.CodecService;
+import io.scif.formats.qt.QTJavaService;
 import io.scif.formats.tiff.TiffService;
 import io.scif.services.FilePatternService;
 import io.scif.services.FormatService;
@@ -160,6 +161,15 @@ public class SCIFIO extends AbstractGateway {
    */
   public TiffService tiff() {
     return get(TiffService.class);
+  }
+
+  /**
+   * QTJavaService accessor.
+   * 
+   * @return The QTJavaService instance associated with the wrapped Context.
+   */
+  public QTJavaService qtJava() {
+    return get(QTJavaService.class);
   }
 
   /**

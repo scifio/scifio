@@ -49,7 +49,6 @@ import io.scif.Translator;
 import io.scif.common.DataTools;
 import io.scif.common.ReflectException;
 import io.scif.common.ReflectedUniverse;
-import io.scif.formats.qt.NativeQTFormat.Writer;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
 import io.scif.io.Location;
@@ -181,9 +180,8 @@ public class LegacyQTFormat extends AbstractFormat {
         throws IOException, FormatException {
       log().info("Checking for QuickTime Java");
 
-      LegacyQTTools tools = LegacyQTUtils.getTools();
-      ReflectedUniverse r = LegacyQTUtils.getUniverse();
-      tools.checkQTLibrary();
+      ReflectedUniverse r = scifio().qtJava().getUniverse();
+      scifio().qtJava().checkQTLibrary();
 
       log().info("Reading movie dimensions");
       try {
@@ -272,7 +270,7 @@ public class LegacyQTFormat extends AbstractFormat {
        BufferedImagePlane plane, int x, int y, int w, int h)
       throws FormatException, IOException
     {
-      ReflectedUniverse r = LegacyQTUtils.getUniverse();
+      ReflectedUniverse r = scifio().qtJava().getUniverse();
       Metadata meta = getMetadata();
 
       // paint frame into image
@@ -295,7 +293,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
   public void close(boolean fileOnly) throws IOException {
     try {
-      ReflectedUniverse r = LegacyQTUtils.getUniverse();
+      ReflectedUniverse r = scifio().qtJava().getUniverse();
 
       if (r != null && r.getVar("openMovieFile") != null) {
         r.exec("openMovieFile.close()");
@@ -324,9 +322,6 @@ public class LegacyQTFormat extends AbstractFormat {
 
     // -- Fields --
 
-    /** Instance of LegacyQTTools to handle QuickTime for Java detection. */
-    protected LegacyQTTools tools;
-
     /** Reflection tool for QuickTime for Java calls. */
     protected ReflectedUniverse r;
 
@@ -335,9 +330,6 @@ public class LegacyQTFormat extends AbstractFormat {
 
     /** The quality to use. */
     protected int quality = NativeQTFormat.Writer.QUALITY_NORMAL;
-
-    /** Number of frames written. */
-    private int numWritten = 0;
 
     /** Frame width. */
     private int width;
@@ -394,11 +386,10 @@ public class LegacyQTFormat extends AbstractFormat {
         img = ((BufferedImagePlane)plane).getData();
       }
 
-      if (tools == null || r == null) {
-        tools = new LegacyQTTools();
-        r = tools.getUniverse();
+      if (r == null) {
+        r = scifio().qtJava().getUniverse();
       }
-      tools.checkQTLibrary();
+      scifio().qtJava().checkQTLibrary();
 
       if (!initialized[imageIndex][planeIndex]) {
         initialized[imageIndex][planeIndex] = true;
@@ -455,8 +446,6 @@ public class LegacyQTFormat extends AbstractFormat {
           throw new FormatException("Legacy QuickTime writer failed", e);
         }
       }
-
-      numWritten++;
 
       try {
         r.exec("pixelData = pixMap.getPixelData()");
@@ -556,7 +545,6 @@ public class LegacyQTFormat extends AbstractFormat {
     public void close() throws IOException {
       super.close();
       r = null;
-      numWritten = 0;
       width = 0;
       height = 0;
       pixels2 = null;
@@ -594,27 +582,4 @@ public class LegacyQTFormat extends AbstractFormat {
     }
   }
 
-  // -- Utility class --
-
-  private static class LegacyQTUtils {
-    // -- Fields --
-
-    /** Instance of LegacyQTTools to handle QuickTime for Java detection. */
-    private static LegacyQTTools tools;
-
-    /** Reflection tool for QuickTime for Java calls. */
-    private static ReflectedUniverse r;
-
-    public static LegacyQTTools getTools() {
-      if (tools == null) tools = new LegacyQTTools();
-
-      return tools;
-    }
-
-    public static ReflectedUniverse getUniverse() {
-      if (r == null) r = getTools().getUniverse();
-
-      return r;
-    }
-  }
 }

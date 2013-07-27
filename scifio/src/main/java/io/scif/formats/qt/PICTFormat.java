@@ -153,10 +153,6 @@ public class PICTFormat extends AbstractFormat {
     /** Color lookup table for palette color images. */
     protected byte[][] lookup;
 
-    /** Helper reader in case this one fails. */
-    protected LegacyQTTools qtTools = new LegacyQTTools();
-
-    private boolean legacy = false;
     private Vector<Long> jpegOffsets = new Vector<Long>();
 
     // -- PICTFormat Metadata getters and setters --
@@ -191,14 +187,6 @@ public class PICTFormat extends AbstractFormat {
 
     public void setLookup(byte[][] lookup) {
       this.lookup = lookup;
-    }
-
-    public LegacyQTTools getQtTools() {
-      return qtTools;
-    }
-
-    public void setQtTools(LegacyQTTools qtTools) {
-      this.qtTools = qtTools;
     }
 
     public Vector<Long> getJpegOffsets() {
@@ -240,7 +228,6 @@ public class PICTFormat extends AbstractFormat {
         strips = null;
         versionOne = false;
         lookup = null;
-        legacy = false;
         if (jpegOffsets != null) jpegOffsets.clear();
         else jpegOffsets = new Vector<Long>();
       }
@@ -724,7 +711,7 @@ public class PICTFormat extends AbstractFormat {
         byte[] pix = new byte[(int) (getStream().length() - getStream().getFilePointer())];
         getStream().read(pix);
         byte[][] b = AWTImageTools.getBytes(
-          AWTImageTools.makeBuffered(meta.getQtTools().pictToImage(pix)));
+          AWTImageTools.makeBuffered(scifio().qtJava().pictToImage(pix)));
         pix = null;
         for (int i=0; i<b.length; i++) {
           System.arraycopy(b[i], 0, buf, i*b[i].length, b[i].length);
