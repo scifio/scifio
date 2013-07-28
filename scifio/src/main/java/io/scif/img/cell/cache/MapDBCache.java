@@ -84,7 +84,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 			// Disable re-caching in all cells of this cache and remove them.
 			for (final Object k : cache.keySet()) {
 				final SCIFIOCell<?> cell = getCellFromCache(cache, (Integer) k);
-				cell.cacheOnFinalize(false);
+				if (cell != null) cell.cacheOnFinalize(false);
 				cache.remove(k);
 			}
 			db.commit();
