@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ShortArray;
 
 /**
  * Decompresses lossless JPEG images.
@@ -295,10 +296,10 @@ public class LosslessJPEGCodec extends AbstractCodec {
 					final byte tableClass = (byte) ((s & 0xf0) >> 4);
 					final byte destination = (byte) (s & 0xf);
 					final int[] nCodes = new int[16];
-					final Vector table = new Vector();
+					final ShortArray table = new ShortArray();
 					for (int i = 0; i < nCodes.length; i++) {
 						nCodes[i] = in.read();
-						table.add(new Short((short) nCodes[i]));
+						table.add((short) nCodes[i]);
 					}
 
 					for (int i = 0; i < nCodes.length; i++) {
@@ -308,7 +309,7 @@ public class LosslessJPEGCodec extends AbstractCodec {
 					}
 					huffmanTables[destination] = new short[table.size()];
 					for (int i = 0; i < huffmanTables[destination].length; i++) {
-						huffmanTables[destination][i] = ((Short) table.get(i)).shortValue();
+						huffmanTables[destination][i] = table.getValue(i);
 					}
 				}
 				in.seek(fp + length);

@@ -262,7 +262,7 @@ public class JPEGTileDecoder {
 			}
 		}
 
-		public void setProperties(final Hashtable props) {}
+		public void setProperties(final Hashtable<?, ?> props) {}
 
 		public void setColorModel(final ColorModel model) {}
 

@@ -141,7 +141,10 @@ public class PICTFormat extends AbstractFormat {
 		/** Number of bytes in a row of pixel data (variable). */
 		private int rowBytes;
 
-		/** Vector of byte arrays representing individual rows. */
+		/**
+		 * Vector of {@code byte[]} and/or {@code int[]} representing individual
+		 * rows.
+		 */
 		private Vector<Object> strips;
 
 		/** Whether or not the file is PICT v1. */
@@ -162,11 +165,11 @@ public class PICTFormat extends AbstractFormat {
 			this.rowBytes = rowBytes;
 		}
 
-		public Vector getStrips() {
+		public Vector<Object> getStrips() {
 			return strips;
 		}
 
-		public void setStrips(final Vector strips) {
+		public void setStrips(final Vector<Object> strips) {
 			this.strips = strips;
 		}
 
@@ -260,7 +263,7 @@ public class PICTFormat extends AbstractFormat {
 			iMeta.setAxisLength(Axes.X, sizeX);
 			iMeta.setAxisLength(Axes.Y, sizeY);
 
-			final Vector strips = new Vector();
+			final Vector<Object> strips = new Vector<Object>();
 			final byte[][] lookup = null;
 			boolean versionOne = false;
 			meta.setStrips(strips);

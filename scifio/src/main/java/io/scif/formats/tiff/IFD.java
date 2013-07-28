@@ -235,13 +235,13 @@ public class IFD extends HashMap<Integer, Object> {
 	 * Gets the given directory entry value from this IFD, performing some error
 	 * checking.
 	 */
-	public Object getIFDValue(final int tag, final Class checkClass)
+	public Object getIFDValue(final int tag, final Class<?> checkClass)
 		throws FormatException
 	{
 		Object value = get(new Integer(tag));
 		if (checkClass != null && value != null && !checkClass.isInstance(value)) {
 			// wrap object in array of length 1, if appropriate
-			final Class cType = checkClass.getComponentType();
+			final Class<?> cType = checkClass.getComponentType();
 			final Object array =
 				Array.newInstance(cType == null ? value.getClass() : cType, 1);
 			if (cType == value.getClass()) {

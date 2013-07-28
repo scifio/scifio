@@ -396,7 +396,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 				firstTag = xml.substring(0, gt + 1).toLowerCase();
 			}
 
-			final Set namespaces = new HashSet();
+			final Set<String> namespaces = new HashSet<String>();
 			Pattern pattern = Pattern.compile(" xmlns:(\\w+)");
 			Matcher matcher = pattern.matcher(firstTag);
 			while (matcher.find()) {
