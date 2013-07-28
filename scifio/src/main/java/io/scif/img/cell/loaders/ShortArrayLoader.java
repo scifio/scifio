@@ -36,44 +36,43 @@
 
 package io.scif.img.cell.loaders;
 
-import io.scif.Metadata;
-import io.scif.Reader;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import io.scif.Metadata;
+import io.scif.Reader;
 
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link ShortArray} types.
+ * {@link SCIFIOArrayLoader} implementation for {@link ShortArray}
+ * types.
  * 
  * @author Mark Hiner hinerm at gmail.com
+ *
  */
-public class ShortArrayLoader extends AbstractArrayLoader<ShortArray> {
-
-	public ShortArrayLoader(final Reader reader) {
-		super(reader);
-	}
+public class ShortArrayLoader extends AbstractArrayLoader< ShortArray >
+{
+	public ShortArrayLoader(Reader reader) {
+    super(reader);
+  }
 
 	@Override
-	public void convertBytes(final ShortArray data, final byte[] bytes,
-		final int planesRead)
+  public void convertBytes(ShortArray data, byte[] bytes, int planesRead) {
+    Metadata meta = reader().getMetadata();
+    
+    int bpp = meta.getBitsPerPixel(0) / 8;
+    int offset = planesRead * (bytes.length / bpp);
+    
+    ByteBuffer bb = ByteBuffer.wrap(bytes);
+    
+    bb.order(meta.isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+    bb.asShortBuffer().get(data.getCurrentStorageArray(), offset, bytes.length / bpp);
+  }
+  
+	public ShortArray emptyArray( final int[] dimensions )
 	{
-		final Metadata meta = reader().getMetadata();
-
-		final int bpp = meta.getBitsPerPixel(0) / 8;
-		final int offset = planesRead * (bytes.length / bpp);
-
-		final ByteBuffer bb = ByteBuffer.wrap(bytes);
-
-		bb.order(meta.isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN
-			: ByteOrder.BIG_ENDIAN);
-		bb.asShortBuffer().get(data.getCurrentStorageArray(), offset,
-			bytes.length / bpp);
-	}
-
-	public ShortArray emptyArray(final int[] dimensions) {
-		return new ShortArray(countEntities(dimensions));
+		return new ShortArray( countEntities(dimensions) );
 	}
 
 	public int getBitsPerElement() {

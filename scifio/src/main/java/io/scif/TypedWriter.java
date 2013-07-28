@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif;
 
 /**
@@ -42,25 +41,27 @@ package io.scif;
  * <p>
  * Generics all each concrete {@code Writer} implementation to guarantee, by
  * type narrowing, any methods that return SCIFIO components. Also, parallel
- * methods that take SCIFIO component arguments are defined to be type narrowed.
+ * methods that take SCIFIO component arguments are defined to be type
+ * narrowed.
  * </p>
  * 
  * @author Mark Hiner
+ *
  * @param <M> The {@link io.scif.Metadata} type associated with this Writer.
  */
 public interface TypedWriter<M extends TypedMetadata> extends Writer {
 
-	/**
-	 * Generic-parameterized {@code setMetadata} method, using
-	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Writer#setMetadata(Metadata)}.
-	 * 
-	 * @see {@link io.scif.Writer#parse(Metadata)}
-	 */
-	void setMetadata(M meta) throws FormatException;
+  /**
+   * Generic-parameterized {@code setMetadata} method, using 
+   * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+   * {@link io.scif.Writer#setMetadata(Metadata)}.
+   * 
+   * @see {@link io.scif.Writer#parse(Metadata)}
+   */
+  void setMetadata(M meta) throws FormatException;
 
-	/*
-	 * @see io.scif.Writer#getMetadata()
-	 */
-	M getMetadata();
+  /*
+   * @see io.scif.Writer#getMetadata()
+   */
+  M getMetadata();
 }

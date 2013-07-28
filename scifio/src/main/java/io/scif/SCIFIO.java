@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif;
 
 import io.scif.app.SCIFIOApp;
@@ -49,13 +48,13 @@ import org.scijava.Context;
 /**
  * Convenience {@link org.scijava.Context} wrapper.
  * <p>
- * Provides easy accessor methods for the SCIFIO-specific
- * {@link org.scijava.service.Service} implementations, bypassing the need to
- * call the {@code getService(Service.class} method.
+ * Provides easy accessor methods for the SCIFIO-specific 
+ * {@link org.scijava.service.Service} implementations, bypassing the
+ * need to call the {@code getService(Service.class} method.
  * </p>
- * <p>
- * This class is intended to be a disposable wrapper that can easily be created
- * and forgotten as needed.
+ * <p> 
+ * This class is intended to be a disposable wrapper that can easily
+ * be created and forgotten as needed.
  * </p>
  * 
  * @see org.scijava.Context
@@ -64,81 +63,81 @@ import org.scijava.Context;
  * @see io.scif.services.TranslatorService
  * @see io.scif.services.LocationService
  * @see io.scif.services.FilePatternService
+ * 
  * @author Mark Hiner
  */
 public class SCIFIO extends AbstractGateway {
 
-	// -- Constructors --
+  // -- Constructors --
+  
+  /** Creates a new SCIFIO application context with all available services. */
+  public SCIFIO() {
+    this(new Context());
+  }
 
-	/** Creates a new SCIFIO application context with all available services. */
-	public SCIFIO() {
-		this(new Context());
-	}
-
-	/**
-	 * Creates a new SCIFIO application with zero or all services..
-	 * 
-	 * @param empty If true, the context will be empty; otherwise, it will be
-	 *          initialized with all available services.
-	 */
-	public SCIFIO(final boolean empty) {
-		this(new Context(empty));
-	}
-
-	/**
-	 * Creates a new SCIFIO wrapping the provided context.
-	 * 
-	 * @param context - The context to wrap
-	 */
-	public SCIFIO(final Context context) {
-		super(SCIFIOApp.NAME, context);
-	}
-
-	// -- Service Accessors --
-
-	/**
-	 * InitializeService accessor.
-	 * 
-	 * @return The InitializeService instance associated with the wrapped Context.
-	 */
-	public InitializeService initializer() {
-		return get(InitializeService.class);
-	}
-
-	/**
-	 * FormatService accessor.
-	 * 
-	 * @return The FormatService instance associated with the wrapped Context.
-	 */
-	public FormatService format() {
-		return get(FormatService.class);
-	}
-
-	/**
-	 * TranslatorService accessor.
-	 * 
-	 * @return The TranslatorService instance associated with the wrapped Context.
-	 */
-	public TranslatorService translator() {
-		return get(TranslatorService.class);
-	}
-
-	/**
-	 * LocationService accessor.
-	 * 
-	 * @return The LocationService instance associated with the wrapped Context.
-	 */
-	public LocationService location() {
-		return get(LocationService.class);
-	}
-
-	/**
-	 * FilePatternService accessor.
-	 * 
-	 * @return The FilePatternService instance associated with the wrapped
-	 *         Context.
-	 */
-	public FilePatternService filePattern() {
-		return get(FilePatternService.class);
-	}
+  /**
+   * Creates a new SCIFIO application with zero or all services..
+   *
+   * @param empty If true, the context will be empty; otherwise, it will be
+   * initialized with all available services.
+   */
+  public SCIFIO(boolean empty) {
+    this(new Context(empty));
+  }
+  
+  /**
+   * Creates a new SCIFIO wrapping the provided context.
+   * 
+   * @param context - The context to wrap
+   */
+  public SCIFIO(Context context) {
+    super(SCIFIOApp.NAME, context);
+  }
+  
+  // -- Service Accessors --
+  
+  /**
+   * InitializeService accessor.
+   * 
+   * @return The InitializeService instance associated with the wrapped Context.
+   */
+  public InitializeService initializer() {
+  	return get(InitializeService.class);
+  }
+  
+  /**
+   * FormatService accessor.
+   * 
+   * @return The FormatService instance associated with the wrapped Context.
+   */
+  public FormatService format() {
+  	return get(FormatService.class);
+  }
+  
+  /**
+   * TranslatorService accessor.
+   * 
+   * @return The TranslatorService instance associated with the wrapped Context.
+   */
+  public TranslatorService translator() {
+  	return get(TranslatorService.class);
+  }
+  
+  /**
+   * LocationService accessor.
+   * 
+   * @return The LocationService instance associated with the wrapped Context.
+   */
+  public LocationService location() {
+  	return get(LocationService.class);
+  }
+  
+  /**
+   * FilePatternService accessor.
+   * 
+   * @return The FilePatternService instance associated with the wrapped Context.
+   */
+  public FilePatternService filePattern() {
+    return get(FilePatternService.class);
+  }
 }

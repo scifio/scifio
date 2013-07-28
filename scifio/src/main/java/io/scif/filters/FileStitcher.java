@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif.filters;
 
 import io.scif.AxisGuesser;
@@ -55,823 +54,753 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+
+
 /**
- * Logic to stitch together files with similar names. Assumes that all files
- * have the same characteristics (e.g., dimensions).
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FileStitcher.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FileStitcher.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
+ * Logic to stitch together files with similar names.
+ * Assumes that all files have the same characteristics (e.g., dimensions).
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FileStitcher.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FileStitcher.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-@Plugin(type = FileStitcher.class, priority = FileStitcher.PRIORITY, attrs = {
-	@Attr(name = FileStitcher.FILTER_KEY, value = FileStitcher.FILTER_VALUE),
-	@Attr(name = FileStitcher.ENABLED_KEY, value = FileStitcher.ENABLED_VAULE) })
+@Plugin(type=FileStitcher.class, priority=FileStitcher.PRIORITY, attrs={
+  @Attr(name=FileStitcher.FILTER_KEY, value=FileStitcher.FILTER_VALUE),
+  @Attr(name=FileStitcher.ENABLED_KEY, value=FileStitcher.ENABLED_VAULE)
+  })
 public class FileStitcher extends AbstractReaderFilter {
 
-	// -- Constants --
+  // -- Constants --
+  
+  public static final double PRIORITY = 3.0;
+  public static final String FILTER_VALUE = "io.scif.Reader";
+  
+  // -- Fields --
 
-	public static final double PRIORITY = 3.0;
-	public static final String FILTER_VALUE = "io.scif.Reader";
+  /**
+   * Cached parent plane
+   */
+  private Plane parentPlane = null;
+  
+  /**
+   * Whether string ids given should be treated
+   * as file patterns rather than single file paths.
+   */
+  private boolean patternIds = false;
 
-	// -- Fields --
+  private boolean doNotChangePattern = false;
 
-	/**
-	 * Cached parent plane
-	 */
-	private Plane parentPlane = null;
+  /** Dimensional axis lengths per file. */
+  private int[] sizeZ, sizeC, sizeT;
+  
+  /** Component lengths for each axis type. */
+  private int[][] lenZ, lenC, lenT;
 
-	/**
-	 * Whether string ids given should be treated as file patterns rather than
-	 * single file paths.
-	 */
-	private boolean patternIds = false;
+  private boolean noStitch;
+  private boolean group = true;
 
-	private boolean doNotChangePattern = false;
+  private List<ExternalSeries> externals;
+  
+  // -- Constructors --
 
-	/** Dimensional axis lengths per file. */
-	private int[] sizeZ, sizeC, sizeT;
+  /** Constructs a FileStitcher around a new image reader. */
+  public FileStitcher() { this(false); }
 
-	/** Component lengths for each axis type. */
-	private int[][] lenZ, lenC, lenT;
+  /**
+   * Constructs a FileStitcher with the given reader.
+   * @param r The reader to use for reading stitched files.
+   * @param patternIds Whether string ids given should be treated as file
+   *   patterns rather than single file paths.
+   */
+  public FileStitcher(boolean patternIds) {
+    super(FileStitcherMetadata.class);
+    setUsingPatternIds(patternIds);
+  }
 
-	private boolean noStitch;
-	private final boolean group = true;
+  // -- FileStitcher API methods --
 
-	private List<ExternalSeries> externals;
+  /** Sets whether the reader is using file patterns for IDs. */
+  public void setUsingPatternIds(boolean patternIds) {
+    this.patternIds = patternIds;
+  }
 
-	// -- Constructors --
+  /** Gets whether the reader is using file patterns for IDs. */
+  public boolean isUsingPatternIds() { return patternIds; }
 
-	/** Constructs a FileStitcher around a new image reader. */
-	public FileStitcher() {
-		this(false);
-	}
+  public void setCanChangePattern(boolean doChange) {
+    doNotChangePattern = !doChange;
+  }
 
-	/**
-	 * Constructs a FileStitcher with the given reader.
-	 * 
-	 * @param r The reader to use for reading stitched files.
-	 * @param patternIds Whether string ids given should be treated as file
-	 *          patterns rather than single file paths.
-	 */
-	public FileStitcher(final boolean patternIds) {
-		super(FileStitcherMetadata.class);
-		setUsingPatternIds(patternIds);
-	}
+  public boolean canChangePattern() {
+    return !doNotChangePattern;
+  }
 
-	// -- FileStitcher API methods --
+  /** Gets the reader appropriate for use with the given image plane. */
+  public Reader getReader(int imageIndex, int planeIndex) throws FormatException, IOException {
+    if (noStitch) return getParent();
+    int[] q = computeIndices(imageIndex, planeIndex);
+    int fno = q[0];
+    return getReader(imageIndex, fno);
+  }
+  
+  /**
+   * Gets the reader that should be used with the given series and image plane.
+   */
+  public DimensionSwapper getExternalsReader(int imageIndex, int planeIndex) {
+    if (noStitch) return (DimensionSwapper) getParent();
+    DimensionSwapper r = externals.get(getExternalSeries(imageIndex)).getReaders()[planeIndex];
+    initReader(imageIndex, planeIndex);
+    return r;
+  }
 
-	/** Sets whether the reader is using file patterns for IDs. */
-	public void setUsingPatternIds(final boolean patternIds) {
-		this.patternIds = patternIds;
-	}
+  /**
+   * Gets the Metadata that should  be used with the given series and image plane.
+   */
+  public Metadata getExternalsMetadata(int imageIndex, int planeIndex) {
+    return getExternalsReader(imageIndex, planeIndex).getMetadata();
+  }
 
-	/** Gets whether the reader is using file patterns for IDs. */
-	public boolean isUsingPatternIds() {
-		return patternIds;
-	}
+  /** Gets the local reader index for use with the given image plane. */
+  public int getAdjustedIndex(int imageIndex, int planeIndex) throws FormatException, IOException {
+    if (noStitch) return planeIndex;
+    int[] q = computeIndices(imageIndex, planeIndex);
+    int ino = q[1];
+    return ino;
+  }
 
-	public void setCanChangePattern(final boolean doChange) {
-		doNotChangePattern = !doChange;
-	}
+  /**
+   * Gets the axis type for each dimensional block.
+   * @return An array containing values from the enumeration:
+   *   <ul>
+   *     <li>AxisGuesser.Z_AXIS: focal planes</li>
+   *     <li>AxisGuesser.T_AXIS: time points</li>
+   *     <li>AxisGuesser.C_AXIS: channels</li>
+   *     <li>AxisGuesser.S_AXIS: series</li>
+   *   </ul>
+   */
+  public int[] getAxisTypes(int imageIndex) {
+    FormatTools.assertId(getCurrentFile(), true, 2);
+    return externals.get(getExternalSeries(imageIndex)).getAxisGuesser().getAxisTypes();
+  }
 
-	public boolean canChangePattern() {
-		return !doNotChangePattern;
-	}
+  /**
+   * Sets the axis type for each dimensional block.
+   * @param axes An array containing values from the enumeration:
+   *   <ul>
+   *     <li>AxisGuesser.Z_AXIS: focal planes</li>
+   *     <li>AxisGuesser.T_AXIS: time points</li>
+   *     <li>AxisGuesser.C_AXIS: channels</li>
+   *     <li>AxisGuesser.S_AXIS: series</li>
+   *   </ul>
+   */
+  public void setAxisTypes(int imageIndex, int[] axes) throws FormatException {
+    FormatTools.assertId(getCurrentFile(), true, 2);
+    externals.get(getExternalSeries(imageIndex)).getAxisGuesser().setAxisTypes(axes);
+    computeAxisLengths(imageIndex);
+  }
 
-	/** Gets the reader appropriate for use with the given image plane. */
-	public Reader getReader(final int imageIndex, final int planeIndex)
-		throws FormatException, IOException
-	{
-		if (noStitch) return getParent();
-		final int[] q = computeIndices(imageIndex, planeIndex);
-		final int fno = q[0];
-		return getReader(imageIndex, fno);
-	}
+  /** Gets the file pattern object used to build the list of files. */
+  public FilePattern getFilePattern(int imageIndex) {
+    FormatTools.assertId(getCurrentFile(), true, 2);
+    return noStitch ? findPattern(getCurrentFile()) :
+      externals.get(getExternalSeries(imageIndex)).getFilePattern();
+  }
 
-	/**
-	 * Gets the reader that should be used with the given series and image plane.
-	 */
-	public DimensionSwapper getExternalsReader(final int imageIndex,
-		final int planeIndex)
-	{
-		if (noStitch) return (DimensionSwapper) getParent();
-		final DimensionSwapper r =
-			externals.get(getExternalSeries(imageIndex)).getReaders()[planeIndex];
-		initReader(imageIndex, planeIndex);
-		return r;
-	}
+  /**
+   * Gets the axis guesser object used to guess
+   * which dimensional axes are which.
+   */
+  public AxisGuesser getAxisGuesser(int imageIndex) {
+    FormatTools.assertId(getCurrentFile(), true, 2);
+    return externals.get(getExternalSeries(imageIndex)).getAxisGuesser();
+  }
 
-	/**
-	 * Gets the Metadata that should be used with the given series and image
-	 * plane.
-	 */
-	public Metadata getExternalsMetadata(final int imageIndex,
-		final int planeIndex)
-	{
-		return getExternalsReader(imageIndex, planeIndex).getMetadata();
-	}
+  /**
+   * Constructs a new FilePattern around the pattern extracted from the
+   * given id.
+   */
+  public FilePattern findPattern(String id) {
+    return new FilePattern(getContext(), scifio().filePattern().findPattern(id));
+  }
 
-	/** Gets the local reader index for use with the given image plane. */
-	public int getAdjustedIndex(final int imageIndex, final int planeIndex)
-		throws FormatException, IOException
-	{
-		if (noStitch) return planeIndex;
-		final int[] q = computeIndices(imageIndex, planeIndex);
-		final int ino = q[1];
-		return ino;
-	}
+  /**
+   * Finds the file pattern for the given ID, based on the state of the file
+   * stitcher. Takes both ID map entries and the patternIds flag into account.
+   */
+  public String[] findPatterns(String id) {
+    if (!patternIds) {
+      // find the containing patterns
+      HashMap<String, Object> map = scifio().location().getIdMap();
+      if (map.containsKey(id)) {
+        // search ID map for pattern, rather than files on disk
+        String[] idList = new String[map.size()];
+        map.keySet().toArray(idList);
+        return scifio().filePattern().findImagePatterns(id, null, idList);
+      }
+      else {
+        // id is an unmapped file path; look to similar files on disk
+        return scifio().filePattern().findImagePatterns(id);
+      }
+    }
+    if (doNotChangePattern) {
+      return new String[] {id};
+    }
+    patternIds = false;
+    String[] patterns = findPatterns(new FilePattern(getContext(), id).getFiles()[0]);
+    if (patterns.length == 0) patterns = new String[] {id};
+    else {
+      FilePattern test = new FilePattern(getContext(), patterns[0]);
+      if (test.getFiles().length == 0) patterns = new String[] {id};
+    }
+    patternIds = true;
+    return patterns;
+  }
+  
+  // -- AbstractReaderFilter API Methods --
 
-	/**
-	 * Gets the axis type for each dimensional block.
-	 * 
-	 * @return An array containing values from the enumeration:
-	 *         <ul>
-	 *         <li>AxisGuesser.Z_AXIS: focal planes</li>
-	 *         <li>AxisGuesser.T_AXIS: time points</li>
-	 *         <li>AxisGuesser.C_AXIS: channels</li>
-	 *         <li>AxisGuesser.S_AXIS: series</li>
-	 *         </ul>
-	 */
-	public int[] getAxisTypes(final int imageIndex) {
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		return externals.get(getExternalSeries(imageIndex)).getAxisGuesser()
-			.getAxisTypes();
-	}
+  /* lutLength is 0 until a plane is opened */
+  protected void setSourceHelper(String source) {
+    cleanUp();
+    try {
+      initFile(source, 0);
+    } catch (FormatException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+    
+  // -- Filter API Methods --
+  
+  /**
+   * FileStitcher is only compatible with ByteArray formats.
+   */
+  @Override
+  public boolean isCompatible(Class<?> c) {
+    return ByteArrayReader.class.isAssignableFrom(c);
+  }
 
-	/**
-	 * Sets the axis type for each dimensional block.
-	 * 
-	 * @param axes An array containing values from the enumeration:
-	 *          <ul>
-	 *          <li>AxisGuesser.Z_AXIS: focal planes</li>
-	 *          <li>AxisGuesser.T_AXIS: time points</li>
-	 *          <li>AxisGuesser.C_AXIS: channels</li>
-	 *          <li>AxisGuesser.S_AXIS: series</li>
-	 *          </ul>
-	 */
-	public void setAxisTypes(final int imageIndex, final int[] axes)
-		throws FormatException
-	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		externals.get(getExternalSeries(imageIndex)).getAxisGuesser().setAxisTypes(
-			axes);
-		computeAxisLengths(imageIndex);
-	}
+  // -- Reader API methods --
 
-	/** Gets the file pattern object used to build the list of files. */
-	public FilePattern getFilePattern(final int imageIndex) {
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		return noStitch ? findPattern(getCurrentFile()) : externals.get(
-			getExternalSeries(imageIndex)).getFilePattern();
-	}
+  /*
+   * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int)
+   */
+  public Plane openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
+    return openPlaneHelper(imageIndex, planeIndex, getParent().openPlane(planeIndex, imageIndex), null);
+  }
 
-	/**
-	 * Gets the axis guesser object used to guess which dimensional axes are
-	 * which.
-	 */
-	public AxisGuesser getAxisGuesser(final int imageIndex) {
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		return externals.get(getExternalSeries(imageIndex)).getAxisGuesser();
-	}
+  /*
+   * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane)
+   */
+  public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
+    throws FormatException, IOException
+  {
+    if (parentPlane == null) parentPlane = getParent().openPlane(imageIndex, planeIndex);
+    else getParent().openPlane(imageIndex, planeIndex, parentPlane);
+    return openPlaneHelper(imageIndex, planeIndex, parentPlane, plane);
+  }
 
-	/**
-	 * Constructs a new FilePattern around the pattern extracted from the given
-	 * id.
-	 */
-	public FilePattern findPattern(final String id) {
-		return new FilePattern(getContext(), scifio().filePattern().findPattern(id));
-	}
+  /*
+   * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, int, int, int, int)
+   */
+  public Plane openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
+    throws FormatException, IOException
+  {
+    return openPlaneHelper(imageIndex, planeIndex, 
+        getParent().openPlane(imageIndex, planeIndex, x, y, w, h), null);
 
-	/**
-	 * Finds the file pattern for the given ID, based on the state of the file
-	 * stitcher. Takes both ID map entries and the patternIds flag into account.
-	 */
-	public String[] findPatterns(final String id) {
-		if (!patternIds) {
-			// find the containing patterns
-			final HashMap<String, Object> map = scifio().location().getIdMap();
-			if (map.containsKey(id)) {
-				// search ID map for pattern, rather than files on disk
-				final String[] idList = new String[map.size()];
-				map.keySet().toArray(idList);
-				return scifio().filePattern().findImagePatterns(id, null, idList);
-			}
-			else {
-				// id is an unmapped file path; look to similar files on disk
-				return scifio().filePattern().findImagePatterns(id);
-			}
-		}
-		if (doNotChangePattern) {
-			return new String[] { id };
-		}
-		patternIds = false;
-		String[] patterns =
-			findPatterns(new FilePattern(getContext(), id).getFiles()[0]);
-		if (patterns.length == 0) patterns = new String[] { id };
-		else {
-			final FilePattern test = new FilePattern(getContext(), patterns[0]);
-			if (test.getFiles().length == 0) patterns = new String[] { id };
-		}
-		patternIds = true;
-		return patterns;
-	}
+  }
 
-	// -- AbstractReaderFilter API Methods --
+  /*
+   * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane, int, int, int, int)
+   */
+  public Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x, int y, int w, int h)
+    throws FormatException, IOException
+  {
+    if (parentPlane == null) parentPlane = getParent().openPlane(imageIndex, planeIndex, x, y, w, h);
+    else getParent().openPlane(imageIndex, planeIndex, parentPlane, x, y, w, h);
+    return openPlaneHelper(imageIndex, planeIndex, parentPlane, plane);
+  }
+  
+  /* TODO not sure how this logic ties in
+  public Object openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
+    throws FormatException, IOException
+  {
+    FormatTools.assertId(getCurrentFile(), true, 2);
 
-	/* lutLength is 0 until a plane is opened */
-	@Override
-	protected void setSourceHelper(final String source) {
-		cleanUp();
-		try {
-			initFile(source, 0);
-		}
-		catch (final FormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (final IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+    Reader r = getReader(imageIndex, planeIndex);
+    int ino = getAdjustedIndex(imageIndex, planeIndex);
+    if (ino < getPlaneCount(imageIndex, r)) return r.openPlane(imageIndex, ino, x, y, w, h);
 
-	// -- Filter API Methods --
+    return null;
+  }
+  */
 
-	/**
-	 * FileStitcher is only compatible with ByteArray formats.
-	 */
-	@Override
-	public boolean isCompatible(final Class<?> c) {
-		return ByteArrayReader.class.isAssignableFrom(c);
-	}
+  /*
+   * @see io.scif.filters.AbstractReaderFilter#openThumbPlane(int, int)
+   */
+  public Plane openThumbPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
+    FormatTools.assertId(getCurrentFile(), true, 2);
 
-	// -- Reader API methods --
+    Reader r = getReader(imageIndex, planeIndex);
+    int ino = getAdjustedIndex(imageIndex, planeIndex);
+    if (ino < r.getMetadata().getPlaneCount(imageIndex)) return r.openThumbPlane(imageIndex, ino);
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int)
-	 */
-	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex)
-		throws FormatException, IOException
-	{
-		return openPlaneHelper(imageIndex, planeIndex, getParent().openPlane(
-			planeIndex, imageIndex), null);
-	}
+    // return a blank image to cover for the fact that
+    // this file does not contain enough image planes
+    return externals.get(getExternalSeries(imageIndex)).getBlankThumbBytes();
+  }
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane)
-	 */
-	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
-		final Plane plane) throws FormatException, IOException
-	{
-		if (parentPlane == null) parentPlane =
-			getParent().openPlane(imageIndex, planeIndex);
-		else getParent().openPlane(imageIndex, planeIndex, parentPlane);
-		return openPlaneHelper(imageIndex, planeIndex, parentPlane, plane);
-	}
+  /*
+   * @see io.scif.filters.AbstractReaderFilter#close(boolean)
+   */
+  public void close(boolean fileOnly) throws IOException {
+    super.close(fileOnly);
+    if (externals != null) {
+      for (ExternalSeries s : externals) {
+        if (s != null && s.getReaders() != null) {
+          for (DimensionSwapper r : s.getReaders()) {
+            if (r != null) r.close(fileOnly);
+          }
+        }
+      }
+    }
+    if (!fileOnly) {
+      cleanUp();
+    }
+  }
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, int, int, int, int)
-	 */
-	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
-		final int x, final int y, final int w, final int h) throws FormatException,
-		IOException
-	{
-		return openPlaneHelper(imageIndex, planeIndex, getParent().openPlane(
-			imageIndex, planeIndex, x, y, w, h), null);
+  /*
+   * @see io.scif.filters.AbstractReaderFilter#getUnderlyingReaders()
+   */
+  public Reader[] getUnderlyingReaders() {
+    List<Reader> list = new ArrayList<Reader>();
+    for (ExternalSeries s : externals) {
+      for (DimensionSwapper r : s.getReaders()) {
+        list.add(r);
+      }
+    }
+    return list.toArray(new Reader[0]);
+  }
+  
+  /**
+   * FileStitcher-specific implementation of {@link FormatTools#getZCTCoords}.
+   */
+  public int[] getZCTCoords(int imageIndex, int planeIndex) {
+    FormatTools.assertId(getCurrentFile(), true, 2);
+    return noStitch ? FormatTools.getZCTCoords(getParent(), imageIndex, planeIndex) :
+      FormatTools.getZCTCoords(FormatTools.findDimensionOrder(getMetadata(), imageIndex),
+          getMetadata().getAxisLength(imageIndex, Axes.Z), getMetadata().getEffectiveSizeC(imageIndex),
+          getMetadata().getAxisLength(imageIndex, Axes.TIME), getMetadata().getPlaneCount(imageIndex),
+          imageIndex, planeIndex);
+  }
 
-	}
+  // -- Internal FormatReader API methods --
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane, int, int, int, int)
-	 */
-	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
-		final Plane plane, final int x, final int y, final int w, final int h)
-		throws FormatException, IOException
-	{
-		if (parentPlane == null) parentPlane =
-			getParent().openPlane(imageIndex, planeIndex, x, y, w, h);
-		else getParent().openPlane(imageIndex, planeIndex, parentPlane, x, y, w, h);
-		return openPlaneHelper(imageIndex, planeIndex, parentPlane, plane);
-	}
+  /** Initializes the given file or file pattern. */
+  protected void initFile(String id, int imageIndex) throws FormatException, IOException {
+    LOGGER.debug("initFile: {}", id);
 
-	/* TODO not sure how this logic ties in
-	public Object openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
-	  throws FormatException, IOException
-	{
-	  FormatTools.assertId(getCurrentFile(), true, 2);
+    FilePattern fp = new FilePattern(getContext(), id);
+    if (!patternIds) {
+      patternIds = fp.isValid() && fp.getFiles().length > 1;
+    }
+    else {
+      patternIds =
+        !new Location(getContext(), id).exists() && scifio().location().getMappedId(id).equals(id);
+    }
 
-	  Reader r = getReader(imageIndex, planeIndex);
-	  int ino = getAdjustedIndex(imageIndex, planeIndex);
-	  if (ino < getPlaneCount(imageIndex, r)) return r.openPlane(imageIndex, ino, x, y, w, h);
+    boolean mustGroup = false;
+    if (patternIds) {
+      mustGroup = fp.isValid() &&
+        getParent().fileGroupOption(fp.getFiles()[0]) == FormatTools.MUST_GROUP;
+    }
+    else {
+      mustGroup = getParent().fileGroupOption(id) == FormatTools.MUST_GROUP;
+    }
 
-	  return null;
-	}
-	*/
+    if (mustGroup || !group) {
+      // reader subclass is handling file grouping
+      noStitch = true;
+      getParent().close();
+      getParent().setGroupFiles(group);
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openThumbPlane(int, int)
-	 */
-	@Override
-	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
-		throws FormatException, IOException
-	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
+      if (patternIds && fp.isValid()) {
+        getParent().setSource(fp.getFiles()[0]);
+      }
+      else getParent().setSource(id);
+      return;
+    }
 
-		final Reader r = getReader(imageIndex, planeIndex);
-		final int ino = getAdjustedIndex(imageIndex, planeIndex);
-		if (ino < r.getMetadata().getPlaneCount(imageIndex)) return r
-			.openThumbPlane(imageIndex, ino);
+    if (fp.isRegex()) {
+      setCanChangePattern(false);
+    }
 
-		// return a blank image to cover for the fact that
-		// this file does not contain enough image planes
-		return externals.get(getExternalSeries(imageIndex)).getBlankThumbBytes();
-	}
+    String[] patterns = findPatterns(id);
+    if (patterns.length == 0) patterns = new String[] {id};
+    externals = new ArrayList<ExternalSeries>();
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#close(boolean)
-	 */
-	@Override
-	public void close(final boolean fileOnly) throws IOException {
-		super.close(fileOnly);
-		if (externals != null) {
-			for (final ExternalSeries s : externals) {
-				if (s != null && s.getReaders() != null) {
-					for (final DimensionSwapper r : s.getReaders()) {
-						if (r != null) r.close(fileOnly);
-					}
-				}
-			}
-		}
-		if (!fileOnly) {
-			cleanUp();
-		}
-	}
+    for (int i=0; i<patterns.length; i++) {
+      externals.set(i, new ExternalSeries(new FilePattern(getContext(), patterns[i])));
+    }
+    fp = new FilePattern(getContext(), patterns[0]);
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#getUnderlyingReaders()
-	 */
-	@Override
-	public Reader[] getUnderlyingReaders() {
-		final List<Reader> list = new ArrayList<Reader>();
-		for (final ExternalSeries s : externals) {
-			for (final DimensionSwapper r : s.getReaders()) {
-				list.add(r);
-			}
-		}
-		return list.toArray(new Reader[0]);
-	}
+    getParent().close();
+    getParent().setGroupFiles(group);
 
-	/**
-	 * FileStitcher-specific implementation of {@link FormatTools#getZCTCoords}.
-	 */
-	public int[] getZCTCoords(final int imageIndex, final int planeIndex) {
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		return noStitch ? FormatTools.getZCTCoords(getParent(), imageIndex,
-			planeIndex) : FormatTools.getZCTCoords(FormatTools.findDimensionOrder(
-			getMetadata(), imageIndex), getMetadata().getAxisLength(imageIndex,
-			Axes.Z), getMetadata().getEffectiveSizeC(imageIndex), getMetadata()
-			.getAxisLength(imageIndex, Axes.TIME), getMetadata().getPlaneCount(
-			imageIndex), imageIndex, planeIndex);
-	}
+    if (!fp.isValid()) {
+      throw new FormatException("Invalid file pattern: " + fp.getPattern());
+    }
+    getParent().setSource(fp.getFiles()[0]);
 
-	// -- Internal FormatReader API methods --
+    String msg = " Please rename your files or disable file stitching.";
+    if (getParent().getImageCount() > 1 && externals.size() > 1) {
+      throw new FormatException("Unsupported grouping: File pattern contains " +
+        "multiple files and each file contains multiple series." + msg);
+    }
 
-	/** Initializes the given file or file pattern. */
-	protected void initFile(final String id, final int imageIndex)
-		throws FormatException, IOException
-	{
-		LOGGER.debug("initFile: {}", id);
-
-		FilePattern fp = new FilePattern(getContext(), id);
-		if (!patternIds) {
-			patternIds = fp.isValid() && fp.getFiles().length > 1;
-		}
-		else {
-			patternIds =
-				!new Location(getContext(), id).exists() &&
-					scifio().location().getMappedId(id).equals(id);
-		}
-
-		boolean mustGroup = false;
-		if (patternIds) {
-			mustGroup =
-				fp.isValid() &&
-					getParent().fileGroupOption(fp.getFiles()[0]) == FormatTools.MUST_GROUP;
-		}
-		else {
-			mustGroup = getParent().fileGroupOption(id) == FormatTools.MUST_GROUP;
-		}
-
-		if (mustGroup || !group) {
-			// reader subclass is handling file grouping
-			noStitch = true;
-			getParent().close();
-			getParent().setGroupFiles(group);
-
-			if (patternIds && fp.isValid()) {
-				getParent().setSource(fp.getFiles()[0]);
-			}
-			else getParent().setSource(id);
-			return;
-		}
-
-		if (fp.isRegex()) {
-			setCanChangePattern(false);
-		}
-
-		String[] patterns = findPatterns(id);
-		if (patterns.length == 0) patterns = new String[] { id };
-		externals = new ArrayList<ExternalSeries>();
-
-		for (int i = 0; i < patterns.length; i++) {
-			externals.set(i, new ExternalSeries(new FilePattern(getContext(),
-				patterns[i])));
-		}
-		fp = new FilePattern(getContext(), patterns[0]);
-
-		getParent().close();
-		getParent().setGroupFiles(group);
-
-		if (!fp.isValid()) {
-			throw new FormatException("Invalid file pattern: " + fp.getPattern());
-		}
-		getParent().setSource(fp.getFiles()[0]);
-
-		final String msg = " Please rename your files or disable file stitching.";
-		if (getParent().getImageCount() > 1 && externals.size() > 1) {
-			throw new FormatException("Unsupported grouping: File pattern contains " +
-				"multiple files and each file contains multiple series." + msg);
-		}
-
-		// TODO need a new UsedFiles interface..
-		final int nPixelsFiles = 1;
+    //TODO need a new UsedFiles interface..
+    int nPixelsFiles = 1;
 //      getParent().getUsedFiles().length - getParent().getUsedFiles(true).length;
-		if (nPixelsFiles > 1 || fp.getFiles().length == 1) {
-			noStitch = true;
-			return;
-		}
+    if (nPixelsFiles > 1 || fp.getFiles().length == 1) {
+      noStitch = true;
+      return;
+    }
 
-		final AxisGuesser guesser =
-			new AxisGuesser(fp, FormatTools.findDimensionOrder(getMetadata(),
-				imageIndex), getParent().getMetadata()
-				.getAxisLength(imageIndex, Axes.Z), getParent().getMetadata()
-				.getAxisLength(imageIndex, Axes.TIME), getParent().getMetadata()
-				.getEffectiveSizeC(imageIndex), getParent().getMetadata()
-				.isOrderCertain(imageIndex));
+    AxisGuesser guesser = new AxisGuesser(fp, FormatTools.findDimensionOrder(getMetadata(), imageIndex),
+      getParent().getMetadata().getAxisLength(imageIndex, Axes.Z),
+      getParent().getMetadata().getAxisLength(imageIndex, Axes.TIME),
+      getParent().getMetadata().getEffectiveSizeC(imageIndex),
+      getParent().getMetadata().isOrderCertain(imageIndex));
 
-		// use the dimension order recommended by the axis guesser
-		((DimensionSwapper) getParent()).swapDimensions(imageIndex, Arrays
-			.asList(FormatTools.findDimensionList(guesser.getAdjustedOrder())));
+    // use the dimension order recommended by the axis guesser
+    ((DimensionSwapper) getParent()).swapDimensions(imageIndex,
+      Arrays.asList(FormatTools.findDimensionList(guesser.getAdjustedOrder())));
 
-		// if this is a multi-series dataset, we need some special logic
-		int imageCount = externals.size();
-		if (externals.size() == 1) {
-			imageCount = getParent().getImageCount();
-		}
+    // if this is a multi-series dataset, we need some special logic
+    int imageCount = externals.size();
+    if (externals.size() == 1) {
+      imageCount = getParent().getImageCount();
+    }
 
-		// verify that file pattern is valid and matches existing files
-		if (!fp.isValid()) {
-			throw new FormatException("Invalid " +
-				(patternIds ? "file pattern" : "filename") + " (" + id + "): " +
-				fp.getErrorMessage() + msg);
-		}
-		final String[] files = fp.getFiles();
+    // verify that file pattern is valid and matches existing files
+    if (!fp.isValid()) {
+      throw new FormatException("Invalid " +
+        (patternIds ? "file pattern" : "filename") +
+        " (" + id + "): " + fp.getErrorMessage() + msg);
+    }
+    String[] files = fp.getFiles();
 
-		if (files == null) {
-			throw new FormatException("No files matching pattern (" +
-				fp.getPattern() + "). " + msg);
-		}
+    if (files == null) {
+      throw new FormatException("No files matching pattern (" +
+        fp.getPattern() + "). " + msg);
+    }
 
-		for (int i = 0; i < files.length; i++) {
-			final String file = files[i];
+    for (int i=0; i<files.length; i++) {
+      String file = files[i];
 
-			// HACK: skip file existence check for fake files
-			if (file.toLowerCase().endsWith(".fake")) continue;
+      // HACK: skip file existence check for fake files
+      if (file.toLowerCase().endsWith(".fake")) continue;
 
-			if (!new Location(getContext(), file).exists()) {
-				throw new FormatException("File #" + i + " (" + file +
-					") does not exist.");
-			}
-		}
+      if (!new Location(getContext(), file).exists()) {
+        throw new FormatException("File #" + i +
+          " (" + file + ") does not exist.");
+      }
+    }
 
-		// determine reader type for these files; assume all are the same type
-		// NB: readerClass is not used anywhere.
+    // determine reader type for these files; assume all are the same type
+    // NB: readerClass is not used anywhere.
 //    Class<? extends Reader> readerClass =
 //      ((DimensionSwapper) getParent()).unwrap(files[0]).getClass();
 
-		lenZ = new int[imageCount][];
-		lenC = new int[imageCount][];
-		lenT = new int[imageCount][];
+    lenZ = new int[imageCount][];
+    lenC = new int[imageCount][];
+    lenT = new int[imageCount][];
 
-		// analyze first file; assume each file has the same parameters
-
+    // analyze first file; assume each file has the same parameters
+    
 //  TODO seems unnecessary?
 //  core = new DefaultMetadata();
+    
+    //TODO globalMetadata?
+    
+    List<ImageMetadata> imgMeta = new ArrayList<ImageMetadata>();
 
-		// TODO globalMetadata?
+    
+    for (int i=0; i<imageCount; i++) {
+      Reader rr = getReader(i, 0);
+      Metadata rrMeta = rr.getMetadata();
+      DefaultImageMetadata iMeta = new DefaultImageMetadata(rrMeta.get(i));
+      imgMeta.add(iMeta);
 
-		final List<ImageMetadata> imgMeta = new ArrayList<ImageMetadata>();
-
-		for (int i = 0; i < imageCount; i++) {
-			final Reader rr = getReader(i, 0);
-			final Metadata rrMeta = rr.getMetadata();
-			final DefaultImageMetadata iMeta =
-				new DefaultImageMetadata(rrMeta.get(i));
-			imgMeta.add(iMeta);
-
-			sizeZ[i] = rrMeta.getAxisLength(i, Axes.Z);
-			sizeC[i] = rrMeta.getAxisLength(i, Axes.CHANNEL);
-			sizeT[i] = rrMeta.getAxisLength(i, Axes.TIME);
-		}
-
+      sizeZ[i] = rrMeta.getAxisLength(i, Axes.Z);
+      sizeC[i] = rrMeta.getAxisLength(i, Axes.CHANNEL);
+      sizeT[i] = rrMeta.getAxisLength(i, Axes.TIME);
+    }
+    
 //    TODO seems unnecessary?
 //    core = new DefaultMetadata(imgMeta);
 
-		// order may need to be adjusted
-		for (int i = 0; i < imageCount; i++) {
-			final AxisGuesser ag =
-				externals.get(getExternalSeries(i)).getAxisGuesser();
-			getMetadata().setAxisTypes(i,
-				FormatTools.findDimensionList(ag.getAdjustedOrder()));
-			getMetadata().setOrderCertain(i, ag.isCertain());
-			computeAxisLengths(i);
-		}
-	}
+    // order may need to be adjusted
+    for (int i=0; i<imageCount; i++) {
+      AxisGuesser ag = externals.get(getExternalSeries(i)).getAxisGuesser();
+      getMetadata().setAxisTypes(i, FormatTools.findDimensionList(ag.getAdjustedOrder()));
+      getMetadata().setOrderCertain(i, ag.isCertain());
+      computeAxisLengths(i);
+    }
+  }
 
-	private int getExternalSeries(final int currentSeries) {
-		if (getParent().getImageCount() > 1) return 0;
-		return currentSeries;
-	}
+  private int getExternalSeries(int currentSeries) {
+    if (getParent().getImageCount() > 1) return 0;
+    return currentSeries;
+  }
 
-	/** Computes axis length arrays, and total axis lengths. */
-	protected void computeAxisLengths(final int imageIndex)
-		throws FormatException
-	{
-		final int sno = imageIndex;
-		final ExternalSeries s = externals.get(getExternalSeries(imageIndex));
-		final FilePattern p = s.getFilePattern();
+  /** Computes axis length arrays, and total axis lengths. */
+  protected void computeAxisLengths(int imageIndex) throws FormatException {
+    int sno = imageIndex;
+    ExternalSeries s = externals.get(getExternalSeries(imageIndex));
+    FilePattern p = s.getFilePattern();
 
-		int[] count = p.getCount();
+    int[] count = p.getCount();
 
-		initReader(sno, 0);
+    initReader(sno, 0);
 
-		final AxisGuesser ag = s.getAxisGuesser();
-		int[] axes = ag.getAxisTypes();
+    AxisGuesser ag = s.getAxisGuesser();
+    int[] axes = ag.getAxisTypes();
 
-		final int numZ = ag.getAxisCountZ();
-		final int numC = ag.getAxisCountC();
-		int numT = ag.getAxisCountT();
+    int numZ = ag.getAxisCountZ();
+    int numC = ag.getAxisCountC();
+    int numT = ag.getAxisCountT();
 
-		if (axes.length == 0 && s.getFiles().length > 1) {
-			axes = new int[] { AxisGuesser.T_AXIS };
-			count = new int[] { s.getFiles().length };
-			numT++;
-		}
+    if (axes.length == 0 && s.getFiles().length > 1) {
+      axes = new int[] {AxisGuesser.T_AXIS};
+      count = new int[] {s.getFiles().length};
+      numT++;
+    }
 
-		getMetadata().setAxisLength(sno, Axes.Z, sizeZ[sno]);
-		getMetadata().setAxisLength(sno, Axes.CHANNEL, sizeC[sno]);
-		getMetadata().setAxisLength(sno, Axes.TIME, sizeT[sno]);
-		lenZ[sno] = new int[numZ + 1];
-		lenC[sno] = new int[numC + 1];
-		lenT[sno] = new int[numT + 1];
-		lenZ[sno][0] = sizeZ[sno];
-		lenC[sno][0] = sizeC[sno];
-		lenT[sno][0] = sizeT[sno];
+    getMetadata().setAxisLength(sno, Axes.Z, sizeZ[sno]);
+    getMetadata().setAxisLength(sno, Axes.CHANNEL, sizeC[sno]);
+    getMetadata().setAxisLength(sno, Axes.TIME, sizeT[sno]);
+    lenZ[sno] = new int[numZ + 1];
+    lenC[sno] = new int[numC + 1];
+    lenT[sno] = new int[numT + 1];
+    lenZ[sno][0] = sizeZ[sno];
+    lenC[sno][0] = sizeC[sno];
+    lenT[sno][0] = sizeT[sno];
 
-		for (int i = 0, z = 1, c = 1, t = 1; i < count.length; i++) {
-			switch (axes[i]) {
-				case AxisGuesser.Z_AXIS:
-					getMetadata().setAxisLength(sno, Axes.Z,
-						getMetadata().getAxisLength(sno, Axes.Z) * count[i]);
-					lenZ[sno][z++] = count[i];
-					break;
-				case AxisGuesser.C_AXIS:
-					getMetadata().setAxisLength(sno, Axes.CHANNEL,
-						getMetadata().getAxisLength(sno, Axes.CHANNEL) * count[i]);
-					lenC[sno][c++] = count[i];
-					break;
-				case AxisGuesser.T_AXIS:
-					getMetadata().setAxisLength(sno, Axes.TIME,
-						getMetadata().getAxisLength(sno, Axes.TIME) * count[i]);
-					lenT[sno][t++] = count[i];
-					break;
-				case AxisGuesser.S_AXIS:
-					break;
-				default:
-					throw new FormatException("Unknown axis type for axis #" + i + ": " +
-						axes[i]);
-			}
-		}
-	}
+    for (int i=0, z=1, c=1, t=1; i<count.length; i++) {
+      switch (axes[i]) {
+        case AxisGuesser.Z_AXIS:
+          getMetadata().setAxisLength(sno, Axes.Z, getMetadata().getAxisLength(sno, Axes.Z) * count[i]);
+          lenZ[sno][z++] = count[i];
+          break;
+        case AxisGuesser.C_AXIS:
+          getMetadata().setAxisLength(sno, Axes.CHANNEL, getMetadata().getAxisLength(sno, Axes.CHANNEL) * count[i]);
+          lenC[sno][c++] = count[i];
+          break;
+        case AxisGuesser.T_AXIS:
+          getMetadata().setAxisLength(sno, Axes.TIME, getMetadata().getAxisLength(sno, Axes.TIME) * count[i]);
+          lenT[sno][t++] = count[i];
+          break;
+        case AxisGuesser.S_AXIS:
+          break;
+        default:
+          throw new FormatException("Unknown axis type for axis #" +
+            i + ": " + axes[i]);
+      }
+    }
+  }
 
-	/**
-	 * Gets the file index, and image index into that file, corresponding to the
-	 * given global image index.
-	 * 
-	 * @return An array of size 2, dimensioned {file index, image index}.
-	 */
-	protected int[] computeIndices(final int imageIndex, final int planeIndex)
-		throws FormatException, IOException
-	{
-		if (noStitch) return new int[] { 0, planeIndex };
-		final int sno = imageIndex;
-		final ExternalSeries s = externals.get(getExternalSeries(imageIndex));
+  /**
+   * Gets the file index, and image index into that file,
+   * corresponding to the given global image index.
+   *
+   * @return An array of size 2, dimensioned {file index, image index}.
+   */
+  protected int[] computeIndices(int imageIndex, int planeIndex) throws FormatException, IOException {
+    if (noStitch) return new int[] {0, planeIndex};
+    int sno = imageIndex;
+    ExternalSeries s = externals.get(getExternalSeries(imageIndex));
 
-		final int[] axes = s.getAxisGuesser().getAxisTypes();
-		final int[] count = s.getFilePattern().getCount();
+    int[] axes = s.getAxisGuesser().getAxisTypes();
+    int[] count = s.getFilePattern().getCount();
 
-		// get Z, C and T positions
-		final int[] zct = getZCTCoords(imageIndex, planeIndex);
-		final int[] posZ = FormatTools.rasterToPosition(lenZ[sno], zct[0]);
-		final int[] posC = FormatTools.rasterToPosition(lenC[sno], zct[1]);
-		final int[] posT = FormatTools.rasterToPosition(lenT[sno], zct[2]);
+    // get Z, C and T positions
+    int[] zct = getZCTCoords(imageIndex, planeIndex);
+    int[] posZ = FormatTools.rasterToPosition(lenZ[sno], zct[0]);
+    int[] posC = FormatTools.rasterToPosition(lenC[sno], zct[1]);
+    int[] posT = FormatTools.rasterToPosition(lenT[sno], zct[2]);
 
-		final int[] tmpZ = new int[posZ.length];
-		System.arraycopy(posZ, 0, tmpZ, 0, tmpZ.length);
-		final int[] tmpC = new int[posC.length];
-		System.arraycopy(posC, 0, tmpC, 0, tmpC.length);
-		final int[] tmpT = new int[posT.length];
-		System.arraycopy(posT, 0, tmpT, 0, tmpT.length);
+    int[] tmpZ = new int[posZ.length];
+    System.arraycopy(posZ, 0, tmpZ, 0, tmpZ.length);
+    int[] tmpC = new int[posC.length];
+    System.arraycopy(posC, 0, tmpC, 0, tmpC.length);
+    int[] tmpT = new int[posT.length];
+    System.arraycopy(posT, 0, tmpT, 0, tmpT.length);
 
-		// convert Z, C and T position lists into file index and image index
-		final int[] pos = new int[axes.length];
-		int z = 1, c = 1, t = 1;
-		for (int i = 0; i < axes.length; i++) {
-			if (axes[i] == AxisGuesser.Z_AXIS) pos[i] = posZ[z++];
-			else if (axes[i] == AxisGuesser.C_AXIS) pos[i] = posC[c++];
-			else if (axes[i] == AxisGuesser.T_AXIS) pos[i] = posT[t++];
-			else if (axes[i] == AxisGuesser.S_AXIS) {
-				pos[i] = 0;
-			}
-			else {
-				throw new FormatException("Unknown axis type for axis #" + i + ": " +
-					axes[i]);
-			}
-		}
+    // convert Z, C and T position lists into file index and image index
+    int[] pos = new int[axes.length];
+    int z = 1, c = 1, t = 1;
+    for (int i=0; i<axes.length; i++) {
+      if (axes[i] == AxisGuesser.Z_AXIS) pos[i] = posZ[z++];
+      else if (axes[i] == AxisGuesser.C_AXIS) pos[i] = posC[c++];
+      else if (axes[i] == AxisGuesser.T_AXIS) pos[i] = posT[t++];
+      else if (axes[i] == AxisGuesser.S_AXIS) {
+        pos[i] = 0;
+      }
+      else {
+        throw new FormatException("Unknown axis type for axis #" +
+          i + ": " + axes[i]);
+      }
+    }
 
-		final int fno = FormatTools.positionToRaster(count, pos);
-		final DimensionSwapper r = getExternalsReader(sno, fno);
-		final Metadata datasetMeta = r.getMetadata();
+    int fno = FormatTools.positionToRaster(count, pos);
+    DimensionSwapper r = getExternalsReader(sno, fno);
+    Metadata datasetMeta = r.getMetadata();
+    
+    int ino;
+    if (posZ[0] < datasetMeta.getAxisLength(sno, Axes.Z) && 
+      posC[0] <  datasetMeta.getAxisLength(sno, Axes.CHANNEL) &&
+      posT[0] <  datasetMeta.getAxisLength(sno, Axes.TIME))
+    {
+      if (datasetMeta.isRGB(sno) && (posC[0] * datasetMeta.getRGBChannelCount(sno) >= lenC[sno][0])) {
+        posC[0] /= lenC[sno][0];
+      }
+      ino = FormatTools.getIndex(r, sno, posZ[0], posC[0], posT[0]);
+    }
+    else ino = Integer.MAX_VALUE; // coordinates out of range
 
-		int ino;
-		if (posZ[0] < datasetMeta.getAxisLength(sno, Axes.Z) &&
-			posC[0] < datasetMeta.getAxisLength(sno, Axes.CHANNEL) &&
-			posT[0] < datasetMeta.getAxisLength(sno, Axes.TIME))
-		{
-			if (datasetMeta.isRGB(sno) &&
-				(posC[0] * datasetMeta.getRGBChannelCount(sno) >= lenC[sno][0]))
-			{
-				posC[0] /= lenC[sno][0];
-			}
-			ino = FormatTools.getIndex(r, sno, posZ[0], posC[0], posT[0]);
-		}
-		else ino = Integer.MAX_VALUE; // coordinates out of range
+    return new int[] {fno, ino};
+  }
 
-		return new int[] { fno, ino };
-	}
+  protected void initReader(int imageIndex, int fno) {
+    int external = getExternalSeries(imageIndex);
+    DimensionSwapper r = externals.get(external).getReaders()[fno];
+    Metadata c = r.getMetadata();
+    try {
+      if (r.getCurrentFile() == null) {
+        r.setGroupFiles(false);
+      }
+      r.setSource(externals.get(external).getFiles()[fno]);
+      List<AxisType> axes = ((DimensionSwapper) getParent()).getInputOrder(imageIndex);
+      
+      String newOrder = FormatTools.findDimensionOrder(axes.toArray(new AxisType[axes.size()]));
+      if ((externals.get(external).getFiles().length > 1 || !c.isOrderCertain(imageIndex)) &&
+        (c.getRGBChannelCount(imageIndex) == 1 ||
+        newOrder.indexOf("C") == FormatTools.findDimensionOrder(c, imageIndex).indexOf("C")))
+      {
+        r.swapDimensions(imageIndex, Arrays.asList(FormatTools.findDimensionList(newOrder)));
+      }
+      r.setOutputOrder(imageIndex, Arrays.asList(FormatTools.findDimensionList(newOrder)));
+    }
+    catch (IOException e) {
+      LOGGER.debug("", e);
+    }
+  }
+  
+  public Plane openPlaneHelper(int imageIndex, int planeIndex, Plane parentPlane, Plane plane)
+    throws FormatException, IOException
+  {
+    FormatTools.assertId(getCurrentFile(), true, 2);
+    
+    if (plane == null || !isCompatible(plane.getClass())) {
+      ByteArrayPlane bp = new ByteArrayPlane(parentPlane.getContext());
+      bp.populate(parentPlane);
+      bp.setData(new byte[parentPlane.getBytes().length]);
+      
+      plane = bp;
+    }
 
-	protected void initReader(final int imageIndex, final int fno) {
-		final int external = getExternalSeries(imageIndex);
-		final DimensionSwapper r = externals.get(external).getReaders()[fno];
-		final Metadata c = r.getMetadata();
-		try {
-			if (r.getCurrentFile() == null) {
-				r.setGroupFiles(false);
-			}
-			r.setSource(externals.get(external).getFiles()[fno]);
-			final List<AxisType> axes =
-				((DimensionSwapper) getParent()).getInputOrder(imageIndex);
+    int[] pos = computeIndices(imageIndex, planeIndex);
+    Reader r = getReader(imageIndex, pos[0]);
+    int ino = pos[1];
 
-			final String newOrder =
-				FormatTools.findDimensionOrder(axes.toArray(new AxisType[axes.size()]));
-			if ((externals.get(external).getFiles().length > 1 || !c
-				.isOrderCertain(imageIndex)) &&
-				(c.getRGBChannelCount(imageIndex) == 1 || newOrder.indexOf("C") == FormatTools
-					.findDimensionOrder(c, imageIndex).indexOf("C")))
-			{
-				r.swapDimensions(imageIndex, Arrays.asList(FormatTools
-					.findDimensionList(newOrder)));
-			}
-			r.setOutputOrder(imageIndex, Arrays.asList(FormatTools
-				.findDimensionList(newOrder)));
-		}
-		catch (final IOException e) {
-			LOGGER.debug("", e);
-		}
-	}
+    if (ino < r.getMetadata().getPlaneCount(imageIndex)) 
+      return r.openPlane(imageIndex, ino, plane, parentPlane.getxOffset(), 
+          parentPlane.getyOffset(), parentPlane.getxLength(), parentPlane.getyLength());
 
-	public Plane openPlaneHelper(final int imageIndex, final int planeIndex,
-		final Plane parentPlane, Plane plane) throws FormatException, IOException
-	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
+    // return a blank image to cover for the fact that
+    // this file does not contain enough image planes
+    Arrays.fill(plane.getBytes(), (byte) 0);
+    return plane;
+  }
 
-		if (plane == null || !isCompatible(plane.getClass())) {
-			final ByteArrayPlane bp = new ByteArrayPlane(parentPlane.getContext());
-			bp.populate(parentPlane);
-			bp.setData(new byte[parentPlane.getBytes().length]);
+  private void cleanUp() {
+    noStitch = false;
+    externals = null;
+    lenZ = lenC = lenT = null;
+    parentPlane = null;
+  }
 
-			plane = bp;
-		}
+  // -- Helper classes --
 
-		final int[] pos = computeIndices(imageIndex, planeIndex);
-		final Reader r = getReader(imageIndex, pos[0]);
-		final int ino = pos[1];
+  class ExternalSeries {
+    private DimensionSwapper[] readers;
+    private String[] files;
+    private FilePattern pattern;
+    private Plane blankThumbBytes;
+    private String originalOrder;
+    private AxisGuesser ag;
+    private int imagesPerFile;
 
-		if (ino < r.getMetadata().getPlaneCount(imageIndex)) return r.openPlane(
-			imageIndex, ino, plane, parentPlane.getxOffset(), parentPlane
-				.getyOffset(), parentPlane.getxLength(), parentPlane.getyLength());
+    public ExternalSeries(FilePattern pattern)
+      throws FormatException, IOException
+    {
+      this.pattern = pattern;
+      files = this.pattern.getFiles();
 
-		// return a blank image to cover for the fact that
-		// this file does not contain enough image planes
-		Arrays.fill(plane.getBytes(), (byte) 0);
-		return plane;
-	}
+      readers = new DimensionSwapper[files.length];
+      for (int i=0; i<readers.length; i++) {
+        readers[i] = new DimensionSwapper();
+        readers[i].setGroupFiles(false);
+      }
+      readers[0].setSource(files[0]);
 
-	private void cleanUp() {
-		noStitch = false;
-		externals = null;
-		lenZ = lenC = lenT = null;
-		parentPlane = null;
-	}
+      Metadata c = readers[0].getMetadata();
+      
+      ag = new AxisGuesser(this.pattern, FormatTools.findDimensionOrder(c, 0),
+        c.getAxisLength(0, Axes.Z), c.getAxisLength(0, Axes.TIME),
+        c.getAxisLength(0, Axes.CHANNEL), c.isOrderCertain(0));
 
-	// -- Helper classes --
+      blankThumbBytes = createPlane(0, 0, 0, 0);
 
-	class ExternalSeries {
+      originalOrder = FormatTools.findDimensionOrder(c, 0);
+      imagesPerFile = readers[0].getImageCount();
+    }
 
-		private final DimensionSwapper[] readers;
-		private final String[] files;
-		private final FilePattern pattern;
-		private final Plane blankThumbBytes;
-		private final String originalOrder;
-		private final AxisGuesser ag;
-		private final int imagesPerFile;
+    public DimensionSwapper[] getReaders() {
+      return readers;
+    }
 
-		public ExternalSeries(final FilePattern pattern) throws FormatException,
-			IOException
-		{
-			this.pattern = pattern;
-			files = this.pattern.getFiles();
+    public FilePattern getFilePattern() {
+      return pattern;
+    }
 
-			readers = new DimensionSwapper[files.length];
-			for (int i = 0; i < readers.length; i++) {
-				readers[i] = new DimensionSwapper();
-				readers[i].setGroupFiles(false);
-			}
-			readers[0].setSource(files[0]);
+    public String getOriginalOrder() {
+      return originalOrder;
+    }
 
-			final Metadata c = readers[0].getMetadata();
+    public AxisGuesser getAxisGuesser() {
+      return ag;
+    }
 
-			ag =
-				new AxisGuesser(this.pattern, FormatTools.findDimensionOrder(c, 0), c
-					.getAxisLength(0, Axes.Z), c.getAxisLength(0, Axes.TIME), c
-					.getAxisLength(0, Axes.CHANNEL), c.isOrderCertain(0));
+    public Plane getBlankThumbBytes() {
+      return blankThumbBytes;
+    }
 
-			blankThumbBytes = createPlane(0, 0, 0, 0);
+    public String[] getFiles() {
+      return files;
+    }
 
-			originalOrder = FormatTools.findDimensionOrder(c, 0);
-			imagesPerFile = readers[0].getImageCount();
-		}
-
-		public DimensionSwapper[] getReaders() {
-			return readers;
-		}
-
-		public FilePattern getFilePattern() {
-			return pattern;
-		}
-
-		public String getOriginalOrder() {
-			return originalOrder;
-		}
-
-		public AxisGuesser getAxisGuesser() {
-			return ag;
-		}
-
-		public Plane getBlankThumbBytes() {
-			return blankThumbBytes;
-		}
-
-		public String[] getFiles() {
-			return files;
-		}
-
-		public int getImagesPerFile() {
-			return imagesPerFile;
-		}
-	}
+    public int getImagesPerFile() {
+      return imagesPerFile;
+    }
+  }
 }

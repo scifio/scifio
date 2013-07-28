@@ -54,205 +54,200 @@ import org.scijava.plugin.Plugin;
 
 /**
  * JPEGReader is the file format reader for JPEG images.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/JPEGReader.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/JPEGReader.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/JPEGReader.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/JPEGReader.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @author Curtis Rueden ctrueden at wisc.edu
  */
 @Plugin(type = JPEGFormat.class, priority = Priority.NORMAL_PRIORITY)
 public class JPEGFormat extends ImageIOFormat {
 
-	// -- Format API Methods --
+  // -- Format API Methods --
+  
+  /*
+   * @see io.scif.Format#getFormatName()
+   */
+  public String getFormatName() {
+    return "JPEG";
+  }
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
-	public String getFormatName() {
-		return "JPEG";
-	}
+  /*
+   * @see io.scif.Format#getSuffixes()
+   */
+  public String[] getSuffixes() {
+    return new String[] {"jpg", "jpeg", "jpe"};
+  }
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
-	public String[] getSuffixes() {
-		return new String[] { "jpg", "jpeg", "jpe" };
-	}
+  // -- Nested classes --
+  
+  /**
+   * @author Mark Hiner hinerm at gmail.com
+   *
+   */
+  public static class Metadata extends ImageIOFormat.Metadata {
+    
+    // -- Metadata API Methods --
+    
+    public void close(boolean fileOnly) throws IOException {
+      scifio().location().mapId(getDatasetName(), null);
+      super.close(fileOnly);
+    }
+  }
+  
+  /**
+   * @author Mark Hiner hinerm at gmail.com
+   *
+   */
+  public static class Checker extends AbstractChecker {
 
-	// -- Nested classes --
+    // -- Constants --
+    
+    private static final int MAX_SIZE = 8192;
+    // -- Constructor --
+    
+    public Checker() {
+      suffixNecessary = false;
+      suffixSufficient = false;
+    }
+    
+    // -- Checker API Methods --
+    
+    @Override
+    public boolean isFormat(String name, boolean open) {
+      if (open) {
+        return super.isFormat(name, open);
+      }
 
-	/**
-	 * @author Mark Hiner hinerm at gmail.com
-	 */
-	public static class Metadata extends ImageIOFormat.Metadata {
+      return FormatTools.checkSuffix(name, getFormat().getSuffixes());
+    }
+    
+    @Override
+    public boolean isFormat(RandomAccessInputStream stream) throws IOException {
+      final int blockLen = 4;
+      if (!FormatTools.validStream(stream, blockLen, false)) return false;
 
-		// -- Metadata API Methods --
+      byte[] signature = new byte[blockLen];
+      stream.read(signature);
 
-		@Override
-		public void close(final boolean fileOnly) throws IOException {
-			scifio().location().mapId(getDatasetName(), null);
-			super.close(fileOnly);
-		}
-	}
+      if (signature[0] != (byte) 0xff || signature[1] != (byte) 0xd8 ||
+        signature[2] != (byte) 0xff || ((int) signature[3] & 0xf0) == 0)
+      {
+        return false;
+      }
+      
+      try {
+        io.scif.Metadata m = getFormat().createParser().parse(stream);
+        
+        // Need to check dimension lengths
+        if (m.getAxisLength(0, Axes.X) > MAX_SIZE && m.getAxisLength(0, Axes.Y) > MAX_SIZE)
+        {
+          stream.seek(0);
+          return false;
+        }
+      } catch (FormatException e) {
+        LOGGER.error("Failed to pare JPEG data", e);
+        return false;
+      }
 
-	/**
-	 * @author Mark Hiner hinerm at gmail.com
-	 */
-	public static class Checker extends AbstractChecker {
+      return true;
+    }
+  }
+  
+  /**
+   * @author Mark Hiner hinerm at gmail.com
+   *
+   */
+  public static class Parser extends ImageIOFormat.Parser<Metadata> {
 
-		// -- Constants --
+ 
+    @Override
+    public void typedParse(RandomAccessInputStream stream, Metadata meta) 
+      throws IOException, FormatException
+    {
+      String id = stream.getFileName();
+      try {
+        super.typedParse(stream, meta);
+      }
+      catch (CMMException e) {
+        // strip out all but the first application marker
+        // ImageIO isn't too keen on supporting multiple application markers
+        // in the same stream, as evidenced by:
+        //
+        // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6488904
 
-		private static final int MAX_SIZE = 8192;
+        ByteArrayOutputStream v = new ByteArrayOutputStream();
 
-		// -- Constructor --
+        byte[] tag = new byte[2];
+        stream.read(tag);
+        v.write(tag);
 
-		public Checker() {
-			suffixNecessary = false;
-			suffixSufficient = false;
-		}
+        stream.read(tag);
+        int tagValue = DataTools.bytesToShort(tag, false) & 0xffff;
+        boolean appNoteFound = false;
+        while (tagValue != 0xffdb) {
+          if (!appNoteFound || (tagValue < 0xffe0 && tagValue >= 0xfff0)) {
+            v.write(tag);
 
-		// -- Checker API Methods --
+            stream.read(tag);
+            int len = DataTools.bytesToShort(tag, false) & 0xffff;
+            byte[] tagContents = new byte[len - 2];
+            stream.read(tagContents);
+            v.write(tag);
+            v.write(tagContents);
+          }
+          else {
+            stream.read(tag);
+            int len = DataTools.bytesToShort(tag, false) & 0xffff;
+            stream.skipBytes(len - 2);
+          }
 
-		@Override
-		public boolean isFormat(final String name, final boolean open) {
-			if (open) {
-				return super.isFormat(name, open);
-			}
+          if (tagValue >= 0xffe0 && tagValue < 0xfff0 && !appNoteFound) {
+            appNoteFound = true;
+          }
+          stream.read(tag);
+          tagValue = DataTools.bytesToShort(tag, false) & 0xffff;
+        }
+        v.write(tag);
+        byte[] remainder = new byte[(int) (stream.length() - stream.getFilePointer())];
+        stream.read(remainder);
+        v.write(remainder);
 
-			return FormatTools.checkSuffix(name, getFormat().getSuffixes());
-		}
+        ByteArrayHandle bytes = new ByteArrayHandle(v.toByteArray());
 
-		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
-			throws IOException
-		{
-			final int blockLen = 4;
-			if (!FormatTools.validStream(stream, blockLen, false)) return false;
+        scifio().location().mapFile(currentId + ".fixed", bytes);
+        super.parse(currentId + ".fixed", meta);
+      }
 
-			final byte[] signature = new byte[blockLen];
-			stream.read(signature);
+      metadata.setDatasetName(id);
+      currentId = id;
+    }
+  }
+  
+  /**
+   * @author Mark Hiner hinerm at gmail.com
+   *
+   */
+  public static class Reader extends ImageIOFormat.Reader<Metadata> { }
+  
+  /**
+   * @author Mark Hiner hinerm at gmail.com
+   *
+   */
+  public static class Writer extends ImageIOFormat.Writer<Metadata> {
 
-			if (signature[0] != (byte) 0xff || signature[1] != (byte) 0xd8 ||
-				signature[2] != (byte) 0xff || (signature[3] & 0xf0) == 0)
-			{
-				return false;
-			}
+    // -- Constructor --
+    
+    public Writer() {
+      super("jpeg");
+    }
+    
+    // -- Writer API methods --
 
-			try {
-				final io.scif.Metadata m = getFormat().createParser().parse(stream);
-
-				// Need to check dimension lengths
-				if (m.getAxisLength(0, Axes.X) > MAX_SIZE &&
-					m.getAxisLength(0, Axes.Y) > MAX_SIZE)
-				{
-					stream.seek(0);
-					return false;
-				}
-			}
-			catch (final FormatException e) {
-				LOGGER.error("Failed to pare JPEG data", e);
-				return false;
-			}
-
-			return true;
-		}
-	}
-
-	/**
-	 * @author Mark Hiner hinerm at gmail.com
-	 */
-	public static class Parser extends ImageIOFormat.Parser<Metadata> {
-
-		@Override
-		public void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
-		{
-			final String id = stream.getFileName();
-			try {
-				super.typedParse(stream, meta);
-			}
-			catch (final CMMException e) {
-				// strip out all but the first application marker
-				// ImageIO isn't too keen on supporting multiple application markers
-				// in the same stream, as evidenced by:
-				//
-				// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6488904
-
-				final ByteArrayOutputStream v = new ByteArrayOutputStream();
-
-				final byte[] tag = new byte[2];
-				stream.read(tag);
-				v.write(tag);
-
-				stream.read(tag);
-				int tagValue = DataTools.bytesToShort(tag, false) & 0xffff;
-				boolean appNoteFound = false;
-				while (tagValue != 0xffdb) {
-					if (!appNoteFound || (tagValue < 0xffe0 && tagValue >= 0xfff0)) {
-						v.write(tag);
-
-						stream.read(tag);
-						final int len = DataTools.bytesToShort(tag, false) & 0xffff;
-						final byte[] tagContents = new byte[len - 2];
-						stream.read(tagContents);
-						v.write(tag);
-						v.write(tagContents);
-					}
-					else {
-						stream.read(tag);
-						final int len = DataTools.bytesToShort(tag, false) & 0xffff;
-						stream.skipBytes(len - 2);
-					}
-
-					if (tagValue >= 0xffe0 && tagValue < 0xfff0 && !appNoteFound) {
-						appNoteFound = true;
-					}
-					stream.read(tag);
-					tagValue = DataTools.bytesToShort(tag, false) & 0xffff;
-				}
-				v.write(tag);
-				final byte[] remainder =
-					new byte[(int) (stream.length() - stream.getFilePointer())];
-				stream.read(remainder);
-				v.write(remainder);
-
-				final ByteArrayHandle bytes = new ByteArrayHandle(v.toByteArray());
-
-				scifio().location().mapFile(currentId + ".fixed", bytes);
-				super.parse(currentId + ".fixed", meta);
-			}
-
-			metadata.setDatasetName(id);
-			currentId = id;
-		}
-	}
-
-	/**
-	 * @author Mark Hiner hinerm at gmail.com
-	 */
-	public static class Reader extends ImageIOFormat.Reader<Metadata> {}
-
-	/**
-	 * @author Mark Hiner hinerm at gmail.com
-	 */
-	public static class Writer extends ImageIOFormat.Writer<Metadata> {
-
-		// -- Constructor --
-
-		public Writer() {
-			super("jpeg");
-		}
-
-		// -- Writer API methods --
-
-		@Override
-		public int[] getPixelTypes(final String codec) {
-			return new int[] { FormatTools.UINT8 };
-		}
-	}
+    @Override
+    public int[] getPixelTypes(String codec) {
+      return new int[] {FormatTools.UINT8};
+    } 
+  }
 }

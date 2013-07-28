@@ -37,11 +37,14 @@
 package io.scif.io.utests;
 
 import static org.testng.AssertJUnit.assertEquals;
+
 import io.scif.io.IRandomAccess;
-import io.scif.io.utests.providers.IRandomAccessProvider;
-import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 
 import java.io.IOException;
+
+
+import io.scif.io.utests.providers.IRandomAccessProvider;
+import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
@@ -50,133 +53,131 @@ import org.testng.annotations.Test;
 
 /**
  * Tests for reading doubles from a loci.common.IRandomAccess.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/test/loci/common/utests/WriteDoubleTest.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/test/loci/common/utests/WriteDoubleTest.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/test/loci/common/utests/WriteDoubleTest.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/test/loci/common/utests/WriteDoubleTest.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @see io.scif.io.IRandomAccess
  */
-@Test(groups = "writeTests")
+@Test(groups="writeTests")
 public class WriteDoubleTest {
 
-	private static final byte[] PAGE = new byte[] { (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 };
+  private static final byte[] PAGE = new byte[] {
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
+  };
 
-	private static final String MODE = "rw";
+  private static final String MODE = "rw";
 
-	private static final int BUFFER_SIZE = 1024;
+  private static final int BUFFER_SIZE = 1024;
 
-	private IRandomAccess fileHandle;
+  private IRandomAccess fileHandle;
 
-	private boolean checkGrowth;
+  private boolean checkGrowth;
 
-	@Parameters({ "provider", "checkGrowth" })
-	@BeforeMethod
-	public void setUp(final String provider,
-		@Optional("false") final String checkGrowth) throws IOException
-	{
-		this.checkGrowth = Boolean.parseBoolean(checkGrowth);
-		final IRandomAccessProviderFactory factory =
-			new IRandomAccessProviderFactory();
-		final IRandomAccessProvider instance = factory.getInstance(provider);
-		fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
-	}
+  @Parameters({"provider", "checkGrowth"})
+  @BeforeMethod
+  public void setUp(String provider, @Optional("false") String checkGrowth)
+    throws IOException {
+    this.checkGrowth = Boolean.parseBoolean(checkGrowth);
+    IRandomAccessProviderFactory factory = new IRandomAccessProviderFactory();
+    IRandomAccessProvider instance = factory.getInstance(provider);
+    fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
+  }
 
-	@Test(groups = "initialLengthTest")
-	public void testLength() throws IOException {
-		assertEquals(56, fileHandle.length());
-	}
+  @Test(groups="initialLengthTest")
+  public void testLength() throws IOException {
+    assertEquals(56, fileHandle.length());
+  }
 
-	@Test
-	public void testSequential() throws IOException {
-		fileHandle.writeDouble(0.0d);
-		if (checkGrowth) {
-			assertEquals(8, fileHandle.length());
-		}
-		fileHandle.writeDouble(1.0d);
-		if (checkGrowth) {
-			assertEquals(16, fileHandle.length());
-		}
-		fileHandle.writeDouble(-1.0d);
-		if (checkGrowth) {
-			assertEquals(24, fileHandle.length());
-		}
-		fileHandle.writeDouble(3.1415926535897930d);
-		if (checkGrowth) {
-			assertEquals(32, fileHandle.length());
-		}
-		fileHandle.writeDouble(Double.MAX_VALUE);
-		if (checkGrowth) {
-			assertEquals(40, fileHandle.length());
-		}
-		fileHandle.writeDouble(Double.NEGATIVE_INFINITY);
-		if (checkGrowth) {
-			assertEquals(48, fileHandle.length());
-		}
-		fileHandle.writeDouble(Double.NaN);
-		if (checkGrowth) {
-			assertEquals(56, fileHandle.length());
-		}
-		fileHandle.seek(0);
-		assertEquals(0.0d, fileHandle.readDouble());
-		assertEquals(1.0d, fileHandle.readDouble());
-		assertEquals(-1.0d, fileHandle.readDouble());
-		assertEquals(3.1415926535897930d, fileHandle.readDouble());
-		assertEquals(Double.MAX_VALUE, fileHandle.readDouble());
-		assertEquals(Double.NEGATIVE_INFINITY, fileHandle.readDouble());
-		assertEquals(Double.NaN, fileHandle.readDouble());
-	}
+  @Test
+  public void testSequential() throws IOException {
+    fileHandle.writeDouble(0.0d);
+    if (checkGrowth) {
+      assertEquals(8, fileHandle.length());
+    }
+    fileHandle.writeDouble(1.0d);
+    if (checkGrowth) {
+      assertEquals(16, fileHandle.length());
+    }
+    fileHandle.writeDouble(-1.0d);
+    if (checkGrowth) {
+      assertEquals(24, fileHandle.length());
+    }
+    fileHandle.writeDouble(3.1415926535897930d);
+    if (checkGrowth) {
+      assertEquals(32, fileHandle.length());
+    }
+    fileHandle.writeDouble(Double.MAX_VALUE);
+    if (checkGrowth) {
+      assertEquals(40, fileHandle.length());
+    }
+    fileHandle.writeDouble(Double.NEGATIVE_INFINITY);
+    if (checkGrowth) {
+      assertEquals(48, fileHandle.length());
+    }
+    fileHandle.writeDouble(Double.NaN);
+    if (checkGrowth) {
+      assertEquals(56, fileHandle.length());
+    }
+    fileHandle.seek(0);
+    assertEquals(0.0d, fileHandle.readDouble());
+    assertEquals(1.0d, fileHandle.readDouble());
+    assertEquals(-1.0d, fileHandle.readDouble());
+    assertEquals(3.1415926535897930d, fileHandle.readDouble());
+    assertEquals(Double.MAX_VALUE, fileHandle.readDouble());
+    assertEquals(Double.NEGATIVE_INFINITY, fileHandle.readDouble());
+    assertEquals(Double.NaN, fileHandle.readDouble());
+  }
 
-	@Test
-	public void testSeekForward() throws IOException {
-		fileHandle.seek(16);
-		fileHandle.writeDouble(-1.0d);
-		if (checkGrowth) {
-			assertEquals(24, fileHandle.length());
-		}
-		fileHandle.writeDouble(3.1415926535897930d);
-		if (checkGrowth) {
-			assertEquals(32, fileHandle.length());
-		}
-		fileHandle.seek(16);
-		assertEquals(-1.0d, fileHandle.readDouble());
-		assertEquals(3.1415926535897930d, fileHandle.readDouble());
-	}
+  @Test
+  public void testSeekForward() throws IOException {
+    fileHandle.seek(16);
+    fileHandle.writeDouble(-1.0d);
+    if (checkGrowth) {
+      assertEquals(24, fileHandle.length());
+    }
+    fileHandle.writeDouble(3.1415926535897930d);
+    if (checkGrowth) {
+      assertEquals(32, fileHandle.length());
+    }
+    fileHandle.seek(16);
+    assertEquals(-1.0d, fileHandle.readDouble());
+    assertEquals(3.1415926535897930d, fileHandle.readDouble());
+  }
 
-	@Test
-	public void testReset() throws IOException {
-		fileHandle.writeDouble(0.0d);
-		if (checkGrowth) {
-			assertEquals(8, fileHandle.length());
-		}
-		fileHandle.writeDouble(1.0d);
-		if (checkGrowth) {
-			assertEquals(16, fileHandle.length());
-		}
-		fileHandle.seek(0);
-		assertEquals(0.0d, fileHandle.readDouble());
-		assertEquals(1.0d, fileHandle.readDouble());
-		fileHandle.seek(0);
-		fileHandle.writeDouble(-1.0d);
-		fileHandle.writeDouble(3.1415926535897930d);
-		fileHandle.seek(0);
-		fileHandle.writeDouble(-1.0d);
-		fileHandle.writeDouble(3.1415926535897930d);
-	}
+  @Test
+  public void testReset() throws IOException {
+    fileHandle.writeDouble(0.0d);
+    if (checkGrowth) {
+      assertEquals(8, fileHandle.length());
+    }
+    fileHandle.writeDouble(1.0d);
+    if (checkGrowth) {
+      assertEquals(16, fileHandle.length());
+    }
+    fileHandle.seek(0);
+    assertEquals(0.0d, fileHandle.readDouble());
+    assertEquals(1.0d, fileHandle.readDouble());
+    fileHandle.seek(0);
+    fileHandle.writeDouble(-1.0d);
+    fileHandle.writeDouble(3.1415926535897930d);
+    fileHandle.seek(0);
+    fileHandle.writeDouble(-1.0d);
+    fileHandle.writeDouble(3.1415926535897930d);
+  }
 
 }

@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif.services;
 
 import io.scif.Format;
@@ -46,6 +45,7 @@ import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
 
+
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -56,122 +56,119 @@ import org.scijava.service.AbstractService;
  * Default {@link InitializeService} implementation.
  * 
  * @see io.scif.services.InitializeService
+ * 
  * @author Mark Hiner
+ *
  */
-@Plugin(type = InitializeService.class, priority = Priority.LOW_PRIORITY)
-public class DefaultInitializeService extends AbstractService implements
-	InitializeService
+@Plugin(type=InitializeService.class, priority=Priority.LOW_PRIORITY)
+public class DefaultInitializeService extends AbstractService
+  implements InitializeService
 {
+  // -- Parameters --
+  
+  @Parameter
+  private PluginService pluginService;
+  
+  @Parameter
+  private FormatService formatService;
+  
+  @Parameter
+  private TranslatorService translatorService;
+  
+  @Parameter
+  private LocationService locationService;
+  
+  // -- InitializeService API Methods --	
 
-	// -- Parameters --
+  /*
+   * @see io.scif.services.InitializeService#initializeReader(java.lang.String)
+   */
+  public ReaderFilter initializeReader(final String id) throws FormatException,
+      IOException {
+    return initializeReader(id, false);
+  }
 
-	@Parameter
-	private PluginService pluginService;
+  /*
+   * @see io.scif.services.InitializeService#
+   * initializeReader(java.lang.String, boolean)
+   */
+  public ReaderFilter initializeReader(final String id, final boolean openFile)
+      throws FormatException, IOException {
+    
+    final Reader r = formatService.getFormat(id, openFile).createReader();
+    r.setSource(id);
+    return new ReaderFilter(r);
+  }
 
-	@Parameter
-	private FormatService formatService;
+  /*
+   * @see io.scif.services.InitializeService#
+   * initializeWriter(java.lang.String, java.lang.String)
+   */
+  public Writer initializeWriter( final String source, final String destination)
+    throws FormatException, IOException
+  {
+    return initializeWriter(source, destination, false);
+  }
+  
+  /*
+   * @see io.scif.services.InitializeService#
+   * initializeWriter(java.lang.String, java.lang.String, boolean)
+   */
+  public Writer initializeWriter(
+    final String source, final String destination,
+    final boolean openSource) throws FormatException, IOException
+  {
+    
+    final Format sFormat = formatService.getFormat(source, openSource);
+    final Parser parser = sFormat.createParser();
+    final Metadata sourceMeta = parser.parse(source);
+    
+    return initializeWriter(sourceMeta, destination);
+  }
 
-	@Parameter
-	private TranslatorService translatorService;
+  /*
+   * @see io.scif.InitializeService#
+   * initializeWriter(io.scif.Metadata, java.lang.String)
+   */
+  public Writer initializeWriter(Metadata sourceMeta, String destination)
+    throws FormatException, IOException
+  {
+    final Format sFormat = sourceMeta.getFormat();
+    final Format dFormat = formatService.getFormat(destination, false);
+    Metadata destMeta = dFormat.createMetadata();
 
-	@Parameter
-	private LocationService locationService;
+    // if dest is a different format than source, translate..
+    if (sFormat == dFormat) {
+      // otherwise we can directly cast, since they are the same types
+      destMeta = castMeta(sourceMeta, destMeta);
+      
+    } else {
+      // Attempt to directly translate between these formats
+      
+      destMeta = dFormat.createMetadata();
+      translatorService.translate(sourceMeta, destMeta, false);
+    } 
+    
+    destMeta.setDatasetName(destination);
+    
+    final Writer writer = dFormat.createWriter();
+    writer.setMetadata(destMeta);
+    writer.setDest(destination);
 
-	// -- InitializeService API Methods --
-
-	/*
-	 * @see io.scif.services.InitializeService#initializeReader(java.lang.String)
-	 */
-	public ReaderFilter initializeReader(final String id) throws FormatException,
-		IOException
-	{
-		return initializeReader(id, false);
-	}
-
-	/*
-	 * @see io.scif.services.InitializeService#
-	 * initializeReader(java.lang.String, boolean)
-	 */
-	public ReaderFilter initializeReader(final String id, final boolean openFile)
-		throws FormatException, IOException
-	{
-
-		final Reader r = formatService.getFormat(id, openFile).createReader();
-		r.setSource(id);
-		return new ReaderFilter(r);
-	}
-
-	/*
-	 * @see io.scif.services.InitializeService#
-	 * initializeWriter(java.lang.String, java.lang.String)
-	 */
-	public Writer initializeWriter(final String source, final String destination)
-		throws FormatException, IOException
-	{
-		return initializeWriter(source, destination, false);
-	}
-
-	/*
-	 * @see io.scif.services.InitializeService#
-	 * initializeWriter(java.lang.String, java.lang.String, boolean)
-	 */
-	public Writer initializeWriter(final String source, final String destination,
-		final boolean openSource) throws FormatException, IOException
-	{
-
-		final Format sFormat = formatService.getFormat(source, openSource);
-		final Parser parser = sFormat.createParser();
-		final Metadata sourceMeta = parser.parse(source);
-
-		return initializeWriter(sourceMeta, destination);
-	}
-
-	/*
-	 * @see io.scif.InitializeService#
-	 * initializeWriter(io.scif.Metadata, java.lang.String)
-	 */
-	public Writer initializeWriter(final Metadata sourceMeta,
-		final String destination) throws FormatException, IOException
-	{
-		final Format sFormat = sourceMeta.getFormat();
-		final Format dFormat = formatService.getFormat(destination, false);
-		Metadata destMeta = dFormat.createMetadata();
-
-		// if dest is a different format than source, translate..
-		if (sFormat == dFormat) {
-			// otherwise we can directly cast, since they are the same types
-			destMeta = castMeta(sourceMeta, destMeta);
-
-		}
-		else {
-			// Attempt to directly translate between these formats
-
-			destMeta = dFormat.createMetadata();
-			translatorService.translate(sourceMeta, destMeta, false);
-		}
-
-		destMeta.setDatasetName(destination);
-
-		final Writer writer = dFormat.createWriter();
-		writer.setMetadata(destMeta);
-		writer.setDest(destination);
-
-		return writer;
-	}
-
-	// -- Helper Methods --
-
-	/*
-	 * Hide the suppress warnings in an atomic cast method
-	 * <p>
-	 * NB: endType parameter is just there to guarantee a return type
-	 * </p>
-	 */
-	private <N extends Metadata, M extends Metadata> M castMeta(final N metadata,
-		final M endType)
-	{
-		@SuppressWarnings("unchecked")
-		final M meta = (M) metadata;
-		return meta;
-	}
+    return writer;
+  }
+  
+  // -- Helper Methods --
+  
+  /*
+   * Hide the suppress warnings in an atomic cast method
+   * <p>
+   * NB: endType parameter is just there to guarantee a return type
+   * </p>
+   */
+  private <N extends Metadata, M extends Metadata> M castMeta(N metadata, M endType) {
+    @SuppressWarnings("unchecked")
+    M meta = (M) metadata;
+    return meta;
+  }
 }

@@ -159,9 +159,11 @@ public final class ImgIOUtils {
 		}
 		return null;
 	}
-
+	
 	/** Obtains array access instance backing the given img, if any. */
-	public static ArrayImg<?, ?> getArrayAccess(final ImgPlus<?> img) {
+	public static ArrayImg<?, ?> getArrayAccess(
+		final ImgPlus<?> img)
+	{
 		if (img.getImg() instanceof ArrayImg) {
 			return (ArrayImg<?, ?>) img.getImg();
 		}

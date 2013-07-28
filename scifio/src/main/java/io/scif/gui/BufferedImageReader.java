@@ -47,70 +47,63 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
+
 /**
- * BufferedImageReader is the superclass for file format readers that use
- * java.awt.image.BufferedImage as the native data type.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/BIFormatReader.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/BIFormatReader.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ * BufferedImageReader is the superclass for file format readers
+ * that use java.awt.image.BufferedImage as the native data type.
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/BIFormatReader.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/BIFormatReader.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @author Curtis Rueden ctrueden at wisc.edu
  */
-public abstract class BufferedImageReader<M extends TypedMetadata> extends
-	AbstractReader<M, BufferedImagePlane>
-{
+public abstract class BufferedImageReader<M extends TypedMetadata>
+  extends AbstractReader<M, BufferedImagePlane> {
+  // -- Constructors --
 
-	// -- Constructors --
+  /** Constructs a new BIFormatReader. */
+  public BufferedImageReader() {
+    super(BufferedImagePlane.class);
+  }
+  
+  // -- Reader API Methods --
+  
+  /*
+   * @see io.scif.Reader#openThumbPlane(int, int)
+   */
+  public BufferedImagePlane openThumbPlane(final int imageIndex, final int planeIndex)
+    throws FormatException, IOException
+  {
+    FormatTools.assertStream(getStream(), true, 1);
+    int w = getMetadata().getAxisLength(imageIndex, Axes.X);
+    int h = getMetadata().getAxisLength(imageIndex, Axes.Y);
+    int thumbX = getMetadata().getThumbSizeX(imageIndex);
+    int thumbY = getMetadata().getThumbSizeY(imageIndex);
+    
+    BufferedImagePlane plane = createPlane(0, 0, thumbX, thumbY);
+    
+    plane.setData(AWTImageTools.openThumbImage(openPlane(imageIndex, planeIndex),
+    			        this, imageIndex, w, h, thumbX, thumbY, false));
+    
+    return plane;
+  } 
 
-	/** Constructs a new BIFormatReader. */
-	public BufferedImageReader() {
-		super(BufferedImagePlane.class);
-	}
+  /*
+   * @see io.scif.Reader#createPlane(int, int, int, int)
+   */
+  public BufferedImagePlane createPlane(int xOffset, int yOffset, int xLength,
+    int yLength)
+  {
+    return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
+  }
 
-	// -- Reader API Methods --
-
-	/*
-	 * @see io.scif.Reader#openThumbPlane(int, int)
-	 */
-	public BufferedImagePlane openThumbPlane(final int imageIndex,
-		final int planeIndex) throws FormatException, IOException
-	{
-		FormatTools.assertStream(getStream(), true, 1);
-		final int w = getMetadata().getAxisLength(imageIndex, Axes.X);
-		final int h = getMetadata().getAxisLength(imageIndex, Axes.Y);
-		final int thumbX = getMetadata().getThumbSizeX(imageIndex);
-		final int thumbY = getMetadata().getThumbSizeY(imageIndex);
-
-		final BufferedImagePlane plane = createPlane(0, 0, thumbX, thumbY);
-
-		plane.setData(AWTImageTools.openThumbImage(
-			openPlane(imageIndex, planeIndex), this, imageIndex, w, h, thumbX,
-			thumbY, false));
-
-		return plane;
-	}
-
-	/*
-	 * @see io.scif.Reader#createPlane(int, int, int, int)
-	 */
-	public BufferedImagePlane createPlane(final int xOffset, final int yOffset,
-		final int xLength, final int yLength)
-	{
-		return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
-	}
-
-	/*
-	 * @see io.scif.TypedReader#createPlane(int, int, int, int)
-	 */
-	public BufferedImagePlane createPlane(final ImageMetadata meta,
-		final int xOffset, final int yOffset, final int xLength, final int yLength)
-	{
-		return new BufferedImagePlane(getContext(), meta, xOffset, yOffset,
-			xLength, yLength);
-	}
+  /*
+   * @see io.scif.TypedReader#createPlane(int, int, int, int)
+   */
+  public BufferedImagePlane createPlane(ImageMetadata meta, int xOffset, int yOffset, int xLength,
+    int yLength)
+  {
+    return new BufferedImagePlane(getContext(), meta, xOffset, yOffset, xLength, yLength);
+  }
 }

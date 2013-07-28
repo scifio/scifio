@@ -44,21 +44,21 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Interface for selecting an {@link ImgFactory} type based on a list of
- * preferred {@link ImgMode}s.
+ * Interface for selecting an {@link ImgFactory} type based on a list
+ * of preferred {@link ImgMode}s.
  * 
  * @author Mark Hiner hinerm at gmail.com
+ *
  */
 public interface ImgFactoryHeuristic {
 
-	/**
-	 * @param m Metadata describing the image
-	 * @param imgModes An ordered list of ImgModes. Each should be investigated in
-	 *          the order they appear.
-	 * @return An ImgFactory implementation capable of creating appropriate Imgs.
-	 * @throws IncompatibleTypeException If an ImgFactory of type T can't be
-	 *           created matching the type described by the Metadata.
-	 */
-	<T extends RealType<T> & NativeType<T>> ImgFactory<T> createFactory(
-		final Metadata m, ImgMode[] imgModes) throws IncompatibleTypeException;
+  /**
+   * @param m Metadata describing the image
+   * @param imgModes An ordered list of ImgModes. Each should be investigated in the order they appear.
+   * @return An ImgFactory implementation capable of creating appropriate Imgs.
+   * @throws IncompatibleTypeException If an ImgFactory of type T can't be created matching the type
+   *         described by the Metadata.
+   */
+  <T extends RealType<T> & NativeType<T>> ImgFactory<T> createFactory(
+      final Metadata m, ImgMode[] imgModes) throws IncompatibleTypeException;
 }

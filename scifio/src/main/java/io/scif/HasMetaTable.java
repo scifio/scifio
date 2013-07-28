@@ -37,23 +37,25 @@
 package io.scif;
 
 /**
- * Interface for components that maintain a MetaTable mapping metadata names to
- * values.
+ * Interface for components that maintain a MetaTable mapping metadata
+ * names to values.
  * 
  * @see MetaTable
+ * 
  * @author Mark hiner hinerm at gmail.com
+ *
  */
 public interface HasMetaTable {
 
-	/**
-	 * @return the MetaTable attached to this component
-	 */
-	MetaTable getTable();
-
-	/**
-	 * Sets the table for this component
-	 * 
-	 * @param table - a MetaTable implementation
-	 */
-	void setTable(MetaTable table);
+  /**
+   * @return the MetaTable attached to this component
+   */
+  MetaTable getTable();
+  
+  /**
+   * Sets the table for this component
+   * 
+   * @param table - a MetaTable implementation
+   */
+  void setTable(MetaTable table);
 }

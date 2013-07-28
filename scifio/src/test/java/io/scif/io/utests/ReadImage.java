@@ -74,16 +74,16 @@ public class ReadImage {
 		// read all arguments using auto-detected type with default container
 		System.out.println("== AUTO-DETECTED TYPE, DEFAULT CONTAINER ==");
 		for (final String id : ids) {
-			final ImgPlus<T> img = imageOpener.openImg(id);
-			reportInformation(img);
+		  final ImgPlus<T> img = imageOpener.openImg(id);
+		  reportInformation(img);
 		}
-
-		// read all arguments using auto-detected type with default container
-		System.out.println("== AUTO-DETECTED TYPE, CELL CONTAINER ==");
-		for (final String id : ids) {
-			final ImgPlus<T> img = imageOpener.openImg(id);
-			reportInformation(img);
-		}
+		
+    // read all arguments using auto-detected type with default container
+    System.out.println("== AUTO-DETECTED TYPE, CELL CONTAINER ==");
+    for (final String id : ids) {
+      final ImgPlus<T> img = imageOpener.openImg(id);
+      reportInformation(img);
+    }
 
 		// read all arguments using FloatType with ArrayContainer
 //		System.out.println();
@@ -97,17 +97,17 @@ public class ReadImage {
 		System.out.println();
 		System.out.println("== FLOAT TYPE, DEFAULT CONTAINER ==");
 		for (final String arg : args) {
-			final ImgPlus<FloatType> img = IO.openFloat(arg, 0);
-			reportInformation(img);
+		  final ImgPlus<FloatType> img = IO.openFloat(arg, 0);
+		  reportInformation(img);
 		}
-
-		// read all arguments using FloatType with PlanarImg
-		System.out.println();
-		System.out.println("== DOUBLE TYPE, DEFAULT CONTAINER ==");
-		for (final String arg : args) {
-			final ImgPlus<DoubleType> img = IO.openDouble(arg, 0);
-			reportInformation(img);
-		}
+		
+    // read all arguments using FloatType with PlanarImg
+    System.out.println();
+    System.out.println("== DOUBLE TYPE, DEFAULT CONTAINER ==");
+    for (final String arg : args) {
+      final ImgPlus<DoubleType> img = IO.openDouble(arg, 0);
+      reportInformation(img);
+    }
 	}
 
 	/** Prints out some useful information about the {@link Img}. */

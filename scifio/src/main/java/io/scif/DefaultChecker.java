@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif;
 
 /**
@@ -50,19 +49,22 @@ package io.scif;
  * 
  * @see io.scif.Checker
  * @see io.scif.Format
+ * 
  * @author Mark Hiner
+ *
  */
-public class DefaultChecker extends AbstractChecker implements DefaultComponent
+public class DefaultChecker extends AbstractChecker 
+  implements DefaultComponent
 {
+  
+  // -- Fields --
+  
+  private Format format;
+  
+  // -- HasFormat API methods --
 
-	// -- Fields --
-
-	private Format format;
-
-	// -- HasFormat API methods --
-
-	@Override
-	public Format getFormat() {
-		return format;
-	}
+  @Override
+  public Format getFormat() {
+    return format;
+  }
 }

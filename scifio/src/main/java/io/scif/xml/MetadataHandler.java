@@ -42,47 +42,40 @@ import org.xml.sax.Attributes;
 
 /**
  * Used to retrieve key/value pairs from XML.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/MetadataHandler.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/MetadataHandler.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/MetadataHandler.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/MetadataHandler.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Chris Allan callan at blackcat.ca
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 class MetadataHandler extends BaseHandler {
+  private String currentQName;
+  private Hashtable<String, String> metadata =
+    new Hashtable<String, String>();
 
-	private String currentQName;
-	private final Hashtable<String, String> metadata =
-		new Hashtable<String, String>();
+  // -- MetadataHandler API methods --
 
-	// -- MetadataHandler API methods --
+  public Hashtable<String, String> getMetadata() {
+    return metadata;
+  }
 
-	public Hashtable<String, String> getMetadata() {
-		return metadata;
-	}
+  // -- DefaultHandler API methods --
 
-	// -- DefaultHandler API methods --
+  public void characters(char[] data, int start, int len) {
+    metadata.put(currentQName, new String(data, start, len));
+  }
 
-	@Override
-	public void characters(final char[] data, final int start, final int len) {
-		metadata.put(currentQName, new String(data, start, len));
-	}
-
-	@Override
-	public void startElement(final String uri, final String localName,
-		final String qName, final Attributes attributes)
-	{
-		if (attributes.getLength() == 0) currentQName += " - " + qName;
-		else currentQName = qName;
-		for (int i = 0; i < attributes.getLength(); i++) {
-			metadata.put(qName + " - " + attributes.getQName(i), attributes
-				.getValue(i));
-		}
-	}
+  public void startElement(String uri, String localName, String qName,
+    Attributes attributes)
+  {
+    if (attributes.getLength() == 0) currentQName += " - " + qName;
+    else currentQName = qName;
+    for (int i=0; i<attributes.getLength(); i++) {
+      metadata.put(qName + " - " + attributes.getQName(i),
+        attributes.getValue(i));
+    }
+  }
 }

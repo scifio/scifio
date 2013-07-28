@@ -41,56 +41,56 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+
+import io.scif.common.Constants;
+import io.scif.common.IniList;
+import io.scif.common.IniTable;
+import io.scif.common.IniWriter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A simple writer for INI configuration files.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/IniWriter.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/IniWriter.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/IniWriter.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/IniWriter.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class IniWriter {
 
-	/** Logger for this class. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(IniWriter.class);
+  /** Logger for this class. */
+  private static final Logger LOGGER = LoggerFactory.getLogger(IniWriter.class);
 
-	// -- IniWriter API methods --
+  // -- IniWriter API methods --
 
-	/**
-	 * Saves the given IniList to the given file. If the given file already
-	 * exists, then the IniList will be appended.
-	 */
-	public void saveINI(final IniList ini, final String path) throws IOException {
-		saveINI(ini, path, true);
-	}
+  /**
+   * Saves the given IniList to the given file.
+   * If the given file already exists, then the IniList will be appended.
+   */
+  public void saveINI(IniList ini, String path) throws IOException {
+    saveINI(ini, path, true);
+  }
 
-	/** Saves the given IniList to the given file. */
-	public void
-		saveINI(final IniList ini, final String path, final boolean append)
-			throws IOException
-	{
-		final BufferedWriter out =
-			new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path,
-				append), Constants.ENCODING));
+  /** Saves the given IniList to the given file. */
+  public void saveINI(IniList ini, String path, boolean append)
+    throws IOException
+  {
+    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+      new FileOutputStream(path, append), Constants.ENCODING));
 
-		for (final IniTable table : ini) {
-			final String header = table.get(IniTable.HEADER_KEY);
-			out.write("[" + header + "]\n");
-			for (final String key : table.keySet()) {
-				out.write(key + " = " + table.get(key) + "\n");
-			}
-			out.write("\n");
-		}
+    for (IniTable table : ini) {
+      String header = table.get(IniTable.HEADER_KEY);
+      out.write("[" + header + "]\n");
+      for (String key : table.keySet()) {
+        out.write(key + " = " + table.get(key) + "\n");
+      }
+      out.write("\n");
+    }
 
-		out.close();
-	}
+    out.close();
+  }
 
 }

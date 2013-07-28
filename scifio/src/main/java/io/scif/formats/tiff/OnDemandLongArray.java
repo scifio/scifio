@@ -40,51 +40,47 @@ import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+
 /**
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/tiff/OnDemandLongArray.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/tiff/OnDemandLongArray.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/tiff/OnDemandLongArray.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/tiff/OnDemandLongArray.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @author Melissa Linkert <melissa at glencoesoftware.com>
  */
 public class OnDemandLongArray {
 
-	private RandomAccessInputStream stream;
-	private int size;
-	private long start;
+  private RandomAccessInputStream stream;
+  private int size;
+  private long start;
 
-	public OnDemandLongArray(final RandomAccessInputStream in) throws IOException
-	{
-		stream = in;
-		start = stream.getFilePointer();
-	}
+  public OnDemandLongArray(RandomAccessInputStream in) throws IOException {
+    stream = in;
+    start = stream.getFilePointer();
+  }
 
-	public void setSize(final int size) {
-		this.size = size;
-	}
+  public void setSize(int size) {
+    this.size = size;
+  }
 
-	public long get(final int index) throws IOException {
-		final long fp = stream.getFilePointer();
-		stream.seek(start + index * 8);
-		final long value = stream.readLong();
-		stream.seek(fp);
-		return value;
-	}
+  public long get(int index) throws IOException {
+    long fp = stream.getFilePointer();
+    stream.seek(start + index * 8);
+    long value = stream.readLong();
+    stream.seek(fp);
+    return value;
+  }
 
-	public long size() {
-		return size;
-	}
+  public long size() {
+    return size;
+  }
 
-	public void close() throws IOException {
-		stream.close();
-		stream = null;
-		size = 0;
-		start = 0;
-	}
+  public void close() throws IOException {
+    stream.close();
+    stream = null;
+    size = 0;
+    start = 0;
+  }
 
 }

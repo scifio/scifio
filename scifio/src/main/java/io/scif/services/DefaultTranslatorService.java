@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif.services;
 
 import io.scif.Metadata;
@@ -42,62 +41,54 @@ import io.scif.Translator;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 
-@Plugin(type = TranslatorService.class)
-public class DefaultTranslatorService extends AbstractService implements
-	TranslatorService
-{
+@Plugin(type=TranslatorService.class)
+public class DefaultTranslatorService extends AbstractService implements TranslatorService {
+  
+  // -- Parameters --
+	
+  @Parameter
+  private PluginAttributeService attributeService;
+  
+  // -- TranslatorService API Methods --
 
-	// -- Parameters --
+  /*
+   * @see io.scif.TranslatorService#
+   * findTranslator(io.scif.Metadata, io.scif.Metadata)
+   */
+  public Translator findTranslator(Metadata source, Metadata dest, boolean exact) {
+    return findTranslator(source.getClass(), dest.getClass(), exact);
+  }
 
-	@Parameter
-	private PluginAttributeService attributeService;
+  /*
+   * @see io.scif.services.TranslatorService#
+   * findTranslator(java.lang.Class, java.lang.Class)
+   */
+  public Translator findTranslator(Class<?> source, Class<?> dest, boolean exact) {
+    Map<String, String> kvPairs = new HashMap<String,String>();
+    kvPairs.put(Translator.SOURCE, source.getName());
+    kvPairs.put(Translator.DEST, dest.getName());
+    
+    Translator t = attributeService.createInstance(Translator.class, kvPairs, null, exact);
+    
+    return t;
+  }
 
-	// -- TranslatorService API Methods --
-
-	/*
-	 * @see io.scif.TranslatorService#
-	 * findTranslator(io.scif.Metadata, io.scif.Metadata)
-	 */
-	public Translator findTranslator(final Metadata source, final Metadata dest,
-		final boolean exact)
-	{
-		return findTranslator(source.getClass(), dest.getClass(), exact);
-	}
-
-	/*
-	 * @see io.scif.services.TranslatorService#
-	 * findTranslator(java.lang.Class, java.lang.Class)
-	 */
-	public Translator findTranslator(final Class<?> source, final Class<?> dest,
-		final boolean exact)
-	{
-		final Map<String, String> kvPairs = new HashMap<String, String>();
-		kvPairs.put(Translator.SOURCE, source.getName());
-		kvPairs.put(Translator.DEST, dest.getName());
-
-		final Translator t =
-			attributeService.createInstance(Translator.class, kvPairs, null, exact);
-
-		return t;
-	}
-
-	/*
-	 * @see io.scif.TranslatorService#
-	 * translate(io.scif.Metadata, io.scif.Metadata)
-	 */
-	public boolean translate(final Metadata source, final Metadata dest,
-		final boolean exact)
-	{
-		final Translator t = findTranslator(source, dest, exact);
-
-		if (t == null) return false;
-
-		t.translate(source, dest);
-
-		return true;
-	}
+  /*
+   * @see io.scif.TranslatorService#
+   * translate(io.scif.Metadata, io.scif.Metadata)
+   */
+  public boolean translate(Metadata source, Metadata dest, boolean exact) {
+    Translator t = findTranslator(source, dest, exact);
+    
+    if (t == null) return false;
+    
+    t.translate(source, dest);
+    
+    return true;
+  }
 }

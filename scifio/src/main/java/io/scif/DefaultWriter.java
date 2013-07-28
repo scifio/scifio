@@ -33,48 +33,45 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif;
 
 import java.io.IOException;
 
 /**
- * Non-functional default {@link io.scif.Writer} implementation. For use in
- * {@link io.scif.Format}s that do not need a Writer.
+ * Non-functional default {@link io.scif.Writer} implementation. For use
+ * in {@link io.scif.Format}s that do not need a Writer.
  * 
  * @see io.scif.Writer
  * @see io.scif.Format
+ * 
  * @author Mark Hiner
+ *
  */
-public class DefaultWriter extends AbstractWriter<DefaultMetadata> implements
-	DefaultComponent
+public class DefaultWriter extends AbstractWriter<DefaultMetadata>
+  implements DefaultComponent
 {
-
-	// -- Fields --
-
-	private Format format;
-
-	// -- HasFormat API methods --
-
-	@Override
-	public Format getFormat() {
-		return format;
-	}
-
-	// -- Writer API Methods --
-
-	/**
-	 * Non-functional savePlane implementation.
-	 * 
-	 * @throws UnsupportedOperationException
-	 */
-	public void savePlane(final int imageIndex, final int planeIndex,
-		final Plane plane, final int x, final int y, final int w, final int h)
-		throws FormatException, IOException
-	{
-		throw new UnsupportedOperationException(
-			"Trying to write using DefaultWriter. "
-				+ "Must implement a Writer specifically for this Format");
-	}
+  // -- Fields --
+  
+  private Format format;
+  
+  // -- HasFormat API methods --
+  
+  @Override
+  public Format getFormat() {
+    return format;
+  }
+  
+  // -- Writer API Methods --
+  
+  /**
+   * Non-functional savePlane implementation.
+   * 
+   * @throws UnsupportedOperationException
+   */
+  public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
+      int y, int w, int h) throws FormatException, IOException {
+    throw new UnsupportedOperationException("Trying to write using DefaultWriter. " +
+        "Must implement a Writer specifically for this Format");
+  }
 
 }

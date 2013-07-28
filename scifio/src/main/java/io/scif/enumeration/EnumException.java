@@ -37,35 +37,19 @@
 package io.scif.enumeration;
 
 /**
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/enumeration/EnumException.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/enumeration/EnumException.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/enumeration/EnumException.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/enumeration/EnumException.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @author callan
  */
 public class EnumException extends RuntimeException {
 
-	private static final long serialVersionUID = -4969429871517178079L;
+  private static final long serialVersionUID = -4969429871517178079L;
 
-	public EnumException() {
-		super();
-	}
-
-	public EnumException(final String s) {
-		super(s);
-	}
-
-	public EnumException(final String s, final Throwable cause) {
-		super(s, cause);
-	}
-
-	public EnumException(final Throwable cause) {
-		super(cause);
-	}
+  public EnumException() { super(); }
+  public EnumException(String s) { super(s); }
+  public EnumException(String s, Throwable cause) { super(s, cause); }
+  public EnumException(Throwable cause) { super(cause); }
 
 }

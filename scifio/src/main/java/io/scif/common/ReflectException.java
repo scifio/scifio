@@ -37,33 +37,19 @@
 package io.scif.common;
 
 /**
- * ReflectException is the exception thrown when something goes wrong performing
- * a reflected operation with ReflectedUniverse.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/ReflectException.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/ReflectException.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
+ * ReflectException is the exception thrown when something
+ * goes wrong performing a reflected operation with ReflectedUniverse.
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/ReflectException.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/ReflectException.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 public class ReflectException extends Exception {
 
-	public ReflectException() {
-		super();
-	}
-
-	public ReflectException(final String s) {
-		super(s);
-	}
-
-	public ReflectException(final String s, final Throwable cause) {
-		super(s, cause);
-	}
-
-	public ReflectException(final Throwable cause) {
-		super(cause);
-	}
+  public ReflectException() { super(); }
+  public ReflectException(String s) { super(s); }
+  public ReflectException(String s, Throwable cause) { super(s, cause); }
+  public ReflectException(Throwable cause) { super(cause); }
 
 }
+

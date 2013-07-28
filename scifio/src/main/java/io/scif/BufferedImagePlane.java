@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif;
 
 import io.scif.common.DataTools;
@@ -41,92 +40,86 @@ import io.scif.gui.AWTImageTools;
 
 import java.awt.image.BufferedImage;
 
+
 import org.scijava.Context;
 
 /**
- * A {@link io.scif.Plane} implementation using a
- * {@link java.awt.image.BufferedImage} for the underlying data representation.
+ * A {@link io.scif.Plane} implementation using a {@link java.awt.image.BufferedImage} for the
+ * underlying data representation.
  * 
  * @see io.scif.Plane
  * @see io.scif.DataPlane
  * @see java.awt.image.BufferedImage
+ * 
  * @author Mark Hiner
  */
-public class BufferedImagePlane extends
-	AbstractPlane<BufferedImage, BufferedImagePlane>
-{
+public class BufferedImagePlane extends AbstractPlane<BufferedImage, BufferedImagePlane> {
 
-	// -- Constructor --
+  // -- Constructor --
 
-	public BufferedImagePlane(final Context context) {
-		super(context);
-	}
+  public BufferedImagePlane(final Context context) {
+    super(context);
+  }
 
-	public BufferedImagePlane(final Context context, final ImageMetadata meta,
-		final int xOffset, final int yOffset, final int xLength, final int yLength)
-	{
-		super(context, meta, xOffset, yOffset, xLength, yLength);
+  public BufferedImagePlane(final Context context, ImageMetadata meta, int xOffset,
+    int yOffset, int xLength, int yLength)
+  {
+    super(context, meta, xOffset, yOffset, xLength, yLength);
 
-		populate(meta, xOffset, yOffset, xLength, yLength);
-	}
+    populate(meta, xOffset, yOffset, xLength, yLength);
+  }
 
-	// -- Plane API methods --
+  // -- Plane API methods --
 
-	/**
-	 * Standardizes this plane's {@link BufferedImage} to a byte[].
-	 * <p>
-	 * NB: If this plane contains multiple channels, the planes for each channel
-	 * will be condensed to a single array. The first entry for each channel's
-	 * data will have an offset of:
-	 * <p>
-	 * <code>channelIndex * planeSize</code>
-	 * </p>
-	 * </p>
-	 * 
-	 * @return The byte[] extracted from this Plane's BufferedImage
-	 */
-	public byte[] getBytes() {
-		byte[] t = null;
+  /**
+   * Standardizes this plane's {@link BufferedImage} to a byte[].
+   * <p>
+   * NB: If this plane contains multiple channels, the planes for each channel
+   * will be condensed to a single array. The first entry for each channel's
+   * data will have an offset of:
+   * <p><code>channelIndex * planeSize</code></p>
+   * </p>
+   * 
+   * @return The byte[] extracted from this Plane's BufferedImage
+   */
+  public byte[] getBytes() {
+    byte[] t = null;
 
-		switch (getData().getColorModel().getComponentSize(0)) {
-			case 8:
-				// 8-bit types can directly delegate to AWTImageTools
-				t = AWTImageTools.getBytes(getData(), false);
-				break;
-			case 16:
-				// Here we need to unpack the channel arrays appropriately
-				final short[][] ts = AWTImageTools.getShorts(getData());
-				t = new byte[ts.length * ts[0].length * 2];
-				for (int c = 0; c < ts.length; c++) {
-					int offset = c * ts[c].length * 2;
-					for (int i = 0; i < ts[c].length; i++) {
-						DataTools.unpackBytes(ts[c][i], t, offset, 2, getImageMetadata()
-							.isLittleEndian());
-						offset += 2;
-					}
-				}
-				break;
-		}
+    switch (getData().getColorModel().getComponentSize(0)) {
+    case 8:
+      // 8-bit types can directly delegate to AWTImageTools
+      t = AWTImageTools.getBytes(getData(), false);
+      break;
+    case 16:
+      // Here we need to unpack the channel arrays appropriately
+      short[][] ts = AWTImageTools.getShorts(getData());
+      t = new byte[ts.length * ts[0].length * 2];
+      for (int c=0; c<ts.length; c++) {
+        int offset = c * ts[c].length * 2;
+        for (int i=0; i<ts[c].length; i++) {
+          DataTools.unpackBytes(ts[c][i], t, offset, 2, getImageMetadata().isLittleEndian());
+          offset += 2;
+        }
+      }
+      break;
+    }
 
-		return t;
-	}
+    return t;
+  }
 
-	/*
-	 * @see io.scif.AbstractPlane#populate(io.scif.ImageMetadata, int, int, int, int)
-	 */
-	@Override
-	public BufferedImagePlane populate(final ImageMetadata meta,
-		final BufferedImage data, final int xOffset, final int yOffset,
-		final int xLength, final int yLength)
-	{
-		if (data == null) {
-			final int type = meta.getPixelType();
+  /*
+   * @see io.scif.AbstractPlane#populate(io.scif.ImageMetadata, int, int, int, int)
+   */
+  public BufferedImagePlane populate(ImageMetadata meta, BufferedImage data,
+    int xOffset, int yOffset, int xLength, int yLength)
+  {
+    if (data == null) {
+      int type = meta.getPixelType();
 
-			// Create a blank image for this Plane's data
-			setData(AWTImageTools.blankImage(xLength, yLength, meta
-				.getRGBChannelCount(), type));
-		}
+      // Create a blank image for this Plane's data
+      setData(AWTImageTools.blankImage(xLength, yLength, meta.getRGBChannelCount(), type));
+    }
 
-		return super.populate(meta, data, xOffset, yOffset, xLength, yLength);
-	}
+    return super.populate(meta, data, xOffset, yOffset, xLength, yLength);
+  }
 }

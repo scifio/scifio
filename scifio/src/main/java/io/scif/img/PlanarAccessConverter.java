@@ -45,36 +45,36 @@ import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * {@link PlaneConverter} implementation specialized for populating
- * {@link PlanarAccess} instances.
+ * {@link PlaneConverter} implementation specialized for
+ * populating {@link PlanarAccess} instances.
  * 
  * @author Mark Hiner hinerm at gmail.com
+ *
  */
 public class PlanarAccessConverter implements PlaneConverter {
-
-	/** Populates plane by reference using {@link PlanarAccess} interface. */
-	@SuppressWarnings("unchecked")
-	public <T extends RealType<T>> void populatePlane(final Reader reader,
-		final int imageIndex, final int planeIndex, final byte[] plane,
-		final ImgPlus<T> planarImg, final ImgOptions imgOptions)
-	{
-
-		final Metadata m = reader.getMetadata();
-
-		@SuppressWarnings("rawtypes")
-		final PlanarAccess planarAccess = ImgIOUtils.getPlanarAccess(planarImg);
-		final int pixelType = m.getPixelType(imageIndex);
-		final int bpp = FormatTools.getBytesPerPixel(pixelType);
-		final boolean fp = FormatTools.isFloatingPoint(pixelType);
-		final boolean little = m.isLittleEndian(imageIndex);
-		Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
-		if (planeArray == plane) {
-			// array was returned by reference; make a copy
-			final byte[] planeCopy = new byte[plane.length];
-			System.arraycopy(plane, 0, planeCopy, 0, plane.length);
-			planeArray = planeCopy;
-		}
-		planarAccess.setPlane(planeIndex, ImgIOUtils.makeArray(planeArray));
-	}
+  
+  /** Populates plane by reference using {@link PlanarAccess} interface. */
+  @SuppressWarnings("unchecked")
+  public <T extends RealType<T>> void populatePlane(final Reader reader, final int imageIndex, 
+      final int planeIndex, final byte[] plane, final ImgPlus<T> planarImg,
+      ImgOptions imgOptions) {
+	
+	Metadata m = reader.getMetadata();
+	  
+    @SuppressWarnings("rawtypes")
+    PlanarAccess planarAccess = ImgIOUtils.getPlanarAccess(planarImg);
+    final int pixelType = m.getPixelType(imageIndex);
+    final int bpp = FormatTools.getBytesPerPixel(pixelType);
+    final boolean fp = FormatTools.isFloatingPoint(pixelType);
+    final boolean little = m.isLittleEndian(imageIndex);
+    Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
+    if (planeArray == plane) {
+      // array was returned by reference; make a copy
+      final byte[] planeCopy = new byte[plane.length];
+      System.arraycopy(plane, 0, planeCopy, 0, plane.length);
+      planeArray = planeCopy;
+    }
+    planarAccess.setPlane(planeIndex, ImgIOUtils.makeArray(planeArray));
+  }
 
 }

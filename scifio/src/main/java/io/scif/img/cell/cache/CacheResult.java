@@ -38,11 +38,17 @@ package io.scif.img.cell.cache;
 
 /**
  * List of possible outcomes from the
- * {@link CacheService#cache(String, int, java.io.Serializable)} method.
+ * {@link CacheService#cache(String, int, java.io.Serializable)}
+ * method.
  * 
  * @author Mark Hiner
+ *
  */
 public enum CacheResult {
-	CACHE_DISABLED, CACHE_NOT_FOUND, DISK_FULL, DUPLICATE_FOUND, NOT_DIRTY,
-		SUCCESS
+	CACHE_DISABLED,
+	CACHE_NOT_FOUND,
+	DISK_FULL,
+	DUPLICATE_FOUND,
+	NOT_DIRTY,
+	SUCCESS
 }

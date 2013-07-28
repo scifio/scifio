@@ -33,15 +33,15 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif;
 
 import org.scijava.plugin.SciJavaPlugin;
 
 /**
- * Marker interface for org.scijava.plugin.SciJavaPlugin implementations in the
- * io.scif package. Allows for finer-grain indexing.
- * 
+ * Marker interface for org.scijava.plugin.SciJavaPlugin implementations
+ * in the io.scif package. Allows for finer-grain indexing.
+ *
  * @author Curtis Rueden
  */
-public interface SCIFIOPlugin extends SciJavaPlugin {}
+public interface SCIFIOPlugin extends SciJavaPlugin {
+}

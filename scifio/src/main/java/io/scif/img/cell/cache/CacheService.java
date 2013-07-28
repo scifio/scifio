@@ -44,104 +44,105 @@ import org.scijava.service.Service;
  * Interface for caching and retrieving objects.
  * 
  * @author Mark Hiner hinerm at gmail.com
+ *
  */
 public interface CacheService<T extends Serializable> extends Service {
+  
+  /**
+   * Removes all entries from the specified cache
+   * @param cacheId cache name to clear
+   */
+  void clearCache(String cacheId);
+  
+  /**
+   * Removes all entries for all caches
+   */
+  void clearAllCaches();
+  
+  /**
+   * Closes and removes the specified cache.
+   * @param cacheId cache name to remove
+   */
+  void dropCache(String cacheId);
+  
+  /**
+   * Creates a cache using the specified id
+   * @param cacheId cache to create
+   */
+  void addCache(String cacheId);
+  
+  /**
+   * Caches the provided object. The cacheId and index
+   * are used as a hash key.
+   * <p>
+   * NB: If successful, after invoking this method, the cached object
+   * should be considered "clean" in a dirty/clean context.
+   * </p>
+   * 
+   * @param cacheId - Cache this object belongs to
+   * @param index - Index in the cache of this object
+   * @param object - object to store
+   * @return CacheResult based on the outcome
+   */
+  CacheResult cache(String cacheId, int index, T object);
+  
+  /**
+   * Removes and returns the object at the desired
+   * index from the specified index.
+   * <p>
+   * NB: the cell returned from this method 
+   * will automatically attempt to re-cache itself
+   * when finalized. To disable this feature,
+   * use {@link #retrieveNoRecache(String, int)}.
+   * </p>
+   * 
+   * @param cacheId - Cache the desired object belongs to
+   * @param index - Index in the cache of the desired object
+   * @return The cached object for the specified id and index
+   */
+  T retrieve(String cacheId, int index);
+  
+  /**
+   * Removes and returns the object at the desired
+   * index from the specified index and disable
+   * that cell's automatic re-caching. Useful for
+   * anonymous retrieval.
+   * 
+   * @param cacheId - Cache the desired object belongs to
+   * @param index - Index in the cache of the desired object
+   * @return The cached object for the specified id and index
+   */
+  T retrieveNoRecache(String cacheId, int index);
+  
+  /**
+   * @param cacheId - Cache the desired object belongs to
+   * @param index - Index in the cache of the desired object
+   * @return Hashed value of the cacheId and index
+   */
+  Integer getKey(String cacheId, int index);
 
-	/**
-	 * Removes all entries from the specified cache
-	 * 
-	 * @param cacheId cache name to clear
-	 */
-	void clearCache(String cacheId);
-
-	/**
-	 * Removes all entries for all caches
-	 */
-	void clearAllCaches();
-
-	/**
-	 * Closes and removes the specified cache.
-	 * 
-	 * @param cacheId cache name to remove
-	 */
-	void dropCache(String cacheId);
-
-	/**
-	 * Creates a cache using the specified id
-	 * 
-	 * @param cacheId cache to create
-	 */
-	void addCache(String cacheId);
-
-	/**
-	 * Caches the provided object. The cacheId and index are used as a hash key.
-	 * <p>
-	 * NB: If successful, after invoking this method, the cached object should be
-	 * considered "clean" in a dirty/clean context.
-	 * </p>
-	 * 
-	 * @param cacheId - Cache this object belongs to
-	 * @param index - Index in the cache of this object
-	 * @param object - object to store
-	 * @return CacheResult based on the outcome
-	 */
-	CacheResult cache(String cacheId, int index, T object);
-
-	/**
-	 * Removes and returns the object at the desired index from the specified
-	 * index.
-	 * <p>
-	 * NB: the cell returned from this method will automatically attempt to
-	 * re-cache itself when finalized. To disable this feature, use
-	 * {@link #retrieveNoRecache(String, int)}.
-	 * </p>
-	 * 
-	 * @param cacheId - Cache the desired object belongs to
-	 * @param index - Index in the cache of the desired object
-	 * @return The cached object for the specified id and index
-	 */
-	T retrieve(String cacheId, int index);
-
-	/**
-	 * Removes and returns the object at the desired index from the specified
-	 * index and disable that cell's automatic re-caching. Useful for anonymous
-	 * retrieval.
-	 * 
-	 * @param cacheId - Cache the desired object belongs to
-	 * @param index - Index in the cache of the desired object
-	 * @return The cached object for the specified id and index
-	 */
-	T retrieveNoRecache(String cacheId, int index);
-
-	/**
-	 * @param cacheId - Cache the desired object belongs to
-	 * @param index - Index in the cache of the desired object
-	 * @return Hashed value of the cacheId and index
-	 */
-	Integer getKey(String cacheId, int index);
-
-	/**
-	 * Sets the amount of disk space available to caches created by this service's
-	 * manager.
-	 * 
-	 * @param maxBytes - max bytes usable by this manager's disk stores.
-	 */
-	void setMaxBytesOnDisk(long maxBytes);
-
-	/**
-	 * @return True if this CacheService can write to disk.
-	 */
-	boolean enabled();
-
-	/**
-	 * @param enabled If true, disk caching will be enabled. If false, no writes
-	 *          to disk will occur.
-	 */
-	void enable(boolean enabled);
-
-	/**
-	 * @param enabled If true, all records will be cached, not just those that are
-	 *          dirty.
-	 */
-	void cacheAll(boolean enabled);
+  /**
+   * Sets the amount of disk space available to caches
+   * created by this service's manager.
+   * 
+   * @param maxBytes - max bytes usable by this manager's disk stores.
+   */
+  void setMaxBytesOnDisk(long maxBytes);
+  
+  /**
+   * @return True if this CacheService can write to disk.
+   */
+  boolean enabled();
+  
+  /**
+   * @param enabled If true, disk caching will be enabled. If false,
+   *        no writes to disk will occur.
+   */
+  void enable(boolean enabled);
+  
+  /**
+   * @param enabled If true, all records will be cached, not just
+   *        those that are dirty.
+   */
+  void cacheAll(boolean enabled);
 }

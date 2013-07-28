@@ -40,37 +40,32 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Top-level SAX handler.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/BaseHandler.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/BaseHandler.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/BaseHandler.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/BaseHandler.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class BaseHandler extends DefaultHandler {
 
-	private static final Logger LOGGER = LoggerFactory
-		.getLogger(BaseHandler.class);
+  private static final Logger LOGGER =
+    LoggerFactory.getLogger(BaseHandler.class);
 
-	// -- DefaultHandler API methods --
+  // -- DefaultHandler API methods --
 
-	@Override
-	public InputSource
-		resolveEntity(final String publicId, final String systemId)
-			throws IOException, SAXException
-	{
-		LOGGER.debug("Ignoring: {}, {}", publicId, systemId);
-		return new InputSource(new java.io.StringReader(""));
-	}
+  public InputSource resolveEntity(String publicId, String systemId)
+    throws IOException, SAXException
+  {
+    LOGGER.debug("Ignoring: {}, {}", publicId, systemId);
+    return new InputSource(new java.io.StringReader(""));
+  }
 
 }

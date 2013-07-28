@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
+
 /**
  * Interface for all SCIFIO Parsers.
  * <p>
@@ -49,150 +50,151 @@ import java.util.Set;
  * appropriate for their {@code Format} by reading from an image source.
  * </p>
  * 
- * @see io.scif.Format <dl>
- *      <dt><b>Source code:</b></dt>
- *      <dd><a href="">Trac</a>, <a href="">Gitweb</a></dd>
- *      </dl>
+ * @see io.scif.Format
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="">Trac</a>,
+ * <a href="">Gitweb</a></dd></dl>
+ * 
  * @author Mark Hiner
  */
 public interface Parser extends HasFormat, HasSource, Groupable {
 
-	// -- Parser API methods --
+  // -- Parser API methods --
 
-	/**
-	 * Creates a {@code Metadata} object using the provided name of an image
-	 * source.
-	 * 
-	 * @param fileName Name of the image source to parse.
-	 * @return A new {@code Metadata} object of the appropriate type.
-	 */
-	Metadata parse(String fileName) throws IOException, FormatException;
+  /**
+   * Creates a {@code Metadata} object using the provided name of an image
+   * source.
+   * 
+   * @param fileName Name of the image source to parse.
+   * @return A new {@code Metadata} object of the appropriate type.
+   */
+  Metadata parse(String fileName) throws IOException, FormatException;
 
-	/**
-	 * Creates a {@code Metadata} object from the provided image file.
-	 * 
-	 * @param file a path to the image file to parse.
-	 * @return A new {@code Metadata} object of the appropriate type.
-	 */
-	Metadata parse(File file) throws IOException, FormatException;
+  /**
+   * Creates a {@code Metadata} object from the provided image file.
+   * 
+   * @param file a path to the image file to parse.
+   * @return A new {@code Metadata} object of the appropriate type.
+   */
+  Metadata parse(File file) throws IOException, FormatException;
 
-	/**
-	 * Creates a {@code Metadata} object from the provided image source.
-	 * 
-	 * @param stream a random access handle to the image source to parse.
-	 * @return A new {@code Metadata} object of the appropriate type.
-	 */
-	Metadata parse(RandomAccessInputStream stream) throws IOException,
-		FormatException;
+  /**
+   * Creates a {@code Metadata} object from the provided image source.
+   * 
+   * @param stream a random access handle to the image source to parse.
+   * @return A new {@code Metadata} object of the appropriate type. 
+   */
+  Metadata parse(RandomAccessInputStream stream) throws IOException, FormatException;
 
-	/**
-	 * Parses metadata using the provided name of an image source, and writes to
-	 * an existing {@code Metadata} object (overwriting may occur).
-	 * 
-	 * @param fileName Name of the image source to parse.
-	 * @param meta A base {@code Metadata} to fill.
-	 * @return The provided {@code Metadata} after parsing.
-	 * @throws IllegalArgumentException if meta is not assignable from the
-	 *           {@code Metadata} associated with this {@code Parser's Format}
-	 */
-	Metadata parse(String fileName, Metadata meta) throws IOException,
-		FormatException;
+  /**
+   * Parses metadata using the provided name of an image source, and writes
+   * to an existing {@code Metadata} object (overwriting may occur).
+   * 
+   * @param fileName Name of the image source to parse.
+   * @param meta A base {@code Metadata} to fill.
+   * @return The provided {@code Metadata} after parsing.
+   * @throws IllegalArgumentException if meta is not assignable from the
+   *         {@code Metadata} associated with this {@code Parser's Format}
+   */
+  Metadata parse(String fileName, Metadata meta) throws IOException, FormatException;
 
-	/**
-	 * Parses metadata from the provided file location to an existing
-	 * {@code Metadata} object (overwriting may occur).
-	 * 
-	 * @param file a path to the image file to parse.
-	 * @param meta A base {@code Metadata} to fill.
-	 * @return The provided {@code Metadata} after parsing.
-	 * @throws IllegalArgumentException if meta is not assignable from the
-	 *           {@code Metadata} associated with this {@code Parser's Format}
-	 */
-	Metadata parse(File file, Metadata meta) throws IOException, FormatException;
+  /**
+   * Parses metadata from the provided file location to an existing
+   * {@code Metadata} object (overwriting may occur).
+   * 
+   * @param file a path to the image file to parse.
+   * @param meta A base {@code Metadata} to fill.
+   * @return The provided {@code Metadata} after parsing.
+   * @throws IllegalArgumentException if meta is not assignable from the
+   *         {@code Metadata} associated with this {@code Parser's Format}
+   */
+  Metadata parse(File file, Metadata meta) throws IOException, FormatException;
 
-	/**
-	 * Parses metadata from the provided image source to an existing
-	 * {@code Metadata} object (overwriting may occur).
-	 * 
-	 * @param stream a random access handle to the image source to parse.
-	 * @param meta A base {@code Metadata} to fill.
-	 * @return The provided {@code Metadata} after parsing.
-	 * @throws IllegalArgumentException if meta is not assignable from the
-	 *           {@code Metadata} associated with this {@code Parser's Format}
-	 */
-	Metadata parse(RandomAccessInputStream stream, Metadata meta)
-		throws IOException, FormatException;
+  /**
+   * Parses metadata from the provided image source to an existing
+   * {@code Metadata} object (overwriting may occur).
+   * 
+   * @param stream a random access handle to the image source to parse.
+   * @param meta A base {@code Metadata} to fill.
+   * @return The provided {@code Metadata} after parsing.
+   * @throws IllegalArgumentException if meta is not assignable from the
+   *         {@code Metadata} associated with this {@code Parser's Format}
+   */
+  Metadata parse(RandomAccessInputStream stream, Metadata meta)
+    throws IOException, FormatException;
 
-	/**
-	 * Specifies whether or not this {@code Parser} should save proprietary
-	 * metadata while parsing.
-	 */
-	void setOriginalMetadataPopulated(boolean populate);
+  /**
+   * Specifies whether or not this {@code Parser} should save proprietary
+   * metadata while parsing.
+   */
+  void setOriginalMetadataPopulated(boolean populate);
 
-	/**
-	 * Returns true if this {@code Parser} should save proprietary metadata while
-	 * parsing.
-	 */
-	boolean isOriginalMetadataPopulated();
+  /**
+   * Returns true if this {@code Parser} should save proprietary metadata
+   * while parsing.
+   */
+  boolean isOriginalMetadataPopulated();
 
-	/** Returns an array of filenames needed to open this dataset. */
-	String[] getUsedFiles();
+  /** Returns an array of filenames needed to open this dataset. */
+  String[] getUsedFiles();
 
-	/**
-	 * Returns an array of filenames needed to open this dataset. If the
-	 * 'noPixels' flag is set, then only files that do not contain pixel data will
-	 * be returned.
-	 */
-	String[] getUsedFiles(boolean noPixels);
+  /**
+   * Returns an array of filenames needed to open this dataset.
+   * If the 'noPixels' flag is set, then only files that do not contain
+   * pixel data will be returned.
+   */
+  String[] getUsedFiles(boolean noPixels);
 
-	/**
-	 * Specifies whether ugly metadata (entries with unprintable characters, and
-	 * extremely large entries) should be discarded from the metadata table.
-	 */
-	void setMetadataFiltered(boolean filter);
+  /**
+   * Specifies whether ugly metadata (entries with unprintable characters,
+   * and extremely large entries) should be discarded from the metadata table.
+   */
+  void setMetadataFiltered(boolean filter);
 
-	/**
-	 * Returns true if ugly metadata (entries with unprintable characters, and
-	 * extremely large entries) are discarded from the metadata table.
-	 */
-	boolean isMetadataFiltered();
+  /**
+   * Returns true if ugly metadata (entries with unprintable characters,
+   * and extremely large entries) are discarded from the metadata table.
+   */
+  boolean isMetadataFiltered();
 
-	/** Returns an array of filenames needed to open the indicated image index. */
-	String[] getImageUsedFiles(int imageIndex);
+  /** Returns an array of filenames needed to open the indicated image index. */
+  String[] getImageUsedFiles(int imageIndex);
 
-	/**
-	 * Returns an array of filenames needed to open the indicated image. If the
-	 * 'noPixels' flag is set, then only files that do not contain pixel data will
-	 * be returned.
-	 */
-	String[] getImageUsedFiles(int imageIndex, boolean noPixels);
+  /**
+   * Returns an array of filenames needed to open the indicated image.
+   * If the 'noPixels' flag is set, then only files that do not contain
+   * pixel data will be returned.
+   */
+  String[] getImageUsedFiles(int imageIndex, boolean noPixels);
 
-	/**
-	 * Returns an array of FileInfo objects representing the files needed to open
-	 * this dataset. If the 'noPixels' flag is set, then only files that do not
-	 * contain pixel data will be returned.
-	 */
-	FileInfo[] getAdvancedUsedFiles(boolean noPixels);
+  /**
+   * Returns an array of FileInfo objects representing the files needed
+   * to open this dataset.
+   * If the 'noPixels' flag is set, then only files that do not contain
+   * pixel data will be returned.
+   */
+  FileInfo[] getAdvancedUsedFiles(boolean noPixels);
 
-	/**
-	 * Returns an array of FileInfo objects representing the files needed to open
-	 * the current series. If the 'noPixels' flag is set, then only files that do
-	 * not contain pixel data will be returned.
-	 */
-	FileInfo[] getAdvancedImageUsedFiles(int imageIndex, boolean noPixels);
+  /**
+   * Returns an array of FileInfo objects representing the files needed to
+   * open the current series.
+   * If the 'noPixels' flag is set, then only files that do not contain
+   * pixel data will be returned.
+   */
+  FileInfo[] getAdvancedImageUsedFiles(int imageIndex, boolean noPixels);
 
-	/**
-	 * Returns a list of MetadataLevel options for determining the granularity of
-	 * MetadataCollection
-	 */
-	Set<MetadataLevel> getSupportedMetadataLevels();
+  /**
+   * Returns a list of MetadataLevel options for determining the granularity 
+   * of MetadataCollection */
+  Set<MetadataLevel> getSupportedMetadataLevels();
 
-	/** Sets the MetadataOptions of this Parser */
-	void setMetadataOptions(MetadataOptions options);
+  /** Sets the MetadataOptions of this Parser */
+  void setMetadataOptions(MetadataOptions options);
 
-	/** Returns the MetadataOptions for this Parser */
-	MetadataOptions getMetadataOptions();
+  /** Returns the MetadataOptions for this Parser */
+  MetadataOptions getMetadataOptions();
 
-	/** Adds an entry to the specified Hashtable */
-	void addMeta(String key, Object value, MetaTable meta);
+  /** Adds an entry to the specified Hashtable */
+  void addMeta(String key, Object value, MetaTable meta);
 }

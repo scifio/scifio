@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif.app;
 
 import org.scijava.app.AbstractApp;
@@ -45,22 +44,23 @@ import org.scijava.plugin.Plugin;
  * context.
  * 
  * @author Mark Hiner
+ *
  */
 @Plugin(type = App.class, name = SCIFIOApp.NAME)
 public class SCIFIOApp extends AbstractApp {
 
-	public static final String NAME = "SCIFIO";
+  public static final String NAME = "SCIFIO";
 
-	public String getTitle() {
-		return NAME;
-	}
+  public String getTitle() {
+    return NAME;
+  }
 
-	public String getGroupId() {
-		return "io.scif";
-	}
+  public String getGroupId() {
+    return "io.scif";
+  }
 
-	public String getArtifactId() {
-		return "scifio";
-	}
+  public String getArtifactId() {
+    return "scifio";
+  }
 
 }

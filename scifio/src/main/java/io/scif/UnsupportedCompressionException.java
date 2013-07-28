@@ -39,32 +39,18 @@ package io.scif;
 /**
  * UnsupportedCompressionException is the exception thrown when the compression
  * scheme used in a particular file or stream is unsupported.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/UnsupportedCompressionException.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/UnsupportedCompressionException.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/UnsupportedCompressionException.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/UnsupportedCompressionException.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 public class UnsupportedCompressionException extends FormatException {
 
-	public UnsupportedCompressionException() {
-		super();
-	}
-
-	public UnsupportedCompressionException(final String s) {
-		super(s);
-	}
-
-	public UnsupportedCompressionException(final String s, final Throwable cause)
-	{
-		super(s, cause);
-	}
-
-	public UnsupportedCompressionException(final Throwable cause) {
-		super(cause);
-	}
+  public UnsupportedCompressionException() { super(); }
+  public UnsupportedCompressionException(String s) { super(s); }
+  public UnsupportedCompressionException(String s, Throwable cause) {
+    super(s, cause);
+  }
+  public UnsupportedCompressionException(Throwable cause) { super(cause); }
 
 }

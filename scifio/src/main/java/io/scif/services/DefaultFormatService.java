@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif.services;
 
 import io.scif.Checker;
@@ -53,6 +52,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+
+
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -62,313 +63,296 @@ import org.scijava.service.AbstractService;
  * Default {@link FormatService} implementation
  * 
  * @see io.scif.services.FormatService
+ * 
  * @author Mark Hiner
+ *
  */
-@Plugin(type = FormatService.class)
-public class DefaultFormatService extends AbstractService implements
-	FormatService
-{
+@Plugin(type=FormatService.class)
+public class DefaultFormatService extends AbstractService implements FormatService {
 
-	// -- Parameters --
+  // -- Parameters --
+  
+  @Parameter
+  private PluginService pluginService;
+  
+  //NB: needed for JEPG2000 format, which is a core format
+  @Parameter
+  private JAIIIOService jaiiioService;
+  
+  // -- Fields --
+  
+  /*
+   * A  list of all available Formats
+   */
+  private final List<Format> formats = new ArrayList<Format>();
+  
+  /*
+   * Maps Format classes to their instances.
+   */
+  private final Map<Class<?>, Format> formatMap = new HashMap<Class<?>, Format>();
+  
+  /*
+   * Maps Checker classes to their parent Format instance.
+   */
+  private final Map<Class<?>, Format> checkerMap = new HashMap<Class<?>, Format>();
 
-	@Parameter
-	private PluginService pluginService;
+  /*
+   * Maps Parser classes to their parent Format instance.
+   */
+  private final Map<Class<?>, Format> parserMap = new HashMap<Class<?>, Format>();
 
-	// NB: needed for JEPG2000 format, which is a core format
-	@Parameter
-	private JAIIIOService jaiiioService;
+  /*
+   * Maps Reader classes to their parent Format instance.
+   */
+  private final Map<Class<?>, Format> readerMap = new HashMap<Class<?>, Format>();
 
-	// -- Fields --
+  /*
+   * Maps Writer classes to their parent Format instance.
+   */
+  private final Map<Class<?>, Format> writerMap = new HashMap<Class<?>, Format>();
 
-	/*
-	 * A  list of all available Formats
-	 */
-	private final List<Format> formats = new ArrayList<Format>();
+  /*
+   * Maps Metadata classes to their parent Format instance.
+   */
+  private final Map<Class<?>, Format> metadataMap = new HashMap<Class<?>, Format>();
 
-	/*
-	 * Maps Format classes to their instances.
-	 */
-	private final Map<Class<?>, Format> formatMap =
-		new HashMap<Class<?>, Format>();
+  // -- FormatService API Methods --
+  
+  /*
+   * @see FormatService#getSuffixes()
+   */
+  public String[] getSuffixes() {
+    TreeSet<String> ts = new TreeSet<String>();
+    
+    for (Format f : formats) {
+      for (String s : f.getSuffixes()) {
+        ts.add(s);
+      }
+    }
+    
+    return ts.toArray(new String[ts.size()]);
+  }
 
-	/*
-	 * Maps Checker classes to their parent Format instance.
-	 */
-	private final Map<Class<?>, Format> checkerMap =
-		new HashMap<Class<?>, Format>();
+  /*
+   * @see FormatService#addFormat(Format)
+   */
+  public <M extends Metadata> boolean addFormat(
+      final Format format) {
+    // already have an entry for this format
+    if(formatMap.get(format.getClass()) != null)
+      return false;
+    
+    formats.add(format);
+    formatMap.put(format.getClass(), format);
 
-	/*
-	 * Maps Parser classes to their parent Format instance.
-	 */
-	private final Map<Class<?>, Format> parserMap =
-		new HashMap<Class<?>, Format>();
+    addComponents(format);
+    if (format.getContext() == null) format.setContext(getContext());
+    return true;
+  }
 
-	/*
-	 * Maps Reader classes to their parent Format instance.
-	 */
-	private final Map<Class<?>, Format> readerMap =
-		new HashMap<Class<?>, Format>();
+  /*
+   * @see FormatService#removeFormat(Format)
+   */
+  public boolean removeFormat(final Format format) {
+    removeComponents(format);
+    formatMap.remove(format.getClass());
+    return formats.remove(format);
+  }
+  
+  /*
+   * @see io.scif.services.FormatService#addComponents(io.scif.Format)
+   */
+  public void addComponents(final Format format) {
+    checkerMap.put(format.getCheckerClass(), format);
+    parserMap.put(format.getParserClass(), format);
+    readerMap.put(format.getReaderClass(), format);
+    writerMap.put(format.getWriterClass(), format);
+    metadataMap.put(format.getMetadataClass(), format);
+  }
+  
+  /*
+   * @see io.scif.services.FormatService#removeComponents(io.scif.Format)
+   */
+  public void removeComponents(final Format format) {
+    checkerMap.remove(format.getCheckerClass());
+    parserMap.remove(format.getParserClass());
+    readerMap.remove(format.getReaderClass());
+    writerMap.remove(format.getWriterClass());
+    metadataMap.remove(format.getMetadataClass());
+  }
+  
+  /*
+   * @see FormatService#getFormatFromClass(Class<? extends Format>)
+   */
+  @SuppressWarnings("unchecked")
+  public <F extends Format> F getFormatFromClass(final Class<F> formatClass) {
+    return (F)formatMap.get(formatClass);
+  }
+  
+  /*
+   * @see FormatService#getFormatFromComponent(Class<?>)
+   */
+  @SuppressWarnings("unchecked")
+  public Format getFormatFromComponent(final Class<?> componentClass) {
+    Format fmt = null;
 
-	/*
-	 * Maps Writer classes to their parent Format instance.
-	 */
-	private final Map<Class<?>, Format> writerMap =
-		new HashMap<Class<?>, Format>();
+    if (Reader.class.isAssignableFrom(componentClass)) {
+      fmt = getFormatFromReader((Class<? extends Reader>)componentClass);
+    }
+    else if (Writer.class.isAssignableFrom(componentClass)) {
+      fmt = getFormatFromWriter((Class<? extends Writer>)componentClass);
+    }
+    else if (Metadata.class.isAssignableFrom(componentClass)) {
+      fmt = getFormatFromMetadata((Class<? extends Metadata>)componentClass);
+    }
+    else if (Parser.class.isAssignableFrom(componentClass)) {
+      fmt = getFormatFromParser((Class<? extends Parser>)componentClass);
+    }
+    else if (Checker.class.isAssignableFrom(componentClass)) {
+      fmt = getFormatFromChecker((Class<? extends Checker>)componentClass);
+    }
 
-	/*
-	 * Maps Metadata classes to their parent Format instance.
-	 */
-	private final Map<Class<?>, Format> metadataMap =
-		new HashMap<Class<?>, Format>();
+    return fmt;
+  }
 
-	// -- FormatService API Methods --
+  /*
+   * @see FormatService#getFormatFromReader(Class<? extends Reader>)
+   */
+  public <R extends Reader> Format getFormatFromReader(final Class<R> readerClass) {
+    return readerMap.get(readerClass);
+  }
 
-	/*
-	 * @see FormatService#getSuffixes()
-	 */
-	public String[] getSuffixes() {
-		final TreeSet<String> ts = new TreeSet<String>();
+  /*
+   * @see FormatService#getFormatFromWriter(Class<? extends Writer>)
+   */
+  public <W extends Writer> Format getFormatFromWriter(final Class<W> writerClass) {
+    return writerMap.get(writerClass);
+  }
+  
+  /*
+   * @see io.scif.services.FormatService#getFormatByExtension(java.lang.String)
+   */
+  public Writer getWriterByExtension(String fileId) throws FormatException {
+    boolean matched = false;
+    
+    Writer w = null;
 
-		for (final Format f : formats) {
-			for (final String s : f.getSuffixes()) {
-				ts.add(s);
-			}
-		}
+    for (int i=0; !matched && i<formats.size(); i++) {
+      Format f = formats.get(i);
+      
+      if (FormatTools.checkSuffix(fileId,f.getSuffixes())) {
+        
+        if (!DefaultWriter.class.isAssignableFrom(f.getWriterClass())) {
+          w = f.createWriter();
+          matched = true;
+        }
+      }
+    }
+    
+    return w;
+  }
 
-		return ts.toArray(new String[ts.size()]);
-	}
+  /*
+   * @see FormatService#getFormatFromChecker(Class<? extends Checker>)
+   */
+  public <C extends Checker> Format getFormatFromChecker(final Class<C> checkerClass) {
+    return checkerMap.get(checkerClass);
+  }
 
-	/*
-	 * @see FormatService#addFormat(Format)
-	 */
-	public <M extends Metadata> boolean addFormat(final Format format) {
-		// already have an entry for this format
-		if (formatMap.get(format.getClass()) != null) return false;
+  /*
+   * @see FormatService#getFormatFromParser(Class<? extends Parser)
+   */
+  public <P extends Parser> Format getFormatFromParser(final Class<P> parserClass) {
+    return parserMap.get(parserClass);
+  }
 
-		formats.add(format);
-		formatMap.put(format.getClass(), format);
+  /*
+   * @see FormatService#getFormatFromMetadata(Class<? extends Metadata>)
+   */
+  public <M extends Metadata> Format getFormatFromMetadata(final Class<M> metadataClass) {
+    return metadataMap.get(metadataClass);
+  }
 
-		addComponents(format);
-		if (format.getContext() == null) format.setContext(getContext());
-		return true;
-	}
+  /**
+   * Returns the first Format known to be compatible with the source provided.
+   * Formats are checked in ascending order of their priority. The source is read
+   * if necessary to determine compatibility.
+   * 
+   * @param id the source
+   * @return A Format reference compatible with the provided source.
+   */
+  public Format getFormat(final String id)
+      throws FormatException {
+    return getFormat(id, false);
+  }
+  
+  /*
+   * @see FormatService#getFormat(String, boolean)
+   */
+  public Format getFormat(final String id, final boolean open)
+      throws FormatException {
+    return getFormatList(id, open, true).get(0);
+  }
+  
+  /*
+   * @see FormatService#getformatList(String)
+   */
+  public List<Format> getFormatList(final String id)
+      throws FormatException {
+    return getFormatList(id, false, false);
+  }
 
-	/*
-	 * @see FormatService#removeFormat(Format)
-	 */
-	public boolean removeFormat(final Format format) {
-		removeComponents(format);
-		formatMap.remove(format.getClass());
-		return formats.remove(format);
-	}
+  /*
+   * @see FormatService#getFormatList(String, boolean, boolean)
+   */
+  public List<Format> getFormatList(final String id,
+    final boolean open, final boolean greedy) throws FormatException
+  {
+    
+    final List<Format> formatList = new ArrayList<Format>();
 
-	/*
-	 * @see io.scif.services.FormatService#addComponents(io.scif.Format)
-	 */
-	public void addComponents(final Format format) {
-		checkerMap.put(format.getCheckerClass(), format);
-		parserMap.put(format.getParserClass(), format);
-		readerMap.put(format.getReaderClass(), format);
-		writerMap.put(format.getWriterClass(), format);
-		metadataMap.put(format.getMetadataClass(), format);
-	}
+    boolean found = false;
+    
+    for (int i=0; i<formats.size() && !found; i++) {
+      final Format format = formats.get(i);
+      if (format.isEnabled() && format.createChecker().isFormat(id, open)) {
+        // if greedy is true, we can end after finding the first format
+        found = greedy;
+        formatList.add(format);
+      }
+    }
 
-	/*
-	 * @see io.scif.services.FormatService#removeComponents(io.scif.Format)
-	 */
-	public void removeComponents(final Format format) {
-		checkerMap.remove(format.getCheckerClass());
-		parserMap.remove(format.getParserClass());
-		readerMap.remove(format.getReaderClass());
-		writerMap.remove(format.getWriterClass());
-		metadataMap.remove(format.getMetadataClass());
-	}
+    if (formatList.isEmpty())
+      throw new FormatException(id + ": No supported format found.");
 
-	/*
-	 * @see FormatService#getFormatFromClass(Class<? extends Format>)
-	 */
-	@SuppressWarnings("unchecked")
-	public <F extends Format> F getFormatFromClass(final Class<F> formatClass) {
-		return (F) formatMap.get(formatClass);
-	}
+    return formatList;
+  }
+  
+  /*
+   * @see FormatService#getAllFormats()
+   */
+  public List<Format> getAllFormats() {
+    return formats;
+  }
+  
+  /*
+   * @see io.scif.FormatService#getInstance(java.lang.Class)
+   */
+  public <T extends TypedService> T getInstance(Class<T> type) { 
+    return getContext().getService(type);
+  }
 
-	/*
-	 * @see FormatService#getFormatFromComponent(Class<?>)
-	 */
-	@SuppressWarnings("unchecked")
-	public Format getFormatFromComponent(final Class<?> componentClass) {
-		Format fmt = null;
-
-		if (Reader.class.isAssignableFrom(componentClass)) {
-			fmt = getFormatFromReader((Class<? extends Reader>) componentClass);
-		}
-		else if (Writer.class.isAssignableFrom(componentClass)) {
-			fmt = getFormatFromWriter((Class<? extends Writer>) componentClass);
-		}
-		else if (Metadata.class.isAssignableFrom(componentClass)) {
-			fmt = getFormatFromMetadata((Class<? extends Metadata>) componentClass);
-		}
-		else if (Parser.class.isAssignableFrom(componentClass)) {
-			fmt = getFormatFromParser((Class<? extends Parser>) componentClass);
-		}
-		else if (Checker.class.isAssignableFrom(componentClass)) {
-			fmt = getFormatFromChecker((Class<? extends Checker>) componentClass);
-		}
-
-		return fmt;
-	}
-
-	/*
-	 * @see FormatService#getFormatFromReader(Class<? extends Reader>)
-	 */
-	public <R extends Reader> Format getFormatFromReader(
-		final Class<R> readerClass)
-	{
-		return readerMap.get(readerClass);
-	}
-
-	/*
-	 * @see FormatService#getFormatFromWriter(Class<? extends Writer>)
-	 */
-	public <W extends Writer> Format getFormatFromWriter(
-		final Class<W> writerClass)
-	{
-		return writerMap.get(writerClass);
-	}
-
-	/*
-	 * @see io.scif.services.FormatService#getFormatByExtension(java.lang.String)
-	 */
-	public Writer getWriterByExtension(final String fileId)
-		throws FormatException
-	{
-		boolean matched = false;
-
-		Writer w = null;
-
-		for (int i = 0; !matched && i < formats.size(); i++) {
-			final Format f = formats.get(i);
-
-			if (FormatTools.checkSuffix(fileId, f.getSuffixes())) {
-
-				if (!DefaultWriter.class.isAssignableFrom(f.getWriterClass())) {
-					w = f.createWriter();
-					matched = true;
-				}
-			}
-		}
-
-		return w;
-	}
-
-	/*
-	 * @see FormatService#getFormatFromChecker(Class<? extends Checker>)
-	 */
-	public <C extends Checker> Format getFormatFromChecker(
-		final Class<C> checkerClass)
-	{
-		return checkerMap.get(checkerClass);
-	}
-
-	/*
-	 * @see FormatService#getFormatFromParser(Class<? extends Parser)
-	 */
-	public <P extends Parser> Format getFormatFromParser(
-		final Class<P> parserClass)
-	{
-		return parserMap.get(parserClass);
-	}
-
-	/*
-	 * @see FormatService#getFormatFromMetadata(Class<? extends Metadata>)
-	 */
-	public <M extends Metadata> Format getFormatFromMetadata(
-		final Class<M> metadataClass)
-	{
-		return metadataMap.get(metadataClass);
-	}
-
-	/**
-	 * Returns the first Format known to be compatible with the source provided.
-	 * Formats are checked in ascending order of their priority. The source is
-	 * read if necessary to determine compatibility.
-	 * 
-	 * @param id the source
-	 * @return A Format reference compatible with the provided source.
-	 */
-	public Format getFormat(final String id) throws FormatException {
-		return getFormat(id, false);
-	}
-
-	/*
-	 * @see FormatService#getFormat(String, boolean)
-	 */
-	public Format getFormat(final String id, final boolean open)
-		throws FormatException
-	{
-		return getFormatList(id, open, true).get(0);
-	}
-
-	/*
-	 * @see FormatService#getformatList(String)
-	 */
-	public List<Format> getFormatList(final String id) throws FormatException {
-		return getFormatList(id, false, false);
-	}
-
-	/*
-	 * @see FormatService#getFormatList(String, boolean, boolean)
-	 */
-	public List<Format> getFormatList(final String id, final boolean open,
-		final boolean greedy) throws FormatException
-	{
-
-		final List<Format> formatList = new ArrayList<Format>();
-
-		boolean found = false;
-
-		for (int i = 0; i < formats.size() && !found; i++) {
-			final Format format = formats.get(i);
-			if (format.isEnabled() && format.createChecker().isFormat(id, open)) {
-				// if greedy is true, we can end after finding the first format
-				found = greedy;
-				formatList.add(format);
-			}
-		}
-
-		if (formatList.isEmpty()) throw new FormatException(id +
-			": No supported format found.");
-
-		return formatList;
-	}
-
-	/*
-	 * @see FormatService#getAllFormats()
-	 */
-	public List<Format> getAllFormats() {
-		return formats;
-	}
-
-	/*
-	 * @see io.scif.FormatService#getInstance(java.lang.Class)
-	 */
-	public <T extends TypedService> T getInstance(final Class<T> type) {
-		return getContext().getService(type);
-	}
-
-	// -- Service API Methods --
-
-	/*
-	 * Discovers the list of formats and creates singleton instances of each.
-	 */
-	@Override
-	public void initialize() {
-		for (final Format format : pluginService
-			.createInstancesOfType(Format.class))
-		{
-			addFormat(format);
-		}
-
-		Collections.sort(formats);
-	}
+  // -- Service API Methods --
+  
+  /*
+   * Discovers the list of formats and creates singleton instances of each.
+   */
+  public void initialize() {
+    for (Format format : pluginService.createInstancesOfType(Format.class))
+    {
+      addFormat(format); 
+    }
+    
+    Collections.sort(formats);
+  }
 }

@@ -44,56 +44,51 @@ import java.io.IOException;
 import java.util.zip.Deflater;
 import java.util.zip.InflaterInputStream;
 
+
 /**
  * This class implements ZLIB decompression.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/ZlibCodec.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/ZlibCodec.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/ZlibCodec.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/ZlibCodec.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class ZlibCodec extends BaseCodec {
 
-	/* @see Codec#compress(byte[], CodecOptions) */
-	public byte[] compress(final byte[] data, final CodecOptions options)
-		throws FormatException
-	{
-		if (data == null || data.length == 0) throw new IllegalArgumentException(
-			"No data to compress");
-		final Deflater deflater = new Deflater();
-		deflater.setInput(data);
-		deflater.finish();
-		final byte[] buf = new byte[8192];
-		final ByteVector bytes = new ByteVector();
-		int r = 0;
-		// compress until eof reached
-		while ((r = deflater.deflate(buf, 0, buf.length)) > 0) {
-			bytes.add(buf, 0, r);
-		}
-		return bytes.toByteArray();
-	}
+  /* @see Codec#compress(byte[], CodecOptions) */
+  public byte[] compress(byte[] data, CodecOptions options)
+    throws FormatException
+  {
+    if (data == null || data.length == 0)
+      throw new IllegalArgumentException("No data to compress");
+    Deflater deflater = new Deflater();
+    deflater.setInput(data);
+    deflater.finish();
+    byte[] buf = new byte[8192];
+    ByteVector bytes = new ByteVector();
+    int r = 0;
+    // compress until eof reached
+    while ((r = deflater.deflate(buf, 0, buf.length)) > 0) {
+      bytes.add(buf, 0, r);
+    }
+    return bytes.toByteArray();
+  }
 
-	/* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
-	@Override
-	public byte[] decompress(final RandomAccessInputStream in,
-		final CodecOptions options) throws FormatException, IOException
-	{
-		final InflaterInputStream i = new InflaterInputStream(in);
-		final ByteVector bytes = new ByteVector();
-		final byte[] buf = new byte[8192];
-		int r = 0;
-		// read until eof reached
-		try {
-			while ((r = i.read(buf, 0, buf.length)) > 0)
-				bytes.add(buf, 0, r);
-		}
-		catch (final EOFException e) {}
-		return bytes.toByteArray();
-	}
+  /* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
+  public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
+    throws FormatException, IOException
+  {
+    InflaterInputStream i = new InflaterInputStream(in);
+    ByteVector bytes = new ByteVector();
+    byte[] buf = new byte[8192];
+    int r = 0;
+    // read until eof reached
+    try {
+      while ((r = i.read(buf, 0, buf.length)) > 0) bytes.add(buf, 0, r);
+    }
+    catch (EOFException e) { }
+    return bytes.toByteArray();
+  }
 
 }

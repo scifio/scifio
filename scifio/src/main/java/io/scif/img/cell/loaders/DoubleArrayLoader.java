@@ -45,38 +45,37 @@ import java.nio.ByteOrder;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link DoubleArray} types.
+ * {@link SCIFIOArrayLoader} implementation for {@link DoubleArray}
+ * types.
  * 
  * @author Mark Hiner hinerm at gmail.com
+ *
  */
-public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
+public class DoubleArrayLoader extends AbstractArrayLoader< DoubleArray >
+{
+  public DoubleArrayLoader (Reader reader) {
+    super(reader);
+  }
 
-	public DoubleArrayLoader(final Reader reader) {
-		super(reader);
-	}
+  @Override
+  public void convertBytes(DoubleArray data, byte[] bytes, int planesRead) {
+    Metadata meta = reader().getMetadata();
+    
+    int bpp = meta.getBitsPerPixel(0) / 8;
+    int offset = planesRead * (bytes.length / bpp);
 
-	@Override
-	public void convertBytes(final DoubleArray data, final byte[] bytes,
-		final int planesRead)
-	{
-		final Metadata meta = reader().getMetadata();
+    ByteBuffer bb = ByteBuffer.wrap(bytes);
+    
+    bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+    bb.asDoubleBuffer().get(data.getCurrentStorageArray(), offset, bytes.length / bpp);
+  }
+  
+  public DoubleArray emptyArray( final int[] dimensions )
+  {
+    return new DoubleArray( countEntities(dimensions) );
+  }
 
-		final int bpp = meta.getBitsPerPixel(0) / 8;
-		final int offset = planesRead * (bytes.length / bpp);
-
-		final ByteBuffer bb = ByteBuffer.wrap(bytes);
-
-		bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN
-			: ByteOrder.BIG_ENDIAN);
-		bb.asDoubleBuffer().get(data.getCurrentStorageArray(), offset,
-			bytes.length / bpp);
-	}
-
-	public DoubleArray emptyArray(final int[] dimensions) {
-		return new DoubleArray(countEntities(dimensions));
-	}
-
-	public int getBitsPerElement() {
-		return 64;
-	}
+  public int getBitsPerElement() {
+    return 64;
+  }
 }

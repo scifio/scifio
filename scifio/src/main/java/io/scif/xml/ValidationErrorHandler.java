@@ -41,44 +41,36 @@ import org.xml.sax.SAXParseException;
 
 /**
  * Used by validateXML to handle XML validation errors.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/ValidationErrorHandler.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/ValidationErrorHandler.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/ValidationErrorHandler.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/ValidationErrorHandler.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Chris Allan callan at blackcat.ca
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class ValidationErrorHandler implements ErrorHandler {
 
-	private int errors = 0;
+  private int errors = 0;
 
-	public boolean ok() {
-		return errors == 0;
-	}
+  public boolean ok() { return errors == 0; }
 
-	public int getErrorCount() {
-		return errors;
-	}
+  public int getErrorCount() { return errors; }
 
-	public void error(final SAXParseException e) {
-		XMLTools.LOGGER.error(e.getMessage());
-		errors++;
-	}
+  public void error(SAXParseException e) {
+    XMLTools.LOGGER.error(e.getMessage());
+    errors++;
+  }
 
-	public void fatalError(final SAXParseException e) {
-		XMLTools.LOGGER.error(e.getMessage());
-		errors++;
-	}
+  public void fatalError(SAXParseException e) {
+    XMLTools.LOGGER.error(e.getMessage());
+    errors++;
+  }
 
-	public void warning(final SAXParseException e) {
-		XMLTools.LOGGER.warn(e.getMessage());
-		errors++;
-	}
+  public void warning(SAXParseException e) {
+    XMLTools.LOGGER.warn(e.getMessage());
+    errors++;
+  }
 
 }

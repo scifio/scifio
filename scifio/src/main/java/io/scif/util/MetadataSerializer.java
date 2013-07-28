@@ -44,35 +44,35 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+
 /**
- * Utility class for serializing and deserializing arbitrary Metadata objects.
+ * Utility class for serializing and deserializing arbitrary Metadata
+ * objects.
  */
 public class MetadataSerializer<M extends Metadata> {
 
-	private final Class<M> type;
+  private Class<M> type;
 
-	// Constructor
+  // Constructor
 
-	private MetadataSerializer(final Class<M> type) {
-		this.type = type;
-	}
+  private MetadataSerializer(Class<M> type) {
+    this.type = type;
+  }
 
-	public M load(final InputStream is) throws IOException,
-		ClassNotFoundException
-	{
-		final ObjectInputStream ois = new ObjectInputStream(is);
-		final Object o = ois.readObject();
-		if (type.isInstance(o)) {
-			@SuppressWarnings("unchecked")
-			final M m = (M) o;
-			return m;
-		}
-		throw new IllegalArgumentException("Invalid object from stream: " +
-			o.getClass().getName());
-	}
+  public M load(InputStream is) throws IOException, ClassNotFoundException {
+    final ObjectInputStream ois = new ObjectInputStream(is);
+    final Object o = ois.readObject();
+    if (type.isInstance(o)) {
+      @SuppressWarnings("unchecked")
+      final M m = (M) o;
+      return m;
+    }
+    throw new IllegalArgumentException("Invalid object from stream: " +
+      o.getClass().getName());
+  }
 
-	public void save(final OutputStream os, final M meta) throws IOException {
-		final ObjectOutputStream oos = new ObjectOutputStream(os);
-		oos.writeObject(meta);
-	}
+  public void save(OutputStream os, M meta) throws IOException {
+    final ObjectOutputStream oos = new ObjectOutputStream(os);
+    oos.writeObject(meta);
+  }
 }

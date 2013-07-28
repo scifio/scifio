@@ -41,21 +41,22 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Interface for using planes read by SCIFIO {@link Reader}s to populate
- * {@link ImgPlus} instances.
+ * Interface for using planes read by SCIFIO {@link Reader}s
+ * to populate {@link ImgPlus} instances.
  * 
  * @author Mark Hiner hinerm at gmail.com
+ *
  */
 public interface PlaneConverter {
 
-	/**
-	 * @param reader Reader that was used to open the source plane
-	 * @param imageIndex image index within the dataset
-	 * @param planeIndex plane index within the image
-	 * @param source the opened plane
-	 * @param dest the ImgPlus to populate
-	 * @param imgOptions ImgOptions for opening this plane
-	 */
-	<T extends RealType<T>> void populatePlane(Reader reader, int imageIndex,
-		int planeIndex, byte[] source, ImgPlus<T> dest, ImgOptions imgOptions);
+   /**
+   * @param reader Reader that was used to open the source plane
+   * @param imageIndex image index within the dataset
+   * @param planeIndex plane index within the image
+   * @param source the opened plane
+   * @param dest the ImgPlus to populate
+   * @param imgOptions ImgOptions for opening this plane
+   */
+  <T extends RealType<T>> void populatePlane(Reader reader, int imageIndex, int planeIndex,
+      byte[] source, ImgPlus<T> dest, ImgOptions imgOptions);
 }

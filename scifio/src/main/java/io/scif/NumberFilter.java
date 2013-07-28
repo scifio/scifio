@@ -42,64 +42,54 @@ import java.math.BigInteger;
 
 /**
  * NumberFilter is a helper filter for FilePattern.findPattern().
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/NumberFilter.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/NumberFilter.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/NumberFilter.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/NumberFilter.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 public class NumberFilter implements FileFilter {
 
-	// -- Fields --
+  // -- Fields --
 
-	/** String appearing before the numerical block. */
-	private final String pre;
+  /** String appearing before the numerical block. */
+  private String pre;
 
-	/** String appearing after the numerical block. */
-	private final String post;
+  /** String appearing after the numerical block. */
+  private String post;
 
-	// -- Constructor --
+  // -- Constructor --
 
-	/**
-	 * Creates a filter for files containing a numerical block, sandwiched between
-	 * the given strings.
-	 */
-	public NumberFilter(final String pre, final String post) {
-		this.pre = pre;
-		this.post = post;
-	}
+  /**
+   * Creates a filter for files containing a numerical block,
+   * sandwiched between the given strings.
+   */
+  public NumberFilter(String pre, String post) {
+    this.pre = pre;
+    this.post = post;
+  }
 
-	// -- NumberFilter API methods --
+  // -- NumberFilter API methods --
 
-	/** Gets numbers filling the asterisk positions. */
-	public BigInteger getNumber(final String name) {
-		if (!name.startsWith(pre) || !name.endsWith(post)) return null;
-		final int ndx = pre.length();
-		final int end = name.length() - post.length();
-		try {
-			return new BigInteger(name.substring(ndx, end));
-		}
-		catch (final NumberFormatException exc) {
-			return null;
-		}
-		catch (final IndexOutOfBoundsException exc) {
-			return null;
-		}
-	}
+  /** Gets numbers filling the asterisk positions. */
+  public BigInteger getNumber(String name) {
+    if (!name.startsWith(pre) || !name.endsWith(post)) return null;
+    int ndx = pre.length();
+    int end = name.length() - post.length();
+    try { return new BigInteger(name.substring(ndx, end)); }
+    catch (NumberFormatException exc) { return null; }
+    catch (IndexOutOfBoundsException exc) { return null; }
+  }
 
-	/** Tests if a specified file should be included in a file list. */
-	public boolean accept(final String name) {
-		return getNumber(name) != null;
-	}
+  /** Tests if a specified file should be included in a file list. */
+  public boolean accept(String name) {
+    return getNumber(name) != null;
+  }
 
-	// -- FileFilter API methods --
+  // -- FileFilter API methods --
 
-	/** Tests if a specified file should be included in a file list. */
-	public boolean accept(final File pathname) {
-		return accept(pathname.getName());
-	}
+  /** Tests if a specified file should be included in a file list. */
+  public boolean accept(File pathname) {
+    return accept(pathname.getName());
+  }
 
 }

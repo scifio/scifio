@@ -37,33 +37,19 @@
 package io.scif;
 
 /**
- * FormatException is the exception thrown when something goes wrong performing
- * a file format operation.
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FormatException.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FormatException.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
+ * FormatException is the exception thrown when something
+ * goes wrong performing a file format operation.
+ *
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/FormatException.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/FormatException.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 public class FormatException extends Exception {
 
-	public FormatException() {
-		super();
-	}
-
-	public FormatException(final String s) {
-		super(s);
-	}
-
-	public FormatException(final String s, final Throwable cause) {
-		super(s, cause);
-	}
-
-	public FormatException(final Throwable cause) {
-		super(cause);
-	}
+  public FormatException() { super(); }
+  public FormatException(String s) { super(s); }
+  public FormatException(String s, Throwable cause) { super(s, cause); }
+  public FormatException(Throwable cause) { super(cause); }
 
 }
+

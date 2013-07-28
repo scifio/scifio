@@ -37,21 +37,16 @@
 package io.scif;
 
 /**
- * <dl>
- * <dt><b>Source code:</b></dt>
- * <dd><a href=
- * "http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/MetadataOptions.java"
- * >Trac</a>, <a href=
- * "http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/MetadataOptions.java;hb=HEAD"
- * >Gitweb</a></dd>
- * </dl>
- * 
+ * <dl><dt><b>Source code:</b></dt>
+ * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/MetadataOptions.java">Trac</a>,
+ * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/MetadataOptions.java;hb=HEAD">Gitweb</a></dd></dl>
+ *
  * @author callan
  */
 public interface MetadataOptions {
 
-	void setMetadataLevel(MetadataLevel level);
+  void setMetadataLevel(MetadataLevel level);
 
-	MetadataLevel getMetadataLevel();
+  MetadataLevel getMetadataLevel();
 
 }

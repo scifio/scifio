@@ -33,7 +33,6 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
 package io.scif.io.utests.providers;
 
 import org.scijava.AbstractContextual;
@@ -41,10 +40,11 @@ import org.scijava.Context;
 
 /**
  * @author Mark Hiner
+ *
  */
 public class ContextualProvider extends AbstractContextual {
 
-	public ContextualProvider() {
-		setContext(new Context());
-	}
+  public ContextualProvider() {
+    setContext(new Context());
+  }
 }

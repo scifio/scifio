@@ -43,15 +43,14 @@ import java.io.IOException;
  * default {@link #close()} implementation that calls {@code close(false)}.
  * 
  * @author Mark Hiner hinerm at gmail.com
+ *
  */
-public abstract class AbstractHasSource extends AbstractHasFormat implements
-	HasSource
-{
+public abstract class AbstractHasSource extends AbstractHasFormat implements HasSource {
 
-	/*
-	 * @see io.scif.HasSource#close()
-	 */
-	public void close() throws IOException {
-		close(false);
-	}
+  /*
+   * @see io.scif.HasSource#close()
+   */
+  public void close() throws IOException {
+    close(false);
+  }
 }
