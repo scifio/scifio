@@ -46,8 +46,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.scijava.log.LogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Data structure for working with TIFF Image File Directories (IFDs).
@@ -64,8 +62,6 @@ import org.slf4j.LoggerFactory;
 public class IFD extends HashMap<Integer, Object> {
 
   // -- Constants --
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(IFD.class);
 
   // non-IFD tags (for internal use)
   public static final int LITTLE_ENDIAN = 0;

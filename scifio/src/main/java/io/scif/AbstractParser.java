@@ -48,8 +48,6 @@ import java.util.Set;
 import java.util.Vector;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Parser} implementations.
@@ -64,10 +62,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractParser<M extends TypedMetadata>
   extends AbstractGroupable implements TypedParser<M> {
-
-  // -- Constants --
-
-  protected static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
   // -- Fields --
 

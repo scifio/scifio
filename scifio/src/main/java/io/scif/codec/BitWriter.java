@@ -40,8 +40,6 @@ import java.util.Random;
 
 import org.scijava.log.LogService;
 import org.scijava.log.StderrLogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A class for writing arbitrary numbers of bits to a byte array.
@@ -52,10 +50,6 @@ import org.slf4j.LoggerFactory;
  * @author Curtis Rueden ctrueden at wisc.edu
  */
 public class BitWriter {
-
-  // -- Constants --
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(BitWriter.class);
 
   // -- Fields --
 

@@ -49,8 +49,6 @@ import java.nio.channels.FileChannel;
 
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A wrapper for buffered NIO logic that implements the IRandomAccess interface.
@@ -65,12 +63,6 @@ import org.slf4j.LoggerFactory;
  * @author Chris Allan <callan at blackcat dot ca>
  */
 public class NIOFileHandle extends AbstractNIOHandle {
-
-  // -- Constants --
-
-  /** Logger for this class. */
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(RandomAccessInputStream.class);
 
   //-- Static fields --
 

@@ -45,8 +45,6 @@ import net.imglib2.meta.Axes;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * AxisGuesser guesses which blocks in a file pattern correspond to which
@@ -62,9 +60,6 @@ import org.slf4j.LoggerFactory;
 public class AxisGuesser {
 
   // -- Constants --
-
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(AxisGuesser.class);
 
   /** Axis type for unclassified axes. */
   public static final int UNKNOWN_AXIS = 0;

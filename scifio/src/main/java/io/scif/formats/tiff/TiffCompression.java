@@ -58,8 +58,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for performing compression operations with a TIFF file.
@@ -197,10 +195,7 @@ public enum TiffCompression implements CodedEnum {
   NIKON(34713, NikonCodec.class, "Nikon"),
   LURAWAVE(65535, LuraWaveCodec.class, "LuraWave");
 
-  // -- Constants --
-
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(TiffCompression.class);
+  // -- Fields --
 
   /** Code for the TIFF compression in the actual TIFF file. */
   private int code;

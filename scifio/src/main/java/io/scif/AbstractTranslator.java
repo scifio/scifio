@@ -38,8 +38,6 @@ package io.scif;
 
 import io.scif.util.SCIFIOMetadataTools;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Translator} components.
@@ -62,11 +60,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
   extends AbstractSCIFIOComponent implements Translator {
-
-  // -- Constants --
-
-  protected static final Logger LOGGER =
-    LoggerFactory.getLogger(Translator.class);
 
   // -- Translator API --
 

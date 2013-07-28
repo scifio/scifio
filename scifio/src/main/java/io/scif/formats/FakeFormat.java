@@ -67,7 +67,6 @@ import org.scijava.Context;
 import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
-import org.slf4j.Logger;
 
 /**
  * FakeFormat is the file format reader for faking input data.
@@ -111,8 +110,6 @@ public class FakeFormat extends AbstractFormat
   public static final String DEFAULT_DIMENSION_ORDER = "XYZCT";
 
   private static final long SEED = 0xcafebabe;
-
-  public static final Logger LOGGER = null;
 
   private static final String DEFAULT_NAME = "Untitled";
   private static final String TOKEN_SEPARATOR = "&";

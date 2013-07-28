@@ -50,8 +50,6 @@ import java.util.Hashtable;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <dl><dt><b>Source code:</b></dt>
@@ -60,11 +58,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class JPEGTileDecoder {
-
-  // -- Constants --
-
-  protected static final Logger LOGGER =
-    LoggerFactory.getLogger(JPEGTileDecoder.class);
 
   // -- Fields --
 

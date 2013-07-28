@@ -87,8 +87,6 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A utility class with convenience methods for manipulating images
@@ -114,9 +112,6 @@ public final class AWTImageTools {
 
   /** ImageObserver for working with AWT images. */
   protected static final Component OBS = new Container();
-
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(AWTImageTools.class);
 
   // -- Constructor --
 

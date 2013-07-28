@@ -39,8 +39,6 @@ package io.scif.xml;
 import java.io.IOException;
 
 import org.scijava.log.LogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -55,9 +53,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class BaseHandler extends DefaultHandler {
-
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(BaseHandler.class);
 
   private final LogService log;
 

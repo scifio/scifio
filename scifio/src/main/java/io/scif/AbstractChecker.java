@@ -41,8 +41,6 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Checker} implementations.
@@ -54,10 +52,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractChecker
   extends AbstractHasFormat implements Checker {
-
-  // -- Constants --
-
-  protected static final Logger LOGGER = LoggerFactory.getLogger(Checker.class);
 
   // -- Fields --
 

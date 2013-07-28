@@ -37,8 +37,6 @@ package io.scif.filters;
 
 import io.scif.AbstractSCIFIOComponent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract superclass for {@link io.scif.filters.Filter} implementations.
@@ -64,10 +62,6 @@ public abstract class AbstractFilter<T> extends AbstractSCIFIOComponent
   implements Filter
 {
 
-  // -- Constants --
-
-  protected static final Logger LOGGER = LoggerFactory.getLogger(Filter.class);
-  
   // -- Fields --
 
   /* Parent to delegate to. */

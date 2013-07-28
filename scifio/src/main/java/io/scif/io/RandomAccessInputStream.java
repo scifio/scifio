@@ -48,8 +48,6 @@ import java.nio.ByteOrder;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -66,10 +64,6 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 
   /** Maximum size of the buffer used by the DataInputStream. */
   protected static final int MAX_OVERHEAD = 1048576;
-
-  /** Logger for this class. */
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(RandomAccessInputStream.class);
 
   /**
    * Block size to use when searching through the stream.

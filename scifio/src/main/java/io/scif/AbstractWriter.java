@@ -48,8 +48,6 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -65,10 +63,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractWriter<M extends TypedMetadata>
   extends AbstractHasSource implements TypedWriter<M> {
-
-  // -- Constants --
-
-  protected static final Logger LOGGER = LoggerFactory.getLogger(Writer.class);
 
   // -- Fields --
 

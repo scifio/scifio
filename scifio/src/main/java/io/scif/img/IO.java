@@ -52,8 +52,6 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 
 import org.scijava.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A static utility class for easy access to {@link ImgSaver} and {@link ImgOpener}
@@ -71,10 +69,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class IO {
-
-  // -- Static fields --
-
-  private static Logger logger = LoggerFactory.getLogger(IO.class);
 
   // -- Static IO Methods --
 

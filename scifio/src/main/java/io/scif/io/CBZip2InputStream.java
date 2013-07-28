@@ -65,8 +65,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.scijava.log.LogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An input stream that decompresses from the BZip2 format (without the file
@@ -156,8 +154,7 @@ public class CBZip2InputStream extends InputStream {
     936, 638
   };
 
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(CBZip2InputStream.class);
+  // -- Helper methods --
 
   private void reportCRCError() {
     // The clean way would be to throw an exception.
@@ -179,6 +176,8 @@ public class CBZip2InputStream extends InputStream {
 
     this.nInUse = nInUseShadow;
   }
+
+  // -- Fields --
 
   /**
    * Index of the last char in the block, so the block size == last + 1.

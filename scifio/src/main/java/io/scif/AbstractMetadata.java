@@ -46,8 +46,6 @@ import java.util.List;
 
 import net.imglib2.meta.AxisType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Metadata} implementations.
@@ -61,10 +59,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractMetadata extends AbstractHasSource
   implements TypedMetadata {
-
-  // -- Constants --
-
-  protected static final Logger LOGGER = LoggerFactory.getLogger(Metadata.class);
 
   // -- Fields --
 

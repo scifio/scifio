@@ -42,8 +42,6 @@ import java.io.InputStreamReader;
 
 import org.scijava.log.LogService;
 import org.scijava.log.StderrLogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A simple parser for INI configuration files. Supports pound (#) as comments,
@@ -56,9 +54,6 @@ import org.slf4j.LoggerFactory;
  * @author Curtis Rueden ctrueden at wisc.edu
  */
 public class IniParser {
-
-  /** Logger for this class. */
-  private static final Logger LOGGER = LoggerFactory.getLogger(IniParser.class);
 
   private String commentDelimiter = "#";
 

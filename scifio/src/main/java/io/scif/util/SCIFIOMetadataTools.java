@@ -47,8 +47,6 @@ import java.util.Map;
 
 import net.imglib2.meta.AxisType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for working with {@link io.scif.Metadata} objects.
@@ -63,11 +61,6 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class SCIFIOMetadataTools {
-
-  // -- Constants --
-
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(SCIFIOMetadataTools.class);
 
   // -- Constructor --
 

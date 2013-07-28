@@ -48,8 +48,6 @@ import java.util.regex.PatternSyntaxException;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * FilePattern is a collection of methods for handling file patterns, a way of
@@ -70,11 +68,6 @@ import org.slf4j.LoggerFactory;
  * @author Curtis Rueden ctrueden at wisc.edu
  */
 public class FilePattern {
-
-  // -- Constants --
-
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(FilePattern.class);
 
   // -- Fields --
 

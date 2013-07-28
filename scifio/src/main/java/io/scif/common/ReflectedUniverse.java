@@ -50,8 +50,6 @@ import java.util.StringTokenizer;
 
 import org.scijava.log.LogService;
 import org.scijava.log.StderrLogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A general-purpose reflection wrapper class.
@@ -61,11 +59,6 @@ import org.slf4j.LoggerFactory;
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/ReflectedUniverse.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 public class ReflectedUniverse {
-
-  // -- Constants --
-
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(ReflectedUniverse.class);
 
   // -- Fields --
 

@@ -54,8 +54,6 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Default {@link io.scif.services.LocationService} implementation
@@ -67,8 +65,6 @@ import org.slf4j.LoggerFactory;
  */
 @Plugin(type=LocationService.class)
 public class DefaultLocationService extends AbstractService implements LocationService {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(Location.class);
 
   // -- Fields --
 

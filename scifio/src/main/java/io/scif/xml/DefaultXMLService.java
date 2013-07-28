@@ -566,7 +566,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 
   // -- Helper class --
 
-  /** ErrorListener implementation that logs errors and warnings using SLF4J. */
+  /** ErrorListener implementation that logs errors and warnings. */
   private class XMLListener implements ErrorListener {
 
     public void error(TransformerException e) {

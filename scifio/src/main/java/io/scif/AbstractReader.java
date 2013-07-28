@@ -46,8 +46,6 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -62,10 +60,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlane<?>>
   extends AbstractGroupable implements TypedReader<M, P> {
-
-  // -- Constants --
-
-  protected static final Logger LOGGER = LoggerFactory.getLogger(Reader.class);
 
   // -- Fields --
 

@@ -47,8 +47,6 @@ import io.scif.common.IniList;
 import io.scif.common.IniTable;
 import io.scif.common.IniWriter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A simple writer for INI configuration files.
@@ -60,9 +58,6 @@ import org.slf4j.LoggerFactory;
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class IniWriter {
-
-  /** Logger for this class. */
-  private static final Logger LOGGER = LoggerFactory.getLogger(IniWriter.class);
 
   // -- IniWriter API methods --
 

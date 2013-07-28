@@ -55,8 +55,6 @@ import java.util.TreeSet;
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.log.LogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Parses TIFF data from an input source.
@@ -71,10 +69,6 @@ import org.slf4j.LoggerFactory;
  * @author Chris Allan callan at blackcat.ca
  */
 public class TiffSaver extends AbstractContextual {
-
-  // -- Constructor --
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(TiffSaver.class);
 
   // -- Fields --
 

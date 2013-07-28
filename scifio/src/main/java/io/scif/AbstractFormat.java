@@ -39,8 +39,6 @@ package io.scif;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Format} implementations.
@@ -58,11 +56,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractFormat extends AbstractSCIFIOComponent
   implements Format
 {
-
-  // -- Constants --
-
-  protected static final Logger LOGGER =
-    LoggerFactory.getLogger(Format.class);
 
   // -- Fields --
 

@@ -43,8 +43,6 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 import java.util.Random;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * BaseCodec contains default implementation and testing for classes
@@ -63,11 +61,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractCodec extends AbstractSCIFIOComponent
   implements Codec
 {
-
-  // -- Constants --
-
-  protected static final Logger LOGGER =
-    LoggerFactory.getLogger(AbstractCodec.class);
 
   // -- BaseCodec API methods --
 

@@ -40,8 +40,6 @@ import java.util.Random;
 
 import org.scijava.log.LogService;
 import org.scijava.log.StderrLogService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A class for reading arbitrary numbers of bits from a byte array.
@@ -55,7 +53,6 @@ public class BitBuffer {
 
   // -- Constants --
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(BitBuffer.class);
 
   /** Various bitmasks for the 0000xxxx side of a byte. */
   private static final int[] BACK_MASK = {
