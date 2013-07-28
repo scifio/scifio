@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <profiles version="2">
-<profile kind="CleanUpProfile" name="ImageJ" version="2">
+<profile kind="CleanUpProfile" name="SCIFIO" version="2">
 <setting id="cleanup.add_default_serial_version_id" value="true"/>
 <setting id="cleanup.add_generated_serial_version_id" value="false"/>
 <setting id="cleanup.add_missing_annotations" value="true"/>
