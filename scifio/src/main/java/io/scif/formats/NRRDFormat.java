@@ -507,10 +507,8 @@ public class NRRDFormat extends AbstractFormat {
 					readPlane(getStream(), imageIndex, x, y, w, h, plane);
 					return plane;
 				}
-				else {
-					throw new UnsupportedCompressionException("Unsupported encoding: " +
-						meta.getEncoding());
-				}
+				throw new UnsupportedCompressionException("Unsupported encoding: " +
+					meta.getEncoding());
 			}
 			else if (meta.getEncoding().equals("raw")) {
 				final RandomAccessInputStream s =

@@ -258,10 +258,8 @@ public class FileStitcher extends AbstractReaderFilter {
 				map.keySet().toArray(idList);
 				return scifio().filePattern().findImagePatterns(id, null, idList);
 			}
-			else {
-				// id is an unmapped file path; look to similar files on disk
-				return scifio().filePattern().findImagePatterns(id);
-			}
+			// id is an unmapped file path; look to similar files on disk
+			return scifio().filePattern().findImagePatterns(id);
 		}
 		if (doNotChangePattern) {
 			return new String[] { id };

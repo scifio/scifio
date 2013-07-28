@@ -369,12 +369,8 @@ public class OBFFormat extends AbstractFormat {
 		}
 
 		private long getLength(final long length) throws FormatException {
-			if (length >= 0) {
-				return length;
-			}
-			else {
-				throw new FormatException("Negative stack length on disk");
-			}
+			if (length >= 0) return length;
+			throw new FormatException("Negative stack length on disk");
 		}
 
 		private boolean getCompression(final int compression)

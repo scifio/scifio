@@ -106,11 +106,9 @@ public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
 	@Override
 	public AxisType[] getAxes(final int imageIndex) {
 		if (unwrap().isRGB(imageIndex) && !unwrap().isIndexed(imageIndex)) {
-
-			if (unwrap().getAxisIndex(imageIndex, Axes.TIME) > unwrap().getAxisIndex(
-				imageIndex, Axes.Z)) return xyczt;
-			else return xyctz;
-
+			final int timeIndex = unwrap().getAxisIndex(imageIndex, Axes.TIME);
+			final int zIndex = unwrap().getAxisIndex(imageIndex, Axes.Z);
+			return timeIndex > zIndex ? xyczt : xyctz;
 		}
 		return unwrap().getAxes(imageIndex);
 	}

@@ -240,18 +240,17 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			getStream().seek(0);
 			return;
 		}
-		else {
-			close();
-			final RandomAccessInputStream stream =
-				new RandomAccessInputStream(getContext(), fileName);
-			try {
-				setMetadata(getFormat().createParser().parse(stream));
-			}
-			catch (final FormatException e) {
-				throw new IOException(e);
-			}
-			setSource(stream);
+
+		close();
+		final RandomAccessInputStream stream =
+			new RandomAccessInputStream(getContext(), fileName);
+		try {
+			setMetadata(getFormat().createParser().parse(stream));
 		}
+		catch (final FormatException e) {
+			throw new IOException(e);
+		}
+		setSource(stream);
 	}
 
 	/*

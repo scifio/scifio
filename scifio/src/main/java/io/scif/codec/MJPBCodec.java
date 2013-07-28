@@ -338,12 +338,10 @@ public class MJPBCodec extends AbstractCodec {
 				}
 				return result;
 			}
-			else {
-				v.add(b.toByteArray());
-				v.add((byte) 0xff);
-				v.add((byte) 0xd9);
-				return new JPEGCodec().decompress(v.toByteArray(), options);
-			}
+			v.add(b.toByteArray());
+			v.add((byte) 0xff);
+			v.add((byte) 0xd9);
+			return new JPEGCodec().decompress(v.toByteArray(), options);
 		}
 		catch (final IOException e) {
 			throw new FormatException(e);

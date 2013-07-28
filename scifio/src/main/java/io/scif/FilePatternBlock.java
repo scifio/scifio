@@ -115,11 +115,9 @@ public class FilePatternBlock {
 				elements = block.substring(1, block.length() - 1).split(",");
 				return;
 			}
-			else {
-				// no range and not a list; assume entire block is a single value
-				b = e = block.substring(1, block.length() - 1);
-				s = "1";
-			}
+			// no range and not a list; assume entire block is a single value
+			b = e = block.substring(1, block.length() - 1);
+			s = "1";
 		}
 		else {
 			final int colon = block.indexOf(":");
