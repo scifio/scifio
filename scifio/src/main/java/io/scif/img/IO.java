@@ -38,8 +38,7 @@ package io.scif.img;
 
 import io.scif.Reader;
 import io.scif.Writer;
-import io.scif.img.ImgOpener;
-import io.scif.img.ImgSaver;
+import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
@@ -84,14 +83,10 @@ public final class IO {
    *          - the location of the dataset to assess
    * @return - The number of images in the specified dataset, or 0
    *            if an error occurred.
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static int imageCount(final String source) {
-    try {
-      return new ImgOpener().getImageCount(source);
-    } catch (ImgIOException e) {
-      logger.error("Failed to get image count for source: " + source, e);
-      return 0;
-    }
+  public static int imageCount(final String source) throws ImgIOException {
+    return new ImgOpener().getImageCount(source);
   }
 
   // -- Static ImgOpener methods --
@@ -109,11 +104,9 @@ public final class IO {
    *          - the location of the dataset to open
    * @return - the {@link ImgPlus} or null if an exception is caught
    * 
-   * @throws ImgIOException
-   *           - if file could not be found, if it is too big for the memory or
-   *           if it is incompatible with the opener
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(final String source)
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(final String source) throws ImgIOException
   {
     return open(source, 0);
   }
@@ -132,11 +125,9 @@ public final class IO {
    * @param imageIndex - the index within the dataset to open
    * @return - the {@link ImgPlus} or null if an exception is caught
    * 
-   * @throws ImgIOException
-   *           - if file could not be found, if it is too big for the memory or
-   *           if it is incompatible with the opener
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(final String source, int imageIndex)
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(final String source, int imageIndex) throws ImgIOException
   {
     return open(source, imageIndex, (T)null);
   }
@@ -154,10 +145,9 @@ public final class IO {
    * @param imageIndex - the index within the dataset to open
    * @return - the {@link ImgPlus} or null if an exception is caught
    * 
-   * @throws ImgIOException
-   *           - if file could not be found or is too big for the memory
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static ImgPlus<FloatType> openFloat(final String source, int imageIndex)
+  public static ImgPlus<FloatType> openFloat(final String source, int imageIndex) throws ImgIOException
   {
     return open(source, imageIndex, new FloatType());
   }
@@ -175,10 +165,9 @@ public final class IO {
    * @param imageIndex - the index within the dataset to open
    * @return - the {@link ImgPlus} or null if an exception is caught
    * 
-   * @throws ImgIOException
-   *           - if file could not be found or is too big for the memory
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static ImgPlus<DoubleType> openDouble(final String source, int imageIndex)
+  public static ImgPlus<DoubleType> openDouble(final String source, int imageIndex) throws ImgIOException
   {
     return open(source, imageIndex, new DoubleType());
   }
@@ -196,10 +185,9 @@ public final class IO {
    * @param imageIndex - the index within the dataset to open
    * @return - the {@link ImgPlus} or null if an exception is caught
    * 
-   * @throws ImgIOException
-   *           - if file could not be found or is too big for the memory
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static ImgPlus<UnsignedByteType> openUnsignedByte(final String source, int imageIndex)
+  public static ImgPlus<UnsignedByteType> openUnsignedByte(final String source, int imageIndex) throws ImgIOException
   {
     return open(source, imageIndex, new UnsignedByteType());
   }
@@ -219,148 +207,143 @@ public final class IO {
    * @param type - the real type to use to open the image
    * @return - the {@link ImgPlus} or null if an exception is caught
    * 
-   * @throws ImgIOException
-   *           - if file could not be found, if it is too big for the memory or
-   *           if it is incompatible with the opener
+   * @throws ImgIOException if something goes wrong reading the source.
    */
   public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(
-    final String source, int imageIndex, T type)
+    final String source, int imageIndex, T type) throws ImgIOException
   {
-    try {
-      return new ImgOpener().openImg(source, type, new ImgOptions().setIndex(imageIndex));
-    } catch (Exception e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
+    return new ImgOpener().openImg(source, type, new ImgOptions().setIndex(imageIndex));
   }
 
   /**
-   * @see {@link ImgOpener#openImg(String)}
+   * TODO
+   * 
+   * @see ImgOpener#openImg(String)
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source) {
-    try {
-      return new ImgOpener().openImg(source);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source) throws ImgIOException {
+    return new ImgOpener().openImg(source);
   }
 
   /**
-   * @see {@link ImgOpener#openImg(String, RealType)}
+   * TODO
+   * 
+   * @see ImgOpener#openImg(String, RealType)
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, T type) {
-    try {
-      return new ImgOpener().openImg(source, type);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, T type) throws ImgIOException {
+    return new ImgOpener().openImg(source, type);
   }
 
   /**
-   * @see {@link ImgOpener#openImg(String, ImgOptions)}
+   * TODO
+   * 
+   * @see ImgOpener#openImg(String, ImgOptions)
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, ImgOptions imgOptions) {
-    try {
-      return new ImgOpener().openImg(source, imgOptions);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, ImgOptions imgOptions) throws ImgIOException {
+    return new ImgOpener().openImg(source, imgOptions);
   }
 
   /**
-   * @see {@link ImgOpener#openImg(String, RealType, ImgOptions)}
+   * TODO
+   * 
+   * @see ImgOpener#openImg(String, RealType, ImgOptions)
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, T type, ImgOptions imgOptions) {
-    try {
-      return new ImgOpener().openImg(source, type, imgOptions);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
+  public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(String source, T type, ImgOptions imgOptions) throws ImgIOException {
+    return new ImgOpener().openImg(source, type, imgOptions);
   }
 
   /**
-   * @see {@link ImgOpener#openImg(String, ImgFactory)}
+   * TODO
+   * 
+   * @see ImgOpener#openImg(String, ImgFactory)
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static <T extends RealType<T>> ImgPlus<T> openImg(String source, ImgFactory<T> imgFactory) {
-    try {
-      return new ImgOpener().openImg(source, imgFactory);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
+  public static <T extends RealType<T>> ImgPlus<T> openImg(String source, ImgFactory<T> imgFactory) throws ImgIOException {
+    return new ImgOpener().openImg(source, imgFactory);
   }
 
   /**
-   * @see {@link ImgOpener#openImg(String, ImgFactory, RealType)}
+   * TODO
+   * 
+   * @see ImgOpener#openImg(String, ImgFactory, RealType)
+   * @throws ImgIOException if something goes wrong reading the source.
    */
-  public static <T extends RealType<T>> ImgPlus<T> openImg(String source, ImgFactory<T> imgFactory, T type) {
-    try {
-      return new ImgOpener().openImg(source, imgFactory, type);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image for source: " + source, e);
-      return null;
-    }
+  public static <T extends RealType<T>> ImgPlus<T> openImg(String source, ImgFactory<T> imgFactory, T type) throws ImgIOException {
+    return new ImgOpener().openImg(source, imgFactory, type);
   }
 
   /**
-   * @see {@link ImgOpener#openImg(Reader, RealType, ImgFactory, ImgOptions)}
+   * TODO
+   * 
+   * @see ImgOpener#openImg(Reader, RealType, ImgFactory, ImgOptions)
    */
-  public static <T extends RealType<T>> ImgPlus<T> openImg(Reader reader, T type, ImgFactory<T> imgFactory, ImgOptions imgOptions) {
-    try {
-      return new ImgOpener().openImg(reader, type, imgFactory, imgOptions);
-    } catch (ImgIOException e) {
-      logger.error("Failed to open image", e);
-      return null;
-    }
+  public static <T extends RealType<T>> ImgPlus<T> openImg(Reader reader, T type, ImgFactory<T> imgFactory, ImgOptions imgOptions) throws ImgIOException {
+    return new ImgOpener().openImg(reader, type, imgFactory, imgOptions);
   }
 
   // -- Static ImgSaver methods --
 
   /**
-   * @see {@link ImgSaver#saveImg(String, Img)}
+   * TODO
+   * 
+   * @see ImgSaver#saveImg(String, Img)
+   * @throws ImgIOException if something goes wrong writing to the destination.
    */
-  public static <T extends RealType<T> & NativeType<T>> void saveImg(String dest, Img<T> img) {
+  public static <T extends RealType<T> & NativeType<T>> void saveImg(String dest, Img<T> img) throws ImgIOException {
     try {
       new ImgSaver().saveImg(dest, img);
-    } catch (Exception e) {
-      logger.error("Failed to write image : " + dest, e);
+    }
+    catch (IncompatibleTypeException exc) {
+      throw new ImgIOException(exc);
     }
   }
 
   /**
-   * @see {@link ImgSaver#saveImg(String, ImgPlus, int)}
+   * TODO
+   * 
+   * @see ImgSaver#saveImg(String, ImgPlus, int)
+   * @throws ImgIOException if something goes wrong writing to the destination.
    */
-  <T extends RealType<T> & NativeType<T>> void saveImg(String dest, ImgPlus<T> imgPlus, int imageIndex) {
+  <T extends RealType<T> & NativeType<T>> void saveImg(String dest, ImgPlus<T> imgPlus, int imageIndex) throws ImgIOException {
     try {
       new ImgSaver().saveImg(dest, imgPlus, imageIndex);
-    } catch (Exception e) {
-      logger.error("Failed to write image : " + dest, e);
+    }
+    catch (IncompatibleTypeException exc) {
+      throw new ImgIOException(exc);
     }
   }
 
   /**
-   * @see {@link ImgSaver#saveImg(Writer, Img)}
+   * TODO
+   * 
+   * @see ImgSaver#saveImg(Writer, Img)
+   * @throws ImgIOException if something goes wrong writing to the destination.
    */
-  <T extends RealType<T> & NativeType<T>> void saveImg(Writer writer, Img<T> imgPlus) {
+  <T extends RealType<T> & NativeType<T>> void saveImg(Writer writer, Img<T> imgPlus) throws ImgIOException {
     try {
       new ImgSaver().saveImg(writer, imgPlus);
-    } catch (Exception e) {
-      logger.error("Failed to write image", e);
+    }
+    catch (IncompatibleTypeException exc) {
+      throw new ImgIOException(exc);
     }
   }
 
   /**
-   * @see {@link ImgSaver#saveImg(Writer, ImgPlus, int)}
+   * TODO
+   * 
+   * @see ImgSaver#saveImg(Writer, ImgPlus, int)
+   * @throws ImgIOException if something goes wrong writing to the destination.
    */
-  <T extends RealType<T> & NativeType<T>> void saveImg(Writer writer, ImgPlus<T> imgPlus, int imageIndex) {
+  <T extends RealType<T> & NativeType<T>> void saveImg(Writer writer, ImgPlus<T> imgPlus, int imageIndex) throws ImgIOException {
     try {
       new ImgSaver().saveImg(writer, imgPlus, imageIndex);
-    } catch (Exception e) {
-      logger.error("Failed to write image", e);
+    }
+    catch (IncompatibleTypeException exc) {
+      throw new ImgIOException(exc);
     }
   }
+
 }
