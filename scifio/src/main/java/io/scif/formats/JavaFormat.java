@@ -310,7 +310,7 @@ public class JavaFormat extends AbstractFormat {
 
 		public DoubleArrayPlus(final double[] data) {
 			super(data);
-		};
+		}
 
 		public String label() {
 			return "double";

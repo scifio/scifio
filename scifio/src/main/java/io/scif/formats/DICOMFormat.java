@@ -998,7 +998,7 @@ public class DICOMFormat extends AbstractFormat {
 					try {
 						final Parser p = (Parser) getFormat().createParser();
 						p.setGroupFiles(false);
-						final Metadata m = p.parse(fileList.get(keys[i]).get(0));;
+						final Metadata m = p.parse(fileList.get(keys[i]).get(0));
 						add(m.get(0));
 						sizeZ *= fileList.get(keys[i]).size();
 					}

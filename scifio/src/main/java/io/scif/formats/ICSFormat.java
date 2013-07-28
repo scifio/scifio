@@ -1695,7 +1695,7 @@ public class ICSFormat extends AbstractFormat {
 		@Override
 		public boolean canDoStacks() {
 			return true;
-		};
+		}
 
 		/* @see io.scif.Writer#getPixelTypes(String) */
 		@Override
@@ -1847,7 +1847,7 @@ public class ICSFormat extends AbstractFormat {
 					else if (dim == 'T') {
 						if (meta.getAxisIndex(imageIndex, Axes.TIME) != -1) {
 							value = meta.getAxisLength(imageIndex, Axes.TIME);
-						};
+						}
 						units.append("seconds\t");
 					}
 					out.writeBytes(value + "\t");

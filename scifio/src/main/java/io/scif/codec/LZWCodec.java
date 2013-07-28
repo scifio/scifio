@@ -179,7 +179,7 @@ public class LZWCodec extends AbstractCodec {
 				else {
 					// we have to rehash
 					hashCode = (hashCode + HASH_STEP) % HASH_SIZE;
-				};
+				}
 			}
 			while (true);
 
