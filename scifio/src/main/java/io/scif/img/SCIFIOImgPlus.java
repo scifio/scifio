@@ -79,12 +79,12 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> {
   {
     super(img, name, axes, cal);
   }
-  
+
   @Override
   public ColorTable getColorTable(final int planeIndex) {
     return getColorTable(0, planeIndex);
   }
-  
+
   /**
    * @param imageIndex - Image index to look up the color table
    * @param planeIndex - Plane index of the desired color table
@@ -92,7 +92,7 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> {
    */
   public ColorTable getColorTable(int imageIndex, final int planeIndex) {
     ColorTable table = super.getColorTable(planeIndex);
-    
+
     if (table == null && SCIFIOCellImg.class.isAssignableFrom(getImg().getClass()))
     {
       try {
@@ -102,10 +102,10 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> {
       } catch (IOException e) {
         return null;
       }
-      
+
       setColorTable(table, planeIndex);
     }
-    
+
     return table;
   }
 }

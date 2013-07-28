@@ -36,11 +36,15 @@
 package io.scif;
 
 import io.scif.app.SCIFIOApp;
+import io.scif.codec.CodecService;
+import io.scif.formats.qt.QTJavaService;
+import io.scif.formats.tiff.TiffService;
 import io.scif.services.FilePatternService;
 import io.scif.services.FormatService;
 import io.scif.services.InitializeService;
 import io.scif.services.LocationService;
 import io.scif.services.TranslatorService;
+import io.scif.xml.XMLService;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
@@ -48,11 +52,11 @@ import org.scijava.Context;
 /**
  * Convenience {@link org.scijava.Context} wrapper.
  * <p>
- * Provides easy accessor methods for the SCIFIO-specific 
+ * Provides easy accessor methods for the SCIFIO-specific
  * {@link org.scijava.service.Service} implementations, bypassing the
  * need to call the {@code getService(Service.class} method.
  * </p>
- * <p> 
+ * <p>
  * This class is intended to be a disposable wrapper that can easily
  * be created and forgotten as needed.
  * </p>
@@ -69,7 +73,7 @@ import org.scijava.Context;
 public class SCIFIO extends AbstractGateway {
 
   // -- Constructors --
-  
+
   /** Creates a new SCIFIO application context with all available services. */
   public SCIFIO() {
     this(new Context());
@@ -84,7 +88,7 @@ public class SCIFIO extends AbstractGateway {
   public SCIFIO(boolean empty) {
     this(new Context(empty));
   }
-  
+
   /**
    * Creates a new SCIFIO wrapping the provided context.
    * 
@@ -93,45 +97,45 @@ public class SCIFIO extends AbstractGateway {
   public SCIFIO(Context context) {
     super(SCIFIOApp.NAME, context);
   }
-  
+
   // -- Service Accessors --
-  
+
   /**
    * InitializeService accessor.
    * 
    * @return The InitializeService instance associated with the wrapped Context.
    */
   public InitializeService initializer() {
-  	return get(InitializeService.class);
+    return get(InitializeService.class);
   }
-  
+
   /**
    * FormatService accessor.
    * 
    * @return The FormatService instance associated with the wrapped Context.
    */
   public FormatService format() {
-  	return get(FormatService.class);
+    return get(FormatService.class);
   }
-  
+
   /**
    * TranslatorService accessor.
    * 
    * @return The TranslatorService instance associated with the wrapped Context.
    */
   public TranslatorService translator() {
-  	return get(TranslatorService.class);
+    return get(TranslatorService.class);
   }
-  
+
   /**
    * LocationService accessor.
    * 
    * @return The LocationService instance associated with the wrapped Context.
    */
   public LocationService location() {
-  	return get(LocationService.class);
+    return get(LocationService.class);
   }
-  
+
   /**
    * FilePatternService accessor.
    * 
@@ -140,4 +144,41 @@ public class SCIFIO extends AbstractGateway {
   public FilePatternService filePattern() {
     return get(FilePatternService.class);
   }
+
+  /**
+   * CodecService accessor.
+   * 
+   * @return The CodecService instance associated with the wrapped Context.
+   */
+  public CodecService codec() {
+    return get(CodecService.class);
+  }
+
+  /**
+   * TiffService accessor.
+   * 
+   * @return The TiffService instance associated with the wrapped Context.
+   */
+  public TiffService tiff() {
+    return get(TiffService.class);
+  }
+
+  /**
+   * QTJavaService accessor.
+   * 
+   * @return The QTJavaService instance associated with the wrapped Context.
+   */
+  public QTJavaService qtJava() {
+    return get(QTJavaService.class);
+  }
+
+  /**
+   * XMLService accessor.
+   * 
+   * @return The XMLService instance associated with the wrapped Context.
+   */
+  public XMLService xml() {
+    return get(XMLService.class);
+  }
+
 }

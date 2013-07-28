@@ -54,12 +54,12 @@ import org.testng.annotations.Test;
 public class MissingJAIIIOServiceTest {
 
   private Context context;
-  
+
   @BeforeMethod
   public void setUp() {
     context = new Context();
   }
-  
+
   @Test
   public void testInstantiate() {
     JAIIIOService service = context.getService(JAIIIOService.class);

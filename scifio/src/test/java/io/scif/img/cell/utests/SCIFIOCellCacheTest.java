@@ -53,7 +53,7 @@ public class SCIFIOCellCacheTest {
 
   @BeforeMethod
   public void setUp() { }
-  
+
   @AfterMethod
   public void tearDown() { }
 }

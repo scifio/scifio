@@ -58,9 +58,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.scijava.plugin.Plugin;
-
 import net.imglib2.meta.Axes;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.Plugin;
 
 
 /**
@@ -82,7 +83,7 @@ import net.imglib2.meta.Axes;
 public class TextFormat extends AbstractFormat {
 
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -96,7 +97,7 @@ public class TextFormat extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[] {"txt", "csv"};
   }
-  
+
   // -- Nested classes --
 
   /**
@@ -106,7 +107,7 @@ public class TextFormat extends AbstractFormat {
   public static class Metadata extends AbstractMetadata {
 
     // -- Fields --
-    
+
     /**
      * Because we have no way of indexing into the text file efficiently
      * in general, we cheat and store the entire file's data in a giant array.
@@ -133,9 +134,9 @@ public class TextFormat extends AbstractFormat {
 
     /** Image height. */
     private int sizeY;
-    
+
     // -- TextMetadata getters and setters --
-    
+
     public float[][] getData() {
       return data;
     }
@@ -199,12 +200,12 @@ public class TextFormat extends AbstractFormat {
     public void setSizeY(int sizeY) {
       this.sizeY = sizeY;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
-      
+
       iMeta.setPixelType(FormatTools.FLOAT);
       iMeta.setBitsPerPixel(32);
       iMeta.setPlaneCount(iMeta.getAxisLength(Axes.Z) *
@@ -213,7 +214,7 @@ public class TextFormat extends AbstractFormat {
       iMeta.setLittleEndian(TextUtils.LITTLE_ENDIAN);
       iMeta.setMetadataComplete(true);
     }
-    
+
     @Override
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -227,21 +228,21 @@ public class TextFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Checker extends AbstractChecker {
-    
+
     // -- Constructor --
-    
+
     public Checker() {
       suffixSufficient = false;
     }
-    
+
     // -- Checker API Methods --
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
       final int blockLen = 8192;
@@ -252,17 +253,17 @@ public class TextFormat extends AbstractFormat {
       try {
         meta = (Metadata) getFormat().createMetadata();
       } catch (FormatException e) {
-        LOGGER.error("Failed to create TextMetadata", e);
+        log().error("Failed to create TextMetadata", e);
         return false;
       }
       meta.createImageMetadata(1);
       meta.setRow(0);
-      
+
       String[] line = TextUtils.getNextLine(lines, meta);
       if (line == null) return false;
       int headerRows = 0;
       try {
-        headerRows = TextUtils.parseFileHeader(lines, meta);
+        headerRows = TextUtils.parseFileHeader(lines, meta, log());
       }
       catch (FormatException e) { }
       return headerRows > 0;
@@ -276,27 +277,27 @@ public class TextFormat extends AbstractFormat {
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- Constants --
-    
+
     /** How often to report progress during initialization, in milliseconds. */
     private static final long TIME_OFFSET = 2000;
-    
+
     // -- AbstractParser API Methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
-      throws IOException, FormatException 
+      throws IOException, FormatException
     {
       meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
-      
+
       // read file into memory
-      LOGGER.info("Reading file");
+      log().info("Reading file");
       List<String> lines = readFile(stream.getFileName());
 
       // parse file header
-      LOGGER.info("Parsing file header");
-      final int headerRows = TextUtils.parseFileHeader(lines, meta);
-      
+      log().info("Parsing file header");
+      final int headerRows = TextUtils.parseFileHeader(lines, meta, log());
+
       // allocate memory for image data
       final int sizeZ = 1, sizeT = 1; // no Z or T for now
       final int sizeC = meta.getChannels().length;
@@ -313,11 +314,11 @@ public class TextFormat extends AbstractFormat {
       for (int i=0; i<planeCount; i++) Arrays.fill(data[i], Float.NaN);
 
       // read data into float array
-      parseTableData(lines, headerRows, meta);  
+      parseTableData(lines, headerRows, meta);
     }
-    
+
     // -- Helper Methods --
-    
+
     /** Reads the tabular data into the data array. */
     private void parseTableData(List<String> lines, int linesToSkip, Metadata meta) {
       meta.setRow(linesToSkip); // skip header lines
@@ -327,22 +328,22 @@ public class TextFormat extends AbstractFormat {
         String[] tokens = TextUtils.getNextLine(lines, meta);
         if (tokens == null) break; // eof
         if (tokens.length != meta.getRowLength()) {
-          LOGGER.warn("Ignoring deviant row #" + meta.getRow());
+          log().warn("Ignoring deviant row #" + meta.getRow());
           continue;
         }
 
         // parse values from row
         boolean success = TextUtils.getRowData(tokens, rowData);
         if (!success) {
-          LOGGER.warn("Ignoring non-numeric row #" + meta.getRow());
+          log().warn("Ignoring non-numeric row #" + meta.getRow());
           continue;
         }
 
         // copy values into array
         assignValues(rowData, meta);
       }
-    } 
-    
+    }
+
     /** Assigns values from the given row into the data array. */
     private void assignValues(double[] rowData, Metadata meta) {
       int x = TextUtils.getX(rowData, meta);
@@ -354,7 +355,7 @@ public class TextFormat extends AbstractFormat {
         meta.getData()[c++][index] = (float) rowData[i];
       }
     }
-    
+
     private List<String> readFile(String id) throws IOException {
       List<String> lines = new ArrayList<String>();
       long time = System.currentTimeMillis();
@@ -389,22 +390,22 @@ public class TextFormat extends AbstractFormat {
       }
       return lines;
     }
-    
+
     private long checkTime(long time, int no, long pos, long len) {
       long t = System.currentTimeMillis();
       if (t - time > TIME_OFFSET) {
         // some time has passed; report progress
         if (len > 0) {
           int percent = (int) (100 * pos / len);
-          LOGGER.info("Reading line " + no + " (" + percent + "%)");
+          log().info("Reading line " + no + " (" + percent + "%)");
         }
-        else LOGGER.info("Reading line " + no);
+        else log().info("Reading line " + no);
         time = t;
       }
       return time;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -412,13 +413,13 @@ public class TextFormat extends AbstractFormat {
   public static class Reader extends ByteArrayReader<Metadata> {
 
     // -- Reader API Methods --
-    
+
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
       ByteArrayPlane plane, int x, int y, int w, int h)
       throws FormatException, IOException
     {
       byte[] buf = plane.getData();
-      
+
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
 
       // copy floating point data into byte buffer
@@ -438,15 +439,15 @@ public class TextFormat extends AbstractFormat {
       return plane;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   private static class TextUtils {
-    
+
     // -- Constants --
-    
+
     private static final String LABEL_X = "x";
     private static final String LABEL_Y = "y";
     private static final boolean LITTLE_ENDIAN = false;
@@ -459,7 +460,9 @@ public class TextFormat extends AbstractFormat {
      *
      * @return number of rows in the header
      */
-    private static int parseFileHeader(List<String> lines, Metadata meta) throws FormatException {
+    private static int parseFileHeader(List<String> lines, Metadata meta,
+      LogService log) throws FormatException
+    {
       String[] lastTokens = null;
       double[] rowData = null;
       while (true) {
@@ -477,7 +480,7 @@ public class TextFormat extends AbstractFormat {
 
           // try to parse the first data row
           if (getRowData(tokens, rowData)) {
-            LOGGER.info("Found header on line " + (meta.getRow() - 1));
+            log.info("Found header on line " + (meta.getRow() - 1));
             // looks like tabular data; assume previous line is the header
             parseHeaderRow(lastTokens, meta);
             break;
@@ -553,7 +556,7 @@ public class TextFormat extends AbstractFormat {
       }
       meta.setChannels(channelsList.toArray(new String[0]));
     }
-    
+
     private static String[] getNextLine(List<String> lines, Metadata meta) {
       while (true) {
         if (meta.getRow() >= lines.size()) return null; // end of list
@@ -564,11 +567,11 @@ public class TextFormat extends AbstractFormat {
         return line.split("[\\s,]");
       }
     }
-    
+
     private static int getX(double[] rowData, Metadata meta) {
-      return (int) rowData[meta.getxIndex()]; 
+      return (int) rowData[meta.getxIndex()];
     }
-    
+
     private static int getY(double[] rowData, Metadata meta) {
       return (int) rowData[meta.getyIndex()];
     }

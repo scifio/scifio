@@ -55,19 +55,20 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Mark Hiner
  */
-public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
+public abstract class AbstractFormat extends AbstractSCIFIOComponent
+  implements Format
 {
-  
+
   // -- Constants --
 
   protected static final Logger LOGGER =
     LoggerFactory.getLogger(Format.class);
-  
+
   // -- Fields --
 
   /** Valid suffixes for this file format. */
   protected String[] suffixes;
-  
+
   private boolean enabled = true;
 
   // Class references to the components of this Format
@@ -86,26 +87,26 @@ public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
     parserClass = DefaultParser.class;
     readerClass = DefaultReader.class;
     writerClass = DefaultWriter.class;
-    
+
     updateCustomClasses();
   }
 
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#setEnabled(boolean)
    */
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
-  
+
   /*
    * @see io.scif.Format#isEnabled()
    */
   public boolean isEnabled() {
     return enabled;
   }
-  
+
   /*
    * @see io.scif.Format#createMetadata()
    */
@@ -140,7 +141,7 @@ public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
   public Writer createWriter() throws FormatException {
     return createContextualObject(getWriterClass());
   }
-  
+
   /*
    * @see io.scif.Format#getMetadataClass()
    */
@@ -175,7 +176,7 @@ public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
   public Class<? extends Writer> getWriterClass() {
     return writerClass;
   }
-  
+
   // -- Helper Methods --
 
   /*
@@ -186,7 +187,7 @@ public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
       throws FormatException {
     final T t = createObject(c);
     t.setContext(getContext());
-    
+
     // if we are creating a Default component, we need to
     // manually set its Format.
     if (DefaultComponent.class.isAssignableFrom(t.getClass())) {
@@ -225,7 +226,7 @@ public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
    */
   @SuppressWarnings("unchecked")
   private void updateCustomClasses() {
-    
+
     for (Class<?> c : buildClassList()) {
       if (Metadata.class.isAssignableFrom(c))
         metadataClass = (Class<? extends Metadata>) c;
@@ -247,11 +248,11 @@ public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
   private List<Class<?>> buildClassList() {
     Class<?>[] classes = this.getClass().getDeclaredClasses();
     List<Class<?>> classList = new ArrayList<Class<?>>();
-    
+
     for (Class<?> c : classes) {
       check(c, classList);
     }
-    
+
     return classList;
   }
 
@@ -261,9 +262,9 @@ public abstract class AbstractFormat extends AbstractHasSCIFIO implements Format
    */
   private void check(Class<?> newClass, List<Class<?>> classList) {
     classList.add(newClass);
-    
+
     for (Class<?> c : newClass.getDeclaredClasses())
       check(c, classList);
-    
+
   }
 }

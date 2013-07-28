@@ -63,18 +63,18 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class SCIFIOMetadataTools {
-  
+
   // -- Constants --
-  
+
   private static final Logger LOGGER =
     LoggerFactory.getLogger(SCIFIOMetadataTools.class);
-  
+
   // -- Constructor --
-  
+
   private SCIFIOMetadataTools() { }
-  
-  // -- Utility Methods -- DatasetMetadata -- 
-  
+
+  // -- Utility Methods -- DatasetMetadata --
+
   /**
    * Casts the provided Metadata object to the generic type
    * of this method.
@@ -85,11 +85,11 @@ public class SCIFIOMetadataTools {
    */
   @SuppressWarnings("unchecked")
   public static <M extends Metadata> M castMeta(Metadata meta) {
-    //TODO need to check for safe casting here.. 
-    
+    //TODO need to check for safe casting here..
+
     return (M)meta;
   }
-  
+
   /**
    * Checks whether the given metadata object has the minimum metadata
    * populated to successfully describe an Image.
@@ -141,7 +141,7 @@ public class SCIFIOMetadataTools {
       throw new FormatException("Axiscount #" + imageIndex + " is 0");
     }
   }
-  
+
   /**
    * Populates the provided ImageMetadata. Automatically looks up
    * bits per pixel for the provided pixel type.
@@ -156,7 +156,7 @@ public class SCIFIOMetadataTools {
         orderCertain, littleEndian, indexed, falseColor, metadataComplete, sizeX,
         sizeY, sizeZ, sizeC, sizeT);
   }
-  
+
   /**
    * Populates the provided ImageMetadata.
    */
@@ -177,7 +177,7 @@ public class SCIFIOMetadataTools {
     iMeta.setMetadataComplete(metadataComplete);
     populateDimensions(iMeta, dimensionOrder, sizeX, sizeY, sizeZ, sizeC, sizeT);
   }
-  
+
   /**
    * Populates the provided ImageMetadata's axis types and lengths using
    * the provided dimension order and sizes.
@@ -195,7 +195,7 @@ public class SCIFIOMetadataTools {
       int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT)
   {
     int[] axisLengths = new int[5];
-    
+
     for (int i=0; i<5; i++) {
       switch (dimensionOrder.toUpperCase().charAt(i)) {
       case 'X': axisLengths[i] = Math.max(sizeX, 1);
@@ -211,10 +211,10 @@ public class SCIFIOMetadataTools {
       default: axisLengths[i] = 1;
       }
     }
-    
+
     populateDimensions(iMeta, dimensionOrder, axisLengths);
   }
-  
+
   /**
    * Populates the provided ImageMetadata's axis types and lengths using
    * the provided dimension order and sizes.
@@ -228,10 +228,10 @@ public class SCIFIOMetadataTools {
       int[] lengths)
   {
     AxisType[] axes = FormatTools.findDimensionList(dimensionOrder);
-    
+
     iMeta.setAxes(axes, lengths);
   }
-  
+
   // Utility methods -- original metadata --
 
   /**
@@ -245,7 +245,7 @@ public class SCIFIOMetadataTools {
       dest.put(prefix + key, src.get(key));
     }
   }
-  
+
   /** Gets a sorted list of keys from the given hashtable. */
   public static String[] keys(Hashtable<String, Object> meta) {
     String[] keys = new String[meta.size()];

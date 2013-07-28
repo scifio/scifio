@@ -56,11 +56,11 @@ import net.imglib2.type.NativeType;
  */
 public class SCIFIOCellImg< T extends NativeType< T >, A, C extends AbstractCell<A> > extends AbstractCellImg< T, A, C, SCIFIOCellImgFactory< T > >
 {
-  
+
   // -- Fields --
 
   private Reader reader;
-  
+
   // -- Constructor --
 
   public SCIFIOCellImg(final SCIFIOCellImgFactory<T> factory,

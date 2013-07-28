@@ -44,16 +44,16 @@ package io.scif;
  * 
  * @author Mark Hiner
  */
-public abstract class AbstractHasFormat extends AbstractHasSCIFIO
+public abstract class AbstractHasFormat extends AbstractSCIFIOComponent
   implements HasFormat {
-  
+
   // -- HasFormat API --
 
   /*
    * @see io.scif.HasFormat#getFormat()
    */
   public Format getFormat() {
-  	// All Format lookups go through the FormatService
+    // All Format lookups go through the FormatService
     return scifio().format().getFormatFromComponent(getClass());
   }
 }

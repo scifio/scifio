@@ -51,7 +51,6 @@ import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.xml.BaseHandler;
-import io.scif.xml.XMLTools;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,18 +77,18 @@ import org.xml.sax.helpers.DefaultHandler;
 public class MicromanagerFormat extends AbstractFormat {
 
   // -- Constants --
-  
+
   /** File containing extra metadata. */
   private static final String METADATA = "metadata.txt";
-  
+
   /**
    * Optional file containing additional acquisition parameters.
    * (And yes, the spelling is correct.)
    */
   private static final String XML = "Acqusition.xml";
-  
+
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -103,7 +102,7 @@ public class MicromanagerFormat extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[] {"tif", "tiff", "txt", "xml"};
   }
-  
+
   // -- Nested Classes --
 
   /**
@@ -111,17 +110,17 @@ public class MicromanagerFormat extends AbstractFormat {
    *
    */
   public static class Metadata extends AbstractMetadata {
-    
+
     // -- Constants --
-    
+
     public static final String CNAME = "io.scif.formats.MicromanagerFormat$Metadata";
-    
+
     // -- Fields --
-    
+
     private Vector<Position> positions;
-    
+
     // -- MicromanagerMetadata getters and setters --
-    
+
     public Vector<Position> getPositions() {
       return positions;
     }
@@ -129,17 +128,17 @@ public class MicromanagerFormat extends AbstractFormat {
     public void setPositions(Vector<Position> positions) {
       this.positions = positions;
     }
-    
+
     // -- Metadata API methods --
-    
+
     public void populateImageMetadata() {
-      
+
       for (int i=0; i<getImageCount(); i++) {
         ImageMetadata ms = get(i);
 
         if (ms.getAxisLength(Axes.Z) == 0) ms.setAxisLength(Axes.Z, 1);
         if (ms.getAxisLength(Axes.TIME) == 0) ms.setAxisLength(Axes.TIME, 1);
-        
+
         ms.setAxisTypes(FormatTools.findDimensionList("XYZCT"));
         ms.setInterleaved(false);
         ms.setRGB(false);
@@ -159,9 +158,9 @@ public class MicromanagerFormat extends AbstractFormat {
         positions = null;
       }
     }
-    
+
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -169,7 +168,7 @@ public class MicromanagerFormat extends AbstractFormat {
   public static class Checker extends AbstractChecker {
 
     // -- Checker API Methods --
-    
+
     /*
      * @see io.scif.Checker#isFormat(io.scif.io.RandomAccessInputStream)
      */
@@ -203,7 +202,7 @@ public class MicromanagerFormat extends AbstractFormat {
       catch (IOException e) { }
       return false;
     }
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException
     {
@@ -212,12 +211,12 @@ public class MicromanagerFormat extends AbstractFormat {
         checker = scifio().format().getFormatFromClass(MinimalTIFFFormat.class).createChecker();
         return checker.isFormat(stream);
       } catch (FormatException e) {
-        LOGGER.error("Failed to create a MinimalTIFFChecker", e);
+        log().error("Failed to create a MinimalTIFFChecker", e);
         return false;
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -242,19 +241,19 @@ public class MicromanagerFormat extends AbstractFormat {
         positions.add(p);
         parsePosition(jsonData[pos], source, pos);
       }
-      
+
       scifio().translator().translate(source, dest, true);
     }
-    
+
     // -- Parser API methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
         throws IOException, FormatException {
       Vector<Position> positions = new Vector<Position>();
       meta.setPositions(positions);
 
-      LOGGER.info("Reading metadata file");
+      log().info("Reading metadata file");
 
       // find metadata.txt
 
@@ -288,12 +287,12 @@ public class MicromanagerFormat extends AbstractFormat {
 
       int imageCount = positions.size();
       meta.createImageMetadata(imageCount);
-      
+
       for (int i=0; i<imageCount; i++) {
         parsePosition(meta, i);
       }
     }
-    
+
     public String[] getImgaeUsedFiles(int imageIndex, boolean noPixels) {
       FormatTools.assertId(currentId, true, 1);
       Vector<String> files = new Vector<String>();
@@ -312,7 +311,7 @@ public class MicromanagerFormat extends AbstractFormat {
       }
       return files.toArray(new String[files.size()]);
     }
-    
+
     // -- Groupable API Methods --
 
     @Override
@@ -324,12 +323,12 @@ public class MicromanagerFormat extends AbstractFormat {
     public int fileGroupOption(String id) {
       return FormatTools.MUST_GROUP;
     }
-    
+
     @Override
     public boolean hasCompanionFiles() {
       return true;
     }
-    
+
     // -- Helper methods --
 
     private void parsePosition(Metadata meta, int posIndex) throws IOException, FormatException {
@@ -345,7 +344,7 @@ public class MicromanagerFormat extends AbstractFormat {
       ImageMetadata ms = meta.get(posIndex);
       String parent = new Location(getContext(), p.metadataFile).getParent();
 
-      LOGGER.info("Finding image file names");
+      log().info("Finding image file names");
 
       // find the name of a TIFF file
       p.tiffs = new Vector<String>();
@@ -405,7 +404,7 @@ public class MicromanagerFormat extends AbstractFormat {
       //
       // }
 
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
 
       Vector<Double> stamps = new Vector<Double>();
       p.voltage = new Vector<Double>();
@@ -620,14 +619,14 @@ public class MicromanagerFormat extends AbstractFormat {
      * Populate the list of TIFF files using the given file name as a pattern.
      */
     private void buildTIFFList(Metadata meta, int posIndex, String baseTiff) {
-      LOGGER.info("Building list of TIFFs");
+      log().info("Building list of TIFFs");
       Position p = meta.getPositions().get(posIndex);
       String prefix = "";
       if (baseTiff.indexOf(File.separator) != -1) {
         prefix = baseTiff.substring(0, baseTiff.lastIndexOf(File.separator) + 1);
         baseTiff = baseTiff.substring(baseTiff.lastIndexOf(File.separator) + 1);
       }
-      
+
       String[] blocks = baseTiff.split("_");
       StringBuffer filename = new StringBuffer();
       for (int t=0; t<meta.getAxisLength(posIndex, Axes.TIME); t++) {
@@ -676,16 +675,19 @@ public class MicromanagerFormat extends AbstractFormat {
     private void parseXMLFile(Metadata meta, int imageIndex) throws IOException {
       Position p = meta.getPositions().get(imageIndex);
       String xmlData = DataTools.readFile(getContext(), p.xmlFile);
-      xmlData = XMLTools.sanitizeXML(xmlData);
+      xmlData = scifio().xml().sanitizeXML(xmlData);
 
       DefaultHandler handler = new MicromanagerHandler();
-      XMLTools.parseXML(xmlData, handler);
+      scifio().xml().parseXML(xmlData, handler);
     }
 
     // -- Helper classes --
 
     /** SAX handler for parsing Acqusition.xml. */
-    class MicromanagerHandler extends BaseHandler {
+    private class MicromanagerHandler extends BaseHandler {
+      public MicromanagerHandler() {
+        super(log());
+      }
       public void startElement(String uri, String localName, String qName,
         Attributes attributes)
       {
@@ -699,33 +701,33 @@ public class MicromanagerFormat extends AbstractFormat {
     }
 
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Fields --
 
     /** Helper reader for TIFF files. */
     private MinimalTIFFFormat.Reader<?> tiffReader;
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.LM_DOMAIN};
     }
-    
+
     // -- Reader API methods --
-    
+
     /*
      * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
         ByteArrayPlane plane, int x, int y, int w, int h)
         throws FormatException, IOException {
-      
+
       Metadata meta = getMetadata();
       byte[] buf = plane.getBytes();
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
@@ -736,16 +738,17 @@ public class MicromanagerFormat extends AbstractFormat {
         tiffReader.setSource(file);
         return tiffReader.openPlane(imageIndex, 0, plane, x, y, w, h);
       }
-      LOGGER.warn("File for image #{} ({}) is missing.", planeIndex, file);
+      log().warn("File for image #" + planeIndex +
+        " (" + file + ") is missing.");
       return plane;
     }
-    
+
     @Override
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
       if (tiffReader != null) tiffReader.close(fileOnly);
     }
-    
+
     @Override
     public int getOptimalTileWidth(int imageIndex) {
       if (tiffReader == null || tiffReader.getCurrentFile() == null) {
@@ -761,46 +764,46 @@ public class MicromanagerFormat extends AbstractFormat {
       }
       return tiffReader.getOptimalTileHeight(imageIndex);
     }
-    
+
     // -- Groupable API Methods --
-    
+
     @Override
     public boolean hasCompanionFiles() {
       return true;
     }
-    
+
     // -- Helper methods --
-    
+
     private void setupReader(int imageIndex) {
       try {
         String file = getMetadata().getPositions().get(imageIndex).getFile(getMetadata(), imageIndex, 0);
-        
+
         if (tiffReader == null) tiffReader =
             (MinimalTIFFFormat.Reader<?>) scifio().format().getFormatFromClass(MinimalTIFFFormat.class).createReader();
-        
+
         tiffReader.setSource(file);
       }
       catch (Exception e) {
-        LOGGER.debug("", e);
+        log().debug("", e);
       }
     }
 
   }
-  
+
   /**
    * Necessary dummy translator, so that a Micromanager-OMEXML translator can be used
    * 
    * @author Mark Hiner hinerm at gmail.com
    *
    */
-  @Plugin(type = Translator.class, attrs = 
+  @Plugin(type = Translator.class, attrs =
     {@Attr(name = MicromanagerTranslator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = MicromanagerTranslator.DEST, value = Metadata.CNAME)},
     priority = Priority.LOW_PRIORITY)
   public static class MicromanagerTranslator
     extends DefaultTranslator
   { }
-  
+
   // -- Helper classes --
 
   public static class Position {

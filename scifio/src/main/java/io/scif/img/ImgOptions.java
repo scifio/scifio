@@ -119,7 +119,7 @@ public class ImgOptions {
 
   // Custom plane converter
   private PlaneConverter planeConverter;
-  
+
   // Custom heuristic for choosing an ImgFactory
   private ImgFactoryHeuristic imgFactoryHeuristic;
 
@@ -149,7 +149,7 @@ public class ImgOptions {
   }
 
   // -- Getters and Setters --
-  
+
   /**
    * @return The access type to attempt to open the dataset with. Default:
    *         imgMode.AUTO, which allows the calling program to decide.
@@ -266,14 +266,14 @@ public class ImgOptions {
     this.planeConverter = planeConverter;
     return this;
   }
-  
+
   /**
    * @return The ImgFactoryHeuristic to use when selecting an ImgFactory. Default: {@code null}
    */
   public ImgFactoryHeuristic getImgFactoryHeuristic() {
     return imgFactoryHeuristic;
   }
-  
+
   /**
    * @param imgFactoryHeuristic Heuristic to use when selecting an ImgFactory. Will
    *        not be used if an ImgFactory is provided to the ImgOpener.

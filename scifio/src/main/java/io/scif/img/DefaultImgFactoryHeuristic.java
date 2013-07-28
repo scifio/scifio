@@ -77,9 +77,9 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 
   // % of available memory to trigger opening as a CellImg, if surpassed
   private static final double MEMORY_THRESHOLD = 0.75;
-  
+
   // -- ImgFactoryHeuristic API Methods --
-  
+
   /*
    * @see ImgFactoryHeuristic#createFactory(m, ImgMode[])
    */
@@ -88,16 +88,16 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
     ImgFactory<T> tmpFactory = null;
 
     T type = ImgIOUtils.makeType(m.getPixelType(0));
-    
+
     // Max size of a plane of a PlanarImg, or total dataset for ArrayImg. 2GB.
     long maxSize = DataTools.safeMultiply64(2, 1024, 1024, 1024);
-    
+
     long availableMem = (long) (Runtime.getRuntime().freeMemory() * MEMORY_THRESHOLD);
     long datasetSize = m.getDatasetSize();
-    
+
     // check for overflow
     if (datasetSize <= 0) datasetSize = Long.MAX_VALUE;
-    
+
     // divide by 1024 to compare to max_size and avoid overflow
     long planeSize = m.getAxisLength(0, Axes.X) * m.getAxisLength(0, Axes.Y) * FormatTools.getBytesPerPixel(m.getPixelType(0));
 
@@ -105,13 +105,13 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 
     boolean decided = false;
     int modeIndex = 0;
-    
+
     // loop over ImgOptions in preferred order
     while (!decided) {
-      
+
       // get the current mode, or AUTO if we've exhausted the list of modes
       ImgMode mode = modeIndex >= imgModes.length ? ImgMode.AUTO : imgModes[modeIndex++];
-      
+
       if (mode.equals(ImgMode.AUTO)) {
         if (!fitsInMemory) tmpFactory = new SCIFIOCellImgFactory<T>();
         else if (datasetSize < maxSize) tmpFactory = new ArrayImgFactory<T>();
@@ -120,7 +120,7 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
         // FIXME: no CellImgFactory right now.. isn't guaranteed to handle all images well (e.g. RGB)
 //        else if (planeSize < maxSize) tmpFactory = new PlanarImgFactory<T>();
 //        else tmpFactory = new CellImgFactory<T>();
-        
+
         decided = true;
       }
       else if (mode.equals(ImgMode.ARRAY) && datasetSize < maxSize && fitsInMemory) {
@@ -136,7 +136,7 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 //        if (fitsInMemory) tmpFactory = new CellImgFactory<T>();
 //        else tmpFactory = new SCIFIOCellImgFactory<T>();
         tmpFactory = new SCIFIOCellImgFactory<T>();
-        
+
         decided = true;
       }
     }

@@ -65,24 +65,24 @@ public enum CompressionType implements CodedEnum {
   J2K(10, "JPEG-2000"),
   J2K_LOSSY(11, "JPEG-2000 Lossy"),
   JPEG(12, "JPEG");
-  
+
   /** Code for the compression. */
   private int code;
-  
+
   /** The compression used. */
   private String compression;
-  
+
   /** Map used to retrieve the compression type corresponding to the code. */
   private static final Map<Integer, CompressionType> lookup =
     new HashMap<Integer, CompressionType>();
-  
+
   /** Reverse lookup of code to compression type enumerate value. */
   static {
     for(CompressionType v : EnumSet.allOf(CompressionType.class)) {
       lookup.put(v.getCode(), v);
     }
   }
-  
+
   /**
    * Retrieves the compression by reverse lookup of its "code".
    * @param code The code to look up.
@@ -93,11 +93,11 @@ public enum CompressionType implements CodedEnum {
     CompressionType toReturn = lookup.get(code);
     if (toReturn == null) {
       throw new EnumException("Unable to find CompressionType with code: " +
-      		""+code);
+          ""+code);
     }
     return toReturn;
   }
-  
+
   /**
    * Default constructor.
    * @param code Integer "code" for the IFD type.
@@ -107,7 +107,7 @@ public enum CompressionType implements CodedEnum {
     this.code = code;
     this.compression = compression;
   }
-  
+
   /**
    * Implemented as specified by the {@link CodedEnum} I/F.
    * @see CodedEnum#getCode()
@@ -123,5 +123,5 @@ public enum CompressionType implements CodedEnum {
   public String getCompression() {
     return compression;
   }
-  
+
 }

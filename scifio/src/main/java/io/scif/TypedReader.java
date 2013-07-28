@@ -98,7 +98,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>> ex
    */
   P openThumbPlane(int imageIndex, int planeIndex)
     throws FormatException, IOException;
-  
+
   /**
    * Generic-parameterized {@code setMetadata} method, using
    * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
@@ -112,7 +112,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>> ex
    * @see io.scif.Reader#getMetadata()
    */
   M getMetadata();
-  
+
   /**
    * Generic-parameterized {@code readPlane} method, using
    * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
@@ -136,12 +136,12 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>> ex
    */
   P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
     int w, int h, int scanlinePad, P plane) throws IOException;
-  
+
   /*
    * @see io.scif.Reader#createPlane(int, int, int, int)
    */
   P createPlane(int xOffset, int yOffset, int xLength, int yLength);
-  
+
   /**
    * Returns the class of {@code Planes} associated with this {@code Reader}.
    * @return

@@ -80,11 +80,11 @@ public class URLHandle extends StreamHandle {
   public URLHandle() {
     super();
   }
-  
+
   public URLHandle(Context context) {
     super(context);
   }
-  
+
   /**
    * Constructs a new URLHandle using the given URL.
    */
@@ -92,18 +92,18 @@ public class URLHandle extends StreamHandle {
     super(context);
     setURL(url);
   }
-  
+
   // -- URLHandle API --
-  
+
   /**
    * Initializes this URLHandle with the provided url.
-   * @throws IOException 
+   * @throws IOException
    */
   public void setURL(String url) throws IOException {
     if (!isConstructable(url)) {
       throw new HandleException(url + " is not a valid url.");
     }
-    
+
     if (!url.startsWith("http") && !url.startsWith("file:")) {
       url = "http://" + url;
     }
@@ -122,9 +122,9 @@ public class URLHandle extends StreamHandle {
     }
     else super.seek(pos);
   }
-  
+
   // -- IStreamAccess API methods --
-  
+
   /* @see IStreamAccess#isConstructable(String id) */
   public boolean isConstructable(String id) throws IOException {
     return id.startsWith("http:") || id.startsWith("file:");

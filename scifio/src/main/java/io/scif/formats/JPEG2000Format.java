@@ -78,7 +78,7 @@ import org.scijava.plugin.Plugin;
 public class JPEG2000Format extends AbstractFormat {
 
   // -- Format API methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -92,9 +92,9 @@ public class JPEG2000Format extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[]{"jp2", "j2k", "jpf"};
   }
-  
+
   // -- Nested Classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -115,7 +115,7 @@ public class JPEG2000Format extends AbstractFormat {
     private int[][] lut;
     byte[][] byteLut;
     short[][] shortLut;
-    
+
     // -- JPEG2000Metadata getters and setters --
 
     public long getPixelsOffset() {
@@ -162,9 +162,9 @@ public class JPEG2000Format extends AbstractFormat {
     public void setLut(int[][] lut) {
       this.lut = lut;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
@@ -177,7 +177,7 @@ public class JPEG2000Format extends AbstractFormat {
       iMeta.setInterleaved(true);
       iMeta.setIndexed(!iMeta.isRGB() && getLut() != null);
       iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
-      
+
 
       // New core metadata now that we know how many sub-resolutions we have.
       if (getResolutionLevels() != null) {
@@ -193,12 +193,12 @@ public class JPEG2000Format extends AbstractFormat {
         }
       }
     }
-    
+
     @Override
     public int getImageCount() {
       return 1;
     }
-    
+
     @Override
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -213,13 +213,13 @@ public class JPEG2000Format extends AbstractFormat {
       }
     }
     // -- HasColorTable API Methods --
-    
+
     /*
      * @see io.scif.HasColorTable#getColorTable()
      */
     public ColorTable getColorTable(int imageIndex, int planeIndex) {
       if (lut == null) return null;
-      
+
       if (FormatTools.getBytesPerPixel(getPixelType(0)) == 1) {
         if (byteLut == null) {
           byteLut = new byte[lut.length][lut[0].length];
@@ -240,29 +240,29 @@ public class JPEG2000Format extends AbstractFormat {
             }
           }
         }
-        
+
         return new ColorTable16(shortLut);
       }
-      
+
       return null;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Checker extends AbstractChecker {
-    
+
     // -- Constructor --
-    
+
     public Checker() {
       suffixSufficient = false;
       suffixNecessary = false;
     }
-    
+
     // -- Checker API methods --
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
       final int blockLen = 40;
@@ -288,7 +288,7 @@ public class JPEG2000Format extends AbstractFormat {
    *
    */
   public static class Parser extends AbstractParser<Metadata> {
-    
+
     // -- Fields --
 
     /** Offset to first contiguous codestream. */
@@ -326,18 +326,18 @@ public class JPEG2000Format extends AbstractFormat {
 
     /** List of comments stored in the file.*/
     private ArrayList<String> comments;
-    
+
     // -- JPEG2000Parse methods --
-    
+
     public void parse(RandomAccessInputStream stream, Metadata meta, long maximumReadOffset)
       throws IOException, FormatException
     {
-      
+
       meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
-      
+
       int sizeX, sizeY, sizeC, pixelType;
-      
+
       in = stream;
       this.maximumReadOffset = maximumReadOffset;
       comments = new ArrayList<String>();
@@ -352,14 +352,14 @@ public class JPEG2000Format extends AbstractFormat {
       }
 
       if (isRawCodestream()) {
-        LOGGER.info("Codestream is raw, using codestream dimensions.");
+        log().info("Codestream is raw, using codestream dimensions.");
         sizeX = getCodestreamSizeX();
         sizeY = getCodestreamSizeY();
         sizeC = getCodestreamSizeC();
         pixelType = getCodestreamPixelType();
       }
       else {
-        LOGGER.info("Codestream is JP2 boxed, using header dimensions.");
+        log().info("Codestream is JP2 boxed, using header dimensions.");
         sizeX = getHeaderSizeX();
         sizeY = getHeaderSizeY();
         sizeC = getHeaderSizeC();
@@ -369,9 +369,9 @@ public class JPEG2000Format extends AbstractFormat {
       iMeta.setAxisLength(Axes.Y, sizeY);
       iMeta.setAxisLength(Axes.CHANNEL, sizeC);
       iMeta.setPixelType(pixelType);
-      
+
       meta.setPixelsOffset(getCodestreamOffset());
-      
+
       iMeta.setLittleEndian(false);
 
       ArrayList<String> comments = getComments();
@@ -389,7 +389,7 @@ public class JPEG2000Format extends AbstractFormat {
         }
       }
     }
-  
+
   // -- Parser API Methods --
 
   /*
@@ -401,7 +401,7 @@ public class JPEG2000Format extends AbstractFormat {
   {
     parse(stream, meta, stream.length());
   }
-    
+
     /** Retrieves the offset to the first contiguous codestream. */
     public long getCodestreamOffset() {
       return codestreamOffset;
@@ -419,7 +419,7 @@ public class JPEG2000Format extends AbstractFormat {
     private void parseBoxes(Metadata meta) throws IOException {
       long originalPos = in.getFilePointer(), nextPos = 0;
       long pos = originalPos;
-      LOGGER.trace("Parsing JPEG 2000 boxes at {}", pos);
+      log().trace("Parsing JPEG 2000 boxes at " + pos);
       int length = 0, boxCode;
       JPEG2000BoxType boxType;
 
@@ -429,7 +429,7 @@ public class JPEG2000Format extends AbstractFormat {
         boxCode = in.readInt();
         boxType = JPEG2000BoxType.get(boxCode);
         if (boxType == JPEG2000BoxType.SIGNATURE_WRONG_ENDIANNESS) {
-          LOGGER.trace("Swapping endianness during box parsing.");
+          log().trace("Swapping endianness during box parsing.");
           in.order(!in.isLittleEndian());
           length = DataTools.swap(length);
         }
@@ -438,12 +438,12 @@ public class JPEG2000Format extends AbstractFormat {
           length -= 8;
         }
         if (boxType == null) {
-          LOGGER.warn("Unknown JPEG 2000 box 0x{} at {}",
-              Integer.toHexString(boxCode), pos);
+          log().warn("Unknown JPEG 2000 box 0x" +
+            Integer.toHexString(boxCode) + " at " + pos);
           if (pos == originalPos) {
             in.seek(originalPos);
             if (JPEG2000SegmentMarker.get(in.readUnsignedShort()) != null) {
-              LOGGER.info("File is a raw codestream not a JP2.");
+              log().info("File is a raw codestream not a JP2.");
               isRawCodestream = true;
               in.seek(originalPos);
               parseContiguousCodestream(meta, in.length());
@@ -451,14 +451,15 @@ public class JPEG2000Format extends AbstractFormat {
           }
         }
         else {
-          LOGGER.trace("Found JPEG 2000 '{}' box at {}", boxType.getName(), pos);
+          log().trace("Found JPEG 2000 '" +
+            boxType.getName() + "' box at " + pos);
           switch (boxType) {
             case CONTIGUOUS_CODESTREAM: {
               try {
                 parseContiguousCodestream(meta, length == 0 ? in.length() : length);
               }
               catch (Exception e) {
-                LOGGER.warn("Could not parse contiguous codestream.", e);
+                log().warn("Could not parse contiguous codestream.", e);
               }
               break;
             }
@@ -498,7 +499,7 @@ public class JPEG2000Format extends AbstractFormat {
                   }
                 }
               }
-              
+
               meta.setLut(lut);
 
               break;
@@ -506,10 +507,10 @@ public class JPEG2000Format extends AbstractFormat {
         }
         // Exit or seek to the next metadata box
         if (nextPos < 0 || nextPos >= maximumReadOffset || length == 0) {
-          LOGGER.trace("Exiting box parser loop.");
+          log().trace("Exiting box parser loop.");
           break;
         }
-        LOGGER.trace("Seeking to next box at {}", nextPos);
+        log().trace("Seeking to next box at " + nextPos);
         in.seek(nextPos);
       }
     }
@@ -527,8 +528,8 @@ public class JPEG2000Format extends AbstractFormat {
       JPEG2000SegmentMarker segmentMarker;
       int segmentMarkerCode = 0, segmentLength = 0;
       long pos = in.getFilePointer(), nextPos = 0;
-      LOGGER.trace("Parsing JPEG 2000 contiguous codestream of length {} at {}",
-          length, pos);
+      log().trace("Parsing JPEG 2000 contiguous codestream of length " +
+        length + " at " + pos);
       long maximumReadOffset = pos + length;
       boolean terminate = false;
       while (pos < maximumReadOffset && !terminate) {
@@ -536,7 +537,7 @@ public class JPEG2000Format extends AbstractFormat {
         segmentMarkerCode = in.readUnsignedShort();
         segmentMarker = JPEG2000SegmentMarker.get(segmentMarkerCode);
         if (segmentMarker == JPEG2000SegmentMarker.SOC_WRONG_ENDIANNESS) {
-          LOGGER.trace("Swapping endianness during segment marker parsing.");
+          log().trace("Swapping endianness during segment marker parsing.");
           in.order(!in.isLittleEndian());
           segmentMarkerCode = JPEG2000SegmentMarker.SOC.getCode();
           segmentMarker = JPEG2000SegmentMarker.SOC;
@@ -555,12 +556,12 @@ public class JPEG2000Format extends AbstractFormat {
         }
         nextPos = pos + segmentLength + 2;
         if (segmentMarker == null) {
-          LOGGER.warn("Unknown JPEG 2000 segment marker 0x{} at {}",
-              Integer.toHexString(segmentMarkerCode), pos);
+          log().warn("Unknown JPEG 2000 segment marker 0x" +
+            Integer.toHexString(segmentMarkerCode) + " at " + pos);
         }
         else {
-          if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(String.format(
+          if (log().isTrace()) {
+            log().trace(String.format(
                 "Found JPEG 2000 segment marker '%s' of length %d at %d",
                 segmentMarker.getName(), segmentLength, pos));
           }
@@ -575,11 +576,11 @@ public class JPEG2000Format extends AbstractFormat {
               //  * Capability (uint16)
               in.skipBytes(2);
               codestreamSizeX = in.readInt();
-              LOGGER.trace("Read reference grid width {} at {}", codestreamSizeX,
-                  in.getFilePointer());
+              log().trace("Read reference grid width " +
+                codestreamSizeX + " at " + in.getFilePointer());
               codestreamSizeY = in.readInt();
-              LOGGER.trace("Read reference grid height {} at {}", codestreamSizeY,
-                  in.getFilePointer());
+              log().trace("Read reference grid height " +
+                codestreamSizeY + " at " + in.getFilePointer());
               // Skipping:
               //  * Horizontal image offset (uint32)
               //  * Vertical image offset (uint32)
@@ -589,13 +590,13 @@ public class JPEG2000Format extends AbstractFormat {
               //  * Vertical tile offset (uint32)
               in.skipBytes(24);
               codestreamSizeC = in.readShort();
-              LOGGER.trace("Read total components {} at {}",
-                  codestreamSizeC, in.getFilePointer());
+              log().trace("Read total components " +
+                codestreamSizeC + " at " + in.getFilePointer());
               int type = in.read();
               in.skipBytes(3);
               codestreamPixelType = convertPixelType(type);
-              LOGGER.trace("Read codestream pixel type {} at {}",
-                  codestreamPixelType, in.getFilePointer());
+              log().trace("Read codestream pixel type " +
+                codestreamPixelType + " at " + in.getFilePointer());
               break;
             }
             case COD: {
@@ -606,8 +607,8 @@ public class JPEG2000Format extends AbstractFormat {
               //  * Multiple component transform (uint8)
               in.skipBytes(5);
               meta.setResolutionLevels(in.readUnsignedByte());
-              LOGGER.trace("Found number of resolution levels {} at {} ",
-                  meta.getResolutionLevels(), in.getFilePointer());
+              log().trace("Found number of resolution levels " +
+                meta.getResolutionLevels() + " at " + in.getFilePointer());
               break;
             }
             case COM:
@@ -619,10 +620,10 @@ public class JPEG2000Format extends AbstractFormat {
         }
         // Exit or seek to the next metadata box
         if (nextPos < 0 || nextPos >= maximumReadOffset || terminate) {
-          LOGGER.trace("Exiting segment marker parse loop.");
+          log().trace("Exiting segment marker parse loop.");
           break;
         }
-        LOGGER.trace("Seeking to next segment marker at {}", nextPos);
+        log().trace("Seeking to next segment marker at " + nextPos);
         in.seek(nextPos);
       }
     }
@@ -716,7 +717,7 @@ public class JPEG2000Format extends AbstractFormat {
       return FormatTools.UINT8;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -724,13 +725,13 @@ public class JPEG2000Format extends AbstractFormat {
   public static class Reader extends ByteArrayReader<Metadata> {
 
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
-    
+
     // -- Reader API Methods --
-    
+
     /*
      * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
@@ -740,10 +741,10 @@ public class JPEG2000Format extends AbstractFormat {
     {
       byte[] buf = plane.getBytes();
       Metadata meta = getMetadata();
-      
+
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
 
-      if (meta.getLastIndex().getImageIndex() == imageIndex && 
+      if (meta.getLastIndex().getImageIndex() == imageIndex &&
           meta.getLastIndex().getPlaneIndex() == planeIndex && meta.getLastIndexBytes() != null) {
         RandomAccessInputStream s = new RandomAccessInputStream(getContext(), meta.getLastIndexBytes());
         readPlane(s, imageIndex, x, y, w, h, plane);
@@ -772,9 +773,9 @@ public class JPEG2000Format extends AbstractFormat {
       meta.setLastIndex(imageIndex, planeIndex);
       return plane;
     }
-    
+
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -782,16 +783,16 @@ public class JPEG2000Format extends AbstractFormat {
   public static class Writer extends AbstractWriter<Metadata> {
 
     // -- Constructor --
-    
+
     public Writer() {
-      compressionTypes = new String[] {CompressionType.J2K_LOSSY.getCompression(), 
+      compressionTypes = new String[] {CompressionType.J2K_LOSSY.getCompression(),
           CompressionType.J2K.getCompression()};
       //The default codec options
       options = JPEG2000CodecOptions.getDefaultOptions();
     }
-    
+
     // -- Writer API Methods --
-    
+
     /*
      * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
      */
@@ -800,7 +801,7 @@ public class JPEG2000Format extends AbstractFormat {
     {
       byte[] buf = plane.getBytes();
       checkParams(imageIndex, planeIndex, buf, x, y, w, h);
-      
+
       /*
       if (!isFullPlane(x, y, w, h)) {
         throw new FormatException(
@@ -810,7 +811,7 @@ public class JPEG2000Format extends AbstractFormat {
       //MetadataRetrieve retrieve = getMetadataRetrieve();
       //int width = retrieve.getPixelsSizeX(series).getValue().intValue();
       //int height = retrieve.getPixelsSizeY(series).getValue().intValue();
-     
+
       out.write(compressBuffer(imageIndex, planeIndex, buf, x, y, w, h));
     }
 
@@ -843,58 +844,58 @@ public class JPEG2000Format extends AbstractFormat {
       options.bitsPerSample = bytesPerPixel * 8;
       options.littleEndian = littleEndian;
       options.interleaved = interleaved;
-      options.lossless = compression == null || 
+      options.lossless = compression == null ||
       compression.equals(CompressionType.J2K.getCompression());
       options.colorModel = getColorModel();
-      
+
       JPEG2000Codec codec = new JPEG2000Codec();
       codec.setContext(getContext());
       return codec.compress(buf, options);
     }
-      
+
     /**
-     * Overridden to indicate that stacks are not supported. 
-     * @see loci.formats.IFormatWriter#canDoStacks() 
+     * Overridden to indicate that stacks are not supported.
+     * @see loci.formats.IFormatWriter#canDoStacks()
      */
     public boolean canDoStacks() { return false; }
 
     /**
      * Overridden to return the formats supported by the writer.
-     * @see loci.formats.IFormatWriter#getPixelTypes(String) 
+     * @see loci.formats.IFormatWriter#getPixelTypes(String)
      */
     public int[] getPixelTypes(String codec) {
       return new int[] {FormatTools.INT8, FormatTools.UINT8, FormatTools.INT16,
         FormatTools.UINT16, FormatTools.INT32, FormatTools.UINT32};
     }
   }
-  
+
   // -- Helper class --
-  
+
   public static class Index {
     private int imageIndex;
     private int planeIndex;
-    
+
     public Index() {
       this(-1, -1);
     }
-    
+
     public Index(int image, int plane) {
       imageIndex = image;
       planeIndex = plane;
     }
-    
+
     public void setImageIndex(int image) {
       imageIndex = image;
     }
-    
+
     public void setPlaneIndex(int plane) {
       planeIndex = plane;
     }
-    
+
     public int getImageIndex() {
       return imageIndex;
     }
-    
+
     public int getPlaneIndex() {
       return planeIndex;
     }

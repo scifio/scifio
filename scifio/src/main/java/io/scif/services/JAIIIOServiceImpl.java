@@ -92,7 +92,7 @@ public class JAIIIOServiceImpl extends AbstractService
     ImageOutputStream ios = ImageIO.createImageOutputStream(out);
 
     IIORegistry registry = IIORegistry.getDefaultInstance();
-    Iterator<J2KImageWriterSpi> iter = 
+    Iterator<J2KImageWriterSpi> iter =
       ServiceRegistry.lookupProviders(J2KImageWriterSpi.class);
     registry.registerServiceProviders(iter);
     J2KImageWriterSpi spi =

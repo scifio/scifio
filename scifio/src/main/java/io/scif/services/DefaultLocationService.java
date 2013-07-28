@@ -40,6 +40,7 @@ import io.scif.io.IRandomAccess;
 import io.scif.io.IStreamAccess;
 import io.scif.io.Location;
 import io.scif.io.NIOFileHandle;
+import io.scif.io.NIOService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
@@ -65,17 +67,23 @@ import org.slf4j.LoggerFactory;
  */
 @Plugin(type=LocationService.class)
 public class DefaultLocationService extends AbstractService implements LocationService {
-  
+
   private static final Logger LOGGER = LoggerFactory.getLogger(Location.class);
- 
-  // -- Static fields --
+
+  // -- Fields --
+
+  @Parameter
+  private LogService log;
+
+  @Parameter
+  private NIOService nioService;
 
   /** Map from given filenames to actual filenames. */
   private HashMap<String, Object> idMap =
     new HashMap<String, Object>();
 
   private volatile boolean cacheListings = false;
-  
+
   // By default, cache for one hour.
   private volatile long cacheNanos = 60L * 60L * 1000L * 1000L * 1000L;
 
@@ -89,7 +97,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
   }
   private ConcurrentHashMap<String, ListingsResult> fileListings =
     new ConcurrentHashMap<String, ListingsResult>();
-  
+
   // -- Location API methods --
 
   /*
@@ -146,7 +154,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
     if (id == null) return;
     if (filename == null) getIdMap().remove(id);
     else getIdMap().put(id, filename);
-    LOGGER.debug("Location.mapId: {} -> {}", id, filename);
+    log.debug("Location.mapId: " + id + " -> " + filename);
   }
 
   /*
@@ -157,7 +165,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
     if (id == null) return;
     if (ira == null) getIdMap().remove(id);
     else getIdMap().put(id, ira);
-    LOGGER.debug("Location.mapFile: {} -> {}", id, ira);
+    log.debug("Location.mapFile: " + id + " -> " + ira);
   }
 
   /*
@@ -220,19 +228,19 @@ public class DefaultLocationService extends AbstractService implements LocationS
   public IRandomAccess getHandle(String id, boolean writable,
     boolean allowArchiveHandles) throws IOException
   {
-    LOGGER.trace("getHandle(id = {}, writable = {})", id, writable);
+    log.trace("getHandle(id = " + id + ", writable = " + writable + ")");
     IRandomAccess handle = getMappedFile(id);
     if (handle == null) {
-      LOGGER.trace("no handle was mapped for this ID");
+      log.trace("no handle was mapped for this ID");
       String mapId = getMappedId(id);
 
-      final List<PluginInfo<IStreamAccess>> streamInfos = 
+      final List<PluginInfo<IStreamAccess>> streamInfos =
           getContext().getPluginIndex().getPlugins(IStreamAccess.class);
-     
+
       if (allowArchiveHandles) {
         for (final PluginInfo<IStreamAccess> info : streamInfos) {
-        	handle = 
-        			getContext().getService(PluginService.class).createInstance(info);
+          handle =
+              getContext().getService(PluginService.class).createInstance(info);
           if (((IStreamAccess)handle).isConstructable(id)) {
             ((IStreamAccess)handle).setFile(id);
             break;
@@ -240,12 +248,12 @@ public class DefaultLocationService extends AbstractService implements LocationS
           handle = null;
         }
       }
-      
+
       if (handle == null)
-        handle = new NIOFileHandle(mapId, writable ? "rw" : "r");
-      
+        handle = new NIOFileHandle(nioService, mapId, writable ? "rw" : "r");
+
     }
-    LOGGER.trace("Location.getHandle: {} -> {}", id, handle);
+    log.trace("Location.getHandle: " + id + " -> " + handle);
     return handle;
   }
 
@@ -263,7 +271,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
     // throw IOException if something goes wrong.
     getHandle(id).close();
   }
-  
+
   /*
    * @see io.scif.services.LocationService#getCachedListing(java.lang.String)
    */
@@ -275,7 +283,7 @@ public class DefaultLocationService extends AbstractService implements LocationS
     }
     return listingsResult == null ? null : listingsResult.listing;
   }
-  
+
   /*
    * @see io.scif.services.LocationService#
    * putCachedListing(java.lang.String, java.lang.String[])

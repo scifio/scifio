@@ -148,7 +148,7 @@ public class ZipHandle extends StreamHandle {
   /* @see IStreamAccess#setFile(String) */
   public void setFile(String file, ZipEntry entry) throws IOException {
     super.setFile(file);
-    
+
     setLength(-1);
 
     in = openStream(file);
@@ -200,9 +200,9 @@ public class ZipHandle extends StreamHandle {
     setStream(new DataInputStream(new BufferedInputStream(
         zip, RandomAccessInputStream.MAX_OVERHEAD)));
     getStream().mark(RandomAccessInputStream.MAX_OVERHEAD);
-    
+
     seekToEntry();
-    
+
     if (resetStream) resetStream();
   }
 
@@ -227,7 +227,7 @@ public class ZipHandle extends StreamHandle {
    */
   private void seekToEntry() throws IOException {
     resetStream = false;
-    
+
     while (true) {
       ZipEntry entry = zip.getNextEntry();
       if (entryName == null || entryName.equals(entry.getName())) {
@@ -257,9 +257,9 @@ public class ZipHandle extends StreamHandle {
       }
       length += skipped;
     }
-    
+
     setLength(length);
-    
+
     resetStream = true;
   }
 

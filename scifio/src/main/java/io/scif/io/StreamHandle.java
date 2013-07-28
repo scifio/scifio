@@ -88,7 +88,7 @@ public abstract class StreamHandle extends SortablePlugin implements IStreamAcce
   private ByteOrder order;
 
   // -- Constructor --
-  
+
   public StreamHandle() {
     this(null);
   }
@@ -110,7 +110,7 @@ public abstract class StreamHandle extends SortablePlugin implements IStreamAcce
   }
 
   // -- Field getters/setters --
-  
+
   public String getFile() {
     return file;
   }
@@ -154,14 +154,14 @@ public abstract class StreamHandle extends SortablePlugin implements IStreamAcce
   public void setMark(long mark) {
     this.mark = mark;
   }
-  
+
   // -- IStreamAccess API methods --
-  
+
   /* @see IStreamAccess#setFile(String) */
   public void setFile(String file) throws IOException {
     this.file = file;
   }
-  
+
   // -- IRandomAccess API methods --
 
   /* @see IRandomAccess#close() */

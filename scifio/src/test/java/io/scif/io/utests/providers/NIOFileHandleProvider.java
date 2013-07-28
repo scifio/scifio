@@ -38,13 +38,14 @@ package io.scif.io.utests.providers;
 
 import io.scif.io.IRandomAccess;
 import io.scif.io.NIOFileHandle;
+import io.scif.io.NIOService;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-
+import org.scijava.Context;
 
 /**
  * Implementation of IRandomAccessProvider that produces instances of
@@ -68,7 +69,9 @@ class NIOFileHandleProvider implements IRandomAccessProvider {
     } finally {
       stream.close();
     }
-    return new NIOFileHandle(pageFile, mode, bufferSize);
+    Context context = new Context(NIOService.class);
+    NIOService nioService = context.getService(NIOService.class);
+    return new NIOFileHandle(nioService, pageFile, mode, bufferSize);
   }
 
 }

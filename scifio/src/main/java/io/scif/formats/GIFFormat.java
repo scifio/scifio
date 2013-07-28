@@ -81,17 +81,17 @@ public class GIFFormat extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[]{"gif"};
   }
-  
+
   // -- Nested Classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata implements HasColorTable {
-    
+
     // -- Fields --
-    
+
     private ColorTable8 cachedTable;
 
     /** Global color table. */
@@ -129,7 +129,7 @@ public class GIFFormat extends AbstractFormat {
 
     private Vector<byte[]> images;
     private Vector<int[]> colorTables;
-    
+
     // -- GIFMetadata getters and setters --
 
     public int[] getGct() {
@@ -283,19 +283,19 @@ public class GIFFormat extends AbstractFormat {
     public void setColorTables(Vector<int[]> colorTables) {
       this.colorTables = colorTables;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
-      
+
       iMeta.setAxisLength(Axes.CHANNEL, 1);
       iMeta.setAxisLength(Axes.TIME, iMeta.getPlaneCount());
       iMeta.setAxisLength(Axes.Z, 1);
-      
+
       iMeta.setRGB(false);
       iMeta.setLittleEndian(true);
       iMeta.setInterleaved(true);
@@ -305,7 +305,7 @@ public class GIFFormat extends AbstractFormat {
       iMeta.setPixelType(FormatTools.UINT8);
       iMeta.setBitsPerPixel(8);
     }
-    
+
     @Override
     public void close(boolean fileOnly) throws IOException {
       int length = dBlock.length;
@@ -320,11 +320,11 @@ public class GIFFormat extends AbstractFormat {
         images = null;
         colorTables = null;
         dBlock = new byte[length];
-      } 
+      }
     }
-    
+
     // -- HasColorTable API Methods --
-    
+
     /*
      * @see io.scif.HasColorTable#getColorTable()
      */
@@ -340,20 +340,20 @@ public class GIFFormat extends AbstractFormat {
         cachedTable = new ColorTable8(table);
 
       }
-      
+
       return cachedTable;
     }
-    
+
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Checker extends AbstractChecker {
-    
+
     // -- Checker API methods --
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream in) throws IOException {
       final int blockLen = GIF_MAGIC_STRING.length();
@@ -361,7 +361,7 @@ public class GIFFormat extends AbstractFormat {
       return in.readString(blockLen).startsWith(GIF_MAGIC_STRING);
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -369,22 +369,22 @@ public class GIFFormat extends AbstractFormat {
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- Constants --
-    
+
     private static final int IMAGE_SEPARATOR = 0x2c;
     private static final int EXTENSION = 0x21;
     private static final int END = 0x3b;
-    private static final int GRAPHICS = 0xf9; 
-    
+    private static final int GRAPHICS = 0xf9;
+
     /** Maximum buffer size. */
-    private static final int MAX_STACK_SIZE = 4096; 
-    
+    private static final int MAX_STACK_SIZE = 4096;
+
     // -- Parser API Methods --
 
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
     {
-      LOGGER.info("Verifying GIF format");
+      log().info("Verifying GIF format");
 
       stream.order(true);
       meta.setImages(new Vector<byte[]>());
@@ -396,11 +396,11 @@ public class GIFFormat extends AbstractFormat {
         throw new FormatException("Not a valid GIF file.");
       }
 
-      LOGGER.info("Reading dimensions");
+      log().info("Reading dimensions");
 
       meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
-      
+
       iMeta.setAxisLength(Axes.X, stream.readShort());
       iMeta.setAxisLength(Axes.Y, stream.readShort());
 
@@ -414,7 +414,7 @@ public class GIFFormat extends AbstractFormat {
         meta.setGct(readLut(gctSize));
       }
 
-      LOGGER.info("Reading data blocks");
+      log().info("Reading data blocks");
 
       boolean done = false;
       while (!done) {
@@ -448,7 +448,7 @@ public class GIFFormat extends AbstractFormat {
             break;
         }
       }
-      
+
       meta.setAct(meta.getColorTables().get(0));
     }
 
@@ -474,7 +474,7 @@ public class GIFFormat extends AbstractFormat {
       metadata.setAct(lctFlag ? readLut(lctSize) : metadata.getGct());
 
       if (metadata.getAct() == null) throw new FormatException("Color table not found.");
-      
+
       int save = 0;
 
       if (metadata.isTransparency()) {
@@ -490,17 +490,17 @@ public class GIFFormat extends AbstractFormat {
       if (metadata.isTransparency()) metadata.getAct()[metadata.getTransIndex()] = save;
 
       metadata.setLastDispose(metadata.getDispose());
-    } 
+    }
 
     /** Decodes LZW image data into a pixel array.  Adapted from ImageMagick. */
     private void decodeImageData() throws IOException {
       int nullCode = -1;
       int npix = metadata.getIw() * metadata.getIh();
-      
+
       byte[] pixels = metadata.getPixels();
 
       if (pixels == null || pixels.length < npix) pixels = new byte[npix];
-      
+
       short[] prefix = metadata.getPrefix();
       byte[] suffix = metadata.getSuffix();
       byte[] pixelStack = metadata.getPixelStack();
@@ -508,7 +508,7 @@ public class GIFFormat extends AbstractFormat {
       if (prefix == null) prefix = new short[MAX_STACK_SIZE];
       if (suffix == null) suffix = new byte[MAX_STACK_SIZE];
       if (pixelStack == null) pixelStack = new byte[MAX_STACK_SIZE + 1];
-      
+
       metadata.setPrefix(prefix);
       metadata.setSuffix(suffix);
       metadata.setPixelStack(pixelStack);
@@ -527,7 +527,7 @@ public class GIFFormat extends AbstractFormat {
       for (code=0; code<clear; code++) {
         prefix[code] = 0;
         suffix[code] = (byte) code;
-      } 
+      }
 
       // decode GIF pixel stream
 
@@ -607,7 +607,7 @@ public class GIFFormat extends AbstractFormat {
       for (i=pi; i<npix; i++) pixels[i] = 0;
       metadata.setPixels(pixels);
       setPixels();
-    }  
+    }
 
     private void setPixels() {
       // expose destination image's pixels as an int array
@@ -661,7 +661,7 @@ public class GIFFormat extends AbstractFormat {
           int k = line * metadata.getAxisLength(0, Axes.X);
           int dx = k + metadata.getIx(); // start of line in dest
           int dlim = dx + metadata.getIw(); // end of dest line
-          if ((k + metadata.getAxisLength(0, Axes.X)) < dlim) 
+          if ((k + metadata.getAxisLength(0, Axes.X)) < dlim)
             dlim = k + metadata.getAxisLength(0, Axes.X);
           int sx = i * metadata.getIw(); // start of line in source
           while (dx < dlim) {
@@ -673,7 +673,7 @@ public class GIFFormat extends AbstractFormat {
       }
       metadata.getColorTables().add(metadata.getAct());
       metadata.getImages().add(dest);
-    } 
+    }
 
     /** Reads the next variable length block. */
     private int readBlock() throws IOException {
@@ -691,12 +691,12 @@ public class GIFFormat extends AbstractFormat {
           }
         }
         catch (IOException e) {
-          LOGGER.trace("Truncated block", e);
+          log().trace("Truncated block", e);
         }
       }
       return n;
-    } 
-    
+    }
+
     /** Read a color lookup table of the specified size. */
     private int[] readLut(int size) throws FormatException {
       int nbytes = 3 * size;
@@ -718,23 +718,23 @@ public class GIFFormat extends AbstractFormat {
         lut[i] = 0xff000000 | (r << 16) | (g << 8) | b;
       }
       return lut;
-    } 
+    }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Constructor --
 
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
-    
+
     // -- Reader API Methods --
-    
+
     /*
      * @see io.scif.Reader#openPlane(int, int, Plane, int, int, int, int)
      */

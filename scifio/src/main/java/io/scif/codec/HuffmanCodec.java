@@ -43,6 +43,7 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * This class implements Huffman decoding.
@@ -53,7 +54,8 @@ import java.util.HashMap;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class HuffmanCodec extends BaseCodec {
+@Plugin(type = Codec.class)
+public class HuffmanCodec extends AbstractCodec {
 
   // -- Constants --
 
@@ -88,7 +90,7 @@ public class HuffmanCodec extends BaseCodec {
   public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
     throws FormatException, IOException
   {
-    if (in == null) 
+    if (in == null)
       throw new IllegalArgumentException("No data to decompress.");
     if (options == null || !(options instanceof HuffmanCodecOptions)) {
       throw new FormatException("Options must be an instance of " +

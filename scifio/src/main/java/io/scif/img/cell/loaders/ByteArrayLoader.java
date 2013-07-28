@@ -55,10 +55,10 @@ public class ByteArrayLoader extends AbstractArrayLoader< ByteArray >
   @Override
   public void convertBytes(ByteArray data, byte[] bytes, int planesRead) {
     int offset = planesRead * bytes.length;
-    
+
     System.arraycopy(bytes, 0, data.getCurrentStorageArray(), offset, bytes.length);
   }
-  
+
   public ByteArray emptyArray( final int[] dimensions )
   {
     return new ByteArray( countEntities(dimensions) );

@@ -57,10 +57,10 @@ public interface Groupable {
    * in a given dataset.
    */
   int fileGroupOption(String id) throws FormatException, IOException;
-  
+
   /** Returns true if this is a single-file format. */
   boolean isSingleFile(String id) throws FormatException, IOException;
-  
+
   /** Returns true if this format supports multi-file datasets. */
   boolean hasCompanionFiles();
 }

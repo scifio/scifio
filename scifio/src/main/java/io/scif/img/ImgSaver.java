@@ -36,7 +36,7 @@
 
 package io.scif.img;
 
-import io.scif.AbstractHasSCIFIO;
+import io.scif.AbstractSCIFIOComponent;
 import io.scif.ByteArrayPlane;
 import io.scif.DefaultMetadata;
 import io.scif.FormatException;
@@ -62,7 +62,6 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
-
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 
@@ -72,623 +71,623 @@ import org.scijava.app.StatusService;
  * @author Mark Hiner
  * @author Curtis Rueden
  */
-public class ImgSaver extends AbstractHasSCIFIO {
+public class ImgSaver extends AbstractSCIFIOComponent {
 
   // -- Constructors --
-  
+
   public ImgSaver() {
     this(new Context(StatusService.class, InitializeService.class, TranslatorService.class));
   }
-  
+
   public ImgSaver(Context context) {
     setContext(context);
   }
-  
-	// -- ImgSaver methods --
 
-	/**
-	 * see isCompressible(ImgPlus)
-	 */
-	public <T extends RealType<T> & NativeType<T>> boolean isCompressible(
-		final Img<T> img)
-	{
-		return isCompressible(ImgPlus.wrap(img));
-	}
+  // -- ImgSaver methods --
 
-	/**
-	 * Currently there are limits as to what types of Images can be saved. All
-	 * images must ultimately adhere to an, at most, five-dimensional structure
-	 * using the known axes X, Y, Z, Channel and Time. Unknown axes (U) can
-	 * potentially be handled by coercing to the Channel axis. For example, X Y Z
-	 * U C U T would be valid, as would X Y Z U T. But X Y C Z U T would not, as
-	 * the unknown axis can not be compressed with Channel. This method will
-	 * return true if the axes of the provided image can be represented with a
-	 * valid 5D String, and false otherwise.
-	 */
-	public <T extends RealType<T> & NativeType<T>> boolean isCompressible(
-		final ImgPlus<T> img)
-	{
+  /**
+   * see isCompressible(ImgPlus)
+   */
+  public <T extends RealType<T> & NativeType<T>> boolean isCompressible(
+    final Img<T> img)
+  {
+    return isCompressible(ImgPlus.wrap(img));
+  }
 
-		final AxisType[] axes = new AxisType[img.numDimensions()];
-		img.axes(axes);
+  /**
+   * Currently there are limits as to what types of Images can be saved. All
+   * images must ultimately adhere to an, at most, five-dimensional structure
+   * using the known axes X, Y, Z, Channel and Time. Unknown axes (U) can
+   * potentially be handled by coercing to the Channel axis. For example, X Y Z
+   * U C U T would be valid, as would X Y Z U T. But X Y C Z U T would not, as
+   * the unknown axis can not be compressed with Channel. This method will
+   * return true if the axes of the provided image can be represented with a
+   * valid 5D String, and false otherwise.
+   */
+  public <T extends RealType<T> & NativeType<T>> boolean isCompressible(
+    final ImgPlus<T> img)
+  {
 
-		final long[] axisLengths = new long[5];
-		final long[] oldLengths = new long[img.numDimensions()];
+    final AxisType[] axes = new AxisType[img.numDimensions()];
+    img.axes(axes);
 
-		img.dimensions(oldLengths);
+    final long[] axisLengths = new long[5];
+    final long[] oldLengths = new long[img.numDimensions()];
 
-		// true if this img contains an axis that will need to be compressed
-		boolean foundUnknown = false;
+    img.dimensions(oldLengths);
 
-		for (int i = 0; i < axes.length; i++) {
-			final AxisType axis = axes[i];
+    // true if this img contains an axis that will need to be compressed
+    boolean foundUnknown = false;
 
-			switch (axis.getLabel().toUpperCase().charAt(0)) {
-				case 'X':
-				case 'Y':
-				case 'Z':
-				case 'C':
-				case 'T':
-					break;
-				default:
-					if (oldLengths[i] > 1) foundUnknown = true;
-			}
-		}
+    for (int i = 0; i < axes.length; i++) {
+      final AxisType axis = axes[i];
 
-		if (!foundUnknown) return false;
+      switch (axis.getLabel().toUpperCase().charAt(0)) {
+        case 'X':
+        case 'Y':
+        case 'Z':
+        case 'C':
+        case 'T':
+          break;
+        default:
+          if (oldLengths[i] > 1) foundUnknown = true;
+      }
+    }
 
-		// This ImgPlus had unknown axes of size > 1, so we will check to see if
-		// they can be compressed
-		final String dimOrder = guessDimOrder(axes, oldLengths, axisLengths);
+    if (!foundUnknown) return false;
 
-		return (dimOrder != null);
-	}
+    // This ImgPlus had unknown axes of size > 1, so we will check to see if
+    // they can be compressed
+    final String dimOrder = guessDimOrder(axes, oldLengths, axisLengths);
 
-	/**
-	 * saveImg is the entry point for saving an {@link ImgPlus} The goal is to get
-	 * to a {@link Writer} and {@link ImgPlus} which are then passed to
-	 * {@link #writePlanes}. These saveImg signatures facilitate multiple pathways
-	 * to that goal. This method is called when a String id and {@link Img} are
-	 * provided.
-	 * 
-	 * @param <T>
-	 * @param id
-	 * @param img
-	 * @throws ImgIOException
-	 * @throws IncompatibleTypeException
-	 */
-	public <T extends RealType<T> & NativeType<T>> void saveImg(final String id,
-		final Img<T> img) throws ImgIOException, IncompatibleTypeException
-	{
-		saveImg(id, ImgPlus.wrap(img), 0);
-	}
+    return (dimOrder != null);
+  }
 
-	/**
-	 * String id provided. {@link ImgPlus} provided, or wrapped {@link Img} in
-	 * previous saveImg.
-	 * 
-	 * @param <T>
-	 * @param id
-	 * @param img
-	 * @throws ImgIOException
-	 * @throws IncompatibleTypeException
-	 */
-	public <T extends RealType<T> & NativeType<T>> void saveImg(final String id,
-		final ImgPlus<T> img, int imageIndex) throws ImgIOException, IncompatibleTypeException
-	{
-		img.setSource(id);
-		img.setName(new File(id).getName());
-		saveImg(initializeWriter(id, img, imageIndex), img, imageIndex, false);
-	}
+  /**
+   * saveImg is the entry point for saving an {@link ImgPlus} The goal is to get
+   * to a {@link Writer} and {@link ImgPlus} which are then passed to
+   * {@link #writePlanes}. These saveImg signatures facilitate multiple pathways
+   * to that goal. This method is called when a String id and {@link Img} are
+   * provided.
+   * 
+   * @param <T>
+   * @param id
+   * @param img
+   * @throws ImgIOException
+   * @throws IncompatibleTypeException
+   */
+  public <T extends RealType<T> & NativeType<T>> void saveImg(final String id,
+    final Img<T> img) throws ImgIOException, IncompatibleTypeException
+  {
+    saveImg(id, ImgPlus.wrap(img), 0);
+  }
 
-	/**
-	 * {@link Writer} and {@link Img} provided
-	 * 
-	 * @param <T>
-	 * @param w
-	 * @param img
-	 * @throws ImgIOException
-	 * @throws IncompatibleTypeException
-	 */
-	public <T extends RealType<T> & NativeType<T>> void saveImg(
-		final Writer w, final Img<T> img) throws ImgIOException,
-		IncompatibleTypeException
-	{
-		saveImg(w, ImgPlus.wrap(img), 0);
-	}
+  /**
+   * String id provided. {@link ImgPlus} provided, or wrapped {@link Img} in
+   * previous saveImg.
+   * 
+   * @param <T>
+   * @param id
+   * @param img
+   * @throws ImgIOException
+   * @throws IncompatibleTypeException
+   */
+  public <T extends RealType<T> & NativeType<T>> void saveImg(final String id,
+    final ImgPlus<T> img, int imageIndex) throws ImgIOException, IncompatibleTypeException
+  {
+    img.setSource(id);
+    img.setName(new File(id).getName());
+    saveImg(initializeWriter(id, img, imageIndex), img, imageIndex, false);
+  }
 
-	// TODO IFormatHandler needs to be promoted to be able to get the current
-	// file, to get its full path, to provide the ImgPlus
-	// pending that, these two IFormatWriter methods are not guaranteed to be
-	// useful
-	/**
-	 * {@link Writer} provided. {@link ImgPlus} provided, or wrapped
-	 * provided {@link Img}.
-	 * 
-	 * @param <T>
-	 * @param w
-	 * @param img
-	 * @throws ImgIOException
-	 * @throws IncompatibleTypeException
-	 */
-	public <T extends RealType<T> & NativeType<T>> void saveImg(
-		final Writer w, final ImgPlus<T> img, int imageIndex) throws ImgIOException,
-		IncompatibleTypeException
-	{
-		saveImg(w, img, imageIndex, true);
-	}
+  /**
+   * {@link Writer} and {@link Img} provided
+   * 
+   * @param <T>
+   * @param w
+   * @param img
+   * @throws ImgIOException
+   * @throws IncompatibleTypeException
+   */
+  public <T extends RealType<T> & NativeType<T>> void saveImg(
+    final Writer w, final Img<T> img) throws ImgIOException,
+    IncompatibleTypeException
+  {
+    saveImg(w, ImgPlus.wrap(img), 0);
+  }
 
-	// -- Utility methods --
+  // TODO IFormatHandler needs to be promoted to be able to get the current
+  // file, to get its full path, to provide the ImgPlus
+  // pending that, these two IFormatWriter methods are not guaranteed to be
+  // useful
+  /**
+   * {@link Writer} provided. {@link ImgPlus} provided, or wrapped
+   * provided {@link Img}.
+   * 
+   * @param <T>
+   * @param w
+   * @param img
+   * @throws ImgIOException
+   * @throws IncompatibleTypeException
+   */
+  public <T extends RealType<T> & NativeType<T>> void saveImg(
+    final Writer w, final ImgPlus<T> img, int imageIndex) throws ImgIOException,
+    IncompatibleTypeException
+  {
+    saveImg(w, img, imageIndex, true);
+  }
 
-	/**
-	 * The ImgLib axes structure can contain multiple unknown axes. This method
-	 * will determine if the provided dimension order, obtained from an ImgLib
-	 * AxisType array, can be converted to a 5-dimensional sequence compatible
-	 * with SCIFIO, and returns that sequence if it exists and null otherwise.
-	 * 
-	 * @param newLengths - updated to hold the lengths of the newly ordered axes
-	 */
-	public static String guessDimOrder(final AxisType[] axes,
-		final long[] dimLengths, final long[] newLengths)
-	{
-		String oldOrder = "";
-		String newOrder = "";
+  // -- Utility methods --
 
-		// initialize newLengths to be 1 for simpler multiplication logic later
-		for (int i = 0; i < newLengths.length; i++) {
-			newLengths[i] = 1;
-		}
+  /**
+   * The ImgLib axes structure can contain multiple unknown axes. This method
+   * will determine if the provided dimension order, obtained from an ImgLib
+   * AxisType array, can be converted to a 5-dimensional sequence compatible
+   * with SCIFIO, and returns that sequence if it exists and null otherwise.
+   * 
+   * @param newLengths - updated to hold the lengths of the newly ordered axes
+   */
+  public static String guessDimOrder(final AxisType[] axes,
+    final long[] dimLengths, final long[] newLengths)
+  {
+    String oldOrder = "";
+    String newOrder = "";
 
-		// Signifies if the given axis is present in the dimension order,
-		// X=0, Y=1, Z=2, C=3, T=4
-		final boolean[] haveDim = new boolean[5];
+    // initialize newLengths to be 1 for simpler multiplication logic later
+    for (int i = 0; i < newLengths.length; i++) {
+      newLengths[i] = 1;
+    }
 
-		// number of "blocks" of unknown axes, e.g. YUUUZU = 2
-		int contiguousUnknown = 0;
+    // Signifies if the given axis is present in the dimension order,
+    // X=0, Y=1, Z=2, C=3, T=4
+    final boolean[] haveDim = new boolean[5];
 
-		// how many axis slots we have to work with
-		int missingAxisCount = 0;
+    // number of "blocks" of unknown axes, e.g. YUUUZU = 2
+    int contiguousUnknown = 0;
 
-		// flag to determine how many contiguous blocks of unknowns present
-		boolean unknownBlock = false;
+    // how many axis slots we have to work with
+    int missingAxisCount = 0;
 
-		// first pass to determine which axes are missing and how many
-		// unknown blocks are present.
-		// We build oldOrder to iterate over on pass 2, for convenience
-		for (int i = 0; i < axes.length; i++) {
-			switch (axes[i].getLabel().toUpperCase().charAt(0)) {
-				case 'X':
-					oldOrder += "X";
-					haveDim[0] = true;
-					unknownBlock = false;
-					break;
-				case 'Y':
-					oldOrder += "Y";
-					haveDim[1] = true;
-					unknownBlock = false;
-					break;
-				case 'Z':
-					oldOrder += "Z";
-					haveDim[2] = true;
-					unknownBlock = false;
-					break;
-				case 'C':
-					oldOrder += "C";
-					haveDim[3] = true;
-					unknownBlock = false;
-					break;
-				case 'T':
-					oldOrder += "T";
-					haveDim[4] = true;
-					unknownBlock = false;
-					break;
-				default:
-					oldOrder += "U";
+    // flag to determine how many contiguous blocks of unknowns present
+    boolean unknownBlock = false;
 
-					// dimensions of size 1 can be skipped, and only will
-					// be considered in pass 2 if the number of missing axes is
-					// greater than the number of contiguous unknown chunks found
-					if (dimLengths[i] > 1) {
-						if (!unknownBlock) {
-							unknownBlock = true;
-							contiguousUnknown++;
-						}
-					}
-					break;
-			}
-		}
+    // first pass to determine which axes are missing and how many
+    // unknown blocks are present.
+    // We build oldOrder to iterate over on pass 2, for convenience
+    for (int i = 0; i < axes.length; i++) {
+      switch (axes[i].getLabel().toUpperCase().charAt(0)) {
+        case 'X':
+          oldOrder += "X";
+          haveDim[0] = true;
+          unknownBlock = false;
+          break;
+        case 'Y':
+          oldOrder += "Y";
+          haveDim[1] = true;
+          unknownBlock = false;
+          break;
+        case 'Z':
+          oldOrder += "Z";
+          haveDim[2] = true;
+          unknownBlock = false;
+          break;
+        case 'C':
+          oldOrder += "C";
+          haveDim[3] = true;
+          unknownBlock = false;
+          break;
+        case 'T':
+          oldOrder += "T";
+          haveDim[4] = true;
+          unknownBlock = false;
+          break;
+        default:
+          oldOrder += "U";
 
-		// determine how many axes are missing
-		for (final boolean d : haveDim) {
-			if (!d) missingAxisCount++;
-		}
+          // dimensions of size 1 can be skipped, and only will
+          // be considered in pass 2 if the number of missing axes is
+          // greater than the number of contiguous unknown chunks found
+          if (dimLengths[i] > 1) {
+            if (!unknownBlock) {
+              unknownBlock = true;
+              contiguousUnknown++;
+            }
+          }
+          break;
+      }
+    }
 
-		// check to see if we can make a valid dimension ordering
-		if (contiguousUnknown > missingAxisCount) {
-			return null;
-		}
+    // determine how many axes are missing
+    for (final boolean d : haveDim) {
+      if (!d) missingAxisCount++;
+    }
 
-		int axesPlaced = 0;
-		unknownBlock = false;
+    // check to see if we can make a valid dimension ordering
+    if (contiguousUnknown > missingAxisCount) {
+      return null;
+    }
 
-		// Flag to determine if the current unknownBlock was started by
-		// an unknown of size 1.
-		boolean sizeOneUnknown = false;
+    int axesPlaced = 0;
+    unknownBlock = false;
 
-		// Second pass to assign new ordering and calculate lengths
-		for (int i = 0; i < axes.length; i++) {
-			switch (oldOrder.charAt(0)) {
-				case 'U':
-					// dimensions of size 1 have no effect on the ordering
-					if (dimLengths[i] > 1 || contiguousUnknown < missingAxisCount) {
-						if (!unknownBlock) {
-							unknownBlock = true;
+    // Flag to determine if the current unknownBlock was started by
+    // an unknown of size 1.
+    boolean sizeOneUnknown = false;
 
-							// length of this unknown == 1
-							if (contiguousUnknown < missingAxisCount) {
-								contiguousUnknown++;
-								sizeOneUnknown = true;
-							}
+    // Second pass to assign new ordering and calculate lengths
+    for (int i = 0; i < axes.length; i++) {
+      switch (oldOrder.charAt(0)) {
+        case 'U':
+          // dimensions of size 1 have no effect on the ordering
+          if (dimLengths[i] > 1 || contiguousUnknown < missingAxisCount) {
+            if (!unknownBlock) {
+              unknownBlock = true;
 
-							// assign a label to this dimension
-							if (!haveDim[0]) {
-								newOrder += "X";
-								haveDim[0] = true;
-							}
-							else if (!haveDim[1]) {
-								newOrder += "Y";
-								haveDim[1] = true;
-							}
-							else if (!haveDim[2]) {
-								newOrder += "Z";
-								haveDim[2] = true;
-							}
-							else if (!haveDim[3]) {
-								newOrder += "C";
-								haveDim[3] = true;
-							}
-							else if (!haveDim[4]) {
-								newOrder += "T";
-								haveDim[4] = true;
-							}
-						}
-						else if (dimLengths[i] > 1 && sizeOneUnknown) {
-							// we are in a block of unknowns that was started by
-							// one of size 1, but contains an unknown of size > 1,
-							// thus was double counted (once in pass 1, once in pass 2)
-							sizeOneUnknown = false;
-							contiguousUnknown--;
-						}
-						newLengths[axesPlaced] *= dimLengths[i];
-					}
-					break;
-				default:
-					// "cap" the current unknown block
-					if (unknownBlock) {
-						axesPlaced++;
-						unknownBlock = false;
-						sizeOneUnknown = false;
-					}
+              // length of this unknown == 1
+              if (contiguousUnknown < missingAxisCount) {
+                contiguousUnknown++;
+                sizeOneUnknown = true;
+              }
 
-					newOrder += oldOrder.charAt(i);
-					newLengths[axesPlaced] = dimLengths[i];
-					axesPlaced++;
-					break;
-			}
-		}
+              // assign a label to this dimension
+              if (!haveDim[0]) {
+                newOrder += "X";
+                haveDim[0] = true;
+              }
+              else if (!haveDim[1]) {
+                newOrder += "Y";
+                haveDim[1] = true;
+              }
+              else if (!haveDim[2]) {
+                newOrder += "Z";
+                haveDim[2] = true;
+              }
+              else if (!haveDim[3]) {
+                newOrder += "C";
+                haveDim[3] = true;
+              }
+              else if (!haveDim[4]) {
+                newOrder += "T";
+                haveDim[4] = true;
+              }
+            }
+            else if (dimLengths[i] > 1 && sizeOneUnknown) {
+              // we are in a block of unknowns that was started by
+              // one of size 1, but contains an unknown of size > 1,
+              // thus was double counted (once in pass 1, once in pass 2)
+              sizeOneUnknown = false;
+              contiguousUnknown--;
+            }
+            newLengths[axesPlaced] *= dimLengths[i];
+          }
+          break;
+        default:
+          // "cap" the current unknown block
+          if (unknownBlock) {
+            axesPlaced++;
+            unknownBlock = false;
+            sizeOneUnknown = false;
+          }
 
-		// append any remaining missing axes
-		// only have to update order string, as lengths are already 1
-		for (int i = 0; i < haveDim.length; i++) {
-			if (!haveDim[i]) {
-				switch (i) {
-					case 0:
-						newOrder += "X";
-						break;
-					case 1:
-						newOrder += "Y";
-						break;
-					case 2:
-						newOrder += "Z";
-						break;
-					case 3:
-						newOrder += "C";
-						break;
-					case 4:
-						newOrder += "T";
-						break;
-				}
-			}
-		}
+          newOrder += oldOrder.charAt(i);
+          newLengths[axesPlaced] = dimLengths[i];
+          axesPlaced++;
+          break;
+      }
+    }
 
-		return newOrder;
-	}
+    // append any remaining missing axes
+    // only have to update order string, as lengths are already 1
+    for (int i = 0; i < haveDim.length; i++) {
+      if (!haveDim[i]) {
+        switch (i) {
+          case 0:
+            newOrder += "X";
+            break;
+          case 1:
+            newOrder += "Y";
+            break;
+          case 2:
+            newOrder += "Z";
+            break;
+          case 3:
+            newOrder += "C";
+            break;
+          case 4:
+            newOrder += "T";
+            break;
+        }
+      }
+    }
 
-	// -- Helper methods --
+    return newOrder;
+  }
 
-	/* Entry point for writePlanes method, the actual workhorse to save pixels to disk */
-	private <T extends RealType<T> & NativeType<T>> void
-		saveImg(final Writer w, final ImgPlus<T> img, final int imageIndex,
-			final boolean initializeWriter) throws ImgIOException,
-			IncompatibleTypeException
-	{
+  // -- Helper methods --
 
-		// use the ImgPlus to calculate necessary metadata if
-		if (initializeWriter) {
-			populateMeta(w.getMetadata(), img, imageIndex);
-		}
+  /* Entry point for writePlanes method, the actual workhorse to save pixels to disk */
+  private <T extends RealType<T> & NativeType<T>> void
+    saveImg(final Writer w, final ImgPlus<T> img, final int imageIndex,
+      final boolean initializeWriter) throws ImgIOException,
+      IncompatibleTypeException
+  {
 
-		if (img.getSource().length() == 0) {
-			throw new ImgIOException("Provided Image has no attached source.");
-		}
+    // use the ImgPlus to calculate necessary metadata if
+    if (initializeWriter) {
+      populateMeta(w.getMetadata(), img, imageIndex);
+    }
 
-		final long startTime = System.currentTimeMillis();
-		final String id = img.getSource();
-		final int sliceCount = countSlices(img);
+    if (img.getSource().length() == 0) {
+      throw new ImgIOException("Provided Image has no attached source.");
+    }
 
-		// write pixels
-		writePlanes(w, img, imageIndex);
+    final long startTime = System.currentTimeMillis();
+    final String id = img.getSource();
+    final int sliceCount = countSlices(img);
 
-		final long endTime = System.currentTimeMillis();
-		final float time = (endTime - startTime) / 1000f;
-		getContext().getService(StatusService.class).showStatus(sliceCount, sliceCount, id + ": wrote " +
-			sliceCount + " planes in " + time + " s");
-	}
-	
-	// -- Helper Methods --
+    // write pixels
+    writePlanes(w, img, imageIndex);
 
-	/* Counts the number of slices in the provided ImgPlus.
-	 * NumSlices = product of the sizes of all non-X,Y planes.
-	 */
-	private <T extends RealType<T> & NativeType<T>> int countSlices(
-		final ImgPlus<T> img)
-	{
+    final long endTime = System.currentTimeMillis();
+    final float time = (endTime - startTime) / 1000f;
+    getContext().getService(StatusService.class).showStatus(sliceCount, sliceCount, id + ": wrote " +
+      sliceCount + " planes in " + time + " s");
+  }
 
-		int sliceCount = 1;
-		for (int i = 0; i < img.numDimensions(); i++) {
-			if (!(img.axis(i).equals(Axes.X) || img.axis(i).equals(Axes.Y))) {
-				sliceCount *= img.dimension(i);
-			}
-		}
+  // -- Helper Methods --
 
-		return sliceCount;
-	}
+  /* Counts the number of slices in the provided ImgPlus.
+   * NumSlices = product of the sizes of all non-X,Y planes.
+   */
+  private <T extends RealType<T> & NativeType<T>> int countSlices(
+    final ImgPlus<T> img)
+  {
 
-	/**
-	 * Iterates through the planes of the provided {@link ImgPlus}, converting
-	 * each to a byte[] if necessary (the SCIFIO writer requires a byte[]) and
-	 * saving the plane. Currently only {@link PlanarImg} is supported.
-	 * 
-	 * @throws IncompatibleTypeException
-	 */
-	@SuppressWarnings("unchecked")
-	private <T extends RealType<T> & NativeType<T>> void writePlanes(
-		Writer w, final ImgPlus<T> img, final int imageIndex) throws ImgIOException,
-		IncompatibleTypeException
-	{
-		final PlanarAccess<?> planarAccess = ImgIOUtils.getPlanarAccess(img);
-		if (planarAccess == null) {
-			throw new IncompatibleTypeException(new ImgLibException(), "Only " +
-				PlanarAccess.class + " images supported at this time.");
-		}
+    int sliceCount = 1;
+    for (int i = 0; i < img.numDimensions(); i++) {
+      if (!(img.axis(i).equals(Axes.X) || img.axis(i).equals(Axes.Y))) {
+        sliceCount *= img.dimension(i);
+      }
+    }
 
-		final PlanarImg<T, ?> planarImg = (PlanarImg<T, ?>) planarAccess;
-		final int planeCount = planarImg.numSlices();
-		final int rgbChannelCount = w.getMetadata().getRGBChannelCount(imageIndex);
-		final boolean interleaved = w.getMetadata().isInterleaved(imageIndex);
+    return sliceCount;
+  }
 
-		if (img.numDimensions() > 0) {
-			final Class<?> arrayType =
-				planarImg.getPlane(0).getCurrentStorageArray().getClass();
+  /**
+   * Iterates through the planes of the provided {@link ImgPlus}, converting
+   * each to a byte[] if necessary (the SCIFIO writer requires a byte[]) and
+   * saving the plane. Currently only {@link PlanarImg} is supported.
+   * 
+   * @throws IncompatibleTypeException
+   */
+  @SuppressWarnings("unchecked")
+  private <T extends RealType<T> & NativeType<T>> void writePlanes(
+    Writer w, final ImgPlus<T> img, final int imageIndex) throws ImgIOException,
+    IncompatibleTypeException
+  {
+    final PlanarAccess<?> planarAccess = ImgIOUtils.getPlanarAccess(img);
+    if (planarAccess == null) {
+      throw new IncompatibleTypeException(new ImgLibException(), "Only " +
+        PlanarAccess.class + " images supported at this time.");
+    }
 
-			byte[] sourcePlane = null;
-			
-			// if we know this image will pass to SCIFIO to be saved,
-			// then delete the old file if it exists
-			if (arrayType == int[].class || arrayType == byte[].class ||
-				arrayType == short[].class || arrayType == long[].class ||
-				arrayType == double[].class || arrayType == float[].class)
-			{
-				final File f = new File(img.getSource());
-				if (f.exists()) {
-					f.delete();
-					w = initializeWriter(img.getSource(), img, imageIndex);
-				}
-			}
+    final PlanarImg<T, ?> planarImg = (PlanarImg<T, ?>) planarAccess;
+    final int planeCount = planarImg.numSlices();
+    final int rgbChannelCount = w.getMetadata().getRGBChannelCount(imageIndex);
+    final boolean interleaved = w.getMetadata().isInterleaved(imageIndex);
 
-			// iterate over each plane
-			for (int planeIndex = 0; planeIndex < planeCount; planeIndex += rgbChannelCount) {
-				getContext().getService(StatusService.class).showStatus(planeIndex, planeCount,
-					"Saving plane " + (planeIndex + 1) + "/" + (planeCount / rgbChannelCount));
+    if (img.numDimensions() > 0) {
+      final Class<?> arrayType =
+        planarImg.getPlane(0).getCurrentStorageArray().getClass();
 
-				// save bytes
-				try {
-				  Metadata meta = w.getMetadata();
-				  ByteArrayPlane destPlane = new ByteArrayPlane(getContext(), meta.get(imageIndex),
-				      0, 0, meta.getAxisLength(imageIndex, Axes.X),
-				      meta.getAxisLength(imageIndex, Axes.Y));
-				  
-				  for (int channelIndex = planeIndex; channelIndex < planeIndex + rgbChannelCount; channelIndex++) {
-				    final Object curPlane =
-				        planarImg.getPlane(channelIndex).getCurrentStorageArray();
+      byte[] sourcePlane = null;
 
-				    // Convert current plane if necessary
-				    if (arrayType == int[].class) {
-				      sourcePlane = DataTools.intsToBytes((int[]) curPlane, false);
-				    }
-				    else if (arrayType == byte[].class) {
-				      sourcePlane = (byte[]) curPlane;
-				    }
-				    else if (arrayType == short[].class) {
-				      sourcePlane = DataTools.shortsToBytes((short[]) curPlane, false);
-				    }
-				    else if (arrayType == long[].class) {
-				      sourcePlane = DataTools.longsToBytes((long[]) curPlane, false);
-				    }
-				    else if (arrayType == double[].class) {
-				      sourcePlane = DataTools.doublesToBytes((double[]) curPlane, false);
-				    }
-				    else if (arrayType == float[].class) {
-				      sourcePlane = DataTools.floatsToBytes((float[]) curPlane, false);
-				    }
-				    else {
-				      throw new IncompatibleTypeException(new ImgLibException(),
-				          "PlanarImgs of type " + planarImg.getPlane(0).getClass() +
-				          " not supported.");
-				    }
+      // if we know this image will pass to SCIFIO to be saved,
+      // then delete the old file if it exists
+      if (arrayType == int[].class || arrayType == byte[].class ||
+        arrayType == short[].class || arrayType == long[].class ||
+        arrayType == double[].class || arrayType == float[].class)
+      {
+        final File f = new File(img.getSource());
+        if (f.exists()) {
+          f.delete();
+          w = initializeWriter(img.getSource(), img, imageIndex);
+        }
+      }
 
-				    if (interleaved) {
-				      int bpp = FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
-				      
-	            for (int i=0; i<sourcePlane.length / bpp; i += bpp) {
-	              System.arraycopy(sourcePlane, i, destPlane.getData(), ((i * rgbChannelCount) + channelIndex) * bpp, bpp);
-	            }
-				    }
-				    else {
-				      System.arraycopy(sourcePlane, 0, destPlane.getData(), channelIndex * sourcePlane.length, sourcePlane.length);
-				    }
-				  }
+      // iterate over each plane
+      for (int planeIndex = 0; planeIndex < planeCount; planeIndex += rgbChannelCount) {
+        getContext().getService(StatusService.class).showStatus(planeIndex, planeCount,
+          "Saving plane " + (planeIndex + 1) + "/" + (planeCount / rgbChannelCount));
 
-					w.savePlane(imageIndex, planeIndex, destPlane);
-				}
-				catch (final FormatException e) {
-					throw new ImgIOException(e);
-				}
-				catch (final IOException e) {
-					throw new ImgIOException(e);
-				}
-			}
-		}
+        // save bytes
+        try {
+          Metadata meta = w.getMetadata();
+          ByteArrayPlane destPlane = new ByteArrayPlane(getContext(), meta.get(imageIndex),
+              0, 0, meta.getAxisLength(imageIndex, Axes.X),
+              meta.getAxisLength(imageIndex, Axes.Y));
 
-		try {
-			w.close();
-		}
-		catch (final IOException e) {
-			throw new ImgIOException(e);
-		}
-	}
+          for (int channelIndex = planeIndex; channelIndex < planeIndex + rgbChannelCount; channelIndex++) {
+            final Object curPlane =
+                planarImg.getPlane(channelIndex).getCurrentStorageArray();
 
-	/**
-	 * Creates a new {@link Writer} with an unpopulated MetadataStore and
-	 * sets its id to the provided String.
-	 */
-	private <T extends RealType<T> & NativeType<T>> Writer
-		initializeWriter(final String id, final ImgPlus<T> img, int imageIndex)
-			throws ImgIOException
-	{
+            // Convert current plane if necessary
+            if (arrayType == int[].class) {
+              sourcePlane = DataTools.intsToBytes((int[]) curPlane, false);
+            }
+            else if (arrayType == byte[].class) {
+              sourcePlane = (byte[]) curPlane;
+            }
+            else if (arrayType == short[].class) {
+              sourcePlane = DataTools.shortsToBytes((short[]) curPlane, false);
+            }
+            else if (arrayType == long[].class) {
+              sourcePlane = DataTools.longsToBytes((long[]) curPlane, false);
+            }
+            else if (arrayType == double[].class) {
+              sourcePlane = DataTools.doublesToBytes((double[]) curPlane, false);
+            }
+            else if (arrayType == float[].class) {
+              sourcePlane = DataTools.floatsToBytes((float[]) curPlane, false);
+            }
+            else {
+              throw new IncompatibleTypeException(new ImgLibException(),
+                  "PlanarImgs of type " + planarImg.getPlane(0).getClass() +
+                  " not supported.");
+            }
+
+            if (interleaved) {
+              int bpp = FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
+
+              for (int i=0; i<sourcePlane.length / bpp; i += bpp) {
+                System.arraycopy(sourcePlane, i, destPlane.getData(), ((i * rgbChannelCount) + channelIndex) * bpp, bpp);
+              }
+            }
+            else {
+              System.arraycopy(sourcePlane, 0, destPlane.getData(), channelIndex * sourcePlane.length, sourcePlane.length);
+            }
+          }
+
+          w.savePlane(imageIndex, planeIndex, destPlane);
+        }
+        catch (final FormatException e) {
+          throw new ImgIOException(e);
+        }
+        catch (final IOException e) {
+          throw new ImgIOException(e);
+        }
+      }
+    }
+
+    try {
+      w.close();
+    }
+    catch (final IOException e) {
+      throw new ImgIOException(e);
+    }
+  }
+
+  /**
+   * Creates a new {@link Writer} with an unpopulated MetadataStore and
+   * sets its id to the provided String.
+   */
+  private <T extends RealType<T> & NativeType<T>> Writer
+    initializeWriter(final String id, final ImgPlus<T> img, int imageIndex)
+      throws ImgIOException
+  {
     Writer writer = null;
     Metadata meta = null;
-	  
-		try {
-	    writer =  scifio().format().getWriterByExtension(id);
-	    meta = writer.getFormat().createMetadata();
 
-	    populateMeta(meta, img, imageIndex);
+    try {
+      writer =  scifio().format().getWriterByExtension(id);
+      meta = writer.getFormat().createMetadata();
 
-	    writer.setMetadata(meta);
+      populateMeta(meta, img, imageIndex);
 
-	    writer.setDest(id);
-		}
-		catch (final FormatException e) {
-			throw new ImgIOException(e);
-		}
-		catch (final IOException e) {
-			throw new ImgIOException(e);
-		}
+      writer.setMetadata(meta);
 
-		return writer;
-	}
+      writer.setDest(id);
+    }
+    catch (final FormatException e) {
+      throw new ImgIOException(e);
+    }
+    catch (final IOException e) {
+      throw new ImgIOException(e);
+    }
 
-	/**
-	 * Uses the provided {@link ImgPlus} to populate the minimum metadata fields
-	 * necessary for writing.
-	 */
-	private <T extends RealType<T> & NativeType<T>> void populateMeta(
-		final Metadata meta, final ImgPlus<T> img, int imageIndex) throws ImgIOException
-	{
-		getContext().getService(StatusService.class).showStatus("Initializing " + img.getName());
+    return writer;
+  }
 
-		final int pixelType = ImgIOUtils.makeType(img.firstElement());
+  /**
+   * Uses the provided {@link ImgPlus} to populate the minimum metadata fields
+   * necessary for writing.
+   */
+  private <T extends RealType<T> & NativeType<T>> void populateMeta(
+    final Metadata meta, final ImgPlus<T> img, int imageIndex) throws ImgIOException
+  {
+    getContext().getService(StatusService.class).showStatus("Initializing " + img.getName());
 
-		// TODO is there some way to consolidate this with the isCompressible
-		// method?
-		final AxisType[] axes = new AxisType[img.numDimensions()];
-		img.axes(axes);
+    final int pixelType = ImgIOUtils.makeType(img.firstElement());
 
-		String dimOrder = "";
+    // TODO is there some way to consolidate this with the isCompressible
+    // method?
+    final AxisType[] axes = new AxisType[img.numDimensions()];
+    img.axes(axes);
 
-		final long[] axisLengths = new long[5];
-		final long[] oldLengths = new long[img.numDimensions()];
-		img.dimensions(oldLengths);
-		dimOrder = guessDimOrder(axes, oldLengths, axisLengths);
+    String dimOrder = "";
 
-		// Populate physical pixel sizes
-		for (int i=0; i<axes.length; i++) {
-		  AxisType axis = axes[i];
-//		  PositiveFloat physicalSize = null;
+    final long[] axisLengths = new long[5];
+    final long[] oldLengths = new long[img.numDimensions()];
+    img.dimensions(oldLengths);
+    dimOrder = guessDimOrder(axes, oldLengths, axisLengths);
 
-		  //TODO need to decide how to handle physical pixel sizes in SCIFIO...
-//		  if (Axes.X.equals(axis)) {
-//		    physicalSize = new PositiveFloat(img.calibration(i));
-//		    meta.setPixelsPhysicalSizeX(physicalSize, imageIndex);
-//		  }
-//		  else if (Axes.Y.equals(axis)) {
-//		    physicalSize = new PositiveFloat(img.calibration(i));
-//		    meta.setPixelsPhysicalSizeY(physicalSize, imageIndex);
-//		  }
-//		  else if (Axes.Z.equals(axis)) {
-//		    physicalSize = new PositiveFloat(img.calibration(i));
-//		    meta.setPixelsPhysicalSizeZ(physicalSize, imageIndex);
-//		  }
-		}
+    // Populate physical pixel sizes
+    for (int i=0; i<axes.length; i++) {
+      AxisType axis = axes[i];
+//      PositiveFloat physicalSize = null;
 
-		if (dimOrder == null) throw new ImgIOException(
-		    "Image has more than 5 dimensions in an order that could not be compressed.");
+      //TODO need to decide how to handle physical pixel sizes in SCIFIO...
+//      if (Axes.X.equals(axis)) {
+//        physicalSize = new PositiveFloat(img.calibration(i));
+//        meta.setPixelsPhysicalSizeX(physicalSize, imageIndex);
+//      }
+//      else if (Axes.Y.equals(axis)) {
+//        physicalSize = new PositiveFloat(img.calibration(i));
+//        meta.setPixelsPhysicalSizeY(physicalSize, imageIndex);
+//      }
+//      else if (Axes.Z.equals(axis)) {
+//        physicalSize = new PositiveFloat(img.calibration(i));
+//        meta.setPixelsPhysicalSizeZ(physicalSize, imageIndex);
+//      }
+    }
 
-		// TODO if size C, Z, T and dimension order are populated we won't
-		// overwrite them.
-		/*
-			if(meta.getPixelsSizeZ(0) == null) sizeZ = meta.getPixelsSizeZ(0).getValue();
-			if(meta.getPixelsSizeC(0) == null) sizeC = meta.getPixelsSizeC(0).getValue();
-			if(meta.getPixelsSizeT(0) == null) sizeT = meta.getPixelsSizeT(0).getValue();
-		 */
+    if (dimOrder == null) throw new ImgIOException(
+        "Image has more than 5 dimensions in an order that could not be compressed.");
 
-		int sizeX = 0, sizeY = 0, sizeZ = 0, sizeC = 0, sizeT = 0;
+    // TODO if size C, Z, T and dimension order are populated we won't
+    // overwrite them.
+    /*
+      if(meta.getPixelsSizeZ(0) == null) sizeZ = meta.getPixelsSizeZ(0).getValue();
+      if(meta.getPixelsSizeC(0) == null) sizeC = meta.getPixelsSizeC(0).getValue();
+      if(meta.getPixelsSizeT(0) == null) sizeT = meta.getPixelsSizeT(0).getValue();
+     */
 
-		for (int i = 0; i < dimOrder.length(); i++) {
-		  switch (dimOrder.charAt(i)) {
-		  case 'X':
-		    sizeX = new Long(axisLengths[i]).intValue();
-		    break;
-		  case 'Y':
-		    sizeY = new Long(axisLengths[i]).intValue();
-		    break;
-		  case 'Z':
-		    sizeZ = new Long(axisLengths[i]).intValue();
-		    break;
-		  case 'C':
-		    sizeC = new Long(axisLengths[i]).intValue();
-		    break;
-		  case 'T':
-		    sizeT = new Long(axisLengths[i]).intValue();
-		    break;
-		  }
-		}
+    int sizeX = 0, sizeY = 0, sizeZ = 0, sizeC = 0, sizeT = 0;
 
-		// TODO save composite channel count somewhere...
-		
-		DefaultMetadata imgplusMeta = new DefaultMetadata();
-		
-		int rgbChannelCount = img.getCompositeChannelCount();
-		
-		imgplusMeta.createImageMetadata(imageIndex + 1);
-		
-		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), dimOrder, pixelType, rgbChannelCount,
-		    true, false, false, false, true, sizeX, sizeY, sizeZ, sizeC,
-		    sizeT);
-		
-		// Translate to trigger any format-specific translation
-		
-		scifio().translator().translate(imgplusMeta, meta, false);
-	}
+    for (int i = 0; i < dimOrder.length(); i++) {
+      switch (dimOrder.charAt(i)) {
+      case 'X':
+        sizeX = new Long(axisLengths[i]).intValue();
+        break;
+      case 'Y':
+        sizeY = new Long(axisLengths[i]).intValue();
+        break;
+      case 'Z':
+        sizeZ = new Long(axisLengths[i]).intValue();
+        break;
+      case 'C':
+        sizeC = new Long(axisLengths[i]).intValue();
+        break;
+      case 'T':
+        sizeT = new Long(axisLengths[i]).intValue();
+        break;
+      }
+    }
+
+    // TODO save composite channel count somewhere...
+
+    DefaultMetadata imgplusMeta = new DefaultMetadata();
+
+    int rgbChannelCount = img.getCompositeChannelCount();
+
+    imgplusMeta.createImageMetadata(imageIndex + 1);
+
+    SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), dimOrder, pixelType, rgbChannelCount,
+        true, false, false, false, true, sizeX, sizeY, sizeZ, sizeC,
+        sizeT);
+
+    // Translate to trigger any format-specific translation
+
+    scifio().translator().translate(imgplusMeta, meta, false);
+  }
 }

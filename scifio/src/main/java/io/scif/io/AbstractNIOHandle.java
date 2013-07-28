@@ -56,12 +56,6 @@ public abstract class AbstractNIOHandle implements IRandomAccess {
   protected static final String EOF_ERROR_MSG =
     "Attempting to read beyond end of file.";
 
-  //-- Constants --
-
-  // -- Fields --
-
-  // -- Constructors --
-
   // -- AbstractNIOHandle methods --
 
   /**

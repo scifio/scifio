@@ -42,7 +42,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Field annotation. Used for flagging SCIFIO component fields 
+ * Field annotation. Used for flagging SCIFIO component fields
  * and differentiating Metadata source fields from Java fields.
  * <p>
  * The {@link #label()} method allows preservation of the

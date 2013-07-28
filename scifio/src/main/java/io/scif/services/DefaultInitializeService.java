@@ -65,20 +65,20 @@ public class DefaultInitializeService extends AbstractService
   implements InitializeService
 {
   // -- Parameters --
-  
+
   @Parameter
   private PluginService pluginService;
-  
+
   @Parameter
   private FormatService formatService;
-  
+
   @Parameter
   private TranslatorService translatorService;
-  
+
   @Parameter
   private LocationService locationService;
-  
-  // -- InitializeService API Methods --	
+
+  // -- InitializeService API Methods --
 
   /*
    * @see io.scif.services.InitializeService#initializeReader(java.lang.String)
@@ -94,7 +94,7 @@ public class DefaultInitializeService extends AbstractService
    */
   public ReaderFilter initializeReader(final String id, final boolean openFile)
       throws FormatException, IOException {
-    
+
     final Reader r = formatService.getFormat(id, openFile).createReader();
     r.setSource(id);
     return new ReaderFilter(r);
@@ -109,7 +109,7 @@ public class DefaultInitializeService extends AbstractService
   {
     return initializeWriter(source, destination, false);
   }
-  
+
   /*
    * @see io.scif.services.InitializeService#
    * initializeWriter(java.lang.String, java.lang.String, boolean)
@@ -118,11 +118,11 @@ public class DefaultInitializeService extends AbstractService
     final String source, final String destination,
     final boolean openSource) throws FormatException, IOException
   {
-    
+
     final Format sFormat = formatService.getFormat(source, openSource);
     final Parser parser = sFormat.createParser();
     final Metadata sourceMeta = parser.parse(source);
-    
+
     return initializeWriter(sourceMeta, destination);
   }
 
@@ -141,25 +141,25 @@ public class DefaultInitializeService extends AbstractService
     if (sFormat == dFormat) {
       // otherwise we can directly cast, since they are the same types
       destMeta = castMeta(sourceMeta, destMeta);
-      
+
     } else {
       // Attempt to directly translate between these formats
-      
+
       destMeta = dFormat.createMetadata();
       translatorService.translate(sourceMeta, destMeta, false);
-    } 
-    
+    }
+
     destMeta.setDatasetName(destination);
-    
+
     final Writer writer = dFormat.createWriter();
     writer.setMetadata(destMeta);
     writer.setDest(destination);
 
     return writer;
   }
-  
+
   // -- Helper Methods --
-  
+
   /*
    * Hide the suppress warnings in an atomic cast method
    * <p>

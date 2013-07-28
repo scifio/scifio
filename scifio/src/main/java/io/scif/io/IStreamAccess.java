@@ -53,10 +53,10 @@ public interface IStreamAccess extends SciJavaPlugin, Contextual, Prioritized, I
    * Returns true if this handle can be constructed from
    * the provided id.
    * 
-   * @throws IOException 
+   * @throws IOException
    */
   boolean isConstructable(String id) throws IOException;
-  
+
   /**
    * Initializes the current handle using the provided file id.
    * 

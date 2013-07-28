@@ -92,7 +92,7 @@ public class WriteByteTest {
   public void testLength() throws IOException {
     assertEquals(16, fileHandle.length());
   }
-  
+
   @Test
   public void testWriteSequential() throws IOException {
     for (int i = 0; i < 16; i++) {

@@ -60,7 +60,7 @@
  *  define a {@code getName} and {@code setName} method, which will be
  *  implemented in the various handles.
  *  <p>
- *  This value should be chained up to the {@code RandomAccessInputStream} 
+ *  This value should be chained up to the {@code RandomAccessInputStream}
  *  {@code toString} method.
  *  </p>
  *  </li>

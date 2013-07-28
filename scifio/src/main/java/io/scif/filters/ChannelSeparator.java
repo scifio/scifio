@@ -63,10 +63,10 @@ import org.scijava.plugin.Plugin;
 public class ChannelSeparator extends AbstractReaderFilter {
 
   // -- Constants --
-  
+
   public static final double PRIORITY = 2.0;
   public static final String FILTER_VALUE = "io.scif.Reader";
-  
+
   // -- Fields --
 
   /** Last plane opened. */
@@ -89,9 +89,9 @@ public class ChannelSeparator extends AbstractReaderFilter {
 
   /** Height of last plane opened. */
   private int lastPlaneHeight = -1;
-  
+
   // -- Constructor --
-  
+
   public ChannelSeparator() {
     super(ChannelSeparatorMetadata.class);
   }
@@ -116,17 +116,17 @@ public class ChannelSeparator extends AbstractReaderFilter {
     coords[1] /= getParentMeta().getRGBChannelCount(imageIndex);
     return FormatTools.getIndex(getParent(), imageIndex, coords[0], coords[1], coords[2]);
   }
-  
+
   // -- AbstractReaderFilter API Methods --
-  
+
   /*
    * @see io.scif.filters.AbstractReaderFilter#setSourceHelper(java.lang.String)
    */
   protected void setSourceHelper(String source){
     cleanUp();
   }
-  
-  
+
+
   public int getPlaneCount(int imageIndex) {
     return getMetadata().get(imageIndex).getPlaneCount();
   }
@@ -166,7 +166,7 @@ public class ChannelSeparator extends AbstractReaderFilter {
   {
     FormatTools.assertId(getCurrentFile(), true, 2);
     FormatTools.checkPlaneNumber(this, imageIndex, planeIndex);
-    
+
     if (getParentMeta().isRGB(imageIndex) && !getParentMeta().isIndexed(imageIndex)) {
       int c = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) / getParentMeta().getEffectiveSizeC(imageIndex);
       int source = getOriginalIndex(imageIndex, planeIndex);
@@ -180,12 +180,12 @@ public class ChannelSeparator extends AbstractReaderFilter {
         bp.populate(buf, x, y, w, h);
         plane = bp;
       }
-      
+
       if (source != lastPlaneIndex || imageIndex != lastImageIndex ||
           x != lastPlaneX || y != lastPlaneY || w != lastPlaneWidth ||
           h != lastPlaneHeight)
       {
-        
+
         int strips = 1;
 
         // check how big the original image is; if it's larger than the
@@ -243,15 +243,15 @@ public class ChannelSeparator extends AbstractReaderFilter {
 
     int source = getOriginalIndex(imageIndex, planeIndex);
     Plane thumb = getParent().openThumbPlane(source, planeIndex);
-    
+
     ByteArrayPlane ret = null;
-    
+
     if (isCompatible(thumb.getClass())) ret = (ByteArrayPlane)thumb;
     else {
       ret = new ByteArrayPlane(thumb.getContext());
       ret.populate(thumb);
     }
-    
+
     //TODO maybe these imageIndices should be source as well?
 
     int c = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) /
@@ -262,7 +262,7 @@ public class ChannelSeparator extends AbstractReaderFilter {
     ret.setData(ImageTools.splitChannels(thumb.getBytes(), channel, c, bpp, false, false));
     return ret;
   }
-  
+
   /*
    * @see io.scif.filters.AbstractReaderFilter#close()
    */
@@ -279,15 +279,15 @@ public class ChannelSeparator extends AbstractReaderFilter {
       cleanUp();
     }
   }
-  
+
   @Override
   public Plane createPlane(int xOffset, int yOffset, int xLength,
     int yLength) {
   return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
 }
- 
+
   // -- Helper Methods --
-  
+
   /* Resets local fields. */
   private void cleanUp() {
     lastPlane = null;

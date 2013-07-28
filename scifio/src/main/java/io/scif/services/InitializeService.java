@@ -111,7 +111,7 @@ public interface InitializeService extends Service {
    */
   Writer initializeWriter(String source, String destination, boolean openSource)
     throws FormatException, IOException;
-  
+
   /**
    * See {@link #initializeWriter(String, String, boolean)}. Will not open the
    * image source while parsing metadata.

@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract superclass of all SCIFIO {@link io.scif.Checker} implementations. 
+ * Abstract superclass of all SCIFIO {@link io.scif.Checker} implementations.
  *
  * @see io.scif.Checker
  * @see io.scif.HasFormat
@@ -75,14 +75,14 @@ public abstract class AbstractChecker
    * </p>
    */
   protected boolean suffixSufficient = true;
-  
+
   // -- Checker API Methods --
 
   /* @see Checker#isFormat(String name, boolean open) */
   public boolean isFormat(final String name) {
     return isFormat(name, true);
   }
-  
+
   /* @see Checker#isFormat(String name, boolean open) */
   public boolean isFormat(final String name, final boolean open) {
     // if file extension ID is insufficient and we can't open the file, give up
@@ -108,7 +108,7 @@ public abstract class AbstractChecker
       return isFormat;
     }
     catch (final IOException exc) {
-      LOGGER.debug("", exc);
+      log().debug("", exc);
       return false;
     }
   }
@@ -119,7 +119,7 @@ public abstract class AbstractChecker
   {
     return false;
   }
-  
+
   /*
    * @see io.scif.Checker#checkHeader(byte[])
    */
@@ -131,7 +131,7 @@ public abstract class AbstractChecker
       return isFormat;
     }
     catch (final IOException e) {
-      LOGGER.debug("", e);
+      log().debug("", e);
     }
     return false;
   }

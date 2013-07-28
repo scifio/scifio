@@ -42,6 +42,7 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * This is an optimized LZW codec for use with TIFF files.
@@ -84,7 +85,8 @@ import java.util.Arrays;
  *
  * @author Mikhail Kovtun mikhail.kovtun at duke.edu
  */
-public class LZWCodec extends BaseCodec {
+@Plugin(type = Codec.class)
+public class LZWCodec extends AbstractCodec {
 
   /**
    * Size of hash table. Must be greater 3837 (the number of possible codes).
@@ -362,7 +364,7 @@ public class LZWCodec extends BaseCodec {
           }
           currOutPos += outLength;
           // 2) Add string[old_code]+firstByte(string[curr_code]) to the table
-          if (nextCode >= anotherCodes.length) break; 
+          if (nextCode >= anotherCodes.length) break;
           anotherCodes[nextCode] = oldCode;
           newBytes[nextCode] = output[i];
           lengths[nextCode] = lengths[oldCode] + 1;

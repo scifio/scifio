@@ -55,10 +55,10 @@ public class BitArrayLoader extends AbstractArrayLoader< BitArray >
   @Override
   public void convertBytes(BitArray data, byte[] bytes, int planesRead) {
     int offset = planesRead * bytes.length * 8;
-    
+
     for (int i=0; i<bytes.length; i++) {
       byte b = bytes[i];
-      
+
       for (int j=0; j<8; j++) {
         int idx = (i * 8) + j;
         data.setValue(offset + idx, (b & 0x01) == 1);
@@ -66,7 +66,7 @@ public class BitArrayLoader extends AbstractArrayLoader< BitArray >
       }
     }
   }
-  
+
   public BitArray emptyArray( final int[] dimensions )
   {
     return new BitArray( countEntities(dimensions) );

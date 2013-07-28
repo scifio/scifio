@@ -70,9 +70,9 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = FITSFormat.class)
 public class FITSFormat extends AbstractFormat {
-  
+
   // -- Format API Methods --
-  
+
   public String getFormatName() {
     return "Flexible Image Transport System";
   }
@@ -80,23 +80,23 @@ public class FITSFormat extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[] {"fits", "fts"};
   }
-  
+
   // -- Nested Classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata {
-    
+
     // -- Constants --
-    
+
     public static final String CNAME = "io.scif.formats.FITSFormat$Metadata";
 
     // -- Fields --
-    
+
     private long pixelOffset;
-    
+
     // -- FITS Metadata getters and setters --
 
     public long getPixelOffset() {
@@ -111,15 +111,15 @@ public class FITSFormat extends AbstractFormat {
 
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
-      
+
       if (iMeta.getAxisIndex(Axes.Z) == -1) iMeta.setAxisLength(Axes.Z, 1);
       iMeta.setAxisLength(Axes.CHANNEL, 1);
       iMeta.setAxisLength(Axes.TIME, 1);
-      
+
       // correct for truncated files
       int planeSize = iMeta.getAxisLength(Axes.X) * iMeta.getAxisLength(Axes.X) *
           FormatTools.getBytesPerPixel(iMeta.getPixelType());
-      
+
       try {
         if (DataTools.safeMultiply64(planeSize, iMeta.getAxisLength(Axes.Z)) >
         (getSource().length() - pixelOffset))
@@ -127,7 +127,7 @@ public class FITSFormat extends AbstractFormat {
           iMeta.setAxisLength(Axes.Z, (int) ((getSource().length() - pixelOffset) / planeSize));
         }
       } catch (IOException e) {
-        LOGGER.error("Failed to determine input stream length", e);
+        log().error("Failed to determine input stream length", e);
       }
 
       iMeta.setPlaneCount(iMeta.getAxisLength(Axes.Z));
@@ -138,12 +138,12 @@ public class FITSFormat extends AbstractFormat {
       iMeta.setFalseColor(false);
       iMeta.setMetadataComplete(true);
     }
-    
+
     public void close() {
       pixelOffset = 0;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -152,11 +152,11 @@ public class FITSFormat extends AbstractFormat {
     private static final int LINE_LENGTH = 80;
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
-      throws IOException, FormatException 
+      throws IOException, FormatException
     {
       meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
-      
+
       String line = in.readString(LINE_LENGTH);
       if (!line.startsWith("SIMPLE")) {
         throw new FormatException("Unsupported FITS file.");
@@ -195,7 +195,7 @@ public class FITSFormat extends AbstractFormat {
         else if (key.equals("NAXIS2")) iMeta.setAxisLength(Axes.Y, Integer.parseInt(value));
         else if (key.equals("NAXIS3")) iMeta.setAxisLength(Axes.Z, Integer.parseInt(value));
 
-        addGlobalMeta(key, value);  
+        addGlobalMeta(key, value);
       }
       while (in.read() == 0x20);
       meta.setPixelOffset(in.getFilePointer() - 1);
@@ -207,22 +207,22 @@ public class FITSFormat extends AbstractFormat {
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains =
           new String[] {FormatTools.ASTRONOMY_DOMAIN, FormatTools.UNKNOWN_DOMAIN};
     }
-    
+
     // -- Reader API Methods --
 
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
       ByteArrayPlane plane, int x, int y, int w, int h)
-      throws FormatException, IOException 
+      throws FormatException, IOException
     {
       byte[] buf = plane.getData();
-      
+
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
 
       getStream().seek(getMetadata().getPixelOffset() + planeIndex * 

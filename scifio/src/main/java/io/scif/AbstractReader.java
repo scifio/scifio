@@ -83,7 +83,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
   /** Whether this format supports multi-file datasets. */
   protected boolean hasCompanionFiles = false;
-  
+
   private Class<P> planeClass;
 
   // -- Constructors --
@@ -117,7 +117,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     throws FormatException, IOException
   {
     P plane = null;
-    
+
     try {
       plane = createPlane(x, y, w, h);
     }
@@ -129,7 +129,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
           "i-see-an-outofmemory-or-negativearraysize-error-message-when-" +
           "attempting-to-open-an-svs-or-jpeg-2000-file.-what-does-this-mean", e);
     }
- 
+
     return openPlane(imageIndex, planeIndex, plane, x, y, w, h);
   }
 
@@ -191,11 +191,11 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   public int getOptimalTileHeight(final int imageIndex) {
     final int bpp =
       FormatTools.getBytesPerPixel(metadata.getPixelType(imageIndex));
-    
+
     final int width = metadata.getAxisLength(imageIndex, Axes.X);
     final int rgbcCount = metadata.getRGBChannelCount(imageIndex);
-    
-    final int maxHeight = 
+
+    final int maxHeight =
       (1024 * 1024) / (width * rgbcCount * bpp);
     return Math.min(maxHeight, metadata.getAxisLength(imageIndex, Axes.Y));
   }
@@ -256,7 +256,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
       setSource(stream);
     }
   }
-  
+
   /*
    * @see io.scif.Reader#setSource(java.io.File)
    */
@@ -275,7 +275,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
     if (metadata == null) {
       currentId = stream.getFileName();
-      
+
       try {
         @SuppressWarnings("unchecked")
         final M meta = (M) getFormat().createParser().parse(stream);
@@ -317,7 +317,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   public int getImageCount() {
     return metadata.getImageCount();
   }
-  
+
   /*
    * @see io.scif.Reader#castToTypedPlane(io.scif.Plane)
    */
@@ -326,12 +326,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
       throw new IllegalArgumentException("Incompatible plane types. " +
           "Attempted to cast: " + plane.getClass() + " to: " + planeClass);
     }
-      
+
     @SuppressWarnings("unchecked")
     T p = (T)plane;
     return p;
   }
-  
+
   // -- TypedReader API --
 
   /*
@@ -345,18 +345,18 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
       metadata.getAxisLength(imageIndex, Axes.X),
       metadata.getAxisLength(imageIndex, Axes.Y));
   }
-  
+
   /*
    * @see io.scif.TypedReader#setMetadata(io.scif.TypedMetadata)
    */
   public void setMetadata(final M meta) throws IOException {
-    if (metadata != null && metadata != meta) { 
+    if (metadata != null && metadata != meta) {
       close();
     }
-    
+
     if (metadata == null) metadata = meta;
   }
-  
+
   /*
    * @see io.scif.TypedReader#readPlane(io.scif.io.RandomAccessInputStream, int, int, int, int, int, io.scif.DataPlane)
    */
@@ -377,9 +377,9 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     final int c = metadata.getRGBChannelCount(imageIndex);
     final int bpp =
       FormatTools.getBytesPerPixel(metadata.getPixelType(imageIndex));
-    
+
     byte[] bytes = plane.getBytes();
-    
+
     if (x == 0 && y == 0 && w == metadata.getAxisLength(imageIndex, Axes.X) &&
       h == metadata.getAxisLength(imageIndex, Axes.Y) && scanlinePad == 0)
     {
@@ -440,7 +440,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
     }
     return plane;
   }
-    
+
   /*
    * @see io.scif.TypedReader#getPlaneClass()
    */
@@ -449,16 +449,16 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
   }
 
   // -- HasSource Format API --
-  
+
   /*
    * @see io.scif.Reader#close(boolean)
    */
   public void close(final boolean fileOnly) throws IOException {
     if (metadata != null) metadata.close(fileOnly);
-    
+
     if (!fileOnly) {
       metadata = null;
       currentId = null;
     }
-  } 
+  }
 }

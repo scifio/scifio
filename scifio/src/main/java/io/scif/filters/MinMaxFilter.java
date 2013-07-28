@@ -60,11 +60,11 @@ import org.scijava.plugin.Plugin;
   @Attr(name=MinMaxFilter.ENABLED_KEY, value=MinMaxFilter.ENABLED_VAULE)
   })
 public class MinMaxFilter extends AbstractReaderFilter {
-  
+
   // -- Constants --
-  
+
   public static final String FILTER_VALUE = "io.scif.Reader";
-  
+
   // -- Fields --
 
   /** Min values for each channel. */
@@ -244,7 +244,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
   {
     FormatTools.assertId(getCurrentFile(), true, 2);
     super.openPlane(imageIndex, planeIndex, plane, x, y, w, h);
-    
+
     updateMinMax(imageIndex, planeIndex, plane.getBytes(), FormatTools.getBytesPerPixel(
         getMetadata().getPixelType(imageIndex)) * w * h);
     return plane;
@@ -296,7 +296,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
         && !Double.isNaN(planeMin[imageIndex][planeIndex * numRGB])) return;
 
     boolean little = m.isLittleEndian(imageIndex);
-    
+
     int pixels = len / (bpp * numRGB);
     boolean interleaved = m.isInterleaved(imageIndex);
 
@@ -347,7 +347,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
   }
 
   /**
-   * Ensures internal min/max variables are initialized properly. 
+   * Ensures internal min/max variables are initialized properly.
    *
    * @throws FormatException Not actually thrown.
    * @throws IOException Not actually thrown.

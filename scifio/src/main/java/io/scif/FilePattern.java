@@ -46,8 +46,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-
 import org.scijava.Context;
+import org.scijava.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,13 +101,13 @@ public class FilePattern {
 
   /** Whether or not this FilePattern represents a regular expression. */
   private boolean isRegex = false;
-  
+
   private SCIFIO scifio;
 
   // -- Constructors --
 
   /** Creates a pattern object using the given file as a template. */
-  public FilePattern(Context context, Location file) { 
+  public FilePattern(Context context, Location file) {
     this(context, new SCIFIO(context).filePattern().findPattern(file));
   }
 
@@ -382,10 +382,11 @@ public class FilePattern {
   public static void main(String[] args) {
     String pat = null;
     SCIFIO scifio = new SCIFIO();
+    LogService log = scifio.log();
     if (args.length > 0) {
       // test file pattern detection based on the given file on disk
       Location file = new Location(scifio.getContext(), args[0]);
-      LOGGER.info("File = {}", file.getAbsoluteFile());
+      log.info("File = " + file.getAbsoluteFile());
       pat = scifio.filePattern().findPattern(file);
     }
     else {
@@ -406,19 +407,19 @@ public class FilePattern {
       }
       pat = scifio.filePattern().findPattern(nameList[1], null, nameList);
     }
-    if (pat == null) LOGGER.info("No pattern found.");
+    if (pat == null) log.info("No pattern found.");
     else {
-      LOGGER.info("Pattern = {}", pat);
+      log.info("Pattern = " + pat);
       FilePattern fp = new FilePattern(scifio.getContext(), pat);
       if (fp.isValid()) {
-        LOGGER.info("Pattern is valid.");
-        LOGGER.info("Files:");
+        log.info("Pattern is valid.");
+        log.info("Files:");
         String[] ids = fp.getFiles();
         for (int i=0; i<ids.length; i++) {
-          LOGGER.info("  #{}: {}", i, ids[i]);
+          log.info("  #" + i + ": " + ids[i]);
         }
       }
-      else LOGGER.info("Pattern is invalid: {}", fp.getErrorMessage());
+      else log.info("Pattern is invalid: " + fp.getErrorMessage());
     }
   }
 

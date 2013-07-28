@@ -34,7 +34,7 @@
  * #L%
  */
 
-package io.scif.formats;
+package io.scif.formats.qt;
 
 import io.scif.AbstractFormat;
 import io.scif.AbstractMetadata;
@@ -49,7 +49,6 @@ import io.scif.codec.JPEGCodec;
 import io.scif.codec.PackbitsCodec;
 import io.scif.common.DataTools;
 import io.scif.gui.AWTImageTools;
-import io.scif.gui.LegacyQTTools;
 import io.scif.io.ByteArrayHandle;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -102,21 +101,21 @@ public class PICTFormat extends AbstractFormat {
       }
     }
   }
-  
+
   // -- Fields --
-  
+
   private boolean legacy;
-  
+
   // -- PICTFormat API --
-  
+
   public void setLegacy(boolean legacy) {
     this.legacy = legacy;
   }
-  
+
   public boolean isLegacy() {
     return legacy;
   }
-  
+
   // -- Format API Methods --
   /*
    * @see io.scif.Format#getFormatName()
@@ -133,7 +132,7 @@ public class PICTFormat extends AbstractFormat {
   }
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -154,12 +153,8 @@ public class PICTFormat extends AbstractFormat {
     /** Color lookup table for palette color images. */
     protected byte[][] lookup;
 
-    /** Helper reader in case this one fails. */
-    protected LegacyQTTools qtTools = new LegacyQTTools();
-
-    private boolean legacy = false;
     private Vector<Long> jpegOffsets = new Vector<Long>();
-    
+
     // -- PICTFormat Metadata getters and setters --
 
     public int getRowBytes() {
@@ -194,14 +189,6 @@ public class PICTFormat extends AbstractFormat {
       this.lookup = lookup;
     }
 
-    public LegacyQTTools getQtTools() {
-      return qtTools;
-    }
-
-    public void setQtTools(LegacyQTTools qtTools) {
-      this.qtTools = qtTools;
-    }
-
     public Vector<Long> getJpegOffsets() {
       return jpegOffsets;
     }
@@ -209,18 +196,18 @@ public class PICTFormat extends AbstractFormat {
     public void setJpegOffsets(Vector<Long> jpegOffsets) {
       this.jpegOffsets = jpegOffsets;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
-      
+
       if (iMeta.getAxisIndex(Axes.CHANNEL) == -1)
         iMeta.setAxisLength(Axes.CHANNEL, 1);
-      
+
       iMeta.setAxisLength(Axes.Z, 1);
       iMeta.setAxisLength(Axes.TIME, 1);
-      
+
       iMeta.setLittleEndian(false);
       iMeta.setPlaneCount(1);
       iMeta.setFalseColor(false);
@@ -229,7 +216,7 @@ public class PICTFormat extends AbstractFormat {
       iMeta.setPixelType(FormatTools.UINT8);
       iMeta.setBitsPerPixel(8);
       iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) > 1);
-      
+
       iMeta.setIndexed(!iMeta.isRGB() && lookup != null);
     }
 
@@ -241,12 +228,11 @@ public class PICTFormat extends AbstractFormat {
         strips = null;
         versionOne = false;
         lookup = null;
-        legacy = false;
         if (jpegOffsets != null) jpegOffsets.clear();
         else jpegOffsets = new Vector<Long>();
       }
     }
-    
+
     // -- HasColorTable API Methods --
 
     public ColorTable getColorTable(int imageIndex, int planeIndex) {
@@ -254,7 +240,7 @@ public class PICTFormat extends AbstractFormat {
     }
 
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -262,7 +248,7 @@ public class PICTFormat extends AbstractFormat {
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- Parser API methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
@@ -273,10 +259,10 @@ public class PICTFormat extends AbstractFormat {
       stream.seek(518);
       short sizeY = stream.readShort();
       short sizeX = stream.readShort();
-      
+
       iMeta.setAxisLength(Axes.X, sizeX);
       iMeta.setAxisLength(Axes.Y, sizeY);
-      
+
       Vector strips = new Vector();
       byte[][] lookup = null;
       boolean versionOne = false;
@@ -331,14 +317,14 @@ public class PICTFormat extends AbstractFormat {
       }
       while (drivePictDecoder(meta, opcode));
     }
-    
+
     // -- Helper methods --
 
     /** Handles the opcodes in the PICT file. */
     private boolean drivePictDecoder(Metadata meta, int opcode)
       throws FormatException, IOException
     {
-      LOGGER.debug("drivePictDecoder({}) @ {}", opcode, in.getFilePointer());
+      log().debug("drivePictDecoder(" + opcode + ") @ " + in.getFilePointer());
 
       switch (opcode) {
         case PICT_BITSRGN:  // rowBytes must be < 8
@@ -386,13 +372,13 @@ public class PICTFormat extends AbstractFormat {
         default:
           if (opcode < 0) {
             //throw new FormatException("Invalid opcode: " + opcode);
-            LOGGER.warn("Invalid opcode: {}", opcode);
+            log().warn("Invalid opcode: " + opcode);
           }
       }
 
       return in.getFilePointer() < in.length();
     }
-    
+
 
     /** Extract the image data in a PICT bitmap structure. */
     private void handleBitmap(Metadata meta, int opcode) throws FormatException, IOException {
@@ -403,7 +389,7 @@ public class PICTFormat extends AbstractFormat {
     /** Extracts the image data in a PICT pixmap structure. */
     private void handlePixmap(Metadata meta, int opcode) throws FormatException, IOException {
       readImageHeader(meta, opcode);
-      LOGGER.debug("handlePixmap({})", opcode);
+      log().debug("handlePixmap(" + opcode + ")");
 
       int pixelSize = in.readShort();
       int compCount = in.readShort();
@@ -456,8 +442,8 @@ public class PICTFormat extends AbstractFormat {
     private void handlePixmap(Metadata meta, int pixelSize, int compCount)
       throws FormatException, IOException
     {
-      LOGGER.debug("handlePixmap({}, {}, {})",
-        new Object[] {meta.getRowBytes(), pixelSize, compCount});
+      log().debug("handlePixmap(" + meta.getRowBytes() + ", " +
+        pixelSize + ", " + compCount + ")");
       int rawLen;
       byte[] buf;  // row raw bytes
       byte[] uBuf = null;  // row uncompressed data
@@ -488,7 +474,8 @@ public class PICTFormat extends AbstractFormat {
       }
 
       if (!compressed) {
-        LOGGER.debug("Pixel data is uncompressed (pixelSize={}).", pixelSize);
+        log().debug("Pixel data is uncompressed (pixelSize=" +
+          pixelSize + ").");
         buf = new byte[bufSize];
         for (int row=0; row<meta.getAxisLength(0, Axes.X); row++) {
           in.read(buf, 0, meta.getRowBytes());
@@ -513,8 +500,8 @@ public class PICTFormat extends AbstractFormat {
         }
       }
       else {
-        LOGGER.debug("Pixel data is compressed (pixelSize={}; compCount={}).",
-          pixelSize, compCount);
+        log().debug("Pixel data is compressed (pixelSize=" + pixelSize +
+          "; compCount=" + compCount + ").");
         buf = new byte[bufSize + 1 + bufSize / 128];
         for (int row=0; row<meta.getAxisLength(0, Axes.Y); row++) {
           if (meta.getRowBytes() > 250) rawLen = in.readShort();
@@ -593,8 +580,7 @@ public class PICTFormat extends AbstractFormat {
     private void expandPixels(int bitSize, byte[] ib, byte[] ob, int outLen)
       throws FormatException
     {
-      LOGGER.debug("expandPixels({}, {}, {}, {})",
-        new Object[] {bitSize, ib.length, ob.length, outLen});
+      log().debug("expandPixels(" + bitSize + ", " + ib.length + ", " + ob.length + ", " + outLen + ")");
       if (bitSize == 1) {
         int remainder = outLen % 8;
         int max = outLen / 8;
@@ -645,7 +631,7 @@ public class PICTFormat extends AbstractFormat {
 
     /** PackBits variant that outputs an int array. */
     private void unpackBits(byte[] ib, int[] ob) {
-      LOGGER.debug("unpackBits(...)");
+      log().debug("unpackBits(...)");
       int i = 0;
       int b;
       int rep;
@@ -674,21 +660,21 @@ public class PICTFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
 
     // -- Reader API Methods --
-    
+
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
       ByteArrayPlane plane, int x, int y, int w, int h)
       throws FormatException, IOException
@@ -725,7 +711,7 @@ public class PICTFormat extends AbstractFormat {
         byte[] pix = new byte[(int) (getStream().length() - getStream().getFilePointer())];
         getStream().read(pix);
         byte[][] b = AWTImageTools.getBytes(
-          AWTImageTools.makeBuffered(meta.getQtTools().pictToImage(pix)));
+          AWTImageTools.makeBuffered(scifio().qtJava().pictToImage(pix)));
         pix = null;
         for (int i=0; i<b.length; i++) {
           System.arraycopy(b[i], 0, buf, i*b[i].length, b[i].length);
@@ -790,6 +776,6 @@ public class PICTFormat extends AbstractFormat {
       }
       return plane;
     }
-    
+
   }
 }

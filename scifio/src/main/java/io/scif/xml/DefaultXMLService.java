@@ -79,31 +79,27 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * A utility class for working with XML.
+ * Default service for working with XML.
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/xml/XMLTools.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/xml/XMLTools.java;hb=HEAD">Gitweb</a></dd></dl>
- *
- * @author Curtis Rueden ctrueden at wisc.edu
- * @author Chris Allan callan at blackcat.ca
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Curtis Rueden
+ * @author Chris Allan
+ * @author Melissa Linkert
  */
-public final class XMLTools {
+@Plugin(type = Service.class)
+public class DefaultXMLService extends AbstractService implements XMLService {
 
   // -- Constants --
-
-  static final Logger LOGGER = LoggerFactory.getLogger(XMLTools.class);
 
   private static final String XML_SCHEMA_PATH =
     "http://www.w3.org/2001/XMLSchema";
@@ -113,22 +109,21 @@ public final class XMLTools {
 
   // -- Fields --
 
-  private static ThreadLocal<HashMap<URI, Schema>> schemas =
+  @Parameter
+  private LogService log;
+
+  private ThreadLocal<HashMap<URI, Schema>> schemas =
     new ThreadLocal<HashMap<URI, Schema>>()
   {
+    @Override
     protected HashMap<URI, Schema> initialValue() {
       return new HashMap<URI, Schema>();
     }
   };
 
-  // -- Constructor --
-
-  private XMLTools() { }
-
   // -- XML to/from DOM --
 
-  /** Parses a DOM from the given XML file on disk. */
-  public static Document parseDOM(File file)
+  public Document parseDOM(File file)
     throws ParserConfigurationException, SAXException, IOException
   {
     InputStream is = new FileInputStream(file);
@@ -140,8 +135,7 @@ public final class XMLTools {
     }
   }
 
-  /** Parses a DOM from the given XML string. */
-  public static Document parseDOM(String xml)
+  public Document parseDOM(String xml)
     throws ParserConfigurationException, SAXException, IOException
   {
     byte[] bytes = xml.getBytes(Constants.ENCODING);
@@ -154,8 +148,7 @@ public final class XMLTools {
     }
   }
 
-  /** Parses a DOM from the given XML input stream. */
-  public static Document parseDOM(InputStream is)
+  public Document parseDOM(InputStream is)
     throws ParserConfigurationException, SAXException, IOException
   {
     final InputStream in =
@@ -165,12 +158,11 @@ public final class XMLTools {
     // Java XML factories are not declared to be thread safe
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder db = factory.newDocumentBuilder();
-    db.setErrorHandler(new ParserErrorHandler());
+    db.setErrorHandler(new ParserErrorHandler(log));
     return db.parse(in);
   }
 
-  /** Converts the given DOM back to a string. */
-  public static String getXML(Document doc)
+  public String getXML(Document doc)
     throws TransformerConfigurationException, TransformerException
   {
     Source source = new DOMSource(doc);
@@ -186,8 +178,7 @@ public final class XMLTools {
 
   // -- Filtering --
 
-  /** Remove invalid characters from an XML string. */
-  public static String sanitizeXML(String s) {
+  public String sanitizeXML(String s) {
     final char[] c = s.toCharArray();
     for (int i=0; i<s.length(); i++) {
       if ((Character.isISOControl(c[i]) && c[i] != '\n') ||
@@ -201,8 +192,7 @@ public final class XMLTools {
     return new String(c);
   }
 
-  /** Escape special characters. */
-  public static String escapeXML(String s) {
+  public String escapeXML(String s) {
     StringBuffer sb = new StringBuffer();
 
     for (int i=0; i<s.length(); i++) {
@@ -231,29 +221,19 @@ public final class XMLTools {
     return sb.toString();
   }
 
-  /** Indents XML to be more readable. */
-  public static String indentXML(String xml) {
+  public String indentXML(String xml) {
     return indentXML(xml, 3, false);
   }
 
-  /** Indents XML by the given spacing to be more readable. */
-  public static String indentXML(String xml, int spacing) {
+  public String indentXML(String xml, int spacing) {
     return indentXML(xml, spacing, false);
   }
 
-  /**
-   * Indents XML to be more readable, avoiding any whitespace
-   * injection into CDATA if the preserveCData flag is set.
-   */
-  public static String indentXML(String xml, boolean preserveCData) {
+  public String indentXML(String xml, boolean preserveCData) {
     return indentXML(xml, 3, preserveCData);
   }
 
-  /**
-   * Indents XML by the given spacing to be more readable, avoiding any
-   * whitespace injection into CDATA if the preserveCData flag is set.
-   */
-  public static String indentXML(String xml, int spacing,
+  public String indentXML(String xml, int spacing,
     boolean preserveCData)
   {
     if (xml == null) return null; // garbage in, garbage out
@@ -314,8 +294,7 @@ public final class XMLTools {
 
   // -- Parsing --
 
-  /** Parses the given XML string into a list of key/value pairs. */
-  public static Hashtable<String, String> parseXML(String xml)
+  public Hashtable<String, String> parseXML(String xml)
     throws IOException
   {
     MetadataHandler handler = new MetadataHandler();
@@ -323,41 +302,25 @@ public final class XMLTools {
     return handler.getMetadata();
   }
 
-  /**
-   * Parses the given XML string using the specified XML handler.
-   */
-  public static void parseXML(String xml, DefaultHandler handler)
+  public void parseXML(String xml, DefaultHandler handler)
     throws IOException
   {
     parseXML(xml.getBytes(Constants.ENCODING), handler);
   }
 
-  /**
-   * Parses the XML contained in the given input stream into
-   * using the specified XML handler.
-   * Be very careful, as 'stream' <b>will</b> be closed by the SAX parser.
-   */
-  public static void parseXML(RandomAccessInputStream stream,
+  public void parseXML(RandomAccessInputStream stream,
     DefaultHandler handler) throws IOException
   {
     parseXML((InputStream) stream, handler);
   }
 
-  /**
-   * Parses the XML contained in the given byte array into
-   * using the specified XML handler.
-   */
-  public static void parseXML(byte[] xml, DefaultHandler handler)
+  public void parseXML(byte[] xml, DefaultHandler handler)
     throws IOException
   {
     parseXML(new ByteArrayInputStream(xml), handler);
   }
 
-  /**
-   * Parses the XML contained in the given InputStream using the
-   * specified XML handler.
-   */
-  public static void parseXML(InputStream xml, DefaultHandler handler)
+  public void parseXML(InputStream xml, DefaultHandler handler)
     throws IOException
   {
     try {
@@ -380,8 +343,7 @@ public final class XMLTools {
 
   // -- XSLT --
 
-  /** Gets an XSLT template from the given resource location. */
-  public static Templates getStylesheet(String resourcePath,
+  public Templates getStylesheet(String resourcePath,
     Class<?> sourceClass)
   {
     InputStream xsltStream;
@@ -390,7 +352,7 @@ public final class XMLTools {
         xsltStream = new FileInputStream(resourcePath);
       }
       catch (IOException exc) {
-        LOGGER.debug("Could not open file", exc);
+        log.debug("Could not open file", exc);
         return null;
       }
     }
@@ -406,21 +368,20 @@ public final class XMLTools {
       return transformerFactory.newTemplates(xsltSource);
     }
     catch (TransformerConfigurationException exc) {
-      LOGGER.debug("Could not construct template", exc);
+      log.debug("Could not construct template", exc);
     }
     finally {
       try {
         if (xsltStream != null) xsltStream.close();
       }
       catch (IOException e) {
-        LOGGER.debug("Could not close file", e);
+        log.debug("Could not close file", e);
       }
     }
     return null;
   }
 
-  /** Replaces NS:tag with NS_tag for undeclared namespaces */
-  public static String avoidUndeclaredNamespaces(String xml) {
+  public String avoidUndeclaredNamespaces(String xml) {
     int gt = xml.indexOf('>');
     if (gt > 0 && xml.startsWith("<?xml "))
       gt = xml.indexOf('>', gt + 1);
@@ -463,16 +424,14 @@ public final class XMLTools {
     return xml;
   }
 
-  /** Transforms the given XML string using the specified XSLT stylesheet. */
-  public static String transformXML(String xml, Templates xslt)
+  public String transformXML(String xml, Templates xslt)
     throws IOException
   {
     xml = avoidUndeclaredNamespaces(xml);
     return transformXML(new StreamSource(new StringReader(xml)), xslt);
   }
 
-  /** Transforms the given XML data using the specified XSLT stylesheet. */
-  public static String transformXML(Source xmlSource, Templates xslt)
+  public String transformXML(Source xmlSource, Templates xslt)
     throws IOException
   {
     Transformer trans;
@@ -500,30 +459,17 @@ public final class XMLTools {
 
   // -- Validation --
 
-  /**
-   * Attempts to validate the given XML string using
-   * Java's XML validation facility. Requires Java 1.5+.
-   * @param xml The XML string to validate.
-   * @return whether or not validation was successful.
-   */
-  public static boolean validateXML(String xml) {
+  public boolean validateXML(String xml) {
     return validateXML(xml, null);
   }
 
-  /**
-   * Attempts to validate the given XML string using
-   * Java's XML validation facility. Requires Java 1.5+.
-   * @param xml The XML string to validate.
-   * @param label String describing the type of XML being validated.
-   * @return whether or not validation was successful.
-   */
-  public static boolean validateXML(String xml, String label) {
+  public boolean validateXML(String xml, String label) {
     if (label == null) label = "XML";
     Exception exception = null;
 
     // get path to schema from root element using SAX
-    LOGGER.info("Parsing schema path");
-    ValidationSAXHandler saxHandler = new ValidationSAXHandler();
+    log.info("Parsing schema path");
+    ValidationSAXHandler saxHandler = new ValidationSAXHandler(log);
     try {
       // Java XML factories are not declared to be thread safe
       SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -536,17 +482,17 @@ public final class XMLTools {
     catch (SAXException exc) { exception = exc; }
     catch (IOException exc) { exception = exc; }
     if (exception != null) {
-      LOGGER.warn("Error parsing schema path from {}", label, exception);
+      log.warn("Error parsing schema path from " + label, exception);
       return false;
     }
     String schemaPath = saxHandler.getSchemaPath();
     if (schemaPath == null) {
-      LOGGER.error("No schema path found. Validation cannot continue.");
+      log.error("No schema path found. Validation cannot continue.");
       return false;
     }
-    LOGGER.info(schemaPath);
+    log.info(schemaPath);
 
-    LOGGER.info("Validating {}", label);
+    log.info("Validating " + label);
 
     // compile the schema
     URI schemaLocation = null;
@@ -554,7 +500,7 @@ public final class XMLTools {
       schemaLocation = new URI(schemaPath);
     }
     catch (URISyntaxException exc) {
-      LOGGER.info("Error accessing schema at {}", schemaPath, exc);
+      log.info("Error accessing schema at " + schemaPath, exc);
       return false;
     }
     Schema schema = schemas.get().get(schemaLocation);
@@ -564,11 +510,11 @@ public final class XMLTools {
         schemas.get().put(schemaLocation, schema);
       }
       catch (MalformedURLException exc) {
-        LOGGER.info("Error parsing schema at {}", schemaPath, exc);
+        log.info("Error parsing schema at " + schemaPath, exc);
         return false;
       }
       catch (SAXException exc) {
-        LOGGER.info("Error parsing schema at {}", schemaPath, exc);
+        log.info("Error parsing schema at " + schemaPath, exc);
         return false;
       }
     }
@@ -582,7 +528,7 @@ public final class XMLTools {
     SAXSource source = new SAXSource(is);
 
     // validate the XML
-    ValidationErrorHandler errorHandler = new ValidationErrorHandler();
+    ValidationErrorHandler errorHandler = new ValidationErrorHandler(log);
     validator.setErrorHandler(errorHandler);
     try {
       validator.validate(source);
@@ -591,10 +537,10 @@ public final class XMLTools {
     catch (SAXException exc) { exception = exc; }
     final int errors = errorHandler.getErrorCount();
     if (errors > 0) {
-      LOGGER.info("Error validating document: {} errors found", errors);
+      log.info("Error validating document: " + errors + " errors found");
       return false;
     }
-    else LOGGER.info("No validation errors found.");
+    log.info("No validation errors found.");
     return errorHandler.ok();
   }
 
@@ -609,7 +555,7 @@ public final class XMLTools {
    * >Java does not handle it correctly</a>.
    * </p>
    */
-  private static void checkUTF8(InputStream is) throws IOException {
+  private void checkUTF8(InputStream is) throws IOException {
     // check first 3 bytes of the stream
     is.mark(3);
     if (is.read() != 0xef || is.read() != 0xbb || is.read() != 0xbf) {
@@ -621,18 +567,20 @@ public final class XMLTools {
   // -- Helper class --
 
   /** ErrorListener implementation that logs errors and warnings using SLF4J. */
-  static class XMLListener implements ErrorListener {
+  private class XMLListener implements ErrorListener {
+
     public void error(TransformerException e) {
-      LOGGER.debug("", e);
+      log.debug("", e);
     }
 
     public void fatalError(TransformerException e) {
-      LOGGER.debug("", e);
+      log.debug("", e);
     }
 
     public void warning(TransformerException e) {
-      LOGGER.debug("", e);
+      log.debug("", e);
     }
+
   }
 
 }

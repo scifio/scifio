@@ -109,7 +109,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   protected RandomAccessOutputStream out;
 
   // -- Writer API Methods --
-  
+
   /* @see io.scif.Writer#savePlane(int, int, Object) */
   public void savePlane(final int imageIndex, final int planeIndex,
     final Plane plane) throws FormatException, IOException
@@ -118,12 +118,12 @@ public abstract class AbstractWriter<M extends TypedMetadata>
     final int height = metadata.getAxisLength(imageIndex, Axes.Y);
     savePlane(imageIndex, planeIndex, plane, 0, 0, width, height);
   }
-  
+
   /* @see io.scif.Writer#canDoStacks() */
   public boolean canDoStacks() {
     return false;
   }
-  
+
   /*
    * @see io.scif.Writer#setMetadata(io.scif.Metadata)
    */
@@ -154,7 +154,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   {
     setDest(out, 0);
   }
-  
+
   /* @see io.scif.Writer#setStream(String, int) */
   public void setDest(final String fileName, final int imageIndex)
     throws FormatException, IOException
@@ -181,7 +181,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
 
     //FIXME
     // set metadata.datasetName here when RAOS has better id handling
-    
+
     this.out = out;
     initialize(imageIndex);
   }
@@ -270,7 +270,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
   public void setWriteSequentially(final boolean sequential) {
     this.sequential = sequential;
   }
-  
+
   // -- TypedWriter API Methods --
 
   /*
@@ -284,7 +284,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
         throw new FormatException(e);
       }
     }
-    
+
     if (out != null) {
       try {
         close();
@@ -292,12 +292,12 @@ public abstract class AbstractWriter<M extends TypedMetadata>
         throw new FormatException(e);
       }
     }
-    
+
     metadata = meta;
   }
-  
+
   // -- HasSource API Methods --
-  
+
   /*
    * @see io.scif.HasSource#close(boolean)
    */
@@ -307,7 +307,7 @@ public abstract class AbstractWriter<M extends TypedMetadata>
     out = null;
     initialized = null;
   }
-  
+
   // -- Helper methods --
 
   /** Sets up the initialized array and ensures this Writer is ready for writing */

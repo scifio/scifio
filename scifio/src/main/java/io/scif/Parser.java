@@ -83,7 +83,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
    * Creates a {@code Metadata} object from the provided image source.
    * 
    * @param stream a random access handle to the image source to parse.
-   * @return A new {@code Metadata} object of the appropriate type. 
+   * @return A new {@code Metadata} object of the appropriate type.
    */
   Metadata parse(RandomAccessInputStream stream) throws IOException, FormatException;
 
@@ -185,7 +185,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
   FileInfo[] getAdvancedImageUsedFiles(int imageIndex, boolean noPixels);
 
   /**
-   * Returns a list of MetadataLevel options for determining the granularity 
+   * Returns a list of MetadataLevel options for determining the granularity
    * of MetadataCollection */
   Set<MetadataLevel> getSupportedMetadataLevels();
 

@@ -55,39 +55,39 @@ public class T3bCustomFormats {
     // In SCIFIO, we allow formats to be discovered automatically via Sezpoz
     // (sezpoz.java.net) or manually added to a context.
     // ------------------------------------------------------------------------
-    
+
     // Let's start by creating a new context as we have in the other tutorials:
     SCIFIO scifio = new SCIFIO();
-    
+
     // ... and a sample image path:
     String sampleImage = "notAnImage.scifiosmpl";
-    
-    // When the Context was created, it automatically used SezPoz to discover 
+
+    // When the Context was created, it automatically used SezPoz to discover
     // all available Formats. As SampleFormat below was annotated as a @Plugin
     // it should be available to our context, directly:
-    
+
     Format format = scifio.format().getFormat(sampleImage);
     System.out.println("SampleFormat found via FormatService: " + (format != null));
-    
+
     // Using the FormatService provides access to a consistent singleton Format within
     // the context.
-    
+
     // Next let's suspend our disbelief and imagine that the SampleFormat was
     // not annotated and thus not discovered automatically when constructing
     // a context:
-    
+
     SampleFormat sFormat = new SampleFormat();
-    
+
     // It may be tempting to call sFormat.setContext at this point to
     // populate its context. But what we really want to do is ensure the
     // context's FormatService knows about our sFormat:
-    
+
     scifio.format().addFormat(sFormat);
-    
+
     // Now our SampleFormat will be properly contextualized, and
     // this particular instance will serve as a singleton within the
     // FormatService of this context.
-    
+
     // In closing, notice that the SampleFormat we defined lacks any
     // Translator objects. Translators would be defined within a Format
     // and annotated with @DiscoverableTranslator annotations. Translators
@@ -98,7 +98,7 @@ public class T3bCustomFormats {
     // is no format:DatasetMetadata translator).
     // See the TranslatingMetadata tutorial for more information.
   }
-  
+
   /*
    * This is a non-functional Format which adds "support" for a fictional
    * ".scifiosmpl" image type.
@@ -126,7 +126,7 @@ public class T3bCustomFormats {
     // A lot of work is done for you in the AbstractFormat and Abstact component
     // classes. But you will always need to implement these methods when defining
     // a new Format.
-    
+
     // First we have to declare a name for our Format.
     public String getFormatName() {
       return "Sample data";
@@ -153,7 +153,7 @@ public class T3bCustomFormats {
       return new Class<?>[]{Metadata.class,
           Parser.class, Reader.class, Writer.class};
     }
-    
+
     // -- Nested classes --
 
     // Metadata doesn't have any methods that need to be implemented, it
@@ -167,8 +167,8 @@ public class T3bCustomFormats {
       // be mangled by Java's variable naming practices.
       @Field(label = "Sky color")
       private String color;
-      
-      public void setColor(String c) { 
+
+      public void setColor(String c) {
         color = c;
       }
 
@@ -196,7 +196,7 @@ public class T3bCustomFormats {
       // the "authoritative" signature and last to execute. Thus it is the only
       // signature Overridden here.
       public void typedParse(final RandomAccessInputStream stream, final Metadata meta)
-          throws IOException, FormatException 
+          throws IOException, FormatException
       {
         meta.setColor("blue");
       }
@@ -216,7 +216,7 @@ public class T3bCustomFormats {
         suffixNecessary = true;
       }
     }
-    
+
     // Each reader MUST implement the openPlane method, and must choose
     // a Plane type to return (e.g. ByteArrayPlane or BufferedImagePlane)
     // by extending the appropriate abstract class, or providing its own
@@ -235,12 +235,12 @@ public class T3bCustomFormats {
         // update the data by reference
         byte[] bytes = plane.getData();
         Arrays.fill(bytes, 0, bytes.length, (byte)0);
-        
+
         return plane;
       }
-      
+
     }
-    
+
     // Like the Reader, a Writer must implement its savePlane method
     // which writes the provided Plane object to disk. However, the
     // type of Plane is irrelevant for Writers, thanks to the
@@ -250,7 +250,7 @@ public class T3bCustomFormats {
       public void savePlane(int imageIndex, int planeIndex, Plane plane, int x,
           int y, int w, int h) throws FormatException, IOException {
         byte[] bytes = plane.getBytes();
-        
+
         System.out.println(bytes.length);
       }
     }

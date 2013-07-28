@@ -47,6 +47,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import org.scijava.Context;
+import org.scijava.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
   // -- Fields --
 
   protected IRandomAccess raf;
-  
+
   /** The file name. */
   protected final String file;
 
@@ -90,15 +91,16 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
   protected long markedPos = -1;
 
   protected String encoding = Constants.ENCODING;
-  
-  private SCIFIO scifio;
+
+  private final SCIFIO scifio;
+  private final LogService log;
 
   // -- Constructors --
 
   protected RandomAccessInputStream(Context context) throws IOException {
     this(context, null, null);
   }
-  
+
   /**
    * Constructs a hybrid RandomAccessFile/DataInputStream
    * around the given file.
@@ -120,8 +122,9 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
     throws IOException
   {
     scifio = new SCIFIO(context);
-    if (LOGGER.isTraceEnabled()) {
-      LOGGER.trace("RandomAccessInputStream {} OPEN", hashCode());
+    log = scifio.log();
+    if (log.isTrace()) {
+      log.trace("RandomAccessInputStream " + hashCode() + " OPEN");
     }
     this.file = file;
     raf = handle;
@@ -177,8 +180,8 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 
   /** Closes the streams. */
   public void close() throws IOException {
-    if (LOGGER.isTraceEnabled()) {
-      LOGGER.trace("RandomAccessInputStream {} CLOSE", hashCode());
+    if (log.isTrace()) {
+      log.trace("RandomAccessInputStream " + hashCode() + " CLOSE");
     }
     if (scifio.location().getMappedFile(file) != null) return;
     if (raf != null) raf.close();
@@ -494,7 +497,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
       markedPos = getFilePointer();
     }
     catch (IOException exc) {
-      LOGGER.warn("Cannot set mark", exc);
+      log.warn("Cannot set mark", exc);
     }
   }
 
@@ -506,7 +509,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
     if (markedPos < 0) throw new IOException("No mark set");
     seek(markedPos);
   }
-  
+
   public String getFileName() {
     return this.file;
   }

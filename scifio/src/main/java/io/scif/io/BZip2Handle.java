@@ -43,8 +43,8 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-
 import org.scijava.Context;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -63,7 +63,7 @@ import org.scijava.plugin.Plugin;
 public class BZip2Handle extends StreamHandle {
 
   // -- Constructor --
-  
+
   /**
    * Zero-parameter constructor. This instructor can be used first
    * to see if a given file is constructable from this handle. If so,
@@ -72,7 +72,7 @@ public class BZip2Handle extends StreamHandle {
   public BZip2Handle() {
     super();
   }
-  
+
   public BZip2Handle(Context context) {
     super(context);
   }
@@ -108,11 +108,12 @@ public class BZip2Handle extends StreamHandle {
     while (skipped < 2) {
       skipped += bis.skip(2 - skipped);
     }
-    setStream(new DataInputStream(new CBZip2InputStream(bis)));
+    LogService log = getContext().getService(LogService.class);
+    setStream(new DataInputStream(new CBZip2InputStream(bis, log)));
   }
-  
+
   // -- IStreamAccess API methods --
-  
+
   /* @see IStreamAccess#setFile(String) */
   public void setFile(String file) throws IOException {
     super.setFile(file);
@@ -128,7 +129,7 @@ public class BZip2Handle extends StreamHandle {
       if (skip <= 0) break;
       length += skip;
     }
-    
+
     setLength(length);
 
     resetStream();

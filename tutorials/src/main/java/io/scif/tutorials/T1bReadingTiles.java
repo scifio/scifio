@@ -34,16 +34,16 @@ import io.scif.SCIFIO;
 public class T1bReadingTiles {
 
   public static void main(final String... args) throws FormatException, IOException {
-    
+
     // As always we'll need a SCIFIO for this tutorial
     SCIFIO scifio = new SCIFIO();
-    
+
     // This time we're going to set up a huge image path
     String hugeImage = "hugePlane&sizeX=70000&sizeY=80000.fake";
-    
+
     // We initialize a reader as we did before
     Reader reader = scifio.initializer().initializeReader(hugeImage);
-    
+
     // Now we'll try the naive thing, and just open all the planes in this dataset.
     try {
       for (int i=0; i<reader.getImageCount(); i++) {
@@ -55,31 +55,31 @@ public class T1bReadingTiles {
       System.out.println("Caught:\n" + e);
     }
     // There should be an exception caught above. Planes that are greater than 2GB in size
-    // will not be instantiated. The plane opening code prints each time it opens a tile, 
+    // will not be instantiated. The plane opening code prints each time it opens a tile,
     // so if the output below is uncommented you probably will miss the exception message.
-    
+
     // We'll need some basic information about this dataset, so let's get a reference to
     // its metadata.
     Metadata meta = reader.getMetadata();
-    
+
     for (int i=0; i<reader.getImageCount(); i++) {
-      
+
       // These methods will compute the optimal width to use with reader#openPlane
       int optimalTileWidth = reader.getOptimalTileWidth(i);
       int optimalTileHeight = reader.getOptimalTileHeight(i);
-      
+
       // Then we need to figure out how many tiles are actually present in a plane,
       // given the tile height and width
       int tilesWide = (int) Math.ceil((double) meta.getAxisLength(i, Axes.X) / optimalTileWidth);
       int tilesHigh = (int) Math.ceil((double) meta.getAxisLength(i, Axes.Y) / optimalTileHeight);
-      
+
       int x, y = 0;
-      
+
       // now we can open each tile, one at a time, for each plane in this image
       for (int j=0; j<meta.getPlaneCount(i); j++) {
         for (int tileX = 0; tileX < tilesWide; tileX++) {
           for (int tileY = 0; tileY < tilesHigh; tileY++) {
-            
+
             // these are pointers to the position in the current plane
             x = tileX * optimalTileWidth;
             y = tileY * optimalTileHeight;
@@ -91,16 +91,16 @@ public class T1bReadingTiles {
             int actualTileHeight =
                 (int) Math.min(optimalTileHeight, meta.getAxisLength(i, Axes.Y) - y);
 
-            
+
             // Finally we open the current plane, using an openPlane signature that allows us
             // to specify a sub-region of the current plane.
             // FIXME: uncomment these lines of code after the first time you run this tutorial.
-//            System.out.println("Image:" + i + " Plane:" + j + " Tile:" + (tileX + tileY) + " -- " 
+//            System.out.println("Image:" + i + " Plane:" + j + " Tile:" + (tileX + tileY) + " -- "
 //                + reader.openPlane(i, j, x, y, actualTileWidth, actualTileHeight));
-            
+
             // Here, if we saved a reference to the returned Plane, we would do any necessary
             // processing of the bytes.
-            
+
             // NB: the openPlane signature we used creates a new plane each time. If there
             // are a significant number of tiles being read, it may be more efficient to
             // create a Plane ahead of time using the reader.createPlane method, and then

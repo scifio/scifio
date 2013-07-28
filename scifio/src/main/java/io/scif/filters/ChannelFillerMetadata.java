@@ -57,29 +57,29 @@ import net.imglib2.meta.AxisType;
   @Attr(name=ChannelFillerMetadata.METADATA_KEY, value=ChannelFillerMetadata.METADATA_VALUE)
   })
 public class ChannelFillerMetadata extends AbstractMetadataWrapper {
-  
+
   // -- Constants --
-  
+
   public static final String METADATA_VALUE = "io.scif.filters.ChannelFiller";
-  
+
   // -- Fields --
-  
+
   private Boolean filled = null;
-  
+
   private int lutLength;
-  
+
   // -- Constructors --
-  
+
   public ChannelFillerMetadata() {
     this(null);
   }
-  
+
   public ChannelFillerMetadata(Metadata metadata) {
     super(metadata);
   }
-  
+
   // -- ChannelFillerMetadata API Methods --
-  
+
   /** Returns true if the indices are being factored out. */
   public boolean isFilled(int imageIndex) {
     if (!isIndexed(imageIndex)) return false; // cannot fill non-indexed color
@@ -91,16 +91,16 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
   public void setFilled(boolean filled) {
     this.filled = filled;
   }
-  
+
   /**
    * @param length - Number of components in the lut
    */
   public void setLutLength(int length) {
     lutLength = length;
   }
-  
+
   // -- Metadata API methods --
-  
+
   /*
    * @see io.scif.AbstractMetadata#isRGB(int)
    */
@@ -108,7 +108,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
     if (!isFilled(imageIndex)) return super.isRGB(imageIndex);
     return getRGBChannelCount(imageIndex) > 1;
   }
-  
+
   /*
    * @see io.scif.AbstractMetadata#isIndexed(int)
    */
@@ -116,7 +116,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
     if (!isFilled(imageIndex)) return super.isIndexed(imageIndex);
     return false;
   }
-  
+
   /*
    * @see io.scif.AbstractMetadata#getAxisLength(int, net.imglib2.meta.AxisType)
    */
@@ -126,7 +126,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
     if(!t.equals(Axes.CHANNEL))
       return length;
 
-    return (!isFilled(imageIndex)) ? length : length * lutLength; 
+    return (!isFilled(imageIndex)) ? length : length * lutLength;
   }
 
 }

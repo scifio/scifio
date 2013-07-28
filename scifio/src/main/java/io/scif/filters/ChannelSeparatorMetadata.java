@@ -58,58 +58,58 @@ import net.imglib2.meta.AxisType;
   @Attr(name=ChannelSeparatorMetadata.METADATA_KEY, value=ChannelSeparatorMetadata.METADATA_VALUE)
   })
 public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
-  
+
   // -- Constants --
-  
+
   public static final String METADATA_VALUE = "io.scif.filters.ChannelSeparator";
-  
-  // -- Fields -- 
+
+  // -- Fields --
 
   private AxisType[] xyczt = new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME};
-  private AxisType[] xyctz = new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME, Axes.Z}; 
-  
-  
+  private AxisType[] xyctz = new AxisType[]{Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME, Axes.Z};
+
+
   // -- Constructors --
-  
+
   public ChannelSeparatorMetadata() {
     this(null);
   }
-  
+
   public ChannelSeparatorMetadata(Metadata metadata) {
     super(metadata);
   }
-  
+
   // -- Metadata API Methods --
-  
+
   @Override
   public void populateImageMetadata() {
     Metadata m = unwrap();
     createImageMetadata(0);
-    
+
     for (int i=0; i<m.getImageCount(); i++) {
       ImageMetadata iMeta = new DefaultImageMetadata(m.get(i));
       if (iMeta.isRGB() && !iMeta.isIndexed()) iMeta.setPlaneCount(iMeta.getPlaneCount() * iMeta.getRGBChannelCount());
-      
+
       add(iMeta, false);
     }
   }
-  
+
   @Override
   public boolean isRGB(int imageIndex) {
     return isIndexed(imageIndex) && !isFalseColor(imageIndex)
       && getAxisLength(imageIndex, Axes.CHANNEL) > 1;
   }
-  
+
 
   @Override
   public AxisType[] getAxes(int imageIndex) {
     if (unwrap().isRGB(imageIndex) && !unwrap().isIndexed(imageIndex)) {
-      
+
       if (unwrap().getAxisIndex(imageIndex, Axes.TIME) > unwrap().getAxisIndex(imageIndex, Axes.Z))
         return xyczt;
       else
         return xyctz;
-      
+
     }
     return unwrap().getAxes(imageIndex);
   }

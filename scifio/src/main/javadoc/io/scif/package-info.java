@@ -46,11 +46,11 @@
  * components:
  * <ul>
  *  <li>
- *  {@link io.scif.Checker} - determines if the {@code Format} can read/write a 
+ *  {@link io.scif.Checker} - determines if the {@code Format} can read/write a
  *  given image.
  *  </li>
  *  <li>
- *  {@link io.scif.Metadata} - data structure for all metadata that can be found in 
+ *  {@link io.scif.Metadata} - data structure for all metadata that can be found in
  *  images of the associated {@code Format}.
  *  </li>
  *  <li>
@@ -58,7 +58,7 @@
  *  pixel information from the image.
  *  </li>
  *  <li>
- *  {@link io.scif.Reader} - uses corresponding {@code Metadata} to produce a 
+ *  {@link io.scif.Reader} - uses corresponding {@code Metadata} to produce a
  *  standard pixel representation, e.g. encapsulated in a {@link Plane}.
  *  </li>
  *  <li>
@@ -105,12 +105,12 @@
  * </ol>
  * </p>
  * <p>
- * The {@link io.scif.SCIFIO} class wraps {@link org.scijava.Context} 
+ * The {@link io.scif.SCIFIO} class wraps {@link org.scijava.Context}
  * instances and provides convenient access to many services.
  * </p>
  * <p>
- * This package also contains an {@link io.scif.ImageMetadata} 
- * interface and default implementation. ImageMetadata is use as a 
+ * This package also contains an {@link io.scif.ImageMetadata}
+ * interface and default implementation. ImageMetadata is use as a
  * format-agnostic representation of common image attributes. SCIFIO follows the OME
  * syntax of what is an "image" - in that top-level is really a dataset, which
  * are arbitrary lists of one or more images. Images are the pixel containers,
@@ -120,7 +120,7 @@
  * <h3>Changes since Bio-Formats</h3>
  * <ul>
  *  <li>
- *  Converting to {@code Format} representations from the Bio-Formats 
+ *  Converting to {@code Format} representations from the Bio-Formats
  *  {@code Reader}. Both encapsulate the functions to read and write images of a
  *  given format, but in SCIFIO the {@code Format} consists of multiple
  *  single-purpose components to address each part of image IO atomically.
@@ -189,7 +189,7 @@
  *  to capture these relationships.
  *  <p>
  *  Most of these parameters disappear at the concrete implementation level,
- *  but are present in the interfaces and abstract layers (which is 
+ *  but are present in the interfaces and abstract layers (which is
  *  representative of the desire for SCIFIO to generically define the image IO
  *  process - with the specifications of Bio-Formats being just one possible
  *  implementation).
@@ -197,7 +197,7 @@
  *  </li>
  *  <li>
  *  <p>
- *  Serialization. The {@link io.scif.Metadata} class implements 
+ *  Serialization. The {@link io.scif.Metadata} class implements
  *  {@link java.io.Serializble}. The idea behind metadata serialization is that
  *  parsing the metadata is one of the most expensive processes of image IO.
  *  If metadata can be saved for future sessions, then repeated analysis of
@@ -242,7 +242,7 @@
  *  <li>
  *  Add default components. Currently implementing a new {@code Format}
  *  mandates the implementation of all components. However, some formats will
- *  not use all components (e.g. proprietary formats that won't have a 
+ *  not use all components (e.g. proprietary formats that won't have a
  *  {@code Writer}) or do not need to go beyond the abstract implementations
  *  (for many {@code Checkers}).
  *  <p>
@@ -301,7 +301,7 @@
  *  create a standard that will allow for extensibility without breaking API.
  *  </li>
  *  <li>
- *  Create {@code OriginalMetadata} class. Currently both 
+ *  Create {@code OriginalMetadata} class. Currently both
  *  {@code Metadata} and {@code ImageMetadata} maintain
  *  {@code HashTables} for general metadata storage. This should be
  *  standardized into a new class that works more intelligently in the SCIFIO
@@ -334,7 +334,7 @@
  *  such as the last plane read. This behavior may still be useful. To keep
  *  SCIFIO component instances free of state, it would make sense to allow the context
  *  to cache information in a generic way. Then different instances of a given
- *  class created under the same context would behave similarly, and 
+ *  class created under the same context would behave similarly, and
  *  potentially allow for speed improvements over a completely stateless
  *  environment.
  *  </li>

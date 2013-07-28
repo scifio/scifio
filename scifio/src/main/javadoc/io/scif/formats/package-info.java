@@ -34,7 +34,7 @@
  * #L%
  */
 /**
- * Provides {@link Format} implementations for all file formats that are 
+ * Provides {@link Format} implementations for all file formats that are
  * supported by default in SCIFIO.
  * <p>
  * The set of default formats are all open formats that can be freely read and
@@ -58,7 +58,7 @@
  * be implemented, pending discussion.
  * <ul>
  *  <li>
- *  Convert the remaining open source formats (in the scifio component, 
+ *  Convert the remaining open source formats (in the scifio component,
  *  loci.formats.in  and loci.formats.out) to SCIFIO Formats.
  *  </li>
  * </ul>

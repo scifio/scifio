@@ -35,7 +35,7 @@
  */
 package io.scif.filters;
 
-import io.scif.AbstractHasSCIFIO;
+import io.scif.AbstractSCIFIOComponent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,22 +60,24 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> - Parent type of this filter.
  */
-public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Filter {
+public abstract class AbstractFilter<T> extends AbstractSCIFIOComponent
+  implements Filter
+{
 
   // -- Constants --
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(Filter.class);
   
   // -- Fields --
-  
+
   /* Parent to delegate to. */
   private T parent = null;
-  
+
   /* For checking in setParent */
   private Class<? extends T> parentClass;
-  
+
   // -- Constructor --
-  
+
   public AbstractFilter(Class<? extends T> parentClass) {
     this.parentClass = parentClass;
   }
@@ -98,17 +100,17 @@ public abstract class AbstractFilter<T> extends AbstractHasSCIFIO implements Fil
       this.parent = (T) parent;
     else {
       throw new IllegalArgumentException("Invalid parent. Provided: " +
-      				parent.getClass() + " Expected: " + parentClass);
+              parent.getClass() + " Expected: " + parentClass);
     }
   }
-  
+
   /*
    * @see io.scif.filters.Filter#reset()
    */
   public void reset() {
     parent = null;
   }
-  
+
   /*
    * @see io.scif.filters.Filter#isCompatible(java.lang.Class)
    */

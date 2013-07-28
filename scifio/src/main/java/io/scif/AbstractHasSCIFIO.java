@@ -46,22 +46,22 @@ import org.scijava.plugin.SortablePlugin;
  * 
  * @author Mark Hiner
  */
-public class AbstractHasSCIFIO extends SortablePlugin
+public abstract class AbstractHasSCIFIO extends SortablePlugin
   implements HasSCIFIO
 {
 
   /** Cached SCIFIO reference. */
   private SCIFIO scifio;
-  
+
   // -- HasSCIFIO API Methods --
-  
+
   /*
    * @see io.scif.HasSCIFIO#scifio()
    */
   public SCIFIO scifio() {
-  	// Lazily creates a SCIFIO wrapping this instance's context
+    // Lazily creates a SCIFIO wrapping this instance's context
     if (scifio == null) scifio = new SCIFIO(getContext());
-    
+
     return scifio;
   }
 }

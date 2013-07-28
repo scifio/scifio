@@ -35,6 +35,7 @@
  */
 package io.scif.filters;
 
+import io.scif.SCIFIOComponent;
 import io.scif.SCIFIOPlugin;
 
 import org.scijava.Contextual;
@@ -55,27 +56,27 @@ import org.scijava.Prioritized;
  * @author Mark Hiner
  *
  */
-public interface Filter extends SCIFIOPlugin, Prioritized, Contextual {
+public interface Filter extends SCIFIOComponent, SCIFIOPlugin, Prioritized, Contextual {
 
   public static final String FILTER_KEY = "Filters";
   public static final String FILTER_VALUE = "java.lang.Object";
   public static final String ENABLED_KEY = "Enabled by default";
   public static final String ENABLED_VAULE = "false";
-  
+
   /**
    * Sets the object which this filter augments.
    * 
    * @param parent - The object wrapped by this filter
    */
   void setParent(Object parent);
-  
+
   /**
    * Returns the object this filter augments.
    * 
    * @return The object wrapped by this filter
    */
   Object getParent();
-  
+
   /**
    * Returns true if this filter is capable of wrapping instances of the
    * provided class.
@@ -84,7 +85,7 @@ public interface Filter extends SCIFIOPlugin, Prioritized, Contextual {
    * @return True if this filter can call setParent on instances of c
    */
   boolean isCompatible(Class<?> c);
-  
+
   /**
    * Clears any configuration performed on this filter.
    */

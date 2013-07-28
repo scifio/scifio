@@ -54,7 +54,7 @@ import net.imglib2.type.numeric.RealType;
  *
  */
 public class RandomAccessConverter implements PlaneConverter {
-  
+
   /**
    * Uses a cursor to populate the plane. This solution is general and works
    * regardless of container, but at the expense of performance both now and
@@ -63,9 +63,9 @@ public class RandomAccessConverter implements PlaneConverter {
   public <T extends RealType<T>> void populatePlane(final Reader reader,
     int imageIndex, final int planeIndex, final byte[] plane,
     final ImgPlus<T> img, ImgOptions imgOptions) {
-	
-	Metadata m = reader.getMetadata();
-	
+
+  Metadata m = reader.getMetadata();
+
     final int pixelType = m.getPixelType(imageIndex);
     final boolean little = m.isLittleEndian(imageIndex);
 
@@ -99,7 +99,7 @@ public class RandomAccessConverter implements PlaneConverter {
       randomAccess.get().setReal(decodeWord(plane, index++, pixelType, little));
     }
   }
-  
+
 
   /** Copies the current dimensional position into the given array. */
   private void getPosition(final Metadata m, final int imageIndex, final int planeIndex, final long[] pos) {
@@ -139,7 +139,7 @@ public class RandomAccessConverter implements PlaneConverter {
       }
     }
   }
-  
+
   private static double decodeWord(final byte[] plane, final int index,
       final int pixelType, final boolean little) {
       final double value;

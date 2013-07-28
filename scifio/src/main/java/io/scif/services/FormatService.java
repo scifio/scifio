@@ -65,13 +65,13 @@ import org.scijava.service.Service;
  * @author Mark Hiner
  */
 public interface FormatService extends Service {
-  
+
   // -- Priority constant --
-  
+
   public static final double PRIORITY = Priority.LOW_PRIORITY;
-  
+
   /**
-   * Returns a complete list of all suffixes supported within this context. 
+   * Returns a complete list of all suffixes supported within this context.
    */
   String[] getSuffixes();
 
@@ -85,12 +85,12 @@ public interface FormatService extends Service {
    * @return True if the {@code Format} was added successfully.
    */
   <M extends Metadata> boolean addFormat(Format format);
-  
+
   /**
    * Creates mappings between this Format and its components.
    */
   void addComponents(final Format format);
-  
+
   /**
    * Removes any mappings involving this Format's components.
    */
@@ -114,14 +114,14 @@ public interface FormatService extends Service {
    * constructor. If you manually invoke that constructor and then try to link
    * your {@code Format} to an existing context, e.g. via the {@link #addFormat(Format)}
    * method, it will fail if the {@code Format} was already discovered.
-   * The same principle is true if the context-based constructor is invoked. 
+   * The same principle is true if the context-based constructor is invoked.
    * </p>
    * @param formatClass the class of the desired {@code Format}
-   * @return A reference to concrete class of the queried {@code Format}, or null if the 
+   * @return A reference to concrete class of the queried {@code Format}, or null if the
    *         {@code Format} was not found.
    */
   <F extends Format> F getFormatFromClass(Class<F> formatClass);
-  
+
   /**
    * Returns the Format compatible with this component class, or null if no matching
    * Format can be found.
@@ -141,13 +141,13 @@ public interface FormatService extends Service {
   /**
    * {@code Format} lookup method using the {@code Writer} component.
    * 
-   * @param writerClass the class of the {@code Writer} component for the 
+   * @param writerClass the class of the {@code Writer} component for the
    *        desired {@code Format}
    * @return A reference to the queried {@code Format}, or null if
    *         the {@code Format} was not found.
    */
   <W extends Writer> Format getFormatFromWriter(Class<W> writerClass);
-  
+
   /**
    * {@code Writer} lookup method using exclusively the supported suffix
    * list. This bypasses the {@code Checker} logic, and thus does not guarantee
@@ -155,14 +155,14 @@ public interface FormatService extends Service {
    * 
    * @param extension
    * @return
-   * @throws FormatException 
+   * @throws FormatException
    */
   Writer getWriterByExtension(String fileId) throws FormatException;
 
   /**
    * {@code Format} lookup method using the {@code Checker} component.
    * 
-   * @param writerClass the class of the {@code Checker} component for the 
+   * @param writerClass the class of the {@code Checker} component for the
    *        desired {@code Format}
    * @return A reference to the queried {@code Format}, or null if
    *         the {@code Format} was not found.
@@ -172,7 +172,7 @@ public interface FormatService extends Service {
   /**
    * {@code Format} lookup method using the {@code Parser} component.
    * 
-   * @param writerClass the class of the {@code Parser} component for the 
+   * @param writerClass the class of the {@code Parser} component for the
    *        desired {@code Format}
    * @return A reference to the queried {@code Format}, or null if
    *         the {@code Format} was not found.
@@ -182,7 +182,7 @@ public interface FormatService extends Service {
   /**
    * {@code Format} lookup method using the {@code Metadata} component.
    * 
-   * @param writerClass the class of the {@code Metadata} component for the 
+   * @param writerClass the class of the {@code Metadata} component for the
    *        desired {@code Format}
    * @return A reference to the queried {@code Format}, or null if
    *         the {@code Format} was not found.
@@ -198,7 +198,7 @@ public interface FormatService extends Service {
    * @return A  Format reference compatible with the provided source.
    */
   Format getFormat(String id) throws FormatException;
-  
+
   /**
    * Returns the first Format known to be compatible with the source provided.
    * Formats are checked in ascending order of their priority.
@@ -234,7 +234,7 @@ public interface FormatService extends Service {
    * Returns a list of all Formats within this context.
    */
   List<Format> getAllFormats();
-  
+
   /**
    * Convenience method to obtain TypedService instances within the current
    * context.

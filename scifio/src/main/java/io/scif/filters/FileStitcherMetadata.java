@@ -59,42 +59,42 @@ import net.imglib2.meta.AxisType;
   @Attr(name=FileStitcherMetadata.METADATA_KEY, value=FileStitcherMetadata.METADATA_VALUE)
   })
 public class FileStitcherMetadata extends AbstractMetadataWrapper {
-  
+
   // -- Constants --
-  
+
   public static final String METADATA_VALUE = "io.scif.filters.FileStitcher";
   // -- Fields --
-  
+
   boolean noStitch = true;
-  
+
   // -- Constructors --
-  
+
   public FileStitcherMetadata() {
     this(null);
   }
-  
+
   public FileStitcherMetadata(Metadata metadata) {
     super(metadata);
   }
-  
+
   // -- ChannelFillerMetadata API Methods --
-  
+
   /**
    * @param stitch - Whether stitching is enabled
    */
   public void setStitching(boolean stitch) {
     noStitch = !stitch;
   }
-  
+
   // -- Metadata API Methods --
-  
+
   /*
    * @see io.scif.AbstractMetadata#isRGB(int)
    */
   public boolean isRGB(int imageIndex) {
     return noStitch ? super.isRGB(imageIndex) : unwrap().isRGB(imageIndex);
   }
-  
+
   /*
    * @see io.scif.AbstractMetadata#getAxisLength(int, net.imglib2.meta.AxisType)
    */
@@ -204,7 +204,7 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
 //      }
 //    }
 //  }
-//    
+//
 //    public void setGroupFiles(boolean group) {
 //    this.group = group;
 //  }
@@ -239,10 +239,10 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
 //          }
 //        }
 //        catch (FormatException e) {
-//          LOGGER.debug("", e);
+//          log().debug("", e);
 //        }
 //        catch (IOException e) {
-//          LOGGER.debug("", e);
+//          log().debug("", e);
 //        }
 //      }
 //    }
@@ -274,10 +274,10 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
 //        infos[i].reader = ((DimensionSwapper) reader).unwrap().getClass();
 //      }
 //      catch (FormatException e) {
-//        LOGGER.debug("", e);
+//        log().debug("", e);
 //      }
 //      catch (IOException e) {
-//        LOGGER.debug("", e);
+//        log().debug("", e);
 //      }
 //      infos[i].usedToInitialize = files[i].endsWith(getCurrentFile());
 //    }
@@ -296,10 +296,10 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
 //        infos[i].reader = ((DimensionSwapper) reader).unwrap().getClass();
 //      }
 //      catch (FormatException e) {
-//        LOGGER.debug("", e);
+//        log().debug("", e);
 //      }
 //      catch (IOException e) {
-//        LOGGER.debug("", e);
+//        log().debug("", e);
 //      }
 //      infos[i].usedToInitialize = files[i].endsWith(getCurrentFile());
 //    }

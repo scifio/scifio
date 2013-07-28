@@ -51,7 +51,7 @@ public interface HasMetaTable {
    * @return the MetaTable attached to this component
    */
   MetaTable getTable();
-  
+
   /**
    * Sets the table for this component
    * 

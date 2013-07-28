@@ -36,7 +36,7 @@
 
 package io.scif.io;
 
-import io.scif.AbstractHasSCIFIO;
+import io.scif.AbstractSCIFIOComponent;
 import io.scif.common.Constants;
 
 import java.io.File;
@@ -47,13 +47,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-
 import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-// HACK: for scan-deps.pl: The following packages are not actually "optional":
-// optional org.apache.log4j, optional org.slf4j.impl
 
 /**
  * Pseudo-extension of java.io.File that supports reading over HTTP.
@@ -63,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/Location.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/Location.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class Location extends AbstractHasSCIFIO {
+public class Location extends AbstractSCIFIOComponent {
 
   // -- Constants --
 
@@ -77,28 +73,28 @@ public class Location extends AbstractHasSCIFIO {
 
 
   // -- Constructors --
-  
+
   public Location(Context context) {
     setContext(context);
   }
 
   public Location(Context context, String pathname) {
     this(context);
-    LOGGER.trace("Location({})", pathname);
+    log().trace("Location(" + pathname + ")");
     try {
       url = new URL(scifio().location().getMappedId(pathname));
     }
     catch (MalformedURLException e) {
-      LOGGER.trace("Location is not a URL", e);
+      log().trace("Location is not a URL", e);
       isURL = false;
     }
-    if (!isURL) file = 
+    if (!isURL) file =
         new File(scifio().location().getMappedId(pathname));
   }
 
   public Location(Context context, File file) {
     this(context);
-    LOGGER.trace("Location({})", file);
+    log().trace("Location(" + file + ")");
     isURL = false;
     this.file = file;
   }
@@ -123,7 +119,7 @@ public class Location extends AbstractHasSCIFIO {
 
     result = scifio().location().getCachedListing(key);
     if (result != null) return result;
-    
+
     ArrayList<String> files = new ArrayList<String>();
     if (isURL) {
       try {
@@ -155,7 +151,7 @@ public class Location extends AbstractHasSCIFIO {
         }
       }
       catch (IOException e) {
-        LOGGER.trace("Could not retrieve directory listing", e);
+        log().trace("Could not retrieve directory listing", e);
         return null;
       }
     }
@@ -172,9 +168,9 @@ public class Location extends AbstractHasSCIFIO {
       }
     }
     result = files.toArray(new String[files.size()]);
-    
+
     scifio().location().putCachedListing(key, result);
-    
+
     return result;
   }
 
@@ -274,7 +270,7 @@ public class Location extends AbstractHasSCIFIO {
         return true;
       }
       catch (IOException e) {
-        LOGGER.trace("Failed to retrieve content from URL", e);
+        log().trace("Failed to retrieve content from URL", e);
         return false;
       }
     }
@@ -407,7 +403,7 @@ public class Location extends AbstractHasSCIFIO {
         return url.openConnection().getLastModified();
       }
       catch (IOException e) {
-        LOGGER.trace("Could not determine URL's last modification time", e);
+        log().trace("Could not determine URL's last modification time", e);
         return 0;
       }
     }
@@ -424,7 +420,7 @@ public class Location extends AbstractHasSCIFIO {
         return url.openConnection().getContentLength();
       }
       catch (IOException e) {
-        LOGGER.trace("Could not determine URL's content length", e);
+        log().trace("Could not determine URL's content length", e);
         return 0;
       }
     }

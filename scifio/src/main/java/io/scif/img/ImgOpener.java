@@ -36,7 +36,7 @@
 
 package io.scif.img;
 
-import io.scif.AbstractHasSCIFIO;
+import io.scif.AbstractSCIFIOComponent;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
@@ -83,7 +83,7 @@ import org.scijava.app.StatusService;
  * @author Stephan Preibisch
  * @author Stephan Saalfeld
  */
-public class ImgOpener extends AbstractHasSCIFIO {
+public class ImgOpener extends AbstractSCIFIOComponent {
 
   // -- Constructors --
 
@@ -243,9 +243,9 @@ public class ImgOpener extends AbstractHasSCIFIO {
       if (type == null)
         type = ImgIOUtils.makeType(r.getMetadata().getPixelType(
             imgOptions.getIndex()));
-      
+
       ImgFactoryHeuristic heuristic = imgOptions.getImgFactoryHeuristic();
-      
+
       if (heuristic == null) heuristic = new DefaultImgFactoryHeuristic();
 
       ImgFactory<T> imgFactory = heuristic.createFactory(r.getMetadata(), imgOptions.getImgModes());
@@ -724,12 +724,12 @@ public class ImgOpener extends AbstractHasSCIFIO {
     // We have to manually reset the 2nd and 3rd indices after the inner loops
     int idx1 = index[1];
     int idx2 = index[2];
-    
+
     //FIXME I think this is returning multi-channel planes out of order because of ChannelSeparator
     for (; index[0]<bound[0]; index[0]++) {
       for (; index[1]<bound[1]; index[1]++) {
         for (; index[2]<bound[2]; index[2]++) {
-          
+
           // get the plane index in the underlying dataset
           int planeIndex = FormatTools.getIndex(r, imageIndex, index[zPos],
               index[cPos], index[tPos]);
@@ -755,7 +755,7 @@ public class ImgOpener extends AbstractHasSCIFIO {
       }
       index[1] = idx1;
     }
-    
+
     if (imgOptions.isComputeMinMax())
       populateMinMax(r, imgPlus, imageIndex);
   }

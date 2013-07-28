@@ -49,7 +49,7 @@ import org.scijava.InstantiableException;
  * built.
  * </p>
  * <p>
- * NB: this interface extends {@link io.scif.Filter} and concrete {@code MasterFilter} 
+ * NB: this interface extends {@link io.scif.Filter} and concrete {@code MasterFilter}
  * implementations should similarly extend the interface they wrap. However, instead of
  * {@link io.scif.filters.Filter#getParent()} returning the wrapped object,
  * it should return the head of this {@code MasterFilter}'s filter stack.
@@ -61,7 +61,7 @@ import org.scijava.InstantiableException;
  * </p>
  * <p>
  * NB: {@code MasterFilters} are intended to be used the same way as {@code Filters}:
- * that is, as the wrapped component would be. However, the {@code Filter} API 
+ * that is, as the wrapped component would be. However, the {@code Filter} API
  * does have a slightly different meaning in the context of a {@code MasterFilter}.
  * </p>
  * 
@@ -72,19 +72,19 @@ import org.scijava.InstantiableException;
 public interface MasterFilter<T extends Contextual> extends Filter {
 
   // -- Master Filter methods --
-  
+
   /**
    * Inserts an instance of the indicated filter class into the
    * filter stack. Returns the filter instance associated with
-   * this MasterFilter, which can be used for wrapper-specific 
+   * this MasterFilter, which can be used for wrapper-specific
    * configuration.
    * 
    * @param filterClass - The type of filter to enable
    * @return The enabled filter
-   * @throws InstantiableException 
+   * @throws InstantiableException
    */
   <F extends Filter> F enable(Class<F> filterClass) throws InstantiableException;
-  
+
   /**
    * Removes the specified filter from the filter stack,
    * if present. Clears any state in the cached instance of the specified
@@ -92,34 +92,34 @@ public interface MasterFilter<T extends Contextual> extends Filter {
    * 
    * @param filterClass - The type of filter to disable
    * @return true if the desired filter was disabled
-   * @throws InstantiableException 
+   * @throws InstantiableException
    */
   boolean disable(Class<? extends Filter> filterClass) throws InstantiableException;
-  
+
   /**
    * Returns a list of all filter classes this MasterFilter can enable/disable.
    * 
    * @return A list of discovered filters
    */
   Set<Class<? extends Filter>> getFilterClasses();
-  
+
   // -- Filter API --
-  
+
   /**
    * Sets the wrapped object. Effectively the tail of the filter stack.
    */
   void setParent(Object parent);
-  
+
   /**
    * Returns the top of the filter stack.
    */
   Object getParent();
-  
+
   /**
    * Returns the base object (below the filter stack).
    */
   Object getTail();
-  
+
   /**
    * Disables all enabled filters maintained by this MasterFilter.
    */

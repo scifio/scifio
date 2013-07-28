@@ -38,6 +38,8 @@ package io.scif.codec;
 
 import java.util.Random;
 
+import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +110,7 @@ public class BitWriter {
    *   '0' and '1' appear in the string.
    */
   public void write(String bitString) {
-    if (bitString == null) 
+    if (bitString == null)
       throw new IllegalArgumentException("The string cannot be null.");
     for (int i = 0; i < bitString.length(); i++) {
       if ('1' == bitString.charAt(i)) {
@@ -147,9 +149,11 @@ public class BitWriter {
 
   /** Tests the BitWriter class. */
   public static void main(String[] args) {
+    final LogService log = new StderrLogService();
+
     int max = 50000;
     // randomize values
-    LOGGER.info("Generating random list of {} values", max);
+    log.info("Generating random list of " + max + " values");
     int[] values = new int[max];
     int[] bits = new int[max];
     double log2 = Math.log(2);
@@ -160,39 +164,39 @@ public class BitWriter {
     }
 
     // write values out
-    LOGGER.info("Writing values to byte array");
+    log.info("Writing values to byte array");
     BitWriter out = new BitWriter();
     for (int i=0; i<values.length; i++) out.write(values[i], bits[i]);
 
     // read values back in
-    LOGGER.info("Reading values from byte array");
+    log.info("Reading values from byte array");
     BitBuffer bb = new BitBuffer(out.toByteArray());
     for (int i=0; i<values.length; i++) {
       int value = bb.getBits(bits[i]);
       if (value != values[i]) {
-        LOGGER.info("Value #{} does not match (got {}; expected {}; {} bits)",
-          new Object[] {i, value, values[i], bits[i]});
+        log.info("Value #" + i + " does not match (got " + value +
+          "; expected " + values[i] + "; " + bits[i] + " bits)");
       }
     }
 
     // Testing string functionality
     Random r = new Random();
-    LOGGER.info("Generating 5000 random bits for String test");
+    log.info("Generating 5000 random bits for String test");
     StringBuffer sb = new StringBuffer(5000);
     for (int i = 0; i < 5000; i++) {
       sb.append(r.nextInt(2));
     }
     out = new BitWriter();
-    LOGGER.info("Writing values to byte array");
+    log.info("Writing values to byte array");
     out.write(sb.toString());
-    LOGGER.info("Reading values from byte array");
+    log.info("Reading values from byte array");
     bb = new BitBuffer(out.toByteArray());
     for (int i = 0; i < 5000; i++) {
       int value = bb.getBits(1);
       int expected = (sb.charAt(i) == '1') ? 1 : 0;
       if (value != expected) {
-        LOGGER.info("Bit #{} does not match (got {}; expected {}.",
-          new Object[] {i, value, expected});
+        log.info("Bit #" + i + " does not match (got " +
+          value + "; expected " + expected + ")");
       }
     }
   }

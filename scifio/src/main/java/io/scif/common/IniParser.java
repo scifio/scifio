@@ -40,12 +40,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-
-import io.scif.common.Constants;
-import io.scif.common.IniList;
-import io.scif.common.IniParser;
-import io.scif.common.IniTable;
-
+import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +63,18 @@ public class IniParser {
   private String commentDelimiter = "#";
 
   private boolean slashContinues = true;
+
+  private final LogService log;
+
+  // -- Constructors --
+
+  public IniParser() {
+    this(new StderrLogService());
+  }
+
+  public IniParser(final LogService log) {
+    this.log = log;
+  }
 
   // -- IniParser API methods --
 
@@ -117,7 +125,7 @@ public class IniParser {
       int num = readLine(in, sb);
       if (num == 0) break; // eof
       String line = sb.toString();
-      LOGGER.debug("Line {}: {}", no, line);
+      log.debug("Line " + no + ": " + line);
 
       // ignore blank lines
       if (line.equals("")) {
@@ -161,26 +169,24 @@ public class IniParser {
     return list;
   }
 
-  // -- Utility methods --
+  // -- Helper methods --
 
   /** Opens a buffered reader for the given resource. */
-  public static BufferedReader openTextResource(String path) {
+  private BufferedReader openTextResource(String path) {
     return openTextResource(path, IniParser.class);
   }
 
   /** Opens a buffered reader for the given resource. */
-  public static BufferedReader openTextResource(String path, Class<?> c) {
+  private BufferedReader openTextResource(String path, Class<?> c) {
     try {
       return new BufferedReader(new InputStreamReader(
         c.getResourceAsStream(path), Constants.ENCODING));
     }
     catch (IOException e) {
-      LOGGER.error("Could not open BufferedReader", e);
+      log.error("Could not open BufferedReader", e);
     }
     return null;
   }
-
-  // -- Helper methods --
 
   /**
    * Reads (at least) one line from the given input stream

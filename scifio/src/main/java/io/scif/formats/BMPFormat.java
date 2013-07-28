@@ -75,20 +75,20 @@ import net.imglib2.meta.Axes;
  */
 @Plugin(type=BMPFormat.class)
 public class BMPFormat extends AbstractFormat {
-  
+
   // -- Constants --
-  
+
   public static final String BMP_MAGIC_STRING = "BM";
-  
+
   // -- Compression types --
-  
+
   private static final int RAW = 0;
   private static final int RLE_8 = 1;
   private static final int RLE_4 = 2;
   private static final int RGB_MASK = 3;
 
   // -- Format API MEthods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -104,19 +104,19 @@ public class BMPFormat extends AbstractFormat {
   }
 
   // -- Nested Classes --
-  
+
   /**
   * @author Mark Hiner
    *
    */
   public static class Metadata extends AbstractMetadata implements HasColorTable {
-    
+
     // -- Constants --
 
     public static final String CNAME = "io.scif.formats.BMPFormat$Metadata";
 
     // -- Fields --
-    
+
     /** The palette for indexed color images. */
     private ColorTable8 palette;
 
@@ -129,7 +129,7 @@ public class BMPFormat extends AbstractFormat {
     private boolean invertY = false;
 
     // -- Getters and Setters --
-    
+
     public int getCompression() {
       return compression;
     }
@@ -153,26 +153,26 @@ public class BMPFormat extends AbstractFormat {
     public void setInvertY(boolean invertY) {
       this.invertY = invertY;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
 
       int bpp = getBitsPerPixel(0);
       ImageMetadata iMeta = get(0);
-      
+
       int sizeC = bpp != 24 ? 1 : 3;
-      
+
       if (bpp == 32) sizeC = 4;
       if (bpp > 8) bpp /= sizeC;
-      
+
       iMeta.setBitsPerPixel(bpp);
 
-      
+
       switch (bpp) {
         case 16:
           iMeta.setPixelType(FormatTools.UINT16);
@@ -188,30 +188,30 @@ public class BMPFormat extends AbstractFormat {
       iMeta.setLittleEndian(true);
       iMeta.setInterleaved(true);
       iMeta.setPlaneCount(1);
-      
+
       iMeta.setMetadataComplete(true);
       iMeta.setIndexed(getColorTable(0, 0) != null);
-      
+
       if (iMeta.isIndexed()) {
         sizeC = 1;
         iMeta.setRGB(false);
       }
-      
+
       iMeta.addAxis(Axes.CHANNEL, sizeC);
       iMeta.addAxis(Axes.Z, 1);
       iMeta.addAxis(Axes.TIME, 1);
-      
+
       iMeta.setFalseColor(false);
     }
-    
+
     // -- HasSource API Methods --
-    
+
     /*
      * @see io.scif.AbstractMetadata#close()
      */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
-      
+
       if (!fileOnly) {
         compression = 0;
         global = 0;
@@ -221,7 +221,7 @@ public class BMPFormat extends AbstractFormat {
     }
 
     // -- HasColorTable API Methods --
-    
+
     /*
      * @see io.scif.HasColorTable#getColorTable()
      */
@@ -229,13 +229,13 @@ public class BMPFormat extends AbstractFormat {
       return palette;
     }
   }
-  
+
   /**
    * @author Mark Hiner
    *
    */
   public static class Checker extends AbstractChecker {
-    
+
     public boolean isFormat(final RandomAccessInputStream stream)
       throws IOException
    {
@@ -244,8 +244,8 @@ public class BMPFormat extends AbstractFormat {
      return stream.readString(blockLen).startsWith(BMP_MAGIC_STRING);
    }
   }
-    
-  
+
+
   /**
   * @author Mark Hiner
    *
@@ -257,52 +257,52 @@ public class BMPFormat extends AbstractFormat {
         throws IOException, FormatException
     {
       meta.createImageMetadata(1);
-      
+
       ImageMetadata iMeta = meta.get(0);
-      
+
       stream.order(true);
-      
+
       // read the first header - 14 bytes
-      
+
       addGlobalMeta("Magic identifier", in.readString(2));
 
       addGlobalMeta("File size (in bytes)", in.readInt());
       in.skipBytes(4);
-      
+
       meta.setGlobal(in.readInt());
-      
+
       // read the second header - 40 bytes
 
       in.skipBytes(4);
-      
+
       int sizeX = 0, sizeY = 0;
-      
+
       // get the dimensions
-      
+
       sizeX = in.readInt();
       sizeY = in.readInt();
-      
+
       iMeta.addAxis(Axes.X, sizeX);
       iMeta.addAxis(Axes.Y, sizeY);
-      
+
       if (sizeX < 1) {
-        LOGGER.trace("Invalid width: {}; using the absolute value", sizeX);
+        log().trace("Invalid width: " + sizeX + "; using the absolute value");
         sizeX = Math.abs(sizeX);
       }
       if (sizeY < 1) {
-        LOGGER.trace("Invalid height: {}; using the absolute value", sizeY);
+        log().trace("Invalid height: " + sizeY + "; using the absolute value");
         sizeY = Math.abs(sizeY);
         meta.setInvertY(true);
       }
-      
+
       addGlobalMeta("Color planes", in.readShort());
-      
+
       short bpp = in.readShort();
-      
+
       iMeta.setBitsPerPixel(bpp);
-      
+
       meta.setCompression(in.readInt());
-      
+
       in.skipBytes(4);
       int pixelSizeX = in.readInt();
       int pixelSizeY = in.readInt();
@@ -311,9 +311,9 @@ public class BMPFormat extends AbstractFormat {
         nColors = bpp < 8 ? 1 << bpp : 256;
       }
       in.skipBytes(4);
-      
+
       // read the palette, if it exists
-      
+
       if (nColors != 0 && bpp == 8) {
         byte[][] palette = new byte[3][256];
 
@@ -323,11 +323,11 @@ public class BMPFormat extends AbstractFormat {
           }
           in.skipBytes(1);
         }
-        
+
         meta.palette = new ColorTable8(palette);
       }
       else if (nColors != 0) in.skipBytes(nColors * 4);
-      
+
       if (getMetadataOptions().getMetadataLevel() != MetadataLevel.MINIMUM) {
         addGlobalMeta("Indexed color", meta.getColorTable(0, 0) != null);
         addGlobalMeta("Image width", sizeX);
@@ -356,21 +356,21 @@ public class BMPFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
   * @author Mark Hiner
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
 
     // -- Reader API Methods --
-    
+
     /*
      * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
@@ -379,17 +379,17 @@ public class BMPFormat extends AbstractFormat {
         throws FormatException, IOException
     {
       Metadata meta = getMetadata();
-      
+
       byte[] buf = plane.getData();
       int compression = meta.getCompression();
       int bpp = meta.getBitsPerPixel(imageIndex);
       int sizeX = meta.getAxisLength(imageIndex, Axes.X);
       int sizeY = meta.getAxisLength(imageIndex, Axes.Y);
       int sizeC = meta.getAxisLength(imageIndex, Axes.CHANNEL);
-      
+
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
           buf.length, x, y, w, h);
-      
+
       if (compression != RAW && getStream().length() <
           FormatTools.getPlaneSize(this, imageIndex))
       {
@@ -431,7 +431,7 @@ public class BMPFormat extends AbstractFormat {
 
       ColorTable palette = meta.getColorTable(0, 0);
       plane.setColorTable(palette);
-      
+
       int effectiveC = palette != null && palette.getLength() > 0 ? 1 : sizeC;
       for (int row=h-1; row>=0; row--) {
         int rowIndex = meta.isInvertY() ? h - 1 - row : row;
@@ -458,6 +458,6 @@ public class BMPFormat extends AbstractFormat {
       }
       return plane;
     }
-    
+
   }
 }

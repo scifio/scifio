@@ -66,19 +66,19 @@ public interface Plane extends Contextual {
   void setColorTable(ColorTable lut);
 
   /**
-   * Gets this plane's ColorTable. 
+   * Gets this plane's ColorTable.
    * 
    * @return A reference to the ColorTable instance associated with this plane.
    */
   ColorTable getColorTable();
-  
+
   /**
    * Gets this plane's standardized pixel data.
    * 
    * @return The standardized representation of this plane's data.
    */
   byte[] getBytes();
-  
+
   /**
    * Gets the {@link ImageMetadata} associated with this plane. The
    * ImageMetadata returned by this method can then be used to answer questions
@@ -88,27 +88,27 @@ public interface Plane extends Contextual {
    *         this plane.
    */
   ImageMetadata getImageMetadata();
-  
+
   /**
    * @return The x offset of this Plane relative to the origin image
    */
   int getxOffset();
-  
+
   /**
    * @return The y offset of this Plane relative to the origin image
    */
   int getyOffset();
-  
+
   /**
    * @return The width of this Plane
    */
   int getxLength();
-  
+
   /**
    * @return The height of this plane
    */
   int getyLength();
-  
+
   /**
    * Populates this planes offsets, dimensions and Metadata.
    * 
@@ -121,7 +121,7 @@ public interface Plane extends Contextual {
    */
   Plane populate(ImageMetadata meta, int xOffset, int yOffset, int xLength,
        int yLength);
-  
+
   /**
    * Populates this plane by copying the fields of the provided plane
    * 
@@ -129,15 +129,15 @@ public interface Plane extends Contextual {
    * @return A reference to this Plane
    */
   Plane populate(Plane p);
-  
-  
+
+
   /**
    * Sets the ImageMetadata representation of the underlying image.
    * 
    * @param meta - an initialized ImageMetadata instance.
    */
   void setImageMetadata(ImageMetadata meta);
-  
+
   /**
    * Sets this plane's position in the X axis of the underlying image.
    * 
@@ -145,7 +145,7 @@ public interface Plane extends Contextual {
    *        NB: x-offset + x-length <= image width
    */
   void setxOffset(int x);
-  
+
   /**
    * Sets this plane's position in the Y axis of the underlying image.
    * 
@@ -153,7 +153,7 @@ public interface Plane extends Contextual {
    *        NB: y-offset + y-length <= image height
    */
   void setyOffset(int y);
-  
+
   /**
    * Sets this plane's length in the X axis of the underlying image.
    * 
@@ -161,7 +161,7 @@ public interface Plane extends Contextual {
    *        NB: x-offset + x-length <= image width
    */
   void setxLength(int length);
-  
+
   /**
    * Sets this plane's length in the Y axis of the underlying image.
    * 

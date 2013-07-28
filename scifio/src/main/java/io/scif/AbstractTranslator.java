@@ -61,39 +61,39 @@ import org.slf4j.LoggerFactory;
  * @param <N> - The destination Metadata type required by this Translator
  */
 public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
-  extends AbstractHasSCIFIO implements Translator {
-  
+  extends AbstractSCIFIOComponent implements Translator {
+
   // -- Constants --
 
   protected static final Logger LOGGER =
     LoggerFactory.getLogger(Translator.class);
-  
+
   // -- Translator API --
-  
+
   /*
    * @see io.scif.Translator#translate(io.scif.Metadata, io.scif.Metadata)
    */
   public void translate(Metadata source, Metadata dest) {
-  	// Cast the parameters to typed Metadata
+    // Cast the parameters to typed Metadata
     M typedSource = SCIFIOMetadataTools.<M>castMeta(source);
     N typedDest = SCIFIOMetadataTools.<N>castMeta(dest);
-    
+
     // Boilerplate for common Metadata fields
     dest.setSource(source.getSource());
     dest.setFiltered(source.isFiltered());
     dest.setMetadataOptions(source.getMetadataOptions());
     dest.setDatasetName(source.getDatasetName());
-    
+
     // Type-dependent translation
     typedTranslate(typedSource, typedDest);
-    
+
     // -- Post-translation hook --
     // Update the source's ImageMetadata based on the translation results
     dest.populateImageMetadata();
   }
-  
+
   // -- AbstractTranslator API --
-  
+
   /**
    * This method should contain the actual logic for populating the
    * type-specific fields of the destination Metadata.

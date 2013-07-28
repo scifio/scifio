@@ -60,16 +60,16 @@ public class DoubleArrayLoader extends AbstractArrayLoader< DoubleArray >
   @Override
   public void convertBytes(DoubleArray data, byte[] bytes, int planesRead) {
     Metadata meta = reader().getMetadata();
-    
+
     int bpp = meta.getBitsPerPixel(0) / 8;
     int offset = planesRead * (bytes.length / bpp);
 
     ByteBuffer bb = ByteBuffer.wrap(bytes);
-    
+
     bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
     bb.asDoubleBuffer().get(data.getCurrentStorageArray(), offset, bytes.length / bpp);
   }
-  
+
   public DoubleArray emptyArray( final int[] dimensions )
   {
     return new DoubleArray( countEntities(dimensions) );

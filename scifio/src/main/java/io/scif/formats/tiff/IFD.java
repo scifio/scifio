@@ -45,7 +45,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 
-
+import org.scijava.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,14 +206,20 @@ public class IFD extends HashMap<Integer, Object> {
   public static final int SHARPNESS = 41994;
   public static final int SUBJECT_DISTANCE_RANGE = 41996;
 
+  // -- Fields --
+
+  private LogService log;
+
   // -- Constructors --
 
-  public IFD() {
+  public IFD(LogService log) {
     super();
+    this.log = log;
   }
 
-  public IFD(IFD ifd) {
+  public IFD(IFD ifd, LogService log) {
     super(ifd);
+    this.log = log;
   }
 
   // -- Tag retrieval methods --
@@ -559,8 +565,8 @@ public class IFD extends HashMap<Integer, Object> {
 
     int samplesPerPixel = getSamplesPerPixel();
     if (bitsPerSample.length < samplesPerPixel) {
-      LOGGER.debug("BitsPerSample length ({}) does not match " +
-        "SamplesPerPixel ({})", bitsPerSample.length, samplesPerPixel);
+      log.debug("BitsPerSample length (" + bitsPerSample.length +
+        ") does not match SamplesPerPixel (" + samplesPerPixel + ")");
       int bits = bitsPerSample[0];
       bitsPerSample = new int[samplesPerPixel];
       Arrays.fill(bitsPerSample, bits);
@@ -944,27 +950,27 @@ public class IFD extends HashMap<Integer, Object> {
 
   /** Prints the contents of this IFD. */
   public void printIFD() {
-    LOGGER.trace("IFD directory entry values:");
+    log.trace("IFD directory entry values:");
 
     for (Integer tag : keySet()) {
       Object value = get(tag);
       String v = null;
       if (value == null) {
-        LOGGER.trace("\t{}=null", getIFDTagName(tag.intValue()));
+        log.trace("\t" + getIFDTagName(tag.intValue()) + "=null");
       }
       else if ((value instanceof Boolean) || (value instanceof Number) ||
         (value instanceof String) || (value instanceof PhotoInterp) ||
         (value instanceof TiffCompression) || (value instanceof TiffIFDEntry))
       {
         v = value.toString();
-        LOGGER.trace("\t{}={}", getIFDTagName(tag.intValue()), v);
+        log.trace("\t" + getIFDTagName(tag.intValue()) + "=" + v);
       }
       else {
         // this is an array of primitive types, Strings, or TiffRationals
-        LOGGER.trace("\t{}=", getIFDTagName(tag.intValue()));
+        log.trace("\t" + getIFDTagName(tag.intValue()) + "=");
         int nElements = Array.getLength(value);
         for (int i=0; i<nElements; i++) {
-          LOGGER.trace("\t\t{}", Array.get(value, i));
+          log.trace("\t\t" + Array.get(value, i));
         }
       }
     }

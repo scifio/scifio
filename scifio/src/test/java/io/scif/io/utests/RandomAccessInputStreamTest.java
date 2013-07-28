@@ -37,15 +37,13 @@
 package io.scif.io.utests;
 
 import static org.testng.AssertJUnit.assertEquals;
-
 import io.scif.io.IRandomAccess;
 import io.scif.io.RandomAccessInputStream;
-
-import java.io.IOException;
-
-
 import io.scif.io.utests.providers.IRandomAccessProvider;
 import io.scif.io.utests.providers.IRandomAccessProviderFactory;
+import io.scif.services.LocationService;
+
+import java.io.IOException;
 
 import org.scijava.Context;
 import org.testng.annotations.AfterMethod;
@@ -91,7 +89,7 @@ public class RandomAccessInputStreamTest {
     IRandomAccessProviderFactory factory = new IRandomAccessProviderFactory();
     IRandomAccessProvider instance = factory.getInstance(provider);
     fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
-    context = new Context();
+    context = new Context(LocationService.class);
     stream = new RandomAccessInputStream(context, fileHandle);
   }
 
@@ -145,7 +143,7 @@ public class RandomAccessInputStreamTest {
       assertEquals(PAGE[(int) stream.getFilePointer()], stream.readByte());
     }
   }
-  
+
   @AfterMethod
   public void tearDown() throws IOException {
     stream.close();

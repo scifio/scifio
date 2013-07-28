@@ -48,11 +48,8 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-
-import io.scif.common.Constants;
-import io.scif.common.ReflectException;
-import io.scif.common.ReflectedUniverse;
-
+import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,10 +78,15 @@ public class ReflectedUniverse {
   /** Whether to force our way past restrictive access modifiers. */
   protected boolean force;
 
+  private final LogService log;
+
   // -- Constructors --
 
   /** Constructs a new reflected universe. */
-  public ReflectedUniverse() { this((ClassLoader) null); }
+  public ReflectedUniverse() { this(null, null); }
+
+  /** Constructs a new reflected universe. */
+  public ReflectedUniverse(LogService log) { this(null, log); }
 
   /**
    * Constructs a new reflected universe, with the given URLs
@@ -97,8 +99,13 @@ public class ReflectedUniverse {
 
   /** Constructs a new reflected universe that uses the given class loader. */
   public ReflectedUniverse(ClassLoader loader) {
+    this(loader, null);
+  }
+
+  public ReflectedUniverse(ClassLoader loader, LogService log) {
     variables = new HashMap<String, Object>();
     this.loader = loader == null ? getClass().getClassLoader() : loader;
+    this.log = log == null ? new StderrLogService() : log;
   }
 
   // -- Utility methods --
@@ -163,18 +170,18 @@ public class ReflectedUniverse {
         c = Class.forName(command, true, loader);
       }
       catch (NoClassDefFoundError err) {
-        LOGGER.debug("No such class: {}", command, err);
+        log.debug("No such class: " + command, err);
         throw new ReflectException("No such class: " + command, err);
       }
       catch (ClassNotFoundException exc) {
-        LOGGER.debug("No such class: {}", command, exc);
+        log.debug("No such class: " + command, exc);
         throw new ReflectException("No such class: " + command, exc);
       }
       catch (RuntimeException exc) {
         // HACK: workaround for bug in Apache Axis2
         String msg = exc.getMessage();
         if (msg != null && msg.indexOf("ClassNotFound") < 0) throw exc;
-        LOGGER.debug("No such class: {}", command, exc);
+        log.debug("No such class: " + command, exc);
         throw new ReflectException("No such class: " + command, exc);
       }
       setVar(varName, c);
@@ -269,7 +276,7 @@ public class ReflectedUniverse {
       catch (IllegalAccessException e) { exc = e; }
       catch (InvocationTargetException e) { exc = e; }
       if (exc != null) {
-        LOGGER.debug("Cannot instantiate object", exc);
+        log.debug("Cannot instantiate object", exc);
         throw new ReflectException("Cannot instantiate object", exc);
       }
     }
@@ -322,7 +329,7 @@ public class ReflectedUniverse {
       catch (IllegalAccessException e) { exc = e; }
       catch (InvocationTargetException e) { exc = e; }
       if (exc != null) {
-        LOGGER.debug("Cannot execute method: {}", methodName, exc);
+        log.debug("Cannot execute method: " + methodName, exc);
         throw new ReflectException("Cannot execute method: " + methodName, exc);
       }
     }
@@ -433,13 +440,13 @@ public class ReflectedUniverse {
         if (force) field.setAccessible(true);
       }
       catch (NoSuchFieldException exc) {
-        LOGGER.debug("No such field: {}", varName, exc);
+        log.debug("No such field: " + varName, exc);
         throw new ReflectException("No such field: " + varName, exc);
       }
       Object fieldVal;
       try { fieldVal = field.get(var); }
       catch (IllegalAccessException exc) {
-        LOGGER.debug("Cannot get field value: {}", varName, exc);
+        log.debug("Cannot get field value: " + varName, exc);
         throw new ReflectException("Cannot get field value: " + varName, exc);
       }
       return fieldVal;
@@ -476,7 +483,7 @@ public class ReflectedUniverse {
       if (line == null) break;
       try { r.exec(line); }
       catch (ReflectException exc) {
-        LOGGER.debug("Could not execute '{}'", line, exc);
+        r.log.debug("Could not execute '" + line + "'", exc);
       }
     }
     System.out.println();

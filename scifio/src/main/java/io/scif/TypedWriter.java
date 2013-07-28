@@ -52,7 +52,7 @@ package io.scif;
 public interface TypedWriter<M extends TypedMetadata> extends Writer {
 
   /**
-   * Generic-parameterized {@code setMetadata} method, using 
+   * Generic-parameterized {@code setMetadata} method, using
    * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
    * {@link io.scif.Writer#setMetadata(Metadata)}.
    * 

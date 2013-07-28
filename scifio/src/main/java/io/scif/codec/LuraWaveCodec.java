@@ -49,6 +49,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * This class provides LuraWave decompression, using LuraWave's Java decoding
@@ -62,7 +63,8 @@ import java.io.IOException;
  *
  * @author Curtis Rueden ctrueden at wisc.edu
  */
-public class LuraWaveCodec extends BaseCodec {
+@Plugin(type = Codec.class)
+public class LuraWaveCodec extends AbstractCodec {
 
   // -- Fields --
 

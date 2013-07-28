@@ -51,70 +51,70 @@ public abstract class AbstractCacheService<T extends Serializable>
   extends AbstractService implements CacheService<T>
 {
   // -- Fields --
-  
+
   // Whether this service should cache anything
   private boolean enabled = true;
-  
+
   // Whether non-dirty records should be cached or not
   private boolean cacheAll = false;
-  
+
   // Whether the cache has reached the disk allocation limit
   private boolean diskFull = false;
-  
+
   // -- CacheService API methods --
-  
+
   /*
    * @see io.scif.io.img.cell.cache.CacheService#enabled()
    */
   public boolean enabled() {
     return enabled;
   }
-  
+
   /*
    * @see io.scif.io.img.cell.cache.CacheService#enable(boolean)
    */
   public void enable(boolean enabled) {
     this.enabled = enabled;
   }
-  
+
   /*
    * @see ome.scifio.io.img.cell.CacheService#getKey(java.lang.String, int)
    */
   public Integer getKey(String cacheId, int index) {
-    
+
     int result = 17;
     result = 31 * result + index;
     result = 31 * result + cacheId.hashCode();
-    
+
     return result;
   }
-  
+
   /*
    * @see io.scif.io.img.cell.cache.CacheService#setMaxBytesOnDisk(long)
    */
   public void setMaxBytesOnDisk(long maxBytes) {
     throw new UnsupportedOperationException("Setting the disk store size not currently supported. Please use enable(false) instead.");
   }
-  
+
   /*
    * @see io.scif.io.img.cell.cache.CacheService#cacheAll(boolean)
    */
   public void cacheAll(boolean enabled) {
     cacheAll = enabled;
   }
-  
+
   // -- AbstractCacheService methods --
-  
+
   // Accessor for CacheAll
   protected boolean cacheAll() {
     return cacheAll;
   }
-  
+
   // Accessor for diskFull
   protected boolean diskFull() {
     return diskFull;
   }
-  
+
   // Setter for diskFull
   protected void diskIsFull(boolean full) {
     diskFull = full;

@@ -73,7 +73,7 @@ import net.imglib2.meta.Axes;
 public class PCXFormat extends AbstractFormat {
 
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -87,15 +87,15 @@ public class PCXFormat extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[]{"pcx"};
   }
-  
+
   // -- Nested Classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata implements HasColorTable {
-    
+
     // -- Fields --
 
     /** Offset to pixel data. */
@@ -106,7 +106,7 @@ public class PCXFormat extends AbstractFormat {
 
     private int nColorPlanes;
     private ColorTable8 lut;
-    
+
     // -- PCXMetadata getters and setters --
 
     public long getOffset() {
@@ -132,14 +132,14 @@ public class PCXFormat extends AbstractFormat {
     public void setnColorPlanes(int nColorPlanes) {
       this.nColorPlanes = nColorPlanes;
     }
-    
+
     // -- Metadata API methods --
-    
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
-      
+
       ImageMetadata iMeta = get(0);
       iMeta.setAxisLength(Axes.CHANNEL, nColorPlanes);
       iMeta.setAxisLength(Axes.Z, 1);
@@ -150,7 +150,7 @@ public class PCXFormat extends AbstractFormat {
       iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
       iMeta.setInterleaved(false);
     }
-    
+
     @Override
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -161,26 +161,26 @@ public class PCXFormat extends AbstractFormat {
         lut = null;
       }
     }
-    
+
     // -- HasColorTable API Methods -
 
     public ColorTable getColorTable(int imageIndex, int planeIndex) {
       return lut;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Checker extends AbstractChecker {
-    
-    // -- Constants -- 
-    
+
+    // -- Constants --
+
     public static final byte PCX_MAGIC_BYTE = 10;
 
     // -- Checker API Methods --
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
       final int blockLen = 1;
@@ -188,7 +188,7 @@ public class PCXFormat extends AbstractFormat {
       return stream.read() == PCX_MAGIC_BYTE;
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -196,16 +196,16 @@ public class PCXFormat extends AbstractFormat {
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- Parser API Methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
-      throws IOException, FormatException 
+      throws IOException, FormatException
     {
-      LOGGER.info("Reading file header");
+      log().info("Reading file header");
 
       meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
-      
+
       iMeta.setLittleEndian(true);
       stream.order(true);
       stream.seek(1);
@@ -227,7 +227,7 @@ public class PCXFormat extends AbstractFormat {
       int paletteType = stream.readShort();
 
       meta.setOffset(stream.getFilePointer() + 58);
-      
+
       if (version == 5 && meta.getnColorPlanes() == 1) {
         stream.seek(stream.length() - 768);
         byte[][] lut = new byte[3][256];
@@ -236,14 +236,14 @@ public class PCXFormat extends AbstractFormat {
             lut[j][i] = stream.readByte();
           }
         }
-        
+
         meta.lut = new ColorTable8(lut);
         iMeta.setIndexed(true);
       }
 
       addGlobalMeta("Palette type", paletteType);
     }
-    
+
   }
 
   /**
@@ -251,25 +251,25 @@ public class PCXFormat extends AbstractFormat {
    *
    */
   public static class Reader extends ByteArrayReader<Metadata> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
 
     // -- Reader API Methods --
-  
+
     /*
      * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
       ByteArrayPlane plane, int x, int y, int w, int h)
-      throws FormatException, IOException 
+      throws FormatException, IOException
     {
       Metadata meta = getMetadata();
       byte[] buf = plane.getData();
-      
+
       FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
 
       getStream().seek(meta.getOffset());

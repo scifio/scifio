@@ -73,7 +73,7 @@ public interface PluginAttributeService extends Service {
    */
   <PT extends SCIFIOPlugin> PT createInstance(Class<PT> type,
       Map<String, String> andPairs, Map<String, String> orPairs);
-  
+
   /**
    * As {@link org.scijava.plugin.PluginService#createInstancesOfType(Class)}
    * but with key,value pair parameters to allow for filtering based on

@@ -52,15 +52,15 @@ import net.imglib2.type.numeric.RealType;
  *
  */
 public class PlanarAccessConverter implements PlaneConverter {
-  
+
   /** Populates plane by reference using {@link PlanarAccess} interface. */
   @SuppressWarnings("unchecked")
-  public <T extends RealType<T>> void populatePlane(final Reader reader, final int imageIndex, 
+  public <T extends RealType<T>> void populatePlane(final Reader reader, final int imageIndex,
       final int planeIndex, final byte[] plane, final ImgPlus<T> planarImg,
       ImgOptions imgOptions) {
-	
-	Metadata m = reader.getMetadata();
-	  
+
+  Metadata m = reader.getMetadata();
+
     @SuppressWarnings("rawtypes")
     PlanarAccess planarAccess = ImgIOUtils.getPlanarAccess(planarImg);
     final int pixelType = m.getPixelType(imageIndex);

@@ -37,7 +37,7 @@
  * Provides SCIFIO-based classes for working with {@link net.imglib2.img.ImgPlus}
  * from the imglib2 library.
  * <p>
- * {@link io.scif.io.img.ImgOpener} is used for creating ImgPluses, using 
+ * {@link io.scif.io.img.ImgOpener} is used for creating ImgPluses, using
  * {@link net.imglib2.img.cell.CellImg} or {@link net.imglib2.img.planar.PlanarImg}
  * implementations.
  * </p>

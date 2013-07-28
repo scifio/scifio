@@ -38,6 +38,8 @@ package io.scif.xml;
 
 import java.util.Hashtable;
 
+import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 import org.xml.sax.Attributes;
 
 /**
@@ -55,6 +57,14 @@ class MetadataHandler extends BaseHandler {
   private String currentQName;
   private Hashtable<String, String> metadata =
     new Hashtable<String, String>();
+
+  public MetadataHandler() {
+    this(new StderrLogService());
+  }
+
+  public MetadataHandler(LogService log) {
+    super(log);
+  }
 
   // -- MetadataHandler API methods --
 

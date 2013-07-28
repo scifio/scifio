@@ -76,7 +76,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
   /** Metadata for the current source. */
   protected M metadata;
-  
+
   /** String id of current source. */
   protected String currentId;
 
@@ -90,14 +90,14 @@ public abstract class AbstractParser<M extends TypedMetadata>
   protected MetadataOptions metadataOptions = new DefaultMetadataOptions();
 
   // -- Parser API Methods --
-  
+
   /* @see Parser#parse(String fileName) */
   public M parse(final String fileName) throws IOException, FormatException {
     @SuppressWarnings("unchecked")
     M meta = (M) getFormat().createMetadata();
     return parse(fileName, meta);
   }
-  
+
   /*
    * @see io.scif.TypedParser#parse(java.io.File)
    */
@@ -124,7 +124,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
   {
     return parse(fileName, SCIFIOMetadataTools.<M>castMeta(meta));
   }
-  
+
   /*
    * @see io.scif.Parser#parse(java.io.File, io.scif.Metadata)
    */
@@ -232,7 +232,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
     if (files == null) return null;
     return getFileInfo(files);
   }
-  
+
   /*
    * @see io.scif.Parser#getSupportedMetadataLevels()
    */
@@ -314,7 +314,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
 
     metaTable.put(key, val == null ? value : val);
   }
-  
+
   // -- TypedParser API Methods --
 
   /* @see TypedParser#parse(String, M) */
@@ -322,7 +322,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
     throws IOException, FormatException
   {
     RandomAccessInputStream stream = null;
-    
+
     if (in != null) {
       if (in.getFileName().equals(fileName)) {
         in.seek(0);
@@ -332,13 +332,13 @@ public abstract class AbstractParser<M extends TypedMetadata>
         close();
       }
     }
-    
+
     if (stream == null)
       stream = new RandomAccessInputStream(getContext(), fileName);
-    
+
     return parse(stream, meta);
   }
-  
+
   /* @see TypedParser#parse(File, M) */
   public M parse(final File file, final M meta)
     throws IOException, FormatException
@@ -355,27 +355,27 @@ public abstract class AbstractParser<M extends TypedMetadata>
       init(stream);
 
       if (saveOriginalMetadata) {
-        //TODO store all metadata in OMEXML store.. 
-      	// or equivalent function? as per setId.. or handle via annotations
+        //TODO store all metadata in OMEXML store..
+        // or equivalent function? as per setId.. or handle via annotations
       }
     }
-    
+
     //TODO relying on Abstract-level API
     metadata.setFiltered(filterMetadata);
     metadata.setMetadataOptions(metadataOptions);
     if(metadata.getContext() == null) metadata.setContext(getContext());
     metadata.setSource(stream);
     metadata.setDatasetName(stream.getFileName());
-    
+
     currentId = stream.getFileName();
-    
+
     typedParse(stream, meta);
-    
+
     metadata.populateImageMetadata();
-    
+
     return metadata;
   }
-  
+
   // -- HasSource API Methods --
 
   /*
@@ -391,7 +391,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
   }
 
   // -- AbstractParser Methods --
-  
+
   /**
    * A helper method, called by {@link #parse(RandomAccessInputStream, TypedMetadata)}.
    * Allows for boilerplate code to come after parsing, specifically calls to
@@ -400,13 +400,13 @@ public abstract class AbstractParser<M extends TypedMetadata>
    * This method should be implemented to populate any format-specific Metadata.
    * </p>
    * <p>
-   * NB: if a Format requires type-specific parsing to occur before 
+   * NB: if a Format requires type-specific parsing to occur before
    * the Abstract layer, Override {@code #parse(String, TypedMetadata)} instead.
    * </p>
    */
   protected abstract void typedParse(RandomAccessInputStream stream, M meta)
     throws IOException, FormatException;
-  
+
   /** Adds an entry to the global metadata table. */
   public void addGlobalMeta(final String key, final Object value) {
     addMeta(key, value, metadata.getTable());
@@ -460,7 +460,7 @@ public abstract class AbstractParser<M extends TypedMetadata>
   /* Sets the input stream for this parser if provided a new stream */
   private void init(final RandomAccessInputStream stream) throws IOException {
 
-  	// Check to see if the stream is already open
+    // Check to see if the stream is already open
     if (in != null) {
       final String[] s = getUsedFiles();
       for (int i = 0; i < s.length; i++) {

@@ -181,11 +181,11 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
   public void setReader(Reader r) {
     reader = r;
     // TODO make N-d
-    
+
     if (r instanceof ReaderFilter) r = ((ReaderFilter)r).getTail();
-    
+
     int[] cellXY = getOptimalCellXY(reader);
-    
+
     defaultCellDimensions = new int[] {cellXY[0], cellXY[1], 1, 1, 1 };
   }
 
@@ -197,7 +197,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
       super.finalize();
     }
   }
-  
+
   // -- Helper Methods --
 
   private <A extends ArrayDataAccess<?>, L extends SCIFIOArrayLoader<A>>
@@ -208,19 +208,19 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
     @SuppressWarnings("unchecked")
     CacheService<SCIFIOCell<?>> service = reader.getContext().getServiceIndex().getService(CacheService.class);
-    
-    final SCIFIOCellCache<A> c = new SCIFIOCellCache<A>(service, loader); 
+
+    final SCIFIOCellCache<A> c = new SCIFIOCellCache<A>(service, loader);
 
     return new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(
         c, entitiesPerPixel, dimensions, cellSize));
 
   }
-  
+
   // -- Static helper methods --
-  
+
   /**
    * See {@link #getOptimalCellXY(Reader, int, int)}. Defaults
-   * to {@link Reader#getOptimalTileHeight(int)} and 
+   * to {@link Reader#getOptimalTileHeight(int)} and
    * {@link Reader#getOptimalTileWidth(int)}.
    * 
    * @throws IllegalArgumentException if no cell can be found
@@ -233,7 +233,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
     return getOptimalCellXY(reader, reader.getOptimalTileWidth(0),
     reader.getOptimalTileHeight(0));
   }
-  
+
   /**
    * Returns optimal default cell dimensions given a reader
    * with an open dataset and a base tileWidth and tileHeight.
@@ -255,41 +255,41 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
   public static int[] getOptimalCellXY(Reader reader, int tileWidth, int tileHeight) {
     // No cell will occupy more than 2MB
     int maxBytes = 2 * 1024 * 1024;
-    
+
     Metadata meta = reader.getMetadata();
-    
+
     int sizeX = meta.getAxisLength(0, Axes.X);
     int sizeY = meta.getAxisLength(0, Axes.Y);
-    
+
     // Invalid sizes default to 1, 1, which are automatically expanded.
     if (tileWidth <= 0) tileWidth = 1;
     if (tileHeight <= 0) tileHeight = 1;
-    
+
     // Similarly, if the tiles are too big, cap them
     if (tileHeight > sizeX) tileHeight = sizeX;
     if (tileWidth > sizeY) tileWidth = sizeY;
-    
+
     int cellWidth = -1, cellHeight = -1;
     int bpp = FormatTools.getBytesPerPixel(meta.getPixelType(0));
-    
+
     // Compute the size, in bytes, of a single tile. We do not consider RGB
     // channel count because ChannelSeparator is assumed.
     int tileSize = DataTools.safeMultiply32(tileWidth, tileHeight, bpp);
-    
+
     // Tile is too large
-    if (tileSize > maxBytes) 
-      throw new IllegalArgumentException("Tiles too large: " + tileSize 
+    if (tileSize > maxBytes)
+      throw new IllegalArgumentException("Tiles too large: " + tileSize
           + ". Please use a tile size < 2MB");
-    
+
     // Determine how many tiles we have to work with
     int numTiles = maxBytes / tileSize;
-    
+
     // How many tiles wide can we make our strips
     int tilesWide = Math.min(sizeX / tileWidth, numTiles);
-    
+
     // Compute cellWidth
     cellWidth = tilesWide * tileWidth;
-    
+
     if (cellWidth < sizeX && numTiles > tilesWide)
       cellWidth = sizeX;
 
@@ -298,10 +298,10 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
     // compute cellHeight
     cellHeight = tilesHigh * tileHeight;
-    
+
     if (cellHeight < sizeY && maxBytes > cellWidth * sizeY * bpp)
       cellHeight = sizeY;
-    
+
     return new int[]{cellWidth, cellHeight};
   }
 }

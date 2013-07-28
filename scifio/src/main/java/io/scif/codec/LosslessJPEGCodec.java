@@ -44,6 +44,7 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * Decompresses lossless JPEG images.
@@ -54,7 +55,8 @@ import java.util.Vector;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class LosslessJPEGCodec extends BaseCodec {
+@Plugin(type = Codec.class)
+public class LosslessJPEGCodec extends AbstractCodec {
 
   // -- Constants --
 
@@ -123,7 +125,7 @@ public class LosslessJPEGCodec extends BaseCodec {
   public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
     throws FormatException, IOException
   {
-    if (in == null) 
+    if (in == null)
       throw new IllegalArgumentException("No data to decompress.");
     if (options == null) options = CodecOptions.getDefaultOptions();
     byte[] buf = new byte[0];

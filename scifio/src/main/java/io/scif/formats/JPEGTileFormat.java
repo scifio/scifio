@@ -68,7 +68,7 @@ import net.imglib2.meta.Axes;
 public class JPEGTileFormat extends AbstractFormat {
 
   // -- Format API Methods --
-  
+
   public String getFormatName() {
     return "Tile JPEG";
   }
@@ -76,9 +76,9 @@ public class JPEGTileFormat extends AbstractFormat {
   public String[] getSuffixes() {
     return new String[] {"jpg", "jpeg"};
   }
-  
+
   // -- Nested Classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -88,9 +88,9 @@ public class JPEGTileFormat extends AbstractFormat {
     // -- Fields --
 
     private JPEGTileDecoder decoder;
-    
+
     // -- JPEGTileMetadata API getters and setters --
-    
+
     public JPEGTileDecoder getDecoder() {
       return decoder;
     }
@@ -98,16 +98,16 @@ public class JPEGTileFormat extends AbstractFormat {
     public void setDecoder(JPEGTileDecoder decoder) {
       this.decoder = decoder;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       createImageMetadata(1);
       ImageMetadata iMeta = get(0);
-      
+
       iMeta.setInterleaved(true);
       iMeta.setLittleEndian(false);
       iMeta.setAxisLength(Axes.X, decoder.getWidth());
@@ -131,7 +131,7 @@ public class JPEGTileFormat extends AbstractFormat {
         }
         decoder = null;
       }
-      
+
       super.close(fileOnly);
     }
   }
@@ -143,7 +143,7 @@ public class JPEGTileFormat extends AbstractFormat {
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- Parser API Methods --
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
@@ -153,7 +153,7 @@ public class JPEGTileFormat extends AbstractFormat {
       decoder.initialize(getContext(), in, 0, 1, 0);
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -161,13 +161,13 @@ public class JPEGTileFormat extends AbstractFormat {
   public static class Reader extends ByteArrayReader<Metadata> {
 
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
 
     // -- Reader API methods --
-    
+
     /*
      * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
@@ -192,6 +192,6 @@ public class JPEGTileFormat extends AbstractFormat {
 
       return plane;
     }
-    
+
   }
 }

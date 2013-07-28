@@ -45,7 +45,7 @@ import org.scijava.Prioritized;
  * for creating components, and facilitates component intercommunication.
  * </p>
  * <p>
- * {@code Formats} are typically accessed through the 
+ * {@code Formats} are typically accessed through the
  * {@link io.scif.services.FormatService}, which maintains a list of
  * singleton {@code Formats} and has many convenience methods relating
  * to their use.
@@ -60,10 +60,10 @@ import org.scijava.Prioritized;
  * @see io.scif.SCIFIO
  * @see io.scif.services.FormatService
  */
-public interface Format extends SCIFIOPlugin, Prioritized, HasSCIFIO {
-  
+public interface Format extends SCIFIOComponent, SCIFIOPlugin, Prioritized {
+
   // -- Format API methods --
-  
+
   /**
    * Toggle whether this Format should be used when checking image compatibility.
    * 
@@ -71,7 +71,7 @@ public interface Format extends SCIFIOPlugin, Prioritized, HasSCIFIO {
    * 
    */
   void setEnabled(boolean enabled);
-  
+
   /**
    * @return True if this Format is active when checking image compatibility.
    */
@@ -103,8 +103,8 @@ public interface Format extends SCIFIOPlugin, Prioritized, HasSCIFIO {
    * 
    * @return an array of extensions associated with this Format
    */
-  String[] getSuffixes();  
-  
+  String[] getSuffixes();
+
   /**
    * Create an instance of the Metadata associated with this format.
    * 
@@ -149,7 +149,7 @@ public interface Format extends SCIFIOPlugin, Prioritized, HasSCIFIO {
    * @throws FormatException
    */
   Writer createWriter() throws FormatException;
-   
+
   /**
    * @return The class of the Metadata associated with this format
    */

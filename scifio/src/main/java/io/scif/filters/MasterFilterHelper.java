@@ -77,31 +77,31 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
 
   // The non-filter object ultimately delegated to
   private T tail;
-  
+
   // PluginInfo map allows lazy instantiation of individual plugins
   private HashMap<Class<? extends Filter>, PluginInfo<Filter>> refMap =
       new HashMap<Class<? extends Filter>, PluginInfo<Filter>>();
-  
+
   // Instance map to maintain singletons of created plugins
   private HashMap<Class<? extends Filter>, Filter> instanceMap =
       new HashMap<Class<? extends Filter>, Filter>();
-  
+
   // A sorted set of enabled filters
   private TreeSet<Filter> enabled = new TreeSet<Filter>();
-  
+
   // -- Constructor --
-  
+
   public MasterFilterHelper(T wrapped, Class<? extends T> wrappedClass) {
     super(wrappedClass);
     tail = wrapped;
-    
+
     setContext(wrapped.getContext());
     List<PluginInfo<Filter>> filterInfos = getContext().getPluginIndex().getPlugins(Filter.class);
-    
+
     // check for matching filter types
     for (PluginInfo<Filter> info : filterInfos) {
       String filterClassName = info.get(FILTER_KEY);
-      
+
       if (filterClassName != null) {
         Class<?> filterClass;
         try {
@@ -112,18 +112,18 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
             if (Boolean.getBoolean(defaultEnabled)) enable(info.getPluginType());
           }
         } catch (ClassNotFoundException e) {
-          LOGGER.error("Failed to find class: " + filterClassName);
+          log().error("Failed to find class: " + filterClassName);
         } catch (InstantiableException e) {
-          LOGGER.error("Failed to create instance: " + filterClassName);
+          log().error("Failed to create instance: " + filterClassName);
         }
       }
     }
-    
+
     setParent(tail);
   }
-  
+
   // -- MasterFilter API Methods --
-  
+
   /*
    * @see io.scif.filters.MasterFilter#enable(java.lang.Class)
    */
@@ -152,7 +152,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
       filter.reset();
       disabled = true;
     }
-    
+
     return disabled;
   }
 
@@ -162,9 +162,9 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
   public T getTail() {
     return tail;
   }
-  
+
   // -- Filter API Methods --
-  
+
   /*
    * @see io.scif.filters.Filter#reset()
    */
@@ -174,23 +174,23 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
     enabled.clear();
     updateParents();
   }
-  
+
   /*
    * @see io.scif.filters.MasterFilter#getFilterClasses()
    */
   public Set<Class<? extends Filter>> getFilterClasses() {
     return refMap.keySet();
   }
-  
+
   // -- Helper Methods --
-  
+
   // Helper method to check instanceMap first. If instanceMap is empty, create a new instance
   // and set its priority.
   private Filter getFilter(Class<? extends Filter> filterClass) throws InstantiableException {
     Filter filter = instanceMap.get(filterClass);
-    
+
     if (filter != null) return filter;
-    
+
     PluginInfo<Filter> item = refMap.get(filterClass);
     if(item != null) {
       filter = item.createInstance();
@@ -198,7 +198,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
       //NB: didn't set context as parents aren't set yet
       instanceMap.put(filterClass, filter);
     }
-    
+
     return filter;
   }
 
@@ -221,7 +221,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T> 
         currentFilter.setParent(nextFilter);
         currentFilter = nextFilter;
       }
-      
+
       setParent(currentFilter);
     }
   }

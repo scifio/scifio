@@ -52,7 +52,7 @@ import org.scijava.Context;
 public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 
   // -- Constructor --
-  
+
   public ByteArrayPlane(final Context context) {
     super(context);
   }
@@ -62,12 +62,12 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
     super(context, meta, xOffset, yOffset, xLength, yLength);
 
     byte[] buf = null;
-    
+
     buf = DataTools.allocate(xLength, yLength, FormatTools.getBytesPerPixel(getImageMetadata().getPixelType()), meta.getRGBChannelCount());
-    
+
     setData(buf);
   }
-  
+
   // -- Plane API methods --
 
   /*

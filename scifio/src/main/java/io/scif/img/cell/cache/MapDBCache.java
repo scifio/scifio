@@ -60,7 +60,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	
   // Disk-backed database for writing
   private DB db;
-  
+
   // List of caches
   private Set<String> caches = new TreeSet<String>();
 
@@ -68,7 +68,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   private long maxCacheSize = Long.MAX_VALUE;
 
   // -- CacheService API Methods --
-  
+
   /**
    * @see io.scifio.io.img.cell.CacheService#clearCache(java.lang.String)
    * <p>
@@ -86,11 +86,10 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       	cell.cacheOnFinalize(false);
       	cache.remove(k);
       }
-      
       db.commit();
     }
   }
-  
+
   /*
    * @see io.scif.img.cell.cache.CacheService#clearAllCaches()
    */
@@ -107,14 +106,14 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       caches.remove(cacheId);
     }
   }
-  
+
   /*
    * @see io.scif.io.img.cell.cache.CacheService#addCache(java.lang.String)
    */
   public void addCache(String cacheId) {
     caches.add(cacheId);
   }
-  
+
   /*
    * @see io.scifio.io.img.cell.CacheService#cache(java.lang.String, int, java.io.Serializable)
    */
@@ -132,13 +131,13 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
       if (cell != null && cell.equals(object)) return CacheResult.DUPLICATE_FOUND;
       
       // Store the provided cell
-      
+
       HTreeMap<Object, Object> cache = db.getHashMap(cacheId);
-      
+
       // Will another object fit?
       if ((cache.size() + 1) * object.getElementSize() < maxCacheSize) diskIsFull(false);
       else diskIsFull(true);
-      
+
       // If the cache is enabled and there's room on disk, cache and commit
       if (!enabled()) {
       	return CacheResult.CACHE_DISABLED;
@@ -161,12 +160,12 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   public SCIFIOCell<?> retrieve(String cacheId, int index) {
 
     SCIFIOCell<?> cell = getCell(cacheId, index);
-    
+
     if (cell != null) {
       db.getHashMap(cacheId).remove(getKey(cacheId, index));
       db.commit();
     }
-    
+
     return cell;
   }
   
@@ -188,9 +187,9 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   public void setMaxBytesOnDisk(long maxBytes) {
     maxCacheSize = maxBytes;
   }
-  
+
   // -- Service API Methods --
-  
+
   @Override
   public void initialize() {
       db = DBMaker.newTempFileDB()
@@ -200,13 +199,13 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
           .deleteFilesAfterClose()
           .make();
   }
-  
+
   @Override
   public void dispose() {
     clearAllCaches();
     db.close();
   }
-  
+
   // -- Helper Methods --
   
   private SCIFIOCell<?> getCell(String cacheId, int index) {
@@ -229,7 +228,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
   private SCIFIOCell<?> getCellFromCache(HTreeMap<?, ?> cache, int key) {
     SCIFIOCell<?> cell = null;
     boolean success = false;
-    
+
     // wait for memory to clear and the read to succeed
     while (!success) {
       try {

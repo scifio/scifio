@@ -64,7 +64,7 @@ import org.scijava.plugin.Plugin;
 public class PGMFormat extends AbstractFormat {
 
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -80,20 +80,20 @@ public class PGMFormat extends AbstractFormat {
   }
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata {
-    
+
     // -- Fields --
-    
+
     private boolean rawBits;
 
     /** Offset to pixel data. */
     private long offset;
-    
+
     // -- PGMMetadata getters and setters --
 
     public boolean isRawBits() {
@@ -111,13 +111,13 @@ public class PGMFormat extends AbstractFormat {
     public void setOffset(long offset) {
       this.offset = offset;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
       iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
-      
+
       iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) == 3);
       iMeta.setAxisLength(Axes.Z, 1);
       iMeta.setAxisLength(Axes.TIME, 1);
@@ -128,7 +128,7 @@ public class PGMFormat extends AbstractFormat {
       iMeta.setFalseColor(false);
       iMeta.setMetadataComplete(true);
     }
-    
+
     /* @see loci.formats.IFormatReader#close(boolean) */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -138,25 +138,25 @@ public class PGMFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Checker extends AbstractChecker {
-    
+
     // -- Constants --
-    
+
     public static final char PGM_MAGIC_CHAR = 'P';
 
     // -- Constructor --
-    
+
     public Checker() {
       suffixNecessary = false;
     }
-    
+
     // -- Checker API Methods --
-    
+
     @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
       final int blockLen = 2;
@@ -164,9 +164,9 @@ public class PGMFormat extends AbstractFormat {
       return stream.read() == PGM_MAGIC_CHAR &&
         Character.isDigit((char) stream.read());
     }
-    
+
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -182,7 +182,7 @@ public class PGMFormat extends AbstractFormat {
       String magic = stream.readLine().trim();
 
       boolean isBlackAndWhite = false;
-      
+
       meta.createImageMetadata(1);
       ImageMetadata iMeta = meta.get(0);
 
@@ -192,9 +192,9 @@ public class PGMFormat extends AbstractFormat {
       int space = line.indexOf(" ");
       iMeta.setAxisLength(Axes.X, Integer.parseInt(line.substring(0, space).trim()));
       iMeta.setAxisLength(Axes.Y, Integer.parseInt(line.substring(space + 1).trim()));
-      
+
       meta.setRawBits(magic.equals("P4") || magic.equals("P5") || magic.equals("P6"));
-      
+
       iMeta.setAxisLength(Axes.CHANNEL, (magic.equals("P3") || magic.equals("P6")) ? 3 : 1);
       isBlackAndWhite = magic.equals("P1") || magic.equals("P4");
 
@@ -208,7 +208,7 @@ public class PGMFormat extends AbstractFormat {
 
       addGlobalMeta("Black and white", isBlackAndWhite);
     }
-    
+
     // -- Helper Methods --
 
     private String readNextLine() throws IOException {
@@ -220,7 +220,7 @@ public class PGMFormat extends AbstractFormat {
     }
 
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -228,13 +228,13 @@ public class PGMFormat extends AbstractFormat {
   public static class Reader extends ByteArrayReader<Metadata> {
 
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
-    
+
     // -- Reader API methods --
-    
+
     /*
      * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */

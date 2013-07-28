@@ -52,7 +52,7 @@ public class DependencyException extends Exception
 {
   /** Serial for this version. */
   protected static final long serialVersionUID = -7836244849086491562L;
-  
+
   /** The class that was used in a failed instantiation. */
   protected Class<? extends Service> failureClass;
 
@@ -67,7 +67,7 @@ public class DependencyException extends Exception
 
   /**
    * Default constructor.
-   * @param message Error message. 
+   * @param message Error message.
    * @param klass Failed instantiation class.
    */
   public DependencyException(String message, Class<? extends Service> klass)
@@ -78,7 +78,7 @@ public class DependencyException extends Exception
 
   /**
    * Default constructor.
-   * @param message Error message. 
+   * @param message Error message.
    * @param klass Failed instantiation class.
    * @param cause Upstream exception.
    */

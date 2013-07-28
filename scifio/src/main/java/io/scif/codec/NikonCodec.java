@@ -43,6 +43,7 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * This class implements Nikon decompression. Compression is not yet
@@ -57,7 +58,8 @@ import java.util.Arrays;
  *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public class NikonCodec extends BaseCodec {
+@Plugin(type = Codec.class)
+public class NikonCodec extends AbstractCodec {
 
   private static final int[] DEFAULT_LINEARIZATION_TABLE = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,

@@ -52,7 +52,7 @@ public abstract class AbstractGroupable extends AbstractHasSource implements Gro
 
   /** Whether or not to group multi-file formats. */
   private boolean group = true;
-  
+
   /*
    * @see io.scif.Groupable#setGroupFiles(boolean)
    */
@@ -75,7 +75,7 @@ public abstract class AbstractGroupable extends AbstractHasSource implements Gro
   {
     return FormatTools.CANNOT_GROUP;
   }
-  
+
   /*
    * @see io.scif.Groupable#isSingleFile()
    */

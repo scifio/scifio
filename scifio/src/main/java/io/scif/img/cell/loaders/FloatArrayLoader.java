@@ -60,16 +60,16 @@ public class FloatArrayLoader extends AbstractArrayLoader< FloatArray >
   @Override
   public void convertBytes(FloatArray data, byte[] bytes, int planesRead) {
     Metadata meta = reader().getMetadata();
-    
+
     int bpp = meta.getBitsPerPixel(0) / 8;
     int offset = planesRead * (bytes.length / bpp);
 
     ByteBuffer bb = ByteBuffer.wrap(bytes);
-    
+
     bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
     bb.asFloatBuffer().get(data.getCurrentStorageArray(), offset, bytes.length / bpp);
   }
-  
+
   public FloatArray emptyArray( final int[] dimensions )
   {
     return new FloatArray( countEntities(dimensions) );

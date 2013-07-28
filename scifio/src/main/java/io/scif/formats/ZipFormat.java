@@ -71,7 +71,7 @@ import net.imglib2.display.ColorTable;
 public class ZipFormat extends AbstractFormat {
 
   // -- Format API Methods --
-  
+
   /*
    * @see io.scif.Format#getFormatName()
    */
@@ -87,33 +87,33 @@ public class ZipFormat extends AbstractFormat {
   }
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata implements HasColorTable {
-    
+
     // -- Fields --
 
     private io.scif.Metadata metadata;
-    
+
     private List<String> mappedFiles = new ArrayList<String>();
-    
+
     // -- ZipMetadata methods --
-    
+
     public List<String> getMappedFiles() {
       return mappedFiles;
     }
-    
+
     public void setMetadata(io.scif.Metadata m) throws IOException {
       if (metadata != null) metadata.close();
-      
+
       metadata = m;
     }
-    
+
     // -- HasColorTable API methods --
-    
+
     /*
      * @see io.scif.HasColorTable#getColorTable()
      */
@@ -123,15 +123,15 @@ public class ZipFormat extends AbstractFormat {
       return null;
     }
 
-    // -- Metadata API Methods -- 
-    
+    // -- Metadata API Methods --
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       // clears existing metadata
       createImageMetadata(0);
-      
+
       // copies the delegate's image metadata
       for (ImageMetadata meta : metadata.getAll())
         add(meta);
@@ -147,12 +147,12 @@ public class ZipFormat extends AbstractFormat {
         }
       }
       mappedFiles.clear();
-      
+
       super.close(fileOnly);
-      
+
       if (metadata != null) metadata.close(fileOnly);
       if (!fileOnly) metadata = null;
-      
+
       mappedFiles = new ArrayList<String>();
     }
   }
@@ -169,23 +169,23 @@ public class ZipFormat extends AbstractFormat {
     {
       return super.parse(ZipUtilities.getRawStream(scifio(), stream), meta);
     }
-    
+
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
       throws IOException, FormatException
     {
       String baseId = ZipUtilities.unzipId(scifio(), stream, meta.getMappedFiles());
-      
+
       io.scif.Parser p = scifio().format().getFormat(baseId).createParser();
       p.setOriginalMetadataPopulated(isOriginalMetadataPopulated());
       p.setMetadataFiltered(isMetadataFiltered());
       p.setMetadataOptions(getMetadataOptions());
       io.scif.Metadata m = p.parse(baseId);
-      
+
       meta.setMetadata(m);
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -193,48 +193,48 @@ public class ZipFormat extends AbstractFormat {
   public static class Reader extends ByteArrayReader<Metadata> {
 
     // -- Fields --
-    
+
     private io.scif.Reader reader;
-    
+
     // -- Reader API Methods --
-    
+
     @Override
     public void setSource(RandomAccessInputStream stream) throws IOException {
       super.setSource(ZipUtilities.getRawStream(scifio(), stream));
-      
+
       if (reader != null) reader.close();
-      
+
       String baseId = ZipUtilities.unzipId(scifio(), stream, null);
 
       try {
         reader = scifio().format().getFormat(baseId).createReader();
         reader.setSource(baseId);
       } catch (FormatException e) {
-        LOGGER.error("Failed to set delegate Reader's source", e);
+        log().error("Failed to set delegate Reader's source", e);
       }
     }
-    
+
     @Override
     public void setMetadata(Metadata meta) throws IOException {
       super.setMetadata(meta);
-      
+
       if (reader != null) reader.close();
-      
+
       try {
         String baseId = ZipUtilities.unzipId(scifio(), meta.getSource(), null);
-        
+
         reader = scifio().initializer().initializeReader(baseId);
         meta.setMetadata(reader.getMetadata());
       } catch (FormatException e) {
-        LOGGER.error("Failed to initialize delegate Reader", e);
+        log().error("Failed to initialize delegate Reader", e);
       }
     }
-    
+
     /** Specifies whether or not to normalize float data. */
     public void setNormalized(boolean normalize) {
       if (reader != null) reader.setNormalized(normalize);
     }
-    
+
     /*
      * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
@@ -246,7 +246,7 @@ public class ZipFormat extends AbstractFormat {
       System.arraycopy(p.getBytes(), 0, plane.getData(), 0, plane.getData().length);
       return plane;
     }
-    
+
     @Override
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -254,11 +254,11 @@ public class ZipFormat extends AbstractFormat {
       if (!fileOnly) reader = null;
     }
   }
-  
+
   // -- Helper class --
-  
+
   private static class ZipUtilities {
-   
+
     /**
      * Extracts the String id of the provided stream.
      * 
@@ -274,7 +274,7 @@ public class ZipFormat extends AbstractFormat {
     {
       ZipInputStream zip = new ZipInputStream(stream);
       ZipEntry ze = null;
-      
+
       while (true) {
         ze = zip.getNextEntry();
         if (ze == null) break;
@@ -286,10 +286,10 @@ public class ZipFormat extends AbstractFormat {
       ZipHandle base = new ZipHandle(scifio.getContext(), stream.getFileName());
       String id = base.getEntryName();
       base.close();
-      
+
       return id;
     }
-    
+
     /**
      * Returns a new RandomAccessInputStream around the raw handle underlying the
      * provided stream, instead of using a zip handle.

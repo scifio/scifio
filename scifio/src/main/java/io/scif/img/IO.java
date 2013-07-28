@@ -74,11 +74,11 @@ import org.slf4j.LoggerFactory;
 public final class IO {
 
   // -- Static fields --
-  
+
   private static Logger logger = LoggerFactory.getLogger(IO.class);
-  
+
   // -- Static IO Methods --
-  
+
   /**
    * @param source
    *          - the location of the dataset to assess
@@ -93,7 +93,7 @@ public final class IO {
       return 0;
     }
   }
-  
+
   // -- Static ImgOpener methods --
 
   /**
@@ -157,7 +157,7 @@ public final class IO {
    * @throws ImgIOException
    *           - if file could not be found or is too big for the memory
    */
-  public static ImgPlus<FloatType> openFloat(final String source, int imageIndex) 
+  public static ImgPlus<FloatType> openFloat(final String source, int imageIndex)
   {
     return open(source, imageIndex, new FloatType());
   }
@@ -182,7 +182,7 @@ public final class IO {
   {
     return open(source, imageIndex, new DoubleType());
   }
-  
+
   /**
    * Opens an {@link Img} as {@link UnsignedByteType}. It returns an {@link ImgPlus}
    * which contains the Calibration and name.
@@ -233,7 +233,7 @@ public final class IO {
       return null;
     }
   }
-    
+
   /**
    * @see {@link ImgOpener#openImg(String)}
    */
@@ -245,7 +245,7 @@ public final class IO {
       return null;
     }
   }
-  
+
   /**
    * @see {@link ImgOpener#openImg(String, RealType)}
    */
@@ -257,7 +257,7 @@ public final class IO {
       return null;
     }
   }
-  
+
   /**
    * @see {@link ImgOpener#openImg(String, ImgOptions)}
    */
@@ -269,7 +269,7 @@ public final class IO {
       return null;
     }
   }
-  
+
   /**
    * @see {@link ImgOpener#openImg(String, RealType, ImgOptions)}
    */
@@ -281,7 +281,7 @@ public final class IO {
       return null;
     }
   }
-  
+
   /**
    * @see {@link ImgOpener#openImg(String, ImgFactory)}
    */
@@ -293,7 +293,7 @@ public final class IO {
       return null;
     }
   }
-  
+
   /**
    * @see {@link ImgOpener#openImg(String, ImgFactory, RealType)}
    */
@@ -305,7 +305,7 @@ public final class IO {
       return null;
     }
   }
-  
+
   /**
    * @see {@link ImgOpener#openImg(Reader, RealType, ImgFactory, ImgOptions)}
    */
@@ -317,7 +317,7 @@ public final class IO {
       return null;
     }
   }
-  
+
   // -- Static ImgSaver methods --
 
   /**
@@ -330,7 +330,7 @@ public final class IO {
       logger.error("Failed to write image : " + dest, e);
     }
   }
-  
+
   /**
    * @see {@link ImgSaver#saveImg(String, ImgPlus, int)}
    */
@@ -339,9 +339,9 @@ public final class IO {
       new ImgSaver().saveImg(dest, imgPlus, imageIndex);
     } catch (Exception e) {
       logger.error("Failed to write image : " + dest, e);
-    } 
+    }
   }
-  
+
   /**
    * @see {@link ImgSaver#saveImg(Writer, Img)}
    */
@@ -352,7 +352,7 @@ public final class IO {
       logger.error("Failed to write image", e);
     }
   }
-  
+
   /**
    * @see {@link ImgSaver#saveImg(Writer, ImgPlus, int)}
    */

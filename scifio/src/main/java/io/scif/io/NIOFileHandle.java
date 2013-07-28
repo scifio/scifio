@@ -85,34 +85,31 @@ public class NIOFileHandle extends AbstractNIOHandle {
   // -- Fields --
 
   /** The random access file object backing this FileHandle. */
-  protected RandomAccessFile raf;
+  private RandomAccessFile raf;
 
   /** The file channel backed by the random access file. */
-  protected FileChannel channel;
+  private FileChannel channel;
 
   /** The absolute position within the file. */
-  protected long position = 0;
+  private long position = 0;
 
   /** The absolute position of the start of the buffer. */
-  protected long bufferStartPosition = 0;
+  private long bufferStartPosition = 0;
 
   /** The buffer size. */
-  protected int bufferSize;
+  private int bufferSize;
 
   /** The buffer itself. */
-  protected ByteBuffer buffer;
-
-  /** Whether or not the file is opened read/write. */
-  protected boolean isReadWrite = false;
+  private ByteBuffer buffer;
 
   /** The default map mode for the file. */
-  protected FileChannel.MapMode mapMode = FileChannel.MapMode.READ_ONLY;
+  private FileChannel.MapMode mapMode = FileChannel.MapMode.READ_ONLY;
 
   /** The buffer's byte ordering. */
-  protected ByteOrder order;
+  private ByteOrder order;
 
-  /** Provider class for NIO byte buffers, allocated or memory mapped. */
-  protected NIOByteBufferProvider byteBufferProvider;
+  /** Service which provides NIO byte buffers, allocated or memory mapped. */
+  private NIOService nioService;
 
   // -- Constructors --
 
@@ -120,17 +117,17 @@ public class NIOFileHandle extends AbstractNIOHandle {
    * Creates a random access file stream to read from, and
    * optionally to write to, the file specified by the File argument.
    */
-  public NIOFileHandle(File file, String mode, int bufferSize)
-    throws IOException {
+  public NIOFileHandle(NIOService nioService, File file, String mode,
+    int bufferSize) throws IOException
+  {
+    this.nioService = nioService;
     this.bufferSize = bufferSize;
     validateMode(mode);
     if (mode.equals("rw")) {
-      isReadWrite = true;
       mapMode = FileChannel.MapMode.READ_WRITE;
     }
     raf = new RandomAccessFile(file, mode);
     channel = raf.getChannel();
-    byteBufferProvider = new NIOByteBufferProvider(channel, mapMode);
     buffer(position, 0);
   }
 
@@ -138,8 +135,10 @@ public class NIOFileHandle extends AbstractNIOHandle {
    * Creates a random access file stream to read from, and
    * optionally to write to, the file specified by the File argument.
    */
-  public NIOFileHandle(File file, String mode) throws IOException {
-    this(file, mode,
+  public NIOFileHandle(NIOService nioService, File file, String mode)
+    throws IOException
+  {
+    this(nioService, file, mode,
       mode.equals("rw") ? defaultRWBufferSize : defaultBufferSize);
   }
 
@@ -147,8 +146,10 @@ public class NIOFileHandle extends AbstractNIOHandle {
    * Creates a random access file stream to read from, and
    * optionally to write to, a file with the specified name.
    */
-  public NIOFileHandle(String name, String mode) throws IOException {
-    this(new File(name), mode);
+  public NIOFileHandle(NIOService nioService, String name, String mode)
+    throws IOException
+  {
+    this(nioService, new File(name), mode);
   }
 
   // -- NIOFileHandle API methods --
@@ -533,7 +534,8 @@ public class NIOFileHandle extends AbstractNIOHandle {
       }
       offset = bufferStartPosition;
       ByteOrder byteOrder = buffer == null ? order : getOrder();
-      buffer = byteBufferProvider.allocate(bufferStartPosition, (int) newSize);
+      buffer = nioService.allocate(channel, mapMode,
+        bufferStartPosition, (int) newSize);
       if (byteOrder != null) setOrder(byteOrder);
     }
     buffer.position((int) (offset - bufferStartPosition));

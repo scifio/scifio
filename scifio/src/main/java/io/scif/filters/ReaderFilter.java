@@ -51,20 +51,20 @@ import org.scijava.InstantiableException;
  * @see io.scif.Reader
  */
 public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<Reader> {
-  
+
   // -- Fields --
-  
+
   private MasterFilterHelper<Reader> fHelper;
-  
+
   // -- Constructor --
-  
+
   /**
    * @param r - Reader to be wrapped
    */
   public ReaderFilter(Reader r) {
     fHelper = new MasterFilterHelper<Reader>(r, Reader.class);
   }
-  
+
   // -- MasterFilter API Methods --
 
   /*
@@ -89,7 +89,7 @@ public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<R
   }
 
   // -- Filter API Methods --
-  
+
   /*
    * @see io.scif.filters.MasterFilter#setParent(java.lang.Object)
    */
@@ -97,7 +97,7 @@ public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<R
   public void setParent(Object parent) {
     fHelper.setParent(parent);
   }
-  
+
   /*
    * @see io.scif.filters.MasterFilter#getParent()
    */
@@ -105,12 +105,12 @@ public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<R
   public Reader getParent() {
     return fHelper.getParent();
   }
-  
-  
+
+
   public Reader getTail() {
     return fHelper.getTail();
   }
-  
+
   /*
    * @see io.scif.filters.MasterFilter#reset()
    */
@@ -118,9 +118,9 @@ public class ReaderFilter extends AbstractReaderFilter implements MasterFilter<R
   public void reset() {
     fHelper.reset();
   }
-  
+
   // -- Reader API Methods --
-  
+
   /*
    * @see io.scif.filters.AbstractReaderFilter#getMetadata()
    */

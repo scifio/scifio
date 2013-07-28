@@ -43,6 +43,7 @@ import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.plugin.Plugin;
 
 /**
  * Methods for compressing and decompressing data using QuickTime RLE.
@@ -51,7 +52,8 @@ import java.io.IOException;
  * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/codec/QTRLECodec.java">Trac</a>,
  * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/codec/QTRLECodec.java;hb=HEAD">Gitweb</a></dd></dl>
  */
-public class QTRLECodec extends BaseCodec {
+@Plugin(type = Codec.class)
+public class QTRLECodec extends AbstractCodec {
 
   /* @see Codec#compress(byte[], CodecOptions) */
   public byte[] compress(byte[] data, CodecOptions options)
@@ -65,7 +67,7 @@ public class QTRLECodec extends BaseCodec {
   public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
     throws FormatException, IOException
   {
-    if (in == null) 
+    if (in == null)
       throw new IllegalArgumentException("No data to decompress.");
     byte[] b = new byte[(int) (in.length() - in.getFilePointer())];
     in.read(b);

@@ -40,7 +40,7 @@ import java.io.IOException;
 
 /**
  * Interface for components that can be attached to open image sources that
- * should be closed to avoid resource leaks 
+ * should be closed to avoid resource leaks
  * (e.g. {@link io.scif.io.RandomAccessInputStream})
  * 
  * @see io.scif.io.RandomAccessInputStream
@@ -50,7 +50,7 @@ import java.io.IOException;
  *
  */
 public interface HasSource {
-  
+
   /**
    * Closes the image source(s) associated with this component, with
    * a toggle to determine if the component itself is reset.
@@ -58,7 +58,7 @@ public interface HasSource {
    * @param fileOnly - If true, only the associated source(s) are closed.
    */
   void close(boolean fileOnly) throws IOException;
-  
+
   /**
    * Closes the image source(s) associated with this component
    * and resets the component to its default state.

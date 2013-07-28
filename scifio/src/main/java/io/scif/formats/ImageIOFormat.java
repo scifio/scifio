@@ -76,21 +76,21 @@ import org.scijava.plugin.Plugin;
 public abstract class ImageIOFormat extends AbstractFormat {
 
   // -- Nested classes --
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    */
   public static class Metadata extends AbstractMetadata {
-    
+
     // -- Constants --
-    
+
     public static final String CNAME = "io.scif.formats.ImageIOFormat$Metadata";
-    
+
     // -- Fields --
 
     private BufferedImage img;
-    
+
     // -- ImageIOMetadata API methods --
 
     public BufferedImage getImg() {
@@ -100,15 +100,15 @@ public abstract class ImageIOFormat extends AbstractFormat {
     public void setImg(BufferedImage img) {
       this.img = img;
     }
-    
+
     // -- Metadata API Methods --
-    
+
     /*
      * @see io.scif.Metadata#populateImageMetadata()
      */
     public void populateImageMetadata() {
       ImageMetadata iMeta = get(0);
-      
+
       if (img != null) {
         iMeta.setAxisLength(Axes.X, img.getWidth());
         iMeta.setAxisLength(Axes.Y, img.getHeight());
@@ -127,7 +127,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
       iMeta.setFalseColor(false);
       iMeta.setPlaneCount(1);
     }
-    
+
     /* @see loci.formats.IFormatReader#close(boolean) */
     public void close(boolean fileOnly) throws IOException {
       super.close(fileOnly);
@@ -136,7 +136,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
       }
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -147,7 +147,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
     @Override
     protected void typedParse(RandomAccessInputStream stream, M meta)
       throws IOException, FormatException {
-      LOGGER.info("Populating metadata");
+      log().info("Populating metadata");
       DataInputStream dis = new DataInputStream(stream);
       BufferedImage img = ImageIO.read(dis);
       dis.close();
@@ -156,23 +156,23 @@ public abstract class ImageIOFormat extends AbstractFormat {
       meta.createImageMetadata(1);
     }
   }
-  
-  
+
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
    * @param <M>
    */
   public static class Reader<M extends Metadata> extends BufferedImageReader<M> {
-    
+
     // -- Constructor --
-    
+
     public Reader() {
       domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
     }
 
     // -- Reader API methods --
-    
+
     /*
      * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
      */
@@ -184,13 +184,13 @@ public abstract class ImageIOFormat extends AbstractFormat {
       plane.setData(AWTImageTools.getSubimage(meta.getImg(), meta.isLittleEndian(imageIndex), x, y, w, h));
       return plane;
     }
-    
+
     @Override
     public int getOptimalTileHeight(int imageIndex) {
       return getMetadata().getAxisLength(imageIndex, Axes.Y);
     }
   }
-  
+
   /**
    * @author Mark Hiner hinerm at gmail.com
    *
@@ -201,13 +201,13 @@ public abstract class ImageIOFormat extends AbstractFormat {
     // -- Fields --
 
     protected String kind;
-    
+
     // -- Constructors --
-    
+
     public Writer(String kind) {
       this.kind = kind;
     }
-    
+
     /*
      * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
      */
@@ -220,7 +220,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
       BufferedImage img = null;
       Metadata meta = getMetadata();
-      
+
       if (!(plane instanceof BufferedImagePlane)) {
         int type = meta.getPixelType(imageIndex);
         img = AWTImageTools.makeImage(plane.getBytes(), meta.getAxisLength(imageIndex, Axes.X),
@@ -232,17 +232,17 @@ public abstract class ImageIOFormat extends AbstractFormat {
       else {
         img = ((BufferedImagePlane)plane).getData();
       }
-      
+
       ImageIO.write(img, kind, out);
     }
-    
+
     @Override
     public int[] getPixelTypes(String codec) {
       return new int[] {FormatTools.UINT8, FormatTools.UINT16};
     }
   }
-  
-  @Plugin(type = Translator.class, attrs = 
+
+  @Plugin(type = Translator.class, attrs =
     {@Attr(name = ImageIOTranslator.SOURCE, value = io.scif.Metadata.CNAME),
      @Attr(name = ImageIOTranslator.DEST, value = Metadata.CNAME)},
     priority = Priority.LOW_PRIORITY)
