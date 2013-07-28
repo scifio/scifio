@@ -67,9 +67,6 @@ import net.imglib2.meta.Axes;
  * http://astronomy.swin.edu.au/~pbourke/dataformats/bmp/</a>
  * for a nice description of the BMP file format.
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/BMPReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/BMPReader.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @author Mark Hiner
  */

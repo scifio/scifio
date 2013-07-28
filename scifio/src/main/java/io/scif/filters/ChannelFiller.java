@@ -58,9 +58,6 @@ import net.imglib2.display.ColorTable;
  * 
  * NB: lut length is not guaranteed to be accurate until a plane has been read
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/ChannelFiller.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/ChannelFiller.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 @Plugin(type=ChannelFiller.class, priority=ChannelFiller.PRIORITY, attrs={
   @Attr(name=ChannelFiller.FILTER_KEY, value=ChannelFiller.FILTER_VALUE),

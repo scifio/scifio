@@ -55,9 +55,6 @@ package io.scif;
  * instances can be reset to ensure no previous information persists.
  * </p>
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="">Trac</a>,
- * <a href="">Gitweb</a></dd></dl>
  * 
  * @see io.scif.Format#createMetadata()
  * @see io.scif.Metadata#reset(Class)

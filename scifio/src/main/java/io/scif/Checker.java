@@ -48,9 +48,6 @@ import java.io.IOException;
  * accomplished via the {@link #isFormat} methods.
  * </p>
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="">Trac</a>,
- * <a href="">Gitweb</a></dd></dl>
  *
  * @see io.scif.Format
  * @see io.scif.HasFormat

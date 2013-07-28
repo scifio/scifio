@@ -56,9 +56,6 @@ import java.io.IOException;
  * {@link #setSource} and {@link #setMetadata} calls.
  * </p>
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="">Trac</a>,
- * <a href="">Gitweb</a></dd></dl>
  * 
  * @see io.scif.Plane
  * @see io.scif.Metadata

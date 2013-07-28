@@ -76,9 +76,6 @@ import org.scijava.plugin.Plugin;
  * Much of this code was based on the QuickTime Movie Opener for ImageJ
  * (available at http://rsb.info.nih.gov/ij/plugins/movie-opener.html).
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/LegacyQTReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/LegacyQTReader.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 @Plugin(type = LegacyQTFormat.class, priority = Priority.LOW_PRIORITY)
 public class LegacyQTFormat extends AbstractFormat {

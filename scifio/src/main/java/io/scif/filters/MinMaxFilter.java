@@ -51,9 +51,6 @@ import org.scijava.plugin.Plugin;
 /**
  * Logic to compute minimum and maximum values for each channel.
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/MinMaxCalculator.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/MinMaxCalculator.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 @Plugin(type=MinMaxFilter.class, attrs={
   @Attr(name=MinMaxFilter.FILTER_KEY, value=MinMaxFilter.FILTER_VALUE),

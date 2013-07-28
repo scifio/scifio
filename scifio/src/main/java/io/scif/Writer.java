@@ -51,9 +51,6 @@ import java.io.IOException;
  * via the {@link #savePlane} methods.
  * </p>
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="">Trac</a>,
- * <a href="">Gitweb</a></dd></dl>
  * 
  * @author Mark Hiner
  * 

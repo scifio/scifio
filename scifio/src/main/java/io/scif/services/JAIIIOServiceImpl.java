@@ -67,9 +67,6 @@ import io.scif.media.imageioimpl.plugins.jpeg2000.J2KImageWriterSpi;
 /**
  * Implementation of JAIIIOService for reading and writing JPEG-2000 data.
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/services/JAIIIOServiceImpl.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/services/JAIIIOServiceImpl.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 @Plugin(type=JAIIIOService.class)
 public class JAIIIOServiceImpl extends AbstractService

@@ -61,9 +61,6 @@ import net.imglib2.meta.Axes;
  * PC Paintbrush; now used in Zeiss' LSM Image Browser).
  * See http://www.qzx.com/pc-gpe/pcx.txt
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/PCXReader.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/PCXReader.java;hb=HEAD">Gitweb</a></dd></dl>
  * 
  * @author Mark Hiner
  * @author Melissa Linkert

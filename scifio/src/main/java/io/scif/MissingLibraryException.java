@@ -40,9 +40,6 @@ package io.scif;
  * MissingLibraryException is the exception thrown when a particular data
  * stream or filename requires a library that is not present on the system.
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/MissingLibraryException.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/MissingLibraryException.java;hb=HEAD">Gitweb</a></dd></dl>
  */
 public class MissingLibraryException extends FormatException {
 

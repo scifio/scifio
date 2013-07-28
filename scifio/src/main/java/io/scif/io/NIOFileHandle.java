@@ -53,9 +53,6 @@ import java.nio.channels.FileChannel;
 /**
  * A wrapper for buffered NIO logic that implements the IRandomAccess interface.
  *
- * <dl><dt><b>Source code:</b></dt>
- * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/common/src/loci/common/NIOFileHandle.java">Trac</a>,
- * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/common/src/loci/common/NIOFileHandle.java;hb=HEAD">Gitweb</a></dd></dl>
  *
  * @see IRandomAccess
  * @see java.io.RandomAccessFile

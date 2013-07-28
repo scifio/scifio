@@ -634,9 +634,6 @@ public class TIFFFormat extends AbstractFormat {
    * BaseTiffReader is the superclass for file format readers compatible with
    * or derived from the TIFF 6.0 file format.
    *
-   * <dl><dt><b>Source code:</b></dt>
-   * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/BaseTiffReader.java">Trac</a>,
-   * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/BaseTiffReader.java;hb=HEAD">Gitweb</a></dd></dl>
    *
    * @author Curtis Rueden ctrueden at wisc.edu
    * @author Melissa Linkert melissa at glencoesoftware.com
@@ -1087,9 +1084,6 @@ public class TIFFFormat extends AbstractFormat {
    * TiffReader is the file format reader for regular TIFF files,
    * not of any specific TIFF variant.
    *
-   * <dl><dt><b>Source code:</b></dt>
-   * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/in/TiffReader.java">Trac</a>,
-   * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/in/TiffReader.java;hb=HEAD">Gitweb</a></dd></dl>
    *
    * @author Curtis Rueden ctrueden at wisc.edu
    * @author Melissa Linkert melissa at glencoesoftware.com
@@ -1101,9 +1095,6 @@ public class TIFFFormat extends AbstractFormat {
   /**
    * TiffWriter is the file format writer for TIFF files.
    *
-   * <dl><dt><b>Source code:</b></dt>
-   * <dd><a href="http://trac.openmicroscopy.org.uk/ome/browser/bioformats.git/components/bio-formats/src/loci/formats/out/TiffWriter.java">Trac</a>,
-   * <a href="http://git.openmicroscopy.org/?p=bioformats.git;a=blob;f=components/bio-formats/src/loci/formats/out/TiffWriter.java;hb=HEAD">Gitweb</a></dd></dl>
    */
   public static class Writer<M extends Metadata> extends AbstractWriter<M> {
 
