@@ -1,10 +1,11 @@
 /*
  * #%L
- * ImageJ software for multidimensional image processing and analysis.
+ * SCIFIO library for reading and converting scientific file formats.
  * %%
- * Copyright (C) 2009 - 2013 Board of Regents of the University of
- * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
- * Institute of Molecular Cell Biology and Genetics.
+ * Copyright (C) 2011 - 2013 Open Microscopy Environment:
+ *   - Board of Regents of the University of Wisconsin-Madison
+ *   - Glencoe Software, Inc.
+ *   - University of Dundee
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
