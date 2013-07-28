@@ -37,8 +37,9 @@
 package io.scif.common;
 
 /**
- * Constants that are used within many classes in loci.common.
+ * Constants that are used within many classes in {@link io.scif.common}.
  *
+ * @author Melissa Linkert
  */
 public final class Constants {
 
