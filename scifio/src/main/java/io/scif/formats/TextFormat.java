@@ -70,8 +70,8 @@ import org.scijava.plugin.Plugin;
  * but assumed to be in tabular form with a consistent number of columns, and a
  * labeled header line immediately preceding the data.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
- * @author Mark Hiner hiner at wisc.edu
+ * @author Curtis Rueden
+ * @author Mark Hiner
  */
 @Plugin(type = TextFormat.class)
 public class TextFormat extends AbstractFormat {
@@ -95,7 +95,7 @@ public class TextFormat extends AbstractFormat {
 	// -- Nested classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
 
@@ -223,7 +223,7 @@ public class TextFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Checker extends AbstractChecker {
 
@@ -266,7 +266,7 @@ public class TextFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
@@ -409,7 +409,7 @@ public class TextFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
@@ -443,7 +443,7 @@ public class TextFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	private static class TextUtils {
 

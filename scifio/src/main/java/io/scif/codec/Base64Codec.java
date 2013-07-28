@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
  * This code was adapted from the Jakarta Commons Codec source,
  * http://jakarta.apache.org/commons
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = Codec.class)
 public class Base64Codec extends AbstractCodec {

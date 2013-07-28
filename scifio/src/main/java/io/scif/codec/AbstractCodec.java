@@ -50,7 +50,7 @@ import java.util.Random;
  * implemented here, and are left as abstract. 2D methods do simple
  * concatenation and call to the 1D methods
  * 
- * @author Eric Kjellman egkjellman at wisc.edu
+ * @author Eric Kjellman
  */
 public abstract class AbstractCodec extends AbstractSCIFIOComponent implements
 	Codec

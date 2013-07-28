@@ -47,7 +47,7 @@ import net.imglib2.img.basictypeaccess.array.FloatArray;
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link FloatArray} types.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class FloatArrayLoader extends AbstractArrayLoader<FloatArray> {
 

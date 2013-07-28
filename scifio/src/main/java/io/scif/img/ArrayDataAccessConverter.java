@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.RealType;
  * {@link PlaneConverter} implementation specialized for populating
  * {@link ArrayImg} instances.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class ArrayDataAccessConverter implements PlaneConverter {
 

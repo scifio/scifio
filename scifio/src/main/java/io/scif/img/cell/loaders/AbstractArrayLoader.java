@@ -54,7 +54,7 @@ import net.imglib2.meta.Axes;
  * {@link #convertBytes(Object, byte[], int)}.
  * </p>
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 

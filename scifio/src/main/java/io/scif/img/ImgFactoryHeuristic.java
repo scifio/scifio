@@ -47,7 +47,7 @@ import net.imglib2.type.numeric.RealType;
  * Interface for selecting an {@link ImgFactory} type based on a list of
  * preferred {@link ImgMode}s.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public interface ImgFactoryHeuristic {
 

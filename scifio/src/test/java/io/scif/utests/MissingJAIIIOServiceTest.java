@@ -44,7 +44,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
- * @author Chris Allan <callan at blackcat dot ca>
+ * @author Chris Allan
  */
 public class MissingJAIIIOServiceTest {
 

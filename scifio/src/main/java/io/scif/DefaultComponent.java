@@ -39,6 +39,6 @@ package io.scif;
 /**
  * Marker interface for default class implementations.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public interface DefaultComponent {}

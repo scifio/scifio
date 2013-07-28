@@ -50,7 +50,7 @@ import org.scijava.plugin.Plugin;
  * implemented. Decompression logic is adapted from the jrawio project,
  * http://jrawio.dev.java.net
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = Codec.class)
 public class NikonCodec extends AbstractCodec {

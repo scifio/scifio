@@ -57,7 +57,7 @@ import net.imglib2.meta.Axes;
 import org.scijava.plugin.Plugin;
 
 /**
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 @Plugin(type = PGMFormat.class)
 public class PGMFormat extends AbstractFormat {
@@ -81,7 +81,7 @@ public class PGMFormat extends AbstractFormat {
 	// -- Nested classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
 
@@ -139,7 +139,7 @@ public class PGMFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Checker extends AbstractChecker {
 
@@ -168,7 +168,7 @@ public class PGMFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
@@ -225,7 +225,7 @@ public class PGMFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 

@@ -45,7 +45,7 @@ import org.xml.sax.SAXParseException;
 /**
  * Used by various XMLTools methods to handle XML parsing errors.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 public class ParserErrorHandler implements ErrorHandler, HasLog {
 

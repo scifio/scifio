@@ -44,7 +44,7 @@ import java.io.OutputStreamWriter;
 /**
  * A simple writer for INI configuration files.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 public class IniWriter {
 

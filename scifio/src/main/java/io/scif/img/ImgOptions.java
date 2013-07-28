@@ -52,7 +52,7 @@ import net.imglib2.img.planar.PlanarImgFactory;
  * </p>
  * </p>
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class ImgOptions {
 

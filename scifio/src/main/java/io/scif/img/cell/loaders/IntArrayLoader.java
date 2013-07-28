@@ -47,7 +47,7 @@ import net.imglib2.img.basictypeaccess.array.IntArray;
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link IntArray} types.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class IntArrayLoader extends AbstractArrayLoader<IntArray> {
 

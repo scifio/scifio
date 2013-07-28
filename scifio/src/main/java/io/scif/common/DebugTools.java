@@ -45,7 +45,7 @@ import java.lang.reflect.Modifier;
 /**
  * A utility class with convenience methods for debugging.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public final class DebugTools {
 

@@ -49,7 +49,7 @@ import org.scijava.plugin.Plugin;
 /**
  * Decompresses lossless JPEG images.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = Codec.class)
 public class LosslessJPEGCodec extends AbstractCodec {

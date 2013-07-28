@@ -39,7 +39,7 @@ package io.scif.formats.tiff;
 /**
  * A rational number (numerator over denominator).
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public class TiffRational extends Number implements Comparable<TiffRational> {
 

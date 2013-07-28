@@ -41,7 +41,7 @@ package io.scif.formats.tiff;
  * store the values from the entry's specific offset and is based on the TIFF
  * 6.0 specification of an IFD entry.
  * 
- * @author Chris Allan callan at blackcat.ca
+ * @author Chris Allan
  */
 public class TiffIFDEntry implements Comparable<Object> {
 

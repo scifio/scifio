@@ -50,8 +50,8 @@ import org.scijava.Context;
 import org.scijava.log.LogService;
 
 /**
- * @author Melissa Linkert melissa at glencoesoftware.com
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Melissa Linkert
+ * @author Curtis Rueden
  */
 public class RandomAccessInputStream extends InputStream implements DataInput {
 

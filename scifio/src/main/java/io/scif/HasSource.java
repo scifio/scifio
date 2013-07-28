@@ -45,7 +45,7 @@ import java.io.IOException;
  * 
  * @see io.scif.io.RandomAccessInputStream
  * @see io.scif.io.RandomAccessOutputStream
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public interface HasSource {
 

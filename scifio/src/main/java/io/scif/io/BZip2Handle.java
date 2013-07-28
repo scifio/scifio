@@ -52,7 +52,7 @@ import org.scijava.plugin.Plugin;
  * arrays. Instances of BZip2Handle are read-only.
  * 
  * @see StreamHandle
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = IStreamAccess.class)
 public class BZip2Handle extends StreamHandle {

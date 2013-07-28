@@ -39,7 +39,7 @@ package io.scif.codec;
 /**
  * A growable array of bytes.
  * 
- * @author Wayne Rasband wsr at nih.gov
+ * @author Wayne Rasband
  */
 public class ByteVector {
 

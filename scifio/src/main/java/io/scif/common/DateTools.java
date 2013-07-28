@@ -45,9 +45,9 @@ import java.util.TimeZone;
 /**
  * A utility class with convenience methods for working with dates.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
- * @author Chris Allan callan at blackcat.ca
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Curtis Rueden
+ * @author Chris Allan
+ * @author Melissa Linkert
  */
 public final class DateTools {
 

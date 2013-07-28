@@ -47,7 +47,7 @@ import net.imglib2.img.basictypeaccess.array.ShortArray;
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link ShortArray} types.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class ShortArrayLoader extends AbstractArrayLoader<ShortArray> {
 

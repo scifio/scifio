@@ -70,7 +70,7 @@ import net.imglib2.type.NativeType;
  * {@link AbstractCellImgFactory} implementation for working with
  * {@link SCIFIOCell}s.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	AbstractCellImgFactory<T>

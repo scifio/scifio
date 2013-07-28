@@ -71,7 +71,7 @@ import org.scijava.plugin.Plugin;
  * MinimalTiffReader is the superclass for file format readers compatible with
  * or derived from the TIFF 6.0 file format.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = MinimalTIFFFormat.class, priority = MinimalTIFFFormat.PRIORITY)
 public class MinimalTIFFFormat extends AbstractFormat {
@@ -91,7 +91,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 	// -- Nested classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata implements
 		HasColorTable
@@ -432,7 +432,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser<M extends Metadata> extends AbstractParser<M> {
 
@@ -573,7 +573,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader<M extends Metadata> extends ByteArrayReader<M> {
 

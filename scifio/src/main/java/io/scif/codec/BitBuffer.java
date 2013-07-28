@@ -44,7 +44,7 @@ import org.scijava.log.StderrLogService;
 /**
  * A class for reading arbitrary numbers of bits from a byte array.
  * 
- * @author Eric Kjellman egkjellman at wisc.edu
+ * @author Eric Kjellman
  */
 public class BitBuffer {
 

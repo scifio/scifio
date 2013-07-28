@@ -47,7 +47,7 @@ import net.imglib2.img.basictypeaccess.array.DoubleArray;
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link DoubleArray} types.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
 

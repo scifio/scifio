@@ -45,7 +45,7 @@ import org.testng.annotations.Test;
 /**
  * Unit tests for {@link SCIFIOCellCache}
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 @Test(groups = "cellTests")
 public class SCIFIOCellCacheTest {

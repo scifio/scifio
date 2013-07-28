@@ -47,7 +47,7 @@ import net.imglib2.img.basictypeaccess.array.LongArray;
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link LongArray} types.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class LongArrayLoader extends AbstractArrayLoader<LongArray> {
 

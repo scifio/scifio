@@ -52,7 +52,7 @@ import net.imglib2.meta.Metadata;
  * {@link #getColorTable(int, int)} API for specifying both the plane and image
  * index.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class SCIFIOImgPlus<T> extends ImgPlus<T> {
 

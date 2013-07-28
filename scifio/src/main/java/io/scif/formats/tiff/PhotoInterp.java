@@ -46,10 +46,10 @@ import java.util.Map;
 /**
  * Utility class for working with TIFF photometric interpretations.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
- * @author Eric Kjellman egkjellman at wisc.edu
- * @author Melissa Linkert melissa at glencoesoftware.com
- * @author Chris Allan callan at blackcat.ca
+ * @author Curtis Rueden
+ * @author Eric Kjellman
+ * @author Melissa Linkert
+ * @author Chris Allan
  */
 public enum PhotoInterp implements CodedEnum {
 

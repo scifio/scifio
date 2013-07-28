@@ -50,7 +50,7 @@ import org.scijava.plugin.Plugin;
  * This class implements packbits decompression. Compression is not yet
  * implemented.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = Codec.class)
 public class PackbitsCodec extends AbstractCodec {

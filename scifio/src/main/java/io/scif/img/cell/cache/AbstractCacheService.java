@@ -44,7 +44,7 @@ import org.scijava.service.AbstractService;
  * Abstract superclass for {@link CacheService} implementations. Provides a base
  * {@link #getKey(String, int)} implementation.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public abstract class AbstractCacheService<T extends Serializable> extends
 	AbstractService implements CacheService<T>

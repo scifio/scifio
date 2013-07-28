@@ -44,7 +44,7 @@ import org.scijava.log.StderrLogService;
 /**
  * A class for writing arbitrary numbers of bits to a byte array.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public class BitWriter {
 

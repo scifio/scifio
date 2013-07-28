@@ -45,7 +45,7 @@ import org.scijava.Optional;
 import org.scijava.service.Service;
 
 /**
- * @author callan
+ * @author Chris Allan
  */
 public interface LuraWaveService extends Service, Optional {
 

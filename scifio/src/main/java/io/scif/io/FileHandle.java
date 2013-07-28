@@ -48,7 +48,7 @@ import java.nio.ByteOrder;
  * 
  * @see IRandomAccess
  * @see java.io.RandomAccessFile
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public class FileHandle implements IRandomAccess {
 

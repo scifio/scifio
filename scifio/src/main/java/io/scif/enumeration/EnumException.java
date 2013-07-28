@@ -37,7 +37,7 @@
 package io.scif.enumeration;
 
 /**
- * @author callan
+ * @author Chris Allan
  */
 public class EnumException extends RuntimeException {
 

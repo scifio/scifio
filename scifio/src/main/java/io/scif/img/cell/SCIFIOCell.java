@@ -56,7 +56,7 @@ import net.imglib2.img.cell.AbstractCell;
  * {@link AbstractCell} implenetation. Stores the actual byte array for a given
  * cell position.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A>
 	implements Serializable

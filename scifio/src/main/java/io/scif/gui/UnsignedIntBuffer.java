@@ -41,7 +41,7 @@ import java.awt.image.DataBuffer;
 /**
  * DataBuffer that stores unsigned ints.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 public class UnsignedIntBuffer extends DataBuffer {
 

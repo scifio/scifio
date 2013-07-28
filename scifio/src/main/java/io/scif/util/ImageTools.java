@@ -43,7 +43,7 @@ import io.scif.common.DataTools;
  * array form. To work with images in {@link java.awt.image.BufferedImage} form,
  * use the {@link io.scif.gui.AWTImageTools} class.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public final class ImageTools {
 

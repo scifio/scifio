@@ -45,7 +45,7 @@ import net.imglib2.util.IntervalIndexer;
 /**
  * {@link AbstractCells} implementation for working with {@link SCIFIOCell}s.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
 	AbstractCells<A, SCIFIOCell<A>, SCIFIOImgCells<A>.CachedCells>

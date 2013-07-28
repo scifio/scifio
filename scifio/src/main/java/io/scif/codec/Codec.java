@@ -59,7 +59,7 @@ import org.scijava.plugin.SingletonPlugin;
  * both compression methods or neither. (The same is expected for
  * decompression).
  * 
- * @author Eric Kjellman egkjellman at wisc.edu
+ * @author Eric Kjellman
  */
 public interface Codec extends SCIFIOComponent, Prioritized, HasPluginInfo,
 	SingletonPlugin, SCIFIOPlugin

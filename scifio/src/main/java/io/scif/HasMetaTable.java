@@ -41,7 +41,7 @@ package io.scif;
  * values.
  * 
  * @see MetaTable
- * @author Mark hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public interface HasMetaTable {
 

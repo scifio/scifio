@@ -43,7 +43,7 @@ import org.scijava.service.Service;
 /**
  * Interface for caching and retrieving objects.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public interface CacheService<T extends Serializable> extends Service {
 

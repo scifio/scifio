@@ -80,7 +80,7 @@ import org.scijava.plugin.Plugin;
  * supported: raw, rle, jpeg, mjpb, rpza. Additional video codecs will be added
  * as time permits.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = NativeQTFormat.class, priority = Priority.NORMAL_PRIORITY)
 public class NativeQTFormat extends AbstractFormat {
@@ -111,7 +111,7 @@ public class NativeQTFormat extends AbstractFormat {
 	// -- Nested classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
 
@@ -341,7 +341,7 @@ public class NativeQTFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Checker extends AbstractChecker {
 
@@ -375,7 +375,7 @@ public class NativeQTFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
@@ -480,7 +480,7 @@ public class NativeQTFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
@@ -623,7 +623,7 @@ public class NativeQTFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Writer extends AbstractWriter<Metadata> {
 
@@ -1201,7 +1201,7 @@ public class NativeQTFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	@Plugin(type = Translator.class, attrs = {
 		@Attr(name = NativeQTTranslator.SOURCE, value = io.scif.Metadata.CNAME),

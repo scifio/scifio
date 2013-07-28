@@ -41,7 +41,7 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 
 /**
- * @author Melissa Linkert <melissa at glencoesoftware.com>
+ * @author Melissa Linkert
  */
 public class OnDemandLongArray {
 

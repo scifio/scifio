@@ -58,7 +58,7 @@ import org.scijava.plugin.Plugin;
  * Reader for decoding JPEG images using java.awt.Toolkit. This reader is useful
  * for reading very large JPEG images, as it supports tile-based access.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = JPEGTileFormat.class, priority = Priority.LOW_PRIORITY)
 public class JPEGTileFormat extends AbstractFormat {
@@ -76,7 +76,7 @@ public class JPEGTileFormat extends AbstractFormat {
 	// -- Nested Classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
 
@@ -134,7 +134,7 @@ public class JPEGTileFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
@@ -151,7 +151,7 @@ public class JPEGTileFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 

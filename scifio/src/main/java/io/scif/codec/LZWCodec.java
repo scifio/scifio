@@ -77,7 +77,7 @@ import org.scijava.plugin.Plugin;
  * exceeds 1.41*(number of input bytes)+3.
  * <p>
  * 
- * @author Mikhail Kovtun mikhail.kovtun at duke.edu
+ * @author Mikhail Kovtun
  */
 @Plugin(type = Codec.class)
 public class LZWCodec extends AbstractCodec {

@@ -58,7 +58,7 @@ import org.scijava.plugin.Plugin;
  * (FITS) images. Much of this code was adapted from ImageJ
  * (http://rsb.info.nih.gov/ij).
  * 
- * @author Mark hiner hinerm at gmail.com
+ * @author Mark Hiner
  * @author Melissa Linkert
  */
 @Plugin(type = FITSFormat.class)
@@ -77,7 +77,7 @@ public class FITSFormat extends AbstractFormat {
 	// -- Nested Classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
 
@@ -141,7 +141,7 @@ public class FITSFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
@@ -203,7 +203,7 @@ public class FITSFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 

@@ -70,7 +70,7 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * MicromanagerReader is the file format reader for Micro-Manager files.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 @Plugin(type = MicromanagerFormat.class)
 public class MicromanagerFormat extends AbstractFormat {
@@ -105,7 +105,7 @@ public class MicromanagerFormat extends AbstractFormat {
 	// -- Nested Classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
 
@@ -162,7 +162,7 @@ public class MicromanagerFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Checker extends AbstractChecker {
 
@@ -226,7 +226,7 @@ public class MicromanagerFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
@@ -737,7 +737,7 @@ public class MicromanagerFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
@@ -834,7 +834,7 @@ public class MicromanagerFormat extends AbstractFormat {
 	 * Necessary dummy translator, so that a Micromanager-OMEXML translator can be
 	 * used
 	 * 
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	@Plugin(type = Translator.class,
 		attrs = {

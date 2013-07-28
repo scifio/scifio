@@ -49,7 +49,7 @@ import org.scijava.plugin.Plugin;
 /**
  * This class implements ZLIB decompression.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = Codec.class)
 public class ZlibCodec extends AbstractCodec {

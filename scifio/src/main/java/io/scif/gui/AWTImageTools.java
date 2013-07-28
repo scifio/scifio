@@ -93,7 +93,7 @@ import net.imglib2.display.ColorTable8;
  * href="http://forum.java.sun.com/thread.jspa?threadID=522483"> DrLaszloJamf's
  * posts</a> on the Java forums.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public final class AWTImageTools {
 

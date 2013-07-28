@@ -52,7 +52,7 @@ import org.scijava.plugin.Plugin;
  * @see IRandomAccess
  * @see StreamHandle
  * @see java.net.URLConnection
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = IStreamAccess.class)
 public class URLHandle extends StreamHandle {

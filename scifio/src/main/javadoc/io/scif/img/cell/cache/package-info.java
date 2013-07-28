@@ -53,7 +53,7 @@
  * types.
  * </p>
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  *
  */
 package io.scif.io.img.cell;

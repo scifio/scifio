@@ -41,7 +41,7 @@ import java.awt.color.ColorSpace;
 /**
  * ColorSpace for 2-channel images.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 public class TwoChannelColorSpace extends ColorSpace {
 

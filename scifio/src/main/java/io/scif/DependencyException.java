@@ -42,7 +42,7 @@ import org.scijava.service.Service;
  * Exception thrown when there is an object instantiation error or error
  * processing dependencies.
  * 
- * @author Chris Allan <callan at blackcat dot ca>
+ * @author Chris Allan
  */
 public class DependencyException extends Exception {
 

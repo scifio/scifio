@@ -42,7 +42,7 @@ import java.util.HashMap;
 /**
  * A data structure containing a parsed list of INI key/value tables.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public class IniList extends ArrayList<IniTable> {
 

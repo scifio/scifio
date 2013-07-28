@@ -45,7 +45,7 @@
  * {@link io.scif.io.img.ImgSaver} is used for writing ImgPluses to disk.
  * </p>
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  *
  */
 package io.scif.io.img;

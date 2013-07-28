@@ -53,7 +53,7 @@ import org.scijava.plugin.SortablePlugin;
  * writing to OutputStreams.
  * 
  * @see IRandomAccess
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 public abstract class StreamHandle extends SortablePlugin implements
 	IStreamAccess

@@ -37,7 +37,7 @@
 package io.scif;
 
 /**
- * @author callan
+ * @author Chris Allan
  */
 public enum MetadataLevel {
 

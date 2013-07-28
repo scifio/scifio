@@ -48,7 +48,7 @@ import net.imglib2.type.numeric.RealType;
  * {@link PlaneConverter} implementation specialized for populating
  * {@link PlanarAccess} instances.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class PlanarAccessConverter implements PlaneConverter {
 

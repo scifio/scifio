@@ -57,7 +57,7 @@ import org.scijava.plugin.Plugin;
  * license code, specified in the lurawave.license system property (e.g.,
  * <code>-Dlurawave.license=XXXX</code> on the command line).
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 @Plugin(type = Codec.class)
 public class LuraWaveCodec extends AbstractCodec {

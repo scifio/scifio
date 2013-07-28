@@ -49,7 +49,7 @@ import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
  * {@link CellCache} implementation for {@link SCIFIOCell}s. Loads the requested
  * cell if it is not already in the cache.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	CellCache<A>

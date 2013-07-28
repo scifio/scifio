@@ -47,7 +47,7 @@ import org.scijava.log.StderrLogService;
  * A simple parser for INI configuration files. Supports pound (#) as comments,
  * and backslash (\) to continue values across multiple lines.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public class IniParser {
 

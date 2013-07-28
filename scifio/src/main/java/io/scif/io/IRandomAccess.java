@@ -45,7 +45,7 @@ import java.nio.ByteOrder;
 /**
  * Interface for random access into structures (e.g., files or arrays).
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public interface IRandomAccess extends DataInput, DataOutput {
 

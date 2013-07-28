@@ -50,7 +50,7 @@ import net.imglib2.type.numeric.RealType;
  * {@link ImgPlus} using its {@RandomAccess}. May be slower than
  * other, optimized methods.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class RandomAccessConverter implements PlaneConverter {
 

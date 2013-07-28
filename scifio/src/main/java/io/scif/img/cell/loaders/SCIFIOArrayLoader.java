@@ -42,7 +42,7 @@ import io.scif.img.cell.SCIFIOCellImg;
  * Interface for requesting arrays from SCIFIO {@link io.scif.Reader}s by
  * {@link SCIFIOCellImg}s.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public interface SCIFIOArrayLoader<A> {
 

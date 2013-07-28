@@ -44,7 +44,7 @@ import net.imglib2.type.numeric.RealType;
  * Interface for using planes read by SCIFIO {@link Reader}s to populate
  * {@link ImgPlus} instances.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public interface PlaneConverter {
 

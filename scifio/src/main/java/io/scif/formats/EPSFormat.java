@@ -67,7 +67,7 @@ import org.scijava.plugin.Plugin;
  * Reader is the file format reader for Encapsulated PostScript (EPS) files.
  * Some regular PostScript files are also supported.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  * @author Mark Hiner
  */
 @Plugin(type = EPSFormat.class)
@@ -86,7 +86,7 @@ public class EPSFormat extends AbstractFormat {
 	// -- Nested classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
 
@@ -183,7 +183,7 @@ public class EPSFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
@@ -323,7 +323,7 @@ public class EPSFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
@@ -460,7 +460,7 @@ public class EPSFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Writer extends AbstractWriter<Metadata> {
 
@@ -578,7 +578,7 @@ public class EPSFormat extends AbstractFormat {
 	/**
 	 * Necessary dummy translator, so that an EPS-OMEXML translator can be used
 	 * 
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	@Plugin(type = Translator.class, attrs = {
 		@Attr(name = EPSTranslator.SOURCE, value = io.scif.Metadata.CNAME),

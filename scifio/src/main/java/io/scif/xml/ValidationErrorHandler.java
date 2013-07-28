@@ -45,9 +45,9 @@ import org.xml.sax.SAXParseException;
 /**
  * Used by validateXML to handle XML validation errors.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
- * @author Chris Allan callan at blackcat.ca
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Curtis Rueden
+ * @author Chris Allan
+ * @author Melissa Linkert
  */
 public class ValidationErrorHandler implements ErrorHandler, HasLog {
 

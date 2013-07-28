@@ -58,7 +58,7 @@ import net.imglib2.meta.Axes;
 import org.scijava.plugin.Plugin;
 
 /**
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 @Plugin(type = GIFFormat.class)
 public class GIFFormat extends AbstractFormat {
@@ -84,7 +84,7 @@ public class GIFFormat extends AbstractFormat {
 	// -- Nested Classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata implements
 		HasColorTable
@@ -348,7 +348,7 @@ public class GIFFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Checker extends AbstractChecker {
 
@@ -365,7 +365,7 @@ public class GIFFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
@@ -732,7 +732,7 @@ public class GIFFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 

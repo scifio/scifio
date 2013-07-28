@@ -50,10 +50,10 @@ import org.scijava.log.LogService;
 /**
  * Data structure for working with TIFF Image File Directories (IFDs).
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
- * @author Eric Kjellman egkjellman at wisc.edu
- * @author Melissa Linkert melissa at glencoesoftware.com
- * @author Chris Allan callan at blackcat.ca
+ * @author Curtis Rueden
+ * @author Eric Kjellman
+ * @author Melissa Linkert
+ * @author Chris Allan
  */
 public class IFD extends HashMap<Integer, Object> {
 

@@ -65,7 +65,7 @@ import org.testng.annotations.Test;
  * {@link ChannelSeparator} is assumed.
  * </p>
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 @Test(groups = "cellTests")
 public class SCIFIOCellImgFactoryTest {

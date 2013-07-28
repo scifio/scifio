@@ -85,7 +85,7 @@ public class JavaFormat extends AbstractFormat {
 	// -- Nested classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Writer extends AbstractWriter<DefaultMetadata> {
 

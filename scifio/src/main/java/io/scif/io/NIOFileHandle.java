@@ -52,7 +52,7 @@ import java.nio.channels.FileChannel;
  * 
  * @see IRandomAccess
  * @see java.io.RandomAccessFile
- * @author Chris Allan <callan at blackcat dot ca>
+ * @author Chris Allan
  */
 public class NIOFileHandle extends AbstractNIOHandle {
 

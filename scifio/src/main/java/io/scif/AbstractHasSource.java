@@ -42,7 +42,7 @@ import java.io.IOException;
  * Abstract implementation of the {@link HasSource} interface. Provides a
  * default {@link #close()} implementation that calls {@code close(false)}.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public abstract class AbstractHasSource extends AbstractHasFormat implements
 	HasSource

@@ -66,7 +66,7 @@ import org.testng.annotations.Test;
  * storage and retrieval, the various configuration options,
  * and edge cases.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  *
  */
 @Test(groups = "cacheTests")

@@ -43,7 +43,7 @@ import java.util.Map;
  * as needed (e.g. {@link #putList(String, Object)} for mapping keys with many
  * values).
  * 
- * @author Mark hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public interface MetaTable extends Map<String, Object> {
 

@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
 /**
  * This class implements Huffman decoding.
  * 
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Melissa Linkert
  */
 @Plugin(type = Codec.class)
 public class HuffmanCodec extends AbstractCodec {

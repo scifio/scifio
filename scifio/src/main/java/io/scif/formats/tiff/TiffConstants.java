@@ -39,10 +39,10 @@ package io.scif.formats.tiff;
 /**
  * Generally useful TIFF-related constants.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
- * @author Eric Kjellman egkjellman at wisc.edu
- * @author Melissa Linkert melissa at glencoesoftware.com
- * @author Chris Allan callan at blackcat.ca
+ * @author Curtis Rueden
+ * @author Eric Kjellman
+ * @author Melissa Linkert
+ * @author Chris Allan
  */
 public final class TiffConstants {
 

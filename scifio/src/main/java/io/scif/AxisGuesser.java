@@ -51,7 +51,7 @@ import org.scijava.log.LogService;
  * dimensional axes (Z, T or C), potentially recommending an adjustment in
  * dimension order within the files, depending on the confidence of each guess.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public class AxisGuesser {
 

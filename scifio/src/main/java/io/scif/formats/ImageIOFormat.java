@@ -67,14 +67,14 @@ import org.scijava.plugin.Plugin;
  * ImageIOReader is the superclass for file format readers that use the
  * javax.imageio package.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public abstract class ImageIOFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
 
@@ -135,7 +135,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 * @param <M>
 	 */
 	public static class Parser<M extends Metadata> extends AbstractParser<M> {
@@ -156,7 +156,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 * @param <M>
 	 */
 	public static class Reader<M extends Metadata> extends BufferedImageReader<M>
@@ -191,7 +191,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 * @param <M>
 	 */
 	public static class Writer<M extends Metadata> extends AbstractWriter<M> {

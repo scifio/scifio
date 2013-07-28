@@ -66,7 +66,7 @@ import net.imglib2.type.numeric.RealType;
  * provide a list excluding the undesired types that includes ImgMode.CELL last.
  * </p>
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 

@@ -48,9 +48,9 @@ import org.scijava.Context;
  * A utility class with convenience methods for reading, writing and decoding
  * words.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
- * @author Chris Allan callan at blackcat.ca
- * @author Melissa Linkert melissa at glencoesoftware.com
+ * @author Curtis Rueden
+ * @author Chris Allan
+ * @author Melissa Linkert
  */
 public final class DataTools {
 

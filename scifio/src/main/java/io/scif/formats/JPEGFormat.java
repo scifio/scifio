@@ -55,7 +55,7 @@ import org.scijava.plugin.Plugin;
 /**
  * JPEGReader is the file format reader for JPEG images.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 @Plugin(type = JPEGFormat.class, priority = Priority.NORMAL_PRIORITY)
 public class JPEGFormat extends ImageIOFormat {
@@ -79,7 +79,7 @@ public class JPEGFormat extends ImageIOFormat {
 	// -- Nested classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends ImageIOFormat.Metadata {
 
@@ -93,7 +93,7 @@ public class JPEGFormat extends ImageIOFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Checker extends AbstractChecker {
 
@@ -156,7 +156,7 @@ public class JPEGFormat extends ImageIOFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser extends ImageIOFormat.Parser<Metadata> {
 
@@ -225,12 +225,12 @@ public class JPEGFormat extends ImageIOFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader extends ImageIOFormat.Reader<Metadata> {}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Writer extends ImageIOFormat.Writer<Metadata> {
 

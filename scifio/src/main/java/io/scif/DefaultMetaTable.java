@@ -45,7 +45,7 @@ import java.util.Vector;
  * a {@link #putList(String, Object)} implementation.
  * 
  * @see MetaTable
- * @author Mark hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class DefaultMetaTable extends HashMap<String, Object> implements
 	MetaTable

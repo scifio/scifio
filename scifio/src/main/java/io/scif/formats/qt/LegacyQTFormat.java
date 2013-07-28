@@ -97,7 +97,7 @@ public class LegacyQTFormat extends AbstractFormat {
 	// -- Nested classes --
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
 
@@ -163,7 +163,7 @@ public class LegacyQTFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
@@ -250,7 +250,7 @@ public class LegacyQTFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Reader extends BufferedImageReader<Metadata> {
 
@@ -308,7 +308,7 @@ public class LegacyQTFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	public static class Writer extends AbstractWriter<Metadata> {
 
@@ -565,7 +565,7 @@ public class LegacyQTFormat extends AbstractFormat {
 	}
 
 	/**
-	 * @author Mark Hiner hinerm at gmail.com
+	 * @author Mark Hiner
 	 */
 	@Plugin(type = Translator.class, attrs = {
 		@Attr(name = LegacyQTTranslator.SOURCE, value = io.scif.Metadata.CNAME),

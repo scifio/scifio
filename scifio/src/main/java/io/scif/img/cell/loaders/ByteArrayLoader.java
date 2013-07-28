@@ -42,7 +42,7 @@ import net.imglib2.img.basictypeaccess.array.ByteArray;
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link ByteArray} types.
  * 
- * @author Mark Hiner hinerm at gmail.com
+ * @author Mark Hiner
  */
 public class ByteArrayLoader extends AbstractArrayLoader<ByteArray> {
 

@@ -51,7 +51,7 @@ import net.imglib2.meta.Axes;
  * BufferedImageReader is the superclass for file format readers that use
  * java.awt.image.BufferedImage as the native data type.
  * 
- * @author Curtis Rueden ctrueden at wisc.edu
+ * @author Curtis Rueden
  */
 public abstract class BufferedImageReader<M extends TypedMetadata> extends
 	AbstractReader<M, BufferedImagePlane>
