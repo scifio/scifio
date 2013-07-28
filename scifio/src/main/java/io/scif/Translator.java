@@ -61,7 +61,7 @@ package io.scif;
  * @see io.scif.services.TranslatorService
  * @author Mark Hiner
  */
-public interface Translator extends SCIFIOComponent, SCIFIOPlugin, HasSCIFIO {
+public interface Translator extends SCIFIOComponent, SCIFIOPlugin {
 
 	// -- Fields --
 
