@@ -39,40 +39,39 @@ package io.scif.services;
 /**
  * Exception thrown when there is an error within a given service. That could
  * not be handled.
- *
- *
+ * 
  * @author Chris Allan <callan at blackcat dot ca>
  */
-public class ServiceException extends Exception
-{
-  /** Serial for this version. */
-  private static final long serialVersionUID = 7402442944895106504L;
+public class ServiceException extends Exception {
 
-  /**
-   * Default constructor.
-   * @param message Error message.
-   */
-  public ServiceException(String message)
-  {
-    super(message);
-  }
+	/** Serial for this version. */
+	private static final long serialVersionUID = 7402442944895106504L;
 
-  /**
-   * Default constructor.
-   * @param message Error message.
-   * @param cause Upstream exception.
-   */
-  public ServiceException(String message, Throwable cause)
-  {
-    super(message, cause);
-  }
+	/**
+	 * Default constructor.
+	 * 
+	 * @param message Error message.
+	 */
+	public ServiceException(final String message) {
+		super(message);
+	}
 
-  /**
-   * Default constructor.
-   * @param cause Upstream exception.
-   */
-  public ServiceException(Throwable cause)
-  {
-    super(cause);
-  }
+	/**
+	 * Default constructor.
+	 * 
+	 * @param message Error message.
+	 * @param cause Upstream exception.
+	 */
+	public ServiceException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
+
+	/**
+	 * Default constructor.
+	 * 
+	 * @param cause Upstream exception.
+	 */
+	public ServiceException(final Throwable cause) {
+		super(cause);
+	}
 }

@@ -33,35 +33,34 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import org.scijava.plugin.SortablePlugin;
 
 /**
- * Abstract superclass for all classes that implement
- * {@link io.scif.HasSCIFIO}.
+ * Abstract superclass for all classes that implement {@link io.scif.HasSCIFIO}.
  * 
  * @see io.scif.HasSCIFIO
  * @see io.scif.SCIFIO
- * 
  * @author Mark Hiner
  */
-public abstract class AbstractHasSCIFIO extends SortablePlugin
-  implements HasSCIFIO
+public abstract class AbstractHasSCIFIO extends SortablePlugin implements
+	HasSCIFIO
 {
 
-  /** Cached SCIFIO reference. */
-  private SCIFIO scifio;
+	/** Cached SCIFIO reference. */
+	private SCIFIO scifio;
 
-  // -- HasSCIFIO API Methods --
+	// -- HasSCIFIO API Methods --
 
-  /*
-   * @see io.scif.HasSCIFIO#scifio()
-   */
-  public SCIFIO scifio() {
-    // Lazily creates a SCIFIO wrapping this instance's context
-    if (scifio == null) scifio = new SCIFIO(getContext());
+	/*
+	 * @see io.scif.HasSCIFIO#scifio()
+	 */
+	public SCIFIO scifio() {
+		// Lazily creates a SCIFIO wrapping this instance's context
+		if (scifio == null) scifio = new SCIFIO(getContext());
 
-    return scifio;
-  }
+		return scifio;
+	}
 }

@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.filters;
 
 import java.util.Set;
@@ -43,85 +44,86 @@ import org.scijava.InstantiableException;
 /**
  * An entry point for toggling and configuring {@link io.scif.filter.Filter}s.
  * <p>
- * When instantiated, all appropriately typed {@code Filter} classes
- * should be discovered by this class. As {@link #enable(Class)} and {@link #disable(Class)}
- * are called on the appropriate {@code Filter} classes, a stack of filters is
- * built.
+ * When instantiated, all appropriately typed {@code Filter} classes should be
+ * discovered by this class. As {@link #enable(Class)} and
+ * {@link #disable(Class)} are called on the appropriate {@code Filter} classes,
+ * a stack of filters is built.
  * </p>
  * <p>
- * NB: this interface extends {@link io.scif.Filter} and concrete {@code MasterFilter}
- * implementations should similarly extend the interface they wrap. However, instead of
- * {@link io.scif.filters.Filter#getParent()} returning the wrapped object,
- * it should return the head of this {@code MasterFilter}'s filter stack.
+ * NB: this interface extends {@link io.scif.Filter} and concrete
+ * {@code MasterFilter} implementations should similarly extend the interface
+ * they wrap. However, instead of {@link io.scif.filters.Filter#getParent()}
+ * returning the wrapped object, it should return the head of this
+ * {@code MasterFilter}'s filter stack.
  * </p>
  * <p>
  * NB: all wrappers should be maintained as singletons within the scope of a
- * {@code MasterFilter} instance, so that {@link #enable(Class)} returns
- * the same filter instance each time it is called.
+ * {@code MasterFilter} instance, so that {@link #enable(Class)} returns the
+ * same filter instance each time it is called.
  * </p>
  * <p>
- * NB: {@code MasterFilters} are intended to be used the same way as {@code Filters}:
- * that is, as the wrapped component would be. However, the {@code Filter} API
- * does have a slightly different meaning in the context of a {@code MasterFilter}.
+ * NB: {@code MasterFilters} are intended to be used the same way as
+ * {@code Filters}: that is, as the wrapped component would be. However, the
+ * {@code Filter} API does have a slightly different meaning in the context of a
+ * {@code MasterFilter}.
  * </p>
  * 
  * @author Mark Hiner
- * 
  * @see io.scif.filters.Filter
  */
 public interface MasterFilter<T extends Contextual> extends Filter {
 
-  // -- Master Filter methods --
+	// -- Master Filter methods --
 
-  /**
-   * Inserts an instance of the indicated filter class into the
-   * filter stack. Returns the filter instance associated with
-   * this MasterFilter, which can be used for wrapper-specific
-   * configuration.
-   * 
-   * @param filterClass - The type of filter to enable
-   * @return The enabled filter
-   * @throws InstantiableException
-   */
-  <F extends Filter> F enable(Class<F> filterClass) throws InstantiableException;
+	/**
+	 * Inserts an instance of the indicated filter class into the filter stack.
+	 * Returns the filter instance associated with this MasterFilter, which can be
+	 * used for wrapper-specific configuration.
+	 * 
+	 * @param filterClass - The type of filter to enable
+	 * @return The enabled filter
+	 * @throws InstantiableException
+	 */
+	<F extends Filter> F enable(Class<F> filterClass)
+		throws InstantiableException;
 
-  /**
-   * Removes the specified filter from the filter stack,
-   * if present. Clears any state in the cached instance of the specified
-   * filter.
-   * 
-   * @param filterClass - The type of filter to disable
-   * @return true if the desired filter was disabled
-   * @throws InstantiableException
-   */
-  boolean disable(Class<? extends Filter> filterClass) throws InstantiableException;
+	/**
+	 * Removes the specified filter from the filter stack, if present. Clears any
+	 * state in the cached instance of the specified filter.
+	 * 
+	 * @param filterClass - The type of filter to disable
+	 * @return true if the desired filter was disabled
+	 * @throws InstantiableException
+	 */
+	boolean disable(Class<? extends Filter> filterClass)
+		throws InstantiableException;
 
-  /**
-   * Returns a list of all filter classes this MasterFilter can enable/disable.
-   * 
-   * @return A list of discovered filters
-   */
-  Set<Class<? extends Filter>> getFilterClasses();
+	/**
+	 * Returns a list of all filter classes this MasterFilter can enable/disable.
+	 * 
+	 * @return A list of discovered filters
+	 */
+	Set<Class<? extends Filter>> getFilterClasses();
 
-  // -- Filter API --
+	// -- Filter API --
 
-  /**
-   * Sets the wrapped object. Effectively the tail of the filter stack.
-   */
-  void setParent(Object parent);
+	/**
+	 * Sets the wrapped object. Effectively the tail of the filter stack.
+	 */
+	void setParent(Object parent);
 
-  /**
-   * Returns the top of the filter stack.
-   */
-  Object getParent();
+	/**
+	 * Returns the top of the filter stack.
+	 */
+	Object getParent();
 
-  /**
-   * Returns the base object (below the filter stack).
-   */
-  Object getTail();
+	/**
+	 * Returns the base object (below the filter stack).
+	 */
+	Object getTail();
 
-  /**
-   * Disables all enabled filters maintained by this MasterFilter.
-   */
-  void reset();
+	/**
+	 * Disables all enabled filters maintained by this MasterFilter.
+	 */
+	void reset();
 }

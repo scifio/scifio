@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.filters;
 
 import io.scif.ByteArrayPlane;
@@ -51,248 +52,281 @@ import org.scijava.plugin.Plugin;
 
 /**
  * Logic to automatically separate the channels in a file.
- *
  */
-@Plugin(type=ChannelSeparator.class, priority=ChannelSeparator.PRIORITY, attrs={
-  @Attr(name=ChannelSeparator.FILTER_KEY, value=ChannelSeparator.FILTER_VALUE),
-  @Attr(name=ChannelSeparator.ENABLED_KEY, value=ChannelSeparator.ENABLED_VAULE)
-  })
+@Plugin(type = ChannelSeparator.class, priority = ChannelSeparator.PRIORITY,
+	attrs = {
+		@Attr(name = ChannelSeparator.FILTER_KEY,
+			value = ChannelSeparator.FILTER_VALUE),
+		@Attr(name = ChannelSeparator.ENABLED_KEY,
+			value = ChannelSeparator.ENABLED_VAULE) })
 public class ChannelSeparator extends AbstractReaderFilter {
 
-  // -- Constants --
+	// -- Constants --
 
-  public static final double PRIORITY = 2.0;
-  public static final String FILTER_VALUE = "io.scif.Reader";
+	public static final double PRIORITY = 2.0;
+	public static final String FILTER_VALUE = "io.scif.Reader";
 
-  // -- Fields --
+	// -- Fields --
 
-  /** Last plane opened. */
-  private Plane lastPlane = null;
+	/** Last plane opened. */
+	private Plane lastPlane = null;
 
-  /** Index of last plane opened. */
-  private int lastPlaneIndex = -1;
+	/** Index of last plane opened. */
+	private int lastPlaneIndex = -1;
 
-  /** Index of last plane opened. */
-  private int lastImageIndex = -1;
+	/** Index of last plane opened. */
+	private int lastImageIndex = -1;
 
-  /** X index of last plane opened. */
-  private int lastPlaneX = -1;
+	/** X index of last plane opened. */
+	private int lastPlaneX = -1;
 
-  /** Y index of last plane opened. */
-  private int lastPlaneY = -1;
+	/** Y index of last plane opened. */
+	private int lastPlaneY = -1;
 
-  /** Width of last plane opened. */
-  private int lastPlaneWidth = -1;
+	/** Width of last plane opened. */
+	private int lastPlaneWidth = -1;
 
-  /** Height of last plane opened. */
-  private int lastPlaneHeight = -1;
+	/** Height of last plane opened. */
+	private int lastPlaneHeight = -1;
 
-  // -- Constructor --
+	// -- Constructor --
 
-  public ChannelSeparator() {
-    super(ChannelSeparatorMetadata.class);
-  }
+	public ChannelSeparator() {
+		super(ChannelSeparatorMetadata.class);
+	}
 
-  // -- ChannelSeparator API methods --
+	// -- ChannelSeparator API methods --
 
-  /**
-   * Returns the image number in the original dataset that corresponds to the
-   * given image number.  For instance, if the original dataset was a single
-   * RGB image and the given image number is 2, the return value will be 0.
-   *
-   * @param planeIndex is a plane number greater than or equal to 0 and less than
-   *   getPlaneCount()
-   * @return the corresponding plane number in the original (unseparated) data.
-   */
-  public int getOriginalIndex(int imageIndex, int planeIndex) {
-    int planeCount = getPlaneCount(imageIndex);
-    int originalCount = getParent().getPlaneCount(imageIndex);
+	/**
+	 * Returns the image number in the original dataset that corresponds to the
+	 * given image number. For instance, if the original dataset was a single RGB
+	 * image and the given image number is 2, the return value will be 0.
+	 * 
+	 * @param planeIndex is a plane number greater than or equal to 0 and less
+	 *          than getPlaneCount()
+	 * @return the corresponding plane number in the original (unseparated) data.
+	 */
+	public int getOriginalIndex(final int imageIndex, final int planeIndex) {
+		final int planeCount = getPlaneCount(imageIndex);
+		final int originalCount = getParent().getPlaneCount(imageIndex);
 
-    if (planeCount == originalCount) return planeIndex;
-    int[] coords = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
-    coords[1] /= getParentMeta().getRGBChannelCount(imageIndex);
-    return FormatTools.getIndex(getParent(), imageIndex, coords[0], coords[1], coords[2]);
-  }
+		if (planeCount == originalCount) return planeIndex;
+		final int[] coords = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
+		coords[1] /= getParentMeta().getRGBChannelCount(imageIndex);
+		return FormatTools.getIndex(getParent(), imageIndex, coords[0], coords[1],
+			coords[2]);
+	}
 
-  // -- AbstractReaderFilter API Methods --
+	// -- AbstractReaderFilter API Methods --
 
-  /*
-   * @see io.scif.filters.AbstractReaderFilter#setSourceHelper(java.lang.String)
-   */
-  protected void setSourceHelper(String source){
-    cleanUp();
-  }
+	/*
+	 * @see io.scif.filters.AbstractReaderFilter#setSourceHelper(java.lang.String)
+	 */
+	@Override
+	protected void setSourceHelper(final String source) {
+		cleanUp();
+	}
 
+	@Override
+	public int getPlaneCount(final int imageIndex) {
+		return getMetadata().get(imageIndex).getPlaneCount();
+	}
 
-  public int getPlaneCount(int imageIndex) {
-    return getMetadata().get(imageIndex).getPlaneCount();
-  }
+	/*
+	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int)
+	 */
+	@Override
+	public Plane openPlane(final int imageIndex, final int planeIndex)
+		throws FormatException, IOException
+	{
+		return openPlane(planeIndex, imageIndex, 0, 0, getMetadata().getAxisLength(
+			imageIndex, Axes.X), getMetadata().getAxisLength(imageIndex, Axes.Y));
+	}
 
-  /*
-   * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int)
-   */
-  public Plane openPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
-    return openPlane(planeIndex, imageIndex, 0, 0, getMetadata().getAxisLength(imageIndex, Axes.X),
-        getMetadata().getAxisLength(imageIndex, Axes.Y));
-  }
+	/*
+	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane)
+	 */
+	@Override
+	public Plane openPlane(final int imageIndex, final int planeIndex,
+		final Plane plane) throws FormatException, IOException
+	{
+		return openPlane(imageIndex, planeIndex, plane, plane.getxOffset(), plane
+			.getyOffset(), plane.getxLength(), plane.getyLength());
+	}
 
-  /*
-   * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane)
-   */
-  public Plane openPlane(int imageIndex, int planeIndex, Plane plane)
-    throws FormatException, IOException
-  {
-    return openPlane(imageIndex, planeIndex, plane, plane.getxOffset(), plane.getyOffset(),
-        plane.getxLength(), plane.getyLength());
-  }
+	/*
+	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, int, int, int, int)
+	 */
+	@Override
+	public Plane openPlane(final int imageIndex, final int planeIndex,
+		final int x, final int y, final int w, final int h) throws FormatException,
+		IOException
+	{
+		return openPlane(imageIndex, planeIndex, createPlane(x, y, w, h), x, y, w,
+			h);
+	}
 
-  /*
-   * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, int, int, int, int)
-   */
-  public Plane openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
-    throws FormatException, IOException
-  {
-    return openPlane(imageIndex, planeIndex, createPlane(x, y, w, h), x, y, w, h);
-  }
+	/*
+	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane, int, int, int, int)
+	 */
+	@Override
+	public Plane openPlane(final int imageIndex, final int planeIndex,
+		Plane plane, final int x, final int y, final int w, final int h)
+		throws FormatException, IOException
+	{
+		FormatTools.assertId(getCurrentFile(), true, 2);
+		FormatTools.checkPlaneNumber(this, imageIndex, planeIndex);
 
-  /*
-   * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane, int, int, int, int)
-   */
-  public Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x, int y, int w, int h)
-    throws FormatException, IOException
-  {
-    FormatTools.assertId(getCurrentFile(), true, 2);
-    FormatTools.checkPlaneNumber(this, imageIndex, planeIndex);
+		if (getParentMeta().isRGB(imageIndex) &&
+			!getParentMeta().isIndexed(imageIndex))
+		{
+			final int c =
+				getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) /
+					getParentMeta().getEffectiveSizeC(imageIndex);
+			final int source = getOriginalIndex(imageIndex, planeIndex);
+			final int channel = planeIndex % c;
+			final int bpp =
+				FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
 
-    if (getParentMeta().isRGB(imageIndex) && !getParentMeta().isIndexed(imageIndex)) {
-      int c = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) / getParentMeta().getEffectiveSizeC(imageIndex);
-      int source = getOriginalIndex(imageIndex, planeIndex);
-      int channel = planeIndex % c;
-      int bpp = FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
+			if (plane == null ||
+				!ByteArrayPlane.class.isAssignableFrom(plane.getClass()))
+			{
+				final ByteArrayPlane bp = new ByteArrayPlane(getContext());
+				final byte[] buf =
+					DataTools.allocate(w, h, FormatTools.getBytesPerPixel(getMetadata()
+						.getPixelType(imageIndex)));
+				bp.populate(buf, x, y, w, h);
+				plane = bp;
+			}
 
-      if (plane == null || !ByteArrayPlane.class.isAssignableFrom( plane.getClass() )) {
-        ByteArrayPlane bp = new ByteArrayPlane(getContext());
-        byte[] buf =
-            DataTools.allocate(w, h, FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex)));
-        bp.populate(buf, x, y, w, h);
-        plane = bp;
-      }
+			if (source != lastPlaneIndex || imageIndex != lastImageIndex ||
+				x != lastPlaneX || y != lastPlaneY || w != lastPlaneWidth ||
+				h != lastPlaneHeight)
+			{
 
-      if (source != lastPlaneIndex || imageIndex != lastImageIndex ||
-          x != lastPlaneX || y != lastPlaneY || w != lastPlaneWidth ||
-          h != lastPlaneHeight)
-      {
+				int strips = 1;
 
-        int strips = 1;
+				// check how big the original image is; if it's larger than the
+				// available memory, we will need to split it into strips
 
-        // check how big the original image is; if it's larger than the
-        // available memory, we will need to split it into strips
+				final Runtime rt = Runtime.getRuntime();
+				final long availableMemory = rt.freeMemory();
+				final long planeSize = DataTools.safeMultiply64(w, h, bpp, c);
 
-        Runtime rt = Runtime.getRuntime();
-        long availableMemory = rt.freeMemory();
-        long planeSize = DataTools.safeMultiply64(w, h, bpp, c);
+				if (availableMemory < planeSize || planeSize > Integer.MAX_VALUE) {
+					strips = (int) Math.sqrt(h);
+				}
 
-        if (availableMemory < planeSize || planeSize > Integer.MAX_VALUE) {
-          strips = (int) Math.sqrt(h);
-        }
+				final int stripHeight = h / strips;
+				final int lastStripHeight = stripHeight + (h - (stripHeight * strips));
+				byte[] strip =
+					strips == 1 ? plane.getBytes() : new byte[stripHeight * w * bpp];
+				for (int i = 0; i < strips; i++) {
+					lastPlane =
+						getParent().openPlane(imageIndex, source, x, y + i * stripHeight,
+							w, i == strips - 1 ? lastStripHeight : stripHeight);
+					lastPlaneIndex = source;
+					lastImageIndex = imageIndex;
+					lastPlaneX = x;
+					lastPlaneY = y + i * stripHeight;
+					lastPlaneWidth = w;
+					lastPlaneHeight = i == strips - 1 ? lastStripHeight : stripHeight;
 
-        int stripHeight = h / strips;
-        int lastStripHeight = stripHeight + (h - (stripHeight * strips));
-        byte[] strip = strips == 1 ? plane.getBytes() : new byte[stripHeight * w * bpp];
-        for (int i=0; i<strips; i++) {
-          lastPlane = getParent().openPlane(imageIndex, source, x, y + i * stripHeight, w,
-            i == strips - 1 ? lastStripHeight : stripHeight);
-          lastPlaneIndex = source;
-          lastImageIndex = imageIndex;
-          lastPlaneX = x;
-          lastPlaneY = y + i * stripHeight;
-          lastPlaneWidth = w;
-          lastPlaneHeight = i == strips - 1 ? lastStripHeight : stripHeight;
+					if (strips != 1 && lastStripHeight != stripHeight && i == strips - 1)
+					{
+						strip = new byte[lastStripHeight * w * bpp];
+					}
 
-          if (strips != 1 && lastStripHeight != stripHeight && i == strips - 1)
-          {
-            strip = new byte[lastStripHeight * w * bpp];
-          }
+					ImageTools.splitChannels(lastPlane.getBytes(), strip, channel, c,
+						bpp, false, getMetadata().isInterleaved(imageIndex), strips == 1
+							? w * h * bpp : strip.length);
+					if (strips != 1) {
+						System.arraycopy(strip, 0, plane.getBytes(), i * stripHeight * w *
+							bpp, strip.length);
+					}
+				}
+			}
+			else {
+				ImageTools.splitChannels(lastPlane.getBytes(), plane.getBytes(),
+					channel, c, bpp, false, getMetadata().isInterleaved(imageIndex), w *
+						h * bpp);
+			}
 
-          ImageTools.splitChannels(lastPlane.getBytes(), strip, channel, c, bpp,
-              false, getMetadata().isInterleaved(imageIndex), strips == 1 ? w * h * bpp : strip.length);
-          if (strips != 1) {
-            System.arraycopy(strip, 0, plane.getBytes(), i * stripHeight * w * bpp,
-                strip.length);
-          }
-        }
-      }
-      else {
-        ImageTools.splitChannels(lastPlane.getBytes(), plane.getBytes(), channel, c, bpp,
-            false, getMetadata().isInterleaved(imageIndex), w * h * bpp);
-      }
+			return plane;
+		}
+		return getParent().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
+	}
 
-      return plane;
-    }
-    return getParent().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
-  }
+	/*
+	 * @see io.scif.filters.AbstractReaderFilter#openThumbPlane(int, int)
+	 */
+	@Override
+	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
+		throws FormatException, IOException
+	{
+		FormatTools.assertId(getCurrentFile(), true, 2);
 
-  /*
-   * @see io.scif.filters.AbstractReaderFilter#openThumbPlane(int, int)
-   */
-  public Plane openThumbPlane(int imageIndex, int planeIndex) throws FormatException, IOException {
-    FormatTools.assertId(getCurrentFile(), true, 2);
+		final int source = getOriginalIndex(imageIndex, planeIndex);
+		final Plane thumb = getParent().openThumbPlane(source, planeIndex);
 
-    int source = getOriginalIndex(imageIndex, planeIndex);
-    Plane thumb = getParent().openThumbPlane(source, planeIndex);
+		ByteArrayPlane ret = null;
 
-    ByteArrayPlane ret = null;
+		if (isCompatible(thumb.getClass())) ret = (ByteArrayPlane) thumb;
+		else {
+			ret = new ByteArrayPlane(thumb.getContext());
+			ret.populate(thumb);
+		}
 
-    if (isCompatible(thumb.getClass())) ret = (ByteArrayPlane)thumb;
-    else {
-      ret = new ByteArrayPlane(thumb.getContext());
-      ret.populate(thumb);
-    }
+		// TODO maybe these imageIndices should be source as well?
 
-    //TODO maybe these imageIndices should be source as well?
+		final int c =
+			getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) /
+				getParentMeta().getEffectiveSizeC(imageIndex);
+		final int channel = planeIndex % c;
+		final int bpp =
+			FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
 
-    int c = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL) /
-      getParentMeta().getEffectiveSizeC(imageIndex);
-    int channel = planeIndex % c;
-    int bpp = FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
+		ret.setData(ImageTools.splitChannels(thumb.getBytes(), channel, c, bpp,
+			false, false));
+		return ret;
+	}
 
-    ret.setData(ImageTools.splitChannels(thumb.getBytes(), channel, c, bpp, false, false));
-    return ret;
-  }
+	/*
+	 * @see io.scif.filters.AbstractReaderFilter#close()
+	 */
+	@Override
+	public void close() throws IOException {
+		close(false);
+	}
 
-  /*
-   * @see io.scif.filters.AbstractReaderFilter#close()
-   */
-  public void close() throws IOException {
-    close(false);
-  }
+	/*
+	 * @see io.scif.filters.AbstractReaderFilter#close(boolean)
+	 */
+	@Override
+	public void close(final boolean fileOnly) throws IOException {
+		super.close(fileOnly);
+		if (!fileOnly) {
+			cleanUp();
+		}
+	}
 
-  /*
-   * @see io.scif.filters.AbstractReaderFilter#close(boolean)
-   */
-  public void close(boolean fileOnly) throws IOException {
-    super.close(fileOnly);
-    if (!fileOnly) {
-      cleanUp();
-    }
-  }
+	@Override
+	public Plane createPlane(final int xOffset, final int yOffset,
+		final int xLength, final int yLength)
+	{
+		return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
+	}
 
-  @Override
-  public Plane createPlane(int xOffset, int yOffset, int xLength,
-    int yLength) {
-  return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
-}
+	// -- Helper Methods --
 
-  // -- Helper Methods --
-
-  /* Resets local fields. */
-  private void cleanUp() {
-    lastPlane = null;
-    lastPlaneIndex = -1;
-    lastImageIndex = -1;
-    lastPlaneX = -1;
-    lastPlaneY = -1;
-    lastPlaneWidth = -1;
-    lastPlaneHeight = -1;
-  }
+	/* Resets local fields. */
+	private void cleanUp() {
+		lastPlane = null;
+		lastPlaneIndex = -1;
+		lastImageIndex = -1;
+		lastPlaneX = -1;
+		lastPlaneY = -1;
+		lastPlaneWidth = -1;
+		lastPlaneHeight = -1;
+	}
 }

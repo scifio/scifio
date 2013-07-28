@@ -39,22 +39,27 @@ package io.scif.io;
 import java.io.IOException;
 
 /**
- * HandleException is the exception thrown when something goes wrong in
- * one of the custom I/O classes.
- *
+ * HandleException is the exception thrown when something goes wrong in one of
+ * the custom I/O classes.
  */
 public class HandleException extends IOException {
 
-  public HandleException() { super(); }
-  public HandleException(String s) { super(s); }
-  public HandleException(String s, Throwable cause) {
-    super(s);
-    initCause(cause);
-  }
-  public HandleException(Throwable cause) {
-    super();
-    initCause(cause);
-  }
+	public HandleException() {
+		super();
+	}
+
+	public HandleException(final String s) {
+		super(s);
+	}
+
+	public HandleException(final String s, final Throwable cause) {
+		super(s);
+		initCause(cause);
+	}
+
+	public HandleException(final Throwable cause) {
+		super();
+		initCause(cause);
+	}
 
 }
-

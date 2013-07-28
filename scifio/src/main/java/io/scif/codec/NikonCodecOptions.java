@@ -38,14 +38,13 @@ package io.scif.codec;
 
 /**
  * Options for compressing and decompressing Nikon NEF data.
- *
  */
 public class NikonCodecOptions extends CodecOptions {
 
-  public int[] curve;
+	public int[] curve;
 
-  public int[] vPredictor;
+	public int[] vPredictor;
 
-  public int split;
+	public int split;
 
 }

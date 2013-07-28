@@ -44,45 +44,44 @@ import java.lang.reflect.Modifier;
 
 /**
  * A utility class with convenience methods for debugging.
- *
- *
+ * 
  * @author Curtis Rueden ctrueden at wisc.edu
  */
 public final class DebugTools {
 
-  // -- Constructor --
+	// -- Constructor --
 
-  private DebugTools() { }
+	private DebugTools() {}
 
-  // -- DebugTools methods --
+	// -- DebugTools methods --
 
-  /** Extracts the given exception's corresponding stack trace to a string. */
-  public static String getStackTrace(Throwable t) {
-    try {
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      t.printStackTrace(new PrintStream(out, false, Constants.ENCODING));
-      return new String(out.toByteArray(), Constants.ENCODING);
-    }
-    catch (IOException e) { }
-    return null;
-  }
+	/** Extracts the given exception's corresponding stack trace to a string. */
+	public static String getStackTrace(final Throwable t) {
+		try {
+			final ByteArrayOutputStream out = new ByteArrayOutputStream();
+			t.printStackTrace(new PrintStream(out, false, Constants.ENCODING));
+			return new String(out.toByteArray(), Constants.ENCODING);
+		}
+		catch (final IOException e) {}
+		return null;
+	}
 
-  /**
-   * This method uses reflection to scan the values of the given class's
-   * static fields, returning the first matching field's name.
-   */
-  public static String getFieldName(Class<?> c, int value) {
-    Field[] fields = c.getDeclaredFields();
-    for (int i=0; i<fields.length; i++) {
-      if (!Modifier.isStatic(fields[i].getModifiers())) continue;
-      fields[i].setAccessible(true);
-      try {
-        if (fields[i].getInt(null) == value) return fields[i].getName();
-      }
-      catch (IllegalAccessException exc) { }
-      catch (IllegalArgumentException exc) { }
-    }
-    return "" + value;
-  }
+	/**
+	 * This method uses reflection to scan the values of the given class's static
+	 * fields, returning the first matching field's name.
+	 */
+	public static String getFieldName(final Class<?> c, final int value) {
+		final Field[] fields = c.getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			if (!Modifier.isStatic(fields[i].getModifiers())) continue;
+			fields[i].setAccessible(true);
+			try {
+				if (fields[i].getInt(null) == value) return fields[i].getName();
+			}
+			catch (final IllegalAccessException exc) {}
+			catch (final IllegalArgumentException exc) {}
+		}
+		return "" + value;
+	}
 
 }

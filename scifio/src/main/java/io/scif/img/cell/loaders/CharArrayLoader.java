@@ -36,41 +36,42 @@
 
 package io.scif.img.cell.loaders;
 
+import io.scif.Reader;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import io.scif.Reader;
 import net.imglib2.img.basictypeaccess.array.CharArray;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link CharArray}
- * types.
+ * {@link SCIFIOArrayLoader} implementation for {@link CharArray} types.
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
-public class CharArrayLoader extends AbstractArrayLoader< CharArray >
-{
-  public CharArrayLoader (Reader reader) {
-    super(reader);
-  }
+public class CharArrayLoader extends AbstractArrayLoader<CharArray> {
 
-  @Override
-  public void convertBytes(CharArray data, byte[] bytes, int planesRead) {
-    int offset = planesRead * bytes.length;
+	public CharArrayLoader(final Reader reader) {
+		super(reader);
+	}
 
-    ByteBuffer bb = ByteBuffer.wrap(bytes);
+	@Override
+	public void convertBytes(final CharArray data, final byte[] bytes,
+		final int planesRead)
+	{
+		final int offset = planesRead * bytes.length;
 
-    bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-    bb.asCharBuffer().get(data.getCurrentStorageArray(), offset, bytes.length);
-  }
+		final ByteBuffer bb = ByteBuffer.wrap(bytes);
 
-  public CharArray emptyArray( final int[] dimensions )
-  {
-    return new CharArray( countEntities(dimensions) );
-  }
+		bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN
+			: ByteOrder.BIG_ENDIAN);
+		bb.asCharBuffer().get(data.getCurrentStorageArray(), offset, bytes.length);
+	}
 
-  public int getBitsPerElement() {
-    return 8;
-  }
+	public CharArray emptyArray(final int[] dimensions) {
+		return new CharArray(countEntities(dimensions));
+	}
+
+	public int getBitsPerElement() {
+		return 8;
+	}
 }

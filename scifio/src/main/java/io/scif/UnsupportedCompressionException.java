@@ -39,15 +39,24 @@ package io.scif;
 /**
  * UnsupportedCompressionException is the exception thrown when the compression
  * scheme used in a particular file or stream is unsupported.
- *
  */
 public class UnsupportedCompressionException extends FormatException {
 
-  public UnsupportedCompressionException() { super(); }
-  public UnsupportedCompressionException(String s) { super(s); }
-  public UnsupportedCompressionException(String s, Throwable cause) {
-    super(s, cause);
-  }
-  public UnsupportedCompressionException(Throwable cause) { super(cause); }
+	public UnsupportedCompressionException() {
+		super();
+	}
+
+	public UnsupportedCompressionException(final String s) {
+		super(s);
+	}
+
+	public UnsupportedCompressionException(final String s, final Throwable cause)
+	{
+		super(s, cause);
+	}
+
+	public UnsupportedCompressionException(final Throwable cause) {
+		super(cause);
+	}
 
 }

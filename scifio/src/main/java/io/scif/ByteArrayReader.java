@@ -33,64 +33,67 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
-
 /**
- * Abstract superclass for all {@link io.scif.Reader} implementations
- * that return a {@link io.scif.ByteArrayPlane} when reading datasets.
+ * Abstract superclass for all {@link io.scif.Reader} implementations that
+ * return a {@link io.scif.ByteArrayPlane} when reading datasets.
  * 
  * @see io.scif.Reader
  * @see io.scif.ByteArrayPlane
- * 
  * @author Mark Hiner
- *
  * @param <M> - The Metadata type required by this Reader.
  */
-public abstract class ByteArrayReader<M extends TypedMetadata>
-  extends AbstractReader<M, ByteArrayPlane> {
+public abstract class ByteArrayReader<M extends TypedMetadata> extends
+	AbstractReader<M, ByteArrayPlane>
+{
 
-  // -- Constructor --
+	// -- Constructor --
 
-  public ByteArrayReader() {
-    super(ByteArrayPlane.class);
-  }
+	public ByteArrayReader() {
+		super(ByteArrayPlane.class);
+	}
 
-  // -- Reader API Methods --
+	// -- Reader API Methods --
 
-  /*
-   * @see io.scif.Reader#openThumbPlane(int, int)
-   */
-  public ByteArrayPlane openThumbPlane(final int imageIndex, final int planeIndex)
-    throws FormatException, IOException
-  {
-    FormatTools.assertStream(getStream(), true, 1);
-    ByteArrayPlane plane = createPlane(0, 0,
-        getMetadata().getThumbSizeX(imageIndex), getMetadata().getThumbSizeY(imageIndex));
+	/*
+	 * @see io.scif.Reader#openThumbPlane(int, int)
+	 */
+	public ByteArrayPlane openThumbPlane(final int imageIndex,
+		final int planeIndex) throws FormatException, IOException
+	{
+		FormatTools.assertStream(getStream(), true, 1);
+		final ByteArrayPlane plane =
+			createPlane(0, 0, getMetadata().getThumbSizeX(imageIndex), getMetadata()
+				.getThumbSizeY(imageIndex));
 
-    plane.setData(FormatTools.openThumbBytes(this, imageIndex, planeIndex));
+		plane.setData(FormatTools.openThumbBytes(this, imageIndex, planeIndex));
 
-    return plane;
-  }
+		return plane;
+	}
 
-  /*
-   * @see io.scif.TypedReader#createPlane(int, int, int, int)
-   */
-  public ByteArrayPlane createPlane(int xOffset, int yOffset, int xLength,
-      int yLength) {
-    return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
-  }
+	/*
+	 * @see io.scif.TypedReader#createPlane(int, int, int, int)
+	 */
+	public ByteArrayPlane createPlane(final int xOffset, final int yOffset,
+		final int xLength, final int yLength)
+	{
+		return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
+	}
 
-  /*
-   * @see io.scif.TypedReader#createPlane(int, int, int, int)
-   */
-  public ByteArrayPlane createPlane(ImageMetadata meta, int xOffset, int yOffset, int xLength,
-      int yLength) {
-    return new ByteArrayPlane(getContext(), meta, xOffset, yOffset, xLength, yLength);
-  }
+	/*
+	 * @see io.scif.TypedReader#createPlane(int, int, int, int)
+	 */
+	public ByteArrayPlane createPlane(final ImageMetadata meta,
+		final int xOffset, final int yOffset, final int xLength, final int yLength)
+	{
+		return new ByteArrayPlane(getContext(), meta, xOffset, yOffset, xLength,
+			yLength);
+	}
 
 }

@@ -41,48 +41,42 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-
-import io.scif.common.Constants;
-import io.scif.common.IniList;
-import io.scif.common.IniTable;
-import io.scif.common.IniWriter;
-
-
 /**
  * A simple writer for INI configuration files.
- *
- *
+ * 
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class IniWriter {
 
-  // -- IniWriter API methods --
+	// -- IniWriter API methods --
 
-  /**
-   * Saves the given IniList to the given file.
-   * If the given file already exists, then the IniList will be appended.
-   */
-  public void saveINI(IniList ini, String path) throws IOException {
-    saveINI(ini, path, true);
-  }
+	/**
+	 * Saves the given IniList to the given file. If the given file already
+	 * exists, then the IniList will be appended.
+	 */
+	public void saveINI(final IniList ini, final String path) throws IOException {
+		saveINI(ini, path, true);
+	}
 
-  /** Saves the given IniList to the given file. */
-  public void saveINI(IniList ini, String path, boolean append)
-    throws IOException
-  {
-    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
-      new FileOutputStream(path, append), Constants.ENCODING));
+	/** Saves the given IniList to the given file. */
+	public void
+		saveINI(final IniList ini, final String path, final boolean append)
+			throws IOException
+	{
+		final BufferedWriter out =
+			new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path,
+				append), Constants.ENCODING));
 
-    for (IniTable table : ini) {
-      String header = table.get(IniTable.HEADER_KEY);
-      out.write("[" + header + "]\n");
-      for (String key : table.keySet()) {
-        out.write(key + " = " + table.get(key) + "\n");
-      }
-      out.write("\n");
-    }
+		for (final IniTable table : ini) {
+			final String header = table.get(IniTable.HEADER_KEY);
+			out.write("[" + header + "]\n");
+			for (final String key : table.keySet()) {
+				out.write(key + " = " + table.get(key) + "\n");
+			}
+			out.write("\n");
+		}
 
-    out.close();
-  }
+		out.close();
+	}
 
 }

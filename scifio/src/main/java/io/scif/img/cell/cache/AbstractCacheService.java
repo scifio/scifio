@@ -41,82 +41,83 @@ import java.io.Serializable;
 import org.scijava.service.AbstractService;
 
 /**
- * Abstract superclass for {@link CacheService} implementations.
- * Provides a base {@link #getKey(String, int)} implementation.
+ * Abstract superclass for {@link CacheService} implementations. Provides a base
+ * {@link #getKey(String, int)} implementation.
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
-public abstract class AbstractCacheService<T extends Serializable>
-  extends AbstractService implements CacheService<T>
+public abstract class AbstractCacheService<T extends Serializable> extends
+	AbstractService implements CacheService<T>
 {
-  // -- Fields --
 
-  // Whether this service should cache anything
-  private boolean enabled = true;
+	// -- Fields --
 
-  // Whether non-dirty records should be cached or not
-  private boolean cacheAll = false;
+	// Whether this service should cache anything
+	private boolean enabled = true;
 
-  // Whether the cache has reached the disk allocation limit
-  private boolean diskFull = false;
+	// Whether non-dirty records should be cached or not
+	private boolean cacheAll = false;
 
-  // -- CacheService API methods --
+	// Whether the cache has reached the disk allocation limit
+	private boolean diskFull = false;
 
-  /*
-   * @see io.scif.io.img.cell.cache.CacheService#enabled()
-   */
-  public boolean enabled() {
-    return enabled;
-  }
+	// -- CacheService API methods --
 
-  /*
-   * @see io.scif.io.img.cell.cache.CacheService#enable(boolean)
-   */
-  public void enable(boolean enabled) {
-    this.enabled = enabled;
-  }
+	/*
+	 * @see io.scif.io.img.cell.cache.CacheService#enabled()
+	 */
+	public boolean enabled() {
+		return enabled;
+	}
 
-  /*
-   * @see ome.scifio.io.img.cell.CacheService#getKey(java.lang.String, int)
-   */
-  public Integer getKey(String cacheId, int index) {
+	/*
+	 * @see io.scif.io.img.cell.cache.CacheService#enable(boolean)
+	 */
+	public void enable(final boolean enabled) {
+		this.enabled = enabled;
+	}
 
-    int result = 17;
-    result = 31 * result + index;
-    result = 31 * result + cacheId.hashCode();
+	/*
+	 * @see ome.scifio.io.img.cell.CacheService#getKey(java.lang.String, int)
+	 */
+	public Integer getKey(final String cacheId, final int index) {
 
-    return result;
-  }
+		int result = 17;
+		result = 31 * result + index;
+		result = 31 * result + cacheId.hashCode();
 
-  /*
-   * @see io.scif.io.img.cell.cache.CacheService#setMaxBytesOnDisk(long)
-   */
-  public void setMaxBytesOnDisk(long maxBytes) {
-    throw new UnsupportedOperationException("Setting the disk store size not currently supported. Please use enable(false) instead.");
-  }
+		return result;
+	}
 
-  /*
-   * @see io.scif.io.img.cell.cache.CacheService#cacheAll(boolean)
-   */
-  public void cacheAll(boolean enabled) {
-    cacheAll = enabled;
-  }
+	/*
+	 * @see io.scif.io.img.cell.cache.CacheService#setMaxBytesOnDisk(long)
+	 */
+	public void setMaxBytesOnDisk(final long maxBytes) {
+		throw new UnsupportedOperationException(
+			"Setting the disk store size not currently supported. Please use enable(false) instead.");
+	}
 
-  // -- AbstractCacheService methods --
+	/*
+	 * @see io.scif.io.img.cell.cache.CacheService#cacheAll(boolean)
+	 */
+	public void cacheAll(final boolean enabled) {
+		cacheAll = enabled;
+	}
 
-  // Accessor for CacheAll
-  protected boolean cacheAll() {
-    return cacheAll;
-  }
+	// -- AbstractCacheService methods --
 
-  // Accessor for diskFull
-  protected boolean diskFull() {
-    return diskFull;
-  }
+	// Accessor for CacheAll
+	protected boolean cacheAll() {
+		return cacheAll;
+	}
 
-  // Setter for diskFull
-  protected void diskIsFull(boolean full) {
-    diskFull = full;
-  }
+	// Accessor for diskFull
+	protected boolean diskFull() {
+		return diskFull;
+	}
+
+	// Setter for diskFull
+	protected void diskIsFull(final boolean full) {
+		diskFull = full;
+	}
 }

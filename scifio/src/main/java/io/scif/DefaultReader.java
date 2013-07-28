@@ -33,47 +33,47 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import java.io.IOException;
 
 /**
- * Non-functional default {@link io.scif.Reader} implementation. For use
- * in {@link io.scif.Format}s that do not need a Reader.
+ * Non-functional default {@link io.scif.Reader} implementation. For use in
+ * {@link io.scif.Format}s that do not need a Reader.
  * 
  * @see io.scif.Reader
  * @see io.scif.Format
- * 
  * @author Mark Hiner
- *
  */
-public class DefaultReader extends ByteArrayReader<DefaultMetadata>
-  implements DefaultComponent
+public class DefaultReader extends ByteArrayReader<DefaultMetadata> implements
+	DefaultComponent
 {
 
-  // -- Fields --
+	// -- Fields --
 
-  private Format format;
+	private Format format;
 
-  // -- HasFormat API Methods --
+	// -- HasFormat API Methods --
 
-  @Override
-  public Format getFormat() {
-    return format;
-  }
+	@Override
+	public Format getFormat() {
+		return format;
+	}
 
-  // -- Reader API Methods --
+	// -- Reader API Methods --
 
-  /**
-   * Non-functional openPlane implementation.
-   * 
-   * @throws UnsupportedOperationException
-   */
-  public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
-      ByteArrayPlane plane, int x, int y, int w, int h) throws FormatException,
-      IOException
-  {
-    throw new UnsupportedOperationException("Trying to read using DefaultReader. " +
-        "Must implement a Reader specifically for this Format");
-  }
+	/**
+	 * Non-functional openPlane implementation.
+	 * 
+	 * @throws UnsupportedOperationException
+	 */
+	public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		final ByteArrayPlane plane, final int x, final int y, final int w,
+		final int h) throws FormatException, IOException
+	{
+		throw new UnsupportedOperationException(
+			"Trying to read using DefaultReader. "
+				+ "Must implement a Reader specifically for this Format");
+	}
 }

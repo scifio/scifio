@@ -44,90 +44,90 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
-
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 /**
- * StreamHandle implementation for reading from gzip-compressed files
- * or byte arrays.  Instances of GZipHandle are read-only.
- *
- *
+ * StreamHandle implementation for reading from gzip-compressed files or byte
+ * arrays. Instances of GZipHandle are read-only.
+ * 
  * @see StreamHandle
- *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 @Plugin(type = IStreamAccess.class)
 public class GZipHandle extends StreamHandle {
 
-  // -- Constructor --
+	// -- Constructor --
 
-  /**
-   * Zero-parameter constructor. This instructor can be used first
-   * to see if a given file is constructable from this handle. If so,
-   * setFile can then be used.
-   */
-  public GZipHandle() {
-    super();
-  }
+	/**
+	 * Zero-parameter constructor. This instructor can be used first to see if a
+	 * given file is constructable from this handle. If so, setFile can then be
+	 * used.
+	 */
+	public GZipHandle() {
+		super();
+	}
 
-  public GZipHandle(Context context) {
-    super(context);
-  }
+	public GZipHandle(final Context context) {
+		super(context);
+	}
 
-  /**
-   * Construct a new GZipHandle for the given file.
-   *
-   * @throws HandleException if the given file name is not a GZip file.
-   */
-  public GZipHandle(Context context, String file) throws IOException {
-    super(context);
-    setFile(file);
-  }
+	/**
+	 * Construct a new GZipHandle for the given file.
+	 * 
+	 * @throws HandleException if the given file name is not a GZip file.
+	 */
+	public GZipHandle(final Context context, final String file)
+		throws IOException
+	{
+		super(context);
+		setFile(file);
+	}
 
-  // -- IStreamAccess API methods --
+	// -- IStreamAccess API methods --
 
-  /* @see IStreamAccess#isConstructable(String) */
-  public boolean isConstructable(String file) throws IOException {
-    if (!file.toLowerCase().endsWith(".gz")) return false;
+	/* @see IStreamAccess#isConstructable(String) */
+	public boolean isConstructable(final String file) throws IOException {
+		if (!file.toLowerCase().endsWith(".gz")) return false;
 
-    FileInputStream s = new FileInputStream(file);
-    byte[] b = new byte[2];
-    s.read(b);
-    s.close();
-    return DataTools.bytesToInt(b, true) == GZIPInputStream.GZIP_MAGIC;
-  }
+		final FileInputStream s = new FileInputStream(file);
+		final byte[] b = new byte[2];
+		s.read(b);
+		s.close();
+		return DataTools.bytesToInt(b, true) == GZIPInputStream.GZIP_MAGIC;
+	}
 
+	/* @see IStreamAccess#resetStream() */
+	public void resetStream() throws IOException {
+		if (getStream() != null) getStream().close();
+		final BufferedInputStream bis =
+			new BufferedInputStream(new FileInputStream(getFile()),
+				RandomAccessInputStream.MAX_OVERHEAD);
+		setStream(new DataInputStream(new GZIPInputStream(bis)));
+	}
 
-  /* @see IStreamAccess#resetStream() */
-  public void resetStream() throws IOException {
-    if (getStream() != null) getStream().close();
-    BufferedInputStream bis = new BufferedInputStream(
-      new FileInputStream(getFile()), RandomAccessInputStream.MAX_OVERHEAD);
-    setStream(new DataInputStream(new GZIPInputStream(bis)));
-  }
+	// -- IStreamAccess API methods --
 
-  // -- IStreamAccess API methods --
+	/* @see IStreamAccess#setFile(String) */
+	@Override
+	public void setFile(final String file) throws IOException {
+		super.setFile(file);
+		if (!isConstructable(file)) {
+			throw new HandleException(file + " is not a gzip file.");
+		}
 
-  /* @see IStreamAccess#setFile(String) */
-  public void setFile(String file) throws IOException {
-    super.setFile(file);
-    if (!isConstructable(file)) {
-      throw new HandleException(file + " is not a gzip file.");
-    }
+		resetStream();
 
-    resetStream();
+		int length = 0;
+		while (true) {
+			final int skip = getStream().skipBytes(1024);
+			if (skip <= 0) break;
+			length += skip;
+		}
 
-    int length = 0;
-    while (true) {
-      int skip = getStream().skipBytes(1024);
-      if (skip <= 0) break;
-      length += skip;
-    }
+		setLength(length);
 
-    setLength(length);
-
-    resetStream();
-  }
+		resetStream();
+	}
 
 }

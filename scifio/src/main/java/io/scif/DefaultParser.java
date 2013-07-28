@@ -33,59 +33,54 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
-
 /**
  * Default {@link io.scif.Parser} implementation.
- * 
  * <p>
  * Populates the following fields:
  * <ul>
  * <li>
- * {@link io.scif.Metadata#isFiltered()}
- * </li>
+ * {@link io.scif.Metadata#isFiltered()}</li>
  * <li>
- * {@link io.scif.Metadata#getMetadataOptions()}
- * </li>
+ * {@link io.scif.Metadata#getMetadataOptions()}</li>
  * <li>
- * {@link io.scif.Metadata#getSource()}
- * </li>
+ * {@link io.scif.Metadata#getSource()}</li>
  * <li>
- * {@link io.scif.Metadata#getDatasetName()}
- * </li>
+ * {@link io.scif.Metadata#getDatasetName()}</li>
  * </ul>
  * </p>
  * 
  * @see io.scif.Parser
- * 
  * @author Mark Hiner
- *
  */
-public class DefaultParser extends AbstractParser<DefaultMetadata>
-  implements DefaultComponent
+public class DefaultParser extends AbstractParser<DefaultMetadata> implements
+	DefaultComponent
 {
-  // -- Fields --
 
-  private Format format;
+	// -- Fields --
 
-  // -- HasFormatAPI Methods --
+	private Format format;
 
-  @Override
-  public Format getFormat() {
-    return format;
-  }
+	// -- HasFormatAPI Methods --
 
-  // -- AbstractParser API Methods --
+	@Override
+	public Format getFormat() {
+		return format;
+	}
 
-  /*
-   * Non-functional typedParse implementation.
-   */
-  @Override
-  protected void typedParse(RandomAccessInputStream stream, DefaultMetadata meta)
-      throws IOException, FormatException { }
+	// -- AbstractParser API Methods --
+
+	/*
+	 * Non-functional typedParse implementation.
+	 */
+	@Override
+	protected void typedParse(final RandomAccessInputStream stream,
+		final DefaultMetadata meta) throws IOException, FormatException
+	{}
 }

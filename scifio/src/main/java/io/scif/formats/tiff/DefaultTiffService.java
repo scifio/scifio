@@ -47,63 +47,67 @@ import org.scijava.service.Service;
 
 /**
  * Default service for working with TIFF files.
- *
+ * 
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
 public class DefaultTiffService extends AbstractService implements TiffService {
 
-  @Parameter
-  private LogService log;
+	@Parameter
+	private LogService log;
 
-  public void difference(byte[] input, IFD ifd) throws FormatException {
-    int predictor = ifd.getIFDIntValue(IFD.PREDICTOR, 1);
-    if (predictor == 2) {
-      log.debug("performing horizontal differencing");
-      int[] bitsPerSample = ifd.getBitsPerSample();
-      long width = ifd.getImageWidth();
-      boolean little = ifd.isLittleEndian();
-      int planarConfig = ifd.getPlanarConfiguration();
-      int bytes = ifd.getBytesPerSample()[0];
-      int len = bytes * (planarConfig == 2 ? 1 : bitsPerSample.length);
+	public void difference(final byte[] input, final IFD ifd)
+		throws FormatException
+	{
+		final int predictor = ifd.getIFDIntValue(IFD.PREDICTOR, 1);
+		if (predictor == 2) {
+			log.debug("performing horizontal differencing");
+			final int[] bitsPerSample = ifd.getBitsPerSample();
+			final long width = ifd.getImageWidth();
+			final boolean little = ifd.isLittleEndian();
+			final int planarConfig = ifd.getPlanarConfiguration();
+			final int bytes = ifd.getBytesPerSample()[0];
+			final int len = bytes * (planarConfig == 2 ? 1 : bitsPerSample.length);
 
-      for (int b=input.length-bytes; b>=0; b-=bytes) {
-        if (b / len % width == 0) continue;
-        int value = DataTools.bytesToInt(input, b, bytes, little);
-        value -= DataTools.bytesToInt(input, b - len, bytes, little);
-        DataTools.unpackBytes(value, input, b, bytes, little);
-      }
-    }
-    else if (predictor != 1) {
-      throw new FormatException("Unknown Predictor (" + predictor + ")");
-    }
-  }
+			for (int b = input.length - bytes; b >= 0; b -= bytes) {
+				if (b / len % width == 0) continue;
+				int value = DataTools.bytesToInt(input, b, bytes, little);
+				value -= DataTools.bytesToInt(input, b - len, bytes, little);
+				DataTools.unpackBytes(value, input, b, bytes, little);
+			}
+		}
+		else if (predictor != 1) {
+			throw new FormatException("Unknown Predictor (" + predictor + ")");
+		}
+	}
 
-  public void undifference(byte[] input, IFD ifd) throws FormatException {
-    int predictor = ifd.getIFDIntValue(IFD.PREDICTOR, 1);
-    if (predictor == 2) {
-      log.debug("reversing horizontal differencing");
-      int[] bitsPerSample = ifd.getBitsPerSample();
-      int len = bitsPerSample.length;
-      long width = ifd.getImageWidth();
-      boolean little = ifd.isLittleEndian();
-      int planarConfig = ifd.getPlanarConfiguration();
+	public void undifference(final byte[] input, final IFD ifd)
+		throws FormatException
+	{
+		final int predictor = ifd.getIFDIntValue(IFD.PREDICTOR, 1);
+		if (predictor == 2) {
+			log.debug("reversing horizontal differencing");
+			final int[] bitsPerSample = ifd.getBitsPerSample();
+			int len = bitsPerSample.length;
+			final long width = ifd.getImageWidth();
+			final boolean little = ifd.isLittleEndian();
+			final int planarConfig = ifd.getPlanarConfiguration();
 
-      int bytes = ifd.getBytesPerSample()[0];
+			final int bytes = ifd.getBytesPerSample()[0];
 
-      if (planarConfig == 2 || bitsPerSample[len - 1] == 0) len = 1;
-      len *= bytes;
+			if (planarConfig == 2 || bitsPerSample[len - 1] == 0) len = 1;
+			len *= bytes;
 
-      for (int b=0; b<=input.length-bytes; b+=bytes) {
-        if (b / len % width == 0) continue;
-        int value = DataTools.bytesToInt(input, b, bytes, little);
-        value += DataTools.bytesToInt(input, b - len, bytes, little);
-        DataTools.unpackBytes(value, input, b, bytes, little);
-      }
-    }
-    else if (predictor != 1) {
-      throw new FormatException("Unknown Predictor (" + predictor + ")");
-    }
-  }
+			for (int b = 0; b <= input.length - bytes; b += bytes) {
+				if (b / len % width == 0) continue;
+				int value = DataTools.bytesToInt(input, b, bytes, little);
+				value += DataTools.bytesToInt(input, b - len, bytes, little);
+				DataTools.unpackBytes(value, input, b, bytes, little);
+			}
+		}
+		else if (predictor != 1) {
+			throw new FormatException("Unknown Predictor (" + predictor + ")");
+		}
+	}
 
 }

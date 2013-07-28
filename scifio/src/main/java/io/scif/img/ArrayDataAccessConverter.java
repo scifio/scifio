@@ -1,3 +1,4 @@
+
 package io.scif.img;
 
 import io.scif.Reader;
@@ -20,6 +21,7 @@ import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.type.numeric.RealType;
+
 /*
  * #%L
  * OME SCIFIO package for reading and converting scientific file formats.
@@ -57,59 +59,61 @@ import net.imglib2.type.numeric.RealType;
  */
 
 /**
- * {@link PlaneConverter} implementation specialized for
- * populating {@link ArrayImg} instances.
+ * {@link PlaneConverter} implementation specialized for populating
+ * {@link ArrayImg} instances.
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
 public class ArrayDataAccessConverter implements PlaneConverter {
 
-  public <T extends RealType<T>> void populatePlane(Reader reader,
-      int imageIndex, int planeIndex, byte[] source, ImgPlus<T> dest,
-      ImgOptions imgOptions) {
-    ArrayImg<?, ?> arrayImg = (ArrayImg<?, ?>) dest.getImg();
+	public <T extends RealType<T>> void populatePlane(final Reader reader,
+		final int imageIndex, final int planeIndex, final byte[] source,
+		final ImgPlus<T> dest, final ImgOptions imgOptions)
+	{
+		final ArrayImg<?, ?> arrayImg = (ArrayImg<?, ?>) dest.getImg();
 
-    Object store = arrayImg.update(null);
+		final Object store = arrayImg.update(null);
 
-    //FIXME actually do need to pass a reader w/ metadata to the loader
+		// FIXME actually do need to pass a reader w/ metadata to the loader
 
-    //FIXME loaders are faster than byte buffers but of course slower than a direct system.arraycopy call, and slower still than passing the array directly.
-    // however that simply may not be feasible given the variety of data types.
+		// FIXME loaders are faster than byte buffers but of course slower than a
+		// direct system.arraycopy call, and slower still than passing the array
+		// directly.
+		// however that simply may not be feasible given the variety of data types.
 
-    if (store instanceof BitArray) {
-      BitArrayLoader loader = new BitArrayLoader(reader);
-      loader.convertBytes((BitArray)store, source, planeIndex);
-    }
-    else if (store instanceof ByteArray) {
-      ByteArrayLoader loader = new ByteArrayLoader(reader);
-      loader.convertBytes((ByteArray)store, source, planeIndex);
-    }
-    else if (store instanceof ShortArray) {
-      ShortArrayLoader loader = new ShortArrayLoader(reader);
-      loader.convertBytes((ShortArray)store, source, planeIndex);
-    }
-    else if (store instanceof LongArray) {
-      LongArrayLoader loader = new LongArrayLoader(reader);
-      loader.convertBytes((LongArray)store, source, planeIndex);
-    }
-    else if (store instanceof CharArray) {
-      CharArrayLoader loader = new CharArrayLoader(reader);
-      loader.convertBytes((CharArray)store, source, planeIndex);
-    }
-    else if (store instanceof DoubleArray) {
-      DoubleArrayLoader loader = new DoubleArrayLoader(reader);
-      loader.convertBytes((DoubleArray)store, source, planeIndex);
-    }
-    else if (store instanceof FloatArray) {
-      FloatArrayLoader loader = new FloatArrayLoader(reader);
-      loader.convertBytes((FloatArray)store, source, planeIndex);
-    }
-    else if (store instanceof IntArray) {
-      IntArrayLoader loader = new IntArrayLoader(reader);
-      loader.convertBytes((IntArray)store, source, planeIndex);
-    }
+		if (store instanceof BitArray) {
+			final BitArrayLoader loader = new BitArrayLoader(reader);
+			loader.convertBytes((BitArray) store, source, planeIndex);
+		}
+		else if (store instanceof ByteArray) {
+			final ByteArrayLoader loader = new ByteArrayLoader(reader);
+			loader.convertBytes((ByteArray) store, source, planeIndex);
+		}
+		else if (store instanceof ShortArray) {
+			final ShortArrayLoader loader = new ShortArrayLoader(reader);
+			loader.convertBytes((ShortArray) store, source, planeIndex);
+		}
+		else if (store instanceof LongArray) {
+			final LongArrayLoader loader = new LongArrayLoader(reader);
+			loader.convertBytes((LongArray) store, source, planeIndex);
+		}
+		else if (store instanceof CharArray) {
+			final CharArrayLoader loader = new CharArrayLoader(reader);
+			loader.convertBytes((CharArray) store, source, planeIndex);
+		}
+		else if (store instanceof DoubleArray) {
+			final DoubleArrayLoader loader = new DoubleArrayLoader(reader);
+			loader.convertBytes((DoubleArray) store, source, planeIndex);
+		}
+		else if (store instanceof FloatArray) {
+			final FloatArrayLoader loader = new FloatArrayLoader(reader);
+			loader.convertBytes((FloatArray) store, source, planeIndex);
+		}
+		else if (store instanceof IntArray) {
+			final IntArrayLoader loader = new IntArrayLoader(reader);
+			loader.convertBytes((IntArray) store, source, planeIndex);
+		}
 
-  }
+	}
 
 }

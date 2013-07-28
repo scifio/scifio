@@ -47,200 +47,208 @@ import java.util.Map;
 
 import net.imglib2.meta.AxisType;
 
-
 /**
  * A utility class for working with {@link io.scif.Metadata} objects.
- *
+ * 
  * @see io.scif.Metadata
- *
- * 
  * @author Mark Hiner
- * 
  */
 public class SCIFIOMetadataTools {
 
-  // -- Constructor --
+	// -- Constructor --
 
-  private SCIFIOMetadataTools() { }
+	private SCIFIOMetadataTools() {}
 
-  // -- Utility Methods -- DatasetMetadata --
+	// -- Utility Methods -- DatasetMetadata --
 
-  /**
-   * Casts the provided Metadata object to the generic type
-   * of this method.
-   * <p>
-   * Usage: To cast a Metadata instance to ConcreteMetadata, use:
-   * <p>{@code SCIFIOMetadataTools.<ConcreteMetadata>castMeta(meta)}</p>
-   * </p>
-   */
-  @SuppressWarnings("unchecked")
-  public static <M extends Metadata> M castMeta(Metadata meta) {
-    //TODO need to check for safe casting here..
+	/**
+	 * Casts the provided Metadata object to the generic type of this method.
+	 * <p>
+	 * Usage: To cast a Metadata instance to ConcreteMetadata, use:
+	 * <p>
+	 * {@code SCIFIOMetadataTools.<ConcreteMetadata>castMeta(meta)}
+	 * </p>
+	 * </p>
+	 */
+	@SuppressWarnings("unchecked")
+	public static <M extends Metadata> M castMeta(final Metadata meta) {
+		// TODO need to check for safe casting here..
 
-    return (M)meta;
-  }
+		return (M) meta;
+	}
 
-  /**
-   * Checks whether the given metadata object has the minimum metadata
-   * populated to successfully describe an Image.
-   *
-   * @throws FormatException if there is a missing metadata field,
-   *   or the metadata object is uninitialized
-   */
-  public static void verifyMinimumPopulated(Metadata src,
-    RandomAccessOutputStream out) throws FormatException
-  {
-    verifyMinimumPopulated(src, out, 0, 0);
-  }
+	/**
+	 * Checks whether the given metadata object has the minimum metadata populated
+	 * to successfully describe an Image.
+	 * 
+	 * @throws FormatException if there is a missing metadata field, or the
+	 *           metadata object is uninitialized
+	 */
+	public static void verifyMinimumPopulated(final Metadata src,
+		final RandomAccessOutputStream out) throws FormatException
+	{
+		verifyMinimumPopulated(src, out, 0, 0);
+	}
 
-  /**
-   * Checks whether the given metadata object has the minimum metadata
-   * populated to successfully describe an Image.
-   *
-   * @throws FormatException if there is a missing metadata field,
-   *   or the metadata object is uninitialized
-   */
-  public static void verifyMinimumPopulated(Metadata src,
-    RandomAccessOutputStream out, int imageIndex) throws FormatException
-  {
-    verifyMinimumPopulated(src, out, imageIndex, 0);
-  }
+	/**
+	 * Checks whether the given metadata object has the minimum metadata populated
+	 * to successfully describe an Image.
+	 * 
+	 * @throws FormatException if there is a missing metadata field, or the
+	 *           metadata object is uninitialized
+	 */
+	public static void verifyMinimumPopulated(final Metadata src,
+		final RandomAccessOutputStream out, final int imageIndex)
+		throws FormatException
+	{
+		verifyMinimumPopulated(src, out, imageIndex, 0);
+	}
 
-  /**
-   * Checks whether the given metadata object has the minimum metadata
-   * populated to successfully describe the nth Image.
-   *
-   * @throws FormatException if there is a missing metadata field,
-   *   or the metadata object is uninitialized
-   */
-  public static void verifyMinimumPopulated(Metadata src,
-    RandomAccessOutputStream out, int imageIndex, int planeIndex)
-    throws FormatException
-  {
-    if (src == null) {
-      throw new FormatException("Metadata object is null; "
-        + "call Writer.setMetadata() first");
-    }
+	/**
+	 * Checks whether the given metadata object has the minimum metadata populated
+	 * to successfully describe the nth Image.
+	 * 
+	 * @throws FormatException if there is a missing metadata field, or the
+	 *           metadata object is uninitialized
+	 */
+	public static void verifyMinimumPopulated(final Metadata src,
+		final RandomAccessOutputStream out, final int imageIndex,
+		final int planeIndex) throws FormatException
+	{
+		if (src == null) {
+			throw new FormatException("Metadata object is null; "
+				+ "call Writer.setMetadata() first");
+		}
 
-    if (out == null) {
-      throw new FormatException("RandomAccessOutputStream object is null; "
-        + "call Writer.setSource(<String/File/RandomAccessOutputStream>) first");
-    }
+		if (out == null) {
+			throw new FormatException("RandomAccessOutputStream object is null; "
+				+ "call Writer.setSource(<String/File/RandomAccessOutputStream>) first");
+		}
 
-    if (src.getAxisCount(0) == 0) {
-      throw new FormatException("Axiscount #" + imageIndex + " is 0");
-    }
-  }
+		if (src.getAxisCount(0) == 0) {
+			throw new FormatException("Axiscount #" + imageIndex + " is 0");
+		}
+	}
 
-  /**
-   * Populates the provided ImageMetadata. Automatically looks up
-   * bits per pixel for the provided pixel type.
-   */
-  public static void populate(ImageMetadata iMeta, String dimensionOrder,
-      int pixelType, int rgbCCount, boolean orderCertain,
-      boolean littleEndian, boolean indexed, boolean falseColor,
-      boolean metadataComplete, int sizeX, int sizeY, int sizeZ, int sizeC,
-      int sizeT)
-  {
-    populate(iMeta, dimensionOrder, pixelType, rgbCCount, FormatTools.getBitsPerPixel(pixelType),
-        orderCertain, littleEndian, indexed, falseColor, metadataComplete, sizeX,
-        sizeY, sizeZ, sizeC, sizeT);
-  }
+	/**
+	 * Populates the provided ImageMetadata. Automatically looks up bits per pixel
+	 * for the provided pixel type.
+	 */
+	public static void populate(final ImageMetadata iMeta,
+		final String dimensionOrder, final int pixelType, final int rgbCCount,
+		final boolean orderCertain, final boolean littleEndian,
+		final boolean indexed, final boolean falseColor,
+		final boolean metadataComplete, final int sizeX, final int sizeY,
+		final int sizeZ, final int sizeC, final int sizeT)
+	{
+		populate(iMeta, dimensionOrder, pixelType, rgbCCount, FormatTools
+			.getBitsPerPixel(pixelType), orderCertain, littleEndian, indexed,
+			falseColor, metadataComplete, sizeX, sizeY, sizeZ, sizeC, sizeT);
+	}
 
-  /**
-   * Populates the provided ImageMetadata.
-   */
-  public static void populate(ImageMetadata iMeta, String dimensionOrder,
-      int pixelType, int rgbCCount, int bitsPerPixel, boolean orderCertain,
-      boolean littleEndian, boolean indexed, boolean falseColor,
-      boolean metadataComplete, int sizeX, int sizeY, int sizeZ, int sizeC,
-      int sizeT)
-  {
-    iMeta.setPixelType(pixelType);
-    iMeta.setBitsPerPixel(bitsPerPixel);
-    iMeta.setOrderCertain(orderCertain);
-    iMeta.setRGB(rgbCCount > 1);
-    iMeta.setPlaneCount(sizeZ * sizeT * sizeC / rgbCCount);
-    iMeta.setLittleEndian(littleEndian);
-    iMeta.setIndexed(indexed);
-    iMeta.setFalseColor(falseColor);
-    iMeta.setMetadataComplete(metadataComplete);
-    populateDimensions(iMeta, dimensionOrder, sizeX, sizeY, sizeZ, sizeC, sizeT);
-  }
+	/**
+	 * Populates the provided ImageMetadata.
+	 */
+	public static void populate(final ImageMetadata iMeta,
+		final String dimensionOrder, final int pixelType, final int rgbCCount,
+		final int bitsPerPixel, final boolean orderCertain,
+		final boolean littleEndian, final boolean indexed,
+		final boolean falseColor, final boolean metadataComplete, final int sizeX,
+		final int sizeY, final int sizeZ, final int sizeC, final int sizeT)
+	{
+		iMeta.setPixelType(pixelType);
+		iMeta.setBitsPerPixel(bitsPerPixel);
+		iMeta.setOrderCertain(orderCertain);
+		iMeta.setRGB(rgbCCount > 1);
+		iMeta.setPlaneCount(sizeZ * sizeT * sizeC / rgbCCount);
+		iMeta.setLittleEndian(littleEndian);
+		iMeta.setIndexed(indexed);
+		iMeta.setFalseColor(falseColor);
+		iMeta.setMetadataComplete(metadataComplete);
+		populateDimensions(iMeta, dimensionOrder, sizeX, sizeY, sizeZ, sizeC, sizeT);
+	}
 
-  /**
-   * Populates the provided ImageMetadata's axis types and lengths using
-   * the provided dimension order and sizes.
-   * 
-   * @param iMeta - ImageMetadata to populate
-   * @param dimensionOrder - A serialized list of dimensions. Each character
-   *              is interpreted as an Axes enumeration (e.g. 'X' = 'x' = Axes.X)
-   * @param sizeX - Length of Axes.X
-   * @param sizeY - Length of Axes.Y
-   * @param sizeZ - Length of Axes.Z
-   * @param sizeC - Length of Axes.CHANNEL
-   * @param sizeT - Length of Axes.TIME
-   */
-  public static void populateDimensions(ImageMetadata iMeta, String dimensionOrder,
-      int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT)
-  {
-    int[] axisLengths = new int[5];
+	/**
+	 * Populates the provided ImageMetadata's axis types and lengths using the
+	 * provided dimension order and sizes.
+	 * 
+	 * @param iMeta - ImageMetadata to populate
+	 * @param dimensionOrder - A serialized list of dimensions. Each character is
+	 *          interpreted as an Axes enumeration (e.g. 'X' = 'x' = Axes.X)
+	 * @param sizeX - Length of Axes.X
+	 * @param sizeY - Length of Axes.Y
+	 * @param sizeZ - Length of Axes.Z
+	 * @param sizeC - Length of Axes.CHANNEL
+	 * @param sizeT - Length of Axes.TIME
+	 */
+	public static void populateDimensions(final ImageMetadata iMeta,
+		final String dimensionOrder, final int sizeX, final int sizeY,
+		final int sizeZ, final int sizeC, final int sizeT)
+	{
+		final int[] axisLengths = new int[5];
 
-    for (int i=0; i<5; i++) {
-      switch (dimensionOrder.toUpperCase().charAt(i)) {
-      case 'X': axisLengths[i] = Math.max(sizeX, 1);
-        break;
-      case 'Y': axisLengths[i] = Math.max(sizeY, 1);
-        break;
-      case 'Z': axisLengths[i] = Math.max(sizeZ, 1);
-        break;
-      case 'C': axisLengths[i] = Math.max(sizeC, 1);
-        break;
-      case 'T': axisLengths[i] = Math.max(sizeT, 1);
-        break;
-      default: axisLengths[i] = 1;
-      }
-    }
+		for (int i = 0; i < 5; i++) {
+			switch (dimensionOrder.toUpperCase().charAt(i)) {
+				case 'X':
+					axisLengths[i] = Math.max(sizeX, 1);
+					break;
+				case 'Y':
+					axisLengths[i] = Math.max(sizeY, 1);
+					break;
+				case 'Z':
+					axisLengths[i] = Math.max(sizeZ, 1);
+					break;
+				case 'C':
+					axisLengths[i] = Math.max(sizeC, 1);
+					break;
+				case 'T':
+					axisLengths[i] = Math.max(sizeT, 1);
+					break;
+				default:
+					axisLengths[i] = 1;
+			}
+		}
 
-    populateDimensions(iMeta, dimensionOrder, axisLengths);
-  }
+		populateDimensions(iMeta, dimensionOrder, axisLengths);
+	}
 
-  /**
-   * Populates the provided ImageMetadata's axis types and lengths using
-   * the provided dimension order and sizes.
-   * 
-   * @param iMeta - ImageMetadata to populate
-   * @param dimensionOrder - A serialized list of dimensions. Each character
-   *              is interpreted as an Axes enumeration (e.g. 'X' = 'x' = Axes.X)
-   * @param lengths - An array of axis lengths, parallel to the dimensionOrder list
-   */
-  public static void populateDimensions(ImageMetadata iMeta, String dimensionOrder,
-      int[] lengths)
-  {
-    AxisType[] axes = FormatTools.findDimensionList(dimensionOrder);
+	/**
+	 * Populates the provided ImageMetadata's axis types and lengths using the
+	 * provided dimension order and sizes.
+	 * 
+	 * @param iMeta - ImageMetadata to populate
+	 * @param dimensionOrder - A serialized list of dimensions. Each character is
+	 *          interpreted as an Axes enumeration (e.g. 'X' = 'x' = Axes.X)
+	 * @param lengths - An array of axis lengths, parallel to the dimensionOrder
+	 *          list
+	 */
+	public static void populateDimensions(final ImageMetadata iMeta,
+		final String dimensionOrder, final int[] lengths)
+	{
+		final AxisType[] axes = FormatTools.findDimensionList(dimensionOrder);
 
-    iMeta.setAxes(axes, lengths);
-  }
+		iMeta.setAxes(axes, lengths);
+	}
 
-  // Utility methods -- original metadata --
+	// Utility methods -- original metadata --
 
-  /**
-   * Merges the given lists of metadata, prepending the
-   * specified prefix for the destination keys.
-   */
-  public static void merge(Map<String, Object> src, Map<String, Object> dest,
-    String prefix)
-  {
-    for (String key : src.keySet()) {
-      dest.put(prefix + key, src.get(key));
-    }
-  }
+	/**
+	 * Merges the given lists of metadata, prepending the specified prefix for the
+	 * destination keys.
+	 */
+	public static void merge(final Map<String, Object> src,
+		final Map<String, Object> dest, final String prefix)
+	{
+		for (final String key : src.keySet()) {
+			dest.put(prefix + key, src.get(key));
+		}
+	}
 
-  /** Gets a sorted list of keys from the given hashtable. */
-  public static String[] keys(Hashtable<String, Object> meta) {
-    String[] keys = new String[meta.size()];
-    meta.keySet().toArray(keys);
-    Arrays.sort(keys);
-    return keys;
-  }
+	/** Gets a sorted list of keys from the given hashtable. */
+	public static String[] keys(final Hashtable<String, Object> meta) {
+		final String[] keys = new String[meta.size()];
+		meta.keySet().toArray(keys);
+		Arrays.sort(keys);
+		return keys;
+	}
 }

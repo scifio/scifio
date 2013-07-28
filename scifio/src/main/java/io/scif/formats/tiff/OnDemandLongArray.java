@@ -40,44 +40,42 @@ import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
-
 /**
- *
- *
  * @author Melissa Linkert <melissa at glencoesoftware.com>
  */
 public class OnDemandLongArray {
 
-  private RandomAccessInputStream stream;
-  private int size;
-  private long start;
+	private RandomAccessInputStream stream;
+	private int size;
+	private long start;
 
-  public OnDemandLongArray(RandomAccessInputStream in) throws IOException {
-    stream = in;
-    start = stream.getFilePointer();
-  }
+	public OnDemandLongArray(final RandomAccessInputStream in) throws IOException
+	{
+		stream = in;
+		start = stream.getFilePointer();
+	}
 
-  public void setSize(int size) {
-    this.size = size;
-  }
+	public void setSize(final int size) {
+		this.size = size;
+	}
 
-  public long get(int index) throws IOException {
-    long fp = stream.getFilePointer();
-    stream.seek(start + index * 8);
-    long value = stream.readLong();
-    stream.seek(fp);
-    return value;
-  }
+	public long get(final int index) throws IOException {
+		final long fp = stream.getFilePointer();
+		stream.seek(start + index * 8);
+		final long value = stream.readLong();
+		stream.seek(fp);
+		return value;
+	}
 
-  public long size() {
-    return size;
-  }
+	public long size() {
+		return size;
+	}
 
-  public void close() throws IOException {
-    stream.close();
-    stream = null;
-    size = 0;
-    start = 0;
-  }
+	public void close() throws IOException {
+		stream.close();
+		stream = null;
+		size = 0;
+		start = 0;
+	}
 
 }

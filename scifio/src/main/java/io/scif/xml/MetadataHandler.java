@@ -44,45 +44,47 @@ import org.xml.sax.Attributes;
 
 /**
  * Used to retrieve key/value pairs from XML.
- *
- *
+ * 
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Chris Allan callan at blackcat.ca
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 class MetadataHandler extends BaseHandler {
-  private String currentQName;
-  private Hashtable<String, String> metadata =
-    new Hashtable<String, String>();
 
-  public MetadataHandler() {
-    this(new StderrLogService());
-  }
+	private String currentQName;
+	private final Hashtable<String, String> metadata =
+		new Hashtable<String, String>();
 
-  public MetadataHandler(LogService log) {
-    super(log);
-  }
+	public MetadataHandler() {
+		this(new StderrLogService());
+	}
 
-  // -- MetadataHandler API methods --
+	public MetadataHandler(final LogService log) {
+		super(log);
+	}
 
-  public Hashtable<String, String> getMetadata() {
-    return metadata;
-  }
+	// -- MetadataHandler API methods --
 
-  // -- DefaultHandler API methods --
+	public Hashtable<String, String> getMetadata() {
+		return metadata;
+	}
 
-  public void characters(char[] data, int start, int len) {
-    metadata.put(currentQName, new String(data, start, len));
-  }
+	// -- DefaultHandler API methods --
 
-  public void startElement(String uri, String localName, String qName,
-    Attributes attributes)
-  {
-    if (attributes.getLength() == 0) currentQName += " - " + qName;
-    else currentQName = qName;
-    for (int i=0; i<attributes.getLength(); i++) {
-      metadata.put(qName + " - " + attributes.getQName(i),
-        attributes.getValue(i));
-    }
-  }
+	@Override
+	public void characters(final char[] data, final int start, final int len) {
+		metadata.put(currentQName, new String(data, start, len));
+	}
+
+	@Override
+	public void startElement(final String uri, final String localName,
+		final String qName, final Attributes attributes)
+	{
+		if (attributes.getLength() == 0) currentQName += " - " + qName;
+		else currentQName = qName;
+		for (int i = 0; i < attributes.getLength(); i++) {
+			metadata.put(qName + " - " + attributes.getQName(i), attributes
+				.getValue(i));
+		}
+	}
 }

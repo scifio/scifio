@@ -41,29 +41,28 @@ import java.util.Map;
 
 /**
  * Factory for providing instances of IRandomAccessProvider.
- *
- *
+ * 
  * @see IRandomAccessProvider
  */
 public class IRandomAccessProviderFactory {
 
-  private static final Map<String, IRandomAccessProvider> providers =
-    new HashMap<String, IRandomAccessProvider>();
+	private static final Map<String, IRandomAccessProvider> providers =
+		new HashMap<String, IRandomAccessProvider>();
 
-  static {
-    providers.put("NewByteArrayHandle", new NewByteArrayHandleProvider());
-    providers.put("ExistingByteArrayHandle",
-      new ExistingByteArrayHandleProvider());
-    providers.put("ByteArrayHandle", new ByteArrayHandleProvider());
-    providers.put("BZip2Handle", new BZip2HandleProvider());
-    providers.put("GZipHandle", new GZipHandleProvider());
-    providers.put("NIOFileHandle", new NIOFileHandleProvider());
-    providers.put("URLHandle", new URLHandleProvider());
-    providers.put("ZipHandle", new ZipHandleProvider());
-  }
+	static {
+		providers.put("NewByteArrayHandle", new NewByteArrayHandleProvider());
+		providers.put("ExistingByteArrayHandle",
+			new ExistingByteArrayHandleProvider());
+		providers.put("ByteArrayHandle", new ByteArrayHandleProvider());
+		providers.put("BZip2Handle", new BZip2HandleProvider());
+		providers.put("GZipHandle", new GZipHandleProvider());
+		providers.put("NIOFileHandle", new NIOFileHandleProvider());
+		providers.put("URLHandle", new URLHandleProvider());
+		providers.put("ZipHandle", new ZipHandleProvider());
+	}
 
-  public IRandomAccessProvider getInstance(String provider) {
-    return providers.get(provider);
-  }
+	public IRandomAccessProvider getInstance(final String provider) {
+		return providers.get(provider);
+	}
 
 }

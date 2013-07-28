@@ -33,50 +33,49 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import java.util.List;
 
 /**
- * A dummy {@link io.scif.Metadata} implementation.
- * Holds no format-specific information, and adds no functionality over
- * {@link io.scif.AbstractMetadata}.
+ * A dummy {@link io.scif.Metadata} implementation. Holds no format-specific
+ * information, and adds no functionality over {@link io.scif.AbstractMetadata}.
  * 
  * @see io.scif.Metadata
  * @see io.scif.AbstractMetadata
- * 
  * @author Mark Hiner
  */
-public class DefaultMetadata extends AbstractMetadata
-  implements DefaultComponent
+public class DefaultMetadata extends AbstractMetadata implements
+	DefaultComponent
 {
 
-  // -- Fields --
+	// -- Fields --
 
-  private Format format;
+	private Format format;
 
-  // -- Constructors --
+	// -- Constructors --
 
-  public DefaultMetadata() {
-    super();
-  }
+	public DefaultMetadata() {
+		super();
+	}
 
-  public DefaultMetadata(final Metadata copy) {
-    super(copy);
-  }
+	public DefaultMetadata(final Metadata copy) {
+		super(copy);
+	}
 
-  public DefaultMetadata(final List<ImageMetadata> list) {
-    super(list);
-  }
+	public DefaultMetadata(final List<ImageMetadata> list) {
+		super(list);
+	}
 
-  // -- HasFormat API Methods --
+	// -- HasFormat API Methods --
 
-  @Override
-  public Format getFormat() {
-    return format;
-  }
+	@Override
+	public Format getFormat() {
+		return format;
+	}
 
-  // -- Metadata API methods --
+	// -- Metadata API methods --
 
-  public void populateImageMetadata() { }
+	public void populateImageMetadata() {}
 }

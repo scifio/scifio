@@ -48,46 +48,47 @@ import org.scijava.plugin.Plugin;
 
 /**
  * This class implements ZLIB decompression.
- *
- *
+ * 
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 @Plugin(type = Codec.class)
 public class ZlibCodec extends AbstractCodec {
 
-  /* @see Codec#compress(byte[], CodecOptions) */
-  public byte[] compress(byte[] data, CodecOptions options)
-    throws FormatException
-  {
-    if (data == null || data.length == 0)
-      throw new IllegalArgumentException("No data to compress");
-    Deflater deflater = new Deflater();
-    deflater.setInput(data);
-    deflater.finish();
-    byte[] buf = new byte[8192];
-    ByteVector bytes = new ByteVector();
-    int r = 0;
-    // compress until eof reached
-    while ((r = deflater.deflate(buf, 0, buf.length)) > 0) {
-      bytes.add(buf, 0, r);
-    }
-    return bytes.toByteArray();
-  }
+	/* @see Codec#compress(byte[], CodecOptions) */
+	public byte[] compress(final byte[] data, final CodecOptions options)
+		throws FormatException
+	{
+		if (data == null || data.length == 0) throw new IllegalArgumentException(
+			"No data to compress");
+		final Deflater deflater = new Deflater();
+		deflater.setInput(data);
+		deflater.finish();
+		final byte[] buf = new byte[8192];
+		final ByteVector bytes = new ByteVector();
+		int r = 0;
+		// compress until eof reached
+		while ((r = deflater.deflate(buf, 0, buf.length)) > 0) {
+			bytes.add(buf, 0, r);
+		}
+		return bytes.toByteArray();
+	}
 
-  /* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
-  public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
-    throws FormatException, IOException
-  {
-    InflaterInputStream i = new InflaterInputStream(in);
-    ByteVector bytes = new ByteVector();
-    byte[] buf = new byte[8192];
-    int r = 0;
-    // read until eof reached
-    try {
-      while ((r = i.read(buf, 0, buf.length)) > 0) bytes.add(buf, 0, r);
-    }
-    catch (EOFException e) { }
-    return bytes.toByteArray();
-  }
+	/* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
+	@Override
+	public byte[] decompress(final RandomAccessInputStream in,
+		final CodecOptions options) throws FormatException, IOException
+	{
+		final InflaterInputStream i = new InflaterInputStream(in);
+		final ByteVector bytes = new ByteVector();
+		final byte[] buf = new byte[8192];
+		int r = 0;
+		// read until eof reached
+		try {
+			while ((r = i.read(buf, 0, buf.length)) > 0)
+				bytes.add(buf, 0, r);
+		}
+		catch (final EOFException e) {}
+		return bytes.toByteArray();
+	}
 
 }

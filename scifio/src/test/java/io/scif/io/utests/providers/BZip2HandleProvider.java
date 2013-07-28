@@ -43,37 +43,37 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.scijava.Context;
-
-
-
 /**
  * Implementation of IRandomAccessProvider that produces instances of
  * loci.common.BZip2Handle.
- *
- *
+ * 
  * @see IRandomAccessProvider
  * @see io.scif.io.BZip2Handle
  */
-class BZip2HandleProvider extends ContextualProvider implements IRandomAccessProvider {
+class BZip2HandleProvider extends ContextualProvider implements
+	IRandomAccessProvider
+{
 
-  public IRandomAccess createMock(
-      byte[] page, String mode, int bufferSize) throws IOException {
-    File pageFile = File.createTempFile("page", ".dat");
-    FileOutputStream out = new FileOutputStream(pageFile);
-    out.write(page);
-    out.close();
+	public IRandomAccess createMock(final byte[] page, final String mode,
+		final int bufferSize) throws IOException
+	{
+		File pageFile = File.createTempFile("page", ".dat");
+		final FileOutputStream out = new FileOutputStream(pageFile);
+		out.write(page);
+		out.close();
 
-    Runtime rt = Runtime.getRuntime();
-    Process p = rt.exec(new String[] {"bzip2", pageFile.getAbsolutePath()});
-    try {
-      p.waitFor();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
+		final Runtime rt = Runtime.getRuntime();
+		final Process p =
+			rt.exec(new String[] { "bzip2", pageFile.getAbsolutePath() });
+		try {
+			p.waitFor();
+		}
+		catch (final InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 
-    pageFile = new File(pageFile.getAbsolutePath() + ".bz2");
-    return new BZip2Handle(getContext(), pageFile.getAbsolutePath());
-  }
+		pageFile = new File(pageFile.getAbsolutePath() + ".bz2");
+		return new BZip2Handle(getContext(), pageFile.getAbsolutePath());
+	}
 
 }

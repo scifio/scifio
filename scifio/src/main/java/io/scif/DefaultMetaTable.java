@@ -41,51 +41,51 @@ import java.util.Map;
 import java.util.Vector;
 
 /**
- * Default {@link MetaTable} implementation. Provides a copying constructor
- * and a {@link #putList(String, Object)} implementation.
+ * Default {@link MetaTable} implementation. Provides a copying constructor and
+ * a {@link #putList(String, Object)} implementation.
  * 
  * @see MetaTable
- * 
  * @author Mark hiner hinerm at gmail.com
- *
  */
-public class DefaultMetaTable extends HashMap<String, Object> implements MetaTable {
+public class DefaultMetaTable extends HashMap<String, Object> implements
+	MetaTable
+{
 
-  // -- Constructors --
+	// -- Constructors --
 
-  /**
-   * Basic constructor
-   */
-  public DefaultMetaTable() {
+	/**
+	 * Basic constructor
+	 */
+	public DefaultMetaTable() {
 
-  }
+	}
 
-  /**
-   * Construct a MetaTable and populate it using an existing map.
-   */
-  public DefaultMetaTable(Map<String, Object> copy) {
-    for (String k : copy.keySet())
-      put(k, copy.get(k));
-  }
+	/**
+	 * Construct a MetaTable and populate it using an existing map.
+	 */
+	public DefaultMetaTable(final Map<String, Object> copy) {
+		for (final String k : copy.keySet())
+			put(k, copy.get(k));
+	}
 
-  // -- MetaTable API Methods --
+	// -- MetaTable API Methods --
 
-  /*
-   * @see io.scif.MetaTable#putList(java.lang.String, java.lang.Object)
-   */
-  public void putList(String key, Object value) {
-    Object list = get(key);
+	/*
+	 * @see io.scif.MetaTable#putList(java.lang.String, java.lang.Object)
+	 */
+	public void putList(final String key, final Object value) {
+		Object list = get(key);
 
-    if (list == null) list = new Vector<Object>();
+		if (list == null) list = new Vector<Object>();
 
-    if (list instanceof Vector) ((Vector<Object>)list).add(value);
-    else {
-      Vector<Object> v = new Vector<Object>();
-      v.add(list);
-      v.add(value);
-      list = v;
-    }
+		if (list instanceof Vector) ((Vector<Object>) list).add(value);
+		else {
+			final Vector<Object> v = new Vector<Object>();
+			v.add(list);
+			v.add(value);
+			list = v;
+		}
 
-    put(key, list);
-  }
+		put(key, list);
+	}
 }

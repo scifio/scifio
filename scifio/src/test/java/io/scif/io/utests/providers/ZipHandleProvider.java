@@ -45,28 +45,29 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-
-
 /**
  * Implementation of IRandomAccessProvider that produces instances of
  * loci.common.ZipHandle.
- *
- *
+ * 
  * @see IRandomAccessProvider
  * @see io.scif.io.ZipHandle
  */
-class ZipHandleProvider extends ContextualProvider implements IRandomAccessProvider {
+class ZipHandleProvider extends ContextualProvider implements
+	IRandomAccessProvider
+{
 
-  public IRandomAccess createMock(
-      byte[] page, String mode, int bufferSize) throws IOException {
-    File pageFile = File.createTempFile("page", ".zip");
-    pageFile.deleteOnExit();
-    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(pageFile));
-    out.putNextEntry(new ZipEntry(pageFile.getName()));
-    out.write(page);
-    out.close();
+	public IRandomAccess createMock(final byte[] page, final String mode,
+		final int bufferSize) throws IOException
+	{
+		final File pageFile = File.createTempFile("page", ".zip");
+		pageFile.deleteOnExit();
+		final ZipOutputStream out =
+			new ZipOutputStream(new FileOutputStream(pageFile));
+		out.putNextEntry(new ZipEntry(pageFile.getName()));
+		out.write(page);
+		out.close();
 
-    return new ZipHandle(getContext(), pageFile.getAbsolutePath());
-  }
+		return new ZipHandle(getContext(), pageFile.getAbsolutePath());
+	}
 
 }

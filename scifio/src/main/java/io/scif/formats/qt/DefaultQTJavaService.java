@@ -60,314 +60,325 @@ import org.scijava.service.Service;
 
 /**
  * Default service for working with QuickTime for Java.
- *
+ * 
  * @author Curtis Rueden
  * @author Melissa Linkert
  */
 @Plugin(type = Service.class)
-public class DefaultQTJavaService extends AbstractService
-  implements QTJavaService
+public class DefaultQTJavaService extends AbstractService implements
+	QTJavaService
 {
 
-  // -- Constants --
+	// -- Constants --
 
-  private static final String NO_QT_MSG =
-    "QuickTime for Java is required to read some QuickTime files. " +
-    "Please install QuickTime for Java from http://www.apple.com/quicktime/";
+	private static final String NO_QT_MSG =
+		"QuickTime for Java is required to read some QuickTime files. "
+			+ "Please install QuickTime for Java from http://www.apple.com/quicktime/";
 
-  private static final String JVM_64BIT_MSG =
-    "QuickTime for Java is not supported with a 64-bit JVM. " +
-    "Please invoke the 32-bit JVM (-d32) to utilize QTJava functionality.";
+	private static final String JVM_64BIT_MSG =
+		"QuickTime for Java is not supported with a 64-bit JVM. "
+			+ "Please invoke the 32-bit JVM (-d32) to utilize QTJava functionality.";
 
-  private static final String EXPIRED_QT_MSG =
-    "Your version of QuickTime for Java has expired. " +
-    "Please reinstall QuickTime for Java from http://www.apple.com/quicktime/";
+	private static final String EXPIRED_QT_MSG =
+		"Your version of QuickTime for Java has expired. "
+			+ "Please reinstall QuickTime for Java from http://www.apple.com/quicktime/";
 
-  private static final boolean MAC_OS_X =
-    System.getProperty("os.name").equals("Mac OS X");
+	private static final boolean MAC_OS_X = System.getProperty("os.name").equals(
+		"Mac OS X");
 
-  // -- Static fields --
+	// -- Static fields --
 
-  /**
-   * This custom class loader searches additional paths for the QTJava.zip
-   * library. Java has a restriction where only one class loader can have a
-   * native library loaded within a JVM. So the class loader must be static,
-   * shared by all service instances, or else an UnsatisfiedLinkError is
-   * thrown when attempting to initialize QTJava multiple times.
-   */
-  private static ClassLoader loader;
+	/**
+	 * This custom class loader searches additional paths for the QTJava.zip
+	 * library. Java has a restriction where only one class loader can have a
+	 * native library loaded within a JVM. So the class loader must be static,
+	 * shared by all service instances, or else an UnsatisfiedLinkError is thrown
+	 * when attempting to initialize QTJava multiple times.
+	 */
+	private static ClassLoader loader;
 
-  // -- Fields --
+	// -- Fields --
 
-  @Parameter
-  private LogService log;
+	@Parameter
+	private LogService log;
 
-  /** Flag indicating this class has been initialized. */
-  private boolean initialized = false;
+	/** Flag indicating this class has been initialized. */
+	private boolean initialized = false;
 
-  /** Flag indicating QuickTime for Java is not installed. */
-  private boolean noQT = false;
+	/** Flag indicating QuickTime for Java is not installed. */
+	private boolean noQT = false;
 
-  /** Flag indicating 64-bit JVM (does not support QTJava). */
-  private boolean jvm64Bit = false;
+	/** Flag indicating 64-bit JVM (does not support QTJava). */
+	private boolean jvm64Bit = false;
 
-  /** Flag indicating QuickTime for Java has expired. */
-  private boolean expiredQT = false;
+	/** Flag indicating QuickTime for Java has expired. */
+	private boolean expiredQT = false;
 
-  /** Reflection tool for QuickTime for Java calls. */
-  private ReflectedUniverse r;
+	/** Reflection tool for QuickTime for Java calls. */
+	private ReflectedUniverse r;
 
-  // -- LegacyQTService API methods --
+	// -- LegacyQTService API methods --
 
-  /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see io.scif.formats.qt.QTJavaService#canDoQT()
 	 */
-  public boolean canDoQT() {
-    if (!initialized) initQTJava();
-    return !noQT;
-  }
+	public boolean canDoQT() {
+		if (!initialized) initQTJava();
+		return !noQT;
+	}
 
-  /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see io.scif.formats.qt.QTJavaService#isJVM64Bit()
 	 */
-  public boolean isJVM64Bit() {
-    if (!initialized) initQTJava();
-    return jvm64Bit;
-  }
+	public boolean isJVM64Bit() {
+		if (!initialized) initQTJava();
+		return jvm64Bit;
+	}
 
-  /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see io.scif.formats.qt.QTJavaService#isQTExpired()
 	 */
-  public boolean isQTExpired() {
-    if (!initialized) initQTJava();
-    return expiredQT;
-  }
+	public boolean isQTExpired() {
+		if (!initialized) initQTJava();
+		return expiredQT;
+	}
 
-  /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see io.scif.formats.qt.QTJavaService#getQTVersion()
 	 */
-  public String getQTVersion() {
-    if (isJVM64Bit()) return "Not available";
-    else if (isQTExpired()) return "Expired";
-    else if (!canDoQT()) return "Missing";
-    else {
-      try {
-        String qtMajor = r.exec("QTSession.getMajorVersion()").toString();
-        String qtMinor = r.exec("QTSession.getMinorVersion()").toString();
-        return qtMajor + "." + qtMinor;
-      }
-      catch (Throwable t) {
-        log.debug("Could not retrieve QuickTime for Java version", t);
-        return "Error";
-      }
-    }
-  }
+	public String getQTVersion() {
+		if (isJVM64Bit()) return "Not available";
+		else if (isQTExpired()) return "Expired";
+		else if (!canDoQT()) return "Missing";
+		else {
+			try {
+				final String qtMajor = r.exec("QTSession.getMajorVersion()").toString();
+				final String qtMinor = r.exec("QTSession.getMinorVersion()").toString();
+				return qtMajor + "." + qtMinor;
+			}
+			catch (final Throwable t) {
+				log.debug("Could not retrieve QuickTime for Java version", t);
+				return "Error";
+			}
+		}
+	}
 
-  /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see io.scif.formats.qt.QTJavaService#getUniverse()
 	 */
-  public ReflectedUniverse getUniverse() {
-    if (!initialized) initQTJava();
-    return r;
-  }
+	public ReflectedUniverse getUniverse() {
+		if (!initialized) initQTJava();
+		return r;
+	}
 
-  /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see io.scif.formats.qt.QTJavaService#getPictDimensions(byte[])
 	 */
-  public Dimension getPictDimensions(byte[] bytes)
-    throws FormatException, ReflectException
-  {
-    checkQTLibrary();
-    try {
-      r.exec("QTSession.open()");
-      r.setVar("bytes", bytes);
-      r.exec("pict = new Pict(bytes)");
-      r.exec("box = pict.getPictFrame()");
-      int width = ((Integer) r.exec("box.getWidth()")).intValue();
-      int height = ((Integer) r.exec("box.getHeight()")).intValue();
-      r.exec("QTSession.close()");
-      return new Dimension(width, height);
-    }
-    catch (ReflectException e) {
-      r.exec("QTSession.close()");
-      throw new FormatException("PICT height determination failed", e);
-    }
-  }
+	public Dimension getPictDimensions(final byte[] bytes)
+		throws FormatException, ReflectException
+	{
+		checkQTLibrary();
+		try {
+			r.exec("QTSession.open()");
+			r.setVar("bytes", bytes);
+			r.exec("pict = new Pict(bytes)");
+			r.exec("box = pict.getPictFrame()");
+			final int width = ((Integer) r.exec("box.getWidth()")).intValue();
+			final int height = ((Integer) r.exec("box.getHeight()")).intValue();
+			r.exec("QTSession.close()");
+			return new Dimension(width, height);
+		}
+		catch (final ReflectException e) {
+			r.exec("QTSession.close()");
+			throw new FormatException("PICT height determination failed", e);
+		}
+	}
 
-  /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see io.scif.formats.qt.QTJavaService#pictToImage(byte[])
 	 */
-  public synchronized Image pictToImage(byte[] bytes)
-    throws FormatException
-  {
-    checkQTLibrary();
-    try {
-      r.exec("QTSession.open()");
+	public synchronized Image pictToImage(final byte[] bytes)
+		throws FormatException
+	{
+		checkQTLibrary();
+		try {
+			r.exec("QTSession.open()");
 
-      // Code adapted from:
-      //   http://www.onjava.com/pub/a/onjava/2002/12/23/jmf.html?page=2
-      r.setVar("bytes", bytes);
-      r.exec("pict = new Pict(bytes)");
-      r.exec("box = pict.getPictFrame()");
-      int width = ((Integer) r.exec("box.getWidth()")).intValue();
-      int height = ((Integer) r.exec("box.getHeight()")).intValue();
-      // note: could get a RawEncodedImage from the Pict, but
-      // apparently no way to get a PixMap from the REI
-      r.exec("g = new QDGraphics(box)");
-      r.exec("pict.draw(g, box)");
-      // get data from the QDGraphics
-      r.exec("pixMap = g.getPixMap()");
-      r.exec("rei = pixMap.getPixelData()");
+			// Code adapted from:
+			// http://www.onjava.com/pub/a/onjava/2002/12/23/jmf.html?page=2
+			r.setVar("bytes", bytes);
+			r.exec("pict = new Pict(bytes)");
+			r.exec("box = pict.getPictFrame()");
+			final int width = ((Integer) r.exec("box.getWidth()")).intValue();
+			final int height = ((Integer) r.exec("box.getHeight()")).intValue();
+			// note: could get a RawEncodedImage from the Pict, but
+			// apparently no way to get a PixMap from the REI
+			r.exec("g = new QDGraphics(box)");
+			r.exec("pict.draw(g, box)");
+			// get data from the QDGraphics
+			r.exec("pixMap = g.getPixMap()");
+			r.exec("rei = pixMap.getPixelData()");
 
-      // copy bytes to an array
-      int rowBytes = ((Integer) r.exec("pixMap.getRowBytes()")).intValue();
-      int intsPerRow = rowBytes / 4;
-      int pixLen = intsPerRow * height;
-      r.setVar("pixLen", pixLen);
-      int[] pixels = new int[pixLen];
-      r.setVar("pixels", pixels);
-      r.setVar("zero", new Integer(0));
-      r.exec("rei.copyToArray(zero, pixels, zero, pixLen)");
+			// copy bytes to an array
+			final int rowBytes =
+				((Integer) r.exec("pixMap.getRowBytes()")).intValue();
+			final int intsPerRow = rowBytes / 4;
+			final int pixLen = intsPerRow * height;
+			r.setVar("pixLen", pixLen);
+			final int[] pixels = new int[pixLen];
+			r.setVar("pixels", pixels);
+			r.setVar("zero", new Integer(0));
+			r.exec("rei.copyToArray(zero, pixels, zero, pixLen)");
 
-      // now coax into image, ignoring alpha for speed
-      int bitsPerSample = 32;
-      int redMask = 0x00ff0000;
-      int greenMask = 0x0000ff00;
-      int blueMask = 0x000000ff;
-      int alphaMask = 0x00000000;
-      DirectColorModel colorModel = new DirectColorModel(
-        bitsPerSample, redMask, greenMask, blueMask, alphaMask);
+			// now coax into image, ignoring alpha for speed
+			final int bitsPerSample = 32;
+			final int redMask = 0x00ff0000;
+			final int greenMask = 0x0000ff00;
+			final int blueMask = 0x000000ff;
+			final int alphaMask = 0x00000000;
+			final DirectColorModel colorModel =
+				new DirectColorModel(bitsPerSample, redMask, greenMask, blueMask,
+					alphaMask);
 
-      r.exec("QTSession.close()");
-      return Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(
-        width, height, colorModel, pixels, 0, intsPerRow));
-    }
-    catch (ReflectException e) {
-      try { r.exec("QTSession.close()"); }
-      catch (ReflectException exc) {
-        log.info("Could not close QuickTime session", exc);
-      }
-      throw new FormatException("PICT extraction failed", e);
-    }
-  }
+			r.exec("QTSession.close()");
+			return Toolkit.getDefaultToolkit()
+				.createImage(
+					new MemoryImageSource(width, height, colorModel, pixels, 0,
+						intsPerRow));
+		}
+		catch (final ReflectException e) {
+			try {
+				r.exec("QTSession.close()");
+			}
+			catch (final ReflectException exc) {
+				log.info("Could not close QuickTime session", exc);
+			}
+			throw new FormatException("PICT extraction failed", e);
+		}
+	}
 
-  /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see io.scif.formats.qt.QTJavaService#checkQTLibrary()
 	 */
-  public void checkQTLibrary() throws MissingLibraryException {
-    if (isJVM64Bit()) throw new MissingLibraryException(JVM_64BIT_MSG);
-    if (isQTExpired()) throw new MissingLibraryException(EXPIRED_QT_MSG);
-    if (!canDoQT()) throw new MissingLibraryException(NO_QT_MSG);
-  }
+	public void checkQTLibrary() throws MissingLibraryException {
+		if (isJVM64Bit()) throw new MissingLibraryException(JVM_64BIT_MSG);
+		if (isQTExpired()) throw new MissingLibraryException(EXPIRED_QT_MSG);
+		if (!canDoQT()) throw new MissingLibraryException(NO_QT_MSG);
+	}
 
-  // -- Helper methods --
+	// -- Helper methods --
 
-  /** Initializes the class. */
-  private void initQTJava() {
-    if (initialized) return;
+	/** Initializes the class. */
+	private void initQTJava() {
+		if (initialized) return;
 
-    String arch = System.getProperty("os.arch");
-    if (arch != null && arch.indexOf("64") >= 0) {
-      // QTJava is not supported on 64-bit Java; don't even try
-      noQT = true;
-      jvm64Bit = true;
-      initialized = true;
-      return;
-    }
+		final String arch = System.getProperty("os.arch");
+		if (arch != null && arch.indexOf("64") >= 0) {
+			// QTJava is not supported on 64-bit Java; don't even try
+			noQT = true;
+			jvm64Bit = true;
+			initialized = true;
+			return;
+		}
 
-    boolean needClose = false;
-    if (loader == null) loader = constructLoader();
-    r = new ReflectedUniverse(loader);
-    try {
-      r.exec("import quicktime.QTSession");
-      r.exec("QTSession.open()");
-      needClose = true;
+		boolean needClose = false;
+		if (loader == null) loader = constructLoader();
+		r = new ReflectedUniverse(loader);
+		try {
+			r.exec("import quicktime.QTSession");
+			r.exec("QTSession.open()");
+			needClose = true;
 
-      // for LegacyQTReader and LegacyQTWriter
-      r.exec("import quicktime.io.QTFile");
-      r.exec("import quicktime.std.movies.Movie");
+			// for LegacyQTReader and LegacyQTWriter
+			r.exec("import quicktime.io.QTFile");
+			r.exec("import quicktime.std.movies.Movie");
 
-      // for LegacyQTReader
-      r.exec("import quicktime.app.view.MoviePlayer");
-      r.exec("import quicktime.app.view.QTImageProducer");
-      r.exec("import quicktime.io.OpenMovieFile");
-      r.exec("import quicktime.qd.QDDimension");
-      r.exec("import quicktime.std.StdQTConstants");
-      r.exec("import quicktime.std.movies.TimeInfo");
-      r.exec("import quicktime.std.movies.Track");
+			// for LegacyQTReader
+			r.exec("import quicktime.app.view.MoviePlayer");
+			r.exec("import quicktime.app.view.QTImageProducer");
+			r.exec("import quicktime.io.OpenMovieFile");
+			r.exec("import quicktime.qd.QDDimension");
+			r.exec("import quicktime.std.StdQTConstants");
+			r.exec("import quicktime.std.movies.TimeInfo");
+			r.exec("import quicktime.std.movies.Track");
 
-      // for LegacyQTWriter
-      r.exec("import quicktime.qd.QDGraphics");
-      r.exec("import quicktime.qd.QDRect");
-      r.exec("import quicktime.std.image.CSequence");
-      r.exec("import quicktime.std.image.CodecComponent");
-      r.exec("import quicktime.std.image.ImageDescription");
-      r.exec("import quicktime.std.movies.media.VideoMedia");
-      r.exec("import quicktime.util.QTHandle");
-      r.exec("import quicktime.util.RawEncodedImage");
-      r.exec("import quicktime.util.EndianOrder");
-    }
-    catch (ExceptionInInitializerError err) {
-      noQT = true;
-      Throwable t = err.getException();
-      if (t instanceof SecurityException) {
-        SecurityException exc = (SecurityException) t;
-        if (exc.getMessage().indexOf("expired") >= 0) expiredQT = true;
-      }
-    }
-    catch (Throwable t) {
-      noQT = true;
-      log.debug("Could not find QuickTime for Java", t);
-    }
-    finally {
-      if (needClose) {
-        try { r.exec("QTSession.close()"); }
-        catch (Throwable t) {
-          log.debug("Could not close QuickTime session", t);
-        }
-      }
-      initialized = true;
-    }
-  }
+			// for LegacyQTWriter
+			r.exec("import quicktime.qd.QDGraphics");
+			r.exec("import quicktime.qd.QDRect");
+			r.exec("import quicktime.std.image.CSequence");
+			r.exec("import quicktime.std.image.CodecComponent");
+			r.exec("import quicktime.std.image.ImageDescription");
+			r.exec("import quicktime.std.movies.media.VideoMedia");
+			r.exec("import quicktime.util.QTHandle");
+			r.exec("import quicktime.util.RawEncodedImage");
+			r.exec("import quicktime.util.EndianOrder");
+		}
+		catch (final ExceptionInInitializerError err) {
+			noQT = true;
+			final Throwable t = err.getException();
+			if (t instanceof SecurityException) {
+				final SecurityException exc = (SecurityException) t;
+				if (exc.getMessage().indexOf("expired") >= 0) expiredQT = true;
+			}
+		}
+		catch (final Throwable t) {
+			noQT = true;
+			log.debug("Could not find QuickTime for Java", t);
+		}
+		finally {
+			if (needClose) {
+				try {
+					r.exec("QTSession.close()");
+				}
+				catch (final Throwable t) {
+					log.debug("Could not close QuickTime session", t);
+				}
+			}
+			initialized = true;
+		}
+	}
 
-  /** Loads the QTJava native library. */
-  private ClassLoader constructLoader() {
-    // set up additional QuickTime for Java paths
-    URL[] paths = null;
+	/** Loads the QTJava native library. */
+	private ClassLoader constructLoader() {
+		// set up additional QuickTime for Java paths
+		URL[] paths = null;
 
-    if (MAC_OS_X) {
-      try {
-        paths = new URL[] {
-          new URL("file:/System/Library/Java/Extensions/QTJava.zip")
-        };
-      }
-      catch (MalformedURLException exc) { log.info("", exc); }
-      return paths == null ? null : new URLClassLoader(paths);
-    }
+		if (MAC_OS_X) {
+			try {
+				paths =
+					new URL[] { new URL("file:/System/Library/Java/Extensions/QTJava.zip") };
+			}
+			catch (final MalformedURLException exc) {
+				log.info("", exc);
+			}
+			return paths == null ? null : new URLClassLoader(paths);
+		}
 
-    // case for Windows
-    try {
-      String windir = System.getProperty("java.library.path");
-      StringTokenizer st = new StringTokenizer(windir, ";");
+		// case for Windows
+		try {
+			final String windir = System.getProperty("java.library.path");
+			final StringTokenizer st = new StringTokenizer(windir, ";");
 
-      while (st.hasMoreTokens()) {
+			while (st.hasMoreTokens()) {
 
-        File f = new File(st.nextToken(), "QTJava.zip");
-        if (f.exists()) {
-          try {
-            paths = new URL[] {f.toURI().toURL()};
-          }
-          catch (MalformedURLException exc) { log.info("", exc); }
-          return paths == null ? null : new URLClassLoader(paths);
-        }
-      }
-    }
-    catch (SecurityException e) {
-      // this is common when using SCIFIO within an applet
-      log.warn("Cannot read value of 'java.library.path'", e);
-    }
+				final File f = new File(st.nextToken(), "QTJava.zip");
+				if (f.exists()) {
+					try {
+						paths = new URL[] { f.toURI().toURL() };
+					}
+					catch (final MalformedURLException exc) {
+						log.info("", exc);
+					}
+					return paths == null ? null : new URLClassLoader(paths);
+				}
+			}
+		}
+		catch (final SecurityException e) {
+			// this is common when using SCIFIO within an applet
+			log.warn("Cannot read value of 'java.library.path'", e);
+		}
 
-    return null;
-  }
+		return null;
+	}
 
 }

@@ -37,11 +37,10 @@
 package io.scif;
 
 /**
- *
  * @author callan
  */
 public enum MetadataLevel {
 
-  MINIMUM, NO_OVERLAYS, ALL;
+	MINIMUM, NO_OVERLAYS, ALL;
 
 }

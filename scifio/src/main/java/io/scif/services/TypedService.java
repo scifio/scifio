@@ -41,7 +41,6 @@ import org.scijava.service.Service;
 /**
  * Marker interface for Format-specific services.
  * 
- *
  * @author Mark Hiner
  */
 public interface TypedService extends Service {

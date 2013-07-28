@@ -37,13 +37,12 @@
 package io.scif;
 
 /**
- *
  * @author callan
  */
 public interface MetadataOptions {
 
-  void setMetadataLevel(MetadataLevel level);
+	void setMetadataLevel(MetadataLevel level);
 
-  MetadataLevel getMetadataLevel();
+	MetadataLevel getMetadataLevel();
 
 }

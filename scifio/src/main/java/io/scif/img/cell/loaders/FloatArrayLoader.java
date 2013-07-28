@@ -45,37 +45,38 @@ import java.nio.ByteOrder;
 import net.imglib2.img.basictypeaccess.array.FloatArray;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link FloatArray}
- * types.
+ * {@link SCIFIOArrayLoader} implementation for {@link FloatArray} types.
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
-public class FloatArrayLoader extends AbstractArrayLoader< FloatArray >
-{
-  public FloatArrayLoader (Reader reader) {
-    super(reader);
-  }
+public class FloatArrayLoader extends AbstractArrayLoader<FloatArray> {
 
-  @Override
-  public void convertBytes(FloatArray data, byte[] bytes, int planesRead) {
-    Metadata meta = reader().getMetadata();
+	public FloatArrayLoader(final Reader reader) {
+		super(reader);
+	}
 
-    int bpp = meta.getBitsPerPixel(0) / 8;
-    int offset = planesRead * (bytes.length / bpp);
+	@Override
+	public void convertBytes(final FloatArray data, final byte[] bytes,
+		final int planesRead)
+	{
+		final Metadata meta = reader().getMetadata();
 
-    ByteBuffer bb = ByteBuffer.wrap(bytes);
+		final int bpp = meta.getBitsPerPixel(0) / 8;
+		final int offset = planesRead * (bytes.length / bpp);
 
-    bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-    bb.asFloatBuffer().get(data.getCurrentStorageArray(), offset, bytes.length / bpp);
-  }
+		final ByteBuffer bb = ByteBuffer.wrap(bytes);
 
-  public FloatArray emptyArray( final int[] dimensions )
-  {
-    return new FloatArray( countEntities(dimensions) );
-  }
+		bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN
+			: ByteOrder.BIG_ENDIAN);
+		bb.asFloatBuffer().get(data.getCurrentStorageArray(), offset,
+			bytes.length / bpp);
+	}
 
-  public int getBitsPerElement() {
-    return 32;
-  }
+	public FloatArray emptyArray(final int[] dimensions) {
+		return new FloatArray(countEntities(dimensions));
+	}
+
+	public int getBitsPerElement() {
+		return 32;
+	}
 }

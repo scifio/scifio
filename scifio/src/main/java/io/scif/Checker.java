@@ -33,69 +33,67 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
-
 /**
  * Interface for all SCIFIO Checker components.
  * <p>
- * {@code Checker} components are used to determine if the {@code Format}
- * they are associated with is compatibile with a given image. This is
- * accomplished via the {@link #isFormat} methods.
+ * {@code Checker} components are used to determine if the {@code Format} they
+ * are associated with is compatibile with a given image. This is accomplished
+ * via the {@link #isFormat} methods.
  * </p>
- *
- *
+ * 
  * @see io.scif.Format
  * @see io.scif.HasFormat
- * 
  * @author Mark Hiner
  */
 public interface Checker extends HasFormat {
 
-  // -- Checker API methods --
+	// -- Checker API methods --
 
-  /**
-   * Checks if the provided image source is compatible with this {@code Format}.
-   * Will not open the source during this process.
-   * 
-   * @param name path to the image source to check.
-   * @return True if the image source is compatible with this {@code Format}.
-   */
-  boolean isFormat(String name);
+	/**
+	 * Checks if the provided image source is compatible with this {@code Format}.
+	 * Will not open the source during this process.
+	 * 
+	 * @param name path to the image source to check.
+	 * @return True if the image source is compatible with this {@code Format}.
+	 */
+	boolean isFormat(String name);
 
-  /**
-   * Checks if the provided image source is compatible with this {@code Format}.
-   * <p>
-   * If {@code open} is true and the source name is insufficient to determine
-   * the image type, the source may be opened for further analysis, or other
-   * relatively expensive file system operations (such as file existence
-   * tests and directory listings) may be performed.
-   * </p>
-   *
-   * @param name path to the image source to check.
-   * @param open if true, allows file access during the checking process.
-   * @return True if the image source is compatible with this {@code Format}.
-   */
-  boolean isFormat(String name, boolean open);
+	/**
+	 * Checks if the provided image source is compatible with this {@code Format}.
+	 * <p>
+	 * If {@code open} is true and the source name is insufficient to determine
+	 * the image type, the source may be opened for further analysis, or other
+	 * relatively expensive file system operations (such as file existence tests
+	 * and directory listings) may be performed.
+	 * </p>
+	 * 
+	 * @param name path to the image source to check.
+	 * @param open if true, allows file access during the checking process.
+	 * @return True if the image source is compatible with this {@code Format}.
+	 */
+	boolean isFormat(String name, boolean open);
 
-  /**
-   * Checks if the given stream is a valid stream for this {@code Format}.
-   *  
-   * @param stream the image source to check.
-   * @return True if {@code stream} is compatible with this {@code Format}.
-   * @throws IOException
-   */
-  boolean isFormat(RandomAccessInputStream stream) throws IOException;
+	/**
+	 * Checks if the given stream is a valid stream for this {@code Format}.
+	 * 
+	 * @param stream the image source to check.
+	 * @return True if {@code stream} is compatible with this {@code Format}.
+	 * @throws IOException
+	 */
+	boolean isFormat(RandomAccessInputStream stream) throws IOException;
 
-  /**
-   * Checks if the given bytes are a valid header for this {@code Format}.
-   * 
-   * @param block the byte array to check.
-   * @return True if {@code block} is compatible with this {@code Format}.
-   */
-  boolean checkHeader(byte[] block);
+	/**
+	 * Checks if the given bytes are a valid header for this {@code Format}.
+	 * 
+	 * @param block the byte array to check.
+	 * @return True if {@code block} is compatible with this {@code Format}.
+	 */
+	boolean checkHeader(byte[] block);
 }

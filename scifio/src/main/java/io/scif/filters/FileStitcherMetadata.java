@@ -33,166 +33,182 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.filters;
 
 import io.scif.Metadata;
 import io.scif.util.FormatTools;
-
-import java.util.Hashtable;
+import net.imglib2.meta.AxisType;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-
 /**
- * {@link io.scif.filters.MetadataWrapper} implementation specifically
- * for use with the {@link io.scif.filters.FileStitcher}.
+ * {@link io.scif.filters.MetadataWrapper} implementation specifically for use
+ * with the {@link io.scif.filters.FileStitcher}.
  * 
  * @see io.scif.filters.MetadataWrapper
  * @see io.scif.filters.FileStitcher
- * 
  * @author Mark Hiner
  */
-@Plugin(type=MetadataWrapper.class, attrs={
-  @Attr(name=FileStitcherMetadata.METADATA_KEY, value=FileStitcherMetadata.METADATA_VALUE)
-  })
+@Plugin(type = MetadataWrapper.class, attrs = { @Attr(
+	name = FileStitcherMetadata.METADATA_KEY,
+	value = FileStitcherMetadata.METADATA_VALUE) })
 public class FileStitcherMetadata extends AbstractMetadataWrapper {
 
-  // -- Constants --
+	// -- Constants --
 
-  public static final String METADATA_VALUE = "io.scif.filters.FileStitcher";
-  // -- Fields --
+	public static final String METADATA_VALUE = "io.scif.filters.FileStitcher";
+	// -- Fields --
 
-  boolean noStitch = true;
+	boolean noStitch = true;
 
-  // -- Constructors --
+	// -- Constructors --
 
-  public FileStitcherMetadata() {
-    this(null);
-  }
+	public FileStitcherMetadata() {
+		this(null);
+	}
 
-  public FileStitcherMetadata(Metadata metadata) {
-    super(metadata);
-  }
+	public FileStitcherMetadata(final Metadata metadata) {
+		super(metadata);
+	}
 
-  // -- ChannelFillerMetadata API Methods --
+	// -- ChannelFillerMetadata API Methods --
 
-  /**
-   * @param stitch - Whether stitching is enabled
-   */
-  public void setStitching(boolean stitch) {
-    noStitch = !stitch;
-  }
+	/**
+	 * @param stitch - Whether stitching is enabled
+	 */
+	public void setStitching(final boolean stitch) {
+		noStitch = !stitch;
+	}
 
-  // -- Metadata API Methods --
+	// -- Metadata API Methods --
 
-  /*
-   * @see io.scif.AbstractMetadata#isRGB(int)
-   */
-  public boolean isRGB(int imageIndex) {
-    return noStitch ? super.isRGB(imageIndex) : unwrap().isRGB(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#isRGB(int)
+	 */
+	@Override
+	public boolean isRGB(final int imageIndex) {
+		return noStitch ? super.isRGB(imageIndex) : unwrap().isRGB(imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#getAxisLength(int, net.imglib2.meta.AxisType)
-   */
-  public int getAxisLength(int imageIndex, AxisType t) {
-    return noStitch ? super.getAxisLength(imageIndex, t) :
-      unwrap().getAxisLength(imageIndex, t);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#getAxisLength(int, net.imglib2.meta.AxisType)
+	 */
+	@Override
+	public int getAxisLength(final int imageIndex, final AxisType t) {
+		return noStitch ? super.getAxisLength(imageIndex, t) : unwrap()
+			.getAxisLength(imageIndex, t);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#getPixelType(int)
-   */
-  public int getPixelType(int imageIndex) {
-    return noStitch ? super.getPixelType(imageIndex) : unwrap().getPixelType(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#getPixelType(int)
+	 */
+	@Override
+	public int getPixelType(final int imageIndex) {
+		return noStitch ? super.getPixelType(imageIndex) : unwrap().getPixelType(
+			imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#getBitsPerPixel(int)
-   */
-  public int getBitsPerPixel(int imageIndex) {
-    return noStitch ? super.getBitsPerPixel(imageIndex) : unwrap().getBitsPerPixel(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#getBitsPerPixel(int)
+	 */
+	@Override
+	public int getBitsPerPixel(final int imageIndex) {
+		return noStitch ? super.getBitsPerPixel(imageIndex) : unwrap()
+			.getBitsPerPixel(imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#isIndexed(int)
-   */
-  public boolean isIndexed(int imageIndex) {
-    return noStitch ? super.isIndexed(imageIndex) : unwrap().isIndexed(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#isIndexed(int)
+	 */
+	@Override
+	public boolean isIndexed(final int imageIndex) {
+		return noStitch ? super.isIndexed(imageIndex) : unwrap().isIndexed(
+			imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#isFalseColor(int)
-   */
-  public boolean isFalseColor(int imageIndex) {
-    return noStitch ? super.isFalseColor(imageIndex) : unwrap().isFalseColor(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#isFalseColor(int)
+	 */
+	@Override
+	public boolean isFalseColor(final int imageIndex) {
+		return noStitch ? super.isFalseColor(imageIndex) : unwrap().isFalseColor(
+			imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#getThumbSizeX(int)
-   */
-  public int getThumbSizeX(int imageIndex) {
-    return noStitch ? super.getThumbSizeX(imageIndex) :
-      unwrap().getThumbSizeX(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#getThumbSizeX(int)
+	 */
+	@Override
+	public int getThumbSizeX(final int imageIndex) {
+		return noStitch ? super.getThumbSizeX(imageIndex) : unwrap().getThumbSizeX(
+			imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#getThumbSizeY(int)
-   */
-  public int getThumbSizeY(int imageIndex) {
-    return noStitch ? super.getThumbSizeY(imageIndex) :
-      unwrap().getThumbSizeY(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#getThumbSizeY(int)
+	 */
+	@Override
+	public int getThumbSizeY(final int imageIndex) {
+		return noStitch ? super.getThumbSizeY(imageIndex) : unwrap().getThumbSizeY(
+			imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#isLittleEndian(int)
-   */
-  public boolean isLittleEndian(int imageIndex) {
-    return noStitch ? super.isLittleEndian(imageIndex) :
-      unwrap().isLittleEndian(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#isLittleEndian(int)
+	 */
+	@Override
+	public boolean isLittleEndian(final int imageIndex) {
+		return noStitch ? super.isLittleEndian(imageIndex) : unwrap()
+			.isLittleEndian(imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#isOrderCertain(int)
-   */
-  public boolean isOrderCertain(int imageIndex) {
-    return noStitch ? super.isOrderCertain(imageIndex) : unwrap().isOrderCertain(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#isOrderCertain(int)
+	 */
+	@Override
+	public boolean isOrderCertain(final int imageIndex) {
+		return noStitch ? super.isOrderCertain(imageIndex) : unwrap()
+			.isOrderCertain(imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#isThumbnailImage(int)
-   */
-  public boolean isThumbnailImage(int imageIndex) {
-    return noStitch ? super.isThumbnailImage(imageIndex) : unwrap().isThumbnailImage(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#isThumbnailImage(int)
+	 */
+	@Override
+	public boolean isThumbnailImage(final int imageIndex) {
+		return noStitch ? super.isThumbnailImage(imageIndex) : unwrap()
+			.isThumbnailImage(imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#isInterleaved(int)
-   */
-  public boolean isInterleaved(int imageIndex) {
-    return noStitch ? super.isInterleaved(imageIndex) :
-      unwrap().isInterleaved(imageIndex);
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#isInterleaved(int)
+	 */
+	@Override
+	public boolean isInterleaved(final int imageIndex) {
+		return noStitch ? super.isInterleaved(imageIndex) : unwrap().isInterleaved(
+			imageIndex);
+	}
 
-  /**
-   * @param imageIndex
-   * @return
-   */
-  public String getDimensionOrder(int imageIndex) {
-    return FormatTools.findDimensionOrder((noStitch ? this : unwrap()), imageIndex);
-  }
+	/**
+	 * @param imageIndex
+	 * @return
+	 */
+	public String getDimensionOrder(final int imageIndex) {
+		return FormatTools.findDimensionOrder((noStitch ? this : unwrap()),
+			imageIndex);
+	}
 
-  /*
-   * @see io.scif.AbstractMetadata#getImageCount()
-   */
-  public int getImageCount() {
-    return noStitch ? super.getImageCount() : unwrap().getImageCount();
-  }
+	/*
+	 * @see io.scif.AbstractMetadata#getImageCount()
+	 */
+	@Override
+	public int getImageCount() {
+		return noStitch ? super.getImageCount() : unwrap().getImageCount();
+	}
 
-  //TODO with new group files API
+	// TODO with new group files API
 //  public void setNormalized(boolean normalize) {
 //    FormatTools.assertId(getCurrentFile(), false, 2);
 //    if (externals == null) reader.setNormalized(normalize);

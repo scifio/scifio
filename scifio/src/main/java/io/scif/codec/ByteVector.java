@@ -38,68 +38,74 @@ package io.scif.codec;
 
 /**
  * A growable array of bytes.
- *
+ * 
  * @author Wayne Rasband wsr at nih.gov
  */
 public class ByteVector {
-  private byte[] data;
-  private int size;
 
-  public ByteVector() {
-    data = new byte[10];
-    size = 0;
-  }
+	private byte[] data;
+	private int size;
 
-  public ByteVector(int initialSize) {
-    data = new byte[initialSize];
-    size = 0;
-  }
+	public ByteVector() {
+		data = new byte[10];
+		size = 0;
+	}
 
-  public ByteVector(byte[] byteBuffer) {
-    data = byteBuffer;
-    size = 0;
-  }
+	public ByteVector(final int initialSize) {
+		data = new byte[initialSize];
+		size = 0;
+	}
 
-  public void add(byte x) {
-    while (size >= data.length) doubleCapacity();
-    data[size++] = x;
-  }
+	public ByteVector(final byte[] byteBuffer) {
+		data = byteBuffer;
+		size = 0;
+	}
 
-  public int size() {
-    return size;
-  }
+	public void add(final byte x) {
+		while (size >= data.length)
+			doubleCapacity();
+		data[size++] = x;
+	}
 
-  public byte get(int index) {
-    return data[index];
-  }
+	public int size() {
+		return size;
+	}
 
-  public void add(byte[] array) { add(array, 0, array.length); }
+	public byte get(final int index) {
+		return data[index];
+	}
 
-  public void add(byte[] array, int off, int len) {
-    while (data.length < size + len) doubleCapacity();
-    if (len == 1) data[size] = array[off];
-    else if (len < 35) {
-      // for loop is faster for small number of elements
-      for (int i=0; i<len; i++) data[size + i] = array[off + i];
-    }
-    else System.arraycopy(array, off, data, size, len);
-    size += len;
-  }
+	public void add(final byte[] array) {
+		add(array, 0, array.length);
+	}
 
-  void doubleCapacity() {
-    byte[] tmp = new byte[data.length*2 + 1];
-    System.arraycopy(data, 0, tmp, 0, data.length);
-    data = tmp;
-  }
+	public void add(final byte[] array, final int off, final int len) {
+		while (data.length < size + len)
+			doubleCapacity();
+		if (len == 1) data[size] = array[off];
+		else if (len < 35) {
+			// for loop is faster for small number of elements
+			for (int i = 0; i < len; i++)
+				data[size + i] = array[off + i];
+		}
+		else System.arraycopy(array, off, data, size, len);
+		size += len;
+	}
 
-  public void clear() {
-    size = 0;
-  }
+	void doubleCapacity() {
+		final byte[] tmp = new byte[data.length * 2 + 1];
+		System.arraycopy(data, 0, tmp, 0, data.length);
+		data = tmp;
+	}
 
-  public byte[] toByteArray() {
-    byte[] bytes = new byte[size];
-    System.arraycopy(data, 0, bytes, 0, size);
-    return bytes;
-  }
+	public void clear() {
+		size = 0;
+	}
+
+	public byte[] toByteArray() {
+		final byte[] bytes = new byte[size];
+		System.arraycopy(data, 0, bytes, 0, size);
+		return bytes;
+	}
 
 }

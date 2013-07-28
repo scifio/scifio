@@ -48,5 +48,5 @@ import org.scijava.log.LogService;
  * @author Curtis Rueden
  */
 public interface SCIFIOComponent extends HasSCIFIO, HasLog {
-  // NB: Marker interface.
+	// NB: Marker interface.
 }

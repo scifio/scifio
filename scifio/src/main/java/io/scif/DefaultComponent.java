@@ -33,12 +33,12 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 /**
  * Marker interface for default class implementations.
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
-public interface DefaultComponent { }
+public interface DefaultComponent {}

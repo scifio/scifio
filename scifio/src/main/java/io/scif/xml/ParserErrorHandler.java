@@ -44,36 +44,35 @@ import org.xml.sax.SAXParseException;
 
 /**
  * Used by various XMLTools methods to handle XML parsing errors.
- *
- *
+ * 
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class ParserErrorHandler implements ErrorHandler, HasLog {
 
-  private final LogService log;
+	private final LogService log;
 
-  public ParserErrorHandler(LogService log) {
-    this.log = log;
-  }
+	public ParserErrorHandler(final LogService log) {
+		this.log = log;
+	}
 
-  // -- ParserErrorHandler API methods --
+	// -- ParserErrorHandler API methods --
 
-  public void error(SAXParseException e) {
-    log().debug(e.getMessage());
-  }
+	public void error(final SAXParseException e) {
+		log().debug(e.getMessage());
+	}
 
-  public void fatalError(SAXParseException e) {
-    log().debug(e.getMessage());
-  }
+	public void fatalError(final SAXParseException e) {
+		log().debug(e.getMessage());
+	}
 
-  public void warning(SAXParseException e) {
-    log().debug(e.getMessage());
-  }
+	public void warning(final SAXParseException e) {
+		log().debug(e.getMessage());
+	}
 
-  // -- HasLog API methods --
+	// -- HasLog API methods --
 
-  public LogService log() {
-    return log;
-  }
+	public LogService log() {
+		return log;
+	}
 
 }

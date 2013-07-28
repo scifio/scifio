@@ -39,42 +39,39 @@ package io.scif.common;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.scif.common.IniTable;
-
 /**
  * A data structure containing a parsed list of INI key/value tables.
- *
- *
+ * 
  * @author Curtis Rueden ctrueden at wisc.edu
  */
 public class IniList extends ArrayList<IniTable> {
 
-  // -- IniList methods --
+	// -- IniList methods --
 
-  /** Gets the table with the given name (header). */
-  public IniTable getTable(String tableName) {
-    for (IniTable table : this) {
-      String header = table.get(IniTable.HEADER_KEY);
-      if (tableName.equals(header)) return table;
-    }
-    return null;
-  }
+	/** Gets the table with the given name (header). */
+	public IniTable getTable(final String tableName) {
+		for (final IniTable table : this) {
+			final String header = table.get(IniTable.HEADER_KEY);
+			if (tableName.equals(header)) return table;
+		}
+		return null;
+	}
 
-  /**
-   * Flattens all of the INI tables into a single HashMap whose keys are
-   * of the format "[table name] table key".
-   */
-  public HashMap<String, String> flattenIntoHashMap() {
-    HashMap<String, String> h = new HashMap<String, String>();
-    for (IniTable table : this) {
-      String tableName = table.get(IniTable.HEADER_KEY);
-      for (String key : table.keySet()) {
-        if (!key.equals(IniTable.HEADER_KEY)) {
-          h.put("[" + tableName + "] " + key, table.get(key));
-        }
-      }
-    }
-    return h;
-  }
+	/**
+	 * Flattens all of the INI tables into a single HashMap whose keys are of the
+	 * format "[table name] table key".
+	 */
+	public HashMap<String, String> flattenIntoHashMap() {
+		final HashMap<String, String> h = new HashMap<String, String>();
+		for (final IniTable table : this) {
+			final String tableName = table.get(IniTable.HEADER_KEY);
+			for (final String key : table.keySet()) {
+				if (!key.equals(IniTable.HEADER_KEY)) {
+					h.put("[" + tableName + "] " + key, table.get(key));
+				}
+			}
+		}
+		return h;
+	}
 
 }

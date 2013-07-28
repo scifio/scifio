@@ -42,15 +42,15 @@ import org.scijava.service.Service;
 
 /**
  * Interface for services that work with TIFF files.
- *
+ * 
  * @author Curtis Rueden
  */
 public interface TiffService extends Service {
 
-  /** Performs in-place differencing according to the given predictor value. */
-  void difference(byte[] input, IFD ifd) throws FormatException;
+	/** Performs in-place differencing according to the given predictor value. */
+	void difference(byte[] input, IFD ifd) throws FormatException;
 
-  /** Undoes in-place differencing according to the given predictor value. */
-  void undifference(byte[] input, IFD ifd) throws FormatException;
+	/** Undoes in-place differencing according to the given predictor value. */
+	void undifference(byte[] input, IFD ifd) throws FormatException;
 
 }

@@ -48,87 +48,89 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
 /**
- * StreamHandle implementation for reading from BZip2-compressed files
- * or byte arrays.  Instances of BZip2Handle are read-only.
- *
- *
+ * StreamHandle implementation for reading from BZip2-compressed files or byte
+ * arrays. Instances of BZip2Handle are read-only.
+ * 
  * @see StreamHandle
- *
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 @Plugin(type = IStreamAccess.class)
 public class BZip2Handle extends StreamHandle {
 
-  // -- Constructor --
+	// -- Constructor --
 
-  /**
-   * Zero-parameter constructor. This instructor can be used first
-   * to see if a given file is constructable from this handle. If so,
-   * setFile can then be used.
-   */
-  public BZip2Handle() {
-    super();
-  }
+	/**
+	 * Zero-parameter constructor. This instructor can be used first to see if a
+	 * given file is constructable from this handle. If so, setFile can then be
+	 * used.
+	 */
+	public BZip2Handle() {
+		super();
+	}
 
-  public BZip2Handle(Context context) {
-    super(context);
-  }
+	public BZip2Handle(final Context context) {
+		super(context);
+	}
 
-  /**
-   * Construct a new BZip2Handle corresponding to the given file.
-   *
-   * @throws HandleException if the given file is not a BZip2 file.
-   */
-  public BZip2Handle(Context context, String file) throws IOException {
-    super(context);
-    setFile(file);
-  }
+	/**
+	 * Construct a new BZip2Handle corresponding to the given file.
+	 * 
+	 * @throws HandleException if the given file is not a BZip2 file.
+	 */
+	public BZip2Handle(final Context context, final String file)
+		throws IOException
+	{
+		super(context);
+		setFile(file);
+	}
 
-  // -- IStreamAccess API methods --
+	// -- IStreamAccess API methods --
 
-  /* @see IStreamAccess#isConstructable(String) */
-  public boolean isConstructable(String file) throws IOException {
-    if (!file.toLowerCase().endsWith(".bz2")) return false;
+	/* @see IStreamAccess#isConstructable(String) */
+	public boolean isConstructable(final String file) throws IOException {
+		if (!file.toLowerCase().endsWith(".bz2")) return false;
 
-    FileInputStream s = new FileInputStream(file);
-    byte[] b = new byte[2];
-    s.read(b);
-    s.close();
-    return new String(b, Constants.ENCODING).equals("BZ");
-  }
+		final FileInputStream s = new FileInputStream(file);
+		final byte[] b = new byte[2];
+		s.read(b);
+		s.close();
+		return new String(b, Constants.ENCODING).equals("BZ");
+	}
 
-  /* @see IStreamAccess#resetStream() */
-  public void resetStream() throws IOException {
-    BufferedInputStream bis = new BufferedInputStream(
-      new FileInputStream(getFile()), RandomAccessInputStream.MAX_OVERHEAD);
-    int skipped = 0;
-    while (skipped < 2) {
-      skipped += bis.skip(2 - skipped);
-    }
-    LogService log = getContext().getService(LogService.class);
-    setStream(new DataInputStream(new CBZip2InputStream(bis, log)));
-  }
+	/* @see IStreamAccess#resetStream() */
+	public void resetStream() throws IOException {
+		final BufferedInputStream bis =
+			new BufferedInputStream(new FileInputStream(getFile()),
+				RandomAccessInputStream.MAX_OVERHEAD);
+		int skipped = 0;
+		while (skipped < 2) {
+			skipped += bis.skip(2 - skipped);
+		}
+		final LogService log = getContext().getService(LogService.class);
+		setStream(new DataInputStream(new CBZip2InputStream(bis, log)));
+	}
 
-  // -- IStreamAccess API methods --
+	// -- IStreamAccess API methods --
 
-  /* @see IStreamAccess#setFile(String) */
-  public void setFile(String file) throws IOException {
-    super.setFile(file);
-    if (!isConstructable(file)) {
-      throw new HandleException(file + " is not a BZip2 file.");
-    }
+	/* @see IStreamAccess#setFile(String) */
+	@Override
+	public void setFile(final String file) throws IOException {
+		super.setFile(file);
+		if (!isConstructable(file)) {
+			throw new HandleException(file + " is not a BZip2 file.");
+		}
 
-    resetStream();
+		resetStream();
 
-    int length = 0;
-    while (true) {
-      int skip = getStream().skipBytes(1024);
-      if (skip <= 0) break;
-      length += skip;
-    }
+		int length = 0;
+		while (true) {
+			final int skip = getStream().skipBytes(1024);
+			if (skip <= 0) break;
+			length += skip;
+		}
 
-    setLength(length);
+		setLength(length);
 
-    resetStream();
-  }
+		resetStream();
+	}
 }

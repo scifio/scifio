@@ -33,27 +33,27 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 /**
- * Abstract superclass for all classes that implement
- * {@link io.scif.HasFormat}.
- *
+ * Abstract superclass for all classes that implement {@link io.scif.HasFormat}.
+ * 
  * @see io.scif.HasFormat
  * @see io.scif.services.FormatService
- * 
  * @author Mark Hiner
  */
 public abstract class AbstractHasFormat extends AbstractSCIFIOComponent
-  implements HasFormat {
+	implements HasFormat
+{
 
-  // -- HasFormat API --
+	// -- HasFormat API --
 
-  /*
-   * @see io.scif.HasFormat#getFormat()
-   */
-  public Format getFormat() {
-    // All Format lookups go through the FormatService
-    return scifio().format().getFormatFromComponent(getClass());
-  }
+	/*
+	 * @see io.scif.HasFormat#getFormat()
+	 */
+	public Format getFormat() {
+		// All Format lookups go through the FormatService
+		return scifio().format().getFormatFromComponent(getClass());
+	}
 }

@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import io.scif.common.DataTools;
@@ -41,39 +42,42 @@ import io.scif.util.FormatTools;
 import org.scijava.Context;
 
 /**
- * A naive {@link io.scif.Plane} implementation that uses {@code byte[]} for its underlying
- * data type.
+ * A naive {@link io.scif.Plane} implementation that uses {@code byte[]} for its
+ * underlying data type.
  * 
  * @see io.scif.Plane
  * @see io.scif.DataPlane
- * 
  * @author Mark Hiner
  */
 public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 
-  // -- Constructor --
+	// -- Constructor --
 
-  public ByteArrayPlane(final Context context) {
-    super(context);
-  }
+	public ByteArrayPlane(final Context context) {
+		super(context);
+	}
 
-  public ByteArrayPlane(final Context context, ImageMetadata meta, int xOffset,
-      int yOffset, int xLength, int yLength) {
-    super(context, meta, xOffset, yOffset, xLength, yLength);
+	public ByteArrayPlane(final Context context, final ImageMetadata meta,
+		final int xOffset, final int yOffset, final int xLength, final int yLength)
+	{
+		super(context, meta, xOffset, yOffset, xLength, yLength);
 
-    byte[] buf = null;
+		byte[] buf = null;
 
-    buf = DataTools.allocate(xLength, yLength, FormatTools.getBytesPerPixel(getImageMetadata().getPixelType()), meta.getRGBChannelCount());
+		buf =
+			DataTools.allocate(xLength, yLength, FormatTools
+				.getBytesPerPixel(getImageMetadata().getPixelType()), meta
+				.getRGBChannelCount());
 
-    setData(buf);
-  }
+		setData(buf);
+	}
 
-  // -- Plane API methods --
+	// -- Plane API methods --
 
-  /*
-   * @see io.scif.Plane#getBytes()
-   */
-  public byte[] getBytes() {
-    return getData();
-  }
+	/*
+	 * @see io.scif.Plane#getBytes()
+	 */
+	public byte[] getBytes() {
+		return getData();
+	}
 }

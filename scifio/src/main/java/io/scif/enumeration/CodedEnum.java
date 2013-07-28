@@ -38,15 +38,15 @@ package io.scif.enumeration;
 
 /**
  * Enumeration which is coded.
- *
  */
 public interface CodedEnum {
 
-  /**
-   * Retrieves the integer "code" for this enumeration. It is expected that the
-   * code be unique across the enumerated type.
-   * @return See above.
-   */
-  public int getCode();
+	/**
+	 * Retrieves the integer "code" for this enumeration. It is expected that the
+	 * code be unique across the enumerated type.
+	 * 
+	 * @return See above.
+	 */
+	public int getCode();
 
 }

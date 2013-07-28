@@ -40,8 +40,7 @@ import java.util.ArrayList;
 
 /**
  * Data structure for working with a list of TIFF {@link IFD}s.
- *
- *
+ * 
  * @author Curtis Rueden ctrueden at wisc.edu
  */
-public class IFDList extends ArrayList<IFD> { }
+public class IFDList extends ArrayList<IFD> {}

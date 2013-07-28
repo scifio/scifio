@@ -40,15 +40,14 @@ import java.util.HashMap;
 
 /**
  * A data structure containing a parsed list of INI key/value tables.
- *
- *
+ * 
  * @author Curtis Rueden ctrueden at wisc.edu
  */
 public class IniTable extends HashMap<String, String> {
 
-  // -- Constants --
+	// -- Constants --
 
-  /** Key to use for storing header value (in brackets). */
-  public static final String HEADER_KEY = "header";
+	/** Key to use for storing header value (in brackets). */
+	public static final String HEADER_KEY = "header";
 
 }

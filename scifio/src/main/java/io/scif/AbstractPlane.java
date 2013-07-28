@@ -33,203 +33,207 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
+
+import net.imglib2.display.ColorTable;
 
 import org.scijava.Context;
 import org.scijava.plugin.SortablePlugin;
-
-import net.imglib2.display.ColorTable;
 
 /**
  * Abstract superclass for {@link io.scif.Plane} implementations in SCIFIO.
  * 
  * @see io.scif.Plane
  * @see io.scif.DataPlane
- * 
  * @author Mark Hiner
- * 
  * @param <T> - The underlying data type used by this Plane
  * @param <P> - A recursive reference to this concrete class
  */
-public abstract class AbstractPlane<T, P extends DataPlane<T>> extends SortablePlugin
-  implements DataPlane<T> {
+public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
+	SortablePlugin implements DataPlane<T>
+{
 
-  // -- Fields --
+	// -- Fields --
 
-  /** Native pixel data for this plane. */
-  private T data = null;
+	/** Native pixel data for this plane. */
+	private T data = null;
 
-  /** Color look-up table for this plane. */
-  private ColorTable lut = null;
+	/** Color look-up table for this plane. */
+	private ColorTable lut = null;
 
-  /** Metadata describing the underlying image. */
-  private ImageMetadata meta = null;
+	/** Metadata describing the underlying image. */
+	private ImageMetadata meta = null;
 
-  /** X-axis offset into the underlying image. */
-  private int xOffset = 0;
+	/** X-axis offset into the underlying image. */
+	private int xOffset = 0;
 
-  /** Y-axis offset into the underlying image. */
-  private int yOffset = 0;
+	/** Y-axis offset into the underlying image. */
+	private int yOffset = 0;
 
-  /** Length of the plane in the X-axis. */
-  private int xLength = 0;
+	/** Length of the plane in the X-axis. */
+	private int xLength = 0;
 
-  /** Length of the plane in the Y-axis. */
-  private int yLength = 0;
+	/** Length of the plane in the Y-axis. */
+	private int yLength = 0;
 
-  // -- Constructor --
+	// -- Constructor --
 
-  public AbstractPlane(final Context context) {
-    setContext(context);
-  }
+	public AbstractPlane(final Context context) {
+		setContext(context);
+	}
 
-  public AbstractPlane(final Context context, ImageMetadata meta, int xOffset,
-      int yOffset, int xLength, int yLength) {
-    setContext(context);
-    // TODO bounds checking?
-    populate(meta, xOffset, yOffset, xLength, yLength);
-  }
+	public AbstractPlane(final Context context, final ImageMetadata meta,
+		final int xOffset, final int yOffset, final int xLength, final int yLength)
+	{
+		setContext(context);
+		// TODO bounds checking?
+		populate(meta, xOffset, yOffset, xLength, yLength);
+	}
 
-  // -- DataPlane API methods --
+	// -- DataPlane API methods --
 
-  /* @see DataPlane#setData(T) */
-  public void setData(T data) {
-    this.data = data;
-  }
+	/* @see DataPlane#setData(T) */
+	public void setData(final T data) {
+		this.data = data;
+	}
 
-  /* @see DataPlane#getData() */
-  public T getData() {
-    return data;
-  }
+	/* @see DataPlane#getData() */
+	public T getData() {
+		return data;
+	}
 
-  // -- Plane API methods --
+	// -- Plane API methods --
 
-  /* @see Plane#setColorTable(ColorTable) */
-  public void setColorTable(ColorTable lut) {
-    this.lut = lut;
-  }
+	/* @see Plane#setColorTable(ColorTable) */
+	public void setColorTable(final ColorTable lut) {
+		this.lut = lut;
+	}
 
-  /* @see Plane#getColorTable() */
-  public ColorTable getColorTable() {
-    return lut;
-  }
+	/* @see Plane#getColorTable() */
+	public ColorTable getColorTable() {
+		return lut;
+	}
 
-  /*
-   * @see io.scif.Plane#getImageMetadata()
-   */
-  public ImageMetadata getImageMetadata() {
-    return meta;
-  }
+	/*
+	 * @see io.scif.Plane#getImageMetadata()
+	 */
+	public ImageMetadata getImageMetadata() {
+		return meta;
+	}
 
-  /*
-   * @see io.scif.Plane#getxOffset()
-   */
-  public int getxOffset() {
-    return xOffset;
-  }
+	/*
+	 * @see io.scif.Plane#getxOffset()
+	 */
+	public int getxOffset() {
+		return xOffset;
+	}
 
-  /*
-   * @see io.scif.Plane#getyOffset()
-   */
-  public int getyOffset() {
-    return yOffset;
-  }
+	/*
+	 * @see io.scif.Plane#getyOffset()
+	 */
+	public int getyOffset() {
+		return yOffset;
+	}
 
-  /*
-   * @see io.scif.Plane#getxLength()
-   */
-  public int getxLength() {
-    return xLength;
-  }
+	/*
+	 * @see io.scif.Plane#getxLength()
+	 */
+	public int getxLength() {
+		return xLength;
+	}
 
-  /*
-   * @see io.scif.Plane#getyLength()
-   */
-  public int getyLength() {
-    return yLength;
-  }
+	/*
+	 * @see io.scif.Plane#getyLength()
+	 */
+	public int getyLength() {
+		return yLength;
+	}
 
-  public P populate(Plane p) {
-    return populate(p.getImageMetadata(), p.getxOffset(),
-                    p.getyOffset(), p.getxLength(), p.getyLength());
-  }
+	public P populate(final Plane p) {
+		return populate(p.getImageMetadata(), p.getxOffset(), p.getyOffset(), p
+			.getxLength(), p.getyLength());
+	}
 
-  /*
-   * @see io.scif.DataPlane#populate(io.scif.DataPlane)
-   */
-  public P populate(DataPlane<T> plane) {
-    return populate(plane.getImageMetadata(), plane.getData(), plane.getxOffset(),
-        plane.getyOffset(), plane.getxLength(), plane.getyLength());
-  }
+	/*
+	 * @see io.scif.DataPlane#populate(io.scif.DataPlane)
+	 */
+	public P populate(final DataPlane<T> plane) {
+		return populate(plane.getImageMetadata(), plane.getData(), plane
+			.getxOffset(), plane.getyOffset(), plane.getxLength(), plane.getyLength());
+	}
 
-  /*
-   * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
-   *      int)
-   */
-  public P populate(ImageMetadata meta, int xOffset, int yOffset,
-      int xLength, int yLength) {
-    return populate(meta, null, xOffset, yOffset, xLength, yLength);
-  }
+	/*
+	 * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
+	 *      int)
+	 */
+	public P populate(final ImageMetadata meta, final int xOffset,
+		final int yOffset, final int xLength, final int yLength)
+	{
+		return populate(meta, null, xOffset, yOffset, xLength, yLength);
+	}
 
-  /*
-   * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
-   *      int)
-   */
-  public P populate(T data, int xOffset, int yOffset,
-      int xLength, int yLength) {
-    return populate(null, data, xOffset, yOffset, xLength, yLength);
-  }
+	/*
+	 * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
+	 *      int)
+	 */
+	public P populate(final T data, final int xOffset, final int yOffset,
+		final int xLength, final int yLength)
+	{
+		return populate(null, data, xOffset, yOffset, xLength, yLength);
+	}
 
-  /*
-   * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
-   *      int)
-   */
-  public P populate(ImageMetadata meta, T data, int xOffset, int yOffset,
-      int xLength, int yLength) {
-    setImageMetadata(meta);
-    setData(data);
-    setxOffset(xOffset);
-    setyOffset(yOffset);
-    setxLength(xLength);
-    setyLength(yLength);
+	/*
+	 * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
+	 *      int)
+	 */
+	public P populate(final ImageMetadata meta, final T data, final int xOffset,
+		final int yOffset, final int xLength, final int yLength)
+	{
+		setImageMetadata(meta);
+		setData(data);
+		setxOffset(xOffset);
+		setyOffset(yOffset);
+		setxLength(xLength);
+		setyLength(yLength);
 
-    @SuppressWarnings("unchecked")
-    P pl = (P) this;
-    return pl;
-  }
+		@SuppressWarnings("unchecked")
+		final P pl = (P) this;
+		return pl;
+	}
 
-  /*
-   * @see io.scif.Plane#setImageMetadata(io.scif.ImageMetadata)
-   */
-  public void setImageMetadata(ImageMetadata meta) {
-    this.meta = meta;
-  }
+	/*
+	 * @see io.scif.Plane#setImageMetadata(io.scif.ImageMetadata)
+	 */
+	public void setImageMetadata(final ImageMetadata meta) {
+		this.meta = meta;
+	}
 
-  /*
-   * @see io.scif.Plane#setxOffset(int)
-   */
-  public void setxOffset(int xOffset) {
-    this.xOffset = xOffset;
-  }
+	/*
+	 * @see io.scif.Plane#setxOffset(int)
+	 */
+	public void setxOffset(final int xOffset) {
+		this.xOffset = xOffset;
+	}
 
-  /*
-   * @see io.scif.Plane#setyOffset(int)
-   */
-  public void setyOffset(int yOffset) {
-    this.yOffset = yOffset;
-  }
+	/*
+	 * @see io.scif.Plane#setyOffset(int)
+	 */
+	public void setyOffset(final int yOffset) {
+		this.yOffset = yOffset;
+	}
 
-  /*
-   * @see io.scif.Plane#setxLength(int)
-   */
-  public void setxLength(int xLength) {
-    this.xLength = xLength;
-  }
+	/*
+	 * @see io.scif.Plane#setxLength(int)
+	 */
+	public void setxLength(final int xLength) {
+		this.xLength = xLength;
+	}
 
-  /*
-   * @see io.scif.Plane#setyLength(int)
-   */
-  public void setyLength(int yLength) {
-    this.yLength = yLength;
-  }
+	/*
+	 * @see io.scif.Plane#setyLength(int)
+	 */
+	public void setyLength(final int yLength) {
+		this.yLength = yLength;
+	}
 }

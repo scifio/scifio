@@ -33,27 +33,28 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import org.scijava.log.LogService;
 
 /**
  * Abstract superclass for classes that implement {@link SCIFIOComponent}.
- *
+ * 
  * @author Curtis Rueden
  */
 public abstract class AbstractSCIFIOComponent extends AbstractHasSCIFIO
-  implements SCIFIOComponent
+	implements SCIFIOComponent
 {
 
-  /** Cached LogService reference. */
-  private LogService log;
+	/** Cached LogService reference. */
+	private LogService log;
 
-  // -- HasLog API Methods --
+	// -- HasLog API Methods --
 
-  public LogService log() {
-    if (log == null) log = scifio().log();
-    return log;
-  }
+	public LogService log() {
+		if (log == null) log = scifio().log();
+		return log;
+	}
 
 }

@@ -33,12 +33,12 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
-
 
 /**
  * Interface for all {@link io.scif.Reader} implementations that use generic
@@ -49,102 +49,99 @@ import java.io.IOException;
  * </p>
  * 
  * @author Mark Hiner
- *
  * @param <M> - {@link io.scif.Metadata} used by this reader for reading images.
- * @param <P> - {@link io.scif.Plane} return and parameter type for this reader's
- *              {@link #openPlane} and {@link #readPlane} methods.
- * 
+ * @param <P> - {@link io.scif.Plane} return and parameter type for this
+ *          reader's {@link #openPlane} and {@link #readPlane} methods.
  * @see {@link #openPlane}
  * @see {@link #readPlane}
  * @see {@link #setMetadata}
  * @see {@link #getMetadata}
  */
-public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>> extends Reader {
+public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
+	extends Reader
+{
 
-  /*
-   * @see io.scif.Reader#openPlane(int, int)
-   */
-  P openPlane(int imageIndex, int planeIndex)
-    throws FormatException, IOException;
+	/*
+	 * @see io.scif.Reader#openPlane(int, int)
+	 */
+	P openPlane(int imageIndex, int planeIndex) throws FormatException,
+		IOException;
 
-  /*
-   * @see io.scif.Reader#openPlane(int, int, int, int, int, int)
-   */
-  P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
-    throws FormatException, IOException;
+	/*
+	 * @see io.scif.Reader#openPlane(int, int, int, int, int, int)
+	 */
+	P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
+		throws FormatException, IOException;
 
-  /**
-   * Generic-parameterized {@code openPlane} method, using
-   * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-   * {@link io.scif.Reader#openPlane(int, int, Plane)}.
-   * 
-   * @see {@link io.scif.Reader#openPlane(int, int, Plane)}
-   */
-  P openPlane(int imageIndex, int planeIndex, P plane)
-    throws FormatException, IOException;
+	/**
+	 * Generic-parameterized {@code openPlane} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Reader#openPlane(int, int, Plane)}.
+	 * 
+	 * @see {@link io.scif.Reader#openPlane(int, int, Plane)}
+	 */
+	P openPlane(int imageIndex, int planeIndex, P plane) throws FormatException,
+		IOException;
 
-  /**
-   * Generic-parameterized {@code openPlane} method, using
-   * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-   * {@link io.scif.Reader#openPlane(int, int, Plane, int, int, int, int)}.
-   * 
-   * @see {@link io.scif.Reader#openPlane(int, int, Plane, int, int, int, int)}
-   */
-  P openPlane(int imageIndex, int planeIndex, P plane, int x, int y,
-    int w, int h) throws FormatException, IOException;
+	/**
+	 * Generic-parameterized {@code openPlane} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Reader#openPlane(int, int, Plane, int, int, int, int)}.
+	 * 
+	 * @see {@link io.scif.Reader#openPlane(int, int, Plane, int, int, int, int)}
+	 */
+	P openPlane(int imageIndex, int planeIndex, P plane, int x, int y, int w,
+		int h) throws FormatException, IOException;
 
-  /*
-   * @see io.scif.Reader#openThumbPlane(int, int)
-   */
-  P openThumbPlane(int imageIndex, int planeIndex)
-    throws FormatException, IOException;
+	/*
+	 * @see io.scif.Reader#openThumbPlane(int, int)
+	 */
+	P openThumbPlane(int imageIndex, int planeIndex) throws FormatException,
+		IOException;
 
-  /**
-   * Generic-parameterized {@code setMetadata} method, using
-   * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-   * {@link io.scif.Reader#setMetadata(Metadata)}.
-   * 
-   * @see {@link io.scif.Reader#setMetadata(Metadata)}
-   */
-  void setMetadata(M meta) throws IOException;
+	/**
+	 * Generic-parameterized {@code setMetadata} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Reader#setMetadata(Metadata)}.
+	 * 
+	 * @see {@link io.scif.Reader#setMetadata(Metadata)}
+	 */
+	void setMetadata(M meta) throws IOException;
 
-  /*
-   * @see io.scif.Reader#getMetadata()
-   */
-  M getMetadata();
+	/*
+	 * @see io.scif.Reader#getMetadata()
+	 */
+	M getMetadata();
 
-  /**
-   * Generic-parameterized {@code readPlane} method, using
-   * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-   * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int,
-   * int, int, int, int, Plane)}
-   * 
-   * @see {@link io.scif.Reader#readPlane(RandomAccessInputStream, int,
-   *             int, int, int, int, Plane)}
-   */
-  P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
-    int w, int h, P plane) throws IOException;
+	/**
+	 * Generic-parameterized {@code readPlane} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, Plane)}
+	 * 
+	 * @see {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, Plane)}
+	 */
+	P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y, int w,
+		int h, P plane) throws IOException;
 
-  /**
-   * Generic-parameterized {@code readPlane} method, using
-   * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-   * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int,
-   * int, int, int, int, int, Plane)}
-   * 
-   * @see {@link io.scif.Reader#readPlane(RandomAccessInputStream, int,
-   *             int, int, int, int, int, Plane)}
-   */
-  P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
-    int w, int h, int scanlinePad, P plane) throws IOException;
+	/**
+	 * Generic-parameterized {@code readPlane} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, int, Plane)}
+	 * 
+	 * @see {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, int, Plane)}
+	 */
+	P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y, int w,
+		int h, int scanlinePad, P plane) throws IOException;
 
-  /*
-   * @see io.scif.Reader#createPlane(int, int, int, int)
-   */
-  P createPlane(int xOffset, int yOffset, int xLength, int yLength);
+	/*
+	 * @see io.scif.Reader#createPlane(int, int, int, int)
+	 */
+	P createPlane(int xOffset, int yOffset, int xLength, int yLength);
 
-  /**
-   * Returns the class of {@code Planes} associated with this {@code Reader}.
-   * @return
-   */
-  Class<P> getPlaneClass();
+	/**
+	 * Returns the class of {@code Planes} associated with this {@code Reader}.
+	 * 
+	 * @return
+	 */
+	Class<P> getPlaneClass();
 }

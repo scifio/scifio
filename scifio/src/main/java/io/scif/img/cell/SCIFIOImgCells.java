@@ -43,80 +43,80 @@ import net.imglib2.img.list.AbstractListImg;
 import net.imglib2.util.IntervalIndexer;
 
 /**
- * {@link AbstractCells} implementation for
- * working with {@link SCIFIOCell}s.
+ * {@link AbstractCells} implementation for working with {@link SCIFIOCell}s.
  * 
  * @author Mark Hiner hinerm at gmail.com
  */
 public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
-    AbstractCells<A, SCIFIOCell<A>, SCIFIOImgCells<A>.CachedCells> {
-  public static interface CellCache<A extends ArrayDataAccess<?>> {
-    /**
-     * Get the cell at a specified index.
-     * 
-     * @return cell at index or null if the cell is not in the cache.
-     */
-    public SCIFIOCell<A> get(final int index);
+	AbstractCells<A, SCIFIOCell<A>, SCIFIOImgCells<A>.CachedCells>
+{
 
-    /**
-     * Load a cell into memory and put it into the cache at the specified index.
-     * 
-     * @param index
-     *          cell is stored at this index in the cache.
-     * @param cellDims
-     *          dimensions of the cell.
-     * @param cellMin
-     *          offset of the cell in image coordinates.
-     * @return cell at index
-     */
-    public SCIFIOCell<A> load(final int index, final int[] cellDims,
-      final long[] cellMin);
+	public static interface CellCache<A extends ArrayDataAccess<?>> {
 
-  }
+		/**
+		 * Get the cell at a specified index.
+		 * 
+		 * @return cell at index or null if the cell is not in the cache.
+		 */
+		public SCIFIOCell<A> get(final int index);
 
-  protected final CachedCells cells;
+		/**
+		 * Load a cell into memory and put it into the cache at the specified index.
+		 * 
+		 * @param index cell is stored at this index in the cache.
+		 * @param cellDims dimensions of the cell.
+		 * @param cellMin offset of the cell in image coordinates.
+		 * @return cell at index
+		 */
+		public SCIFIOCell<A> load(final int index, final int[] cellDims,
+			final long[] cellMin);
 
-  protected final CellCache<A> cache;
+	}
 
-  public SCIFIOImgCells(final CellCache<A> cache, final int entitiesPerPixel,
-      final long[] dimensions, final int[] cellDimensions) {
-    super(entitiesPerPixel, dimensions, cellDimensions);
-    this.cache = cache;
-    cells = new CachedCells(numCells);
-  }
+	protected final CachedCells cells;
 
-  @Override
-  protected CachedCells cells() {
-    return cells;
-  }
+	protected final CellCache<A> cache;
 
-  public class CachedCells extends AbstractListImg<SCIFIOCell<A>> {
-    protected CachedCells(final long[] dim) {
-      super(dim);
-    }
+	public SCIFIOImgCells(final CellCache<A> cache, final int entitiesPerPixel,
+		final long[] dimensions, final int[] cellDimensions)
+	{
+		super(entitiesPerPixel, dimensions, cellDimensions);
+		this.cache = cache;
+		cells = new CachedCells(numCells);
+	}
 
-    @Override
-    protected SCIFIOCell<A> get(final int index) {
-      // TODO is this index just a linear index on cells?
-      final SCIFIOCell<A> cell = cache.get(index);
-      if (cell != null)
-        return cell;
-      final long[] cellGridPosition = new long[n];
-      final long[] cellMin = new long[n];
-      final int[] cellDims = new int[n];
-      // TODO here is the index to position logic to re-compute
-      IntervalIndexer.indexToPosition(index, dim, cellGridPosition);
-      getCellDimensions(cellGridPosition, cellMin, cellDims);
-      return cache.load(index, cellDims, cellMin);
-    }
+	@Override
+	protected CachedCells cells() {
+		return cells;
+	}
 
-    public Img<SCIFIOCell<A>> copy() {
-      throw new UnsupportedOperationException("Not supported");
-    }
+	public class CachedCells extends AbstractListImg<SCIFIOCell<A>> {
 
-    @Override
-    protected void set(final int index, final SCIFIOCell<A> value) {
-      throw new UnsupportedOperationException("Not supported");
-    }
-  }
+		protected CachedCells(final long[] dim) {
+			super(dim);
+		}
+
+		@Override
+		protected SCIFIOCell<A> get(final int index) {
+			// TODO is this index just a linear index on cells?
+			final SCIFIOCell<A> cell = cache.get(index);
+			if (cell != null) return cell;
+			final long[] cellGridPosition = new long[n];
+			final long[] cellMin = new long[n];
+			final int[] cellDims = new int[n];
+			// TODO here is the index to position logic to re-compute
+			IntervalIndexer.indexToPosition(index, dim, cellGridPosition);
+			getCellDimensions(cellGridPosition, cellMin, cellDims);
+			return cache.load(index, cellDims, cellMin);
+		}
+
+		public Img<SCIFIOCell<A>> copy() {
+			throw new UnsupportedOperationException("Not supported");
+		}
+
+		@Override
+		protected void set(final int index, final SCIFIOCell<A> value) {
+			throw new UnsupportedOperationException("Not supported");
+		}
+	}
 }

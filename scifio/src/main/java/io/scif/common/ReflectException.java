@@ -37,16 +37,25 @@
 package io.scif.common;
 
 /**
- * ReflectException is the exception thrown when something
- * goes wrong performing a reflected operation with ReflectedUniverse.
- *
+ * ReflectException is the exception thrown when something goes wrong performing
+ * a reflected operation with ReflectedUniverse.
  */
 public class ReflectException extends Exception {
 
-  public ReflectException() { super(); }
-  public ReflectException(String s) { super(s); }
-  public ReflectException(String s, Throwable cause) { super(s, cause); }
-  public ReflectException(Throwable cause) { super(cause); }
+	public ReflectException() {
+		super();
+	}
+
+	public ReflectException(final String s) {
+		super(s);
+	}
+
+	public ReflectException(final String s, final Throwable cause) {
+		super(s, cause);
+	}
+
+	public ReflectException(final Throwable cause) {
+		super(cause);
+	}
 
 }
-

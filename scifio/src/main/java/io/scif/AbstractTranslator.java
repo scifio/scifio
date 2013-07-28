@@ -38,66 +38,65 @@ package io.scif;
 
 import io.scif.util.SCIFIOMetadataTools;
 
-
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Translator} components.
  * <p>
- * NB: this class provides a special abstract method: {@code typedTranslate(Metadata, Metadata)}.
- * That is the method which should be overridden when extending this class, and not
+ * NB: this class provides a special abstract method:
+ * {@code typedTranslate(Metadata, Metadata)}. That is the method which should
+ * be overridden when extending this class, and not
  * {@link #translate(Metadata, Metadata)} - which has been set up to translate
  * the type-general Metadata information, delegate to {@code typedTranslate},
  * and then populate the ImageMetadata of the destination.
  * </p>
- *
+ * 
  * @see io.scif.Translator
  * @see io.scif.services.TranslatorService
  * @see io.scif.Metadata
- * 
  * @author Mark Hiner
- * 
  * @param <M> - The source Metadata type required by this Translator
  * @param <N> - The destination Metadata type required by this Translator
  */
 public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
-  extends AbstractSCIFIOComponent implements Translator {
+	extends AbstractSCIFIOComponent implements Translator
+{
 
-  // -- Translator API --
+	// -- Translator API --
 
-  /*
-   * @see io.scif.Translator#translate(io.scif.Metadata, io.scif.Metadata)
-   */
-  public void translate(Metadata source, Metadata dest) {
-    // Cast the parameters to typed Metadata
-    M typedSource = SCIFIOMetadataTools.<M>castMeta(source);
-    N typedDest = SCIFIOMetadataTools.<N>castMeta(dest);
+	/*
+	 * @see io.scif.Translator#translate(io.scif.Metadata, io.scif.Metadata)
+	 */
+	public void translate(final Metadata source, final Metadata dest) {
+		// Cast the parameters to typed Metadata
+		final M typedSource = SCIFIOMetadataTools.<M> castMeta(source);
+		final N typedDest = SCIFIOMetadataTools.<N> castMeta(dest);
 
-    // Boilerplate for common Metadata fields
-    dest.setSource(source.getSource());
-    dest.setFiltered(source.isFiltered());
-    dest.setMetadataOptions(source.getMetadataOptions());
-    dest.setDatasetName(source.getDatasetName());
+		// Boilerplate for common Metadata fields
+		dest.setSource(source.getSource());
+		dest.setFiltered(source.isFiltered());
+		dest.setMetadataOptions(source.getMetadataOptions());
+		dest.setDatasetName(source.getDatasetName());
 
-    // Type-dependent translation
-    typedTranslate(typedSource, typedDest);
+		// Type-dependent translation
+		typedTranslate(typedSource, typedDest);
 
-    // -- Post-translation hook --
-    // Update the source's ImageMetadata based on the translation results
-    dest.populateImageMetadata();
-  }
+		// -- Post-translation hook --
+		// Update the source's ImageMetadata based on the translation results
+		dest.populateImageMetadata();
+	}
 
-  // -- AbstractTranslator API --
+	// -- AbstractTranslator API --
 
-  /**
-   * This method should contain the actual logic for populating the
-   * type-specific fields of the destination Metadata.
-   * <p>
-   * This separation of logic allows the translate(Metadata, Metadata) method
-   * to perform "pre" and "post" translation activities, while facilitating
-   * type-specific Metadata operations.
-   * </p>
-   * 
-   * @param source - Source Metadata
-   * @param dest - Destination Metadata
-   */
-  protected abstract void typedTranslate(M source, N dest);
+	/**
+	 * This method should contain the actual logic for populating the
+	 * type-specific fields of the destination Metadata.
+	 * <p>
+	 * This separation of logic allows the translate(Metadata, Metadata) method to
+	 * perform "pre" and "post" translation activities, while facilitating
+	 * type-specific Metadata operations.
+	 * </p>
+	 * 
+	 * @param source - Source Metadata
+	 * @param dest - Destination Metadata
+	 */
+	protected abstract void typedTranslate(M source, N dest);
 }

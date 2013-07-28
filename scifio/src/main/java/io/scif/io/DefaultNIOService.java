@@ -57,73 +57,73 @@ import org.scijava.service.Service;
 @Plugin(type = Service.class)
 public class DefaultNIOService extends AbstractService implements NIOService {
 
-  // -- Fields --
+	// -- Fields --
 
-  @Parameter
-  private LogService log;
+	@Parameter
+	private LogService log;
 
-  /** Whether or not we are to use memory mapped I/O. */
-  private boolean useMappedByteBuffer = false;
+	/** Whether or not we are to use memory mapped I/O. */
+	private boolean useMappedByteBuffer = false;
 
-  // -- Service API methods --
+	// -- Service API methods --
 
-  @Override
-  public void initialize() {
-    final String mapping = System.getProperty("mappedBuffers");
-    useMappedByteBuffer = Boolean.parseBoolean(mapping);
-    log.debug("Using mapped byte buffer? " + useMappedByteBuffer);
-  }
+	@Override
+	public void initialize() {
+		final String mapping = System.getProperty("mappedBuffers");
+		useMappedByteBuffer = Boolean.parseBoolean(mapping);
+		log.debug("Using mapped byte buffer? " + useMappedByteBuffer);
+	}
 
-  // -- NIOService API methods --
+	// -- NIOService API methods --
 
-  public ByteBuffer allocate(FileChannel channel, MapMode mapMode,
-    long bufferStartPosition, int newSize) throws IOException
-  {
-    if (useMappedByteBuffer) {
-      return allocateMappedByteBuffer(channel, mapMode, bufferStartPosition,
-        newSize);
-    }
-    return allocateDirect(channel, bufferStartPosition, newSize);
-  }
+	public ByteBuffer allocate(final FileChannel channel, final MapMode mapMode,
+		final long bufferStartPosition, final int newSize) throws IOException
+	{
+		if (useMappedByteBuffer) {
+			return allocateMappedByteBuffer(channel, mapMode, bufferStartPosition,
+				newSize);
+		}
+		return allocateDirect(channel, bufferStartPosition, newSize);
+	}
 
-  // -- Helper methods --
+	// -- Helper methods --
 
-  /**
-   * Allocates memory and copies the desired file data into it.
-   * 
-   * @param channel File channel to allocate or map byte buffers from.
-   * @param bufferStartPosition The absolute position of the start of the
-   * buffer.
-   * @param newSize The buffer size.
-   * @return A newly allocated NIO byte buffer.
-   * @throws IOException If there is an issue aligning or allocating
-   * the buffer.
-   */
-  private ByteBuffer allocateDirect(FileChannel channel,
-    long bufferStartPosition, int newSize) throws IOException
-  {
-    final ByteBuffer buffer = ByteBuffer.allocate(newSize);
-    channel.read(buffer, bufferStartPosition);
-    return buffer;
-  }
+	/**
+	 * Allocates memory and copies the desired file data into it.
+	 * 
+	 * @param channel File channel to allocate or map byte buffers from.
+	 * @param bufferStartPosition The absolute position of the start of the
+	 *          buffer.
+	 * @param newSize The buffer size.
+	 * @return A newly allocated NIO byte buffer.
+	 * @throws IOException If there is an issue aligning or allocating the buffer.
+	 */
+	private ByteBuffer allocateDirect(final FileChannel channel,
+		final long bufferStartPosition, final int newSize) throws IOException
+	{
+		final ByteBuffer buffer = ByteBuffer.allocate(newSize);
+		channel.read(buffer, bufferStartPosition);
+		return buffer;
+	}
 
-  /**
-   * Memory maps the desired file data into memory.
-   * 
-   * @param channel File channel to allocate or map byte buffers from.
-   * @param mapMode The map mode. Required but only used if memory mapped I/O
-   * is to occur.
-   * @param bufferStartPosition The absolute position of the start of the
-   * buffer.
-   * @param newSize The buffer size.
-   * @return A newly mapped NIO byte buffer.
-   * @throws IOException If there is an issue mapping, aligning or allocating
-   * the buffer.
-   */
-  private ByteBuffer allocateMappedByteBuffer(FileChannel channel,
-    MapMode mapMode, long bufferStartPosition, int newSize) throws IOException
-  {
-    return channel.map(mapMode, bufferStartPosition, newSize);
-  }
+	/**
+	 * Memory maps the desired file data into memory.
+	 * 
+	 * @param channel File channel to allocate or map byte buffers from.
+	 * @param mapMode The map mode. Required but only used if memory mapped I/O is
+	 *          to occur.
+	 * @param bufferStartPosition The absolute position of the start of the
+	 *          buffer.
+	 * @param newSize The buffer size.
+	 * @return A newly mapped NIO byte buffer.
+	 * @throws IOException If there is an issue mapping, aligning or allocating
+	 *           the buffer.
+	 */
+	private ByteBuffer allocateMappedByteBuffer(final FileChannel channel,
+		final MapMode mapMode, final long bufferStartPosition, final int newSize)
+		throws IOException
+	{
+		return channel.map(mapMode, bufferStartPosition, newSize);
+	}
 
 }

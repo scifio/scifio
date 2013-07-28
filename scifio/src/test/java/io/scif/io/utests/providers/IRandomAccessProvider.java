@@ -40,16 +40,12 @@ import io.scif.io.IRandomAccess;
 
 import java.io.IOException;
 
-
-
 /**
  * Interface for all providers of IRandomAccess objects.
- *
- *
  */
 public interface IRandomAccessProvider {
 
-  IRandomAccess createMock(byte[] page, String mode, int bufferSize)
-    throws IOException;
+	IRandomAccess createMock(byte[] page, String mode, int bufferSize)
+		throws IOException;
 
 }

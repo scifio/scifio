@@ -41,7 +41,6 @@ import java.util.StringTokenizer;
 import org.scijava.log.LogService;
 import org.xml.sax.Attributes;
 
-
 /**
  * Used by validateXML to parse the XML block's schema path using SAX.
  *
@@ -53,48 +52,52 @@ import org.xml.sax.Attributes;
 /**  */
 public class ValidationSAXHandler extends BaseHandler {
 
-  private String schemaPath;
-  private boolean first;
+	private String schemaPath;
+	private boolean first;
 
-  public ValidationSAXHandler(LogService log) {
-    super(log);
-  }
+	public ValidationSAXHandler(final LogService log) {
+		super(log);
+	}
 
-  public String getSchemaPath() { return schemaPath; }
+	public String getSchemaPath() {
+		return schemaPath;
+	}
 
-  public void startDocument() {
-    schemaPath = null;
-    first = true;
-  }
+	@Override
+	public void startDocument() {
+		schemaPath = null;
+		first = true;
+	}
 
-  public void startElement(String uri,
-    String localName, String qName, Attributes attributes)
-  {
-    if (!first) return;
-    first = false;
+	@Override
+	public void startElement(final String uri, final String localName,
+		final String qName, final Attributes attributes)
+	{
+		if (!first) return;
+		first = false;
 
-    int len = attributes.getLength();
-    String xmlns = null, xsiSchemaLocation = null;
-    for (int i=0; i<len; i++) {
-      String name = attributes.getQName(i);
-      if (name.equals("xmlns")) xmlns = attributes.getValue(i);
-      else if (name.equals("schemaLocation") ||
-        name.endsWith(":schemaLocation"))
-      {
-        xsiSchemaLocation = attributes.getValue(i);
-      }
-    }
-    if (xmlns == null || xsiSchemaLocation == null) return; // not found
+		final int len = attributes.getLength();
+		String xmlns = null, xsiSchemaLocation = null;
+		for (int i = 0; i < len; i++) {
+			final String name = attributes.getQName(i);
+			if (name.equals("xmlns")) xmlns = attributes.getValue(i);
+			else if (name.equals("schemaLocation") ||
+				name.endsWith(":schemaLocation"))
+			{
+				xsiSchemaLocation = attributes.getValue(i);
+			}
+		}
+		if (xmlns == null || xsiSchemaLocation == null) return; // not found
 
-    StringTokenizer st = new StringTokenizer(xsiSchemaLocation);
-    while (st.hasMoreTokens()) {
-      String token = st.nextToken();
-      if (xmlns.equals(token)) {
-        // next token is the actual schema path
-        if (st.hasMoreTokens()) schemaPath = st.nextToken();
-        break;
-      }
-    }
-  }
+		final StringTokenizer st = new StringTokenizer(xsiSchemaLocation);
+		while (st.hasMoreTokens()) {
+			final String token = st.nextToken();
+			if (xmlns.equals(token)) {
+				// next token is the actual schema path
+				if (st.hasMoreTokens()) schemaPath = st.nextToken();
+				break;
+			}
+		}
+	}
 
 }

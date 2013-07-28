@@ -43,27 +43,27 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-
-
 /**
  * Implementation of IRandomAccessProvider that produces instances of
  * loci.common.URLHandle.
- *
- *
+ * 
  * @see IRandomAccessProvider
  * @see io.scif.io.URLHandle
  */
-class URLHandleProvider extends ContextualProvider implements IRandomAccessProvider {
+class URLHandleProvider extends ContextualProvider implements
+	IRandomAccessProvider
+{
 
-  public IRandomAccess createMock(
-      byte[] page, String mode, int bufferSize) throws IOException {
-    File f = File.createTempFile("url", ".dat");
-    f.deleteOnExit();
-    FileOutputStream out = new FileOutputStream(f);
-    out.write(page);
-    out.close();
+	public IRandomAccess createMock(final byte[] page, final String mode,
+		final int bufferSize) throws IOException
+	{
+		final File f = File.createTempFile("url", ".dat");
+		f.deleteOnExit();
+		final FileOutputStream out = new FileOutputStream(f);
+		out.write(page);
+		out.close();
 
-    return new URLHandle(getContext(), f.toURL().toString());
-  }
+		return new URLHandle(getContext(), f.toURL().toString());
+	}
 
 }

@@ -47,16 +47,16 @@ import net.imglib2.exception.ImgLibException;
  */
 public class ImgIOException extends ImgLibException {
 
-  public ImgIOException(final Object obj, final String message) {
-    super(obj.getClass().getCanonicalName() + ": " + message);
-  }
+	public ImgIOException(final Object obj, final String message) {
+		super(obj.getClass().getCanonicalName() + ": " + message);
+	}
 
-  public ImgIOException(final Throwable t) {
-    super(t);
-  }
+	public ImgIOException(final Throwable t) {
+		super(t);
+	}
 
-  public ImgIOException(final String s) {
-    super(s);
-  }
+	public ImgIOException(final String s) {
+		super(s);
+	}
 
 }

@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import org.scijava.log.LogService;
@@ -45,11 +46,11 @@ import org.scijava.log.LogService;
  */
 public interface HasLog {
 
-  /**
-   * Returns the {@link LogService} associated with this instance.
-   * 
-   * @return The cached {@link LogService} instance.
-   */
-  LogService log();
+	/**
+	 * Returns the {@link LogService} associated with this instance.
+	 * 
+	 * @return The cached {@link LogService} instance.
+	 */
+	LogService log();
 
 }

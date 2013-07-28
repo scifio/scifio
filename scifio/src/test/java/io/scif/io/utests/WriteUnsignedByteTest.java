@@ -37,14 +37,11 @@
 package io.scif.io.utests;
 
 import static org.testng.AssertJUnit.assertEquals;
-
 import io.scif.io.IRandomAccess;
-
-import java.io.IOException;
-
-
 import io.scif.io.utests.providers.IRandomAccessProvider;
 import io.scif.io.utests.providers.IRandomAccessProviderFactory;
+
+import java.io.IOException;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
@@ -53,163 +50,162 @@ import org.testng.annotations.Test;
 
 /**
  * Tests for reading unsigned bytes from a loci.common.IRandomAccess.
- *
- *
+ * 
  * @see io.scif.io.IRandomAccess
  */
-@Test(groups="writeTests")
+@Test(groups = "writeTests")
 public class WriteUnsignedByteTest {
 
-  private static final byte[] PAGE = new byte[] {
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
-  };
+	private static final byte[] PAGE = new byte[] { (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 };
 
-  private static final String MODE = "rw";
+	private static final String MODE = "rw";
 
-  private static final int BUFFER_SIZE = 1024;
+	private static final int BUFFER_SIZE = 1024;
 
-  private IRandomAccess fileHandle;
+	private IRandomAccess fileHandle;
 
-  private boolean checkGrowth;
+	private boolean checkGrowth;
 
-  @Parameters({"provider", "checkGrowth"})
-  @BeforeMethod
-  public void setUp(String provider, @Optional("false") String checkGrowth)
-    throws IOException {
-    this.checkGrowth = Boolean.parseBoolean(checkGrowth);
-    IRandomAccessProviderFactory factory = new IRandomAccessProviderFactory();
-    IRandomAccessProvider instance = factory.getInstance(provider);
-    fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
-  }
+	@Parameters({ "provider", "checkGrowth" })
+	@BeforeMethod
+	public void setUp(final String provider,
+		@Optional("false") final String checkGrowth) throws IOException
+	{
+		this.checkGrowth = Boolean.parseBoolean(checkGrowth);
+		final IRandomAccessProviderFactory factory =
+			new IRandomAccessProviderFactory();
+		final IRandomAccessProvider instance = factory.getInstance(provider);
+		fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
+	}
 
-  @Test(groups="initialLengthTest")
-  public void testLength() throws IOException {
-    assertEquals(16, fileHandle.length());
-  }
+	@Test(groups = "initialLengthTest")
+	public void testLength() throws IOException {
+		assertEquals(16, fileHandle.length());
+	}
 
-  @Test
-  public void testSequential() throws IOException {
-    fileHandle.writeByte(1);
-    if (checkGrowth) {
-      assertEquals(1, fileHandle.length());
-    }
-    fileHandle.writeByte(2);
-    if (checkGrowth) {
-      assertEquals(2, fileHandle.length());
-    }
-    fileHandle.writeByte(3);
-    if (checkGrowth) {
-      assertEquals(3, fileHandle.length());
-    }
-    fileHandle.writeByte(4);
-    if (checkGrowth) {
-      assertEquals(4, fileHandle.length());
-    }
-    fileHandle.writeByte(5);
-    if (checkGrowth) {
-      assertEquals(5, fileHandle.length());
-    }
-    fileHandle.writeByte(6);
-    if (checkGrowth) {
-      assertEquals(6, fileHandle.length());
-    }
-    fileHandle.writeByte(7);
-    if (checkGrowth) {
-      assertEquals(7, fileHandle.length());
-    }
-    fileHandle.writeByte(8);
-    if (checkGrowth) {
-      assertEquals(8, fileHandle.length());
-    }
-    fileHandle.writeByte(9);
-    if (checkGrowth) {
-      assertEquals(9, fileHandle.length());
-    }
-    fileHandle.writeByte(10);
-    if (checkGrowth) {
-      assertEquals(10, fileHandle.length());
-    }
-    fileHandle.writeByte(11);
-    if (checkGrowth) {
-      assertEquals(11, fileHandle.length());
-    }
-    fileHandle.writeByte(12);
-    if (checkGrowth) {
-      assertEquals(12, fileHandle.length());
-    }
-    fileHandle.writeByte(13);
-    if (checkGrowth) {
-      assertEquals(13, fileHandle.length());
-    }
-    fileHandle.writeByte(14);
-    if (checkGrowth) {
-      assertEquals(14, fileHandle.length());
-    }
-    fileHandle.writeByte((byte) 0xFF);
-    if (checkGrowth) {
-      assertEquals(15, fileHandle.length());
-    }
-    fileHandle.writeByte((byte) 0xFE);
-    if (checkGrowth) {
-      assertEquals(16, fileHandle.length());
-    }
-    fileHandle.seek(0);
-    assertEquals(1, fileHandle.readUnsignedByte());
-    assertEquals(2, fileHandle.readUnsignedByte());
-    assertEquals(3, fileHandle.readUnsignedByte());
-    assertEquals(4, fileHandle.readUnsignedByte());
-    assertEquals(5, fileHandle.readUnsignedByte());
-    assertEquals(6, fileHandle.readUnsignedByte());
-    assertEquals(7, fileHandle.readUnsignedByte());
-    assertEquals(8, fileHandle.readUnsignedByte());
-    assertEquals(9, fileHandle.readUnsignedByte());
-    assertEquals(10, fileHandle.readUnsignedByte());
-    assertEquals(11, fileHandle.readUnsignedByte());
-    assertEquals(12, fileHandle.readUnsignedByte());
-    assertEquals(13, fileHandle.readUnsignedByte());
-    assertEquals(14, fileHandle.readUnsignedByte());
-    assertEquals(255, fileHandle.readUnsignedByte());
-    assertEquals(254, fileHandle.readUnsignedByte());
-  }
+	@Test
+	public void testSequential() throws IOException {
+		fileHandle.writeByte(1);
+		if (checkGrowth) {
+			assertEquals(1, fileHandle.length());
+		}
+		fileHandle.writeByte(2);
+		if (checkGrowth) {
+			assertEquals(2, fileHandle.length());
+		}
+		fileHandle.writeByte(3);
+		if (checkGrowth) {
+			assertEquals(3, fileHandle.length());
+		}
+		fileHandle.writeByte(4);
+		if (checkGrowth) {
+			assertEquals(4, fileHandle.length());
+		}
+		fileHandle.writeByte(5);
+		if (checkGrowth) {
+			assertEquals(5, fileHandle.length());
+		}
+		fileHandle.writeByte(6);
+		if (checkGrowth) {
+			assertEquals(6, fileHandle.length());
+		}
+		fileHandle.writeByte(7);
+		if (checkGrowth) {
+			assertEquals(7, fileHandle.length());
+		}
+		fileHandle.writeByte(8);
+		if (checkGrowth) {
+			assertEquals(8, fileHandle.length());
+		}
+		fileHandle.writeByte(9);
+		if (checkGrowth) {
+			assertEquals(9, fileHandle.length());
+		}
+		fileHandle.writeByte(10);
+		if (checkGrowth) {
+			assertEquals(10, fileHandle.length());
+		}
+		fileHandle.writeByte(11);
+		if (checkGrowth) {
+			assertEquals(11, fileHandle.length());
+		}
+		fileHandle.writeByte(12);
+		if (checkGrowth) {
+			assertEquals(12, fileHandle.length());
+		}
+		fileHandle.writeByte(13);
+		if (checkGrowth) {
+			assertEquals(13, fileHandle.length());
+		}
+		fileHandle.writeByte(14);
+		if (checkGrowth) {
+			assertEquals(14, fileHandle.length());
+		}
+		fileHandle.writeByte((byte) 0xFF);
+		if (checkGrowth) {
+			assertEquals(15, fileHandle.length());
+		}
+		fileHandle.writeByte((byte) 0xFE);
+		if (checkGrowth) {
+			assertEquals(16, fileHandle.length());
+		}
+		fileHandle.seek(0);
+		assertEquals(1, fileHandle.readUnsignedByte());
+		assertEquals(2, fileHandle.readUnsignedByte());
+		assertEquals(3, fileHandle.readUnsignedByte());
+		assertEquals(4, fileHandle.readUnsignedByte());
+		assertEquals(5, fileHandle.readUnsignedByte());
+		assertEquals(6, fileHandle.readUnsignedByte());
+		assertEquals(7, fileHandle.readUnsignedByte());
+		assertEquals(8, fileHandle.readUnsignedByte());
+		assertEquals(9, fileHandle.readUnsignedByte());
+		assertEquals(10, fileHandle.readUnsignedByte());
+		assertEquals(11, fileHandle.readUnsignedByte());
+		assertEquals(12, fileHandle.readUnsignedByte());
+		assertEquals(13, fileHandle.readUnsignedByte());
+		assertEquals(14, fileHandle.readUnsignedByte());
+		assertEquals(255, fileHandle.readUnsignedByte());
+		assertEquals(254, fileHandle.readUnsignedByte());
+	}
 
-  @Test
-  public void testSeekForward() throws IOException {
-    fileHandle.seek(7);
-    fileHandle.writeByte(8);
-    if (checkGrowth) {
-      assertEquals(8, fileHandle.length());
-    }
-    fileHandle.writeByte(9);
-    if (checkGrowth) {
-      assertEquals(9, fileHandle.length());
-    }
-    fileHandle.seek(7);
-    fileHandle.writeByte((byte) 0xFF);
-    fileHandle.writeByte((byte) 0xFE);
-    fileHandle.seek(7);
-    assertEquals(255, fileHandle.readUnsignedByte());
-    assertEquals(254, fileHandle.readUnsignedByte());
-  }
+	@Test
+	public void testSeekForward() throws IOException {
+		fileHandle.seek(7);
+		fileHandle.writeByte(8);
+		if (checkGrowth) {
+			assertEquals(8, fileHandle.length());
+		}
+		fileHandle.writeByte(9);
+		if (checkGrowth) {
+			assertEquals(9, fileHandle.length());
+		}
+		fileHandle.seek(7);
+		fileHandle.writeByte((byte) 0xFF);
+		fileHandle.writeByte((byte) 0xFE);
+		fileHandle.seek(7);
+		assertEquals(255, fileHandle.readUnsignedByte());
+		assertEquals(254, fileHandle.readUnsignedByte());
+	}
 
-  @Test
-  public void testReset() throws IOException {
-    fileHandle.writeByte(1);
-    if (checkGrowth) {
-      assertEquals(1, fileHandle.length());
-    }
-    fileHandle.writeByte(2);
-    if (checkGrowth) {
-      assertEquals(2, fileHandle.length());
-    }
-    fileHandle.seek(0);
-    fileHandle.writeByte(1);
-    fileHandle.writeByte(2);
-    fileHandle.seek(0);
-    assertEquals(1, fileHandle.readUnsignedByte());
-    assertEquals(2, fileHandle.readUnsignedByte());
-  }
+	@Test
+	public void testReset() throws IOException {
+		fileHandle.writeByte(1);
+		if (checkGrowth) {
+			assertEquals(1, fileHandle.length());
+		}
+		fileHandle.writeByte(2);
+		if (checkGrowth) {
+			assertEquals(2, fileHandle.length());
+		}
+		fileHandle.seek(0);
+		fileHandle.writeByte(1);
+		fileHandle.writeByte(2);
+		fileHandle.seek(0);
+		assertEquals(1, fileHandle.readUnsignedByte());
+		assertEquals(2, fileHandle.readUnsignedByte());
+	}
 
 }

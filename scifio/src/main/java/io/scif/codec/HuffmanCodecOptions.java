@@ -38,10 +38,9 @@ package io.scif.codec;
 
 /**
  * Options for compressing and decompressing Huffman data.
- *
  */
 public class HuffmanCodecOptions extends CodecOptions {
 
-  public short[] table;
+	public short[] table;
 
 }

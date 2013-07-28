@@ -44,47 +44,50 @@ import org.xml.sax.SAXParseException;
 
 /**
  * Used by validateXML to handle XML validation errors.
- *
- *
+ * 
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Chris Allan callan at blackcat.ca
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class ValidationErrorHandler implements ErrorHandler, HasLog {
 
-  private int errors = 0;
+	private int errors = 0;
 
-  private final LogService log;
+	private final LogService log;
 
-  public ValidationErrorHandler(LogService log) {
-    this.log = log;
-  }
+	public ValidationErrorHandler(final LogService log) {
+		this.log = log;
+	}
 
-  public boolean ok() { return errors == 0; }
+	public boolean ok() {
+		return errors == 0;
+	}
 
-  public int getErrorCount() { return errors; }
+	public int getErrorCount() {
+		return errors;
+	}
 
-  // -- ValidationErrorHandler API methods --
+	// -- ValidationErrorHandler API methods --
 
-  public void error(SAXParseException e) {
-    log().error(e.getMessage());
-    errors++;
-  }
+	public void error(final SAXParseException e) {
+		log().error(e.getMessage());
+		errors++;
+	}
 
-  public void fatalError(SAXParseException e) {
-    log().error(e.getMessage());
-    errors++;
-  }
+	public void fatalError(final SAXParseException e) {
+		log().error(e.getMessage());
+		errors++;
+	}
 
-  public void warning(SAXParseException e) {
-    log().warn(e.getMessage());
-    errors++;
-  }
+	public void warning(final SAXParseException e) {
+		log().warn(e.getMessage());
+		errors++;
+	}
 
-  // -- HasLog API methods --
+	// -- HasLog API methods --
 
-  public LogService log() {
-    return log;
-  }
+	public LogService log() {
+		return log;
+	}
 
 }

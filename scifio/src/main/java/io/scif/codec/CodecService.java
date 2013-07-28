@@ -42,7 +42,7 @@ import org.scijava.plugin.SingletonService;
  * 
  * @author Curtis Rueden
  */
-public interface CodecService extends SingletonService<Codec>
-{
-  <C extends Codec> C getCodec(Class<C> codecClass);
+public interface CodecService extends SingletonService<Codec> {
+
+	<C extends Codec> C getCodec(Class<C> codecClass);
 }

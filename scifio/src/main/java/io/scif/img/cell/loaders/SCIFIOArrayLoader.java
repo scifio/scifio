@@ -38,18 +38,17 @@ package io.scif.img.cell.loaders;
 
 import io.scif.img.cell.SCIFIOCellImg;
 
-
 /**
- * Interface for requesting arrays from SCIFIO {@link io.scif.Reader}s
- * by {@link SCIFIOCellImg}s.
+ * Interface for requesting arrays from SCIFIO {@link io.scif.Reader}s by
+ * {@link SCIFIOCellImg}s.
  * 
  * @author Mark Hiner hinerm at gmail.com
  */
-public interface SCIFIOArrayLoader< A >
-{
-  int getBitsPerElement();
+public interface SCIFIOArrayLoader<A> {
 
-  A loadArray( int[] dimensions, long[] min );
+	int getBitsPerElement();
 
-  A emptyArray( final int[] dimensions );
+	A loadArray(int[] dimensions, long[] min);
+
+	A emptyArray(final int[] dimensions);
 }

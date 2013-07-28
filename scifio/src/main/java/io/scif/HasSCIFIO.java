@@ -54,11 +54,11 @@ import org.scijava.Contextual;
  */
 public interface HasSCIFIO extends Contextual {
 
-  /**
-   * Returns the SCIFIO instance associated with this instance.
-   * 
-   * @return The cached SCIFIO instance.
-   */
-  SCIFIO scifio();
+	/**
+	 * Returns the SCIFIO instance associated with this instance.
+	 * 
+	 * @return The cached SCIFIO instance.
+	 */
+	SCIFIO scifio();
 
 }

@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 /**
@@ -40,63 +41,61 @@ package io.scif;
  * underlying data representation.
  * 
  * @see io.scif.Plane
- * 
  * @author Mark Hiner
- *
- * @param <T> the native data type used to store this plane's pixel
- *            information.
+ * @param <T> the native data type used to store this plane's pixel information.
  */
 public interface DataPlane<T> extends Plane {
 
-  /**
-   * Sets the native pixel data for this plane. If {@link getColorTable()}
-   * returns null, then this is the pixel data. Otherwise, this data should be
-   * used as an index into the associated ColorTable.
-   * 
-   * @param data - an object matching the native data type of this plane.
-   */
-  void setData(T data);
+	/**
+	 * Sets the native pixel data for this plane. If {@link getColorTable()}
+	 * returns null, then this is the pixel data. Otherwise, this data should be
+	 * used as an index into the associated ColorTable.
+	 * 
+	 * @param data - an object matching the native data type of this plane.
+	 */
+	void setData(T data);
 
-  /**
-   * Gets this plane's type-specific pixel data.
-   * 
-   * @return The native representation for this plane's data.
-   */
-  T getData();
+	/**
+	 * Gets this plane's type-specific pixel data.
+	 * 
+	 * @return The native representation for this plane's data.
+	 */
+	T getData();
 
-  /**
-   * Populate this plane by copying the provided plane.
-   * 
-   * @param plane the plane to copy
-   * @return A reference to this plane
-   */
-  DataPlane<T> populate(DataPlane<T> plane);
+	/**
+	 * Populate this plane by copying the provided plane.
+	 * 
+	 * @param plane the plane to copy
+	 * @return A reference to this plane
+	 */
+	DataPlane<T> populate(DataPlane<T> plane);
 
-  /**
-   * Populate this plane using the specified lengths and offsets,
-   * with the provided data representation of the pixels in that region.
-   * 
-   * @param data Pixel information for the region of this plane.
-   * @param xOffset Starting x coordinate of this plane
-   * @param yOffset Starting y coordinate of this plane
-   * @param xLength Width of this plane
-   * @param yLength Height of this plane
-   * @return A reference to this plane
-   */
-  DataPlane<T> populate(T data, int xOffset, int yOffset, int xLength, int yLength);
+	/**
+	 * Populate this plane using the specified lengths and offsets, with the
+	 * provided data representation of the pixels in that region.
+	 * 
+	 * @param data Pixel information for the region of this plane.
+	 * @param xOffset Starting x coordinate of this plane
+	 * @param yOffset Starting y coordinate of this plane
+	 * @param xLength Width of this plane
+	 * @param yLength Height of this plane
+	 * @return A reference to this plane
+	 */
+	DataPlane<T> populate(T data, int xOffset, int yOffset, int xLength,
+		int yLength);
 
-  /**
-   * As {@link #populate(T, int, int, int, int)}, but also sets the
-   * ImageMetadata of the source from which this Plane was read.
-   * 
-   * @param meta ImageMetadata of the source associated with this Plane
-   * @param data Pixel information for the region of this plane.
-   * @param xOffset Starting x coordinate of this plane
-   * @param yOffset Starting y coordinate of this plane
-   * @param xLength Width of this plane
-   * @param yLength Height of this plane
-   * @return A reference to this plane
-   */
-  DataPlane<T> populate(ImageMetadata meta, T data, int xOffset, int yOffset,
-      int xLength, int yLength);
+	/**
+	 * As {@link #populate(T, int, int, int, int)}, but also sets the
+	 * ImageMetadata of the source from which this Plane was read.
+	 * 
+	 * @param meta ImageMetadata of the source associated with this Plane
+	 * @param data Pixel information for the region of this plane.
+	 * @param xOffset Starting x coordinate of this plane
+	 * @param yOffset Starting y coordinate of this plane
+	 * @param xLength Width of this plane
+	 * @param yLength Height of this plane
+	 * @return A reference to this plane
+	 */
+	DataPlane<T> populate(ImageMetadata meta, T data, int xOffset, int yOffset,
+		int xLength, int yLength);
 }

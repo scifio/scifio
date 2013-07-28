@@ -58,11 +58,9 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * Utility class for performing compression operations with a TIFF file.
- *
- *
+ * 
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Eric Kjellman egkjellman at wisc.edu
  * @author Melissa Linkert melissa at glencoesoftware.com
@@ -70,258 +68,270 @@ import java.util.Map;
  */
 public enum TiffCompression implements CodedEnum {
 
-  // TODO: Make TIFF compression logic extensible, not a hardcoded enum!
+		// TODO: Make TIFF compression logic extensible, not a hardcoded enum!
 
-  // (TIFF code, codec, codec name)
-  DEFAULT_UNCOMPRESSED(0, PassthroughCodec.class, "Uncompressed"),
-  UNCOMPRESSED(1, PassthroughCodec.class, "Uncompressed"),
-  CCITT_1D(2, null, "CCITT Group 3 1-Dimensional Modified Huffman"),
-  GROUP_3_FAX(3, null, "CCITT T.4 bi-level encoding (Group 3 Fax)"),
-  GROUP_4_FAX(4, null, "CCITT T.6 bi-level encoding (Group 4 Fax)"),
-  LZW(5, LZWCodec.class, "LZW"),
-  OLD_JPEG(6, JPEGCodec.class, "Old JPEG"),
-  JPEG(7, JPEGCodec.class, "JPEG"),
-  PACK_BITS(32773, PackbitsCodec.class, "PackBits"),
-  PROPRIETARY_DEFLATE(32946, ZlibCodec.class, "Deflate (Zlib)"),
-  DEFLATE(8, ZlibCodec.class, "Deflate (Zlib)"),
-  THUNDERSCAN(32809, null, "Thunderscan"),
-  JPEG_2000(33003, JPEG2000Codec.class, "JPEG-2000") {
-    @Override
-    public CodecOptions getCompressionCodecOptions(IFD ifd)
-        throws FormatException {
-      return getCompressionCodecOptions(ifd, null);
-    }
+		// (TIFF code, codec, codec name)
+		DEFAULT_UNCOMPRESSED(0, PassthroughCodec.class, "Uncompressed"),
+		UNCOMPRESSED(1, PassthroughCodec.class, "Uncompressed"), CCITT_1D(2, null,
+			"CCITT Group 3 1-Dimensional Modified Huffman"), GROUP_3_FAX(3, null,
+			"CCITT T.4 bi-level encoding (Group 3 Fax)"), GROUP_4_FAX(4, null,
+			"CCITT T.6 bi-level encoding (Group 4 Fax)"), LZW(5, LZWCodec.class,
+			"LZW"), OLD_JPEG(6, JPEGCodec.class, "Old JPEG"), JPEG(7,
+			JPEGCodec.class, "JPEG"), PACK_BITS(32773, PackbitsCodec.class,
+			"PackBits"),
+		PROPRIETARY_DEFLATE(32946, ZlibCodec.class, "Deflate (Zlib)"), DEFLATE(8,
+			ZlibCodec.class, "Deflate (Zlib)"), THUNDERSCAN(32809, null,
+			"Thunderscan"), JPEG_2000(33003, JPEG2000Codec.class, "JPEG-2000") {
 
-    @Override
-    public CodecOptions getCompressionCodecOptions(IFD ifd, CodecOptions opt)
-    throws FormatException {
-      CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
-      options.lossless = true;
-      JPEG2000CodecOptions j2k = JPEG2000CodecOptions.getDefaultOptions(options);
-      if (opt instanceof JPEG2000CodecOptions) {
-        JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
-        j2k.numDecompositionLevels = o.numDecompositionLevels;
-        j2k.resolution = o.resolution;
-        if (o.codeBlockSize != null)
-          j2k.codeBlockSize = o.codeBlockSize;
-        if (o.quality > 0)
-          j2k.quality = o.quality;
-      }
-      return j2k;
-    }
-  },
-  JPEG_2000_LOSSY(33004, JPEG2000Codec.class, "JPEG-2000 Lossy") {
-    @Override
-    public CodecOptions getCompressionCodecOptions(IFD ifd)
-        throws FormatException {
-      return getCompressionCodecOptions(ifd, null);
-    }
+			@Override
+			public CodecOptions getCompressionCodecOptions(final IFD ifd)
+				throws FormatException
+			{
+				return getCompressionCodecOptions(ifd, null);
+			}
 
-    @Override
-    public CodecOptions getCompressionCodecOptions(IFD ifd, CodecOptions opt)
-    throws FormatException {
-      CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
-      options.lossless = false;
-      JPEG2000CodecOptions j2k = JPEG2000CodecOptions.getDefaultOptions(options);
-      if (opt instanceof JPEG2000CodecOptions) {
-        JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
-        j2k.numDecompositionLevels = o.numDecompositionLevels;
-        j2k.resolution = o.resolution;
-        if (o.codeBlockSize != null)
-          j2k.codeBlockSize = o.codeBlockSize;
-        if (o.quality > 0)
-          j2k.quality = o.quality;
-      }
-      return j2k;
-    }
-  },
-  ALT_JPEG2000(33005, JPEG2000Codec.class, "JPEG-2000") {
-    @Override
-    public CodecOptions getCompressionCodecOptions(IFD ifd)
-        throws FormatException
-    {
-      return getCompressionCodecOptions(ifd, null);
-    }
+			@Override
+			public CodecOptions getCompressionCodecOptions(final IFD ifd,
+				final CodecOptions opt) throws FormatException
+			{
+				final CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
+				options.lossless = true;
+				final JPEG2000CodecOptions j2k =
+					JPEG2000CodecOptions.getDefaultOptions(options);
+				if (opt instanceof JPEG2000CodecOptions) {
+					final JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
+					j2k.numDecompositionLevels = o.numDecompositionLevels;
+					j2k.resolution = o.resolution;
+					if (o.codeBlockSize != null) j2k.codeBlockSize = o.codeBlockSize;
+					if (o.quality > 0) j2k.quality = o.quality;
+				}
+				return j2k;
+			}
+		},
+		JPEG_2000_LOSSY(33004, JPEG2000Codec.class, "JPEG-2000 Lossy") {
 
-    @Override
-    public CodecOptions getCompressionCodecOptions(IFD ifd, CodecOptions opt)
-    throws FormatException {
-      CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
-      options.lossless = true;
-      JPEG2000CodecOptions j2k = JPEG2000CodecOptions.getDefaultOptions(options);
-      if (opt instanceof JPEG2000CodecOptions) {
-        JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
-        j2k.numDecompositionLevels = o.numDecompositionLevels;
-        j2k.resolution = o.resolution;
-        if (o.codeBlockSize != null)
-          j2k.codeBlockSize = o.codeBlockSize;
-        if (o.quality > 0)
-          j2k.quality = o.quality;
-      }
-      return j2k;
-    }
-  },
-  ALT_JPEG(33007, JPEGCodec.class, "JPEG"),
-  OLYMPUS_JPEG2000(34712, JPEG2000Codec.class, "JPEG-2000") {
-    @Override
-    public CodecOptions getCompressionCodecOptions(IFD ifd)
-        throws FormatException
-    {
-      return getCompressionCodecOptions(ifd, null);
-    }
+			@Override
+			public CodecOptions getCompressionCodecOptions(final IFD ifd)
+				throws FormatException
+			{
+				return getCompressionCodecOptions(ifd, null);
+			}
 
-    @Override
-    public CodecOptions getCompressionCodecOptions(IFD ifd, CodecOptions opt)
-    throws FormatException {
-      CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
-      options.lossless = true;
-      JPEG2000CodecOptions j2k = JPEG2000CodecOptions.getDefaultOptions(options);
-      if (opt instanceof JPEG2000CodecOptions) {
-        JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
-        j2k.numDecompositionLevels = o.numDecompositionLevels;
-        j2k.resolution = o.resolution;
-        if (o.codeBlockSize != null)
-          j2k.codeBlockSize = o.codeBlockSize;
-        if (o.quality > 0)
-          j2k.quality = o.quality;
-      }
-      return j2k;
-    }
+			@Override
+			public CodecOptions getCompressionCodecOptions(final IFD ifd,
+				final CodecOptions opt) throws FormatException
+			{
+				final CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
+				options.lossless = false;
+				final JPEG2000CodecOptions j2k =
+					JPEG2000CodecOptions.getDefaultOptions(options);
+				if (opt instanceof JPEG2000CodecOptions) {
+					final JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
+					j2k.numDecompositionLevels = o.numDecompositionLevels;
+					j2k.resolution = o.resolution;
+					if (o.codeBlockSize != null) j2k.codeBlockSize = o.codeBlockSize;
+					if (o.quality > 0) j2k.quality = o.quality;
+				}
+				return j2k;
+			}
+		},
+		ALT_JPEG2000(33005, JPEG2000Codec.class, "JPEG-2000") {
 
-  },
-  NIKON(34713, NikonCodec.class, "Nikon"),
-  LURAWAVE(65535, LuraWaveCodec.class, "LuraWave");
+			@Override
+			public CodecOptions getCompressionCodecOptions(final IFD ifd)
+				throws FormatException
+			{
+				return getCompressionCodecOptions(ifd, null);
+			}
 
-  // -- Fields --
+			@Override
+			public CodecOptions getCompressionCodecOptions(final IFD ifd,
+				final CodecOptions opt) throws FormatException
+			{
+				final CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
+				options.lossless = true;
+				final JPEG2000CodecOptions j2k =
+					JPEG2000CodecOptions.getDefaultOptions(options);
+				if (opt instanceof JPEG2000CodecOptions) {
+					final JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
+					j2k.numDecompositionLevels = o.numDecompositionLevels;
+					j2k.resolution = o.resolution;
+					if (o.codeBlockSize != null) j2k.codeBlockSize = o.codeBlockSize;
+					if (o.quality > 0) j2k.quality = o.quality;
+				}
+				return j2k;
+			}
+		},
+		ALT_JPEG(33007, JPEGCodec.class, "JPEG"), OLYMPUS_JPEG2000(34712,
+			JPEG2000Codec.class, "JPEG-2000")
+		{
 
-  /** Code for the TIFF compression in the actual TIFF file. */
-  private int code;
+			@Override
+			public CodecOptions getCompressionCodecOptions(final IFD ifd)
+				throws FormatException
+			{
+				return getCompressionCodecOptions(ifd, null);
+			}
 
-  /** TIFF compression codec. */
-  private Class<? extends Codec> codecClass;
+			@Override
+			public CodecOptions getCompressionCodecOptions(final IFD ifd,
+				final CodecOptions opt) throws FormatException
+			{
+				final CodecOptions options = super.getCompressionCodecOptions(ifd, opt);
+				options.lossless = true;
+				final JPEG2000CodecOptions j2k =
+					JPEG2000CodecOptions.getDefaultOptions(options);
+				if (opt instanceof JPEG2000CodecOptions) {
+					final JPEG2000CodecOptions o = (JPEG2000CodecOptions) opt;
+					j2k.numDecompositionLevels = o.numDecompositionLevels;
+					j2k.resolution = o.resolution;
+					if (o.codeBlockSize != null) j2k.codeBlockSize = o.codeBlockSize;
+					if (o.quality > 0) j2k.quality = o.quality;
+				}
+				return j2k;
+			}
 
-  /** Name of the TIFF compression codec. */
-  private String codecName;
+		},
+		NIKON(34713, NikonCodec.class, "Nikon"), LURAWAVE(65535,
+			LuraWaveCodec.class, "LuraWave");
 
-  /** Reverse lookup of code to TIFF compression enumerate value. */
-  private static final Map<Integer, TiffCompression> lookup =
-    getCompressionMap();
+	// -- Fields --
 
-  private static Map<Integer, TiffCompression> getCompressionMap() {
-    Map<Integer, TiffCompression> lookup =
-      new HashMap<Integer, TiffCompression>();
-    for (TiffCompression v : EnumSet.allOf(TiffCompression.class)) {
-      lookup.put(v.getCode(), v);
-    }
-    return lookup;
-  }
+	/** Code for the TIFF compression in the actual TIFF file. */
+	private int code;
 
-  // -- TiffCompression methods --
+	/** TIFF compression codec. */
+	private Class<? extends Codec> codecClass;
 
-  /**
-   * Default constructor.
-   * @param code Integer "code" for the TIFF compression type.
-   * @param codecClass TIFF compression codec.
-   * @param codecName String name of the compression type.
-   */
-  private TiffCompression(int code, Class<? extends Codec> codecClass,
-    String codecName)
-  {
-    this.code = code;
-    this.codecClass = codecClass;
-    this.codecName = codecName;
-  }
+	/** Name of the TIFF compression codec. */
+	private String codecName;
 
-  /**
-   * Retrieves a TIFF compression instance by code.
-   * @param code Integer "code" for the TIFF compression type.
-   * @return See above.
-   */
-  public static TiffCompression get(int code) {
-    TiffCompression toReturn = lookup.get(code);
-    if (toReturn == null) {
-      throw new EnumException(
-          "Unable to find TiffCompresssion with code: " + code);
-    }
-    return toReturn;
-  }
+	/** Reverse lookup of code to TIFF compression enumerate value. */
+	private static final Map<Integer, TiffCompression> lookup =
+		getCompressionMap();
 
-  /* (non-Javadoc)
-   * @see loci.common.CodedEnum#getCode()
-   */
-  public int getCode() {
-    return code;
-  }
+	private static Map<Integer, TiffCompression> getCompressionMap() {
+		final Map<Integer, TiffCompression> lookup =
+			new HashMap<Integer, TiffCompression>();
+		for (final TiffCompression v : EnumSet.allOf(TiffCompression.class)) {
+			lookup.put(v.getCode(), v);
+		}
+		return lookup;
+	}
 
-  /**
-   * Retrieves the name of the TIFF compression codec.
-   * @return See above.
-   */
-  public String getCodecName() {
-    return codecName;
-  }
+	// -- TiffCompression methods --
 
-  // -- TiffCompression methods - decompression --
+	/**
+	 * Default constructor.
+	 * 
+	 * @param code Integer "code" for the TIFF compression type.
+	 * @param codecClass TIFF compression codec.
+	 * @param codecName String name of the compression type.
+	 */
+	private TiffCompression(final int code,
+		final Class<? extends Codec> codecClass, final String codecName)
+	{
+		this.code = code;
+		this.codecClass = codecClass;
+		this.codecName = codecName;
+	}
 
-  /** Decodes a strip of data. */
-  public byte[] decompress(CodecService codecService, byte[] input,
-    CodecOptions options) throws FormatException, IOException
-  {
-    if (codecClass == null) {
-      throw new UnsupportedCompressionException(
-          "Sorry, " + getCodecName() + " compression mode is not supported");
-    }
+	/**
+	 * Retrieves a TIFF compression instance by code.
+	 * 
+	 * @param code Integer "code" for the TIFF compression type.
+	 * @return See above.
+	 */
+	public static TiffCompression get(final int code) {
+		final TiffCompression toReturn = lookup.get(code);
+		if (toReturn == null) {
+			throw new EnumException("Unable to find TiffCompresssion with code: " +
+				code);
+		}
+		return toReturn;
+	}
 
-    final Codec codec = codecService.getCodec(codecClass);
-    return codec.decompress(input, options);
-  }
+	/* (non-Javadoc)
+	 * @see loci.common.CodedEnum#getCode()
+	 */
+	public int getCode() {
+		return code;
+	}
 
-  // -- TiffCompression methods - compression --
+	/**
+	 * Retrieves the name of the TIFF compression codec.
+	 * 
+	 * @return See above.
+	 */
+	public String getCodecName() {
+		return codecName;
+	}
 
-  /**
-   * Creates a set of codec options for compression.
-   * @param ifd The IFD to create codec options for.
-   * @return A new codec options instance populated using metadata from
-   * <code>ifd</code>.
-   */
-  public CodecOptions getCompressionCodecOptions(IFD ifd)
-    throws FormatException{
-    return getCompressionCodecOptions(ifd, null);
-  }
+	// -- TiffCompression methods - decompression --
 
-  /**
-   * Creates a set of codec options for compression.
-   * @param ifd The IFD to create codec options for.
-   * @return A new codec options instance populated using metadata from
-   * <code>ifd</code>.
-   * @param opt The codec options to copy.
-   */
-  public CodecOptions getCompressionCodecOptions(IFD ifd, CodecOptions opt)
-    throws FormatException{
-    if (ifd == null)
-      throw new IllegalArgumentException("No IFD specified.");
-    if (opt == null) opt = CodecOptions.getDefaultOptions();
-    CodecOptions options = new CodecOptions(opt);
-    options.width = (int) ifd.getImageWidth();
-    options.height = (int) ifd.getImageLength();
-    options.bitsPerSample = ifd.getBitsPerSample()[0];
-    options.channels = ifd.getSamplesPerPixel();
-    options.littleEndian = ifd.isLittleEndian();
-    options.interleaved = true;
-    options.signed = false;
-    return options;
-  }
+	/** Decodes a strip of data. */
+	public byte[] decompress(final CodecService codecService, final byte[] input,
+		final CodecOptions options) throws FormatException, IOException
+	{
+		if (codecClass == null) {
+			throw new UnsupportedCompressionException("Sorry, " + getCodecName() +
+				" compression mode is not supported");
+		}
 
-  /** Encodes a strip of data. */
-  public byte[] compress(CodecService codecService, byte[] input,
-    CodecOptions options) throws FormatException, IOException
-  {
-    if (codecClass == null) {
-      throw new FormatException(
-          "Sorry, " + getCodecName() + " compression mode is not supported");
-    }
-    final Codec codec = codecService.getCodec(codecClass);
-    return codec.compress(input, options);
-  }
+		final Codec codec = codecService.getCodec(codecClass);
+		return codec.decompress(input, options);
+	}
+
+	// -- TiffCompression methods - compression --
+
+	/**
+	 * Creates a set of codec options for compression.
+	 * 
+	 * @param ifd The IFD to create codec options for.
+	 * @return A new codec options instance populated using metadata from
+	 *         <code>ifd</code>.
+	 */
+	public CodecOptions getCompressionCodecOptions(final IFD ifd)
+		throws FormatException
+	{
+		return getCompressionCodecOptions(ifd, null);
+	}
+
+	/**
+	 * Creates a set of codec options for compression.
+	 * 
+	 * @param ifd The IFD to create codec options for.
+	 * @return A new codec options instance populated using metadata from
+	 *         <code>ifd</code>.
+	 * @param opt The codec options to copy.
+	 */
+	public CodecOptions
+		getCompressionCodecOptions(final IFD ifd, CodecOptions opt)
+			throws FormatException
+	{
+		if (ifd == null) throw new IllegalArgumentException("No IFD specified.");
+		if (opt == null) opt = CodecOptions.getDefaultOptions();
+		final CodecOptions options = new CodecOptions(opt);
+		options.width = (int) ifd.getImageWidth();
+		options.height = (int) ifd.getImageLength();
+		options.bitsPerSample = ifd.getBitsPerSample()[0];
+		options.channels = ifd.getSamplesPerPixel();
+		options.littleEndian = ifd.isLittleEndian();
+		options.interleaved = true;
+		options.signed = false;
+		return options;
+	}
+
+	/** Encodes a strip of data. */
+	public byte[] compress(final CodecService codecService, final byte[] input,
+		final CodecOptions options) throws FormatException, IOException
+	{
+		if (codecClass == null) {
+			throw new FormatException("Sorry, " + getCodecName() +
+				" compression mode is not supported");
+		}
+		final Codec codec = codecService.getCodec(codecClass);
+		return codec.compress(input, options);
+	}
 
 }

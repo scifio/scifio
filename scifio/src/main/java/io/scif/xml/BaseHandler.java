@@ -45,25 +45,26 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Top-level SAX handler.
- *
- *
+ * 
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 public class BaseHandler extends DefaultHandler {
 
-  private final LogService log;
+	private final LogService log;
 
-  public BaseHandler(LogService log) {
-    this.log = log;
-  }
+	public BaseHandler(final LogService log) {
+		this.log = log;
+	}
 
-  // -- DefaultHandler API methods --
+	// -- DefaultHandler API methods --
 
-  public InputSource resolveEntity(String publicId, String systemId)
-    throws IOException, SAXException
-  {
-    log.debug("Ignoring: " + publicId + ", " + systemId);
-    return new InputSource(new java.io.StringReader(""));
-  }
+	@Override
+	public InputSource
+		resolveEntity(final String publicId, final String systemId)
+			throws IOException, SAXException
+	{
+		log.debug("Ignoring: " + publicId + ", " + systemId);
+		return new InputSource(new java.io.StringReader(""));
+	}
 
 }

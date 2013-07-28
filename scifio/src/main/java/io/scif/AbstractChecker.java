@@ -41,92 +41,94 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
-
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Checker} implementations.
- *
+ * 
  * @see io.scif.Checker
  * @see io.scif.HasFormat
- *
  * @author Mark Hiner
  */
-public abstract class AbstractChecker
-  extends AbstractHasFormat implements Checker {
+public abstract class AbstractChecker extends AbstractHasFormat implements
+	Checker
+{
 
-  // -- Fields --
+	// -- Fields --
 
-  /**
-   * Whether the file extension matching one of the format's suffixes
-   * is necessary to identify the file as a source compatible with this format.
-   */
-  protected boolean suffixNecessary = true;
+	/**
+	 * Whether the file extension matching one of the format's suffixes is
+	 * necessary to identify the file as a source compatible with this format.
+	 */
+	protected boolean suffixNecessary = true;
 
-  /**
-   * Whether the file extension matching one of the format's suffixes
-   * is sufficient to identify the file as a source compatible with this format.
-   * <p>
-   * If false, the source will have to be read to determine compatibility.
-   * </p>
-   */
-  protected boolean suffixSufficient = true;
+	/**
+	 * Whether the file extension matching one of the format's suffixes is
+	 * sufficient to identify the file as a source compatible with this format.
+	 * <p>
+	 * If false, the source will have to be read to determine compatibility.
+	 * </p>
+	 */
+	protected boolean suffixSufficient = true;
 
-  // -- Checker API Methods --
+	// -- Checker API Methods --
 
-  /* @see Checker#isFormat(String name, boolean open) */
-  public boolean isFormat(final String name) {
-    return isFormat(name, true);
-  }
+	/* @see Checker#isFormat(String name, boolean open) */
+	public boolean isFormat(final String name) {
+		return isFormat(name, true);
+	}
 
-  /* @see Checker#isFormat(String name, boolean open) */
-  public boolean isFormat(final String name, final boolean open) {
-    // if file extension ID is insufficient and we can't open the file, give up
-    if (!suffixSufficient && !open) return false;
+	/* @see Checker#isFormat(String name, boolean open) */
+	public boolean isFormat(final String name, final boolean open) {
+		// if file extension ID is insufficient and we can't open the file, give up
+		if (!suffixSufficient && !open) return false;
 
-    if (suffixNecessary || suffixSufficient) {
-      // it's worth checking the file extension
-      final boolean suffixMatch = FormatTools.checkSuffix(name, getFormat().getSuffixes());
+		if (suffixNecessary || suffixSufficient) {
+			// it's worth checking the file extension
+			final boolean suffixMatch =
+				FormatTools.checkSuffix(name, getFormat().getSuffixes());
 
-      // if suffix match is required but it doesn't match, failure
-      if (suffixNecessary && !suffixMatch) return false;
+			// if suffix match is required but it doesn't match, failure
+			if (suffixNecessary && !suffixMatch) return false;
 
-      // if suffix matches and that's all we need, green light it
-      if (suffixMatch && suffixSufficient) return true;
-    }
+			// if suffix matches and that's all we need, green light it
+			if (suffixMatch && suffixSufficient) return true;
+		}
 
-    // suffix matching was inconclusive; we need to analyze the file contents
-    if (!open) return false; // not allowed to open any files
-    try {
-      final RandomAccessInputStream stream = new RandomAccessInputStream(getContext(), name);
-      final boolean isFormat = isFormat(stream);
-      stream.close();
-      return isFormat;
-    }
-    catch (final IOException exc) {
-      log().debug("", exc);
-      return false;
-    }
-  }
+		// suffix matching was inconclusive; we need to analyze the file contents
+		if (!open) return false; // not allowed to open any files
+		try {
+			final RandomAccessInputStream stream =
+				new RandomAccessInputStream(getContext(), name);
+			final boolean isFormat = isFormat(stream);
+			stream.close();
+			return isFormat;
+		}
+		catch (final IOException exc) {
+			log().debug("", exc);
+			return false;
+		}
+	}
 
-  /* @see Checker#isFormat(RandomAccessInputStream) */
-  public boolean isFormat(final RandomAccessInputStream stream)
-    throws IOException
-  {
-    return false;
-  }
+	/* @see Checker#isFormat(RandomAccessInputStream) */
+	public boolean isFormat(final RandomAccessInputStream stream)
+		throws IOException
+	{
+		return false;
+	}
 
-  /*
-   * @see io.scif.Checker#checkHeader(byte[])
-   */
-  public boolean checkHeader(final byte[] block) {
-    try {
-      final RandomAccessInputStream stream = new RandomAccessInputStream(getContext(), block);
-      final boolean isFormat = isFormat(stream);
-      stream.close();
-      return isFormat;
-    }
-    catch (final IOException e) {
-      log().debug("", e);
-    }
-    return false;
-  }
+	/*
+	 * @see io.scif.Checker#checkHeader(byte[])
+	 */
+	public boolean checkHeader(final byte[] block) {
+		try {
+			final RandomAccessInputStream stream =
+				new RandomAccessInputStream(getContext(), block);
+			final boolean isFormat = isFormat(stream);
+			stream.close();
+			return isFormat;
+		}
+		catch (final IOException e) {
+			log().debug("", e);
+		}
+		return false;
+	}
 }

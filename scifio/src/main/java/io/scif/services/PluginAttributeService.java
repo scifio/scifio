@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.services;
 
 import io.scif.SCIFIOPlugin;
@@ -40,70 +41,62 @@ import io.scif.SCIFIOPlugin;
 import java.util.List;
 import java.util.Map;
 
-
 import org.scijava.plugin.PluginInfo;
 import org.scijava.service.Service;
 
 /**
  * Service for finding plugins with particular attribute values.
  * <p>
- * In each method signature, plugins will be returned if they
- * are annotated with {@link org.scijava.plugin.Attr}'s matching
- * all key,value pairs in {@code andPairs}, and at least one of
- * any key, value pairs in {@code orPairs}.
+ * In each method signature, plugins will be returned if they are annotated with
+ * {@link org.scijava.plugin.Attr}'s matching all key,value pairs in
+ * {@code andPairs}, and at least one of any key, value pairs in {@code orPairs}
+ * .
  * </p>
  * <p>
  * NB: attributes are assumed to be classes, and "matching" is equivalent to
  * passing an "isAssignableFrom" test. So it is possible to have multiple
- * "matches", in the case of both specific and general attribute
- * types. Typically you should set plugins with specific parameters
- * to have higher priority than those with general parameters,
- * so they are checked first.
+ * "matches", in the case of both specific and general attribute types.
+ * Typically you should set plugins with specific parameters to have higher
+ * priority than those with general parameters, so they are checked first.
  * </p>
  * 
  * @author Mark Hiner
- *
  */
 public interface PluginAttributeService extends Service {
 
-  /**
-   * As {@link org.scijava.plugin.PluginService#createInstancesOfType(Class)}
-   * but with key,value pair parameters to allow for filtering based on
-   * {@code Attr} annotation. Returns the first possible match.
-   */
-  <PT extends SCIFIOPlugin> PT createInstance(Class<PT> type,
-      Map<String, String> andPairs, Map<String, String> orPairs);
+	/**
+	 * As {@link org.scijava.plugin.PluginService#createInstancesOfType(Class)}
+	 * but with key,value pair parameters to allow for filtering based on
+	 * {@code Attr} annotation. Returns the first possible match.
+	 */
+	<PT extends SCIFIOPlugin> PT createInstance(Class<PT> type,
+		Map<String, String> andPairs, Map<String, String> orPairs);
 
-  /**
-   * As {@link org.scijava.plugin.PluginService#createInstancesOfType(Class)}
-   * but with key,value pair parameters to allow for filtering based on
-   * {@code Attr} annotation.
-   * 
-   * Returns the first possible match if exact == false, or the first specific
-   * match if exact == true.
-   */
-  <PT extends SCIFIOPlugin> PT createInstance(Class<PT> type,
-      Map<String, String> andPairs, Map<String, String> orPairs, boolean exact);
+	/**
+	 * As {@link org.scijava.plugin.PluginService#createInstancesOfType(Class)}
+	 * but with key,value pair parameters to allow for filtering based on
+	 * {@code Attr} annotation. Returns the first possible match if exact ==
+	 * false, or the first specific match if exact == true.
+	 */
+	<PT extends SCIFIOPlugin> PT createInstance(Class<PT> type,
+		Map<String, String> andPairs, Map<String, String> orPairs, boolean exact);
 
-  /**
-   * As {@link org.scijava.plugin.PluginService#getPlugin(Class)}
-   * but with key,value pair parameters to allow for filtering based on
-   * {@code Attr} annotation.
-   * 
-   * Returns the first possible match if exact == false, or the first specific
-   * match if exact == true.
-   */
-  <PT extends SCIFIOPlugin> PluginInfo<PT> getPlugin(Class<PT> type,
-      Map<String, String> andPairs, Map<String, String> orPairs, boolean exact);
+	/**
+	 * As {@link org.scijava.plugin.PluginService#getPlugin(Class)} but with
+	 * key,value pair parameters to allow for filtering based on {@code Attr}
+	 * annotation. Returns the first possible match if exact == false, or the
+	 * first specific match if exact == true.
+	 */
+	<PT extends SCIFIOPlugin> PluginInfo<PT> getPlugin(Class<PT> type,
+		Map<String, String> andPairs, Map<String, String> orPairs, boolean exact);
 
-  /**
-   * As {@link org.scijava.plugin.PluginService#getPluginsOfType(Class)}
-   * but with key,value pair parameters to allow for filtering based on
-   * {@code Attr} annotation.
-   * 
-   * Returns all possible match if exact == false, or all specific
-   * matches if exact == true.
-   */
-  <PT extends SCIFIOPlugin> List<PluginInfo<PT>> getPluginsOfType(
-      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs, boolean exact);
+	/**
+	 * As {@link org.scijava.plugin.PluginService#getPluginsOfType(Class)} but
+	 * with key,value pair parameters to allow for filtering based on {@code Attr}
+	 * annotation. Returns all possible match if exact == false, or all specific
+	 * matches if exact == true.
+	 */
+	<PT extends SCIFIOPlugin> List<PluginInfo<PT>> getPluginsOfType(
+		Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs,
+		boolean exact);
 }

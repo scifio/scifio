@@ -47,23 +47,23 @@ import org.scijava.service.Service;
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public class DefaultCodecService extends
-  AbstractSingletonService<Codec> implements CodecService
+public class DefaultCodecService extends AbstractSingletonService<Codec>
+	implements CodecService
 {
 
-  @Parameter
-  private ObjectService objectService;
+	@Parameter
+	private ObjectService objectService;
 
-  // -- CodecService methods --
+	// -- CodecService methods --
 
-  public <C extends Codec> C getCodec(Class<C> codecClass) {
-    return objectService.getObjects(codecClass).get(0);
-  }
+	public <C extends Codec> C getCodec(final Class<C> codecClass) {
+		return objectService.getObjects(codecClass).get(0);
+	}
 
-  // -- PTService methods --
+	// -- PTService methods --
 
-  public Class<Codec> getPluginType() {
-    return Codec.class;
-  }
+	public Class<Codec> getPluginType() {
+		return Codec.class;
+	}
 
 }

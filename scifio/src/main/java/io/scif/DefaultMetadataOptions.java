@@ -37,33 +37,32 @@
 package io.scif;
 
 /**
- *
  * @author callan
  */
 public class DefaultMetadataOptions implements MetadataOptions {
 
-  private MetadataLevel level;
+	private MetadataLevel level;
 
-  public DefaultMetadataOptions() {
-    this.level = MetadataLevel.ALL;
-  }
+	public DefaultMetadataOptions() {
+		this.level = MetadataLevel.ALL;
+	}
 
-  public DefaultMetadataOptions(final MetadataLevel level) {
-    this.level = level;
-  }
+	public DefaultMetadataOptions(final MetadataLevel level) {
+		this.level = level;
+	}
 
-  /* (non-Javadoc)
-   * @see io.scif.MetadataOptions#getMetadataLevel()
-   */
-  public MetadataLevel getMetadataLevel() {
-    return level;
-  }
+	/* (non-Javadoc)
+	 * @see io.scif.MetadataOptions#getMetadataLevel()
+	 */
+	public MetadataLevel getMetadataLevel() {
+		return level;
+	}
 
-  /* (non-Javadoc)
-   * @see io.scif.MetadataOptions#setMetadataLevel(io.scif.MetadataLevel)
-   */
-  public void setMetadataLevel(final MetadataLevel level) {
-    this.level = level;
-  }
+	/* (non-Javadoc)
+	 * @see io.scif.MetadataOptions#setMetadataLevel(io.scif.MetadataLevel)
+	 */
+	public void setMetadataLevel(final MetadataLevel level) {
+		this.level = level;
+	}
 
 }

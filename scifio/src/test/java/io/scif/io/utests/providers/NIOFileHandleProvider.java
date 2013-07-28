@@ -50,25 +50,26 @@ import org.scijava.Context;
 /**
  * Implementation of IRandomAccessProvider that produces instances of
  * loci.common.NIOFileHandle.
- *
- *
+ * 
  * @see IRandomAccessProvider
  * @see io.scif.io.NIOFileHandle
  */
 class NIOFileHandleProvider implements IRandomAccessProvider {
 
-  public IRandomAccess createMock(
-      byte[] page, String mode, int bufferSize) throws IOException {
-    File pageFile = File.createTempFile("page", ".dat");
-    OutputStream stream = new FileOutputStream(pageFile);
-    try {
-      stream.write(page);
-    } finally {
-      stream.close();
-    }
-    Context context = new Context(NIOService.class);
-    NIOService nioService = context.getService(NIOService.class);
-    return new NIOFileHandle(nioService, pageFile, mode, bufferSize);
-  }
+	public IRandomAccess createMock(final byte[] page, final String mode,
+		final int bufferSize) throws IOException
+	{
+		final File pageFile = File.createTempFile("page", ".dat");
+		final OutputStream stream = new FileOutputStream(pageFile);
+		try {
+			stream.write(page);
+		}
+		finally {
+			stream.close();
+		}
+		final Context context = new Context(NIOService.class);
+		final NIOService nioService = context.getService(NIOService.class);
+		return new NIOFileHandle(nioService, pageFile, mode, bufferSize);
+	}
 
 }

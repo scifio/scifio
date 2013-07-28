@@ -43,7 +43,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -51,123 +50,130 @@ import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
 /**
- * Default {@link io.scif.services.PluginAttributeService}
- * implementation.
+ * Default {@link io.scif.services.PluginAttributeService} implementation.
  * 
  * @author Mark Hiner
- *
  */
-@Plugin(type=PluginAttributeService.class)
-public class DefaultPluginAttributeService extends AbstractService implements PluginAttributeService {
+@Plugin(type = PluginAttributeService.class)
+public class DefaultPluginAttributeService extends AbstractService implements
+	PluginAttributeService
+{
 
-  // -- Parameters --
+	// -- Parameters --
 
-  @Parameter
-  private PluginService pluginService;
+	@Parameter
+	private PluginService pluginService;
 
-  /*
-   * @see io.scif.services.PluginAttributeService#createInstance(java.lang.Class, java.util.Map, java.util.Map)
-   */
-  public <PT extends SCIFIOPlugin> PT createInstance(Class<PT> type,
-    Map<String, String> andPairs, Map<String, String> orPairs) {
-    return createInstance(type, andPairs, orPairs, false);
-  }
+	/*
+	 * @see io.scif.services.PluginAttributeService#createInstance(java.lang.Class, java.util.Map, java.util.Map)
+	 */
+	public <PT extends SCIFIOPlugin> PT createInstance(final Class<PT> type,
+		final Map<String, String> andPairs, final Map<String, String> orPairs)
+	{
+		return createInstance(type, andPairs, orPairs, false);
+	}
 
-  /*
-   * @see io.scif.services.PluginAttributeService#
-   * createInstance(java.lang.Class, java.util.Map, java.util.Map)
-   */
-  public <PT extends SCIFIOPlugin> PT createInstance(
-      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs, boolean exact) {
-    PluginInfo<PT> plugin = getPlugin(type, andPairs, orPairs, exact);
+	/*
+	 * @see io.scif.services.PluginAttributeService#
+	 * createInstance(java.lang.Class, java.util.Map, java.util.Map)
+	 */
+	public <PT extends SCIFIOPlugin> PT createInstance(final Class<PT> type,
+		final Map<String, String> andPairs, final Map<String, String> orPairs,
+		final boolean exact)
+	{
+		final PluginInfo<PT> plugin = getPlugin(type, andPairs, orPairs, exact);
 
-    return plugin == null ? null : pluginService.createInstance(plugin);
-  }
+		return plugin == null ? null : pluginService.createInstance(plugin);
+	}
 
-  /*
-   * @see io.scif.services.PluginAttributeService#
-   * getPlugin(java.lang.Class, java.util.Map, java.util.Map)
-   */
-  public <PT extends SCIFIOPlugin> PluginInfo<PT> getPlugin(
-      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs, boolean exact) {
-    List<PluginInfo<PT>> pluginList = getPluginsOfType(type, andPairs, orPairs, exact);
-    return pluginList.size() > 0 ? pluginList.get(0) : null;
-  }
+	/*
+	 * @see io.scif.services.PluginAttributeService#
+	 * getPlugin(java.lang.Class, java.util.Map, java.util.Map)
+	 */
+	public <PT extends SCIFIOPlugin> PluginInfo<PT> getPlugin(
+		final Class<PT> type, final Map<String, String> andPairs,
+		final Map<String, String> orPairs, final boolean exact)
+	{
+		final List<PluginInfo<PT>> pluginList =
+			getPluginsOfType(type, andPairs, orPairs, exact);
+		return pluginList.size() > 0 ? pluginList.get(0) : null;
+	}
 
-  /*
-   * @see io.scif.services.PluginAttributeService#
-   * getPluginsOfType(java.lang.Class, java.util.Map, java.util.Map)
-   */
-  public <PT extends SCIFIOPlugin> List<PluginInfo<PT>> getPluginsOfType(
-      Class<PT> type, Map<String, String> andPairs, Map<String, String> orPairs, boolean exact) {
-    // Get the unfiltered plugin list
-    List<PluginInfo<PT>> plugins = pluginService.getPluginsOfType(type);
+	/*
+	 * @see io.scif.services.PluginAttributeService#
+	 * getPluginsOfType(java.lang.Class, java.util.Map, java.util.Map)
+	 */
+	public <PT extends SCIFIOPlugin> List<PluginInfo<PT>> getPluginsOfType(
+		final Class<PT> type, final Map<String, String> andPairs,
+		final Map<String, String> orPairs, final boolean exact)
+	{
+		// Get the unfiltered plugin list
+		final List<PluginInfo<PT>> plugins = pluginService.getPluginsOfType(type);
 
-    // The list of filtered plugins we will return.
-    List<PluginInfo<PT>> filteredPlugins = new ArrayList<PluginInfo<PT>>();
+		// The list of filtered plugins we will return.
+		final List<PluginInfo<PT>> filteredPlugins =
+			new ArrayList<PluginInfo<PT>>();
 
-    // loop through the unfiltered list, checking the "AND" and "OR"
-    // parameters
-    for(PluginInfo<PT> info : plugins) {
-      // If true, we will add this PluginInfo to our filtered list.
-      boolean valid = true;
+		// loop through the unfiltered list, checking the "AND" and "OR"
+		// parameters
+		for (final PluginInfo<PT> info : plugins) {
+			// If true, we will add this PluginInfo to our filtered list.
+			boolean valid = true;
 
-      // Checking "OR" key,value pairs. Just one @Attr needs to match
-      // an entry on this list.
-      if (orPairs != null) {
-        boolean matchedOr = false;
+			// Checking "OR" key,value pairs. Just one @Attr needs to match
+			// an entry on this list.
+			if (orPairs != null) {
+				boolean matchedOr = false;
 
-        Iterator<String> keyIter = orPairs.keySet().iterator();
+				final Iterator<String> keyIter = orPairs.keySet().iterator();
 
-        while (!matchedOr && keyIter.hasNext()) {
-          String key = keyIter.next();
-          Class<?> c1 = null;
-          Class<?> c2 = null;
+				while (!matchedOr && keyIter.hasNext()) {
+					final String key = keyIter.next();
+					Class<?> c1 = null;
+					Class<?> c2 = null;
 
-          try {
-            c1 = Class.forName(orPairs.get(key));
-            c2 = Class.forName(info.get(key));
-          } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException(
-                "Class name attribute was invalid or not found.", e);
-          }
+					try {
+						c1 = Class.forName(orPairs.get(key));
+						c2 = Class.forName(info.get(key));
+					}
+					catch (final ClassNotFoundException e) {
+						throw new IllegalArgumentException(
+							"Class name attribute was invalid or not found.", e);
+					}
 
-          if (exact ? c2.equals(c1) : c2.isAssignableFrom(c1))
-            matchedOr = true;
-        }
+					if (exact ? c2.equals(c1) : c2.isAssignableFrom(c1)) matchedOr = true;
+				}
 
-        if (!matchedOr)
-          valid = false;
-      }
+				if (!matchedOr) valid = false;
+			}
 
-      // Checking "AND" key,value pairs. All entries in this list
-      // must have a matching @Attr, or this plugin will be filtered out.
-      if (andPairs != null) {
-        Iterator<String> keyIter = andPairs.keySet().iterator();
+			// Checking "AND" key,value pairs. All entries in this list
+			// must have a matching @Attr, or this plugin will be filtered out.
+			if (andPairs != null) {
+				final Iterator<String> keyIter = andPairs.keySet().iterator();
 
-        while(valid && keyIter.hasNext()) {
-          String key = keyIter.next();
-          Class<?> c1 = null;
-          Class<?> c2 = null;
+				while (valid && keyIter.hasNext()) {
+					final String key = keyIter.next();
+					Class<?> c1 = null;
+					Class<?> c2 = null;
 
-          try {
-            c1 = Class.forName(andPairs.get(key));
-            c2 = Class.forName(info.get(key));
-          } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException(
-                "Class name attribute was invalid or not found.", e);
-          }
+					try {
+						c1 = Class.forName(andPairs.get(key));
+						c2 = Class.forName(info.get(key));
+					}
+					catch (final ClassNotFoundException e) {
+						throw new IllegalArgumentException(
+							"Class name attribute was invalid or not found.", e);
+					}
 
-          if (!(exact ? c2.equals(c1) : c2.isAssignableFrom(c1)))
-            valid = false;
-        }
-      }
+					if (!(exact ? c2.equals(c1) : c2.isAssignableFrom(c1))) valid = false;
+				}
+			}
 
-      if (valid)
-        filteredPlugins.add(info);
-    }
+			if (valid) filteredPlugins.add(info);
+		}
 
-    return filteredPlugins;
-  }
+		return filteredPlugins;
+	}
 
 }

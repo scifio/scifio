@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif;
 
 import java.util.List;
@@ -42,40 +43,37 @@ import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
- * Basic {@link io.scif.Translator} implementation. Can convert between
- * any two Metadata implementations because only {@link io.scif.ImageMetadata}
- * is used.
+ * Basic {@link io.scif.Translator} implementation. Can convert between any two
+ * Metadata implementations because only {@link io.scif.ImageMetadata} is used.
  * 
  * @see io.scif.Translator
  * @see io.scif.DefaultMetadata
  * @see io.scif.ImageMetadata
- * 
  * @author Mark Hiner
- *
  */
-@Plugin(type = Translator.class, attrs =
-{@Attr(name = DefaultTranslator.SOURCE, value = Metadata.CNAME),
-@Attr(name = DefaultTranslator.DEST, value = Metadata.CNAME)},
-priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = Translator.class, attrs = {
+	@Attr(name = DefaultTranslator.SOURCE, value = Metadata.CNAME),
+	@Attr(name = DefaultTranslator.DEST, value = Metadata.CNAME) },
+	priority = Priority.VERY_LOW_PRIORITY)
 public class DefaultTranslator extends AbstractTranslator<Metadata, Metadata> {
 
-  @Override
-  protected void typedTranslate(Metadata source, Metadata dest) {
-    List<ImageMetadata> metaList = source.getAll();
+	@Override
+	protected void typedTranslate(final Metadata source, final Metadata dest) {
+		final List<ImageMetadata> metaList = source.getAll();
 
-    dest.createImageMetadata(metaList.size());
+		dest.createImageMetadata(metaList.size());
 
-    for (int i=0; i<metaList.size(); i++) {
-      ImageMetadata sourceMeta = metaList.get(i);
+		for (int i = 0; i < metaList.size(); i++) {
+			final ImageMetadata sourceMeta = metaList.get(i);
 
-      // Need to add a new ImageMetadata
-      if (i >= dest.getImageCount()) {
-        dest.add(new DefaultImageMetadata(sourceMeta));
-      }
-      // Update the existing ImageMetadata using sourceMeta
-      else {
-        dest.get(i).copy(sourceMeta);
-      }
-    }
-  }
+			// Need to add a new ImageMetadata
+			if (i >= dest.getImageCount()) {
+				dest.add(new DefaultImageMetadata(sourceMeta));
+			}
+			// Update the existing ImageMetadata using sourceMeta
+			else {
+				dest.get(i).copy(sourceMeta);
+			}
+		}
+	}
 }

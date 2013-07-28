@@ -38,13 +38,13 @@ package io.scif.common;
 
 /**
  * Constants that are used within many classes in {@link io.scif.common}.
- *
+ * 
  * @author Melissa Linkert
  */
 public final class Constants {
 
-  public static final String ENCODING = "UTF-8";
+	public static final String ENCODING = "UTF-8";
 
-  public static final double EPSILON = 0.000001;
+	public static final double EPSILON = 0.000001;
 
 }

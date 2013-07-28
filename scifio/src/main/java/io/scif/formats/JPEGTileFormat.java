@@ -49,146 +49,146 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
+import net.imglib2.meta.Axes;
+
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
-import net.imglib2.meta.Axes;
-
 /**
- * Reader for decoding JPEG images using java.awt.Toolkit.
- * This reader is useful for reading very large JPEG images, as it supports
- * tile-based access.
- *
+ * Reader for decoding JPEG images using java.awt.Toolkit. This reader is useful
+ * for reading very large JPEG images, as it supports tile-based access.
+ * 
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
 @Plugin(type = JPEGTileFormat.class, priority = Priority.LOW_PRIORITY)
 public class JPEGTileFormat extends AbstractFormat {
 
-  // -- Format API Methods --
+	// -- Format API Methods --
 
-  public String getFormatName() {
-    return "Tile JPEG";
-  }
+	public String getFormatName() {
+		return "Tile JPEG";
+	}
 
-  public String[] getSuffixes() {
-    return new String[] {"jpg", "jpeg"};
-  }
+	public String[] getSuffixes() {
+		return new String[] { "jpg", "jpeg" };
+	}
 
-  // -- Nested Classes --
+	// -- Nested Classes --
 
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Metadata extends AbstractMetadata {
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Metadata extends AbstractMetadata {
 
-    // -- Fields --
+		// -- Fields --
 
-    private JPEGTileDecoder decoder;
+		private JPEGTileDecoder decoder;
 
-    // -- JPEGTileMetadata API getters and setters --
+		// -- JPEGTileMetadata API getters and setters --
 
-    public JPEGTileDecoder getDecoder() {
-      return decoder;
-    }
+		public JPEGTileDecoder getDecoder() {
+			return decoder;
+		}
 
-    public void setDecoder(JPEGTileDecoder decoder) {
-      this.decoder = decoder;
-    }
+		public void setDecoder(final JPEGTileDecoder decoder) {
+			this.decoder = decoder;
+		}
 
-    // -- Metadata API Methods --
+		// -- Metadata API Methods --
 
-    /*
-     * @see io.scif.Metadata#populateImageMetadata()
-     */
-    public void populateImageMetadata() {
-      createImageMetadata(1);
-      ImageMetadata iMeta = get(0);
+		/*
+		 * @see io.scif.Metadata#populateImageMetadata()
+		 */
+		public void populateImageMetadata() {
+			createImageMetadata(1);
+			final ImageMetadata iMeta = get(0);
 
-      iMeta.setInterleaved(true);
-      iMeta.setLittleEndian(false);
-      iMeta.setAxisLength(Axes.X, decoder.getWidth());
-      iMeta.setAxisLength(Axes.Y, decoder.getHeight());
-      iMeta.setAxisLength(Axes.CHANNEL, decoder.getScanline(0).length / iMeta.getAxisLength(Axes.X));
-      iMeta.setAxisLength(Axes.Z, 1);
-      iMeta.setAxisLength(Axes.TIME, 1);
-      iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) > 1);
-      iMeta.setPlaneCount(1);
-      iMeta.setPixelType(FormatTools.UINT8);
-      iMeta.setBitsPerPixel(8);
-      iMeta.setMetadataComplete(true);
-      iMeta.setIndexed(false);
-    }
+			iMeta.setInterleaved(true);
+			iMeta.setLittleEndian(false);
+			iMeta.setAxisLength(Axes.X, decoder.getWidth());
+			iMeta.setAxisLength(Axes.Y, decoder.getHeight());
+			iMeta.setAxisLength(Axes.CHANNEL, decoder.getScanline(0).length /
+				iMeta.getAxisLength(Axes.X));
+			iMeta.setAxisLength(Axes.Z, 1);
+			iMeta.setAxisLength(Axes.TIME, 1);
+			iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) > 1);
+			iMeta.setPlaneCount(1);
+			iMeta.setPixelType(FormatTools.UINT8);
+			iMeta.setBitsPerPixel(8);
+			iMeta.setMetadataComplete(true);
+			iMeta.setIndexed(false);
+		}
 
-    /* @see loci.formats.IFormatReader#close(boolean) */
-    public void close(boolean fileOnly) throws IOException {
-      if (!fileOnly) {
-        if (decoder != null) {
-          decoder.close();
-        }
-        decoder = null;
-      }
+		/* @see loci.formats.IFormatReader#close(boolean) */
+		@Override
+		public void close(final boolean fileOnly) throws IOException {
+			if (!fileOnly) {
+				if (decoder != null) {
+					decoder.close();
+				}
+				decoder = null;
+			}
 
-      super.close(fileOnly);
-    }
-  }
+			super.close(fileOnly);
+		}
+	}
 
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Parser extends AbstractParser<Metadata> {
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Parser extends AbstractParser<Metadata> {
 
-    // -- Parser API Methods --
+		// -- Parser API Methods --
 
-    @Override
-    protected void typedParse(RandomAccessInputStream stream, Metadata meta)
-      throws IOException, FormatException
-    {
-      JPEGTileDecoder decoder = new JPEGTileDecoder();
-      meta.setDecoder(decoder);
-      decoder.initialize(getContext(), in, 0, 1, 0);
-    }
-  }
+		@Override
+		protected void typedParse(final RandomAccessInputStream stream,
+			final Metadata meta) throws IOException, FormatException
+		{
+			final JPEGTileDecoder decoder = new JPEGTileDecoder();
+			meta.setDecoder(decoder);
+			decoder.initialize(getContext(), in, 0, 1, 0);
+		}
+	}
 
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
-  public static class Reader extends ByteArrayReader<Metadata> {
+	/**
+	 * @author Mark Hiner hinerm at gmail.com
+	 */
+	public static class Reader extends ByteArrayReader<Metadata> {
 
-    // -- Constructor --
+		// -- Constructor --
 
-    public Reader() {
-      domains = new String[] {FormatTools.GRAPHICS_DOMAIN};
-    }
+		public Reader() {
+			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		}
 
-    // -- Reader API methods --
+		// -- Reader API methods --
 
-    /*
-     * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-     */
-    public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
-      ByteArrayPlane plane, int x, int y, int w, int h) throws FormatException,
-      IOException
-    {
-      Metadata meta = getMetadata();
-      byte[] buf = plane.getBytes();
-      FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, buf.length, x, y, w, h);
+		/*
+		 * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
+		 */
+		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+			final ByteArrayPlane plane, final int x, final int y, final int w,
+			final int h) throws FormatException, IOException
+		{
+			final Metadata meta = getMetadata();
+			final byte[] buf = plane.getBytes();
+			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
+				buf.length, x, y, w, h);
 
-      int c = meta.getRGBChannelCount(imageIndex);
+			final int c = meta.getRGBChannelCount(imageIndex);
 
-      for (int ty=y; ty<y+h; ty++) {
-        byte[] scanline = meta.getDecoder().getScanline(ty);
-        if (scanline == null) {
-          meta.getDecoder().initialize(getContext(), getStream().getFileName(), 0);
-          scanline = meta.getDecoder().getScanline(ty);
-        }
-        System.arraycopy(scanline, c * x, buf, (ty - y) * c * w, c * w);
-      }
+			for (int ty = y; ty < y + h; ty++) {
+				byte[] scanline = meta.getDecoder().getScanline(ty);
+				if (scanline == null) {
+					meta.getDecoder().initialize(getContext(), getStream().getFileName(),
+						0);
+					scanline = meta.getDecoder().getScanline(ty);
+				}
+				System.arraycopy(scanline, c * x, buf, (ty - y) * c * w, c * w);
+			}
 
-      return plane;
-    }
+			return plane;
+		}
 
-  }
+	}
 }

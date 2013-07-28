@@ -33,13 +33,13 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.utests;
 
-import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertEquals;
-
+import static org.testng.AssertJUnit.assertTrue;
 import io.scif.Checker;
 import io.scif.Format;
 import io.scif.FormatException;
@@ -48,7 +48,6 @@ import io.scif.formats.FakeFormat;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
-
 
 import org.scijava.Context;
 import org.testng.annotations.AfterMethod;
@@ -59,130 +58,137 @@ import org.testng.annotations.Test;
  * Unit tests for {@link io.scif.Checker} interface methods.
  * 
  * @author Mark Hiner
- *
  */
-@Test(groups="checkerTests")
+@Test(groups = "checkerTests")
 public class CheckerTest {
 
-  private String id = "8bit-signed&pixelType=int8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake";
-  private String falseId = "testFile.png";
-  private Checker c;
-  private FakeChecker fc;
-  private Context context;
+	private final String id =
+		"8bit-signed&pixelType=int8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake";
+	private final String falseId = "testFile.png";
+	private Checker c;
+	private FakeChecker fc;
+	private Context context;
 
-  @BeforeMethod
-  public void setUp() throws FormatException {
-    context = new Context();
-    SCIFIO scifio = new SCIFIO();
-    Format f = scifio.format().getFormat(id);
-    c = f.createChecker();
-    fc = new FakeChecker();
-    fc.setContext(context);
-  }
+	@BeforeMethod
+	public void setUp() throws FormatException {
+		context = new Context();
+		final SCIFIO scifio = new SCIFIO();
+		final Format f = scifio.format().getFormat(id);
+		c = f.createChecker();
+		fc = new FakeChecker();
+		fc.setContext(context);
+	}
 
-  @Test
-  public void isFormatTests() throws IOException {
-    boolean isFormat = false;
+	@Test
+	public void isFormatTests() throws IOException {
+		boolean isFormat = false;
 
-    isFormat = c.isFormat(id);
-    assertTrue(isFormat);
+		isFormat = c.isFormat(id);
+		assertTrue(isFormat);
 
-    isFormat = c.isFormat(id, false);
-    assertTrue(isFormat);
+		isFormat = c.isFormat(id, false);
+		assertTrue(isFormat);
 
-    isFormat = c.isFormat(id, true);
-    assertTrue(isFormat);
+		isFormat = c.isFormat(id, true);
+		assertTrue(isFormat);
 
-    RandomAccessInputStream stream = new RandomAccessInputStream(context, id);
-    isFormat = c.isFormat(stream);
-    assertFalse(isFormat);
-    stream.close();
+		final RandomAccessInputStream stream =
+			new RandomAccessInputStream(context, id);
+		isFormat = c.isFormat(stream);
+		assertFalse(isFormat);
+		stream.close();
 
-    isFormat = c.isFormat(falseId, false);
-    assertFalse(isFormat);
-  }
+		isFormat = c.isFormat(falseId, false);
+		assertFalse(isFormat);
+	}
 
-  @Test
-  public void checkHeaderTest() {
-    boolean isFormat = false;
+	@Test
+	public void checkHeaderTest() {
+		boolean isFormat = false;
 
-    isFormat = c.checkHeader(id.getBytes());
-    assertFalse(isFormat);
-  }
+		isFormat = c.checkHeader(id.getBytes());
+		assertFalse(isFormat);
+	}
 
-  @Test
-  public void suffixSufficientTests() throws IOException {
-    fc.setSuffixSufficient(false);
-    boolean isFormat = false;
+	@Test
+	public void suffixSufficientTests() throws IOException {
+		fc.setSuffixSufficient(false);
+		boolean isFormat = false;
 
-    isFormat = fc.isFormat(id);
-    assertTrue(isFormat);
+		isFormat = fc.isFormat(id);
+		assertTrue(isFormat);
 
-    isFormat = fc.isFormat(id, false);
-    assertFalse(isFormat);
+		isFormat = fc.isFormat(id, false);
+		assertFalse(isFormat);
 
-    isFormat = fc.isFormat(id, true);
-    assertTrue(isFormat);
+		isFormat = fc.isFormat(id, true);
+		assertTrue(isFormat);
 
-    RandomAccessInputStream stream = new RandomAccessInputStream(context, id);
-    isFormat = fc.isFormat(stream);
-    assertTrue(isFormat);
-    stream.close();
+		final RandomAccessInputStream stream =
+			new RandomAccessInputStream(context, id);
+		isFormat = fc.isFormat(stream);
+		assertTrue(isFormat);
+		stream.close();
 
-    isFormat = fc.checkHeader(id.getBytes());
-    assertTrue(isFormat);
-  }
+		isFormat = fc.checkHeader(id.getBytes());
+		assertTrue(isFormat);
+	}
 
-  @Test
-  public void hasContextTests() {
-    assertNotNull(c.getContext());
-  }
+	@Test
+	public void hasContextTests() {
+		assertNotNull(c.getContext());
+	}
 
-  public void hasFormatTests() {
-    Format format = c.getFormat();
+	public void hasFormatTests() {
+		final Format format = c.getFormat();
 
-    assertNotNull(format);
+		assertNotNull(format);
 
-    if (format != null) {
-      assertEquals(c.getFormat().getCheckerClass(), c.getClass());
-    }
-  }
+		if (format != null) {
+			assertEquals(c.getFormat().getCheckerClass(), c.getClass());
+		}
+	}
 
-  @AfterMethod
-  public void tearDown() {
-    context = null;
-    c = null;
-    fc = null;
-  }
+	@AfterMethod
+	public void tearDown() {
+		context = null;
+		c = null;
+		fc = null;
+	}
 
-  /*
-   * Private inner class for testing suffix flags.
-   * 
-   * @author Mark Hiner
-   *
-   */
-  private static class FakeChecker extends io.scif.DefaultChecker {
+	/*
+	 * Private inner class for testing suffix flags.
+	 * 
+	 * @author Mark Hiner
+	 *
+	 */
+	private static class FakeChecker extends io.scif.DefaultChecker {
 
-    // -- FakeChecker Methods --
+		// -- FakeChecker Methods --
 
-    public void setSuffixSufficient(boolean s) {
-      suffixSufficient = s;
-    }
+		public void setSuffixSufficient(final boolean s) {
+			suffixSufficient = s;
+		}
 
-    public boolean isFormat(final RandomAccessInputStream stream) throws IOException
-    {
-      return true;
-    }
+		@Override
+		public boolean isFormat(final RandomAccessInputStream stream)
+			throws IOException
+		{
+			return true;
+		}
 
-    // -- HasFormat Methods --
+		// -- HasFormat Methods --
 
-    // When extending an existing component, the getFormat() method should be overriden to ensure
-    // the proper format is returned.
-    //FIXME: index over all components? make Format.createComponent work more like services where
-    // you can have a list of components returned... maybe? Or not..
-    public Format getFormat() {
-      SCIFIO scifio = new SCIFIO(getContext());
-      return scifio.format().getFormatFromClass(FakeFormat.class);
-    }
-  }
+		// When extending an existing component, the getFormat() method should be
+		// overriden to ensure
+		// the proper format is returned.
+		// FIXME: index over all components? make Format.createComponent work more
+		// like services where
+		// you can have a list of components returned... maybe? Or not..
+		@Override
+		public Format getFormat() {
+			final SCIFIO scifio = new SCIFIO(getContext());
+			return scifio.format().getFormatFromClass(FakeFormat.class);
+		}
+	}
 }

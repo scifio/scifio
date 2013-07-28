@@ -33,6 +33,7 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.io;
 
 import java.io.IOException;
@@ -47,28 +48,28 @@ import org.scijava.plugin.SciJavaPlugin;
  * 
  * @author Mark Hiner
  */
-public interface IStreamAccess extends SciJavaPlugin, Contextual, Prioritized, IRandomAccess {
+public interface IStreamAccess extends SciJavaPlugin, Contextual, Prioritized,
+	IRandomAccess
+{
 
-  /** 
-   * Returns true if this handle can be constructed from
-   * the provided id.
-   * 
-   * @throws IOException
-   */
-  boolean isConstructable(String id) throws IOException;
+	/**
+	 * Returns true if this handle can be constructed from the provided id.
+	 * 
+	 * @throws IOException
+	 */
+	boolean isConstructable(String id) throws IOException;
 
-  /**
-   * Initializes the current handle using the provided file id.
-   * 
-   * @param file - A String path to the desired file.
-   * @throws IOException
-   */
-  void setFile(String file) throws IOException;
+	/**
+	 * Initializes the current handle using the provided file id.
+	 * 
+	 * @param file - A String path to the desired file.
+	 * @throws IOException
+	 */
+	void setFile(String file) throws IOException;
 
-  /**
-   * Close and reopen the stream; the stream pointer and mark should be
-   * reset to 0.  This method is called if we need to seek backwards within
-   * the stream.
-   */
-  void resetStream() throws IOException;
+	/**
+	 * Close and reopen the stream; the stream pointer and mark should be reset to
+	 * 0. This method is called if we need to seek backwards within the stream.
+	 */
+	void resetStream() throws IOException;
 }

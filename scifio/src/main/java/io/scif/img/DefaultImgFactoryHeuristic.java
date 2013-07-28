@@ -44,7 +44,6 @@ import io.scif.util.FormatTools;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.NativeType;
@@ -54,93 +53,103 @@ import net.imglib2.type.numeric.RealType;
  * Default {@link ImgFactoryHeuristic} implementation. Uses the following
  * heuristic to select a factory:
  * <ul>
- *   <li>Check each ImgMode in order</li>
- *   <li>If ImgMode.ARRAY, select if dataset size < 2GB</li>
- *   <li>If ImgMode.PLANAR, select if plane size < 2GB and dataset fits memory.<li>
- *   <li>If ImgMode.CELL, return a SCIFIOCellImgFactory.</li>
- *   <li>If ImgMode.AUTO or none of the requested types could be selected,
- *   check as though the order were ARRAY -> PLANAR -> CELL.</li>
+ * <li>Check each ImgMode in order</li>
+ * <li>If ImgMode.ARRAY, select if dataset size < 2GB</li>
+ * <li>If ImgMode.PLANAR, select if plane size < 2GB and dataset fits memory.
+ * <li>
+ * <li>If ImgMode.CELL, return a SCIFIOCellImgFactory.</li>
+ * <li>If ImgMode.AUTO or none of the requested types could be selected, check
+ * as though the order were ARRAY -> PLANAR -> CELL.</li>
  * </ul>
- * 
  * <p>
  * NB: ImgMode.CELL is always satisfied. Thus to avoid a particular ImgMode,
- * provide a list excluding the undesired types that includes ImgMode.CELL
- * last.
+ * provide a list excluding the undesired types that includes ImgMode.CELL last.
  * </p>
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
 public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 
-  // -- Constants --
+	// -- Constants --
 
-  // % of available memory to trigger opening as a CellImg, if surpassed
-  private static final double MEMORY_THRESHOLD = 0.75;
+	// % of available memory to trigger opening as a CellImg, if surpassed
+	private static final double MEMORY_THRESHOLD = 0.75;
 
-  // -- ImgFactoryHeuristic API Methods --
+	// -- ImgFactoryHeuristic API Methods --
 
-  /*
-   * @see ImgFactoryHeuristic#createFactory(m, ImgMode[])
-   */
-  public <T extends RealType<T> & NativeType<T>> ImgFactory<T> createFactory(
-      Metadata m, ImgMode[] imgModes) throws IncompatibleTypeException {
-    ImgFactory<T> tmpFactory = null;
+	/*
+	 * @see ImgFactoryHeuristic#createFactory(m, ImgMode[])
+	 */
+	public <T extends RealType<T> & NativeType<T>> ImgFactory<T> createFactory(
+		final Metadata m, final ImgMode[] imgModes)
+		throws IncompatibleTypeException
+	{
+		ImgFactory<T> tmpFactory = null;
 
-    T type = ImgIOUtils.makeType(m.getPixelType(0));
+		final T type = ImgIOUtils.makeType(m.getPixelType(0));
 
-    // Max size of a plane of a PlanarImg, or total dataset for ArrayImg. 2GB.
-    long maxSize = DataTools.safeMultiply64(2, 1024, 1024, 1024);
+		// Max size of a plane of a PlanarImg, or total dataset for ArrayImg. 2GB.
+		final long maxSize = DataTools.safeMultiply64(2, 1024, 1024, 1024);
 
-    long availableMem = (long) (Runtime.getRuntime().freeMemory() * MEMORY_THRESHOLD);
-    long datasetSize = m.getDatasetSize();
+		final long availableMem =
+			(long) (Runtime.getRuntime().freeMemory() * MEMORY_THRESHOLD);
+		long datasetSize = m.getDatasetSize();
 
-    // check for overflow
-    if (datasetSize <= 0) datasetSize = Long.MAX_VALUE;
+		// check for overflow
+		if (datasetSize <= 0) datasetSize = Long.MAX_VALUE;
 
-    // divide by 1024 to compare to max_size and avoid overflow
-    long planeSize = m.getAxisLength(0, Axes.X) * m.getAxisLength(0, Axes.Y) * FormatTools.getBytesPerPixel(m.getPixelType(0));
+		// divide by 1024 to compare to max_size and avoid overflow
+		final long planeSize =
+			m.getAxisLength(0, Axes.X) * m.getAxisLength(0, Axes.Y) *
+				FormatTools.getBytesPerPixel(m.getPixelType(0));
 
-    boolean fitsInMemory = availableMem > datasetSize;
+		final boolean fitsInMemory = availableMem > datasetSize;
 
-    boolean decided = false;
-    int modeIndex = 0;
+		boolean decided = false;
+		int modeIndex = 0;
 
-    // loop over ImgOptions in preferred order
-    while (!decided) {
+		// loop over ImgOptions in preferred order
+		while (!decided) {
 
-      // get the current mode, or AUTO if we've exhausted the list of modes
-      ImgMode mode = modeIndex >= imgModes.length ? ImgMode.AUTO : imgModes[modeIndex++];
+			// get the current mode, or AUTO if we've exhausted the list of modes
+			final ImgMode mode =
+				modeIndex >= imgModes.length ? ImgMode.AUTO : imgModes[modeIndex++];
 
-      if (mode.equals(ImgMode.AUTO)) {
-        if (!fitsInMemory) tmpFactory = new SCIFIOCellImgFactory<T>();
-        else if (datasetSize < maxSize) tmpFactory = new ArrayImgFactory<T>();
-        else tmpFactory = new PlanarImgFactory<T>();
+			if (mode.equals(ImgMode.AUTO)) {
+				if (!fitsInMemory) tmpFactory = new SCIFIOCellImgFactory<T>();
+				else if (datasetSize < maxSize) tmpFactory = new ArrayImgFactory<T>();
+				else tmpFactory = new PlanarImgFactory<T>();
 
-        // FIXME: no CellImgFactory right now.. isn't guaranteed to handle all images well (e.g. RGB)
+				// FIXME: no CellImgFactory right now.. isn't guaranteed to handle all
+				// images well (e.g. RGB)
 //        else if (planeSize < maxSize) tmpFactory = new PlanarImgFactory<T>();
 //        else tmpFactory = new CellImgFactory<T>();
 
-        decided = true;
-      }
-      else if (mode.equals(ImgMode.ARRAY) && datasetSize < maxSize && fitsInMemory) {
-        tmpFactory = new ArrayImgFactory<T>();
-        decided = true;
-      }
-      else if (mode.equals(ImgMode.PLANAR) && planeSize < maxSize && fitsInMemory) {
-        tmpFactory = new PlanarImgFactory<T>();
-        decided = true;
-      }
-      else if (mode.equals(ImgMode.CELL)) {
-        // FIXME: no CellImgFactory right now.. isn't guaranteed to handle all images well (e.g. RGB)
+				decided = true;
+			}
+			else if (mode.equals(ImgMode.ARRAY) && datasetSize < maxSize &&
+				fitsInMemory)
+			{
+				tmpFactory = new ArrayImgFactory<T>();
+				decided = true;
+			}
+			else if (mode.equals(ImgMode.PLANAR) && planeSize < maxSize &&
+				fitsInMemory)
+			{
+				tmpFactory = new PlanarImgFactory<T>();
+				decided = true;
+			}
+			else if (mode.equals(ImgMode.CELL)) {
+				// FIXME: no CellImgFactory right now.. isn't guaranteed to handle all
+				// images well (e.g. RGB)
 //        if (fitsInMemory) tmpFactory = new CellImgFactory<T>();
 //        else tmpFactory = new SCIFIOCellImgFactory<T>();
-        tmpFactory = new SCIFIOCellImgFactory<T>();
+				tmpFactory = new SCIFIOCellImgFactory<T>();
 
-        decided = true;
-      }
-    }
+				decided = true;
+			}
+		}
 
-    return tmpFactory.imgFactory(type);
-  }
+		return tmpFactory.imgFactory(type);
+	}
 }

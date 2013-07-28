@@ -42,25 +42,23 @@ import io.scif.io.IRandomAccess;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
-
-
 /**
  * Implementation of IRandomAccessProvider that produces instances of
  * loci.common.ByteArrayHandle.
- *
- *
+ * 
  * @see IRandomAccessProvider
  * @see io.scif.io.ByteArrayHandle
  */
 class ByteArrayHandleProvider implements IRandomAccessProvider {
 
-  public IRandomAccess createMock(
-      byte[] page, String mode, int bufferSize) throws IOException {
-    IRandomAccess handle = new ByteArrayHandle();
-    handle.setOrder(ByteOrder.BIG_ENDIAN);
-    handle.write(page);
-    handle.seek(0);
-    return handle;
-  }
+	public IRandomAccess createMock(final byte[] page, final String mode,
+		final int bufferSize) throws IOException
+	{
+		final IRandomAccess handle = new ByteArrayHandle();
+		handle.setOrder(ByteOrder.BIG_ENDIAN);
+		handle.write(page);
+		handle.seek(0);
+		return handle;
+	}
 
 }

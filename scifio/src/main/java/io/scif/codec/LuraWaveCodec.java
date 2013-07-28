@@ -56,112 +56,113 @@ import org.scijava.plugin.Plugin;
  * library. Compression is not supported. Decompression requires a LuraWave
  * license code, specified in the lurawave.license system property (e.g.,
  * <code>-Dlurawave.license=XXXX</code> on the command line).
- *
- *
+ * 
  * @author Curtis Rueden ctrueden at wisc.edu
  */
 @Plugin(type = Codec.class)
 public class LuraWaveCodec extends AbstractCodec {
 
-  // -- Fields --
+	// -- Fields --
 
-  private LuraWaveService service;
+	private LuraWaveService service;
 
-  // -- Codec API methods --
+	// -- Codec API methods --
 
-  /* @see Codec#compress(byte[], CodecOptions) */
-  public byte[] compress(byte[] data, CodecOptions options)
-    throws FormatException
-  {
-    throw new UnsupportedCompressionException(
-      "LuraWave compression not supported");
-  }
+	/* @see Codec#compress(byte[], CodecOptions) */
+	public byte[] compress(final byte[] data, final CodecOptions options)
+		throws FormatException
+	{
+		throw new UnsupportedCompressionException(
+			"LuraWave compression not supported");
+	}
 
-  /* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
-  public byte[] decompress(RandomAccessInputStream in, CodecOptions options)
-    throws FormatException, IOException
-  {
-    byte[] buf = new byte[(int) in.length()];
-    in.read(buf);
-    return decompress(buf, options);
-  }
+	/* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
+	@Override
+	public byte[] decompress(final RandomAccessInputStream in,
+		final CodecOptions options) throws FormatException, IOException
+	{
+		final byte[] buf = new byte[(int) in.length()];
+		in.read(buf);
+		return decompress(buf, options);
+	}
 
-  /**
-   * The CodecOptions parameter should have the following fields set:
-   *  {@link CodecOptions#maxBytes maxBytes}
-   *
-   * @see Codec#decompress(byte[], CodecOptions)
-   */
-  public byte[] decompress(byte[] buf, CodecOptions options)
-    throws FormatException
-  {
-    initialize();
+	/**
+	 * The CodecOptions parameter should have the following fields set:
+	 * {@link CodecOptions#maxBytes maxBytes}
+	 * 
+	 * @see Codec#decompress(byte[], CodecOptions)
+	 */
+	@Override
+	public byte[] decompress(final byte[] buf, final CodecOptions options)
+		throws FormatException
+	{
+		initialize();
 
-    BufferedInputStream stream =
-      new BufferedInputStream(new ByteArrayInputStream(buf), 4096);
-    try {
-      service.initialize(stream);
-    }
-    catch (DependencyException e) {
-      throw new FormatException(LuraWaveService.NO_LICENSE_MSG, e);
-    }
-    catch (ServiceException e) {
-      throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
-    }
-    catch (IOException e) {
-      throw new FormatException(e);
-    }
+		final BufferedInputStream stream =
+			new BufferedInputStream(new ByteArrayInputStream(buf), 4096);
+		try {
+			service.initialize(stream);
+		}
+		catch (final DependencyException e) {
+			throw new FormatException(LuraWaveService.NO_LICENSE_MSG, e);
+		}
+		catch (final ServiceException e) {
+			throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
+		}
+		catch (final IOException e) {
+			throw new FormatException(e);
+		}
 
-    int w = service.getWidth();
-    int h = service.getHeight();
+		final int w = service.getWidth();
+		final int h = service.getHeight();
 
-    int nbits = 8 * (options.maxBytes / (w * h));
+		final int nbits = 8 * (options.maxBytes / (w * h));
 
-    if (nbits == 8) {
-      byte[] image8 = new byte[w * h];
-      try {
-        service.decodeToMemoryGray8(image8, -1, 1024, 0);
-      }
-      catch (ServiceException e) {
-        throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
-      }
-      return image8;
-    }
-    else if (nbits == 16) {
-      short[] image16 = new short[w * h];
-      try {
-        service.decodeToMemoryGray16(image16, 0, -1, 1024, 0, 1, w, 0, 0, w, h);
-      }
-      catch (ServiceException e) {
-        throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
-      }
+		if (nbits == 8) {
+			final byte[] image8 = new byte[w * h];
+			try {
+				service.decodeToMemoryGray8(image8, -1, 1024, 0);
+			}
+			catch (final ServiceException e) {
+				throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
+			}
+			return image8;
+		}
+		else if (nbits == 16) {
+			final short[] image16 = new short[w * h];
+			try {
+				service.decodeToMemoryGray16(image16, 0, -1, 1024, 0, 1, w, 0, 0, w, h);
+			}
+			catch (final ServiceException e) {
+				throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
+			}
 
-      byte[] output = new byte[w * h * 2];
-      for (int i=0; i<image16.length; i++) {
-        DataTools.unpackBytes(image16[i], output, i * 2, 2, true);
-      }
-      return output;
-    }
+			final byte[] output = new byte[w * h * 2];
+			for (int i = 0; i < image16.length; i++) {
+				DataTools.unpackBytes(image16[i], output, i * 2, 2, true);
+			}
+			return output;
+		}
 
-    throw new FormatException("Unsupported bits per pixel: " + nbits);
-  }
+		throw new FormatException("Unsupported bits per pixel: " + nbits);
+	}
 
-  // -- Helper methods --
+	// -- Helper methods --
 
-  /**
-   * Initializes the LuraWave dependency service. This is called at the
-   * beginning of the {@link #decompress} method to avoid having the
-   * constructor's method definition contain a checked exception.
-   *
-   * @throws FormatException If there is an error initializing LuraWave
-   * services.
-   */
-  private void initialize() throws FormatException {
-    if (service != null) return;
-    service = getContext().getService(LuraWaveService.class);
+	/**
+	 * Initializes the LuraWave dependency service. This is called at the
+	 * beginning of the {@link #decompress} method to avoid having the
+	 * constructor's method definition contain a checked exception.
+	 * 
+	 * @throws FormatException If there is an error initializing LuraWave
+	 *           services.
+	 */
+	private void initialize() throws FormatException {
+		if (service != null) return;
+		service = getContext().getService(LuraWaveService.class);
 
-    if (service == null)
-      throw new MissingLibraryException(LuraWaveService.NO_LURAWAVE_MSG);
-  }
+		if (service == null) throw new MissingLibraryException(
+			LuraWaveService.NO_LURAWAVE_MSG);
+	}
 
 }
