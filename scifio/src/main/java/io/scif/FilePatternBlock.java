@@ -40,7 +40,7 @@ import java.math.BigInteger;
 
 /**
  * FilePatternBlock represents a single block in a
- * {@link loci.formats.FilePattern}. Examples:
+ * {@link io.scif.FilePattern}. Examples:
  * <ul>
  * <li>&lt;1-12&gt;</li>
  * <li>&lt;A-H&gt;</li>
