@@ -139,16 +139,16 @@ public class PICTFormat extends AbstractFormat {
 		// -- Fields --
 
 		/** Number of bytes in a row of pixel data (variable). */
-		protected int rowBytes;
+		private int rowBytes;
 
 		/** Vector of byte arrays representing individual rows. */
-		protected Vector strips;
+		private Vector<Object> strips;
 
 		/** Whether or not the file is PICT v1. */
-		protected boolean versionOne;
+		private boolean versionOne;
 
 		/** Color lookup table for palette color images. */
-		protected byte[][] lookup;
+		private byte[][] lookup;
 
 		private Vector<Long> jpegOffsets = new Vector<Long>();
 
