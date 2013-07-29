@@ -98,9 +98,9 @@ public interface Translator extends SCIFIOComponent, SCIFIOPlugin {
 	 * 
 	 * @param source {@code Metadata} to use to populate
 	 * @param destination {@code Metadata} to be populated
-	 * @see {@link io.scif.Format#createMetadata()}
-	 * @see {@link io.scif.Metadata#reset(Class)}
-	 * @see {@link io.scif.Format#getTranslatorClassList()}
+	 * @see io.scif.Format#createMetadata()
+	 * @see io.scif.Metadata#reset(Class)
+	 * @see io.scif.Format#getTranslatorClassList()
 	 * @throws IllegalArgumentException if the arguments don't match the
 	 *           {@code Metadata} types used to query this {@code Translator}
 	 *           (e.g. via the {@link io.scif.Format#findDestTranslator} or

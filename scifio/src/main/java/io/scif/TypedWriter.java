@@ -36,6 +36,8 @@
 
 package io.scif;
 
+import java.io.File;
+
 /**
  * Interface for all {@link io.scif.Writer} implementations that use generic
  * parameters.
@@ -55,7 +57,7 @@ public interface TypedWriter<M extends TypedMetadata> extends Writer {
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Writer#setMetadata(Metadata)}.
 	 * 
-	 * @see {@link io.scif.Writer#parse(Metadata)}
+	 * @see io.scif.Parser#parse(File, Metadata)
 	 */
 	void setMetadata(M meta) throws FormatException;
 
@@ -63,4 +65,5 @@ public interface TypedWriter<M extends TypedMetadata> extends Writer {
 	 * @see io.scif.Writer#getMetadata()
 	 */
 	M getMetadata();
+
 }

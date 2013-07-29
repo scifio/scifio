@@ -76,7 +76,7 @@ public interface TypedParser<M extends TypedMetadata> extends Parser {
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Parser#parse(String, Metadata)}.
 	 * 
-	 * @see {@link io.scif.Parser#parse(String, Metadata)}
+	 * @see io.scif.Parser#parse(String, Metadata)
 	 */
 	M parse(String fileName, M meta) throws IOException, FormatException;
 
@@ -85,7 +85,7 @@ public interface TypedParser<M extends TypedMetadata> extends Parser {
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Parser#parse(File, Metadata)}.
 	 * 
-	 * @see {@link io.scif.Parser#parse(File, Metadata)}
+	 * @see io.scif.Parser#parse(File, Metadata)
 	 */
 	M parse(File file, M meta) throws IOException, FormatException;
 
@@ -94,8 +94,9 @@ public interface TypedParser<M extends TypedMetadata> extends Parser {
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Parser#parse(RandomAccessInputStream, Metadata)}.
 	 * 
-	 * @see {@link io.scif.Parser#parse(RandomAccessInputStream, Metadata)}
+	 * @see io.scif.Parser#parse(RandomAccessInputStream, Metadata)
 	 */
 	M parse(RandomAccessInputStream stream, M meta) throws IOException,
 		FormatException;
+
 }
