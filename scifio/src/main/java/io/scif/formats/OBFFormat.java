@@ -363,9 +363,7 @@ public class OBFFormat extends AbstractFormat {
 				}
 				return next;
 			}
-			else {
-				throw new FormatException("Unsupported stack format");
-			}
+			throw new FormatException("Unsupported stack format");
 		}
 
 		private long getLength(final long length) throws FormatException {
