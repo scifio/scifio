@@ -147,7 +147,7 @@ public class JPEGFormat extends ImageIOFormat {
 				}
 			}
 			catch (final FormatException e) {
-				log().error("Failed to pare JPEG data", e);
+				log().error("Failed to parse JPEG data", e);
 				return false;
 			}
 
