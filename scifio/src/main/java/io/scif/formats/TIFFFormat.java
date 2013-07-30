@@ -40,6 +40,7 @@ import io.scif.AbstractFormat;
 import io.scif.AbstractTranslator;
 import io.scif.AbstractWriter;
 import io.scif.ByteArrayPlane;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
@@ -74,7 +75,7 @@ import net.imglib2.meta.Axes;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
-@Plugin(type = TIFFFormat.class, priority = TIFFFormat.PRIORITY)
+@Plugin(type = Format.class, priority = TIFFFormat.PRIORITY)
 public class TIFFFormat extends AbstractFormat {
 
 	// -- Constants --

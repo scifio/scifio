@@ -65,7 +65,7 @@ import org.scijava.plugin.Plugin;
  * Logic to stitch together files with similar names. Assumes that all files
  * have the same characteristics (e.g., dimensions).
  */
-@Plugin(type = FileStitcher.class, priority = FileStitcher.PRIORITY, attrs = {
+@Plugin(type = Filter.class, priority = FileStitcher.PRIORITY, attrs = {
 	@Attr(name = FileStitcher.FILTER_KEY, value = FileStitcher.FILTER_VALUE),
 	@Attr(name = FileStitcher.ENABLED_KEY, value = FileStitcher.ENABLED_VAULE) })
 public class FileStitcher extends AbstractReaderFilter {

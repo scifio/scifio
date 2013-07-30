@@ -48,13 +48,14 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default {@link io.scif.services.PluginAttributeService} implementation.
  * 
  * @author Mark Hiner
  */
-@Plugin(type = PluginAttributeService.class)
+@Plugin(type = Service.class)
 public class DefaultPluginAttributeService extends AbstractService implements
 	PluginAttributeService
 {

@@ -43,6 +43,7 @@ import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
 import io.scif.DefaultTranslator;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Translator;
@@ -72,7 +73,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = MicromanagerFormat.class)
+@Plugin(type = Format.class)
 public class MicromanagerFormat extends AbstractFormat {
 
 	// -- Constants --

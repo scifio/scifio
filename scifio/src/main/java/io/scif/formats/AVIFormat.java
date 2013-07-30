@@ -44,6 +44,7 @@ import io.scif.AbstractTranslator;
 import io.scif.AbstractWriter;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
@@ -79,7 +80,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = AVIFormat.class)
+@Plugin(type = Format.class)
 public class AVIFormat extends AbstractFormat {
 
 	// -- Supported compression types --
@@ -1540,7 +1541,7 @@ public class AVIFormat extends AbstractFormat {
 	/**
 	 * @author Mark Hiner
 	 */
-	@Plugin(type = Translator.class, attrs = {
+	@Plugin(type = io.scif.Translator.class, attrs = {
 		@Attr(name = Translator.SOURCE, value = io.scif.Metadata.CNAME),
 		@Attr(name = Translator.DEST, value = Metadata.CNAME) },
 		priority = Priority.LOW_PRIORITY)

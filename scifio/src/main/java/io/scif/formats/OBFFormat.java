@@ -42,6 +42,7 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.io.RandomAccessInputStream;
@@ -62,7 +63,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Bjoern Thiel
  */
-@Plugin(type = OBFFormat.class)
+@Plugin(type = Format.class)
 public class OBFFormat extends AbstractFormat {
 
 	// -- Format API Methods --

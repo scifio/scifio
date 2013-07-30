@@ -42,6 +42,7 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.io.ByteArrayHandle;
@@ -59,7 +60,7 @@ import org.scijava.plugin.Plugin;
 /**
  * @author Mark Hiner
  */
-@Plugin(type = PGMFormat.class)
+@Plugin(type = Format.class)
 public class PGMFormat extends AbstractFormat {
 
 	// -- Format API Methods --

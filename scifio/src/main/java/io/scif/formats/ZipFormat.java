@@ -41,6 +41,7 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
@@ -63,7 +64,7 @@ import org.scijava.plugin.Plugin;
 /**
  * Reader for Zip files.
  */
-@Plugin(type = ZipFormat.class)
+@Plugin(type = Format.class)
 public class ZipFormat extends AbstractFormat {
 
 	// -- Format API Methods --

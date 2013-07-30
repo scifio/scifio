@@ -44,6 +44,7 @@ import io.scif.AbstractWriter;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
 import io.scif.DefaultImageMetadata;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
@@ -70,7 +71,7 @@ import org.scijava.plugin.Plugin;
 /**
  * JPEG2000Reader is the file format reader for JPEG-2000 images.
  */
-@Plugin(type = JPEG2000Format.class)
+@Plugin(type = Format.class)
 public class JPEG2000Format extends AbstractFormat {
 
 	// -- Format API methods --

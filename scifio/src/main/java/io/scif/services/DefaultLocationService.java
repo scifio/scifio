@@ -53,6 +53,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default {@link io.scif.services.LocationService} implementation
@@ -60,7 +61,7 @@ import org.scijava.service.AbstractService;
  * @see io.scif.services.LocationService
  * @author Mark Hiner
  */
-@Plugin(type = LocationService.class)
+@Plugin(type = Service.class)
 public class DefaultLocationService extends AbstractService implements
 	LocationService
 {

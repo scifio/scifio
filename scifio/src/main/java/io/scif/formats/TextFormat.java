@@ -42,6 +42,7 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.common.Constants;
@@ -73,7 +74,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Mark Hiner
  */
-@Plugin(type = TextFormat.class)
+@Plugin(type = Format.class)
 public class TextFormat extends AbstractFormat {
 
 	// -- Format API Methods --

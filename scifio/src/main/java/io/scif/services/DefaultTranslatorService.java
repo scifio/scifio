@@ -45,8 +45,9 @@ import java.util.Map;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
-@Plugin(type = TranslatorService.class)
+@Plugin(type = Service.class)
 public class DefaultTranslatorService extends AbstractService implements
 	TranslatorService
 {

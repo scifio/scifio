@@ -45,6 +45,7 @@ import io.scif.AbstractWriter;
 import io.scif.BufferedImagePlane;
 import io.scif.Field;
 import io.scif.FieldPrinter;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
@@ -87,7 +88,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = APNGFormat.class)
+@Plugin(type = Format.class)
 public class APNGFormat extends AbstractFormat {
 
 	// -- Constants --

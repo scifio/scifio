@@ -41,6 +41,7 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.codec.JPEGTileDecoder;
@@ -60,7 +61,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Melissa Linkert
  */
-@Plugin(type = JPEGTileFormat.class, priority = Priority.LOW_PRIORITY)
+@Plugin(type = Format.class, priority = Priority.LOW_PRIORITY)
 public class JPEGTileFormat extends AbstractFormat {
 
 	// -- Format API Methods --

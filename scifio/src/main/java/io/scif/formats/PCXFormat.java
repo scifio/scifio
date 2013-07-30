@@ -42,6 +42,7 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
@@ -64,7 +65,7 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  * @author Melissa Linkert
  */
-@Plugin(type = PCXFormat.class)
+@Plugin(type = Format.class)
 public class PCXFormat extends AbstractFormat {
 
 	// -- Format API Methods --

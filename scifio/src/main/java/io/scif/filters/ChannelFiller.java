@@ -56,7 +56,7 @@ import org.scijava.plugin.Plugin;
  * lut length is not guaranteed to be accurate until a plane has been read
  */
 @Plugin(
-	type = ChannelFiller.class,
+	type = Filter.class,
 	priority = ChannelFiller.PRIORITY,
 	attrs = {
 		@Attr(name = ChannelFiller.FILTER_KEY, value = ChannelFiller.FILTER_VALUE),

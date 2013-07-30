@@ -57,7 +57,7 @@ import org.scijava.plugin.Plugin;
  * for both reassigning ZCT sizes (the input dimension order), and shuffling
  * around the resultant planar order (the output dimension order).
  */
-@Plugin(type = DimensionSwapper.class, priority = DimensionSwapper.PRIORITY,
+@Plugin(type = Filter.class, priority = DimensionSwapper.PRIORITY,
 	attrs = {
 		@Attr(name = DimensionSwapper.FILTER_KEY,
 			value = DimensionSwapper.FILTER_VALUE),

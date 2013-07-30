@@ -44,6 +44,7 @@ import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
 import io.scif.DefaultImageMetadata;
 import io.scif.DefaultTranslator;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
@@ -70,7 +71,7 @@ import org.scijava.plugin.Plugin;
  * @author Melissa Linkert
  * @author Mark Hiner
  */
-@Plugin(type = EPSFormat.class)
+@Plugin(type = Format.class)
 public class EPSFormat extends AbstractFormat {
 
 	// -- Format API Methods --

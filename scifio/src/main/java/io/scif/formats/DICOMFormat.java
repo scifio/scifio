@@ -43,6 +43,7 @@ import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
 import io.scif.FilePattern;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
@@ -77,7 +78,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = DICOMFormat.class)
+@Plugin(type = Format.class)
 public class DICOMFormat extends AbstractFormat {
 
 	// -- Constants --

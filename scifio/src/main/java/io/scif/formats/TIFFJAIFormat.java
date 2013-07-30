@@ -40,6 +40,7 @@ import io.scif.AbstractFormat;
 import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.BufferedImagePlane;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.MissingLibraryException;
@@ -69,7 +70,7 @@ import org.scijava.plugin.Plugin;
  * "http://java.sun.com/products/java-media/jai/forDevelopers/samples/MultiPageRead.java"
  * >this example</a>.
  */
-@Plugin(type = TIFFJAIFormat.class, priority = MinimalTIFFFormat.PRIORITY - 1)
+@Plugin(type = Format.class, priority = MinimalTIFFFormat.PRIORITY - 1)
 public class TIFFJAIFormat extends AbstractFormat {
 
 	// -- Format API methods --

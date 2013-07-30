@@ -41,6 +41,7 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.common.DataTools;
@@ -61,7 +62,7 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  * @author Melissa Linkert
  */
-@Plugin(type = FITSFormat.class)
+@Plugin(type = Format.class)
 public class FITSFormat extends AbstractFormat {
 
 	// -- Format API Methods --

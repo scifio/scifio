@@ -44,6 +44,7 @@ import io.scif.AbstractTranslator;
 import io.scif.AbstractWriter;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
@@ -82,7 +83,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Melissa Linkert
  */
-@Plugin(type = NativeQTFormat.class)
+@Plugin(type = Format.class)
 public class NativeQTFormat extends AbstractFormat {
 
 	// -- Constants --

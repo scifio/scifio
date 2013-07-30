@@ -53,7 +53,7 @@ import org.scijava.plugin.Plugin;
 /**
  * Logic to automatically separate the channels in a file.
  */
-@Plugin(type = ChannelSeparator.class, priority = ChannelSeparator.PRIORITY,
+@Plugin(type = Filter.class, priority = ChannelSeparator.PRIORITY,
 	attrs = {
 		@Attr(name = ChannelSeparator.FILTER_KEY,
 			value = ChannelSeparator.FILTER_VALUE),

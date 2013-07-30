@@ -37,6 +37,7 @@
 package io.scif.formats;
 
 import io.scif.AbstractChecker;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.common.DataTools;
 import io.scif.io.ByteArrayHandle;
@@ -56,7 +57,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = JPEGFormat.class)
+@Plugin(type = Format.class)
 public class JPEGFormat extends ImageIOFormat {
 
 	// -- Format API Methods --

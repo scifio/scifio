@@ -42,6 +42,7 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
@@ -73,7 +74,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Melissa Linkert
  */
-@Plugin(type = MinimalTIFFFormat.class, priority = MinimalTIFFFormat.PRIORITY)
+@Plugin(type = Format.class, priority = MinimalTIFFFormat.PRIORITY)
 public class MinimalTIFFFormat extends AbstractFormat {
 
 	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;

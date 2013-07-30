@@ -61,11 +61,12 @@ import javax.imageio.stream.MemoryCacheImageInputStream;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Implementation of JAIIIOService for reading and writing JPEG-2000 data.
  */
-@Plugin(type = JAIIIOService.class)
+@Plugin(type = Service.class)
 public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 {
 

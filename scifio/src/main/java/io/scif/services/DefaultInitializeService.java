@@ -51,6 +51,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default {@link InitializeService} implementation.
@@ -58,7 +59,7 @@ import org.scijava.service.AbstractService;
  * @see io.scif.services.InitializeService
  * @author Mark Hiner
  */
-@Plugin(type = InitializeService.class, priority = Priority.LOW_PRIORITY)
+@Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
 public class DefaultInitializeService extends AbstractService implements
 	InitializeService
 {

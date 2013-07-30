@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default {@link FilePatternService} implementation.
@@ -58,7 +59,7 @@ import org.scijava.service.AbstractService;
  * @see FilePatternService
  * @author Mark Hiner
  */
-@Plugin(type = FilePatternService.class)
+@Plugin(type = Service.class)
 public class DefaultFilePatternService extends AbstractService implements
 	FilePatternService
 {

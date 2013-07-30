@@ -39,6 +39,7 @@ package io.scif.formats;
 import io.scif.AbstractFormat;
 import io.scif.AbstractWriter;
 import io.scif.DefaultMetadata;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
@@ -63,7 +64,7 @@ import org.scijava.plugin.Plugin;
  * Format for Java source code. At the moment, this code just writes a very
  * simple container for pixel data.
  */
-@Plugin(type = JavaFormat.class)
+@Plugin(type = Format.class)
 public class JavaFormat extends AbstractFormat {
 
 	// -- Format API Methods --

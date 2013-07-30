@@ -44,6 +44,7 @@ import io.scif.AbstractTranslator;
 import io.scif.AbstractWriter;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
@@ -77,7 +78,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = ICSFormat.class)
+@Plugin(type = Format.class)
 public class ICSFormat extends AbstractFormat {
 
 	// -- Format API Methods --

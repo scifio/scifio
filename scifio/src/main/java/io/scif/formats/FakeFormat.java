@@ -42,6 +42,7 @@ import io.scif.AbstractParser;
 import io.scif.AbstractTranslator;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
@@ -106,7 +107,7 @@ import org.scijava.plugin.Plugin;
  * </ul>
  * </p>
  */
-@Plugin(type = FakeFormat.class)
+@Plugin(type = Format.class)
 public class FakeFormat extends AbstractFormat {
 
 	// -- Constants --

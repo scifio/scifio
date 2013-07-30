@@ -41,6 +41,7 @@ import io.scif.AbstractFormat;
 import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.BufferedImagePlane;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
@@ -62,7 +63,7 @@ import org.scijava.plugin.Plugin;
 /**
  * @author Mark Hiner
  */
-@Plugin(type = MNGFormat.class)
+@Plugin(type = Format.class)
 public class MNGFormat extends AbstractFormat {
 
 	// -- Format API Methods --

@@ -41,6 +41,7 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
@@ -68,7 +69,7 @@ import org.scijava.plugin.Plugin;
  * (http://java.sun.com/products/jimi/index.html), ImageMagick
  * (http://www.imagemagick.org), and Java QuickDraw.
  */
-@Plugin(type = PICTFormat.class)
+@Plugin(type = Format.class)
 public class PICTFormat extends AbstractFormat {
 
 	// -- Constants --
