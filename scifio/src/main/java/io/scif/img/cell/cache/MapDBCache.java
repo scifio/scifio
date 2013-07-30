@@ -199,6 +199,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	public void initialize() {
 		db =
 			DBMaker.newTempFileDB().closeOnJvmShutdown().cacheDisable()
+				.asyncWriteDisable().writeAheadLogDisable()
 				.randomAccessFileEnableIfNeeded().deleteFilesAfterClose().make();
 	}
 
@@ -236,9 +237,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		// wait for memory to clear and the read to succeed
 		while (!success) {
 			try {
-				if (cache.containsKey(key)) {
-					cell = (SCIFIOCell<?>) cache.get(key);
-				}
+				cell = (SCIFIOCell<?>) cache.get(key);
 				success = true;
 			}
 			catch (final OutOfMemoryError e) {}
