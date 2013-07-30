@@ -82,7 +82,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Melissa Linkert
  */
-@Plugin(type = NativeQTFormat.class, priority = Priority.NORMAL_PRIORITY)
+@Plugin(type = NativeQTFormat.class)
 public class NativeQTFormat extends AbstractFormat {
 
 	// -- Constants --

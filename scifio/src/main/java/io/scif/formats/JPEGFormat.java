@@ -49,7 +49,6 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
-import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -57,7 +56,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = JPEGFormat.class, priority = Priority.NORMAL_PRIORITY)
+@Plugin(type = JPEGFormat.class)
 public class JPEGFormat extends ImageIOFormat {
 
 	// -- Format API Methods --
