@@ -44,6 +44,7 @@ import java.io.EOFException;
 import java.io.IOException;
 
 import org.scijava.Context;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -187,4 +188,8 @@ public class URLHandleTest {
 		fileHandle.write(0);
 	}
 
+	@AfterMethod
+	public void tearDown() throws IOException {
+		fileHandle.close();
+	}
 }

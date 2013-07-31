@@ -43,6 +43,7 @@ import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 
 import java.io.IOException;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -77,4 +78,8 @@ public class ReadOnlyTest {
 		fileHandle.write(0);
 	}
 
+	@AfterMethod
+	public void tearDown() throws IOException {
+		fileHandle.close();
+	}
 }

@@ -221,5 +221,4 @@ public class LocationTest {
 			assertEquals(file.getName(), file.toString(), file.getAbsolutePath());
 		}
 	}
-
 }

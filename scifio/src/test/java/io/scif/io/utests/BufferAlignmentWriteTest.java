@@ -44,6 +44,7 @@ import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -186,5 +187,10 @@ public class BufferAlignmentWriteTest {
 		fileHandle.seek(16);
 		assertEquals(1, fileHandle.readByte());
 		assertEquals(1, fileHandle.readByte());
+	}
+
+	@AfterMethod
+	public void tearDown() throws IOException {
+		fileHandle.close();
 	}
 }

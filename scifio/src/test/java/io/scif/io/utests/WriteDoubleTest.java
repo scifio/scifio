@@ -43,6 +43,7 @@ import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 
 import java.io.IOException;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
@@ -171,4 +172,8 @@ public class WriteDoubleTest {
 		fileHandle.writeDouble(3.1415926535897930d);
 	}
 
+	@AfterMethod
+	public void tearDown() throws IOException {
+		fileHandle.close();
+	}
 }

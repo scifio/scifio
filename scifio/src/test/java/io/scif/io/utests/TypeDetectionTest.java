@@ -62,6 +62,7 @@ public class TypeDetectionTest {
 		invalidFile.deleteOnExit();
 		final BZip2Handle handle = new BZip2Handle(context);
 		assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
+		handle.close();
 	}
 
 	@Test
@@ -70,6 +71,7 @@ public class TypeDetectionTest {
 		invalidFile.deleteOnExit();
 		final GZipHandle handle = new GZipHandle(context);
 		assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
+		handle.close();
 	}
 
 	@Test
@@ -78,5 +80,6 @@ public class TypeDetectionTest {
 		invalidFile.deleteOnExit();
 		final ZipHandle handle = new ZipHandle(context);
 		assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
+		handle.close();
 	}
 }

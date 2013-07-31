@@ -120,5 +120,4 @@ public class ReadImage {
 		System.out.println("\tType = " + cursor.get().getClass().getName());
 		System.out.println("\tImg = " + img.getClass().getName());
 	}
-
 }
