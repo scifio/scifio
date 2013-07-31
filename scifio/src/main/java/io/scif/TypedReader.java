@@ -118,7 +118,8 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, Plane)}
 	 * 
-	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, Plane)
+	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int,
+	 *      int, Plane)
 	 */
 	P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y, int w,
 		int h, P plane) throws IOException;
@@ -128,7 +129,8 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, int, Plane)}
 	 * 
-	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, int, Plane)
+	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int,
+	 *      int, int, Plane)
 	 */
 	P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y, int w,
 		int h, int scanlinePad, P plane) throws IOException;

@@ -36,7 +36,6 @@
 
 package io.scif.common;
 
-
 /**
  * A class for representing a rectangular region. This class is very similar to
  * {@link java.awt.Rectangle}; it mainly exists to avoid problems with AWT, JNI

@@ -42,7 +42,6 @@ import io.scif.common.DataTools;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
-import java.util.Vector;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ShortArray;

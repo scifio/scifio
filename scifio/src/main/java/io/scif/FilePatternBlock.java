@@ -39,8 +39,8 @@ package io.scif;
 import java.math.BigInteger;
 
 /**
- * FilePatternBlock represents a single block in a
- * {@link io.scif.FilePattern}. Examples:
+ * FilePatternBlock represents a single block in a {@link io.scif.FilePattern}.
+ * Examples:
  * <ul>
  * <li>&lt;1-12&gt;</li>
  * <li>&lt;A-H&gt;</li>
