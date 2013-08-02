@@ -64,6 +64,7 @@ import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
 import org.scijava.app.StatusService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Writes out an {@link ImgPlus} using SCIFIO.
@@ -72,6 +73,9 @@ import org.scijava.app.StatusService;
  * @author Curtis Rueden
  */
 public class ImgSaver extends AbstractSCIFIOComponent {
+
+	@Parameter
+	private StatusService statusService;
 
 	// -- Constructors --
 
@@ -430,8 +434,8 @@ public class ImgSaver extends AbstractSCIFIOComponent {
 
 		final long endTime = System.currentTimeMillis();
 		final float time = (endTime - startTime) / 1000f;
-		getContext().getService(StatusService.class).showStatus(sliceCount,
-			sliceCount, id + ": wrote " + sliceCount + " planes in " + time + " s");
+		statusService.showStatus(sliceCount, sliceCount, id + ": wrote " +
+			sliceCount + " planes in " + time + " s");
 	}
 
 	// -- Helper Methods --
@@ -499,11 +503,8 @@ public class ImgSaver extends AbstractSCIFIOComponent {
 			for (int planeIndex = 0; planeIndex < planeCount; planeIndex +=
 				rgbChannelCount)
 			{
-				getContext().getService(StatusService.class).showStatus(
-					planeIndex,
-					planeCount,
-					"Saving plane " + (planeIndex + 1) + "/" +
-						(planeCount / rgbChannelCount));
+				statusService.showStatus(planeIndex, planeCount, "Saving plane " +
+					(planeIndex + 1) + "/" + (planeCount / rgbChannelCount));
 
 				// save bytes
 				try {
@@ -618,8 +619,7 @@ public class ImgSaver extends AbstractSCIFIOComponent {
 		final Metadata meta, final ImgPlus<T> img, final int imageIndex)
 		throws ImgIOException
 	{
-		getContext().getService(StatusService.class).showStatus(
-			"Initializing " + img.getName());
+		statusService.showStatus("Initializing " + img.getName());
 
 		final int pixelType = ImgIOUtils.makeType(img.firstElement());
 

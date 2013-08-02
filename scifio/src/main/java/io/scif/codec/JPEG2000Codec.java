@@ -53,7 +53,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -67,7 +67,8 @@ public class JPEG2000Codec extends AbstractCodec {
 
 	// -- Fields --
 
-	private JAIIIOService service;
+	@Parameter
+	private JAIIIOService jaiIIOService;
 
 	// -- Codec API methods --
 
@@ -85,7 +86,6 @@ public class JPEG2000Codec extends AbstractCodec {
 		throws FormatException
 	{
 		if (data == null || data.length == 0) return data;
-		initialize();
 
 		JPEG2000CodecOptions j2kOptions;
 		if (options instanceof JPEG2000CodecOptions) {
@@ -184,7 +184,7 @@ public class JPEG2000Codec extends AbstractCodec {
 		}
 
 		try {
-			service.writeImage(out, img, j2kOptions);
+			jaiIIOService.writeImage(out, img, j2kOptions);
 		}
 		catch (final IOException e) {
 			throw new FormatException("Could not compress JPEG-2000 data.", e);
@@ -237,8 +237,6 @@ public class JPEG2000Codec extends AbstractCodec {
 	public byte[] decompress(final byte[] buf, CodecOptions options)
 		throws FormatException
 	{
-		initialize();
-
 		if (options == null || !(options instanceof JPEG2000CodecOptions)) {
 			options = JPEG2000CodecOptions.getDefaultOptions(options);
 		}
@@ -253,7 +251,7 @@ public class JPEG2000Codec extends AbstractCodec {
 		try {
 			final ByteArrayInputStream bis = new ByteArrayInputStream(buf);
 			b =
-				(WritableRaster) service
+				(WritableRaster) jaiIIOService
 					.readRaster(bis, (JPEG2000CodecOptions) options);
 			single = AWTImageTools.getPixelBytes(b, options.littleEndian);
 			bpp = single[0].length / (b.getWidth() * b.getHeight());
@@ -291,30 +289,6 @@ public class JPEG2000Codec extends AbstractCodec {
 		single = null;
 
 		return rtn;
-	}
-
-	// -- Contextual API Methods --
-
-	@Override
-	public void setContext(final Context context) {
-		super.setContext(context);
-
-		initialize();
-	}
-
-	// -- Helper methods --
-
-	/**
-	 * Initializes the JAI ImageIO dependency service. This is called at the
-	 * beginning of the {@link #compress} and {@link #decompress} methods to avoid
-	 * having the constructor's method definition contain a checked exception.
-	 * 
-	 * @throws FormatException If there is an error initializing JAI ImageIO
-	 *           services.
-	 */
-	private void initialize() {
-		if (service != null) return;
-		service = getContext().getService(JAIIIOService.class);
 	}
 
 }

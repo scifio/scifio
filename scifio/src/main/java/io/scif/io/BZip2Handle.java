@@ -45,6 +45,7 @@ import java.io.IOException;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,6 +57,9 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = IStreamAccess.class)
 public class BZip2Handle extends StreamHandle {
+
+	@Parameter
+	private LogService log;
 
 	// -- Constructor --
 
@@ -106,7 +110,6 @@ public class BZip2Handle extends StreamHandle {
 		while (skipped < 2) {
 			skipped += bis.skip(2 - skipped);
 		}
-		final LogService log = getContext().getService(LogService.class);
 		setStream(new DataInputStream(new CBZip2InputStream(bis, log)));
 	}
 

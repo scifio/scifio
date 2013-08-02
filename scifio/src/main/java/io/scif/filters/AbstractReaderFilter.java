@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
@@ -82,6 +83,9 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	private Metadata wrappedMeta = null;
 
 	private final Class<? extends Metadata> metaClass;
+
+	@Parameter
+	private PluginService pluginService;
 
 	// -- Constructor --
 
@@ -157,7 +161,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 					wrapperClass = Class.forName(wrapperClassName);
 					if (wrapperClass.isAssignableFrom(getClass())) {
 						final MetadataWrapper metaWrapper =
-							getContext().getService(PluginService.class).createInstance(info);
+							pluginService.createInstance(info);
 						metaWrapper.wrap(r.getMetadata());
 						wrappedMeta = metaWrapper;
 						return;
