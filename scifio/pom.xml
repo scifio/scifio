@@ -80,7 +80,7 @@
 		</plugins>
 	</build>
 
-	<!-- NB: for parent project -->
+	<!-- NB: for parent project, in case of partial checkout -->
 	<repositories>
 		<repository>
 			<id>imagej.releases</id>
