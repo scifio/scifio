@@ -468,7 +468,7 @@ public class NativeQTFormat extends AbstractFormat {
 							log().debug("\tAbsent: " + f);
 							throw new FormatException("QuickTime resource fork not found. "
 								+ " To avoid this issue, please flatten your QuickTime movies "
-								+ "before importing with Bio-Formats.");
+								+ "before importing with SCIFIO.");
 						}
 					}
 				}

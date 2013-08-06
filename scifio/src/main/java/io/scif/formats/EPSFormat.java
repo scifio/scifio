@@ -551,7 +551,7 @@ public class EPSFormat extends AbstractFormat {
 
 			out.writeBytes("%!PS-Adobe-2.0 EPSF-1.2\n");
 			out.writeBytes("%%Title: " + getMetadata().getDatasetName() + "\n");
-			out.writeBytes("%%Creator: OME Bio-Formats\n");
+			out.writeBytes("%%Creator: SCIFIO\n");
 			out.writeBytes("%%Pages: 1\n");
 			out.writeBytes("%%BoundingBox: 0 0 " + width + " " + height + "\n");
 			out.writeBytes("%%EndComments\n\n");
