@@ -15,17 +15,10 @@ You can import these projects into your favorite IDE:
   * NetBeans: File > Open Project
   * IDEA: File > Open Project... (select pom.xml)
 
-Or build and run from the command line...
-
-... via Maven:
+Or build and run from the command line:
 
     mvn
     mvn exec:java -Dexec.mainClass=io.scif.tutorials.T1aIntroToSCIFIO
-
-... via ant (from the Bio-Formats top-level)
-
-    ant jar-scifio-tutorials
-    java -cp jar/*:artifacts/* io.scif.tutorials.T1aIntroToSCIFIO
 
 TUTORIAL ORDER
 -------------
