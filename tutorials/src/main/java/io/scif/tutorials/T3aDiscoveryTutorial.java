@@ -55,27 +55,28 @@ public class T3aDiscoveryTutorial {
 		// Now, let's get a SCIFIO to work with:
 		final SCIFIO scifio = new SCIFIO(context);
 
-		// The SCIFIO service was created as a convenience entry point to access the
-		// other commonly required services. For example, if we want to work with
+		// Note that we could have done the same thing more simply using:
+		//
+		// final SCIFIO scifio = new SCIFIO();
+		//
+		// The other tutorials use this shorthand, for convenience.
+
+		// The SCIFIO gateway was created as a convenience entry point to access
+		// commonly required services. For example, if we want to work with
 		// Formats, we can get a FormatService implementation:
 		final FormatService fService = scifio.format();
 
 		// Note that this service could also have been retrieved from the context
-		// itself, and
-		// because it is a service you would get the same instance back:
-
-		final FormatService fService2 = scifio.format();
-		System.out.println("Format services are equal: " + (fService == fService2));
+		// itself, and because it is a service you would get the same instance back:
+		final FormatService fService2 = context.getService(FormatService.class);
+		System.out.println("Format services are equal? " + (fService == fService2));
 
 		// Note that FormatService is an interface. If you look at
-		// io.scif.DefaultFormatService
-		// you'll see that it's annotated as a Plugin with type=FormatService.class.
-		// This
-		// allows it to be discovered by the context as a FormatService instance.
-		// If more than one class on the classpath was similarly annotated, the
-		// context
-		// would have returned the instance with the highest priority field in its
-		// Plugin annotation.
+		// io.scif.DefaultFormatService you'll see that it's annotated as a Plugin
+		// with type=FormatService.class. This allows it to be discovered by the
+		// context as a FormatService instance. If more than one class on the
+		// classpath was similarly annotated, the context would have returned the
+		// instance with the highest priority field in its Plugin annotation.
 
 		// Now let's play with a sample image path
 		final String sampleImage =
@@ -84,54 +85,40 @@ public class T3aDiscoveryTutorial {
 		// We can use our FormatService to find an appropriate Format plugin:
 		final Format format = fService.getFormat(sampleImage);
 
-		// Formats are special in that they are maintained as singletons within a
-		// FormatService:
-
+		// Formats are special: they are singletons within the FormatService:
 		final Format format2 = fService2.getFormat(sampleImage);
-		System.out.println("Formats from FormatService are equal: " +
+		System.out.println("Formats from FormatService are equal? " +
 			(format == format2));
 
-		// We'll look at creating plugins now. To do so we'll want to use the
-		// PluginService:
-		final PluginService pluginService = context.getService(PluginService.class);
+		// We'll look at creating plugins now, using the PluginService:
+		final PluginService pluginService = scifio.plugin();
 
-		// However, that is special behavior of the FormatService in particular. If
-		// we were manually
-		// querying a Format plugin from the context, it would return a new
-		// instance:
-		final Format format3 =
-			pluginService.createInstancesOfType(FakeFormat.class).get(0);
+		// PluginService is a very handy Service to use when you need to
+		// discover or instantiate plugins. This service works with PluginInfo
+		// objects, which contain metadata that describes plugins without even
+		// needing to load the plugin's class using a class loader.
 
-		System.out.println("Formats from the context are equal: " +
-			(format == format3));
-
-		// A couple of things to note here:
-		// - PluginService is a very handy Service to use when you need to
-		// instantiate a plugin.
-		// - Annotating a plugin using the narrowest type possible allows for
-		// granular discovery.
-		// FakeFormat, the concrete class, can be discovered directly. We could also
-		// have done
-		// something like:
-
-		Format format4 = null;
+		// Let's use the PluginService to instantiate some Formats:
+		Format format3 = null;
 
 		for (final Format f : pluginService.createInstancesOfType(Format.class)) {
-			if (f.getClass().equals(FakeFormat.class)) format4 = f;
+			if (f.getClass().equals(FakeFormat.class)) format3 = f;
 		}
+		System.out.println("FakeFormat found: " + (format3 != null));
+		System.out.println("Newly created Format is equal? " + (format == format3));
 
-		System.out.println("FakeFormat found: " + (format4 != null));
+		// Note that we created new Format instances here *only* for illustration.
+		// In practice you would never want to instantiate one, because the
+		// FormatService is already maintaining stateless singleton instances,
+		// as shown above, for your use.
 
 		// Understanding the Plugin annotation is critical to developing new SCIFIO
-		// components.
-		// Some general tips to keep in mind:
-		// - Always set Type to the most specific class possible for maximum
-		// granularity
-		// - use the "priority" field to control the order plugins are returned
-		// - use the attrs() field to allow for string-matching queries.
+		// components. Some general tips to keep in mind:
+		// - Use the "priority" field to control the order plugins are returned
+		// - Use the "attrs" field to allow for string-matching queries.
 
 		// For a discussion of how to define your own services, take a look at
-		// T3bCustomFormats
+		// T3bCustomFormats.
 
 		// For examples of using and querying attributes, look at
 		// io.scifDefaultTranslatorService,
