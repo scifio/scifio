@@ -44,6 +44,7 @@ import java.util.TreeSet;
 
 import org.scijava.Contextual;
 import org.scijava.InstantiableException;
+import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 
 /**
@@ -58,8 +59,8 @@ import org.scijava.plugin.PluginInfo;
  * conflicts.
  * </p>
  * <p>
- * On construction, all {@link io.scif.discovery.DiscoverableFilter} annotated
- * classes are discovered via {@code SezPoz}. All items whose
+ * On construction, all Filter classes annotated with {@link Plugin} are
+ * discovered by the SciJava Common framework. All items whose
  * {@code wrappedClass()} return the same class as was used to construct this
  * {@code MasterFilterHelper} will be added to the list of filters for future
  * use. Filters are initially enabled or disabled based on their
@@ -73,9 +74,8 @@ import org.scijava.plugin.PluginInfo;
  * </p>
  * 
  * @author Mark Hiner
- * @see io.scif.discovery.DiscoverableFilter
  * @see io.scif.filters.MasterFilter
- * @see io.scif.fitlers.Filter
+ * @see io.scif.filters.Filter
  */
 public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 	implements MasterFilter<T>

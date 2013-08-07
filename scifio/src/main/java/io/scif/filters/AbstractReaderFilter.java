@@ -50,12 +50,17 @@ import java.util.List;
 
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
 /**
  * Abstract superclass for all {@link io.scif.filters.Filter} that delegate to
  * {@link io.scif.Reader} instances.
+ * <p>
+ * NB: All concrete implementations of this interface should be annotated as
+ * {@link Plugin} for automatic discovery.
+ * </p>
  * <p>
  * NB: This class attempts to locate a type-matching MetadataWrapper to
  * protectively wrap the wrapped {@code Reader}'s Metadata. If none is found, a
