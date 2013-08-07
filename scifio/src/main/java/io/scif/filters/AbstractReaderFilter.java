@@ -53,6 +53,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
+import org.scijava.util.ClassUtils;
 
 /**
  * Abstract superclass for all {@link io.scif.filters.Filter} that delegate to
@@ -155,19 +156,17 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 			final String wrapperClassName = info.get(MetadataWrapper.METADATA_KEY);
 
 			if (wrapperClassName != null) {
-				Class<?> wrapperClass;
-				try {
-					wrapperClass = Class.forName(wrapperClassName);
-					if (wrapperClass.isAssignableFrom(getClass())) {
-						final MetadataWrapper metaWrapper =
-							pluginService.createInstance(info);
-						metaWrapper.wrap(r.getMetadata());
-						wrappedMeta = metaWrapper;
-						return;
-					}
-				}
-				catch (final ClassNotFoundException e) {
+				final Class<?> wrapperClass = ClassUtils.loadClass(wrapperClassName);
+				if (wrapperClass == null) {
 					log().error("Failed to find class: " + wrapperClassName);
+					continue;
+				}
+				if (wrapperClass.isAssignableFrom(getClass())) {
+					final MetadataWrapper metaWrapper =
+							getContext().getService(PluginService.class).createInstance(info);
+					metaWrapper.wrap(r.getMetadata());
+					wrappedMeta = metaWrapper;
+					return;
 				}
 			}
 		}

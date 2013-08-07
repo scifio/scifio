@@ -49,6 +49,7 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.util.ClassUtils;
 
 /**
  * Default {@link io.scif.services.PluginAttributeService} implementation.
@@ -130,16 +131,12 @@ public class DefaultPluginAttributeService extends AbstractService implements
 
 				while (!matchedOr && keyIter.hasNext()) {
 					final String key = keyIter.next();
-					Class<?> c1 = null;
-					Class<?> c2 = null;
 
-					try {
-						c1 = Class.forName(orPairs.get(key));
-						c2 = Class.forName(info.get(key));
-					}
-					catch (final ClassNotFoundException e) {
+					final Class<?> c1 = ClassUtils.loadClass(orPairs.get(key));
+					final Class<?> c2 = ClassUtils.loadClass(info.get(key));
+					if (c1 == null || c2 == null) {
 						throw new IllegalArgumentException(
-							"Class name attribute was invalid or not found.", e);
+							"Class name attribute was invalid or not found.");
 					}
 
 					if (exact ? c2.equals(c1) : c2.isAssignableFrom(c1)) matchedOr = true;
@@ -155,16 +152,12 @@ public class DefaultPluginAttributeService extends AbstractService implements
 
 				while (valid && keyIter.hasNext()) {
 					final String key = keyIter.next();
-					Class<?> c1 = null;
-					Class<?> c2 = null;
 
-					try {
-						c1 = Class.forName(andPairs.get(key));
-						c2 = Class.forName(info.get(key));
-					}
-					catch (final ClassNotFoundException e) {
+					final Class<?> c1 = ClassUtils.loadClass(andPairs.get(key));
+					final Class<?> c2 = ClassUtils.loadClass(info.get(key));
+					if (c1 == null || c2 == null) {
 						throw new IllegalArgumentException(
-							"Class name attribute was invalid or not found.", e);
+							"Class name attribute was invalid or not found.");
 					}
 
 					if (!(exact ? c2.equals(c1) : c2.isAssignableFrom(c1))) valid = false;

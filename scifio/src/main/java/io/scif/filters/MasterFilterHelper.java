@@ -46,6 +46,7 @@ import org.scijava.Contextual;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
+import org.scijava.util.ClassUtils;
 
 /**
  * Helper class for {@link io.scif.filters.MasterFilter} implementations. Takes
@@ -112,20 +113,31 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 			final String filterClassName = info.get(FILTER_KEY);
 
 			if (filterClassName != null) {
-				Class<?> filterClass;
-				try {
-					filterClass = Class.forName(filterClassName);
-					if (filterClass.isAssignableFrom(wrapped.getClass())) {
-						refMap.put((Class<? extends Filter>) Class.forName(info.getClassName()), info);
-						final String defaultEnabled = info.get(ENABLED_KEY);
-						if (Boolean.getBoolean(defaultEnabled)) enable(info.getPluginClass());
+				final Class<?> filterClass = ClassUtils.loadClass(filterClassName);
+				if (filterClass == null) {
+					log().error("Failed to find filter: " + filterClassName);
+					continue;
+				}
+				if (filterClass.isAssignableFrom(wrapped.getClass())) {
+					final Class<? extends Filter> c;
+					try {
+						c = info.loadClass();
 					}
-				}
-				catch (final ClassNotFoundException e) {
-					log().error("Failed to find class: " + filterClassName);
-				}
-				catch (final InstantiableException e) {
-					log().error("Failed to create instance: " + filterClassName);
+					catch (final InstantiableException e) {
+						log().error("Failed to load filter: " + info.getClassName(), e);
+						continue;
+					}
+					refMap.put(c, info);
+					final String defaultEnabled = info.get(ENABLED_KEY);
+					if (Boolean.getBoolean(defaultEnabled)) {
+						try {
+							enable(info.getPluginClass());
+						}
+						catch (final InstantiableException e) {
+							log().error("Failed to enable filter: " + info.getPluginClass(),
+								e);
+						}
+					}
 				}
 			}
 		}
