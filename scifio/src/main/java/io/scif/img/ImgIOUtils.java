@@ -169,8 +169,7 @@ public final class ImgIOUtils {
 	}
 
 	/** Converts SCIFIO pixel type to ImgLib2 Type object. */
-	@SuppressWarnings("unchecked")
-	public static <T extends RealType<T>> T makeType(final int pixelType) {
+	public static RealType<?> makeType(final int pixelType) {
 		final RealType<?> type;
 		switch (pixelType) {
 			case FormatTools.UINT8:
@@ -200,7 +199,7 @@ public final class ImgIOUtils {
 			default:
 				type = null;
 		}
-		return (T) type;
+		return type;
 	}
 
 	/**

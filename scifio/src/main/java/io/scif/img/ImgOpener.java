@@ -174,10 +174,9 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-		final String source) throws ImgIOException
-	{
-		return openImg(source, (T) null);
+	@SuppressWarnings("rawtypes")
+	public ImgPlus openImg(final String source) throws ImgIOException {
+		return openImg(source, new ImgOptions());
 	}
 
 	/**
@@ -205,10 +204,27 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-		final String source, final ImgOptions imgOptions) throws ImgIOException
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ImgPlus openImg(final String source, final ImgOptions imgOptions)
+		throws ImgIOException
 	{
-		return openImg(source, null, imgOptions);
+		final Reader r = createReader(source, imgOptions);
+		final RealType t = getType(r, imgOptions);
+
+		final ImgFactoryHeuristic heuristic = getHeuristic(imgOptions);
+
+		ImgFactory imgFactory;
+		try {
+			if (NativeType.class.isAssignableFrom(t.getClass())) imgFactory =
+				heuristic.createFactory(r.getMetadata(), imgOptions.getImgModes(),
+					(NativeType) t);
+			else return null;
+		}
+		catch (final IncompatibleTypeException e) {
+			throw new ImgIOException(e);
+		}
+
+		return openImg(r, t, imgFactory, imgOptions);
 	}
 
 	/**
@@ -222,46 +238,30 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-		final String source, T type, final ImgOptions imgOptions)
+		final String source, final T type, final ImgOptions imgOptions)
 		throws ImgIOException
 	{
-		try {
-			final Reader r = createReader(source, imgOptions);
-			if (type == null) type =
-				ImgIOUtils
-					.makeType(r.getMetadata().getPixelType(imgOptions.getIndex()));
+		final Reader r = createReader(source, imgOptions);
 
-			ImgFactoryHeuristic heuristic = imgOptions.getImgFactoryHeuristic();
-
-			if (heuristic == null) heuristic = new DefaultImgFactoryHeuristic();
-
-			final ImgFactory<T> imgFactory =
-				heuristic.createFactory(r.getMetadata(), imgOptions.getImgModes());
-
-			return openImg(r, type, imgFactory, imgOptions);
-
-		}
-		catch (final FormatException e) {
-			throw new ImgIOException(e);
-		}
-		catch (final IOException e) {
-			throw new ImgIOException(e);
-		}
-		catch (final IncompatibleTypeException e) {
-			throw new ImgIOException(e);
-		}
+		return openImg(r, type, imgOptions);
 	}
 
 	/**
 	 * @param source - the location of the dataset to open
 	 * @param imgFactory - The {@link ImgFactory} to use for creating the
-	 *          resultant {@link ImgPlus}. * @return - the {@link ImgPlus} or null
+	 *          resultant {@link ImgPlus}.
+	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	public <T extends RealType<T>> ImgPlus<T> openImg(final String source,
-		final ImgFactory<T> imgFactory) throws ImgIOException
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ImgPlus openImg(final String source, final ImgFactory imgFactory)
+		throws ImgIOException
 	{
-		return openImg(source, imgFactory, null);
+		final ImgOptions imgOptions = new ImgOptions().setComputeMinMax(true);
+		final Reader r = createReader(source, imgOptions);
+		final RealType t = getType(r, imgOptions);
+
+		return openImg(r, t, imgFactory, imgOptions);
 	}
 
 	/**
@@ -274,25 +274,33 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T extends RealType<T>> ImgPlus<T> openImg(final String source,
-		final ImgFactory<T> imgFactory, T type) throws ImgIOException
+		final ImgFactory<T> imgFactory, final T type) throws ImgIOException
 	{
 
-		Reader r;
 		final ImgOptions imgOptions = new ImgOptions().setComputeMinMax(true);
+		final Reader r = createReader(source, imgOptions);
+
+		return openImg(r, type, imgFactory, imgOptions);
+	}
+
+	public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
+		final Reader reader, final T type, final ImgOptions imgOptions)
+		throws ImgIOException
+	{
+
+		final ImgFactoryHeuristic heuristic = getHeuristic(imgOptions);
+
+		ImgFactory<T> imgFactory;
 		try {
-			r = createReader(source, imgOptions);
-			if (type == null) type =
-				ImgIOUtils
-					.makeType(r.getMetadata().getPixelType(imgOptions.getIndex()));
+			imgFactory =
+				heuristic.createFactory(reader.getMetadata(), imgOptions.getImgModes(),
+					type);
 		}
-		catch (final IOException e) {
-			throw new ImgIOException(e);
-		}
-		catch (final FormatException e) {
+		catch (final IncompatibleTypeException e) {
 			throw new ImgIOException(e);
 		}
 
-		return openImg(r, type, imgFactory, imgOptions);
+		return openImg(reader, type, imgFactory, imgOptions);
 	}
 
 	/**
@@ -361,6 +369,22 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 
 	// -- Helper methods --
 
+	@SuppressWarnings("rawtypes")
+	private RealType getType(final Reader r, final ImgOptions options) {
+		int imageIndex = 0;
+		if (options != null) imageIndex = options.getIndex();
+
+		return ImgIOUtils.makeType(r.getMetadata().getPixelType(imageIndex));
+	}
+
+	private ImgFactoryHeuristic getHeuristic(final ImgOptions imgOptions) {
+		ImgFactoryHeuristic heuristic = imgOptions.getImgFactoryHeuristic();
+
+		if (heuristic == null) heuristic = new DefaultImgFactoryHeuristic();
+
+		return heuristic;
+	}
+
 	/**
 	 * @param io - An ImgOpener instance
 	 * @param source - Dataset source to open
@@ -368,7 +392,7 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 	 * @return A Reader initialized to open the specified id
 	 */
 	private Reader createReader(final String source, final ImgOptions imgOptions)
-		throws FormatException, IOException
+		throws ImgIOException
 	{
 
 		final boolean openFile = imgOptions.getCheckMode().equals(CheckMode.DEEP);
@@ -376,15 +400,20 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 		getContext().getService(StatusService.class).showStatus(
 			"Initializing " + source);
 
-		final ReaderFilter r =
-			scifio().initializer().initializeReader(source, openFile);
-
+		ReaderFilter r = null;
 		try {
+			r = scifio().initializer().initializeReader(source, openFile);
 			r.enable(ChannelSeparator.class);
 			if (computeMinMax) r.enable(MinMaxFilter.class);
 		}
+		catch (final FormatException e) {
+			throw new ImgIOException(e);
+		}
+		catch (final IOException e) {
+			throw new ImgIOException(e);
+		}
 		catch (final InstantiableException e) {
-			throw new FormatException(e);
+			throw new ImgIOException(e);
 		}
 		return r;
 	}
@@ -575,7 +604,9 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 
 		// get container
 		final PlanarAccess<?> planarAccess = ImgIOUtils.getPlanarAccess(imgPlus);
-		final T inputType = ImgIOUtils.makeType(r.getMetadata().getPixelType(0));
+		@SuppressWarnings("rawtypes")
+		final RealType inputType =
+			ImgIOUtils.makeType(r.getMetadata().getPixelType(0));
 		final T outputType = type;
 		final boolean compatibleTypes =
 			outputType.getClass().isAssignableFrom(inputType.getClass());

@@ -47,7 +47,6 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 
 /**
  * Default {@link ImgFactoryHeuristic} implementation. Uses the following
@@ -77,16 +76,11 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 
 	// -- ImgFactoryHeuristic API Methods --
 
-	/*
-	 * @see ImgFactoryHeuristic#createFactory(m, ImgMode[])
-	 */
-	public <T extends RealType<T> & NativeType<T>> ImgFactory<T> createFactory(
-		final Metadata m, final ImgMode[] imgModes)
+	public <T extends NativeType<T>> ImgFactory<T> createFactory(
+		final Metadata m, final ImgMode[] imgModes, final T type)
 		throws IncompatibleTypeException
 	{
 		ImgFactory<T> tmpFactory = null;
-
-		final T type = ImgIOUtils.makeType(m.getPixelType(0));
 
 		// Max size of a plane of a PlanarImg, or total dataset for ArrayImg. 2GB.
 		final long maxSize = DataTools.safeMultiply64(2, 1024, 1024, 1024);

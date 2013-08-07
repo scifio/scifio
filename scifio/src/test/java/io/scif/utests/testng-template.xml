@@ -288,6 +288,11 @@
         <class name="io.scif.img.cell.cache.utests.CacheServiceTest"/>
       </classes>
     </test>
+    <test name="ImgOpenerTest">
+      <classes>
+        <class name="io.scif.img.utests.ImgOpenerTest"/>
+      </classes>
+    </test>
     <!--
     <test name="Encoding">
       <classes>
