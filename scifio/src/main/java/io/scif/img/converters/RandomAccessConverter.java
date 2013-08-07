@@ -34,16 +34,20 @@
  * #L%
  */
 
-package io.scif.img;
+package io.scif.img.converters;
 
 import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.common.DataTools;
+import io.scif.img.ImgOpener;
+import io.scif.img.ImgOptions;
 import io.scif.util.FormatTools;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Generalized {@link PlaneConverter} implementation. Can populate any
@@ -52,7 +56,8 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Mark Hiner
  */
-public class RandomAccessConverter implements PlaneConverter {
+@Plugin(type = PlaneConverter.class, name = "Default")
+public class RandomAccessConverter extends AbstractPlaneConverter {
 
 	/**
 	 * Uses a cursor to populate the plane. This solution is general and works

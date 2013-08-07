@@ -1,7 +1,8 @@
 
-package io.scif.img;
+package io.scif.img.converters;
 
 import io.scif.Reader;
+import io.scif.img.ImgOptions;
 import io.scif.img.cell.loaders.BitArrayLoader;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.CharArrayLoader;
@@ -21,6 +22,8 @@ import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.plugin.Plugin;
 
 /*
  * #%L
@@ -64,7 +67,8 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Mark Hiner
  */
-public class ArrayDataAccessConverter implements PlaneConverter {
+@Plugin(type = PlaneConverter.class, name = "ArrayDataAccess")
+public class ArrayDataAccessConverter extends AbstractPlaneConverter {
 
 	public <T extends RealType<T>> void populatePlane(final Reader reader,
 		final int imageIndex, final int planeIndex, final byte[] source,

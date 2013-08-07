@@ -36,6 +36,7 @@
 
 package io.scif.img;
 
+import io.scif.img.converters.PlaneConverter;
 import net.imglib2.Interval;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.cell.CellImgFactory;

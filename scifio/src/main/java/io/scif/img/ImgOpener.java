@@ -49,6 +49,8 @@ import io.scif.filters.ReaderFilter;
 import io.scif.img.ImgOptions.CheckMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.img.cell.cache.CacheService;
+import io.scif.img.converters.PlaneConverter;
+import io.scif.img.converters.PlaneConverterService;
 import io.scif.services.InitializeService;
 import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
@@ -727,13 +729,14 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 			// if it's we have a PlanarAccess we can use a PlanarAccess converter,
 			// otherwise
 			// we can use a more general RandomAccess approach
+			PlaneConverterService pcService = getContext().getService(PlaneConverterService.class);
 			if (isArray) {
-				converter = new ArrayDataAccessConverter();
+				converter = pcService.getArrayConverter();
 			}
 			else if (isPlanar) {
-				converter = new PlanarAccessConverter();
+				converter = pcService.getPlanarConverter();
 			}
-			else converter = new RandomAccessConverter();
+			else converter = pcService.getDefaultConverter();
 		}
 
 		// We have to manually reset the 2nd and 3rd indices after the inner loops

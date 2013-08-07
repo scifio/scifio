@@ -34,28 +34,52 @@
  * #L%
  */
 
-package io.scif.img;
+package io.scif.img.converters;
 
+import io.scif.Metadata;
 import io.scif.Reader;
+import io.scif.common.DataTools;
+import io.scif.img.ImgIOUtils;
+import io.scif.img.ImgOptions;
+import io.scif.util.FormatTools;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.plugin.Plugin;
+
 /**
- * Interface for using planes read by SCIFIO {@link Reader}s to populate
- * {@link ImgPlus} instances.
+ * {@link PlaneConverter} implementation specialized for populating
+ * {@link PlanarAccess} instances.
  * 
  * @author Mark Hiner
  */
-public interface PlaneConverter {
+@Plugin(type = PlaneConverter.class, name = "PlanarAccess")
+public class PlanarAccessConverter extends AbstractPlaneConverter {
 
-	/**
-	 * @param reader Reader that was used to open the source plane
-	 * @param imageIndex image index within the dataset
-	 * @param planeIndex plane index within the image
-	 * @param source the opened plane
-	 * @param dest the ImgPlus to populate
-	 * @param imgOptions ImgOptions for opening this plane
-	 */
-	<T extends RealType<T>> void populatePlane(Reader reader, int imageIndex,
-		int planeIndex, byte[] source, ImgPlus<T> dest, ImgOptions imgOptions);
+	/** Populates plane by reference using {@link PlanarAccess} interface. */
+	@SuppressWarnings("unchecked")
+	public <T extends RealType<T>> void populatePlane(final Reader reader,
+		final int imageIndex, final int planeIndex, final byte[] plane,
+		final ImgPlus<T> planarImg, final ImgOptions imgOptions)
+	{
+
+		final Metadata m = reader.getMetadata();
+
+		@SuppressWarnings("rawtypes")
+		final PlanarAccess planarAccess = ImgIOUtils.getPlanarAccess(planarImg);
+		final int pixelType = m.getPixelType(imageIndex);
+		final int bpp = FormatTools.getBytesPerPixel(pixelType);
+		final boolean fp = FormatTools.isFloatingPoint(pixelType);
+		final boolean little = m.isLittleEndian(imageIndex);
+		Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
+		if (planeArray == plane) {
+			// array was returned by reference; make a copy
+			final byte[] planeCopy = new byte[plane.length];
+			System.arraycopy(plane, 0, planeCopy, 0, plane.length);
+			planeArray = planeCopy;
+		}
+		planarAccess.setPlane(planeIndex, ImgIOUtils.makeArray(planeArray));
+	}
+
 }
