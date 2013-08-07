@@ -54,7 +54,9 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 
 /**
- *
+ * TODO
+ * 
+ * @author Melissa Linkert
  */
 public class JPEGTileDecoder extends AbstractContextual {
 
