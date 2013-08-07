@@ -71,8 +71,7 @@ public class T3bCustomFormats {
 			(format != null));
 
 		// Using the FormatService provides access to a consistent singleton Format
-		// within
-		// the context.
+		// within the context.
 
 		// Next let's suspend our disbelief and imagine that the SampleFormat was
 		// not annotated and thus not discovered automatically when constructing
@@ -101,18 +100,20 @@ public class T3bCustomFormats {
 		// See the TranslatingMetadata tutorial for more information.
 	}
 
-	/*
+	/**
 	 * This is a non-functional Format which adds "support" for a fictional
 	 * ".scifiosmpl" image type.
-	 * 
-	 * Note the annotation: Plugin. All Formats are plugins for the scijava
+	 * <p>
+	 * Note the annotation: Plugin. All Formats are plugins for the SciJava
 	 * Context, which allows them to be automatically discovered and instantiated
 	 * as singletons whenever a Context is created.
+	 * </p>
+	 * <p>
+	 * Contexts also use a special type of plugin, Service, for performing
+	 * operations within the scope of that context. The FormatService plugin deals
+	 * with managing Formats within the context.
+	 * </p>
 	 * 
-	 * Contexts also use a special type of plugin, Service, for performing operations
-	 * within the scope of that context. The FormatService plugin deals with managing
-	 * Formats within the context.
-	 *
 	 * @author Mark Hiner
 	 */
 	@Plugin(type = Format.class)
@@ -128,8 +129,7 @@ public class T3bCustomFormats {
 
 		// A lot of work is done for you in the AbstractFormat and Abstact component
 		// classes. But you will always need to implement these methods when
-		// defining
-		// a new Format.
+		// defining a new Format.
 
 		// First we have to declare a name for our Format.
 		public String getFormatName() {
