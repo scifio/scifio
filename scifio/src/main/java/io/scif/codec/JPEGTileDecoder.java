@@ -48,46 +48,53 @@ import java.awt.image.ImageProducer;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
- *
+ * TODO
+ * 
+ * @author Melissa Linkert
  */
-public class JPEGTileDecoder {
+public class JPEGTileDecoder extends AbstractContextual {
 
 	// -- Fields --
+
+	@Parameter
+	private LogService log;
 
 	private TileConsumer consumer;
 	private TileCache tiles;
 	private RandomAccessInputStream in;
-	private LogService log;
+
+	public JPEGTileDecoder(final Context ctx) {
+		setContext(ctx);
+	}
 
 	// -- JPEGTileDecoder API methods --
 
-	public void initialize(final Context ctx, final String id,
-		final int imageWidth)
-	{
+	public void initialize(final String id, final int imageWidth) {
 		try {
-			initialize(ctx, new RandomAccessInputStream(ctx, id), imageWidth);
+			initialize(new RandomAccessInputStream(getContext(), id), imageWidth);
 		}
 		catch (final IOException e) {
 			log.debug("", e);
 		}
 	}
 
-	public void initialize(final Context ctx, final RandomAccessInputStream in,
-		final int imageWidth)
+	public void
+		initialize(final RandomAccessInputStream in, final int imageWidth)
 	{
-		initialize(ctx, in, 0, 0, imageWidth);
+		initialize(in, 0, 0, imageWidth);
 	}
 
-	public void initialize(final Context ctx, final RandomAccessInputStream in,
-		final int y, final int h, final int imageWidth)
+	public void initialize(final RandomAccessInputStream in, final int y,
+		final int h, final int imageWidth)
 	{
 		this.in = in;
-		log = ctx.getService(LogService.class);
-		tiles = new TileCache(ctx, y, h);
+		tiles = new TileCache(getContext(), y, h);
 
 		// pre-process the stream to make sure that the
 		// image width and height are non-zero

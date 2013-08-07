@@ -93,7 +93,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 	 * byte ordering will be big-endian.
 	 */
 	public StreamHandle(final Context context) {
-		setContext(context);
+		if (context != null) setContext(context);
 		fp = 0;
 		order = ByteOrder.BIG_ENDIAN;
 		file = null;

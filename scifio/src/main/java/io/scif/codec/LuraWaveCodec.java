@@ -49,6 +49,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -64,7 +65,8 @@ public class LuraWaveCodec extends AbstractCodec {
 
 	// -- Fields --
 
-	private LuraWaveService service;
+	@Parameter(required = false)
+	private LuraWaveService luraWaveService;
 
 	// -- Codec API methods --
 
@@ -96,12 +98,12 @@ public class LuraWaveCodec extends AbstractCodec {
 	public byte[] decompress(final byte[] buf, final CodecOptions options)
 		throws FormatException
 	{
-		initialize();
+		checkLuraWaveService();
 
 		final BufferedInputStream stream =
 			new BufferedInputStream(new ByteArrayInputStream(buf), 4096);
 		try {
-			service.initialize(stream);
+			luraWaveService.initialize(stream);
 		}
 		catch (final DependencyException e) {
 			throw new FormatException(LuraWaveService.NO_LICENSE_MSG, e);
@@ -113,15 +115,15 @@ public class LuraWaveCodec extends AbstractCodec {
 			throw new FormatException(e);
 		}
 
-		final int w = service.getWidth();
-		final int h = service.getHeight();
+		final int w = luraWaveService.getWidth();
+		final int h = luraWaveService.getHeight();
 
 		final int nbits = 8 * (options.maxBytes / (w * h));
 
 		if (nbits == 8) {
 			final byte[] image8 = new byte[w * h];
 			try {
-				service.decodeToMemoryGray8(image8, -1, 1024, 0);
+				luraWaveService.decodeToMemoryGray8(image8, -1, 1024, 0);
 			}
 			catch (final ServiceException e) {
 				throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
@@ -131,7 +133,7 @@ public class LuraWaveCodec extends AbstractCodec {
 		else if (nbits == 16) {
 			final short[] image16 = new short[w * h];
 			try {
-				service.decodeToMemoryGray16(image16, 0, -1, 1024, 0, 1, w, 0, 0, w, h);
+				luraWaveService.decodeToMemoryGray16(image16, 0, -1, 1024, 0, 1, w, 0, 0, w, h);
 			}
 			catch (final ServiceException e) {
 				throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);
@@ -150,19 +152,13 @@ public class LuraWaveCodec extends AbstractCodec {
 	// -- Helper methods --
 
 	/**
-	 * Initializes the LuraWave dependency service. This is called at the
-	 * beginning of the {@link #decompress} method to avoid having the
-	 * constructor's method definition contain a checked exception.
+	 * Checks the LuraWave service, throwing an exception if it is not available.
 	 * 
-	 * @throws FormatException If there is an error initializing LuraWave
-	 *           services.
+	 * @throws FormatException If the LuraWave service is unavailable.
 	 */
-	private void initialize() throws FormatException {
-		if (service != null) return;
-		service = getContext().getService(LuraWaveService.class);
-
-		if (service == null) throw new MissingLibraryException(
-			LuraWaveService.NO_LURAWAVE_MSG);
+	private void checkLuraWaveService() throws FormatException {
+		if (luraWaveService != null) return;
+		throw new MissingLibraryException(LuraWaveService.NO_LURAWAVE_MSG);
 	}
 
 }

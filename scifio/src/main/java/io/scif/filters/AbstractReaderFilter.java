@@ -49,16 +49,13 @@ import java.io.IOException;
 import java.util.List;
 
 import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
 /**
  * Abstract superclass for all {@link io.scif.filters.Filter} that delegate to
  * {@link io.scif.Reader} instances.
- * <p>
- * NB: All concrete implementations of this interface should be annotated as
- * {@link io.scif.discovery.DiscoverableFilter} for discovery by {@code SezPoz}.
- * </p>
  * <p>
  * NB: This class attempts to locate a type-matching MetadataWrapper to
  * protectively wrap the wrapped {@code Reader}'s Metadata. If none is found, a
@@ -68,8 +65,6 @@ import org.scijava.plugin.PluginService;
  * @author Mark Hiner
  * @see io.scif.Reader
  * @see io.scif.filters.Filter
- * @see io.scif.discovery.DiscoverableFilter
- * @see io.scif.discovery.DiscoverableMetadataWrapper
  * @see io.scif.filters.AbstractMetadataWrapper
  */
 public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
@@ -82,6 +77,9 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	private Metadata wrappedMeta = null;
 
 	private final Class<? extends Metadata> metaClass;
+
+	@Parameter
+	private PluginService pluginService;
 
 	// -- Constructor --
 
@@ -157,7 +155,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 					wrapperClass = Class.forName(wrapperClassName);
 					if (wrapperClass.isAssignableFrom(getClass())) {
 						final MetadataWrapper metaWrapper =
-							getContext().getService(PluginService.class).createInstance(info);
+							pluginService.createInstance(info);
 						metaWrapper.wrap(r.getMetadata());
 						wrappedMeta = metaWrapper;
 						return;

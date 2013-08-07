@@ -39,7 +39,6 @@ package io.scif.filters;
 import io.scif.SCIFIOComponent;
 import io.scif.SCIFIOPlugin;
 
-import org.scijava.Contextual;
 import org.scijava.Prioritized;
 
 /**
@@ -56,9 +55,7 @@ import org.scijava.Prioritized;
  * 
  * @author Mark Hiner
  */
-public interface Filter extends SCIFIOComponent, SCIFIOPlugin, Prioritized,
-	Contextual
-{
+public interface Filter extends SCIFIOComponent, SCIFIOPlugin, Prioritized {
 
 	public static final String FILTER_KEY = "Filters";
 	public static final String FILTER_VALUE = "java.lang.Object";

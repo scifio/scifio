@@ -74,6 +74,7 @@ import net.imglib2.type.numeric.RealType;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.app.StatusService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Reads in an {@link ImgPlus} using SCIFIO.
@@ -84,6 +85,9 @@ import org.scijava.app.StatusService;
  * @author Stephan Saalfeld
  */
 public class ImgOpener extends AbstractSCIFIOComponent {
+
+	@Parameter
+	private StatusService statusService;
 
 	// -- Constructors --
 
@@ -343,8 +347,7 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 		// If we have a planar img, read the planes now. Otherwise they
 		// will be read on demand.
 		if (AbstractCellImgFactory.class.isAssignableFrom(imgFactory.getClass())) {
-			getContext().getService(StatusService.class).showStatus(
-				"Created CellImg for dynamic loading");
+			statusService.showStatus("Created CellImg for dynamic loading");
 		}
 		else {
 			final float startTime = System.currentTimeMillis();
@@ -360,8 +363,8 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 			}
 			final long endTime = System.currentTimeMillis();
 			final float time = (endTime - startTime) / 1000f;
-			getContext().getService(StatusService.class).showStatus(
-				id + ": read " + planeCount + " planes in " + time + "s");
+			statusService.showStatus(id + ": read " + planeCount + " planes in " +
+				time + "s");
 		}
 
 		return imgPlus;
@@ -397,8 +400,7 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 
 		final boolean openFile = imgOptions.getCheckMode().equals(CheckMode.DEEP);
 		final boolean computeMinMax = imgOptions.isComputeMinMax();
-		getContext().getService(StatusService.class).showStatus(
-			"Initializing " + source);
+		statusService.showStatus("Initializing " + source);
 
 		ReaderFilter r = null;
 		try {
@@ -617,9 +619,6 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 			ImgIOUtils.getArrayAccess(imgPlus) != null && compatibleTypes;
 
 		Plane plane = null;
-
-		final StatusService statusService =
-			getContext().getService(StatusService.class);
 
 		final Interval interval = imgOptions.getInterval();
 		final boolean checkSubregion = interval != null;

@@ -74,6 +74,9 @@ public class DefaultLocationService extends AbstractService implements
 	@Parameter
 	private NIOService nioService;
 
+	@Parameter
+	private PluginService pluginService;
+
 	/** Map from given filenames to actual filenames. */
 	private HashMap<String, Object> idMap = new HashMap<String, Object>();
 
@@ -239,8 +242,7 @@ public class DefaultLocationService extends AbstractService implements
 
 			if (allowArchiveHandles) {
 				for (final PluginInfo<IStreamAccess> info : streamInfos) {
-					handle =
-						getContext().getService(PluginService.class).createInstance(info);
+					handle = pluginService.createInstance(info);
 					if (((IStreamAccess) handle).isConstructable(id)) {
 						((IStreamAccess) handle).setFile(id);
 						break;

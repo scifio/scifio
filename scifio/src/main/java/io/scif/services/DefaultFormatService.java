@@ -75,10 +75,6 @@ public class DefaultFormatService extends AbstractService implements
 	@Parameter
 	private PluginService pluginService;
 
-	// NB: needed for JEPG2000 format, which is a core format
-	@Parameter
-	private JAIIIOService jaiiioService;
-
 	// -- Fields --
 
 	/*
