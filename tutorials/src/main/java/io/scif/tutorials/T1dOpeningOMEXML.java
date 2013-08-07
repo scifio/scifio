@@ -41,12 +41,10 @@ public class T1dOpeningOMEXML {
 		// Creation of OME-XML metadata in SCIFIO is accomplished via translation.
 		// The OME-XML component is essentially a collection of translators, from
 		// specific formats to OME-XML, which define how to extract the OME-XML
-		// schema.
-		// So, we will need to work with a sample image that has a defined
-		// translator
-		// to OME-XML. Luckily we already have a tutorial which creates a PNG image
-		// for us:
-		T1cSavingImagePlanes.main(new String[] {});
+		// schema. So, we will need to work with a sample image that has a defined
+		// translator to OME-XML. Luckily we already have a tutorial which creates a
+		// PNG image for us:
+		T1cSavingImagePlanes.main();
 
 		// We'll need a context for discovering formats and translators
 		final SCIFIO scifio = new SCIFIO();
@@ -58,17 +56,17 @@ public class T1dOpeningOMEXML {
 		Metadata meta = null;
 
 		// NB: we could use the following line here:
-		// Reader reader =
-		// context.getService(SCIFIO.class).initializer().initializeReader(sampleImage);
+		//
+		// Reader reader = scifio.initializer().initializeReader(sampleImage);
+		//
 		// which would provide us with an initialized reader. We could then obtain
-		// its Metadata
-		// for Translation:
+		// its Metadata for Translation:
+		//
 		// meta = reader.getMetadata();
+		//
 		// If we were going to continue to use that Reader for more operations this
-		// would
-		// be quite reasonable. But if we ONLY want the Metadata, it's really doing
-		// more than
-		// we need. We just need a Parser:
+		// would be quite reasonable. But if we ONLY want the Metadata, it's really
+		// doing more than we need. We just need a Parser:
 
 		final Format format = scifio.format().getFormat(outPath);
 		final Parser parser = format.createParser();
@@ -79,8 +77,7 @@ public class T1dOpeningOMEXML {
 		meta = parser.parse(outPath);
 
 		// Now that we have our source Metadata, we will need OME-XML Metadata to
-		// translate
-		// to:
+		// translate to:
 
 		final OMEMetadata omexml = new OMEMetadata();
 		omexml.setContext(scifio.getContext());
