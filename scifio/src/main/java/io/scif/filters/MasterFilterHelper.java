@@ -118,7 +118,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 					if (filterClass.isAssignableFrom(wrapped.getClass())) {
 						refMap.put((Class<? extends Filter>) Class.forName(info.getClassName()), info);
 						final String defaultEnabled = info.get(ENABLED_KEY);
-						if (Boolean.getBoolean(defaultEnabled)) enable(info.getPluginType());
+						if (Boolean.getBoolean(defaultEnabled)) enable(info.getPluginClass());
 					}
 				}
 				catch (final ClassNotFoundException e) {
