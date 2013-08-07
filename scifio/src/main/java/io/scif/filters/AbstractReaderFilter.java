@@ -57,10 +57,6 @@ import org.scijava.plugin.PluginService;
  * Abstract superclass for all {@link io.scif.filters.Filter} that delegate to
  * {@link io.scif.Reader} instances.
  * <p>
- * NB: All concrete implementations of this interface should be annotated as
- * {@link io.scif.discovery.DiscoverableFilter} for discovery by {@code SezPoz}.
- * </p>
- * <p>
  * NB: This class attempts to locate a type-matching MetadataWrapper to
  * protectively wrap the wrapped {@code Reader}'s Metadata. If none is found, a
  * reference to the {@code Reader's} Metadata itself is used.
@@ -69,8 +65,6 @@ import org.scijava.plugin.PluginService;
  * @author Mark Hiner
  * @see io.scif.Reader
  * @see io.scif.filters.Filter
- * @see io.scif.discovery.DiscoverableFilter
- * @see io.scif.discovery.DiscoverableMetadataWrapper
  * @see io.scif.filters.AbstractMetadataWrapper
  */
 public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
