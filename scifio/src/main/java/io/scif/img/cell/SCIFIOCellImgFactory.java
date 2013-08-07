@@ -161,9 +161,11 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	@SuppressWarnings("unchecked")
 	@Override
 	public SCIFIOCellImg<T, ?, ?> create(final long[] dim, final T type) {
-		if (reader == null) throw new IllegalStateException(
-			"Tried to create a new SCIFIOCellImg without a Reader to "
-				+ "use for opening planes.\nCall setReader(Reader) before invoking create()");
+		if (reader == null) {
+			throw new IllegalStateException(
+				"Tried to create a new SCIFIOCellImg without a Reader to "
+					+ "use for opening planes.\nCall setReader(Reader) before invoking create()");
+		}
 
 		return (SCIFIOCellImg<T, ?, ?>) type.createSuitableNativeImg(this, dim);
 	}
@@ -216,7 +218,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 		@SuppressWarnings("unchecked")
 		final CacheService<SCIFIOCell<?>> service =
-			reader.getContext().getServiceIndex().getService(CacheService.class);
+			reader.getContext().getService(CacheService.class);
 
 		final SCIFIOCellCache<A> c = new SCIFIOCellCache<A>(service, loader);
 
