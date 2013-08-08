@@ -66,44 +66,44 @@ public interface ImgUtilityService extends Service {
 	 * first file in the archive is cached.
 	 * </p>
 	 */
-	public String cacheId(final String urlPath) throws ImgIOException;
+	String cacheId(final String urlPath) throws ImgIOException;
 
 	/** Obtains planar access instance backing the given img, if any. */
-	public PlanarAccess<ArrayDataAccess<?>> getPlanarAccess(final ImgPlus<?> img);
+	PlanarAccess<ArrayDataAccess<?>> getPlanarAccess(final ImgPlus<?> img);
 
 	/** Obtains array access instance backing the given img, if any. */
-	public ArrayImg<?, ?> getArrayAccess(final ImgPlus<?> img);
+	ArrayImg<?, ?> getArrayAccess(final ImgPlus<?> img);
 
 	/** Converts SCIFIO pixel type to ImgLib2 Type object. */
-	public RealType<?> makeType(final int pixelType);
+	RealType<?> makeType(final int pixelType);
 
 	/**
 	 * Converts ImgLib2 Type object to SCIFIO pixel type.
 	 */
-	public int makeType(final RealType<?> type) throws ImgIOException;
+	int makeType(final RealType<?> type) throws ImgIOException;
 
 	/** Wraps raw primitive array in ImgLib2 Array object. */
-	public ArrayDataAccess<?> makeArray(final Object array);
+	ArrayDataAccess<?> makeArray(final Object array);
 	
 	/** Compiles an N-dimensional list of axis lengths from the given Metadata. */
-	public long[] getDimLengths(final Metadata m, final ImgOptions imgOptions);
+	long[] getDimLengths(final Metadata m, final ImgOptions imgOptions);
 	
 	/**
 	 * Returns an N-dimensional list of axis lengths from the given Metadata,
 	 * of a size specified by the provided SubRegion (if present)
 	 */
-	public long[] getEmptyRegion(final Metadata m, final ImgOptions imgOptions);
+	long[] getEmptyRegion(final Metadata m, final ImgOptions imgOptions);
 
 	/**
 	 * @param source - the location of the dataset to assess
 	 * @return The number of images in the specified dataset.
 	 */
-	public int getImageCount(final String source) throws ImgIOException;
+	int getImageCount(final String source) throws ImgIOException;
 
 	/**
 	 * see {@link #isCompressible(ImgPlus)}
 	 */
-	public <T extends RealType<T> & NativeType<T>> boolean isCompressible(
+	<T extends RealType<T> & NativeType<T>> boolean isCompressible(
 		final Img<T> img);
 
 	/**
@@ -116,7 +116,7 @@ public interface ImgUtilityService extends Service {
 	 * return true if the axes of the provided image can be represented with a
 	 * valid 5D String, and false otherwise.
 	 */
-	public <T extends RealType<T> & NativeType<T>> boolean isCompressible(
+	<T extends RealType<T> & NativeType<T>> boolean isCompressible(
 		final ImgPlus<T> img);
 
 	/**
@@ -127,6 +127,6 @@ public interface ImgUtilityService extends Service {
 	 * 
 	 * @param newLengths - updated to hold the lengths of the newly ordered axes
 	 */
-	public String guessDimOrder(final AxisType[] axes, final long[] dimLengths,
+	String guessDimOrder(final AxisType[] axes, final long[] dimLengths,
 		final long[] newLengths);
 }

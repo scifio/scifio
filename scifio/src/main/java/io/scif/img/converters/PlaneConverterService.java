@@ -59,31 +59,31 @@ public interface PlaneConverterService extends SingletonService<PlaneConverter>
 	/**
 	 * @return a Map of all PlaneConverter names to instances
 	 */
-	public Map<String, PlaneConverter> getPlaneConverters();
+	Map<String, PlaneConverter> getPlaneConverters();
 
 	/**
 	 * @return A List of all PlaneConverter names
 	 */
-	public List<String> getPlaneConverterNames();
+	List<String> getPlaneConverterNames();
 
 	/**
 	 * @param name The desired PlaneConverter's name
 	 * @return The PlaneConverter instance if it exists
 	 */
-	public PlaneConverter getPlaneConverter(String name);
+	PlaneConverter getPlaneConverter(String name);
 
 	/**
 	 * @return A PlaneConverter for converting to Array Imgs
 	 */
-	public PlaneConverter getArrayConverter();
+	PlaneConverter getArrayConverter();
 
 	/**
 	 * @return A PlaneConverter for converting to Planar Imgs
 	 */
-	public PlaneConverter getPlanarConverter();
+	PlaneConverter getPlanarConverter();
 
 	/**
 	 * @return A PlaneConverter for converting to any Img
 	 */
-	public PlaneConverter getDefaultConverter();
+	PlaneConverter getDefaultConverter();
 }
