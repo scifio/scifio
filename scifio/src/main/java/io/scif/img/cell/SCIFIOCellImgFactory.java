@@ -40,6 +40,7 @@ import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.common.DataTools;
 import io.scif.filters.ReaderFilter;
+import io.scif.img.SubRegion;
 import io.scif.img.cell.cache.CacheService;
 import io.scif.img.cell.loaders.BitArrayLoader;
 import io.scif.img.cell.loaders.ByteArrayLoader;
@@ -79,6 +80,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	// -- Fields --
 
 	protected Reader reader;
+	protected SubRegion subregion;
 
 	// -- Constuctors --
 
@@ -98,7 +100,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	public SCIFIOCellImg<T, BitArray, SCIFIOCell<BitArray>> createBitInstance(
 		final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new BitArrayLoader(reader()), dimensions,
+		return createInstance(new BitArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
 	}
 
@@ -106,7 +108,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	public SCIFIOCellImg<T, ByteArray, SCIFIOCell<ByteArray>> createByteInstance(
 		final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new ByteArrayLoader(reader()), dimensions,
+		return createInstance(new ByteArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
 	}
 
@@ -114,7 +116,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	public SCIFIOCellImg<T, CharArray, SCIFIOCell<CharArray>> createCharInstance(
 		final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new CharArrayLoader(reader()), dimensions,
+		return createInstance(new CharArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
 	}
 
@@ -122,7 +124,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	public SCIFIOCellImg<T, ShortArray, SCIFIOCell<ShortArray>>
 		createShortInstance(final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new ShortArrayLoader(reader()), dimensions,
+		return createInstance(new ShortArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
 	}
 
@@ -130,7 +132,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	public SCIFIOCellImg<T, IntArray, SCIFIOCell<IntArray>> createIntInstance(
 		final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new IntArrayLoader(reader()), dimensions,
+		return createInstance(new IntArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
 	}
 
@@ -138,7 +140,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	public SCIFIOCellImg<T, LongArray, SCIFIOCell<LongArray>> createLongInstance(
 		final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new LongArrayLoader(reader()), dimensions,
+		return createInstance(new LongArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
 	}
 
@@ -146,7 +148,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	public SCIFIOCellImg<T, FloatArray, SCIFIOCell<FloatArray>>
 		createFloatInstance(final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new FloatArrayLoader(reader()), dimensions,
+		return createInstance(new FloatArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
 	}
 
@@ -154,7 +156,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	public SCIFIOCellImg<T, DoubleArray, SCIFIOCell<DoubleArray>>
 		createDoubleInstance(final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new DoubleArrayLoader(reader()), dimensions,
+		return createInstance(new DoubleArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
 	}
 
@@ -195,6 +197,10 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		final int[] cellXY = getOptimalCellXY(reader);
 
 		defaultCellDimensions = new int[] { cellXY[0], cellXY[1], 1, 1, 1 };
+	}
+	
+	public void setSubRegion(SubRegion region) {
+		subregion = region;
 	}
 
 	@Override

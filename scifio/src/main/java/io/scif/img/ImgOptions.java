@@ -37,7 +37,6 @@
 package io.scif.img;
 
 import io.scif.img.converters.PlaneConverter;
-import net.imglib2.Interval;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
@@ -107,7 +106,7 @@ public class ImgOptions {
 	private CheckMode checkMode;
 
 	// sub-region specification for opening portions of an image
-	private Interval interval;
+	private SubRegion region;
 
 	// Whether or not to use a MinMaxFilter
 	private boolean computeMinMax;
@@ -139,7 +138,7 @@ public class ImgOptions {
 		checkMode = CheckMode.SHALLOW;
 		computeMinMax = false;
 		index = 0;
-		interval = null;
+		region = null;
 		planeConverter = null;
 		imgFactoryHeuristic = null;
 
@@ -222,23 +221,23 @@ public class ImgOptions {
 	}
 
 	/**
-	 * Returns an array of dimension lengths. This may be of a different
-	 * dimensionality than the underlying image, in which case the lengths are
-	 * assume to be in the natural ordering of the image.
+	 * Returns a {@link SubRegion} specifying dimension constraints. This may be
+	 * of a different dimensionality than the underlying image, in which case the
+	 * lengths are assume to be in the natural ordering of the image.
 	 * 
 	 * @return An Subregion specifying dimension offsets and lengths. Default:
 	 *         null
 	 */
-	public Interval getInterval() {
-		return interval;
+	public SubRegion getRegion() {
+		return region;
 	}
 
 	/**
-	 * @param interval Region constraints for any image to open
+	 * @param region Region constraints for any image to open
 	 * @return A reference to this ImgOptions instance.
 	 */
-	public ImgOptions setInterval(final Interval interval) {
-		this.interval = interval;
+	public ImgOptions setRegion(final SubRegion region) {
+		this.region = region;
 		return this;
 	}
 

@@ -55,7 +55,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.imglib2.Interval;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
@@ -186,14 +185,29 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	public ImgPlus openImg(final String source, final ImgFactory imgFactory)
 		throws ImgIOException
 	{
 		final ImgOptions imgOptions = new ImgOptions().setComputeMinMax(true);
+
+		return openImg(source, imgFactory, imgOptions);
+	}
+
+	/**
+	 * @param source - the location of the dataset to open
+	 * @param imgFactory - The {@link ImgFactory} to use for creating the
+	 *          resultant {@link ImgPlus}.
+	 * @param imgOptions - {@link ImgOptions} to use when opening this dataset
+	 * @return - the {@link ImgPlus} or null
+	 * @throws ImgIOException if there is a problem reading the image data.
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ImgPlus openImg(final String source, final ImgFactory imgFactory,
+		ImgOptions imgOptions) throws ImgIOException
+	{
 		final Reader r = createReader(source, imgOptions);
 		final RealType t = getType(r, imgOptions);
-
 		return openImg(r, t, imgFactory, imgOptions);
 	}
 
@@ -274,12 +288,14 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		// create image and read metadata
 		final long[] dimLengths =
-			utils().getDimLengths(reader.getMetadata(), imgOptions);
+			utils().getEmptyRegion(reader.getMetadata(), imgOptions);
 		if (SCIFIOCellImgFactory.class.isAssignableFrom(imgFactory.getClass())) {
 			((SCIFIOCellImgFactory<?>) imgFactory).setReader(reader);
+			((SCIFIOCellImgFactory<?>) imgFactory).setSubRegion(imgOptions
+				.getRegion());
 		}
 		final Img<T> img = imgFactory.create(dimLengths, type);
-		final ImgPlus<T> imgPlus = makeImgPlus(img, reader);
+		final ImgPlus<T> imgPlus = makeImgPlus(img, reader, imgOptions);
 
 		final String id = reader.getCurrentFile();
 		imgPlus.setSource(id);
@@ -471,7 +487,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * corresponding to the specified initialized {@link Reader}.
 	 */
 	private <T extends RealType<T>> ImgPlus<T> makeImgPlus(final Img<T> img,
-		final Reader r) throws ImgIOException
+		final Reader r, ImgOptions options) throws ImgIOException
 	{
 		final String id = r.getCurrentFile();
 		final File idFile = new File(id);
@@ -561,14 +577,13 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		Plane plane = null;
 
-		final Interval interval = imgOptions.getInterval();
-		final boolean checkSubregion = interval != null;
+		final SubRegion region = imgOptions.getRegion();
+		final boolean checkSubregion = region != null;
 
 		int x, y, w, h, zPos, cPos, tPos;
 
 		// Z,C,T offsets and maximum values
-		final int[] index = new int[] { 0, 0, 0 };
-		final int[] bound = new int[] { 1, 1, 1 };
+		final Long[][] index = new Long[][] { { 0l, 1l }, { 0l, 1l }, { 0l, 1l } };
 
 		final Metadata meta = r.getMetadata();
 
@@ -600,63 +615,75 @@ public class ImgOpener extends AbstractImgIOComponent {
 			final AxisType axisType = axes[axisIndex++];
 
 			if (axisType.equals(Axes.X)) {
-				if (checkSubregion && dimsPlaced < interval.numDimensions()) {
-					x = (int) interval.min(dimsPlaced);
-					w = (int) interval.max(dimsPlaced);
+				if (checkSubregion && dimsPlaced < region.size()) {
+					x = region.indices(dimsPlaced).get(0).intValue();
+					int maxX = 						region.indices(dimsPlaced).get(
+						region.indices(dimsPlaced).size() - 1).intValue();
+					w = maxX - x;
 					dimsPlaced++;
 				}
 			}
 			else if (axisType.equals(Axes.Y)) {
-				if (checkSubregion && dimsPlaced < interval.numDimensions()) {
-					y = (int) interval.min(dimsPlaced);
-					h = (int) interval.max(dimsPlaced);
+				if (checkSubregion && dimsPlaced < region.size()) {
+					y = region.indices(dimsPlaced).get(0).intValue();
+					int maxY = region.indices(dimsPlaced).get(
+							region.indices(dimsPlaced).size() - 1).intValue();
+					h = maxY - y;
 					dimsPlaced++;
 				}
 			}
 			else if (axisType.equals(Axes.CHANNEL)) {
-				int cStart = 0;
 				int c = meta.getAxisLength(imageIndex, Axes.CHANNEL);
 
-				if (checkSubregion && dimsPlaced < interval.numDimensions()) {
-					cStart = (int) interval.min(dimsPlaced);
-					c = (int) interval.max(dimsPlaced);
+				Long[] cVals = null;
+
+				if (checkSubregion && dimsPlaced < region.size()) {
+					cVals =
+						region.indices(dimsPlaced).toArray(
+							new Long[region.indices(dimsPlaced).size()]);
 					dimsPlaced++;
 				}
 
-				index[cztPlaced] = cStart;
-				bound[cztPlaced] = cStart + c;
+				if (cVals == null) cVals = toArray(0, c);
+
+				index[cztPlaced] = cVals;
 				cPos = cztPlaced++;
-				planeCount *= c;
+				planeCount *= cVals.length;
 			}
 			else if (axisType.equals(Axes.Z)) {
-				int zStart = 0;
 				int z = meta.getAxisLength(imageIndex, Axes.Z);
+				Long[] zVals = null;
 
-				if (checkSubregion && dimsPlaced < interval.numDimensions()) {
-					zStart = (int) interval.min(dimsPlaced);
-					z = (int) interval.max(dimsPlaced);
+				if (checkSubregion && dimsPlaced < region.size()) {
+					zVals =
+						region.indices(dimsPlaced).toArray(
+							new Long[region.indices(dimsPlaced).size()]);
 					dimsPlaced++;
 				}
 
-				index[cztPlaced] = zStart;
-				bound[cztPlaced] = zStart + z;
+				if (zVals == null) zVals = toArray(0, z);
+
+				index[cztPlaced] = zVals;
 				zPos = cztPlaced++;
-				planeCount *= z;
+				planeCount *= zVals.length;
 			}
 			else if (axisType.equals(Axes.TIME)) {
-				int tStart = 0;
 				int t = meta.getAxisLength(imageIndex, Axes.TIME);
 
-				if (checkSubregion && dimsPlaced < interval.numDimensions()) {
-					tStart = (int) interval.min(dimsPlaced);
-					t = (int) interval.max(dimsPlaced);
+				Long[] tVals = null;
+
+				if (checkSubregion && dimsPlaced < region.size()) {
+					tVals =
+						region.indices(dimsPlaced).toArray(
+							new Long[region.indices(dimsPlaced).size()]);
 					dimsPlaced++;
 				}
 
-				index[cztPlaced] = tStart;
-				bound[cztPlaced] = tStart + t;
+				if (tVals == null) tVals = toArray(0, t);
+
+				index[cztPlaced] = tVals;
 				tPos = cztPlaced++;
-				planeCount *= t;
+				planeCount *= tVals.length;
 			}
 		}
 
@@ -679,20 +706,19 @@ public class ImgOpener extends AbstractImgIOComponent {
 			else converter = pcService.getDefaultConverter();
 		}
 
-		// We have to manually reset the 2nd and 3rd indices after the inner loops
-		final int idx1 = index[1];
-		final int idx2 = index[2];
-
 		// FIXME I think this is returning multi-channel planes out of order because
 		// of ChannelSeparator
-		for (; index[0] < bound[0]; index[0]++) {
-			for (; index[1] < bound[1]; index[1]++) {
-				for (; index[2] < bound[2]; index[2]++) {
+		for (int i = 0; i < index[0].length; i++) {
+			for (int j = 0; j < index[1].length; j++) {
+				for (int k = 0; k < index[2].length; k++) {
+
+					int[] indices = new int[] { i, j, k };
+					int z = index[zPos][indices[zPos]].intValue();
+					int c = index[cPos][indices[cPos]].intValue();
+					int t = index[tPos][indices[tPos]].intValue();
 
 					// get the plane index in the underlying dataset
-					final int planeIndex =
-						FormatTools.getIndex(r, imageIndex, index[zPos], index[cPos],
-							index[tPos]);
+					final int planeIndex = FormatTools.getIndex(r, imageIndex, z, c, t);
 					statusService.showStatus(currentPlane + 1, planeCount,
 						"Reading plane");
 
@@ -711,12 +737,19 @@ public class ImgOpener extends AbstractImgIOComponent {
 					imgPlus.setColorTable(plane.getColorTable(), currentPlane);
 					currentPlane++;
 				}
-				index[2] = idx2;
 			}
-			index[1] = idx1;
 		}
 
 		if (imgOptions.isComputeMinMax()) populateMinMax(r, imgPlus, imageIndex);
+	}
+
+	private Long[] toArray(int start, int end) {
+		Long[] vals = new Long[end - start];
+
+		for (int i = start; i < end; i++)
+			vals[i] = new Long(i);
+
+		return vals;
 	}
 
 	private void populateMinMax(final Reader r, final ImgPlus<?> imgPlus,

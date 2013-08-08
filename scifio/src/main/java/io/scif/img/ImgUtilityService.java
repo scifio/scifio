@@ -84,9 +84,15 @@ public interface ImgUtilityService extends Service {
 
 	/** Wraps raw primitive array in ImgLib2 Array object. */
 	public ArrayDataAccess<?> makeArray(final Object array);
-
-	/** Compiles an N-dimensional list of axis lengths from the given reader. */
+	
+	/** Compiles an N-dimensional list of axis lengths from the given Metadata. */
 	public long[] getDimLengths(final Metadata m, final ImgOptions imgOptions);
+	
+	/**
+	 * Returns an N-dimensional list of axis lengths from the given Metadata,
+	 * of a size specified by the provided SubRegion (if present)
+	 */
+	public long[] getEmptyRegion(final Metadata m, final ImgOptions imgOptions);
 
 	/**
 	 * @param source - the location of the dataset to assess

@@ -38,6 +38,7 @@ package io.scif.img.cell.loaders;
 
 import io.scif.Metadata;
 import io.scif.Reader;
+import io.scif.img.SubRegion;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -51,8 +52,8 @@ import net.imglib2.img.basictypeaccess.array.DoubleArray;
  */
 public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
 
-	public DoubleArrayLoader(final Reader reader) {
-		super(reader);
+	public DoubleArrayLoader(final Reader reader, final SubRegion subRegion) {
+		super(reader, subRegion);
 	}
 
 	@Override

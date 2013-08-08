@@ -37,6 +37,7 @@
 package io.scif.img.cell.loaders;
 
 import io.scif.Reader;
+import io.scif.img.SubRegion;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 
 /**
@@ -46,8 +47,8 @@ import net.imglib2.img.basictypeaccess.array.ByteArray;
  */
 public class ByteArrayLoader extends AbstractArrayLoader<ByteArray> {
 
-	public ByteArrayLoader(final Reader reader) {
-		super(reader);
+	public ByteArrayLoader(final Reader reader, final SubRegion subRegion) {
+		super(reader, subRegion);
 	}
 
 	@Override

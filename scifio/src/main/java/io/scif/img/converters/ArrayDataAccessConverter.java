@@ -85,35 +85,35 @@ public class ArrayDataAccessConverter extends AbstractPlaneConverter {
 		// however that simply may not be feasible given the variety of data types.
 
 		if (store instanceof BitArray) {
-			final BitArrayLoader loader = new BitArrayLoader(reader);
+			final BitArrayLoader loader = new BitArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((BitArray) store, source, planeIndex);
 		}
 		else if (store instanceof ByteArray) {
-			final ByteArrayLoader loader = new ByteArrayLoader(reader);
+			final ByteArrayLoader loader = new ByteArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((ByteArray) store, source, planeIndex);
 		}
 		else if (store instanceof ShortArray) {
-			final ShortArrayLoader loader = new ShortArrayLoader(reader);
+			final ShortArrayLoader loader = new ShortArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((ShortArray) store, source, planeIndex);
 		}
 		else if (store instanceof LongArray) {
-			final LongArrayLoader loader = new LongArrayLoader(reader);
+			final LongArrayLoader loader = new LongArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((LongArray) store, source, planeIndex);
 		}
 		else if (store instanceof CharArray) {
-			final CharArrayLoader loader = new CharArrayLoader(reader);
+			final CharArrayLoader loader = new CharArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((CharArray) store, source, planeIndex);
 		}
 		else if (store instanceof DoubleArray) {
-			final DoubleArrayLoader loader = new DoubleArrayLoader(reader);
+			final DoubleArrayLoader loader = new DoubleArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((DoubleArray) store, source, planeIndex);
 		}
 		else if (store instanceof FloatArray) {
-			final FloatArrayLoader loader = new FloatArrayLoader(reader);
+			final FloatArrayLoader loader = new FloatArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((FloatArray) store, source, planeIndex);
 		}
 		else if (store instanceof IntArray) {
-			final IntArrayLoader loader = new IntArrayLoader(reader);
+			final IntArrayLoader loader = new IntArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((IntArray) store, source, planeIndex);
 		}
 

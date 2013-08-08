@@ -40,9 +40,11 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
+import io.scif.img.SubRegion;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
+import java.util.List;
 
 import net.imglib2.meta.Axes;
 
@@ -59,9 +61,11 @@ import net.imglib2.meta.Axes;
 public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 	final private Reader reader;
+	final private SubRegion subRegion;
 
-	public AbstractArrayLoader(final Reader reader) {
+	public AbstractArrayLoader(final Reader reader, final SubRegion subRegion) {
 		this.reader = reader;
+		this.subRegion = subRegion;
 	}
 
 	public A loadArray(final int[] dimensions, final long[] min) {
@@ -137,12 +141,22 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			final int[] index =
 				new int[] { iterBounds[0][0], iterBounds[1][0], iterBounds[2][0] };
 
-			final int x = new Long(xIndex == -1 ? 0 : min[xIndex]).intValue();
-			final int y = new Long(yIndex == -1 ? 0 : min[yIndex]).intValue();
-			final int w = xIndex == -1 ? 1 : dimensions[xIndex];
-			final int h = yIndex == -1 ? 1 : dimensions[yIndex];
+			int x = new Long(xIndex == -1 ? 0 : min[xIndex]).intValue();
+			int y = new Long(yIndex == -1 ? 0 : min[yIndex]).intValue();
+			int w = xIndex == -1 ? 1 : dimensions[xIndex];
+			int h = yIndex == -1 ? 1 : dimensions[yIndex];
 
 			final int i1 = index[1], i2 = index[2];
+			
+			if (subRegion != null) {
+				x = subRegion.indices(0).get(0).intValue();
+				w = subRegion.indices(0).get(subRegion.indices(0).size()).intValue();
+				
+				if (subRegion.size() > 1) {
+					y = subRegion.indices(1).get(0).intValue();
+					h = subRegion.indices(1).get(subRegion.indices(1).size()).intValue();
+				}
+			}
 
 			boolean success = false;
 
@@ -160,6 +174,9 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 				for (; index[0] < iterBounds[0][1]; index[0]++) {
 					for (; index[1] < iterBounds[1][1]; index[1]++) {
 						for (; index[2] < iterBounds[2][1]; index[2]++) {
+							
+							if (!inSubregion(index[0], index[1], index[2])) continue; 
+							
 							final int z = index[zctOrder.indexOf('Z')];
 							final int c = index[zctOrder.indexOf('C')];
 							final int t = index[zctOrder.indexOf('T')];
@@ -199,6 +216,25 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 			return data;
 		}
+	}
+
+	private boolean inSubregion(int... dims) {
+		if (subRegion == null) return true;
+		
+		boolean inSubregion = true;
+		
+		for (int i=2; inSubregion && i<subRegion.size(); i++) {
+			inSubregion = indexContained(subRegion.indices(i), dims[i-2]);
+		}
+
+		return inSubregion;
+	}
+
+	private boolean indexContained(List<Long> indices, int i) {
+		for (Long l : indices)
+			if (l.intValue() != i) return false;
+
+		return true;
 	}
 
 	private int[][] getBounds(final int start1, final int max1, final int start2,

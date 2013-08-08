@@ -54,7 +54,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import net.imglib2.Interval;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.array.ArrayImg;
@@ -136,19 +135,28 @@ public class DefaultImgUtilityService extends AbstractService implements
 					break;
 			}
 		}
-
+		
 		// convert result to primitive array
 		final long[] dimLengths = new long[dimLengthsList.size()];
 
-		final Interval interval = imgOptions.getInterval();
-
 		for (int i = 0; i < dimLengths.length; i++) {
-
-			if (interval != null && i < interval.numDimensions()) dimLengths[i] =
-				interval.dimension(i);
-			else dimLengths[i] = dimLengthsList.get(i);
+		  dimLengths[i] = dimLengthsList.get(i);
 		}
 		return dimLengths;
+	}
+	
+	public long[] getEmptyRegion(final Metadata m, final ImgOptions imgOptions) {
+		long[] lengths = getDimLengths(m, imgOptions);
+		
+		SubRegion r = imgOptions.getRegion();
+		
+		if (r != null) {
+			// set each dimension length = the number of entries for that axis
+			for (int i=0; i<r.size(); i++)
+				lengths[i] = r.indices(i).size();
+		}
+		
+		return lengths;
 	}
 
 	/**

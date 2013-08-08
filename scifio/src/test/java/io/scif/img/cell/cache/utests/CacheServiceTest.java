@@ -410,7 +410,7 @@ public class CacheServiceTest {
 		throws FormatException, IOException
 	{
 		final ReaderFilter rf = scifio.initializer().initializeReader(id, true);
-		final ByteArrayLoader loader = new ByteArrayLoader(rf);
+		final ByteArrayLoader loader = new ByteArrayLoader(rf, null);
 		final SCIFIOCellCache<ByteArray> cellCache =
 			new SCIFIOCellCache<ByteArray>(cs, loader);
 		return cellCache;
@@ -422,7 +422,7 @@ public class CacheServiceTest {
 	{
 		final String id = makeFakeFile(bytes);
 		final ReaderFilter rf = scifio.initializer().initializeReader(id, true);
-		final ByteArrayLoader loader = new ByteArrayLoader(rf);
+		final ByteArrayLoader loader = new ByteArrayLoader(rf, null);
 		final TestCellCache<ByteArray> cellCache =
 			new TestCellCache<ByteArray>(cs, loader);
 		return cellCache;

@@ -142,6 +142,13 @@ public final class IO {
 	{
 		return new ImgOpener().openImg(source, imgFactory);
 	}
+	
+	@SuppressWarnings("rawtypes")
+	public static ImgPlus openImg(final String source, final ImgFactory imgFactory,
+		ImgOptions imgOptions) throws ImgIOException
+	{
+		return new ImgOpener().openImg(source, imgFactory, imgOptions);
+	}
 
 	/**
 	 * @see {@link ImgOpener#openImg(String, ImgFactory, RealType)}

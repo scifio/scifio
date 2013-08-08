@@ -37,6 +37,7 @@
 package io.scif.img.cell.loaders;
 
 import io.scif.Reader;
+import io.scif.img.SubRegion;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -50,8 +51,8 @@ import net.imglib2.img.basictypeaccess.array.CharArray;
  */
 public class CharArrayLoader extends AbstractArrayLoader<CharArray> {
 
-	public CharArrayLoader(final Reader reader) {
-		super(reader);
+	public CharArrayLoader(final Reader reader, final SubRegion subRegion) {
+		super(reader, subRegion);
 	}
 
 	@Override
