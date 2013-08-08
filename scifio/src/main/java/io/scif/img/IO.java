@@ -172,6 +172,9 @@ public final class IO {
 		return new ImgOpener().openImg(reader, type, imgFactory, imgOptions);
 	}
 
+	/**
+	 *  @see {@link ImgSaver#saveImg(String, Img)}
+	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
 		final String dest, final Img<T> img) throws ImgIOException
 	{
@@ -183,17 +186,23 @@ public final class IO {
 		}
 	}
 
+	/**
+	 *  @see {@link ImgSaver#saveImg(String, ImgPlus, int)}
+	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
-		final String dest, final ImgPlus<T> imgPlus) throws ImgIOException
+		final String dest, final ImgPlus<T> imgPlus, int imageIndex) throws ImgIOException
 	{
 		try {
-			new ImgSaver().saveImg(dest, imgPlus);
+			new ImgSaver().saveImg(dest, imgPlus, imageIndex);
 		}
 		catch (final IncompatibleTypeException e) {
 			throw new ImgIOException(e);
 		}
 	}
 
+	/**
+	 *  @see {@link ImgSaver#saveImg(Writer, Img)}
+	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
 		final Writer writer, final Img<T> img) throws ImgIOException
 	{
@@ -205,11 +214,14 @@ public final class IO {
 		}
 	}
 
+	/**
+	 *  @see {@link ImgSaver#saveImg(Writer, ImgPlus, int)}
+	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
-		final Writer writer, final ImgPlus<T> imgPlus) throws ImgIOException
+		final Writer writer, final ImgPlus<T> imgPlus, int imageIndex) throws ImgIOException
 	{
 		try {
-			new ImgSaver().saveImg(writer, imgPlus);
+			new ImgSaver().saveImg(writer, imgPlus, imageIndex);
 		}
 		catch (final IncompatibleTypeException e) {
 			throw new ImgIOException(e);
