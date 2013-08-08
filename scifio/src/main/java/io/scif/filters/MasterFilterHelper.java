@@ -129,7 +129,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 					}
 					refMap.put(c, info);
 					final String defaultEnabled = info.get(ENABLED_KEY);
-					if (Boolean.getBoolean(defaultEnabled)) {
+					if (Boolean.valueOf(defaultEnabled)) {
 						try {
 							enable(info.getPluginClass());
 						}
