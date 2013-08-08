@@ -249,7 +249,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 
 			while (filterIterator.hasNext()) {
 				final Filter nextFilter = filterIterator.next();
-				currentFilter.setParent(nextFilter);
+				nextFilter.setParent(currentFilter);
 				currentFilter = nextFilter;
 			}
 
