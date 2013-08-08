@@ -461,19 +461,13 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().getFormat();
 	}
 
-	// -- HasContext API Methods --
+	// -- Contextual API Methods --
 
-	/*
-	 * @see io.scif.HasContext#getContext()
-	 */
 	@Override
 	public Context getContext() {
 		return getParent().getContext();
 	}
 
-	/*
-	 * @see io.scif.HasContext#setContext(io.scif.SCIFIO)
-	 */
 	@Override
 	public void setContext(final Context ctx) {
 		getParent().setContext(ctx);

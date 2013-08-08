@@ -237,11 +237,6 @@
 	    	<class name="io.scif.utests.HasColorTableTest"/>
     	</classes>
     </test>
-    <test name="HasContextTest">
-    	<classes>
-	    	<class name="io.scif.utests.HasContextTest"/>
-    	</classes>
-    </test>
     <test name="HasFormatTest">
     	<classes>
 	    	<class name="io.scif.utests.HasFormatTest"/>
