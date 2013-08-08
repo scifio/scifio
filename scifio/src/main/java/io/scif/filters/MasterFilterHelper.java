@@ -104,6 +104,8 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 		super(wrappedClass);
 		tail = wrapped;
 
+		setParent(tail);
+
 		setContext(wrapped.getContext());
 		final List<PluginInfo<Filter>> filterInfos =
 			getContext().getPluginIndex().getPlugins(Filter.class);
@@ -141,8 +143,6 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 				}
 			}
 		}
-
-		setParent(tail);
 	}
 
 	// -- MasterFilter API Methods --
