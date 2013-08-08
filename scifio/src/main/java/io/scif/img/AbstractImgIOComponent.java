@@ -34,54 +34,48 @@
  * #L%
  */
 
-package io.scif.img.converters;
+package io.scif.img;
 
-import io.scif.Metadata;
-import io.scif.Reader;
-import io.scif.common.DataTools;
-import io.scif.img.ImgOptions;
-import io.scif.img.ImgUtilityService;
-import io.scif.util.FormatTools;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.img.basictypeaccess.PlanarAccess;
-import net.imglib2.type.numeric.RealType;
+import io.scif.AbstractSCIFIOComponent;
+import io.scif.img.cell.cache.CacheService;
+import io.scif.img.converters.PlaneConverterService;
+import io.scif.services.InitializeService;
+import io.scif.services.TranslatorService;
 
-import org.scijava.plugin.Plugin;
+import org.scijava.Context;
+import org.scijava.app.StatusService;
+
 
 /**
- * {@link PlaneConverter} implementation specialized for populating
- * {@link PlanarAccess} instances.
+ * Abstract superclass for ImgIOComponents (such as {@link ImgOpener}
+ * or {@link ImgSaver}). Provides constructors ensuring proper
+ * Services are available, and an accessor for the {@link ImgUtilityService}.
  * 
- * @author Mark Hiner
+ * @author Mark Hiner hinerm@gmail.com
+ *
  */
-@Plugin(type = PlaneConverter.class, name = "PlanarAccess")
-public class PlanarAccessConverter extends AbstractPlaneConverter {
+public abstract class AbstractImgIOComponent extends AbstractSCIFIOComponent {
 
-	/** Populates plane by reference using {@link PlanarAccess} interface. */
-	@SuppressWarnings("unchecked")
-	public <T extends RealType<T>> void populatePlane(final Reader reader,
-		final int imageIndex, final int planeIndex, final byte[] plane,
-		final ImgPlus<T> planarImg, final ImgOptions imgOptions)
-	{
-		final ImgUtilityService imgUtilService =
-			getContext().getService(ImgUtilityService.class);
+	// -- Fields --
+	
+	private ImgUtilityService imgUtils;
 
-		final Metadata m = reader.getMetadata();
+	// -- Constructors --
 
-		@SuppressWarnings("rawtypes")
-		final PlanarAccess planarAccess = imgUtilService.getPlanarAccess(planarImg);
-		final int pixelType = m.getPixelType(imageIndex);
-		final int bpp = FormatTools.getBytesPerPixel(pixelType);
-		final boolean fp = FormatTools.isFloatingPoint(pixelType);
-		final boolean little = m.isLittleEndian(imageIndex);
-		Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
-		if (planeArray == plane) {
-			// array was returned by reference; make a copy
-			final byte[] planeCopy = new byte[plane.length];
-			System.arraycopy(plane, 0, planeCopy, 0, plane.length);
-			planeArray = planeCopy;
-		}
-		planarAccess.setPlane(planeIndex, imgUtilService.makeArray(planeArray));
+	public AbstractImgIOComponent() {
+		this(new Context(StatusService.class, InitializeService.class, PlaneConverterService.class,
+			TranslatorService.class, CacheService.class, ImgUtilityService.class));
 	}
 
+	public AbstractImgIOComponent(final Context context) {
+		setContext(context);
+	}
+	
+	// -- AbstractImgIOComponent methods --
+	
+	public ImgUtilityService utils() {
+		if (imgUtils == null)	imgUtils = getContext().getService(ImgUtilityService.class);
+		return imgUtils;
+	}
+	
 }

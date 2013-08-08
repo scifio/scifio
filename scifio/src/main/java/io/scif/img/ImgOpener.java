@@ -36,8 +36,6 @@
 
 package io.scif.img;
 
-import io.scif.AbstractSCIFIOComponent;
-import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
@@ -48,11 +46,8 @@ import io.scif.filters.MinMaxFilter;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.ImgOptions.CheckMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
-import io.scif.img.cell.cache.CacheService;
 import io.scif.img.converters.PlaneConverter;
 import io.scif.img.converters.PlaneConverterService;
-import io.scif.services.InitializeService;
-import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
 
 import java.io.File;
@@ -86,7 +81,7 @@ import org.scijava.plugin.Parameter;
  * @author Stephan Preibisch
  * @author Stephan Saalfeld
  */
-public class ImgOpener extends AbstractSCIFIOComponent {
+public class ImgOpener extends AbstractImgIOComponent {
 
 	@Parameter
 	private StatusService statusService;
@@ -94,84 +89,16 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 	// -- Constructors --
 
 	public ImgOpener() {
-		this(new Context(StatusService.class, InitializeService.class,
-			TranslatorService.class, CacheService.class));
+		super();
 	}
 
 	public ImgOpener(final Context ctx) {
-		setContext(ctx);
+		super(ctx);
 	}
 
 	// -- Static methods --
 
-	/** Compiles an N-dimensional list of axis lengths from the given reader. */
-	public static long[] getDimLengths(final Metadata m,
-		final ImgOptions imgOptions)
-	{
-		final int imageIndex = imgOptions.getIndex();
-		final long sizeX = m.getAxisLength(imageIndex, Axes.X);
-		final long sizeY = m.getAxisLength(imageIndex, Axes.Y);
-		final long sizeZ = m.getAxisLength(imageIndex, Axes.Z);
-		final long sizeT = m.getAxisLength(imageIndex, Axes.TIME);
-		final long sizeC = m.getEffectiveSizeC(imageIndex);
-		final String dimOrder = FormatTools.findDimensionOrder(m, imageIndex);
-
-		final List<Long> dimLengthsList = new ArrayList<Long>();
-
-		// add core dimensions
-		for (int i = 0; i < dimOrder.length(); i++) {
-			final char dim = dimOrder.charAt(i);
-			switch (dim) {
-				case 'X':
-					if (sizeX > 0) dimLengthsList.add(sizeX);
-					break;
-				case 'Y':
-					if (sizeY > 0) dimLengthsList.add(sizeY);
-					break;
-				case 'Z':
-					if (sizeZ > 1) dimLengthsList.add(sizeZ);
-					break;
-				case 'T':
-					if (sizeT > 1) dimLengthsList.add(sizeT);
-					break;
-				case 'C':
-					if (sizeC > 1) dimLengthsList.add(sizeC);
-					break;
-			}
-		}
-
-		// convert result to primitive array
-		final long[] dimLengths = new long[dimLengthsList.size()];
-
-		final Interval interval = imgOptions.getInterval();
-
-		for (int i = 0; i < dimLengths.length; i++) {
-
-			if (interval != null && i < interval.numDimensions()) dimLengths[i] =
-				interval.dimension(i);
-			else dimLengths[i] = dimLengthsList.get(i);
-		}
-		return dimLengths;
-	}
-
 	// -- ImgOpener methods --
-
-	/**
-	 * @param source - the location of the dataset to assess
-	 * @return The number of images in the specified dataset.
-	 */
-	public int getImageCount(final String source) throws ImgIOException {
-		try {
-			final Format format = scifio().format().getFormat(source);
-			return format.createParser().parse(source).getImageCount();
-		}
-		catch (final FormatException e) {
-			throw new ImgIOException(e);
-		}
-		catch (final IOException e) {
-			throw new ImgIOException(e);
-		}
-	}
 
 	/**
 	 * Reads in an {@link ImgPlus} from the first image of the given source.
@@ -276,6 +203,7 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 	 *          resultant {@link ImgPlus}.
 	 * @param type - The {@link Type} T of the output {@link ImgPlus}, which must
 	 *          match the typing of the {@link ImgFactory}.
+	 * @param imgOptions - {@link ImgOptions} to use when opening this dataset
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
@@ -289,6 +217,16 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 		return openImg(r, type, imgFactory, imgOptions);
 	}
 
+	/**
+	 * @param reader - An initialized {@link Reader} to use for reading image
+	 *          data.
+	 * @param imgFactory - The {@link ImgFactory} to use for creating the
+	 *          resultant {@link ImgPlus}.
+	 * @param type - The {@link Type} T of the output {@link ImgPlus}, which must
+	 *          match the typing of the {@link ImgFactory}.
+	 * @return - the {@link ImgPlus} or null
+	 * @throws ImgIOException if there is a problem reading the image data.
+	 */
 	public <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final Reader reader, final T type, final ImgOptions imgOptions)
 		throws ImgIOException
@@ -335,7 +273,8 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 		final int imageIndex = imgOptions.getIndex();
 
 		// create image and read metadata
-		final long[] dimLengths = getDimLengths(reader.getMetadata(), imgOptions);
+		final long[] dimLengths =
+			utils().getDimLengths(reader.getMetadata(), imgOptions);
 		if (SCIFIOCellImgFactory.class.isAssignableFrom(imgFactory.getClass())) {
 			((SCIFIOCellImgFactory<?>) imgFactory).setReader(reader);
 		}
@@ -379,7 +318,7 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 		int imageIndex = 0;
 		if (options != null) imageIndex = options.getIndex();
 
-		return ImgIOUtils.makeType(r.getMetadata().getPixelType(imageIndex));
+		return utils().makeType(r.getMetadata().getPixelType(imageIndex));
 	}
 
 	private ImgFactoryHeuristic getHeuristic(final ImgOptions imgOptions) {
@@ -607,10 +546,10 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 		// #3 is useful for efficient memory use
 
 		// get container
-		final PlanarAccess<?> planarAccess = ImgIOUtils.getPlanarAccess(imgPlus);
+		final PlanarAccess<?> planarAccess = utils().getPlanarAccess(imgPlus);
 		@SuppressWarnings("rawtypes")
 		final RealType inputType =
-			ImgIOUtils.makeType(r.getMetadata().getPixelType(0));
+			utils().makeType(r.getMetadata().getPixelType(0));
 		final T outputType = type;
 		final boolean compatibleTypes =
 			outputType.getClass().isAssignableFrom(inputType.getClass());
@@ -618,7 +557,7 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 		// populate planes
 		final boolean isPlanar = planarAccess != null && compatibleTypes;
 		final boolean isArray =
-			ImgIOUtils.getArrayAccess(imgPlus) != null && compatibleTypes;
+			utils().getArrayAccess(imgPlus) != null && compatibleTypes;
 
 		Plane plane = null;
 
@@ -729,7 +668,8 @@ public class ImgOpener extends AbstractSCIFIOComponent {
 			// if it's we have a PlanarAccess we can use a PlanarAccess converter,
 			// otherwise
 			// we can use a more general RandomAccess approach
-			PlaneConverterService pcService = getContext().getService(PlaneConverterService.class);
+			final PlaneConverterService pcService =
+				getContext().getService(PlaneConverterService.class);
 			if (isArray) {
 				converter = pcService.getArrayConverter();
 			}

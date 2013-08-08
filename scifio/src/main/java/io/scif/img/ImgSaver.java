@@ -36,15 +36,12 @@
 
 package io.scif.img;
 
-import io.scif.AbstractSCIFIOComponent;
 import io.scif.ByteArrayPlane;
 import io.scif.DefaultMetadata;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Writer;
 import io.scif.common.DataTools;
-import io.scif.services.InitializeService;
-import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
@@ -72,7 +69,7 @@ import org.scijava.plugin.Parameter;
  * @author Mark Hiner
  * @author Curtis Rueden
  */
-public class ImgSaver extends AbstractSCIFIOComponent {
+public class ImgSaver extends AbstractImgIOComponent {
 
 	@Parameter
 	private StatusService statusService;
@@ -80,73 +77,14 @@ public class ImgSaver extends AbstractSCIFIOComponent {
 	// -- Constructors --
 
 	public ImgSaver() {
-		this(new Context(StatusService.class, InitializeService.class,
-			TranslatorService.class));
+		super();
 	}
 
 	public ImgSaver(final Context context) {
-		setContext(context);
+		super(context);
 	}
 
 	// -- ImgSaver methods --
-
-	/**
-	 * see isCompressible(ImgPlus)
-	 */
-	public <T extends RealType<T> & NativeType<T>> boolean isCompressible(
-		final Img<T> img)
-	{
-		return isCompressible(ImgPlus.wrap(img));
-	}
-
-	/**
-	 * Currently there are limits as to what types of Images can be saved. All
-	 * images must ultimately adhere to an, at most, five-dimensional structure
-	 * using the known axes X, Y, Z, Channel and Time. Unknown axes (U) can
-	 * potentially be handled by coercing to the Channel axis. For example, X Y Z
-	 * U C U T would be valid, as would X Y Z U T. But X Y C Z U T would not, as
-	 * the unknown axis can not be compressed with Channel. This method will
-	 * return true if the axes of the provided image can be represented with a
-	 * valid 5D String, and false otherwise.
-	 */
-	public <T extends RealType<T> & NativeType<T>> boolean isCompressible(
-		final ImgPlus<T> img)
-	{
-
-		final AxisType[] axes = new AxisType[img.numDimensions()];
-		img.axes(axes);
-
-		final long[] axisLengths = new long[5];
-		final long[] oldLengths = new long[img.numDimensions()];
-
-		img.dimensions(oldLengths);
-
-		// true if this img contains an axis that will need to be compressed
-		boolean foundUnknown = false;
-
-		for (int i = 0; i < axes.length; i++) {
-			final AxisType axis = axes[i];
-
-			switch (axis.getLabel().toUpperCase().charAt(0)) {
-				case 'X':
-				case 'Y':
-				case 'Z':
-				case 'C':
-				case 'T':
-					break;
-				default:
-					if (oldLengths[i] > 1) foundUnknown = true;
-			}
-		}
-
-		if (!foundUnknown) return false;
-
-		// This ImgPlus had unknown axes of size > 1, so we will check to see if
-		// they can be compressed
-		final String dimOrder = guessDimOrder(axes, oldLengths, axisLengths);
-
-		return (dimOrder != null);
-	}
 
 	/**
 	 * saveImg is the entry point for saving an {@link ImgPlus} The goal is to get
@@ -469,7 +407,7 @@ public class ImgSaver extends AbstractSCIFIOComponent {
 		final ImgPlus<T> img, final int imageIndex) throws ImgIOException,
 		IncompatibleTypeException
 	{
-		final PlanarAccess<?> planarAccess = ImgIOUtils.getPlanarAccess(img);
+		final PlanarAccess<?> planarAccess = utils().getPlanarAccess(img);
 		if (planarAccess == null) {
 			throw new IncompatibleTypeException(new ImgLibException(), "Only " +
 				PlanarAccess.class + " images supported at this time.");
@@ -621,7 +559,7 @@ public class ImgSaver extends AbstractSCIFIOComponent {
 	{
 		statusService.showStatus("Initializing " + img.getName());
 
-		final int pixelType = ImgIOUtils.makeType(img.firstElement());
+		final int pixelType = utils().makeType(img.firstElement());
 
 		// TODO is there some way to consolidate this with the isCompressible
 		// method?

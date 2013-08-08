@@ -1,30 +1,3 @@
-
-package io.scif.img.converters;
-
-import io.scif.Reader;
-import io.scif.img.ImgOptions;
-import io.scif.img.cell.loaders.BitArrayLoader;
-import io.scif.img.cell.loaders.ByteArrayLoader;
-import io.scif.img.cell.loaders.CharArrayLoader;
-import io.scif.img.cell.loaders.DoubleArrayLoader;
-import io.scif.img.cell.loaders.FloatArrayLoader;
-import io.scif.img.cell.loaders.IntArrayLoader;
-import io.scif.img.cell.loaders.LongArrayLoader;
-import io.scif.img.cell.loaders.ShortArrayLoader;
-import net.imglib2.img.ImgPlus;
-import net.imglib2.img.array.ArrayImg;
-import net.imglib2.img.basictypeaccess.array.BitArray;
-import net.imglib2.img.basictypeaccess.array.ByteArray;
-import net.imglib2.img.basictypeaccess.array.CharArray;
-import net.imglib2.img.basictypeaccess.array.DoubleArray;
-import net.imglib2.img.basictypeaccess.array.FloatArray;
-import net.imglib2.img.basictypeaccess.array.IntArray;
-import net.imglib2.img.basictypeaccess.array.LongArray;
-import net.imglib2.img.basictypeaccess.array.ShortArray;
-import net.imglib2.type.numeric.RealType;
-
-import org.scijava.plugin.Plugin;
-
 /*
  * #%L
  * SCIFIO library for reading and converting scientific file formats.
@@ -60,6 +33,32 @@ import org.scijava.plugin.Plugin;
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
+package io.scif.img.converters;
+
+import io.scif.Reader;
+import io.scif.img.ImgOptions;
+import io.scif.img.cell.loaders.BitArrayLoader;
+import io.scif.img.cell.loaders.ByteArrayLoader;
+import io.scif.img.cell.loaders.CharArrayLoader;
+import io.scif.img.cell.loaders.DoubleArrayLoader;
+import io.scif.img.cell.loaders.FloatArrayLoader;
+import io.scif.img.cell.loaders.IntArrayLoader;
+import io.scif.img.cell.loaders.LongArrayLoader;
+import io.scif.img.cell.loaders.ShortArrayLoader;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.img.array.ArrayImg;
+import net.imglib2.img.basictypeaccess.array.BitArray;
+import net.imglib2.img.basictypeaccess.array.ByteArray;
+import net.imglib2.img.basictypeaccess.array.CharArray;
+import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import net.imglib2.img.basictypeaccess.array.FloatArray;
+import net.imglib2.img.basictypeaccess.array.IntArray;
+import net.imglib2.img.basictypeaccess.array.LongArray;
+import net.imglib2.img.basictypeaccess.array.ShortArray;
+import net.imglib2.type.numeric.RealType;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * {@link PlaneConverter} implementation specialized for populating

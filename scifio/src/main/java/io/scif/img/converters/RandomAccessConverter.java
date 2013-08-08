@@ -39,8 +39,8 @@ package io.scif.img.converters;
 import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.common.DataTools;
-import io.scif.img.ImgOpener;
 import io.scif.img.ImgOptions;
+import io.scif.img.ImgUtilityService;
 import io.scif.util.FormatTools;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
@@ -68,13 +68,15 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 		final int imageIndex, final int planeIndex, final byte[] plane,
 		final ImgPlus<T> img, final ImgOptions imgOptions)
 	{
+		final ImgUtilityService imgUtilService =
+			getContext().getService(ImgUtilityService.class);
 
 		final Metadata m = reader.getMetadata();
 
 		final int pixelType = m.getPixelType(imageIndex);
 		final boolean little = m.isLittleEndian(imageIndex);
 
-		final long[] dimLengths = ImgOpener.getDimLengths(m, imgOptions);
+		final long[] dimLengths = imgUtilService.getDimLengths(m, imgOptions);
 		final long[] pos = new long[dimLengths.length];
 
 		final int planeX = 0;
