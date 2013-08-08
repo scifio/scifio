@@ -42,16 +42,11 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.img.array.ArrayImg;
-import net.imglib2.img.cell.CellImg;
-import net.imglib2.img.planar.PlanarImg;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
-
-import org.scijava.Context;
 
 /**
  * A static utility class for easy access to {@link ImgSaver} and
@@ -72,153 +67,43 @@ public final class IO {
 	// -- Static IO Methods --
 
 	/**
-	 * @param source - the location of the dataset to assess
-	 * @return - The number of images in the specified dataset, or 0 if an error
-	 *         occurred.
-	 * @throws ImgIOException if something goes wrong reading the source.
+	 * @see {@link ImgOpener#openImg(String)}
 	 */
-	public static int imageCount(final String source) throws ImgIOException {
-		return new ImgOpener().getImageCount(source);
-	}
-
-	// -- Static ImgOpener methods --
-
-	/**
-	 * Opens an {@link Img} in a format it is in (unsigned byte, float, int, ...)
-	 * using the respective {@link RealType}. It returns an {@link ImgPlus} which
-	 * contains the Calibration and name.
-	 * <p>
-	 * The {@link Img} containing the data could be either a {@link PlanarImg},
-	 * {@link ArrayImg} or {@link CellImg}.
-	 * </p>
-	 * 
-	 * @param source - the location of the dataset to open
-	 * @return - the {@link ImgPlus} or null if an exception is caught
-	 * @throws ImgIOException if something goes wrong reading the source.
-	 */
-	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(
-		final String source) throws ImgIOException
-	{
-		return open(source, 0);
-	}
-
-	/**
-	 * Opens an {@link Img} in a format it is in (unsigned byte, float, int, ...)
-	 * using the respective {@link RealType}. It returns an {@link ImgPlus} which
-	 * contains the Calibration and name.
-	 * <p>
-	 * The {@link Img} containing the data could be either a {@link PlanarImg} or
-	 * {@link CellImg}.
-	 * </p>
-	 * 
-	 * @param source - the location of the dataset to open
-	 * @param imageIndex - the index within the dataset to open
-	 * @return - the {@link ImgPlus} or null if an exception is caught
-	 * @throws ImgIOException if something goes wrong reading the source.
-	 */
-	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(
-		final String source, final int imageIndex) throws ImgIOException
-	{
-		return open(source, imageIndex, (T) null);
-	}
-
-	/**
-	 * Opens an {@link Img} as {@link FloatType}. It returns an {@link ImgPlus}
-	 * which contains the Calibration and name.
-	 * <p>
-	 * The {@link Img} containing the data could be either a {@link PlanarImg},
-	 * {@link ArrayImg} or {@link CellImg}.
-	 * </p>
-	 * 
-	 * @param source - the location of the dataset to open
-	 * @param imageIndex - the index within the dataset to open
-	 * @return - the {@link ImgPlus} or null if an exception is caught
-	 * @throws ImgIOException if something goes wrong reading the source.
-	 */
-	public static ImgPlus<FloatType> openFloat(final String source,
-		final int imageIndex) throws ImgIOException
-	{
-		return open(source, imageIndex, new FloatType());
-	}
-
-	/**
-	 * Opens an {@link Img} as {@link DoubleType}. It returns an {@link ImgPlus}
-	 * which contains the Calibration and name.
-	 * <p>
-	 * The {@link Img} containing the data could be either a {@link PlanarImg},
-	 * {@link ArrayImg} or {@link CellImg}.
-	 * </p>
-	 * 
-	 * @param source - the location of the dataset to open
-	 * @param imageIndex - the index within the dataset to open
-	 * @return - the {@link ImgPlus} or null if an exception is caught
-	 * @throws ImgIOException if something goes wrong reading the source.
-	 */
-	public static ImgPlus<DoubleType> openDouble(final String source,
-		final int imageIndex) throws ImgIOException
-	{
-		return open(source, imageIndex, new DoubleType());
-	}
-
-	/**
-	 * Opens an {@link Img} as {@link UnsignedByteType}. It returns an
-	 * {@link ImgPlus} which contains the Calibration and name.
-	 * <p>
-	 * The {@link Img} containing the data could be either a {@link PlanarImg},
-	 * {@link ArrayImg} or {@link CellImg}.
-	 * </p>
-	 * 
-	 * @param source - the location of the dataset to open
-	 * @param imageIndex - the index within the dataset to open
-	 * @return - the {@link ImgPlus} or null if an exception is caught
-	 * @throws ImgIOException if something goes wrong reading the source.
-	 */
-	public static ImgPlus<UnsignedByteType> openUnsignedByte(final String source,
-		final int imageIndex) throws ImgIOException
-	{
-		return open(source, imageIndex, new UnsignedByteType());
-	}
-
-	/**
-	 * Opens an {@link Img} in a format it is in (unsigned byte, float, int, ...)
-	 * using the respective {@link RealType}. It returns an {@link ImgPlus} which
-	 * contains the Calibration and name.
-	 * <p>
-	 * The {@link Img} containing the data could be either a {@link PlanarImg},
-	 * {@link ArrayImg} or {@link CellImg}.
-	 * </p>
-	 * 
-	 * @param source - the location of the dataset to open
-	 * @param imageIndex - the index within the dataset to open
-	 * @param type - the real type to use to open the image
-	 * @return - the {@link ImgPlus} or null if an exception is caught
-	 * @throws ImgIOException if something goes wrong reading the source.
-	 */
-	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> open(
-		final String source, final int imageIndex, final T type)
-		throws ImgIOException
-	{
-		return new ImgOpener().openImg(source, type, new ImgOptions()
-			.setIndex(imageIndex));
-	}
-
-	/**
-	 * TODO
-	 * 
-	 * @see ImgOpener#openImg(String)
-	 * @throws ImgIOException if something goes wrong reading the source.
-	 */
-	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-		final String source) throws ImgIOException
-	{
+	@SuppressWarnings("rawtypes")
+	public static ImgPlus open(final String source) throws ImgIOException {
 		return new ImgOpener().openImg(source);
 	}
 
 	/**
-	 * TODO
-	 * 
-	 * @see ImgOpener#openImg(String, RealType)
-	 * @throws ImgIOException if something goes wrong reading the source.
+	 * As {@link ImgOpener#openImg(String)} with a guaranteed {@link FloatType}.
+	 */
+	public static ImgPlus<FloatType> openFloat(final String source)
+		throws ImgIOException
+	{
+		return new ImgOpener().openImg(source, new FloatType());
+	}
+
+	/**
+	 * As {@link ImgOpener#openImg(String)} with a guaranteed {@link DoubleType}.
+	 */
+	public static ImgPlus<DoubleType> openDouble(final String source)
+		throws ImgIOException
+	{
+		return new ImgOpener().openImg(source, new DoubleType());
+	}
+
+	/**
+	 * As {@link ImgOpener#openImg(String)} with a guaranteed
+	 * {@link UnsignedByteType}.
+	 */
+	public static ImgPlus<UnsignedByteType> openUnsignedByte(final String source)
+		throws ImgIOException
+	{
+		return new ImgOpener().openImg(source, new UnsignedByteType());
+	}
+
+	/**
+	 * @see {@link ImgOpener#openImg(String, RealType)}
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final String source, final T type) throws ImgIOException
@@ -227,22 +112,18 @@ public final class IO {
 	}
 
 	/**
-	 * TODO
-	 * 
-	 * @see ImgOpener#openImg(String, ImgOptions)
-	 * @throws ImgIOException if something goes wrong reading the source.
+	 * @see {@link ImgOpener#openImg(String, ImgOptions)}
 	 */
-	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-		final String source, final ImgOptions imgOptions) throws ImgIOException
+	@SuppressWarnings("rawtypes")
+	public static ImgPlus
+		openImg(final String source, final ImgOptions imgOptions)
+			throws ImgIOException
 	{
 		return new ImgOpener().openImg(source, imgOptions);
 	}
 
 	/**
-	 * TODO
-	 * 
-	 * @see ImgOpener#openImg(String, RealType, ImgOptions)
-	 * @throws ImgIOException if something goes wrong reading the source.
+	 * @see {@link ImgOpener#openImg(Reader, RealType, ImgOptions)}
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final String source, final T type, final ImgOptions imgOptions)
@@ -252,22 +133,18 @@ public final class IO {
 	}
 
 	/**
-	 * TODO
-	 * 
-	 * @see ImgOpener#openImg(String, ImgFactory)
-	 * @throws ImgIOException if something goes wrong reading the source.
+	 * @see {@link ImgOpener#openImg(String, ImgFactory)}
 	 */
-	public static <T extends RealType<T>> ImgPlus<T> openImg(final String source,
-		final ImgFactory<T> imgFactory) throws ImgIOException
+	@SuppressWarnings("rawtypes")
+	public static ImgPlus
+		openImg(final String source, final ImgFactory imgFactory)
+			throws ImgIOException
 	{
 		return new ImgOpener().openImg(source, imgFactory);
 	}
 
 	/**
-	 * TODO
-	 * 
-	 * @see ImgOpener#openImg(String, ImgFactory, RealType)
-	 * @throws ImgIOException if something goes wrong reading the source.
+	 * @see {@link ImgOpener#openImg(String, ImgFactory, RealType)}
 	 */
 	public static <T extends RealType<T>> ImgPlus<T> openImg(final String source,
 		final ImgFactory<T> imgFactory, final T type) throws ImgIOException
@@ -276,9 +153,17 @@ public final class IO {
 	}
 
 	/**
-	 * TODO
-	 * 
-	 * @see ImgOpener#openImg(Reader, RealType, ImgFactory, ImgOptions)
+	 * @see {@link ImgOpener#openImg(Reader, RealType, ImgOptions)}
+	 */
+	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
+		final Reader reader, final T type, final ImgOptions imgOptions)
+		throws ImgIOException
+	{
+		return new ImgOpener().openImg(reader, type, imgOptions);
+	}
+
+	/**
+	 * @see {@link ImgOpener#openImg(Reader, RealType, ImgFactory, ImgOptions)}
 	 */
 	public static <T extends RealType<T>> ImgPlus<T> openImg(final Reader reader,
 		final T type, final ImgFactory<T> imgFactory, final ImgOptions imgOptions)
@@ -287,73 +172,47 @@ public final class IO {
 		return new ImgOpener().openImg(reader, type, imgFactory, imgOptions);
 	}
 
-	// -- Static ImgSaver methods --
-
-	/**
-	 * TODO
-	 * 
-	 * @see ImgSaver#saveImg(String, Img)
-	 * @throws ImgIOException if something goes wrong writing to the destination.
-	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
 		final String dest, final Img<T> img) throws ImgIOException
 	{
 		try {
 			new ImgSaver().saveImg(dest, img);
 		}
-		catch (final IncompatibleTypeException exc) {
-			throw new ImgIOException(exc);
+		catch (final IncompatibleTypeException e) {
+			throw new ImgIOException(e);
 		}
 	}
 
-	/**
-	 * TODO
-	 * 
-	 * @see ImgSaver#saveImg(String, ImgPlus, int)
-	 * @throws ImgIOException if something goes wrong writing to the destination.
-	 */
-	<T extends RealType<T> & NativeType<T>> void saveImg(final String dest,
-		final ImgPlus<T> imgPlus, final int imageIndex) throws ImgIOException
+	public static <T extends RealType<T> & NativeType<T>> void saveImg(
+		final String dest, final ImgPlus<T> imgPlus) throws ImgIOException
 	{
 		try {
-			new ImgSaver().saveImg(dest, imgPlus, imageIndex);
+			new ImgSaver().saveImg(dest, imgPlus);
 		}
-		catch (final IncompatibleTypeException exc) {
-			throw new ImgIOException(exc);
+		catch (final IncompatibleTypeException e) {
+			throw new ImgIOException(e);
 		}
 	}
 
-	/**
-	 * TODO
-	 * 
-	 * @see ImgSaver#saveImg(Writer, Img)
-	 * @throws ImgIOException if something goes wrong writing to the destination.
-	 */
-	<T extends RealType<T> & NativeType<T>> void saveImg(final Writer writer,
-		final Img<T> imgPlus) throws ImgIOException
+	public static <T extends RealType<T> & NativeType<T>> void saveImg(
+		final Writer writer, final Img<T> img) throws ImgIOException
+	{
+		try {
+			new ImgSaver().saveImg(writer, img);
+		}
+		catch (final IncompatibleTypeException e) {
+			throw new ImgIOException(e);
+		}
+	}
+
+	public static <T extends RealType<T> & NativeType<T>> void saveImg(
+		final Writer writer, final ImgPlus<T> imgPlus) throws ImgIOException
 	{
 		try {
 			new ImgSaver().saveImg(writer, imgPlus);
 		}
-		catch (final IncompatibleTypeException exc) {
-			throw new ImgIOException(exc);
-		}
-	}
-
-	/**
-	 * TODO
-	 * 
-	 * @see ImgSaver#saveImg(Writer, ImgPlus, int)
-	 * @throws ImgIOException if something goes wrong writing to the destination.
-	 */
-	<T extends RealType<T> & NativeType<T>> void saveImg(final Writer writer,
-		final ImgPlus<T> imgPlus, final int imageIndex) throws ImgIOException
-	{
-		try {
-			new ImgSaver().saveImg(writer, imgPlus, imageIndex);
-		}
-		catch (final IncompatibleTypeException exc) {
-			throw new ImgIOException(exc);
+		catch (final IncompatibleTypeException e) {
+			throw new ImgIOException(e);
 		}
 	}
 

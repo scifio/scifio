@@ -97,7 +97,7 @@ public class ReadImage {
 		System.out.println();
 		System.out.println("== FLOAT TYPE, DEFAULT CONTAINER ==");
 		for (final String arg : args) {
-			final ImgPlus<FloatType> img = IO.openFloat(arg, 0);
+			final ImgPlus<FloatType> img = IO.openFloat(arg);
 			reportInformation(img);
 		}
 
@@ -105,7 +105,7 @@ public class ReadImage {
 		System.out.println();
 		System.out.println("== DOUBLE TYPE, DEFAULT CONTAINER ==");
 		for (final String arg : args) {
-			final ImgPlus<DoubleType> img = IO.openDouble(arg, 0);
+			final ImgPlus<DoubleType> img = IO.openDouble(arg);
 			reportInformation(img);
 		}
 	}
