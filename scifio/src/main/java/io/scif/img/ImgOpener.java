@@ -84,6 +84,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 	@Parameter
 	private StatusService statusService;
+	
+	@Parameter
+	private PlaneConverterService pcService;
 
 	// -- Constructors --
 
@@ -695,8 +698,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 			// if it's we have a PlanarAccess we can use a PlanarAccess converter,
 			// otherwise
 			// we can use a more general RandomAccess approach
-			final PlaneConverterService pcService =
-				getContext().getService(PlaneConverterService.class);
 			if (isArray) {
 				converter = pcService.getArrayConverter();
 			}

@@ -44,6 +44,7 @@ import io.scif.services.TranslatorService;
 
 import org.scijava.Context;
 import org.scijava.app.StatusService;
+import org.scijava.plugin.Parameter;
 
 
 /**
@@ -58,6 +59,7 @@ public abstract class AbstractImgIOComponent extends AbstractSCIFIOComponent {
 
 	// -- Fields --
 	
+	@Parameter
 	private ImgUtilityService imgUtils;
 
 	// -- Constructors --
@@ -74,7 +76,6 @@ public abstract class AbstractImgIOComponent extends AbstractSCIFIOComponent {
 	// -- AbstractImgIOComponent methods --
 	
 	public ImgUtilityService utils() {
-		if (imgUtils == null)	imgUtils = getContext().getService(ImgUtilityService.class);
 		return imgUtils;
 	}
 	

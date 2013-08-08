@@ -47,6 +47,7 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -59,6 +60,9 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = PlaneConverter.class, name = "Default")
 public class RandomAccessConverter extends AbstractPlaneConverter {
 
+	@Parameter
+	private ImgUtilityService imgUtilService;
+
 	/**
 	 * Uses a cursor to populate the plane. This solution is general and works
 	 * regardless of container, but at the expense of performance both now and
@@ -68,9 +72,6 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 		final int imageIndex, final int planeIndex, final byte[] plane,
 		final ImgPlus<T> img, final ImgOptions imgOptions)
 	{
-		final ImgUtilityService imgUtilService =
-			getContext().getService(ImgUtilityService.class);
-
 		final Metadata m = reader.getMetadata();
 
 		final int pixelType = m.getPixelType(imageIndex);

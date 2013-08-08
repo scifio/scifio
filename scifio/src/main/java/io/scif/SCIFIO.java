@@ -54,8 +54,7 @@ import org.scijava.Context;
  * Convenience {@link org.scijava.Context} wrapper.
  * <p>
  * Provides easy accessor methods for the SCIFIO-specific
- * {@link org.scijava.service.Service} implementations, bypassing the need to
- * call the {@code getService(Service.class} method.
+ * {@link org.scijava.service.Service} implementations.
  * </p>
  * <p>
  * This class is intended to be a disposable wrapper that can easily be created

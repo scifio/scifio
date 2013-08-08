@@ -46,6 +46,7 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -57,15 +58,15 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = PlaneConverter.class, name = "PlanarAccess")
 public class PlanarAccessConverter extends AbstractPlaneConverter {
 
+	@Parameter
+	private ImgUtilityService imgUtilService;
+
 	/** Populates plane by reference using {@link PlanarAccess} interface. */
 	@SuppressWarnings("unchecked")
 	public <T extends RealType<T>> void populatePlane(final Reader reader,
 		final int imageIndex, final int planeIndex, final byte[] plane,
 		final ImgPlus<T> planarImg, final ImgOptions imgOptions)
 	{
-		final ImgUtilityService imgUtilService =
-			getContext().getService(ImgUtilityService.class);
-
 		final Metadata m = reader.getMetadata();
 
 		@SuppressWarnings("rawtypes")
