@@ -36,6 +36,8 @@
 
 package io.scif.codec;
 
+import java.util.List;
+
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
@@ -58,7 +60,8 @@ public class DefaultCodecService extends AbstractSingletonService<Codec>
 	// -- CodecService methods --
 
 	public <C extends Codec> C getCodec(final Class<C> codecClass) {
-		return objectService.getObjects(codecClass).get(0);
+		final List<C> objects = objectService.getObjects(codecClass);
+		return objects == null || objects.isEmpty() ? null : objects.get(0);
 	}
 
 	// -- PTService methods --
