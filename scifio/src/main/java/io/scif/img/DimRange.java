@@ -60,6 +60,10 @@ import java.util.Set;
  * </ul>
  * </p>
  * </p>
+ * <p>
+ * NB: index order is preserved, so if indices are provided out of order, they
+ * will remain out of order.
+ * </p>
  * 
  * @author Mark Hiner
  */
@@ -72,6 +76,8 @@ public class DimRange {
 
 	// -- Fields --
 
+	// Two indices are maintained over the data. A set to allow fast lookup
+	// for contains checks, and a list to provide a consistent guaranteed order.
 	private final Set<Long> setIndex;
 	private final List<Long> listIndex;
 
@@ -118,10 +124,26 @@ public class DimRange {
 	}
 
 	/**
-	 * Creates the DimRange: [start, end)
+	 * Creates a singleton DimRange. 
+	 * 
+	 * @param index single index for this DimRange.
+	 */
+	public DimRange(final Long index) {
+		head = index;
+		tail = index;
+
+		setIndex = new HashSet<Long>();
+		listIndex = new ArrayList<Long>();
+
+		setIndex.add(index);
+		listIndex.add(index);
+	}
+
+	/**
+	 * Creates the DimRange: [start, end]
 	 * 
 	 * @param start inclusive start value
-	 * @param end exclusive end value
+	 * @param end inclusive end value
 	 */
 	public DimRange(final Long start, final Long end) {
 		head = start;
@@ -130,10 +152,7 @@ public class DimRange {
 		setIndex = new HashSet<Long>();
 		listIndex = new ArrayList<Long>();
 
-		setIndex.add(start);
-		listIndex.add(start);
-
-		for (long l = start + 1; l < end; l++) {
+		for (long l = start; l <= end; l++) {
 			setIndex.add(l);
 			listIndex.add(l);
 		}

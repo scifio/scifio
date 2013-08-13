@@ -587,8 +587,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		// Z,C,T offsets and maximum values
 		final DimRange[] index =
-			new DimRange[] { new DimRange(0l, 1l), new DimRange(0l, 1l),
-				new DimRange(0l, 1l) };
+			new DimRange[] { new DimRange(0l), new DimRange(0l), new DimRange(0l) };
 
 		final Metadata meta = r.getMetadata();
 
@@ -649,7 +648,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 					dimsPlaced++;
 				}
 
-				if (cVals == null) cVals = new DimRange(0l, (long) c);
+				if (cVals == null) cVals = new DimRange(0l, (long) (c-1));
 
 				index[cztPlaced] = cVals;
 				cPos = cztPlaced++;
@@ -664,7 +663,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 					dimsPlaced++;
 				}
 
-				if (zVals == null) zVals = new DimRange(0l, (long) z);
+				if (zVals == null) zVals = new DimRange(0l, (long) (z-1));
 
 				index[cztPlaced] = zVals;
 				zPos = cztPlaced++;
@@ -680,7 +679,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 					dimsPlaced++;
 				}
 
-				if (tVals == null) tVals = new DimRange(0l, (long) t);
+				if (tVals == null) tVals = new DimRange(0l, (long) (t-1));
 
 				index[cztPlaced] = tVals;
 				tPos = cztPlaced++;
