@@ -45,6 +45,7 @@ import io.scif.Reader;
 import io.scif.Writer;
 
 import java.util.List;
+import java.util.Set;
 
 import org.scijava.Priority;
 import org.scijava.service.Service;
@@ -238,7 +239,7 @@ public interface FormatService extends Service {
 	/**
 	 * Returns a list of all Formats within this context.
 	 */
-	List<Format> getAllFormats();
+	Set<Format> getAllFormats();
 
 	/**
 	 * Convenience method to obtain TypedService instances within the current

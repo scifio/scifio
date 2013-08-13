@@ -47,10 +47,10 @@ import io.scif.Writer;
 import io.scif.util.FormatTools;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.scijava.plugin.Parameter;
@@ -80,8 +80,8 @@ public class DefaultFormatService extends AbstractService implements
 	/*
 	 * A  list of all available Formats
 	 */
-	private final List<Format> formats = new ArrayList<Format>();
-
+	private final Set<Format> formats = new TreeSet<Format>();
+	
 	/*
 	 * Maps Format classes to their instances.
 	 */
@@ -243,10 +243,8 @@ public class DefaultFormatService extends AbstractService implements
 
 		Writer w = null;
 
-		for (int i = 0; !matched && i < formats.size(); i++) {
-			final Format f = formats.get(i);
-
-			if (FormatTools.checkSuffix(fileId, f.getSuffixes())) {
+		for (Format f : formats) {
+			if (!matched && FormatTools.checkSuffix(fileId, f.getSuffixes())) {
 
 				if (!DefaultWriter.class.isAssignableFrom(f.getWriterClass())) {
 					w = f.createWriter();
@@ -324,9 +322,8 @@ public class DefaultFormatService extends AbstractService implements
 
 		boolean found = false;
 
-		for (int i = 0; i < formats.size() && !found; i++) {
-			final Format format = formats.get(i);
-			if (format.isEnabled() && format.createChecker().isFormat(id, open)) {
+		for (Format format : formats) {
+			if (!found && format.isEnabled() && format.createChecker().isFormat(id, open)) {
 				// if greedy is true, we can end after finding the first format
 				found = greedy;
 				formatList.add(format);
@@ -343,7 +340,7 @@ public class DefaultFormatService extends AbstractService implements
 	/*
 	 * @see FormatService#getAllFormats()
 	 */
-	public List<Format> getAllFormats() {
+	public Set<Format> getAllFormats() {
 		return formats;
 	}
 
@@ -366,7 +363,5 @@ public class DefaultFormatService extends AbstractService implements
 		{
 			addFormat(format);
 		}
-
-		Collections.sort(formats);
 	}
 }
