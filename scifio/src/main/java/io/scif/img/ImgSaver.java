@@ -51,11 +51,11 @@ import java.io.IOException;
 import net.imglib2.exception.ImgLibException;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.img.planar.PlanarImg;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -170,7 +170,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * 
 	 * @param newLengths - updated to hold the lengths of the newly ordered axes
 	 */
-	public static String guessDimOrder(final AxisType[] axes,
+	public static String guessDimOrder(final CalibratedAxis[] axes,
 		final long[] dimLengths, final long[] newLengths)
 	{
 		String oldOrder = "";
@@ -198,7 +198,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		// unknown blocks are present.
 		// We build oldOrder to iterate over on pass 2, for convenience
 		for (int i = 0; i < axes.length; i++) {
-			switch (axes[i].getLabel().toUpperCase().charAt(0)) {
+			switch (axes[i].type().getLabel().toUpperCase().charAt(0)) {
 				case 'X':
 					oldOrder += "X";
 					haveDim[0] = true;
@@ -563,7 +563,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		// TODO is there some way to consolidate this with the isCompressible
 		// method?
-		final AxisType[] axes = new AxisType[img.numDimensions()];
+		final CalibratedAxis[] axes = new CalibratedAxis[img.numDimensions()];
 		img.axes(axes);
 
 		String dimOrder = "";
@@ -575,34 +575,12 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		// Populate physical pixel sizes
 		for (int i = 0; i < axes.length; i++) {
-			final AxisType axis = axes[i];
-//      PositiveFloat physicalSize = null;
-
-			// TODO need to decide how to handle physical pixel sizes in SCIFIO...
-//      if (Axes.X.equals(axis)) {
-//        physicalSize = new PositiveFloat(img.calibration(i));
-//        meta.setPixelsPhysicalSizeX(physicalSize, imageIndex);
-//      }
-//      else if (Axes.Y.equals(axis)) {
-//        physicalSize = new PositiveFloat(img.calibration(i));
-//        meta.setPixelsPhysicalSizeY(physicalSize, imageIndex);
-//      }
-//      else if (Axes.Z.equals(axis)) {
-//        physicalSize = new PositiveFloat(img.calibration(i));
-//        meta.setPixelsPhysicalSizeZ(physicalSize, imageIndex);
-//      }
+			final CalibratedAxis axis = axes[i];
+			axis.setCalibration(img.calibration(i));
 		}
 
 		if (dimOrder == null) throw new ImgIOException(
 			"Image has more than 5 dimensions in an order that could not be compressed.");
-
-		// TODO if size C, Z, T and dimension order are populated we won't
-		// overwrite them.
-		/*
-		  if(meta.getPixelsSizeZ(0) == null) sizeZ = meta.getPixelsSizeZ(0).getValue();
-		  if(meta.getPixelsSizeC(0) == null) sizeC = meta.getPixelsSizeC(0).getValue();
-		  if(meta.getPixelsSizeT(0) == null) sizeT = meta.getPixelsSizeT(0).getValue();
-		 */
 
 		int sizeX = 0, sizeY = 0, sizeZ = 0, sizeC = 0, sizeT = 0;
 
@@ -625,8 +603,6 @@ public class ImgSaver extends AbstractImgIOComponent {
 					break;
 			}
 		}
-
-		// TODO save composite channel count somewhere...
 
 		final DefaultMetadata imgplusMeta = new DefaultMetadata();
 

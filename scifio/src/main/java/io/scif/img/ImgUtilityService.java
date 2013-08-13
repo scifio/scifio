@@ -38,11 +38,11 @@ package io.scif.img;
 
 import io.scif.Metadata;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -84,10 +84,10 @@ public interface ImgUtilityService extends Service {
 
 	/** Wraps raw primitive array in ImgLib2 Array object. */
 	ArrayDataAccess<?> makeArray(final Object array);
-	
+
 	/** Compiles an N-dimensional list of axis lengths from the given Metadata. */
 	long[] getDimLengths(final Metadata m, final ImgOptions imgOptions);
-	
+
 	/**
 	 * Returns an N-dimensional list of axis lengths from the given Metadata,
 	 * constrained by the provided SubRegion (if present)
@@ -127,6 +127,6 @@ public interface ImgUtilityService extends Service {
 	 * 
 	 * @param newLengths - updated to hold the lengths of the newly ordered axes
 	 */
-	String guessDimOrder(final AxisType[] axes, final long[] dimLengths,
+	String guessDimOrder(final CalibratedAxis[] axes, final long[] dimLengths,
 		final long[] newLengths);
 }

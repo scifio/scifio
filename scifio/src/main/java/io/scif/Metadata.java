@@ -37,11 +37,13 @@
 package io.scif;
 
 import io.scif.io.RandomAccessInputStream;
+import io.scif.util.FormatTools;
 
 import java.io.Serializable;
 import java.util.List;
 
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 /**
  * Interface for all SCIFIO Metadata objects. Based on the format, a Metadata
@@ -201,6 +203,12 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	int getThumbSizeY(int imageIndex);
 
 	/**
+	 * Returns the CalibratedAxis associated with the given type, for the
+	 * specified imageIndex. Useful to retrieve calibration information.
+	 */
+	CalibratedAxis getAxis(int imageIndex, AxisType type);
+
+	/**
 	 * Returns the number of axes (planes) in the specified image.
 	 * 
 	 * @param imageIndex - index for multi-image files
@@ -215,7 +223,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * @param axisIndex - index of the desired axis within the specified image
 	 * @return Type of the desired plane.
 	 */
-	AxisType getAxisType(int imageIndex, int axisIndex);
+	CalibratedAxis getAxisType(int imageIndex, int axisIndex);
 
 	/**
 	 * Gets the length of the (zero-indexed) specified plane.
@@ -234,14 +242,35 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * @param t - desired axis type
 	 * @return Length of axis t
 	 */
+	int getAxisLength(int imageIndex, CalibratedAxis t);
+
+	/**
+	 * As {@link #getAxisLength(int, CalibratedAxis)} but with just the desired
+	 * {@link AxisType}.
+	 * 
+	 * @param imageIndex - index for multi-image files
+	 * @param t - desired axis type
+	 * @return Length of axis t
+	 */
 	int getAxisLength(int imageIndex, AxisType t);
 
 	/**
-	 * Returns the array index for the specified AxisType. This index can be used
-	 * in other Axes methods for looking up lengths, etc...
+	 * Returns the array index for the specified CalibratedAxis. This index can be
+	 * used in other Axes methods for looking up lengths, etc...
 	 * <p>
-	 * This method can also be used as an existence check for the target AxisType.
+	 * This method can also be used as an existence check for the target
+	 * CalibratedAxis.
 	 * </p>
+	 * 
+	 * @param imageIndex - index for multi-image files
+	 * @param type - axis type to look up
+	 * @return The index of the desired axis or -1 if not found.
+	 */
+	int getAxisIndex(int imageIndex, CalibratedAxis type);
+
+	/**
+	 * As {@link #getAxisIndex(int, CalibratedAxis)} but with just the desired
+	 * {@link AxisType}.
 	 * 
 	 * @param imageIndex - index for multi-image files
 	 * @param type - axis type to look up
@@ -254,19 +283,19 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * index. Order is consistent with the axis length (int) array returned by
 	 * {@link #getAxesLengths(int)}.
 	 * <p>
-	 * AxisType order is sorted and represents order within the image.
+	 * CalibratedAxis order is sorted and represents order within the image.
 	 * </p>
 	 * 
 	 * @param imageIndex - index for multi-image sources
-	 * @return An array of AxisTypes in the order they appear.
+	 * @return An array of CalibratedAxiss in the order they appear.
 	 */
-	AxisType[] getAxes(int imageIndex);
+	CalibratedAxis[] getAxes(int imageIndex);
 
 	/**
 	 * Returns an array of the lengths for axes associated with the specified
 	 * image index.
 	 * <p>
-	 * Ordering is consistent with the AxisType array returned by
+	 * Ordering is consistent with the CalibratedAxis array returned by
 	 * {@link #getAxes(int)}.
 	 * </p>
 	 * 
@@ -276,23 +305,29 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	int[] getAxesLengths(int imageIndex);
 
 	/**
-	 * Appends the provided AxisType to the current AxisType array and creates
-	 * corresponding length = 0 entry in the axis lengths array.
+	 * Appends the provided CalibratedAxis to the current CalibratedAxis array and
+	 * creates corresponding length = 0 entry in the axis lengths array.
 	 * 
 	 * @param imageIndex - index for multi-image sources
 	 * @param type - Type of the new axis
 	 */
-	void addAxis(int imageIndex, AxisType type);
+	void addAxis(int imageIndex, CalibratedAxis type);
 
 	/**
-	 * Appends the provided AxisType to the current AxisType array and creates a
-	 * corresponding entry with the specified value in axis lengths.
+	 * Appends the provided CalibratedAxis to the current CalibratedAxis array and
+	 * creates a corresponding entry with the specified value in axis lengths.
 	 * 
 	 * @param imageIndex - index for multi-image sources
 	 * @param type - Type of the new axis
 	 * @param value - Value of the new axis
 	 */
-	void addAxis(int imageIndex, AxisType type, int value);
+	void addAxis(int imageIndex, CalibratedAxis type, int value);
+
+	/**
+	 * As {@link #addAxis(int, CalibratedAxis, int)} using the default calibration
+	 * value, per {@link FormatTools#calibrate(AxisType)}.
+	 */
+	void addAxis(int imageIndex, final AxisType type, final int value);
 
 	/**
 	 * Returns true if we are confident that the dimension order is correct for
@@ -404,9 +439,15 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * Sets the Axes types for the specified image. Order is implied by ordering
 	 * within this array
 	 */
-	void setAxisTypes(int imageIndex, AxisType[] axisTypes);
+	void setAxisTypes(int imageIndex, CalibratedAxis[] axisTypes);
 
 	/** Sets the type of the axis at the specified index, for the specified image. */
+	void setAxisType(int imageIndex, int axisIndex, CalibratedAxis axis);
+
+	/**
+	 * As {@link #setAxisType(int, int, CalibratedAxis)} using the default
+	 * calibration provided by {@link FormatTools#calibrate(AxisType)}.
+	 */
 	void setAxisType(int imageIndex, int axisIndex, AxisType axis);
 
 	/**
@@ -418,6 +459,12 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	/**
 	 * Sets the length for the specified axis, if its type is present in the
 	 * specified image.
+	 */
+	void setAxisLength(int imageIndex, CalibratedAxis axis, int length);
+
+	/**
+	 * As {@link #setAxisLength(int, CalibratedAxis, int)}, but requires only the
+	 * AxisType.
 	 */
 	void setAxisLength(int imageIndex, AxisType axis, int length);
 

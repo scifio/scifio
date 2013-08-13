@@ -40,7 +40,7 @@ import io.scif.Metadata;
 
 import java.util.List;
 
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
@@ -65,7 +65,7 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 
 	// -- Fields --
 
-	private List<AxisType>[] outputOrder;
+	private List<CalibratedAxis>[] outputOrder;
 
 	// -- Constructors --
 
@@ -86,7 +86,7 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 	 * 
 	 * @return The output order array for this dataset
 	 */
-	public List<AxisType>[] getOutputOrder() {
+	public List<CalibratedAxis>[] getOutputOrder() {
 		return outputOrder;
 	}
 
@@ -96,7 +96,7 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 	 * 
 	 * @param outputOrder - Array of output orders for this dataset
 	 */
-	public void setOutputOrder(final List<AxisType>[] outputOrder) {
+	public void setOutputOrder(final List<CalibratedAxis>[] outputOrder) {
 		this.outputOrder = outputOrder;
 	}
 
@@ -114,7 +114,9 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 	 * @see io.scif.filters.AbstractMetadataWrapper#setAxisTypes(int, net.imglib2.meta.AxisType[])
 	 */
 	@Override
-	public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
+	public void setAxisTypes(final int imageIndex,
+		final CalibratedAxis[] axisTypes)
+	{
 		super.setAxisTypes(imageIndex, axisTypes, false);
 	}
 }

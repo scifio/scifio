@@ -56,7 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
@@ -743,11 +743,12 @@ public class FileStitcher extends AbstractReaderFilter {
 				r.setGroupFiles(false);
 			}
 			r.setSource(externals.get(external).getFiles()[fno]);
-			final List<AxisType> axes =
+			final List<CalibratedAxis> axes =
 				((DimensionSwapper) getParent()).getInputOrder(imageIndex);
 
 			final String newOrder =
-				FormatTools.findDimensionOrder(axes.toArray(new AxisType[axes.size()]));
+				FormatTools.findDimensionOrder(axes.toArray(new CalibratedAxis[axes
+					.size()]));
 			if ((externals.get(external).getFiles().length > 1 || !c
 				.isOrderCertain(imageIndex)) &&
 				(c.getRGBChannelCount(imageIndex) == 1 || newOrder.indexOf("C") == FormatTools

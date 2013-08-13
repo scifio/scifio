@@ -45,11 +45,11 @@ import io.scif.img.SubRegion;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
@@ -91,29 +91,29 @@ public class ImgOpenerTest {
 	@Test
 	public void testImgOptions() throws IncompatibleTypeException, ImgIOException
 	{
-		NativeType t = new UnsignedByteType();
+		final NativeType t = new UnsignedByteType();
 
-		ImgFactory aif = new ArrayImgFactory().imgFactory(t);
-		ImgFactory pif = new PlanarImgFactory().imgFactory(t);
-		ImgFactory sif = new SCIFIOCellImgFactory().imgFactory(t);
+		final ImgFactory aif = new ArrayImgFactory().imgFactory(t);
+		final ImgFactory pif = new PlanarImgFactory().imgFactory(t);
+		final ImgFactory sif = new SCIFIOCellImgFactory().imgFactory(t);
 
-		for (ImgFactory f : new ImgFactory[] { aif, pif, sif }) {
+		for (final ImgFactory f : new ImgFactory[] { aif, pif, sif }) {
 			testSubRegion(f);
 		}
 	}
 
 	// Tests the opening various sub-regions of an image
 	@SuppressWarnings({ "rawtypes" })
-	private void testSubRegion(ImgFactory factory) throws ImgIOException {
-		ImgOptions options = new ImgOptions();
+	private void testSubRegion(final ImgFactory factory) throws ImgIOException {
+		final ImgOptions options = new ImgOptions();
 		// should get an inner left left 128x128 square
-		AxisType[] axes = new AxisType[]{Axes.X, Axes.Y};
-		String[] ranges = new String[]{"128-255", "128-255"};
+		AxisType[] axes = new AxisType[] { Axes.X, Axes.Y };
+		String[] ranges = new String[] { "128-255", "128-255" };
 		options.setRegion(new SubRegion(axes, ranges));
 		doTestSubRegion(factory, options, 128 * 128 * 5);
 
-		axes = new AxisType[]{Axes.TIME};
-		ranges = new String[]{"0,2-4:2"};
+		axes = new AxisType[] { Axes.TIME };
+		ranges = new String[] { "0,2-4:2" };
 		// should get the first, 3rd and 5th T slices
 		options.setRegion(new SubRegion(axes, ranges));
 		doTestSubRegion(factory, options, 512 * 512 * 3);
@@ -124,9 +124,8 @@ public class ImgOpenerTest {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void
-		doTestSubRegion(ImgFactory factory, ImgOptions options, long size)
-			throws ImgIOException
+	private void doTestSubRegion(final ImgFactory factory,
+		final ImgOptions options, final long size) throws ImgIOException
 	{
 		ImgPlus imgPlus = null;
 		imgPlus = imgOpener.openImg(id, factory, options);

@@ -64,6 +64,7 @@ import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.Context;
 import org.scijava.Priority;
@@ -78,32 +79,32 @@ import org.scijava.plugin.Plugin;
  * Examples:
  * <ul>
  * <li>showinf
- * 'multi-series&amp;series=11&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake'
- * -series 9</li>
+ * 'multi-series&amp;series=11&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake
+ * ' -series 9</li>
  * <li>showinf
- * '8bit-signed&amp;pixelType=int8&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake
- * '</li>
+ * '8bit-signed&amp;pixelType=int8&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
+ * e '</li>
  * <li>showinf
- * '8bit-unsigned&amp;pixelType=uint8&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake
- * '</li>
+ * '8bit-unsigned&amp;pixelType=uint8&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
+ * e '</li>
  * <li>showinf
- * '16bit-signed&amp;pixelType=int16&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake
- * '</li>
+ * '16bit-signed&amp;pixelType=int16&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
+ * e '</li>
  * <li>showinf
- * '16bit-unsigned&amp;pixelType=uint16&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake
- * '</li>
+ * '16bit-unsigned&amp;pixelType=uint16&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
+ * e '</li>
  * <li>showinf
- * '32bit-signed&amp;pixelType=int32&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake
- * '</li>
+ * '32bit-signed&amp;pixelType=int32&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
+ * e '</li>
  * <li>showinf
- * '32bit-unsigned&amp;pixelType=uint32&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake
- * '</li>
+ * '32bit-unsigned&amp;pixelType=uint32&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
+ * e '</li>
  * <li>showinf
- * '32bit-floating&amp;pixelType=float&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake
- * '</li>
+ * '32bit-floating&amp;pixelType=float&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
+ * e '</li>
  * <li>showinf
- * '64bit-floating&amp;pixelType=double&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake
- * '</li>
+ * '64bit-floating&amp;pixelType=double&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
+ * e '</li>
  * </ul>
  * </p>
  */
@@ -425,12 +426,12 @@ public class FakeFormat extends AbstractFormat {
 			scaleFactor =
 				FakeUtils.getDoubleValue(fakeMap.get(SCALE_FACTOR), scaleFactor);
 
-			final AxisType[] axes = FormatTools.findDimensionList(dimOrder);
+			final CalibratedAxis[] axes = FormatTools.findDimensionList(dimOrder);
 			final int[] axisLengths = new int[axes.length];
 
 			// Create axes arrays
 			for (int i = 0; i < axes.length; i++) {
-				final AxisType t = axes[i];
+				final AxisType t = axes[i].type();
 				if (t.equals(Axes.X)) axisLengths[i] = sizeX;
 				else if (t.equals(Axes.Y)) axisLengths[i] = sizeY;
 				else if (t.equals(Axes.Z)) axisLengths[i] = sizeZ;

@@ -58,11 +58,12 @@ import java.util.List;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.img.cell.AbstractCellImgFactory;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
@@ -423,35 +424,11 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final int sizeC = m.getAxisLength(0, Axes.CHANNEL);
 		final String dimOrder = FormatTools.findDimensionOrder(m, 0);
 
-		// FIXME: need physical pixel sizes in SCIFIO..
-//    final OMEMetadata meta = new OMEMetadata();
-//    meta.setContext(getContext());
-//    scifio().translator().translate(m, meta, false);
-//
-//    final PositiveFloat xCalin = meta.getRoot().getPixelsPhysicalSizeX(0);
-//    final PositiveFloat yCalin = meta.getRoot().getPixelsPhysicalSizeY(0);
-//    final PositiveFloat zCalin = meta.getRoot().getPixelsPhysicalSizeZ(0);
-//    Double tCal = meta.getRoot().getPixelsTimeIncrement(0);
-
-		final Double xCal = 1.0, yCal = 1.0, zCal = 1.0, tCal = 1.0, cCal = 1.0;
-
-//    if (xCalin == null)
-//      xCal = 1.0;
-//    else
-//      xCal = xCalin.getValue();
-//
-//    if (yCalin == null)
-//      yCal = 1.0;
-//    else
-//      yCal = yCalin.getValue();
-//
-//    if (zCalin == null)
-//      zCal = 1.0;
-//    else
-//      zCal = zCalin.getValue();
-//
-//    if (tCal == null)
-//      tCal = 1.0;
+		final Double xCal = m.getAxis(0, Axes.X).calibration(),
+									yCal = m.getAxis(0, Axes.Y).calibration(), 
+									zCal = m.getAxis(0, Axes.Z).calibration(),
+									tCal = m.getAxis(0, Axes.TIME).calibration(),
+									cCal = m.getAxis(0, Axes.CHANNEL).calibration();
 
 		final List<Double> calibrationList = new ArrayList<Double>();
 
@@ -609,14 +586,14 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		// current axis
 		int axisIndex = 0;
-		final AxisType[] axes = meta.getAxes(imageIndex);
+		final CalibratedAxis[] axes = meta.getAxes(imageIndex);
 
 		// Total # planes in this subregion
 		int planeCount = 1;
 
 		// Populate subregion, plane count, and CZT information
 		while (axisIndex < axes.length) {
-			final AxisType axisType = axes[axisIndex++];
+			final AxisType axisType = axes[axisIndex++].type();
 
 			if (axisType.equals(Axes.X)) {
 				if (checkSubregion && dimsPlaced < region.size() &&
@@ -648,7 +625,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 					dimsPlaced++;
 				}
 
-				if (cVals == null) cVals = new DimRange(0l, (long) (c-1));
+				if (cVals == null) cVals = new DimRange(0l, (long) (c - 1));
 
 				index[cztPlaced] = cVals;
 				cPos = cztPlaced++;
@@ -663,7 +640,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 					dimsPlaced++;
 				}
 
-				if (zVals == null) zVals = new DimRange(0l, (long) (z-1));
+				if (zVals == null) zVals = new DimRange(0l, (long) (z - 1));
 
 				index[cztPlaced] = zVals;
 				zPos = cztPlaced++;
@@ -679,7 +656,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 					dimsPlaced++;
 				}
 
-				if (tVals == null) tVals = new DimRange(0l, (long) (t-1));
+				if (tVals == null) tVals = new DimRange(0l, (long) (t - 1));
 
 				index[cztPlaced] = tVals;
 				tPos = cztPlaced++;
@@ -706,9 +683,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		// FIXME I think this is returning multi-channel planes out of order because
 		// of ChannelSeparator
-		for (Long i : index[0].indices()) {
-			for (Long j : index[1].indices()) {
-				for (Long k : index[2].indices()) {
+		for (final Long i : index[0].indices()) {
+			for (final Long j : index[1].indices()) {
+				for (final Long k : index[2].indices()) {
 
 					final Long[] indices = new Long[] { i, j, k };
 					final Long z = indices[zPos];

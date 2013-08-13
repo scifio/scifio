@@ -39,8 +39,9 @@ package io.scif.filters;
 import io.scif.DefaultImageMetadata;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
+import io.scif.util.FormatTools;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
@@ -65,10 +66,10 @@ public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
 
 	// -- Fields --
 
-	private final AxisType[] xyczt = new AxisType[] { Axes.X, Axes.Y,
-		Axes.CHANNEL, Axes.Z, Axes.TIME };
-	private final AxisType[] xyctz = new AxisType[] { Axes.X, Axes.Y,
-		Axes.CHANNEL, Axes.TIME, Axes.Z };
+	private final CalibratedAxis[] xyczt = FormatTools.calibrate(Axes.X, Axes.Y,
+		Axes.CHANNEL, Axes.Z, Axes.TIME);
+	private final CalibratedAxis[] xyctz = FormatTools.calibrate(Axes.X, Axes.Y,
+		Axes.CHANNEL, Axes.TIME, Axes.Z);
 
 	// -- Constructors --
 
@@ -104,7 +105,7 @@ public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
 	}
 
 	@Override
-	public AxisType[] getAxes(final int imageIndex) {
+	public CalibratedAxis[] getAxes(final int imageIndex) {
 		if (unwrap().isRGB(imageIndex) && !unwrap().isIndexed(imageIndex)) {
 			final int timeIndex = unwrap().getAxisIndex(imageIndex, Axes.TIME);
 			final int zIndex = unwrap().getAxisIndex(imageIndex, Axes.Z);

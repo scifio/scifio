@@ -41,12 +41,14 @@ import io.scif.Writer;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
+
+import org.scijava.Context;
 
 /**
  * A static utility class for easy access to {@link ImgSaver} and
@@ -142,10 +144,11 @@ public final class IO {
 	{
 		return new ImgOpener().openImg(source, imgFactory);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public static ImgPlus openImg(final String source, final ImgFactory imgFactory,
-		ImgOptions imgOptions) throws ImgIOException
+	public static ImgPlus openImg(final String source,
+		final ImgFactory imgFactory, final ImgOptions imgOptions)
+		throws ImgIOException
 	{
 		return new ImgOpener().openImg(source, imgFactory, imgOptions);
 	}
@@ -180,7 +183,7 @@ public final class IO {
 	}
 
 	/**
-	 *  @see {@link ImgSaver#saveImg(String, Img)}
+	 * @see {@link ImgSaver#saveImg(String, Img)}
 	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
 		final String dest, final Img<T> img) throws ImgIOException
@@ -194,10 +197,11 @@ public final class IO {
 	}
 
 	/**
-	 *  @see {@link ImgSaver#saveImg(String, ImgPlus, int)}
+	 * @see {@link ImgSaver#saveImg(String, ImgPlus, int)}
 	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
-		final String dest, final ImgPlus<T> imgPlus, int imageIndex) throws ImgIOException
+		final String dest, final ImgPlus<T> imgPlus, final int imageIndex)
+		throws ImgIOException
 	{
 		try {
 			new ImgSaver().saveImg(dest, imgPlus, imageIndex);
@@ -208,7 +212,7 @@ public final class IO {
 	}
 
 	/**
-	 *  @see {@link ImgSaver#saveImg(Writer, Img)}
+	 * @see {@link ImgSaver#saveImg(Writer, Img)}
 	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
 		final Writer writer, final Img<T> img) throws ImgIOException
@@ -222,10 +226,11 @@ public final class IO {
 	}
 
 	/**
-	 *  @see {@link ImgSaver#saveImg(Writer, ImgPlus, int)}
+	 * @see {@link ImgSaver#saveImg(Writer, ImgPlus, int)}
 	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
-		final Writer writer, final ImgPlus<T> imgPlus, int imageIndex) throws ImgIOException
+		final Writer writer, final ImgPlus<T> imgPlus, final int imageIndex)
+		throws ImgIOException
 	{
 		try {
 			new ImgSaver().saveImg(writer, imgPlus, imageIndex);

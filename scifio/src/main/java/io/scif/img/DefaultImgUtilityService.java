@@ -55,7 +55,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
@@ -67,7 +66,8 @@ import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
@@ -145,15 +145,17 @@ public class DefaultImgUtilityService extends AbstractService implements
 		return dimLengths;
 	}
 
-	public long[] getConstrainedLengths(final Metadata m, final ImgOptions imgOptions) {
-		long[] lengths = getDimLengths(m, imgOptions);
+	public long[] getConstrainedLengths(final Metadata m,
+		final ImgOptions imgOptions)
+	{
+		final long[] lengths = getDimLengths(m, imgOptions);
 
-		SubRegion r = imgOptions.getRegion();
+		final SubRegion r = imgOptions.getRegion();
 
 		if (r != null) {
 			// set each dimension length = the number of entries for that axis
-			for (AxisType t : m.getAxes(0)) {
-				DimRange range = r.getRange(t);
+			for (final CalibratedAxis t : m.getAxes(0)) {
+				final DimRange range = r.getRange(t.type());
 				if (range != null) lengths[m.getAxisIndex(0, t)] =
 					range.indices().size();
 			}
@@ -383,7 +385,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 		final ImgPlus<T> img)
 	{
 
-		final AxisType[] axes = new AxisType[img.numDimensions()];
+		final CalibratedAxis[] axes = new CalibratedAxis[img.numDimensions()];
 		img.axes(axes);
 
 		final long[] axisLengths = new long[5];
@@ -395,9 +397,9 @@ public class DefaultImgUtilityService extends AbstractService implements
 		boolean foundUnknown = false;
 
 		for (int i = 0; i < axes.length; i++) {
-			final AxisType axis = axes[i];
+			final CalibratedAxis axis = axes[i];
 
-			switch (axis.getLabel().toUpperCase().charAt(0)) {
+			switch (axis.type().getLabel().toUpperCase().charAt(0)) {
 				case 'X':
 				case 'Y':
 				case 'Z':
@@ -418,8 +420,8 @@ public class DefaultImgUtilityService extends AbstractService implements
 		return (dimOrder != null);
 	}
 
-	public String guessDimOrder(final AxisType[] axes, final long[] dimLengths,
-		final long[] newLengths)
+	public String guessDimOrder(final CalibratedAxis[] axes,
+		final long[] dimLengths, final long[] newLengths)
 	{
 		String oldOrder = "";
 		String newOrder = "";
@@ -446,7 +448,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 		// unknown blocks are present.
 		// We build oldOrder to iterate over on pass 2, for convenience
 		for (int i = 0; i < axes.length; i++) {
-			switch (axes[i].getLabel().toUpperCase().charAt(0)) {
+			switch (axes[i].type().getLabel().toUpperCase().charAt(0)) {
 				case 'X':
 					oldOrder += "X";
 					haveDim[0] = true;

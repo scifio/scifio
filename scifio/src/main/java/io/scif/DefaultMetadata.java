@@ -78,4 +78,5 @@ public class DefaultMetadata extends AbstractMetadata implements
 	// -- Metadata API methods --
 
 	public void populateImageMetadata() {}
+
 }

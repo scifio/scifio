@@ -45,7 +45,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 /**
  * A utility class for working with {@link io.scif.Metadata} objects.
@@ -225,7 +225,7 @@ public class SCIFIOMetadataTools {
 	public static void populateDimensions(final ImageMetadata iMeta,
 		final String dimensionOrder, final int[] lengths)
 	{
-		final AxisType[] axes = FormatTools.findDimensionList(dimensionOrder);
+		final CalibratedAxis[] axes = FormatTools.findDimensionList(dimensionOrder);
 
 		iMeta.setAxes(axes, lengths);
 	}

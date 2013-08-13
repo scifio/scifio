@@ -64,8 +64,8 @@ import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
 
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.Axes.CustomAxisType;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Attr;
@@ -157,7 +157,7 @@ public class ICSFormat extends AbstractFormat {
 			final String[] axes = getAxes();
 
 			// Reset the existing axes
-			imageMeta.setAxes(new AxisType[0], new int[0]);
+			imageMeta.setAxes(new CalibratedAxis[0], new int[0]);
 
 			int bitsPerPixel = 0;
 
@@ -188,7 +188,7 @@ public class ICSFormat extends AbstractFormat {
 					while (bitsPerPixel % 8 != 0)
 						bitsPerPixel++;
 					if (bitsPerPixel == 24 || bitsPerPixel == 48) bitsPerPixel /= 3;
-					imageMeta.addAxis(new CustomAxisType("bits"), bitsPerPixel);
+					imageMeta.addAxis(new Axes.CustomType("bits"), bitsPerPixel);
 				}
 				else {
 					final int cIndex = imageMeta.getAxisIndex(Axes.CHANNEL);
@@ -221,7 +221,7 @@ public class ICSFormat extends AbstractFormat {
 						imageMeta.setAxisType(n, Axes.FREQUENCY);
 					}
 					else {
-						imageMeta.setAxisType(n, Axes.UNKNOWN);
+						imageMeta.setAxisType(n, Axes.unknown());
 					}
 				}
 			}
@@ -2074,7 +2074,7 @@ public class ICSFormat extends AbstractFormat {
 			String sizes = "";
 
 			for (int i = 0; i < numAxes; i++) {
-				final AxisType axis = source.getAxisType(0, i);
+				final AxisType axis = source.getAxisType(0, i).type();
 
 				// flag for RGB images
 				if (axis.equals(Axes.X)) {

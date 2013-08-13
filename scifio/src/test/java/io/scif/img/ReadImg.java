@@ -40,8 +40,8 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import net.imglib2.img.ImgPlus;
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.ImgPlus;
 
 /**
  * A simple manual test of the {@link IO#open(String)} convenience method.
@@ -69,8 +69,8 @@ public class ReadImg {
 
 		System.out.println("file = " + file);
 		System.out.println("Dimensions:");
-		for (int d=0; d<img.numDimensions(); d++) {
-			final AxisType axisType = img.axis(d);
+		for (int d = 0; d < img.numDimensions(); d++) {
+			final CalibratedAxis axisType = img.axis(d);
 			final long axisLength = img.dimension(d);
 			System.out.println("\t" + axisLength + " : " + axisType);
 		}

@@ -46,7 +46,6 @@ import io.scif.img.cell.loaders.FloatArrayLoader;
 import io.scif.img.cell.loaders.IntArrayLoader;
 import io.scif.img.cell.loaders.LongArrayLoader;
 import io.scif.img.cell.loaders.ShortArrayLoader;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
@@ -56,6 +55,7 @@ import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Plugin;
@@ -85,35 +85,43 @@ public class ArrayDataAccessConverter extends AbstractPlaneConverter {
 		// however that simply may not be feasible given the variety of data types.
 
 		if (store instanceof BitArray) {
-			final BitArrayLoader loader = new BitArrayLoader(reader, imgOptions.getRegion());
+			final BitArrayLoader loader =
+				new BitArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((BitArray) store, source, planeIndex);
 		}
 		else if (store instanceof ByteArray) {
-			final ByteArrayLoader loader = new ByteArrayLoader(reader, imgOptions.getRegion());
+			final ByteArrayLoader loader =
+				new ByteArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((ByteArray) store, source, planeIndex);
 		}
 		else if (store instanceof ShortArray) {
-			final ShortArrayLoader loader = new ShortArrayLoader(reader, imgOptions.getRegion());
+			final ShortArrayLoader loader =
+				new ShortArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((ShortArray) store, source, planeIndex);
 		}
 		else if (store instanceof LongArray) {
-			final LongArrayLoader loader = new LongArrayLoader(reader, imgOptions.getRegion());
+			final LongArrayLoader loader =
+				new LongArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((LongArray) store, source, planeIndex);
 		}
 		else if (store instanceof CharArray) {
-			final CharArrayLoader loader = new CharArrayLoader(reader, imgOptions.getRegion());
+			final CharArrayLoader loader =
+				new CharArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((CharArray) store, source, planeIndex);
 		}
 		else if (store instanceof DoubleArray) {
-			final DoubleArrayLoader loader = new DoubleArrayLoader(reader, imgOptions.getRegion());
+			final DoubleArrayLoader loader =
+				new DoubleArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((DoubleArray) store, source, planeIndex);
 		}
 		else if (store instanceof FloatArray) {
-			final FloatArrayLoader loader = new FloatArrayLoader(reader, imgOptions.getRegion());
+			final FloatArrayLoader loader =
+				new FloatArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((FloatArray) store, source, planeIndex);
 		}
 		else if (store instanceof IntArray) {
-			final IntArrayLoader loader = new IntArrayLoader(reader, imgOptions.getRegion());
+			final IntArrayLoader loader =
+				new IntArrayLoader(reader, imgOptions.getRegion());
 			loader.convertBytes((IntArray) store, source, planeIndex);
 		}
 

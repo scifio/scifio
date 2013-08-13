@@ -38,7 +38,7 @@ package io.scif.img.converters;
 
 import io.scif.Reader;
 import io.scif.img.ImgOptions;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Contextual;

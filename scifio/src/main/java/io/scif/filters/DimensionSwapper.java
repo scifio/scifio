@@ -48,6 +48,7 @@ import java.util.List;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
@@ -57,12 +58,11 @@ import org.scijava.plugin.Plugin;
  * for both reassigning ZCT sizes (the input dimension order), and shuffling
  * around the resultant planar order (the output dimension order).
  */
-@Plugin(type = Filter.class, priority = DimensionSwapper.PRIORITY,
-	attrs = {
-		@Attr(name = DimensionSwapper.FILTER_KEY,
-			value = DimensionSwapper.FILTER_VALUE),
-		@Attr(name = DimensionSwapper.ENABLED_KEY,
-			value = DimensionSwapper.ENABLED_VAULE) })
+@Plugin(type = Filter.class, priority = DimensionSwapper.PRIORITY, attrs = {
+	@Attr(name = DimensionSwapper.FILTER_KEY,
+		value = DimensionSwapper.FILTER_VALUE),
+	@Attr(name = DimensionSwapper.ENABLED_KEY,
+		value = DimensionSwapper.ENABLED_VAULE) })
 public class DimensionSwapper extends AbstractReaderFilter {
 
 	// -- Constants --
@@ -87,14 +87,14 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	 * if X and Y do not appear in positions 0 and 1 (although X and Y can be
 	 * reversed).
 	 */
-	public void
-		swapDimensions(final int imageIndex, final List<AxisType> newOrder)
+	public void swapDimensions(final int imageIndex,
+		final List<CalibratedAxis> newOrder)
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
 
 		if (newOrder == null) throw new IllegalArgumentException("order is null");
 
-		final List<AxisType> oldOrder = getDimensionOrder(imageIndex);
+		final List<CalibratedAxis> oldOrder = getDimensionOrder(imageIndex);
 
 		if (newOrder.size() != oldOrder.size()) {
 			throw new IllegalArgumentException("newOrder is unexpected length: " +
@@ -106,10 +106,10 @@ public class DimensionSwapper extends AbstractReaderFilter {
 				"newOrder specifies different axes");
 		}
 
-		if (newOrder.get(0) != Axes.X && newOrder.get(1) != Axes.X) {
+		if (newOrder.get(0).type() != Axes.X && newOrder.get(1).type() != Axes.X) {
 			throw new IllegalArgumentException("X is not in first two positions");
 		}
-		if (newOrder.get(0) != Axes.Y && newOrder.get(1) != Axes.Y) {
+		if (newOrder.get(0).type() != Axes.Y && newOrder.get(1).type() != Axes.Y) {
 			throw new IllegalArgumentException("Y is not in first two positions");
 		}
 
@@ -129,7 +129,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 		}
 
 		getMetadata().setAxisTypes(imageIndex,
-			newOrder.toArray(new AxisType[newOrder.size()]));
+			newOrder.toArray(new CalibratedAxis[newOrder.size()]));
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	 * virtual stacks must be in XYCZT order.
 	 */
 	public void setOutputOrder(final int imageIndex,
-		final List<AxisType> outputOrder)
+		final List<CalibratedAxis> outputOrder)
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
 
@@ -155,7 +155,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	 * Returns the original axis order for this dataset. Not affected by swapping
 	 * dimensions.
 	 */
-	public List<AxisType> getInputOrder(final int imageIndex) {
+	public List<CalibratedAxis> getInputOrder(final int imageIndex) {
 		FormatTools.assertId(getCurrentFile(), true, 2);
 		return Arrays.asList(getMetadata().getAxes(imageIndex));
 	}
@@ -171,9 +171,9 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	/**
 	 * Returns the current axis order, accounting for any swapped dimensions.
 	 */
-	public List<AxisType> getDimensionOrder(final int imageIndex) {
+	public List<CalibratedAxis> getDimensionOrder(final int imageIndex) {
 		FormatTools.assertId(getCurrentFile(), true, 2);
-		List<AxisType> outOrder = null;
+		List<CalibratedAxis> outOrder = null;
 
 		if (metaCheck()) {
 			outOrder =
@@ -277,12 +277,12 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	/* Reorders the ImageMetadata axes associated with this filter */
 	protected int reorder(final int imageIndex, final int planeIndex) {
 		if (getInputOrder(imageIndex) == null) return planeIndex;
-		final List<AxisType> outputOrder = getDimensionOrder(imageIndex);
-		final AxisType[] outputAxes =
-			outputOrder.toArray(new AxisType[outputOrder.size()]);
-		final List<AxisType> inputOrder = getInputOrder(imageIndex);
-		final AxisType[] inputAxes =
-			inputOrder.toArray(new AxisType[inputOrder.size()]);
+		final List<CalibratedAxis> outputOrder = getDimensionOrder(imageIndex);
+		final CalibratedAxis[] outputAxes =
+			outputOrder.toArray(new CalibratedAxis[outputOrder.size()]);
+		final List<CalibratedAxis> inputOrder = getInputOrder(imageIndex);
+		final CalibratedAxis[] inputAxes =
+			inputOrder.toArray(new CalibratedAxis[inputOrder.size()]);
 
 		return FormatTools.getReorderedIndex(FormatTools
 			.findDimensionOrder(inputAxes), FormatTools

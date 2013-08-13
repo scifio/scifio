@@ -75,7 +75,6 @@ import javax.imageio.ImageIO;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Attr;
@@ -242,8 +241,8 @@ public class APNGFormat extends AbstractFormat {
 			final ACTLChunk actl = getActl();
 			final int planeCount = actl == null ? 1 : actl.getNumFrames();
 
-			imageMeta.setAxisTypes(new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL,
-				Axes.TIME, Axes.Z });
+			imageMeta.setAxisTypes(FormatTools.calibrate(Axes.X, Axes.Y,
+				Axes.CHANNEL, Axes.TIME, Axes.Z));
 			imageMeta.setAxisLengths(new int[] { getIhdr().getWidth(),
 				getIhdr().getHeight(), sizec, planeCount, 1 });
 

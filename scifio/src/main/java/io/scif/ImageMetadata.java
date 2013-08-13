@@ -36,7 +36,9 @@
 
 package io.scif;
 
+import io.scif.util.FormatTools;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 /**
  * ImageMetadata stores the metadata for a single image within a dataset. Here,
@@ -103,19 +105,19 @@ public interface ImageMetadata extends HasMetaTable {
 	 * Convenience method to set both the axis types and lengths for this
 	 * ImageMetadata.
 	 */
-	void setAxes(AxisType[] axisTypes, int[] axisLengths);
+	void setAxes(CalibratedAxis[] axisTypes, int[] axisLengths);
 
 	/**
 	 * Sets the Axes types for this image. Order is implied by ordering within
 	 * this array
 	 */
-	void setAxisTypes(AxisType[] axisTypes);
+	void setAxisTypes(CalibratedAxis[] axisTypes);
 
 	/**
 	 * Sets the lengths of each axis. Order is parallel of axisTypes.
 	 * <p>
 	 * NB: axes must already exist for this method to be called. Use
-	 * {@link #setAxisTypes(AxisType[])} or {@link #setAxes}
+	 * {@link #setAxisTypes(CalibratedAxis[])} or {@link #setAxes}
 	 */
 	void setAxisLengths(int[] axisLengths);
 
@@ -123,12 +125,24 @@ public interface ImageMetadata extends HasMetaTable {
 	 * Sets the length for the specified axis. Adds the axis if if its type is not
 	 * already present in the image.
 	 */
+	void setAxisLength(CalibratedAxis axis, int length);
+
+	/**
+	 * As {@link #setAxisLength(CalibratedAxis, int)} but requires only the
+	 * AxisType.
+	 */
 	void setAxisLength(AxisType axis, int length);
 
 	/**
 	 * Sets the type of the axis at the specified index, if {@code axis} is not
 	 * already defined. Otherwise the axes are re-ordered, per
 	 * {@link java.util.List#add(int, Object)}.
+	 */
+	void setAxisType(int index, CalibratedAxis axis);
+
+	/**
+	 * As {@link #setAxisType(int, CalibratedAxis)} but using the default
+	 * calibration values, per {@link FormatTools#calibrate(AxisType)}.
 	 */
 	void setAxisType(int index, AxisType axis);
 
@@ -146,6 +160,12 @@ public interface ImageMetadata extends HasMetaTable {
 
 	/** Returns the height (in pixles) of the thumbnail planes in this image. */
 	int getThumbSizeY();
+
+	/**
+	 * Returns the CalibratedAxis associated with the given type. Useful to
+	 * retrieve calibration information.
+	 */	
+	CalibratedAxis getAxis(AxisType type);
 
 	/**
 	 * Returns the number of bytes per pixel. Should correlate with the pixel
@@ -216,7 +236,7 @@ public interface ImageMetadata extends HasMetaTable {
 	 * @param axisIndex - index of the desired axis within this image
 	 * @return Type of the desired plane.
 	 */
-	AxisType getAxisType(final int axisIndex);
+	CalibratedAxis getAxisType(final int axisIndex);
 
 	/**
 	 * Gets the length of the (zero-indexed) specified plane.
@@ -230,17 +250,36 @@ public interface ImageMetadata extends HasMetaTable {
 	 * A convenience method for looking up the length of an axis based on its
 	 * type. No knowledge of plane ordering is necessary.
 	 * 
-	 * @param t - AxisType to look up
+	 * @param t - CalibratedAxis to look up
+	 * @return Length of axis t
+	 */
+	int getAxisLength(final CalibratedAxis t);
+
+	/**
+	 * As {@link #getAxisLength(CalibratedAxis)} but only requires the
+	 * {@link AxisType} of the desired axis.
+	 * 
+	 * @param t - CalibratedAxis to look up
 	 * @return Length of axis t
 	 */
 	int getAxisLength(final AxisType t);
 
 	/**
-	 * Returns the array index for the specified AxisType. This index can be used
-	 * in other Axes methods for looking up lengths, etc...
+	 * Returns the array index for the specified CalibratedAxis. This index can be
+	 * used in other Axes methods for looking up lengths, etc...
 	 * <p>
-	 * This method can also be used as an existence check for the target AxisType.
+	 * This method can also be used as an existence check for the target
+	 * CalibratedAxis.
 	 * </p>
+	 * 
+	 * @param type - axis type to look up
+	 * @return The index of the desired axis or -1 if not found.
+	 */
+	int getAxisIndex(final CalibratedAxis type);
+
+	/**
+	 * As {@link #getAxisIndex(CalibratedAxis)} but only requires the
+	 * {@link AxisType} of the desired axis.
 	 * 
 	 * @param type - axis type to look up
 	 * @return The index of the desired axis or -1 if not found.
@@ -252,18 +291,18 @@ public interface ImageMetadata extends HasMetaTable {
 	 * index. Order is consistent with the axis length (int) array returned by
 	 * {@link #getAxesLengths()}.
 	 * <p>
-	 * AxisType order is sorted and represents order within the image.
+	 * CalibratedAxis order is sorted and represents order within the image.
 	 * </p>
 	 * 
-	 * @return Sorted AxisType array
+	 * @return Sorted CalibratedAxis array
 	 */
-	AxisType[] getAxes();
+	CalibratedAxis[] getAxes();
 
 	/**
 	 * Returns an array of the lengths for axes associated with the specified
 	 * image index.
 	 * <p>
-	 * Ordering is consistent with the AxisType array returned by
+	 * Ordering is consistent with the CalibratedAxis array returned by
 	 * {@link #getAxes()}.
 	 * </p>
 	 * 
@@ -272,18 +311,25 @@ public interface ImageMetadata extends HasMetaTable {
 	int[] getAxesLengths();
 
 	/**
-	 * Appends the provided AxisType to the current AxisTypes, with a length of 0.
+	 * Appends the provided CalibratedAxis to the current CalibratedAxiss, with a
+	 * length of 0.
 	 * 
 	 * @param type - Type of the new axis
 	 */
-	void addAxis(final AxisType type);
+	void addAxis(final CalibratedAxis type);
 
 	/**
-	 * Appends the provided AxisType to the current AxisType array and creates a
-	 * corresponding entry with the specified value in axis lengths.
+	 * Appends the provided CalibratedAxis to the current CalibratedAxis array and
+	 * creates a corresponding entry with the specified value in axis lengths.
 	 * 
 	 * @param type - Type of the new axis
 	 * @param value - length of the new axis
+	 */
+	void addAxis(final CalibratedAxis type, final int value);
+
+	/**
+	 * As {@link #addAxis(CalibratedAxis, int)} using the default calibration
+	 * value, per {@link FormatTools#calibrate(AxisType)}.
 	 */
 	void addAxis(final AxisType type, final int value);
 

@@ -45,6 +45,7 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 /**
  * Abstract superclass for concrete implementations of {@code MetadataWrapper}.
@@ -100,7 +101,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	/*
 	 * @see io.scif.filters.MetadataWrapper#addAxis(int, net.imglib2.meta.AxisType, boolean)
 	 */
-	public void addAxis(final int imageIndex, final AxisType type,
+	public void addAxis(final int imageIndex, final CalibratedAxis type,
 		final boolean passUp)
 	{
 		super.addAxis(imageIndex, type);
@@ -110,7 +111,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	/*
 	 * @see io.scif.filters.MetadataWrapper#addAxis(int, net.imglib2.meta.AxisType, int, boolean)
 	 */
-	public void addAxis(final int imageIndex, final AxisType type,
+	public void addAxis(final int imageIndex, final CalibratedAxis type,
 		final int value, final boolean passUp)
 	{
 		super.addAxis(imageIndex, type, value);
@@ -261,8 +262,8 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	/*
 	 * @see io.scif.filters.MetadataWrapper#setAxisTypes(int, net.imglib2.meta.AxisType[], boolean)
 	 */
-	public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes,
-		final boolean passUp)
+	public void setAxisTypes(final int imageIndex,
+		final CalibratedAxis[] axisTypes, final boolean passUp)
 	{
 		super.setAxisTypes(imageIndex, axisTypes);
 		if (passUp) meta.setAxisTypes(imageIndex, axisTypes);
@@ -272,7 +273,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	 * @see io.scif.filters.MetadataWrapper#setAxisType(int, int, net.imglib2.meta.AxisType, boolean)
 	 */
 	public void setAxisType(final int imageIndex, final int axisIndex,
-		final AxisType axis, final boolean passUp)
+		final CalibratedAxis axis, final boolean passUp)
 	{
 		super.setAxisType(imageIndex, axisIndex, axis);
 		if (passUp) meta.setAxisType(imageIndex, axisIndex, axis);
@@ -291,8 +292,29 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	/*
 	 * @see io.scif.filters.MetadataWrapper#setAxisLength(int, net.imglib2.meta.AxisType, int, boolean)
 	 */
-	public void setAxisLength(final int imageIndex, final AxisType axis,
+	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
 		final int length, final boolean passUp)
+	{
+		super.setAxisLength(imageIndex, axis, length);
+		if (passUp) meta.setAxisLength(imageIndex, axis, length);
+	}
+	
+	public void addAxis(int imageIndex, AxisType type, int value, boolean passUp)
+	{
+		super.addAxis(imageIndex, type, value);
+		if (passUp) meta.addAxis(imageIndex, type, value);
+		
+	}
+
+	public void setAxisType(int imageIndex, int axisIndex, AxisType axis,
+		boolean passUp)
+	{
+		super.setAxisType(imageIndex, axisIndex, axis);
+		if (passUp) meta.setAxisType(imageIndex, axisIndex, axis);
+	}
+
+	public void setAxisLength(int imageIndex, AxisType axis, int length,
+		boolean passUp)
 	{
 		super.setAxisLength(imageIndex, axis, length);
 		if (passUp) meta.setAxisLength(imageIndex, axis, length);
@@ -302,7 +324,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	 * @see io.scif.AbstractMetadata#addAxis(int, net.imglib2.meta.AxisType)
 	 */
 	@Override
-	public void addAxis(final int imageIndex, final AxisType type) {
+	public void addAxis(final int imageIndex, final CalibratedAxis type) {
 		addAxis(imageIndex, type, true);
 	}
 
@@ -310,8 +332,8 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	 * @see io.scif.AbstractMetadata#addAxis(int, net.imglib2.meta.AxisType, int)
 	 */
 	@Override
-	public void
-		addAxis(final int imageIndex, final AxisType type, final int value)
+	public void addAxis(final int imageIndex, final CalibratedAxis type,
+		final int value)
 	{
 		addAxis(imageIndex, type, value, true);
 	}
@@ -428,7 +450,9 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	 * @see io.scif.AbstractMetadata#setAxisTypes(int, net.imglib2.meta.AxisType[])
 	 */
 	@Override
-	public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
+	public void setAxisTypes(final int imageIndex,
+		final CalibratedAxis[] axisTypes)
+	{
 		setAxisTypes(imageIndex, axisTypes, true);
 	}
 
@@ -437,7 +461,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	 */
 	@Override
 	public void setAxisType(final int imageIndex, final int axisIndex,
-		final AxisType axis)
+		final CalibratedAxis axis)
 	{
 		setAxisType(imageIndex, axisIndex, axis, true);
 	}
@@ -454,7 +478,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	 * @see io.scif.AbstractMetadata#setAxisLength(int, net.imglib2.meta.AxisType, int)
 	 */
 	@Override
-	public void setAxisLength(final int imageIndex, final AxisType axis,
+	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
 		final int length)
 	{
 		setAxisLength(imageIndex, axis, length, true);

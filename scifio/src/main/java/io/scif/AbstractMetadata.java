@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Metadata} implementations.
@@ -257,7 +258,11 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	public int getThumbSizeY(final int imageIndex) {
 		return imageMeta.get(imageIndex).getThumbSizeY();
 	}
-
+	
+	public CalibratedAxis getAxis(int imageIndex, AxisType type) {
+		return imageMeta.get(imageIndex).getAxis(type);
+	}
+	
 	/*
 	 * @see io.scif.Metadata#getAxisCount(int)
 	 */
@@ -268,7 +273,8 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	/*
 	 * @see io.scif.Metadata#getAxisType(int, int)
 	 */
-	public AxisType getAxisType(final int imageIndex, final int planeIndex) {
+	public CalibratedAxis getAxisType(final int imageIndex, final int planeIndex)
+	{
 		return imageMeta.get(imageIndex).getAxisType(planeIndex);
 	}
 
@@ -282,6 +288,10 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	/*
 	 * @see io.scif.Metadata#getAxisLength(int, net.imglib2.meta.AxisType)
 	 */
+	public int getAxisLength(final int imageIndex, final CalibratedAxis t) {
+		return imageMeta.get(imageIndex).getAxisLength(t);
+	}
+
 	public int getAxisLength(final int imageIndex, final AxisType t) {
 		return imageMeta.get(imageIndex).getAxisLength(t);
 	}
@@ -289,6 +299,10 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	/*
 	 * @see io.scif.Metadata#getAxisIndex(int, net.imglib2.meta.AxisType)
 	 */
+	public int getAxisIndex(final int imageIndex, final CalibratedAxis type) {
+		return imageMeta.get(imageIndex).getAxisIndex(type);
+	}
+
 	public int getAxisIndex(final int imageIndex, final AxisType type) {
 		return imageMeta.get(imageIndex).getAxisIndex(type);
 	}
@@ -296,7 +310,7 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	/*
 	 * @see io.scif.Metadata#getAxes(int)
 	 */
-	public AxisType[] getAxes(final int imageIndex) {
+	public CalibratedAxis[] getAxes(final int imageIndex) {
 		return imageMeta.get(imageIndex).getAxes();
 	}
 
@@ -449,13 +463,19 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	/*
 	 * @see io.scif.Metadata#addAxis(int, net.imglib2.meta.AxisType)
 	 */
-	public void addAxis(final int imageIndex, final AxisType type) {
+	public void addAxis(final int imageIndex, final CalibratedAxis type) {
 		imageMeta.get(imageIndex).addAxis(type);
 	}
 
 	/*
 	 * @see io.scif.Metadata#addAxis(int, net.imglib2.meta.AxisType, int)
 	 */
+	public void addAxis(final int imageIndex, final CalibratedAxis type,
+		final int value)
+	{
+		imageMeta.get(imageIndex).addAxis(type, value);
+	}
+
 	public void
 		addAxis(final int imageIndex, final AxisType type, final int value)
 	{
@@ -465,13 +485,21 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	/*
 	 * @see io.scif.Metadata#setAxisTypes(int, net.imglib2.meta.AxisType[])
 	 */
-	public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes) {
+	public void setAxisTypes(final int imageIndex,
+		final CalibratedAxis[] axisTypes)
+	{
 		imageMeta.get(imageIndex).setAxisTypes(axisTypes);
 	}
 
 	/*
 	 * @see io.scif.Metadata#setAxisType(int, int, net.imglib2.meta.AxisType)
 	 */
+	public void setAxisType(final int imageIndex, final int axisIndex,
+		final CalibratedAxis axis)
+	{
+		imageMeta.get(imageIndex).setAxisType(axisIndex, axis);
+	}
+
 	public void setAxisType(final int imageIndex, final int axisIndex,
 		final AxisType axis)
 	{
@@ -488,6 +516,12 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	/*
 	 * @see io.scif.Metadata#setAxisLength(int, net.imglib2.meta.AxisType, int)
 	 */
+	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
+		final int length)
+	{
+		imageMeta.get(imageIndex).setAxisLength(axis, length);
+	}
+
 	public void setAxisLength(final int imageIndex, final AxisType axis,
 		final int length)
 	{

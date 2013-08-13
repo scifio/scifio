@@ -53,6 +53,8 @@ import java.util.Vector;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.DefaultCalibratedAxis;
 
 /**
  * A collection of constants and utility methods applicable for all cycles of
@@ -296,6 +298,30 @@ public final class FormatTools {
 	}
 
 	/**
+	 * Wraps the provided AxisType in a CalibratedAxis with calibration = 1.0um.
+	 */
+	public static CalibratedAxis calibrate(final AxisType t) {
+		return new DefaultCalibratedAxis(t, "um", 1.0);
+	}
+
+	/**
+	 * Creates an array, wrapping all provided AxisTypes as CalibratedAxis with
+	 * calibration = 1.0um.
+	 */
+	public static CalibratedAxis[] calibrate(final AxisType t,
+		final AxisType... types)
+	{
+		final CalibratedAxis[] calAxes = new CalibratedAxis[types.length + 1];
+		calAxes[0] = calibrate(t);
+
+		for (int i = 0; i < types.length; i++) {
+			calAxes[i + 1] = calibrate(types[i]);
+		}
+
+		return calAxes;
+	}
+
+	/**
 	 * Returns the dimension order for the provided reader. Currently limited to
 	 * 5D orders.
 	 */
@@ -314,7 +340,7 @@ public final class FormatTools {
 		return findDimensionOrder(meta.getAxes(imageIndex));
 	}
 
-	public static String findDimensionOrder(final AxisType[] axes) {
+	public static String findDimensionOrder(final CalibratedAxis[] axes) {
 		String order = "";
 
 		// TODO currently this list is restricted to the traditional 5D axes
@@ -324,8 +350,8 @@ public final class FormatTools {
 				Axes.Z, Axes.TIME, Axes.CHANNEL }));
 
 		for (int i = 0; i < axes.length; i++) {
-			final AxisType type = axes[i];
-			if (validAxes.contains(type)) order += axes[i].toString().charAt(0);
+			final AxisType axis = axes[i].type();
+			if (validAxes.contains(axis)) order += axis.toString().charAt(0);
 		}
 
 		return order;
@@ -338,28 +364,29 @@ public final class FormatTools {
 	 * @param dimensionOrder
 	 * @return
 	 */
-	public static AxisType[] findDimensionList(final String dimensionOrder) {
-		final AxisType[] axes = new AxisType[dimensionOrder.length()];
+	public static CalibratedAxis[] findDimensionList(final String dimensionOrder)
+	{
+		final CalibratedAxis[] axes = new CalibratedAxis[dimensionOrder.length()];
 
 		for (int i = 0; i < dimensionOrder.length(); i++) {
 			switch (dimensionOrder.toUpperCase().charAt(i)) {
 				case 'X':
-					axes[i] = Axes.X;
+					axes[i] = calibrate(Axes.X);
 					break;
 				case 'Y':
-					axes[i] = Axes.Y;
+					axes[i] = calibrate(Axes.Y);
 					break;
 				case 'Z':
-					axes[i] = Axes.Z;
+					axes[i] = calibrate(Axes.Z);
 					break;
 				case 'C':
-					axes[i] = Axes.CHANNEL;
+					axes[i] = calibrate(Axes.CHANNEL);
 					break;
 				case 'T':
-					axes[i] = Axes.TIME;
+					axes[i] = calibrate(Axes.TIME);
 					break;
 				default:
-					axes[i] = Axes.UNKNOWN;
+					axes[i] = calibrate(Axes.unknown());
 			}
 		}
 

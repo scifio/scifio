@@ -40,6 +40,7 @@ import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.SCIFIOPlugin;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 /**
  * Wrapper for {@link io.scif.Metadata}. Used to create defensive copies of
@@ -82,9 +83,12 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 
 	// -- Setter Methods with passUp flag --
 
-	void addAxis(final int imageIndex, final AxisType type, boolean passUp);
+	void addAxis(final int imageIndex, final CalibratedAxis type, boolean passUp);
 
-	void addAxis(final int imageIndex, final AxisType type, final int value,
+	void addAxis(final int imageIndex, final CalibratedAxis type,
+		final int value, boolean passUp);
+
+	void addAxis(int imageIndex, final AxisType type, final int value,
 		boolean passUp);
 
 	void setThumbSizeX(final int imageIndex, final int thumbX, boolean passUp);
@@ -119,15 +123,20 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 	void setThumbnailImage(final int imageIndex, final boolean thumbnail,
 		boolean passUp);
 
-	void setAxisTypes(final int imageIndex, final AxisType[] axisTypes,
+	void setAxisTypes(final int imageIndex, final CalibratedAxis[] axisTypes,
 		boolean passUp);
 
 	void setAxisType(final int imageIndex, final int axisIndex,
-		final AxisType axis, boolean passUp);
+		final CalibratedAxis axis, boolean passUp);
+
+	void
+		setAxisType(int imageIndex, int axisIndex, AxisType axis, boolean passUp);
 
 	void setAxisLengths(final int imageIndex, final int[] axisLengths,
 		boolean passUp);
 
-	void setAxisLength(final int imageIndex, final AxisType axis,
+	void setAxisLength(final int imageIndex, final CalibratedAxis axis,
 		final int length, boolean passUp);
+	
+	void setAxisLength(int imageIndex, AxisType axis, int length, boolean passUp);
 }

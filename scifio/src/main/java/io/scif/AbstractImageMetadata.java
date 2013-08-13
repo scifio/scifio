@@ -37,6 +37,7 @@
 package io.scif;
 
 import io.scif.common.DataTools;
+import io.scif.util.FormatTools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +46,7 @@ import java.util.List;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 /**
  * Abstract superclass of all {@link io.scif.ImageMetadata} implementations.
@@ -90,7 +92,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	 * array
 	 */
 	@Field(label = "dimTypes")
-	private List<AxisType> axisTypes;
+	private List<CalibratedAxis> axisTypes;
 
 	/** Lengths of each axis. Order is parallel of dimTypes. */
 	@Field(label = "dimLengths")
@@ -149,7 +151,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Constructors --
 
 	public AbstractImageMetadata() {
-		axisTypes = new ArrayList<AxisType>();
+		axisTypes = new ArrayList<CalibratedAxis>();
 		axisLengths = new HashMap<AxisType, Integer>();
 	}
 
@@ -247,7 +249,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	/*
 	 * @see io.scif.ImageMetadata#setAxes(net.imglib2.meta.AxisType[], int[])
 	 */
-	public void setAxes(final AxisType[] axisTypes, final int[] axisLengths) {
+	public void
+		setAxes(final CalibratedAxis[] axisTypes, final int[] axisLengths)
+	{
 		setAxisTypes(axisTypes);
 		setAxisLengths(axisLengths);
 	}
@@ -255,8 +259,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	/*
 	 * @see io.scif.ImageMetadata#setAxisTypes(net.imglib2.meta.AxisType[])
 	 */
-	public void setAxisTypes(final AxisType[] axisTypes) {
-		this.axisTypes = new ArrayList<AxisType>(Arrays.asList(axisTypes));
+	public void setAxisTypes(final CalibratedAxis[] axisTypes) {
+		this.axisTypes = new ArrayList<CalibratedAxis>(Arrays.asList(axisTypes));
 	}
 
 	/*
@@ -268,21 +272,25 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 				axisTypes.size() + " axes present." + " Call setAxisTypes first.");
 
 		for (int i = 0; i < axisTypes.size(); i++) {
-			this.axisLengths.put(axisTypes.get(i), axisLengths[i]);
+			updateLength(axisTypes.get(i).type(), axisLengths[i]);
 		}
 	}
 
 	/*
 	 * @see io.scif.ImageMetadata#setAxisLength(net.imglib2.meta.AxisType, int)
 	 */
+	public void setAxisLength(final CalibratedAxis axis, final int length) {
+		setAxisLength(axis.type(), length);
+	}
+
 	public void setAxisLength(final AxisType axis, final int length) {
-		addAxis(axis, length);
+		updateLength(axis, length);
 	}
 
 	/*
 	 * @see io.scif.ImageMetadata#setAxisType(int, net.imglib2.meta.AxisType)
 	 */
-	public void setAxisType(final int index, final AxisType axis) {
+	public void setAxisType(final int index, final CalibratedAxis axis) {
 		final int oldIndex = getAxisIndex(axis);
 
 		// Replace existing axis
@@ -290,13 +298,17 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 			final int length = axisLengths.remove(axisTypes.get(index));
 
 			axisTypes.set(index, axis);
-			axisLengths.put(axis, length);
+			axisLengths.put(axis.type(), length);
 		}
 		// Axis is already in the list. Move it here.
 		else {
 			axisTypes.remove(axis);
 			axisTypes.add(index, axis);
 		}
+	}
+
+	public void setAxisType(final int index, final AxisType axis) {
+		setAxisType(index, FormatTools.calibrate(axis));
 	}
 
 	/*
@@ -321,7 +333,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	public long getSize() {
 		long size = 1;
 
-		for (final AxisType a : axisTypes) {
+		for (final CalibratedAxis a : axisTypes) {
 			size = DataTools.safeMultiply64(size, getAxisLength(a));
 		}
 
@@ -373,6 +385,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return thumbY;
 	}
 
+	public CalibratedAxis getAxis(AxisType type) {
+		for (CalibratedAxis axis : axisTypes) {
+			if (axis.type().equals(type)) return axis;
+		}
+		return null;
+	}
+	
 	/*
 	 * @see io.scif.ImageMetadata#getPixelType()
 	 */
@@ -390,8 +409,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	/*
 	 * @see io.scif.ImageMetadata#getAxes()
 	 */
-	public AxisType[] getAxes() {
-		return axisTypes.toArray(new AxisType[axisTypes.size()]);
+	public CalibratedAxis[] getAxes() {
+		return axisTypes.toArray(new CalibratedAxis[axisTypes.size()]);
 	}
 
 	/*
@@ -486,7 +505,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	/*
 	 * @see io.scif.ImageMetadata#getAxisType(int)
 	 */
-	public AxisType getAxisType(final int axisIndex) {
+	public CalibratedAxis getAxisType(final int axisIndex) {
 		return axisTypes.get(axisIndex);
 	}
 
@@ -501,6 +520,10 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return axisLengths.get(axisTypes.get(axisIndex));
 	}
 
+	public int getAxisLength(final CalibratedAxis t) {
+		return getAxisLength(t.type());
+	}
+
 	/*
 	 * @see io.scif.ImageMetadata#getAxisLength(net.imglib2.meta.AxisType)
 	 */
@@ -510,32 +533,46 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return axisLengths.get(t);
 	}
 
+	public int getAxisIndex(final CalibratedAxis type) {
+		return getAxisIndex(type.type());
+	}
+
 	/*
 	 * @see io.scif.ImageMetadata#getAxisIndex(net.imglib2.meta.AxisType)
 	 */
 	public int getAxisIndex(final AxisType type) {
 		if (axisTypes == null) return -1;
 
-		return axisTypes.indexOf(type);
+		int index = -1;
+
+		for (int i = 0; index == -1 && i < axisTypes.size(); i++) {
+			if (axisTypes.get(i).type().equals(type)) index = i;
+		}
+
+		return index;
 	}
 
 	/*
 	 * @see io.scif.ImageMetadata#addAxis(net.imglib2.meta.AxisType)
 	 */
-	public void addAxis(final AxisType type) {
+	public void addAxis(final CalibratedAxis type) {
 		addAxis(type, 0);
 	}
 
 	/*
 	 * @see io.scif.ImageMetadata#addAxis(net.imglib2.meta.AxisType, int)
 	 */
-	public void addAxis(final AxisType type, final int value) {
-		if (axisTypes == null) axisTypes = new ArrayList<AxisType>();
+	public void addAxis(final CalibratedAxis type, final int value) {
+		if (axisTypes == null) axisTypes = new ArrayList<CalibratedAxis>();
 
 		// See if the axis already exists
 		if (!axisTypes.contains(type)) axisTypes.add(type);
 
-		axisLengths.put(type, value);
+		updateLength(type.type(), value);
+	}
+
+	public void addAxis(final AxisType type, final int value) {
+		addAxis(FormatTools.calibrate(type), value);
 	}
 
 	/*
@@ -544,7 +581,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	public void copy(final ImageMetadata toCopy) {
 		table = new DefaultMetaTable(toCopy.getTable());
 
-		axisTypes = new ArrayList<AxisType>(Arrays.asList(toCopy.getAxes()));
+		axisTypes = new ArrayList<CalibratedAxis>(Arrays.asList(toCopy.getAxes()));
 		setAxisLengths(toCopy.getAxesLengths().clone());
 		bitsPerPixel = toCopy.getBitsPerPixel();
 		falseColor = toCopy.isFalseColor();
@@ -585,5 +622,11 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Override
 	public String toString() {
 		return new FieldPrinter(this).toString();
+	}
+
+	// -- Helper methods --
+
+	private void updateLength(final AxisType type, final int value) {
+		axisLengths.put(type, value);
 	}
 }

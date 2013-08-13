@@ -58,7 +58,6 @@ import io.scif.util.FormatTools;
 import java.io.IOException;
 
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Attr;
@@ -249,7 +248,7 @@ public class EPSFormat extends AbstractFormat {
 
 			line = in.readLine().trim();
 
-			m.setAxisTypes(new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL });
+			m.setAxisTypes(FormatTools.calibrate(Axes.X, Axes.Y, Axes.CHANNEL));
 
 			while (line != null && !line.equals("%%EOF")) {
 				if (line.endsWith(image)) {

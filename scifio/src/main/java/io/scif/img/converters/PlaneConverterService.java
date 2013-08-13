@@ -41,7 +41,7 @@ import io.scif.Reader;
 import java.util.List;
 import java.util.Map;
 
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 
 import org.scijava.plugin.SingletonService;
 
