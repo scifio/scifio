@@ -119,7 +119,7 @@ public class NativeQTFormat extends AbstractFormat {
 		// -- Constants --
 
 		public static final String CNAME =
-			"io.scif.formats.NativeQTFormat$Metadata";
+			"io.scif.formats.qt.NativeQTFormat$Metadata";
 
 		// -- Fields --
 
