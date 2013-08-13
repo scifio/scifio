@@ -135,27 +135,30 @@ public class DefaultImgUtilityService extends AbstractService implements
 					break;
 			}
 		}
-		
+
 		// convert result to primitive array
 		final long[] dimLengths = new long[dimLengthsList.size()];
 
 		for (int i = 0; i < dimLengths.length; i++) {
-		  dimLengths[i] = dimLengthsList.get(i);
+			dimLengths[i] = dimLengthsList.get(i);
 		}
 		return dimLengths;
 	}
-	
-	public long[] getEmptyRegion(final Metadata m, final ImgOptions imgOptions) {
+
+	public long[] getConstrainedLengths(final Metadata m, final ImgOptions imgOptions) {
 		long[] lengths = getDimLengths(m, imgOptions);
-		
+
 		SubRegion r = imgOptions.getRegion();
-		
+
 		if (r != null) {
 			// set each dimension length = the number of entries for that axis
-			for (int i=0; i<r.size(); i++)
-				lengths[i] = r.indices(i).size();
+			for (AxisType t : m.getAxes(0)) {
+				DimRange range = r.getRange(t);
+				if (range != null) lengths[m.getAxisIndex(0, t)] =
+					range.indices().size();
+			}
 		}
-		
+
 		return lengths;
 	}
 

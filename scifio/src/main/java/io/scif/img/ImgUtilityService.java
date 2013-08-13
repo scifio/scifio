@@ -90,9 +90,9 @@ public interface ImgUtilityService extends Service {
 	
 	/**
 	 * Returns an N-dimensional list of axis lengths from the given Metadata,
-	 * of a size specified by the provided SubRegion (if present)
+	 * constrained by the provided SubRegion (if present)
 	 */
-	long[] getEmptyRegion(final Metadata m, final ImgOptions imgOptions);
+	long[] getConstrainedLengths(final Metadata m, final ImgOptions imgOptions);
 
 	/**
 	 * @param source - the location of the dataset to assess

@@ -36,8 +36,8 @@
 
 package io.scif.img.utests;
 
-import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertNotNull;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgOptions;
@@ -48,6 +48,8 @@ import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
@@ -105,11 +107,15 @@ public class ImgOpenerTest {
 	private void testSubRegion(ImgFactory factory) throws ImgIOException {
 		ImgOptions options = new ImgOptions();
 		// should get an inner left left 128x128 square
-		options.setRegion(new SubRegion("128-255", "128-255"));
+		AxisType[] axes = new AxisType[]{Axes.X, Axes.Y};
+		String[] ranges = new String[]{"128-255", "128-255"};
+		options.setRegion(new SubRegion(axes, ranges));
 		doTestSubRegion(factory, options, 128 * 128 * 5);
 
+		axes = new AxisType[]{Axes.TIME};
+		ranges = new String[]{"0,2-4:2"};
 		// should get the first, 3rd and 5th T slices
-		options.setRegion(new SubRegion("0-511", "0-511", "0,2-4:2"));
+		options.setRegion(new SubRegion(axes, ranges));
 		doTestSubRegion(factory, options, 512 * 512 * 3);
 
 		// should get the whole image
