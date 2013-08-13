@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -65,6 +66,9 @@ public class DefaultPluginAttributeService extends AbstractService implements
 
 	@Parameter
 	private PluginService pluginService;
+
+	@Parameter
+	private LogService logService;
 
 	/*
 	 * @see io.scif.services.PluginAttributeService#createInstance(java.lang.Class, java.util.Map, java.util.Map)
@@ -156,11 +160,12 @@ public class DefaultPluginAttributeService extends AbstractService implements
 					final Class<?> c1 = ClassUtils.loadClass(andPairs.get(key));
 					final Class<?> c2 = ClassUtils.loadClass(info.get(key));
 					if (c1 == null || c2 == null) {
-						throw new IllegalArgumentException(
-							"Class name attribute was invalid or not found.");
+						logService.debug("No class found: " + (c1 == null ? c1 + " " : "") +
+							(c2 == null ? c2 + " " : ""));
+						valid = false;
 					}
 
-					if (!(exact ? c2.equals(c1) : c2.isAssignableFrom(c1))) valid = false;
+					if (valid && !(exact ? c2.equals(c1) : c2.isAssignableFrom(c1))) valid = false;
 				}
 			}
 
