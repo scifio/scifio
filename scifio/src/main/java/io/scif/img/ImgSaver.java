@@ -441,8 +441,6 @@ public class ImgSaver extends AbstractImgIOComponent {
 			for (int planeIndex = 0; planeIndex < planeCount; planeIndex +=
 				rgbChannelCount)
 			{
-				statusService.showStatus(planeIndex, planeCount, "Saving plane " +
-					(planeIndex + 1) + "/" + (planeCount / rgbChannelCount));
 
 				// save bytes
 				try {
@@ -452,11 +450,12 @@ public class ImgSaver extends AbstractImgIOComponent {
 							.getAxisLength(imageIndex, Axes.X), meta.getAxisLength(
 							imageIndex, Axes.Y));
 
-					for (int channelIndex = planeIndex; channelIndex < planeIndex +
-						rgbChannelCount; channelIndex++)
+					for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++)
 					{
+						statusService.showStatus(planeIndex, planeCount, "Saving plane " +
+								(planeIndex + cIndex + 1) + "/" + (planeCount));
 						final Object curPlane =
-							planarImg.getPlane(channelIndex).getCurrentStorageArray();
+							planarImg.getPlane(cIndex + planeIndex).getCurrentStorageArray();
 
 						// Convert current plane if necessary
 						if (arrayType == int[].class) {
@@ -490,16 +489,16 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 							for (int i = 0; i < sourcePlane.length / bpp; i += bpp) {
 								System.arraycopy(sourcePlane, i, destPlane.getData(),
-									((i * rgbChannelCount) + channelIndex) * bpp, bpp);
+									((i * rgbChannelCount) + cIndex) * bpp, bpp);
 							}
 						}
 						else {
 							System.arraycopy(sourcePlane, 0, destPlane.getData(),
-								channelIndex * sourcePlane.length, sourcePlane.length);
+								sourcePlane.length, sourcePlane.length);
 						}
+						w.savePlane(imageIndex, planeIndex + cIndex, destPlane);
 					}
 
-					w.savePlane(imageIndex, planeIndex, destPlane);
 				}
 				catch (final FormatException e) {
 					throw new ImgIOException(e);
