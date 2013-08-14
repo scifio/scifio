@@ -160,6 +160,18 @@ public class DefaultInitializeService extends AbstractService implements
 		return writer;
 	}
 
+	public Metadata parseMetadata(String id) throws IOException, FormatException {
+		Format format = formatService.getFormat(id);
+		return format.createParser().parse(id);
+	}
+
+	public Metadata parseMetadata(String id, boolean openFile)
+		throws FormatException, IOException
+	{
+		Format format = formatService.getFormat(id, openFile);
+		return format.createParser().parse(id);
+	}
+
 	// -- Helper Methods --
 
 	/*
@@ -175,4 +187,5 @@ public class DefaultInitializeService extends AbstractService implements
 		final M meta = (M) metadata;
 		return meta;
 	}
+
 }

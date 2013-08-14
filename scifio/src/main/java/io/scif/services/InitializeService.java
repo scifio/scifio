@@ -120,4 +120,31 @@ public interface InitializeService extends Service {
 	 */
 	Writer initializeWriter(Metadata sourceMeta, String destination)
 		throws FormatException, IOException;
+
+	/**
+	 * Convenience method to parse {@link Metadata} without reading the underlying
+	 * pixels. Useful when translating to other formats, or simply extracting
+	 * image metadata. Will not open the image source when determining format
+	 * compatibility.
+	 * 
+	 * @param id Name of the image source to be read.
+	 * @return Parsed {@link Metadata} for the given source.
+	 * @throws FormatException
+	 * @throws IOException
+	 */
+	Metadata parseMetadata(String id) throws IOException, FormatException;
+
+	/**
+	 * As {@link #parseMetadata(String)} with a flag to open the underlying
+	 * dataset when parsing, if desired.
+	 * 
+	 * @param id Name of the image source to be read.
+	 * @param openFile If true, the image source may be read during metadata
+	 *          parsing.
+	 * @return Parsed {@link Metadata} for the given source.
+	 * @throws FormatException
+	 * @throws IOException
+	 */
+	Metadata parseMetadata(String id, boolean openFile) throws FormatException,
+		IOException;
 }
