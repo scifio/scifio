@@ -106,4 +106,22 @@ public class MetadataTest {
 		assertEquals(m.getAxisLength(0, Axes.X), 100);
 		assertEquals(m.getAxisIndex(0, Axes.X), 0);
 	}
+	
+	/**
+	 * Verify conditions when interrogating non-existant axes
+	 * 
+	 * @throws FormatException 
+	 */
+	@Test(expectedExceptions = IndexOutOfBoundsException.class)
+	public void testMissingAxes() throws FormatException {
+		Metadata m = scifio.format().getFormat(id).createMetadata();
+		
+		// Axis index should be -1, length 0
+		assertEquals(m.getAxisIndex(0, Axes.X), -1);
+		assertEquals(m.getAxisLength(0, Axes.X), 0);
+		
+		// Should throw an IndexOutOfBoundsException
+		assertEquals(m.getAxisLength(0, 0), 0);
+	}
+	
 }

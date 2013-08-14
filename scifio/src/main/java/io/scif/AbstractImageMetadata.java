@@ -518,7 +518,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 			"Invalid axisIndex: " + axisIndex + ". " + axisTypes.size() +
 				" axes present.");
 
-		return axisLengths.get(axisTypes.get(axisIndex).type());
+		return getAxisLength(axisTypes.get(axisIndex).type());
 	}
 
 	public int getAxisLength(final CalibratedAxis t) {
@@ -529,7 +529,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	 * @see io.scif.ImageMetadata#getAxisLength(net.imglib2.meta.AxisType)
 	 */
 	public int getAxisLength(final AxisType t) {
-		if (axisLengths == null || !axisLengths.containsKey(t)) return 1;
+		if (axisLengths == null || !axisLengths.containsKey(t)) return 0;
 
 		return axisLengths.get(t);
 	}
