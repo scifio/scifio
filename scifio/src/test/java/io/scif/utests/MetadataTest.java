@@ -97,11 +97,18 @@ public class MetadataTest {
 		assertEquals(m.getAxisIndex(0, Axes.CHANNEL), 4);
 	}
 	
+	/**
+	 * Verify conditions when adding axes
+	 * 
+	 * @throws FormatException
+	 */
 	@Test
 	public void testAddingAxes() throws FormatException {
 		Metadata m = scifio.format().getFormat(id).createMetadata();
 		m.createImageMetadata(1);
 		
+		// Verify that, after adding an axis to a clean metadata, the axis
+		// length and type can be looked up properly
 		m.setAxisLength(0, Axes.X, 100);
 		assertEquals(m.getAxisLength(0, Axes.X), 100);
 		assertEquals(m.getAxisIndex(0, Axes.X), 0);
