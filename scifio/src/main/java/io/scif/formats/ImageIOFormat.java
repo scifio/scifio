@@ -148,7 +148,6 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			log().info("Populating metadata");
 			final DataInputStream dis = new DataInputStream(stream);
 			final BufferedImage img = ImageIO.read(dis);
-			dis.close();
 			if (img == null) throw new FormatException("Invalid image stream");
 			meta.setImg(img);
 			meta.createImageMetadata(1);

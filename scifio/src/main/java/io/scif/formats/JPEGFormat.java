@@ -132,6 +132,7 @@ public class JPEGFormat extends ImageIOFormat {
 			if (signature[0] != (byte) 0xff || signature[1] != (byte) 0xd8 ||
 				signature[2] != (byte) 0xff || (signature[3] & 0xf0) == 0)
 			{
+				stream.seek(0);
 				return false;
 			}
 
@@ -139,11 +140,12 @@ public class JPEGFormat extends ImageIOFormat {
 				stream.seek(0);
 				final io.scif.Metadata m = getFormat().createParser().parse(stream);
 
+				stream.seek(0);
+				
 				// Need to check dimension lengths
 				if (m.getAxisLength(0, Axes.X) > MAX_SIZE &&
 					m.getAxisLength(0, Axes.Y) > MAX_SIZE)
 				{
-					stream.seek(0);
 					return false;
 				}
 			}
