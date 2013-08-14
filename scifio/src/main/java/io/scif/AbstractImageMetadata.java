@@ -284,7 +284,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	public void setAxisLength(final AxisType axis, final int length) {
-		updateLength(axis, length);
+		if (getAxisIndex(axis) == -1) addAxis(FormatTools.calibrate(axis), length);
+		else updateLength(axis, length);
 	}
 
 	/*
@@ -628,5 +629,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	private void updateLength(final AxisType type, final int value) {
 		axisLengths.put(type, value);
+		
 	}
 }

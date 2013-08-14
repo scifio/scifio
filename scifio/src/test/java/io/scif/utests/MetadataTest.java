@@ -36,7 +36,7 @@
 
 package io.scif.utests;
 
-import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.assertEquals;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.SCIFIO;
@@ -69,31 +69,41 @@ public class MetadataTest {
 		Metadata m = scifio.format().getFormat(id).createParser().parse(id);
 		
 		// Check getAxisType(int, int)
-		assertTrue(m.getAxisType(0, 0).type().equals(Axes.X));
-		assertTrue(m.getAxisType(0, 1).type().equals(Axes.Y));
-		assertTrue(m.getAxisType(0, 2).type().equals(Axes.TIME));
-		assertTrue(m.getAxisType(0, 3).type().equals(Axes.Z));
-		assertTrue(m.getAxisType(0, 4).type().equals(Axes.CHANNEL));
+		assertEquals(m.getAxisType(0, 0).type(), Axes.X);
+		assertEquals(m.getAxisType(0, 1).type(), Axes.Y);
+		assertEquals(m.getAxisType(0, 2).type(), Axes.TIME);
+		assertEquals(m.getAxisType(0, 3).type(), Axes.Z);
+		assertEquals(m.getAxisType(0, 4).type(), Axes.CHANNEL);
 		
 		// Check getAxisLength(int, int)
-		assertTrue(m.getAxisLength(0, 0) == 620);
-		assertTrue(m.getAxisLength(0, 1) == 512);
-		assertTrue(m.getAxisLength(0, 2) == 5);
-		assertTrue(m.getAxisLength(0, 3) == 1);
-		assertTrue(m.getAxisLength(0, 4) == 1);
+		assertEquals(m.getAxisLength(0, 0), 620);
+		assertEquals(m.getAxisLength(0, 1), 512);
+		assertEquals(m.getAxisLength(0, 2), 5);
+		assertEquals(m.getAxisLength(0, 3), 1);
+		assertEquals(m.getAxisLength(0, 4), 1);
 		
 		// Check getAxisLength(int, AxisType)
-		assertTrue(m.getAxisLength(0, Axes.X) == 620);
-		assertTrue(m.getAxisLength(0, Axes.Y) == 512);
-		assertTrue(m.getAxisLength(0, Axes.TIME) == 5);
-		assertTrue(m.getAxisLength(0, Axes.Z) == 1);
-		assertTrue(m.getAxisLength(0, Axes.CHANNEL) == 1);
+		assertEquals(m.getAxisLength(0, Axes.X), 620);
+		assertEquals(m.getAxisLength(0, Axes.Y), 512);
+		assertEquals(m.getAxisLength(0, Axes.TIME), 5);
+		assertEquals(m.getAxisLength(0, Axes.Z), 1);
+		assertEquals(m.getAxisLength(0, Axes.CHANNEL), 1);
 		
 		// Check getAxisIndex(int, AxisType)
-		assertTrue(m.getAxisIndex(0, Axes.X) == 0);
-		assertTrue(m.getAxisIndex(0, Axes.Y) == 1);
-		assertTrue(m.getAxisIndex(0, Axes.TIME) == 2);
-		assertTrue(m.getAxisIndex(0, Axes.Z) == 3);
-		assertTrue(m.getAxisIndex(0, Axes.CHANNEL) == 4);
+		assertEquals(m.getAxisIndex(0, Axes.X), 0);
+		assertEquals(m.getAxisIndex(0, Axes.Y), 1);
+		assertEquals(m.getAxisIndex(0, Axes.TIME), 2);
+		assertEquals(m.getAxisIndex(0, Axes.Z), 3);
+		assertEquals(m.getAxisIndex(0, Axes.CHANNEL), 4);
+	}
+	
+	@Test
+	public void testAddingAxes() throws FormatException {
+		Metadata m = scifio.format().getFormat(id).createMetadata();
+		m.createImageMetadata(1);
+		
+		m.setAxisLength(0, Axes.X, 100);
+		assertEquals(m.getAxisLength(0, Axes.X), 100);
+		assertEquals(m.getAxisIndex(0, Axes.X), 0);
 	}
 }
