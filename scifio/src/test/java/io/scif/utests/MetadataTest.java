@@ -36,6 +36,15 @@
 
 package io.scif.utests;
 
+import static org.testng.AssertJUnit.assertTrue;
+import io.scif.FormatException;
+import io.scif.Metadata;
+import io.scif.SCIFIO;
+
+import java.io.IOException;
+
+import net.imglib2.meta.Axes;
+
 import org.testng.annotations.Test;
 
 /**
@@ -45,5 +54,46 @@ import org.testng.annotations.Test;
  */
 @Test(groups = "metadataTests")
 public class MetadataTest {
+	
+	private final SCIFIO scifio = new SCIFIO();
+	private final String id =
+			"testImg&sizeX=620&sizeY=512&sizeT=5&dimOrder=XYTZC.fake";	
 
+	/**
+	 * Down the middle test that verifies each method of the Metadata API.
+	 * @throws FormatException 
+	 * @throws IOException 
+	 */
+	@Test
+	public void testDownTheMiddle() throws IOException, FormatException {
+		Metadata m = scifio.format().getFormat(id).createParser().parse(id);
+		
+		// Check getAxisType(int, int)
+		assertTrue(m.getAxisType(0, 0).type().equals(Axes.X));
+		assertTrue(m.getAxisType(0, 1).type().equals(Axes.Y));
+		assertTrue(m.getAxisType(0, 2).type().equals(Axes.TIME));
+		assertTrue(m.getAxisType(0, 3).type().equals(Axes.Z));
+		assertTrue(m.getAxisType(0, 4).type().equals(Axes.CHANNEL));
+		
+		// Check getAxisLength(int, int)
+		assertTrue(m.getAxisLength(0, 0) == 620);
+		assertTrue(m.getAxisLength(0, 1) == 512);
+		assertTrue(m.getAxisLength(0, 2) == 5);
+		assertTrue(m.getAxisLength(0, 3) == 1);
+		assertTrue(m.getAxisLength(0, 4) == 1);
+		
+		// Check getAxisLength(int, AxisType)
+		assertTrue(m.getAxisLength(0, Axes.X) == 620);
+		assertTrue(m.getAxisLength(0, Axes.Y) == 512);
+		assertTrue(m.getAxisLength(0, Axes.TIME) == 5);
+		assertTrue(m.getAxisLength(0, Axes.Z) == 1);
+		assertTrue(m.getAxisLength(0, Axes.CHANNEL) == 1);
+		
+		// Check getAxisIndex(int, AxisType)
+		assertTrue(m.getAxisIndex(0, Axes.X) == 0);
+		assertTrue(m.getAxisIndex(0, Axes.Y) == 1);
+		assertTrue(m.getAxisIndex(0, Axes.TIME) == 2);
+		assertTrue(m.getAxisIndex(0, Axes.Z) == 3);
+		assertTrue(m.getAxisIndex(0, Axes.CHANNEL) == 4);
+	}
 }

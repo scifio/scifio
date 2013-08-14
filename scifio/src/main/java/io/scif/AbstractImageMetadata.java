@@ -517,7 +517,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 			"Invalid axisIndex: " + axisIndex + ". " + axisTypes.size() +
 				" axes present.");
 
-		return axisLengths.get(axisTypes.get(axisIndex));
+		return axisLengths.get(axisTypes.get(axisIndex).type());
 	}
 
 	public int getAxisLength(final CalibratedAxis t) {
