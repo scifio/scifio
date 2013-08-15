@@ -111,7 +111,7 @@ public class FITSFormat extends AbstractFormat {
 
 			// correct for truncated files
 			final int planeSize =
-				iMeta.getAxisLength(Axes.X) * iMeta.getAxisLength(Axes.X) *
+				iMeta.getAxisLength(Axes.X) * iMeta.getAxisLength(Axes.Y) *
 					FormatTools.getBytesPerPixel(iMeta.getPixelType());
 
 			try {
