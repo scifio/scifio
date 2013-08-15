@@ -641,7 +641,8 @@ public class FakeFormat extends AbstractFormat {
 			fakeId = FakeUtils.appendToken(fakeId, THUMB_Y, source.getThumbSizeY(0));
 
 			fakeId =
-				FakeUtils.appendToken(fakeId, PIXEL_TYPE, source.getPixelType(0));
+				FakeUtils.appendToken(fakeId, PIXEL_TYPE, FormatTools
+					.getPixelTypeString(source.getPixelType(0)));
 			fakeId =
 				FakeUtils
 					.appendToken(fakeId, BITS_PER_PIXEL, source.getBitsPerPixel(0));
