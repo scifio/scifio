@@ -320,6 +320,20 @@ public final class FormatTools {
 
 		return calAxes;
 	}
+	
+	/**
+	 * Applies the calibration values, in order, to the axes of the supplied
+	 * Metadata.
+	 */
+	public static void Calibrate(Metadata m, int imageIndex, double[] calibration) {
+		int i = 0;
+		
+		for (CalibratedAxis axis : m.getAxes(imageIndex)) {
+			if (i >= calibration.length) return;
+			axis.setCalibration(calibration[i]);
+			i++;
+		}
+	}
 
 	/**
 	 * Returns the dimension order for the provided reader. Currently limited to

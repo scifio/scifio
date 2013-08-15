@@ -119,6 +119,11 @@ public class FakeFormat extends AbstractFormat {
 	public static final int DEFAULT_SIZE_Z = 1;
 	public static final int DEFAULT_SIZE_C = 1;
 	public static final int DEFAULT_SIZE_T = 1;
+	public static final double DEFAULT_CAL_X = 1.0;
+	public static final double DEFAULT_CAL_Y = 1.0;
+	public static final double DEFAULT_CAL_Z = 1.0;
+	public static final double DEFAULT_CAL_C = 1.0;
+	public static final double DEFAULT_CAL_T = 1.0;
 	public static final int DEFAULT_THUMB_SIZE_X = 0;
 	public static final int DEFAULT_THUMB_SIZE_Y = 0;
 	public static final String DEFAULT_PIXEL_TYPE = FormatTools
@@ -140,6 +145,11 @@ public class FakeFormat extends AbstractFormat {
 	private static final String SIZE_Z = "sizeZ";
 	private static final String SIZE_C = "sizeC";
 	private static final String SIZE_T = "sizeT";
+	private static final String CAL_X = "calX";
+	private static final String CAL_Y = "calY";
+	private static final String CAL_Z = "calZ";
+	private static final String CAL_C = "calC";
+	private static final String CAL_T = "calT";
 	private static final String THUMB_X = "thumbSizeX";
 	private static final String THUMB_Y = "thumbSizeY";
 	private static final String PIXEL_TYPE = "pixelType";
@@ -285,6 +295,11 @@ public class FakeFormat extends AbstractFormat {
 			int sizeZ = DEFAULT_SIZE_Z;
 			int sizeC = DEFAULT_SIZE_C;
 			int sizeT = DEFAULT_SIZE_T;
+			double calX = DEFAULT_CAL_X;
+			double calY = DEFAULT_CAL_Y;
+			double calZ = DEFAULT_CAL_Z;
+			double calC = DEFAULT_CAL_C;
+			double calT = DEFAULT_CAL_T;
 			int thumbSizeX = DEFAULT_THUMB_SIZE_X;
 			int thumbSizeY = DEFAULT_THUMB_SIZE_Y;
 			int rgb = DEFAULT_RGB_CHANNEL_COUNT;
@@ -303,6 +318,12 @@ public class FakeFormat extends AbstractFormat {
 			sizeZ = FakeUtils.getIntValue(fakeMap.get(SIZE_Z), sizeZ);
 			sizeC = FakeUtils.getIntValue(fakeMap.get(SIZE_C), sizeC);
 			sizeT = FakeUtils.getIntValue(fakeMap.get(SIZE_T), sizeT);
+
+			calX = FakeUtils.getDoubleValue(fakeMap.get(CAL_X), calX);
+			calY = FakeUtils.getDoubleValue(fakeMap.get(CAL_Y), calY);
+			calZ = FakeUtils.getDoubleValue(fakeMap.get(CAL_Z), calZ);
+			calC = FakeUtils.getDoubleValue(fakeMap.get(CAL_C), calC);
+			calT = FakeUtils.getDoubleValue(fakeMap.get(CAL_T), calT);
 
 			thumbSizeX = FakeUtils.getIntValue(fakeMap.get(THUMB_X), thumbSizeX);
 			thumbSizeY = FakeUtils.getIntValue(fakeMap.get(THUMB_Y), thumbSizeY);
@@ -428,15 +449,31 @@ public class FakeFormat extends AbstractFormat {
 
 			final CalibratedAxis[] axes = FormatTools.findDimensionList(dimOrder);
 			final int[] axisLengths = new int[axes.length];
+			final double[] calibrations = new double[axes.length];
 
 			// Create axes arrays
 			for (int i = 0; i < axes.length; i++) {
 				final AxisType t = axes[i].type();
-				if (t.equals(Axes.X)) axisLengths[i] = sizeX;
-				else if (t.equals(Axes.Y)) axisLengths[i] = sizeY;
-				else if (t.equals(Axes.Z)) axisLengths[i] = sizeZ;
-				else if (t.equals(Axes.CHANNEL)) axisLengths[i] = sizeC;
-				else if (t.equals(Axes.TIME)) axisLengths[i] = sizeT;
+				if (t.equals(Axes.X)) {
+					axisLengths[i] = sizeX;
+					calibrations[i] = calX;
+				}
+				else if (t.equals(Axes.Y)) {
+					axisLengths[i] = sizeY;
+					calibrations[i] = calY;
+				}
+				else if (t.equals(Axes.Z)) {
+					axisLengths[i] = sizeZ;
+					calibrations[i] = calZ;
+				}
+				else if (t.equals(Axes.CHANNEL)) {
+					axisLengths[i] = sizeC;
+					calibrations[i] = calC;
+				}
+				else if (t.equals(Axes.TIME)) { 
+					axisLengths[i] = sizeT;
+					calibrations[i] = calT;
+				}
 				else axisLengths[i] = -1; // Unknown axis
 			}
 
@@ -456,6 +493,7 @@ public class FakeFormat extends AbstractFormat {
 
 				imageMeta.setAxisTypes(axes);
 				imageMeta.setAxisLengths(axisLengths);
+				FormatTools.Calibrate(this, i, calibrations);
 				imageMeta.setPixelType(pixelType);
 				imageMeta.setThumbSizeX(thumbSizeX);
 				imageMeta.setThumbSizeY(thumbSizeY);
@@ -636,6 +674,17 @@ public class FakeFormat extends AbstractFormat {
 			fakeId =
 				FakeUtils.appendToken(fakeId, SIZE_T, source
 					.getAxisLength(0, Axes.TIME));
+			
+			fakeId = FakeUtils.appendToken(fakeId,
+				CAL_X, source.getAxis(0, Axes.X).calibration());
+			fakeId = FakeUtils.appendToken(fakeId,
+				CAL_Y, source.getAxis(0, Axes.Y).calibration());
+			fakeId = FakeUtils.appendToken(fakeId,
+				CAL_Z, source.getAxis(0, Axes.Z).calibration());
+			fakeId = FakeUtils.appendToken(fakeId,
+				CAL_C, source.getAxis(0, Axes.CHANNEL).calibration());
+			fakeId = FakeUtils.appendToken(fakeId,
+				CAL_T, source.getAxis(0, Axes.TIME).calibration());
 
 			fakeId = FakeUtils.appendToken(fakeId, THUMB_X, source.getThumbSizeX(0));
 			fakeId = FakeUtils.appendToken(fakeId, THUMB_Y, source.getThumbSizeY(0));
@@ -1023,6 +1072,18 @@ public class FakeFormat extends AbstractFormat {
 			final boolean value)
 		{
 			return FakeUtils.appendToken(base, key, Boolean.toString(value));
+		}
+
+		/**
+		 * Appends the provided key:double pair to the provided base and returns
+		 * the result.
+		 * 
+		 * @return A formatted FakeFormat key:value pair
+		 */
+		public static String appendToken(final String base, final String key,
+			final double value)
+		{
+			return FakeUtils.appendToken(base, key, Double.toString(value));
 		}
 
 		/**
