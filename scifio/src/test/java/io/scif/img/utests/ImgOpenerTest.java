@@ -70,6 +70,25 @@ public class ImgOpenerTest {
 		"testImg&sizeX=512&sizeY=512&sizeT=5&dimOrder=XYTZC.fake";
 
 	/**
+	 * Verify that SCIFIO Metadata calibration values are preserved in an opened
+	 * ImgPlus.
+	 */
+	@Test
+	public void testImgCalibration() throws ImgIOException {
+		String calId =
+			"testImg&sizeX=512&sizeY=512&sizeZ=3&sizeT=5" +
+			"&dimOrder=XYTZC&calX=5.0&calY=6.0&calZ=8.0&calT=7.0.fake";
+		
+		@SuppressWarnings("rawtypes")
+		ImgPlus imgPlus = imgOpener.openImg(calId);
+		
+		assertEquals(5.0, imgPlus.calibration(0));
+		assertEquals(6.0, imgPlus.calibration(1));
+		assertEquals(7.0, imgPlus.calibration(2));
+		assertEquals(8.0, imgPlus.calibration(3));
+	}
+
+	/**
 	 * Check that having raw typed ImgOpener methods doesn't cause problems. This
 	 * test should just fail to compile if there's an issue.
 	 */
