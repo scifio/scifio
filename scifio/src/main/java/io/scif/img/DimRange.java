@@ -157,6 +157,25 @@ public class DimRange {
 			setIndex.add(l);
 			listIndex.add(l);
 		}
+		
+	}
+
+	/**
+	 * Constructs a DimRange that includes only the values contained in the
+	 * provided array.
+	 * 
+	 * @param values explicit list of values in this range
+	 */
+	public DimRange(final long[] values) {
+		this();
+		
+		head = values[0];
+		tail = values[values.length-1];
+		
+		for (long l : values) {
+			setIndex.add(l);
+			listIndex.add(l);
+		}
 	}
 
 	// -- DimensionRanges methods --
