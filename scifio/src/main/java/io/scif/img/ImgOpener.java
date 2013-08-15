@@ -683,11 +683,11 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		// FIXME I think this is returning multi-channel planes out of order because
 		// of ChannelSeparator
-		for (final Long i : index[0].indices()) {
+		for (final Long i : index[2].indices()) {
 			for (final Long j : index[1].indices()) {
-				for (final Long k : index[2].indices()) {
+				for (final Long k : index[0].indices()) {
 
-					final Long[] indices = new Long[] { i, j, k };
+					final Long[] indices = new Long[] { k, j, i };
 					final Long z = indices[zPos];
 					final Long c = indices[cPos];
 					final Long t = indices[tPos];
