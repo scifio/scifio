@@ -105,7 +105,7 @@ public class FITSFormat extends AbstractFormat {
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
-			if (iMeta.getAxisIndex(Axes.Z) == -1) iMeta.setAxisLength(Axes.Z, 1);
+			if (iMeta.getAxisLength(Axes.Z) == 0) iMeta.setAxisLength(Axes.Z, 1);
 			iMeta.setAxisLength(Axes.CHANNEL, 1);
 			iMeta.setAxisLength(Axes.TIME, 1);
 
