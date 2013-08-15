@@ -86,15 +86,18 @@ public class DimRange {
 	private Long tail;
 
 	// -- Constructors --
+	
+	private DimRange() {
+		setIndex = new HashSet<Long>();
+		listIndex = new ArrayList<Long>();
+	}
 
 	public DimRange(final String range) {
+		this();
 
 		// Check for invalid patterns
 		if (!range.matches(REGION_PATTERN)) throw new IllegalArgumentException(
 			"Invalid range pattern. Must match: " + REGION_PATTERN);
-
-		setIndex = new HashSet<Long>();
-		listIndex = new ArrayList<Long>();
 
 		final String[] intervals = range.split(",");
 
@@ -129,11 +132,10 @@ public class DimRange {
 	 * @param index single index for this DimRange.
 	 */
 	public DimRange(final Long index) {
+		this();
+		
 		head = index;
 		tail = index;
-
-		setIndex = new HashSet<Long>();
-		listIndex = new ArrayList<Long>();
 
 		setIndex.add(index);
 		listIndex.add(index);
@@ -146,11 +148,10 @@ public class DimRange {
 	 * @param end inclusive end value
 	 */
 	public DimRange(final Long start, final Long end) {
+		this();
+		
 		head = start;
 		tail = end;
-
-		setIndex = new HashSet<Long>();
-		listIndex = new ArrayList<Long>();
 
 		for (long l = start; l <= end; l++) {
 			setIndex.add(l);
