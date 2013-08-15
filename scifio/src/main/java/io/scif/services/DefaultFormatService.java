@@ -80,43 +80,37 @@ public class DefaultFormatService extends AbstractService implements
 	/*
 	 * A  list of all available Formats
 	 */
-	private final Set<Format> formats = new TreeSet<Format>();
+	private Set<Format> formats;
 	
 	/*
 	 * Maps Format classes to their instances.
 	 */
-	private final Map<Class<?>, Format> formatMap =
-		new HashMap<Class<?>, Format>();
+	private Map<Class<?>, Format> formatMap;
 
 	/*
 	 * Maps Checker classes to their parent Format instance.
 	 */
-	private final Map<Class<?>, Format> checkerMap =
-		new HashMap<Class<?>, Format>();
+	private Map<Class<?>, Format> checkerMap;
 
 	/*
 	 * Maps Parser classes to their parent Format instance.
 	 */
-	private final Map<Class<?>, Format> parserMap =
-		new HashMap<Class<?>, Format>();
+	private Map<Class<?>, Format> parserMap;
 
 	/*
 	 * Maps Reader classes to their parent Format instance.
 	 */
-	private final Map<Class<?>, Format> readerMap =
-		new HashMap<Class<?>, Format>();
+	private Map<Class<?>, Format> readerMap;
 
 	/*
 	 * Maps Writer classes to their parent Format instance.
 	 */
-	private final Map<Class<?>, Format> writerMap =
-		new HashMap<Class<?>, Format>();
+	private Map<Class<?>, Format> writerMap;
 
 	/*
 	 * Maps Metadata classes to their parent Format instance.
 	 */
-	private final Map<Class<?>, Format> metadataMap =
-		new HashMap<Class<?>, Format>();
+	private Map<Class<?>, Format> metadataMap;
 
 	// -- FormatService API Methods --
 
@@ -140,10 +134,10 @@ public class DefaultFormatService extends AbstractService implements
 	 */
 	public <M extends Metadata> boolean addFormat(final Format format) {
 		// already have an entry for this format
-		if (formatMap.get(format.getClass()) != null) return false;
+		if (formatMap().get(format.getClass()) != null) return false;
 
-		formats.add(format);
-		formatMap.put(format.getClass(), format);
+		formats().add(format);
+		formatMap().put(format.getClass(), format);
 
 		addComponents(format);
 		if (format.getContext() == null) format.setContext(getContext());
@@ -155,30 +149,30 @@ public class DefaultFormatService extends AbstractService implements
 	 */
 	public boolean removeFormat(final Format format) {
 		removeComponents(format);
-		formatMap.remove(format.getClass());
-		return formats.remove(format);
+		formatMap().remove(format.getClass());
+		return formats().remove(format);
 	}
 
 	/*
 	 * @see io.scif.services.FormatService#addComponents(io.scif.Format)
 	 */
 	public void addComponents(final Format format) {
-		checkerMap.put(format.getCheckerClass(), format);
-		parserMap.put(format.getParserClass(), format);
-		readerMap.put(format.getReaderClass(), format);
-		writerMap.put(format.getWriterClass(), format);
-		metadataMap.put(format.getMetadataClass(), format);
+		checkerMap().put(format.getCheckerClass(), format);
+		parserMap().put(format.getParserClass(), format);
+		readerMap().put(format.getReaderClass(), format);
+		writerMap().put(format.getWriterClass(), format);
+		metadataMap().put(format.getMetadataClass(), format);
 	}
 
 	/*
 	 * @see io.scif.services.FormatService#removeComponents(io.scif.Format)
 	 */
 	public void removeComponents(final Format format) {
-		checkerMap.remove(format.getCheckerClass());
-		parserMap.remove(format.getParserClass());
-		readerMap.remove(format.getReaderClass());
-		writerMap.remove(format.getWriterClass());
-		metadataMap.remove(format.getMetadataClass());
+		checkerMap().remove(format.getCheckerClass());
+		parserMap().remove(format.getParserClass());
+		readerMap().remove(format.getReaderClass());
+		writerMap().remove(format.getWriterClass());
+		metadataMap().remove(format.getMetadataClass());
 	}
 
 	/*
@@ -186,7 +180,7 @@ public class DefaultFormatService extends AbstractService implements
 	 */
 	@SuppressWarnings("unchecked")
 	public <F extends Format> F getFormatFromClass(final Class<F> formatClass) {
-		return (F) formatMap.get(formatClass);
+		return (F) formatMap().get(formatClass);
 	}
 
 	/*
@@ -221,7 +215,7 @@ public class DefaultFormatService extends AbstractService implements
 	public <R extends Reader> Format getFormatFromReader(
 		final Class<R> readerClass)
 	{
-		return readerMap.get(readerClass);
+		return readerMap().get(readerClass);
 	}
 
 	/*
@@ -230,7 +224,7 @@ public class DefaultFormatService extends AbstractService implements
 	public <W extends Writer> Format getFormatFromWriter(
 		final Class<W> writerClass)
 	{
-		return writerMap.get(writerClass);
+		return writerMap().get(writerClass);
 	}
 
 	/*
@@ -243,7 +237,7 @@ public class DefaultFormatService extends AbstractService implements
 
 		Writer w = null;
 
-		for (Format f : formats) {
+		for (Format f : formats()) {
 			if (!matched && FormatTools.checkSuffix(fileId, f.getSuffixes())) {
 
 				if (!DefaultWriter.class.isAssignableFrom(f.getWriterClass())) {
@@ -262,7 +256,7 @@ public class DefaultFormatService extends AbstractService implements
 	public <C extends Checker> Format getFormatFromChecker(
 		final Class<C> checkerClass)
 	{
-		return checkerMap.get(checkerClass);
+		return checkerMap().get(checkerClass);
 	}
 
 	/*
@@ -271,7 +265,7 @@ public class DefaultFormatService extends AbstractService implements
 	public <P extends Parser> Format getFormatFromParser(
 		final Class<P> parserClass)
 	{
-		return parserMap.get(parserClass);
+		return parserMap().get(parserClass);
 	}
 
 	/*
@@ -280,7 +274,7 @@ public class DefaultFormatService extends AbstractService implements
 	public <M extends Metadata> Format getFormatFromMetadata(
 		final Class<M> metadataClass)
 	{
-		return metadataMap.get(metadataClass);
+		return metadataMap().get(metadataClass);
 	}
 
 	/**
@@ -322,7 +316,7 @@ public class DefaultFormatService extends AbstractService implements
 
 		boolean found = false;
 
-		for (Format format : formats) {
+		for (Format format : formats()) {
 			if (!found && format.isEnabled() && format.createChecker().isFormat(id, open)) {
 				// if greedy is true, we can end after finding the first format
 				found = greedy;
@@ -341,7 +335,7 @@ public class DefaultFormatService extends AbstractService implements
 	 * @see FormatService#getAllFormats()
 	 */
 	public Set<Format> getAllFormats() {
-		return formats;
+		return formats();
 	}
 
 	/*
@@ -351,17 +345,61 @@ public class DefaultFormatService extends AbstractService implements
 		return getContext().getService(type);
 	}
 
-	// -- Service API Methods --
+	// -- Private Methods --
+	
+	private Set<Format> formats() {
+		if (formats == null) initializeSingletons();
+		return formats;
+	}
+	
+	private Map<Class<?>, Format> formatMap() {
+		if (formatMap == null) initializeSingletons();
+		return formatMap;
+	}
+
+	private Map<Class<?>, Format> checkerMap() {
+		if (checkerMap == null) initializeSingletons();
+		return checkerMap;
+	}
+
+	private Map<Class<?>, Format> parserMap() {
+		if (parserMap == null) initializeSingletons();
+		return parserMap;
+	}
+
+	private Map<Class<?>, Format> readerMap() {
+		if (readerMap == null) initializeSingletons();
+		return readerMap;
+	}
+
+	private Map<Class<?>, Format> writerMap() {
+		if (writerMap == null) initializeSingletons();
+		return writerMap;
+	}
+
+	private Map<Class<?>, Format> metadataMap() {
+		if (metadataMap == null) initializeSingletons();
+		return metadataMap;
+	}
 
 	/*
 	 * Discovers the list of formats and creates singleton instances of each.
 	 */
-	@Override
-	public void initialize() {
+	private synchronized void initializeSingletons() {
+		if (formats != null) return;
+		formats = new TreeSet<Format>();
+		formatMap = new HashMap<Class<?>, Format>();
+		checkerMap = new HashMap<Class<?>, Format>();
+		parserMap = new HashMap<Class<?>, Format>();
+		readerMap = new HashMap<Class<?>, Format>();
+		writerMap = new HashMap<Class<?>, Format>();
+		metadataMap = new HashMap<Class<?>, Format>();
+
 		for (final Format format : pluginService
 			.createInstancesOfType(Format.class))
 		{
 			addFormat(format);
 		}
 	}
+
 }
