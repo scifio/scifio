@@ -36,16 +36,16 @@
 
 package io.scif.img.cell.cache;
 
-import java.io.Serializable;
+import io.scif.SCIFIOService;
 
-import org.scijava.service.Service;
+import java.io.Serializable;
 
 /**
  * Interface for caching and retrieving objects.
  * 
  * @author Mark Hiner
  */
-public interface CacheService<T extends Serializable> extends Service {
+public interface CacheService<T extends Serializable> extends SCIFIOService {
 
 	/**
 	 * Removes all entries from the specified cache

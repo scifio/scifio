@@ -37,15 +37,14 @@
 package io.scif.formats.tiff;
 
 import io.scif.FormatException;
-
-import org.scijava.service.Service;
+import io.scif.SCIFIOService;
 
 /**
  * Interface for services that work with TIFF files.
  * 
  * @author Curtis Rueden
  */
-public interface TiffService extends Service {
+public interface TiffService extends SCIFIOService {
 
 	/** Performs in-place differencing according to the given predictor value. */
 	void difference(byte[] input, IFD ifd) throws FormatException;

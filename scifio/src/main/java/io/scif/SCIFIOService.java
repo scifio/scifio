@@ -34,15 +34,16 @@
  * #L%
  */
 
-package io.scif.services;
+package io.scif;
 
 import org.scijava.service.Service;
 
 /**
- * Marker interface for Format-specific services.
+ * Marker interface for all SCIFIO services
  * 
  * @author Mark Hiner
+ *
  */
-public interface TypedService extends Service {
+public interface SCIFIOService extends Service {
 
 }

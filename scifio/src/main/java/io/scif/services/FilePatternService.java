@@ -36,11 +36,10 @@
 
 package io.scif.services;
 
+import io.scif.SCIFIOService;
 import io.scif.io.Location;
 
 import java.io.File;
-
-import org.scijava.service.Service;
 
 /**
  * A collection of utility methods to facilitate {@link io.scif.FilePattern}
@@ -49,7 +48,7 @@ import org.scijava.service.Service;
  * @see io.scif.FilePattern
  * @author Mark Hiner
  */
-public interface FilePatternService extends Service {
+public interface FilePatternService extends SCIFIOService {
 
 	/**
 	 * Identifies the group pattern from a given file within that group.

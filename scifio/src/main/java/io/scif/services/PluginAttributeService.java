@@ -37,12 +37,12 @@
 package io.scif.services;
 
 import io.scif.SCIFIOPlugin;
+import io.scif.SCIFIOService;
 
 import java.util.List;
 import java.util.Map;
 
 import org.scijava.plugin.PluginInfo;
-import org.scijava.service.Service;
 
 /**
  * Service for finding plugins with particular attribute values.
@@ -62,7 +62,7 @@ import org.scijava.service.Service;
  * 
  * @author Mark Hiner
  */
-public interface PluginAttributeService extends Service {
+public interface PluginAttributeService extends SCIFIOService {
 
 	/**
 	 * As {@link org.scijava.plugin.PluginService#createInstancesOfType(Class)}

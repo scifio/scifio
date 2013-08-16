@@ -37,6 +37,7 @@
 package io.scif.img;
 
 import io.scif.Metadata;
+import io.scif.SCIFIOService;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
@@ -46,8 +47,6 @@ import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
-import org.scijava.service.Service;
-
 /**
  * Helper methods for converting between SCIFIO and ImgLib2 data structures.
  * 
@@ -55,7 +54,7 @@ import org.scijava.service.Service;
  * @author Stephan Saalfeld
  * @author Curtis Rueden
  */
-public interface ImgUtilityService extends Service {
+public interface ImgUtilityService extends SCIFIOService {
 
 	/**
 	 * Downloads the given URL and caches it to a temporary file, which is deleted
