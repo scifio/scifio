@@ -31,15 +31,14 @@ The SCIFIO core includes support for:
 * ICS
 * JPEG
 * JPEG2000
-* Quicktime
 * MNG
-* Micromanager
+* Micro-Manager
 * NRRD
-* TIFF
 * OBF
 * PCX
 * PGM
-* PIC
+* QuickTime
+* TIFF
 * Zipped images
 
 Additionally,
