@@ -424,12 +424,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final int sizeC = m.getAxisLength(0, Axes.CHANNEL);
 		final String dimOrder = FormatTools.findDimensionOrder(m, 0);
 
-		final Double xCal = m.getAxis(0, Axes.X).calibration(),
-									yCal = m.getAxis(0, Axes.Y).calibration(), 
-									zCal = m.getAxis(0, Axes.Z).calibration(),
-									tCal = m.getAxis(0, Axes.TIME).calibration(),
-									cCal = m.getAxis(0, Axes.CHANNEL).calibration();
-
 		final List<Double> calibrationList = new ArrayList<Double>();
 
 		// add core dimensions
@@ -437,19 +431,29 @@ public class ImgOpener extends AbstractImgIOComponent {
 			final char dim = dimOrder.charAt(i);
 			switch (dim) {
 				case 'X':
-					if (sizeX > 1) calibrationList.add(xCal);
+					if (sizeX > 0) {
+						calibrationList.add(m.getAxis(0, Axes.X).calibration());
+					}
 					break;
 				case 'Y':
-					if (sizeY > 1) calibrationList.add(yCal);
+					if (sizeY > 0) {
+						calibrationList.add(m.getAxis(0, Axes.Y).calibration());
+					}
 					break;
 				case 'Z':
-					if (sizeZ > 1) calibrationList.add(zCal);
+					if (sizeZ > 0) {
+						calibrationList.add(m.getAxis(0, Axes.Z).calibration());
+					}
 					break;
 				case 'T':
-					if (sizeT > 1) calibrationList.add(tCal);
+					if (sizeT > 0) {
+						calibrationList.add(m.getAxis(0, Axes.TIME).calibration());
+					}
 					break;
 				case 'C':
-					if (sizeC > 1) calibrationList.add(cCal);
+					if (sizeC > 0) {
+						calibrationList.add(m.getAxis(0, Axes.CHANNEL).calibration());
+					}
 					break;
 			}
 		}
