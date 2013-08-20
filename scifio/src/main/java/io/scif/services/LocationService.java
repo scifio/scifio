@@ -36,12 +36,11 @@
 
 package io.scif.services;
 
+import io.scif.SCIFIOService;
 import io.scif.io.IRandomAccess;
 
 import java.io.IOException;
 import java.util.HashMap;
-
-import org.scijava.service.Service;
 
 /**
  * Contains methods for mapping files and ids, and generating
@@ -51,7 +50,7 @@ import org.scijava.service.Service;
  * @see io.scif.io.IRandomAccess
  * @author Mark Hiner
  */
-public interface LocationService extends Service {
+public interface LocationService extends SCIFIOService {
 
 	/**
 	 * Clear all caches and reset cache-related bookkeeping variables to their

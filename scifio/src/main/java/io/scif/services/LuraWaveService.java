@@ -37,17 +37,17 @@
 package io.scif.services;
 
 import io.scif.DependencyException;
+import io.scif.SCIFIOService;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.scijava.Optional;
-import org.scijava.service.Service;
 
 /**
  * @author Chris Allan
  */
-public interface LuraWaveService extends Service, Optional {
+public interface LuraWaveService extends SCIFIOService, Optional {
 
 	// -- Constants --
 

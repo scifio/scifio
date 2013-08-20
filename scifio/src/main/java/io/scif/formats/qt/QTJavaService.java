@@ -38,13 +38,12 @@ package io.scif.formats.qt;
 
 import io.scif.FormatException;
 import io.scif.MissingLibraryException;
+import io.scif.SCIFIOService;
 import io.scif.common.ReflectException;
 import io.scif.common.ReflectedUniverse;
 
 import java.awt.Dimension;
 import java.awt.Image;
-
-import org.scijava.service.Service;
 
 /**
  * Interface for services that work with QuickTime for Java.
@@ -52,7 +51,7 @@ import org.scijava.service.Service;
  * @author Curtis Rueden
  * @author Melissa Linkert
  */
-public interface QTJavaService extends Service {
+public interface QTJavaService extends SCIFIOService {
 
 	/** Whether QuickTime is available to this JVM. */
 	boolean canDoQT();

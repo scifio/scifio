@@ -37,14 +37,11 @@
 package io.scif.img;
 
 import io.scif.AbstractSCIFIOComponent;
-import io.scif.img.cell.cache.CacheService;
-import io.scif.img.converters.PlaneConverterService;
-import io.scif.services.InitializeService;
-import io.scif.services.TranslatorService;
+import io.scif.SCIFIOService;
 
 import org.scijava.Context;
-import org.scijava.app.StatusService;
 import org.scijava.plugin.Parameter;
+import org.scijava.service.SciJavaService;
 
 
 /**
@@ -65,8 +62,7 @@ public abstract class AbstractImgIOComponent extends AbstractSCIFIOComponent {
 	// -- Constructors --
 
 	public AbstractImgIOComponent() {
-		this(new Context(StatusService.class, InitializeService.class, PlaneConverterService.class,
-			TranslatorService.class, CacheService.class, ImgUtilityService.class));
+		this(new Context(SCIFIOService.class, SciJavaService.class));
 	}
 
 	public AbstractImgIOComponent(final Context context) {

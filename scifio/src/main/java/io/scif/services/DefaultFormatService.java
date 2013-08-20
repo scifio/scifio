@@ -43,6 +43,7 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Parser;
 import io.scif.Reader;
+import io.scif.SCIFIOService;
 import io.scif.Writer;
 import io.scif.util.FormatTools;
 
@@ -341,7 +342,7 @@ public class DefaultFormatService extends AbstractService implements
 	/*
 	 * @see io.scif.FormatService#getInstance(java.lang.Class)
 	 */
-	public <T extends TypedService> T getInstance(final Class<T> type) {
+	public <T extends SCIFIOService> T getInstance(final Class<T> type) {
 		return getContext().getService(type);
 	}
 

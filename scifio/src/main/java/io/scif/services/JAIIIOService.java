@@ -36,6 +36,7 @@
 
 package io.scif.services;
 
+import io.scif.SCIFIOService;
 import io.scif.codec.JPEG2000CodecOptions;
 
 import java.awt.image.BufferedImage;
@@ -44,12 +45,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.scijava.service.Service;
-
 /**
  * Interface defining methods for reading data using JAI Image I/O.
  */
-public interface JAIIIOService extends Service {
+public interface JAIIIOService extends SCIFIOService {
 
 	/**
 	 * Writes an image using JAI Image I/O using the JPEG 2000 codec.

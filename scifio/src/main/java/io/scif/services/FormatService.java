@@ -42,13 +42,13 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Parser;
 import io.scif.Reader;
+import io.scif.SCIFIOService;
 import io.scif.Writer;
 
 import java.util.List;
 import java.util.Set;
 
 import org.scijava.Priority;
-import org.scijava.service.Service;
 
 /**
  * A collection of methods for finding {@link io.scif.Format} instances given a
@@ -63,7 +63,7 @@ import org.scijava.service.Service;
  * @see FormatService#getInstance(Class)
  * @author Mark Hiner
  */
-public interface FormatService extends Service {
+public interface FormatService extends SCIFIOService {
 
 	// -- Priority constant --
 
@@ -248,5 +248,5 @@ public interface FormatService extends Service {
 	 * @param type - Service type to instantiate
 	 * @return An instance of the requested service
 	 */
-	<T extends TypedService> T getInstance(Class<T> type);
+	<T extends SCIFIOService> T getInstance(Class<T> type);
 }

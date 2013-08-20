@@ -37,9 +37,8 @@
 package io.scif.services;
 
 import io.scif.Metadata;
+import io.scif.SCIFIOService;
 import io.scif.Translator;
-
-import org.scijava.service.Service;
 
 /**
  * Collection of methods for creating and using appropriate Translators to
@@ -48,7 +47,7 @@ import org.scijava.service.Service;
  * @see io.scif.Translator
  * @author Mark Hiner
  */
-public interface TranslatorService extends Service {
+public interface TranslatorService extends SCIFIOService {
 
 	/**
 	 * Returns a translator capable of translating from the source Metadata to the

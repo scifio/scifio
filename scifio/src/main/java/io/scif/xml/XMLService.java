@@ -36,6 +36,7 @@
 
 package io.scif.xml;
 
+import io.scif.SCIFIOService;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.File;
@@ -49,7 +50,6 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.scijava.service.Service;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -59,7 +59,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @author Curtis Rueden
  */
-public interface XMLService extends Service {
+public interface XMLService extends SCIFIOService {
 
 	/** Parses a DOM from the given XML file on disk. */
 	Document parseDOM(File file) throws ParserConfigurationException,

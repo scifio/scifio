@@ -38,12 +38,11 @@ package io.scif.services;
 
 import io.scif.FormatException;
 import io.scif.Metadata;
+import io.scif.SCIFIOService;
 import io.scif.Writer;
 import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
-
-import org.scijava.service.Service;
 
 /**
  * A collection of methods for initializing the IO components of SCIFIO (Readers
@@ -59,7 +58,7 @@ import org.scijava.service.Service;
  * @see io.scif.filters.ReaderFilter
  * @author Mark Hiner
  */
-public interface InitializeService extends Service {
+public interface InitializeService extends SCIFIOService {
 
 	/**
 	 * See {@link #initializeReader(String, boolean)}. Will not open the image

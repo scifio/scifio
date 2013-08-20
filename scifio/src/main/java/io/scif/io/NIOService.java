@@ -36,12 +36,12 @@
 
 package io.scif.io;
 
+import io.scif.SCIFIOService;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
-
-import org.scijava.service.Service;
 
 /**
  * Interface for services that work with the {@link java.nio} package,
@@ -50,7 +50,7 @@ import org.scijava.service.Service;
  * @author Chris Allan
  * @author Curtis Rueden
  */
-public interface NIOService extends Service {
+public interface NIOService extends SCIFIOService {
 
 	/**
 	 * Allocates or maps the desired file data into memory.
