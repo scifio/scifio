@@ -217,11 +217,9 @@ public class APNGFormat extends AbstractFormat {
 				case 0x4:
 					rgb = false;
 					sizec = 2;
-					bpp *= 2;
 					break;
 				case 0x6:
 					sizec = 4;
-					bpp *= 2;
 					break;
 			}
 
