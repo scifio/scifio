@@ -685,8 +685,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 			else converter = pcService.getDefaultConverter();
 		}
 
-		// FIXME I think this is returning multi-channel planes out of order because
-		// of ChannelSeparator
 		for (final Long i : index[2].indices()) {
 			for (final Long j : index[1].indices()) {
 				for (final Long k : index[0].indices()) {
