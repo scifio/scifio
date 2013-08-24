@@ -68,16 +68,10 @@ public class MNGFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "Multiple Network Graphics";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "mng" };
 	}
@@ -115,9 +109,6 @@ public class MNGFormat extends AbstractFormat {
 
 		// -- Metadata API methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
 		public void populateImageMetadata() {
 			final String[] keys = getDatasetInfo().keys;
 
@@ -144,9 +135,6 @@ public class MNGFormat extends AbstractFormat {
 			}
 		}
 
-		/*
-		 * @see io.scif.AbstractMetadata#close(boolean)
-		 */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -321,9 +309,6 @@ public class MNGFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
-		/*
-		 * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final int planeIndex, final BufferedImagePlane plane, final int x,
 			final int y, final int w, final int h) throws FormatException,

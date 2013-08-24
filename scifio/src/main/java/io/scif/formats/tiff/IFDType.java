@@ -96,9 +96,6 @@ public enum IFDType implements CodedEnum {
 		this.bytesPerElement = bytesPerElement;
 	}
 
-	/* (non-Javadoc)
-	 * @see loci.common.CodedEnum#getCode()
-	 */
 	public int getCode() {
 		return code;
 	}

@@ -98,9 +98,6 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
@@ -124,7 +121,6 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			iMeta.setPlaneCount(1);
 		}
 
-		/* @see loci.formats.IFormatReader#close(boolean) */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -169,9 +165,6 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		// -- Reader API methods --
 
-		/*
-		 * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final int planeIndex, final BufferedImagePlane plane, final int x,
 			final int y, final int w, final int h) throws FormatException,
@@ -205,9 +198,6 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			this.kind = kind;
 		}
 
-		/*
-		 * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
-		 */
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

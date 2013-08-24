@@ -69,16 +69,10 @@ public class JavaFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "Java source code";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "java" };
 	}
@@ -100,9 +94,6 @@ public class JavaFormat extends AbstractFormat {
 			if (out.length() == 0) writeHeader();
 		}
 
-		/*
-		 * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
-		 */
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

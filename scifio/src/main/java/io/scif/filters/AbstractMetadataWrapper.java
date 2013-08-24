@@ -83,24 +83,15 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 
 	// -- MetadataWrapper API Methods --
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#unwrap()
-	 */
 	public Metadata unwrap() {
 		return meta;
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#wrap(io.scif.Metadata)
-	 */
 	public void wrap(final Metadata meta) {
 		this.meta = meta;
 		populateImageMetadata();
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#addAxis(int, net.imglib2.meta.AxisType, boolean)
-	 */
 	public void addAxis(final int imageIndex, final CalibratedAxis type,
 		final boolean passUp)
 	{
@@ -108,9 +99,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.addAxis(imageIndex, type);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#addAxis(int, net.imglib2.meta.AxisType, int, boolean)
-	 */
 	public void addAxis(final int imageIndex, final CalibratedAxis type,
 		final int value, final boolean passUp)
 	{
@@ -118,9 +106,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.addAxis(imageIndex, type, value);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#getTable()
-	 */
 	@Override
 	public MetaTable getTable() {
 		return super.getTable();
@@ -131,9 +116,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setTable(table);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setThumbSizeX(int, int, boolean)
-	 */
 	public void setThumbSizeX(final int imageIndex, final int thumbX,
 		final boolean passUp)
 	{
@@ -141,9 +123,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setThumbSizeX(imageIndex, thumbX);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setThumbSizeY(int, int, boolean)
-	 */
 	public void setThumbSizeY(final int imageIndex, final int thumbY,
 		final boolean passUp)
 	{
@@ -151,9 +130,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setThumbSizeY(imageIndex, thumbY);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setPixelType(int, int, boolean)
-	 */
 	public void setPixelType(final int imageIndex, final int type,
 		final boolean passUp)
 	{
@@ -161,9 +137,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setPixelType(imageIndex, type);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setBitsPerPixel(int, int, boolean)
-	 */
 	public void setBitsPerPixel(final int imageIndex, final int bpp,
 		final boolean passUp)
 	{
@@ -171,9 +144,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setBitsPerPixel(imageIndex, bpp);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setOrderCertain(int, boolean, boolean)
-	 */
 	public void setOrderCertain(final int imageIndex, final boolean orderCertain,
 		final boolean passUp)
 	{
@@ -181,9 +151,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setOrderCertain(imageIndex, orderCertain);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setRGB(int, boolean, boolean)
-	 */
 	public void setRGB(final int imageIndex, final boolean rgb,
 		final boolean passUp)
 	{
@@ -191,9 +158,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setRGB(imageIndex, rgb);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setLittleEndian(int, boolean, boolean)
-	 */
 	public void setLittleEndian(final int imageIndex, final boolean littleEndian,
 		final boolean passUp)
 	{
@@ -201,9 +165,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setLittleEndian(imageIndex, littleEndian);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setInterleaved(int, boolean, boolean)
-	 */
 	public void setInterleaved(final int imageIndex, final boolean interleaved,
 		final boolean passUp)
 	{
@@ -211,9 +172,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setInterleaved(imageIndex, interleaved);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setIndexed(int, boolean, boolean)
-	 */
 	public void setIndexed(final int imageIndex, final boolean indexed,
 		final boolean passUp)
 	{
@@ -221,9 +179,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setIndexed(imageIndex, indexed);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setFalseColor(int, boolean, boolean)
-	 */
 	public void setFalseColor(final int imageIndex, final boolean falseC,
 		final boolean passUp)
 	{
@@ -231,9 +186,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setFalseColor(imageIndex, falseC);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setMetadataComplete(int, boolean, boolean)
-	 */
 	public void setMetadataComplete(final int imageIndex,
 		final boolean metadataComplete, final boolean passUp)
 	{
@@ -241,17 +193,11 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setMetadataComplete(imageIndex, metadataComplete);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#add(io.scif.ImageMetadata, boolean)
-	 */
 	public void add(final ImageMetadata meta, final boolean passUp) {
 		super.add(meta);
 		if (passUp) this.meta.add(meta);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setThumbnailImage(int, boolean, boolean)
-	 */
 	public void setThumbnailImage(final int imageIndex, final boolean thumbnail,
 		final boolean passUp)
 	{
@@ -259,9 +205,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setThumbnailImage(imageIndex, thumbnail);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setAxisTypes(int, net.imglib2.meta.AxisType[], boolean)
-	 */
 	public void setAxisTypes(final int imageIndex,
 		final CalibratedAxis[] axisTypes, final boolean passUp)
 	{
@@ -269,9 +212,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setAxisTypes(imageIndex, axisTypes);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setAxisType(int, int, net.imglib2.meta.AxisType, boolean)
-	 */
 	public void setAxisType(final int imageIndex, final int axisIndex,
 		final CalibratedAxis axis, final boolean passUp)
 	{
@@ -279,9 +219,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setAxisType(imageIndex, axisIndex, axis);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setAxisLengths(int, int[], boolean)
-	 */
 	public void setAxisLengths(final int imageIndex, final int[] axisLengths,
 		final boolean passUp)
 	{
@@ -289,9 +226,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setAxisLengths(imageIndex, axisLengths);
 	}
 
-	/*
-	 * @see io.scif.filters.MetadataWrapper#setAxisLength(int, net.imglib2.meta.AxisType, int, boolean)
-	 */
 	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
 		final int length, final boolean passUp)
 	{
@@ -320,17 +254,11 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setAxisLength(imageIndex, axis, length);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#addAxis(int, net.imglib2.meta.AxisType)
-	 */
 	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis type) {
 		addAxis(imageIndex, type, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#addAxis(int, net.imglib2.meta.AxisType, int)
-	 */
 	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis type,
 		final int value)
@@ -338,91 +266,58 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		addAxis(imageIndex, type, value, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setThumbSizeX(int, int)
-	 */
 	@Override
 	public void setThumbSizeX(final int imageIndex, final int thumbX) {
 		setThumbSizeX(imageIndex, thumbX, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setThumbSizeY(int, int)
-	 */
 	@Override
 	public void setThumbSizeY(final int imageIndex, final int thumbY) {
 		setThumbSizeY(imageIndex, thumbY, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setPixelType(int, int)
-	 */
 	@Override
 	public void setPixelType(final int imageIndex, final int type) {
 		setPixelType(imageIndex, type, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setBitsPerPixel(int, int)
-	 */
 	@Override
 	public void setBitsPerPixel(final int imageIndex, final int bpp) {
 		setBitsPerPixel(imageIndex, bpp, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setOrderCertain(int, boolean)
-	 */
 	@Override
 	public void setOrderCertain(final int imageIndex, final boolean orderCertain)
 	{
 		setOrderCertain(imageIndex, orderCertain, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setRGB(int, boolean)
-	 */
 	@Override
 	public void setRGB(final int imageIndex, final boolean rgb) {
 		setRGB(imageIndex, rgb, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setLittleEndian(int, boolean)
-	 */
 	@Override
 	public void setLittleEndian(final int imageIndex, final boolean littleEndian)
 	{
 		setLittleEndian(imageIndex, littleEndian, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setInterleaved(int, boolean)
-	 */
 	@Override
 	public void setInterleaved(final int imageIndex, final boolean interleaved) {
 		setInterleaved(imageIndex, interleaved, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setIndexed(int, boolean)
-	 */
 	@Override
 	public void setIndexed(final int imageIndex, final boolean indexed) {
 		setIndexed(imageIndex, indexed, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setFalseColor(int, boolean)
-	 */
 	@Override
 	public void setFalseColor(final int imageIndex, final boolean falseC) {
 		setFalseColor(imageIndex, falseC, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setMetadataComplete(int, boolean)
-	 */
 	@Override
 	public void setMetadataComplete(final int imageIndex,
 		final boolean metadataComplete)
@@ -430,25 +325,16 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		setMetadataComplete(imageIndex, metadataComplete, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#add(io.scif.ImageMetadata)
-	 */
 	@Override
 	public void add(final ImageMetadata meta) {
 		add(meta, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setThumbnailImage(int, boolean)
-	 */
 	@Override
 	public void setThumbnailImage(final int imageIndex, final boolean thumbnail) {
 		setThumbnailImage(imageIndex, thumbnail, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setAxisTypes(int, net.imglib2.meta.AxisType[])
-	 */
 	@Override
 	public void setAxisTypes(final int imageIndex,
 		final CalibratedAxis[] axisTypes)
@@ -456,9 +342,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		setAxisTypes(imageIndex, axisTypes, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setAxisType(int, int, net.imglib2.meta.AxisType)
-	 */
 	@Override
 	public void setAxisType(final int imageIndex, final int axisIndex,
 		final CalibratedAxis axis)
@@ -466,17 +349,11 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		setAxisType(imageIndex, axisIndex, axis, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setAxisLengths(int, int[])
-	 */
 	@Override
 	public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
 		setAxisLengths(imageIndex, axisLengths, true);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#setAxisLength(int, net.imglib2.meta.AxisType, int)
-	 */
 	@Override
 	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
 		final int length)
@@ -486,9 +363,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 
 	// -- Metadata API Methods --
 
-	/*
-	 * @see io.scif.AbstractMetadata#setSource(io.scif.io.RandomAccessInputStream)
-	 */
 	@Override
 	public void setSource(final RandomAccessInputStream source) {
 		super.setSource(source);
@@ -501,9 +375,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 
 	// -- HasSource API Methods --
 
-	/*
-	 * @see io.scif.AbstractMetadata#close(boolean)
-	 */
 	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		super.close(fileOnly);

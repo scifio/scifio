@@ -77,21 +77,18 @@ public class UnsignedIntColorModel extends ColorModel {
 
 	// -- ColorModel API methods --
 
-	/* @see java.awt.image.ColorModel#getDataElements(int, Object) */
 	@Override
 	public synchronized Object getDataElements(final int rgb, final Object pixel)
 	{
 		return helper.getDataElements(rgb, pixel);
 	}
 
-	/* @see java.awt.image.ColorModel#isCompatibleRaster(Raster) */
 	@Override
 	public boolean isCompatibleRaster(final Raster raster) {
 		return raster.getNumBands() == getNumComponents() &&
 			raster.getTransferType() == getTransferType();
 	}
 
-	/* @see java.awt.image.ColorModel#createCompatibleWritableRaster(int, int) */
 	@Override
 	public WritableRaster
 		createCompatibleWritableRaster(final int w, final int h)
@@ -107,31 +104,26 @@ public class UnsignedIntColorModel extends ColorModel {
 		return Raster.createWritableRaster(m, db, null);
 	}
 
-	/* @see java.awt.image.ColorModel#getAlpha(int) */
 	@Override
 	public int getAlpha(final int pixel) {
 		return (int) (Math.pow(2, 32) - 1);
 	}
 
-	/* @see java.awt.image.ColorModel#getBlue(int) */
 	@Override
 	public int getBlue(final int pixel) {
 		return getComponent(pixel, 3);
 	}
 
-	/* @see java.awt.image.ColorModel#getGreen(int) */
 	@Override
 	public int getGreen(final int pixel) {
 		return getComponent(pixel, 2);
 	}
 
-	/* @see java.awt.image.ColorModel#getRed(int) */
 	@Override
 	public int getRed(final int pixel) {
 		return getComponent(pixel, 1);
 	}
 
-	/* @see java.awt.image.ColorModel#getAlpha(Object) */
 	@Override
 	public int getAlpha(final Object data) {
 		final int max = (int) Math.pow(2, 32) - 1;
@@ -143,7 +135,6 @@ public class UnsignedIntColorModel extends ColorModel {
 		return max;
 	}
 
-	/* @see java.awt.image.ColorModel#getRed(Object) */
 	@Override
 	public int getRed(final Object data) {
 		final int max = (int) Math.pow(2, 32) - 1;
@@ -155,7 +146,6 @@ public class UnsignedIntColorModel extends ColorModel {
 		return max;
 	}
 
-	/* @see java.awt.image.ColorModel#getGreen(Object) */
 	@Override
 	public int getGreen(final Object data) {
 		final int max = (int) Math.pow(2, 32) - 1;
@@ -167,7 +157,6 @@ public class UnsignedIntColorModel extends ColorModel {
 		return max;
 	}
 
-	/* @see java.awt.image.ColorModel#getBlue(Object) */
 	@Override
 	public int getBlue(final Object data) {
 		final int max = (int) Math.pow(2, 32) - 1;

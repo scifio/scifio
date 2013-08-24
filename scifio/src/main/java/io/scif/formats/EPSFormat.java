@@ -166,9 +166,6 @@ public class EPSFormat extends AbstractFormat {
 
 		// -- HasSource API Methods --
 
-		/*
-		 * @see io.scif.AbstractMetadata#close(boolean)
-		 */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);

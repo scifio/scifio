@@ -175,7 +175,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
 
 	// -- AbstractNIOHandle API methods --
 
-	/* @see AbstractNIOHandle.setLength(long) */
 	@Override
 	public void setLength(final long length) throws IOException {
 		raf.seek(length - 1);
@@ -185,27 +184,22 @@ public class NIOFileHandle extends AbstractNIOHandle {
 
 	// -- IRandomAccess API methods --
 
-	/* @see IRandomAccess.close() */
 	public void close() throws IOException {
 		raf.close();
 	}
 
-	/* @see IRandomAccess.getFilePointer() */
 	public long getFilePointer() {
 		return position;
 	}
 
-	/* @see IRandomAccess.length() */
 	public long length() throws IOException {
 		return raf.length();
 	}
 
-	/* @see IRandomAccess.getOrder() */
 	public ByteOrder getOrder() {
 		return buffer == null ? order : buffer.order();
 	}
 
-	/* @see IRandomAccess.setOrder(ByteOrder) */
 	public void setOrder(final ByteOrder order) {
 		this.order = order;
 		if (buffer != null) {
@@ -213,24 +207,20 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
-	/* @see IRandomAccess.read(byte[]) */
 	public int read(final byte[] b) throws IOException {
 		return read(ByteBuffer.wrap(b));
 	}
 
-	/* @see IRandomAccess.read(byte[], int, int) */
 	public int read(final byte[] b, final int off, final int len)
 		throws IOException
 	{
 		return read(ByteBuffer.wrap(b), off, len);
 	}
 
-	/* @see IRandomAccess.read(ByteBuffer) */
 	public int read(final ByteBuffer buf) throws IOException {
 		return read(buf, 0, buf.capacity());
 	}
 
-	/* @see IRandomAccess.read(ByteBuffer, int, int) */
 	public int read(final ByteBuffer buf, final int off, final int len)
 		throws IOException
 	{
@@ -244,7 +234,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		return readLength == -1 ? 0 : readLength;
 	}
 
-	/* @see IRandomAccess.seek(long) */
 	public void seek(final long pos) throws IOException {
 		if (mapMode == FileChannel.MapMode.READ_WRITE && pos > length()) {
 			setLength(pos);
@@ -252,12 +241,10 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		buffer(pos, 0);
 	}
 
-	/* @see java.io.DataInput.readBoolean() */
 	public boolean readBoolean() throws IOException {
 		return readByte() == 1;
 	}
 
-	/* @see java.io.DataInput.readByte() */
 	public byte readByte() throws IOException {
 		buffer(position, 1);
 		position += 1;
@@ -271,7 +258,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
-	/* @see java.io.DataInput.readChar() */
 	public char readChar() throws IOException {
 		buffer(position, 2);
 		position += 2;
@@ -285,7 +271,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
-	/* @see java.io.DataInput.readDouble() */
 	public double readDouble() throws IOException {
 		buffer(position, 8);
 		position += 8;
@@ -299,7 +284,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
-	/* @see java.io.DataInput.readFloat() */
 	public float readFloat() throws IOException {
 		buffer(position, 4);
 		position += 4;
@@ -313,19 +297,16 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
-	/* @see java.io.DataInput.readFully(byte[]) */
 	public void readFully(final byte[] b) throws IOException {
 		read(b);
 	}
 
-	/* @see java.io.DataInput.readFully(byte[], int, int) */
 	public void readFully(final byte[] b, final int off, final int len)
 		throws IOException
 	{
 		read(b, off, len);
 	}
 
-	/* @see java.io.DataInput.readInt() */
 	public int readInt() throws IOException {
 		buffer(position, 4);
 		position += 4;
@@ -339,7 +320,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
-	/* @see java.io.DataInput.readLine() */
 	public String readLine() throws IOException {
 		raf.seek(position);
 		final String line = raf.readLine();
@@ -347,7 +327,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		return line;
 	}
 
-	/* @see java.io.DataInput.readLong() */
 	public long readLong() throws IOException {
 		buffer(position, 8);
 		position += 8;
@@ -361,7 +340,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
-	/* @see java.io.DataInput.readShort() */
 	public short readShort() throws IOException {
 		buffer(position, 2);
 		position += 2;
@@ -375,17 +353,14 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
-	/* @see java.io.DataInput.readUnsignedByte() */
 	public int readUnsignedByte() throws IOException {
 		return readByte() & 0xFF;
 	}
 
-	/* @see java.io.DataInput.readUnsignedShort() */
 	public int readUnsignedShort() throws IOException {
 		return readShort() & 0xFFFF;
 	}
 
-	/* @see java.io.DataInput.readUTF() */
 	public String readUTF() throws IOException {
 		raf.seek(position);
 		final String utf8 = raf.readUTF();
@@ -393,7 +368,6 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		return utf8;
 	}
 
-	/* @see java.io.DataInput.skipBytes(int) */
 	public int skipBytes(final int n) throws IOException {
 		if (n < 1) {
 			return 0;
@@ -407,24 +381,20 @@ public class NIOFileHandle extends AbstractNIOHandle {
 
 	// -- DataOutput API methods --
 
-	/* @see java.io.DataOutput.write(byte[]) */
 	public void write(final byte[] b) throws IOException {
 		write(ByteBuffer.wrap(b));
 	}
 
-	/* @see java.io.DataOutput.write(byte[], int, int) */
 	public void write(final byte[] b, final int off, final int len)
 		throws IOException
 	{
 		write(ByteBuffer.wrap(b), off, len);
 	}
 
-	/* @see IRandomAccess.write(ByteBuffer) */
 	public void write(final ByteBuffer buf) throws IOException {
 		write(buf, 0, buf.capacity());
 	}
 
-	/* @see IRandomAccess.write(ByteBuffer, int, int) */
 	public void write(final ByteBuffer buf, final int off, final int len)
 		throws IOException
 	{
@@ -435,76 +405,64 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		buffer = null;
 	}
 
-	/* @see java.io.DataOutput.write(int b) */
 	public void write(final int b) throws IOException {
 		writeByte(b);
 	}
 
-	/* @see java.io.DataOutput.writeBoolean(boolean) */
 	public void writeBoolean(final boolean v) throws IOException {
 		writeByte(v ? 1 : 0);
 	}
 
-	/* @see java.io.DataOutput.writeByte(int) */
 	public void writeByte(final int v) throws IOException {
 		writeSetup(1);
 		buffer.put((byte) v);
 		doWrite(1);
 	}
 
-	/* @see java.io.DataOutput.writeBytes(String) */
 	public void writeBytes(final String s) throws IOException {
 		write(s.getBytes(Constants.ENCODING));
 	}
 
-	/* @see java.io.DataOutput.writeChar(int) */
 	public void writeChar(final int v) throws IOException {
 		writeSetup(2);
 		buffer.putChar((char) v);
 		doWrite(2);
 	}
 
-	/* @see java.io.DataOutput.writeChars(String) */
 	public void writeChars(final String s) throws IOException {
 		write(s.getBytes("UTF-16BE"));
 	}
 
-	/* @see java.io.DataOutput.writeDouble(double) */
 	public void writeDouble(final double v) throws IOException {
 		writeSetup(8);
 		buffer.putDouble(v);
 		doWrite(8);
 	}
 
-	/* @see java.io.DataOutput.writeFloat(float) */
 	public void writeFloat(final float v) throws IOException {
 		writeSetup(4);
 		buffer.putFloat(v);
 		doWrite(4);
 	}
 
-	/* @see java.io.DataOutput.writeInt(int) */
 	public void writeInt(final int v) throws IOException {
 		writeSetup(4);
 		buffer.putInt(v);
 		doWrite(4);
 	}
 
-	/* @see java.io.DataOutput.writeLong(long) */
 	public void writeLong(final long v) throws IOException {
 		writeSetup(8);
 		buffer.putLong(v);
 		doWrite(8);
 	}
 
-	/* @see java.io.DataOutput.writeShort(int) */
 	public void writeShort(final int v) throws IOException {
 		writeSetup(2);
 		buffer.putShort((short) v);
 		doWrite(2);
 	}
 
-	/* @see java.io.DataOutput.writeUTF(String)  */
 	public void writeUTF(final String str) throws IOException {
 		// NB: number of bytes written is greater than the length of the string
 		final int strlen = str.getBytes(Constants.ENCODING).length + 2;

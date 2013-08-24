@@ -66,9 +66,6 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 
 	// -- Reader API Methods --
 
-	/*
-	 * @see io.scif.Reader#openThumbPlane(int, int)
-	 */
 	public BufferedImagePlane openThumbPlane(final int imageIndex,
 		final int planeIndex) throws FormatException, IOException
 	{
@@ -87,18 +84,12 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 		return plane;
 	}
 
-	/*
-	 * @see io.scif.Reader#createPlane(int, int, int, int)
-	 */
 	public BufferedImagePlane createPlane(final int xOffset, final int yOffset,
 		final int xLength, final int yLength)
 	{
 		return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
 	}
 
-	/*
-	 * @see io.scif.TypedReader#createPlane(int, int, int, int)
-	 */
 	public BufferedImagePlane createPlane(final ImageMetadata meta,
 		final int xOffset, final int yOffset, final int xLength, final int yLength)
 	{

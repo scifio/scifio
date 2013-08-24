@@ -79,16 +79,10 @@ public class TextFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "Text";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "txt", "csv" };
 	}

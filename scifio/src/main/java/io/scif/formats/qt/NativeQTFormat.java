@@ -95,16 +95,10 @@ public class NativeQTFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "QuickTime";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "mov" };
 	}
@@ -302,9 +296,6 @@ public class NativeQTFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 

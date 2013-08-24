@@ -134,9 +134,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	// -- Filter API Methods --
 
-	/*
-	 * @see io.scif.filters.AbstractFilter#setParent(java.lang.Object)
-	 */
 	@Override
 	public void setParent(final Object parent) {
 		super.setParent(parent);
@@ -175,9 +172,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		wrappedMeta = r.getMetadata();
 	}
 
-	/*
-	 * @see io.scif.filters.Filter#isCompatible(java.lang.Class)
-	 */
 	@Override
 	public boolean isCompatible(final Class<?> c) {
 		return Reader.class.isAssignableFrom(c);
@@ -185,9 +179,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	// -- Reader API Methods --
 
-	/*
-	 * @see io.scif.Reader#openPlane(int, int)
-	 */
 	public Plane openPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
 	{
@@ -195,9 +186,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().openPlane(imageIndex, planeIndex);
 	}
 
-	/*
-	 * @see io.scif.Reader#openPlane(int, int, int, int, int, int)
-	 */
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final int x, final int y, final int w, final int h) throws FormatException,
 		IOException
@@ -206,9 +194,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().openPlane(imageIndex, planeIndex, x, y, w, h);
 	}
 
-	/*
-	 * @see io.scif.Reader#openPlane(int, int, io.scif.Plane)
-	 */
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
@@ -216,9 +201,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().openPlane(imageIndex, planeIndex, plane);
 	}
 
-	/*
-	 * @see io.scif.Reader#openPlane(int, int, io.scif.Plane, int, int, int, int)
-	 */
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane, final int x, final int y, final int w, final int h)
 		throws FormatException, IOException
@@ -227,83 +209,50 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
 	}
 
-	/*
-	 * @see io.scif.Reader#openThumbPlane(int, int)
-	 */
 	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
 	{
 		return getParent().openThumbPlane(imageIndex, planeIndex);
 	}
 
-	/*
-	 * @see io.scif.Reader#setGroupFiles(boolean)
-	 */
 	public void setGroupFiles(final boolean group) {
 		getParent().setGroupFiles(group);
 	}
 
-	/*
-	 * @see io.scif.Reader#isGroupFiles()
-	 */
 	public boolean isGroupFiles() {
 		return getParent().isGroupFiles();
 	}
 
-	/*
-	 * @see io.scif.Reader#fileGroupOption(java.lang.String)
-	 */
 	public int fileGroupOption(final String id) throws FormatException,
 		IOException
 	{
 		return getParent().fileGroupOption(id);
 	}
 
-	/*
-	 * @see io.scif.Reader#getCurrentFile()
-	 */
 	public String getCurrentFile() {
 		return getParent().getCurrentFile();
 	}
 
-	/*
-	 * @see io.scif.Reader#getDomains()
-	 */
 	public String[] getDomains() {
 		return getParent().getDomains();
 	}
 
-	/*
-	 * @see io.scif.Reader#getStream()
-	 */
 	public RandomAccessInputStream getStream() {
 		return getParent().getStream();
 	}
 
-	/*
-	 * @see io.scif.Reader#getUnderlyingReaders()
-	 */
 	public Reader[] getUnderlyingReaders() {
 		return getParent().getUnderlyingReaders();
 	}
 
-	/*
-	 * @see io.scif.Reader#getOptimalTileWidth(int)
-	 */
 	public int getOptimalTileWidth(final int imageIndex) {
 		return getParent().getOptimalTileWidth(imageIndex);
 	}
 
-	/*
-	 * @see io.scif.Reader#getOptimalTileHeight(int)
-	 */
 	public int getOptimalTileHeight(final int imageIndex) {
 		return getParent().getOptimalTileHeight(imageIndex);
 	}
 
-	/*
-	 * @see io.scif.Reader#setMetadata(io.scif.Metadata)
-	 */
 	public void setMetadata(final Metadata meta) throws IOException {
 		getParent().setMetadata(meta);
 
@@ -312,53 +261,32 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		else wrappedMeta = meta;
 	}
 
-	/*
-	 * @see io.scif.Reader#getMetadata()
-	 */
 	public Metadata getMetadata() {
 		return wrappedMeta;
 	}
 
-	/*
-	 * @see io.scif.Reader#setNormalized(boolean)
-	 */
 	public void setNormalized(final boolean normalize) {
 		getParent().setNormalized(normalize);
 	}
 
-	/*
-	 * @see io.scif.Reader#isNormalized()
-	 */
 	public boolean isNormalized() {
 		return getParent().isNormalized();
 	}
 
-	/*
-	 * @see io.scif.Reader#hasCompanionFiles()
-	 */
 	public boolean hasCompanionFiles() {
 		return getParent().hasCompanionFiles();
 	}
 
-	/*
-	 * @see io.scif.Reader#setSource(java.lang.String)
-	 */
 	public void setSource(final String fileName) throws IOException {
 		setSourceHelper(fileName);
 		getParent().setSource(fileName);
 	}
 
-	/*
-	 * @see io.scif.Reader#setSource(java.io.File)
-	 */
 	public void setSource(final File file) throws IOException {
 		setSourceHelper(file.getAbsolutePath());
 		getParent().setSource(file);
 	}
 
-	/*
-	 * @see io.scif.Reader#setSource(io.scif.io.RandomAccessInputStream)
-	 */
 	public void setSource(final RandomAccessInputStream stream)
 		throws IOException
 	{
@@ -366,23 +294,14 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		getParent().setSource(stream);
 	}
 
-	/*
-	 * @see io.scif.Reader#close(boolean)
-	 */
 	public void close(final boolean fileOnly) throws IOException {
 		getParent().close(fileOnly);
 	}
 
-	/*
-	 * @see io.scif.Reader#close()
-	 */
 	public void close() throws IOException {
 		getParent().close();
 	}
 
-	/*
-	 * @see io.scif.Reader#readPlane(io.scif.io.RandomAccessInputStream, int, int, int, int, int, io.scif.Plane)
-	 */
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final Plane plane)
 		throws IOException
@@ -391,9 +310,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().readPlane(s, imageIndex, x, y, w, h, plane);
 	}
 
-	/*
-	 * @see io.scif.Reader#readPlane(io.scif.io.RandomAccessInputStream, int, int, int, int, int, int, io.scif.Plane)
-	 */
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final int scanlinePad,
 		final Plane plane) throws IOException
@@ -402,50 +318,32 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().readPlane(s, imageIndex, x, y, w, h, scanlinePad, plane);
 	}
 
-	/*
-	 * @see io.scif.Reader#getPlaneCount(int)
-	 */
 	public int getPlaneCount(final int imageIndex) {
 		return getParent().getPlaneCount(imageIndex);
 	}
 
-	/*
-	 * @see io.scif.Reader#getImageCount()
-	 */
 	public int getImageCount() {
 		return getParent().getImageCount();
 	}
 
-	/*
-	 * @see io.scif.Reader#createPlane(int, int, int, int)
-	 */
 	public Plane createPlane(final int xOffset, final int yOffset,
 		final int xLength, final int yLength)
 	{
 		return getParent().createPlane(xOffset, yOffset, xLength, yLength);
 	}
 
-	/*
-	 * @see io.scif.Reader#createPlane(io.scif.ImageMetadata, int, int, int, int)
-	 */
 	public Plane createPlane(final ImageMetadata meta, final int xOffset,
 		final int yOffset, final int xLength, final int yLength)
 	{
 		return getParent().createPlane(meta, xOffset, yOffset, xLength, yLength);
 	}
 
-	/*
-	 * @see io.scif.Reader#castToTypedPlane(io.scif.Plane)
-	 */
 	public <P extends Plane> P castToTypedPlane(final Plane plane) {
 		return getParent().<P> castToTypedPlane(plane);
 	}
 
 	// -- Groupable API Methods --
 
-	/*
-	 * @see io.scif.Groupable#isSingleFile(java.lang.String)
-	 */
 	public boolean isSingleFile(final String id) throws FormatException,
 		IOException
 	{
@@ -454,9 +352,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	// -- HasFormat API Methods --
 
-	/*
-	 * @see io.scif.HasFormat#getFormat()
-	 */
 	public Format getFormat() {
 		return getParent().getFormat();
 	}

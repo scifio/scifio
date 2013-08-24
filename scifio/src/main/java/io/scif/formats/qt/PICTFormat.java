@@ -114,16 +114,10 @@ public class PICTFormat extends AbstractFormat {
 	}
 
 	// -- Format API Methods --
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "PICT";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "pict", "pct" };
 	}

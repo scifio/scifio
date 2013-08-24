@@ -99,27 +99,18 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 
 	// -- Metadata API methods --
 
-	/*
-	 * @see io.scif.AbstractMetadata#isRGB(int)
-	 */
 	@Override
 	public boolean isRGB(final int imageIndex) {
 		if (!isFilled(imageIndex)) return super.isRGB(imageIndex);
 		return getRGBChannelCount(imageIndex) > 1;
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#isIndexed(int)
-	 */
 	@Override
 	public boolean isIndexed(final int imageIndex) {
 		if (!isFilled(imageIndex)) return super.isIndexed(imageIndex);
 		return false;
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#getAxisLength(int, net.imglib2.meta.AxisType)
-	 */
 	@Override
 	public int getAxisLength(final int imageIndex, final AxisType t) {
 		final int length = unwrap().getAxisLength(imageIndex, t);

@@ -83,16 +83,10 @@ public class ICSFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "Image Cytometry Standard";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "ics", "ids" };
 	}
@@ -141,9 +135,6 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.AbstractMetadata#populateImageMetadata()
-		 */
 		public void populateImageMetadata() {
 			// Common metadata population
 			createImageMetadata(1);
@@ -335,9 +326,6 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- HasSource API Methods --
 
-		/*
-		 * @see io.scif.AbstractMetadata#close(boolean)
-		 */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -1236,10 +1224,6 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Parser API Methods --
 
-		/*
-		 * @see io.scif.AbstractParser#parse(
-		 * io.scif.io.RandomAccessInputStream, io.scif.Metadata)
-		 */
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
 			final Metadata meta) throws IOException, FormatException
@@ -1408,9 +1392,6 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
-		/*
-		 * @see io.scif.Reader#openPlane(int, int, Plane, int, int, int, int)
-		 */
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException
@@ -1536,7 +1517,6 @@ public class ICSFormat extends AbstractFormat {
 			return plane;
 		}
 
-		/* @see io.scif.Reader#close(boolean) */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -1553,14 +1533,12 @@ public class ICSFormat extends AbstractFormat {
 			}
 		}
 
-		/* @see io.scif.Reader#setMetadata(Metadata) */
 		@Override
 		public void setMetadata(final Metadata meta) throws IOException {
 			super.setMetadata(meta);
 			gzip = metadata.get("representation compression").equals("gzip");
 		}
 
-		/* @see io.scif.Reader#setSource(RandomAccessInputStream) */
 		@Override
 		public void setSource(final RandomAccessInputStream stream)
 			throws IOException
@@ -1575,7 +1553,6 @@ public class ICSFormat extends AbstractFormat {
 			}
 		}
 
-		/* @see io.scif.Reader#getDomains() */
 		@Override
 		public String[] getDomains() {
 			FormatTools.assertStream(getStream(), true, 0);
@@ -1624,9 +1601,6 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Writer API Methods --
 
-		/*
-		 * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
-		 */
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException
@@ -1692,13 +1666,11 @@ public class ICSFormat extends AbstractFormat {
 			lastPlane = realIndex;
 		}
 
-		/* @see io.scif.Writer#caDoStacks() */
 		@Override
 		public boolean canDoStacks() {
 			return true;
 		}
 
-		/* @see io.scif.Writer#getPixelTypes(String) */
 		@Override
 		public int[] getPixelTypes(final String codec) {
 			return new int[] { FormatTools.INT8, FormatTools.UINT8,
@@ -1706,7 +1678,6 @@ public class ICSFormat extends AbstractFormat {
 				FormatTools.UINT32, FormatTools.FLOAT };
 		}
 
-		/* @see io.scif.Writer#close() */
 		public void close(final int imageIndex) throws IOException {
 			if (lastPlane != getMetadata().getPlaneCount(imageIndex) - 1 &&
 				out != null)
@@ -1725,18 +1696,12 @@ public class ICSFormat extends AbstractFormat {
 			pixels = null;
 		}
 
-		/*
-		 * @see io.scif.Writer#setDest(java.lang.String)
-		 */
 		@Override
 		public void setDest(final String id) throws FormatException, IOException {
 			updateMetadataIds(id);
 			super.setDest(id);
 		}
 
-		/*
-		 * @see io.scif.Writer#setDest(java.lang.String, int)
-		 */
 		@Override
 		public void setDest(final String id, final int imageIndex)
 			throws FormatException, IOException
@@ -1745,9 +1710,6 @@ public class ICSFormat extends AbstractFormat {
 			super.setDest(id, imageIndex);
 		}
 
-		/*
-		 * @see io.scif.Writer#setDest(io.scif.io.RandomAccessOutputStream, int)
-		 */
 		@Override
 		public void
 			setDest(final RandomAccessOutputStream out, final int imageIndex)

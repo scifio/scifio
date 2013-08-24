@@ -54,9 +54,6 @@ public abstract class AbstractHasSCIFIO extends SortablePlugin implements
 
 	// -- HasSCIFIO API Methods --
 
-	/*
-	 * @see io.scif.HasSCIFIO#scifio()
-	 */
 	public SCIFIO scifio() {
 		// Lazily creates a SCIFIO wrapping this instance's context
 		if (scifio == null) scifio = new SCIFIO(getContext());

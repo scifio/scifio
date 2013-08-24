@@ -162,93 +162,54 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	// -- Setters --
 
-	/*
-	 * @see io.scif.ImageMetadata#setThumbSizeX(int)
-	 */
 	public void setThumbSizeX(final int thumbSizeX) {
 		this.thumbSizeX = thumbSizeX;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setThumbSizeY(int)
-	 */
 	public void setThumbSizeY(final int thumbSizeY) {
 		this.thumbSizeY = thumbSizeY;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setPixelType(int)
-	 */
 	public void setPixelType(final int pixelType) {
 		this.pixelType = pixelType;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setBitsPerPixel(int)
-	 */
 	public void setBitsPerPixel(final int bitsPerPixel) {
 		this.bitsPerPixel = bitsPerPixel;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setOrderCertain(boolean)
-	 */
 	public void setOrderCertain(final boolean orderCertain) {
 		this.orderCertain = orderCertain;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setRGB(boolean)
-	 */
 	public void setRGB(final boolean rgb) {
 		this.rgb = rgb;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setLittleEndian(boolean)
-	 */
 	public void setLittleEndian(final boolean littleEndian) {
 		this.littleEndian = littleEndian;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setInterleaved(boolean)
-	 */
 	public void setInterleaved(final boolean interleaved) {
 		this.interleaved = interleaved;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setIndexed(boolean)
-	 */
 	public void setIndexed(final boolean indexed) {
 		this.indexed = indexed;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setFalseColor(boolean)
-	 */
 	public void setFalseColor(final boolean falseColor) {
 		this.falseColor = falseColor;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setMetadataComplete(boolean)
-	 */
 	public void setMetadataComplete(final boolean metadataComplete) {
 		this.metadataComplete = metadataComplete;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setThumbnail(boolean)
-	 */
 	public void setThumbnail(final boolean thumbnail) {
 		this.thumbnail = thumbnail;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setAxes(net.imglib2.meta.AxisType[], int[])
-	 */
 	public void
 		setAxes(final CalibratedAxis[] axisTypes, final int[] axisLengths)
 	{
@@ -256,16 +217,10 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		setAxisLengths(axisLengths);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setAxisTypes(net.imglib2.meta.AxisType[])
-	 */
 	public void setAxisTypes(final CalibratedAxis[] axisTypes) {
 		this.axisTypes = new ArrayList<CalibratedAxis>(Arrays.asList(axisTypes));
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setAxisLengths(int[])
-	 */
 	public void setAxisLengths(final int[] axisLengths) {
 		if (axisLengths.length != axisTypes.size()) throw new IllegalArgumentException(
 			"Tried to set " + axisLengths.length + " axis lengths, but " +
@@ -276,9 +231,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		}
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setAxisLength(net.imglib2.meta.AxisType, int)
-	 */
 	public void setAxisLength(final CalibratedAxis axis, final int length) {
 		setAxisLength(axis.type(), length);
 	}
@@ -288,9 +240,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		else updateLength(axis, length);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setAxisType(int, net.imglib2.meta.AxisType)
-	 */
 	public void setAxisType(final int index, final CalibratedAxis axis) {
 		final int oldIndex = getAxisIndex(axis);
 
@@ -312,25 +261,16 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		setAxisType(index, FormatTools.calibrate(axis));
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setPlaneCount(int)
-	 */
 	public void setPlaneCount(final int planeCount) {
 		this.planeCount = planeCount;
 	}
 
 	// -- Getters --
 
-	/*
-	 * @see io.scif.ImageMetadata#getPlaneCount()
-	 */
 	public int getPlaneCount() {
 		return planeCount;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getSize()
-	 */
 	public long getSize() {
 		long size = 1;
 
@@ -343,9 +283,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return DataTools.safeMultiply64(size, bytesPerPixel);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getThumbSizeX()
-	 */
 	public int getThumbSizeX() {
 		int thumbX = thumbSizeX;
 
@@ -364,9 +301,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return thumbX;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getThumbSizeY()
-	 */
 	public int getThumbSizeY() {
 		int thumbY = thumbSizeY;
 
@@ -393,30 +327,18 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return null;
 	}
 	
-	/*
-	 * @see io.scif.ImageMetadata#getPixelType()
-	 */
 	public int getPixelType() {
 		return pixelType;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getBitsPerPixel()
-	 */
 	public int getBitsPerPixel() {
 		return bitsPerPixel;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxes()
-	 */
 	public CalibratedAxis[] getAxes() {
 		return axisTypes.toArray(new CalibratedAxis[axisTypes.size()]);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxesLengths()
-	 */
 	public int[] getAxesLengths() {
 		final int[] lengths = new int[axisTypes.size()];
 
@@ -427,74 +349,44 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return lengths;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isOrderCertain()
-	 */
 	public boolean isOrderCertain() {
 		return orderCertain;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isRGB()
-	 */
 	public boolean isRGB() {
 		return rgb;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isLittleEndian()
-	 */
 	public boolean isLittleEndian() {
 		return littleEndian;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isInterleaved()
-	 */
 	public boolean isInterleaved() {
 		return interleaved;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isIndexed()
-	 */
 	public boolean isIndexed() {
 		return indexed;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isFalseColor()
-	 */
 	public boolean isFalseColor() {
 		return falseColor;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isMetadataComplete()
-	 */
 	public boolean isMetadataComplete() {
 		return metadataComplete;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isThumbnail()
-	 */
 	public boolean isThumbnail() {
 		return thumbnail;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getEffectiveSizeC()
-	 */
 	public int getEffectiveSizeC() {
 		final int sizeZT = getAxisLength(Axes.Z) * getAxisLength(Axes.TIME);
 		if (sizeZT == 0) return 0;
 		return getPlaneCount() / sizeZT;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getRGBChannelCount()
-	 */
 	public int getRGBChannelCount() {
 		if (!isRGB()) return 1;
 
@@ -503,16 +395,10 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return getAxisLength(Axes.CHANNEL) / effC;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxisType(int)
-	 */
 	public CalibratedAxis getAxisType(final int axisIndex) {
 		return axisTypes.get(axisIndex);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxisLength(int)
-	 */
 	public int getAxisLength(final int axisIndex) {
 		if (axisIndex < 0 || axisIndex >= axisTypes.size()) throw new IllegalArgumentException(
 			"Invalid axisIndex: " + axisIndex + ". " + axisTypes.size() +
@@ -525,9 +411,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return getAxisLength(t.type());
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxisLength(net.imglib2.meta.AxisType)
-	 */
 	public int getAxisLength(final AxisType t) {
 		if (axisLengths == null || !axisLengths.containsKey(t)) return 0;
 
@@ -538,9 +421,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return getAxisIndex(type.type());
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxisIndex(net.imglib2.meta.AxisType)
-	 */
 	public int getAxisIndex(final AxisType type) {
 		if (axisTypes == null) return -1;
 
@@ -553,16 +433,10 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return index;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#addAxis(net.imglib2.meta.AxisType)
-	 */
 	public void addAxis(final CalibratedAxis type) {
 		addAxis(type, 0);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#addAxis(net.imglib2.meta.AxisType, int)
-	 */
 	public void addAxis(final CalibratedAxis type, final int value) {
 		if (axisTypes == null) axisTypes = new ArrayList<CalibratedAxis>();
 
@@ -576,9 +450,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		addAxis(FormatTools.calibrate(type), value);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#copy(io.scif.ImageMetadata)
-	 */
 	public void copy(final ImageMetadata toCopy) {
 		table = new DefaultMetaTable(toCopy.getTable());
 
@@ -601,17 +472,11 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	// -- HasTable API Methods --
 
-	/*
-	 * @see io.scif.HasMetaTable#getTable()
-	 */
 	public MetaTable getTable() {
 		if (table == null) table = new DefaultMetaTable();
 		return table;
 	}
 
-	/*
-	 * @see io.scif.HasMetaTable#setTable(io.scif.MetaTable)
-	 */
 	public void setTable(final MetaTable table) {
 		this.table = table;
 	}

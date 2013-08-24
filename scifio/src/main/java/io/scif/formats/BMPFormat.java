@@ -85,16 +85,10 @@ public class BMPFormat extends AbstractFormat {
 
 	// -- Format API MEthods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "Windows Bitmap";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "bmp" };
 	}
@@ -153,9 +147,6 @@ public class BMPFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
 		public void populateImageMetadata() {
 			log().info("Populating metadata");
 
@@ -202,9 +193,6 @@ public class BMPFormat extends AbstractFormat {
 
 		// -- HasSource API Methods --
 
-		/*
-		 * @see io.scif.AbstractMetadata#close()
-		 */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -219,9 +207,6 @@ public class BMPFormat extends AbstractFormat {
 
 		// -- HasColorTable API Methods --
 
-		/*
-		 * @see io.scif.HasColorTable#getColorTable()
-		 */
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			return palette;
@@ -366,9 +351,6 @@ public class BMPFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
-		/*
-		 * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

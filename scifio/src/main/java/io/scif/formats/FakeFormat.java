@@ -176,16 +176,10 @@ public class FakeFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "Simulated data";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "fake" };
 	}
@@ -778,14 +772,12 @@ public class FakeFormat extends AbstractFormat {
 
 		// -- IRandomAccess API Methods --
 
-		/* @see IRandomAccess#read(byte[]) */
 		@Override
 		public int read(final byte[] b) throws IOException {
 			// no-op
 			return 0;
 		}
 
-		/* @see IRandomAccess#read(byte[], int, int) */
 		@Override
 		public int read(final byte[] b, final int off, final int len)
 			throws IOException
@@ -794,14 +786,12 @@ public class FakeFormat extends AbstractFormat {
 			return 0;
 		}
 
-		/* @see IRandomAccess#read(ByteBuffer) */
 		@Override
 		public int read(final ByteBuffer buffer) throws IOException {
 			// no-op
 			return 0;
 		}
 
-		/* @see IRandomAccess#read(ByteBuffer, int, int) */
 		@Override
 		public int read(final ByteBuffer buffer, final int off, final int len)
 			throws IOException
@@ -809,19 +799,16 @@ public class FakeFormat extends AbstractFormat {
 			return 0;
 		}
 
-		/* @see IRandomAccess#seek(long) */
 		@Override
 		public void seek(final long pos) throws IOException {
 			// no-op
 		}
 
-		/* @see IRandomAccess.write(ByteBuffer) */
 		@Override
 		public void write(final ByteBuffer buf) throws IOException {
 			// no-op
 		}
 
-		/* @see IRandomAccess.write(ByteBuffer, int, int) */
 		@Override
 		public void write(final ByteBuffer buf, final int off, final int len)
 			throws IOException
@@ -831,34 +818,29 @@ public class FakeFormat extends AbstractFormat {
 
 		// -- DataInput API Methods --
 
-		/* @see java.io.DataInput#readChar() */
 		@Override
 		public char readChar() throws IOException {
 			// no-op
 			return 0;
 		}
 
-		/* @see java.io.DataInput#readDouble() */
 		@Override
 		public double readDouble() throws IOException {
 			// no-op
 			return 0.0;
 		}
 
-		/* @see java.io.DataInput#readFloat() */
 		@Override
 		public float readFloat() throws IOException {
 			// no-op
 			return 0f;
 		}
 
-		/* @see java.io.DataInput#readFully(byte[]) */
 		@Override
 		public void readFully(final byte[] b) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataInput#readFully(byte[], int, int) */
 		@Override
 		public void readFully(final byte[] b, final int off, final int len)
 			throws IOException
@@ -866,55 +848,47 @@ public class FakeFormat extends AbstractFormat {
 			// no-op
 		}
 
-		/* @see java.io.DataInput#readInt() */
 		@Override
 		public int readInt() throws IOException {
 			// no-op
 			return 0;
 		}
 
-		/* @see java.io.DataInput#readLine() */
 		@Override
 		public String readLine() throws IOException {
 			throw new IOException("Unimplemented");
 		}
 
-		/* @see java.io.DataInput#readLong() */
 		@Override
 		public long readLong() throws IOException {
 			// no-op
 			return 0l;
 		}
 
-		/* @see java.io.DataInput#readShort() */
 		@Override
 		public short readShort() throws IOException {
 			// no-op
 			return 0;
 		}
 
-		/* @see java.io.DataInput#readUnsignedByte() */
 		@Override
 		public int readUnsignedByte() throws IOException {
 			// no-op
 			return 0;
 		}
 
-		/* @see java.io.DataInput#readUnsignedShort() */
 		@Override
 		public int readUnsignedShort() throws IOException {
 			// no-op
 			return 0;
 		}
 
-		/* @see java.io.DataInput#readUTF() */
 		@Override
 		public String readUTF() throws IOException {
 			// no-op
 			return "";
 		}
 
-		/* @see java.io.DataInput#skipBytes(int) */
 		@Override
 		public int skipBytes(final int n) throws IOException {
 			// no-op
@@ -923,13 +897,11 @@ public class FakeFormat extends AbstractFormat {
 
 		// -- DataOutput API methods --
 
-		/* @see java.io.DataOutput#write(byte[]) */
 		@Override
 		public void write(final byte[] b) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#write(byte[], int, int) */
 		@Override
 		public void write(final byte[] b, final int off, final int len)
 			throws IOException
@@ -937,73 +909,61 @@ public class FakeFormat extends AbstractFormat {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#write(int) */
 		@Override
 		public void write(final int b) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeBoolean(boolean) */
 		@Override
 		public void writeBoolean(final boolean v) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeByte(int) */
 		@Override
 		public void writeByte(final int v) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeBytes(String) */
 		@Override
 		public void writeBytes(final String s) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeChar(int) */
 		@Override
 		public void writeChar(final int v) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeChars(String) */
 		@Override
 		public void writeChars(final String s) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeDouble(double) */
 		@Override
 		public void writeDouble(final double v) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeFloat(float) */
 		@Override
 		public void writeFloat(final float v) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeInt(int) */
 		@Override
 		public void writeInt(final int v) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeLong(long) */
 		@Override
 		public void writeLong(final long v) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeShort(int) */
 		@Override
 		public void writeShort(final int v) throws IOException {
 			// no-op
 		}
 
-		/* @see java.io.DataOutput#writeUTF(String) */
 		@Override
 		public void writeUTF(final String str) throws IOException {
 			// no-op

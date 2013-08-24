@@ -60,84 +60,70 @@ public class UnsignedIntBuffer extends DataBuffer {
 		bankData = dataArray;
 	}
 
-	/* @see java.awt.image.DataBuffer.getData() */
 	public int[] getData() {
 		return bankData[0];
 	}
 
-	/* @see java.awt.image.DataBuffer#getData(int) */
 	public int[] getData(final int bank) {
 		return bankData[bank];
 	}
 
-	/* @see java.awt.image.DataBuffer#getElem(int) */
 	@Override
 	public int getElem(final int i) {
 		return getElem(0, i);
 	}
 
-	/* @see java.awt.image.DataBuffer#getElem(int, int) */
 	@Override
 	public int getElem(final int bank, final int i) {
 		final int value = bankData[bank][i + getOffsets()[bank]];
 		return (int) (value & 0xffffffffL);
 	}
 
-	/* @see java.awt.image.DataBuffer#getElemFloat(int) */
 	@Override
 	public float getElemFloat(final int i) {
 		return getElemFloat(0, i);
 	}
 
-	/* @see java.awt.image.DataBuffer#getElemFloat(int, int) */
 	@Override
 	public float getElemFloat(final int bank, final int i) {
 		return (getElem(bank, i) & 0xffffffffL);
 	}
 
-	/* @see java.awt.image.DataBuffer#getElemDouble(int) */
 	@Override
 	public double getElemDouble(final int i) {
 		return getElemDouble(0, i);
 	}
 
-	/* @see java.awt.image.DataBuffer#getElemDouble(int, int) */
 	@Override
 	public double getElemDouble(final int bank, final int i) {
 		return (getElem(bank, i) & 0xffffffffL);
 	}
 
-	/* @see java.awt.image.DataBuffer#setElem(int, int) */
 	@Override
 	public void setElem(final int i, final int val) {
 		setElem(0, i, val);
 	}
 
-	/* @see java.awt.image.DataBuffer#setElem(int, int, int) */
 	@Override
 	public void setElem(final int bank, final int i, final int val) {
 		bankData[bank][i + getOffsets()[bank]] = val;
 	}
 
-	/* @see java.awt.image.DataBuffer#setElemFloat(int, float) */
 	@Override
 	public void setElemFloat(final int i, final float val) {
 		setElemFloat(0, i, val);
 	}
 
-	/* @see java.awt.image.DataBuffer#setElemFloat(int, int, float) */
 	@Override
 	public void setElemFloat(final int bank, final int i, final float val) {
 		bankData[bank][i + getOffsets()[bank]] = (int) val;
 	}
 
-	/* @see java.awt.image.DataBuffer#setElemDouble(int, double) */
 	@Override
 	public void setElemDouble(final int i, final double val) {
 		setElemDouble(0, i, val);
 	}
 
-	/* @see java.awt.image.DataBuffer#setElemDouble(int, int, double) */
 	@Override
 	public void setElemDouble(final int bank, final int i, final double val) {
 		bankData[bank][i + getOffsets()[bank]] = (int) val;

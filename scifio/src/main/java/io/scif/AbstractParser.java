@@ -82,23 +82,18 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	// -- Parser API Methods --
 
-	/* @see Parser#parse(String fileName) */
 	public M parse(final String fileName) throws IOException, FormatException {
 		@SuppressWarnings("unchecked")
 		final M meta = (M) getFormat().createMetadata();
 		return parse(fileName, meta);
 	}
 
-	/*
-	 * @see io.scif.TypedParser#parse(java.io.File)
-	 */
 	public M parse(final File file) throws IOException, FormatException {
 		@SuppressWarnings("unchecked")
 		final M meta = (M) getFormat().createMetadata();
 		return parse(file, meta);
 	}
 
-	/* @see Parser#parse(RandomAccessInputStream stream) */
 	public M parse(final RandomAccessInputStream stream) throws IOException,
 		FormatException
 	{
@@ -107,58 +102,37 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return parse(stream, meta);
 	}
 
-	/*
-	 * @see io.scif.Parser#parse(java.lang.String, io.scif.Metadata)
-	 */
 	public M parse(final String fileName, final Metadata meta)
 		throws IOException, FormatException
 	{
 		return parse(fileName, SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
-	/*
-	 * @see io.scif.Parser#parse(java.io.File, io.scif.Metadata)
-	 */
 	public M parse(final File file, final Metadata meta) throws IOException,
 		FormatException
 	{
 		return parse(file, SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
-	/*
-	 * @see io.scif.Parser#parse(io.scif.io.RandomAccessInputStream, io.scif.Metadata)
-	 */
 	public M parse(final RandomAccessInputStream stream, final Metadata meta)
 		throws IOException, FormatException
 	{
 		return parse(stream, SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
-	/*
-	 * @see io.scif.Parser#setOriginalMetadataPopulated(boolean)
-	 */
 	public void setOriginalMetadataPopulated(final boolean populate) {
 		FormatTools.assertStream(in, false, 1);
 		saveOriginalMetadata = populate;
 	}
 
-	/*
-	 * @see io.scif.Parser#isOriginalMetadataPopulated()
-	 */
 	public boolean isOriginalMetadataPopulated() {
 		return saveOriginalMetadata;
 	}
 
-	/*
-	 * @see io.scif.Parser#getUsedFiles()
-	 */
 	public String[] getUsedFiles() {
 		return getUsedFiles(false);
 	}
 
-	/*
-	 * @see io.scif.Parser#getUsedFiles(boolean)
-	 */
 	public String[] getUsedFiles(final boolean noPixels) {
 		final Vector<String> files = new Vector<String>();
 		for (int i = 0; i < metadata.getImageCount(); i++) {
@@ -174,49 +148,31 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return files.toArray(new String[files.size()]);
 	}
 
-	/*
-	 * @see io.scif.Parser#setMetadataFiltered(boolean)
-	 */
 	public void setMetadataFiltered(final boolean filter) {
 		FormatTools.assertStream(in, false, 1);
 		filterMetadata = filter;
 	}
 
-	/*
-	 * @see io.scif.Parser#isMetadataFiltered()
-	 */
 	public boolean isMetadataFiltered() {
 		return filterMetadata;
 	}
 
-	/*
-	 * @see io.scif.Parser#getImageUsedFiles(int)
-	 */
 	public String[] getImageUsedFiles(final int imageIndex) {
 		return getImageUsedFiles(imageIndex, false);
 	}
 
-	/*
-	 * @see io.scif.Parser#getImageUsedFiles(int, boolean)
-	 */
 	public String[]
 		getImageUsedFiles(final int imageIndex, final boolean noPixels)
 	{
 		return noPixels ? null : new String[] { in.getFileName() };
 	}
 
-	/*
-	 * @see io.scif.Parser#getAdvancedUsedFiles(boolean)
-	 */
 	public FileInfo[] getAdvancedUsedFiles(final boolean noPixels) {
 		final String[] files = getUsedFiles(noPixels);
 		if (files == null) return null;
 		return getFileInfo(files);
 	}
 
-	/*
-	 * @see io.scif.Parser#getAdvancedImageUsedFiles(int, boolean)
-	 */
 	public FileInfo[] getAdvancedImageUsedFiles(final int imageIndex,
 		final boolean noPixels)
 	{
@@ -225,9 +181,6 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return getFileInfo(files);
 	}
 
-	/*
-	 * @see io.scif.Parser#getSupportedMetadataLevels()
-	 */
 	public Set<MetadataLevel> getSupportedMetadataLevels() {
 		final Set<MetadataLevel> supportedLevels = new HashSet<MetadataLevel>();
 		supportedLevels.add(MetadataLevel.ALL);
@@ -236,23 +189,14 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return supportedLevels;
 	}
 
-	/*
-	 * @see io.scif.Parser#getMetadataOptions()
-	 */
 	public MetadataOptions getMetadataOptions() {
 		return metadataOptions;
 	}
 
-	/*
-	 * @see io.scif.Parser#setMetadataOptions(io.scif.MetadataOptions)
-	 */
 	public void setMetadataOptions(final MetadataOptions options) {
 		metadataOptions = options;
 	}
 
-	/*
-	 * @see io.scif.Parser#addMeta(java.lang.String, java.lang.Object, java.util.Hashtable)
-	 */
 	public void addMeta(String key, Object value, final MetaTable metaTable) {
 		if (key == null || value == null /* || TODO !isMetadataCollected() */) {
 			return;
@@ -307,7 +251,6 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	// -- TypedParser API Methods --
 
-	/* @see TypedParser#parse(String, M) */
 	public M parse(final String fileName, final M meta) throws IOException,
 		FormatException
 	{
@@ -329,14 +272,12 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return parse(stream, meta);
 	}
 
-	/* @see TypedParser#parse(File, M) */
 	public M parse(final File file, final M meta) throws IOException,
 		FormatException
 	{
 		return parse(file.getPath(), meta);
 	}
 
-	/* @see TypedParser#parse(RandomAccessInputStream, M) */
 	public M parse(final RandomAccessInputStream stream, final M meta)
 		throws IOException, FormatException
 	{
@@ -368,9 +309,6 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	// -- HasSource API Methods --
 
-	/*
-	 * @see io.scif.Parser#close(boolean)
-	 */
 	public void close(final boolean fileOnly) throws IOException {
 		if (in != null) in.close();
 		if (metadata != null) metadata.close(fileOnly);

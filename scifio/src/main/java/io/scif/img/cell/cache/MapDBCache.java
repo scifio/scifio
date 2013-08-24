@@ -91,17 +91,11 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		}
 	}
 
-	/*
-	 * @see io.scif.img.cell.cache.CacheService#clearAllCaches()
-	 */
 	public void clearAllCaches() {
 		for (final String cache : caches)
 			clearCache(cache);
 	}
 
-	/*
-	 * @see io.scif.io.img.cell.cache.CacheService#dropCache(java.lang.String)
-	 */
 	public void dropCache(final String cacheId) {
 		if (caches.contains(cacheId)) {
 			db.getHashMap(cacheId).close();
@@ -109,16 +103,10 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		}
 	}
 
-	/*
-	 * @see io.scif.io.img.cell.cache.CacheService#addCache(java.lang.String)
-	 */
 	public void addCache(final String cacheId) {
 		caches.add(cacheId);
 	}
 
-	/*
-	 * @see io.scifio.io.img.cell.CacheService#cache(java.lang.String, int, java.io.Serializable)
-	 */
 	public CacheResult cache(final String cacheId, final int index,
 		final SCIFIOCell<?> object)
 	{
@@ -158,9 +146,6 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		return CacheResult.SUCCESS;
 	}
 
-	/*
-	 * @see io.scifio.io.img.cell.CacheService#get(java.lang.String, int)
-	 */
 	public SCIFIOCell<?> retrieve(final String cacheId, final int index) {
 
 		final SCIFIOCell<?> cell = getCell(cacheId, index);
@@ -173,9 +158,6 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		return cell;
 	}
 
-	/*
-	 * @see io.scifio.io.img.cell.CacheService#get(java.lang.String, int)
-	 */
 	public SCIFIOCell<?> retrieveNoRecache(final String cacheId, final int index)
 	{
 

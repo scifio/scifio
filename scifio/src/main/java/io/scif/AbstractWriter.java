@@ -101,7 +101,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 
 	// -- Writer API Methods --
 
-	/* @see io.scif.Writer#savePlane(int, int, Object) */
 	public void savePlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
@@ -110,43 +109,34 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		savePlane(imageIndex, planeIndex, plane, 0, 0, width, height);
 	}
 
-	/* @see io.scif.Writer#canDoStacks() */
 	public boolean canDoStacks() {
 		return false;
 	}
 
-	/*
-	 * @see io.scif.Writer#setMetadata(io.scif.Metadata)
-	 */
 	public void setMetadata(final Metadata meta) throws FormatException {
 		setMetadata(SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
-	/* @see io.scif.Writer#getMetadata() */
 	public M getMetadata() {
 		return metadata;
 	}
 
-	/* @see io.scif.Writer#setStream(String) */
 	public void setDest(final String fileName) throws FormatException,
 		IOException
 	{
 		setDest(fileName, 0);
 	}
 
-	/* @see io.scif.Writer#setStream(File) */
 	public void setDest(final File file) throws FormatException, IOException {
 		setDest(file.getName(), 0);
 	}
 
-	/* @see io.scif.Writer#setStream(RandomAccessOutputStream) */
 	public void setDest(final RandomAccessOutputStream out)
 		throws FormatException, IOException
 	{
 		setDest(out, 0);
 	}
 
-	/* @see io.scif.Writer#setStream(String, int) */
 	public void setDest(final String fileName, final int imageIndex)
 		throws FormatException, IOException
 	{
@@ -154,7 +144,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		setDest(new RandomAccessOutputStream(getContext(), fileName));
 	}
 
-	/* @see io.scif.Writer#setStream(File, int) */
 
 	public void setDest(final File file, final int imageIndex)
 		throws FormatException, IOException
@@ -162,7 +151,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		setDest(file.getName());
 	}
 
-	/* @see io.scif.Writer#setStream(RandomAccessOutputStream, int) */
 	public void setDest(final RandomAccessOutputStream out, final int imageIndex)
 		throws FormatException, IOException
 	{
@@ -176,49 +164,40 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		initialize(imageIndex);
 	}
 
-	/* @see io.scif.Writer#getStream() */
 	public RandomAccessOutputStream getStream() {
 		return out;
 	}
 
-	/* @see io.scif.Writer#setColorModel(ColorModel) */
 	public void setColorModel(final ColorModel cm) {
 		this.cm = cm;
 	}
 
-	/* @see io.scif.Writer#getColorModel() */
 	public ColorModel getColorModel() {
 		return cm;
 	}
 
-	/* @see io.scif.Writer#setFramesPerSecond(int) */
 	public void setFramesPerSecond(final int rate) {
 		fps = rate;
 	}
 
-	/* @see io.scif.Writer#getFramesPerSecond() */
 	public int getFramesPerSecond() {
 		return fps;
 	}
 
-	/* @see io.scif.Writer#getCompressionTypes() */
 	public String[] getCompressionTypes() {
 		return compressionTypes;
 	}
 
-	/* @see io.scif.Writer#getPixelTypes() */
 	public int[] getPixelTypes() {
 		return getPixelTypes(getCompression());
 	}
 
-	/* @see io.scif.Writer#getPixelTypes(String) */
 	public int[] getPixelTypes(final String codec) {
 		return new int[] { FormatTools.INT8, FormatTools.UINT8, FormatTools.INT16,
 			FormatTools.UINT16, FormatTools.INT32, FormatTools.UINT32,
 			FormatTools.FLOAT };
 	}
 
-	/* @see io.scif.Writer#isSupportedType(int) */
 	public boolean isSupportedType(final int type) {
 		final int[] types = getPixelTypes();
 		for (int i = 0; i < types.length; i++) {
@@ -227,7 +206,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		return false;
 	}
 
-	/* @see io.scif.Writer#setCompression(String) */
 	public void setCompression(final String compress) throws FormatException {
 		for (int i = 0; i < compressionTypes.length; i++) {
 			if (compressionTypes[i].equals(compress)) {
@@ -238,33 +216,26 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		throw new FormatException("Invalid compression type: " + compress);
 	}
 
-	/* @see io.scif.Writer#getCompression() */
 	public String getCompression() {
 		return compression;
 	}
 
-	/* @see io.scif.Writer#setCodecOptions(CodecOptions) */
 	public void setCodecOptions(final CodecOptions options) {
 		this.options = options;
 	}
 
-	/* @see io.scif.Writer#changeOutputFile(String) */
 	public void changeOutputFile(final String id) throws FormatException,
 		IOException
 	{
 		setDest(id);
 	}
 
-	/* @see io.scif.Writer#setWriterSequentially(boolean) */
 	public void setWriteSequentially(final boolean sequential) {
 		this.sequential = sequential;
 	}
 
 	// -- TypedWriter API Methods --
 
-	/*
-	 * @see io.scif.TypedWriter#setMetadata(io.scif.TypedMetadata)
-	 */
 	public void setMetadata(final M meta) throws FormatException {
 		if (metadata != null && metadata != meta) {
 			try {
@@ -289,9 +260,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 
 	// -- HasSource API Methods --
 
-	/*
-	 * @see io.scif.HasSource#close(boolean)
-	 */
 	public void close(final boolean fileOnly) throws IOException {
 		if (out != null) out.close();
 		if (metadata != null) metadata.close(fileOnly);

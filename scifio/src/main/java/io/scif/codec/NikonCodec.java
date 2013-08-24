@@ -130,7 +130,6 @@ public class NikonCodec extends AbstractCodec {
 		2, 2, 3, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 8, 5, 9, 4, 10, 3, 11, 12, 2,
 		0, 1, 13, 14 };
 
-	/* @see Codec#compress(byte[], CodecOptions) */
 	public byte[] compress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{

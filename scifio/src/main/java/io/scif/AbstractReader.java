@@ -88,9 +88,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	// TODO Merge common Reader and Writer API methods
 
-	/*
-	 * @see io.scif.Reader#openPlane(int, int)
-	 */
 	public P openPlane(final int imageIndex, final int planeNumber)
 		throws FormatException, IOException
 	{
@@ -98,9 +95,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			imageIndex, Axes.X), metadata.getAxisLength(imageIndex, Axes.Y));
 	}
 
-	/*
-	 * @see io.scif.Reader#openPlane(int, int, int, int, int, int)
-	 */
 	public P openPlane(final int imageIndex, final int planeIndex, final int x,
 		final int y, final int w, final int h) throws FormatException, IOException
 	{
@@ -123,18 +117,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return openPlane(imageIndex, planeIndex, plane, x, y, w, h);
 	}
 
-	/*
-	 * @see io.scif.Reader#openPlane(int, int, io.scif.Plane)
-	 */
 	public P openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane));
 	}
 
-	/*
-	 * @see io.scif.Reader#openPlane(int, int, io.scif.Plane, int, int, int, int)
-	 */
 	public P openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane, final int x, final int y, final int w, final int h)
 		throws FormatException, IOException
@@ -143,45 +131,27 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			x, y, w, h);
 	}
 
-	/*
-	 * @see io.scif.Reader#getCurrentFile()
-	 */
 	public String getCurrentFile() {
 		return getStream() == null ? null : getStream().getFileName();
 	}
 
-	/*
-	 * @see io.scif.Reader#getDomains()
-	 */
 	public String[] getDomains() {
 		return domains;
 	}
 
-	/*
-	 * @see io.scif.Reader#getStream()
-	 */
 	public RandomAccessInputStream getStream() {
 		return metadata == null ? null : metadata.getSource();
 	}
 
-	/*
-	 * @see io.scif.Reader#getUnderlyingReaders()
-	 */
 	public Reader[] getUnderlyingReaders() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/*
-	 * @see io.scif.Reader#getOptimalTileWidth(int)
-	 */
 	public int getOptimalTileWidth(final int imageIndex) {
 		return metadata.getAxisLength(imageIndex, Axes.X);
 	}
 
-	/*
-	 * @see io.scif.Reader#getOptimalTileHeight(int)
-	 */
 	public int getOptimalTileHeight(final int imageIndex) {
 		final int bpp =
 			FormatTools.getBytesPerPixel(metadata.getPixelType(imageIndex));
@@ -193,45 +163,27 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return Math.min(maxHeight, metadata.getAxisLength(imageIndex, Axes.Y));
 	}
 
-	/*
-	 * @see io.scif.Reader#setMetadata(io.scif.Metadata)
-	 */
 	public void setMetadata(final io.scif.Metadata meta) throws IOException {
 		setMetadata(SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
-	/*
-	 * @see io.scif.Reader#getMetadata()
-	 */
 	public M getMetadata() {
 		return metadata;
 	}
 
-	/*
-	 * @see io.scif.Reader#setNormalized(boolean)
-	 */
 	public void setNormalized(final boolean normalize) {
 		normalizeData = normalize;
 	}
 
-	/*
-	 * @see io.scif.Reader#isNormalized()
-	 */
 	public boolean isNormalized() {
 		return normalizeData;
 	}
 
-	/*
-	 * @see io.scif.Reader#hasCompanionFiles()
-	 */
 	@Override
 	public boolean hasCompanionFiles() {
 		return hasCompanionFiles;
 	}
 
-	/*
-	 * @see io.scif.Reader#setSource(java.lang.String)
-	 */
 	public void setSource(final String fileName) throws IOException {
 
 		if (getStream() != null && getStream().getFileName() != null &&
@@ -253,16 +205,10 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		setSource(stream);
 	}
 
-	/*
-	 * @see io.scif.Reader#setSource(java.io.File)
-	 */
 	public void setSource(final File file) throws IOException {
 		setSource(file.getName());
 	}
 
-	/*
-	 * @see io.scif.Reader#setSource(io.scif.io.RandomAccessInputStream)
-	 */
 	public void setSource(final RandomAccessInputStream stream)
 		throws IOException
 	{
@@ -282,9 +228,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		}
 	}
 
-	/*
-	 * @see io.scif.Reader#readPlane(io.scif.io.RandomAccessInputStream, int, int, int, int, int, io.scif.Plane)
-	 */
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final Plane plane)
 		throws IOException
@@ -293,9 +236,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			.<P> castToTypedPlane(plane));
 	}
 
-	/*
-	 * @see io.scif.Reader#readPlane(io.scif.io.RandomAccessInputStream, int, int, int, int, int, int, io.scif.Plane)
-	 */
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final int scanlinePad,
 		final Plane plane) throws IOException
@@ -304,23 +244,14 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			.<P> castToTypedPlane(plane));
 	}
 
-	/*
-	 * @see io.scif.Reader#getPlaneCount(int)
-	 */
 	public int getPlaneCount(final int imageIndex) {
 		return metadata.getPlaneCount(imageIndex);
 	}
 
-	/*
-	 * @see io.scif.Reader#getImageCount()
-	 */
 	public int getImageCount() {
 		return metadata.getImageCount();
 	}
 
-	/*
-	 * @see io.scif.Reader#castToTypedPlane(io.scif.Plane)
-	 */
 	public <T extends Plane> T castToTypedPlane(final Plane plane) {
 		if (!planeClass.isAssignableFrom(plane.getClass())) {
 			throw new IllegalArgumentException("Incompatible plane types. " +
@@ -334,9 +265,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	// -- TypedReader API --
 
-	/*
-	 * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane)
-	 */
 	public P openPlane(final int imageIndex, final int planeIndex, final P plane)
 		throws FormatException, IOException
 	{
@@ -345,9 +273,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			Axes.Y));
 	}
 
-	/*
-	 * @see io.scif.TypedReader#setMetadata(io.scif.TypedMetadata)
-	 */
 	public void setMetadata(final M meta) throws IOException {
 		if (metadata != null && metadata != meta) {
 			close();
@@ -356,9 +281,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		if (metadata == null) metadata = meta;
 	}
 
-	/*
-	 * @see io.scif.TypedReader#readPlane(io.scif.io.RandomAccessInputStream, int, int, int, int, int, io.scif.DataPlane)
-	 */
 	public P readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final P plane)
 		throws IOException
@@ -366,9 +288,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return readPlane(s, imageIndex, x, y, w, h, 0, plane);
 	}
 
-	/*
-	 * @see io.scif.TypedReader#readPlane(io.scif.io.RandomAccessInputStream, int, int, int, int, int, int, io.scif.DataPlane)
-	 */
 	public P readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final int scanlinePad,
 		final P plane) throws IOException
@@ -440,18 +359,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return plane;
 	}
 
-	/*
-	 * @see io.scif.TypedReader#getPlaneClass()
-	 */
 	public Class<P> getPlaneClass() {
 		return planeClass;
 	}
 
 	// -- HasSource Format API --
 
-	/*
-	 * @see io.scif.Reader#close(boolean)
-	 */
 	public void close(final boolean fileOnly) throws IOException {
 		if (metadata != null) metadata.close(fileOnly);
 

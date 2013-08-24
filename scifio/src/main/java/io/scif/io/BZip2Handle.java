@@ -90,7 +90,6 @@ public class BZip2Handle extends StreamHandle {
 
 	// -- IStreamAccess API methods --
 
-	/* @see IStreamAccess#isConstructable(String) */
 	public boolean isConstructable(final String file) throws IOException {
 		if (!file.toLowerCase().endsWith(".bz2")) return false;
 
@@ -101,7 +100,6 @@ public class BZip2Handle extends StreamHandle {
 		return new String(b, Constants.ENCODING).equals("BZ");
 	}
 
-	/* @see IStreamAccess#resetStream() */
 	public void resetStream() throws IOException {
 		final BufferedInputStream bis =
 			new BufferedInputStream(new FileInputStream(getFile()),
@@ -115,7 +113,6 @@ public class BZip2Handle extends StreamHandle {
 
 	// -- IStreamAccess API methods --
 
-	/* @see IStreamAccess#setFile(String) */
 	@Override
 	public void setFile(final String file) throws IOException {
 		super.setFile(file);

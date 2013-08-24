@@ -64,30 +64,18 @@ public class DefaultFilePatternService extends AbstractService implements
 	FilePatternService
 {
 
-	/*
-	 * @see io.scif.services.FilePatternService#findPattern(java.lang.String)
-	 */
 	public String findPattern(final String path) {
 		return findPattern(new Location(getContext(), path));
 	}
 
-	/*
-	 * @see io.scif.services.FilePatternService#findPattern(io.scif.io.Location)
-	 */
 	public String findPattern(final Location file) {
 		return findPattern(file.getName(), file.getAbsoluteFile().getParent());
 	}
 
-	/*
-	 * @see io.scif.services.FilePatternService#findPattern(java.io.File)
-	 */
 	public String findPattern(final File file) {
 		return findPattern(file.getName(), file.getAbsoluteFile().getParent());
 	}
 
-	/*
-	 * @see io.scif.services.FilePatternService#findPattern(java.lang.String, java.lang.String)
-	 */
 	public String findPattern(final String name, String dir) {
 		if (dir == null) dir = ""; // current directory
 		else if (!dir.equals("") && !dir.endsWith(File.separator)) {
@@ -106,20 +94,12 @@ public class DefaultFilePatternService extends AbstractService implements
 		return findPattern(name, dir, nameList);
 	}
 
-	/*
-	 * @see io.scif.services.FilePatternService#
-	 *   findPattern(java.lang.String, java.lang.String, java.lang.String[])
-	 */
 	public String findPattern(final String name, final String dir,
 		final String[] nameList)
 	{
 		return findPattern(name, dir, nameList, null);
 	}
 
-	/*
-	 * @see io.scif.services.FilePatternService#
-	 *   findPattern(java.lang.String, java.lang.String, java.lang.String[], int[])
-	 */
 	public String findPattern(final String name, String dir,
 		final String[] nameList, int[] excludeAxes)
 	{
@@ -261,9 +241,6 @@ public class DefaultFilePatternService extends AbstractService implements
 		return sb.toString();
 	}
 
-	/*
-	 * @see io.scif.services.FilePatternService#findPattern(java.lang.String[])
-	 */
 	public String findPattern(final String[] names) {
 		final String dir =
 			names[0].substring(0, names[0].lastIndexOf(File.separator) + 1);
@@ -284,9 +261,6 @@ public class DefaultFilePatternService extends AbstractService implements
 		return pattern.toString();
 	}
 
-	/*
-	 * @see io.scif.services.FilePatternService#findImagePatterns(java.lang.String)
-	 */
 	public String[] findImagePatterns(final String base) {
 		final Location file = new Location(getContext(), base).getAbsoluteFile();
 		final Location parent = file.getParentFile();
@@ -294,10 +268,6 @@ public class DefaultFilePatternService extends AbstractService implements
 		return findImagePatterns(base, parent.getAbsolutePath(), list);
 	}
 
-	/*
-	 * @see io.scif.services.FilePatternService#
-	 * findImagePatterns(java.lang.String, java.lang.String, java.lang.String[])
-	 */
 	public String[] findImagePatterns(final String base, final String dir,
 		final String[] nameList)
 	{

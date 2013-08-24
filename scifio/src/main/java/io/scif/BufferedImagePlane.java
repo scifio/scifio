@@ -111,9 +111,6 @@ public class BufferedImagePlane extends
 		return t;
 	}
 
-	/*
-	 * @see io.scif.AbstractPlane#populate(io.scif.ImageMetadata, int, int, int, int)
-	 */
 	@Override
 	public BufferedImagePlane populate(final ImageMetadata meta,
 		final BufferedImage data, final int xOffset, final int yOffset,

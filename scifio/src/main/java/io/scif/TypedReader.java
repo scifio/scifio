@@ -61,15 +61,9 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	extends Reader
 {
 
-	/*
-	 * @see io.scif.Reader#openPlane(int, int)
-	 */
 	P openPlane(int imageIndex, int planeIndex) throws FormatException,
 		IOException;
 
-	/*
-	 * @see io.scif.Reader#openPlane(int, int, int, int, int, int)
-	 */
 	P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
 		throws FormatException, IOException;
 
@@ -93,9 +87,6 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	P openPlane(int imageIndex, int planeIndex, P plane, int x, int y, int w,
 		int h) throws FormatException, IOException;
 
-	/*
-	 * @see io.scif.Reader#openThumbPlane(int, int)
-	 */
 	P openThumbPlane(int imageIndex, int planeIndex) throws FormatException,
 		IOException;
 
@@ -108,9 +99,6 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 */
 	void setMetadata(M meta) throws IOException;
 
-	/*
-	 * @see io.scif.Reader#getMetadata()
-	 */
 	M getMetadata();
 
 	/**
@@ -135,9 +123,6 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y, int w,
 		int h, int scanlinePad, P plane) throws IOException;
 
-	/*
-	 * @see io.scif.Reader#createPlane(int, int, int, int)
-	 */
 	P createPlane(int xOffset, int yOffset, int xLength, int yLength);
 
 	/**

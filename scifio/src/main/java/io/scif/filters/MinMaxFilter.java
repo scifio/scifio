@@ -263,7 +263,6 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		return plane;
 	}
 
-	/* @see IFormatReader#close(boolean) */
 	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		super.close(fileOnly);
@@ -278,7 +277,6 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
 	// -- IFormatHandler API methods --
 
-	/* @see IFormatHandler#getNativeDataType() */
 	public Class<?> getNativeDataType() {
 		return byte[].class;
 	}

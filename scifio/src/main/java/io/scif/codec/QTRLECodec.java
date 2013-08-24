@@ -51,7 +51,6 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Codec.class)
 public class QTRLECodec extends AbstractCodec {
 
-	/* @see Codec#compress(byte[], CodecOptions) */
 	public byte[] compress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{
@@ -59,7 +58,6 @@ public class QTRLECodec extends AbstractCodec {
 			"QTRLE compression not supported.");
 	}
 
-	/* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
 	@Override
 	public byte[] decompress(final RandomAccessInputStream in,
 		final CodecOptions options) throws FormatException, IOException

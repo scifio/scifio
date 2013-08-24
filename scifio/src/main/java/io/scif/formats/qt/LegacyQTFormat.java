@@ -81,16 +81,10 @@ public class LegacyQTFormat extends AbstractFormat {
 
 	// -- Format API methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "QuickTime";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "mov" };
 	}

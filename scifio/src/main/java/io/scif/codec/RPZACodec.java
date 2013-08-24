@@ -55,7 +55,6 @@ public class RPZACodec extends AbstractCodec {
 
 	private int totalBlocks, pixelPtr, rowPtr, stride;
 
-	/* @see Codec#compress(byte[], CodecOptions) */
 	public byte[] compress(final byte[] input, final CodecOptions options)
 		throws FormatException
 	{

@@ -68,16 +68,10 @@ public class OBFFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "OBF";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "obf", "msr" };
 	}
@@ -127,9 +121,6 @@ public class OBFFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 

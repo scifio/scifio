@@ -58,9 +58,6 @@ public class DefaultImageMetadata extends AbstractImageMetadata {
 
 	// -- ImageMetadata API Methods --
 
-	/*
-	 * @see io.scif.ImageMetadata#copy()
-	 */
 	public ImageMetadata copy() {
 		return new DefaultImageMetadata(this);
 	}

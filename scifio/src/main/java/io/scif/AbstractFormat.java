@@ -83,86 +83,50 @@ public abstract class AbstractFormat extends AbstractSCIFIOComponent implements
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#setEnabled(boolean)
-	 */
 	public void setEnabled(final boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	/*
-	 * @see io.scif.Format#isEnabled()
-	 */
 	public boolean isEnabled() {
 		return enabled;
 	}
 
-	/*
-	 * @see io.scif.Format#createMetadata()
-	 */
 	public Metadata createMetadata() throws FormatException {
 		return createContextualObject(getMetadataClass());
 	}
 
-	/*
-	 * @see io.scif.Format#createChecker()
-	 */
 	public Checker createChecker() throws FormatException {
 		return createContextualObject(getCheckerClass());
 	}
 
-	/*
-	 * @see io.scif.Format#createParser()
-	 */
 	public Parser createParser() throws FormatException {
 		return createContextualObject(getParserClass());
 	}
 
-	/*
-	 * @see io.scif.Format#createReader()
-	 */
 	public Reader createReader() throws FormatException {
 		return createContextualObject(getReaderClass());
 	}
 
-	/*
-	 * @see io.scif.Format#createWriter()
-	 */
 	public Writer createWriter() throws FormatException {
 		return createContextualObject(getWriterClass());
 	}
 
-	/*
-	 * @see io.scif.Format#getMetadataClass()
-	 */
 	public Class<? extends Metadata> getMetadataClass() {
 		return metadataClass;
 	}
 
-	/*
-	 * @see io.scif.Format#getCheckerClass()
-	 */
 	public Class<? extends Checker> getCheckerClass() {
 		return checkerClass;
 	}
 
-	/*
-	 * @see io.scif.Format#getParserClass()
-	 */
 	public Class<? extends Parser> getParserClass() {
 		return parserClass;
 	}
 
-	/*
-	 * @see io.scif.Format#getReaderClass()
-	 */
 	public Class<? extends Reader> getReaderClass() {
 		return readerClass;
 	}
 
-	/*
-	 * @see io.scif.Format#getWriterClass()
-	 */
 	public Class<? extends Writer> getWriterClass() {
 		return writerClass;
 	}

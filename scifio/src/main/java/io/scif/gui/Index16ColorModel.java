@@ -104,7 +104,6 @@ public class Index16ColorModel extends ColorModel {
 
 	// -- ColorModel API methods --
 
-	/* @see java.awt.image.ColorModel#getDataElements(int, Object) */
 	@Override
 	public synchronized Object getDataElements(final int rgb, final Object pixel)
 	{
@@ -120,13 +119,11 @@ public class Index16ColorModel extends ColorModel {
 		return p;
 	}
 
-	/* @see java.awt.image.ColorModel#isCompatibleRaster(Raster) */
 	@Override
 	public boolean isCompatibleRaster(final Raster raster) {
 		return raster.getNumBands() == 1;
 	}
 
-	/* @see java.awt.image.ColorModel#createCompatibleWritableRaster(int, int) */
 	@Override
 	public WritableRaster
 		createCompatibleWritableRaster(final int w, final int h)
@@ -135,14 +132,12 @@ public class Index16ColorModel extends ColorModel {
 			.createInterleavedRaster(DataBuffer.TYPE_USHORT, w, h, 1, null);
 	}
 
-	/* @see java.awt.image.ColorModel#getAlpha(int) */
 	@Override
 	public int getAlpha(final int pixel) {
 		if (alphaShort != null) return alphaShort[pixel] & 0xffff;
 		return 0xffff;
 	}
 
-	/* @see java.awt.image.ColorModel#getBlue(int) */
 	@Override
 	public int getBlue(final int pixel) {
 		if (blueShort == null) return 0;
@@ -150,7 +145,6 @@ public class Index16ColorModel extends ColorModel {
 		return littleEndian ? DataTools.swap(blue) : blue;
 	}
 
-	/* @see java.awt.image.ColorModel#getGreen(int) */
 	@Override
 	public int getGreen(final int pixel) {
 		if (greenShort == null) return 0;
@@ -158,7 +152,6 @@ public class Index16ColorModel extends ColorModel {
 		return littleEndian ? DataTools.swap(green) : green;
 	}
 
-	/* @see java.awt.image.ColorModel#getRed(int) */
 	@Override
 	public int getRed(final int pixel) {
 		if (redShort == null) return 0;

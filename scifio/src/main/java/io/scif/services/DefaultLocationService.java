@@ -101,39 +101,24 @@ public class DefaultLocationService extends AbstractService implements
 
 	// -- Location API methods --
 
-	/*
-	 * @see io.scif.services.LocationService#reset()
-	 */
 	public void reset() {
 		cacheNanos = 60L * 60L * 1000L * 1000L * 1000L;
 		fileListings.clear();
 		getIdMap().clear();
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#cacheDirectoryListings(boolean)
-	 */
 	public void cacheDirectoryListings(final boolean cache) {
 		cacheListings = cache;
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#setCacheDirectoryTimeout(double)
-	 */
 	public void setCacheDirectoryTimeout(final double sec) {
 		cacheNanos = (long) (sec * 1000. * 1000. * 1000.);
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#clearDirectoryListingsCache()
-	 */
 	public void clearDirectoryListingsCache() {
 		fileListings = new ConcurrentHashMap<String, ListingsResult>();
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#cleanStaleCacheEntries()
-	 */
 	public void cleanStaleCacheEntries() {
 		final long t = System.nanoTime() - cacheNanos;
 		final ArrayList<String> staleKeys = new ArrayList<String>();
@@ -147,10 +132,6 @@ public class DefaultLocationService extends AbstractService implements
 		}
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#
-	 * mapId(java.lang.String, java.lang.String)
-	 */
 	public void mapId(final String id, final String filename) {
 		if (id == null) return;
 		if (filename == null) getIdMap().remove(id);
@@ -158,10 +139,6 @@ public class DefaultLocationService extends AbstractService implements
 		log.debug("Location.mapId: " + id + " -> " + filename);
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#
-	 * mapFile(java.lang.String, io.scif.io.IRandomAccess)
-	 */
 	public void mapFile(final String id, final IRandomAccess ira) {
 		if (id == null) return;
 		if (ira == null) getIdMap().remove(id);
@@ -169,9 +146,6 @@ public class DefaultLocationService extends AbstractService implements
 		log.debug("Location.mapFile: " + id + " -> " + ira);
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#getMappedId(java.lang.String)
-	 */
 	public String getMappedId(final String id) {
 		if (getIdMap() == null) return id;
 		String filename = null;
@@ -181,9 +155,6 @@ public class DefaultLocationService extends AbstractService implements
 		return filename == null ? id : filename;
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#getMappedFile(java.lang.String)
-	 */
 	public IRandomAccess getMappedFile(final String id) {
 		if (getIdMap() == null) return null;
 		IRandomAccess ira = null;
@@ -193,41 +164,25 @@ public class DefaultLocationService extends AbstractService implements
 		return ira;
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#getIdMap()
-	 */
 	public HashMap<String, Object> getIdMap() {
 		return idMap;
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#setIdMap(java.util.HashMap)
-	 */
 	public void setIdMap(final HashMap<String, Object> map) {
 		if (map == null) throw new IllegalArgumentException("map cannot be null");
 		idMap = map;
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#getHandle(java.lang.String)
-	 */
 	public IRandomAccess getHandle(final String id) throws IOException {
 		return getHandle(id, false);
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#getHandle(java.lang.String, boolean)
-	 */
 	public IRandomAccess getHandle(final String id, final boolean writable)
 		throws IOException
 	{
 		return getHandle(id, writable, true);
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#
-	 * getHandle(java.lang.String, boolean, boolean)
-	 */
 	public IRandomAccess getHandle(final String id, final boolean writable,
 		final boolean allowArchiveHandles) throws IOException
 	{
@@ -259,9 +214,6 @@ public class DefaultLocationService extends AbstractService implements
 		return handle;
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#checkValidId(java.lang.String)
-	 */
 	public void checkValidId(final String id) throws IOException {
 		if (getMappedFile(id) != null) {
 			// NB: The id maps directly to an IRandomAccess handle, so is valid. Do
@@ -274,9 +226,6 @@ public class DefaultLocationService extends AbstractService implements
 		getHandle(id).close();
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#getCachedListing(java.lang.String)
-	 */
 	public String[] getCachedListing(final String key) {
 		ListingsResult listingsResult = null;
 		if (cacheListings) {
@@ -286,10 +235,6 @@ public class DefaultLocationService extends AbstractService implements
 		return listingsResult == null ? null : listingsResult.listing;
 	}
 
-	/*
-	 * @see io.scif.services.LocationService#
-	 * putCachedListing(java.lang.String, java.lang.String[])
-	 */
 	public void putCachedListing(final String key, final String[] listing) {
 		if (cacheListings) {
 			fileListings.put(key, new ListingsResult(listing, System.nanoTime()));

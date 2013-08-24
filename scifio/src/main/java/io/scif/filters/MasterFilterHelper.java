@@ -147,9 +147,6 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 
 	// -- MasterFilter API Methods --
 
-	/*
-	 * @see io.scif.filters.MasterFilter#enable(java.lang.Class)
-	 */
 	public <F extends Filter> F enable(final Class<F> filterClass)
 		throws InstantiableException
 	{
@@ -164,9 +161,6 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 		return filter;
 	}
 
-	/*
-	 * @see io.scif.filters.MasterFilter#disable(java.lang.Class)
-	 */
 	public boolean disable(final Class<? extends Filter> filterClass)
 		throws InstantiableException
 	{
@@ -183,18 +177,12 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 		return disabled;
 	}
 
-	/*
-	 * @see io.scif.filters.MasterFilter#getTail()
-	 */
 	public T getTail() {
 		return tail;
 	}
 
 	// -- Filter API Methods --
 
-	/*
-	 * @see io.scif.filters.Filter#reset()
-	 */
 	@Override
 	public void reset() {
 		super.reset();
@@ -202,9 +190,6 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 		updateParents();
 	}
 
-	/*
-	 * @see io.scif.filters.MasterFilter#getFilterClasses()
-	 */
 	public Set<Class<? extends Filter>> getFilterClasses() {
 		return refMap.keySet();
 	}

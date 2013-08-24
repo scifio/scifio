@@ -153,17 +153,14 @@ public abstract class AbstractCodec extends AbstractSCIFIOComponent implements
 		return compress(toCompress, options);
 	}
 
-	/* @see Codec#decompress(byte[]) */
 	public byte[] decompress(final byte[] data) throws FormatException {
 		return decompress(data, null);
 	}
 
-	/* @see Codec#decompress(byte[][]) */
 	public byte[] decompress(final byte[][] data) throws FormatException {
 		return decompress(data, null);
 	}
 
-	/* @see Codec#decompress(byte[], CodecOptions) */
 	public byte[] decompress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{
@@ -179,7 +176,6 @@ public abstract class AbstractCodec extends AbstractSCIFIOComponent implements
 		}
 	}
 
-	/* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
 	public abstract byte[] decompress(RandomAccessInputStream in,
 		CodecOptions options) throws FormatException, IOException;
 

@@ -251,9 +251,6 @@ public enum TiffCompression implements CodedEnum {
 		return toReturn;
 	}
 
-	/* (non-Javadoc)
-	 * @see loci.common.CodedEnum#getCode()
-	 */
 	public int getCode() {
 		return code;
 	}

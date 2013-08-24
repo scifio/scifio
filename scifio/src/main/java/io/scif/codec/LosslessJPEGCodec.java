@@ -103,7 +103,6 @@ public class LosslessJPEGCodec extends AbstractCodec {
 
 	// -- Codec API methods --
 
-	/* @see Codec#compress(byte[], CodecOptions) */
 	public byte[] compress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{

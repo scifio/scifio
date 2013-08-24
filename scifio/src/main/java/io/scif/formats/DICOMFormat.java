@@ -967,9 +967,6 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
 		public void populateImageMetadata() {
 			log().info("Populating metadata");
 
@@ -1026,9 +1023,6 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- HasSource API Methods --
 
-		/*
-		 * @see io.scif.AbstractMetadata#close(boolean)
-		 */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -1076,9 +1070,6 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- Checker API Methods --
 
-		/*
-		 * @see io.scif.Checker#isFormat(java.lang.String)
-		 */
 		@Override
 		public boolean isFormat(final String name, final boolean open) {
 			// extension is sufficient as long as it is DIC, DCM, DICOM, J2KI, or J2KR
@@ -1086,9 +1077,6 @@ public class DICOMFormat extends AbstractFormat {
 			return super.isFormat(name, open);
 		}
 
-		/*
-		 * @see io.scif.Checker#isFormat(io.scif.io.RandomAccessInputStream)
-		 */
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)
 			throws IOException
@@ -1869,10 +1857,6 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
-		/*
-		 * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane,
-		 * int, int, int, int)
-		 */
 		public ByteArrayPlane openPlane(final int imageIndex, int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

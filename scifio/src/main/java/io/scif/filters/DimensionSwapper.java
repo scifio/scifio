@@ -185,9 +185,6 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	// -- AbstractReaderFilter API Methods --
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#setSourceHelper()
-	 */
 	@Override
 	protected void setSourceHelper(final String source) {
 		final String oldFile = getCurrentFile();
@@ -209,9 +206,6 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	// -- Reader API methods --
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
@@ -219,9 +213,6 @@ public class DimensionSwapper extends AbstractReaderFilter {
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex));
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, int, int, int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final int x, final int y, final int w, final int h) throws FormatException,
@@ -231,9 +222,6 @@ public class DimensionSwapper extends AbstractReaderFilter {
 			w, h);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
@@ -241,9 +229,6 @@ public class DimensionSwapper extends AbstractReaderFilter {
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane, int, int, int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane, final int x, final int y, final int w, final int h)
@@ -253,9 +238,6 @@ public class DimensionSwapper extends AbstractReaderFilter {
 			x, y, w, h);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openThumbPlane(int, int)
-	 */
 	@Override
 	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
@@ -263,9 +245,6 @@ public class DimensionSwapper extends AbstractReaderFilter {
 		return super.openThumbPlane(imageIndex, reorder(imageIndex, planeIndex));
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#getMetadata()
-	 */
 	@Override
 	public Metadata getMetadata() {
 		FormatTools.assertId(getCurrentFile(), true, 2);

@@ -69,44 +69,29 @@ public class ReaderFilter extends AbstractReaderFilter implements
 
 	// -- MasterFilter API Methods --
 
-	/*
-	 * @see io.scif.filters.MasterFilter#enable(java.lang.Class)
-	 */
 	public <F extends Filter> F enable(final Class<F> filterClass)
 		throws InstantiableException
 	{
 		return fHelper.enable(filterClass);
 	}
 
-	/*
-	 * @see io.scif.filters.MasterFilter#disable(java.lang.Class)
-	 */
 	public boolean disable(final Class<? extends Filter> filterClass)
 		throws InstantiableException
 	{
 		return fHelper.disable(filterClass);
 	}
 
-	/*
-	 * @see io.scif.filters.MasterFilter#getFilterClasses()
-	 */
 	public Set<Class<? extends Filter>> getFilterClasses() {
 		return fHelper.getFilterClasses();
 	}
 
 	// -- Filter API Methods --
 
-	/*
-	 * @see io.scif.filters.MasterFilter#setParent(java.lang.Object)
-	 */
 	@Override
 	public void setParent(final Object parent) {
 		fHelper.setParent(parent);
 	}
 
-	/*
-	 * @see io.scif.filters.MasterFilter#getParent()
-	 */
 	@Override
 	public Reader getParent() {
 		return fHelper.getParent();
@@ -116,9 +101,6 @@ public class ReaderFilter extends AbstractReaderFilter implements
 		return fHelper.getTail();
 	}
 
-	/*
-	 * @see io.scif.filters.MasterFilter#reset()
-	 */
 	@Override
 	public void reset() {
 		fHelper.reset();
@@ -126,9 +108,6 @@ public class ReaderFilter extends AbstractReaderFilter implements
 
 	// -- Reader API Methods --
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#getMetadata()
-	 */
 	@Override
 	public Metadata getMetadata() {
 		return fHelper.getParent().getMetadata();

@@ -68,16 +68,10 @@ public class GIFFormat extends AbstractFormat {
 
 	public static final String GIF_MAGIC_STRING = "GIF";
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "Graphics Interchange Format";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "gif" };
 	}
@@ -287,9 +281,6 @@ public class GIFFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
@@ -326,9 +317,6 @@ public class GIFFormat extends AbstractFormat {
 
 		// -- HasColorTable API Methods --
 
-		/*
-		 * @see io.scif.HasColorTable#getColorTable()
-		 */
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 
@@ -745,9 +733,6 @@ public class GIFFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
-		/*
-		 * @see io.scif.Reader#openPlane(int, int, Plane, int, int, int, int)
-		 */
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

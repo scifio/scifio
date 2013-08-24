@@ -148,16 +148,10 @@ public class AVIFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
 	public String getFormatName() {
 		return "Audio Video Interleave";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		return new String[] { "avi" };
 	}
@@ -391,9 +385,6 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- HasSource API Methods --
 
-		/*
-		 * @see io.scif.AbstractMetadata#close(boolean)
-		 */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -428,9 +419,6 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- Checker API Methods --
 
-		/*
-		 * @see io.scif.Checker#isFormat(io.scif.io.RandomAccessInputStream)
-		 */
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)
 			throws IOException
@@ -830,9 +818,6 @@ public class AVIFormat extends AbstractFormat {
 			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
-		/*
-		 * @see io.scif.Reader#openPlane(int, int, io.scif.Plane, int, int, int, int)
-		 */
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

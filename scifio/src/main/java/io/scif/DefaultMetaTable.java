@@ -70,9 +70,6 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 
 	// -- MetaTable API Methods --
 
-	/*
-	 * @see io.scif.MetaTable#putList(java.lang.String, java.lang.Object)
-	 */
 	public void putList(final String key, final Object value) {
 		Object list = get(key);
 

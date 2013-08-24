@@ -142,7 +142,6 @@ public class ZipHandle extends StreamHandle {
 
 	// -- IStreamAccess API methods --
 
-	/* @see IStreamAccess#setFile(String) */
 	public void setFile(final String file, final ZipEntry entry)
 		throws IOException
 	{
@@ -180,13 +179,11 @@ public class ZipHandle extends StreamHandle {
 		resetStream();
 	}
 
-	/* @see IStreamAccess#setFile(String) */
 	@Override
 	public void setFile(final String file) throws IOException {
 		setFile(file, null);
 	}
 
-	/* @see IStreamAccess#resetStream() */
 	public void resetStream() throws IOException {
 		if (getStream() != null) getStream().close();
 		if (in != null) {
@@ -207,7 +204,6 @@ public class ZipHandle extends StreamHandle {
 
 	// -- IRandomAccess API methods --
 
-	/* @see IRandomAccess#close() */
 	@Override
 	public void close() throws IOException {
 		super.close();

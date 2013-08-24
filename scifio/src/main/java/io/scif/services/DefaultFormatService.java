@@ -115,9 +115,6 @@ public class DefaultFormatService extends AbstractService implements
 
 	// -- FormatService API Methods --
 
-	/*
-	 * @see FormatService#getSuffixes()
-	 */
 	public String[] getSuffixes() {
 		final TreeSet<String> ts = new TreeSet<String>();
 
@@ -130,9 +127,6 @@ public class DefaultFormatService extends AbstractService implements
 		return ts.toArray(new String[ts.size()]);
 	}
 
-	/*
-	 * @see FormatService#addFormat(Format)
-	 */
 	public <M extends Metadata> boolean addFormat(final Format format) {
 		// already have an entry for this format
 		if (formatMap().get(format.getClass()) != null) return false;
@@ -145,18 +139,12 @@ public class DefaultFormatService extends AbstractService implements
 		return true;
 	}
 
-	/*
-	 * @see FormatService#removeFormat(Format)
-	 */
 	public boolean removeFormat(final Format format) {
 		removeComponents(format);
 		formatMap().remove(format.getClass());
 		return formats().remove(format);
 	}
 
-	/*
-	 * @see io.scif.services.FormatService#addComponents(io.scif.Format)
-	 */
 	public void addComponents(final Format format) {
 		checkerMap().put(format.getCheckerClass(), format);
 		parserMap().put(format.getParserClass(), format);
@@ -165,9 +153,6 @@ public class DefaultFormatService extends AbstractService implements
 		metadataMap().put(format.getMetadataClass(), format);
 	}
 
-	/*
-	 * @see io.scif.services.FormatService#removeComponents(io.scif.Format)
-	 */
 	public void removeComponents(final Format format) {
 		checkerMap().remove(format.getCheckerClass());
 		parserMap().remove(format.getParserClass());
@@ -176,17 +161,11 @@ public class DefaultFormatService extends AbstractService implements
 		metadataMap().remove(format.getMetadataClass());
 	}
 
-	/*
-	 * @see FormatService#getFormatFromClass(Class<? extends Format>)
-	 */
 	@SuppressWarnings("unchecked")
 	public <F extends Format> F getFormatFromClass(final Class<F> formatClass) {
 		return (F) formatMap().get(formatClass);
 	}
 
-	/*
-	 * @see FormatService#getFormatFromComponent(Class<?>)
-	 */
 	@SuppressWarnings("unchecked")
 	public Format getFormatFromComponent(final Class<?> componentClass) {
 		Format fmt = null;
@@ -210,27 +189,18 @@ public class DefaultFormatService extends AbstractService implements
 		return fmt;
 	}
 
-	/*
-	 * @see FormatService#getFormatFromReader(Class<? extends Reader>)
-	 */
 	public <R extends Reader> Format getFormatFromReader(
 		final Class<R> readerClass)
 	{
 		return readerMap().get(readerClass);
 	}
 
-	/*
-	 * @see FormatService#getFormatFromWriter(Class<? extends Writer>)
-	 */
 	public <W extends Writer> Format getFormatFromWriter(
 		final Class<W> writerClass)
 	{
 		return writerMap().get(writerClass);
 	}
 
-	/*
-	 * @see io.scif.services.FormatService#getFormatByExtension(java.lang.String)
-	 */
 	public Writer getWriterByExtension(final String fileId)
 		throws FormatException
 	{
@@ -251,27 +221,18 @@ public class DefaultFormatService extends AbstractService implements
 		return w;
 	}
 
-	/*
-	 * @see FormatService#getFormatFromChecker(Class<? extends Checker>)
-	 */
 	public <C extends Checker> Format getFormatFromChecker(
 		final Class<C> checkerClass)
 	{
 		return checkerMap().get(checkerClass);
 	}
 
-	/*
-	 * @see FormatService#getFormatFromParser(Class<? extends Parser)
-	 */
 	public <P extends Parser> Format getFormatFromParser(
 		final Class<P> parserClass)
 	{
 		return parserMap().get(parserClass);
 	}
 
-	/*
-	 * @see FormatService#getFormatFromMetadata(Class<? extends Metadata>)
-	 */
 	public <M extends Metadata> Format getFormatFromMetadata(
 		final Class<M> metadataClass)
 	{
@@ -290,25 +251,16 @@ public class DefaultFormatService extends AbstractService implements
 		return getFormat(id, false);
 	}
 
-	/*
-	 * @see FormatService#getFormat(String, boolean)
-	 */
 	public Format getFormat(final String id, final boolean open)
 		throws FormatException
 	{
 		return getFormatList(id, open, true).get(0);
 	}
 
-	/*
-	 * @see FormatService#getformatList(String)
-	 */
 	public List<Format> getFormatList(final String id) throws FormatException {
 		return getFormatList(id, false, false);
 	}
 
-	/*
-	 * @see FormatService#getFormatList(String, boolean, boolean)
-	 */
 	public List<Format> getFormatList(final String id, final boolean open,
 		final boolean greedy) throws FormatException
 	{
@@ -332,16 +284,10 @@ public class DefaultFormatService extends AbstractService implements
 		return formatList;
 	}
 
-	/*
-	 * @see FormatService#getAllFormats()
-	 */
 	public Set<Format> getAllFormats() {
 		return formats();
 	}
 
-	/*
-	 * @see io.scif.FormatService#getInstance(java.lang.Class)
-	 */
 	public <T extends SCIFIOService> T getInstance(final Class<T> type) {
 		return getContext().getService(type);
 	}

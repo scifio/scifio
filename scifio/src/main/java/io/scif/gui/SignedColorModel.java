@@ -86,14 +86,12 @@ public class SignedColorModel extends ColorModel {
 
 	// -- ColorModel API methods --
 
-	/* @see java.awt.image.ColorModel#getDataElements(int, Object) */
 	@Override
 	public synchronized Object getDataElements(final int rgb, final Object pixel)
 	{
 		return helper.getDataElements(rgb, pixel);
 	}
 
-	/* @see java.awt.image.ColorModel#isCompatibleRaster(Raster) */
 	@Override
 	public boolean isCompatibleRaster(final Raster raster) {
 		if (pixelBits == 16) {
@@ -102,7 +100,6 @@ public class SignedColorModel extends ColorModel {
 		return helper.isCompatibleRaster(raster);
 	}
 
-	/* @see java.awt.image.ColorModel#createCompatibleWritableRaster(int, int) */
 	@Override
 	public WritableRaster
 		createCompatibleWritableRaster(final int w, final int h)
@@ -121,34 +118,29 @@ public class SignedColorModel extends ColorModel {
 		return helper.createCompatibleWritableRaster(w, h);
 	}
 
-	/* @see java.awt.image.ColorModel#getAlpha(int) */
 	@Override
 	public int getAlpha(final int pixel) {
 		if (nChannels < 4) return 255;
 		return rescale(pixel, max);
 	}
 
-	/* @see java.awt.image.ColorModel#getBlue(int) */
 	@Override
 	public int getBlue(final int pixel) {
 		if (nChannels == 1) return getRed(pixel);
 		return rescale(pixel, max);
 	}
 
-	/* @see java.awt.image.ColorModel#getGreen(int) */
 	@Override
 	public int getGreen(final int pixel) {
 		if (nChannels == 1) return getRed(pixel);
 		return rescale(pixel, max);
 	}
 
-	/* @see java.awt.image.ColorModel#getRed(int) */
 	@Override
 	public int getRed(final int pixel) {
 		return rescale(pixel, max);
 	}
 
-	/* @see java.awt.image.ColorModel#getAlpha(Object) */
 	@Override
 	public int getAlpha(final Object data) {
 		if (data instanceof byte[]) {
@@ -169,7 +161,6 @@ public class SignedColorModel extends ColorModel {
 		return 0;
 	}
 
-	/* @see java.awt.image.ColorModel#getRed(Object) */
 	@Override
 	public int getRed(final Object data) {
 		if (data instanceof byte[]) {
@@ -190,7 +181,6 @@ public class SignedColorModel extends ColorModel {
 		return 0;
 	}
 
-	/* @see java.awt.image.ColorModel#getGreen(Object) */
 	@Override
 	public int getGreen(final Object data) {
 		if (data instanceof byte[]) {
@@ -211,7 +201,6 @@ public class SignedColorModel extends ColorModel {
 		return 0;
 	}
 
-	/* @see java.awt.image.ColorModel#getBlue(Object) */
 	@Override
 	public int getBlue(final Object data) {
 		if (data instanceof byte[]) {

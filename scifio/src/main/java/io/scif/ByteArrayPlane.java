@@ -74,9 +74,6 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 
 	// -- Plane API methods --
 
-	/*
-	 * @see io.scif.Plane#getBytes()
-	 */
 	public byte[] getBytes() {
 		return getData();
 	}

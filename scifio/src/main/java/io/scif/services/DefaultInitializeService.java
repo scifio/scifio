@@ -80,19 +80,12 @@ public class DefaultInitializeService extends AbstractService implements
 
 	// -- InitializeService API Methods --
 
-	/*
-	 * @see io.scif.services.InitializeService#initializeReader(java.lang.String)
-	 */
 	public ReaderFilter initializeReader(final String id) throws FormatException,
 		IOException
 	{
 		return initializeReader(id, false);
 	}
 
-	/*
-	 * @see io.scif.services.InitializeService#
-	 * initializeReader(java.lang.String, boolean)
-	 */
 	public ReaderFilter initializeReader(final String id, final boolean openFile)
 		throws FormatException, IOException
 	{
@@ -102,20 +95,12 @@ public class DefaultInitializeService extends AbstractService implements
 		return new ReaderFilter(r);
 	}
 
-	/*
-	 * @see io.scif.services.InitializeService#
-	 * initializeWriter(java.lang.String, java.lang.String)
-	 */
 	public Writer initializeWriter(final String source, final String destination)
 		throws FormatException, IOException
 	{
 		return initializeWriter(source, destination, false);
 	}
 
-	/*
-	 * @see io.scif.services.InitializeService#
-	 * initializeWriter(java.lang.String, java.lang.String, boolean)
-	 */
 	public Writer initializeWriter(final String source, final String destination,
 		final boolean openSource) throws FormatException, IOException
 	{
@@ -127,10 +112,6 @@ public class DefaultInitializeService extends AbstractService implements
 		return initializeWriter(sourceMeta, destination);
 	}
 
-	/*
-	 * @see io.scif.InitializeService#
-	 * initializeWriter(io.scif.Metadata, java.lang.String)
-	 */
 	public Writer initializeWriter(final Metadata sourceMeta,
 		final String destination) throws FormatException, IOException
 	{

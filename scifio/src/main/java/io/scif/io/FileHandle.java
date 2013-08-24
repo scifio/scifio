@@ -88,39 +88,32 @@ public class FileHandle implements IRandomAccess {
 
 	// -- IRandomAccess API methods --
 
-	/* @see IRandomAccess.close() */
 	public void close() throws IOException {
 		raf.close();
 	}
 
-	/* @see IRandomAccess.getFilePointer() */
 	public long getFilePointer() throws IOException {
 		return raf.getFilePointer();
 	}
 
-	/* @see IRandomAccess.length() */
 	public long length() throws IOException {
 		return raf.length();
 	}
 
-	/* @see IRandomAccess.read(byte[]) */
 	public int read(final byte[] b) throws IOException {
 		return raf.read(b);
 	}
 
-	/* @see IRandomAccess.read(byte[], int, int) */
 	public int read(final byte[] b, final int off, final int len)
 		throws IOException
 	{
 		return raf.read(b, off, len);
 	}
 
-	/* @see IRandomAccess.read(ByteBuffer) */
 	public int read(final ByteBuffer buffer) throws IOException {
 		return read(buffer, 0, buffer.capacity());
 	}
 
-	/* @see IRandomAccess.read(ByteBuffer, int, int) */
 	public int read(final ByteBuffer buffer, final int off, final int len)
 		throws IOException
 	{
@@ -130,17 +123,14 @@ public class FileHandle implements IRandomAccess {
 		return n;
 	}
 
-	/* @see IRandomAccess.seek(long) */
 	public void seek(final long pos) throws IOException {
 		raf.seek(pos);
 	}
 
-	/* @see IRandomAccess.write(ByteBuffer) */
 	public void write(final ByteBuffer buf) throws IOException {
 		write(buf, 0, buf.capacity());
 	}
 
-	/* @see IRandomAccess.write(ByteBuffer, int, int) */
 	public void write(final ByteBuffer buf, final int off, final int len)
 		throws IOException
 	{
@@ -149,153 +139,124 @@ public class FileHandle implements IRandomAccess {
 
 	// -- DataInput API methods --
 
-	/* @see java.io.DataInput.readBoolean() */
 	public boolean readBoolean() throws IOException {
 		return raf.readBoolean();
 	}
 
-	/* @see java.io.DataInput.readByte() */
 	public byte readByte() throws IOException {
 		return raf.readByte();
 	}
 
-	/* @see java.io.DataInput.readChar() */
 	public char readChar() throws IOException {
 		return raf.readChar();
 	}
 
-	/* @see java.io.DataInput.readDouble() */
 	public double readDouble() throws IOException {
 		return raf.readDouble();
 	}
 
-	/* @see java.io.DataInput.readFloat() */
 	public float readFloat() throws IOException {
 		return raf.readFloat();
 	}
 
-	/* @see java.io.DataInput.readFully(byte[]) */
 	public void readFully(final byte[] b) throws IOException {
 		raf.readFully(b);
 	}
 
-	/* @see java.io.DataInput.readFully(byte[], int, int) */
 	public void readFully(final byte[] b, final int off, final int len)
 		throws IOException
 	{
 		raf.readFully(b, off, len);
 	}
 
-	/* @see java.io.DataInput.readInt() */
 	public int readInt() throws IOException {
 		return raf.readInt();
 	}
 
-	/* @see java.io.DataInput.readLine() */
 	public String readLine() throws IOException {
 		return raf.readLine();
 	}
 
-	/* @see java.io.DataInput.readLong() */
 	public long readLong() throws IOException {
 		return raf.readLong();
 	}
 
-	/* @see java.io.DataInput.readShort() */
 	public short readShort() throws IOException {
 		return raf.readShort();
 	}
 
-	/* @see java.io.DataInput.readUnsignedByte() */
 	public int readUnsignedByte() throws IOException {
 		return raf.readUnsignedByte();
 	}
 
-	/* @see java.io.DataInput.readUnsignedShort() */
 	public int readUnsignedShort() throws IOException {
 		return raf.readUnsignedShort();
 	}
 
-	/* @see java.io.DataInput.readUTF() */
 	public String readUTF() throws IOException {
 		return raf.readUTF();
 	}
 
-	/* @see java.io.DataInput.skipBytes(int) */
 	public int skipBytes(final int n) throws IOException {
 		return raf.skipBytes(n);
 	}
 
 	// -- DataOutput API metthods --
 
-	/* @see java.io.DataOutput.write(byte[]) */
 	public void write(final byte[] b) throws IOException {
 		raf.write(b);
 	}
 
-	/* @see java.io.DataOutput.write(byte[], int, int) */
 	public void write(final byte[] b, final int off, final int len)
 		throws IOException
 	{
 		raf.write(b, off, len);
 	}
 
-	/* @see java.io.DataOutput.write(int b) */
 	public void write(final int b) throws IOException {
 		raf.write(b);
 	}
 
-	/* @see java.io.DataOutput.writeBoolean(boolean) */
 	public void writeBoolean(final boolean v) throws IOException {
 		raf.writeBoolean(v);
 	}
 
-	/* @see java.io.DataOutput.writeByte(int) */
 	public void writeByte(final int v) throws IOException {
 		raf.writeByte(v);
 	}
 
-	/* @see java.io.DataOutput.writeBytes(String) */
 	public void writeBytes(final String s) throws IOException {
 		raf.writeBytes(s);
 	}
 
-	/* @see java.io.DataOutput.writeChar(int) */
 	public void writeChar(final int v) throws IOException {
 		raf.writeChar(v);
 	}
 
-	/* @see java.io.DataOutput.writeChars(String) */
 	public void writeChars(final String s) throws IOException {
 		raf.writeChars(s);
 	}
 
-	/* @see java.io.DataOutput.writeDouble(double) */
 	public void writeDouble(final double v) throws IOException {
 		raf.writeDouble(v);
 	}
 
-	/* @see java.io.DataOutput.writeFloat(float) */
 	public void writeFloat(final float v) throws IOException {
 		raf.writeFloat(v);
 	}
 
-	/* @see java.io.DataOutput.writeInt(int) */
 	public void writeInt(final int v) throws IOException {
 		raf.writeInt(v);
 	}
 
-	/* @see java.io.DataOutput.writeLong(long) */
 	public void writeLong(final long v) throws IOException {
 		raf.writeLong(v);
 	}
 
-	/* @see java.io.DataOutput.writeShort(int) */
 	public void writeShort(final int v) throws IOException {
 		raf.writeShort(v);
 	}
 
-	/* @see java.io.DataOutput.writeUTF(String)  */
 	public void writeUTF(final String str) throws IOException {
 		raf.writeUTF(str);
 	}

@@ -351,7 +351,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		// -- HasColorTable API methods --
 
-		/* @see loci.formats.IFormatReader#get16BitLookupTable() */
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			if (ifds == null || lastPlane < 0 || lastPlane > ifds.size()) return null;
@@ -630,9 +629,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			return plane;
 		}
 
-		/*
-		 * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

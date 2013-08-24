@@ -123,13 +123,11 @@ public class RandomAccessOutputStream extends OutputStream implements
 
 	// -- DataOutput API methods --
 
-	/* @see java.io.DataOutput#write(byte[]) */
 	@Override
 	public void write(final byte[] b) throws IOException {
 		outputFile.write(b);
 	}
 
-	/* @see java.io.DataOutput#write(byte[], int, int) */
 	@Override
 	public void write(final byte[] b, final int off, final int len)
 		throws IOException
@@ -159,76 +157,62 @@ public class RandomAccessOutputStream extends OutputStream implements
 		outputFile.write(b, off, len);
 	}
 
-	/* @see java.io.DataOutput#write(int) */
 	@Override
 	public void write(final int b) throws IOException {
 		outputFile.write(b);
 	}
 
-	/* @see java.io.DataOutput#writeBoolean(boolean) */
 	public void writeBoolean(final boolean v) throws IOException {
 		outputFile.writeBoolean(v);
 	}
 
-	/* @see java.io.DataOutput#writeByte(int) */
 	public void writeByte(final int v) throws IOException {
 		outputFile.writeByte(v);
 	}
 
-	/* @see java.io.DataOutput#writeBytes(String) */
 	public void writeBytes(final String s) throws IOException {
 		outputFile.writeBytes(s);
 	}
 
-	/* @see java.io.DataOutput#writeChar(int) */
 	public void writeChar(final int v) throws IOException {
 		outputFile.writeChar(v);
 	}
 
-	/* @see java.io.DataOutput#writeChars(String) */
 	public void writeChars(final String s) throws IOException {
 		outputFile.writeChars(s);
 	}
 
-	/* @see java.io.DataOutput#writeDouble(double) */
 	public void writeDouble(final double v) throws IOException {
 		outputFile.writeDouble(v);
 	}
 
-	/* @see java.io.DataOutput#writeFloat(float) */
 	public void writeFloat(final float v) throws IOException {
 		outputFile.writeFloat(v);
 	}
 
-	/* @see java.io.DataOutput#writeInt(int) */
 	public void writeInt(final int v) throws IOException {
 		outputFile.writeInt(v);
 	}
 
-	/* @see java.io.DataOutput#writeLong(long) */
 	public void writeLong(final long v) throws IOException {
 		outputFile.writeLong(v);
 	}
 
-	/* @see java.io.DataOutput#writeShort(int) */
 	public void writeShort(final int v) throws IOException {
 		outputFile.writeShort(v);
 	}
 
-	/* @see java.io.DataOutput#writeUTF(String) */
 	public void writeUTF(final String str) throws IOException {
 		outputFile.writeUTF(str);
 	}
 
 	// -- OutputStream API methods --
 
-	/* @see java.io.OutputStream#close() */
 	@Override
 	public void close() throws IOException {
 		outputFile.close();
 	}
 
-	/* @see java.io.OutputStream#flush() */
 	@Override
 	public void flush() throws IOException {}
 

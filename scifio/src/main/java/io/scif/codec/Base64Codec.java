@@ -84,7 +84,6 @@ public class Base64Codec extends AbstractCodec {
 		lookupBase64Alphabet[63] = (byte) '/';
 	}
 
-	/* @see Codec#compress(byte[], CodecOptions) */
 	public byte[] compress(final byte[] input, final CodecOptions options)
 		throws FormatException
 	{
@@ -152,7 +151,6 @@ public class Base64Codec extends AbstractCodec {
 		return encoded.toByteArray();
 	}
 
-	/* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
 	@Override
 	public byte[] decompress(final RandomAccessInputStream in,
 		final CodecOptions options) throws FormatException, IOException
