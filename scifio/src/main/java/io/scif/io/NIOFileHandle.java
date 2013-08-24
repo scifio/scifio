@@ -184,22 +184,27 @@ public class NIOFileHandle extends AbstractNIOHandle {
 
 	// -- IRandomAccess API methods --
 
+	@Override
 	public void close() throws IOException {
 		raf.close();
 	}
 
+	@Override
 	public long getFilePointer() {
 		return position;
 	}
 
+	@Override
 	public long length() throws IOException {
 		return raf.length();
 	}
 
+	@Override
 	public ByteOrder getOrder() {
 		return buffer == null ? order : buffer.order();
 	}
 
+	@Override
 	public void setOrder(final ByteOrder order) {
 		this.order = order;
 		if (buffer != null) {
@@ -207,20 +212,24 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
+	@Override
 	public int read(final byte[] b) throws IOException {
 		return read(ByteBuffer.wrap(b));
 	}
 
+	@Override
 	public int read(final byte[] b, final int off, final int len)
 		throws IOException
 	{
 		return read(ByteBuffer.wrap(b), off, len);
 	}
 
+	@Override
 	public int read(final ByteBuffer buf) throws IOException {
 		return read(buf, 0, buf.capacity());
 	}
 
+	@Override
 	public int read(final ByteBuffer buf, final int off, final int len)
 		throws IOException
 	{
@@ -234,6 +243,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		return readLength == -1 ? 0 : readLength;
 	}
 
+	@Override
 	public void seek(final long pos) throws IOException {
 		if (mapMode == FileChannel.MapMode.READ_WRITE && pos > length()) {
 			setLength(pos);
@@ -241,10 +251,12 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		buffer(pos, 0);
 	}
 
+	@Override
 	public boolean readBoolean() throws IOException {
 		return readByte() == 1;
 	}
 
+	@Override
 	public byte readByte() throws IOException {
 		buffer(position, 1);
 		position += 1;
@@ -258,6 +270,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
+	@Override
 	public char readChar() throws IOException {
 		buffer(position, 2);
 		position += 2;
@@ -271,6 +284,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
+	@Override
 	public double readDouble() throws IOException {
 		buffer(position, 8);
 		position += 8;
@@ -284,6 +298,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
+	@Override
 	public float readFloat() throws IOException {
 		buffer(position, 4);
 		position += 4;
@@ -297,16 +312,19 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
+	@Override
 	public void readFully(final byte[] b) throws IOException {
 		read(b);
 	}
 
+	@Override
 	public void readFully(final byte[] b, final int off, final int len)
 		throws IOException
 	{
 		read(b, off, len);
 	}
 
+	@Override
 	public int readInt() throws IOException {
 		buffer(position, 4);
 		position += 4;
@@ -320,6 +338,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
+	@Override
 	public String readLine() throws IOException {
 		raf.seek(position);
 		final String line = raf.readLine();
@@ -327,6 +346,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		return line;
 	}
 
+	@Override
 	public long readLong() throws IOException {
 		buffer(position, 8);
 		position += 8;
@@ -340,6 +360,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
+	@Override
 	public short readShort() throws IOException {
 		buffer(position, 2);
 		position += 2;
@@ -353,14 +374,17 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		}
 	}
 
+	@Override
 	public int readUnsignedByte() throws IOException {
 		return readByte() & 0xFF;
 	}
 
+	@Override
 	public int readUnsignedShort() throws IOException {
 		return readShort() & 0xFFFF;
 	}
 
+	@Override
 	public String readUTF() throws IOException {
 		raf.seek(position);
 		final String utf8 = raf.readUTF();
@@ -368,6 +392,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		return utf8;
 	}
 
+	@Override
 	public int skipBytes(final int n) throws IOException {
 		if (n < 1) {
 			return 0;
@@ -381,20 +406,24 @@ public class NIOFileHandle extends AbstractNIOHandle {
 
 	// -- DataOutput API methods --
 
+	@Override
 	public void write(final byte[] b) throws IOException {
 		write(ByteBuffer.wrap(b));
 	}
 
+	@Override
 	public void write(final byte[] b, final int off, final int len)
 		throws IOException
 	{
 		write(ByteBuffer.wrap(b), off, len);
 	}
 
+	@Override
 	public void write(final ByteBuffer buf) throws IOException {
 		write(buf, 0, buf.capacity());
 	}
 
+	@Override
 	public void write(final ByteBuffer buf, final int off, final int len)
 		throws IOException
 	{
@@ -405,64 +434,76 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		buffer = null;
 	}
 
+	@Override
 	public void write(final int b) throws IOException {
 		writeByte(b);
 	}
 
+	@Override
 	public void writeBoolean(final boolean v) throws IOException {
 		writeByte(v ? 1 : 0);
 	}
 
+	@Override
 	public void writeByte(final int v) throws IOException {
 		writeSetup(1);
 		buffer.put((byte) v);
 		doWrite(1);
 	}
 
+	@Override
 	public void writeBytes(final String s) throws IOException {
 		write(s.getBytes(Constants.ENCODING));
 	}
 
+	@Override
 	public void writeChar(final int v) throws IOException {
 		writeSetup(2);
 		buffer.putChar((char) v);
 		doWrite(2);
 	}
 
+	@Override
 	public void writeChars(final String s) throws IOException {
 		write(s.getBytes("UTF-16BE"));
 	}
 
+	@Override
 	public void writeDouble(final double v) throws IOException {
 		writeSetup(8);
 		buffer.putDouble(v);
 		doWrite(8);
 	}
 
+	@Override
 	public void writeFloat(final float v) throws IOException {
 		writeSetup(4);
 		buffer.putFloat(v);
 		doWrite(4);
 	}
 
+	@Override
 	public void writeInt(final int v) throws IOException {
 		writeSetup(4);
 		buffer.putInt(v);
 		doWrite(4);
 	}
 
+	@Override
 	public void writeLong(final long v) throws IOException {
 		writeSetup(8);
 		buffer.putLong(v);
 		doWrite(8);
 	}
 
+	@Override
 	public void writeShort(final int v) throws IOException {
 		writeSetup(2);
 		buffer.putShort((short) v);
 		doWrite(2);
 	}
 
+	@Override
 	public void writeUTF(final String str) throws IOException {
 		// NB: number of bytes written is greater than the length of the string
 		final int strlen = str.getBytes(Constants.ENCODING).length + 2;

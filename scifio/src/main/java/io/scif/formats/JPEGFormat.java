@@ -62,10 +62,12 @@ public class JPEGFormat extends ImageIOFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "JPEG";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "jpg", "jpeg", "jpe" };
 	}

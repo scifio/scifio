@@ -77,6 +77,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	 *      desired.
 	 *      </p>
 	 */
+	@Override
 	public void clearCache(final String cacheId) {
 		if (caches.contains(cacheId)) {
 			final HTreeMap<?, ?> cache = db.getHashMap(cacheId);
@@ -91,11 +92,13 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		}
 	}
 
+	@Override
 	public void clearAllCaches() {
 		for (final String cache : caches)
 			clearCache(cache);
 	}
 
+	@Override
 	public void dropCache(final String cacheId) {
 		if (caches.contains(cacheId)) {
 			db.getHashMap(cacheId).close();
@@ -103,10 +106,12 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		}
 	}
 
+	@Override
 	public void addCache(final String cacheId) {
 		caches.add(cacheId);
 	}
 
+	@Override
 	public CacheResult cache(final String cacheId, final int index,
 		final SCIFIOCell<?> object)
 	{
@@ -146,6 +151,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		return CacheResult.SUCCESS;
 	}
 
+	@Override
 	public SCIFIOCell<?> retrieve(final String cacheId, final int index) {
 
 		final SCIFIOCell<?> cell = getCell(cacheId, index);
@@ -158,6 +164,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		return cell;
 	}
 
+	@Override
 	public SCIFIOCell<?> retrieveNoRecache(final String cacheId, final int index)
 	{
 

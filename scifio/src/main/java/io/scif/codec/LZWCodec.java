@@ -104,6 +104,7 @@ public class LZWCodec extends AbstractCodec {
 	private static final int[] DECOMPR_MASKS = { 0x00, 0x01, 0x03, 0x07, 0x0f,
 		0x1f, 0x3f, 0x7f };
 
+	@Override
 	public byte[] compress(final byte[] input, final CodecOptions options)
 		throws FormatException
 	{

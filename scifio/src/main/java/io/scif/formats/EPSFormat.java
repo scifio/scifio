@@ -75,10 +75,12 @@ public class EPSFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Encapsulated PostScript";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "eps", "epsi", "ps" };
 	}
@@ -149,6 +151,7 @@ public class EPSFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			if (getAxisLength(0, Axes.CHANNEL) == 0) setAxisLength(0, Axes.CHANNEL, 1);
 
@@ -332,6 +335,7 @@ public class EPSFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException
@@ -471,6 +475,7 @@ public class EPSFormat extends AbstractFormat {
 
 		// -- Writer API Methods --
 
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

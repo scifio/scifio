@@ -110,11 +110,13 @@ public interface MasterFilter<T extends Contextual> extends Filter {
 	/**
 	 * Sets the wrapped object. Effectively the tail of the filter stack.
 	 */
+	@Override
 	void setParent(Object parent);
 
 	/**
 	 * Returns the top of the filter stack.
 	 */
+	@Override
 	Object getParent();
 
 	/**
@@ -125,5 +127,6 @@ public interface MasterFilter<T extends Contextual> extends Filter {
 	/**
 	 * Disables all enabled filters maintained by this MasterFilter.
 	 */
+	@Override
 	void reset();
 }

@@ -89,10 +89,12 @@ public class DICOMFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "DICOM";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "dic", "dcm", "dicom", "jp2", "j2ki", "j2kr", "raw",
 			"ima" };
@@ -946,6 +948,7 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- ColorTable API Methods --
 
+		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			final int pixelType = getPixelType(0);
@@ -967,6 +970,7 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			log().info("Populating metadata");
 
@@ -1857,6 +1861,7 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

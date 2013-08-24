@@ -64,6 +64,7 @@ public class PassthroughCodec extends AbstractCodec {
 		throw new RuntimeException("Not implemented.");
 	}
 
+	@Override
 	public byte[] compress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{

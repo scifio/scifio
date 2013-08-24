@@ -64,18 +64,22 @@ public class DefaultFilePatternService extends AbstractService implements
 	FilePatternService
 {
 
+	@Override
 	public String findPattern(final String path) {
 		return findPattern(new Location(getContext(), path));
 	}
 
+	@Override
 	public String findPattern(final Location file) {
 		return findPattern(file.getName(), file.getAbsoluteFile().getParent());
 	}
 
+	@Override
 	public String findPattern(final File file) {
 		return findPattern(file.getName(), file.getAbsoluteFile().getParent());
 	}
 
+	@Override
 	public String findPattern(final String name, String dir) {
 		if (dir == null) dir = ""; // current directory
 		else if (!dir.equals("") && !dir.endsWith(File.separator)) {
@@ -94,12 +98,14 @@ public class DefaultFilePatternService extends AbstractService implements
 		return findPattern(name, dir, nameList);
 	}
 
+	@Override
 	public String findPattern(final String name, final String dir,
 		final String[] nameList)
 	{
 		return findPattern(name, dir, nameList, null);
 	}
 
+	@Override
 	public String findPattern(final String name, String dir,
 		final String[] nameList, int[] excludeAxes)
 	{
@@ -241,6 +247,7 @@ public class DefaultFilePatternService extends AbstractService implements
 		return sb.toString();
 	}
 
+	@Override
 	public String findPattern(final String[] names) {
 		final String dir =
 			names[0].substring(0, names[0].lastIndexOf(File.separator) + 1);
@@ -261,6 +268,7 @@ public class DefaultFilePatternService extends AbstractService implements
 		return pattern.toString();
 	}
 
+	@Override
 	public String[] findImagePatterns(final String base) {
 		final Location file = new Location(getContext(), base).getAbsoluteFile();
 		final Location parent = file.getParentFile();
@@ -268,6 +276,7 @@ public class DefaultFilePatternService extends AbstractService implements
 		return findImagePatterns(base, parent.getAbsolutePath(), list);
 	}
 
+	@Override
 	public String[] findImagePatterns(final String base, final String dir,
 		final String[] nameList)
 	{

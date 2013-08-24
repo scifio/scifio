@@ -68,6 +68,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 		this.subRegion = subRegion;
 	}
 
+	@Override
 	public A loadArray(final int[] dimensions, final long[] min) {
 		synchronized (reader) {
 			final Metadata meta = reader.getMetadata();

@@ -101,24 +101,29 @@ public class DefaultLocationService extends AbstractService implements
 
 	// -- Location API methods --
 
+	@Override
 	public void reset() {
 		cacheNanos = 60L * 60L * 1000L * 1000L * 1000L;
 		fileListings.clear();
 		getIdMap().clear();
 	}
 
+	@Override
 	public void cacheDirectoryListings(final boolean cache) {
 		cacheListings = cache;
 	}
 
+	@Override
 	public void setCacheDirectoryTimeout(final double sec) {
 		cacheNanos = (long) (sec * 1000. * 1000. * 1000.);
 	}
 
+	@Override
 	public void clearDirectoryListingsCache() {
 		fileListings = new ConcurrentHashMap<String, ListingsResult>();
 	}
 
+	@Override
 	public void cleanStaleCacheEntries() {
 		final long t = System.nanoTime() - cacheNanos;
 		final ArrayList<String> staleKeys = new ArrayList<String>();
@@ -132,6 +137,7 @@ public class DefaultLocationService extends AbstractService implements
 		}
 	}
 
+	@Override
 	public void mapId(final String id, final String filename) {
 		if (id == null) return;
 		if (filename == null) getIdMap().remove(id);
@@ -139,6 +145,7 @@ public class DefaultLocationService extends AbstractService implements
 		log.debug("Location.mapId: " + id + " -> " + filename);
 	}
 
+	@Override
 	public void mapFile(final String id, final IRandomAccess ira) {
 		if (id == null) return;
 		if (ira == null) getIdMap().remove(id);
@@ -146,6 +153,7 @@ public class DefaultLocationService extends AbstractService implements
 		log.debug("Location.mapFile: " + id + " -> " + ira);
 	}
 
+	@Override
 	public String getMappedId(final String id) {
 		if (getIdMap() == null) return id;
 		String filename = null;
@@ -155,6 +163,7 @@ public class DefaultLocationService extends AbstractService implements
 		return filename == null ? id : filename;
 	}
 
+	@Override
 	public IRandomAccess getMappedFile(final String id) {
 		if (getIdMap() == null) return null;
 		IRandomAccess ira = null;
@@ -164,25 +173,30 @@ public class DefaultLocationService extends AbstractService implements
 		return ira;
 	}
 
+	@Override
 	public HashMap<String, Object> getIdMap() {
 		return idMap;
 	}
 
+	@Override
 	public void setIdMap(final HashMap<String, Object> map) {
 		if (map == null) throw new IllegalArgumentException("map cannot be null");
 		idMap = map;
 	}
 
+	@Override
 	public IRandomAccess getHandle(final String id) throws IOException {
 		return getHandle(id, false);
 	}
 
+	@Override
 	public IRandomAccess getHandle(final String id, final boolean writable)
 		throws IOException
 	{
 		return getHandle(id, writable, true);
 	}
 
+	@Override
 	public IRandomAccess getHandle(final String id, final boolean writable,
 		final boolean allowArchiveHandles) throws IOException
 	{
@@ -214,6 +228,7 @@ public class DefaultLocationService extends AbstractService implements
 		return handle;
 	}
 
+	@Override
 	public void checkValidId(final String id) throws IOException {
 		if (getMappedFile(id) != null) {
 			// NB: The id maps directly to an IRandomAccess handle, so is valid. Do
@@ -226,6 +241,7 @@ public class DefaultLocationService extends AbstractService implements
 		getHandle(id).close();
 	}
 
+	@Override
 	public String[] getCachedListing(final String key) {
 		ListingsResult listingsResult = null;
 		if (cacheListings) {
@@ -235,6 +251,7 @@ public class DefaultLocationService extends AbstractService implements
 		return listingsResult == null ? null : listingsResult.listing;
 	}
 
+	@Override
 	public void putCachedListing(final String key, final String[] listing) {
 		if (cacheListings) {
 			fileListings.put(key, new ListingsResult(listing, System.nanoTime()));

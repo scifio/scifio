@@ -83,50 +83,62 @@ public abstract class AbstractFormat extends AbstractSCIFIOComponent implements
 
 	// -- Format API Methods --
 
+	@Override
 	public void setEnabled(final boolean enabled) {
 		this.enabled = enabled;
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return enabled;
 	}
 
+	@Override
 	public Metadata createMetadata() throws FormatException {
 		return createContextualObject(getMetadataClass());
 	}
 
+	@Override
 	public Checker createChecker() throws FormatException {
 		return createContextualObject(getCheckerClass());
 	}
 
+	@Override
 	public Parser createParser() throws FormatException {
 		return createContextualObject(getParserClass());
 	}
 
+	@Override
 	public Reader createReader() throws FormatException {
 		return createContextualObject(getReaderClass());
 	}
 
+	@Override
 	public Writer createWriter() throws FormatException {
 		return createContextualObject(getWriterClass());
 	}
 
+	@Override
 	public Class<? extends Metadata> getMetadataClass() {
 		return metadataClass;
 	}
 
+	@Override
 	public Class<? extends Checker> getCheckerClass() {
 		return checkerClass;
 	}
 
+	@Override
 	public Class<? extends Parser> getParserClass() {
 		return parserClass;
 	}
 
+	@Override
 	public Class<? extends Reader> getReaderClass() {
 		return readerClass;
 	}
 
+	@Override
 	public Class<? extends Writer> getWriterClass() {
 		return writerClass;
 	}

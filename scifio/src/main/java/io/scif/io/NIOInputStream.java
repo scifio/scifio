@@ -316,36 +316,43 @@ public class NIOInputStream extends InputStream implements DataInput {
 	// -- DataInput API methods --
 
 	/** Read an input byte and return true if the byte is nonzero. */
+	@Override
 	public boolean readBoolean() throws IOException {
 		return raf.readBoolean();
 	}
 
 	/** Read one byte and return it. */
+	@Override
 	public byte readByte() throws IOException {
 		return raf.readByte();
 	}
 
 	/** Read an input char. */
+	@Override
 	public char readChar() throws IOException {
 		return raf.readChar();
 	}
 
 	/** Read eight bytes and return a double value. */
+	@Override
 	public double readDouble() throws IOException {
 		return raf.readDouble();
 	}
 
 	/** Read four bytes and return a float value. */
+	@Override
 	public float readFloat() throws IOException {
 		return raf.readFloat();
 	}
 
 	/** Read four input bytes and return an int value. */
+	@Override
 	public int readInt() throws IOException {
 		return raf.readInt();
 	}
 
 	/** Read the next line of text from the input stream. */
+	@Override
 	public String readLine() throws IOException {
 		return findString("\n");
 	}
@@ -363,31 +370,37 @@ public class NIOInputStream extends InputStream implements DataInput {
 	}
 
 	/** Read eight input bytes and return a long value. */
+	@Override
 	public long readLong() throws IOException {
 		return raf.readLong();
 	}
 
 	/** Read two input bytes and return a short value. */
+	@Override
 	public short readShort() throws IOException {
 		return raf.readShort();
 	}
 
 	/** Read an input byte and zero extend it appropriately. */
+	@Override
 	public int readUnsignedByte() throws IOException {
 		return raf.readUnsignedByte();
 	}
 
 	/** Read two bytes and return an int in the range 0 through 65535. */
+	@Override
 	public int readUnsignedShort() throws IOException {
 		return raf.readUnsignedShort();
 	}
 
 	/** Read a string that has been encoded using a modified UTF-8 format. */
+	@Override
 	public String readUTF() throws IOException {
 		return null; // not implemented yet...we don't really need this
 	}
 
 	/** Skip n bytes within the stream. */
+	@Override
 	public int skipBytes(final int n) throws IOException {
 		return raf.skipBytes(n);
 	}
@@ -409,6 +422,7 @@ public class NIOInputStream extends InputStream implements DataInput {
 	}
 
 	/** Read bytes from the stream into the given array. */
+	@Override
 	public void readFully(final byte[] array) throws IOException {
 		readFully(array, 0, array.length);
 	}
@@ -416,6 +430,7 @@ public class NIOInputStream extends InputStream implements DataInput {
 	/**
 	 * Read n bytes from the stream into the given array at the specified offset.
 	 */
+	@Override
 	public void readFully(final byte[] array, final int offset, final int n)
 		throws IOException
 	{

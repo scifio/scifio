@@ -89,10 +89,12 @@ public class MicromanagerFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Micro-Manager";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "tif", "tiff", "txt", "xml" };
 	}
@@ -125,6 +127,7 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		// -- Metadata API methods --
 
+		@Override
 		public void populateImageMetadata() {
 
 			for (int i = 0; i < getImageCount(); i++) {
@@ -746,6 +749,7 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		// -- Reader API methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

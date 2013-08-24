@@ -81,10 +81,12 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Minimal TIFF";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "tif", "tiff" };
 	}
@@ -217,6 +219,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			createImageMetadata(1);
 			final ImageMetadata ms0 = get(0);
@@ -351,6 +354,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		// -- HasColorTable API methods --
 
+		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			if (ifds == null || lastPlane < 0 || lastPlane > ifds.size()) return null;
@@ -629,6 +633,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			return plane;
 		}
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

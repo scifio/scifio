@@ -107,46 +107,56 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	// -- Metadata API Methods --
 
+	@Override
 	public void setSource(final RandomAccessInputStream source) {
 		this.source = source;
 
 		if (source != null) setDatasetName(source.getFileName());
 	}
 
+	@Override
 	public RandomAccessInputStream getSource() {
 		return source;
 	}
 
+	@Override
 	public boolean isFiltered() {
 		return filtered;
 	}
 
+	@Override
 	public MetadataOptions getMetadataOptions() {
 		return metadataOptions;
 	}
 
 	// -- Getters --
 
+	@Override
 	public String getDatasetName() {
 		return datasetName;
 	}
 
+	@Override
 	public ImageMetadata get(final int imageIndex) {
 		return imageMeta.get(imageIndex);
 	}
 
+	@Override
 	public List<ImageMetadata> getAll() {
 		return imageMeta;
 	}
 
+	@Override
 	public int getImageCount() {
 		return imageMeta.size();
 	}
 
+	@Override
 	public int getPlaneCount(final int imageIndex) {
 		return imageMeta.get(imageIndex).getPlaneCount();
 	}
 
+	@Override
 	public long getDatasetSize() {
 		int size = 0;
 
@@ -156,227 +166,278 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 		return size;
 	}
 
+	@Override
 	public long getImageSize(final int imageIndex) {
 		return imageMeta.get(imageIndex).getSize();
 	}
 
+	@Override
 	public boolean isInterleaved(final int imageIndex) {
 		return imageMeta.get(imageIndex).isInterleaved();
 	}
 
+	@Override
 	public int getPixelType(final int imageIndex) {
 		return imageMeta.get(imageIndex).getPixelType();
 	}
 
+	@Override
 	public int getEffectiveSizeC(final int imageIndex) {
 		return imageMeta.get(imageIndex).getEffectiveSizeC();
 	}
 
+	@Override
 	public int getRGBChannelCount(final int imageIndex) {
 		return imageMeta.get(imageIndex).getRGBChannelCount();
 	}
 
+	@Override
 	public boolean isLittleEndian(final int imageIndex) {
 		return imageMeta.get(imageIndex).isLittleEndian();
 	}
 
+	@Override
 	public boolean isIndexed(final int imageIndex) {
 		return imageMeta.get(imageIndex).isIndexed();
 	}
 
+	@Override
 	public int getBitsPerPixel(final int imageIndex) {
 		return imageMeta.get(imageIndex).getBitsPerPixel();
 	}
 
+	@Override
 	public boolean isRGB(final int imageIndex) {
 		return imageMeta.get(imageIndex).isRGB();
 	}
 
+	@Override
 	public boolean isFalseColor(final int imageIndex) {
 		return imageMeta.get(imageIndex).isFalseColor();
 	}
 
+	@Override
 	public int getThumbSizeX(final int imageIndex) {
 		return imageMeta.get(imageIndex).getThumbSizeX();
 	}
 
+	@Override
 	public int getThumbSizeY(final int imageIndex) {
 		return imageMeta.get(imageIndex).getThumbSizeY();
 	}
 	
+	@Override
 	public CalibratedAxis getAxis(int imageIndex, AxisType type) {
 		return imageMeta.get(imageIndex).getAxis(type);
 	}
 	
+	@Override
 	public int getAxisCount(final int imageIndex) {
 		return imageMeta.get(imageIndex).getAxesLengths().length;
 	}
 
+	@Override
 	public CalibratedAxis getAxisType(final int imageIndex, final int planeIndex)
 	{
 		return imageMeta.get(imageIndex).getAxisType(planeIndex);
 	}
 
+	@Override
 	public int getAxisLength(final int imageIndex, final int planeIndex) {
 		return imageMeta.get(imageIndex).getAxisLength(planeIndex);
 	}
 
+	@Override
 	public int getAxisLength(final int imageIndex, final CalibratedAxis t) {
 		return imageMeta.get(imageIndex).getAxisLength(t);
 	}
 
+	@Override
 	public int getAxisLength(final int imageIndex, final AxisType t) {
 		return imageMeta.get(imageIndex).getAxisLength(t);
 	}
 
+	@Override
 	public int getAxisIndex(final int imageIndex, final CalibratedAxis type) {
 		return imageMeta.get(imageIndex).getAxisIndex(type);
 	}
 
+	@Override
 	public int getAxisIndex(final int imageIndex, final AxisType type) {
 		return imageMeta.get(imageIndex).getAxisIndex(type);
 	}
 
+	@Override
 	public CalibratedAxis[] getAxes(final int imageIndex) {
 		return imageMeta.get(imageIndex).getAxes();
 	}
 
+	@Override
 	public int[] getAxesLengths(final int imageIndex) {
 		return imageMeta.get(imageIndex).getAxesLengths();
 	}
 
+	@Override
 	public boolean isOrderCertain(final int imageIndex) {
 		return imageMeta.get(imageIndex).isOrderCertain();
 	}
 
+	@Override
 	public boolean isThumbnailImage(final int imageIndex) {
 		return imageMeta.get(imageIndex).isThumbnail();
 	}
 
+	@Override
 	public boolean isMetadataComplete(final int imageIndex) {
 		return imageMeta.get(imageIndex).isMetadataComplete();
 	}
 
 	// -- Setters --
 
+	@Override
 	public void setDatasetName(final String name) {
 		datasetName = name;
 	}
 
+	@Override
 	public void setThumbSizeX(final int imageIndex, final int thumbX) {
 		imageMeta.get(imageIndex).setThumbSizeX(thumbX);
 	}
 
+	@Override
 	public void setThumbSizeY(final int imageIndex, final int thumbY) {
 		imageMeta.get(imageIndex).setThumbSizeY(thumbY);
 	}
 
+	@Override
 	public void setPixelType(final int imageIndex, final int type) {
 		imageMeta.get(imageIndex).setPixelType(type);
 	}
 
+	@Override
 	public void setBitsPerPixel(final int imageIndex, final int bpp) {
 		imageMeta.get(imageIndex).setBitsPerPixel(bpp);
 	}
 
+	@Override
 	public void setOrderCertain(final int imageIndex, final boolean orderCertain)
 	{
 		imageMeta.get(imageIndex).setOrderCertain(orderCertain);
 	}
 
+	@Override
 	public void setRGB(final int imageIndex, final boolean rgb) {
 		imageMeta.get(imageIndex).setRGB(rgb);
 	}
 
+	@Override
 	public void setLittleEndian(final int imageIndex, final boolean littleEndian)
 	{
 		imageMeta.get(imageIndex).setLittleEndian(littleEndian);
 	}
 
+	@Override
 	public void setInterleaved(final int imageIndex, final boolean interleaved) {
 		imageMeta.get(imageIndex).setInterleaved(interleaved);
 	}
 
+	@Override
 	public void setIndexed(final int imageIndex, final boolean indexed) {
 		imageMeta.get(imageIndex).setIndexed(indexed);
 	}
 
+	@Override
 	public void setFalseColor(final int imageIndex, final boolean falseC) {
 		imageMeta.get(imageIndex).setFalseColor(falseC);
 	}
 
+	@Override
 	public void setMetadataComplete(final int imageIndex,
 		final boolean metadataComplete)
 	{
 		imageMeta.get(imageIndex).setMetadataComplete(metadataComplete);
 	}
 
+	@Override
 	public void setFiltered(final boolean filtered) {
 		this.filtered = filtered;
 	}
 
+	@Override
 	public void setMetadataOptions(final MetadataOptions opts) {
 		metadataOptions = opts;
 	}
 
+	@Override
 	public void add(final ImageMetadata meta) {
 		imageMeta.add(meta);
 	}
 
+	@Override
 	public void setThumbnailImage(final int imageIndex, final boolean thumbnail) {
 		imageMeta.get(imageIndex).setThumbnail(thumbnail);
 	}
 
+	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis type) {
 		imageMeta.get(imageIndex).addAxis(type);
 	}
 
+	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis type,
 		final int value)
 	{
 		imageMeta.get(imageIndex).addAxis(type, value);
 	}
 
+	@Override
 	public void
 		addAxis(final int imageIndex, final AxisType type, final int value)
 	{
 		imageMeta.get(imageIndex).addAxis(type, value);
 	}
 
+	@Override
 	public void setAxisTypes(final int imageIndex,
 		final CalibratedAxis[] axisTypes)
 	{
 		imageMeta.get(imageIndex).setAxisTypes(axisTypes);
 	}
 
+	@Override
 	public void setAxisType(final int imageIndex, final int axisIndex,
 		final CalibratedAxis axis)
 	{
 		imageMeta.get(imageIndex).setAxisType(axisIndex, axis);
 	}
 
+	@Override
 	public void setAxisType(final int imageIndex, final int axisIndex,
 		final AxisType axis)
 	{
 		imageMeta.get(imageIndex).setAxisType(axisIndex, axis);
 	}
 
+	@Override
 	public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
 		imageMeta.get(imageIndex).setAxisLengths(axisLengths);
 	}
 
+	@Override
 	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
 		final int length)
 	{
 		imageMeta.get(imageIndex).setAxisLength(axis, length);
 	}
 
+	@Override
 	public void setAxisLength(final int imageIndex, final AxisType axis,
 		final int length)
 	{
 		imageMeta.get(imageIndex).setAxisLength(axis, length);
 	}
 
+	@Override
 	public void createImageMetadata(final int imageCount) {
 		imageMeta.clear();
 
@@ -386,17 +447,20 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	// -- HasMetaTable API Methods --
 
+	@Override
 	public MetaTable getTable() {
 		if (table == null) table = new DefaultMetaTable();
 		return table;
 	}
 
+	@Override
 	public void setTable(final MetaTable table) {
 		this.table = table;
 	}
 
 	// -- HasSource API Methods --
 
+	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		if (source != null) {
 			source.close();

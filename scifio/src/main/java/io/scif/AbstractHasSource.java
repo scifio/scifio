@@ -48,6 +48,7 @@ public abstract class AbstractHasSource extends AbstractHasFormat implements
 	HasSource
 {
 
+	@Override
 	public void close() throws IOException {
 		close(false);
 	}

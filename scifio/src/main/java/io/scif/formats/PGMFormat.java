@@ -65,10 +65,12 @@ public class PGMFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Portable Gray Map";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "pgm" };
 	}
@@ -107,6 +109,7 @@ public class PGMFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 			iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
@@ -231,6 +234,7 @@ public class PGMFormat extends AbstractFormat {
 
 		// -- Reader API methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

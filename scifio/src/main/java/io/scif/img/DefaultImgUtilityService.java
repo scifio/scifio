@@ -103,6 +103,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	// -- ImgUtilityService methods --
 
 	/** Compiles an N-dimensional list of axis lengths from the given reader. */
+	@Override
 	public long[] getDimLengths(final Metadata m, final ImgOptions imgOptions) {
 		final int imageIndex = imgOptions.getIndex();
 		final long sizeX = m.getAxisLength(imageIndex, Axes.X);
@@ -145,6 +146,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 		return dimLengths;
 	}
 
+	@Override
 	public long[] getConstrainedLengths(final Metadata m,
 		final ImgOptions imgOptions)
 	{
@@ -168,6 +170,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	 * @param source - the location of the dataset to assess
 	 * @return The number of images in the specified dataset.
 	 */
+	@Override
 	public int getImageCount(final String source) throws ImgIOException {
 		try {
 			final Format format = scifio().format().getFormat(source);
@@ -190,6 +193,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	 * first file in the archive is cached.
 	 * </p>
 	 */
+	@Override
 	public String cacheId(final String urlPath) throws ImgIOException {
 		InputStream in = null;
 		OutputStream out = null;
@@ -246,6 +250,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	}
 
 	/** Obtains planar access instance backing the given img, if any. */
+	@Override
 	@SuppressWarnings("unchecked")
 	public PlanarAccess<ArrayDataAccess<?>> getPlanarAccess(final ImgPlus<?> img)
 	{
@@ -256,6 +261,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	}
 
 	/** Obtains array access instance backing the given img, if any. */
+	@Override
 	public ArrayImg<?, ?> getArrayAccess(final ImgPlus<?> img) {
 		if (img.getImg() instanceof ArrayImg) {
 			return (ArrayImg<?, ?>) img.getImg();
@@ -264,6 +270,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	}
 
 	/** Converts SCIFIO pixel type to ImgLib2 Type object. */
+	@Override
 	public RealType<?> makeType(final int pixelType) {
 		final RealType<?> type;
 		switch (pixelType) {
@@ -300,6 +307,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	/**
 	 * Converts ImgLib2 Type object to SCIFIO pixel type.
 	 */
+	@Override
 	public int makeType(final RealType<?> type) throws ImgIOException {
 		int pixelType = FormatTools.UINT8;
 		if (type instanceof UnsignedByteType) {
@@ -335,6 +343,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	}
 
 	/** Wraps raw primitive array in ImgLib2 Array object. */
+	@Override
 	public ArrayDataAccess<?> makeArray(final Object array) {
 		final ArrayDataAccess<?> access;
 		if (array instanceof byte[]) {
@@ -365,6 +374,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	/**
 	 * see isCompressible(ImgPlus)
 	 */
+	@Override
 	public <T extends RealType<T> & NativeType<T>> boolean isCompressible(
 		final Img<T> img)
 	{
@@ -381,6 +391,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	 * return true if the axes of the provided image can be represented with a
 	 * valid 5D String, and false otherwise.
 	 */
+	@Override
 	public <T extends RealType<T> & NativeType<T>> boolean isCompressible(
 		final ImgPlus<T> img)
 	{
@@ -420,6 +431,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 		return (dimOrder != null);
 	}
 
+	@Override
 	public String guessDimOrder(final CalibratedAxis[] axes,
 		final long[] dimLengths, final long[] newLengths)
 	{

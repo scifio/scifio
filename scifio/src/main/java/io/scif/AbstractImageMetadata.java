@@ -162,54 +162,67 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	// -- Setters --
 
+	@Override
 	public void setThumbSizeX(final int thumbSizeX) {
 		this.thumbSizeX = thumbSizeX;
 	}
 
+	@Override
 	public void setThumbSizeY(final int thumbSizeY) {
 		this.thumbSizeY = thumbSizeY;
 	}
 
+	@Override
 	public void setPixelType(final int pixelType) {
 		this.pixelType = pixelType;
 	}
 
+	@Override
 	public void setBitsPerPixel(final int bitsPerPixel) {
 		this.bitsPerPixel = bitsPerPixel;
 	}
 
+	@Override
 	public void setOrderCertain(final boolean orderCertain) {
 		this.orderCertain = orderCertain;
 	}
 
+	@Override
 	public void setRGB(final boolean rgb) {
 		this.rgb = rgb;
 	}
 
+	@Override
 	public void setLittleEndian(final boolean littleEndian) {
 		this.littleEndian = littleEndian;
 	}
 
+	@Override
 	public void setInterleaved(final boolean interleaved) {
 		this.interleaved = interleaved;
 	}
 
+	@Override
 	public void setIndexed(final boolean indexed) {
 		this.indexed = indexed;
 	}
 
+	@Override
 	public void setFalseColor(final boolean falseColor) {
 		this.falseColor = falseColor;
 	}
 
+	@Override
 	public void setMetadataComplete(final boolean metadataComplete) {
 		this.metadataComplete = metadataComplete;
 	}
 
+	@Override
 	public void setThumbnail(final boolean thumbnail) {
 		this.thumbnail = thumbnail;
 	}
 
+	@Override
 	public void
 		setAxes(final CalibratedAxis[] axisTypes, final int[] axisLengths)
 	{
@@ -217,10 +230,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		setAxisLengths(axisLengths);
 	}
 
+	@Override
 	public void setAxisTypes(final CalibratedAxis[] axisTypes) {
 		this.axisTypes = new ArrayList<CalibratedAxis>(Arrays.asList(axisTypes));
 	}
 
+	@Override
 	public void setAxisLengths(final int[] axisLengths) {
 		if (axisLengths.length != axisTypes.size()) throw new IllegalArgumentException(
 			"Tried to set " + axisLengths.length + " axis lengths, but " +
@@ -231,15 +246,18 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		}
 	}
 
+	@Override
 	public void setAxisLength(final CalibratedAxis axis, final int length) {
 		setAxisLength(axis.type(), length);
 	}
 
+	@Override
 	public void setAxisLength(final AxisType axis, final int length) {
 		if (getAxisIndex(axis) == -1) addAxis(FormatTools.calibrate(axis), length);
 		else updateLength(axis, length);
 	}
 
+	@Override
 	public void setAxisType(final int index, final CalibratedAxis axis) {
 		final int oldIndex = getAxisIndex(axis);
 
@@ -257,20 +275,24 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		}
 	}
 
+	@Override
 	public void setAxisType(final int index, final AxisType axis) {
 		setAxisType(index, FormatTools.calibrate(axis));
 	}
 
+	@Override
 	public void setPlaneCount(final int planeCount) {
 		this.planeCount = planeCount;
 	}
 
 	// -- Getters --
 
+	@Override
 	public int getPlaneCount() {
 		return planeCount;
 	}
 
+	@Override
 	public long getSize() {
 		long size = 1;
 
@@ -283,6 +305,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return DataTools.safeMultiply64(size, bytesPerPixel);
 	}
 
+	@Override
 	public int getThumbSizeX() {
 		int thumbX = thumbSizeX;
 
@@ -301,6 +324,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return thumbX;
 	}
 
+	@Override
 	public int getThumbSizeY() {
 		int thumbY = thumbSizeY;
 
@@ -320,6 +344,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return thumbY;
 	}
 
+	@Override
 	public CalibratedAxis getAxis(AxisType type) {
 		for (CalibratedAxis axis : axisTypes) {
 			if (axis.type().equals(type)) return axis;
@@ -327,18 +352,22 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return null;
 	}
 	
+	@Override
 	public int getPixelType() {
 		return pixelType;
 	}
 
+	@Override
 	public int getBitsPerPixel() {
 		return bitsPerPixel;
 	}
 
+	@Override
 	public CalibratedAxis[] getAxes() {
 		return axisTypes.toArray(new CalibratedAxis[axisTypes.size()]);
 	}
 
+	@Override
 	public int[] getAxesLengths() {
 		final int[] lengths = new int[axisTypes.size()];
 
@@ -349,44 +378,54 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return lengths;
 	}
 
+	@Override
 	public boolean isOrderCertain() {
 		return orderCertain;
 	}
 
+	@Override
 	public boolean isRGB() {
 		return rgb;
 	}
 
+	@Override
 	public boolean isLittleEndian() {
 		return littleEndian;
 	}
 
+	@Override
 	public boolean isInterleaved() {
 		return interleaved;
 	}
 
+	@Override
 	public boolean isIndexed() {
 		return indexed;
 	}
 
+	@Override
 	public boolean isFalseColor() {
 		return falseColor;
 	}
 
+	@Override
 	public boolean isMetadataComplete() {
 		return metadataComplete;
 	}
 
+	@Override
 	public boolean isThumbnail() {
 		return thumbnail;
 	}
 
+	@Override
 	public int getEffectiveSizeC() {
 		final int sizeZT = getAxisLength(Axes.Z) * getAxisLength(Axes.TIME);
 		if (sizeZT == 0) return 0;
 		return getPlaneCount() / sizeZT;
 	}
 
+	@Override
 	public int getRGBChannelCount() {
 		if (!isRGB()) return 1;
 
@@ -395,10 +434,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return getAxisLength(Axes.CHANNEL) / effC;
 	}
 
+	@Override
 	public CalibratedAxis getAxisType(final int axisIndex) {
 		return axisTypes.get(axisIndex);
 	}
 
+	@Override
 	public int getAxisLength(final int axisIndex) {
 		if (axisIndex < 0 || axisIndex >= axisTypes.size()) throw new IllegalArgumentException(
 			"Invalid axisIndex: " + axisIndex + ". " + axisTypes.size() +
@@ -407,20 +448,24 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return getAxisLength(axisTypes.get(axisIndex).type());
 	}
 
+	@Override
 	public int getAxisLength(final CalibratedAxis t) {
 		return getAxisLength(t.type());
 	}
 
+	@Override
 	public int getAxisLength(final AxisType t) {
 		if (axisLengths == null || !axisLengths.containsKey(t)) return 0;
 
 		return axisLengths.get(t);
 	}
 
+	@Override
 	public int getAxisIndex(final CalibratedAxis type) {
 		return getAxisIndex(type.type());
 	}
 
+	@Override
 	public int getAxisIndex(final AxisType type) {
 		if (axisTypes == null) return -1;
 
@@ -433,10 +478,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return index;
 	}
 
+	@Override
 	public void addAxis(final CalibratedAxis type) {
 		addAxis(type, 0);
 	}
 
+	@Override
 	public void addAxis(final CalibratedAxis type, final int value) {
 		if (axisTypes == null) axisTypes = new ArrayList<CalibratedAxis>();
 
@@ -446,10 +493,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		updateLength(type.type(), value);
 	}
 
+	@Override
 	public void addAxis(final AxisType type, final int value) {
 		addAxis(FormatTools.calibrate(type), value);
 	}
 
+	@Override
 	public void copy(final ImageMetadata toCopy) {
 		table = new DefaultMetaTable(toCopy.getTable());
 
@@ -472,11 +521,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	// -- HasTable API Methods --
 
+	@Override
 	public MetaTable getTable() {
 		if (table == null) table = new DefaultMetaTable();
 		return table;
 	}
 
+	@Override
 	public void setTable(final MetaTable table) {
 		this.table = table;
 	}

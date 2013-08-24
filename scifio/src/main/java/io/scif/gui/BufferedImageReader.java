@@ -66,6 +66,7 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 
 	// -- Reader API Methods --
 
+	@Override
 	public BufferedImagePlane openThumbPlane(final int imageIndex,
 		final int planeIndex) throws FormatException, IOException
 	{
@@ -84,12 +85,14 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 		return plane;
 	}
 
+	@Override
 	public BufferedImagePlane createPlane(final int xOffset, final int yOffset,
 		final int xLength, final int yLength)
 	{
 		return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
 	}
 
+	@Override
 	public BufferedImagePlane createPlane(final ImageMetadata meta,
 		final int xOffset, final int yOffset, final int xLength, final int yLength)
 	{

@@ -113,6 +113,7 @@ public class TiffIFDEntry implements Comparable<Object> {
 
 	// -- Comparable API methods --
 
+	@Override
 	public int compareTo(final Object o) {
 		if (!(o instanceof TiffIFDEntry)) return 1;
 		final long offset = ((TiffIFDEntry) o).getValueOffset();

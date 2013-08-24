@@ -61,6 +61,7 @@ public interface TypedWriter<M extends TypedMetadata> extends Writer {
 	 */
 	void setMetadata(M meta) throws FormatException;
 
+	@Override
 	M getMetadata();
 
 }

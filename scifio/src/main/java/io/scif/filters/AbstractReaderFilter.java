@@ -179,6 +179,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	// -- Reader API Methods --
 
+	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
 	{
@@ -186,6 +187,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().openPlane(imageIndex, planeIndex);
 	}
 
+	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final int x, final int y, final int w, final int h) throws FormatException,
 		IOException
@@ -194,6 +196,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().openPlane(imageIndex, planeIndex, x, y, w, h);
 	}
 
+	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
@@ -201,6 +204,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().openPlane(imageIndex, planeIndex, plane);
 	}
 
+	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane, final int x, final int y, final int w, final int h)
 		throws FormatException, IOException
@@ -209,50 +213,61 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
 	}
 
+	@Override
 	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
 	{
 		return getParent().openThumbPlane(imageIndex, planeIndex);
 	}
 
+	@Override
 	public void setGroupFiles(final boolean group) {
 		getParent().setGroupFiles(group);
 	}
 
+	@Override
 	public boolean isGroupFiles() {
 		return getParent().isGroupFiles();
 	}
 
+	@Override
 	public int fileGroupOption(final String id) throws FormatException,
 		IOException
 	{
 		return getParent().fileGroupOption(id);
 	}
 
+	@Override
 	public String getCurrentFile() {
 		return getParent().getCurrentFile();
 	}
 
+	@Override
 	public String[] getDomains() {
 		return getParent().getDomains();
 	}
 
+	@Override
 	public RandomAccessInputStream getStream() {
 		return getParent().getStream();
 	}
 
+	@Override
 	public Reader[] getUnderlyingReaders() {
 		return getParent().getUnderlyingReaders();
 	}
 
+	@Override
 	public int getOptimalTileWidth(final int imageIndex) {
 		return getParent().getOptimalTileWidth(imageIndex);
 	}
 
+	@Override
 	public int getOptimalTileHeight(final int imageIndex) {
 		return getParent().getOptimalTileHeight(imageIndex);
 	}
 
+	@Override
 	public void setMetadata(final Metadata meta) throws IOException {
 		getParent().setMetadata(meta);
 
@@ -261,32 +276,39 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		else wrappedMeta = meta;
 	}
 
+	@Override
 	public Metadata getMetadata() {
 		return wrappedMeta;
 	}
 
+	@Override
 	public void setNormalized(final boolean normalize) {
 		getParent().setNormalized(normalize);
 	}
 
+	@Override
 	public boolean isNormalized() {
 		return getParent().isNormalized();
 	}
 
+	@Override
 	public boolean hasCompanionFiles() {
 		return getParent().hasCompanionFiles();
 	}
 
+	@Override
 	public void setSource(final String fileName) throws IOException {
 		setSourceHelper(fileName);
 		getParent().setSource(fileName);
 	}
 
+	@Override
 	public void setSource(final File file) throws IOException {
 		setSourceHelper(file.getAbsolutePath());
 		getParent().setSource(file);
 	}
 
+	@Override
 	public void setSource(final RandomAccessInputStream stream)
 		throws IOException
 	{
@@ -294,14 +316,17 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		getParent().setSource(stream);
 	}
 
+	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		getParent().close(fileOnly);
 	}
 
+	@Override
 	public void close() throws IOException {
 		getParent().close();
 	}
 
+	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final Plane plane)
 		throws IOException
@@ -310,6 +335,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().readPlane(s, imageIndex, x, y, w, h, plane);
 	}
 
+	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final int scanlinePad,
 		final Plane plane) throws IOException
@@ -318,32 +344,38 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().readPlane(s, imageIndex, x, y, w, h, scanlinePad, plane);
 	}
 
+	@Override
 	public int getPlaneCount(final int imageIndex) {
 		return getParent().getPlaneCount(imageIndex);
 	}
 
+	@Override
 	public int getImageCount() {
 		return getParent().getImageCount();
 	}
 
+	@Override
 	public Plane createPlane(final int xOffset, final int yOffset,
 		final int xLength, final int yLength)
 	{
 		return getParent().createPlane(xOffset, yOffset, xLength, yLength);
 	}
 
+	@Override
 	public Plane createPlane(final ImageMetadata meta, final int xOffset,
 		final int yOffset, final int xLength, final int yLength)
 	{
 		return getParent().createPlane(meta, xOffset, yOffset, xLength, yLength);
 	}
 
+	@Override
 	public <P extends Plane> P castToTypedPlane(final Plane plane) {
 		return getParent().<P> castToTypedPlane(plane);
 	}
 
 	// -- Groupable API Methods --
 
+	@Override
 	public boolean isSingleFile(final String id) throws FormatException,
 		IOException
 	{
@@ -352,6 +384,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	// -- HasFormat API Methods --
 
+	@Override
 	public Format getFormat() {
 		return getParent().getFormat();
 	}

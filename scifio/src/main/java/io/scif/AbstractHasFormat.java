@@ -49,6 +49,7 @@ public abstract class AbstractHasFormat extends AbstractSCIFIOComponent
 
 	// -- HasFormat API --
 
+	@Override
 	public Format getFormat() {
 		// All Format lookups go through the FormatService
 		return scifio().format().getFormatFromComponent(getClass());

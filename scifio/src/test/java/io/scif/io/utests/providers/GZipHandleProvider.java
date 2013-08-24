@@ -56,6 +56,7 @@ class GZipHandleProvider extends ContextualProvider implements
 	IRandomAccessProvider
 {
 
+	@Override
 	public IRandomAccess createMock(final byte[] page, final String mode,
 		final int bufferSize) throws IOException
 	{

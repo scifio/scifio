@@ -97,10 +97,12 @@ public class APNGFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Animated PNG";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "png" };
 	}
@@ -171,6 +173,7 @@ public class APNGFormat extends AbstractFormat {
 			littleEndian = little;
 		}
 
+		@Override
 		public void populateImageMetadata() {
 			createImageMetadata(1);
 
@@ -513,6 +516,7 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final int planeIndex, final BufferedImagePlane plane, final int x,
 			final int y, final int w, final int h) throws FormatException,
@@ -706,6 +710,7 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- Writer API Methods --
 
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

@@ -59,6 +59,7 @@ public class DefaultCodecService extends AbstractSingletonService<Codec>
 
 	// -- CodecService methods --
 
+	@Override
 	public <C extends Codec> C getCodec(final Class<C> codecClass) {
 		getInstances(); // NB: Force instantiation of singletons.
 		final List<C> objects = objectService.getObjects(codecClass);
@@ -67,6 +68,7 @@ public class DefaultCodecService extends AbstractSingletonService<Codec>
 
 	// -- PTService methods --
 
+	@Override
 	public Class<Codec> getPluginType() {
 		return Codec.class;
 	}

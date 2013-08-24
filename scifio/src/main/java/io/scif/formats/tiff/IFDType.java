@@ -96,6 +96,7 @@ public enum IFDType implements CodedEnum {
 		this.bytesPerElement = bytesPerElement;
 	}
 
+	@Override
 	public int getCode() {
 		return code;
 	}

@@ -80,12 +80,14 @@ public class DefaultInitializeService extends AbstractService implements
 
 	// -- InitializeService API Methods --
 
+	@Override
 	public ReaderFilter initializeReader(final String id) throws FormatException,
 		IOException
 	{
 		return initializeReader(id, false);
 	}
 
+	@Override
 	public ReaderFilter initializeReader(final String id, final boolean openFile)
 		throws FormatException, IOException
 	{
@@ -95,12 +97,14 @@ public class DefaultInitializeService extends AbstractService implements
 		return new ReaderFilter(r);
 	}
 
+	@Override
 	public Writer initializeWriter(final String source, final String destination)
 		throws FormatException, IOException
 	{
 		return initializeWriter(source, destination, false);
 	}
 
+	@Override
 	public Writer initializeWriter(final String source, final String destination,
 		final boolean openSource) throws FormatException, IOException
 	{
@@ -112,6 +116,7 @@ public class DefaultInitializeService extends AbstractService implements
 		return initializeWriter(sourceMeta, destination);
 	}
 
+	@Override
 	public Writer initializeWriter(final Metadata sourceMeta,
 		final String destination) throws FormatException, IOException
 	{
@@ -141,11 +146,13 @@ public class DefaultInitializeService extends AbstractService implements
 		return writer;
 	}
 
+	@Override
 	public Metadata parseMetadata(String id) throws IOException, FormatException {
 		Format format = formatService.getFormat(id);
 		return format.createParser().parse(id);
 	}
 
+	@Override
 	public Metadata parseMetadata(String id, boolean openFile)
 		throws FormatException, IOException
 	{

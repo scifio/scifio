@@ -70,6 +70,7 @@ public class LuraWaveCodec extends AbstractCodec {
 
 	// -- Codec API methods --
 
+	@Override
 	public byte[] compress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{

@@ -105,6 +105,7 @@ public class ZipHandle extends StreamHandle {
 	// -- IStreamAccess API methods --
 
 	/** Returns true if the given filename is a Zip file. */
+	@Override
 	public boolean isConstructable(final String file) throws IOException {
 		if (!file.toLowerCase().endsWith(".zip")) return false;
 
@@ -184,6 +185,7 @@ public class ZipHandle extends StreamHandle {
 		setFile(file, null);
 	}
 
+	@Override
 	public void resetStream() throws IOException {
 		if (getStream() != null) getStream().close();
 		if (in != null) {

@@ -57,20 +57,24 @@ public class ParserErrorHandler implements ErrorHandler, HasLog {
 
 	// -- ParserErrorHandler API methods --
 
+	@Override
 	public void error(final SAXParseException e) {
 		log().debug(e.getMessage());
 	}
 
+	@Override
 	public void fatalError(final SAXParseException e) {
 		log().debug(e.getMessage());
 	}
 
+	@Override
 	public void warning(final SAXParseException e) {
 		log().debug(e.getMessage());
 	}
 
 	// -- HasLog API methods --
 
+	@Override
 	public LogService log() {
 		return log;
 	}

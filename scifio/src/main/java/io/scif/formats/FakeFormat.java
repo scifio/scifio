@@ -176,10 +176,12 @@ public class FakeFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Simulated data";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "fake" };
 	}
@@ -273,6 +275,7 @@ public class FakeFormat extends AbstractFormat {
 		/**
 		 * Returns the current color table for this dataset
 		 */
+		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			return lut == null ? null : lut[ac];
@@ -283,6 +286,7 @@ public class FakeFormat extends AbstractFormat {
 		/**
 		 * Generates ImageMetadata based on the id of this dataset.
 		 */
+		@Override
 		public void populateImageMetadata() {
 			int sizeX = DEFAULT_SIZE_X;
 			int sizeY = DEFAULT_SIZE_Y;
@@ -528,6 +532,7 @@ public class FakeFormat extends AbstractFormat {
 
 		// -- Reader API methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException
@@ -762,10 +767,12 @@ public class FakeFormat extends AbstractFormat {
 
 		// -- IStreamAccess API Methods --
 
+		@Override
 		public boolean isConstructable(final String id) throws IOException {
 			return id.endsWith("fake");
 		}
 
+		@Override
 		public void resetStream() throws IOException {
 			// no-op as there is no backing stream
 		}

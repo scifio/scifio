@@ -121,12 +121,14 @@ public class URLHandle extends StreamHandle {
 
 	// -- IStreamAccess API methods --
 
+	@Override
 	public boolean isConstructable(final String id) throws IOException {
 		return id.startsWith("http:") || id.startsWith("file:");
 	}
 
 	// -- StreamHandle API methods --
 
+	@Override
 	public void resetStream() throws IOException {
 		conn = (new URL(url)).openConnection();
 		setStream(new DataInputStream(new BufferedInputStream(

@@ -85,6 +85,7 @@ public class BufferedImagePlane extends
 	 * 
 	 * @return The byte[] extracted from this Plane's BufferedImage
 	 */
+	@Override
 	public byte[] getBytes() {
 		byte[] t = null;
 

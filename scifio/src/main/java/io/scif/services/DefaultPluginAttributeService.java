@@ -70,12 +70,14 @@ public class DefaultPluginAttributeService extends AbstractService implements
 	@Parameter
 	private LogService logService;
 
+	@Override
 	public <PT extends SCIFIOPlugin> PT createInstance(final Class<PT> type,
 		final Map<String, String> andPairs, final Map<String, String> orPairs)
 	{
 		return createInstance(type, andPairs, orPairs, false);
 	}
 
+	@Override
 	public <PT extends SCIFIOPlugin> PT createInstance(final Class<PT> type,
 		final Map<String, String> andPairs, final Map<String, String> orPairs,
 		final boolean exact)
@@ -85,6 +87,7 @@ public class DefaultPluginAttributeService extends AbstractService implements
 		return plugin == null ? null : pluginService.createInstance(plugin);
 	}
 
+	@Override
 	public <PT extends SCIFIOPlugin> PluginInfo<PT> getPlugin(
 		final Class<PT> type, final Map<String, String> andPairs,
 		final Map<String, String> orPairs, final boolean exact)
@@ -94,6 +97,7 @@ public class DefaultPluginAttributeService extends AbstractService implements
 		return pluginList.size() > 0 ? pluginList.get(0) : null;
 	}
 
+	@Override
 	public <PT extends SCIFIOPlugin> List<PluginInfo<PT>> getPluginsOfType(
 		final Class<PT> type, final Map<String, String> andPairs,
 		final Map<String, String> orPairs, final boolean exact)

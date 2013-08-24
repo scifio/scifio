@@ -151,12 +151,14 @@ public abstract class StreamHandle extends SortablePlugin implements
 
 	// -- IStreamAccess API methods --
 
+	@Override
 	public void setFile(final String file) throws IOException {
 		this.file = file;
 	}
 
 	// -- IRandomAccess API methods --
 
+	@Override
 	public void close() throws IOException {
 		length = fp = mark = 0;
 		if (stream != null) stream.close();
@@ -166,18 +168,22 @@ public abstract class StreamHandle extends SortablePlugin implements
 		file = null;
 	}
 
+	@Override
 	public long getFilePointer() throws IOException {
 		return fp;
 	}
 
+	@Override
 	public long length() throws IOException {
 		return length;
 	}
 
+	@Override
 	public int read(final byte[] b) throws IOException {
 		return read(b, 0, b.length);
 	}
 
+	@Override
 	public int read(final byte[] b, final int off, final int len)
 		throws IOException
 	{
@@ -193,10 +199,12 @@ public abstract class StreamHandle extends SortablePlugin implements
 		return n == -1 ? 0 : n;
 	}
 
+	@Override
 	public int read(final ByteBuffer buffer) throws IOException {
 		return read(buffer, 0, buffer.capacity());
 	}
 
+	@Override
 	public int read(final ByteBuffer buffer, final int off, final int len)
 		throws IOException
 	{
@@ -210,6 +218,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		return n;
 	}
 
+	@Override
 	public void seek(final long pos) throws IOException {
 		long diff = pos - fp;
 		fp = pos;
@@ -226,10 +235,12 @@ public abstract class StreamHandle extends SortablePlugin implements
 		}
 	}
 
+	@Override
 	public void write(final ByteBuffer buf) throws IOException {
 		write(buf, 0, buf.capacity());
 	}
 
+	@Override
 	public void write(final ByteBuffer buf, final int off, final int len)
 		throws IOException
 	{
@@ -244,48 +255,57 @@ public abstract class StreamHandle extends SortablePlugin implements
 		}
 	}
 
+	@Override
 	public ByteOrder getOrder() {
 		return order;
 	}
 
+	@Override
 	public void setOrder(final ByteOrder order) {
 		this.order = order;
 	}
 
 	// -- DataInput API methods --
 
+	@Override
 	public boolean readBoolean() throws IOException {
 		fp++;
 		return stream.readBoolean();
 	}
 
+	@Override
 	public byte readByte() throws IOException {
 		fp++;
 		return stream.readByte();
 	}
 
+	@Override
 	public char readChar() throws IOException {
 		fp++;
 		return stream.readChar();
 	}
 
+	@Override
 	public double readDouble() throws IOException {
 		fp += 8;
 		final double v = stream.readDouble();
 		return order.equals(ByteOrder.LITTLE_ENDIAN) ? DataTools.swap(v) : v;
 	}
 
+	@Override
 	public float readFloat() throws IOException {
 		fp += 4;
 		final float v = stream.readFloat();
 		return order.equals(ByteOrder.LITTLE_ENDIAN) ? DataTools.swap(v) : v;
 	}
 
+	@Override
 	public void readFully(final byte[] b) throws IOException {
 		stream.readFully(b);
 		fp += b.length;
 	}
 
+	@Override
 	public void readFully(final byte[] b, final int off, final int len)
 		throws IOException
 	{
@@ -293,43 +313,51 @@ public abstract class StreamHandle extends SortablePlugin implements
 		fp += len;
 	}
 
+	@Override
 	public int readInt() throws IOException {
 		fp += 4;
 		final int v = stream.readInt();
 		return order.equals(ByteOrder.LITTLE_ENDIAN) ? DataTools.swap(v) : v;
 	}
 
+	@Override
 	public String readLine() throws IOException {
 		throw new IOException("Unimplemented");
 	}
 
+	@Override
 	public long readLong() throws IOException {
 		fp += 8;
 		final long v = stream.readLong();
 		return order.equals(ByteOrder.LITTLE_ENDIAN) ? DataTools.swap(v) : v;
 	}
 
+	@Override
 	public short readShort() throws IOException {
 		fp += 2;
 		final short v = stream.readShort();
 		return order.equals(ByteOrder.LITTLE_ENDIAN) ? DataTools.swap(v) : v;
 	}
 
+	@Override
 	public int readUnsignedByte() throws IOException {
 		fp++;
 		return stream.readUnsignedByte();
 	}
 
+	@Override
 	public int readUnsignedShort() throws IOException {
 		return readShort() & 0xffff;
 	}
 
+	@Override
 	public String readUTF() throws IOException {
 		final String s = stream.readUTF();
 		fp += s.length();
 		return s;
 	}
 
+	@Override
 	public int skipBytes(final int n) throws IOException {
 		int skipped = 0;
 		try {
@@ -344,6 +372,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 
 	// -- DataOutput API methods --
 
+	@Override
 	public void write(final byte[] b) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -351,6 +380,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.write(b);
 	}
 
+	@Override
 	public void write(final byte[] b, final int off, final int len)
 		throws IOException
 	{
@@ -360,6 +390,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.write(b, off, len);
 	}
 
+	@Override
 	public void write(int b) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -368,6 +399,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.write(b);
 	}
 
+	@Override
 	public void writeBoolean(final boolean v) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -375,6 +407,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.writeBoolean(v);
 	}
 
+	@Override
 	public void writeByte(int v) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -383,6 +416,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.writeByte(v);
 	}
 
+	@Override
 	public void writeBytes(final String s) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -390,6 +424,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.writeBytes(s);
 	}
 
+	@Override
 	public void writeChar(int v) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -398,6 +433,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.writeChar(v);
 	}
 
+	@Override
 	public void writeChars(final String s) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -405,6 +441,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.writeChars(s);
 	}
 
+	@Override
 	public void writeDouble(double v) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -413,6 +450,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.writeDouble(v);
 	}
 
+	@Override
 	public void writeFloat(float v) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -421,6 +459,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.writeFloat(v);
 	}
 
+	@Override
 	public void writeInt(int v) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -429,6 +468,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.writeInt(v);
 	}
 
+	@Override
 	public void writeLong(long v) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -437,6 +477,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.writeLong(v);
 	}
 
+	@Override
 	public void writeShort(int v) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
@@ -445,6 +486,7 @@ public abstract class StreamHandle extends SortablePlugin implements
 		outStream.writeShort(v);
 	}
 
+	@Override
 	public void writeUTF(final String str) throws IOException {
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");

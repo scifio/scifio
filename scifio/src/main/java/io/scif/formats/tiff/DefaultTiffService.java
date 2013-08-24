@@ -56,6 +56,7 @@ public class DefaultTiffService extends AbstractService implements TiffService {
 	@Parameter
 	private LogService log;
 
+	@Override
 	public void difference(final byte[] input, final IFD ifd)
 		throws FormatException
 	{
@@ -81,6 +82,7 @@ public class DefaultTiffService extends AbstractService implements TiffService {
 		}
 	}
 
+	@Override
 	public void undifference(final byte[] input, final IFD ifd)
 		throws FormatException
 	{

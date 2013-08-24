@@ -74,6 +74,7 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 
 	// -- Plane API methods --
 
+	@Override
 	public byte[] getBytes() {
 		return getData();
 	}

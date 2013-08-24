@@ -147,6 +147,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 
 	// -- MasterFilter API Methods --
 
+	@Override
 	public <F extends Filter> F enable(final Class<F> filterClass)
 		throws InstantiableException
 	{
@@ -161,6 +162,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 		return filter;
 	}
 
+	@Override
 	public boolean disable(final Class<? extends Filter> filterClass)
 		throws InstantiableException
 	{
@@ -177,6 +179,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 		return disabled;
 	}
 
+	@Override
 	public T getTail() {
 		return tail;
 	}
@@ -190,6 +193,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 		updateParents();
 	}
 
+	@Override
 	public Set<Class<? extends Filter>> getFilterClasses() {
 		return refMap.keySet();
 	}

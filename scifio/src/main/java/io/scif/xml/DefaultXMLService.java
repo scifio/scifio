@@ -123,6 +123,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 
 	// -- XML to/from DOM --
 
+	@Override
 	public Document parseDOM(final File file)
 		throws ParserConfigurationException, SAXException, IOException
 	{
@@ -136,6 +137,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		}
 	}
 
+	@Override
 	public Document parseDOM(final String xml)
 		throws ParserConfigurationException, SAXException, IOException
 	{
@@ -150,6 +152,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		}
 	}
 
+	@Override
 	public Document parseDOM(final InputStream is)
 		throws ParserConfigurationException, SAXException, IOException
 	{
@@ -164,6 +167,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		return db.parse(in);
 	}
 
+	@Override
 	public String getXML(final Document doc)
 		throws TransformerConfigurationException, TransformerException
 	{
@@ -180,6 +184,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 
 	// -- Filtering --
 
+	@Override
 	public String sanitizeXML(final String s) {
 		final char[] c = s.toCharArray();
 		for (int i = 0; i < s.length(); i++) {
@@ -194,6 +199,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		return new String(c);
 	}
 
+	@Override
 	public String escapeXML(final String s) {
 		final StringBuffer sb = new StringBuffer();
 
@@ -223,18 +229,22 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		return sb.toString();
 	}
 
+	@Override
 	public String indentXML(final String xml) {
 		return indentXML(xml, 3, false);
 	}
 
+	@Override
 	public String indentXML(final String xml, final int spacing) {
 		return indentXML(xml, spacing, false);
 	}
 
+	@Override
 	public String indentXML(final String xml, final boolean preserveCData) {
 		return indentXML(xml, 3, preserveCData);
 	}
 
+	@Override
 	public String indentXML(final String xml, final int spacing,
 		final boolean preserveCData)
 	{
@@ -296,6 +306,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 
 	// -- Parsing --
 
+	@Override
 	public Hashtable<String, String> parseXML(final String xml)
 		throws IOException
 	{
@@ -304,24 +315,28 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		return handler.getMetadata();
 	}
 
+	@Override
 	public void parseXML(final String xml, final DefaultHandler handler)
 		throws IOException
 	{
 		parseXML(xml.getBytes(Constants.ENCODING), handler);
 	}
 
+	@Override
 	public void parseXML(final RandomAccessInputStream stream,
 		final DefaultHandler handler) throws IOException
 	{
 		parseXML((InputStream) stream, handler);
 	}
 
+	@Override
 	public void parseXML(final byte[] xml, final DefaultHandler handler)
 		throws IOException
 	{
 		parseXML(new ByteArrayInputStream(xml), handler);
 	}
 
+	@Override
 	public void parseXML(final InputStream xml, final DefaultHandler handler)
 		throws IOException
 	{
@@ -345,6 +360,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 
 	// -- XSLT --
 
+	@Override
 	public Templates getStylesheet(final String resourcePath,
 		final Class<?> sourceClass)
 	{
@@ -384,6 +400,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		return null;
 	}
 
+	@Override
 	public String avoidUndeclaredNamespaces(String xml) {
 		int gt = xml.indexOf('>');
 		if (gt > 0 && xml.startsWith("<?xml ")) gt = xml.indexOf('>', gt + 1);
@@ -426,6 +443,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		return xml;
 	}
 
+	@Override
 	public String transformXML(String xml, final Templates xslt)
 		throws IOException
 	{
@@ -433,6 +451,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		return transformXML(new StreamSource(new StringReader(xml)), xslt);
 	}
 
+	@Override
 	public String transformXML(final Source xmlSource, final Templates xslt)
 		throws IOException
 	{
@@ -461,10 +480,12 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 
 	// -- Validation --
 
+	@Override
 	public boolean validateXML(final String xml) {
 		return validateXML(xml, null);
 	}
 
+	@Override
 	public boolean validateXML(final String xml, String label) {
 		if (label == null) label = "XML";
 		Exception exception = null;
@@ -581,14 +602,17 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	/** ErrorListener implementation that logs errors and warnings. */
 	private class XMLListener implements ErrorListener {
 
+		@Override
 		public void error(final TransformerException e) {
 			log.debug("", e);
 		}
 
+		@Override
 		public void fatalError(final TransformerException e) {
 			log.debug("", e);
 		}
 
+		@Override
 		public void warning(final TransformerException e) {
 			log.debug("", e);
 		}

@@ -51,6 +51,7 @@ import java.nio.ByteOrder;
  */
 class ExistingByteArrayHandleProvider implements IRandomAccessProvider {
 
+	@Override
 	public IRandomAccess createMock(final byte[] page, final String mode,
 		final int bufferSize) throws IOException
 	{

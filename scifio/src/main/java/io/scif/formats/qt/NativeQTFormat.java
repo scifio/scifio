@@ -95,10 +95,12 @@ public class NativeQTFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "QuickTime";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "mov" };
 	}
@@ -296,6 +298,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
@@ -484,6 +487,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException
@@ -745,6 +749,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 		// -- Writer API methods --
 
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

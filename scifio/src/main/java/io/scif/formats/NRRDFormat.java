@@ -67,10 +67,12 @@ public class NRRDFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "NRRD";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "nrrd", "nhdr" };
 	}
@@ -165,6 +167,7 @@ public class NRRDFormat extends AbstractFormat {
 
 		// -- Metadata API methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
@@ -475,6 +478,7 @@ public class NRRDFormat extends AbstractFormat {
 			return getMetadata().getAxisLength(imageIndex, Axes.Y);
 		}
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

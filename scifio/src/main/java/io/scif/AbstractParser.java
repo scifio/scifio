@@ -82,18 +82,21 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	// -- Parser API Methods --
 
+	@Override
 	public M parse(final String fileName) throws IOException, FormatException {
 		@SuppressWarnings("unchecked")
 		final M meta = (M) getFormat().createMetadata();
 		return parse(fileName, meta);
 	}
 
+	@Override
 	public M parse(final File file) throws IOException, FormatException {
 		@SuppressWarnings("unchecked")
 		final M meta = (M) getFormat().createMetadata();
 		return parse(file, meta);
 	}
 
+	@Override
 	public M parse(final RandomAccessInputStream stream) throws IOException,
 		FormatException
 	{
@@ -102,37 +105,44 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return parse(stream, meta);
 	}
 
+	@Override
 	public M parse(final String fileName, final Metadata meta)
 		throws IOException, FormatException
 	{
 		return parse(fileName, SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
+	@Override
 	public M parse(final File file, final Metadata meta) throws IOException,
 		FormatException
 	{
 		return parse(file, SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
+	@Override
 	public M parse(final RandomAccessInputStream stream, final Metadata meta)
 		throws IOException, FormatException
 	{
 		return parse(stream, SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
+	@Override
 	public void setOriginalMetadataPopulated(final boolean populate) {
 		FormatTools.assertStream(in, false, 1);
 		saveOriginalMetadata = populate;
 	}
 
+	@Override
 	public boolean isOriginalMetadataPopulated() {
 		return saveOriginalMetadata;
 	}
 
+	@Override
 	public String[] getUsedFiles() {
 		return getUsedFiles(false);
 	}
 
+	@Override
 	public String[] getUsedFiles(final boolean noPixels) {
 		final Vector<String> files = new Vector<String>();
 		for (int i = 0; i < metadata.getImageCount(); i++) {
@@ -148,31 +158,37 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return files.toArray(new String[files.size()]);
 	}
 
+	@Override
 	public void setMetadataFiltered(final boolean filter) {
 		FormatTools.assertStream(in, false, 1);
 		filterMetadata = filter;
 	}
 
+	@Override
 	public boolean isMetadataFiltered() {
 		return filterMetadata;
 	}
 
+	@Override
 	public String[] getImageUsedFiles(final int imageIndex) {
 		return getImageUsedFiles(imageIndex, false);
 	}
 
+	@Override
 	public String[]
 		getImageUsedFiles(final int imageIndex, final boolean noPixels)
 	{
 		return noPixels ? null : new String[] { in.getFileName() };
 	}
 
+	@Override
 	public FileInfo[] getAdvancedUsedFiles(final boolean noPixels) {
 		final String[] files = getUsedFiles(noPixels);
 		if (files == null) return null;
 		return getFileInfo(files);
 	}
 
+	@Override
 	public FileInfo[] getAdvancedImageUsedFiles(final int imageIndex,
 		final boolean noPixels)
 	{
@@ -181,6 +197,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return getFileInfo(files);
 	}
 
+	@Override
 	public Set<MetadataLevel> getSupportedMetadataLevels() {
 		final Set<MetadataLevel> supportedLevels = new HashSet<MetadataLevel>();
 		supportedLevels.add(MetadataLevel.ALL);
@@ -189,14 +206,17 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return supportedLevels;
 	}
 
+	@Override
 	public MetadataOptions getMetadataOptions() {
 		return metadataOptions;
 	}
 
+	@Override
 	public void setMetadataOptions(final MetadataOptions options) {
 		metadataOptions = options;
 	}
 
+	@Override
 	public void addMeta(String key, Object value, final MetaTable metaTable) {
 		if (key == null || value == null /* || TODO !isMetadataCollected() */) {
 			return;
@@ -251,6 +271,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	// -- TypedParser API Methods --
 
+	@Override
 	public M parse(final String fileName, final M meta) throws IOException,
 		FormatException
 	{
@@ -272,12 +293,14 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return parse(stream, meta);
 	}
 
+	@Override
 	public M parse(final File file, final M meta) throws IOException,
 		FormatException
 	{
 		return parse(file.getPath(), meta);
 	}
 
+	@Override
 	public M parse(final RandomAccessInputStream stream, final M meta)
 		throws IOException, FormatException
 	{
@@ -309,6 +332,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	// -- HasSource API Methods --
 
+	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		if (in != null) in.close();
 		if (metadata != null) metadata.close(fileOnly);

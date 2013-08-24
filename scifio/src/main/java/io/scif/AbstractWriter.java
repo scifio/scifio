@@ -101,6 +101,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 
 	// -- Writer API Methods --
 
+	@Override
 	public void savePlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
@@ -109,34 +110,41 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		savePlane(imageIndex, planeIndex, plane, 0, 0, width, height);
 	}
 
+	@Override
 	public boolean canDoStacks() {
 		return false;
 	}
 
+	@Override
 	public void setMetadata(final Metadata meta) throws FormatException {
 		setMetadata(SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
+	@Override
 	public M getMetadata() {
 		return metadata;
 	}
 
+	@Override
 	public void setDest(final String fileName) throws FormatException,
 		IOException
 	{
 		setDest(fileName, 0);
 	}
 
+	@Override
 	public void setDest(final File file) throws FormatException, IOException {
 		setDest(file.getName(), 0);
 	}
 
+	@Override
 	public void setDest(final RandomAccessOutputStream out)
 		throws FormatException, IOException
 	{
 		setDest(out, 0);
 	}
 
+	@Override
 	public void setDest(final String fileName, final int imageIndex)
 		throws FormatException, IOException
 	{
@@ -145,12 +153,14 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	}
 
 
+	@Override
 	public void setDest(final File file, final int imageIndex)
 		throws FormatException, IOException
 	{
 		setDest(file.getName());
 	}
 
+	@Override
 	public void setDest(final RandomAccessOutputStream out, final int imageIndex)
 		throws FormatException, IOException
 	{
@@ -164,40 +174,49 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		initialize(imageIndex);
 	}
 
+	@Override
 	public RandomAccessOutputStream getStream() {
 		return out;
 	}
 
+	@Override
 	public void setColorModel(final ColorModel cm) {
 		this.cm = cm;
 	}
 
+	@Override
 	public ColorModel getColorModel() {
 		return cm;
 	}
 
+	@Override
 	public void setFramesPerSecond(final int rate) {
 		fps = rate;
 	}
 
+	@Override
 	public int getFramesPerSecond() {
 		return fps;
 	}
 
+	@Override
 	public String[] getCompressionTypes() {
 		return compressionTypes;
 	}
 
+	@Override
 	public int[] getPixelTypes() {
 		return getPixelTypes(getCompression());
 	}
 
+	@Override
 	public int[] getPixelTypes(final String codec) {
 		return new int[] { FormatTools.INT8, FormatTools.UINT8, FormatTools.INT16,
 			FormatTools.UINT16, FormatTools.INT32, FormatTools.UINT32,
 			FormatTools.FLOAT };
 	}
 
+	@Override
 	public boolean isSupportedType(final int type) {
 		final int[] types = getPixelTypes();
 		for (int i = 0; i < types.length; i++) {
@@ -206,6 +225,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		return false;
 	}
 
+	@Override
 	public void setCompression(final String compress) throws FormatException {
 		for (int i = 0; i < compressionTypes.length; i++) {
 			if (compressionTypes[i].equals(compress)) {
@@ -216,26 +236,31 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		throw new FormatException("Invalid compression type: " + compress);
 	}
 
+	@Override
 	public String getCompression() {
 		return compression;
 	}
 
+	@Override
 	public void setCodecOptions(final CodecOptions options) {
 		this.options = options;
 	}
 
+	@Override
 	public void changeOutputFile(final String id) throws FormatException,
 		IOException
 	{
 		setDest(id);
 	}
 
+	@Override
 	public void setWriteSequentially(final boolean sequential) {
 		this.sequential = sequential;
 	}
 
 	// -- TypedWriter API Methods --
 
+	@Override
 	public void setMetadata(final M meta) throws FormatException {
 		if (metadata != null && metadata != meta) {
 			try {
@@ -260,6 +285,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 
 	// -- HasSource API Methods --
 
+	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		if (out != null) out.close();
 		if (metadata != null) metadata.close(fileOnly);

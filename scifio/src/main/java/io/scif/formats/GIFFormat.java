@@ -68,10 +68,12 @@ public class GIFFormat extends AbstractFormat {
 
 	public static final String GIF_MAGIC_STRING = "GIF";
 
+	@Override
 	public String getFormatName() {
 		return "Graphics Interchange Format";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "gif" };
 	}
@@ -281,6 +283,7 @@ public class GIFFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
@@ -317,6 +320,7 @@ public class GIFFormat extends AbstractFormat {
 
 		// -- HasColorTable API Methods --
 
+		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 
@@ -733,6 +737,7 @@ public class GIFFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

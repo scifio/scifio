@@ -69,18 +69,21 @@ public class ReaderFilter extends AbstractReaderFilter implements
 
 	// -- MasterFilter API Methods --
 
+	@Override
 	public <F extends Filter> F enable(final Class<F> filterClass)
 		throws InstantiableException
 	{
 		return fHelper.enable(filterClass);
 	}
 
+	@Override
 	public boolean disable(final Class<? extends Filter> filterClass)
 		throws InstantiableException
 	{
 		return fHelper.disable(filterClass);
 	}
 
+	@Override
 	public Set<Class<? extends Filter>> getFilterClasses() {
 		return fHelper.getFilterClasses();
 	}
@@ -97,6 +100,7 @@ public class ReaderFilter extends AbstractReaderFilter implements
 		return fHelper.getParent();
 	}
 
+	@Override
 	public Reader getTail() {
 		return fHelper.getTail();
 	}

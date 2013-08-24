@@ -117,6 +117,7 @@ public enum PhotoInterp implements CodedEnum {
 		return toReturn;
 	}
 
+	@Override
 	public int getCode() {
 		return code;
 	}

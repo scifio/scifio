@@ -59,12 +59,14 @@ public class DefaultTranslatorService extends AbstractService implements
 
 	// -- TranslatorService API Methods --
 
+	@Override
 	public Translator findTranslator(final Metadata source, final Metadata dest,
 		final boolean exact)
 	{
 		return findTranslator(source.getClass(), dest.getClass(), exact);
 	}
 
+	@Override
 	public Translator findTranslator(final Class<?> source, final Class<?> dest,
 		final boolean exact)
 	{
@@ -78,6 +80,7 @@ public class DefaultTranslatorService extends AbstractService implements
 		return t;
 	}
 
+	@Override
 	public boolean translate(final Metadata source, final Metadata dest,
 		final boolean exact)
 	{

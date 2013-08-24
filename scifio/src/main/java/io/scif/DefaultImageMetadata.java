@@ -58,6 +58,7 @@ public class DefaultImageMetadata extends AbstractImageMetadata {
 
 	// -- ImageMetadata API Methods --
 
+	@Override
 	public ImageMetadata copy() {
 		return new DefaultImageMetadata(this);
 	}

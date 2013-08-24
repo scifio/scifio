@@ -66,10 +66,12 @@ public class JPEGTileFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Tile JPEG";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "jpg", "jpeg" };
 	}
@@ -97,6 +99,7 @@ public class JPEGTileFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			createImageMetadata(1);
 			final ImageMetadata iMeta = get(0);
@@ -160,6 +163,7 @@ public class JPEGTileFormat extends AbstractFormat {
 
 		// -- Reader API methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

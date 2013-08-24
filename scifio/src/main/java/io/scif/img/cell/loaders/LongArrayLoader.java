@@ -72,10 +72,12 @@ public class LongArrayLoader extends AbstractArrayLoader<LongArray> {
 			bytes.length / bpp);
 	}
 
+	@Override
 	public LongArray emptyArray(final int[] dimensions) {
 		return new LongArray(countEntities(dimensions));
 	}
 
+	@Override
 	public int getBitsPerElement() {
 		return 64;
 	}

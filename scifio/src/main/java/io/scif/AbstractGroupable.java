@@ -53,26 +53,31 @@ public abstract class AbstractGroupable extends AbstractHasSource implements
 	/** Whether or not to group multi-file formats. */
 	private boolean group = true;
 
+	@Override
 	public void setGroupFiles(final boolean groupFiles) {
 		group = groupFiles;
 	}
 
+	@Override
 	public boolean isGroupFiles() {
 		return group;
 	}
 
+	@Override
 	public int fileGroupOption(final String id) throws FormatException,
 		IOException
 	{
 		return FormatTools.CANNOT_GROUP;
 	}
 
+	@Override
 	public boolean isSingleFile(final String id) throws FormatException,
 		IOException
 	{
 		return true;
 	}
 
+	@Override
 	public boolean hasCompanionFiles() {
 		return false;
 	}

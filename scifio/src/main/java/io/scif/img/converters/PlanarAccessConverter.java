@@ -62,6 +62,7 @@ public class PlanarAccessConverter extends AbstractPlaneConverter {
 	private ImgUtilityService imgUtilService;
 
 	/** Populates plane by reference using {@link PlanarAccess} interface. */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends RealType<T>> void populatePlane(final Reader reader,
 		final int imageIndex, final int planeIndex, final byte[] plane,

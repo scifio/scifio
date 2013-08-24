@@ -56,10 +56,13 @@ import java.io.IOException;
  */
 public interface TypedParser<M extends TypedMetadata> extends Parser {
 
+	@Override
 	M parse(String fileName) throws IOException, FormatException;
 
+	@Override
 	M parse(File file) throws IOException, FormatException;
 
+	@Override
 	M parse(RandomAccessInputStream stream) throws IOException, FormatException;
 
 	/**

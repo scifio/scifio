@@ -51,10 +51,12 @@ public class DefaultMetadataOptions implements MetadataOptions {
 		this.level = level;
 	}
 
+	@Override
 	public MetadataLevel getMetadataLevel() {
 		return level;
 	}
 
+	@Override
 	public void setMetadataLevel(final MetadataLevel level) {
 		this.level = level;
 	}

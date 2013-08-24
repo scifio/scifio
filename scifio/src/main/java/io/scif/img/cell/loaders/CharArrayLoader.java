@@ -68,10 +68,12 @@ public class CharArrayLoader extends AbstractArrayLoader<CharArray> {
 		bb.asCharBuffer().get(data.getCurrentStorageArray(), offset, bytes.length);
 	}
 
+	@Override
 	public CharArray emptyArray(final int[] dimensions) {
 		return new CharArray(countEntities(dimensions));
 	}
 
+	@Override
 	public int getBitsPerElement() {
 		return 8;
 	}

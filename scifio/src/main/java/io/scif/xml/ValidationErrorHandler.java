@@ -69,16 +69,19 @@ public class ValidationErrorHandler implements ErrorHandler, HasLog {
 
 	// -- ValidationErrorHandler API methods --
 
+	@Override
 	public void error(final SAXParseException e) {
 		log().error(e.getMessage());
 		errors++;
 	}
 
+	@Override
 	public void fatalError(final SAXParseException e) {
 		log().error(e.getMessage());
 		errors++;
 	}
 
+	@Override
 	public void warning(final SAXParseException e) {
 		log().warn(e.getMessage());
 		errors++;
@@ -86,6 +89,7 @@ public class ValidationErrorHandler implements ErrorHandler, HasLog {
 
 	// -- HasLog API methods --
 
+	@Override
 	public LogService log() {
 		return log;
 	}

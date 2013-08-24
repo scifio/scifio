@@ -83,15 +83,18 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 
 	// -- MetadataWrapper API Methods --
 
+	@Override
 	public Metadata unwrap() {
 		return meta;
 	}
 
+	@Override
 	public void wrap(final Metadata meta) {
 		this.meta = meta;
 		populateImageMetadata();
 	}
 
+	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis type,
 		final boolean passUp)
 	{
@@ -99,6 +102,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.addAxis(imageIndex, type);
 	}
 
+	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis type,
 		final int value, final boolean passUp)
 	{
@@ -116,6 +120,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setTable(table);
 	}
 
+	@Override
 	public void setThumbSizeX(final int imageIndex, final int thumbX,
 		final boolean passUp)
 	{
@@ -123,6 +128,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setThumbSizeX(imageIndex, thumbX);
 	}
 
+	@Override
 	public void setThumbSizeY(final int imageIndex, final int thumbY,
 		final boolean passUp)
 	{
@@ -130,6 +136,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setThumbSizeY(imageIndex, thumbY);
 	}
 
+	@Override
 	public void setPixelType(final int imageIndex, final int type,
 		final boolean passUp)
 	{
@@ -137,6 +144,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setPixelType(imageIndex, type);
 	}
 
+	@Override
 	public void setBitsPerPixel(final int imageIndex, final int bpp,
 		final boolean passUp)
 	{
@@ -144,6 +152,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setBitsPerPixel(imageIndex, bpp);
 	}
 
+	@Override
 	public void setOrderCertain(final int imageIndex, final boolean orderCertain,
 		final boolean passUp)
 	{
@@ -151,6 +160,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setOrderCertain(imageIndex, orderCertain);
 	}
 
+	@Override
 	public void setRGB(final int imageIndex, final boolean rgb,
 		final boolean passUp)
 	{
@@ -158,6 +168,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setRGB(imageIndex, rgb);
 	}
 
+	@Override
 	public void setLittleEndian(final int imageIndex, final boolean littleEndian,
 		final boolean passUp)
 	{
@@ -165,6 +176,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setLittleEndian(imageIndex, littleEndian);
 	}
 
+	@Override
 	public void setInterleaved(final int imageIndex, final boolean interleaved,
 		final boolean passUp)
 	{
@@ -172,6 +184,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setInterleaved(imageIndex, interleaved);
 	}
 
+	@Override
 	public void setIndexed(final int imageIndex, final boolean indexed,
 		final boolean passUp)
 	{
@@ -179,6 +192,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setIndexed(imageIndex, indexed);
 	}
 
+	@Override
 	public void setFalseColor(final int imageIndex, final boolean falseC,
 		final boolean passUp)
 	{
@@ -186,6 +200,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setFalseColor(imageIndex, falseC);
 	}
 
+	@Override
 	public void setMetadataComplete(final int imageIndex,
 		final boolean metadataComplete, final boolean passUp)
 	{
@@ -193,11 +208,13 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setMetadataComplete(imageIndex, metadataComplete);
 	}
 
+	@Override
 	public void add(final ImageMetadata meta, final boolean passUp) {
 		super.add(meta);
 		if (passUp) this.meta.add(meta);
 	}
 
+	@Override
 	public void setThumbnailImage(final int imageIndex, final boolean thumbnail,
 		final boolean passUp)
 	{
@@ -205,6 +222,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setThumbnailImage(imageIndex, thumbnail);
 	}
 
+	@Override
 	public void setAxisTypes(final int imageIndex,
 		final CalibratedAxis[] axisTypes, final boolean passUp)
 	{
@@ -212,6 +230,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setAxisTypes(imageIndex, axisTypes);
 	}
 
+	@Override
 	public void setAxisType(final int imageIndex, final int axisIndex,
 		final CalibratedAxis axis, final boolean passUp)
 	{
@@ -219,6 +238,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setAxisType(imageIndex, axisIndex, axis);
 	}
 
+	@Override
 	public void setAxisLengths(final int imageIndex, final int[] axisLengths,
 		final boolean passUp)
 	{
@@ -226,6 +246,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setAxisLengths(imageIndex, axisLengths);
 	}
 
+	@Override
 	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
 		final int length, final boolean passUp)
 	{
@@ -233,6 +254,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setAxisLength(imageIndex, axis, length);
 	}
 	
+	@Override
 	public void addAxis(int imageIndex, AxisType type, int value, boolean passUp)
 	{
 		super.addAxis(imageIndex, type, value);
@@ -240,6 +262,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		
 	}
 
+	@Override
 	public void setAxisType(int imageIndex, int axisIndex, AxisType axis,
 		boolean passUp)
 	{
@@ -247,6 +270,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		if (passUp) meta.setAxisType(imageIndex, axisIndex, axis);
 	}
 
+	@Override
 	public void setAxisLength(int imageIndex, AxisType axis, int length,
 		boolean passUp)
 	{
@@ -369,6 +393,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		meta.setSource(source);
 	}
 
+	@Override
 	public void populateImageMetadata() {
 		meta.populateImageMetadata();
 	}

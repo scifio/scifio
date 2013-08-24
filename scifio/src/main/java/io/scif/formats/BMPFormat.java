@@ -85,10 +85,12 @@ public class BMPFormat extends AbstractFormat {
 
 	// -- Format API MEthods --
 
+	@Override
 	public String getFormatName() {
 		return "Windows Bitmap";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "bmp" };
 	}
@@ -147,6 +149,7 @@ public class BMPFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			log().info("Populating metadata");
 
@@ -207,6 +210,7 @@ public class BMPFormat extends AbstractFormat {
 
 		// -- HasColorTable API Methods --
 
+		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			return palette;
@@ -351,6 +355,7 @@ public class BMPFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

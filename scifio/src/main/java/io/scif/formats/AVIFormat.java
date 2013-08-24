@@ -148,10 +148,12 @@ public class AVIFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Audio Video Interleave";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "avi" };
 	}
@@ -274,6 +276,7 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- HasColorTable API Methods --
 
+		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			return lut;
@@ -281,6 +284,7 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 			int sizeT = 0, sizeC = 0;
@@ -818,6 +822,7 @@ public class AVIFormat extends AbstractFormat {
 			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException
@@ -1053,6 +1058,7 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- Writer API Methods --
 
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

@@ -68,6 +68,7 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 	 * regardless of container, but at the expense of performance both now and
 	 * later.
 	 */
+	@Override
 	public <T extends RealType<T>> void populatePlane(final Reader reader,
 		final int imageIndex, final int planeIndex, final byte[] plane,
 		final ImgPlus<T> img, final ImgOptions imgOptions)

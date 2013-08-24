@@ -61,10 +61,12 @@ public class ByteArrayLoader extends AbstractArrayLoader<ByteArray> {
 			bytes.length);
 	}
 
+	@Override
 	public ByteArray emptyArray(final int[] dimensions) {
 		return new ByteArray(countEntities(dimensions));
 	}
 
+	@Override
 	public int getBitsPerElement() {
 		return 8;
 	}

@@ -83,10 +83,12 @@ public class ICSFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Image Cytometry Standard";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "ics", "ids" };
 	}
@@ -135,6 +137,7 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			// Common metadata population
 			createImageMetadata(1);
@@ -1392,6 +1395,7 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException
@@ -1601,6 +1605,7 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Writer API Methods --
 
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

@@ -110,6 +110,7 @@ public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
 			return cache.load(index, cellDims, cellMin);
 		}
 
+		@Override
 		public Img<SCIFIOCell<A>> copy() {
 			throw new UnsupportedOperationException("Not supported");
 		}

@@ -88,6 +88,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	// TODO Merge common Reader and Writer API methods
 
+	@Override
 	public P openPlane(final int imageIndex, final int planeNumber)
 		throws FormatException, IOException
 	{
@@ -95,6 +96,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			imageIndex, Axes.X), metadata.getAxisLength(imageIndex, Axes.Y));
 	}
 
+	@Override
 	public P openPlane(final int imageIndex, final int planeIndex, final int x,
 		final int y, final int w, final int h) throws FormatException, IOException
 	{
@@ -117,12 +119,14 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return openPlane(imageIndex, planeIndex, plane, x, y, w, h);
 	}
 
+	@Override
 	public P openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane));
 	}
 
+	@Override
 	public P openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane, final int x, final int y, final int w, final int h)
 		throws FormatException, IOException
@@ -131,27 +135,33 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			x, y, w, h);
 	}
 
+	@Override
 	public String getCurrentFile() {
 		return getStream() == null ? null : getStream().getFileName();
 	}
 
+	@Override
 	public String[] getDomains() {
 		return domains;
 	}
 
+	@Override
 	public RandomAccessInputStream getStream() {
 		return metadata == null ? null : metadata.getSource();
 	}
 
+	@Override
 	public Reader[] getUnderlyingReaders() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public int getOptimalTileWidth(final int imageIndex) {
 		return metadata.getAxisLength(imageIndex, Axes.X);
 	}
 
+	@Override
 	public int getOptimalTileHeight(final int imageIndex) {
 		final int bpp =
 			FormatTools.getBytesPerPixel(metadata.getPixelType(imageIndex));
@@ -163,18 +173,22 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return Math.min(maxHeight, metadata.getAxisLength(imageIndex, Axes.Y));
 	}
 
+	@Override
 	public void setMetadata(final io.scif.Metadata meta) throws IOException {
 		setMetadata(SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
+	@Override
 	public M getMetadata() {
 		return metadata;
 	}
 
+	@Override
 	public void setNormalized(final boolean normalize) {
 		normalizeData = normalize;
 	}
 
+	@Override
 	public boolean isNormalized() {
 		return normalizeData;
 	}
@@ -184,6 +198,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return hasCompanionFiles;
 	}
 
+	@Override
 	public void setSource(final String fileName) throws IOException {
 
 		if (getStream() != null && getStream().getFileName() != null &&
@@ -205,10 +220,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		setSource(stream);
 	}
 
+	@Override
 	public void setSource(final File file) throws IOException {
 		setSource(file.getName());
 	}
 
+	@Override
 	public void setSource(final RandomAccessInputStream stream)
 		throws IOException
 	{
@@ -228,6 +245,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		}
 	}
 
+	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final Plane plane)
 		throws IOException
@@ -236,6 +254,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			.<P> castToTypedPlane(plane));
 	}
 
+	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final int scanlinePad,
 		final Plane plane) throws IOException
@@ -244,14 +263,17 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			.<P> castToTypedPlane(plane));
 	}
 
+	@Override
 	public int getPlaneCount(final int imageIndex) {
 		return metadata.getPlaneCount(imageIndex);
 	}
 
+	@Override
 	public int getImageCount() {
 		return metadata.getImageCount();
 	}
 
+	@Override
 	public <T extends Plane> T castToTypedPlane(final Plane plane) {
 		if (!planeClass.isAssignableFrom(plane.getClass())) {
 			throw new IllegalArgumentException("Incompatible plane types. " +
@@ -265,6 +287,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	// -- TypedReader API --
 
+	@Override
 	public P openPlane(final int imageIndex, final int planeIndex, final P plane)
 		throws FormatException, IOException
 	{
@@ -273,6 +296,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			Axes.Y));
 	}
 
+	@Override
 	public void setMetadata(final M meta) throws IOException {
 		if (metadata != null && metadata != meta) {
 			close();
@@ -281,6 +305,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		if (metadata == null) metadata = meta;
 	}
 
+	@Override
 	public P readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final P plane)
 		throws IOException
@@ -288,6 +313,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return readPlane(s, imageIndex, x, y, w, h, 0, plane);
 	}
 
+	@Override
 	public P readPlane(final RandomAccessInputStream s, final int imageIndex,
 		final int x, final int y, final int w, final int h, final int scanlinePad,
 		final P plane) throws IOException
@@ -359,12 +385,14 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return plane;
 	}
 
+	@Override
 	public Class<P> getPlaneClass() {
 		return planeClass;
 	}
 
 	// -- HasSource Format API --
 
+	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		if (metadata != null) metadata.close(fileOnly);
 

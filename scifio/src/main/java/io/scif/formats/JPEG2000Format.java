@@ -76,10 +76,12 @@ public class JPEG2000Format extends AbstractFormat {
 
 	// -- Format API methods --
 
+	@Override
 	public String getFormatName() {
 		return "JPEG-2000";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "jp2", "j2k", "jpf" };
 	}
@@ -157,6 +159,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 			iMeta.setAxisLength(Axes.Z, 1);
@@ -203,6 +206,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		// -- HasColorTable API Methods --
 
+		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			if (lut == null) return null;
@@ -742,6 +746,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException
@@ -806,6 +811,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		// -- Writer API Methods --
 
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

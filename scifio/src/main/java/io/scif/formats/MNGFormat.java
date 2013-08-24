@@ -68,10 +68,12 @@ public class MNGFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Multiple Network Graphics";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "mng" };
 	}
@@ -109,6 +111,7 @@ public class MNGFormat extends AbstractFormat {
 
 		// -- Metadata API methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final String[] keys = getDatasetInfo().keys;
 
@@ -309,6 +312,7 @@ public class MNGFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final int planeIndex, final BufferedImagePlane plane, final int x,
 			final int y, final int w, final int h) throws FormatException,

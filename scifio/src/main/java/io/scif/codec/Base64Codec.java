@@ -84,6 +84,7 @@ public class Base64Codec extends AbstractCodec {
 		lookupBase64Alphabet[63] = (byte) '/';
 	}
 
+	@Override
 	public byte[] compress(final byte[] input, final CodecOptions options)
 		throws FormatException
 	{

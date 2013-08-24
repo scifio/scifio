@@ -61,9 +61,11 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	extends Reader
 {
 
+	@Override
 	P openPlane(int imageIndex, int planeIndex) throws FormatException,
 		IOException;
 
+	@Override
 	P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
 		throws FormatException, IOException;
 
@@ -87,6 +89,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	P openPlane(int imageIndex, int planeIndex, P plane, int x, int y, int w,
 		int h) throws FormatException, IOException;
 
+	@Override
 	P openThumbPlane(int imageIndex, int planeIndex) throws FormatException,
 		IOException;
 
@@ -99,6 +102,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 */
 	void setMetadata(M meta) throws IOException;
 
+	@Override
 	M getMetadata();
 
 	/**
@@ -123,6 +127,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y, int w,
 		int h, int scanlinePad, P plane) throws IOException;
 
+	@Override
 	P createPlane(int xOffset, int yOffset, int xLength, int yLength);
 
 	/**

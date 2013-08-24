@@ -71,10 +71,12 @@ public abstract class AbstractChecker extends AbstractHasFormat implements
 
 	// -- Checker API Methods --
 
+	@Override
 	public boolean isFormat(final String name) {
 		return isFormat(name, true);
 	}
 
+	@Override
 	public boolean isFormat(final String name, final boolean open) {
 		// if file extension ID is insufficient and we can't open the file, give up
 		if (!suffixSufficient && !open) return false;
@@ -106,12 +108,14 @@ public abstract class AbstractChecker extends AbstractHasFormat implements
 		}
 	}
 
+	@Override
 	public boolean isFormat(final RandomAccessInputStream stream)
 		throws IOException
 	{
 		return false;
 	}
 
+	@Override
 	public boolean checkHeader(final byte[] block) {
 		try {
 			final RandomAccessInputStream stream =

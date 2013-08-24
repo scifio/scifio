@@ -64,32 +64,39 @@ public class DefaultPlaneConverterService extends
 
 	// -- PlaneConverterService methods --
 
+	@Override
 	public Map<String, PlaneConverter> getPlaneConverters() {
 		return Collections.unmodifiableMap(converters());
 	}
 
+	@Override
 	public List<String> getPlaneConverterNames() {
 		return Collections.unmodifiableList(converterNames());
 	}
 
+	@Override
 	public PlaneConverter getPlaneConverter(final String name) {
 		return converters().get(name);
 	}
 
+	@Override
 	public PlaneConverter getArrayConverter() {
 		return getPlaneConverter("ArrayDataAccess");
 	}
 
+	@Override
 	public PlaneConverter getPlanarConverter() {
 		return getPlaneConverter("PlanarAccess");
 	}
 
+	@Override
 	public PlaneConverter getDefaultConverter() {
 		return getPlaneConverter("Default");
 	}
 
 	// -- PTService methods --
 
+	@Override
 	public Class<PlaneConverter> getPluginType() {
 		return PlaneConverter.class;
 	}

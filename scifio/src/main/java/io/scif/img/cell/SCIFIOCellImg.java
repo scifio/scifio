@@ -94,6 +94,7 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 		return factory;
 	}
 
+	@Override
 	public SCIFIOCellImg<T, A, C> copy() {
 		final SCIFIOCellImg<T, A, C> copy =
 			(SCIFIOCellImg<T, A, C>) factory().create(dimension,

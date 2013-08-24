@@ -93,66 +93,80 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 
 	// -- DataPlane API methods --
 
+	@Override
 	public void setData(final T data) {
 		this.data = data;
 	}
 
+	@Override
 	public T getData() {
 		return data;
 	}
 
 	// -- Plane API methods --
 
+	@Override
 	public void setColorTable(final ColorTable lut) {
 		this.lut = lut;
 	}
 
+	@Override
 	public ColorTable getColorTable() {
 		return lut;
 	}
 
+	@Override
 	public ImageMetadata getImageMetadata() {
 		return meta;
 	}
 
+	@Override
 	public int getxOffset() {
 		return xOffset;
 	}
 
+	@Override
 	public int getyOffset() {
 		return yOffset;
 	}
 
+	@Override
 	public int getxLength() {
 		return xLength;
 	}
 
+	@Override
 	public int getyLength() {
 		return yLength;
 	}
 
+	@Override
 	public P populate(final Plane p) {
 		return populate(p.getImageMetadata(), p.getxOffset(), p.getyOffset(), p
 			.getxLength(), p.getyLength());
 	}
 
+	@Override
 	public P populate(final DataPlane<T> plane) {
 		return populate(plane.getImageMetadata(), plane.getData(), plane
 			.getxOffset(), plane.getyOffset(), plane.getxLength(), plane.getyLength());
 	}
 
+	@Override
 	public P populate(final ImageMetadata meta, final int xOffset,
 		final int yOffset, final int xLength, final int yLength)
 	{
 		return populate(meta, null, xOffset, yOffset, xLength, yLength);
 	}
 
+	@Override
 	public P populate(final T data, final int xOffset, final int yOffset,
 		final int xLength, final int yLength)
 	{
 		return populate(null, data, xOffset, yOffset, xLength, yLength);
 	}
 
+	@Override
 	public P populate(final ImageMetadata meta, final T data, final int xOffset,
 		final int yOffset, final int xLength, final int yLength)
 	{
@@ -168,22 +182,27 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 		return pl;
 	}
 
+	@Override
 	public void setImageMetadata(final ImageMetadata meta) {
 		this.meta = meta;
 	}
 
+	@Override
 	public void setxOffset(final int xOffset) {
 		this.xOffset = xOffset;
 	}
 
+	@Override
 	public void setyOffset(final int yOffset) {
 		this.yOffset = yOffset;
 	}
 
+	@Override
 	public void setxLength(final int xLength) {
 		this.xLength = xLength;
 	}
 
+	@Override
 	public void setyLength(final int yLength) {
 		this.yLength = yLength;
 	}

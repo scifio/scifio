@@ -63,14 +63,17 @@ public abstract class AbstractCacheService<T extends Serializable> extends
 
 	// -- CacheService API methods --
 
+	@Override
 	public boolean enabled() {
 		return enabled;
 	}
 
+	@Override
 	public void enable(final boolean enabled) {
 		this.enabled = enabled;
 	}
 
+	@Override
 	public Integer getKey(final String cacheId, final int index) {
 
 		int result = 17;
@@ -80,11 +83,13 @@ public abstract class AbstractCacheService<T extends Serializable> extends
 		return result;
 	}
 
+	@Override
 	public void setMaxBytesOnDisk(final long maxBytes) {
 		throw new UnsupportedOperationException(
 			"Setting the disk store size not currently supported. Please use enable(false) instead.");
 	}
 
+	@Override
 	public void cacheAll(final boolean enabled) {
 		cacheAll = enabled;
 	}

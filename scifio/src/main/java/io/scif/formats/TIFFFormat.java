@@ -87,10 +87,12 @@ public class TIFFFormat extends AbstractFormat {
 
 	// -- Format API methods --
 
+	@Override
 	public String getFormatName() {
 		return "Tagged Image File Format";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return TIFF_SUFFIXES;
 	}
@@ -1238,6 +1240,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 		}
 
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

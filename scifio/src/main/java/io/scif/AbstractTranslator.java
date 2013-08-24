@@ -62,6 +62,7 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 
 	// -- Translator API --
 
+	@Override
 	public void translate(final Metadata source, final Metadata dest) {
 		// Cast the parameters to typed Metadata
 		final M typedSource = SCIFIOMetadataTools.<M> castMeta(source);

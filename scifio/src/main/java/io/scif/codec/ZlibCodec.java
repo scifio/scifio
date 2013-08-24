@@ -54,6 +54,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Codec.class)
 public class ZlibCodec extends AbstractCodec {
 
+	@Override
 	public byte[] compress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{

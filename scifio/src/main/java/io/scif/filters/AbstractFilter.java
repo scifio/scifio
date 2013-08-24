@@ -76,10 +76,12 @@ public abstract class AbstractFilter<T> extends AbstractSCIFIOComponent
 
 	// -- Filter API Methods --
 
+	@Override
 	public T getParent() {
 		return parent;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void setParent(final Object parent) {
 		if (parentClass.isAssignableFrom(parent.getClass())) this.parent =
@@ -90,10 +92,12 @@ public abstract class AbstractFilter<T> extends AbstractSCIFIOComponent
 		}
 	}
 
+	@Override
 	public void reset() {
 		parent = null;
 	}
 
+	@Override
 	public boolean isCompatible(final Class<?> c) {
 		return parentClass.isAssignableFrom(c);
 	}
