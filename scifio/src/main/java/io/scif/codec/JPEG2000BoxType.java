@@ -107,6 +107,7 @@ public enum JPEG2000BoxType implements CodedEnum {
 	 * 
 	 * @see CodedEnum#getCode()
 	 */
+	@Override
 	public int getCode() {
 		return code;
 	}

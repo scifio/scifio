@@ -76,6 +76,7 @@ public class DefaultNIOService extends AbstractService implements NIOService {
 
 	// -- NIOService API methods --
 
+	@Override
 	public ByteBuffer allocate(final FileChannel channel, final MapMode mapMode,
 		final long bufferStartPosition, final int newSize) throws IOException
 	{

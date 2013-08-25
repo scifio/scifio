@@ -107,6 +107,7 @@ public enum JPEG2000SegmentMarker implements CodedEnum {
 	 * 
 	 * @see CodedEnum#getCode()
 	 */
+	@Override
 	public int getCode() {
 		return code;
 	}

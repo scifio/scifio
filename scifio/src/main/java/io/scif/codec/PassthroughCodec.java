@@ -50,9 +50,6 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Codec.class)
 public class PassthroughCodec extends AbstractCodec {
 
-	/* (non-Javadoc)
-	 * @see loci.formats.codec.BaseCodec#decompress(byte[], loci.formats.codec.CodecOptions)
-	 */
 	@Override
 	public byte[] decompress(final byte[] data, final CodecOptions options)
 		throws FormatException
@@ -60,9 +57,6 @@ public class PassthroughCodec extends AbstractCodec {
 		return data;
 	}
 
-	/* (non-Javadoc)
-	 * @see loci.formats.codec.BaseCodec#decompress(loci.common.RandomAccessInputStream, loci.formats.codec.CodecOptions)
-	 */
 	@Override
 	public byte[] decompress(final RandomAccessInputStream in,
 		final CodecOptions options) throws FormatException, IOException
@@ -70,9 +64,7 @@ public class PassthroughCodec extends AbstractCodec {
 		throw new RuntimeException("Not implemented.");
 	}
 
-	/* (non-Javadoc)
-	 * @see loci.formats.codec.Codec#compress(byte[], loci.formats.codec.CodecOptions)
-	 */
+	@Override
 	public byte[] compress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{

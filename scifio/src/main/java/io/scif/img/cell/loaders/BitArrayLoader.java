@@ -68,10 +68,12 @@ public class BitArrayLoader extends AbstractArrayLoader<BitArray> {
 		}
 	}
 
+	@Override
 	public BitArray emptyArray(final int[] dimensions) {
 		return new BitArray(countEntities(dimensions));
 	}
 
+	@Override
 	public int getBitsPerElement() {
 		return 1;
 	}

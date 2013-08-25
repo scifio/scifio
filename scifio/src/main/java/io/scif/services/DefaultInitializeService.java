@@ -80,19 +80,14 @@ public class DefaultInitializeService extends AbstractService implements
 
 	// -- InitializeService API Methods --
 
-	/*
-	 * @see io.scif.services.InitializeService#initializeReader(java.lang.String)
-	 */
+	@Override
 	public ReaderFilter initializeReader(final String id) throws FormatException,
 		IOException
 	{
 		return initializeReader(id, false);
 	}
 
-	/*
-	 * @see io.scif.services.InitializeService#
-	 * initializeReader(java.lang.String, boolean)
-	 */
+	@Override
 	public ReaderFilter initializeReader(final String id, final boolean openFile)
 		throws FormatException, IOException
 	{
@@ -102,20 +97,14 @@ public class DefaultInitializeService extends AbstractService implements
 		return new ReaderFilter(r);
 	}
 
-	/*
-	 * @see io.scif.services.InitializeService#
-	 * initializeWriter(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public Writer initializeWriter(final String source, final String destination)
 		throws FormatException, IOException
 	{
 		return initializeWriter(source, destination, false);
 	}
 
-	/*
-	 * @see io.scif.services.InitializeService#
-	 * initializeWriter(java.lang.String, java.lang.String, boolean)
-	 */
+	@Override
 	public Writer initializeWriter(final String source, final String destination,
 		final boolean openSource) throws FormatException, IOException
 	{
@@ -127,10 +116,7 @@ public class DefaultInitializeService extends AbstractService implements
 		return initializeWriter(sourceMeta, destination);
 	}
 
-	/*
-	 * @see io.scif.InitializeService#
-	 * initializeWriter(io.scif.Metadata, java.lang.String)
-	 */
+	@Override
 	public Writer initializeWriter(final Metadata sourceMeta,
 		final String destination) throws FormatException, IOException
 	{
@@ -160,11 +146,13 @@ public class DefaultInitializeService extends AbstractService implements
 		return writer;
 	}
 
+	@Override
 	public Metadata parseMetadata(String id) throws IOException, FormatException {
 		Format format = formatService.getFormat(id);
 		return format.createParser().parse(id);
 	}
 
+	@Override
 	public Metadata parseMetadata(String id, boolean openFile)
 		throws FormatException, IOException
 	{

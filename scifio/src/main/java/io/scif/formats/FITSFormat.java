@@ -67,10 +67,12 @@ public class FITSFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Flexible Image Transport System";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "fits", "fts" };
 	}
@@ -102,6 +104,7 @@ public class FITSFormat extends AbstractFormat {
 
 		// -- Metadata API methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
@@ -217,6 +220,7 @@ public class FITSFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

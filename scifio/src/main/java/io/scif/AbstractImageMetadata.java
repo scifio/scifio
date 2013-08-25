@@ -162,93 +162,67 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	// -- Setters --
 
-	/*
-	 * @see io.scif.ImageMetadata#setThumbSizeX(int)
-	 */
+	@Override
 	public void setThumbSizeX(final int thumbSizeX) {
 		this.thumbSizeX = thumbSizeX;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setThumbSizeY(int)
-	 */
+	@Override
 	public void setThumbSizeY(final int thumbSizeY) {
 		this.thumbSizeY = thumbSizeY;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setPixelType(int)
-	 */
+	@Override
 	public void setPixelType(final int pixelType) {
 		this.pixelType = pixelType;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setBitsPerPixel(int)
-	 */
+	@Override
 	public void setBitsPerPixel(final int bitsPerPixel) {
 		this.bitsPerPixel = bitsPerPixel;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setOrderCertain(boolean)
-	 */
+	@Override
 	public void setOrderCertain(final boolean orderCertain) {
 		this.orderCertain = orderCertain;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setRGB(boolean)
-	 */
+	@Override
 	public void setRGB(final boolean rgb) {
 		this.rgb = rgb;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setLittleEndian(boolean)
-	 */
+	@Override
 	public void setLittleEndian(final boolean littleEndian) {
 		this.littleEndian = littleEndian;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setInterleaved(boolean)
-	 */
+	@Override
 	public void setInterleaved(final boolean interleaved) {
 		this.interleaved = interleaved;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setIndexed(boolean)
-	 */
+	@Override
 	public void setIndexed(final boolean indexed) {
 		this.indexed = indexed;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setFalseColor(boolean)
-	 */
+	@Override
 	public void setFalseColor(final boolean falseColor) {
 		this.falseColor = falseColor;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setMetadataComplete(boolean)
-	 */
+	@Override
 	public void setMetadataComplete(final boolean metadataComplete) {
 		this.metadataComplete = metadataComplete;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setThumbnail(boolean)
-	 */
+	@Override
 	public void setThumbnail(final boolean thumbnail) {
 		this.thumbnail = thumbnail;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setAxes(net.imglib2.meta.AxisType[], int[])
-	 */
+	@Override
 	public void
 		setAxes(final CalibratedAxis[] axisTypes, final int[] axisLengths)
 	{
@@ -256,16 +230,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		setAxisLengths(axisLengths);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setAxisTypes(net.imglib2.meta.AxisType[])
-	 */
+	@Override
 	public void setAxisTypes(final CalibratedAxis[] axisTypes) {
 		this.axisTypes = new ArrayList<CalibratedAxis>(Arrays.asList(axisTypes));
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setAxisLengths(int[])
-	 */
+	@Override
 	public void setAxisLengths(final int[] axisLengths) {
 		if (axisLengths.length != axisTypes.size()) throw new IllegalArgumentException(
 			"Tried to set " + axisLengths.length + " axis lengths, but " +
@@ -276,21 +246,18 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		}
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setAxisLength(net.imglib2.meta.AxisType, int)
-	 */
+	@Override
 	public void setAxisLength(final CalibratedAxis axis, final int length) {
 		setAxisLength(axis.type(), length);
 	}
 
+	@Override
 	public void setAxisLength(final AxisType axis, final int length) {
 		if (getAxisIndex(axis) == -1) addAxis(FormatTools.calibrate(axis), length);
 		else updateLength(axis, length);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setAxisType(int, net.imglib2.meta.AxisType)
-	 */
+	@Override
 	public void setAxisType(final int index, final CalibratedAxis axis) {
 		final int oldIndex = getAxisIndex(axis);
 
@@ -308,29 +275,24 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		}
 	}
 
+	@Override
 	public void setAxisType(final int index, final AxisType axis) {
 		setAxisType(index, FormatTools.calibrate(axis));
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#setPlaneCount(int)
-	 */
+	@Override
 	public void setPlaneCount(final int planeCount) {
 		this.planeCount = planeCount;
 	}
 
 	// -- Getters --
 
-	/*
-	 * @see io.scif.ImageMetadata#getPlaneCount()
-	 */
+	@Override
 	public int getPlaneCount() {
 		return planeCount;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getSize()
-	 */
+	@Override
 	public long getSize() {
 		long size = 1;
 
@@ -343,9 +305,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return DataTools.safeMultiply64(size, bytesPerPixel);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getThumbSizeX()
-	 */
+	@Override
 	public int getThumbSizeX() {
 		int thumbX = thumbSizeX;
 
@@ -364,9 +324,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return thumbX;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getThumbSizeY()
-	 */
+	@Override
 	public int getThumbSizeY() {
 		int thumbY = thumbSizeY;
 
@@ -386,6 +344,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return thumbY;
 	}
 
+	@Override
 	public CalibratedAxis getAxis(AxisType type) {
 		for (CalibratedAxis axis : axisTypes) {
 			if (axis.type().equals(type)) return axis;
@@ -393,30 +352,22 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return null;
 	}
 	
-	/*
-	 * @see io.scif.ImageMetadata#getPixelType()
-	 */
+	@Override
 	public int getPixelType() {
 		return pixelType;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getBitsPerPixel()
-	 */
+	@Override
 	public int getBitsPerPixel() {
 		return bitsPerPixel;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxes()
-	 */
+	@Override
 	public CalibratedAxis[] getAxes() {
 		return axisTypes.toArray(new CalibratedAxis[axisTypes.size()]);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxesLengths()
-	 */
+	@Override
 	public int[] getAxesLengths() {
 		final int[] lengths = new int[axisTypes.size()];
 
@@ -427,74 +378,54 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return lengths;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isOrderCertain()
-	 */
+	@Override
 	public boolean isOrderCertain() {
 		return orderCertain;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isRGB()
-	 */
+	@Override
 	public boolean isRGB() {
 		return rgb;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isLittleEndian()
-	 */
+	@Override
 	public boolean isLittleEndian() {
 		return littleEndian;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isInterleaved()
-	 */
+	@Override
 	public boolean isInterleaved() {
 		return interleaved;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isIndexed()
-	 */
+	@Override
 	public boolean isIndexed() {
 		return indexed;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isFalseColor()
-	 */
+	@Override
 	public boolean isFalseColor() {
 		return falseColor;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isMetadataComplete()
-	 */
+	@Override
 	public boolean isMetadataComplete() {
 		return metadataComplete;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#isThumbnail()
-	 */
+	@Override
 	public boolean isThumbnail() {
 		return thumbnail;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getEffectiveSizeC()
-	 */
+	@Override
 	public int getEffectiveSizeC() {
 		final int sizeZT = getAxisLength(Axes.Z) * getAxisLength(Axes.TIME);
 		if (sizeZT == 0) return 0;
 		return getPlaneCount() / sizeZT;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getRGBChannelCount()
-	 */
+	@Override
 	public int getRGBChannelCount() {
 		if (!isRGB()) return 1;
 
@@ -503,16 +434,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return getAxisLength(Axes.CHANNEL) / effC;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxisType(int)
-	 */
+	@Override
 	public CalibratedAxis getAxisType(final int axisIndex) {
 		return axisTypes.get(axisIndex);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxisLength(int)
-	 */
+	@Override
 	public int getAxisLength(final int axisIndex) {
 		if (axisIndex < 0 || axisIndex >= axisTypes.size()) throw new IllegalArgumentException(
 			"Invalid axisIndex: " + axisIndex + ". " + axisTypes.size() +
@@ -521,26 +448,24 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return getAxisLength(axisTypes.get(axisIndex).type());
 	}
 
+	@Override
 	public int getAxisLength(final CalibratedAxis t) {
 		return getAxisLength(t.type());
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxisLength(net.imglib2.meta.AxisType)
-	 */
+	@Override
 	public int getAxisLength(final AxisType t) {
 		if (axisLengths == null || !axisLengths.containsKey(t)) return 0;
 
 		return axisLengths.get(t);
 	}
 
+	@Override
 	public int getAxisIndex(final CalibratedAxis type) {
 		return getAxisIndex(type.type());
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#getAxisIndex(net.imglib2.meta.AxisType)
-	 */
+	@Override
 	public int getAxisIndex(final AxisType type) {
 		if (axisTypes == null) return -1;
 
@@ -553,16 +478,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return index;
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#addAxis(net.imglib2.meta.AxisType)
-	 */
+	@Override
 	public void addAxis(final CalibratedAxis type) {
 		addAxis(type, 0);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#addAxis(net.imglib2.meta.AxisType, int)
-	 */
+	@Override
 	public void addAxis(final CalibratedAxis type, final int value) {
 		if (axisTypes == null) axisTypes = new ArrayList<CalibratedAxis>();
 
@@ -572,13 +493,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		updateLength(type.type(), value);
 	}
 
+	@Override
 	public void addAxis(final AxisType type, final int value) {
 		addAxis(FormatTools.calibrate(type), value);
 	}
 
-	/*
-	 * @see io.scif.ImageMetadata#copy(io.scif.ImageMetadata)
-	 */
+	@Override
 	public void copy(final ImageMetadata toCopy) {
 		table = new DefaultMetaTable(toCopy.getTable());
 
@@ -601,17 +521,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	// -- HasTable API Methods --
 
-	/*
-	 * @see io.scif.HasMetaTable#getTable()
-	 */
+	@Override
 	public MetaTable getTable() {
 		if (table == null) table = new DefaultMetaTable();
 		return table;
 	}
 
-	/*
-	 * @see io.scif.HasMetaTable#setTable(io.scif.MetaTable)
-	 */
+	@Override
 	public void setTable(final MetaTable table) {
 		this.table = table;
 	}

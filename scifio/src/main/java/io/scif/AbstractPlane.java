@@ -93,100 +93,80 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 
 	// -- DataPlane API methods --
 
-	/* @see DataPlane#setData(T) */
+	@Override
 	public void setData(final T data) {
 		this.data = data;
 	}
 
-	/* @see DataPlane#getData() */
+	@Override
 	public T getData() {
 		return data;
 	}
 
 	// -- Plane API methods --
 
-	/* @see Plane#setColorTable(ColorTable) */
+	@Override
 	public void setColorTable(final ColorTable lut) {
 		this.lut = lut;
 	}
 
-	/* @see Plane#getColorTable() */
+	@Override
 	public ColorTable getColorTable() {
 		return lut;
 	}
 
-	/*
-	 * @see io.scif.Plane#getImageMetadata()
-	 */
+	@Override
 	public ImageMetadata getImageMetadata() {
 		return meta;
 	}
 
-	/*
-	 * @see io.scif.Plane#getxOffset()
-	 */
+	@Override
 	public int getxOffset() {
 		return xOffset;
 	}
 
-	/*
-	 * @see io.scif.Plane#getyOffset()
-	 */
+	@Override
 	public int getyOffset() {
 		return yOffset;
 	}
 
-	/*
-	 * @see io.scif.Plane#getxLength()
-	 */
+	@Override
 	public int getxLength() {
 		return xLength;
 	}
 
-	/*
-	 * @see io.scif.Plane#getyLength()
-	 */
+	@Override
 	public int getyLength() {
 		return yLength;
 	}
 
+	@Override
 	public P populate(final Plane p) {
 		return populate(p.getImageMetadata(), p.getxOffset(), p.getyOffset(), p
 			.getxLength(), p.getyLength());
 	}
 
-	/*
-	 * @see io.scif.DataPlane#populate(io.scif.DataPlane)
-	 */
+	@Override
 	public P populate(final DataPlane<T> plane) {
 		return populate(plane.getImageMetadata(), plane.getData(), plane
 			.getxOffset(), plane.getyOffset(), plane.getxLength(), plane.getyLength());
 	}
 
-	/*
-	 * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
-	 *      int)
-	 */
+	@Override
 	public P populate(final ImageMetadata meta, final int xOffset,
 		final int yOffset, final int xLength, final int yLength)
 	{
 		return populate(meta, null, xOffset, yOffset, xLength, yLength);
 	}
 
-	/*
-	 * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
-	 *      int)
-	 */
+	@Override
 	public P populate(final T data, final int xOffset, final int yOffset,
 		final int xLength, final int yLength)
 	{
 		return populate(null, data, xOffset, yOffset, xLength, yLength);
 	}
 
-	/*
-	 * @see io.scif.Plane#initialize(io.scif.ImageMetadata, int, int, int,
-	 *      int)
-	 */
+	@Override
 	public P populate(final ImageMetadata meta, final T data, final int xOffset,
 		final int yOffset, final int xLength, final int yLength)
 	{
@@ -202,37 +182,27 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 		return pl;
 	}
 
-	/*
-	 * @see io.scif.Plane#setImageMetadata(io.scif.ImageMetadata)
-	 */
+	@Override
 	public void setImageMetadata(final ImageMetadata meta) {
 		this.meta = meta;
 	}
 
-	/*
-	 * @see io.scif.Plane#setxOffset(int)
-	 */
+	@Override
 	public void setxOffset(final int xOffset) {
 		this.xOffset = xOffset;
 	}
 
-	/*
-	 * @see io.scif.Plane#setyOffset(int)
-	 */
+	@Override
 	public void setyOffset(final int yOffset) {
 		this.yOffset = yOffset;
 	}
 
-	/*
-	 * @see io.scif.Plane#setxLength(int)
-	 */
+	@Override
 	public void setxLength(final int xLength) {
 		this.xLength = xLength;
 	}
 
-	/*
-	 * @see io.scif.Plane#setyLength(int)
-	 */
+	@Override
 	public void setyLength(final int yLength) {
 		this.yLength = yLength;
 	}

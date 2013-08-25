@@ -84,107 +84,71 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
 
 	// -- Metadata API Methods --
 
-	/*
-	 * @see io.scif.AbstractMetadata#isRGB(int)
-	 */
 	@Override
 	public boolean isRGB(final int imageIndex) {
 		return noStitch ? super.isRGB(imageIndex) : unwrap().isRGB(imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#getAxisLength(int, net.imglib2.meta.AxisType)
-	 */
 	@Override
 	public int getAxisLength(final int imageIndex, final AxisType t) {
 		return noStitch ? super.getAxisLength(imageIndex, t) : unwrap()
 			.getAxisLength(imageIndex, t);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#getPixelType(int)
-	 */
 	@Override
 	public int getPixelType(final int imageIndex) {
 		return noStitch ? super.getPixelType(imageIndex) : unwrap().getPixelType(
 			imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#getBitsPerPixel(int)
-	 */
 	@Override
 	public int getBitsPerPixel(final int imageIndex) {
 		return noStitch ? super.getBitsPerPixel(imageIndex) : unwrap()
 			.getBitsPerPixel(imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#isIndexed(int)
-	 */
 	@Override
 	public boolean isIndexed(final int imageIndex) {
 		return noStitch ? super.isIndexed(imageIndex) : unwrap().isIndexed(
 			imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#isFalseColor(int)
-	 */
 	@Override
 	public boolean isFalseColor(final int imageIndex) {
 		return noStitch ? super.isFalseColor(imageIndex) : unwrap().isFalseColor(
 			imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#getThumbSizeX(int)
-	 */
 	@Override
 	public int getThumbSizeX(final int imageIndex) {
 		return noStitch ? super.getThumbSizeX(imageIndex) : unwrap().getThumbSizeX(
 			imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#getThumbSizeY(int)
-	 */
 	@Override
 	public int getThumbSizeY(final int imageIndex) {
 		return noStitch ? super.getThumbSizeY(imageIndex) : unwrap().getThumbSizeY(
 			imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#isLittleEndian(int)
-	 */
 	@Override
 	public boolean isLittleEndian(final int imageIndex) {
 		return noStitch ? super.isLittleEndian(imageIndex) : unwrap()
 			.isLittleEndian(imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#isOrderCertain(int)
-	 */
 	@Override
 	public boolean isOrderCertain(final int imageIndex) {
 		return noStitch ? super.isOrderCertain(imageIndex) : unwrap()
 			.isOrderCertain(imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#isThumbnailImage(int)
-	 */
 	@Override
 	public boolean isThumbnailImage(final int imageIndex) {
 		return noStitch ? super.isThumbnailImage(imageIndex) : unwrap()
 			.isThumbnailImage(imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#isInterleaved(int)
-	 */
 	@Override
 	public boolean isInterleaved(final int imageIndex) {
 		return noStitch ? super.isInterleaved(imageIndex) : unwrap().isInterleaved(
@@ -200,9 +164,6 @@ public class FileStitcherMetadata extends AbstractMetadataWrapper {
 			imageIndex);
 	}
 
-	/*
-	 * @see io.scif.AbstractMetadata#getImageCount()
-	 */
 	@Override
 	public int getImageCount() {
 		return noStitch ? super.getImageCount() : unwrap().getImageCount();

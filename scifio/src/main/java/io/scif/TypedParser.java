@@ -56,19 +56,13 @@ import java.io.IOException;
  */
 public interface TypedParser<M extends TypedMetadata> extends Parser {
 
-	/*
-	 * @see io.scif.Parser#parse(java.lang.String)
-	 */
+	@Override
 	M parse(String fileName) throws IOException, FormatException;
 
-	/*
-	 * @see io.scif.Parser#parse(java.io.File)
-	 */
+	@Override
 	M parse(File file) throws IOException, FormatException;
 
-	/*
-	 * @see io.scif.Parser#parse(io.scif.io.RandomAccessInputStream)
-	 */
+	@Override
 	M parse(RandomAccessInputStream stream) throws IOException, FormatException;
 
 	/**

@@ -51,14 +51,17 @@ public class SCIFIOApp extends AbstractApp {
 
 	public static final String NAME = "SCIFIO";
 
+	@Override
 	public String getTitle() {
 		return NAME;
 	}
 
+	@Override
 	public String getGroupId() {
 		return "io.scif";
 	}
 
+	@Override
 	public String getArtifactId() {
 		return "scifio";
 	}

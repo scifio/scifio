@@ -107,65 +107,56 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	// -- Metadata API Methods --
 
-	/* @see Metadata#setSource(RandomAccessInputStream) */
+	@Override
 	public void setSource(final RandomAccessInputStream source) {
 		this.source = source;
 
 		if (source != null) setDatasetName(source.getFileName());
 	}
 
-	/* @see Metadata#getSource() */
+	@Override
 	public RandomAccessInputStream getSource() {
 		return source;
 	}
 
-	/* @see Metadata#isFiltered() */
+	@Override
 	public boolean isFiltered() {
 		return filtered;
 	}
 
-	/* @see Metadata#getMetadataOptions() */
+	@Override
 	public MetadataOptions getMetadataOptions() {
 		return metadataOptions;
 	}
 
 	// -- Getters --
 
+	@Override
 	public String getDatasetName() {
 		return datasetName;
 	}
 
-	/*
-	 * @see io.scif.Metadata#get(int)
-	 */
+	@Override
 	public ImageMetadata get(final int imageIndex) {
 		return imageMeta.get(imageIndex);
 	}
 
-	/*
-	 * @see io.scif.Metadata#getAll()
-	 */
+	@Override
 	public List<ImageMetadata> getAll() {
 		return imageMeta;
 	}
 
-	/*
-	 * @see io.scif.Metadata#getImageCount()
-	 */
+	@Override
 	public int getImageCount() {
 		return imageMeta.size();
 	}
 
-	/*
-	 * @see io.scif.Metadata#getPlaneCount(int)
-	 */
+	@Override
 	public int getPlaneCount(final int imageIndex) {
 		return imageMeta.get(imageIndex).getPlaneCount();
 	}
 
-	/*
-	 * @see io.scif.Metadata#getDatasetSize()
-	 */
+	@Override
 	public long getDatasetSize() {
 		int size = 0;
 
@@ -175,362 +166,278 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 		return size;
 	}
 
-	/*
-	 * @see io.scif.Metadata#getImageSize(int)
-	 */
+	@Override
 	public long getImageSize(final int imageIndex) {
 		return imageMeta.get(imageIndex).getSize();
 	}
 
-	/*
-	 * @see io.scif.Metadata#isInterleaved(int)
-	 */
+	@Override
 	public boolean isInterleaved(final int imageIndex) {
 		return imageMeta.get(imageIndex).isInterleaved();
 	}
 
-	/*
-	 * @see io.scif.Metadata#getPixelType(int)
-	 */
+	@Override
 	public int getPixelType(final int imageIndex) {
 		return imageMeta.get(imageIndex).getPixelType();
 	}
 
-	/*
-	 * @see io.scif.Metadata#getEffectiveSizeC(int)
-	 */
+	@Override
 	public int getEffectiveSizeC(final int imageIndex) {
 		return imageMeta.get(imageIndex).getEffectiveSizeC();
 	}
 
-	/*
-	 * @see io.scif.Metadata#getRGBChannelCount(int)
-	 */
+	@Override
 	public int getRGBChannelCount(final int imageIndex) {
 		return imageMeta.get(imageIndex).getRGBChannelCount();
 	}
 
-	/*
-	 * @see io.scif.Metadata#isLittleEndian(int)
-	 */
+	@Override
 	public boolean isLittleEndian(final int imageIndex) {
 		return imageMeta.get(imageIndex).isLittleEndian();
 	}
 
-	/*
-	 * @see io.scif.Metadata#isIndexed(int)
-	 */
+	@Override
 	public boolean isIndexed(final int imageIndex) {
 		return imageMeta.get(imageIndex).isIndexed();
 	}
 
-	/*
-	 * @see io.scif.Metadata#getBitsPerPixel(int)
-	 */
+	@Override
 	public int getBitsPerPixel(final int imageIndex) {
 		return imageMeta.get(imageIndex).getBitsPerPixel();
 	}
 
-	/*
-	 * @see io.scif.Metadata#isRGB(int)
-	 */
+	@Override
 	public boolean isRGB(final int imageIndex) {
 		return imageMeta.get(imageIndex).isRGB();
 	}
 
-	/*
-	 * @see io.scif.Metadata#isFalseColor(int)
-	 */
+	@Override
 	public boolean isFalseColor(final int imageIndex) {
 		return imageMeta.get(imageIndex).isFalseColor();
 	}
 
-	/*
-	 * @see io.scif.Metadata#getThumbSizeX(int)
-	 */
+	@Override
 	public int getThumbSizeX(final int imageIndex) {
 		return imageMeta.get(imageIndex).getThumbSizeX();
 	}
 
-	/*
-	 * @see io.scif.Metadata#getThumbSizeY(int)
-	 */
+	@Override
 	public int getThumbSizeY(final int imageIndex) {
 		return imageMeta.get(imageIndex).getThumbSizeY();
 	}
 	
+	@Override
 	public CalibratedAxis getAxis(int imageIndex, AxisType type) {
 		return imageMeta.get(imageIndex).getAxis(type);
 	}
 	
-	/*
-	 * @see io.scif.Metadata#getAxisCount(int)
-	 */
+	@Override
 	public int getAxisCount(final int imageIndex) {
 		return imageMeta.get(imageIndex).getAxesLengths().length;
 	}
 
-	/*
-	 * @see io.scif.Metadata#getAxisType(int, int)
-	 */
+	@Override
 	public CalibratedAxis getAxisType(final int imageIndex, final int planeIndex)
 	{
 		return imageMeta.get(imageIndex).getAxisType(planeIndex);
 	}
 
-	/*
-	 * @see io.scif.Metadata#getAxisLength(int, int)
-	 */
+	@Override
 	public int getAxisLength(final int imageIndex, final int planeIndex) {
 		return imageMeta.get(imageIndex).getAxisLength(planeIndex);
 	}
 
-	/*
-	 * @see io.scif.Metadata#getAxisLength(int, net.imglib2.meta.AxisType)
-	 */
+	@Override
 	public int getAxisLength(final int imageIndex, final CalibratedAxis t) {
 		return imageMeta.get(imageIndex).getAxisLength(t);
 	}
 
+	@Override
 	public int getAxisLength(final int imageIndex, final AxisType t) {
 		return imageMeta.get(imageIndex).getAxisLength(t);
 	}
 
-	/*
-	 * @see io.scif.Metadata#getAxisIndex(int, net.imglib2.meta.AxisType)
-	 */
+	@Override
 	public int getAxisIndex(final int imageIndex, final CalibratedAxis type) {
 		return imageMeta.get(imageIndex).getAxisIndex(type);
 	}
 
+	@Override
 	public int getAxisIndex(final int imageIndex, final AxisType type) {
 		return imageMeta.get(imageIndex).getAxisIndex(type);
 	}
 
-	/*
-	 * @see io.scif.Metadata#getAxes(int)
-	 */
+	@Override
 	public CalibratedAxis[] getAxes(final int imageIndex) {
 		return imageMeta.get(imageIndex).getAxes();
 	}
 
-	/*
-	 * @see io.scif.Metadata#getAxesLengths(int)
-	 */
+	@Override
 	public int[] getAxesLengths(final int imageIndex) {
 		return imageMeta.get(imageIndex).getAxesLengths();
 	}
 
-	/*
-	 * @see io.scif.Metadata#isOrderCertain(int)
-	 */
+	@Override
 	public boolean isOrderCertain(final int imageIndex) {
 		return imageMeta.get(imageIndex).isOrderCertain();
 	}
 
-	/*
-	 * @see io.scif.Metadata#isThumbnailImage(int)
-	 */
+	@Override
 	public boolean isThumbnailImage(final int imageIndex) {
 		return imageMeta.get(imageIndex).isThumbnail();
 	}
 
-	/*
-	 * @see io.scif.Metadata#isMetadataComplete(int)
-	 */
+	@Override
 	public boolean isMetadataComplete(final int imageIndex) {
 		return imageMeta.get(imageIndex).isMetadataComplete();
 	}
 
 	// -- Setters --
 
-	/*
-	 * @see io.scif.Metadata#setDatasetName(java.lang.String)
-	 */
+	@Override
 	public void setDatasetName(final String name) {
 		datasetName = name;
 	}
 
-	/*
-	 * @see io.scif.Metadata#setThumbSizeX(int, int)
-	 */
+	@Override
 	public void setThumbSizeX(final int imageIndex, final int thumbX) {
 		imageMeta.get(imageIndex).setThumbSizeX(thumbX);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setThumbSizeY(int, int)
-	 */
+	@Override
 	public void setThumbSizeY(final int imageIndex, final int thumbY) {
 		imageMeta.get(imageIndex).setThumbSizeY(thumbY);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setPixelType(int, int)
-	 */
+	@Override
 	public void setPixelType(final int imageIndex, final int type) {
 		imageMeta.get(imageIndex).setPixelType(type);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setBitsPerPixel(int, int)
-	 */
+	@Override
 	public void setBitsPerPixel(final int imageIndex, final int bpp) {
 		imageMeta.get(imageIndex).setBitsPerPixel(bpp);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setOrderCertain(int, boolean)
-	 */
+	@Override
 	public void setOrderCertain(final int imageIndex, final boolean orderCertain)
 	{
 		imageMeta.get(imageIndex).setOrderCertain(orderCertain);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setRGB(int, boolean)
-	 */
+	@Override
 	public void setRGB(final int imageIndex, final boolean rgb) {
 		imageMeta.get(imageIndex).setRGB(rgb);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setLittleEndian(int, boolean)
-	 */
+	@Override
 	public void setLittleEndian(final int imageIndex, final boolean littleEndian)
 	{
 		imageMeta.get(imageIndex).setLittleEndian(littleEndian);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setInterleaved(int, boolean)
-	 */
+	@Override
 	public void setInterleaved(final int imageIndex, final boolean interleaved) {
 		imageMeta.get(imageIndex).setInterleaved(interleaved);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setIndexed(int, boolean)
-	 */
+	@Override
 	public void setIndexed(final int imageIndex, final boolean indexed) {
 		imageMeta.get(imageIndex).setIndexed(indexed);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setFalseColor(int, boolean)
-	 */
+	@Override
 	public void setFalseColor(final int imageIndex, final boolean falseC) {
 		imageMeta.get(imageIndex).setFalseColor(falseC);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setMetadataComplete(int, boolean)
-	 */
+	@Override
 	public void setMetadataComplete(final int imageIndex,
 		final boolean metadataComplete)
 	{
 		imageMeta.get(imageIndex).setMetadataComplete(metadataComplete);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setFiltered(boolean)
-	 */
+	@Override
 	public void setFiltered(final boolean filtered) {
 		this.filtered = filtered;
 	}
 
-	/*
-	 * @see io.scif.Metadata#setMetadataOptions(io.scif.MetadataOptions)
-	 */
+	@Override
 	public void setMetadataOptions(final MetadataOptions opts) {
 		metadataOptions = opts;
 	}
 
-	/*
-	 * @see io.scif.Metadata#add(io.scif.ImageMetadata)
-	 */
+	@Override
 	public void add(final ImageMetadata meta) {
 		imageMeta.add(meta);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setThumbnailImage(int, boolean)
-	 */
+	@Override
 	public void setThumbnailImage(final int imageIndex, final boolean thumbnail) {
 		imageMeta.get(imageIndex).setThumbnail(thumbnail);
 	}
 
-	/*
-	 * @see io.scif.Metadata#addAxis(int, net.imglib2.meta.AxisType)
-	 */
+	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis type) {
 		imageMeta.get(imageIndex).addAxis(type);
 	}
 
-	/*
-	 * @see io.scif.Metadata#addAxis(int, net.imglib2.meta.AxisType, int)
-	 */
+	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis type,
 		final int value)
 	{
 		imageMeta.get(imageIndex).addAxis(type, value);
 	}
 
+	@Override
 	public void
 		addAxis(final int imageIndex, final AxisType type, final int value)
 	{
 		imageMeta.get(imageIndex).addAxis(type, value);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setAxisTypes(int, net.imglib2.meta.AxisType[])
-	 */
+	@Override
 	public void setAxisTypes(final int imageIndex,
 		final CalibratedAxis[] axisTypes)
 	{
 		imageMeta.get(imageIndex).setAxisTypes(axisTypes);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setAxisType(int, int, net.imglib2.meta.AxisType)
-	 */
+	@Override
 	public void setAxisType(final int imageIndex, final int axisIndex,
 		final CalibratedAxis axis)
 	{
 		imageMeta.get(imageIndex).setAxisType(axisIndex, axis);
 	}
 
+	@Override
 	public void setAxisType(final int imageIndex, final int axisIndex,
 		final AxisType axis)
 	{
 		imageMeta.get(imageIndex).setAxisType(axisIndex, axis);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setAxisLengths(int, int[])
-	 */
+	@Override
 	public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
 		imageMeta.get(imageIndex).setAxisLengths(axisLengths);
 	}
 
-	/*
-	 * @see io.scif.Metadata#setAxisLength(int, net.imglib2.meta.AxisType, int)
-	 */
+	@Override
 	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
 		final int length)
 	{
 		imageMeta.get(imageIndex).setAxisLength(axis, length);
 	}
 
+	@Override
 	public void setAxisLength(final int imageIndex, final AxisType axis,
 		final int length)
 	{
 		imageMeta.get(imageIndex).setAxisLength(axis, length);
 	}
 
-	/*
-	 * @see io.scif.Metadata#createImageMetadata(int)
-	 */
+	@Override
 	public void createImageMetadata(final int imageCount) {
 		imageMeta.clear();
 
@@ -540,26 +447,20 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	// -- HasMetaTable API Methods --
 
-	/*
-	 * @see io.scif.HasMetaTable#getTable()
-	 */
+	@Override
 	public MetaTable getTable() {
 		if (table == null) table = new DefaultMetaTable();
 		return table;
 	}
 
-	/*
-	 * @see io.scif.HasMetaTable#setTable(io.scif.MetaTable)
-	 */
+	@Override
 	public void setTable(final MetaTable table) {
 		this.table = table;
 	}
 
 	// -- HasSource API Methods --
 
-	/*
-	 * @see io.scif.HasSource#close(boolean)
-	 */
+	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		if (source != null) {
 			source.close();

@@ -69,16 +69,12 @@ public class JavaFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "Java source code";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "java" };
 	}
@@ -100,9 +96,7 @@ public class JavaFormat extends AbstractFormat {
 			if (out.length() == 0) writeHeader();
 		}
 
-		/*
-		 * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
-		 */
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException
@@ -237,10 +231,12 @@ public class JavaFormat extends AbstractFormat {
 			super(data);
 		}
 
+		@Override
 		public String label() {
 			return "byte";
 		}
 
+		@Override
 		public String value(final int index) {
 			return String.valueOf(getValue(index));
 		}
@@ -252,10 +248,12 @@ public class JavaFormat extends AbstractFormat {
 			super(data);
 		}
 
+		@Override
 		public String label() {
 			return "int";
 		}
 
+		@Override
 		public String value(final int index) {
 			return String.valueOf(getValue(index));
 		}
@@ -267,10 +265,12 @@ public class JavaFormat extends AbstractFormat {
 			super(data);
 		}
 
+		@Override
 		public String label() {
 			return "short";
 		}
 
+		@Override
 		public String value(final int index) {
 			return String.valueOf(getValue(index));
 		}
@@ -282,10 +282,12 @@ public class JavaFormat extends AbstractFormat {
 			super(data);
 		}
 
+		@Override
 		public String label() {
 			return "long";
 		}
 
+		@Override
 		public String value(final int index) {
 			return String.valueOf(getValue(index));
 		}
@@ -297,10 +299,12 @@ public class JavaFormat extends AbstractFormat {
 			super(data);
 		}
 
+		@Override
 		public String label() {
 			return "float";
 		}
 
+		@Override
 		public String value(final int index) {
 			return String.valueOf(getValue(index));
 		}
@@ -313,10 +317,12 @@ public class JavaFormat extends AbstractFormat {
 			super(data);
 		}
 
+		@Override
 		public String label() {
 			return "double";
 		}
 
+		@Override
 		public String value(final int index) {
 			return String.valueOf(getValue(index));
 		}

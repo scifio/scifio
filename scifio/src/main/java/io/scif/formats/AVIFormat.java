@@ -148,16 +148,12 @@ public class AVIFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "Audio Video Interleave";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "avi" };
 	}
@@ -280,6 +276,7 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- HasColorTable API Methods --
 
+		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			return lut;
@@ -287,6 +284,7 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 			int sizeT = 0, sizeC = 0;
@@ -391,9 +389,6 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- HasSource API Methods --
 
-		/*
-		 * @see io.scif.AbstractMetadata#close(boolean)
-		 */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -428,9 +423,6 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- Checker API Methods --
 
-		/*
-		 * @see io.scif.Checker#isFormat(io.scif.io.RandomAccessInputStream)
-		 */
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)
 			throws IOException
@@ -830,9 +822,7 @@ public class AVIFormat extends AbstractFormat {
 			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
-		/*
-		 * @see io.scif.Reader#openPlane(int, int, io.scif.Plane, int, int, int, int)
-		 */
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException
@@ -1068,6 +1058,7 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- Writer API Methods --
 
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

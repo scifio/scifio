@@ -107,9 +107,6 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	// -- Filter API Methods --
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#isCompatible(java.lang.Class)
-	 */
 	@Override
 	public boolean isCompatible(final Class<?> c) {
 		return ByteArrayReader.class.isAssignableFrom(c);
@@ -117,9 +114,6 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	// -- Reader API methods --
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
@@ -128,9 +122,6 @@ public class ChannelFiller extends AbstractReaderFilter {
 			imageIndex);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
@@ -141,9 +132,6 @@ public class ChannelFiller extends AbstractReaderFilter {
 		return openPlaneHelper(parentPlane, plane, imageIndex);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, int, int, int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final int x, final int y, final int w, final int h) throws FormatException,
@@ -153,9 +141,6 @@ public class ChannelFiller extends AbstractReaderFilter {
 			w, h), null, imageIndex);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane, int, int, int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane, final int x, final int y, final int w, final int h)
@@ -167,17 +152,11 @@ public class ChannelFiller extends AbstractReaderFilter {
 		return openPlaneHelper(parentPlane, plane, imageIndex);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#close()
-	 */
 	@Override
 	public void close() throws IOException {
 		close(false);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#close(boolean)
-	 */
 	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		super.close(fileOnly);

@@ -81,16 +81,12 @@ public class LegacyQTFormat extends AbstractFormat {
 
 	// -- Format API methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "QuickTime";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "mov" };
 	}
@@ -135,6 +131,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final BufferedImage img = AWTImageTools.makeBuffered(image);
 			final ImageMetadata iMeta = get(0);
@@ -263,6 +260,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
+		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final int planeIndex, final BufferedImagePlane plane, final int x,
 			final int y, final int w, final int h) throws FormatException,
@@ -374,6 +372,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		// -- Writer API Methods --
 
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

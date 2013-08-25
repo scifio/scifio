@@ -97,16 +97,12 @@ public class APNGFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "Animated PNG";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "png" };
 	}
@@ -167,25 +163,17 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.Metadata#isLittleEndian(int)
-		 */
 		@Override
 		public boolean isLittleEndian(final int imageIndex) {
 			return littleEndian;
 		}
 
-		/*
-		 * @see io.scif.Metadata#setLittleEndian(int, boolean)
-		 */
 		@Override
 		public void setLittleEndian(final int imageIndex, final boolean little) {
 			littleEndian = little;
 		}
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
+		@Override
 		public void populateImageMetadata() {
 			createImageMetadata(1);
 
@@ -336,7 +324,6 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- HasSource API Methods --
 
-		/* @see io.scif.Metadata#reset() */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -363,7 +350,6 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- Checker API Methods --
 
-		/* @see io.scif.Checker#isFormat(RandomAccessInputStream stream) */
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)
 			throws IOException
@@ -530,7 +516,7 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
-		/* @see io.scif.Reader#openPlane(int, int, int, int, int) */
+		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final int planeIndex, final BufferedImagePlane plane, final int x,
 			final int y, final int w, final int h) throws FormatException,
@@ -660,9 +646,6 @@ public class APNGFormat extends AbstractFormat {
 			return plane.populate(lastPlane);
 		}
 
-		/*
-		 * @see io.scif.AbstractReader#close(boolean)
-		 */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -727,9 +710,7 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- Writer API Methods --
 
-		/*
-		 * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
-		 */
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException
@@ -767,13 +748,11 @@ public class APNGFormat extends AbstractFormat {
 			numFrames++;
 		}
 
-		/* @see io.scif.Writer#canDoStacks() */
 		@Override
 		public boolean canDoStacks() {
 			return true;
 		}
 
-		/* @see io.scif.Writer#getPixelTypes(String) */
 		@Override
 		public int[] getPixelTypes(final String codec) {
 			return new int[] { FormatTools.INT8, FormatTools.UINT8,
@@ -782,7 +761,6 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- APNGWriter Methods --
 
-		/* @see io.scif.Writer#setDest(RandomAccessOutputStream, int) */
 		@Override
 		public void
 			setDest(final RandomAccessOutputStream out, final int imageIndex)
@@ -794,9 +772,6 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- HasSource API Methods --
 
-		/*
-		 * @see io.scif.AbstractWriter#close(boolean)
-		 */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			if (out != null) {

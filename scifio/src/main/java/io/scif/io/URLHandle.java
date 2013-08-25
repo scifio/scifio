@@ -109,7 +109,6 @@ public class URLHandle extends StreamHandle {
 
 	// -- IRandomAccess API methods --
 
-	/* @see IRandomAccess#seek(long) */
 	@Override
 	public void seek(final long pos) throws IOException {
 		if (pos < getFp() && pos >= getMark()) {
@@ -122,14 +121,14 @@ public class URLHandle extends StreamHandle {
 
 	// -- IStreamAccess API methods --
 
-	/* @see IStreamAccess#isConstructable(String id) */
+	@Override
 	public boolean isConstructable(final String id) throws IOException {
 		return id.startsWith("http:") || id.startsWith("file:");
 	}
 
 	// -- StreamHandle API methods --
 
-	/* @see IStreamAccess#resetStream() */
+	@Override
 	public void resetStream() throws IOException {
 		conn = (new URL(url)).openConnection();
 		setStream(new DataInputStream(new BufferedInputStream(

@@ -307,9 +307,6 @@ public class FileStitcher extends AbstractReaderFilter {
 
 	// -- Reader API methods --
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
@@ -318,9 +315,6 @@ public class FileStitcher extends AbstractReaderFilter {
 			planeIndex, imageIndex), null);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
@@ -331,9 +325,6 @@ public class FileStitcher extends AbstractReaderFilter {
 		return openPlaneHelper(imageIndex, planeIndex, parentPlane, plane);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, int, int, int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final int x, final int y, final int w, final int h) throws FormatException,
@@ -344,9 +335,6 @@ public class FileStitcher extends AbstractReaderFilter {
 
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane, int, int, int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane, final int x, final int y, final int w, final int h)
@@ -372,9 +360,6 @@ public class FileStitcher extends AbstractReaderFilter {
 	}
 	*/
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openThumbPlane(int, int)
-	 */
 	@Override
 	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
@@ -391,9 +376,6 @@ public class FileStitcher extends AbstractReaderFilter {
 		return externals.get(getExternalSeries(imageIndex)).getBlankThumbBytes();
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#close(boolean)
-	 */
 	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		super.close(fileOnly);
@@ -411,9 +393,6 @@ public class FileStitcher extends AbstractReaderFilter {
 		}
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#getUnderlyingReaders()
-	 */
 	@Override
 	public Reader[] getUnderlyingReaders() {
 		final List<Reader> list = new ArrayList<Reader>();

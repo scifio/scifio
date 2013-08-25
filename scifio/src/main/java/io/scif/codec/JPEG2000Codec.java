@@ -82,6 +82,7 @@ public class JPEG2000Codec extends AbstractCodec {
 	 * 
 	 * @see Codec#compress(byte[], CodecOptions)
 	 */
+	@Override
 	public byte[] compress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{

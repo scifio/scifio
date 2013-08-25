@@ -214,16 +214,19 @@ public class JPEGTileDecoder extends AbstractContextual {
 
 		// -- ImageConsumer API methods --
 
+		@Override
 		public void imageComplete(final int status) {
 			producer.removeConsumer(this);
 		}
 
+		@Override
 		public void setDimensions(final int width, final int height) {
 			this.width = width;
 			this.height = height;
 			if (hh <= 0) hh = height;
 		}
 
+		@Override
 		public void setPixels(final int x, final int y, final int w, final int h,
 			final ColorModel model, final byte[] pixels, final int off,
 			final int scanSize)
@@ -246,6 +249,7 @@ public class JPEGTileDecoder extends AbstractContextual {
 			}
 		}
 
+		@Override
 		public void setPixels(final int x, final int y, final int w, final int h,
 			final ColorModel model, final int[] pixels, final int off,
 			final int scanSize)
@@ -269,10 +273,13 @@ public class JPEGTileDecoder extends AbstractContextual {
 			}
 		}
 
+		@Override
 		public void setProperties(final Hashtable<?, ?> props) {}
 
+		@Override
 		public void setColorModel(final ColorModel model) {}
 
+		@Override
 		public void setHints(final int hintFlags) {}
 	}
 

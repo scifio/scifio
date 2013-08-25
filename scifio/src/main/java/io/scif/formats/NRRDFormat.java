@@ -67,16 +67,12 @@ public class NRRDFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "NRRD";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "nrrd", "nhdr" };
 	}
@@ -171,9 +167,7 @@ public class NRRDFormat extends AbstractFormat {
 
 		// -- Metadata API methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
@@ -187,7 +181,6 @@ public class NRRDFormat extends AbstractFormat {
 			iMeta.setMetadataComplete(true);
 		}
 
-		/* @see loci.formats.IFormatReader#close(boolean) */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -485,9 +478,7 @@ public class NRRDFormat extends AbstractFormat {
 			return getMetadata().getAxisLength(imageIndex, Axes.Y);
 		}
 
-		/*
-		 * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

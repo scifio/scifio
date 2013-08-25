@@ -61,9 +61,7 @@ public abstract class ByteArrayReader<M extends TypedMetadata> extends
 
 	// -- Reader API Methods --
 
-	/*
-	 * @see io.scif.Reader#openThumbPlane(int, int)
-	 */
+	@Override
 	public ByteArrayPlane openThumbPlane(final int imageIndex,
 		final int planeIndex) throws FormatException, IOException
 	{
@@ -77,18 +75,14 @@ public abstract class ByteArrayReader<M extends TypedMetadata> extends
 		return plane;
 	}
 
-	/*
-	 * @see io.scif.TypedReader#createPlane(int, int, int, int)
-	 */
+	@Override
 	public ByteArrayPlane createPlane(final int xOffset, final int yOffset,
 		final int xLength, final int yLength)
 	{
 		return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
 	}
 
-	/*
-	 * @see io.scif.TypedReader#createPlane(int, int, int, int)
-	 */
+	@Override
 	public ByteArrayPlane createPlane(final ImageMetadata meta,
 		final int xOffset, final int yOffset, final int xLength, final int yLength)
 	{

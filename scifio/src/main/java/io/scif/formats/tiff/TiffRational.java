@@ -150,6 +150,7 @@ public class TiffRational extends Number implements Comparable<TiffRational> {
 	 * negative integer, zero, or a positive integer as this object is less than,
 	 * equal to, or greater than the specified object.
 	 */
+	@Override
 	public int compareTo(final TiffRational q) {
 		long diff = (numer * q.denom - q.numer * denom);
 		if (diff > Integer.MAX_VALUE) diff = Integer.MAX_VALUE;

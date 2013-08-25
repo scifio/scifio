@@ -61,9 +61,7 @@ public interface TypedWriter<M extends TypedMetadata> extends Writer {
 	 */
 	void setMetadata(M meta) throws FormatException;
 
-	/*
-	 * @see io.scif.Writer#getMetadata()
-	 */
+	@Override
 	M getMetadata();
 
 }

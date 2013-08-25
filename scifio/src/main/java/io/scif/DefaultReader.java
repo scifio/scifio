@@ -68,6 +68,7 @@ public class DefaultReader extends ByteArrayReader<DefaultMetadata> implements
 	 * 
 	 * @throws UnsupportedOperationException
 	 */
+	@Override
 	public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 		final ByteArrayPlane plane, final int x, final int y, final int w,
 		final int h) throws FormatException, IOException

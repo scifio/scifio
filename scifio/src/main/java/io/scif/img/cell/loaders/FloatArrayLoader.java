@@ -73,10 +73,12 @@ public class FloatArrayLoader extends AbstractArrayLoader<FloatArray> {
 			bytes.length / bpp);
 	}
 
+	@Override
 	public FloatArray emptyArray(final int[] dimensions) {
 		return new FloatArray(countEntities(dimensions));
 	}
 
+	@Override
 	public int getBitsPerElement() {
 		return 32;
 	}

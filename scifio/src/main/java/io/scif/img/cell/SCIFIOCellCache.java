@@ -90,6 +90,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	 * Returns the SCIFIOCell at the specified index from this cache, or null if
 	 * index has not been loaded yet.
 	 */
+	@Override
 	public SCIFIOCell<A> get(final int index) {
 		final SCIFIOCell<A> cell = checkCache(cacheId, index);
 
@@ -106,6 +107,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	 * @param cellDims - lengths of each axis of a cell
 	 * @param cellMin - origin position of each cell axis
 	 */
+	@Override
 	public SCIFIOCell<A> load(final int index, final int[] cellDims,
 		final long[] cellMin)
 	{

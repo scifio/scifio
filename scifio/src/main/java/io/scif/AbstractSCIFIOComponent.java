@@ -52,6 +52,7 @@ public abstract class AbstractSCIFIOComponent extends AbstractHasSCIFIO
 
 	// -- HasLog API Methods --
 
+	@Override
 	public LogService log() {
 		if (log == null) log = scifio().log();
 		return log;

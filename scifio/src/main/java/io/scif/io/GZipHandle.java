@@ -86,7 +86,7 @@ public class GZipHandle extends StreamHandle {
 
 	// -- IStreamAccess API methods --
 
-	/* @see IStreamAccess#isConstructable(String) */
+	@Override
 	public boolean isConstructable(final String file) throws IOException {
 		if (!file.toLowerCase().endsWith(".gz")) return false;
 
@@ -97,7 +97,7 @@ public class GZipHandle extends StreamHandle {
 		return DataTools.bytesToInt(b, true) == GZIPInputStream.GZIP_MAGIC;
 	}
 
-	/* @see IStreamAccess#resetStream() */
+	@Override
 	public void resetStream() throws IOException {
 		if (getStream() != null) getStream().close();
 		final BufferedInputStream bis =
@@ -108,7 +108,6 @@ public class GZipHandle extends StreamHandle {
 
 	// -- IStreamAccess API methods --
 
-	/* @see IStreamAccess#setFile(String) */
 	@Override
 	public void setFile(final String file) throws IOException {
 		super.setFile(file);

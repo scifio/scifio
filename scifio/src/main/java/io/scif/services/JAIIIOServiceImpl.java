@@ -79,7 +79,7 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 
 	// -- JAIIIOService API methods --
 
-	/* @see JAIIIOService#writeImage(OutputStream, BufferedImage, JPEG2000CodecOptions) */
+	@Override
 	public void writeImage(final OutputStream out, final BufferedImage img,
 		final JPEG2000CodecOptions options) throws IOException, ServiceException
 	{
@@ -123,6 +123,7 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 	 * @deprecated
 	 * @see JAIIIOService#writeImage(OutputStream, BufferedImage)
 	 */
+	@Override
 	@Deprecated
 	public void writeImage(final OutputStream out, final BufferedImage img,
 		final boolean lossless, final int[] codeBlockSize, final double quality)
@@ -136,7 +137,7 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 		writeImage(out, img, options);
 	}
 
-	/* @see JAIIIOService#readImage(InputStream, JPEG2000CodecOptions) */
+	@Override
 	public BufferedImage readImage(final InputStream in,
 		final JPEG2000CodecOptions options) throws IOException, ServiceException
 	{
@@ -152,14 +153,14 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 		return reader.read(0, param);
 	}
 
-	/* @see JAIIIOService#readImage(InputStream) */
+	@Override
 	public BufferedImage readImage(final InputStream in) throws IOException,
 		ServiceException
 	{
 		return readImage(in, JPEG2000CodecOptions.getDefaultOptions());
 	}
 
-	/* @see JAIIIOService#readRaster(InputStream, JPEG2000CodecOptions) */
+	@Override
 	public Raster readRaster(final InputStream in,
 		final JPEG2000CodecOptions options) throws IOException, ServiceException
 	{
@@ -175,7 +176,7 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 		return reader.readRaster(0, param);
 	}
 
-	/* @see JAIIIOService#readRaster(InputStream) */
+	@Override
 	public Raster readRaster(final InputStream in) throws IOException,
 		ServiceException
 	{

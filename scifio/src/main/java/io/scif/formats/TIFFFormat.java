@@ -87,16 +87,12 @@ public class TIFFFormat extends AbstractFormat {
 
 	// -- Format API methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "Tagged Image File Format";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return TIFF_SUFFIXES;
 	}
@@ -1244,9 +1240,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 		}
 
-		/*
-		 * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
-		 */
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException
@@ -1272,13 +1266,11 @@ public class TIFFFormat extends AbstractFormat {
 			savePlane(imageIndex, planeIndex, plane, ifd, x, y, w, h);
 		}
 
-		/* @see loci.formats.IFormatWriter#canDoStacks(String) */
 		@Override
 		public boolean canDoStacks() {
 			return true;
 		}
 
-		/* @see loci.formats.IFormatWriter#getPixelTypes(String) */
 		@Override
 		public int[] getPixelTypes(final String codec) {
 			if (codec != null && codec.equals(COMPRESSION_JPEG)) {

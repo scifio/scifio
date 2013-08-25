@@ -105,6 +105,7 @@ public class ZipHandle extends StreamHandle {
 	// -- IStreamAccess API methods --
 
 	/** Returns true if the given filename is a Zip file. */
+	@Override
 	public boolean isConstructable(final String file) throws IOException {
 		if (!file.toLowerCase().endsWith(".zip")) return false;
 
@@ -142,7 +143,6 @@ public class ZipHandle extends StreamHandle {
 
 	// -- IStreamAccess API methods --
 
-	/* @see IStreamAccess#setFile(String) */
 	public void setFile(final String file, final ZipEntry entry)
 		throws IOException
 	{
@@ -180,13 +180,12 @@ public class ZipHandle extends StreamHandle {
 		resetStream();
 	}
 
-	/* @see IStreamAccess#setFile(String) */
 	@Override
 	public void setFile(final String file) throws IOException {
 		setFile(file, null);
 	}
 
-	/* @see IStreamAccess#resetStream() */
+	@Override
 	public void resetStream() throws IOException {
 		if (getStream() != null) getStream().close();
 		if (in != null) {
@@ -207,7 +206,6 @@ public class ZipHandle extends StreamHandle {
 
 	// -- IRandomAccess API methods --
 
-	/* @see IRandomAccess#close() */
 	@Override
 	public void close() throws IOException {
 		super.close();

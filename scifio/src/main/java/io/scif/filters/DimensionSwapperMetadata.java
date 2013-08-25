@@ -102,17 +102,11 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 
 	// -- Metadata API Methods --
 
-	/*
-	 * @see io.scif.filters.AbstractMetadataWrapper#setAxisLengths(int, int[])
-	 */
 	@Override
 	public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
 		super.setAxisLengths(imageIndex, axisLengths, false);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractMetadataWrapper#setAxisTypes(int, net.imglib2.meta.AxisType[])
-	 */
 	@Override
 	public void setAxisTypes(final int imageIndex,
 		final CalibratedAxis[] axisTypes)

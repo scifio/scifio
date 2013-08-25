@@ -137,6 +137,7 @@ public abstract class AbstractCodec extends AbstractSCIFIOComponent implements
 	 * @throws FormatException If input is not a compressed data block of the
 	 *           appropriate type.
 	 */
+	@Override
 	public byte[] compress(final byte[][] data, final CodecOptions options)
 		throws FormatException
 	{
@@ -153,17 +154,17 @@ public abstract class AbstractCodec extends AbstractSCIFIOComponent implements
 		return compress(toCompress, options);
 	}
 
-	/* @see Codec#decompress(byte[]) */
+	@Override
 	public byte[] decompress(final byte[] data) throws FormatException {
 		return decompress(data, null);
 	}
 
-	/* @see Codec#decompress(byte[][]) */
+	@Override
 	public byte[] decompress(final byte[][] data) throws FormatException {
 		return decompress(data, null);
 	}
 
-	/* @see Codec#decompress(byte[], CodecOptions) */
+	@Override
 	public byte[] decompress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{
@@ -179,7 +180,7 @@ public abstract class AbstractCodec extends AbstractSCIFIOComponent implements
 		}
 	}
 
-	/* @see Codec#decompress(RandomAccessInputStream, CodecOptions) */
+	@Override
 	public abstract byte[] decompress(RandomAccessInputStream in,
 		CodecOptions options) throws FormatException, IOException;
 
@@ -193,6 +194,7 @@ public abstract class AbstractCodec extends AbstractSCIFIOComponent implements
 	 * @throws FormatException If input is not a compressed data block of the
 	 *           appropriate type.
 	 */
+	@Override
 	public byte[] decompress(final byte[][] data, final CodecOptions options)
 		throws FormatException
 	{

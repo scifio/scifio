@@ -119,33 +119,25 @@ public class DefaultQTJavaService extends AbstractService implements
 
 	// -- LegacyQTService API methods --
 
-	/* (non-Javadoc)
-	 * @see io.scif.formats.qt.QTJavaService#canDoQT()
-	 */
+	@Override
 	public boolean canDoQT() {
 		if (!initialized) initQTJava();
 		return !noQT;
 	}
 
-	/* (non-Javadoc)
-	 * @see io.scif.formats.qt.QTJavaService#isJVM64Bit()
-	 */
+	@Override
 	public boolean isJVM64Bit() {
 		if (!initialized) initQTJava();
 		return jvm64Bit;
 	}
 
-	/* (non-Javadoc)
-	 * @see io.scif.formats.qt.QTJavaService#isQTExpired()
-	 */
+	@Override
 	public boolean isQTExpired() {
 		if (!initialized) initQTJava();
 		return expiredQT;
 	}
 
-	/* (non-Javadoc)
-	 * @see io.scif.formats.qt.QTJavaService#getQTVersion()
-	 */
+	@Override
 	public String getQTVersion() {
 		if (isJVM64Bit()) return "Not available";
 		else if (isQTExpired()) return "Expired";
@@ -163,17 +155,13 @@ public class DefaultQTJavaService extends AbstractService implements
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see io.scif.formats.qt.QTJavaService#getUniverse()
-	 */
+	@Override
 	public ReflectedUniverse getUniverse() {
 		if (!initialized) initQTJava();
 		return r;
 	}
 
-	/* (non-Javadoc)
-	 * @see io.scif.formats.qt.QTJavaService#getPictDimensions(byte[])
-	 */
+	@Override
 	public Dimension getPictDimensions(final byte[] bytes)
 		throws FormatException, ReflectException
 	{
@@ -194,9 +182,7 @@ public class DefaultQTJavaService extends AbstractService implements
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see io.scif.formats.qt.QTJavaService#pictToImage(byte[])
-	 */
+	@Override
 	public synchronized Image pictToImage(final byte[] bytes)
 		throws FormatException
 	{
@@ -257,9 +243,7 @@ public class DefaultQTJavaService extends AbstractService implements
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see io.scif.formats.qt.QTJavaService#checkQTLibrary()
-	 */
+	@Override
 	public void checkQTLibrary() throws MissingLibraryException {
 		if (isJVM64Bit()) throw new MissingLibraryException(JVM_64BIT_MSG);
 		if (isQTExpired()) throw new MissingLibraryException(EXPIRED_QT_MSG);

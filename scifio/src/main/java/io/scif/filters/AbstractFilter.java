@@ -76,16 +76,12 @@ public abstract class AbstractFilter<T> extends AbstractSCIFIOComponent
 
 	// -- Filter API Methods --
 
-	/*
-	 * @see io.scif.filters.Filter#getParent()
-	 */
+	@Override
 	public T getParent() {
 		return parent;
 	}
 
-	/*
-	 * @see io.scif.filters.Filter#setParent(java.lang.Object)
-	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public void setParent(final Object parent) {
 		if (parentClass.isAssignableFrom(parent.getClass())) this.parent =
@@ -96,16 +92,12 @@ public abstract class AbstractFilter<T> extends AbstractSCIFIOComponent
 		}
 	}
 
-	/*
-	 * @see io.scif.filters.Filter#reset()
-	 */
+	@Override
 	public void reset() {
 		parent = null;
 	}
 
-	/*
-	 * @see io.scif.filters.Filter#isCompatible(java.lang.Class)
-	 */
+	@Override
 	public boolean isCompatible(final Class<?> c) {
 		return parentClass.isAssignableFrom(c);
 	}

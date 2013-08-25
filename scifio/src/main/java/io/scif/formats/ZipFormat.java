@@ -69,16 +69,12 @@ public class ZipFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "Zip";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "zip" };
 	}
@@ -112,9 +108,7 @@ public class ZipFormat extends AbstractFormat {
 
 		// -- HasColorTable API methods --
 
-		/*
-		 * @see io.scif.HasColorTable#getColorTable()
-		 */
+		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			if (HasColorTable.class.isAssignableFrom(metadata.getClass())) return ((HasColorTable) metadata)
@@ -124,9 +118,7 @@ public class ZipFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
+		@Override
 		public void populateImageMetadata() {
 			// clears existing metadata
 			createImageMetadata(0);
@@ -240,9 +232,7 @@ public class ZipFormat extends AbstractFormat {
 			if (reader != null) reader.setNormalized(normalize);
 		}
 
-		/*
-		 * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

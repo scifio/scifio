@@ -59,20 +59,14 @@ public class DefaultTranslatorService extends AbstractService implements
 
 	// -- TranslatorService API Methods --
 
-	/*
-	 * @see io.scif.TranslatorService#
-	 * findTranslator(io.scif.Metadata, io.scif.Metadata)
-	 */
+	@Override
 	public Translator findTranslator(final Metadata source, final Metadata dest,
 		final boolean exact)
 	{
 		return findTranslator(source.getClass(), dest.getClass(), exact);
 	}
 
-	/*
-	 * @see io.scif.services.TranslatorService#
-	 * findTranslator(java.lang.Class, java.lang.Class)
-	 */
+	@Override
 	public Translator findTranslator(final Class<?> source, final Class<?> dest,
 		final boolean exact)
 	{
@@ -86,10 +80,7 @@ public class DefaultTranslatorService extends AbstractService implements
 		return t;
 	}
 
-	/*
-	 * @see io.scif.TranslatorService#
-	 * translate(io.scif.Metadata, io.scif.Metadata)
-	 */
+	@Override
 	public boolean translate(final Metadata source, final Metadata dest,
 		final boolean exact)
 	{

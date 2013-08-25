@@ -68,6 +68,7 @@ public class JPEGCodec extends AbstractCodec {
 	 * 
 	 * @see Codec#compress(byte[], CodecOptions)
 	 */
+	@Override
 	public byte[] compress(final byte[] data, CodecOptions options)
 		throws FormatException
 	{

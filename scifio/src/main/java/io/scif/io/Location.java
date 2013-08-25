@@ -276,17 +276,14 @@ public class Location extends AbstractSCIFIOComponent {
 		return mappedId != null && new File(mappedId).exists();
 	}
 
-	/* @see java.io.File#getAbsoluteFile() */
 	public Location getAbsoluteFile() {
 		return new Location(getContext(), getAbsolutePath());
 	}
 
-	/* @see java.io.File#getAbsolutePath() */
 	public String getAbsolutePath() {
 		return isURL ? url.toExternalForm() : file.getAbsolutePath();
 	}
 
-	/* @see java.io.File#getCanonicalFile() */
 	public Location getCanonicalFile() throws IOException {
 		return isURL ? getAbsoluteFile() : new Location(getContext(), file
 			.getCanonicalFile());
@@ -333,12 +330,10 @@ public class Location extends AbstractSCIFIOComponent {
 		return file.getParent();
 	}
 
-	/* @see java.io.File#getParentFile() */
 	public Location getParentFile() {
 		return new Location(getContext(), getParent());
 	}
 
-	/* @see java.io.File#getPath() */
 	public String getPath() {
 		return isURL ? url.getHost() + url.getPath() : file.getPath();
 	}

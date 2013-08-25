@@ -48,9 +48,7 @@ public abstract class AbstractHasSource extends AbstractHasFormat implements
 	HasSource
 {
 
-	/*
-	 * @see io.scif.HasSource#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		close(false);
 	}

@@ -75,16 +75,12 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 	// -- Format API methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "Tagged Image File Format";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return scifio().format().getFormatFromClass(TIFFFormat.class).getSuffixes();
 	}
@@ -127,6 +123,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			createImageMetadata(1);
 			final ImageMetadata m = get(0);
@@ -252,9 +249,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 		// -- Reader API methods --
 
-		/*
-		 * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
+		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final int planeIndex, final BufferedImagePlane plane, final int x,
 			final int y, final int w, final int h) throws FormatException,

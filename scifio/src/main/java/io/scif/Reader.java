@@ -172,6 +172,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	boolean isNormalized();
 
 	/** Returns true if this format supports multi-file datasets. */
+	@Override
 	boolean hasCompanionFiles();
 
 	/**

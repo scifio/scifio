@@ -51,16 +51,12 @@ public class DefaultMetadataOptions implements MetadataOptions {
 		this.level = level;
 	}
 
-	/* (non-Javadoc)
-	 * @see io.scif.MetadataOptions#getMetadataLevel()
-	 */
+	@Override
 	public MetadataLevel getMetadataLevel() {
 		return level;
 	}
 
-	/* (non-Javadoc)
-	 * @see io.scif.MetadataOptions#setMetadataLevel(io.scif.MetadataLevel)
-	 */
+	@Override
 	public void setMetadataLevel(final MetadataLevel level) {
 		this.level = level;
 	}

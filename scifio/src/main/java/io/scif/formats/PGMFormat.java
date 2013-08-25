@@ -65,16 +65,12 @@ public class PGMFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "Portable Gray Map";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "pgm" };
 	}
@@ -113,6 +109,7 @@ public class PGMFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 			iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
@@ -128,7 +125,6 @@ public class PGMFormat extends AbstractFormat {
 			iMeta.setMetadataComplete(true);
 		}
 
-		/* @see loci.formats.IFormatReader#close(boolean) */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
@@ -238,9 +234,7 @@ public class PGMFormat extends AbstractFormat {
 
 		// -- Reader API methods --
 
-		/*
-		 * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

@@ -82,23 +82,21 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	// -- Parser API Methods --
 
-	/* @see Parser#parse(String fileName) */
+	@Override
 	public M parse(final String fileName) throws IOException, FormatException {
 		@SuppressWarnings("unchecked")
 		final M meta = (M) getFormat().createMetadata();
 		return parse(fileName, meta);
 	}
 
-	/*
-	 * @see io.scif.TypedParser#parse(java.io.File)
-	 */
+	@Override
 	public M parse(final File file) throws IOException, FormatException {
 		@SuppressWarnings("unchecked")
 		final M meta = (M) getFormat().createMetadata();
 		return parse(file, meta);
 	}
 
-	/* @see Parser#parse(RandomAccessInputStream stream) */
+	@Override
 	public M parse(final RandomAccessInputStream stream) throws IOException,
 		FormatException
 	{
@@ -107,58 +105,44 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return parse(stream, meta);
 	}
 
-	/*
-	 * @see io.scif.Parser#parse(java.lang.String, io.scif.Metadata)
-	 */
+	@Override
 	public M parse(final String fileName, final Metadata meta)
 		throws IOException, FormatException
 	{
 		return parse(fileName, SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
-	/*
-	 * @see io.scif.Parser#parse(java.io.File, io.scif.Metadata)
-	 */
+	@Override
 	public M parse(final File file, final Metadata meta) throws IOException,
 		FormatException
 	{
 		return parse(file, SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
-	/*
-	 * @see io.scif.Parser#parse(io.scif.io.RandomAccessInputStream, io.scif.Metadata)
-	 */
+	@Override
 	public M parse(final RandomAccessInputStream stream, final Metadata meta)
 		throws IOException, FormatException
 	{
 		return parse(stream, SCIFIOMetadataTools.<M> castMeta(meta));
 	}
 
-	/*
-	 * @see io.scif.Parser#setOriginalMetadataPopulated(boolean)
-	 */
+	@Override
 	public void setOriginalMetadataPopulated(final boolean populate) {
 		FormatTools.assertStream(in, false, 1);
 		saveOriginalMetadata = populate;
 	}
 
-	/*
-	 * @see io.scif.Parser#isOriginalMetadataPopulated()
-	 */
+	@Override
 	public boolean isOriginalMetadataPopulated() {
 		return saveOriginalMetadata;
 	}
 
-	/*
-	 * @see io.scif.Parser#getUsedFiles()
-	 */
+	@Override
 	public String[] getUsedFiles() {
 		return getUsedFiles(false);
 	}
 
-	/*
-	 * @see io.scif.Parser#getUsedFiles(boolean)
-	 */
+	@Override
 	public String[] getUsedFiles(final boolean noPixels) {
 		final Vector<String> files = new Vector<String>();
 		for (int i = 0; i < metadata.getImageCount(); i++) {
@@ -174,49 +158,37 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return files.toArray(new String[files.size()]);
 	}
 
-	/*
-	 * @see io.scif.Parser#setMetadataFiltered(boolean)
-	 */
+	@Override
 	public void setMetadataFiltered(final boolean filter) {
 		FormatTools.assertStream(in, false, 1);
 		filterMetadata = filter;
 	}
 
-	/*
-	 * @see io.scif.Parser#isMetadataFiltered()
-	 */
+	@Override
 	public boolean isMetadataFiltered() {
 		return filterMetadata;
 	}
 
-	/*
-	 * @see io.scif.Parser#getImageUsedFiles(int)
-	 */
+	@Override
 	public String[] getImageUsedFiles(final int imageIndex) {
 		return getImageUsedFiles(imageIndex, false);
 	}
 
-	/*
-	 * @see io.scif.Parser#getImageUsedFiles(int, boolean)
-	 */
+	@Override
 	public String[]
 		getImageUsedFiles(final int imageIndex, final boolean noPixels)
 	{
 		return noPixels ? null : new String[] { in.getFileName() };
 	}
 
-	/*
-	 * @see io.scif.Parser#getAdvancedUsedFiles(boolean)
-	 */
+	@Override
 	public FileInfo[] getAdvancedUsedFiles(final boolean noPixels) {
 		final String[] files = getUsedFiles(noPixels);
 		if (files == null) return null;
 		return getFileInfo(files);
 	}
 
-	/*
-	 * @see io.scif.Parser#getAdvancedImageUsedFiles(int, boolean)
-	 */
+	@Override
 	public FileInfo[] getAdvancedImageUsedFiles(final int imageIndex,
 		final boolean noPixels)
 	{
@@ -225,9 +197,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return getFileInfo(files);
 	}
 
-	/*
-	 * @see io.scif.Parser#getSupportedMetadataLevels()
-	 */
+	@Override
 	public Set<MetadataLevel> getSupportedMetadataLevels() {
 		final Set<MetadataLevel> supportedLevels = new HashSet<MetadataLevel>();
 		supportedLevels.add(MetadataLevel.ALL);
@@ -236,23 +206,17 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return supportedLevels;
 	}
 
-	/*
-	 * @see io.scif.Parser#getMetadataOptions()
-	 */
+	@Override
 	public MetadataOptions getMetadataOptions() {
 		return metadataOptions;
 	}
 
-	/*
-	 * @see io.scif.Parser#setMetadataOptions(io.scif.MetadataOptions)
-	 */
+	@Override
 	public void setMetadataOptions(final MetadataOptions options) {
 		metadataOptions = options;
 	}
 
-	/*
-	 * @see io.scif.Parser#addMeta(java.lang.String, java.lang.Object, java.util.Hashtable)
-	 */
+	@Override
 	public void addMeta(String key, Object value, final MetaTable metaTable) {
 		if (key == null || value == null /* || TODO !isMetadataCollected() */) {
 			return;
@@ -307,7 +271,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	// -- TypedParser API Methods --
 
-	/* @see TypedParser#parse(String, M) */
+	@Override
 	public M parse(final String fileName, final M meta) throws IOException,
 		FormatException
 	{
@@ -329,14 +293,14 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return parse(stream, meta);
 	}
 
-	/* @see TypedParser#parse(File, M) */
+	@Override
 	public M parse(final File file, final M meta) throws IOException,
 		FormatException
 	{
 		return parse(file.getPath(), meta);
 	}
 
-	/* @see TypedParser#parse(RandomAccessInputStream, M) */
+	@Override
 	public M parse(final RandomAccessInputStream stream, final M meta)
 		throws IOException, FormatException
 	{
@@ -368,9 +332,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	// -- HasSource API Methods --
 
-	/*
-	 * @see io.scif.Parser#close(boolean)
-	 */
+	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		if (in != null) in.close();
 		if (metadata != null) metadata.close(fileOnly);

@@ -89,16 +89,12 @@ public class MicromanagerFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "Micro-Manager";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "tif", "tiff", "txt", "xml" };
 	}
@@ -131,6 +127,7 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		// -- Metadata API methods --
 
+		@Override
 		public void populateImageMetadata() {
 
 			for (int i = 0; i < getImageCount(); i++) {
@@ -169,9 +166,6 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		// -- Checker API Methods --
 
-		/*
-		 * @see io.scif.Checker#isFormat(io.scif.io.RandomAccessInputStream)
-		 */
 		@Override
 		public boolean isFormat(final String name, final boolean open) {
 			if (!open) return false; // not allowed to touch the file system
@@ -755,9 +749,7 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		// -- Reader API methods --
 
-		/*
-		 * @see io.scif.Reader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

@@ -63,23 +63,17 @@ public abstract class AbstractCacheService<T extends Serializable> extends
 
 	// -- CacheService API methods --
 
-	/*
-	 * @see io.scif.io.img.cell.cache.CacheService#enabled()
-	 */
+	@Override
 	public boolean enabled() {
 		return enabled;
 	}
 
-	/*
-	 * @see io.scif.io.img.cell.cache.CacheService#enable(boolean)
-	 */
+	@Override
 	public void enable(final boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	/*
-	 * @see ome.scifio.io.img.cell.CacheService#getKey(java.lang.String, int)
-	 */
+	@Override
 	public Integer getKey(final String cacheId, final int index) {
 
 		int result = 17;
@@ -89,17 +83,13 @@ public abstract class AbstractCacheService<T extends Serializable> extends
 		return result;
 	}
 
-	/*
-	 * @see io.scif.io.img.cell.cache.CacheService#setMaxBytesOnDisk(long)
-	 */
+	@Override
 	public void setMaxBytesOnDisk(final long maxBytes) {
 		throw new UnsupportedOperationException(
 			"Setting the disk store size not currently supported. Please use enable(false) instead.");
 	}
 
-	/*
-	 * @see io.scif.io.img.cell.cache.CacheService#cacheAll(boolean)
-	 */
+	@Override
 	public void cacheAll(final boolean enabled) {
 		cacheAll = enabled;
 	}

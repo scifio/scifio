@@ -76,6 +76,7 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 
 	// -- ImgFactoryHeuristic API Methods --
 
+	@Override
 	public <T extends NativeType<T>> ImgFactory<T> createFactory(
 		final Metadata m, final ImgMode[] imgModes, final T type)
 		throws IncompatibleTypeException

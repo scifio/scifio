@@ -66,10 +66,12 @@ public class JPEGTileFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Tile JPEG";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "jpg", "jpeg" };
 	}
@@ -97,9 +99,7 @@ public class JPEGTileFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
+		@Override
 		public void populateImageMetadata() {
 			createImageMetadata(1);
 			final ImageMetadata iMeta = get(0);
@@ -120,7 +120,6 @@ public class JPEGTileFormat extends AbstractFormat {
 			iMeta.setIndexed(false);
 		}
 
-		/* @see loci.formats.IFormatReader#close(boolean) */
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			if (!fileOnly) {
@@ -164,9 +163,7 @@ public class JPEGTileFormat extends AbstractFormat {
 
 		// -- Reader API methods --
 
-		/*
-		 * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException

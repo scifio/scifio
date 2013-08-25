@@ -85,6 +85,7 @@ public class BufferedImagePlane extends
 	 * 
 	 * @return The byte[] extracted from this Plane's BufferedImage
 	 */
+	@Override
 	public byte[] getBytes() {
 		byte[] t = null;
 
@@ -111,9 +112,6 @@ public class BufferedImagePlane extends
 		return t;
 	}
 
-	/*
-	 * @see io.scif.AbstractPlane#populate(io.scif.ImageMetadata, int, int, int, int)
-	 */
 	@Override
 	public BufferedImagePlane populate(final ImageMetadata meta,
 		final BufferedImage data, final int xOffset, final int yOffset,

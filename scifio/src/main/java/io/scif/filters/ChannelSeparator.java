@@ -119,9 +119,6 @@ public class ChannelSeparator extends AbstractReaderFilter {
 
 	// -- AbstractReaderFilter API Methods --
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#setSourceHelper(java.lang.String)
-	 */
 	@Override
 	protected void setSourceHelper(final String source) {
 		cleanUp();
@@ -132,9 +129,6 @@ public class ChannelSeparator extends AbstractReaderFilter {
 		return getMetadata().get(imageIndex).getPlaneCount();
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
@@ -143,9 +137,6 @@ public class ChannelSeparator extends AbstractReaderFilter {
 			imageIndex, Axes.X), getMetadata().getAxisLength(imageIndex, Axes.Y));
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
@@ -154,9 +145,6 @@ public class ChannelSeparator extends AbstractReaderFilter {
 			.getyOffset(), plane.getxLength(), plane.getyLength());
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, int, int, int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final int x, final int y, final int w, final int h) throws FormatException,
@@ -166,9 +154,6 @@ public class ChannelSeparator extends AbstractReaderFilter {
 			h);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openPlane(int, int, io.scif.Plane, int, int, int, int)
-	 */
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		Plane plane, final int x, final int y, final int w, final int h)
@@ -257,9 +242,6 @@ public class ChannelSeparator extends AbstractReaderFilter {
 		return getParent().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#openThumbPlane(int, int)
-	 */
 	@Override
 	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
@@ -291,17 +273,11 @@ public class ChannelSeparator extends AbstractReaderFilter {
 		return ret;
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#close()
-	 */
 	@Override
 	public void close() throws IOException {
 		close(false);
 	}
 
-	/*
-	 * @see io.scif.filters.AbstractReaderFilter#close(boolean)
-	 */
 	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		super.close(fileOnly);

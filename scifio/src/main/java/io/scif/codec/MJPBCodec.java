@@ -57,7 +57,7 @@ public class MJPBCodec extends AbstractCodec {
 
 	// -- Codec API methods --
 
-	/* @see Codec#compress(byte[], CodecOptions) */
+	@Override
 	public byte[] compress(final byte[] data, final CodecOptions options)
 		throws FormatException
 	{

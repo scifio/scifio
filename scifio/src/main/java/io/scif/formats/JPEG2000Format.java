@@ -76,16 +76,12 @@ public class JPEG2000Format extends AbstractFormat {
 
 	// -- Format API methods --
 
-	/*
-	 * @see io.scif.Format#getFormatName()
-	 */
+	@Override
 	public String getFormatName() {
 		return "JPEG-2000";
 	}
 
-	/*
-	 * @see io.scif.Format#getSuffixes()
-	 */
+	@Override
 	public String[] getSuffixes() {
 		return new String[] { "jp2", "j2k", "jpf" };
 	}
@@ -163,9 +159,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
-		/*
-		 * @see io.scif.Metadata#populateImageMetadata()
-		 */
+		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 			iMeta.setAxisLength(Axes.Z, 1);
@@ -212,9 +206,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		// -- HasColorTable API Methods --
 
-		/*
-		 * @see io.scif.HasColorTable#getColorTable()
-		 */
+		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
 			if (lut == null) return null;
@@ -392,9 +384,6 @@ public class JPEG2000Format extends AbstractFormat {
 
 		// -- Parser API Methods --
 
-		/*
-		 * @see io.scif.AbstractParser#typedParse(io.scif.io.RandomAccessInputStream, io.scif.TypedMetadata)
-		 */
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
 			final Metadata meta) throws IOException, FormatException
@@ -757,9 +746,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		// -- Reader API Methods --
 
-		/*
-		 * @see io.scif.TypedReader#openPlane(int, int, io.scif.DataPlane, int, int, int, int)
-		 */
+		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
 			final ByteArrayPlane plane, final int x, final int y, final int w,
 			final int h) throws FormatException, IOException
@@ -824,9 +811,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		// -- Writer API Methods --
 
-		/*
-		 * @see io.scif.Writer#savePlane(int, int, io.scif.Plane, int, int, int, int)
-		 */
+		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
 			final Plane plane, final int x, final int y, final int w, final int h)
 			throws FormatException, IOException

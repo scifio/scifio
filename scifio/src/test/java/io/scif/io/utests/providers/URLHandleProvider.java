@@ -54,6 +54,7 @@ class URLHandleProvider extends ContextualProvider implements
 	IRandomAccessProvider
 {
 
+	@Override
 	public IRandomAccess createMock(final byte[] page, final String mode,
 		final int bufferSize) throws IOException
 	{

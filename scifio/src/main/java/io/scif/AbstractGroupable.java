@@ -53,41 +53,31 @@ public abstract class AbstractGroupable extends AbstractHasSource implements
 	/** Whether or not to group multi-file formats. */
 	private boolean group = true;
 
-	/*
-	 * @see io.scif.Groupable#setGroupFiles(boolean)
-	 */
+	@Override
 	public void setGroupFiles(final boolean groupFiles) {
 		group = groupFiles;
 	}
 
-	/*
-	 * @see io.scif.Groupable#isGroupFiles()
-	 */
+	@Override
 	public boolean isGroupFiles() {
 		return group;
 	}
 
-	/*
-	 * @see io.scif.Groupable#fileGroupOption(String)
-	 */
+	@Override
 	public int fileGroupOption(final String id) throws FormatException,
 		IOException
 	{
 		return FormatTools.CANNOT_GROUP;
 	}
 
-	/*
-	 * @see io.scif.Groupable#isSingleFile()
-	 */
+	@Override
 	public boolean isSingleFile(final String id) throws FormatException,
 		IOException
 	{
 		return true;
 	}
 
-	/*
-	 * @see io.scif.Groupable#hasCompanionFiles()
-	 */
+	@Override
 	public boolean hasCompanionFiles() {
 		return false;
 	}

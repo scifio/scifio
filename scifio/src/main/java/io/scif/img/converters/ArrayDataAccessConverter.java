@@ -69,6 +69,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = PlaneConverter.class, name = "ArrayDataAccess")
 public class ArrayDataAccessConverter extends AbstractPlaneConverter {
 
+	@Override
 	public <T extends RealType<T>> void populatePlane(final Reader reader,
 		final int imageIndex, final int planeIndex, final byte[] source,
 		final ImgPlus<T> dest, final ImgOptions imgOptions)
