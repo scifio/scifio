@@ -600,8 +600,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			final AxisType axisType = axes[axisIndex++].type();
 
 			if (axisType.equals(Axes.X)) {
-				if (checkSubregion && dimsPlaced < region.size() &&
-					region.hasRange(Axes.X))
+				if (applySubregion(checkSubregion, Axes.X, dimsPlaced, region))
 				{
 					x = region.getRange(Axes.X).head().intValue();
 					final int maxX = region.getRange(Axes.X).tail().intValue();
@@ -610,8 +609,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 				}
 			}
 			else if (axisType.equals(Axes.Y)) {
-				if (checkSubregion && dimsPlaced < region.size() &&
-					region.hasRange(Axes.Y))
+				if (applySubregion(checkSubregion, Axes.Y, dimsPlaced, region))
 				{
 					y = region.getRange(Axes.Y).head().intValue();
 					final int maxY = region.getRange(Axes.Y).tail().intValue();
@@ -624,7 +622,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 				DimRange cVals = null;
 
-				if (checkSubregion && dimsPlaced < region.size()) {
+				if (applySubregion(checkSubregion, Axes.CHANNEL, dimsPlaced, region)) {
 					cVals = region.getRange(Axes.CHANNEL);
 					dimsPlaced++;
 				}
@@ -639,7 +637,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 				final int z = meta.getAxisLength(imageIndex, Axes.Z);
 				DimRange zVals = null;
 
-				if (checkSubregion && dimsPlaced < region.size()) {
+				if (applySubregion(checkSubregion, Axes.Z, dimsPlaced, region)) {
 					zVals = region.getRange(Axes.Z);
 					dimsPlaced++;
 				}
@@ -655,7 +653,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 				DimRange tVals = null;
 
-				if (checkSubregion && dimsPlaced < region.size()) {
+				if (applySubregion(checkSubregion, Axes.TIME, dimsPlaced, region)) {
 					tVals = region.getRange(Axes.TIME);
 					dimsPlaced++;
 				}
@@ -720,6 +718,18 @@ public class ImgOpener extends AbstractImgIOComponent {
 		}
 
 		if (imgOptions.isComputeMinMax()) populateMinMax(r, imgPlus, imageIndex);
+	}
+	
+	/**
+	 * Returns true if the specified Axis is listed in the provided Subregion,
+	 * and checkSubregion is enabled, and dimsPlaced < subRegion.size(). Indicates
+	 * that it is safe to apply the SubRegion constraints to the specified axis.
+	 */
+	private boolean applySubregion(boolean checkSubregion, AxisType axis,
+		int dimsPlaced, SubRegion region)
+	{
+		return checkSubregion && dimsPlaced < region.size() &&
+			region.hasRange(axis);
 	}
 
 	private void populateMinMax(final Reader r, final ImgPlus<?> imgPlus,
