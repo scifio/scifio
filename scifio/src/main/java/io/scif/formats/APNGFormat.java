@@ -517,6 +517,13 @@ public class APNGFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
+		public void setMetadata(final Metadata meta) throws IOException {
+			lastPlaneIndex = -1;
+			lastPlane = null;
+			super.setMetadata(meta);
+		}
+
+		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final int planeIndex, final BufferedImagePlane plane, final int x,
 			final int y, final int w, final int h) throws FormatException,

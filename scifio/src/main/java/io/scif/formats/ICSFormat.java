@@ -1541,6 +1541,10 @@ public class ICSFormat extends AbstractFormat {
 		public void setMetadata(final Metadata meta) throws IOException {
 			super.setMetadata(meta);
 			gzip = metadata.get("representation compression").equals("gzip");
+			prevPlane = -1;
+			gzipStream = null;
+			invertY = false;
+			data = null;
 		}
 
 		@Override
