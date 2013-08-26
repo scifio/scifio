@@ -49,6 +49,7 @@ import io.scif.xml.XMLService;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
+import org.scijava.service.SciJavaService;
 
 /**
  * Convenience {@link org.scijava.Context} wrapper.
@@ -75,7 +76,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/** Creates a new SCIFIO application context with all available services. */
 	public SCIFIO() {
-		this(new Context());
+		this(new Context(SciJavaService.class, SCIFIOService.class));
 	}
 
 	/**
