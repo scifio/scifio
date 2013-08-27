@@ -37,14 +37,18 @@
 package io.scif.filters.utests;
 
 import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.assertEquals;
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
 import io.scif.filters.AbstractReaderFilter;
+import io.scif.filters.ChannelSeparator;
 import io.scif.filters.Filter;
 import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
+
+import net.imglib2.meta.Axes;
 
 import org.scijava.InstantiableException;
 import org.scijava.plugin.Attr;
@@ -69,6 +73,39 @@ public class FilterTest {
 	@AfterMethod
 	public void tearDown() throws IOException {
 		readerFilter.close();
+	}
+
+	/**
+	 * Verifies that opening a file with a filter enabled, then reusing the reader
+	 * with another file works as intended (and does not re-opene the original
+	 * file).
+	 */
+	@Test
+	public void testSetSource() throws FormatException, IOException {
+		final String id2 =
+			"testImg&sizeX=256&sizeY=128&sizeT=5&dimOrder=XYTZC.fake";
+
+		readerFilter = scifio.initializer().initializeReader(id, true);
+
+		try {
+			((ReaderFilter) readerFilter).enable(ChannelSeparator.class);
+		}
+		catch (InstantiableException e) {
+			throw new FormatException(e);
+		}
+
+		int x = readerFilter.getMetadata().getAxisLength(0, Axes.X);
+		int y = readerFilter.getMetadata().getAxisLength(0, Axes.Y);
+		assertEquals(512, x);
+		assertEquals(512, y);
+
+		readerFilter.setSource(id2);
+
+		x = readerFilter.getMetadata().getAxisLength(0, Axes.X);
+		y = readerFilter.getMetadata().getAxisLength(0, Axes.Y);
+		assertEquals(256, x);
+		assertEquals(128, y);
+
 	}
 
 	@Test
