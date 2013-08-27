@@ -91,6 +91,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	@Override
 	public void wrap(final Metadata meta) {
 		this.meta = meta;
+		setSource(meta.getSource());
 		populateImageMetadata();
 	}
 

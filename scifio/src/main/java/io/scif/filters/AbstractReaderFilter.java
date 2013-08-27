@@ -106,10 +106,16 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	 * 
 	 * @param source - Lowest common denominator of arguments in the
 	 *          {@code setSource} series.
+	 * @throws IOException 
 	 */
-	protected void setSourceHelper(final String source) {
+  protected void setSourceHelper(final String source) throws IOException {
+    final String filterSource = getMetadata() == null ? null : getMetadata()
+        .getSource().getFileName();
 
-	}
+    if (filterSource == null || !filterSource.equals(source)) {
+      setMetadata(getParent().getMetadata());
+    }
+  }
 
 	/**
 	 * Allows code to be executed regardless of which {@link #openPlane()}
@@ -298,22 +304,22 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public void setSource(final String fileName) throws IOException {
-		setSourceHelper(fileName);
 		getParent().setSource(fileName);
+		setSourceHelper(fileName);
 	}
 
 	@Override
 	public void setSource(final File file) throws IOException {
-		setSourceHelper(file.getAbsolutePath());
 		getParent().setSource(file);
+		setSourceHelper(file.getAbsolutePath());
 	}
 
 	@Override
 	public void setSource(final RandomAccessInputStream stream)
 		throws IOException
 	{
-		setSourceHelper(stream.getFileName());
 		getParent().setSource(stream);
+		setSourceHelper(stream.getFileName());
 	}
 
 	@Override

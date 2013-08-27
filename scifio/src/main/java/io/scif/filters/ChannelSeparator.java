@@ -40,9 +40,11 @@ import io.scif.ByteArrayPlane;
 import io.scif.FormatException;
 import io.scif.Plane;
 import io.scif.common.DataTools;
+import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
 
+import java.io.File;
 import java.io.IOException;
 
 import net.imglib2.meta.Axes;
@@ -118,12 +120,27 @@ public class ChannelSeparator extends AbstractReaderFilter {
 	}
 
 	// -- AbstractReaderFilter API Methods --
+	
+  @Override
+  public void setSource(final String source) throws IOException {
+    cleanUp();
+    super.setSource(source);
+  }
+  
+  @Override
+  public void setSource(final File file) throws IOException {
+    cleanUp();
+    super.setSource(file);
+  }
 
-	@Override
-	protected void setSourceHelper(final String source) {
-		cleanUp();
-	}
-
+  @Override
+  public void setSource(final RandomAccessInputStream stream)
+    throws IOException
+  {
+    cleanUp();
+    super.setSource(stream);
+  }
+  
 	@Override
 	public int getPlaneCount(final int imageIndex) {
 		return getMetadata().get(imageIndex).getPlaneCount();
