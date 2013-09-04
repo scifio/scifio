@@ -70,11 +70,11 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	/** Width (in pixels) of thumbnail planes in this image. */
 	@Field(label = "thumbSizeX")
-	private int thumbSizeX = 0;
+	private int thumbSizeX;
 
 	/** Height (in pixels) of thumbnail planes in this image. */
 	@Field(label = "thumbSizeY")
-	private int thumbSizeY = 0;
+	private int thumbSizeY;
 
 	/**
 	 * Describes the number of bytes per pixel. Must be one of the <i>static</i>
