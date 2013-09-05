@@ -71,6 +71,7 @@ public final class DataTools {
 		final RandomAccessInputStream in = new RandomAccessInputStream(context, id);
 		final long idLen = in.length();
 		if (idLen > Integer.MAX_VALUE) {
+			in.close();
 			throw new IOException("File too large");
 		}
 		final int len = (int) idLen;
