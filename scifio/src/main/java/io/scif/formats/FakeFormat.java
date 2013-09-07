@@ -473,7 +473,7 @@ public class FakeFormat extends AbstractFormat {
 
 				imageMeta.setAxisTypes(axes);
 				imageMeta.setAxisLengths(axisLengths);
-				FormatTools.Calibrate(this, i, calibrations);
+				FormatTools.calibrate(this, i, calibrations);
 				imageMeta.setPixelType(pixelType);
 				imageMeta.setThumbSizeX(thumbSizeX);
 				imageMeta.setThumbSizeY(thumbSizeY);

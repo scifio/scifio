@@ -325,7 +325,7 @@ public final class FormatTools {
 	 * Applies the calibration values, in order, to the axes of the supplied
 	 * Metadata.
 	 */
-	public static void Calibrate(Metadata m, int imageIndex, double[] calibration) {
+	public static void calibrate(Metadata m, int imageIndex, double[] calibration) {
 		int i = 0;
 		
 		for (CalibratedAxis axis : m.getAxes(imageIndex)) {
