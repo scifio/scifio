@@ -24,7 +24,7 @@ import io.scif.Reader;
 import io.scif.SCIFIO;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import org.scijava.Context;
 
@@ -51,7 +51,7 @@ public class T1aIntroToSCIFIO {
 
 		// This context provides access to all supported Format types, which
 		// will allow corresponding images to be opened:
-		final List<Format> formats = scifio.format().getAllFormats();
+		final Set<Format> formats = scifio.format().getAllFormats();
 
 		// ------------------------------------------------------------------------
 		// COMPARISON WITH BIO-FORMATS 4.X

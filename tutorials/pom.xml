@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>io.scif</groupId>
 		<artifactId>pom-scifio</artifactId>
-		<version>0.4.2-SNAPSHOT</version>
+		<version>0.6.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>scifio-tutorials</artifactId>
@@ -27,20 +27,24 @@
 	<dependencies>
 		<!-- NB: dependency:analyze has false warning about xml-apis:xml-apis. -->
 
+		<!-- FIXME: eliminate SNAPSHOT dependencies for repeatable builds! -->
 		<dependency>
 			<groupId>${scifio.groupId}</groupId>
 			<artifactId>scifio</artifactId>
-			<version>${scifio.version}</version>
+			<version>0.6.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>${bio-formats.groupId}</groupId>
-			<artifactId>scifio</artifactId>
-			<version>${bio-formats.version}</version>
+			<groupId>${scifio.groupId}</groupId>
+			<artifactId>ome-formats</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
+
+		<!-- NB: We need this as long as we depend on Bio-Formats 4.4.8... -->
 		<dependency>
-			<groupId>${bio-formats.groupId}</groupId>
-			<artifactId>ome-xml</artifactId>
-			<version>${bio-formats.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.5.10</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>

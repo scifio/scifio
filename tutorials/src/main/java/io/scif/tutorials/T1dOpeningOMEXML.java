@@ -22,11 +22,11 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Parser;
 import io.scif.SCIFIO;
-import io.scif.xml.XMLTools;
+import io.scif.ome.xml.meta.OMEMetadata;
 
 import java.io.IOException;
 
-import ome.xml.meta.OMEMetadata;
+import loci.common.xml.XMLTools;
 
 /**
  * Tutorial on obtaining OME-XML using SCIFIO.
@@ -79,8 +79,7 @@ public class T1dOpeningOMEXML {
 		// Now that we have our source Metadata, we will need OME-XML Metadata to
 		// translate to:
 
-		final OMEMetadata omexml = new OMEMetadata();
-		omexml.setContext(scifio.getContext());
+		final OMEMetadata omexml = new OMEMetadata(scifio.getContext());
 
 		scifio.translator().translate(meta, omexml, true);
 
