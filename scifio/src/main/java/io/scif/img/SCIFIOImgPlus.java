@@ -45,7 +45,7 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.meta.Metadata;
+import net.imglib2.meta.ImgPlusMetadata;
 
 /**
  * SCIFIO extension of {@link ImgPlus} that adds
@@ -72,7 +72,7 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> {
 		super(img, name, axes);
 	}
 
-	public SCIFIOImgPlus(final Img<T> img, final Metadata metadata) {
+	public SCIFIOImgPlus(final Img<T> img, final ImgPlusMetadata metadata) {
 		super(img, metadata);
 	}
 
