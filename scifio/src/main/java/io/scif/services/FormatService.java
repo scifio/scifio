@@ -52,8 +52,8 @@ import org.scijava.Priority;
 
 /**
  * A collection of methods for finding {@link io.scif.Format} instances given a
- * child class, disovering available Formats, and managing the list of available
- * Formats.
+ * child class, discovering available formats, and managing the list of
+ * available formats.
  * <p>
  * Also provides convenience methods for working with the Format-specific
  * services.
