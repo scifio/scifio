@@ -74,4 +74,6 @@ public interface MetadataService extends SCIFIOService {
 	 */
 	void populate(Object metadata, Map<String, String> map);
 
+	// TODO: MetaTable dump(Object metadata);
+
 }
