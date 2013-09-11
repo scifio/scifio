@@ -46,6 +46,7 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
+import io.scif.MetadataService;
 import io.scif.Translator;
 import io.scif.common.DataTools;
 import io.scif.io.IStreamAccess;
@@ -57,6 +58,7 @@ import io.scif.util.FormatTools;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import net.imglib2.display.ColorTable;
@@ -136,7 +138,6 @@ public class FakeFormat extends AbstractFormat {
 	private static final long SEED = 0xcafebabe;
 
 	private static final String DEFAULT_NAME = "Untitled";
-	private static final String TOKEN_SEPARATOR = "&";
 
 	// -- Allowed keys --
 
@@ -166,7 +167,6 @@ public class FakeFormat extends AbstractFormat {
 	private static final String SCALE_FACTOR = "scaleFactor";
 	private static final String SERIES = "series";
 	private static final String RGB = "rgb";
-	private static final String NAME = "name";
 
 	// -- Constructor --
 
@@ -308,7 +308,7 @@ public class FakeFormat extends AbstractFormat {
 			int imageCount = 1;
 			int lutLength = DEFAULT_LUT_LENGTH;
 
-			final HashMap<String, String> fakeMap =
+			final Map<String, String> fakeMap =
 				FakeUtils.extractFakeInfo(getContext(), getDatasetName());
 
 			sizeX = FakeUtils.getIntValue(fakeMap.get(SIZE_X), sizeX);
@@ -659,7 +659,7 @@ public class FakeFormat extends AbstractFormat {
 		public void typedTranslate(final io.scif.Metadata source,
 			final Metadata dest)
 		{
-			String fakeId = NAME + "=" + source.getDatasetName();
+			String fakeId = MetadataService.NAME_KEY + "=" + source.getDatasetName();
 
 			fakeId =
 				FakeUtils.appendToken(fakeId, SIZE_X, source.getAxisLength(0, Axes.X));
@@ -990,40 +990,26 @@ public class FakeFormat extends AbstractFormat {
 		 * @param fakePath - A properly formatted .fake id
 		 * @return A mapping of all discovered properties.
 		 */
-		public static HashMap<String, String> extractFakeInfo(
+		public static Map<String, String> extractFakeInfo(
 			final Context context, String fakePath)
 		{
-			final HashMap<String, String> fakeMap = new HashMap<String, String>();
-
 			final Location loc = new Location(context, fakePath);
 
 			if (loc.exists()) {
 				fakePath = loc.getAbsoluteFile().getName();
 			}
 
+			// strip extension from filename
 			final String noExt = fakePath.substring(0, fakePath.lastIndexOf("."));
-			final String[] tokens = noExt.split(TOKEN_SEPARATOR);
 
 			// parse tokens from filename
-			for (final String token : tokens) {
-				final int equals = token.indexOf("=");
-				if (!fakeMap.containsKey(NAME)) {
-					if (equals < 0) {
-						// first token is the image name
-						fakeMap.put(NAME, token);
-						continue;
-					}
-					// no name was given; use a default one
-					fakeMap.put(NAME, DEFAULT_NAME);
-				}
-				if (equals < 0) {
-					// TODO log().warn("ignoring token: " + token);
-					continue;
-				}
-				final String key = token.substring(0, equals);
-				final String value = token.substring(equals + 1);
+			final MetadataService metadataService =
+				context.getService(MetadataService.class);
+			final Map<String, String> fakeMap = metadataService.parse(noExt);
 
-				fakeMap.put(key, value);
+			// provide a default name if none was given
+			if (!fakeMap.containsKey(MetadataService.NAME_KEY)) {
+				fakeMap.put(MetadataService.NAME_KEY, DEFAULT_NAME);
 			}
 
 			return fakeMap;
@@ -1074,7 +1060,7 @@ public class FakeFormat extends AbstractFormat {
 		public static String appendToken(String base, final String key,
 			final String value)
 		{
-			base += TOKEN_SEPARATOR + key + "=" + value;
+			base += "&" + key + "=" + value;
 			return base;
 		}
 
