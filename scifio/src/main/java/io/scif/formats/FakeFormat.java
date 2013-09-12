@@ -152,7 +152,7 @@ public class FakeFormat extends AbstractFormat {
 
 	// -- Constructor --
 
-	public FakeFormat() throws FormatException {
+	public FakeFormat() {
 		super();
 	}
 
