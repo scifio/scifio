@@ -42,7 +42,9 @@ import java.util.Map;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
 
 /**
@@ -50,6 +52,7 @@ import org.scijava.util.ClassUtils;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = Service.class)
 public class DefaultMetadataService extends AbstractService implements
 	MetadataService
 {
