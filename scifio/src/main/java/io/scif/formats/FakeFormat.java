@@ -79,36 +79,19 @@ import org.scijava.plugin.Plugin;
  * notation, without requiring an actual dataset to exist on disk.
  * <p>
  * Examples:
- * <ul>
- * <li>showinf
- * 'multi-series&amp;series=11&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fake
- * ' -series 9</li>
- * <li>showinf
- * '8bit-signed&amp;pixelType=int8&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
- * e '</li>
- * <li>showinf
- * '8bit-unsigned&amp;pixelType=uint8&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
- * e '</li>
- * <li>showinf
- * '16bit-signed&amp;pixelType=int16&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
- * e '</li>
- * <li>showinf
- * '16bit-unsigned&amp;pixelType=uint16&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
- * e '</li>
- * <li>showinf
- * '32bit-signed&amp;pixelType=int32&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
- * e '</li>
- * <li>showinf
- * '32bit-unsigned&amp;pixelType=uint32&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
- * e '</li>
- * <li>showinf
- * '32bit-floating&amp;pixelType=float&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
- * e '</li>
- * <li>showinf
- * '64bit-floating&amp;pixelType=double&amp;sizeZ=3&amp;sizeC=5&amp;sizeT=7&amp;sizeY=50.fak
- * e '</li>
- * </ul>
  * </p>
+ * 
+ * <pre>
+ * 'multi-series&series=11&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
+ * '8bit-signed&pixelType=int8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
+ * '8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
+ * '16bit-signed&pixelType=int16&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
+ * '16bit-unsigned&pixelType=uint16&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
+ * '32bit-signed&pixelType=int32&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
+ * '32bit-unsigned&pixelType=uint32&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
+ * '32bit-floating&pixelType=float&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
+ * '64bit-floating&pixelType=double&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
+ * </pre>
  */
 @Plugin(type = Format.class)
 public class FakeFormat extends AbstractFormat {
