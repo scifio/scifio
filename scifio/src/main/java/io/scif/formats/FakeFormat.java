@@ -57,7 +57,6 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
