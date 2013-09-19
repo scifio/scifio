@@ -38,7 +38,6 @@ package io.scif.img.cell;
 
 import io.scif.img.cell.cache.CacheService;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
@@ -58,9 +57,7 @@ import net.imglib2.img.cell.AbstractCell;
  * 
  * @author Mark Hiner
  */
-public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A>
-	implements Serializable
-{
+public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 
 	private static final long serialVersionUID = 660070520155729477L;
 
