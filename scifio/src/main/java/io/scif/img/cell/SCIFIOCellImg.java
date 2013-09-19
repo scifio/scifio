@@ -48,7 +48,7 @@ import net.imglib2.img.cell.Cells;
 import net.imglib2.type.NativeType;
 
 /**
- * {@link AbstractCellImg} implementation for working with {@link SCIFIOCells}.
+ * {@link AbstractCellImg} implementation for working with {@link SCIFIOCell}s.
  * 
  * @author Mark Hiner
  */

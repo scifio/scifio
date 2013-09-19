@@ -52,7 +52,7 @@ import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.img.cell.AbstractCell;
 
 /**
- * {@link AbstractCell} implenetation. Stores the actual byte array for a given
+ * {@link AbstractCell} implementation. Stores the actual byte array for a given
  * cell position.
  * 
  * @author Mark Hiner
