@@ -493,8 +493,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 							}
 						}
 						else {
-							System.arraycopy(sourcePlane, 0, destPlane.getData(),
-								sourcePlane.length, sourcePlane.length);
+							System.arraycopy(sourcePlane, 0, destPlane.getData(), 0,
+								sourcePlane.length);
 						}
 						w.savePlane(imageIndex, planeIndex + cIndex, destPlane);
 					}
