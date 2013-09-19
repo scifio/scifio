@@ -487,12 +487,20 @@ public class ImgSaver extends AbstractImgIOComponent {
 							final int bpp =
 								FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
 
+							// TODO: Assign all elements in a for loop rather than
+							// using many small System.arraycopy calls. Calling
+							// System.arraycopy is less efficient than element-by-element
+							// copying for small array lengths (~24 elements or less).
+							// See: http://stackoverflow.com/a/12366983
 							for (int i = 0; i < sourcePlane.length / bpp; i += bpp) {
 								System.arraycopy(sourcePlane, i, destPlane.getData(),
 									((i * rgbChannelCount) + cIndex) * bpp, bpp);
 							}
 						}
 						else {
+							// TODO: Consider using destPlane.setData(sourcePlane) instead.
+							// Ideally would also make modifications to avoid the initial
+							// allocation overhead of the destPlane's internal buffer.
 							System.arraycopy(sourcePlane, 0, destPlane.getData(), 0,
 								sourcePlane.length);
 						}
