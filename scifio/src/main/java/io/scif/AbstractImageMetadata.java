@@ -359,6 +359,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public int getBitsPerPixel() {
+		if (bitsPerPixel <= 0) return FormatTools.getBitsPerPixel(pixelType);
 		return bitsPerPixel;
 	}
 
