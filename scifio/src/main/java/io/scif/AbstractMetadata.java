@@ -132,6 +132,16 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	// -- Getters --
 
 	@Override
+	public long getSize(int imageIndex) {
+		return get(imageIndex).getSize();
+	}
+
+	@Override
+	public long getPlaneSize(int imageIndex) {
+		return get(imageIndex).getPlaneSize();
+	}
+
+	@Override
 	public String getDatasetName() {
 		return datasetName;
 	}

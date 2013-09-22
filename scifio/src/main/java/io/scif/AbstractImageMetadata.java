@@ -306,6 +306,10 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
+	public long getPlaneSize() {
+		return getSize() / getPlaneCount();
+	}
+
 	public int getThumbSizeX() {
 		int thumbX = thumbSizeX;
 

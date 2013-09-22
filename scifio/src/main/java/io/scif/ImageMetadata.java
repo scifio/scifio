@@ -155,6 +155,9 @@ public interface ImageMetadata extends HasMetaTable {
 	/** Returns the size, in bytes, of all planes in this image. */
 	long getSize();
 
+	/** Returns the size, in bytes, of one plane in this image. */
+	long getPlaneSize();
+
 	/** Returns the width (in pixles) of the thumbnail planes in this image. */
 	int getThumbSizeX();
 

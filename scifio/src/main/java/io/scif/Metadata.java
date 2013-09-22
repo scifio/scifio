@@ -468,6 +468,12 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 */
 	void setAxisLength(int imageIndex, AxisType axis, int length);
 
+	/** Returns the size, in bytes, of all planes in the specified image. */
+	long getSize(int imageIndex);
+
+	/** Returns the size, in bytes, of one plane in the specified image. */
+	long getPlaneSize(int imageIndex);
+
 	/**
 	 * Creates the specified number of blank ImageMetadata.
 	 * 
