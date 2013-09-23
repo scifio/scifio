@@ -119,6 +119,15 @@ public class SCIFIO extends AbstractGateway {
 	}
 
 	/**
+	 * MetadataService accessor.
+	 * 
+	 * @return The MetadataService instance associated with the wrapped Context.
+	 */
+	public MetadataService metadata() {
+		return get(MetadataService.class);
+	}
+
+	/**
 	 * TranslatorService accessor.
 	 * 
 	 * @return The TranslatorService instance associated with the wrapped Context.
