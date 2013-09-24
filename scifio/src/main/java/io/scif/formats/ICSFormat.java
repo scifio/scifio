@@ -50,6 +50,7 @@ import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.Translator;
 import io.scif.common.DateTools;
+import io.scif.img.axes.SCIFIOAxes;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
@@ -182,7 +183,7 @@ public class ICSFormat extends AbstractFormat {
 					while (bitsPerPixel % 8 != 0)
 						bitsPerPixel++;
 					if (bitsPerPixel == 24 || bitsPerPixel == 48) bitsPerPixel /= 3;
-					imageMeta.addAxis(new Axes.CustomType("bits"), bitsPerPixel);
+					imageMeta.addAxis(Axes.get("bits"), bitsPerPixel);
 				}
 				else {
 					final int cIndex = imageMeta.getAxisIndex(Axes.CHANNEL);
@@ -209,10 +210,10 @@ public class ICSFormat extends AbstractFormat {
 						imageMeta.setAxisType(n, Axes.CHANNEL);
 					}
 					else if (axis.startsWith("p")) {
-						imageMeta.setAxisType(n, Axes.PHASE);
+						imageMeta.setAxisType(n, SCIFIOAxes.PHASE);
 					}
 					else if (axis.startsWith("f")) {
-						imageMeta.setAxisType(n, Axes.FREQUENCY);
+						imageMeta.setAxisType(n, SCIFIOAxes.FREQUENCY);
 					}
 					else {
 						imageMeta.setAxisType(n, Axes.unknown());
@@ -289,7 +290,7 @@ public class ICSFormat extends AbstractFormat {
 				if (newOrder != null) {
 					// FIXME: Make sure this works.
 					imageMeta.setAxisTypes(FormatTools.findDimensionList(newOrder));
-					imageMeta.setAxisLength(Axes.LIFETIME, binCount);
+					imageMeta.setAxisLength(SCIFIOAxes.LIFETIME, binCount);
 				}
 			}
 
@@ -1565,7 +1566,7 @@ public class ICSFormat extends AbstractFormat {
 		public String[] getDomains() {
 			FormatTools.assertStream(getStream(), true, 0);
 			final String[] domain = new String[] { FormatTools.GRAPHICS_DOMAIN };
-			if (getMetadata().getAxisLength(0, Axes.LIFETIME) > 1) {
+			if (getMetadata().getAxisLength(0, SCIFIOAxes.LIFETIME) > 1) {
 				domain[0] = FormatTools.FLIM_DOMAIN;
 			}
 			else if (metadata.hasInstrumentData) {
@@ -2070,10 +2071,10 @@ public class ICSFormat extends AbstractFormat {
 
 					order += "c";
 				}
-				else if (axis.equals(Axes.PHASE)) {
+				else if (axis.equals(SCIFIOAxes.PHASE)) {
 					order += "p";
 				}
-				else if (axis.equals(Axes.FREQUENCY)) {
+				else if (axis.equals(SCIFIOAxes.FREQUENCY)) {
 					order += "f";
 				}
 				else {
@@ -2091,7 +2092,7 @@ public class ICSFormat extends AbstractFormat {
 			keyValPairs
 				.put("layout significant_bits", "" + source.getBitsPerPixel(0));
 
-			if (source.getAxisLength(0, Axes.LIFETIME) > 1) keyValPairs.put(
+			if (source.getAxisLength(0, SCIFIOAxes.LIFETIME) > 1) keyValPairs.put(
 				"history type", "time resolved");
 
 			boolean signed = false;
