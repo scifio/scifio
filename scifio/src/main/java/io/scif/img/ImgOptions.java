@@ -67,12 +67,6 @@ public class ImgOptions {
 	 * <li>
    * {@link ImgMode#CELL} will attempt to use {@link CellImgFactory}</li>
 	 * <li>
-   * {@link ImgMode#CELL_ARRAY} will {@link ArrayImgFactory} if the image
-	 * fits in memory, and {@link CellImgFactory} if it does not.</li>
-	 * <li>
-   * {@link ImgMode#CELL_PLANAR} will use {@link PlanarImgFactory} if the
-	 * image fits in memory, and {@link CellImgFactory} if it does not.</li>
-	 * <li>
    * {@link ImgMode#PLANAR} will attempt to use {@link PlanarImgFactory}</li>
 	 * </ul>
 	 * 
