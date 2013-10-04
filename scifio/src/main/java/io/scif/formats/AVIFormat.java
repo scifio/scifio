@@ -64,6 +64,7 @@ import io.scif.util.SCIFIOMetadataTools;
 
 import java.awt.image.IndexColorModel;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Vector;
 
 import net.imglib2.display.ColorTable;
@@ -188,6 +189,7 @@ public class AVIFormat extends AbstractFormat {
 
 		private ByteArrayPlane lastPlane;
 		private int lastPlaneIndex;
+		private int[] lastDims;
 
 		// -- Metadata Accessors --
 
@@ -254,6 +256,14 @@ public class AVIFormat extends AbstractFormat {
 		public byte[] getLastPlaneBytes() {
 			return lastPlane == null ? null : lastPlane.getBytes();
 		}
+		
+		public void setLastDimensions(final int[] dims) {
+			lastDims = dims;
+		}
+		
+		public int[] getLastDimensions() {
+			return lastDims;
+		}
 
 		public void setLastPlane(final ByteArrayPlane lastPlane) {
 			this.lastPlane = lastPlane;
@@ -306,9 +316,12 @@ public class AVIFormat extends AbstractFormat {
 
 				int nBytes = 0;
 				try {
+					final int x = 0, y = 0, w = (int) iMeta.getAxisLength(Axes.X), h =
+						(int) iMeta.getAxisLength(Axes.Y);
 					nBytes =
-						AVIUtils.extractCompression(this, options, getSource(), null, 0).length /
-							(int)(iMeta.getAxisLength(Axes.X) * iMeta.getAxisLength(Axes.Y));
+						AVIUtils.extractCompression(this, options, getSource(), null, 0,
+							new int[] { x, y, w, h }).length /
+							w * h;
 				}
 				catch (final IOException e) {
 					log().error("IOException while decompressing", e);
@@ -868,9 +881,6 @@ public class AVIFormat extends AbstractFormat {
 
 			if (meta.getBmpCompression() != 0 && meta.getBmpCompression() != Y8) {
 				uncompress(imageIndex, planeIndex, plane, x, y, w, h);
-//        byte[] b = uncompress(imageIndex, planeIndex, plane, x, y, w, h).getBytes();
-
-//        b = null;
 				return plane;
 			}
 
@@ -969,7 +979,6 @@ public class AVIFormat extends AbstractFormat {
 				ImageTools.bgrToRgb(plane.getBytes(), meta.isInterleaved(imageIndex),
 					2, (int)meta.getAxisLength(imageIndex, Axes.CHANNEL));
 			}
-
 			return plane;
 		}
 
@@ -983,7 +992,7 @@ public class AVIFormat extends AbstractFormat {
 			final Metadata meta = getMetadata();
 			byte[] buf = null;
 
-			if (meta.getLastPlaneIndex() == planeIndex) {
+			if (haveCached(meta, planeIndex, x, y, w, h)) {
 				buf = meta.getLastPlane().getBytes();
 			}
 			else {
@@ -996,6 +1005,18 @@ public class AVIFormat extends AbstractFormat {
 					createPlane(new long[meta.getPlanarAxisCount(imageIndex)], meta
 						.getAxesLengthsPlanar(imageIndex));
 
+				// If our last cached plane was of insufficient size for the requested
+				// region, we need to open it as a full plan.
+				if(meta.getLastDimensions() != null && !sufficientRegion(meta, x,y,w,h)) {
+					final int lastPlane = meta.getLastPlaneIndex();
+					// Reset last plane information
+					meta.setLastDimensions(null);
+					meta.setLastPlane(null);
+					meta.setLastPlaneIndex(-1);
+					// Open the full last plane again
+					openPlane(imageIndex, lastPlane, tmpPlane);
+					options.previousImage = meta.getLastPlaneBytes();
+				}
 				if (options.previousImage == null && meta.getBmpCompression() != JPEG) {
 					while (meta.getLastPlaneIndex() < planeIndex - 1) {
 						openPlane(imageIndex, meta.getLastPlaneIndex() + 1, tmpPlane);
@@ -1008,7 +1029,7 @@ public class AVIFormat extends AbstractFormat {
 
 				buf =
 					AVIUtils.extractCompression(meta, options, getStream(), tmpPlane,
-						planeIndex);
+						planeIndex, new int[]{x, y, w, h});
 			}
 
 			final int rowLen = (int)FormatTools.getPlaneSize(meta, w, 1, imageIndex);
@@ -1024,6 +1045,27 @@ public class AVIFormat extends AbstractFormat {
 			}
 
 			return plane;
+		}
+
+		private boolean sufficientRegion(Metadata meta, int x, int y, int w, int h)
+		{
+			boolean cached = true;
+			final int[] dims = meta.getLastDimensions();
+			if (dims == null) cached = false;
+			cached = cached && dims[0] <= x;
+			cached = cached && dims[1] <= y;
+			cached = cached && dims[2] + dims[0] >= x + w;
+			cached = cached && dims[3] + dims[1] >= y + h;
+			return cached;
+		}
+
+		private boolean haveCached(Metadata meta, int planeIndex, int x, int y,
+			int w, int h)
+		{
+			boolean cached = true;
+			cached = cached && meta.getLastPlaneIndex() == planeIndex;
+			cached = cached && sufficientRegion(meta, x, y, w, h);
+			return cached;
 		}
 	}
 
@@ -1658,8 +1700,8 @@ public class AVIFormat extends AbstractFormat {
 
 		public static byte[] extractCompression(final Metadata meta,
 			final CodecOptions options, final RandomAccessInputStream stream,
-			final ByteArrayPlane plane, final int planeIndex) throws IOException,
-			FormatException
+			final ByteArrayPlane plane, final int planeIndex, final int[] dims)
+			throws IOException, FormatException
 		{
 			final int bmpCompression = meta.getBmpCompression();
 
@@ -1673,15 +1715,21 @@ public class AVIFormat extends AbstractFormat {
 				codec.setContext(meta.getContext());
 				buf = codec.decompress(b, options);
 				plane.setData(buf);
-				meta.setLastPlane(plane);
-				meta.setLastPlaneIndex(planeIndex);
+				if (updateLastPlane(meta, planeIndex, dims)) {
+					meta.setLastPlane(plane);
+					meta.setLastPlaneIndex(planeIndex);
+					meta.setLastDimensions(dims);
+				}
 			}
 			else if (bmpCompression == MS_VIDEO) {
 				final MSVideoCodec codec = new MSVideoCodec();
 				buf = codec.decompress(stream, options);
 				plane.setData(buf);
-				meta.setLastPlane(plane);
-				meta.setLastPlaneIndex(planeIndex);
+				if (updateLastPlane(meta, planeIndex, dims)) {
+					meta.setLastPlane(plane);
+					meta.setLastPlaneIndex(planeIndex);
+					meta.setLastDimensions(dims);
+				}
 			}
 			else if (bmpCompression == JPEG) {
 				final JPEGCodec codec = new JPEGCodec();
@@ -1770,6 +1818,23 @@ public class AVIFormat extends AbstractFormat {
 			}
 
 			return buf;
+		}
+
+		private static boolean updateLastPlane(Metadata meta, int planeIndex,
+			int[] dims)
+		{
+			// different planes, fine to update
+			if (meta.getLastPlaneIndex() != planeIndex) return true;
+
+			// same plane.. make sure we're not overwriting a larger plane with a
+			// smaller one
+			int[] lastDims = meta.getLastDimensions();
+			boolean smaller = false;
+			smaller = smaller && dims[0] > lastDims[0];
+			smaller = smaller && dims[1] > lastDims[1];
+			smaller = smaller && dims[2] < lastDims[2];
+			smaller = smaller && dims[3] < lastDims[3];
+			return !smaller;
 		}
 	}
 }
