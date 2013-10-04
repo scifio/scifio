@@ -80,7 +80,14 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 	public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
 	{
-		return reader.openPlane(imageIndex, planeIndex, 0, 0, 1, 1).getColorTable();
+		final long[] planeMin =
+			new long[reader.getMetadata().getAxesPlanar(imageIndex).size()];
+		final long[] planeMax = new long[planeMin.length];
+		for (int i = 0; i < planeMax.length; i++)
+			planeMax[i] = 1;
+
+		return reader.openPlane(imageIndex, planeIndex, planeMin, planeMax)
+			.getColorTable();
 	}
 
 	@Override

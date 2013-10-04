@@ -112,14 +112,9 @@ public class PGMFormat extends AbstractFormat {
 		@Override
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
-			iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
 
-			iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) == 3);
-			iMeta.setAxisLength(Axes.Z, 1);
-			iMeta.setAxisLength(Axes.TIME, 1);
+			iMeta.setPlanarAxisCount(iMeta.getAxisLength(Axes.CHANNEL) == 3 ? 3 : 2);
 			iMeta.setLittleEndian(true);
-			iMeta.setInterleaved(false);
-			iMeta.setPlaneCount(1);
 			iMeta.setIndexed(false);
 			iMeta.setFalseColor(false);
 			iMeta.setMetadataComplete(true);
@@ -236,17 +231,17 @@ public class PGMFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-				buf.length, x, y, w, h);
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+				buf.length, planeMin, planeMax);
 
 			getStream().seek(meta.getOffset());
 			if (meta.isRawBits()) {
-				readPlane(getStream(), imageIndex, x, y, w, h, plane);
+				readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
 			}
 			else {
 				final ByteArrayHandle handle = new ByteArrayHandle();
@@ -271,7 +266,7 @@ public class PGMFormat extends AbstractFormat {
 				final RandomAccessInputStream s =
 					new RandomAccessInputStream(getContext(), handle);
 				s.seek(0);
-				readPlane(s, imageIndex, x, y, w, h, plane);
+				readPlane(s, imageIndex, planeMin, planeMax, plane);
 				s.close();
 			}
 

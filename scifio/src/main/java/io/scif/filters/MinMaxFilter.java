@@ -37,6 +37,7 @@
 package io.scif.filters;
 
 import io.scif.FormatException;
+import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.common.DataTools;
 import io.scif.util.FormatTools;
@@ -64,10 +65,10 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	// -- Fields --
 
 	/** Min values for each channel. */
-	protected double[][] chanMin;
+	protected double[][] sliceMin;
 
 	/** Max values for each channel. */
-	protected double[][] chanMax;
+	protected double[][] sliceMax;
 
 	/** Min values for each plane. */
 	protected double[][] planeMin;
@@ -100,7 +101,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		if (minMaxDone == null || minMaxDone[imageIndex] < getImageCount()) {
 			return null;
 		}
-		return new Double(chanMin[imageIndex][theC]);
+		return new Double(sliceMin[imageIndex][theC]);
 	}
 
 	/**
@@ -123,7 +124,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		if (minMaxDone == null || minMaxDone[imageIndex] < getImageCount()) {
 			return null;
 		}
-		return new Double(chanMax[imageIndex][theC]);
+		return new Double(sliceMax[imageIndex][theC]);
 	}
 
 	/**
@@ -137,7 +138,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		throws FormatException, IOException
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
-		return chanMin == null ? null : new Double(chanMin[imageIndex][theC]);
+		return sliceMin == null ? null : new Double(sliceMin[imageIndex][theC]);
 	}
 
 	/**
@@ -151,14 +152,14 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		throws FormatException, IOException
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
-		return chanMax == null ? null : new Double(chanMax[imageIndex][theC]);
+		return sliceMax == null ? null : new Double(sliceMax[imageIndex][theC]);
 	}
 
 	/**
 	 * Retrieves the minimum pixel value for the specified plane. If each image
-	 * plane contains more than one channel (i.e., {@link #getRGBChannelCount()}
-	 * &gt; 1), returns the maximum value for each embedded channel. Returns null
-	 * if the plane has not already been read.
+	 * contains multiple representations of a given plane (i.e., with an RGB
+	 * image), returns the maximum value for each individual plane representation.
+	 * Returns null if the plane has not already been read.
 	 * 
 	 * @throws FormatException Not actually thrown.
 	 * @throws IOException Not actually thrown.
@@ -169,12 +170,12 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		FormatTools.assertId(getCurrentFile(), true, 2);
 		if (planeMin == null) return null;
 
-		final int numRGB = getMetadata().getRGBChannelCount(imageIndex);
-		final int pBase = planeIndex * numRGB;
+		final int numXY = countRGB(imageIndex, planeIndex);
+		final int pBase = planeIndex * numXY;
 		if (Double.isNaN(planeMin[imageIndex][pBase])) return null;
 
-		final Double[] min = new Double[numRGB];
-		for (int c = 0; c < numRGB; c++) {
+		final Double[] min = new Double[numXY];
+		for (int c = 0; c < numXY; c++) {
 			min[c] = new Double(planeMin[imageIndex][pBase + c]);
 		}
 		return min;
@@ -195,12 +196,12 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		FormatTools.assertId(getCurrentFile(), true, 2);
 		if (planeMax == null) return null;
 
-		final int numRGB = getMetadata().getRGBChannelCount(imageIndex);
-		final int pBase = planeIndex * numRGB;
+		final int numXY = countRGB(imageIndex, planeIndex);
+		final int pBase = planeIndex * numXY;
 		if (Double.isNaN(planeMax[imageIndex][pBase])) return null;
 
-		final Double[] max = new Double[numRGB];
-		for (int c = 0; c < numRGB; c++) {
+		final Double[] max = new Double[numXY];
+		for (int c = 0; c < numXY; c++) {
 			max[c] = new Double(planeMax[imageIndex][pBase + c]);
 		}
 		return max;
@@ -223,43 +224,48 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	// -- IFormatReader API methods --
 
 	@Override
+	public int getPlaneCount(final int imageIndex) {
+		return getMetadata().get(imageIndex).getPlaneCount();
+	}
+
+	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
 	{
-		final io.scif.Metadata m = getMetadata();
-		return openPlane(imageIndex, planeIndex, 0, 0, m.getAxisLength(imageIndex,
-			Axes.X), m.getAxisLength(imageIndex, Axes.Y));
+		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
+		return openPlane(imageIndex, planeIndex, new long[planarAxes],
+			getMetadata().getAxesLengthsPlanar(imageIndex));
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		final io.scif.Metadata m = getMetadata();
-		return openPlane(imageIndex, planeIndex, plane, 0, 0, m.getAxisLength(
-			imageIndex, Axes.X), m.getAxisLength(imageIndex, Axes.Y));
+		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
+		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],
+			getMetadata().getAxesLengthsPlanar(imageIndex));
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
-		final int x, final int y, final int w, final int h) throws FormatException,
+		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException
 	{
-		return openPlane(imageIndex, planeIndex, createPlane(x, y, w, h), x, y, w,
-			h);
+		return openPlane(imageIndex, planeIndex, createPlane(planeMin, planeMax),
+			planeMin, planeMax);
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
-		final Plane plane, final int x, final int y, final int w, final int h)
+		final Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
-		super.openPlane(imageIndex, planeIndex, plane, x, y, w, h);
+		super.openPlane(imageIndex, planeIndex, plane, offsets, lengths);
 
 		updateMinMax(imageIndex, planeIndex, plane.getBytes(), FormatTools
 			.getBytesPerPixel(getMetadata().getPixelType(imageIndex)) *
-			w * h);
+			DataTools.safeMultiply32(lengths));
 		return plane;
 	}
 
@@ -267,8 +273,8 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	public void close(final boolean fileOnly) throws IOException {
 		super.close(fileOnly);
 		if (!fileOnly) {
-			chanMin = null;
-			chanMax = null;
+			sliceMin = null;
+			sliceMax = null;
 			planeMin = null;
 			planeMax = null;
 			minMaxDone = null;
@@ -296,16 +302,17 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		final byte[] buf, final int len) throws FormatException, IOException
 	{
 		if (buf == null) return;
-		initMinMax();
+		initMinMax(imageIndex, planeIndex);
 
 		final io.scif.Metadata m = getMetadata();
-		final int numRGB = m.getRGBChannelCount(imageIndex);
+		final int numRGB = countRGB(imageIndex, planeIndex);
 		final int pixelType = m.getPixelType(imageIndex);
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
-		final int planeSize =
-			m.getAxisLength(imageIndex, Axes.X) *
-				m.getAxisLength(imageIndex, Axes.Y) * bpp;
-		// check whether min/max values have already been computed for this plane
+		final long planeSize = m.getPlaneSize(imageIndex);
+		// check whether min/max
+		// values have already
+		// been computed for
+		// this plane
 		// and that the buffer requested is actually the entire plane
 		if (len == planeSize &&
 			!Double.isNaN(planeMin[imageIndex][planeIndex * numRGB])) return;
@@ -315,9 +322,12 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		final int pixels = len / (bpp * numRGB);
 		final boolean interleaved = m.isInterleaved(imageIndex);
 
-		final int[] coords = FormatTools.getZCTCoords(m, imageIndex, planeIndex);
-		final int cBase = coords[1] * numRGB;
-		final int pBase = planeIndex * numRGB;
+		final long[] coords =
+			FormatTools.rasterToPosition(imageIndex, planeIndex, m);
+		int cIndex = m.getAxisIndex(imageIndex, Axes.CHANNEL);
+		final int cBase =
+			m.isMultichannel(imageIndex) ? (int) coords[cIndex] * numRGB : 0;
+		final int pBase = (int) planeIndex * numRGB;
 		for (int c = 0; c < numRGB; c++) {
 			planeMin[imageIndex][pBase + c] = Double.POSITIVE_INFINITY;
 			planeMax[imageIndex][pBase + c] = Double.NEGATIVE_INFINITY;
@@ -341,21 +351,21 @@ public class MinMaxFilter extends AbstractReaderFilter {
 					v = Double.longBitsToDouble(bits);
 				}
 
-				if (v > chanMax[imageIndex][cBase + c]) {
-					chanMax[imageIndex][cBase + c] = v;
+				if (v > sliceMax[imageIndex][cBase + c]) {
+					sliceMax[imageIndex][cBase + c] = v;
 				}
-				if (v < chanMin[imageIndex][cBase + c]) {
-					chanMin[imageIndex][cBase + c] = v;
+				if (v < sliceMin[imageIndex][cBase + c]) {
+					sliceMin[imageIndex][cBase + c] = v;
 				}
 			}
 		}
 
 		for (int c = 0; c < numRGB; c++) {
-			if (chanMin[imageIndex][cBase + c] < planeMin[imageIndex][pBase + c]) {
-				planeMin[imageIndex][pBase + c] = chanMin[imageIndex][cBase + c];
+			if (sliceMin[imageIndex][cBase + c] < planeMin[imageIndex][pBase + c]) {
+				planeMin[imageIndex][pBase + c] = sliceMin[imageIndex][cBase + c];
 			}
-			if (chanMax[imageIndex][cBase + c] > planeMax[imageIndex][pBase + c]) {
-				planeMax[imageIndex][pBase + c] = chanMax[imageIndex][cBase + c];
+			if (sliceMax[imageIndex][cBase + c] > planeMax[imageIndex][pBase + c]) {
+				planeMax[imageIndex][pBase + c] = sliceMax[imageIndex][cBase + c];
 			}
 		}
 		minMaxDone[imageIndex] = Math.max(minMaxDone[imageIndex], planeIndex + 1);
@@ -367,41 +377,56 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	 * @throws FormatException Not actually thrown.
 	 * @throws IOException Not actually thrown.
 	 */
-	protected void initMinMax() throws FormatException, IOException {
+	protected void initMinMax(int imageIndex, int planeIndex)
+		throws FormatException, IOException
+	{
 		final io.scif.Metadata m = getMetadata();
 		final int imageCount = m.getImageCount();
+		final int xyRepresentations =
+			countRGB(imageIndex, planeIndex);
 
-		if (chanMin == null) {
-			chanMin = new double[imageCount][];
+		if (sliceMin == null) {
+			sliceMin = new double[imageCount][];
 			for (int i = 0; i < imageCount; i++) {
-				chanMin[i] = new double[m.getAxisLength(i, Axes.CHANNEL)];
-				Arrays.fill(chanMin[i], Double.POSITIVE_INFINITY);
+				sliceMin[i] = new double[xyRepresentations];
+				Arrays.fill(sliceMin[i], Double.POSITIVE_INFINITY);
 			}
 		}
-		if (chanMax == null) {
-			chanMax = new double[imageCount][];
+		if (sliceMax == null) {
+			sliceMax = new double[imageCount][];
 			for (int i = 0; i < imageCount; i++) {
-				chanMax[i] = new double[m.getAxisLength(i, Axes.CHANNEL)];
-				Arrays.fill(chanMax[i], Double.NEGATIVE_INFINITY);
+				sliceMax[i] = new double[xyRepresentations];
+				Arrays.fill(sliceMax[i], Double.NEGATIVE_INFINITY);
 			}
 		}
 		if (planeMin == null) {
 			planeMin = new double[imageCount][];
 			for (int i = 0; i < imageCount; i++) {
-				final int numRGB = m.getRGBChannelCount(i);
-				planeMin[i] = new double[getPlaneCount(i) * numRGB];
+				planeMin[i] = new double[getPlaneCount(i) * xyRepresentations];
 				Arrays.fill(planeMin[i], Double.NaN);
 			}
 		}
 		if (planeMax == null) {
 			planeMax = new double[imageCount][];
 			for (int i = 0; i < imageCount; i++) {
-				final int numRGB = m.getRGBChannelCount(i);
-				planeMax[i] = new double[getPlaneCount(i) * numRGB];
+				planeMax[i] = new double[getPlaneCount(i) * xyRepresentations];
 				Arrays.fill(planeMax[i], Double.NaN);
 			}
 		}
 		if (minMaxDone == null) minMaxDone = new int[imageCount];
 	}
 
+
+	/**
+	 * Count how many color channel planes are present.
+	 */
+	private int countRGB(int imageIndex, int planeIndex) {
+		Metadata meta = getMetadata();
+		if (meta.getAxisIndex(imageIndex, Axes.CHANNEL) < meta
+			.getPlanarAxisCount(imageIndex))
+		{
+			return (int) meta.getAxisLength(imageIndex, Axes.CHANNEL);
+		}
+		return 1;
+	}
 }

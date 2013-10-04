@@ -50,5 +50,5 @@ public interface SCIFIOArrayLoader<A> {
 
 	A loadArray(int[] dimensions, long[] min);
 
-	A emptyArray(final int[] dimensions);
+	A emptyArray(final int entities);
 }

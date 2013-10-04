@@ -42,11 +42,13 @@ import io.scif.AbstractParser;
 import io.scif.AbstractTranslator;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Field;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
 import io.scif.MetadataService;
+import io.scif.Plane;
 import io.scif.Translator;
 import io.scif.common.DataTools;
 import io.scif.io.IStreamAccess;
@@ -64,10 +66,9 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 
-import org.scijava.Context;
 import org.scijava.Priority;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
@@ -81,15 +82,17 @@ import org.scijava.plugin.Plugin;
  * </p>
  * 
  * <pre>
- * 'multi-series&series=11&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
- * '8bit-signed&pixelType=int8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
- * '8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
- * '16bit-signed&pixelType=int16&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
- * '16bit-unsigned&pixelType=uint16&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
- * '32bit-signed&pixelType=int32&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
- * '32bit-unsigned&pixelType=uint32&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
- * '32bit-floating&pixelType=float&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
- * '64bit-floating&pixelType=double&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake'
+ * 'multi-series&series=11&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'
+ * '8bit-signed&pixelType=int8&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'
+ * '8bit-unsigned&pixelType=uint8&axes=X,Y,Z,Channel&lengths=1,50,3,5.fake'
+ * '16bit-signed&pixelType=int16&axes=X,Y,Z,Channel,Time&lengths=1,50,3,7.fake'
+ * '16bit-unsigned&pixelType=uint16&sizeZ=3&axes=X,Y,&lengths=1,1.fake'
+ * '32bit-signed&pixelType=int32&sizeZ=3&axes=X,Y,Z,,Time&lengths=50,50.fake'
+ * '32bit-unsigned&pixelType=uint32&axes=X,Y,Z&lengths=50,50,3.fake'
+ * '32bit-floating&pixelType=float&axes=X,Y&lengths=1,1.fake'
+ * '64bit-floating&pixelType=double&axes=X,Y,Time&lengths=256,256,3.fake'
+ * 'rgb-image&lengths=512,512,3&axes=X,Y,Channel&planarDims=3.fake'
+ * 'rgb-interleaved&lengths=3,512,512&axes=Channel,X,Y&planarDims=3.fake'
  * </pre>
  */
 @Plugin(type = Format.class)
@@ -97,58 +100,9 @@ public class FakeFormat extends AbstractFormat {
 
 	// -- Constants --
 
-	public static final int BOX_SIZE = 10;
-	public static final int DEFAULT_SIZE_X = 512;
-	public static final int DEFAULT_SIZE_Y = 512;
-	public static final int DEFAULT_SIZE_Z = 1;
-	public static final int DEFAULT_SIZE_C = 1;
-	public static final int DEFAULT_SIZE_T = 1;
-	public static final double DEFAULT_CAL_X = 1.0;
-	public static final double DEFAULT_CAL_Y = 1.0;
-	public static final double DEFAULT_CAL_Z = 1.0;
-	public static final double DEFAULT_CAL_C = 1.0;
-	public static final double DEFAULT_CAL_T = 1.0;
-	public static final int DEFAULT_THUMB_SIZE_X = 0;
-	public static final int DEFAULT_THUMB_SIZE_Y = 0;
-	public static final String DEFAULT_PIXEL_TYPE = FormatTools
-		.getPixelTypeString(FormatTools.UINT8);
-	public static final int DEFAULT_RGB_CHANNEL_COUNT = 1;
-	public static final int DEFAULT_LUT_LENGTH = 3;
-	public static final int DEFAULT_SCALE_FACTOR = 1;
-	public static final String DEFAULT_DIMENSION_ORDER = "XYZCT";
-
 	private static final long SEED = 0xcafebabe;
 
 	private static final String DEFAULT_NAME = "Untitled";
-
-	// -- Allowed keys --
-
-	private static final String SIZE_X = "sizeX";
-	private static final String SIZE_Y = "sizeY";
-	private static final String SIZE_Z = "sizeZ";
-	private static final String SIZE_C = "sizeC";
-	private static final String SIZE_T = "sizeT";
-	private static final String CAL_X = "calX";
-	private static final String CAL_Y = "calY";
-	private static final String CAL_Z = "calZ";
-	private static final String CAL_C = "calC";
-	private static final String CAL_T = "calT";
-	private static final String THUMB_X = "thumbSizeX";
-	private static final String THUMB_Y = "thumbSizeY";
-	private static final String PIXEL_TYPE = "pixelType";
-	private static final String BITS_PER_PIXEL = "bitsPerPixel";
-	private static final String DIM_ORDER = "dimOrder";
-	private static final String INDEXED = "indexed";
-	private static final String FALSE_COLOR = "falseColor";
-	private static final String LITTLE_ENDIAN = "little";
-	private static final String INTERLEAVED = "interleaved";
-	private static final String META_COMPLETE = "metadataComplete";
-	private static final String THUMBNAIL = "thumbnail";
-	private static final String ORDER_CERTAIN = "orderCertain";
-	private static final String LUT_LENGTH = "lutLength";
-	private static final String SCALE_FACTOR = "scaleFactor";
-	private static final String SERIES = "series";
-	private static final String RGB = "rgb";
 
 	// -- Constructor --
 
@@ -193,8 +147,56 @@ public class FakeFormat extends AbstractFormat {
 
 		// -- Fields --
 
-		/** Channel of last opened image plane. */
-		private int ac = 0;
+		@Field
+		private String[] axes;
+
+		@Field
+		private long[] lengths;
+
+		@Field
+		private double[] scales;
+
+		@Field
+		private String[] units;
+
+		@Field
+		private int planarDims;
+
+		@Field
+		private int thumbSizeX;
+
+		@Field
+		private int thumbSizeY;
+
+		@Field
+		private String pixelType;
+
+		@Field
+		private boolean indexed;
+
+		@Field
+		private boolean falseColor;
+
+		@Field
+		private boolean little;
+
+		@Field
+		private boolean metadataComplete;
+
+		@Field
+		private boolean thumbnail;
+
+		@Field
+		private boolean orderCertain;
+
+		@Field
+		private int lutLength;
+
+		@Field
+		private int scaleFactor;
+
+		@Field
+		private int images;
 
 		private ColorTable[] lut;
 
@@ -203,21 +205,10 @@ public class FakeFormat extends AbstractFormat {
 		// -- FakeFormat.Metadata methods --
 
 		/**
-		 * Gets the last read channel index
-		 * 
-		 * @return The last read channel
+		 * @return Scale factor for this image
 		 */
-		public int getLastChannel() {
-			return ac;
-		}
-
-		/**
-		 * Sets the last read channel index
-		 * 
-		 * @param c - Last read channel
-		 */
-		public void setLastChannel(final int c) {
-			ac = c;
+		public int getScaleFactor() {
+			return scaleFactor;
 		}
 
 		/**
@@ -260,7 +251,13 @@ public class FakeFormat extends AbstractFormat {
 		@Override
 		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		{
-			return lut == null ? null : lut[ac];
+			int cIndex = getAxisIndex(imageIndex, Axes.CHANNEL);
+			if (cIndex == -1) return null;
+			final long[] pos =
+				FormatTools.rasterToPosition(getAxesLengthsNonPlanar(imageIndex),
+					planeIndex);
+			final int cPos = (int) pos[cIndex];
+			return lut == null ? null : lut[cPos];
 		}
 
 		// -- Metadata API Methods --
@@ -270,80 +267,55 @@ public class FakeFormat extends AbstractFormat {
 		 */
 		@Override
 		public void populateImageMetadata() {
-			int sizeX = DEFAULT_SIZE_X;
-			int sizeY = DEFAULT_SIZE_Y;
-			int sizeZ = DEFAULT_SIZE_Z;
-			int sizeC = DEFAULT_SIZE_C;
-			int sizeT = DEFAULT_SIZE_T;
-			double calX = DEFAULT_CAL_X;
-			double calY = DEFAULT_CAL_Y;
-			double calZ = DEFAULT_CAL_Z;
-			double calC = DEFAULT_CAL_C;
-			double calT = DEFAULT_CAL_T;
-			int thumbSizeX = DEFAULT_THUMB_SIZE_X;
-			int thumbSizeY = DEFAULT_THUMB_SIZE_Y;
-			int rgb = DEFAULT_RGB_CHANNEL_COUNT;
-			boolean indexed = false;
-			boolean falseColor = false;
-			int pixelType = FormatTools.pixelTypeFromString(DEFAULT_PIXEL_TYPE);
+			final MetadataService metadataService =
+				getContext().getService(MetadataService.class);
 
-			int imageCount = 1;
-			int lutLength = DEFAULT_LUT_LENGTH;
+			setDefaults();
 
-			final Map<String, String> fakeMap =
-				FakeUtils.extractFakeInfo(getContext(), getDatasetName());
+			// parse key/value pairs from fake filename
+			final Map<String, Object> fakeMap =
+				FakeUtils.extractFakeInfo(metadataService, getDatasetName());
 
-			sizeX = FakeUtils.getIntValue(fakeMap.get(SIZE_X), sizeX);
-			sizeY = FakeUtils.getIntValue(fakeMap.get(SIZE_Y), sizeY);
-			sizeZ = FakeUtils.getIntValue(fakeMap.get(SIZE_Z), sizeZ);
-			sizeC = FakeUtils.getIntValue(fakeMap.get(SIZE_C), sizeC);
-			sizeT = FakeUtils.getIntValue(fakeMap.get(SIZE_T), sizeT);
+			metadataService.populate(this, fakeMap);
 
-			calX = FakeUtils.getDoubleValue(fakeMap.get(CAL_X), calX);
-			calY = FakeUtils.getDoubleValue(fakeMap.get(CAL_Y), calY);
-			calZ = FakeUtils.getDoubleValue(fakeMap.get(CAL_Z), calZ);
-			calC = FakeUtils.getDoubleValue(fakeMap.get(CAL_C), calC);
-			calT = FakeUtils.getDoubleValue(fakeMap.get(CAL_T), calT);
+			int pType = FormatTools.pixelTypeFromString(pixelType);
+			int bpp = FormatTools.getBitsPerPixel(pType);
 
-			thumbSizeX = FakeUtils.getIntValue(fakeMap.get(THUMB_X), thumbSizeX);
-			thumbSizeY = FakeUtils.getIntValue(fakeMap.get(THUMB_Y), thumbSizeY);
-			rgb = FakeUtils.getIntValue(fakeMap.get(RGB), rgb);
-			indexed = FakeUtils.getBoolValue(fakeMap.get(INDEXED), indexed);
-			falseColor = FakeUtils.getBoolValue(fakeMap.get(FALSE_COLOR), falseColor);
-			final String mappedPType = fakeMap.get(PIXEL_TYPE);
-			pixelType =
-				FormatTools.pixelTypeFromString(mappedPType == null
-					? DEFAULT_PIXEL_TYPE : mappedPType);
+			CalibratedAxis[] calibratedAxes = new CalibratedAxis[axes.length];
 
-			imageCount = FakeUtils.getIntValue(fakeMap.get(SERIES), imageCount);
-			lutLength = FakeUtils.getIntValue(fakeMap.get(LUT_LENGTH), lutLength);
+			for (int i = 0; i < calibratedAxes.length; i++) {
+				double scale = 1.0;
+				String unit = "um";
+				if (i < units.length) {
+					unit = units[i];
+				}
+				if (i < scales.length) {
+					scale = scales[i];
+				}
+				calibratedAxes[i] =
+					new DefaultLinearAxis(Axes.get(axes[i]), unit, scale);
+			}
 
-			// TODO not sure how to handle error handling here yet
-//      // Sanity checking
-//      if (sizeX < 1) throw new FormatException("Invalid sizeX: " + sizeX);
-//      if (sizeY < 1) throw new FormatException("Invalid sizeY: " + sizeY);
-//      if (sizeZ < 1) throw new FormatException("Invalid sizeZ: " + sizeZ);
-//      if (sizeC < 1) throw new FormatException("Invalid sizeC: " + sizeC);
-//      if (sizeT < 1) throw new FormatException("Invalid sizeT: " + sizeT);
-//      if (thumbSizeX < 0) {
-//        throw new FormatException("Invalid thumbSizeX: " + thumbSizeX);
-//      }
-//      if (thumbSizeY < 0) {
-//        throw new FormatException("Invalid thumbSizeY: " + thumbSizeY);
-//      }
-//      if (rgb < 1 || rgb > sizeC || sizeC % rgb != 0) {
-//        throw new FormatException("Invalid sizeC/rgb combination: " +
-//          sizeC + "/" + rgb);
-//      }
-//      if (falseColor && !indexed) {
-//        throw new FormatException("False color images must be indexed");
-//      }
-//      if (imageCount < 1) {
-//        throw new FormatException("Invalid seriesCount: " + imageCount);
-//      }
-//      if (lutLength < 1) {
-//        throw new FormatException("Invalid lutLength: " + lutLength);
-//      }
+			// Image metadata population
+			createImageMetadata(images);
+
+			// set ImageMetadata
+			for (int i = 0; i < images; i++) {
+				final ImageMetadata imageMeta = get(i);
+
+				imageMeta.setAxes(calibratedAxes, lengths);
+				imageMeta.setPlanarAxisCount(planarDims);
+				imageMeta.setPixelType(pType);
+				imageMeta.setThumbSizeX(thumbSizeX);
+				imageMeta.setThumbSizeY(thumbSizeY);
+				imageMeta.setIndexed(indexed);
+				imageMeta.setFalseColor(falseColor);
+				imageMeta.setLittleEndian(little);
+				imageMeta.setMetadataComplete(metadataComplete);
+				imageMeta.setThumbnail(thumbnail);
+				imageMeta.setOrderCertain(orderCertain);
+				imageMeta.setBitsPerPixel(bpp);
+			}
 
 			// for indexed color images, create lookup tables
 			if (indexed) {
@@ -351,7 +323,8 @@ public class FakeFormat extends AbstractFormat {
 				int[][] valueToIndex = null;
 				ColorTable[] luts = null;
 
-				if (pixelType == FormatTools.UINT8) {
+				int sizeC = (int)getAxisLength(0, Axes.CHANNEL);
+				if (pType == FormatTools.UINT8) {
 					// create 8-bit LUTs
 					final int num = 256;
 					indexToValue = new int[sizeC][num];
@@ -369,7 +342,7 @@ public class FakeFormat extends AbstractFormat {
 						luts[c] = new ColorTable8(lutBytes);
 					}
 				}
-				else if (pixelType == FormatTools.UINT16) {
+				else if (pType == FormatTools.UINT16) {
 					// create 16-bit LUTs
 					final int num = 65536;
 					indexToValue = new int[sizeC][num];
@@ -396,98 +369,30 @@ public class FakeFormat extends AbstractFormat {
 				}
 				// NB: Other pixel types will have null LUTs.
 			}
+		}
 
-			// General metadata population
-
-			int bitsPerPixel = 0; // default
-			String dimOrder = DEFAULT_DIMENSION_ORDER;
-			boolean orderCertain = true;
-			boolean little = true;
-			boolean interleaved = false;
-			boolean metadataComplete = true;
-			boolean thumbnail = false;
-			double scaleFactor = DEFAULT_SCALE_FACTOR;
-
-			bitsPerPixel = FormatTools.getBitsPerPixel(pixelType);
-			bitsPerPixel =
-				FakeUtils.getIntValue(fakeMap.get(BITS_PER_PIXEL), bitsPerPixel);
-			dimOrder =
-				fakeMap.get(DIM_ORDER) == null ? dimOrder : fakeMap.get(DIM_ORDER)
-					.toUpperCase();
-
-			little = FakeUtils.getBoolValue(fakeMap.get(LITTLE_ENDIAN), little);
-			interleaved =
-				FakeUtils.getBoolValue(fakeMap.get(INTERLEAVED), interleaved);
-			metadataComplete =
-				FakeUtils.getBoolValue(fakeMap.get(META_COMPLETE), metadataComplete);
-			thumbnail = FakeUtils.getBoolValue(fakeMap.get(THUMBNAIL), thumbnail);
-			orderCertain =
-				FakeUtils.getBoolValue(fakeMap.get(ORDER_CERTAIN), orderCertain);
-
-			scaleFactor =
-				FakeUtils.getDoubleValue(fakeMap.get(SCALE_FACTOR), scaleFactor);
-
-			final CalibratedAxis[] axes = FormatTools.findDimensionList(dimOrder);
-			final int[] axisLengths = new int[axes.length];
-			final double[] calibrations = new double[axes.length];
-
-			// Create axes arrays
-			for (int i = 0; i < axes.length; i++) {
-				final AxisType t = axes[i].type();
-				if (t.equals(Axes.X)) {
-					axisLengths[i] = sizeX;
-					calibrations[i] = calX;
-				}
-				else if (t.equals(Axes.Y)) {
-					axisLengths[i] = sizeY;
-					calibrations[i] = calY;
-				}
-				else if (t.equals(Axes.Z)) {
-					axisLengths[i] = sizeZ;
-					calibrations[i] = calZ;
-				}
-				else if (t.equals(Axes.CHANNEL)) {
-					axisLengths[i] = sizeC;
-					calibrations[i] = calC;
-				}
-				else if (t.equals(Axes.TIME)) { 
-					axisLengths[i] = sizeT;
-					calibrations[i] = calT;
-				}
-				else axisLengths[i] = -1; // Unknown axis
-			}
-
-			getTable().put(SCALE_FACTOR, scaleFactor);
-			getTable().put(LUT_LENGTH, lutLength);
-
-			int numImages = 1;
-			numImages = FakeUtils.getIntValue(fakeMap.get(SERIES), numImages);
-
-			final int effSizeC = sizeC / rgb;
-
-			createImageMetadata(numImages);
-
-			// set ImageMetadata
-			for (int i = 0; i < numImages; i++) {
-				final ImageMetadata imageMeta = get(i);
-
-				imageMeta.setAxes(axes);
-				imageMeta.setAxisLengths(axisLengths);
-				FormatTools.calibrate(this, i, calibrations);
-				imageMeta.setPixelType(pixelType);
-				imageMeta.setThumbSizeX(thumbSizeX);
-				imageMeta.setThumbSizeY(thumbSizeY);
-				imageMeta.setIndexed(indexed);
-				imageMeta.setFalseColor(falseColor);
-				imageMeta.setRGB(rgb > 1);
-				imageMeta.setLittleEndian(little);
-				imageMeta.setInterleaved(interleaved);
-				imageMeta.setMetadataComplete(metadataComplete);
-				imageMeta.setThumbnail(thumbnail);
-				imageMeta.setOrderCertain(orderCertain);
-				imageMeta.setBitsPerPixel(bitsPerPixel);
-				imageMeta.setPlaneCount(sizeZ * effSizeC * sizeT);
-			}
+		/**
+		 * Sets default values for all fields. Necessary as field values may be
+		 * erased post-initialization (e.g. by closing).
+		 */
+		private void setDefaults() {
+			axes = new String[] { "X", "Y" };
+			lengths = new long[] { 512, 512 };
+			scales = new double[] { 1.0, 1.0 };
+			units = new String[] { "um", "um" };
+			planarDims = 2;
+			thumbSizeX = 0;
+			thumbSizeY = 0;
+			pixelType = FormatTools.getPixelTypeString(FormatTools.UINT8);
+			indexed = false;
+			falseColor = false;
+			little = true;
+			metadataComplete = true;
+			thumbnail = false;
+			orderCertain = true;
+			lutLength = 3;
+			scaleFactor = 1;
+			images = 1;
 		}
 	}
 
@@ -516,111 +421,159 @@ public class FakeFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, plane
-				.getData().length, x, y, w, h);
-
 			final Metadata meta = getMetadata();
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex, plane
+				.getData().length, planeMin, planeMax);
 			plane.setImageMetadata(meta.get(imageIndex));
 
-			final int pixelType = meta.getPixelType(imageIndex);
-			final int bpp = FormatTools.getBytesPerPixel(pixelType);
-			final boolean signed = FormatTools.isSigned(pixelType);
-			final boolean floating = FormatTools.isFloatingPoint(pixelType);
-			final int rgb = meta.getRGBChannelCount(imageIndex);
-			final boolean indexed = meta.isIndexed(imageIndex);
-			final boolean little = meta.isLittleEndian(imageIndex);
-			final boolean interleaved = meta.isInterleaved(imageIndex);
-			final int scaleFactor =
-				((Double) meta.getTable().get(SCALE_FACTOR)).intValue();
-			final ColorTable[] lut = getMetadata().getLut();
-			final int[][] valueToIndex = getMetadata().getValueToIndex();
+			final long[] pos =
+				FormatTools.rasterToPosition(meta.getAxesLengthsNonPlanar(imageIndex),
+					planeIndex);
 
-			final int[] zct = FormatTools.getZCTCoords(this, imageIndex, planeIndex);
-			final int zIndex = zct[0], cIndex = zct[1], tIndex = zct[2];
-			getMetadata().setLastChannel(cIndex);
+			final long[] planarIndices = new long[planeMin.length];
 
-			// integer types start gradient at the smallest value
-			long min = signed ? (long) -Math.pow(2, 8 * bpp - 1) : 0;
-			if (floating) min = 0; // floating point types always start at 0
-
-			for (int cOffset = 0; cOffset < rgb; cOffset++) {
-				final int channel = rgb * cIndex + cOffset;
-				for (int row = 0; row < h; row++) {
-					final int yy = y + row;
-					for (int col = 0; col < w; col++) {
-						final int xx = x + col;
-						long pixel = min + xx;
-
-						// encode various information into the image plane
-						boolean specialPixel = false;
-						if (yy < BOX_SIZE) {
-							final int grid = xx / BOX_SIZE;
-							specialPixel = true;
-							switch (grid) {
-								case 0:
-									pixel = imageIndex;
-									break;
-								case 1:
-									pixel = planeIndex;
-									break;
-								case 2:
-									pixel = zIndex;
-									break;
-								case 3:
-									pixel = channel;
-									break;
-								case 4:
-									pixel = tIndex;
-									break;
-								default:
-									// just a normal pixel in the gradient
-									specialPixel = false;
-							}
-						}
-
-						// if indexed color with non-null LUT, convert value to index
-						if (indexed && lut != null) {
-							final int modValue =
-								lut[getMetadata().getLastChannel()].getLength();
-							plane.setColorTable(lut[getMetadata().getLastChannel()]);
-
-							if (valueToIndex != null) pixel =
-								valueToIndex[getMetadata().getLastChannel()][(int) (pixel % modValue)];
-						}
-
-						// scale pixel value by the scale factor
-						// if floating point, convert value to raw IEEE floating point bits
-						switch (pixelType) {
-							case FormatTools.FLOAT:
-								float floatPixel;
-								if (specialPixel) floatPixel = pixel;
-								else floatPixel = scaleFactor * pixel;
-								pixel = Float.floatToIntBits(floatPixel);
-								break;
-							case FormatTools.DOUBLE:
-								double doublePixel;
-								if (specialPixel) doublePixel = pixel;
-								else doublePixel = scaleFactor * pixel;
-								pixel = Double.doubleToLongBits(doublePixel);
-								break;
-							default:
-								if (!specialPixel) pixel = scaleFactor * pixel;
-						}
-
-						// unpack pixel into byte buffer
-						int index;
-						if (interleaved) index = w * rgb * row + rgb * col + cOffset; // CXY
-						else index = h * w * cOffset + w * row + col; // XYC
-						index *= bpp;
-						DataTools.unpackBytes(pixel, plane.getData(), index, bpp, little);
-					}
-				}
-			}
+			openPlaneHelper(imageIndex, planeIndex, meta, plane, planeMin, planeMax,
+				pos, planarIndices, 0, -1, -1);
 
 			return plane;
+		}
+
+		private void openPlaneHelper(int imageIndex, int planeIndex, Metadata meta, Plane plane,
+			long[] planeMin, long[] planeLengths, long[] npIndices, long[] planeIndices, int planarPos, long xPos,
+			long yPos)
+		{
+			if (planarPos < planeMin.length) {
+				// Recursively descend along each planar axis
+				for (int i = 0; i < planeLengths[planarPos]; i++) {
+					if (planarPos == meta.getAxisIndex(imageIndex, Axes.X)) xPos =
+						planeMin[planarPos] + i;
+					if (planarPos == meta.getAxisIndex(imageIndex, Axes.Y)) yPos =
+						planeMin[planarPos] + i;
+					planeIndices[planarPos] = planeMin[planarPos] + i;
+					openPlaneHelper(imageIndex, planeIndex, meta, plane, planeMin,
+						planeLengths, npIndices, planeIndices, planarPos + 1, xPos, yPos);
+				}
+			}
+			else {
+				final int pixelType = meta.getPixelType(imageIndex);
+				final int bpp = FormatTools.getBytesPerPixel(pixelType);
+				final boolean signed = FormatTools.isSigned(pixelType);
+				final boolean floating = FormatTools.isFloatingPoint(pixelType);
+				final boolean indexed = meta.isIndexed(imageIndex);
+				final boolean little = meta.isLittleEndian(imageIndex);
+				final int scaleFactor = meta.getScaleFactor();
+				final ColorTable lut = meta.getColorTable(imageIndex, planeIndex);
+				final int[][] valueToIndex = getMetadata().getValueToIndex();
+				// integer types start gradient at the smallest value
+				long min = signed ? (long) -Math.pow(2, 8 * bpp - 1) : 0;
+				if (floating) min = 0;
+				// floating point types always start at 0
+				// to differentiate each plane, we create a box of imageIndex,
+				// planeIndex and
+				// the non-planar indices
+				int boxSize = 10;
+					// Code for scaling pixel values (see default case in switch below)
+//				final double xMax = meta.getAxisLength(imageIndex, Axes.X);
+//				int boxSize = 2 + meta.getAxesNonPlanar(imageIndex).size();
+//				boxSize = (int) Math.min(boxSize, xMax / boxSize);
+
+				// Generate a pixel
+				long pixel = min + xPos;
+
+				// encode various information into the image plane
+				boolean specialPixel = false;
+				if (yPos < boxSize) {
+					int grid = (int) (xPos / boxSize);
+					specialPixel = true;
+					switch (grid) {
+						case 0:
+							pixel = imageIndex;
+							// Code for scaling the pixel values (see default case)
+//							pixel =
+//								(long) Math.floor(imageIndex * xMax / meta.getImageCount());
+							break;
+						case 1:
+							pixel = planeIndex;
+							// Code for scaling the pixel values (see default case)
+//							pixel =
+//								(long) Math.floor(planeIndex * xMax /
+//									meta.getPlaneCount(imageIndex));
+							break;
+						default:
+							grid -= 2;
+							if (grid < npIndices.length) {
+								pixel = min + npIndices[grid];
+								// The following code allows for scaling the box pixels to the
+								// max intensity of the image. This allows for much easier
+								// plane differentiation in manual testing, but breaks or
+								// complicates automated pixel verification, which is the
+								// primary purpose of these boxes. This code could be
+								// factored out into special "drawBox" methods, with behavior
+								// configurable by Fake parameters.
+//								final double npMax =
+//									meta.getAxesLengthsNonPlanar(imageIndex)[grid];
+//								if (npMax < xMax) {
+//									// create a gradient based on the current axis length
+//									pixel =
+//										(long) Math.floor(min + (npIndices[grid] * xMax / npMax));
+//								}
+//								else {
+//									// create a repeating gradient based on max pixel intensity
+//									pixel = (long) Math.floor(min + (npIndices[grid] % xMax));
+//								}
+							}
+							else {
+								specialPixel = false;
+							}
+							break;
+					}
+				}
+
+				// if indexed color with non-null LUT, convert value to index
+				if (indexed && lut != null) {
+					final int modValue = lut.getLength();
+					plane.setColorTable(lut);
+					int cIndex = meta.getAxisIndex(imageIndex, Axes.CHANNEL);
+
+					if (valueToIndex != null) pixel =
+						valueToIndex[cIndex][(int) (pixel % modValue)];
+				}
+
+				// scale pixel value by the scale factor
+				// if floating point, convert value to raw IEEE floating point bits
+				switch (pixelType) {
+					case FormatTools.FLOAT:
+						float floatPixel;
+						if (specialPixel) floatPixel = pixel;
+						else floatPixel = scaleFactor * pixel;
+						pixel = Float.floatToIntBits(floatPixel);
+						break;
+					case FormatTools.DOUBLE:
+						double doublePixel;
+						if (specialPixel) doublePixel = pixel;
+						else doublePixel = scaleFactor * pixel;
+						pixel = Double.doubleToLongBits(doublePixel);
+						break;
+					default:
+						if (!specialPixel) pixel = scaleFactor * pixel;
+				}
+
+				// unpack pixel into byte buffer
+				int index = 0;
+				// Index is sum of each position * all previous axes lengths
+				for (int i=planeIndices.length - 1; i>=0; i--) {
+					long partialIndex = planeIndices[i] - planeMin[i];
+					for (int j=0; j<i; j++) {
+						partialIndex *= planeLengths[j];
+					}
+					index += (int)partialIndex;
+				}
+				index *= bpp;
+				DataTools.unpackBytes(pixel, plane.getBytes(), index, bpp, little);
+			}
 		}
 	}
 
@@ -641,73 +594,46 @@ public class FakeFormat extends AbstractFormat {
 		public void typedTranslate(final io.scif.Metadata source,
 			final Metadata dest)
 		{
+			ImageMetadata iMeta = source.get(0);
+
 			String fakeId = MetadataService.NAME_KEY + "=" + source.getDatasetName();
 
-			fakeId =
-				FakeUtils.appendToken(fakeId, SIZE_X, source.getAxisLength(0, Axes.X));
-			fakeId =
-				FakeUtils.appendToken(fakeId, SIZE_Y, source.getAxisLength(0, Axes.Y));
-			fakeId =
-				FakeUtils.appendToken(fakeId, SIZE_Z, source.getAxisLength(0, Axes.Z));
-			fakeId =
-				FakeUtils.appendToken(fakeId, SIZE_C, source.getAxisLength(0,
-					Axes.CHANNEL));
-			fakeId =
-				FakeUtils.appendToken(fakeId, SIZE_T, source
-					.getAxisLength(0, Axes.TIME));
-			
-			fakeId = FakeUtils.appendToken(fakeId,
-				CAL_X, FormatTools.getScale(source, 0, Axes.X));
-			fakeId = FakeUtils.appendToken(fakeId,
-				CAL_Y, FormatTools.getScale(source, 0, Axes.Y));
-			fakeId = FakeUtils.appendToken(fakeId,
-				CAL_Z, FormatTools.getScale(source, 0, Axes.Z));
-			fakeId = FakeUtils.appendToken(fakeId,
-				CAL_C, FormatTools.getScale(source, 0, Axes.CHANNEL));
-			fakeId = FakeUtils.appendToken(fakeId,
-				CAL_T, FormatTools.getScale(source, 0, Axes.TIME));
+			String[] axes = new String[iMeta.getAxes().size()];
+			long[] lengths = new long[axes.length];
+			double[] scales = new double[axes.length];
+			String[] units = new String[axes.length];
 
-			fakeId = FakeUtils.appendToken(fakeId, THUMB_X, source.getThumbSizeX(0));
-			fakeId = FakeUtils.appendToken(fakeId, THUMB_Y, source.getThumbSizeY(0));
-
-			fakeId =
-				FakeUtils.appendToken(fakeId, PIXEL_TYPE, FormatTools
-					.getPixelTypeString(source.getPixelType(0)));
-			fakeId =
-				FakeUtils
-					.appendToken(fakeId, BITS_PER_PIXEL, source.getBitsPerPixel(0));
-			fakeId =
-				FakeUtils.appendToken(fakeId, DIM_ORDER, FormatTools
-					.findDimensionOrder(source, 0));
-			fakeId = FakeUtils.appendToken(fakeId, INDEXED, source.isIndexed(0));
-			fakeId =
-				FakeUtils.appendToken(fakeId, FALSE_COLOR, source.isFalseColor(0));
-			fakeId =
-				FakeUtils.appendToken(fakeId, LITTLE_ENDIAN, source.isLittleEndian(0));
-			fakeId =
-				FakeUtils.appendToken(fakeId, INTERLEAVED, source.isInterleaved(0));
-			fakeId =
-				FakeUtils.appendToken(fakeId, META_COMPLETE, source
-					.isMetadataComplete(0));
-			fakeId =
-				FakeUtils.appendToken(fakeId, THUMBNAIL, source.isThumbnailImage(0));
-			fakeId =
-				FakeUtils.appendToken(fakeId, ORDER_CERTAIN, source.isOrderCertain(0));
-			fakeId = FakeUtils.appendToken(fakeId, SERIES, source.getImageCount());
-			fakeId = FakeUtils.appendToken(fakeId, RGB, source.getRGBChannelCount(0));
-
-			if (source.getTable().get(SCALE_FACTOR) != null) {
-				final double scaleFactor = (Double) source.getTable().get(SCALE_FACTOR);
-				fakeId =
-					FakeUtils.appendToken(fakeId, SCALE_FACTOR, Double
-						.toString(scaleFactor));
+			int index = 0;
+			for (CalibratedAxis axis : iMeta.getAxes()) {
+				axes[index] = axis.type().getLabel();
+				lengths[index] = iMeta.getAxisLength(axis);
+				scales[index] = axis.calibration();
+				units[index] = axis.unit();
+				index++;
 			}
 
-			if (source.getTable().get(LUT_LENGTH) != null) {
-				final int lutLength = (Integer) source.getTable().get(LUT_LENGTH);
-				fakeId =
-					FakeUtils
-						.appendToken(fakeId, LUT_LENGTH, Integer.toString(lutLength));
+			FakeUtils.appendToken(fakeId, "axes", (Object[]) axes);
+			FakeUtils.appendToken(fakeId, "lengths", lengths);
+			FakeUtils.appendToken(fakeId, "scales", scales);
+			FakeUtils.appendToken(fakeId, "units", (Object[]) units);
+			FakeUtils.appendToken(fakeId, "planarDims", iMeta.getPlanarAxisCount());
+			FakeUtils.appendToken(fakeId, "thumbSizeX", iMeta.getThumbSizeX());
+			FakeUtils.appendToken(fakeId, "thumbSizeY", iMeta.getThumbSizeY());
+			FakeUtils.appendToken(fakeId, "pixelType", FormatTools
+				.getPixelTypeString(iMeta.getPixelType()));
+			FakeUtils.appendToken(fakeId, "falseColor", iMeta.isFalseColor());
+			FakeUtils.appendToken(fakeId, "little", iMeta.isLittleEndian());
+			FakeUtils.appendToken(fakeId, "metadataComplete", iMeta
+				.isMetadataComplete());
+			FakeUtils.appendToken(fakeId, "thumbnail", iMeta.isThumbnail());
+			FakeUtils.appendToken(fakeId, "orderCertain", iMeta.isOrderCertain());
+			FakeUtils.appendToken(fakeId, "images", source.getImageCount());
+
+			if (iMeta.isIndexed()) {
+				int lutLength =
+					((HasColorTable) source).getColorTable(0, 0).getComponentCount();
+				FakeUtils.appendToken(fakeId, "indexed", iMeta.isIndexed());
+				FakeUtils.appendToken(fakeId, "lutLength", lutLength);
 			}
 
 			fakeId += ".fake";
@@ -972,10 +898,10 @@ public class FakeFormat extends AbstractFormat {
 		 * @param fakePath - A properly formatted .fake id
 		 * @return A mapping of all discovered properties.
 		 */
-		public static Map<String, String> extractFakeInfo(
-			final Context context, String fakePath)
+		public static Map<String, Object> extractFakeInfo(
+			final MetadataService metadataService, String fakePath)
 		{
-			final Location loc = new Location(context, fakePath);
+			final Location loc = new Location(metadataService.getContext(), fakePath);
 
 			if (loc.exists()) {
 				fakePath = loc.getAbsoluteFile().getName();
@@ -985,9 +911,7 @@ public class FakeFormat extends AbstractFormat {
 			final String noExt = fakePath.substring(0, fakePath.lastIndexOf("."));
 
 			// parse tokens from filename
-			final MetadataService metadataService =
-				context.getService(MetadataService.class);
-			final Map<String, String> fakeMap = metadataService.parse(noExt);
+			final Map<String, Object> fakeMap = metadataService.parse(noExt);
 
 			// provide a default name if none was given
 			if (!fakeMap.containsKey(MetadataService.NAME_KEY)) {
@@ -997,104 +921,29 @@ public class FakeFormat extends AbstractFormat {
 			return fakeMap;
 		}
 
-		/**
-		 * Appends the provided key:boolean pair to the provided base and returns
-		 * the result.
-		 * 
-		 * @return A formatted FakeFormat key:value pair
-		 */
-		public static String appendToken(final String base, final String key,
-			final boolean value)
-		{
-			return FakeUtils.appendToken(base, key, Boolean.toString(value));
-		}
+		// Fake name generation methods
 
 		/**
-		 * Appends the provided key:double pair to the provided base and returns
-		 * the result.
-		 * 
-		 * @return A formatted FakeFormat key:value pair
-		 */
-		public static String appendToken(final String base, final String key,
-			final double value)
-		{
-			return FakeUtils.appendToken(base, key, Double.toString(value));
-		}
-
-		/**
-		 * Appends the provided key:int pair to the provided base and returns the
-		 * result.
-		 * 
-		 * @return A formatted FakeFormat key:value pair
-		 */
-		public static String appendToken(final String base, final String key,
-			final int value)
-		{
-			return FakeUtils.appendToken(base, key, Integer.toString(value));
-		}
-
-		/**
-		 * Appends the provided key:String pair to the provided base and returns the
+		 * Appends the provided key:value pair to the provided base and returns the
 		 * result.
 		 * 
 		 * @return A formatted FakeFormat key:value pair
 		 */
 		public static String appendToken(String base, final String key,
-			final String value)
+			final Object... value)
 		{
-			base += "&" + key + "=" + value;
+			String listValue = "" + value[0];
+
+			// expand the array if necessary
+			for (int i = 1; i < value.length; i++) {
+				listValue += "," + value[i];
+			}
+
+			base += "&" + key + "=" + listValue;
 			return base;
 		}
 
-		// -- Value extraction methods --
-
-		/**
-		 * Returns the integer value of the passed String, or the default int value
-		 * if testValue is null.
-		 * 
-		 * @param testValue - Potential int value
-		 * @param defaultValue - Value to use if testValue is null
-		 * @return The int value parsed from testValue, or defaultValue
-		 */
-		public static int
-			getIntValue(final String testValue, final int defaultValue)
-		{
-			if (testValue == null) return defaultValue;
-
-			return Integer.parseInt(testValue);
-		}
-
-		/**
-		 * Returns the double value of the passed String, or the default double
-		 * value if testValue is null.
-		 * 
-		 * @param testValue - Potential double value
-		 * @param defaultValue - Value to use if testValue is null
-		 * @return The double value parsed from testValue, or defaultValue
-		 */
-		public static double getDoubleValue(final String testValue,
-			final double defaultValue)
-		{
-			if (testValue == null) return defaultValue;
-
-			return Double.parseDouble(testValue);
-		}
-
-		/**
-		 * Returns the boolean value of the passed String, or the default boolean
-		 * value if testValue is null.
-		 * 
-		 * @param testValue - Potential boolean value
-		 * @param defaultValue - Value to use if testValue is null
-		 * @return The boolean value parsed from testValue, or defaultValue
-		 */
-		public static boolean getBoolValue(final String testValue,
-			final boolean oldValue)
-		{
-			if (testValue == null) return oldValue;
-
-			return Boolean.parseBoolean(testValue);
-		}
+		// -- Index : Value mapping methods
 
 		/**
 		 * Populates a mapping between indicies and color values, and the inverse

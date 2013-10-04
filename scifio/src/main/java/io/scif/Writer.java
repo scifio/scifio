@@ -79,15 +79,13 @@ public interface Writer extends HasFormat, HasSource {
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
 	 * @param plane the pixels save
-	 * @param x the X coordinate of the upper-left corner of the image tile.
-	 * @param y the Y coordinate of the upper-left corner of the image tile.
-	 * @param w the width (in pixels) of the image tile.
-	 * @param h the height (in pixels) of the image tile.
+	 * @param planeMin minimal bounds of the planar axes
+	 * @param planeMax maximum bounds of the planar axes
 	 * @throws FormatException if one of the parameters is invalid.
 	 * @throws IOException if there was a problem writing to the file.
 	 */
 	void savePlane(final int imageIndex, final int planeIndex, final Plane plane,
-		final int x, final int y, final int w, final int h) throws FormatException,
+		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException;
 
 	/**

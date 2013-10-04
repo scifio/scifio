@@ -136,15 +136,13 @@ public class LegacyQTFormat extends AbstractFormat {
 			final BufferedImage img = AWTImageTools.makeBuffered(image);
 			final ImageMetadata iMeta = get(0);
 
+			iMeta.setAxisTypes(Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME);
 			iMeta.setAxisLength(Axes.X, img.getWidth());
 			iMeta.setAxisLength(Axes.Y, img.getHeight());
 			iMeta.setAxisLength(Axes.CHANNEL, img.getRaster().getNumBands());
 			iMeta.setAxisLength(Axes.TIME, iMeta.getPlaneCount());
-			iMeta.setAxisLength(Axes.Z, 1);
 
 			iMeta.setPixelType(AWTImageTools.getPixelType(img));
-			iMeta.setRGB(true);
-			iMeta.setInterleaved(false);
 			iMeta.setLittleEndian(false);
 			iMeta.setIndexed(false);
 			iMeta.setFalseColor(false);
@@ -231,7 +229,7 @@ public class LegacyQTFormat extends AbstractFormat {
 				meta.createImageMetadata(1);
 				final ImageMetadata iMeta = meta.get(0);
 
-				iMeta.setPlaneCount(v.size());
+				iMeta.setAxisLength(Axes.TIME, v.size());
 
 				final int[] times = new int[iMeta.getPlaneCount()];
 				for (int i = 0; i < times.length; i++) {
@@ -262,8 +260,8 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
-			final int planeIndex, final BufferedImagePlane plane, final int x,
-			final int y, final int w, final int h) throws FormatException,
+			final int planeIndex, final BufferedImagePlane plane,
+			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
 			final ReflectedUniverse r = scifio().qtJava().getUniverse();
@@ -281,9 +279,9 @@ public class LegacyQTFormat extends AbstractFormat {
 			}
 			final BufferedImage bimg =
 				AWTImageTools.getSubimage(AWTImageTools.makeBuffered(meta.getImage()),
-					meta.isLittleEndian(imageIndex), x, y, w, h);
+					meta.isLittleEndian(imageIndex), planeMin, planeMax);
 
-			plane.populate(meta.get(imageIndex), bimg, x, y, w, h);
+			plane.populate(meta.get(imageIndex), bimg, planeMin, planeMax);
 			return plane;
 		}
 	}
@@ -374,7 +372,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
-			final Plane plane, final int x, final int y, final int w, final int h)
+			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
 			BufferedImage img = null;
@@ -383,11 +381,11 @@ public class LegacyQTFormat extends AbstractFormat {
 			if (!(plane instanceof BufferedImagePlane)) {
 				final int type = meta.getPixelType(imageIndex);
 				img =
-					AWTImageTools.makeImage(plane.getBytes(), meta.getAxisLength(
-						imageIndex, Axes.X), meta.getAxisLength(0, Axes.Y), meta
-						.getRGBChannelCount(imageIndex), meta.isInterleaved(imageIndex),
-						FormatTools.getBytesPerPixel(type), FormatTools
-							.isFloatingPoint(type), meta.isLittleEndian(imageIndex),
+					AWTImageTools.makeImage(plane.getBytes(), (int) meta.getAxisLength(
+						imageIndex, Axes.X), (int) meta.getAxisLength(imageIndex, Axes.Y),
+						(int) meta.getAxisLength(imageIndex, Axes.CHANNEL), meta
+							.isInterleaved(imageIndex), FormatTools.getBytesPerPixel(type),
+						FormatTools.isFloatingPoint(type), meta.isLittleEndian(imageIndex),
 						FormatTools.isSigned(type));
 			}
 			else {
@@ -582,12 +580,13 @@ public class LegacyQTFormat extends AbstractFormat {
 			final Metadata dest)
 		{
 			dest.createImageMetadata(1);
-			dest.get(0).setPlaneCount(source.getPlaneCount(0));
+			dest.get(0).setAxisLength(Axes.TIME, source.getPlaneCount(0));
 
-			final int w = source.getAxisLength(0, Axes.X);
-			final int h = source.getAxisLength(0, Axes.Y);
+			final int w = (int) source.getAxisLength(0, Axes.X);
+			final int h = (int) source.getAxisLength(0, Axes.Y);
 			final int bpp = source.getBitsPerPixel(0) / 8;
-			final byte[][] data = new byte[source.getRGBChannelCount(0)][w * h * bpp];
+			final byte[][] data =
+				new byte[(int) source.getAxisLength(0, Axes.CHANNEL)][w * h * bpp];
 			final boolean fp = FormatTools.isFloatingPoint(source.getPixelType(0));
 			final boolean little = source.isLittleEndian(0);
 			final boolean signed = FormatTools.isSigned(source.getPixelType(0));
