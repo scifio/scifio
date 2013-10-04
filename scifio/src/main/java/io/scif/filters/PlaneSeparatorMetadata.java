@@ -39,46 +39,62 @@ package io.scif.filters;
 import io.scif.DefaultImageMetadata;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
-import io.scif.util.FormatTools;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.CalibratedAxis;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import net.imglib2.meta.AxisType;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
  * {@link io.scif.filters.MetadataWrapper} implementation specifically for use
- * with the {@link io.scif.filters.ChannelSeparator}.
+ * with the {@link io.scif.filters.PlaneSeparator}.
  * 
  * @see io.scif.filters.MetadataWrapper
- * @see io.scif.filters.ChannelSeparator
+ * @see io.scif.filters.PlaneSeparator
  * @author Mark Hiner
  */
 @Plugin(type = MetadataWrapper.class, attrs = { @Attr(
-	name = ChannelSeparatorMetadata.METADATA_KEY,
-	value = ChannelSeparatorMetadata.METADATA_VALUE) })
-public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
+	name = PlaneSeparatorMetadata.METADATA_KEY,
+	value = PlaneSeparatorMetadata.METADATA_VALUE) })
+public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 
 	// -- Constants --
 
 	public static final String METADATA_VALUE =
-		"io.scif.filters.ChannelSeparator";
+		"io.scif.filters.PlaneSeparator";
 
 	// -- Fields --
 
-	private final CalibratedAxis[] xyczt = FormatTools.createAxes(Axes.X, Axes.Y,
-		Axes.CHANNEL, Axes.Z, Axes.TIME);
-	private final CalibratedAxis[] xyctz = FormatTools.createAxes(Axes.X, Axes.Y,
-		Axes.CHANNEL, Axes.TIME, Axes.Z);
+	/** List of Axes to separate. */
+	private Set<AxisType> splitTypes = new HashSet<AxisType>();
 
 	// -- Constructors --
 
-	public ChannelSeparatorMetadata() {
-		this(null);
+	// -- PlanarAxisSeparatorMetadata API Methods --
+
+	/** Returns the number of axes being separated. */
+	public int offset() {
+		return splitTypes.size();
 	}
 
-	public ChannelSeparatorMetadata(final Metadata metadata) {
-		super(metadata);
+	/**
+	 * Specify which AxisTypes should be separated.
+	 */
+	public void separate(AxisType... types) {
+		if (unwrap() != null) {
+			matchTypes(types);
+			populateImageMetadata();
+		}
+	}
+
+	/**
+	 * @return true iff the specified AxisType is currently being split on
+	 */
+	public boolean splitting(AxisType type) {
+		return splitTypes.contains(type);
 	}
 
 	// -- Metadata API Methods --
@@ -90,27 +106,38 @@ public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
 
 		for (int i = 0; i < m.getImageCount(); i++) {
 			final ImageMetadata iMeta = new DefaultImageMetadata(m.get(i));
-			if (iMeta.isRGB() && !iMeta.isIndexed()) iMeta.setPlaneCount(iMeta
-				.getPlaneCount() *
-				iMeta.getRGBChannelCount());
+
+			// offset to the next axis position
+			int offset = 0;
+			for (AxisType type : splitTypes) {
+				// For each potentially split axis, if it's a planar axis, move it to a
+				// non-planar position
+				if (iMeta.getAxisIndex(type) >= 0 &&
+					iMeta.getAxisIndex(type) < iMeta.getPlanarAxisCount())
+				{
+					iMeta.setAxis(iMeta.getPlanarAxisCount() + offset++ - 1, iMeta
+						.getAxis(type));
+					iMeta.setPlanarAxisCount(iMeta.getPlanarAxisCount() - 1);
+				}
+			}
 
 			add(iMeta, false);
 		}
 	}
 
-	@Override
-	public boolean isRGB(final int imageIndex) {
-		return isIndexed(imageIndex) && !isFalseColor(imageIndex) &&
-			getAxisLength(imageIndex, Axes.CHANNEL) > 1;
-	}
+	// -- Helper Methods --
 
-	@Override
-	public CalibratedAxis[] getAxes(final int imageIndex) {
-		if (unwrap().isRGB(imageIndex) && !unwrap().isIndexed(imageIndex)) {
-			final int timeIndex = unwrap().getAxisIndex(imageIndex, Axes.TIME);
-			final int zIndex = unwrap().getAxisIndex(imageIndex, Axes.Z);
-			return timeIndex > zIndex ? xyczt : xyctz;
+	/**
+	 * Returns a list of all AxisTypes that are present in the wrapped Metadata.
+	 */
+	private void matchTypes(AxisType... types) {
+		splitTypes.clear();
+		for (AxisType t : types) {
+			int axisIndex = unwrap().getAxisIndex(0, t);
+			// If the specified axis is present and a planar axis, we can separate it
+			if (axisIndex >= 0 && axisIndex < unwrap().getPlanarAxisCount(0)) {
+				splitTypes.add(t);
+			}
 		}
-		return unwrap().getAxes(imageIndex);
 	}
 }

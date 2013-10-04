@@ -58,18 +58,9 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 	}
 
 	public ByteArrayPlane(final Context context, final ImageMetadata meta,
-		final int xOffset, final int yOffset, final int xLength, final int yLength)
+		final long[] planeOffsets, final long[] planeLengths)
 	{
-		super(context, meta, xOffset, yOffset, xLength, yLength);
-
-		byte[] buf = null;
-
-		buf =
-			DataTools.allocate(xLength, yLength, FormatTools
-				.getBytesPerPixel(getImageMetadata().getPixelType()), meta
-				.getRGBChannelCount());
-
-		setData(buf);
+		super(context, meta, planeOffsets, planeLengths);
 	}
 
 	// -- Plane API methods --
@@ -77,5 +68,22 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 	@Override
 	public byte[] getBytes() {
 		return getData();
+	}
+
+	// -- AbstractPlane API --
+
+	@Override
+	protected byte[] blankPlane(long[] planeOffsets, long[] planeBounds) {
+		byte[] buf = null;
+
+		final long[] lengths = new long[planeOffsets.length + 1];
+		for (int i = 0; i < lengths.length - 1; i++) {
+			lengths[i] = planeBounds[i];
+		}
+		lengths[lengths.length - 1] =
+			FormatTools.getBytesPerPixel(getImageMetadata().getPixelType());
+
+		buf = DataTools.allocate(lengths);
+		return buf;
 	}
 }

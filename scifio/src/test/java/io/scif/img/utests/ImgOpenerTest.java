@@ -67,7 +67,7 @@ public class ImgOpenerTest {
 	// to ensure all necessary services are present
 	private final ImgOpener imgOpener = new ImgOpener();
 	private final String id =
-		"testImg&sizeX=512&sizeY=512&sizeT=5&dimOrder=XYTZC.fake";
+		"testImg&lengths=512,512,5&axes=X,Y,Time.fake";
 
 	/**
 	 * Verify that SCIFIO Metadata calibration values are preserved in an opened
@@ -76,8 +76,7 @@ public class ImgOpenerTest {
 	@Test
 	public void testImgCalibration() throws ImgIOException {
 		String calId =
-			"testImg&sizeX=512&sizeY=512&sizeZ=3&sizeT=5" +
-			"&dimOrder=XYTZC&calX=5.0&calY=6.0&calZ=8.0&calT=7.0.fake";
+			"testImg&lengths=512,512,3,5&axes=X,Y,Z,Time&scales=5.0,6.0,7.0,8.0.fake";
 		
 		@SuppressWarnings("rawtypes")
 		ImgPlus imgPlus = imgOpener.openImg(calId);

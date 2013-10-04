@@ -245,8 +245,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	 *         [1];
 	 */
 	public static int[] getOptimalCellXY(final Reader reader) {
-		return getOptimalCellXY(reader, reader.getOptimalTileWidth(0), reader
-			.getOptimalTileHeight(0));
+		return getOptimalCellXY(reader, (int) reader.getOptimalTileWidth(0),
+			(int) reader.getOptimalTileHeight(0));
 	}
 
 	/**
@@ -272,8 +272,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 		final Metadata meta = reader.getMetadata();
 
-		final int sizeX = meta.getAxisLength(0, Axes.X);
-		final int sizeY = meta.getAxisLength(0, Axes.Y);
+		final int sizeX = (int)meta.getAxisLength(0, Axes.X);
+		final int sizeY = (int)meta.getAxisLength(0, Axes.Y);
 
 		// Invalid sizes default to 1, 1, which are automatically expanded.
 		if (tileWidth <= 0) tileWidth = 1;

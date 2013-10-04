@@ -234,11 +234,11 @@ public class ZipFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final Plane p =
-				reader.openPlane(imageIndex, planeIndex, plane, x, y, w, h);
+				reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax);
 			System.arraycopy(p.getBytes(), 0, plane.getData(), 0,
 				plane.getData().length);
 			return plane;

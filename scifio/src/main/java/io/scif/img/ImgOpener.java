@@ -41,8 +41,8 @@ import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.filters.ChannelFiller;
-import io.scif.filters.ChannelSeparator;
 import io.scif.filters.MinMaxFilter;
+import io.scif.filters.PlaneSeparator;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.ImgOptions.CheckMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
@@ -52,8 +52,8 @@ import io.scif.util.FormatTools;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
@@ -270,7 +270,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * using the given {@link ImgFactory} to construct the {@link Img}. The
 	 * {@link Type} T to read is defined by the third parameter.
 	 * <p>
-	 * NB: Any Reader provided must be wrapped by a {@link ChannelSeparator}
+	 * NB: Any Reader provided must be wrapped by a {@link PlaneSeparator}
 	 * filter.
 	 * </p>
 	 * 
@@ -366,7 +366,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 		ReaderFilter r = null;
 		try {
 			r = scifio().initializer().initializeReader(source, openFile);
-			r.enable(ChannelSeparator.class);
+			r.enable(ChannelFiller.class);
+			r.enable(PlaneSeparator.class).separate(axesToSplit(r));
 			if (computeMinMax) r.enable(MinMaxFilter.class);
 		}
 		catch (final FormatException e) {
@@ -381,88 +382,41 @@ public class ImgOpener extends AbstractImgIOComponent {
 		return r;
 	}
 
-	/** Compiles an N-dimensional list of axis types from the given reader. */
-	private AxisType[] getDimTypes(final Metadata m) {
-		final int sizeX = m.getAxisLength(0, Axes.X);
-		final int sizeY = m.getAxisLength(0, Axes.Y);
-		final int sizeZ = m.getAxisLength(0, Axes.Z);
-		final int sizeT = m.getAxisLength(0, Axes.TIME);
-		final int sizeC = m.getEffectiveSizeC(0);
-		final String dimOrder = FormatTools.findDimensionOrder(m, 0);
-		final List<AxisType> dimTypes = new ArrayList<AxisType>();
-
-		// add core dimensions
-		for (final char dim : dimOrder.toCharArray()) {
-			switch (dim) {
-				case 'X':
-					if (sizeX > 0) dimTypes.add(Axes.X);
-					break;
-				case 'Y':
-					if (sizeY > 0) dimTypes.add(Axes.Y);
-					break;
-				case 'Z':
-					if (sizeZ > 1) dimTypes.add(Axes.Z);
-					break;
-				case 'T':
-					if (sizeT > 1) dimTypes.add(Axes.TIME);
-					break;
-				case 'C':
-					if (sizeC > 1) dimTypes.add(Axes.CHANNEL);
-					break;
+	/**
+	 * Returns a list of all AxisTypes that should be split out. This is a list
+	 * of all non-X,Y planar axes. Always tries to split {@link Axes.CHANNEL}.
+	 */
+	private AxisType[] axesToSplit(ReaderFilter r) {
+		Set<AxisType> axes = new HashSet<AxisType>();
+		Metadata meta = r.getMetadata();
+		// Split any non-X,Y axis
+		for (CalibratedAxis t : meta.getAxesPlanar(0)) {
+			AxisType type = t.type();
+			if (!(type == Axes.X || type == Axes.Y)) {
+				axes.add(type);
 			}
 		}
+		// Ensure channel is attempted to be split
+		axes.add(Axes.CHANNEL);
+		return axes.toArray(new AxisType[axes.size()]);
+	}
 
-		return dimTypes.toArray(new AxisType[0]);
+	private AxisType[] getAxisTypes(int imageIndex, Metadata m) {
+		AxisType[] types = new AxisType[m.getAxisCount(imageIndex)];
+		for (int i=0; i<types.length; i++) {
+			types[i] = m.getAxis(imageIndex, i).type();
+		}
+		return types;
 	}
 
 	/** Compiles an N-dimensional list of calibration values. */
-	private double[] getCalibration(final Metadata m) {
-		final int sizeX = m.getAxisLength(0, Axes.X);
-		final int sizeY = m.getAxisLength(0, Axes.Y);
-		final int sizeZ = m.getAxisLength(0, Axes.Z);
-		final int sizeT = m.getAxisLength(0, Axes.TIME);
-		final int sizeC = m.getAxisLength(0, Axes.CHANNEL);
-		final String dimOrder = FormatTools.findDimensionOrder(m, 0);
+	private double[] getCalibration(int imageIndex, final Metadata m) {
 
-		final List<Double> calibrationList = new ArrayList<Double>();
-
-		// add core dimensions
-		for (int i = 0; i < dimOrder.length(); i++) {
-			final char dim = dimOrder.charAt(i);
-			switch (dim) {
-				case 'X':
-					if (sizeX > 0) {
-						calibrationList.add(FormatTools.getScale(m, 0, Axes.X));
-					}
-					break;
-				case 'Y':
-					if (sizeY > 0) {
-						calibrationList.add(FormatTools.getScale(m, 0, Axes.Y));
-					}
-					break;
-				case 'Z':
-					if (sizeZ > 0) {
-						calibrationList.add(FormatTools.getScale(m, 0, Axes.Z));
-					}
-					break;
-				case 'T':
-					if (sizeT > 0) {
-						calibrationList.add(FormatTools.getScale(m, 0, Axes.TIME));
-					}
-					break;
-				case 'C':
-					if (sizeC > 0) {
-						calibrationList.add(FormatTools.getScale(m, 0, Axes.CHANNEL));
-					}
-					break;
-			}
-		}
-
-		// convert result to primitive array
-		final double[] calibration = new double[calibrationList.size()];
+		final double[] calibration = new double[m.getAxisCount(imageIndex)];
 		for (int i = 0; i < calibration.length; i++) {
-			calibration[i] = calibrationList.get(i);
+			calibration[i] = m.getAxis(imageIndex, i).calibration();
 		}
+
 		return calibration;
 	}
 
@@ -477,8 +431,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final File idFile = new File(id);
 		final String name = idFile.exists() ? idFile.getName() : id;
 
-		final AxisType[] dimTypes = getDimTypes(r.getMetadata());
-		final double[] cal = getCalibration(r.getMetadata());
+		final double[] cal = getCalibration(options.getIndex(), r.getMetadata());
+		final AxisType[] dimTypes = getAxisTypes(options.getIndex(), r.getMetadata());
 
 		final Reader base;
 		try {
@@ -492,7 +446,10 @@ public class ImgOpener extends AbstractImgIOComponent {
 		}
 
 		final Metadata meta = r.getMetadata();
-		final int rgbChannelCount = base.getMetadata().getRGBChannelCount(0);
+		int rgbChannelCount =
+			base.getMetadata().isMultichannel(0) ? (int) base.getMetadata()
+				.getAxisLength(0, Axes.CHANNEL) : 1;
+		if (base.getMetadata().isIndexed(0)) rgbChannelCount = 3;
 		final int validBits = meta.getBitsPerPixel(0);
 
 		final ImgPlus<T> imgPlus = new SCIFIOImgPlus<T>(img, name, dimTypes, cal);
@@ -503,7 +460,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			// HACK: Support ImageJ color mode embedded in TIFF files.
 			final String colorMode = (String) meta.getTable().get("Color mode");
 			if ("composite".equals(colorMode)) {
-				compositeChannelCount = meta.getAxisLength(0, Axes.CHANNEL);
+				compositeChannelCount = (int)meta.getAxisLength(0, Axes.CHANNEL);
 			}
 		}
 		imgPlus.setCompositeChannelCount(compositeChannelCount);
@@ -559,114 +516,44 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final boolean isArray =
 			utils().getArrayAccess(imgPlus) != null && compatibleTypes;
 
-		Plane plane = null;
-
 		final SubRegion region = imgOptions.getRegion();
-		final boolean checkSubregion = region != null;
+		
+		Metadata m = r.getMetadata();
 
-		int x, y, w, h, zPos, cPos, tPos;
+		// Starting indices for the planar dimensions
+		long[] planarMin = new long[m.getAxesPlanar(imageIndex).size()];
+		// Lengths in the planar dimensions
+		long[] planarLength = new long[m.getAxesPlanar(imageIndex).size()];
+		// Non-planar indices to open
+		DimRange[] npRanges = new DimRange[m.getAxesNonPlanar(imageIndex).size()];
+		long[] npIndices = new long[npRanges.length];
 
-		// Z,C,T offsets and maximum values
-		final DimRange[] index =
-			new DimRange[] { new DimRange(0l), new DimRange(0l), new DimRange(0l) };
-
-		final Metadata meta = r.getMetadata();
-
-		// Set the base
-		x = y = w = h = 0;
-		w = meta.getAxisLength(imageIndex, Axes.X);
-		h = meta.getAxisLength(imageIndex, Axes.Y);
-
-		// Default these to the last index position. If any index wasn't seen
-		// this will result in index[xPos] = 0 for looking up the plane index,
-		// equivalent to a length of 1 for that axis.
-		zPos = cPos = tPos = 2;
-
-		// subregion dimension index
-		int dimsPlaced = 0;
-
-		// CZT index
-		int cztPlaced = 0;
-
-		// current axis
-		int axisIndex = 0;
-		final CalibratedAxis[] axes = meta.getAxes(imageIndex);
-
-		// Total # planes in this subregion
-		int planeCount = 1;
-
-		// Populate subregion, plane count, and CZT information
-		while (axisIndex < axes.length) {
-			final AxisType axisType = axes[axisIndex++].type();
-
-			if (axisType.equals(Axes.X)) {
-				if (applySubregion(checkSubregion, Axes.X, dimsPlaced, region))
-				{
-					x = region.getRange(Axes.X).head().intValue();
-					final int maxX = region.getRange(Axes.X).tail().intValue();
-					w = maxX - x;
-					dimsPlaced++;
-				}
+		// populate plane dimensions
+		int index = 0;
+		for (CalibratedAxis planarAxis : m.getAxesPlanar(imageIndex)) {
+			if (region != null && region.hasRange(planarAxis.type())) {
+				planarMin[index] = region.getRange(planarAxis.type()).head();
+				planarLength[index] =
+					region.getRange(planarAxis.type()).tail() - planarMin[index] + 1;
 			}
-			else if (axisType.equals(Axes.Y)) {
-				if (applySubregion(checkSubregion, Axes.Y, dimsPlaced, region))
-				{
-					y = region.getRange(Axes.Y).head().intValue();
-					final int maxY = region.getRange(Axes.Y).tail().intValue();
-					h = maxY - y;
-					dimsPlaced++;
-				}
+			else {
+				planarMin[index] = 0;
+				planarLength[index] = m.getAxisLength(imageIndex, planarAxis);
 			}
-			else if (axisType.equals(Axes.CHANNEL)) {
-				final int c = meta.getAxisLength(imageIndex, Axes.CHANNEL);
-
-				DimRange cVals = null;
-
-				if (applySubregion(checkSubregion, Axes.CHANNEL, dimsPlaced, region)) {
-					cVals = region.getRange(Axes.CHANNEL);
-					dimsPlaced++;
-				}
-
-				if (cVals == null) cVals = new DimRange(0l, (long) (c - 1));
-
-				index[cztPlaced] = cVals;
-				cPos = cztPlaced++;
-				planeCount *= cVals.indices().size();
-			}
-			else if (axisType.equals(Axes.Z)) {
-				final int z = meta.getAxisLength(imageIndex, Axes.Z);
-				DimRange zVals = null;
-
-				if (applySubregion(checkSubregion, Axes.Z, dimsPlaced, region)) {
-					zVals = region.getRange(Axes.Z);
-					dimsPlaced++;
-				}
-
-				if (zVals == null) zVals = new DimRange(0l, (long) (z - 1));
-
-				index[cztPlaced] = zVals;
-				zPos = cztPlaced++;
-				planeCount *= zVals.indices().size();
-			}
-			else if (axisType.equals(Axes.TIME)) {
-				final int t = meta.getAxisLength(imageIndex, Axes.TIME);
-
-				DimRange tVals = null;
-
-				if (applySubregion(checkSubregion, Axes.TIME, dimsPlaced, region)) {
-					tVals = region.getRange(Axes.TIME);
-					dimsPlaced++;
-				}
-
-				if (tVals == null) tVals = new DimRange(0l, (long) (t - 1));
-
-				index[cztPlaced] = tVals;
-				tPos = cztPlaced++;
-				planeCount *= tVals.indices().size();
-			}
+			index++;
 		}
 
-		int currentPlane = 0;
+		// determine non-planar indices to open
+		index = 0;
+		for (CalibratedAxis npAxis : m.getAxesNonPlanar(imageIndex)) {
+			if (region != null && region.hasRange(npAxis.type())) {
+				npRanges[index++] = region.getRange(npAxis.type());
+			}
+			else {
+				npRanges[index++] =
+					new DimRange(0l, m.getAxisLength(imageIndex, npAxis.type()) - 1);
+			}
+		}
 
 		PlaneConverter converter = imgOptions.getPlaneConverter();
 
@@ -683,59 +570,75 @@ public class ImgOpener extends AbstractImgIOComponent {
 			else converter = pcService.getDefaultConverter();
 		}
 
-		for (final Long i : index[2].indices()) {
-			for (final Long j : index[1].indices()) {
-				for (final Long k : index[0].indices()) {
-
-					final Long[] indices = new Long[] { k, j, i };
-					final Long z = indices[zPos];
-					final Long c = indices[cPos];
-					final Long t = indices[tPos];
-
-					// get the plane index in the underlying dataset
-					final int planeIndex =
-						FormatTools.getIndex(r, imageIndex, z.intValue(), c.intValue(), t
-							.intValue());
-					statusService.showStatus(currentPlane + 1, planeCount,
-						"Reading plane");
-
-					// open the subregion of the current plane
-					if (plane == null) plane =
-						r.openPlane(imageIndex, planeIndex, x, y, w, h);
-					else {
-						r.openPlane(0, planeIndex, plane, x, y, w, h);
-					}
-
-					// copy the data to the ImgPlus
-					converter.populatePlane(r, imageIndex, currentPlane,
-						plane.getBytes(), imgPlus, imgOptions);
-
-					// store color table
-					imgPlus.setColorTable(plane.getColorTable(), currentPlane);
-					currentPlane++;
-				}
-			}
-		}
+		read(imageIndex, imgPlus, r, imgOptions, converter, planarMin, planarLength,
+			npRanges, npIndices);
 
 		if (imgOptions.isComputeMinMax()) populateMinMax(r, imgPlus, imageIndex);
 	}
-	
-	/**
-	 * Returns true if the specified Axis is listed in the provided Subregion,
-	 * and checkSubregion is enabled, and dimsPlaced < subRegion.size(). Indicates
-	 * that it is safe to apply the SubRegion constraints to the specified axis.
-	 */
-	private boolean applySubregion(boolean checkSubregion, AxisType axis,
-		int dimsPlaced, SubRegion region)
+
+	@SuppressWarnings("rawtypes")
+	private void
+		read(final int imageIndex, final ImgPlus imgPlus, final Reader r,
+			final ImgOptions imgOptions, final PlaneConverter converter,
+			final long[] planarMin, final long[] planarLength,
+			final DimRange[] npRanges, final long[] npIndices)
+			throws FormatException, IOException
 	{
-		return checkSubregion && dimsPlaced < region.size() &&
-			region.hasRange(axis);
+		read(imageIndex, imgPlus, r, imgOptions, converter, null, planarMin,
+			planarLength, npRanges, npIndices, 0, new int[]{0});
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Plane read(final int imageIndex, final ImgPlus imgPlus,
+		final Reader r, final ImgOptions imgOptions,
+		final PlaneConverter converter, Plane tmpPlane, final long[] planarMin,
+		final long[] planarLength, final DimRange[] npRanges,
+		final long[] npIndices, final int depth, int[] planeCount)
+		throws FormatException, IOException
+	{
+		if (depth < npRanges.length) {
+			// We need to invert the depth index to get the current non-planar
+			// axis index, to ensure axes are iteratead in fastest to slowest order
+			final int npPosition = npRanges.length - 1 - depth;
+			// Recursive step. Sets the non-planar indices
+			for (int i = 0; i < npRanges[npPosition].indices().size(); i++) {
+				npIndices[npPosition] = npRanges[npPosition].indices().get(i);
+				tmpPlane = read(imageIndex, imgPlus, r, imgOptions, converter, tmpPlane,
+					planarMin, planarLength, npRanges, npIndices, depth + 1, planeCount);
+			}
+		}
+		else {
+			// Terminal step. Reads the plane at the rasterized index, given the
+			// non-planar indices
+			final int planeIndex =
+				(int) FormatTools.positionToRaster(0, r, npIndices);
+
+			if (imgOptions.isComputeMinMax()) populateMinMax(r, imgPlus, imageIndex);
+			if (tmpPlane == null) tmpPlane =
+				r.openPlane(imgOptions.getIndex(), planeIndex, planarMin, planarLength);
+			else tmpPlane =
+				r.openPlane(imgOptions.getIndex(), planeIndex, tmpPlane, planarMin,
+					planarLength);
+
+			// copy the data to the ImgPlus
+			converter.populatePlane(r, imageIndex, planeCount[0], tmpPlane.getBytes(),
+				imgPlus, imgOptions);
+
+			// store color table
+			imgPlus.setColorTable(tmpPlane.getColorTable(), planeCount[0]);
+
+			// Update plane count
+			planeCount[0]++;
+		}
+
+		return tmpPlane;
 	}
 
 	private void populateMinMax(final Reader r, final ImgPlus<?> imgPlus,
 		final int imageIndex) throws FormatException, IOException
 	{
-		final int sizeC = r.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+		final int sizeC =
+			(int) r.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
 		final ReaderFilter rf = (ReaderFilter) r;
 		MinMaxFilter minMax = null;
 		try {

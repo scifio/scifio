@@ -133,13 +133,8 @@ public class PCXFormat extends AbstractFormat {
 
 			final ImageMetadata iMeta = get(0);
 			iMeta.setAxisLength(Axes.CHANNEL, nColorPlanes);
-			iMeta.setAxisLength(Axes.Z, 1);
-			iMeta.setAxisLength(Axes.TIME, 1);
-			iMeta.setRGB(nColorPlanes > 1);
-			iMeta.setPlaneCount(1);
+			iMeta.setPlanarAxisCount(iMeta.getAxisLength(Axes.CHANNEL) > 1 ? 3 : 2);
 			iMeta.setPixelType(FormatTools.UINT8);
-			iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
-			iMeta.setInterleaved(false);
 		}
 
 		@Override
@@ -254,14 +249,14 @@ public class PCXFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getData();
 
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-				buf.length, x, y, w, h);
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+				buf.length, planeMin, planeMax);
 
 			getStream().seek(meta.getOffset());
 
@@ -269,7 +264,7 @@ public class PCXFormat extends AbstractFormat {
 
 			final byte[] b =
 				new byte[meta.getBytesPerLine() *
-					meta.getAxisLength(imageIndex, Axes.Y) * meta.getnColorPlanes()];
+					(int)meta.getAxisLength(imageIndex, Axes.Y) * meta.getnColorPlanes()];
 			int pt = 0;
 			while (pt < b.length) {
 				int val = getStream().read() & 0xff;
@@ -286,6 +281,12 @@ public class PCXFormat extends AbstractFormat {
 				else b[pt++] = (byte) (val & 0xff);
 			}
 
+			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
+			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xAxis],
+								y = (int) planeMin[yAxis],
+								w = (int) planeMax[xAxis],
+								h = (int) planeMax[yAxis];
 			final int src = y * meta.getnColorPlanes() * meta.getBytesPerLine();
 			for (int row = 0; row < h; row++) {
 				int rowOffset = row * meta.getnColorPlanes() * meta.getBytesPerLine();

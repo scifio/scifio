@@ -75,14 +75,11 @@ public interface DataPlane<T> extends Plane {
 	 * provided data representation of the pixels in that region.
 	 * 
 	 * @param data Pixel information for the region of this plane.
-	 * @param xOffset Starting x coordinate of this plane
-	 * @param yOffset Starting y coordinate of this plane
-	 * @param xLength Width of this plane
-	 * @param yLength Height of this plane
+	 * @param planeOffsets minimal offsets of the planar axes
+	 * @param planeBounds maximum values of the planar axes
 	 * @return A reference to this plane
 	 */
-	DataPlane<T> populate(T data, int xOffset, int yOffset, int xLength,
-		int yLength);
+	DataPlane<T> populate(T data, long[] planeOffsets, long[] planeBounds);
 
 	/**
 	 * As {@link #populate(T, int, int, int, int)}, but also sets the
@@ -90,12 +87,10 @@ public interface DataPlane<T> extends Plane {
 	 * 
 	 * @param meta ImageMetadata of the source associated with this Plane
 	 * @param data Pixel information for the region of this plane.
-	 * @param xOffset Starting x coordinate of this plane
-	 * @param yOffset Starting y coordinate of this plane
-	 * @param xLength Width of this plane
-	 * @param yLength Height of this plane
+	 * @param planeOffsets minimal offsets of the planar axes
+	 * @param planeBounds maximum values of the planar axes
 	 * @return A reference to this plane
 	 */
-	DataPlane<T> populate(ImageMetadata meta, T data, int xOffset, int yOffset,
-		int xLength, int yLength);
+	DataPlane<T> populate(ImageMetadata meta, T data, long[] planeOffsets,
+		long[] planeBoundsh);
 }

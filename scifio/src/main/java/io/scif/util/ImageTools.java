@@ -191,12 +191,16 @@ public final class ImageTools {
 	 * parameter is false if channels are in RGB order, true if channels are in
 	 * BGR order.
 	 */
-	public static byte[] splitChannels(final byte[] array, final int index,
-		final int c, final int bytes, final boolean reverse,
+	public static byte[] splitChannels(final byte[] array, final long[] pos,
+		final long[] maxLengths, final int bytes, final boolean reverse,
 		final boolean interleaved)
 	{
-		return splitChannels(array, null, index, c, bytes, reverse, interleaved,
-			array.length / c);
+		long splitCount = 1;
+		for (long l : maxLengths) {
+			splitCount *= l;
+		}
+		return splitChannels(array, null, pos, maxLengths, bytes, reverse, interleaved,
+			array.length / splitCount);
 	}
 
 	/**
@@ -207,26 +211,43 @@ public final class ImageTools {
 	 * bytes that are expected to be in a single channel. In many cases, this will
 	 * match the value of 'rtn.length', but specifying it separately allows 'rtn'
 	 * to be larger than the size of a single channel.
+	 * 
+	 * @param pos - positional axes index of the plane to extract
+	 * @param maxLengths - lengths of each split positional axis
+	 * @param planeLength - number of bytes in a split out plane
 	 */
-	public static byte[] splitChannels(final byte[] array, byte[] rtn, int index,
-		final int c, final int bytes, final boolean reverse,
-		final boolean interleaved, final int channelLength)
+	public static byte[] splitChannels(final byte[] array, byte[] rtn, long[] pos,
+		final long[] maxLengths, final int bytes, final boolean reverse,
+		final boolean interleaved, final long planeLength)
 	{
-		if (c == 1) return array;
-		if (rtn == null) {
-			rtn = new byte[array.length / c];
+		if (planeLength == array.length) {
+			if (rtn != null) {
+				System.arraycopy(array, 0, rtn, 0, rtn.length);
+			}
+			return array;
 		}
 
-		if (reverse) index = c - index - 1;
+		if (rtn == null) {
+			rtn = new byte[(int) (planeLength)];
+		}
+
+		if (reverse) {
+			for (int i=0; i<pos.length; i++) {
+				pos[i] = maxLengths[i] - pos[i] - 1;
+			}
+		}
+
+		long index = FormatTools.positionToRaster(maxLengths, pos);
 
 		if (!interleaved) {
-			System.arraycopy(array, channelLength * index, rtn, 0, channelLength);
+			System.arraycopy(array, (int)(planeLength * index), rtn, 0, (int)planeLength);
 		}
 		else {
 			int next = 0;
-			for (int i = 0; i < array.length; i += c * bytes) {
+			//TODO may need to do more to sort out the actual axis order
+			for (int i = 0; i < array.length; i +=  bytes * DataTools.safeMultiply32(maxLengths)) {
 				for (int k = 0; k < bytes; k++) {
-					if (next < rtn.length) rtn[next] = array[i + index * bytes + k];
+					if (next < rtn.length) rtn[next] = array[(int) (i + index * bytes + k)];
 					next++;
 				}
 			}

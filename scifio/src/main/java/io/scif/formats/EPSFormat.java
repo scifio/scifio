@@ -54,6 +54,7 @@ import io.scif.formats.tiff.IFDList;
 import io.scif.formats.tiff.TiffParser;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
+import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.IOException;
 
@@ -155,16 +156,18 @@ public class EPSFormat extends AbstractFormat {
 		public void populateImageMetadata() {
 			if (getAxisLength(0, Axes.CHANNEL) == 0) setAxisLength(0, Axes.CHANNEL, 1);
 
-			setAxisLength(0, Axes.Z, 1);
-			setAxisLength(0, Axes.TIME, 1);
-
 			if (getPixelType(0) == 0) setPixelType(0, FormatTools.UINT8);
 
-			setBitsPerPixel(0, FormatTools.getBitsPerPixel(getPixelType(0)));
+			if (getAxisLength(0, Axes.CHANNEL) != 3) {
+				setPlanarAxisCount(0, 2);
+				setAxisTypes(0, Axes.X, Axes.Y, Axes.CHANNEL);
+			}
+			else {
+				setPlanarAxisCount(0, 3);
+				setAxisTypes(0, Axes.CHANNEL, Axes.X, Axes.Y);
+			}
 
-			setRGB(0, getAxisLength(0, Axes.CHANNEL) == 3);
-			setInterleaved(0, true);
-			get(0).setPlaneCount(1);
+
 		}
 
 		// -- HasSource API Methods --
@@ -218,20 +221,15 @@ public class EPSFormat extends AbstractFormat {
 
 				final IFD firstIFD = meta.getIfds().get(0);
 
+				m.setAxisLength(Axes.CHANNEL, firstIFD.getSamplesPerPixel());
 				m.setAxisLength(Axes.X, (int) firstIFD.getImageWidth());
 				m.setAxisLength(Axes.Y, (int) firstIFD.getImageLength());
-				m.setAxisLength(Axes.CHANNEL, firstIFD.getSamplesPerPixel());
-				m.setAxisLength(Axes.Z, 1);
-				m.setAxisLength(Axes.TIME, 1);
 
 				if (m.getAxisLength(Axes.CHANNEL) == 2) m
 					.setAxisLength(Axes.CHANNEL, 4);
 
 				m.setLittleEndian(firstIFD.isLittleEndian());
-				m.setInterleaved(true);
-				m.setRGB(m.getAxisLength(Axes.CHANNEL) > 1);
 				m.setPixelType(firstIFD.getPixelType());
-				m.setPlaneCount(1);
 				m.setMetadataComplete(true);
 				m.setIndexed(false);
 				m.setFalseColor(false);
@@ -337,14 +335,20 @@ public class EPSFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
+			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
+			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xAxis],
+								y = (int) planeMin[yAxis],
+								w = (int) planeMax[xAxis],
+								h = (int) planeMax[yAxis];
 
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-				buf.length, x, y, w, h);
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+				buf.length, planeMin, planeMax);
 
 			if (meta.isTiff()) {
 				final long[] offsets = meta.getIfds().get(0).getStripOffsets();
@@ -352,33 +356,35 @@ public class EPSFormat extends AbstractFormat {
 
 				final int[] map = meta.getIfds().get(0).getIFDIntArray(IFD.COLOR_MAP);
 				if (map == null) {
-					readPlane(getStream(), imageIndex, x, y, w, h, plane);
+					readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
 					return plane;
 				}
 
 				final byte[] b = new byte[w * h];
-				getStream().skipBytes(2 * y * meta.getAxisLength(imageIndex, Axes.X));
+				getStream().skipBytes(
+					2 * y * (int) meta.getAxisLength(imageIndex, Axes.X));
 				for (int row = 0; row < h; row++) {
 					getStream().skipBytes(x * 2);
 					for (int col = 0; col < w; col++) {
 						b[row * w + col] = (byte) (getStream().readShort() & 0xff);
 					}
 					getStream().skipBytes(
-						2 * (meta.getAxisLength(imageIndex, Axes.X) - w - x));
+						2 * (int) (meta.getAxisLength(imageIndex, Axes.X) - w - x));
 				}
 
 				for (int i = 0; i < b.length; i++) {
 					final int ndx = b[i] & 0xff;
-					for (int j = 0; j < meta.getAxisLength(imageIndex, Axes.CHANNEL); j++)
+					for (int j = 0; j < (int) meta
+						.getAxisLength(imageIndex, Axes.CHANNEL); j++)
 					{
 						if (j < 3) {
-							buf[i * meta.getAxisLength(imageIndex, Axes.CHANNEL) + j] =
+							buf[i * (int) meta.getAxisLength(imageIndex, Axes.CHANNEL) + j] =
 								(byte) map[ndx + j * 256];
 						}
 						else {
 							final boolean zero =
 								map[ndx] == 0 && map[ndx + 256] == 0 && map[ndx + 512] == 0;
-							buf[i * meta.getAxisLength(imageIndex, Axes.CHANNEL) + j] =
+							buf[i * (int) meta.getAxisLength(imageIndex, Axes.CHANNEL) + j] =
 								zero ? (byte) 0 : (byte) 255;
 						}
 					}
@@ -400,7 +406,7 @@ public class EPSFormat extends AbstractFormat {
 				FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
 			if (meta.isBinary()) {
 				// pixels are stored as raw bytes
-				readPlane(getStream(), imageIndex, x, y, w, h, plane);
+				readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
 			}
 			else {
 				// pixels are stored as a 2 character hexadecimal value
@@ -411,8 +417,8 @@ public class EPSFormat extends AbstractFormat {
 				pix = pix.replaceAll("\r", "");
 
 				int ndx =
-					meta.getAxisLength(imageIndex, Axes.CHANNEL) * y * bytes *
-						meta.getAxisLength(imageIndex, Axes.X);
+					(int)(meta.getAxisLength(imageIndex, Axes.CHANNEL) * y * bytes *
+						meta.getAxisLength(imageIndex, Axes.X));
 				int destNdx = 0;
 
 				for (int row = 0; row < h; row++) {
@@ -434,7 +440,7 @@ public class EPSFormat extends AbstractFormat {
 		}
 
 		@Override
-		public int getOptimalTileWidth(final int imageIndex) {
+		public long getOptimalTileWidth(final int imageIndex) {
 			try {
 				if (getMetadata().isTiff) {
 					return (int) getMetadata().getIfds().get(0).getTileWidth();
@@ -447,7 +453,7 @@ public class EPSFormat extends AbstractFormat {
 		}
 
 		@Override
-		public int getOptimalTileHeight(final int imageIndex) {
+		public long getOptimalTileHeight(final int imageIndex) {
 			try {
 				if (getMetadata().isTiff()) {
 					return (int) getMetadata().getIfds().get(0).getTileLength();
@@ -477,16 +483,21 @@ public class EPSFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
-			final Plane plane, final int x, final int y, final int w, final int h)
+			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
 
 			final byte[] buf = plane.getBytes();
-			checkParams(imageIndex, planeIndex, buf, x, y, w, h);
-
-			final int sizeX = getMetadata().getAxisLength(imageIndex, Axes.X);
+			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
+			final int xAxis = getMetadata().getAxisIndex(imageIndex, Axes.X);
+			final int yAxis = getMetadata().getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xAxis],
+								y = (int) planeMin[yAxis],
+								w = (int) planeMax[xAxis],
+								h = (int) planeMax[yAxis];
+			final int sizeX = (int)getMetadata().getAxisLength(imageIndex, Axes.X);
 			final int nChannels =
-				getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+				(int)getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
 
 			// write pixel data
 			// for simplicity, write 80 char lines
@@ -496,7 +507,9 @@ public class EPSFormat extends AbstractFormat {
 
 				writeHeader(imageIndex);
 
-				if (!isFullPlane(imageIndex, x, y, w, h)) {
+				if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(),
+					planeMin, planeMax))
+				{
 					// write a dummy plane that will be overwritten in sections
 					final int planeSize = w * h * nChannels;
 					for (int i = 0; i < planeSize; i++) {
@@ -505,7 +518,7 @@ public class EPSFormat extends AbstractFormat {
 				}
 			}
 
-			final int planeSize = w * h;
+			final int planeSize = (int)(planeMax[0] * planeMax[1]);
 
 			final StringBuffer buffer = new StringBuffer();
 
@@ -545,10 +558,10 @@ public class EPSFormat extends AbstractFormat {
 		// -- Helper methods --
 
 		private void writeHeader(final int imageIndex) throws IOException {
-			final int width = getMetadata().getAxisLength(imageIndex, Axes.X);
-			final int height = getMetadata().getAxisLength(imageIndex, Axes.Y);
+			final int width = (int)getMetadata().getAxisLength(imageIndex, Axes.X);
+			final int height = (int)getMetadata().getAxisLength(imageIndex, Axes.Y);
 			final int nChannels =
-				getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+				(int)getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
 
 			out.writeBytes("%!PS-Adobe-2.0 EPSF-1.2\n");
 			out.writeBytes("%%Title: " + getMetadata().getDatasetName() + "\n");

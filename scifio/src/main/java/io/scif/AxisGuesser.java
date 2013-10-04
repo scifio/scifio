@@ -42,6 +42,7 @@ import io.scif.util.FormatTools;
 import java.io.IOException;
 
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;
@@ -95,10 +96,10 @@ public class AxisGuesser {
 	private final FilePattern fp;
 
 	/** Original ordering of internal dimensional axes. */
-	private final String dimOrder;
+	private final AxisType[] dimOrder;
 
 	/** Adjusted ordering of internal dimensional axes. */
-	private String newOrder;
+	private final AxisType[] newOrder;
 
 	/** Guessed axis types. */
 	private int[] axisTypes;
@@ -122,8 +123,8 @@ public class AxisGuesser {
 	 *          merely a guess
 	 * @see FilePattern
 	 */
-	public AxisGuesser(final FilePattern fp, final String dimOrder, int sizeZ,
-		int sizeT, final int sizeC, final boolean isCertain)
+	public AxisGuesser(final FilePattern fp, final AxisType[] dimOrder,
+		long sizeZ, long sizeT, final long sizeC, final boolean isCertain)
 	{
 		this.fp = fp;
 		this.dimOrder = dimOrder;
@@ -231,13 +232,11 @@ public class AxisGuesser {
 				sizeT > 1 && sizeZ == 1)
 			{
 				// swap Z and T dimensions
-				final int indexZ = newOrder.indexOf('Z');
-				final int indexT = newOrder.indexOf('T');
-				final char[] ch = newOrder.toCharArray();
-				ch[indexZ] = 'T';
-				ch[indexT] = 'Z';
-				newOrder = new String(ch);
-				final int sz = sizeT;
+				final int indexZ = indexOf(newOrder, Axes.Z);
+				final int indexT = indexOf(newOrder, Axes.TIME);
+				final long sz = sizeT;
+				newOrder[indexZ] = Axes.TIME;
+				newOrder[indexT] = Axes.Z;
 				sizeT = sizeZ;
 				sizeZ = sz;
 			}
@@ -268,11 +267,11 @@ public class AxisGuesser {
 				canBeC = false;
 			}
 			else {
-				final char lastAxis = newOrder.charAt(newOrder.length() - 1);
-				if (lastAxis == 'C') {
+				final AxisType lastAxis = newOrder[newOrder.length - 1];
+				if (lastAxis.equals(Axes.CHANNEL)) {
 					axisTypes[i] = C_AXIS;
 				}
-				else if (lastAxis == 'Z') {
+				else if (lastAxis.equals(Axes.Z)) {
 					axisTypes[i] = Z_AXIS;
 				}
 				else axisTypes[i] = T_AXIS;
@@ -288,12 +287,12 @@ public class AxisGuesser {
 	}
 
 	/** Gets the original dimension order. */
-	public String getOriginalOrder() {
+	public AxisType[] getOriginalOrder() {
 		return dimOrder;
 	}
 
 	/** Gets the adjusted dimension order. */
-	public String getAdjustedOrder() {
+	public AxisType[] getAdjustedOrder() {
 		return newOrder;
 	}
 
@@ -390,7 +389,17 @@ public class AxisGuesser {
 		}
 		return UNKNOWN_AXIS;
 	}
-
+	
+	// -- Helper methods --
+	
+	private int indexOf(final AxisType[] axes, final AxisType type) {
+		int index = -1;
+		for (int i = 0; i < axes.length && index == -1; i++) {
+			if (axes[i].equals(type)) index = i;
+		}
+		return index;
+	}
+	
 	// -- Main method --
 
 	public static void main(final String[] args) throws FormatException,
@@ -424,11 +433,12 @@ public class AxisGuesser {
 					// read dimensional information from first file
 					log.info("Reading first file ");
 					final Reader reader = scifio.initializer().initializeReader(id);
-					final String dimOrder =
-						FormatTools.findDimensionOrder(reader.getMetadata(), 0);
-					final int sizeZ = reader.getMetadata().getAxisLength(0, Axes.Z);
-					final int sizeT = reader.getMetadata().getAxisLength(0, Axes.TIME);
-					final int sizeC = reader.getMetadata().getAxisLength(0, Axes.CHANNEL);
+					final AxisType[] dimOrder =
+						(AxisType[]) reader.getMetadata().getAxes(0).toArray();
+					final long sizeZ = reader.getMetadata().getAxisLength(0, Axes.Z);
+					final long sizeT = reader.getMetadata().getAxisLength(0, Axes.TIME);
+					final long sizeC =
+						reader.getMetadata().getAxisLength(0, Axes.CHANNEL);
 					final boolean certain = reader.getMetadata().isOrderCertain(0);
 					reader.close();
 					log.info("[done]");
@@ -446,7 +456,7 @@ public class AxisGuesser {
 					final String[] blocks = fp.getBlocks();
 					final String[] prefixes = fp.getPrefixes();
 					final int[] axes = ag.getAxisTypes();
-					final String newOrder = ag.getAdjustedOrder();
+					final AxisType[] newOrder = ag.getAdjustedOrder();
 					final boolean isCertain = ag.isCertain();
 					log.info("Axis types:");
 					for (int i = 0; i < blocks.length; i++) {

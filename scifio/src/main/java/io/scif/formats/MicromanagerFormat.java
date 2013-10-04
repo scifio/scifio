@@ -133,19 +133,12 @@ public class MicromanagerFormat extends AbstractFormat {
 			for (int i = 0; i < getImageCount(); i++) {
 				final ImageMetadata ms = get(i);
 
-				if (ms.getAxisLength(Axes.Z) == 0) ms.setAxisLength(Axes.Z, 1);
-				if (ms.getAxisLength(Axes.TIME) == 0) ms.setAxisLength(Axes.TIME, 1);
-
-				ms.setAxes(FormatTools.findDimensionList("XYZCT"));
-				ms.setInterleaved(false);
-				ms.setRGB(false);
+				ms.setAxisTypes(Axes.X, Axes.Y, Axes.Z, Axes.CHANNEL, Axes.TIME);
+				ms.setPlanarAxisCount(2);
 				ms.setLittleEndian(false);
-				ms.setPlaneCount(ms.getAxisLength(Axes.Z) *
-					ms.getAxisLength(Axes.CHANNEL) * ms.getAxisLength(Axes.TIME));
 				ms.setIndexed(false);
 				ms.setFalseColor(false);
 				ms.setMetadataComplete(true);
-				ms.setBitsPerPixel(FormatTools.getBitsPerPixel(ms.getPixelType()));
 			}
 		}
 
@@ -757,14 +750,13 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
-
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-				buf.length, x, y, w, h);
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+				buf.length, planeMin, planeMax);
 
 			final String file =
 				meta.getPositions().get(imageIndex).getFile(meta, imageIndex,
@@ -772,7 +764,7 @@ public class MicromanagerFormat extends AbstractFormat {
 
 			if (file != null && new Location(getContext(), file).exists()) {
 				tiffReader.setSource(file);
-				return tiffReader.openPlane(imageIndex, 0, plane, x, y, w, h);
+				return tiffReader.openPlane(imageIndex, 0, plane, planeMin, planeMax);
 			}
 			log().warn(
 				"File for image #" + planeIndex + " (" + file + ") is missing.");
@@ -786,7 +778,7 @@ public class MicromanagerFormat extends AbstractFormat {
 		}
 
 		@Override
-		public int getOptimalTileWidth(final int imageIndex) {
+		public long getOptimalTileWidth(final int imageIndex) {
 			if (tiffReader == null || tiffReader.getCurrentFile() == null) {
 				setupReader(imageIndex);
 			}
@@ -794,7 +786,7 @@ public class MicromanagerFormat extends AbstractFormat {
 		}
 
 		@Override
-		public int getOptimalTileHeight(final int imageIndex) {
+		public long getOptimalTileHeight(final int imageIndex) {
 			if (tiffReader == null || tiffReader.getCurrentFile() == null) {
 				setupReader(imageIndex);
 			}
@@ -870,7 +862,8 @@ public class MicromanagerFormat extends AbstractFormat {
 		public String getFile(final Metadata meta, final int imageIndex,
 			final int planeIndex)
 		{
-			final int[] zct = FormatTools.getZCTCoords(meta, imageIndex, planeIndex);
+			final long[] zct =
+				FormatTools.rasterToPosition(imageIndex, planeIndex, meta);
 			for (final Index key : fileNameMap.keySet()) {
 				if (key.z == zct[0] && key.c == zct[1] && key.t == zct[2]) {
 					final String file = fileNameMap.get(key);

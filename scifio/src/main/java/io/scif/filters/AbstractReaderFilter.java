@@ -195,11 +195,11 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
-		final int x, final int y, final int w, final int h) throws FormatException,
+		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException
 	{
 		openPlaneHelper();
-		return getParent().openPlane(imageIndex, planeIndex, x, y, w, h);
+		return getParent().openPlane(imageIndex, planeIndex, planeMin, planeMax);
 	}
 
 	@Override
@@ -212,11 +212,12 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane openPlane(final int imageIndex, final int planeIndex,
-		final Plane plane, final int x, final int y, final int w, final int h)
+		final Plane plane, final long[] planeMin, final long[] planeMax)
 		throws FormatException, IOException
 	{
 		openPlaneHelper();
-		return getParent().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
+		return getParent().openPlane(imageIndex, planeIndex, plane, planeMin,
+			planeMax);
 	}
 
 	@Override
@@ -264,12 +265,12 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public int getOptimalTileWidth(final int imageIndex) {
+	public long getOptimalTileWidth(final int imageIndex) {
 		return getParent().getOptimalTileWidth(imageIndex);
 	}
 
 	@Override
-	public int getOptimalTileHeight(final int imageIndex) {
+	public long getOptimalTileHeight(final int imageIndex) {
 		return getParent().getOptimalTileHeight(imageIndex);
 	}
 
@@ -334,20 +335,21 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final int x, final int y, final int w, final int h, final Plane plane)
+		final long[] planeMin, final long[] planeMax, final Plane plane)
 		throws IOException
 	{
 		readPlaneHelper();
-		return getParent().readPlane(s, imageIndex, x, y, w, h, plane);
+		return getParent().readPlane(s, imageIndex, planeMin, planeMax, plane);
 	}
 
 	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final int x, final int y, final int w, final int h, final int scanlinePad,
+		final long[] planeMin, final long[] planeMax, final int scanlinePad,
 		final Plane plane) throws IOException
 	{
 		readPlaneHelper();
-		return getParent().readPlane(s, imageIndex, x, y, w, h, scanlinePad, plane);
+		return getParent().readPlane(s, imageIndex, planeMin, planeMax,
+			scanlinePad, plane);
 	}
 
 	@Override
@@ -361,17 +363,16 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Plane createPlane(final int xOffset, final int yOffset,
-		final int xLength, final int yLength)
+	public Plane createPlane(final long[] planeMin, final long[] planeMax)
 	{
-		return getParent().createPlane(xOffset, yOffset, xLength, yLength);
+		return getParent().createPlane(planeMin, planeMax);
 	}
 
 	@Override
-	public Plane createPlane(final ImageMetadata meta, final int xOffset,
-		final int yOffset, final int xLength, final int yLength)
+	public Plane createPlane(final ImageMetadata meta, final long[] planeMin,
+		final long[] planeMax)
 	{
-		return getParent().createPlane(meta, xOffset, yOffset, xLength, yLength);
+		return getParent().createPlane(meta, planeMin, planeMax);
 	}
 
 	@Override

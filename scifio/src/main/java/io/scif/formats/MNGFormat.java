@@ -123,18 +123,15 @@ public class MNGFormat extends AbstractFormat {
 				setAxisLength(i, Axes.X, Integer.parseInt(tokens[0]));
 				setAxisLength(i, Axes.Y, Integer.parseInt(tokens[1]));
 				setAxisLength(i, Axes.CHANNEL, Integer.parseInt(tokens[2]));
+				setPlanarAxisCount(i, getAxisLength(i, Axes.CHANNEL) > 1 ? 3 : 2);
 				setPixelType(i, Integer.parseInt(tokens[3]));
-				setBitsPerPixel(i, FormatTools.getBitsPerPixel(getPixelType(i)));
-				setRGB(i, getAxisLength(i, Axes.CHANNEL) > 1);
-				setAxisLength(i, Axes.Z, 1);
-				setInterleaved(i, false);
 				setMetadataComplete(i, true);
 				setIndexed(i, false);
 				setLittleEndian(i, false);
 				setFalseColor(i, false);
 
-				get(i).setPlaneCount(getDatasetInfo().imageInfo.get(i).offsets.size());
-				setAxisLength(i, Axes.TIME, getPlaneCount(i));
+				setAxisLength(i, Axes.TIME, getDatasetInfo().imageInfo.get(i).offsets
+					.size());
 			}
 		}
 
@@ -314,8 +311,8 @@ public class MNGFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
-			final int planeIndex, final BufferedImagePlane plane, final int x,
-			final int y, final int w, final int h) throws FormatException,
+			final int planeIndex, final BufferedImagePlane plane,
+			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
 			final MNGImageInfo info =
@@ -330,7 +327,7 @@ public class MNGFormat extends AbstractFormat {
 			// BytePackedRaster is used
 			img =
 				AWTImageTools.getSubimage(img,
-					getMetadata().isLittleEndian(imageIndex), x, y, w, h);
+					getMetadata().isLittleEndian(imageIndex), planeMin, planeMax);
 
 			plane.setData(img);
 			return plane;

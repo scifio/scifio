@@ -37,6 +37,10 @@
 package io.scif;
 
 import io.scif.util.FormatTools;
+
+import java.util.List;
+
+import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 
@@ -50,10 +54,10 @@ import net.imglib2.meta.CalibratedAxis;
 public interface ImageMetadata extends HasMetaTable {
 
 	/** Sets width (in pixels) of thumbnail planes in this image. */
-	void setThumbSizeX(int thumbSizeX);
+	void setThumbSizeX(long thumbSizeX);
 
 	/** Sets height (in pixels) of thumbnail planes in this image. */
-	void setThumbSizeY(int thumbSizeY);
+	void setThumbSizeY(long thumbSizeY);
 
 	/**
 	 * Sets the number of bytes per pixel. Must be one of the <i>static</i> pixel
@@ -69,23 +73,14 @@ public interface ImageMetadata extends HasMetaTable {
 	 */
 	void setOrderCertain(boolean orderCertain);
 
-	/**
-	 * Sets whether or not the planes are stored as RGB (multiple channels per
-	 * plane).
-	 */
-	void setRGB(boolean rgb);
-
 	/** Sets whether or not each pixel's bytes are in little endian order. */
 	void setLittleEndian(boolean littleEndian);
 
-	/**
-	 * Set true if channels are stored RGBRGBRGB...; false if channels are stored
-	 * RRR...GGG...BBB...
-	 */
-	void setInterleaved(boolean interleaved);
-
 	/** Sets whether or not the planes are stored as indexed color. */
 	void setIndexed(boolean indexed);
+
+	/** Sets the number of planar axes in this image. */
+	void setPlanarAxisCount(final int count);
 
 	/** Sets whether or not we can ignore the color map (if present). */
 	void setFalseColor(boolean falseColor);
@@ -105,13 +100,19 @@ public interface ImageMetadata extends HasMetaTable {
 	 * Convenience method to set both the axis types and lengths for this
 	 * ImageMetadata.
 	 */
-	void setAxes(CalibratedAxis[] axes, int[] axisLengths);
+	void setAxes(CalibratedAxis[] axes, long[] axisLengths);
 
 	/**
 	 * Sets the Axes types for this image. Order is implied by ordering within
 	 * this array
 	 */
-	void setAxes(CalibratedAxis[] axes);
+	void setAxisTypes(AxisType... axisTypes);
+
+	/**
+	 * Sets the Axes types for this image. Order is implied by ordering within
+	 * this array
+	 */
+	void setAxes(CalibratedAxis... axes);
 
 	/**
 	 * Sets the lengths of each axis. Order is parallel of {@code axes}.
@@ -119,19 +120,19 @@ public interface ImageMetadata extends HasMetaTable {
 	 * NB: axes must already exist for this method to be called. Use
 	 * {@link #setAxes(CalibratedAxis[])} or {@link #setAxes}
 	 */
-	void setAxisLengths(int[] axisLengths);
+	void setAxisLengths(long[] axisLengths);
 
 	/**
 	 * Sets the length for the specified axis. Adds the axis if if its type is not
 	 * already present in the image.
 	 */
-	void setAxisLength(CalibratedAxis axis, int length);
+	void setAxisLength(CalibratedAxis axis, long length);
 
 	/**
-	 * As {@link #setAxisLength(CalibratedAxis, int)} but requires only the
+	 * As {@link #setAxisLength(CalibratedAxis, long)} but requires only the
 	 * AxisType.
 	 */
-	void setAxisLength(AxisType axis, int length);
+	void setAxisLength(AxisType axis, long length);
 
 	/**
 	 * Sets the type of the axis at the specified index, if {@code axis} is not
@@ -146,12 +147,6 @@ public interface ImageMetadata extends HasMetaTable {
 	 */
 	void setAxisType(int index, AxisType axis);
 
-	/** Sets the number of planes within this image. */
-	void setPlaneCount(int planeCount);
-
-	/** Returns the number of planes within this image. */
-	int getPlaneCount();
-
 	/** Returns the size, in bytes, of all planes in this image. */
 	long getSize();
 
@@ -159,10 +154,10 @@ public interface ImageMetadata extends HasMetaTable {
 	long getPlaneSize();
 
 	/** Returns the width (in pixles) of the thumbnail planes in this image. */
-	int getThumbSizeX();
+	long getThumbSizeX();
 
 	/** Returns the height (in pixles) of the thumbnail planes in this image. */
-	int getThumbSizeY();
+	long getThumbSizeY();
 
 	/**
 	 * Returns the CalibratedAxis associated with the given type. Useful to
@@ -184,22 +179,23 @@ public interface ImageMetadata extends HasMetaTable {
 	 */
 	boolean isOrderCertain();
 
-	/**
-	 * Returns true if the planes are stored as RGB (multiple channels per plane).
-	 */
-	boolean isRGB();
-
 	/** Returns true if each pixel's bytes are in little endian order. */
 	boolean isLittleEndian();
 
-	/**
-	 * Returns true if channels are stored RGBRGBRGB...; false if channels are
-	 * stored RRR...GGG...BBB...
+	/** Returns true if the planes are stored as indexed color. */
+	boolean isIndexed();
+
+	/** Returns the number of planar axes in this image. */
+	int getPlanarAxisCount();
+
+	/** 
+	 * Returns true iff {@link Axes#X} and {@link Axes#Y} are not the first
+	 * two axes.
 	 */
 	boolean isInterleaved();
 
-	/** Returns true if the planes are stored as indexed color. */
-	boolean isIndexed();
+	/** Returns true if the {@link Axes.CHANNEL} axis is a planar axis. */
+	boolean isMultichannel();
 
 	/** Returns true if we can ignore the color map (if present). */
 	boolean isFalseColor();
@@ -219,21 +215,6 @@ public interface ImageMetadata extends HasMetaTable {
 	boolean isThumbnail();
 
 	/**
-	 * Calculates the effective number of non-RGB channels in this image. This
-	 * value may be more useful than {@code getAxisLength(Axes.CHANNEL)}.
-	 * 
-	 * @return Count of non-RGB channels in this image.
-	 */
-	int getEffectiveSizeC();
-
-	/**
-	 * Calculates the number of RGB channels in this image.
-	 * 
-	 * @return Count of RGB channels in this image.
-	 */
-	int getRGBChannelCount();
-
-	/**
 	 * Gets the axis of the (zero-indexed) specified plane.
 	 * 
 	 * @param axisIndex - index of the desired axis within this image
@@ -247,7 +228,7 @@ public interface ImageMetadata extends HasMetaTable {
 	 * @param axisIndex - index of the desired axis within this image
 	 * @return Length of the desired axis, or 0 if the axis is not found.
 	 */
-	int getAxisLength(final int axisIndex);
+	long getAxisLength(final int axisIndex);
 
 	/**
 	 * A convenience method for looking up the length of an axis based on its
@@ -256,7 +237,7 @@ public interface ImageMetadata extends HasMetaTable {
 	 * @param t - CalibratedAxis to look up
 	 * @return Length of axis t, or 0 if the axis is not found.
 	 */
-	int getAxisLength(final CalibratedAxis t);
+	long getAxisLength(final CalibratedAxis t);
 
 	/**
 	 * As {@link #getAxisLength(CalibratedAxis)} but only requires the
@@ -265,7 +246,7 @@ public interface ImageMetadata extends HasMetaTable {
 	 * @param t - CalibratedAxis to look up
 	 * @return Length of axis t, or 0 if the axis is not found.
 	 */
-	int getAxisLength(final AxisType t);
+	long getAxisLength(final AxisType t);
 
 	/**
 	 * Returns the array index for the specified CalibratedAxis. This index can be
@@ -297,9 +278,36 @@ public interface ImageMetadata extends HasMetaTable {
 	 * CalibratedAxis order is sorted and represents order within the image.
 	 * </p>
 	 * 
-	 * @return Sorted CalibratedAxis array
+	 * @return Sorted CalibratedAxis list
 	 */
-	CalibratedAxis[] getAxes();
+	List<CalibratedAxis> getAxes();
+
+	/**
+	 * Returns an array of the AxisTypes that, together, define the bounds of a
+	 * single plane in the dataset.
+	 * <p>
+	 * NB: Axes.CHANNEL is considered neither a planar nor spatial axis.
+	 * </p>
+	 * 
+	 * @return Sorted CalibratedAxis list
+	 */
+	List<CalibratedAxis> getAxesPlanar();
+
+	/**
+	 * Returns an array of the AxisTypes that define the number of planes in the
+	 * dataset.
+	 * <p>
+	 * NB: Axes.CHANNEL is considered neither a planar nor spatial axis.
+	 * </p>
+	 * 
+	 * @return Sorted CalibratedAxis list
+	 */
+	List<CalibratedAxis> getAxesNonPlanar();
+
+	/**
+	 * @return the number of planes in this image
+	 */
+	int getPlaneCount();
 
 	/**
 	 * Returns an array of the lengths for axes associated with the specified
@@ -311,7 +319,31 @@ public interface ImageMetadata extends HasMetaTable {
 	 * 
 	 * @return Sorted axis length array
 	 */
-	int[] getAxesLengths();
+	long[] getAxesLengths();
+
+	/**
+	 * Returns an array of the lengths for axes in the provided AxisType list.
+	 * <p>
+	 * Ordering of the lengths is consistent with the provided ordering.
+	 * </p>
+	 * 
+	 * @return Sorted axis length array
+	 */
+	long[] getAxesLengths(final List<CalibratedAxis> axes);
+
+	/**
+	 * Returns an array of the lengths for the planar axes in this image.
+	 * 
+	 * @return Sorted axis length array
+	 */
+	long[] getAxesLengthsPlanar();
+
+	/**
+	 * Returns an array of the lengths for the non-planar axes in this image.
+	 * 
+	 * @return Sorted axis length array
+	 */
+	long[] getAxesLengthsNonPlanar();
 
 	/**
 	 * Appends the provided CalibratedAxis to the current CalibratedAxiss, with a
@@ -328,13 +360,13 @@ public interface ImageMetadata extends HasMetaTable {
 	 * @param axis - The new axis
 	 * @param value - length of the new axis
 	 */
-	void addAxis(final CalibratedAxis axis, final int value);
+	void addAxis(final CalibratedAxis axis, final long value);
 
 	/**
 	 * As {@link #addAxis(CalibratedAxis, int)} using the default calibration
 	 * value, per {@link FormatTools#calibrate(AxisType)}.
 	 */
-	void addAxis(final AxisType axisType, final int value);
+	void addAxis(final AxisType axisType, final long value);
 
 	/**
 	 * @return A new copy of this ImageMetadata.
