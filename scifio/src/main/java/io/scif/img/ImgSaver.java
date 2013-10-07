@@ -580,8 +580,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 		img.dimensions(oldLengths);
 		dimOrder = guessDimOrder(axes, oldLengths, axisLengths);
 
-		if (dimOrder == null) throw new ImgIOException(
-			"Image has more than 5 dimensions in an order that could not be compressed.");
+		if (dimOrder == null) {
+			throw new ImgIOException("Image has more than 5 dimensions "
+				+ "in an order that could not be compressed.");
+		}
 
 		int sizeX = 0, sizeY = 0, sizeZ = 0, sizeC = 0, sizeT = 0;
 
