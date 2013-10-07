@@ -580,12 +580,6 @@ public class ImgSaver extends AbstractImgIOComponent {
 		img.dimensions(oldLengths);
 		dimOrder = guessDimOrder(axes, oldLengths, axisLengths);
 
-		// Populate physical pixel sizes
-		for (int i = 0; i < axes.length; i++) {
-			final CalibratedAxis axis = axes[i];
-			axis.setCalibration(img.calibration(i));
-		}
-
 		if (dimOrder == null) throw new ImgIOException(
 			"Image has more than 5 dimensions in an order that could not be compressed.");
 
