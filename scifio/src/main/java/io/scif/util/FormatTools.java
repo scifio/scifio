@@ -345,6 +345,17 @@ public final class FormatTools {
 	}
 
 	/**
+	 * Gets the average scale over the specified axis of the given image metadata.
+	 */
+	public static double getScale(final Metadata m, final int imageIndex,
+		final AxisType axisType)
+	{
+		final CalibratedAxis axis = m.getAxis(imageIndex, axisType);
+		final int axisLength = m.getAxisLength(0, axis);
+		return axis.averageScale(0, axisLength - 1);
+	}
+
+	/**
 	 * Returns the dimension order for the provided reader. Currently limited to
 	 * 5D orders.
 	 */

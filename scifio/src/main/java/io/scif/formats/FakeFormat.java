@@ -657,15 +657,15 @@ public class FakeFormat extends AbstractFormat {
 					.getAxisLength(0, Axes.TIME));
 			
 			fakeId = FakeUtils.appendToken(fakeId,
-				CAL_X, source.getAxis(0, Axes.X).calibration());
+				CAL_X, FormatTools.getScale(source, 0, Axes.X));
 			fakeId = FakeUtils.appendToken(fakeId,
-				CAL_Y, source.getAxis(0, Axes.Y).calibration());
+				CAL_Y, FormatTools.getScale(source, 0, Axes.Y));
 			fakeId = FakeUtils.appendToken(fakeId,
-				CAL_Z, source.getAxis(0, Axes.Z).calibration());
+				CAL_Z, FormatTools.getScale(source, 0, Axes.Z));
 			fakeId = FakeUtils.appendToken(fakeId,
-				CAL_C, source.getAxis(0, Axes.CHANNEL).calibration());
+				CAL_C, FormatTools.getScale(source, 0, Axes.CHANNEL));
 			fakeId = FakeUtils.appendToken(fakeId,
-				CAL_T, source.getAxis(0, Axes.TIME).calibration());
+				CAL_T, FormatTools.getScale(source, 0, Axes.TIME));
 
 			fakeId = FakeUtils.appendToken(fakeId, THUMB_X, source.getThumbSizeX(0));
 			fakeId = FakeUtils.appendToken(fakeId, THUMB_Y, source.getThumbSizeY(0));

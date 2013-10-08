@@ -432,27 +432,27 @@ public class ImgOpener extends AbstractImgIOComponent {
 			switch (dim) {
 				case 'X':
 					if (sizeX > 0) {
-						calibrationList.add(m.getAxis(0, Axes.X).calibration());
+						calibrationList.add(FormatTools.getScale(m, 0, Axes.X));
 					}
 					break;
 				case 'Y':
 					if (sizeY > 0) {
-						calibrationList.add(m.getAxis(0, Axes.Y).calibration());
+						calibrationList.add(FormatTools.getScale(m, 0, Axes.Y));
 					}
 					break;
 				case 'Z':
 					if (sizeZ > 0) {
-						calibrationList.add(m.getAxis(0, Axes.Z).calibration());
+						calibrationList.add(FormatTools.getScale(m, 0, Axes.Z));
 					}
 					break;
 				case 'T':
 					if (sizeT > 0) {
-						calibrationList.add(m.getAxis(0, Axes.TIME).calibration());
+						calibrationList.add(FormatTools.getScale(m, 0, Axes.TIME));
 					}
 					break;
 				case 'C':
 					if (sizeC > 0) {
-						calibrationList.add(m.getAxis(0, Axes.CHANNEL).calibration());
+						calibrationList.add(FormatTools.getScale(m, 0, Axes.CHANNEL));
 					}
 					break;
 			}
