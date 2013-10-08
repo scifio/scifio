@@ -471,7 +471,7 @@ public class FakeFormat extends AbstractFormat {
 			for (int i = 0; i < numImages; i++) {
 				final ImageMetadata imageMeta = get(i);
 
-				imageMeta.setAxisTypes(axes);
+				imageMeta.setAxes(axes);
 				imageMeta.setAxisLengths(axisLengths);
 				FormatTools.calibrate(this, i, calibrations);
 				imageMeta.setPixelType(pixelType);

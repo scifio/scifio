@@ -987,7 +987,7 @@ public class DICOMFormat extends AbstractFormat {
 				if (seriesCount == 1) {
 					sizeZ = getOffsets().length * fileList.get(keys[i]).size();
 
-					setAxisTypes(0, FormatTools.findDimensionList("XYCZT"));
+					setAxes(0, FormatTools.findDimensionList("XYCZT"));
 
 					setRGB(i, getAxisLength(i, Axes.CHANNEL) > 1);
 					setAxisLength(i, Axes.TIME, 1);

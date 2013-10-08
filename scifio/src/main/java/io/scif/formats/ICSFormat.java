@@ -289,7 +289,7 @@ public class ICSFormat extends AbstractFormat {
 
 				if (newOrder != null) {
 					// FIXME: Make sure this works.
-					imageMeta.setAxisTypes(FormatTools.findDimensionList(newOrder));
+					imageMeta.setAxes(FormatTools.findDimensionList(newOrder));
 					imageMeta.setAxisLength(SCIFIOAxes.LIFETIME, binCount);
 				}
 			}
@@ -2046,7 +2046,7 @@ public class ICSFormat extends AbstractFormat {
 			String sizes = "";
 
 			for (int i = 0; i < numAxes; i++) {
-				final AxisType axis = source.getAxisType(0, i).type();
+				final AxisType axis = source.getAxis(0, i).type();
 
 				// flag for RGB images
 				if (axis.equals(Axes.X)) {

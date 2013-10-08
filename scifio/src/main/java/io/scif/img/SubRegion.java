@@ -101,15 +101,15 @@ public class SubRegion {
 	/**
 	 * @return A list of indices for the specified dimension
 	 */
-	public DimRange getRange(final AxisType type) {
-		return dimRanges.get(type);
+	public DimRange getRange(final AxisType axisType) {
+		return dimRanges.get(axisType);
 	}
 	
 	/**
 	 * @return True if this SubRegion contains a range for the specified AxisType
 	 */
-	public boolean hasRange(final AxisType type) {
-		return dimRanges.get(type) != null;
+	public boolean hasRange(final AxisType axisType) {
+		return dimRanges.get(axisType) != null;
 	}
 	
 	/**

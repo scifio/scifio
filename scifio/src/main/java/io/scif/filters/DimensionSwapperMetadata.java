@@ -108,9 +108,9 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 	}
 
 	@Override
-	public void setAxisTypes(final int imageIndex,
-		final CalibratedAxis[] axisTypes)
+	public void setAxes(final int imageIndex,
+		final CalibratedAxis[] axes)
 	{
-		super.setAxisTypes(imageIndex, axisTypes, false);
+		super.setAxes(imageIndex, axes, false);
 	}
 }

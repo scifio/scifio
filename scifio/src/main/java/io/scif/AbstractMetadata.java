@@ -237,8 +237,8 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 	
 	@Override
-	public CalibratedAxis getAxis(int imageIndex, AxisType type) {
-		return imageMeta.get(imageIndex).getAxis(type);
+	public CalibratedAxis getAxis(int imageIndex, AxisType axisType) {
+		return imageMeta.get(imageIndex).getAxis(axisType);
 	}
 	
 	@Override
@@ -247,9 +247,9 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public CalibratedAxis getAxisType(final int imageIndex, final int planeIndex)
+	public CalibratedAxis getAxis(final int imageIndex, final int planeIndex)
 	{
-		return imageMeta.get(imageIndex).getAxisType(planeIndex);
+		return imageMeta.get(imageIndex).getAxis(planeIndex);
 	}
 
 	@Override
@@ -268,13 +268,13 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public int getAxisIndex(final int imageIndex, final CalibratedAxis type) {
-		return imageMeta.get(imageIndex).getAxisIndex(type);
+	public int getAxisIndex(final int imageIndex, final CalibratedAxis axis) {
+		return imageMeta.get(imageIndex).getAxisIndex(axis);
 	}
 
 	@Override
-	public int getAxisIndex(final int imageIndex, final AxisType type) {
-		return imageMeta.get(imageIndex).getAxisIndex(type);
+	public int getAxisIndex(final int imageIndex, final AxisType axisType) {
+		return imageMeta.get(imageIndex).getAxisIndex(axisType);
 	}
 
 	@Override
@@ -389,43 +389,41 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public void addAxis(final int imageIndex, final CalibratedAxis type) {
-		imageMeta.get(imageIndex).addAxis(type);
+	public void addAxis(final int imageIndex, final CalibratedAxis axis) {
+		imageMeta.get(imageIndex).addAxis(axis);
 	}
 
 	@Override
-	public void addAxis(final int imageIndex, final CalibratedAxis type,
+	public void addAxis(final int imageIndex, final CalibratedAxis axis,
 		final int value)
 	{
-		imageMeta.get(imageIndex).addAxis(type, value);
+		imageMeta.get(imageIndex).addAxis(axis, value);
 	}
 
 	@Override
 	public void
-		addAxis(final int imageIndex, final AxisType type, final int value)
+		addAxis(final int imageIndex, final AxisType axisType, final int value)
 	{
-		imageMeta.get(imageIndex).addAxis(type, value);
+		imageMeta.get(imageIndex).addAxis(axisType, value);
 	}
 
 	@Override
-	public void setAxisTypes(final int imageIndex,
-		final CalibratedAxis[] axisTypes)
-	{
-		imageMeta.get(imageIndex).setAxisTypes(axisTypes);
+	public void setAxes(final int imageIndex, final CalibratedAxis[] axes) {
+		imageMeta.get(imageIndex).setAxes(axes);
 	}
 
 	@Override
-	public void setAxisType(final int imageIndex, final int axisIndex,
+	public void setAxis(final int imageIndex, final int axisIndex,
 		final CalibratedAxis axis)
 	{
-		imageMeta.get(imageIndex).setAxisType(axisIndex, axis);
+		imageMeta.get(imageIndex).setAxis(axisIndex, axis);
 	}
 
 	@Override
 	public void setAxisType(final int imageIndex, final int axisIndex,
-		final AxisType axis)
+		final AxisType axisType)
 	{
-		imageMeta.get(imageIndex).setAxisType(axisIndex, axis);
+		imageMeta.get(imageIndex).setAxisType(axisIndex, axisType);
 	}
 
 	@Override
@@ -441,10 +439,10 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public void setAxisLength(final int imageIndex, final AxisType axis,
+	public void setAxisLength(final int imageIndex, final AxisType axisType,
 		final int length)
 	{
-		imageMeta.get(imageIndex).setAxisLength(axis, length);
+		imageMeta.get(imageIndex).setAxisLength(axisType, length);
 	}
 
 	@Override

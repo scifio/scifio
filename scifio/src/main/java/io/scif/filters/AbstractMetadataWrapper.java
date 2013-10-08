@@ -96,19 +96,19 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void addAxis(final int imageIndex, final CalibratedAxis type,
+	public void addAxis(final int imageIndex, final CalibratedAxis axis,
 		final boolean passUp)
 	{
-		super.addAxis(imageIndex, type);
-		if (passUp) meta.addAxis(imageIndex, type);
+		super.addAxis(imageIndex, axis);
+		if (passUp) meta.addAxis(imageIndex, axis);
 	}
 
 	@Override
-	public void addAxis(final int imageIndex, final CalibratedAxis type,
+	public void addAxis(final int imageIndex, final CalibratedAxis axis,
 		final int value, final boolean passUp)
 	{
-		super.addAxis(imageIndex, type, value);
-		if (passUp) meta.addAxis(imageIndex, type, value);
+		super.addAxis(imageIndex, axis, value);
+		if (passUp) meta.addAxis(imageIndex, axis, value);
 	}
 
 	@Override
@@ -224,19 +224,19 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void setAxisTypes(final int imageIndex,
-		final CalibratedAxis[] axisTypes, final boolean passUp)
+	public void setAxes(final int imageIndex,
+		final CalibratedAxis[] axes, final boolean passUp)
 	{
-		super.setAxisTypes(imageIndex, axisTypes);
-		if (passUp) meta.setAxisTypes(imageIndex, axisTypes);
+		super.setAxes(imageIndex, axes);
+		if (passUp) meta.setAxes(imageIndex, axes);
 	}
 
 	@Override
-	public void setAxisType(final int imageIndex, final int axisIndex,
+	public void setAxis(final int imageIndex, final int axisIndex,
 		final CalibratedAxis axis, final boolean passUp)
 	{
-		super.setAxisType(imageIndex, axisIndex, axis);
-		if (passUp) meta.setAxisType(imageIndex, axisIndex, axis);
+		super.setAxis(imageIndex, axisIndex, axis);
+		if (passUp) meta.setAxis(imageIndex, axisIndex, axis);
 	}
 
 	@Override
@@ -256,39 +256,40 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 	
 	@Override
-	public void addAxis(int imageIndex, AxisType type, int value, boolean passUp)
+	public void addAxis(int imageIndex, AxisType axisType, int value,
+		boolean passUp)
 	{
-		super.addAxis(imageIndex, type, value);
-		if (passUp) meta.addAxis(imageIndex, type, value);
+		super.addAxis(imageIndex, axisType, value);
+		if (passUp) meta.addAxis(imageIndex, axisType, value);
 		
 	}
 
 	@Override
-	public void setAxisType(int imageIndex, int axisIndex, AxisType axis,
+	public void setAxisType(int imageIndex, int axisIndex, AxisType axisType,
 		boolean passUp)
 	{
-		super.setAxisType(imageIndex, axisIndex, axis);
-		if (passUp) meta.setAxisType(imageIndex, axisIndex, axis);
+		super.setAxisType(imageIndex, axisIndex, axisType);
+		if (passUp) meta.setAxisType(imageIndex, axisIndex, axisType);
 	}
 
 	@Override
-	public void setAxisLength(int imageIndex, AxisType axis, int length,
+	public void setAxisLength(int imageIndex, AxisType axisType, int length,
 		boolean passUp)
 	{
-		super.setAxisLength(imageIndex, axis, length);
-		if (passUp) meta.setAxisLength(imageIndex, axis, length);
+		super.setAxisLength(imageIndex, axisType, length);
+		if (passUp) meta.setAxisLength(imageIndex, axisType, length);
 	}
 
 	@Override
-	public void addAxis(final int imageIndex, final CalibratedAxis type) {
-		addAxis(imageIndex, type, true);
+	public void addAxis(final int imageIndex, final CalibratedAxis axis) {
+		addAxis(imageIndex, axis, true);
 	}
 
 	@Override
-	public void addAxis(final int imageIndex, final CalibratedAxis type,
+	public void addAxis(final int imageIndex, final CalibratedAxis axis,
 		final int value)
 	{
-		addAxis(imageIndex, type, value, true);
+		addAxis(imageIndex, axis, value, true);
 	}
 
 	@Override
@@ -361,17 +362,17 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void setAxisTypes(final int imageIndex,
-		final CalibratedAxis[] axisTypes)
+	public void setAxes(final int imageIndex,
+		final CalibratedAxis[] axes)
 	{
-		setAxisTypes(imageIndex, axisTypes, true);
+		setAxes(imageIndex, axes, true);
 	}
 
 	@Override
-	public void setAxisType(final int imageIndex, final int axisIndex,
+	public void setAxis(final int imageIndex, final int axisIndex,
 		final CalibratedAxis axis)
 	{
-		setAxisType(imageIndex, axisIndex, axis, true);
+		setAxis(imageIndex, axisIndex, axis, true);
 	}
 
 	@Override
