@@ -69,11 +69,11 @@ public class MetadataTest {
 		Metadata m = scifio.format().getFormat(id).createParser().parse(id);
 		
 		// Check getAxisType(int, int)
-		assertEquals(m.getAxisType(0, 0).type(), Axes.X);
-		assertEquals(m.getAxisType(0, 1).type(), Axes.Y);
-		assertEquals(m.getAxisType(0, 2).type(), Axes.TIME);
-		assertEquals(m.getAxisType(0, 3).type(), Axes.Z);
-		assertEquals(m.getAxisType(0, 4).type(), Axes.CHANNEL);
+		assertEquals(m.getAxis(0, 0).type(), Axes.X);
+		assertEquals(m.getAxis(0, 1).type(), Axes.Y);
+		assertEquals(m.getAxis(0, 2).type(), Axes.TIME);
+		assertEquals(m.getAxis(0, 3).type(), Axes.Z);
+		assertEquals(m.getAxis(0, 4).type(), Axes.CHANNEL);
 		
 		// Check getAxisLength(int, int)
 		assertEquals(m.getAxisLength(0, 0), 620);

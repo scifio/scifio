@@ -83,12 +83,12 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 
 	// -- Setter Methods with passUp flag --
 
-	void addAxis(final int imageIndex, final CalibratedAxis type, boolean passUp);
+	void addAxis(final int imageIndex, final CalibratedAxis axis, boolean passUp);
 
-	void addAxis(final int imageIndex, final CalibratedAxis type,
+	void addAxis(final int imageIndex, final CalibratedAxis axis,
 		final int value, boolean passUp);
 
-	void addAxis(int imageIndex, final AxisType type, final int value,
+	void addAxis(int imageIndex, final AxisType axisType, final int value,
 		boolean passUp);
 
 	void setThumbSizeX(final int imageIndex, final int thumbX, boolean passUp);
@@ -123,10 +123,10 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 	void setThumbnailImage(final int imageIndex, final boolean thumbnail,
 		boolean passUp);
 
-	void setAxisTypes(final int imageIndex, final CalibratedAxis[] axisTypes,
+	void setAxes(final int imageIndex, final CalibratedAxis[] axisTypes,
 		boolean passUp);
 
-	void setAxisType(final int imageIndex, final int axisIndex,
+	void setAxis(final int imageIndex, final int axisIndex,
 		final CalibratedAxis axis, boolean passUp);
 
 	void

@@ -92,7 +92,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	 * array
 	 */
 	@Field(label = "dimTypes")
-	private List<CalibratedAxis> axisTypes;
+	private List<CalibratedAxis> axes;
 
 	/** Lengths of each axis. Order is parallel of dimTypes. */
 	@Field(label = "dimLengths")
@@ -151,7 +151,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Constructors --
 
 	public AbstractImageMetadata() {
-		axisTypes = new ArrayList<CalibratedAxis>();
+		axes = new ArrayList<CalibratedAxis>();
 		axisLengths = new HashMap<AxisType, Integer>();
 	}
 
@@ -224,25 +224,27 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void
-		setAxes(final CalibratedAxis[] axisTypes, final int[] axisLengths)
+		setAxes(final CalibratedAxis[] axes, final int[] axisLengths)
 	{
-		setAxisTypes(axisTypes);
+		setAxes(axes);
 		setAxisLengths(axisLengths);
 	}
 
 	@Override
-	public void setAxisTypes(final CalibratedAxis[] axisTypes) {
-		this.axisTypes = new ArrayList<CalibratedAxis>(Arrays.asList(axisTypes));
+	public void setAxes(final CalibratedAxis[] axis) {
+		this.axes = new ArrayList<CalibratedAxis>(Arrays.asList(axis));
 	}
 
 	@Override
 	public void setAxisLengths(final int[] axisLengths) {
-		if (axisLengths.length != axisTypes.size()) throw new IllegalArgumentException(
-			"Tried to set " + axisLengths.length + " axis lengths, but " +
-				axisTypes.size() + " axes present." + " Call setAxisTypes first.");
+		if (axisLengths.length != axes.size()) {
+			throw new IllegalArgumentException("Tried to set " + axisLengths.length +
+				" axis lengths, but " + axes.size() + " axes present." +
+				" Call setAxes first.");
+		}
 
-		for (int i = 0; i < axisTypes.size(); i++) {
-			updateLength(axisTypes.get(i).type(), axisLengths[i]);
+		for (int i = 0; i < axes.size(); i++) {
+			updateLength(axes.get(i).type(), axisLengths[i]);
 		}
 	}
 
@@ -252,32 +254,34 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public void setAxisLength(final AxisType axis, final int length) {
-		if (getAxisIndex(axis) == -1) addAxis(FormatTools.calibrate(axis), length);
-		else updateLength(axis, length);
+	public void setAxisLength(final AxisType axisType, final int length) {
+		if (getAxisIndex(axisType) == -1) {
+			addAxis(FormatTools.createAxis(axisType), length);
+		}
+		else updateLength(axisType, length);
 	}
 
 	@Override
-	public void setAxisType(final int index, final CalibratedAxis axis) {
+	public void setAxis(final int index, final CalibratedAxis axis) {
 		final int oldIndex = getAxisIndex(axis);
 
 		// Replace existing axis
 		if (oldIndex == -1) {
-			final int length = axisLengths.remove(axisTypes.get(index));
+			final int length = axisLengths.remove(axes.get(index));
 
-			axisTypes.set(index, axis);
+			axes.set(index, axis);
 			axisLengths.put(axis.type(), length);
 		}
 		// Axis is already in the list. Move it here.
 		else {
-			axisTypes.remove(axis);
-			axisTypes.add(index, axis);
+			axes.remove(axis);
+			axes.add(index, axis);
 		}
 	}
 
 	@Override
-	public void setAxisType(final int index, final AxisType axis) {
-		setAxisType(index, FormatTools.calibrate(axis));
+	public void setAxisType(final int index, final AxisType axisType) {
+		setAxis(index, FormatTools.createAxis(axisType));
 	}
 
 	@Override
@@ -296,7 +300,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	public long getSize() {
 		long size = 1;
 
-		for (final CalibratedAxis a : axisTypes) {
+		for (final CalibratedAxis a : axes) {
 			size = DataTools.safeMultiply64(size, getAxisLength(a));
 		}
 
@@ -310,6 +314,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		return getSize() / getPlaneCount();
 	}
 
+	@Override
 	public int getThumbSizeX() {
 		int thumbX = thumbSizeX;
 
@@ -349,9 +354,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public CalibratedAxis getAxis(AxisType type) {
-		for (CalibratedAxis axis : axisTypes) {
-			if (axis.type().equals(type)) return axis;
+	public CalibratedAxis getAxis(AxisType axisType) {
+		for (CalibratedAxis axis : axes) {
+			if (axis.type().equals(axisType)) return axis;
 		}
 		return null;
 	}
@@ -369,15 +374,15 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public CalibratedAxis[] getAxes() {
-		return axisTypes.toArray(new CalibratedAxis[axisTypes.size()]);
+		return axes.toArray(new CalibratedAxis[axes.size()]);
 	}
 
 	@Override
 	public int[] getAxesLengths() {
-		final int[] lengths = new int[axisTypes.size()];
+		final int[] lengths = new int[axes.size()];
 
-		for (int i = 0; i < axisTypes.size(); i++) {
-			lengths[i] = getAxisLength(axisTypes.get(i));
+		for (int i = 0; i < axes.size(); i++) {
+			lengths[i] = getAxisLength(axes.get(i));
 		}
 
 		return lengths;
@@ -440,17 +445,17 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public CalibratedAxis getAxisType(final int axisIndex) {
-		return axisTypes.get(axisIndex);
+	public CalibratedAxis getAxis(final int axisIndex) {
+		return axes.get(axisIndex);
 	}
 
 	@Override
 	public int getAxisLength(final int axisIndex) {
-		if (axisIndex < 0 || axisIndex >= axisTypes.size()) throw new IllegalArgumentException(
-			"Invalid axisIndex: " + axisIndex + ". " + axisTypes.size() +
+		if (axisIndex < 0 || axisIndex >= axes.size()) throw new IllegalArgumentException(
+			"Invalid axisIndex: " + axisIndex + ". " + axes.size() +
 				" axes present.");
 
-		return getAxisLength(axisTypes.get(axisIndex).type());
+		return getAxisLength(axes.get(axisIndex).type());
 	}
 
 	@Override
@@ -466,48 +471,48 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public int getAxisIndex(final CalibratedAxis type) {
-		return getAxisIndex(type.type());
+	public int getAxisIndex(final CalibratedAxis axis) {
+		return getAxisIndex(axis.type());
 	}
 
 	@Override
-	public int getAxisIndex(final AxisType type) {
-		if (axisTypes == null) return -1;
+	public int getAxisIndex(final AxisType axisType) {
+		if (axes == null) return -1;
 
 		int index = -1;
 
-		for (int i = 0; index == -1 && i < axisTypes.size(); i++) {
-			if (axisTypes.get(i).type().equals(type)) index = i;
+		for (int i = 0; index == -1 && i < axes.size(); i++) {
+			if (axes.get(i).type().equals(axisType)) index = i;
 		}
 
 		return index;
 	}
 
 	@Override
-	public void addAxis(final CalibratedAxis type) {
-		addAxis(type, 0);
+	public void addAxis(final CalibratedAxis axis) {
+		addAxis(axis, 0);
 	}
 
 	@Override
-	public void addAxis(final CalibratedAxis type, final int value) {
-		if (axisTypes == null) axisTypes = new ArrayList<CalibratedAxis>();
+	public void addAxis(final CalibratedAxis axis, final int value) {
+		if (axes == null) axes = new ArrayList<CalibratedAxis>();
 
 		// See if the axis already exists
-		if (!axisTypes.contains(type)) axisTypes.add(type);
+		if (!axes.contains(axis)) axes.add(axis);
 
-		updateLength(type.type(), value);
+		updateLength(axis.type(), value);
 	}
 
 	@Override
-	public void addAxis(final AxisType type, final int value) {
-		addAxis(FormatTools.calibrate(type), value);
+	public void addAxis(final AxisType axisType, final int value) {
+		addAxis(FormatTools.createAxis(axisType), value);
 	}
 
 	@Override
 	public void copy(final ImageMetadata toCopy) {
 		table = new DefaultMetaTable(toCopy.getTable());
 
-		axisTypes = new ArrayList<CalibratedAxis>(Arrays.asList(toCopy.getAxes()));
+		axes = new ArrayList<CalibratedAxis>(Arrays.asList(toCopy.getAxes()));
 		setAxisLengths(toCopy.getAxesLengths().clone());
 		bitsPerPixel = toCopy.getBitsPerPixel();
 		falseColor = toCopy.isFalseColor();
@@ -548,8 +553,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	// -- Helper methods --
 
-	private void updateLength(final AxisType type, final int value) {
-		axisLengths.put(type, value);
+	private void updateLength(final AxisType axisType, final int value) {
+		axisLengths.put(axisType, value);
 		
 	}
 }

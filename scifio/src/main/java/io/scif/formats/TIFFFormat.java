@@ -487,7 +487,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			final ImageMetadata m = meta.get(0);
-			m.setAxisTypes(FormatTools.findDimensionList("XYCZT"));
+			m.setAxes(FormatTools.findDimensionList("XYCZT"));
 
 			if (z * t * (m.isRGB() ? 1 : c) == ifds.size()) {
 				m.setAxisLength(Axes.Z, z);

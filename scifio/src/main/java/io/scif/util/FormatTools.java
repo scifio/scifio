@@ -54,7 +54,8 @@ import java.util.Vector;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
-import net.imglib2.meta.DefaultCalibratedAxis;
+import net.imglib2.meta.axis.DefaultLinearAxis;
+import net.imglib2.meta.axis.LinearAxis;
 
 /**
  * A collection of constants and utility methods applicable for all cycles of
@@ -300,39 +301,58 @@ public final class FormatTools {
 	/**
 	 * Wraps the provided AxisType in a CalibratedAxis with calibration = 1.0um.
 	 */
-	public static CalibratedAxis calibrate(final AxisType t) {
-		return new DefaultCalibratedAxis(t, "um", 1.0);
+	public static CalibratedAxis createAxis(final AxisType axisType) {
+		return new DefaultLinearAxis(axisType, "um");
 	}
 
 	/**
 	 * Creates an array, wrapping all provided AxisTypes as CalibratedAxis with
 	 * calibration = 1.0um.
 	 */
-	public static CalibratedAxis[] calibrate(final AxisType t,
-		final AxisType... types)
-	{
-		final CalibratedAxis[] calAxes = new CalibratedAxis[types.length + 1];
-		calAxes[0] = calibrate(t);
-
-		for (int i = 0; i < types.length; i++) {
-			calAxes[i + 1] = calibrate(types[i]);
+	public static CalibratedAxis[] createAxes(final AxisType... axisTypes) {
+		final CalibratedAxis[] axes = new CalibratedAxis[axisTypes.length];
+		for (int i = 0; i < axisTypes.length; i++) {
+			axes[i] = createAxis(axisTypes[i]);
 		}
-
-		return calAxes;
+		return axes;
 	}
-	
+
 	/**
-	 * Applies the calibration values, in order, to the axes of the supplied
-	 * Metadata.
+	 * Applies the given scale value, and an origin of 0.0, to each
+	 * {@link LinearAxis} in the provided Metadata.
 	 */
-	public static void calibrate(Metadata m, int imageIndex, double[] calibration) {
+	public static void calibrate(final Metadata m, final int imageIndex,
+		final double[] scale)
+	{
+		calibrate(m, imageIndex, scale, new double[scale.length]);
+	}
+
+	/**
+	 * Applies the given scale and origin values to each {@link LinearAxis} in the
+	 * provided Metadata.
+	 */
+	public static void calibrate(final Metadata m, final int imageIndex,
+		final double[] scale, final double[] origin)
+	{
 		int i = 0;
-		
-		for (CalibratedAxis axis : m.getAxes(imageIndex)) {
-			if (i >= calibration.length) return;
-			axis.setCalibration(calibration[i]);
+
+		for (final CalibratedAxis axis : m.getAxes(imageIndex)) {
+			if (i >= scale.length || !(axis instanceof LinearAxis)) return;
+			((LinearAxis) axis).setScale(scale[i]);
+			((LinearAxis) axis).setOrigin(origin[i]);
 			i++;
 		}
+	}
+
+	/**
+	 * Gets the average scale over the specified axis of the given image metadata.
+	 */
+	public static double getScale(final Metadata m, final int imageIndex,
+		final AxisType axisType)
+	{
+		final CalibratedAxis axis = m.getAxis(imageIndex, axisType);
+		final int axisLength = m.getAxisLength(0, axis);
+		return axis.averageScale(0, axisLength - 1);
 	}
 
 	/**
@@ -385,22 +405,22 @@ public final class FormatTools {
 		for (int i = 0; i < dimensionOrder.length(); i++) {
 			switch (dimensionOrder.toUpperCase().charAt(i)) {
 				case 'X':
-					axes[i] = calibrate(Axes.X);
+					axes[i] = createAxis(Axes.X);
 					break;
 				case 'Y':
-					axes[i] = calibrate(Axes.Y);
+					axes[i] = createAxis(Axes.Y);
 					break;
 				case 'Z':
-					axes[i] = calibrate(Axes.Z);
+					axes[i] = createAxis(Axes.Z);
 					break;
 				case 'C':
-					axes[i] = calibrate(Axes.CHANNEL);
+					axes[i] = createAxis(Axes.CHANNEL);
 					break;
 				case 'T':
-					axes[i] = calibrate(Axes.TIME);
+					axes[i] = createAxis(Axes.TIME);
 					break;
 				default:
-					axes[i] = calibrate(Axes.unknown());
+					axes[i] = createAxis(Axes.unknown());
 			}
 		}
 
@@ -1195,4 +1215,5 @@ public final class FormatTools {
 		}
 		return false;
 	}
+
 }

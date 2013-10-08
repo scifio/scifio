@@ -136,7 +136,7 @@ public class MicromanagerFormat extends AbstractFormat {
 				if (ms.getAxisLength(Axes.Z) == 0) ms.setAxisLength(Axes.Z, 1);
 				if (ms.getAxisLength(Axes.TIME) == 0) ms.setAxisLength(Axes.TIME, 1);
 
-				ms.setAxisTypes(FormatTools.findDimensionList("XYZCT"));
+				ms.setAxes(FormatTools.findDimensionList("XYZCT"));
 				ms.setInterleaved(false);
 				ms.setRGB(false);
 				ms.setLittleEndian(false);

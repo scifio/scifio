@@ -82,10 +82,10 @@ public class ImgOpenerTest {
 		@SuppressWarnings("rawtypes")
 		ImgPlus imgPlus = imgOpener.openImg(calId);
 		
-		assertEquals(5.0, imgPlus.calibration(0));
-		assertEquals(6.0, imgPlus.calibration(1));
-		assertEquals(7.0, imgPlus.calibration(2));
-		assertEquals(8.0, imgPlus.calibration(3));
+		assertEquals(5.0, imgPlus.averageScale(0));
+		assertEquals(6.0, imgPlus.averageScale(1));
+		assertEquals(7.0, imgPlus.averageScale(2));
+		assertEquals(8.0, imgPlus.averageScale(3));
 	}
 
 	/**

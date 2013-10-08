@@ -206,7 +206,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * Returns the CalibratedAxis associated with the given type, for the
 	 * specified imageIndex. Useful to retrieve calibration information.
 	 */
-	CalibratedAxis getAxis(int imageIndex, AxisType type);
+	CalibratedAxis getAxis(int imageIndex, AxisType axisType);
 
 	/**
 	 * Returns the number of axes (planes) in the specified image.
@@ -223,7 +223,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * @param axisIndex - index of the desired axis within the specified image
 	 * @return Type of the desired plane.
 	 */
-	CalibratedAxis getAxisType(int imageIndex, int axisIndex);
+	CalibratedAxis getAxis(int imageIndex, int axisIndex);
 
 	/**
 	 * Gets the length of the (zero-indexed) specified plane.
@@ -263,20 +263,20 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * </p>
 	 * 
 	 * @param imageIndex - index for multi-image files
-	 * @param type - axis type to look up
+	 * @param axis - axis to look up
 	 * @return The index of the desired axis or -1 if not found.
 	 */
-	int getAxisIndex(int imageIndex, CalibratedAxis type);
+	int getAxisIndex(int imageIndex, CalibratedAxis axis);
 
 	/**
 	 * As {@link #getAxisIndex(int, CalibratedAxis)} but with just the desired
 	 * {@link AxisType}.
 	 * 
 	 * @param imageIndex - index for multi-image files
-	 * @param type - axis type to look up
+	 * @param axisType - axis type to look up
 	 * @return The index of the desired axis or -1 if not found.
 	 */
-	int getAxisIndex(int imageIndex, AxisType type);
+	int getAxisIndex(int imageIndex, AxisType axisType);
 
 	/**
 	 * Returns an array of the types for axes associated with the specified image
@@ -309,25 +309,25 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * creates corresponding length = 0 entry in the axis lengths array.
 	 * 
 	 * @param imageIndex - index for multi-image sources
-	 * @param type - Type of the new axis
+	 * @param axis - The new axis
 	 */
-	void addAxis(int imageIndex, CalibratedAxis type);
+	void addAxis(int imageIndex, CalibratedAxis axis);
 
 	/**
 	 * Appends the provided CalibratedAxis to the current CalibratedAxis array and
 	 * creates a corresponding entry with the specified value in axis lengths.
 	 * 
 	 * @param imageIndex - index for multi-image sources
-	 * @param type - Type of the new axis
+	 * @param axis - The new axis
 	 * @param value - Value of the new axis
 	 */
-	void addAxis(int imageIndex, CalibratedAxis type, int value);
+	void addAxis(int imageIndex, CalibratedAxis axis, int value);
 
 	/**
 	 * As {@link #addAxis(int, CalibratedAxis, int)} using the default calibration
 	 * value, per {@link FormatTools#calibrate(AxisType)}.
 	 */
-	void addAxis(int imageIndex, final AxisType type, final int value);
+	void addAxis(int imageIndex, final AxisType axisType, final int value);
 
 	/**
 	 * Returns true if we are confident that the dimension order is correct for
@@ -439,13 +439,13 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * Sets the Axes types for the specified image. Order is implied by ordering
 	 * within this array
 	 */
-	void setAxisTypes(int imageIndex, CalibratedAxis[] axisTypes);
+	void setAxes(int imageIndex, CalibratedAxis[] axisTypes);
 
 	/** Sets the type of the axis at the specified index, for the specified image. */
-	void setAxisType(int imageIndex, int axisIndex, CalibratedAxis axis);
+	void setAxis(int imageIndex, int axisIndex, CalibratedAxis axis);
 
 	/**
-	 * As {@link #setAxisType(int, int, CalibratedAxis)} using the default
+	 * As {@link #setAxis(int, int, CalibratedAxis)} using the default
 	 * calibration provided by {@link FormatTools#calibrate(AxisType)}.
 	 */
 	void setAxisType(int imageIndex, int axisIndex, AxisType axis);
