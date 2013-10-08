@@ -59,8 +59,11 @@ import io.scif.util.SCIFIOMetadataTools;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
 
@@ -240,10 +243,11 @@ public class ICSFormat extends AbstractFormat {
 
 				if (label.equalsIgnoreCase("t x y")) {
 					binCount = (int)imageMeta.getAxisLength(Axes.X);
-					index = imageMeta.getAxisIndex(Axes.X) - 1;
+					index = imageMeta.getAxisIndex(Axes.X);
 					imageMeta.setAxisLength(Axes.X, imageMeta.getAxisLength(Axes.Y));
 					imageMeta.setAxisLength(Axes.Y, imageMeta.getAxisLength(Axes.Z));
 					imageMeta.setAxisLength(Axes.Z, 1);
+					imageMeta.setPlanarAxisCount(3);
 				}
 				else if (label.equalsIgnoreCase("x y t")) {
 					index = imageMeta.getAxisIndex(Axes.Y) + 1;
@@ -255,9 +259,9 @@ public class ICSFormat extends AbstractFormat {
 				}
 
 				
-				if (index != -1) {
-					imageMeta.addAxis(SCIFIOAxes.LIFETIME, binCount);
+				if (index > -1) {
 					imageMeta.setAxisType(index, SCIFIOAxes.LIFETIME);
+					imageMeta.setAxisLength(SCIFIOAxes.LIFETIME, binCount);
 				}
 			}
 
@@ -418,11 +422,11 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void putPinholes(final Hashtable<Integer, Double> pins) {
-			put("sensor s_params PinholeRadius", merge(pins.values()));
+			put("sensor s_params pinholeradius", merge(pins.values()));
 		}
 
 		public void putEMWaves(final Integer[] emWaves) {
-			put("sensor s_params LambdaEm", merge(emWaves));
+			put("sensor s_params lambdaem", merge(emWaves));
 		}
 
 		public void putEMSingleton(final Integer[] em) {
@@ -438,7 +442,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void putWavelengths(final Hashtable<Integer, Integer> waves) {
-			put("history Wavelength*", merge(waves.values()));
+			put("history wavelength*", merge(waves.values()));
 		}
 
 		public void putByteOrder(final String byteOrder) {
@@ -466,7 +470,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void putLaserRepetitionRate(final Double laserRep) {
-			put("history laser model", laserRep.toString());
+			put("history laser rep rate", laserRep.toString());
 		}
 
 		public void putLaserPower(final Double laserPower) {
@@ -498,11 +502,11 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void putLensNA(final Double lensNA) {
-			put("history objective NA", lensNA.toString());
+			put("history objective na", lensNA.toString());
 		}
 
 		public void putWorkingDistance(final Double wd) {
-			put("history objective WorkingDistance", wd.toString());
+			put("history objective workingdistance", wd.toString());
 		}
 
 		public void putMagnification(final Double mag) {
@@ -546,7 +550,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void putExposureTime(final Double expTime) {
-			put("history Exposure", expTime.toString());
+			put("history exposure", expTime.toString());
 		}
 
 		// -- Accessor methods for dynamically retrieving common metadata --
@@ -696,7 +700,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Hashtable<Integer, Double> getPinholes() {
-			final String[] kv = findValueForKey("sensor s_params PinholeRadius");
+			final String[] kv = findValueForKey("sensor s_params pinholeradius");
 			final Hashtable<Integer, Double> pinholes =
 				new Hashtable<Integer, Double>();
 			if (kv != null) {
@@ -716,7 +720,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Integer[] getEMWaves() {
-			final String[] kv = findValueForKey("sensor s_params LambdaEm");
+			final String[] kv = findValueForKey("sensor s_params lambdaem");
 			Integer[] emWaves = null;
 			if (kv != null) {
 				final String[] waves = kv[1].split(" ");
@@ -744,7 +748,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Integer[] getEXWaves() {
-			final String[] kv = findValueForKey("sensor s_params LambdaEx");
+			final String[] kv = findValueForKey("sensor s_params lambdaex");
 			Integer[] exWaves = null;
 			if (kv != null) {
 				final String[] waves = kv[1].split(" ");
@@ -772,7 +776,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Hashtable<Integer, Integer> getWavelengths() {
-			final String[] kv = findValueForKey("history Wavelength*");
+			final String[] kv = findValueForKey("history wavelength*");
 			final Hashtable<Integer, Integer> wavelengths =
 				new Hashtable<Integer, Integer>();
 			if (kv != null) {
@@ -827,7 +831,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Double getLaserRepetitionRate() {
-			return findDoubleValueForKey("history laser model");
+			return findDoubleValueForKey("history laser rep rate");
 		}
 
 		public Double getLaserPower() {
@@ -860,11 +864,11 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Double getLensNA() {
-			return findDoubleValueForKey("history objective NA");
+			return findDoubleValueForKey("history objective na");
 		}
 
 		public Double getWorkingDistance() {
-			return findDoubleValueForKey("history objective WorkingDistance");
+			return findDoubleValueForKey("history objective workingdistance");
 		}
 
 		public Double getMagnification() {
@@ -934,7 +938,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Double getExposureTime() {
-			final String[] kv = findValueForKey("history Exposure");
+			final String[] kv = findValueForKey("history exposure");
 			Double exposureTime = null;
 			if (kv != null) {
 				final String expTime = kv[1];
@@ -1026,7 +1030,7 @@ public class ICSFormat extends AbstractFormat {
 		 */
 		private String[] findValueIteration(final String starts, final String ends)
 		{
-
+			//TODO not sure how to represent this in the ICSUtils key tree
 			for (final String key : keyValPairs.keySet()) {
 				if ((starts == null || key.startsWith(starts)) &&
 					(ends == null || key.endsWith(ends))) return new String[] { key,
@@ -1178,6 +1182,7 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Parser API Methods --
 
+		@SuppressWarnings("unchecked")
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
 			final Metadata meta) throws IOException, FormatException
@@ -1190,42 +1195,52 @@ public class ICSFormat extends AbstractFormat {
 			reader.seek(0);
 			reader.readString(ICSUtils.NL);
 			String line = reader.readString(ICSUtils.NL);
-
 			// Extracts the key, value pairs from each line and
 			// inserts them into the ICSMetadata object
 			while (line != null && !line.trim().equals("end") &&
 				reader.getFilePointer() < reader.length() - 1)
 			{
-				line = line.trim();
+				line = line.trim().toLowerCase();
 				final String[] tokens = line.split("[ \t]");
 				final StringBuffer key = new StringBuffer();
+				Map<String, Object> keyMap = ICSUtils.keys;
+				boolean validKey = false;
 				for (int q = 0; q < tokens.length; q++) {
 					tokens[q] = tokens[q].trim();
 					if (tokens[q].length() == 0) continue;
 
-					boolean foundValue = true;
-					for (int i = 0; i < ICSUtils.CATEGORIES.length; i++) {
-						if (tokens[q].matches(ICSUtils.CATEGORIES[i])) {
-							foundValue = false;
+					Object o = keyMap.get(tokens[q]);
+					if (o == null) {
+						// Reached the value section of the line.
+						if (!validKey) {
+							// Didn't get a valid key so exit
 							break;
 						}
+						else {
+							// found a valid key, so build the value and create a mapping
+							final StringBuffer value = new StringBuffer(tokens[q++]);
+							for (; q < tokens.length; q++) {
+								value.append(" ");
+								value.append(tokens[q].trim());
+							}
+							final String k = key.toString().trim().replaceAll("\t", " ");
+							final String v = value.toString().trim();
+							addGlobalMeta(k, v);
+							meta.keyValPairs.put(k.toLowerCase(), v);
+						}
 					}
-					if (!foundValue) {
+					else {
+						// Map lookup wasn't null, so we move the keyMap to the next node
+						keyMap = (Map<String, Object>)o;
+						// if we have a LEAF entry, we know we've found a valid key
+						if (keyMap.get(ICSUtils.LEAF) != null) validKey = true;
+
+						// Build the key
 						key.append(tokens[q]);
 						key.append(" ");
-						continue;
 					}
-
-					final StringBuffer value = new StringBuffer(tokens[q++]);
-					for (; q < tokens.length; q++) {
-						value.append(" ");
-						value.append(tokens[q].trim());
-					}
-					final String k = key.toString().trim().replaceAll("\t", " ");
-					final String v = value.toString().trim();
-					addGlobalMeta(k, v);
-					meta.keyValPairs.put(k.toLowerCase(), v);
 				}
+
 				line = reader.readString(ICSUtils.NL);
 			}
 
@@ -1858,7 +1873,9 @@ public class ICSFormat extends AbstractFormat {
 
 		/** Newline characters. */
 		public static final String NL = "\r\n";
-
+		
+		public static final String LEAF = "VALID_LEAF";
+		
 		public static final String[] DATE_FORMATS = {
 			"EEEE, MMMM dd, yyyy HH:mm:ss", "EEE dd MMMM yyyy HH:mm:ss",
 			"EEE MMM dd HH:mm:ss yyyy", "EE dd MMM yyyy HH:mm:ss z",
@@ -1892,51 +1909,97 @@ public class ICSFormat extends AbstractFormat {
 			{ "scil_type" }, { "source" } };
 
 		/** Metadata field categories. */
-		public static final String[] CATEGORIES = new String[] { "ics_version",
-			"filename", "source", "layout", "representation", "parameter", "sensor",
-			"history", "document", "view.*", "end", "file", "offset", "parameters",
-			"order", "sizes", "coordinates", "significant_bits", "format", "sign",
-			"compression", "byte_order", "origin", "scale", "units", "t", "labels",
-			"SCIL_TYPE", "type", "model", "s_params", "gain.*", "dwell", "shutter.*",
-			"pinhole", "laser.*", "version", "objective", "PassCount", "step.*",
-			"date", "GMTdate", "label", "software", "author", "length",
-			"Z (background)", "dimensions", "rep period", "image form", "extents",
-			"offsets", "region", "expon. order", "a.*", "tau.*", "noiseval",
-			"excitationfwhm", "created on", "text", "other text", "mode",
-			"CFD limit low", "CFD limit high", "CFD zc level", "CFD holdoff",
-			"SYNC zc level", "SYNC freq div", "SYNC holdoff", "TAC range",
-			"TAC gain", "TAC offset", "TAC limit low", "ADC resolution",
-			"Ext latch delay", "collection time", "repeat time", "stop on time",
-			"stop on O'flow", "dither range", "count increment", "memory bank",
-			"sync threshold", "dead time comp", "polarity", "line compressio",
-			"scan flyback", "scan borders", "pixel time", "pixel clock", "trigger",
-			"scan pixels x", "scan pixels y", "routing chan x", "routing chan y",
-			"detector type", "channel.*", "filter.*", "wavelength.*",
-			"black.level.*", "ht.*", "scan resolution", "scan speed", "scan zoom",
-			"scan pattern", "scan pos x", "scan pos y", "transmission",
-			"x amplitude", "y amplitude", "x offset", "y offset", "x delay",
-			"y delay", "beam zoom", "mirror .*", "direct turret", "desc exc turret",
-			"desc emm turret", "cube", "Stage_XYZum", "cube descriptio", "camera",
-			"exposure", "bits/pixel", "binning", "left", "top", "cols", "rows",
-			"significant_channels", "allowedlinemodes", "real_significant_bits",
-			"sample_width", "range", "ch", "lower_limit", "higher_limit",
-			"passcount", "detector", "dateGMT", "RefrInxMedium", "RefrInxLensMedium",
-			"Channels", "PinholeRadius", "LambdaEx", "LambdaEm", "ExPhotonCnt",
-			"RefInxMedium", "NumAperture", "RefInxLensMedium", "PinholeSpacing",
-			"power", "name", "Type", "Magnification", "NA", "WorkingDistance",
-			"Immersion", "Pinhole", "Channel .*", "Gain .*", "Shutter .*",
-			"Position", "Size", "Port", "Cursor", "Color", "BlackLevel",
-			"Saturation", "Gamma", "IntZoom", "Live", "Synchronize", "ShowIndex",
-			"AutoResize", "UseUnits", "Zoom", "IgnoreAspect", "ShowCursor",
-			"ShowAll", "Axis", "Order", "Tile", "DimViewOption", "channels",
-			"pinholeradius", "refrinxmedium", "numaperture", "refrinxlensmedium",
-			"image", "microscope", "stage", "filterset", "dichroic", "exc", "emm",
-			"manufacturer", "experiment", "experimenter", "study", "metadata",
-			"format", "icsviewer", "illumination", "exposure_time", "model", "ver",
-			"creation", "date", "bpp", "bigendian", "size.", "physical_size.",
-			"controller", "firmware", "pos", "position.", "mag", "na", "nm", "lamp",
-			"built", "on", "rep", "rate", "Exposure", "Wavelength\\*" };
+		public static final Map<String, Object> keys = createKeyMap();
 
+		private static Map<String, Object> createKeyMap() {
+			Map<String, Object> root = new HashMap<String, Object>();
+			
+			addKey(root, "parameter", "ch");
+			addKey(root, "parameter", "scale");
+			addKey(root, "parameter", "t");
+			addKey(root, "parameter", "units");
+			addKey(root, "sensor", "s_params", "lambdaem");
+			addKey(root, "sensor", "s_params", "lambdaex");
+			addKey(root, "sensor", "s_params", "pinholeradius");
+			addKey(root, "representation", "byte_order");
+			addKey(root, "representation", "compression");
+			addKey(root, "representation", "format");
+			addKey(root, "representation", "sign");
+			addKey(root, "history", "author");
+			addKey(root, "history", "camera", "manufcaturer");
+			addKey(root, "history", "camera", "model");
+			addKey(root, "history", "cube", "emm", "nm");
+			addKey(root, "history", "cube", "exc", "nm");
+			addKey(root, "history", "date");
+			addKey(root, "history", "creation", "date");
+			addKey(root, "history", "created", "on");
+			addKey(root, "history", "experimenter");
+			addKey(root, "history", "exposure");
+			addKey(root, "history", "extents");
+			addKey(root, "history", "filterset");
+			addKey(root, "history", "filterset", "dichroic", "name");
+			addKey(root, "history", "filterset", "emm", "name");
+			addKey(root, "history", "filterset", "exc", "name");
+			addKey(root, "history", "gain");
+			addKey(root, "history", "laser", "manufacturer");
+			addKey(root, "history", "laser", "model");
+			addKey(root, "history", "laser", "rep", "rate");
+			addKey(root, "history", "laser", "power");
+			addKey(root, "history", "labels");
+			addKey(root, "history", "manufacturer");
+			addKey(root, "history", "microscope");
+			addKey(root, "history", "objective", "type");
+			addKey(root, "history", "objective", "immersion");
+			addKey(root, "history", "objective", "na");
+			addKey(root, "history", "objective", "workingdistance");
+			addKey(root, "history", "objective", "magnification");
+			addKey(root, "history", "objective", "mag");
+			addKey(root, "history", "other", "text");
+			addKey(root, "history", "stage", "positionx");
+			addKey(root, "history", "stage", "positiony");
+			addKey(root, "history", "stage", "positionz");
+			addKey(root, "history", "stage_xyzum");
+			addKey(root, "history", "step");
+			addKey(root, "history", "type");
+			addKey(root, "history", "wavelength*");
+			addKey(root, "layout", "order");
+			addKey(root, "layout", "significant_bits");
+			addKey(root, "layout", "sizes");
+			
+			return root;
+		}
+
+		/**
+		 * Recursively descends the list of keys (ICS header categories and sub-
+		 * categories). When reaching the final subcategory, creates a String:String
+		 * mapping using {@link #LEAF}, indicating a valid complete key. When sub-
+		 * categories are present, a new map is created at each step, generating
+		 * a tree structure of valid keys.
+		 */
+		@SuppressWarnings("unchecked")
+		private static void addKey(Map<String, Object> parent, String... keys) {
+			// Create a LEAF entry to indicate this is a valid key
+			if (keys.length == 0) {
+				parent.put(LEAF, LEAF);
+			}
+			// the head category may have multiple subcategories, so create a category
+			// mapping.
+			else {
+				String node = keys[0];
+				Object o = parent.get(node);
+				Map<String, Object> child = null;
+				// check for existing map
+				if (o == null) {
+					child = new HashMap<String, Object>();
+					parent.put(node, child);
+				}
+				else {
+					child = (Map<String, Object>)o;
+				}
+				// recursive step to build the category tree
+				addKey(child, Arrays.copyOfRange(keys, 1, keys.length));
+			}
+		}
 	}
 
 	/**
