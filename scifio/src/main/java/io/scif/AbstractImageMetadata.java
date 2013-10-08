@@ -256,7 +256,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Override
 	public void setAxisLength(final AxisType axisType, final int length) {
 		if (getAxisIndex(axisType) == -1) {
-			addAxis(FormatTools.calibrate(axisType), length);
+			addAxis(FormatTools.createAxis(axisType), length);
 		}
 		else updateLength(axisType, length);
 	}
@@ -281,7 +281,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void setAxisType(final int index, final AxisType axisType) {
-		setAxis(index, FormatTools.calibrate(axisType));
+		setAxis(index, FormatTools.createAxis(axisType));
 	}
 
 	@Override
@@ -505,7 +505,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void addAxis(final AxisType axisType, final int value) {
-		addAxis(FormatTools.calibrate(axisType), value);
+		addAxis(FormatTools.createAxis(axisType), value);
 	}
 
 	@Override

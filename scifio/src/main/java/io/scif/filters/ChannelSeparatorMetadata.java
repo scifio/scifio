@@ -66,9 +66,9 @@ public class ChannelSeparatorMetadata extends AbstractMetadataWrapper {
 
 	// -- Fields --
 
-	private final CalibratedAxis[] xyczt = FormatTools.calibrate(Axes.X, Axes.Y,
+	private final CalibratedAxis[] xyczt = FormatTools.createAxes(Axes.X, Axes.Y,
 		Axes.CHANNEL, Axes.Z, Axes.TIME);
-	private final CalibratedAxis[] xyctz = FormatTools.calibrate(Axes.X, Axes.Y,
+	private final CalibratedAxis[] xyctz = FormatTools.createAxes(Axes.X, Axes.Y,
 		Axes.CHANNEL, Axes.TIME, Axes.Z);
 
 	// -- Constructors --

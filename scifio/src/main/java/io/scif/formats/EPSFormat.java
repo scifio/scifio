@@ -248,7 +248,7 @@ public class EPSFormat extends AbstractFormat {
 
 			line = in.readLine().trim();
 
-			m.setAxes(FormatTools.calibrate(Axes.X, Axes.Y, Axes.CHANNEL));
+			m.setAxes(FormatTools.createAxes(Axes.X, Axes.Y, Axes.CHANNEL));
 
 			while (line != null && !line.equals("%%EOF")) {
 				if (line.endsWith(image)) {
