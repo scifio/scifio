@@ -54,7 +54,7 @@ import java.util.Vector;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
-import net.imglib2.meta.DefaultCalibratedAxis;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 
 /**
  * A collection of constants and utility methods applicable for all cycles of
@@ -301,7 +301,7 @@ public final class FormatTools {
 	 * Wraps the provided AxisType in a CalibratedAxis with calibration = 1.0um.
 	 */
 	public static CalibratedAxis calibrate(final AxisType t) {
-		return new DefaultCalibratedAxis(t, "um", 1.0);
+		return new DefaultLinearAxis(t, "um");
 	}
 
 	/**
