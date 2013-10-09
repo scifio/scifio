@@ -40,6 +40,7 @@ import io.scif.io.IRandomAccess;
 import io.scif.io.IStreamAccess;
 import io.scif.io.NIOFileHandle;
 import io.scif.io.NIOService;
+import io.scif.io.VirtualHandle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -220,9 +221,20 @@ public class DefaultLocationService extends AbstractService implements
 				}
 			}
 
-			if (handle == null) handle =
-				new NIOFileHandle(nioService, mapId, writable ? "rw" : "r");
-
+			try {
+				if (handle == null) handle =
+					new NIOFileHandle(nioService, mapId, writable ? "rw" : "r");
+			}
+			catch (IOException e) {
+				// File doesn't exist on disk, so we'll create a virtual handle that
+				// can be used even when a physical file doesn't exist.
+				//TODO this solution is not ideal; but we are currently limited by the
+				// over-use of RAIS and the mapping of handles by LocationService.
+				// This infrastructure is going to be redone before a 1.0.0 release,
+				// but VirtualHandle is an intermediate fix.
+				log.warn(id + " not found - creating VirtualHandle.");
+				return new VirtualHandle(mapId);
+			}
 		}
 		log.trace("Location.getHandle: " + id + " -> " + handle);
 		return handle;

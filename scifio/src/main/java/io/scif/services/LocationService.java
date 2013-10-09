@@ -135,6 +135,9 @@ public interface LocationService extends SCIFIOService {
 
 	/**
 	 * Gets an IRandomAccess object that can read from the given file.
+	 * <p>
+	 * NB: if the file doesn't exist, a {@link VirtualHandle} will be returned.
+	 * </p>
 	 * 
 	 * @see io.scif.io.IRandomAccess
 	 */
@@ -142,6 +145,9 @@ public interface LocationService extends SCIFIOService {
 
 	/**
 	 * Gets an IRandomAccess object that can read from or write to the given file.
+	 * <p>
+	 * NB: if the file doesn't exist, a {@link VirtualHandle} will be returned.
+	 * </p>
 	 * 
 	 * @see io.scif.io.IRandomAccess
 	 */
@@ -149,6 +155,9 @@ public interface LocationService extends SCIFIOService {
 
 	/**
 	 * Gets an IRandomAccess object that can read from or write to the given file.
+	 * <p>
+	 * NB: if the file doesn't exist, a {@link VirtualHandle} will be returned.
+	 * </p>
 	 * 
 	 * @see io.scif.io.IRandomAccess
 	 */
