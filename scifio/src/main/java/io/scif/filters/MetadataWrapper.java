@@ -86,14 +86,14 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 	void addAxis(final int imageIndex, final CalibratedAxis axis, boolean passUp);
 
 	void addAxis(final int imageIndex, final CalibratedAxis axis,
-		final int value, boolean passUp);
+		final long value, boolean passUp);
 
 	void addAxis(int imageIndex, final AxisType axisType, final int value,
 		boolean passUp);
 
-	void setThumbSizeX(final int imageIndex, final int thumbX, boolean passUp);
+	void setThumbSizeX(final int imageIndex, final long thumbX, boolean passUp);
 
-	void setThumbSizeY(final int imageIndex, final int thumbY, boolean passUp);
+	void setThumbSizeY(final int imageIndex, final long thumbY, boolean passUp);
 
 	void setPixelType(final int imageIndex, final int type, boolean passUp);
 
@@ -102,15 +102,12 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 	void setOrderCertain(final int imageIndex, final boolean orderCertain,
 		boolean passUp);
 
-	void setRGB(final int imageIndex, final boolean rgb, boolean passUp);
-
 	void setLittleEndian(final int imageIndex, final boolean littleEndian,
 		boolean passUp);
 
-	void setInterleaved(final int imageIndex, final boolean interleaved,
-		boolean passUp);
-
 	void setIndexed(final int imageIndex, final boolean indexed, boolean passUp);
+
+	void setPlanarAxisCount(int imageIndex, final int count, boolean passUp);
 
 	void
 		setFalseColor(final int imageIndex, final boolean falseC, boolean passUp);
@@ -123,7 +120,10 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 	void setThumbnailImage(final int imageIndex, final boolean thumbnail,
 		boolean passUp);
 
-	void setAxes(final int imageIndex, final CalibratedAxis[] axisTypes,
+	void setAxisTypes(final int imageIndex, final AxisType[] axisTypes,
+		boolean passUp);
+
+	void setAxes(final int imageIndex, final CalibratedAxis[] axes,
 		boolean passUp);
 
 	void setAxis(final int imageIndex, final int axisIndex,
@@ -132,11 +132,11 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 	void
 		setAxisType(int imageIndex, int axisIndex, AxisType axis, boolean passUp);
 
-	void setAxisLengths(final int imageIndex, final int[] axisLengths,
+	void setAxisLengths(final int imageIndex, final long[] axisLengths,
 		boolean passUp);
 
 	void setAxisLength(final int imageIndex, final CalibratedAxis axis,
-		final int length, boolean passUp);
+		final long length, boolean passUp);
 	
-	void setAxisLength(int imageIndex, AxisType axis, int length, boolean passUp);
+	void setAxisLength(int imageIndex, AxisType axis, long length, boolean passUp);
 }

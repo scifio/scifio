@@ -48,8 +48,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -65,7 +63,6 @@ import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
-import net.imglib2.meta.Axes;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
@@ -106,42 +103,19 @@ public class DefaultImgUtilityService extends AbstractService implements
 	@Override
 	public long[] getDimLengths(final Metadata m, final ImgOptions imgOptions) {
 		final int imageIndex = imgOptions.getIndex();
-		final long sizeX = m.getAxisLength(imageIndex, Axes.X);
-		final long sizeY = m.getAxisLength(imageIndex, Axes.Y);
-		final long sizeZ = m.getAxisLength(imageIndex, Axes.Z);
-		final long sizeT = m.getAxisLength(imageIndex, Axes.TIME);
-		final long sizeC = m.getEffectiveSizeC(imageIndex);
-		final String dimOrder = FormatTools.findDimensionOrder(m, imageIndex);
 
-		final List<Long> dimLengthsList = new ArrayList<Long>();
+		final long[] dimLengths = m.getAxesLengths(imageIndex);
 
-		// add core dimensions
-		for (int i = 0; i < dimOrder.length(); i++) {
-			final char dim = dimOrder.charAt(i);
-			switch (dim) {
-				case 'X':
-					if (sizeX > 0) dimLengthsList.add(sizeX);
-					break;
-				case 'Y':
-					if (sizeY > 0) dimLengthsList.add(sizeY);
-					break;
-				case 'Z':
-					if (sizeZ > 1) dimLengthsList.add(sizeZ);
-					break;
-				case 'T':
-					if (sizeT > 1) dimLengthsList.add(sizeT);
-					break;
-				case 'C':
-					if (sizeC > 1) dimLengthsList.add(sizeC);
-					break;
-			}
-		}
-
-		// convert result to primitive array
-		final long[] dimLengths = new long[dimLengthsList.size()];
+		final SubRegion region = imgOptions.getRegion();
 
 		for (int i = 0; i < dimLengths.length; i++) {
-			dimLengths[i] = dimLengthsList.get(i);
+
+			if (region != null && i < region.size()) {
+				DimRange range = region.getRange(m.getAxis(imageIndex, i).type());
+				if (range != null) {
+					dimLengths[i] = range.indices().size();
+				}
+			}
 		}
 		return dimLengths;
 	}

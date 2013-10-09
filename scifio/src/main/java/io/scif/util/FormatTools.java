@@ -43,12 +43,10 @@ import io.scif.Reader;
 import io.scif.Writer;
 import io.scif.common.ReflectException;
 import io.scif.common.ReflectedUniverse;
-import io.scif.filters.DimensionSwapper;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 import net.imglib2.meta.Axes;
@@ -205,100 +203,6 @@ public final class FormatTools {
 	// Utility methods -- dimensional positions --
 
 	/**
-	 * Gets the rasterized index corresponding to the given Z, C and T
-	 * coordinates.
-	 */
-	public static int getIndex(final Reader reader, final int imageIndex,
-		final int z, final int c, final int t)
-	{
-		final int zSize = reader.getMetadata().getAxisLength(imageIndex, Axes.Z);
-		final int cSize = reader.getMetadata().getEffectiveSizeC(imageIndex);
-		final int tSize = reader.getMetadata().getAxisLength(imageIndex, Axes.TIME);
-		final int numPlanes = reader.getMetadata().getPlaneCount(imageIndex);
-		return getIndex(findDimensionOrder(reader, imageIndex), zSize, cSize,
-			tSize, numPlanes, z, c, t);
-	}
-
-	/**
-	 * Gets the rasterized index corresponding to the given Z, C and T
-	 * coordinates.
-	 * 
-	 * @param order Dimension order.
-	 * @param zSize Total number of focal planes.
-	 * @param cSize Total number of channels.
-	 * @param tSize Total number of time points.
-	 * @param numPlanes Total number of image planes (zSize * cSize * tSize),
-	 *          specified as a consistency check.
-	 * @param z Z coordinate of ZCT coordinate triple to convert to 1D index.
-	 * @param c C coordinate of ZCT coordinate triple to convert to 1D index.
-	 * @param t T coordinate of ZCT coordinate triple to convert to 1D index.
-	 */
-	public static int getIndex(final String order, final int zSize,
-		final int cSize, final int tSize, final int numPlanes, final int z,
-		final int c, final int t)
-	{
-		// check DimensionOrder
-		if (order == null) {
-			throw new IllegalArgumentException("Dimension order is null");
-		}
-		if (!order.startsWith("XY") && !order.startsWith("YX")) {
-			throw new IllegalArgumentException("Invalid dimension order: " + order);
-		}
-		final int iz = order.indexOf("Z") - 2;
-		final int ic = order.indexOf("C") - 2;
-		final int it = order.indexOf("T") - 2;
-		if (iz < 0 || iz > 2 || ic < 0 || ic > 2 || it < 0 || it > 2) {
-			throw new IllegalArgumentException("Invalid dimension order: " + order);
-		}
-
-		// check SizeZ
-		if (zSize <= 0) {
-			throw new IllegalArgumentException("Invalid Z size: " + zSize);
-		}
-		if (z < 0 || z >= zSize) {
-			throw new IllegalArgumentException("Invalid Z index: " + z + "/" + zSize);
-		}
-
-		// check SizeC
-		if (cSize <= 0) {
-			throw new IllegalArgumentException("Invalid C size: " + cSize);
-		}
-		if (c < 0 || c >= cSize) {
-			throw new IllegalArgumentException("Invalid C index: " + c + "/" + cSize);
-		}
-
-		// check SizeT
-		if (tSize <= 0) {
-			throw new IllegalArgumentException("Invalid T size: " + tSize);
-		}
-		if (t < 0 || t >= tSize) {
-			throw new IllegalArgumentException("Invalid T index: " + t + "/" + tSize);
-		}
-
-		// check image count
-		if (numPlanes <= 0) {
-			throw new IllegalArgumentException("Invalid image count: " + numPlanes);
-		}
-		if (numPlanes != zSize * cSize * tSize) {
-			// if this happens, there is probably a bug in metadata population --
-			// either one of the ZCT sizes, or the total number of images --
-			// or else the input file is invalid
-			throw new IllegalArgumentException("ZCT size vs image count mismatch " +
-				"(sizeZ=" + zSize + ", sizeC=" + cSize + ", sizeT=" + tSize +
-				", total=" + numPlanes + ")");
-		}
-
-		// assign rasterization order
-		final int v0 = iz == 0 ? z : (ic == 0 ? c : t);
-		final int v1 = iz == 1 ? z : (ic == 1 ? c : t);
-		final int v2 = iz == 2 ? z : (ic == 2 ? c : t);
-		final int len0 = iz == 0 ? zSize : (ic == 0 ? cSize : tSize);
-		final int len1 = iz == 1 ? zSize : (ic == 1 ? cSize : tSize);
-
-		return v0 + v1 * len0 + v2 * len0 * len1;
-	}
-
-	/**
 	 * Wraps the provided AxisType in a CalibratedAxis with calibration = 1.0um.
 	 */
 	public static CalibratedAxis createAxis(final AxisType axisType) {
@@ -309,8 +213,10 @@ public final class FormatTools {
 	 * Creates an array, wrapping all provided AxisTypes as CalibratedAxis with
 	 * calibration = 1.0um.
 	 */
-	public static CalibratedAxis[] createAxes(final AxisType... axisTypes) {
+	public static CalibratedAxis[] createAxes(final AxisType... axisTypes)
+	{
 		final CalibratedAxis[] axes = new CalibratedAxis[axisTypes.length];
+
 		for (int i = 0; i < axisTypes.length; i++) {
 			axes[i] = createAxis(axisTypes[i]);
 		}
@@ -351,241 +257,39 @@ public final class FormatTools {
 		final AxisType axisType)
 	{
 		final CalibratedAxis axis = m.getAxis(imageIndex, axisType);
-		final int axisLength = m.getAxisLength(0, axis);
+		final long axisLength = m.getAxisLength(0, axis);
 		return axis.averageScale(0, axisLength - 1);
 	}
 
 	/**
-	 * Returns the dimension order for the provided reader. Currently limited to
-	 * 5D orders.
-	 */
-	public static String findDimensionOrder(final Reader r, final int imageIndex)
-	{
-		return findDimensionOrder(r.getMetadata(), imageIndex);
-	}
-
-	/**
-	 * Returns the dimension order for the provided Metadata object. Currently
-	 * limited to 5D orders.
-	 */
-	public static String findDimensionOrder(final Metadata meta,
-		final int imageIndex)
-	{
-		return findDimensionOrder(meta.getAxes(imageIndex));
-	}
-
-	public static String findDimensionOrder(final CalibratedAxis[] axes) {
-		String order = "";
-
-		// TODO currently this list is restricted to the traditional 5D axes
-		// compatible with Bio-Formats
-		final ArrayList<AxisType> validAxes =
-			new ArrayList<AxisType>(Arrays.asList(new AxisType[] { Axes.X, Axes.Y,
-				Axes.Z, Axes.TIME, Axes.CHANNEL }));
-
-		for (int i = 0; i < axes.length; i++) {
-			final AxisType axis = axes[i].type();
-			if (validAxes.contains(axis)) order += axis.toString().charAt(0);
-		}
-
-		return order;
-	}
-
-	/**
-	 * Attempts to convert the provided String dimension order to an array of
-	 * AxisTypes.
-	 * 
-	 * @param dimensionOrder
-	 * @return
-	 */
-	public static CalibratedAxis[] findDimensionList(final String dimensionOrder)
-	{
-		final CalibratedAxis[] axes = new CalibratedAxis[dimensionOrder.length()];
-
-		for (int i = 0; i < dimensionOrder.length(); i++) {
-			switch (dimensionOrder.toUpperCase().charAt(i)) {
-				case 'X':
-					axes[i] = createAxis(Axes.X);
-					break;
-				case 'Y':
-					axes[i] = createAxis(Axes.Y);
-					break;
-				case 'Z':
-					axes[i] = createAxis(Axes.Z);
-					break;
-				case 'C':
-					axes[i] = createAxis(Axes.CHANNEL);
-					break;
-				case 'T':
-					axes[i] = createAxis(Axes.TIME);
-					break;
-				default:
-					axes[i] = createAxis(Axes.unknown());
-			}
-		}
-
-		return axes;
-	}
-
-	/**
-	 * Gets the Z, C and T coordinates corresponding to the given rasterized index
-	 * value.
-	 */
-	public static int[] getZCTCoords(final Reader reader, final int imageIndex,
-		final int planeIndex)
-	{
-		return getZCTCoords(reader.getMetadata(), imageIndex, planeIndex);
-	}
-
-	public static int[] getZCTCoords(final Metadata meta, final int imageIndex,
-		final int planeIndex)
-	{
-		final int zSize = meta.getAxisLength(imageIndex, Axes.Z);
-		final int cSize = meta.getEffectiveSizeC(imageIndex);
-		final int tSize = meta.getAxisLength(imageIndex, Axes.TIME);
-		final int numPlanes = meta.getPlaneCount(imageIndex);
-
-		return getZCTCoords(findDimensionOrder(meta, imageIndex), zSize, cSize,
-			tSize, numPlanes, imageIndex, planeIndex);
-	}
-
-	/**
-	 * Gets the Z, C and T coordinates corresponding to the given rasterized index
+	 * Computes a unique N-D position corresponding to the given rasterized index
 	 * value.
 	 * 
-	 * @param zSize Total number of focal planes.
-	 * @param cSize Total number of channels.
-	 * @param tSize Total number of time points.
-	 * @param numPlanes Total number of image planes (zSize * cSize * tSize),
-	 *          specified as a consistency check.
-	 * @param imageIndex 1D (rasterized) index to convert to ZCT coordinate
-	 *          triple.
+	 * @param imageIndex image index within dataset
+	 * @param planeIndex rasterized plane index to convert to axis indices
+	 * @param reader reader used to open the dataset
+	 * @return position along each dimensional axis
 	 */
-	public static int[] getZCTCoords(final String order, final int zSize,
-		final int cSize, final int tSize, final int numPlanes,
-		final int imageIndex, final int planeIndex)
+	public static long[] rasterToPosition(final int imageIndex,
+		final int planeIndex, final Reader reader)
 	{
-		// check DimensionOrder
-
-		if (!order.startsWith("XY") && !order.startsWith("YX")) {
-			throw new IllegalArgumentException("Invalid dimension order: " + order);
-		}
-		final int iz = order.indexOf("Z") - 2;
-		final int ic = order.indexOf("C") - 2;
-		final int it = order.indexOf("T") - 2;
-		if (iz < 0 || iz > 2 || ic < 0 || ic > 2 || it < 0 || it > 2) {
-			throw new IllegalArgumentException("Invalid dimension order: " + order);
-		}
-
-		// check SizeZ
-		if (zSize <= 0) {
-			throw new IllegalArgumentException("Invalid Z size: " + zSize);
-		}
-
-		// check SizeC
-		if (cSize <= 0) {
-			throw new IllegalArgumentException("Invalid C size: " + cSize);
-		}
-
-		// check SizeT
-		if (tSize <= 0) {
-			throw new IllegalArgumentException("Invalid T size: " + tSize);
-		}
-
-		// check image count
-		if (numPlanes <= 0) {
-			throw new IllegalArgumentException("Invalid image count: " + numPlanes);
-		}
-		if (numPlanes != zSize * cSize * tSize) {
-			// if this happens, there is probably a bug in metadata population --
-			// either one of the ZCT sizes, or the total number of images --
-			// or else the input file is invalid
-			throw new IllegalArgumentException("ZCT size vs image count mismatch " +
-				"(sizeZ=" + zSize + ", sizeC=" + cSize + ", sizeT=" + tSize +
-				", total=" + numPlanes + ")");
-		}
-		if (planeIndex < 0 || planeIndex >= numPlanes) {
-			throw new IllegalArgumentException("Invalid plane index: " + planeIndex +
-				"/" + numPlanes);
-		}
-
-		// assign rasterization order
-		final int len0 = iz == 0 ? zSize : (ic == 0 ? cSize : tSize);
-		final int len1 = iz == 1 ? zSize : (ic == 1 ? cSize : tSize);
-		// int len2 = iz == 2 ? sizeZ : (ic == 2 ? sizeC : sizeT);
-		final int v0 = planeIndex % len0;
-		final int v1 = planeIndex / len0 % len1;
-		final int v2 = planeIndex / len0 / len1;
-		final int z = iz == 0 ? v0 : (iz == 1 ? v1 : v2);
-		final int c = ic == 0 ? v0 : (ic == 1 ? v1 : v2);
-		final int t = it == 0 ? v0 : (it == 1 ? v1 : v2);
-
-		return new int[] { z, c, t };
+		return rasterToPosition(imageIndex, planeIndex, reader.getMetadata());
 	}
 
 	/**
-	 * Converts index from the given dimension order to the reader's native one.
-	 * This method is useful for shuffling the planar order around (rather than
-	 * eassigning ZCT sizes as {@link DimensionSwapper} does).
+	 * Computes a unique N-D position corresponding to the given rasterized index
+	 * value.
 	 * 
-	 * @throws FormatException Never actually thrown.
+	 * @param imageIndex image index within dataset
+	 * @param planeIndex rasterized plane index to convert to axis indices
+	 * @param metadata metadata describing the dataset
+	 * @return position along each dimensional axis
 	 */
-	public static int getReorderedIndex(final Reader reader,
-		final int imageIndex, final String newOrder, final int newIndex)
-		throws FormatException
+	public static long[] rasterToPosition(final int imageIndex,
+		final int planeIndex, final Metadata m)
 	{
-		final Metadata meta = reader.getMetadata();
-		final int zSize = meta.getAxisLength(imageIndex, Axes.Z);
-		final int cSize = meta.getEffectiveSizeC(imageIndex);
-		final int tSize = meta.getAxisLength(imageIndex, Axes.TIME);
-		final int numPlanes = meta.getPlaneCount(imageIndex);
-
-		return getReorderedIndex(findDimensionOrder(reader, imageIndex), newOrder,
-			zSize, cSize, tSize, numPlanes, imageIndex, newIndex);
-	}
-
-	/**
-	 * Converts index from one dimension order to another. This method is useful
-	 * for shuffling the planar order around (rather than eassigning ZCT sizes as
-	 * {@link DimensionSwapper} does).
-	 * 
-	 * @param origOrder Original dimension order.
-	 * @param newOrder New dimension order.
-	 * @param zSize Total number of focal planes.
-	 * @param cSize Total number of channels.
-	 * @param tSize Total number of time points.
-	 * @param num Total number of image planes (zSize * cSize * tSize), specified
-	 *          as a consistency check.
-	 * @param newIndex 1D (rasterized) index according to new dimension order.
-	 * @return rasterized index according to original dimension order.
-	 */
-	public static int getReorderedIndex(final String origOrder,
-		final String newOrder, final int zSize, final int cSize, final int tSize,
-		final int numPlanes, final int imageIndex, final int newIndex)
-	{
-		final int[] zct =
-			getZCTCoords(newOrder, zSize, cSize, tSize, numPlanes, imageIndex,
-				newIndex);
-		return getIndex(origOrder, zSize, cSize, tSize, numPlanes, zct[0], zct[1],
-			zct[2]);
-	}
-
-	/**
-	 * Computes a unique 1-D index corresponding to the given multidimensional
-	 * position.
-	 * 
-	 * @param lengths the maximum value for each positional dimension
-	 * @param pos position along each dimensional axis
-	 * @return rasterized index value
-	 */
-	public static int positionToRaster(final int[] lengths, final int[] pos) {
-		int offset = 1;
-		int raster = 0;
-		for (int i = 0; i < pos.length; i++) {
-			raster += offset * pos[i];
-			offset *= lengths[i];
-		}
-		return raster;
+		final long[] axisLengths = m.getAxesLengthsNonPlanar(imageIndex);
+		return rasterToPosition(axisLengths, planeIndex);
 	}
 
 	/**
@@ -596,8 +300,9 @@ public final class FormatTools {
 	 * @param raster rasterized index value
 	 * @return position along each dimensional axis
 	 */
-	public static int[] rasterToPosition(final int[] lengths, final int raster) {
-		return rasterToPosition(lengths, raster, new int[lengths.length]);
+	public static long[] rasterToPosition(final long[] lengths, final int raster)
+	{
+		return rasterToPosition(lengths, raster, new long[lengths.length]);
 	}
 
 	/**
@@ -609,13 +314,13 @@ public final class FormatTools {
 	 * @param pos preallocated position array to populate with the result
 	 * @return position along each dimensional axis
 	 */
-	public static int[] rasterToPosition(final int[] lengths, int raster,
-		final int[] pos)
+	public static long[] rasterToPosition(final long[] lengths, int raster,
+		final long[] pos)
 	{
-		int offset = 1;
+		long offset = 1;
 		for (int i = 0; i < pos.length; i++) {
-			final int offset1 = offset * lengths[i];
-			final int q = i < pos.length - 1 ? raster % offset1 : raster;
+			final long offset1 = offset * lengths[i];
+			final long q = i < pos.length - 1 ? raster % offset1 : raster;
 			pos[i] = q / offset;
 			raster -= q;
 			offset = offset1;
@@ -624,11 +329,60 @@ public final class FormatTools {
 	}
 
 	/**
+	 * Computes a unique 1-D index corresponding to the given multidimensional
+	 * position.
+	 * 
+	 * @param imageIndex image index within dataset
+	 * @param reader reader used to open the dataset
+	 * @param planeIndices position along each dimensional axis
+	 * @return rasterized index value
+	 */
+	public static long positionToRaster(final int imageIndex,
+		final Reader reader, final long[] planeIndices)
+	{
+		return positionToRaster(imageIndex, reader.getMetadata(), planeIndices);
+	}
+
+	/**
+	 * Computes a unique 1-D index corresponding to the given multidimensional
+	 * position.
+	 * 
+	 * @param imageIndex image index within dataset
+	 * @param metadata metadata describing the dataset
+	 * @param planeIndices position along each dimensional axis
+	 * @return rasterized index value
+	 */
+	public static long positionToRaster(final int imageIndex,
+		final Metadata m, final long[] planeIndices)
+	{
+		final long[] planeSizes = m.getAxesLengthsNonPlanar(imageIndex);
+		return positionToRaster(planeSizes, planeIndices);
+	}
+
+	/**
+	 * Computes a unique 1-D index corresponding to the given multidimensional
+	 * position.
+	 * 
+	 * @param lengths the maximum value for each positional dimension
+	 * @param pos position along each dimensional axis
+	 * @return rasterized index value
+	 */
+	public static long positionToRaster(final long[] lengths, final long[] pos) {
+		long offset = 1;
+		long raster = 0l;
+		for (int i = 0; i < pos.length; i++) {
+			raster += offset * pos[i];
+			offset *= lengths[i];
+		}
+		return raster;
+	}
+
+	/**
 	 * Computes the number of raster values for a positional array with the given
 	 * lengths.
 	 */
-	public static int getRasterLength(final int[] lengths) {
-		int len = 1;
+	public static long getRasterLength(final long[] lengths) {
+		long len = 1;
 		for (int i = 0; i < lengths.length; i++)
 			len *= lengths[i];
 		return len;
@@ -715,21 +469,21 @@ public final class FormatTools {
 	 * sizes are all valid for the given reader. If 'bufLength' is less than 0,
 	 * then the buffer length check is not performed.
 	 */
-	public static void checkPlaneParameters(final Reader r, final int imageIndex,
-		final int planeIndex, final int bufLength, final int x, final int y,
-		final int w, final int h) throws FormatException
+	public static void checkPlaneParameters(final Metadata m, final int imageIndex,
+		final int planeIndex, final int bufLength, final long[] planeMin,
+		final long[] planeMax) throws FormatException
 	{
-		assertId(r.getCurrentFile(), true, 2);
-		checkPlaneNumber(r, imageIndex, planeIndex);
-		checkTileSize(r, x, y, w, h, imageIndex);
-		if (bufLength >= 0) checkBufferSize(r, bufLength, w, h, imageIndex);
+		assertId(m.getSource().getFileName(), true, 2);
+		checkPlaneNumber(m, imageIndex, planeIndex);
+		checkTileSize(m, planeMin, planeMax, imageIndex);
+		if (bufLength >= 0) checkBufferSize(m, bufLength, planeMax, imageIndex);
 	}
 
 	/** Checks that the given plane number is valid for the given reader. */
-	public static void checkPlaneNumber(final Reader r, final int imageIndex,
+	public static void checkPlaneNumber(final Metadata m, final int imageIndex,
 		final int planeIndex) throws FormatException
 	{
-		final int imageCount = r.getMetadata().getPlaneCount(imageIndex);
+		final int imageCount = m.getPlaneCount(imageIndex);
 		if (planeIndex < 0 || planeIndex >= imageCount) {
 			throw new FormatException("Invalid plane number: " + planeIndex + " (" +
 			/* TODO series=" +
@@ -738,15 +492,19 @@ public final class FormatTools {
 	}
 
 	/** Checks that the given tile size is valid for the given reader. */
-	public static void checkTileSize(final Reader r, final int x, final int y,
-		final int w, final int h, final int imageIndex) throws FormatException
+	public static void checkTileSize(final Metadata m, final long[] planeMin,
+		final long[] planeMax, final int imageIndex) throws FormatException
 	{
-		final int width = r.getMetadata().getAxisLength(imageIndex, Axes.X);
-		final int height = r.getMetadata().getAxisLength(imageIndex, Axes.Y);
-		if (x < 0 || y < 0 || w < 0 || h < 0 || (x + w) > width || (y + h) > height)
-		{
-			throw new FormatException("Invalid tile size: x=" + x + ", y=" + y +
-				", w=" + w + ", h=" + h);
+		List<CalibratedAxis> axes = m.getAxesPlanar(imageIndex);
+		
+		for (int i=0; i<axes.size(); i++) {
+			final long start = planeMin[i];
+			final long end = planeMax[i];
+			final long length = m.getAxisLength(imageIndex, axes.get(i));
+
+			if (start < 0 || end < 0 || (start + end) > length) throw new FormatException(
+				"Invalid planar size: start=" + start + ", end=" + end +
+					", length in metadata=" + length);
 		}
 	}
 
@@ -754,23 +512,23 @@ public final class FormatTools {
 	 * Checks that the given buffer length is long enough to hold planes of the
 	 * specified image index, using the provided Reader.
 	 */
-	public static void checkBufferSize(final int imageIndex, final Reader r,
+	public static void checkBufferSize(final int imageIndex, final Metadata m,
 		final int len) throws FormatException
 	{
-		checkBufferSize(r, len, r.getMetadata().getAxisLength(imageIndex, Axes.X),
-			r.getMetadata().getAxisLength(imageIndex, Axes.Y), imageIndex);
+		checkBufferSize(m, len, m.getAxesLengthsPlanar(imageIndex), imageIndex);
 	}
 
 	/**
-	 * Checks that the given buffer size is large enough to hold a w * h image as
-	 * returned by the given reader.
+	 * Checks that the given buffer size is large enough to hold an image with the
+	 * given planar lengths.
 	 * 
 	 * @throws FormatException if the buffer is too small
 	 */
-	public static void checkBufferSize(final Reader r, final int len,
-		final int w, final int h, final int imageIndex) throws FormatException
+	public static void checkBufferSize(final Metadata m, final int len,
+		final long[] planeLengths, final int imageIndex) throws FormatException
 	{
-		final int size = getPlaneSize(r, w, h, imageIndex);
+		final long size =
+			getPlaneSize(m, new long[planeLengths.length], planeLengths, imageIndex);
 		if (size > len) {
 			throw new FormatException("Buffer too small (got " + len + ", expected " +
 				size + ").");
@@ -789,18 +547,35 @@ public final class FormatTools {
 		return stream.length() >= len;
 	}
 
-	/** Returns the size in bytes of a single plane. */
-	public static int getPlaneSize(final Reader r, final int imageIndex) {
-		return getPlaneSize(r, r.getMetadata().getAxisLength(imageIndex, Axes.X), r
-			.getMetadata().getAxisLength(imageIndex, Axes.Y), imageIndex);
+	/** Returns the size in bytes of a single plane read by the given Reader. */
+	public static long getPlaneSize(final Reader r, final int imageIndex) {
+		return getPlaneSize(r.getMetadata(), imageIndex);
+	}
+
+	/** Returns the size in bytes of a tile defined by the given Metadata. */
+	public static long getPlaneSize(final Metadata m, final int imageIndex) {
+		return m.getPlaneSize(imageIndex);
 	}
 
 	/** Returns the size in bytes of a w * h tile. */
-	public static int getPlaneSize(final Reader r, final int w, final int h,
-		final int imageIndex)
+	public static long getPlaneSize(final Metadata m, final int width,
+		final int height, int imageIndex)
 	{
-		return w * h * r.getMetadata().getRGBChannelCount(imageIndex) *
-			getBytesPerPixel(r.getMetadata().getPixelType(imageIndex));
+		return getPlaneSize(m, new long[2], new long[]{width, height}, imageIndex);
+	}
+
+	/** Returns the size in bytes of a plane with the given minima and maxima. */
+	public static long getPlaneSize(final Metadata m, final long[] planeMin,
+		final long[] planeMax, final int imageIndex)
+	{
+		if (planeMin.length != planeMax.length) throw new IllegalArgumentException(
+			"Plane min array size: " + planeMin.length +
+				" does not match plane max array size: " + planeMax.length);
+		long length = m.getBitsPerPixel(imageIndex) / 8;
+		for (int i = 0; i < planeMin.length; i++) {
+			length *= planeMax[i] - planeMin[i];
+		}
+		return length;
 	}
 
 	// -- Utility methods - pixel types --
@@ -974,8 +749,8 @@ public final class FormatTools {
 
 		filename = filename.replaceAll(SERIES_NAME, imageName);
 
-		final int[] coordinates = FormatTools.getZCTCoords(r, imageIndex, image);
-
+		final long[] coordinates =
+			FormatTools.rasterToPosition(imageIndex, image, r);
 		filename = filename.replaceAll(Z_NUM, String.valueOf(coordinates[0]));
 		filename = filename.replaceAll(T_NUM, String.valueOf(coordinates[2]));
 		filename = filename.replaceAll(CHANNEL_NUM, String.valueOf(coordinates[1]));
@@ -1060,16 +835,25 @@ public final class FormatTools {
 		try {
 			r.exec("import io.scif.gui.AWTImageTools");
 
-			final int planeSize = getPlaneSize(reader, imageIndex);
+			final long planeSize = getPlaneSize(reader, imageIndex);
 			Plane plane = null;
 			if (planeSize < 0) {
-				final int width = reader.getMetadata().getThumbSizeX(imageIndex) * 4;
-				final int height = reader.getMetadata().getThumbSizeY(imageIndex) * 4;
-				final int x =
-					(reader.getMetadata().getAxisLength(imageIndex, Axes.X) - width) / 2;
-				final int y =
-					(reader.getMetadata().getAxisLength(imageIndex, Axes.Y) - height) / 2;
-				plane = reader.openPlane(imageIndex, planeIndex, x, y, width, height);
+				final Metadata m = reader.getMetadata();
+				final long[] planeMax = m.getAxesLengthsPlanar(imageIndex);
+				final long[] planeMin = new long[planeMax.length];
+
+				final int xIndex = m.getAxisIndex(imageIndex, Axes.X);
+				final int yIndex = m.getAxisIndex(imageIndex, Axes.Y);
+				final long width = m.getThumbSizeX(imageIndex) * 4;
+				final long height = m.getThumbSizeY(imageIndex) * 4;
+
+				planeMin[xIndex] = (m.getAxisLength(imageIndex, Axes.X) - width) / 2;
+				planeMin[yIndex] =
+					(m.getAxisLength(imageIndex, Axes.Y) - height) / 2;
+				planeMax[xIndex] = width;
+				planeMax[yIndex] = height;
+
+				plane = reader.openPlane(imageIndex, planeIndex, planeMin, planeMax);
 			}
 			else {
 				plane = reader.openPlane(imageIndex, planeIndex);
@@ -1093,9 +877,9 @@ public final class FormatTools {
 		}
 
 		if (bytes.length == 1) return bytes[0];
-		final int rgbChannelCount =
-			reader.getMetadata().getRGBChannelCount(imageIndex);
-		final byte[] rtn = new byte[rgbChannelCount * bytes[0].length];
+		final long rgbChannelCount =
+			reader.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+		final byte[] rtn = new byte[(int) rgbChannelCount * bytes[0].length];
 
 		if (!reader.getMetadata().isInterleaved(imageIndex)) {
 			for (int i = 0; i < rgbChannelCount; i++) {
@@ -1110,7 +894,7 @@ public final class FormatTools {
 
 			for (int i = 0; i < bytes[0].length / bpp; i += bpp) {
 				for (int j = 0; j < rgbChannelCount; j++) {
-					System.arraycopy(bytes[j], i, rtn, (i * rgbChannelCount) + j * bpp,
+					System.arraycopy(bytes[j], i, rtn, (int)(i * rgbChannelCount) + j * bpp,
 						bpp);
 				}
 			}

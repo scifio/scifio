@@ -127,11 +127,8 @@ public class OBFFormat extends AbstractFormat {
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
+			iMeta.setPlanarAxisCount(2);
 			iMeta.setIndexed(false);
-			iMeta.setRGB(false);
-			iMeta.setInterleaved(false);
-			iMeta.setPlaneCount(iMeta.getAxisLength(Axes.Z) *
-				iMeta.getAxisLength(Axes.TIME) * iMeta.getAxisLength(Axes.CHANNEL));
 			iMeta.setOrderCertain(false);
 		}
 
@@ -389,14 +386,19 @@ public class OBFFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buffer = plane.getBytes();
-
-			final int rows = meta.getAxisLength(imageIndex, Axes.Y);
-			final int columns = meta.getAxisLength(imageIndex, Axes.X);
+			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
+			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xAxis],
+								y = (int) planeMin[yAxis],
+								w = (int) planeMax[xAxis],
+								h = (int) planeMax[yAxis];
+			final int rows = (int)meta.getAxisLength(imageIndex, Axes.Y);
+			final int columns = (int)meta.getAxisLength(imageIndex, Axes.X);
 			final int bytesPerPixel = meta.getBitsPerPixel(imageIndex) / 8;
 
 			final Stack stack = meta.getStacks().get(imageIndex);

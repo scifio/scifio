@@ -171,11 +171,10 @@ public class NRRDFormat extends AbstractFormat {
 		public void populateImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
-			iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) > 1);
-			iMeta.setInterleaved(true);
-			iMeta.setPlaneCount(iMeta.getAxisLength(Axes.Z) *
-				iMeta.getAxisLength(Axes.TIME));
-			iMeta.setBitsPerPixel(FormatTools.getBitsPerPixel(iMeta.getPixelType()));
+			if (iMeta.getAxisLength(Axes.CHANNEL) > 1) {
+				iMeta.setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y);
+				iMeta.setPlanarAxisCount(3);
+			}
 			iMeta.setIndexed(false);
 			iMeta.setFalseColor(false);
 			iMeta.setMetadataComplete(true);
@@ -298,6 +297,7 @@ public class NRRDFormat extends AbstractFormat {
 			iMeta.setAxisLength(Axes.Z, 1);
 			iMeta.setAxisLength(Axes.CHANNEL, 1);
 			iMeta.setAxisLength(Axes.TIME, 1);
+			iMeta.setPlanarAxisCount(2);
 
 			String line = in.readLine();
 			while (line != null && line.length() > 0) {
@@ -335,24 +335,25 @@ public class NRRDFormat extends AbstractFormat {
 
 							if (numDimensions >= 3 && i == 0 && size > 1 && size <= 16) {
 								iMeta.setAxisLength(Axes.CHANNEL, size);
+								iMeta.setPlanarAxisCount(3);
 							}
 							else if (i == 0 ||
-								(iMeta.getAxisLength(Axes.CHANNEL) > 1 && i == 1))
+								(iMeta.getPlanarAxisCount() > 2 && i == 1))
 							{
 								iMeta.setAxisLength(Axes.X, size);
 							}
 							else if (i == 1 ||
-								(iMeta.getAxisLength(Axes.CHANNEL) > 1 && i == 2))
+								(iMeta.getPlanarAxisCount() > 2 && i == 2))
 							{
 								iMeta.setAxisLength(Axes.Y, size);
 							}
 							else if (i == 2 ||
-								(iMeta.getAxisLength(Axes.CHANNEL) > 1 && i == 3))
+								(iMeta.getPlanarAxisCount() > 2 && i == 3))
 							{
 								iMeta.setAxisLength(Axes.Z, size);
 							}
 							else if (i == 3 ||
-								(iMeta.getAxisLength(Axes.CHANNEL) > 1 && i == 4))
+								(iMeta.getPlanarAxisCount() > 2 && i == 4))
 							{
 								iMeta.setAxisLength(Axes.TIME, size);
 							}
@@ -474,20 +475,20 @@ public class NRRDFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public int getOptimalTileHeight(final int imageIndex) {
+		public long getOptimalTileHeight(final int imageIndex) {
 			return getMetadata().getAxisLength(imageIndex, Axes.Y);
 		}
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
 
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-				buf.length, x, y, w, h);
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+				buf.length, planeMin, planeMax);
 
 			// TODO : add support for additional encoding types
 			if (meta.getDataFile() == null) {
@@ -495,7 +496,7 @@ public class NRRDFormat extends AbstractFormat {
 					final long planeSize = FormatTools.getPlaneSize(this, imageIndex);
 					getStream().seek(meta.getOffset() + planeIndex * planeSize);
 
-					readPlane(getStream(), imageIndex, x, y, w, h, plane);
+					readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
 					return plane;
 				}
 				throw new UnsupportedCompressionException("Unsupported encoding: " +
@@ -506,7 +507,7 @@ public class NRRDFormat extends AbstractFormat {
 					new RandomAccessInputStream(getContext(), meta.getDataFile());
 				s.seek(meta.getOffset() + planeIndex *
 					FormatTools.getPlaneSize(this, imageIndex));
-				readPlane(s, imageIndex, x, y, w, h, plane);
+				readPlane(s, imageIndex, planeMin, planeMax, plane);
 				s.close();
 				return plane;
 			}
@@ -515,7 +516,8 @@ public class NRRDFormat extends AbstractFormat {
 			if (meta.isInitializeHelper() && meta.getDataFile() != null &&
 				meta.getHelper() != null)
 			{
-				meta.getHelper().openPlane(imageIndex, planeIndex, plane, x, y, w, h);
+				meta.getHelper().openPlane(imageIndex, planeIndex, plane, planeMin,
+					planeMax);
 				return plane;
 			}
 

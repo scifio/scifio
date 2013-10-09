@@ -122,12 +122,12 @@ public class DataToolsTest {
 
 	// -- Helper methods --
 
-	private void assertSafeMultiply32Pass(final int expected, final int... sizes)
+	private void assertSafeMultiply32Pass(final int expected, final long... sizes)
 	{
 		assertEquals(expected, DataTools.safeMultiply32(sizes));
 	}
 
-	private void assertSafeMultiply32Fail(final String msg, final int... sizes) {
+	private void assertSafeMultiply32Fail(final String msg, final long... sizes) {
 		int actual;
 		try {
 			actual = DataTools.safeMultiply32(sizes);

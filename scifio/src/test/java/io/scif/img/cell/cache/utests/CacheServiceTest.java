@@ -395,7 +395,7 @@ public class CacheServiceTest {
 	// return a fake id for a file of the specified size
 	private String makeFakeFile(final long bytes) {
 		final long dim = Math.round(Math.sqrt(bytes));
-		return "testImg&sizeX=" + dim + "&sizeY=" + dim + ".fake";
+		return "testImg&lengths=" + dim + "," + dim + ".fake";
 	}
 
 	// Creates a SCIFIOCellCache anonymously for a file of the specified size

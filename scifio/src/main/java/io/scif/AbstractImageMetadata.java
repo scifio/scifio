@@ -60,21 +60,23 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Constants --
 
 	/** Default thumbnail width and height. */
-	protected static final int THUMBNAIL_DIMENSION = 128;
+	protected static final long THUMBNAIL_DIMENSION = 128;
 
 	// -- Fields --
 
-	/** Number of planes in this image */
-	@Field(label = "planeCount")
-	private int planeCount;
+	/** Cached list of planar axes. */
+	private List<CalibratedAxis> planarAxes;
+
+	/** Cached list of non-planar axes. */
+	private List<CalibratedAxis> extendedAxes;
 
 	/** Width (in pixels) of thumbnail planes in this image. */
 	@Field(label = "thumbSizeX")
-	private int thumbSizeX;
+	private long thumbSizeX;
 
 	/** Height (in pixels) of thumbnail planes in this image. */
 	@Field(label = "thumbSizeY")
-	private int thumbSizeY;
+	private long thumbSizeY;
 
 	/**
 	 * Describes the number of bytes per pixel. Must be one of the <i>static</i>
@@ -96,7 +98,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	/** Lengths of each axis. Order is parallel of dimTypes. */
 	@Field(label = "dimLengths")
-	private final HashMap<AxisType, Integer> axisLengths;
+	private final HashMap<AxisType, Long> axisLengths;
 
 	/**
 	 * Indicates whether or not we are confident that the dimension order is
@@ -105,27 +107,20 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Field(label = "orderCertain")
 	private boolean orderCertain;
 
-	/**
-	 * Indicates whether or not the images are stored as RGB (multiple channels
-	 * per plane).
-	 */
-	@Field(label = "rgb")
-	private boolean rgb;
-
 	/** Indicates whether or not each pixel's bytes are in little endian order. */
 	@Field(label = "littleEndian")
 	private boolean littleEndian;
 
-	/**
-	 * True if channels are stored RGBRGBRGB...; false if channels are stored
-	 * RRR...GGG...BBB...
-	 */
-	@Field(label = "interleaved")
-	private boolean interleaved;
-
 	/** Indicates whether or not the images are stored as indexed color. */
 	@Field(label = "indexed")
 	private boolean indexed;
+
+	/**
+	 * Number of planar axes in this image. These will always be the first axes
+	 * in a list of planar and non-planar axes.
+	 */
+	@Field(label = "planarAxiscount")
+	private int planarAxisCount = -1;
 
 	/** Indicates whether or not we can ignore the color map (if present). */
 	@Field(label = "falseColor")
@@ -152,7 +147,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	public AbstractImageMetadata() {
 		axes = new ArrayList<CalibratedAxis>();
-		axisLengths = new HashMap<AxisType, Integer>();
+		axisLengths = new HashMap<AxisType, Long>();
 	}
 
 	public AbstractImageMetadata(final ImageMetadata copy) {
@@ -163,12 +158,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Setters --
 
 	@Override
-	public void setThumbSizeX(final int thumbSizeX) {
+	public void setThumbSizeX(final long thumbSizeX) {
 		this.thumbSizeX = thumbSizeX;
 	}
 
 	@Override
-	public void setThumbSizeY(final int thumbSizeY) {
+	public void setThumbSizeY(final long thumbSizeY) {
 		this.thumbSizeY = thumbSizeY;
 	}
 
@@ -188,23 +183,19 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public void setRGB(final boolean rgb) {
-		this.rgb = rgb;
-	}
-
-	@Override
 	public void setLittleEndian(final boolean littleEndian) {
 		this.littleEndian = littleEndian;
 	}
 
 	@Override
-	public void setInterleaved(final boolean interleaved) {
-		this.interleaved = interleaved;
+	public void setIndexed(final boolean indexed) {
+		this.indexed = indexed;
 	}
 
 	@Override
-	public void setIndexed(final boolean indexed) {
-		this.indexed = indexed;
+	public void setPlanarAxisCount(final int count) {
+		planarAxisCount = count;
+		clearCachedAxes();
 	}
 
 	@Override
@@ -223,42 +214,54 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public void
-		setAxes(final CalibratedAxis[] axes, final int[] axisLengths)
-	{
+	public void setAxes(final CalibratedAxis[] axes, final long[] axisLengths) {
 		setAxes(axes);
 		setAxisLengths(axisLengths);
 	}
 
 	@Override
-	public void setAxes(final CalibratedAxis[] axis) {
-		this.axes = new ArrayList<CalibratedAxis>(Arrays.asList(axis));
+	public void setAxisTypes(final AxisType... axisTypes) {
+		CalibratedAxis[] axes = new CalibratedAxis[axisTypes.length];
+		
+		for (int i=0; i<axisTypes.length; i++) {
+			AxisType t = axisTypes[i];
+			CalibratedAxis c = getAxis(t);
+			if (c == null) c = FormatTools.createAxis(t);
+			axes[i] = c;
+		}
+		setAxes(axes);
 	}
 
 	@Override
-	public void setAxisLengths(final int[] axisLengths) {
-		if (axisLengths.length != axes.size()) {
-			throw new IllegalArgumentException("Tried to set " + axisLengths.length +
-				" axis lengths, but " + axes.size() + " axes present." +
-				" Call setAxes first.");
-		}
+	public void setAxes(final CalibratedAxis... axisTypes) {
+		this.axes = new ArrayList<CalibratedAxis>(Arrays.asList(axisTypes));
+		clearCachedAxes();
+	}
 
-		for (int i = 0; i < axes.size(); i++) {
+	@Override
+	public void setAxisLengths(final long[] axisLengths) {
+		if (axisLengths.length > axes.size()) throw new IllegalArgumentException(
+			"Tried to set " + axisLengths.length + " axis lengths, but " +
+				axes.size() + " axes present." + " Call setAxisTypes first.");
+
+		for (int i = 0; i < axisLengths.length; i++) {
 			updateLength(axes.get(i).type(), axisLengths[i]);
 		}
 	}
 
 	@Override
-	public void setAxisLength(final CalibratedAxis axis, final int length) {
+	public void setAxisLength(final CalibratedAxis axis, final long length) {
 		setAxisLength(axis.type(), length);
 	}
 
 	@Override
-	public void setAxisLength(final AxisType axisType, final int length) {
+	public void setAxisLength(final AxisType axisType, final long length) {
 		if (getAxisIndex(axisType) == -1) {
 			addAxis(FormatTools.createAxis(axisType), length);
 		}
-		else updateLength(axisType, length);
+		else {
+			updateLength(axisType, length);
+		}
 	}
 
 	@Override
@@ -266,15 +269,22 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		final int oldIndex = getAxisIndex(axis);
 
 		// Replace existing axis
-		if (oldIndex == -1) {
-			final int length = axisLengths.remove(axes.get(index));
 
-			axes.set(index, axis);
+		if (oldIndex >= 0) {
+			final long length = axisLengths.remove(axes.get(oldIndex).type());
+			axes.remove(oldIndex);
+
+			if (index == axes.size()) {
+				axes.add(axis);
+			}
+			else {
+				axes.add(index, axis);
+			}
 			axisLengths.put(axis.type(), length);
 		}
 		// Axis is already in the list. Move it here.
 		else {
-			axes.remove(axis);
+			axes.remove(axes.get(oldIndex));
 			axes.add(index, axis);
 		}
 	}
@@ -284,17 +294,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		setAxis(index, FormatTools.createAxis(axisType));
 	}
 
-	@Override
-	public void setPlaneCount(final int planeCount) {
-		this.planeCount = planeCount;
-	}
-
 	// -- Getters --
-
-	@Override
-	public int getPlaneCount() {
-		return planeCount;
-	}
 
 	@Override
 	public long getSize() {
@@ -315,14 +315,15 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public int getThumbSizeX() {
-		int thumbX = thumbSizeX;
+
+	public long getThumbSizeX() {
+		long thumbX = thumbSizeX;
 
 		// If the X thumbSize isn't explicitly set, scale the actual width using
 		// the thumbnail dimension constant
 		if (thumbX == 0) {
-			final int sx = getAxisLength(Axes.X);
-			final int sy = getAxisLength(Axes.Y);
+			final long sx = getAxisLength(Axes.X);
+			final long sy = getAxisLength(Axes.Y);
 
 			if (sx < THUMBNAIL_DIMENSION && sy < THUMBNAIL_DIMENSION) thumbX = sx;
 			else if (sx > sy) thumbX = THUMBNAIL_DIMENSION;
@@ -334,14 +335,14 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public int getThumbSizeY() {
-		int thumbY = thumbSizeY;
+	public long getThumbSizeY() {
+		long thumbY = thumbSizeY;
 
 		// If the Y thumbSize isn't explicitly set, scale the actual width using
 		// the thumbnail dimension constant
 		if (thumbY == 0) {
-			final int sx = getAxisLength(Axes.X);
-			final int sy = getAxisLength(Axes.Y);
+			final long sx = getAxisLength(Axes.X);
+			final long sy = getAxisLength(Axes.Y);
 			thumbY = 1;
 
 			if (sx < THUMBNAIL_DIMENSION && sy < THUMBNAIL_DIMENSION) thumbY = sy;
@@ -373,13 +374,42 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public CalibratedAxis[] getAxes() {
-		return axes.toArray(new CalibratedAxis[axes.size()]);
+	public List<CalibratedAxis> getAxes() {
+		return axes;
 	}
 
 	@Override
-	public int[] getAxesLengths() {
-		final int[] lengths = new int[axes.size()];
+	public List<CalibratedAxis> getAxesPlanar() {
+		initializedCheck();
+		return getAxisList(true);
+	}
+
+	@Override
+	public List<CalibratedAxis> getAxesNonPlanar() {
+		initializedCheck();
+		return getAxisList(false);
+	}
+
+	@Override
+	public int getPlaneCount() {
+		initializedCheck();
+		int length = 1;
+
+		for (final CalibratedAxis t : getAxesNonPlanar()) {
+			length *= getAxisLength(t);
+		}
+
+		return length;
+	}
+
+	@Override
+	public long[] getAxesLengths() {
+		return getAxesLengths(axes);
+	}
+
+	@Override
+	public long[] getAxesLengths(final List<CalibratedAxis> axes) {
+		final long[] lengths = new long[axes.size()];
 
 		for (int i = 0; i < axes.size(); i++) {
 			lengths[i] = getAxisLength(axes.get(i));
@@ -389,13 +419,20 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public boolean isOrderCertain() {
-		return orderCertain;
+	public long[] getAxesLengthsPlanar() {
+		initializedCheck();
+		return getAxesLengths(getAxesPlanar());
 	}
 
 	@Override
-	public boolean isRGB() {
-		return rgb;
+	public long[] getAxesLengthsNonPlanar() {
+		initializedCheck();
+		return getAxesLengths(getAxesNonPlanar());
+	}
+
+	@Override
+	public boolean isOrderCertain() {
+		return orderCertain;
 	}
 
 	@Override
@@ -404,13 +441,25 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public boolean isInterleaved() {
-		return interleaved;
+	public boolean isIndexed() {
+		return indexed;
 	}
 
 	@Override
-	public boolean isIndexed() {
-		return indexed;
+	public int getPlanarAxisCount() {
+		initializedCheck();
+		return planarAxisCount;
+	}
+
+	@Override
+	public boolean isInterleaved() {
+		return getAxisIndex(Axes.X) != 0 || getAxisIndex(Axes.Y) != 1;
+	}
+
+	@Override
+	public boolean isMultichannel() {
+		final int cIndex = getAxisIndex(Axes.CHANNEL);
+		return (cIndex < getPlanarAxisCount() && cIndex >= 0);
 	}
 
 	@Override
@@ -429,28 +478,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public int getEffectiveSizeC() {
-		final int sizeZT = getAxisLength(Axes.Z) * getAxisLength(Axes.TIME);
-		if (sizeZT == 0) return 0;
-		return getPlaneCount() / sizeZT;
-	}
-
-	@Override
-	public int getRGBChannelCount() {
-		if (!isRGB()) return 1;
-
-		final int effC = getEffectiveSizeC();
-		if (effC == 0) return 0;
-		return getAxisLength(Axes.CHANNEL) / effC;
-	}
-
-	@Override
 	public CalibratedAxis getAxis(final int axisIndex) {
 		return axes.get(axisIndex);
 	}
 
 	@Override
-	public int getAxisLength(final int axisIndex) {
+
+	public long getAxisLength(final int axisIndex) {
 		if (axisIndex < 0 || axisIndex >= axes.size()) throw new IllegalArgumentException(
 			"Invalid axisIndex: " + axisIndex + ". " + axes.size() +
 				" axes present.");
@@ -459,13 +493,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public int getAxisLength(final CalibratedAxis t) {
+	public long getAxisLength(final CalibratedAxis t) {
 		return getAxisLength(t.type());
 	}
 
 	@Override
-	public int getAxisLength(final AxisType t) {
-		if (axisLengths == null || !axisLengths.containsKey(t)) return 0;
+	public long getAxisLength(final AxisType t) {
+		if (axisLengths == null || !axisLengths.containsKey(t)) return 1;
 
 		return axisLengths.get(t);
 	}
@@ -490,21 +524,24 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void addAxis(final CalibratedAxis axis) {
-		addAxis(axis, 0);
+		addAxis(axis, 1);
 	}
 
 	@Override
-	public void addAxis(final CalibratedAxis axis, final int value) {
+	public void addAxis(final CalibratedAxis axis, final long value) {
 		if (axes == null) axes = new ArrayList<CalibratedAxis>();
 
 		// See if the axis already exists
-		if (!axes.contains(axis)) axes.add(axis);
+		if (!axes.contains(axis)) {
+			axes.add(axis);
+			clearCachedAxes();
+		}
 
 		updateLength(axis.type(), value);
 	}
 
 	@Override
-	public void addAxis(final AxisType axisType, final int value) {
+	public void addAxis(final AxisType axisType, final long value) {
 		addAxis(FormatTools.createAxis(axisType), value);
 	}
 
@@ -512,18 +549,16 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	public void copy(final ImageMetadata toCopy) {
 		table = new DefaultMetaTable(toCopy.getTable());
 
-		axes = new ArrayList<CalibratedAxis>(Arrays.asList(toCopy.getAxes()));
+		axes = new ArrayList<CalibratedAxis>(toCopy.getAxes());
 		setAxisLengths(toCopy.getAxesLengths().clone());
 		bitsPerPixel = toCopy.getBitsPerPixel();
 		falseColor = toCopy.isFalseColor();
 		indexed = toCopy.isIndexed();
-		interleaved = toCopy.isInterleaved();
+		planarAxisCount = toCopy.getPlanarAxisCount();
 		littleEndian = toCopy.isLittleEndian();
 		metadataComplete = toCopy.isMetadataComplete();
 		orderCertain = toCopy.isOrderCertain();
 		pixelType = toCopy.getPixelType();
-		planeCount = toCopy.getPlaneCount();
-		rgb = toCopy.isRGB();
 		thumbnail = toCopy.isThumbnail();
 		thumbSizeX = toCopy.getThumbSizeX();
 		thumbSizeY = toCopy.getThumbSizeY();
@@ -542,8 +577,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		this.table = table;
 	}
 
-	// -- Serializable API Methods --
-
 	// -- Object API --
 
 	@Override
@@ -553,8 +586,74 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	// -- Helper methods --
 
-	private void updateLength(final AxisType axisType, final int value) {
+	/**
+	 * Resets the cached planar and non-planar axes. Used after the axes
+	 * or planarAxisCount are modified.
+	 */
+	private void clearCachedAxes() {
+		planarAxes = null;
+		extendedAxes = null;
+	}
+
+	/**
+	 * Sanity check to guarantee the validity of the current metadata. This makes
+	 * things slightly annoying, in that we can not choose a sensible default
+	 * value (e.g. 2). However, this seems preferable to the alternative of
+	 * trusting plane counts, interleaved and multichannel checks, etc... after
+	 * setting up the axes correctly but not specifying this count.
+	 */
+	private void initializedCheck() {
+		if (planarAxisCount == -1) {
+			throw new IllegalStateException(
+				"Invalid Metadata state: planar axis count not set.");
+		}
+	}
+
+	private void updateLength(final AxisType axisType, final long value) {
 		axisLengths.put(axisType, value);
-		
+	}
+
+	// If spatial == true, returns every non-CHANNEL axis after both X and Y
+	// have been seen. If false, returns every non-CHANNEL axis until both X
+	// and Y have been seen.
+	private List<CalibratedAxis> getAxisList(final boolean planar) {
+		int index = -1;
+		int end = -1;
+		List<CalibratedAxis> axisList = null;
+
+		if (planar) {
+			if (planarAxes == null) planarAxes = new ArrayList<CalibratedAxis>();
+			axisList = planarAxes;
+			index = 0;
+			end = getPlanarAxisCount();
+		}
+		else {
+			if (extendedAxes == null) extendedAxes = new ArrayList<CalibratedAxis>();
+			axisList = extendedAxes;
+			index = getPlanarAxisCount();
+			end = getAxes().size();
+		}
+
+		if (axisList.size() == 0) {
+			synchronized (axisList) {
+				if (axisList.size() == 0) {
+
+					axisList.clear();
+
+					int position = 0;
+					for (; index < end; index++) {
+						if (position <= axisList.size()) {
+							axisList.add(getAxes().get(index));
+							position++;
+						}
+						else {
+							axisList.set(position++, getAxes().get(index));
+						}
+					}
+				}
+			}
+		}
+
+		return axisList;
 	}
 }

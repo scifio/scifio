@@ -69,8 +69,8 @@ public class BitArrayLoader extends AbstractArrayLoader<BitArray> {
 	}
 
 	@Override
-	public BitArray emptyArray(final int[] dimensions) {
-		return new BitArray(countEntities(dimensions));
+	public BitArray emptyArray(final int entities) {
+		return new BitArray(entities);
 	}
 
 	@Override

@@ -41,6 +41,7 @@ import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.Metadata;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
@@ -64,7 +65,7 @@ import net.imglib2.meta.CalibratedAxis;
  * @see io.scif.filters.AbstractReaderFilter
  */
 public abstract class AbstractMetadataWrapper extends AbstractMetadata
-	implements MetadataWrapper
+implements MetadataWrapper
 {
 
 	// -- Fields --
@@ -105,7 +106,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 
 	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis axis,
-		final int value, final boolean passUp)
+		final long value, final boolean passUp)
 	{
 		super.addAxis(imageIndex, axis, value);
 		if (passUp) meta.addAxis(imageIndex, axis, value);
@@ -122,7 +123,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void setThumbSizeX(final int imageIndex, final int thumbX,
+	public void setThumbSizeX(final int imageIndex, final long thumbX,
 		final boolean passUp)
 	{
 		super.setThumbSizeX(imageIndex, thumbX);
@@ -130,7 +131,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void setThumbSizeY(final int imageIndex, final int thumbY,
+	public void setThumbSizeY(final int imageIndex, final long thumbY,
 		final boolean passUp)
 	{
 		super.setThumbSizeY(imageIndex, thumbY);
@@ -162,14 +163,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void setRGB(final int imageIndex, final boolean rgb,
-		final boolean passUp)
-	{
-		super.setRGB(imageIndex, rgb);
-		if (passUp) meta.setRGB(imageIndex, rgb);
-	}
-
-	@Override
 	public void setLittleEndian(final int imageIndex, final boolean littleEndian,
 		final boolean passUp)
 	{
@@ -178,19 +171,19 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void setInterleaved(final int imageIndex, final boolean interleaved,
-		final boolean passUp)
-	{
-		super.setInterleaved(imageIndex, interleaved);
-		if (passUp) meta.setInterleaved(imageIndex, interleaved);
-	}
-
-	@Override
 	public void setIndexed(final int imageIndex, final boolean indexed,
 		final boolean passUp)
 	{
 		super.setIndexed(imageIndex, indexed);
 		if (passUp) meta.setIndexed(imageIndex, indexed);
+	}
+
+	@Override
+	public void
+		setPlanarAxisCount(int imageIndex, final int count, boolean passUp)
+	{
+		super.setPlanarAxisCount(imageIndex, count);
+		if (passUp) meta.setPlanarAxisCount(imageIndex, count);
 	}
 
 	@Override
@@ -224,6 +217,12 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
+	public void setAxisTypes(final int imageIndex, final AxisType[] axisTypes,
+		boolean passUp) {
+		setAxes(imageIndex, FormatTools.createAxes(axisTypes), passUp);
+	}
+
+	@Override
 	public void setAxes(final int imageIndex,
 		final CalibratedAxis[] axes, final boolean passUp)
 	{
@@ -240,7 +239,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void setAxisLengths(final int imageIndex, final int[] axisLengths,
+	public void setAxisLengths(final int imageIndex, final long[] axisLengths,
 		final boolean passUp)
 	{
 		super.setAxisLengths(imageIndex, axisLengths);
@@ -249,7 +248,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 
 	@Override
 	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
-		final int length, final boolean passUp)
+		final long length, final boolean passUp)
 	{
 		super.setAxisLength(imageIndex, axis, length);
 		if (passUp) meta.setAxisLength(imageIndex, axis, length);
@@ -273,7 +272,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void setAxisLength(int imageIndex, AxisType axisType, int length,
+	public void setAxisLength(int imageIndex, AxisType axisType, long length,
 		boolean passUp)
 	{
 		super.setAxisLength(imageIndex, axisType, length);
@@ -287,18 +286,18 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 
 	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis axis,
-		final int value)
+		final long value)
 	{
 		addAxis(imageIndex, axis, value, true);
 	}
 
 	@Override
-	public void setThumbSizeX(final int imageIndex, final int thumbX) {
+	public void setThumbSizeX(final int imageIndex, final long thumbX) {
 		setThumbSizeX(imageIndex, thumbX, true);
 	}
 
 	@Override
-	public void setThumbSizeY(final int imageIndex, final int thumbY) {
+	public void setThumbSizeY(final int imageIndex, final long thumbY) {
 		setThumbSizeY(imageIndex, thumbY, true);
 	}
 
@@ -319,19 +318,9 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void setRGB(final int imageIndex, final boolean rgb) {
-		setRGB(imageIndex, rgb, true);
-	}
-
-	@Override
 	public void setLittleEndian(final int imageIndex, final boolean littleEndian)
 	{
 		setLittleEndian(imageIndex, littleEndian, true);
-	}
-
-	@Override
-	public void setInterleaved(final int imageIndex, final boolean interleaved) {
-		setInterleaved(imageIndex, interleaved, true);
 	}
 
 	@Override
@@ -376,13 +365,13 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
+	public void setAxisLengths(final int imageIndex, final long[] axisLengths) {
 		setAxisLengths(imageIndex, axisLengths, true);
 	}
 
 	@Override
 	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
-		final int length)
+		final long length)
 	{
 		setAxisLength(imageIndex, axis, length, true);
 	}

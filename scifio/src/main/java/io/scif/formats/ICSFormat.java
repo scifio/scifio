@@ -36,7 +36,6 @@
 
 package io.scif.formats;
 
-import io.scif.AbstractChecker;
 import io.scif.AbstractFormat;
 import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
@@ -55,12 +54,16 @@ import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
+import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
 
@@ -144,7 +147,6 @@ public class ICSFormat extends AbstractFormat {
 			createImageMetadata(1);
 
 			final ImageMetadata imageMeta = get(0);
-			imageMeta.setRGB(false);
 
 			// find axis sizes
 
@@ -152,18 +154,21 @@ public class ICSFormat extends AbstractFormat {
 			final String[] axes = getAxes();
 
 			// Reset the existing axes
-			imageMeta.setAxes(new CalibratedAxis[0], new int[0]);
+			imageMeta.setAxes(new CalibratedAxis[0], new long[0]);
 
 			int bitsPerPixel = 0;
+			int planarAxes = 0;
 
 			// interpret axis information
 			for (int n = 0; n < axes.length; n++) {
 				final String axis = axes[n].toLowerCase();
 				if (axis.equals("x")) {
 					imageMeta.addAxis(Axes.X, new Double(axesSizes[n]).intValue());
+					planarAxes++;
 				}
 				else if (axis.equals("y")) {
 					imageMeta.addAxis(Axes.Y, new Double(axesSizes[n]).intValue());
+					planarAxes++;
 				}
 				else if (axis.equals("z")) {
 					imageMeta.addAxis(Axes.Z, new Double(axesSizes[n]).intValue());
@@ -183,80 +188,45 @@ public class ICSFormat extends AbstractFormat {
 					while (bitsPerPixel % 8 != 0)
 						bitsPerPixel++;
 					if (bitsPerPixel == 24 || bitsPerPixel == 48) bitsPerPixel /= 3;
-					imageMeta.addAxis(Axes.get("bits"), bitsPerPixel);
 				}
 				else {
-					final int cIndex = imageMeta.getAxisIndex(Axes.CHANNEL);
-
-					if (cIndex == -1) {
-						imageMeta
-							.addAxis(Axes.CHANNEL, new Double(axesSizes[n]).intValue());
-					}
-					else {
-						imageMeta.setAxisLength(Axes.CHANNEL, imageMeta
-							.getAxisLength(Axes.CHANNEL) *
-							new Double(axesSizes[n]).intValue());
-					}
-
 					if (imageMeta.getAxisIndex(Axes.X) == -1) {
 						setStoredRGB(true);
-
-						final int sizeC = imageMeta.getAxisLength(Axes.CHANNEL);
-
-						imageMeta.setRGB(sizeC <= 4 && sizeC > 1);
+						planarAxes++;
 					}
+
+					AxisType type = null;
 
 					if (axis.startsWith("c")) {
-						imageMeta.setAxisType(n, Axes.CHANNEL);
+						type = Axes.CHANNEL;
 					}
 					else if (axis.startsWith("p")) {
-						imageMeta.setAxisType(n, SCIFIOAxes.PHASE);
+						type = SCIFIOAxes.PHASE;
 					}
 					else if (axis.startsWith("f")) {
-						imageMeta.setAxisType(n, SCIFIOAxes.FREQUENCY);
+						type = SCIFIOAxes.FREQUENCY;
 					}
 					else {
-						imageMeta.setAxisType(n, Axes.unknown());
+						type = Axes.unknown();
 					}
+
+					imageMeta.addAxis(type, new Double(axesSizes[n]).longValue());;
 				}
 			}
 
-			// Re-order axes if RGB
-			if (imageMeta.getAxisIndex(Axes.CHANNEL) >= 0 &&
-				imageMeta.getAxisIndex(Axes.CHANNEL) < imageMeta.getAxisIndex(Axes.Y))
-			{
-				imageMeta.setAxisType(imageMeta.getAxisIndex(Axes.Y), Axes.CHANNEL);
-			}
+			imageMeta.setPlanarAxisCount(planarAxes);
 
 			if (getBitsPerPixel() != null) bitsPerPixel = getBitsPerPixel();
 
 			imageMeta.setBitsPerPixel(bitsPerPixel);
 
-			if (imageMeta.isRGB() && getEMWaves() != null &&
+			if (imageMeta.isMultichannel() && getEMWaves() != null &&
 				getEMWaves().length == imageMeta.getAxisLength(Axes.CHANNEL))
 			{
-				imageMeta.setRGB(false);
+				imageMeta.setAxisLength(Axes.CHANNEL, 1);
 				setStoredRGB(true);
 			}
 
-			if (imageMeta.getAxisIndex(Axes.Z) == -1) {
-				imageMeta.addAxis(Axes.Z, 1);
-			}
-			if (imageMeta.getAxisIndex(Axes.CHANNEL) == -1) {
-				imageMeta.addAxis(Axes.CHANNEL, 1);
-			}
-			if (imageMeta.getAxisIndex(Axes.TIME) == -1) {
-				imageMeta.addAxis(Axes.TIME, 1);
-			}
-
-			if (imageMeta.getAxisLength(Axes.Z) == 0) imageMeta.setAxisLength(Axes.Z,
-				1);
-			if (imageMeta.getAxisLength(Axes.CHANNEL) == 0) imageMeta.setAxisLength(
-				Axes.CHANNEL, 1);
-			if (imageMeta.getAxisLength(Axes.TIME) == 0) imageMeta.setAxisLength(
-				Axes.TIME, 1);
-
-			imageMeta.setInterleaved(imageMeta.isRGB());
 			imageMeta.setIndexed(false);
 			imageMeta.setFalseColor(false);
 			imageMeta.setMetadataComplete(true);
@@ -268,38 +238,31 @@ public class ICSFormat extends AbstractFormat {
 			// HACK - support for Gray Institute at Oxford's ICS lifetime data
 			if (lifetime && label != null) {
 				int binCount = 0;
-				String newOrder = null;
+				imageMeta.addAxis(SCIFIOAxes.LIFETIME, 1);
+				int index = -1;
 
 				if (label.equalsIgnoreCase("t x y")) {
-					newOrder = "XYCZT";
-					imageMeta.setInterleaved(true);
-					binCount = imageMeta.getAxisLength(Axes.X);
+					binCount = (int)imageMeta.getAxisLength(Axes.X);
+					index = imageMeta.getAxisIndex(Axes.X);
 					imageMeta.setAxisLength(Axes.X, imageMeta.getAxisLength(Axes.Y));
 					imageMeta.setAxisLength(Axes.Y, imageMeta.getAxisLength(Axes.Z));
 					imageMeta.setAxisLength(Axes.Z, 1);
+					imageMeta.setPlanarAxisCount(3);
 				}
 				else if (label.equalsIgnoreCase("x y t")) {
-					newOrder = "XYCZT";
-					binCount = imageMeta.getAxisLength(Axes.Z);
+					index = imageMeta.getAxisIndex(Axes.Y) + 1;
+					binCount = (int)imageMeta.getAxisLength(Axes.Z);
 					imageMeta.setAxisLength(Axes.Z, 1);
 				}
 				else {
 					log().debug("Lifetime data, unexpected 'history labels' " + label);
 				}
 
-				if (newOrder != null) {
-					// FIXME: Make sure this works.
-					imageMeta.setAxes(FormatTools.findDimensionList(newOrder));
+				
+				if (index > -1) {
+					imageMeta.setAxisType(index, SCIFIOAxes.LIFETIME);
 					imageMeta.setAxisLength(SCIFIOAxes.LIFETIME, binCount);
 				}
-			}
-
-			imageMeta.setPlaneCount(getAxisLength(0, Axes.Z) *
-				getAxisLength(0, Axes.TIME));
-
-			if (!imageMeta.isRGB()) {
-				imageMeta.setPlaneCount(imageMeta.getPlaneCount() *
-					imageMeta.getAxisLength(Axes.CHANNEL));
 			}
 
 			final String byteOrder = getByteOrder();
@@ -459,11 +422,11 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void putPinholes(final Hashtable<Integer, Double> pins) {
-			put("sensor s_params PinholeRadius", merge(pins.values()));
+			put("sensor s_params pinholeradius", merge(pins.values()));
 		}
 
 		public void putEMWaves(final Integer[] emWaves) {
-			put("sensor s_params LambdaEm", merge(emWaves));
+			put("sensor s_params lambdaem", merge(emWaves));
 		}
 
 		public void putEMSingleton(final Integer[] em) {
@@ -479,7 +442,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void putWavelengths(final Hashtable<Integer, Integer> waves) {
-			put("history Wavelength*", merge(waves.values()));
+			put("history wavelength*", merge(waves.values()));
 		}
 
 		public void putByteOrder(final String byteOrder) {
@@ -507,7 +470,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void putLaserRepetitionRate(final Double laserRep) {
-			put("history laser model", laserRep.toString());
+			put("history laser rep rate", laserRep.toString());
 		}
 
 		public void putLaserPower(final Double laserPower) {
@@ -539,11 +502,11 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void putLensNA(final Double lensNA) {
-			put("history objective NA", lensNA.toString());
+			put("history objective na", lensNA.toString());
 		}
 
 		public void putWorkingDistance(final Double wd) {
-			put("history objective WorkingDistance", wd.toString());
+			put("history objective workingdistance", wd.toString());
 		}
 
 		public void putMagnification(final Double mag) {
@@ -587,7 +550,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public void putExposureTime(final Double expTime) {
-			put("history Exposure", expTime.toString());
+			put("history exposure", expTime.toString());
 		}
 
 		// -- Accessor methods for dynamically retrieving common metadata --
@@ -737,7 +700,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Hashtable<Integer, Double> getPinholes() {
-			final String[] kv = findValueForKey("sensor s_params PinholeRadius");
+			final String[] kv = findValueForKey("sensor s_params pinholeradius");
 			final Hashtable<Integer, Double> pinholes =
 				new Hashtable<Integer, Double>();
 			if (kv != null) {
@@ -757,7 +720,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Integer[] getEMWaves() {
-			final String[] kv = findValueForKey("sensor s_params LambdaEm");
+			final String[] kv = findValueForKey("sensor s_params lambdaem");
 			Integer[] emWaves = null;
 			if (kv != null) {
 				final String[] waves = kv[1].split(" ");
@@ -785,7 +748,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Integer[] getEXWaves() {
-			final String[] kv = findValueForKey("sensor s_params LambdaEx");
+			final String[] kv = findValueForKey("sensor s_params lambdaex");
 			Integer[] exWaves = null;
 			if (kv != null) {
 				final String[] waves = kv[1].split(" ");
@@ -813,7 +776,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Hashtable<Integer, Integer> getWavelengths() {
-			final String[] kv = findValueForKey("history Wavelength*");
+			final String[] kv = findValueForKey("history wavelength*");
 			final Hashtable<Integer, Integer> wavelengths =
 				new Hashtable<Integer, Integer>();
 			if (kv != null) {
@@ -868,7 +831,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Double getLaserRepetitionRate() {
-			return findDoubleValueForKey("history laser model");
+			return findDoubleValueForKey("history laser rep rate");
 		}
 
 		public Double getLaserPower() {
@@ -901,11 +864,11 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Double getLensNA() {
-			return findDoubleValueForKey("history objective NA");
+			return findDoubleValueForKey("history objective na");
 		}
 
 		public Double getWorkingDistance() {
-			return findDoubleValueForKey("history objective WorkingDistance");
+			return findDoubleValueForKey("history objective workingdistance");
 		}
 
 		public Double getMagnification() {
@@ -975,7 +938,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public Double getExposureTime() {
-			final String[] kv = findValueForKey("history Exposure");
+			final String[] kv = findValueForKey("history exposure");
 			Double exposureTime = null;
 			if (kv != null) {
 				final String expTime = kv[1];
@@ -1067,7 +1030,7 @@ public class ICSFormat extends AbstractFormat {
 		 */
 		private String[] findValueIteration(final String starts, final String ends)
 		{
-
+			//TODO not sure how to represent this in the ICSUtils key tree
 			for (final String key : keyValPairs.keySet()) {
 				if ((starts == null || key.startsWith(starts)) &&
 					(ends == null || key.endsWith(ends))) return new String[] { key,
@@ -1199,15 +1162,6 @@ public class ICSFormat extends AbstractFormat {
 	}
 
 	/**
-	 * SCIFIO file format Checker for ICS images.
-	 */
-	public static class Checker extends AbstractChecker {
-
-		// -- Checker API Methods --
-
-	}
-
-	/**
 	 * SCIFIO file format Parser for ICS images.
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
@@ -1228,6 +1182,7 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Parser API Methods --
 
+		@SuppressWarnings("unchecked")
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
 			final Metadata meta) throws IOException, FormatException
@@ -1240,42 +1195,52 @@ public class ICSFormat extends AbstractFormat {
 			reader.seek(0);
 			reader.readString(ICSUtils.NL);
 			String line = reader.readString(ICSUtils.NL);
-
 			// Extracts the key, value pairs from each line and
 			// inserts them into the ICSMetadata object
 			while (line != null && !line.trim().equals("end") &&
 				reader.getFilePointer() < reader.length() - 1)
 			{
-				line = line.trim();
+				line = line.trim().toLowerCase();
 				final String[] tokens = line.split("[ \t]");
 				final StringBuffer key = new StringBuffer();
+				Map<String, Object> keyMap = ICSUtils.keys;
+				boolean validKey = false;
 				for (int q = 0; q < tokens.length; q++) {
 					tokens[q] = tokens[q].trim();
 					if (tokens[q].length() == 0) continue;
 
-					boolean foundValue = true;
-					for (int i = 0; i < ICSUtils.CATEGORIES.length; i++) {
-						if (tokens[q].matches(ICSUtils.CATEGORIES[i])) {
-							foundValue = false;
+					Object o = keyMap.get(tokens[q]);
+					if (o == null) {
+						// Reached the value section of the line.
+						if (!validKey) {
+							// Didn't get a valid key so exit
 							break;
 						}
+						else {
+							// found a valid key, so build the value and create a mapping
+							final StringBuffer value = new StringBuffer(tokens[q++]);
+							for (; q < tokens.length; q++) {
+								value.append(" ");
+								value.append(tokens[q].trim());
+							}
+							final String k = key.toString().trim().replaceAll("\t", " ");
+							final String v = value.toString().trim();
+							addGlobalMeta(k, v);
+							meta.keyValPairs.put(k.toLowerCase(), v);
+						}
 					}
-					if (!foundValue) {
+					else {
+						// Map lookup wasn't null, so we move the keyMap to the next node
+						keyMap = (Map<String, Object>)o;
+						// if we have a LEAF entry, we know we've found a valid key
+						if (keyMap.get(ICSUtils.LEAF) != null) validKey = true;
+
+						// Build the key
 						key.append(tokens[q]);
 						key.append(" ");
-						continue;
 					}
-
-					final StringBuffer value = new StringBuffer(tokens[q++]);
-					for (; q < tokens.length; q++) {
-						value.append(" ");
-						value.append(tokens[q].trim());
-					}
-					final String k = key.toString().trim().replaceAll("\t", " ");
-					final String v = value.toString().trim();
-					addGlobalMeta(k, v);
-					meta.keyValPairs.put(k.toLowerCase(), v);
 				}
+
 				line = reader.readString(ICSUtils.NL);
 			}
 
@@ -1398,21 +1363,28 @@ public class ICSFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, plane
-				.getData().length, x, y, w, h);
+			final Metadata meta = getMetadata();
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex, plane
+				.getData().length, planeMin, planeMax);
+			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
+			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xAxis],
+								y = (int) planeMin[yAxis],
+								w = (int) planeMax[xAxis],
+								h = (int) planeMax[yAxis];
 
 			final int bpp =
-				FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
-			final int len = FormatTools.getPlaneSize(this, imageIndex);
-			final int rowLen = FormatTools.getPlaneSize(this, w, 1, imageIndex);
+				FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
+			final int len = (int) FormatTools.getPlaneSize(this, imageIndex);
+			final int rowLen = (int) FormatTools.getPlaneSize(meta, w, 1, imageIndex);
 
-			final int[] coordinates =
-				FormatTools.getZCTCoords(this, imageIndex, planeIndex);
-			final int[] prevCoordinates =
-				FormatTools.getZCTCoords(this, imageIndex, prevPlane);
+			final long[] coordinates =
+				FormatTools.rasterToPosition(imageIndex, planeIndex, meta);
+			final long[] prevCoordinates =
+					FormatTools.rasterToPosition(imageIndex, prevPlane, meta);
 
 			if (!gzip) {
 				getStream().seek(metadata.offset + planeIndex * (long) len);
@@ -1447,9 +1419,8 @@ public class ICSFormat extends AbstractFormat {
 					}
 
 					data =
-						new byte[len *
-							(getMetadata().storedRGB() ? getMetadata().getAxisLength(
-								imageIndex, Axes.CHANNEL) : 1)];
+						new byte[(int) (len * (meta.storedRGB() ? meta.getAxisLength(
+							imageIndex, Axes.CHANNEL) : 1))];
 					int toRead = data.length;
 					while (toRead > 0) {
 						toRead -= gzipStream.read(data, data.length - toRead, toRead);
@@ -1459,22 +1430,22 @@ public class ICSFormat extends AbstractFormat {
 
 			// FIXME: Why not getMetadata().getSizeC()?
 			final int sizeC =
-				getMetadata().getLifetime() ? 1 : getMetadata().getAxisLength(
-					imageIndex, Axes.CHANNEL);
+				(int) (meta.getLifetime() ? 1 : meta.getAxisLength(imageIndex,
+					Axes.CHANNEL));
 
 			// FIXME: This logic needs to be reworked!
-			if (!getMetadata().isRGB(imageIndex) && getMetadata().storedRGB()) {
+			if (!getMetadata().isMultichannel(imageIndex) && getMetadata().storedRGB()) {
 				// channels are stored interleaved, but because there are more than we
 				// can display as RGB, we need to separate them
 				getStream().seek(
 					metadata.offset +
 						(long) len *
-						FormatTools.getIndex(this, imageIndex, coordinates[0], 0,
-							coordinates[2]));
+						FormatTools.positionToRaster(0, this, new long[]{coordinates[0], 0,
+							coordinates[2]}));
 				if (!gzip && data == null) {
 					data =
-						new byte[len *
-							getMetadata().getAxisLength(imageIndex, Axes.CHANNEL)];
+						new byte[(int) (len * getMetadata().getAxisLength(imageIndex,
+							Axes.CHANNEL))];
 					getStream().read(data);
 				}
 				else if (!gzip &&
@@ -1486,10 +1457,10 @@ public class ICSFormat extends AbstractFormat {
 				for (int row = y; row < h + y; row++) {
 					for (int col = x; col < w + x; col++) {
 						final int src =
-							bpp *
-								((planeIndex % getMetadata().getAxisLength(imageIndex,
-									Axes.CHANNEL)) + sizeC *
-									(row * (row * getMetadata().getAxisLength(imageIndex, Axes.X) + col)));
+							(int) (bpp *
+							((planeIndex % meta.getAxisLength(imageIndex,
+								Axes.CHANNEL)) + sizeC *
+								(row * (row * meta.getAxisLength(imageIndex, Axes.X) + col))));
 						final int dest = bpp * ((row - y) * w + (col - x));
 						System.arraycopy(data, src, plane.getBytes(), dest, bpp);
 					}
@@ -1498,11 +1469,11 @@ public class ICSFormat extends AbstractFormat {
 			else if (gzip) {
 				final RandomAccessInputStream s =
 					new RandomAccessInputStream(getContext(), data);
-				readPlane(s, imageIndex, x, y, w, h, plane);
+				readPlane(s, imageIndex, planeMin, planeMax, plane);
 				s.close();
 			}
 			else {
-				readPlane(getStream(), imageIndex, x, y, w, h, plane);
+				readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
 			}
 
 			if (invertY) {
@@ -1590,67 +1561,47 @@ public class ICSFormat extends AbstractFormat {
 		private int lastPlane = -1;
 		private RandomAccessOutputStream pixels;
 
-		// NB: write in ZTC order by default. Certain software (e.g. Volocity)
-		// lacks the capacity to import files with any other dimension
-		// ordering. Technically, this is not our problem, but it is
-		// easy enough to work around and makes life easier for our users.
-		private String outputOrder = "XYZTC";
-
-		// -- ICSWriter API methods --
-
-		/**
-		 * Set the order in which dimensions should be written to the file. Valid
-		 * values are specified in the documentation for
-		 * {@link loci.formats.IFormatReader#getDimensionOrder()} By default, the
-		 * ordering is "XYZTC".
-		 */
-		public void setOutputOrder(final String outputOrder) {
-			this.outputOrder = outputOrder;
-		}
-
 		// -- Writer API Methods --
 
 		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
-			final Plane plane, final int x, final int y, final int w, final int h)
+			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
-			checkParams(imageIndex, planeIndex, plane.getBytes(), x, y, w, h);
+			checkParams(imageIndex, planeIndex, plane.getBytes(), planeMin, planeMax);
+			final Metadata meta = getMetadata();
+			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
+			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xAxis],
+								y = (int) planeMin[yAxis],
+								w = (int) planeMax[xAxis],
+								h = (int) planeMax[yAxis];
 
-			final int rgbChannels = getMetadata().getRGBChannelCount(imageIndex);
+			int rgbChannels = 1;
 
-			final int sizeZ = getMetadata().getAxisLength(imageIndex, Axes.Z);
-			int sizeC = getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
-			if (rgbChannels <= sizeC) {
-				sizeC /= rgbChannels;
+			if (meta.isMultichannel(imageIndex)) {
+				int cIndex = meta.getAxisIndex(imageIndex, Axes.CHANNEL);
+				rgbChannels = (int) (planeMax[cIndex] - planeMin[cIndex]);
 			}
 
-			final int sizeT = getMetadata().getAxisLength(imageIndex, Axes.TIME);
-			final int planes = sizeZ * sizeC * sizeT;
-
-			final int[] coords =
-				FormatTools.getZCTCoords(outputOrder, sizeZ, sizeC, sizeT, planes,
-					imageIndex, planeIndex);
-			final int realIndex =
-				FormatTools.getIndex(outputOrder, sizeZ, sizeC, sizeT, planes,
-					coords[0], coords[1], coords[2]);
-
-			final int sizeX = getMetadata().getAxisLength(imageIndex, Axes.X);
-			final int sizeY = getMetadata().getAxisLength(imageIndex, Axes.Y);
+			final int sizeX = (int) meta.getAxisLength(imageIndex, Axes.X);
 			final int pixelType = getMetadata().getPixelType(imageIndex);
 			final int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
-			final int planeSize = sizeX * sizeY * rgbChannels * bytesPerPixel;
+			final int planeSize = (int) (meta.get(0).getSize() / meta.get(0).getPlaneCount());
 
-			if (!initialized[planeIndex][realIndex]) {
-				initialized[planeIndex][realIndex] = true;
+			if (!initialized[planeIndex][planeIndex]) {
+				initialized[planeIndex][planeIndex] = true;
 
-				if (!isFullPlane(imageIndex, x, y, w, h)) {
-					pixels.seek(pixelOffset + (realIndex + 1) * planeSize);
+				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
+					planeMax))
+				{
+					pixels.seek(pixelOffset + (planeIndex + 1) * planeSize);
 				}
 			}
 
-			pixels.seek(pixelOffset + realIndex * planeSize);
-			if (isFullPlane(imageIndex, x, y, w, h) &&
+			pixels.seek(pixelOffset + planeIndex * planeSize);
+			if (SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
+				planeMax) &&
 				(interleaved || rgbChannels == 1))
 			{
 				pixels.write(plane.getBytes());
@@ -1673,7 +1624,7 @@ public class ICSFormat extends AbstractFormat {
 					pixels.skipBytes(bytesPerPixel * rgbChannels * (sizeX - w - x));
 				}
 			}
-			lastPlane = realIndex;
+			lastPlane = planeIndex;
 		}
 
 		@Override
@@ -1796,31 +1747,23 @@ public class ICSFormat extends AbstractFormat {
 				out.writeBytes("\nparameter\tscale\t1.000000\t");
 
 				final StringBuffer units = new StringBuffer();
-				for (int i = 0; i < outputOrder.length(); i++) {
-					final char dim = outputOrder.charAt(i);
+
+				for (CalibratedAxis axis : meta.getAxes(imageIndex)) {
 					Number value = 1.0;
-					if (dim == 'X') {
-						if (meta.getAxisIndex(imageIndex, Axes.X) != -1) {
-							value = meta.getAxisLength(imageIndex, Axes.X);
-						}
+					if (axis.type() == Axes.X) {
+						value = meta.getAxisLength(imageIndex, Axes.X);
 						units.append("micrometers\t");
 					}
-					else if (dim == 'Y') {
-						if (meta.getAxisIndex(imageIndex, Axes.Y) != -1) {
-							value = meta.getAxisLength(imageIndex, Axes.Y);
-						}
+					else if (axis.type() == Axes.Y) {
+						value = meta.getAxisLength(imageIndex, Axes.Y);
 						units.append("micrometers\t");
 					}
-					else if (dim == 'Z') {
-						if (meta.getAxisIndex(imageIndex, Axes.Z) != -1) {
-							value = meta.getAxisLength(imageIndex, Axes.X);
-						}
+					else if (axis.type() == Axes.Z) {
+						value = meta.getAxisLength(imageIndex, Axes.X);
 						units.append("micrometers\t");
 					}
-					else if (dim == 'T') {
-						if (meta.getAxisIndex(imageIndex, Axes.TIME) != -1) {
-							value = meta.getAxisLength(imageIndex, Axes.TIME);
-						}
+					else if (axis.type() == Axes.TIME) {
+						value = meta.getAxisLength(imageIndex, Axes.TIME);
 						units.append("seconds\t");
 					}
 					out.writeBytes(value + "\t");
@@ -1852,42 +1795,39 @@ public class ICSFormat extends AbstractFormat {
 				throws IOException
 		{
 			out.seek(dimensionOffset);
-			final int sizeX = meta.getAxisLength(imageIndex, Axes.X);
-			final int sizeY = meta.getAxisLength(imageIndex, Axes.Y);
-			final int z = meta.getAxisLength(imageIndex, Axes.Z);
-			final int c = meta.getAxisLength(imageIndex, Axes.CHANNEL);
-			final int t = meta.getAxisLength(imageIndex, Axes.TIME);
+//			final int sizeX = (int) meta.getAxisLength(imageIndex, Axes.X);
+//			final int sizeY = (int) meta.getAxisLength(imageIndex, Axes.Y);
+//			final int z = (int) meta.getAxisLength(imageIndex, Axes.Z);
+//			final int c = (int) meta.getAxisLength(imageIndex, Axes.SPECTRA);
+//			final int t = (int) meta.getAxisLength(imageIndex, Axes.TIME);
 			final int pixelType = meta.getPixelType(imageIndex);
 			final int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
-			final int rgbChannels = meta.getRGBChannelCount(imageIndex);
-
-			if (lastPlane < 0) lastPlane = z * c * t - 1;
-			final int[] pos =
-				FormatTools.getZCTCoords(outputOrder, z, c, t, z * c * t, imageIndex,
-					lastPlane);
-			lastPlane = -1;
 
 			final StringBuffer dimOrder = new StringBuffer();
 			final int[] sizes = new int[6];
 			int nextSize = 0;
 			sizes[nextSize++] = 8 * bytesPerPixel;
 
-			if (rgbChannels > 1) {
+			if (meta.isMultichannel(imageIndex)) {
 				dimOrder.append("ch\t");
-				sizes[nextSize++] = pos[1] + 1;
+				sizes[nextSize++] = (int) (meta.getAxisLength(imageIndex, Axes.CHANNEL));
 			}
 
-			for (int i = 0; i < outputOrder.length(); i++) {
-				if (outputOrder.charAt(i) == 'X') sizes[nextSize++] = sizeX;
-				else if (outputOrder.charAt(i) == 'Y') sizes[nextSize++] = sizeY;
-				else if (outputOrder.charAt(i) == 'Z') sizes[nextSize++] = pos[0] + 1;
-				else if (outputOrder.charAt(i) == 'T') sizes[nextSize++] = pos[2] + 1;
-				else if (outputOrder.charAt(i) == 'C' && dimOrder.indexOf("ch") == -1) {
-					sizes[nextSize++] = pos[1] + 1;
-					dimOrder.append("ch");
+			for (CalibratedAxis axis : meta.getAxes(imageIndex)) {
+				if (axis.type() == Axes.CHANNEL) {
+					if (dimOrder.indexOf("ch") == -1) {
+						sizes[nextSize++] =
+							(int) meta.getAxisLength(imageIndex, Axes.CHANNEL);
+						dimOrder.append("ch");
+					}
+					else {
+						continue;
+					}
 				}
-				if (outputOrder.charAt(i) != 'C') {
-					dimOrder.append(String.valueOf(outputOrder.charAt(i)).toLowerCase());
+				else {
+					sizes[nextSize++] = (int) meta.getAxisLength(imageIndex, axis.type());
+					dimOrder.append(String.valueOf(axis.type().getLabel().charAt(0))
+						.toLowerCase());
 				}
 				dimOrder.append("\t");
 			}
@@ -1933,7 +1873,9 @@ public class ICSFormat extends AbstractFormat {
 
 		/** Newline characters. */
 		public static final String NL = "\r\n";
-
+		
+		public static final String LEAF = "VALID_LEAF";
+		
 		public static final String[] DATE_FORMATS = {
 			"EEEE, MMMM dd, yyyy HH:mm:ss", "EEE dd MMMM yyyy HH:mm:ss",
 			"EEE MMM dd HH:mm:ss yyyy", "EE dd MMM yyyy HH:mm:ss z",
@@ -1967,51 +1909,97 @@ public class ICSFormat extends AbstractFormat {
 			{ "scil_type" }, { "source" } };
 
 		/** Metadata field categories. */
-		public static final String[] CATEGORIES = new String[] { "ics_version",
-			"filename", "source", "layout", "representation", "parameter", "sensor",
-			"history", "document", "view.*", "end", "file", "offset", "parameters",
-			"order", "sizes", "coordinates", "significant_bits", "format", "sign",
-			"compression", "byte_order", "origin", "scale", "units", "t", "labels",
-			"SCIL_TYPE", "type", "model", "s_params", "gain.*", "dwell", "shutter.*",
-			"pinhole", "laser.*", "version", "objective", "PassCount", "step.*",
-			"date", "GMTdate", "label", "software", "author", "length",
-			"Z (background)", "dimensions", "rep period", "image form", "extents",
-			"offsets", "region", "expon. order", "a.*", "tau.*", "noiseval",
-			"excitationfwhm", "created on", "text", "other text", "mode",
-			"CFD limit low", "CFD limit high", "CFD zc level", "CFD holdoff",
-			"SYNC zc level", "SYNC freq div", "SYNC holdoff", "TAC range",
-			"TAC gain", "TAC offset", "TAC limit low", "ADC resolution",
-			"Ext latch delay", "collection time", "repeat time", "stop on time",
-			"stop on O'flow", "dither range", "count increment", "memory bank",
-			"sync threshold", "dead time comp", "polarity", "line compressio",
-			"scan flyback", "scan borders", "pixel time", "pixel clock", "trigger",
-			"scan pixels x", "scan pixels y", "routing chan x", "routing chan y",
-			"detector type", "channel.*", "filter.*", "wavelength.*",
-			"black.level.*", "ht.*", "scan resolution", "scan speed", "scan zoom",
-			"scan pattern", "scan pos x", "scan pos y", "transmission",
-			"x amplitude", "y amplitude", "x offset", "y offset", "x delay",
-			"y delay", "beam zoom", "mirror .*", "direct turret", "desc exc turret",
-			"desc emm turret", "cube", "Stage_XYZum", "cube descriptio", "camera",
-			"exposure", "bits/pixel", "binning", "left", "top", "cols", "rows",
-			"significant_channels", "allowedlinemodes", "real_significant_bits",
-			"sample_width", "range", "ch", "lower_limit", "higher_limit",
-			"passcount", "detector", "dateGMT", "RefrInxMedium", "RefrInxLensMedium",
-			"Channels", "PinholeRadius", "LambdaEx", "LambdaEm", "ExPhotonCnt",
-			"RefInxMedium", "NumAperture", "RefInxLensMedium", "PinholeSpacing",
-			"power", "name", "Type", "Magnification", "NA", "WorkingDistance",
-			"Immersion", "Pinhole", "Channel .*", "Gain .*", "Shutter .*",
-			"Position", "Size", "Port", "Cursor", "Color", "BlackLevel",
-			"Saturation", "Gamma", "IntZoom", "Live", "Synchronize", "ShowIndex",
-			"AutoResize", "UseUnits", "Zoom", "IgnoreAspect", "ShowCursor",
-			"ShowAll", "Axis", "Order", "Tile", "DimViewOption", "channels",
-			"pinholeradius", "refrinxmedium", "numaperture", "refrinxlensmedium",
-			"image", "microscope", "stage", "filterset", "dichroic", "exc", "emm",
-			"manufacturer", "experiment", "experimenter", "study", "metadata",
-			"format", "icsviewer", "illumination", "exposure_time", "model", "ver",
-			"creation", "date", "bpp", "bigendian", "size.", "physical_size.",
-			"controller", "firmware", "pos", "position.", "mag", "na", "nm", "lamp",
-			"built", "on", "rep", "rate", "Exposure", "Wavelength\\*" };
+		public static final Map<String, Object> keys = createKeyMap();
 
+		private static Map<String, Object> createKeyMap() {
+			Map<String, Object> root = new HashMap<String, Object>();
+			
+			addKey(root, "parameter", "ch");
+			addKey(root, "parameter", "scale");
+			addKey(root, "parameter", "t");
+			addKey(root, "parameter", "units");
+			addKey(root, "sensor", "s_params", "lambdaem");
+			addKey(root, "sensor", "s_params", "lambdaex");
+			addKey(root, "sensor", "s_params", "pinholeradius");
+			addKey(root, "representation", "byte_order");
+			addKey(root, "representation", "compression");
+			addKey(root, "representation", "format");
+			addKey(root, "representation", "sign");
+			addKey(root, "history", "author");
+			addKey(root, "history", "camera", "manufcaturer");
+			addKey(root, "history", "camera", "model");
+			addKey(root, "history", "cube", "emm", "nm");
+			addKey(root, "history", "cube", "exc", "nm");
+			addKey(root, "history", "date");
+			addKey(root, "history", "creation", "date");
+			addKey(root, "history", "created", "on");
+			addKey(root, "history", "experimenter");
+			addKey(root, "history", "exposure");
+			addKey(root, "history", "extents");
+			addKey(root, "history", "filterset");
+			addKey(root, "history", "filterset", "dichroic", "name");
+			addKey(root, "history", "filterset", "emm", "name");
+			addKey(root, "history", "filterset", "exc", "name");
+			addKey(root, "history", "gain");
+			addKey(root, "history", "laser", "manufacturer");
+			addKey(root, "history", "laser", "model");
+			addKey(root, "history", "laser", "rep", "rate");
+			addKey(root, "history", "laser", "power");
+			addKey(root, "history", "labels");
+			addKey(root, "history", "manufacturer");
+			addKey(root, "history", "microscope");
+			addKey(root, "history", "objective", "type");
+			addKey(root, "history", "objective", "immersion");
+			addKey(root, "history", "objective", "na");
+			addKey(root, "history", "objective", "workingdistance");
+			addKey(root, "history", "objective", "magnification");
+			addKey(root, "history", "objective", "mag");
+			addKey(root, "history", "other", "text");
+			addKey(root, "history", "stage", "positionx");
+			addKey(root, "history", "stage", "positiony");
+			addKey(root, "history", "stage", "positionz");
+			addKey(root, "history", "stage_xyzum");
+			addKey(root, "history", "step");
+			addKey(root, "history", "type");
+			addKey(root, "history", "wavelength*");
+			addKey(root, "layout", "order");
+			addKey(root, "layout", "significant_bits");
+			addKey(root, "layout", "sizes");
+			
+			return root;
+		}
+
+		/**
+		 * Recursively descends the list of keys (ICS header categories and sub-
+		 * categories). When reaching the final subcategory, creates a String:String
+		 * mapping using {@link #LEAF}, indicating a valid complete key. When sub-
+		 * categories are present, a new map is created at each step, generating
+		 * a tree structure of valid keys.
+		 */
+		@SuppressWarnings("unchecked")
+		private static void addKey(Map<String, Object> parent, String... keys) {
+			// Create a LEAF entry to indicate this is a valid key
+			if (keys.length == 0) {
+				parent.put(LEAF, LEAF);
+			}
+			// the head category may have multiple subcategories, so create a category
+			// mapping.
+			else {
+				String node = keys[0];
+				Object o = parent.get(node);
+				Map<String, Object> child = null;
+				// check for existing map
+				if (o == null) {
+					child = new HashMap<String, Object>();
+					parent.put(node, child);
+				}
+				else {
+					child = (Map<String, Object>)o;
+				}
+				// recursive step to build the category tree
+				addKey(child, Arrays.copyOfRange(keys, 1, keys.length));
+			}
+		}
 	}
 
 	/**
@@ -2063,7 +2051,7 @@ public class ICSFormat extends AbstractFormat {
 				}
 				else if (axis.equals(Axes.CHANNEL)) {
 					// ICS flag for RGB images
-					if (source.isRGB(0)) {
+					if (source.isMultichannel(0)) {
 						order = "c " + order;
 						sizes = source.getAxisLength(0, i) + " " + sizes;
 						continue;

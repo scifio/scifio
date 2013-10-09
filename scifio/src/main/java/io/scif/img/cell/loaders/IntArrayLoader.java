@@ -74,8 +74,8 @@ public class IntArrayLoader extends AbstractArrayLoader<IntArray> {
 	}
 
 	@Override
-	public IntArray emptyArray(final int[] dimensions) {
-		return new IntArray(countEntities(dimensions));
+	public IntArray emptyArray(final int entities) {
+		return new IntArray(entities);
 	}
 
 	@Override

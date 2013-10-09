@@ -65,17 +65,11 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 	/** Metadata describing the underlying image. */
 	private ImageMetadata meta = null;
 
-	/** X-axis offset into the underlying image. */
-	private int xOffset = 0;
+	/** offsets into the underlying image. */
+	private long[] offsets;
 
-	/** Y-axis offset into the underlying image. */
-	private int yOffset = 0;
-
-	/** Length of the plane in the X-axis. */
-	private int xLength = 0;
-
-	/** Length of the plane in the Y-axis. */
-	private int yLength = 0;
+	/** axis lengths */
+	private long[] lengths;
 
 	// -- Constructor --
 
@@ -84,11 +78,11 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 	}
 
 	public AbstractPlane(final Context context, final ImageMetadata meta,
-		final int xOffset, final int yOffset, final int xLength, final int yLength)
+		final long[] planeOffsets, final long[] planeBounds)
 	{
 		setContext(context);
 		// TODO bounds checking?
-		populate(meta, xOffset, yOffset, xLength, yLength);
+		populate(meta, planeOffsets, planeBounds);
 	}
 
 	// -- DataPlane API methods --
@@ -121,61 +115,49 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 	}
 
 	@Override
-	public int getxOffset() {
-		return xOffset;
+	public long[] getOffsets() {
+		return offsets;
 	}
 
 	@Override
-	public int getyOffset() {
-		return yOffset;
-	}
-
-	@Override
-	public int getxLength() {
-		return xLength;
-	}
-
-	@Override
-	public int getyLength() {
-		return yLength;
+	public long[] getLengths() {
+		return lengths;
 	}
 
 	@Override
 	public P populate(final Plane p) {
-		return populate(p.getImageMetadata(), p.getxOffset(), p.getyOffset(), p
-			.getxLength(), p.getyLength());
+		return populate(p.getImageMetadata(), p.getOffsets(), p.getLengths());
 	}
 
 	@Override
 	public P populate(final DataPlane<T> plane) {
 		return populate(plane.getImageMetadata(), plane.getData(), plane
-			.getxOffset(), plane.getyOffset(), plane.getxLength(), plane.getyLength());
+			.getOffsets(), plane.getLengths());
 	}
 
 	@Override
-	public P populate(final ImageMetadata meta, final int xOffset,
-		final int yOffset, final int xLength, final int yLength)
+	public P populate(final ImageMetadata meta, final long[] planeOffsets,
+		final long[] planeBounds)
 	{
-		return populate(meta, null, xOffset, yOffset, xLength, yLength);
+		return populate(meta, null, planeOffsets, planeBounds);
 	}
 
 	@Override
-	public P populate(final T data, final int xOffset, final int yOffset,
-		final int xLength, final int yLength)
+	public P populate(final T data, final long[] planeOffsets,
+		final long[] planeBounds)
 	{
-		return populate(null, data, xOffset, yOffset, xLength, yLength);
+		return populate(null, data, planeOffsets, planeBounds);
 	}
 
 	@Override
-	public P populate(final ImageMetadata meta, final T data, final int xOffset,
-		final int yOffset, final int xLength, final int yLength)
+	public P populate(final ImageMetadata meta, T data,
+		final long[] planeOffsets, final long[] planeBounds)
 	{
 		setImageMetadata(meta);
+		if (data == null) data = blankPlane(planeOffsets, planeBounds);
 		setData(data);
-		setxOffset(xOffset);
-		setyOffset(yOffset);
-		setxLength(xLength);
-		setyLength(yLength);
+		setOffsets(planeOffsets);
+		setLengths(planeBounds);
 
 		@SuppressWarnings("unchecked")
 		final P pl = (P) this;
@@ -188,22 +170,20 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 	}
 
 	@Override
-	public void setxOffset(final int xOffset) {
-		this.xOffset = xOffset;
+	public void setOffsets(final long[] planeOffsets) {
+		offsets = planeOffsets;
 	}
 
 	@Override
-	public void setyOffset(final int yOffset) {
-		this.yOffset = yOffset;
+	public void setLengths(final long[] planeBounds) {
+		lengths = planeBounds;
 	}
 
-	@Override
-	public void setxLength(final int xLength) {
-		this.xLength = xLength;
-	}
+	// -- Internal AbstractPlane API --
 
-	@Override
-	public void setyLength(final int yLength) {
-		this.yLength = yLength;
-	}
+	/**
+	 * @return an empty data conforming to the given planeOffsets and planeBounds
+	 */
+	protected abstract T blankPlane(final long[] planeOffsets,
+		final long[] planeBounds);
 }

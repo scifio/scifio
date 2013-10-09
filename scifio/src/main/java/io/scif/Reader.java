@@ -80,14 +80,12 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * 
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
-	 * @param x the X coordinate of the upper-left corner of the image tile.
-	 * @param y the Y coordinate of the upper-left corner of the image tile.
-	 * @param w the width (in pixels) of the image tile.
-	 * @param h the height (in pixels) of the image tile.
+	 * @param planeMin minimal bounds of the planar axes
+	 * @param planeMax maximum bounds of the planar axes
 	 * @return The desired sub-region at the specified indices.
 	 */
-	Plane openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
-		throws FormatException, IOException;
+	Plane openPlane(int imageIndex, int planeIndex, long[] planeMin,
+		long[] planeMax) throws FormatException, IOException; 
 
 	/**
 	 * Allows a single {@code Plane} object to be reused by reference when opening
@@ -108,8 +106,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane openPlane(int imageIndex, int planeIndex, Plane plane, int x, int y,
-		int w, int h) throws FormatException, IOException;
+	Plane openPlane(int imageIndex, int planeIndex, Plane plane,
+		long[] planeMin, long[] planeMax) throws FormatException, IOException; 
 
 	/**
 	 * Obtains a thumbnail version of the {@code Plane} at the specified image and
@@ -142,10 +140,10 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	Reader[] getUnderlyingReaders();
 
 	/** Returns the optimal sub-image width for use with {@link #openPlane}. */
-	int getOptimalTileWidth(int imageIndex);
+	long getOptimalTileWidth(int imageIndex);
 
 	/** Returns the optimal sub-image height for use with {@link #openPlane}. */
-	int getOptimalTileHeight(int imageIndex);
+	long getOptimalTileHeight(int imageIndex);
 
 	/**
 	 * Sets the Metadata for this Reader.
@@ -204,8 +202,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
-		int w, int h, Plane plane) throws IOException;
+	Plane readPlane(RandomAccessInputStream s, int imageIndex, long[] planeMin,
+		long[] planeMax, Plane plane) throws IOException;
 
 	/**
 	 * Reads a raw plane from disk.
@@ -213,8 +211,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane readPlane(RandomAccessInputStream s, int imageIndex, int x, int y,
-		int w, int h, int scanlinePad, Plane plane) throws IOException;
+	Plane readPlane(RandomAccessInputStream s, int imageIndex, long[] planeMin,
+		long[] planeMax, int scanlinePad, Plane plane) throws IOException;
 
 	/** Determines the number of planes in the current file. */
 	int getPlaneCount(int imageIndex);
@@ -225,26 +223,21 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * Creates a blank plane compatible with this reader.
 	 * 
-	 * @param xOffset - X offset of the Plane
-	 * @param yOffset - Y offset of the Plane
-	 * @param xLength - Width of the Plane
-	 * @param yLength - Height of the Plane
+	 * @param planeOffsets minimal offsets of the planar axes
+	 * @param planeBounds maximum values of the planar axes
 	 * @return The created plane
 	 */
-	Plane createPlane(int xOffset, int yOffset, int xLength, int yLength);
+	Plane createPlane(long[] planeOffsets, long[] planeBounds);
 
 	/**
 	 * Creates a blank plane compatible with this reader.
 	 * 
 	 * @param meta - ImageMetadata to use to populate the new plane.
-	 * @param xOffset - X offset of the Plane
-	 * @param yOffset - Y offset of the Plane
-	 * @param xLength - Width of the Plane
-	 * @param yLength - Height of the Plane
+	 * @param planeOffsets minimal offsets of the planar axes
+	 * @param planeBounds maximum values of the planar axes
 	 * @return The created plane
 	 */
-	Plane createPlane(ImageMetadata meta, int xOffset, int yOffset, int xLength,
-		int yLength);
+	Plane createPlane(ImageMetadata meta, long[] planeMin, long[] planeMax);
 
 	/**
 	 * Convenience method for casting {@code Plane} implementations to the type

@@ -90,37 +90,24 @@ public interface Plane extends Contextual {
 	ImageMetadata getImageMetadata();
 
 	/**
-	 * @return The x offset of this Plane relative to the origin image
+	 * @return The offsets of this Plane relative to the origin image
 	 */
-	int getxOffset();
+	long[] getOffsets();
 
 	/**
-	 * @return The y offset of this Plane relative to the origin image
+	 * @return The lengths of each axis of this plane 
 	 */
-	int getyOffset();
-
-	/**
-	 * @return The width of this Plane
-	 */
-	int getxLength();
-
-	/**
-	 * @return The height of this plane
-	 */
-	int getyLength();
+	long[] getLengths();
 
 	/**
 	 * Populates this planes offsets, dimensions and Metadata.
 	 * 
 	 * @param meta - ImageMetadata to associate with this Plane
-	 * @param xOffset - X offset for this Plane
-	 * @param yOffset - Y offset for this Plane
-	 * @param xLength - Width of this Plane
-	 * @param yLength - Height of this Plane
+	 * @param planeOffsets minimal offsets of the planar axes
+	 * @param planeBounds maximum values of the planar axes
 	 * @return A reference to this Plane
 	 */
-	Plane populate(ImageMetadata meta, int xOffset, int yOffset, int xLength,
-		int yLength);
+	Plane populate(ImageMetadata meta, long[] planeOffsets, long[] planeBounds);
 
 	/**
 	 * Populates this plane by copying the fields of the provided plane
@@ -138,34 +125,12 @@ public interface Plane extends Contextual {
 	void setImageMetadata(ImageMetadata meta);
 
 	/**
-	 * Sets this plane's position in the X axis of the underlying image.
-	 * 
-	 * @param x - the new x-offset for this plane. NB: x-offset + x-length <=
-	 *          image width
+	 * Sets this plane's offset from 0 relative to the underlying image.
 	 */
-	void setxOffset(int x);
-
+	void setOffsets(long[] offsets);
+	
 	/**
-	 * Sets this plane's position in the Y axis of the underlying image.
-	 * 
-	 * @param y - the new y-offset for this plane. NB: y-offset + y-length <=
-	 *          image height
+	 * Sets this plane's axis lengths
 	 */
-	void setyOffset(int y);
-
-	/**
-	 * Sets this plane's length in the X axis of the underlying image.
-	 * 
-	 * @param length - the new x-length for this plane. NB: x-offset + x-length <=
-	 *          image width
-	 */
-	void setxLength(int length);
-
-	/**
-	 * Sets this plane's length in the Y axis of the underlying image.
-	 * 
-	 * @param length - the new y-length for this plane. NB: y-offset + y-length <=
-	 *          image width
-	 */
-	void setyLength(int length);
+	void setLengths(long[] lengths);
 }

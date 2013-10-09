@@ -63,7 +63,7 @@ import org.testng.annotations.Test;
 public class CheckerTest {
 
 	private final String id =
-		"8bit-signed&pixelType=int8&sizeZ=3&sizeC=5&sizeT=7&sizeY=50.fake";
+		"8bit-signed&pixelType=int8&axes=X,Y,Z,C,T&lengths=50,50,3,5,7.fake";
 	private final String falseId = "testFile.png";
 	private Checker c;
 	private FakeChecker fc;

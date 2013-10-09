@@ -36,6 +36,7 @@
 
 package io.scif;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,13 +62,13 @@ public class DefaultMetadataService extends AbstractService implements
 	private LogService log;
 
 	@Override
-	public Map<String, String> parse(final String data) {
+	public Map<String, Object> parse(final String data) {
 		return parse(data, "[&\n]");
 	}
 
 	@Override
-	public Map<String, String> parse(final String data, final String regex) {
-		final HashMap<String, String> map = new HashMap<String, String>();
+	public Map<String, Object> parse(final String data, final String regex) {
+		final HashMap<String, Object> map = new HashMap<String, Object>();
 
 		final String[] tokens = data.split(regex);
 
@@ -84,7 +85,16 @@ public class DefaultMetadataService extends AbstractService implements
 				continue;
 			}
 			final String key = token.substring(0, equals);
-			final String value = token.substring(equals + 1);
+			Object value;
+			final String rawValue = token.substring(equals + 1);
+			// Check for a list of values
+			if (rawValue.indexOf(',') >= 0) {
+				String[] values = rawValue.split(",");
+				value = Arrays.asList(values);
+			}
+			else {
+				value = rawValue;
+			}
 			map.put(key, value);
 		}
 
@@ -92,7 +102,7 @@ public class DefaultMetadataService extends AbstractService implements
 	}
 
 	@Override
-	public void populate(final Object metadata, final Map<String, String> map) {
+	public void populate(final Object metadata, final Map<String, Object> map) {
 		final List<java.lang.reflect.Field> fields =
 			ClassUtils.getAnnotatedFields(metadata.getClass(), Field.class);
 		for (final java.lang.reflect.Field field : fields) {
@@ -101,9 +111,8 @@ public class DefaultMetadataService extends AbstractService implements
 				// no value given for this field
 				continue;
 			}
-			final String value = map.get(name);
+			final Object value = map.get(name);
 			ClassUtils.setValue(field, metadata, value);
 		}
 	}
-
 }

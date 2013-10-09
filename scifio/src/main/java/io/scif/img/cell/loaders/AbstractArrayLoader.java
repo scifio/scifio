@@ -46,7 +46,7 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
-import net.imglib2.meta.Axes;
+import net.imglib2.meta.CalibratedAxis;
 
 /**
  * Abstract superclass for all {@link SCIFIOArrayLoader} implementations.
@@ -73,138 +73,68 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 		synchronized (reader) {
 			final Metadata meta = reader.getMetadata();
 
-			StringBuilder dimOrder =
-				new StringBuilder(FormatTools.findDimensionOrder(meta, 0).toUpperCase());
-
-			if (meta.getAxisLength(0, Axes.X) == 1) dimOrder =
-				dimOrder.deleteCharAt(dimOrder.indexOf("X"));
-			if (meta.getAxisLength(0, Axes.Y) == 1) dimOrder =
-				dimOrder.deleteCharAt(dimOrder.indexOf("Y"));
-			if (meta.getAxisLength(0, Axes.Z) == 1) dimOrder =
-				dimOrder.deleteCharAt(dimOrder.indexOf("Z"));
-			if (meta.getEffectiveSizeC(0) == 1) dimOrder =
-				dimOrder.deleteCharAt(dimOrder.indexOf("C"));
-			if (meta.getAxisLength(0, Axes.TIME) == 1) dimOrder =
-				dimOrder.deleteCharAt(dimOrder.indexOf("T"));
-
-			final int xIndex = dimOrder.indexOf("X");
-			final int yIndex = dimOrder.indexOf("Y");
-			final int zIndex = dimOrder.indexOf("Z");
-			final int cIndex = dimOrder.indexOf("C");
-			final int tIndex = dimOrder.indexOf("T");
-
-			final int zSlice = new Long(zIndex == -1 ? 0 : min[zIndex]).intValue();
-			final int tSlice = new Long(tIndex == -1 ? 0 : min[tIndex]).intValue();
-			final int cSlice = new Long(cIndex == -1 ? 0 : min[cIndex]).intValue();
-			final int zMax = zIndex == -1 ? 1 : dimensions[zIndex] + zSlice;
-			final int tMax = tIndex == -1 ? 1 : dimensions[tIndex] + tSlice;
-			final int cMax = cIndex == -1 ? 1 : dimensions[cIndex] + cSlice;
-
-			Plane tmpPlane = null;
-
-			int planeSize = -1;
-
-			int[][] iterBounds = null;
-			String zctOrder = "";
-
-			if (zIndex < cIndex) {
-				if (zIndex < tIndex) {
-					if (cIndex < tIndex) {
-						zctOrder = "ZCT";
-						iterBounds = getBounds(zSlice, zMax, cSlice, cMax, tSlice, tMax);
-					}
-					else {
-						zctOrder = "ZTC";
-						iterBounds = getBounds(zSlice, zMax, tSlice, tMax, cSlice, cMax);
-					}
-				}
-				else {
-					zctOrder = "TZC";
-					iterBounds = getBounds(tSlice, tMax, zSlice, zMax, cSlice, cMax);
-				}
-			}
-			else if (tIndex < cIndex) {
-				zctOrder = "TCZ";
-				iterBounds = getBounds(tSlice, tMax, cSlice, cMax, zSlice, zMax);
-			}
-			else {
-				if (zIndex < tIndex) {
-					zctOrder = "CZT";
-					iterBounds = getBounds(cSlice, cMax, zSlice, zMax, tSlice, tMax);
-				}
-				else {
-					zctOrder = "CTZ";
-					iterBounds = getBounds(cSlice, cMax, tSlice, tMax, zSlice, zMax);
-				}
-			}
-
-			int planesRead = 0;
-			final int[] index =
-				new int[] { iterBounds[0][0], iterBounds[1][0], iterBounds[2][0] };
-
-			int x = new Long(xIndex == -1 ? 0 : min[xIndex]).intValue();
-			int y = new Long(yIndex == -1 ? 0 : min[yIndex]).intValue();
-			int w = xIndex == -1 ? 1 : dimensions[xIndex];
-			int h = yIndex == -1 ? 1 : dimensions[yIndex];
-
-			final int i1 = index[1], i2 = index[2];
-
-			if (subRegion != null) {
-				x = subRegion.getRange(Axes.X).head().intValue();
-				w = subRegion.getRange(Axes.X).tail().intValue();
-
-				if (subRegion.size() > 1) {
-					y = subRegion.getRange(Axes.Y).head().intValue();
-					h = subRegion.getRange(Axes.Y).tail().intValue();
-				}
-			}
-
 			boolean success = false;
+
+			int entities = 1;
+
+			// Starting indices for the planar dimensions
+			long[] planarMin = new long[meta.getAxesPlanar(0).size()];
+			// Lengths in the planar dimensions
+			long[] planarLength = new long[meta.getAxesPlanar(0).size()];
+			// Non-planar indices to open
+			DimRange[] npRanges = new DimRange[meta.getAxesNonPlanar(0).size()];
+			long[] npIndices = new long[npRanges.length];
+
+			int axisIndex = 0;
+			// Get planar ranges
+			for (CalibratedAxis axis : meta.getAxesPlanar(0)) {
+				int index = meta.getAxisIndex(0, axis.type());
+
+				// Constrain on passed dims
+				if (index < dimensions.length) {
+					planarMin[axisIndex] = min[index];
+					planarLength[axisIndex] = dimensions[index];
+				}
+				else {
+					planarLength[axisIndex] = 1;
+				}
+
+				entities *= planarLength[axisIndex];
+
+				axisIndex++;
+			}
+
+			axisIndex = 0;
+			for (CalibratedAxis axis : meta.getAxesNonPlanar(0)) {
+				int index = meta.getAxisIndex(0, axis.type());
+
+				// otherwise just make a straightforward range spanning the passed
+				// dimensional constraints
+				npRanges[axisIndex] =
+					new DimRange(min[index], min[index] + dimensions[index] - 1);
+
+				if (subRegion != null) {
+					entities *= subRegion.getRange(axis.type()).indices().size();
+				}
+				else {
+					entities *= npRanges[axisIndex].indices().size();
+				}
+
+				axisIndex++;
+			}
 
 			A data = null;
 
 			while (!success) {
 				try {
-					data = emptyArray(dimensions);
+					data = emptyArray(entities);
 					success = true;
 				}
 				catch (final OutOfMemoryError e) {}
 			}
 
 			try {
-				for (; index[0] < iterBounds[0][1]; index[0]++) {
-					for (; index[1] < iterBounds[1][1]; index[1]++) {
-						for (; index[2] < iterBounds[2][1]; index[2]++) {
-
-							final int z = index[zctOrder.indexOf('Z')];
-							final int c = index[zctOrder.indexOf('C')];
-							final int t = index[zctOrder.indexOf('T')];
-
-							if (!inSubregion(z, c, t)) continue;
-
-							final int planeIndex = FormatTools.getIndex(reader, 0, z, c, t);
-
-							success = false;
-							while (!success) {
-								try {
-									if (tmpPlane == null) tmpPlane =
-										reader.openPlane(0, planeIndex, x, y, w, h);
-									else tmpPlane =
-										reader.openPlane(0, planeIndex, tmpPlane, x, y, w, h);
-									success = true;
-								}
-								catch (final OutOfMemoryError e) {}
-							}
-							if (planeSize == -1) planeSize = tmpPlane.getBytes().length;
-
-							convertBytes(data, tmpPlane.getBytes(), planesRead);
-
-							planesRead++;
-						}
-						index[2] = i2;
-					}
-					index[1] = i1;
-				}
+				read(data, planarMin, planarLength, npRanges, npIndices);
 			}
 			catch (final FormatException e) {
 				throw new IllegalStateException(
@@ -219,36 +149,82 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 		}
 	}
 
-	private boolean inSubregion(final int z, final int c, final int t) {
+	/**
+	 * Entry point for {@link #read(Object, Plane, long[], long[], DimRange[], int[], int, int)}
+	 */
+	private void
+		read(final A data, final long[] planarMin, final long[] planarLength,
+			final DimRange[] npRanges, final long[] npIndices)
+			throws FormatException, IOException
+	{
+		read(data, null, planarMin, planarLength, npRanges, npIndices, 0, 0);
+	}
+
+	/**
+	 * Recurses over all the provided {@link DimRange}s, reading the corresponding
+	 * bytes and storing them in the provided data object.
+	 */
+	private void read(final A data, Plane tmpPlane, final long[] planarMin,
+		final long[] planarLength, final DimRange[] npRanges,
+		final long[] npIndices, final int depth, int planeCount)
+		throws FormatException, IOException
+	{
+		if (depth < npRanges.length) {
+			// We need to invert the depth index to get the current non-planar
+			// axis index, to ensure axes are iteratead in fastest to slowest order
+			final int npPosition = npRanges.length - 1 - depth;
+			for (int i = 0; i < npRanges[npPosition].indices().size(); i++) {
+				npIndices[npPosition] = npRanges[npPosition].indices().get(i);
+				read(data, tmpPlane, planarMin, planarLength, npRanges, npIndices,
+					depth + 1, planeCount);
+				planeCount++;
+			}
+		}
+		else if (inSubregion(npIndices)) {
+			final int planeIndex =
+				(int) FormatTools.positionToRaster(0, reader, npIndices);
+
+			boolean success = false;
+			while (!success) {
+				try {
+					if (tmpPlane == null) tmpPlane =
+						reader.openPlane(0, planeIndex, planarMin, planarLength);
+					else tmpPlane =
+						reader.openPlane(0, planeIndex, tmpPlane, planarMin, planarLength);
+					success = true;
+				}
+				catch (final OutOfMemoryError e) {}
+			}
+			convertBytes(data, tmpPlane.getBytes(), planeCount);
+		}
+
+	}
+
+	/**
+	 * Returns true if this loader's {@link SubRegion} contains all of the given
+	 * indices
+	 */
+	private boolean inSubregion(final long[] npIndices) {
 		boolean inSubregion = true;
 
 		if (subRegion != null) {
-			inSubregion = inSubregion && inRange(subRegion.getRange(Axes.Z), z);
-			inSubregion = inSubregion && inRange(subRegion.getRange(Axes.CHANNEL), c);
-			inSubregion = inSubregion && inRange(subRegion.getRange(Axes.TIME), t);
+			int index = 0;
+			for (CalibratedAxis axis : reader.getMetadata().getAxesNonPlanar(0)) {
+				inSubregion = inSubregion && inRange(subRegion.getRange(axis.type()), index++);
+			}
 		}
 
 		return inSubregion;
 	}
 
+	/**
+	 * Returns true if the provided {@link DimRange} contains the given index
+	 */
 	private boolean inRange(final DimRange range, final int index) {
 		if (range == null) return true;
 		if (range.contains(new Long(index))) return true;
 
 		return false;
-	}
-
-	private int[][] getBounds(final int start1, final int max1, final int start2,
-		final int max2, final int start3, final int max3)
-	{
-		return new int[][] { { start1, max1 }, { start2, max2 }, { start3, max3 } };
-	}
-
-	protected int countEntities(final int[] dimensions) {
-		int numEntities = 1;
-		for (int i = 0; i < dimensions.length; ++i)
-			numEntities *= dimensions[i];
-		return numEntities;
 	}
 
 	public abstract void convertBytes(A data, byte[] bytes, int planesRead);

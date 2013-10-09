@@ -982,18 +982,21 @@ public class DICOMFormat extends AbstractFormat {
 			Arrays.sort(keys);
 
 			for (int i = 0; i < seriesCount; i++) {
-				int sizeC = getAxisLength(i, Axes.CHANNEL);
 				int sizeZ = 0;
 				if (seriesCount == 1) {
 					sizeZ = getOffsets().length * fileList.get(keys[i]).size();
 
-					setAxes(0, FormatTools.findDimensionList("XYCZT"));
-
-					setRGB(i, getAxisLength(i, Axes.CHANNEL) > 1);
-					setAxisLength(i, Axes.TIME, 1);
 					setMetadataComplete(i, true);
 					setFalseColor(i, false);
-					if (isRLE) setInterleaved(i, false);
+					if (isRLE) {
+						setAxisTypes(0, Axes.X, Axes.Y, Axes.CHANNEL);
+					}
+					if (getAxisLength(0, Axes.CHANNEL) > 1) {
+						setPlanarAxisCount(0, 3);
+					}
+					else {
+						setPlanarAxisCount(0, 2);
+					}
 				}
 				else {
 
@@ -1015,13 +1018,7 @@ public class DICOMFormat extends AbstractFormat {
 
 				}
 
-				if (sizeC == 0) sizeC = 1;
-
-				setAxisLength(i, Axes.CHANNEL, sizeC);
 				setAxisLength(i, Axes.Z, sizeZ);
-				setAxisLength(i, Axes.TIME, 1);
-
-				get(i).setPlaneCount(sizeZ);
 			}
 		}
 
@@ -1241,7 +1238,10 @@ public class DICOMFormat extends AbstractFormat {
 					case PLANAR_CONFIGURATION:
 						final int config = in.readShort();
 						interleaved = config == 0;
-						iMeta.setInterleaved(interleaved);
+						if (interleaved) {
+							iMeta.setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y);
+							iMeta.setPlanarAxisCount(3);
+						}
 						addInfo(meta, tag, config);
 						break;
 					case ROWS:
@@ -1345,7 +1345,7 @@ public class DICOMFormat extends AbstractFormat {
 			final int planeSize =
 				sizeX *
 					sizeY *
-					(meta.getColorTable(0, 0) == null ? meta.getAxisLength(0,
+					(int)(meta.getColorTable(0, 0) == null ? meta.getAxisLength(0,
 						Axes.CHANNEL) : 1) * bytesPerPixel;
 
 			meta.setJP2K(isJP2K);
@@ -1676,14 +1676,15 @@ public class DICOMFormat extends AbstractFormat {
 				}
 				if (key.equals("Samples per pixel")) {
 					final int sizeC = Integer.parseInt(info);
-					if (sizeC > 1) meta.setRGB(0, false);
-					meta.setAxisLength(0, Axes.CHANNEL, sizeC);
+					if (sizeC > 1) {
+						meta.setAxisLength(0, Axes.CHANNEL, sizeC);
+						meta.setPlanarAxisCount(0, 2);
+					}
 				}
 				else if (key.equals("Photometric Interpretation")) {
 					if (info.equals("PALETTE COLOR")) {
 						meta.setIndexed(0, true);
 						meta.setAxisLength(0, Axes.CHANNEL, 1);
-						meta.setRGB(0, false);
 						meta.lut = new byte[3][];
 						meta.shortLut = new short[3][];
 
@@ -1863,13 +1864,20 @@ public class DICOMFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, plane
-				.getData().length, x, y, w, h);
-
 			final Metadata meta = getMetadata();
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex, plane
+				.getData().length, planeMin, planeMax);
+
+			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
+			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xAxis],
+								y = (int) planeMin[yAxis],
+								w = (int) planeMax[xAxis],
+								h = (int) planeMax[yAxis];
+
 			final Hashtable<Integer, Vector<String>> fileList = meta.getFileList();
 
 			final Integer[] keys = fileList.keySet().toArray(new Integer[0]);
@@ -1879,25 +1887,26 @@ public class DICOMFormat extends AbstractFormat {
 				planeIndex = planeIndex % meta.getImagesPerFile();
 				final String file = fileList.get(keys[imageIndex]).get(fileNumber);
 				final io.scif.Reader r = scifio().initializer().initializeReader(file);
-				return (ByteArrayPlane) r.openPlane(imageIndex, planeIndex, plane, x,
-					y, w, h);
+				return (ByteArrayPlane) r.openPlane(imageIndex, planeIndex, plane,
+					planeMin, planeMax);
 			}
 
 			final int ec =
-				meta.isIndexed(0) ? 1 : meta.getAxisLength(imageIndex, Axes.CHANNEL);
+				meta.isIndexed(0) ? 1 : (int) meta.getAxisLength(imageIndex,
+					Axes.CHANNEL);
 			final int bpp =
 				FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
 			final int bytes =
-				meta.getAxisLength(imageIndex, Axes.X) *
-					meta.getAxisLength(imageIndex, Axes.Y) * bpp * ec;
+				(int) (meta.getAxisLength(imageIndex, Axes.X) *
+					meta.getAxisLength(imageIndex, Axes.Y) * bpp * ec);
 			getStream().seek(meta.getOffsets()[planeIndex]);
 
 			if (meta.isRLE()) {
 				// plane is compressed using run-length encoding
 				final CodecOptions options = new CodecOptions();
 				options.maxBytes =
-					meta.getAxisLength(imageIndex, Axes.X) *
-						meta.getAxisLength(imageIndex, Axes.Y);
+					(int) (meta.getAxisLength(imageIndex, Axes.X) * meta.getAxisLength(
+						imageIndex, Axes.Y));
 				for (int c = 0; c < ec; c++) {
 					final PackbitsCodec codec = new PackbitsCodec();
 					byte[] t = null;
@@ -1937,7 +1946,8 @@ public class DICOMFormat extends AbstractFormat {
 					}
 
 					final int rowLen = w * bpp;
-					final int srcRowLen = meta.getAxisLength(imageIndex, Axes.X) * bpp;
+					final int srcRowLen =
+						(int) meta.getAxisLength(imageIndex, Axes.X) * bpp;
 
 					// TODO unused int srcPlane = meta.getAxisLength(imageIndex, Axes.Y) *
 					// srcRowLen;
@@ -1990,9 +2000,9 @@ public class DICOMFormat extends AbstractFormat {
 				b = codec.decompress(b, options);
 
 				final int rowLen = w * bpp;
-				final int srcRowLen = meta.getAxisLength(imageIndex, Axes.X) * bpp;
+				final int srcRowLen = (int)meta.getAxisLength(imageIndex, Axes.X) * bpp;
 
-				final int srcPlane = meta.getAxisLength(imageIndex, Axes.Y) * srcRowLen;
+				final int srcPlane = (int)meta.getAxisLength(imageIndex, Axes.Y) * srcRowLen;
 
 				for (int c = 0; c < ec; c++) {
 					for (int row = 0; row < h; row++) {
@@ -2008,7 +2018,7 @@ public class DICOMFormat extends AbstractFormat {
 			}
 			else {
 				// plane is not compressed
-				readPlane(getStream(), imageIndex, x, y, w, h, plane);
+				readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
 			}
 
 			if (meta.isInverted()) {

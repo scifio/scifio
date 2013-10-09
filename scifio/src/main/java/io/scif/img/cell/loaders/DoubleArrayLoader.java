@@ -74,8 +74,8 @@ public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
 	}
 
 	@Override
-	public DoubleArray emptyArray(final int[] dimensions) {
-		return new DoubleArray(countEntities(dimensions));
+	public DoubleArray emptyArray(final int entities) {
+		return new DoubleArray(entities);
 	}
 
 	@Override
