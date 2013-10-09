@@ -69,13 +69,13 @@ public abstract class ByteArrayReader<M extends TypedMetadata> extends
 	{
 		FormatTools.assertStream(getStream(), true, 1);
 		final Metadata meta = getMetadata();
-		final long[] planeBounds = meta.getAxesLengthsPlanar(imageIndex);
+		final long[] planeBounds = meta.get(imageIndex).getAxesLengthsPlanar();
 		final long[] planeOffsets = new long[planeBounds.length];
 
-		planeBounds[meta.getAxisIndex(imageIndex, Axes.X)] =
-			meta.getThumbSizeX(imageIndex);
-		planeBounds[meta.getAxisIndex(imageIndex, Axes.Y)] =
-			meta.getThumbSizeX(imageIndex);
+		planeBounds[meta.get(imageIndex).getAxisIndex(Axes.X)] =
+			meta.get(imageIndex).getThumbSizeX();
+		planeBounds[meta.get(imageIndex).getAxisIndex(Axes.Y)] =
+			meta.get(imageIndex).getThumbSizeX();
 
 		final ByteArrayPlane plane = createPlane(planeOffsets, planeBounds);
 

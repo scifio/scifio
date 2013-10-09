@@ -350,7 +350,7 @@ public class PICTFormat extends AbstractFormat {
 					break;
 				case PICT_JPEG:
 					meta.getJpegOffsets().add(in.getFilePointer() + 2);
-					meta.setAxisLength(0, Axes.CHANNEL, 3);
+					meta.get(0).setAxisLength(Axes.CHANNEL, 3);
 					while ((in.readShort() & 0xffff) != 0xffd9 &&
 						in.getFilePointer() < in.length());
 					while (in.getFilePointer() < in.length()) {
@@ -360,7 +360,7 @@ public class PICTFormat extends AbstractFormat {
 							meta.getJpegOffsets().add(in.getFilePointer() - 2);
 						}
 					}
-					meta.setAxisTypes(0, Axes.CHANNEL, Axes.X, Axes.Y);
+					meta.get(0).setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y);
 					break;
 				default:
 					if (opcode < 0) {
@@ -395,10 +395,10 @@ public class PICTFormat extends AbstractFormat {
 				// rowBytes doesn't exist, so set it to its logical value
 				switch (pixelSize) {
 					case 32:
-						meta.setRowBytes((int)meta.getAxisLength(0, Axes.X) * compCount);
+						meta.setRowBytes((int)meta.get(0).getAxisLength(Axes.X) * compCount);
 						break;
 					case 16:
-						meta.setRowBytes((int)meta.getAxisLength(0, Axes.X) * 2);
+						meta.setRowBytes((int)meta.get(0).getAxisLength(Axes.X) * 2);
 						break;
 					default:
 						throw new FormatException("Sorry, vector data not supported.");
@@ -446,7 +446,7 @@ public class PICTFormat extends AbstractFormat {
 			byte[] uBuf = null; // row uncompressed data
 			int[] uBufI = null; // row uncompressed data - 16+ bit pixels
 			final int bufSize = meta.getRowBytes();
-			final int outBufSize = (int)meta.getAxisLength(0, Axes.X);
+			final int outBufSize = (int)meta.get(0).getAxisLength(Axes.X);
 			byte[] outBuf = null; // used to expand pixel data
 
 			final boolean compressed = (meta.getRowBytes() >= 8) || (pixelSize == 32);
@@ -455,11 +455,11 @@ public class PICTFormat extends AbstractFormat {
 
 			switch (pixelSize) {
 				case 32:
-					if (!compressed) uBufI = new int[(int)meta.getAxisLength(0, Axes.X)];
+					if (!compressed) uBufI = new int[(int)meta.get(0).getAxisLength(Axes.X)];
 					else uBuf = new byte[bufSize];
 					break;
 				case 16:
-					uBufI = new int[(int)meta.getAxisLength(0, Axes.X)];
+					uBufI = new int[(int)meta.get(0).getAxisLength(Axes.X)];
 					break;
 				case 8:
 					uBuf = new byte[bufSize];
@@ -474,17 +474,17 @@ public class PICTFormat extends AbstractFormat {
 				log()
 					.debug("Pixel data is uncompressed (pixelSize=" + pixelSize + ").");
 				buf = new byte[bufSize];
-				for (int row = 0; row < meta.getAxisLength(0, Axes.X); row++) {
+				for (int row = 0; row < meta.get(0).getAxisLength(Axes.X); row++) {
 					in.read(buf, 0, meta.getRowBytes());
 
 					switch (pixelSize) {
 						case 16:
-							for (int i = 0; i < meta.getAxisLength(0, Axes.X); i++) {
+							for (int i = 0; i < meta.get(0).getAxisLength(Axes.X); i++) {
 								uBufI[i] = DataTools.bytesToShort(buf, i * 2, 2, false);
 							}
 							meta.getStrips().add(uBufI);
 							buf = null;
-							meta.setAxisLength(0, Axes.CHANNEL, 3);
+							meta.get(0).setAxisLength(Axes.CHANNEL, 3);
 							break;
 						case 8:
 							meta.getStrips().add(buf);
@@ -501,7 +501,7 @@ public class PICTFormat extends AbstractFormat {
 					"Pixel data is compressed (pixelSize=" + pixelSize + "; compCount=" +
 						compCount + ").");
 				buf = new byte[bufSize + 1 + bufSize / 128];
-				for (int row = 0; row < meta.getAxisLength(0, Axes.Y); row++) {
+				for (int row = 0; row < meta.get(0).getAxisLength(Axes.Y); row++) {
 					if (meta.getRowBytes() > 250) rawLen = in.readShort();
 					else rawLen = in.read();
 
@@ -519,16 +519,16 @@ public class PICTFormat extends AbstractFormat {
 					in.read(buf, 0, rawLen);
 
 					if (pixelSize == 16) {
-						uBufI = new int[(int)meta.getAxisLength(0, Axes.X)];
+						uBufI = new int[(int)meta.get(0).getAxisLength(Axes.X)];
 						unpackBits(buf, uBufI);
 						meta.getStrips().add(uBufI);
-						meta.setAxisLength(0, Axes.CHANNEL, 3);
+						meta.get(0).setAxisLength(Axes.CHANNEL, 3);
 					}
 					else {
 						final PackbitsCodec c = new PackbitsCodec();
 						c.setContext(getContext());
 						final CodecOptions options = new CodecOptions();
-						options.maxBytes = (int)meta.getAxisLength(0, Axes.X) * 4;
+						options.maxBytes = (int)meta.get(0).getAxisLength(Axes.X) * 4;
 						uBuf = c.decompress(buf, options);
 					}
 
@@ -543,16 +543,16 @@ public class PICTFormat extends AbstractFormat {
 						byte[] newBuf = null;
 
 						for (int q = 0; q < compCount; q++) {
-							final int offset = q * (int)meta.getAxisLength(0, Axes.X);
+							final int offset = q * (int)meta.get(0).getAxisLength(Axes.X);
 							final int len =
-								Math.min((int)meta.getAxisLength(0, Axes.X), uBuf.length - offset);
-							newBuf = new byte[(int)meta.getAxisLength(0, Axes.X)];
+								Math.min((int)meta.get(0).getAxisLength(Axes.X), uBuf.length - offset);
+							newBuf = new byte[(int)meta.get(0).getAxisLength(Axes.X)];
 							if (offset < uBuf.length) {
 								System.arraycopy(uBuf, offset, newBuf, 0, len);
 							}
 							meta.getStrips().add(newBuf);
 						}
-						meta.setAxisLength(0, Axes.CHANNEL, 3);
+						meta.get(0).setAxisLength(Axes.CHANNEL, 3);
 					}
 				}
 			}
@@ -571,8 +571,8 @@ public class PICTFormat extends AbstractFormat {
 			final int brY = in.readShort();
 			final int brX = in.readShort();
 
-			if (brX - tlX > 0) meta.setAxisLength(0, Axes.X, brX - tlX);
-			if (brY - tlY > 0) meta.setAxisLength(0, Axes.Y, brY - tlY);
+			if (brX - tlX > 0) meta.get(0).setAxisLength(Axes.X, brX - tlX);
+			if (brY - tlY > 0) meta.get(0).setAxisLength(Axes.Y, brY - tlY);
 
 			in.skipBytes(18);
 		}
@@ -697,8 +697,8 @@ public class PICTFormat extends AbstractFormat {
 					s.seek(jpegOffset - meta.getJpegOffsets().get(0));
 
 					final CodecOptions options = new CodecOptions();
-					options.interleaved = meta.getInterleavedAxisCount(0) > 0;
-					options.littleEndian = meta.isLittleEndian(0);
+					options.interleaved = meta.get(0).getInterleavedAxisCount() > 0;
+					options.littleEndian = meta.get(0).isLittleEndian();
 
 					v.write(new JPEGCodec().decompress(s, options));
 				}
@@ -730,13 +730,13 @@ public class PICTFormat extends AbstractFormat {
 
 			// combine everything in the strips Vector
 
-			if ((meta.getAxisLength(0, Axes.Y) * 4 < meta.getStrips().size()) &&
-				(((meta.getStrips().size() / 3) % meta.getAxisLength(0, Axes.Y)) != 0))
+			if ((meta.get(0).getAxisLength(Axes.Y) * 4 < meta.getStrips().size()) &&
+				(((meta.getStrips().size() / 3) % meta.get(0).getAxisLength(Axes.Y)) != 0))
 			{
-				meta.setAxisLength(0, Axes.Y, meta.getStrips().size());
+				meta.get(0).setAxisLength(Axes.Y, meta.getStrips().size());
 			}
-			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
-			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xAxis],
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],
@@ -754,12 +754,12 @@ public class PICTFormat extends AbstractFormat {
 					System.arraycopy(row, x, buf, (i - y) * w, len);
 				}
 			}
-			else if (meta.getAxisLength(0, Axes.Y) * 3 == meta.getStrips().size() ||
-				meta.getAxisLength(0, Axes.Y) * 4 == meta.getStrips().size())
+			else if (meta.get(0).getAxisLength(Axes.Y) * 3 == meta.getStrips().size() ||
+				meta.get(0).getAxisLength(Axes.Y) * 4 == meta.getStrips().size())
 			{
 				// 24 or 32 bit data
 
-				final int nc = meta.getStrips().size() / (int)meta.getAxisLength(0, Axes.Y);
+				final int nc = meta.getStrips().size() / (int)meta.get(0).getAxisLength(Axes.Y);
 
 				byte[] c0 = null;
 				byte[] c1 = null;

@@ -254,10 +254,10 @@ public class FakeFormat extends AbstractFormat {
 		@Override
 		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
-			int cIndex = getAxisIndex(imageIndex, Axes.CHANNEL);
+			int cIndex = get(imageIndex).getAxisIndex(Axes.CHANNEL);
 			if (cIndex == -1) return null;
 			final long[] pos =
-				FormatTools.rasterToPosition(getAxesLengthsNonPlanar(imageIndex),
+				FormatTools.rasterToPosition(get(imageIndex).getAxesLengthsNonPlanar(),
 					planeIndex);
 			final int cPos = (int) pos[cIndex];
 			return lut == null ? null : lut[cPos];
@@ -327,7 +327,7 @@ public class FakeFormat extends AbstractFormat {
 				int[][] valueToIndex = null;
 				ColorTable[] luts = null;
 
-				int sizeC = (int)getAxisLength(0, Axes.CHANNEL);
+				int sizeC = (int)get(0).getAxisLength(Axes.CHANNEL);
 				if (pType == FormatTools.UINT8) {
 					// create 8-bit LUTs
 					final int num = 256;
@@ -435,7 +435,7 @@ public class FakeFormat extends AbstractFormat {
 			plane.setImageMetadata(meta.get(imageIndex));
 
 			final long[] pos =
-				FormatTools.rasterToPosition(meta.getAxesLengthsNonPlanar(imageIndex),
+				FormatTools.rasterToPosition(meta.get(imageIndex).getAxesLengthsNonPlanar(),
 					planeIndex);
 
 			final long[] planarIndices = new long[planeMin.length];
@@ -453,9 +453,9 @@ public class FakeFormat extends AbstractFormat {
 			if (planarPos < planeMin.length) {
 				// Recursively descend along each planar axis
 				for (int i = 0; i < planeLengths[planarPos]; i++) {
-					if (planarPos == meta.getAxisIndex(imageIndex, Axes.X)) xPos =
+					if (planarPos == meta.get(imageIndex).getAxisIndex(Axes.X)) xPos =
 						planeMin[planarPos] + i;
-					if (planarPos == meta.getAxisIndex(imageIndex, Axes.Y)) yPos =
+					if (planarPos == meta.get(imageIndex).getAxisIndex(Axes.Y)) yPos =
 						planeMin[planarPos] + i;
 					planeIndices[planarPos] = planeMin[planarPos] + i;
 					openPlaneHelper(imageIndex, planeIndex, meta, plane, planeMin,
@@ -463,12 +463,12 @@ public class FakeFormat extends AbstractFormat {
 				}
 			}
 			else {
-				final int pixelType = meta.getPixelType(imageIndex);
+				final int pixelType = meta.get(imageIndex).getPixelType();
 				final int bpp = FormatTools.getBytesPerPixel(pixelType);
 				final boolean signed = FormatTools.isSigned(pixelType);
 				final boolean floating = FormatTools.isFloatingPoint(pixelType);
-				final boolean indexed = meta.isIndexed(imageIndex);
-				final boolean little = meta.isLittleEndian(imageIndex);
+				final boolean indexed = meta.get(imageIndex).isIndexed();
+				final boolean little = meta.get(imageIndex).isLittleEndian();
 				final int scaleFactor = meta.getScaleFactor();
 				final ColorTable lut = meta.getColorTable(imageIndex, planeIndex);
 				final int[][] valueToIndex = getMetadata().getValueToIndex();
@@ -541,7 +541,7 @@ public class FakeFormat extends AbstractFormat {
 				if (indexed && lut != null) {
 					final int modValue = lut.getLength();
 					plane.setColorTable(lut);
-					int cIndex = meta.getAxisIndex(imageIndex, Axes.CHANNEL);
+					int cIndex = meta.get(imageIndex).getAxisIndex(Axes.CHANNEL);
 
 					if (valueToIndex != null) pixel =
 						valueToIndex[cIndex][(int) (pixel % modValue)];

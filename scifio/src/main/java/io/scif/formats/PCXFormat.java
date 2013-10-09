@@ -264,7 +264,7 @@ public class PCXFormat extends AbstractFormat {
 
 			final byte[] b =
 				new byte[meta.getBytesPerLine() *
-					(int)meta.getAxisLength(imageIndex, Axes.Y) * meta.getnColorPlanes()];
+					(int)meta.get(imageIndex).getAxisLength(Axes.Y) * meta.getnColorPlanes()];
 			int pt = 0;
 			while (pt < b.length) {
 				int val = getStream().read() & 0xff;
@@ -281,8 +281,8 @@ public class PCXFormat extends AbstractFormat {
 				else b[pt++] = (byte) (val & 0xff);
 			}
 
-			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
-			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xAxis],
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],

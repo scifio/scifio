@@ -70,9 +70,9 @@ public class SCIFIOMetadataTools {
 		final long[] planeMin, final long[] planeMax)
 	{
 		final boolean wholePlane = wholeRow(imageIndex, meta, planeMin, planeMax);
-		final int yIndex = meta.getAxisIndex(imageIndex, Axes.Y);
+		final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
 		return wholePlane && planeMin[yIndex] == 0 &&
-			planeMax[yIndex] == meta.getAxisLength(imageIndex, Axes.Y);
+			planeMax[yIndex] == meta.get(imageIndex).getAxisLength(Axes.Y);
 	}
 
 	/**
@@ -82,12 +82,12 @@ public class SCIFIOMetadataTools {
 		final long[] planeMin, final long[] planeMax)
 	{
 		boolean wholeRow = true;
-		final int yIndex = meta.getAxisIndex(imageIndex, Axes.Y);
+		final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
 
 		for (int i = 0; wholeRow && i < planeMin.length; i++) {
 			if (i == yIndex) continue;
-			if (planeMin[i] != 0 || planeMax[i] != meta.getAxisLength(imageIndex, i)) wholeRow =
-				false;
+			if (planeMin[i] != 0 ||
+				planeMax[i] != meta.get(imageIndex).getAxisLength(i)) wholeRow = false;
 		}
 
 		return wholeRow;
@@ -111,10 +111,10 @@ public class SCIFIOMetadataTools {
 	public static long[] modifyPlanar(final int imageIndex, final Metadata meta,
 		final AxisValue... axes)
 	{
-		final long[] planarAxes = meta.getAxesLengthsPlanar(imageIndex);
+		final long[] planarAxes = meta.get(imageIndex).getAxesLengthsPlanar();
 
 		for (final AxisValue v : axes) {
-			planarAxes[meta.getAxisIndex(imageIndex, v.getType())] = v.getLength();
+			planarAxes[meta.get(imageIndex).getAxisIndex(v.getType())] = v.getLength();
 		}
 
 	    return planarAxes;
@@ -183,7 +183,7 @@ public class SCIFIOMetadataTools {
 				+ "call Writer.setSource(<String/File/RandomAccessOutputStream>) first");
 		}
 
-		if (src.getAxisCount(0) == 0) {
+		if (src.get(0).getAxes().size() == 0) {
 			throw new FormatException("Axiscount #" + imageIndex + " is 0");
 		}
 	}

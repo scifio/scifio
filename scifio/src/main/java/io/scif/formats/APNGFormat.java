@@ -134,14 +134,6 @@ public class APNGFormat extends AbstractFormat {
 		// true if the default image is not part of the animation
 		private boolean separateDefault;
 
-		// Reproduces the imageMetadata littleEndian field..
-		// because APNG spec doesn't have its own little endian notation
-		// (all integers are supposed to be written big endian)
-		// so as an ImageMetadata field it can't be populated
-		// in a translate() method, which is for format-specific
-		// metadata only.
-		private boolean littleEndian = false;
-
 		// true if the pixel bits are signed
 		private boolean signed = false;
 
@@ -184,16 +176,6 @@ public class APNGFormat extends AbstractFormat {
 		}
 
 		// -- Metadata API Methods --
-
-		@Override
-		public boolean isLittleEndian(final int imageIndex) {
-			return littleEndian;
-		}
-
-		@Override
-		public void setLittleEndian(final int imageIndex, final boolean little) {
-			littleEndian = little;
-		}
 
 		@Override
 		public void populateImageMetadata() {
@@ -275,7 +257,6 @@ public class APNGFormat extends AbstractFormat {
 			}
 
 			imageMeta.setIndexed(indexed);
-			imageMeta.setLittleEndian(isLittleEndian(0));
 
 			// Some anciliary chunks may not have been parsed
 			imageMeta.setMetadataComplete(false);
@@ -562,13 +543,13 @@ public class APNGFormat extends AbstractFormat {
 
 				final BufferedImage subImage =
 					AWTImageTools.getSubimage(lastPlane.getData(), meta
-						.isLittleEndian(imageIndex), planeMin, planeMax);
+						.get(imageIndex).isLittleEndian(), planeMin, planeMax);
 				plane.setData(subImage);
 				return plane;
 			}
 			else if (lastPlane == null) {
 				lastPlane = createPlane(planeMin, planeMax);
-				if (getMetadata().isIndexed(imageIndex)) {
+				if (getMetadata().get(imageIndex).isIndexed()) {
 					final PLTEChunk plte = meta.getPlte();
 					if (plte != null) {
 						final ColorTable ct =
@@ -598,7 +579,7 @@ public class APNGFormat extends AbstractFormat {
 					// updates the data of the plane to a sub-image, by reference
 					subImg =
 						AWTImageTools.getSubimage(lastPlane.getData(), meta
-							.isLittleEndian(imageIndex), planeMin, planeMax);
+							.get(imageIndex).isLittleEndian(), planeMin, planeMax);
 					plane.setData(subImg);
 				}
 
@@ -630,7 +611,7 @@ public class APNGFormat extends AbstractFormat {
 				getStream().seek(fdat.getOffset() + 4);
 				byte[] b = new byte[fdat.getLength() + 8];
 				DataTools.unpackBytes(fdat.getLength() - 4, b, 0, 4, getMetadata()
-					.isLittleEndian(imageIndex));
+					.get(imageIndex).isLittleEndian());
 				b[4] = 'I';
 				b[5] = 'D';
 				b[6] = 'A';
@@ -638,7 +619,7 @@ public class APNGFormat extends AbstractFormat {
 				getStream().read(b, 8, b.length - 12);
 				final int crc = (int) computeCRC(b, b.length - 4);
 				DataTools.unpackBytes(crc, b, b.length - 4, 4, getMetadata()
-					.isLittleEndian(imageIndex));
+					.get(imageIndex).isLittleEndian());
 				stream.write(b);
 				b = null;
 			}
@@ -658,8 +639,8 @@ public class APNGFormat extends AbstractFormat {
 
 			// Recover first plane
 			openPlane(imageIndex, 0, new long[] { 0l, 0l }, new long[] {
-				getMetadata().getAxisLength(imageIndex, Axes.X),
-				getMetadata().getAxisLength(imageIndex, Axes.Y) });
+				getMetadata().get(imageIndex).getAxisLength(Axes.X),
+				getMetadata().get(imageIndex).getAxisLength(Axes.Y) });
 
 			// paste current image onto first plane
 			// NB: last plane read was the first plane
@@ -702,21 +683,21 @@ public class APNGFormat extends AbstractFormat {
 			throws IOException
 		{
 			byte[] b = new byte[length + 12];
-			DataTools.unpackBytes(length, b, 0, 4, getMetadata().isLittleEndian(
-				imageIndex));
+			DataTools.unpackBytes(length, b, 0, 4, getMetadata().get(imageIndex)
+				.isLittleEndian());
 			final byte[] typeBytes = (isIHDR ? "IHDR".getBytes() : "PLTE".getBytes());
 			System.arraycopy(typeBytes, 0, b, 4, 4);
 			getStream().seek(offset);
 			getStream().read(b, 8, b.length - 12);
 			if (isIHDR) {
-				DataTools.unpackBytes(coords[2], b, 8, 4, getMetadata().isLittleEndian(
-					imageIndex));
+				DataTools.unpackBytes(coords[2], b, 8, 4, getMetadata().get(imageIndex)
+					.isLittleEndian());
 				DataTools.unpackBytes(coords[3], b, 12, 4, getMetadata()
-					.isLittleEndian(imageIndex));
+					.get(imageIndex).isLittleEndian());
 			}
 			final int crc = (int) computeCRC(b, b.length - 4);
 			DataTools.unpackBytes(crc, b, b.length - 4, 4, getMetadata()
-				.isLittleEndian(imageIndex));
+				.get(imageIndex).isLittleEndian());
 			stream.write(b);
 			b = null;
 		}
@@ -753,8 +734,8 @@ public class APNGFormat extends AbstractFormat {
 					"APNGWriter does not yet support saving image tiles.");
 			}
 
-			final int width = (int)getMetadata().getAxisLength(imageIndex, Axes.X);
-			final int height = (int)getMetadata().getAxisLength(imageIndex, Axes.Y);
+			final int width = (int)getMetadata().get(imageIndex).getAxisLength(Axes.X);
+			final int height = (int)getMetadata().get(imageIndex).getAxisLength(Axes.Y);
 
 			if (!initialized[imageIndex][(int)planeIndex]) {
 				if (numFrames == 0) {
@@ -821,12 +802,12 @@ public class APNGFormat extends AbstractFormat {
 			IOException
 		{
 			if (out.length() == 0) {
-				final int width = (int)getMetadata().getAxisLength(imageIndex, Axes.X);
-				final int height = (int)getMetadata().getAxisLength(imageIndex, Axes.Y);
+				final int width = (int)getMetadata().get(imageIndex).getAxisLength(Axes.X);
+				final int height = (int)getMetadata().get(imageIndex).getAxisLength(Axes.Y);
 				final int bytesPerPixel =
-					FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
+					FormatTools.getBytesPerPixel(getMetadata().get(imageIndex).getPixelType());
 				final int nChannels =
-					(int)getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+					(int)getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 				final boolean indexed =
 					getColorModel() != null &&
 						(getColorModel() instanceof IndexColorModel);
@@ -942,9 +923,9 @@ public class APNGFormat extends AbstractFormat {
 		{
 
 			final long rgbCCount =
-				getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+				getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 
-			final int pixelType = getMetadata().getPixelType(imageIndex);
+			final int pixelType = getMetadata().get(imageIndex).getPixelType();
 			final boolean signed = FormatTools.isSigned(pixelType);
 
 			if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(), planeMin,
@@ -953,8 +934,10 @@ public class APNGFormat extends AbstractFormat {
 				throw new FormatException("APNGWriter does not support writing tiles.");
 			}
 
-			final int width = (int) getMetadata().getAxisLength(imageIndex, Axes.X);
-			final int height = (int) getMetadata().getAxisLength(imageIndex, Axes.Y);
+			final int width =
+				(int) getMetadata().get(imageIndex).getAxisLength(Axes.X);
+			final int height =
+				(int) getMetadata().get(imageIndex).getAxisLength(Axes.Y);
 
 			final ByteArrayOutputStream s = new ByteArrayOutputStream();
 			s.write(chunk.getBytes());
@@ -969,12 +952,12 @@ public class APNGFormat extends AbstractFormat {
 			for (int i = 0; i < height; i++) {
 				deflater.write(0);
 				if (interleaved) {
-					if (getMetadata().isLittleEndian(0)) {
+					if (getMetadata().get(0).isLittleEndian()) {
 						for (int col = 0; col < width * rgbCCount; col++) {
 							final int offset = (int)(i * rgbCCount * width + col) * bytesPerPixel;
 							final int pixel =
 								DataTools.bytesToInt(stream, offset, bytesPerPixel,
-									getMetadata().isLittleEndian(0));
+									getMetadata().get(0).isLittleEndian());
 							DataTools.unpackBytes(pixel, rowBuf, col * bytesPerPixel,
 								bytesPerPixel, false);
 						}
@@ -989,7 +972,7 @@ public class APNGFormat extends AbstractFormat {
 								(c * planeSize + (i * width + col) * bytesPerPixel);
 							int pixel =
 								DataTools.bytesToInt(stream, offset, bytesPerPixel,
-									getMetadata().isLittleEndian(0));
+									getMetadata().get(0).isLittleEndian());
 							if (signed) {
 								if (pixel < max) pixel += max;
 								else pixel -= max;
@@ -1077,16 +1060,17 @@ public class APNGFormat extends AbstractFormat {
 			dest.setActl(actl);
 			dest.setFctl(fctl);
 
-			ihdr.setWidth((int)source.getAxisLength(0, Axes.X));
-			ihdr.setHeight((int)source.getAxisLength(0, Axes.Y));
-			ihdr.setBitDepth((byte) source.getBitsPerPixel(0));
+			ihdr.setWidth((int)source.get(0).getAxisLength(Axes.X));
+			ihdr.setHeight((int)source.get(0).getAxisLength(Axes.Y));
+			ihdr.setBitDepth((byte) source.get(0).getBitsPerPixel());
 			ihdr.setFilterMethod((byte) 0);
 			ihdr.setCompressionMethod((byte) 0);
 			ihdr.setInterlaceMethod((byte) 0);
 
 			final long sizec =
-				source.isMultichannel(0) ? source.getAxisLength(0, Axes.CHANNEL) : 1;
-			final boolean indexed = source.isIndexed(0);
+				source.get(0).isMultichannel() ? source.get(0).getAxisLength(
+					Axes.CHANNEL) : 1;
+			final boolean indexed = source.get(0).isIndexed();
 
 			if (indexed) {
 				ihdr.setColourType((byte) 0x3);
@@ -1134,7 +1118,7 @@ public class APNGFormat extends AbstractFormat {
 				ihdr.setColourType((byte) 0x2);
 			}
 
-			actl.setNumFrames((int)source.getPlaneCount(0));
+			actl.setNumFrames((int) source.get(0).getPlaneCount());
 
 			for (int i = 0; i < actl.getNumFrames(); i++) {
 				final FCTLChunk frame = new FCTLChunk();
@@ -1152,9 +1136,9 @@ public class APNGFormat extends AbstractFormat {
 
 			// FIXME: all integers in apng should be written big endian per spec
 			// but for bio-formats endianness is supposed to be preserved... resolve?
-			dest.setLittleEndian(0, source.isLittleEndian(0));
+			dest.get(0).setLittleEndian(source.get(0).isLittleEndian());
 
-			final boolean signed = FormatTools.isSigned(source.getPixelType(0));
+			final boolean signed = FormatTools.isSigned(source.get(0).getPixelType());
 			dest.setSigned(signed);
 
 			final Object separateDefault =

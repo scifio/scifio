@@ -279,7 +279,7 @@ public class LegacyQTFormat extends AbstractFormat {
 			}
 			final BufferedImage bimg =
 				AWTImageTools.getSubimage(AWTImageTools.makeBuffered(meta.getImage()),
-					meta.isLittleEndian(imageIndex), planeMin, planeMax);
+					meta.get(imageIndex).isLittleEndian(), planeMin, planeMax);
 
 			plane.populate(meta.get(imageIndex), bimg, planeMin, planeMax);
 			return plane;
@@ -379,14 +379,14 @@ public class LegacyQTFormat extends AbstractFormat {
 			final Metadata meta = getMetadata();
 
 			if (!(plane instanceof BufferedImagePlane)) {
-				final int type = meta.getPixelType(imageIndex);
+				final int type = meta.get(imageIndex).getPixelType();
 				img =
-					AWTImageTools.makeImage(plane.getBytes(), (int) meta.getAxisLength(
-						imageIndex, Axes.X), (int) meta.getAxisLength(imageIndex, Axes.Y),
-						(int) meta.getAxisLength(imageIndex, Axes.CHANNEL), meta
-							.getInterleavedAxisCount(imageIndex) > 0, FormatTools
+					AWTImageTools.makeImage(plane.getBytes(), (int) meta.get(imageIndex)
+						.getAxisLength(Axes.X), (int) meta.get(imageIndex).getAxisLength(
+						Axes.Y), (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL),
+						meta.get(imageIndex).getInterleavedAxisCount() > 0, FormatTools
 							.getBytesPerPixel(type), FormatTools.isFloatingPoint(type), meta
-							.isLittleEndian(imageIndex), FormatTools.isSigned(type));
+							.get(imageIndex).isLittleEndian(), FormatTools.isSigned(type));
 			}
 			else {
 				img = ((BufferedImagePlane) plane).getData();
@@ -580,16 +580,16 @@ public class LegacyQTFormat extends AbstractFormat {
 			final Metadata dest)
 		{
 			dest.createImageMetadata(1);
-			dest.get(0).setAxisLength(Axes.TIME, source.getPlaneCount(0));
+			dest.get(0).setAxisLength(Axes.TIME, source.get(0).getPlaneCount());
 
-			final int w = (int) source.getAxisLength(0, Axes.X);
-			final int h = (int) source.getAxisLength(0, Axes.Y);
-			final int bpp = source.getBitsPerPixel(0) / 8;
+			final int w = (int) source.get(0).getAxisLength(Axes.X);
+			final int h = (int) source.get(0).getAxisLength(Axes.Y);
+			final int bpp = source.get(0).getBitsPerPixel() / 8;
 			final byte[][] data =
-				new byte[(int) source.getAxisLength(0, Axes.CHANNEL)][w * h * bpp];
-			final boolean fp = FormatTools.isFloatingPoint(source.getPixelType(0));
-			final boolean little = source.isLittleEndian(0);
-			final boolean signed = FormatTools.isSigned(source.getPixelType(0));
+				new byte[(int) source.get(0).getAxisLength(Axes.CHANNEL)][w * h * bpp];
+			final boolean fp = FormatTools.isFloatingPoint(source.get(0).getPixelType());
+			final boolean little = source.get(0).isLittleEndian();
+			final boolean signed = FormatTools.isSigned(source.get(0).getPixelType());
 
 			final Image img =
 				AWTImageTools.makeImage(data, w, h, bpp, fp, little, signed);

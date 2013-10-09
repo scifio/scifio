@@ -242,7 +242,7 @@ public final class FormatTools {
 	{
 		int i = 0;
 
-		for (final CalibratedAxis axis : m.getAxes(imageIndex)) {
+		for (final CalibratedAxis axis : m.get(imageIndex).getAxes()) {
 			if (i >= scale.length || !(axis instanceof LinearAxis)) return;
 			((LinearAxis) axis).setScale(scale[i]);
 			((LinearAxis) axis).setOrigin(origin[i]);
@@ -256,8 +256,8 @@ public final class FormatTools {
 	public static double getScale(final Metadata m, final int imageIndex,
 		final AxisType axisType)
 	{
-		final CalibratedAxis axis = m.getAxis(imageIndex, axisType);
-		final long axisLength = m.getAxisLength(0, axis);
+		final CalibratedAxis axis = m.get(imageIndex).getAxis(axisType);
+		final long axisLength = m.get(imageIndex).getAxisLength(axis);
 		return axis.averageScale(0, axisLength - 1);
 	}
 
@@ -288,7 +288,7 @@ public final class FormatTools {
 	public static long[] rasterToPosition(final int imageIndex,
 		final long planeIndex, final Metadata m)
 	{
-		final long[] axisLengths = m.getAxesLengthsNonPlanar(imageIndex);
+		final long[] axisLengths = m.get(imageIndex).getAxesLengthsNonPlanar();
 		return rasterToPosition(axisLengths, planeIndex);
 	}
 
@@ -355,7 +355,7 @@ public final class FormatTools {
 	public static long positionToRaster(final int imageIndex,
 		final Metadata m, final long[] planeIndices)
 	{
-		final long[] planeSizes = m.getAxesLengthsNonPlanar(imageIndex);
+		final long[] planeSizes = m.get(imageIndex).getAxesLengthsNonPlanar();
 		return positionToRaster(planeSizes, planeIndices);
 	}
 
@@ -483,8 +483,8 @@ public final class FormatTools {
 	public static void checkPlaneNumber(final Metadata m, final int imageIndex,
 		final long planeIndex) throws FormatException
 	{
-		final long planeCount = m.getPlaneCount(imageIndex);
-		if (planeIndex < 0 || planeIndex >= planeCount) {
+		final long imageCount = m.get(imageIndex).getPlaneCount();
+		if (planeIndex < 0 || planeIndex >= imageCount) {
 			throw new FormatException("Invalid plane number: " + planeIndex + " (" +
 			/* TODO series=" +
 			r.getMetadata().getSeries() + ", */"planeCount=" + planeIndex + ")");
@@ -495,12 +495,12 @@ public final class FormatTools {
 	public static void checkTileSize(final Metadata m, final long[] planeMin,
 		final long[] planeMax, final int imageIndex) throws FormatException
 	{
-		List<CalibratedAxis> axes = m.getAxesPlanar(imageIndex);
+		List<CalibratedAxis> axes = m.get(imageIndex).getAxesPlanar();
 		
 		for (int i=0; i<axes.size(); i++) {
 			final long start = planeMin[i];
 			final long end = planeMax[i];
-			final long length = m.getAxisLength(imageIndex, axes.get(i));
+			final long length = m.get(imageIndex).getAxisLength(axes.get(i));
 
 			if (start < 0 || end < 0 || (start + end) > length) throw new FormatException(
 				"Invalid planar size: start=" + start + ", end=" + end +
@@ -515,7 +515,7 @@ public final class FormatTools {
 	public static void checkBufferSize(final int imageIndex, final Metadata m,
 		final int len) throws FormatException
 	{
-		checkBufferSize(m, len, m.getAxesLengthsPlanar(imageIndex), imageIndex);
+		checkBufferSize(m, len, m.get(imageIndex).getAxesLengthsPlanar(), imageIndex);
 	}
 
 	/**
@@ -554,7 +554,7 @@ public final class FormatTools {
 
 	/** Returns the size in bytes of a tile defined by the given Metadata. */
 	public static long getPlaneSize(final Metadata m, final int imageIndex) {
-		return m.getPlaneSize(imageIndex);
+		return m.get(imageIndex).getPlaneSize();
 	}
 
 	/** Returns the size in bytes of a w * h tile. */
@@ -571,7 +571,7 @@ public final class FormatTools {
 		if (planeMin.length != planeMax.length) throw new IllegalArgumentException(
 			"Plane min array size: " + planeMin.length +
 				" does not match plane max array size: " + planeMax.length);
-		long length = m.getBitsPerPixel(imageIndex) / 8;
+		long length = m.get(imageIndex).getBitsPerPixel() / 8;
 		for (int i = 0; i < planeMin.length; i++) {
 			length *= planeMax[i] - planeMin[i];
 		}
@@ -808,7 +808,7 @@ public final class FormatTools {
 		final String[] filenames = getFilenames(pattern, r);
 		int totalPlanes = 0;
 		for (int series = 0; series < r.getImageCount(); series++) {
-			totalPlanes += r.getMetadata().getPlaneCount(series);
+			totalPlanes += r.getMetadata().get(series).getPlaneCount();
 		}
 		return totalPlanes / filenames.length;
 	}
@@ -839,17 +839,17 @@ public final class FormatTools {
 			Plane plane = null;
 			if (planeSize < 0) {
 				final Metadata m = reader.getMetadata();
-				final long[] planeMax = m.getAxesLengthsPlanar(imageIndex);
+				final long[] planeMax = m.get(imageIndex).getAxesLengthsPlanar();
 				final long[] planeMin = new long[planeMax.length];
 
-				final int xIndex = m.getAxisIndex(imageIndex, Axes.X);
-				final int yIndex = m.getAxisIndex(imageIndex, Axes.Y);
-				final long width = m.getThumbSizeX(imageIndex) * 4;
-				final long height = m.getThumbSizeY(imageIndex) * 4;
+				final int xIndex = m.get(imageIndex).getAxisIndex(Axes.X);
+				final int yIndex = m.get(imageIndex).getAxisIndex(Axes.Y);
+				final long width = m.get(imageIndex).getThumbSizeX() * 4;
+				final long height = m.get(imageIndex).getThumbSizeY() * 4;
 
-				planeMin[xIndex] = (m.getAxisLength(imageIndex, Axes.X) - width) / 2;
+				planeMin[xIndex] = (m.get(imageIndex).getAxisLength(Axes.X) - width) / 2;
 				planeMin[yIndex] =
-					(m.getAxisLength(imageIndex, Axes.Y) - height) / 2;
+					(m.get(imageIndex).getAxisLength(Axes.Y) - height) / 2;
 				planeMax[xIndex] = width;
 				planeMax[yIndex] = height;
 
@@ -861,11 +861,15 @@ public final class FormatTools {
 
 			r.setVar("plane", plane);
 			r.setVar("reader", reader);
-			r.setVar("sizeX", reader.getMetadata().getAxisLength(imageIndex, Axes.X));
-			r.setVar("sizeY", reader.getMetadata().getAxisLength(imageIndex, Axes.Y));
-			r.setVar("thumbSizeX", reader.getMetadata().getThumbSizeX(imageIndex));
-			r.setVar("thumbSizeY", reader.getMetadata().getThumbSizeY(imageIndex));
-			r.setVar("little", reader.getMetadata().isLittleEndian(imageIndex));
+			r.setVar("sizeX", reader.getMetadata().get(imageIndex).getAxisLength(
+				Axes.X));
+			r.setVar("sizeY", reader.getMetadata().get(imageIndex).getAxisLength(
+				Axes.Y));
+			r.setVar("thumbSizeX", reader.getMetadata().get(imageIndex)
+				.getThumbSizeX());
+			r.setVar("thumbSizeY", reader.getMetadata().get(imageIndex)
+				.getThumbSizeY());
+			r.setVar("little", reader.getMetadata().get(imageIndex).isLittleEndian());
 			r.setVar("imageIndex", imageIndex);
 			r.exec("thumb = AWTImageTools.openThumbImage(plane, reader, imageIndex, sizeX, sizeY,"
 				+ " thumbSizeX, thumbSizeY, false)");
@@ -878,10 +882,10 @@ public final class FormatTools {
 
 		if (bytes.length == 1) return bytes[0];
 		final long rgbChannelCount =
-			reader.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+			reader.getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 		final byte[] rtn = new byte[(int) rgbChannelCount * bytes[0].length];
 
-		if (!(reader.getMetadata().getInterleavedAxisCount(imageIndex) > 0)) {
+		if (!(reader.getMetadata().get(imageIndex).getInterleavedAxisCount() > 0)) {
 			for (int i = 0; i < rgbChannelCount; i++) {
 				System
 					.arraycopy(bytes[i], 0, rtn, bytes[0].length * i, bytes[i].length);
@@ -889,8 +893,8 @@ public final class FormatTools {
 		}
 		else {
 			final int bpp =
-				FormatTools.getBytesPerPixel(reader.getMetadata().getPixelType(
-					imageIndex));
+				FormatTools.getBytesPerPixel(reader.getMetadata().get(imageIndex)
+					.getPixelType());
 
 			for (int i = 0; i < bytes[0].length / bpp; i += bpp) {
 				for (int j = 0; j < rgbChannelCount; j++) {

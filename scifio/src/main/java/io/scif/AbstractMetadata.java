@@ -37,16 +37,12 @@
 package io.scif;
 
 import io.scif.io.RandomAccessInputStream;
-import io.scif.util.FormatTools;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.CalibratedAxis;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Metadata} implementations.
@@ -133,16 +129,6 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	// -- Getters --
 
 	@Override
-	public long getSize(int imageIndex) {
-		return get(imageIndex).getSize();
-	}
-
-	@Override
-	public long getPlaneSize(int imageIndex) {
-		return get(imageIndex).getPlaneSize();
-	}
-
-	@Override
 	public String getDatasetName() {
 		return datasetName;
 	}
@@ -163,161 +149,13 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public long getPlaneCount(final int imageIndex) {
-		return imageMeta.get(imageIndex).getPlaneCount();
-	}
-
-	@Override
 	public long getDatasetSize() {
 		int size = 0;
 
 		for (int i = 0; i < getAll().size(); i++)
-			size += getImageSize(i);
+			size += get(i).getSize();
 
 		return size;
-	}
-
-	@Override
-	public long getImageSize(final int imageIndex) {
-		return imageMeta.get(imageIndex).getSize();
-	}
-
-	@Override
-	public int getPixelType(final int imageIndex) {
-		return imageMeta.get(imageIndex).getPixelType();
-	}
-
-	@Override
-	public boolean isLittleEndian(final int imageIndex) {
-		return imageMeta.get(imageIndex).isLittleEndian();
-	}
-
-	@Override
-	public boolean isIndexed(final int imageIndex) {
-		return imageMeta.get(imageIndex).isIndexed();
-	}
-
-	@Override
-	public int getPlanarAxisCount(int imageIndex) {
-		return imageMeta.get(imageIndex).getPlanarAxisCount();
-	}
-
-	@Override
-	public int getInterleavedAxisCount(int imageIndex) {
-		return imageMeta.get(imageIndex).getInterleavedAxisCount();
-	}
-
-	@Override
-	public boolean isMultichannel(final int imageIndex) {
-		return imageMeta.get(imageIndex).isMultichannel();
-	}
-
-	@Override
-	public int getBitsPerPixel(final int imageIndex) {
-		return imageMeta.get(imageIndex).getBitsPerPixel();
-	}
-
-	@Override
-	public boolean isFalseColor(final int imageIndex) {
-		return imageMeta.get(imageIndex).isFalseColor();
-	}
-
-	@Override
-	public long getThumbSizeX(final int imageIndex) {
-		return imageMeta.get(imageIndex).getThumbSizeX();
-	}
-
-	@Override
-	public long getThumbSizeY(final int imageIndex) {
-		return imageMeta.get(imageIndex).getThumbSizeY();
-	}
-	
-	@Override
-	public CalibratedAxis getAxis(int imageIndex, AxisType axisType) {
-		return imageMeta.get(imageIndex).getAxis(axisType);
-	}
-	
-	@Override
-	public int getAxisCount(final int imageIndex) {
-		return imageMeta.get(imageIndex).getAxesLengths().length;
-	}
-
-	@Override
-	public CalibratedAxis getAxis(final int imageIndex, final int planeIndex)
-	{
-		return imageMeta.get(imageIndex).getAxis(planeIndex);
-	}
-
-	@Override
-	public long getAxisLength(final int imageIndex, final int planeIndex) {
-		return imageMeta.get(imageIndex).getAxisLength(planeIndex);
-	}
-
-	@Override
-	public long getAxisLength(final int imageIndex, final CalibratedAxis t) {
-		return imageMeta.get(imageIndex).getAxisLength(t);
-	}
-
-	@Override
-	public long getAxisLength(final int imageIndex, final AxisType t) {
-		return imageMeta.get(imageIndex).getAxisLength(t);
-	}
-
-	@Override
-	public int getAxisIndex(final int imageIndex, final CalibratedAxis axis) {
-		return imageMeta.get(imageIndex).getAxisIndex(axis);
-	}
-
-	@Override
-	public int getAxisIndex(final int imageIndex, final AxisType axisType) {
-		return imageMeta.get(imageIndex).getAxisIndex(axisType);
-	}
-
-	@Override
-	public List<CalibratedAxis> getAxes(final int imageIndex) {
-		return imageMeta.get(imageIndex).getAxes();
-	}
-
-	@Override
-	public List<CalibratedAxis> getAxesPlanar(final int imageIndex) {
-		return imageMeta.get(imageIndex).getAxesPlanar();
-	}
-
-	@Override
-	public List<CalibratedAxis> getAxesNonPlanar(final int imageIndex) {
-		return imageMeta.get(imageIndex).getAxesNonPlanar();
-	}
-
-	@Override
-	public long[] getAxesLengths(final int imageIndex) {
-		return imageMeta.get(imageIndex).getAxesLengths();
-	}
-
-	@Override
-	public long[] getAxesLengthsPlanar(final int imageIndex) {
-		return imageMeta.get(imageIndex).getAxesLengthsPlanar();
-
-	}
-
-	@Override
-	public long[] getAxesLengthsNonPlanar(final int imageIndex) {
-		return imageMeta.get(imageIndex).getAxesLengthsNonPlanar();
-
-	}
-
-	@Override
-	public boolean isOrderCertain(final int imageIndex) {
-		return imageMeta.get(imageIndex).isOrderCertain();
-	}
-
-	@Override
-	public boolean isThumbnailImage(final int imageIndex) {
-		return imageMeta.get(imageIndex).isThumbnail();
-	}
-
-	@Override
-	public boolean isMetadataComplete(final int imageIndex) {
-		return imageMeta.get(imageIndex).isMetadataComplete();
 	}
 
 	// -- Setters --
@@ -325,65 +163,6 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	@Override
 	public void setDatasetName(final String name) {
 		datasetName = name;
-	}
-
-	@Override
-	public void setThumbSizeX(final int imageIndex, final long thumbX) {
-		imageMeta.get(imageIndex).setThumbSizeX(thumbX);
-	}
-
-	@Override
-	public void setThumbSizeY(final int imageIndex, final long thumbY) {
-		imageMeta.get(imageIndex).setThumbSizeY(thumbY);
-	}
-
-	@Override
-	public void setPixelType(final int imageIndex, final int type) {
-		imageMeta.get(imageIndex).setPixelType(type);
-	}
-
-	@Override
-	public void setBitsPerPixel(final int imageIndex, final int bpp) {
-		imageMeta.get(imageIndex).setBitsPerPixel(bpp);
-	}
-
-	@Override
-	public void setOrderCertain(final int imageIndex, final boolean orderCertain)
-	{
-		imageMeta.get(imageIndex).setOrderCertain(orderCertain);
-	}
-
-	@Override
-	public void setLittleEndian(final int imageIndex, final boolean littleEndian)
-	{
-		imageMeta.get(imageIndex).setLittleEndian(littleEndian);
-	}
-
-	@Override
-	public void setIndexed(final int imageIndex, final boolean indexed) {
-		imageMeta.get(imageIndex).setIndexed(indexed);
-	}
-
-	@Override
-	public void setPlanarAxisCount(int imageIndex, final int count) {
-		imageMeta.get(imageIndex).setPlanarAxisCount(count);
-	}
-
-	@Override
-	public void setInterleavedAxisCount(int imageIndex, final int count) {
-		imageMeta.get(imageIndex).setInterleavedAxisCount(count);
-	}
-
-	@Override
-	public void setFalseColor(final int imageIndex, final boolean falseC) {
-		imageMeta.get(imageIndex).setFalseColor(falseC);
-	}
-
-	@Override
-	public void setMetadataComplete(final int imageIndex,
-		final boolean metadataComplete)
-	{
-		imageMeta.get(imageIndex).setMetadataComplete(metadataComplete);
 	}
 
 	@Override
@@ -399,78 +178,6 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	@Override
 	public void add(final ImageMetadata meta) {
 		imageMeta.add(meta);
-	}
-
-	@Override
-	public void setThumbnailImage(final int imageIndex, final boolean thumbnail) {
-		imageMeta.get(imageIndex).setThumbnail(thumbnail);
-	}
-
-	@Override
-	public void addAxis(final int imageIndex, final CalibratedAxis axis) {
-		imageMeta.get(imageIndex).addAxis(axis);
-	}
-
-	@Override
-	public void addAxis(final int imageIndex, final CalibratedAxis axis,
-		final long value)
-	{
-		imageMeta.get(imageIndex).addAxis(axis, value);
-	}
-
-	@Override
-	public void
-		addAxis(final int imageIndex, final AxisType axisType, final long value)
-	{
-		imageMeta.get(imageIndex).addAxis(axisType, value);
-	}
-
-	@Override
-
-	public void setAxisTypes(final int imageIndex,
-		final AxisType... axisTypes)
-	{
-		setAxes(imageIndex, FormatTools.createAxes(axisTypes));
-	}
-
-	@Override
-	public void setAxes(final int imageIndex,
-		final CalibratedAxis... axes)
-	{
-		imageMeta.get(imageIndex).setAxes(axes);
-	}
-
-	@Override
-	public void setAxis(final int imageIndex, final int axisIndex,
-		final CalibratedAxis axis)
-	{
-		imageMeta.get(imageIndex).setAxis(axisIndex, axis);
-	}
-
-	@Override
-	public void setAxisType(final int imageIndex, final int axisIndex,
-		final AxisType axisType)
-	{
-		imageMeta.get(imageIndex).setAxisType(axisIndex, axisType);
-	}
-
-	@Override
-	public void setAxisLengths(final int imageIndex, final long[] axisLengths) {
-		imageMeta.get(imageIndex).setAxisLengths(axisLengths);
-	}
-
-	@Override
-	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
-		final long length)
-	{
-		imageMeta.get(imageIndex).setAxisLength(axis, length);
-	}
-
-	@Override
-	public void setAxisLength(final int imageIndex, final AxisType axisType,
-		final long length)
-	{
-		imageMeta.get(imageIndex).setAxisLength(axisType, length);
 	}
 
 	@Override

@@ -272,8 +272,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 		final Metadata meta = reader.getMetadata();
 
-		final int sizeX = (int)meta.getAxisLength(0, Axes.X);
-		final int sizeY = (int)meta.getAxisLength(0, Axes.Y);
+		final int sizeX = (int)meta.get(0).getAxisLength(Axes.X);
+		final int sizeY = (int)meta.get(0).getAxisLength(Axes.Y);
 
 		// Invalid sizes default to 1, 1, which are automatically expanded.
 		if (tileWidth <= 0) tileWidth = 1;
@@ -284,7 +284,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		if (tileWidth > sizeY) tileWidth = sizeY;
 
 		int cellWidth = -1, cellHeight = -1;
-		final int bpp = FormatTools.getBytesPerPixel(meta.getPixelType(0));
+		final int bpp = FormatTools.getBytesPerPixel(meta.get(0).getPixelType());
 
 		// Compute the size, in bytes, of a single tile. We do not consider RGB
 		// channel count because ChannelSeparator is assumed.

@@ -338,7 +338,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		int imageIndex = 0;
 		if (options != null) imageIndex = options.getIndex();
 
-		return utils().makeType(r.getMetadata().getPixelType(imageIndex));
+		return utils().makeType(r.getMetadata().get(imageIndex).getPixelType());
 	}
 
 	private ImgFactoryHeuristic getHeuristic(final ImgOptions imgOptions) {
@@ -390,7 +390,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		Set<AxisType> axes = new HashSet<AxisType>();
 		Metadata meta = r.getTail().getMetadata();
 		// Split any non-X,Y axis
-		for (CalibratedAxis t : meta.getAxesPlanar(0)) {
+		for (CalibratedAxis t : meta.get(0).getAxesPlanar()) {
 			AxisType type = t.type();
 			if (!(type == Axes.X || type == Axes.Y)) {
 				axes.add(type);
@@ -402,9 +402,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	private AxisType[] getAxisTypes(int imageIndex, Metadata m) {
-		AxisType[] types = new AxisType[m.getAxisCount(imageIndex)];
+		AxisType[] types = new AxisType[m.get(imageIndex).getAxes().size()];
 		for (int i=0; i<types.length; i++) {
-			types[i] = m.getAxis(imageIndex, i).type();
+			types[i] = m.get(imageIndex).getAxis(i).type();
 		}
 		return types;
 	}
@@ -412,9 +412,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 	/** Compiles an N-dimensional list of calibration values. */
 	private double[] getCalibration(int imageIndex, final Metadata m) {
 
-		final double[] calibration = new double[m.getAxisCount(imageIndex)];
+		final double[] calibration = new double[m.get(imageIndex).getAxes().size()];
 		for (int i = 0; i < calibration.length; i++) {
-			calibration[i] = m.getAxis(imageIndex, i).calibration();
+			calibration[i] = m.get(imageIndex).getAxis(i).calibration();
 		}
 
 		return calibration;
@@ -447,10 +447,10 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		final Metadata meta = r.getMetadata();
 		int rgbChannelCount =
-			base.getMetadata().isMultichannel(0) ? (int) base.getMetadata()
-				.getAxisLength(0, Axes.CHANNEL) : 1;
-		if (base.getMetadata().isIndexed(0)) rgbChannelCount = 3;
-		final int validBits = meta.getBitsPerPixel(0);
+			base.getMetadata().get(0).isMultichannel() ? (int) base.getMetadata()
+				.get(0).getAxisLength(Axes.CHANNEL) : 1;
+		if (base.getMetadata().get(0).isIndexed()) rgbChannelCount = 3;
+		final int validBits = meta.get(0).getBitsPerPixel();
 
 		final ImgPlus<T> imgPlus = new SCIFIOImgPlus<T>(img, name, dimTypes, cal);
 		imgPlus.setValidBits(validBits);
@@ -460,7 +460,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			// HACK: Support ImageJ color mode embedded in TIFF files.
 			final String colorMode = (String) meta.getTable().get("Color mode");
 			if ("composite".equals(colorMode)) {
-				compositeChannelCount = (int)meta.getAxisLength(0, Axes.CHANNEL);
+				compositeChannelCount = (int)meta.get(0).getAxisLength(Axes.CHANNEL);
 			}
 		}
 		imgPlus.setCompositeChannelCount(compositeChannelCount);
@@ -506,7 +506,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final PlanarAccess<?> planarAccess = utils().getPlanarAccess(imgPlus);
 		@SuppressWarnings("rawtypes")
 		final RealType inputType =
-			utils().makeType(r.getMetadata().getPixelType(0));
+			utils().makeType(r.getMetadata().get(0).getPixelType());
 		final T outputType = type;
 		final boolean compatibleTypes =
 			outputType.getClass().isAssignableFrom(inputType.getClass());
@@ -521,16 +521,17 @@ public class ImgOpener extends AbstractImgIOComponent {
 		Metadata m = r.getMetadata();
 
 		// Starting indices for the planar dimensions
-		long[] planarMin = new long[m.getAxesPlanar(imageIndex).size()];
+		long[] planarMin = new long[m.get(imageIndex).getAxesPlanar().size()];
 		// Lengths in the planar dimensions
-		long[] planarLength = new long[m.getAxesPlanar(imageIndex).size()];
+		long[] planarLength = new long[m.get(imageIndex).getAxesPlanar().size()];
 		// Non-planar indices to open
-		DimRange[] npRanges = new DimRange[m.getAxesNonPlanar(imageIndex).size()];
+		DimRange[] npRanges =
+			new DimRange[m.get(imageIndex).getAxesNonPlanar().size()];
 		long[] npIndices = new long[npRanges.length];
 
 		// populate plane dimensions
 		int index = 0;
-		for (CalibratedAxis planarAxis : m.getAxesPlanar(imageIndex)) {
+		for (CalibratedAxis planarAxis : m.get(imageIndex).getAxesPlanar()) {
 			if (region != null && region.hasRange(planarAxis.type())) {
 				planarMin[index] = region.getRange(planarAxis.type()).head();
 				planarLength[index] =
@@ -538,20 +539,20 @@ public class ImgOpener extends AbstractImgIOComponent {
 			}
 			else {
 				planarMin[index] = 0;
-				planarLength[index] = m.getAxisLength(imageIndex, planarAxis);
+				planarLength[index] = m.get(imageIndex).getAxisLength(planarAxis);
 			}
 			index++;
 		}
 
 		// determine non-planar indices to open
 		index = 0;
-		for (CalibratedAxis npAxis : m.getAxesNonPlanar(imageIndex)) {
+		for (CalibratedAxis npAxis : m.get(imageIndex).getAxesNonPlanar()) {
 			if (region != null && region.hasRange(npAxis.type())) {
 				npRanges[index++] = region.getRange(npAxis.type());
 			}
 			else {
 				npRanges[index++] =
-					new DimRange(0l, m.getAxisLength(imageIndex, npAxis.type()) - 1);
+					new DimRange(0l, m.get(imageIndex).getAxisLength(npAxis.type()) - 1);
 			}
 		}
 
@@ -638,7 +639,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final int imageIndex) throws FormatException, IOException
 	{
 		final int sizeC =
-			(int) r.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+			(int) r.getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 		final ReaderFilter rf = (ReaderFilter) r;
 		MinMaxFilter minMax = null;
 		try {

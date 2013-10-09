@@ -105,7 +105,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	public void savePlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		final long[] planeMax = metadata.getAxesLengthsPlanar(imageIndex);
+		final long[] planeMax = metadata.get(imageIndex).getAxesLengthsPlanar();
 		final long[] planeMin = new long[planeMax.length];
 		savePlane(imageIndex, planeIndex, plane, planeMin, planeMax);
 	}
@@ -302,7 +302,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
 		initialized = new boolean[metadata.getImageCount()][];
 		for (int i = 0; i < metadata.getImageCount(); i++) {
-			initialized[i] = new boolean[(int)metadata.getPlaneCount(i)];
+			initialized[i] = new boolean[(int) metadata.get(imageIndex).getPlaneCount()];
 		}
 	}
 
@@ -320,10 +320,10 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 			planeIndex);
 
 		if (buf == null) throw new FormatException("Buffer cannot be null.");
-		long planes = metadata.getPlaneCount(imageIndex);
+		long planes = metadata.get(imageIndex).getPlaneCount();
 
-		if (metadata.isMultichannel(imageIndex)) planes *=
-			metadata.getAxisLength(imageIndex, Axes.CHANNEL);
+		if (metadata.get(imageIndex).isMultichannel()) planes *=
+			metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 		if (planeIndex < 0) throw new FormatException(String.format(
 			"Plane index:%d must be >= 0", planeIndex));
@@ -335,7 +335,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		FormatTools.checkPlaneParameters(getMetadata(), imageIndex, planeIndex,
 			buf.length, planeMin, planeMax);
 
-		final int pixelType = metadata.getPixelType(imageIndex);
+		final int pixelType = metadata.get(imageIndex).getPixelType();
 
 		if (!DataTools.containsValue(getPixelTypes(compression), pixelType)) {
 			throw new FormatException("Unsupported image type '" +

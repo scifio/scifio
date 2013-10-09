@@ -75,8 +75,8 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 	{
 		final Metadata m = reader.getMetadata();
 
-		final int pixelType = m.getPixelType(imageIndex);
-		final boolean little = m.isLittleEndian(imageIndex);
+		final int pixelType = m.get(imageIndex).getPixelType();
+		final boolean little = m.get(imageIndex).isLittleEndian();
 
 		final long[] dimLengths = imgUtilService.getDimLengths(m, imgOptions);
 		final long[] pos = new long[dimLengths.length];
@@ -114,7 +114,8 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 		final int planeIndex, final long[] pos)
 	{
 		final int offset =
-			m.getAxes(imageIndex).size() - m.getAxesNonPlanar(imageIndex).size();
+			m.get(imageIndex).getAxes().size() -
+				m.get(imageIndex).getAxesNonPlanar().size();
 
 		final long[] axesPositions =
 			FormatTools.rasterToPosition(imageIndex, planeIndex, m);

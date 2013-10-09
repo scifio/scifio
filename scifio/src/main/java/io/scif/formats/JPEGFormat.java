@@ -139,8 +139,8 @@ public class JPEGFormat extends ImageIOFormat {
 				stream.seek(0);
 				
 				// Need to check dimension lengths
-				if (m.getAxisLength(0, Axes.X) > MAX_SIZE &&
-					m.getAxisLength(0, Axes.Y) > MAX_SIZE)
+				if (m.get(0).getAxisLength(Axes.X) > MAX_SIZE &&
+					m.get(0).getAxisLength(Axes.Y) > MAX_SIZE)
 				{
 					return false;
 				}

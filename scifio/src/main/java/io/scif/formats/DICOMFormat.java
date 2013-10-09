@@ -951,7 +951,7 @@ public class DICOMFormat extends AbstractFormat {
 		@Override
 		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
-			final int pixelType = getPixelType(0);
+			final int pixelType = get(0).getPixelType();
 
 			switch (pixelType) {
 				case FormatTools.INT8:
@@ -986,16 +986,16 @@ public class DICOMFormat extends AbstractFormat {
 				if (seriesCount == 1) {
 					sizeZ = getOffsets().length * fileList.get(keys[i]).size();
 
-					setMetadataComplete(i, true);
-					setFalseColor(i, false);
+					get(i).setMetadataComplete(true);
+					get(i).setFalseColor(false);
 					if (isRLE) {
-						setAxisTypes(0, Axes.X, Axes.Y, Axes.CHANNEL);
+						get(i).setAxisTypes(Axes.X, Axes.Y, Axes.CHANNEL);
 					}
-					if (getAxisLength(0, Axes.CHANNEL) > 1) {
-						setPlanarAxisCount(0, 3);
+					if (get(i).getAxisLength(Axes.CHANNEL) > 1) {
+						get(i).setPlanarAxisCount(3);
 					}
 					else {
-						setPlanarAxisCount(0, 2);
+						get(i).setPlanarAxisCount(2);
 					}
 				}
 				else {
@@ -1018,7 +1018,7 @@ public class DICOMFormat extends AbstractFormat {
 
 				}
 
-				setAxisLength(i, Axes.Z, sizeZ);
+				get(i).setAxisLength(Axes.Z, sizeZ);
 			}
 		}
 
@@ -1345,7 +1345,7 @@ public class DICOMFormat extends AbstractFormat {
 			final int planeSize =
 				sizeX *
 					sizeY *
-					(int)(meta.getColorTable(0, 0) == null ? meta.getAxisLength(0,
+					(int) (meta.getColorTable(0, 0) == null ? meta.get(0).getAxisLength(
 						Axes.CHANNEL) : 1) * bytesPerPixel;
 
 			meta.setJP2K(isJP2K);
@@ -1677,14 +1677,14 @@ public class DICOMFormat extends AbstractFormat {
 				if (key.equals("Samples per pixel")) {
 					final int sizeC = Integer.parseInt(info);
 					if (sizeC > 1) {
-						meta.setAxisLength(0, Axes.CHANNEL, sizeC);
-						meta.setPlanarAxisCount(0, 2);
+						meta.get(0).setAxisLength(Axes.CHANNEL, sizeC);
+						meta.get(0).setPlanarAxisCount(2);
 					}
 				}
 				else if (key.equals("Photometric Interpretation")) {
 					if (info.equals("PALETTE COLOR")) {
-						meta.setIndexed(0, true);
-						meta.setAxisLength(0, Axes.CHANNEL, 1);
+						meta.get(0).setIndexed(true);
+						meta.get(0).setAxisLength(Axes.CHANNEL, 1);
 						meta.lut = new byte[3][];
 						meta.shortLut = new short[3][];
 
@@ -1871,8 +1871,8 @@ public class DICOMFormat extends AbstractFormat {
 			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex, plane
 				.getData().length, planeMin, planeMax);
 
-			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
-			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xAxis],
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],
@@ -1892,21 +1892,21 @@ public class DICOMFormat extends AbstractFormat {
 			}
 
 			final int ec =
-				meta.isIndexed(0) ? 1 : (int) meta.getAxisLength(imageIndex,
+				meta.get(0).isIndexed() ? 1 : (int) meta.get(imageIndex).getAxisLength(
 					Axes.CHANNEL);
 			final int bpp =
-				FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
+				FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
 			final int bytes =
-				(int) (meta.getAxisLength(imageIndex, Axes.X) *
-					meta.getAxisLength(imageIndex, Axes.Y) * bpp * ec);
-			getStream().seek(meta.getOffsets()[(int)planeIndex]);
+				(int) (meta.get(imageIndex).getAxisLength(Axes.X) *
+					meta.get(imageIndex).getAxisLength(Axes.Y) * bpp * ec);
+			getStream().seek(meta.getOffsets()[(int) planeIndex]);
 
 			if (meta.isRLE()) {
 				// plane is compressed using run-length encoding
 				final CodecOptions options = new CodecOptions();
 				options.maxBytes =
-					(int) (meta.getAxisLength(imageIndex, Axes.X) * meta.getAxisLength(
-						imageIndex, Axes.Y));
+					(int) (meta.get(imageIndex).getAxisLength(Axes.X) * meta.get(
+						imageIndex).getAxisLength(Axes.Y));
 				for (int c = 0; c < ec; c++) {
 					final PackbitsCodec codec = new PackbitsCodec();
 					byte[] t = null;
@@ -1925,7 +1925,7 @@ public class DICOMFormat extends AbstractFormat {
 						for (int i = 0; i < planeIndex; i++) {
 							for (int j = 0; j < bpp; j++) {
 								final int byteIndex =
-									meta.isLittleEndian(imageIndex) ? bpp - j - 1 : j;
+									meta.get(imageIndex).isLittleEndian() ? bpp - j - 1 : j;
 								if (i < tmp[byteIndex].length) {
 									t[i * bpp + j] = tmp[byteIndex][i];
 								}
@@ -1947,7 +1947,7 @@ public class DICOMFormat extends AbstractFormat {
 
 					final int rowLen = w * bpp;
 					final int srcRowLen =
-						(int) meta.getAxisLength(imageIndex, Axes.X) * bpp;
+						(int) meta.get(imageIndex).getAxisLength(Axes.X) * bpp;
 
 					// TODO unused int srcPlane = meta.getAxisLength(imageIndex, Axes.Y) *
 					// srcRowLen;
@@ -1993,16 +1993,18 @@ public class DICOMFormat extends AbstractFormat {
 
 				Codec codec = null;
 				final CodecOptions options = new CodecOptions();
-				options.littleEndian = meta.isLittleEndian(imageIndex);
-				options.interleaved = meta.getInterleavedAxisCount(imageIndex) > 0;
+				options.littleEndian = meta.get(imageIndex).isLittleEndian();
+				options.interleaved = meta.get(imageIndex).getInterleavedAxisCount() > 0;
 				if (meta.isJPEG()) codec = new JPEGCodec();
 				else codec = new JPEG2000Codec();
 				b = codec.decompress(b, options);
 
 				final int rowLen = w * bpp;
-				final int srcRowLen = (int)meta.getAxisLength(imageIndex, Axes.X) * bpp;
+				final int srcRowLen =
+					(int) meta.get(imageIndex).getAxisLength(Axes.X) * bpp;
 
-				final int srcPlane = (int)meta.getAxisLength(imageIndex, Axes.Y) * srcRowLen;
+				final int srcPlane =
+					(int) meta.get(imageIndex).getAxisLength(Axes.Y) * srcRowLen;
 
 				for (int c = 0; c < ec; c++) {
 					for (int row = 0; row < h; row++) {
@@ -2031,7 +2033,7 @@ public class DICOMFormat extends AbstractFormat {
 				}
 				else if (bpp == 2) {
 					if (meta.getMaxPixelValue() == -1) meta.setMaxPixelValue(65535);
-					final boolean little = meta.isLittleEndian(imageIndex);
+					final boolean little = meta.get(imageIndex).isLittleEndian();
 					for (int i = 0; i < plane.getBytes().length; i += 2) {
 						final short s =
 							DataTools.bytesToShort(plane.getBytes(), i, 2, little);

@@ -92,7 +92,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
 		if (theC < 0 ||
-			theC >= getMetadata().getAxisLength(imageIndex, Axes.CHANNEL))
+			theC >= getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL))
 		{
 			throw new FormatException("Invalid channel index: " + theC);
 		}
@@ -115,7 +115,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
 		if (theC < 0 ||
-			theC >= getMetadata().getAxisLength(imageIndex, Axes.CHANNEL))
+			theC >= getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL))
 		{
 			throw new FormatException("Invalid channel index: " + theC);
 		}
@@ -232,18 +232,18 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
+		int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
 		return openPlane(imageIndex, planeIndex, new long[planarAxes],
-			getMetadata().getAxesLengthsPlanar(imageIndex));
+			getMetadata().get(imageIndex).getAxesLengthsPlanar());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
+		int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
 		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],
-			getMetadata().getAxesLengthsPlanar(imageIndex));
+			getMetadata().get(imageIndex).getAxesLengthsPlanar());
 	}
 
 	@Override
@@ -264,7 +264,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		super.openPlane(imageIndex, planeIndex, plane, offsets, lengths);
 
 		updateMinMax(imageIndex, planeIndex, plane.getBytes(), FormatTools
-			.getBytesPerPixel(getMetadata().getPixelType(imageIndex)) *
+			.getBytesPerPixel(getMetadata().get(imageIndex).getPixelType()) *
 			DataTools.safeMultiply32(lengths));
 		return plane;
 	}
@@ -306,9 +306,9 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
 		final io.scif.Metadata m = getMetadata();
 		final int numRGB = countRGB(imageIndex, planeIndex);
-		final int pixelType = m.getPixelType(imageIndex);
+		final int pixelType = m.get(imageIndex).getPixelType();
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
-		final long planeSize = m.getPlaneSize(imageIndex);
+		final long planeSize = m.get(imageIndex).getPlaneSize();
 		// check whether min/max
 		// values have already
 		// been computed for
@@ -317,16 +317,17 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		if (len == planeSize &&
 			!Double.isNaN(planeMin[imageIndex][(int)planeIndex * numRGB])) return;
 
-		final boolean little = m.isLittleEndian(imageIndex);
+		final boolean little = m.get(imageIndex).isLittleEndian();
 
 		final int pixels = len / (bpp * numRGB);
-		final boolean interleaved = m.getInterleavedAxisCount(imageIndex) > 0;
+		final boolean interleaved =
+			m.get(imageIndex).getInterleavedAxisCount() > 0;
 
 		final long[] coords =
 			FormatTools.rasterToPosition(imageIndex, planeIndex, m);
-		int cIndex = m.getAxisIndex(imageIndex, Axes.CHANNEL);
+		int cIndex = m.get(imageIndex).getAxisIndex(Axes.CHANNEL);
 		final int cBase =
-			m.isMultichannel(imageIndex) ? (int) coords[cIndex] * numRGB : 0;
+			m.get(imageIndex).isMultichannel() ? (int) coords[cIndex] * numRGB : 0;
 		final int pBase = (int) planeIndex * numRGB;
 		for (int c = 0; c < numRGB; c++) {
 			planeMin[imageIndex][pBase + c] = Double.POSITIVE_INFINITY;
@@ -422,10 +423,10 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	 */
 	private int countRGB(int imageIndex, long planeIndex) {
 		Metadata meta = getMetadata();
-		if (meta.getAxisIndex(imageIndex, Axes.CHANNEL) < meta
-			.getPlanarAxisCount(imageIndex))
+		if (meta.get(imageIndex).getAxisIndex(Axes.CHANNEL) < meta
+				.get(imageIndex).getPlanarAxisCount())
 		{
-			return (int) meta.getAxisLength(imageIndex, Axes.CHANNEL);
+			return (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 		}
 		return 1;
 	}

@@ -114,7 +114,7 @@ public class JavaFormat extends AbstractFormat {
 
 			// check pixel type
 			final String pixelType =
-				FormatTools.getPixelTypeString(meta.getPixelType(imageIndex));
+				FormatTools.getPixelTypeString(meta.get(imageIndex).getPixelType());
 			final int type = FormatTools.pixelTypeFromString(pixelType);
 			if (!DataTools.containsValue(getPixelTypes(), type)) {
 				throw new FormatException("Unsupported image type '" + pixelType + "'.");
@@ -122,7 +122,7 @@ public class JavaFormat extends AbstractFormat {
 			final int bpp = FormatTools.getBytesPerPixel(type);
 			final boolean fp = FormatTools.isFloatingPoint(type);
 			final boolean little =
-				Boolean.FALSE.equals(!meta.isLittleEndian(imageIndex));
+				Boolean.FALSE.equals(!meta.get(imageIndex).isLittleEndian());
 
 			// write array
 			final String varName = "image" + imageIndex + "Plane" + planeIndex;

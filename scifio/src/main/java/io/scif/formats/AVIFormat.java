@@ -621,7 +621,7 @@ public class AVIFormat extends AbstractFormat {
 								if (type.equals("strf")) {
 									spos = in.getFilePointer();
 
-									if (meta.getAxisIndex(0, Axes.Y) != -1) {
+									if (meta.get(0).getAxisIndex(Axes.Y) != -1) {
 										in.skipBytes(size);
 										readTypeAndSize();
 										while (type.equals("indx")) {
@@ -855,17 +855,17 @@ public class AVIFormat extends AbstractFormat {
 			plane.setColorTable(meta.getColorTable(0, 0));
 
 			final int bytes =
-				FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
+				FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
 			final double p =
 				((double) meta.getBmpScanLineSize()) / meta.getBmpBitsPerPixel();
 			int effectiveWidth = (int) (meta.getBmpScanLineSize() / p);
 			if (effectiveWidth == 0 ||
-				effectiveWidth < meta.getAxisLength(imageIndex, Axes.X))
+				effectiveWidth < meta.get(imageIndex).getAxisLength(Axes.X))
 			{
-				effectiveWidth = (int)meta.getAxisLength(imageIndex, Axes.X);
+				effectiveWidth = (int)meta.get(imageIndex).getAxisLength(Axes.X);
 			}
-			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
-			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xAxis],
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],
@@ -885,18 +885,19 @@ public class AVIFormat extends AbstractFormat {
 
 			if (meta.getBmpBitsPerPixel() < 8) {
 				int rawSize =
-					(int)FormatTools.getPlaneSize(meta, effectiveWidth, (int)meta.getAxisLength(
-						imageIndex, Axes.Y), imageIndex);
+					(int) FormatTools.getPlaneSize(meta, effectiveWidth, (int) meta.get(
+						imageIndex).getAxisLength(Axes.Y), imageIndex);
 				rawSize /= (8 / meta.getBmpBitsPerPixel());
 
 				final byte[] b = new byte[rawSize];
 
-				final int len = rawSize / (int)meta.getAxisLength(imageIndex, Axes.Y);
+				final int len =
+					rawSize / (int) meta.get(imageIndex).getAxisLength(Axes.Y);
 				getStream().read(b);
 
 				final BitBuffer bb = new BitBuffer(b);
 				bb.skipBits(meta.getBmpBitsPerPixel() * len *
-					(meta.getAxisLength(imageIndex, Axes.Y) - h - y));
+					(meta.get(imageIndex).getAxisLength(Axes.Y) - h - y));
 
 				for (int row = h; row >= y; row--) {
 					bb.skipBits(meta.getBmpBitsPerPixel() * x);
@@ -905,31 +906,31 @@ public class AVIFormat extends AbstractFormat {
 							(byte) bb.getBits(meta.getBmpBitsPerPixel());
 					}
 					bb.skipBits(meta.getBmpBitsPerPixel() *
-						(meta.getAxisLength(imageIndex, Axes.X)) - w - x);
+						(meta.get(imageIndex).getAxisLength(Axes.X)) - w - x);
 				}
 
 				return plane;
 			}
 
 			final int pad = (int)
-				((meta.getBmpScanLineSize() / meta.getAxisLength(imageIndex,
+				((meta.getBmpScanLineSize() / meta.get(imageIndex).getAxisLength(
 					Axes.CHANNEL)) -
-					meta.getAxisLength(imageIndex, Axes.X) * bytes);
+					meta.get(imageIndex).getAxisLength(Axes.X) * bytes);
 			final int scanline =
 				w *
 					bytes *
-					(int) (meta.getInterleavedAxisCount(imageIndex) > 0 ? meta
-						.getAxisLength(imageIndex, Axes.CHANNEL) : 1);
+					(int)(meta.get(imageIndex).getInterleavedAxisCount() > 0 ?
+						meta.get(imageIndex).getAxisLength(Axes.CHANNEL) : 1);
 
 			getStream().skipBytes(
-				(int)((meta.getAxisLength(imageIndex, Axes.X) + pad) * bytes *
-					(meta.getAxisLength(imageIndex, Axes.Y) - h - y)));
+				(int)((meta.get(imageIndex).getAxisLength(Axes.X) + pad) * bytes *
+					(meta.get(imageIndex).getAxisLength(Axes.Y) - h - y)));
 
-			if (meta.getAxisLength(imageIndex, Axes.X) == w && pad == 0) {
-				for (int row = 0; row < meta.getAxisLength(imageIndex, Axes.Y); row++) {
+			if (meta.get(imageIndex).getAxisLength(Axes.X) == w && pad == 0) {
+				for (int row = 0; row < meta.get(imageIndex).getAxisLength(Axes.Y); row++) {
 					final int outputRow =
-						(int) (meta.getBmpCompression() == Y8 ? row : meta.getAxisLength(
-							imageIndex, Axes.Y) -
+						(int) (meta.getBmpCompression() == Y8 ? row : meta.get(imageIndex)
+							.getAxisLength(Axes.Y) -
 							row - 1);
 					getStream().read(buf, outputRow * scanline, scanline);
 				}
@@ -938,26 +939,26 @@ public class AVIFormat extends AbstractFormat {
 				if (meta.getBmpBitsPerPixel() == 24 || meta.getBmpBitsPerPixel() == 32)
 				{
 					for (int i = 0; i < buf.length /
-						meta.getAxisLength(imageIndex, Axes.CHANNEL); i++)
+						meta.get(imageIndex).getAxisLength(Axes.CHANNEL); i++)
 					{
 						final byte r =
-							buf[i * (int)meta.getAxisLength(imageIndex, Axes.CHANNEL) + 2];
-						buf[i * (int)meta.getAxisLength(imageIndex, Axes.CHANNEL) + 2] =
-							buf[i * (int)meta.getAxisLength(imageIndex, Axes.CHANNEL)];
-	            buf[i * (int)meta.getAxisLength(imageIndex, Axes.CHANNEL)] = r; 
+							buf[i * (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL) + 2];
+						buf[i * (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL) + 2] =
+							buf[i * (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL)];
+	            buf[i * (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL)] = r; 
 					}
 				}
 			}
 			else {
 				int skip =
-					(int) FormatTools.getPlaneSize(meta, (int) meta.getAxisLength(
-						imageIndex, Axes.X) -
+					(int) FormatTools.getPlaneSize(meta, (int) meta.get(imageIndex)
+						.getAxisLength(Axes.X) -
 						w - x + pad, 1, imageIndex);
-				if ((meta.getAxisLength(imageIndex, Axes.X) + pad) *
-					meta.getAxisLength(imageIndex, Axes.Y) *
-					meta.getAxisLength(imageIndex, Axes.CHANNEL) > maxBytes)
+				if ((meta.get(imageIndex).getAxisLength(Axes.X) + pad) *
+					meta.get(imageIndex).getAxisLength(Axes.Y) *
+					meta.get(imageIndex).getAxisLength(Axes.CHANNEL) > maxBytes)
 				{
-					skip /= meta.getAxisLength(imageIndex, Axes.CHANNEL);
+					skip /= meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 				}
 				for (int i = h - 1; i >= 0; i--) {
 					getStream().skipBytes(x * (meta.getBmpBitsPerPixel() / 8));
@@ -973,11 +974,13 @@ public class AVIFormat extends AbstractFormat {
 				}
 			}
 
-			if (meta.getBmpBitsPerPixel() == 16 && meta.isMultichannel(imageIndex)) {
+			if (meta.getBmpBitsPerPixel() == 16 &&
+				meta.get(imageIndex).isMultichannel())
+			{
 				// channels are stored as BGR, need to swap them
-				ImageTools.bgrToRgb(plane.getBytes(), meta
-					.getInterleavedAxisCount(imageIndex) > 0, 2, (int) meta
-					.getAxisLength(imageIndex, Axes.CHANNEL));
+				ImageTools.bgrToRgb(plane.getBytes(), meta.get(imageIndex)
+					.getInterleavedAxisCount() > 0, 2, (int) meta.get(imageIndex).getAxisLength(
+					Axes.CHANNEL));
 			}
 			return plane;
 		}
@@ -1002,8 +1005,8 @@ public class AVIFormat extends AbstractFormat {
 				// if not full plane, open the full plane and then decompress
 
 				final ByteArrayPlane tmpPlane =
-					createPlane(new long[meta.getPlanarAxisCount(imageIndex)], meta
-						.getAxesLengthsPlanar(imageIndex));
+					createPlane(new long[meta.get(imageIndex).getPlanarAxisCount()], meta
+						.get(imageIndex).getAxesLengthsPlanar());
 
 				// If our last cached plane was of insufficient size for the requested
 				// region, we need to open it as a full plan.
@@ -1034,10 +1037,10 @@ public class AVIFormat extends AbstractFormat {
 
 			final int rowLen = (int)FormatTools.getPlaneSize(meta, w, 1, imageIndex);
 			final int bytes =
-				FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
+				FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
 			final int inputRowLen =
-				(int)FormatTools.getPlaneSize(meta, (int)meta.getAxisLength(imageIndex, Axes.X),
-					1, imageIndex);
+				(int) FormatTools.getPlaneSize(meta, (int) meta.get(imageIndex)
+					.getAxisLength(Axes.X), 1, imageIndex);
 
 			for (int row = 0; row < h; row++) {
 				System.arraycopy(buf, (row + y) * inputRowLen + x * bytes, plane
@@ -1131,7 +1134,7 @@ public class AVIFormat extends AbstractFormat {
 					"AVIWriter does not yet support saving image tiles.");
 			}
 
-			final int nChannels = (int)meta.getAxisLength(imageIndex, Axes.CHANNEL);
+			final int nChannels = (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			if (!initialized[imageIndex][(int)planeIndex]) {
 				initialized[imageIndex][(int)planeIndex] = true;
@@ -1295,15 +1298,15 @@ public class AVIFormat extends AbstractFormat {
 
 			out.order(true);
 
-			tDim = (int)meta.getAxisLength(imageIndex, Axes.Z);
-			zDim = (int)meta.getAxisLength(imageIndex, Axes.TIME);
-			yDim = (int)meta.getAxisLength(imageIndex, Axes.Y);
-			xDim = (int)meta.getAxisLength(imageIndex, Axes.X);
+			tDim = (int)meta.get(imageIndex).getAxisLength(Axes.Z);
+			zDim = (int)meta.get(imageIndex).getAxisLength(Axes.TIME);
+			yDim = (int)meta.get(imageIndex).getAxisLength(Axes.Y);
+			xDim = (int)meta.get(imageIndex).getAxisLength(Axes.X);
 			final String type =
-				FormatTools.getPixelTypeString(meta.getPixelType(imageIndex));
+				FormatTools.getPixelTypeString(meta.get(imageIndex).getPixelType());
 			final int pixelType = FormatTools.pixelTypeFromString(type);
 			bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
-			bytesPerPixel *= meta.getAxisLength(imageIndex, Axes.CHANNEL);
+			bytesPerPixel *= meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			xPad = 0;
 			final int xMod = xDim % 4;
@@ -1609,28 +1612,28 @@ public class AVIFormat extends AbstractFormat {
 			dest.setLengths(lengths);
 			dest.createImageMetadata(1);
 
-			int sizeX = (int)source.getAxisLength(0, Axes.X);
-			final int sizeY = (int)source.getAxisLength(0, Axes.Y);
-			final int bpp = source.getBitsPerPixel(0);
+			int sizeX = (int)source.get(0).getAxisLength(Axes.X);
+			final int sizeY = (int)source.get(0).getAxisLength(Axes.Y);
+			final int bpp = source.get(0).getBitsPerPixel();
 			long length = bpp;
-			for (long l : source.getAxesLengthsPlanar(0)) {
+			for (long l : source.get(0).getAxesLengthsPlanar()) {
 				length *= l;
 			}
 			long offset = 0;
 
-			dest.setAxisLength(0, Axes.X, sizeX);
-			dest.setAxisLength(0, Axes.Y, sizeY);
+			dest.get(0).setAxisLength(Axes.X, sizeX);
+			dest.get(0).setAxisLength(Axes.Y, sizeY);
 
 			final int npad = sizeX % 4;
 
 			if (npad != 0) sizeX += (4 - npad);
 
-			dest.setBmpBitsPerPixel((short) (bpp * source.getAxisLength(0,
+			dest.setBmpBitsPerPixel((short) (bpp * source.get(0).getAxisLength(
 				Axes.CHANNEL)));
 
 			dest.setBmpWidth(sizeX * (bpp / 8));
 			dest.setBmpScanLineSize(dest.getBmpWidth() *
-				(int)source.getAxisLength(0, Axes.CHANNEL));
+				(int)source.get(0).getAxisLength(Axes.CHANNEL));
 
 			try {
 				if (source.getSource() == null) offset = 0;
@@ -1640,7 +1643,7 @@ public class AVIFormat extends AbstractFormat {
 				log().error("Error retrieving AVI plane offset", e);
 			}
 
-			for (int i = 0; i < source.getPlaneCount(0); i++) {
+			for (int i = 0; i < source.get(0).getPlaneCount(); i++) {
 				offsets.add(offset);
 
 				lengths.add(length);
@@ -1669,15 +1672,15 @@ public class AVIFormat extends AbstractFormat {
 			final int imageIndex, final long planeIndex)
 		{
 			final CodecOptions options = new CodecOptions();
-			options.width = (int)meta.getAxisLength(imageIndex, Axes.X);
-			options.height = (int)meta.getAxisLength(imageIndex, Axes.Y);
+			options.width = (int)meta.get(imageIndex).getAxisLength(Axes.X);
+			options.height = (int)meta.get(imageIndex).getAxisLength(Axes.Y);
 			options.previousImage =
 				(meta.getLastPlaneIndex() == planeIndex - 1) ? meta.getLastPlaneBytes()
 					: null;
 
 			options.bitsPerSample = meta.getBmpBitsPerPixel();
-			options.interleaved = meta.getInterleavedAxisCount(imageIndex) > 0;
-			options.littleEndian = meta.isLittleEndian(imageIndex);
+			options.interleaved = meta.get(imageIndex).getInterleavedAxisCount() > 0;
+			options.littleEndian = meta.get(imageIndex).isLittleEndian();
 			return options;
 		}
 

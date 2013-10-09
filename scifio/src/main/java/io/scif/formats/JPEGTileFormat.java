@@ -166,8 +166,8 @@ public class JPEGTileFormat extends AbstractFormat {
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
-			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
-			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xAxis],
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],
@@ -175,7 +175,7 @@ public class JPEGTileFormat extends AbstractFormat {
 			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
-			final int c = (int)meta.getAxisLength(imageIndex, Axes.CHANNEL);
+			final int c = (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			for (int ty = y; ty < y + h; ty++) {
 				byte[] scanline = meta.getDecoder().getScanline(ty);

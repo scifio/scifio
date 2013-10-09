@@ -436,7 +436,7 @@ public class TIFFFormat extends AbstractFormat {
 			meta.setDescription("");
 
 			int z = 1, t = 1;
-			int c = (int)meta.getAxisLength(0, Axes.CHANNEL);
+			int c = (int)meta.get(0).getAxisLength(Axes.CHANNEL);
 
 			IFDList ifds = meta.getIfds();
 
@@ -482,8 +482,8 @@ public class TIFFFormat extends AbstractFormat {
 					put(token.substring(0, eq).trim(), value);
 				}
 			}
-			if (z * c * t == c && meta.isMultichannel(0)) {
-				t = (int)meta.getPlaneCount(0);
+			if (z * c * t == c && meta.get(0).isMultichannel()) {
+				t = (int) meta.get(0).getPlaneCount();
 			}
 
 			final ImageMetadata m = meta.get(0);
@@ -1190,8 +1190,8 @@ public class TIFFFormat extends AbstractFormat {
 			final Plane plane, final IFD ifd) throws IOException, FormatException
 		{
 			final Metadata meta = getMetadata();
-			final int w = (int)meta.getAxisLength(imageIndex, Axes.X);
-			final int h = (int)meta.getAxisLength(imageIndex, Axes.Y);
+			final int w = (int)meta.get(imageIndex).getAxisLength(Axes.X);
+			final int h = (int)meta.get(imageIndex).getAxisLength(Axes.Y);
 			savePlane(imageIndex, planeIndex, plane, ifd, new long[2], new long[]{w, h});
 		}
 
@@ -1207,14 +1207,14 @@ public class TIFFFormat extends AbstractFormat {
 			final byte[] buf = plane.getBytes();
 			if (checkParams) checkParams(imageIndex, planeIndex, buf, planeMin,
 				planeMax);
-			final int xAxis = getMetadata().getAxisIndex(imageIndex, Axes.X);
-			final int yAxis = getMetadata().getAxisIndex(imageIndex, Axes.Y);
+			final int xAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.X);
+			final int yAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xAxis],
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],
 								h = (int) planeMax[yAxis];
 			if (ifd == null) ifd = new IFD(log());
-			final int type = getMetadata().getPixelType(imageIndex);
+			final int type = getMetadata().get(imageIndex).getPixelType();
 			long index = planeIndex;
 			// This operation is synchronized
 			synchronized (this) {
@@ -1338,7 +1338,7 @@ public class TIFFFormat extends AbstractFormat {
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
-			final Boolean bigEndian = !meta.isLittleEndian(imageIndex);
+			final Boolean bigEndian = !meta.get(imageIndex).isLittleEndian();
 			final boolean littleEndian =
 				bigEndian == null ? false : !bigEndian.booleanValue();
 
@@ -1362,8 +1362,8 @@ public class TIFFFormat extends AbstractFormat {
 				}
 			}
 
-			final int type = meta.getPixelType(imageIndex);
-			int c = (int)meta.getAxisLength(imageIndex, Axes.CHANNEL);
+			final int type = meta.get(imageIndex).getPixelType();
+			int c = (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 			final int bytesPerPixel = FormatTools.getBytesPerPixel(type);
 
 			final int blockSize = w * h * c * bytesPerPixel;
@@ -1412,8 +1412,8 @@ public class TIFFFormat extends AbstractFormat {
 				ifd.putIFDValue(IFD.COLOR_MAP, colorMap);
 			}
 
-			final int width = (int)meta.getAxisLength(imageIndex, Axes.X);
-			final int height = (int)meta.getAxisLength(imageIndex, Axes.Y);
+			final int width = (int)meta.get(imageIndex).getAxisLength(Axes.X);
+			final int height = (int)meta.get(imageIndex).getAxisLength(Axes.Y);
 			ifd.put(new Integer(IFD.IMAGE_WIDTH), new Long(width));
 			ifd.put(new Integer(IFD.IMAGE_LENGTH), new Long(height));
 
@@ -1454,7 +1454,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			ifd.putIFDValue(IFD.PLANAR_CONFIGURATION, interleaved ||
-				meta.getAxisLength(imageIndex, Axes.CHANNEL) == 1 ? 1 : 2);
+				meta.get(imageIndex).getAxisLength(Axes.CHANNEL) == 1 ? 1 : 2);
 
 			int sampleFormat = 1;
 			if (FormatTools.isSigned(type)) sampleFormat = 2;
@@ -1464,7 +1464,7 @@ public class TIFFFormat extends AbstractFormat {
 			long index = planeIndex;
 			final int realSeries = imageIndex;
 			for (int i = 0; i < realSeries; i++) {
-				index += meta.getPlaneCount(i);
+				index += meta.get(i).getPlaneCount();
 			}
 			return index;
 		}
@@ -1475,7 +1475,7 @@ public class TIFFFormat extends AbstractFormat {
 			out = new RandomAccessOutputStream(getContext(), meta.getDatasetName());
 			tiffSaver = new TiffSaver(getContext(), out, meta.getDatasetName());
 
-			final Boolean bigEndian = !meta.isLittleEndian(imageIndex);
+			final Boolean bigEndian = !meta.get(imageIndex).isLittleEndian();
 			final boolean littleEndian =
 				bigEndian == null ? false : !bigEndian.booleanValue();
 

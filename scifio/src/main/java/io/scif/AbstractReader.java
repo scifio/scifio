@@ -92,7 +92,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	public P openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		final long[] planeMax = metadata.getAxesLengthsPlanar(imageIndex);
+		final long[] planeMax = metadata.get(imageIndex).getAxesLengthsPlanar();
 		final long[] planeMin = new long[planeMax.length];
 		return openPlane(imageIndex, planeIndex, planeMin, planeMax);
 	}
@@ -160,19 +160,19 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public long getOptimalTileWidth(final int imageIndex) {
-		return metadata.getAxisLength(imageIndex, Axes.X);
+		return metadata.get(imageIndex).getAxisLength(Axes.X);
 	}
 
 	@Override
 	public long getOptimalTileHeight(final int imageIndex) {
 		final int bpp =
-			FormatTools.getBytesPerPixel(metadata.getPixelType(imageIndex));
+			FormatTools.getBytesPerPixel(metadata.get(imageIndex).getPixelType());
 
-		final long width = metadata.getAxisLength(imageIndex, Axes.X);
-		final long rgbcCount = metadata.getAxisLength(imageIndex, Axes.CHANNEL);
+		final long width = metadata.get(imageIndex).getAxisLength(Axes.X);
+		final long rgbcCount = metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 		final long maxHeight = (1024 * 1024) / (width * rgbcCount * bpp);
-		return Math.min(maxHeight, metadata.getAxisLength(imageIndex, Axes.Y));
+		return Math.min(maxHeight, metadata.get(imageIndex).getAxisLength(Axes.Y));
 	}
 
 	@Override
@@ -267,7 +267,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public long getPlaneCount(final int imageIndex) {
-		return metadata.getPlaneCount(imageIndex);
+		return metadata.get(imageIndex).getPlaneCount();
 	}
 
 	@Override
@@ -319,11 +319,11 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		final P plane) throws IOException
 	{
 		final int bpp =
-			FormatTools.getBytesPerPixel(metadata.getPixelType(imageIndex));
+			FormatTools.getBytesPerPixel(metadata.get(imageIndex).getPixelType());
 
 		final byte[] bytes = plane.getBytes();
-		final int xIndex = metadata.getAxisIndex(imageIndex, Axes.X);
-		final int yIndex = metadata.getAxisIndex(imageIndex, Axes.Y);
+		final int xIndex = metadata.get(imageIndex).getAxisIndex(Axes.X);
+		final int yIndex = metadata.get(imageIndex).getAxisIndex(Axes.Y);
 		if (SCIFIOMetadataTools
 			.wholePlane(imageIndex, metadata, planeMin, planeMax) &&
 			scanlinePad == 0)
@@ -334,7 +334,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			planeMax) &&
 			scanlinePad == 0)
 		{
-			if (metadata.getInterleavedAxisCount(imageIndex) > 0) {
+			if (metadata.get(imageIndex).getInterleavedAxisCount() > 0) {
 				int bytesToSkip = bpp;
 				bytesToSkip *= planeMax[xIndex];
 				int bytesToRead = bytesToSkip;
@@ -356,15 +356,15 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 				final int rowLen = (int) (bpp * planeMax[xIndex]);
 				final int h = (int) planeMax[yIndex];
 				final int y = (int) planeMin[yIndex];
-				long c = metadata.getAxisLength(imageIndex, Axes.CHANNEL);
-				if (c <= 0 || !metadata.isMultichannel(imageIndex)) c = 1;
+				long c = metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
+				if (c <= 0 || !metadata.get(imageIndex).isMultichannel()) c = 1;
 				for (int channel = 0; channel < c; channel++) {
 
 					s.skipBytes(y * rowLen);
 					s.read(bytes, channel * h * rowLen, h * rowLen);
 					if (channel < c - 1) {
 						// no need to skip bytes after reading final channel
-						s.skipBytes((int)(metadata.getAxisLength(imageIndex, Axes.Y) - y - h) *
+						s.skipBytes((int)(metadata.get(imageIndex).getAxisLength(Axes.Y) - y - h) *
 							rowLen);
 					}
 				}
@@ -372,12 +372,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		}
 		else {
 			final int scanlineWidth =
-				(int) metadata.getAxisLength(imageIndex, Axes.X) + scanlinePad;
-			if (metadata.getInterleavedAxisCount(imageIndex) > 0) {
+				(int) metadata.get(imageIndex).getAxisLength(Axes.X) + scanlinePad;
+			if (metadata.get(imageIndex).getInterleavedAxisCount() > 0) {
 				long planeProduct = bpp;
 				for (int i = 0; i < planeMin.length; i++) {
 					if (i != xIndex && i != yIndex) planeProduct *=
-						metadata.getAxisLength(imageIndex, i);
+						metadata.get(imageIndex).getAxisLength(i);
 				}
 				int bytesToSkip = scanlineWidth * (int) planeProduct;
 				s.skipBytes((int) planeMin[yIndex] * bytesToSkip);
@@ -399,7 +399,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 				}
 			}
 			else {
-				final long c = metadata.getAxisLength(imageIndex, Axes.CHANNEL);
+				final long c = metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 				final int w = (int) planeMax[xIndex];
 				final int h = (int) planeMax[yIndex];
@@ -418,7 +418,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 					if (channel < c - 1) {
 						// no need to skip bytes after reading final channel
 						s.skipBytes(scanlineWidth * bpp *
-							(int)(metadata.getAxisLength(imageIndex, Axes.Y) - y - h));
+							(int)(metadata.get(imageIndex).getAxisLength(Axes.Y) - y - h));
 					}
 				}
 			}

@@ -756,11 +756,12 @@ public final class AWTImageTools {
 		final int w = whc.x();
 		final int h = whc.y();
 		final int rgbChanCount = whc.c();
-		final int pixelType = meta.getPixelType(imageIndex);
-		final boolean little = meta.isLittleEndian(imageIndex);
+		final int pixelType = meta.get(imageIndex).getPixelType();
+		final boolean little = meta.get(imageIndex).isLittleEndian();
 		final boolean normal = r.isNormalized();
-		final boolean interleaved = meta.getInterleavedAxisCount(imageIndex) > 0;
-		final boolean indexed = meta.isIndexed(imageIndex);
+		final boolean interleaved =
+			meta.get(imageIndex).getInterleavedAxisCount() > 0;
+		final boolean indexed = meta.get(imageIndex).isIndexed();
 
 		if (pixelType == FormatTools.FLOAT) {
 			float[] f =
@@ -817,7 +818,7 @@ public final class AWTImageTools {
 				if (table != null && table.length > 0 && table[0] != null) {
 					model =
 						new Index16ColorModel(16, table[0].length, table, meta
-							.isLittleEndian(imageIndex));
+							.get(imageIndex).isLittleEndian());
 				}
 			}
 		}

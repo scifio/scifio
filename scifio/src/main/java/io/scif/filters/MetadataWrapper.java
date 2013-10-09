@@ -37,10 +37,9 @@
 package io.scif.filters;
 
 import io.scif.ImageMetadata;
+import io.scif.MetaTable;
 import io.scif.Metadata;
 import io.scif.SCIFIOPlugin;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.CalibratedAxis;
 
 /**
  * Wrapper for {@link io.scif.Metadata}. Used to create defensive copies of
@@ -83,60 +82,8 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 
 	// -- Setter Methods with passUp flag --
 
-	void addAxis(final int imageIndex, final CalibratedAxis axis, boolean passUp);
-
-	void addAxis(final int imageIndex, final CalibratedAxis axis,
-		final long value, boolean passUp);
-
-	void addAxis(int imageIndex, final AxisType axisType, final int value,
-		boolean passUp);
-
-	void setThumbSizeX(final int imageIndex, final long thumbX, boolean passUp);
-
-	void setThumbSizeY(final int imageIndex, final long thumbY, boolean passUp);
-
-	void setPixelType(final int imageIndex, final int type, boolean passUp);
-
-	void setBitsPerPixel(final int imageIndex, final int bpp, boolean passUp);
-
-	void setOrderCertain(final int imageIndex, final boolean orderCertain,
-		boolean passUp);
-
-	void setLittleEndian(final int imageIndex, final boolean littleEndian,
-		boolean passUp);
-
-	void setIndexed(final int imageIndex, final boolean indexed, boolean passUp);
-
-	void setPlanarAxisCount(int imageIndex, final int count, boolean passUp);
-
-	void
-		setFalseColor(final int imageIndex, final boolean falseC, boolean passUp);
-
-	void setMetadataComplete(final int imageIndex,
-		final boolean metadataComplete, boolean passUp);
+	void setTable(final MetaTable table, final boolean passUp);
 
 	void add(final ImageMetadata meta, boolean passUp);
 
-	void setThumbnailImage(final int imageIndex, final boolean thumbnail,
-		boolean passUp);
-
-	void setAxisTypes(final int imageIndex, final AxisType[] axisTypes,
-		boolean passUp);
-
-	void setAxes(final int imageIndex, final CalibratedAxis[] axes,
-		boolean passUp);
-
-	void setAxis(final int imageIndex, final int axisIndex,
-		final CalibratedAxis axis, boolean passUp);
-
-	void
-		setAxisType(int imageIndex, int axisIndex, AxisType axis, boolean passUp);
-
-	void setAxisLengths(final int imageIndex, final long[] axisLengths,
-		boolean passUp);
-
-	void setAxisLength(final int imageIndex, final CalibratedAxis axis,
-		final long length, boolean passUp);
-	
-	void setAxisLength(int imageIndex, AxisType axis, long length, boolean passUp);
 }

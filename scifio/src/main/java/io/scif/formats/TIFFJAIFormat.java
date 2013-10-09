@@ -253,7 +253,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 				-1, planeMin, planeMax);
 			final BufferedImage img = openBufferedImage(getMetadata(), planeIndex);
 			plane.setData(AWTImageTools.getSubimage(img, getMetadata()
-				.isLittleEndian(imageIndex), planeMin, planeMax));
+				.get(imageIndex).isLittleEndian(), planeMin, planeMax));
 			return plane;
 		}
 	}

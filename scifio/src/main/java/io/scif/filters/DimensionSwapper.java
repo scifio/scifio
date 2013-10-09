@@ -116,7 +116,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 				getInputOrder(imageIndex);
 		}
 
-		getMetadata().setAxisTypes(imageIndex, newOrder);
+		getMetadata().get(imageIndex).setAxisTypes(newOrder);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 		FormatTools.assertId(getCurrentFile(), true, 2);
 		
 		if (inputOrder == null) inputOrder = new ArrayList<AxisType>();
-		List<CalibratedAxis> axes = getMetadata().getAxes(imageIndex);
+		List<CalibratedAxis> axes = getMetadata().get(imageIndex).getAxes();
 		
 		for (int i=0; i<axes.size(); i++) {
 			inputOrder.set(i, axes.get(i).type());
@@ -247,8 +247,8 @@ public class DimensionSwapper extends AbstractReaderFilter {
 		if (!metaCheck()) return planeIndex;
 
 		long[] originalPosition =
-			FormatTools.rasterToPosition(getMetadata().getAxesLengthsNonPlanar(
-				imageIndex), planeIndex);
+			FormatTools.rasterToPosition(getMetadata().get(imageIndex)
+				.getAxesLengthsNonPlanar(), planeIndex);
 
 		List<AxisType> swappedOrder = getDimensionOrder(imageIndex);
 
@@ -256,11 +256,11 @@ public class DimensionSwapper extends AbstractReaderFilter {
 		long[] lengths = new long[originalPosition.length];
 
 		for (int i = 0; i < originalPosition.length; i++) {
-			int offset = getMetadata().getPlanarAxisCount(imageIndex);
+			int offset = getMetadata().get(imageIndex).getPlanarAxisCount();
 			AxisType type = swappedOrder.get(i + offset);
-			lengths[i] = getMetadata().getAxisLength(imageIndex, type);
+			lengths[i] = getMetadata().get(imageIndex).getAxisLength(type);
 			swappedPosition[i] =
-				originalPosition[getMetadata().getAxisIndex(imageIndex, type) - offset];
+				originalPosition[getMetadata().get(imageIndex).getAxisIndex(type) - offset];
 		}
 
 		return (int) FormatTools.positionToRaster(lengths, swappedPosition);

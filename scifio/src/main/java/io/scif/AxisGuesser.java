@@ -434,12 +434,12 @@ public class AxisGuesser {
 					log.info("Reading first file ");
 					final Reader reader = scifio.initializer().initializeReader(id);
 					final AxisType[] dimOrder =
-						(AxisType[]) reader.getMetadata().getAxes(0).toArray();
-					final long sizeZ = reader.getMetadata().getAxisLength(0, Axes.Z);
-					final long sizeT = reader.getMetadata().getAxisLength(0, Axes.TIME);
+						(AxisType[]) reader.getMetadata().get(0).getAxes().toArray();
+					final long sizeZ = reader.getMetadata().get(0).getAxisLength(Axes.Z);
+					final long sizeT = reader.getMetadata().get(0).getAxisLength(Axes.TIME);
 					final long sizeC =
-						reader.getMetadata().getAxisLength(0, Axes.CHANNEL);
-					final boolean certain = reader.getMetadata().isOrderCertain(0);
+						reader.getMetadata().get(0).getAxisLength( Axes.CHANNEL);
+					final boolean certain = reader.getMetadata().get(0).isOrderCertain();
 					reader.close();
 					log.info("[done]");
 					log.info("\tdimOrder = " + dimOrder + " (" +

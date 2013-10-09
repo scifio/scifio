@@ -208,7 +208,7 @@ public class JPEG2000Format extends AbstractFormat {
 		{
 			if (lut == null) return null;
 
-			if (FormatTools.getBytesPerPixel(getPixelType(0)) == 1) {
+			if (FormatTools.getBytesPerPixel(get(0).getPixelType()) == 1) {
 				if (byteLut == null) {
 					byteLut = new byte[lut.length][lut[0].length];
 					for (int i = 0; i < lut.length; i++) {
@@ -219,7 +219,7 @@ public class JPEG2000Format extends AbstractFormat {
 				}
 				return new ColorTable8(byteLut);
 			}
-			else if (FormatTools.getBytesPerPixel(getPixelType(0)) == 1) {
+			else if (FormatTools.getBytesPerPixel(get(0).getPixelType()) == 1) {
 				if (shortLut == null) {
 					shortLut = new short[lut.length][lut[0].length];
 					for (int i = 0; i < lut.length; i++) {
@@ -767,8 +767,8 @@ public class JPEG2000Format extends AbstractFormat {
 
 			final JPEG2000CodecOptions options =
 				JPEG2000CodecOptions.getDefaultOptions();
-			options.interleaved = meta.getInterleavedAxisCount(imageIndex) > 0;
-			options.littleEndian = meta.isLittleEndian(imageIndex);
+			options.interleaved = meta.get(imageIndex).getInterleavedAxisCount() > 0;
+			options.littleEndian = meta.get(imageIndex).isLittleEndian();
 			if (meta.getResolutionLevels() != null) {
 				options.resolution = Math.abs(imageIndex - meta.getResolutionLevels());
 			}
@@ -846,10 +846,12 @@ public class JPEG2000Format extends AbstractFormat {
 			throws FormatException, IOException
 		{
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
-			final boolean littleEndian = getMetadata().isLittleEndian(imageIndex);
-			final int bytesPerPixel = getMetadata().getBitsPerPixel(imageIndex) / 8;
+			final boolean littleEndian =
+				getMetadata().get(imageIndex).isLittleEndian();
+			final int bytesPerPixel =
+				getMetadata().get(imageIndex).getBitsPerPixel() / 8;
 			final int nChannels =
-				(int) getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+				(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			// To be on the save-side
 			if (options == null) options = JPEG2000CodecOptions.getDefaultOptions();

@@ -102,8 +102,8 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 	@Override
 	public void wrap(final Metadata meta) {
 		splitTypes = new HashSet<AxisType>();
-		for (int i=0; i<meta.getInterleavedAxisCount(0); i++) {
-			splitTypes.add(meta.getAxis(0, i).type());
+		for (int i=0; i<meta.get(0).getInterleavedAxisCount(); i++) {
+			splitTypes.add(meta.get(0).getAxis(i).type());
 		}
 		super.wrap(meta);
 	}
@@ -144,9 +144,9 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 	private void matchTypes(AxisType... types) {
 		splitTypes.clear();
 		for (AxisType t : types) {
-			int axisIndex = unwrap().getAxisIndex(0, t);
+			int axisIndex = unwrap().get(0).getAxisIndex(t);
 			// If the specified axis is present and a planar axis, we can separate it
-			if (axisIndex >= 0 && axisIndex < unwrap().getPlanarAxisCount(0)) {
+			if (axisIndex >= 0 && axisIndex < unwrap().get(0).getPlanarAxisCount()) {
 				splitTypes.add(t);
 			}
 		}

@@ -41,7 +41,6 @@ import io.scif.Metadata;
 import java.util.List;
 
 import net.imglib2.meta.AxisType;
-import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
@@ -99,17 +98,5 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 	 */
 	public void setOutputOrder(final List<AxisType>[] outputOrder) {
 		this.outputOrder = outputOrder;
-	}
-
-	// -- Metadata API Methods --
-
-	@Override
-	public void setAxisLengths(final int imageIndex, final long[] axisLengths) {
-		super.setAxisLengths(imageIndex, axisLengths, false);
-	}
-
-	@Override
-	public void setAxisTypes(final int imageIndex, final AxisType... axisTypes) {
-		super.setAxisTypes(imageIndex, axisTypes, false);
 	}
 }

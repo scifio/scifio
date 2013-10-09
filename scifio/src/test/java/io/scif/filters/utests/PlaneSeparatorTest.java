@@ -67,15 +67,15 @@ public class PlaneSeparatorTest {
 	{
 		Reader filter = scifio.initializer().initializeReader(id);
 		// Verify that we are starting with 4 planar axes, 2 of which are interleaved
-		assertEquals(4, filter.getMetadata().getPlanarAxisCount(0));
-		assertEquals(2, filter.getMetadata().getInterleavedAxisCount(0));
-		assertEquals(0, filter.getMetadata().getAxesNonPlanar(0).size());
+		assertEquals(4, filter.getMetadata().get(0).getPlanarAxisCount());
+		assertEquals(2, filter.getMetadata().get(0).getInterleavedAxisCount());
+		assertEquals(0, filter.getMetadata().get(0).getAxesNonPlanar().size());
 		
 		((ReaderFilter)filter).enable(PlaneSeparator.class);
 		// Verify that, after enabling the PlaneSeparator, the default behavior
 		// separates out the 2 interleaved axes to non-planar axes.
-		assertEquals(2, filter.getMetadata().getPlanarAxisCount(0));
-		assertEquals(0, filter.getMetadata().getInterleavedAxisCount(0));
-		assertEquals(2, filter.getMetadata().getAxesNonPlanar(0).size());
+		assertEquals(2, filter.getMetadata().get(0).getPlanarAxisCount());
+		assertEquals(0, filter.getMetadata().get(0).getInterleavedAxisCount());
+		assertEquals(2, filter.getMetadata().get(0).getAxesNonPlanar().size());
 	}
 }

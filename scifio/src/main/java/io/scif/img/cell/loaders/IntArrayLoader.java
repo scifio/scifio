@@ -62,12 +62,12 @@ public class IntArrayLoader extends AbstractArrayLoader<IntArray> {
 	{
 		final Metadata meta = reader().getMetadata();
 
-		final int bpp = meta.getBitsPerPixel(0) / 8;
+		final int bpp = meta.get(0).getBitsPerPixel() / 8;
 		final int offset = planesRead * (bytes.length / bpp);
 
 		final ByteBuffer bb = ByteBuffer.wrap(bytes);
 
-		bb.order(meta.isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN
+		bb.order(meta.get(0).isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
 			: ByteOrder.BIG_ENDIAN);
 		bb.asIntBuffer().get(data.getCurrentStorageArray(), offset,
 			bytes.length / bpp);

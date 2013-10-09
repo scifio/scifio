@@ -71,15 +71,15 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 	{
 		FormatTools.assertStream(getStream(), true, 1);
 		final Metadata meta = getMetadata();
-		final long[] planeBounds = meta.getAxesLengthsPlanar(imageIndex);
+		final long[] planeBounds = meta.get(imageIndex).getAxesLengthsPlanar();
 		final long[] planeOffsets = new long[planeBounds.length];
 
 		final BufferedImagePlane plane = createPlane(planeOffsets, planeBounds);
 
 		plane.setData(AWTImageTools.openThumbImage(
 			openPlane(imageIndex, planeIndex), this, imageIndex, planeBounds,
-			(int) meta.getThumbSizeX(imageIndex), (int) meta
-			.getThumbSizeY(imageIndex), false));
+			(int) meta.get(imageIndex).getThumbSizeX(), (int) meta
+			.get(imageIndex).getThumbSizeY(), false));
 
 		return plane;
 	}

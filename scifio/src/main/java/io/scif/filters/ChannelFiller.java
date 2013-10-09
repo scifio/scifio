@@ -112,18 +112,18 @@ public class ChannelFiller extends AbstractReaderFilter {
 	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
+		int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
 		return openPlane(imageIndex, planeIndex, new long[planarAxes],
-			getMetadata().getAxesLengthsPlanar(imageIndex));
+			getMetadata().get(imageIndex).getAxesLengthsPlanar());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
+		int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
 		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],
-			getMetadata().getAxesLengthsPlanar(imageIndex));
+			getMetadata().get(imageIndex).getAxesLengthsPlanar());
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 	{
 		// If the wrapped Metadata wasn't indexed, we can use the parent reader
 		// directly
-		if (!getParentMeta().isIndexed(imageIndex)) {
+		if (!getParentMeta().get(imageIndex).isIndexed()) {
 			if (!haveCached(imageIndex, planeIndex, offsets, lengths)) {
 				lastPlaneOffsets = offsets;
 				lastPlaneLengths = lengths;
@@ -182,18 +182,18 @@ public class ChannelFiller extends AbstractReaderFilter {
 		final byte[] buf = plane.getBytes();
 		int pt = 0;
 
-		final int bytesPerIndex = getParentMeta().getBitsPerPixel(imageIndex) / 8;
+		final int bytesPerIndex = getParentMeta().get(imageIndex).getBitsPerPixel() / 8;
 
 		final ColorTable lut = lastPlane.getColorTable();
 		final byte[] index = lastPlane.getBytes();
 
 		// Expand the index values to fill the buffer
-		if (getMetadata().getInterleavedAxisCount(imageIndex) > 0) {
+		if (getMetadata().get(imageIndex).getInterleavedAxisCount() > 0) {
 			for (int i = 0; i < index.length / bytesPerIndex && pt < buf.length; i++)
 			{
 				final int iVal =
 					DataTools.bytesToInt(index, i * bytesPerIndex, bytesPerIndex,
-						getMetadata().isLittleEndian(imageIndex));
+						getMetadata().get(imageIndex).isLittleEndian());
 				for (int j = 0; j < lutLength; j++) {
 					buf[pt++] = (byte) lut.get(j, iVal);
 				}
@@ -206,7 +206,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 				{
 					final int iVal =
 						DataTools.bytesToInt(index, i * bytesPerIndex, bytesPerIndex,
-							getMetadata().isLittleEndian(imageIndex));
+							getMetadata().get(imageIndex).isLittleEndian());
 					buf[pt++] = (byte) lut.get(j, iVal);
 				}
 			}
@@ -248,7 +248,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 		lastPlaneOffsets = Arrays.copyOf(offsets, offsets.length);
 		lastPlaneLengths = Arrays.copyOf(lengths, lengths.length);
 
-		final int cIndex = getMetadata().getAxisIndex(imageIndex, Axes.CHANNEL);
+		final int cIndex = getMetadata().get(imageIndex).getAxisIndex(Axes.CHANNEL);
 		lastPlaneOffsets[cIndex] = lastPlaneOffsets[cIndex] / lutLength;
 		lastPlaneLengths[cIndex] = lastPlaneLengths[cIndex] / lutLength;
 	}

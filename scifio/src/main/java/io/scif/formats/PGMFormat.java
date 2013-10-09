@@ -247,7 +247,7 @@ public class PGMFormat extends AbstractFormat {
 				final ByteArrayHandle handle = new ByteArrayHandle();
 				final RandomAccessOutputStream out =
 					new RandomAccessOutputStream(handle);
-				out.order(meta.isLittleEndian(imageIndex));
+				out.order(meta.get(imageIndex).isLittleEndian());
 
 				while (getStream().getFilePointer() < getStream().length()) {
 					String line = getStream().readLine().trim();
@@ -255,7 +255,7 @@ public class PGMFormat extends AbstractFormat {
 					final StringTokenizer t = new StringTokenizer(line, " ");
 					while (t.hasMoreTokens()) {
 						final int q = Integer.parseInt(t.nextToken().trim());
-						if (meta.getPixelType(imageIndex) == FormatTools.UINT16) {
+						if (meta.get(imageIndex).getPixelType() == FormatTools.UINT16) {
 							out.writeShort(q);
 						}
 						else out.writeByte(q);

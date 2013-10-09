@@ -94,15 +94,15 @@ public class FilterTest {
 			throw new FormatException(e);
 		}
 
-		long x = readerFilter.getMetadata().getAxisLength(0, Axes.X);
-		long y = readerFilter.getMetadata().getAxisLength(0, Axes.Y);
+		long x = readerFilter.getMetadata().get(0).getAxisLength(Axes.X);
+		long y = readerFilter.getMetadata().get(0).getAxisLength(Axes.Y);
 		assertEquals(512, x);
 		assertEquals(512, y);
 
 		readerFilter.setSource(id2);
 
-		x = readerFilter.getMetadata().getAxisLength(0, Axes.X);
-		y = readerFilter.getMetadata().getAxisLength(0, Axes.Y);
+		x = readerFilter.getMetadata().get(0).getAxisLength(Axes.X);
+		y = readerFilter.getMetadata().get(0).getAxisLength(Axes.Y);
 		assertEquals(256, x);
 		assertEquals(128, y);
 

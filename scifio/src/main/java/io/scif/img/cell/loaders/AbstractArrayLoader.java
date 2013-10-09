@@ -78,17 +78,17 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			int entities = 1;
 
 			// Starting indices for the planar dimensions
-			long[] planarMin = new long[meta.getAxesPlanar(0).size()];
+			long[] planarMin = new long[meta.get(0).getAxesPlanar().size()];
 			// Lengths in the planar dimensions
-			long[] planarLength = new long[meta.getAxesPlanar(0).size()];
+			long[] planarLength = new long[meta.get(0).getAxesPlanar().size()];
 			// Non-planar indices to open
-			DimRange[] npRanges = new DimRange[meta.getAxesNonPlanar(0).size()];
+			DimRange[] npRanges = new DimRange[meta.get(0).getAxesNonPlanar().size()];
 			long[] npIndices = new long[npRanges.length];
 
 			int axisIndex = 0;
 			// Get planar ranges
-			for (CalibratedAxis axis : meta.getAxesPlanar(0)) {
-				int index = meta.getAxisIndex(0, axis.type());
+			for (CalibratedAxis axis : meta.get(0).getAxesPlanar()) {
+				int index = meta.get(0).getAxisIndex(axis.type());
 
 				// Constrain on passed dims
 				if (index < dimensions.length) {
@@ -105,8 +105,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			}
 
 			axisIndex = 0;
-			for (CalibratedAxis axis : meta.getAxesNonPlanar(0)) {
-				int index = meta.getAxisIndex(0, axis.type());
+			for (CalibratedAxis axis : meta.get(0).getAxesNonPlanar()) {
+				int index = meta.get(0).getAxisIndex(axis.type());
 
 				// otherwise just make a straightforward range spanning the passed
 				// dimensional constraints
@@ -209,8 +209,10 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 		if (subRegion != null) {
 			int index = 0;
-			for (CalibratedAxis axis : reader.getMetadata().getAxesNonPlanar(0)) {
-				inSubregion = inSubregion && inRange(subRegion.getRange(axis.type()), index++);
+			for (CalibratedAxis axis : reader.getMetadata().get(0).getAxesNonPlanar())
+			{
+				inSubregion =
+					inSubregion && inRange(subRegion.getRange(axis.type()), index++);
 			}
 		}
 

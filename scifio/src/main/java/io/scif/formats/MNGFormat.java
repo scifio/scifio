@@ -120,17 +120,17 @@ public class MNGFormat extends AbstractFormat {
 
 			for (int i = 0; i < getImageCount(); i++) {
 				final String[] tokens = keys[i].split("-");
-				setAxisLength(i, Axes.X, Integer.parseInt(tokens[0]));
-				setAxisLength(i, Axes.Y, Integer.parseInt(tokens[1]));
-				setAxisLength(i, Axes.CHANNEL, Integer.parseInt(tokens[2]));
-				setPlanarAxisCount(i, getAxisLength(i, Axes.CHANNEL) > 1 ? 3 : 2);
-				setPixelType(i, Integer.parseInt(tokens[3]));
-				setMetadataComplete(i, true);
-				setIndexed(i, false);
-				setLittleEndian(i, false);
-				setFalseColor(i, false);
+				get(i).setAxisLength(Axes.X, Integer.parseInt(tokens[0]));
+				get(i).setAxisLength(Axes.Y, Integer.parseInt(tokens[1]));
+				get(i).setAxisLength(Axes.CHANNEL, Integer.parseInt(tokens[2]));
+				get(i).setPlanarAxisCount(get(i).getAxisLength(Axes.CHANNEL) > 1 ? 3 : 2);
+				get(i).setPixelType(Integer.parseInt(tokens[3]));
+				get(i).setMetadataComplete(true);
+				get(i).setIndexed(false);
+				get(i).setLittleEndian(false);
+				get(i).setFalseColor(false);
 
-				setAxisLength(i, Axes.TIME, getDatasetInfo().imageInfo.get(i).offsets
+				get(i).setAxisLength(Axes.TIME, getDatasetInfo().imageInfo.get(i).offsets
 					.size());
 			}
 		}
@@ -326,8 +326,8 @@ public class MNGFormat extends AbstractFormat {
 			// ImageIO often returns images that cannot be scaled because a
 			// BytePackedRaster is used
 			img =
-				AWTImageTools.getSubimage(img,
-					getMetadata().isLittleEndian(imageIndex), planeMin, planeMax);
+				AWTImageTools.getSubimage(img, getMetadata().get(imageIndex)
+					.isLittleEndian(), planeMin, planeMax);
 
 			plane.setData(img);
 			return plane;

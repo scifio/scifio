@@ -74,32 +74,32 @@ public class MetadataTest {
 		Metadata m = scifio.format().getFormat(id).createParser().parse(id);
 		
 		// Check getAxisType(int, int)
-		assertEquals(m.getAxis(0, 0).type(), Axes.X);
-		assertEquals(m.getAxis(0, 1).type(), Axes.Y);
-		assertEquals(m.getAxis(0, 2).type(), Axes.TIME);
-		assertEquals(m.getAxis(0, 3).type(), Axes.Z);
-		assertEquals(m.getAxis(0, 4).type(), Axes.CHANNEL);
+		assertEquals(m.get(0).getAxis(0).type(), Axes.X);
+		assertEquals(m.get(0).getAxis(1).type(), Axes.Y);
+		assertEquals(m.get(0).getAxis(2).type(), Axes.TIME);
+		assertEquals(m.get(0).getAxis(3).type(), Axes.Z);
+		assertEquals(m.get(0).getAxis(4).type(), Axes.CHANNEL);
 		
 		// Check getAxisLength(int, int)
-		assertEquals(m.getAxisLength(0, 0), 620);
-		assertEquals(m.getAxisLength(0, 1), 512);
-		assertEquals(m.getAxisLength(0, 2), 5);
-		assertEquals(m.getAxisLength(0, 3), 1);
-		assertEquals(m.getAxisLength(0, 4), 1);
+		assertEquals(m.get(0).getAxisLength(0), 620);
+		assertEquals(m.get(0).getAxisLength(1), 512);
+		assertEquals(m.get(0).getAxisLength(2), 5);
+		assertEquals(m.get(0).getAxisLength(3), 1);
+		assertEquals(m.get(0).getAxisLength(4), 1);
 		
 		// Check getAxisLength(int, AxisType)
-		assertEquals(m.getAxisLength(0, Axes.X), 620);
-		assertEquals(m.getAxisLength(0, Axes.Y), 512);
-		assertEquals(m.getAxisLength(0, Axes.TIME), 5);
-		assertEquals(m.getAxisLength(0, Axes.Z), 1);
-		assertEquals(m.getAxisLength(0, Axes.CHANNEL), 1);
+		assertEquals(m.get(0).getAxisLength(Axes.X), 620);
+		assertEquals(m.get(0).getAxisLength(Axes.Y), 512);
+		assertEquals(m.get(0).getAxisLength(Axes.TIME), 5);
+		assertEquals(m.get(0).getAxisLength(Axes.Z), 1);
+		assertEquals(m.get(0).getAxisLength(Axes.CHANNEL), 1);
 		
 		// Check getAxisIndex(int, AxisType)
-		assertEquals(m.getAxisIndex(0, Axes.X), 0);
-		assertEquals(m.getAxisIndex(0, Axes.Y), 1);
-		assertEquals(m.getAxisIndex(0, Axes.TIME), 2);
-		assertEquals(m.getAxisIndex(0, Axes.Z), 3);
-		assertEquals(m.getAxisIndex(0, Axes.CHANNEL), 4);
+		assertEquals(m.get(0).getAxisIndex(Axes.X), 0);
+		assertEquals(m.get(0).getAxisIndex(Axes.Y), 1);
+		assertEquals(m.get(0).getAxisIndex(Axes.TIME), 2);
+		assertEquals(m.get(0).getAxisIndex(Axes.Z), 3);
+		assertEquals(m.get(0).getAxisIndex(Axes.CHANNEL), 4);
 	}
 	
 	/**
@@ -114,9 +114,11 @@ public class MetadataTest {
 		
 		// Verify that, after adding an axis to a clean metadata, the axis
 		// length and type can be looked up properly
-		m.setAxisLength(0, Axes.X, 100);
-		assertEquals(m.getAxisLength(0, Axes.X), 100);
-		assertEquals(m.getAxisIndex(0, Axes.X), 0);
+		assertEquals(m.get(0).getAxisLength(Axes.X), 1);
+		assertEquals(m.get(0).getAxisIndex(Axes.X), -1);
+		m.get(0).setAxisLength(Axes.X, 100);
+		assertEquals(m.get(0).getAxisLength(Axes.X), 100);
+		assertEquals(m.get(0).getAxisIndex(Axes.X), 0);
 	}
 	
 	/**
@@ -129,11 +131,11 @@ public class MetadataTest {
 		Metadata m = scifio.format().getFormat(id).createMetadata();
 		
 		// Axis index should be -1, length 0
-		assertEquals(m.getAxisIndex(0, Axes.X), -1);
-		assertEquals(m.getAxisLength(0, Axes.X), 0);
+		assertEquals(m.get(0).getAxisLength(Axes.X), -1);
+		assertEquals(m.get(0).getAxisLength(Axes.X), 0);
 		
 		// Should throw an IndexOutOfBoundsException
-		assertEquals(m.getAxisLength(0, 0), 0);
+		assertEquals(m.get(0).getAxisLength(0), 0);
 	}
 	
 	/**
@@ -144,12 +146,12 @@ public class MetadataTest {
 		Metadata m = scifio.initializer().parseMetadata(ndId);
 
 		// Basic plane + axis length checks
-		assertEquals(2 * 6 * 10 * 4 * 8, m.getPlaneCount(0));
-		assertEquals(8, m.getAxisLength(0, SCIFIOAxes.SPECTRA));
-		assertEquals(4, m.getAxisLength(0, SCIFIOAxes.LIFETIME));
-		assertEquals(10, m.getAxisLength(0, Axes.TIME));
-		assertEquals(6, m.getAxisLength(0, Axes.CHANNEL));
-		assertEquals(2, m.getAxisLength(0, Axes.Z));
+		assertEquals(2 * 6 * 10 * 4 * 8, m.get(0).getPlaneCount());
+		assertEquals(8, m.get(0).getAxisLength(SCIFIOAxes.SPECTRA));
+		assertEquals(4, m.get(0).getAxisLength(SCIFIOAxes.LIFETIME));
+		assertEquals(10, m.get(0).getAxisLength(Axes.TIME));
+		assertEquals(6, m.get(0).getAxisLength(Axes.CHANNEL));
+		assertEquals(2, m.get(0).getAxisLength(Axes.Z));
 	}
 
 	/**
@@ -163,11 +165,11 @@ public class MetadataTest {
 		// Plane index lookup checks
 		long[] pos = { 1, 3, 5, 0, 0 };
 		assertEquals(1 + (3 * 2) + (5 * 6 * 2), FormatTools.positionToRaster(m
-			.getAxesLengthsNonPlanar(0), pos));
+			.get(0).getAxesLengthsNonPlanar(), pos));
 
 		pos = new long[] { 0, 0, 3, 3, 7 };
 		assertEquals((3 * 6 * 2) + (3 * 10 * 6 * 2) + (7 * 4 * 10 * 6 * 2),
-			FormatTools.positionToRaster(m.getAxesLengthsNonPlanar(0), pos));
+			FormatTools.positionToRaster(m.get(0).getAxesLengthsNonPlanar(), pos));
 	}
 
 	/**
@@ -179,10 +181,10 @@ public class MetadataTest {
 		Metadata m = scifio.initializer().parseMetadata(ndId);
 
 		// Try adjusting the planar axis count.
-		m.setPlanarAxisCount(0, 3);
-		assertEquals(6 * 10 * 4 * 8, m.getPlaneCount(0));
-		m.setPlanarAxisCount(0, 4);
-		assertEquals(10 * 4 * 8, m.getPlaneCount(0));
+		m.get(0).setPlanarAxisCount(3);
+		assertEquals(6 * 10 * 4 * 8, m.get(0).getPlaneCount());
+		m.get(0).setPlanarAxisCount(4);
+		assertEquals(10 * 4 * 8, m.get(0).getPlaneCount());
 	}
 
 	/**
@@ -193,20 +195,20 @@ public class MetadataTest {
 	public void testNDFlags() throws FormatException, IOException {
 		Metadata m = scifio.initializer().parseMetadata(ndId);
 		// Check multichannel. C index < planar axis count, so should be false
-		assertFalse(m.isMultichannel(0));
+		assertFalse(m.get(0).isMultichannel());
 		// Check the interleaved flag
 		// XY...C.. so not interleaved
-		assertFalse(m.getInterleavedAxisCount(0) > 0);
-		m.setPlanarAxisCount(0, 4);
+		assertFalse(m.get(0).getInterleavedAxisCount() > 0);
+		m.get(0).setPlanarAxisCount(4);
 		// Now multichannel
-		assertTrue(m.isMultichannel(0));
+		assertTrue(m.get(0).isMultichannel());
 		// But still XY...C
-		assertFalse(m.getInterleavedAxisCount(0) > 0);
-		m.setAxisType(0, 0, Axes.CHANNEL);
-		m.setInterleavedAxisCount(0, 1);
+		assertFalse(m.get(0).getInterleavedAxisCount() > 0);
+		m.get(0).setAxisType(0, Axes.CHANNEL);
+		m.get(0).setInterleavedAxisCount(1);
 		// Now we're CXY, so interleaved
-		assertEquals(1, m.getAxisIndex(0, Axes.X));
-		assertEquals(2, m.getAxisIndex(0, Axes.Y));
-		assertTrue(m.getInterleavedAxisCount(0) > 0);
+		assertEquals(1, m.get(0).getAxisIndex(Axes.X));
+		assertEquals(2, m.get(0).getAxisIndex(Axes.Y));
+		assertTrue(m.get(0).getInterleavedAxisCount() > 0);
 	}
 }

@@ -173,13 +173,13 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		{
 			final Metadata meta = getMetadata();
 			plane.setData(AWTImageTools.getSubimage(meta.getImg(), meta
-				.isLittleEndian(imageIndex), planeMin, planeMax));
+				.get(imageIndex).isLittleEndian(), planeMin, planeMax));
 			return plane;
 		}
 
 		@Override
 		public long getOptimalTileHeight(final int imageIndex) {
-			return getMetadata().getAxisLength(imageIndex, Axes.Y);
+			return getMetadata().get(imageIndex).getAxisLength(Axes.Y);
 		}
 	}
 
@@ -213,14 +213,14 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			BufferedImage img = null;
 
 			if (!(plane instanceof BufferedImagePlane)) {
-				final int type = meta.getPixelType(imageIndex);
+				final int type = meta.get(imageIndex).getPixelType();
 				img =
-					AWTImageTools.makeImage(plane.getBytes(), (int) meta.getAxisLength(
-						imageIndex, Axes.X), (int) meta.getAxisLength(0, Axes.Y),
-						(int) meta.getAxisLength(imageIndex, Axes.CHANNEL), meta
-						.getInterleavedAxisCount(imageIndex) > 0, FormatTools.getBytesPerPixel(type),
-						FormatTools.isFloatingPoint(type), meta.isLittleEndian(imageIndex),
-						FormatTools.isSigned(type));
+					AWTImageTools.makeImage(plane.getBytes(), (int) meta.get(imageIndex)
+						.getAxisLength(Axes.X), (int) meta.get(imageIndex).getAxisLength(
+						Axes.Y), (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL),
+						meta.get(imageIndex).getInterleavedAxisCount() > 0, FormatTools
+							.getBytesPerPixel(type), FormatTools.isFloatingPoint(type), meta
+							.get(imageIndex).isLittleEndian(), FormatTools.isSigned(type));
 			}
 			else {
 				img = ((BufferedImagePlane) plane).getData();
@@ -248,11 +248,11 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			final Metadata dest)
 		{
 			dest.createImageMetadata(1);
-			dest.setAxisLength(0, Axes.X, source.getAxisLength(0, Axes.X));
-			dest.setAxisLength(0, Axes.Y, source.getAxisLength(0, Axes.Y));
-			dest
-				.setAxisLength(0, Axes.CHANNEL, source.getAxisLength(0, Axes.CHANNEL));
-			dest.setPixelType(0, source.getPixelType(0));
+			dest.get(0).setAxisLength(Axes.X, source.get(0).getAxisLength(Axes.X));
+			dest.get(0).setAxisLength(Axes.Y, source.get(0).getAxisLength(Axes.Y));
+			dest.get(0).setAxisLength(Axes.CHANNEL,
+				source.get(0).getAxisLength(Axes.CHANNEL));
+			dest.get(0).setPixelType(source.get(0).getPixelType());
 		}
 	}
 }

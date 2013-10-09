@@ -153,7 +153,7 @@ public class BMPFormat extends AbstractFormat {
 		public void populateImageMetadata() {
 			log().info("Populating metadata");
 
-			int bpp = getBitsPerPixel(0);
+			int bpp = get(0).getBitsPerPixel();
 			final ImageMetadata iMeta = get(0);
 			iMeta.setAxisTypes(Axes.X, Axes.Y);
 			iMeta.setPlanarAxisCount(1);
@@ -361,8 +361,8 @@ public class BMPFormat extends AbstractFormat {
 			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
-			final int xIndex = meta.getAxisIndex(imageIndex, Axes.X);
-			final int yIndex = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xIndex],
 								y = (int) planeMin[yIndex],
 								w = (int) planeMax[xIndex],
@@ -370,10 +370,10 @@ public class BMPFormat extends AbstractFormat {
 
 			final byte[] buf = plane.getData();
 			final int compression = meta.getCompression();
-			final int bpp = meta.getBitsPerPixel(imageIndex);
-			final int sizeX = (int)meta.getAxisLength(imageIndex, Axes.X);
-			final int sizeY = (int)meta.getAxisLength(imageIndex, Axes.Y);
-			final int sizeC = (int)meta.getAxisLength(imageIndex, Axes.CHANNEL);
+			final int bpp = meta.get(imageIndex).getBitsPerPixel();
+			final int sizeX = (int)meta.get(imageIndex).getAxisLength(Axes.X);
+			final int sizeY = (int)meta.get(imageIndex).getAxisLength(Axes.Y);
+			final int sizeC = (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
@@ -386,7 +386,7 @@ public class BMPFormat extends AbstractFormat {
 			}
 
 			final int rowsToSkip = meta.isInvertY() ? y : sizeY - (h + y);
-			final int rowLength = sizeX * (meta.isIndexed(imageIndex) ? 1 : sizeC);
+			final int rowLength = sizeX * (meta.get(imageIndex).isIndexed() ? 1 : sizeC);
 			getStream().seek(meta.getGlobal() + rowsToSkip * rowLength);
 
 			int pad = ((rowLength * bpp) / 8) % 2;
@@ -443,9 +443,10 @@ public class BMPFormat extends AbstractFormat {
 				}
 			}
 
-			if (meta.getAxisLength(imageIndex, Axes.CHANNEL) > 1) {
-				ImageTools.bgrToRgb(buf, meta.getInterleavedAxisCount(imageIndex) > 0,
-					1, (int) meta.getAxisLength(imageIndex, Axes.CHANNEL));
+			if (meta.get(imageIndex).getAxisLength(Axes.CHANNEL) > 1) {
+				ImageTools.bgrToRgb(buf,
+					meta.get(imageIndex).getInterleavedAxisCount() > 0, 1, (int) meta
+						.get(imageIndex).getAxisLength(Axes.CHANNEL));
 			}
 			return plane;
 		}

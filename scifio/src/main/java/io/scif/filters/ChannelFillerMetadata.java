@@ -102,7 +102,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 		for (int i = 0; i < m.getImageCount(); i++) {
 			final ImageMetadata iMeta = new DefaultImageMetadata(m.get(i));
 
-			if (m.isIndexed(i)) {
+			if (m.get(i).isIndexed()) {
 				iMeta.setIndexed(false);
 				ColorTable cTable = null;
 

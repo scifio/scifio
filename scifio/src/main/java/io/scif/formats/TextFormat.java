@@ -343,7 +343,7 @@ public class TextFormat extends AbstractFormat {
 			final int x = TextUtils.getX(rowData, meta);
 			final int y = TextUtils.getY(rowData, meta);
 			int c = 0;
-			final int index = (int)meta.getAxisLength(0, Axes.X) * y + x;
+			final int index = (int)meta.get(0).getAxisLength(Axes.X) * y + x;
 			for (int i = 0; i < meta.getRowLength(); i++) {
 				if (i == meta.getxIndex() || i == meta.getyIndex()) continue;
 				meta.getData()[c++][index] = (float) rowData[i];
@@ -421,8 +421,8 @@ public class TextFormat extends AbstractFormat {
 
 			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
-			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
-			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xAxis],
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],
@@ -434,7 +434,7 @@ public class TextFormat extends AbstractFormat {
 				final int yy = y + j;
 				for (int i = 0; i < w; i++) {
 					final int xx = x + i;
-					final int index = yy * (int)meta.getAxisLength(0, Axes.X) + xx;
+					final int index = yy * (int)meta.get(0).getAxisLength(Axes.X) + xx;
 					final int bits = Float.floatToIntBits(planeFloats[index]);
 					DataTools.unpackBytes(bits, buf, q, 4, TextUtils.LITTLE_ENDIAN);
 					q += 4;
@@ -508,14 +508,14 @@ public class TextFormat extends AbstractFormat {
 						throw new FormatException("Row #" + meta.getRow() +
 							": invalid X: " + x);
 					}
-					if (meta.getAxisLength(0, Axes.X) <= x) meta.setAxisLength(0, Axes.X,
+					if (meta.get(0).getAxisLength(Axes.X) <= x) meta.get(0).setAxisLength(Axes.X,
 						x + 1);
 					final int y = getY(rowData, meta);
 					if (y < 0) {
 						throw new FormatException("Row #" + meta.getRow() +
 							": invalid Y: " + x);
 					}
-					if (meta.getAxisLength(0, Axes.Y) <= y) meta.setAxisLength(0, Axes.Y,
+					if (meta.get(0).getAxisLength(Axes.Y) <= y) meta.get(0).setAxisLength(Axes.Y,
 						y + 1);
 				}
 

@@ -646,9 +646,9 @@ public class MicromanagerFormat extends AbstractFormat {
 
 			final String[] blocks = baseTiff.split("_");
 			final StringBuffer filename = new StringBuffer();
-			for (int t = 0; t < meta.getAxisLength(posIndex, Axes.TIME); t++) {
-				for (int c = 0; c < meta.getAxisLength(posIndex, Axes.CHANNEL); c++) {
-					for (int z = 0; z < meta.getAxisLength(posIndex, Axes.Z); z++) {
+			for (int t = 0; t < meta.get(posIndex).getAxisLength(Axes.TIME); t++) {
+				for (int c = 0; c < meta.get(posIndex).getAxisLength(Axes.CHANNEL); c++) {
+					for (int z = 0; z < meta.get(posIndex).getAxisLength(Axes.Z); z++) {
 						// file names are of format:
 						// img_<T>_<channel name>_<T>.tif
 						filename.append(prefix);

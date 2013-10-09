@@ -81,7 +81,7 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 		throws FormatException, IOException
 	{
 		final long[] planeMin =
-			new long[reader.getMetadata().getAxesPlanar(imageIndex).size()];
+			new long[reader.getMetadata().get(imageIndex).getAxesPlanar().size()];
 		final long[] planeMax = new long[planeMin.length];
 		for (int i = 0; i < planeMax.length; i++)
 			planeMax[i] = 1;

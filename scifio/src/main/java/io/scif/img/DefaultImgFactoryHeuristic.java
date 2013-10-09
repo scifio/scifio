@@ -95,8 +95,8 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 
 		// divide by 1024 to compare to max_size and avoid overflow
 		final long planeSize =
-			m.getAxisLength(0, Axes.X) * m.getAxisLength(0, Axes.Y) *
-				FormatTools.getBytesPerPixel(m.getPixelType(0));
+			m.get(0).getAxisLength(Axes.X) * m.get(0).getAxisLength(Axes.Y) *
+				FormatTools.getBytesPerPixel(m.get(0).getPixelType());
 
 		final boolean fitsInMemory = availableMem > datasetSize;
 

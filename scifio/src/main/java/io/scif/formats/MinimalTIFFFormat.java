@@ -236,6 +236,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 				ms0.setAxisLength(Axes.X, (int) firstIFD.getImageWidth());
 				ms0.setAxisLength(Axes.Y, (int) firstIFD.getImageLength());
+				if (thumbnailIFDs != null && thumbnailIFDs.size() > 0) {
+					ms0.setThumbSizeX(thumbnailIFDs.get(0).getImageWidth());
+					ms0.setThumbSizeY(thumbnailIFDs.get(0).getImageLength());
+				}
 
 				if (samples > 1) {
 					ms0.setAxisLength(Axes.CHANNEL, samples);
@@ -280,6 +284,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 						ms.setAxisLength(Axes.Y, (int) ifd.getImageLength());
 						ms.setAxisLength(Axes.TIME, ms0.getAxisLength(Axes.TIME));
 						ms.setThumbnail(true);
+						ms.setThumbSizeX(ms0.getThumbSizeX());
+						ms.setThumbSizeY(ms0.getThumbSizeY());
 						// TODO subresolutions
 						// ms.resolutionCount = 1;
 					}
@@ -289,32 +295,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			catch (final FormatException e) {
 				log().error("Error populating TIFF image metadata", e);
 			}
-		}
-
-		@Override
-		public long getThumbSizeX(final int imageIndex) {
-			if (thumbnailIFDs != null && thumbnailIFDs.size() > 0) {
-				try {
-					return thumbnailIFDs.get(0).getImageWidth();
-				}
-				catch (final FormatException e) {
-					log().debug("Could not retrieve thumbnail width", e);
-				}
-			}
-			return super.getThumbSizeX(imageIndex);
-		}
-
-		@Override
-		public long getThumbSizeY(final int imageIndex) {
-			if (thumbnailIFDs != null && thumbnailIFDs.size() > 0) {
-				try {
-					return thumbnailIFDs.get(0).getImageLength();
-				}
-				catch (final FormatException e) {
-					log().debug("Could not retrieve thumbnail height", e);
-				}
-			}
-			return super.getThumbSizeY(imageIndex);
 		}
 
 		@Override
@@ -605,22 +585,23 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			while ((b % 8) != 0)
 				b++;
 			b /= 8;
-			if (b != FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex)) ||
-				bps.length != meta.getAxisLength(imageIndex, Axes.CHANNEL))
+			if (b != FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType()) ||
+				bps.length != meta.get(imageIndex).getAxisLength(Axes.CHANNEL))
 			{
 				return super.openThumbPlane(imageIndex, planeIndex);
 			}
 
 			byte[] buf =
-				new byte[(int) (meta.getThumbSizeX(imageIndex) *
-					meta.getThumbSizeY(imageIndex) *
-					meta.getAxisLength(imageIndex, Axes.CHANNEL) * FormatTools
-					.getBytesPerPixel(meta.getPixelType(imageIndex)))];
+				new byte[(int) (meta.get(imageIndex).getThumbSizeX() *
+					meta.get(imageIndex).getThumbSizeY() *
+					meta.get(imageIndex).getAxisLength(Axes.CHANNEL) * FormatTools
+					.getBytesPerPixel(meta.get(imageIndex).getPixelType()))];
 
 			final ByteArrayPlane plane = new ByteArrayPlane(getContext());
-			buf = tiffParser.getSamples(thumbnailIFDs.get((int)planeIndex), buf);
-			plane.populate(meta.get(imageIndex), buf, new long[2], new long[]{meta
-				.getThumbSizeX(imageIndex), meta.getThumbSizeY(imageIndex)});
+			buf = tiffParser.getSamples(thumbnailIFDs.get((int) planeIndex), buf);
+			plane.populate(meta.get(imageIndex), buf, new long[2], new long[] {
+				meta.get(imageIndex).getThumbSizeX(),
+				meta.get(imageIndex).getThumbSizeY() });
 
 			return plane;
 		}
@@ -634,8 +615,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			final byte[] buf = plane.getBytes();
 			final IFDList ifds = meta.getIfds();
 			final TiffParser tiffParser = meta.getTiffParser();
-			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
-			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xAxis],
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],
@@ -660,15 +641,15 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			tiffParser.getSamples(ifd, buf, x, y, w, h);
 
 			final boolean float16 =
-				meta.getPixelType(imageIndex) == FormatTools.FLOAT &&
+				meta.get(imageIndex).getPixelType() == FormatTools.FLOAT &&
 					firstIFD.getBitsPerSample()[0] == 16;
 			final boolean float24 =
-				meta.getPixelType(imageIndex) == FormatTools.FLOAT &&
+				meta.get(imageIndex).getPixelType() == FormatTools.FLOAT &&
 					firstIFD.getBitsPerSample()[0] == 24;
 
 			if (float16 || float24) {
 				final int nPixels =
-					w * h * (int) meta.getAxisLength(imageIndex, Axes.CHANNEL);
+					w * h * (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 				final int nBytes = float16 ? 2 : 3;
 				final int mantissaBits = float16 ? 10 : 16;
 				final int exponentBits = float16 ? 5 : 7;
@@ -679,7 +660,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				for (int i = 0; i < nPixels; i++) {
 					final int v =
 						DataTools.bytesToInt(buf, i * nBytes, nBytes, meta
-							.isLittleEndian(imageIndex));
+							.get(imageIndex).isLittleEndian());
 					final int sign = v >> bits;
 					int exponent =
 						(v >> mantissaBits) & (int) (Math.pow(2, exponentBits) - 1);
@@ -707,7 +688,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 					final int value = (sign << 31) | (exponent << 23) | mantissa;
 					DataTools.unpackBytes(value, newBuf, i * 4, 4, meta
-						.isLittleEndian(imageIndex));
+						.get(imageIndex).isLittleEndian());
 				}
 				System.arraycopy(newBuf, 0, buf, 0, newBuf.length);
 			}

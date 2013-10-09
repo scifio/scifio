@@ -72,10 +72,10 @@ public class PlanarAccessConverter extends AbstractPlaneConverter {
 
 		@SuppressWarnings("rawtypes")
 		final PlanarAccess planarAccess = imgUtilService.getPlanarAccess(planarImg);
-		final int pixelType = m.getPixelType(imageIndex);
+		final int pixelType = m.get(imageIndex).getPixelType();
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
 		final boolean fp = FormatTools.isFloatingPoint(pixelType);
-		final boolean little = m.isLittleEndian(imageIndex);
+		final boolean little = m.get(imageIndex).isLittleEndian();
 		Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
 		if (planeArray == plane) {
 			// array was returned by reference; make a copy

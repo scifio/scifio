@@ -416,9 +416,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final PlanarImg<T, ?> planarImg = (PlanarImg<T, ?>) planarAccess;
 		final int planeCount = planarImg.numSlices();
 		final int rgbChannelCount =
-			(int) w.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+			(int) w.getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 		final boolean interleaved =
-			w.getMetadata().getInterleavedAxisCount(imageIndex) > 0;
+			w.getMetadata().get(imageIndex).getInterleavedAxisCount() > 0;
 
 		if (img.numDimensions() > 0) {
 			final Class<?> arrayType =
@@ -450,7 +450,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 					final long[] planarMin =
 						SCIFIOMetadataTools.modifyPlanarXY(imageIndex, meta, 0l, 0l);
-					final long[] planarLengths = meta.getAxesLengthsPlanar(imageIndex);
+					final long[] planarLengths = meta.get(imageIndex).getAxesLengthsPlanar();
 					final ByteArrayPlane destPlane =
 						new ByteArrayPlane(getContext(), meta.get(imageIndex), planarMin,
 							planarLengths);
@@ -490,7 +490,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 						if (interleaved) {
 							final int bpp =
-								FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex));
+								FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
 
 							// TODO: Assign all elements in a for loop rather than
 							// using many small System.arraycopy calls. Calling

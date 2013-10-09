@@ -391,15 +391,15 @@ public class OBFFormat extends AbstractFormat {
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buffer = plane.getBytes();
-			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
-			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xAxis],
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],
 								h = (int) planeMax[yAxis];
-			final int rows = (int)meta.getAxisLength(imageIndex, Axes.Y);
-			final int columns = (int)meta.getAxisLength(imageIndex, Axes.X);
-			final int bytesPerPixel = meta.getBitsPerPixel(imageIndex) / 8;
+			final int rows = (int)meta.get(imageIndex).getAxisLength(Axes.Y);
+			final int columns = (int)meta.get(imageIndex).getAxisLength(Axes.X);
+			final int bytesPerPixel = meta.get(imageIndex).getBitsPerPixel() / 8;
 
 			final Stack stack = meta.getStacks().get(imageIndex);
 			if (stack.isCompression()) {

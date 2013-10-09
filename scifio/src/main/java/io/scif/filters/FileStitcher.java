@@ -380,12 +380,12 @@ public class FileStitcher extends AbstractReaderFilter {
 		// return a blank image to cover for the fact that
 		// this file does not contain enough image planes
 		long[] thumbPlaneOffsets =
-			new long[getParentMeta().getAxesPlanar(0).size()];
-		long[] thumbPlaneBounds = getParentMeta().getAxesLengths(0);
-		thumbPlaneBounds[getParentMeta().getAxisIndex(0, Axes.X)] =
-			getParentMeta().getThumbSizeX(0);
-		thumbPlaneBounds[getParentMeta().getAxisIndex(0, Axes.Y)] =
-			getParentMeta().getThumbSizeY(0);
+			new long[getParentMeta().get(0).getAxesPlanar().size()];
+		long[] thumbPlaneBounds = getParentMeta().get(0).getAxesLengths();
+		thumbPlaneBounds[getParentMeta().get(0).getAxisIndex(Axes.X)] =
+			getParentMeta().get(0).getThumbSizeX();
+		thumbPlaneBounds[getParentMeta().get(0).getAxisIndex(Axes.Y)] =
+			getParentMeta().get(0).getThumbSizeY();
 		return getParent().createPlane(thumbPlaneOffsets, thumbPlaneBounds);
 	}
 

@@ -476,7 +476,7 @@ public class NRRDFormat extends AbstractFormat {
 
 		@Override
 		public long getOptimalTileHeight(final int imageIndex) {
-			return getMetadata().getAxisLength(imageIndex, Axes.Y);
+			return getMetadata().get(imageIndex).getAxisLength(Axes.Y);
 		}
 
 		@Override
