@@ -40,7 +40,7 @@ import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.fail;
 import io.scif.Reader;
 import io.scif.SCIFIO;
-import io.scif.filters.ChannelSeparator;
+import io.scif.filters.PlaneSeparator;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 
 import java.io.IOException;
@@ -62,7 +62,7 @@ import org.testng.annotations.Test;
  * <p>
  * Note: RGB output sizes should be the same as uint8 because the RGB channel
  * count is not taken into consideration for plane size, because
- * {@link ChannelSeparator} is assumed.
+ * {@link PlaneSeparator} is assumed.
  * </p>
  * 
  * @author Mark Hiner
@@ -86,7 +86,7 @@ public class SCIFIOCellImgFactoryTest {
 
 	@Test
 	public void cellSmallSizePlaneTest() {
-		final String id = "cellTest&sizeX=13&sizeY=17.fake";
+		final String id = "cellTest&lengths=13,17.fake";
 		final Reader reader = getReader(id);
 
 		// test that small image plane tile size matches plane size
@@ -106,7 +106,7 @@ public class SCIFIOCellImgFactoryTest {
 
 	@Test
 	public void cellTileLayoutTest() {
-		final String id = "cellTest&sizeX=2468&sizeY=1817.fake";
+		final String id = "cellTest&lengths=2468,1817.fake";
 		final Reader reader = getReader(id);
 
 		// Notably, a 3 x 3 tile structure (1320 x 1530) would be closer to
@@ -119,7 +119,7 @@ public class SCIFIOCellImgFactoryTest {
 
 	@Test
 	public void cellMediumPlaneSizeTest() {
-		final String id = "cellTest&sizeX=512&sizeY=512.fake";
+		final String id = "cellTest&lengths=512,512.fake";
 		final Reader reader = getReader(id);
 
 		// Tile == image size, should come back unchanged
@@ -154,7 +154,7 @@ public class SCIFIOCellImgFactoryTest {
 
 	@Test
 	public void cellMediumPlaneSizeRGBTest() {
-		final String id = "cellTest&sizeX=512&sizeY=512&RGB=3.fake";
+		final String id = "cellTest&lengths=512,512,3&axes=X,Y,Channel&planarDims=3.fake";
 		final Reader reader = getReader(id);
 
 		// NB: All these tests should be identical as
@@ -177,7 +177,7 @@ public class SCIFIOCellImgFactoryTest {
 
 	@Test
 	public void cellMediumPlaneSize16BitTest() {
-		final String id = "cellTest&sizeX=512&sizeY=512&pixelType=int16.fake";
+		final String id = "cellTest&lengths=512,512&pixelType=int16.fake";
 		final Reader reader = getReader(id);
 
 		// NB: These tests are identical to
@@ -201,7 +201,7 @@ public class SCIFIOCellImgFactoryTest {
 
 	@Test
 	public void cellLargePlaneSizeTest() {
-		final String id = "cellTest&sizeX=4096&sizeY=4096.fake";
+		final String id = "cellTest&lengths=4096,4096.fake";
 		final Reader reader = getReader(id);
 
 		// even factor plane, expands horizontally
@@ -228,7 +228,7 @@ public class SCIFIOCellImgFactoryTest {
 
 	@Test
 	public void cellLargePlaneSizeRGBTest() {
-		final String id = "cellTest&sizeX=4096&sizeY=4096&RGB=3.fake";
+		final String id = "cellTest&lengths=4096,4096,3&axes=X,Y,Channel&planarDims=3.fake";
 		final Reader reader = getReader(id);
 
 		// NB: These tests are identical to
@@ -248,7 +248,7 @@ public class SCIFIOCellImgFactoryTest {
 
 	@Test
 	public void cellLargePlaneSize16BitTest() {
-		final String id = "cellTest&sizeX=4096&sizeY=4096&pixelType=int16.fake";
+		final String id = "cellTest&lengths=4096,4096&pixelType=int16.fake";
 		final Reader reader = getReader(id);
 
 		// NB: These are the same tile sizes as

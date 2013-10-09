@@ -36,9 +36,18 @@
 
 package io.scif.filters;
 
+import java.io.IOException;
+
+import io.scif.DefaultImageMetadata;
+import io.scif.FormatException;
+import io.scif.HasColorTable;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
+import io.scif.Reader;
+import io.scif.util.FormatTools;
+import net.imglib2.display.ArrayColorTable;
+import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
@@ -62,8 +71,9 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 
 	// -- Fields --
 
-	private Boolean filled = null;
-
+	/**
+	 * Number of components in the wrapped color table
+	 */
 	private int lutLength;
 
 	// -- Constructors --
@@ -76,48 +86,75 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 		super(metadata);
 	}
 
-	// -- ChannelFillerMetadata API Methods --
+	// -- ChannelFiller API methods --
 
-	/** Returns true if the indices are being factored out. */
-	public boolean isFilled(final int imageIndex) {
-		if (!isIndexed(imageIndex)) return false; // cannot fill non-indexed color
-		if (lutLength < 1) return false; // cannot fill when LUTs are missing
-		return filled == null ? !isFalseColor(imageIndex) : filled;
-	}
-
-	/** Toggles whether the indices should be factored out. */
-	public void setFilled(final boolean filled) {
-		this.filled = filled;
-	}
-
-	/**
-	 * @param length - Number of components in the lut
-	 */
-	public void setLutLength(final int length) {
-		lutLength = length;
+	public int getLutLength() {
+		return lutLength;
 	}
 
 	// -- Metadata API methods --
-
+	
 	@Override
-	public boolean isRGB(final int imageIndex) {
-		if (!isFilled(imageIndex)) return super.isRGB(imageIndex);
-		return getRGBChannelCount(imageIndex) > 1;
+	public void populateImageMetadata() {
+		final Metadata m = unwrap();
+		createImageMetadata(0);
+
+		for (int i = 0; i < m.getImageCount(); i++) {
+			final ImageMetadata iMeta = new DefaultImageMetadata(m.get(i));
+
+			if (m.isIndexed(i)) {
+				iMeta.setIndexed(false);
+				ColorTable cTable = null;
+
+				// Extract the color table. If the Metadata has one attached we
+				// can access it directly
+				if (HasColorTable.class.isAssignableFrom(m.getClass())) {
+					cTable = ((HasColorTable) m).getColorTable(i, 0);
+				}
+				// Otherwise we have to open a plane
+				else {
+					Reader r = null;
+					try {
+						r =
+							scifio().initializer().initializeReader(
+								m.getSource().getFileName(), true);
+						cTable = r.openPlane(0, 0).getColorTable();
+						r.close();
+					}
+					catch (FormatException e) {
+						throw new IllegalArgumentException(
+							"ChannelFiller failed, could not open ColorTable for an indexed dataset",
+							e);
+					}
+					catch (IOException e) {
+						throw new IllegalArgumentException(
+							"ChannelFiller failed, could not open ColorTable for an indexed dataset",
+							e);
+					}
+				}
+				lutLength = cTable.getComponentCount();
+
+				// Attempt to update the pixel type based on the color table type
+				if (ArrayColorTable.class.isAssignableFrom(cTable.getClass())) {
+					int bitsPerElement = ((ArrayColorTable<?>) cTable).getBits();
+					boolean signed = FormatTools.isSigned(iMeta.getPixelType());
+					boolean floating = FormatTools.isFloatingPoint(iMeta.getPixelType());
+
+					try {
+						iMeta.setPixelType(FormatTools.pixelTypeFromBytes(
+							bitsPerElement / 8, signed, floating));
+					}
+					catch (FormatException e) {
+						log().warn("Could not update pixel type of ChannelFiller metadata.");
+					}
+					
+				}
+				
+				iMeta.setAxisLength(Axes.CHANNEL, iMeta.getAxisLength(Axes.CHANNEL) *
+					lutLength);
+			}
+
+			add(iMeta, false);
+		}
 	}
-
-	@Override
-	public boolean isIndexed(final int imageIndex) {
-		if (!isFilled(imageIndex)) return super.isIndexed(imageIndex);
-		return false;
-	}
-
-	@Override
-	public int getAxisLength(final int imageIndex, final AxisType t) {
-		final int length = unwrap().getAxisLength(imageIndex, t);
-
-		if (!t.equals(Axes.CHANNEL)) return length;
-
-		return (!isFilled(imageIndex)) ? length : length * lutLength;
-	}
-
 }

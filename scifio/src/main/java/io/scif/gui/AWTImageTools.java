@@ -38,6 +38,7 @@ package io.scif.gui;
 
 import io.scif.BufferedImagePlane;
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
@@ -84,6 +85,7 @@ import java.util.Hashtable;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
+import net.imglib2.meta.Axes;
 
 /**
  * A utility class with convenience methods for manipulating images in
@@ -617,9 +619,13 @@ public final class AWTImageTools {
 	 *          <li>FormatTools.DOUBLE</li>
 	 *          </ul>
 	 */
-	public static BufferedImage blankImage(final int w, final int h, final int c,
-		final int type)
+	public static BufferedImage blankImage(final ImageMetadata meta,
+		final long[] axes, final int type)
 	{
+		final XYCTuple xyc = axesToXYC(meta, axes);
+		final int c = xyc.c();
+		final int w = xyc.x();
+		final int h = xyc.y();
 		switch (type) {
 			case FormatTools.INT8:
 				return makeImage(new byte[c][w * h], w, h, true);
@@ -742,15 +748,17 @@ public final class AWTImageTools {
 	 * from the provided Reader's Metadata.
 	 */
 	public static BufferedImage openImage(final Plane plane, final Reader r,
-		final int w, final int h, final int imageIndex) throws FormatException,
+		long[] axes, final int imageIndex) throws FormatException,
 		IOException
 	{
 		final Metadata meta = r.getMetadata();
-
+		final XYCTuple whc = axesToXYC(meta.get(imageIndex), axes);
+		final int w = whc.x();
+		final int h = whc.y();
+		final int rgbChanCount = whc.c();
 		final int pixelType = meta.getPixelType(imageIndex);
 		final boolean little = meta.isLittleEndian(imageIndex);
 		final boolean normal = r.isNormalized();
-		final int rgbChanCount = meta.getRGBChannelCount(imageIndex);
 		final boolean interleaved = meta.isInterleaved(imageIndex);
 		final boolean indexed = meta.isIndexed(imageIndex);
 
@@ -846,12 +854,12 @@ public final class AWTImageTools {
 	 * @throws IOException
 	 */
 	public static BufferedImage openThumbImage(final Plane plane, final Reader r,
-		final int imageIndex, final int w, final int h, final int thumbSizeX,
+		final int imageIndex, final long[] axes, final int thumbSizeX,
 		final int thumbSizeY, final boolean pad) throws FormatException,
 		IOException
 	{
 
-		BufferedImage img = AWTImageTools.openImage(plane, r, w, h, imageIndex);
+		BufferedImage img = AWTImageTools.openImage(plane, r, axes, imageIndex);
 		img = AWTImageTools.makeUnsigned(img);
 		img = AWTImageTools.scale(img, thumbSizeX, thumbSizeY, pad);
 
@@ -1430,6 +1438,13 @@ public final class AWTImageTools {
 	}
 
 	// -- Image manipulation --
+	/** Returns a subimage of the specified image. */
+	public static BufferedImage getSubimage(final BufferedImage image,
+		final boolean littleEndian, final long[] planeMin, final long[] planeMax)
+	{
+		return getSubimage(image, littleEndian, (int) planeMin[0],
+			(int) planeMin[1], (int) planeMax[0], (int) planeMax[1]);
+	}
 
 	/** Returns a subimage of the specified image. */
 	public static BufferedImage getSubimage(final BufferedImage image,
@@ -2073,5 +2088,66 @@ public final class AWTImageTools {
 		lut[1] = m.getGreens();
 		lut[2] = m.getBlues();
 		return lut;
+	}
+	
+
+  // -- Helper methods --
+
+	private static XYCTuple axesToXYC(final ImageMetadata meta,
+		final long[] axisLengths)
+	{
+		long x = 1, y = 1, c = 1;
+		if (meta.isInterleaved()) {
+			// compress the non-XY planar axes
+			for (int i = 0; i < axisLengths.length; i++) {
+				if (meta.getAxisIndex(Axes.X) == i) {
+					x = axisLengths[i];
+				}
+				else if (meta.getAxisIndex(Axes.Y) == i) {
+					y = axisLengths[i];
+				}
+				else {
+					c *= axisLengths[i];
+				}
+			}
+		}
+		else {
+			x = axisLengths[meta.getAxisIndex(Axes.X)];
+			y = axisLengths[meta.getAxisIndex(Axes.Y)];
+			// pull the channel dimension if it's a planar axis.
+			int cIndex = meta.getAxisIndex(Axes.CHANNEL);
+			if (cIndex < meta.getPlanarAxisCount()) {
+				c = axisLengths[meta.getAxisIndex(Axes.CHANNEL)];
+			}
+
+			if (c <= 0) c = 1;
+		}
+
+		return new XYCTuple(x, y, c);
+	}
+
+	// -- Helper class --
+
+	private static class XYCTuple {
+
+		private final long x, y, c;
+
+		public XYCTuple(final long x, final long y, final long c) {
+			this.x = x;
+			this.y = y;
+			this.c = c;
+		}
+
+		public int x() {
+			return (int) x;
+		}
+
+		public int y() {
+			return (int) y;
+		}
+
+		public int c() {
+			return (int) c;
+		}
 	}
 }

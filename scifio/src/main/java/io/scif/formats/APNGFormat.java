@@ -57,6 +57,7 @@ import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.io.StreamTools;
 import io.scif.util.FormatTools;
+import io.scif.util.SCIFIOMetadataTools;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
@@ -153,12 +154,33 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- APNGMetadata API Methods --
 
+		/**
+		 * @return true iff this dataset's pixel type is signed
+		 */
 		public boolean isSigned() {
 			return signed;
 		}
 
+		/**
+		 * Sets whether this dataset's pixel type is signed or not.
+		 */
 		public void setSigned(final boolean signed) {
 			this.signed = signed;
+		}
+
+		/**
+		 * @return true iff the first frame is not part of the animation.
+		 */
+		public boolean isSeparateDefault() {
+			return separateDefault;
+		}
+
+		/**
+		 * Sets whether or not the first (default) frame is part of the animation or
+		 * not.
+		 */
+		public void setSeparateDefault(final boolean separateDefault) {
+			this.separateDefault = separateDefault;
 		}
 
 		// -- Metadata API Methods --
@@ -179,18 +201,19 @@ public class APNGFormat extends AbstractFormat {
 
 			final ImageMetadata imageMeta = get(0);
 
-			imageMeta.setInterleaved(false);
+			// These fields are fixed
 			imageMeta.setOrderCertain(true);
 			imageMeta.setFalseColor(false);
+			imageMeta.setThumbnail(false);
 
-			imageMeta.setIndexed(false);
-
+			// Determine color information
 			boolean indexed = false;
 			boolean rgb = true;
 			int sizec = 1;
 
 			int bpp = getIhdr().getBitDepth();
 
+			// Check the color type, directly from the png spec
 			switch (getIhdr().getColourType()) {
 				case 0x0:
 					rgb = false;
@@ -224,14 +247,13 @@ public class APNGFormat extends AbstractFormat {
 			}
 			*/
 
-			final ACTLChunk actl = getActl();
-			final int planeCount = actl == null ? 1 : actl.getNumFrames();
+			// The IHDR contains frame height and width
+			imageMeta.setAxisTypes(Axes.X, Axes.Y);
+			imageMeta.setAxisLengths(new long[] { getIhdr().getWidth(),
+				getIhdr().getHeight() });
+			imageMeta.setPlanarAxisCount(2);
 
-			imageMeta.setAxes(FormatTools.createAxes(Axes.X, Axes.Y,
-				Axes.CHANNEL, Axes.TIME, Axes.Z));
-			imageMeta.setAxisLengths(new int[] { getIhdr().getWidth(),
-				getIhdr().getHeight(), sizec, planeCount, 1 });
-
+			// Set pixel information
 			imageMeta.setBitsPerPixel(bpp);
 			try {
 				imageMeta.setPixelType(FormatTools.pixelTypeFromBytes(bpp / 8,
@@ -241,15 +263,22 @@ public class APNGFormat extends AbstractFormat {
 				log().error("Failed to find pixel type from bytes: " + (bpp / 8), e);
 			}
 
-			imageMeta.setRGB(rgb);
+			// RGB planes are always stored planar
+			if (rgb) {
+				imageMeta.addAxis(Axes.CHANNEL, sizec);
+			imageMeta.setPlanarAxisCount(3);
+			}
+
+			final ACTLChunk actl = getActl();
+			if (actl != null) {
+				imageMeta.addAxis(Axes.TIME, actl.getNumFrames());
+			}
+
 			imageMeta.setIndexed(indexed);
-			imageMeta.setPlaneCount(planeCount);
 			imageMeta.setLittleEndian(isLittleEndian(0));
 
 			// Some anciliary chunks may not have been parsed
 			imageMeta.setMetadataComplete(false);
-
-			imageMeta.setThumbnail(false);
 
 			get(0).getTable().put(Metadata.DEFAULT_KEY, isSeparateDefault());
 			// TODO
@@ -272,14 +301,6 @@ public class APNGFormat extends AbstractFormat {
 
 		public void addIdat(final IDATChunk idat) {
 			this.idat.add(idat);
-		}
-
-		public void setSeparateDefault(final boolean separateDefault) {
-			this.separateDefault = separateDefault;
-		}
-
-		public boolean isSeparateDefault() {
-			return separateDefault;
 		}
 
 		public List<FCTLChunk> getFctl() {
@@ -381,7 +402,8 @@ public class APNGFormat extends AbstractFormat {
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
 			final Metadata meta) throws IOException, FormatException
-		{ // check that this is a valid PNG file
+		{
+			// check that this is a valid PNG file
 			final byte[] signature = new byte[8];
 			stream.read(signature);
 
@@ -525,27 +547,29 @@ public class APNGFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
-			final int planeIndex, final BufferedImagePlane plane, final int x,
-			final int y, final int w, final int h) throws FormatException,
+			final int planeIndex, final BufferedImagePlane plane,
+			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, -1, x, y,
-				w, h);
+			final Metadata meta = getMetadata();
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex, -1,
+				planeMin, planeMax);
 
 			// If the last processed (cached) plane is requested, return the
 			// requested sub-image, but don't update the last plane (in case the
 			// full plane was not requested)
 			if (planeIndex == lastPlaneIndex && lastPlane != null) {
+
 				final BufferedImage subImage =
-					AWTImageTools.getSubimage(lastPlane.getData(), getMetadata()
-						.isLittleEndian(imageIndex), x, y, w, h);
+					AWTImageTools.getSubimage(lastPlane.getData(), meta
+						.isLittleEndian(imageIndex), planeMin, planeMax);
 				plane.setData(subImage);
 				return plane;
 			}
 			else if (lastPlane == null) {
-				lastPlane = createPlane(x, y, w, h);
+				lastPlane = createPlane(planeMin, planeMax);
 				if (getMetadata().isIndexed(imageIndex)) {
-					final PLTEChunk plte = getMetadata().getPlte();
+					final PLTEChunk plte = meta.getPlte();
 					if (plte != null) {
 						final ColorTable ct =
 							new ColorTable8(plte.getRed(), plte.getGreen(), plte.getBlue());
@@ -561,20 +585,20 @@ public class APNGFormat extends AbstractFormat {
 				final DataInputStream dis =
 					new DataInputStream(new BufferedInputStream(getStream(), 4096));
 				BufferedImage subImg = ImageIO.read(dis);
-				lastPlane.populate(getMetadata().get(imageIndex), subImg, x, y, w, h);
+				lastPlane.populate(meta.get(imageIndex), subImg, planeMin,
+					planeMax);
 
 				lastPlaneIndex = 0;
 
 				plane.setData(lastPlane.getData());
 
-				if (x != 0 || y != 0 ||
-					w != getMetadata().getAxisLength(imageIndex, Axes.X) ||
-					h != getMetadata().getAxisLength(imageIndex, Axes.Y))
+				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
+					planeMax))
 				{
 					// updates the data of the plane to a sub-image, by reference
 					subImg =
-						AWTImageTools.getSubimage(lastPlane.getData(), getMetadata()
-							.isLittleEndian(planeIndex), x, y, w, h);
+						AWTImageTools.getSubimage(lastPlane.getData(), meta
+							.isLittleEndian(imageIndex), planeMin, planeMax);
 					plane.setData(subImg);
 				}
 
@@ -633,8 +657,9 @@ public class APNGFormat extends AbstractFormat {
 			dis.close();
 
 			// Recover first plane
-			openPlane(imageIndex, 0, 0, 0, getMetadata().getAxisLength(imageIndex,
-				Axes.X), getMetadata().getAxisLength(imageIndex, Axes.Y));
+			openPlane(imageIndex, 0, new long[] { 0l, 0l }, new long[] {
+				getMetadata().getAxisLength(imageIndex, Axes.X),
+				getMetadata().getAxisLength(imageIndex, Axes.Y) });
 
 			// paste current image onto first plane
 			// NB: last plane read was the first plane
@@ -647,7 +672,7 @@ public class APNGFormat extends AbstractFormat {
 				new BufferedImage(lastPlane.getData().getColorModel(), firstRaster,
 					false, null);
 
-			lastPlane.populate(getMetadata().get(imageIndex), bImg, x, y, w, h);
+			lastPlane.populate(getMetadata().get(imageIndex), bImg, planeMin, planeMax);
 
 			lastPlaneIndex = planeIndex;
 			return plane.populate(lastPlane);
@@ -719,17 +744,17 @@ public class APNGFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final int planeIndex,
-			final Plane plane, final int x, final int y, final int w, final int h)
+			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
-			checkParams(imageIndex, planeIndex, plane.getBytes(), x, y, w, h);
-			if (!isFullPlane(imageIndex, x, y, w, h)) {
+			checkParams(imageIndex, planeIndex, plane.getBytes(), planeMin, planeMax);
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(), planeMin, planeMax)) {
 				throw new FormatException(
 					"APNGWriter does not yet support saving image tiles.");
 			}
 
-			final int width = getMetadata().getAxisLength(imageIndex, Axes.X);
-			final int height = getMetadata().getAxisLength(imageIndex, Axes.Y);
+			final int width = (int)getMetadata().getAxisLength(imageIndex, Axes.X);
+			final int height = (int)getMetadata().getAxisLength(imageIndex, Axes.Y);
 
 			if (!initialized[imageIndex][planeIndex]) {
 				if (numFrames == 0) {
@@ -746,11 +771,11 @@ public class APNGFormat extends AbstractFormat {
 
 			if (numFrames == 0) {
 				// This is the first frame, and also the default image
-				writePixels(imageIndex, "IDAT", plane.getBytes(), x, y, w, h);
+				writePixels(imageIndex, "IDAT", plane.getBytes(), planeMin, planeMax);
 			}
 			else {
 				writeFCTL(width, height, planeIndex);
-				writePixels(imageIndex, "fdAT", plane.getBytes(), x, y, w, h);
+				writePixels(imageIndex, "fdAT", plane.getBytes(), planeMin, planeMax);
 			}
 			numFrames++;
 		}
@@ -796,12 +821,12 @@ public class APNGFormat extends AbstractFormat {
 			IOException
 		{
 			if (out.length() == 0) {
-				final int width = getMetadata().getAxisLength(imageIndex, Axes.X);
-				final int height = getMetadata().getAxisLength(imageIndex, Axes.Y);
+				final int width = (int)getMetadata().getAxisLength(imageIndex, Axes.X);
+				final int height = (int)getMetadata().getAxisLength(imageIndex, Axes.Y);
 				final int bytesPerPixel =
 					FormatTools.getBytesPerPixel(getMetadata().getPixelType(imageIndex));
 				final int nChannels =
-					getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+					(int)getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
 				final boolean indexed =
 					getColorModel() != null &&
 						(getColorModel() instanceof IndexColorModel);
@@ -912,18 +937,24 @@ public class APNGFormat extends AbstractFormat {
 		}
 
 		private void writePixels(final int imageIndex, final String chunk,
-			final byte[] stream, final int x, final int y, final int width,
-			final int height) throws FormatException, IOException
+			final byte[] stream, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 
-			final int rgbCCount = getMetadata().getRGBChannelCount(imageIndex);
+			final long rgbCCount =
+				getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
 
 			final int pixelType = getMetadata().getPixelType(imageIndex);
 			final boolean signed = FormatTools.isSigned(pixelType);
 
-			if (!isFullPlane(imageIndex, x, y, width, height)) {
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(), planeMin,
+				planeMax))
+			{
 				throw new FormatException("APNGWriter does not support writing tiles.");
 			}
+
+			final int width = (int) getMetadata().getAxisLength(imageIndex, Axes.X);
+			final int height = (int) getMetadata().getAxisLength(imageIndex, Axes.Y);
 
 			final ByteArrayOutputStream s = new ByteArrayOutputStream();
 			s.write(chunk.getBytes());
@@ -931,16 +962,16 @@ public class APNGFormat extends AbstractFormat {
 				s.write(DataTools.intToBytes(nextSequenceNumber++, false));
 			}
 			final DeflaterOutputStream deflater = new DeflaterOutputStream(s);
-			final int planeSize = stream.length / rgbCCount;
+			final long planeSize = stream.length / rgbCCount;
 			final int rowLen = stream.length / height;
-			final int bytesPerPixel = stream.length / (width * height * rgbCCount);
+			final int bytesPerPixel = stream.length / (int)(width * height * rgbCCount);
 			final byte[] rowBuf = new byte[rowLen];
 			for (int i = 0; i < height; i++) {
 				deflater.write(0);
 				if (interleaved) {
 					if (getMetadata().isLittleEndian(0)) {
 						for (int col = 0; col < width * rgbCCount; col++) {
-							final int offset = (i * rgbCCount * width + col) * bytesPerPixel;
+							final int offset = (int)(i * rgbCCount * width + col) * bytesPerPixel;
 							final int pixel =
 								DataTools.bytesToInt(stream, offset, bytesPerPixel,
 									getMetadata().isLittleEndian(0));
@@ -954,8 +985,8 @@ public class APNGFormat extends AbstractFormat {
 					final int max = (int) Math.pow(2, bytesPerPixel * 8 - 1);
 					for (int col = 0; col < width; col++) {
 						for (int c = 0; c < rgbCCount; c++) {
-							final int offset =
-								c * planeSize + (i * width + col) * bytesPerPixel;
+							final int offset = (int)
+								(c * planeSize + (i * width + col) * bytesPerPixel);
 							int pixel =
 								DataTools.bytesToInt(stream, offset, bytesPerPixel,
 									getMetadata().isLittleEndian(0));
@@ -963,7 +994,7 @@ public class APNGFormat extends AbstractFormat {
 								if (pixel < max) pixel += max;
 								else pixel -= max;
 							}
-							final int output = (col * rgbCCount + c) * bytesPerPixel;
+							final int output = (int)(col * rgbCCount + c) * bytesPerPixel;
 							DataTools
 								.unpackBytes(pixel, rowBuf, output, bytesPerPixel, false);
 						}
@@ -1046,15 +1077,15 @@ public class APNGFormat extends AbstractFormat {
 			dest.setActl(actl);
 			dest.setFctl(fctl);
 
-			ihdr.setWidth(source.getAxisLength(0, Axes.X));
-			ihdr.setHeight(source.getAxisLength(0, Axes.Y));
+			ihdr.setWidth((int)source.getAxisLength(0, Axes.X));
+			ihdr.setHeight((int)source.getAxisLength(0, Axes.Y));
 			ihdr.setBitDepth((byte) source.getBitsPerPixel(0));
 			ihdr.setFilterMethod((byte) 0);
 			ihdr.setCompressionMethod((byte) 0);
 			ihdr.setInterlaceMethod((byte) 0);
 
-			final int sizec = source.getAxisLength(0, Axes.CHANNEL);
-			final boolean rgb = source.isRGB(0);
+			final long sizec =
+				source.isMultichannel(0) ? source.getAxisLength(0, Axes.CHANNEL) : 1;
 			final boolean indexed = source.isIndexed(0);
 
 			if (indexed) {
@@ -1094,7 +1125,7 @@ public class APNGFormat extends AbstractFormat {
 				// and not per pixel. Thus we divide by 2.
 				ihdr.setBitDepth((byte) (ihdr.getBitDepth() / 2));
 			}
-			else if (!rgb) {
+			else if (sizec != 3) {
 				// grayscale image
 				ihdr.setColourType((byte) 0x0);
 			}

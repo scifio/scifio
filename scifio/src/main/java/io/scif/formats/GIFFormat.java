@@ -129,18 +129,30 @@ public class GIFFormat extends AbstractFormat {
 
 		// -- GIFMetadata getters and setters --
 
+		/**
+		 * @return Global color table (raw) for this dataset
+		 */
 		public int[] getGct() {
 			return gct;
 		}
 
+		/**
+		 * Sets the global color table (raw values) for this dataset
+		 */
 		public void setGct(final int[] gct) {
 			this.gct = gct;
 		}
 
+		/**
+		 * @return Active color table
+		 */
 		public int[] getAct() {
 			return act;
 		}
 
+		/**
+		 * Sets the active color table
+		 */
 		public void setAct(final int[] act) {
 			this.act = act;
 		}
@@ -288,17 +300,14 @@ public class GIFFormat extends AbstractFormat {
 			final ImageMetadata iMeta = get(0);
 
 			iMeta.setAxisLength(Axes.CHANNEL, 1);
-			iMeta.setAxisLength(Axes.TIME, iMeta.getPlaneCount());
-			iMeta.setAxisLength(Axes.Z, 1);
 
-			iMeta.setRGB(false);
+			iMeta.setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y, Axes.TIME);
+			iMeta.setPlanarAxisCount(3);
 			iMeta.setLittleEndian(true);
-			iMeta.setInterleaved(true);
 			iMeta.setMetadataComplete(true);
 			iMeta.setIndexed(true);
 			iMeta.setFalseColor(false);
 			iMeta.setPixelType(FormatTools.UINT8);
-			iMeta.setBitsPerPixel(8);
 		}
 
 		@Override
@@ -395,9 +404,12 @@ public class GIFFormat extends AbstractFormat {
 			meta.createImageMetadata(1);
 			final ImageMetadata iMeta = meta.get(0);
 
+			// Read plane extents
 			iMeta.setAxisLength(Axes.X, stream.readShort());
 			iMeta.setAxisLength(Axes.Y, stream.readShort());
+			iMeta.setAxisLength(Axes.TIME, 0);
 
+			// Check for a global color table, and populate if present.
 			int packed = stream.read() & 0xff;
 			final boolean gctFlag = (packed & 0x80) != 0;
 			final int gctSize = 2 << (packed & 7);
@@ -410,6 +422,7 @@ public class GIFFormat extends AbstractFormat {
 
 			log().info("Reading data blocks");
 
+			// Reading the GIF metadata. Checks for dispose and transparency flags. 
 			boolean done = false;
 			while (!done) {
 				int code = stream.read() & 0xff;
@@ -482,7 +495,8 @@ public class GIFFormat extends AbstractFormat {
 			decodeImageData();
 			skipBlocks();
 
-			metadata.get(0).setPlaneCount(metadata.getPlaneCount(0) + 1);
+			// Update the plane count
+			metadata.get(0).setAxisLength(Axes.TIME, metadata.getAxisLength(0, Axes.TIME) + 1);
 
 			if (metadata.isTransparency()) metadata.getAct()[metadata.getTransIndex()] =
 				save;
@@ -611,8 +625,8 @@ public class GIFFormat extends AbstractFormat {
 		private void setPixels() {
 			// expose destination image's pixels as an int array
 			final byte[] dest =
-				new byte[metadata.getAxisLength(0, Axes.X) *
-					metadata.getAxisLength(0, Axes.Y)];
+				new byte[(int)(metadata.getAxisLength(0, Axes.X) *
+					metadata.getAxisLength(0, Axes.Y))];
 			int lastImage = -1;
 
 			// fill in starting image contents based on last image's dispose code
@@ -624,8 +638,8 @@ public class GIFFormat extends AbstractFormat {
 
 				if (lastImage != -1) {
 					final byte[] prev = metadata.getImages().get(lastImage);
-					System.arraycopy(prev, 0, dest, 0, metadata.getAxisLength(0, Axes.X) *
-						metadata.getAxisLength(0, Axes.Y));
+					System.arraycopy(prev, 0, dest, 0, (int)(metadata.getAxisLength(0, Axes.X) *
+						metadata.getAxisLength(0, Axes.Y)));
 				}
 			}
 
@@ -658,11 +672,11 @@ public class GIFFormat extends AbstractFormat {
 				}
 				line += metadata.getIy();
 				if (line < metadata.getAxisLength(0, Axes.Y)) {
-					final int k = line * metadata.getAxisLength(0, Axes.X);
+					final int k = line * (int)metadata.getAxisLength(0, Axes.X);
 					int dx = k + metadata.getIx(); // start of line in dest
 					int dlim = dx + metadata.getIw(); // end of dest line
 					if ((k + metadata.getAxisLength(0, Axes.X)) < dlim) dlim =
-						k + metadata.getAxisLength(0, Axes.X);
+						k + (int)metadata.getAxisLength(0, Axes.X);
 					int sx = i * metadata.getIw(); // start of line in source
 					while (dx < dlim) {
 						// map color and insert in destination
@@ -739,15 +753,20 @@ public class GIFFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
+			final int xIndex = meta.getAxisIndex(imageIndex, Axes.X);
+			final int yIndex = meta.getAxisIndex(imageIndex, Axes.Y);
 			plane.setColorTable(meta.getColorTable(0, 0));
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-				buf.length, x, y, w, h);
-
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+				buf.length, planeMin, planeMax);
+			final int x = (int) planeMin[xIndex],
+					y = (int) planeMin[yIndex],
+					w = (int) planeMax[xIndex],
+					h = (int) planeMax[yIndex];
 			final int[] act = meta.getColorTables().get(planeIndex);
 
 			final byte[] b = meta.getImages().get(planeIndex);
@@ -764,7 +783,7 @@ public class GIFFormat extends AbstractFormat {
 			}
 
 			for (int row = 0; row < h; row++) {
-				System.arraycopy(b, (row + y) * meta.getAxisLength(imageIndex, Axes.X) +
+				System.arraycopy(b, (row + y) * (int)meta.getAxisLength(imageIndex, Axes.X) +
 					x, buf, row * w, w);
 			}
 

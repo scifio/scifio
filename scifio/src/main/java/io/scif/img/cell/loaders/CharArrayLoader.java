@@ -69,8 +69,8 @@ public class CharArrayLoader extends AbstractArrayLoader<CharArray> {
 	}
 
 	@Override
-	public CharArray emptyArray(final int[] dimensions) {
-		return new CharArray(countEntities(dimensions));
+	public CharArray emptyArray(final int entities) {
+		return new CharArray(entities);
 	}
 
 	@Override

@@ -40,6 +40,8 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
+import net.imglib2.meta.Axes;
+
 /**
  * Abstract superclass for all {@link io.scif.Reader} implementations that
  * return a {@link io.scif.ByteArrayPlane} when reading datasets.
@@ -66,9 +68,16 @@ public abstract class ByteArrayReader<M extends TypedMetadata> extends
 		final int planeIndex) throws FormatException, IOException
 	{
 		FormatTools.assertStream(getStream(), true, 1);
-		final ByteArrayPlane plane =
-			createPlane(0, 0, getMetadata().getThumbSizeX(imageIndex), getMetadata()
-				.getThumbSizeY(imageIndex));
+		final Metadata meta = getMetadata();
+		final long[] planeBounds = meta.getAxesLengthsPlanar(imageIndex);
+		final long[] planeOffsets = new long[planeBounds.length];
+
+		planeBounds[meta.getAxisIndex(imageIndex, Axes.X)] =
+			meta.getThumbSizeX(imageIndex);
+		planeBounds[meta.getAxisIndex(imageIndex, Axes.Y)] =
+			meta.getThumbSizeX(imageIndex);
+
+		final ByteArrayPlane plane = createPlane(planeOffsets, planeBounds);
 
 		plane.setData(FormatTools.openThumbBytes(this, imageIndex, planeIndex));
 
@@ -76,18 +85,17 @@ public abstract class ByteArrayReader<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public ByteArrayPlane createPlane(final int xOffset, final int yOffset,
-		final int xLength, final int yLength)
+	public ByteArrayPlane createPlane(final long[] planeOffsets,
+		final long[] planeBounds)
 	{
-		return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
+		return createPlane(getMetadata().get(0), planeOffsets, planeBounds);
 	}
 
 	@Override
 	public ByteArrayPlane createPlane(final ImageMetadata meta,
-		final int xOffset, final int yOffset, final int xLength, final int yLength)
+		final long[] planeOffsets, final long[] planeBounds)
 	{
-		return new ByteArrayPlane(getContext(), meta, xOffset, yOffset, xLength,
-			yLength);
+		return new ByteArrayPlane(getContext(), meta, planeOffsets, planeBounds);
 	}
 
 }

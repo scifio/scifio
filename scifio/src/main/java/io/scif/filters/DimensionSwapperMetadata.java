@@ -40,6 +40,7 @@ import io.scif.Metadata;
 
 import java.util.List;
 
+import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.plugin.Attr;
@@ -65,7 +66,7 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 
 	// -- Fields --
 
-	private List<CalibratedAxis>[] outputOrder;
+	private List<AxisType>[] outputOrder;
 
 	// -- Constructors --
 
@@ -86,7 +87,7 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 	 * 
 	 * @return The output order array for this dataset
 	 */
-	public List<CalibratedAxis>[] getOutputOrder() {
+	public List<AxisType>[] getOutputOrder() {
 		return outputOrder;
 	}
 
@@ -96,21 +97,19 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 	 * 
 	 * @param outputOrder - Array of output orders for this dataset
 	 */
-	public void setOutputOrder(final List<CalibratedAxis>[] outputOrder) {
+	public void setOutputOrder(final List<AxisType>[] outputOrder) {
 		this.outputOrder = outputOrder;
 	}
 
 	// -- Metadata API Methods --
 
 	@Override
-	public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
+	public void setAxisLengths(final int imageIndex, final long[] axisLengths) {
 		super.setAxisLengths(imageIndex, axisLengths, false);
 	}
 
 	@Override
-	public void setAxes(final int imageIndex,
-		final CalibratedAxis[] axes)
-	{
-		super.setAxes(imageIndex, axes, false);
+	public void setAxisTypes(final int imageIndex, final AxisType... axisTypes) {
+		super.setAxisTypes(imageIndex, axisTypes, false);
 	}
 }

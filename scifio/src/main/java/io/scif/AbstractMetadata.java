@@ -37,6 +37,7 @@
 package io.scif;
 
 import io.scif.io.RandomAccessInputStream;
+import io.scif.util.FormatTools;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -182,23 +183,8 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public boolean isInterleaved(final int imageIndex) {
-		return imageMeta.get(imageIndex).isInterleaved();
-	}
-
-	@Override
 	public int getPixelType(final int imageIndex) {
 		return imageMeta.get(imageIndex).getPixelType();
-	}
-
-	@Override
-	public int getEffectiveSizeC(final int imageIndex) {
-		return imageMeta.get(imageIndex).getEffectiveSizeC();
-	}
-
-	@Override
-	public int getRGBChannelCount(final int imageIndex) {
-		return imageMeta.get(imageIndex).getRGBChannelCount();
 	}
 
 	@Override
@@ -212,13 +198,23 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public int getBitsPerPixel(final int imageIndex) {
-		return imageMeta.get(imageIndex).getBitsPerPixel();
+	public int getPlanarAxisCount(int imageIndex) {
+		return imageMeta.get(imageIndex).getPlanarAxisCount();
 	}
 
 	@Override
-	public boolean isRGB(final int imageIndex) {
-		return imageMeta.get(imageIndex).isRGB();
+	public boolean isInterleaved(final int imageIndex) {
+		return imageMeta.get(imageIndex).isInterleaved();
+	}
+
+	@Override
+	public boolean isMultichannel(final int imageIndex) {
+		return imageMeta.get(imageIndex).isMultichannel();
+	}
+
+	@Override
+	public int getBitsPerPixel(final int imageIndex) {
+		return imageMeta.get(imageIndex).getBitsPerPixel();
 	}
 
 	@Override
@@ -227,12 +223,12 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public int getThumbSizeX(final int imageIndex) {
+	public long getThumbSizeX(final int imageIndex) {
 		return imageMeta.get(imageIndex).getThumbSizeX();
 	}
 
 	@Override
-	public int getThumbSizeY(final int imageIndex) {
+	public long getThumbSizeY(final int imageIndex) {
 		return imageMeta.get(imageIndex).getThumbSizeY();
 	}
 	
@@ -253,17 +249,17 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public int getAxisLength(final int imageIndex, final int planeIndex) {
+	public long getAxisLength(final int imageIndex, final int planeIndex) {
 		return imageMeta.get(imageIndex).getAxisLength(planeIndex);
 	}
 
 	@Override
-	public int getAxisLength(final int imageIndex, final CalibratedAxis t) {
+	public long getAxisLength(final int imageIndex, final CalibratedAxis t) {
 		return imageMeta.get(imageIndex).getAxisLength(t);
 	}
 
 	@Override
-	public int getAxisLength(final int imageIndex, final AxisType t) {
+	public long getAxisLength(final int imageIndex, final AxisType t) {
 		return imageMeta.get(imageIndex).getAxisLength(t);
 	}
 
@@ -278,13 +274,35 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public CalibratedAxis[] getAxes(final int imageIndex) {
+	public List<CalibratedAxis> getAxes(final int imageIndex) {
 		return imageMeta.get(imageIndex).getAxes();
 	}
 
 	@Override
-	public int[] getAxesLengths(final int imageIndex) {
+	public List<CalibratedAxis> getAxesPlanar(final int imageIndex) {
+		return imageMeta.get(imageIndex).getAxesPlanar();
+	}
+
+	@Override
+	public List<CalibratedAxis> getAxesNonPlanar(final int imageIndex) {
+		return imageMeta.get(imageIndex).getAxesNonPlanar();
+	}
+
+	@Override
+	public long[] getAxesLengths(final int imageIndex) {
 		return imageMeta.get(imageIndex).getAxesLengths();
+	}
+
+	@Override
+	public long[] getAxesLengthsPlanar(final int imageIndex) {
+		return imageMeta.get(imageIndex).getAxesLengthsPlanar();
+
+	}
+
+	@Override
+	public long[] getAxesLengthsNonPlanar(final int imageIndex) {
+		return imageMeta.get(imageIndex).getAxesLengthsNonPlanar();
+
 	}
 
 	@Override
@@ -310,12 +328,12 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public void setThumbSizeX(final int imageIndex, final int thumbX) {
+	public void setThumbSizeX(final int imageIndex, final long thumbX) {
 		imageMeta.get(imageIndex).setThumbSizeX(thumbX);
 	}
 
 	@Override
-	public void setThumbSizeY(final int imageIndex, final int thumbY) {
+	public void setThumbSizeY(final int imageIndex, final long thumbY) {
 		imageMeta.get(imageIndex).setThumbSizeY(thumbY);
 	}
 
@@ -336,24 +354,19 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public void setRGB(final int imageIndex, final boolean rgb) {
-		imageMeta.get(imageIndex).setRGB(rgb);
-	}
-
-	@Override
 	public void setLittleEndian(final int imageIndex, final boolean littleEndian)
 	{
 		imageMeta.get(imageIndex).setLittleEndian(littleEndian);
 	}
 
 	@Override
-	public void setInterleaved(final int imageIndex, final boolean interleaved) {
-		imageMeta.get(imageIndex).setInterleaved(interleaved);
+	public void setIndexed(final int imageIndex, final boolean indexed) {
+		imageMeta.get(imageIndex).setIndexed(indexed);
 	}
 
 	@Override
-	public void setIndexed(final int imageIndex, final boolean indexed) {
-		imageMeta.get(imageIndex).setIndexed(indexed);
+	public void setPlanarAxisCount(int imageIndex, final int count) {
+		imageMeta.get(imageIndex).setPlanarAxisCount(count);
 	}
 
 	@Override
@@ -395,20 +408,30 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	@Override
 	public void addAxis(final int imageIndex, final CalibratedAxis axis,
-		final int value)
+		final long value)
 	{
 		imageMeta.get(imageIndex).addAxis(axis, value);
 	}
 
 	@Override
 	public void
-		addAxis(final int imageIndex, final AxisType axisType, final int value)
+		addAxis(final int imageIndex, final AxisType axisType, final long value)
 	{
 		imageMeta.get(imageIndex).addAxis(axisType, value);
 	}
 
 	@Override
-	public void setAxes(final int imageIndex, final CalibratedAxis[] axes) {
+
+	public void setAxisTypes(final int imageIndex,
+		final AxisType... axisTypes)
+	{
+		setAxes(imageIndex, FormatTools.createAxes(axisTypes));
+	}
+
+	@Override
+	public void setAxes(final int imageIndex,
+		final CalibratedAxis... axes)
+	{
 		imageMeta.get(imageIndex).setAxes(axes);
 	}
 
@@ -427,20 +450,20 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public void setAxisLengths(final int imageIndex, final int[] axisLengths) {
+	public void setAxisLengths(final int imageIndex, final long[] axisLengths) {
 		imageMeta.get(imageIndex).setAxisLengths(axisLengths);
 	}
 
 	@Override
 	public void setAxisLength(final int imageIndex, final CalibratedAxis axis,
-		final int length)
+		final long length)
 	{
 		imageMeta.get(imageIndex).setAxisLength(axis, length);
 	}
 
 	@Override
 	public void setAxisLength(final int imageIndex, final AxisType axisType,
-		final int length)
+		final long length)
 	{
 		imageMeta.get(imageIndex).setAxisLength(axisType, length);
 	}
