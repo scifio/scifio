@@ -60,8 +60,8 @@ public interface ImageMetadata extends HasMetaTable {
 	void setThumbSizeY(long thumbSizeY);
 
 	/**
-	 * Sets the number of bytes per pixel. Must be one of the <i>static</i> pixel
-	 * types (e.g. <code>INT8</code>) in {@link io.scif.util.FormatTools}.
+	 * Sets the number of bytes per pixel. Valid pixel type constants (e.g.,
+	 * {@link FormatTools#INT8}) are enumerated in {@link FormatTools}.
 	 */
 	void setPixelType(int pixelType);
 
@@ -76,10 +76,29 @@ public interface ImageMetadata extends HasMetaTable {
 	/** Sets whether or not each pixel's bytes are in little endian order. */
 	void setLittleEndian(boolean littleEndian);
 
-	/** Sets whether or not the planes are stored as indexed color. */
+	/**
+	 * Sets whether or not the planes are stored as indexed color. An indexed
+	 * color image treats each pixel value as an index into a color table
+	 * containing one or more (typically 3) actual values for the pixel.
+	 */
 	void setIndexed(boolean indexed);
 
-	/** Sets the number of planar axes in this image. */
+	/**
+	 * Sets the number of planar axes in this image. This value represents the
+	 * number of dimensional axes constituting each {@link Plane} (as returned by
+	 * the {@link Reader#openPlane} methods). This value is necessary to determine
+	 * the total plane count for an N-dimensional image, as well as how many
+	 * pixels there are per plane.
+	 * <p>
+	 * For example, suppose we have a 4-dimensional image with axes (X, Y, Z, T)
+	 * and extents (768, 512, 7, 13). If there are two planar axes, then each
+	 * plane is 768 x 512 and there are 7 x 13 = 91 total planes. But if we have
+	 * three planar axes, then each plane is 768 x 512 x 7 and there are 13 total
+	 * planes.
+	 * </p>
+	 * 
+	 * @see Reader#openPlane(int, int)
+	 */
 	void setPlanarAxisCount(final int count);
 
 	/** Sets whether or not we can ignore the color map (if present). */
