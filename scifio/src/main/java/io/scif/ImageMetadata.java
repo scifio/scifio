@@ -383,8 +383,8 @@ public interface ImageMetadata extends HasMetaTable {
 	void addAxis(final CalibratedAxis axis, final long value);
 
 	/**
-	 * As {@link #addAxis(CalibratedAxis, int)} using the default calibration
-	 * value, per {@link FormatTools#calibrate(AxisType)}.
+	 * As {@link #addAxis(CalibratedAxis, long)} using a default
+	 * {@link CalibratedAxis} created by {@link FormatTools#createAxis(AxisType)}.
 	 */
 	void addAxis(final AxisType axisType, final long value);
 
