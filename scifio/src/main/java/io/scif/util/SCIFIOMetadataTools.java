@@ -61,7 +61,7 @@ public class SCIFIOMetadataTools {
 
 	private SCIFIOMetadataTools() {}
 
-	// -- Utility Methods -- DatasetMetadata --
+	// -- Utility Methods -- Metadata --
 
 	/**
 	 * Returns true if the provided axes correspond to a complete image plane
@@ -222,7 +222,7 @@ public class SCIFIOMetadataTools {
 		iMeta.setAxes(axisTypes, axisLengths);
 	}
 
-	// Utility methods -- original metadata --
+	// -- Utility methods -- original metadata --
 
 	/**
 	 * Merges the given lists of metadata, prepending the specified prefix for the
