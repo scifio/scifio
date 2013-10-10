@@ -44,7 +44,7 @@ import java.util.Set;
 /**
  * A list of indices for a particular dimension, and is parsed from a properly
  * formatted string. Ranges must match the pattern:
- * [0-9]*(-[0-9]*(:[0-9]*)?)?(,[0-9]*(-[0-9]*(:[0-9])?*)?)*?
+ * {@code \d*(-\d*(:\d*)?)?(,\d*(-\d*(:\d)?*)?)*?}
  * <p>
  * Practically, ranges are ","-separated list of selected values. For each
  * selection specified, a start value is mandatory. An (inclusive) end value can
