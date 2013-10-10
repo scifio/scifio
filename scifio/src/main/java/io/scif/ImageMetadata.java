@@ -365,8 +365,8 @@ public interface ImageMetadata extends HasMetaTable {
 	long[] getAxesLengthsNonPlanar();
 
 	/**
-	 * Appends the provided CalibratedAxis to the current CalibratedAxiss, with a
-	 * length of 0.
+	 * Appends the provided {@link CalibratedAxis} to the metadata's list of axes,
+	 * with a length of 1.
 	 * 
 	 * @param axis - The new axis
 	 */
