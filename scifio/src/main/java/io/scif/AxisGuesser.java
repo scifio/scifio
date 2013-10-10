@@ -37,7 +37,6 @@
 package io.scif;
 
 import io.scif.io.Location;
-import io.scif.util.FormatTools;
 
 import java.io.IOException;
 

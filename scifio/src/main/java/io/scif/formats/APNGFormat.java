@@ -734,14 +734,11 @@ public class APNGFormat extends AbstractFormat {
 					"APNGWriter does not yet support saving image tiles.");
 			}
 
-			final int width = (int)getMetadata().get(imageIndex).getAxisLength(Axes.X);
-			final int height = (int)getMetadata().get(imageIndex).getAxisLength(Axes.Y);
-
-			if (!initialized[imageIndex][(int)planeIndex]) {
+			if (!initialized[imageIndex][(int) planeIndex]) {
 				if (numFrames == 0) {
 					if (!metadata.isSeparateDefault()) {
 						// first frame is default image
-						writeFCTL(width, height, planeIndex);
+						writeFCTL(planeIndex);
 					}
 					writePLTE();
 				}
@@ -755,7 +752,7 @@ public class APNGFormat extends AbstractFormat {
 				writePixels(imageIndex, "IDAT", plane.getBytes(), planeMin, planeMax);
 			}
 			else {
-				writeFCTL(width, height, planeIndex);
+				writeFCTL(planeIndex);
 				writePixels(imageIndex, "fdAT", plane.getBytes(), planeMin, planeMax);
 			}
 			numFrames++;
@@ -798,9 +795,7 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- Helper Methods --
 
-		private void initialize(final int imageIndex) throws FormatException,
-			IOException
-		{
+		private void initialize(final int imageIndex) throws IOException {
 			if (out.length() == 0) {
 				final int width = (int)getMetadata().get(imageIndex).getAxisLength(Axes.X);
 				final int height = (int)getMetadata().get(imageIndex).getAxisLength(Axes.Y);
@@ -862,9 +857,7 @@ public class APNGFormat extends AbstractFormat {
 			return (int) crc.getValue();
 		}
 
-		private void writeFCTL(final int width, final int height,
-			final long planeIndex) throws IOException
-		{
+		private void writeFCTL(final long planeIndex) throws IOException {
 			out.writeInt(26);
 			final FCTLChunk fctl =
 				metadata.getFctl().get((int)(

@@ -57,49 +57,49 @@ public class LosslessJPEGCodec extends AbstractCodec {
 	// -- Constants --
 
 	// Start of Frame markers - non-differential, Huffman coding
-	private static final int SOF0 = 0xffc0; // baseline DCT
-	private static final int SOF1 = 0xffc1; // extended sequential DCT
-	private static final int SOF2 = 0xffc2; // progressive DCT
-	private static final int SOF3 = 0xffc3; // lossless (sequential)
+	public static final int SOF0 = 0xffc0; // baseline DCT
+	public static final int SOF1 = 0xffc1; // extended sequential DCT
+	public static final int SOF2 = 0xffc2; // progressive DCT
+	public static final int SOF3 = 0xffc3; // lossless (sequential)
 
 	// Start of Frame markers - differential, Huffman coding
-	private static final int SOF5 = 0xffc5; // differential sequential DCT
-	private static final int SOF6 = 0xffc6; // differential progressive DCT
-	private static final int SOF7 = 0xffc7; // differential lossless (sequential)
+	public static final int SOF5 = 0xffc5; // differential sequential DCT
+	public static final int SOF6 = 0xffc6; // differential progressive DCT
+	public static final int SOF7 = 0xffc7; // differential lossless (sequential)
 
 	// Start of Frame markers - non-differential, arithmetic coding
-	private static final int JPG = 0xffc8; // reserved for JPEG extensions
-	private static final int SOF9 = 0xffc9; // extended sequential DCT
-	private static final int SOF10 = 0xffca; // progressive DCT
-	private static final int SOF11 = 0xffcb; // lossless (sequential)
+	public static final int JPG = 0xffc8; // reserved for JPEG extensions
+	public static final int SOF9 = 0xffc9; // extended sequential DCT
+	public static final int SOF10 = 0xffca; // progressive DCT
+	public static final int SOF11 = 0xffcb; // lossless (sequential)
 
 	// Start of Frame markers - differential, arithmetic coding
-	private static final int SOF13 = 0xffcd; // differential sequential DCT
-	private static final int SOF14 = 0xffce; // differential progressive DCT
-	private static final int SOF15 = 0xffcf; // differential lossless (sequential)
+	public static final int SOF13 = 0xffcd; // differential sequential DCT
+	public static final int SOF14 = 0xffce; // differential progressive DCT
+	public static final int SOF15 = 0xffcf; // differential lossless (sequential)
 
-	private static final int DHT = 0xffc4; // define Huffman table(s)
-	private static final int DAC = 0xffcc; // define arithmetic coding conditions
+	public static final int DHT = 0xffc4; // define Huffman table(s)
+	public static final int DAC = 0xffcc; // define arithmetic coding conditions
 
 	// Restart interval termination
-	private static final int RST_0 = 0xffd0;
-	private static final int RST_1 = 0xffd1;
-	private static final int RST_2 = 0xffd2;
-	private static final int RST_3 = 0xffd3;
-	private static final int RST_4 = 0xffd4;
-	private static final int RST_5 = 0xffd5;
-	private static final int RST_6 = 0xffd6;
-	private static final int RST_7 = 0xffd7;
+	public static final int RST_0 = 0xffd0;
+	public static final int RST_1 = 0xffd1;
+	public static final int RST_2 = 0xffd2;
+	public static final int RST_3 = 0xffd3;
+	public static final int RST_4 = 0xffd4;
+	public static final int RST_5 = 0xffd5;
+	public static final int RST_6 = 0xffd6;
+	public static final int RST_7 = 0xffd7;
 
-	private static final int SOI = 0xffd8; // start of image
-	private static final int EOI = 0xffd9; // end of image
-	private static final int SOS = 0xffda; // start of scan
-	private static final int DQT = 0xffdb; // define quantization table(s)
-	private static final int DNL = 0xffdc; // define number of lines
-	private static final int DRI = 0xffdd; // define restart interval
-	private static final int DHP = 0xffde; // define hierarchical progression
-	private static final int EXP = 0xffdf; // expand reference components
-	private static final int COM = 0xfffe; // comment
+	public static final int SOI = 0xffd8; // start of image
+	public static final int EOI = 0xffd9; // end of image
+	public static final int SOS = 0xffda; // start of scan
+	public static final int DQT = 0xffdb; // define quantization table(s)
+	public static final int DNL = 0xffdc; // define number of lines
+	public static final int DRI = 0xffdd; // define restart interval
+	public static final int DHP = 0xffde; // define hierarchical progression
+	public static final int EXP = 0xffdf; // expand reference components
+	public static final int COM = 0xfffe; // comment
 
 	// -- Codec API methods --
 
@@ -132,8 +132,7 @@ public class LosslessJPEGCodec extends AbstractCodec {
 		int[] quantizationTable = null;
 		short[][] huffmanTables = null;
 
-		int startPredictor = 0, endPredictor = 0;
-		int pointTransform = 0;
+		int startPredictor = 0;
 
 		int[] dcTable = null, acTable = null;
 
@@ -150,14 +149,14 @@ public class LosslessJPEGCodec extends AbstractCodec {
 				dcTable = new int[nComponents];
 				acTable = new int[nComponents];
 				for (int i = 0; i < nComponents; i++) {
-					final int componentSelector = in.read();
+					in.read(); // componentSelector
 					final int tableSelector = in.read();
 					dcTable[i] = (tableSelector & 0xf0) >> 4;
 					acTable[i] = tableSelector & 0xf;
 				}
 				startPredictor = in.read();
-				endPredictor = in.read();
-				pointTransform = in.read() & 0xf;
+				in.read(); // endPredictor
+				in.read(); // least significant 4 bits = pointTransform
 
 				// read image data
 
@@ -182,10 +181,12 @@ public class LosslessJPEGCodec extends AbstractCodec {
 				int nextSample = 0;
 				while (nextSample < buf.length / nComponents) {
 					for (int i = 0; i < nComponents; i++) {
-						huffmanOptions.table = huffmanTables[dcTable[i]];
+						if (huffmanTables != null) {
+							huffmanOptions.table = huffmanTables[dcTable[i]];
+						}
 						int v = 0;
 
-						if (huffmanTables != null) {
+						if (huffmanOptions.table != null) {
 							v = huffman.getSample(bb, huffmanOptions);
 							if (nextSample == 0) {
 								v += (int) Math.pow(2, bitsPerSample - 1);
@@ -292,7 +293,7 @@ public class LosslessJPEGCodec extends AbstractCodec {
 						huffmanTables = new short[4][];
 					}
 					final int s = in.read();
-					final byte tableClass = (byte) ((s & 0xf0) >> 4);
+//					final byte tableClass = (byte) ((s & 0xf0) >> 4);
 					final byte destination = (byte) (s & 0xf);
 					final int[] nCodes = new int[16];
 					final ShortArray table = new ShortArray();

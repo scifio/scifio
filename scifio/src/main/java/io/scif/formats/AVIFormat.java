@@ -1054,11 +1054,15 @@ public class AVIFormat extends AbstractFormat {
 		{
 			boolean cached = true;
 			final int[] dims = meta.getLastDimensions();
-			if (dims == null) cached = false;
-			cached = cached && dims[0] <= x;
-			cached = cached && dims[1] <= y;
-			cached = cached && dims[2] + dims[0] >= x + w;
-			cached = cached && dims[3] + dims[1] >= y + h;
+			if (dims == null) {
+				cached = false;
+			}
+			else {
+				cached = cached && dims[0] <= x;
+				cached = cached && dims[1] <= y;
+				cached = cached && dims[2] + dims[0] >= x + w;
+				cached = cached && dims[3] + dims[1] >= y + h;
+			}
 			return cached;
 		}
 

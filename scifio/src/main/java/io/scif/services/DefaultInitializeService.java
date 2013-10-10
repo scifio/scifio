@@ -127,7 +127,7 @@ public class DefaultInitializeService extends AbstractService implements
 		// if dest is a different format than source, translate..
 		if (sFormat == dFormat) {
 			// otherwise we can directly cast, since they are the same types
-			destMeta = castMeta(sourceMeta, destMeta);
+			destMeta = castMeta(sourceMeta, destMeta.getClass());
 
 		}
 		else {
@@ -169,7 +169,7 @@ public class DefaultInitializeService extends AbstractService implements
 	 * </p>
 	 */
 	private <N extends Metadata, M extends Metadata> M castMeta(final N metadata,
-		final M endType)
+		final Class<M> endType)
 	{
 		@SuppressWarnings("unchecked")
 		final M meta = (M) metadata;

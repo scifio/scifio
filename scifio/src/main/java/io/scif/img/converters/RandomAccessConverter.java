@@ -43,7 +43,6 @@ import io.scif.img.ImgOptions;
 import io.scif.img.ImgUtilityService;
 import io.scif.util.FormatTools;
 import net.imglib2.RandomAccess;
-import net.imglib2.meta.Axes;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 

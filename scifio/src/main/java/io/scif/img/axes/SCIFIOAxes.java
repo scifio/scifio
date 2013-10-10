@@ -47,7 +47,7 @@ import net.imglib2.meta.AxisType;
 public final class SCIFIOAxes {
 
 	// -- Private constructor to prevent instantiation --
-	private SCIFIOAxes() {};
+	private SCIFIOAxes() {}
 
 	// -- Custom AxisType constants --
 

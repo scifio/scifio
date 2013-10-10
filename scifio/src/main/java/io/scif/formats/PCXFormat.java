@@ -199,7 +199,7 @@ public class PCXFormat extends AbstractFormat {
 			stream.seek(1);
 			final int version = stream.read();
 			stream.skipBytes(1);
-			final int bitsPerPixel = stream.read();
+			iMeta.setBitsPerPixel(stream.read());
 			final int xMin = stream.readShort();
 			final int yMin = stream.readShort();
 			final int xMax = stream.readShort();

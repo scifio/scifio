@@ -612,7 +612,7 @@ public class FakeFormat extends AbstractFormat {
 			for (CalibratedAxis axis : iMeta.getAxes()) {
 				axes[index] = axis.type().getLabel();
 				lengths[index] = iMeta.getAxisLength(axis);
-				scales[index] = axis.calibration();
+				scales[index] = axis.averageScale(0, lengths[index]);
 				units[index] = axis.unit();
 				index++;
 			}

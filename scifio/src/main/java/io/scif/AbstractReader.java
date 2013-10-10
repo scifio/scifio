@@ -217,6 +217,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			setMetadata(getFormat().createParser().parse(stream));
 		}
 		catch (final FormatException e) {
+			stream.close();
 			throw new IOException(e);
 		}
 		setSource(stream);

@@ -123,10 +123,6 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 
 		cache(cacheService.getKey(cacheId, index), cell);
 
-		int c = loader.getBitsPerElement();
-		for (final int l : cellDims)
-			c *= l;
-
 		return cell;
 	}
 

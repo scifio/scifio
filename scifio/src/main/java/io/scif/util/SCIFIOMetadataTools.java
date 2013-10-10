@@ -145,21 +145,7 @@ public class SCIFIOMetadataTools {
 	public static void verifyMinimumPopulated(final Metadata src,
 		final RandomAccessOutputStream out) throws FormatException
 	{
-		verifyMinimumPopulated(src, out, 0, 0);
-	}
-
-	/**
-	 * Checks whether the given metadata object has the minimum metadata populated
-	 * to successfully describe an Image.
-	 * 
-	 * @throws FormatException if there is a missing metadata field, or the
-	 *           metadata object is uninitialized
-	 */
-	public static void verifyMinimumPopulated(final Metadata src,
-		final RandomAccessOutputStream out, final int imageIndex)
-		throws FormatException
-	{
-		verifyMinimumPopulated(src, out, imageIndex, 0);
+		verifyMinimumPopulated(src, out, 0);
 	}
 
 	/**
@@ -170,8 +156,8 @@ public class SCIFIOMetadataTools {
 	 *           metadata object is uninitialized
 	 */
 	public static void verifyMinimumPopulated(final Metadata src,
-		final RandomAccessOutputStream out, final int imageIndex,
-		final long planeIndex) throws FormatException
+		final RandomAccessOutputStream out, final int imageIndex)
+		throws FormatException
 	{
 		if (src == null) {
 			throw new FormatException("Metadata object is null; "
@@ -183,7 +169,7 @@ public class SCIFIOMetadataTools {
 				+ "call Writer.setSource(<String/File/RandomAccessOutputStream>) first");
 		}
 
-		if (src.get(0).getAxes().size() == 0) {
+		if (src.get(imageIndex).getAxes().size() == 0) {
 			throw new FormatException("Axiscount #" + imageIndex + " is 0");
 		}
 	}

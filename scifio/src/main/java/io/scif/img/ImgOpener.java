@@ -410,7 +410,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		final double[] calibration = new double[m.get(imageIndex).getAxes().size()];
 		for (int i = 0; i < calibration.length; i++) {
-			calibration[i] = m.get(imageIndex).getAxis(i).calibration();
+			calibration[i] =
+				FormatTools
+					.getScale(m, imageIndex, m.get(imageIndex).getAxis(i).type());
 		}
 
 		return calibration;
@@ -421,7 +423,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * corresponding to the specified initialized {@link Reader}.
 	 */
 	private <T extends RealType<T>> ImgPlus<T> makeImgPlus(final Img<T> img,
-		final Reader r, final ImgOptions options) throws ImgIOException
+		final Reader r, final ImgOptions options)
 	{
 		final String id = r.getCurrentFile();
 		final File idFile = new File(id);
@@ -431,15 +433,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final AxisType[] dimTypes = getAxisTypes(options.getIndex(), r.getMetadata());
 
 		final Reader base;
-		try {
-			base = unwrap(r);
-		}
-		catch (final FormatException exc) {
-			throw new ImgIOException(exc);
-		}
-		catch (final IOException exc) {
-			throw new ImgIOException(exc);
-		}
+		base = unwrap(r);
 
 		final Metadata meta = r.getMetadata();
 		int rgbChannelCount =
@@ -470,7 +464,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * input data is intended to be viewed with multiple channels composited
 	 * together.
 	 */
-	private Reader unwrap(final Reader r) throws FormatException, IOException {
+	private Reader unwrap(final Reader r) {
 		if (!(r instanceof ReaderFilter)) return r;
 		final ReaderFilter rf = (ReaderFilter) r;
 		return rf.getTail();

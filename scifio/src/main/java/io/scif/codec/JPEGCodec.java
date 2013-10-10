@@ -109,7 +109,9 @@ public class JPEGCodec extends AbstractCodec {
 		final long fp = in.getFilePointer();
 		try {
 			try {
-				while (in.read() != (byte) 0xff || in.read() != (byte) 0xd8);
+				while (in.read() != (byte) 0xff || in.read() != (byte) 0xd8) {
+					/* Read to data. */
+				}
 				in.seek(in.getFilePointer() - 2);
 			}
 			catch (final EOFException e) {

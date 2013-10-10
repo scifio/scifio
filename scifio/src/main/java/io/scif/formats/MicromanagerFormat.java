@@ -228,7 +228,6 @@ public class MicromanagerFormat extends AbstractFormat {
 			final Metadata source, final io.scif.Metadata dest)
 			throws FormatException, IOException
 		{
-			final String currentId = "in-memory-json";
 			source.createImageMetadata(jsonData.length);
 			final Vector<Position> positions = new Vector<Position>();
 			for (int pos = 0; pos < jsonData.length; pos++) {
@@ -294,8 +293,9 @@ public class MicromanagerFormat extends AbstractFormat {
 			}
 		}
 
-		public String[] getImgaeUsedFiles(final int imageIndex,
-			final boolean noPixels)
+		@Override
+		public String[]
+				getImageUsedFiles(final int imageIndex, final boolean noPixels)
 		{
 			FormatTools.assertId(currentId, true, 1);
 			final Vector<String> files = new Vector<String>();

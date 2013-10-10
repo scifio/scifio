@@ -318,8 +318,7 @@ public class JPEG2000Format extends AbstractFormat {
 		// -- JPEG2000Parse methods --
 
 		public void parse(final RandomAccessInputStream stream,
-			final Metadata meta, final long maximumReadOffset) throws IOException,
-			FormatException
+			final Metadata meta, final long maximumReadOffset) throws IOException
 		{
 
 			meta.createImageMetadata(1);
@@ -493,6 +492,9 @@ public class JPEG2000Format extends AbstractFormat {
 							meta.setLut(lut);
 
 							break;
+						default:
+							// No-op
+							break;
 					}
 				}
 				// Exit or seek to the next metadata box
@@ -618,6 +620,9 @@ public class JPEG2000Format extends AbstractFormat {
 							in.skipBytes(2);
 							final String comment = in.readString(segmentLength - 4);
 							comments.add(comment);
+							break;
+						default:
+							// No-op
 							break;
 					}
 				}

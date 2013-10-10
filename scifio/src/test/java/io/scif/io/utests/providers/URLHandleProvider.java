@@ -64,7 +64,7 @@ class URLHandleProvider extends ContextualProvider implements
 		out.write(page);
 		out.close();
 
-		return new URLHandle(getContext(), f.toURL().toString());
+		return new URLHandle(getContext(), f.toURI().toURL().toString());
 	}
 
 }

@@ -45,7 +45,6 @@ import java.awt.image.DataBufferShort;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
-import java.io.IOException;
 
 /**
  * ColorModel that handles 8, 16 and 32 bits per channel signed data.
@@ -63,7 +62,7 @@ public class SignedColorModel extends ColorModel {
 	// -- Constructors --
 
 	public SignedColorModel(final int pixelBits, final int dataType,
-		final int nChannels) throws IOException
+		final int nChannels)
 	{
 		super(pixelBits, makeBitArray(nChannels, pixelBits), AWTImageTools
 			.makeColorSpace(nChannels), nChannels == 4, false,

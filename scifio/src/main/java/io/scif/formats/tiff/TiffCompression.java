@@ -53,7 +53,6 @@ import io.scif.codec.ZlibCodec;
 import io.scif.enumeration.CodedEnum;
 import io.scif.enumeration.EnumException;
 
-import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -269,7 +268,7 @@ public enum TiffCompression implements CodedEnum {
 
 	/** Decodes a strip of data. */
 	public byte[] decompress(final CodecService codecService, final byte[] input,
-		final CodecOptions options) throws FormatException, IOException
+		final CodecOptions options) throws FormatException
 	{
 		if (codecClass == null) {
 			throw new UnsupportedCompressionException("Sorry, " + getCodecName() +
@@ -322,7 +321,7 @@ public enum TiffCompression implements CodedEnum {
 
 	/** Encodes a strip of data. */
 	public byte[] compress(final CodecService codecService, final byte[] input,
-		final CodecOptions options) throws FormatException, IOException
+		final CodecOptions options) throws FormatException
 	{
 		if (codecClass == null) {
 			throw new FormatException("Sorry, " + getCodecName() +

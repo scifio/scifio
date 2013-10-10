@@ -210,7 +210,7 @@ public class ICSFormat extends AbstractFormat {
 						type = Axes.unknown();
 					}
 
-					imageMeta.addAxis(type, new Double(axesSizes[n]).longValue());;
+					imageMeta.addAxis(type, new Double(axesSizes[n]).longValue());
 				}
 			}
 
@@ -1213,18 +1213,16 @@ public class ICSFormat extends AbstractFormat {
 							// Didn't get a valid key so exit
 							break;
 						}
-						else {
-							// found a valid key, so build the value and create a mapping
-							final StringBuffer value = new StringBuffer(tokens[q++]);
-							for (; q < tokens.length; q++) {
-								value.append(" ");
-								value.append(tokens[q].trim());
-							}
-							final String k = key.toString().trim().replaceAll("\t", " ");
-							final String v = value.toString().trim();
-							addGlobalMeta(k, v);
-							meta.keyValPairs.put(k.toLowerCase(), v);
+						// found a valid key, so build the value and create a mapping
+						final StringBuffer value = new StringBuffer(tokens[q++]);
+						for (; q < tokens.length; q++) {
+							value.append(" ");
+							value.append(tokens[q].trim());
 						}
+						final String k = key.toString().trim().replaceAll("\t", " ");
+						final String v = value.toString().trim();
+						addGlobalMeta(k, v);
+						meta.keyValPairs.put(k.toLowerCase(), v);
 					}
 					else {
 						// Map lookup wasn't null, so we move the keyMap to the next node
@@ -1436,7 +1434,7 @@ public class ICSFormat extends AbstractFormat {
 				// can display as RGB, we need to separate them
 				getStream().seek(
 					metadata.offset +
-						(long) len *
+						len *
 						FormatTools.positionToRaster(0, this, new long[]{coordinates[0], 0,
 							coordinates[2]}));
 				if (!gzip && data == null) {
@@ -1685,9 +1683,7 @@ public class ICSFormat extends AbstractFormat {
 			metadata.icsId = FormatTools.checkSuffix(id, "ics") ? id : makeIcsId(id);
 		}
 
-		private void initialize(final int imageIndex) throws FormatException,
-			IOException
-		{
+		private void initialize(final int imageIndex) throws IOException {
 			final String currentId =
 				getMetadata().idsId != null ? getMetadata().idsId : getMetadata().icsId;
 

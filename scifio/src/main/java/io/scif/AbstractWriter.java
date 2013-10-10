@@ -296,8 +296,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	// -- Helper methods --
 
 	/** Sets up the initialized array and ensures this Writer is ready for writing */
-	private void initialize(final int imageIndex) throws FormatException,
-		IOException
+	private void initialize(final int imageIndex) throws FormatException
 	{
 		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
 		initialized = new boolean[metadata.getImageCount()][];
@@ -316,8 +315,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		final byte[] buf, final long[] planeMin, final long[] planeMax)
 		throws FormatException
 	{
-		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out, imageIndex,
-			planeIndex);
+		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out, imageIndex);
 
 		if (buf == null) throw new FormatException("Buffer cannot be null.");
 		long planes = metadata.get(imageIndex).getPlaneCount();

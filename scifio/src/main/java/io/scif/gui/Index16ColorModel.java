@@ -54,7 +54,6 @@ public class Index16ColorModel extends ColorModel {
 	/** Lookup tables. */
 	private short[] redShort, greenShort, blueShort, alphaShort;
 
-	private final int pixelBits;
 	private final boolean littleEndian;
 
 	// -- Constructors --
@@ -77,7 +76,6 @@ public class Index16ColorModel extends ColorModel {
 		if (table.length > 1) greenShort = table[1];
 		if (table.length > 2) blueShort = table[2];
 		if (table.length > 3) alphaShort = table[3];
-		pixelBits = bits;
 	}
 
 	// -- Index16ColorModel API methods --

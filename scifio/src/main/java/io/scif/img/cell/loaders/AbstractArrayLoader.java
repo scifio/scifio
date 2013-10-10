@@ -212,7 +212,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			for (CalibratedAxis axis : reader.getMetadata().get(0).getAxesNonPlanar())
 			{
 				inSubregion =
-					inSubregion && inRange(subRegion.getRange(axis.type()), index++);
+					inSubregion &&
+						inRange(subRegion.getRange(axis.type()), npIndices[index++]);
 			}
 		}
 
@@ -222,9 +223,9 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	/**
 	 * Returns true if the provided {@link DimRange} contains the given index
 	 */
-	private boolean inRange(final DimRange range, final int index) {
+	private boolean inRange(final DimRange range, final long value) {
 		if (range == null) return true;
-		if (range.contains(new Long(index))) return true;
+		if (range.contains(value)) return true;
 
 		return false;
 	}

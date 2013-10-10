@@ -198,7 +198,7 @@ public class FITSFormat extends AbstractFormat {
 
 				addGlobalMeta(key, value);
 			}
-			while (in.read() == 0x20);
+			while (in.read() == 0x20) { /* Read to pixel data. */ }
 			meta.setPixelOffset(in.getFilePointer() - 1);
 		}
 	}

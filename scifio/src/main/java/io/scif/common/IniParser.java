@@ -145,7 +145,7 @@ public class IniParser {
 
 			// parse key/value pair
 			final int equals = line.indexOf("=");
-			if (equals < 0) throw new IOException(no + ": bad line");
+			if (equals < 0 || attrs == null) throw new IOException(no + ": bad line");
 			final String key = line.substring(0, equals).trim();
 			final String value = line.substring(equals + 1).trim();
 			attrs.put(key, value);

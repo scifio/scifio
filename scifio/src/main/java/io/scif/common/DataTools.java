@@ -1007,17 +1007,6 @@ public final class DataTools {
 
 	// -- Helper methods --
 
-	private static String sizeAsProduct(final int... sizes) {
-		final StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (final int size : sizes) {
-			if (first) first = false;
-			else sb.append(" x ");
-			sb.append(size);
-		}
-		return sb.toString();
-	}
-
 	private static String sizeAsProduct(final long... sizes) {
 		final StringBuilder sb = new StringBuilder();
 		boolean first = true;

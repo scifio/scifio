@@ -792,7 +792,6 @@ public class NativeQTFormat extends AbstractFormat {
 				}
 
 				// update the number of pixel bytes written
-				final int planeOffset = numBytes;
 				numBytes += (planeSize + pad * height);
 				out.seek(BYTE_COUNT_OFFSET);
 				out.writeInt(numBytes + 8);
@@ -1321,7 +1320,7 @@ public class NativeQTFormat extends AbstractFormat {
 						if ("zlib".equals(stream.readString(4))) {
 							atomSize = stream.readInt();
 							stream.skipBytes(4);
-							final int uncompressedSize = stream.readInt();
+							stream.readInt(); // uncompressedSize
 
 							final byte[] b = new byte[(int) (atomSize - 12)];
 							stream.read(b);
@@ -1481,7 +1480,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 		/** Uncompresses an image plane according to the the codec identifier. */
 		private static byte[] uncompress(final byte[] pixs, final String code,
-			final Metadata meta) throws FormatException, IOException
+			final Metadata meta) throws FormatException
 		{
 			final CodecOptions options = new MJPBCodecOptions();
 			options.width = (int)meta.get(0).getAxisLength(Axes.X);

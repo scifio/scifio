@@ -77,7 +77,7 @@ public class LocationTest {
 		final File tmpDirectory =
 			new File(System.getProperty("java.io.tmpdir"),
 				System.currentTimeMillis() + "-location-test");
-		final boolean success = tmpDirectory.mkdirs();
+		tmpDirectory.mkdirs();
 		tmpDirectory.deleteOnExit();
 
 		final File hiddenFile =

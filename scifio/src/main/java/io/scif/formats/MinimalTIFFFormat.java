@@ -303,13 +303,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			if (!fileOnly) {
 				if (ifds != null) {
 					for (final IFD ifd : ifds) {
-						try {
-							if (ifd.getOnDemandStripOffsets() != null) {
-								ifd.getOnDemandStripOffsets().close();
-							}
-						}
-						catch (final FormatException e) {
-							log().debug("", e);
+						if (ifd.getOnDemandStripOffsets() != null) {
+							ifd.getOnDemandStripOffsets().close();
 						}
 					}
 				}

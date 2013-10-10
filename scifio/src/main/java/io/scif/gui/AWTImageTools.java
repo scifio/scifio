@@ -667,12 +667,7 @@ public final class AWTImageTools {
 			colorModel = makeColorModel(c, type);
 			if (colorModel == null) return null;
 			if (buffer instanceof UnsignedIntBuffer) {
-				try {
-					colorModel = new UnsignedIntColorModel(32, type, c);
-				}
-				catch (final IOException e) {
-					return null;
-				}
+				colorModel = new UnsignedIntColorModel(32, type, c);
 			}
 		}
 

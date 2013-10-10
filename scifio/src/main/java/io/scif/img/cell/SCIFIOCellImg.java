@@ -103,6 +103,7 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 
 	@Override
 	public SCIFIOCellImg<T, A, C> copy() {
+		@SuppressWarnings("unchecked")
 		final SCIFIOCellImg<T, A, C> copy =
 			(SCIFIOCellImg<T, A, C>) factory().create(dimension,
 				firstElement().createVariable());

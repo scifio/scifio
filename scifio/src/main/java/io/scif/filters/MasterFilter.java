@@ -69,6 +69,7 @@ import org.scijava.InstantiableException;
  * </p>
  * 
  * @author Mark Hiner
+ * @param <T> The underlying type of Filter.
  * @see Filter
  */
 public interface MasterFilter<T extends Contextual> extends Filter {

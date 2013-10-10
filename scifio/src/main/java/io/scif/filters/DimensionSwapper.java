@@ -182,8 +182,10 @@ public class DimensionSwapper extends AbstractReaderFilter {
 			(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null || ((DimensionSwapperMetadata) getMetadata())
 				.getOutputOrder().length != getImageCount()))
 		{
+			@SuppressWarnings("unchecked")
+			List<AxisType>[] axisTypeList = new ArrayList[getImageCount()];
 			((DimensionSwapperMetadata) getMetadata())
-				.setOutputOrder(new ArrayList[getImageCount()]);
+				.setOutputOrder(axisTypeList);
 
 			// NB: Create our own copy of the Metadata,
 			// which we can manipulate safely.

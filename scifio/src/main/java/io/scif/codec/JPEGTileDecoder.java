@@ -87,11 +87,11 @@ public class JPEGTileDecoder extends AbstractContextual {
 	public void
 		initialize(final RandomAccessInputStream in, final int imageWidth)
 	{
-		initialize(in, 0, 0, imageWidth);
+		initialize(in, 0, imageWidth);
 	}
 
 	public void initialize(final RandomAccessInputStream in, final int y,
-		final int h, final int imageWidth)
+		final int h)
 	{
 		this.in = in;
 		tiles = new TileCache(getContext(), y, h);
@@ -144,7 +144,7 @@ public class JPEGTileDecoder extends AbstractContextual {
 
 			consumer = new TileConsumer(producer, y, h);
 			producer.startProduction(consumer);
-			while (producer.isConsumer(consumer));
+			while (producer.isConsumer(consumer)) { /* Loop over image consumers */ }
 		}
 		catch (final IOException e) {}
 	}
@@ -154,9 +154,6 @@ public class JPEGTileDecoder extends AbstractContextual {
 			return tiles.get(0, y, consumer.getWidth(), 1);
 		}
 		catch (final FormatException e) {
-			log.debug("", e);
-		}
-		catch (final IOException e) {
 			log.debug("", e);
 		}
 		return null;
@@ -239,12 +236,9 @@ public class JPEGTileDecoder extends AbstractContextual {
 			}
 			else if (y < yy) return;
 			try {
-				tiles.add(pixels, x, y, w, h);
+				tiles.add(pixels, x, y, w);
 			}
 			catch (final FormatException e) {
-				log.debug("", e);
-			}
-			catch (final IOException e) {
 				log.debug("", e);
 			}
 		}
@@ -263,12 +257,9 @@ public class JPEGTileDecoder extends AbstractContextual {
 			}
 			else if (y < yy) return;
 			try {
-				tiles.add(pixels, x, y, w, h);
+				tiles.add(pixels, x, y, w);
 			}
 			catch (final FormatException e) {
-				log.debug("", e);
-			}
-			catch (final IOException e) {
 				log.debug("", e);
 			}
 		}
@@ -308,8 +299,8 @@ public class JPEGTileDecoder extends AbstractContextual {
 			codec.setContext(ctx);
 		}
 
-		public void add(final byte[] pixels, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+		public void add(final byte[] pixels, final int x, final int y, final int w)
+			throws FormatException
 		{
 			toCompress.add(pixels);
 			row++;
@@ -331,8 +322,8 @@ public class JPEGTileDecoder extends AbstractContextual {
 			}
 		}
 
-		public void add(final int[] pixels, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+		public void add(final int[] pixels, final int x, final int y, final int w)
+			throws FormatException
 		{
 			final byte[] buf = new byte[pixels.length * 3];
 			for (int i = 0; i < pixels.length; i++) {
@@ -363,7 +354,7 @@ public class JPEGTileDecoder extends AbstractContextual {
 		}
 
 		public byte[] get(final int x, final int y, final int w, final int h)
-			throws FormatException, IOException
+			throws FormatException
 		{
 			final Region[] keys = compressedTiles.keySet().toArray(new Region[0]);
 			Region r = new Region(x, y, w, h);

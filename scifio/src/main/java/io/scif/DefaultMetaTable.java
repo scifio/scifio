@@ -76,7 +76,11 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 
 		if (list == null) list = new Vector<Object>();
 
-		if (list instanceof Vector) ((Vector<Object>) list).add(value);
+		if (list instanceof Vector) {
+			@SuppressWarnings("unchecked")
+			Vector<Object> valueList = ((Vector<Object>) list);
+			valueList.add(value);
+		}
 		else {
 			final Vector<Object> v = new Vector<Object>();
 			v.add(list);

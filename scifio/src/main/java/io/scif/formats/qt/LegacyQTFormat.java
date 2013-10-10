@@ -286,7 +286,7 @@ public class LegacyQTFormat extends AbstractFormat {
 		}
 	}
 
-	public void close(final boolean fileOnly) throws IOException {
+	public void close(final boolean fileOnly) {
 		try {
 			final ReflectedUniverse r = scifio().qtJava().getUniverse();
 

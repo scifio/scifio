@@ -45,7 +45,6 @@ import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
-import java.io.IOException;
 
 /**
  * ColorModel that handles unsigned 32 bit data.
@@ -54,14 +53,13 @@ public class UnsignedIntColorModel extends ColorModel {
 
 	// -- Fields --
 
-	private final int pixelBits;
 	private final int nChannels;
 	private final ComponentColorModel helper;
 
 	// -- Constructors --
 
 	public UnsignedIntColorModel(final int pixelBits, final int dataType,
-		final int nChannels) throws IOException
+		final int nChannels)
 	{
 		super(pixelBits, makeBitArray(nChannels, pixelBits), AWTImageTools
 			.makeColorSpace(nChannels), nChannels == 4, false,
@@ -71,7 +69,6 @@ public class UnsignedIntColorModel extends ColorModel {
 			new ComponentColorModel(AWTImageTools.makeColorSpace(nChannels),
 				nChannels == 4, false, Transparency.TRANSLUCENT, dataType);
 
-		this.pixelBits = pixelBits;
 		this.nChannels = nChannels;
 	}
 
@@ -111,17 +108,17 @@ public class UnsignedIntColorModel extends ColorModel {
 
 	@Override
 	public int getBlue(final int pixel) {
-		return getComponent(pixel, 3);
+		return getComponent(pixel);
 	}
 
 	@Override
 	public int getGreen(final int pixel) {
-		return getComponent(pixel, 2);
+		return getComponent(pixel);
 	}
 
 	@Override
 	public int getRed(final int pixel) {
-		return getComponent(pixel, 1);
+		return getComponent(pixel);
 	}
 
 	@Override
@@ -170,7 +167,7 @@ public class UnsignedIntColorModel extends ColorModel {
 
 	// -- Helper methods --
 
-	private int getComponent(final int pixel, final int index) {
+	private int getComponent(final int pixel) {
 		final long v = pixel & 0xffffffffL;
 		double f = v / (Math.pow(2, 32) - 1);
 		f *= 255;

@@ -53,7 +53,7 @@ public class RPZACodec extends AbstractCodec {
 
 	// -- Fields --
 
-	private int totalBlocks, pixelPtr, rowPtr, stride;
+	private int pixelPtr, rowPtr, stride;
 
 	@Override
 	public byte[] compress(final byte[] input, final CodecOptions options)
@@ -94,10 +94,10 @@ public class RPZACodec extends AbstractCodec {
 		final int[] pixels = new int[plane];
 		final byte[] rtn = new byte[plane * 3];
 
-		while (in.read() != (byte) 0xe1);
+		while (in.read() != (byte) 0xe1) { /* Read to block metadata */ }
 		in.skipBytes(3);
 
-		totalBlocks = ((options.width + 3) / 4) * ((options.height + 3) / 4);
+//		totalBlocks = ((options.width + 3) / 4) * ((options.height + 3) / 4);
 
 		while (in.getFilePointer() + 2 < in.length()) {
 			opcode = in.readByte();
@@ -228,7 +228,7 @@ public class RPZACodec extends AbstractCodec {
 			pixelPtr = 0;
 			rowPtr += stride * 4;
 		}
-		totalBlocks--;
+//		totalBlocks--;
 	}
 
 }

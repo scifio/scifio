@@ -129,7 +129,7 @@ public class DefaultFormatService extends AbstractService implements
 	}
 
 	@Override
-	public <M extends Metadata> boolean addFormat(final Format format) {
+	public boolean addFormat(final Format format) {
 		// already have an entry for this format
 		if (formatMap().get(format.getClass()) != null) return false;
 

@@ -163,7 +163,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(Reader, RealType, ImgOptions)
+	 * @see ImgOpener#openImg(Reader, ImgOptions)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final Reader reader, final T type, final ImgOptions imgOptions)

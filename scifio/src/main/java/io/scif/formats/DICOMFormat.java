@@ -1382,12 +1382,12 @@ public class DICOMFormat extends AbstractFormat {
 						options.maxBytes = planeSize / bytesPerPixel;
 						for (int q = 0; q < bytesPerPixel; q++) {
 							new PackbitsCodec().decompress(in, options);
-							while (in.read() == 0);
+							while (in.read() == 0) { /* Read to non-0 data */ }
 							in.seek(in.getFilePointer() - 1);
 						}
 					}
 					in.skipBytes(i == 0 ? 64 : 53);
-					while (in.read() == 0);
+					while (in.read() == 0) { /* Read to non-0 data */ }
 					offsets[i] = in.getFilePointer() - 1;
 				}
 				else if (isJPEG || isJP2K) {
@@ -1517,9 +1517,7 @@ public class DICOMFormat extends AbstractFormat {
 		 * contain a bunch of extra metadata and log files. We do not parse these
 		 * extra files, but do locate and attach them to the DICOM file(s).
 		 */
-		private void attachCompanionFiles(final Vector<String> companionFiles)
-			throws IOException
-		{
+		private void attachCompanionFiles(final Vector<String> companionFiles) {
 			final Location parent =
 				new Location(getContext(), currentId).getAbsoluteFile().getParentFile();
 			final Location grandparent = parent.getParentFile();
@@ -1782,7 +1780,7 @@ public class DICOMFormat extends AbstractFormat {
 			int vr = tag.getVR();
 
 			if (id != null) {
-				if (vr == DICOMUtils.IMPLICIT_VR && id != null) {
+				if (vr == DICOMUtils.IMPLICIT_VR) {
 					vr = (id.charAt(0) << 8) + id.charAt(1);
 					tag.setVR(vr);
 				}
@@ -1917,7 +1915,7 @@ public class DICOMFormat extends AbstractFormat {
 						for (int i = 0; i < bpp; i++) {
 							tmp[i] = codec.decompress(getStream(), options);
 							if (planeIndex < meta.getImagesPerFile() - 1 || i < bpp - 1) {
-								while (getStream().read() == 0);
+								while (getStream().read() == 0) { /* Read to non-0 data */ }
 								getStream().seek(getStream().getFilePointer() - 1);
 							}
 						}
@@ -1940,7 +1938,7 @@ public class DICOMFormat extends AbstractFormat {
 							System.arraycopy(tmp, 0, t, 0, tmp.length);
 						}
 						if (planeIndex < meta.getImagesPerFile() - 1 || c < ec - 1) {
-							while (getStream().read() == 0);
+							while (getStream().read() == 0) { /* Read to non-0 data */ }
 							getStream().seek(getStream().getFilePointer() - 1);
 						}
 					}
@@ -2079,7 +2077,7 @@ public class DICOMFormat extends AbstractFormat {
 			final boolean bigEndianTransferSyntax) throws FormatException,
 			IOException
 		{
-			return getNextTag(stream, false, false);
+			return getNextTag(stream, bigEndianTransferSyntax, false);
 		}
 
 		private static DICOMTag getNextTag(final RandomAccessInputStream stream,

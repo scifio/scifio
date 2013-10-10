@@ -60,6 +60,7 @@ import java.util.Vector;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 
 import org.scijava.plugin.Plugin;
 
@@ -280,8 +281,10 @@ public class PICTFormat extends AbstractFormat {
 				// skip over v2 header -- don't need it here
 				// stream.skipBytes(26);
 				stream.skipBytes(6);
-				final int pixelsPerInchX = stream.readInt();
-				final int pixelsPerInchY = stream.readInt();
+				int pixelsPerInchX = stream.readInt();
+				int pixelsPerInchY = stream.readInt();
+				iMeta.addAxis(new DefaultLinearAxis(Axes.X, "in", pixelsPerInchX));
+				iMeta.addAxis(new DefaultLinearAxis(Axes.Y, "in", pixelsPerInchY));
 				stream.skipBytes(4);
 				final int y = stream.readShort();
 				final int x = stream.readShort();
@@ -352,10 +355,10 @@ public class PICTFormat extends AbstractFormat {
 					meta.getJpegOffsets().add(in.getFilePointer() + 2);
 					meta.get(0).setAxisLength(Axes.CHANNEL, 3);
 					while ((in.readShort() & 0xffff) != 0xffd9 &&
-						in.getFilePointer() < in.length());
+						in.getFilePointer() < in.length()) { /* Read to end of 0xffd9 */ }
 					while (in.getFilePointer() < in.length()) {
 						while ((in.readShort() & 0xffff) != 0xffd8 &&
-							in.getFilePointer() < in.length());
+							in.getFilePointer() < in.length()) { /* Read to jpeg offsets */ }
 						if (in.getFilePointer() < in.length()) {
 							meta.getJpegOffsets().add(in.getFilePointer() - 2);
 						}
@@ -408,7 +411,7 @@ public class PICTFormat extends AbstractFormat {
 				// read the lookup table
 
 				in.skipBytes(4);
-				final int flags = in.readShort();
+				in.readShort(); // flags
 				int count = in.readShort();
 
 				count++;
@@ -703,10 +706,15 @@ public class PICTFormat extends AbstractFormat {
 					v.write(new JPEGCodec().decompress(s, options));
 				}
 
+				s.close();
 				s = new RandomAccessInputStream(getContext(), v);
 				s.seek(0);
-				readPlane(s, imageIndex, planeMin, planeMax, plane);
-				s.close();
+				try {
+					readPlane(s, imageIndex, planeMin, planeMax, plane);
+				}
+				finally {
+					s.close();
+				}
 
 				return plane;
 			}

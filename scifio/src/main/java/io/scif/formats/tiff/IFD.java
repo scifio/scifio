@@ -515,7 +515,7 @@ public class IFD extends HashMap<Integer, Object> {
 		return nTiles;
 	}
 
-	public boolean isTiled() throws FormatException {
+	public boolean isTiled() {
 		final Object offsets = get(new Integer(STRIP_OFFSETS));
 		final Object tileWidth = get(new Integer(TILE_WIDTH));
 		return offsets == null && tileWidth != null;
@@ -779,7 +779,7 @@ public class IFD extends HashMap<Integer, Object> {
 		return offsets;
 	}
 
-	public OnDemandLongArray getOnDemandStripOffsets() throws FormatException {
+	public OnDemandLongArray getOnDemandStripOffsets() {
 		final int tag = isTiled() ? TILE_OFFSETS : STRIP_OFFSETS;
 		final Object offsets = getIFDValue(tag);
 		if (offsets instanceof OnDemandLongArray) {
@@ -923,7 +923,6 @@ public class IFD extends HashMap<Integer, Object> {
 		final TiffRational yResolution = getIFDRationalValue(Y_RESOLUTION);
 		final double y = yResolution == null ? 0 : 1 / yResolution.doubleValue();
 
-		final int resolutionUnit = getIFDIntValue(RESOLUTION_UNIT);
 		final int multiplier = getResolutionMultiplier();
 		return y * multiplier;
 	}
