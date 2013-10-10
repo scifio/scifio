@@ -161,8 +161,9 @@ public interface ImageMetadata extends HasMetaTable {
 	void setAxis(int index, CalibratedAxis axis);
 
 	/**
-	 * As {@link #setAxis(int, CalibratedAxis)} but using the default
-	 * calibration values, per {@link FormatTools#calibrate(AxisType)}.
+	 * Sets the type of the axis at the specified index, creating a default
+	 * {@link CalibratedAxis} using {@link FormatTools#createAxis(AxisType)} if
+	 * one is not already defined.
 	 */
 	void setAxisType(int index, AxisType axis);
 

@@ -291,7 +291,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void setAxisType(final int index, final AxisType axisType) {
-		setAxis(index, FormatTools.createAxis(axisType));
+		final CalibratedAxis axis = getAxis(index);
+		if (axis == null) setAxis(index, FormatTools.createAxis(axisType));
+		else axis.setType(axisType);
 	}
 
 	// -- Getters --
