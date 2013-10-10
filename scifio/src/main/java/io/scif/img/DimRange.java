@@ -72,7 +72,7 @@ public class DimRange {
 	// -- Constants --
 
 	private static final String REGION_PATTERN =
-		"[\\d]*(-[\\d]*(:[\\d]*)?)?(,[\\d]*(-[\\d]*(:[\\d])?)?)*?";
+		"\\d*(-\\d*(:\\d*)?)?(,\\d*(-\\d*(:\\d)?)?)*?";
 
 	// -- Fields --
 
