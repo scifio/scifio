@@ -97,7 +97,7 @@ public interface ImageMetadata extends HasMetaTable {
 	 * planes.
 	 * </p>
 	 * 
-	 * @see Reader#openPlane(int, int)
+	 * @see Reader#openPlane(int, long)
 	 */
 	void setPlanarAxisCount(final int count);
 
@@ -170,9 +170,8 @@ public interface ImageMetadata extends HasMetaTable {
 	void setAxis(int index, CalibratedAxis axis);
 
 	/**
-	 * Sets the type of the axis at the specified index, creating a default
-	 * {@link CalibratedAxis} using {@link FormatTools#createAxis(AxisType)} if
-	 * one is not already defined.
+	 * As {@link #setAxis(int, CalibratedAxis)} but using the default
+	 * calibration values, per {@link FormatTools#createAxis(AxisType)}.
 	 */
 	void setAxisType(int index, AxisType axis);
 
@@ -388,8 +387,13 @@ public interface ImageMetadata extends HasMetaTable {
 	void addAxis(final CalibratedAxis axis, final long value);
 
 	/**
+<<<<<<< HEAD
 	 * As {@link #addAxis(CalibratedAxis, long)} using a default
 	 * {@link CalibratedAxis} created by {@link FormatTools#createAxis(AxisType)}.
+=======
+	 * As {@link #addAxis(CalibratedAxis, long)} using the default calibration
+	 * value, per {@link FormatTools#createAxis(AxisType)}.
+>>>>>>> 92cbcd9... Remoed Javadoc warnings
 	 */
 	void addAxis(final AxisType axisType, final long value);
 

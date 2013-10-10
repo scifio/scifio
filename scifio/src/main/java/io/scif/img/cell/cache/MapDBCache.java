@@ -71,11 +71,10 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	// -- CacheService API Methods --
 
 	/**
-	 * @see io.scifio.io.img.cell.CacheService#clearCache(java.lang.String) <p>
-	 *      NB: Disables caching on finalize in cleared cells. This is done to
-	 *      prevent immortal cells. Caching must be re-enabled per-cell if
-	 *      desired.
-	 *      </p>
+	 * NB: Disables caching on finalize in cleared cells. This is done to prevent
+	 * immortal cells. Caching must be re-enabled per-cell if desired.
+	 * 
+	 * @see CacheService#clearCache(String)
 	 */
 	@Override
 	public void clearCache(final String cacheId) {

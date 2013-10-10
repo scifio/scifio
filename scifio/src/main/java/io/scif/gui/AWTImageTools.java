@@ -604,9 +604,8 @@ public final class AWTImageTools {
 	/**
 	 * Creates a blank image with the given dimensions and transfer type.
 	 * 
-	 * @param w Width of image plane.
-	 * @param h Height of image plane.
-	 * @param c Number of channels.
+	 * @param axes the ordered axis lengths for the new image. Only interested in
+	 *          {@link Axes#CHANNEL}, {@link Axes#X} and {@link Axes#Y}.
 	 * @param type One of the following types:
 	 *          <ul>
 	 *          <li>FormatTools.INT8 <b>** unsupported for now **</b></li>
@@ -846,10 +845,9 @@ public final class AWTImageTools {
 	 * @param plane - Plane to scale
 	 * @param r - Reader used to open the provided Plane
 	 * @param imageIndex - index of the image the plane was read from
-	 * @param w - Plane width
-	 * @param h - Plane height
-	 * @param thumbX - width to scale to
-	 * @param thumbY - height to scale to
+	 * @param axes - Ordered list of planar dimension lengths
+	 * @param thumbSizeX - width to scale to
+	 * @param thumbSizeY - height to scale to
 	 * @param pad - whether to pad when scaling
 	 * @throws FormatException
 	 * @throws IOException

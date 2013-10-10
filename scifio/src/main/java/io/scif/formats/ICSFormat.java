@@ -314,9 +314,6 @@ public class ICSFormat extends AbstractFormat {
 
 		/**
 		 * Convenience method to directly access the hashtable.
-		 * 
-		 * @param key
-		 * @return
 		 */
 		public String get(final String key) {
 			return keyValPairs.get(key);

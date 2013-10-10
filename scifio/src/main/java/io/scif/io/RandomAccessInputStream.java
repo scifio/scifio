@@ -137,7 +137,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 	/**
 	 * Sets the native encoding of the stream.
 	 * 
-	 * @see loci.common.Constants#ENCODING
+	 * @see Constants#ENCODING
 	 */
 	public void setEncoding(final String encoding) {
 		this.encoding = encoding;

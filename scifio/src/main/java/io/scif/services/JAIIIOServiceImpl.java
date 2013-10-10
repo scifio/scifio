@@ -120,8 +120,8 @@ public class JAIIIOServiceImpl extends AbstractService implements JAIIIOService
 	}
 
 	/**
-	 * @deprecated
-	 * @see JAIIIOService#writeImage(OutputStream, BufferedImage)
+	 * @deprecated use JAIIIOService#writeImage(OutputStream, BufferedImage,
+	 *             JPEG2000CodecOptions)
 	 */
 	@Override
 	@Deprecated

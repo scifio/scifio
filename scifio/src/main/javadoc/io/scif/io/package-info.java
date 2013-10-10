@@ -40,8 +40,8 @@
  * <h3>Changes since Bio-Formats</h3>
  * <ul>
  *  <li>
- *  Added {@link IStreamAccess} interface. This interface is used as a middle
- *  ground for {@link IRandomAccess} implementations that will be stream based,
+ *  Added {@link io.scif.io.IStreamAccess} interface. This interface is used as a middle
+ *  ground for {@link io.scif.io.IRandomAccess} implementations that will be stream based,
  *  and extracts many methods that were injected in an abstract layer in
  *  Bio-Formats.
  *  </li>
@@ -65,8 +65,8 @@
  *  </p>
  *  </li>
  *  <li>
- *  Remove id maps from {@link Location}. Should be able to construct with just
- *  the {@link RandomAccessInputStream}.
+ *  Remove id maps from {@link io.scif.io.Location}. Should be able to construct with just
+ *  the {@link io.scif.io.RandomAccessInputStream}.
  *  </li>
  * </ul>
  * 

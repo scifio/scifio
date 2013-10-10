@@ -47,7 +47,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
 
 /**
- * Default {@link PlanarConverterService} implementation.
+ * Default {@link PlaneConverterService} implementation.
  * 
  * @author Mark Hiner
  */

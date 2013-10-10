@@ -40,8 +40,9 @@
  * <ul>
  *  <li>
  *  Because of the split between SCIFIO and OME-XML classes, the Bio-Formats
- *  tools class was split into {@link ome.xml.services.DefaultOMEXMLMetadataService} and
- *  {@link io.scif.util.SCIFIOMetadataTools}.
+ *  tools class was split into {@code ome.xml.services.DefaultOMEXMLMetadataService} and
+ *  {@link io.scif.util.SCIFIOMetadataTools}. The OMEXMLMetadata classes can now
+ *  be found in the <a href=https://github.com/scifio/ome-formats>OME-Formats project</a>.
  *  </li>
  * </ul>
  * 

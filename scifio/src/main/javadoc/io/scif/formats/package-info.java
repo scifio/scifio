@@ -34,7 +34,7 @@
  * #L%
  */
 /**
- * Provides {@link Format} implementations for all file formats that are
+ * Provides {@link io.scif.Format} implementations for all file formats that are
  * supported by default in SCIFIO.
  * <p>
  * The set of default formats are all open formats that can be freely read and

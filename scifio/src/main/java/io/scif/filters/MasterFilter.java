@@ -42,7 +42,7 @@ import org.scijava.Contextual;
 import org.scijava.InstantiableException;
 
 /**
- * An entry point for toggling and configuring {@link io.scif.filter.Filter}s.
+ * An entry point for toggling and configuring {@link Filter}s.
  * <p>
  * When instantiated, all appropriately typed {@code Filter} classes should be
  * discovered by this class. As {@link #enable(Class)} and
@@ -50,7 +50,7 @@ import org.scijava.InstantiableException;
  * a stack of filters is built.
  * </p>
  * <p>
- * NB: this interface extends {@link io.scif.Filter} and concrete
+ * NB: this interface extends {@link Filter} and concrete
  * {@code MasterFilter} implementations should similarly extend the interface
  * they wrap. However, instead of {@link io.scif.filters.Filter#getParent()}
  * returning the wrapped object, it should return the head of this
@@ -69,7 +69,7 @@ import org.scijava.InstantiableException;
  * </p>
  * 
  * @author Mark Hiner
- * @see io.scif.filters.Filter
+ * @see Filter
  */
 public interface MasterFilter<T extends Contextual> extends Filter {
 

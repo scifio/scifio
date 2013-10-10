@@ -44,7 +44,7 @@
  *  is prohibitive to external development, as per {@code readers.txt} in
  *  {@link io.scif}. Instead, all services are now managed through the
  *  scijava-common {@link org.scijava.Context}. New services should be
- *  annotated using {@link io.scif.services.TypedService}.
+ *  annotated using {@link io.scif.SCIFIOService}.
  *  </li>
  *  <li>
  *  As the old ServiceFactory paradigm has been removed, this package has

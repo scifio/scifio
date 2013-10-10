@@ -52,7 +52,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  * Generalized {@link PlaneConverter} implementation. Can populate any
- * {@link ImgPlus} using its {@RandomAccess}. May be slower than
+ * {@link ImgPlus} using its {@link RandomAccess}. May be slower than
  * other, optimized methods.
  * 
  * @author Mark Hiner

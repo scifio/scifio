@@ -91,7 +91,7 @@ public interface LuraWaveService extends SCIFIOService, Optional {
 
 	/**
 	 * Wraps
-	 * {@link com.luratech.lwf.lwfDecoder#lwfDecoder(InputStream, String, String)}
+	 * {@code com.luratech.lwf.lwfDecoder#lwfDecoder(InputStream, String, String)}
 	 * .
 	 * 
 	 * @throws IOException If parsing of the image header fails.
@@ -101,15 +101,15 @@ public interface LuraWaveService extends SCIFIOService, Optional {
 	public void initialize(InputStream stream) throws IOException,
 		DependencyException, ServiceException;
 
-	/** Wraps {@link com.luratech.lwf.lwfDecoder#getWidth()} */
+	/** Wraps {@code com.luratech.lwf.lwfDecoder#getWidth()} */
 	public int getWidth();
 
-	/** Wraps {@link com.luratech.lwf.lwfDecoder#getHeight()} */
+	/** Wraps {@code com.luratech.lwf.lwfDecoder#getHeight()} */
 	public int getHeight();
 
 	/**
 	 * Wraps
-	 * {@link com.luratech.lwf.lwfDecoder#decodeToMemoryGray8(byte[], int, int, int)}
+	 * {@code com.luratech.lwf.lwfDecoder#decodeToMemoryGray8(byte[], int, int, int)}
 	 * .
 	 * 
 	 * @throws ServiceException If the license code is invalid.
@@ -119,7 +119,7 @@ public interface LuraWaveService extends SCIFIOService, Optional {
 
 	/**
 	 * Wraps
-	 * {@link com.luratech.lwf.lwfDecoder#decodeToMemoryGray16(short[], int, int, int, int, int, int, int, int, int, int)}
+	 * {@code com.luratech.lwf.lwfDecoder#decodeToMemoryGray16(short[], int, int, int, int, int, int, int, int, int, int)}
 	 * .
 	 * 
 	 * @throws ServiceException If the license code is invalid.

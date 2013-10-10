@@ -134,8 +134,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * Can specify a variety of {@link ImgOptions}.
 	 * 
 	 * @param source - the location of the dataset to open
-	 * @param imageIndex - the index within the dataset to open
-	 * @param type - The {@link Type} T of the output {@link ImgPlus}.
 	 * @param imgOptions - {@link ImgOptions} to use when opening this dataset
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
@@ -221,7 +219,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 *          resultant {@link ImgPlus}.
 	 * @param type - The {@link Type} T of the output {@link ImgPlus}, which must
 	 *          match the typing of the {@link ImgFactory}.
-	 * @param imgOptions - {@link ImgOptions} to use when opening this dataset
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
@@ -238,10 +235,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 	/**
 	 * @param reader - An initialized {@link Reader} to use for reading image
 	 *          data.
-	 * @param imgFactory - The {@link ImgFactory} to use for creating the
-	 *          resultant {@link ImgPlus}.
 	 * @param type - The {@link Type} T of the output {@link ImgPlus}, which must
 	 *          match the typing of the {@link ImgFactory}.
+	 * @param imgOptions - {@link ImgOptions} to use when opening this dataset
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */

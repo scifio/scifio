@@ -45,15 +45,14 @@ public class JPEG2000CodecOptions extends CodecOptions {
 
 	/**
 	 * The maximum code-block size to use per tile-component as it would be
-	 * provided to:
-	 * {@link com.sun.media.imageio.plugins.jpeg2000.J2KImageWriteParam#setCodeBlockSize(int[])}
+	 * provided to: {@code J2KImageWriteParam#setCodeBlockSize(int[])}
 	 * (WRITE).
 	 */
 	public int[] codeBlockSize;
 
 	/**
 	 * The number of decomposition levels as would be provided to:
-	 * {@link com.sun.media.imageio.plugins.jpeg2000.J2KImageWriteParam#setNumDecompositionLevels(int)}
+	 * {@code J2KImageWriteParam#setNumDecompositionLevels(int)}
 	 * (WRITE). Leaving this value <code>null</code> signifies that when a JPEG
 	 * 2000 parameter set is created for the purposes of compression the number of
 	 * decomposition levels will be left as the default.
@@ -62,7 +61,7 @@ public class JPEG2000CodecOptions extends CodecOptions {
 
 	/**
 	 * The resolution level as would be provided to:
-	 * {@link com.sun.media.imageio.plugins.jpeg2000.J2KImageWriteParam#setResolution(int)}
+	 * {@code J2KImageWriteParam#setResolution(int)}
 	 * (READ). Leaving this value <code>null</code> signifies that when a JPEG
 	 * 2000 parameter set is created for the purposes of compression the number of
 	 * decomposition levels will be left as the default.

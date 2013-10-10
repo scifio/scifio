@@ -44,21 +44,23 @@ import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.plugin.Plugin;
+
 /**
  * Abstract superclass for concrete implementations of {@code MetadataWrapper}.
  * <p>
  * To create a {@code MetadataWrapper} that is paired with a specific
  * {@code Filter}, simply extend this class, override any methods as desired,
- * and annotate the class using {@code DiscoverableMetadataWrapper} as
+ * and annotate the class using {@link Plugin} as
  * appropriate. The wrapper will automatically be discovered and applied when a
- * new instance of its {@code Filter} is instantiated, assuming the
- * {@code Filter} is a subclass of {@code AbstractReaderFilter}
+ * new instance of its {@link Filter} is instantiated, assuming the
+ * {@code Filter} is a subclass of {@link AbstractReaderFilter}
  * </p>
  * 
  * @author Mark Hiner
- * @see io.scif.filters.MetadataWrapper
- * @see io.scif.discovery.DiscoverableMetadataWrapper
- * @see io.scif.filters.AbstractReaderFilter
+ * @see Plugin
+ * @see MetadataWrapper
+ * @see AbstractReaderFilter
  */
 public abstract class AbstractMetadataWrapper extends AbstractMetadata
 implements MetadataWrapper

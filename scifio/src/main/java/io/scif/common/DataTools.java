@@ -543,7 +543,7 @@ public final class DataTools {
 		return v;
 	}
 
-	/** @deprecated Use {@link #unpackBytes(long, byte[], int, int, boolean)  */
+	/** @deprecated Use {@link #unpackBytes(long, byte[], int, int, boolean)}  */
 	@Deprecated
 	public static void unpackShort(final short value, final byte[] buf,
 		final int ndx, final boolean little)
@@ -756,7 +756,7 @@ public final class DataTools {
 	/**
 	 * Convert byte array to a hexadecimal string.
 	 * 
-	 * @deprecated Use {@link bytesToHex(byte[])} instead.
+	 * @deprecated Use {@link #bytesToHex(byte[])} instead.
 	 */
 	@Deprecated
 	public static String getHexString(final byte[] b) {

@@ -56,4 +56,4 @@
  * @author Mark Hiner
  *
  */
-package io.scif.io.img.cell;
+package io.scif.img.cell.cache;

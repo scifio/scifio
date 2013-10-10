@@ -41,13 +41,13 @@ import io.scif.AbstractSCIFIOComponent;
 /**
  * Abstract superclass for {@link io.scif.filters.Filter} implementations.
  * <p>
- * NB: the {@link #compareTo(Filter)} implementation provided produces a natural
- * ordering in descending order of {@link #getPriority()}.
+ * NB: the {@link #compareTo(org.scijava.Prioritized)} implementation provided
+ * produces a natural ordering in descending order of {@link #getPriority()}.
  * </p>
  * <p>
  * NB: the {@link #setParent(Object)} method can not be typed narrowed with
  * generics due to erasure. Type checking is performed during this call,
- * however, to guarantee type safety for the cached {@link #parent} instance. An
+ * however, to guarantee type safety for the cached parent instance. An
  * {@link IllegalArgumentException} will be thrown if provided the wrong type of
  * parent for this filter.
  * </p>

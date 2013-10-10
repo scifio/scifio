@@ -101,7 +101,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	// -- AbstractReaderFilter API Methods --
 
 	/**
-	 * Allows code to be executed regardless of which {@link #setSource()}
+	 * Allows code to be executed regardless of which {@link #setSource}
 	 * signature is called.
 	 * 
 	 * @param source - Lowest common denominator of arguments in the
@@ -118,7 +118,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
   }
 
 	/**
-	 * Allows code to be executed regardless of which {@link #openPlane()}
+	 * Allows code to be executed regardless of which {@link #openPlane}
 	 * signature is called.
 	 */
 	protected void openPlaneHelper() {
@@ -126,7 +126,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	/**
-	 * Allows code to be executed regardless of which {@link #readPlane()}
+	 * Allows code to be executed regardless of which {@link #readPlane}
 	 * signature is called.
 	 */
 	protected void readPlaneHelper() {}

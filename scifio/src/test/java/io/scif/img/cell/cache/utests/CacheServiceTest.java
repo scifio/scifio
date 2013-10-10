@@ -62,12 +62,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for testing the {@link CacheService). Tests
- * storage and retrieval, the various configuration options,
- * and edge cases.
+ * Unit tests for testing the {@link CacheService}. Tests storage and
+ * retrieval, the various configuration options, and edge cases.
  * 
  * @author Mark Hiner
- *
  */
 @Test(groups = "cacheTests")
 public class CacheServiceTest {

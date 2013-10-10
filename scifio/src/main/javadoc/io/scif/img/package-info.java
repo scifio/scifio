@@ -34,18 +34,18 @@
  * #L%
  */
 /**
- * Provides SCIFIO-based classes for working with {@link net.imglib2.img.ImgPlus}
+ * Provides SCIFIO-based classes for working with {@link net.imglib2.meta.ImgPlus}
  * from the imglib2 library.
  * <p>
- * {@link io.scif.io.img.ImgOpener} is used for creating ImgPluses, using
+ * {@link io.scif.img.ImgOpener} is used for creating ImgPluses, using
  * {@link net.imglib2.img.cell.CellImg} or {@link net.imglib2.img.planar.PlanarImg}
  * implementations.
  * </p>
  * <p>
- * {@link io.scif.io.img.ImgSaver} is used for writing ImgPluses to disk.
+ * {@link io.scif.img.ImgSaver} is used for writing ImgPluses to disk.
  * </p>
  * 
  * @author Mark Hiner
  *
  */
-package io.scif.io.img;
+package io.scif.img;

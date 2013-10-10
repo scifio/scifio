@@ -48,7 +48,7 @@ import java.io.IOException;
  * A collection of methods for initializing the IO components of SCIFIO (Readers
  * and Writers). All parsing and Metadata setup is done automatically.
  * <p>
- * NB: The {@link #initializeReader()} line of methods return a
+ * NB: The {@link #initializeReader} line of methods return a
  * {@link io.scif.filters.ReaderFilter} instead of a basic Reader. This is a
  * convenience to allow filters to be enabled if desired.
  * </p>
@@ -101,7 +101,7 @@ public interface InitializeService extends SCIFIOService {
 	 * 
 	 * @param source Name of the image source to use for parsing metadata.
 	 * @param destination Name of the writing destination.
-	 * @param openFile If true, the image source may be read during metadata
+	 * @param openSource If true, the image source may be read during metadata
 	 *          parsing.
 	 * @return An initialized {@code Writer}.
 	 */
@@ -113,7 +113,7 @@ public interface InitializeService extends SCIFIOService {
 	 * See {@link #initializeWriter(String, String, boolean)}. Will not open the
 	 * image source while parsing metadata.
 	 * 
-	 * @param source Name of the image source to use for parsing metadata.
+	 * @param sourceMeta Name of the image source to use for parsing metadata.
 	 * @param destination Name of the writing destination.
 	 * @return An initialized {@code Writer}.
 	 */

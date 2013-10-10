@@ -91,7 +91,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * Allows a single {@code Plane} object to be reused by reference when opening
 	 * complete planes.
 	 * 
-	 * @see #openPlane(int, int)
+	 * @see #openPlane(int, long)
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
@@ -102,7 +102,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * Allows a single {@code Plane} object to be reused by reference when opening
 	 * sub-regions of planes.
 	 * 
-	 * @see #openPlane(int, int, int, int, int, int)
+	 * @see #openPlane(int, long, long[], long[])
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
@@ -237,7 +237,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param planeBounds maximum values of the planar axes
 	 * @return The created plane
 	 */
-	Plane createPlane(ImageMetadata meta, long[] planeMin, long[] planeMax);
+	Plane createPlane(ImageMetadata meta, long[] planeOffsets, long[] planeBounds);
 
 	/**
 	 * Convenience method for casting {@code Plane} implementations to the type
@@ -247,7 +247,6 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * with this {@code Reader}.
 	 * </p>
 	 * 
-	 * @param P The specific {@code Plane} implementation to return.
 	 * @param plane - The base {@link io.scif.Plane} to cast.
 	 * @return The {@code Plane} argument cast to {@code P}.
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not

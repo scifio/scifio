@@ -37,6 +37,7 @@
 package io.scif.filters;
 
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.common.DataTools;
@@ -183,9 +184,10 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
 	/**
 	 * Retrieves the maximum pixel value for the specified plane. If each image
-	 * plane contains more than one channel (i.e., {@link #getRGBChannelCount()}
-	 * &gt; 1), returns the maximum value for each embedded channel. Returns null
-	 * if the plane has not already been read.
+	 * plane contains more than one channel (i.e.,
+	 * {@link ImageMetadata#isMultichannel()} &gt; 1), returns the maximum value
+	 * for each embedded channel. Returns null if the plane has not already been
+	 * read.
 	 * 
 	 * @throws FormatException Not actually thrown.
 	 * @throws IOException Not actually thrown.
@@ -292,7 +294,8 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	/**
 	 * Updates min/max values based on the given byte array.
 	 * 
-	 * @param no the image index within the file.
+	 * @param imageIndex the image index within the dataset
+	 * @param planeIndex the plane index within the image.
 	 * @param buf a pre-allocated buffer.
 	 * @param len as <code>buf</code> may be larger than the actual pixel count
 	 *          having been written to it, the length (in bytes) of the those

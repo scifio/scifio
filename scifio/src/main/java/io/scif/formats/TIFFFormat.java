@@ -981,11 +981,11 @@ public class TIFFFormat extends AbstractFormat {
 
 		/**
 		 * Populates the metadata store using the data parsed in
-		 * {@link #initStandardMetadata()} along with some further parsing done in
-		 * the method itself. All calls to the active <code>MetadataStore</code>
-		 * should be made in this method and <b>only</b> in this method. This is
-		 * especially important for sub-classes that override the getters for pixel
-		 * set array size, etc.
+		 * {@code #initStandardMetadata(Metadata)} along with some
+		 * further parsing done in the method itself. All calls to the active
+		 * <code>MetadataStore</code> should be made in this method and <b>only</b>
+		 * in this method. This is especially important for sub-classes that
+		 * override the getters for pixel set array size, etc.
 		 */
 		protected void initMetadataStore(final Metadata meta)
 			throws FormatException

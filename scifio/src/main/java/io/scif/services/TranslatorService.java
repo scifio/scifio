@@ -55,7 +55,7 @@ public interface TranslatorService extends SCIFIOService {
 	 * 
 	 * @param source - Metadata to read from
 	 * @param dest - Metadata to populate
-	 * @param boolean - true if a translator that exactly matches these Metadata
+	 * @param exact - true if a translator that exactly matches these Metadata
 	 *        is desired
 	 * @return Translator whose translate method will accept these Metadata
 	 *         instances
@@ -68,7 +68,7 @@ public interface TranslatorService extends SCIFIOService {
 	 * 
 	 * @param source - Metadata to read from
 	 * @param dest - Metadata to populate
-	 * @param boolean - true if a translator that exactly matches these Metadata
+	 * @param exact - true if a translator that exactly matches these Metadata
 	 *        is desired
 	 * @return Translator whose translate method will accept these Metadata
 	 *         instances
@@ -84,7 +84,7 @@ public interface TranslatorService extends SCIFIOService {
 	 * 
 	 * @param source - Metadata to read from
 	 * @param dest - Metadata to populate
-	 * @param boolean - true if a translator that exactly matches these Metadata
+	 * @param exact - true if a translator that exactly matches these Metadata
 	 *        is desired
 	 * @return true if translation was successful, and false otherwise.
 	 */

@@ -59,7 +59,7 @@
  *  </li>
  *  <li>
  *  {@link io.scif.Reader} - uses corresponding {@code Metadata} to produce a
- *  standard pixel representation, e.g. encapsulated in a {@link Plane}.
+ *  standard pixel representation, e.g. encapsulated in a {@link io.scif.Plane}.
  *  </li>
  *  <li>
  *  {@link io.scif.Writer} - uses corresponding {@code Metadata} to save pixel
@@ -273,7 +273,7 @@
  *  </li>
  *  <li>
  *  Create a {@code HasSource} style interface. {@code Metadata} objects should
- *  have some sort of mapping back to their {@link RandomAccessInputStream}
+ *  have some sort of mapping back to their {@link io.scif.io.RandomAccessInputStream}
  *  object(s).
  *  <p>
  *  Default implementation could be a 2D array, as a list of companion files

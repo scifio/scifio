@@ -48,7 +48,7 @@ import java.util.Map;
 public interface MetaTable extends Map<String, Object> {
 
 	/**
-	 * Special {@link #put(String, Object)} implementation. Treats the provided
+	 * Special {@link Map#put(Object, Object)} implementation. Treats the provided
 	 * value as a list item. The previous value(s) is not overwritten, but instead
 	 * also added to the list.
 	 * 

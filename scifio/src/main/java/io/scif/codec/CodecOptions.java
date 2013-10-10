@@ -113,7 +113,7 @@ public class CodecOptions {
 
 	/**
 	 * Compression quality level as it would be provided to:
-	 * {@link javax.imageio.ImageWriteParam#compressionQuality} (WRITE).
+	 * {@code javax.imageio.ImageWriteParam#compressionQuality} (WRITE).
 	 */
 	public double quality;
 

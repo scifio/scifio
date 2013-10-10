@@ -38,6 +38,7 @@ package io.scif.services;
 
 import io.scif.SCIFIOService;
 import io.scif.io.IRandomAccess;
+import io.scif.io.VirtualHandle;
 
 import java.io.IOException;
 import java.util.HashMap;

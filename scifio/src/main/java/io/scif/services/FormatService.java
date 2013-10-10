@@ -155,8 +155,6 @@ public interface FormatService extends SCIFIOService {
 	 * This bypasses the {@code Checker} logic, and thus does not guarantee the
 	 * associated {@code Format} can read image sources of the provided type.
 	 * 
-	 * @param extension
-	 * @return
 	 * @throws FormatException
 	 */
 	Writer getWriterByExtension(String fileId) throws FormatException;
@@ -164,7 +162,7 @@ public interface FormatService extends SCIFIOService {
 	/**
 	 * {@code Format} lookup method using the {@code Checker} component.
 	 * 
-	 * @param writerClass the class of the {@code Checker} component for the
+	 * @param checkerClass the class of the {@code Checker} component for the
 	 *          desired {@code Format}
 	 * @return A reference to the queried {@code Format}, or null if the
 	 *         {@code Format} was not found.
@@ -174,7 +172,7 @@ public interface FormatService extends SCIFIOService {
 	/**
 	 * {@code Format} lookup method using the {@code Parser} component.
 	 * 
-	 * @param writerClass the class of the {@code Parser} component for the
+	 * @param parserClass the class of the {@code Parser} component for the
 	 *          desired {@code Format}
 	 * @return A reference to the queried {@code Format}, or null if the
 	 *         {@code Format} was not found.
@@ -184,7 +182,7 @@ public interface FormatService extends SCIFIOService {
 	/**
 	 * {@code Format} lookup method using the {@code Metadata} component.
 	 * 
-	 * @param writerClass the class of the {@code Metadata} component for the
+	 * @param metadataClass the class of the {@code Metadata} component for the
 	 *          desired {@code Format}
 	 * @return A reference to the queried {@code Format}, or null if the
 	 *         {@code Format} was not found.

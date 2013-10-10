@@ -446,7 +446,7 @@ public class Location extends AbstractSCIFIOComponent {
 	/**
 	 * Return the URL corresponding to this pathname.
 	 * 
-	 * @see java.io.File#toURL()
+	 * @see java.io.File#toURI()
 	 */
 	public URL toURL() throws MalformedURLException {
 		return isURL ? url : file.toURI().toURL();

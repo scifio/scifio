@@ -35,12 +35,12 @@
  */
 /**
  * Provides a {@link io.scif.img.converters.PlaneConverterService} for
- * populating {@link net.imglib2.img.ImgPlus} objects using 
+ * populating {@link net.imglib2.meta.ImgPlus} objects using 
  * {@link io.scif.Reader} output.
  * 
  * @author Mark Hiner
  *
  */
 
-package io.scif.io.img.converters;
+package io.scif.img.converters;
 

@@ -47,7 +47,7 @@ import net.imglib2.meta.AxisType;
  * {@link AxisType}, and is used to restrict the indices that are read in the
  * corresponding planes.
  * <p>
- * NB: Subregions must be continuous in the {@link Axes.X} and {@link Axes.Y}
+ * NB: Subregions must be continuous in the {@link Axes#X} and {@link Axes#Y}
  * dimensions. Discontinuous tiles require multiple openings.
  * </p>
  * 

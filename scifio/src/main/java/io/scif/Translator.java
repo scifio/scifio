@@ -57,7 +57,6 @@ package io.scif;
  * </p>
  * 
  * @see io.scif.Format#createMetadata()
- * @see io.scif.Metadata#reset(Class)
  * @see io.scif.services.TranslatorService
  * @author Mark Hiner
  */
@@ -81,9 +80,7 @@ public interface Translator extends SCIFIOComponent, SCIFIOPlugin {
 	 * is undefined if at least one {@code Metadata} instance is not of the type
 	 * associated with this {@code Translator's Format}. Neither can the other
 	 * {@code Metadata} be arbitrary, as an appropriate {@code Translator} must be
-	 * defined for the desired direction of translation. See
-	 * {@link io.scif.Format#getTranslatorClassList()} for a list of classes
-	 * capable of translation with a given {@code Format's Metadata}.
+	 * defined for the desired direction of translation.
 	 * </p>
 	 * <p>
 	 * Note that the destination does not have to be empty, but can be built up
@@ -92,19 +89,14 @@ public interface Translator extends SCIFIOComponent, SCIFIOPlugin {
 	 * </p>
 	 * <p>
 	 * For a reference to a fresh {@code Metadata} instance to use in translation,
-	 * consider the {@link io.scif.Format#createMetadata()} and
-	 * {@link io.scif.Metadata#reset(Class)} methods.
+	 * consider the {@link io.scif.Format#createMetadata()} method.
 	 * </p>
 	 * 
 	 * @param source {@code Metadata} to use to populate
 	 * @param destination {@code Metadata} to be populated
 	 * @see io.scif.Format#createMetadata()
-	 * @see io.scif.Metadata#reset(Class)
-	 * @see io.scif.Format#getTranslatorClassList()
 	 * @throws IllegalArgumentException if the arguments don't match the
-	 *           {@code Metadata} types used to query this {@code Translator}
-	 *           (e.g. via the {@link io.scif.Format#findDestTranslator} or
-	 *           {@link io.scif.Format#findSourceTranslator} methods).
+	 *           {@code Metadata} types of this {@code Translator}.
 	 */
 	void translate(final Metadata source, final Metadata destination);
 }

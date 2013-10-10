@@ -69,7 +69,7 @@ public final class IO {
 	// -- Static IO Methods --
 
 	/**
-	 * @see {@link ImgOpener#openImg(String)}
+	 * @see ImgOpener#openImg(String)
 	 */
 	@SuppressWarnings("rawtypes")
 	public static ImgPlus open(final String source) throws ImgIOException {
@@ -105,7 +105,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgOpener#openImg(String, RealType)}
+	 * @see ImgOpener#openImg(String, RealType)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final String source, final T type) throws ImgIOException
@@ -114,7 +114,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgOpener#openImg(String, ImgOptions)}
+	 * @see ImgOpener#openImg(String, ImgOptions)
 	 */
 	@SuppressWarnings("rawtypes")
 	public static ImgPlus
@@ -125,7 +125,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgOpener#openImg(Reader, RealType, ImgOptions)}
+	 * @see ImgOpener#openImg(Reader, RealType, ImgOptions)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final String source, final T type, final ImgOptions imgOptions)
@@ -135,7 +135,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgOpener#openImg(String, ImgFactory)}
+	 * @see ImgOpener#openImg(String, ImgFactory)
 	 */
 	@SuppressWarnings("rawtypes")
 	public static ImgPlus
@@ -154,7 +154,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgOpener#openImg(String, ImgFactory, RealType)}
+	 * @see ImgOpener#openImg(String, ImgFactory, RealType)
 	 */
 	public static <T extends RealType<T>> ImgPlus<T> openImg(final String source,
 		final ImgFactory<T> imgFactory, final T type) throws ImgIOException
@@ -163,7 +163,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgOpener#openImg(Reader, RealType, ImgOptions)}
+	 * @see ImgOpener#openImg(Reader, RealType, ImgOptions)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final Reader reader, final T type, final ImgOptions imgOptions)
@@ -173,7 +173,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgOpener#openImg(Reader, RealType, ImgFactory, ImgOptions)}
+	 * @see ImgOpener#openImg(Reader, RealType, ImgFactory, ImgOptions)
 	 */
 	public static <T extends RealType<T>> ImgPlus<T> openImg(final Reader reader,
 		final T type, final ImgFactory<T> imgFactory, final ImgOptions imgOptions)
@@ -183,7 +183,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgSaver#saveImg(String, Img)}
+	 * @see ImgSaver#saveImg(String, Img)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
 		final String dest, final Img<T> img) throws ImgIOException
@@ -197,7 +197,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgSaver#saveImg(String, ImgPlus, int)}
+	 * @see ImgSaver#saveImg(String, ImgPlus, int)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
 		final String dest, final ImgPlus<T> imgPlus, final int imageIndex)
@@ -212,7 +212,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgSaver#saveImg(Writer, Img)}
+	 * @see ImgSaver#saveImg(Writer, Img)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
 		final Writer writer, final Img<T> img) throws ImgIOException
@@ -226,7 +226,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see {@link ImgSaver#saveImg(Writer, ImgPlus, int)}
+	 * @see ImgSaver#saveImg(Writer, ImgPlus, int)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> void saveImg(
 		final Writer writer, final ImgPlus<T> imgPlus, final int imageIndex)

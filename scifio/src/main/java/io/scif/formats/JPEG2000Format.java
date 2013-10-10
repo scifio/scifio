@@ -832,12 +832,11 @@ public class JPEG2000Format extends AbstractFormat {
 		/**
 		 * Compresses the buffer.
 		 * 
-		 * @param no the image index within the current file, starting from 0.
+		 * @param imageIndex the image index within the dataset
+		 * @param planeIndex the plane index within the image
 		 * @param buf the byte array that represents the image tile.
-		 * @param x the X coordinate of the upper-left corner of the image tile.
-		 * @param y the Y coordinate of the upper-left corner of the image tile.
-		 * @param w the width (in pixels) of the image tile.
-		 * @param h the height (in pixels) of the image tile.
+		 * @param planeMin minimal bounds of the planar axes
+		 * @param planeMax maximum bounds of the planar axes
 		 * @throws FormatException if one of the parameters is invalid.
 		 * @throws IOException if there was a problem writing to the file.
 		 */
@@ -874,8 +873,6 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Overridden to indicate that stacks are not supported.
-		 * 
-		 * @see loci.formats.IFormatWriter#canDoStacks()
 		 */
 		@Override
 		public boolean canDoStacks() {
@@ -884,8 +881,6 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Overridden to return the formats supported by the writer.
-		 * 
-		 * @see loci.formats.IFormatWriter#getPixelTypes(String)
 		 */
 		@Override
 		public int[] getPixelTypes(final String codec) {

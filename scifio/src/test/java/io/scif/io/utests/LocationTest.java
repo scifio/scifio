@@ -52,7 +52,7 @@ import org.testng.annotations.Test;
 /**
  * Unit tests for the loci.common.Location class.
  * 
- * @see io.scif.common.Location
+ * @see Location
  */
 public class LocationTest {
 

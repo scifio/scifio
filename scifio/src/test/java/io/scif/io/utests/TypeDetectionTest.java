@@ -39,6 +39,7 @@ package io.scif.io.utests;
 import static org.testng.AssertJUnit.assertEquals;
 import io.scif.io.BZip2Handle;
 import io.scif.io.GZipHandle;
+import io.scif.io.IRandomAccess;
 import io.scif.io.ZipHandle;
 
 import java.io.File;
@@ -50,7 +51,7 @@ import org.testng.annotations.Test;
 /**
  * Tests compressed IRandomAccess implementation type detection.
  * 
- * @see loci.common.IRandomAcess
+ * @see IRandomAccess
  */
 public class TypeDetectionTest {
 

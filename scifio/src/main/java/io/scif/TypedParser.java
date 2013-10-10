@@ -46,7 +46,7 @@ import java.io.IOException;
  * parameters.
  * <p>
  * Generics allow each concrete {@code Parser} implementation to type narrow the
- * return the type of {@code Metadata} from its {@link #Parse} methods, as well
+ * return the type of {@code Metadata} from its {@link #parse} methods, as well
  * as the argument {@code Metadata} types for the same methods.
  * </p>
  * 

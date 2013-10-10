@@ -141,8 +141,8 @@ public class NikonCodec extends AbstractCodec {
 
 	/**
 	 * The CodecOptions parameter must be an instance of {@link NikonCodecOptions}
-	 * , and should have the following fields set: {@link NikonCodecOptions#lossy
-	 * lossy} {@link NikonCodecOptions#vPredictor vPredictor}
+	 * , and should have the following fields set:
+	 * {@link NikonCodecOptions#vPredictor vPredictor}
 	 * {@link NikonCodecOptions#curve curve} {@link NikonCodecOptions#split split}
 	 * {@link CodecOptions#bitsPerSample bitsPerSample}
 	 * {@link CodecOptions#maxBytes maxBytes} {@link CodecOptions#width width}

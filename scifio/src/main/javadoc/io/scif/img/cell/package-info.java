@@ -41,7 +41,7 @@
  * exceedingly large images to be read immediately.
  * </p>
  * <p>
- * The {@link io.scif.io.img.cell.SCIFIOCellCache} is the entry point for loading
+ * The {@link io.scif.img.cell.SCIFIOCellCache} is the entry point for loading
  * Cells. Cell positions are requested from the cache, which are then loaded if they
  * do not exist already. The cache can be memory or disk-based.
  * </p>
@@ -49,4 +49,4 @@
  * @author Mark Hiner
  *
  */
-package io.scif.io.img.cell;
+package io.scif.img.cell;

@@ -47,7 +47,7 @@ package io.scif;
 public interface DataPlane<T> extends Plane {
 
 	/**
-	 * Sets the native pixel data for this plane. If {@link getColorTable()}
+	 * Sets the native pixel data for this plane. If {@link #getColorTable()}
 	 * returns null, then this is the pixel data. Otherwise, this data should be
 	 * used as an index into the associated ColorTable.
 	 * 
@@ -82,7 +82,7 @@ public interface DataPlane<T> extends Plane {
 	DataPlane<T> populate(T data, long[] planeOffsets, long[] planeBounds);
 
 	/**
-	 * As {@link #populate(T, int, int, int, int)}, but also sets the
+	 * As {@link #populate(Object, long[], long[])}, but also sets the
 	 * ImageMetadata of the source from which this Plane was read.
 	 * 
 	 * @param meta ImageMetadata of the source associated with this Plane
@@ -92,5 +92,5 @@ public interface DataPlane<T> extends Plane {
 	 * @return A reference to this plane
 	 */
 	DataPlane<T> populate(ImageMetadata meta, T data, long[] planeOffsets,
-		long[] planeBoundsh);
+		long[] planeBounds);
 }

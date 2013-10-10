@@ -282,7 +282,7 @@ public final class FormatTools {
 	 * 
 	 * @param imageIndex image index within dataset
 	 * @param planeIndex rasterized plane index to convert to axis indices
-	 * @param metadata metadata describing the dataset
+	 * @param m metadata describing the dataset
 	 * @return position along each dimensional axis
 	 */
 	public static long[] rasterToPosition(final int imageIndex,
@@ -348,7 +348,7 @@ public final class FormatTools {
 	 * position.
 	 * 
 	 * @param imageIndex image index within dataset
-	 * @param metadata metadata describing the dataset
+	 * @param m metadata describing the dataset
 	 * @param planeIndices position along each dimensional axis
 	 * @return rasterized index value
 	 */
@@ -431,7 +431,7 @@ public final class FormatTools {
 	 * Asserts that the current file is either null, or not, according to the
 	 * given flag. If the assertion fails, an IllegalStateException is thrown.
 	 * 
-	 * @param currentId File name to test.
+	 * @param stream Source to test.
 	 * @param notNull True iff id should be non-null.
 	 * @param depth How far back in the stack the calling method is; this name is
 	 *          reported as part of the exception message, if available. Use zero
@@ -613,7 +613,7 @@ public final class FormatTools {
 	 * 
 	 * @param pixelType the pixel type as retrieved from
 	 * @return the number of bytes per pixel.
-	 * @see io.scif.Metadata#getPixelType()
+	 * @see io.scif.ImageMetadata#getPixelType()
 	 */
 	public static int getBytesPerPixel(final int pixelType) {
 		switch (pixelType) {
@@ -637,9 +637,9 @@ public final class FormatTools {
 	 * Retrieves how many bytes per pixel the current plane or section has.
 	 * 
 	 * @param pixelType the pixel type as retrieved from
-	 *          {@link io.scif.Metadata#getPixelType()}.
+	 *          {@link io.scif.ImageMetadata#getPixelType()}.
 	 * @return the number of bytes per pixel.
-	 * @see io.scif.Metadata#getPixelType()
+	 * @see io.scif.ImageMetadata#getPixelType()
 	 */
 	public static int getBitsPerPixel(final int pixelType) {
 		return 8 * FormatTools.getBytesPerPixel(pixelType);
@@ -661,9 +661,9 @@ public final class FormatTools {
 	 * Determines whether the given pixel type is floating point or integer.
 	 * 
 	 * @param pixelType the pixel type as retrieved from
-	 *          {@link io.scif.Metadata#getPixelType()}.
+	 *          {@link io.scif.ImageMetadata#getPixelType()}.
 	 * @return true if the pixel type is floating point.
-	 * @see io.scif.Metadata#getPixelType()
+	 * @see io.scif.ImageMetadata#getPixelType()
 	 */
 	public static boolean isFloatingPoint(final int pixelType) {
 		switch (pixelType) {
@@ -685,9 +685,9 @@ public final class FormatTools {
 	 * Determines whether the given pixel type is signed or unsigned.
 	 * 
 	 * @param pixelType the pixel type as retrieved from
-	 *          {@link io.scif.Metadata#getPixelType()}.
+	 *          {@link io.scif.ImageMetadata#getPixelType()}.
 	 * @return true if the pixel type is signed.
-	 * @see io.scif.Metadata#getPixelType()
+	 * @see io.scif.ImageMetadata#getPixelType()
 	 */
 	public static boolean isSigned(final int pixelType) {
 		switch (pixelType) {
@@ -816,7 +816,7 @@ public final class FormatTools {
 	// -- Utility methods -- other
 
 	/**
-	 * Default implementation for {@link IFormatReader#openThumbBytes}. At the
+	 * Default implementation for {@link Reader#openThumbPlane(int, long)}. At the
 	 * moment, it uses {@link java.awt.image.BufferedImage} objects to resize
 	 * thumbnails, so it is not safe for use in headless contexts. In the future,
 	 * we may reimplement the image scaling logic purely with byte arrays, but
@@ -942,9 +942,9 @@ public final class FormatTools {
 	 * minimum and maximum which should be used for rendering.
 	 * 
 	 * @param pixelType the pixel type.
-	 * @returns an array containing the min and max as elements 0 and 1,
+	 * @return an array containing the min and max as elements 0 and 1,
 	 *          respectively.
-	 * @throws IOException if the pixel type is floating point or invalid.
+	 * @throws IllegalArgumentException if the pixel type is floating point or invalid.
 	 */
 	public static long[] defaultMinMax(final int pixelType) {
 		long min = 0, max = 0;
