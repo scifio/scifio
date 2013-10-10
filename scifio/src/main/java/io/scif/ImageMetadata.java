@@ -214,7 +214,7 @@ public interface ImageMetadata extends HasMetaTable {
 	 */
 	boolean isInterleaved();
 
-	/** Returns true if the {@link Axes.CHANNEL} axis is a planar axis. */
+	/** Returns true if the {@link Axes#CHANNEL} axis is a planar axis. */
 	boolean isMultichannel();
 
 	/** Returns true if we can ignore the color map (if present). */
