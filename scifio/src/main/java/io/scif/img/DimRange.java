@@ -96,8 +96,10 @@ public class DimRange {
 		this();
 
 		// Check for invalid patterns
-		if (!range.matches(REGION_PATTERN)) throw new IllegalArgumentException(
-			"Invalid range pattern. Must match: " + REGION_PATTERN);
+		if (!range.matches(REGION_PATTERN)) {
+			throw new IllegalArgumentException("Invalid range pattern. Must match: " +
+				REGION_PATTERN);
+		}
 
 		final String[] intervals = range.split(",");
 
