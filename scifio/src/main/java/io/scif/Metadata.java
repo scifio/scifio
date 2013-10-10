@@ -176,13 +176,13 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	boolean isFalseColor(int imageIndex);
 
 	/**
-	 * Returns the width (in pixles) of the thumbnail planes in the specified
+	 * Returns the width (in pixels) of the thumbnail planes in the specified
 	 * image.
 	 */
 	long getThumbSizeX(int imageIndex);
 
 	/**
-	 * Returns the height (in pixles) of the thumbnail planes in the specified
+	 * Returns the height (in pixels) of the thumbnail planes in the specified
 	 * image.
 	 */
 	long getThumbSizeY(int imageIndex);
