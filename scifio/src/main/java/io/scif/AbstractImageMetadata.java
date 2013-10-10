@@ -506,6 +506,10 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public int getAxisIndex(final CalibratedAxis axis) {
+		// FIXME: It is unintuitive that you can pass a CalibratedAxis that is *not*
+		// one of the ImageMetadata's actual axes, and get back a value other than
+		// -1 (since it merely looks up the matching type). We may want to have a
+		// hash on CalibratedAxis objects, too, and change behavior of this method.
 		return getAxisIndex(axis.type());
 	}
 

@@ -154,8 +154,8 @@ public interface ImageMetadata extends HasMetaTable {
 	void setAxisLength(AxisType axis, long length);
 
 	/**
-	 * Sets the type of the axis at the specified index, if {@code axis} is not
-	 * already defined. Otherwise the axes are re-ordered, per
+	 * Sets the axis at the specified index, if an axis with a matching type is
+	 * not already defined. Otherwise the axes are re-ordered, per
 	 * {@link java.util.List#add(int, Object)}.
 	 */
 	void setAxis(int index, CalibratedAxis axis);
