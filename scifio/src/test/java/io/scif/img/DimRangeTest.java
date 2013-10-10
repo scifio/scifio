@@ -64,6 +64,9 @@ public class DimRangeTest {
 		// test list of single values (descending order should be preserved too)
 		assertRange(new DimRange("3,2,1"), 3, 2, 1);
 
+		// test pair of ranges
+		assertRange(new DimRange("7-8,4-6"), 7, 8, 4, 5, 6);
+
 		// test mixed list of ranges and values
 		assertRange(new DimRange("1-3,5,8,13"), 1, 2, 3, 5, 8, 13);
 
