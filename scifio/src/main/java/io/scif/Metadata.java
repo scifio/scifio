@@ -308,9 +308,6 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	/**
 	 * Returns an array of the AxisTypes for the specified image index that,
 	 * together, define the bounds of a single plane in the dataset.
-	 * <p>
-	 * NB: Axes.CHANNEL is considered neither a planar nor spatial axis.
-	 * </p>
 	 * 
 	 * @param imageIndex - index for multi-image sources
 	 * @return Sorted CalibratedAxis list
@@ -320,9 +317,6 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	/**
 	 * Returns an array of the AxisTypes for the specified image index that define
 	 * the number of planes in the dataset.
-	 * <p>
-	 * NB: Axes.CHANNEL is considered neither a planar nor spatial axis.
-	 * </p>
 	 * 
 	 * @param imageIndex - index for multi-image sources
 	 * @return Sorted CalibratedAxis list

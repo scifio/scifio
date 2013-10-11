@@ -305,9 +305,6 @@ public interface ImageMetadata extends HasMetaTable {
 	/**
 	 * Returns an array of the AxisTypes that, together, define the bounds of a
 	 * single plane in the dataset.
-	 * <p>
-	 * NB: Axes.CHANNEL is considered neither a planar nor spatial axis.
-	 * </p>
 	 * 
 	 * @return Sorted CalibratedAxis list
 	 */
@@ -316,9 +313,6 @@ public interface ImageMetadata extends HasMetaTable {
 	/**
 	 * Returns an array of the AxisTypes that define the number of planes in the
 	 * dataset.
-	 * <p>
-	 * NB: Axes.CHANNEL is considered neither a planar nor spatial axis.
-	 * </p>
 	 * 
 	 * @return Sorted CalibratedAxis list
 	 */
