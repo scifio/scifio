@@ -298,7 +298,8 @@ public interface ImageMetadata extends HasMetaTable {
 	 * CalibratedAxis order is sorted and represents order within the image.
 	 * </p>
 	 * 
-	 * @return Sorted CalibratedAxis list
+	 * @return List of CalibratedAxes. Ordering in the list indicates the axis
+	 *         order in the image.
 	 */
 	List<CalibratedAxis> getAxes();
 
@@ -306,7 +307,8 @@ public interface ImageMetadata extends HasMetaTable {
 	 * Returns an array of the AxisTypes that, together, define the bounds of a
 	 * single plane in the dataset.
 	 * 
-	 * @return Sorted CalibratedAxis list
+	 * @return List of CalibratedAxes. Ordering in the list indicates the axis
+	 *         order in the image.
 	 */
 	List<CalibratedAxis> getAxesPlanar();
 
@@ -314,7 +316,8 @@ public interface ImageMetadata extends HasMetaTable {
 	 * Returns an array of the AxisTypes that define the number of planes in the
 	 * dataset.
 	 * 
-	 * @return Sorted CalibratedAxis list
+	 * @return List of CalibratedAxes. Ordering in the list indicates the axis
+	 *         order in the image.
 	 */
 	List<CalibratedAxis> getAxesNonPlanar();
 

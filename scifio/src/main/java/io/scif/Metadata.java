@@ -310,7 +310,8 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * together, define the bounds of a single plane in the dataset.
 	 * 
 	 * @param imageIndex - index for multi-image sources
-	 * @return Sorted CalibratedAxis list
+	 * @return List of CalibratedAxes. Ordering in the list indicates the axis
+	 *         order in the specified image.
 	 */
 	List<CalibratedAxis> getAxesPlanar(int imageIndex);
 
@@ -319,7 +320,8 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * the number of planes in the dataset.
 	 * 
 	 * @param imageIndex - index for multi-image sources
-	 * @return Sorted CalibratedAxis list
+	 * @return List of CalibratedAxes. Ordering in the list indicates the axis
+	 *         order in the specified image.
 	 */
 	List<CalibratedAxis> getAxesNonPlanar(int imageIndex);
 
