@@ -56,6 +56,10 @@ import org.testng.annotations.Test;
  */
 public class LocationTest {
 
+	// -- Constants --
+	private final String OS = System.getProperty("os.name").toLowerCase();
+	private final boolean isWindows = OS.indexOf("win") >= 0;
+
 	// -- Fields --
 
 	private Location[] files;
@@ -79,8 +83,12 @@ public class LocationTest {
 		final File hiddenFile =
 			File.createTempFile(".hiddenTest", null, tmpDirectory);
 		hiddenFile.deleteOnExit();
-		Process p = Runtime.getRuntime().exec("attrib +h " + hiddenFile.getAbsolutePath());
-		p.waitFor();
+
+		if (isWindows) {
+			Process p =
+				Runtime.getRuntime().exec("attrib +h " + hiddenFile.getAbsolutePath());
+			p.waitFor();
+		}
 
 		final File invalidFile =
 			File.createTempFile("invalidTest", null, tmpDirectory);
