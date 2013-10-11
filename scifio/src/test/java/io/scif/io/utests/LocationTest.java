@@ -205,13 +205,15 @@ public class LocationTest {
 	public void testToURL() throws IOException {
 		for (final Location file : files) {
 			String path = file.getAbsolutePath();
-			if (path.indexOf("://") == -1) {
-				path = "file://" + path;
-			}
 			if (file.isDirectory() && !path.endsWith(File.separator)) {
 				path += File.separator;
 			}
-			assertEquals(file.getName(), file.toURL(), new URL(path));
+			if (path.indexOf("://") == -1 && path.indexOf(":/") == -1) {
+				path = new File(path).toURI().toURL().toString();
+			}
+			URL baseURL = file.toURL();
+			URL compareURL = new URL(path);
+			assertEquals(file.getName(),baseURL,compareURL);
 		}
 	}
 
