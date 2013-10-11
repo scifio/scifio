@@ -160,6 +160,9 @@ public class Location extends AbstractSCIFIOComponent {
 				}
 			}
 		}
+
+		if (files.size() == 0) return null;
+
 		result = files.toArray(new String[files.size()]);
 
 		scifio().location().putCachedListing(key, result);
