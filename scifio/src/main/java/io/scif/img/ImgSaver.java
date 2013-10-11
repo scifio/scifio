@@ -416,8 +416,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final PlanarImg<T, ?> planarImg = (PlanarImg<T, ?>) planarAccess;
 		final int planeCount = planarImg.numSlices();
 		final int rgbChannelCount =
-			(int)w.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
-		final boolean interleaved = w.getMetadata().isInterleaved(imageIndex);
+			(int) w.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+		final boolean interleaved =
+			w.getMetadata().getInterleavedAxisCount(imageIndex) > 0;
 
 		if (img.numDimensions() > 0) {
 			final Class<?> arrayType =

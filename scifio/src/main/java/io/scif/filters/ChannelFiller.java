@@ -188,7 +188,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 		final byte[] index = lastPlane.getBytes();
 
 		// Expand the index values to fill the buffer
-		if (getMetadata().isInterleaved(imageIndex)) {
+		if (getMetadata().getInterleavedAxisCount(imageIndex) > 0) {
 			for (int i = 0; i < index.length / bytesPerIndex && pt < buf.length; i++)
 			{
 				final int iVal =

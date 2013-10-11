@@ -767,7 +767,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 			final JPEG2000CodecOptions options =
 				JPEG2000CodecOptions.getDefaultOptions();
-			options.interleaved = meta.isInterleaved(imageIndex);
+			options.interleaved = meta.getInterleavedAxisCount(imageIndex) > 0;
 			options.littleEndian = meta.isLittleEndian(imageIndex);
 			if (meta.getResolutionLevels() != null) {
 				options.resolution = Math.abs(imageIndex - meta.getResolutionLevels());

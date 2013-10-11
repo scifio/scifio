@@ -697,7 +697,7 @@ public class PICTFormat extends AbstractFormat {
 					s.seek(jpegOffset - meta.getJpegOffsets().get(0));
 
 					final CodecOptions options = new CodecOptions();
-					options.interleaved = meta.isInterleaved(0);
+					options.interleaved = meta.getInterleavedAxisCount(0) > 0;
 					options.littleEndian = meta.isLittleEndian(0);
 
 					v.write(new JPEGCodec().decompress(s, options));

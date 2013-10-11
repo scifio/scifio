@@ -101,6 +101,15 @@ public interface ImageMetadata extends HasMetaTable {
 	 */
 	void setPlanarAxisCount(final int count);
 
+	/**
+	 * Sets the number of interleaved axes in this image. This must be a value
+	 * between [0, planarAxisCount). Interleaved axes are planar axes that do not
+	 * constitute the "canonical" axes - e.g., in a CXY image with an interleaved
+	 * axis count of 1, the C axis is interleaved, and each plane is an XY plane
+	 * with C different representations.
+	 */
+	void setInterleavedAxisCount(final int count);
+
 	/** Sets whether or not we can ignore the color map (if present). */
 	void setFalseColor(boolean falseColor);
 
@@ -209,10 +218,9 @@ public interface ImageMetadata extends HasMetaTable {
 	int getPlanarAxisCount();
 
 	/** 
-	 * Returns true iff {@link Axes#X} and {@link Axes#Y} are not the first
-	 * two axes.
+	 * Returns the number of interleaved axes in this image.
 	 */
-	boolean isInterleaved();
+	int getInterleavedAxisCount();
 
 	/** Returns true if the {@link Axes#CHANNEL} axis is a planar axis. */
 	boolean isMultichannel();

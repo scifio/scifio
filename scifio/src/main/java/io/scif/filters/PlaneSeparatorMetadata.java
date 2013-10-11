@@ -97,6 +97,17 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 		return splitTypes.contains(type);
 	}
 
+	// -- MetadataWrapper API Methods --
+
+	@Override
+	public void wrap(final Metadata meta) {
+		splitTypes = new HashSet<AxisType>();
+		for (int i=0; i<meta.getInterleavedAxisCount(0); i++) {
+			splitTypes.add(meta.getAxis(0, i).type());
+		}
+		super.wrap(meta);
+	}
+
 	// -- Metadata API Methods --
 
 	@Override

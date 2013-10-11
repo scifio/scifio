@@ -196,16 +196,17 @@ public class MetadataTest {
 		assertFalse(m.isMultichannel(0));
 		// Check the interleaved flag
 		// XY...C.. so not interleaved
-		assertFalse(m.isInterleaved(0));
+		assertFalse(m.getInterleavedAxisCount(0) > 0);
 		m.setPlanarAxisCount(0, 4);
 		// Now multichannel
 		assertTrue(m.isMultichannel(0));
 		// But still XY...C
-		assertFalse(m.isInterleaved(0));
+		assertFalse(m.getInterleavedAxisCount(0) > 0);
 		m.setAxisType(0, 0, Axes.CHANNEL);
+		m.setInterleavedAxisCount(0, 1);
 		// Now we're CXY, so interleaved
 		assertEquals(1, m.getAxisIndex(0, Axes.X));
 		assertEquals(2, m.getAxisIndex(0, Axes.Y));
-		assertTrue(m.isInterleaved(0));
+		assertTrue(m.getInterleavedAxisCount(0) > 0);
 	}
 }

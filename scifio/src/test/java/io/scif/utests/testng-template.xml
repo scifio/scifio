@@ -291,6 +291,7 @@
     <test name="FilterTest">
       <classes>
         <class name="io.scif.filters.utests.FilterTest"/>
+        <class name="io.scif.filters.utests.PlaneSeparatorTest"/>
       </classes>
     </test>
     <!--

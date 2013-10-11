@@ -909,8 +909,8 @@ public class AVIFormat extends AbstractFormat {
 			final int scanline =
 				w *
 					bytes *
-					(int)(meta.isInterleaved(imageIndex) ? meta.getAxisLength(imageIndex, Axes.CHANNEL)
-						: 1);
+					(int) (meta.getInterleavedAxisCount(imageIndex) > 0 ? meta
+						.getAxisLength(imageIndex, Axes.CHANNEL) : 1);
 
 			getStream().skipBytes(
 				(int)((meta.getAxisLength(imageIndex, Axes.X) + pad) * bytes *
@@ -966,8 +966,9 @@ public class AVIFormat extends AbstractFormat {
 
 			if (meta.getBmpBitsPerPixel() == 16 && meta.isMultichannel(imageIndex)) {
 				// channels are stored as BGR, need to swap them
-				ImageTools.bgrToRgb(plane.getBytes(), meta.isInterleaved(imageIndex),
-					2, (int)meta.getAxisLength(imageIndex, Axes.CHANNEL));
+				ImageTools.bgrToRgb(plane.getBytes(), meta
+					.getInterleavedAxisCount(imageIndex) > 0, 2, (int) meta
+					.getAxisLength(imageIndex, Axes.CHANNEL));
 			}
 
 			return plane;
@@ -1634,7 +1635,7 @@ public class AVIFormat extends AbstractFormat {
 					: null;
 
 			options.bitsPerSample = meta.getBmpBitsPerPixel();
-			options.interleaved = meta.isInterleaved(imageIndex);
+			options.interleaved = meta.getInterleavedAxisCount(imageIndex) > 0;
 			options.littleEndian = meta.isLittleEndian(imageIndex);
 			return options;
 		}

@@ -122,6 +122,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Field(label = "planarAxiscount")
 	private int planarAxisCount = -1;
 
+	/**
+	 * Number of interleaved axes in this image. These will be the first planar
+	 * axes.
+	 */
+	@Field(label = "interleavedAxisCount")
+	private int interleavedAxisCount = -1;
+
 	/** Indicates whether or not we can ignore the color map (if present). */
 	@Field(label = "falseColor")
 	private boolean falseColor = true;
@@ -197,6 +204,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		planarAxisCount = count;
 		clearCachedAxes();
 	}
+
+	@Override
+	public void setInterleavedAxisCount(final int count) {
+		interleavedAxisCount = count;
+	}
+
 
 	@Override
 	public void setFalseColor(final boolean falseColor) {
@@ -382,19 +395,16 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public List<CalibratedAxis> getAxesPlanar() {
-		initializedCheck();
 		return getAxisList(true);
 	}
 
 	@Override
 	public List<CalibratedAxis> getAxesNonPlanar() {
-		initializedCheck();
 		return getAxisList(false);
 	}
 
 	@Override
 	public long getPlaneCount() {
-		initializedCheck();
 		long length = 1;
 
 		for (final CalibratedAxis t : getAxesNonPlanar()) {
@@ -422,13 +432,11 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public long[] getAxesLengthsPlanar() {
-		initializedCheck();
 		return getAxesLengths(getAxesPlanar());
 	}
 
 	@Override
 	public long[] getAxesLengthsNonPlanar() {
-		initializedCheck();
 		return getAxesLengths(getAxesNonPlanar());
 	}
 
@@ -449,13 +457,14 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public int getPlanarAxisCount() {
-		initializedCheck();
+		if (planarAxisCount == -1) return computePlanarAxisCount();
 		return planarAxisCount;
 	}
 
 	@Override
-	public boolean isInterleaved() {
-		return getAxisIndex(Axes.X) != 0 || getAxisIndex(Axes.Y) != 1;
+	public int getInterleavedAxisCount() {
+		if (interleavedAxisCount == -1) return computeInterleavedAxisCount();
+		return interleavedAxisCount;
 	}
 
 	@Override
@@ -593,26 +602,27 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Helper methods --
 
 	/**
+	 * We assume that {@link Axes#Y} is the last planar axis.
+	 */
+	private int computePlanarAxisCount() {
+		return getAxisIndex(Axes.Y) + 1;
+	}
+
+	/**
+	 * We assume that {@link Axes#X} defines the border between interleaved and
+	 * non-interleaved planar axes.
+	 */
+	private int computeInterleavedAxisCount() {
+		return getAxisIndex(Axes.X);
+	}
+
+	/**
 	 * Resets the cached planar and non-planar axes. Used after the axes
 	 * or planarAxisCount are modified.
 	 */
 	private void clearCachedAxes() {
 		planarAxes = null;
 		extendedAxes = null;
-	}
-
-	/**
-	 * Sanity check to guarantee the validity of the current metadata. This makes
-	 * things slightly annoying, in that we can not choose a sensible default
-	 * value (e.g. 2). However, this seems preferable to the alternative of
-	 * trusting plane counts, interleaved and multichannel checks, etc... after
-	 * setting up the axes correctly but not specifying this count.
-	 */
-	private void initializedCheck() {
-		if (planarAxisCount == -1) {
-			throw new IllegalStateException(
-				"Invalid Metadata state: planar axis count not set.");
-		}
 	}
 
 	private void updateLength(final AxisType axisType, final long value) {

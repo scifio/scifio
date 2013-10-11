@@ -1994,7 +1994,7 @@ public class DICOMFormat extends AbstractFormat {
 				Codec codec = null;
 				final CodecOptions options = new CodecOptions();
 				options.littleEndian = meta.isLittleEndian(imageIndex);
-				options.interleaved = meta.isInterleaved(imageIndex);
+				options.interleaved = meta.getInterleavedAxisCount(imageIndex) > 0;
 				if (meta.isJPEG()) codec = new JPEGCodec();
 				else codec = new JPEG2000Codec();
 				b = codec.decompress(b, options);

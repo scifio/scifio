@@ -205,6 +205,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 		int splitOffset =
 			metaCheck() ? ((PlaneSeparatorMetadata) meta).offset()
 				: 0;
+			final boolean interleaved = parentMeta.getInterleavedAxisCount(imageIndex) > 0;
 
 		if (!parentMeta.isIndexed(imageIndex))
 		{
@@ -281,12 +282,12 @@ public class PlaneSeparator extends AbstractReaderFilter {
 								DataTools.safeMultiply32(Arrays.copyOf(lengths,
 									lengths.length - 1)) * bpp)];
 					}
-
+					
 					// Extract the requested channel from the plane
 					ImageTools.splitChannels(lastPlane.getBytes(), strip,
-						separatedPosition, separatedLengths, bpp, false, parentMeta
-							.isInterleaved(imageIndex), strips == 1 ? bpp *
-							DataTools.safeMultiply32(lengths) : strip.length);
+						separatedPosition, separatedLengths, bpp, false, interleaved,
+						strips == 1 ? bpp * DataTools.safeMultiply32(lengths)
+							: strip.length);
 					if (strips != 1) {
 						System.arraycopy(strip, 0, plane.getBytes(),
 							(int) (i * stripHeight * DataTools.safeMultiply32(Arrays.copyOf(
@@ -299,8 +300,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 				// Have a cached instance of the plane containing the desired region
 				ImageTools
 					.splitChannels(lastPlane.getBytes(), plane.getBytes(),
-						separatedPosition, separatedLengths, bpp, false, parentMeta
-							.isInterleaved(imageIndex), bpp *
+						separatedPosition, separatedLengths, bpp, false, interleaved, bpp *
 							DataTools.safeMultiply32(lengths));
 			}
 

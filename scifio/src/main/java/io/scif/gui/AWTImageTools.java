@@ -759,7 +759,7 @@ public final class AWTImageTools {
 		final int pixelType = meta.getPixelType(imageIndex);
 		final boolean little = meta.isLittleEndian(imageIndex);
 		final boolean normal = r.isNormalized();
-		final boolean interleaved = meta.isInterleaved(imageIndex);
+		final boolean interleaved = meta.getInterleavedAxisCount(imageIndex) > 0;
 		final boolean indexed = meta.isIndexed(imageIndex);
 
 		if (pixelType == FormatTools.FLOAT) {
@@ -2097,7 +2097,7 @@ public final class AWTImageTools {
 		final long[] axisLengths)
 	{
 		long x = 1, y = 1, c = 1;
-		if (meta.isInterleaved()) {
+		if (meta.getInterleavedAxisCount() > 0) {
 			// compress the non-XY planar axes
 			for (int i = 0; i < axisLengths.length; i++) {
 				if (meta.getAxisIndex(Axes.X) == i) {

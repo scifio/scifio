@@ -203,8 +203,8 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public boolean isInterleaved(final int imageIndex) {
-		return imageMeta.get(imageIndex).isInterleaved();
+	public int getInterleavedAxisCount(int imageIndex) {
+		return imageMeta.get(imageIndex).getInterleavedAxisCount();
 	}
 
 	@Override
@@ -367,6 +367,11 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	@Override
 	public void setPlanarAxisCount(int imageIndex, final int count) {
 		imageMeta.get(imageIndex).setPlanarAxisCount(count);
+	}
+
+	@Override
+	public void setInterleavedAxisCount(int imageIndex, final int count) {
+		imageMeta.get(imageIndex).setInterleavedAxisCount(count);
 	}
 
 	@Override

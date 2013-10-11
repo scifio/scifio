@@ -384,9 +384,9 @@ public class LegacyQTFormat extends AbstractFormat {
 					AWTImageTools.makeImage(plane.getBytes(), (int) meta.getAxisLength(
 						imageIndex, Axes.X), (int) meta.getAxisLength(imageIndex, Axes.Y),
 						(int) meta.getAxisLength(imageIndex, Axes.CHANNEL), meta
-							.isInterleaved(imageIndex), FormatTools.getBytesPerPixel(type),
-						FormatTools.isFloatingPoint(type), meta.isLittleEndian(imageIndex),
-						FormatTools.isSigned(type));
+							.getInterleavedAxisCount(imageIndex) > 0, FormatTools
+							.getBytesPerPixel(type), FormatTools.isFloatingPoint(type), meta
+							.isLittleEndian(imageIndex), FormatTools.isSigned(type));
 			}
 			else {
 				img = ((BufferedImagePlane) plane).getData();

@@ -334,7 +334,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 			planeMax) &&
 			scanlinePad == 0)
 		{
-			if (metadata.isInterleaved(imageIndex)) {
+			if (metadata.getInterleavedAxisCount(imageIndex) > 0) {
 				int bytesToSkip = bpp;
 				bytesToSkip *= planeMax[xIndex];
 				int bytesToRead = bytesToSkip;
@@ -357,7 +357,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 				final int h = (int) planeMax[yIndex];
 				final int y = (int) planeMin[yIndex];
 				long c = metadata.getAxisLength(imageIndex, Axes.CHANNEL);
-				if (c <= 0) c = 1;
+				if (c <= 0 || !metadata.isMultichannel(imageIndex)) c = 1;
 				for (int channel = 0; channel < c; channel++) {
 
 					s.skipBytes(y * rowLen);
@@ -373,7 +373,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		else {
 			final int scanlineWidth =
 				(int) metadata.getAxisLength(imageIndex, Axes.X) + scanlinePad;
-			if (metadata.isInterleaved(imageIndex)) {
+			if (metadata.getInterleavedAxisCount(imageIndex) > 0) {
 				long planeProduct = bpp;
 				for (int i = 0; i < planeMin.length; i++) {
 					if (i != xIndex && i != yIndex) planeProduct *=

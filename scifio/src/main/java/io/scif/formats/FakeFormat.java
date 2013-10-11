@@ -163,6 +163,9 @@ public class FakeFormat extends AbstractFormat {
 		private int planarDims;
 
 		@Field
+		private int interleavedDims;
+
+		@Field
 		private int thumbSizeX;
 
 		@Field
@@ -305,6 +308,7 @@ public class FakeFormat extends AbstractFormat {
 
 				imageMeta.setAxes(calibratedAxes, lengths);
 				imageMeta.setPlanarAxisCount(planarDims);
+				imageMeta.setInterleavedAxisCount(interleavedDims);
 				imageMeta.setPixelType(pType);
 				imageMeta.setThumbSizeX(thumbSizeX);
 				imageMeta.setThumbSizeY(thumbSizeY);
@@ -380,7 +384,8 @@ public class FakeFormat extends AbstractFormat {
 			lengths = new long[] { 512, 512 };
 			scales = new double[] { 1.0, 1.0 };
 			units = new String[] { "um", "um" };
-			planarDims = 2;
+			planarDims = -1;
+			interleavedDims = -1;
 			thumbSizeX = 0;
 			thumbSizeY = 0;
 			pixelType = FormatTools.getPixelTypeString(FormatTools.UINT8);
@@ -617,6 +622,8 @@ public class FakeFormat extends AbstractFormat {
 			FakeUtils.appendToken(fakeId, "scales", scales);
 			FakeUtils.appendToken(fakeId, "units", (Object[]) units);
 			FakeUtils.appendToken(fakeId, "planarDims", iMeta.getPlanarAxisCount());
+			FakeUtils.appendToken(fakeId, "interleavedDims", iMeta
+				.getInterleavedAxisCount());
 			FakeUtils.appendToken(fakeId, "thumbSizeX", iMeta.getThumbSizeX());
 			FakeUtils.appendToken(fakeId, "thumbSizeY", iMeta.getThumbSizeY());
 			FakeUtils.appendToken(fakeId, "pixelType", FormatTools

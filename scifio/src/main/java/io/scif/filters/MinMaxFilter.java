@@ -320,7 +320,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		final boolean little = m.isLittleEndian(imageIndex);
 
 		final int pixels = len / (bpp * numRGB);
-		final boolean interleaved = m.isInterleaved(imageIndex);
+		final boolean interleaved = m.getInterleavedAxisCount(imageIndex) > 0;
 
 		final long[] coords =
 			FormatTools.rasterToPosition(imageIndex, planeIndex, m);

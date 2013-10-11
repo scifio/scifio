@@ -136,11 +136,6 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	long getImageSize(int imageIndex);
 
 	/**
-	 * Returns true if more than two planar axes are present.
-	 */
-	boolean isInterleaved(int imageIndex);
-
-	/**
 	 * Returns true if the Axes.CHANNEL axis is present.
 	 */
 	boolean isMultichannel(int imageIndex);
@@ -165,6 +160,11 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 
 	/** Returns the number of planar axes in the specified image. */
 	int getPlanarAxisCount(int imageIndex);
+
+	/**
+	 * Returns the number of interleaved axes in the specified image.
+	 */
+	int getInterleavedAxisCount(int imageIndex);
 
 	/** Returns the number of valid bits per pixel in the specified image. */
 	int getBitsPerPixel(int imageIndex);
@@ -417,6 +417,9 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 
 	/** Sets the number of planar axes in the specified image. */
 	void setPlanarAxisCount(int imageIndex, final int count);
+
+	/** Sets the number of interleaved axes in the specified image. */
+	void setInterleavedAxisCount(final int imageIndex, final int count);
 
 	/**
 	 * Sets whether or not we can ignore the color map (if present) of the

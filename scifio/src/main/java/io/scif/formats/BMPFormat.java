@@ -444,8 +444,8 @@ public class BMPFormat extends AbstractFormat {
 			}
 
 			if (meta.getAxisLength(imageIndex, Axes.CHANNEL) > 1) {
-				ImageTools.bgrToRgb(buf, meta.isInterleaved(imageIndex), 1, (int) meta
-					.getAxisLength(imageIndex, Axes.CHANNEL));
+				ImageTools.bgrToRgb(buf, meta.getInterleavedAxisCount(imageIndex) > 0,
+					1, (int) meta.getAxisLength(imageIndex, Axes.CHANNEL));
 			}
 			return plane;
 		}

@@ -881,7 +881,7 @@ public final class FormatTools {
 			reader.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
 		final byte[] rtn = new byte[(int) rgbChannelCount * bytes[0].length];
 
-		if (!reader.getMetadata().isInterleaved(imageIndex)) {
+		if (!(reader.getMetadata().getInterleavedAxisCount(imageIndex) > 0)) {
 			for (int i = 0; i < rgbChannelCount; i++) {
 				System
 					.arraycopy(bytes[i], 0, rtn, bytes[0].length * i, bytes[i].length);
