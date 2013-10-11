@@ -71,7 +71,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param planeIndex the plane index within the image.
 	 * @return The complete {@code Plane} at the specified indices.
 	 */
-	Plane openPlane(int imageIndex, int planeIndex) throws FormatException,
+	Plane openPlane(int imageIndex, long planeIndex) throws FormatException,
 		IOException;
 
 	/**
@@ -84,7 +84,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param planeMax maximum bounds of the planar axes
 	 * @return The desired sub-region at the specified indices.
 	 */
-	Plane openPlane(int imageIndex, int planeIndex, long[] planeMin,
+	Plane openPlane(int imageIndex, long planeIndex, long[] planeMin,
 		long[] planeMax) throws FormatException, IOException; 
 
 	/**
@@ -95,7 +95,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane openPlane(int imageIndex, int planeIndex, Plane plane)
+	Plane openPlane(int imageIndex, long planeIndex, Plane plane)
 		throws FormatException, IOException;
 
 	/**
@@ -106,7 +106,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane openPlane(int imageIndex, int planeIndex, Plane plane,
+	Plane openPlane(int imageIndex, long planeIndex, Plane plane,
 		long[] planeMin, long[] planeMax) throws FormatException, IOException; 
 
 	/**
@@ -117,7 +117,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param planeIndex the plane index within the image.
 	 * @return A thumbnail version of the {@code Plane} at the specified indices.
 	 */
-	Plane openThumbPlane(int imageIndex, int planeIndex) throws FormatException,
+	Plane openThumbPlane(int imageIndex, long planeIndex) throws FormatException,
 		IOException;
 
 	/** Returns the current file. */

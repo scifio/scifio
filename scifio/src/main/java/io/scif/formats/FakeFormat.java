@@ -249,7 +249,7 @@ public class FakeFormat extends AbstractFormat {
 		 * Returns the current color table for this dataset
 		 */
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
+		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
 			int cIndex = getAxisIndex(imageIndex, Axes.CHANNEL);
 			if (cIndex == -1) return null;
@@ -420,7 +420,7 @@ public class FakeFormat extends AbstractFormat {
 		// -- Reader API methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -441,7 +441,7 @@ public class FakeFormat extends AbstractFormat {
 			return plane;
 		}
 
-		private void openPlaneHelper(int imageIndex, int planeIndex, Metadata meta, Plane plane,
+		private void openPlaneHelper(int imageIndex, long planeIndex, Metadata meta, Plane plane,
 			long[] planeMin, long[] planeLengths, long[] npIndices, long[] planeIndices, int planarPos, long xPos,
 			long yPos)
 		{

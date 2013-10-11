@@ -196,14 +196,14 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	// -- Reader API methods --
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex)
+	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex));
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final long[] offsets, final long[] lengths) throws FormatException,
 		IOException
 	{
@@ -212,14 +212,14 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane);
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane, final long[] offsets, long[] lengths)
 		throws FormatException, IOException
 	{
@@ -228,7 +228,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
+	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		return super.openThumbPlane(imageIndex, reorder(imageIndex, planeIndex));
@@ -243,7 +243,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	// -- Helper methods --
 
 	/* Computes the reordered plane index for the current axes order */
-	private int reorder(final int imageIndex, final int planeIndex) {
+	private long reorder(final int imageIndex, final long planeIndex) {
 		if (!metaCheck()) return planeIndex;
 
 		long[] originalPosition =

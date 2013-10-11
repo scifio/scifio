@@ -528,7 +528,7 @@ public class APNGFormat extends AbstractFormat {
 		private BufferedImagePlane lastPlane;
 
 		// Plane index of the last plane that was returned.
-		private int lastPlaneIndex = -1;
+		private long lastPlaneIndex = -1;
 
 		// -- Constructor --
 
@@ -547,7 +547,7 @@ public class APNGFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
-			final int planeIndex, final BufferedImagePlane plane,
+			final long planeIndex, final BufferedImagePlane plane,
 			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
@@ -613,7 +613,7 @@ public class APNGFormat extends AbstractFormat {
 			stream.write(APNGFormat.PNG_SIGNATURE);
 
 			final int[] coords =
-				metadata.getFctl().get(planeIndex).getFrameCoordinates();
+				metadata.getFctl().get((int)planeIndex).getFrameCoordinates();
 			// process IHDR chunk
 			final IHDRChunk ihdr = metadata.getIhdr();
 			processChunk(imageIndex, ihdr.getLength(), ihdr.getOffset(), coords,
@@ -621,8 +621,8 @@ public class APNGFormat extends AbstractFormat {
 
 			// process fcTL and fdAT chunks
 			final FCTLChunk fctl =
-				metadata.getFctl().get(
-					metadata.isSeparateDefault() ? planeIndex - 1 : planeIndex);
+				metadata.getFctl().get((int)(
+					metadata.isSeparateDefault() ? planeIndex - 1 : planeIndex));
 
 			// fdAT chunks are converted to IDAT chunks, as we are essentially
 			// building a standalone single-frame image
@@ -743,7 +743,7 @@ public class APNGFormat extends AbstractFormat {
 		// -- Writer API Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -756,7 +756,7 @@ public class APNGFormat extends AbstractFormat {
 			final int width = (int)getMetadata().getAxisLength(imageIndex, Axes.X);
 			final int height = (int)getMetadata().getAxisLength(imageIndex, Axes.Y);
 
-			if (!initialized[imageIndex][planeIndex]) {
+			if (!initialized[imageIndex][(int)planeIndex]) {
 				if (numFrames == 0) {
 					if (!metadata.isSeparateDefault()) {
 						// first frame is default image
@@ -764,7 +764,7 @@ public class APNGFormat extends AbstractFormat {
 					}
 					writePLTE();
 				}
-				initialized[imageIndex][planeIndex] = true;
+				initialized[imageIndex][(int)planeIndex] = true;
 			}
 
 			// write the data for this frame
@@ -882,12 +882,12 @@ public class APNGFormat extends AbstractFormat {
 		}
 
 		private void writeFCTL(final int width, final int height,
-			final int planeIndex) throws IOException
+			final long planeIndex) throws IOException
 		{
 			out.writeInt(26);
 			final FCTLChunk fctl =
-				metadata.getFctl().get(
-					metadata.isSeparateDefault() ? planeIndex - 1 : planeIndex);
+				metadata.getFctl().get((int)(
+					metadata.isSeparateDefault() ? planeIndex - 1 : planeIndex));
 			final byte[] b = new byte[30];
 
 			DataTools.unpackBytes(22, b, 0, 4, false);

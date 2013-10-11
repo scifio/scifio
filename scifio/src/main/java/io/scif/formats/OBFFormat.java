@@ -385,7 +385,7 @@ public class OBFFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{

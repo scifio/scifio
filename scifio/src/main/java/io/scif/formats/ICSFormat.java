@@ -1321,7 +1321,7 @@ public class ICSFormat extends AbstractFormat {
 		// -- Fields --
 
 		/* Last read plane index. */
-		private int prevPlane;
+		private long prevPlane;
 
 		/* Whether or not the pixels are GZIP-compressed. */
 		private boolean gzip;
@@ -1347,7 +1347,7 @@ public class ICSFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -1543,13 +1543,13 @@ public class ICSFormat extends AbstractFormat {
 		private long dimensionOffset;
 		private int dimensionLength;
 		private long pixelOffset;
-		private int lastPlane = -1;
+		private long lastPlane = -1;
 		private RandomAccessOutputStream pixels;
 
 		// -- Writer API Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -1574,8 +1574,8 @@ public class ICSFormat extends AbstractFormat {
 			final int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
 			final int planeSize = (int) (meta.get(0).getSize() / meta.get(0).getPlaneCount());
 
-			if (!initialized[planeIndex][planeIndex]) {
-				initialized[planeIndex][planeIndex] = true;
+			if (!initialized[imageIndex][(int)planeIndex]) {
+				initialized[imageIndex][(int)planeIndex] = true;
 
 				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
 					planeMax))

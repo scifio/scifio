@@ -311,15 +311,15 @@ public class MNGFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
-			final int planeIndex, final BufferedImagePlane plane,
+			final long planeIndex, final BufferedImagePlane plane,
 			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
 			final MNGImageInfo info =
 				getMetadata().getDatasetInfo().imageInfo.get(imageIndex);
-			final long offset = info.offsets.get(planeIndex);
+			final long offset = info.offsets.get((int)planeIndex);
 			getStream().seek(offset);
-			final long end = info.lengths.get(planeIndex);
+			final long end = info.lengths.get((int)planeIndex);
 			BufferedImage img = readImage(getMetadata(), end);
 
 			// reconstruct the image to use an appropriate raster

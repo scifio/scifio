@@ -187,7 +187,7 @@ public class AVIFormat extends AbstractFormat {
 		// -- Cached plane --
 
 		private ByteArrayPlane lastPlane;
-		private int lastPlaneIndex;
+		private long lastPlaneIndex;
 
 		// -- Metadata Accessors --
 
@@ -259,11 +259,11 @@ public class AVIFormat extends AbstractFormat {
 			this.lastPlane = lastPlane;
 		}
 
-		public int getLastPlaneIndex() {
+		public long getLastPlaneIndex() {
 			return lastPlaneIndex;
 		}
 
-		public void setLastPlaneIndex(final int lastPlaneIndex) {
+		public void setLastPlaneIndex(final long lastPlaneIndex) {
 			this.lastPlaneIndex = lastPlaneIndex;
 		}
 
@@ -278,7 +278,7 @@ public class AVIFormat extends AbstractFormat {
 		// -- HasColorTable API Methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
+		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
 			return lut;
 		}
@@ -832,7 +832,7 @@ public class AVIFormat extends AbstractFormat {
 		}
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -859,10 +859,10 @@ public class AVIFormat extends AbstractFormat {
 								w = (int) planeMax[xAxis],
 								h = (int) planeMax[yAxis];
 
-			final long fileOff = meta.getOffsets().get(planeIndex).longValue();
+			final long fileOff = meta.getOffsets().get((int)planeIndex).longValue();
 			final long end =
 				planeIndex < meta.getOffsets().size() - 1 ? meta.getOffsets().get(
-					planeIndex + 1) : getStream().length();
+					(int)planeIndex + 1) : getStream().length();
 			final long maxBytes = end - fileOff;
 			getStream().seek(fileOff);
 
@@ -976,7 +976,7 @@ public class AVIFormat extends AbstractFormat {
 		// -- Helper methods --
 
 		private ByteArrayPlane uncompress(final int imageIndex,
-			final int planeIndex, final ByteArrayPlane plane, final int x,
+			final long planeIndex, final ByteArrayPlane plane, final int x,
 			final int y, final int w, final int h) throws FormatException,
 			IOException
 		{
@@ -1003,7 +1003,7 @@ public class AVIFormat extends AbstractFormat {
 					options.previousImage = meta.getLastPlaneBytes();
 				}
 
-				final long fileOff = meta.getOffsets().get(planeIndex).longValue();
+				final long fileOff = meta.getOffsets().get((int)planeIndex).longValue();
 				getStream().seek(fileOff);
 
 				buf =
@@ -1076,7 +1076,7 @@ public class AVIFormat extends AbstractFormat {
 		// -- Writer API Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -1091,8 +1091,8 @@ public class AVIFormat extends AbstractFormat {
 
 			final int nChannels = (int)meta.getAxisLength(imageIndex, Axes.CHANNEL);
 
-			if (!initialized[imageIndex][planeIndex]) {
-				initialized[imageIndex][planeIndex] = true;
+			if (!initialized[imageIndex][(int)planeIndex]) {
+				initialized[imageIndex][(int)planeIndex] = true;
 			}
 
 			// Write the data. Each 3-byte triplet in the bitmap array represents the
@@ -1624,7 +1624,7 @@ public class AVIFormat extends AbstractFormat {
 	private static class AVIUtils {
 
 		public static CodecOptions createCodecOptions(final Metadata meta,
-			final int imageIndex, final int planeIndex)
+			final int imageIndex, final long planeIndex)
 		{
 			final CodecOptions options = new CodecOptions();
 			options.width = (int)meta.getAxisLength(imageIndex, Axes.X);
@@ -1658,7 +1658,7 @@ public class AVIFormat extends AbstractFormat {
 
 		public static byte[] extractCompression(final Metadata meta,
 			final CodecOptions options, final RandomAccessInputStream stream,
-			final ByteArrayPlane plane, final int planeIndex) throws IOException,
+			final ByteArrayPlane plane, final long planeIndex) throws IOException,
 			FormatException
 		{
 			final int bmpCompression = meta.getBmpCompression();
@@ -1667,7 +1667,7 @@ public class AVIFormat extends AbstractFormat {
 
 			if (bmpCompression == MSRLE) {
 				final byte[] b =
-					new byte[(int) meta.getLengths().get(planeIndex).longValue()];
+					new byte[(int) meta.getLengths().get((int)planeIndex).longValue()];
 				stream.read(b);
 				final MSRLECodec codec = new MSRLECodec();
 				codec.setContext(meta.getContext());
@@ -1687,7 +1687,7 @@ public class AVIFormat extends AbstractFormat {
 				final JPEGCodec codec = new JPEGCodec();
 
 				byte[] tmpPlane =
-					new byte[(int) meta.getLengths().get(planeIndex).longValue()];
+					new byte[(int) meta.getLengths().get((int)planeIndex).longValue()];
 				stream.read(tmpPlane);
 
 				final boolean motionJPEG =

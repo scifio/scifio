@@ -80,7 +80,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 	/**
 	 * Last plane index opened.
 	 */
-	private int lastPlaneIndex = -1;
+	private long lastPlaneIndex = -1;
 
 	/**
 	 * Cached last plane opened.
@@ -109,7 +109,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 	// -- Reader API methods --
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex)
+	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
@@ -118,7 +118,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
 		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
@@ -127,7 +127,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final long[] offsets, final long[] lengths) throws FormatException,
 		IOException
 	{
@@ -136,7 +136,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
@@ -258,7 +258,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 	 * @param lengths 
 	 * @param offsets 
 	 */
-	private boolean haveCached(int imageIndex, int planeIndex, long[] offsets, long[] lengths) {
+	private boolean haveCached(int imageIndex, long planeIndex, long[] offsets, long[] lengths) {
 		boolean matches = planeIndex == lastPlaneIndex;
 		matches = matches && (imageIndex == lastImageIndex);
 

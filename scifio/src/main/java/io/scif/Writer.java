@@ -69,7 +69,7 @@ public interface Writer extends HasFormat, HasSource {
 	 * @throws FormatException if one of the parameters is invalid.
 	 * @throws IOException if there was a problem writing to the file.
 	 */
-	void savePlane(final int imageIndex, final int planeIndex, Plane plane)
+	void savePlane(final int imageIndex, final long planeIndex, Plane plane)
 		throws FormatException, IOException;
 
 	/**
@@ -84,7 +84,7 @@ public interface Writer extends HasFormat, HasSource {
 	 * @throws FormatException if one of the parameters is invalid.
 	 * @throws IOException if there was a problem writing to the file.
 	 */
-	void savePlane(final int imageIndex, final int planeIndex, final Plane plane,
+	void savePlane(final int imageIndex, final long planeIndex, final Plane plane,
 		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException;
 

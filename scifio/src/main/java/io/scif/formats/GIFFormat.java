@@ -330,7 +330,7 @@ public class GIFFormat extends AbstractFormat {
 		// -- HasColorTable API Methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
+		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
 
 			if (cachedTable == null) {
@@ -752,7 +752,7 @@ public class GIFFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -767,11 +767,11 @@ public class GIFFormat extends AbstractFormat {
 					y = (int) planeMin[yIndex],
 					w = (int) planeMax[xIndex],
 					h = (int) planeMax[yIndex];
-			final int[] act = meta.getColorTables().get(planeIndex);
+			final int[] act = meta.getColorTables().get((int)planeIndex);
 
-			final byte[] b = meta.getImages().get(planeIndex);
+			final byte[] b = meta.getImages().get((int)planeIndex);
 			if (planeIndex > 0 && meta.isTransparency()) {
-				final byte[] prev = meta.getImages().get(planeIndex - 1);
+				final byte[] prev = meta.getImages().get((int)planeIndex - 1);
 				int idx = meta.getTransIndex();
 				if (idx >= 127) idx = 0;
 				for (int i = 0; i < b.length; i++) {
@@ -779,7 +779,7 @@ public class GIFFormat extends AbstractFormat {
 						b[i] = prev[i];
 					}
 				}
-				meta.getImages().setElementAt(b, planeIndex);
+				meta.getImages().setElementAt(b, (int)planeIndex);
 			}
 
 			for (int row = 0; row < h; row++) {

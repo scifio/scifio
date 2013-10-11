@@ -327,7 +327,7 @@ public class FileStitcher extends AbstractReaderFilter {
 	// -- Reader API methods --
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
@@ -361,7 +361,7 @@ public class FileStitcher extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
+	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		// If no stitching, delegate to parent

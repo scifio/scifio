@@ -138,7 +138,7 @@ public class NativeQTFormat extends AbstractFormat {
 		private byte[] prevPixels;
 
 		/** Previous plane number. */
-		private int prevPlane;
+		private long prevPlane;
 
 		/** Flag indicating whether we can safely use prevPixels. */
 		private boolean canUsePrevious;
@@ -216,11 +216,11 @@ public class NativeQTFormat extends AbstractFormat {
 			this.prevPixels = prevPixels;
 		}
 
-		public int getPrevPlane() {
+		public long getPrevPlane() {
 			return prevPlane;
 		}
 
-		public void setPrevPlane(final int prevPlane) {
+		public void setPrevPlane(final long prevPlane) {
 			this.prevPlane = prevPlane;
 		}
 
@@ -489,7 +489,7 @@ public class NativeQTFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -503,7 +503,7 @@ public class NativeQTFormat extends AbstractFormat {
 			if (planeIndex >= meta.getPlaneCount(imageIndex) - meta.getAltPlanes()) code =
 				meta.altCodec;
 
-			int offset = meta.getOffsets().get(planeIndex).intValue();
+			int offset = meta.getOffsets().get((int)planeIndex).intValue();
 			int nextOffset = (int) meta.getPixelBytes();
 
 			meta.setScale(meta.getOffsets().get(0).intValue());
@@ -511,7 +511,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 			if (planeIndex < meta.getOffsets().size() - 1) {
 				nextOffset =
-					meta.getOffsets().get(planeIndex + 1).intValue() - meta.getScale();
+					meta.getOffsets().get((int)planeIndex + 1).intValue() - meta.getScale();
 			}
 
 			if ((nextOffset - offset) < 0) {
@@ -537,7 +537,7 @@ public class NativeQTFormat extends AbstractFormat {
 				for (int i = 0; i < t.length; i++) {
 					t[i] = (byte) (255 - t[i]);
 				}
-				meta.setPrevPlane(planeIndex);
+				meta.setPrevPlane((int)planeIndex);
 				return plane;
 			}
 
@@ -757,7 +757,7 @@ public class NativeQTFormat extends AbstractFormat {
 		// -- Writer API methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -781,13 +781,13 @@ public class NativeQTFormat extends AbstractFormat {
 			final int nChannels = (int)meta.getAxisLength(imageIndex, Axes.CHANNEL);
 			final int planeSize = width * height * nChannels;
 
-			if (!initialized[imageIndex][planeIndex]) {
-				initialized[imageIndex][planeIndex] = true;
+			if (!initialized[imageIndex][(int)planeIndex]) {
+				initialized[imageIndex][(int)planeIndex] = true;
 				setCodec();
 				if (codec != CODEC_RAW) {
 					needLegacy = true;
 					legacy.setDest(out);
-					legacy.savePlane(planeIndex, imageIndex, plane, planeMin, planeMax);
+					legacy.savePlane(imageIndex, planeIndex, plane, planeMin, planeMax);
 					return;
 				}
 
@@ -797,7 +797,7 @@ public class NativeQTFormat extends AbstractFormat {
 				out.seek(BYTE_COUNT_OFFSET);
 				out.writeInt(numBytes + 8);
 
-				out.seek(offsets.get(planeIndex));
+				out.seek(offsets.get((int)planeIndex));
 
 				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
 					planeMax))
@@ -809,7 +809,7 @@ public class NativeQTFormat extends AbstractFormat {
 			final int x = (int) planeMin[0], y = (int) planeMin[1], w =
 					(int) planeMax[0], h = (int) planeMax[1];
 
-			out.seek(offsets.get(planeIndex) + y * (nChannels * width + pad));
+			out.seek(offsets.get((int)planeIndex) + y * (nChannels * width + pad));
 
 			// invert each pixel
 			// this will makes the colors look right in other readers (e.g. xine),

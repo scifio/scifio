@@ -65,7 +65,7 @@ public abstract class ByteArrayReader<M extends TypedMetadata> extends
 
 	@Override
 	public ByteArrayPlane openThumbPlane(final int imageIndex,
-		final int planeIndex) throws FormatException, IOException
+		final long planeIndex) throws FormatException, IOException
 	{
 		FormatTools.assertStream(getStream(), true, 1);
 		final Metadata meta = getMetadata();

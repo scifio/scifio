@@ -949,7 +949,7 @@ public class DICOMFormat extends AbstractFormat {
 		// -- ColorTable API Methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
+		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
 			final int pixelType = getPixelType(0);
 
@@ -1863,7 +1863,7 @@ public class DICOMFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -1883,7 +1883,7 @@ public class DICOMFormat extends AbstractFormat {
 			final Integer[] keys = fileList.keySet().toArray(new Integer[0]);
 			Arrays.sort(keys);
 			if (fileList.get(keys[imageIndex]).size() > 1) {
-				final int fileNumber = planeIndex / meta.getImagesPerFile();
+				final int fileNumber = (int)(planeIndex / meta.getImagesPerFile());
 				planeIndex = planeIndex % meta.getImagesPerFile();
 				final String file = fileList.get(keys[imageIndex]).get(fileNumber);
 				final io.scif.Reader r = scifio().initializer().initializeReader(file);
@@ -1899,7 +1899,7 @@ public class DICOMFormat extends AbstractFormat {
 			final int bytes =
 				(int) (meta.getAxisLength(imageIndex, Axes.X) *
 					meta.getAxisLength(imageIndex, Axes.Y) * bpp * ec);
-			getStream().seek(meta.getOffsets()[planeIndex]);
+			getStream().seek(meta.getOffsets()[(int)planeIndex]);
 
 			if (meta.isRLE()) {
 				// plane is compressed using run-length encoding
@@ -1965,7 +1965,7 @@ public class DICOMFormat extends AbstractFormat {
 				// plane is compressed using JPEG or JPEG-2000
 				final long end =
 					planeIndex < meta.getOffsets().length - 1
-						? meta.getOffsets()[planeIndex + 1] : getStream().length();
+						? meta.getOffsets()[(int)planeIndex + 1] : getStream().length();
 				byte[] b = new byte[(int) (end - getStream().getFilePointer())];
 				getStream().read(b);
 

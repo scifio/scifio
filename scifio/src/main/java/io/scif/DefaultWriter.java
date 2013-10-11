@@ -69,7 +69,7 @@ public class DefaultWriter extends AbstractWriter<DefaultMetadata> implements
 	 * @throws UnsupportedOperationException
 	 */
 	@Override
-	public void savePlane(final int imageIndex, final int planeIndex,
+	public void savePlane(final int imageIndex, final long planeIndex,
 		final Plane plane, final long[] planeMin, final long[] planeMax)
 		throws FormatException, IOException
 	{

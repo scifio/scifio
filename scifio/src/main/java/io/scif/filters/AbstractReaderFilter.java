@@ -186,7 +186,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	// -- Reader API Methods --
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex)
+	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		openPlaneHelper();
@@ -194,7 +194,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException
 	{
@@ -203,7 +203,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
 		openPlaneHelper();
@@ -211,7 +211,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane, final long[] planeMin, final long[] planeMax)
 		throws FormatException, IOException
 	{
@@ -221,7 +221,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
+	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		return getParent().openThumbPlane(imageIndex, planeIndex);

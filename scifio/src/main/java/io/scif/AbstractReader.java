@@ -89,16 +89,16 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	// TODO Merge common Reader and Writer API methods
 
 	@Override
-	public P openPlane(final int imageIndex, final int planeNumber)
+	public P openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		final long[] planeMax = metadata.getAxesLengthsPlanar(imageIndex);
 		final long[] planeMin = new long[planeMax.length];
-		return openPlane(imageIndex, planeNumber, planeMin, planeMax);
+		return openPlane(imageIndex, planeIndex, planeMin, planeMax);
 	}
 
 	  @Override
-	public P openPlane(final int imageIndex, final int planeIndex,
+	public P openPlane(final int imageIndex, final long planeIndex,
 		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException
 	{
@@ -122,14 +122,14 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public P openPlane(final int imageIndex, final int planeIndex,
+	public P openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane));
 	}
 
 	@Override
-	public P openPlane(final int imageIndex, final int planeIndex,
+	public P openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane, final long[] planeMin, final long[] planeMax)
 		throws FormatException, IOException
 	{
@@ -290,7 +290,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	// -- TypedReader API --
 
 	@Override
-	public P openPlane(final int imageIndex, final int planeIndex, final P plane)
+	public P openPlane(final int imageIndex, final long planeIndex, final P plane)
 		throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, plane, plane.getOffsets(), plane.getLengths());

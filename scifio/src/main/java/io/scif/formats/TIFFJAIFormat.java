@@ -245,7 +245,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
-			final int planeIndex, final BufferedImagePlane plane,
+			final long planeIndex, final BufferedImagePlane plane,
 			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
@@ -262,7 +262,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 	/** Obtains a BufferedImage from the given data source using JAI. */
 	protected static BufferedImage openBufferedImage(final Metadata meta,
-		final int planeIndex) throws FormatException
+		final long planeIndex) throws FormatException
 	{
 		meta.universe().setVar("planeIndex", planeIndex);
 		RenderedImage img;

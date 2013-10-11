@@ -167,7 +167,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
-			final int planeIndex, final BufferedImagePlane plane,
+			final long planeIndex, final BufferedImagePlane plane,
 			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
@@ -200,7 +200,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{

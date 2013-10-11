@@ -164,14 +164,14 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	 * @throws FormatException Not actually thrown.
 	 * @throws IOException Not actually thrown.
 	 */
-	public Double[] getPlaneMinimum(final int imageIndex, final int planeIndex)
+	public Double[] getPlaneMinimum(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
 		if (planeMin == null) return null;
 
 		final int numXY = countRGB(imageIndex, planeIndex);
-		final int pBase = planeIndex * numXY;
+		final int pBase = (int)planeIndex * numXY;
 		if (Double.isNaN(planeMin[imageIndex][pBase])) return null;
 
 		final Double[] min = new Double[numXY];
@@ -190,14 +190,14 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	 * @throws FormatException Not actually thrown.
 	 * @throws IOException Not actually thrown.
 	 */
-	public Double[] getPlaneMaximum(final int imageIndex, final int planeIndex)
+	public Double[] getPlaneMaximum(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
 		if (planeMax == null) return null;
 
 		final int numXY = countRGB(imageIndex, planeIndex);
-		final int pBase = planeIndex * numXY;
+		final int pBase = (int)planeIndex * numXY;
 		if (Double.isNaN(planeMax[imageIndex][pBase])) return null;
 
 		final Double[] max = new Double[numXY];
@@ -229,7 +229,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex)
+	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
@@ -238,7 +238,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
 		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
@@ -247,7 +247,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException
 	{
@@ -256,7 +256,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
@@ -298,7 +298,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	 *          having been written to it, the length (in bytes) of the those
 	 *          pixels.
 	 */
-	protected void updateMinMax(final int imageIndex, final int planeIndex,
+	protected void updateMinMax(final int imageIndex, final long planeIndex,
 		final byte[] buf, final int len) throws FormatException, IOException
 	{
 		if (buf == null) return;
@@ -315,7 +315,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		// this plane
 		// and that the buffer requested is actually the entire plane
 		if (len == planeSize &&
-			!Double.isNaN(planeMin[imageIndex][planeIndex * numRGB])) return;
+			!Double.isNaN(planeMin[imageIndex][(int)planeIndex * numRGB])) return;
 
 		final boolean little = m.isLittleEndian(imageIndex);
 
@@ -368,7 +368,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 				planeMax[imageIndex][pBase + c] = sliceMax[imageIndex][cBase + c];
 			}
 		}
-		minMaxDone[imageIndex] = Math.max(minMaxDone[imageIndex], planeIndex + 1);
+		minMaxDone[imageIndex] = Math.max(minMaxDone[imageIndex], (int)planeIndex + 1);
 	}
 
 	/**
@@ -377,7 +377,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	 * @throws FormatException Not actually thrown.
 	 * @throws IOException Not actually thrown.
 	 */
-	protected void initMinMax(int imageIndex, int planeIndex)
+	protected void initMinMax(int imageIndex, long planeIndex)
 		throws FormatException, IOException
 	{
 		final io.scif.Metadata m = getMetadata();
@@ -420,7 +420,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	/**
 	 * Count how many color channel planes are present.
 	 */
-	private int countRGB(int imageIndex, int planeIndex) {
+	private int countRGB(int imageIndex, long planeIndex) {
 		Metadata meta = getMetadata();
 		if (meta.getAxisIndex(imageIndex, Axes.CHANNEL) < meta
 			.getPlanarAxisCount(imageIndex))

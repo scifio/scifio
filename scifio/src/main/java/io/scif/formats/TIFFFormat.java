@@ -1186,7 +1186,7 @@ public class TIFFFormat extends AbstractFormat {
 		 * IFD hashtable allows specification of TIFF parameters such as bit depth,
 		 * compression and units.
 		 */
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final IFD ifd) throws IOException, FormatException
 		{
 			final Metadata meta = getMetadata();
@@ -1200,7 +1200,7 @@ public class TIFFFormat extends AbstractFormat {
 		 * IFD hashtable allows specification of TIFF parameters such as bit depth,
 		 * compression and units.
 		 */
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, IFD ifd, final long[] planeMin, final long[] planeMax)
 			throws IOException, FormatException
 		{
@@ -1215,7 +1215,7 @@ public class TIFFFormat extends AbstractFormat {
 								h = (int) planeMax[yAxis];
 			if (ifd == null) ifd = new IFD(log());
 			final int type = getMetadata().getPixelType(imageIndex);
-			int index = planeIndex;
+			long index = planeIndex;
 			// This operation is synchronized
 			synchronized (this) {
 				// This operation is synchronized against the TIFF saver.
@@ -1246,7 +1246,7 @@ public class TIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -1257,7 +1257,7 @@ public class TIFFFormat extends AbstractFormat {
 				try {
 					final long[] ifdOffsets = parser.getIFDOffsets();
 					if (planeIndex < ifdOffsets.length) {
-						ifd = parser.getIFD(ifdOffsets[planeIndex]);
+						ifd = parser.getIFD(ifdOffsets[(int)planeIndex]);
 					}
 				}
 				finally {
@@ -1332,7 +1332,7 @@ public class TIFFFormat extends AbstractFormat {
 		 * This method is factored out from <code>saveBytes()</code> in an attempt
 		 * to ensure thread safety.
 		 */
-		private int prepareToWriteImage(final int imageIndex, final int planeIndex,
+		private long prepareToWriteImage(final int imageIndex, final long planeIndex,
 			final Plane plane, final IFD ifd, final int x, final int y, final int w,
 			final int h) throws IOException, FormatException
 		{
@@ -1346,9 +1346,9 @@ public class TIFFFormat extends AbstractFormat {
 			// at one time.
 			synchronized (this) {
 				if (planeIndex < initialized[imageIndex].length &&
-					!initialized[imageIndex][planeIndex])
+					!initialized[imageIndex][(int)planeIndex])
 				{
-					initialized[imageIndex][planeIndex] = true;
+					initialized[imageIndex][(int)planeIndex] = true;
 
 					final RandomAccessInputStream tmp =
 						new RandomAccessInputStream(getContext(), meta.getDatasetName());
@@ -1461,7 +1461,7 @@ public class TIFFFormat extends AbstractFormat {
 			if (FormatTools.isFloatingPoint(type)) sampleFormat = 3;
 			ifd.putIFDValue(IFD.SAMPLE_FORMAT, sampleFormat);
 
-			int index = planeIndex;
+			long index = planeIndex;
 			final int realSeries = imageIndex;
 			for (int i = 0; i < realSeries; i++) {
 				index += meta.getPlaneCount(i);

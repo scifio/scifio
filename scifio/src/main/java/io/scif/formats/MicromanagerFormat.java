@@ -749,7 +749,7 @@ public class MicromanagerFormat extends AbstractFormat {
 		}
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -860,7 +860,7 @@ public class MicromanagerFormat extends AbstractFormat {
 		public String cameraMode;
 
 		public String getFile(final Metadata meta, final int imageIndex,
-			final int planeIndex)
+			final long planeIndex)
 		{
 			final long[] zct =
 				FormatTools.rasterToPosition(imageIndex, planeIndex, meta);
@@ -877,7 +877,7 @@ public class MicromanagerFormat extends AbstractFormat {
 					}
 				}
 			}
-			return fileNameMap.size() == 0 ? tiffs.get(planeIndex) : null;
+			return fileNameMap.size() == 0 ? tiffs.get((int)planeIndex) : null;
 		}
 	}
 

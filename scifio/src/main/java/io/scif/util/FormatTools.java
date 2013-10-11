@@ -271,7 +271,7 @@ public final class FormatTools {
 	 * @return position along each dimensional axis
 	 */
 	public static long[] rasterToPosition(final int imageIndex,
-		final int planeIndex, final Reader reader)
+		final long planeIndex, final Reader reader)
 	{
 		return rasterToPosition(imageIndex, planeIndex, reader.getMetadata());
 	}
@@ -286,7 +286,7 @@ public final class FormatTools {
 	 * @return position along each dimensional axis
 	 */
 	public static long[] rasterToPosition(final int imageIndex,
-		final int planeIndex, final Metadata m)
+		final long planeIndex, final Metadata m)
 	{
 		final long[] axisLengths = m.getAxesLengthsNonPlanar(imageIndex);
 		return rasterToPosition(axisLengths, planeIndex);
@@ -300,7 +300,7 @@ public final class FormatTools {
 	 * @param raster rasterized index value
 	 * @return position along each dimensional axis
 	 */
-	public static long[] rasterToPosition(final long[] lengths, final int raster)
+	public static long[] rasterToPosition(final long[] lengths, final long raster)
 	{
 		return rasterToPosition(lengths, raster, new long[lengths.length]);
 	}
@@ -314,7 +314,7 @@ public final class FormatTools {
 	 * @param pos preallocated position array to populate with the result
 	 * @return position along each dimensional axis
 	 */
-	public static long[] rasterToPosition(final long[] lengths, int raster,
+	public static long[] rasterToPosition(final long[] lengths, long raster,
 		final long[] pos)
 	{
 		long offset = 1;
@@ -470,7 +470,7 @@ public final class FormatTools {
 	 * then the buffer length check is not performed.
 	 */
 	public static void checkPlaneParameters(final Metadata m, final int imageIndex,
-		final int planeIndex, final int bufLength, final long[] planeMin,
+		final long planeIndex, final int bufLength, final long[] planeMin,
 		final long[] planeMax) throws FormatException
 	{
 		assertId(m.getSource().getFileName(), true, 2);
@@ -481,7 +481,7 @@ public final class FormatTools {
 
 	/** Checks that the given plane number is valid for the given reader. */
 	public static void checkPlaneNumber(final Metadata m, final int imageIndex,
-		final int planeIndex) throws FormatException
+		final long planeIndex) throws FormatException
 	{
 		final int imageCount = m.getPlaneCount(imageIndex);
 		if (planeIndex < 0 || planeIndex >= imageCount) {
@@ -824,7 +824,7 @@ public final class FormatTools {
 	 * low priority item.
 	 */
 	public static byte[] openThumbBytes(final Reader reader,
-		final int imageIndex, final int planeIndex) throws FormatException,
+		final int imageIndex, final long planeIndex) throws FormatException,
 		IOException
 	{
 		// NB: Dependency on AWT here is unfortunate, but very difficult to

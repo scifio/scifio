@@ -115,7 +115,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	 *          than getPlaneCount()
 	 * @return the corresponding plane number in the original (unseparated) data.
 	 */
-	public long getOriginalIndex(final int imageIndex, final int planeIndex) {
+	public long getOriginalIndex(final int imageIndex, final long planeIndex) {
 		final int planeCount = getPlaneCount(imageIndex);
 		final int originalCount = getParent().getPlaneCount(imageIndex);
 
@@ -163,7 +163,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex)
+	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
@@ -172,7 +172,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
 		int planarAxes = getMetadata().getPlanarAxisCount(imageIndex);
@@ -181,7 +181,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException
 	{
@@ -190,7 +190,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
@@ -319,7 +319,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
+	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);

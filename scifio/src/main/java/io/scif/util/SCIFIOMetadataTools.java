@@ -171,7 +171,7 @@ public class SCIFIOMetadataTools {
 	 */
 	public static void verifyMinimumPopulated(final Metadata src,
 		final RandomAccessOutputStream out, final int imageIndex,
-		final int planeIndex) throws FormatException
+		final long planeIndex) throws FormatException
 	{
 		if (src == null) {
 			throw new FormatException("Metadata object is null; "

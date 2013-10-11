@@ -125,7 +125,7 @@ public class JPEG2000Format extends AbstractFormat {
 			return lastIndex;
 		}
 
-		public void setLastIndex(final int imageIndex, final int planeIndex) {
+		public void setLastIndex(final int imageIndex, final long planeIndex) {
 			if (lastIndex == null) lastIndex = new Index(imageIndex, planeIndex);
 			else {
 				lastIndex.setImageIndex(imageIndex);
@@ -204,7 +204,7 @@ public class JPEG2000Format extends AbstractFormat {
 		// -- HasColorTable API Methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
+		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
 			if (lut == null) return null;
 
@@ -744,7 +744,7 @@ public class JPEG2000Format extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -809,7 +809,7 @@ public class JPEG2000Format extends AbstractFormat {
 		// -- Writer API Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -841,7 +841,7 @@ public class JPEG2000Format extends AbstractFormat {
 		 * @throws FormatException if one of the parameters is invalid.
 		 * @throws IOException if there was a problem writing to the file.
 		 */
-		public byte[] compressBuffer(final int imageIndex, final int planeIndex,
+		public byte[] compressBuffer(final int imageIndex, final long planeIndex,
 			final byte[] buf, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -898,13 +898,13 @@ public class JPEG2000Format extends AbstractFormat {
 	public static class Index {
 
 		private int imageIndex;
-		private int planeIndex;
+		private long planeIndex;
 
 		public Index() {
 			this(-1, -1);
 		}
 
-		public Index(final int image, final int plane) {
+		public Index(final int image, final long plane) {
 			imageIndex = image;
 			planeIndex = plane;
 		}
@@ -913,7 +913,7 @@ public class JPEG2000Format extends AbstractFormat {
 			imageIndex = image;
 		}
 
-		public void setPlaneIndex(final int plane) {
+		public void setPlaneIndex(final long plane) {
 			planeIndex = plane;
 		}
 
@@ -921,7 +921,7 @@ public class JPEG2000Format extends AbstractFormat {
 			return imageIndex;
 		}
 
-		public int getPlaneIndex() {
+		public long getPlaneIndex() {
 			return planeIndex;
 		}
 	}

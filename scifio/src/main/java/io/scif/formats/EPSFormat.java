@@ -334,7 +334,7 @@ public class EPSFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -482,7 +482,7 @@ public class EPSFormat extends AbstractFormat {
 		// -- Writer API Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -502,8 +502,8 @@ public class EPSFormat extends AbstractFormat {
 			// write pixel data
 			// for simplicity, write 80 char lines
 
-			if (!initialized[imageIndex][planeIndex]) {
-				initialized[imageIndex][planeIndex] = true;
+			if (!initialized[imageIndex][(int)planeIndex]) {
+				initialized[imageIndex][(int)planeIndex] = true;
 
 				writeHeader(imageIndex);
 

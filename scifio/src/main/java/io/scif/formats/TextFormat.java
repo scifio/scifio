@@ -412,7 +412,7 @@ public class TextFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -428,7 +428,7 @@ public class TextFormat extends AbstractFormat {
 								w = (int) planeMax[xAxis],
 								h = (int) planeMax[yAxis];
 			// copy floating point data into byte buffer
-			final float[] planeFloats = getMetadata().getData()[planeIndex];
+			final float[] planeFloats = getMetadata().getData()[(int)planeIndex];
 			int q = 0;
 			for (int j = 0; j < h; j++) {
 				final int yy = y + j;

@@ -120,7 +120,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		protected boolean use64Bit = false;
 
-		private int lastPlane = 0;
+		private long lastPlane = 0;
 
 		protected boolean noSubresolutions = false;
 
@@ -185,11 +185,11 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			this.use64Bit = use64Bit;
 		}
 
-		public int getLastPlane() {
+		public long getLastPlane() {
 			return lastPlane;
 		}
 
-		public void setLastPlane(final int lastPlane) {
+		public void setLastPlane(final long lastPlane) {
 			this.lastPlane = lastPlane;
 		}
 
@@ -346,10 +346,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- HasColorTable API methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
+		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
 			if (ifds == null || lastPlane < 0 || lastPlane > ifds.size()) return null;
-			IFD lastIFD = ifds.get(lastPlane);
+			IFD lastIFD = ifds.get((int)lastPlane);
 
 			ColorTable table = null;
 			try {
@@ -582,7 +582,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openThumbPlane(final int imageIndex,
-			final int planeIndex) throws FormatException, IOException
+			final long planeIndex) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final IFDList thumbnailIFDs = meta.getThumbnailIFDs();
@@ -590,10 +590,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				return super.openThumbPlane(imageIndex, planeIndex);
 			}
 			final TiffParser tiffParser = meta.getTiffParser();
-			tiffParser.fillInIFD(thumbnailIFDs.get(planeIndex));
+			tiffParser.fillInIFD(thumbnailIFDs.get((int)planeIndex));
 			int[] bps = null;
 			try {
-				bps = thumbnailIFDs.get(planeIndex).getBitsPerSample();
+				bps = thumbnailIFDs.get((int)planeIndex).getBitsPerSample();
 			}
 			catch (final FormatException e) {}
 
@@ -618,7 +618,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 					.getBytesPerPixel(meta.getPixelType(imageIndex)))];
 
 			final ByteArrayPlane plane = new ByteArrayPlane(getContext());
-			buf = tiffParser.getSamples(thumbnailIFDs.get(planeIndex), buf);
+			buf = tiffParser.getSamples(thumbnailIFDs.get((int)planeIndex), buf);
 			plane.populate(meta.get(imageIndex), buf, new long[2], new long[]{meta
 				.getThumbSizeX(imageIndex), meta.getThumbSizeY(imageIndex)});
 
@@ -626,7 +626,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -645,7 +645,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 			final IFD firstIFD = ifds.get(0);
 			meta.setLastPlane(planeIndex);
-			final IFD ifd = ifds.get(planeIndex);
+			final IFD ifd = ifds.get((int)planeIndex);
 			if ((firstIFD.getCompression() == TiffCompression.JPEG_2000 || firstIFD
 				.getCompression() == TiffCompression.JPEG_2000_LOSSY) &&
 				meta.getResolutionLevels() != null)

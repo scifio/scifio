@@ -260,7 +260,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
-			final int planeIndex, final BufferedImagePlane plane,
+			final long planeIndex, final BufferedImagePlane plane,
 			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
@@ -269,7 +269,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 			// paint frame into image
 			try {
-				r.setVar("time", meta.getTimes()[planeIndex]);
+				r.setVar("time", meta.getTimes()[(int)planeIndex]);
 				r.exec("moviePlayer.setTime(time)");
 				r.exec("qtip.redraw(null)");
 				r.exec("qtip.updateConsumers(null)");
@@ -371,7 +371,7 @@ public class LegacyQTFormat extends AbstractFormat {
 		// -- Writer API Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
@@ -397,8 +397,8 @@ public class LegacyQTFormat extends AbstractFormat {
 			}
 			scifio().qtJava().checkQTLibrary();
 
-			if (!initialized[imageIndex][planeIndex]) {
-				initialized[imageIndex][planeIndex] = true;
+			if (!initialized[imageIndex][(int)planeIndex]) {
+				initialized[imageIndex][(int)planeIndex] = true;
 
 				try {
 					r.exec("QTSession.open()");

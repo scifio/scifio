@@ -102,7 +102,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	// -- Writer API Methods --
 
 	@Override
-	public void savePlane(final int imageIndex, final int planeIndex,
+	public void savePlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
 		final long[] planeMax = metadata.getAxesLengthsPlanar(imageIndex);
@@ -312,7 +312,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	 * 
 	 * @throws FormatException if any of the arguments is invalid.
 	 */
-	protected void checkParams(final int imageIndex, final int planeIndex,
+	protected void checkParams(final int imageIndex, final long planeIndex,
 		final byte[] buf, final long[] planeMin, final long[] planeMax)
 		throws FormatException
 	{
