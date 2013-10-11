@@ -393,9 +393,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public int getPlaneCount() {
+	public long getPlaneCount() {
 		initializedCheck();
-		int length = 1;
+		long length = 1;
 
 		for (final CalibratedAxis t : getAxesNonPlanar()) {
 			length *= getAxisLength(t);

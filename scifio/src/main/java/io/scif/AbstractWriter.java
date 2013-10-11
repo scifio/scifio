@@ -302,7 +302,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
 		initialized = new boolean[metadata.getImageCount()][];
 		for (int i = 0; i < metadata.getImageCount(); i++) {
-			initialized[i] = new boolean[metadata.getPlaneCount(i)];
+			initialized[i] = new boolean[(int)metadata.getPlaneCount(i)];
 		}
 	}
 

@@ -627,17 +627,17 @@ public class GIFFormat extends AbstractFormat {
 			final byte[] dest =
 				new byte[(int)(metadata.getAxisLength(0, Axes.X) *
 					metadata.getAxisLength(0, Axes.Y))];
-			int lastImage = -1;
+			long lastPlane = -1;
 
 			// fill in starting image contents based on last image's dispose code
 			if (metadata.getLastDispose() > 0) {
 				if (metadata.getLastDispose() == 3) { // use image before last
-					final int n = metadata.getPlaneCount(0) - 2;
-					if (n > 0) lastImage = n - 1;
+					final long n = metadata.getPlaneCount(0) - 2;
+					if (n > 0) lastPlane = n - 1;
 				}
 
-				if (lastImage != -1) {
-					final byte[] prev = metadata.getImages().get(lastImage);
+				if (lastPlane != -1) {
+					final byte[] prev = metadata.getImages().get((int)lastPlane);
 					System.arraycopy(prev, 0, dest, 0, (int)(metadata.getAxisLength(0, Axes.X) *
 						metadata.getAxisLength(0, Axes.Y)));
 				}

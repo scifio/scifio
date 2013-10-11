@@ -353,7 +353,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public int getPlaneCount(final int imageIndex) {
+	public long getPlaneCount(final int imageIndex) {
 		return getParent().getPlaneCount(imageIndex);
 	}
 

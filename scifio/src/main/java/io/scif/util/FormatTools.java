@@ -483,8 +483,8 @@ public final class FormatTools {
 	public static void checkPlaneNumber(final Metadata m, final int imageIndex,
 		final long planeIndex) throws FormatException
 	{
-		final int imageCount = m.getPlaneCount(imageIndex);
-		if (planeIndex < 0 || planeIndex >= imageCount) {
+		final long planeCount = m.getPlaneCount(imageIndex);
+		if (planeIndex < 0 || planeIndex >= planeCount) {
 			throw new FormatException("Invalid plane number: " + planeIndex + " (" +
 			/* TODO series=" +
 			r.getMetadata().getSeries() + ", */"planeCount=" + planeIndex + ")");

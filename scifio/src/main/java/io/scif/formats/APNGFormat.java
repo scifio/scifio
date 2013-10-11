@@ -1134,7 +1134,7 @@ public class APNGFormat extends AbstractFormat {
 				ihdr.setColourType((byte) 0x2);
 			}
 
-			actl.setNumFrames(source.getPlaneCount(0));
+			actl.setNumFrames((int)source.getPlaneCount(0));
 
 			for (int i = 0; i < actl.getNumFrames(); i++) {
 				final FCTLChunk frame = new FCTLChunk();

@@ -215,7 +215,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 		long[] planeMax, int scanlinePad, Plane plane) throws IOException;
 
 	/** Determines the number of planes in the current file. */
-	int getPlaneCount(int imageIndex);
+	long getPlaneCount(int imageIndex);
 
 	/** Determines the number of images in the current file. */
 	int getImageCount();

@@ -116,8 +116,8 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	 * @return the corresponding plane number in the original (unseparated) data.
 	 */
 	public long getOriginalIndex(final int imageIndex, final long planeIndex) {
-		final int planeCount = getPlaneCount(imageIndex);
-		final int originalCount = getParent().getPlaneCount(imageIndex);
+		final long planeCount = getPlaneCount(imageIndex);
+		final long originalCount = getParent().getPlaneCount(imageIndex);
 
 		if (planeCount == originalCount) return planeIndex;
 		final long[] coords = FormatTools.rasterToPosition(imageIndex, planeIndex, this);
@@ -158,7 +158,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	}
 
 	@Override
-	public int getPlaneCount(final int imageIndex) {
+	public long getPlaneCount(final int imageIndex) {
 		return getMetadata().get(imageIndex).getPlaneCount();
 	}
 

@@ -231,7 +231,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 				iMeta.setAxisLength(Axes.TIME, v.size());
 
-				final int[] times = new int[iMeta.getPlaneCount()];
+				final int[] times = new int[(int)iMeta.getPlaneCount()];
 				for (int i = 0; i < times.length; i++) {
 					q = v.elementAt(i);
 					times[i] = q.intValue();

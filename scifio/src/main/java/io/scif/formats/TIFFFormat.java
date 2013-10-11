@@ -483,7 +483,7 @@ public class TIFFFormat extends AbstractFormat {
 				}
 			}
 			if (z * c * t == c && meta.isMultichannel(0)) {
-				t = meta.getPlaneCount(0);
+				t = (int)meta.getPlaneCount(0);
 			}
 
 			final ImageMetadata m = meta.get(0);

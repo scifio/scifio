@@ -327,7 +327,7 @@ public interface ImageMetadata extends HasMetaTable {
 	/**
 	 * @return the number of planes in this image
 	 */
-	int getPlaneCount();
+	long getPlaneCount();
 
 	/**
 	 * Returns an array of the lengths for axes associated with the specified

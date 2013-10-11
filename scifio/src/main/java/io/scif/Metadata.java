@@ -127,7 +127,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	int getImageCount();
 
 	/** Returns the number of planes in the specified image. */
-	int getPlaneCount(int imageIndex);
+	long getPlaneCount(int imageIndex);
 
 	/** Returns the size, in bytes, of the current dataset. */
 	long getDatasetSize();

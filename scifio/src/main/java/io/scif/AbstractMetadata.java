@@ -163,7 +163,7 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public int getPlaneCount(final int imageIndex) {
+	public long getPlaneCount(final int imageIndex) {
 		return imageMeta.get(imageIndex).getPlaneCount();
 	}
 

@@ -266,7 +266,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public int getPlaneCount(final int imageIndex) {
+	public long getPlaneCount(final int imageIndex) {
 		return metadata.getPlaneCount(imageIndex);
 	}
 

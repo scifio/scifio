@@ -303,7 +303,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		final String id = reader.getCurrentFile();
 		imgPlus.setSource(id);
-		imgPlus.initializeColorTables(reader.getPlaneCount(imageIndex));
+		imgPlus.initializeColorTables((int)reader.getPlaneCount(imageIndex));
 
 		// If we have a planar img, read the planes now. Otherwise they
 		// will be read on demand.
@@ -312,7 +312,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		}
 		else {
 			final float startTime = System.currentTimeMillis();
-			final int planeCount = reader.getPlaneCount(imageIndex);
+			final long planeCount = reader.getPlaneCount(imageIndex);
 			try {
 				readPlanes(reader, imageIndex, type, imgPlus, imgOptions);
 			}

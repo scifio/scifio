@@ -224,7 +224,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	// -- IFormatReader API methods --
 
 	@Override
-	public int getPlaneCount(final int imageIndex) {
+	public long getPlaneCount(final int imageIndex) {
 		return getMetadata().get(imageIndex).getPlaneCount();
 	}
 
@@ -402,14 +402,14 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		if (planeMin == null) {
 			planeMin = new double[imageCount][];
 			for (int i = 0; i < imageCount; i++) {
-				planeMin[i] = new double[getPlaneCount(i) * xyRepresentations];
+				planeMin[i] = new double[(int)getPlaneCount(i) * xyRepresentations];
 				Arrays.fill(planeMin[i], Double.NaN);
 			}
 		}
 		if (planeMax == null) {
 			planeMax = new double[imageCount][];
 			for (int i = 0; i < imageCount; i++) {
-				planeMax[i] = new double[getPlaneCount(i) * xyRepresentations];
+				planeMax[i] = new double[(int)getPlaneCount(i) * xyRepresentations];
 				Arrays.fill(planeMax[i], Double.NaN);
 			}
 		}
