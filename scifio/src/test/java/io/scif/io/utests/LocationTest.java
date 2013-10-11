@@ -68,7 +68,7 @@ public class LocationTest {
 	// -- Setup methods --
 
 	@BeforeMethod
-	public void setup() throws IOException {
+	public void setup() throws IOException, InterruptedException {
 		context = new Context();
 		final File tmpDirectory =
 			new File(System.getProperty("java.io.tmpdir"),
@@ -79,6 +79,8 @@ public class LocationTest {
 		final File hiddenFile =
 			File.createTempFile(".hiddenTest", null, tmpDirectory);
 		hiddenFile.deleteOnExit();
+		Process p = Runtime.getRuntime().exec("attrib +h " + hiddenFile.getAbsolutePath());
+		p.waitFor();
 
 		final File invalidFile =
 			File.createTempFile("invalidTest", null, tmpDirectory);
