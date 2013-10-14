@@ -388,7 +388,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 */
 	private AxisType[] axesToSplit(ReaderFilter r) {
 		Set<AxisType> axes = new HashSet<AxisType>();
-		Metadata meta = r.getMetadata();
+		Metadata meta = r.getTail().getMetadata();
 		// Split any non-X,Y axis
 		for (CalibratedAxis t : meta.getAxesPlanar(0)) {
 			AxisType type = t.type();
