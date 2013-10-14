@@ -50,18 +50,21 @@ public interface MetadataService extends SCIFIOService {
 	/**
 	 * Parses key/value pairs from the given string, using the default separator
 	 * regex of {@code "[&\n]"} (i.e., ampersand or newline). Each key/value pair
-	 * is assumed to be separated with an equals sign character ('=').
+	 * is assumed to be separated with an equals sign character ('='). The value
+	 * can also be a list of values if each value is separated by a comma
+	 * character (',').
 	 */
-	Map<String, String> parse(String data);
+	Map<String, Object> parse(String data);
 
 	/**
 	 * Parses key/value pairs from the given string, using the specified separator
 	 * regex. Each key/value pair is assumed to be separated with an equals sign
-	 * character ('=').
+	 * character ('='). The value can also be a list of values if each value is
+	 * separated by a comma character (',').
 	 * 
 	 * @see String#split(String)
 	 */
-	Map<String, String> parse(String data, String regex);
+	Map<String, Object> parse(String data, String regex);
 
 	/**
 	 * Populates fields of the given metadata object with information from the
@@ -72,7 +75,7 @@ public interface MetadataService extends SCIFIOService {
 	 * @param metadata The metadata object with annotated fields to populate.
 	 * @param map The map defining the values to use when populating the metadata.
 	 */
-	void populate(Object metadata, Map<String, String> map);
+	void populate(Object metadata, Map<String, Object> map);
 
 	// TODO: MetaTable dump(Object metadata);
 

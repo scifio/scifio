@@ -50,6 +50,7 @@ import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
+import io.scif.util.SCIFIOMetadataTools;
 
 import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
@@ -105,21 +106,19 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			if (img != null) {
 				iMeta.setAxisLength(Axes.X, img.getWidth());
 				iMeta.setAxisLength(Axes.Y, img.getHeight());
-				iMeta.setRGB(img.getRaster().getNumBands() > 1);
+				iMeta.setPlanarAxisCount(2);
+				int channels = img.getRaster().getNumBands();
+				if (channels > 1) {
+					iMeta.setPlanarAxisCount(3);
+					iMeta.setAxisLength(Axes.CHANNEL, img.getRaster().getNumBands());
+				}
 				iMeta.setPixelType(AWTImageTools.getPixelType(img));
 			}
 
-			iMeta.setAxisLength(Axes.CHANNEL, iMeta.isRGB() ? 3 : 1);
-			iMeta.setAxisLength(Axes.Z, 1);
-			iMeta.setAxisLength(Axes.TIME, 1);
-			iMeta.setBitsPerPixel(FormatTools
-				.getBitsPerPixel(iMeta.getBitsPerPixel()));
-			iMeta.setInterleaved(false);
 			iMeta.setLittleEndian(false);
 			iMeta.setMetadataComplete(true);
 			iMeta.setIndexed(false);
 			iMeta.setFalseColor(false);
-			iMeta.setPlaneCount(1);
 		}
 
 		@Override
@@ -168,18 +167,18 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
-			final int planeIndex, final BufferedImagePlane plane, final int x,
-			final int y, final int w, final int h) throws FormatException,
+			final long planeIndex, final BufferedImagePlane plane,
+			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
 			final Metadata meta = getMetadata();
 			plane.setData(AWTImageTools.getSubimage(meta.getImg(), meta
-				.isLittleEndian(imageIndex), x, y, w, h));
+				.isLittleEndian(imageIndex), planeMin, planeMax));
 			return plane;
 		}
 
 		@Override
-		public int getOptimalTileHeight(final int imageIndex) {
+		public long getOptimalTileHeight(final int imageIndex) {
 			return getMetadata().getAxisLength(imageIndex, Axes.Y);
 		}
 	}
@@ -201,26 +200,26 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
-			final Plane plane, final int x, final int y, final int w, final int h)
+		public void savePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
-			if (!isFullPlane(imageIndex, x, y, w, h)) {
+			final Metadata meta = getMetadata();
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax)) {
 				throw new FormatException(
 					"ImageIOWriter does not support writing tiles");
 			}
 
 			BufferedImage img = null;
-			final Metadata meta = getMetadata();
 
 			if (!(plane instanceof BufferedImagePlane)) {
 				final int type = meta.getPixelType(imageIndex);
 				img =
-					AWTImageTools.makeImage(plane.getBytes(), meta.getAxisLength(
-						imageIndex, Axes.X), meta.getAxisLength(0, Axes.Y), meta
-						.getRGBChannelCount(imageIndex), meta.isInterleaved(imageIndex),
-						FormatTools.getBytesPerPixel(type), FormatTools
-							.isFloatingPoint(type), meta.isLittleEndian(imageIndex),
+					AWTImageTools.makeImage(plane.getBytes(), (int) meta.getAxisLength(
+						imageIndex, Axes.X), (int) meta.getAxisLength(0, Axes.Y),
+						(int) meta.getAxisLength(imageIndex, Axes.CHANNEL), meta
+						.getInterleavedAxisCount(imageIndex) > 0, FormatTools.getBytesPerPixel(type),
+						FormatTools.isFloatingPoint(type), meta.isLittleEndian(imageIndex),
 						FormatTools.isSigned(type));
 			}
 			else {
@@ -251,7 +250,8 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			dest.createImageMetadata(1);
 			dest.setAxisLength(0, Axes.X, source.getAxisLength(0, Axes.X));
 			dest.setAxisLength(0, Axes.Y, source.getAxisLength(0, Axes.Y));
-			dest.setRGB(0, source.isRGB(0));
+			dest
+				.setAxisLength(0, Axes.CHANNEL, source.getAxisLength(0, Axes.CHANNEL));
 			dest.setPixelType(0, source.getPixelType(0));
 		}
 	}

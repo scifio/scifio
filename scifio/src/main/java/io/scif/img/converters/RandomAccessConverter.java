@@ -113,35 +113,13 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 	private void getPosition(final Metadata m, final int imageIndex,
 		final int planeIndex, final long[] pos)
 	{
-		final long sizeX = m.getAxisLength(0, Axes.X);
-		final long sizeY = m.getAxisLength(0, Axes.Y);
-		final long sizeZ = m.getAxisLength(0, Axes.Z);
-		final long sizeT = m.getAxisLength(0, Axes.TIME);
-		final long sizeC = m.getAxisLength(0, Axes.CHANNEL);
-		final String dimOrder = FormatTools.findDimensionOrder(m, imageIndex);
+		final int offset =
+			m.getAxes(imageIndex).size() - m.getAxesNonPlanar(imageIndex).size();
 
-		final int[] zct = FormatTools.getZCTCoords(m, imageIndex, planeIndex);
-
-		int index = 0;
-		for (int i = 0; i < dimOrder.length(); i++) {
-			final char dim = dimOrder.charAt(i);
-			switch (dim) {
-				case 'X':
-					if (sizeX > 1) index++; // NB: Leave X axis position alone.
-					break;
-				case 'Y':
-					if (sizeY > 1) index++; // NB: Leave Y axis position alone.
-					break;
-				case 'Z':
-					if (sizeZ > 1) pos[index++] = zct[0];
-					break;
-				case 'T':
-					if (sizeT > 1) pos[index++] = zct[2];
-					break;
-				case 'C':
-					if (sizeC > 1) pos[index++] = zct[1];
-					break;
-			}
+		final long[] axesPositions =
+			FormatTools.rasterToPosition(imageIndex, planeIndex, m);
+		for (int i = 0; i < pos.length; i++) {
+			pos[i + offset] = axesPositions[i];
 		}
 	}
 

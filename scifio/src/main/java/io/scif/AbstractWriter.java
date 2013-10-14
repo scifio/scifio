@@ -102,12 +102,12 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	// -- Writer API Methods --
 
 	@Override
-	public void savePlane(final int imageIndex, final int planeIndex,
+	public void savePlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		final int width = metadata.getAxisLength(imageIndex, Axes.X);
-		final int height = metadata.getAxisLength(imageIndex, Axes.Y);
-		savePlane(imageIndex, planeIndex, plane, 0, 0, width, height);
+		final long[] planeMax = metadata.getAxesLengthsPlanar(imageIndex);
+		final long[] planeMin = new long[planeMax.length];
+		savePlane(imageIndex, planeIndex, plane, planeMin, planeMax);
 	}
 
 	@Override
@@ -302,28 +302,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
 		initialized = new boolean[metadata.getImageCount()][];
 		for (int i = 0; i < metadata.getImageCount(); i++) {
-			initialized[i] = new boolean[getPlaneCount(i)];
+			initialized[i] = new boolean[(int)metadata.getPlaneCount(i)];
 		}
-	}
-
-	/** Retrieve the total number of planes in the current series. */
-	protected int getPlaneCount(final int imageIndex) {
-		final int z = metadata.getAxisLength(imageIndex, Axes.Z);
-		final int t = metadata.getAxisLength(imageIndex, Axes.TIME);
-		final int c = metadata.getEffectiveSizeC(imageIndex);
-		return z * c * t;
-	}
-
-	/**
-	 * Returns true if the given rectangle coordinates correspond to a full image
-	 * in the given series.
-	 */
-	protected boolean isFullPlane(final int imageIndex, final int x, final int y,
-		final int w, final int h)
-	{
-		final int sizeX = metadata.getAxisLength(imageIndex, Axes.X);
-		final int sizeY = metadata.getAxisLength(imageIndex, Axes.Y);
-		return x == 0 && y == 0 && w == sizeX && h == sizeY;
 	}
 
 	/**
@@ -332,18 +312,18 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	 * 
 	 * @throws FormatException if any of the arguments is invalid.
 	 */
-	protected void checkParams(final int imageIndex, final int planeIndex,
-		final byte[] buf, final int x, final int y, final int w, final int h)
+	protected void checkParams(final int imageIndex, final long planeIndex,
+		final byte[] buf, final long[] planeMin, final long[] planeMax)
 		throws FormatException
 	{
 		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out, imageIndex,
 			planeIndex);
 
 		if (buf == null) throw new FormatException("Buffer cannot be null.");
-		final int z = metadata.getAxisLength(imageIndex, Axes.Z);
-		final int t = metadata.getAxisLength(imageIndex, Axes.TIME);
-		final int c = metadata.getAxisLength(imageIndex, Axes.CHANNEL);
-		final int planes = z * c * t;
+		long planes = metadata.getPlaneCount(imageIndex);
+
+		if (metadata.isMultichannel(imageIndex)) planes *=
+			metadata.getAxisLength(imageIndex, Axes.CHANNEL);
 
 		if (planeIndex < 0) throw new FormatException(String.format(
 			"Plane index:%d must be >= 0", planeIndex));
@@ -352,34 +332,10 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 				planeIndex, planes));
 		}
 
-		final int sizeX = metadata.getAxisLength(imageIndex, Axes.X);
-		final int sizeY = metadata.getAxisLength(imageIndex, Axes.Y);
-		if (x < 0) throw new FormatException(String.format("X:%d must be >= 0", x));
-		if (y < 0) throw new FormatException(String.format("Y:%d must be >= 0", y));
-		if (x >= sizeX) {
-			throw new FormatException(String.format("X:%d must be < %d", x, sizeX));
-		}
-		if (y >= sizeY) {
-			throw new FormatException(String.format("Y:%d must be < %d", y, sizeY));
-		}
-		if (w <= 0) throw new FormatException(String.format("Width:%d must be > 0",
-			w));
-		if (h <= 0) throw new FormatException(String.format(
-			"Height:%d must be > 0", h));
-		if (x + w > sizeX) throw new FormatException(String.format(
-			"(w:%d + x:%d) must be <= %d", w, x, sizeX));
-		if (y + h > sizeY) throw new FormatException(String.format(
-			"(h:%d + y:%d) must be <= %d", h, y, sizeY));
+		FormatTools.checkPlaneParameters(getMetadata(), imageIndex, planeIndex,
+			buf.length, planeMin, planeMax);
 
 		final int pixelType = metadata.getPixelType(imageIndex);
-		final int bpp = FormatTools.getBytesPerPixel(pixelType);
-		int samples = metadata.getRGBChannelCount(imageIndex);
-		if (samples == 0) samples = 1;
-		final int minSize = bpp * w * h * samples;
-		if (buf.length < minSize) {
-			throw new FormatException("Buffer is too small; expected " + minSize +
-				" bytes, got " + buf.length + " bytes.");
-		}
 
 		if (!DataTools.containsValue(getPixelTypes(compression), pixelType)) {
 			throw new FormatException("Unsupported image type '" +

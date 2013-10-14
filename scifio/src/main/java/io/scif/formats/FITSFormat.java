@@ -109,12 +109,10 @@ public class FITSFormat extends AbstractFormat {
 			final ImageMetadata iMeta = get(0);
 
 			if (iMeta.getAxisLength(Axes.Z) == 0) iMeta.setAxisLength(Axes.Z, 1);
-			iMeta.setAxisLength(Axes.CHANNEL, 1);
-			iMeta.setAxisLength(Axes.TIME, 1);
 
 			// correct for truncated files
 			final int planeSize =
-				iMeta.getAxisLength(Axes.X) * iMeta.getAxisLength(Axes.Y) *
+				(int)iMeta.getAxisLength(Axes.X) * (int)iMeta.getAxisLength(Axes.Y) *
 					FormatTools.getBytesPerPixel(iMeta.getPixelType());
 
 			try {
@@ -129,10 +127,9 @@ public class FITSFormat extends AbstractFormat {
 				log().error("Failed to determine input stream length", e);
 			}
 
-			iMeta.setPlaneCount(iMeta.getAxisLength(Axes.Z));
-			iMeta.setRGB(false);
+			iMeta.setAxisTypes(Axes.X, Axes.Y, Axes.Z);
+			iMeta.setPlanarAxisCount(2);
 			iMeta.setLittleEndian(false);
-			iMeta.setInterleaved(false);
 			iMeta.setIndexed(false);
 			iMeta.setFalseColor(false);
 			iMeta.setMetadataComplete(true);
@@ -221,19 +218,19 @@ public class FITSFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final long[] planeMin, final long planeMax[])
+			throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-				buf.length, x, y, w, h);
+			FormatTools.checkPlaneParameters(getMetadata(), imageIndex, planeIndex,
+				buf.length, planeMin, planeMax);
 
 			getStream().seek(
 				getMetadata().getPixelOffset() + planeIndex *
 					FormatTools.getPlaneSize(this, imageIndex));
-			return readPlane(getStream(), imageIndex, x, y, w, h, plane);
+			return readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
 		}
 	}
 }

@@ -155,6 +155,8 @@ public class BMPFormat extends AbstractFormat {
 
 			int bpp = getBitsPerPixel(0);
 			final ImageMetadata iMeta = get(0);
+			iMeta.setAxisTypes(Axes.X, Axes.Y);
+			iMeta.setPlanarAxisCount(1);
 
 			int sizeC = bpp != 24 ? 1 : 3;
 
@@ -174,22 +176,20 @@ public class BMPFormat extends AbstractFormat {
 					iMeta.setPixelType(FormatTools.UINT8);
 			}
 
-			iMeta.setRGB(sizeC > 1);
 			iMeta.setLittleEndian(true);
-			iMeta.setInterleaved(true);
-			iMeta.setPlaneCount(1);
 
 			iMeta.setMetadataComplete(true);
 			iMeta.setIndexed(getColorTable(0, 0) != null);
 
 			if (iMeta.isIndexed()) {
 				sizeC = 1;
-				iMeta.setRGB(false);
 			}
 
-			iMeta.addAxis(Axes.CHANNEL, sizeC);
-			iMeta.addAxis(Axes.Z, 1);
-			iMeta.addAxis(Axes.TIME, 1);
+			if (sizeC > 1) {
+				iMeta.addAxis(Axes.CHANNEL, sizeC);
+				if (sizeC > 1) iMeta.setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y);
+				iMeta.setPlanarAxisCount(3);
+			}
 
 			iMeta.setFalseColor(false);
 		}
@@ -211,7 +211,7 @@ public class BMPFormat extends AbstractFormat {
 		// -- HasColorTable API Methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
+		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
 			return palette;
 		}
@@ -356,21 +356,27 @@ public class BMPFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
+			final int xIndex = meta.getAxisIndex(imageIndex, Axes.X);
+			final int yIndex = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xIndex],
+								y = (int) planeMin[yIndex],
+								w = (int) planeMax[xIndex],
+								h = (int) planeMax[yIndex];
 
 			final byte[] buf = plane.getData();
 			final int compression = meta.getCompression();
 			final int bpp = meta.getBitsPerPixel(imageIndex);
-			final int sizeX = meta.getAxisLength(imageIndex, Axes.X);
-			final int sizeY = meta.getAxisLength(imageIndex, Axes.Y);
-			final int sizeC = meta.getAxisLength(imageIndex, Axes.CHANNEL);
+			final int sizeX = (int)meta.getAxisLength(imageIndex, Axes.X);
+			final int sizeY = (int)meta.getAxisLength(imageIndex, Axes.Y);
+			final int sizeC = (int)meta.getAxisLength(imageIndex, Axes.CHANNEL);
 
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-				buf.length, x, y, w, h);
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+				buf.length, planeMin, planeMax);
 
 			if (compression != RAW &&
 				getStream().length() < FormatTools.getPlaneSize(this, imageIndex))
@@ -437,9 +443,9 @@ public class BMPFormat extends AbstractFormat {
 				}
 			}
 
-			if (meta.getRGBChannelCount(imageIndex) > 1) {
-				ImageTools.bgrToRgb(buf, meta.isInterleaved(imageIndex), 1, meta
-					.getRGBChannelCount(imageIndex));
+			if (meta.getAxisLength(imageIndex, Axes.CHANNEL) > 1) {
+				ImageTools.bgrToRgb(buf, meta.getInterleavedAxisCount(imageIndex) > 0,
+					1, (int) meta.getAxisLength(imageIndex, Axes.CHANNEL));
 			}
 			return plane;
 		}

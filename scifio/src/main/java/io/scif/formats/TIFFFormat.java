@@ -436,7 +436,7 @@ public class TIFFFormat extends AbstractFormat {
 			meta.setDescription("");
 
 			int z = 1, t = 1;
-			int c = meta.getAxisLength(0, Axes.CHANNEL);
+			int c = (int)meta.getAxisLength(0, Axes.CHANNEL);
 
 			IFDList ifds = meta.getIfds();
 
@@ -482,23 +482,23 @@ public class TIFFFormat extends AbstractFormat {
 					put(token.substring(0, eq).trim(), value);
 				}
 			}
-			if (z * c * t == c && meta.isRGB(0)) {
-				t = meta.getPlaneCount(0);
+			if (z * c * t == c && meta.isMultichannel(0)) {
+				t = (int)meta.getPlaneCount(0);
 			}
 
 			final ImageMetadata m = meta.get(0);
-			m.setAxes(FormatTools.findDimensionList("XYCZT"));
 
-			if (z * t * (m.isRGB() ? 1 : c) == ifds.size()) {
+			m.setAxisTypes(Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME);
+
+			if (z * t * (m.isMultichannel() ? 1 : c) == ifds.size()) {
 				m.setAxisLength(Axes.Z, z);
 				m.setAxisLength(Axes.TIME, t);
-				m.setAxisLength(Axes.CHANNEL, m.isRGB() ? m.getAxisLength(Axes.CHANNEL)
-					: c);
+				if (m.isMultichannel()) m.setAxisLength(Axes.CHANNEL, c);
 			}
-			else if (z * c * t == ifds.size() && m.isRGB()) {
+			else if (z * c * t == ifds.size() && m.isMultichannel()) {
 				m.setAxisLength(Axes.Z, z);
 				m.setAxisLength(Axes.TIME, t);
-				m.setAxisLength(Axes.CHANNEL, m.getAxisLength(Axes.CHANNEL) * c);
+				m.setAxisLength(Axes.CHANNEL, c);
 			}
 			else if (ifds.size() == 1 && z * t > ifds.size() &&
 				ifds.get(0).getCompression() == TiffCompression.UNCOMPRESSED)
@@ -519,9 +519,9 @@ public class TIFFFormat extends AbstractFormat {
 				final IFD firstIFD = ifds.get(0);
 
 				final int planeSize =
-					m.getAxisLength(Axes.X) * m.getAxisLength(Axes.Y) *
-						m.getRGBChannelCount() *
-						FormatTools.getBytesPerPixel(m.getPixelType());
+					(int)(m.getAxisLength(Axes.X) * m.getAxisLength(Axes.Y) *
+						m.getAxisLength(Axes.CHANNEL) *
+						FormatTools.getBytesPerPixel(m.getPixelType()));
 				final long[] stripOffsets = firstIFD.getStripOffsets();
 				final long[] stripByteCounts = firstIFD.getStripByteCounts();
 
@@ -557,11 +557,9 @@ public class TIFFFormat extends AbstractFormat {
 					m.setAxisLength(Axes.TIME, t);
 				}
 				else m.setAxisLength(Axes.Z, ifds.size());
-				m.setPlaneCount(ifds.size());
 			}
 			else {
 				m.setAxisLength(Axes.TIME, ifds.size());
-				m.setPlaneCount(ifds.size());
 			}
 		}
 
@@ -1188,13 +1186,13 @@ public class TIFFFormat extends AbstractFormat {
 		 * IFD hashtable allows specification of TIFF parameters such as bit depth,
 		 * compression and units.
 		 */
-		public void savePlane(final int imageIndex, final int planeIndex,
+		public void savePlane(final int imageIndex, final long planeIndex,
 			final Plane plane, final IFD ifd) throws IOException, FormatException
 		{
 			final Metadata meta = getMetadata();
-			final int w = meta.getAxisLength(imageIndex, Axes.X);
-			final int h = meta.getAxisLength(imageIndex, Axes.Y);
-			savePlane(imageIndex, planeIndex, plane, ifd, 0, 0, w, h);
+			final int w = (int)meta.getAxisLength(imageIndex, Axes.X);
+			final int h = (int)meta.getAxisLength(imageIndex, Axes.Y);
+			savePlane(imageIndex, planeIndex, plane, ifd, new long[2], new long[]{w, h});
 		}
 
 		/**
@@ -1202,15 +1200,22 @@ public class TIFFFormat extends AbstractFormat {
 		 * IFD hashtable allows specification of TIFF parameters such as bit depth,
 		 * compression and units.
 		 */
-		public void savePlane(final int imageIndex, final int planeIndex,
-			final Plane plane, IFD ifd, final int x, final int y, final int w,
-			final int h) throws IOException, FormatException
+		public void savePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, IFD ifd, final long[] planeMin, final long[] planeMax)
+			throws IOException, FormatException
 		{
 			final byte[] buf = plane.getBytes();
-			if (checkParams) checkParams(imageIndex, planeIndex, buf, x, y, w, h);
+			if (checkParams) checkParams(imageIndex, planeIndex, buf, planeMin,
+				planeMax);
+			final int xAxis = getMetadata().getAxisIndex(imageIndex, Axes.X);
+			final int yAxis = getMetadata().getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xAxis],
+								y = (int) planeMin[yAxis],
+								w = (int) planeMax[xAxis],
+								h = (int) planeMax[yAxis];
 			if (ifd == null) ifd = new IFD(log());
 			final int type = getMetadata().getPixelType(imageIndex);
-			int index = planeIndex;
+			long index = planeIndex;
 			// This operation is synchronized
 			synchronized (this) {
 				// This operation is synchronized against the TIFF saver.
@@ -1241,8 +1246,8 @@ public class TIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
-			final Plane plane, final int x, final int y, final int w, final int h)
+		public void savePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
 			IFD ifd = new IFD(log());
@@ -1252,7 +1257,7 @@ public class TIFFFormat extends AbstractFormat {
 				try {
 					final long[] ifdOffsets = parser.getIFDOffsets();
 					if (planeIndex < ifdOffsets.length) {
-						ifd = parser.getIFD(ifdOffsets[planeIndex]);
+						ifd = parser.getIFD(ifdOffsets[(int)planeIndex]);
 					}
 				}
 				finally {
@@ -1263,7 +1268,7 @@ public class TIFFFormat extends AbstractFormat {
 				}
 			}
 
-			savePlane(imageIndex, planeIndex, plane, ifd, x, y, w, h);
+			savePlane(imageIndex, planeIndex, plane, ifd, planeMin, planeMax);
 		}
 
 		@Override
@@ -1285,19 +1290,6 @@ public class TIFFFormat extends AbstractFormat {
 			return new int[] { FormatTools.INT8, FormatTools.UINT8,
 				FormatTools.INT16, FormatTools.UINT16, FormatTools.INT32,
 				FormatTools.UINT32, FormatTools.FLOAT, FormatTools.DOUBLE };
-		}
-
-		@Override
-		public int getPlaneCount(final int imageIndex) {
-			final Metadata meta = getMetadata();
-			final int c = meta.getRGBChannelCount(imageIndex);
-			final int type = meta.getPixelType(imageIndex);
-			final int bytesPerPixel = FormatTools.getBytesPerPixel(type);
-
-			if (bytesPerPixel > 1 && c != 1 && c != 3) {
-				return super.getPlaneCount(imageIndex) * c;
-			}
-			return super.getPlaneCount(imageIndex);
 		}
 
 		@Override
@@ -1340,7 +1332,7 @@ public class TIFFFormat extends AbstractFormat {
 		 * This method is factored out from <code>saveBytes()</code> in an attempt
 		 * to ensure thread safety.
 		 */
-		private int prepareToWriteImage(final int imageIndex, final int planeIndex,
+		private long prepareToWriteImage(final int imageIndex, final long planeIndex,
 			final Plane plane, final IFD ifd, final int x, final int y, final int w,
 			final int h) throws IOException, FormatException
 		{
@@ -1354,9 +1346,9 @@ public class TIFFFormat extends AbstractFormat {
 			// at one time.
 			synchronized (this) {
 				if (planeIndex < initialized[imageIndex].length &&
-					!initialized[imageIndex][planeIndex])
+					!initialized[imageIndex][(int)planeIndex])
 				{
-					initialized[imageIndex][planeIndex] = true;
+					initialized[imageIndex][(int)planeIndex] = true;
 
 					final RandomAccessInputStream tmp =
 						new RandomAccessInputStream(getContext(), meta.getDatasetName());
@@ -1371,7 +1363,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			final int type = meta.getPixelType(imageIndex);
-			int c = meta.getRGBChannelCount(imageIndex);
+			int c = (int)meta.getAxisLength(imageIndex, Axes.CHANNEL);
 			final int bytesPerPixel = FormatTools.getBytesPerPixel(type);
 
 			final int blockSize = w * h * c * bytesPerPixel;
@@ -1387,17 +1379,22 @@ public class TIFFFormat extends AbstractFormat {
 					initialized[imageIndex] =
 						new boolean[initialized[imageIndex].length * c];
 				}
+				final long[] planeMin = new long[]{x, y};
+				final long[] planeMax = new long[]{w, h};
+				final long[] cIndex = new long[1];
+				final long[] cLength = new long[]{c};
 
 				for (int i = 0; i < c; i++) {
+					cIndex[0] = i;
 					final byte[] b =
-						ImageTools.splitChannels(buf, i, c, bytesPerPixel, false,
+						ImageTools.splitChannels(buf, cIndex, cLength, bytesPerPixel, false,
 							interleaved);
 
 					final ByteArrayPlane bp = new ByteArrayPlane(getContext());
-					bp.populate(getMetadata().get(imageIndex), b, x, y, w, h);
+					bp.populate(getMetadata().get(imageIndex), b, planeMin, planeMax);
 
-					savePlane(imageIndex, planeIndex * c + i, bp, (IFD) ifd.clone(), x,
-						y, w, h);
+					savePlane(imageIndex, planeIndex * c + i, bp, (IFD) ifd.clone(),
+						planeMin, planeMax);
 				}
 				checkParams = true;
 				return -1;
@@ -1415,8 +1412,8 @@ public class TIFFFormat extends AbstractFormat {
 				ifd.putIFDValue(IFD.COLOR_MAP, colorMap);
 			}
 
-			final int width = meta.getAxisLength(imageIndex, Axes.X);
-			final int height = meta.getAxisLength(imageIndex, Axes.Y);
+			final int width = (int)meta.getAxisLength(imageIndex, Axes.X);
+			final int height = (int)meta.getAxisLength(imageIndex, Axes.Y);
 			ifd.put(new Integer(IFD.IMAGE_WIDTH), new Long(width));
 			ifd.put(new Integer(IFD.IMAGE_LENGTH), new Long(height));
 
@@ -1457,14 +1454,14 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			ifd.putIFDValue(IFD.PLANAR_CONFIGURATION, interleaved ||
-				meta.getRGBChannelCount(imageIndex) == 1 ? 1 : 2);
+				meta.getAxisLength(imageIndex, Axes.CHANNEL) == 1 ? 1 : 2);
 
 			int sampleFormat = 1;
 			if (FormatTools.isSigned(type)) sampleFormat = 2;
 			if (FormatTools.isFloatingPoint(type)) sampleFormat = 3;
 			ifd.putIFDValue(IFD.SAMPLE_FORMAT, sampleFormat);
 
-			int index = planeIndex;
+			long index = planeIndex;
 			final int realSeries = imageIndex;
 			for (int i = 0; i < realSeries; i++) {
 				index += meta.getPlaneCount(i);
@@ -1536,11 +1533,11 @@ public class TIFFFormat extends AbstractFormat {
 			firstIFD.putIFDValue(IFD.LITTLE_ENDIAN, m.isLittleEndian());
 			firstIFD.putIFDValue(IFD.IMAGE_WIDTH, m.getAxisLength(Axes.X));
 			firstIFD.putIFDValue(IFD.IMAGE_LENGTH, m.getAxisLength(Axes.Y));
-			firstIFD.putIFDValue(IFD.SAMPLES_PER_PIXEL, m.getRGBChannelCount());
+			firstIFD.putIFDValue(IFD.SAMPLES_PER_PIXEL, m.getAxisLength(Axes.CHANNEL));
 
 			firstIFD.putIFDValue(IFD.PHOTOMETRIC_INTERPRETATION,
 				PhotoInterp.BLACK_IS_ZERO);
-			if (m.isRGB()) firstIFD.putIFDValue(IFD.PHOTOMETRIC_INTERPRETATION,
+			if (m.isMultichannel()) firstIFD.putIFDValue(IFD.PHOTOMETRIC_INTERPRETATION,
 				PhotoInterp.RGB);
 			if (m.isIndexed() &&
 				HasColorTable.class.isAssignableFrom(source.getClass()))

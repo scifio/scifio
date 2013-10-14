@@ -33,53 +33,49 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
-package io.scif.img.cell.loaders;
-
-import io.scif.Metadata;
+package io.scif.filters.utests;
+import static org.testng.AssertJUnit.assertEquals;
+import io.scif.FormatException;
 import io.scif.Reader;
-import io.scif.img.SubRegion;
+import io.scif.SCIFIO;
+import io.scif.filters.PlaneSeparator;
+import io.scif.filters.ReaderFilter;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.io.IOException;
 
-import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import org.scijava.InstantiableException;
+import org.testng.annotations.Test;
 
 /**
- * {@link SCIFIOArrayLoader} implementation for {@link DoubleArray} types.
- * 
+ * Tests for {@link PlaneSeparator}.
+ *
  * @author Mark Hiner
  */
-public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
+public class PlaneSeparatorTest {
 
-	public DoubleArrayLoader(final Reader reader, final SubRegion subRegion) {
-		super(reader, subRegion);
-	}
-
-	@Override
-	public void convertBytes(final DoubleArray data, final byte[] bytes,
-		final int planesRead)
+	private final SCIFIO scifio = new SCIFIO();
+	private final String id =
+		"testImg&lengths=3,4,512,512&axes=Channel,Time,X,Y.fake";
+	
+	/**
+	 * Verify that multiple interleaved axes are automatically extracted.
+	 * @throws InstantiableException 
+	 */
+	@Test
+	public void testMultipleInterleavedAxes() throws FormatException,
+		IOException, InstantiableException
 	{
-		final Metadata meta = reader().getMetadata();
-
-		final int bpp = meta.getBitsPerPixel(0) / 8;
-		final int offset = planesRead * (bytes.length / bpp);
-
-		final ByteBuffer bb = ByteBuffer.wrap(bytes);
-
-		bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN
-			: ByteOrder.BIG_ENDIAN);
-		bb.asDoubleBuffer().get(data.getCurrentStorageArray(), offset,
-			bytes.length / bpp);
-	}
-
-	@Override
-	public DoubleArray emptyArray(final int entities) {
-		return new DoubleArray(entities);
-	}
-
-	@Override
-	public int getBitsPerElement() {
-		return 64;
+		Reader filter = scifio.initializer().initializeReader(id);
+		// Verify that we are starting with 4 planar axes, 2 of which are interleaved
+		assertEquals(4, filter.getMetadata().getPlanarAxisCount(0));
+		assertEquals(2, filter.getMetadata().getInterleavedAxisCount(0));
+		assertEquals(0, filter.getMetadata().getAxesNonPlanar(0).size());
+		
+		((ReaderFilter)filter).enable(PlaneSeparator.class);
+		// Verify that, after enabling the PlaneSeparator, the default behavior
+		// separates out the 2 interleaved axes to non-planar axes.
+		assertEquals(2, filter.getMetadata().getPlanarAxisCount(0));
+		assertEquals(0, filter.getMetadata().getInterleavedAxisCount(0));
+		assertEquals(2, filter.getMetadata().getAxesNonPlanar(0).size());
 	}
 }

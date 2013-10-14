@@ -42,7 +42,7 @@ import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
 import io.scif.filters.AbstractReaderFilter;
-import io.scif.filters.ChannelSeparator;
+import io.scif.filters.PlaneSeparator;
 import io.scif.filters.Filter;
 import io.scif.filters.ReaderFilter;
 
@@ -67,7 +67,7 @@ public class FilterTest {
 
 	private final SCIFIO scifio = new SCIFIO();
 	private final String id =
-		"testImg&sizeX=512&sizeY=512&sizeT=5&dimOrder=XYTZC.fake";
+		"testImg&lengths=512,512.fake";
 	private Reader readerFilter;
 
 	@AfterMethod
@@ -83,19 +83,19 @@ public class FilterTest {
 	@Test
 	public void testSetSource() throws FormatException, IOException {
 		final String id2 =
-			"testImg&sizeX=256&sizeY=128&sizeT=5&dimOrder=XYTZC.fake";
+			"testImg&lengths=256,128,5&axes=X,Y,Time.fake";
 
 		readerFilter = scifio.initializer().initializeReader(id, true);
 
 		try {
-			((ReaderFilter) readerFilter).enable(ChannelSeparator.class);
+			((ReaderFilter) readerFilter).enable(PlaneSeparator.class);
 		}
 		catch (InstantiableException e) {
 			throw new FormatException(e);
 		}
 
-		int x = readerFilter.getMetadata().getAxisLength(0, Axes.X);
-		int y = readerFilter.getMetadata().getAxisLength(0, Axes.Y);
+		long x = readerFilter.getMetadata().getAxisLength(0, Axes.X);
+		long y = readerFilter.getMetadata().getAxisLength(0, Axes.Y);
 		assertEquals(512, x);
 		assertEquals(512, y);
 

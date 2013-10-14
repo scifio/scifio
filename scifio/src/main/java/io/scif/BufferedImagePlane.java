@@ -63,11 +63,9 @@ public class BufferedImagePlane extends
 	}
 
 	public BufferedImagePlane(final Context context, final ImageMetadata meta,
-		final int xOffset, final int yOffset, final int xLength, final int yLength)
+		final long[] planeOffsets, final long[] planeBounds)
 	{
-		super(context, meta, xOffset, yOffset, xLength, yLength);
-
-		populate(meta, xOffset, yOffset, xLength, yLength);
+		super(context, meta, planeOffsets, planeBounds);
 	}
 
 	// -- Plane API methods --
@@ -112,19 +110,18 @@ public class BufferedImagePlane extends
 		return t;
 	}
 
-	@Override
-	public BufferedImagePlane populate(final ImageMetadata meta,
-		final BufferedImage data, final int xOffset, final int yOffset,
-		final int xLength, final int yLength)
-	{
-		if (data == null) {
-			final int type = meta.getPixelType();
+	// -- AbstractPlane API --
 
-			// Create a blank image for this Plane's data
-			setData(AWTImageTools.blankImage(xLength, yLength, meta
-				.getRGBChannelCount(), type));
+	@Override
+	protected BufferedImage blankPlane(long[] planeOffsets, long[] planeBounds) {
+		final int type = getImageMetadata().getPixelType();
+
+		final long[] axes = new long[planeOffsets.length];
+
+		for (int i = 0; i < axes.length; i++) {
+			axes[i] = planeBounds[i] - planeOffsets[i];
 		}
 
-		return super.populate(meta, data, xOffset, yOffset, xLength, yLength);
+		return AWTImageTools.blankImage(getImageMetadata(), axes, type);
 	}
 }

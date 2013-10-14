@@ -44,7 +44,7 @@ import java.util.Set;
 /**
  * A list of indices for a particular dimension, and is parsed from a properly
  * formatted string. Ranges must match the pattern:
- * [0-9]*(-[0-9]*(:[0-9]*)?)?(,[0-9]*(-[0-9]*(:[0-9])?*)?)*?
+ * {@code \d*(-\d*(:\d*)?)?(,\d*(-\d*(:\d)?*)?)*}
  * <p>
  * Practically, ranges are ","-separated list of selected values. For each
  * selection specified, a start value is mandatory. An (inclusive) end value can
@@ -72,7 +72,7 @@ public class DimRange {
 	// -- Constants --
 
 	private static final String REGION_PATTERN =
-		"[\\d]*(-[\\d]*(:[\\d]*)?)?(,[\\d]*(-[\\d]*(:[\\d])?)?)*?";
+		"\\d*(-\\d*(:\\d*)?)?(,\\d*(-\\d*(:\\d)?)?)*";
 
 	// -- Fields --
 
@@ -96,8 +96,10 @@ public class DimRange {
 		this();
 
 		// Check for invalid patterns
-		if (!range.matches(REGION_PATTERN)) throw new IllegalArgumentException(
-			"Invalid range pattern. Must match: " + REGION_PATTERN);
+		if (!range.matches(REGION_PATTERN)) {
+			throw new IllegalArgumentException("Invalid range pattern. Must match: " +
+				REGION_PATTERN);
+		}
 
 		final String[] intervals = range.split(",");
 

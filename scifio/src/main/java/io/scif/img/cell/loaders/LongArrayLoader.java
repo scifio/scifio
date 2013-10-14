@@ -73,8 +73,8 @@ public class LongArrayLoader extends AbstractArrayLoader<LongArray> {
 	}
 
 	@Override
-	public LongArray emptyArray(final int[] dimensions) {
-		return new LongArray(countEntities(dimensions));
+	public LongArray emptyArray(final int entities) {
+		return new LongArray(entities);
 	}
 
 	@Override

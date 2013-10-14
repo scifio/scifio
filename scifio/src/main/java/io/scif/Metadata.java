@@ -127,7 +127,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	int getImageCount();
 
 	/** Returns the number of planes in the specified image. */
-	int getPlaneCount(int imageIndex);
+	long getPlaneCount(int imageIndex);
 
 	/** Returns the size, in bytes, of the current dataset. */
 	long getDatasetSize();
@@ -136,32 +136,15 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	long getImageSize(int imageIndex);
 
 	/**
-	 * Returns true if the spcified image stores its channels RGBRGBRGB... and
-	 * false if channels are stored RRR...GGG...BBB...
+	 * Returns true if the Axes.CHANNEL axis is present.
 	 */
-	boolean isInterleaved(int imageIndex);
+	boolean isMultichannel(int imageIndex);
 
 	/**
 	 * Returns the number of bytes per pixel for the specified image. Should
 	 * correlate with the pixel types in {@link io.scif.util.FormatTools}
 	 */
 	int getPixelType(int imageIndex);
-
-	/**
-	 * Gets the effective size of the C dimension for the specified image,
-	 * guaranteeing that getEffectiveSizeC() * sizeZ * sizeT == getPlaneCount()
-	 * regardless of the result of isRGB().
-	 */
-	int getEffectiveSizeC(int imageIndex);
-
-	/**
-	 * Gets the number of channels returned with each call to openBytes for the
-	 * specified image. The most common case where this value is greater than 1 is
-	 * for interleaved RGB data, such as a 24-bit color image plane. However, it
-	 * is possible for this value to be greater than 1 for non-interleaved data,
-	 * such as an RGB TIFF with Planar rather than Chunky configuration.
-	 */
-	int getRGBChannelCount(int imageIndex);
 
 	/**
 	 * Returns true if for the specified image, each pixel's bytes are in little
@@ -175,14 +158,16 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 */
 	boolean isIndexed(int imageIndex);
 
-	/** Returns the number of valid bits per pixel in the specified image. */
-	int getBitsPerPixel(int imageIndex);
+	/** Returns the number of planar axes in the specified image. */
+	int getPlanarAxisCount(int imageIndex);
 
 	/**
-	 * Returns true if the planes are stored as RGB (multiple channels per plane)
-	 * within the specified image.
+	 * Returns the number of interleaved axes in the specified image.
 	 */
-	boolean isRGB(int imageIndex);
+	int getInterleavedAxisCount(int imageIndex);
+
+	/** Returns the number of valid bits per pixel in the specified image. */
+	int getBitsPerPixel(int imageIndex);
 
 	/**
 	 * Returns true if we can ignore the color map (if present) for the specified
@@ -191,16 +176,16 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	boolean isFalseColor(int imageIndex);
 
 	/**
-	 * Returns the width (in pixles) of the thumbnail planes in the specified
+	 * Returns the width (in pixels) of the thumbnail planes in the specified
 	 * image.
 	 */
-	int getThumbSizeX(int imageIndex);
+	long getThumbSizeX(int imageIndex);
 
 	/**
-	 * Returns the height (in pixles) of the thumbnail planes in the specified
+	 * Returns the height (in pixels) of the thumbnail planes in the specified
 	 * image.
 	 */
-	int getThumbSizeY(int imageIndex);
+	long getThumbSizeY(int imageIndex);
 
 	/**
 	 * Returns the CalibratedAxis associated with the given type, for the
@@ -232,7 +217,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * @param axisIndex - index of the desired axis within the specified image
 	 * @return Length of the desired plane.
 	 */
-	int getAxisLength(int imageIndex, int axisIndex);
+	long getAxisLength(int imageIndex, int axisIndex);
 
 	/**
 	 * A convenience method for looking up the length of an axis based on its
@@ -242,7 +227,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * @param t - desired axis type
 	 * @return Length of axis t
 	 */
-	int getAxisLength(int imageIndex, CalibratedAxis t);
+	long getAxisLength(int imageIndex, CalibratedAxis t);
 
 	/**
 	 * As {@link #getAxisLength(int, CalibratedAxis)} but with just the desired
@@ -252,7 +237,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * @param t - desired axis type
 	 * @return Length of axis t
 	 */
-	int getAxisLength(int imageIndex, AxisType t);
+	long getAxisLength(int imageIndex, AxisType t);
 
 	/**
 	 * Returns the array index for the specified CalibratedAxis. This index can be
@@ -287,9 +272,9 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * </p>
 	 * 
 	 * @param imageIndex - index for multi-image sources
-	 * @return An array of CalibratedAxiss in the order they appear.
+	 * @return A list of CalibratedAxiss in the order they appear.
 	 */
-	CalibratedAxis[] getAxes(int imageIndex);
+	List<CalibratedAxis> getAxes(int imageIndex);
 
 	/**
 	 * Returns an array of the lengths for axes associated with the specified
@@ -302,7 +287,43 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * @param imageIndex - index for multi-image sources
 	 * @return Sorted axis length array
 	 */
-	int[] getAxesLengths(int imageIndex);
+	long[] getAxesLengths(int imageIndex);
+
+	/**
+	 * Returns an array of the lengths for the planar axes in this image.
+	 * 
+	 * @param imageIndex - index for multi-image sources
+	 * @return Sorted axis length array
+	 */
+	long[] getAxesLengthsPlanar(int imageIndex);
+
+	/**
+	 * Returns an array of the lengths for the non-planar axes in this image.
+	 * 
+	 * @param imageIndex - index for multi-image sources
+	 * @return Sorted axis length array
+	 */
+	long[] getAxesLengthsNonPlanar(int imageIndex);
+
+	/**
+	 * Returns an array of the AxisTypes for the specified image index that,
+	 * together, define the bounds of a single plane in the dataset.
+	 * 
+	 * @param imageIndex - index for multi-image sources
+	 * @return List of CalibratedAxes. Ordering in the list indicates the axis
+	 *         order in the specified image.
+	 */
+	List<CalibratedAxis> getAxesPlanar(int imageIndex);
+
+	/**
+	 * Returns an array of the AxisTypes for the specified image index that define
+	 * the number of planes in the dataset.
+	 * 
+	 * @param imageIndex - index for multi-image sources
+	 * @return List of CalibratedAxes. Ordering in the list indicates the axis
+	 *         order in the specified image.
+	 */
+	List<CalibratedAxis> getAxesNonPlanar(int imageIndex);
 
 	/**
 	 * Appends the provided CalibratedAxis to the current CalibratedAxis array and
@@ -321,13 +342,13 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * @param axis - The new axis
 	 * @param value - Value of the new axis
 	 */
-	void addAxis(int imageIndex, CalibratedAxis axis, int value);
+	void addAxis(int imageIndex, CalibratedAxis axis, long value);
 
 	/**
 	 * As {@link #addAxis(int, CalibratedAxis, int)} using the default calibration
 	 * value, per {@link FormatTools#calibrate(AxisType)}.
 	 */
-	void addAxis(int imageIndex, final AxisType axisType, final int value);
+	void addAxis(int imageIndex, final AxisType axisType, final long value);
 
 	/**
 	 * Returns true if we are confident that the dimension order is correct for
@@ -361,10 +382,10 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	void setDatasetName(String name);
 
 	/** Sets width (in pixels) of thumbnail planes for the specified image. */
-	void setThumbSizeX(int imageIndex, int thumbX);
+	void setThumbSizeX(int imageIndex, long thumbX);
 
 	/** Sets height (in pixels) of thumbnail planes for the specified image. */
-	void setThumbSizeY(int imageIndex, int thumbY);
+	void setThumbSizeY(int imageIndex, long thumbY);
 
 	/**
 	 * Sets the number of bytes per pixel for the specified image. Must be one of
@@ -383,28 +404,22 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	void setOrderCertain(int imageIndex, boolean orderCertain);
 
 	/**
-	 * Sets whether or not the planes are stored as RGB (multiple channels per
-	 * plane) for the specified image.
-	 */
-	void setRGB(int imageIndex, boolean rgb);
-
-	/**
 	 * Sets whether or not the bytes of the specified image's pixels are in little
 	 * endian order.
 	 */
 	void setLittleEndian(int imageIndex, boolean littleEndian);
 
 	/**
-	 * Set true if the specified image's channels are stored RGBRGBRGB...; false
-	 * if channels are stored RRR...GGG...BBB...
-	 */
-	void setInterleaved(int imageIndex, boolean interleaved);
-
-	/**
 	 * Sets whether or not the planes are stored as indexed color for the
 	 * specified image.
 	 */
 	void setIndexed(int imageIndex, boolean indexed);
+
+	/** Sets the number of planar axes in the specified image. */
+	void setPlanarAxisCount(int imageIndex, final int count);
+
+	/** Sets the number of interleaved axes in the specified image. */
+	void setInterleavedAxisCount(final int imageIndex, final int count);
 
 	/**
 	 * Sets whether or not we can ignore the color map (if present) of the
@@ -439,7 +454,13 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * Sets the Axes types for the specified image. Order is implied by ordering
 	 * within this array
 	 */
-	void setAxes(int imageIndex, CalibratedAxis[] axisTypes);
+	void setAxisTypes(int imageIndex, AxisType... axisTypes);
+
+	/**
+	 * Sets the Axes types for the specified image. Order is implied by ordering
+	 * within this array
+	 */
+	void setAxes(int imageIndex, CalibratedAxis... axes);
 
 	/** Sets the type of the axis at the specified index, for the specified image. */
 	void setAxis(int imageIndex, int axisIndex, CalibratedAxis axis);
@@ -454,19 +475,19 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * Sets the lengths of each axis for the specified image. Order is parallel of
 	 * axisTypes.
 	 */
-	void setAxisLengths(int imageIndex, int[] axisLengths);
+	void setAxisLengths(int imageIndex, long[] axisLengths);
 
 	/**
 	 * Sets the length for the specified axis, if its type is present in the
 	 * specified image.
 	 */
-	void setAxisLength(int imageIndex, CalibratedAxis axis, int length);
+	void setAxisLength(int imageIndex, CalibratedAxis axis, long length);
 
 	/**
 	 * As {@link #setAxisLength(int, CalibratedAxis, int)}, but requires only the
 	 * AxisType.
 	 */
-	void setAxisLength(int imageIndex, AxisType axis, int length);
+	void setAxisLength(int imageIndex, AxisType axis, long length);
 
 	/** Returns the size, in bytes, of all planes in the specified image. */
 	long getSize(int imageIndex);

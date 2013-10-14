@@ -261,7 +261,7 @@ public class TiffSaver extends AbstractContextual {
 	 * 
 	 * @param buf The block that is to be written.
 	 * @param ifd The Image File Directories. Mustn't be <code>null</code>.
-	 * @param no The image index within the current file, starting from 0.
+	 * @param planeIndex The image index within the current file, starting from 0.
 	 * @param pixelType The type of pixels.
 	 * @param x The X-coordinate of the top-left corner.
 	 * @param y The Y-coordinate of the top-left corner.
@@ -272,14 +272,14 @@ public class TiffSaver extends AbstractContextual {
 	 * @throws FormatException
 	 * @throws IOException
 	 */
-	public void writeImage(final byte[] buf, final IFD ifd, final int no,
+	public void writeImage(final byte[] buf, final IFD ifd, final long planeIndex,
 		final int pixelType, final int x, final int y, final int w, final int h,
 		final boolean last) throws FormatException, IOException
 	{
-		writeImage(buf, ifd, no, pixelType, x, y, w, h, last, null, false);
+		writeImage(buf, ifd, planeIndex, pixelType, x, y, w, h, last, null, false);
 	}
 
-	public void writeImage(final byte[] buf, final IFD ifd, final int no,
+	public void writeImage(final byte[] buf, final IFD ifd, final long planeIndex,
 		final int pixelType, final int x, final int y, final int w, final int h,
 		final boolean last, Integer nChannels, final boolean copyDirectly)
 		throws FormatException, IOException
@@ -398,7 +398,7 @@ public class TiffSaver extends AbstractContextual {
 
 		// This operation is synchronized
 		synchronized (this) {
-			writeImageIFD(ifd, no, strips, nChannels, last, x, y);
+			writeImageIFD(ifd, planeIndex, strips, nChannels, last, x, y);
 		}
 	}
 
@@ -407,7 +407,7 @@ public class TiffSaver extends AbstractContextual {
 	 * TIFF for a given image or sub-image.
 	 * 
 	 * @param ifd The Image File Directories. Mustn't be <code>null</code>.
-	 * @param no The image index within the current file, starting from 0.
+	 * @param planeIndex The image index within the current file, starting from 0.
 	 * @param strips The strips to write to the file.
 	 * @param last Pass <code>true</code> if it is the last image,
 	 *          <code>false</code> otherwise.
@@ -416,7 +416,7 @@ public class TiffSaver extends AbstractContextual {
 	 * @throws FormatException
 	 * @throws IOException
 	 */
-	private void writeImageIFD(IFD ifd, final int no, final byte[][] strips,
+	private void writeImageIFD(IFD ifd, final long planeIndex, final byte[][] strips,
 		final int nChannels, final boolean last, final int x, final int y)
 		throws FormatException, IOException
 	{
@@ -442,11 +442,11 @@ public class TiffSaver extends AbstractContextual {
 				final TiffParser parser = new TiffParser(getContext(), in);
 				final long[] ifdOffsets = parser.getIFDOffsets();
 				log.debug("IFD offsets: " + Arrays.toString(ifdOffsets));
-				if (no < ifdOffsets.length) {
-					out.seek(ifdOffsets[no]);
-					log.debug("Reading IFD from " + ifdOffsets[no] +
+				if (planeIndex < ifdOffsets.length) {
+					out.seek(ifdOffsets[(int)planeIndex]);
+					log.debug("Reading IFD from " + ifdOffsets[(int)planeIndex] +
 						" in non-sequential write.");
-					ifd = parser.getIFD(ifdOffsets[no]);
+					ifd = parser.getIFD(ifdOffsets[(int)planeIndex]);
 				}
 			}
 			finally {
