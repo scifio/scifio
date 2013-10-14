@@ -43,10 +43,8 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 
@@ -70,6 +68,10 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	public static final double PRIORITY = 4.0;
 	public static final String FILTER_VALUE = "io.scif.Reader";
 
+	// -- Fields --
+
+	private List<AxisType> inputOrder;
+
 	// -- Contructor --
 
 	public DimensionSwapper() {
@@ -87,49 +89,34 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	 * if X and Y do not appear in positions 0 and 1 (although X and Y can be
 	 * reversed).
 	 */
-	public void swapDimensions(final int imageIndex,
-		final List<CalibratedAxis> newOrder)
-	{
+	public void swapDimensions(final int imageIndex, final AxisType... newOrder) {
 		FormatTools.assertId(getCurrentFile(), true, 2);
 
+		// Check for null order
 		if (newOrder == null) throw new IllegalArgumentException("order is null");
 
-		final List<CalibratedAxis> oldOrder = getDimensionOrder(imageIndex);
+		final List<AxisType> oldOrder = getDimensionOrder(imageIndex);
 
-		if (newOrder.size() != oldOrder.size()) {
+		// Check for mis-aligned order
+		if (newOrder.length != oldOrder.size()) {
 			throw new IllegalArgumentException("newOrder is unexpected length: " +
-				newOrder.size() + "; expected: " + oldOrder.size());
+				newOrder.length + "; expected: " + oldOrder.size());
 		}
 
-		for (int i = 0; i < newOrder.size(); i++) {
-			if (!oldOrder.contains(newOrder.get(i))) throw new IllegalArgumentException(
+		// Check for unknown AxisTypes
+		for (int i = 0; i < newOrder.length; i++) {
+			if (!oldOrder.contains(newOrder[i])) throw new IllegalArgumentException(
 				"newOrder specifies different axes");
 		}
 
-		if (newOrder.get(0).type() != Axes.X && newOrder.get(1).type() != Axes.X) {
-			throw new IllegalArgumentException("X is not in first two positions");
-		}
-		if (newOrder.get(0).type() != Axes.Y && newOrder.get(1).type() != Axes.Y) {
-			throw new IllegalArgumentException("Y is not in first two positions");
-		}
-
-		if (newOrder.indexOf(Axes.CHANNEL) != oldOrder.indexOf(Axes.CHANNEL) &&
-			getMetadata().getRGBChannelCount(imageIndex) > 1)
-		{
-			throw new IllegalArgumentException(
-				"Cannot swap C dimension when RGB channel count > 1");
-		}
-
-		// core.currentOrder[series] = order;
 		if (metaCheck() &&
 			!(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null))
 		{
 			((DimensionSwapperMetadata) getMetadata()).getOutputOrder()[imageIndex] =
-				Arrays.asList(getMetadata().getAxes(imageIndex));
+				getInputOrder(imageIndex);
 		}
 
-		getMetadata().setAxes(imageIndex,
-			newOrder.toArray(new CalibratedAxis[newOrder.size()]));
+		getMetadata().setAxisTypes(imageIndex, newOrder);
 	}
 
 	/**
@@ -142,38 +129,40 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	 * virtual stacks must be in XYCZT order.
 	 */
 	public void setOutputOrder(final int imageIndex,
-		final List<CalibratedAxis> outputOrder)
+		final List<AxisType> outputOrder)
 	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
 
 		if (metaCheck() &&
-			!(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null)) ((DimensionSwapperMetadata) getMetadata())
-			.getOutputOrder()[imageIndex] = outputOrder;
+			!(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null))
+		{
+			((DimensionSwapperMetadata) getMetadata()).getOutputOrder()[imageIndex] =
+				outputOrder;
+		}
 	}
 
 	/**
-	 * Returns the original axis order for this dataset. Not affected by swapping
-	 * dimensions.
+	 * Returns the order for reading AxisTypes from disk.
 	 */
-	public List<CalibratedAxis> getInputOrder(final int imageIndex) {
+	public List<AxisType> getInputOrder(final int imageIndex) {
 		FormatTools.assertId(getCurrentFile(), true, 2);
-		return Arrays.asList(getMetadata().getAxes(imageIndex));
+		
+		if (inputOrder == null) inputOrder = new ArrayList<AxisType>();
+		List<CalibratedAxis> axes = getMetadata().getAxes(imageIndex);
+		
+		for (int i=0; i<axes.size(); i++) {
+			inputOrder.set(i, axes.get(i).type());
+		}
+		
+		return inputOrder;
 	}
 
 	/**
-	 * Returns the length of a given axis.
+	 * Returns the (potentially swapped) output order of the AxisTypes.
 	 */
-	public int getDimensionLength(final int imageIndex, final AxisType t) {
+	public List<AxisType> getDimensionOrder(final int imageIndex) {
 		FormatTools.assertId(getCurrentFile(), true, 2);
-		return getMetadata().getAxisLength(imageIndex, t);
-	}
-
-	/**
-	 * Returns the current axis order, accounting for any swapped dimensions.
-	 */
-	public List<CalibratedAxis> getDimensionOrder(final int imageIndex) {
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		List<CalibratedAxis> outOrder = null;
+		List<AxisType> outOrder = null;
 
 		if (metaCheck()) {
 			outOrder =
@@ -207,39 +196,39 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	// -- Reader API methods --
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex)
+	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex));
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
-		final int x, final int y, final int w, final int h) throws FormatException,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final long[] offsets, final long[] lengths) throws FormatException,
 		IOException
 	{
-		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), x, y,
-			w, h);
+		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex),
+			offsets, lengths);
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
+	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane);
 	}
 
 	@Override
-	public Plane openPlane(final int imageIndex, final int planeIndex,
-		final Plane plane, final int x, final int y, final int w, final int h)
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final long[] offsets, long[] lengths)
 		throws FormatException, IOException
 	{
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane,
-			x, y, w, h);
+			offsets, lengths);
 	}
 
 	@Override
-	public Plane openThumbPlane(final int imageIndex, final int planeIndex)
+	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
 		return super.openThumbPlane(imageIndex, reorder(imageIndex, planeIndex));
@@ -253,21 +242,27 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	// -- Helper methods --
 
-	/* Reorders the ImageMetadata axes associated with this filter */
-	protected int reorder(final int imageIndex, final int planeIndex) {
-		if (getInputOrder(imageIndex) == null) return planeIndex;
-		final List<CalibratedAxis> outputOrder = getDimensionOrder(imageIndex);
-		final CalibratedAxis[] outputAxes =
-			outputOrder.toArray(new CalibratedAxis[outputOrder.size()]);
-		final List<CalibratedAxis> inputOrder = getInputOrder(imageIndex);
-		final CalibratedAxis[] inputAxes =
-			inputOrder.toArray(new CalibratedAxis[inputOrder.size()]);
+	/* Computes the reordered plane index for the current axes order */
+	private long reorder(final int imageIndex, final long planeIndex) {
+		if (!metaCheck()) return planeIndex;
 
-		return FormatTools.getReorderedIndex(FormatTools
-			.findDimensionOrder(inputAxes), FormatTools
-			.findDimensionOrder(outputAxes), getDimensionLength(imageIndex, Axes.Z),
-			getMetadata().getEffectiveSizeC(imageIndex), getDimensionLength(
-				imageIndex, Axes.TIME), getMetadata().getPlaneCount(imageIndex),
-			imageIndex, planeIndex);
+		long[] originalPosition =
+			FormatTools.rasterToPosition(getMetadata().getAxesLengthsNonPlanar(
+				imageIndex), planeIndex);
+
+		List<AxisType> swappedOrder = getDimensionOrder(imageIndex);
+
+		long[] swappedPosition = new long[originalPosition.length];
+		long[] lengths = new long[originalPosition.length];
+
+		for (int i = 0; i < originalPosition.length; i++) {
+			int offset = getMetadata().getPlanarAxisCount(imageIndex);
+			AxisType type = swappedOrder.get(i + offset);
+			lengths[i] = getMetadata().getAxisLength(imageIndex, type);
+			swappedPosition[i] =
+				originalPosition[getMetadata().getAxisIndex(imageIndex, type) - offset];
+		}
+
+		return (int) FormatTools.positionToRaster(lengths, swappedPosition);
 	}
 }

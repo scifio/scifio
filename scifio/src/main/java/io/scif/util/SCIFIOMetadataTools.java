@@ -45,6 +45,8 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 
 /**
@@ -59,8 +61,64 @@ public class SCIFIOMetadataTools {
 
 	private SCIFIOMetadataTools() {}
 
-	// -- Utility Methods -- DatasetMetadata --
+	// -- Utility Methods -- Metadata --
 
+	/**
+	 * Returns true if the provided axes correspond to a complete image plane
+	 */
+	public static boolean wholePlane(final int imageIndex, Metadata meta,
+		final long[] planeMin, final long[] planeMax)
+	{
+		final boolean wholePlane = wholeRow(imageIndex, meta, planeMin, planeMax);
+		final int yIndex = meta.getAxisIndex(imageIndex, Axes.Y);
+		return wholePlane && planeMin[yIndex] == 0 &&
+			planeMax[yIndex] == meta.getAxisLength(imageIndex, Axes.Y);
+	}
+
+	/**
+	 * Returns true if the provided axes correspond to a complete image row
+	 */
+	public static boolean wholeRow(final int imageIndex, Metadata meta,
+		final long[] planeMin, final long[] planeMax)
+	{
+		boolean wholeRow = true;
+		final int yIndex = meta.getAxisIndex(imageIndex, Axes.Y);
+
+		for (int i = 0; wholeRow && i < planeMin.length; i++) {
+			if (i == yIndex) continue;
+			if (planeMin[i] != 0 || planeMax[i] != meta.getAxisLength(imageIndex, i)) wholeRow =
+				false;
+		}
+
+		return wholeRow;
+	}
+
+	/**
+	 * Replaces the X and Y lengths of the provided Metadata's planar axes with
+	 * the specified values.
+	 */
+	public static long[] modifyPlanarXY(final int imageIndex,
+		final Metadata meta, final long x, final long y)
+	{
+		return modifyPlanar(imageIndex, meta, new AxisValue(Axes.X, x),
+			new AxisValue(Axes.Y, y));
+	}
+
+	/**
+	 * Iterates over the provided Metadata's planar axes, replacing any instances
+	 * of axes with the paired values.
+	 */
+	public static long[] modifyPlanar(final int imageIndex, final Metadata meta,
+		final AxisValue... axes)
+	{
+		final long[] planarAxes = meta.getAxesLengthsPlanar(imageIndex);
+
+		for (final AxisValue v : axes) {
+			planarAxes[meta.getAxisIndex(imageIndex, v.getType())] = v.getLength();
+		}
+
+	    return planarAxes;
+	  } 
 	/**
 	 * Casts the provided Metadata object to the generic type of this method.
 	 * <p>
@@ -113,7 +171,7 @@ public class SCIFIOMetadataTools {
 	 */
 	public static void verifyMinimumPopulated(final Metadata src,
 		final RandomAccessOutputStream out, final int imageIndex,
-		final int planeIndex) throws FormatException
+		final long planeIndex) throws FormatException
 	{
 		if (src == null) {
 			throw new FormatException("Metadata object is null; "
@@ -135,102 +193,36 @@ public class SCIFIOMetadataTools {
 	 * for the provided pixel type.
 	 */
 	public static void populate(final ImageMetadata iMeta,
-		final String dimensionOrder, final int pixelType, final int rgbCCount,
+		final CalibratedAxis[] axisTypes, final long[] axisLengths, final int pixelType,
 		final boolean orderCertain, final boolean littleEndian,
 		final boolean indexed, final boolean falseColor,
-		final boolean metadataComplete, final int sizeX, final int sizeY,
-		final int sizeZ, final int sizeC, final int sizeT)
+		final boolean metadataComplete)
 	{
-		populate(iMeta, dimensionOrder, pixelType, rgbCCount, FormatTools
+		populate(iMeta, axisTypes, axisLengths, pixelType, FormatTools
 			.getBitsPerPixel(pixelType), orderCertain, littleEndian, indexed,
-			falseColor, metadataComplete, sizeX, sizeY, sizeZ, sizeC, sizeT);
+			falseColor, metadataComplete);
 	}
 
 	/**
 	 * Populates the provided ImageMetadata.
 	 */
 	public static void populate(final ImageMetadata iMeta,
-		final String dimensionOrder, final int pixelType, final int rgbCCount,
-		final int bitsPerPixel, final boolean orderCertain,
+		final CalibratedAxis[] axisTypes, final long[] axisLengths,
+		final int pixelType, final int bitsPerPixel, final boolean orderCertain,
 		final boolean littleEndian, final boolean indexed,
-		final boolean falseColor, final boolean metadataComplete, final int sizeX,
-		final int sizeY, final int sizeZ, final int sizeC, final int sizeT)
+		final boolean falseColor, final boolean metadataComplete)
 	{
 		iMeta.setPixelType(pixelType);
 		iMeta.setBitsPerPixel(bitsPerPixel);
 		iMeta.setOrderCertain(orderCertain);
-		iMeta.setRGB(rgbCCount > 1);
-		iMeta.setPlaneCount(sizeZ * sizeT * sizeC / rgbCCount);
 		iMeta.setLittleEndian(littleEndian);
 		iMeta.setIndexed(indexed);
 		iMeta.setFalseColor(falseColor);
 		iMeta.setMetadataComplete(metadataComplete);
-		populateDimensions(iMeta, dimensionOrder, sizeX, sizeY, sizeZ, sizeC, sizeT);
+		iMeta.setAxes(axisTypes, axisLengths);
 	}
 
-	/**
-	 * Populates the provided ImageMetadata's axis types and lengths using the
-	 * provided dimension order and sizes.
-	 * 
-	 * @param iMeta - ImageMetadata to populate
-	 * @param dimensionOrder - A serialized list of dimensions. Each character is
-	 *          interpreted as an Axes enumeration (e.g. 'X' = 'x' = Axes.X)
-	 * @param sizeX - Length of Axes.X
-	 * @param sizeY - Length of Axes.Y
-	 * @param sizeZ - Length of Axes.Z
-	 * @param sizeC - Length of Axes.CHANNEL
-	 * @param sizeT - Length of Axes.TIME
-	 */
-	public static void populateDimensions(final ImageMetadata iMeta,
-		final String dimensionOrder, final int sizeX, final int sizeY,
-		final int sizeZ, final int sizeC, final int sizeT)
-	{
-		final int[] axisLengths = new int[5];
-
-		for (int i = 0; i < 5; i++) {
-			switch (dimensionOrder.toUpperCase().charAt(i)) {
-				case 'X':
-					axisLengths[i] = Math.max(sizeX, 1);
-					break;
-				case 'Y':
-					axisLengths[i] = Math.max(sizeY, 1);
-					break;
-				case 'Z':
-					axisLengths[i] = Math.max(sizeZ, 1);
-					break;
-				case 'C':
-					axisLengths[i] = Math.max(sizeC, 1);
-					break;
-				case 'T':
-					axisLengths[i] = Math.max(sizeT, 1);
-					break;
-				default:
-					axisLengths[i] = 1;
-			}
-		}
-
-		populateDimensions(iMeta, dimensionOrder, axisLengths);
-	}
-
-	/**
-	 * Populates the provided ImageMetadata's axis types and lengths using the
-	 * provided dimension order and sizes.
-	 * 
-	 * @param iMeta - ImageMetadata to populate
-	 * @param dimensionOrder - A serialized list of dimensions. Each character is
-	 *          interpreted as an Axes enumeration (e.g. 'X' = 'x' = Axes.X)
-	 * @param lengths - An array of axis lengths, parallel to the dimensionOrder
-	 *          list
-	 */
-	public static void populateDimensions(final ImageMetadata iMeta,
-		final String dimensionOrder, final int[] lengths)
-	{
-		final CalibratedAxis[] axes = FormatTools.findDimensionList(dimensionOrder);
-
-		iMeta.setAxes(axes, lengths);
-	}
-
-	// Utility methods -- original metadata --
+	// -- Utility methods -- original metadata --
 
 	/**
 	 * Merges the given lists of metadata, prepending the specified prefix for the
@@ -250,5 +242,39 @@ public class SCIFIOMetadataTools {
 		meta.keySet().toArray(keys);
 		Arrays.sort(keys);
 		return keys;
+	}
+
+	// -- Utility class --
+
+	/**
+	 * Helper class that pairs an AxisType with a length.
+	 * 
+	 * @author Mark Hiner
+	 */
+	public static class AxisValue {
+
+		private CalibratedAxis type;
+		private long length;
+
+		public AxisValue(final AxisType type, final long length) {
+			this.type = FormatTools.createAxis(type);
+			this.length = length;
+		}
+
+		public long getLength() {
+			return length;
+		}
+
+		public void setLength(final long length) {
+			this.length = length;
+		}
+
+		public AxisType getType() {
+			return type.type();
+		}
+
+		public void setType(final CalibratedAxis type) {
+			this.type = type;
+		}
 	}
 }

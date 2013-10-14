@@ -138,19 +138,13 @@ public class TIFFJAIFormat extends AbstractFormat {
 				return;
 			}
 
-			m.setPlaneCount(numPages);
-
+			m.setAxisLength(Axes.CHANNEL, img.getSampleModel().getNumBands());
 			m.setAxisLength(Axes.X, img.getWidth());
 			m.setAxisLength(Axes.Y, img.getHeight());
-			m.setAxisLength(Axes.CHANNEL, img.getSampleModel().getNumBands());
-			m.setAxisLength(Axes.Z, 1);
 			m.setAxisLength(Axes.TIME, numPages);
-
-			m.setRGB(m.getAxisLength(Axes.CHANNEL) > 1);
+			m.setPlanarAxisCount(3);
 
 			m.setPixelType(AWTImageTools.getPixelType(img));
-			m.setBitsPerPixel(FormatTools.getBitsPerPixel(m.getPixelType()));
-			m.setInterleaved(true);
 			m.setLittleEndian(false);
 			m.setMetadataComplete(true);
 			m.setIndexed(false);
@@ -251,15 +245,15 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
-			final int planeIndex, final BufferedImagePlane plane, final int x,
-			final int y, final int w, final int h) throws FormatException,
+			final long planeIndex, final BufferedImagePlane plane,
+			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex, -1, x, y,
-				w, h);
+			FormatTools.checkPlaneParameters(getMetadata(), imageIndex, planeIndex,
+				-1, planeMin, planeMax);
 			final BufferedImage img = openBufferedImage(getMetadata(), planeIndex);
 			plane.setData(AWTImageTools.getSubimage(img, getMetadata()
-				.isLittleEndian(imageIndex), x, y, w, h));
+				.isLittleEndian(imageIndex), planeMin, planeMax));
 			return plane;
 		}
 	}
@@ -268,7 +262,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 	/** Obtains a BufferedImage from the given data source using JAI. */
 	protected static BufferedImage openBufferedImage(final Metadata meta,
-		final int planeIndex) throws FormatException
+		final long planeIndex) throws FormatException
 	{
 		meta.universe().setVar("planeIndex", planeIndex);
 		RenderedImage img;

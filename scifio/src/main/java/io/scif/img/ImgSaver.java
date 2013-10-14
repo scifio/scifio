@@ -415,8 +415,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		final PlanarImg<T, ?> planarImg = (PlanarImg<T, ?>) planarAccess;
 		final int planeCount = planarImg.numSlices();
-		final int rgbChannelCount = w.getMetadata().getRGBChannelCount(imageIndex);
-		final boolean interleaved = w.getMetadata().isInterleaved(imageIndex);
+		final int rgbChannelCount =
+			(int) w.getMetadata().getAxisLength(imageIndex, Axes.CHANNEL);
+		final boolean interleaved =
+			w.getMetadata().getInterleavedAxisCount(imageIndex) > 0;
 
 		if (img.numDimensions() > 0) {
 			final Class<?> arrayType =
@@ -445,10 +447,13 @@ public class ImgSaver extends AbstractImgIOComponent {
 				// save bytes
 				try {
 					final Metadata meta = w.getMetadata();
+
+					final long[] planarMin =
+						SCIFIOMetadataTools.modifyPlanarXY(imageIndex, meta, 0l, 0l);
+					final long[] planarLengths = meta.getAxesLengthsPlanar(imageIndex);
 					final ByteArrayPlane destPlane =
-						new ByteArrayPlane(getContext(), meta.get(imageIndex), 0, 0, meta
-							.getAxisLength(imageIndex, Axes.X), meta.getAxisLength(
-							imageIndex, Axes.Y));
+						new ByteArrayPlane(getContext(), meta.get(imageIndex), planarMin,
+							planarLengths);
 
 					for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++)
 					{
@@ -573,49 +578,16 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final CalibratedAxis[] axes = new CalibratedAxis[img.numDimensions()];
 		img.axes(axes);
 
-		String dimOrder = "";
-
-		final long[] axisLengths = new long[5];
-		final long[] oldLengths = new long[img.numDimensions()];
-		img.dimensions(oldLengths);
-		dimOrder = guessDimOrder(axes, oldLengths, axisLengths);
-
-		if (dimOrder == null) {
-			throw new ImgIOException("Image has more than 5 dimensions "
-				+ "in an order that could not be compressed.");
-		}
-
-		int sizeX = 0, sizeY = 0, sizeZ = 0, sizeC = 0, sizeT = 0;
-
-		for (int i = 0; i < dimOrder.length(); i++) {
-			switch (dimOrder.charAt(i)) {
-				case 'X':
-					sizeX = new Long(axisLengths[i]).intValue();
-					break;
-				case 'Y':
-					sizeY = new Long(axisLengths[i]).intValue();
-					break;
-				case 'Z':
-					sizeZ = new Long(axisLengths[i]).intValue();
-					break;
-				case 'C':
-					sizeC = new Long(axisLengths[i]).intValue();
-					break;
-				case 'T':
-					sizeT = new Long(axisLengths[i]).intValue();
-					break;
-			}
-		}
+		final long[] axisLengths = new long[img.numDimensions()];
+		img.dimensions(axisLengths);
 
 		final DefaultMetadata imgplusMeta = new DefaultMetadata();
 
-		final int rgbChannelCount = img.getCompositeChannelCount();
-
+		//TODO: still accounting for rgb/composite info correctly?
 		imgplusMeta.createImageMetadata(imageIndex + 1);
 
-		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), dimOrder,
-			pixelType, rgbChannelCount, true, false, false, false, true, sizeX,
-			sizeY, sizeZ, sizeC, sizeT);
+		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), axes, axisLengths, pixelType,
+			true, false, false, false, true);
 
 		// Translate to trigger any format-specific translation
 

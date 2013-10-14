@@ -62,8 +62,8 @@ public class ByteArrayLoader extends AbstractArrayLoader<ByteArray> {
 	}
 
 	@Override
-	public ByteArray emptyArray(final int[] dimensions) {
-		return new ByteArray(countEntities(dimensions));
+	public ByteArray emptyArray(final int entities) {
+		return new ByteArray(entities);
 	}
 
 	@Override

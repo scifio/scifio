@@ -74,8 +74,8 @@ public class ShortArrayLoader extends AbstractArrayLoader<ShortArray> {
 	}
 
 	@Override
-	public ShortArray emptyArray(final int[] dimensions) {
-		return new ShortArray(countEntities(dimensions));
+	public ShortArray emptyArray(final int entities) {
+		return new ShortArray(entities);
 	}
 
 	@Override

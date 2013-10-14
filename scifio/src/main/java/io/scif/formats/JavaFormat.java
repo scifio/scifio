@@ -46,6 +46,7 @@ import io.scif.Plane;
 import io.scif.common.DataTools;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
+import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,15 +98,16 @@ public class JavaFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void savePlane(final int imageIndex, final int planeIndex,
-			final Plane plane, final int x, final int y, final int w, final int h)
+		public void savePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
 
-			checkParams(imageIndex, planeIndex, buf, x, y, w, h);
-			if (!isFullPlane(imageIndex, x, y, w, h)) {
+			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax))
+			{
 				throw new FormatException(
 					"JavaWriter does not yet support saving image tiles.");
 			}
@@ -127,7 +129,7 @@ public class JavaFormat extends AbstractFormat {
 			final Object array = DataTools.makeDataArray(buf, bpp, fp, little);
 
 			out.seek(out.length());
-			writePlane(varName, getType(array), w, h);
+			writePlane(varName, getType(array), (int)planeMax[0], (int)planeMax[1]);
 
 		}
 

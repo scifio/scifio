@@ -884,7 +884,7 @@ public final class DataTools {
 	 *           the maximum size of an array in Java; or if any size argument is
 	 *           zero or negative
 	 */
-	public static byte[] allocate(final int... sizes)
+	public static byte[] allocate(final long... sizes)
 		throws IllegalArgumentException
 	{
 		if (sizes == null) return null;
@@ -903,12 +903,12 @@ public final class DataTools {
 	 *           the maximum size of an int in Java; or if any size argument is
 	 *           zero or negative
 	 */
-	public static int safeMultiply32(final int... sizes)
+	public static int safeMultiply32(final long... sizes)
 		throws IllegalArgumentException
 	{
 		if (sizes.length == 0) return 0;
 		long total = 1;
-		for (final int size : sizes) {
+		for (final long size : sizes) {
 			if (size < 1) {
 				throw new IllegalArgumentException("Invalid array size: " +
 					sizeAsProduct(sizes));

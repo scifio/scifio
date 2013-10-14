@@ -36,28 +36,33 @@
 
 package io.scif.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.SCIFIO;
+import io.scif.img.axes.SCIFIOAxes;
+import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * Unit tests for {@link io.scif.Metadata} interface methods.
  * 
  * @author Mark Hiner
  */
-@Test(groups = "metadataTests")
 public class MetadataTest {
 	
 	private final SCIFIO scifio = new SCIFIO();
 	private final String id =
-			"testImg&sizeX=620&sizeY=512&sizeT=5&dimOrder=XYTZC.fake";	
+			"testImg&lengths=620,512,5&axes=X,Y,Time,Z,Channel.fake";
+	private final String ndId =
+			"ndImg&axes=X,Y,Z,Channel,Time,Lifetime,Spectra,&lengths=256,128,2,6,10,4,8.fake";
 
 	/**
 	 * Down the middle test that verifies each method of the Metadata API.
@@ -119,7 +124,7 @@ public class MetadataTest {
 	 * 
 	 * @throws FormatException 
 	 */
-	@Test(expectedExceptions = IndexOutOfBoundsException.class)
+	@Test(expected = IndexOutOfBoundsException.class)
 	public void testMissingAxes() throws FormatException {
 		Metadata m = scifio.format().getFormat(id).createMetadata();
 		
@@ -131,4 +136,77 @@ public class MetadataTest {
 		assertEquals(m.getAxisLength(0, 0), 0);
 	}
 	
+	/**
+	 * Down the middle testing of constructing an N-D image.
+	 */
+	@Test
+	public void testNDBasic() throws FormatException, IOException {
+		Metadata m = scifio.initializer().parseMetadata(ndId);
+
+		// Basic plane + axis length checks
+		assertEquals(2 * 6 * 10 * 4 * 8, m.getPlaneCount(0));
+		assertEquals(8, m.getAxisLength(0, SCIFIOAxes.SPECTRA));
+		assertEquals(4, m.getAxisLength(0, SCIFIOAxes.LIFETIME));
+		assertEquals(10, m.getAxisLength(0, Axes.TIME));
+		assertEquals(6, m.getAxisLength(0, Axes.CHANNEL));
+		assertEquals(2, m.getAxisLength(0, Axes.Z));
+	}
+
+	/**
+	 * Check Plane Index lookups via
+	 * {@link FormatTools#positionToRaster(long[], long[])} with an N-D dataset.
+	 */
+	@Test
+	public void testNDPositions() throws FormatException, IOException {
+		Metadata m = scifio.initializer().parseMetadata(ndId);
+
+		// Plane index lookup checks
+		long[] pos = { 1, 3, 5, 0, 0 };
+		assertEquals(1 + (3 * 2) + (5 * 6 * 2), FormatTools.positionToRaster(m
+			.getAxesLengthsNonPlanar(0), pos));
+
+		pos = new long[] { 0, 0, 3, 3, 7 };
+		assertEquals((3 * 6 * 2) + (3 * 10 * 6 * 2) + (7 * 4 * 10 * 6 * 2),
+			FormatTools.positionToRaster(m.getAxesLengthsNonPlanar(0), pos));
+	}
+
+	/**
+	 * Test that the plane count reflects updates to the planar axis count in
+	 * an N-D dataset.
+	 */
+	@Test
+	public void testNDPlaneCounts() throws FormatException, IOException {
+		Metadata m = scifio.initializer().parseMetadata(ndId);
+
+		// Try adjusting the planar axis count.
+		m.setPlanarAxisCount(0, 3);
+		assertEquals(6 * 10 * 4 * 8, m.getPlaneCount(0));
+		m.setPlanarAxisCount(0, 4);
+		assertEquals(10 * 4 * 8, m.getPlaneCount(0));
+	}
+
+	/**
+	 * Test that axis-position-dependent flags (e.g. multichannel, interleaved)
+	 * reflect updates to axis positions with an N-D dataset.
+	 */
+	@Test
+	public void testNDFlags() throws FormatException, IOException {
+		Metadata m = scifio.initializer().parseMetadata(ndId);
+		// Check multichannel. C index < planar axis count, so should be false
+		assertFalse(m.isMultichannel(0));
+		// Check the interleaved flag
+		// XY...C.. so not interleaved
+		assertFalse(m.getInterleavedAxisCount(0) > 0);
+		m.setPlanarAxisCount(0, 4);
+		// Now multichannel
+		assertTrue(m.isMultichannel(0));
+		// But still XY...C
+		assertFalse(m.getInterleavedAxisCount(0) > 0);
+		m.setAxisType(0, 0, Axes.CHANNEL);
+		m.setInterleavedAxisCount(0, 1);
+		// Now we're CXY, so interleaved
+		assertEquals(1, m.getAxisIndex(0, Axes.X));
+		assertEquals(2, m.getAxisIndex(0, Axes.Y));
+		assertTrue(m.getInterleavedAxisCount(0) > 0);
+	}
 }

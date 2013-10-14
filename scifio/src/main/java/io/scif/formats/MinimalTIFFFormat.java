@@ -120,7 +120,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		protected boolean use64Bit = false;
 
-		private int lastPlane = 0;
+		private long lastPlane = 0;
 
 		protected boolean noSubresolutions = false;
 
@@ -185,11 +185,11 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			this.use64Bit = use64Bit;
 		}
 
-		public int getLastPlane() {
+		public long getLastPlane() {
 			return lastPlane;
 		}
 
-		public void setLastPlane(final int lastPlane) {
+		public void setLastPlane(final long lastPlane) {
 			this.lastPlane = lastPlane;
 		}
 
@@ -225,22 +225,25 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			final ImageMetadata ms0 = get(0);
 
 			final IFD firstIFD = ifds.get(0);
-			ms0.setPlaneCount(ifds.size());
 
 			try {
 
 				final PhotoInterp photo = firstIFD.getPhotometricInterpretation();
-				final int samples = firstIFD.getSamplesPerPixel();
-				ms0.setRGB(samples > 1 || photo == PhotoInterp.RGB);
-				ms0.setInterleaved(false);
+				int samples = firstIFD.getSamplesPerPixel();
+				if (samples <= 1 && photo == PhotoInterp.RGB) samples = 3;
+				int planarAxes = 2;
 				ms0.setLittleEndian(firstIFD.isLittleEndian());
 
 				ms0.setAxisLength(Axes.X, (int) firstIFD.getImageWidth());
 				ms0.setAxisLength(Axes.Y, (int) firstIFD.getImageLength());
-				ms0.setAxisLength(Axes.CHANNEL, ms0.isRGB() ? samples : 1);
-				ms0.setAxisLength(Axes.Z, 1);
+
+				if (samples > 1) {
+					ms0.setAxisLength(Axes.CHANNEL, samples);
+					planarAxes = 3;
+				}
 				ms0.setAxisLength(Axes.TIME, ifds.size());
 
+				ms0.setPlanarAxisCount(planarAxes);
 				ms0.setPixelType(firstIFD.getPixelType());
 				ms0.setMetadataComplete(true);
 				ms0.setIndexed(photo == PhotoInterp.RGB_PALETTE &&
@@ -248,14 +251,11 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 				if (ms0.isIndexed()) {
 					ms0.setAxisLength(Axes.CHANNEL, 1);
-					ms0.setRGB(false);
 					for (final IFD ifd : ifds) {
 						ifd.putIFDValue(IFD.PHOTOMETRIC_INTERPRETATION,
 							PhotoInterp.RGB_PALETTE);
 					}
 				}
-				if (ms0.getAxisLength(Axes.CHANNEL) == 1 && !ms0.isIndexed()) ms0
-					.setRGB(false);
 				ms0.setBitsPerPixel(firstIFD.getBitsPerSample()[0]);
 
 				// New core metadata now that we know how many sub-resolutions we have.
@@ -271,14 +271,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 					if (ifds.size() + 1 < ms0.getAxisLength(Axes.TIME)) {
 						ms0.setAxisLength(Axes.TIME, ms0.getAxisLength(Axes.TIME) -
 							(ifds.size() + 1));
-						ms0.setPlaneCount(ms0.getAxisLength(Axes.TIME) - ifds.size() + 1);
-					}
-
-					if (ms0.getAxisLength(Axes.TIME) <= 0) {
-						ms0.setAxisLength(Axes.TIME, 1);
-					}
-					if (ms0.getPlaneCount() <= 0) {
-						ms0.setPlaneCount(1);
 					}
 
 					for (final IFD ifd : ifds) {
@@ -287,7 +279,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 						ms.setAxisLength(Axes.X, (int) ifd.getImageWidth());
 						ms.setAxisLength(Axes.Y, (int) ifd.getImageLength());
 						ms.setAxisLength(Axes.TIME, ms0.getAxisLength(Axes.TIME));
-						ms.setPlaneCount(ms0.getPlaneCount());
 						ms.setThumbnail(true);
 						// TODO subresolutions
 						// ms.resolutionCount = 1;
@@ -301,10 +292,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public int getThumbSizeX(final int imageIndex) {
+		public long getThumbSizeX(final int imageIndex) {
 			if (thumbnailIFDs != null && thumbnailIFDs.size() > 0) {
 				try {
-					return (int) thumbnailIFDs.get(0).getImageWidth();
+					return thumbnailIFDs.get(0).getImageWidth();
 				}
 				catch (final FormatException e) {
 					log().debug("Could not retrieve thumbnail width", e);
@@ -314,10 +305,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public int getThumbSizeY(final int imageIndex) {
+		public long getThumbSizeY(final int imageIndex) {
 			if (thumbnailIFDs != null && thumbnailIFDs.size() > 0) {
 				try {
-					return (int) thumbnailIFDs.get(0).getImageLength();
+					return thumbnailIFDs.get(0).getImageLength();
 				}
 				catch (final FormatException e) {
 					log().debug("Could not retrieve thumbnail height", e);
@@ -355,10 +346,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- HasColorTable API methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final int planeIndex)
+		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
 			if (ifds == null || lastPlane < 0 || lastPlane > ifds.size()) return null;
-			IFD lastIFD = ifds.get(lastPlane);
+			IFD lastIFD = ifds.get((int)lastPlane);
 
 			ColorTable table = null;
 			try {
@@ -591,7 +582,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openThumbPlane(final int imageIndex,
-			final int planeIndex) throws FormatException, IOException
+			final long planeIndex) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final IFDList thumbnailIFDs = meta.getThumbnailIFDs();
@@ -599,10 +590,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				return super.openThumbPlane(imageIndex, planeIndex);
 			}
 			final TiffParser tiffParser = meta.getTiffParser();
-			tiffParser.fillInIFD(thumbnailIFDs.get(planeIndex));
+			tiffParser.fillInIFD(thumbnailIFDs.get((int)planeIndex));
 			int[] bps = null;
 			try {
-				bps = thumbnailIFDs.get(planeIndex).getBitsPerSample();
+				bps = thumbnailIFDs.get((int)planeIndex).getBitsPerSample();
 			}
 			catch (final FormatException e) {}
 
@@ -615,40 +606,46 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				b++;
 			b /= 8;
 			if (b != FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex)) ||
-				bps.length != meta.getRGBChannelCount(imageIndex))
+				bps.length != meta.getAxisLength(imageIndex, Axes.CHANNEL))
 			{
 				return super.openThumbPlane(imageIndex, planeIndex);
 			}
 
 			byte[] buf =
-				new byte[meta.getThumbSizeX(imageIndex) *
-					meta.getThumbSizeY(imageIndex) * meta.getRGBChannelCount(imageIndex) *
-					FormatTools.getBytesPerPixel(meta.getPixelType(imageIndex))];
+				new byte[(int) (meta.getThumbSizeX(imageIndex) *
+					meta.getThumbSizeY(imageIndex) *
+					meta.getAxisLength(imageIndex, Axes.CHANNEL) * FormatTools
+					.getBytesPerPixel(meta.getPixelType(imageIndex)))];
 
 			final ByteArrayPlane plane = new ByteArrayPlane(getContext());
-			buf = tiffParser.getSamples(thumbnailIFDs.get(planeIndex), buf);
-			plane.populate(meta.get(imageIndex), buf, 0, 0, meta
-				.getThumbSizeX(imageIndex), meta.getThumbSizeY(imageIndex));
+			buf = tiffParser.getSamples(thumbnailIFDs.get((int)planeIndex), buf);
+			plane.populate(meta.get(imageIndex), buf, new long[2], new long[]{meta
+				.getThumbSizeX(imageIndex), meta.getThumbSizeY(imageIndex)});
 
 			return plane;
 		}
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
 			final IFDList ifds = meta.getIfds();
 			final TiffParser tiffParser = meta.getTiffParser();
-
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-				buf.length, x, y, w, h);
+			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
+			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xAxis],
+								y = (int) planeMin[yAxis],
+								w = (int) planeMax[xAxis],
+								h = (int) planeMax[yAxis];
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+				buf.length, planeMin, planeMax);
 
 			final IFD firstIFD = ifds.get(0);
 			meta.setLastPlane(planeIndex);
-			final IFD ifd = ifds.get(planeIndex);
+			final IFD ifd = ifds.get((int)planeIndex);
 			if ((firstIFD.getCompression() == TiffCompression.JPEG_2000 || firstIFD
 				.getCompression() == TiffCompression.JPEG_2000_LOSSY) &&
 				meta.getResolutionLevels() != null)
@@ -670,7 +667,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 					firstIFD.getBitsPerSample()[0] == 24;
 
 			if (float16 || float24) {
-				final int nPixels = w * h * meta.getRGBChannelCount(imageIndex);
+				final int nPixels =
+					w * h * (int) meta.getAxisLength(imageIndex, Axes.CHANNEL);
 				final int nBytes = float16 ? 2 : 3;
 				final int mantissaBits = float16 ? 10 : 16;
 				final int exponentBits = float16 ? 5 : 7;
@@ -718,10 +716,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public int getOptimalTileWidth(final int imageIndex) {
+		public long getOptimalTileWidth(final int imageIndex) {
 			FormatTools.assertId(getStream().getFileName(), true, 1);
 			try {
-				return (int) getMetadata().getIfds().get(0).getTileWidth();
+				return getMetadata().getIfds().get(0).getTileWidth();
 			}
 			catch (final FormatException e) {
 				log().debug("Could not retrieve tile width", e);
@@ -730,10 +728,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public int getOptimalTileHeight(final int imageIndex) {
+		public long getOptimalTileHeight(final int imageIndex) {
 			FormatTools.assertId(getStream().getFileName(), true, 1);
 			try {
-				return (int) getMetadata().getIfds().get(0).getTileLength();
+				return getMetadata().getIfds().get(0).getTileLength();
 			}
 			catch (final FormatException e) {
 				log().debug("Could not retrieve tile height", e);

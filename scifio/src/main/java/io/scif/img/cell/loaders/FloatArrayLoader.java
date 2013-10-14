@@ -74,8 +74,8 @@ public class FloatArrayLoader extends AbstractArrayLoader<FloatArray> {
 	}
 
 	@Override
-	public FloatArray emptyArray(final int[] dimensions) {
-		return new FloatArray(countEntities(dimensions));
+	public FloatArray emptyArray(final int entities) {
+		return new FloatArray(entities);
 	}
 
 	@Override

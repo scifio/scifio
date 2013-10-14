@@ -40,12 +40,11 @@ import io.scif.AbstractReader;
 import io.scif.BufferedImagePlane;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
+import io.scif.Metadata;
 import io.scif.TypedMetadata;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
-
-import net.imglib2.meta.Axes;
 
 /**
  * BufferedImageReader is the superclass for file format readers that use
@@ -68,35 +67,34 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 
 	@Override
 	public BufferedImagePlane openThumbPlane(final int imageIndex,
-		final int planeIndex) throws FormatException, IOException
+		final long planeIndex) throws FormatException, IOException
 	{
 		FormatTools.assertStream(getStream(), true, 1);
-		final int w = getMetadata().getAxisLength(imageIndex, Axes.X);
-		final int h = getMetadata().getAxisLength(imageIndex, Axes.Y);
-		final int thumbX = getMetadata().getThumbSizeX(imageIndex);
-		final int thumbY = getMetadata().getThumbSizeY(imageIndex);
+		final Metadata meta = getMetadata();
+		final long[] planeBounds = meta.getAxesLengthsPlanar(imageIndex);
+		final long[] planeOffsets = new long[planeBounds.length];
 
-		final BufferedImagePlane plane = createPlane(0, 0, thumbX, thumbY);
+		final BufferedImagePlane plane = createPlane(planeOffsets, planeBounds);
 
 		plane.setData(AWTImageTools.openThumbImage(
-			openPlane(imageIndex, planeIndex), this, imageIndex, w, h, thumbX,
-			thumbY, false));
+			openPlane(imageIndex, planeIndex), this, imageIndex, planeBounds,
+			(int) meta.getThumbSizeX(imageIndex), (int) meta
+			.getThumbSizeY(imageIndex), false));
 
 		return plane;
 	}
 
 	@Override
-	public BufferedImagePlane createPlane(final int xOffset, final int yOffset,
-		final int xLength, final int yLength)
+	public BufferedImagePlane createPlane(final long[] planeOffsets,
+		final long[] planeBounds)
 	{
-		return createPlane(getMetadata().get(0), xOffset, yOffset, xLength, yLength);
+		return createPlane(getMetadata().get(0), planeOffsets, planeBounds);
 	}
 
 	@Override
 	public BufferedImagePlane createPlane(final ImageMetadata meta,
-		final int xOffset, final int yOffset, final int xLength, final int yLength)
+		final long[] planeOffsets, final long[] planeBounds)
 	{
-		return new BufferedImagePlane(getContext(), meta, xOffset, yOffset,
-			xLength, yLength);
+		return new BufferedImagePlane(getContext(), meta, planeOffsets, planeBounds);
 	}
 }

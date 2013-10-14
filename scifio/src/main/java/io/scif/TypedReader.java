@@ -62,11 +62,11 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 {
 
 	@Override
-	P openPlane(int imageIndex, int planeIndex) throws FormatException,
+	P openPlane(int imageIndex, long planeIndex) throws FormatException,
 		IOException;
 
 	@Override
-	P openPlane(int imageIndex, int planeIndex, int x, int y, int w, int h)
+	P openPlane(int imageIndex, long planeIndex, long[] planeMin, long[] planeMax)
 		throws FormatException, IOException;
 
 	/**
@@ -76,21 +76,21 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * 
 	 * @see io.scif.Reader#openPlane(int, int, Plane)
 	 */
-	P openPlane(int imageIndex, int planeIndex, P plane) throws FormatException,
+	P openPlane(int imageIndex, long planeIndex, P plane) throws FormatException,
 		IOException;
 
 	/**
 	 * Generic-parameterized {@code openPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#openPlane(int, int, Plane, int, int, int, int)}.
+	 * {@link io.scif.Reader#openPlane(int, int, Plane, long[], long[])}.
 	 * 
-	 * @see io.scif.Reader#openPlane(int, int, Plane, int, int, int, int)
+	 * @see io.scif.Reader#openPlane(int, int, Plane, long[], long[])
 	 */
-	P openPlane(int imageIndex, int planeIndex, P plane, int x, int y, int w,
-		int h) throws FormatException, IOException;
+	P openPlane(int imageIndex, long planeIndex, P plane, long[] planeMin,
+		long[] planeMax) throws FormatException, IOException;
 
 	@Override
-	P openThumbPlane(int imageIndex, int planeIndex) throws FormatException,
+	P openThumbPlane(int imageIndex, long planeIndex) throws FormatException,
 		IOException;
 
 	/**
@@ -108,27 +108,27 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	/**
 	 * Generic-parameterized {@code readPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, Plane)}
+	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[], Plane)}
 	 * 
 	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int,
 	 *      int, Plane)
 	 */
-	P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y, int w,
-		int h, P plane) throws IOException;
+	P readPlane(RandomAccessInputStream s, int imageIndex, long[] planeMin,
+		long[] planeMax, P plane) throws IOException;
 
 	/**
 	 * Generic-parameterized {@code readPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int, int, int, Plane)}
+	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[], int, Plane)}
 	 * 
 	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, int, int, int,
 	 *      int, int, Plane)
 	 */
-	P readPlane(RandomAccessInputStream s, int imageIndex, int x, int y, int w,
-		int h, int scanlinePad, P plane) throws IOException;
+	P readPlane(RandomAccessInputStream s, int imageIndex, long[] planeMin,
+		long[] planeMax, int scanlinePad, P plane) throws IOException;
 
 	@Override
-	P createPlane(int xOffset, int yOffset, int xLength, int yLength);
+	P createPlane(long[] planeOffsets, long[] planeBounds);
 
 	/**
 	 * Returns the class of {@code Planes} associated with this {@code Reader}.

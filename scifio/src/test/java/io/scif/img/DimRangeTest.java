@@ -34,52 +34,63 @@
  * #L%
  */
 
-package io.scif.img.cell.loaders;
+package io.scif.img;
 
-import io.scif.Metadata;
-import io.scif.Reader;
-import io.scif.img.SubRegion;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.util.List;
 
-import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import org.junit.Test;
 
-/**
- * {@link SCIFIOArrayLoader} implementation for {@link DoubleArray} types.
- * 
- * @author Mark Hiner
- */
-public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
+/** Tests {@link DimRange}. */
+public class DimRangeTest {
 
-	public DoubleArrayLoader(final Reader reader, final SubRegion subRegion) {
-		super(reader, subRegion);
+	/** Tests {@link DimRange#indices()}. */
+	@Test
+	public void testIndices() {
+		// test single value
+		assertRange(new DimRange("17"), 17);
+
+		// test single range, default step
+		assertRange(new DimRange("1-5"), 1, 2, 3, 4, 5);
+		
+		// test single range, explicit step where max is in range
+		assertRange(new DimRange("5-15:5"), 5, 10, 15);
+
+		// test single range, explicit step where max is not in range
+		assertRange(new DimRange("3-10:2"), 3, 5, 7, 9);
+
+		// test list of single values (descending order should be preserved too)
+		assertRange(new DimRange("3,2,1"), 3, 2, 1);
+
+		// test pair of ranges
+		assertRange(new DimRange("7-8,4-6"), 7, 8, 4, 5, 6);
+
+		// test mixed list of ranges and values
+		assertRange(new DimRange("1-3,5,8,13"), 1, 2, 3, 5, 8, 13);
+
+		// test range where min and max are equal and step is superfluous
+		assertRange(new DimRange("0-0:1"), 0);
+
+		// test range where min is greater than max (has no elements in range)
+		assertRange(new DimRange("3-1")); // min > max is invalid
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testInvalidPattern() {
+		new DimRange("3,2,1,blastoff!");
 	}
 
-	@Override
-	public void convertBytes(final DoubleArray data, final byte[] bytes,
-		final int planesRead)
+	private void
+		assertRange(DimRange range, long... indices)
 	{
-		final Metadata meta = reader().getMetadata();
-
-		final int bpp = meta.getBitsPerPixel(0) / 8;
-		final int offset = planesRead * (bytes.length / bpp);
-
-		final ByteBuffer bb = ByteBuffer.wrap(bytes);
-
-		bb.order(reader().getMetadata().isLittleEndian(0) ? ByteOrder.LITTLE_ENDIAN
-			: ByteOrder.BIG_ENDIAN);
-		bb.asDoubleBuffer().get(data.getCurrentStorageArray(), offset,
-			bytes.length / bpp);
+		final List<Long> rangeIndices = range.indices();
+		assertNotNull(rangeIndices);
+		assertEquals(indices.length, range.indices().size());
+		for (int i=0; i<indices.length; i++) {
+			assertEquals(indices[i], rangeIndices.get(i).longValue());
+		}
 	}
 
-	@Override
-	public DoubleArray emptyArray(final int entities) {
-		return new DoubleArray(entities);
-	}
-
-	@Override
-	public int getBitsPerElement() {
-		return 64;
-	}
 }

@@ -104,18 +104,14 @@ public class JPEGTileFormat extends AbstractFormat {
 			createImageMetadata(1);
 			final ImageMetadata iMeta = get(0);
 
-			iMeta.setInterleaved(true);
+			iMeta.setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y);
+			iMeta.setPlanarAxisCount(3);
 			iMeta.setLittleEndian(false);
 			iMeta.setAxisLength(Axes.X, decoder.getWidth());
 			iMeta.setAxisLength(Axes.Y, decoder.getHeight());
 			iMeta.setAxisLength(Axes.CHANNEL, decoder.getScanline(0).length /
 				iMeta.getAxisLength(Axes.X));
-			iMeta.setAxisLength(Axes.Z, 1);
-			iMeta.setAxisLength(Axes.TIME, 1);
-			iMeta.setRGB(iMeta.getAxisLength(Axes.CHANNEL) > 1);
-			iMeta.setPlaneCount(1);
 			iMeta.setPixelType(FormatTools.UINT8);
-			iMeta.setBitsPerPixel(8);
 			iMeta.setMetadataComplete(true);
 			iMeta.setIndexed(false);
 		}
@@ -164,16 +160,22 @@ public class JPEGTileFormat extends AbstractFormat {
 		// -- Reader API methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
-			FormatTools.checkPlaneParameters(this, imageIndex, planeIndex,
-				buf.length, x, y, w, h);
+			final int xAxis = meta.getAxisIndex(imageIndex, Axes.X);
+			final int yAxis = meta.getAxisIndex(imageIndex, Axes.Y);
+			final int x = (int) planeMin[xAxis],
+								y = (int) planeMin[yAxis],
+								w = (int) planeMax[xAxis],
+								h = (int) planeMax[yAxis];
+			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+				buf.length, planeMin, planeMax);
 
-			final int c = meta.getRGBChannelCount(imageIndex);
+			final int c = (int)meta.getAxisLength(imageIndex, Axes.CHANNEL);
 
 			for (int ty = y; ty < y + h; ty++) {
 				byte[] scanline = meta.getDecoder().getScanline(ty);
