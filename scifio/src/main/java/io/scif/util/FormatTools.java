@@ -243,10 +243,22 @@ public final class FormatTools {
 		int i = 0;
 
 		for (final CalibratedAxis axis : m.get(imageIndex).getAxes()) {
-			if (i >= scale.length || !(axis instanceof LinearAxis)) return;
-			((LinearAxis) axis).setScale(scale[i]);
-			((LinearAxis) axis).setOrigin(origin[i]);
+			if (i >= scale.length || i >= origin.length) continue;
+			calibrate(axis, scale[i], origin[i]);
 			i++;
+		}
+	}
+
+	/**
+	 * Applies the given scale and origin to the provided CalibratedAxis, if it
+	 * is a {@link LinearAxis}.
+	 */
+	public static void calibrate(final CalibratedAxis axis, final double scale,
+		final double origin)
+	{
+		if (axis instanceof LinearAxis) {
+			((LinearAxis) axis).setScale(scale);
+			((LinearAxis) axis).setOrigin(origin);
 		}
 	}
 
