@@ -62,7 +62,7 @@ public class LongArrayLoader extends AbstractArrayLoader<LongArray> {
 	{
 		final Metadata meta = reader().getMetadata();
 
-		final int bpp = meta.get(0).getBitsPerPixel() / 8;
+		final int bpp = getBitsPerElement() / 8;
 		final int offset = planesRead * (bytes.length / bpp);
 		final ByteBuffer bb = ByteBuffer.wrap(bytes);
 

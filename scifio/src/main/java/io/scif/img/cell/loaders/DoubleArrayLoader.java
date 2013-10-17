@@ -36,7 +36,6 @@
 
 package io.scif.img.cell.loaders;
 
-import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.img.SubRegion;
 
@@ -60,9 +59,7 @@ public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
 	public void convertBytes(final DoubleArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		final Metadata meta = reader().getMetadata();
-
-		final int bpp = meta.get(0).getBitsPerPixel() / 8;
+		final int bpp = getBitsPerElement() / 8;
 		final int offset = planesRead * (bytes.length / bpp);
 
 		final ByteBuffer bb = ByteBuffer.wrap(bytes);
