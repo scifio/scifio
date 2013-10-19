@@ -10,7 +10,7 @@
 
 	<groupId>io.scif</groupId>
 	<artifactId>pom-scifio</artifactId>
-	<version>0.7.1-SNAPSHOT</version>
+	<version>0.7.1</version>
 	<packaging>pom</packaging>
 
 	<name>SCIFIO projects</name>
@@ -128,7 +128,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/scifio/scifio</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio</developerConnection>
-		<tag>HEAD</tag>
+		<tag>scifio-0.7.1</tag>
 		<url>http://github.com/scifio/scifio</url>
 	</scm>
 
