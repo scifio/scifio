@@ -430,7 +430,7 @@ public class FakeFormat extends AbstractFormat {
 			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex, plane
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane
 				.getData().length, planeMin, planeMax);
 			plane.setImageMetadata(meta.get(imageIndex));
 

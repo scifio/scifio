@@ -850,7 +850,7 @@ public class AVIFormat extends AbstractFormat {
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 			plane.setColorTable(meta.getColorTable(0, 0));
 

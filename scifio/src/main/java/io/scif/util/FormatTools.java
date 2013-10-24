@@ -481,15 +481,29 @@ public final class FormatTools {
 	}
 
 	/**
-	 * Convenience method for checking that the plane number, tile size and buffer
-	 * sizes are all valid for the given reader. If 'bufLength' is less than 0,
-	 * then the buffer length check is not performed.
+	 * As {@link #checkPlaneForWriting} but also asserts that the Metadata has a
+	 * non-null source attached. If no exception is throwin, these parameters are
+	 * suitable for reading.
 	 */
-	public static void checkPlaneParameters(final Metadata m, final int imageIndex,
+	public static void checkPlaneForReading(final Metadata m,
+		final int imageIndex, final long planeIndex, final int bufLength,
+		final long[] planeMin, final long[] planeMax) throws FormatException
+	{
+		assertId(m.getSource(), true, 2);
+		checkPlaneForWriting(m, imageIndex, planeIndex, bufLength, planeMin,
+			planeMax);
+	}
+
+	/**
+	 * Convenience method for checking that the plane number, tile size and buffer
+	 * sizes are all valid for the given Metadata. If 'bufLength' is less than 0,
+	 * then the buffer length check is not performed. If no exception is thrown,
+	 * these parameters are suitable for writing.
+	 */
+	public static void checkPlaneForWriting(final Metadata m, final int imageIndex,
 		final long planeIndex, final int bufLength, final long[] planeMin,
 		final long[] planeMax) throws FormatException
 	{
-		assertId(m.getSource(), true, 2);
 		checkPlaneNumber(m, imageIndex, planeIndex);
 		checkTileSize(m, planeMin, planeMax, imageIndex);
 		if (bufLength >= 0) checkBufferSize(m, bufLength, planeMax, imageIndex);

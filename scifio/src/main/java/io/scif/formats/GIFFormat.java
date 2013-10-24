@@ -761,7 +761,7 @@ public class GIFFormat extends AbstractFormat {
 			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			plane.setColorTable(meta.getColorTable(0, 0));
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 			final int x = (int) planeMin[xIndex],
 					y = (int) planeMin[yIndex],

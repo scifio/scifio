@@ -1871,7 +1871,7 @@ public class DICOMFormat extends AbstractFormat {
 			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex, plane
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane
 				.getData().length, planeMin, planeMax);
 
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);

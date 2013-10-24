@@ -330,7 +330,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 				planeIndex, planes));
 		}
 
-		FormatTools.checkPlaneParameters(getMetadata(), imageIndex, planeIndex,
+		FormatTools.checkPlaneForWriting(getMetadata(), imageIndex, planeIndex,
 			buf.length, planeMin, planeMax);
 
 		final int pixelType = metadata.get(imageIndex).getPixelType();

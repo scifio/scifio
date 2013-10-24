@@ -347,7 +347,7 @@ public class EPSFormat extends AbstractFormat {
 								w = (int) planeMax[xAxis],
 								h = (int) planeMax[yAxis];
 
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			if (meta.isTiff()) {

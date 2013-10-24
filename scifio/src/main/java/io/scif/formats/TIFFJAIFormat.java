@@ -260,7 +260,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
-			FormatTools.checkPlaneParameters(getMetadata(), imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(getMetadata(), imageIndex, planeIndex,
 				-1, planeMin, planeMax);
 			final BufferedImage img = openBufferedImage(getMetadata(), planeIndex);
 			plane.setData(AWTImageTools.getSubimage(img, getMetadata()

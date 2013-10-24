@@ -756,7 +756,7 @@ public class JPEG2000Format extends AbstractFormat {
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
 
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			if (meta.getLastIndex().getImageIndex() == imageIndex &&
