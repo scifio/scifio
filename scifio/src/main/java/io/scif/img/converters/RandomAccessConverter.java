@@ -36,6 +36,7 @@
 
 package io.scif.img.converters;
 
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.common.DataTools;
@@ -112,9 +113,8 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 	private void getPosition(final Metadata m, final int imageIndex,
 		final int planeIndex, final long[] pos)
 	{
-		final int offset =
-			m.get(imageIndex).getAxes().size() -
-				m.get(imageIndex).getAxesNonPlanar().size();
+		ImageMetadata meta = m.get(imageIndex);
+		final int offset = meta.getAxes().size() - meta.getAxesNonPlanar().size();
 
 		final long[] axesPositions =
 			FormatTools.rasterToPosition(imageIndex, planeIndex, m);
