@@ -592,7 +592,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final DefaultMetadata imgplusMeta = new DefaultMetadata();
 
 		//TODO: still accounting for rgb/composite info correctly?
+		// Create fresh metadata in source and destination
 		imgplusMeta.createImageMetadata(imageIndex + 1);
+		meta.createImageMetadata(imageIndex + 1);
 
 		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), axes, axisLengths, pixelType,
 			true, false, false, false, true);
