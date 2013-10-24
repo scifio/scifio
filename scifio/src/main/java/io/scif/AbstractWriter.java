@@ -87,9 +87,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	 */
 	protected boolean[][] initialized;
 
-	/** Whether the channels in an RGB image are interleaved. */
-	protected boolean interleaved;
-
 	/** The number of valid bits per pixel. */
 	protected int validBits;
 

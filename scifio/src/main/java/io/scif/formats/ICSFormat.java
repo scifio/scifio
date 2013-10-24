@@ -1565,6 +1565,9 @@ public class ICSFormat extends AbstractFormat {
 		{
 			checkParams(imageIndex, planeIndex, plane.getBytes(), planeMin, planeMax);
 			final Metadata meta = getMetadata();
+			final boolean interleaved =
+				meta.get(imageIndex).getInterleavedAxisCount() > 0;
+
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xAxis],

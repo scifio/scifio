@@ -377,7 +377,6 @@ public class AVIFormat extends AbstractFormat {
 				iMeta.setPlanarAxisCount(3);
 			}
 
-			iMeta.setBitsPerPixel(getBmpBitsPerPixel());
 			if (getBmpBitsPerPixel() <= 8) {
 				iMeta.setPixelType(FormatTools.UINT8);
 			}
@@ -1131,6 +1130,8 @@ public class AVIFormat extends AbstractFormat {
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
+			final boolean interleaved =
+				meta.get(imageIndex).getInterleavedAxisCount() > 0;
 
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
 			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax)) {

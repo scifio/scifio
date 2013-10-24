@@ -917,6 +917,8 @@ public class APNGFormat extends AbstractFormat {
 
 			final long rgbCCount =
 				getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
+			final boolean interleaved =
+				getMetadata().get(0).getInterleavedAxisCount() > 0;
 
 			final int pixelType = getMetadata().get(imageIndex).getPixelType();
 			final boolean signed = FormatTools.isSigned(pixelType);

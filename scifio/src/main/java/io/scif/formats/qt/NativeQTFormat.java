@@ -789,7 +789,8 @@ public class NativeQTFormat extends AbstractFormat {
 			}
 
 			final Metadata meta = getMetadata();
-
+			final boolean interleaved =
+					meta.get(imageIndex).getInterleavedAxisCount() > 0;
 			// get the width and height of the image
 			final int width = (int)meta.get(imageIndex).getAxisLength(Axes.X);
 			final int height = (int)meta.get(imageIndex).getAxisLength(Axes.Y);
