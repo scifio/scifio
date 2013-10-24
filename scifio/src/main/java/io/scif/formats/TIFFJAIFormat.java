@@ -51,6 +51,8 @@ import io.scif.gui.BufferedImageReader;
 import io.scif.io.FileHandle;
 import io.scif.io.IRandomAccess;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.services.FormatService;
+import io.scif.services.LocationService;
 import io.scif.util.FormatTools;
 
 import java.awt.image.BufferedImage;
@@ -61,6 +63,7 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -73,6 +76,9 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Format.class, priority = MinimalTIFFFormat.PRIORITY - 1)
 public class TIFFJAIFormat extends AbstractFormat {
 
+	@Parameter
+	private FormatService formatService;
+
 	// -- Format API methods --
 
 	@Override
@@ -82,7 +88,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 	@Override
 	public String[] getSuffixes() {
-		return scifio().format().getFormatFromClass(TIFFFormat.class).getSuffixes();
+		return formatService.getFormatFromClass(TIFFFormat.class).getSuffixes();
 	}
 
 	// -- Nested classes --
@@ -163,6 +169,11 @@ public class TIFFJAIFormat extends AbstractFormat {
 			"Java Advanced Imaging (JAI) is required to read some TIFF files. "
 				+ "Please install JAI from https://jai.dev.java.net/";
 
+		// -- Fields --
+
+		@Parameter
+		private LocationService locationService;
+
 		// -- Parser API Methods --
 
 		@Override
@@ -191,7 +202,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 			log().info("Reading movie dimensions");
 
 			// map Location to File or RandomAccessFile, if possible
-			final IRandomAccess ira = scifio().location().getMappedFile(id);
+			final IRandomAccess ira = locationService.getMappedFile(id);
 			if (ira != null) {
 				if (ira instanceof FileHandle) {
 					final FileHandle fh = (FileHandle) ira;
@@ -203,7 +214,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 				}
 			}
 			else {
-				final String mapId = scifio().location().getMappedId(id);
+				final String mapId = locationService.getMappedId(id);
 				final File file = new File(mapId);
 				if (file.exists()) {
 					r.setVar("file", file);

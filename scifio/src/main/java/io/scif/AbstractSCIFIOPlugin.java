@@ -36,17 +36,36 @@
 
 package io.scif;
 
+import io.scif.app.SCIFIOApp;
+
+import org.scijava.app.AppService;
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractRichPlugin;
+import org.scijava.plugin.Parameter;
 
 /**
- * Super-interface for SCIFIO components.
- * <p>
- * All SCIFIO components have access to a {@link SCIFIO} context, as well as
- * convenient access to that context's {@link LogService} for easy logging.
- * </p>
+ * Abstract superclass of all {@link SCIFIOPlugin} implementations.
  * 
  * @author Curtis Rueden
  */
-public interface SCIFIOComponent extends HasSCIFIO, HasLog {
-	// NB: Marker interface.
+public abstract class AbstractSCIFIOPlugin extends AbstractRichPlugin implements
+	SCIFIOPlugin
+{
+
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private AppService appService;
+
+	@Override
+	public LogService log() {
+		return log;
+	}
+
+	@Override
+	public String getVersion() {
+		return appService.getApp(SCIFIOApp.NAME).getVersion();
+	}
+
 }

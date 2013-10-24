@@ -46,10 +46,12 @@ import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
-import io.scif.SCIFIO;
 import io.scif.io.IRandomAccess;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.ZipHandle;
+import io.scif.services.FormatService;
+import io.scif.services.InitializeService;
+import io.scif.services.LocationService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,6 +61,7 @@ import java.util.zip.ZipInputStream;
 
 import net.imglib2.display.ColorTable;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -89,6 +92,9 @@ public class ZipFormat extends AbstractFormat {
 	{
 
 		// -- Fields --
+
+		@Parameter
+		private LocationService locationService;
 
 		private io.scif.Metadata metadata;
 
@@ -131,8 +137,8 @@ public class ZipFormat extends AbstractFormat {
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			for (final String name : mappedFiles) {
-				final IRandomAccess handle = scifio().location().getMappedFile(name);
-				scifio().location().mapFile(name, null);
+				final IRandomAccess handle = locationService.getMappedFile(name);
+				locationService.mapFile(name, null);
 				if (handle != null) {
 					handle.close();
 				}
@@ -153,11 +159,17 @@ public class ZipFormat extends AbstractFormat {
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
+		@Parameter
+		private LocationService locationService;
+
+		@Parameter
+		private FormatService formatService;
+
 		@Override
 		public Metadata parse(final RandomAccessInputStream stream,
 			final Metadata meta) throws IOException, FormatException
 		{
-			return super.parse(ZipUtilities.getRawStream(scifio(), stream), meta);
+			return super.parse(ZipUtilities.getRawStream(locationService, stream), meta);
 		}
 
 		@Override
@@ -165,10 +177,10 @@ public class ZipFormat extends AbstractFormat {
 			final Metadata meta) throws IOException, FormatException
 		{
 			final String baseId =
-				ZipUtilities.unzipId(scifio(), stream, meta.getMappedFiles());
+				ZipUtilities.unzipId(locationService, stream, meta.getMappedFiles());
 
 			final io.scif.Parser p =
-				scifio().format().getFormat(baseId).createParser();
+				formatService.getFormat(baseId).createParser();
 			p.setOriginalMetadataPopulated(isOriginalMetadataPopulated());
 			p.setMetadataFiltered(isMetadataFiltered());
 			p.setMetadataOptions(getMetadataOptions());
@@ -185,6 +197,15 @@ public class ZipFormat extends AbstractFormat {
 
 		// -- Fields --
 
+		@Parameter
+		private LocationService locationService;
+
+		@Parameter
+		private FormatService formatService;
+
+		@Parameter
+		private InitializeService initializeService;
+
 		private io.scif.Reader reader;
 
 		// -- Reader API Methods --
@@ -193,14 +214,14 @@ public class ZipFormat extends AbstractFormat {
 		public void setSource(final RandomAccessInputStream stream)
 			throws IOException
 		{
-			super.setSource(ZipUtilities.getRawStream(scifio(), stream));
+			super.setSource(ZipUtilities.getRawStream(locationService, stream));
 
 			if (reader != null) reader.close();
 
-			final String baseId = ZipUtilities.unzipId(scifio(), stream, null);
+			final String baseId = ZipUtilities.unzipId(locationService, stream, null);
 
 			try {
-				reader = scifio().format().getFormat(baseId).createReader();
+				reader = formatService.getFormat(baseId).createReader();
 				reader.setSource(baseId);
 			}
 			catch (final FormatException e) {
@@ -216,9 +237,9 @@ public class ZipFormat extends AbstractFormat {
 
 			try {
 				final String baseId =
-					ZipUtilities.unzipId(scifio(), meta.getSource(), null);
+					ZipUtilities.unzipId(locationService, meta.getSource(), null);
 
-				reader = scifio().initializer().initializeReader(baseId);
+				reader = initializeService.initializeReader(baseId);
 				meta.setMetadata(reader.getMetadata());
 			}
 			catch (final FormatException e) {
@@ -259,7 +280,7 @@ public class ZipFormat extends AbstractFormat {
 		/**
 		 * Extracts the String id of the provided stream.
 		 * 
-		 * @param scifio - A SCIFIO wrapping the current context
+		 * @param locationService - The location service to use for mapping files
 		 * @param stream - Stream, built around a .zip file, to extract the actual
 		 *          id from
 		 * @param mappedFiles - Optional param. If provided, all discovered entries
@@ -267,7 +288,7 @@ public class ZipFormat extends AbstractFormat {
 		 * @return An id of the base entry in the .zip
 		 * @throws IOException
 		 */
-		public static String unzipId(final SCIFIO scifio,
+		public static String unzipId(final LocationService locationService,
 			final RandomAccessInputStream stream, final List<String> mappedFiles)
 			throws IOException
 		{
@@ -278,13 +299,13 @@ public class ZipFormat extends AbstractFormat {
 				ze = zip.getNextEntry();
 				if (ze == null) break;
 				final ZipHandle handle =
-					new ZipHandle(scifio.getContext(), stream.getFileName(), ze);
-				scifio.location().mapFile(ze.getName(), handle);
+					new ZipHandle(locationService.getContext(), stream.getFileName(), ze);
+				locationService.mapFile(ze.getName(), handle);
 				if (mappedFiles != null) mappedFiles.add(ze.getName());
 			}
 
 			final ZipHandle base =
-				new ZipHandle(scifio.getContext(), stream.getFileName());
+				new ZipHandle(locationService.getContext(), stream.getFileName());
 			final String id = base.getEntryName();
 			base.close();
 
@@ -298,14 +319,16 @@ public class ZipFormat extends AbstractFormat {
 		 * NB: closes the provided stream.
 		 * </p>
 		 */
-		public static RandomAccessInputStream getRawStream(final SCIFIO scifio,
+		public static RandomAccessInputStream getRawStream(
+			final LocationService locationService,
 			final RandomAccessInputStream stream) throws IOException
 		{
 			// NB: We need a raw handle on the ZIP data itself, not a ZipHandle.
 			final String id = stream.getFileName();
 			final IRandomAccess rawHandle =
-				scifio.location().getHandle(id, false, false);
-			return new RandomAccessInputStream(scifio.getContext(), rawHandle, id);
+				locationService.getHandle(id, false, false);
+			return new RandomAccessInputStream(locationService.getContext(),
+				rawHandle, id);
 		}
 	}
 }

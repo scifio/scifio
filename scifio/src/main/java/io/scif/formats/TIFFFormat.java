@@ -64,6 +64,7 @@ import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
+import io.scif.xml.XMLService;
 
 import java.io.IOException;
 import java.util.Hashtable;
@@ -73,6 +74,7 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = Format.class, priority = TIFFFormat.PRIORITY)
@@ -284,6 +286,11 @@ public class TIFFFormat extends AbstractFormat {
 
 		public static final int IMAGEJ_TAG = 50839;
 
+		// -- Fields --
+
+		@Parameter
+		private XMLService xmlService;
+
 		// -- Parser API Methods --
 
 		@Override
@@ -331,10 +338,10 @@ public class TIFFFormat extends AbstractFormat {
 							if (metadata.indexOf("xml") != -1) {
 								metadata = metadata.substring(metadata.indexOf("<"));
 								metadata =
-									"<root>" + scifio().xml().sanitizeXML(metadata) + "</root>";
+									"<root>" + xmlService.sanitizeXML(metadata) + "</root>";
 								try {
 									final Hashtable<String, String> xmlMetadata =
-										scifio().xml().parseXML(metadata);
+										xmlService.parseXML(metadata);
 									for (final String key : xmlMetadata.keySet()) {
 										addGlobalMeta(key, xmlMetadata.get(key));
 									}

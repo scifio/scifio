@@ -36,7 +36,7 @@
 
 package io.scif.filters;
 
-import io.scif.AbstractSCIFIOComponent;
+import io.scif.AbstractSCIFIOPlugin;
 
 /**
  * Abstract superclass for {@link io.scif.filters.Filter} implementations.
@@ -56,7 +56,7 @@ import io.scif.AbstractSCIFIOComponent;
  * @see io.scif.filters.Filter
  * @param <T> - Parent type of this filter.
  */
-public abstract class AbstractFilter<T> extends AbstractSCIFIOComponent
+public abstract class AbstractFilter<T> extends AbstractSCIFIOPlugin
 	implements Filter
 {
 

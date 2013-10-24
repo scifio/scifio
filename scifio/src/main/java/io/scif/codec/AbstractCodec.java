@@ -36,7 +36,7 @@
 
 package io.scif.codec;
 
-import io.scif.AbstractSCIFIOComponent;
+import io.scif.AbstractSCIFIOPlugin;
 import io.scif.FormatException;
 import io.scif.io.RandomAccessInputStream;
 
@@ -52,7 +52,7 @@ import java.util.Random;
  * 
  * @author Eric Kjellman
  */
-public abstract class AbstractCodec extends AbstractSCIFIOComponent implements
+public abstract class AbstractCodec extends AbstractSCIFIOPlugin implements
 	Codec
 {
 

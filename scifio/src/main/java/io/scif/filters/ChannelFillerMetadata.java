@@ -36,20 +36,23 @@
 
 package io.scif.filters;
 
-import java.io.IOException;
-
 import io.scif.DefaultImageMetadata;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
+import io.scif.services.InitializeService;
 import io.scif.util.FormatTools;
+
+import java.io.IOException;
+
 import net.imglib2.display.ArrayColorTable;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -70,6 +73,9 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 	public static final String METADATA_VALUE = "io.scif.filters.ChannelFiller";
 
 	// -- Fields --
+
+	@Parameter
+	private InitializeService initializeService;
 
 	/**
 	 * Number of components in the wrapped color table
@@ -116,8 +122,8 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 					Reader r = null;
 					try {
 						r =
-							scifio().initializer().initializeReader(
-								m.getSource().getFileName(), true);
+							initializeService.initializeReader(m.getSource().getFileName(),
+								true);
 						cTable = r.openPlane(0, 0).getColorTable();
 						r.close();
 					}

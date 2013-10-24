@@ -49,6 +49,7 @@ import io.scif.common.Constants;
 import io.scif.common.DataTools;
 import io.scif.io.IRandomAccess;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.services.LocationService;
 import io.scif.util.FormatTools;
 
 import java.io.BufferedReader;
@@ -62,6 +63,7 @@ import java.util.List;
 import net.imglib2.meta.Axes;
 
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -272,6 +274,11 @@ public class TextFormat extends AbstractFormat {
 		/** How often to report progress during initialization, in milliseconds. */
 		private static final long TIME_OFFSET = 2000;
 
+		// -- Fields --
+
+		@Parameter
+		private LocationService locationService;
+
 		// -- AbstractParser API Methods --
 
 		@Override
@@ -353,10 +360,10 @@ public class TextFormat extends AbstractFormat {
 		private List<String> readFile(final String id) throws IOException {
 			final List<String> lines = new ArrayList<String>();
 			long time = System.currentTimeMillis();
-			final IRandomAccess handle = scifio().location().getMappedFile(id);
+			final IRandomAccess handle = locationService.getMappedFile(id);
 			if (handle == null) {
 				// HACK: Read using vanilla BufferedReader, since it's faster.
-				final String mapId = scifio().location().getMappedId(id);
+				final String mapId = locationService.getMappedId(id);
 				final BufferedReader in =
 					new BufferedReader(new InputStreamReader(new FileInputStream(mapId),
 						Constants.ENCODING));

@@ -44,6 +44,9 @@ import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.io.Location;
+import io.scif.services.FilePatternService;
+import io.scif.services.InitializeService;
+import io.scif.services.LocationService;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -53,6 +56,7 @@ import java.util.HashMap;
 import net.imglib2.meta.Axes;
 
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -70,6 +74,15 @@ public class FileStitcher extends AbstractReaderFilter {
 	public static final String FILTER_VALUE = "io.scif.Reader";
 
 	// -- Fields --
+
+	@Parameter
+	private InitializeService initializeService;
+
+	@Parameter
+	private FilePatternService filePatternService;
+
+	@Parameter
+	private LocationService locationService;
 
 	/**
 	 * Whether string ids given should be treated as file patterns rather than
@@ -138,7 +151,7 @@ public class FileStitcher extends AbstractReaderFilter {
 		final int[] fileIndex = computeFileIndex(imageIndex);
 		Reader r = readers[fileIndex[0]];
 		if (r == null) {
-			r = scifio().initializer().initializeReader(files[imageIndex]);
+			r = initializeService.initializeReader(files[imageIndex]);
 			readers[fileIndex[0]] = r;
 		}
 		return r;
@@ -164,7 +177,7 @@ public class FileStitcher extends AbstractReaderFilter {
 	 * id.
 	 */
 	public FilePattern findPattern(final String id) {
-		return new FilePattern(getContext(), scifio().filePattern().findPattern(id));
+		return new FilePattern(getContext(), filePatternService.findPattern(id));
 	}
 
 	/**
@@ -174,15 +187,15 @@ public class FileStitcher extends AbstractReaderFilter {
 	public String[] findPatterns(final String id) {
 		if (!patternIds) {
 			// find the containing patterns
-			final HashMap<String, Object> map = scifio().location().getIdMap();
+			final HashMap<String, Object> map = locationService.getIdMap();
 			if (map.containsKey(id)) {
 				// search ID map for pattern, rather than files on disk
 				final String[] idList = new String[map.size()];
 				map.keySet().toArray(idList);
-				return scifio().filePattern().findImagePatterns(id, null, idList);
+				return filePatternService.findImagePatterns(id, null, idList);
 			}
 			// id is an unmapped file path; look to similar files on disk
-			return scifio().filePattern().findImagePatterns(id);
+			return filePatternService.findImagePatterns(id);
 		}
 		if (doNotChangePattern) {
 			return new String[] { id };
@@ -215,7 +228,7 @@ public class FileStitcher extends AbstractReaderFilter {
 			else {
 				patternIds =
 					!new Location(getContext(), source).exists() &&
-						scifio().location().getMappedId(source).equals(source);
+						locationService.getMappedId(source).equals(source);
 			}
 
 			// Determine if the wrapped reader should handle the stitching

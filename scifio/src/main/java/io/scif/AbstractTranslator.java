@@ -57,7 +57,7 @@ import io.scif.util.SCIFIOMetadataTools;
  * @param <N> - The destination Metadata type required by this Translator
  */
 public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
-	extends AbstractSCIFIOComponent implements Translator
+	extends AbstractSCIFIOPlugin implements Translator
 {
 
 	// -- Translator API --

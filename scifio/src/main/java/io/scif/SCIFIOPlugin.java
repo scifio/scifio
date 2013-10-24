@@ -36,7 +36,8 @@
 
 package io.scif;
 
-import org.scijava.plugin.SciJavaPlugin;
+import org.scijava.log.LogService;
+import org.scijava.plugin.RichPlugin;
 
 /**
  * Marker interface for org.scijava.plugin.SciJavaPlugin implementations in the
@@ -44,4 +45,12 @@ import org.scijava.plugin.SciJavaPlugin;
  * 
  * @author Curtis Rueden
  */
-public interface SCIFIOPlugin extends SciJavaPlugin {}
+public interface SCIFIOPlugin extends RichPlugin {
+
+	/** Gets a reference to the SciJava context's {@link LogService}. */
+	LogService log();
+
+	/** Gets the version of the SCIFIO software. */
+	String getVersion();
+
+}

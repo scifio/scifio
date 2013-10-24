@@ -50,8 +50,11 @@ import io.scif.Translator;
 import io.scif.common.DataTools;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.services.FormatService;
+import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
 import io.scif.xml.BaseHandler;
+import io.scif.xml.XMLService;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,6 +67,7 @@ import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
@@ -157,6 +161,9 @@ public class MicromanagerFormat extends AbstractFormat {
 	 */
 	public static class Checker extends AbstractChecker {
 
+		@Parameter
+		private FormatService formatService;
+
 		// -- Checker API Methods --
 
 		@Override
@@ -202,7 +209,7 @@ public class MicromanagerFormat extends AbstractFormat {
 			io.scif.Checker checker;
 			try {
 				checker =
-					scifio().format().getFormatFromClass(MinimalTIFFFormat.class)
+					formatService.getFormatFromClass(MinimalTIFFFormat.class)
 						.createChecker();
 				return checker.isFormat(stream);
 			}
@@ -222,6 +229,14 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		public static final String DATE_FORMAT = "EEE MMM dd HH:mm:ss zzz yyyy";
 
+		// -- Fields --
+
+		@Parameter
+		private TranslatorService translatorService;
+
+		@Parameter
+		private XMLService xmlService;
+
 		// -- MicromanagerParser API methods --
 
 		public void populateMetadataStore(final String[] jsonData,
@@ -237,7 +252,7 @@ public class MicromanagerFormat extends AbstractFormat {
 				parsePosition(jsonData[pos], source, pos);
 			}
 
-			scifio().translator().translate(source, dest, true);
+			translatorService.translate(source, dest, true);
 		}
 
 		// -- Parser API methods --
@@ -694,10 +709,10 @@ public class MicromanagerFormat extends AbstractFormat {
 		{
 			final Position p = meta.getPositions().get(imageIndex);
 			String xmlData = DataTools.readFile(getContext(), p.xmlFile);
-			xmlData = scifio().xml().sanitizeXML(xmlData);
+			xmlData = xmlService.sanitizeXML(xmlData);
 
 			final DefaultHandler handler = new MicromanagerHandler();
-			scifio().xml().parseXML(xmlData, handler);
+			xmlService.parseXML(xmlData, handler);
 		}
 
 		// -- Helper classes --
@@ -730,6 +745,9 @@ public class MicromanagerFormat extends AbstractFormat {
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- Fields --
+
+		@Parameter
+		private FormatService formatService;
 
 		/** Helper reader for TIFF files. */
 		private MinimalTIFFFormat.Reader<?> tiffReader;
@@ -808,9 +826,11 @@ public class MicromanagerFormat extends AbstractFormat {
 					getMetadata().getPositions().get(imageIndex).getFile(getMetadata(),
 						imageIndex, 0);
 
-				if (tiffReader == null) tiffReader =
-					(MinimalTIFFFormat.Reader<?>) scifio().format().getFormatFromClass(
-						MinimalTIFFFormat.class).createReader();
+				if (tiffReader == null) {
+					tiffReader =
+						(MinimalTIFFFormat.Reader<?>) formatService.getFormatFromClass(
+							MinimalTIFFFormat.class).createReader();
+				}
 
 				tiffReader.setSource(file);
 			}

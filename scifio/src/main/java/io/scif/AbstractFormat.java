@@ -51,7 +51,7 @@ import java.util.List;
  * @see io.scif.services.FormatService
  * @author Mark Hiner
  */
-public abstract class AbstractFormat extends AbstractSCIFIOComponent implements
+public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 	Format
 {
 

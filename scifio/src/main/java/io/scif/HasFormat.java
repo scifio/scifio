@@ -36,6 +36,8 @@
 
 package io.scif;
 
+import org.scijava.plugin.RichPlugin;
+
 /**
  * Super-interface for SCIFIO components that relate back to a
  * {@link io.scif.Format}.
@@ -43,7 +45,7 @@ package io.scif;
  * @see io.scif.Format
  * @author Mark Hiner
  */
-public interface HasFormat extends SCIFIOComponent {
+public interface HasFormat extends SCIFIOPlugin {
 
 	/**
 	 * Provides a link back to the format associated with this component.

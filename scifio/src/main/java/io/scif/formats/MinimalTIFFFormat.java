@@ -54,6 +54,7 @@ import io.scif.formats.tiff.PhotoInterp;
 import io.scif.formats.tiff.TiffCompression;
 import io.scif.formats.tiff.TiffParser;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.services.FormatService;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -66,6 +67,7 @@ import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -406,6 +408,9 @@ public class MinimalTIFFFormat extends AbstractFormat {
 	 */
 	public static class Parser<M extends Metadata> extends AbstractParser<M> {
 
+		@Parameter
+		private FormatService formatService;
+
 		// -- Parser API Methods --
 
 		@Override
@@ -466,7 +471,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 						final long stripOffset = stripOffsets[0];
 						stream.seek(stripOffset);
 						final JPEG2000Format jp2kFormat =
-							scifio().format().getFormatFromClass(JPEG2000Format.class);
+							formatService.getFormatFromClass(JPEG2000Format.class);
 						final JPEG2000Format.Metadata jp2kMeta =
 							(JPEG2000Format.Metadata) jp2kFormat.createMetadata();
 						((JPEG2000Format.Parser) jp2kFormat.createParser()).parse(stream,

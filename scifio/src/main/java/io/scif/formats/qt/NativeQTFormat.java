@@ -61,6 +61,8 @@ import io.scif.codec.ZlibCodec;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
+import io.scif.services.FormatService;
+import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
@@ -73,6 +75,7 @@ import net.imglib2.meta.Axes;
 import org.scijava.Priority;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -674,6 +677,15 @@ public class NativeQTFormat extends AbstractFormat {
 
 		// -- Fields --
 
+		@Parameter
+		private QTJavaService qtJavaService;
+
+		@Parameter
+		private FormatService formatService;
+
+		@Parameter
+		private TranslatorService translatorService;
+
 		/** The codec to use. */
 		protected int codec = CODEC_RAW;
 
@@ -702,7 +714,7 @@ public class NativeQTFormat extends AbstractFormat {
 		// -- Constructor --
 
 		public Writer() {
-			if (scifio().qtJava().canDoQT()) {
+			if (qtJavaService.canDoQT()) {
 				compressionTypes =
 					new String[] {
 						CompressionType.UNCOMPRESSED.getCompression(),
@@ -891,10 +903,10 @@ public class NativeQTFormat extends AbstractFormat {
 
 			if (legacy == null) {
 				final LegacyQTFormat legacyFormat =
-					scifio().format().getFormatFromClass(LegacyQTFormat.class);
+					formatService.getFormatFromClass(LegacyQTFormat.class);
 				legacy = (LegacyQTFormat.Writer) legacyFormat.createWriter();
 				final io.scif.Metadata legacyMeta = legacyFormat.createMetadata();
-				scifio().translator().translate(meta, legacyMeta, false);
+				translatorService.translate(meta, legacyMeta, false);
 
 				legacy.setMetadata(legacyMeta);
 
