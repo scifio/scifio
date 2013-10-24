@@ -150,7 +150,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	}
 
 	/**
-	 * Entry point for {@link #read(Object, Plane, long[], long[], DimRange[], int[], int, int)}
+	 * Entry point for
+	 * {@link #read(Object, Plane, long[], long[], DimRange[], long[], int, int)}
 	 */
 	private void
 		read(final A data, final long[] planarMin, final long[] planarLength,

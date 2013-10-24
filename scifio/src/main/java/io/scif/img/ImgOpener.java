@@ -346,7 +346,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * @param io - An ImgOpener instance
 	 * @param source - Dataset source to open
 	 * @param imgOptions - Options object for opening this dataset
 	 * @return A Reader initialized to open the specified id
@@ -380,7 +379,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 	/**
 	 * Returns a list of all AxisTypes that should be split out. This is a list
-	 * of all non-X,Y planar axes. Always tries to split {@link Axes.CHANNEL}.
+	 * of all non-X,Y planar axes. Always tries to split {@link Axes#CHANNEL}.
 	 */
 	private AxisType[] axesToSplit(ReaderFilter r) {
 		Set<AxisType> axes = new HashSet<AxisType>();

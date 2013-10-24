@@ -95,7 +95,7 @@ public enum JPEG2000SegmentMarker implements CodedEnum {
 	 * Default constructor.
 	 * 
 	 * @param code Integer "code" for the segment marker.
-	 * @param compression The name of the segment marker.
+	 * @param name The name of the segment marker.
 	 */
 	private JPEG2000SegmentMarker(final int code, final String name) {
 		this.code = code;
