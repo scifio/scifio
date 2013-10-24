@@ -118,7 +118,7 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 
 		final long[] axesPositions =
 			FormatTools.rasterToPosition(imageIndex, planeIndex, m);
-		for (int i = 0; i < pos.length; i++) {
+		for (int i = 0; i < axesPositions.length; i++) {
 			pos[i + offset] = axesPositions[i];
 		}
 	}
