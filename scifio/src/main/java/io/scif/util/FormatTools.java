@@ -416,16 +416,16 @@ public final class FormatTools {
 	 *          reported as part of the exception message, if available. Use zero
 	 *          to suppress output of the calling method name.
 	 */
-	public static void assertId(final String currentId, final boolean notNull,
+	public static void assertId(final Object id, final boolean notNull,
 		final int depth)
 	{
 		String msg = null;
-		if (currentId == null && notNull) {
+		if (id == null && notNull) {
 			msg = "Current file should not be null; call setId(String) first";
 		}
-		else if (currentId != null && !notNull) {
+		else if (id != null && !notNull) {
 			msg =
-				"Current file should be null, but is '" + currentId +
+				"Current file should be null, but is '" + id +
 					"'; call close() first";
 		}
 		if (msg == null) return;
@@ -489,7 +489,7 @@ public final class FormatTools {
 		final long planeIndex, final int bufLength, final long[] planeMin,
 		final long[] planeMax) throws FormatException
 	{
-		assertId(m.getSource().getFileName(), true, 2);
+		assertId(m.getSource(), true, 2);
 		checkPlaneNumber(m, imageIndex, planeIndex);
 		checkTileSize(m, planeMin, planeMax, imageIndex);
 		if (bufLength >= 0) checkBufferSize(m, bufLength, planeMax, imageIndex);
