@@ -50,6 +50,7 @@ import io.scif.MetadataLevel;
 import io.scif.UnsupportedCompressionException;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.services.FormatService;
 import io.scif.util.FormatTools;
 
 import java.io.File;
@@ -57,6 +58,7 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -238,6 +240,9 @@ public class NRRDFormat extends AbstractFormat {
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
+		@Parameter
+		private FormatService formatService;
+
 		// -- Parser API Methods --
 
 		@Override
@@ -401,11 +406,11 @@ public class NRRDFormat extends AbstractFormat {
 				// current
 				// image and cache it as a helper
 				final NRRDFormat nrrd =
-					scifio().format().getFormatFromClass(NRRDFormat.class);
-				scifio().format().removeFormat(nrrd);
+					formatService.getFormatFromClass(NRRDFormat.class);
+				formatService.removeFormat(nrrd);
 
 				final Format helperFormat =
-					scifio().format().getFormat(meta.getDataFile());
+					formatService.getFormat(meta.getDataFile());
 				final io.scif.Parser p = helperFormat.createParser();
 				p.setMetadataOptions(new DefaultMetadataOptions(MetadataLevel.MINIMUM));
 				p.setMetadataOptions(meta.getMetadataOptions());
@@ -414,7 +419,7 @@ public class NRRDFormat extends AbstractFormat {
 				helper.setSource(meta.getDataFile());
 				meta.setHelper(helper);
 
-				scifio().format().addFormat(nrrd);
+				formatService.addFormat(nrrd);
 			}
 		}
 

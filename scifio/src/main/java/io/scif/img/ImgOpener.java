@@ -48,6 +48,7 @@ import io.scif.img.ImgOptions.CheckMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.img.converters.PlaneConverter;
 import io.scif.img.converters.PlaneConverterService;
+import io.scif.services.InitializeService;
 import io.scif.util.FormatTools;
 
 import java.io.File;
@@ -88,6 +89,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 	@Parameter
 	private PlaneConverterService pcService;
+
+	@Parameter
+	private InitializeService initializeService;
 
 	// -- Constructors --
 
@@ -360,7 +364,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		ReaderFilter r = null;
 		try {
-			r = scifio().initializer().initializeReader(source, openFile);
+			r = initializeService.initializeReader(source, openFile);
 			r.enable(ChannelFiller.class);
 			r.enable(PlaneSeparator.class).separate(axesToSplit(r));
 			if (computeMinMax) r.enable(MinMaxFilter.class);

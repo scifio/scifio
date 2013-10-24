@@ -38,8 +38,8 @@ package io.scif;
 
 import net.imglib2.display.ColorTable;
 
+import org.scijava.AbstractContextual;
 import org.scijava.Context;
-import org.scijava.plugin.SortablePlugin;
 
 /**
  * Abstract superclass for {@link io.scif.Plane} implementations in SCIFIO.
@@ -51,7 +51,7 @@ import org.scijava.plugin.SortablePlugin;
  * @param <P> - A recursive reference to this concrete class
  */
 public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
-	SortablePlugin implements DataPlane<T>
+	AbstractContextual implements DataPlane<T>
 {
 
 	// -- Fields --

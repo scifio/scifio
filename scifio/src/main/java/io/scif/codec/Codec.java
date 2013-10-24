@@ -37,14 +37,11 @@
 package io.scif.codec;
 
 import io.scif.FormatException;
-import io.scif.SCIFIOComponent;
 import io.scif.SCIFIOPlugin;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
-import org.scijava.Prioritized;
-import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.SingletonPlugin;
 
 /**
@@ -61,9 +58,7 @@ import org.scijava.plugin.SingletonPlugin;
  * 
  * @author Eric Kjellman
  */
-public interface Codec extends SCIFIOComponent, Prioritized, HasPluginInfo,
-	SingletonPlugin, SCIFIOPlugin
-{
+public interface Codec extends SCIFIOPlugin, SingletonPlugin {
 
 	/**
 	 * Compresses a block of data.

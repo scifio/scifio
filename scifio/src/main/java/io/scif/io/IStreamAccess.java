@@ -36,11 +36,9 @@
 
 package io.scif.io;
 
-import java.io.IOException;
+import io.scif.SCIFIOPlugin;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
-import org.scijava.plugin.SciJavaPlugin;
+import java.io.IOException;
 
 /**
  * Interface for random access into String-compatible streams, which are
@@ -48,9 +46,7 @@ import org.scijava.plugin.SciJavaPlugin;
  * 
  * @author Mark Hiner
  */
-public interface IStreamAccess extends SciJavaPlugin, Contextual, Prioritized,
-	IRandomAccess
-{
+public interface IStreamAccess extends SCIFIOPlugin, IRandomAccess {
 
 	/**
 	 * Returns true if this handle can be constructed from the provided id.

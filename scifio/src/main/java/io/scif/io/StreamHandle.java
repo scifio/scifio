@@ -36,6 +36,7 @@
 
 package io.scif.io;
 
+import io.scif.AbstractSCIFIOPlugin;
 import io.scif.common.DataTools;
 
 import java.io.DataInputStream;
@@ -46,7 +47,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import org.scijava.Context;
-import org.scijava.plugin.SortablePlugin;
 
 /**
  * Abstract IRandomAccess implementation for reading from InputStreams and
@@ -55,7 +55,7 @@ import org.scijava.plugin.SortablePlugin;
  * @see IRandomAccess
  * @author Melissa Linkert
  */
-public abstract class StreamHandle extends SortablePlugin implements
+public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 	IStreamAccess
 {
 

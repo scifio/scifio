@@ -36,8 +36,6 @@
 
 package io.scif.xml;
 
-import io.scif.HasLog;
-
 import org.scijava.log.LogService;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
@@ -47,7 +45,7 @@ import org.xml.sax.SAXParseException;
  * 
  * @author Melissa Linkert
  */
-public class ParserErrorHandler implements ErrorHandler, HasLog {
+public class ParserErrorHandler implements ErrorHandler {
 
 	private final LogService log;
 
@@ -59,24 +57,17 @@ public class ParserErrorHandler implements ErrorHandler, HasLog {
 
 	@Override
 	public void error(final SAXParseException e) {
-		log().debug(e.getMessage());
+		log.debug(e.getMessage());
 	}
 
 	@Override
 	public void fatalError(final SAXParseException e) {
-		log().debug(e.getMessage());
+		log.debug(e.getMessage());
 	}
 
 	@Override
 	public void warning(final SAXParseException e) {
-		log().debug(e.getMessage());
-	}
-
-	// -- HasLog API methods --
-
-	@Override
-	public LogService log() {
-		return log;
+		log.debug(e.getMessage());
 	}
 
 }

@@ -42,6 +42,8 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Writer;
 import io.scif.common.DataTools;
+import io.scif.services.FormatService;
+import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
@@ -73,6 +75,12 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 	@Parameter
 	private StatusService statusService;
+
+	@Parameter
+	private FormatService formatService;
+
+	@Parameter
+	private TranslatorService translatorService;
 
 	// -- Constructors --
 
@@ -542,7 +550,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		Metadata meta = null;
 
 		try {
-			writer = scifio().format().getWriterByExtension(id);
+			writer = formatService.getWriterByExtension(id);
 			meta = writer.getFormat().createMetadata();
 
 			populateMeta(meta, img, imageIndex);
@@ -591,6 +599,6 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		// Translate to trigger any format-specific translation
 
-		scifio().translator().translate(imgplusMeta, meta, false);
+		translatorService.translate(imgplusMeta, meta, false);
 	}
 }

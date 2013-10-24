@@ -36,6 +36,10 @@
 
 package io.scif;
 
+import io.scif.services.FormatService;
+
+import org.scijava.plugin.Parameter;
+
 /**
  * Abstract superclass for all classes that implement {@link io.scif.HasFormat}.
  * 
@@ -43,15 +47,18 @@ package io.scif;
  * @see io.scif.services.FormatService
  * @author Mark Hiner
  */
-public abstract class AbstractHasFormat extends AbstractSCIFIOComponent
+public abstract class AbstractHasFormat extends AbstractSCIFIOPlugin
 	implements HasFormat
 {
+
+	@Parameter
+	private FormatService formatService;
 
 	// -- HasFormat API --
 
 	@Override
 	public Format getFormat() {
 		// All Format lookups go through the FormatService
-		return scifio().format().getFormatFromComponent(getClass());
+		return formatService.getFormatFromComponent(getClass());
 	}
 }

@@ -36,8 +36,9 @@
 
 package io.scif.io;
 
-import io.scif.AbstractSCIFIOComponent;
+import io.scif.AbstractSCIFIOPlugin;
 import io.scif.common.Constants;
+import io.scif.services.LocationService;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,14 +49,18 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 
 import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 
 /**
  * Pseudo-extension of java.io.File that supports reading over HTTP. It is
  * strongly recommended that you use this instead of java.io.File.
  */
-public class Location extends AbstractSCIFIOComponent {
+public class Location extends AbstractSCIFIOPlugin {
 
 	// -- Fields --
+
+	@Parameter
+	private LocationService locationService;
 
 	private boolean isURL = true;
 	private URL url;
@@ -71,13 +76,13 @@ public class Location extends AbstractSCIFIOComponent {
 		this(context);
 		log().trace("Location(" + pathname + ")");
 		try {
-			url = new URL(scifio().location().getMappedId(pathname));
+			url = new URL(locationService.getMappedId(pathname));
 		}
 		catch (final MalformedURLException e) {
 			log().trace("Location is not a URL", e);
 			isURL = false;
 		}
-		if (!isURL) file = new File(scifio().location().getMappedId(pathname));
+		if (!isURL) file = new File(locationService.getMappedId(pathname));
 	}
 
 	public Location(final Context context, final File file) {
@@ -108,7 +113,7 @@ public class Location extends AbstractSCIFIOComponent {
 		final String key = getAbsolutePath() + Boolean.toString(noHiddenFiles);
 		String[] result = null;
 
-		result = scifio().location().getCachedListing(key);
+		result = locationService.getCachedListing(key);
 		if (result != null) return result;
 
 		final ArrayList<String> files = new ArrayList<String>();
@@ -165,7 +170,7 @@ public class Location extends AbstractSCIFIOComponent {
 
 		result = files.toArray(new String[files.size()]);
 
-		scifio().location().putCachedListing(key, result);
+		locationService.putCachedListing(key, result);
 
 		return result;
 	}
@@ -273,9 +278,9 @@ public class Location extends AbstractSCIFIOComponent {
 			}
 		}
 		if (file.exists()) return true;
-		if (scifio().location().getMappedFile(file.getPath()) != null) return true;
+		if (locationService.getMappedFile(file.getPath()) != null) return true;
 
-		final String mappedId = scifio().location().getMappedId(file.getPath());
+		final String mappedId = locationService.getMappedId(file.getPath());
 		return mappedId != null && new File(mappedId).exists();
 	}
 

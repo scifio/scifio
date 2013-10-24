@@ -62,6 +62,7 @@ import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.axis.DefaultLinearAxis;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -672,6 +673,9 @@ public class PICTFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
+		@Parameter
+		private QTJavaService qtJavaService;
+
 		// -- Constructor --
 
 		public Reader() {
@@ -726,7 +730,7 @@ public class PICTFormat extends AbstractFormat {
 					new byte[(int) (getStream().length() - getStream().getFilePointer())];
 				getStream().read(pix);
 				byte[][] b =
-					AWTImageTools.getBytes(AWTImageTools.makeBuffered(scifio().qtJava()
+					AWTImageTools.getBytes(AWTImageTools.makeBuffered(qtJavaService
 						.pictToImage(pix)));
 				pix = null;
 				for (int i = 0; i < b.length; i++) {

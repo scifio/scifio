@@ -36,7 +36,6 @@
 
 package io.scif;
 
-import org.scijava.Prioritized;
 
 /**
  * Interface for all SCIFIO formats.
@@ -55,7 +54,7 @@ import org.scijava.Prioritized;
  * @see io.scif.SCIFIO
  * @see io.scif.services.FormatService
  */
-public interface Format extends SCIFIOComponent, SCIFIOPlugin, Prioritized {
+public interface Format extends SCIFIOPlugin {
 
 	// -- Format API methods --
 

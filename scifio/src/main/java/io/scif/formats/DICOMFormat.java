@@ -57,6 +57,7 @@ import io.scif.codec.PackbitsCodec;
 import io.scif.common.DataTools;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.services.InitializeService;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -69,6 +70,7 @@ import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -1853,6 +1855,9 @@ public class DICOMFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
+		@Parameter
+		private InitializeService initializeService;
+
 		public Reader() {
 			domains = new String[] { FormatTools.MEDICAL_DOMAIN };
 			hasCompanionFiles = true;
@@ -1884,7 +1889,7 @@ public class DICOMFormat extends AbstractFormat {
 				final int fileNumber = (int)(planeIndex / meta.getImagesPerFile());
 				planeIndex = planeIndex % meta.getImagesPerFile();
 				final String file = fileList.get(keys[imageIndex]).get(fileNumber);
-				final io.scif.Reader r = scifio().initializer().initializeReader(file);
+				final io.scif.Reader r = initializeService.initializeReader(file);
 				return (ByteArrayPlane) r.openPlane(imageIndex, planeIndex, plane,
 					planeMin, planeMax);
 			}

@@ -42,6 +42,7 @@ import io.scif.FormatException;
 import io.scif.common.DataTools;
 import io.scif.io.ByteArrayHandle;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.services.LocationService;
 import io.scif.util.FormatTools;
 
 import java.awt.color.CMMException;
@@ -50,6 +51,7 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -79,11 +81,14 @@ public class JPEGFormat extends ImageIOFormat {
 	 */
 	public static class Metadata extends ImageIOFormat.Metadata {
 
+		@Parameter
+		private LocationService locationService;
+
 		// -- Metadata API Methods --
 
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
-			scifio().location().mapId(getDatasetName(), null);
+			locationService.mapId(getDatasetName(), null);
 			super.close(fileOnly);
 		}
 	}
@@ -159,6 +164,9 @@ public class JPEGFormat extends ImageIOFormat {
 	 */
 	public static class Parser extends ImageIOFormat.Parser<Metadata> {
 
+		@Parameter
+		private LocationService locationService;
+
 		@Override
 		public void typedParse(final RandomAccessInputStream stream,
 			final Metadata meta) throws IOException, FormatException
@@ -214,7 +222,7 @@ public class JPEGFormat extends ImageIOFormat {
 
 				final ByteArrayHandle bytes = new ByteArrayHandle(v.toByteArray());
 
-				scifio().location().mapFile(currentId + ".fixed", bytes);
+				locationService.mapFile(currentId + ".fixed", bytes);
 				super.parse(currentId + ".fixed", meta);
 			}
 

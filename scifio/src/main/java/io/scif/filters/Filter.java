@@ -36,10 +36,7 @@
 
 package io.scif.filters;
 
-import io.scif.SCIFIOComponent;
 import io.scif.SCIFIOPlugin;
-
-import org.scijava.Prioritized;
 
 /**
  * Interface for modifying object behavior. Equivalent to wrapping/decorating.
@@ -55,7 +52,7 @@ import org.scijava.Prioritized;
  * 
  * @author Mark Hiner
  */
-public interface Filter extends SCIFIOComponent, SCIFIOPlugin, Prioritized {
+public interface Filter extends SCIFIOPlugin {
 
 	public static final String FILTER_KEY = "Filters";
 	public static final String FILTER_VALUE = "java.lang.Object";

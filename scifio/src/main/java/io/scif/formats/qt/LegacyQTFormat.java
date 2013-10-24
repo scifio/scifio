@@ -67,7 +67,9 @@ import java.util.Vector;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -104,6 +106,9 @@ public class LegacyQTFormat extends AbstractFormat {
 			"io.scif.formats.LegacyQTFormat$Metadata";
 
 		// -- Fields --
+
+		@Parameter
+		private QTJavaService qtJavaService;
 
 		/** Time offset for each frame. */
 		protected int[] times;
@@ -163,6 +168,9 @@ public class LegacyQTFormat extends AbstractFormat {
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
+		@Parameter
+		private QTJavaService qtJavaService;
+
 		// -- Parser API Methods --
 
 		@Override
@@ -171,8 +179,8 @@ public class LegacyQTFormat extends AbstractFormat {
 		{
 			log().info("Checking for QuickTime Java");
 
-			final ReflectedUniverse r = scifio().qtJava().getUniverse();
-			scifio().qtJava().checkQTLibrary();
+			final ReflectedUniverse r = qtJavaService.getUniverse();
+			qtJavaService.checkQTLibrary();
 
 			log().info("Reading movie dimensions");
 			try {
@@ -250,6 +258,9 @@ public class LegacyQTFormat extends AbstractFormat {
 	 */
 	public static class Reader extends BufferedImageReader<Metadata> {
 
+		@Parameter
+		private QTJavaService qtJavaService;
+
 		// -- Constructor --
 
 		public Reader() {
@@ -264,7 +275,7 @@ public class LegacyQTFormat extends AbstractFormat {
 			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
-			final ReflectedUniverse r = scifio().qtJava().getUniverse();
+			final ReflectedUniverse r = qtJavaService.getUniverse();
 			final Metadata meta = getMetadata();
 
 			// paint frame into image
@@ -284,23 +295,24 @@ public class LegacyQTFormat extends AbstractFormat {
 			plane.populate(meta.get(imageIndex), bimg, planeMin, planeMax);
 			return plane;
 		}
-	}
 
-	public void close(final boolean fileOnly) {
-		try {
-			final ReflectedUniverse r = scifio().qtJava().getUniverse();
+		@Override
+		public void close(final boolean fileOnly) {
+			try {
+				final ReflectedUniverse r = qtJavaService.getUniverse();
 
-			if (r != null && r.getVar("openMovieFile") != null) {
-				r.exec("openMovieFile.close()");
-				if (!fileOnly) {
-					r.exec("m.disposeQTObject()");
-					r.exec("imageTrack.disposeQTObject()");
-					r.exec("QTSession.close()");
+				if (r != null && r.getVar("openMovieFile") != null) {
+					r.exec("openMovieFile.close()");
+					if (!fileOnly) {
+						r.exec("m.disposeQTObject()");
+						r.exec("imageTrack.disposeQTObject()");
+						r.exec("QTSession.close()");
+					}
 				}
 			}
-		}
-		catch (final ReflectException e) {
-			log().debug("Failed to close QuickTime session", e);
+			catch (final ReflectException e) {
+				log().debug("Failed to close QuickTime session", e);
+			}
 		}
 	}
 
@@ -315,6 +327,9 @@ public class LegacyQTFormat extends AbstractFormat {
 		private static final int TIME_SCALE = 600;
 
 		// -- Fields --
+
+		@Parameter
+		private QTJavaService qtJavaService;
 
 		/** Reflection tool for QuickTime for Java calls. */
 		protected ReflectedUniverse r;
@@ -393,9 +408,9 @@ public class LegacyQTFormat extends AbstractFormat {
 			}
 
 			if (r == null) {
-				r = scifio().qtJava().getUniverse();
+				r = qtJavaService.getUniverse();
 			}
-			scifio().qtJava().checkQTLibrary();
+			qtJavaService.checkQTLibrary();
 
 			if (!initialized[imageIndex][(int)planeIndex]) {
 				initialized[imageIndex][(int)planeIndex] = true;
@@ -572,6 +587,12 @@ public class LegacyQTFormat extends AbstractFormat {
 	public static class LegacyQTTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{
+
+		@Parameter
+		private QTJavaService qtJavaService;
+
+		@Parameter
+		private LogService log;
 
 		// -- Translator API Methods --
 

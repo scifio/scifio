@@ -36,7 +36,7 @@
 
 package io.scif.img;
 
-import io.scif.AbstractSCIFIOComponent;
+import io.scif.AbstractSCIFIOPlugin;
 import io.scif.SCIFIOService;
 
 import org.scijava.Context;
@@ -52,7 +52,7 @@ import org.scijava.service.SciJavaService;
  * @author Mark Hiner hinerm@gmail.com
  *
  */
-public abstract class AbstractImgIOComponent extends AbstractSCIFIOComponent {
+public abstract class AbstractImgIOComponent extends AbstractSCIFIOPlugin {
 
 	// -- Fields --
 	
