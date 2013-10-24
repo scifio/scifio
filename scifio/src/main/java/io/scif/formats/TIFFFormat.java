@@ -491,7 +491,14 @@ public class TIFFFormat extends AbstractFormat {
 			if (z * t * (m.isMultichannel() ? 1 : c) == ifds.size()) {
 				m.setAxisLength(Axes.Z, z);
 				m.setAxisLength(Axes.TIME, t);
-				if (m.isMultichannel()) m.setAxisLength(Axes.CHANNEL, c);
+				if (!m.isMultichannel()) {
+					// No multichannel data, so it's fine to use Axes.CHANNEL
+					m.setAxisLength(Axes.CHANNEL, c);
+				}
+				else {
+					// Axes.CHANNEL already in use for RGB planes, so add a new axis
+					m.addAxis(Axes.get("Channel-ImageJ", false), c);
+				}
 			}
 			else if (z * c * t == ifds.size() && m.isMultichannel()) {
 				m.setAxisLength(Axes.Z, z);
