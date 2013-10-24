@@ -1382,13 +1382,13 @@ public class ICSFormat extends AbstractFormat {
 					FormatTools.rasterToPosition(imageIndex, prevPlane, meta);
 
 			if (!gzip) {
-				getStream().seek(metadata.offset + planeIndex * (long) len);
+				getStream().seek(metadata.offset + planeIndex * len);
 			}
 			else {
-				long toSkip = (planeIndex - prevPlane - 1) * (long) len;
+				long toSkip = (planeIndex - prevPlane - 1) * len;
 				if (gzipStream == null || planeIndex <= prevPlane) {
 					FileInputStream fis = null;
-					toSkip = planeIndex * (long) len;
+					toSkip = planeIndex * len;
 					if (metadata.versionTwo) {
 						fis = new FileInputStream(metadata.icsId);
 						fis.skip(metadata.offset);
@@ -1403,7 +1403,7 @@ public class ICSFormat extends AbstractFormat {
 					catch (final IOException e) {
 						// the 'gzip' flag is set erroneously
 						gzip = false;
-						getStream().seek(metadata.offset + planeIndex * (long) len);
+						getStream().seek(metadata.offset + planeIndex * len);
 						gzipStream = null;
 					}
 				}
