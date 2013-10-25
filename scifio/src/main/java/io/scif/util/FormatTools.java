@@ -410,7 +410,7 @@ public final class FormatTools {
 	 * Asserts that the current file is either null, or not, according to the
 	 * given flag. If the assertion fails, an IllegalStateException is thrown.
 	 * 
-	 * @param currentId File name to test.
+	 * @param id File name to test.
 	 * @param notNull True iff id should be non-null.
 	 * @param depth How far back in the stack the calling method is; this name is
 	 *          reported as part of the exception message, if available. Use zero
