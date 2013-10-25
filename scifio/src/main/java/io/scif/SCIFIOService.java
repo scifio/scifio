@@ -39,11 +39,10 @@ package io.scif;
 import org.scijava.service.Service;
 
 /**
- * Marker interface for all SCIFIO services
+ * Marker interface for all SCIFIO {@link Service}s.
  * 
  * @author Mark Hiner
- *
  */
 public interface SCIFIOService extends Service {
-
+	// NB: Marker interface.
 }
