@@ -743,7 +743,7 @@ public class NativeQTFormat extends AbstractFormat {
 		 * 
 		 * @param codec Codec value:
 		 *          <ul>
-		 *          <li>QTWriterCODEC_CINEPAK</li>
+		 *          <li>QTWriter.CODEC_CINEPAK</li>
 		 *          <li>QTWriter.CODEC_ANIMATION</li>
 		 *          <li>QTWriter.CODEC_H_263</li>
 		 *          <li>QTWriter.CODEC_SORENSON</li>
