@@ -773,7 +773,7 @@ public class MicromanagerFormat extends AbstractFormat {
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			final String file =

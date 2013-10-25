@@ -1351,6 +1351,8 @@ public class TIFFFormat extends AbstractFormat {
 			final Metadata meta = getMetadata();
 			final Boolean bigEndian = !meta.get(imageIndex).isLittleEndian();
 			final boolean littleEndian = !bigEndian.booleanValue();
+			final boolean interleaved =
+				meta.get(imageIndex).getInterleavedAxisCount() > 0;
 
 			// Ensure that no more than one thread manipulated the initialized array
 			// at one time.

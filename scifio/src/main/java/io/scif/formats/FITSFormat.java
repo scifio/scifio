@@ -224,7 +224,7 @@ public class FITSFormat extends AbstractFormat {
 		{
 			final byte[] buf = plane.getData();
 
-			FormatTools.checkPlaneParameters(getMetadata(), imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(getMetadata(), imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			getStream().seek(

@@ -39,6 +39,7 @@ package io.scif.img;
 import io.scif.ByteArrayPlane;
 import io.scif.DefaultMetadata;
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Writer;
 import io.scif.common.DataTools;
@@ -456,9 +457,11 @@ public class ImgSaver extends AbstractImgIOComponent {
 				try {
 					final Metadata meta = w.getMetadata();
 
+					final long[] planarLengths =
+						meta.get(imageIndex).getAxesLengthsPlanar();
 					final long[] planarMin =
-						SCIFIOMetadataTools.modifyPlanarXY(imageIndex, meta, 0l, 0l);
-					final long[] planarLengths = meta.get(imageIndex).getAxesLengthsPlanar();
+						SCIFIOMetadataTools.modifyPlanar(imageIndex, meta,
+							new long[planarLengths.length]);
 					final ByteArrayPlane destPlane =
 						new ByteArrayPlane(getContext(), meta.get(imageIndex), planarMin,
 							planarLengths);
@@ -514,12 +517,11 @@ public class ImgSaver extends AbstractImgIOComponent {
 							// TODO: Consider using destPlane.setData(sourcePlane) instead.
 							// Ideally would also make modifications to avoid the initial
 							// allocation overhead of the destPlane's internal buffer.
-							System.arraycopy(sourcePlane, 0, destPlane.getData(), 0,
-								sourcePlane.length);
+							System.arraycopy(sourcePlane, 0, destPlane.getData(), cIndex *
+								sourcePlane.length, sourcePlane.length);
 						}
-						w.savePlane(imageIndex, planeIndex + cIndex, destPlane);
 					}
-
+					w.savePlane(imageIndex, planeIndex, destPlane);
 				}
 				catch (final FormatException e) {
 					throw new ImgIOException(e);
@@ -591,11 +593,26 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		final DefaultMetadata imgplusMeta = new DefaultMetadata();
 
-		//TODO: still accounting for rgb/composite info correctly?
+		// Create fresh metadata in source and destination
 		imgplusMeta.createImageMetadata(imageIndex + 1);
+		meta.createImageMetadata(imageIndex + 1);
 
-		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), axes, axisLengths, pixelType,
-			true, false, false, false, true);
+		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), axes,
+			axisLengths, pixelType, true, false, false, false, true);
+
+		// Adjust for RGB information
+		if (img.getCompositeChannelCount() > 1) {
+			ImageMetadata m = imgplusMeta.get(imageIndex);
+			m.setPlanarAxisCount(3);
+			m.setAxisType(2, Axes.CHANNEL);
+			// Split Axes.CHANNEL if necessary
+			if (m.getAxisLength(Axes.CHANNEL) > img.getCompositeChannelCount()) {
+				m.addAxis(Axes.get("Channel-planes", false), m
+					.getAxisLength(Axes.CHANNEL) /
+					img.getCompositeChannelCount());
+				m.setAxisLength(Axes.CHANNEL, img.getCompositeChannelCount());
+			}
+		}
 
 		// Translate to trigger any format-specific translation
 

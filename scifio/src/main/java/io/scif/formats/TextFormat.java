@@ -426,7 +426,7 @@ public class TextFormat extends AbstractFormat {
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
 
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);

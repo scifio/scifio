@@ -43,6 +43,7 @@ import io.scif.io.RandomAccessOutputStream;
 
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import net.imglib2.meta.Axes;
@@ -94,14 +95,20 @@ public class SCIFIOMetadataTools {
 	}
 
 	/**
-	 * Replaces the X and Y lengths of the provided Metadata's planar axes with
-	 * the specified values.
+	 * Replaces the first values.length of the provided Metadata's planar axes with
+	 * the values.
 	 */
-	public static long[] modifyPlanarXY(final int imageIndex,
-		final Metadata meta, final long x, final long y)
+	public static long[] modifyPlanar(final int imageIndex, final Metadata meta,
+		final long... values)
 	{
-		return modifyPlanar(imageIndex, meta, new AxisValue(Axes.X, x),
-			new AxisValue(Axes.Y, y));
+		AxisValue[] axes = new AxisValue[values.length];
+		List<CalibratedAxis> axisTypes = meta.get(imageIndex).getAxes();
+
+		for (int i = 0; i < axes.length && i < axisTypes.size(); i++) {
+			axes[i] = new AxisValue(axisTypes.get(i).type(), values[i]);
+		}
+
+		return modifyPlanar(imageIndex, meta, axes);
 	}
 
 	/**
@@ -114,11 +121,13 @@ public class SCIFIOMetadataTools {
 		final long[] planarAxes = meta.get(imageIndex).getAxesLengthsPlanar();
 
 		for (final AxisValue v : axes) {
-			planarAxes[meta.get(imageIndex).getAxisIndex(v.getType())] = v.getLength();
+			planarAxes[meta.get(imageIndex).getAxisIndex(v.getType())] =
+				v.getLength();
 		}
 
-	    return planarAxes;
-	  } 
+		return planarAxes;
+	}
+
 	/**
 	 * Casts the provided Metadata object to the generic type of this method.
 	 * <p>

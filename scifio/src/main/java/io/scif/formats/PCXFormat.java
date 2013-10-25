@@ -255,7 +255,7 @@ public class PCXFormat extends AbstractFormat {
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getData();
 
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			getStream().seek(meta.getOffset());

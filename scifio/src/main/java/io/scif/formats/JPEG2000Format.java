@@ -756,7 +756,7 @@ public class JPEG2000Format extends AbstractFormat {
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
 
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			if (meta.getLastIndex().getImageIndex() == imageIndex &&
@@ -865,7 +865,8 @@ public class JPEG2000Format extends AbstractFormat {
 			options.channels = nChannels;
 			options.bitsPerSample = bytesPerPixel * 8;
 			options.littleEndian = littleEndian;
-			options.interleaved = interleaved;
+			options.interleaved =
+				getMetadata().get(imageIndex).getInterleavedAxisCount() > 0;
 			options.lossless =
 				compression == null ||
 					compression.equals(CompressionType.J2K.getCompression());

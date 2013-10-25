@@ -87,9 +87,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	 */
 	protected boolean[][] initialized;
 
-	/** Whether the channels in an RGB image are interleaved. */
-	protected boolean interleaved;
-
 	/** The number of valid bits per pixel. */
 	protected int validBits;
 
@@ -330,8 +327,9 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 				planeIndex, planes));
 		}
 
-		FormatTools.checkPlaneParameters(getMetadata(), imageIndex, planeIndex,
+		FormatTools.checkPlaneForWriting(getMetadata(), imageIndex, planeIndex,
 			buf.length, planeMin, planeMax);
+		FormatTools.assertId(out, true, 0);
 
 		final int pixelType = metadata.get(imageIndex).getPixelType();
 

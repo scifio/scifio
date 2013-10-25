@@ -533,7 +533,7 @@ public class APNGFormat extends AbstractFormat {
 			IOException
 		{
 			final Metadata meta = getMetadata();
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex, -1,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, -1,
 				planeMin, planeMax);
 
 			// If the last processed (cached) plane is requested, return the
@@ -917,6 +917,8 @@ public class APNGFormat extends AbstractFormat {
 
 			final long rgbCCount =
 				getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
+			final boolean interleaved =
+				getMetadata().get(0).getInterleavedAxisCount() > 0;
 
 			final int pixelType = getMetadata().get(imageIndex).getPixelType();
 			final boolean signed = FormatTools.isSigned(pixelType);

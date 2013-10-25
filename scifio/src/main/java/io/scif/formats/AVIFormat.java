@@ -377,7 +377,6 @@ public class AVIFormat extends AbstractFormat {
 				iMeta.setPlanarAxisCount(3);
 			}
 
-			iMeta.setBitsPerPixel(getBmpBitsPerPixel());
 			if (getBmpBitsPerPixel() <= 8) {
 				iMeta.setPixelType(FormatTools.UINT8);
 			}
@@ -850,7 +849,7 @@ public class AVIFormat extends AbstractFormat {
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 			plane.setColorTable(meta.getColorTable(0, 0));
 
@@ -923,8 +922,10 @@ public class AVIFormat extends AbstractFormat {
 						meta.get(imageIndex).getAxisLength(Axes.CHANNEL) : 1);
 
 			getStream().skipBytes(
-				(int)((meta.get(imageIndex).getAxisLength(Axes.X) + pad) * bytes *
-					(meta.get(imageIndex).getAxisLength(Axes.Y) - h - y)));
+				(int) ((meta.get(imageIndex).getAxisLength(Axes.X) + pad) *
+					(meta.getBmpBitsPerPixel() / 8) * (meta.get(imageIndex)
+					.getAxisLength(Axes.Y) -
+					h - y)));
 
 			if (meta.get(imageIndex).getAxisLength(Axes.X) == w && pad == 0) {
 				for (int row = 0; row < meta.get(imageIndex).getAxisLength(Axes.Y); row++) {
@@ -952,8 +953,7 @@ public class AVIFormat extends AbstractFormat {
 			else {
 				int skip =
 					(int) FormatTools.getPlaneSize(meta, (int) meta.get(imageIndex)
-						.getAxisLength(Axes.X) -
-						w - x + pad, 1, imageIndex);
+						.getAxisLength(Axes.X) - w - x + pad, 1, imageIndex);
 				if ((meta.get(imageIndex).getAxisLength(Axes.X) + pad) *
 					meta.get(imageIndex).getAxisLength(Axes.Y) *
 					meta.get(imageIndex).getAxisLength(Axes.CHANNEL) > maxBytes)
@@ -962,7 +962,7 @@ public class AVIFormat extends AbstractFormat {
 				}
 				for (int i = h - 1; i >= 0; i--) {
 					getStream().skipBytes(x * (meta.getBmpBitsPerPixel() / 8));
-					getStream().read(buf, (i - y) * scanline, scanline);
+					getStream().read(buf, i * scanline, scanline);
 					if (meta.getBmpBitsPerPixel() == 24) {
 						for (int j = 0; j < w; j++) {
 							final byte r = buf[i * scanline + j * 3 + 2];
@@ -1131,6 +1131,8 @@ public class AVIFormat extends AbstractFormat {
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
+			final boolean interleaved =
+				meta.get(imageIndex).getInterleavedAxisCount() > 0;
 
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
 			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax)) {

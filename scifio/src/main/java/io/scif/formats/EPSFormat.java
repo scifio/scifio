@@ -347,7 +347,7 @@ public class EPSFormat extends AbstractFormat {
 								w = (int) planeMax[xAxis],
 								h = (int) planeMax[yAxis];
 
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			if (meta.isTiff()) {
@@ -488,6 +488,8 @@ public class EPSFormat extends AbstractFormat {
 		{
 
 			final byte[] buf = plane.getBytes();
+			final boolean interleaved =
+				getMetadata().get(imageIndex).getInterleavedAxisCount() > 0;
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
 			final int xAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.Y);

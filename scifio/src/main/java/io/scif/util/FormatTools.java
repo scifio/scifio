@@ -37,6 +37,7 @@
 package io.scif.util;
 
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
@@ -410,22 +411,22 @@ public final class FormatTools {
 	 * Asserts that the current file is either null, or not, according to the
 	 * given flag. If the assertion fails, an IllegalStateException is thrown.
 	 * 
-	 * @param currentId File name to test.
+	 * @param id File name to test.
 	 * @param notNull True iff id should be non-null.
 	 * @param depth How far back in the stack the calling method is; this name is
 	 *          reported as part of the exception message, if available. Use zero
 	 *          to suppress output of the calling method name.
 	 */
-	public static void assertId(final String currentId, final boolean notNull,
+	public static void assertId(final Object id, final boolean notNull,
 		final int depth)
 	{
 		String msg = null;
-		if (currentId == null && notNull) {
+		if (id == null && notNull) {
 			msg = "Current file should not be null; call setId(String) first";
 		}
-		else if (currentId != null && !notNull) {
+		else if (id != null && !notNull) {
 			msg =
-				"Current file should be null, but is '" + currentId +
+				"Current file should be null, but is '" + id +
 					"'; call close() first";
 		}
 		if (msg == null) return;
@@ -481,15 +482,29 @@ public final class FormatTools {
 	}
 
 	/**
-	 * Convenience method for checking that the plane number, tile size and buffer
-	 * sizes are all valid for the given reader. If 'bufLength' is less than 0,
-	 * then the buffer length check is not performed.
+	 * As {@link #checkPlaneForWriting} but also asserts that the Metadata has a
+	 * non-null source attached. If no exception is throwin, these parameters are
+	 * suitable for reading.
 	 */
-	public static void checkPlaneParameters(final Metadata m, final int imageIndex,
+	public static void checkPlaneForReading(final Metadata m,
+		final int imageIndex, final long planeIndex, final int bufLength,
+		final long[] planeMin, final long[] planeMax) throws FormatException
+	{
+		assertId(m.getSource(), true, 2);
+		checkPlaneForWriting(m, imageIndex, planeIndex, bufLength, planeMin,
+			planeMax);
+	}
+
+	/**
+	 * Convenience method for checking that the plane number, tile size and buffer
+	 * sizes are all valid for the given Metadata. If 'bufLength' is less than 0,
+	 * then the buffer length check is not performed. If no exception is thrown,
+	 * these parameters are suitable for writing.
+	 */
+	public static void checkPlaneForWriting(final Metadata m, final int imageIndex,
 		final long planeIndex, final int bufLength, final long[] planeMin,
 		final long[] planeMax) throws FormatException
 	{
-		assertId(m.getSource().getFileName(), true, 2);
 		checkPlaneNumber(m, imageIndex, planeIndex);
 		checkTileSize(m, planeMin, planeMax, imageIndex);
 		if (bufLength >= 0) checkBufferSize(m, bufLength, planeMax, imageIndex);
@@ -577,7 +592,22 @@ public final class FormatTools {
 	public static long getPlaneSize(final Metadata m, final int width,
 		final int height, int imageIndex)
 	{
-		return getPlaneSize(m, new long[2], new long[]{width, height}, imageIndex);
+		ImageMetadata iMeta = m.get(imageIndex);
+		long[] planeMin = new long[iMeta.getPlanarAxisCount()];
+		long[] planeMax = new long[iMeta.getPlanarAxisCount()];
+		for (int i = 0; i < planeMax.length; i++) {
+			AxisType type = iMeta.getAxis(i).type();
+			if (type == Axes.X) {
+				planeMax[i] = width;
+			}
+			else if (type == Axes.Y) {
+				planeMax[i] = height;
+			}
+			else {
+				planeMax[i] = iMeta.getAxisLength(type);
+			}
+		}
+		return getPlaneSize(m, planeMin, planeMax, imageIndex);
 	}
 
 	/** Returns the size in bytes of a plane with the given minima and maxima. */

@@ -621,7 +621,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],
 								h = (int) planeMax[yAxis];
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			final IFD firstIFD = ifds.get(0);

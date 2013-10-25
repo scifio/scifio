@@ -172,7 +172,7 @@ public class JPEGTileFormat extends AbstractFormat {
 								y = (int) planeMin[yAxis],
 								w = (int) planeMax[xAxis],
 								h = (int) planeMax[yAxis];
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			final int c = (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL);

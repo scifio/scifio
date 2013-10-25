@@ -492,7 +492,7 @@ public class NRRDFormat extends AbstractFormat {
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
 
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			// TODO : add support for additional encoding types

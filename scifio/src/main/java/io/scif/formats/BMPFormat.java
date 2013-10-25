@@ -375,7 +375,7 @@ public class BMPFormat extends AbstractFormat {
 			final int sizeY = (int)meta.get(imageIndex).getAxisLength(Axes.Y);
 			final int sizeC = (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
-			FormatTools.checkPlaneParameters(meta, imageIndex, planeIndex,
+			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			if (compression != RAW &&
