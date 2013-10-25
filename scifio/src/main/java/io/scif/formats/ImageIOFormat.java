@@ -248,11 +248,9 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			final Metadata dest)
 		{
 			dest.createImageMetadata(1);
-			dest.get(0).setAxisLength(Axes.X, source.get(0).getAxisLength(Axes.X));
-			dest.get(0).setAxisLength(Axes.Y, source.get(0).getAxisLength(Axes.Y));
-			dest.get(0).setAxisLength(Axes.CHANNEL,
-				source.get(0).getAxisLength(Axes.CHANNEL));
-			dest.get(0).setPixelType(source.get(0).getPixelType());
+			ImageMetadata imgMeta = source.get(0);
+			dest.setImg(AWTImageTools.blankImage(imgMeta, imgMeta
+				.getAxesLengthsPlanar(), imgMeta.getPixelType()));
 		}
 	}
 }
