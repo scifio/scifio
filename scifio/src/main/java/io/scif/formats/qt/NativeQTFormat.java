@@ -711,24 +711,29 @@ public class NativeQTFormat extends AbstractFormat {
 
 		private int numWritten = 0;
 
-		// -- Constructor --
+		// -- Writer API methods --
 
-		public Writer() {
-			if (qtJavaService.canDoQT()) {
-				compressionTypes =
-					new String[] {
-						CompressionType.UNCOMPRESSED.getCompression(),
-						// NB: Writing to Motion JPEG-B with QTJava seems to be broken.
-						/*"Motion JPEG-B",*/
-						CompressionType.CINEPAK.getCompression(),
-						CompressionType.ANIMATION.getCompression(),
-						CompressionType.H_263.getCompression(),
-						CompressionType.SORENSON.getCompression(),
-						CompressionType.SORENSON_3.getCompression(),
-						CompressionType.MPEG_4.getCompression() };
+		@Override
+		public String[] getCompressionTypes() {
+			if (compressionTypes == null) {
+				if (qtJavaService.canDoQT()) {
+					compressionTypes =
+						new String[] {
+							CompressionType.UNCOMPRESSED.getCompression(),
+							// NB: Writing to Motion JPEG-B with QTJava seems to be broken.
+							/*"Motion JPEG-B",*/
+							CompressionType.CINEPAK.getCompression(),
+							CompressionType.ANIMATION.getCompression(),
+							CompressionType.H_263.getCompression(),
+							CompressionType.SORENSON.getCompression(),
+							CompressionType.SORENSON_3.getCompression(),
+							CompressionType.MPEG_4.getCompression() };
+				}
+				else compressionTypes =
+					new String[] { CompressionType.UNCOMPRESSED.getCompression() };
 			}
-			else compressionTypes =
-				new String[] { CompressionType.UNCOMPRESSED.getCompression() };
+
+			return super.getCompressionTypes();
 		}
 
 		// -- QTWriter API methods --
