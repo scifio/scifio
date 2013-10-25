@@ -103,7 +103,7 @@ public class LegacyQTFormat extends AbstractFormat {
 		// -- Constants --
 
 		public static final String CNAME =
-			"io.scif.formats.LegacyQTFormat$Metadata";
+			"io.scif.formats.qt.LegacyQTFormat$Metadata";
 
 		// -- Fields --
 

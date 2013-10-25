@@ -451,7 +451,9 @@ public class NativeQTFormat extends AbstractFormat {
 					}
 					else {
 						log().debug("\tAbsent: " + f);
-						f = new Location(getContext(), id + "/..namedfork/rsrc");
+						f =
+							new Location(getContext(), id + File.separator + ".." +
+								File.separator + "namedfork" + File.separator + "rsrc");
 						if (f.exists()) {
 							log().debug("\t Found: " + f);
 							cachedStream = stream;
@@ -576,10 +578,11 @@ public class NativeQTFormat extends AbstractFormat {
 						(int) meta.get(imageIndex).getAxisLength(Axes.Y) * pad];
 
 				for (int row = 0; row < meta.get(imageIndex).getAxisLength(Axes.Y); row++) {
-					System.arraycopy(meta.getPrevPixels(), row *
-						(bytes * (int) meta.get(imageIndex).getAxisLength(Axes.X) + pad), t,
-						row * (int) meta.get(imageIndex).getAxisLength(Axes.X) * bytes,
-						(int) meta.get(imageIndex).getAxisLength(Axes.X) * bytes);
+					int sourceIndex = row *
+							(bytes * (int) meta.get(imageIndex).getAxisLength(Axes.X) + pad);
+					int destIndex = row * (int) meta.get(imageIndex).getAxisLength(Axes.X) * bytes;
+					int length = (int) meta.get(imageIndex).getAxisLength(Axes.X) * bytes;
+					System.arraycopy(meta.getPrevPixels(), sourceIndex, t, destIndex, length);
 				}
 			}
 
@@ -822,8 +825,10 @@ public class NativeQTFormat extends AbstractFormat {
 				}
 			}
 
-			final int x = (int) planeMin[0], y = (int) planeMin[1], w =
-					(int) planeMax[0], h = (int) planeMax[1];
+			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
+			final int x = (int) planeMin[xIndex], y = (int) planeMin[yIndex], w =
+					(int) planeMax[xIndex], h = (int) planeMax[yIndex];
 
 			out.seek(offsets.get((int)planeIndex) + y * (nChannels * width + pad));
 
@@ -1300,7 +1305,8 @@ public class NativeQTFormat extends AbstractFormat {
 					if (atomType.equals("mdat")) {
 						// we've found the pixel data
 						meta.setPixelOffset(stream.getFilePointer());
-						meta.setPixelBytes(atomSize);
+						// "size" includes the size and offset bytes
+						meta.setPixelBytes(atomSize - 8);
 
 						if (meta.getPixelBytes() > (stream.length() - meta.getPixelOffset()))
 						{
