@@ -37,13 +37,11 @@
 package io.scif.img.converters;
 
 import io.scif.Reader;
+import io.scif.SCIFIOPlugin;
 import io.scif.img.ImgOptions;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
-import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.SingletonPlugin;
 
 /**
@@ -52,9 +50,7 @@ import org.scijava.plugin.SingletonPlugin;
  * 
  * @author Mark Hiner
  */
-public interface PlaneConverter extends Contextual, Prioritized, HasPluginInfo,
-	SingletonPlugin
-{
+public interface PlaneConverter extends SCIFIOPlugin, SingletonPlugin {
 
 	/**
 	 * @param reader Reader that was used to open the source plane

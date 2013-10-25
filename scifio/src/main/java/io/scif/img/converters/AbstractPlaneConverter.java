@@ -36,15 +36,15 @@
 
 package io.scif.img.converters;
 
-import org.scijava.plugin.SortablePlugin;
+import io.scif.AbstractSCIFIOPlugin;
 
 /**
  * Abstract superclass for {@link PlaneConverter} implementations.
  * 
  * @author Mark Hiner
  */
-public abstract class AbstractPlaneConverter extends SortablePlugin implements
-	PlaneConverter
+public abstract class AbstractPlaneConverter extends AbstractSCIFIOPlugin
+	implements PlaneConverter
 {
-
+	// NB: No implementation needed.
 }
