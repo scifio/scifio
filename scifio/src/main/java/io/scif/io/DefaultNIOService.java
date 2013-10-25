@@ -63,16 +63,8 @@ public class DefaultNIOService extends AbstractService implements NIOService {
 	private LogService log;
 
 	/** Whether or not we are to use memory mapped I/O. */
-	private boolean useMappedByteBuffer = false;
-
-	// -- Service API methods --
-
-	@Override
-	public void initialize() {
-		final String mapping = System.getProperty("mappedBuffers");
-		useMappedByteBuffer = Boolean.parseBoolean(mapping);
-		log.debug("Using mapped byte buffer? " + useMappedByteBuffer);
-	}
+	private final boolean useMappedByteBuffer = Boolean.parseBoolean(System
+		.getProperty("mappedBuffers"));
 
 	// -- NIOService API methods --
 
@@ -80,6 +72,8 @@ public class DefaultNIOService extends AbstractService implements NIOService {
 	public ByteBuffer allocate(final FileChannel channel, final MapMode mapMode,
 		final long bufferStartPosition, final int newSize) throws IOException
 	{
+		log.debug("NIO: allocate: mapped=" + useMappedByteBuffer + ", start=" +
+			bufferStartPosition + ", size=" + newSize);
 		if (useMappedByteBuffer) {
 			return allocateMappedByteBuffer(channel, mapMode, bufferStartPosition,
 				newSize);
