@@ -37,6 +37,7 @@
 package io.scif.util;
 
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
@@ -591,7 +592,22 @@ public final class FormatTools {
 	public static long getPlaneSize(final Metadata m, final int width,
 		final int height, int imageIndex)
 	{
-		return getPlaneSize(m, new long[2], new long[]{width, height}, imageIndex);
+		ImageMetadata iMeta = m.get(imageIndex);
+		long[] planeMin = new long[iMeta.getPlanarAxisCount()];
+		long[] planeMax = new long[iMeta.getPlanarAxisCount()];
+		for (int i = 0; i < planeMax.length; i++) {
+			AxisType type = iMeta.getAxis(i).type();
+			if (type == Axes.X) {
+				planeMax[i] = width;
+			}
+			else if (type == Axes.Y) {
+				planeMax[i] = height;
+			}
+			else {
+				planeMax[i] = iMeta.getAxisLength(type);
+			}
+		}
+		return getPlaneSize(m, planeMin, planeMax, imageIndex);
 	}
 
 	/** Returns the size in bytes of a plane with the given minima and maxima. */
