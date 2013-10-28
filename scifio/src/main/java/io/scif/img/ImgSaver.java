@@ -449,10 +449,11 @@ public class ImgSaver extends AbstractImgIOComponent {
 			}
 
 			// iterate over each plane
-			for (int planeIndex = 0; planeIndex < planeCount; planeIndex +=
-				rgbChannelCount)
+			for (int planeIndex = 0; planeIndex < planeCount / rgbChannelCount; planeIndex++)
 			{
-
+				statusService.showStatus(planeIndex, planeCount / rgbChannelCount,
+					"Saving plane " + (planeIndex + 1) + "/" +
+						(planeCount / rgbChannelCount));
 				// save bytes
 				try {
 					final Metadata meta = w.getMetadata();
@@ -468,10 +469,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 					for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++)
 					{
-						statusService.showStatus(planeIndex, planeCount, "Saving plane " +
-								(planeIndex + cIndex + 1) + "/" + (planeCount));
 						final Object curPlane =
-							planarImg.getPlane(cIndex + planeIndex).getCurrentStorageArray();
+							planarImg.getPlane(cIndex + (planeIndex * rgbChannelCount))
+								.getCurrentStorageArray();
 
 						// Convert current plane if necessary
 						if (arrayType == int[].class) {
