@@ -449,11 +449,19 @@ public class ImgSaver extends AbstractImgIOComponent {
 			}
 
 			// iterate over each plane
-			for (int planeIndex = 0; planeIndex < planeCount / rgbChannelCount; planeIndex++)
+			final long planeOutCount = w.getMetadata().get(imageIndex).getPlaneCount();
+
+			if (planeOutCount < planeCount / rgbChannelCount) {
+				// Warn that some planes were truncated (e.g. going from 4D format to 3D)
+				statusService.showStatus(0, 0, "Source dataset contains: " +
+					planeCount + " planes, but writer format only supports: " +
+					rgbChannelCount * planeOutCount, true);
+			}
+
+			for (int planeIndex = 0; planeIndex < planeOutCount; planeIndex++)
 			{
-				statusService.showStatus(planeIndex, planeCount / rgbChannelCount,
-					"Saving plane " + (planeIndex + 1) + "/" +
-						(planeCount / rgbChannelCount));
+				statusService.showStatus(planeIndex, (int)planeOutCount, "Saving plane " +
+					(planeIndex + 1) + "/" + planeOutCount);
 				// save bytes
 				try {
 					final Metadata meta = w.getMetadata();
