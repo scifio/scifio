@@ -638,9 +638,9 @@ public class APNGFormat extends AbstractFormat {
 			dis.close();
 
 			// Recover first plane
-			openPlane(imageIndex, 0, new long[] { 0l, 0l }, new long[] {
-				getMetadata().get(imageIndex).getAxisLength(Axes.X),
-				getMetadata().get(imageIndex).getAxisLength(Axes.Y) });
+			final long[] firstPlaneLengths = meta.get(imageIndex).getAxesLengthsPlanar();
+			final long[] firstPlaneOffsets = new long[firstPlaneLengths.length];
+			openPlane(imageIndex, 0, firstPlaneOffsets, firstPlaneLengths);
 
 			// paste current image onto first plane
 			// NB: last plane read was the first plane
