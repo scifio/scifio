@@ -186,8 +186,8 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	@Override
 	public void initialize() {
 		db =
-			DBMaker.newTempFileDB().closeOnJvmShutdown().cacheDisable()
-				.asyncWriteDisable().writeAheadLogDisable()
+			DBMaker.newTempFileDB().deleteFilesAfterClose().closeOnJvmShutdown()
+				.cacheDisable().asyncWriteDisable().writeAheadLogDisable()
 				.randomAccessFileEnableIfNeeded().deleteFilesAfterClose().make();
 	}
 
