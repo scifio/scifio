@@ -1,0 +1,6 @@
+title: Improve thumbnail support
+body:
+Bio-Formats always had a default thumbnail size of 128x128. It would be nice to take a look at thumbnail support and try to make it more robust and scalable.
+assignee: null
+milestone: 0.8.0
+comments:

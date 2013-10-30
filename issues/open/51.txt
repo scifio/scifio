@@ -1,0 +1,12 @@
+title: Make parsing cancelable
+body:
+Need a flag that is polled to see if another thread has canceled the parse, and abort if so.
+assignee: null
+milestone: 0.8.0
+comments:
+Unfortunately that rather conflicts with the goal of issue #38: to make parsers stateless (and hence thread-safe). We'll need to choose a side of the fence, there.
+I think there could be a way to do this without introducing state to the parser itself.
+
+We could, for example, put the state in a service. e.g., ParserControlService has the flag, Parsers poll the service periodically while parsing and stop if instructed.
+
+If the service had a single state flag that would be the simplest, but we could also have job numbers, or maps of Parser instances to an enabled/disabled flag.

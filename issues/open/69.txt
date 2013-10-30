@@ -1,0 +1,46 @@
+title: Improve SCIFIOCellCache Performance
+body:
+Currently, SCIFIOCells and the SCIFIOCellCache override the finalize method to perform their caching. This is a dangerous feature, and can lead to memory issues as we don't block other functionality when serializing... so you can still run into memory issues.
+
+One step towards eliminating this finalize overriding (which should really never be done) would be in migrating to [phantom references](http://resources.ej-technologies.com/jprofiler/help/doc/indexRedirect.html?http&&&resources.ej-technologies.com/jprofiler/help/doc/helptopics/config/finalizers.html) as suggested by @dietzc 
+
+This would effectively allow us to get around the need to reference count to determine when a cell should be serialized.
+
+There is one roadblock to this conversion that I can think of - a chicken and egg problem in that you don't know a cell is ready for cleanup until it is added to its phantom queue, when there are no references to it.. which means it has to be removed from the in-memory cache first.
+
+This could lead to situations where a cell is removed from the in-memory cache but still in use. Then, if that cell is requested, it has to be re-loaded because it's not in the memory or disk cache, and you now have duplication and diverging state - as each cell might be modified differently.
+
+
+assignee: User:hinerm
+milestone: 0.8.0
+comments:
+looking at the [reference](http://docs.oracle.com/javase/7/docs/api/java/lang/ref/package-summary.html#reachability) javadoc, I think we may be able to use the same logic of a Phantom reference queue with a Weak/SoftReference queue.
+
+If the in-memory cache only keeps weak references to objects, then if we register each cell with a weak reference queue, when we want to clean the cache we should be able to poll that queue and see what is actually a weak reference (implying no strong refs outside the SCIFIOCellCache). These items are then safe for serialization and removal from the memory cache.
+
+Note that cache functionality should be blocked during serialization.
+
+This assumes that the update of reference queues is dynamic, and references are added AND removed as appropriate when the status of their referrent is changed. I think this is the case, as items aren't added to the reference queues until they are finalized..
+
+So we could use a similar process to the mentioned WeakHashMap, where on cache access we would just check the referencequeue in which the SCIFIOCell references were registered, and if it has items block until they are empty.
+May be related to issue #68 
+Work will be on https://github.com/scifio/scifio/tree/cell-cache-fixes, which is branched off the N-D work to ensure compatibility.
+
+
+Also from @dietzc  - https://github.com/dietzc/scifio/tree/serialization_tests
+
+> I did some more tests with the SCIFIOCellImg to provide you more feedback. A very simple program opens an
+> image (approx. 80MB size, 640x489x300, VM Xmx50m) and iterates over every pixel + changing the pixel 
+> value. A second cursor simply reads out the image again.
+>
+>While doing so, it nearly takes forever in the first loop (changing each pixel value). To test why this happens, I 
+> implemented the Externalizeable interface (instead of Serializable, which is actually very slow anyway) in 
+> SCIFIOCell to look how often the read() method for de-serialization is called. This was over 6000 times, which is 
+> too much. After writing each pixel, I read the pixels in again. Here I directly get the OutOfMemoryError. You can 
+> find my very simple tests in my fork of SCIFIO (https://github.com/dietzc/scifio.git) under the branch "serialization-
+> tests".
+>
+> The class SCIFIOCellImgTest.java contains the super simple test program. The other changes you can see in my 
+> commits. Please note: This is not a very beautiful implementation (e.g. new 
+> ByteArray(0).getClass().getCanonicalName() must be replaced in SCIFIOCell read/write with the type of your test 
+> image), just to demonstrate some behavior ;-)

@@ -1,0 +1,9 @@
+title: Eliminate ImageMetadata's superfluous planeCount concept
+body:
+`ImageMetadata` has `getPlaneCount` and `setPlaneCount`, even though you can glean that information from other metadata. So it is redundant, and causes problems if you forget to populate it. I know because I found out the hard way. :wink:
+
+We may want to keep `getPlaneCount` but if so, it should always be automatically computed from the product of non-planar dimensional axis lengths.
+assignee: null
+milestone: null
+comments:
+This should be taken care of in the N-dimensional refactoring.. I believe I removed these methods for exactly these reasons. The equivalent information can be retrieved from ImageMetadata by requesting the non-planar axis lengths.

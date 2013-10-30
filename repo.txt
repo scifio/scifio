@@ -1,0 +1,23 @@
+name: scifio
+language: Java
+description: SCientific Image Format Input & Output: a flexible, extensible framework for image I/O. *EXPERIMENTAL* All API is subject to change, so depend at your own risk! See also @openmicroscopy/bioformats.
+homepage: http://scif.io/
+master: master
+created on: Mon May 20 09:54:47 CDT 2013
+collaborators:
+	id: 1420587
+	id: 660469
+	id: 556626
+	id: 385072
+	id: 622070
+	id: 487082
+	id: 25432
+	id: 109998
+	id: 88113
+	id: 888758
+	id: 1267983
+	id: 1267990
+	id: 1406788
+	id: 127790
+	id: 1123809
+	id: 1267802

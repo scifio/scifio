@@ -1,0 +1,13 @@
+title: ImgSaver: add support for saving in RGB color mode
+body:
+It is not possible to export an image as RGB color using `ImgSaver`. The channels are always separated and saved as individual planes. It would be ideal if `ImgSaver` looked at the `ImgPlus` metadata (currently `getCompositeChannelCount()` though that API may change before the `1.0.0` release) and respected that setting to decide whether to save in RGB color mode when the format supports it.
+
+Thanks to Colin Gross for [reporting this problem](https://groups.google.com/d/msg/fiji-devel/g6Z2Xz2vAzY/dxGS9AULwOcJ).
+assignee: null
+milestone: 1.0.0 - Official Release
+comments:
+We need some thorough regression tests to confirm, but I think I did this as part of the writer fixes (and some special case fixes today)
+
+Currently in ImgSaver, if there are N composited channels (from ImgPlus.getCompositeChannelCount()) then every N planes are composited together and passed to the writer for saving.
+
+Tested converting (non)interleaved and (non)indexed RGB images to all of SCIFIO's writers and it all seems to be working nicely on the current master.

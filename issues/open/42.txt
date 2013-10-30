@@ -1,0 +1,8 @@
+title: SCIFIO tests should limit the # of contexts created
+body:
+Currently, all the different "provider" type tests make a new context, which results in a ton of context creation. This isn't a huge performance issue because of the lazy loading of many things in the context, but it's annoying and makes it impossible to get any actual output from these tests while running.
+assignee: null
+milestone: 0.8.0
+comments:
+    System.setProperty("scijava.log.level", "warn");
+    System.setProperty("scijava.log.level:" + MyTest.class.getName(), "debug");

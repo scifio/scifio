@@ -1,0 +1,9 @@
+title: Avi fixes
+body:
+Fixes the AVI caching logic to be more careful when it uses a cached plane (e.g. if the plane's extents are less than those requested).
+
+NB: depends on the N-D branch being merged first
+assignee: null
+milestone: null
+comments:
+merged via command line.

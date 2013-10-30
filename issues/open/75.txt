@@ -1,0 +1,10 @@
+title: Enhance Handle usage
+body:
+Basically we want to get rid of Location mapping and re-think how Handles are used, and make them all plugins (currently just StreamHandles are plugins).
+
+VirtualHandle was added as a intermediate solution until this ticket is resolved.
+
+@ctrueden  - flesh this out with what you would like to see for the final Handle usage, and move it to 0.8.0 if desired.
+assignee: null
+milestone: 0.9.0
+comments:

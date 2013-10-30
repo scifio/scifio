@@ -1,0 +1,6 @@
+title: Iterate on the Plane design
+body:
+I think the Plane class has unnecessary methods and functionality, and may be unintuitive. Review its construction before release.
+assignee: null
+milestone: 1.0.0 - Official Release
+comments:

@@ -1,0 +1,7 @@
+title: Make tools a plugin
+body:
+e.g., SCIFIO tools, and then the current BF tools, should be some sort of extensible, discoverable plugin.
+assignee: null
+milestone: 0.8.0
+comments:
+Really looking forward to this!

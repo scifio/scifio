@@ -1,0 +1,6 @@
+title: Rename FileStitcher to FileGrouper
+body:
+This will avoid confusion with the increasingly common tile stitching that people want to do. E.g.: http://fiji.sc/Stitching. It will also reconcile the API with the "Group files with similar names" option which we present to end users.
+assignee: null
+milestone: 0.8.0
+comments:

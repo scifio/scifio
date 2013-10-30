@@ -1,0 +1,18 @@
+title: DefaultEnabled test fails on Windows
+body:
+On Windows, (win 8, running mvn clean test from cygwin command line) the DefaultEnabled FilterTest fails. It seems that the annotated DefaultEnabled filter class is not discovered.
+assignee: null
+milestone: null
+comments:
+note that this only happens when compiled from the command line (e.g. mvn clean test)
+
+If I clean on the command line and then rebuild from eclipse, the test passes. (and passes when mvn test is run from the command line)
+How about adding a SCIFIO Jenkins job bound to the Windows node?
+Good idea.
+Added here: http://jenkins.imagej.net/view/SCIFIO/job/SCIFIO-windows/
+
+Given that the test is passing on windows I decided to dig a little more.
+Tried using maven 2 (had been using maven 3).. same error.
+Tried cleaning and testing from command line instead of cygwin.. got a whole different set of errors.
+
+Anyway given that it's working on jenkins I'm going to stop investigating.

@@ -1,0 +1,8 @@
+title: Evaluate falseColor/indexed flags
+body:
+We currently have separate falseColor and indexed flags in ImageMetadata, but there are combinations of these flags that don't make sense (indexed = false, isFalseColor = true).
+
+It may make more sense to have a tri-state enum for these flags.
+assignee: null
+milestone: 0.8.0
+comments:

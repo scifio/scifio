@@ -1,0 +1,7 @@
+title: Handle sub-resolution...
+body:
+Need to make a decision for how we're going to handle sub-resolutions that exist in Bio-Formats. Should probably be something that is format specific and not global to Metadata storage.
+assignee: null
+milestone: 0.9.0
+comments:
+I think the general concept of "sub-resolutions" is useful. Essentially, `Image`s can be part of some hierarchical data structure describing this. This is already true for OME's SPW ("Screen Plate Well") model for high content screening. There is no reason we can't have a way to express relationships like this in the metadata. We just need to carefully consider the data structure.

@@ -1,0 +1,10 @@
+title: MapDBCache: delete temporary files after close
+body:
+This developer noticed an abundance of mapdb-temp* files in his /tmp/
+directory. It is most likely that those files cannot be reused after
+the MapDBCache is shut down, so let's delete them after use.
+
+Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
+assignee: null
+milestone: null
+comments:

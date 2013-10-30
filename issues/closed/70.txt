@@ -1,0 +1,16 @@
+title: ICSFormat metadata parsing clashes with values
+body:
+The ICSFormat parsing used to check each individual word in a potential key against a master list of possible values. This clashed with values that also contained these potential keys..
+
+e.g. "history labels t x y" should be parsed as:
+"history labels" : "t x y"
+
+but because "t" is a potential key, in "parameter t", the above string is parsed:
+"history labels t" : "x y"
+
+which caused Gray ICS data to be read improperly.
+
+This was resolved in https://github.com/scifio/scifio/tree/ics_fixes by parsing metadata keys in a tree fashion, where proper category hierarchies are established.
+assignee: User:hinerm
+milestone: 0.7.0 - N-Dimensionality
+comments:

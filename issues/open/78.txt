@@ -1,0 +1,13 @@
+title: Review Thumbnail API
+body:
+from @ctrueden 
+Let's rethink the thumbnail API. It would be nice if SCIFIO could report not only that a particular image is a thumbnail of another image, but which image it is a thumbnail of. To support that would be as simple as changing the `isThumbnail` method to something like `long thumbnailOf`, which returns the `imageIndex` of the image being thumbnailed.
+
+However, there is a very related phenomenon of multi-resolution data in general. Bio-Formats had a multi-resolution API jury rigged on top of it, which would be nice to reconcile with the older (and much more limited) thumbnail API, since the latter is really just a very special case of the former.
+
+So really what we need is a hierarchy of image indices that convey the order. Would also be nice to be able to ask e.g. "which other image indices are lower resolution versions of me?" I haven't studied the existing Bio-Formats multiresolution API so couldn't say for sure whether this sort of thing is possible and/or easy.
+
+One other thing to check is whether there are any formats that are multi-image, where one or more of said images are thumbnail images, and the linkage back to the full-resolution image is unavailable. I.e.: you don't know which image is being thumbnailed. If there are formats like that, our API may want to be able to express that as well, so you can state "this is a thumbnail of another image, but I don't know which one."
+assignee: null
+milestone: 0.8.0
+comments:

@@ -1,0 +1,10 @@
+name: SCientific Image Format Input & Output
+email: null
+location: null
+avatar: https://2.gravatar.com/avatar/dfe2ed9dd29f71c35d6762258a0d708a?d=https%3A%2F%2Fidenticons.github.com%2Fe1358549545c84d1e1829dc531bba27c.png&r=x
+blog: http://scif.io/
+company: null
+created on: 2013-05-10T16:35:10Z
+followed by:
+follows:
+organizations:

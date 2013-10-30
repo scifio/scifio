@@ -1,0 +1,9 @@
+title: TIFFFormat doesn't parse imagej comments correctly
+body:
+Reported by @dietzc 
+
+The TIFFFormat is not using ImageJ comments properly. In a sample dataset where the first IFD does not report 3 channels but there is a "channels=3" ImageJ comment present, the resulting image has 1 channel in SCIFIO, but 3 in Bio-Formats.
+assignee: User:hinerm
+milestone: 0.8.0
+comments:
+Fixed in https://github.com/scifio/scifio/commit/4f4b3702986d657c68df56cd4834533cd70c76cd

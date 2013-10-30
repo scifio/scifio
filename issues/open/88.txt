@@ -1,0 +1,17 @@
+title: Clean up AWT dependencies
+body:
+Originally in Bio-Formats we tried very hard to isolate all `java.awt` references into a single optional `loci.formats.gui` package. Unfortunately, over time, AWT references have creeped in to the code in many places since we have no compile time checks or runtime tests to catch it.
+
+We need to:
+
+1. Purge or isolate as many of these `java.awt` references as possible from the code.
+2. Come up with some way of automatically validating the current codebase against this standard once the work has been completed. This validation mechanism would also be of use in other projects since e.g. ImageJ2 has a similar requirement.
+
+In an ideal world, `git grep java.awt` would match only the `io.scif.gui` package or similar isolated location. Also:
+
+* We should consider whether `io.scif.gui` really should be part of the same component as core SCIFIO.
+* We should stop using `ReflectedUniverse` for AWT references; see issue #87.
+
+assignee: null
+milestone: 1.0.0 - Official Release
+comments:

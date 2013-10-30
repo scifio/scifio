@@ -1,0 +1,13 @@
+title: Remove duplicate API in Metadata
+body:
+Currently, the Metadata class duplicates all the API in ImageMetadata but simply adds an "imageIndex" parameter.
+
+The only reason I can think for this was to allow shielding of the ImageMetadata object to avoid direct modification, but it is currently possible to access ImageMetadata directly anyway, so this separation is unnecessary and creates an extremely frustrating synchronization requirement.
+
+Therefore we should remove all duplicate methods and simply refactor the API to be Metadata.get(i).fooMethod.
+
+The MetadataWrappers in FilterMetadata can be similarly refactored.
+assignee: User:hinerm
+milestone: 0.8.0
+comments:
+see https://github.com/scifio/scifio/tree/metadata_refactor

@@ -1,0 +1,21 @@
+title: Rename some classes and packages
+body:
+We want to make sure that before the `1.0.0` release, our class and package names are consistent and sensible, since changing them after that will become more involved.
+
+Here is a list of changes to make:
+* `NativeQTFormat.java` :arrow_right: `QTFormat.java`: The term "native" was a rather unfortunate choice in Bio-Formats because "native" typically refers to "native code" such as C/C++. Java even has a corresponding `native` keyword. So let's not call our pure Java format implementation "native" but instead just name it simply.
+* `LegacyQTFormat.java` :arrow_right: ???: Similarly, let's consider renaming the "Legacy" formats to something that conveys the fact that they are typically implemented using a third party library (in this case, QTJava) which has certain limitations. (I am not sure what a better name would be than "legacy" but if we cannot think of one, sticking with "legacy" here is OK.)
+* `io.scif.formats.tiff.Tiff*` :arrow_right: `io.scif.formats.tiff.TIFF*`: We decided that all acronyms in SCIFIO will remain capitalized; e.g., `SCIFIO` rather than `Scifio`. We should rename the old `Tiff` classes for consistency. (This rename will cause problems with case-insensitive filesystems though, unfortunately. But there is not really any way around that without moving the classes to a different directory as well, which we do not want to do.)
+* `io.scif.formats.TIFFFormat` :arrow_right: `io.scif.formats.tiff.TIFFFormat`: The format implementation itself should be part of the subpackage, similar to QT.
+* Format-specific codecs: should be moved out of `io.scif.codec` and into `io.scif.formats.xyz` instead. E.g.: `io.scif.codec.LZWCodec` is really for TIFF, so could live in the `io.scif.formats.tiff` package. General-purpose core codecs can probably remain in `io.scif.codec` without too much confusion, though.
+* `io.scif.services` :arrow_right: `io.scif.service`: This rename will make SCIFIO consistent with SciJava Common and ImageJ2, which both have a `service` subpackage as well. Also:
+    * Move _all_ core non-format-specific services into `io.scif.service`; this includes `MetadataService`, `DefaultMetadataService` and the base `SCIFIOService` interface.
+    * Move format-specific services into the corresponding format's package; e.g., `LuraWaveService` should move out of SCIFIO core and into the new `scifio-lifesci` project's `io.scif.lifesci.lwf` package.
+* `io.scif.util.SCIFIOMetadataTools` :arrow_right: `io.scif.util.MetadataTools`: the `SCIFIO` prefix is redundant and inconsistent with the other `Tools` utility classes.
+* `io.scif.common` :arrow_right: `io.scif.util`: These two packages serve the same purpose and we should just go with the more common (pun intended) convention of a `util` package, which is consistent with both SciJava Common and ImageJ2.
+* `io.scif.UnsupportedCompressionException` :arrow_right: `io.scif.codec`: This exception is specifically part of the `Codec` API and belongs in the same package.
+
+I reserve the right to add more items to the list until such time as this ticket is closed. :wink:
+assignee: null
+milestone: 1.0.0 - Official Release
+comments:

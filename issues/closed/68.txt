@@ -1,0 +1,20 @@
+title: AVIFormat doesn't check cached plane size
+body:
+When cells are cached in a SCIFIOCellCache (not necessarily serialized - this bug occurs with the MapDBCache disabled) they sometimes (randomly, but consistently) show overwritten fragments when retrieved.
+
+This can result in mis-matched planes (e.g. in RGB images) or just artifacts persisting from one frame across many others.
+
+There may be compounded issues with the N-D changes and SCIFIOCellCache going on here. I didn't get the bug on master with 2g of ram, but did with 100m. But got it with both memory options on my N-D integration branch.
+
+Tested with Level001-ES-083.avi from test images good, with low enough memory to force a SCIFIOCellImg to be loaded.
+assignee: User:hinerm
+milestone: 0.7.0 - N-Dimensionality
+comments:
+See attached image for example of an artifact produced by this error. Several planes get overlayed onto each other.
+
+![cellerror](https://f.cloud.github.com/assets/1123809/1269872/8844de56-2d00-11e3-869c-5898e354f25f.png)
+
+This is almost certainly a race condition. It seems like that last frame is consistently overlayed onto other frames, so a starting point would be to identify the tile associated with the scoreboard in the last frame and figure out when it's being loaded and when, therefore, the resultant array is being corrupted.
+This turned out to be an AVI format issue with lax cached plane checking. Updating the ticket description.
+see https://github.com/scifio/scifio/tree/avi-fixes
+Fixed in 0.7.0

@@ -1,0 +1,6 @@
+title: Type narrow format component creation
+body:
+The de-genericizing of formats removed the type guarantees of their "create XXXX" component methods. But it might be worthwhile to narrow these in each concrete Format implementation.
+assignee: null
+milestone: 0.8.0
+comments:

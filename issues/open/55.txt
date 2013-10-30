@@ -1,0 +1,30 @@
+title: Support non-byte-aligned pixel types
+body:
+Many formats that we support allow non-byte pixel types (e.g. PNG and BMP supporting 1-bit, 2-bit).
+
+Currently all of our pixel types are 8, 16, 32 or 64 bit.
+
+To fully support these image types, we should support these additional pixel types.
+assignee: null
+milestone: 0.8.0
+comments:
+Hi Mark,
+
+on the imglib2 side Albert and me worked on a better support of those datatypes. We have a branch that we intend to merge soon.
+
+https://github.com/imagej/imglib/tree/albert-dev-fraction2
+
+Cheers,
+Stephan
+
+On Aug 23, 2013, at 18:12 , Mark wrote:
+
+> Many formats that we support allow non-byte pixel types (e.g. PNG and BMP supporting 1-bit, 2-bit).
+> 
+> Currently all of our pixel types are 8, 16, 32 or 64 bit.
+> 
+> To fully support these image types, we should support these additional pixel types.
+> 
+> —
+> Reply to this email directly or view it on GitHub.
+> 

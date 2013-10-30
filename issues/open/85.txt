@@ -1,0 +1,16 @@
+title: Make automated regression tests for each supported reader and writer
+body:
+I severely broke writing with the N-D conversion in 0.7.0, and didn't catch it. It is too much of a burden to manually test the combinations of reading, writing and translation, but these are critical things to have test coverage over.
+
+So we need to establish a pixel-based test like the test-images-good tests in Bio-Formats, and I don't think we should release 0.8.0 without it.
+assignee: null
+milestone: 0.8.0
+comments:
+* first pass test:
+- create a variety of fakes
+- Write them using each writer
+- read them back with each reader
+
+* port the Bio-Formats test-suite component to scifio, make maven run on every compile against fakes
+
+the comprehensive tests will be running the test suite against a scifio-compatible subset of test-images-good

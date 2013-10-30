@@ -1,0 +1,6 @@
+title: Split dimension swapper
+body:
+Make two classes: one for input ordering, one for output ordering
+assignee: null
+milestone: 0.8.0
+comments:

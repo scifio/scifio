@@ -1,0 +1,9 @@
+title: Ics fixes
+body:
+Fixes metadata parsing to avoid clashes of key/value strings.
+
+NB: depends on the N-D branch being merged first
+assignee: null
+milestone: null
+comments:
+merged via command line.

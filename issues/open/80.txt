@@ -1,0 +1,7 @@
+title: ImageMetadata: get rid of "orderCertain" concept
+body:
+The `isOrderCertain()` method informs the caller whether we are confident that all the dimensional axis types are correct, or whether they are just guesses. This method was useful historically in a 5D (XYZCT) world, when the `FileStitcher` was forced to choose between labeling an unknown axis as either Z, C or T. But now that SCIFIO is N-dimensional we no longer need it, because we can just label unknown axes using `Axes.unknown()`. The other common usage of `orderCertain=false` is with TIFF, where the third dimension can be either Z or T with no way to tell from the metadata. We can also use `Axes.unknown()` in that case, and then downstream consumers such as ImageJ2 need to make a "best effort" to handle unknown axis types in a reasonable way.
+assignee: null
+milestone: null
+comments:
+Accidentally closed this via a commit message typo :( This isn't actually addressed yet

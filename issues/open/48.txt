@@ -1,0 +1,9 @@
+title: Eliminate javadoc warnings
+body:
+When generating javadoc for SCIFIO there are tons of warnings. Would be nice to clean these up!
+assignee: User:hinerm
+milestone: 0.8.0
+comments:
+We should shoot for a warning-free SCIFIO!
+current javadoc warnings (output of mvn javadoc:javadoc):
+https://gist.github.com/hinerm/6918272

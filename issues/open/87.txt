@@ -1,0 +1,11 @@
+title: Stop using ReflectedUniverse
+body:
+We should get rid of `ReflectedUniverse`, because:
+* `ReflectedUniverse` often results in `ClassLoader` issues
+* `ReflectedUniverse` code is not compile-time checked and hence harder to debug
+* It is better to use a proper compile-time dependency, code the logic in an isolated class, then catch `ClassNotFoundException` in key parts of the code when the dependent code cannot be loaded.
+* Or: wrap the functionality in a `SCIFIOService` with a dummy default implementation, and provide the more functional implementation in a downstream component that leans on the needed dependency properly.
+
+assignee: null
+milestone: 1.0.0 - Official Release
+comments:

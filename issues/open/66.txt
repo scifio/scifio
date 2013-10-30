@@ -1,0 +1,55 @@
+title: ImgOptions: replicate all options of the Bio-Formats Importer
+body:
+The Bio-Formats Importer provides quite a few options. The `ImgOpener` class needs to support all of them if we hope to replicate the Bio-Formats Importer dialog within ImageJ2 using SCIFIO.
+
+A summary of most of the features can be [found in the Bio-Formats documentation](http://www.openmicroscopy.org/site/support/bio-formats4/users/imagej/load-images.html). Note that some of the features will be obsolete with ImageJ2.
+
+Here is a specific breakdown:
+
+1.  __Stack order__: whether/how to reorder output dimension order (half of what `DimensionSwapper` does)
+
+2. __Swap dimensions__: whether/how to reorder input dimension order (the other half of what `DimensionSwapper` does)
+
+3.  __File grouping__: how to treat multi-file datasets:
+    * Default behavior
+    * Group files with similar names (i.e., `FileStitcher`)
+    * Open files individually
+
+    See also:
+    * `FileStitcher`
+    * `IFormatReader#MUST_GROUP`
+    * `IFormatReader#CAN_GROUP`
+    * `IFormatReader#CANNOT_GROUP`
+    * `IFormatReader#setGroupFiles(boolean)`
+    * `IFormatReader#isGroupFiles()`
+
+4.  __Series selection__: which N-dimensional images to open
+
+5. __Series concatenation__: whether to lump together multiple N-dimensional images if their dimensions are compatible
+
+6. __Stitch tiles__: Obsolete with ImageJ2. We want to present all tiles coregistered in the same image display according to physical calibration. This will obviate the need for a specific option to "stitch tiles" during data import.
+
+7. __Color mode__: We can keep this, but it's essentially a shortcut for setting the "Channels Tool" command appropriately.
+
+8. __Autoscale__: May want to make ternary:
+    * By bit depth
+    * By planar data range
+    * By global data range
+
+9. __Metadata viewing__: Probably all obsolete:
+    *  __Display metadata__: Image > Show Info gives you the same thing.
+    * __Display OME-XML metadata__: Think of another way to accomplish this that isn't OME-XML specific. Ideally it would become part of the Show Info command somehow. E.g., if we have key/value pairs that are String/Object, then we can let users double-click on any value and use ImageJ2's Display plugin mechanism to pop up a display for that value!
+    * __Display ROIs__: As a start we could always do this. Then if it becomes a problem (e.g., data with too many ROIs) either address performance issues some other way, or worst case add an advanced option to ignore ROIs during import. Of course, ROIs are not part of the same ImgPlus so we would need to come up with a way of handling them in ImgOpener... Probably the burgeoning [SciJava ROIs](https://github.com/scijava/roi-model) project will be required here.
+
+10. __Use virtual stack__: Already handled by `ImgOptions#setImgModes`!
+
+11. __Specify range for each series__: Already handled by `ImgOptions#setRegion`!
+
+12. __Crop on import__: Already handled by `ImgOptions#setRegion`!
+
+13. __Split C, Z, T__: Obsolete. With judicious use of ImageJ2 commands that leverage Views, people should split their images after initial import.
+
+We can break this down into separate issues if it needs to be more granular.
+assignee: null
+milestone: 1.0.0 - Official Release
+comments:

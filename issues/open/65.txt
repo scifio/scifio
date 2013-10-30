@@ -1,0 +1,8 @@
+title: write unit tests for default classes
+body:
+I was looking at the Default SCIFIO component classes and their format association logic seems fragile/didn't make complete sense and I'm not sure it interacts correctly in all the FormatService API methods (e.g. registering associations between format and component).
+
+This area should be covered by unit tests.
+assignee: null
+milestone: null
+comments:

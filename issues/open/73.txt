@@ -1,0 +1,16 @@
+title: Consolidate ImageMetadata with AbstractCalibratedInterval
+body:
+ImageMetadata has always had overlap with the Interval API from ImgLib2. With the integration of calibration values to ImageMetadata, this coupling has continued to grow stronger.
+
+Thus it makes sense to formally consolidate these classes by having ImageMetadata extend [AbstractCalibratedRealInterval](https://github.com/imagej/imglib/blob/master/meta/src/main/java/net/imglib2/meta/AbstractCalibratedRealInterval.java) and implement Interval.
+
+This is a similar pattern as ImageJ2's DefaultDataset, so it may be beneficial to create an AbstractCalibratedInterval class in ImgLib to inherit from.
+
+With this refactoring, many of the utility methods (e.g. Calibration in formatTools) can be removed as well as simplifying the ImageMetadata API itself.
+assignee: null
+milestone: 0.8.0
+comments:
+From @ctrueden :
+
+For sure we want to make an AbstractCalibratedInterval, which extends AbstractCalibratedSpace
+We can model this using AbstractRealInterval & AbstractInterval

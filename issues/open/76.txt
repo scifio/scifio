@@ -1,0 +1,6 @@
+title: Eliminate eclipse compiler warnings
+body:
+It's annoying and looks messy to see a bunch of compiler warnings in Eclipse.. let's try to clean these up.
+assignee: User:hinerm
+milestone: 0.8.0
+comments:

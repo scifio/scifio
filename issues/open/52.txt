@@ -1,0 +1,10 @@
+title: Improve IRandomAccess naming
+body:
+Remove RAIS name field
+give IRandomAccess a get/setName method
+Have RAF and RAIS .tostring chain up the getName method, which will be implemented in handles
+can be.. toString: getname == null? return super.tostring : getname
+can lock the setname method in handles that take a string/file in the constructor and just implicitly set the name on construction
+assignee: null
+milestone: 0.9.0
+comments:
