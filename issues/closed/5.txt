@@ -1,0 +1,7 @@
+title: Add a Bio-Formats Format to SCIFIO
+body:
+For backwards compatibility until all Bio-Formats formats are converted, we need a Bio-Formats Format in SCIFIO that is capable of delegating to an IFormatReader and calling all Bio-Formats formats. This Format will use Bio-Formats 4.4.X for now.
+assignee: User:hinerm
+milestone: null
+comments:
+This issue will be resolved in the scifio-bf-compat component

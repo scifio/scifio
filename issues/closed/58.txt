@@ -1,0 +1,6 @@
+title: Bug: SubRegion constraints are always applied to ZCT dimensions
+body:
+In ImgOpener, when applying SubRegion constraints to ZCT dimensions, it is not considered whether or not these axes are actually present in the SubRegion, but just considers dimension order.. e.g. if you have a SubRegion constraining Z, but the dimension order is CZT, the constraint will be applied to the C axis instead of Z.
+assignee: User:hinerm
+milestone: 0.7.0 - N-Dimensionality
+comments:

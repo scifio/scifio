@@ -1,0 +1,7 @@
+title: Make getBitsPerPixel never return 0
+body:
+Currently the ImageMetadata bitsPerPixel always needs to be manually. It would be ideal if the getter for bitsPerPixel did an automatic lookup into FormatTools using the pixel type, if bitsPerPixel is 0.
+assignee: User:hinerm
+milestone: 0.7.0 - N-Dimensionality
+comments:
+Resolved in 7e556d689b7ee8e2c66b2f894e5a352ed2474e61

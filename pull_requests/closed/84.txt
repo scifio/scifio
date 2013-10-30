@@ -1,0 +1,22 @@
+title: Simplify SCIFIO class hierarchy
+body:
+This change eliminates the distinction between a SCIFIOComponent versus
+a SCIFIOPlugin, in favor of everything being a SCIFIOPlugin.
+Furthermore, it eliminates the HasSCIFIO and HasLog interfaces in favor
+of using SciJava Common's built-in parameter injection mechanism.
+
+By using the parameter injection mechanism, creation of a SCIFIO context
+will "fail fast" with an IllegalArgumentException when a service depends
+on another required service, rather than receiving an NPE later when
+first attempting to access that service via the SCIFIO gateway.
+
+For convenience, the log() method still exists as an API method of
+SCIFIOPlugin, since it is a pain to inject the LogService into
+absolutely every implementing class. ;-)
+number: 84
+milestone: null
+labels:
+merged: false
+comments:
+	@hinerm: What do you think? I can split up the commit a bit if you prefer; just let me know.
+	Merged in facf8fab8485f9c85a995007eb321ce15d4eb9ef (after discussing with @hinerm).

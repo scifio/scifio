@@ -1,0 +1,15 @@
+title: Expand (and clean up) use of new 'setWriteSequentially' method
+body:
+ In loci-software:r6976, TiffWriter? was given a new method: 'void setWriteSequentially(boolean)'. The purpose of the method is to allow the calling code (e.g. ImageConverter?) to specify that it absolutely will write planes in sequential order - if setWriteSequentially(true) was called, then TiffWriter? and TiffSaver? can make certain assumptions about the planes which can speed up the export process.
+
+In the next release, I think it would be a good idea to:
+
+*   move 'setWriteSequentially(boolean)' to IFormatWriter
+*   update loci.formats.out.*Writer and TiffSaver? to take as much advantage of this method as possible
+*  add tests to verify that the resulting files are the same, regardless of what arguments are passed to setWriteSequentia
+
+Moved from [ome:#4155](https://trac.openmicroscopy.org.uk/ome/ticket/4155)
+assignee: null
+milestone: null
+comments:
+Mistaken ticket import. closing.

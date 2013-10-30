@@ -1,0 +1,10 @@
+comment: 4431421
+	path: null
+	line: -1
+	body: It looks like this may be a bug in MapDB.. see https://github.com/scifio/scifio/blob/bb55552f2f91c3923e1f85284567c2005bf45943/scifio/src/main/java/io/scif/img/cell/cache/MapDBCache.java#L191
+
+The "deleteFilesAfterClose()" was already being called, so perhaps it just isn't working properly..
+comment: 4431784
+	path: null
+	line: -1
+	body: Hmm, you're correct. And I get those mapdb-temp files again. Maybe it is something different altogether: I guess I should actually shut down the context in my test script ;-)

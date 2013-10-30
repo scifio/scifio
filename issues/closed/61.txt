@@ -1,0 +1,16 @@
+title: Move getHandle method to Formats
+body:
+There currently is a work-around in FakeFormat to allow a file handle to be created when the file doesn't exist on disk.
+
+handles are generated in the LocationService's getHandle method, which looks through a list of handle plugins to test compatibility with a given id, and if no plugin is compatible it makes an NIOFileHandle.
+
+Since this is a Format-specific issue (which formats require files to exist on disk, which typically is true) it makes sense to move this to the Format API. Then we can handle the general case in AbstractFormat, and FakeFormat can be updated to just always return a dummy handle (which should be moved out of FakeFormat to its own class)
+assignee: User:hinerm
+milestone: 0.7.0 - N-Dimensionality
+comments:
+After investigation, I realized that sometimes handles need to be used independently of Formats.
+
+A better solution, I believe, is to create a "virtual" handle when the file doesn't exist on disk.
+
+See https://github.com/scifio/scifio/pull/63
+Fixed by introduction of VirtualHandle.

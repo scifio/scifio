@@ -1,0 +1,315 @@
+title: Parameterize ImgOpener
+body:
+ImgOpener has too many signatures.. it would be simpler and more extensible to just pass a list of key,value pairs. Perhaps using a custom Parameter class..
+assignee: User:hinerm
+milestone: null
+comments:
+We now have Javadocs to discuss this: http://jenkins.imagej.net/view/SCIFIO/job/SCIFIO-javadoc/javadoc/io/scif/io/img/ImgOpener.html
+
+However, I'd like to caution against replacing lightly something that is compile-time safe with something that is not...
+I agree about eliminating compile-time safety. I think Mark is proposing something similar to the `ImporterOptions` of `BF.openImagePlus` in Bio-Formats. This would eliminate the plethora of boolean flags such as `computeMinMax` in favor of a configuration class like that. It would not reduce compile-time safety because the return type is still the same.
+Hi,
+
+just to add to this discussion. I think we should remove the NativeTypes for the return type in there as Curtis and me already did in a branch for the ImgOpener in imglib2.io a long time ago. It just confuses and does not really make sense. In the future you might want to be able to return types that are not native types, why limit it ...
+
+It is different when a certain ImgFactory is provided, but then it is implicitly checked because you give a ImgFactory<T>, which will only take compatible T's.
+
+Otherwise it should be up to the opener to decide what it is.
+
+What do you think?
+
+Nice greetings,
+Steffi
+
+On Jun 10, 2013, at 14:55 , Curtis Rueden wrote:
+
+> I agree about eliminating compile-time safety. I think Mark is proposing something similar to the ImporterOptions of BF.openImagePlus in Bio-Formats. This would eliminate the plethora of boolean flags such as computeMinMax in favor of a configuration class like that. It would not reduce compile-time safety because the return type is still the same.
+> 
+> —
+> Reply to this email directly or view it on GitHub.
+> 
+@StephanPreibisch It would be nice to remove the type specification, but right now NativeType is there so PlanarImgFactory can be constructed if needed. RealType is used when populating the planes.
+see:
+https://github.com/scifio/scifio/blob/master/components/scifio-devel/src/io/scif/io/img/ImgOpener.java#L573
+and
+https://github.com/scifio/scifio/blob/master/components/scifio-devel/src/io/scif/io/img/ImgOpener.java#L872
+respectively.
+Is the branch you and Curtis worked on still around? Or do you know how to get around these cases offhand?
+Thanks, Mark
+@ctrueden good point, thanks for the clarification!
+Hi Mark,
+
+yes you are right, you need a NativeType to create the PlanarImg (or ArrayImg or CellImg) in the private method. But the public open method does not need to return it - it could as well return a ListImg with a non-nativetype if the opener thinks this is the better or maybe only way to open a specific file. This would not be possible if you demand that the return type is NativeType. It is therefore an unnecessary specialization for the return type of the public method I would say. 
+
+Here is the branch: https://github.com/imagej/imglib/commits/newimgopener
+
+The idea was the following. There are several ways to open a file:
+
+a) You know exactly, I want to open it using a certain Type, e.g. FloatType. Then everything is clear, the openFloat method returns an Img< FloatType >. Supported containers are any containers that support FloatType. You can give it one or the opener chooses one.
+
+b) You say open it as e.g. RealType, a class of types. In this case the opener checks what it is an instantiates a Type and a Container - not necessarily based on NativeTypes, although most likely. Could be BigIntegers or BigDecimals which cannot be expressed as NativeTypes as the individual size of each type is dynamic.
+
+c) You might want to say - I really need to open it as a NativeType and RealType. However, I do not think this is a very common case. Usually you just do not care, it is a pretty specific internal thing. It does make sense to support it though.
+
+What do you think?
+
+Nice greetings,
+Steffi
+
+
+On Jun 10, 2013, at 15:39 , Mark wrote:
+
+> @StephanPreibisch It would be nice to remove the type specification, but right now NativeType is there so PlanarImgFactory can be constructed if needed. RealType is used when populating the planes.
+> see:
+> https://github.com/scifio/scifio/blob/master/components/scifio-devel/src/io/scif/io/img/ImgOpener.java#L573
+> and
+> https://github.com/scifio/scifio/blob/master/components/scifio-devel/src/io/scif/io/img/ImgOpener.java#L872
+> respectively.
+> Is the branch you and Curtis worked on still around? Or do you know how to get around these cases offhand?
+> Thanks, Mark
+> 
+> —
+> Reply to this email directly or view it on GitHub.
+> 
+@StephanPreibisch ahhh, sorry, I misread your first post and thought you were saying we should get rid of both the Native and the Real type.
+Yes, what you're saying makes sense. Looking at the other branch is helpful. I don't think it will be a problem to remove the NativeType from the public signatures.
+@ctrueden, @dscho, @StephanPreibisch :  if you get a chance, I added an [ImgOptions](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/io/img/ImgOptions.java) class and updated [ImgOpener](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/io/img/ImgOpener.java) to use it, and to remove the NativeType business.
+
+Please let me know if any of you have reservations about this implementation, otherwise I'll go ahead and merge. Thanks!
+Cool. For the `planar` parameter, I would suggest an enum because moving forward, we may add a third type of `Img` to the mix—not that I have one specifically in mind, but I can easily imagine the auto-detection logic being expanded from binary to ternary. Something like imgMode = {AUTO, PLANAR, CELL}?
+Also, I am curious why you named the private fields one thing, but the methods something else. Wouldn't it be more straightforward for a field called e.g. `deepChecking` to simply have an `isDeepChecking` method?
+Hi Mark,
+
+is this class supposed to replace the ImgOpener in imglib.io?
+
+If so I would have a few requests for other methods that would be essential ...
+
+Nice greetings,
+Stephan
+
+On Jun 12, 2013, at 14:57 , Mark wrote:
+
+> @ctrueden, @dscho, @StephanPreibisch : if you get a chance, I added an ImgOptions class and updated ImgOpener to use it, and to remove the NativeType business.
+> 
+> Please let me know if any of you have reservations about this implementation, otherwise I'll go ahead and merge. Thanks!
+> 
+> —
+> Reply to this email directly or view it on GitHub.
+> 
+For the imgMode.. I kinda liked the idea of avoiding non-numeric parameters for configuration options. I felt using a pattern like `new ImgOpener().usePlanarImg()` would be cleaner/easier to understand than `new ImgOpener.setImgType(ImgTypes.Planar)`, because all the configuration options are self-evident, instead of requiring knowledge of the enum as well.
+
+This leads to more method signatures.. but maybe it's simpler than having an enum for each configuration option? On the other hand, having a single method does a better job of capturing mutually exclusive options.. (e.g. it's less intuitive that usePlanarImg().useCellImg() would return an ImgOptions that only generates CellImgs).
+
+Anyway, because I wasn't using an enum, I added multiple signatures for accessing values. Similar thought process to above. Instead of getting an unknown enum back to check the type, you ask a specific question and get a boolean flag back.
+
+I didn't follow the `isDeepChecking` convention because I wanted the API to be independent of the current boolean variable implementation. e.g. if we wanted 4 different Checker modes we could use enums internally, but the methods would still be `enableThisMode` and `isThisModeEnabled`...
+
+So I probably over-thought this... I can convert to 1 method per option + enums if this reasoning sounds silly.
+
+
+@StephanPreibisch Eventually the plan is to eliminate imglib.io in favor of SCIFIO, like we tried to do a year or so ago. So this ImgOpener should probably be capable of doing everything the imglib.io one is..
+@hinerm: I am a fan of keeping the API as dirt simple as possible, and making the code as braindead simple to read as possible. So personally I like fields matching the method names. Otherwise things can get unintuitive fast.
+
+@StephanPreibisch: The goal is for the SCIFIO `ImgOpener` and `ImgSaver` to replace the ones in `imglib2-io`. If you have time to try out the SCIFIO versions, and give feedback on what you need, it would be much appreciated! Once you are satisfied—and once SCIFIO supports full backwards compatibility with Bio-Formats 4.4.x—we can remove the `imglib2-io` component in favor of a dependency on `io.scif:scifio`.
+In general I agree with Curtis, the ImgOptions seems to support only PlanarImg or ScifioCellImg. How about the ArrayImg? It is by far the fastest Container to work with ... except for opening/saving. Or how about the ListImg or whatever will come in the future. I would like to have it extendable. The Opener itself can then choose to call optimized methods for special containers if it has them. But it should work with any container. This is how the imglib.io was designed.
+
+What would be additionally really helpful in my opinion are the following opener methods
+
+    // for specific opener methods be able to define the ImgFactory to use (often ArrayImg might be the choice I guess)
+    public static ImgPlus<FloatType> openFloat(final String id, int imageIndex, ImgFactory<FloatType> f)
+    public static ImgPlus<DoubleType> openDouble(final String id, int imageIndex, ImgFactory<DoubleType> f)
+    // maybe also offer them for other types that are heavily used like UnsignedByte?
+
+    // for the generic RealType opener, be able to just give an additional factory without the options object
+    public <T extends RealType<T>> ImgPlus<T> openImg(String id, T type, ImgFactory<T> f)
+
+This is only a suggestion and a bit more involved, but how about additionally having an interface that defines opening and that can be extended for my own Type?
+
+    public static <T> ImgPlus<T> openT(final String id, int imageIndex, ImgFactory<T> f, HowToOpenInterface<T> i)
+
+The HowToOpenInterface would have to implement the important things:
+- getBitsPerPixel()
+- decodeWord(final byte[] plane, final int index)
+
+In this way, one could store/load any NativeType like ComplexTypes ... this would also work along the lines of having 16-bit float etc.
+
+Might it even be more elegant or fast than calling the
+
+    switch (pixelType) {
+        case FormatTools.UINT8:
+        case ...
+
+for every decoded word? But I guess not because of the inlining issues we encountered before. But still, for new or specialized types maybe a good thing to have.
+
+What do you think?
+
+Steffi
+
+@StephanPreibisch in general, such convenience methods are fine, but they also clutter the API. So I would strongly suggest to add a convenience class with static methods for that and leave the ImgOpener/ImgSaver nice and clean.
+I agree. The only one that really should be there and is not only convenience is to specify the ImgFactory without the ImgOptions. Because I feel it is redundant to some point as both describe which Factory to use.
+
+On Jun 12, 2013, at 16:52 , dscho wrote:
+
+> @StephanPreibisch in general, such convenience methods are fine, but they also clutter the API. So I would strongly suggest to add a convenience class with static methods for that and leave the ImgOpener/ImgSaver nice and clean.
+> 
+> —
+> Reply to this email directly or view it on GitHub.
+> 
+@hinerm looks awesome! @StephanPreibisch we can always add that back -- *iff* needed. Personally, I think that ImgOpener should be clever enough to determine an appropriate ImgFactory anyway. I know, a lot of ImgLib2 classes are written with developers in mind who want to write that case logic themselves. But even *this* developer would consider that a completely unnecessary chore, so I'd *really* love ImgOpener to implement that case logic (and I imagine that other developers would like that, too).
+Hi Johannes,
+
+what are you referring to by case logic? Do you mean the proposed interface or the ImgFactory?
+
+If it is regarding the ImgFactory, it should really be a parameter for one of the methods. I am not saying this should be the standard way of calling it, but it has to be there in my opinion. One can always try to copy it later, but it could be a waste of memory, time, source code or not even not an option if the dataset is too large. There could also be even an Img implementation that is not in ImgLib I want to use. So the ImgOpener cannot always decide what is the best ImgFactory.
+
+Also, if I open more than one image, I might want to make sure that for the second image it does use the same container. So if the ImgOpener decided PlanarImg for the first one, there is no guarantee that for the second one the ImgOpener will decide on the same one.
+
+What do you think?
+
+Bye bye,
+Steffi
+
+On Jun 12, 2013, at 21:57 , dscho wrote:
+
+> @hinerm looks awesome! @StephanPreibisch we can always add that back -- iff needed. Personally, I think that ImgOpener should be clever enough to determine an appropriate ImgFactory anyway. I know, a lot of ImgLib2 classes are written with developers in mind who want to write that case logic themselves. But even this developer would consider that a completely unnecessary chore, so I'd really love ImgOpener to implement that case logic (and I imagine that other developers would like that, too).
+> 
+> —
+> Reply to this email directly or view it on GitHub.
+> 
+Hi guys,
+
+just to add my opinion on that, I totally agree with Steffi on that:
+It should be possible to specify the ImgFactory to use.
+Otherwise, I think the common sittuation would be to open an Img and then copy it to an ArrayImg (with the drawbacks you explained below…)
+
+best regards,
+Tobias
+
+On Jun 13, 2013, at 6:28 AM, Stephan Preibisch <notifications@github.com> wrote:
+
+> Hi Johannes, 
+> 
+> what are you referring to by case logic? Do you mean the proposed interface or the ImgFactory? 
+> 
+> If it is regarding the ImgFactory, it should really be a parameter for one of the methods. I am not saying this should be the standard way of calling it, but it has to be there in my opinion. One can always try to copy it later, but it could be a waste of memory, time, source code or not even not an option if the dataset is too large. There could also be even an Img implementation that is not in ImgLib I want to use. So the ImgOpener cannot always decide what is the best ImgFactory. 
+> 
+> Also, if I open more than one image, I might want to make sure that for the second image it does use the same container. So if the ImgOpener decided PlanarImg for the first one, there is no guarantee that for the second one the ImgOpener will decide on the same one. 
+> 
+> What do you think? 
+> 
+> Bye bye, 
+> Steffi 
+> 
+> On Jun 12, 2013, at 21:57 , dscho wrote: 
+> 
+> > @hinerm looks awesome! @StephanPreibisch we can always add that back -- iff needed. Personally, I think that ImgOpener should be clever enough to determine an appropriate ImgFactory anyway. I know, a lot of ImgLib2 classes are written with developers in mind who want to write that case logic themselves. But even this developer would consider that a completely unnecessary chore, so I'd really love ImgOpener to implement that case logic (and I imagine that other developers would like that, too). 
+> > 
+> > — 
+> > Reply to this email directly or view it on GitHub. 
+> >
+> —
+> Reply to this email directly or view it on GitHub.
+> 
+https://github.com/imagej/imglib/issues/17 is related, right?
+
+
+I agree with Christian ... partial opening is very useful as well. I needed that myself already and had make my own version of the opener for that.
+
+I guess we have to decide if we want an Opener that is very basic and does the job how it thinks it is right - basically being a HowTo class. Or it will be more complicated but it can do all sorts of stuff -- of course on top of having also simple methods to open images. The drawback of a simple opener without more functionality is in my opinion that people will then just modify it for their own projects which will be very complicated to keep up to date once something changes in scifio.
+
+What do you guys think?
+
+Bye bye,
+Steffi
+
+On Jun 13, 2013, at 4:52 , Christian Dietz wrote:
+
+> imagej/imglib#17 is related, right?
+> 
+> —
+> Reply to this email directly or view it on GitHub.
+> 
+@hinerm is working on some changes right now to split very convenient things into a class with static methods like `IO.open(...)`, and have `ImgOpener` and `ImgSaver` be flexible but keeping the number of method signatures down.
+
+The `ImgOptions` will help greatly. It is patterned after Bio-Formats's [BF](https://github.com/openmicroscopy/bioformats/blob/v4.4.8/components/loci-plugins/src/loci/plugins/BF.java#L74) and [ImporterOptions](https://github.com/openmicroscopy/bioformats/blob/v4.4.8/components/loci-plugins/src/loci/plugins/in/ImporterOptions.java) classes, and will eventually be expanded to include these features. So I suppose that is more toward the side of "complicated but it can do all sorts of stuff" as @StephanPreibisch says.
+
+And @dietzc, I agree that https://github.com/imagej/imglib/issues/17 will ultimately be solved by this work.
+OK.. here are my latest updates:
+[ImgOpener](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/io/img/ImgOpener.java)
+[ImgOptions](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/io/img/ImgOptions.java)
+[IO](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/io/img/IO.java)
+
+Highlights:
+* ImgOptions now lets you specify a subregion to open.
+* For convenience I undeprecated the String, ImgFactory signatures. However I still think it is useful to have signatures that include both an ImgFactory and an ImgOptions, as the ImgOptions does let you specify more than just the Img type so it's not completely redundant.
+* All static methods have been moved to the IO utility class. I am thinking maybe this should be a service instead so it can preserve context. I also included an openUnsignedByte method and am happy to add more type-specific signatures if people think it's useful (should I just add them all...?)
+* Added better ArrayImg support. This can be specified in the ImgOptions, and will be respected. Also, if no type or AUTO is specified, and the image will fit in memory, it will be opened as an ArrayImg.
+
+@StephanPreibisch re: using the same container on multiple calls. You could reuse the same ImgOptions object with each call, which - if you specified the ImgType - should be consistent. Is that sufficient? Or did you mean you'd want to reuse the ImgPlus itself?
+
+As implemented, the only time ImgOpener is going to make a decision about what type of Img to open is if there is limited available memory and no type has been explicitly set. In that case it's going to open as a CellImg.
+
+Also, I don't think there's currently any limitation to the types that can be opened. On [lines 762-765](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/io/img/ImgOpener.java#L762) is where the ImgPlus is populated, either as a planarAccess if planar, or using randomAccess if not.
+
+Do you still think the HowToOpen interface would be useful though? If so, I can add it in tomorrow, and I will probably make it an ImgOption instead of a new method signature. I can add a String, factory, opener convenience signature though.
+
+@dietzc  since we have signatures where a factory can be provided, and we have subregion specification, this meets all your needs - right?
+
+Anything else people would like to see? Did I forget anything?
+Thanks, @hinerm! Yes, I have an additional issue. Use of `ArrayImg` is unfortunately incompatible with ImageJ2 in that it is difficult to synchronize `ArrayImg`s with ImageJ1. That's why we like `PlanarImg` even though it is less time performant. So, for ImageJ2 we will need a way to configure the `ImgOptions` to say essentially: "Give me a `PlanarImg` if it's small enough, or a `CellImg` if not. Never give me an `ArrayImg`." Is that possible with the current implementation? If not, perhaps we simply need a boolean toggle for each type of `Img` after all... thoughts?
+ahhh ok.. that's good to know. I will make the configuration a bit more granular tomorrow so we can control this.
+@ctrueden I reworked ImgOptions to now have an [ImgMode](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/img/ImgOptions.java#L87) enum with multi-type options. So CELL and PLANAR both match CELL_PLANAR using the equalsMode() method. So the idea is that multi-types could be used to specify both an in-memory and virtual type.
+
+I also changed the default in ImgOpener back to Planar instead of the Array type for convenience
+
+@StephanPreibisch I added a [PlaneConverter](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/img/PlaneConverter.java) interface with two implementations: [PlanarAccessConverter](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/img/PlanarAccessConverter.java) and [RandomAccessConverter](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/img/RandomAccessConverter.java)
+
+The behavior of ImgOpener is the same in that, if it can get a PlanarAccess it will use the PlanarAccessConverter, and otherwise fall back to RandomAccessConverter. This can be overridden by using [ImgOptions#setPlanarConverter](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/img/ImgOptions.java#L321).
+
+OK! Anyone have anything else? :)
+Hi Mark,
+
+just wanted to checkout the source code by I get a - 404 not found? Could you please send again the link for the updated ImgOpener, ImgOptions and IO?
+
+Thanks a lot,
+steffi
+
+On Jun 14, 2013, at 17:02 , Mark wrote:
+
+> @ctrueden I reworked ImgOptions to now have an ImgMode enum with multi-type options. So CELL and PLANAR both match CELL_PLANAR using the equalsMode() method. So the idea is that multi-types could be used to specify both an in-memory and virtual type.
+> 
+> I also changed the default in ImgOpener back to Planar instead of the Array type for convenience
+> 
+> @StephanPreibisch I added a PlaneConverter interface with two implementations: PlanarAccessConverter and RandomAccessConverter
+> 
+> The behavior of ImgOpener is the same in that, if it can get a PlanarAccess it will use the PlanarAccessConverter, and otherwise fall back to RandomAccessConverter. This can be overridden by using ImgOptions#setPlanarConverter.
+> 
+> OK! Anyone have anything else? :)
+> 
+> —
+> Reply to this email directly or view it on GitHub.
+> 
+@StephanPreibisch Sorry about that.. I got rid of the last io package in io.scif.io.img, so it's just io.scif.img now
+
+everything can be found [in this directory](https://github.com/scifio/scifio/tree/imgopener-params/components/scifio-devel/src/io/scif/img)
+TODO:
+* add an ImgFactoryHeuristic interface/ImgOption entry so the decision for checking ImageTypes is configurable
+* refactor the ImgMode enum usage to be an array (and thus ordered) instead of multi-typed
+* add an ArrayPlaneConverter and restructure how planes are read & converted, so that the converter can directly pass in a byte[] to populate. This will require addition of an offset to the Reader#openPlane method
+
+The [ArrayDataAccessConverter](https://github.com/scifio/scifio/blob/imgopener-params/components/scifio-devel/src/io/scif/img/ArrayDataAccessConverter.java) is live. I wasn't able to do direct array population like I'd hoped, because SCIFIO can only really handle byte arrays right now. But I was able to reuse my ArrayLoader classes and updated byte[] to do a straight System.arrayCopy so I think it will still be faster than using the RandomAccess and word decoding from the RandomAccessConverter. If anyone has other suggestions though let me know.
+@hinerm in [my work](https://github.com/imagej/bioformats/compare/develop...performance) analyzing the performance bottlenecks of Bio-Formats, I came across a very neat use of NIO buffers: https://github.com/imagej/bioformats/commit/c9c411d053dfb19bc9ecc2fbecc4c143f52be830. While I do not know whether this way to convert byte[] to short[], int[] and float[] can get away without copying data (most likely, the endian-ness of the underlying architecture makes this difficult), at least it is the most performant way I know about converting arrays between native data types. Maybe you can use the NIO buffers to read directly into a non-byte array, pretending that it is? 
+Alright, I updated my typed ArrayLoaders to [use the NIO buffers](https://github.com/scifio/scifio/commit/546b302fa2a1f792d81e60451bd9d70e8366ef56) and they do indeed seem faster - thanks @dscho ! I couldn't figure out how to view a non-byte array as a byte array though, since there is no asByteBuffer method.
+
+Also added an [ImgFactoryHeuristic](https://github.com/scifio/scifio/commit/c457336fdce65178490244c93ba1175c3c9da9d9) so you can control how factories are selected. The default implementation is outlined in the commit. This included a refactoring of the ImgMode option to an array of ImgModes. For @ctrueden as long as ImgMode.CELL is in the ImgMode list, the Default implementation will never make an ArrayImgFactory. Or, alternately, you could create a custom ImgFactoryHeuristic that just ignores the ImgMode.ARRAY option.
+
+Anyway, I don't have any more planned changes unless there are more requests out there..
+OK, this is merged and released in [v0.3.0](https://github.com/scifio/scifio/tree/pom-scifio-0.3.0)
+
+We also restructured SCIFIO, splitting it out to its own component and creating a [Bio-Formats fork](https://github.com/scifio/bioformats/tree/scifio).
+
+NB: This fork is for the 4.5.X development line, and thus not compatible with IJ2 which is pinned to the 4.4.X line (4.4.8 right now).
+
+So, this change temporarily breaks BF support. this will be resolved for now with the [scifio-bf-compat](https://github.com/scifio/scifio-bf-compat) project, which will basically wrap an ImageReader and support any BF formats not in SCIFIO yet. Hopefully that will be released in the next week or so.
+
+If anyone has issues/requests still with the current state of ImgOpener/ImgSaver, let me know!

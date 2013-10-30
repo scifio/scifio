@@ -12,6 +12,8 @@ It will be the common case, i.e. once initialized, that we never hit the
 synchronized method, but before that, we will be safe and synchronized.
 
 Signed-off-by: Johannes Schindelin <johannes.schindelin@gmx.de>
-assignee: null
+number: 21
 milestone: null
+labels:
+merged: true
 comments:

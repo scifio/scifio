@@ -1,0 +1,8 @@
+title: Readers: minimize plane creation
+body:
+The createPlane  method that's used by readers when not provided a plane might be improved if it cached a Plane object to avoid repetitious plane instantiation (assuming the plane is of the same size).
+assignee: null
+milestone: null
+comments:
+Keeping a `Plane` reference that way is dangerous, if the downstream caller assumes it is getting back a *new* `Plane` which is then stores into its own data structures for later manipulation. I think it is better not to do this caching, or else we are inviting future mysterious bugs and problems. If they want to reuse a `Plane`, they should explicitly pass the `Plane` to reuse. That's the whole point of that method signature.
+Sounds good. I think we had this conversation already but it was in my todo list, so I guess it's good to have the explanation here.

@@ -1,0 +1,12 @@
+title: Remove imglib, scifio circular dependency if possible
+body:
+having an imglib2 -> SCIFIO -> Imglib2-io dependency creates a circular dependency
+assignee: null
+milestone: null
+comments:
+`imglib2-io` is now obsolete. We just need to refactor some stuff in `imglib.git` to fully remove it.
+
+However, there is still a circular dependency, in that some components of `imglib.git` make use of SCIFIO to read files, e.g. for testing purposes.
+
+So unfortunately, it will not be possible to eliminate the circular dependency without cutting `imglib.git` in half. And I doubt the main ImgLib2 developers will want to do it.
+Closing, as unnecessary.

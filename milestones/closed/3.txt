@@ -1,0 +1,5 @@
+title: 0.7.0 - N-Dimensionality
+description: Refactor SCIFIO to be N-dimensional.
+
+Also, the tutorials are severely out of date and something needs to be done with them..
+state: CLOSED

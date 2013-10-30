@@ -1,0 +1,10 @@
+title: Use SciJava logging mechanism
+body:
+Right now, SCIFIO uses the old-style Bio-Formats `LOGGER` mechanism (SLF4J-based) for logging. Better would be to use the built-in SciJava `LogService`, which abstracts the source of the logging, allowing developers to purge the SLF4J dependency in favor of a simpler stderr-based solution, or to inject their own preferred logging mechanism. (There is also an [SLF4J-based `LogService` implementation](https://github.com/scijava/scijava-common/tree/scijava-common-1.6.1/log-slf4j/src/main/java/org/scijava/log/slf4j) available in the `scijava-common` repository, for those who want that.)
+assignee: null
+milestone: null
+comments:
+See https://github.com/scifio/scifio/compare/use-log-service as a first stab.
+Thanks @dscho. Using your branch as a starting point, I completed this work; see 594c81aae8e796d472588bb3b9fa347cd15aa08b, as well as bd80092ccd5f4191526641e4ebfd4b1ee4cca244 and eff421792a4536530439e4f01d5ce918c9cdc0d5 for the finishing touches.
+
+In doing this work, several helper classes were converted to proper SciJava services, so it was well worth it.

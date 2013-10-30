@@ -1,0 +1,15 @@
+title: Optional service
+body:
+This pull request is *not* intended to be merged as-is!
+
+It uses a [temporary branch of scijava-common](https://github.com/scijava/scijava-common/compare/optional-services) to resolve the problem that some services *want* to fail to initialize under certain circumstances, while others don't.
+
+@hinerm and @ctrueden could you have a look?
+number: 15
+milestone: null
+labels:
+merged: false
+comments:
+	Thanks @dscho. I commented on your commits on the `optional-services` branch of `scijava-common`. I like the idea but would prefer to generalize the optional interface to just `Optional` rather than limiting ourselves conceptually with `OptionalService`.
+	If this is okay, I will release a new version of scijava-common and adjust the not-to-be-merged commit. @ctrueden @hinerm ?
+	Cherry-picked to master in c81a6241458e965f3d2cb9ee825974de05f98756. Thanks @dscho!

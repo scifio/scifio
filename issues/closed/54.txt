@@ -1,0 +1,14 @@
+title: Fix SCIFIO ICSReader.java to handle Gray .ics files
+body:
+Rewrite ICSReader metadata handling. This already has a hack to handle Paul Barber's lifetime ICS files. However it only handles files with "x y t" order. Some files are in "t x y" order.
+
+Get ICSReader/ImageOpener/etc. to work with "t x y" interleaved files.
+
+This ticket duplicates and replaces  [ome:#8170](https://trac.openmicroscopy.org.uk/ome/ticket/8170)
+
+
+assignee: null
+milestone: 0.7.0 - N-Dimensionality
+comments:
+Tagged with critical priority, since Paul Barber's group cannot use the [SLIM Plugin](http://loci.wisc.edu/software/slim-plugin) until it handles his ICS data correctly.
+This issue is a side effect of #70.

@@ -1,0 +1,9 @@
+title: Remove ant build system from SCIFIO
+body:
+Depends on #3 
+
+When SCIFIO is split out to its own repository, the ant build system can be removed in favor of Maven.
+assignee: User:hinerm
+milestone: null
+comments:
+Completed with 0.3.0 release

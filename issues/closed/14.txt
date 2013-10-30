@@ -1,0 +1,36 @@
+title: Allow discontinuous intervals in ImgOptions
+body:
+Requested by Michael Zinsmaier:
+
+ImgOptions should allow discontinuous intervals (e.g. the first 10 frames and last 10 frames of an image). 
+
+This could potentially be solved by allowing arrays of intervals.
+assignee: User:hinerm
+milestone: null
+comments:
+I'd like to understand Michael's specific needs better before attempting to
+tackle this. BF in IJ1 offers a begin-end:step notation but that would
+still not cover "first 10 + last 10". We could also support an explicit
+list of indices per dimension.
+
+Note that array of intervals cannot necessarily be unioned into a single
+master output img so I am tentatively against that representation (I.e. why
+not simply call the ImgOpener multiple times in that case?)
+uh we didn't think about nasty intervals ...
+
+Calling the opener multiple times is an option. But what about the overhead per call? A use case could be something like selecting every x-th frame from a video and this could result in many calls.
+
+I would prefer the explicit list of indices, that would be sufficient for us and if it resides in the opener itself other clients could use it. (Another use case would be the selection of some measurement channels from a microscope image with many markers)
+
+regards michael
+OK, great, I agree that explicit list of indices per dimension is a nice, general solution. The regex would be: `(\d(-\d(:\d)?)?)(,(\d(-\d(:\d)?)?))*`. In plain English: a list of comma-separated indices or index ranges, where an index range is defined as "start-end" or optionally "start-end:step" for every x-th index. IIRC this syntax is what we already support in Bio-Formats from ImageJ1, so doing the same for SCIFIO+ImgLib2 would be ideal. It also always results in sane intervals.
+
+If something fancier than this is needed, the general way to go is multiple calls to the `ImgOpener` followed by manual reassembly of the resultant intervals based on a priori knowledge.
+@ctrueden maybe what is needed is an Iterable<long[]>? :-P Seriously, I think that we run precariously close to YAGNI land.
+
+As far as the concerns go related to multiple ImgOpener calls, I could imagine that ImgOptions could retain some state helping subsequent runs with the same object but different cropping information to reuse the metadata that was parsed previously from the same ```id```. The cleanest way to do this would actually be to subclass ImgOptions for the specific purpose of reusing it for multiple calls on the very same image (i.e. same ```id```).
+@dscho: One of the central goals of SCIFIO is to allow metadata reuse to avoid overhead on multiple image reads from the same source. So we've got this covered: we just need a way to store and retrieve `Metadata` objects in an `ImgOptions` or some such. The exact API can be worked out but I am confident that overhead will not be an issue here, as SCIFIO makes it very easy to initialize a source only once.
+
+As far as the solution to this issue goes: we need to replicate everything the Bio-Formats Importer can do in ImageJ1, and specifying explicit indices and index ranges per dimension is something you can do there, and people use it, so I think we are in no danger of "YAGNI land" here. (Unless we try to support `Iterable`s of course. :-P)
+Implemented here:
+https://github.com/scifio/scifio/commit/9a0cd564ae4665697989cf184af7e306cf096fdb

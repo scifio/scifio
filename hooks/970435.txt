@@ -1,0 +1,12 @@
+name: irc
+is active: true
+configuration:
+server : irc.freenode.net
+port : 6667
+room : #imagejdev
+nick : 
+branch_regexes : 
+nickserv_password : 
+password : 
+message_without_join : 1
+notice : 1

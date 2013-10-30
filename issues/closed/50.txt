@@ -1,0 +1,15 @@
+title: Convert to Java 6
+body:
+Remove the /* @see */ comments and add @Override to everything
+assignee: User:ctrueden
+milestone: 0.7.0 - N-Dimensionality
+comments:
+:+1000000: !!
+See [this branch](https://github.com/scifio/scifio/compare/java-6) for a first cut!
+doh :( I already had this conflated on https://github.com/scifio/scifio/commit/f18153826fde88aa564ef1c5090abbd714c6598f .. just hadn't split it out, since it needs to be refactored for changes to the current master.
+So my branch is better because A] it's not conflated; and B] it's based off current master, right? Should we merge it?
+Yep, looks good.
+
+@ctrueden My point was that, I had also done work making a pattern to replace comments with @Overrides, so it's unfortunate that there was some repetition of work.
+
+From now on, when we start working on an issue, especially to the point where that work lives on a branch, I think we should assign the issue to ourselves. If I had assigned this issue to myself it might have saved you some time or allowed you to work on something else. That's all

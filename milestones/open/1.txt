@@ -1,0 +1,3 @@
+title: 1.0.0 - Official Release
+description: Need to make sure code is well tested and well reviewed by this point.
+state: OPEN

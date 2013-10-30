@@ -1,0 +1,11 @@
+title: Make it easier to get/set the pixels' compression type
+body:
+The reader API currently does not have any way of providing the compression type used on a file's pixels. This is somewhat related to [ome-xml:#76](http://www.ome-xml.org/intertrac/%2376), and would be most useful for formats that can be both imported and exported.
+
+Also, the writer API for setting compression types is kind of a mess. It might be nice to enumify the compression types - we've already done this for TIFF, but it's not exposed at the TiffWriter?/IFormatWriter level.
+
+Moved from [ome:#4157](https://trac.openmicroscopy.org.uk/ome/ticket/4157)
+assignee: null
+milestone: null
+comments:
+Mistaken ticket import. closing.

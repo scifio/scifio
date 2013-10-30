@@ -1,0 +1,19 @@
+name: Developers
+permission: push
+members:
+	StephanPreibisch, 1420587
+	LeeKamentsky, 660469
+	ctrueden, 556626
+	axtimwalde, 385072
+	tpietzsch, 622070
+	chris-allan, 487082
+	thewtex, 25432
+	melissalinkert, 109998
+	joshmoore, 88113
+	MichaelZinsmaier, 888758
+	hornm, 1267983
+	dietzc, 1267990
+	grislis, 1406788
+	dscho, 127790
+	hinerm, 1123809
+	bdezonia, 1267802

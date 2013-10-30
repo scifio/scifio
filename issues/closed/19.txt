@@ -1,0 +1,15 @@
+title: Refactor for N-dimensionality
+body:
+SCIFIO was pledged to be N-dimensional but currently is still heavily reliant upon the hard-coded 5-Disms of Bio-Formats.
+
+Current progress:
+https://github.com/scifio/scifio/tree/no-more-dim-order
+assignee: User:hinerm
+milestone: 0.7.0 - N-Dimensionality
+comments:
+See also [ome:#4114](https://trac.openmicroscopy.org.uk/ome/ticket/4114)
+Currently, "missing" Axes queried from a Metadata have an index of -1, and a size of 0. 
+
+For N-dimensional computations it may be useful to return a size of 1 instead.
+Note that the behavior of applying subregions to "missing" axes should be evaluated after the N-Dim refactoring.
+See https://github.com/scifio/scifio/pull/67

@@ -1,0 +1,10 @@
+title: Create discovery mechanism for codecs
+body:
+Codecs should be discoverable, facilitating an extensible TIFFCompression enum.
+
+There is currently a static initializer that populates a list of TIFFCompression, it just needs to be converted to be contextual.
+assignee: User:hinerm
+milestone: null
+comments:
+Best will be to have a `CodecService` that discovers `Codec` plugin singletons. This is the [`SingletonService` pattern](https://github.com/imagej/imagej/blob/imagej-2.0.0-beta-7/core/core/src/main/java/imagej/plugin/SingletonService.java), which we can push up to SciJava Common from ImageJ2 to help out here.
+Done as part of the `use-log-service` branch (594c81aae8e796d472588bb3b9fa347cd15aa08b). `TIFFCompression` could use further work, but it is a big step forward.

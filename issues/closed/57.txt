@@ -1,0 +1,21 @@
+title: Remove reader state (esp. after setting source)
+body:
+When setting the source on some readers (e.g. APNGReader), even though the Metadata is re-parsed, some reader state is retained (e.g. last plane opened) which prevents proper reading functionality.
+
+This state needs to be moved either 
+a) to Metadata 
+b) to new classes based on the state being persisted
+ or
+c) add an initialization method to the Reader which clears all state and is called by setSource/setMetadata.
+
+The simplest thing would be a), but saving read-specific metadata in Metadata makes me uncomfortable.. especially because it might limit the capacity to de-serialize Metadata... so c) may be the best thing right now.
+assignee: User:hinerm
+milestone: 0.7.0 - N-Dimensionality
+comments:
+@ctrueden do you have any thoughts/preferences here?
+The problem with a) is not that the `Metadata` will have serialization problems (you can mark those fields as `transient`), but that it will limit the concurrency potential of `Metadata`. E.g., what if two readers are operating on it at the same time?
+
+Readers, on the other hand, are already stateful. So I think c) is the best choice. However, why can't this "initialization method" simply be `super.setSource`?
+@ctrueden I was thinking that since both setSource and setMetadata need to clear Reader state that another method would have to exist for each to defer to... but I forgot that setSource triggers setMetadata (if it's a different source than currently set).
+
+So state clearing can go in setMetadata.

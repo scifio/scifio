@@ -1,0 +1,8 @@
+title: Setting source on a filter doesn't trigger Metadata updates
+body:
+When setting source on a reader, a setMetadata call is magically triggered. However, Filters have no way of intercepting that setMetadata call, so their metadata remains the same.
+
+Thus, setSource for filters is effectively broken.
+assignee: User:hinerm
+milestone: 0.7.0 - N-Dimensionality
+comments:

@@ -1,0 +1,4 @@
+name: jenkins
+is active: false
+configuration:
+jenkins_hook_url : http://jenkins.imagej.net/job/SCIFIO/build?token=SCIFIO-wQYJzVrKADLLLRLqIFzO

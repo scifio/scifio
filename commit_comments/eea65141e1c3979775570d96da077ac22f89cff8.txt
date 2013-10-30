@@ -1,0 +1,238 @@
+comment: 4302645
+	path: scifio/src/main/java/io/scif/util/FormatTools.java
+	line: 289
+	body: Is there some reason you chose not to simply make this a method of `Metadata`? It would be analogous to the old `getZCTCoords` and `getIndex` methods. In `Metadata` we could have `long getPlaneIndex(long[] pos)` and `long[] getPosition(long planeIndex)` or some such. (Which touches on something we should probably fix: all the `int planeIndex` parameters everywhere need to be `long planeIndex`...)
+comment: 4302827
+	path: scifio/src/main/java/io/scif/util/FormatTools.java
+	line: 289
+	body: @ctrueden  dang it, I did convert those indices to longs once and then converted them back :-p
+
+Anyway, no reason except these methods were already here so I left them here. I think it makes sense to move them to Metadata..
+comment: 4303191
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 86
+	body: @hinerm: Do you think it would be worthwhile to combine the `isFalseColor` and `isIndexed` flags into a three-valued enum instead, `IndexedMode`? I am ambivalent; the main issue here is that `isIndexed=false, isFalseColor=true` really makes no sense. That is, the value of `isFalseColor` only matters when `isIndexed=true`. We could still keep an `isIndexed` accessor which returns true in two of the three cases. But I don't feel strongly about it; just thought I'd throw it out there.
+comment: 4303212
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 153
+	body: This is not actually a bad method to keep (though it should return `long`); it simply returns the product of the non-planar axis lengths.
+
+Never mind, I see that you just moved it, and it lives further down now. Cool beans.
+comment: 4303218
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 156
+	body: Typo in the javadoc here... I'll commit a fix.
+comment: 4303239
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 190
+	body: Yaaaaaaaaaay
+comment: 4303260
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 195
+	body: Should we get rid of this? There are various interpretations of the term "interleaved" here. What if you have a line scan where the dim order is (X, Y, Z) but the planar axis count is 1? Would that be considered "interleaved"? Or what if you have "XZ" data (yes, some microscope vendors think they are cute and produce data they label this way)? Should we acquiesce and label it as (X, Z) as well for the first two axes? And if so, it probably shouldn't be considered "interleaved", don't you think?
+comment: 4303292
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 198
+	body: I disagree with this definition. I would define "multichannel" data as _any_ data with an `Axes.CHANNEL` axis of length greater than 1, planar or not. A better name might be `hasMultichannelPlanes` although I (gently) question whether we really need such a method.
+comment: 4303310
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 198
+	body: Also, to be extra anal: the setter method order does not precisely match the getter order here, in that there are no `setInterleaved` or `setMultichannel` methods. IMHO it would be better to separate out such "auxiliary" accessors from the main list of accessors, whose order should match that of the mutators preceding them.
+comment: 4303378
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 215
+	body: We should take the opportunity to rethink this thumbnail API. Probably as a separate ticket rather than squashed in to this big honkin' commit, but this code review gives me the opportunity to pontificate here. :speech_balloon:
+
+In particular, it would be nice if SCIFIO could report not only that a particular image is _a_ thumbnail of another image, but _which_ image it is a thumbnail of. To support that would be as simple as changing the `isThumbnail` method to something like `long thumbnailOf`, which returns the `imageIndex` of the image being thumbnailed.
+
+However, there is a very related phenomenon of multi-resolution data in general. Bio-Formats had a multi-resolution API jury rigged on top of it, which would be nice to reconcile with the older (and much more limited) thumbnail API, since the latter is really just a very special case of the former.
+
+So really what we need is a hierarchy of image indices that convey the order. Would also be nice to be able to ask e.g. "which other image indices are lower resolution versions of me?" I haven't studied the existing Bio-Formats multiresolution API so couldn't say for sure whether this sort of thing is possible and/or easy.
+
+One other thing to check is whether there are any formats that are multi-image, where one or more of said images are thumbnail images, and the linkage back to the full-resolution image is unavailable. I.e.: you don't know which image is being thumbnailed. If there are formats like that, our API may want to be able to express that as well, so you can state "this is a thumbnail of another image, but I don't know which one."
+comment: 4303445
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 310
+	body: Should still return `long` though!
+comment: 4303487
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 227
+	body: :smiley_cat:
+comment: 4303507
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 289
+	body: Is this note obsolete now? I don't understand the comment in the context of how "planar axis" is now defined.
+comment: 4303513
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 300
+	body: Same here... this is no longer relevant, right?
+comment: 4303529
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 292
+	body: As a nitpick, I wouldn't call the list "sorted". The order is consistent with the greater ordering, yes, but "sorted" implies that it is alphabetized or something. Any "sorting" that takes place is solely to account for the internal implementation detail that a hash on `AxisType` objects is used, which shouldn't matter (or even be known) to downstream consumers.
+comment: 4303534
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 303
+	body: See comment about "sorted" above.
+comment: 4303539
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 320
+	body: See comment about "sorted" above.
+comment: 4303543
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 330
+	body: See comment about "sorted" above.
+comment: 4303547
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 337
+	body: See comment about "sorted" above.
+comment: 4303548
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 344
+	body: See comment about "sorted" above.
+comment: 4303756
+	path: null
+	line: -1
+	body: This work is looking really good, @hinerm! I made some comments, mostly in the `ImageMetadata` class. This commit is huge so I didn't throughly read through everything, but we can always address issues after the merge, too. Most of the stuff I mention above can be done as new commits on top of the branch. BTW, I pushed several new commits on the branch already, some more tangential than others.
+comment: 4309586
+	path: scifio/src/main/java/io/scif/util/FormatTools.java
+	line: 289
+	body: Actually I think FormatTools may be the correct place to keep these methods. For example, in https://github.com/scifio/scifio/blob/no-more-dim-order/scifio/src/main/java/io/scif/util/ImageTools.java#L194 this logic is used without Metadata, and I think there could be other similar use cases. So I like it as a utility method.
+comment: 4310440
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 198
+	body: I defined it this way to accommodate situations where you have color channels (planar dimensions) and non-planar Channel axes (e.g., the reason getEffectiveSizeC used to exist).
+
+If we defined multichannel to mean Axes.CHANNEL of length > 1, I don't think there's a reason to have such an accessor because you can just check the axis length directly. If we went in that direction, I think we should provide an Axes.CHANNEL and Axes.RGB axis. Don't know if Axes.RGB should be in SCIFIOAxes or Axes.
+comment: 4310548
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 86
+	body: I also don't feel strongly about this.. but I don't think it has to be an N-D issue. Added it as an issue for 0.8.0. 
+
+https://github.com/scifio/scifio/issues/77
+comment: 4310774
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 195
+	body: This is an unfortunate limitation of our convention of using X and Y as the "primary" dimensional planar axes.
+
+To facilitate things like "XZ" data, we could add API to allow the setting of the dimensional planar axes (defaulting to XY). Then "interleaved" would be any datasets with axes that are ordered before the dimensional planar axes.
+comment: 4310830
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 215
+	body: Agreed, the thumbnail API generally doesn't get much direct attention and could use a refactoring.
+
+Added a ticket https://github.com/scifio/scifio/issues/78
+comment: 4310882
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 289
+	body: yep! removed
+comment: 4310904
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 292
+	body: agreed, rephrasing.
+comment: 4311154
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 198
+	body: It seems the current `isMultichannel()` (what I would prefer to call `hasMultichannelPlanes`) is used in a couple of places currently, including the AVI, ICS, TIFF and PICT formats. But I confess I do not understand its purpose in the context of those formats. My brain is exhausted today so perhaps we should revisit on Monday. But my intuition is that this method is not a good way to solve whatever problem it is trying to solve.
+comment: 4311270
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 195
+	body: Interesting idea, but I think we should not enabling overriding the default usage of XY. Any particular format is free to determine how its two main planar axes are chosen; the vast majority of them simply use the convention of XY, which is fine. But it is possible we could have a format that chooses to do otherwise. Allowing consumers to override this default seems like it would be asking for weird bugs for no real clear benefit.
+
+Anyway, my point is that I think the javadoc's stated definition of "interleaved" here is wrong. I would not define XYC, with planar axis count 3, to be interleaved. But I _would_ say that CXY is interleaved. As for XCY, that one is harder, but it has never come up in practice.
+
+Generally speaking, the main point of interleaved is to define which leading planar axes should be reshuffled by `PlaneSeparator`, right? So in general, perhaps we should have a `getInterleavedAxisCount` similar to `getPlanarAxisCount` where the interleaved count must be strictly less than the planar axis count (because you need at least one dimension per call to `openPlane`).
+
+For example, if you have dimensions `(i, j, k, X, Y, Q, R, S)` where `i`, `j` and `k` are "interleaved" planar dimensions, `X` and `Y` are the "normal" base planar dimensions, and `Q`, `R` and `S` are non-planar dimensions, then:
+
+* Your planar axis count would be 5.
+* Your interleaved axis count would be 3.
+* The `PlaneSeparator` would transform the axis order to `(X, Y, i, j, k, Q, R, S)` with a new planar axis count of 2 and interleaved axis count of 0.
+
+So this raises a question: what should the job of `PlaneSeparator` be? Should it be: A) to make interleaved axis count be 0; or B) to make planar axis count be 2?
+
+The difference is in the case of `(X, Y, C, Q, R, S)` data with planar axis count of 3 and interleaved axis count of 0. If the point of `PlaneSeparator` is (A) then it would leave the above data alone. But in the case of (B) it would separate out the `C` dimension so that you only get one `C` position per call to `openPlane` (because the planar axis count would go from 3 to 2).
+
+I think that all the current use cases of `ChannelSeparator` in Bio-Formats, and hence `PlaneSeparator` in SCIFIO moving forward, will want a filter that ensures there are only 2 axes per `openPlane` call. So in short, I think (B) should be the behavior we shoot for.
+
+Either way, we still need the "interleaved axis count" field because we need to be able to differentiate between `(X, Y, C)` order being left alone (but planar axis count going from 3 to 2) versus `(C, X, Y)` being transformed to `(X, Y, C)`. So I think getting rid of `boolean isInterleaved()` and adding `int getInterleavedAxisCount()` solves the problem in a general way without mandating that `X` and `Y` specifically are the canonical planar axes for this purpose.
+
+Make sense?
+comment: 4311366
+	path: scifio/src/main/java/io/scif/util/FormatTools.java
+	line: 289
+	body: You misunderstand my proposal. The original `rasterToPosition` and `positionToRaster` methods should stay in `FormatTools`, yes. But the versions that take a `Metadata` (or a `Reader` I guess) should live in their respective classes and probably be renamed. Really what we want is for `Metadata` to have the following two methods: `long getPlaneIndex(long[] pos)` and `long[] getPosition(long planeIndex)`. These work by passing the dimensional extents of the metadata instance to `FormatTools.positionToRaster` and `FormatTools.rasterToPosition` respectively.
+comment: 4311394
+	path: scifio/src/main/java/io/scif/util/FormatTools.java
+	line: 289
+	body: We should also consider using the ImgLib2 `Localizable` interface here as appropriate (and its sister interface `Positionable`). See also `imagej.data.PositionableByAxis` which we could consider migrating to `net.imglib2.meta`.
+comment: 4311644
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 195
+	body: The way I wrote PlaneSeparator is agnostic of its intended purpose, but both A) and B) are possible given the parameters used.
+
+If you look at how ImgOpener uses PlaneSeparator, it always tries to separate Axes.CHANNEL. This ensures that if the data is XYC with 3 planar dimensions, it will be converted to XYC with 2 planar dimensions - because PlaneSeparator only "separates" planar axes.
+
+ImgOpener also scans the Axis list and separates on any axes preceding X,Y. This effectively removes all interleaved dimensions.
+
+So I think both A and B are basically covered already.
+
+I don't think the getInterleavedAxisCount is necessary, because I like the current outlook that axis order is sufficient to imply interleaved status.
+
+As for the definition of interleaved, I'm ambivalent. Fundamentally, I agree that it's a little off. But within the scope of our stated conventions (that X and Y are the canonical planar Axes) I think it is correct, if we don't allow the overriding of canonical axes.
+
+If somethings is XCY, I would call that a type of interleaved data, because it is one X scanline for each channel. It certainly is not straight planar data.
+
+If something is just "XZ" and not "XZ...Y" I would still say it's interleaved with respect to our stated convention, but it doesn't matter because size Y is 1. If your planar axis count is 2 then whether it's interleaved or not shouldn't affect the resultant plane.
+
+One thing I'm thinking though, is that in ImgOpener, as I said, I try to separate every axis preceding X. I think I should we should also separate axes after X if there are more than 2 planar axes remaining (effectively reducing the planar axis count to 2).
+
+But I think this should be dictated by the consumer of the PlaneSeparator API, and not in the PlaneSeparator's purpose itself.
+comment: 4311690
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 195
+	body: First of all, by your logic, the `isInterleaved` method is also unnecessary.
+
+Secondly, I am arguing here _against_ the explicit convention of XY as canonical planar axes. My point is that right now, each reader implementation that doesn't "know better" uses them as the _de facto_ first two dimensions. ___However___, I do not think we should _enforce_ this in any way. And if we want to avoid enforcing this, we need `int getInterleavedAxisCount` or else there is _no way_ for `PlaneSeparator` to know how many of the leading axes to "factor to the back".
+comment: 4311694
+	path: scifio/src/main/java/io/scif/util/FormatTools.java
+	line: 289
+	body: whoops I did misunderstand.. my bad. Yes that is a completely reasonable suggestion!
+comment: 4311751
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 195
+	body: One other comment: I think it's fine if `PlaneSeparator` provides an override for how many axes it "factors to the back". But I would much prefer _by default_ for it to use the value of `int getInterleavedAxisCount`. Unless you convince me I am on the wrong track here, of course.
+
+The only thing my proposal does not cover is cases like `(X, C, Y)` being converted to `(X, Y, C)` but as I said we have never seen that and may be YAGNI. Or if not, we can always extend the API for that later (and I fear we would need an `isInterleaved(int d)` to fully support that).
+comment: 4312775
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 195
+	body: sorry, misunderstood when you said we shouldn't override the default use of XY as canonical planar dimensions.
+
+I think we only need one of isInterleaved and getInterleavedAxisCount.  I guess my reservations about the interleavedAxisCount is that, if you have a dataset that is interleaved, it's just another thing to remember to set (e.g. first you set the axis order to an interleaved order, and then you have to set the number of interleaved axes).
+
+The nice thing right now about isInterleaved is that it's just a convenience method for checking if the Axes.X index is index 0 and Axes.Y is 1 and there is no "setIsInterleaved".
+
+But having that behavior overridable would be nice. So maybe, "getInterleavedAxisCount" returns the number of Axes that appear before X by default, unless "setInterleavedAxisCount" is called.
+
+Then I'll refactor PlaneSeparator to work on getInterleavedAxisCount by default, but I'll preserve the API that accepts a list of axes like it does now.
+comment: 4313065
+	path: scifio/src/main/java/io/scif/ImageMetadata.java
+	line: 195
+	body: Right. I am proposing the following:
+*  Get rid of `isInterleaved()`
+*  Introduce `int getInterleavedAxisCount()` which returns a value in the range `[0, getPlanarAxisCount() - 1]`
+*  Make `PlaneSeparator` take two parameters:
+    * `planarAxisCount` (PAC): number of axes that remain as planar axes in the filter's output
+    * `interleavedAxisCount` (IAC): number of leading axes to reshuffle out of planar axes
+
+    So, some examples (semicolon separates planar from nonplanar axes):
+
+    * PAC=2 and IAC=0 converts `(X, Y, C; T)` to `(X, Y; C, T)`.
+    * PAC=2 and IAC=0 converts `(C, X, Y; T)` to `(C, X; Y, T)`.
+    * PAC=2 and IAC=1 converts `(X, Y, C; T)` to `(Y, C; X, T)`.
+    * PAC=2 and IAC=1 converts `(C, X, Y; T)` to `(X, Y; C, T)`.
+
+    So hopefully the examples above illustrate why `PlaneSeparator` needs IAC. And then by extension, why having each `Metadata` provide a `planarAxisCount` and `interleavedAxisCount` is crucial for sensible default behavior (which is what 99+% of users will use).
+
+Rather than having `getInterleavedAxisCount` return the number of axes before `X` by default, I think it should return 0 always by default. It should be up to the format implementation to set it to a larger number if the data is indeed interleaved (which in most cases for scientific data formats it is not; it is more of a thing with graphics formats).

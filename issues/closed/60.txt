@@ -1,0 +1,12 @@
+title: Create new Axes for use in SCIFIO
+body:
+see https://github.com/imagej/imglib/issues/30
+
+We should create the Axes that are used in SCIFIO with the appropriate planar/channel/etc... flags
+assignee: User:hinerm
+milestone: 0.7.0 - N-Dimensionality
+comments:
+Note that this implies a complete refactoring of existing code to then use these axes.
+
+We may also want to add metadata API for accessing each label of axis (e.g. instead of getAxesPlanar or getAxesNonPlanar, just getAxes(label...))
+Fixed in 7b1287229365986f8ab2d05cce7d726393c6ac9e

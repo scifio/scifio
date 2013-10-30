@@ -1,0 +1,4 @@
+name: jenkinsgit
+is active: true
+configuration:
+jenkins_url : http://jenkins.imagej.net/

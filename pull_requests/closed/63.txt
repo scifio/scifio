@@ -11,6 +11,8 @@ so the Format instance is acting like a service and you have to provide the id t
 I know this changeset means that Formats may fail oddly when the file doesn't exist but ultimately I think I like that more, and if needed we can add some checks in the components to check for these things. In the scope of LocationService I think it makes sense to create a VirtualHandle for now.
 
 Let me know if you want me to refactor this though or if it doesn't fully resolve the OMEROFormat issues.
-assignee: null
+number: 63
 milestone: null
+labels:
+merged: true
 comments:

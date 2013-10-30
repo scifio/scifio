@@ -1,0 +1,12 @@
+title: Consolidate these issues with OME trac
+body:
+There is probably overlap between OME trac tickets and these issues. At the least, the difference in purpose between these two tracking systems should be documented/explained.
+
+If we're keeping SCIFIO in its own git repo and not making it a part of Bio-Formats, I think github issues should be SCIFIO-centric, while the OME trac would be used for the issues regarding the Bio-Formats fork (e.g. PFF and OME-XML conversion to SCIFIO API)
+assignee: User:hinerm
+milestone: 0.7.0 - N-Dimensionality
+comments:
+I agree. SCIFIO-specific issues on the OME Trac should be closed with a link to the proper corresponding issue in GitHub Issues. (So any issues in Trac but not GH Issues need to be refiled here, of course.)
+
+The OME Trac will continue to be used for tickets relating to the integration of SCIFIO with Bio-Formats, which as @hinerm says is what the [scifio/bioformats](https://github.com/scifio/bioformats) fork is all about.
+Completed. The OME trac should now contain only SCIFIO tickets relevant to modifications in OME code bases. Migrated tickets to github as necessary.

@@ -1,0 +1,16 @@
+title: No more dim order
+body:
+This patch refactors the SCIFIO API to be N-dimensional, instead of the 5-D model currently used by Bio-Formats.
+
+NB: these changes are not ready to be merged, as the history needs to be cleaned up (at a minimum).
+
+However, this work is at the point where all the maven tests are passing.
+
+I will start to test with IJ2 and fix any associated bugs, but I wanted to open this up to review now in case there are objections to any significant portions of code.
+
+ Personally I would like to find a way to simplify some of the actual N-dimensional reading code ([ImgOpener](https://github.com/scifio/scifio/blob/d1bbb9b391f99bede70249012ffafe2c00e3c646/scifio/src/main/java/io/scif/img/ImgOpener.java#L560), [AbstractArrayLoader](https://github.com/scifio/scifio/blob/d1bbb9b391f99bede70249012ffafe2c00e3c646/scifio/src/main/java/io/scif/img/cell/loaders/AbstractArrayLoader.java#L155), [FakeFormat](https://github.com/scifio/scifio/blob/d1bbb9b391f99bede70249012ffafe2c00e3c646/scifio/src/main/java/io/scif/formats/FakeFormat.java#L444)). In each case I implemented a recursive read method to handle the arbitrary number of planes and planar dimensions. This code is fairly complicated and may not be easy to understand/troubleshoot. If anyone has input on how to consolidate or simplify this that'd be great. (I haven't actually tried to do so myself yet, as I focused on getting tests passing first)
+number: 67
+milestone: null
+labels:
+merged: true
+comments:
