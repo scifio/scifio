@@ -59,13 +59,13 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 
 	// -- Fields --
 
-	// Disk-backed database for writing
+	/** Disk-backed database for writing. */
 	private DB db;
 
-	// List of caches
+	/** List of caches. */
 	private final Set<String> caches = new TreeSet<String>();
 
-	// Maximum cache size, in bytes
+	/** Maximum cache size, in bytes. */
 	private long maxCacheSize = Long.MAX_VALUE;
 
 	// -- CacheService API Methods --
