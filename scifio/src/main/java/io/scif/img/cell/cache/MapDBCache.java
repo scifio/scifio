@@ -227,13 +227,15 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	}
 
 	private DB db() {
-		if (db == null) {
-			db =
-				DBMaker.newTempFileDB().closeOnJvmShutdown().cacheDisable()
-					.asyncWriteDisable().writeAheadLogDisable()
-					.randomAccessFileEnableIfNeeded().deleteFilesAfterClose().make();
-		}
+		if (db == null) createDB();
 		return db;
 	}
 
+	private synchronized void createDB() {
+		if (db != null) return;
+		db =
+			DBMaker.newTempFileDB().closeOnJvmShutdown().cacheDisable()
+				.asyncWriteDisable().writeAheadLogDisable()
+				.randomAccessFileEnableIfNeeded().deleteFilesAfterClose().make();
+	}
 }
