@@ -79,7 +79,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	@Override
 	public void clearCache(final String cacheId) {
 		if (caches.contains(cacheId)) {
-			final HTreeMap<?, ?> cache = db.getHashMap(cacheId);
+			final HTreeMap<?, ?> cache = db().getHashMap(cacheId);
 
 			// Disable re-caching in all cells of this cache and remove them.
 			for (final Object k : cache.keySet()) {
@@ -87,7 +87,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 				if (cell != null) cell.cacheOnFinalize(false);
 				cache.remove(k);
 			}
-			db.commit();
+			db().commit();
 		}
 	}
 
@@ -100,7 +100,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	@Override
 	public void dropCache(final String cacheId) {
 		if (caches.contains(cacheId)) {
-			db.getHashMap(cacheId).close();
+			db().getHashMap(cacheId).close();
 			caches.remove(cacheId);
 		}
 	}
@@ -128,7 +128,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 
 			// Store the provided cell
 
-			final HTreeMap<Object, Object> cache = db.getHashMap(cacheId);
+			final HTreeMap<Object, Object> cache = db().getHashMap(cacheId);
 
 			// Will another object fit?
 			if ((cache.size() + 1) * object.getElementSize() < maxCacheSize) diskIsFull(false);
@@ -143,7 +143,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 			}
 			else {
 				cache.put(getKey(cacheId, index), object);
-				db.commit();
+				db().commit();
 				object.cacheOnFinalize(false);
 			}
 		}
@@ -156,8 +156,8 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		final SCIFIOCell<?> cell = getCell(cacheId, index);
 
 		if (cell != null) {
-			db.getHashMap(cacheId).remove(getKey(cacheId, index));
-			db.commit();
+			db().getHashMap(cacheId).remove(getKey(cacheId, index));
+			db().commit();
 		}
 
 		return cell;
@@ -184,15 +184,8 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	// -- Service API Methods --
 
 	@Override
-	public void initialize() {
-		db =
-			DBMaker.newTempFileDB().closeOnJvmShutdown().cacheDisable()
-				.asyncWriteDisable().writeAheadLogDisable()
-				.randomAccessFileEnableIfNeeded().deleteFilesAfterClose().make();
-	}
-
-	@Override
 	public void dispose() {
+		if (db == null) return;
 		clearAllCaches();
 		db.close();
 	}
@@ -232,4 +225,15 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		}
 		return cell;
 	}
+
+	private DB db() {
+		if (db == null) {
+			db =
+				DBMaker.newTempFileDB().closeOnJvmShutdown().cacheDisable()
+					.asyncWriteDisable().writeAheadLogDisable()
+					.randomAccessFileEnableIfNeeded().deleteFilesAfterClose().make();
+		}
+		return db;
+	}
+
 }
