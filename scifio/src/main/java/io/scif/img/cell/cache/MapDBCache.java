@@ -195,7 +195,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	private SCIFIOCell<?> getCell(final String cacheId, final int index) {
 		final Integer key = getKey(cacheId, index);
 
-		final HTreeMap<?, ?> cache = db.getHashMap(cacheId);
+		final HTreeMap<?, ?> cache = db().getHashMap(cacheId);
 
 		final SCIFIOCell<?> cell = getCellFromCache(cache, key);
 
