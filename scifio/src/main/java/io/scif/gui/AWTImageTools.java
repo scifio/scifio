@@ -742,6 +742,17 @@ public final class AWTImageTools {
 	 * from the provided Reader's Metadata.
 	 */
 	public static BufferedImage openImage(final Plane plane, final Reader r,
+		final int imageIndex) throws FormatException, IOException
+	{
+		long[] lengths = r.getMetadata().get(imageIndex).getAxesLengthsPlanar();
+		return openImage(plane, r, lengths, imageIndex);
+	}
+
+	/**
+	 * Creates an image from the given Plane. Pulls additional image information
+	 * from the provided Reader's Metadata.
+	 */
+	public static BufferedImage openImage(final Plane plane, final Reader r,
 		long[] axes, final int imageIndex) throws FormatException,
 		IOException
 	{
