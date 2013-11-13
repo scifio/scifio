@@ -73,7 +73,9 @@ public interface Plane extends Contextual {
 	ColorTable getColorTable();
 
 	/**
-	 * Gets this plane's standardized pixel data.
+	 * Gets this plane's standardized pixel data. This byte[] is guaranteed to be
+	 * consistent across multiple calls to this method, for a given native data
+	 * object.
 	 * 
 	 * @return The standardized representation of this plane's data.
 	 */

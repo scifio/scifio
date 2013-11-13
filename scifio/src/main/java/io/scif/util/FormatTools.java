@@ -214,8 +214,7 @@ public final class FormatTools {
 	 * Creates an array, wrapping all provided AxisTypes as CalibratedAxis with
 	 * calibration = 1.0um.
 	 */
-	public static CalibratedAxis[] createAxes(final AxisType... axisTypes)
-	{
+	public static CalibratedAxis[] createAxes(final AxisType... axisTypes) {
 		final CalibratedAxis[] axes = new CalibratedAxis[axisTypes.length];
 
 		for (int i = 0; i < axisTypes.length; i++) {
@@ -251,8 +250,8 @@ public final class FormatTools {
 	}
 
 	/**
-	 * Applies the given scale and origin to the provided CalibratedAxis, if it
-	 * is a {@link LinearAxis}.
+	 * Applies the given scale and origin to the provided CalibratedAxis, if it is
+	 * a {@link LinearAxis}.
 	 */
 	public static void calibrate(final CalibratedAxis axis, final double scale,
 		final double origin)
@@ -267,7 +266,7 @@ public final class FormatTools {
 	 * Gets the average scale over the specified axis of the given image metadata.
 	 * 
 	 * @return the average scale over the axis's values, or 1.0 if the desired
-	 * axis is null.
+	 *         axis is null.
 	 */
 	public static double getScale(final Metadata m, final int imageIndex,
 		final AxisType axisType)
@@ -317,7 +316,8 @@ public final class FormatTools {
 	 * @param raster rasterized index value
 	 * @return position along each dimensional axis
 	 */
-	public static long[] rasterToPosition(final long[] lengths, final long raster)
+	public static long[]
+		rasterToPosition(final long[] lengths, final long raster)
 	{
 		return rasterToPosition(lengths, raster, new long[lengths.length]);
 	}
@@ -346,6 +346,86 @@ public final class FormatTools {
 	}
 
 	/**
+	 * Computes the next plane index for a given position, using the current min
+	 * and max planar values. Also updates the position array appropriately.
+	 * 
+	 * @param imageIndex image index within dataset
+	 * @param r reader used to open the dataset
+	 * @param pos current position in each dimension
+	 * @param offsets offsets in each dimension (potentially cropped)
+	 * @param cropLengths effective lengths in each dimension (potentially
+	 *          cropped)
+	 * @return the next plane index, or -1 if the position extends beyond the
+	 *         given min/max
+	 */
+	public static long nextPlaneIndex(int imageIndex, Reader r, long[] pos,
+		long[] offsets, long[] cropLengths)
+	{
+		return nextPlaneIndex(imageIndex, r.getMetadata(), pos, offsets,
+			cropLengths);
+	}
+
+	/**
+	 * Computes the next plane index for a given position, using the current min
+	 * and max planar values. Also updates the position array appropriately.
+	 * 
+	 * @param imageIndex image index within dataset
+	 * @param m metadata describing the dataset
+	 * @param pos current position in each dimension
+	 * @param offsets offsets in each dimension (potentially cropped)
+	 * @param cropLengths effective lengths in each dimension (potentially
+	 *          cropped)
+	 * @return the next plane index, or -1 if the position extends beyond the
+	 *         given min/max
+	 */
+	public static long nextPlaneIndex(int imageIndex, Metadata m, long[] pos,
+		long[] offsets, long[] cropLengths)
+	{
+		return nextPlaneIndex(m.get(imageIndex).getAxesLengthsNonPlanar(), pos,
+			offsets, cropLengths);
+	}
+
+	/**
+	 * Computes the next plane index for a given position, using the current min
+	 * and max planar values. Also updates the position array appropriately.
+	 * 
+	 * @param lengths actual dimension lengths
+	 * @param pos current position in each dimension
+	 * @param offsets offsets in each dimension (potentially cropped)
+	 * @param cropLengths effective lengths in each dimension (potentially
+	 *          cropped)
+	 * @return the next plane index, or -1 if the position extends beyond the
+	 *         given min/max
+	 */
+	public static long nextPlaneIndex(long[] lengths, long[] pos, long[] offsets,
+		long[] cropLengths)
+	{
+		boolean updated = false;
+
+		// loop over each index of the position to see if we can update it
+		for (int i = 0; i < pos.length && !updated; i++) {
+			if (pos[i] < offsets[i]) break;
+
+			// Check if the next index is valid for this position
+			if (pos[i] + 1 < offsets[i] + cropLengths[i]) {
+				// if so, make the update
+				pos[i]++;
+				updated = true;
+			}
+			else {
+				// if not, reset this position and try to update the next position
+				pos[i] = offsets[i];
+			}
+		}
+		if (updated) {
+			// Next position is valid. Return its raster
+			return FormatTools.positionToRaster(lengths, pos);
+		}
+		// Next position is not valid
+		return -1;
+	}
+
+	/**
 	 * Computes a unique 1-D index corresponding to the given multidimensional
 	 * position.
 	 * 
@@ -369,8 +449,8 @@ public final class FormatTools {
 	 * @param planeIndices position along each dimensional axis
 	 * @return rasterized index value
 	 */
-	public static long positionToRaster(final int imageIndex,
-		final Metadata m, final long[] planeIndices)
+	public static long positionToRaster(final int imageIndex, final Metadata m,
+		final long[] planeIndices)
 	{
 		final long[] planeSizes = m.get(imageIndex).getAxesLengthsNonPlanar();
 		return positionToRaster(planeSizes, planeIndices);
@@ -426,8 +506,7 @@ public final class FormatTools {
 		}
 		else if (id != null && !notNull) {
 			msg =
-				"Current file should be null, but is '" + id +
-					"'; call close() first";
+				"Current file should be null, but is '" + id + "'; call close() first";
 		}
 		if (msg == null) return;
 
@@ -501,9 +580,9 @@ public final class FormatTools {
 	 * then the buffer length check is not performed. If no exception is thrown,
 	 * these parameters are suitable for writing.
 	 */
-	public static void checkPlaneForWriting(final Metadata m, final int imageIndex,
-		final long planeIndex, final int bufLength, final long[] planeMin,
-		final long[] planeMax) throws FormatException
+	public static void checkPlaneForWriting(final Metadata m,
+		final int imageIndex, final long planeIndex, final int bufLength,
+		final long[] planeMin, final long[] planeMax) throws FormatException
 	{
 		checkPlaneNumber(m, imageIndex, planeIndex);
 		checkTileSize(m, planeMin, planeMax, imageIndex);
@@ -527,8 +606,8 @@ public final class FormatTools {
 		final long[] planeMax, final int imageIndex) throws FormatException
 	{
 		List<CalibratedAxis> axes = m.get(imageIndex).getAxesPlanar();
-		
-		for (int i=0; i<axes.size(); i++) {
+
+		for (int i = 0; i < axes.size(); i++) {
 			final long start = planeMin[i];
 			final long end = planeMax[i];
 			final long length = m.get(imageIndex).getAxisLength(axes.get(i));
@@ -546,7 +625,8 @@ public final class FormatTools {
 	public static void checkBufferSize(final int imageIndex, final Metadata m,
 		final int len) throws FormatException
 	{
-		checkBufferSize(m, len, m.get(imageIndex).getAxesLengthsPlanar(), imageIndex);
+		checkBufferSize(m, len, m.get(imageIndex).getAxesLengthsPlanar(),
+			imageIndex);
 	}
 
 	/**
@@ -893,7 +973,8 @@ public final class FormatTools {
 				final long width = m.get(imageIndex).getThumbSizeX() * 4;
 				final long height = m.get(imageIndex).getThumbSizeY() * 4;
 
-				planeMin[xIndex] = (m.get(imageIndex).getAxisLength(Axes.X) - width) / 2;
+				planeMin[xIndex] =
+					(m.get(imageIndex).getAxisLength(Axes.X) - width) / 2;
 				planeMin[yIndex] =
 					(m.get(imageIndex).getAxisLength(Axes.Y) - height) / 2;
 				planeMax[xIndex] = width;
@@ -944,8 +1025,8 @@ public final class FormatTools {
 
 			for (int i = 0; i < bytes[0].length / bpp; i += bpp) {
 				for (int j = 0; j < rgbChannelCount; j++) {
-					System.arraycopy(bytes[j], i, rtn, (int)(i * rgbChannelCount) + j * bpp,
-						bpp);
+					System.arraycopy(bytes[j], i, rtn, (int) (i * rgbChannelCount) + j *
+						bpp, bpp);
 				}
 			}
 		}
@@ -989,8 +1070,9 @@ public final class FormatTools {
 	 * 
 	 * @param pixelType the pixel type.
 	 * @return an array containing the min and max as elements 0 and 1,
-	 *          respectively.
-	 * @throws IllegalArgumentException if the pixel type is floating point or invalid.
+	 *         respectively.
+	 * @throws IllegalArgumentException if the pixel type is floating point or
+	 *           invalid.
 	 */
 	public static long[] defaultMinMax(final int pixelType) {
 		long min = 0, max = 0;

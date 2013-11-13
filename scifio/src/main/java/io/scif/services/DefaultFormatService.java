@@ -48,6 +48,7 @@ import io.scif.Writer;
 import io.scif.util.FormatTools;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -309,6 +310,11 @@ public class DefaultFormatService extends AbstractService implements
 	@Override
 	public <T extends SCIFIOService> T getInstance(final Class<T> type) {
 		return getContext().getService(type);
+	}
+
+	@Override
+	public Collection<Format> getOutputFormats() {
+		return writerMap().values();
 	}
 
 	// -- Private Methods --

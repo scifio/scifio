@@ -621,7 +621,7 @@ public final class AWTImageTools {
 	public static BufferedImage blankImage(final ImageMetadata meta,
 		final long[] axes, final int type)
 	{
-		final XYCTuple xyc = axesToXYC(meta, axes);
+		final XYCTuple xyc = new XYCTuple(meta, axes);
 		final int c = xyc.c();
 		final int w = xyc.x();
 		final int h = xyc.y();
@@ -742,11 +742,33 @@ public final class AWTImageTools {
 	 * from the provided Reader's Metadata.
 	 */
 	public static BufferedImage openImage(final Plane plane, final Reader r,
+		final int imageIndex) throws FormatException, IOException
+	{
+		long[] lengths = r.getMetadata().get(imageIndex).getAxesLengthsPlanar();
+		return openImage(plane, r, lengths, imageIndex);
+	}
+
+	/**
+	 * Creates an image from the given Plane. Pulls additional image information
+	 * from the provided Reader's Metadata.
+	 */
+	public static BufferedImage openImage(final Plane plane, final Reader r,
 		long[] axes, final int imageIndex) throws FormatException,
 		IOException
 	{
+		return openImage(plane, plane.getBytes(), r, axes, imageIndex);
+	}
+
+	/**
+	 * Creates an image from the given Plane. Pulls additional image information
+	 * from the provided Reader's Metadata.
+	 */
+	public static BufferedImage openImage(final Plane plane, byte[] bytes,
+		final Reader r, long[] axes, final int imageIndex) throws FormatException,
+		IOException
+	{
 		final Metadata meta = r.getMetadata();
-		final XYCTuple whc = axesToXYC(meta.get(imageIndex), axes);
+		final XYCTuple whc = new XYCTuple(meta.get(imageIndex), axes);
 		final int w = whc.x();
 		final int h = whc.y();
 		final int rgbChanCount = whc.c();
@@ -759,13 +781,13 @@ public final class AWTImageTools {
 
 		if (pixelType == FormatTools.FLOAT) {
 			float[] f =
-				(float[]) DataTools.makeDataArray(plane.getBytes(), 4, true, little);
+				(float[]) DataTools.makeDataArray(bytes, 4, true, little);
 			if (normal) f = DataTools.normalizeFloats(f);
 			return makeImage(f, w, h, rgbChanCount, interleaved);
 		}
 		else if (pixelType == FormatTools.DOUBLE) {
 			double[] d =
-				(double[]) DataTools.makeDataArray(plane.getBytes(), 8, true, little);
+				(double[]) DataTools.makeDataArray(bytes, 8, true, little);
 			if (normal) d = DataTools.normalizeDoubles(d);
 			return makeImage(d, w, h, rgbChanCount, interleaved);
 		}
@@ -787,7 +809,7 @@ public final class AWTImageTools {
 
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
 		BufferedImage b =
-			makeImage(plane.getBytes(), w, h, rgbChanCount, interleaved, bpp, false,
+			makeImage(bytes, w, h, rgbChanCount, interleaved, bpp, false,
 				little, signed);
 		if (b == null) {
 			throw new FormatException("Could not construct BufferedImage");
@@ -2082,66 +2104,5 @@ public final class AWTImageTools {
 		lut[1] = m.getGreens();
 		lut[2] = m.getBlues();
 		return lut;
-	}
-	
-
-  // -- Helper methods --
-
-	private static XYCTuple axesToXYC(final ImageMetadata meta,
-		final long[] axisLengths)
-	{
-		long x = 1, y = 1, c = 1;
-		if (meta.getInterleavedAxisCount() > 0) {
-			// compress the non-XY planar axes
-			for (int i = 0; i < axisLengths.length; i++) {
-				if (meta.getAxisIndex(Axes.X) == i) {
-					x = axisLengths[i];
-				}
-				else if (meta.getAxisIndex(Axes.Y) == i) {
-					y = axisLengths[i];
-				}
-				else {
-					c *= axisLengths[i];
-				}
-			}
-		}
-		else {
-			x = axisLengths[meta.getAxisIndex(Axes.X)];
-			y = axisLengths[meta.getAxisIndex(Axes.Y)];
-			// pull the channel dimension if it's a planar axis.
-			int cIndex = meta.getAxisIndex(Axes.CHANNEL);
-			if (cIndex < meta.getPlanarAxisCount() && cIndex >= 0) {
-				c = axisLengths[meta.getAxisIndex(Axes.CHANNEL)];
-			}
-
-			if (c <= 0) c = 1;
-		}
-
-		return new XYCTuple(x, y, c);
-	}
-
-	// -- Helper class --
-
-	private static class XYCTuple {
-
-		private final long x, y, c;
-
-		public XYCTuple(final long x, final long y, final long c) {
-			this.x = x;
-			this.y = y;
-			this.c = c;
-		}
-
-		public int x() {
-			return (int) x;
-		}
-
-		public int y() {
-			return (int) y;
-		}
-
-		public int c() {
-			return (int) c;
-		}
 	}
 }
