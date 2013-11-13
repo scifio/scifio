@@ -621,7 +621,7 @@ public final class AWTImageTools {
 	public static BufferedImage blankImage(final ImageMetadata meta,
 		final long[] axes, final int type)
 	{
-		final XYCTuple xyc = axesToXYC(meta, axes);
+		final XYCTuple xyc = new XYCTuple(meta, axes);
 		final int c = xyc.c();
 		final int w = xyc.x();
 		final int h = xyc.y();
@@ -746,7 +746,7 @@ public final class AWTImageTools {
 		IOException
 	{
 		final Metadata meta = r.getMetadata();
-		final XYCTuple whc = axesToXYC(meta.get(imageIndex), axes);
+		final XYCTuple whc = new XYCTuple(meta.get(imageIndex), axes);
 		final int w = whc.x();
 		final int h = whc.y();
 		final int rgbChanCount = whc.c();
@@ -2082,66 +2082,5 @@ public final class AWTImageTools {
 		lut[1] = m.getGreens();
 		lut[2] = m.getBlues();
 		return lut;
-	}
-	
-
-  // -- Helper methods --
-
-	private static XYCTuple axesToXYC(final ImageMetadata meta,
-		final long[] axisLengths)
-	{
-		long x = 1, y = 1, c = 1;
-		if (meta.getInterleavedAxisCount() > 0) {
-			// compress the non-XY planar axes
-			for (int i = 0; i < axisLengths.length; i++) {
-				if (meta.getAxisIndex(Axes.X) == i) {
-					x = axisLengths[i];
-				}
-				else if (meta.getAxisIndex(Axes.Y) == i) {
-					y = axisLengths[i];
-				}
-				else {
-					c *= axisLengths[i];
-				}
-			}
-		}
-		else {
-			x = axisLengths[meta.getAxisIndex(Axes.X)];
-			y = axisLengths[meta.getAxisIndex(Axes.Y)];
-			// pull the channel dimension if it's a planar axis.
-			int cIndex = meta.getAxisIndex(Axes.CHANNEL);
-			if (cIndex < meta.getPlanarAxisCount() && cIndex >= 0) {
-				c = axisLengths[meta.getAxisIndex(Axes.CHANNEL)];
-			}
-
-			if (c <= 0) c = 1;
-		}
-
-		return new XYCTuple(x, y, c);
-	}
-
-	// -- Helper class --
-
-	private static class XYCTuple {
-
-		private final long x, y, c;
-
-		public XYCTuple(final long x, final long y, final long c) {
-			this.x = x;
-			this.y = y;
-			this.c = c;
-		}
-
-		public int x() {
-			return (int) x;
-		}
-
-		public int y() {
-			return (int) y;
-		}
-
-		public int c() {
-			return (int) c;
-		}
 	}
 }
