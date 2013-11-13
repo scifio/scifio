@@ -20,6 +20,7 @@
 
 	<modules>
 		<module>scifio</module>
+		<module>tools</module>
 	</modules>
 
 	<profiles>
@@ -53,9 +54,9 @@
 					<licenseResolver>file://${project.rootdir}/license</licenseResolver>
 					<projectName>SCIFIO library for reading and converting scientific file formats.</projectName>
 					<organizationName>Open Microscopy Environment:
-	- Board of Regents of the University of Wisconsin-Madison
-	- Glencoe Software, Inc.
-	- University of Dundee</organizationName>
+  - Board of Regents of the University of Wisconsin-Madison
+  - Glencoe Software, Inc.
+  - University of Dundee</organizationName>
 					<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
 					<canUpdateDescription>true</canUpdateDescription>
 					<canUpdateCopyright>true</canUpdateCopyright>
