@@ -346,6 +346,86 @@ public final class FormatTools {
 	}
 
 	/**
+	 * Computes the next plane index for a given position, using the current min
+	 * and max planar values. Also updates the position array appropriately.
+	 * 
+	 * @param imageIndex image index within dataset
+	 * @param r reader used to open the dataset
+	 * @param pos current position in each dimension
+	 * @param offsets offsets in each dimension (potentially cropped)
+	 * @param cropLengths effective lengths in each dimension (potentially
+	 *          cropped)
+	 * @return the next plane index, or -1 if the position extends beyond the
+	 *         given min/max
+	 */
+	public static long nextPlaneIndex(int imageIndex, Reader r, long[] pos,
+		long[] offsets, long[] cropLengths)
+	{
+		return nextPlaneIndex(imageIndex, r.getMetadata(), pos, offsets,
+			cropLengths);
+	}
+
+	/**
+	 * Computes the next plane index for a given position, using the current min
+	 * and max planar values. Also updates the position array appropriately.
+	 * 
+	 * @param imageIndex image index within dataset
+	 * @param m metadata describing the dataset
+	 * @param pos current position in each dimension
+	 * @param offsets offsets in each dimension (potentially cropped)
+	 * @param cropLengths effective lengths in each dimension (potentially
+	 *          cropped)
+	 * @return the next plane index, or -1 if the position extends beyond the
+	 *         given min/max
+	 */
+	public static long nextPlaneIndex(int imageIndex, Metadata m, long[] pos,
+		long[] offsets, long[] cropLengths)
+	{
+		return nextPlaneIndex(m.get(imageIndex).getAxesLengthsNonPlanar(), pos,
+			offsets, cropLengths);
+	}
+
+	/**
+	 * Computes the next plane index for a given position, using the current min
+	 * and max planar values. Also updates the position array appropriately.
+	 * 
+	 * @param lengths actual dimension lengths
+	 * @param pos current position in each dimension
+	 * @param offsets offsets in each dimension (potentially cropped)
+	 * @param cropLengths effective lengths in each dimension (potentially
+	 *          cropped)
+	 * @return the next plane index, or -1 if the position extends beyond the
+	 *         given min/max
+	 */
+	public static long nextPlaneIndex(long[] lengths, long[] pos, long[] offsets,
+		long[] cropLengths)
+	{
+		boolean updated = false;
+
+		// loop over each index of the position to see if we can update it
+		for (int i = 0; i < pos.length && !updated; i++) {
+			if (pos[i] < offsets[i]) break;
+
+			// Check if the next index is valid for this position
+			if (pos[i] + 1 < offsets[i] + cropLengths[i]) {
+				// if so, make the update
+				pos[i]++;
+				updated = true;
+			}
+			else {
+				// if not, reset this position and try to update the next position
+				pos[i] = offsets[i];
+			}
+		}
+		if (updated) {
+			// Next position is valid. Return its raster
+			return FormatTools.positionToRaster(lengths, pos);
+		}
+		// Next position is not valid
+		return -1;
+	}
+
+	/**
 	 * Computes a unique 1-D index corresponding to the given multidimensional
 	 * position.
 	 * 
