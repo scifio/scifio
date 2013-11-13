@@ -756,6 +756,17 @@ public final class AWTImageTools {
 		long[] axes, final int imageIndex) throws FormatException,
 		IOException
 	{
+		return openImage(plane, plane.getBytes(), r, axes, imageIndex);
+	}
+
+	/**
+	 * Creates an image from the given Plane. Pulls additional image information
+	 * from the provided Reader's Metadata.
+	 */
+	public static BufferedImage openImage(final Plane plane, byte[] bytes,
+		final Reader r, long[] axes, final int imageIndex) throws FormatException,
+		IOException
+	{
 		final Metadata meta = r.getMetadata();
 		final XYCTuple whc = new XYCTuple(meta.get(imageIndex), axes);
 		final int w = whc.x();
@@ -770,13 +781,13 @@ public final class AWTImageTools {
 
 		if (pixelType == FormatTools.FLOAT) {
 			float[] f =
-				(float[]) DataTools.makeDataArray(plane.getBytes(), 4, true, little);
+				(float[]) DataTools.makeDataArray(bytes, 4, true, little);
 			if (normal) f = DataTools.normalizeFloats(f);
 			return makeImage(f, w, h, rgbChanCount, interleaved);
 		}
 		else if (pixelType == FormatTools.DOUBLE) {
 			double[] d =
-				(double[]) DataTools.makeDataArray(plane.getBytes(), 8, true, little);
+				(double[]) DataTools.makeDataArray(bytes, 8, true, little);
 			if (normal) d = DataTools.normalizeDoubles(d);
 			return makeImage(d, w, h, rgbChanCount, interleaved);
 		}
@@ -798,7 +809,7 @@ public final class AWTImageTools {
 
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
 		BufferedImage b =
-			makeImage(plane.getBytes(), w, h, rgbChanCount, interleaved, bpp, false,
+			makeImage(bytes, w, h, rgbChanCount, interleaved, bpp, false,
 				little, signed);
 		if (b == null) {
 			throw new FormatException("Could not construct BufferedImage");
