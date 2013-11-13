@@ -45,6 +45,7 @@ import io.scif.Reader;
 import io.scif.SCIFIOService;
 import io.scif.Writer;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -247,4 +248,9 @@ public interface FormatService extends SCIFIOService {
 	 * @return An instance of the requested service
 	 */
 	<T extends SCIFIOService> T getInstance(Class<T> type);
+
+	/**
+	 * @return A list of all Formats that have {@link Writer} implementations.
+	 */
+	Collection<Format> getOutputFormats();
 }
