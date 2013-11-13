@@ -1,0 +1,140 @@
+/*
+ * #%L
+ * SCIFIO library for reading and converting scientific file formats.
+ * %%
+ * Copyright (C) 2011 - 2013 Open Microscopy Environment:
+ *   - Board of Regents of the University of Wisconsin-Madison
+ *   - Glencoe Software, Inc.
+ *   - University of Dundee
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are
+ * those of the authors and should not be interpreted as representing official
+ * policies, either expressed or implied, of any organization.
+ * #L%
+ */
+
+package io.scif.gui;
+
+import io.scif.Checker;
+import io.scif.Format;
+import io.scif.FormatException;
+
+import java.io.File;
+
+import javax.swing.filechooser.FileFilter;
+
+/**
+ * A file filter for identifying the files supported by an associated
+ * {@link Format}s. Because these filters are queried repeatedly, opening a
+ * dataset during the checking process is disabled. Thus this filter will never
+ * accept a dataset that need to be opened to determine format support. File
+ * choosers should have an "All files" option to allow selection of such
+ * datasets.
+ * 
+ * @author Mark Hiner
+ */
+public class FormatFileFilter extends FileFilter implements java.io.FileFilter,
+	Comparable<FileFilter>
+{
+
+	// -- Fields --
+
+	/** Format to use for filtering */
+	private Format format;
+
+	/** Format description. */
+	private String desc;
+
+	// -- Constructors --
+
+	/**
+	 * Constructs a new filter that accepts files of the given format's type.
+	 * 
+	 * @param format The format to use for verifying a file's type.
+	 */
+	public FormatFileFilter(Format format) {
+		this.format = format;
+		StringBuffer sb = new StringBuffer(format.getFormatName());
+		String[] exts = format.getSuffixes();
+		boolean first = true;
+		for (int i = 0; i < exts.length; i++) {
+			if (exts[i] == null || exts[i].equals("")) continue;
+			if (first) {
+				sb.append(" (");
+				first = false;
+			}
+			else sb.append(", ");
+			sb.append("*.");
+			sb.append(exts[i]);
+		}
+		sb.append(")");
+		desc = sb.toString();
+	}
+
+	// -- FormatFileFilter API --
+
+	/** Returns the filter's format. */
+	public Format getFormat() {
+		return format;
+	}
+
+	// -- FileFilter API methods --
+
+	/**
+	 * Accepts files in accordance with the associated format's {@link Checker}.
+	 */
+	@Override
+	public boolean accept(File f) {
+		if (f.isDirectory()) return true;
+		try {
+			return format.createChecker().isFormat(f.getPath(), false);
+		}
+		catch (FormatException e) {
+			return false;
+		}
+	}
+
+	/** Gets the filter's description. */
+	@Override
+	public String getDescription() {
+		return desc;
+	}
+
+	// -- Object API methods --
+
+	/** Gets a string representation of this file filter. */
+	@Override
+	public String toString() {
+		return "FormatFileFilter: " + desc;
+	}
+
+	// -- Comparable API methods --
+
+	/** Compares two FileFilter objects alphanumerically. */
+	@Override
+	public int compareTo(FileFilter o) {
+		return desc.compareTo(o.getDescription());
+	}
+
+}
