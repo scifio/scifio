@@ -56,6 +56,11 @@ public class BufferedImagePlane extends
 	AbstractPlane<BufferedImage, BufferedImagePlane>
 {
 
+	// -- Fields --
+
+	/** Cached byte array representation of this plane's data. */
+	byte[] cachedBytes = null;
+
 	// -- Constructor --
 
 	public BufferedImagePlane(final Context context) {
@@ -85,29 +90,29 @@ public class BufferedImagePlane extends
 	 */
 	@Override
 	public byte[] getBytes() {
-		byte[] t = null;
-
-		switch (getData().getColorModel().getComponentSize(0)) {
-			case 8:
-				// 8-bit types can directly delegate to AWTImageTools
-				t = AWTImageTools.getBytes(getData(), false);
-				break;
-			case 16:
-				// Here we need to unpack the channel arrays appropriately
-				final short[][] ts = AWTImageTools.getShorts(getData());
-				t = new byte[ts.length * ts[0].length * 2];
-				for (int c = 0; c < ts.length; c++) {
-					int offset = c * ts[c].length * 2;
-					for (int i = 0; i < ts[c].length; i++) {
-						DataTools.unpackBytes(ts[c][i], t, offset, 2, getImageMetadata()
-							.isLittleEndian());
-						offset += 2;
+		if (cachedBytes == null) {
+			switch (getData().getColorModel().getComponentSize(0)) {
+				case 8:
+					// 8-bit types can directly delegate to AWTImageTools
+					cachedBytes = AWTImageTools.getBytes(getData(), false);
+					break;
+				case 16:
+					// Here we need to unpack the channel arrays appropriately
+					final short[][] ts = AWTImageTools.getShorts(getData());
+					cachedBytes = new byte[ts.length * ts[0].length * 2];
+					for (int c = 0; c < ts.length; c++) {
+						int offset = c * ts[c].length * 2;
+						for (int i = 0; i < ts[c].length; i++) {
+							DataTools.unpackBytes(ts[c][i], cachedBytes, offset, 2,
+								getImageMetadata().isLittleEndian());
+							offset += 2;
+						}
 					}
-				}
-				break;
+					break;
+			}
 		}
 
-		return t;
+		return cachedBytes;
 	}
 
 	// -- AbstractPlane API --
@@ -123,5 +128,11 @@ public class BufferedImagePlane extends
 		}
 
 		return AWTImageTools.blankImage(getImageMetadata(), axes, type);
+	}
+
+	@Override
+	public void setData(final BufferedImage data) {
+		super.setData(data);
+		cachedBytes = null;
 	}
 }
