@@ -247,7 +247,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 					ms0.setAxisLength(Axes.CHANNEL, samples);
 					planarAxes = 3;
 				}
-				ms0.setAxisLength(Axes.TIME, ifds.size());
+
+				if (ifds.size() > 1) {
+					ms0.setAxisLength(Axes.TIME, ifds.size());
+				}
 
 				ms0.setPlanarAxisCount(planarAxes);
 				ms0.setPixelType(firstIFD.getPixelType());

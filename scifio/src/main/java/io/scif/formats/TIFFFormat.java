@@ -67,11 +67,13 @@ import io.scif.util.ImageTools;
 import io.scif.xml.XMLService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
@@ -573,6 +575,17 @@ public class TIFFFormat extends AbstractFormat {
 			else {
 				m.setAxisLength(Axes.TIME, ifds.size());
 			}
+
+			// Clean up length 1 axes
+			ArrayList<CalibratedAxis> validAxes = new ArrayList<CalibratedAxis>();
+
+			for (CalibratedAxis axis : m.getAxes()) {
+				if (m.getAxisLength(axis) > 1) {
+					validAxes.add(axis);
+				}
+			}
+
+			m.setAxes(validAxes.toArray(new CalibratedAxis[validAxes.size()]));
 		}
 
 		/**
