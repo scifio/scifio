@@ -156,7 +156,7 @@ public class BMPFormat extends AbstractFormat {
 			int bpp = get(0).getBitsPerPixel();
 			final ImageMetadata iMeta = get(0);
 			iMeta.setAxisTypes(Axes.X, Axes.Y);
-			iMeta.setPlanarAxisCount(1);
+			iMeta.setPlanarAxisCount(2);
 
 			int sizeC = bpp != 24 ? 1 : 3;
 
