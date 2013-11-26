@@ -39,7 +39,6 @@ package io.scif.img.converters;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
-import io.scif.common.DataTools;
 import io.scif.img.ImgOptions;
 import io.scif.img.ImgUtilityService;
 import io.scif.util.FormatTools;
@@ -101,11 +100,12 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 
 			for (int x = 1; x < sX; ++x) {
 				randomAccess.get().setReal(
-					decodeWord(plane, index++, pixelType, little));
+					imgUtilService.decodeWord(plane, index++, pixelType, little));
 				randomAccess.fwd(planeX);
 			}
 
-			randomAccess.get().setReal(decodeWord(plane, index++, pixelType, little));
+			randomAccess.get().setReal(
+				imgUtilService.decodeWord(plane, index++, pixelType, little));
 		}
 	}
 
@@ -121,40 +121,5 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 		for (int i = 0; i < axesPositions.length; i++) {
 			pos[i + offset] = axesPositions[i];
 		}
-	}
-
-	private static double decodeWord(final byte[] plane, final int index,
-		final int pixelType, final boolean little)
-	{
-		final double value;
-		switch (pixelType) {
-			case FormatTools.UINT8:
-				value = plane[index] & 0xff;
-				break;
-			case FormatTools.INT8:
-				value = plane[index];
-				break;
-			case FormatTools.UINT16:
-				value = DataTools.bytesToShort(plane, 2 * index, 2, little) & 0xffff;
-				break;
-			case FormatTools.INT16:
-				value = DataTools.bytesToShort(plane, 2 * index, 2, little);
-				break;
-			case FormatTools.UINT32:
-				value = DataTools.bytesToInt(plane, 4 * index, 4, little) & 0xffffffffL;
-				break;
-			case FormatTools.INT32:
-				value = DataTools.bytesToInt(plane, 4 * index, 4, little);
-				break;
-			case FormatTools.FLOAT:
-				value = DataTools.bytesToFloat(plane, 4 * index, 4, little);
-				break;
-			case FormatTools.DOUBLE:
-				value = DataTools.bytesToDouble(plane, 8 * index, 8, little);
-				break;
-			default:
-				value = Double.NaN;
-		}
-		return value;
 	}
 }

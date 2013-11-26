@@ -128,4 +128,13 @@ public interface ImgUtilityService extends SCIFIOService {
 	 */
 	String guessDimOrder(final CalibratedAxis[] axes, final long[] dimLengths,
 		final long[] newLengths);
+
+	/**
+	 * @param plane - byte array from the desired plane
+	 * @param index - pixel index into the plane (NOT an array index)
+	 * @param pixelType - base pixel type of the plane's data
+	 * @param little - endianness of the plane's bytes
+	 * @return A double value for the specified pixel.
+	 */
+	double decodeWord(byte[] plane, int index, int pixelType, boolean little);
 }

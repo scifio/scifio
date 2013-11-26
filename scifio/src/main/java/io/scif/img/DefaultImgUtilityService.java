@@ -40,6 +40,7 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.SCIFIO;
+import io.scif.common.DataTools;
 import io.scif.util.FormatTools;
 
 import java.io.File;
@@ -580,6 +581,42 @@ public class DefaultImgUtilityService extends AbstractService implements
 		}
 
 		return newOrder;
+	}
+
+	@Override
+	public double decodeWord(final byte[] plane, final int index,
+		final int pixelType, final boolean little)
+	{
+		final double value;
+		switch (pixelType) {
+			case FormatTools.UINT8:
+				value = plane[index] & 0xff;
+				break;
+			case FormatTools.INT8:
+				value = plane[index];
+				break;
+			case FormatTools.UINT16:
+				value = DataTools.bytesToShort(plane, 2 * index, 2, little) & 0xffff;
+				break;
+			case FormatTools.INT16:
+				value = DataTools.bytesToShort(plane, 2 * index, 2, little);
+				break;
+			case FormatTools.UINT32:
+				value = DataTools.bytesToInt(plane, 4 * index, 4, little) & 0xffffffffL;
+				break;
+			case FormatTools.INT32:
+				value = DataTools.bytesToInt(plane, 4 * index, 4, little);
+				break;
+			case FormatTools.FLOAT:
+				value = DataTools.bytesToFloat(plane, 4 * index, 4, little);
+				break;
+			case FormatTools.DOUBLE:
+				value = DataTools.bytesToDouble(plane, 8 * index, 8, little);
+				break;
+			default:
+				value = Double.NaN;
+		}
+		return value;
 	}
 
 	// -- Helper Methods --
