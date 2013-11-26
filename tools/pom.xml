@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>${scifio.groupId}</groupId>
 			<artifactId>scifio</artifactId>
-			<version>${scifio.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${scijava-common.groupId}</groupId>
