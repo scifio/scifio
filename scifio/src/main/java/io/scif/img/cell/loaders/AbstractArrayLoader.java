@@ -40,13 +40,18 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
+import io.scif.common.DataTools;
 import io.scif.img.DimRange;
+import io.scif.img.ImgUtilityService;
 import io.scif.img.SubRegion;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
 import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.type.numeric.RealType;
+
+import org.scijava.plugin.Parameter;
 
 /**
  * Abstract superclass for all {@link SCIFIOArrayLoader} implementations.
@@ -62,10 +67,18 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 	final private Reader reader;
 	final private SubRegion subRegion;
+	final private boolean compatible;
+
+	@Parameter
+	private ImgUtilityService imgUtilityService;
 
 	public AbstractArrayLoader(final Reader reader, final SubRegion subRegion) {
 		this.reader = reader;
 		this.subRegion = subRegion;
+		reader.getContext().inject(this);
+		RealType<?> inputType =
+			imgUtilityService.makeType(reader.getMetadata().get(0).getPixelType());
+		compatible = outputClass().isAssignableFrom(inputType.getClass());
 	}
 
 	@Override
@@ -231,9 +244,41 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 		return false;
 	}
 
-	public abstract void convertBytes(A data, byte[] bytes, int planesRead);
+	// -- AbstractArrayLoader API --
 
+	/**
+	 * @return Reader used for plane loading
+	 */
 	protected Reader reader() {
 		return reader;
 	}
+
+	/**
+	 * @return true iff the byte[]'s passed to convertBytes will match the generic
+	 *         type of this loader.
+	 */
+	protected boolean isCompatible() {
+		return compatible;
+	}
+
+	/**
+	 * @return an ImgUtilityService instance for this loader.
+	 */
+	protected ImgUtilityService utils() {
+		return imgUtilityService;
+	}
+
+	// -- Abstract methods --
+
+	/**
+	 * Type-specific conversion method. The given data is populated using the
+	 * provided byte array, at a position based on planes read, assuming the
+	 * length of the given byte array corresponds to one plane.
+	 */
+	public abstract void convertBytes(A data, byte[] bytes, int planesRead);
+
+	/**
+	 * @return The generic type of this loader.
+	 */
+	public abstract Class<?> outputClass();
 }

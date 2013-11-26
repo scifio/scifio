@@ -36,14 +36,16 @@
 
 package io.scif.img.cell.loaders;
 
-import io.scif.Metadata;
+import io.scif.ImageMetadata;
 import io.scif.Reader;
 import io.scif.img.SubRegion;
+import io.scif.util.FormatTools;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import net.imglib2.img.basictypeaccess.array.IntArray;
+import net.imglib2.type.numeric.integer.GenericIntType;
 
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link IntArray} types.
@@ -60,17 +62,30 @@ public class IntArrayLoader extends AbstractArrayLoader<IntArray> {
 	public void convertBytes(final IntArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		final Metadata meta = reader().getMetadata();
+		ImageMetadata iMeta = reader().getMetadata().get(0);
+		if (isCompatible()) {
+			final int bpp = getBitsPerElement() / 8;
+			final int offset = planesRead * (bytes.length / bpp);
 
-		final int bpp = getBitsPerElement() / 8;
-		final int offset = planesRead * (bytes.length / bpp);
+			final ByteBuffer bb = ByteBuffer.wrap(bytes);
 
-		final ByteBuffer bb = ByteBuffer.wrap(bytes);
+			bb.order(iMeta.isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
+				: ByteOrder.BIG_ENDIAN);
+			bb.asIntBuffer().get(data.getCurrentStorageArray(), offset,
+				bytes.length / bpp);
+		}
+		else {
+			final int pixelType = iMeta.getPixelType();
+			final int bpp = FormatTools.getBytesPerPixel(pixelType);
+			final int offset = planesRead * (bytes.length / bpp);
 
-		bb.order(meta.get(0).isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
-			: ByteOrder.BIG_ENDIAN);
-		bb.asIntBuffer().get(data.getCurrentStorageArray(), offset,
-			bytes.length / bpp);
+			for (int index = 0; index < bytes.length / bpp; index++) {
+				int value =
+					(int) utils().decodeWord(bytes, index * bpp, pixelType,
+						iMeta.isLittleEndian());
+				data.setValue(offset + index, value);
+			}
+		}
 	}
 
 	@Override
@@ -81,5 +96,10 @@ public class IntArrayLoader extends AbstractArrayLoader<IntArray> {
 	@Override
 	public int getBitsPerElement() {
 		return 32;
+	}
+
+	@Override
+	public Class<?> outputClass() {
+		return GenericIntType.class;
 	}
 }

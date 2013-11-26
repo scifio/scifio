@@ -36,13 +36,16 @@
 
 package io.scif.img.cell.loaders;
 
+import io.scif.ImageMetadata;
 import io.scif.Reader;
 import io.scif.img.SubRegion;
+import io.scif.util.FormatTools;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link DoubleArray} types.
@@ -59,15 +62,30 @@ public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
 	public void convertBytes(final DoubleArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		final int bpp = getBitsPerElement() / 8;
-		final int offset = planesRead * (bytes.length / bpp);
+		ImageMetadata iMeta = reader().getMetadata().get(0);
+		if (isCompatible()) {
+			final int bpp = getBitsPerElement() / 8;
+			final int offset = planesRead * (bytes.length / bpp);
 
-		final ByteBuffer bb = ByteBuffer.wrap(bytes);
+			final ByteBuffer bb = ByteBuffer.wrap(bytes);
 
-		bb.order(reader().getMetadata().get(0).isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
-			: ByteOrder.BIG_ENDIAN);
-		bb.asDoubleBuffer().get(data.getCurrentStorageArray(), offset,
-			bytes.length / bpp);
+			bb.order(iMeta.isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
+				: ByteOrder.BIG_ENDIAN);
+			bb.asDoubleBuffer().get(data.getCurrentStorageArray(), offset,
+				bytes.length / bpp);
+		}
+		else {
+			final int pixelType = iMeta.getPixelType();
+			final int bpp = FormatTools.getBytesPerPixel(pixelType);
+			final int offset = planesRead * (bytes.length / bpp);
+
+			for (int index = 0; index < bytes.length / bpp; index++) {
+				double value =
+					utils().decodeWord(bytes, index * bpp, pixelType,
+						iMeta.isLittleEndian());
+				data.setValue(offset + index, value);
+			}
+		}
 	}
 
 	@Override
@@ -78,5 +96,10 @@ public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
 	@Override
 	public int getBitsPerElement() {
 		return 64;
+	}
+
+	@Override
+	public Class<?> outputClass() {
+		return DoubleType.class;
 	}
 }

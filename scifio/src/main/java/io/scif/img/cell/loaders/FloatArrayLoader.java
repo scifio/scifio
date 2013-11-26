@@ -36,13 +36,17 @@
 
 package io.scif.img.cell.loaders;
 
+import io.scif.ImageMetadata;
 import io.scif.Reader;
 import io.scif.img.SubRegion;
+import io.scif.util.FormatTools;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import net.imglib2.img.basictypeaccess.array.FloatArray;
+
+import com.sun.jdi.FloatType;
 
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link FloatArray} types.
@@ -59,15 +63,29 @@ public class FloatArrayLoader extends AbstractArrayLoader<FloatArray> {
 	public void convertBytes(final FloatArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		final int bpp = getBitsPerElement() / 8;
-		final int offset = planesRead * (bytes.length / bpp);
+		ImageMetadata iMeta = reader().getMetadata().get(0);
+		if (isCompatible()) {
+			final int bpp = getBitsPerElement() / 8;
+			final int offset = planesRead * (bytes.length / bpp);
 
-		final ByteBuffer bb = ByteBuffer.wrap(bytes);
+			final ByteBuffer bb = ByteBuffer.wrap(bytes);
 
-		bb.order(reader().getMetadata().get(0).isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
-			: ByteOrder.BIG_ENDIAN);
-		bb.asFloatBuffer().get(data.getCurrentStorageArray(), offset,
-			bytes.length / bpp);
+			bb.order(iMeta.isLittleEndian()
+				? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+			bb.asFloatBuffer().get(data.getCurrentStorageArray(), offset,
+				bytes.length / bpp);
+		}
+		else {
+			final int pixelType = iMeta.getPixelType();
+			final int bpp = FormatTools.getBytesPerPixel(pixelType);
+			final int offset = planesRead * (bytes.length / bpp);
+			for (int index=0; index<bytes.length / bpp; index++) {
+				float value =
+					(float) utils().decodeWord(bytes, index * bpp, pixelType,
+						iMeta.isLittleEndian());
+				data.setValue(offset + index, value);
+			}
+		}
 	}
 
 	@Override
@@ -78,5 +96,10 @@ public class FloatArrayLoader extends AbstractArrayLoader<FloatArray> {
 	@Override
 	public int getBitsPerElement() {
 		return 32;
+	}
+
+	@Override
+	public Class<?> outputClass() {
+		return FloatType.class;
 	}
 }

@@ -36,9 +36,12 @@
 
 package io.scif.img.cell.loaders;
 
+import io.scif.ImageMetadata;
 import io.scif.Reader;
 import io.scif.img.SubRegion;
+import io.scif.util.FormatTools;
 import net.imglib2.img.basictypeaccess.array.BitArray;
+import net.imglib2.type.logic.BitType;
 
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link BitArray} types.
@@ -55,15 +58,19 @@ public class BitArrayLoader extends AbstractArrayLoader<BitArray> {
 	public void convertBytes(final BitArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		final int offset = planesRead * bytes.length * 8;
+		ImageMetadata iMeta = reader().getMetadata().get(0);
+		final int pixelType = iMeta.getPixelType();
+		final int bpp = FormatTools.getBytesPerPixel(pixelType);
+		final int offset = planesRead * (bytes.length / bpp) * 8;
 
-		for (int i = 0; i < bytes.length; i++) {
-			byte b = bytes[i];
-
+		for (int index = 0; index < bytes.length / bpp; index++) {
+			byte value =
+				(byte) utils().decodeWord(bytes, index * bpp, pixelType,
+					iMeta.isLittleEndian());
 			for (int j = 0; j < 8; j++) {
-				final int idx = (i * 8) + j;
-				data.setValue(offset + idx, (b & 0x01) == 1);
-				b = (byte) (b >> 1);
+				final int idx = (index * 8) + j;
+				data.setValue(offset + idx, (value & 0x01) == 1);
+				value = (byte) (value >> 1);
 			}
 		}
 	}
@@ -76,5 +83,10 @@ public class BitArrayLoader extends AbstractArrayLoader<BitArray> {
 	@Override
 	public int getBitsPerElement() {
 		return 1;
+	}
+
+	@Override
+	public Class<?> outputClass() {
+		return BitType.class;
 	}
 }

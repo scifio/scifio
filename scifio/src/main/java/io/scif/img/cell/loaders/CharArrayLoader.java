@@ -36,13 +36,16 @@
 
 package io.scif.img.cell.loaders;
 
+import io.scif.ImageMetadata;
 import io.scif.Reader;
 import io.scif.img.SubRegion;
+import io.scif.util.FormatTools;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import net.imglib2.img.basictypeaccess.array.CharArray;
+import net.imglib2.type.numeric.integer.GenericByteType;
 
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link CharArray} types.
@@ -59,13 +62,29 @@ public class CharArrayLoader extends AbstractArrayLoader<CharArray> {
 	public void convertBytes(final CharArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		final int offset = planesRead * bytes.length;
+		ImageMetadata iMeta = reader().getMetadata().get(0);
+		if (isCompatible()) {
+			final int offset = planesRead * bytes.length;
 
-		final ByteBuffer bb = ByteBuffer.wrap(bytes);
+			final ByteBuffer bb = ByteBuffer.wrap(bytes);
 
-		bb.order(reader().getMetadata().get(0).isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
-			: ByteOrder.BIG_ENDIAN);
-		bb.asCharBuffer().get(data.getCurrentStorageArray(), offset, bytes.length);
+			bb.order(iMeta.isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
+				: ByteOrder.BIG_ENDIAN);
+			bb.asCharBuffer()
+				.get(data.getCurrentStorageArray(), offset, bytes.length);
+		}
+		else {
+			final int pixelType = iMeta.getPixelType();
+			final int bpp = FormatTools.getBytesPerPixel(pixelType);
+			final int offset = planesRead * (bytes.length / bpp);
+
+			for (int index = 0; index < bytes.length / bpp; index++) {
+				char value =
+					(char) utils().decodeWord(bytes, index * bpp, pixelType,
+						iMeta.isLittleEndian());
+				data.setValue(offset + index, value);
+			}
+		}
 	}
 
 	@Override
@@ -76,5 +95,10 @@ public class CharArrayLoader extends AbstractArrayLoader<CharArray> {
 	@Override
 	public int getBitsPerElement() {
 		return 8;
+	}
+
+	@Override
+	public Class<?> outputClass() {
+		return GenericByteType.class;
 	}
 }
