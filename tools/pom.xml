@@ -44,6 +44,7 @@
         <version>1.6</version>
         <configuration>
           <extraJvmArguments>-Xms512m</extraJvmArguments>
+          <extraJvmArguments>-Xmx1024m</extraJvmArguments>
           <useWildcardClassPath>true</useWildcardClassPath>
           <repositoryLayout>flat</repositoryLayout>
           <programs>
