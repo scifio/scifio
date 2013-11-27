@@ -213,7 +213,7 @@ public class DefaultLocationService extends AbstractService implements
 			if (allowArchiveHandles) {
 				for (final PluginInfo<IStreamAccess> info : streamInfos) {
 					handle = pluginService.createInstance(info);
-					if (((IStreamAccess) handle).isConstructable(id)) {
+					if (handle != null && ((IStreamAccess) handle).isConstructable(id)) {
 						((IStreamAccess) handle).setFile(id);
 						break;
 					}
