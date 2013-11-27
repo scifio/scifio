@@ -4,3 +4,4 @@
 .settings
 target
 test-output
+*.swp
