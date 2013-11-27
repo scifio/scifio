@@ -189,8 +189,9 @@ public class PGMFormat extends AbstractFormat {
 			meta.setRawBits(magic.equals("P4") || magic.equals("P5") ||
 				magic.equals("P6"));
 
-			iMeta.setAxisLength(Axes.CHANNEL, (magic.equals("P3") || magic
-				.equals("P6")) ? 3 : 1);
+			if (magic.equals("P3") || magic .equals("P6")) {
+				iMeta.setAxisLength(Axes.CHANNEL, 3);
+			}
 			isBlackAndWhite = magic.equals("P1") || magic.equals("P4");
 
 			if (!isBlackAndWhite) {
