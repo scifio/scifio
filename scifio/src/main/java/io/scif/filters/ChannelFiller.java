@@ -144,8 +144,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 		// directly
 		if (!getParentMeta().get(imageIndex).isIndexed()) {
 			if (!haveCached(imageIndex, planeIndex, offsets, lengths)) {
-				lastPlaneOffsets = offsets;
-				lastPlaneLengths = lengths;
+				lastPlaneOffsets = Arrays.copyOf(offsets, offsets.length);
+				lastPlaneLengths = Arrays.copyOf(lengths, lengths.length);
 				lastPlaneIndex = planeIndex;
 				lastImageIndex = imageIndex;
 				lastPlane =
@@ -168,8 +168,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 					lastPlaneLengths);
 			lastPlaneIndex = planeIndex;
 			lastImageIndex = imageIndex;
-			lastPlaneOffsets = offsets;
-			lastPlaneLengths = lengths;
+			lastPlaneOffsets = Arrays.copyOf(offsets, offsets.length);
+			lastPlaneLengths = Arrays.copyOf(lengths, lengths.length);
 		}
 
 		// Make sure we have a compatible plane type
