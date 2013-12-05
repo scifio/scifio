@@ -50,6 +50,7 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
+import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
@@ -65,7 +66,7 @@ import org.testng.annotations.Test;
 @Test
 public class FilterTest {
 
-	private final SCIFIO scifio = new SCIFIO();
+	private final SCIFIO scifio = makeSCIFIO();
 	private final String id =
 		"testImg&lengths=512,512.fake";
 	private Reader readerFilter;
@@ -73,6 +74,24 @@ public class FilterTest {
 	@AfterMethod
 	public void tearDown() throws IOException {
 		readerFilter.close();
+	}
+
+	private SCIFIO makeSCIFIO() {
+		SCIFIO scifio = new SCIFIO();
+
+		Context ctx = scifio.getContext();
+
+		PluginInfo<Filter> enabledInfo =
+			new PluginInfo<Filter>(EnabledFilter.class, Filter.class,
+				(Plugin) EnabledFilter.class.getAnnotations()[0]);
+		PluginInfo<Filter> disabledInfo =
+			new PluginInfo<Filter>(DisabledFilter.class, Filter.class,
+				(Plugin) DisabledFilter.class.getAnnotations()[0]);
+
+		ctx.getPluginIndex().add(enabledInfo);
+		ctx.getPluginIndex().add(disabledInfo);
+
+		return scifio;
 	}
 
 	/**
