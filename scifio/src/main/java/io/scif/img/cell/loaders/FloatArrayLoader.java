@@ -45,8 +45,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import net.imglib2.img.basictypeaccess.array.FloatArray;
-
-import com.sun.jdi.FloatType;
+import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * {@link SCIFIOArrayLoader} implementation for {@link FloatArray} types.
