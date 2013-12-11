@@ -78,7 +78,6 @@ import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -119,7 +118,6 @@ public class APNGFormat extends AbstractFormat {
 		// -- Constants --
 
 		public static final String DEFAULT_KEY = "separate default";
-		public static final String CNAME = "io.scif.formats.APNGFormat$Metadata";
 
 		// -- Fields --
 
@@ -1028,15 +1026,22 @@ public class APNGFormat extends AbstractFormat {
 	 * used to write it can not be guaranteed valid.
 	 * </p>
 	 */
-	@Plugin(type = Translator.class, attrs = {
-		@Attr(name = APNGTranslator.SOURCE, value = io.scif.Metadata.CNAME),
-		@Attr(name = APNGTranslator.DEST, value = Metadata.CNAME) },
-		priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
 	public static class APNGTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{
 
 		// -- Translator API Methods --
+
+		@Override
+		public Class<? extends io.scif.Metadata> source() {
+			return io.scif.Metadata.class;
+		}
+
+		@Override
+		public Class<? extends io.scif.Metadata> dest() {
+			return Metadata.class;
+		}
 
 		@Override
 		public void typedTranslate(final io.scif.Metadata source,

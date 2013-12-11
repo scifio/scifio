@@ -39,7 +39,6 @@ package io.scif;
 import java.util.List;
 
 import org.scijava.Priority;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -51,11 +50,20 @@ import org.scijava.plugin.Plugin;
  * @see io.scif.ImageMetadata
  * @author Mark Hiner
  */
-@Plugin(type = Translator.class, attrs = {
-	@Attr(name = DefaultTranslator.SOURCE, value = Metadata.CNAME),
-	@Attr(name = DefaultTranslator.DEST, value = Metadata.CNAME) },
-	priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = Translator.class, priority = Priority.VERY_LOW_PRIORITY)
 public class DefaultTranslator extends AbstractTranslator<Metadata, Metadata> {
+
+	// -- Translater API Methods --
+
+	@Override
+	public Class<? extends io.scif.Metadata> source() {
+		return io.scif.Metadata.class;
+	}
+
+	@Override
+	public Class<? extends io.scif.Metadata> dest() {
+		return io.scif.Metadata.class;
+	}
 
 	@Override
 	protected void typedTranslate(final Metadata source, final Metadata dest) {

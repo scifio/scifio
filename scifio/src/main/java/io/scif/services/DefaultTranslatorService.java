@@ -42,20 +42,27 @@ import io.scif.Translator;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.scijava.plugin.Parameter;
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
+/**
+ * Default {@link TranslatorService} implementation. If a false exact flag is
+ * passed to {@link #findTranslator(Metadata, Metadata, boolean)} and an exact
+ * translator can not be found, this service will first try to match the
+ * destination type, then source type, then will accept any generic
+ * {@link Metadata} translator.
+ * 
+ * @author Mark Hiner
+ */
 @Plugin(type = Service.class)
-public class DefaultTranslatorService extends AbstractService implements
-	TranslatorService
+public class DefaultTranslatorService extends
+	AbstractSingletonService<Translator> implements TranslatorService
 {
 
-	// -- Parameters --
+	// -- Fields --
 
-	@Parameter
-	private PluginAttributeService attributeService;
+	Map<Class<? extends Metadata>, Map<Class<? extends Metadata>, Translator>> sourceToDestMap;
 
 	// -- TranslatorService API Methods --
 
@@ -67,15 +74,17 @@ public class DefaultTranslatorService extends AbstractService implements
 	}
 
 	@Override
-	public Translator findTranslator(final Class<?> source, final Class<?> dest,
-		final boolean exact)
+	public Translator findTranslator(final Class<? extends Metadata> source,
+		final Class<? extends Metadata> dest, final boolean exact)
 	{
-		final Map<String, String> kvPairs = new HashMap<String, String>();
-		kvPairs.put(Translator.SOURCE, source.getName());
-		kvPairs.put(Translator.DEST, dest.getName());
+		Translator t = lookup(source, dest);
 
-		final Translator t =
-			attributeService.createInstance(Translator.class, kvPairs, null, exact);
+		// Try to match the destination exactly
+		t = lookup(t, exact, io.scif.Metadata.class, dest);
+		// Try to match the source exactly
+		t = lookup(t, exact, source, io.scif.Metadata.class);
+		// Take any translator
+		t = lookup(t, exact, io.scif.Metadata.class, io.scif.Metadata.class);
 
 		return t;
 	}
@@ -91,5 +100,114 @@ public class DefaultTranslatorService extends AbstractService implements
 		t.translate(source, dest);
 
 		return true;
+	}
+
+	// -- SingletonService API --
+
+	@Override
+	public Class<Translator> getPluginType() {
+		return Translator.class;
+	}
+
+	// -- Service API Methods --
+
+	// -- Helper Methods --
+
+	/**
+	 * @param source - Source class to match
+	 * @param dest - Destination class to match
+	 * @return - Translator capable of translating between the given source and
+	 *         destination
+	 */
+	private Translator lookup(Class<? extends Metadata> source,
+		Class<? extends Metadata> dest)
+	{
+		if (sourceToDestMap == null) {
+			synchronized (this) {
+				if (sourceToDestMap == null) {
+					createTranslatorMap();
+				}
+			}
+		}
+
+		// Just look up the translator to try and find an exact match
+		Map<Class<? extends Metadata>, Translator> destMap =
+			sourceToDestMap.get(source);
+
+		if (destMap != null) {
+			return destMap.get(dest);
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param t - If t is null, will attempt to find a suitable translator (in
+	 *          priority order)
+	 * @param exact - If true, will skip the translator search and return t
+	 * @param source - Source class to match
+	 * @param dest - Destination class to match
+	 * @return - Translator capable of translating between the given source and
+	 *         destination
+	 */
+	private Translator lookup(Translator t, boolean exact,
+		Class<? extends Metadata> source, Class<? extends Metadata> dest)
+	{
+		if (t == null && !exact) {
+			// Loop over the translators in priority order to see if we have a
+			// suitable candidate
+			for (int i = 0; i < getInstances().size() && t == null; i++) {
+				Translator translator = getInstances().get(i);
+				if (translator.source().isAssignableFrom(source) &&
+					translator.dest().isAssignableFrom(dest))
+				{
+					t = translator;
+				}
+			}
+		}
+
+		return t;
+	}
+
+	/**
+	 * Create a nested mapping to all known translators. Allows for lazy
+	 * instantiation.
+	 */
+	private void createTranslatorMap() {
+		sourceToDestMap =
+			new HashMap<Class<? extends Metadata>, Map<Class<? extends Metadata>, Translator>>();
+		for (Translator translator : getInstances()) {
+			addToMap(translator.source(), translator.dest(), sourceToDestMap,
+				translator);
+		}
+	}
+
+	/**
+	 * Creates a nested mapping of key1 : (key 2 : translator). Creates
+	 * intermediate map if it doesn't already exist.
+	 * 
+	 * @param key1 - key to first-level (outer) map
+	 * @param key2 - key to second-level (inner) map
+	 * @param map - first-level (outer) map
+	 * @param translator - value for second-level (inner) map
+	 */
+	private
+		void
+		addToMap(
+			Class<? extends Metadata> key1,
+			Class<? extends Metadata> key2,
+			Map<Class<? extends Metadata>, Map<Class<? extends Metadata>, Translator>> map,
+			Translator translator)
+	{
+		Map<Class<? extends Metadata>, Translator> innerMap = map.get(key1);
+
+		// Create the map if it doesn't already exist
+		if (innerMap == null) {
+			innerMap = new HashMap<Class<? extends Metadata>, Translator>();
+			map.put(key1, innerMap);
+		}
+
+		// Create our mapping
+		innerMap.put(key2, translator);
 	}
 }

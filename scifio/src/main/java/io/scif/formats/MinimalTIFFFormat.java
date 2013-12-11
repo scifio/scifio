@@ -132,11 +132,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		/** Codec options to use when decoding JPEG 2000 data. */
 		private JPEG2000CodecOptions j2kCodecOptions;
 
-		// -- Constants --
-
-		public static final String CNAME =
-			"io.scif.formats.MinimalTiffFormat$Metadata";
-
 		// -- MinimalTIFFMetadata getters and setters --
 
 		public IFDList getIfds() {

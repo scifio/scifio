@@ -74,7 +74,6 @@ import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -114,11 +113,6 @@ public class NativeQTFormat extends AbstractFormat {
 	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
-
-		// -- Constants --
-
-		public static final String CNAME =
-			"io.scif.formats.qt.NativeQTFormat$Metadata";
 
 		// -- Fields --
 
@@ -1234,15 +1228,22 @@ public class NativeQTFormat extends AbstractFormat {
 	/**
 	 * @author Mark Hiner
 	 */
-	@Plugin(type = Translator.class, attrs = {
-		@Attr(name = NativeQTTranslator.SOURCE, value = io.scif.Metadata.CNAME),
-		@Attr(name = NativeQTTranslator.DEST, value = Metadata.CNAME) },
-		priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
 	public static class NativeQTTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{
 
 		// -- Translator API Methods --
+
+		@Override
+		public Class<? extends io.scif.Metadata> source() {
+			return io.scif.Metadata.class;
+		}
+
+		@Override
+		public Class<? extends io.scif.Metadata> dest() {
+			return Metadata.class;
+		}
 
 		@Override
 		public void typedTranslate(final io.scif.Metadata source,

@@ -86,10 +86,6 @@ public class NRRDFormat extends AbstractFormat {
 	 */
 	public static class Metadata extends AbstractMetadata {
 
-		// -- Constants --
-
-		public static final String CNAME = "io.scif.formats.NRRDFormat$Metadata";
-
 		// -- Fields --
 
 		/** Name of data file, if the current extension is 'nhdr'. */

@@ -61,7 +61,6 @@ import java.io.IOException;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -92,10 +91,6 @@ public class EPSFormat extends AbstractFormat {
 	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
-
-		// -- Constants --
-
-		public static final String CNAME = "io.scif.formats.EPSFormat$Metadata";
 
 		// -- Fields --
 
@@ -597,9 +592,20 @@ public class EPSFormat extends AbstractFormat {
 	 * 
 	 * @author Mark Hiner
 	 */
-	@Plugin(type = Translator.class, attrs = {
-		@Attr(name = EPSTranslator.SOURCE, value = io.scif.Metadata.CNAME),
-		@Attr(name = EPSTranslator.DEST, value = Metadata.CNAME) },
-		priority = Priority.LOW_PRIORITY)
-	public static class EPSTranslator extends DefaultTranslator {}
+	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	public static class EPSTranslator extends DefaultTranslator {
+
+		// -- Translator API Methods --
+
+		@Override
+		public Class<? extends io.scif.Metadata> source() {
+			return io.scif.Metadata.class;
+		}
+
+		@Override
+		public Class<? extends io.scif.Metadata> dest() {
+			return Metadata.class;
+		}
+
+	}
 }

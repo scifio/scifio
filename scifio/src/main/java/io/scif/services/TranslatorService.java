@@ -40,6 +40,8 @@ import io.scif.Metadata;
 import io.scif.SCIFIOService;
 import io.scif.Translator;
 
+import org.scijava.plugin.SingletonService;
+
 /**
  * Collection of methods for creating and using appropriate Translators to
  * convert between Metadata types.
@@ -47,7 +49,9 @@ import io.scif.Translator;
  * @see io.scif.Translator
  * @author Mark Hiner
  */
-public interface TranslatorService extends SCIFIOService {
+public interface TranslatorService extends SCIFIOService,
+	SingletonService<Translator>
+{
 
 	/**
 	 * Returns a translator capable of translating from the source Metadata to the
@@ -73,7 +77,8 @@ public interface TranslatorService extends SCIFIOService {
 	 * @return Translator whose translate method will accept these Metadata
 	 *         instances
 	 */
-	Translator findTranslator(Class<?> source, Class<?> dest, boolean exact);
+	Translator findTranslator(Class<? extends Metadata> source,
+		Class<? extends Metadata> dest, boolean exact);
 
 	/**
 	 * Convenience method to immediately translate from the source Metadata to the

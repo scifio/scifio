@@ -85,10 +85,6 @@ public class OBFFormat extends AbstractFormat {
 	 */
 	public static class Metadata extends AbstractMetadata {
 
-		// -- Constants --
-
-		public static final String CNAME = "io.scif.formats.OBFFormat$Metadata";
-
 		// -- Fields --
 
 		private Frame currentInflatedFrame = new Frame();

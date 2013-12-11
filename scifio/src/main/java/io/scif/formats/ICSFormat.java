@@ -72,7 +72,6 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.Priority;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -103,9 +102,6 @@ public class ICSFormat extends AbstractFormat {
 	 * SCIFIO Metadata object for ICS images.
 	 */
 	public static class Metadata extends AbstractMetadata {
-
-		// -- Static Constants
-		public static final String CNAME = "io.scif.formats.ICSFormat$Metadata";
 
 		// -- Fields --
 
@@ -2002,15 +1998,22 @@ public class ICSFormat extends AbstractFormat {
 	 * SCIFIO file format Translator for ICS Metadata objects to the SCIFIO Core
 	 * metadata type.
 	 */
-	@Plugin(type = Translator.class, attrs = {
-		@Attr(name = ICSTranslator.SOURCE, value = io.scif.Metadata.CNAME),
-		@Attr(name = ICSTranslator.DEST, value = Metadata.CNAME) },
-		priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
 	public static class ICSTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{
 
 		// -- Translator API Methods --
+
+		@Override
+		public Class<? extends io.scif.Metadata> source() {
+			return io.scif.Metadata.class;
+		}
+
+		@Override
+		public Class<? extends io.scif.Metadata> dest() {
+			return Metadata.class;
+		}
 
 		@Override
 		public void typedTranslate(final io.scif.Metadata source,

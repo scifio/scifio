@@ -84,10 +84,6 @@ public class FITSFormat extends AbstractFormat {
 	 */
 	public static class Metadata extends AbstractMetadata {
 
-		// -- Constants --
-
-		public static final String CNAME = "io.scif.formats.FITSFormat$Metadata";
-
 		// -- Fields --
 
 		private long pixelOffset;

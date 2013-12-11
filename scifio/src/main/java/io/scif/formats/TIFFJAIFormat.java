@@ -105,10 +105,6 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 		private int numPages;
 
-		// -- Constants --
-
-		public static final String CNAME = "io.scif.formats.TIFFJAIFormat$Metadata";
-
 		// -- TIFFJAIMetadata getters and setters --
 
 		public ReflectedUniverse universe() {

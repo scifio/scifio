@@ -36,6 +36,8 @@
 
 package io.scif;
 
+import org.scijava.plugin.SingletonPlugin;
+
 /**
  * Interface for all SCIFIO {@code Translators}.
  * <p>
@@ -60,17 +62,19 @@ package io.scif;
  * @see io.scif.services.TranslatorService
  * @author Mark Hiner
  */
-public interface Translator extends SCIFIOPlugin {
-
-	// -- Fields --
-
-	/** Source key flag, for use in annotations. */
-	public static final String SOURCE = "source";
-
-	/** Destination key flag, for use in annotations. */
-	public static final String DEST = "dest";
+public interface Translator extends SCIFIOPlugin, SingletonPlugin {
 
 	// -- Translator API methods --
+
+	/**
+	 * @return The Metadata class accepted by this translator as input
+	 */
+	Class<? extends Metadata> source();
+	
+	/**
+	 * @return The Metadata class accepted by this translator as output
+	 */
+	Class<? extends Metadata> dest();
 
 	/**
 	 * Uses the source {@code Metadata} to populate the destination
