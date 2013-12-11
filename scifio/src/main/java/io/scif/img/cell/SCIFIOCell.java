@@ -65,22 +65,30 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	// These fields are transient to speed up serialization/deserialization.
 	// They should be available externally when the cell is deserialized.
 	private transient CacheService<SCIFIOCell<?>> service; // hook used to cache
-																													// during finalization
+	// during
+	// finalization
 	private transient String cacheId; // needed for this cell's hashcode
 	private transient int index; // needed for this cell's hashcode
-	private transient boolean enabled; // whether or not this cell should be
-																			// cached
+	private transient boolean[] enabled; // whether or not this cell should be
+	// cached
 
 	// -- Persistent fields --
+
 	private A data;
-	private int currentHash; // current hash of data
-	private int cleanHash; // hash of data, unmodified
-	private long elementSize = -1L; // element size, in bytes
+	// These fields need to be objects to Phantom references to cache them by
+	// reference
+	private int[] hashes;
+	private long[] elementSize;
 
 	// -- Constructors --
 
-	public SCIFIOCell() {}
+	public SCIFIOCell() {
+		// deserialization constructor - no op
+	}
 
+	/**
+	 * Standard constructor
+	 */
 	public SCIFIOCell(final CacheService<SCIFIOCell<?>> service,
 		final String cacheId, final int index, final int[] dimensions,
 		final long[] min, final A data)
@@ -90,8 +98,38 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 		this.service = service;
 		this.cacheId = cacheId;
 		this.index = index;
-		enabled = true;
+		enabled = new boolean[] { true };
+		elementSize = new long[] { -1 };
+		hashes = new int[2];
 		markClean();
+	}
+
+	/**
+	 * Copying constructor to make another cell with the same metdata and data
+	 * reference.
+	 */
+	public SCIFIOCell(final SCIFIOCell<A> toCopy) {
+		this.service = toCopy.service;
+		this.cacheId = toCopy.cacheId;
+		this.index = toCopy.index;
+		this.enabled = toCopy.enabled;
+		this.data = toCopy.data;
+		this.hashes[0] = toCopy.hashes[0];
+		this.hashes[1] = toCopy.hashes[1];
+		this.elementSize[0] = toCopy.elementSize[0];
+	}
+
+	/**
+	 * {@link SCIFIOCellCleaningProvider} constructor.
+	 */
+	public SCIFIOCell(final A data, final int currentHash, final int cleanHash,
+		final long elementSize, final int[] dimensions, final long[] min)
+	{
+		super(dimensions, min);
+		this.data = data;
+		hashes = new int[] { cleanHash, currentHash };
+		this.elementSize = new long[] { elementSize };
+		enabled = new boolean[1];
 	}
 
 	// -- SCIFIOCell Methods --
@@ -101,7 +139,8 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	 * it remain.
 	 */
 	public void cacheOnFinalize(final boolean e) {
-		enabled = e;
+		if (enabled == null) enabled = new boolean[] { e };
+		else enabled[0] = e;
 	}
 
 	/**
@@ -134,6 +173,28 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	}
 
 	/**
+	 * @return the cacheId for this cell
+	 */
+	public String getCacheId() {
+		return cacheId;
+	}
+
+	/**
+	 * @return index for this cell in its cache
+	 */
+	public int getIndex() {
+		return index;
+	}
+
+	/**
+	 * @return [true] iff this cell should be cached to disk after it's out of
+	 *         scope.
+	 */
+	public boolean[] isEnabled() {
+		return enabled;
+	}
+
+	/**
 	 * Sets the current state of this cell, as determined by the hashcode of its
 	 * underlying data, as the "clean" state.
 	 */
@@ -141,27 +202,65 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 		// Take a hash of the underlying data. If this is different
 		// at finalization, we know this cell is dirty and should be
 		// serialized.
-		cleanHash = computeHash(data);
+		hashes[0] = computeHash(data);
 
 		// If data isn't an ArrayAccess object, this will cause it to always
 		// look dirty compared to future computeHash calls.
-		if (cleanHash == -1) cleanHash = 0;
+		if (hashes[0] == -1) hashes[0] = 0;
 
-		currentHash = cleanHash;
+		hashes[1] = hashes[0];
 	}
 
 	/**
 	 * @return Size of the stored data object, in bytes, or -1 if size not known.
 	 */
 	public long getElementSize() {
+		return elementSize[0];
+	}
+
+	/**
+	 * @return a reference to the base array containing the clean (at index 0) and
+	 *         current (index 1) data hashes.
+	 */
+	public int[] getHashes() {
+		return hashes;
+	}
+
+	/**
+	 * @return the original (clean) hash of the data
+	 */
+	public int getCleanHash() {
+		return hashes[0];
+	}
+
+	/**
+	 * @return the current known hash of the data.
+	 */
+	public int getCurrentHash() {
+		return hashes[1];
+	}
+
+	/**
+	 * @return the array containing the element size. Use this if the actual
+	 *         object reference is needed.
+	 */
+	public long[] getESizeArray() {
 		return elementSize;
 	}
 
 	/**
-	 * @return True if this cell has been modified since creation
+	 * @return dimensionality of this cell
+	 */
+	public int dimCount() {
+		return n;
+	}
+
+	/**
+	 * @return True if this cell has been modified, and {@link #update()} was then
+	 *         called, since creation
 	 */
 	public boolean dirty() {
-		return !(currentHash == cleanHash);
+		return !(hashes[1] == hashes[0]);
 	}
 
 	/**
@@ -169,7 +268,7 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	 * of its underlying data.
 	 */
 	public void update() {
-		currentHash = computeHash(data);
+		hashes[1] = computeHash(data);
 	}
 
 	// -- Object method overrides --
@@ -184,7 +283,7 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 		if (other instanceof SCIFIOCell<?>) {
 			final SCIFIOCell<?> otherCell = (SCIFIOCell<?>) other;
 			return cacheId.equals(otherCell.cacheId) && (index == otherCell.index) &&
-				currentHash == otherCell.currentHash;
+				hashes[1] == otherCell.hashes[1];
 		}
 		return false;
 	}
@@ -200,19 +299,14 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 		return result;
 	}
 
-	@Override
-	public void finalize() {
-		// Writes this cell to disk as it's garbage collected
-		if (enabled) service.cache(cacheId, index, this);
-	}
-
 	// -- Helper Methods --
 
-	// Computes a hash of the provided data object.
-	// Also computes the size of the data object
+	/**
+	 * Computes a hash of the provided data object. Also computes the size of the
+	 * data object
+	 */
 	private int computeHash(final ArrayDataAccess<?> data) {
 		int hashCode = -1;
-
 		if (data instanceof ByteArray) {
 			final byte[] bytes = ((ByteArray) data).getCurrentStorageArray();
 			computedataSize(8l * bytes.length);
@@ -257,7 +351,10 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 		return hashCode;
 	}
 
+	/**
+	 * @param bits update the element size of this cell
+	 */
 	private void computedataSize(final long bits) {
-		elementSize = bits / 8;
+		elementSize[0] = bits / 8;
 	}
 }

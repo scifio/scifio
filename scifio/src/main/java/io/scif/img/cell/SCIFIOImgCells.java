@@ -51,6 +51,9 @@ public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
 	AbstractCells<A, SCIFIOCell<A>, SCIFIOImgCells<A>.CachedCells>
 {
 
+	/**
+	 * Cache-based interface for accessing data.
+	 */
 	public static interface CellCache<A extends ArrayDataAccess<?>> {
 
 		/**
@@ -70,12 +73,15 @@ public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
 		 */
 		public SCIFIOCell<A> load(final int index, final int[] cellDims,
 			final long[] cellMin);
-
 	}
+
+	// -- Fields --
 
 	protected final CachedCells cells;
 
 	protected final CellCache<A> cache;
+
+	// -- Constructor --
 
 	public SCIFIOImgCells(final CellCache<A> cache, final int entitiesPerPixel,
 		final long[] dimensions, final int[] cellDimensions)
@@ -85,38 +91,50 @@ public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
 		cells = new CachedCells(numCells);
 	}
 
+	// -- AbstractCells API --
+
 	@Override
 	protected CachedCells cells() {
 		return cells;
 	}
 
+	/**
+	 * ListImg implementation that accesses a SCIFIOCellCache to return requested
+	 * cells.
+	 */
 	public class CachedCells extends AbstractListImg<SCIFIOCell<A>> {
+
+		// -- Constructor --
 
 		protected CachedCells(final long[] dim) {
 			super(dim);
 		}
 
+		// -- ListImg API --
+
 		@Override
 		protected SCIFIOCell<A> get(final int index) {
-			// TODO is this index just a linear index on cells?
+			// Attempt to get the cell from memory
 			final SCIFIOCell<A> cell = cache.get(index);
 			if (cell != null) return cell;
+			// Load the cell
 			final long[] cellGridPosition = new long[n];
 			final long[] cellMin = new long[n];
 			final int[] cellDims = new int[n];
-			// TODO here is the index to position logic to re-compute
 			IntervalIndexer.indexToPosition(index, dim, cellGridPosition);
 			getCellDimensions(cellGridPosition, cellMin, cellDims);
 			return cache.load(index, cellDims, cellMin);
 		}
 
 		@Override
-		public Img<SCIFIOCell<A>> copy() {
+		protected void set(final int index, final SCIFIOCell<A> value) {
 			throw new UnsupportedOperationException("Not supported");
 		}
 
+		// -- Img API --
+
 		@Override
-		protected void set(final int index, final SCIFIOCell<A> value) {
+		public Img<SCIFIOCell<A>> copy() {
 			throw new UnsupportedOperationException("Not supported");
 		}
 	}

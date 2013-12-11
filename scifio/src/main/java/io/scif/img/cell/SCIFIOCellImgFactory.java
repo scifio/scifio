@@ -41,7 +41,6 @@ import io.scif.Reader;
 import io.scif.common.DataTools;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.SubRegion;
-import io.scif.img.cell.cache.CacheService;
 import io.scif.img.cell.loaders.BitArrayLoader;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.CharArrayLoader;
@@ -203,16 +202,6 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		subregion = region;
 	}
 
-	@Override
-	public void finalize() throws Throwable {
-		try {
-			reader.close(); // close open files
-		}
-		finally {
-			super.finalize();
-		}
-	}
-
 	// -- Helper Methods --
 
 	private <A extends ArrayDataAccess<?>, L extends SCIFIOArrayLoader<A>>
@@ -222,11 +211,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		dimensions = checkDimensions(dimensions);
 		final int[] cellSize = checkCellSize(defaultCellDimensions, dimensions);
 
-		@SuppressWarnings("unchecked")
-		final CacheService<SCIFIOCell<?>> service =
-			reader.getContext().getService(CacheService.class);
-
-		final SCIFIOCellCache<A> c = new SCIFIOCellCache<A>(service, loader);
+		final SCIFIOCellCache<A> c = new SCIFIOCellCache<A>(reader.getContext(), loader);
 
 		return new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(
 			c, entitiesPerPixel, dimensions, cellSize));
