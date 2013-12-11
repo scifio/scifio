@@ -51,9 +51,7 @@ import net.imglib2.display.ArrayColorTable;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
 
 /**
  * {@link io.scif.filters.MetadataWrapper} implementation specifically for use
@@ -63,14 +61,7 @@ import org.scijava.plugin.Plugin;
  * @see io.scif.filters.ChannelFiller
  * @author Mark Hiner
  */
-@Plugin(type = MetadataWrapper.class, attrs = { @Attr(
-	name = ChannelFillerMetadata.METADATA_KEY,
-	value = ChannelFillerMetadata.METADATA_VALUE) })
 public class ChannelFillerMetadata extends AbstractMetadataWrapper {
-
-	// -- Constants --
-
-	public static final String METADATA_VALUE = "io.scif.filters.ChannelFiller";
 
 	// -- Fields --
 
@@ -81,16 +72,6 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 	 * Number of components in the wrapped color table
 	 */
 	private int lutLength;
-
-	// -- Constructors --
-
-	public ChannelFillerMetadata() {
-		this(null);
-	}
-
-	public ChannelFillerMetadata(final Metadata metadata) {
-		super(metadata);
-	}
 
 	// -- ChannelFiller API methods --
 
@@ -162,5 +143,12 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 
 			add(iMeta, false);
 		}
+	}
+
+	// -- MetadataWrapper API --
+
+	@Override
+	public Class<? extends Filter> filterType() {
+		return io.scif.filters.ChannelFiller.class;
 	}
 }

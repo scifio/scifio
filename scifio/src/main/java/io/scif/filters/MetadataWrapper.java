@@ -63,9 +63,6 @@ import io.scif.Metadata;
  */
 public interface MetadataWrapper extends Metadata {
 
-	public static final String METADATA_KEY = "Metadata Wrapper";
-	public static final String METADATA_VALUE = "java.lang.Object";
-
 	/**
 	 * @return The {@code Metadata} used for delegation by this wrapper.
 	 */
@@ -78,6 +75,12 @@ public interface MetadataWrapper extends Metadata {
 	 * @param meta - The Metadata instance to wrap
 	 */
 	void wrap(Metadata meta);
+
+	/**
+	 * @return The class of the {@link Filter} this MetadataWrapper is compatible
+	 *         with.
+	 */
+	Class<? extends Filter> filterType();
 
 	// -- Setter Methods with passUp flag --
 

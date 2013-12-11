@@ -36,14 +36,9 @@
 
 package io.scif.filters;
 
-import io.scif.Metadata;
-
 import java.util.List;
 
 import net.imglib2.meta.AxisType;
-
-import org.scijava.plugin.Attr;
-import org.scijava.plugin.Plugin;
 
 /**
  * {@link io.scif.filters.MetadataWrapper} implementation specifically for use
@@ -53,29 +48,11 @@ import org.scijava.plugin.Plugin;
  * @see io.scif.filters.DimensionSwapper
  * @author Mark Hiner
  */
-@Plugin(type = MetadataWrapper.class, attrs = { @Attr(
-	name = DimensionSwapperMetadata.METADATA_KEY,
-	value = DimensionSwapperMetadata.METADATA_VALUE) })
 public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
-
-	// -- Constants --
-
-	public static final String METADATA_VALUE =
-		"io.scif.filters.DimensionSwapper";
 
 	// -- Fields --
 
 	private List<AxisType>[] outputOrder;
-
-	// -- Constructors --
-
-	public DimensionSwapperMetadata() {
-		this(null);
-	}
-
-	public DimensionSwapperMetadata(final Metadata metadata) {
-		super(metadata);
-	}
 
 	// -- DimensionSwapperMetadata API --
 
@@ -98,5 +75,12 @@ public class DimensionSwapperMetadata extends AbstractMetadataWrapper {
 	 */
 	public void setOutputOrder(final List<AxisType>[] outputOrder) {
 		this.outputOrder = outputOrder;
+	}
+
+	// -- MetadataWrapper API --
+
+	@Override
+	public Class<? extends Filter> filterType() {
+		return io.scif.filters.DimensionSwapper.class;
 	}
 }
