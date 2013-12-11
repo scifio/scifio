@@ -39,7 +39,6 @@ package io.scif.filters;
 import java.util.Set;
 
 import org.scijava.Contextual;
-import org.scijava.InstantiableException;
 
 /**
  * An entry point for toggling and configuring {@link Filter}s.
@@ -83,10 +82,8 @@ public interface MasterFilter<T extends Contextual> extends Filter {
 	 * 
 	 * @param filterClass - The type of filter to enable
 	 * @return The enabled filter
-	 * @throws InstantiableException
 	 */
-	<F extends Filter> F enable(Class<F> filterClass)
-		throws InstantiableException;
+	<F extends Filter> F enable(Class<F> filterClass);
 
 	/**
 	 * Removes the specified filter from the filter stack, if present. Clears any
@@ -94,10 +91,8 @@ public interface MasterFilter<T extends Contextual> extends Filter {
 	 * 
 	 * @param filterClass - The type of filter to disable
 	 * @return true if the desired filter was disabled
-	 * @throws InstantiableException
 	 */
-	boolean disable(Class<? extends Filter> filterClass)
-		throws InstantiableException;
+	boolean disable(Class<? extends Filter> filterClass);
 
 	/**
 	 * Returns a list of all filter classes this MasterFilter can enable/disable.

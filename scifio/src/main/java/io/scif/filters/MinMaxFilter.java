@@ -48,20 +48,13 @@ import java.util.Arrays;
 
 import net.imglib2.meta.Axes;
 
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
  * Logic to compute minimum and maximum values for each channel.
  */
-@Plugin(type = Filter.class, attrs = {
-	@Attr(name = MinMaxFilter.FILTER_KEY, value = MinMaxFilter.FILTER_VALUE),
-	@Attr(name = MinMaxFilter.ENABLED_KEY, value = MinMaxFilter.ENABLED_VAULE) })
+@Plugin(type = Filter.class)
 public class MinMaxFilter extends AbstractReaderFilter {
-
-	// -- Constants --
-
-	public static final String FILTER_VALUE = "io.scif.Reader";
 
 	// -- Fields --
 

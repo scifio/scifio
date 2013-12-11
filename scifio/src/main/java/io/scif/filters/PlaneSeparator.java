@@ -53,24 +53,13 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
  * Logic to automatically separate the channels in a file.
  */
-@Plugin(type = Filter.class, priority = PlaneSeparator.PRIORITY,
-	attrs = {
-		@Attr(name = PlaneSeparator.FILTER_KEY,
-			value = PlaneSeparator.FILTER_VALUE),
-		@Attr(name = PlaneSeparator.ENABLED_KEY,
-			value = PlaneSeparator.ENABLED_VAULE) })
+@Plugin(type = Filter.class)
 public class PlaneSeparator extends AbstractReaderFilter {
-
-	// -- Constants --
-
-	public static final double PRIORITY = 2.0;
-	public static final String FILTER_VALUE = "io.scif.Reader";
 
 	// -- Fields --
 
@@ -365,6 +354,13 @@ public class PlaneSeparator extends AbstractReaderFilter {
 		if (!fileOnly) {
 			cleanUp();
 		}
+	}
+
+	// -- Prioritized API --
+
+	@Override
+	public double getPriority() {
+		return 2.0;
 	}
 
 	// -- Helper Methods --

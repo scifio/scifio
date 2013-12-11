@@ -77,6 +77,11 @@ public abstract class AbstractFilter<T> extends AbstractSCIFIOPlugin
 	// -- Filter API Methods --
 
 	@Override
+	public boolean enabledDefault() {
+		return false;
+	}
+
+	@Override
 	public T getParent() {
 		return parent;
 	}

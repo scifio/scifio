@@ -41,8 +41,6 @@ import io.scif.Reader;
 
 import java.util.Set;
 
-import org.scijava.InstantiableException;
-
 /**
  * {@link io.scif.filters.MasterFilter} for wrapping {@link io.scif.Reader}
  * components.
@@ -71,14 +69,12 @@ public class ReaderFilter extends AbstractReaderFilter implements
 
 	@Override
 	public <F extends Filter> F enable(final Class<F> filterClass)
-		throws InstantiableException
 	{
 		return fHelper.enable(filterClass);
 	}
 
 	@Override
 	public boolean disable(final Class<? extends Filter> filterClass)
-		throws InstantiableException
 	{
 		return fHelper.disable(filterClass);
 	}

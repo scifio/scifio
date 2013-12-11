@@ -141,6 +141,11 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	// -- Filter API Methods --
 
 	@Override
+	public Class<?> target() {
+		return io.scif.Reader.class;
+	}
+
+	@Override
 	public void setParent(final Object parent) {
 		super.setParent(parent);
 

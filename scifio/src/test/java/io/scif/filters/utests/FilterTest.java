@@ -36,14 +36,14 @@
 
 package io.scif.filters.utests;
 
-import static org.testng.AssertJUnit.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
 import io.scif.filters.AbstractReaderFilter;
-import io.scif.filters.PlaneSeparator;
 import io.scif.filters.Filter;
+import io.scif.filters.PlaneSeparator;
 import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
@@ -51,9 +51,6 @@ import java.io.IOException;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Context;
-import org.scijava.InstantiableException;
-import org.scijava.plugin.Attr;
-import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
@@ -82,11 +79,9 @@ public class FilterTest {
 		Context ctx = scifio.getContext();
 
 		PluginInfo<Filter> enabledInfo =
-			new PluginInfo<Filter>(EnabledFilter.class, Filter.class,
-				(Plugin) EnabledFilter.class.getAnnotations()[0]);
+			new PluginInfo<Filter>(EnabledFilter.class, Filter.class);
 		PluginInfo<Filter> disabledInfo =
-			new PluginInfo<Filter>(DisabledFilter.class, Filter.class,
-				(Plugin) DisabledFilter.class.getAnnotations()[0]);
+			new PluginInfo<Filter>(DisabledFilter.class, Filter.class);
 
 		ctx.getPluginIndex().add(enabledInfo);
 		ctx.getPluginIndex().add(disabledInfo);
@@ -106,12 +101,7 @@ public class FilterTest {
 
 		readerFilter = scifio.initializer().initializeReader(id, true);
 
-		try {
 			((ReaderFilter) readerFilter).enable(PlaneSeparator.class);
-		}
-		catch (InstantiableException e) {
-			throw new FormatException(e);
-		}
 
 		long x = readerFilter.getMetadata().get(0).getAxisLength(Axes.X);
 		long y = readerFilter.getMetadata().get(0).getAxisLength(Axes.Y);
@@ -124,7 +114,6 @@ public class FilterTest {
 		y = readerFilter.getMetadata().get(0).getAxisLength(Axes.Y);
 		assertEquals(256, x);
 		assertEquals(128, y);
-
 	}
 
 	@Test
@@ -151,8 +140,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testFilterOrder() throws FormatException, IOException,
-		InstantiableException
+	public void testFilterOrder() throws FormatException, IOException
 	{
 		readerFilter = scifio.initializer().initializeReader(id);
 
@@ -182,28 +170,20 @@ public class FilterTest {
 	}
 
 	// Sample plugin class known to be enabled by default
-	@Plugin(
-		type = Filter.class,
-		attrs = {
-			@Attr(name = EnabledFilter.FILTER_KEY, value = EnabledFilter.FILTER_VALUE),
-			@Attr(name = EnabledFilter.ENABLED_KEY,
-				value = EnabledFilter.ENABLED_VAULE) })
 	public static class EnabledFilter extends AbstractReaderFilter {
 
-		public static final String FILTER_VALUE = "io.scif.Reader";
-		public static final String ENABLED_VAULE = "true";
+		@Override
+		public boolean enabledDefault() {
+			return true;
+		}
 	}
 
 	// Sample plugin class known to be disabled by default
-	@Plugin(type = Filter.class,
-		attrs = {
-			@Attr(name = DisabledFilter.FILTER_KEY,
-				value = DisabledFilter.FILTER_VALUE),
-			@Attr(name = DisabledFilter.ENABLED_KEY,
-				value = DisabledFilter.ENABLED_VAULE) })
 	public static class DisabledFilter extends AbstractReaderFilter {
 
-		public static final String FILTER_VALUE = "io.scif.Reader";
-		public static final String ENABLED_VAULE = "false";
+		@Override
+		public boolean enabledDefault() {
+			return false;
+		}
 	}
 }

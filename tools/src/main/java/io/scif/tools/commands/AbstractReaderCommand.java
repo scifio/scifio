@@ -61,7 +61,6 @@ import net.imglib2.meta.CalibratedAxis;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
-import org.scijava.InstantiableException;
 import org.scijava.plugin.Parameter;
 
 /**
@@ -153,15 +152,10 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 		}
 
 		// Enable filters
-		try {
-			if (stitch) reader.enable(FileStitcher.class);
-			if (separate) reader.enable(PlaneSeparator.class);
-			if (expand) reader.enable(ChannelFiller.class);
-			if (autoscale) reader.enable(MinMaxFilter.class);
-		}
-		catch (InstantiableException e) {
-			throw new CmdLineException(null, e.getMessage());
-		}
+		if (stitch) reader.enable(FileStitcher.class);
+		if (separate) reader.enable(PlaneSeparator.class);
+		if (expand) reader.enable(ChannelFiller.class);
+		if (autoscale) reader.enable(MinMaxFilter.class);
 
 		// Set reader configuration
 		reader.setGroupFiles(!nogroup);

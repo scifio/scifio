@@ -43,10 +43,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.scijava.Contextual;
-import org.scijava.InstantiableException;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.util.ClassUtils;
+import org.scijava.plugin.PluginService;
 
 /**
  * Helper class for {@link io.scif.filters.MasterFilter} implementations. Takes
@@ -82,14 +81,17 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 	implements MasterFilter<T>
 {
 
+	// -- Parameters --
+
+	@Parameter
+	private PluginService pluginService;
+
+	// -- Fields --
+
 	// The non-filter object ultimately delegated to
 	private final T tail;
 
-	// PluginInfo map allows lazy instantiation of individual plugins
-	private final HashMap<Class<? extends Filter>, PluginInfo<Filter>> refMap =
-		new HashMap<Class<? extends Filter>, PluginInfo<Filter>>();
-
-	// Instance map to maintain singletons of created plugins
+	// Instance map to maintain singletons of matching plugins
 	private final HashMap<Class<? extends Filter>, Filter> instanceMap =
 		new HashMap<Class<? extends Filter>, Filter>();
 
@@ -107,39 +109,16 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 		setParent(tail);
 
 		setContext(wrapped.getContext());
-		final List<PluginInfo<Filter>> filterInfos =
-			getContext().getPluginIndex().getPlugins(Filter.class);
+
+		final List<Filter> filters =
+			pluginService.createInstancesOfType(Filter.class);
 
 		// check for matching filter types
-		for (final PluginInfo<Filter> info : filterInfos) {
-			final String filterClassName = info.get(FILTER_KEY);
-
-			if (filterClassName != null) {
-				final Class<?> filterClass = ClassUtils.loadClass(filterClassName);
-				if (filterClass == null) {
-					log().error("Failed to find filter: " + filterClassName);
-					continue;
-				}
-				if (filterClass.isAssignableFrom(wrapped.getClass())) {
-					final Class<? extends Filter> c;
-					try {
-						c = info.loadClass();
-					}
-					catch (final InstantiableException e) {
-						log().error("Failed to load filter: " + info.getClassName(), e);
-						continue;
-					}
-					refMap.put(c, info);
-					final String defaultEnabled = info.get(ENABLED_KEY);
-					if (Boolean.valueOf(defaultEnabled)) {
-						try {
-							enable(info.getPluginClass());
-						}
-						catch (final InstantiableException e) {
-							log().error("Failed to enable filter: " + info.getPluginClass(),
-								e);
-						}
-					}
+		for (final Filter filter : filters) {
+			if (filter.target().isAssignableFrom(wrappedClass)) {
+				instanceMap.put(filter.getClass(), filter);
+				if (filter.enabledDefault()) {
+					enable(filter.getClass());
 				}
 			}
 		}
@@ -149,10 +128,9 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 
 	@Override
 	public <F extends Filter> F enable(final Class<F> filterClass)
-		throws InstantiableException
 	{
 		@SuppressWarnings("unchecked")
-		final F filter = (F) getFilter(filterClass);
+		final F filter = (F) instanceMap.get(filterClass);
 
 		if (filter != null) {
 			enabled.add(filter);
@@ -164,9 +142,8 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 
 	@Override
 	public boolean disable(final Class<? extends Filter> filterClass)
-		throws InstantiableException
 	{
-		final Filter filter = getFilter(filterClass);
+		final Filter filter = instanceMap.get(filterClass);
 		boolean disabled = false;
 
 		if (filter != null) {
@@ -187,6 +164,12 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 	// -- Filter API Methods --
 
 	@Override
+	public Class<?> target() {
+		// Helper class doesn't need a target
+		return null;
+	}
+
+	@Override
 	public void reset() {
 		super.reset();
 		enabled.clear();
@@ -195,31 +178,10 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 
 	@Override
 	public Set<Class<? extends Filter>> getFilterClasses() {
-		return refMap.keySet();
+		return instanceMap.keySet();
 	}
 
 	// -- Helper Methods --
-
-	// Helper method to check instanceMap first. If instanceMap is empty, create a
-	// new instance
-	// and set its priority.
-	private Filter getFilter(final Class<? extends Filter> filterClass)
-		throws InstantiableException
-	{
-		Filter filter = instanceMap.get(filterClass);
-
-		if (filter != null) return filter;
-
-		final PluginInfo<Filter> item = refMap.get(filterClass);
-		if (item != null) {
-			filter = item.createInstance();
-			filter.setPriority(item.getPriority());
-			// NB: didn't set context as parents aren't set yet
-			instanceMap.put(filterClass, filter);
-		}
-
-		return filter;
-	}
 
 	/*
 	 * Re-generates the hierarchical wrappings between each
@@ -230,8 +192,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 		if (enabled.isEmpty()) setParent(tail);
 		else {
 			// need to wrap in reverse order to prevent changing the state of a
-			// parent's
-			// wrapped object
+			// parent's wrapped object
 			final Iterator<Filter> filterIterator = enabled.descendingIterator();
 			Filter currentFilter = filterIterator.next();
 			currentFilter.setParent(tail);
