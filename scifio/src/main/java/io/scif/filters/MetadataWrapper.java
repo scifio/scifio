@@ -39,7 +39,6 @@ package io.scif.filters;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.Metadata;
-import io.scif.SCIFIOPlugin;
 
 /**
  * Wrapper for {@link io.scif.Metadata}. Used to create defensive copies of
@@ -62,7 +61,7 @@ import io.scif.SCIFIOPlugin;
  * @author Mark Hiner
  * @see io.scif.filters.AbstractReaderFilter
  */
-public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
+public interface MetadataWrapper extends Metadata {
 
 	public static final String METADATA_KEY = "Metadata Wrapper";
 	public static final String METADATA_VALUE = "java.lang.Object";
