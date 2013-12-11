@@ -34,15 +34,40 @@
  * #L%
  */
 
-package io.scif.img.cell.cache;
+package io.scif.refs;
+
+import java.lang.ref.Reference;
+
+import org.scijava.service.SciJavaService;
+import org.scijava.service.Service;
 
 /**
- * List of possible outcomes from the
- * {@link CacheService#cache(String, int, java.io.Serializable)} method.
+ * A {@link Service} implementation for helping with {@link Reference}
+ * management.
+ * <p>
+ * The {@link #manage(Object, Object...)} method creates and registers a
+ * {@link CleaningRef} instance with this service, using the given object as its
+ * referent, which allows the {@link CleaningRef#cleanup()} method to be handled
+ * on a separate thread.
+ * </p>
  * 
  * @author Mark Hiner
  */
-public enum CacheResult {
-	CACHE_DISABLED, CACHE_NOT_FOUND, CELL_DISABLED, DISK_FULL, DUPLICATE_FOUND,
-		NOT_DIRTY, SUCCESS
+public interface RefManagerService extends SciJavaService {
+
+	/**
+	 * If there is a corresponding {@link CleaningRef} for the given object, it
+	 * will be created using the given object as its referent and attached to a
+	 * reference queue. A separate thread will poll the queue, and whenever a
+	 * reference is dequeued its {@link CleaningRef#cleanup()} method will be
+	 * invoked.
+	 * <p>
+	 * NB: no more than one of a given Reference type will be managed for a given
+	 * referent. An object shouldn't require more than one cleanup for a given
+	 * usage.
+	 * </p>
+	 * 
+	 * @param toManage Instance to manage via {@link CleaningRef}
+	 */
+	void manage(Object referent, Object... params);
 }

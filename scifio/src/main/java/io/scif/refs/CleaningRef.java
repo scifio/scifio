@@ -34,15 +34,26 @@
  * #L%
  */
 
-package io.scif.img.cell.cache;
+package io.scif.refs;
+
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
 
 /**
- * List of possible outcomes from the
- * {@link CacheService#cache(String, int, java.io.Serializable)} method.
+ * Interface for {@link Reference} subclasses that have some operation that
+ * should be performed after they are enqueued in a {@link ReferenceQueue}.
+ * Implementing classes should extend {@code Reference} or its subclasses. The
+ * {@link #cleanup()} method should be implemented with whatever behavior should
+ * be performed when the reference enters its associated {@link ReferenceQueue},
+ * which depends on the type of reference extended.
  * 
  * @author Mark Hiner
  */
-public enum CacheResult {
-	CACHE_DISABLED, CACHE_NOT_FOUND, CELL_DISABLED, DISK_FULL, DUPLICATE_FOUND,
-		NOT_DIRTY, SUCCESS
+public interface CleaningRef {
+
+	/**
+	 * Hook for cleaning up resources when this reference is removed from a
+	 * {@link ReferenceQueue}.
+	 */
+	void cleanup();
 }

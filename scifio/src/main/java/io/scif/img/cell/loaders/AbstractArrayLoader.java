@@ -86,8 +86,6 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 		synchronized (reader) {
 			final Metadata meta = reader.getMetadata();
 
-			boolean success = false;
-
 			int entities = 1;
 
 			// Starting indices for the planar dimensions
@@ -138,13 +136,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 			A data = null;
 
-			while (!success) {
-				try {
-					data = emptyArray(entities);
-					success = true;
-				}
-				catch (final OutOfMemoryError e) {}
-			}
+			data = emptyArray(entities);
 
 			try {
 				read(data, planarMin, planarLength, npRanges, npIndices);
@@ -198,17 +190,10 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			final int planeIndex =
 				(int) FormatTools.positionToRaster(0, reader, npIndices);
 
-			boolean success = false;
-			while (!success) {
-				try {
-					if (tmpPlane == null) tmpPlane =
-						reader.openPlane(0, planeIndex, planarMin, planarLength);
-					else tmpPlane =
-						reader.openPlane(0, planeIndex, tmpPlane, planarMin, planarLength);
-					success = true;
-				}
-				catch (final OutOfMemoryError e) {}
-			}
+			if (tmpPlane == null) tmpPlane =
+				reader.openPlane(0, planeIndex, planarMin, planarLength);
+			else tmpPlane =
+				reader.openPlane(0, planeIndex, tmpPlane, planarMin, planarLength);
 			convertBytes(data, tmpPlane.getBytes(), planeCount);
 		}
 

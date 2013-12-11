@@ -48,7 +48,11 @@ import java.io.Serializable;
 public interface CacheService<T extends Serializable> extends SCIFIOService {
 
 	/**
-	 * Removes all entries from the specified cache
+	 * Removes all entries from the specified cache. Note: this method is
+	 * vulnerable to race conditions, as successful clearing requires that
+	 * the items to be clear have actually made it to disk. Thus it
+	 * should not be used if there is the chance that transactions are
+	 * still in process.
 	 * 
 	 * @param cacheId cache name to clear
 	 */
@@ -56,6 +60,8 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 
 	/**
 	 * Removes all entries for all caches
+	 * 
+	 * @see #clearCache(String)
 	 */
 	void clearAllCaches();
 
@@ -88,8 +94,10 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	CacheResult cache(String cacheId, int index, T object);
 
 	/**
-	 * Removes and returns the object at the desired index from the specified
-	 * index.
+	 * Returns the object at the desired index from the specified
+	 * index. The entry is not guaranteed to be removed from disk until the
+	 * limit (set via {@link #setMaxBytesOnDisk(long)}) is reached. To encourage
+	 * the deletion of these records early, use {@link #cleanRetrieved(String)}.
 	 * <p>
 	 * NB: the cell returned from this method will automatically attempt to
 	 * re-cache itself when finalized. To disable this feature, use
@@ -103,15 +111,26 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	T retrieve(String cacheId, int index);
 
 	/**
-	 * Removes and returns the object at the desired index from the specified
-	 * index and disable that cell's automatic re-caching. Useful for anonymous
-	 * retrieval.
+	 * As {@link #retrieve(String, int)}, but any flag for automatic caching will
+	 * be disabled if possible.
 	 * 
 	 * @param cacheId - Cache the desired object belongs to
 	 * @param index - Index in the cache of the desired object
 	 * @return The cached object for the specified id and index
 	 */
 	T retrieveNoRecache(String cacheId, int index);
+
+	/**
+	 * Start a new thread to remove all previously-retrieved entries for a given
+	 * cache from disk. This method will automatically be invoked when the byte
+	 * limit, set by {@link #setMaxBytesOnDisk(long)}, is reached. But, although
+	 * this process will run on a separate thread, there may be a performance hit
+	 * to delete cache entries - e.g. if further caching is blocked. Use this
+	 * method to pre-emptively control when records are deleted.
+	 * 
+	 * @param cacheId - Cache to clean
+	 */
+	void cleanRetrieved(final String cacheId);
 
 	/**
 	 * @param cacheId - Cache the desired object belongs to

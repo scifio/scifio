@@ -34,15 +34,40 @@
  * #L%
  */
 
-package io.scif.img.cell.cache;
+package io.scif.refs;
+
+import io.scif.SCIFIOPlugin;
+
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
+
+import org.scijava.plugin.SingletonPlugin;
 
 /**
- * List of possible outcomes from the
- * {@link CacheService#cache(String, int, java.io.Serializable)} method.
+ * Interface for plugins that create references for a given referent. Each
+ * RefProvider is uniquely identified by its referent and parameter combination
+ * defined by the {@link #handles(Object, Object...)} method. If this method
+ * returns true, it is safe to pass the referent and parameters to this
+ * RefProvider, along with the {@link ReferenceQueue} the resulting reference
+ * should be enqueued in.
  * 
  * @author Mark Hiner
  */
-public enum CacheResult {
-	CACHE_DISABLED, CACHE_NOT_FOUND, CELL_DISABLED, DISK_FULL, DUPLICATE_FOUND,
-		NOT_DIRTY, SUCCESS
+public interface RefProvider extends SCIFIOPlugin, SingletonPlugin {
+
+	/**
+	 * @param referent - potential referent to test
+	 * @param params - potential parameter list to test
+	 * @return True iff this RefProvider matches the given referent and parameters
+	 *         exactly.
+	 */
+	boolean handles(Object referent, Object... params);
+
+	/**
+	 * @param referent - referent for the new reference
+	 * @param queue - ReferenceQueue to enqueue the new reference
+	 * @param params - list of parameters required by the new reference
+	 * @return The created reference.
+	 */
+	Reference makeRef(Object referent, ReferenceQueue queue, Object... params);
 }

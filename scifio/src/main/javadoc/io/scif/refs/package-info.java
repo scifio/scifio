@@ -33,16 +33,30 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-
-package io.scif.img.cell.cache;
-
 /**
- * List of possible outcomes from the
- * {@link CacheService#cache(String, int, java.io.Serializable)} method.
+ * Provides reference management utilities.
+ * <p>
+ * The {@link io.scif.refs.RefManagerService} provides a dedicated thread for
+ * polling reference queues, looking for available references. The 
+ * {@link io.scif.refs.RefManagerservice#manage(Object, Object[])} method is
+ * used to create and enqueue a new reference. The first parameter is the
+ * object to manage, and it must have a corresponding
+ * {@link io.scif.refs.RefProvider} that matches the given Object[] parameter
+ * list.
+ * </p>
+ * <p>
+ * The {@link io.scif.refs.RefProvider} is a new plugin type for generating
+ * references, and is uniquely defined by the target referent plus an additional
+ * set of parameters.
+ * </p>
+ * <p>
+ * A {@link io.scif.refs.CleaningRef} interface is provided for references that
+ * have clean-up operations after being enqueued.
+ * </p>
+ * 
  * 
  * @author Mark Hiner
  */
-public enum CacheResult {
-	CACHE_DISABLED, CACHE_NOT_FOUND, CELL_DISABLED, DISK_FULL, DUPLICATE_FOUND,
-		NOT_DIRTY, SUCCESS
-}
+
+package io.scif.memory;
+
