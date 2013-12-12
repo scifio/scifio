@@ -45,7 +45,6 @@ import java.util.Set;
 
 import net.imglib2.meta.AxisType;
 
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,22 +55,13 @@ import org.scijava.plugin.Plugin;
  * @see io.scif.filters.PlaneSeparator
  * @author Mark Hiner
  */
-@Plugin(type = MetadataWrapper.class, attrs = { @Attr(
-	name = PlaneSeparatorMetadata.METADATA_KEY,
-	value = PlaneSeparatorMetadata.METADATA_VALUE) })
+@Plugin(type = MetadataWrapper.class)
 public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
-
-	// -- Constants --
-
-	public static final String METADATA_VALUE =
-		"io.scif.filters.PlaneSeparator";
 
 	// -- Fields --
 
 	/** List of Axes to separate. */
 	private Set<AxisType> splitTypes = new HashSet<AxisType>();
-
-	// -- Constructors --
 
 	// -- PlanarAxisSeparatorMetadata API Methods --
 
@@ -106,6 +96,11 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 			splitTypes.add(meta.get(0).getAxis(i).type());
 		}
 		super.wrap(meta);
+	}
+
+	@Override
+	public Class<? extends Filter> filterType() {
+		return io.scif.filters.PlaneSeparator.class;
 	}
 
 	// -- Metadata API Methods --

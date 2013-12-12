@@ -70,7 +70,6 @@ import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
-import org.scijava.InstantiableException;
 import org.scijava.app.StatusService;
 import org.scijava.plugin.Parameter;
 
@@ -375,9 +374,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 		catch (final IOException e) {
 			throw new ImgIOException(e);
 		}
-		catch (final InstantiableException e) {
-			throw new ImgIOException(e);
-		}
 		return r;
 	}
 
@@ -634,13 +630,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final int sizeC =
 			(int) r.getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 		final ReaderFilter rf = (ReaderFilter) r;
-		MinMaxFilter minMax = null;
-		try {
-			minMax = rf.enable(MinMaxFilter.class);
-		}
-		catch (final InstantiableException e) {
-			throw new FormatException(e);
-		}
+		MinMaxFilter minMax =  rf.enable(MinMaxFilter.class);
 		for (int c = 0; c < sizeC; c++) {
 			final Double min = minMax.getChannelKnownMinimum(imageIndex, c);
 			final Double max = minMax.getChannelKnownMaximum(imageIndex, c);

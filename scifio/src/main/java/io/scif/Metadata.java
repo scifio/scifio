@@ -59,17 +59,6 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	HasMetaTable
 {
 
-	// -- Static Constents --
-
-	/**
-	 * String representation of this classes package-qualified name.
-	 * <p>
-	 * Necessary for dynamic use annotations. All Metadata implementations should
-	 * override this constant.
-	 * </p>
-	 */
-	public static final String CNAME = "io.scif.Metadata";
-
 	// -- Metadata API --
 
 	/**

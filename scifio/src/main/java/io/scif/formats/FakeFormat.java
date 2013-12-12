@@ -51,14 +51,11 @@ import io.scif.MetadataService;
 import io.scif.Plane;
 import io.scif.Translator;
 import io.scif.common.DataTools;
-import io.scif.io.IStreamAccess;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
-import io.scif.io.StreamHandle;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Random;
 
@@ -70,7 +67,6 @@ import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.axis.DefaultLinearAxis;
 
 import org.scijava.Priority;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -140,10 +136,6 @@ public class FakeFormat extends AbstractFormat {
 	public static class Metadata extends AbstractMetadata implements
 		HasColorTable
 	{
-
-		// -- Static Constants --
-
-		public static final String CNAME = "io.scif.formats.FakeFormat$Metadata";
 
 		// -- Fields --
 
@@ -585,15 +577,22 @@ public class FakeFormat extends AbstractFormat {
 	/**
 	 * Translator from {@link io.scif.Metadata} to FakeFormat$Metadata.
 	 */
-	@Plugin(type = Translator.class, attrs = {
-		@Attr(name = FakeTranslator.SOURCE, value = io.scif.Metadata.CNAME),
-		@Attr(name = FakeTranslator.DEST, value = Metadata.CNAME) },
-		priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
 	public static class FakeTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{
 
 		// -- Translator API Methods --
+
+		@Override
+		public Class<? extends io.scif.Metadata> source() {
+			return io.scif.Metadata.class;
+		}
+
+		@Override
+		public Class<? extends io.scif.Metadata> dest() {
+			return Metadata.class;
+		}
 
 		@Override
 		public void typedTranslate(final io.scif.Metadata source,

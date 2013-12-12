@@ -48,7 +48,6 @@ import java.util.Arrays;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -58,17 +57,8 @@ import org.scijava.plugin.Plugin;
  * lut length is not guaranteed to be accurate until a plane has been read
  */
 @Plugin(
-	type = Filter.class,
-	priority = ChannelFiller.PRIORITY,
-	attrs = {
-		@Attr(name = ChannelFiller.FILTER_KEY, value = ChannelFiller.FILTER_VALUE),
-		@Attr(name = ChannelFiller.ENABLED_KEY, value = ChannelFiller.ENABLED_VAULE) })
+	type = Filter.class)
 public class ChannelFiller extends AbstractReaderFilter {
-
-	// -- Constants --
-
-	public static final double PRIORITY = 1.0;
-	public static final String FILTER_VALUE = "io.scif.Reader";
 
 	// -- Fields --
 
@@ -235,6 +225,12 @@ public class ChannelFiller extends AbstractReaderFilter {
 	@Override
 	protected void setSourceHelper(final String source) {
 		cleanUp();
+	}
+	// -- Prioritized API --
+
+	@Override
+	public double getPriority() {
+		return 1.0;
 	}
 
 	// -- Helper Methods --

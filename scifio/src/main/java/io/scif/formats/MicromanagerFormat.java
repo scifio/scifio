@@ -66,7 +66,6 @@ import java.util.Vector;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.xml.sax.Attributes;
@@ -109,11 +108,6 @@ public class MicromanagerFormat extends AbstractFormat {
 	 * @author Mark Hiner
 	 */
 	public static class Metadata extends AbstractMetadata {
-
-		// -- Constants --
-
-		public static final String CNAME =
-			"io.scif.formats.MicromanagerFormat$Metadata";
 
 		// -- Fields --
 
@@ -847,13 +841,19 @@ public class MicromanagerFormat extends AbstractFormat {
 	 * 
 	 * @author Mark Hiner
 	 */
-	@Plugin(type = Translator.class,
-		attrs = {
-			@Attr(name = MicromanagerTranslator.SOURCE,
-				value = io.scif.Metadata.CNAME),
-			@Attr(name = MicromanagerTranslator.DEST, value = Metadata.CNAME) },
-		priority = Priority.LOW_PRIORITY)
-	public static class MicromanagerTranslator extends DefaultTranslator {}
+	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	public static class MicromanagerTranslator extends DefaultTranslator {
+
+		@Override
+		public Class<? extends io.scif.Metadata> source() {
+			return io.scif.Metadata.class;
+		}
+
+		@Override
+		public Class<? extends io.scif.Metadata> dest() {
+			return Metadata.class;
+		}
+	}
 
 	// -- Helper classes --
 

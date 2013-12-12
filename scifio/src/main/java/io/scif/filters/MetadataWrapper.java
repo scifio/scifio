@@ -39,7 +39,6 @@ package io.scif.filters;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.Metadata;
-import io.scif.SCIFIOPlugin;
 
 /**
  * Wrapper for {@link io.scif.Metadata}. Used to create defensive copies of
@@ -62,10 +61,7 @@ import io.scif.SCIFIOPlugin;
  * @author Mark Hiner
  * @see io.scif.filters.AbstractReaderFilter
  */
-public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
-
-	public static final String METADATA_KEY = "Metadata Wrapper";
-	public static final String METADATA_VALUE = "java.lang.Object";
+public interface MetadataWrapper extends Metadata {
 
 	/**
 	 * @return The {@code Metadata} used for delegation by this wrapper.
@@ -79,6 +75,12 @@ public interface MetadataWrapper extends Metadata, SCIFIOPlugin {
 	 * @param meta - The Metadata instance to wrap
 	 */
 	void wrap(Metadata meta);
+
+	/**
+	 * @return The class of the {@link Filter} this MetadataWrapper is compatible
+	 *         with.
+	 */
+	Class<? extends Filter> filterType();
 
 	// -- Setter Methods with passUp flag --
 

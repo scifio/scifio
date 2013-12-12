@@ -731,10 +731,6 @@ public class DICOMFormat extends AbstractFormat {
 		HasColorTable
 	{
 
-		// -- Constants --
-
-		public static final String CNAME = "io.scif.formats.DICOMFormat$Metadata";
-
 		// -- Fields --
 
 		byte[][] lut = null;

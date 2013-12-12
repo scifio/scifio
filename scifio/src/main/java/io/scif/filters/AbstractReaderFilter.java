@@ -46,14 +46,11 @@ import io.scif.io.RandomAccessInputStream;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
-import org.scijava.util.ClassUtils;
 
 /**
  * Abstract superclass for all {@link io.scif.filters.Filter} that delegate to
@@ -82,7 +79,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	/* Need to wrap each Reader's Metadata separately */
 	private Metadata wrappedMeta = null;
 
-	private final Class<? extends Metadata> metaClass;
+	private final Class<? extends MetadataWrapper> metaClass;
 
 	@Parameter
 	private PluginService pluginService;
@@ -93,7 +90,8 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		this(null);
 	}
 
-	public AbstractReaderFilter(final Class<? extends Metadata> metaClass) {
+	public AbstractReaderFilter(final Class<? extends MetadataWrapper> metaClass)
+	{
 		super(Reader.class);
 		this.metaClass = metaClass;
 	}
@@ -141,41 +139,36 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	// -- Filter API Methods --
 
 	@Override
+	public Class<?> target() {
+		return io.scif.Reader.class;
+	}
+
+	@Override
 	public void setParent(final Object parent) {
 		super.setParent(parent);
 
 		final Reader r = (Reader) parent;
 
-		// TODO Maybe cache this result so we don't have to discover every time
-		// setparent is called
-		// because it will be called frequently, given how MasterFilterHelper is
-		// implemented
-
-		final List<PluginInfo<MetadataWrapper>> wrapperInfos =
-			getContext().getPluginIndex().getPlugins(MetadataWrapper.class);
-
-		// look for a compatible MetadataWrapper class
-		for (final PluginInfo<MetadataWrapper> info : wrapperInfos) {
-			final String wrapperClassName = info.get(MetadataWrapper.METADATA_KEY);
-
-			if (wrapperClassName != null) {
-				final Class<?> wrapperClass = ClassUtils.loadClass(wrapperClassName);
-				if (wrapperClass == null) {
-					log().error("Failed to find class: " + wrapperClassName);
-					continue;
-				}
-				if (wrapperClass.isAssignableFrom(getClass())) {
-					final MetadataWrapper metaWrapper =
-							getContext().getService(PluginService.class).createInstance(info);
-					metaWrapper.wrap(r.getMetadata());
-					wrappedMeta = metaWrapper;
-					return;
-				}
+		if (metaClass != null) {
+			MetadataWrapper wrapper = null;
+			try {
+				wrappedMeta = wrapper = metaClass.newInstance();
+				getContext().inject(wrapper);
+				wrapper.wrap(r.getMetadata());
+			}
+			catch (InstantiationException e) {
+				log()
+					.error("Failed to create MetadataWrapper of type: " + metaClass, e);
+			}
+			catch (IllegalAccessException e) {
+				log()
+					.error("Failed to create MetadataWrapper of type: " + metaClass, e);
 			}
 		}
-
-		// No Filter-specific wrapper found
-		wrappedMeta = r.getMetadata();
+		else {
+			// No Filter-specific wrapper found
+			wrappedMeta = r.getMetadata();
+		}
 	}
 
 	@Override

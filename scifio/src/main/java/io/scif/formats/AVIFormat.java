@@ -71,7 +71,6 @@ import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -164,9 +163,6 @@ public class AVIFormat extends AbstractFormat {
 	public static class Metadata extends AbstractMetadata implements
 		HasColorTable
 	{
-
-		// -- Constants --
-		public static final String CNAME = "io.scif.formats.AVIFormat$Metadata";
 
 		// -- AVI Metadata --
 
@@ -1600,13 +1596,22 @@ public class AVIFormat extends AbstractFormat {
 	/**
 	 * @author Mark Hiner
 	 */
-	@Plugin(type = io.scif.Translator.class, attrs = {
-		@Attr(name = Translator.SOURCE, value = io.scif.Metadata.CNAME),
-		@Attr(name = Translator.DEST, value = Metadata.CNAME) },
-		priority = Priority.LOW_PRIORITY)
+	@Plugin(type = io.scif.Translator.class, priority = Priority.LOW_PRIORITY)
 	public static class Translator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{
+		
+		// -- Translator API methods --
+
+		@Override
+		public Class<? extends io.scif.Metadata> source() {
+			return io.scif.Metadata.class;
+		}
+
+		@Override
+		public Class<? extends io.scif.Metadata> dest() {
+			return Metadata.class;
+		}
 
 		@Override
 		protected void typedTranslate(final io.scif.Metadata source,

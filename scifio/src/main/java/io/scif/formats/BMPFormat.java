@@ -104,10 +104,6 @@ public class BMPFormat extends AbstractFormat {
 		HasColorTable
 	{
 
-		// -- Constants --
-
-		public static final String CNAME = "io.scif.formats.BMPFormat$Metadata";
-
 		// -- Fields --
 
 		/** The palette for indexed color images. */

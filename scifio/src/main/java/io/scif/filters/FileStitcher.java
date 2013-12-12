@@ -55,7 +55,6 @@ import java.util.HashMap;
 
 import net.imglib2.meta.Axes;
 
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -63,15 +62,8 @@ import org.scijava.plugin.Plugin;
  * Logic to stitch together files with similar names. Assumes that all files
  * have the same characteristics (e.g., dimensions).
  */
-@Plugin(type = Filter.class, priority = FileStitcher.PRIORITY, attrs = {
-	@Attr(name = FileStitcher.FILTER_KEY, value = FileStitcher.FILTER_VALUE),
-	@Attr(name = FileStitcher.ENABLED_KEY, value = FileStitcher.ENABLED_VAULE) })
+@Plugin(type = Filter.class)
 public class FileStitcher extends AbstractReaderFilter {
-
-	// -- Constants --
-
-	public static final double PRIORITY = 3.0;
-	public static final String FILTER_VALUE = "io.scif.Reader";
 
 	// -- Fields --
 
@@ -413,6 +405,13 @@ public class FileStitcher extends AbstractReaderFilter {
 	@Override
 	public Reader[] getUnderlyingReaders() {
 		return readers;
+	}
+
+	// -- Prioritized API --
+
+	@Override
+	public double getPriority() {
+		return 3.0;
 	}
 
 	// -- Internal FormatReader API methods --

@@ -54,10 +54,16 @@ import io.scif.SCIFIOPlugin;
  */
 public interface Filter extends SCIFIOPlugin {
 
-	public static final String FILTER_KEY = "Filters";
-	public static final String FILTER_VALUE = "java.lang.Object";
-	public static final String ENABLED_KEY = "Enabled by default";
-	public static final String ENABLED_VAULE = "false";
+	/**
+	 * @return The target type operated on by this filter
+	 */
+	Class<?> target();
+
+	/**
+	 * @return True iff this filter should be enabled by default (e.g. whenever a
+	 *         ReaderFilter is constructed)
+	 */
+	boolean enabledDefault();
 
 	/**
 	 * Sets the object which this filter augments.

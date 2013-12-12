@@ -48,7 +48,6 @@ import java.util.List;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,17 +55,8 @@ import org.scijava.plugin.Plugin;
  * for both reassigning ZCT sizes (the input dimension order), and shuffling
  * around the resultant planar order (the output dimension order).
  */
-@Plugin(type = Filter.class, priority = DimensionSwapper.PRIORITY, attrs = {
-	@Attr(name = DimensionSwapper.FILTER_KEY,
-		value = DimensionSwapper.FILTER_VALUE),
-	@Attr(name = DimensionSwapper.ENABLED_KEY,
-		value = DimensionSwapper.ENABLED_VAULE) })
+@Plugin(type = Filter.class)
 public class DimensionSwapper extends AbstractReaderFilter {
-
-	// -- Constants --
-
-	public static final double PRIORITY = 4.0;
-	public static final String FILTER_VALUE = "io.scif.Reader";
 
 	// -- Fields --
 
@@ -240,6 +230,13 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	public Metadata getMetadata() {
 		FormatTools.assertId(getCurrentFile(), true, 2);
 		return super.getMetadata();
+	}
+
+	// -- Prioritized API --
+
+	@Override
+	public double getPriority() {
+		return 4.0;
 	}
 
 	// -- Helper methods --
