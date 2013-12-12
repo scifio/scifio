@@ -1552,10 +1552,21 @@ public class TIFFFormat extends AbstractFormat {
 
 			final IFD firstIFD = ifds.get(0);
 
+			// Determine pixel type. Decoding logic is in IFD#getPixelType
+			int sampleFormat;
+			if (FormatTools.isFloatingPoint(m.getPixelType())) {
+				sampleFormat = 3;
+			}
+			else if (FormatTools.isSigned(m.getPixelType())) {
+				sampleFormat = 2;
+			}
+			else {
+				sampleFormat = 1;
+			}
+
 			firstIFD.putIFDValue(IFD.BITS_PER_SAMPLE,
 				new int[] { m.getBitsPerPixel() });
-			firstIFD.putIFDValue(IFD.SAMPLE_FORMAT, FormatTools.isSigned(m
-				.getPixelType()) ? 2 : 1);
+			firstIFD.putIFDValue(IFD.SAMPLE_FORMAT, sampleFormat);
 			firstIFD.putIFDValue(IFD.LITTLE_ENDIAN, m.isLittleEndian());
 			firstIFD.putIFDValue(IFD.IMAGE_WIDTH, m.getAxisLength(Axes.X));
 			firstIFD.putIFDValue(IFD.IMAGE_LENGTH, m.getAxisLength(Axes.Y));
