@@ -23,6 +23,25 @@ Two subdirectories will be extracted:
 
 Note that the relative location of ```/bin``` and ```/repo``` is important. However, if these directories are separated, you can still set a ```REPO``` environment variable that points to the script dependencies. In addition to this directory, the ```CLASSPATH``` environment variable will always be included.
 
+Building from source
+--------------------
+
+If you would like to build the SCIFIO command-line tools from scratch, simply run:
+
+  ```mvn clean install```
+
+from the top-level SCIFIO directory. You should see three projects completed: "SCIFIO projects", "SCIFIO Core" and "SCIFIO Tools." After installation, the tools will be installed to ```tools/target/appassembler/```. Here you will find the directory structure detailed in the [installation](#installation) section.
+
+Note that there is one caveat in using these tools on *nix operating systems: by default, they will not be created witih execute permissions (per [this issue](http://jira.codehaus.org/browse/MAPPASM-54). So, instead of running ```scifio ...``` commands as in the [usage](#usage) section, you will have two options:
+
+* run ```bash scifio ...``` instead
+
+or
+
+* Add execution permissions to the scifio script, using ```chmod a+x tools/target/appassembler/bin/scifio```
+
+Note also that the zipped scripts (which will also be created as part of the install, in ```tools/target```) will unzip with execute permission already set.
+
 Usage
 -----
 
