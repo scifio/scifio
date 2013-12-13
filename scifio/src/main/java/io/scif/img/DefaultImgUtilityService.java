@@ -283,7 +283,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	 * Converts ImgLib2 Type object to SCIFIO pixel type.
 	 */
 	@Override
-	public int makeType(final RealType<?> type) throws ImgIOException {
+	public int makeType(final Object type) throws ImgIOException {
 		int pixelType = FormatTools.UINT8;
 		if (type instanceof UnsignedByteType) {
 			pixelType = FormatTools.UINT8;

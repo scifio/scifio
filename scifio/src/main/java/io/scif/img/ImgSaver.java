@@ -59,8 +59,6 @@ import net.imglib2.img.planar.PlanarImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
 import org.scijava.app.StatusService;
@@ -102,14 +100,13 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * to that goal. This method is called when a String id and {@link Img} are
 	 * provided.
 	 * 
-	 * @param <T>
 	 * @param id
 	 * @param img
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public <T extends RealType<T> & NativeType<T>> void saveImg(final String id,
-		final Img<T> img) throws ImgIOException, IncompatibleTypeException
+	public void saveImg(final String id,
+		final Img<?> img) throws ImgIOException, IncompatibleTypeException
 	{
 		saveImg(id, ImgPlus.wrap(img), 0);
 	}
@@ -118,14 +115,13 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * String id provided. {@link ImgPlus} provided, or wrapped {@link Img} in
 	 * previous saveImg.
 	 * 
-	 * @param <T>
 	 * @param id
 	 * @param img
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public <T extends RealType<T> & NativeType<T>> void saveImg(final String id,
-		final ImgPlus<T> img, final int imageIndex) throws ImgIOException,
+	public void saveImg(final String id,
+		final ImgPlus<?> img, final int imageIndex) throws ImgIOException,
 		IncompatibleTypeException
 	{
 		img.setSource(id);
@@ -136,14 +132,13 @@ public class ImgSaver extends AbstractImgIOComponent {
 	/**
 	 * {@link Writer} and {@link Img} provided
 	 * 
-	 * @param <T>
 	 * @param w
 	 * @param img
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public <T extends RealType<T> & NativeType<T>> void saveImg(final Writer w,
-		final Img<T> img) throws ImgIOException, IncompatibleTypeException
+	public void saveImg(final Writer w,
+		final Img<?> img) throws ImgIOException, IncompatibleTypeException
 	{
 		saveImg(w, ImgPlus.wrap(img), 0);
 	}
@@ -156,14 +151,13 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * {@link Writer} provided. {@link ImgPlus} provided, or wrapped provided
 	 * {@link Img}.
 	 * 
-	 * @param <T>
 	 * @param w
 	 * @param img
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public <T extends RealType<T> & NativeType<T>> void saveImg(final Writer w,
-		final ImgPlus<T> img, final int imageIndex) throws ImgIOException,
+	public void saveImg(final Writer w,
+		final ImgPlus<?> img, final int imageIndex) throws ImgIOException,
 		IncompatibleTypeException
 	{
 		saveImg(w, img, imageIndex, true);
@@ -358,8 +352,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	// -- Helper methods --
 
 	/* Entry point for writePlanes method, the actual workhorse to save pixels to disk */
-	private <T extends RealType<T> & NativeType<T>> void saveImg(final Writer w,
-		final ImgPlus<T> img, final int imageIndex, final boolean initializeWriter)
+	private void saveImg(final Writer w,
+		final ImgPlus<?> img, final int imageIndex, final boolean initializeWriter)
 		throws ImgIOException, IncompatibleTypeException
 	{
 
@@ -390,8 +384,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	/* Counts the number of slices in the provided ImgPlus.
 	 * NumSlices = product of the sizes of all non-X,Y planes.
 	 */
-	private <T extends RealType<T> & NativeType<T>> int countSlices(
-		final ImgPlus<T> img)
+	private int countSlices(
+		final ImgPlus<?> img)
 	{
 
 		int sliceCount = 1;
@@ -411,9 +405,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * 
 	 * @throws IncompatibleTypeException
 	 */
-	@SuppressWarnings("unchecked")
-	private <T extends RealType<T> & NativeType<T>> void writePlanes(Writer w,
-		final ImgPlus<T> img, final int imageIndex) throws ImgIOException,
+	private void writePlanes(Writer w,
+		final ImgPlus<?> img, final int imageIndex) throws ImgIOException,
 		IncompatibleTypeException
 	{
 		final PlanarAccess<?> planarAccess = utils().getPlanarAccess(img);
@@ -422,7 +415,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 				PlanarAccess.class + " images supported at this time.");
 		}
 
-		final PlanarImg<T, ?> planarImg = (PlanarImg<T, ?>) planarAccess;
+		final PlanarImg<?, ?> planarImg = (PlanarImg<?, ?>) planarAccess;
 		final int planeCount = planarImg.numSlices();
 		final int rgbChannelCount =
 			(int) w.getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
@@ -552,8 +545,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Creates a new {@link Writer} with an unpopulated MetadataStore and sets its
 	 * id to the provided String.
 	 */
-	private <T extends RealType<T> & NativeType<T>> Writer initializeWriter(
-		final String id, final ImgPlus<T> img, final int imageIndex)
+	private Writer initializeWriter(
+		final String id, final ImgPlus<?> img, final int imageIndex)
 		throws ImgIOException
 	{
 		Writer writer = null;
@@ -583,8 +576,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Uses the provided {@link ImgPlus} to populate the minimum metadata fields
 	 * necessary for writing.
 	 */
-	private <T extends RealType<T> & NativeType<T>> void populateMeta(
-		final Metadata meta, final ImgPlus<T> img, final int imageIndex)
+	private void populateMeta(
+		final Metadata meta, final ImgPlus<?> img, final int imageIndex)
 		throws ImgIOException
 	{
 		statusService.showStatus("Initializing " + img.getName());
