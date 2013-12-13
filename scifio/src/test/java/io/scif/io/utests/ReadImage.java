@@ -42,8 +42,6 @@ import io.scif.img.ImgOpener;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -55,7 +53,7 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class ReadImage {
 
-	public static <T extends RealType<T> & NativeType<T>> void main(
+	public static void main(
 		final String[] args) throws ImgIOException
 	{
 		final ImgOpener imageOpener = new ImgOpener();
@@ -74,16 +72,14 @@ public class ReadImage {
 		// read all arguments using auto-detected type with default container
 		System.out.println("== AUTO-DETECTED TYPE, DEFAULT CONTAINER ==");
 		for (final String id : ids) {
-			@SuppressWarnings("unchecked")
-			final ImgPlus<T> img = imageOpener.openImg(id);
+			final ImgPlus<?> img = imageOpener.openImg(id);
 			reportInformation(img);
 		}
 
 		// read all arguments using auto-detected type with default container
 		System.out.println("== AUTO-DETECTED TYPE, CELL CONTAINER ==");
 		for (final String id : ids) {
-			@SuppressWarnings("unchecked")
-			final ImgPlus<T> img = imageOpener.openImg(id);
+			final ImgPlus<?> img = imageOpener.openImg(id);
 			reportInformation(img);
 		}
 
@@ -113,11 +109,11 @@ public class ReadImage {
 	}
 
 	/** Prints out some useful information about the {@link Img}. */
-	public static <T extends RealType<T>> void
-		reportInformation(final Img<T> img)
+	public static void
+		reportInformation(final Img<?> img)
 	{
 		System.out.println(img);
-		final Cursor<T> cursor = img.cursor();
+		final Cursor<?> cursor = img.cursor();
 		cursor.fwd();
 		System.out.println("\tType = " + cursor.get().getClass().getName());
 		System.out.println("\tImg = " + img.getClass().getName());
