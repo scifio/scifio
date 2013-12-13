@@ -113,8 +113,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	@SuppressWarnings("rawtypes")
-	public ImgPlus openImg(final String source) throws ImgIOException {
+	public ImgPlus<?> openImg(final String source) throws ImgIOException {
 		return openImg(source, new ImgOptions());
 	}
 
@@ -141,8 +140,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ImgPlus openImg(final String source, final ImgOptions imgOptions)
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ImgPlus<?> openImg(final String source, final ImgOptions imgOptions)
 		throws ImgIOException
 	{
 		final Reader r = createReader(source, imgOptions);
@@ -190,8 +189,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	@SuppressWarnings({ "rawtypes" })
-	public ImgPlus openImg(final String source, final ImgFactory imgFactory)
+	@SuppressWarnings("rawtypes")
+	public ImgPlus<?> openImg(final String source, final ImgFactory imgFactory)
 		throws ImgIOException
 	{
 		final ImgOptions imgOptions = new ImgOptions().setComputeMinMax(true);
@@ -207,8 +206,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ImgPlus openImg(final String source, final ImgFactory imgFactory,
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ImgPlus<?> openImg(final String source, final ImgFactory imgFactory,
 		final ImgOptions imgOptions) throws ImgIOException
 	{
 		final Reader r = createReader(source, imgOptions);

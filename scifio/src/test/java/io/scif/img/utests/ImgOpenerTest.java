@@ -51,7 +51,10 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.type.numeric.real.FloatType;
 
 import org.testng.annotations.Test;
 
@@ -91,15 +94,11 @@ public class ImgOpenerTest {
 	 * Check that having raw typed ImgOpener methods doesn't cause problems. This
 	 * test should just fail to compile if there's an issue.
 	 */
-	@SuppressWarnings("rawtypes")
 	@Test
-	public void testGenerics() throws IncompatibleTypeException, ImgIOException {
-		final NativeType[] nativeTypes =
-			new NativeType[] { new UnsignedByteType() };
-
-		for (final NativeType t : nativeTypes)
-			doTestGenerics(t);
-
+	public  void testGenerics() throws IncompatibleTypeException, ImgIOException {
+		doTestGenerics(new UnsignedByteType());
+		doTestGenerics(new FloatType());
+		doTestGenerics(new DoubleType());
 	}
 
 	/**
@@ -151,23 +150,21 @@ public class ImgOpenerTest {
 		assertEquals(size, imgPlus.size());
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T> void doTestGenerics(final T type)
+	private <T extends RealType<T> & NativeType<T>> void doTestGenerics(final T type)
 		throws IncompatibleTypeException, ImgIOException
 	{
 		ImgPlus<T> imgPlus = null;
 
-		@SuppressWarnings("rawtypes")
-		final ImgFactory factory = new ArrayImgFactory().imgFactory(type);
+		final ImgFactory<T> factory = new ArrayImgFactory<T>().imgFactory(type);
 
 		// Try each rawtype openImg method
-		imgPlus = imgOpener.openImg(id);
+		imgPlus = imgOpener.openImg(id, type);
 		assertNotNull(imgPlus);
 		imgPlus = null;
-		imgPlus = imgOpener.openImg(id, new ImgOptions());
+		imgPlus = imgOpener.openImg(id, type, new ImgOptions());
 		assertNotNull(imgPlus);
 		imgPlus = null;
-		imgPlus = imgOpener.openImg(id, factory);
+		imgPlus = imgOpener.openImg(id, factory, type);
 		assertNotNull(imgPlus);
 		imgPlus = null;
 	}

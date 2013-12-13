@@ -79,7 +79,7 @@ public interface ImgUtilityService extends SCIFIOService {
 	/**
 	 * Converts ImgLib2 Type object to SCIFIO pixel type.
 	 */
-	int makeType(final RealType<?> type) throws ImgIOException;
+	int makeType(final Object type) throws ImgIOException;
 
 	/** Wraps raw primitive array in ImgLib2 Array object. */
 	ArrayDataAccess<?> makeArray(final Object array);
