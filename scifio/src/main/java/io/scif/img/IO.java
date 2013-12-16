@@ -229,11 +229,17 @@ public final class IO {
 	 * @see ImgOpener#openImg(String, ImgFactory, RealType)
 	 */
 	public static <T extends RealType<T>> ImgPlus<T> openImg(final String source,
-		final ImgFactory<T> imgFactory, final T type) throws ImgIOException
+		final ImgFactory<T> imgFactory, final T type)
 	{
 		ImgOpener opener = opener();
-		ImgPlus<T> imgPlus = opener.openImg(source, imgFactory, type);
-		register(imgPlus, opener);
+		ImgPlus<T> imgPlus = null;
+		try {
+			imgPlus = opener.openImg(source, imgFactory, type);
+			register(imgPlus, opener);
+		}
+		catch (ImgIOException e) {
+			openError(source, e);
+		}
 		return imgPlus;
 	}
 
@@ -242,11 +248,16 @@ public final class IO {
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final Reader reader, final T type, final ImgOptions imgOptions)
-		throws ImgIOException
 	{
 		ImgOpener opener = opener();
-		ImgPlus<T> imgPlus = opener.openImg(reader, type, imgOptions);
-		register(imgPlus, opener);
+		ImgPlus<T> imgPlus = null;
+		try {
+			imgPlus = opener.openImg(reader, type, imgOptions);
+			register(imgPlus, opener);
+		}
+		catch (ImgIOException e) {
+			openError(reader.getMetadata().getDatasetName(), e);
+		}
 		return imgPlus;
 	}
 
@@ -255,11 +266,16 @@ public final class IO {
 	 */
 	public static <T extends RealType<T>> ImgPlus<T> openImg(final Reader reader,
 		final T type, final ImgFactory<T> imgFactory, final ImgOptions imgOptions)
-		throws ImgIOException
 	{
 		ImgOpener opener = opener();
-		ImgPlus<T> imgPlus = opener.openImg(reader, type, imgFactory, imgOptions);
-		register(imgPlus, opener);
+		ImgPlus<T> imgPlus = null;
+		try {
+			imgPlus = opener.openImg(reader, type, imgFactory, imgOptions);
+			register(imgPlus, opener);
+		}
+		catch (ImgIOException e) {
+			openError(reader.getMetadata().getDatasetName(), e);
+		}
 		return imgPlus;
 	}
 
