@@ -70,8 +70,8 @@ Several software libraries use SCIFIO for image I/O:
 Developer documentation:
 * See the [SCIFIO tutorials](https://github.com/scifio/scifio-tutorials) for a
   step-by-step introduction to the SCIFIO API.
-* See also the [SCIFIO
-  Javadocs](http://jenkins.imagej.net/view/SCIFIO/job/SCIFIO-javadoc/javadoc/?).
+* See also the
+  [SCIFIO Javadocs](http://jenkins.imagej.net/job/SCIFIO-javadoc/javadoc/?).
 
 
 More information
