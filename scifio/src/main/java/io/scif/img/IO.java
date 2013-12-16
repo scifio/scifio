@@ -84,7 +84,7 @@ public final class IO {
 		imgPlus = opener.openImg(source);
 		register(imgPlus, opener);
 		} catch (ImgIOException e) {
-			log(source, e);
+			openError(source, e);
 		}
 		return imgPlus;
 	}
@@ -100,7 +100,7 @@ public final class IO {
 		imgPlus = opener.openImg(source, new FloatType());
 		register(imgPlus, opener);
 		} catch (ImgIOException e) {
-			log(source, e);
+			openError(source, e);
 		}
 		return imgPlus;
 	}
@@ -116,7 +116,7 @@ public final class IO {
 		imgPlus = opener.openImg(source, new DoubleType());
 		register(imgPlus, opener);
 		} catch (ImgIOException e) {
-			log(source, e);
+			openError(source, e);
 		}
 		return imgPlus;
 	}
@@ -133,7 +133,7 @@ public final class IO {
 		imgPlus = opener.openImg(source, new UnsignedByteType());
 		register(imgPlus, opener);
 		} catch (ImgIOException e) {
-			log(source, e);
+			openError(source, e);
 		}
 		return imgPlus;
 	}
@@ -150,7 +150,7 @@ public final class IO {
 		imgPlus = opener.openImg(source, type);
 		register(imgPlus, opener);
 		} catch (ImgIOException e) {
-			log(source, e);
+			openError(source, e);
 		}
 		return imgPlus;
 	}
@@ -167,7 +167,7 @@ public final class IO {
 		imgPlus = opener.openImg(source, imgOptions);
 		register(imgPlus, opener);
 		} catch (ImgIOException e) {
-			log(source, e);
+			openError(source, e);
 		}
 		return imgPlus;
 	}
@@ -184,7 +184,7 @@ public final class IO {
 		imgPlus = opener.openImg(source, type, imgOptions);
 		register(imgPlus, opener);
 		} catch (ImgIOException e) {
-			log(source, e);
+			openError(source, e);
 		}
 		return imgPlus;
 	}
@@ -202,7 +202,7 @@ public final class IO {
 		imgPlus = opener.openImg(source, imgFactory);
 		register(imgPlus, opener);
 		} catch (ImgIOException e) {
-			log(source, e);
+			openError(source, e);
 		}
 		return imgPlus;
 	}
@@ -220,7 +220,7 @@ public final class IO {
 		imgPlus = opener.openImg(source, imgFactory, imgOptions);
 		register(imgPlus, opener);
 		} catch (ImgIOException e) {
-			log(source, e);
+			openError(source, e);
 		}
 		return imgPlus;
 	}
@@ -269,13 +269,16 @@ public final class IO {
 	 * @see ImgSaver#saveImg(String, Img)
 	 */
 	public static void saveImg(
-		final String dest, final Img<?> img) throws ImgIOException
+		final String dest, final Img<?> img)
 	{
 		try {
 			new ImgSaver().saveImg(dest, img);
 		}
 		catch (final IncompatibleTypeException e) {
-			throw new ImgIOException(e);
+			saveError(dest, e);
+		}
+		catch (ImgIOException e) {
+			saveError(dest, e);
 		}
 	}
 
@@ -284,13 +287,15 @@ public final class IO {
 	 */
 	public static void saveImg(
 		final String dest, final ImgPlus<?> imgPlus, final int imageIndex)
-		throws ImgIOException
 	{
 		try {
 			new ImgSaver().saveImg(dest, imgPlus, imageIndex);
 		}
 		catch (final IncompatibleTypeException e) {
-			throw new ImgIOException(e);
+			saveError(dest, e);
+		}
+		catch (ImgIOException e) {
+			saveError(dest, e);
 		}
 	}
 
@@ -298,13 +303,16 @@ public final class IO {
 	 * @see ImgSaver#saveImg(Writer, Img)
 	 */
 	public static void saveImg(
-		final Writer writer, final Img<?> img) throws ImgIOException
+		final Writer writer, final Img<?> img) 
 	{
 		try {
 			new ImgSaver().saveImg(writer, img);
 		}
 		catch (final IncompatibleTypeException e) {
-			throw new ImgIOException(e);
+			saveError(writer.getMetadata().getDatasetName(), e);
+		}
+		catch (ImgIOException e) {
+			saveError(writer.getMetadata().getDatasetName(), e);
 		}
 	}
 
@@ -313,13 +321,15 @@ public final class IO {
 	 */
 	public static void saveImg(
 		final Writer writer, final ImgPlus<?> imgPlus, final int imageIndex)
-		throws ImgIOException
 	{
 		try {
 			new ImgSaver().saveImg(writer, imgPlus, imageIndex);
 		}
 		catch (final IncompatibleTypeException e) {
-			throw new ImgIOException(e);
+			saveError(writer.getMetadata().getDatasetName(), e);
+		}
+		catch (ImgIOException e) {
+			saveError(writer.getMetadata().getDatasetName(), e);
 		}
 	}
 
@@ -360,7 +370,15 @@ public final class IO {
 	 * @param source - Source that failed to open
 	 * @param e - Exception to log
 	 */
-	private static void log(String source, ImgIOException e) {
+	private static void openError(String source, Exception e) {
 		logService.error("Failed to open ImgPlus for source: " + source, e);
+	}
+
+	/**
+	 * @param source - Source that failed to open
+	 * @param e - Exception to log
+	 */
+	private static void saveError(String dest, Exception e) {
+		logService.error("Failed to save ImgPlus to id: " + dest, e);
 	}
 }
