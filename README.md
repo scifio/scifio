@@ -44,7 +44,7 @@ The SCIFIO core includes support for:
 Additionally,
 [Bio-Formats](http://www.openmicroscopy.org/site/products/bio-formats) is
 [available as a SCIFIO plugin](https://github.com/scifio/scifio-bf-compat) for
-supporting hundreds of additional proprietary formats.
+supporting more than a hundred additional proprietary formats.
 
 
 For users
