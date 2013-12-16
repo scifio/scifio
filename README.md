@@ -68,8 +68,8 @@ Several software libraries use SCIFIO for image I/O:
   for reading and writing images using SCIFIO.
 
 Developer documentation:
-* See the [tutorials](tutorials) for a step-by-step introduction
-  to the SCIFIO API.
+* See the [SCIFIO tutorials](https://github.com/scifio/scifio-tutorials) for a
+  step-by-step introduction to the SCIFIO API.
 * See also the [SCIFIO
   Javadocs](http://jenkins.imagej.net/view/SCIFIO/job/SCIFIO-javadoc/javadoc/?).
 
