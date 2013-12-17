@@ -624,15 +624,15 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	private void populateMinMax(final Reader r, final ImgPlus<?> imgPlus,
-		final int imageIndex) throws FormatException, IOException
+		final int imageIndex)
 	{
 		final int sizeC =
 			(int) r.getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 		final ReaderFilter rf = (ReaderFilter) r;
 		MinMaxFilter minMax =  rf.enable(MinMaxFilter.class);
 		for (int c = 0; c < sizeC; c++) {
-			final Double min = minMax.getChannelKnownMinimum(imageIndex, c);
-			final Double max = minMax.getChannelKnownMaximum(imageIndex, c);
+			final Double min = minMax.getAxisKnownMinimum(imageIndex, Axes.CHANNEL, c);
+			final Double max = minMax.getAxisKnownMinimum(imageIndex, Axes.CHANNEL, c);
 			imgPlus.setChannelMinimum(c, min == null ? Double.NaN : min);
 			imgPlus.setChannelMaximum(c, max == null ? Double.NaN : max);
 		}

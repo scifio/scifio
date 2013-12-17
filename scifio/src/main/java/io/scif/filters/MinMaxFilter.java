@@ -44,174 +44,114 @@ import io.scif.common.DataTools;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.plugin.Plugin;
 
 /**
- * Logic to compute minimum and maximum values for each channel.
+ * Logic to compute minimum and maximum values for each plane. For each plane,
+ * the min/max values for a given value of a specific planar axis can also be
+ * queried.
  */
 @Plugin(type = Filter.class)
 public class MinMaxFilter extends AbstractReaderFilter {
 
 	// -- Fields --
 
-	/** Min values for each channel. */
-	protected double[][] sliceMin;
-
-	/** Max values for each channel. */
-	protected double[][] sliceMax;
-
-	/** Min values for each plane. */
-	protected double[][] planeMin;
-
-	/** Max values for each plane. */
-	protected double[][] planeMax;
-
-	/** Number of planes for which min/max computations have been completed. */
-	protected int[] minMaxDone;
-
-	// -- MinMaxCalculator API methods --
+	/**
+	 * For each image in the dataset, map each planar axis type to a list of
+	 * minimum values for each index of that plane.
+	 */
+	private List<Map<AxisType, double[]>> planarAxisMin;
 
 	/**
-	 * Retrieves a specified channel's global minimum. Returns null if some of the
-	 * image planes have not been read.
-	 * 
-	 * @throws IOException Not actually thrown.
+	 * For each image in the dataset, map each planar axis type to a list of
+	 * maximum values for each index of that plane.
 	 */
-	public Double getChannelGlobalMinimum(final int imageIndex, final int theC)
-		throws FormatException, IOException
-	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		if (theC < 0 ||
-			theC >= getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL))
-		{
-			throw new FormatException("Invalid channel index: " + theC);
-		}
+	private List<Map<AxisType, double[]>> planarAxisMax;
 
-		// check that all planes have been read
-		if (minMaxDone == null || minMaxDone[imageIndex] < getImageCount()) {
-			return null;
-		}
-		return new Double(sliceMin[imageIndex][theC]);
+	/** Minimum values for each plane, for each image. */
+	private double[][] planeMin;
+
+	/** Maximum values for each plane, for each image. */
+	private double[][] planeMax;
+
+	/**
+	 * Number of planes for which min/max computations have been completed, per
+	 * image.
+	 */
+	private int[] minMaxDone;
+
+	// -- MinMaxFilter API methods --
+
+	/**
+	 * Retrieves a specified planar axis's global minimum. Returns null if some of
+	 * the image planes have not been read.
+	 */
+	public Double getAxisGlobalMinimum(final int imageIndex, final AxisType type,
+		final int index) throws FormatException
+	{
+		return getAxisGlobalValue(imageIndex, type, index, planarAxisMin);
 	}
 
 	/**
-	 * Retrieves a specified channel's global maximum. Returns null if some of the
-	 * image planes have not been read.
-	 * 
-	 * @throws IOException Not actually thrown.
+	 * Retrieves a specified planar axis's global maximum. Returns null if some of
+	 * the image planes have not been read.
 	 */
-	public Double getChannelGlobalMaximum(final int imageIndex, final int theC)
-		throws FormatException, IOException
+	public Double getAxisGlobalMaximum(final int imageIndex, final AxisType type,
+		final int index) throws FormatException
 	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		if (theC < 0 ||
-			theC >= getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL))
-		{
-			throw new FormatException("Invalid channel index: " + theC);
-		}
-
-		// check that all planes have been read
-		if (minMaxDone == null || minMaxDone[imageIndex] < getImageCount()) {
-			return null;
-		}
-		return new Double(sliceMax[imageIndex][theC]);
+		return getAxisGlobalValue(imageIndex, type, index, planarAxisMax);
 	}
 
 	/**
-	 * Retrieves the specified channel's minimum based on the images that have
+	 * Retrieves the specified planar axis's minimum based on the images that have
 	 * been read. Returns null if no image planes have been read yet.
-	 * 
-	 * @throws FormatException Not actually thrown.
-	 * @throws IOException Not actually thrown.
 	 */
-	public Double getChannelKnownMinimum(final int imageIndex, final int theC)
-		throws FormatException, IOException
+	public Double getAxisKnownMinimum(final int imageIndex, final AxisType type,
+		final int index)
 	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		return sliceMin == null ? null : new Double(sliceMin[imageIndex][theC]);
+		return getAxisKnownValue(imageIndex, type, index, planarAxisMin);
 	}
 
 	/**
-	 * Retrieves the specified channel's maximum based on the images that have
+	 * Retrieves the specified planar axis's maximum based on the images that have
 	 * been read. Returns null if no image planes have been read yet.
-	 * 
-	 * @throws FormatException Not actually thrown.
-	 * @throws IOException Not actually thrown.
 	 */
-	public Double getChannelKnownMaximum(final int imageIndex, final int theC)
-		throws FormatException, IOException
+	public Double getAxisKnownMaximum(final int imageIndex, final AxisType type,
+		final int index)
 	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		return sliceMax == null ? null : new Double(sliceMax[imageIndex][theC]);
+		return getAxisKnownValue(imageIndex, type, index, planarAxisMax);
 	}
 
 	/**
-	 * Retrieves the minimum pixel value for the specified plane. If each image
-	 * contains multiple representations of a given plane (i.e., with an RGB
-	 * image), returns the maximum value for each individual plane representation.
-	 * Returns null if the plane has not already been read.
-	 * 
-	 * @throws FormatException Not actually thrown.
-	 * @throws IOException Not actually thrown.
+	 * Retrieves the minimum pixel value for each planar axis of the specified
+	 * plane. Returns null if the plane has not already been read.
 	 */
-	public Double[] getPlaneMinimum(final int imageIndex, final long planeIndex)
-		throws FormatException, IOException
-	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		if (planeMin == null) return null;
-
-		final int numXY = countRGB(imageIndex);
-		final int pBase = (int)planeIndex * numXY;
-		if (Double.isNaN(planeMin[imageIndex][pBase])) return null;
-
-		final Double[] min = new Double[numXY];
-		for (int c = 0; c < numXY; c++) {
-			min[c] = new Double(planeMin[imageIndex][pBase + c]);
-		}
-		return min;
+	public Double getPlaneMinimum(final int imageIndex, final long planeIndex) {
+		return getPlaneValue(imageIndex, planeIndex, planeMin);
 	}
 
 	/**
-	 * Retrieves the maximum pixel value for the specified plane. If each image
-	 * plane contains more than one channel (i.e.,
-	 * {@link ImageMetadata#isMultichannel()} &gt; 1), returns the maximum value
-	 * for each embedded channel. Returns null if the plane has not already been
-	 * read.
-	 * 
-	 * @throws FormatException Not actually thrown.
-	 * @throws IOException Not actually thrown.
+	 * Retrieves the maximum pixel value for each planar axis of the specified
+	 * plane. Returns null if the plane has not already been read.
 	 */
-	public Double[] getPlaneMaximum(final int imageIndex, final long planeIndex)
-		throws FormatException, IOException
-	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
-		if (planeMax == null) return null;
-
-		final int numXY = countRGB(imageIndex);
-		final int pBase = (int) (planeIndex * numXY);
-		if (Double.isNaN(planeMax[imageIndex][pBase])) return null;
-
-		final Double[] max = new Double[numXY];
-		for (int c = 0; c < numXY; c++) {
-			max[c] = new Double(planeMax[imageIndex][pBase + c]);
-		}
-		return max;
+	public Double getPlaneMaximum(final int imageIndex, final long planeIndex) {
+		return getPlaneValue(imageIndex, planeIndex, planeMax);
 	}
 
 	/**
-	 * Returns true if the values returned by getChannelGlobalMinimum/Maximum can
-	 * be trusted.
-	 * 
-	 * @throws FormatException Not actually thrown.
-	 * @throws IOException Not actually thrown.
+	 * Returns true if the values returned by getAxisGlobalMinimum/Maximum can be
+	 * trusted.
 	 */
-	public boolean isMinMaxPopulated(final int imageIndex)
-		throws FormatException, IOException
-	{
+	public boolean isMinMaxPopulated(final int imageIndex) {
 		FormatTools.assertId(getCurrentFile(), true, 2);
 		return minMaxDone != null && minMaxDone[imageIndex] == getImageCount();
 	}
@@ -268,8 +208,8 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	public void close(final boolean fileOnly) throws IOException {
 		super.close(fileOnly);
 		if (!fileOnly) {
-			sliceMin = null;
-			sliceMax = null;
+			planarAxisMin = null;
+			planarAxisMax = null;
 			planeMin = null;
 			planeMax = null;
 			minMaxDone = null;
@@ -294,136 +234,183 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	 *          having been written to it, the length (in bytes) of the those
 	 *          pixels.
 	 */
-	protected void updateMinMax(final int imageIndex, final long planeIndex,
-		final byte[] buf, final int len) throws FormatException, IOException
+	private void updateMinMax(final int imageIndex, final long planeIndex,
+		final byte[] buf, final int len)
 	{
 		if (buf == null) return;
-		initMinMax(imageIndex);
+		initMinMax();
 
-		final io.scif.Metadata m = getMetadata();
-		final int numRGB = countRGB(imageIndex);
-		final int pixelType = m.get(imageIndex).getPixelType();
+		final Metadata m = getMetadata();
+		final ImageMetadata iMeta = m.get(imageIndex);
+		final int pixelType = iMeta.getPixelType();
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
-		final long planeSize = m.get(imageIndex).getPlaneSize();
-		// check whether min/max
-		// values have already
-		// been computed for
-		// this plane
+		final long planeSize = iMeta.getPlaneSize();
+		// check whether min/max values have already been computed for this plane
 		// and that the buffer requested is actually the entire plane
 		if (len == planeSize &&
-			!Double.isNaN(planeMin[imageIndex][(int)planeIndex * numRGB])) return;
+			!Double.isNaN(planeMin[imageIndex][(int) planeIndex])) return;
 
-		final boolean little = m.get(imageIndex).isLittleEndian();
+		final boolean little = iMeta.isLittleEndian();
 
-		final int pixels = len / (bpp * numRGB);
-		final boolean interleaved =
-			m.get(imageIndex).getInterleavedAxisCount() > 0;
+		final int pixels = len / bpp;
 
-		final long[] coords =
-			FormatTools.rasterToPosition(imageIndex, planeIndex, m);
-		int cIndex = m.get(imageIndex).getAxisIndex(Axes.CHANNEL);
-		final int cBase =
-			m.get(imageIndex).isMultichannel() ? (int) coords[cIndex] * numRGB : 0;
-		final int pBase = (int) (planeIndex * numRGB);
-		for (int c = 0; c < numRGB; c++) {
-			planeMin[imageIndex][pBase + c] = Double.POSITIVE_INFINITY;
-			planeMax[imageIndex][pBase + c] = Double.NEGATIVE_INFINITY;
-		}
+		// populate the plane min/max to default values
+		planeMin[imageIndex][(int) planeIndex] = Double.POSITIVE_INFINITY;
+		planeMax[imageIndex][(int) planeIndex] = Double.NEGATIVE_INFINITY;
 
 		final boolean signed = FormatTools.isSigned(pixelType);
-
 		final long threshold = (long) Math.pow(2, bpp * 8 - 1);
+
 		for (int i = 0; i < pixels; i++) {
-			for (int c = 0; c < numRGB; c++) {
-				final int idx = bpp * (interleaved ? i * numRGB + c : c * pixels + i);
-				long bits = DataTools.bytesToLong(buf, idx, bpp, little);
-				if (signed) {
-					if (bits >= threshold) bits -= 2 * threshold;
-				}
-				double v = bits;
-				if (pixelType == FormatTools.FLOAT) {
-					v = Float.intBitsToFloat((int) bits);
-				}
-				else if (pixelType == FormatTools.DOUBLE) {
-					v = Double.longBitsToDouble(bits);
-				}
+			// get the value for this pixel
+			final int idx = bpp * i;
+			long bits = DataTools.bytesToLong(buf, idx, bpp, little);
+			if (signed) {
+				if (bits >= threshold) bits -= 2 * threshold;
+			}
+			double v = bits;
+			if (pixelType == FormatTools.FLOAT) {
+				v = Float.intBitsToFloat((int) bits);
+			}
+			else if (pixelType == FormatTools.DOUBLE) {
+				v = Double.longBitsToDouble(bits);
+			}
 
-				if (v > sliceMax[imageIndex][cBase + c]) {
-					sliceMax[imageIndex][cBase + c] = v;
+			// Update the appropriate planar axis min/max if necessary
+			final long[] planarPositions =
+				FormatTools.rasterToPosition(iMeta.getAxesLengthsPlanar(), i);
+
+			for (int axis = 0; axis < planarPositions.length; axis++) {
+				final AxisType type = iMeta.getAxis(axis).type();
+				final double[] planarMin = planarAxisMin.get(imageIndex).get(type);
+				if (planarMin[(int) planarPositions[axis]] > v) {
+					planarMin[(int) planarPositions[axis]] = v;
 				}
-				if (v < sliceMin[imageIndex][cBase + c]) {
-					sliceMin[imageIndex][cBase + c] = v;
+				final double[] planarMax = planarAxisMax.get(imageIndex).get(type);
+				if (planarMax[(int) planarPositions[axis]] < v) {
+					planarMax[(int) planarPositions[axis]] = v;
 				}
+			}
+
+			// Update the plane min/max if necessary
+			if (v > planeMax[imageIndex][(int) planeIndex]) {
+				planeMax[imageIndex][(int) planeIndex] = v;
+			}
+			if (v < planeMin[imageIndex][(int) planeIndex]) {
+				planeMin[imageIndex][(int) planeIndex] = v;
 			}
 		}
 
-		for (int c = 0; c < numRGB; c++) {
-			if (sliceMin[imageIndex][cBase + c] < planeMin[imageIndex][pBase + c]) {
-				planeMin[imageIndex][pBase + c] = sliceMin[imageIndex][cBase + c];
-			}
-			if (sliceMax[imageIndex][cBase + c] > planeMax[imageIndex][pBase + c]) {
-				planeMax[imageIndex][pBase + c] = sliceMax[imageIndex][cBase + c];
-			}
-		}
-		minMaxDone[imageIndex] = Math.max(minMaxDone[imageIndex], (int)planeIndex + 1);
+		// Set the number of planes complete for this image
+		minMaxDone[imageIndex] =
+			Math.max(minMaxDone[imageIndex], (int) planeIndex + 1);
 	}
 
 	/**
 	 * Ensures internal min/max variables are initialized properly.
-	 * 
-	 * @throws FormatException Not actually thrown.
-	 * @throws IOException Not actually thrown.
 	 */
-	protected void initMinMax(int imageIndex)
-		throws FormatException, IOException
-	{
+	private void initMinMax() {
 		final io.scif.Metadata m = getMetadata();
 		final int imageCount = m.getImageCount();
-		final int xyRepresentations =
-			countRGB(imageIndex); 
 
-		if (sliceMin == null) {
-			sliceMin = new double[imageCount][];
+		if (planarAxisMin == null) {
+			planarAxisMin = new ArrayList<Map<AxisType, double[]>>();
 			for (int i = 0; i < imageCount; i++) {
-				sliceMin[i] = new double[xyRepresentations];
-				Arrays.fill(sliceMin[i], Double.POSITIVE_INFINITY);
+				HashMap<AxisType, double[]> minMap = new HashMap<AxisType, double[]>();
+				ImageMetadata iMeta = m.get(i);
+				for (CalibratedAxis axis : iMeta.getAxesPlanar()) {
+					double[] values = new double[(int) iMeta.getAxisLength(axis.type())];
+					Arrays.fill(values, Double.POSITIVE_INFINITY);
+					minMap.put(axis.type(), values);
+				}
+				planarAxisMin.add(minMap);
 			}
 		}
-		if (sliceMax == null) {
-			sliceMax = new double[imageCount][];
+		if (planarAxisMax == null) {
+			planarAxisMax = new ArrayList<Map<AxisType, double[]>>();
 			for (int i = 0; i < imageCount; i++) {
-				sliceMax[i] = new double[xyRepresentations];
-				Arrays.fill(sliceMax[i], Double.NEGATIVE_INFINITY);
+				HashMap<AxisType, double[]> maxMap = new HashMap<AxisType, double[]>();
+				ImageMetadata iMeta = m.get(i);
+				for (CalibratedAxis axis : iMeta.getAxesPlanar()) {
+					double[] values = new double[(int) iMeta.getAxisLength(axis.type())];
+					Arrays.fill(values, Double.NEGATIVE_INFINITY);
+					maxMap.put(axis.type(), values);
+				}
+				planarAxisMax.add(maxMap);
 			}
 		}
 		if (planeMin == null) {
 			planeMin = new double[imageCount][];
 			for (int i = 0; i < imageCount; i++) {
-				planeMin[i] = new double[(int)getPlaneCount(i) * xyRepresentations];
+				planeMin[i] = new double[(int) getPlaneCount(i)];
 				Arrays.fill(planeMin[i], Double.NaN);
 			}
 		}
 		if (planeMax == null) {
 			planeMax = new double[imageCount][];
 			for (int i = 0; i < imageCount; i++) {
-				planeMax[i] = new double[(int)getPlaneCount(i) * xyRepresentations];
+				planeMax[i] = new double[(int) getPlaneCount(i)];
 				Arrays.fill(planeMax[i], Double.NaN);
 			}
 		}
 		if (minMaxDone == null) minMaxDone = new int[imageCount];
 	}
 
+	/**
+	 * Returns the global min or max (based on the provided list) for the given
+	 * image, axis type, and slice for that axis.
+	 */
+	private Double getAxisGlobalValue(final int imageIndex, final AxisType type,
+		final int index, final List<Map<AxisType, double[]>> planarAxisValues)
+		throws FormatException
+	{
+		FormatTools.assertId(getCurrentFile(), true, 2);
+		if (index < 0 || index >= getMetadata().get(imageIndex).getAxisLength(type))
+		{
+			throw new FormatException("Invalid " + type.getLabel() + " index: " +
+				index);
+		}
+
+		// check that all planes have been read
+		if (minMaxDone == null ||
+			minMaxDone[imageIndex] < getPlaneCount(imageIndex))
+		{
+			return null;
+		}
+		return getAxisValue(planarAxisValues.get(imageIndex).get(type), index);
+	}
 
 	/**
-	 * Count how many color channel planes are present.
+	 * Returns the known min or max (based on the provided list) for the given
+	 * image, axis type, and slice for that axis.
 	 */
-	private int countRGB(int imageIndex) {
-		Metadata meta = getMetadata();
-		if (meta.get(imageIndex).getAxisIndex(Axes.CHANNEL) < meta
-				.get(imageIndex).getPlanarAxisCount())
-		{
-			return (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
-		}
-		return 1;
+	private Double getAxisKnownValue(final int imageIndex, final AxisType type,
+		final int index, final List<Map<AxisType, double[]>> planarAxisValues)
+	{
+		FormatTools.assertId(getCurrentFile(), true, 2);
+		return planarAxisValues == null ? null : getAxisValue(planarAxisValues.get(
+			imageIndex).get(type), index);
+	}
+
+	/**
+	 * Safe method for accessing a values array. Returns null if the provided
+	 * array is null, else returns values[index].
+	 */
+	private Double getAxisValue(final double[] values, final int index) {
+		return values == null ? null : new Double(values[index]);
+	}
+
+	/**
+	 * Returns the min or max (based on the provided array) value for a given
+	 * plane and image index.
+	 */
+	private Double getPlaneValue(final int imageIndex, final long planeIndex,
+		final double[][] planeValues)
+	{
+		FormatTools.assertId(getCurrentFile(), true, 2);
+		if (planeValues == null) return null;
+		if (Double.isNaN(planeValues[imageIndex][(int) planeIndex])) return null;
+
+		return planeValues[imageIndex][(int) planeIndex];
 	}
 }
