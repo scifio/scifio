@@ -211,7 +211,7 @@ public class CacheServiceTest {
 		// wait for reference to clear
 		long time = System.currentTimeMillis();
 		while (ref.get() != null && System.currentTimeMillis() - time < TIMEOUT) {
-			System.gc();
+			clearMem();
 		}
 
 		// Cell shouldn't have cached since it was unmodified
@@ -229,7 +229,7 @@ public class CacheServiceTest {
 		cell = null;
 		time = System.currentTimeMillis();
 		while (ref.get() != null && System.currentTimeMillis() - time < TIMEOUT) {
-			System.gc();
+			clearMem();
 		}
 
 		assertNull(ref.get());
@@ -265,9 +265,12 @@ public class CacheServiceTest {
 		cell = null;
 		time = System.currentTimeMillis();
 		while (ref.get() != null && System.currentTimeMillis() - time < TIMEOUT) {
-			System.gc();
+			clearMem();
 		}
 
+		if (ref.get() != null) {
+			System.out.println("why!");
+		}
 		assertNull(ref.get());
 
 		// Wait for finalization
@@ -276,7 +279,7 @@ public class CacheServiceTest {
 			System.currentTimeMillis() - time < TIMEOUT)
 		{
 			// wait until serialization/deserialization completes
-			System.gc();
+			clearMem();
 		}
 
 		// Cell should have cached again as it is still modified relative to what's
@@ -485,6 +488,16 @@ public class CacheServiceTest {
 		for (final SCIFIOCell<?> cell : cells) {
 			if (cell != null) cell.cacheOnFinalize(enabled);
 		}
+	}
+
+	/**
+	 * Terrible hack that is, unfortunately, more consistent than System.gc() for
+	 * clearing memory.
+	 */
+	private void clearMem() {
+		@SuppressWarnings("unused")
+		String[] tmp = new String[999999];
+		tmp = null;
 	}
 
 	// -- HelperClass --
