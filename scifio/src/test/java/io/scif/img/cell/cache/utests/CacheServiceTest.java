@@ -268,9 +268,6 @@ public class CacheServiceTest {
 			clearMem();
 		}
 
-		if (ref.get() != null) {
-			System.out.println("why!");
-		}
 		assertNull(ref.get());
 
 		// Wait for finalization
