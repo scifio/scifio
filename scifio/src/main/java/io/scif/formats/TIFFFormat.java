@@ -1547,7 +1547,15 @@ public class TIFFFormat extends AbstractFormat {
 
 			final ImageMetadata m = source.get(0);
 
-			for (int i = 0; i < m.getPlaneCount(); i++)
+			long planeCount = m.getPlaneCount();
+			// if Axes.CHANNEL isn't part of the planar axes, we have
+			// to manually coerce it to be an RGB tiff, as that's how
+			// TIFF expects additional channels
+			if (m.getAxisIndex(Axes.CHANNEL) >= m.getPlanarAxisCount()) {
+				planeCount /= m.getAxisLength(Axes.CHANNEL);
+			}
+			
+			for (int i = 0; i < planeCount; i++)
 				ifds.add(new IFD(log()));
 
 			final IFD firstIFD = ifds.get(0);
