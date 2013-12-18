@@ -75,7 +75,10 @@ public class CacheServiceTest {
 	// -- Constants --
 
 	// max time, in ms, to wait for cache
-	private static final long TIMEOUT = 15000l;
+	private static final long TIMEOUT = 300000l;
+
+	// Size of arrays to allocate during clearMem method
+	private long arraySize;
 
 	// -- Fields --
 
@@ -88,6 +91,7 @@ public class CacheServiceTest {
 	public void setUp() {
 		scifio = new SCIFIO();
 		cs = scifio.getContext().getService(CacheService.class);
+		arraySize = -1;
 	}
 
 	// -- Post-test hooks --
@@ -249,7 +253,7 @@ public class CacheServiceTest {
 		cs.cleanRetrieved(cache.toString());
 
 		time = System.currentTimeMillis();
-		while (cs.retrieve(cache.toString(), 0) != null &&
+		while (cs.retrieveNoRecache(cache.toString(), 0) != null &&
 			System.currentTimeMillis() - time < TIMEOUT)
 		{
 			// Wait for the entry to be removed from the cache
@@ -492,8 +496,12 @@ public class CacheServiceTest {
 	 * clearing memory.
 	 */
 	private void clearMem() {
+		if (arraySize == -1) {
+			arraySize = Runtime.getRuntime().freeMemory();
+		}
+
 		@SuppressWarnings("unused")
-		String[] tmp = new String[999999];
+		byte[] tmp = new byte[(int) arraySize];
 		tmp = null;
 	}
 
