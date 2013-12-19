@@ -114,7 +114,7 @@ public class PGMFormat extends AbstractFormat {
 			final ImageMetadata iMeta = get(0);
 
 			iMeta.setPlanarAxisCount(iMeta.getAxisLength(Axes.CHANNEL) == 3 ? 3 : 2);
-			iMeta.setLittleEndian(true);
+			iMeta.setLittleEndian(false);
 			iMeta.setIndexed(false);
 			iMeta.setFalseColor(false);
 			iMeta.setMetadataComplete(true);
