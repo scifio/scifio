@@ -72,7 +72,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	private ThreadService threadService;
 
 	@Parameter
-	private RefManagerService memoryService;
+	private RefManagerService refManagerService;
 
 	@Parameter
 	private LogService logService;
@@ -268,7 +268,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		if (cell != null) {
 			// Mark this entry for possible deletion in the future
 			retrievedKeys.add(getKey(cacheId, index));
-			memoryService.manage(cell);
+			refManagerService.manage(cell);
 		}
 		return cell;
 	}
@@ -283,7 +283,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 			retrievedKeys.add(getKey(cacheId, index));
 			// Ensure this cell is not cached again
 			cell.cacheOnFinalize(false);
-			memoryService.manage(cell);
+			refManagerService.manage(cell);
 		}
 
 		return cell;

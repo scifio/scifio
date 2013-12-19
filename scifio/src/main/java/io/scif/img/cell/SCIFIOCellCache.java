@@ -68,7 +68,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	private CacheService<SCIFIOCell<?>> cacheService;
 
 	@Parameter
-	private RefManagerService memoryService;
+	private RefManagerService refManagerService;
 
 	@Parameter
 	private ThreadService threadService;
@@ -107,7 +107,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 		this.loader = loader;
 		context.inject(this);
 		cacheService.addCache(cacheId);
-		memoryService.manage(this);
+		refManagerService.manage(this);
 	}
 
 	// -- CellCache API --
@@ -150,7 +150,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 		cell =
 			new SCIFIOCell<A>(cacheService, cacheId, index, cellDims, cellMin, loader
 				.loadArray(cellDims, cellMin));
-		memoryService.manage(cell);
+		refManagerService.manage(cell);
 
 		cache(cacheService.getKey(cacheId, index), cell);
 
@@ -178,7 +178,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	 */
 	private void cache(final Integer k, final SCIFIOCell<A> cell) {
 		map.put(k, new WeakReference<SCIFIOCell<A>>(cell));
-		memoryService.manage(cell, k, map);
+		refManagerService.manage(cell, k, map);
 	}
 
 	/**
