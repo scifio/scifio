@@ -37,6 +37,7 @@
 package io.scif.img.converters;
 
 import io.scif.Reader;
+import io.scif.SCIFIOService;
 
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,8 @@ import org.scijava.plugin.SingletonService;
  * 
  * @author Mark Hiner
  */
-public interface PlaneConverterService extends SingletonService<PlaneConverter>
+public interface PlaneConverterService extends
+	SingletonService<PlaneConverter>, SCIFIOService
 {
 
 	// -- PlaneConverterService methods --
