@@ -498,6 +498,9 @@ public class CacheServiceTest {
 	private void clearMem() {
 		if (arraySize == -1) {
 			arraySize = Runtime.getRuntime().freeMemory();
+			if (arraySize > Integer.MAX_VALUE) {
+				arraySize = Integer.MAX_VALUE;
+			}
 		}
 
 		@SuppressWarnings("unused")
