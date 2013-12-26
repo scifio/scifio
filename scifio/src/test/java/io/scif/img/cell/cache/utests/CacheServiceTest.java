@@ -503,9 +503,18 @@ public class CacheServiceTest {
 			}
 		}
 
-		@SuppressWarnings("unused")
-		byte[] tmp = new byte[(int) arraySize];
-		tmp = null;
+		try {
+			@SuppressWarnings("unused")
+			byte[] tmp = new byte[(int) arraySize];
+			tmp = null;
+		}
+		catch (OutOfMemoryError e) {
+			// Typically this should never happen, as garbage collection will
+			// automatically run to collect these array instances. However in some
+			// environments this may be needed, e.g. while running tests during a
+			// maven release invocation.
+			System.gc();
+		}
 	}
 
 	// -- HelperClass --
