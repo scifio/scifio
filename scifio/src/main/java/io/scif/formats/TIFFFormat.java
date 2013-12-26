@@ -278,10 +278,9 @@ public class TIFFFormat extends AbstractFormat {
 		// -- BaseTIFFParser API Methods
 
 		@Override
-		protected void initStandardMetadata(final Metadata meta)
+		protected void initMetadata(final Metadata meta)
 			throws FormatException, IOException
 		{
-			super.initStandardMetadata(meta);
 			final IFDList ifds = meta.getIfds();
 			final String comment = ifds.get(0).getComment();
 
@@ -368,17 +367,12 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			// TODO : parse companion file once loci.parsers package is in place
-		}
 
-		@Override
-		protected void initMetadataStore(final Metadata meta)
-			throws FormatException
-		{
-			super.initMetadataStore(meta);
-//      MetadataStore store = makeFilterMetadata();
-//      if (meta.getDescription() != null) {
-//        store.setImageDescription(description, 0);
-//      }
+//    MetadataStore store = makeFilterMetadata();
+//    if (meta.getDescription() != null) {
+//      store.setImageDescription(description, 0);
+//    }
+			super.initMetadata(meta);
 		}
 
 		// -- Helper methods --
@@ -656,18 +650,6 @@ public class TIFFFormat extends AbstractFormat {
 		/** Populates the metadata hashtable and metadata store. */
 		protected void initMetadata(final Metadata meta) throws FormatException,
 			IOException
-		{
-			initStandardMetadata(meta);
-			initMetadataStore(meta);
-		}
-
-		/**
-		 * Parses standard metadata. NOTE: Absolutely <b>no</b> calls to the
-		 * metadata store should be made in this method or methods that override
-		 * this method. Data <b>will</b> be overwritten if you do so.
-		 */
-		protected void initStandardMetadata(final Metadata meta)
-			throws FormatException, IOException
 		{
 			if (getMetadataOptions().getMetadataLevel() == MetadataLevel.MINIMUM) {
 				return;
@@ -954,22 +936,6 @@ public class TIFFFormat extends AbstractFormat {
 
 			put("BitsPerSample", bps);
 			put("NumberOfChannels", numC);
-		}
-
-		/**
-		 * Populates the metadata store using the data parsed in
-		 * {@code #initStandardMetadata(Metadata)} along with some further parsing
-		 * done in the method itself. All calls to the active
-		 * <code>MetadataStore</code> should be made in this method and <b>only</b>
-		 * in this method. This is especially important for sub-classes that
-		 * override the getters for pixel set array size, etc.
-		 */
-		protected void initMetadataStore(final Metadata meta)
-			throws FormatException
-		{
-			log().info("Populating OME metadata");
-
-			final IFD firstIFD = meta.getIfds().get(0);
 
 			// format the creation date to ISO 8601
 
@@ -981,45 +947,44 @@ public class TIFFFormat extends AbstractFormat {
 
 			meta.setCreationDate(date);
 
-			if (getMetadataOptions().getMetadataLevel() != MetadataLevel.MINIMUM) {
-				// populate Experimenter
-				final String artist = firstIFD.getIFDTextValue(IFD.ARTIST);
+			// populate Experimenter
+			final String artist = firstIFD.getIFDTextValue(IFD.ARTIST);
 
-				if (artist != null) {
-					String firstName = null, lastName = null;
-					final int ndx = artist.indexOf(" ");
-					if (ndx < 0) lastName = artist;
-					else {
-						firstName = artist.substring(0, ndx);
-						lastName = artist.substring(ndx + 1);
-					}
-					final String email = firstIFD.getIFDStringValue(IFD.HOST_COMPUTER);
-					meta.setExperimenterFirstName(firstName);
-					meta.setExperimenterLastName(lastName);
-					meta.setExperimenterEmail(email);
-				}
-
-				meta.setImageDescription(firstIFD.getComment());
-
-				// set the X and Y pixel dimensions
-
-				final double pixX = firstIFD.getXResolution();
-				final double pixY = firstIFD.getYResolution();
-
-				if (pixX > 0 && pixX < Double.POSITIVE_INFINITY) {
-					FormatTools.calibrate(meta.get(0).getAxis(Axes.X), pixX, 0);
-				}
+			if (artist != null) {
+				String firstName = null, lastName = null;
+				final int ndx = artist.indexOf(" ");
+				if (ndx < 0) lastName = artist;
 				else {
-					log().warn("Expected positive value for PhysicalSizeX; got " + pixX);
+					firstName = artist.substring(0, ndx);
+					lastName = artist.substring(ndx + 1);
 				}
-				if (pixY > 0 && pixX < Double.POSITIVE_INFINITY) {
-					FormatTools.calibrate(meta.get(0).getAxis(Axes.Y), pixY, 0);
-				}
-				else {
-					log().warn("Expected positive value for PhysicalSizeY; got " + pixY);
-				}
-				// meta.setPixelsPhysicalSizeZ(null, 0);
+				final String email = firstIFD.getIFDStringValue(IFD.HOST_COMPUTER);
+				meta.setExperimenterFirstName(firstName);
+				meta.setExperimenterLastName(lastName);
+				meta.setExperimenterEmail(email);
 			}
+
+			meta.setImageDescription(firstIFD.getComment());
+
+			// set the X and Y pixel dimensions
+
+			final double pixX = firstIFD.getXResolution();
+			final double pixY = firstIFD.getYResolution();
+
+			if (pixX > 0 && pixX < Double.POSITIVE_INFINITY) {
+				FormatTools.calibrate(meta.get(0).getAxis(Axes.X), pixX, 0);
+			}
+			else {
+				log().warn("Expected positive value for PhysicalSizeX; got " + pixX);
+			}
+			if (pixY > 0 && pixX < Double.POSITIVE_INFINITY) {
+				FormatTools.calibrate(meta.get(0).getAxis(Axes.Y), pixY, 0);
+			}
+			else {
+				log().warn("Expected positive value for PhysicalSizeY; got " + pixY);
+			}
+			// meta.setPixelsPhysicalSizeZ(null, 0);
+
 		}
 
 		/**
