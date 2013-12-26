@@ -387,13 +387,8 @@ public interface ImageMetadata extends HasMetaTable {
 	void addAxis(final CalibratedAxis axis, final long value);
 
 	/**
-<<<<<<< HEAD
-	 * As {@link #addAxis(CalibratedAxis, long)} using a default
-	 * {@link CalibratedAxis} created by {@link FormatTools#createAxis(AxisType)}.
-=======
 	 * As {@link #addAxis(CalibratedAxis, long)} using the default calibration
 	 * value, per {@link FormatTools#createAxis(AxisType)}.
->>>>>>> 92cbcd9... Remoed Javadoc warnings
 	 */
 	void addAxis(final AxisType axisType, final long value);
 
