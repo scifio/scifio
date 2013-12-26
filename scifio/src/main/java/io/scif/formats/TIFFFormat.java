@@ -117,13 +117,10 @@ public class TIFFFormat extends AbstractFormat {
 		private String experimenterLastName;
 		private String experimenterEmail;
 		private String imageDescription;
-		private double physicalSizeX;
-		private double physicalSizeY;
 
 		private String companionFile;
 		private String description;
 		private String calibrationUnit;
-		private Double physicalSizeZ;
 		private Double timeIncrement;
 		private Integer xOrigin, yOrigin;
 
@@ -151,14 +148,6 @@ public class TIFFFormat extends AbstractFormat {
 
 		public void setCalibrationUnit(final String calibrationUnit) {
 			this.calibrationUnit = calibrationUnit;
-		}
-
-		public Double getPhysicalSizeZ() {
-			return physicalSizeZ == null ? 1.0 : physicalSizeZ;
-		}
-
-		public void setPhysicalSizeZ(final Double physicalSizeZ) {
-			this.physicalSizeZ = physicalSizeZ;
 		}
 
 		public Double getTimeIncrement() {
@@ -225,22 +214,6 @@ public class TIFFFormat extends AbstractFormat {
 			this.imageDescription = imageDescription;
 		}
 
-		public double getPhysicalSizeX() {
-			return physicalSizeX;
-		}
-
-		public void setPhysicalSizeX(final double physicalSizeX) {
-			this.physicalSizeX = physicalSizeX;
-		}
-
-		public double getPhysicalSizeY() {
-			return physicalSizeY;
-		}
-
-		public void setPhysicalSizeY(final double physicalSizeY) {
-			this.physicalSizeY = physicalSizeY;
-		}
-
 		// -- Metadata API Methods --
 
 		@Override
@@ -265,7 +238,6 @@ public class TIFFFormat extends AbstractFormat {
 				companionFile = null;
 				description = null;
 				calibrationUnit = null;
-				physicalSizeZ = null;
 				timeIncrement = null;
 				xOrigin = null;
 				yOrigin = null;
@@ -407,7 +379,6 @@ public class TIFFFormat extends AbstractFormat {
 //      if (meta.getDescription() != null) {
 //        store.setImageDescription(description, 0);
 //      }
-			populateMetadataStoreImageJ(meta);
 		}
 
 		// -- Helper methods --
@@ -469,8 +440,16 @@ public class TIFFFormat extends AbstractFormat {
 					put("Frame Interval", meta.getTimeIncrement());
 				}
 				else if (token.startsWith("spacing=")) {
-					meta.setPhysicalSizeZ(parseDouble(value));
-					put("Spacing", meta.getPhysicalSizeZ());
+					final double physicalSizeZ = parseDouble(value);
+					if (physicalSizeZ >= 0) {
+						if (meta.get(0).getAxis(Axes.Z) == null) {
+							meta.get(0).addAxis(Axes.Z, 1);
+						}
+
+						FormatTools
+							.calibrate(meta.get(0).getAxis(Axes.Z), physicalSizeZ, 0);
+					}
+					put("Spacing", physicalSizeZ);
 				}
 				else if (token.startsWith("xorigin=")) {
 					meta.setxOrigin(parseInt(value));
@@ -581,28 +560,6 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			m.setAxes(validAxes.toArray(new CalibratedAxis[validAxes.size()]));
-		}
-
-		/**
-		 * Checks the original metadata table for ImageJ-specific information to
-		 * propagate into the metadata store.
-		 */
-		private void populateMetadataStoreImageJ(final Metadata meta) {
-			// TODO: Perhaps we should only populate the physical Z size if the unit
-			// is
-			// a known, physical quantity such as "micron" rather than "pixel".
-			// e.g.: if (calibrationUnit.equals("micron"))
-			if (meta.getPhysicalSizeZ() != null) {
-				double zDepth = meta.getPhysicalSizeZ();
-				if (zDepth < 0) zDepth = -zDepth;
-				if (zDepth > 0) {
-					meta.setPhysicalSizeZ(zDepth);
-				}
-				else {
-					log()
-						.warn("Expected positive value for PhysicalSizeZ; got " + zDepth);
-				}
-			}
 		}
 
 		private void
@@ -1050,13 +1007,13 @@ public class TIFFFormat extends AbstractFormat {
 				final double pixY = firstIFD.getYResolution();
 
 				if (pixX > 0 && pixX < Double.POSITIVE_INFINITY) {
-					meta.setPhysicalSizeX(pixX);
+					FormatTools.calibrate(meta.get(0).getAxis(Axes.X), pixX, 0);
 				}
 				else {
 					log().warn("Expected positive value for PhysicalSizeX; got " + pixX);
 				}
 				if (pixY > 0 && pixX < Double.POSITIVE_INFINITY) {
-					meta.setPhysicalSizeY(pixY);
+					FormatTools.calibrate(meta.get(0).getAxis(Axes.Y), pixY, 0);
 				}
 				else {
 					log().warn("Expected positive value for PhysicalSizeY; got " + pixY);
@@ -1437,13 +1394,13 @@ public class TIFFFormat extends AbstractFormat {
 			ifd.put(new Integer(IFD.IMAGE_WIDTH), new Long(width));
 			ifd.put(new Integer(IFD.IMAGE_LENGTH), new Long(height));
 
-			Double physicalSizeX = meta.getPhysicalSizeX();
+			Double physicalSizeX = meta.get(0).getAxis(Axes.X).averageScale(0, 1);
 			if (physicalSizeX == null || physicalSizeX.doubleValue() == 0) {
 				physicalSizeX = 0d;
 			}
 			else physicalSizeX = 1d / physicalSizeX;
 
-			Double physicalSizeY = meta.getPhysicalSizeY();
+			Double physicalSizeY = meta.get(0).getAxis(Axes.Y).averageScale(0, 1);
 			if (physicalSizeY == null || physicalSizeY.doubleValue() == 0) {
 				physicalSizeY = 0d;
 			}
