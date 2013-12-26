@@ -148,6 +148,7 @@ public class Info extends AbstractSCIFIOToolCommand {
 		info("Non-planar axes: " + getAxisLabels(iMeta.getAxesNonPlanar()));
 		info("Non-planar lenghts: " +
 			getAxisLengths(iMeta.getAxesLengthsNonPlanar()));
+		info("Axis calibration: " + getAxisCalibrations(iMeta));
 		info("Pixel type: " + FormatTools.getPixelTypeString(iMeta.getPixelType()));
 		info("Bits per pixel: " + iMeta.getBitsPerPixel());
 		info("Interleaved axes: " + iMeta.getInterleavedAxisCount());
@@ -172,6 +173,22 @@ public class Info extends AbstractSCIFIOToolCommand {
 			if (sb.length() > 0) sb.append(",");
 			sb.append(l);
 		}
+		return sb.toString();
+	}
+
+	/**
+	 * @param iMeta - ImageMetadata to gather calibration data for
+	 * @return - A comma-separated string list of the calibration values for the
+	 *         given ImageMetadata.
+	 */
+	private String getAxisCalibrations(ImageMetadata iMeta) {
+		StringBuilder sb = new StringBuilder();
+
+		for (CalibratedAxis axis : iMeta.getAxes()) {
+			if (sb.length() > 0) sb.append(",");
+			sb.append(axis.particularEquation() + " " + axis.unit());
+		}
+
 		return sb.toString();
 	}
 
