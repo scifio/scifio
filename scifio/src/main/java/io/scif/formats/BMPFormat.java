@@ -181,7 +181,7 @@ public class BMPFormat extends AbstractFormat {
 				sizeC = 1;
 			}
 
-			if (sizeC > 1) {
+			if (sizeC > 1 || iMeta.isIndexed()) {
 				iMeta.addAxis(Axes.CHANNEL, sizeC);
 				if (sizeC > 1) iMeta.setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y);
 				iMeta.setPlanarAxisCount(3);
