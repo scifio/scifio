@@ -135,6 +135,9 @@ public class APNGFormat extends AbstractFormat {
 		// true if the pixel bits are signed
 		private boolean signed = false;
 
+		// True if this dataset is little endian
+		private boolean littleEndian = false;
+
 		// -- Constructor --
 
 		public Metadata() {
@@ -173,6 +176,22 @@ public class APNGFormat extends AbstractFormat {
 			this.separateDefault = separateDefault;
 		}
 
+		/**
+		 * @return true iff this dataset is littleEndian. APNG is typically big
+		 *         endian by default/by spec.
+		 */
+		public boolean isLittleEndian() {
+			return littleEndian;
+		}
+
+		/**
+		 * Sets the littleEndian flag on this metadata. Used to preserve endianness
+		 * in translation.
+		 */
+		public void setLittleEndian(boolean littleEndian) {
+			this.littleEndian = littleEndian;
+		}
+
 		// -- Metadata API Methods --
 
 		@Override
@@ -185,6 +204,7 @@ public class APNGFormat extends AbstractFormat {
 			imageMeta.setOrderCertain(true);
 			imageMeta.setFalseColor(false);
 			imageMeta.setThumbnail(false);
+			imageMeta.setLittleEndian(isLittleEndian());
 
 			// Determine color information
 			boolean indexed = false;
@@ -1136,7 +1156,7 @@ public class APNGFormat extends AbstractFormat {
 
 			// FIXME: all integers in apng should be written big endian per spec
 			// but for bio-formats endianness is supposed to be preserved... resolve?
-			dest.get(0).setLittleEndian(source.get(0).isLittleEndian());
+			dest.setLittleEndian(source.get(0).isLittleEndian());
 
 			final boolean signed = FormatTools.isSigned(source.get(0).getPixelType());
 			dest.setSigned(signed);
