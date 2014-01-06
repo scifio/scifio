@@ -193,7 +193,7 @@ public class FakeFormat extends AbstractFormat {
 		@Field
 		private int images;
 
-		private ColorTable[] lut;
+		private ColorTable[][] luts;
 
 		private int[][] valueToIndex;
 
@@ -209,19 +209,21 @@ public class FakeFormat extends AbstractFormat {
 		/**
 		 * Gets the lookup table attached to this dataset
 		 * 
-		 * @return An array of RGB ColorTables. Indexed by plane number.
+		 * @return A 2D array of ColorTables. Indexed by image index and plane
+		 *         plane index.
 		 */
-		public ColorTable[] getLut() {
-			return lut;
+		public ColorTable[][] getLuts() {
+			return luts;
 		}
 
 		/**
 		 * Sets the lookup table for this dataset.
 		 * 
-		 * @param lut - An array of RGB ColorTables. Indexed by plane number.
+		 * @param luts A 2D array of ColorTables. Indexed by image index and plane
+		 *          plane index.
 		 */
-		public void setLut(final ColorTable[] lut) {
-			this.lut = lut;
+		public void setLuts(final ColorTable[][] luts) {
+			this.luts = luts;
 		}
 
 		/**
@@ -246,13 +248,8 @@ public class FakeFormat extends AbstractFormat {
 		@Override
 		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
 		{
-			int cIndex = get(imageIndex).getAxisIndex(Axes.CHANNEL);
-			if (cIndex == -1) return null;
-			final long[] pos =
-				FormatTools.rasterToPosition(get(imageIndex).getAxesLengthsNonPlanar(),
-					planeIndex);
-			final int cPos = (int) pos[cIndex];
-			return lut == null ? null : lut[cPos];
+
+			return luts == null ? null : luts[imageIndex][(int) planeIndex];
 		}
 
 		// -- Metadata API Methods --
@@ -317,47 +314,55 @@ public class FakeFormat extends AbstractFormat {
 			if (indexed) {
 				int[][] indexToValue = null;
 				int[][] valueToIndex = null;
-				ColorTable[] luts = null;
+				ColorTable[][] luts = null;
 
-				int sizeC = (int)get(0).getAxisLength(Axes.CHANNEL);
 				if (pType == FormatTools.UINT8) {
 					// create 8-bit LUTs
 					final int num = 256;
-					indexToValue = new int[sizeC][num];
-					valueToIndex = new int[sizeC][num];
-					FakeUtils.createIndexValueMap(indexToValue);
-					luts = new ColorTable8[sizeC];
-					// linear ramp
-					for (int c = 0; c < sizeC; c++) {
-						final byte[][] lutBytes = new byte[lutLength][num];
-						for (int i = 0; i < lutLength; i++) {
-							for (int index = 0; index < num; index++) {
-								lutBytes[i][index] = (byte) indexToValue[c][index];
+					luts = new ColorTable8[images][];
+					for (int i = 0; i < images; i++) {
+						final int planeCount = (int) get(i).getPlaneCount();
+						luts[i] = new ColorTable8[planeCount];
+						indexToValue = new int[planeCount][num];
+						valueToIndex = new int[planeCount][num];
+						FakeUtils.createIndexValueMap(indexToValue);
+						// linear ramp
+						for (int p = 0; p < planeCount; p++) {
+							final byte[][] lutBytes = new byte[lutLength][num];
+							for (int cmpIndex = 0; cmpIndex < lutLength; cmpIndex++) {
+								for (int index = 0; index < num; index++) {
+									lutBytes[cmpIndex][index] = (byte) indexToValue[p][index];
+								}
 							}
+							luts[i][p] = new ColorTable8(lutBytes);
 						}
-						luts[c] = new ColorTable8(lutBytes);
+
 					}
 				}
 				else if (pType == FormatTools.UINT16) {
 					// create 16-bit LUTs
 					final int num = 65536;
-					indexToValue = new int[sizeC][num];
-					valueToIndex = new int[sizeC][num];
-					FakeUtils.createIndexValueMap(indexToValue);
-					luts = new ColorTable16[sizeC];
-					// linear ramp
-					for (int c = 0; c < sizeC; c++) {
-						final short[][] lutShorts = new short[lutLength][num];
-						for (int i = 0; i < lutLength; i++) {
-							for (int index = 0; index < num; index++) {
-								lutShorts[i][index] = (short) indexToValue[c][index];
+					luts = new ColorTable16[images][];
+					for (int i=0; i<images; i++) {
+						final int planeCount = (int) get(i).getPlaneCount();
+						luts[i] = new ColorTable16[planeCount];
+						indexToValue = new int[planeCount][num];
+						valueToIndex = new int[planeCount][num];
+						FakeUtils.createIndexValueMap(indexToValue);
+						// linear ramp
+						for (int p = 0; p < planeCount; p++) {
+							final short[][] lutShorts = new short[lutLength][num];
+							for (int cmpIndex = 0; cmpIndex < lutLength; cmpIndex++) {
+								for (int index = 0; index < num; index++) {
+									lutShorts[cmpIndex][index] = (short) indexToValue[p][index];
+								}
 							}
+							luts[i][p] = new ColorTable16(lutShorts);
 						}
-						luts[c] = new ColorTable16(lutShorts);
 					}
 				}
 
-				setLut(luts);
+				setLuts(luts);
 
 				if (valueToIndex != null) {
 					FakeUtils.createInverseIndexMap(indexToValue, valueToIndex);
@@ -366,6 +371,8 @@ public class FakeFormat extends AbstractFormat {
 				// NB: Other pixel types will have null LUTs.
 			}
 		}
+
+		// -- Helper methods --
 
 		/**
 		 * Sets default values for all fields. Necessary as field values may be
@@ -390,6 +397,36 @@ public class FakeFormat extends AbstractFormat {
 			lutLength = 3;
 			scaleFactor = 1;
 			images = 1;
+		}
+
+		// -- Deprecated methods --
+
+		/**
+		 * Gets the lookup table for the first image of this dataset.
+		 * 
+		 * @return An array of ColorTables. Indexed by plane number.
+		 * @deprecated Use {@link #getLuts()}
+		 */
+		@Deprecated
+		public ColorTable[] getLut() {
+			return luts == null ? null : luts[0];
+		}
+
+		/**
+		 * Sets the lookup table for the first image of this dataset.
+		 * 
+		 * @param lut - An array of ColorTables. Indexed by plane number.
+		 * 
+		 * @deprecated Use {@link #setLuts(ColorTable[][])}
+		 */
+		@Deprecated
+		public void setLut(final ColorTable[] lut) {
+			if (this.luts != null) {
+				this.luts[0] = lut;
+			}
+			else {
+				this.luts = new ColorTable[][]{lut};
+			}
 		}
 	}
 
@@ -533,10 +570,8 @@ public class FakeFormat extends AbstractFormat {
 				if (indexed && lut != null) {
 					final int modValue = lut.getLength();
 					plane.setColorTable(lut);
-					int cIndex = meta.get(imageIndex).getAxisIndex(Axes.CHANNEL);
-
 					if (valueToIndex != null) pixel =
-						valueToIndex[cIndex][(int) (pixel % modValue)];
+						valueToIndex[(int) planeIndex][(int) (pixel % modValue)];
 				}
 
 				// scale pixel value by the scale factor

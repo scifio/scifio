@@ -153,6 +153,11 @@
             <package name="io.scif.common.utests"/>
         </packages>
     </test>
+    <test name="FakeFormatTest">
+    	<classes>
+	    	<class name="io.scif.utests.FakeFormatTest"/>
+    	</classes>
+    </test>
     <test name="TypeDetection">
         <classes>
             <class name="io.scif.io.utests.TypeDetectionTest"/>
