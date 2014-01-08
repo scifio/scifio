@@ -980,6 +980,7 @@ public class DICOMFormat extends AbstractFormat {
 			Arrays.sort(keys);
 
 			for (int i = 0; i < seriesCount; i++) {
+				get(i).setAxisTypes(Axes.X, Axes.Y);
 				int sizeZ = 0;
 				if (seriesCount == 1) {
 					sizeZ = getOffsets().length * fileList.get(keys[i]).size();
