@@ -229,6 +229,28 @@ public class TIFFFormat extends AbstractFormat {
 			final ImageMetadata m = get(0);
 
 			if (getIfds().size() > 1) m.setOrderCertain(false);
+			// set the X and Y pixel dimensions
+
+			try {
+				double pixX = getIfds().get(0).getXResolution();
+				final double pixY = getIfds().get(0).getYResolution();
+				
+				if (pixX > 0 && pixX < Double.POSITIVE_INFINITY) {
+					FormatTools.calibrate(m.getAxis(Axes.X), pixX, 0);
+				}
+				else {
+					log().warn("Expected positive value for PhysicalSizeX; got " + pixX);
+				}
+				if (pixY > 0 && pixX < Double.POSITIVE_INFINITY) {
+					FormatTools.calibrate(m.getAxis(Axes.Y), pixY, 0);
+				}
+				else {
+					log().warn("Expected positive value for PhysicalSizeY; got " + pixY);
+				}
+			}
+			catch (FormatException e) {
+				log().error("Failed to get x, y pixel sizes", e);
+			}
 		}
 
 		@Override
@@ -965,26 +987,6 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			meta.setImageDescription(firstIFD.getComment());
-
-			// set the X and Y pixel dimensions
-
-			final double pixX = firstIFD.getXResolution();
-			final double pixY = firstIFD.getYResolution();
-
-			if (pixX > 0 && pixX < Double.POSITIVE_INFINITY) {
-				FormatTools.calibrate(meta.get(0).getAxis(Axes.X), pixX, 0);
-			}
-			else {
-				log().warn("Expected positive value for PhysicalSizeX; got " + pixX);
-			}
-			if (pixY > 0 && pixX < Double.POSITIVE_INFINITY) {
-				FormatTools.calibrate(meta.get(0).getAxis(Axes.Y), pixY, 0);
-			}
-			else {
-				log().warn("Expected positive value for PhysicalSizeY; got " + pixY);
-			}
-			// meta.setPixelsPhysicalSizeZ(null, 0);
-
 		}
 
 		/**
