@@ -442,7 +442,11 @@ public class FakeFormat extends AbstractFormat {
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
 			final Metadata meta) throws IOException, FormatException
-		{}
+		{
+			// No operation. All work is done in the populateImageMetadata method
+			// of the metadata itself (the format-specific metadata is implied
+			// purely by the file name).
+		}
 	}
 
 	/**
