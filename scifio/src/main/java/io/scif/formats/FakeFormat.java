@@ -270,6 +270,13 @@ public class FakeFormat extends AbstractFormat {
 
 			metadataService.populate(this, fakeMap);
 
+			if (axes.length != lengths.length) {
+				throw new IllegalStateException(
+					"FakeFormat id: " +
+						getDatasetName() +
+						" is not valid. Can not have a differing number of axis types and axis lengths.");
+			}
+
 			int pType = FormatTools.pixelTypeFromString(pixelType);
 			int bpp = FormatTools.getBitsPerPixel(pType);
 

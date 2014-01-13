@@ -38,6 +38,7 @@ package io.scif.utests;
 
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.fail;
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
@@ -143,5 +144,46 @@ public class FakeFormatTest {
 		for (int i = 0; i < fMeta.get(0).getPlaneCount(); i++) {
 			assertNotNull(reader.openPlane(0, i).getColorTable());
 		}
+	}
+
+	/**
+	 * Test that fake images with more axes than lengths can not be constructed.
+	 */
+	@Test
+	public void testMisMatchedAxes() throws IOException, FormatException {
+		final String moreAxes =
+			"8bit-unsigned&pixelType=uint8lengths=50,50,4&axes=X,Y,Channel,Z,Time.fake";
+
+		testBadAxes(moreAxes);
+	}
+
+	/**
+	 * Test that fake images with more lengths than axes can not be constructed.
+	 */
+	@Test
+	public void testMisMatchedLengths() throws FormatException, IOException {
+		final String moreLengths =
+			"8bit-unsigned&pixelType=uint8lengths=50,50,4,7,12&axes=X,Y,Channel.fake";
+
+		testBadAxes(moreLengths);
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * Helper method to attempt to parse metadata from a fake id. If an 
+	 * {@link IllegalStateException} is not thrown, the test fails.
+	 */
+	private void testBadAxes(final String id) throws FormatException, IOException
+	{
+		try {
+			scifio.initializer().parseMetadata(id);
+		}
+		catch (IllegalStateException e) {
+			// Exception was thrown. This is good!
+			return;
+		}
+		// No exception, or a different exception. This is bad!
+		fail();
 	}
 }
