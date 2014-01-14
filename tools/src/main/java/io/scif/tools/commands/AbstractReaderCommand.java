@@ -139,15 +139,15 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 	 * @param path - Path to a dataset used to initialize a reader
 	 * @return A ReaderFilter initialized using the input path of this command
 	 */
-	protected ReaderFilter makeReader(String path) throws CmdLineException {
+	protected ReaderFilter makeReader(final String path) throws CmdLineException {
 		ReaderFilter reader;
 		try {
 			reader = initializeService.initializeReader(path);
 		}
-		catch (FormatException e) {
+		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
 
@@ -174,8 +174,9 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 	 * @param meta Metadata to look up axis lengths
 	 * @param axes List of axes determining the order of the offset/length arrays
 	 */
-	protected void makeRange(long[] values, long[] offsets, long[] lengths,
-		ImageMetadata meta, List<CalibratedAxis> axes)
+	protected void makeRange(final long[] values, final long[] offsets,
+		final long[] lengths, final ImageMetadata meta,
+		final List<CalibratedAxis> axes)
 	{
 		// The values array is one long list of values for both offsets and lengths,
 		// so it should be twice the length of a single array.
@@ -210,28 +211,28 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 	 * 
 	 * @param reader Reader to use for opening a dataset
 	 */
-	protected void read(Reader reader) throws CmdLineException {
-		Metadata m = reader.getMetadata();
+	protected void read(final Reader reader) throws CmdLineException {
+		final Metadata m = reader.getMetadata();
 		long timeLastLogged = System.currentTimeMillis();
 
-		ImageMetadata iMeta = m.get(0);
+		final ImageMetadata iMeta = m.get(0);
 		// Get the planar offsets/lengths (account for cropping)
-		long[] planeOffsets = new long[iMeta.getAxesPlanar().size()];
-		long[] planeLengths = new long[planeOffsets.length];
+		final long[] planeOffsets = new long[iMeta.getAxesPlanar().size()];
+		final long[] planeLengths = new long[planeOffsets.length];
 		makeRange(crop, planeOffsets, planeLengths, iMeta, iMeta.getAxesPlanar());
 
 		// Get the non-planar offsets/lengths (e.g. restricting plane indices)
-		long[] npOffsets = new long[iMeta.getAxesNonPlanar().size()];
-		long[] npLengths = new long[npOffsets.length];
+		final long[] npOffsets = new long[iMeta.getAxesNonPlanar().size()];
+		final long[] npLengths = new long[npOffsets.length];
 		makeRange(npRange, npOffsets, npLengths, iMeta, iMeta.getAxesNonPlanar());
-		long[] position = Arrays.copyOf(npOffsets, npOffsets.length);
+		final long[] position = Arrays.copyOf(npOffsets, npOffsets.length);
 
 		// Count the total number of planes
-		long[] planeCounts = new long[npOffsets.length];
+		final long[] planeCounts = new long[npOffsets.length];
 		for (int i = 0; i < planeCounts.length; i++) {
 			planeCounts[i] = npLengths[i] - npOffsets[i];
 		}
-		long planeCount = DataTools.safeMultiply64(planeCounts);
+		final long planeCount = DataTools.safeMultiply64(planeCounts);
 
 		long planeIndex = FormatTools.positionToRaster(0, m, position);
 		Plane plane = null;
@@ -243,7 +244,7 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 			plane =
 				processPlane(reader, plane, 0, planeIndex, planeNo++, planeOffsets,
 					planeLengths);
-			long e = System.currentTimeMillis();
+			final long e = System.currentTimeMillis();
 
 			// Print statistics no more than once a second
 			if ((e - timeLastLogged) / 1000 > 0) {

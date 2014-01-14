@@ -36,20 +36,20 @@
 
 package io.scif.tools.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.scif.tools.AbstractSCIFIOToolCommand;
 import io.scif.tools.SCIFIOToolCommand;
 import io.scif.tools.SCIFIOTools;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.scijava.plugin.Plugin;
 
 /**
- * Alternate invocation for getting help information on a command. Accepts
- * other commands as parameters, and calls them with the {@code -h} flag.
+ * Alternate invocation for getting help information on a command. Accepts other
+ * commands as parameters, and calls them with the {@code -h} flag.
  * 
  * @author Mark Hiner
  */
@@ -63,7 +63,7 @@ public class Help extends AbstractSCIFIOToolCommand {
 	private String command;
 
 	@Argument(index = 1, multiValued = true)
-	private List<String> arguments = new ArrayList<String>();
+	private final List<String> arguments = new ArrayList<String>();
 
 	// -- AbstractSCIFIOToolCommand API --
 

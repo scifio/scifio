@@ -80,7 +80,7 @@ public class Convert extends AbstractReaderCommand {
 	private String out;
 
 	@Argument(index = 2, multiValued = true)
-	private List<String> arguments = new ArrayList<String>();
+	private final List<String> arguments = new ArrayList<String>();
 
 	// -- Parameters --
 
@@ -123,7 +123,7 @@ public class Convert extends AbstractReaderCommand {
 			info(in);
 
 			// configure the reader
-			ReaderFilter reader = makeReader(in);
+			final ReaderFilter reader = makeReader(in);
 
 			// Configure the writer
 			writer = makeWriter(reader.getMetadata());
@@ -143,14 +143,14 @@ public class Convert extends AbstractReaderCommand {
 				try {
 					reader.close();
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					warn("Failed to close reader");
 					warn(e.getMessage());
 				}
 				try {
 					writer.close();
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					warn("Failed to close writer");
 					warn(e.getMessage());
 				}
@@ -187,9 +187,9 @@ public class Convert extends AbstractReaderCommand {
 	// -- AbstractReaderCommand API --
 
 	@Override
-	protected Plane processPlane(Reader reader, Plane plane, int imageIndex,
-		long planeIndex, long planeNo, long[] planeMin, long[] planeMax)
-		throws CmdLineException
+	protected Plane processPlane(final Reader reader, Plane plane,
+		final int imageIndex, final long planeIndex, final long planeNo,
+		final long[] planeMin, final long[] planeMax) throws CmdLineException
 	{
 		try {
 			// open the specified plane
@@ -203,10 +203,10 @@ public class Convert extends AbstractReaderCommand {
 			// write the specified plane
 			writer.savePlane(imageIndex, planeNo, plane);
 		}
-		catch (FormatException e) {
+		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
 
@@ -222,7 +222,7 @@ public class Convert extends AbstractReaderCommand {
 	 * @param sourceMeta Metadata object from the Reader that will be used
 	 * @return A Writer initialized using this command's configuration.
 	 */
-	private Writer makeWriter(Metadata sourceMeta) throws CmdLineException {
+	private Writer makeWriter(final Metadata sourceMeta) throws CmdLineException {
 		Writer writer;
 		try {
 			// Initialize the writer
@@ -235,10 +235,10 @@ public class Convert extends AbstractReaderCommand {
 
 			writer.setWriteSequentially(true);
 		}
-		catch (FormatException e) {
+		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
 
@@ -263,16 +263,16 @@ public class Convert extends AbstractReaderCommand {
 					warn("Warning: output file " + out + "exists.");
 					warn("Do you want to overwrite it? ([y]/n)");
 					try {
-						BufferedReader r =
+						final BufferedReader r =
 							new BufferedReader(new InputStreamReader(System.in,
 								Constants.ENCODING));
-						String choice = r.readLine().trim().toLowerCase();
+						final String choice = r.readLine().trim().toLowerCase();
 						overwrite = !choice.startsWith("n");
 					}
-					catch (UnsupportedEncodingException e) {
+					catch (final UnsupportedEncodingException e) {
 						throw new CmdLineException(null, e.getMessage());
 					}
-					catch (IOException e) {
+					catch (final IOException e) {
 						throw new CmdLineException(null, e.getMessage());
 					}
 				}

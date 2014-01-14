@@ -64,8 +64,8 @@ import org.scijava.plugin.Plugin;
 
 /**
  * Opens a dataset for viewing. An ascii version can be printed as output for
- * convenience on headless systems, otherwise a simple AWT pane is opened,
- * per {@link ImageViewer}.
+ * convenience on headless systems, otherwise a simple AWT pane is opened, per
+ * {@link ImageViewer}.
  * 
  * @author Mark Hiner
  */
@@ -85,7 +85,7 @@ public class Show extends AbstractReaderCommand {
 	private String file;
 
 	@Argument(index = 1, multiValued = true)
-	private List<String> arguments = new ArrayList<String>();
+	private final List<String> arguments = new ArrayList<String>();
 
 	// -- Options --
 
@@ -126,11 +126,11 @@ public class Show extends AbstractReaderCommand {
 		try {
 			mapLocation();
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
 
-		Reader reader = makeReader(file);
+		final Reader reader = makeReader(file);
 		showPixels(reader);
 	}
 
@@ -159,9 +159,9 @@ public class Show extends AbstractReaderCommand {
 	// -- AbstractReaderCommand API --
 
 	@Override
-	protected Plane processPlane(Reader reader, Plane plane, int imageIndex,
-		long planeIndex, long planeNo, long[] planeMin, long[] planeMax)
-		throws CmdLineException
+	protected Plane processPlane(final Reader reader, Plane plane,
+		final int imageIndex, final long planeIndex, final long planeNo,
+		final long[] planeMin, final long[] planeMax) throws CmdLineException
 	{
 		try {
 			// open the plane
@@ -178,15 +178,15 @@ public class Show extends AbstractReaderCommand {
 				}
 			}
 		}
-		catch (FormatException e) {
+		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
 
-		int pixelType = reader.getMetadata().get(imageIndex).getPixelType();
-		boolean littleEndian =
+		final int pixelType = reader.getMetadata().get(imageIndex).getPixelType();
+		final boolean littleEndian =
 			reader.getMetadata().get(imageIndex).isLittleEndian();
 
 		// Convert the byte array to an appropriately typed data array
@@ -223,17 +223,17 @@ public class Show extends AbstractReaderCommand {
 			bytes = (byte[]) pix;
 		}
 
-		ImageMetadata meta = reader.getMetadata().get(imageIndex);
+		final ImageMetadata meta = reader.getMetadata().get(imageIndex);
 		try {
 			// Open the potentially modified byte array as a buffered image and
 			// add it to the list
 			bImages.add(AWTImageTools.openImage(plane, bytes, reader, meta
 				.getAxesLengthsPlanar(), imageIndex));
 		}
-		catch (FormatException e) {
+		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
 
@@ -247,7 +247,7 @@ public class Show extends AbstractReaderCommand {
 		}
 
 		// check for pixel type mismatch
-		int pixType = AWTImageTools.getPixelType(bImages.get((int) planeNo));
+		final int pixType = AWTImageTools.getPixelType(bImages.get((int) planeNo));
 		if (pixType != pixelType && pixType != pixelType + 1) {
 			info("\tPlane #" + planeNo + ": pixel type mismatch: " +
 				FormatTools.getPixelTypeString(pixType) + "/" +
@@ -265,7 +265,7 @@ public class Show extends AbstractReaderCommand {
 	 * 
 	 * @param reader Reader to use for opening pixels
 	 */
-	private void showPixels(Reader reader) throws CmdLineException {
+	private void showPixels(final Reader reader) throws CmdLineException {
 		bImages = new ArrayList<BufferedImage>();
 
 		read(reader);
@@ -283,7 +283,7 @@ public class Show extends AbstractReaderCommand {
 			// display pixels in image viewer
 			info("");
 			info("Launching image viewer");
-			ImageViewer viewer = new ImageViewer(getContext(), false);
+			final ImageViewer viewer = new ImageViewer(getContext(), false);
 			viewer.setImages(reader, bImages
 				.toArray(new BufferedImage[bImages.size()]));
 			viewer.setVisible(true);
@@ -297,23 +297,23 @@ public class Show extends AbstractReaderCommand {
 	private void mapLocation() throws IOException {
 		if (map != null) locationService.mapId(file, map);
 		else if (preload) {
-			RandomAccessInputStream f =
+			final RandomAccessInputStream f =
 				new RandomAccessInputStream(getContext(), file);
-			int len = (int) f.length();
+			final int len = (int) f.length();
 			info("Caching " + len + " bytes:");
-			byte[] b = new byte[len];
-			int blockSize = 8 * 1024 * 1024; // 8 MB
+			final byte[] b = new byte[len];
+			final int blockSize = 8 * 1024 * 1024; // 8 MB
 			int read = 0, left = len;
 			while (left > 0) {
-				int r = f.read(b, read, blockSize < left ? blockSize : left);
+				final int r = f.read(b, read, blockSize < left ? blockSize : left);
 				read += r;
 				left -= r;
-				float ratio = (float) read / len;
-				int p = (int) (100 * ratio);
+				final float ratio = (float) read / len;
+				final int p = (int) (100 * ratio);
 				info("\tRead " + read + " bytes (" + p + "% complete)");
 			}
 			f.close();
-			ByteArrayHandle preloaded = new ByteArrayHandle(b);
+			final ByteArrayHandle preloaded = new ByteArrayHandle(b);
 			locationService.mapFile(file, preloaded);
 		}
 	}

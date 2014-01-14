@@ -69,7 +69,7 @@ public class Info extends AbstractSCIFIOToolCommand {
 	// -- Fields --
 
 	@Parameter
-	InitializeService initializeService;
+	private InitializeService initializeService;
 
 	// -- Arguments --
 
@@ -77,21 +77,21 @@ public class Info extends AbstractSCIFIOToolCommand {
 	private String file;
 
 	@Argument(index = 1, multiValued = true)
-	private List<String> arguments = new ArrayList<String>();
+	private final List<String> arguments = new ArrayList<String>();
 
 	// -- AbstractSCIFIOToolCommand API --
 
 	@Override
 	protected void run() throws CmdLineException {
 		try {
-			Metadata meta = initializeService.parseMetadata(file, true);
+			final Metadata meta = initializeService.parseMetadata(file, true);
 			printDatasetMetadata(meta);
 			printImageMetadata(meta);
 		}
-		catch (FormatException e) {
+		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			throw new CmdLineException(null, e.getMessage());
 		}
 	}
@@ -123,13 +123,13 @@ public class Info extends AbstractSCIFIOToolCommand {
 	/**
 	 * @param meta Prints the ImageMetadata for this dataset Metadata object
 	 */
-	private void printImageMetadata(Metadata meta) {
+	private void printImageMetadata(final Metadata meta) {
 		info("");
 		info("Reading image metdata");
 
 		for (int i = 0; i < meta.getImageCount(); i++) {
 			info("Image: " + (i + 1));
-			ImageMetadata iMeta = meta.get(i);
+			final ImageMetadata iMeta = meta.get(i);
 			printTable(iMeta.getTable());
 			print(iMeta);
 		}
@@ -139,7 +139,7 @@ public class Info extends AbstractSCIFIOToolCommand {
 	/**
 	 * @param iMeta Prints useful information about this ImageMetadata
 	 */
-	private void print(ImageMetadata iMeta) {
+	private void print(final ImageMetadata iMeta) {
 		info("Image size: " + iMeta.getSize());
 		info("Plane size: " + iMeta.getPlaneSize());
 		info("Plane count: " + iMeta.getPlaneCount());
@@ -167,9 +167,9 @@ public class Info extends AbstractSCIFIOToolCommand {
 	 * @return The provided axesLenghts array converted to a comma-separated
 	 *         string
 	 */
-	private String getAxisLengths(long[] axesLengths) {
-		StringBuilder sb = new StringBuilder();
-		for (long l : axesLengths) {
+	private String getAxisLengths(final long[] axesLengths) {
+		final StringBuilder sb = new StringBuilder();
+		for (final long l : axesLengths) {
 			if (sb.length() > 0) sb.append(",");
 			sb.append(l);
 		}
@@ -181,10 +181,10 @@ public class Info extends AbstractSCIFIOToolCommand {
 	 * @return - A comma-separated string list of the calibration values for the
 	 *         given ImageMetadata.
 	 */
-	private String getAxisCalibrations(ImageMetadata iMeta) {
-		StringBuilder sb = new StringBuilder();
+	private String getAxisCalibrations(final ImageMetadata iMeta) {
+		final StringBuilder sb = new StringBuilder();
 
-		for (CalibratedAxis axis : iMeta.getAxes()) {
+		for (final CalibratedAxis axis : iMeta.getAxes()) {
 			if (sb.length() > 0) sb.append(",");
 			sb.append(axis.particularEquation() + " " + axis.unit());
 		}
@@ -196,9 +196,9 @@ public class Info extends AbstractSCIFIOToolCommand {
 	 * @param axes List of axes used to build type information
 	 * @return A comma-spearated string representation of the provided axes' types
 	 */
-	private String getAxisLabels(List<CalibratedAxis> axes) {
-		StringBuilder sb = new StringBuilder();
-		for (CalibratedAxis axis : axes) {
+	private String getAxisLabels(final List<CalibratedAxis> axes) {
+		final StringBuilder sb = new StringBuilder();
+		for (final CalibratedAxis axis : axes) {
 			if (sb.length() > 0) sb.append(",");
 			sb.append(axis.type().getLabel());
 		}
@@ -208,7 +208,7 @@ public class Info extends AbstractSCIFIOToolCommand {
 	/**
 	 * @param meta Print dataset-level information about this Metadata object.
 	 */
-	private void printDatasetMetadata(Metadata meta) {
+	private void printDatasetMetadata(final Metadata meta) {
 		info("");
 		info("Dataset: " + meta.getDatasetName());
 		info("Dataset size: " + meta.getDatasetSize());
@@ -221,12 +221,12 @@ public class Info extends AbstractSCIFIOToolCommand {
 	 * @param table Prints the key:value pairs in the given MetaTable object.
 	 *          Expands lists when needed.
 	 */
-	private void printTable(MetaTable table) {
-		for (String key : table.keySet()) {
-			Object val = table.get(key);
+	private void printTable(final MetaTable table) {
+		for (final String key : table.keySet()) {
+			final Object val = table.get(key);
 			if (val instanceof Collection) {
 				info(key + ":");
-				for (Object listVal : (Collection<?>) val) {
+				for (final Object listVal : (Collection<?>) val) {
 					info("\t" + listVal);
 				}
 			}

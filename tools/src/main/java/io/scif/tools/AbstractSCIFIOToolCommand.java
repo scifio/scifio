@@ -77,14 +77,14 @@ public abstract class AbstractSCIFIOToolCommand extends AbstractSCIFIOPlugin
 	// -- SCIFIOToolCommand API --
 
 	@Override
-	public void runCommand(String... args) {
-		CmdLineParser parser = new CmdLineParser(this);
+	public void runCommand(final String... args) {
+		final CmdLineParser parser = new CmdLineParser(this);
 		try {
 			// parse the arguments.
 			parser.parseArgument(args);
 			if (getExtraArguments() != null && !getExtraArguments().isEmpty()) {
 				warn("the following arguments were not used:");
-				for (String arg : getExtraArguments()) {
+				for (final String arg : getExtraArguments()) {
 					warn("\t" + arg);
 				}
 			}
@@ -99,7 +99,7 @@ public abstract class AbstractSCIFIOToolCommand extends AbstractSCIFIOPlugin
 				// TODO
 			}
 		}
-		catch (CmdLineException e) {
+		catch (final CmdLineException e) {
 			// if there's a problem in the command line,
 			// you'll get this exception. this will report
 			// an error message.
@@ -112,7 +112,7 @@ public abstract class AbstractSCIFIOToolCommand extends AbstractSCIFIOPlugin
 		try {
 			run();
 		}
-		catch (CmdLineException e) {
+		catch (final CmdLineException e) {
 			logService.error(e.getMessage(), e);
 		}
 	}
@@ -156,28 +156,28 @@ public abstract class AbstractSCIFIOToolCommand extends AbstractSCIFIOPlugin
 	/**
 	 * @param msg Error message to print
 	 */
-	protected void err(String msg) {
+	protected void err(final String msg) {
 		logService.error(msg);
 	}
 
 	/**
 	 * @param msg Warning message to print
 	 */
-	protected void warn(String msg) {
+	protected void warn(final String msg) {
 		logService.warn(msg);
 	}
 
 	/**
 	 * @param msg Info message to print
 	 */
-	protected void info(String msg) {
+	protected void info(final String msg) {
 		logService.info(msg);
 	}
 
 	/**
 	 * @param msg Debug statement to print
 	 */
-	protected void debug(String msg) {
+	protected void debug(final String msg) {
 		if (debug) logService.debug(msg);
 	}
 }

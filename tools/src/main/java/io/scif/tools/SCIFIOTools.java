@@ -84,12 +84,12 @@ public final class SCIFIOTools {
 	 * @param args command arguments. In the form of
 	 *          {@code command [flags] parameters}
 	 */
-	public static void run(String... args) {
+	public static void run(final String... args) {
 		// Populate the list of commands
 		findCommands();
 
 		if (args.length > 0) {
-			SCIFIOToolCommand cmd = cmdMap.get(args[0].toLowerCase());
+			final SCIFIOToolCommand cmd = cmdMap.get(args[0].toLowerCase());
 
 			// Run the command, passing down the command arguments
 			if (cmd != null) {
@@ -102,7 +102,7 @@ public final class SCIFIOTools {
 		String msg =
 			"A valid command was not supplied. Usage:\n\n"
 				+ "\tscifio <command> [command args]\n\n" + "Available commands:";
-		for (String commandName : cmdMap.keySet()) {
+		for (final String commandName : cmdMap.keySet()) {
 			msg +=
 				"\n\t" +
 					commandName.substring(commandName.lastIndexOf('.') + 1).toLowerCase();
@@ -123,12 +123,12 @@ public final class SCIFIOTools {
 		}
 
 		if (cmdMap == null) {
-			List<SCIFIOToolCommand> commands =
+			final List<SCIFIOToolCommand> commands =
 				ctx.getService(PluginService.class).createInstancesOfType(
 					SCIFIOToolCommand.class);
 			cmdMap = new HashMap<String, SCIFIOToolCommand>();
 
-			for (SCIFIOToolCommand cmd : commands) {
+			for (final SCIFIOToolCommand cmd : commands) {
 				cmdMap.put(cmd.getClass().getSimpleName().toLowerCase(), cmd);
 			}
 		}
@@ -136,7 +136,7 @@ public final class SCIFIOTools {
 
 	// -- Main method --
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		run(args);
 	}
 }

@@ -47,8 +47,8 @@ import org.kohsuke.args4j.spi.Setter;
 import org.scijava.util.ClassUtils;
 
 /**
- * {@link OptionHandler} implementation for setting long array fields. Accepts
- * a ','-delimited String of values.
+ * {@link OptionHandler} implementation for setting long array fields. Accepts a
+ * ','-delimited String of values.
  * 
  * @author Mark Hiner
  */
@@ -57,14 +57,14 @@ public class LongArrayOptionHandler extends OptionHandler<Long> {
 	// -- Fields --
 
 	/**
-	 *  Need a field for ClassUtils conversion
+	 * Need a field for ClassUtils conversion
 	 */
 	private long[] lArray;
 
 	// -- Constructor --
 
-	public LongArrayOptionHandler(CmdLineParser parser, OptionDef option,
-		Setter<Long> setter)
+	public LongArrayOptionHandler(final CmdLineParser parser,
+		final OptionDef option, final Setter<Long> setter)
 	{
 		super(parser, option, setter);
 	}
@@ -72,24 +72,24 @@ public class LongArrayOptionHandler extends OptionHandler<Long> {
 	// -- OptionHandler API --
 
 	@Override
-	public int parseArguments(Parameters params) throws CmdLineException {
-		String val = params.getParameter(0);
-		String[] splitVal = val.split(",");
+	public int parseArguments(final Parameters params) throws CmdLineException {
+		final String val = params.getParameter(0);
+		final String[] splitVal = val.split(",");
 
 		// Set the instance field on this option handler
 		try {
-			Field f = getClass().getDeclaredField("lArray");
+			final Field f = getClass().getDeclaredField("lArray");
 			ClassUtils.setValue(f, this, splitVal);
 		}
-		catch (SecurityException e) {
+		catch (final SecurityException e) {
 			e.printStackTrace();
 		}
-		catch (NoSuchFieldException e) {
+		catch (final NoSuchFieldException e) {
 			e.printStackTrace();
 		}
 		// Pass the values to the actual option being set. Has to be one at a time
 		// for some reason..
-		for (long l : lArray) {
+		for (final long l : lArray) {
 			setter.addValue(l);
 		}
 		return 1;
