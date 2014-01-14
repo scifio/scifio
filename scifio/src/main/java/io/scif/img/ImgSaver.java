@@ -105,8 +105,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public void saveImg(final String id,
-		final Img<?> img) throws ImgIOException, IncompatibleTypeException
+	public void saveImg(final String id, final Img<?> img) throws ImgIOException,
+		IncompatibleTypeException
 	{
 		saveImg(id, ImgPlus.wrap(img), 0);
 	}
@@ -120,9 +120,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public void saveImg(final String id,
-		final ImgPlus<?> img, final int imageIndex) throws ImgIOException,
-		IncompatibleTypeException
+	public void saveImg(final String id, final ImgPlus<?> img,
+		final int imageIndex) throws ImgIOException, IncompatibleTypeException
 	{
 		img.setSource(id);
 		img.setName(new File(id).getName());
@@ -137,8 +136,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public void saveImg(final Writer w,
-		final Img<?> img) throws ImgIOException, IncompatibleTypeException
+	public void saveImg(final Writer w, final Img<?> img) throws ImgIOException,
+		IncompatibleTypeException
 	{
 		saveImg(w, ImgPlus.wrap(img), 0);
 	}
@@ -156,9 +155,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public void saveImg(final Writer w,
-		final ImgPlus<?> img, final int imageIndex) throws ImgIOException,
-		IncompatibleTypeException
+	public void
+		saveImg(final Writer w, final ImgPlus<?> img, final int imageIndex)
+			throws ImgIOException, IncompatibleTypeException
 	{
 		saveImg(w, img, imageIndex, true);
 	}
@@ -352,8 +351,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	// -- Helper methods --
 
 	/* Entry point for writePlanes method, the actual workhorse to save pixels to disk */
-	private void saveImg(final Writer w,
-		final ImgPlus<?> img, final int imageIndex, final boolean initializeWriter)
+	private void saveImg(final Writer w, final ImgPlus<?> img,
+		final int imageIndex, final boolean initializeWriter)
 		throws ImgIOException, IncompatibleTypeException
 	{
 
@@ -384,9 +383,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	/* Counts the number of slices in the provided ImgPlus.
 	 * NumSlices = product of the sizes of all non-X,Y planes.
 	 */
-	private int countSlices(
-		final ImgPlus<?> img)
-	{
+	private int countSlices(final ImgPlus<?> img) {
 
 		int sliceCount = 1;
 		for (int i = 0; i < img.numDimensions(); i++) {
@@ -405,9 +402,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * 
 	 * @throws IncompatibleTypeException
 	 */
-	private void writePlanes(Writer w,
-		final ImgPlus<?> img, final int imageIndex) throws ImgIOException,
-		IncompatibleTypeException
+	private void
+		writePlanes(Writer w, final ImgPlus<?> img, final int imageIndex)
+			throws ImgIOException, IncompatibleTypeException
 	{
 		final PlanarAccess<?> planarAccess = utils().getPlanarAccess(img);
 		if (planarAccess == null) {
@@ -442,19 +439,20 @@ public class ImgSaver extends AbstractImgIOComponent {
 			}
 
 			// iterate over each plane
-			final long planeOutCount = w.getMetadata().get(imageIndex).getPlaneCount();
+			final long planeOutCount =
+				w.getMetadata().get(imageIndex).getPlaneCount();
 
 			if (planeOutCount < planeCount / rgbChannelCount) {
-				// Warn that some planes were truncated (e.g. going from 4D format to 3D)
+				// Warn that some planes were truncated (e.g. going from 4D format to
+				// 3D)
 				statusService.showStatus(0, 0, "Source dataset contains: " +
 					planeCount + " planes, but writer format only supports: " +
 					rgbChannelCount * planeOutCount, true);
 			}
 
-			for (int planeIndex = 0; planeIndex < planeOutCount; planeIndex++)
-			{
-				statusService.showStatus(planeIndex, (int)planeOutCount, "Saving plane " +
-					(planeIndex + 1) + "/" + planeOutCount);
+			for (int planeIndex = 0; planeIndex < planeOutCount; planeIndex++) {
+				statusService.showStatus(planeIndex, (int) planeOutCount,
+					"Saving plane " + (planeIndex + 1) + "/" + planeOutCount);
 				// save bytes
 				try {
 					final Metadata meta = w.getMetadata();
@@ -468,8 +466,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 						new ByteArrayPlane(getContext(), meta.get(imageIndex), planarMin,
 							planarLengths);
 
-					for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++)
-					{
+					for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++) {
 						final Object curPlane =
 							planarImg.getPlane(cIndex + (planeIndex * rgbChannelCount))
 								.getCurrentStorageArray();
@@ -502,7 +499,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 						if (interleaved) {
 							final int bpp =
-								FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
+								FormatTools.getBytesPerPixel(meta.get(imageIndex)
+									.getPixelType());
 
 							// TODO: Assign all elements in a for loop rather than
 							// using many small System.arraycopy calls. Calling
@@ -545,9 +543,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Creates a new {@link Writer} with an unpopulated MetadataStore and sets its
 	 * id to the provided String.
 	 */
-	private Writer initializeWriter(
-		final String id, final ImgPlus<?> img, final int imageIndex)
-		throws ImgIOException
+	private Writer initializeWriter(final String id, final ImgPlus<?> img,
+		final int imageIndex) throws ImgIOException
 	{
 		Writer writer = null;
 		Metadata meta = null;
@@ -576,9 +573,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Uses the provided {@link ImgPlus} to populate the minimum metadata fields
 	 * necessary for writing.
 	 */
-	private void populateMeta(
-		final Metadata meta, final ImgPlus<?> img, final int imageIndex)
-		throws ImgIOException
+	private void populateMeta(final Metadata meta, final ImgPlus<?> img,
+		final int imageIndex) throws ImgIOException
 	{
 		statusService.showStatus("Initializing " + img.getName());
 
@@ -603,7 +599,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		// Adjust for RGB information
 		if (img.getCompositeChannelCount() > 1) {
-			ImageMetadata m = imgplusMeta.get(imageIndex);
+			final ImageMetadata m = imgplusMeta.get(imageIndex);
 			m.setPlanarAxisCount(3);
 			m.setAxisType(2, Axes.CHANNEL);
 			// Split Axes.CHANNEL if necessary

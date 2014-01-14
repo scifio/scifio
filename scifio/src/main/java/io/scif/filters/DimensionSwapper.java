@@ -136,14 +136,14 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	 */
 	public List<AxisType> getInputOrder(final int imageIndex) {
 		FormatTools.assertId(getCurrentFile(), true, 2);
-		
+
 		if (inputOrder == null) inputOrder = new ArrayList<AxisType>();
-		List<CalibratedAxis> axes = getMetadata().get(imageIndex).getAxes();
-		
-		for (int i=0; i<axes.size(); i++) {
+		final List<CalibratedAxis> axes = getMetadata().get(imageIndex).getAxes();
+
+		for (int i = 0; i < axes.size(); i++) {
 			inputOrder.set(i, axes.get(i).type());
 		}
-		
+
 		return inputOrder;
 	}
 
@@ -173,9 +173,8 @@ public class DimensionSwapper extends AbstractReaderFilter {
 				.getOutputOrder().length != getImageCount()))
 		{
 			@SuppressWarnings("unchecked")
-			List<AxisType>[] axisTypeList = new ArrayList[getImageCount()];
-			((DimensionSwapperMetadata) getMetadata())
-				.setOutputOrder(axisTypeList);
+			final List<AxisType>[] axisTypeList = new ArrayList[getImageCount()];
+			((DimensionSwapperMetadata) getMetadata()).setOutputOrder(axisTypeList);
 
 			// NB: Create our own copy of the Metadata,
 			// which we can manipulate safely.
@@ -212,7 +211,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] offsets, long[] lengths)
+		final Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane,
@@ -245,21 +244,22 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	private long reorder(final int imageIndex, final long planeIndex) {
 		if (!metaCheck()) return planeIndex;
 
-		long[] originalPosition =
+		final long[] originalPosition =
 			FormatTools.rasterToPosition(getMetadata().get(imageIndex)
 				.getAxesLengthsNonPlanar(), planeIndex);
 
-		List<AxisType> swappedOrder = getDimensionOrder(imageIndex);
+		final List<AxisType> swappedOrder = getDimensionOrder(imageIndex);
 
-		long[] swappedPosition = new long[originalPosition.length];
-		long[] lengths = new long[originalPosition.length];
+		final long[] swappedPosition = new long[originalPosition.length];
+		final long[] lengths = new long[originalPosition.length];
 
 		for (int i = 0; i < originalPosition.length; i++) {
-			int offset = getMetadata().get(imageIndex).getPlanarAxisCount();
-			AxisType type = swappedOrder.get(i + offset);
+			final int offset = getMetadata().get(imageIndex).getPlanarAxisCount();
+			final AxisType type = swappedOrder.get(i + offset);
 			lengths[i] = getMetadata().get(imageIndex).getAxisLength(type);
 			swappedPosition[i] =
-				originalPosition[getMetadata().get(imageIndex).getAxisIndex(type) - offset];
+				originalPosition[getMetadata().get(imageIndex).getAxisIndex(type) -
+					offset];
 		}
 
 		return (int) FormatTools.positionToRaster(lengths, swappedPosition);

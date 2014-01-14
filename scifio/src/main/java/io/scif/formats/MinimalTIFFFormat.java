@@ -321,10 +321,11 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- HasColorTable API methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable
+			getColorTable(final int imageIndex, final long planeIndex)
 		{
 			if (ifds == null || lastPlane < 0 || lastPlane > ifds.size()) return null;
-			IFD lastIFD = ifds.get((int)lastPlane);
+			IFD lastIFD = ifds.get((int) lastPlane);
 
 			ColorTable table = null;
 			try {
@@ -568,10 +569,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				return super.openThumbPlane(imageIndex, planeIndex);
 			}
 			final TiffParser tiffParser = meta.getTiffParser();
-			tiffParser.fillInIFD(thumbnailIFDs.get((int)planeIndex));
+			tiffParser.fillInIFD(thumbnailIFDs.get((int) planeIndex));
 			int[] bps = null;
 			try {
-				bps = thumbnailIFDs.get((int)planeIndex).getBitsPerSample();
+				bps = thumbnailIFDs.get((int) planeIndex).getBitsPerSample();
 			}
 			catch (final FormatException e) {}
 
@@ -583,7 +584,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			while ((b % 8) != 0)
 				b++;
 			b /= 8;
-			if (b != FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType()) ||
+			if (b != FormatTools
+				.getBytesPerPixel(meta.get(imageIndex).getPixelType()) ||
 				bps.length != meta.get(imageIndex).getAxisLength(Axes.CHANNEL))
 			{
 				return super.openThumbPlane(imageIndex, planeIndex);
@@ -605,9 +607,9 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
@@ -615,16 +617,14 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			final TiffParser tiffParser = meta.getTiffParser();
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis],
-								y = (int) planeMin[yAxis],
-								w = (int) planeMax[xAxis],
-								h = (int) planeMax[yAxis];
+			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
+				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			final IFD firstIFD = ifds.get(0);
 			meta.setLastPlane(planeIndex);
-			final IFD ifd = ifds.get((int)planeIndex);
+			final IFD ifd = ifds.get((int) planeIndex);
 			if ((firstIFD.getCompression() == TiffCompression.JPEG_2000 || firstIFD
 				.getCompression() == TiffCompression.JPEG_2000_LOSSY) &&
 				meta.getResolutionLevels() != null)
@@ -657,8 +657,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				final byte[] newBuf = new byte[buf.length];
 				for (int i = 0; i < nPixels; i++) {
 					final int v =
-						DataTools.bytesToInt(buf, i * nBytes, nBytes, meta
-							.get(imageIndex).isLittleEndian());
+						DataTools.bytesToInt(buf, i * nBytes, nBytes, meta.get(imageIndex)
+							.isLittleEndian());
 					final int sign = v >> bits;
 					int exponent =
 						(v >> mantissaBits) & (int) (Math.pow(2, exponentBits) - 1);
@@ -685,8 +685,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 					mantissa <<= (23 - mantissaBits);
 
 					final int value = (sign << 31) | (exponent << 23) | mantissa;
-					DataTools.unpackBytes(value, newBuf, i * 4, 4, meta
-						.get(imageIndex).isLittleEndian());
+					DataTools.unpackBytes(value, newBuf, i * 4, 4, meta.get(imageIndex)
+						.isLittleEndian());
 				}
 				System.arraycopy(newBuf, 0, buf, 0, newBuf.length);
 			}

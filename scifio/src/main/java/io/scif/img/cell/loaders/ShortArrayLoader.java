@@ -62,7 +62,7 @@ public class ShortArrayLoader extends AbstractArrayLoader<ShortArray> {
 	public void convertBytes(final ShortArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		ImageMetadata iMeta = reader().getMetadata().get(0);
+		final ImageMetadata iMeta = reader().getMetadata().get(0);
 
 		if (isCompatible()) {
 			final int bpp = getBitsPerElement() / 8;
@@ -81,7 +81,7 @@ public class ShortArrayLoader extends AbstractArrayLoader<ShortArray> {
 			final int offset = planesRead * (bytes.length / bpp);
 
 			for (int index = 0; index < bytes.length / bpp; index++) {
-				short value =
+				final short value =
 					(short) utils().decodeWord(bytes, index * bpp, pixelType,
 						iMeta.isLittleEndian());
 				data.setValue(offset + index, value);

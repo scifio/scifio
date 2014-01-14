@@ -301,7 +301,7 @@ public class TextFormat extends AbstractFormat {
 			final int sizeC = meta.getChannels().length;
 			final int planeCount = sizeZ * sizeC * sizeT;
 			final int planeSize =
-				(int)iMeta.getAxisLength(Axes.X) * (int)iMeta.getAxisLength(Axes.Y);
+				(int) iMeta.getAxisLength(Axes.X) * (int) iMeta.getAxisLength(Axes.Y);
 			final float[][] data = new float[planeCount][planeSize];
 			iMeta.setAxisLength(Axes.Z, sizeZ);
 			iMeta.setAxisLength(Axes.CHANNEL, sizeC);
@@ -350,7 +350,7 @@ public class TextFormat extends AbstractFormat {
 			final int x = TextUtils.getX(rowData, meta);
 			final int y = TextUtils.getY(rowData, meta);
 			int c = 0;
-			final int index = (int)meta.get(0).getAxisLength(Axes.X) * y + x;
+			final int index = (int) meta.get(0).getAxisLength(Axes.X) * y + x;
 			for (int i = 0; i < meta.getRowLength(); i++) {
 				if (i == meta.getxIndex() || i == meta.getyIndex()) continue;
 				meta.getData()[c++][index] = (float) rowData[i];
@@ -419,9 +419,9 @@ public class TextFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
@@ -430,18 +430,16 @@ public class TextFormat extends AbstractFormat {
 				buf.length, planeMin, planeMax);
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis],
-								y = (int) planeMin[yAxis],
-								w = (int) planeMax[xAxis],
-								h = (int) planeMax[yAxis];
+			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
+				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 			// copy floating point data into byte buffer
-			final float[] planeFloats = getMetadata().getData()[(int)planeIndex];
+			final float[] planeFloats = getMetadata().getData()[(int) planeIndex];
 			int q = 0;
 			for (int j = 0; j < h; j++) {
 				final int yy = y + j;
 				for (int i = 0; i < w; i++) {
 					final int xx = x + i;
-					final int index = yy * (int)meta.get(0).getAxisLength(Axes.X) + xx;
+					final int index = yy * (int) meta.get(0).getAxisLength(Axes.X) + xx;
 					final int bits = Float.floatToIntBits(planeFloats[index]);
 					DataTools.unpackBytes(bits, buf, q, 4, TextUtils.LITTLE_ENDIAN);
 					q += 4;
@@ -515,15 +513,15 @@ public class TextFormat extends AbstractFormat {
 						throw new FormatException("Row #" + meta.getRow() +
 							": invalid X: " + x);
 					}
-					if (meta.get(0).getAxisLength(Axes.X) <= x) meta.get(0).setAxisLength(Axes.X,
-						x + 1);
+					if (meta.get(0).getAxisLength(Axes.X) <= x) meta.get(0)
+						.setAxisLength(Axes.X, x + 1);
 					final int y = getY(rowData, meta);
 					if (y < 0) {
 						throw new FormatException("Row #" + meta.getRow() +
 							": invalid Y: " + x);
 					}
-					if (meta.get(0).getAxisLength(Axes.Y) <= y) meta.get(0).setAxisLength(Axes.Y,
-						y + 1);
+					if (meta.get(0).getAxisLength(Axes.Y) <= y) meta.get(0)
+						.setAxisLength(Axes.Y, y + 1);
 				}
 
 				// parse next row

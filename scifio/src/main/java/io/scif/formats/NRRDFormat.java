@@ -338,24 +338,16 @@ public class NRRDFormat extends AbstractFormat {
 								iMeta.setAxisLength(Axes.CHANNEL, size);
 								iMeta.setPlanarAxisCount(3);
 							}
-							else if (i == 0 ||
-								(iMeta.getPlanarAxisCount() > 2 && i == 1))
-							{
+							else if (i == 0 || (iMeta.getPlanarAxisCount() > 2 && i == 1)) {
 								iMeta.setAxisLength(Axes.X, size);
 							}
-							else if (i == 1 ||
-								(iMeta.getPlanarAxisCount() > 2 && i == 2))
-							{
+							else if (i == 1 || (iMeta.getPlanarAxisCount() > 2 && i == 2)) {
 								iMeta.setAxisLength(Axes.Y, size);
 							}
-							else if (i == 2 ||
-								(iMeta.getPlanarAxisCount() > 2 && i == 3))
-							{
+							else if (i == 2 || (iMeta.getPlanarAxisCount() > 2 && i == 3)) {
 								iMeta.setAxisLength(Axes.Z, size);
 							}
-							else if (i == 3 ||
-								(iMeta.getPlanarAxisCount() > 2 && i == 4))
-							{
+							else if (i == 3 || (iMeta.getPlanarAxisCount() > 2 && i == 4)) {
 								iMeta.setAxisLength(Axes.TIME, size);
 							}
 						}
@@ -405,8 +397,7 @@ public class NRRDFormat extends AbstractFormat {
 					formatService.getFormatFromClass(NRRDFormat.class);
 				formatService.removeFormat(nrrd);
 
-				final Format helperFormat =
-					formatService.getFormat(meta.getDataFile());
+				final Format helperFormat = formatService.getFormat(meta.getDataFile());
 				final io.scif.Parser p = helperFormat.createParser();
 				p.setMetadataOptions(new DefaultMetadataOptions(MetadataLevel.MINIMUM));
 				p.setMetadataOptions(meta.getMetadataOptions());
@@ -481,9 +472,9 @@ public class NRRDFormat extends AbstractFormat {
 		}
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();

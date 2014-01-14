@@ -508,7 +508,7 @@ public class CacheServiceTest {
 			byte[] tmp = new byte[(int) arraySize];
 			tmp = null;
 		}
-		catch (OutOfMemoryError e) {
+		catch (final OutOfMemoryError e) {
 			// Typically this should never happen, as garbage collection will
 			// automatically run to collect these array instances. However in some
 			// environments this may be needed, e.g. while running tests during a

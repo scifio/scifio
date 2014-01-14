@@ -51,10 +51,10 @@ import org.scijava.plugin.Plugin;
  * <p>
  * To create a {@code MetadataWrapper} that is paired with a specific
  * {@code Filter}, simply extend this class, override any methods as desired,
- * and annotate the class using {@link Plugin} as
- * appropriate. The wrapper will automatically be discovered and applied when a
- * new instance of its {@link Filter} is instantiated, assuming the
- * {@code Filter} is a subclass of {@link AbstractReaderFilter}
+ * and annotate the class using {@link Plugin} as appropriate. The wrapper will
+ * automatically be discovered and applied when a new instance of its
+ * {@link Filter} is instantiated, assuming the {@code Filter} is a subclass of
+ * {@link AbstractReaderFilter}
  * </p>
  * 
  * @author Mark Hiner
@@ -63,7 +63,7 @@ import org.scijava.plugin.Plugin;
  * @see AbstractReaderFilter
  */
 public abstract class AbstractMetadataWrapper extends AbstractMetadata
-implements MetadataWrapper
+	implements MetadataWrapper
 {
 
 	// -- Fields --

@@ -142,7 +142,7 @@ public class JPEGFormat extends ImageIOFormat {
 				final io.scif.Metadata m = getFormat().createParser().parse(stream);
 
 				stream.seek(0);
-				
+
 				// Need to check dimension lengths
 				if (m.get(0).getAxisLength(Axes.X) > MAX_SIZE &&
 					m.get(0).getAxisLength(Axes.Y) > MAX_SIZE)

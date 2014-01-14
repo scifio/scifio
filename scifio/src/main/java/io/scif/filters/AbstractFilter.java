@@ -56,8 +56,8 @@ import io.scif.AbstractSCIFIOPlugin;
  * @see io.scif.filters.Filter
  * @param <T> - Parent type of this filter.
  */
-public abstract class AbstractFilter<T> extends AbstractSCIFIOPlugin
-	implements Filter
+public abstract class AbstractFilter<T> extends AbstractSCIFIOPlugin implements
+	Filter
 {
 
 	// -- Fields --

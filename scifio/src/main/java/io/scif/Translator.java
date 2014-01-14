@@ -70,7 +70,7 @@ public interface Translator extends SCIFIOPlugin, SingletonPlugin {
 	 * @return The Metadata class accepted by this translator as input
 	 */
 	Class<? extends Metadata> source();
-	
+
 	/**
 	 * @return The Metadata class accepted by this translator as output
 	 */

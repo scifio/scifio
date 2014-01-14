@@ -55,14 +55,14 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  */
 @Plugin(type = RefProvider.class)
-public class SCIFIOCellCacheCleaningProvider extends AbstractSCIFIOPlugin implements
-	RefProvider
+public class SCIFIOCellCacheCleaningProvider extends AbstractSCIFIOPlugin
+	implements RefProvider
 {
 
 	// -- RefProvider API --
 
 	@Override
-	public boolean handles(Object referent, Object... params) {
+	public boolean handles(final Object referent, final Object... params) {
 		boolean handles =
 			SCIFIOCellCache.class.isAssignableFrom(referent.getClass());
 		handles = handles && (params == null || params.length == 0);
@@ -70,10 +70,10 @@ public class SCIFIOCellCacheCleaningProvider extends AbstractSCIFIOPlugin implem
 	}
 
 	@Override
-	public Reference makeRef(Object referent, ReferenceQueue queue,
-		Object... params)
+	public Reference makeRef(final Object referent, final ReferenceQueue queue,
+		final Object... params)
 	{
-		Reference ref = new SCIFIOCellCacheCleaner(referent, queue);
+		final Reference ref = new SCIFIOCellCacheCleaner(referent, queue);
 		getContext().inject(ref);
 		return ref;
 	}
@@ -101,11 +101,12 @@ public class SCIFIOCellCacheCleaningProvider extends AbstractSCIFIOPlugin implem
 		/**
 		 * cacheId field of the referent.
 		 */
-		private String cacheId;
+		private final String cacheId;
 
 		// -- Constructors --
 
-		public SCIFIOCellCacheCleaner(Object cache, ReferenceQueue queue) {
+		public SCIFIOCellCacheCleaner(final Object cache, final ReferenceQueue queue)
+		{
 			super((SCIFIOCellCache<?>) cache, queue);
 			cacheId = ((SCIFIOCellCache<?>) cache).getCacheId();
 		}

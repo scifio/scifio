@@ -61,9 +61,9 @@ public class MinMaxFilterTest {
 
 	@Test
 	public void testMinMax() throws FormatException, IOException {
-		ReaderFilter filter = scifio.initializer().initializeReader(id);
+		final ReaderFilter filter = scifio.initializer().initializeReader(id);
 
-		MinMaxFilter minMax = filter.enable(MinMaxFilter.class);
+		final MinMaxFilter minMax = filter.enable(MinMaxFilter.class);
 
 		// open a plane to trigger min/max computation
 		filter.openPlane(0, 1);
@@ -92,9 +92,9 @@ public class MinMaxFilterTest {
 		assertEquals(null, minMax.getAxisGlobalMinimum(0, Axes.CHANNEL, 0));
 		assertEquals(null, minMax.getAxisGlobalMinimum(0, Axes.CHANNEL, 1));
 		assertEquals(null, minMax.getAxisGlobalMinimum(0, Axes.CHANNEL, 2));
-		
+
 		// open all planes
-		for (int i=0; i<minMax.getPlaneCount(0); i++) {
+		for (int i = 0; i < minMax.getPlaneCount(0); i++) {
 			filter.openPlane(0, i);
 		}
 

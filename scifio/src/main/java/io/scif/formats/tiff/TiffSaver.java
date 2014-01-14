@@ -272,17 +272,18 @@ public class TiffSaver extends AbstractContextual {
 	 * @throws FormatException
 	 * @throws IOException
 	 */
-	public void writeImage(final byte[] buf, final IFD ifd, final long planeIndex,
-		final int pixelType, final int x, final int y, final int w, final int h,
-		final boolean last) throws FormatException, IOException
+	public void writeImage(final byte[] buf, final IFD ifd,
+		final long planeIndex, final int pixelType, final int x, final int y,
+		final int w, final int h, final boolean last) throws FormatException,
+		IOException
 	{
 		writeImage(buf, ifd, planeIndex, pixelType, x, y, w, h, last, null, false);
 	}
 
-	public void writeImage(final byte[] buf, final IFD ifd, final long planeIndex,
-		final int pixelType, final int x, final int y, final int w, final int h,
-		final boolean last, Integer nChannels, final boolean copyDirectly)
-		throws FormatException, IOException
+	public void writeImage(final byte[] buf, final IFD ifd,
+		final long planeIndex, final int pixelType, final int x, final int y,
+		final int w, final int h, final boolean last, Integer nChannels,
+		final boolean copyDirectly) throws FormatException, IOException
 	{
 		log.debug("Attempting to write image.");
 		// b/c method is public should check parameters again
@@ -416,9 +417,9 @@ public class TiffSaver extends AbstractContextual {
 	 * @throws FormatException
 	 * @throws IOException
 	 */
-	private void writeImageIFD(IFD ifd, final long planeIndex, final byte[][] strips,
-		final int nChannels, final boolean last, final int x, final int y)
-		throws FormatException, IOException
+	private void writeImageIFD(IFD ifd, final long planeIndex,
+		final byte[][] strips, final int nChannels, final boolean last,
+		final int x, final int y) throws FormatException, IOException
 	{
 		log.debug("Attempting to write image IFD.");
 		final int tilesPerRow = (int) ifd.getTilesPerRow();
@@ -443,10 +444,10 @@ public class TiffSaver extends AbstractContextual {
 				final long[] ifdOffsets = parser.getIFDOffsets();
 				log.debug("IFD offsets: " + Arrays.toString(ifdOffsets));
 				if (planeIndex < ifdOffsets.length) {
-					out.seek(ifdOffsets[(int)planeIndex]);
-					log.debug("Reading IFD from " + ifdOffsets[(int)planeIndex] +
+					out.seek(ifdOffsets[(int) planeIndex]);
+					log.debug("Reading IFD from " + ifdOffsets[(int) planeIndex] +
 						" in non-sequential write.");
-					ifd = parser.getIFD(ifdOffsets[(int)planeIndex]);
+					ifd = parser.getIFD(ifdOffsets[(int) planeIndex]);
 				}
 			}
 			finally {

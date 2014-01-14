@@ -80,7 +80,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 	}
 
 	// -- Metadata API methods --
-	
+
 	@Override
 	public void populateImageMetadata() {
 		final Metadata m = unwrap();
@@ -108,12 +108,12 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 						cTable = r.openPlane(0, 0).getColorTable();
 						r.close();
 					}
-					catch (FormatException e) {
+					catch (final FormatException e) {
 						throw new IllegalArgumentException(
 							"ChannelFiller failed, could not open ColorTable for an indexed dataset",
 							e);
 					}
-					catch (IOException e) {
+					catch (final IOException e) {
 						throw new IllegalArgumentException(
 							"ChannelFiller failed, could not open ColorTable for an indexed dataset",
 							e);
@@ -123,20 +123,22 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 
 				// Attempt to update the pixel type based on the color table type
 				if (ArrayColorTable.class.isAssignableFrom(cTable.getClass())) {
-					int bitsPerElement = ((ArrayColorTable<?>) cTable).getBits();
-					boolean signed = FormatTools.isSigned(iMeta.getPixelType());
-					boolean floating = FormatTools.isFloatingPoint(iMeta.getPixelType());
+					final int bitsPerElement = ((ArrayColorTable<?>) cTable).getBits();
+					final boolean signed = FormatTools.isSigned(iMeta.getPixelType());
+					final boolean floating =
+						FormatTools.isFloatingPoint(iMeta.getPixelType());
 
 					try {
 						iMeta.setPixelType(FormatTools.pixelTypeFromBytes(
 							bitsPerElement / 8, signed, floating));
 					}
-					catch (FormatException e) {
-						log().warn("Could not update pixel type of ChannelFiller metadata.");
+					catch (final FormatException e) {
+						log()
+							.warn("Could not update pixel type of ChannelFiller metadata.");
 					}
-					
+
 				}
-				
+
 				iMeta.setAxisLength(Axes.CHANNEL, iMeta.getAxisLength(Axes.CHANNEL) *
 					lutLength);
 			}

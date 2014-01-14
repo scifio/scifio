@@ -99,9 +99,10 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	private long maxCacheSize = Long.MAX_VALUE;
 
 	/** Flag for cleaning entries from disk. */
-	private boolean[] cleaning = { false };
+	private final boolean[] cleaning = { false };
 
-	private Queue<Set<Integer>> cleaningQueue = new LinkedList<Set<Integer>>();
+	private final Queue<Set<Integer>> cleaningQueue =
+		new LinkedList<Set<Integer>>();
 
 	// -- CacheService API Methods --
 
@@ -170,7 +171,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		}
 		else {
 			// Check to see if we have the latest version of this cell already
-			Integer key = getKey(cacheId, index);
+			final Integer key = getKey(cacheId, index);
 			Integer knownHash = null;
 			synchronized (knownKeys) {
 				knownHash = knownKeys.get(key);
@@ -187,7 +188,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 					try {
 						Thread.sleep(50);
 					}
-					catch (InterruptedException e) {
+					catch (final InterruptedException e) {
 						logService.warn(
 							"Interrupted while waiting for retrieved keys to clear", e);
 					}
@@ -220,7 +221,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 						try {
 							Thread.sleep(50);
 						}
-						catch (InterruptedException e) {
+						catch (final InterruptedException e) {
 							logService
 								.warn("Interrupted while waiting for cache to clean", e);
 						}
@@ -292,7 +293,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	@Override
 	public void cleanRetrieved(final String cacheId) {
 		synchronized (knownKeys) {
-			for (Integer oldKey : retrievedKeys) {
+			for (final Integer oldKey : retrievedKeys) {
 				// Remove all the retrieved keys from known keys to ensure they aren't
 				// loaded.
 				knownKeys.remove(oldKey);
@@ -313,7 +314,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 					Set<Integer> toClean = cleaningQueue.poll();
 					while (cleaning[0]) {
 						synchronized (knownKeys) {
-							for (Integer oldKey : toClean) {
+							for (final Integer oldKey : toClean) {
 								// make sure this key hasn't been revived
 								if (!knownKeys.containsKey(oldKey)) {
 									db().getHashMap(cacheId).remove(oldKey);
@@ -340,7 +341,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	public void dispose() {
 		if (db == null) return;
 		synchronized (this) {
-			for (String cache : caches) {
+			for (final String cache : caches) {
 				db.delete(cache);
 			}
 			db.commit();

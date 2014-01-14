@@ -118,7 +118,9 @@ public class BufferedImagePlane extends
 	// -- AbstractPlane API --
 
 	@Override
-	protected BufferedImage blankPlane(long[] planeOffsets, long[] planeBounds) {
+	protected BufferedImage blankPlane(final long[] planeOffsets,
+		final long[] planeBounds)
+	{
 		final int type = getImageMetadata().getPixelType();
 
 		final long[] axes = new long[planeOffsets.length];

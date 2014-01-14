@@ -57,43 +57,44 @@ import org.junit.Test;
  * @author Mark Hiner
  */
 public class MetadataTest {
-	
+
 	private final SCIFIO scifio = new SCIFIO();
 	private final String id =
-			"testImg&lengths=620,512,5&axes=X,Y,Time,Z,Channel.fake";
+		"testImg&lengths=620,512,5&axes=X,Y,Time,Z,Channel.fake";
 	private final String ndId =
-			"ndImg&axes=X,Y,Z,Channel,Time,Lifetime,Spectra,&lengths=256,128,2,6,10,4,8.fake";
+		"ndImg&axes=X,Y,Z,Channel,Time,Lifetime,Spectra,&lengths=256,128,2,6,10,4,8.fake";
 
 	/**
 	 * Down the middle test that verifies each method of the Metadata API.
-	 * @throws FormatException 
-	 * @throws IOException 
+	 * 
+	 * @throws FormatException
+	 * @throws IOException
 	 */
 	@Test
 	public void testDownTheMiddle() throws IOException, FormatException {
-		Metadata m = scifio.format().getFormat(id).createParser().parse(id);
-		
+		final Metadata m = scifio.format().getFormat(id).createParser().parse(id);
+
 		// Check getAxisType(int, int)
 		assertEquals(m.get(0).getAxis(0).type(), Axes.X);
 		assertEquals(m.get(0).getAxis(1).type(), Axes.Y);
 		assertEquals(m.get(0).getAxis(2).type(), Axes.TIME);
 		assertEquals(m.get(0).getAxis(3).type(), Axes.Z);
 		assertEquals(m.get(0).getAxis(4).type(), Axes.CHANNEL);
-		
+
 		// Check getAxisLength(int, int)
 		assertEquals(m.get(0).getAxisLength(0), 620);
 		assertEquals(m.get(0).getAxisLength(1), 512);
 		assertEquals(m.get(0).getAxisLength(2), 5);
 		assertEquals(m.get(0).getAxisLength(3), 1);
 		assertEquals(m.get(0).getAxisLength(4), 1);
-		
+
 		// Check getAxisLength(int, AxisType)
 		assertEquals(m.get(0).getAxisLength(Axes.X), 620);
 		assertEquals(m.get(0).getAxisLength(Axes.Y), 512);
 		assertEquals(m.get(0).getAxisLength(Axes.TIME), 5);
 		assertEquals(m.get(0).getAxisLength(Axes.Z), 1);
 		assertEquals(m.get(0).getAxisLength(Axes.CHANNEL), 1);
-		
+
 		// Check getAxisIndex(int, AxisType)
 		assertEquals(m.get(0).getAxisIndex(Axes.X), 0);
 		assertEquals(m.get(0).getAxisIndex(Axes.Y), 1);
@@ -101,7 +102,7 @@ public class MetadataTest {
 		assertEquals(m.get(0).getAxisIndex(Axes.Z), 3);
 		assertEquals(m.get(0).getAxisIndex(Axes.CHANNEL), 4);
 	}
-	
+
 	/**
 	 * Verify conditions when adding axes
 	 * 
@@ -109,9 +110,9 @@ public class MetadataTest {
 	 */
 	@Test
 	public void testAddingAxes() throws FormatException {
-		Metadata m = scifio.format().getFormat(id).createMetadata();
+		final Metadata m = scifio.format().getFormat(id).createMetadata();
 		m.createImageMetadata(1);
-		
+
 		// Verify that, after adding an axis to a clean metadata, the axis
 		// length and type can be looked up properly
 		assertEquals(m.get(0).getAxisLength(Axes.X), 1);
@@ -120,30 +121,30 @@ public class MetadataTest {
 		assertEquals(m.get(0).getAxisLength(Axes.X), 100);
 		assertEquals(m.get(0).getAxisIndex(Axes.X), 0);
 	}
-	
+
 	/**
 	 * Verify conditions when interrogating non-existant axes
 	 * 
-	 * @throws FormatException 
+	 * @throws FormatException
 	 */
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testMissingAxes() throws FormatException {
-		Metadata m = scifio.format().getFormat(id).createMetadata();
-		
+		final Metadata m = scifio.format().getFormat(id).createMetadata();
+
 		// Axis index should be -1, length 0
 		assertEquals(m.get(0).getAxisLength(Axes.X), -1);
 		assertEquals(m.get(0).getAxisLength(Axes.X), 0);
-		
+
 		// Should throw an IndexOutOfBoundsException
 		assertEquals(m.get(0).getAxisLength(0), 0);
 	}
-	
+
 	/**
 	 * Down the middle testing of constructing an N-D image.
 	 */
 	@Test
 	public void testNDBasic() throws FormatException, IOException {
-		Metadata m = scifio.initializer().parseMetadata(ndId);
+		final Metadata m = scifio.initializer().parseMetadata(ndId);
 
 		// Basic plane + axis length checks
 		assertEquals(2 * 6 * 10 * 4 * 8, m.get(0).getPlaneCount());
@@ -160,12 +161,12 @@ public class MetadataTest {
 	 */
 	@Test
 	public void testNDPositions() throws FormatException, IOException {
-		Metadata m = scifio.initializer().parseMetadata(ndId);
+		final Metadata m = scifio.initializer().parseMetadata(ndId);
 
 		// Plane index lookup checks
 		long[] pos = { 1, 3, 5, 0, 0 };
-		assertEquals(1 + (3 * 2) + (5 * 6 * 2), FormatTools.positionToRaster(m
-			.get(0).getAxesLengthsNonPlanar(), pos));
+		assertEquals(1 + (3 * 2) + (5 * 6 * 2), FormatTools.positionToRaster(m.get(
+			0).getAxesLengthsNonPlanar(), pos));
 
 		pos = new long[] { 0, 0, 3, 3, 7 };
 		assertEquals((3 * 6 * 2) + (3 * 10 * 6 * 2) + (7 * 4 * 10 * 6 * 2),
@@ -173,12 +174,12 @@ public class MetadataTest {
 	}
 
 	/**
-	 * Test that the plane count reflects updates to the planar axis count in
-	 * an N-D dataset.
+	 * Test that the plane count reflects updates to the planar axis count in an
+	 * N-D dataset.
 	 */
 	@Test
 	public void testNDPlaneCounts() throws FormatException, IOException {
-		Metadata m = scifio.initializer().parseMetadata(ndId);
+		final Metadata m = scifio.initializer().parseMetadata(ndId);
 
 		// Try adjusting the planar axis count.
 		m.get(0).setPlanarAxisCount(3);
@@ -193,7 +194,7 @@ public class MetadataTest {
 	 */
 	@Test
 	public void testNDFlags() throws FormatException, IOException {
-		Metadata m = scifio.initializer().parseMetadata(ndId);
+		final Metadata m = scifio.initializer().parseMetadata(ndId);
 		// Check multichannel. C index < planar axis count, so should be false
 		assertFalse(m.get(0).isMultichannel());
 		// Check the interleaved flag

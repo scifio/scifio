@@ -104,14 +104,14 @@ public class SubRegion {
 	public DimRange getRange(final AxisType axisType) {
 		return dimRanges.get(axisType);
 	}
-	
+
 	/**
 	 * @return True if this SubRegion contains a range for the specified AxisType
 	 */
 	public boolean hasRange(final AxisType axisType) {
 		return dimRanges.get(axisType) != null;
 	}
-	
+
 	/**
 	 * @return Number of ranges in this SubRegion
 	 */

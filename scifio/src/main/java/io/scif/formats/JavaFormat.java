@@ -129,7 +129,7 @@ public class JavaFormat extends AbstractFormat {
 			final Object array = DataTools.makeDataArray(buf, bpp, fp, little);
 
 			out.seek(out.length());
-			writePlane(varName, getType(array), (int)planeMax[0], (int)planeMax[1]);
+			writePlane(varName, getType(array), (int) planeMax[0], (int) planeMax[1]);
 
 		}
 

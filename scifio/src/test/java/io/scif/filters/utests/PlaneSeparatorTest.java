@@ -33,7 +33,9 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package io.scif.filters.utests;
+
 import static org.testng.AssertJUnit.assertEquals;
 import io.scif.FormatException;
 import io.scif.Reader;
@@ -48,7 +50,7 @@ import org.testng.annotations.Test;
 
 /**
  * Tests for {@link PlaneSeparator}.
- *
+ * 
  * @author Mark Hiner
  */
 public class PlaneSeparatorTest {
@@ -56,22 +58,24 @@ public class PlaneSeparatorTest {
 	private final SCIFIO scifio = new SCIFIO();
 	private final String id =
 		"testImg&lengths=3,4,512,512&axes=Channel,Time,X,Y.fake";
-	
+
 	/**
 	 * Verify that multiple interleaved axes are automatically extracted.
-	 * @throws InstantiableException 
+	 * 
+	 * @throws InstantiableException
 	 */
 	@Test
 	public void testMultipleInterleavedAxes() throws FormatException,
 		IOException, InstantiableException
 	{
-		Reader filter = scifio.initializer().initializeReader(id);
-		// Verify that we are starting with 4 planar axes, 2 of which are interleaved
+		final Reader filter = scifio.initializer().initializeReader(id);
+		// Verify that we are starting with 4 planar axes, 2 of which are
+		// interleaved
 		assertEquals(4, filter.getMetadata().get(0).getPlanarAxisCount());
 		assertEquals(2, filter.getMetadata().get(0).getInterleavedAxisCount());
 		assertEquals(0, filter.getMetadata().get(0).getAxesNonPlanar().size());
-		
-		((ReaderFilter)filter).enable(PlaneSeparator.class);
+
+		((ReaderFilter) filter).enable(PlaneSeparator.class);
 		// Verify that, after enabling the PlaneSeparator, the default behavior
 		// separates out the 2 interleaved axes to non-planar axes.
 		assertEquals(2, filter.getMetadata().get(0).getPlanarAxisCount());

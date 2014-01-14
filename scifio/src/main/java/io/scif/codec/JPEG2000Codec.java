@@ -252,8 +252,8 @@ public class JPEG2000Codec extends AbstractCodec {
 		try {
 			final ByteArrayInputStream bis = new ByteArrayInputStream(buf);
 			b =
-				(WritableRaster) jaiIIOService
-					.readRaster(bis, (JPEG2000CodecOptions) options);
+				(WritableRaster) jaiIIOService.readRaster(bis,
+					(JPEG2000CodecOptions) options);
 			single = AWTImageTools.getPixelBytes(b, options.littleEndian);
 			bpp = single[0].length / (b.getWidth() * b.getHeight());
 

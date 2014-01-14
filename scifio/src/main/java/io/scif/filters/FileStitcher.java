@@ -151,10 +151,13 @@ public class FileStitcher extends AbstractReaderFilter {
 
 	/**
 	 * Gets the metadata for the given image index.
-	 * @throws IOException 
-	 * @throws FormatException 
+	 * 
+	 * @throws IOException
+	 * @throws FormatException
 	 */
-	public Metadata getMetadata(final int imageIndex) throws FormatException, IOException {
+	public Metadata getMetadata(final int imageIndex) throws FormatException,
+		IOException
+	{
 		if (noStitch) return getParent().getMetadata();
 		return getReader(imageIndex).getMetadata();
 	}
@@ -254,7 +257,6 @@ public class FileStitcher extends AbstractReaderFilter {
 				setCanChangePattern(false);
 			}
 
-
 			// Get the individual file ids
 			String[] patterns = findPatterns(source);
 			if (patterns.length == 0) patterns = new String[] { source };
@@ -296,7 +298,7 @@ public class FileStitcher extends AbstractReaderFilter {
 			for (int i = 0; i < files.length; i++) {
 				final String file = files[i];
 
-				//TODO remove this when virtual handle is in use
+				// TODO remove this when virtual handle is in use
 				// HACK: skip file existence check for fake files
 				if (file.toLowerCase().endsWith(".fake")) continue;
 
@@ -305,15 +307,15 @@ public class FileStitcher extends AbstractReaderFilter {
 						") does not exist.");
 				}
 			}
-			
+
 			this.files = files;
 			pattern = fp;
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		catch (FormatException e) {
+		catch (final FormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -349,9 +351,9 @@ public class FileStitcher extends AbstractReaderFilter {
 		}
 		else bp = plane;
 
-		// If this is a valid image index, get the appropriate reader and 
+		// If this is a valid image index, get the appropriate reader and
 		// return the corresponding plane
-		int[] adjustedIndex = computeFileIndex(imageIndex);
+		final int[] adjustedIndex = computeFileIndex(imageIndex);
 		if (adjustedIndex[0] < readers.length &&
 			adjustedIndex[1] < readers[adjustedIndex[0]].getImageCount())
 		{
@@ -372,9 +374,9 @@ public class FileStitcher extends AbstractReaderFilter {
 		// If no stitching, delegate to parent
 		if (noStitch) return getParent().openThumbPlane(imageIndex, planeIndex);
 
-		// If this is a valid image index, get the appropriate reader and 
+		// If this is a valid image index, get the appropriate reader and
 		// return the corresponding plane
-		int[] adjustedIndex = computeFileIndex(imageIndex);
+		final int[] adjustedIndex = computeFileIndex(imageIndex);
 		if (adjustedIndex[0] < readers.length &&
 			adjustedIndex[1] < readers[adjustedIndex[0]].getImageCount())
 		{
@@ -384,9 +386,9 @@ public class FileStitcher extends AbstractReaderFilter {
 
 		// return a blank image to cover for the fact that
 		// this file does not contain enough image planes
-		long[] thumbPlaneOffsets =
+		final long[] thumbPlaneOffsets =
 			new long[getParentMeta().get(0).getAxesPlanar().size()];
-		long[] thumbPlaneBounds = getParentMeta().get(0).getAxesLengths();
+		final long[] thumbPlaneBounds = getParentMeta().get(0).getAxesLengths();
 		thumbPlaneBounds[getParentMeta().get(0).getAxisIndex(Axes.X)] =
 			getParentMeta().get(0).getThumbSizeX();
 		thumbPlaneBounds[getParentMeta().get(0).getAxisIndex(Axes.Y)] =
@@ -438,7 +440,7 @@ public class FileStitcher extends AbstractReaderFilter {
 
 		imagesPerFile = null;
 
-		for (Reader r : readers) {
+		for (final Reader r : readers) {
 			if (r != null) r.close();
 		}
 

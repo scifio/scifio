@@ -232,9 +232,9 @@ public class TIFFFormat extends AbstractFormat {
 			// set the X and Y pixel dimensions
 
 			try {
-				double pixX = getIfds().get(0).getXResolution();
+				final double pixX = getIfds().get(0).getXResolution();
 				final double pixY = getIfds().get(0).getYResolution();
-				
+
 				if (pixX > 0 && pixX < Double.POSITIVE_INFINITY) {
 					FormatTools.calibrate(m.getAxis(Axes.X), pixX, 0);
 				}
@@ -248,7 +248,7 @@ public class TIFFFormat extends AbstractFormat {
 					log().warn("Expected positive value for PhysicalSizeY; got " + pixY);
 				}
 			}
-			catch (FormatException e) {
+			catch (final FormatException e) {
 				log().error("Failed to get x, y pixel sizes", e);
 			}
 		}
@@ -300,8 +300,8 @@ public class TIFFFormat extends AbstractFormat {
 		// -- BaseTIFFParser API Methods
 
 		@Override
-		protected void initMetadata(final Metadata meta)
-			throws FormatException, IOException
+		protected void initMetadata(final Metadata meta) throws FormatException,
+			IOException
 		{
 			final IFDList ifds = meta.getIfds();
 			final String comment = ifds.get(0).getComment();
@@ -567,9 +567,10 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			// Clean up length 1 axes
-			ArrayList<CalibratedAxis> validAxes = new ArrayList<CalibratedAxis>();
+			final ArrayList<CalibratedAxis> validAxes =
+				new ArrayList<CalibratedAxis>();
 
-			for (CalibratedAxis axis : m.getAxes()) {
+			for (final CalibratedAxis axis : m.getAxes()) {
 				if (m.getAxisLength(axis) > 1) {
 					validAxes.add(axis);
 				}
@@ -1200,7 +1201,7 @@ public class TIFFFormat extends AbstractFormat {
 				try {
 					final long[] ifdOffsets = parser.getIFDOffsets();
 					if (planeIndex < ifdOffsets.length) {
-						ifd = parser.getIFD(ifdOffsets[(int)planeIndex]);
+						ifd = parser.getIFD(ifdOffsets[(int) planeIndex]);
 					}
 				}
 				finally {
@@ -1275,9 +1276,10 @@ public class TIFFFormat extends AbstractFormat {
 		 * This method is factored out from <code>saveBytes()</code> in an attempt
 		 * to ensure thread safety.
 		 */
-		private long prepareToWriteImage(final int imageIndex, final long planeIndex,
-			final Plane plane, final IFD ifd, final int x, final int y, final int w,
-			final int h) throws IOException, FormatException
+		private long prepareToWriteImage(final int imageIndex,
+			final long planeIndex, final Plane plane, final IFD ifd, final int x,
+			final int y, final int w, final int h) throws IOException,
+			FormatException
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
@@ -1290,9 +1292,9 @@ public class TIFFFormat extends AbstractFormat {
 			// at one time.
 			synchronized (this) {
 				if (planeIndex < initialized[imageIndex].length &&
-					!initialized[imageIndex][(int)planeIndex])
+					!initialized[imageIndex][(int) planeIndex])
 				{
-					initialized[imageIndex][(int)planeIndex] = true;
+					initialized[imageIndex][(int) planeIndex] = true;
 
 					final RandomAccessInputStream tmp =
 						new RandomAccessInputStream(getContext(), meta.getDatasetName());
@@ -1478,7 +1480,7 @@ public class TIFFFormat extends AbstractFormat {
 			if (m.getAxisIndex(Axes.CHANNEL) >= m.getPlanarAxisCount()) {
 				planeCount /= m.getAxisLength(Axes.CHANNEL);
 			}
-			
+
 			for (int i = 0; i < planeCount; i++)
 				ifds.add(new IFD(log()));
 

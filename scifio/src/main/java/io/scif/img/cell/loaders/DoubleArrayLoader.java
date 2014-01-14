@@ -62,7 +62,7 @@ public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
 	public void convertBytes(final DoubleArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		ImageMetadata iMeta = reader().getMetadata().get(0);
+		final ImageMetadata iMeta = reader().getMetadata().get(0);
 		if (isCompatible()) {
 			final int bpp = getBitsPerElement() / 8;
 			final int offset = planesRead * (bytes.length / bpp);
@@ -80,7 +80,7 @@ public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
 			final int offset = planesRead * (bytes.length / bpp);
 
 			for (int index = 0; index < bytes.length / bpp; index++) {
-				double value =
+				final double value =
 					utils().decodeWord(bytes, index * bpp, pixelType,
 						iMeta.isLittleEndian());
 				data.setValue(offset + index, value);

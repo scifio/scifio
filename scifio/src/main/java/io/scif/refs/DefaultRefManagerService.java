@@ -78,13 +78,13 @@ public class DefaultRefManagerService extends AbstractService implements
 	 * Maps managed objects to the reference types which refer to them, ensuring
 	 * individual instances are not managed in the same way.
 	 */
-	private Map<Object, Set<Class<?>>> managed =
+	private final Map<Object, Set<Class<?>>> managed =
 		new WeakHashMap<Object, Set<Class<?>>>();
 
 	/**
 	 * A list of all managed references.
 	 */
-	private Set<Reference> knownRefs = new HashSet<Reference>();
+	private final Set<Reference> knownRefs = new HashSet<Reference>();
 
 	/**
 	 * Queue used for all references. This is polled on a separate thread, and
@@ -96,16 +96,16 @@ public class DefaultRefManagerService extends AbstractService implements
 	// -- RefManagerService API --
 
 	@Override
-	public void manage(Object toManage, Object... params) {
+	public void manage(final Object toManage, final Object... params) {
 		// Check known RefProviders for all appropriate constructors
-		for (RefProvider refProvider : pluginService
+		for (final RefProvider refProvider : pluginService
 			.createInstancesOfType(RefProvider.class))
 		{
 			if (!isManaged(toManage, refProvider.getClass()) &&
 				refProvider.handles(toManage, params))
 			{
 				// found a match
-				Reference ref = refProvider.makeRef(toManage, queue, params);
+				final Reference ref = refProvider.makeRef(toManage, queue, params);
 
 				synchronized (managed) {
 					Set<Class<?>> refs = managed.get(toManage);
@@ -153,9 +153,9 @@ public class DefaultRefManagerService extends AbstractService implements
 	 * @return true iff a {@link RefProvider} of the given class was constructed
 	 *         around the given object
 	 */
-	private boolean isManaged(Object referent, Class<?> pClass) {
+	private boolean isManaged(final Object referent, final Class<?> pClass) {
 		synchronized (managed) {
-			Set<Class<?>> refs = managed.get(referent);
+			final Set<Class<?>> refs = managed.get(referent);
 			if (refs != null && refs.contains(pClass)) return true;
 		}
 		return false;
@@ -181,13 +181,14 @@ public class DefaultRefManagerService extends AbstractService implements
 
 		// -- Fields --
 
-		private ReferenceQueue queue;
-		private Set<Reference> refs;
-		private LogService logService;
+		private final ReferenceQueue queue;
+		private final Set<Reference> refs;
+		private final LogService logService;
 
 		// -- Constructor --
 
-		public RefCleaner(ReferenceQueue queue, Set<Reference> refs, LogService log)
+		public RefCleaner(final ReferenceQueue queue, final Set<Reference> refs,
+			final LogService log)
 		{
 			this.queue = queue;
 			this.refs = refs;
@@ -204,7 +205,7 @@ public class DefaultRefManagerService extends AbstractService implements
 				try {
 					cleaningRef = (CleaningRef) queue.remove(50);
 				}
-				catch (InterruptedException e) {
+				catch (final InterruptedException e) {
 					logService.error("RefCleaner: interrupted while polling queue", e);
 				}
 				synchronized (refs) {

@@ -62,7 +62,7 @@ public class CharArrayLoader extends AbstractArrayLoader<CharArray> {
 	public void convertBytes(final CharArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		ImageMetadata iMeta = reader().getMetadata().get(0);
+		final ImageMetadata iMeta = reader().getMetadata().get(0);
 		if (isCompatible()) {
 			final int offset = planesRead * bytes.length;
 
@@ -79,7 +79,7 @@ public class CharArrayLoader extends AbstractArrayLoader<CharArray> {
 			final int offset = planesRead * (bytes.length / bpp);
 
 			for (int index = 0; index < bytes.length / bpp; index++) {
-				char value =
+				final char value =
 					(char) utils().decodeWord(bytes, index * bpp, pixelType,
 						iMeta.isLittleEndian());
 				data.setValue(offset + index, value);

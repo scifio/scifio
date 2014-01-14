@@ -43,19 +43,17 @@ import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.service.SciJavaService;
 
-
 /**
- * Abstract superclass for ImgIOComponents (such as {@link ImgOpener}
- * or {@link ImgSaver}). Provides constructors ensuring proper
- * Services are available, and an accessor for the {@link ImgUtilityService}.
+ * Abstract superclass for ImgIOComponents (such as {@link ImgOpener} or
+ * {@link ImgSaver}). Provides constructors ensuring proper Services are
+ * available, and an accessor for the {@link ImgUtilityService}.
  * 
  * @author Mark Hiner hinerm@gmail.com
- *
  */
 public abstract class AbstractImgIOComponent extends AbstractSCIFIOPlugin {
 
 	// -- Fields --
-	
+
 	@Parameter
 	private ImgUtilityService imgUtils;
 
@@ -68,11 +66,11 @@ public abstract class AbstractImgIOComponent extends AbstractSCIFIOPlugin {
 	public AbstractImgIOComponent(final Context context) {
 		setContext(context);
 	}
-	
+
 	// -- AbstractImgIOComponent methods --
-	
+
 	public ImgUtilityService utils() {
 		return imgUtils;
 	}
-	
+
 }

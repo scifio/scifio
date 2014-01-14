@@ -53,15 +53,15 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 	// -- Fields --
 
 	/** List of filters to be combined. */
-	private FileFilter[] filts;
+	private final FileFilter[] filts;
 
 	/** Description. */
-	private String desc;
+	private final String desc;
 
 	// -- Constructor --
 
 	/** Constructs a new filter from a list of other filters. */
-	public ComboFileFilter(FileFilter[] filters, String description) {
+	public ComboFileFilter(final FileFilter[] filters, final String description) {
 		filts = new FileFilter[filters.length];
 		System.arraycopy(filters, 0, filts, 0, filters.length);
 		desc = description;
@@ -71,7 +71,7 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 
 	/** Gets the list of file filters forming this filter combination. */
 	public FileFilter[] getFilters() {
-		FileFilter[] ff = new FileFilter[filts.length];
+		final FileFilter[] ff = new FileFilter[filts.length];
 		System.arraycopy(filts, 0, ff, 0, filts.length);
 		return ff;
 	}
@@ -83,7 +83,7 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 	 * descriptions into a combination filter that accepts anything any of its
 	 * constituant filters do.
 	 */
-	public static FileFilter[] sortFilters(FileFilter[] filters) {
+	public static FileFilter[] sortFilters(final FileFilter[] filters) {
 		return sortFilters(new Vector(Arrays.asList(filters)));
 	}
 
@@ -92,24 +92,24 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 	 * descriptions into a combination filter that accepts anything any of its
 	 * constituant filters do.
 	 */
-	public static FileFilter[] sortFilters(Vector filters) {
+	public static FileFilter[] sortFilters(final Vector filters) {
 		// sort filters alphanumerically
 		Collections.sort(filters);
 
 		// combine matching filters
-		int len = filters.size();
-		Vector v = new Vector(len);
+		final int len = filters.size();
+		final Vector v = new Vector(len);
 		for (int i = 0; i < len; i++) {
-			FileFilter ffi = (FileFilter) filters.elementAt(i);
+			final FileFilter ffi = (FileFilter) filters.elementAt(i);
 			int ndx = i + 1;
 			while (ndx < len) {
-				FileFilter ff = (FileFilter) filters.elementAt(ndx);
+				final FileFilter ff = (FileFilter) filters.elementAt(ndx);
 				if (!ffi.getDescription().equals(ff.getDescription())) break;
 				ndx++;
 			}
 			if (ndx > i + 1) {
 				// create combination filter for matching filters
-				FileFilter[] temp = new FileFilter[ndx - i];
+				final FileFilter[] temp = new FileFilter[ndx - i];
 				for (int j = 0; j < temp.length; j++) {
 					temp[j] = (FileFilter) filters.elementAt(i + j);
 				}
@@ -118,7 +118,7 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 			}
 			else v.add(ffi);
 		}
-		FileFilter[] result = new FileFilter[v.size()];
+		final FileFilter[] result = new FileFilter[v.size()];
 		v.copyInto(result);
 		return result;
 	}
@@ -127,7 +127,7 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 
 	/** Accepts files with the proper filename prefix. */
 	@Override
-	public boolean accept(File f) {
+	public boolean accept(final File f) {
 		for (int i = 0; i < filts.length; i++) {
 			if (filts[i].accept(f)) return true;
 		}
@@ -145,7 +145,7 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 	/** Gets a string representation of this file filter. */
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer("ComboFileFilter: ");
+		final StringBuffer sb = new StringBuffer("ComboFileFilter: ");
 		sb.append(desc);
 		for (int i = 0; i < filts.length; i++) {
 			sb.append("\n\t");
@@ -158,7 +158,7 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 
 	/** Compares two FileFilter objects alphanumerically. */
 	@Override
-	public int compareTo(Object o) {
+	public int compareTo(final Object o) {
 		return desc.compareToIgnoreCase(((FileFilter) o).getDescription());
 	}
 

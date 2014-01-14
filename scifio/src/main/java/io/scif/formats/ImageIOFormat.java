@@ -102,7 +102,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 				iMeta.setAxisLength(Axes.X, img.getWidth());
 				iMeta.setAxisLength(Axes.Y, img.getHeight());
 				iMeta.setPlanarAxisCount(2);
-				int channels = img.getRaster().getNumBands();
+				final int channels = img.getRaster().getNumBands();
 				if (channels > 1) {
 					iMeta.setPlanarAxisCount(3);
 					iMeta.setAxisLength(Axes.CHANNEL, img.getRaster().getNumBands());
@@ -167,8 +167,8 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			IOException
 		{
 			final Metadata meta = getMetadata();
-			plane.setData(AWTImageTools.getSubimage(meta.getImg(), meta
-				.get(imageIndex).isLittleEndian(), planeMin, planeMax));
+			plane.setData(AWTImageTools.getSubimage(meta.getImg(), meta.get(
+				imageIndex).isLittleEndian(), planeMin, planeMax));
 			return plane;
 		}
 
@@ -200,7 +200,8 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
-			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax)) {
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax))
+			{
 				throw new FormatException(
 					"ImageIOWriter does not support writing tiles");
 			}
@@ -252,7 +253,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			final Metadata dest)
 		{
 			dest.createImageMetadata(1);
-			ImageMetadata imgMeta = source.get(0);
+			final ImageMetadata imgMeta = source.get(0);
 			dest.setImg(AWTImageTools.blankImage(imgMeta, imgMeta
 				.getAxesLengthsPlanar(), imgMeta.getPixelType()));
 		}

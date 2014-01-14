@@ -144,7 +144,7 @@ public class JPEGTileDecoder extends AbstractContextual {
 
 			consumer = new TileConsumer(producer, y, h);
 			producer.startProduction(consumer);
-			while (producer.isConsumer(consumer)) { /* Loop over image consumers */ }
+			while (producer.isConsumer(consumer)) { /* Loop over image consumers */}
 		}
 		catch (final IOException e) {}
 	}

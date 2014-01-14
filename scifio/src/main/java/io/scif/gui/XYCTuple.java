@@ -75,7 +75,7 @@ public class XYCTuple {
 			x = axisLengths[meta.getAxisIndex(Axes.X)];
 			y = axisLengths[meta.getAxisIndex(Axes.Y)];
 			// pull the channel dimension if it's a planar axis.
-			int cIndex = meta.getAxisIndex(Axes.CHANNEL);
+			final int cIndex = meta.getAxisIndex(Axes.CHANNEL);
 			if (cIndex < meta.getPlanarAxisCount() && cIndex >= 0) {
 				c = axisLengths[meta.getAxisIndex(Axes.CHANNEL)];
 			}

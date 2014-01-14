@@ -167,7 +167,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
+		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
 		return openPlane(imageIndex, planeIndex, new long[planarAxes],
 			getMetadata().get(imageIndex).getAxesLengthsPlanar());
 	}
@@ -176,7 +176,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
+		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
 		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],
 			getMetadata().get(imageIndex).getAxesLengthsPlanar());
 	}
@@ -316,10 +316,12 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		if (planarAxisMin == null) {
 			planarAxisMin = new ArrayList<Map<AxisType, double[]>>();
 			for (int i = 0; i < imageCount; i++) {
-				HashMap<AxisType, double[]> minMap = new HashMap<AxisType, double[]>();
-				ImageMetadata iMeta = m.get(i);
-				for (CalibratedAxis axis : iMeta.getAxesPlanar()) {
-					double[] values = new double[(int) iMeta.getAxisLength(axis.type())];
+				final HashMap<AxisType, double[]> minMap =
+					new HashMap<AxisType, double[]>();
+				final ImageMetadata iMeta = m.get(i);
+				for (final CalibratedAxis axis : iMeta.getAxesPlanar()) {
+					final double[] values =
+						new double[(int) iMeta.getAxisLength(axis.type())];
 					Arrays.fill(values, Double.POSITIVE_INFINITY);
 					minMap.put(axis.type(), values);
 				}
@@ -329,10 +331,12 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		if (planarAxisMax == null) {
 			planarAxisMax = new ArrayList<Map<AxisType, double[]>>();
 			for (int i = 0; i < imageCount; i++) {
-				HashMap<AxisType, double[]> maxMap = new HashMap<AxisType, double[]>();
-				ImageMetadata iMeta = m.get(i);
-				for (CalibratedAxis axis : iMeta.getAxesPlanar()) {
-					double[] values = new double[(int) iMeta.getAxisLength(axis.type())];
+				final HashMap<AxisType, double[]> maxMap =
+					new HashMap<AxisType, double[]>();
+				final ImageMetadata iMeta = m.get(i);
+				for (final CalibratedAxis axis : iMeta.getAxesPlanar()) {
+					final double[] values =
+						new double[(int) iMeta.getAxisLength(axis.type())];
 					Arrays.fill(values, Double.NEGATIVE_INFINITY);
 					maxMap.put(axis.type(), values);
 				}

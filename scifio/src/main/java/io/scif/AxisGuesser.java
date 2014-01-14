@@ -388,9 +388,9 @@ public class AxisGuesser {
 		}
 		return UNKNOWN_AXIS;
 	}
-	
+
 	// -- Helper methods --
-	
+
 	private int indexOf(final AxisType[] axes, final AxisType type) {
 		int index = -1;
 		for (int i = 0; i < axes.length && index == -1; i++) {
@@ -398,7 +398,7 @@ public class AxisGuesser {
 		}
 		return index;
 	}
-	
+
 	// -- Main method --
 
 	public static void main(final String[] args) throws FormatException,
@@ -435,9 +435,10 @@ public class AxisGuesser {
 					final AxisType[] dimOrder =
 						(AxisType[]) reader.getMetadata().get(0).getAxes().toArray();
 					final long sizeZ = reader.getMetadata().get(0).getAxisLength(Axes.Z);
-					final long sizeT = reader.getMetadata().get(0).getAxisLength(Axes.TIME);
+					final long sizeT =
+						reader.getMetadata().get(0).getAxisLength(Axes.TIME);
 					final long sizeC =
-						reader.getMetadata().get(0).getAxisLength( Axes.CHANNEL);
+						reader.getMetadata().get(0).getAxisLength(Axes.CHANNEL);
 					final boolean certain = reader.getMetadata().get(0).isOrderCertain();
 					reader.close();
 					log.info("[done]");

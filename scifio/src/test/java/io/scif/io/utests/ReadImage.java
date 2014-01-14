@@ -53,9 +53,7 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class ReadImage {
 
-	public static void main(
-		final String[] args) throws ImgIOException
-	{
+	public static void main(final String[] args) throws ImgIOException {
 		final ImgOpener imageOpener = new ImgOpener();
 
 		final String[] ids;
@@ -109,9 +107,7 @@ public class ReadImage {
 	}
 
 	/** Prints out some useful information about the {@link Img}. */
-	public static void
-		reportInformation(final Img<?> img)
-	{
+	public static void reportInformation(final Img<?> img) {
 		System.out.println(img);
 		final Cursor<?> cursor = img.cursor();
 		cursor.fwd();

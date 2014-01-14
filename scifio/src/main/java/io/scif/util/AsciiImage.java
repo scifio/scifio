@@ -52,11 +52,11 @@ public class AsciiImage {
 
 	// -- Fields --
 
-	private BufferedImage img;
+	private final BufferedImage img;
 
 	// -- Constructor --
 
-	public AsciiImage(BufferedImage img) {
+	public AsciiImage(final BufferedImage img) {
 		this.img = img;
 	}
 
@@ -85,8 +85,8 @@ public class AsciiImage {
 
 	// -- Helper methods --
 
-	private char getChar(int value) {
-		int index = CHARS.length() * value / 256;
+	private char getChar(final int value) {
+		final int index = CHARS.length() * value / 256;
 		return CHARS.charAt(index);
 	}
 }

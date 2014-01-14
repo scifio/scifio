@@ -99,33 +99,33 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	// -- AbstractReaderFilter API Methods --
 
 	/**
-	 * Allows code to be executed regardless of which {@link #setSource}
-	 * signature is called.
+	 * Allows code to be executed regardless of which {@link #setSource} signature
+	 * is called.
 	 * 
 	 * @param source - Lowest common denominator of arguments in the
 	 *          {@code setSource} series.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-  protected void setSourceHelper(final String source) throws IOException {
-    final String filterSource = getMetadata() == null ? null : getMetadata()
-        .getSource().getFileName();
+	protected void setSourceHelper(final String source) throws IOException {
+		final String filterSource =
+			getMetadata() == null ? null : getMetadata().getSource().getFileName();
 
-    if (filterSource == null || !filterSource.equals(source)) {
-      setMetadata(getParent().getMetadata());
-    }
-  }
+		if (filterSource == null || !filterSource.equals(source)) {
+			setMetadata(getParent().getMetadata());
+		}
+	}
 
 	/**
-	 * Allows code to be executed regardless of which {@link #openPlane}
-	 * signature is called.
+	 * Allows code to be executed regardless of which {@link #openPlane} signature
+	 * is called.
 	 */
 	protected void openPlaneHelper() {
 
 	}
 
 	/**
-	 * Allows code to be executed regardless of which {@link #readPlane}
-	 * signature is called.
+	 * Allows code to be executed regardless of which {@link #readPlane} signature
+	 * is called.
 	 */
 	protected void readPlaneHelper() {}
 
@@ -156,11 +156,11 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 				getContext().inject(wrapper);
 				wrapper.wrap(r.getMetadata());
 			}
-			catch (InstantiationException e) {
+			catch (final InstantiationException e) {
 				log()
 					.error("Failed to create MetadataWrapper of type: " + metaClass, e);
 			}
-			catch (IllegalAccessException e) {
+			catch (final IllegalAccessException e) {
 				log()
 					.error("Failed to create MetadataWrapper of type: " + metaClass, e);
 			}
@@ -356,8 +356,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Plane createPlane(final long[] planeMin, final long[] planeMax)
-	{
+	public Plane createPlane(final long[] planeMin, final long[] planeMax) {
 		return getParent().createPlane(planeMin, planeMax);
 	}
 

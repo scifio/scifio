@@ -78,12 +78,13 @@ public final class IO {
 	 * @see ImgOpener#openImg(String)
 	 */
 	public static ImgPlus<?> open(final String source) {
-		ImgOpener opener = opener();
+		final ImgOpener opener = opener();
 		ImgPlus<?> imgPlus = null;
 		try {
-		imgPlus = opener.openImg(source);
-		register(imgPlus, opener);
-		} catch (ImgIOException e) {
+			imgPlus = opener.openImg(source);
+			register(imgPlus, opener);
+		}
+		catch (final ImgIOException e) {
 			openError(source, e);
 		}
 		return imgPlus;
@@ -92,14 +93,14 @@ public final class IO {
 	/**
 	 * As {@link ImgOpener#openImg(String)} with a guaranteed {@link FloatType}.
 	 */
-	public static ImgPlus<FloatType> openFloat(final String source)
-	{
-		ImgOpener opener = opener();
+	public static ImgPlus<FloatType> openFloat(final String source) {
+		final ImgOpener opener = opener();
 		ImgPlus<FloatType> imgPlus = null;
 		try {
-		imgPlus = opener.openImg(source, new FloatType());
-		register(imgPlus, opener);
-		} catch (ImgIOException e) {
+			imgPlus = opener.openImg(source, new FloatType());
+			register(imgPlus, opener);
+		}
+		catch (final ImgIOException e) {
 			openError(source, e);
 		}
 		return imgPlus;
@@ -108,14 +109,14 @@ public final class IO {
 	/**
 	 * As {@link ImgOpener#openImg(String)} with a guaranteed {@link DoubleType}.
 	 */
-	public static ImgPlus<DoubleType> openDouble(final String source)
-	{
-		ImgOpener opener = opener();
+	public static ImgPlus<DoubleType> openDouble(final String source) {
+		final ImgOpener opener = opener();
 		ImgPlus<DoubleType> imgPlus = null;
 		try {
-		imgPlus = opener.openImg(source, new DoubleType());
-		register(imgPlus, opener);
-		} catch (ImgIOException e) {
+			imgPlus = opener.openImg(source, new DoubleType());
+			register(imgPlus, opener);
+		}
+		catch (final ImgIOException e) {
 			openError(source, e);
 		}
 		return imgPlus;
@@ -127,12 +128,13 @@ public final class IO {
 	 */
 	public static ImgPlus<UnsignedByteType> openUnsignedByte(final String source)
 	{
-		ImgOpener opener = opener();
+		final ImgOpener opener = opener();
 		ImgPlus<UnsignedByteType> imgPlus = null;
 		try {
-		imgPlus = opener.openImg(source, new UnsignedByteType());
-		register(imgPlus, opener);
-		} catch (ImgIOException e) {
+			imgPlus = opener.openImg(source, new UnsignedByteType());
+			register(imgPlus, opener);
+		}
+		catch (final ImgIOException e) {
 			openError(source, e);
 		}
 		return imgPlus;
@@ -144,12 +146,13 @@ public final class IO {
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final String source, final T type)
 	{
-		ImgOpener opener = opener();
+		final ImgOpener opener = opener();
 		ImgPlus<T> imgPlus = null;
 		try {
-		imgPlus = opener.openImg(source, type);
-		register(imgPlus, opener);
-		} catch (ImgIOException e) {
+			imgPlus = opener.openImg(source, type);
+			register(imgPlus, opener);
+		}
+		catch (final ImgIOException e) {
 			openError(source, e);
 		}
 		return imgPlus;
@@ -158,15 +161,16 @@ public final class IO {
 	/**
 	 * @see ImgOpener#openImg(String, ImgOptions)
 	 */
-	public static ImgPlus<?>
-		openImg(final String source, final ImgOptions imgOptions)
+	public static ImgPlus<?> openImg(final String source,
+		final ImgOptions imgOptions)
 	{
-		ImgOpener opener = opener();
+		final ImgOpener opener = opener();
 		ImgPlus<?> imgPlus = null;
 		try {
-		imgPlus = opener.openImg(source, imgOptions);
-		register(imgPlus, opener);
-		} catch (ImgIOException e) {
+			imgPlus = opener.openImg(source, imgOptions);
+			register(imgPlus, opener);
+		}
+		catch (final ImgIOException e) {
 			openError(source, e);
 		}
 		return imgPlus;
@@ -178,12 +182,13 @@ public final class IO {
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final String source, final T type, final ImgOptions imgOptions)
 	{
-		ImgOpener opener = opener();
+		final ImgOpener opener = opener();
 		ImgPlus<T> imgPlus = null;
 		try {
-		imgPlus = opener.openImg(source, type, imgOptions);
-		register(imgPlus, opener);
-		} catch (ImgIOException e) {
+			imgPlus = opener.openImg(source, type, imgOptions);
+			register(imgPlus, opener);
+		}
+		catch (final ImgIOException e) {
 			openError(source, e);
 		}
 		return imgPlus;
@@ -193,15 +198,16 @@ public final class IO {
 	 * @see ImgOpener#openImg(String, ImgFactory)
 	 */
 	@SuppressWarnings("rawtypes")
-	public static ImgPlus<?>
-		openImg(final String source, final ImgFactory imgFactory)
+	public static ImgPlus<?> openImg(final String source,
+		final ImgFactory imgFactory)
 	{
-		ImgOpener opener = opener();
+		final ImgOpener opener = opener();
 		ImgPlus<?> imgPlus = null;
 		try {
-		imgPlus = opener.openImg(source, imgFactory);
-		register(imgPlus, opener);
-		} catch (ImgIOException e) {
+			imgPlus = opener.openImg(source, imgFactory);
+			register(imgPlus, opener);
+		}
+		catch (final ImgIOException e) {
 			openError(source, e);
 		}
 		return imgPlus;
@@ -214,12 +220,13 @@ public final class IO {
 	public static ImgPlus<?> openImg(final String source,
 		final ImgFactory imgFactory, final ImgOptions imgOptions)
 	{
-		ImgOpener opener = opener();
+		final ImgOpener opener = opener();
 		ImgPlus<?> imgPlus = null;
 		try {
-		imgPlus = opener.openImg(source, imgFactory, imgOptions);
-		register(imgPlus, opener);
-		} catch (ImgIOException e) {
+			imgPlus = opener.openImg(source, imgFactory, imgOptions);
+			register(imgPlus, opener);
+		}
+		catch (final ImgIOException e) {
 			openError(source, e);
 		}
 		return imgPlus;
@@ -231,13 +238,13 @@ public final class IO {
 	public static <T extends RealType<T>> ImgPlus<T> openImg(final String source,
 		final ImgFactory<T> imgFactory, final T type)
 	{
-		ImgOpener opener = opener();
+		final ImgOpener opener = opener();
 		ImgPlus<T> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source, imgFactory, type);
 			register(imgPlus, opener);
 		}
-		catch (ImgIOException e) {
+		catch (final ImgIOException e) {
 			openError(source, e);
 		}
 		return imgPlus;
@@ -249,13 +256,13 @@ public final class IO {
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
 		final Reader reader, final T type, final ImgOptions imgOptions)
 	{
-		ImgOpener opener = opener();
+		final ImgOpener opener = opener();
 		ImgPlus<T> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(reader, type, imgOptions);
 			register(imgPlus, opener);
 		}
-		catch (ImgIOException e) {
+		catch (final ImgIOException e) {
 			openError(reader.getMetadata().getDatasetName(), e);
 		}
 		return imgPlus;
@@ -267,13 +274,13 @@ public final class IO {
 	public static <T extends RealType<T>> ImgPlus<T> openImg(final Reader reader,
 		final T type, final ImgFactory<T> imgFactory, final ImgOptions imgOptions)
 	{
-		ImgOpener opener = opener();
+		final ImgOpener opener = opener();
 		ImgPlus<T> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(reader, type, imgFactory, imgOptions);
 			register(imgPlus, opener);
 		}
-		catch (ImgIOException e) {
+		catch (final ImgIOException e) {
 			openError(reader.getMetadata().getDatasetName(), e);
 		}
 		return imgPlus;
@@ -284,16 +291,14 @@ public final class IO {
 	/**
 	 * @see ImgSaver#saveImg(String, Img)
 	 */
-	public static void saveImg(
-		final String dest, final Img<?> img)
-	{
+	public static void saveImg(final String dest, final Img<?> img) {
 		try {
 			new ImgSaver().saveImg(dest, img);
 		}
 		catch (final IncompatibleTypeException e) {
 			saveError(dest, e);
 		}
-		catch (ImgIOException e) {
+		catch (final ImgIOException e) {
 			saveError(dest, e);
 		}
 	}
@@ -301,8 +306,8 @@ public final class IO {
 	/**
 	 * @see ImgSaver#saveImg(String, ImgPlus, int)
 	 */
-	public static void saveImg(
-		final String dest, final ImgPlus<?> imgPlus, final int imageIndex)
+	public static void saveImg(final String dest, final ImgPlus<?> imgPlus,
+		final int imageIndex)
 	{
 		try {
 			new ImgSaver().saveImg(dest, imgPlus, imageIndex);
@@ -310,7 +315,7 @@ public final class IO {
 		catch (final IncompatibleTypeException e) {
 			saveError(dest, e);
 		}
-		catch (ImgIOException e) {
+		catch (final ImgIOException e) {
 			saveError(dest, e);
 		}
 	}
@@ -318,16 +323,14 @@ public final class IO {
 	/**
 	 * @see ImgSaver#saveImg(Writer, Img)
 	 */
-	public static void saveImg(
-		final Writer writer, final Img<?> img) 
-	{
+	public static void saveImg(final Writer writer, final Img<?> img) {
 		try {
 			new ImgSaver().saveImg(writer, img);
 		}
 		catch (final IncompatibleTypeException e) {
 			saveError(writer.getMetadata().getDatasetName(), e);
 		}
-		catch (ImgIOException e) {
+		catch (final ImgIOException e) {
 			saveError(writer.getMetadata().getDatasetName(), e);
 		}
 	}
@@ -335,8 +338,8 @@ public final class IO {
 	/**
 	 * @see ImgSaver#saveImg(Writer, ImgPlus, int)
 	 */
-	public static void saveImg(
-		final Writer writer, final ImgPlus<?> imgPlus, final int imageIndex)
+	public static void saveImg(final Writer writer, final ImgPlus<?> imgPlus,
+		final int imageIndex)
 	{
 		try {
 			new ImgSaver().saveImg(writer, imgPlus, imageIndex);
@@ -344,7 +347,7 @@ public final class IO {
 		catch (final IncompatibleTypeException e) {
 			saveError(writer.getMetadata().getDatasetName(), e);
 		}
-		catch (ImgIOException e) {
+		catch (final ImgIOException e) {
 			saveError(writer.getMetadata().getDatasetName(), e);
 		}
 	}
@@ -355,11 +358,11 @@ public final class IO {
 	 * Registers the given ImgPlus with the RefManagerService in the provided
 	 * component's Context.
 	 */
-	private static void register(ImgPlus<?> imgPlus,
-		AbstractImgIOComponent component)
+	private static void register(final ImgPlus<?> imgPlus,
+		final AbstractImgIOComponent component)
 	{
-		Context ctx = component.getContext();
-		RefManagerService refManagerService =
+		final Context ctx = component.getContext();
+		final RefManagerService refManagerService =
 			ctx.getService(RefManagerService.class);
 		refManagerService.manage(imgPlus, ctx);
 	}
@@ -367,11 +370,11 @@ public final class IO {
 	/**
 	 * Creates a new ImgOpener. The first time this method runs, an additional
 	 * Context is created and the logService is cached for future logging.
-	 *
+	 * 
 	 * @return A new ImgOpener instance with its own Context
 	 */
 	private static ImgOpener opener() {
-		ImgOpener opener = new ImgOpener();
+		final ImgOpener opener = new ImgOpener();
 		if (logService == null) {
 			synchronized (IO.class) {
 				if (logService == null) {
@@ -386,7 +389,7 @@ public final class IO {
 	 * @param source - Source that failed to open
 	 * @param e - Exception to log
 	 */
-	private static void openError(String source, Exception e) {
+	private static void openError(final String source, final Exception e) {
 		logService.error("Failed to open ImgPlus for source: " + source, e);
 	}
 
@@ -394,7 +397,7 @@ public final class IO {
 	 * @param source - Source that failed to open
 	 * @param e - Exception to log
 	 */
-	private static void saveError(String dest, Exception e) {
+	private static void saveError(final String dest, final Exception e) {
 		logService.error("Failed to save ImgPlus to id: " + dest, e);
 	}
 }

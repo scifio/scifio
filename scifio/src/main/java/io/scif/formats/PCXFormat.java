@@ -151,7 +151,8 @@ public class PCXFormat extends AbstractFormat {
 		// -- HasColorTable API Methods -
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable
+			getColorTable(final int imageIndex, final long planeIndex)
 		{
 			return lut;
 		}
@@ -248,9 +249,9 @@ public class PCXFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getData();
@@ -264,7 +265,8 @@ public class PCXFormat extends AbstractFormat {
 
 			final byte[] b =
 				new byte[meta.getBytesPerLine() *
-					(int)meta.get(imageIndex).getAxisLength(Axes.Y) * meta.getnColorPlanes()];
+					(int) meta.get(imageIndex).getAxisLength(Axes.Y) *
+					meta.getnColorPlanes()];
 			int pt = 0;
 			while (pt < b.length) {
 				int val = getStream().read() & 0xff;
@@ -283,10 +285,8 @@ public class PCXFormat extends AbstractFormat {
 
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis],
-								y = (int) planeMin[yAxis],
-								w = (int) planeMax[xAxis],
-								h = (int) planeMax[yAxis];
+			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
+				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 			final int src = y * meta.getnColorPlanes() * meta.getBytesPerLine();
 			for (int row = 0; row < h; row++) {
 				int rowOffset = row * meta.getnColorPlanes() * meta.getBytesPerLine();

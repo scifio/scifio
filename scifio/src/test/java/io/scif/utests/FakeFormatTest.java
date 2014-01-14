@@ -66,7 +66,7 @@ public class FakeFormatTest {
 	// test indexed with non-planar channel
 
 	// -- Fields --
-	
+
 	private final SCIFIO scifio = new SCIFIO();
 
 	// -- Indexed color tests --
@@ -80,8 +80,9 @@ public class FakeFormatTest {
 		final String sampleImage =
 			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=3&lengths=50,50,1&axes=X,Y,Channel.fake";
 
-		Reader reader = scifio.initializer().initializeReader(sampleImage);
-		FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader.getMetadata();
+		final Reader reader = scifio.initializer().initializeReader(sampleImage);
+		final FakeFormat.Metadata fMeta =
+			(FakeFormat.Metadata) reader.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(1, fMeta.getLuts()[0].length);
 		assertNotNull(reader.openPlane(0, 0).getColorTable());
@@ -98,8 +99,9 @@ public class FakeFormatTest {
 		final String sampleImage =
 			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=3&lengths=50,50,4&axes=X,Y,Channel.fake";
 
-		Reader reader = scifio.initializer().initializeReader(sampleImage);
-		FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader.getMetadata();
+		final Reader reader = scifio.initializer().initializeReader(sampleImage);
+		final FakeFormat.Metadata fMeta =
+			(FakeFormat.Metadata) reader.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(1, fMeta.getLuts()[0].length);
 		assertNotNull(reader.openPlane(0, 0).getColorTable());
@@ -117,8 +119,9 @@ public class FakeFormatTest {
 		final String sampleImage =
 			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=3&lengths=50,50,4,6&axes=X,Y,Channel,Time.fake";
 
-		Reader reader = scifio.initializer().initializeReader(sampleImage);
-		FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader.getMetadata();
+		final Reader reader = scifio.initializer().initializeReader(sampleImage);
+		final FakeFormat.Metadata fMeta =
+			(FakeFormat.Metadata) reader.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(6, fMeta.getLuts()[0].length);
 		for (int i = 0; i < fMeta.get(0).getPlaneCount(); i++) {
@@ -131,14 +134,14 @@ public class FakeFormatTest {
 	 * {@link Axes#CHANNEL} is a non-planar axis.
 	 */
 	@Test
-	public void testIndexedNonPlanarChannel() throws FormatException,
-		IOException
+	public void testIndexedNonPlanarChannel() throws FormatException, IOException
 	{
 		final String sampleImage =
 			"8bit-unsigned&pixelType=uint8&indexed=true&planarDims=2&lengths=50,50,4,6&axes=X,Y,Channel,Time.fake";
 
-		Reader reader = scifio.initializer().initializeReader(sampleImage);
-		FakeFormat.Metadata fMeta = (FakeFormat.Metadata) reader.getMetadata();
+		final Reader reader = scifio.initializer().initializeReader(sampleImage);
+		final FakeFormat.Metadata fMeta =
+			(FakeFormat.Metadata) reader.getMetadata();
 		assertEquals(1, fMeta.getLuts().length);
 		assertEquals(24, fMeta.getLuts()[0].length);
 		for (int i = 0; i < fMeta.get(0).getPlaneCount(); i++) {
@@ -171,7 +174,7 @@ public class FakeFormatTest {
 	// -- Helper methods --
 
 	/**
-	 * Helper method to attempt to parse metadata from a fake id. If an 
+	 * Helper method to attempt to parse metadata from a fake id. If an
 	 * {@link IllegalStateException} is not thrown, the test fails.
 	 */
 	private void testBadAxes(final String id) throws FormatException, IOException
@@ -179,7 +182,7 @@ public class FakeFormatTest {
 		try {
 			scifio.initializer().parseMetadata(id);
 		}
-		catch (IllegalStateException e) {
+		catch (final IllegalStateException e) {
 			// Exception was thrown. This is good!
 			return;
 		}

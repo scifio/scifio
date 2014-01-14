@@ -54,7 +54,7 @@ public class DimRangeTest {
 
 		// test single range, default step
 		assertRange(new DimRange("1-5"), 1, 2, 3, 4, 5);
-		
+
 		// test single range, explicit step where max is in range
 		assertRange(new DimRange("5-15:5"), 5, 10, 15);
 
@@ -76,19 +76,17 @@ public class DimRangeTest {
 		// test range where min is greater than max (has no elements in range)
 		assertRange(new DimRange("3-1")); // min > max is invalid
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testInvalidPattern() {
 		new DimRange("3,2,1,blastoff!");
 	}
 
-	private void
-		assertRange(DimRange range, long... indices)
-	{
+	private void assertRange(final DimRange range, final long... indices) {
 		final List<Long> rangeIndices = range.indices();
 		assertNotNull(rangeIndices);
 		assertEquals(indices.length, range.indices().size());
-		for (int i=0; i<indices.length; i++) {
+		for (int i = 0; i < indices.length; i++) {
 			assertEquals(indices[i], rangeIndices.get(i).longValue());
 		}
 	}

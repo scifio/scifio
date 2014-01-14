@@ -225,10 +225,10 @@ public class DefaultLocationService extends AbstractService implements
 				if (handle == null) handle =
 					new NIOFileHandle(nioService, mapId, writable ? "rw" : "r");
 			}
-			catch (IOException e) {
+			catch (final IOException e) {
 				// File doesn't exist on disk, so we'll create a virtual handle that
 				// can be used even when a physical file doesn't exist.
-				//TODO this solution is not ideal; but we are currently limited by the
+				// TODO this solution is not ideal; but we are currently limited by the
 				// over-use of RAIS and the mapping of handles by LocationService.
 				// This infrastructure is going to be redone before a 1.0.0 release,
 				// but VirtualHandle is an intermediate fix.

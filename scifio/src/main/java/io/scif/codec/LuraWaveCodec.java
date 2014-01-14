@@ -132,7 +132,8 @@ public class LuraWaveCodec extends AbstractCodec {
 		else if (nbits == 16) {
 			final short[] image16 = new short[w * h];
 			try {
-				luraWaveService.decodeToMemoryGray16(image16, 0, -1, 1024, 0, 1, w, 0, 0, w, h);
+				luraWaveService.decodeToMemoryGray16(image16, 0, -1, 1024, 0, 1, w, 0,
+					0, w, h);
 			}
 			catch (final ServiceException e) {
 				throw new FormatException(LuraWaveService.INVALID_LICENSE_MSG, e);

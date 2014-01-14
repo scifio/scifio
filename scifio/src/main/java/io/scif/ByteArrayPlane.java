@@ -73,7 +73,9 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 	// -- AbstractPlane API --
 
 	@Override
-	protected byte[] blankPlane(long[] planeOffsets, long[] planeBounds) {
+	protected byte[] blankPlane(final long[] planeOffsets,
+		final long[] planeBounds)
+	{
 		byte[] buf = null;
 
 		final long[] lengths = new long[planeOffsets.length + 1];

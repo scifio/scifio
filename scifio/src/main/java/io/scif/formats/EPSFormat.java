@@ -149,7 +149,8 @@ public class EPSFormat extends AbstractFormat {
 
 		@Override
 		public void populateImageMetadata() {
-			if (get(0).getAxisLength(Axes.CHANNEL) == 0) get(0).setAxisLength(Axes.CHANNEL, 1);
+			if (get(0).getAxisLength(Axes.CHANNEL) == 0) get(0).setAxisLength(
+				Axes.CHANNEL, 1);
 
 			if (get(0).getPixelType() == 0) get(0).setPixelType(FormatTools.UINT8);
 
@@ -161,7 +162,6 @@ public class EPSFormat extends AbstractFormat {
 				get(0).setPlanarAxisCount(3);
 				get(0).setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y);
 			}
-
 
 		}
 
@@ -329,18 +329,16 @@ public class EPSFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis],
-								y = (int) planeMin[yAxis],
-								w = (int) planeMax[xAxis],
-								h = (int) planeMax[yAxis];
+			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
+				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
@@ -369,18 +367,18 @@ public class EPSFormat extends AbstractFormat {
 
 				for (int i = 0; i < b.length; i++) {
 					final int ndx = b[i] & 0xff;
-					for (int j = 0; j < (int) meta
-							.get(imageIndex).getAxisLength(Axes.CHANNEL); j++)
+					for (int j = 0; j < (int) meta.get(imageIndex).getAxisLength(
+						Axes.CHANNEL); j++)
 					{
 						if (j < 3) {
-							buf[i * (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL) + j] =
-								(byte) map[ndx + j * 256];
+							buf[i * (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL) +
+								j] = (byte) map[ndx + j * 256];
 						}
 						else {
 							final boolean zero =
 								map[ndx] == 0 && map[ndx + 256] == 0 && map[ndx + 512] == 0;
-							buf[i * (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL) + j] =
-								zero ? (byte) 0 : (byte) 255;
+							buf[i * (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL) +
+								j] = zero ? (byte) 0 : (byte) 255;
 						}
 					}
 				}
@@ -412,8 +410,8 @@ public class EPSFormat extends AbstractFormat {
 				pix = pix.replaceAll("\r", "");
 
 				int ndx =
-					(int)(meta.get(imageIndex).getAxisLength(Axes.CHANNEL) * y * bytes *
-						meta.get(imageIndex).getAxisLength(Axes.X));
+					(int) (meta.get(imageIndex).getAxisLength(Axes.CHANNEL) * y * bytes * meta
+						.get(imageIndex).getAxisLength(Axes.X));
 				int destNdx = 0;
 
 				for (int row = 0; row < h; row++) {
@@ -488,19 +486,18 @@ public class EPSFormat extends AbstractFormat {
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
 			final int xAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis],
-								y = (int) planeMin[yAxis],
-								w = (int) planeMax[xAxis],
-								h = (int) planeMax[yAxis];
-			final int sizeX = (int)getMetadata().get(imageIndex).getAxisLength(Axes.X);
+			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
+				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int sizeX =
+				(int) getMetadata().get(imageIndex).getAxisLength(Axes.X);
 			final int nChannels =
-				(int)getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
+				(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			// write pixel data
 			// for simplicity, write 80 char lines
 
-			if (!initialized[imageIndex][(int)planeIndex]) {
-				initialized[imageIndex][(int)planeIndex] = true;
+			if (!initialized[imageIndex][(int) planeIndex]) {
+				initialized[imageIndex][(int) planeIndex] = true;
 
 				writeHeader(imageIndex);
 
@@ -515,7 +512,7 @@ public class EPSFormat extends AbstractFormat {
 				}
 			}
 
-			final int planeSize = (int)(planeMax[0] * planeMax[1]);
+			final int planeSize = (int) (planeMax[0] * planeMax[1]);
 
 			final StringBuffer buffer = new StringBuffer();
 
@@ -555,10 +552,12 @@ public class EPSFormat extends AbstractFormat {
 		// -- Helper methods --
 
 		private void writeHeader(final int imageIndex) throws IOException {
-			final int width = (int)getMetadata().get(imageIndex).getAxisLength(Axes.X);
-			final int height = (int)getMetadata().get(imageIndex).getAxisLength(Axes.Y);
+			final int width =
+				(int) getMetadata().get(imageIndex).getAxisLength(Axes.X);
+			final int height =
+				(int) getMetadata().get(imageIndex).getAxisLength(Axes.Y);
 			final int nChannels =
-				(int)getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
+				(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			out.writeBytes("%!PS-Adobe-2.0 EPSF-1.2\n");
 			out.writeBytes("%%Title: " + getMetadata().getDatasetName() + "\n");

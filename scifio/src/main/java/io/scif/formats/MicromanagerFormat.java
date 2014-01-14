@@ -303,8 +303,8 @@ public class MicromanagerFormat extends AbstractFormat {
 		}
 
 		@Override
-		public String[]
-				getImageUsedFiles(final int imageIndex, final boolean noPixels)
+		public String[] getImageUsedFiles(final int imageIndex,
+			final boolean noPixels)
 		{
 			FormatTools.assertId(currentId, true, 1);
 			final Vector<String> files = new Vector<String>();
@@ -656,7 +656,8 @@ public class MicromanagerFormat extends AbstractFormat {
 			final String[] blocks = baseTiff.split("_");
 			final StringBuffer filename = new StringBuffer();
 			for (int t = 0; t < meta.get(posIndex).getAxisLength(Axes.TIME); t++) {
-				for (int c = 0; c < meta.get(posIndex).getAxisLength(Axes.CHANNEL); c++) {
+				for (int c = 0; c < meta.get(posIndex).getAxisLength(Axes.CHANNEL); c++)
+				{
 					for (int z = 0; z < meta.get(posIndex).getAxisLength(Axes.Z); z++) {
 						// file names are of format:
 						// img_<T>_<channel name>_<T>.tif
@@ -761,9 +762,9 @@ public class MicromanagerFormat extends AbstractFormat {
 		}
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
@@ -897,7 +898,7 @@ public class MicromanagerFormat extends AbstractFormat {
 					}
 				}
 			}
-			return fileNameMap.size() == 0 ? tiffs.get((int)planeIndex) : null;
+			return fileNameMap.size() == 0 ? tiffs.get((int) planeIndex) : null;
 		}
 	}
 

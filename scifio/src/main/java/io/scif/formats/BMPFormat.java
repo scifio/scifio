@@ -207,7 +207,8 @@ public class BMPFormat extends AbstractFormat {
 		// -- HasColorTable API Methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable
+			getColorTable(final int imageIndex, final long planeIndex)
 		{
 			return palette;
 		}
@@ -352,24 +353,22 @@ public class BMPFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xIndex],
-								y = (int) planeMin[yIndex],
-								w = (int) planeMax[xIndex],
-								h = (int) planeMax[yIndex];
+			final int x = (int) planeMin[xIndex], y = (int) planeMin[yIndex], w =
+				(int) planeMax[xIndex], h = (int) planeMax[yIndex];
 
 			final byte[] buf = plane.getData();
 			final int compression = meta.getCompression();
 			final int bpp = meta.get(imageIndex).getBitsPerPixel();
-			final int sizeX = (int)meta.get(imageIndex).getAxisLength(Axes.X);
-			final int sizeY = (int)meta.get(imageIndex).getAxisLength(Axes.Y);
-			final int sizeC = (int)meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
+			final int sizeX = (int) meta.get(imageIndex).getAxisLength(Axes.X);
+			final int sizeY = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
+			final int sizeC = (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
@@ -382,7 +381,8 @@ public class BMPFormat extends AbstractFormat {
 			}
 
 			final int rowsToSkip = meta.isInvertY() ? y : sizeY - (h + y);
-			final int rowLength = sizeX * (meta.get(imageIndex).isIndexed() ? 1 : sizeC);
+			final int rowLength =
+				sizeX * (meta.get(imageIndex).isIndexed() ? 1 : sizeC);
 			getStream().seek(meta.getGlobal() + rowsToSkip * rowLength);
 
 			int pad = ((rowLength * bpp) / 8) % 2;

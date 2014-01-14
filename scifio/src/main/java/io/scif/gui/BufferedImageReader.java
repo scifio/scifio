@@ -78,8 +78,8 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 
 		plane.setData(AWTImageTools.openThumbImage(
 			openPlane(imageIndex, planeIndex), this, imageIndex, planeBounds,
-			(int) meta.get(imageIndex).getThumbSizeX(), (int) meta
-			.get(imageIndex).getThumbSizeY(), false));
+			(int) meta.get(imageIndex).getThumbSizeX(), (int) meta.get(imageIndex)
+				.getThumbSizeY(), false));
 
 		return plane;
 	}

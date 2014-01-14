@@ -744,7 +744,8 @@ public final class AWTImageTools {
 	public static BufferedImage openImage(final Plane plane, final Reader r,
 		final int imageIndex) throws FormatException, IOException
 	{
-		long[] lengths = r.getMetadata().get(imageIndex).getAxesLengthsPlanar();
+		final long[] lengths =
+			r.getMetadata().get(imageIndex).getAxesLengthsPlanar();
 		return openImage(plane, r, lengths, imageIndex);
 	}
 
@@ -753,7 +754,7 @@ public final class AWTImageTools {
 	 * from the provided Reader's Metadata.
 	 */
 	public static BufferedImage openImage(final Plane plane, final Reader r,
-		long[] axes, final int imageIndex) throws FormatException,
+		final long[] axes, final int imageIndex) throws FormatException,
 		IOException
 	{
 		return openImage(plane, plane.getBytes(), r, axes, imageIndex);
@@ -763,9 +764,9 @@ public final class AWTImageTools {
 	 * Creates an image from the given Plane. Pulls additional image information
 	 * from the provided Reader's Metadata.
 	 */
-	public static BufferedImage openImage(final Plane plane, byte[] bytes,
-		final Reader r, long[] axes, final int imageIndex) throws FormatException,
-		IOException
+	public static BufferedImage openImage(final Plane plane, final byte[] bytes,
+		final Reader r, final long[] axes, final int imageIndex)
+		throws FormatException, IOException
 	{
 		final Metadata meta = r.getMetadata();
 		final XYCTuple whc = new XYCTuple(meta.get(imageIndex), axes);
@@ -780,14 +781,12 @@ public final class AWTImageTools {
 		final boolean indexed = meta.get(imageIndex).isIndexed();
 
 		if (pixelType == FormatTools.FLOAT) {
-			float[] f =
-				(float[]) DataTools.makeDataArray(bytes, 4, true, little);
+			float[] f = (float[]) DataTools.makeDataArray(bytes, 4, true, little);
 			if (normal) f = DataTools.normalizeFloats(f);
 			return makeImage(f, w, h, rgbChanCount, interleaved);
 		}
 		else if (pixelType == FormatTools.DOUBLE) {
-			double[] d =
-				(double[]) DataTools.makeDataArray(bytes, 8, true, little);
+			double[] d = (double[]) DataTools.makeDataArray(bytes, 8, true, little);
 			if (normal) d = DataTools.normalizeDoubles(d);
 			return makeImage(d, w, h, rgbChanCount, interleaved);
 		}
@@ -809,8 +808,8 @@ public final class AWTImageTools {
 
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
 		BufferedImage b =
-			makeImage(bytes, w, h, rgbChanCount, interleaved, bpp, false,
-				little, signed);
+			makeImage(bytes, w, h, rgbChanCount, interleaved, bpp, false, little,
+				signed);
 		if (b == null) {
 			throw new FormatException("Could not construct BufferedImage");
 		}
@@ -833,8 +832,8 @@ public final class AWTImageTools {
 				final short[][] table = ((ColorTable16) ct).getValues();
 				if (table != null && table.length > 0 && table[0] != null) {
 					model =
-						new Index16ColorModel(16, table[0].length, table, meta
-							.get(imageIndex).isLittleEndian());
+						new Index16ColorModel(16, table[0].length, table, meta.get(
+							imageIndex).isLittleEndian());
 				}
 			}
 		}

@@ -40,7 +40,6 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
-import io.scif.common.DataTools;
 import io.scif.img.DimRange;
 import io.scif.img.ImgUtilityService;
 import io.scif.img.SubRegion;
@@ -76,7 +75,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 		this.reader = reader;
 		this.subRegion = subRegion;
 		reader.getContext().inject(this);
-		RealType<?> inputType =
+		final RealType<?> inputType =
 			imgUtilityService.makeType(reader.getMetadata().get(0).getPixelType());
 		compatible = outputClass().isAssignableFrom(inputType.getClass());
 	}
@@ -89,17 +88,18 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			int entities = 1;
 
 			// Starting indices for the planar dimensions
-			long[] planarMin = new long[meta.get(0).getAxesPlanar().size()];
+			final long[] planarMin = new long[meta.get(0).getAxesPlanar().size()];
 			// Lengths in the planar dimensions
-			long[] planarLength = new long[meta.get(0).getAxesPlanar().size()];
+			final long[] planarLength = new long[meta.get(0).getAxesPlanar().size()];
 			// Non-planar indices to open
-			DimRange[] npRanges = new DimRange[meta.get(0).getAxesNonPlanar().size()];
-			long[] npIndices = new long[npRanges.length];
+			final DimRange[] npRanges =
+				new DimRange[meta.get(0).getAxesNonPlanar().size()];
+			final long[] npIndices = new long[npRanges.length];
 
 			int axisIndex = 0;
 			// Get planar ranges
-			for (CalibratedAxis axis : meta.get(0).getAxesPlanar()) {
-				int index = meta.get(0).getAxisIndex(axis.type());
+			for (final CalibratedAxis axis : meta.get(0).getAxesPlanar()) {
+				final int index = meta.get(0).getAxisIndex(axis.type());
 
 				// Constrain on passed dims
 				if (index < dimensions.length) {
@@ -116,8 +116,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			}
 
 			axisIndex = 0;
-			for (CalibratedAxis axis : meta.get(0).getAxesNonPlanar()) {
-				int index = meta.get(0).getAxisIndex(axis.type());
+			for (final CalibratedAxis axis : meta.get(0).getAxesNonPlanar()) {
+				final int index = meta.get(0).getAxisIndex(axis.type());
 
 				// otherwise just make a straightforward range spanning the passed
 				// dimensional constraints
@@ -208,7 +208,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 		if (subRegion != null) {
 			int index = 0;
-			for (CalibratedAxis axis : reader.getMetadata().get(0).getAxesNonPlanar())
+			for (final CalibratedAxis axis : reader.getMetadata().get(0)
+				.getAxesNonPlanar())
 			{
 				inSubregion =
 					inSubregion &&

@@ -209,8 +209,8 @@ public class FakeFormat extends AbstractFormat {
 		/**
 		 * Gets the lookup table attached to this dataset
 		 * 
-		 * @return A 2D array of ColorTables. Indexed by image index and plane
-		 *         plane index.
+		 * @return A 2D array of ColorTables. Indexed by image index and plane plane
+		 *         index.
 		 */
 		public ColorTable[][] getLuts() {
 			return luts;
@@ -246,7 +246,8 @@ public class FakeFormat extends AbstractFormat {
 		 * Returns the current color table for this dataset
 		 */
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable
+			getColorTable(final int imageIndex, final long planeIndex)
 		{
 
 			return luts == null ? null : luts[imageIndex][(int) planeIndex];
@@ -277,10 +278,10 @@ public class FakeFormat extends AbstractFormat {
 						" is not valid. Can not have a differing number of axis types and axis lengths.");
 			}
 
-			int pType = FormatTools.pixelTypeFromString(pixelType);
-			int bpp = FormatTools.getBitsPerPixel(pType);
+			final int pType = FormatTools.pixelTypeFromString(pixelType);
+			final int bpp = FormatTools.getBitsPerPixel(pType);
 
-			CalibratedAxis[] calibratedAxes = new CalibratedAxis[axes.length];
+			final CalibratedAxis[] calibratedAxes = new CalibratedAxis[axes.length];
 
 			for (int i = 0; i < calibratedAxes.length; i++) {
 				double scale = 1.0;
@@ -350,7 +351,7 @@ public class FakeFormat extends AbstractFormat {
 					// create 16-bit LUTs
 					final int num = 65536;
 					luts = new ColorTable16[images][];
-					for (int i=0; i<images; i++) {
+					for (int i = 0; i < images; i++) {
 						final int planeCount = (int) get(i).getPlaneCount();
 						luts[i] = new ColorTable16[planeCount];
 						indexToValue = new int[planeCount][num];
@@ -423,7 +424,6 @@ public class FakeFormat extends AbstractFormat {
 		 * Sets the lookup table for the first image of this dataset.
 		 * 
 		 * @param lut - An array of ColorTables. Indexed by plane number.
-		 * 
 		 * @deprecated Use {@link #setLuts(ColorTable[][])}
 		 */
 		@Deprecated
@@ -432,7 +432,7 @@ public class FakeFormat extends AbstractFormat {
 				this.luts[0] = lut;
 			}
 			else {
-				this.luts = new ColorTable[][]{lut};
+				this.luts = new ColorTable[][] { lut };
 			}
 		}
 	}
@@ -465,9 +465,9 @@ public class FakeFormat extends AbstractFormat {
 		// -- Reader API methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane
@@ -475,8 +475,8 @@ public class FakeFormat extends AbstractFormat {
 			plane.setImageMetadata(meta.get(imageIndex));
 
 			final long[] pos =
-				FormatTools.rasterToPosition(meta.get(imageIndex).getAxesLengthsNonPlanar(),
-					planeIndex);
+				FormatTools.rasterToPosition(meta.get(imageIndex)
+					.getAxesLengthsNonPlanar(), planeIndex);
 
 			final long[] planarIndices = new long[planeMin.length];
 
@@ -486,9 +486,10 @@ public class FakeFormat extends AbstractFormat {
 			return plane;
 		}
 
-		private void openPlaneHelper(int imageIndex, long planeIndex, Metadata meta, Plane plane,
-			long[] planeMin, long[] planeLengths, long[] npIndices, long[] planeIndices, int planarPos, long xPos,
-			long yPos)
+		private void openPlaneHelper(final int imageIndex, final long planeIndex,
+			final Metadata meta, final Plane plane, final long[] planeMin,
+			final long[] planeLengths, final long[] npIndices,
+			final long[] planeIndices, final int planarPos, long xPos, long yPos)
 		{
 			if (planarPos < planeMin.length) {
 				// Recursively descend along each planar axis
@@ -519,8 +520,8 @@ public class FakeFormat extends AbstractFormat {
 				// to differentiate each plane, we create a box of imageIndex,
 				// planeIndex and
 				// the non-planar indices
-				int boxSize = 10;
-					// Code for scaling pixel values (see default case in switch below)
+				final int boxSize = 10;
+				// Code for scaling pixel values (see default case in switch below)
 //				final double xMax = meta.getAxisLength(imageIndex, Axes.X);
 //				int boxSize = 2 + meta.getAxesNonPlanar(imageIndex).size();
 //				boxSize = (int) Math.min(boxSize, xMax / boxSize);
@@ -607,12 +608,12 @@ public class FakeFormat extends AbstractFormat {
 				// unpack pixel into byte buffer
 				int index = 0;
 				// Index is sum of each position * all previous axes lengths
-				for (int i=planeIndices.length - 1; i>=0; i--) {
+				for (int i = planeIndices.length - 1; i >= 0; i--) {
 					long partialIndex = planeIndices[i] - planeMin[i];
-					for (int j=0; j<i; j++) {
+					for (int j = 0; j < i; j++) {
 						partialIndex *= planeLengths[j];
 					}
-					index += (int)partialIndex;
+					index += (int) partialIndex;
 				}
 				index *= bpp;
 				DataTools.unpackBytes(pixel, plane.getBytes(), index, bpp, little);
@@ -644,17 +645,17 @@ public class FakeFormat extends AbstractFormat {
 		public void typedTranslate(final io.scif.Metadata source,
 			final Metadata dest)
 		{
-			ImageMetadata iMeta = source.get(0);
+			final ImageMetadata iMeta = source.get(0);
 
 			String fakeId = MetadataService.NAME_KEY + "=" + source.getDatasetName();
 
-			String[] axes = new String[iMeta.getAxes().size()];
-			long[] lengths = new long[axes.length];
-			double[] scales = new double[axes.length];
-			String[] units = new String[axes.length];
+			final String[] axes = new String[iMeta.getAxes().size()];
+			final long[] lengths = new long[axes.length];
+			final double[] scales = new double[axes.length];
+			final String[] units = new String[axes.length];
 
 			int index = 0;
-			for (CalibratedAxis axis : iMeta.getAxes()) {
+			for (final CalibratedAxis axis : iMeta.getAxes()) {
 				axes[index] = axis.type().getLabel();
 				lengths[index] = iMeta.getAxisLength(axis);
 				scales[index] = axis.averageScale(0, lengths[index]);
@@ -682,7 +683,7 @@ public class FakeFormat extends AbstractFormat {
 			FakeUtils.appendToken(fakeId, "images", source.getImageCount());
 
 			if (iMeta.isIndexed()) {
-				int lutLength =
+				final int lutLength =
 					((HasColorTable) source).getColorTable(0, 0).getComponentCount();
 				FakeUtils.appendToken(fakeId, "indexed", iMeta.isIndexed());
 				FakeUtils.appendToken(fakeId, "lutLength", lutLength);

@@ -947,7 +947,8 @@ public class DICOMFormat extends AbstractFormat {
 		// -- ColorTable API Methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable
+			getColorTable(final int imageIndex, final long planeIndex)
 		{
 			final int pixelType = get(0).getPixelType();
 
@@ -1381,12 +1382,12 @@ public class DICOMFormat extends AbstractFormat {
 						options.maxBytes = planeSize / bytesPerPixel;
 						for (int q = 0; q < bytesPerPixel; q++) {
 							new PackbitsCodec().decompress(in, options);
-							while (in.read() == 0) { /* Read to non-0 data */ }
+							while (in.read() == 0) { /* Read to non-0 data */}
 							in.seek(in.getFilePointer() - 1);
 						}
 					}
 					in.skipBytes(i == 0 ? 64 : 53);
-					while (in.read() == 0) { /* Read to non-0 data */ }
+					while (in.read() == 0) { /* Read to non-0 data */}
 					offsets[i] = in.getFilePointer() - 1;
 				}
 				else if (isJPEG || isJP2K) {
@@ -1873,17 +1874,15 @@ public class DICOMFormat extends AbstractFormat {
 
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis],
-								y = (int) planeMin[yAxis],
-								w = (int) planeMax[xAxis],
-								h = (int) planeMax[yAxis];
+			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
+				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 
 			final Hashtable<Integer, Vector<String>> fileList = meta.getFileList();
 
 			final Integer[] keys = fileList.keySet().toArray(new Integer[0]);
 			Arrays.sort(keys);
 			if (fileList.get(keys[imageIndex]).size() > 1) {
-				final int fileNumber = (int)(planeIndex / meta.getImagesPerFile());
+				final int fileNumber = (int) (planeIndex / meta.getImagesPerFile());
 				planeIndex = planeIndex % meta.getImagesPerFile();
 				final String file = fileList.get(keys[imageIndex]).get(fileNumber);
 				final io.scif.Reader r = initializeService.initializeReader(file);
@@ -1917,7 +1916,7 @@ public class DICOMFormat extends AbstractFormat {
 						for (int i = 0; i < bpp; i++) {
 							tmp[i] = codec.decompress(getStream(), options);
 							if (planeIndex < meta.getImagesPerFile() - 1 || i < bpp - 1) {
-								while (getStream().read() == 0) { /* Read to non-0 data */ }
+								while (getStream().read() == 0) { /* Read to non-0 data */}
 								getStream().seek(getStream().getFilePointer() - 1);
 							}
 						}
@@ -1940,7 +1939,7 @@ public class DICOMFormat extends AbstractFormat {
 							System.arraycopy(tmp, 0, t, 0, tmp.length);
 						}
 						if (planeIndex < meta.getImagesPerFile() - 1 || c < ec - 1) {
-							while (getStream().read() == 0) { /* Read to non-0 data */ }
+							while (getStream().read() == 0) { /* Read to non-0 data */}
 							getStream().seek(getStream().getFilePointer() - 1);
 						}
 					}
@@ -1965,7 +1964,7 @@ public class DICOMFormat extends AbstractFormat {
 				// plane is compressed using JPEG or JPEG-2000
 				final long end =
 					planeIndex < meta.getOffsets().length - 1
-						? meta.getOffsets()[(int)planeIndex + 1] : getStream().length();
+						? meta.getOffsets()[(int) planeIndex + 1] : getStream().length();
 				byte[] b = new byte[(int) (end - getStream().getFilePointer())];
 				getStream().read(b);
 
@@ -1994,7 +1993,8 @@ public class DICOMFormat extends AbstractFormat {
 				Codec codec = null;
 				final CodecOptions options = new CodecOptions();
 				options.littleEndian = meta.get(imageIndex).isLittleEndian();
-				options.interleaved = meta.get(imageIndex).getInterleavedAxisCount() > 0;
+				options.interleaved =
+					meta.get(imageIndex).getInterleavedAxisCount() > 0;
 				if (meta.isJPEG()) codec = new JPEGCodec();
 				else codec = new JPEG2000Codec();
 				b = codec.decompress(b, options);

@@ -85,7 +85,7 @@ public class LocationTest {
 		hiddenFile.deleteOnExit();
 
 		if (isWindows) {
-			Process p =
+			final Process p =
 				Runtime.getRuntime().exec("attrib +h " + hiddenFile.getAbsolutePath());
 			p.waitFor();
 		}
@@ -99,13 +99,11 @@ public class LocationTest {
 		validFile.deleteOnExit();
 
 		files =
-			new Location[] {
-				new Location(context, validFile.getAbsolutePath()),
+			new Location[] { new Location(context, validFile.getAbsolutePath()),
 				new Location(context, invalidPath),
 				new Location(context, tmpDirectory),
 				new Location(context, "http://loci.wisc.edu/software/scifio"),
-				new Location(context,
-					"http://www.openmicroscopy.org/software/scifio"),
+				new Location(context, "http://www.openmicroscopy.org/software/scifio"),
 				new Location(context, hiddenFile) };
 
 		exists = new boolean[] { true, false, true, true, false, true };
@@ -221,9 +219,9 @@ public class LocationTest {
 			if (path.indexOf("://") == -1 && path.indexOf(":/") == -1) {
 				path = new File(path).toURI().toURL().toString();
 			}
-			URL baseURL = file.toURL();
-			URL compareURL = new URL(path);
-			assertEquals(file.getName(),baseURL,compareURL);
+			final URL baseURL = file.toURL();
+			final URL compareURL = new URL(path);
+			assertEquals(file.getName(), baseURL, compareURL);
 		}
 	}
 

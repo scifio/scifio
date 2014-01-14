@@ -196,11 +196,11 @@ public final class ImageTools {
 		final boolean interleaved)
 	{
 		long splitCount = 1;
-		for (long l : maxLengths) {
+		for (final long l : maxLengths) {
 			splitCount *= l;
 		}
-		return splitChannels(array, null, pos, maxLengths, bytes, reverse, interleaved,
-			array.length / splitCount);
+		return splitChannels(array, null, pos, maxLengths, bytes, reverse,
+			interleaved, array.length / splitCount);
 	}
 
 	/**
@@ -216,9 +216,9 @@ public final class ImageTools {
 	 * @param maxLengths - lengths of each split positional axis
 	 * @param planeLength - number of bytes in a split out plane
 	 */
-	public static byte[] splitChannels(final byte[] array, byte[] rtn, long[] pos,
-		final long[] maxLengths, final int bytes, final boolean reverse,
-		final boolean interleaved, final long planeLength)
+	public static byte[] splitChannels(final byte[] array, byte[] rtn,
+		final long[] pos, final long[] maxLengths, final int bytes,
+		final boolean reverse, final boolean interleaved, final long planeLength)
 	{
 		if (planeLength == array.length) {
 			if (rtn != null) {
@@ -232,22 +232,26 @@ public final class ImageTools {
 		}
 
 		if (reverse) {
-			for (int i=0; i<pos.length; i++) {
+			for (int i = 0; i < pos.length; i++) {
 				pos[i] = maxLengths[i] - pos[i] - 1;
 			}
 		}
 
-		long index = FormatTools.positionToRaster(maxLengths, pos);
+		final long index = FormatTools.positionToRaster(maxLengths, pos);
 
 		if (!interleaved) {
-			System.arraycopy(array, (int)(planeLength * index), rtn, 0, (int)planeLength);
+			System.arraycopy(array, (int) (planeLength * index), rtn, 0,
+				(int) planeLength);
 		}
 		else {
 			int next = 0;
-			//TODO may need to do more to sort out the actual axis order
-			for (int i = 0; i < array.length; i +=  bytes * DataTools.safeMultiply32(maxLengths)) {
+			// TODO may need to do more to sort out the actual axis order
+			for (int i = 0; i < array.length; i +=
+				bytes * DataTools.safeMultiply32(maxLengths))
+			{
 				for (int k = 0; k < bytes; k++) {
-					if (next < rtn.length) rtn[next] = array[(int) (i + index * bytes + k)];
+					if (next < rtn.length) rtn[next] =
+						array[(int) (i + index * bytes + k)];
 					next++;
 				}
 			}

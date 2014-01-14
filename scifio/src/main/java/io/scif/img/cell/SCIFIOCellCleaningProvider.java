@@ -53,8 +53,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * {@link RefProvider} plugin for creating {@link SCIFIOCellCleaner}
- * instances.
+ * {@link RefProvider} plugin for creating {@link SCIFIOCellCleaner} instances.
  * 
  * @author Mark Hiner
  */
@@ -66,17 +65,17 @@ public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
 	// -- RefProvider API --
 
 	@Override
-	public boolean handles(Object referent, Object... params) {
+	public boolean handles(final Object referent, final Object... params) {
 		boolean handles = SCIFIOCell.class.isAssignableFrom(referent.getClass());
 		handles = handles && (params == null || params.length == 0);
 		return handles;
 	}
 
 	@Override
-	public Reference makeRef(Object referent, ReferenceQueue queue,
-		Object... params)
+	public Reference makeRef(final Object referent, final ReferenceQueue queue,
+		final Object... params)
 	{
-		Reference ref = new SCIFIOCellCleaner(referent, queue);
+		final Reference ref = new SCIFIOCellCleaner(referent, queue);
 		getContext().inject(ref);
 		return ref;
 	}
@@ -90,8 +89,8 @@ public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
 	 * 
 	 * @author Mark Hiner
 	 */
-	public static class SCIFIOCellCleaner<A extends ArrayDataAccess<?>>
-		extends PhantomReference<SCIFIOCell<A>> implements CleaningRef
+	public static class SCIFIOCellCleaner<A extends ArrayDataAccess<?>> extends
+		PhantomReference<SCIFIOCell<A>> implements CleaningRef
 	{
 
 		// -- Parameters --
@@ -105,21 +104,22 @@ public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
 		// -- Fields --
 
 		private A data;
-		private int[] hashes;
-		private long[] elementSize;
-		private boolean[] enabled;
-		private long[] min;
-		private int[] dims;
-		private String cacheId;
-		private int index;
+		private final int[] hashes;
+		private final long[] elementSize;
+		private final boolean[] enabled;
+		private final long[] min;
+		private final int[] dims;
+		private final String cacheId;
+		private final int index;
 
 		// -- Constructor --
 
-		public SCIFIOCellCleaner(Object referent, ReferenceQueue queue) {
+		public SCIFIOCellCleaner(final Object referent, final ReferenceQueue queue)
+		{
 			super((SCIFIOCell<A>) referent, queue);
 			// The cell needs to be reconstructed, basically, to cache it.
 			// So we need to store every non-transient field.
-			SCIFIOCell<A> cell = (SCIFIOCell<A>) referent;
+			final SCIFIOCell<A> cell = (SCIFIOCell<A>) referent;
 			data = cell.getData();
 			hashes = cell.getHashes();
 			elementSize = cell.getESizeArray();
@@ -141,7 +141,7 @@ public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
 				new SCIFIOCell<A>(data, hashes[1], hashes[0], elementSize[0], dims, min);
 			cell.cacheOnFinalize(enabled[0]);
 			// Cache the cell
-			CacheResult result = service.cache(cacheId, index, cell);
+			final CacheResult result = service.cache(cacheId, index, cell);
 
 			cell = null;
 			data = null;

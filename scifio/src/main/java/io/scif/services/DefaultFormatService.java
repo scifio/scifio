@@ -83,7 +83,7 @@ public class DefaultFormatService extends AbstractService implements
 	 * A  list of all available Formats
 	 */
 	private Set<Format> formats;
-	
+
 	/*
 	 * Maps Format classes to their instances.
 	 */
@@ -219,7 +219,7 @@ public class DefaultFormatService extends AbstractService implements
 
 		Writer w = null;
 
-		for (Format f : formats()) {
+		for (final Format f : formats()) {
 			if (!matched && FormatTools.checkSuffix(fileId, f.getSuffixes())) {
 
 				if (!DefaultWriter.class.isAssignableFrom(f.getWriterClass())) {
@@ -287,8 +287,10 @@ public class DefaultFormatService extends AbstractService implements
 
 		boolean found = false;
 
-		for (Format format : formats()) {
-			if (!found && format.isEnabled() && format.createChecker().isFormat(id, open)) {
+		for (final Format format : formats()) {
+			if (!found && format.isEnabled() &&
+				format.createChecker().isFormat(id, open))
+			{
 				// if greedy is true, we can end after finding the first format
 				found = greedy;
 				formatList.add(format);
@@ -318,12 +320,12 @@ public class DefaultFormatService extends AbstractService implements
 	}
 
 	// -- Private Methods --
-	
+
 	private Set<Format> formats() {
 		if (formats == null) initializeSingletons();
 		return formats;
 	}
-	
+
 	private Map<Class<?>, Format> formatMap() {
 		if (formatMap == null) initializeSingletons();
 		return formatMap;

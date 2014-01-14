@@ -123,15 +123,16 @@ public class MNGFormat extends AbstractFormat {
 				get(i).setAxisLength(Axes.X, Integer.parseInt(tokens[0]));
 				get(i).setAxisLength(Axes.Y, Integer.parseInt(tokens[1]));
 				get(i).setAxisLength(Axes.CHANNEL, Integer.parseInt(tokens[2]));
-				get(i).setPlanarAxisCount(get(i).getAxisLength(Axes.CHANNEL) > 1 ? 3 : 2);
+				get(i).setPlanarAxisCount(
+					get(i).getAxisLength(Axes.CHANNEL) > 1 ? 3 : 2);
 				get(i).setPixelType(Integer.parseInt(tokens[3]));
 				get(i).setMetadataComplete(true);
 				get(i).setIndexed(false);
 				get(i).setLittleEndian(false);
 				get(i).setFalseColor(false);
 
-				get(i).setAxisLength(Axes.TIME, getDatasetInfo().imageInfo.get(i).offsets
-					.size());
+				get(i).setAxisLength(Axes.TIME,
+					getDatasetInfo().imageInfo.get(i).offsets.size());
 			}
 		}
 
@@ -317,9 +318,9 @@ public class MNGFormat extends AbstractFormat {
 		{
 			final MNGImageInfo info =
 				getMetadata().getDatasetInfo().imageInfo.get(imageIndex);
-			final long offset = info.offsets.get((int)planeIndex);
+			final long offset = info.offsets.get((int) planeIndex);
 			getStream().seek(offset);
-			final long end = info.lengths.get((int)planeIndex);
+			final long end = info.lengths.get((int) planeIndex);
 			BufferedImage img = readImage(getMetadata(), end);
 
 			// reconstruct the image to use an appropriate raster

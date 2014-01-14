@@ -85,7 +85,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @return The desired sub-region at the specified indices.
 	 */
 	Plane openPlane(int imageIndex, long planeIndex, long[] planeMin,
-		long[] planeMax) throws FormatException, IOException; 
+		long[] planeMax) throws FormatException, IOException;
 
 	/**
 	 * Allows a single {@code Plane} object to be reused by reference when opening
@@ -107,7 +107,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 *           compatible with this {@code Reader}.
 	 */
 	Plane openPlane(int imageIndex, long planeIndex, Plane plane,
-		long[] planeMin, long[] planeMax) throws FormatException, IOException; 
+		long[] planeMin, long[] planeMax) throws FormatException, IOException;
 
 	/**
 	 * Obtains a thumbnail version of the {@code Plane} at the specified image and
@@ -237,7 +237,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param planeBounds maximum values of the planar axes
 	 * @return The created plane
 	 */
-	Plane createPlane(ImageMetadata meta, long[] planeOffsets, long[] planeBounds);
+	Plane
+		createPlane(ImageMetadata meta, long[] planeOffsets, long[] planeBounds);
 
 	/**
 	 * Convenience method for casting {@code Plane} implementations to the type

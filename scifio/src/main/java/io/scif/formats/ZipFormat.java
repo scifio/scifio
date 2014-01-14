@@ -115,7 +115,8 @@ public class ZipFormat extends AbstractFormat {
 		// -- HasColorTable API methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable
+			getColorTable(final int imageIndex, final long planeIndex)
 		{
 			if (HasColorTable.class.isAssignableFrom(metadata.getClass())) return ((HasColorTable) metadata)
 				.getColorTable(0, 0);
@@ -169,7 +170,8 @@ public class ZipFormat extends AbstractFormat {
 		public Metadata parse(final RandomAccessInputStream stream,
 			final Metadata meta) throws IOException, FormatException
 		{
-			return super.parse(ZipUtilities.getRawStream(locationService, stream), meta);
+			return super.parse(ZipUtilities.getRawStream(locationService, stream),
+				meta);
 		}
 
 		@Override
@@ -179,8 +181,7 @@ public class ZipFormat extends AbstractFormat {
 			final String baseId =
 				ZipUtilities.unzipId(locationService, stream, meta.getMappedFiles());
 
-			final io.scif.Parser p =
-				formatService.getFormat(baseId).createParser();
+			final io.scif.Parser p = formatService.getFormat(baseId).createParser();
 			p.setOriginalMetadataPopulated(isOriginalMetadataPopulated());
 			p.setMetadataFiltered(isMetadataFiltered());
 			p.setMetadataOptions(getMetadataOptions());
@@ -254,9 +255,9 @@ public class ZipFormat extends AbstractFormat {
 		}
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final Plane p =
 				reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax);

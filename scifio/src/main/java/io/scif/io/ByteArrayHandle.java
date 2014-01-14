@@ -131,7 +131,7 @@ public class ByteArrayHandle extends AbstractNIOHandle {
 	// -- IRandomAccess API methods --
 
 	@Override
-	public void close() { 
+	public void close() {
 		buffer = null;
 	}
 

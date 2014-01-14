@@ -42,6 +42,7 @@ import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.services.InitializeService;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -118,7 +119,7 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 	// -- Constructor --
 
 	/** Constructs a preview pane for the given file chooser. */
-	public PreviewPane(Context context, JFileChooser jc) {
+	public PreviewPane(final Context context, final JFileChooser jc) {
 		super();
 
 		context.inject(this);
@@ -128,21 +129,21 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		iconLabel = new JLabel();
 		iconLabel.setMinimumSize(new java.awt.Dimension(128, -1));
-		iconLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(iconLabel);
 		add(Box.createVerticalStrut(7));
 		formatLabel = new JLabel();
-		formatLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		formatLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(formatLabel);
 		add(Box.createVerticalStrut(5));
 		resLabel = new JLabel();
-		resLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		resLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(resLabel);
 		zctLabel = new JLabel();
-		zctLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		zctLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(zctLabel);
 		typeLabel = new JLabel();
-		typeLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		typeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(typeLabel);
 
 		// smaller font for most labels
@@ -192,7 +193,7 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 	/* @see java.awt.Component#getPreferredSize() */
 	@Override
 	public Dimension getPreferredSize() {
-		Dimension prefSize = super.getPreferredSize();
+		final Dimension prefSize = super.getPreferredSize();
 		return new Dimension(148, prefSize.height);
 	}
 
@@ -203,8 +204,8 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 	 * file chooser closes.
 	 */
 	@Override
-	public void propertyChange(PropertyChangeEvent e) {
-		String prop = e.getPropertyName();
+	public void propertyChange(final PropertyChangeEvent e) {
+		final String prop = e.getPropertyName();
 		if (prop.equals("JFileChooserDialogIsClosingProperty")) {
 			// notify loader thread that it should stop
 			loaderAlive = false;
@@ -227,7 +228,7 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 			try {
 				Thread.sleep(100);
 			}
-			catch (InterruptedException exc) {
+			catch (final InterruptedException exc) {
 				logService.info("", exc);
 			}
 
@@ -251,9 +252,9 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 					reader = initializeService.initializeReader(id);
 					reader.setNormalized(true);
 				}
-				catch (FormatException exc) {
+				catch (final FormatException exc) {
 					logService.debug("Failed to initialize " + id, exc);
-					boolean badFormat =
+					final boolean badFormat =
 						exc.getMessage().startsWith("Unknown file format");
 					iconText = "Unsupported " + (badFormat ? "format" : "file");
 					formatText = resText = "";
@@ -261,7 +262,7 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 					lastId = null;
 					continue;
 				}
-				catch (IOException exc) {
+				catch (final IOException exc) {
 					logService.debug("Failed to initialize " + id, exc);
 					iconText = "Unsupported file";
 					formatText = resText = "";
@@ -276,38 +277,38 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 
 				icon = new ImageIcon(makeImage("Loading..."));
 				iconText = "";
-				String format = reader.getFormat().getFormatName();
+				final String format = reader.getFormat().getFormatName();
 				formatText = format;
 				formatTip = format;
-				ImageMetadata iMeta = reader.getMetadata().get(0);
+				final ImageMetadata iMeta = reader.getMetadata().get(0);
 				resText = getText(iMeta, iMeta.getAxesPlanar());
 				npText = getText(iMeta, iMeta.getAxesNonPlanar());
 				SwingUtilities.invokeLater(refresher);
 
 				// open middle image thumbnail
-				long planeIndex = iMeta.getPlaneCount() / 2;
+				final long planeIndex = iMeta.getPlaneCount() / 2;
 				Plane thumbPlane = null;
 				try {
 					thumbPlane = reader.openPlane(0, planeIndex);
 				}
-				catch (FormatException exc) {
+				catch (final FormatException exc) {
 					logService.debug("Failed to read thumbnail #" + planeIndex +
 						" from " + id, exc);
 				}
-				catch (IOException exc) {
+				catch (final IOException exc) {
 					logService.debug("Failed to read thumbnail #" + planeIndex +
 						" from " + id, exc);
 				}
-				BufferedImage thumb =
+				final BufferedImage thumb =
 					AWTImageTools.openThumbImage(thumbPlane, reader, 0, iMeta
-						.getAxesLengthsPlanar(), (int)iMeta.getThumbSizeX(), (int)iMeta
+						.getAxesLengthsPlanar(), (int) iMeta.getThumbSizeX(), (int) iMeta
 						.getThumbSizeY(), false);
 				icon = new ImageIcon(thumb == null ? makeImage("Failed") : thumb);
 				iconText = "";
 
 				SwingUtilities.invokeLater(refresher);
 			}
-			catch (Exception exc) {
+			catch (final Exception exc) {
 				logService.info("", exc);
 				icon = null;
 				iconText = "Thumbnail failure";
@@ -319,9 +320,11 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 		}
 	}
 
-	private String getText(ImageMetadata meta, List<CalibratedAxis> axes) {
+	private String getText(final ImageMetadata meta,
+		final List<CalibratedAxis> axes)
+	{
 		String text = "";
-		for (CalibratedAxis axis : axes) {
+		for (final CalibratedAxis axis : axes) {
 			if (text.length() > 0) text += " x ";
 			text += meta.getAxisLength(axis) + " " + axis.type().getLabel();
 		}
@@ -344,14 +347,15 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 	 * loading or error message), matching the size of the active reader's
 	 * thumbnails.
 	 */
-	private BufferedImage makeImage(String message) {
-		ImageMetadata iMeta = reader.getMetadata().get(0);
+	private BufferedImage makeImage(final String message) {
+		final ImageMetadata iMeta = reader.getMetadata().get(0);
 		int w = (int) iMeta.getThumbSizeX(), h = (int) iMeta.getThumbSizeY();
 		if (w < 128) w = 128;
 		if (h < 32) h = 32;
-		BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-		Graphics2D g = image.createGraphics();
-		Rectangle2D.Float r =
+		final BufferedImage image =
+			new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+		final Graphics2D g = image.createGraphics();
+		final Rectangle2D.Float r =
 			(Rectangle2D.Float) g.getFont().getStringBounds(message,
 				g.getFontRenderContext());
 		g.drawString(message, (w - r.width) / 2, (h - r.height) / 2 + r.height);

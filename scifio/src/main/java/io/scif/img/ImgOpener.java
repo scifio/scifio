@@ -268,8 +268,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * using the given {@link ImgFactory} to construct the {@link Img}. The
 	 * {@link Type} T to read is defined by the third parameter.
 	 * <p>
-	 * NB: Any Reader provided must be wrapped by a {@link PlaneSeparator}
-	 * filter.
+	 * NB: Any Reader provided must be wrapped by a {@link PlaneSeparator} filter.
 	 * </p>
 	 * 
 	 * @param reader - An initialized {@link Reader} to use for reading image
@@ -301,7 +300,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		final String id = reader.getCurrentFile();
 		imgPlus.setSource(id);
-		imgPlus.initializeColorTables((int)reader.getPlaneCount(imageIndex));
+		imgPlus.initializeColorTables((int) reader.getPlaneCount(imageIndex));
 
 		// If we have a planar img, read the planes now. Otherwise they
 		// will be read on demand.
@@ -377,15 +376,15 @@ public class ImgOpener extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * Returns a list of all AxisTypes that should be split out. This is a list
-	 * of all non-X,Y planar axes. Always tries to split {@link Axes#CHANNEL}.
+	 * Returns a list of all AxisTypes that should be split out. This is a list of
+	 * all non-X,Y planar axes. Always tries to split {@link Axes#CHANNEL}.
 	 */
-	private AxisType[] axesToSplit(ReaderFilter r) {
-		Set<AxisType> axes = new HashSet<AxisType>();
-		Metadata meta = r.getTail().getMetadata();
+	private AxisType[] axesToSplit(final ReaderFilter r) {
+		final Set<AxisType> axes = new HashSet<AxisType>();
+		final Metadata meta = r.getTail().getMetadata();
 		// Split any non-X,Y axis
-		for (CalibratedAxis t : meta.get(0).getAxesPlanar()) {
-			AxisType type = t.type();
+		for (final CalibratedAxis t : meta.get(0).getAxesPlanar()) {
+			final AxisType type = t.type();
 			if (!(type == Axes.X || type == Axes.Y)) {
 				axes.add(type);
 			}
@@ -395,16 +394,16 @@ public class ImgOpener extends AbstractImgIOComponent {
 		return axes.toArray(new AxisType[axes.size()]);
 	}
 
-	private AxisType[] getAxisTypes(int imageIndex, Metadata m) {
-		AxisType[] types = new AxisType[m.get(imageIndex).getAxes().size()];
-		for (int i=0; i<types.length; i++) {
+	private AxisType[] getAxisTypes(final int imageIndex, final Metadata m) {
+		final AxisType[] types = new AxisType[m.get(imageIndex).getAxes().size()];
+		for (int i = 0; i < types.length; i++) {
 			types[i] = m.get(imageIndex).getAxis(i).type();
 		}
 		return types;
 	}
 
 	/** Compiles an N-dimensional list of calibration values. */
-	private double[] getCalibration(int imageIndex, final Metadata m) {
+	private double[] getCalibration(final int imageIndex, final Metadata m) {
 
 		final double[] calibration = new double[m.get(imageIndex).getAxes().size()];
 		for (int i = 0; i < calibration.length; i++) {
@@ -428,7 +427,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final String name = idFile.exists() ? idFile.getName() : id;
 
 		final double[] cal = getCalibration(options.getIndex(), r.getMetadata());
-		final AxisType[] dimTypes = getAxisTypes(options.getIndex(), r.getMetadata());
+		final AxisType[] dimTypes =
+			getAxisTypes(options.getIndex(), r.getMetadata());
 
 		final Reader base;
 		base = unwrap(r);
@@ -448,7 +448,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			// HACK: Support ImageJ color mode embedded in TIFF files.
 			final String colorMode = (String) meta.getTable().get("Color mode");
 			if ("composite".equals(colorMode)) {
-				compositeChannelCount = (int)meta.get(0).getAxisLength(Axes.CHANNEL);
+				compositeChannelCount = (int) meta.get(0).getAxisLength(Axes.CHANNEL);
 			}
 		}
 		imgPlus.setCompositeChannelCount(compositeChannelCount);
@@ -505,21 +505,22 @@ public class ImgOpener extends AbstractImgIOComponent {
 			utils().getArrayAccess(imgPlus) != null && compatibleTypes;
 
 		final SubRegion region = imgOptions.getRegion();
-		
-		Metadata m = r.getMetadata();
+
+		final Metadata m = r.getMetadata();
 
 		// Starting indices for the planar dimensions
-		long[] planarMin = new long[m.get(imageIndex).getAxesPlanar().size()];
+		final long[] planarMin = new long[m.get(imageIndex).getAxesPlanar().size()];
 		// Lengths in the planar dimensions
-		long[] planarLength = new long[m.get(imageIndex).getAxesPlanar().size()];
+		final long[] planarLength =
+			new long[m.get(imageIndex).getAxesPlanar().size()];
 		// Non-planar indices to open
-		DimRange[] npRanges =
+		final DimRange[] npRanges =
 			new DimRange[m.get(imageIndex).getAxesNonPlanar().size()];
-		long[] npIndices = new long[npRanges.length];
+		final long[] npIndices = new long[npRanges.length];
 
 		// populate plane dimensions
 		int index = 0;
-		for (CalibratedAxis planarAxis : m.get(imageIndex).getAxesPlanar()) {
+		for (final CalibratedAxis planarAxis : m.get(imageIndex).getAxesPlanar()) {
 			if (region != null && region.hasRange(planarAxis.type())) {
 				planarMin[index] = region.getRange(planarAxis.type()).head();
 				planarLength[index] =
@@ -534,7 +535,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		// determine non-planar indices to open
 		index = 0;
-		for (CalibratedAxis npAxis : m.get(imageIndex).getAxesNonPlanar()) {
+		for (final CalibratedAxis npAxis : m.get(imageIndex).getAxesNonPlanar()) {
 			if (region != null && region.hasRange(npAxis.type())) {
 				npRanges[index++] = region.getRange(npAxis.type());
 			}
@@ -559,8 +560,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 			else converter = pcService.getDefaultConverter();
 		}
 
-		read(imageIndex, imgPlus, r, imgOptions, converter, planarMin, planarLength,
-			npRanges, npIndices);
+		read(imageIndex, imgPlus, r, imgOptions, converter, planarMin,
+			planarLength, npRanges, npIndices);
 
 		if (imgOptions.isComputeMinMax()) populateMinMax(r, imgPlus, imageIndex);
 	}
@@ -574,7 +575,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			throws FormatException, IOException
 	{
 		read(imageIndex, imgPlus, r, imgOptions, converter, null, planarMin,
-			planarLength, npRanges, npIndices, 0, new int[]{0});
+			planarLength, npRanges, npIndices, 0, new int[] { 0 });
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -582,7 +583,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final Reader r, final ImgOptions imgOptions,
 		final PlaneConverter converter, Plane tmpPlane, final long[] planarMin,
 		final long[] planarLength, final DimRange[] npRanges,
-		final long[] npIndices, final int depth, int[] planeCount)
+		final long[] npIndices, final int depth, final int[] planeCount)
 		throws FormatException, IOException
 	{
 		if (depth < npRanges.length) {
@@ -592,8 +593,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 			// Recursive step. Sets the non-planar indices
 			for (int i = 0; i < npRanges[npPosition].indices().size(); i++) {
 				npIndices[npPosition] = npRanges[npPosition].indices().get(i);
-				tmpPlane = read(imageIndex, imgPlus, r, imgOptions, converter, tmpPlane,
-					planarMin, planarLength, npRanges, npIndices, depth + 1, planeCount);
+				tmpPlane =
+					read(imageIndex, imgPlus, r, imgOptions, converter, tmpPlane,
+						planarMin, planarLength, npRanges, npIndices, depth + 1, planeCount);
 			}
 		}
 		else {
@@ -610,8 +612,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 					planarLength);
 
 			// copy the data to the ImgPlus
-			converter.populatePlane(r, imageIndex, planeCount[0], tmpPlane.getBytes(),
-				imgPlus, imgOptions);
+			converter.populatePlane(r, imageIndex, planeCount[0],
+				tmpPlane.getBytes(), imgPlus, imgOptions);
 
 			// store color table
 			imgPlus.setColorTable(tmpPlane.getColorTable(), planeCount[0]);
@@ -629,10 +631,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final int sizeC =
 			(int) r.getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 		final ReaderFilter rf = (ReaderFilter) r;
-		MinMaxFilter minMax =  rf.enable(MinMaxFilter.class);
+		final MinMaxFilter minMax = rf.enable(MinMaxFilter.class);
 		for (int c = 0; c < sizeC; c++) {
-			final Double min = minMax.getAxisKnownMinimum(imageIndex, Axes.CHANNEL, c);
-			final Double max = minMax.getAxisKnownMinimum(imageIndex, Axes.CHANNEL, c);
+			final Double min =
+				minMax.getAxisKnownMinimum(imageIndex, Axes.CHANNEL, c);
+			final Double max =
+				minMax.getAxisKnownMinimum(imageIndex, Axes.CHANNEL, c);
 			imgPlus.setChannelMinimum(c, min == null ? Double.NaN : min);
 			imgPlus.setChannelMaximum(c, max == null ? Double.NaN : max);
 		}

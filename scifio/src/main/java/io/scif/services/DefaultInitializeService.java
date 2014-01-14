@@ -147,16 +147,18 @@ public class DefaultInitializeService extends AbstractService implements
 	}
 
 	@Override
-	public Metadata parseMetadata(String id) throws IOException, FormatException {
-		Format format = formatService.getFormat(id);
+	public Metadata parseMetadata(final String id) throws IOException,
+		FormatException
+	{
+		final Format format = formatService.getFormat(id);
 		return format.createParser().parse(id);
 	}
 
 	@Override
-	public Metadata parseMetadata(String id, boolean openFile)
+	public Metadata parseMetadata(final String id, final boolean openFile)
 		throws FormatException, IOException
 	{
-		Format format = formatService.getFormat(id, openFile);
+		final Format format = formatService.getFormat(id, openFile);
 		return format.createParser().parse(id);
 	}
 

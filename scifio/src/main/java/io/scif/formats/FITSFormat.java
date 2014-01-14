@@ -108,7 +108,7 @@ public class FITSFormat extends AbstractFormat {
 
 			// correct for truncated files
 			final int planeSize =
-				(int)iMeta.getAxisLength(Axes.X) * (int)iMeta.getAxisLength(Axes.Y) *
+				(int) iMeta.getAxisLength(Axes.X) * (int) iMeta.getAxisLength(Axes.Y) *
 					FormatTools.getBytesPerPixel(iMeta.getPixelType());
 
 			try {
@@ -194,7 +194,7 @@ public class FITSFormat extends AbstractFormat {
 
 				addGlobalMeta(key, value);
 			}
-			while (in.read() == 0x20) { /* Read to pixel data. */ }
+			while (in.read() == 0x20) { /* Read to pixel data. */}
 			meta.setPixelOffset(in.getFilePointer() - 1);
 		}
 	}
@@ -214,9 +214,9 @@ public class FITSFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long planeMax[])
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long planeMax[]) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 

@@ -62,7 +62,7 @@ public class LongArrayLoader extends AbstractArrayLoader<LongArray> {
 	public void convertBytes(final LongArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		ImageMetadata iMeta = reader().getMetadata().get(0);
+		final ImageMetadata iMeta = reader().getMetadata().get(0);
 
 		if (isCompatible()) {
 			final int bpp = getBitsPerElement() / 8;
@@ -80,7 +80,7 @@ public class LongArrayLoader extends AbstractArrayLoader<LongArray> {
 			final int offset = planesRead * (bytes.length / bpp);
 
 			for (int index = 0; index < bytes.length / bpp; index++) {
-				long value =
+				final long value =
 					(long) utils().decodeWord(bytes, index * bpp, pixelType,
 						iMeta.isLittleEndian());
 				data.setValue(offset + index, value);

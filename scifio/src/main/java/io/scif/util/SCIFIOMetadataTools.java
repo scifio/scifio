@@ -67,7 +67,7 @@ public class SCIFIOMetadataTools {
 	/**
 	 * Returns true if the provided axes correspond to a complete image plane
 	 */
-	public static boolean wholePlane(final int imageIndex, Metadata meta,
+	public static boolean wholePlane(final int imageIndex, final Metadata meta,
 		final long[] planeMin, final long[] planeMax)
 	{
 		final boolean wholePlane = wholeRow(imageIndex, meta, planeMin, planeMax);
@@ -79,7 +79,7 @@ public class SCIFIOMetadataTools {
 	/**
 	 * Returns true if the provided axes correspond to a complete image row
 	 */
-	public static boolean wholeRow(final int imageIndex, Metadata meta,
+	public static boolean wholeRow(final int imageIndex, final Metadata meta,
 		final long[] planeMin, final long[] planeMax)
 	{
 		boolean wholeRow = true;
@@ -95,14 +95,14 @@ public class SCIFIOMetadataTools {
 	}
 
 	/**
-	 * Replaces the first values.length of the provided Metadata's planar axes with
-	 * the values.
+	 * Replaces the first values.length of the provided Metadata's planar axes
+	 * with the values.
 	 */
 	public static long[] modifyPlanar(final int imageIndex, final Metadata meta,
 		final long... values)
 	{
-		AxisValue[] axes = new AxisValue[values.length];
-		List<CalibratedAxis> axisTypes = meta.get(imageIndex).getAxes();
+		final AxisValue[] axes = new AxisValue[values.length];
+		final List<CalibratedAxis> axisTypes = meta.get(imageIndex).getAxes();
 
 		for (int i = 0; i < axes.length && i < axisTypes.size(); i++) {
 			axes[i] = new AxisValue(axisTypes.get(i).type(), values[i]);
@@ -188,10 +188,10 @@ public class SCIFIOMetadataTools {
 	 * for the provided pixel type.
 	 */
 	public static void populate(final ImageMetadata iMeta,
-		final CalibratedAxis[] axisTypes, final long[] axisLengths, final int pixelType,
-		final boolean orderCertain, final boolean littleEndian,
-		final boolean indexed, final boolean falseColor,
-		final boolean metadataComplete)
+		final CalibratedAxis[] axisTypes, final long[] axisLengths,
+		final int pixelType, final boolean orderCertain,
+		final boolean littleEndian, final boolean indexed,
+		final boolean falseColor, final boolean metadataComplete)
 	{
 		populate(iMeta, axisTypes, axisLengths, pixelType, FormatTools
 			.getBitsPerPixel(pixelType), orderCertain, littleEndian, indexed,

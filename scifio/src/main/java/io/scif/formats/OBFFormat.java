@@ -381,20 +381,18 @@ public class OBFFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buffer = plane.getBytes();
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis],
-								y = (int) planeMin[yAxis],
-								w = (int) planeMax[xAxis],
-								h = (int) planeMax[yAxis];
-			final int rows = (int)meta.get(imageIndex).getAxisLength(Axes.Y);
-			final int columns = (int)meta.get(imageIndex).getAxisLength(Axes.X);
+			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
+				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int rows = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
+			final int columns = (int) meta.get(imageIndex).getAxisLength(Axes.X);
 			final int bytesPerPixel = meta.get(imageIndex).getBitsPerPixel() / 8;
 
 			final Stack stack = meta.getStacks().get(imageIndex);

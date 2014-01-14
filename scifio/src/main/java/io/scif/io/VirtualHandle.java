@@ -54,7 +54,8 @@ public class VirtualHandle extends StreamHandle {
 
 	/**
 	 * Constructs a new handle around the provided id. No action needs to be taken
-	 * except setting the file field, as the id does not represent a physical file.
+	 * except setting the file field, as the id does not represent a physical
+	 * file.
 	 */
 	public VirtualHandle(final String id) throws IOException {
 		super();

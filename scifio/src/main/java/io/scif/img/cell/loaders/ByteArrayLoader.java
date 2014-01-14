@@ -65,15 +65,15 @@ public class ByteArrayLoader extends AbstractArrayLoader<ByteArray> {
 				bytes.length);
 		}
 		else {
-			ImageMetadata iMeta = reader().getMetadata().get(0);
+			final ImageMetadata iMeta = reader().getMetadata().get(0);
 			final int pixelType = iMeta.getPixelType();
 			final int bpp = FormatTools.getBytesPerPixel(pixelType);
 			final int offset = planesRead * (bytes.length / bpp);
 
 			for (int index = 0; index < bytes.length / bpp; index++) {
-				byte value =
-					(byte) utils().decodeWord(bytes, index * bpp, pixelType, iMeta
-						.isLittleEndian());
+				final byte value =
+					(byte) utils().decodeWord(bytes, index * bpp, pixelType,
+						iMeta.isLittleEndian());
 				data.setValue(offset + index, value);
 			}
 		}

@@ -94,7 +94,7 @@ public class RPZACodec extends AbstractCodec {
 		final int[] pixels = new int[plane];
 		final byte[] rtn = new byte[plane * 3];
 
-		while (in.read() != (byte) 0xe1) { /* Read to block metadata */ }
+		while (in.read() != (byte) 0xe1) { /* Read to block metadata */}
 		in.skipBytes(3);
 
 //		totalBlocks = ((options.width + 3) / 4) * ((options.height + 3) / 4);

@@ -238,7 +238,7 @@ public class ICSFormat extends AbstractFormat {
 				int index = -1;
 
 				if (label.equalsIgnoreCase("t x y")) {
-					binCount = (int)imageMeta.getAxisLength(Axes.X);
+					binCount = (int) imageMeta.getAxisLength(Axes.X);
 					index = imageMeta.getAxisIndex(Axes.X);
 					imageMeta.setAxisLength(Axes.X, imageMeta.getAxisLength(Axes.Y));
 					imageMeta.setAxisLength(Axes.Y, imageMeta.getAxisLength(Axes.Z));
@@ -247,14 +247,13 @@ public class ICSFormat extends AbstractFormat {
 				}
 				else if (label.equalsIgnoreCase("x y t")) {
 					index = imageMeta.getAxisIndex(Axes.Y) + 1;
-					binCount = (int)imageMeta.getAxisLength(Axes.Z);
+					binCount = (int) imageMeta.getAxisLength(Axes.Z);
 					imageMeta.setAxisLength(Axes.Z, 1);
 				}
 				else {
 					log().debug("Lifetime data, unexpected 'history labels' " + label);
 				}
 
-				
 				if (index > -1) {
 					imageMeta.setAxisType(index, SCIFIOAxes.LIFETIME);
 					imageMeta.setAxisLength(SCIFIOAxes.LIFETIME, binCount);
@@ -273,7 +272,8 @@ public class ICSFormat extends AbstractFormat {
 
 			final int bytes = bitsPerPixel / 8;
 
-			if (bitsPerPixel < 32) imageMeta.setLittleEndian(!get(0).isLittleEndian());
+			if (bitsPerPixel < 32) imageMeta
+				.setLittleEndian(!get(0).isLittleEndian());
 
 			final boolean floatingPt = rFormat.equals("real");
 			final boolean signed = isSigned();
@@ -1023,7 +1023,7 @@ public class ICSFormat extends AbstractFormat {
 		 */
 		private String[] findValueIteration(final String starts, final String ends)
 		{
-			//TODO not sure how to represent this in the ICSUtils key tree
+			// TODO not sure how to represent this in the ICSUtils key tree
 			for (final String key : keyValPairs.keySet()) {
 				if ((starts == null || key.startsWith(starts)) &&
 					(ends == null || key.endsWith(ends))) return new String[] { key,
@@ -1202,7 +1202,7 @@ public class ICSFormat extends AbstractFormat {
 					tokens[q] = tokens[q].trim();
 					if (tokens[q].length() == 0) continue;
 
-					Object o = keyMap.get(tokens[q]);
+					final Object o = keyMap.get(tokens[q]);
 					if (o == null) {
 						// Reached the value section of the line.
 						if (!validKey) {
@@ -1222,7 +1222,7 @@ public class ICSFormat extends AbstractFormat {
 					}
 					else {
 						// Map lookup wasn't null, so we move the keyMap to the next node
-						keyMap = (Map<String, Object>)o;
+						keyMap = (Map<String, Object>) o;
 						// if we have a LEAF entry, we know we've found a valid key
 						if (keyMap.get(ICSUtils.LEAF) != null) validKey = true;
 
@@ -1353,19 +1353,17 @@ public class ICSFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane
 				.getData().length, planeMin, planeMax);
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis],
-								y = (int) planeMin[yAxis],
-								w = (int) planeMax[xAxis],
-								h = (int) planeMax[yAxis];
+			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
+				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 
 			final int bpp =
 				FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
@@ -1375,7 +1373,7 @@ public class ICSFormat extends AbstractFormat {
 			final long[] coordinates =
 				FormatTools.rasterToPosition(imageIndex, planeIndex, meta);
 			final long[] prevCoordinates =
-					FormatTools.rasterToPosition(imageIndex, prevPlane, meta);
+				FormatTools.rasterToPosition(imageIndex, prevPlane, meta);
 
 			if (!gzip) {
 				getStream().seek(metadata.offset + planeIndex * len);
@@ -1425,14 +1423,16 @@ public class ICSFormat extends AbstractFormat {
 					Axes.CHANNEL));
 
 			// FIXME: This logic needs to be reworked!
-			if (!getMetadata().get(imageIndex).isMultichannel() && getMetadata().storedRGB()) {
+			if (!getMetadata().get(imageIndex).isMultichannel() &&
+				getMetadata().storedRGB())
+			{
 				// channels are stored interleaved, but because there are more than we
 				// can display as RGB, we need to separate them
 				getStream().seek(
 					metadata.offset +
 						len *
-						FormatTools.positionToRaster(0, this, new long[]{coordinates[0], 0,
-							coordinates[2]}));
+						FormatTools.positionToRaster(0, this, new long[] { coordinates[0],
+							0, coordinates[2] }));
 				if (!gzip && data == null) {
 					data =
 						new byte[(int) (len * getMetadata().get(imageIndex).getAxisLength(
@@ -1448,8 +1448,7 @@ public class ICSFormat extends AbstractFormat {
 				for (int row = y; row < h + y; row++) {
 					for (int col = x; col < w + x; col++) {
 						final int src =
-							(int) (bpp *
-							((planeIndex % meta.get(imageIndex).getAxisLength(
+							(int) (bpp * ((planeIndex % meta.get(imageIndex).getAxisLength(
 								Axes.CHANNEL)) + sizeC *
 								(row * (row * meta.get(imageIndex).getAxisLength(Axes.X) + col))));
 						final int dest = bpp * ((row - y) * w + (col - x));
@@ -1566,25 +1565,24 @@ public class ICSFormat extends AbstractFormat {
 
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis],
-								y = (int) planeMin[yAxis],
-								w = (int) planeMax[xAxis],
-								h = (int) planeMax[yAxis];
+			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
+				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 
 			int rgbChannels = 1;
 
 			if (meta.get(imageIndex).isMultichannel()) {
-				int cIndex = meta.get(imageIndex).getAxisIndex(Axes.CHANNEL);
+				final int cIndex = meta.get(imageIndex).getAxisIndex(Axes.CHANNEL);
 				rgbChannels = (int) (planeMax[cIndex] - planeMin[cIndex]);
 			}
 
 			final int sizeX = (int) meta.get(imageIndex).getAxisLength(Axes.X);
 			final int pixelType = getMetadata().get(imageIndex).getPixelType();
 			final int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
-			final int planeSize = (int) (meta.get(0).getSize() / meta.get(0).getPlaneCount());
+			final int planeSize =
+				(int) (meta.get(0).getSize() / meta.get(0).getPlaneCount());
 
-			if (!initialized[imageIndex][(int)planeIndex]) {
-				initialized[imageIndex][(int)planeIndex] = true;
+			if (!initialized[imageIndex][(int) planeIndex]) {
+				initialized[imageIndex][(int) planeIndex] = true;
 
 				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
 					planeMax))
@@ -1594,8 +1592,7 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			pixels.seek(pixelOffset + planeIndex * planeSize);
-			if (SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
-				planeMax) &&
+			if (SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax) &&
 				(interleaved || rgbChannels == 1))
 			{
 				pixels.write(plane.getBytes());
@@ -1740,7 +1737,7 @@ public class ICSFormat extends AbstractFormat {
 
 				final StringBuffer units = new StringBuffer();
 
-				for (CalibratedAxis axis : meta.get(imageIndex).getAxes()) {
+				for (final CalibratedAxis axis : meta.get(imageIndex).getAxes()) {
 					Number value = 1.0;
 					if (axis.type() == Axes.X) {
 						value = meta.get(imageIndex).getAxisLength(Axes.X);
@@ -1802,10 +1799,11 @@ public class ICSFormat extends AbstractFormat {
 
 			if (meta.get(imageIndex).isMultichannel()) {
 				dimOrder.append("ch\t");
-				sizes[nextSize++] = (int) (meta.get(imageIndex).getAxisLength(Axes.CHANNEL));
+				sizes[nextSize++] =
+					(int) (meta.get(imageIndex).getAxisLength(Axes.CHANNEL));
 			}
 
-			for (CalibratedAxis axis : meta.get(imageIndex).getAxes()) {
+			for (final CalibratedAxis axis : meta.get(imageIndex).getAxes()) {
 				if (axis.type() == Axes.CHANNEL) {
 					if (dimOrder.indexOf("ch") == -1) {
 						sizes[nextSize++] =
@@ -1817,7 +1815,8 @@ public class ICSFormat extends AbstractFormat {
 					}
 				}
 				else {
-					sizes[nextSize++] = (int) meta.get(imageIndex).getAxisLength(axis.type());
+					sizes[nextSize++] =
+						(int) meta.get(imageIndex).getAxisLength(axis.type());
 					dimOrder.append(String.valueOf(axis.type().getLabel().charAt(0))
 						.toLowerCase());
 				}
@@ -1865,9 +1864,9 @@ public class ICSFormat extends AbstractFormat {
 
 		/** Newline characters. */
 		public static final String NL = "\r\n";
-		
+
 		public static final String LEAF = "VALID_LEAF";
-		
+
 		public static final String[] DATE_FORMATS = {
 			"EEEE, MMMM dd, yyyy HH:mm:ss", "EEE dd MMMM yyyy HH:mm:ss",
 			"EEE MMM dd HH:mm:ss yyyy", "EE dd MMM yyyy HH:mm:ss z",
@@ -1904,8 +1903,8 @@ public class ICSFormat extends AbstractFormat {
 		public static final Map<String, Object> keys = createKeyMap();
 
 		private static Map<String, Object> createKeyMap() {
-			Map<String, Object> root = new HashMap<String, Object>();
-			
+			final Map<String, Object> root = new HashMap<String, Object>();
+
 			addKey(root, "parameter", "ch");
 			addKey(root, "parameter", "scale");
 			addKey(root, "parameter", "t");
@@ -1957,7 +1956,7 @@ public class ICSFormat extends AbstractFormat {
 			addKey(root, "layout", "order");
 			addKey(root, "layout", "significant_bits");
 			addKey(root, "layout", "sizes");
-			
+
 			return root;
 		}
 
@@ -1965,11 +1964,13 @@ public class ICSFormat extends AbstractFormat {
 		 * Recursively descends the list of keys (ICS header categories and sub-
 		 * categories). When reaching the final subcategory, creates a String:String
 		 * mapping using {@link #LEAF}, indicating a valid complete key. When sub-
-		 * categories are present, a new map is created at each step, generating
-		 * a tree structure of valid keys.
+		 * categories are present, a new map is created at each step, generating a
+		 * tree structure of valid keys.
 		 */
 		@SuppressWarnings("unchecked")
-		private static void addKey(Map<String, Object> parent, String... keys) {
+		private static void addKey(final Map<String, Object> parent,
+			final String... keys)
+		{
 			// Create a LEAF entry to indicate this is a valid key
 			if (keys.length == 0) {
 				parent.put(LEAF, LEAF);
@@ -1977,8 +1978,8 @@ public class ICSFormat extends AbstractFormat {
 			// the head category may have multiple subcategories, so create a category
 			// mapping.
 			else {
-				String node = keys[0];
-				Object o = parent.get(node);
+				final String node = keys[0];
+				final Object o = parent.get(node);
 				Map<String, Object> child = null;
 				// check for existing map
 				if (o == null) {
@@ -1986,7 +1987,7 @@ public class ICSFormat extends AbstractFormat {
 					parent.put(node, child);
 				}
 				else {
-					child = (Map<String, Object>)o;
+					child = (Map<String, Object>) o;
 				}
 				// recursive step to build the category tree
 				addKey(child, Arrays.copyOfRange(keys, 1, keys.length));
@@ -2076,11 +2077,11 @@ public class ICSFormat extends AbstractFormat {
 			keyValPairs.put("layout sizes", sizes);
 			keyValPairs.put("layout order", order);
 
-			keyValPairs
-				.put("layout significant_bits", "" + source.get(0).getBitsPerPixel());
+			keyValPairs.put("layout significant_bits", "" +
+				source.get(0).getBitsPerPixel());
 
-			if (source.get(0).getAxisLength(SCIFIOAxes.LIFETIME) > 1) keyValPairs.put(
-				"history type", "time resolved");
+			if (source.get(0).getAxisLength(SCIFIOAxes.LIFETIME) > 1) keyValPairs
+				.put("history type", "time resolved");
 
 			boolean signed = false;
 			boolean fPoint = false;

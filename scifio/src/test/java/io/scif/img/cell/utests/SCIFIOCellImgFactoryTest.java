@@ -154,7 +154,8 @@ public class SCIFIOCellImgFactoryTest {
 
 	@Test
 	public void cellMediumPlaneSizeRGBTest() {
-		final String id = "cellTest&lengths=512,512,3&axes=X,Y,Channel&planarDims=3.fake";
+		final String id =
+			"cellTest&lengths=512,512,3&axes=X,Y,Channel&planarDims=3.fake";
 		final Reader reader = getReader(id);
 
 		// NB: All these tests should be identical as
@@ -228,7 +229,8 @@ public class SCIFIOCellImgFactoryTest {
 
 	@Test
 	public void cellLargePlaneSizeRGBTest() {
-		final String id = "cellTest&lengths=4096,4096,3&axes=X,Y,Channel&planarDims=3.fake";
+		final String id =
+			"cellTest&lengths=4096,4096,3&axes=X,Y,Channel&planarDims=3.fake";
 		final Reader reader = getReader(id);
 
 		// NB: These tests are identical to

@@ -233,7 +233,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 				iMeta.setAxisLength(Axes.TIME, v.size());
 
-				final int[] times = new int[(int)iMeta.getPlaneCount()];
+				final int[] times = new int[(int) iMeta.getPlaneCount()];
 				for (int i = 0; i < times.length; i++) {
 					q = v.elementAt(i);
 					times[i] = q.intValue();
@@ -274,7 +274,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 			// paint frame into image
 			try {
-				r.setVar("time", meta.getTimes()[(int)planeIndex]);
+				r.setVar("time", meta.getTimes()[(int) planeIndex]);
 				r.exec("moviePlayer.setTime(time)");
 				r.exec("qtip.redraw(null)");
 				r.exec("qtip.updateConsumers(null)");
@@ -406,8 +406,8 @@ public class LegacyQTFormat extends AbstractFormat {
 			}
 			qtJavaService.checkQTLibrary();
 
-			if (!initialized[imageIndex][(int)planeIndex]) {
-				initialized[imageIndex][(int)planeIndex] = true;
+			if (!initialized[imageIndex][(int) planeIndex]) {
+				initialized[imageIndex][(int) planeIndex] = true;
 
 				try {
 					r.exec("QTSession.open()");
@@ -609,7 +609,8 @@ public class LegacyQTFormat extends AbstractFormat {
 			final int bpp = source.get(0).getBitsPerPixel() / 8;
 			final byte[][] data =
 				new byte[(int) source.get(0).getAxisLength(Axes.CHANNEL)][w * h * bpp];
-			final boolean fp = FormatTools.isFloatingPoint(source.get(0).getPixelType());
+			final boolean fp =
+				FormatTools.isFloatingPoint(source.get(0).getPixelType());
 			final boolean little = source.get(0).isLittleEndian();
 			final boolean signed = FormatTools.isSigned(source.get(0).getPixelType());
 

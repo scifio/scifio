@@ -204,7 +204,8 @@ public class JPEG2000Format extends AbstractFormat {
 		// -- HasColorTable API Methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable
+			getColorTable(final int imageIndex, final long planeIndex)
 		{
 			if (lut == null) return null;
 
@@ -749,9 +750,9 @@ public class JPEG2000Format extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
@@ -831,7 +832,8 @@ public class JPEG2000Format extends AbstractFormat {
 			// int width = retrieve.getPixelsSizeX(series).getValue().intValue();
 			// int height = retrieve.getPixelsSizeY(series).getValue().intValue();
 
-			out.write(compressBuffer(imageIndex, planeIndex, buf, planeMin, planeMax));
+			out
+				.write(compressBuffer(imageIndex, planeIndex, buf, planeMin, planeMax));
 		}
 
 		/**
@@ -860,8 +862,8 @@ public class JPEG2000Format extends AbstractFormat {
 			// To be on the save-side
 			if (options == null) options = JPEG2000CodecOptions.getDefaultOptions();
 			options = new JPEG2000CodecOptions(options);
-			options.width = (int)planeMax[0];
-			options.height = (int)planeMax[1];
+			options.width = (int) planeMax[0];
+			options.height = (int) planeMax[1];
 			options.channels = nChannels;
 			options.bitsPerSample = bytesPerPixel * 8;
 			options.littleEndian = littleEndian;

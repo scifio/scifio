@@ -97,7 +97,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return openPlane(imageIndex, planeIndex, planeMin, planeMax);
 	}
 
-	  @Override
+	@Override
 	public P openPlane(final int imageIndex, final long planeIndex,
 		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException
@@ -291,10 +291,12 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	// -- TypedReader API --
 
 	@Override
-	public P openPlane(final int imageIndex, final long planeIndex, final P plane)
-		throws FormatException, IOException
+	public P
+		openPlane(final int imageIndex, final long planeIndex, final P plane)
+			throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, plane.getOffsets(), plane.getLengths());
+		return openPlane(imageIndex, planeIndex, plane, plane.getOffsets(), plane
+			.getLengths());
 	}
 
 	@Override
@@ -365,7 +367,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 					s.read(bytes, channel * h * rowLen, h * rowLen);
 					if (channel < c - 1) {
 						// no need to skip bytes after reading final channel
-						s.skipBytes((int)(metadata.get(imageIndex).getAxisLength(Axes.Y) - y - h) *
+						s.skipBytes((int) (metadata.get(imageIndex).getAxisLength(Axes.Y) -
+							y - h) *
 							rowLen);
 					}
 				}
@@ -419,7 +422,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 					if (channel < c - 1) {
 						// no need to skip bytes after reading final channel
 						s.skipBytes(scanlineWidth * bpp *
-							(int)(metadata.get(imageIndex).getAxisLength(Axes.Y) - y - h));
+							(int) (metadata.get(imageIndex).getAxisLength(Axes.Y) - y - h));
 					}
 				}
 			}

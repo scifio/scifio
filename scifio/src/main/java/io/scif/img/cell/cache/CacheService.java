@@ -49,10 +49,9 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 
 	/**
 	 * Removes all entries from the specified cache. Note: this method is
-	 * vulnerable to race conditions, as successful clearing requires that
-	 * the items to be clear have actually made it to disk. Thus it
-	 * should not be used if there is the chance that transactions are
-	 * still in process.
+	 * vulnerable to race conditions, as successful clearing requires that the
+	 * items to be clear have actually made it to disk. Thus it should not be used
+	 * if there is the chance that transactions are still in process.
 	 * 
 	 * @param cacheId cache name to clear
 	 */
@@ -94,10 +93,10 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	CacheResult cache(String cacheId, int index, T object);
 
 	/**
-	 * Returns the object at the desired index from the specified
-	 * index. The entry is not guaranteed to be removed from disk until the
-	 * limit (set via {@link #setMaxBytesOnDisk(long)}) is reached. To encourage
-	 * the deletion of these records early, use {@link #cleanRetrieved(String)}.
+	 * Returns the object at the desired index from the specified index. The entry
+	 * is not guaranteed to be removed from disk until the limit (set via
+	 * {@link #setMaxBytesOnDisk(long)}) is reached. To encourage the deletion of
+	 * these records early, use {@link #cleanRetrieved(String)}.
 	 * <p>
 	 * NB: the cell returned from this method will automatically attempt to
 	 * re-cache itself when finalized. To disable this feature, use

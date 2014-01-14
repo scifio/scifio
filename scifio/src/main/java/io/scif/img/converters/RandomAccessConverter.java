@@ -51,8 +51,8 @@ import org.scijava.plugin.Plugin;
 
 /**
  * Generalized {@link PlaneConverter} implementation. Can populate any
- * {@link ImgPlus} using its {@link RandomAccess}. May be slower than
- * other, optimized methods.
+ * {@link ImgPlus} using its {@link RandomAccess}. May be slower than other,
+ * optimized methods.
  * 
  * @author Mark Hiner
  */
@@ -113,7 +113,7 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 	private void getPosition(final Metadata m, final int imageIndex,
 		final int planeIndex, final long[] pos)
 	{
-		ImageMetadata meta = m.get(imageIndex);
+		final ImageMetadata meta = m.get(imageIndex);
 		final int offset = meta.getAxes().size() - meta.getAxesNonPlanar().size();
 
 		final long[] axesPositions =

@@ -66,12 +66,12 @@ public class DefaultGUIService extends AbstractService implements GUIService {
 	// -- GUIService Methods --
 
 	@Override
-	public FileFilter[] buildFileFilters(Collection<Format> formats) {
+	public FileFilter[] buildFileFilters(final Collection<Format> formats) {
 
-		FileFilter[] filters = new FileFilter[formats.size()];
+		final FileFilter[] filters = new FileFilter[formats.size()];
 		int i = 0;
 
-		for (Format f : formats) {
+		for (final Format f : formats) {
 			filters[i++] = new FormatFileFilter(f);
 		}
 
@@ -79,13 +79,13 @@ public class DefaultGUIService extends AbstractService implements GUIService {
 	}
 
 	@Override
-	public JFileChooser buildFileChooser(Collection<Format> formats) {
+	public JFileChooser buildFileChooser(final Collection<Format> formats) {
 		return buildFileChooser(formats, true);
 	}
 
 	@Override
-	public JFileChooser buildFileChooser(Collection<Format> formats,
-		boolean preview)
+	public JFileChooser buildFileChooser(final Collection<Format> formats,
+		final boolean preview)
 	{
 		return buildFileChooser(buildFileFilters(formats), preview);
 	}
@@ -101,17 +101,18 @@ public class DefaultGUIService extends AbstractService implements GUIService {
 	{
 		// NB: construct JFileChooser in the AWT worker thread, to avoid deadlocks
 		final JFileChooser[] jfc = new JFileChooser[1];
-		Runnable r = new Runnable() {
+		final Runnable r = new Runnable() {
 
 			@Override
 			public void run() {
-				JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-				FileFilter[] ff = sortFilters(filters);
+				final JFileChooser fc =
+					new JFileChooser(System.getProperty("user.dir"));
+				final FileFilter[] ff = sortFilters(filters);
 
 				FileFilter combo = null;
 				if (ff.length > 0 && ff[0] instanceof ComboFileFilter) {
 					// check for existing "All supported file types" filter
-					ComboFileFilter cff = (ComboFileFilter) ff[0];
+					final ComboFileFilter cff = (ComboFileFilter) ff[0];
 					if (ALL_TYPES.equals(cff.getDescription())) combo = cff;
 				}
 				// make an "All supported file types" filter if we don't have one yet
@@ -135,10 +136,10 @@ public class DefaultGUIService extends AbstractService implements GUIService {
 			try {
 				SwingUtilities.invokeAndWait(r);
 			}
-			catch (InterruptedException exc) {
+			catch (final InterruptedException exc) {
 				return null;
 			}
-			catch (InvocationTargetException exc) {
+			catch (final InvocationTargetException exc) {
 				return null;
 			}
 		}
@@ -151,7 +152,7 @@ public class DefaultGUIService extends AbstractService implements GUIService {
 	 * Creates an "All supported file types" combo filter encompassing all of the
 	 * given filters.
 	 */
-	private FileFilter makeComboFilter(FileFilter[] filters) {
+	private FileFilter makeComboFilter(final FileFilter[] filters) {
 		return filters.length > 1 ? new ComboFileFilter(filters, ALL_TYPES) : null;
 	}
 
@@ -169,11 +170,11 @@ public class DefaultGUIService extends AbstractService implements GUIService {
 	 * Looks for an "All supported file types" combo filter and shuffles it to the
 	 * front of the list.
 	 */
-	private void shuffleAllTypesToFront(FileFilter[] filters) {
+	private void shuffleAllTypesToFront(final FileFilter[] filters) {
 		for (int i = 0; i < filters.length; i++) {
 			if (filters[i] instanceof ComboFileFilter) {
 				if (ALL_TYPES.equals(filters[i].getDescription())) {
-					FileFilter f = filters[i];
+					final FileFilter f = filters[i];
 					for (int j = i; j >= 1; j--)
 						filters[j] = filters[j - 1];
 					filters[0] = f;

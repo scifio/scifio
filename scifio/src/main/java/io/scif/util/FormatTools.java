@@ -358,8 +358,8 @@ public final class FormatTools {
 	 * @return the next plane index, or -1 if the position extends beyond the
 	 *         given min/max
 	 */
-	public static long nextPlaneIndex(int imageIndex, Reader r, long[] pos,
-		long[] offsets, long[] cropLengths)
+	public static long nextPlaneIndex(final int imageIndex, final Reader r,
+		final long[] pos, final long[] offsets, final long[] cropLengths)
 	{
 		return nextPlaneIndex(imageIndex, r.getMetadata(), pos, offsets,
 			cropLengths);
@@ -378,8 +378,8 @@ public final class FormatTools {
 	 * @return the next plane index, or -1 if the position extends beyond the
 	 *         given min/max
 	 */
-	public static long nextPlaneIndex(int imageIndex, Metadata m, long[] pos,
-		long[] offsets, long[] cropLengths)
+	public static long nextPlaneIndex(final int imageIndex, final Metadata m,
+		final long[] pos, final long[] offsets, final long[] cropLengths)
 	{
 		return nextPlaneIndex(m.get(imageIndex).getAxesLengthsNonPlanar(), pos,
 			offsets, cropLengths);
@@ -397,8 +397,8 @@ public final class FormatTools {
 	 * @return the next plane index, or -1 if the position extends beyond the
 	 *         given min/max
 	 */
-	public static long nextPlaneIndex(long[] lengths, long[] pos, long[] offsets,
-		long[] cropLengths)
+	public static long nextPlaneIndex(final long[] lengths, final long[] pos,
+		final long[] offsets, final long[] cropLengths)
 	{
 		boolean updated = false;
 
@@ -605,7 +605,7 @@ public final class FormatTools {
 	public static void checkTileSize(final Metadata m, final long[] planeMin,
 		final long[] planeMax, final int imageIndex) throws FormatException
 	{
-		List<CalibratedAxis> axes = m.get(imageIndex).getAxesPlanar();
+		final List<CalibratedAxis> axes = m.get(imageIndex).getAxesPlanar();
 
 		for (int i = 0; i < axes.size(); i++) {
 			final long start = planeMin[i];
@@ -670,13 +670,13 @@ public final class FormatTools {
 
 	/** Returns the size in bytes of a w * h tile. */
 	public static long getPlaneSize(final Metadata m, final int width,
-		final int height, int imageIndex)
+		final int height, final int imageIndex)
 	{
-		ImageMetadata iMeta = m.get(imageIndex);
-		long[] planeMin = new long[iMeta.getPlanarAxisCount()];
-		long[] planeMax = new long[iMeta.getPlanarAxisCount()];
+		final ImageMetadata iMeta = m.get(imageIndex);
+		final long[] planeMin = new long[iMeta.getPlanarAxisCount()];
+		final long[] planeMax = new long[iMeta.getPlanarAxisCount()];
 		for (int i = 0; i < planeMax.length; i++) {
-			AxisType type = iMeta.getAxis(i).type();
+			final AxisType type = iMeta.getAxis(i).type();
 			if (type == Axes.X) {
 				planeMax[i] = width;
 			}

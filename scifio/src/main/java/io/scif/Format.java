@@ -36,7 +36,6 @@
 
 package io.scif;
 
-
 /**
  * Interface for all SCIFIO formats.
  * <p>

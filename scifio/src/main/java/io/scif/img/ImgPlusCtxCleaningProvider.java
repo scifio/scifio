@@ -65,7 +65,7 @@ public class ImgPlusCtxCleaningProvider extends AbstractSCIFIOPlugin implements
 	// -- RefProvider API --
 
 	@Override
-	public boolean handles(Object referent, Object... params) {
+	public boolean handles(final Object referent, final Object... params) {
 		boolean matches = ImgPlus.class.isAssignableFrom(referent.getClass());
 		matches = matches && params.length == 1;
 		matches = matches && Context.class.isAssignableFrom(params[0].getClass());
@@ -73,10 +73,10 @@ public class ImgPlusCtxCleaningProvider extends AbstractSCIFIOPlugin implements
 	}
 
 	@Override
-	public Reference makeRef(Object referent, ReferenceQueue queue,
-		Object... params)
+	public Reference makeRef(final Object referent, final ReferenceQueue queue,
+		final Object... params)
 	{
-		Reference ref = new ImgPlusCtxCleaner(referent, queue, params);
+		final Reference ref = new ImgPlusCtxCleaner(referent, queue, params);
 		return ref;
 	}
 
@@ -104,8 +104,8 @@ public class ImgPlusCtxCleaningProvider extends AbstractSCIFIOPlugin implements
 
 		// -- Constructor --
 
-		public ImgPlusCtxCleaner(Object imgPlus, ReferenceQueue queue,
-			Object... params)
+		public ImgPlusCtxCleaner(final Object imgPlus, final ReferenceQueue queue,
+			final Object... params)
 		{
 			super((ImgPlus) imgPlus, queue);
 			if (params.length != 1) {
@@ -116,13 +116,13 @@ public class ImgPlusCtxCleaningProvider extends AbstractSCIFIOPlugin implements
 			try {
 				ctx = (Context) params[0];
 			}
-			catch (ClassCastException e) {
+			catch (final ClassCastException e) {
 				throw new IllegalArgumentException(
 					"ImgPlusCleanerRef: invalid parameter");
 			}
 
 			synchronized (ctx) {
-				Integer count = ctxRefs.get(ctx);
+				final Integer count = ctxRefs.get(ctx);
 
 				if (count == null) {
 					// Create a new entry for this context

@@ -49,11 +49,11 @@ import org.scijava.Contextual;
  * a stack of filters is built.
  * </p>
  * <p>
- * NB: this interface extends {@link Filter} and concrete
- * {@code MasterFilter} implementations should similarly extend the interface
- * they wrap. However, instead of {@link io.scif.filters.Filter#getParent()}
- * returning the wrapped object, it should return the head of this
- * {@code MasterFilter}'s filter stack.
+ * NB: this interface extends {@link Filter} and concrete {@code MasterFilter}
+ * implementations should similarly extend the interface they wrap. However,
+ * instead of {@link io.scif.filters.Filter#getParent()} returning the wrapped
+ * object, it should return the head of this {@code MasterFilter}'s filter
+ * stack.
  * </p>
  * <p>
  * NB: all wrappers should be maintained as singletons within the scope of a

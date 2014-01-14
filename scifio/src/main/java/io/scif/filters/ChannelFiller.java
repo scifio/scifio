@@ -56,8 +56,7 @@ import org.scijava.plugin.Plugin;
  * (either non-indexed, or indexed with "false color" tables), does nothing. NB:
  * lut length is not guaranteed to be accurate until a plane has been read
  */
-@Plugin(
-	type = Filter.class)
+@Plugin(type = Filter.class)
 public class ChannelFiller extends AbstractReaderFilter {
 
 	// -- Fields --
@@ -102,7 +101,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
+		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
 		return openPlane(imageIndex, planeIndex, new long[planarAxes],
 			getMetadata().get(imageIndex).getAxesLengthsPlanar());
 	}
@@ -111,7 +110,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
+		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
 		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],
 			getMetadata().get(imageIndex).getAxesLengthsPlanar());
 	}
@@ -147,7 +146,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 		// If we have the cached base plane we can use it to expand, otherwise we'll
 		// have to open the plane still.
-		final int lutLength = ((ChannelFillerMetadata)getMetadata()).getLutLength();
+		final int lutLength =
+			((ChannelFillerMetadata) getMetadata()).getLutLength();
 
 		if (!haveCached(imageIndex, planeIndex, offsets, lengths)) {
 			updateLastPlaneInfo(imageIndex, lutLength, offsets, lengths);
@@ -172,7 +172,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 		final byte[] buf = plane.getBytes();
 		int pt = 0;
 
-		final int bytesPerIndex = getParentMeta().get(imageIndex).getBitsPerPixel() / 8;
+		final int bytesPerIndex =
+			getParentMeta().get(imageIndex).getBitsPerPixel() / 8;
 
 		final ColorTable lut = lastPlane.getColorTable();
 		final byte[] index = lastPlane.getBytes();
@@ -191,8 +192,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 		}
 		else {
 			for (int j = 0; j < lutLength; j++) {
-				for (int i = 0; i < index.length / bytesPerIndex &&
-					pt < buf.length; i++)
+				for (int i = 0; i < index.length / bytesPerIndex && pt < buf.length; i++)
 				{
 					final int iVal =
 						DataTools.bytesToInt(index, i * bytesPerIndex, bytesPerIndex,
@@ -226,6 +226,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 	protected void setSourceHelper(final String source) {
 		cleanUp();
 	}
+
 	// -- Prioritized API --
 
 	@Override
@@ -238,8 +239,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 	 * Converts the given plane information using the current metadata to a format
 	 * usable by the wrapped reader, stored in the "lastPlane"... variables.
 	 */
-	private void updateLastPlaneInfo(int imageIndex, int lutLength,
-		long[] offsets, long[] lengths)
+	private void updateLastPlaneInfo(final int imageIndex, final int lutLength,
+		final long[] offsets, final long[] lengths)
 	{
 		lastPlaneOffsets = Arrays.copyOf(offsets, offsets.length);
 		lastPlaneLengths = Arrays.copyOf(lengths, lengths.length);
@@ -251,10 +252,13 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	/**
 	 * Returns true if we have a cached copy of the requested plane available.
-	 * @param lengths 
-	 * @param offsets 
+	 * 
+	 * @param lengths
+	 * @param offsets
 	 */
-	private boolean haveCached(int imageIndex, long planeIndex, long[] offsets, long[] lengths) {
+	private boolean haveCached(final int imageIndex, final long planeIndex,
+		final long[] offsets, final long[] lengths)
+	{
 		boolean matches = planeIndex == lastPlaneIndex;
 		matches = matches && (imageIndex == lastImageIndex);
 
@@ -266,9 +270,9 @@ public class ChannelFiller extends AbstractReaderFilter {
 				matches = matches && offsets[i] <= lastPlaneOffsets[i];
 				// make sure we have the last positions in each axis
 				matches =
-						matches &&
-							offsets[i] + lengths[i] <= lastPlaneOffsets[i] +
-								lastPlaneLengths[i];
+					matches &&
+						offsets[i] + lengths[i] <= lastPlaneOffsets[i] +
+							lastPlaneLengths[i];
 			}
 		}
 		else {

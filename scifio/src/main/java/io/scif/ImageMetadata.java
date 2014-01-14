@@ -170,8 +170,8 @@ public interface ImageMetadata extends HasMetaTable {
 	void setAxis(int index, CalibratedAxis axis);
 
 	/**
-	 * As {@link #setAxis(int, CalibratedAxis)} but using the default
-	 * calibration values, per {@link FormatTools#createAxis(AxisType)}.
+	 * As {@link #setAxis(int, CalibratedAxis)} but using the default calibration
+	 * values, per {@link FormatTools#createAxis(AxisType)}.
 	 */
 	void setAxisType(int index, AxisType axis);
 
@@ -190,7 +190,7 @@ public interface ImageMetadata extends HasMetaTable {
 	/**
 	 * Returns the CalibratedAxis associated with the given type. Useful to
 	 * retrieve calibration information.
-	 */	
+	 */
 	CalibratedAxis getAxis(AxisType axisType);
 
 	/**
@@ -216,7 +216,7 @@ public interface ImageMetadata extends HasMetaTable {
 	/** Returns the number of planar axes in this image. */
 	int getPlanarAxisCount();
 
-	/** 
+	/**
 	 * Returns the number of interleaved axes in this image.
 	 */
 	int getInterleavedAxisCount();

@@ -143,7 +143,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 	// -- Constructor --
 
 	/** Constructs an image viewer. */
-	public ImageViewer(Context context) {
+	public ImageViewer(final Context context) {
 		super(TITLE);
 		context.inject(this);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -162,7 +162,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 		sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
 		pane.add(BorderLayout.SOUTH, sliderPanel);
 
-		JPanel nPanel = new JPanel();
+		final JPanel nPanel = new JPanel();
 		nPanel.setLayout(new BoxLayout(nPanel, BoxLayout.X_AXIS));
 		sliderPanel.add(nPanel);
 		sliderPanel.add(Box.createVerticalStrut(2));
@@ -174,12 +174,13 @@ public class ImageViewer extends JFrame implements ActionListener,
 		nPanel.add(Box.createHorizontalStrut(3));
 		nPanel.add(nSlider);
 
-		JPanel ztcPanel = new JPanel();
+		final JPanel ztcPanel = new JPanel();
 		ztcPanel.setLayout(new BoxLayout(ztcPanel, BoxLayout.X_AXIS));
 		sliderPanel.add(ztcPanel);
 
 		// image icon
-		BufferedImage dummy = AWTImageTools.makeImage(new byte[1][1], 1, 1, false);
+		final BufferedImage dummy =
+			AWTImageTools.makeImage(new byte[1][1], 1, 1, false);
 		icon = new ImageIcon(dummy);
 		iconLabel = new JLabel(icon, SwingConstants.LEFT);
 		iconLabel.setVerticalAlignment(SwingConstants.TOP);
@@ -193,16 +194,16 @@ public class ImageViewer extends JFrame implements ActionListener,
 		iconLabel.addMouseMotionListener(this);
 
 		// menu bar
-		JMenuBar menubar = new JMenuBar();
+		final JMenuBar menubar = new JMenuBar();
 		// FIXME: currently the menu bar is disabled to restrict the use of
 		// ImageViewer to the Show command. We could attempt to get this
 		// implementation working nicely, or just convert to an IJ2 implementation.
 //		setJMenuBar(menubar);
 
-		JMenu file = new JMenu("File");
+		final JMenu file = new JMenu("File");
 		file.setMnemonic('f');
 		menubar.add(file);
-		JMenuItem fileOpen = new JMenuItem("Open...");
+		final JMenuItem fileOpen = new JMenuItem("Open...");
 		fileOpen.setMnemonic('o');
 		fileOpen.setActionCommand("open");
 		fileOpen.addActionListener(this);
@@ -214,25 +215,25 @@ public class ImageViewer extends JFrame implements ActionListener,
 		fileSave.addActionListener(this);
 		file.add(fileSave);
 		fileView = new JMenuItem("View Metadata...");
-		JMenuItem fileExit = new JMenuItem("Exit");
+		final JMenuItem fileExit = new JMenuItem("Exit");
 		fileExit.setMnemonic('x');
 		fileExit.setActionCommand("exit");
 		fileExit.addActionListener(this);
 		file.add(fileExit);
 
-		JMenu options = new JMenu("Options");
+		final JMenu options = new JMenu("Options");
 		options.setMnemonic('p');
 		menubar.add(options);
-		JMenuItem optionsFPS = new JMenuItem("Frames per Second...");
+		final JMenuItem optionsFPS = new JMenuItem("Frames per Second...");
 		optionsFPS.setMnemonic('f');
 		optionsFPS.setActionCommand("fps");
 		optionsFPS.addActionListener(this);
 		options.add(optionsFPS);
 
-		JMenu help = new JMenu("Help");
+		final JMenu help = new JMenu("Help");
 		help.setMnemonic('h');
 		menubar.add(help);
-		JMenuItem helpAbout = new JMenuItem("About...");
+		final JMenuItem helpAbout = new JMenuItem("About...");
 		helpAbout.setMnemonic('a');
 		helpAbout.setActionCommand("about");
 		helpAbout.addActionListener(this);
@@ -247,37 +248,37 @@ public class ImageViewer extends JFrame implements ActionListener,
 	 * 
 	 * @param canCloseReader whether or not the underlying reader can be closed
 	 */
-	public ImageViewer(Context context, boolean canCloseReader) {
+	public ImageViewer(final Context context, final boolean canCloseReader) {
 		this(context);
 		this.canCloseReader = canCloseReader;
 	}
 
 	/** Opens the given data source using the current format reader. */
-	public void open(String id) {
+	public void open(final String id) {
 		wait(true);
 		try {
 			canCloseReader = true;
 			myReader = initializeService.initializeReader(id);
-			long planeCount = myReader.getMetadata().get(0).getPlaneCount();
-			ProgressMonitor progress =
+			final long planeCount = myReader.getMetadata().get(0).getPlaneCount();
+			final ProgressMonitor progress =
 				new ProgressMonitor(this, "Reading " + id, null, 0, 0 + 1);
 			progress.setProgress(1);
-			BufferedImage[] img = new BufferedImage[(int) planeCount];
+			final BufferedImage[] img = new BufferedImage[(int) planeCount];
 			for (long planeIndex = 0; planeIndex < planeCount; planeIndex++) {
 				if (progress.isCanceled()) break;
-				Plane plane = myReader.openPlane(0, planeIndex);
+				final Plane plane = myReader.openPlane(0, planeIndex);
 				img[(int) planeIndex] = AWTImageTools.openImage(plane, myReader, 0);
 			}
 			progress.setProgress(0 + 2);
 			setImages(myReader, img);
 			myReader.close(true);
 		}
-		catch (FormatException exc) {
+		catch (final FormatException exc) {
 			logService.info("", exc);
 			wait(false);
 			return;
 		}
-		catch (IOException exc) {
+		catch (final IOException exc) {
 			logService.info("", exc);
 			wait(false);
 			return;
@@ -289,20 +290,20 @@ public class ImageViewer extends JFrame implements ActionListener,
 	 * Saves the current images to the given destination using the current format
 	 * writer.
 	 */
-	public void save(String id) {
+	public void save(final String id) {
 		if (images == null) return;
 		wait(true);
 		try {
 			myWriter.setDest(id);
-			boolean stack = myWriter.canDoStacks();
-			ProgressMonitor progress =
+			final boolean stack = myWriter.canDoStacks();
+			final ProgressMonitor progress =
 				new ProgressMonitor(this, "Saving " + id, null, 0, stack
 					? images.length : 1);
 			if (stack) {
 				// save entire stack
 				for (int i = 0; i < images.length; i++) {
 					progress.setProgress(i);
-					boolean canceled = progress.isCanceled();
+					final boolean canceled = progress.isCanceled();
 					myWriter.savePlane(0, i, getPlane(images[i]));
 					if (canceled) break;
 				}
@@ -310,22 +311,22 @@ public class ImageViewer extends JFrame implements ActionListener,
 			}
 			else {
 				// save current image only
-					myWriter.savePlane(0, 0, getPlane(getImage()));
+				myWriter.savePlane(0, 0, getPlane(getImage()));
 				progress.setProgress(1);
 			}
 			myWriter.close();
 		}
-		catch (FormatException exc) {
+		catch (final FormatException exc) {
 			logService.info("", exc);
 		}
-		catch (IOException exc) {
+		catch (final IOException exc) {
 			logService.info("", exc);
 		}
 		wait(false);
 	}
 
 	/** Sets the viewer to display the given images. */
-	public void setImages(BufferedImage[] img) {
+	public void setImages(final BufferedImage[] img) {
 		setImages(null, img);
 	}
 
@@ -333,7 +334,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 	 * Sets the viewer to display the given images, obtaining corresponding core
 	 * metadata from the specified format reader.
 	 */
-	public void setImages(Reader reader, BufferedImage[] img) {
+	public void setImages(final Reader reader, final BufferedImage[] img) {
 		filename = reader == null ? null : reader.getCurrentFile();
 		myReader = reader;
 		images = img;
@@ -354,7 +355,8 @@ public class ImageViewer extends JFrame implements ActionListener,
 			sb.append(reader.getCurrentFile());
 			sb.append(" ");
 		}
-		String format = reader == null ? null : reader.getFormat().getFormatName();
+		final String format =
+			reader == null ? null : reader.getFormat().getFormatName();
 		if (format != null) {
 			sb.append("(");
 			sb.append(format);
@@ -370,12 +372,12 @@ public class ImageViewer extends JFrame implements ActionListener,
 
 	/** Gets the currently displayed image. */
 	public BufferedImage getImage() {
-		int ndx = getPlaneIndex();
+		final int ndx = getPlaneIndex();
 		return images == null || ndx >= images.length ? null : images[ndx];
 	}
 
-	public Plane getPlane(BufferedImage image) {
-		BufferedImagePlane plane = new BufferedImagePlane(context);
+	public Plane getPlane(final BufferedImage image) {
+		final BufferedImagePlane plane = new BufferedImagePlane(context);
 		plane.setData(image);
 		return plane;
 	}
@@ -387,7 +389,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 
 	// -- Window API methods --
 	@Override
-	public void setVisible(boolean visible) {
+	public void setVisible(final boolean visible) {
 		super.setVisible(visible);
 		// kick off animation thread
 		new Thread(this).start();
@@ -397,14 +399,14 @@ public class ImageViewer extends JFrame implements ActionListener,
 
 	/** Handles menu commands. */
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		String cmd = e.getActionCommand();
+	public void actionPerformed(final ActionEvent e) {
+		final String cmd = e.getActionCommand();
 		if ("open".equals(cmd)) {
 			wait(true);
-			JFileChooser chooser =
+			final JFileChooser chooser =
 				guiService.buildFileChooser(formatService.getAllFormats());
 			wait(false);
-			int rval = chooser.showOpenDialog(this);
+			final int rval = chooser.showOpenDialog(this);
 			if (rval == JFileChooser.APPROVE_OPTION) {
 				final File file = chooser.getSelectedFile();
 				if (file != null) open(file.getAbsolutePath(), myReader);
@@ -412,15 +414,16 @@ public class ImageViewer extends JFrame implements ActionListener,
 		}
 		else if ("save".equals(cmd)) {
 			wait(true);
-			JFileChooser chooser = guiService.buildFileChooser(formatService.getOutputFormats());
+			final JFileChooser chooser =
+				guiService.buildFileChooser(formatService.getOutputFormats());
 			wait(false);
-			int rval = chooser.showSaveDialog(this);
+			final int rval = chooser.showSaveDialog(this);
 			if (rval == JFileChooser.APPROVE_OPTION) {
 				if (myWriter != null) {
 					try {
 						myWriter.close();
 					}
-					catch (IOException e1) {
+					catch (final IOException e1) {
 						logService.error(e1);
 					}
 				}
@@ -430,10 +433,10 @@ public class ImageViewer extends JFrame implements ActionListener,
 						initializeService.initializeWriter(myReader.getMetadata(), file
 							.getAbsolutePath());
 				}
-				catch (FormatException e1) {
+				catch (final FormatException e1) {
 					logService.error(e);
 				}
-				catch (IOException e1) {
+				catch (final IOException e1) {
 					logService.error(e);
 				}
 				if (file != null) save(file.getAbsolutePath(), myWriter);
@@ -444,13 +447,13 @@ public class ImageViewer extends JFrame implements ActionListener,
 			// HACK - JOptionPane prevents shutdown on dispose
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-			String result =
+			final String result =
 				JOptionPane.showInputDialog(this,
 					"Animate using space bar. How many frames per second?", "" + fps);
 			try {
 				fps = Integer.parseInt(result);
 			}
-			catch (NumberFormatException exc) {
+			catch (final NumberFormatException exc) {
 				logService.debug("Could not parse fps " + fps, exc);
 			}
 		}
@@ -458,7 +461,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 			// HACK - JOptionPane prevents shutdown on dispose
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-			String msg =
+			final String msg =
 				"<html>" + "SCIFIO core for reading and " + "converting file formats."
 					+ "<br>Copyright (C) 2005 - 2013" + " Open Microscopy Environment:"
 					+ "<ul>"
@@ -477,10 +480,10 @@ public class ImageViewer extends JFrame implements ActionListener,
 
 	/** Handles slider events. */
 	@Override
-	public void stateChanged(ChangeEvent e) {
-		boolean outOfBounds = false;
+	public void stateChanged(final ChangeEvent e) {
+		final boolean outOfBounds = false;
 		updateLabel(-1, -1);
-		BufferedImage image = outOfBounds ? null : getImage();
+		final BufferedImage image = outOfBounds ? null : getImage();
 		if (image == null) {
 			iconLabel.setIcon(null);
 			iconLabel.setText("No image plane");
@@ -496,27 +499,27 @@ public class ImageViewer extends JFrame implements ActionListener,
 
 	/** Handles key presses. */
 	@Override
-	public void keyPressed(KeyEvent e) {
+	public void keyPressed(final KeyEvent e) {
 		if (e.getKeyChar() == ANIMATION_KEY) anim = !anim; // toggle animation
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {}
+	public void keyReleased(final KeyEvent e) {}
 
 	@Override
-	public void keyTyped(KeyEvent e) {}
+	public void keyTyped(final KeyEvent e) {}
 
 	// -- MouseMotionListener API methods --
 
 	/** Handles cursor probes. */
 	@Override
-	public void mouseDragged(MouseEvent e) {
+	public void mouseDragged(final MouseEvent e) {
 		updateLabel(e.getX(), e.getY());
 	}
 
 	/** Handles cursor probes. */
 	@Override
-	public void mouseMoved(MouseEvent e) {
+	public void mouseMoved(final MouseEvent e) {
 		updateLabel(e.getX(), e.getY());
 	}
 
@@ -529,7 +532,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 			try {
 				Thread.sleep(1000 / fps);
 			}
-			catch (InterruptedException exc) {
+			catch (final InterruptedException exc) {
 				logService.debug("", exc);
 			}
 		}
@@ -538,25 +541,25 @@ public class ImageViewer extends JFrame implements ActionListener,
 	// -- WindowListener API methods --
 
 	@Override
-	public void windowClosing(WindowEvent e) {}
+	public void windowClosing(final WindowEvent e) {}
 
 	@Override
-	public void windowActivated(WindowEvent e) {}
+	public void windowActivated(final WindowEvent e) {}
 
 	@Override
-	public void windowDeactivated(WindowEvent e) {}
+	public void windowDeactivated(final WindowEvent e) {}
 
 	@Override
-	public void windowOpened(WindowEvent e) {}
+	public void windowOpened(final WindowEvent e) {}
 
 	@Override
-	public void windowIconified(WindowEvent e) {}
+	public void windowIconified(final WindowEvent e) {}
 
 	@Override
-	public void windowDeiconified(WindowEvent e) {}
+	public void windowDeiconified(final WindowEvent e) {}
 
 	@Override
-	public void windowClosed(WindowEvent e) {
+	public void windowClosed(final WindowEvent e) {
 		try {
 			if (myWriter != null) {
 				myWriter.close();
@@ -565,7 +568,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 				myReader.close();
 			}
 		}
-		catch (IOException io) {}
+		catch (final IOException io) {}
 	}
 
 	// -- Helper methods --
@@ -575,7 +578,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 	/** Updates cursor probe label. */
 	protected void updateLabel(int x, int y) {
 		if (images == null) return;
-		int ndx = getPlaneIndex();
+		final int ndx = getPlaneIndex();
 		sb.setLength(0);
 		if (images.length > 1) {
 			sb.append("N=");
@@ -583,9 +586,9 @@ public class ImageViewer extends JFrame implements ActionListener,
 			sb.append("/");
 			sb.append(images.length);
 		}
-		BufferedImage image = images[ndx];
-		int w = image == null ? -1 : image.getWidth();
-		int h = image == null ? -1 : image.getHeight();
+		final BufferedImage image = images[ndx];
+		final int w = image == null ? -1 : image.getWidth();
+		final int h = image == null ? -1 : image.getHeight();
 		if (x >= w) x = w - 1;
 		if (y >= h) y = h - 1;
 		if (x >= 0 && y >= 0) {
@@ -603,8 +606,8 @@ public class ImageViewer extends JFrame implements ActionListener,
 				sb.append(h);
 			}
 			if (image != null) {
-				Raster r = image.getRaster();
-				double[] pix = r.getPixel(x, y, (double[]) null);
+				final Raster r = image.getRaster();
+				final double[] pix = r.getPixel(x, y, (double[]) null);
 				sb.append("; value");
 				sb.append(pix.length > 1 ? "s=(" : "=");
 				for (int i = 0; i < pix.length; i++) {
@@ -613,7 +616,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 				}
 				if (pix.length > 1) sb.append(")");
 				sb.append("; type=");
-				int pixelType = AWTImageTools.getPixelType(image);
+				final int pixelType = AWTImageTools.getPixelType(image);
 				sb.append(FormatTools.getPixelTypeString(pixelType));
 			}
 		}
@@ -622,7 +625,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 	}
 
 	/** Toggles wait cursor. */
-	protected void wait(boolean wait) {
+	protected void wait(final boolean wait) {
 		setCursor(wait ? Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR) : null);
 	}
 
@@ -638,7 +641,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 				try {
 					myReader.close();
 				}
-				catch (IOException exc) {
+				catch (final IOException exc) {
 					logService.info("", exc);
 				}
 				myReader = r;
@@ -659,7 +662,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 				try {
 					myWriter.close();
 				}
-				catch (IOException exc) {
+				catch (final IOException exc) {
 					logService.info("", exc);
 				}
 				myWriter = w;
@@ -670,9 +673,9 @@ public class ImageViewer extends JFrame implements ActionListener,
 
 	// -- Main method --
 
-	public static void main(String[] args) {
-		ImageViewer viewer = new ImageViewer(new Context(SCIFIOService.class,
-			SciJavaService.class));
+	public static void main(final String[] args) {
+		final ImageViewer viewer =
+			new ImageViewer(new Context(SCIFIOService.class, SciJavaService.class));
 		viewer.setVisible(true);
 		if (args.length > 0) viewer.open(args[0]);
 	}

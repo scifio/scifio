@@ -58,7 +58,7 @@ public class BitArrayLoader extends AbstractArrayLoader<BitArray> {
 	public void convertBytes(final BitArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		ImageMetadata iMeta = reader().getMetadata().get(0);
+		final ImageMetadata iMeta = reader().getMetadata().get(0);
 		final int pixelType = iMeta.getPixelType();
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
 		final int offset = planesRead * (bytes.length / bpp) * 8;

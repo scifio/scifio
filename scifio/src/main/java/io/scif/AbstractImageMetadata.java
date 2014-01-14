@@ -116,8 +116,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	private boolean indexed;
 
 	/**
-	 * Number of planar axes in this image. These will always be the first axes
-	 * in a list of planar and non-planar axes.
+	 * Number of planar axes in this image. These will always be the first axes in
+	 * a list of planar and non-planar axes.
 	 */
 	@Field(label = "planarAxiscount")
 	private int planarAxisCount = -1;
@@ -210,7 +210,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		interleavedAxisCount = count;
 	}
 
-
 	@Override
 	public void setFalseColor(final boolean falseColor) {
 		this.falseColor = falseColor;
@@ -234,10 +233,10 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void setAxisTypes(final AxisType... axisTypes) {
-		CalibratedAxis[] axes = new CalibratedAxis[axisTypes.length];
-		
-		for (int i=0; i<axisTypes.length; i++) {
-			AxisType t = axisTypes[i];
+		final CalibratedAxis[] axes = new CalibratedAxis[axisTypes.length];
+
+		for (int i = 0; i < axisTypes.length; i++) {
+			final AxisType t = axisTypes[i];
 			CalibratedAxis c = getAxis(t);
 			if (c == null) c = FormatTools.createAxis(t);
 			axes[i] = c;
@@ -330,7 +329,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-
 	public long getThumbSizeX() {
 		long thumbX = thumbSizeX;
 
@@ -370,13 +368,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public CalibratedAxis getAxis(AxisType axisType) {
-		for (CalibratedAxis axis : axes) {
+	public CalibratedAxis getAxis(final AxisType axisType) {
+		for (final CalibratedAxis axis : axes) {
 			if (axis.type().equals(axisType)) return axis;
 		}
 		return null;
 	}
-	
+
 	@Override
 	public int getPixelType() {
 		return pixelType;
@@ -494,11 +492,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-
 	public long getAxisLength(final int axisIndex) {
 		if (axisIndex < 0 || axisIndex >= axes.size()) throw new IllegalArgumentException(
-			"Invalid axisIndex: " + axisIndex + ". " + axes.size() +
-				" axes present.");
+			"Invalid axisIndex: " + axisIndex + ". " + axes.size() + " axes present.");
 
 		return getAxisLength(axes.get(axisIndex).type());
 	}
@@ -617,8 +613,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	/**
-	 * Resets the cached planar and non-planar axes. Used after the axes
-	 * or planarAxisCount are modified.
+	 * Resets the cached planar and non-planar axes. Used after the axes or
+	 * planarAxisCount are modified.
 	 */
 	private void clearCachedAxes() {
 		planarAxes = null;

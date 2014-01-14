@@ -123,8 +123,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	public SCIFIOCellImg<T, ShortArray, SCIFIOCell<ShortArray>>
 		createShortInstance(final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new ShortArrayLoader(reader(), subregion), dimensions,
-			entitiesPerPixel);
+		return createInstance(new ShortArrayLoader(reader(), subregion),
+			dimensions, entitiesPerPixel);
 	}
 
 	@Override
@@ -147,16 +147,16 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	public SCIFIOCellImg<T, FloatArray, SCIFIOCell<FloatArray>>
 		createFloatInstance(final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new FloatArrayLoader(reader(), subregion), dimensions,
-			entitiesPerPixel);
+		return createInstance(new FloatArrayLoader(reader(), subregion),
+			dimensions, entitiesPerPixel);
 	}
 
 	@Override
 	public SCIFIOCellImg<T, DoubleArray, SCIFIOCell<DoubleArray>>
 		createDoubleInstance(final long[] dimensions, final int entitiesPerPixel)
 	{
-		return createInstance(new DoubleArrayLoader(reader(), subregion), dimensions,
-			entitiesPerPixel);
+		return createInstance(new DoubleArrayLoader(reader(), subregion),
+			dimensions, entitiesPerPixel);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -197,8 +197,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 		defaultCellDimensions = new int[] { cellXY[0], cellXY[1], 1, 1, 1 };
 	}
-	
-	public void setSubRegion(SubRegion region) {
+
+	public void setSubRegion(final SubRegion region) {
 		subregion = region;
 	}
 
@@ -211,7 +211,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		dimensions = checkDimensions(dimensions);
 		final int[] cellSize = checkCellSize(defaultCellDimensions, dimensions);
 
-		final SCIFIOCellCache<A> c = new SCIFIOCellCache<A>(reader.getContext(), loader);
+		final SCIFIOCellCache<A> c =
+			new SCIFIOCellCache<A>(reader.getContext(), loader);
 
 		return new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(
 			c, entitiesPerPixel, dimensions, cellSize));
@@ -257,8 +258,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 		final Metadata meta = reader.getMetadata();
 
-		final int sizeX = (int)meta.get(0).getAxisLength(Axes.X);
-		final int sizeY = (int)meta.get(0).getAxisLength(Axes.Y);
+		final int sizeX = (int) meta.get(0).getAxisLength(Axes.X);
+		final int sizeY = (int) meta.get(0).getAxisLength(Axes.Y);
 
 		// Invalid sizes default to 1, 1, which are automatically expanded.
 		if (tileWidth <= 0) tileWidth = 1;

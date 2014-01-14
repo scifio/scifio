@@ -122,7 +122,8 @@ public class DataToolsTest {
 
 	// -- Helper methods --
 
-	private void assertSafeMultiply32Pass(final int expected, final long... sizes)
+	private void
+		assertSafeMultiply32Pass(final int expected, final long... sizes)
 	{
 		assertEquals(expected, DataTools.safeMultiply32(sizes));
 	}

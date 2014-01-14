@@ -61,10 +61,10 @@ public class FormatFileFilter extends FileFilter implements java.io.FileFilter,
 	// -- Fields --
 
 	/** Format to use for filtering */
-	private Format format;
+	private final Format format;
 
 	/** Format description. */
-	private String desc;
+	private final String desc;
 
 	// -- Constructors --
 
@@ -73,10 +73,10 @@ public class FormatFileFilter extends FileFilter implements java.io.FileFilter,
 	 * 
 	 * @param format The format to use for verifying a file's type.
 	 */
-	public FormatFileFilter(Format format) {
+	public FormatFileFilter(final Format format) {
 		this.format = format;
-		StringBuffer sb = new StringBuffer(format.getFormatName());
-		String[] exts = format.getSuffixes();
+		final StringBuffer sb = new StringBuffer(format.getFormatName());
+		final String[] exts = format.getSuffixes();
 		boolean first = true;
 		for (int i = 0; i < exts.length; i++) {
 			if (exts[i] == null || exts[i].equals("")) continue;
@@ -105,12 +105,12 @@ public class FormatFileFilter extends FileFilter implements java.io.FileFilter,
 	 * Accepts files in accordance with the associated format's {@link Checker}.
 	 */
 	@Override
-	public boolean accept(File f) {
+	public boolean accept(final File f) {
 		if (f.isDirectory()) return true;
 		try {
 			return format.createChecker().isFormat(f.getPath(), false);
 		}
-		catch (FormatException e) {
+		catch (final FormatException e) {
 			return false;
 		}
 	}
@@ -133,7 +133,7 @@ public class FormatFileFilter extends FileFilter implements java.io.FileFilter,
 
 	/** Compares two FileFilter objects alphanumerically. */
 	@Override
-	public int compareTo(FileFilter o) {
+	public int compareTo(final FileFilter o) {
 		return desc.compareTo(o.getDescription());
 	}
 

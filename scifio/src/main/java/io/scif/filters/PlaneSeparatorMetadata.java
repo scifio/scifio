@@ -73,7 +73,7 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 	/**
 	 * Specify which AxisTypes should be separated.
 	 */
-	public void separate(AxisType... types) {
+	public void separate(final AxisType... types) {
 		if (unwrap() != null) {
 			matchTypes(types);
 			populateImageMetadata();
@@ -83,7 +83,7 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 	/**
 	 * @return true iff the specified AxisType is currently being split on
 	 */
-	public boolean splitting(AxisType type) {
+	public boolean splitting(final AxisType type) {
 		return splitTypes.contains(type);
 	}
 
@@ -92,7 +92,7 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 	@Override
 	public void wrap(final Metadata meta) {
 		splitTypes = new HashSet<AxisType>();
-		for (int i=0; i<meta.get(0).getInterleavedAxisCount(); i++) {
+		for (int i = 0; i < meta.get(0).getInterleavedAxisCount(); i++) {
 			splitTypes.add(meta.get(0).getAxis(i).type());
 		}
 		super.wrap(meta);
@@ -115,7 +115,7 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 
 			// offset to the next axis position
 			int offset = 0;
-			for (AxisType type : splitTypes) {
+			for (final AxisType type : splitTypes) {
 				// For each potentially split axis, if it's a planar axis, move it to a
 				// non-planar position
 				if (iMeta.getAxisIndex(type) >= 0 &&
@@ -136,10 +136,10 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 	/**
 	 * Returns a list of all AxisTypes that are present in the wrapped Metadata.
 	 */
-	private void matchTypes(AxisType... types) {
+	private void matchTypes(final AxisType... types) {
 		splitTypes.clear();
-		for (AxisType t : types) {
-			int axisIndex = unwrap().get(0).getAxisIndex(t);
+		for (final AxisType t : types) {
+			final int axisIndex = unwrap().get(0).getAxisIndex(t);
 			// If the specified axis is present and a planar axis, we can separate it
 			if (axisIndex >= 0 && axisIndex < unwrap().get(0).getPlanarAxisCount()) {
 				splitTypes.add(t);

@@ -230,7 +230,8 @@ public class PICTFormat extends AbstractFormat {
 		// -- HasColorTable API Methods --
 
 		@Override
-		public ColorTable getColorTable(final int imageIndex, final long planeIndex)
+		public ColorTable
+			getColorTable(final int imageIndex, final long planeIndex)
 		{
 			return lookup == null ? null : new ColorTable8(lookup);
 		}
@@ -282,8 +283,8 @@ public class PICTFormat extends AbstractFormat {
 				// skip over v2 header -- don't need it here
 				// stream.skipBytes(26);
 				stream.skipBytes(6);
-				int pixelsPerInchX = stream.readInt();
-				int pixelsPerInchY = stream.readInt();
+				final int pixelsPerInchX = stream.readInt();
+				final int pixelsPerInchY = stream.readInt();
 				iMeta.addAxis(new DefaultLinearAxis(Axes.X, "in", pixelsPerInchX));
 				iMeta.addAxis(new DefaultLinearAxis(Axes.Y, "in", pixelsPerInchY));
 				stream.skipBytes(4);
@@ -356,10 +357,12 @@ public class PICTFormat extends AbstractFormat {
 					meta.getJpegOffsets().add(in.getFilePointer() + 2);
 					meta.get(0).setAxisLength(Axes.CHANNEL, 3);
 					while ((in.readShort() & 0xffff) != 0xffd9 &&
-						in.getFilePointer() < in.length()) { /* Read to end of 0xffd9 */ }
+						in.getFilePointer() < in.length())
+					{ /* Read to end of 0xffd9 */}
 					while (in.getFilePointer() < in.length()) {
 						while ((in.readShort() & 0xffff) != 0xffd8 &&
-							in.getFilePointer() < in.length()) { /* Read to jpeg offsets */ }
+							in.getFilePointer() < in.length())
+						{ /* Read to jpeg offsets */}
 						if (in.getFilePointer() < in.length()) {
 							meta.getJpegOffsets().add(in.getFilePointer() - 2);
 						}
@@ -399,10 +402,11 @@ public class PICTFormat extends AbstractFormat {
 				// rowBytes doesn't exist, so set it to its logical value
 				switch (pixelSize) {
 					case 32:
-						meta.setRowBytes((int)meta.get(0).getAxisLength(Axes.X) * compCount);
+						meta.setRowBytes((int) meta.get(0).getAxisLength(Axes.X) *
+							compCount);
 						break;
 					case 16:
-						meta.setRowBytes((int)meta.get(0).getAxisLength(Axes.X) * 2);
+						meta.setRowBytes((int) meta.get(0).getAxisLength(Axes.X) * 2);
 						break;
 					default:
 						throw new FormatException("Sorry, vector data not supported.");
@@ -450,7 +454,7 @@ public class PICTFormat extends AbstractFormat {
 			byte[] uBuf = null; // row uncompressed data
 			int[] uBufI = null; // row uncompressed data - 16+ bit pixels
 			final int bufSize = meta.getRowBytes();
-			final int outBufSize = (int)meta.get(0).getAxisLength(Axes.X);
+			final int outBufSize = (int) meta.get(0).getAxisLength(Axes.X);
 			byte[] outBuf = null; // used to expand pixel data
 
 			final boolean compressed = (meta.getRowBytes() >= 8) || (pixelSize == 32);
@@ -459,11 +463,12 @@ public class PICTFormat extends AbstractFormat {
 
 			switch (pixelSize) {
 				case 32:
-					if (!compressed) uBufI = new int[(int)meta.get(0).getAxisLength(Axes.X)];
+					if (!compressed) uBufI =
+						new int[(int) meta.get(0).getAxisLength(Axes.X)];
 					else uBuf = new byte[bufSize];
 					break;
 				case 16:
-					uBufI = new int[(int)meta.get(0).getAxisLength(Axes.X)];
+					uBufI = new int[(int) meta.get(0).getAxisLength(Axes.X)];
 					break;
 				case 8:
 					uBuf = new byte[bufSize];
@@ -523,7 +528,7 @@ public class PICTFormat extends AbstractFormat {
 					in.read(buf, 0, rawLen);
 
 					if (pixelSize == 16) {
-						uBufI = new int[(int)meta.get(0).getAxisLength(Axes.X)];
+						uBufI = new int[(int) meta.get(0).getAxisLength(Axes.X)];
 						unpackBits(buf, uBufI);
 						meta.getStrips().add(uBufI);
 						meta.get(0).setAxisLength(Axes.CHANNEL, 3);
@@ -532,7 +537,7 @@ public class PICTFormat extends AbstractFormat {
 						final PackbitsCodec c = new PackbitsCodec();
 						c.setContext(getContext());
 						final CodecOptions options = new CodecOptions();
-						options.maxBytes = (int)meta.get(0).getAxisLength(Axes.X) * 4;
+						options.maxBytes = (int) meta.get(0).getAxisLength(Axes.X) * 4;
 						uBuf = c.decompress(buf, options);
 					}
 
@@ -547,10 +552,11 @@ public class PICTFormat extends AbstractFormat {
 						byte[] newBuf = null;
 
 						for (int q = 0; q < compCount; q++) {
-							final int offset = q * (int)meta.get(0).getAxisLength(Axes.X);
+							final int offset = q * (int) meta.get(0).getAxisLength(Axes.X);
 							final int len =
-								Math.min((int)meta.get(0).getAxisLength(Axes.X), uBuf.length - offset);
-							newBuf = new byte[(int)meta.get(0).getAxisLength(Axes.X)];
+								Math.min((int) meta.get(0).getAxisLength(Axes.X), uBuf.length -
+									offset);
+							newBuf = new byte[(int) meta.get(0).getAxisLength(Axes.X)];
 							if (offset < uBuf.length) {
 								System.arraycopy(uBuf, offset, newBuf, 0, len);
 							}
@@ -685,9 +691,9 @@ public class PICTFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
+			final long[] planeMax) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
@@ -749,10 +755,8 @@ public class PICTFormat extends AbstractFormat {
 			}
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis],
-								y = (int) planeMin[yAxis],
-								w = (int) planeMax[xAxis],
-								h = (int) planeMax[yAxis];
+			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
+				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 			final int planeSize = w * h;
 
 			if (meta.getLookup() != null) {
@@ -771,7 +775,8 @@ public class PICTFormat extends AbstractFormat {
 			{
 				// 24 or 32 bit data
 
-				final int nc = meta.getStrips().size() / (int)meta.get(0).getAxisLength(Axes.Y);
+				final int nc =
+					meta.getStrips().size() / (int) meta.get(0).getAxisLength(Axes.Y);
 
 				byte[] c0 = null;
 				byte[] c1 = null;

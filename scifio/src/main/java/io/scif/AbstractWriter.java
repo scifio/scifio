@@ -149,7 +149,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		setDest(new RandomAccessOutputStream(getContext(), fileName));
 	}
 
-
 	@Override
 	public void setDest(final File file, final int imageIndex)
 		throws FormatException, IOException
@@ -293,12 +292,12 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	// -- Helper methods --
 
 	/** Sets up the initialized array and ensures this Writer is ready for writing */
-	private void initialize(final int imageIndex) throws FormatException
-	{
+	private void initialize(final int imageIndex) throws FormatException {
 		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
 		initialized = new boolean[metadata.getImageCount()][];
 		for (int i = 0; i < metadata.getImageCount(); i++) {
-			initialized[i] = new boolean[(int) metadata.get(imageIndex).getPlaneCount()];
+			initialized[i] =
+				new boolean[(int) metadata.get(imageIndex).getPlaneCount()];
 		}
 	}
 

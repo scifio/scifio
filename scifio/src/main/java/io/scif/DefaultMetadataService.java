@@ -89,7 +89,7 @@ public class DefaultMetadataService extends AbstractService implements
 			final String rawValue = token.substring(equals + 1);
 			// Check for a list of values
 			if (rawValue.indexOf(',') >= 0) {
-				String[] values = rawValue.split(",");
+				final String[] values = rawValue.split(",");
 				value = Arrays.asList(values);
 			}
 			else {

@@ -127,8 +127,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 	// -- MasterFilter API Methods --
 
 	@Override
-	public <F extends Filter> F enable(final Class<F> filterClass)
-	{
+	public <F extends Filter> F enable(final Class<F> filterClass) {
 		@SuppressWarnings("unchecked")
 		final F filter = (F) instanceMap.get(filterClass);
 
@@ -141,8 +140,7 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 	}
 
 	@Override
-	public boolean disable(final Class<? extends Filter> filterClass)
-	{
+	public boolean disable(final Class<? extends Filter> filterClass) {
 		final Filter filter = instanceMap.get(filterClass);
 		boolean disabled = false;
 

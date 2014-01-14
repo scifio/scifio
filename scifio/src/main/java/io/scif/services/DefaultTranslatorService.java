@@ -119,8 +119,8 @@ public class DefaultTranslatorService extends
 	 * @return - Translator capable of translating between the given source and
 	 *         destination
 	 */
-	private Translator lookup(Class<? extends Metadata> source,
-		Class<? extends Metadata> dest)
+	private Translator lookup(final Class<? extends Metadata> source,
+		final Class<? extends Metadata> dest)
 	{
 		if (sourceToDestMap == null) {
 			synchronized (this) {
@@ -131,7 +131,7 @@ public class DefaultTranslatorService extends
 		}
 
 		// Just look up the translator to try and find an exact match
-		Map<Class<? extends Metadata>, Translator> destMap =
+		final Map<Class<? extends Metadata>, Translator> destMap =
 			sourceToDestMap.get(source);
 
 		if (destMap != null) {
@@ -150,14 +150,16 @@ public class DefaultTranslatorService extends
 	 * @return - Translator capable of translating between the given source and
 	 *         destination
 	 */
-	private Translator lookup(Translator t, boolean exact,
-		Class<? extends Metadata> source, Class<? extends Metadata> dest)
+	private Translator
+		lookup(Translator t, final boolean exact,
+			final Class<? extends Metadata> source,
+			final Class<? extends Metadata> dest)
 	{
 		if (t == null && !exact) {
 			// Loop over the translators in priority order to see if we have a
 			// suitable candidate
 			for (int i = 0; i < getInstances().size() && t == null; i++) {
-				Translator translator = getInstances().get(i);
+				final Translator translator = getInstances().get(i);
 				if (translator.source().isAssignableFrom(source) &&
 					translator.dest().isAssignableFrom(dest))
 				{
@@ -176,7 +178,7 @@ public class DefaultTranslatorService extends
 	private void createTranslatorMap() {
 		sourceToDestMap =
 			new HashMap<Class<? extends Metadata>, Map<Class<? extends Metadata>, Translator>>();
-		for (Translator translator : getInstances()) {
+		for (final Translator translator : getInstances()) {
 			addToMap(translator.source(), translator.dest(), sourceToDestMap,
 				translator);
 		}
@@ -194,10 +196,10 @@ public class DefaultTranslatorService extends
 	private
 		void
 		addToMap(
-			Class<? extends Metadata> key1,
-			Class<? extends Metadata> key2,
-			Map<Class<? extends Metadata>, Map<Class<? extends Metadata>, Translator>> map,
-			Translator translator)
+			final Class<? extends Metadata> key1,
+			final Class<? extends Metadata> key2,
+			final Map<Class<? extends Metadata>, Map<Class<? extends Metadata>, Translator>> map,
+			final Translator translator)
 	{
 		Map<Class<? extends Metadata>, Translator> innerMap = map.get(key1);
 

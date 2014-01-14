@@ -62,7 +62,7 @@ public class RefMapCleaningProvider extends AbstractSCIFIOPlugin implements
 	// -- RefProvider API --
 
 	@Override
-	public boolean handles(Object referent, Object... params) {
+	public boolean handles(final Object referent, final Object... params) {
 		boolean handles = SCIFIOCell.class.isAssignableFrom(referent.getClass());
 		handles = handles && params.length == 2;
 		handles = handles && Integer.class.isAssignableFrom(params[0].getClass());
@@ -71,10 +71,10 @@ public class RefMapCleaningProvider extends AbstractSCIFIOPlugin implements
 	}
 
 	@Override
-	public Reference makeRef(Object referent, ReferenceQueue queue,
-		Object... params)
+	public Reference makeRef(final Object referent, final ReferenceQueue queue,
+		final Object... params)
 	{
-		Reference ref = new RefMapCleaner(referent, queue, params);
+		final Reference ref = new RefMapCleaner(referent, queue, params);
 		return ref;
 	}
 
@@ -99,8 +99,8 @@ public class RefMapCleaningProvider extends AbstractSCIFIOPlugin implements
 
 		// -- Constructor --
 
-		public RefMapCleaner(Object referent, ReferenceQueue q,
-			Object... params)
+		public RefMapCleaner(final Object referent, final ReferenceQueue q,
+			final Object... params)
 		{
 			super((SCIFIOCell<A>) referent, q);
 			if (params.length != 2) {
@@ -113,7 +113,7 @@ public class RefMapCleaningProvider extends AbstractSCIFIOPlugin implements
 				key = (Integer) params[0];
 				refMap = (Map<Integer, RefMapCleaner<A>>) params[1];
 			}
-			catch (ClassCastException e) {
+			catch (final ClassCastException e) {
 				throw new IllegalArgumentException(
 					"RefMapCleaningRef - invalid parameters");
 			}

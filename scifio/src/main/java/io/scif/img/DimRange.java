@@ -86,7 +86,7 @@ public class DimRange {
 	private Long tail;
 
 	// -- Constructors --
-	
+
 	private DimRange() {
 		setIndex = new HashSet<Long>();
 		listIndex = new ArrayList<Long>();
@@ -129,13 +129,13 @@ public class DimRange {
 	}
 
 	/**
-	 * Creates a singleton DimRange. 
+	 * Creates a singleton DimRange.
 	 * 
 	 * @param index single index for this DimRange.
 	 */
 	public DimRange(final Long index) {
 		this();
-		
+
 		head = index;
 		tail = index;
 
@@ -151,7 +151,7 @@ public class DimRange {
 	 */
 	public DimRange(final Long start, final Long end) {
 		this();
-		
+
 		head = start;
 		tail = end;
 
@@ -159,7 +159,7 @@ public class DimRange {
 			setIndex.add(l);
 			listIndex.add(l);
 		}
-		
+
 	}
 
 	/**
@@ -170,26 +170,26 @@ public class DimRange {
 	 */
 	public DimRange(final long[] values) {
 		this();
-		
+
 		head = values[0];
-		tail = values[values.length-1];
-		
-		for (long l : values) {
+		tail = values[values.length - 1];
+
+		for (final long l : values) {
 			setIndex.add(l);
 			listIndex.add(l);
 		}
 	}
 
 	// -- DimensionRanges methods --
-	
+
 	/**
 	 * @return a list index over the values in this range
 	 */
 	public List<Long> indices() {
 		return listIndex;
 	}
-	
-	public boolean contains(Long l) {
+
+	public boolean contains(final Long l) {
 		return setIndex.contains(l);
 	}
 

@@ -112,7 +112,8 @@ public class DefaultImgUtilityService extends AbstractService implements
 		for (int i = 0; i < dimLengths.length; i++) {
 
 			if (region != null && i < region.size()) {
-				DimRange range = region.getRange(m.get(imageIndex).getAxis(i).type());
+				final DimRange range =
+					region.getRange(m.get(imageIndex).getAxis(i).type());
 				if (range != null) {
 					dimLengths[i] = range.indices().size();
 				}

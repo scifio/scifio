@@ -69,8 +69,7 @@ public class ImgOpenerTest {
 	// Use the default constructor, which constructs a minimal context,
 	// to ensure all necessary services are present
 	private final ImgOpener imgOpener = new ImgOpener();
-	private final String id =
-		"testImg&lengths=512,512,5&axes=X,Y,Time.fake";
+	private final String id = "testImg&lengths=512,512,5&axes=X,Y,Time.fake";
 
 	/**
 	 * Verify that SCIFIO Metadata calibration values are preserved in an opened
@@ -78,12 +77,12 @@ public class ImgOpenerTest {
 	 */
 	@Test
 	public void testImgCalibration() throws ImgIOException {
-		String calId =
+		final String calId =
 			"testImg&lengths=512,512,3,5&axes=X,Y,Z,Time&scales=5.0,6.0,7.0,8.0.fake";
-		
+
 		@SuppressWarnings("rawtypes")
-		ImgPlus imgPlus = imgOpener.openImg(calId);
-		
+		final ImgPlus imgPlus = imgOpener.openImg(calId);
+
 		assertEquals(5.0, imgPlus.averageScale(0));
 		assertEquals(6.0, imgPlus.averageScale(1));
 		assertEquals(7.0, imgPlus.averageScale(2));
@@ -95,7 +94,7 @@ public class ImgOpenerTest {
 	 * test should just fail to compile if there's an issue.
 	 */
 	@Test
-	public  void testGenerics() throws IncompatibleTypeException, ImgIOException {
+	public void testGenerics() throws IncompatibleTypeException, ImgIOException {
 		doTestGenerics(new UnsignedByteType());
 		doTestGenerics(new FloatType());
 		doTestGenerics(new DoubleType());
@@ -150,8 +149,8 @@ public class ImgOpenerTest {
 		assertEquals(size, imgPlus.size());
 	}
 
-	private <T extends RealType<T> & NativeType<T>> void doTestGenerics(final T type)
-		throws IncompatibleTypeException, ImgIOException
+	private <T extends RealType<T> & NativeType<T>> void doTestGenerics(
+		final T type) throws IncompatibleTypeException, ImgIOException
 	{
 		ImgPlus<T> imgPlus = null;
 

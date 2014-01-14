@@ -62,15 +62,15 @@ public class FloatArrayLoader extends AbstractArrayLoader<FloatArray> {
 	public void convertBytes(final FloatArray data, final byte[] bytes,
 		final int planesRead)
 	{
-		ImageMetadata iMeta = reader().getMetadata().get(0);
+		final ImageMetadata iMeta = reader().getMetadata().get(0);
 		if (isCompatible()) {
 			final int bpp = getBitsPerElement() / 8;
 			final int offset = planesRead * (bytes.length / bpp);
 
 			final ByteBuffer bb = ByteBuffer.wrap(bytes);
 
-			bb.order(iMeta.isLittleEndian()
-				? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+			bb.order(iMeta.isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
+				: ByteOrder.BIG_ENDIAN);
 			bb.asFloatBuffer().get(data.getCurrentStorageArray(), offset,
 				bytes.length / bpp);
 		}
@@ -78,8 +78,8 @@ public class FloatArrayLoader extends AbstractArrayLoader<FloatArray> {
 			final int pixelType = iMeta.getPixelType();
 			final int bpp = FormatTools.getBytesPerPixel(pixelType);
 			final int offset = planesRead * (bytes.length / bpp);
-			for (int index=0; index<bytes.length / bpp; index++) {
-				float value =
+			for (int index = 0; index < bytes.length / bpp; index++) {
+				final float value =
 					(float) utils().decodeWord(bytes, index * bpp, pixelType,
 						iMeta.isLittleEndian());
 				data.setValue(offset + index, value);

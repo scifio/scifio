@@ -97,7 +97,7 @@ public interface Plane extends Contextual {
 	long[] getOffsets();
 
 	/**
-	 * @return The lengths of each axis of this plane 
+	 * @return The lengths of each axis of this plane
 	 */
 	long[] getLengths();
 
@@ -130,7 +130,7 @@ public interface Plane extends Contextual {
 	 * Sets this plane's offset from 0 relative to the underlying image.
 	 */
 	void setOffsets(long[] offsets);
-	
+
 	/**
 	 * Sets this plane's axis lengths
 	 */

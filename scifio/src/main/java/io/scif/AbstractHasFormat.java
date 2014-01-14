@@ -47,8 +47,8 @@ import org.scijava.plugin.Parameter;
  * @see io.scif.services.FormatService
  * @author Mark Hiner
  */
-public abstract class AbstractHasFormat extends AbstractSCIFIOPlugin
-	implements HasFormat
+public abstract class AbstractHasFormat extends AbstractSCIFIOPlugin implements
+	HasFormat
 {
 
 	@Parameter

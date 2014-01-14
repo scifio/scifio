@@ -64,8 +64,7 @@ import org.testng.annotations.Test;
 public class FilterTest {
 
 	private final SCIFIO scifio = makeSCIFIO();
-	private final String id =
-		"testImg&lengths=512,512.fake";
+	private final String id = "testImg&lengths=512,512.fake";
 	private Reader readerFilter;
 
 	@AfterMethod
@@ -74,13 +73,13 @@ public class FilterTest {
 	}
 
 	private SCIFIO makeSCIFIO() {
-		SCIFIO scifio = new SCIFIO();
+		final SCIFIO scifio = new SCIFIO();
 
-		Context ctx = scifio.getContext();
+		final Context ctx = scifio.getContext();
 
-		PluginInfo<Filter> enabledInfo =
+		final PluginInfo<Filter> enabledInfo =
 			new PluginInfo<Filter>(EnabledFilter.class, Filter.class);
-		PluginInfo<Filter> disabledInfo =
+		final PluginInfo<Filter> disabledInfo =
 			new PluginInfo<Filter>(DisabledFilter.class, Filter.class);
 
 		ctx.getPluginIndex().add(enabledInfo);
@@ -96,12 +95,11 @@ public class FilterTest {
 	 */
 	@Test
 	public void testSetSource() throws FormatException, IOException {
-		final String id2 =
-			"testImg&lengths=256,128,5&axes=X,Y,Time.fake";
+		final String id2 = "testImg&lengths=256,128,5&axes=X,Y,Time.fake";
 
 		readerFilter = scifio.initializer().initializeReader(id, true);
 
-			((ReaderFilter) readerFilter).enable(PlaneSeparator.class);
+		((ReaderFilter) readerFilter).enable(PlaneSeparator.class);
 
 		long x = readerFilter.getMetadata().get(0).getAxisLength(Axes.X);
 		long y = readerFilter.getMetadata().get(0).getAxisLength(Axes.Y);
@@ -140,8 +138,7 @@ public class FilterTest {
 	}
 
 	@Test
-	public void testFilterOrder() throws FormatException, IOException
-	{
+	public void testFilterOrder() throws FormatException, IOException {
 		readerFilter = scifio.initializer().initializeReader(id);
 
 		// enable all plugins
