@@ -277,6 +277,11 @@
 	    	<class name="io.scif.utests.WriterTest"/>
     	</classes>
     </test>
+    <test name="DimRangeTest">
+      <classes>
+        <class name="io.scif.img.DimRangeTest" />
+      </classes>
+    </test>
     <test name="CellTest">
       <classes>
         <class name="io.scif.img.cell.utests.SCIFIOCellImgFactoryTest"/>

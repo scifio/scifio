@@ -36,9 +36,9 @@
 
 package io.scif.utests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.SCIFIO;
@@ -49,7 +49,7 @@ import java.io.IOException;
 
 import net.imglib2.meta.Axes;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 /**
  * Unit tests for {@link io.scif.Metadata} interface methods.
@@ -60,7 +60,7 @@ public class MetadataTest {
 
 	private final SCIFIO scifio = new SCIFIO();
 	private final String id =
-		"testImg&lengths=620,512,5&axes=X,Y,Time,Z,Channel.fake";
+		"testImg&lengths=620,512,5,6,7&axes=X,Y,Time,Z,Channel.fake";
 	private final String ndId =
 		"ndImg&axes=X,Y,Z,Channel,Time,Lifetime,Spectra,&lengths=256,128,2,6,10,4,8.fake";
 
@@ -85,15 +85,15 @@ public class MetadataTest {
 		assertEquals(m.get(0).getAxisLength(0), 620);
 		assertEquals(m.get(0).getAxisLength(1), 512);
 		assertEquals(m.get(0).getAxisLength(2), 5);
-		assertEquals(m.get(0).getAxisLength(3), 1);
-		assertEquals(m.get(0).getAxisLength(4), 1);
+		assertEquals(m.get(0).getAxisLength(3), 6);
+		assertEquals(m.get(0).getAxisLength(4), 7);
 
 		// Check getAxisLength(int, AxisType)
 		assertEquals(m.get(0).getAxisLength(Axes.X), 620);
 		assertEquals(m.get(0).getAxisLength(Axes.Y), 512);
 		assertEquals(m.get(0).getAxisLength(Axes.TIME), 5);
-		assertEquals(m.get(0).getAxisLength(Axes.Z), 1);
-		assertEquals(m.get(0).getAxisLength(Axes.CHANNEL), 1);
+		assertEquals(m.get(0).getAxisLength(Axes.Z), 6);
+		assertEquals(m.get(0).getAxisLength(Axes.CHANNEL), 7);
 
 		// Check getAxisIndex(int, AxisType)
 		assertEquals(m.get(0).getAxisIndex(Axes.X), 0);
@@ -127,7 +127,7 @@ public class MetadataTest {
 	 * 
 	 * @throws FormatException
 	 */
-	@Test(expected = IndexOutOfBoundsException.class)
+	@Test(expectedExceptions = IndexOutOfBoundsException.class)
 	public void testMissingAxes() throws FormatException {
 		final Metadata m = scifio.format().getFormat(id).createMetadata();
 
