@@ -70,6 +70,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	/** Cached list of non-planar axes. */
 	private List<CalibratedAxis> extendedAxes;
 
+	/** Cached list of significant (non-trailing length 1) axes. */
+	private List<CalibratedAxis> effectiveAxes;
+
 	/** Width (in pixels) of thumbnail planes in this image. */
 	@Field(label = "thumbSizeX")
 	private long thumbSizeX;
@@ -254,7 +257,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	public void setAxisLengths(final long[] axisLengths) {
 		if (axisLengths.length > axes.size()) throw new IllegalArgumentException(
 			"Tried to set " + axisLengths.length + " axis lengths, but " +
-				axes.size() + " axes present." + " Call setAxisTypes first.");
+					getAxes().size() + " axes present." + " Call setAxisTypes first.");
 
 		for (int i = 0; i < axisLengths.length; i++) {
 			updateLength(axes.get(i).type(), axisLengths[i]);
@@ -299,6 +302,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 			axes.remove(axes.get(oldIndex));
 			axes.add(index, axis);
 		}
+
+		clearCachedAxes();
 	}
 
 	@Override
@@ -314,7 +319,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	public long getSize() {
 		long size = 1;
 
-		for (final CalibratedAxis a : axes) {
+		for (final CalibratedAxis a : getAxes()) {
 			size = DataTools.safeMultiply64(size, getAxisLength(a));
 		}
 
@@ -369,7 +374,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public CalibratedAxis getAxis(final AxisType axisType) {
-		for (final CalibratedAxis axis : axes) {
+		for (final CalibratedAxis axis : getAxes()) {
 			if (axis.type().equals(axisType)) return axis;
 		}
 		return null;
@@ -388,7 +393,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public List<CalibratedAxis> getAxes() {
-		return axes;
+		return getEffectiveAxes();
 	}
 
 	@Override
@@ -414,7 +419,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public long[] getAxesLengths() {
-		return getAxesLengths(axes);
+		return getAxesLengths(getAxes());
 	}
 
 	@Override
@@ -488,15 +493,16 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public CalibratedAxis getAxis(final int axisIndex) {
-		return axes.get(axisIndex);
+		return getAxes().get(axisIndex);
 	}
 
 	@Override
 	public long getAxisLength(final int axisIndex) {
-		if (axisIndex < 0 || axisIndex >= axes.size()) throw new IllegalArgumentException(
-			"Invalid axisIndex: " + axisIndex + ". " + axes.size() + " axes present.");
+		if (axisIndex < 0 || axisIndex >= getAxes().size()) {
+			return 1;
+		}
 
-		return getAxisLength(axes.get(axisIndex).type());
+		return getAxisLength(getAxis(axisIndex));
 	}
 
 	@Override
@@ -506,17 +512,17 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public long getAxisLength(final AxisType t) {
-		if (axisLengths == null || !axisLengths.containsKey(t)) return 1;
+		if (axisLengths == null || !axisLengths.containsKey(t) ||
+			(effectiveAxes != null && getAxisIndex(t) == -1))
+		{
+			return 1;
+		}
 
 		return axisLengths.get(t);
 	}
 
 	@Override
 	public int getAxisIndex(final CalibratedAxis axis) {
-		// FIXME: It is unintuitive that you can pass a CalibratedAxis that is *not*
-		// one of the ImageMetadata's actual axes, and get back a value other than
-		// -1 (since it merely looks up the matching type). We may want to have a
-		// hash on CalibratedAxis objects, too, and change behavior of this method.
 		return getAxisIndex(axis.type());
 	}
 
@@ -526,8 +532,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 		int index = -1;
 
-		for (int i = 0; index == -1 && i < axes.size(); i++) {
-			if (axes.get(i).type().equals(axisType)) index = i;
+		// Use effectiveAxes if possible. If not, default to axes.
+		List<CalibratedAxis> knownAxes =
+			effectiveAxes == null ? axes : effectiveAxes;
+
+		for (int i = 0; index == -1 && i < knownAxes.size(); i++) {
+			if (knownAxes.get(i).type().equals(axisType)) index = i;
 		}
 
 		return index;
@@ -598,6 +608,30 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Helper methods --
 
 	/**
+	 * Computes and caches the effective (non-trailing-length-1 axes) axis
+	 * types for this dataset.
+	 */
+	private List<CalibratedAxis> getEffectiveAxes() {
+		if (effectiveAxes == null && axes != null) {
+			int end = axes.size();
+	
+			for (; end > getPlanarAxisCount(); end--) {
+				final CalibratedAxis axis = axes.get(end - 1);
+				if (getAxisLength(axis) > 1) {
+					break;
+				}
+			}
+	
+			effectiveAxes = new ArrayList<CalibratedAxis>();
+			for (int i=0; i<end; i++) {
+				effectiveAxes.add(axes.get(i));
+			}
+		}
+	
+		return effectiveAxes;
+	}
+
+	/**
 	 * We assume that {@link Axes#Y} is the last planar axis.
 	 */
 	private int computePlanarAxisCount() {
@@ -619,10 +653,14 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	private void clearCachedAxes() {
 		planarAxes = null;
 		extendedAxes = null;
+		effectiveAxes = null;
 	}
 
 	private void updateLength(final AxisType axisType, final long value) {
 		axisLengths.put(axisType, value);
+		// only effectiveAxes needs to be cleared here, because it's the only
+		// cached axis that can be affected by axis lengths.
+		effectiveAxes = null;
 	}
 
 	// If spatial == true, returns every non-CHANNEL axis after both X and Y

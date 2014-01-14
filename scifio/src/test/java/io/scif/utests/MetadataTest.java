@@ -212,4 +212,58 @@ public class MetadataTest {
 		assertEquals(2, m.get(0).getAxisIndex(Axes.Y));
 		assertTrue(m.get(0).getInterleavedAxisCount() > 0);
 	}
+
+	/**
+	 * Verify that changing a trailing axis's state betwen planar and non-planar
+	 * can make it significant, and reverse.
+	 */
+	@Test
+	public void testTrailingAxis() throws IOException, FormatException {
+		final String id = "testImg&planarDims=2&lengths=620,512,1,&axes=X,Y,Time.fake";
+		Metadata m = scifio.initializer().parseMetadata(id);
+
+		assertEquals(2, m.get(0).getAxes().size());
+
+		m.get(0).setPlanarAxisCount(3);
+		assertEquals(3, m.get(0).getAxes().size());
+
+		m.get(0).setPlanarAxisCount(2);
+		assertEquals(2, m.get(0).getAxes().size());
+	}
+
+	/**
+	 * Basic down-the-middle test with one bracketed length-1 axis, and one
+	 * trailing length-1 axis. The trailing axis should be disregarded, while
+	 * the bracketed axis should be kept as significant.
+	 */
+	@Test
+	public void testAxisCount() throws IOException, FormatException {
+		final String id = "testImg&lengths=620,512,1,5,1&axes=X,Y,Time,Z,Channel.fake";
+		Metadata m = scifio.initializer().parseMetadata(id);
+
+		assertEquals(4, m.get(0).getAxes().size());
+	}
+
+	/**
+	 * Verify that increasing a disregarded axis's length can make it significant,
+	 * and reverse.
+	 */
+	@Test
+	public void testAdjustingTrailingAxis() throws IOException, FormatException {
+		final String id = "testImg&lengths=620,512,1,&axes=X,Y,Time,.fake";
+		Metadata m = scifio.initializer().parseMetadata(id);
+
+		assertEquals(2, m.get(0).getAxes().size());
+
+		// Increase the trailing length-1 axis's length.
+		// It should become significant
+		m.get(0).setAxisLength(Axes.TIME, 5);
+
+		assertEquals(3, m.get(0).getAxes().size());
+
+		// Revert the trailing axis's length to 1. It should be disregarded again.
+		m.get(0).setAxisLength(Axes.TIME, 1);
+
+		assertEquals(2, m.get(0).getAxes().size());
+	}
 }
