@@ -427,6 +427,9 @@ public class TiffParser extends AbstractContextual {
 				log.trace("getIFDs: truncated " + (oldCount - count) +
 					" array elements for tag " + tag);
 				if (count < 0) count = oldCount;
+				entry =
+					new TiffIFDEntry(entry.getTag(), entry.getType(), count, entry
+						.getValueOffset());
 			}
 			if (count < 0 || count > in.length()) break;
 
