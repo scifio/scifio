@@ -11,8 +11,7 @@
 	<artifactId>scifio-tools</artifactId>
 
 	<name>SCIFIO Tools</name>
-	<description>Pluggable command-line tools for performing SCIFIO-based image
-	 IO operations.</description>
+	<description>Pluggable command-line tools for performing SCIFIO-based image IO operations.</description>
 
 	<dependencies>
 		<dependency>
