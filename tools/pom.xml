@@ -37,50 +37,50 @@
 
 	<build>
 		<plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>appassembler-maven-plugin</artifactId>
-        <version>1.6</version>
-        <configuration>
-          <extraJvmArguments>-Xms512m</extraJvmArguments>
-          <extraJvmArguments>-Xmx1024m</extraJvmArguments>
-          <useWildcardClassPath>true</useWildcardClassPath>
-          <repositoryLayout>flat</repositoryLayout>
-          <programs>
-            <program>
-              <mainClass>io.scif.tools.SCIFIOTools</mainClass>
-              <id>scifio</id>
-            </program>
-          </programs>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-app</id>
-            <phase>package</phase>
-            <goals>
-              <goal>assemble</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/src.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id> <!-- this is used for inheritance merges -->
-            <phase>package</phase> <!-- bind to the packaging phase -->
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+				<version>1.6</version>
+				<configuration>
+					<extraJvmArguments>-Xms512m</extraJvmArguments>
+					<extraJvmArguments>-Xmx1024m</extraJvmArguments>
+					<useWildcardClassPath>true</useWildcardClassPath>
+					<repositoryLayout>flat</repositoryLayout>
+					<programs>
+						<program>
+							<mainClass>io.scif.tools.SCIFIOTools</mainClass>
+							<id>scifio</id>
+						</program>
+					</programs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-app</id>
+						<phase>package</phase>
+						<goals>
+							<goal>assemble</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/src.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
