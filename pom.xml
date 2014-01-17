@@ -34,8 +34,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
-					<licenseName>scifio</licenseName>
-					<licenseResolver>file://${project.rootdir}/license</licenseResolver>
+					<licenseName>bsd_2</licenseName>
 					<projectName>SCIFIO library for reading and converting scientific file formats.</projectName>
 					<organizationName>Open Microscopy Environment:
   - Board of Regents of the University of Wisconsin-Madison
