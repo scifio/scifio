@@ -26,7 +26,6 @@
 
 	<properties>
 		<jai-imageio.version>1.0.1</jai-imageio.version>
-		<project.rootdir>${basedir}</project.rootdir>
 	</properties>
 
 	<build>
