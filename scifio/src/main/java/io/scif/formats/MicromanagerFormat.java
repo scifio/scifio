@@ -229,7 +229,7 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		// -- MicromanagerParser API methods --
 
-		public void populateMetadataStore(final String[] jsonData,
+		public void populateMetadata(final String[] jsonData,
 			final Metadata source, final io.scif.Metadata dest)
 			throws FormatException, IOException
 		{
