@@ -536,8 +536,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * Creates a new {@link Writer} with an unpopulated MetadataStore and sets its
-	 * id to the provided String.
+	 * Creates a new {@link Writer} and sets its id to the provided String.
 	 */
 	private Writer initializeWriter(final String id, final ImgPlus<?> img,
 		final int imageIndex) throws ImgIOException
