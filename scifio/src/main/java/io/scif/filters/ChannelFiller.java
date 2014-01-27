@@ -37,6 +37,7 @@ import io.scif.ByteArrayReader;
 import io.scif.FormatException;
 import io.scif.Plane;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -97,18 +98,14 @@ public class ChannelFiller extends AbstractReaderFilter {
 	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
-		return openPlane(imageIndex, planeIndex, new long[planarAxes],
-			getMetadata().get(imageIndex).getAxesLengthsPlanar());
+		return openPlane(imageIndex, planeIndex, new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
-		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],
-			getMetadata().get(imageIndex).getAxesLengthsPlanar());
+		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig());
 	}
 
 	@Override
@@ -116,14 +113,51 @@ public class ChannelFiller extends AbstractReaderFilter {
 		final long[] offsets, final long[] lengths) throws FormatException,
 		IOException
 	{
-		return openPlane(imageIndex, planeIndex, createPlane(getMetadata().get(
-			imageIndex), offsets, lengths), offsets, lengths);
+		return openPlane(imageIndex, planeIndex, offsets, lengths,
+			new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
+	{
+		return openPlane(imageIndex, planeIndex, plane, offsets, lengths,
+			new SCIFIOConfig());
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final SCIFIOConfig config) throws FormatException, IOException
+	{
+		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
+		return openPlane(imageIndex, planeIndex, new long[planarAxes],
+			getMetadata().get(imageIndex).getAxesLengthsPlanar(), config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final SCIFIOConfig config) throws FormatException,
+		IOException
+	{
+		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
+		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],
+			getMetadata().get(imageIndex).getAxesLengthsPlanar(), config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final long[] offsets, final long[] lengths, final SCIFIOConfig config)
+		throws FormatException, IOException
+	{
+		return openPlane(imageIndex, planeIndex, createPlane(getMetadata().get(
+			imageIndex), offsets, lengths), offsets, lengths, config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		Plane plane, final long[] offsets, final long[] lengths,
+		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		// If the wrapped Metadata wasn't indexed, we can use the parent reader
 		// directly
@@ -135,7 +169,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 				lastImageIndex = imageIndex;
 				lastPlane =
 					getParent()
-						.openPlane(imageIndex, planeIndex, plane, offsets, lengths);
+						.openPlane(imageIndex, planeIndex, plane, offsets, lengths, config);
 			}
 			return lastPlane;
 		}
@@ -151,7 +185,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 			// Now we can read the desired plane
 			lastPlane =
 				getParent().openPlane(imageIndex, planeIndex, lastPlaneOffsets,
-					lastPlaneLengths);
+					lastPlaneLengths, config);
 			lastPlaneIndex = planeIndex;
 			lastImageIndex = imageIndex;
 			lastPlaneOffsets = Arrays.copyOf(offsets, offsets.length);
@@ -219,7 +253,9 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	/* lutLength is 0 until a plane is opened */
 	@Override
-	protected void setSourceHelper(final String source) {
+	protected void
+		setSourceHelper(final String source, final SCIFIOConfig config)
+	{
 		cleanUp();
 	}
 

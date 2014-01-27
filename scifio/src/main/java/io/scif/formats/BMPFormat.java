@@ -42,9 +42,11 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
+import io.scif.MetaTable;
 import io.scif.MetadataLevel;
 import io.scif.UnsupportedCompressionException;
 import io.scif.codec.BitBuffer;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
@@ -232,19 +234,21 @@ public class BMPFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			meta.createImageMetadata(1);
 
 			final ImageMetadata iMeta = meta.get(0);
+			final MetaTable globalTable = meta.getTable();
 
 			stream.order(true);
 
 			// read the first header - 14 bytes
 
-			addGlobalMeta("Magic identifier", in.readString(2));
+			globalTable.put("Magic identifier", in.readString(2));
 
-			addGlobalMeta("File size (in bytes)", in.readInt());
+			globalTable.put("File size (in bytes)", in.readInt());
 			in.skipBytes(4);
 
 			meta.setGlobal(in.readInt());
@@ -273,7 +277,7 @@ public class BMPFormat extends AbstractFormat {
 				meta.setInvertY(true);
 			}
 
-			addGlobalMeta("Color planes", in.readShort());
+			globalTable.put("Color planes", in.readShort());
 
 			final short bpp = in.readShort();
 
@@ -306,11 +310,11 @@ public class BMPFormat extends AbstractFormat {
 			}
 			else if (nColors != 0) in.skipBytes(nColors * 4);
 
-			if (getMetadataOptions().getMetadataLevel() != MetadataLevel.MINIMUM) {
-				addGlobalMeta("Indexed color", meta.getColorTable(0, 0) != null);
-				addGlobalMeta("Image width", sizeX);
-				addGlobalMeta("Image height", sizeY);
-				addGlobalMeta("Bits per pixel", bpp);
+			if (config.parserGetLevel() != MetadataLevel.MINIMUM) {
+				globalTable.put("Indexed color", meta.getColorTable(0, 0) != null);
+				globalTable.put("Image width", sizeX);
+				globalTable.put("Image height", sizeY);
+				globalTable.put("Bits per pixel", bpp);
 				String comp = "invalid";
 
 				switch (meta.getCompression()) {
@@ -328,9 +332,9 @@ public class BMPFormat extends AbstractFormat {
 						break;
 				}
 
-				addGlobalMeta("Compression type", comp);
-				addGlobalMeta("X resolution", pixelSizeX);
-				addGlobalMeta("Y resolution", pixelSizeY);
+				globalTable.put("Compression type", comp);
+				globalTable.put("X resolution", pixelSizeX);
+				globalTable.put("Y resolution", pixelSizeY);
 			}
 		}
 	}
@@ -351,7 +355,8 @@ public class BMPFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final Metadata meta = getMetadata();
 			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);

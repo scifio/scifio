@@ -54,6 +54,7 @@ import io.scif.codec.MJPBCodecOptions;
 import io.scif.codec.QTRLECodec;
 import io.scif.codec.RPZACodec;
 import io.scif.codec.ZlibCodec;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
@@ -371,7 +372,8 @@ public class NativeQTFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 
 			meta.setSpork(true);
@@ -486,7 +488,8 @@ public class NativeQTFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 
 			final Metadata meta = getMetadata();
@@ -773,8 +776,8 @@ public class NativeQTFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
@@ -804,7 +807,8 @@ public class NativeQTFormat extends AbstractFormat {
 				if (codec != CODEC_RAW) {
 					needLegacy = true;
 					legacy.setDest(out);
-					legacy.savePlane(imageIndex, planeIndex, plane, planeMin, planeMax);
+					legacy.savePlane(imageIndex, planeIndex, plane, planeMin, planeMax,
+						config);
 					return;
 				}
 

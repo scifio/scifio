@@ -38,12 +38,12 @@ import io.scif.AbstractMetadata;
 import io.scif.AbstractParser;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
-import io.scif.DefaultMetadataOptions;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.MetadataLevel;
 import io.scif.UnsupportedCompressionException;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.services.FormatService;
@@ -199,9 +199,9 @@ public class NRRDFormat extends AbstractFormat {
 		// -- Checker API Methods --
 
 		@Override
-		public boolean isFormat(String name, final boolean open) {
-			if (super.isFormat(name, open)) return true;
-			if (!open) return false;
+		public boolean isFormat(String name, final SCIFIOConfig config) {
+			if (super.isFormat(name, config)) return true;
+			if (!config.checkerIsOpen()) return false;
 
 			// look for a matching .nhdr file
 			Location header = new Location(getContext(), name + ".nhdr");
@@ -280,7 +280,8 @@ public class NRRDFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			String key, v;
 
@@ -302,7 +303,7 @@ public class NRRDFormat extends AbstractFormat {
 					// parse key/value pair
 					key = line.substring(0, line.indexOf(":")).trim();
 					v = line.substring(line.indexOf(":") + 1).trim();
-					addGlobalMeta(key, v);
+					meta.getTable().put(key, v);
 
 					if (key.equals("type")) {
 						if (v.indexOf("char") != -1 || v.indexOf("8") != -1) {
@@ -393,13 +394,13 @@ public class NRRDFormat extends AbstractFormat {
 					formatService.getFormatFromClass(NRRDFormat.class);
 				formatService.removeFormat(nrrd);
 
-				final Format helperFormat = formatService.getFormat(meta.getDataFile());
+				final Format helperFormat =
+					formatService.getFormat(meta.getDataFile(), config);
 				final io.scif.Parser p = helperFormat.createParser();
-				p.setMetadataOptions(new DefaultMetadataOptions(MetadataLevel.MINIMUM));
-				p.setMetadataOptions(meta.getMetadataOptions());
 				final io.scif.Reader helper = helperFormat.createReader();
-				helper.setMetadata(p.parse(meta.getDataFile()));
-				helper.setSource(meta.getDataFile());
+				helper.setMetadata(p.parse(meta.getDataFile(), new SCIFIOConfig()
+					.parserSetLevel(MetadataLevel.MINIMUM)));
+				helper.setSource(meta.getDataFile(), config);
 				meta.setHelper(helper);
 
 				formatService.addFormat(nrrd);
@@ -470,7 +471,8 @@ public class NRRDFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
@@ -505,7 +507,7 @@ public class NRRDFormat extends AbstractFormat {
 				meta.getHelper() != null)
 			{
 				meta.getHelper().openPlane(imageIndex, planeIndex, plane, planeMin,
-					planeMax);
+					planeMax, config);
 				return plane;
 			}
 

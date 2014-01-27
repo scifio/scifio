@@ -41,6 +41,7 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
@@ -142,7 +143,8 @@ public class FITSFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			meta.createImageMetadata(1);
 			final ImageMetadata iMeta = meta.get(0);
@@ -188,7 +190,7 @@ public class FITSFormat extends AbstractFormat {
 				else if (key.equals("NAXIS3")) iMeta.setAxisLength(Axes.Z, Integer
 					.parseInt(value));
 
-				addGlobalMeta(key, value);
+				meta.getTable().put(key, value);
 			}
 			while (in.read() == 0x20) { /* Read to pixel data. */}
 			meta.setPixelOffset(in.getFilePointer() - 1);
@@ -212,7 +214,7 @@ public class FITSFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long planeMax[]) throws FormatException, IOException
+			final long planeMax[], final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 

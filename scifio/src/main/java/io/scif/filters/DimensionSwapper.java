@@ -35,6 +35,7 @@ package io.scif.filters;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
+import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -161,7 +162,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	// -- AbstractReaderFilter API Methods --
 
 	@Override
-	protected void setSourceHelper(final String source) {
+	protected void setSourceHelper(final String source, final SCIFIOConfig config) {
 		final String oldFile = getCurrentFile();
 		if (!source.equals(oldFile) ||
 			metaCheck() &&
@@ -186,7 +187,14 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex));
+		return openPlane(imageIndex, planeIndex, new SCIFIOConfig());
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane) throws FormatException, IOException
+	{
+		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig());
 	}
 
 	@Override
@@ -194,24 +202,51 @@ public class DimensionSwapper extends AbstractReaderFilter {
 		final long[] offsets, final long[] lengths) throws FormatException,
 		IOException
 	{
-		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex),
-			offsets, lengths);
+		return openPlane(imageIndex, planeIndex, offsets, lengths,
+			new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane) throws FormatException, IOException
-	{
-		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane);
-	}
-
-	@Override
-	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] offsets, final long[] lengths)
+		Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
+		return openPlane(imageIndex, planeIndex, plane, offsets, lengths,
+			new SCIFIOConfig());
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final SCIFIOConfig config) throws FormatException, IOException
+	{
+		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final long[] offsets, final long[] lengths, final SCIFIOConfig config)
+		throws FormatException, IOException
+	{
+		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex),
+			offsets, lengths, config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final SCIFIOConfig config) throws FormatException,
+		IOException
+	{
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane,
-			offsets, lengths);
+			config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final long[] offsets, final long[] lengths,
+		final SCIFIOConfig config) throws FormatException, IOException
+	{
+		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane,
+			offsets, lengths, config);
 	}
 
 	@Override

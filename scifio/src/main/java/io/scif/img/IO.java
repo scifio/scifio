@@ -34,6 +34,7 @@ package io.scif.img;
 
 import io.scif.Reader;
 import io.scif.Writer;
+import io.scif.config.SCIFIOConfig;
 import io.scif.refs.RefManagerService;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
@@ -155,15 +156,15 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(String, ImgOptions)
+	 * @see ImgOpener#openImg(String, SCIFIOConfig)
 	 */
 	public static ImgPlus<?> openImg(final String source,
-		final ImgOptions imgOptions)
+		final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
 		ImgPlus<?> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, imgOptions);
+			imgPlus = opener.openImg(source, config);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -173,15 +174,15 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(String, RealType, ImgOptions)
+	 * @see ImgOpener#openImg(String, RealType, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-		final String source, final T type, final ImgOptions imgOptions)
+		final String source, final T type, final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
 		ImgPlus<T> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, type, imgOptions);
+			imgPlus = opener.openImg(source, type, config);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -210,16 +211,16 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(String, ImgFactory, ImgOptions)
+	 * @see ImgOpener#openImg(String, ImgFactory, SCIFIOConfig)
 	 */
 	@SuppressWarnings("rawtypes")
 	public static ImgPlus<?> openImg(final String source,
-		final ImgFactory imgFactory, final ImgOptions imgOptions)
+		final ImgFactory imgFactory, final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
 		ImgPlus<?> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, imgFactory, imgOptions);
+			imgPlus = opener.openImg(source, imgFactory, config);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -247,15 +248,15 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(Reader, RealType, ImgOptions)
+	 * @see ImgOpener#openImg(Reader, RealType, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-		final Reader reader, final T type, final ImgOptions imgOptions)
+		final Reader reader, final T type, final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
 		ImgPlus<T> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(reader, type, imgOptions);
+			imgPlus = opener.openImg(reader, type, config);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -265,15 +266,15 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(Reader, RealType, ImgFactory, ImgOptions)
+	 * @see ImgOpener#openImg(Reader, RealType, ImgFactory, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T>> ImgPlus<T> openImg(final Reader reader,
-		final T type, final ImgFactory<T> imgFactory, final ImgOptions imgOptions)
+		final T type, final ImgFactory<T> imgFactory, final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
 		ImgPlus<T> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(reader, type, imgFactory, imgOptions);
+			imgPlus = opener.openImg(reader, type, imgFactory, config);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {

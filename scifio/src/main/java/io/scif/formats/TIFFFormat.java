@@ -40,6 +40,7 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
+import io.scif.MetaTable;
 import io.scif.MetadataLevel;
 import io.scif.Plane;
 import io.scif.Translator;
@@ -47,6 +48,7 @@ import io.scif.codec.CompressionType;
 import io.scif.common.Constants;
 import io.scif.common.DataTools;
 import io.scif.common.DateTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.formats.tiff.IFD;
 import io.scif.formats.tiff.IFDList;
 import io.scif.formats.tiff.PhotoInterp;
@@ -296,18 +298,19 @@ public class TIFFFormat extends AbstractFormat {
 		// -- BaseTIFFParser API Methods
 
 		@Override
-		protected void initMetadata(final Metadata meta) throws FormatException,
-			IOException
+		protected void initMetadata(final Metadata meta, final SCIFIOConfig config)
+			throws FormatException, IOException
 		{
 			final IFDList ifds = meta.getIfds();
 			final String comment = ifds.get(0).getComment();
+			final MetaTable table = meta.getTable();
 
 			log().info("Checking comment style");
 
 			// check for reusable proprietary tags (65000-65535),
 			// which may contain additional metadata
 
-			final MetadataLevel level = getMetadataOptions().getMetadataLevel();
+			final MetadataLevel level = config.parserGetLevel();
 			if (level != MetadataLevel.MINIMUM) {
 				final Integer[] tags = ifds.get(0).keySet().toArray(new Integer[0]);
 				for (final Integer tag : tags) {
@@ -329,13 +332,13 @@ public class TIFFFormat extends AbstractFormat {
 									final Hashtable<String, String> xmlMetadata =
 										xmlService.parseXML(metadata);
 									for (final String key : xmlMetadata.keySet()) {
-										addGlobalMeta(key, xmlMetadata.get(key));
+										meta.getTable().put(key, xmlMetadata.get(key));
 									}
 								}
 								catch (final IOException e) {}
 							}
 							else {
-								addGlobalMeta(tag.toString(), metadata);
+								meta.getTable().put(tag.toString(), metadata);
 							}
 						}
 					}
@@ -351,7 +354,7 @@ public class TIFFFormat extends AbstractFormat {
 			if (metamorph && level != MetadataLevel.MINIMUM) {
 				parseCommentMetamorph(meta, comment);
 			}
-			put("MetaMorph", metamorph ? "yes" : "no");
+			table.put("MetaMorph", metamorph ? "yes" : "no");
 
 			// check for other INI-style comment
 			if (!ij && !metamorph && level != MetadataLevel.MINIMUM) {
@@ -360,7 +363,7 @@ public class TIFFFormat extends AbstractFormat {
 
 			// check for another file with the same name
 
-			if (isGroupFiles()) {
+			if (config.groupableIsGroupFiles()) {
 				final Location currentFile =
 					new Location(getContext(), currentId).getAbsoluteFile();
 				final String currentName = currentFile.getName();
@@ -390,7 +393,7 @@ public class TIFFFormat extends AbstractFormat {
 //    if (meta.getDescription() != null) {
 //      store.setImageDescription(description, 0);
 //    }
-			super.initMetadata(meta);
+			super.initMetadata(meta, config);
 		}
 
 		// -- Helper methods --
@@ -414,9 +417,10 @@ public class TIFFFormat extends AbstractFormat {
 
 			meta.populateImageMetadata();
 			meta.populateImageMetadata = false;
+			final MetaTable table = meta.getTable();
 
 			final int nl = comment.indexOf("\n");
-			put("ImageJ", nl < 0 ? comment.substring(7) : comment.substring(7, nl));
+			table.put("ImageJ", nl < 0 ? comment.substring(7) : comment.substring(7, nl));
 			meta.getTable().remove("Comment");
 			meta.setDescription("");
 
@@ -441,15 +445,15 @@ public class TIFFFormat extends AbstractFormat {
 				else if (token.startsWith("slices=")) z = parseInt(value);
 				else if (token.startsWith("frames=")) t = parseInt(value);
 				else if (token.startsWith("mode=")) {
-					put("Color mode", value);
+					table.put("Color mode", value);
 				}
 				else if (token.startsWith("unit=")) {
 					meta.setCalibrationUnit(value);
-					put("Unit", meta.getCalibrationUnit());
+					table.put("Unit", meta.getCalibrationUnit());
 				}
 				else if (token.startsWith("finterval=")) {
 					meta.setTimeIncrement(parseDouble(value));
-					put("Frame Interval", meta.getTimeIncrement());
+					table.put("Frame Interval", meta.getTimeIncrement());
 				}
 				else if (token.startsWith("spacing=")) {
 					final double physicalSizeZ = parseDouble(value);
@@ -461,18 +465,18 @@ public class TIFFFormat extends AbstractFormat {
 						FormatTools
 							.calibrate(meta.get(0).getAxis(Axes.Z), physicalSizeZ, 0);
 					}
-					put("Spacing", physicalSizeZ);
+					table.put("Spacing", physicalSizeZ);
 				}
 				else if (token.startsWith("xorigin=")) {
 					meta.setxOrigin(parseInt(value));
-					put("X Origin", meta.getxOrigin());
+					table.put("X Origin", meta.getxOrigin());
 				}
 				else if (token.startsWith("yorigin=")) {
 					meta.setyOrigin(parseInt(value));
-					put("Y Origin", meta.getyOrigin());
+					table.put("Y Origin", meta.getyOrigin());
 				}
 				else if (eq > 0) {
-					put(token.substring(0, eq).trim(), value);
+					table.put(token.substring(0, eq).trim(), value);
 				}
 			}
 			if (z * c * t == c && meta.get(0).isMultichannel()) {
@@ -584,13 +588,13 @@ public class TIFFFormat extends AbstractFormat {
 				final String line = st.nextToken();
 				final int colon = line.indexOf(":");
 				if (colon < 0) {
-					addGlobalMeta("Comment", line);
+					meta.getTable().put("Comment", line);
 					meta.setDescription(line);
 					continue;
 				}
 				final String key = line.substring(0, colon);
 				final String value = line.substring(colon + 1);
-				addGlobalMeta(key, value);
+				meta.getTable().put(key, value);
 			}
 		}
 
@@ -604,13 +608,13 @@ public class TIFFFormat extends AbstractFormat {
 					if (eq != -1) {
 						final String key = line.substring(0, eq).trim();
 						final String value = line.substring(eq + 1).trim();
-						addGlobalMeta(key, value);
+						meta.getTable().put(key, value);
 					}
 					else if (!line.startsWith("[")) {
 						comment += line + "\n";
 					}
 				}
-				addGlobalMeta("Comment", comment);
+				meta.getTable().put("Comment", comment);
 				meta.setDescription(comment);
 			}
 		}
@@ -657,33 +661,35 @@ public class TIFFFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 
-			super.typedParse(stream, meta);
-			initMetadata(meta);
+			super.typedParse(stream, meta, config);
+			initMetadata(meta, config);
 		}
 
 		// -- Internal BaseTiffReader API methods --
 
 		/** Populates the metadata hashtable and metadata store. */
-		protected void initMetadata(final Metadata meta) throws FormatException,
-			IOException
+		protected void initMetadata(final Metadata meta, final SCIFIOConfig config)
+			throws FormatException, IOException
 		{
-			if (getMetadataOptions().getMetadataLevel() == MetadataLevel.MINIMUM) {
+			if (config.parserGetLevel() == MetadataLevel.MINIMUM) {
 				return;
 			}
 
 			final IFDList ifds = meta.getIfds();
+			final MetaTable table = meta.getTable();
 
 			for (int i = 0; i < ifds.size(); i++) {
-				put("PageName #" + i, ifds.get(i), IFD.PAGE_NAME);
+				put(table, "PageName #" + i, ifds.get(i), IFD.PAGE_NAME);
 			}
 
 			final IFD firstIFD = ifds.get(0);
-			put("ImageWidth", firstIFD, IFD.IMAGE_WIDTH);
-			put("ImageLength", firstIFD, IFD.IMAGE_LENGTH);
-			put("BitsPerSample", firstIFD, IFD.BITS_PER_SAMPLE);
+			put(table, "ImageWidth", firstIFD, IFD.IMAGE_WIDTH);
+			put(table, "ImageLength", firstIFD, IFD.IMAGE_LENGTH);
+			put(table, "BitsPerSample", firstIFD, IFD.BITS_PER_SAMPLE);
 
 			// retrieve EXIF values, if available
 
@@ -693,29 +699,29 @@ public class TIFFFormat extends AbstractFormat {
 					final IFD exif = exifIFDs.get(0);
 					for (final Integer key : exif.keySet()) {
 						final int k = key.intValue();
-						addGlobalMeta(getExifTagName(k), exif.get(key));
+						meta.getTable().put(getExifTagName(k), exif.get(key));
 					}
 				}
 			}
 
 			final TiffCompression comp = firstIFD.getCompression();
-			put("Compression", comp.getCodecName());
+			table.put("Compression", comp.getCodecName());
 
 			final PhotoInterp photo = firstIFD.getPhotometricInterpretation();
 			final String photoInterp = photo.getName();
 			final String metaDataPhotoInterp = photo.getMetadataType();
-			put("PhotometricInterpretation", photoInterp);
-			put("MetaDataPhotometricInterpretation", metaDataPhotoInterp);
+			table.put("PhotometricInterpretation", photoInterp);
+			table.put("MetaDataPhotometricInterpretation", metaDataPhotoInterp);
 
-			putInt("CellWidth", firstIFD, IFD.CELL_WIDTH);
-			putInt("CellLength", firstIFD, IFD.CELL_LENGTH);
+			putInt(table, "CellWidth", firstIFD, IFD.CELL_WIDTH);
+			putInt(table, "CellLength", firstIFD, IFD.CELL_LENGTH);
 
 			final int or = firstIFD.getIFDIntValue(IFD.ORIENTATION);
 
 			// adjust the width and height if necessary
 			if (or == 8) {
-				put("ImageWidth", firstIFD, IFD.IMAGE_LENGTH);
-				put("ImageLength", firstIFD, IFD.IMAGE_WIDTH);
+				put(table, "ImageWidth", firstIFD, IFD.IMAGE_LENGTH);
+				put(table, "ImageLength", firstIFD, IFD.IMAGE_WIDTH);
 			}
 
 			String orientation = null;
@@ -746,20 +752,20 @@ public class TIFFFormat extends AbstractFormat {
 					orientation = "1st row -> left; 1st column -> bottom";
 					break;
 			}
-			put("Orientation", orientation);
-			putInt("SamplesPerPixel", firstIFD, IFD.SAMPLES_PER_PIXEL);
+			table.put("Orientation", orientation);
+			putInt(table, "SamplesPerPixel", firstIFD, IFD.SAMPLES_PER_PIXEL);
 
-			put("Software", firstIFD, IFD.SOFTWARE);
-			put("Instrument Make", firstIFD, IFD.MAKE);
-			put("Instrument Model", firstIFD, IFD.MODEL);
-			put("Document Name", firstIFD, IFD.DOCUMENT_NAME);
-			put("DateTime", firstIFD, IFD.DATE_TIME);
-			put("Artist", firstIFD, IFD.ARTIST);
+			put(table, "Software", firstIFD, IFD.SOFTWARE);
+			put(table, "Instrument Make", firstIFD, IFD.MAKE);
+			put(table, "Instrument Model", firstIFD, IFD.MODEL);
+			put(table, "Document Name", firstIFD, IFD.DOCUMENT_NAME);
+			put(table, "DateTime", firstIFD, IFD.DATE_TIME);
+			put(table, "Artist", firstIFD, IFD.ARTIST);
 
-			put("HostComputer", firstIFD, IFD.HOST_COMPUTER);
-			put("Copyright", firstIFD, IFD.COPYRIGHT);
+			put(table, "HostComputer", firstIFD, IFD.HOST_COMPUTER);
+			put(table, "Copyright", firstIFD, IFD.COPYRIGHT);
 
-			put("NewSubfileType", firstIFD, IFD.NEW_SUBFILE_TYPE);
+			put(table, "NewSubfileType", firstIFD, IFD.NEW_SUBFILE_TYPE);
 
 			final int thresh = firstIFD.getIFDIntValue(IFD.THRESHHOLDING);
 			String threshholding = null;
@@ -774,7 +780,7 @@ public class TIFFFormat extends AbstractFormat {
 					threshholding = "Randomized error diffusion";
 					break;
 			}
-			put("Threshholding", threshholding);
+			table.put("Threshholding", threshholding);
 
 			final int fill = firstIFD.getIFDIntValue(IFD.FILL_ORDER);
 			String fillOrder = null;
@@ -790,14 +796,14 @@ public class TIFFFormat extends AbstractFormat {
 							+ "in the lower order bits of a byte";
 					break;
 			}
-			put("FillOrder", fillOrder);
+			table.put("FillOrder", fillOrder);
 
-			putInt("Make", firstIFD, IFD.MAKE);
-			putInt("Model", firstIFD, IFD.MODEL);
-			putInt("MinSampleValue", firstIFD, IFD.MIN_SAMPLE_VALUE);
-			putInt("MaxSampleValue", firstIFD, IFD.MAX_SAMPLE_VALUE);
-			putInt("XResolution", firstIFD, IFD.X_RESOLUTION);
-			putInt("YResolution", firstIFD, IFD.Y_RESOLUTION);
+			putInt(table, "Make", firstIFD, IFD.MAKE);
+			putInt(table, "Model", firstIFD, IFD.MODEL);
+			putInt(table, "MinSampleValue", firstIFD, IFD.MIN_SAMPLE_VALUE);
+			putInt(table, "MaxSampleValue", firstIFD, IFD.MAX_SAMPLE_VALUE);
+			putInt(table, "XResolution", firstIFD, IFD.X_RESOLUTION);
+			putInt(table, "YResolution", firstIFD, IFD.Y_RESOLUTION);
 
 			final int planar = firstIFD.getIFDIntValue(IFD.PLANAR_CONFIGURATION);
 			String planarConfig = null;
@@ -809,16 +815,16 @@ public class TIFFFormat extends AbstractFormat {
 					planarConfig = "Planar";
 					break;
 			}
-			put("PlanarConfiguration", planarConfig);
+			table.put("PlanarConfiguration", planarConfig);
 
-			putInt("XPosition", firstIFD, IFD.X_POSITION);
-			putInt("YPosition", firstIFD, IFD.Y_POSITION);
-			putInt("FreeOffsets", firstIFD, IFD.FREE_OFFSETS);
-			putInt("FreeByteCounts", firstIFD, IFD.FREE_BYTE_COUNTS);
-			putInt("GrayResponseUnit", firstIFD, IFD.GRAY_RESPONSE_UNIT);
-			putInt("GrayResponseCurve", firstIFD, IFD.GRAY_RESPONSE_CURVE);
-			putInt("T4Options", firstIFD, IFD.T4_OPTIONS);
-			putInt("T6Options", firstIFD, IFD.T6_OPTIONS);
+			putInt(table, "XPosition", firstIFD, IFD.X_POSITION);
+			putInt(table, "YPosition", firstIFD, IFD.Y_POSITION);
+			putInt(table, "FreeOffsets", firstIFD, IFD.FREE_OFFSETS);
+			putInt(table, "FreeByteCounts", firstIFD, IFD.FREE_BYTE_COUNTS);
+			putInt(table, "GrayResponseUnit", firstIFD, IFD.GRAY_RESPONSE_UNIT);
+			putInt(table, "GrayResponseCurve", firstIFD, IFD.GRAY_RESPONSE_CURVE);
+			putInt(table, "T4Options", firstIFD, IFD.T4_OPTIONS);
+			putInt(table, "T6Options", firstIFD, IFD.T6_OPTIONS);
 
 			final int res = firstIFD.getIFDIntValue(IFD.RESOLUTION_UNIT);
 			String resUnit = null;
@@ -833,10 +839,10 @@ public class TIFFFormat extends AbstractFormat {
 					resUnit = "Centimeter";
 					break;
 			}
-			put("ResolutionUnit", resUnit);
+			table.put("ResolutionUnit", resUnit);
 
-			putInt("PageNumber", firstIFD, IFD.PAGE_NUMBER);
-			putInt("TransferFunction", firstIFD, IFD.TRANSFER_FUNCTION);
+			putInt(table, "PageNumber", firstIFD, IFD.PAGE_NUMBER);
+			putInt(table, "TransferFunction", firstIFD, IFD.TRANSFER_FUNCTION);
 
 			final int predict = firstIFD.getIFDIntValue(IFD.PREDICTOR);
 			String predictor = null;
@@ -848,16 +854,16 @@ public class TIFFFormat extends AbstractFormat {
 					predictor = "Horizontal differencing";
 					break;
 			}
-			put("Predictor", predictor);
+			table.put("Predictor", predictor);
 
-			putInt("WhitePoint", firstIFD, IFD.WHITE_POINT);
-			putInt("PrimaryChromacities", firstIFD, IFD.PRIMARY_CHROMATICITIES);
+			putInt(table, "WhitePoint", firstIFD, IFD.WHITE_POINT);
+			putInt(table, "PrimaryChromacities", firstIFD, IFD.PRIMARY_CHROMATICITIES);
 
-			putInt("HalftoneHints", firstIFD, IFD.HALFTONE_HINTS);
-			putInt("TileWidth", firstIFD, IFD.TILE_WIDTH);
-			putInt("TileLength", firstIFD, IFD.TILE_LENGTH);
-			putInt("TileOffsets", firstIFD, IFD.TILE_OFFSETS);
-			putInt("TileByteCounts", firstIFD, IFD.TILE_BYTE_COUNTS);
+			putInt(table, "HalftoneHints", firstIFD, IFD.HALFTONE_HINTS);
+			putInt(table, "TileWidth", firstIFD, IFD.TILE_WIDTH);
+			putInt(table, "TileLength", firstIFD, IFD.TILE_LENGTH);
+			putInt(table, "TileOffsets", firstIFD, IFD.TILE_OFFSETS);
+			putInt(table, "TileByteCounts", firstIFD, IFD.TILE_BYTE_COUNTS);
 
 			final int ink = firstIFD.getIFDIntValue(IFD.INK_SET);
 			String inkSet = null;
@@ -869,13 +875,13 @@ public class TIFFFormat extends AbstractFormat {
 					inkSet = "Other";
 					break;
 			}
-			put("InkSet", inkSet);
+			table.put("InkSet", inkSet);
 
-			putInt("InkNames", firstIFD, IFD.INK_NAMES);
-			putInt("NumberOfInks", firstIFD, IFD.NUMBER_OF_INKS);
-			putInt("DotRange", firstIFD, IFD.DOT_RANGE);
-			put("TargetPrinter", firstIFD, IFD.TARGET_PRINTER);
-			putInt("ExtraSamples", firstIFD, IFD.EXTRA_SAMPLES);
+			putInt(table, "InkNames", firstIFD, IFD.INK_NAMES);
+			putInt(table, "NumberOfInks", firstIFD, IFD.NUMBER_OF_INKS);
+			putInt(table, "DotRange", firstIFD, IFD.DOT_RANGE);
+			put(table, "TargetPrinter", firstIFD, IFD.TARGET_PRINTER);
+			putInt(table, "ExtraSamples", firstIFD, IFD.EXTRA_SAMPLES);
 
 			final int fmt = firstIFD.getIFDIntValue(IFD.SAMPLE_FORMAT);
 			String sampleFormat = null;
@@ -893,11 +899,11 @@ public class TIFFFormat extends AbstractFormat {
 					sampleFormat = "undefined";
 					break;
 			}
-			put("SampleFormat", sampleFormat);
+			table.put("SampleFormat", sampleFormat);
 
-			putInt("SMinSampleValue", firstIFD, IFD.S_MIN_SAMPLE_VALUE);
-			putInt("SMaxSampleValue", firstIFD, IFD.S_MAX_SAMPLE_VALUE);
-			putInt("TransferRange", firstIFD, IFD.TRANSFER_RANGE);
+			putInt(table, "SMinSampleValue", firstIFD, IFD.S_MIN_SAMPLE_VALUE);
+			putInt(table, "SMaxSampleValue", firstIFD, IFD.S_MAX_SAMPLE_VALUE);
+			putInt(table, "TransferRange", firstIFD, IFD.TRANSFER_RANGE);
 
 			final int jpeg = firstIFD.getIFDIntValue(IFD.JPEG_PROC);
 			String jpegProc = null;
@@ -909,17 +915,17 @@ public class TIFFFormat extends AbstractFormat {
 					jpegProc = "lossless process with Huffman coding";
 					break;
 			}
-			put("JPEGProc", jpegProc);
+			table.put("JPEGProc", jpegProc);
 
-			putInt("JPEGInterchangeFormat", firstIFD, IFD.JPEG_INTERCHANGE_FORMAT);
-			putInt("JPEGRestartInterval", firstIFD, IFD.JPEG_RESTART_INTERVAL);
+			putInt(table, "JPEGInterchangeFormat", firstIFD, IFD.JPEG_INTERCHANGE_FORMAT);
+			putInt(table, "JPEGRestartInterval", firstIFD, IFD.JPEG_RESTART_INTERVAL);
 
-			putInt("JPEGLosslessPredictors", firstIFD, IFD.JPEG_LOSSLESS_PREDICTORS);
-			putInt("JPEGPointTransforms", firstIFD, IFD.JPEG_POINT_TRANSFORMS);
-			putInt("JPEGQTables", firstIFD, IFD.JPEG_Q_TABLES);
-			putInt("JPEGDCTables", firstIFD, IFD.JPEG_DC_TABLES);
-			putInt("JPEGACTables", firstIFD, IFD.JPEG_AC_TABLES);
-			putInt("YCbCrCoefficients", firstIFD, IFD.Y_CB_CR_COEFFICIENTS);
+			putInt(table, "JPEGLosslessPredictors", firstIFD, IFD.JPEG_LOSSLESS_PREDICTORS);
+			putInt(table, "JPEGPointTransforms", firstIFD, IFD.JPEG_POINT_TRANSFORMS);
+			putInt(table, "JPEGQTables", firstIFD, IFD.JPEG_Q_TABLES);
+			putInt(table, "JPEGDCTables", firstIFD, IFD.JPEG_DC_TABLES);
+			putInt(table, "JPEGACTables", firstIFD, IFD.JPEG_AC_TABLES);
+			putInt(table, "YCbCrCoefficients", firstIFD, IFD.Y_CB_CR_COEFFICIENTS);
 
 			final int ycbcr = firstIFD.getIFDIntValue(IFD.Y_CB_CR_SUB_SAMPLING);
 			String subSampling = null;
@@ -936,10 +942,10 @@ public class TIFFFormat extends AbstractFormat {
 						"chroma image dimensions are " + "1/4 the luma image dimensions";
 					break;
 			}
-			put("YCbCrSubSampling", subSampling);
+			table.put("YCbCrSubSampling", subSampling);
 
-			putInt("YCbCrPositioning", firstIFD, IFD.Y_CB_CR_POSITIONING);
-			putInt("ReferenceBlackWhite", firstIFD, IFD.REFERENCE_BLACK_WHITE);
+			putInt(table, "YCbCrPositioning", firstIFD, IFD.Y_CB_CR_POSITIONING);
+			putInt(table, "ReferenceBlackWhite", firstIFD, IFD.REFERENCE_BLACK_WHITE);
 
 			// bits per sample and number of channels
 			final int[] q = firstIFD.getBitsPerSample();
@@ -953,8 +959,8 @@ public class TIFFFormat extends AbstractFormat {
 				numC = 3;
 			}
 
-			put("BitsPerSample", bps);
-			put("NumberOfChannels", numC);
+			table.put("BitsPerSample", bps);
+			table.put("NumberOfChannels", numC);
 
 			// format the creation date to ISO 8601
 
@@ -1004,51 +1010,16 @@ public class TIFFFormat extends AbstractFormat {
 		// removed, as there are now 'addGlobalMeta' methods that accept
 		// primitive types
 
-		protected void put(final String key, Object value) {
-			if (value == null) return;
-			if (value instanceof String) value = ((String) value).trim();
-			addGlobalMeta(key, value);
+		protected void put(final MetaTable table, final String key, final IFD ifd,
+			final int tag)
+		{
+			table.put(key, ifd.getIFDValue(tag));
 		}
 
-		protected void put(final String key, final int value) {
-			if (value == -1) return; // indicates missing value
-			addGlobalMeta(key, value);
-		}
-
-		protected void put(final String key, final boolean value) {
-			put(key, new Boolean(value));
-		}
-
-		protected void put(final String key, final byte value) {
-			put(key, new Byte(value));
-		}
-
-		protected void put(final String key, final char value) {
-			put(key, new Character(value));
-		}
-
-		protected void put(final String key, final double value) {
-			put(key, new Double(value));
-		}
-
-		protected void put(final String key, final float value) {
-			put(key, new Float(value));
-		}
-
-		protected void put(final String key, final long value) {
-			put(key, new Long(value));
-		}
-
-		protected void put(final String key, final short value) {
-			put(key, new Short(value));
-		}
-
-		protected void put(final String key, final IFD ifd, final int tag) {
-			put(key, ifd.getIFDValue(tag));
-		}
-
-		protected void putInt(final String key, final IFD ifd, final int tag) {
-			put(key, ifd.getIFDIntValue(tag));
+		protected void putInt(final MetaTable table, final String key,
+			final IFD ifd, final int tag)
+		{
+			table.put(key, ifd.getIFDIntValue(tag));
 		}
 
 		// -- Helper methods --
@@ -1187,8 +1158,8 @@ public class TIFFFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			IFD ifd = new IFD(log());
 			if (!sequential) {

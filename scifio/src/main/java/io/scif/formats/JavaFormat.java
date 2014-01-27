@@ -40,6 +40,7 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
@@ -95,8 +96,8 @@ public class JavaFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
@@ -112,7 +113,9 @@ public class JavaFormat extends AbstractFormat {
 			final String pixelType =
 				FormatTools.getPixelTypeString(meta.get(imageIndex).getPixelType());
 			final int type = FormatTools.pixelTypeFromString(pixelType);
-			if (!DataTools.containsValue(getPixelTypes(), type)) {
+			if (!DataTools.containsValue(getPixelTypes(config.writerGetCompression()),
+				type))
+			{
 				throw new FormatException("Unsupported image type '" + pixelType + "'.");
 			}
 			final int bpp = FormatTools.getBytesPerPixel(type);

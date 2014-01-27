@@ -32,6 +32,7 @@
 
 package io.scif;
 
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.File;
@@ -61,6 +62,18 @@ public interface TypedParser<M extends TypedMetadata> extends Parser {
 	@Override
 	M parse(RandomAccessInputStream stream) throws IOException, FormatException;
 
+	@Override
+	M parse(String fileName, SCIFIOConfig config) throws IOException,
+		FormatException;
+
+	@Override
+	M parse(File file, SCIFIOConfig config) throws IOException,
+		FormatException;
+
+	@Override
+	M parse(RandomAccessInputStream stream, SCIFIOConfig config)
+		throws IOException, FormatException;
+
 	/**
 	 * Generic-parameterized {@code parse} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
@@ -89,4 +102,33 @@ public interface TypedParser<M extends TypedMetadata> extends Parser {
 	M parse(RandomAccessInputStream stream, M meta) throws IOException,
 		FormatException;
 
+	/**
+	 * Generic-parameterized {@code parse} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Parser#parse(String, Metadata)}.
+	 * 
+	 * @see io.scif.Parser#parse(String, Metadata, SCIFIOConfig)
+	 */
+	M parse(String fileName, M meta, SCIFIOConfig config) throws IOException,
+		FormatException;
+
+	/**
+	 * Generic-parameterized {@code parse} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Parser#parse(File, Metadata)}.
+	 * 
+	 * @see io.scif.Parser#parse(File, Metadata, SCIFIOConfig)
+	 */
+	M parse(File file, M meta, SCIFIOConfig config) throws IOException,
+		FormatException;
+
+	/**
+	 * Generic-parameterized {@code parse} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Parser#parse(RandomAccessInputStream, Metadata)}.
+	 * 
+	 * @see io.scif.Parser#parse(RandomAccessInputStream, Metadata, SCIFIOConfig)
+	 */
+	M parse(RandomAccessInputStream stream, M meta, SCIFIOConfig config)
+		throws IOException, FormatException;
 }

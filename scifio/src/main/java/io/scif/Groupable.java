@@ -41,13 +41,6 @@ import java.io.IOException;
  * @author Mark Hiner
  */
 public interface Groupable {
-
-	/** Specifies whether or not to force grouping in multi-file formats. */
-	void setGroupFiles(boolean group);
-
-	/** Returns true if we should group files in multi-file formats. */
-	boolean isGroupFiles();
-
 	/**
 	 * Returns an int indicating that we cannot, must, or might group the files in
 	 * a given dataset.

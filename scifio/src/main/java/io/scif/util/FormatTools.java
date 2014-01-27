@@ -40,6 +40,7 @@ import io.scif.Reader;
 import io.scif.Writer;
 import io.scif.common.ReflectException;
 import io.scif.common.ReflectedUniverse;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
@@ -1052,6 +1053,35 @@ public final class FormatTools {
 			for (int j = 0; j < input.getPlaneCount(i); j++) {
 				p = input.openPlane(i, j);
 				output.savePlane(i, j, p);
+			}
+		}
+
+		input.close();
+		output.close();
+	}
+
+	/**
+	 * As {@link #convert(Reader, Writer, String)}, with configuration options.
+	 * 
+	 * @param input the pre-initialized Reader used for reading data.
+	 * @param output the uninitialized Writer used for writing data.
+	 * @param outputFile the full path name of the output file to be created.
+	 * @param config {@link SCIFIOConfig} to use for the reading and writing.
+	 * @throws FormatException if there is a general problem reading from or
+	 *           writing to one of the files.
+	 * @throws IOException if there is an I/O-related error.
+	 */
+	public static void convert(final Reader input, final Writer output,
+		final String outputFile, final SCIFIOConfig config) throws FormatException,
+		IOException
+	{
+
+		Plane p = null;
+
+		for (int i = 0; i < input.getImageCount(); i++) {
+			for (int j = 0; j < input.getPlaneCount(i); j++) {
+				p = input.openPlane(i, j, config);
+				output.savePlane(i, j, p, config);
 			}
 		}
 

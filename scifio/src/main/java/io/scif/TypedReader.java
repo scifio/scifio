@@ -32,6 +32,7 @@
 
 package io.scif;
 
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
@@ -85,6 +86,26 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 */
 	P openPlane(int imageIndex, long planeIndex, P plane, long[] planeMin,
 		long[] planeMax) throws FormatException, IOException;
+
+	@Override
+	P openPlane(int imageIndex, long planeIndex, SCIFIOConfig config)
+		throws FormatException, IOException;
+
+	@Override
+	P openPlane(int imageIndex, long planeIndex, long[] planeMin,
+		long[] planeMax, SCIFIOConfig config) throws FormatException, IOException;
+
+	/**
+	 * @see io.scif.TypedReader#openPlane(int, long, DataPlane)
+	 */
+	P openPlane(int imageIndex, long planeIndex, P plane, SCIFIOConfig config)
+		throws FormatException, IOException;
+
+	/**
+	 * @see io.scif.TypedReader#openPlane(int, long, DataPlane, long[], long[])
+	 */
+	P openPlane(int imageIndex, long planeIndex, P plane, long[] planeMin,
+		long[] planeMax, SCIFIOConfig config) throws FormatException, IOException;
 
 	@Override
 	P openThumbPlane(int imageIndex, long planeIndex) throws FormatException,

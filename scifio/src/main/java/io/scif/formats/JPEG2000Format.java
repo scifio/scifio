@@ -51,6 +51,7 @@ import io.scif.codec.JPEG2000Codec;
 import io.scif.codec.JPEG2000CodecOptions;
 import io.scif.codec.JPEG2000SegmentMarker;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
@@ -367,7 +368,7 @@ public class JPEG2000Format extends AbstractFormat {
 					final String key = comment.substring(0, equal);
 					final String value = comment.substring(equal + 1);
 
-					addGlobalMeta(key, value);
+					meta.getTable().put(key, value);
 				}
 				else {
 					meta.getTable().put("Comment", comment);
@@ -379,7 +380,8 @@ public class JPEG2000Format extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			parse(stream, meta, stream.length());
 		}
@@ -748,7 +750,8 @@ public class JPEG2000Format extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
@@ -812,8 +815,8 @@ public class JPEG2000Format extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config)			throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);

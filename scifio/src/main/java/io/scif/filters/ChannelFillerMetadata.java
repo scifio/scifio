@@ -38,6 +38,7 @@ import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
+import io.scif.config.SCIFIOConfig;
 import io.scif.services.InitializeService;
 import io.scif.util.FormatTools;
 
@@ -100,7 +101,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 					try {
 						r =
 							initializeService.initializeReader(m.getSource().getFileName(),
-								true);
+								new SCIFIOConfig().checkerSetOpen(true));
 						cTable = r.openPlane(0, 0).getColorTable();
 						r.close();
 					}

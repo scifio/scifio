@@ -190,14 +190,17 @@ public class Convert extends AbstractReaderCommand {
 		try {
 			// open the specified plane
 			if (plane == null) {
-				plane = reader.openPlane(imageIndex, planeIndex, planeMin, planeMax);
+				plane =
+					reader.openPlane(imageIndex, planeIndex, planeMin, planeMax,
+						getConfig());
 			}
 			else {
 				plane =
-					reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax);
+					reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax,
+						getConfig());
 			}
 			// write the specified plane
-			writer.savePlane(imageIndex, planeNo, plane);
+			writer.savePlane(imageIndex, planeNo, plane, getConfig());
 		}
 		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());
@@ -222,14 +225,13 @@ public class Convert extends AbstractReaderCommand {
 		Writer writer;
 		try {
 			// Initialize the writer
-			writer = initializeService.initializeWriter(sourceMeta, out);
+			writer =
+				initializeService.initializeWriter(sourceMeta, out, getConfig());
 
 			// Set writer configuration
 			if (writer instanceof TIFFFormat.Writer) {
 				((TIFFFormat.Writer<?>) writer).setBigTiff(bigTiff);
 			}
-
-			writer.setWriteSequentially(true);
 		}
 		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());

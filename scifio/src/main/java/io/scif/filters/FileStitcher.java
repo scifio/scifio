@@ -39,6 +39,7 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.Location;
 import io.scif.services.FilePatternService;
 import io.scif.services.InitializeService;
@@ -90,7 +91,6 @@ public class FileStitcher extends AbstractReaderFilter {
 	private FilePattern pattern;
 
 	private boolean noStitch;
-	private final boolean group = true;
 
 	// -- Constructors --
 
@@ -206,7 +206,9 @@ public class FileStitcher extends AbstractReaderFilter {
 	// -- AbstractReaderFilter API Methods --
 
 	@Override
-	protected void setSourceHelper(final String source) {
+	protected void
+		setSourceHelper(final String source, final SCIFIOConfig config)
+	{
 		try {
 			cleanUp();
 			log().debug("initFile: " + source);
@@ -236,15 +238,14 @@ public class FileStitcher extends AbstractReaderFilter {
 
 			// If the wrapped reader will handle the stitching, we can set its
 			// state and return.
-			if (mustGroup || !group) {
+			if (mustGroup) {
 				noStitch = true;
 				getParent().close();
-				getParent().setGroupFiles(group);
 
 				if (patternIds && fp.isValid()) {
-					getParent().setSource(fp.getFiles()[0]);
+					getParent().setSource(fp.getFiles()[0], config);
 				}
-				else getParent().setSource(source);
+				else getParent().setSource(source, config);
 				return;
 			}
 
@@ -261,12 +262,11 @@ public class FileStitcher extends AbstractReaderFilter {
 			fp = new FilePattern(getContext(), patterns[0]);
 
 			getParent().close();
-			getParent().setGroupFiles(group);
 
 			if (!fp.isValid()) {
 				throw new FormatException("Invalid file pattern: " + fp.getPattern());
 			}
-			getParent().setSource(fp.getFiles()[0]);
+			getParent().setSource(fp.getFiles()[0], config);
 
 			final String msg = " Please rename your files or disable file stitching.";
 
@@ -331,12 +331,12 @@ public class FileStitcher extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] offsets, final long[] lengths)
-		throws FormatException, IOException
+		final Plane plane, final long[] offsets, final long[] lengths,
+		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		// If no stitching, delegate to parent
 		if (noStitch) return getParent().openPlane(imageIndex, planeIndex, plane,
-			offsets, lengths);
+			offsets, lengths, new SCIFIOConfig().groupableSetGroupFiles(false));
 
 		// Check for plane compatibility
 		Plane bp;
@@ -354,7 +354,8 @@ public class FileStitcher extends AbstractReaderFilter {
 			adjustedIndex[1] < readers[adjustedIndex[0]].getImageCount())
 		{
 			final Reader r = readers[adjustedIndex[0]];
-			return r.openPlane(adjustedIndex[1], planeIndex, bp, offsets, lengths);
+			return r.openPlane(adjustedIndex[1], planeIndex, bp, offsets, lengths,
+				config);
 		}
 
 		// return a blank image to cover for the fact that

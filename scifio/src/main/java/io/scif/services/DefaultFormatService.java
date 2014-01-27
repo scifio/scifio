@@ -41,6 +41,7 @@ import io.scif.Parser;
 import io.scif.Reader;
 import io.scif.SCIFIOService;
 import io.scif.Writer;
+import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTools;
 
 import java.util.ArrayList;
@@ -259,23 +260,24 @@ public class DefaultFormatService extends AbstractService implements
 	 */
 	@Override
 	public Format getFormat(final String id) throws FormatException {
-		return getFormat(id, false);
+		return getFormat(id, new SCIFIOConfig().checkerSetOpen(false));
 	}
 
 	@Override
-	public Format getFormat(final String id, final boolean open)
+	public Format getFormat(final String id, final SCIFIOConfig config)
 		throws FormatException
 	{
-		return getFormatList(id, open, true).get(0);
+		return getFormatList(id, config, true).get(0);
 	}
 
 	@Override
 	public List<Format> getFormatList(final String id) throws FormatException {
-		return getFormatList(id, false, false);
+		return getFormatList(id, new SCIFIOConfig().checkerSetOpen(false),
+			false);
 	}
 
 	@Override
-	public List<Format> getFormatList(final String id, final boolean open,
+	public List<Format> getFormatList(final String id, final SCIFIOConfig config,
 		final boolean greedy) throws FormatException
 	{
 
@@ -285,7 +287,7 @@ public class DefaultFormatService extends AbstractService implements
 
 		for (final Format format : formats()) {
 			if (!found && format.isEnabled() &&
-				format.createChecker().isFormat(id, open))
+				format.createChecker().isFormat(id, config))
 			{
 				// if greedy is true, we can end after finding the first format
 				found = greedy;

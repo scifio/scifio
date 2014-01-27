@@ -40,6 +40,7 @@ import io.scif.Checker;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.SCIFIO;
+import io.scif.config.SCIFIOConfig;
 import io.scif.formats.FakeFormat;
 import io.scif.io.RandomAccessInputStream;
 
@@ -82,10 +83,10 @@ public class CheckerTest {
 		isFormat = c.isFormat(id);
 		assertTrue(isFormat);
 
-		isFormat = c.isFormat(id, false);
+		isFormat = c.isFormat(id, new SCIFIOConfig().checkerSetOpen(false));
 		assertTrue(isFormat);
 
-		isFormat = c.isFormat(id, true);
+		isFormat = c.isFormat(id, new SCIFIOConfig().checkerSetOpen(true));
 		assertTrue(isFormat);
 
 		final RandomAccessInputStream stream =
@@ -94,7 +95,8 @@ public class CheckerTest {
 		assertFalse(isFormat);
 		stream.close();
 
-		isFormat = c.isFormat(falseId, false);
+		isFormat =
+			c.isFormat(falseId, new SCIFIOConfig().checkerSetOpen(false));
 		assertFalse(isFormat);
 	}
 
@@ -114,10 +116,10 @@ public class CheckerTest {
 		isFormat = fc.isFormat(id);
 		assertTrue(isFormat);
 
-		isFormat = fc.isFormat(id, false);
+		isFormat = fc.isFormat(id, new SCIFIOConfig().checkerSetOpen(false));
 		assertFalse(isFormat);
 
-		isFormat = fc.isFormat(id, true);
+		isFormat = fc.isFormat(id, new SCIFIOConfig().checkerSetOpen(true));
 		assertTrue(isFormat);
 
 		final RandomAccessInputStream stream =

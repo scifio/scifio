@@ -39,6 +39,7 @@ import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Writer;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.services.FormatService;
 import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
@@ -104,7 +105,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	public void saveImg(final String id, final Img<?> img) throws ImgIOException,
 		IncompatibleTypeException
 	{
-		saveImg(id, ImgPlus.wrap(img), 0);
+		saveImg(id, img, new SCIFIOConfig());
 	}
 
 	/**
@@ -119,9 +120,41 @@ public class ImgSaver extends AbstractImgIOComponent {
 	public void saveImg(final String id, final ImgPlus<?> img,
 		final int imageIndex) throws ImgIOException, IncompatibleTypeException
 	{
+		saveImg(id, img, imageIndex, new SCIFIOConfig());
+	}
+	
+	/**
+	 * As {@link #saveImg(String, Img)} with configuration options.
+	 * 
+	 * @param id
+	 * @param img
+	 * @param config Configuration information to use for this write.
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public void saveImg(final String id, final Img<?> img,
+		final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
+	{
+		saveImg(id, ImgPlus.wrap(img), 0, config);
+	}
+
+	/**
+	 * As {@link #saveImg(String, ImgPlus, int)} with configuration options.
+	 * 
+	 * @param id
+	 * @param img
+	 * @param config Configuration information to use for this write.
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public void saveImg(final String id, final ImgPlus<?> img,
+		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
+		IncompatibleTypeException
+	{
 		img.setSource(id);
 		img.setName(new File(id).getName());
-		saveImg(initializeWriter(id, img, imageIndex), img, imageIndex, false);
+		saveImg(initializeWriter(id, img, imageIndex, config), img, imageIndex,
+			false, config);
 	}
 
 	/**
@@ -135,7 +168,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	public void saveImg(final Writer w, final Img<?> img) throws ImgIOException,
 		IncompatibleTypeException
 	{
-		saveImg(w, ImgPlus.wrap(img), 0);
+		saveImg(w, img, new SCIFIOConfig());
 	}
 
 	// TODO IFormatHandler needs to be promoted to be able to get the current
@@ -155,9 +188,44 @@ public class ImgSaver extends AbstractImgIOComponent {
 		saveImg(final Writer w, final ImgPlus<?> img, final int imageIndex)
 			throws ImgIOException, IncompatibleTypeException
 	{
-		saveImg(w, img, imageIndex, true);
+		saveImg(w, img, imageIndex, new SCIFIOConfig());
 	}
 
+	/**
+	 * As {@link #saveImg(Writer, Img)}, with configuration options.
+	 * 
+	 * @param w
+	 * @param img
+	 * @param config Configuration information to use for this write.
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public void saveImg(final Writer w, final Img<?> img,
+		final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
+	{
+		saveImg(w, ImgPlus.wrap(img), 0, config);
+	}
+
+	// TODO IFormatHandler needs to be promoted to be able to get the current
+	// file, to get its full path, to provide the ImgPlus
+	// pending that, these two IFormatWriter methods are not guaranteed to be
+	// useful
+	/**
+	 * As {@link #saveImg(Writer, ImgPlus, int)}, with configuration options.
+	 * 
+	 * @param w
+	 * @param img
+	 * @param config Configuration information to use for this write.
+	 * @throws ImgIOException
+	 * @throws IncompatibleTypeException
+	 */
+	public void saveImg(final Writer w, final ImgPlus<?> img,
+		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
+		IncompatibleTypeException
+	{
+		saveImg(w, img, imageIndex, true, config);
+	}
+	
 	// -- Utility methods --
 
 	/**
@@ -348,13 +416,13 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 	/* Entry point for writePlanes method, the actual workhorse to save pixels to disk */
 	private void saveImg(final Writer w, final ImgPlus<?> img,
-		final int imageIndex, final boolean initializeWriter)
-		throws ImgIOException, IncompatibleTypeException
+		final int imageIndex, final boolean initializeWriter,
+		final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
 	{
 
 		// use the ImgPlus to calculate necessary metadata if
 		if (initializeWriter) {
-			populateMeta(w.getMetadata(), img, imageIndex);
+			populateMeta(w.getMetadata(), img, imageIndex, config);
 		}
 
 		if (img.getSource().length() == 0) {
@@ -366,7 +434,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final int sliceCount = countSlices(img);
 
 		// write pixels
-		writePlanes(w, img, imageIndex);
+		writePlanes(w, img, imageIndex, config);
 
 		final long endTime = System.currentTimeMillis();
 		final float time = (endTime - startTime) / 1000f;
@@ -398,9 +466,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * 
 	 * @throws IncompatibleTypeException
 	 */
-	private void
-		writePlanes(Writer w, final ImgPlus<?> img, final int imageIndex)
-			throws ImgIOException, IncompatibleTypeException
+	private void writePlanes(Writer w, final ImgPlus<?> img,
+		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
+		IncompatibleTypeException
 	{
 		final PlanarAccess<?> planarAccess = utils().getPlanarAccess(img);
 		if (planarAccess == null) {
@@ -430,7 +498,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 				final File f = new File(img.getSource());
 				if (f.exists()) {
 					f.delete();
-					w = initializeWriter(img.getSource(), img, imageIndex);
+					w = initializeWriter(img.getSource(), img, imageIndex, config);
 				}
 			}
 
@@ -516,7 +584,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 								sourcePlane.length, sourcePlane.length);
 						}
 					}
-					w.savePlane(imageIndex, planeIndex, destPlane);
+					w.savePlane(imageIndex, planeIndex, destPlane, config);
 				}
 				catch (final FormatException e) {
 					throw new ImgIOException(e);
@@ -539,7 +607,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Creates a new {@link Writer} and sets its id to the provided String.
 	 */
 	private Writer initializeWriter(final String id, final ImgPlus<?> img,
-		final int imageIndex) throws ImgIOException
+		final int imageIndex, final SCIFIOConfig config) throws ImgIOException
 	{
 		Writer writer = null;
 		Metadata meta = null;
@@ -548,7 +616,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 			writer = formatService.getWriterByExtension(id);
 			meta = writer.getFormat().createMetadata();
 
-			populateMeta(meta, img, imageIndex);
+			populateMeta(meta, img, imageIndex, config);
 
 			writer.setMetadata(meta);
 
@@ -569,7 +637,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * necessary for writing.
 	 */
 	private void populateMeta(final Metadata meta, final ImgPlus<?> img,
-		final int imageIndex) throws ImgIOException
+		final int imageIndex, final SCIFIOConfig config) throws ImgIOException
 	{
 		statusService.showStatus("Initializing " + img.getName());
 
@@ -595,7 +663,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 		// Adjust for RGB information
 		if (img.getCompositeChannelCount() > 1) {
 			final ImageMetadata m = imgplusMeta.get(imageIndex);
-			m.setPlanarAxisCount(3);
+			if (config.imgSaverGetWriteRGB()) {
+				m.setPlanarAxisCount(3);
+			}
 			m.setAxisType(2, Axes.CHANNEL);
 			// Split Axes.CHANNEL if necessary
 			if (m.getAxisLength(Axes.CHANNEL) > img.getCompositeChannelCount()) {

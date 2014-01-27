@@ -32,6 +32,7 @@
 
 package io.scif;
 
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
@@ -69,11 +70,13 @@ public abstract class AbstractChecker extends AbstractHasFormat implements
 
 	@Override
 	public boolean isFormat(final String name) {
-		return isFormat(name, true);
+		return isFormat(name, new SCIFIOConfig());
 	}
 
 	@Override
-	public boolean isFormat(final String name, final boolean open) {
+	public boolean isFormat(final String name, final SCIFIOConfig config) {
+		boolean open = config.checkerIsOpen();
+
 		// if file extension ID is insufficient and we can't open the file, give up
 		if (!suffixSufficient && !open) return false;
 

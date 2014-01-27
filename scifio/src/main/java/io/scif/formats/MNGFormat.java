@@ -39,6 +39,7 @@ import io.scif.AbstractParser;
 import io.scif.BufferedImagePlane;
 import io.scif.Format;
 import io.scif.FormatException;
+import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
 import io.scif.io.RandomAccessInputStream;
@@ -172,7 +173,8 @@ public class MNGFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			in.order(false);
 
@@ -246,7 +248,7 @@ public class MNGFormat extends AbstractFormat {
 				new Hashtable<String, Vector<Long>>();
 
 			final MNGImageInfo info = datasetInfo.imageInfo.get(0);
-			addGlobalMeta("Number of frames", info.offsets.size());
+			meta.getTable().put("Number of frames", info.offsets.size());
 			for (int i = 0; i < info.offsets.size(); i++) {
 				final long offset = info.offsets.get(i);
 				in.seek(offset);
@@ -309,8 +311,8 @@ public class MNGFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
-			IOException
+			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			throws FormatException,			IOException
 		{
 			final MNGImageInfo info =
 				getMetadata().getDatasetInfo().imageInfo.get(imageIndex);

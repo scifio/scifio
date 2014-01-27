@@ -32,6 +32,7 @@
 
 package io.scif;
 
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
@@ -88,15 +89,46 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	public P openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		final long[] planeMax = metadata.get(imageIndex).getAxesLengthsPlanar();
-		final long[] planeMin = new long[planeMax.length];
-		return openPlane(imageIndex, planeIndex, planeMin, planeMax);
+		return openPlane(imageIndex, planeIndex, new SCIFIOConfig());
 	}
 
 	@Override
 	public P openPlane(final int imageIndex, final long planeIndex,
 		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException
+	{
+		return openPlane(imageIndex, planeIndex, planeMin, planeMax, new SCIFIOConfig());
+	}
+
+	@Override
+	public P openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane) throws FormatException, IOException
+	{
+		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane));
+	}
+
+	@Override
+	public P openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final long[] planeMin, final long[] planeMax)
+		throws FormatException, IOException
+	{
+		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane),
+			planeMin, planeMax);
+	}
+
+	@Override
+	public P openPlane(int imageIndex, long planeIndex,
+		SCIFIOConfig config) throws FormatException, IOException
+	{
+		final long[] planeMax = metadata.get(imageIndex).getAxesLengthsPlanar();
+		final long[] planeMin = new long[planeMax.length];
+		return openPlane(imageIndex, planeIndex, planeMin, planeMax, config);
+	}
+
+	@Override
+	public P openPlane(int imageIndex, long planeIndex,
+		long[] planeMin, long[] planeMax, SCIFIOConfig config)
+		throws FormatException, IOException
 	{
 		P plane = null;
 
@@ -114,23 +146,25 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 				e);
 		}
 
-		return openPlane(imageIndex, planeIndex, plane, planeMin, planeMax);
+		return openPlane(imageIndex, planeIndex, plane, planeMin, planeMax, config);
 	}
 
+
 	@Override
-	public P openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane) throws FormatException, IOException
+	public Plane openPlane(int imageIndex, long planeIndex, Plane plane,
+		SCIFIOConfig config) throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane));
+		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane),
+			config);
 	}
 
 	@Override
-	public P openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] planeMin, final long[] planeMax)
+	public Plane openPlane(int imageIndex, long planeIndex, Plane plane,
+		long[] planeMin, long[] planeMax, SCIFIOConfig config)
 		throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane),
-			planeMin, planeMax);
+			planeMin, planeMax, config);
 	}
 
 	@Override
@@ -198,6 +232,25 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public void setSource(final String fileName) throws IOException {
+		setSource(fileName, new SCIFIOConfig());
+	}
+
+	@Override
+	public void setSource(final File file) throws IOException {
+		setSource(file, new SCIFIOConfig());
+	}
+
+	@Override
+	public void setSource(final RandomAccessInputStream stream)
+		throws IOException
+	{
+		setSource(stream, new SCIFIOConfig());
+	}
+
+	@Override
+	public void setSource(final String fileName, final SCIFIOConfig config)
+		throws IOException
+	{
 
 		if (getStream() != null && getStream().getFileName() != null &&
 			getStream().getFileName().equals(fileName))
@@ -210,7 +263,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		final RandomAccessInputStream stream =
 			new RandomAccessInputStream(getContext(), fileName);
 		try {
-			setMetadata(getFormat().createParser().parse(stream));
+			setMetadata(getFormat().createParser().parse(stream, config));
 		}
 		catch (final FormatException e) {
 			stream.close();
@@ -220,13 +273,15 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public void setSource(final File file) throws IOException {
-		setSource(file.getName());
+	public void setSource(final File file, final SCIFIOConfig config)
+		throws IOException
+	{
+		setSource(file.getName(), config);
 	}
 
 	@Override
-	public void setSource(final RandomAccessInputStream stream)
-		throws IOException
+	public void setSource(final RandomAccessInputStream stream,
+		final SCIFIOConfig config) throws IOException
 	{
 		if (metadata != null && getStream() != stream) close();
 
@@ -235,7 +290,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 			try {
 				@SuppressWarnings("unchecked")
-				final M meta = (M) getFormat().createParser().parse(stream);
+				final M meta = (M) getFormat().createParser().parse(stream, config);
 				setMetadata(meta);
 			}
 			catch (final FormatException e) {
@@ -291,8 +346,25 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		openPlane(final int imageIndex, final long planeIndex, final P plane)
 			throws FormatException, IOException
 	{
+		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig());
+	}
+
+	@Override
+	public P openPlane(int imageIndex, long planeIndex,
+		P plane, SCIFIOConfig config) throws FormatException,
+		IOException
+	{
 		return openPlane(imageIndex, planeIndex, plane, plane.getOffsets(), plane
-			.getLengths());
+			.getLengths(), config);
+	}
+
+	@Override
+	public P openPlane(final int imageIndex, final long planeIndex,
+		final P plane, final long[] planeMin, final long[] planeMax)
+		throws FormatException, IOException
+	{
+		return openPlane(imageIndex, planeIndex, plane, plane.getOffsets(), plane
+			.getLengths(), new SCIFIOConfig());
 	}
 
 	@Override

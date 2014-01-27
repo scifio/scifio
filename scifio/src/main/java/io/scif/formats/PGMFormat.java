@@ -41,6 +41,7 @@ import io.scif.ByteArrayReader;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.ByteArrayHandle;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
@@ -164,7 +165,8 @@ public class PGMFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			final String magic = stream.readLine().trim();
 
@@ -197,7 +199,7 @@ public class PGMFormat extends AbstractFormat {
 
 			meta.setOffset(stream.getFilePointer());
 
-			addGlobalMeta("Black and white", isBlackAndWhite);
+			meta.getTable().put("Black and white", isBlackAndWhite);
 		}
 
 		// -- Helper Methods --
@@ -228,7 +230,7 @@ public class PGMFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();

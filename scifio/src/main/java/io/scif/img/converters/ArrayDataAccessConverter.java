@@ -33,7 +33,7 @@
 package io.scif.img.converters;
 
 import io.scif.Reader;
-import io.scif.img.ImgOptions;
+import io.scif.config.SCIFIOConfig;
 import io.scif.img.cell.loaders.BitArrayLoader;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.CharArrayLoader;
@@ -68,7 +68,7 @@ public class ArrayDataAccessConverter extends AbstractPlaneConverter {
 	@Override
 	public <T extends RealType<T>> void populatePlane(final Reader reader,
 		final int imageIndex, final int planeIndex, final byte[] source,
-		final ImgPlus<T> dest, final ImgOptions imgOptions)
+		final ImgPlus<T> dest, final SCIFIOConfig config)
 	{
 		final ArrayImg<?, ?> arrayImg = (ArrayImg<?, ?>) dest.getImg();
 
@@ -83,42 +83,42 @@ public class ArrayDataAccessConverter extends AbstractPlaneConverter {
 
 		if (store instanceof BitArray) {
 			final BitArrayLoader loader =
-				new BitArrayLoader(reader, imgOptions.getRegion());
+				new BitArrayLoader(reader, config.imgOpenerGetRegion());
 			loader.convertBytes((BitArray) store, source, planeIndex);
 		}
 		else if (store instanceof ByteArray) {
 			final ByteArrayLoader loader =
-				new ByteArrayLoader(reader, imgOptions.getRegion());
+				new ByteArrayLoader(reader, config.imgOpenerGetRegion());
 			loader.convertBytes((ByteArray) store, source, planeIndex);
 		}
 		else if (store instanceof ShortArray) {
 			final ShortArrayLoader loader =
-				new ShortArrayLoader(reader, imgOptions.getRegion());
+				new ShortArrayLoader(reader, config.imgOpenerGetRegion());
 			loader.convertBytes((ShortArray) store, source, planeIndex);
 		}
 		else if (store instanceof LongArray) {
 			final LongArrayLoader loader =
-				new LongArrayLoader(reader, imgOptions.getRegion());
+				new LongArrayLoader(reader, config.imgOpenerGetRegion());
 			loader.convertBytes((LongArray) store, source, planeIndex);
 		}
 		else if (store instanceof CharArray) {
 			final CharArrayLoader loader =
-				new CharArrayLoader(reader, imgOptions.getRegion());
+				new CharArrayLoader(reader, config.imgOpenerGetRegion());
 			loader.convertBytes((CharArray) store, source, planeIndex);
 		}
 		else if (store instanceof DoubleArray) {
 			final DoubleArrayLoader loader =
-				new DoubleArrayLoader(reader, imgOptions.getRegion());
+				new DoubleArrayLoader(reader, config.imgOpenerGetRegion());
 			loader.convertBytes((DoubleArray) store, source, planeIndex);
 		}
 		else if (store instanceof FloatArray) {
 			final FloatArrayLoader loader =
-				new FloatArrayLoader(reader, imgOptions.getRegion());
+				new FloatArrayLoader(reader, config.imgOpenerGetRegion());
 			loader.convertBytes((FloatArray) store, source, planeIndex);
 		}
 		else if (store instanceof IntArray) {
 			final IntArrayLoader loader =
-				new IntArrayLoader(reader, imgOptions.getRegion());
+				new IntArrayLoader(reader, config.imgOpenerGetRegion());
 			loader.convertBytes((IntArray) store, source, planeIndex);
 		}
 

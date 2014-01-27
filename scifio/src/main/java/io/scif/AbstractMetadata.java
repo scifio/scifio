@@ -44,7 +44,6 @@ import java.util.List;
  * Abstract superclass of all SCIFIO {@link io.scif.Metadata} implementations.
  * 
  * @see io.scif.Metadata
- * @see io.scif.MetadataOptions
  * @see io.scif.Parser
  * @see io.scif.HasFormat
  * @author Mark Hiner
@@ -60,9 +59,6 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	/* Whether the Metadata should be filtered or not. */
 	protected boolean filtered;
-
-	/* The MetadataOptions used when parsing this Metadata. */
-	protected MetadataOptions metadataOptions;
 
 	/* Contains a list of metadata objects for each image in this dataset */
 	@io.scif.Field(label = "imageMeta", isList = true)
@@ -117,11 +113,6 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 		return filtered;
 	}
 
-	@Override
-	public MetadataOptions getMetadataOptions() {
-		return metadataOptions;
-	}
-
 	// -- Getters --
 
 	@Override
@@ -167,11 +158,6 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public void setMetadataOptions(final MetadataOptions opts) {
-		metadataOptions = opts;
-	}
-
-	@Override
 	public void add(final ImageMetadata meta) {
 		imageMeta.add(meta);
 	}
@@ -188,7 +174,7 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	@Override
 	public MetaTable getTable() {
-		if (table == null) table = new DefaultMetaTable();
+		if (table == null) table = new DefaultMetaTable(isFiltered());
 		return table;
 	}
 

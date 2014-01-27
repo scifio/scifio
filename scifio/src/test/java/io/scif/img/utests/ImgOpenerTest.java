@@ -34,9 +34,9 @@ package io.scif.img.utests;
 
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
+import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
-import io.scif.img.ImgOptions;
 import io.scif.img.SubRegion;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import net.imglib2.exception.IncompatibleTypeException;
@@ -117,27 +117,27 @@ public class ImgOpenerTest {
 	// Tests the opening various sub-regions of an image
 	@SuppressWarnings({ "rawtypes" })
 	private void testSubRegion(final ImgFactory factory) throws ImgIOException {
-		final ImgOptions options = new ImgOptions();
+		final SCIFIOConfig config = new SCIFIOConfig();
 		// should get an inner left left 128x128 square
 		AxisType[] axes = new AxisType[] { Axes.X, Axes.Y };
 		String[] ranges = new String[] { "128-255", "128-255" };
-		options.setRegion(new SubRegion(axes, ranges));
-		doTestSubRegion(factory, options, 128 * 128 * 5);
+		config.imgOpenerSetRegion(new SubRegion(axes, ranges));
+		doTestSubRegion(factory, config, 128 * 128 * 5);
 
 		axes = new AxisType[] { Axes.TIME };
 		ranges = new String[] { "0,2-4:2" };
 		// should get the first, 3rd and 5th T slices
-		options.setRegion(new SubRegion(axes, ranges));
-		doTestSubRegion(factory, options, 512 * 512 * 3);
+		config.imgOpenerSetRegion(new SubRegion(axes, ranges));
+		doTestSubRegion(factory, config, 512 * 512 * 3);
 
 		// should get the whole image
-		options.setRegion(null);
-		doTestSubRegion(factory, options, 512 * 512 * 5);
+		config.imgOpenerSetRegion(null);
+		doTestSubRegion(factory, config, 512 * 512 * 5);
 	}
 
 	@SuppressWarnings("rawtypes")
 	private void doTestSubRegion(final ImgFactory factory,
-		final ImgOptions options, final long size) throws ImgIOException
+		final SCIFIOConfig options, final long size) throws ImgIOException
 	{
 		ImgPlus imgPlus = null;
 		imgPlus = imgOpener.openImg(id, factory, options);
@@ -156,7 +156,7 @@ public class ImgOpenerTest {
 		imgPlus = imgOpener.openImg(id, type);
 		assertNotNull(imgPlus);
 		imgPlus = null;
-		imgPlus = imgOpener.openImg(id, type, new ImgOptions());
+		imgPlus = imgOpener.openImg(id, type, new SCIFIOConfig());
 		assertNotNull(imgPlus);
 		imgPlus = null;
 		imgPlus = imgOpener.openImg(id, factory, type);

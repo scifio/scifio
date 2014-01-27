@@ -47,6 +47,7 @@ import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.Translator;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
 import io.scif.io.RandomAccessInputStream;
@@ -396,7 +397,8 @@ public class APNGFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			// check that this is a valid PNG file
 			final byte[] signature = new byte[8];
@@ -543,8 +545,8 @@ public class APNGFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
-			IOException
+			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, -1,
@@ -654,7 +656,7 @@ public class APNGFormat extends AbstractFormat {
 			final long[] firstPlaneLengths =
 				meta.get(imageIndex).getAxesLengthsPlanar();
 			final long[] firstPlaneOffsets = new long[firstPlaneLengths.length];
-			openPlane(imageIndex, 0, firstPlaneOffsets, firstPlaneLengths);
+			openPlane(imageIndex, 0, firstPlaneOffsets, firstPlaneLengths, config);
 
 			// paste current image onto first plane
 			// NB: last plane read was the first plane
@@ -740,8 +742,8 @@ public class APNGFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			checkParams(imageIndex, planeIndex, plane.getBytes(), planeMin, planeMax);
 			if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(), planeMin,

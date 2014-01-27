@@ -34,6 +34,7 @@ package io.scif;
 
 import io.scif.codec.CodecOptions;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
@@ -92,15 +93,35 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	/** Where the image should be written. */
 	protected RandomAccessOutputStream out;
 
+	/** ColorModel for this Writer. */
+	private ColorModel model;
+
 	// -- Writer API Methods --
 
 	@Override
 	public void savePlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
+		savePlane(imageIndex, planeIndex, plane, new SCIFIOConfig());
+	}
+
+	@Override
+	public void savePlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final SCIFIOConfig config) throws FormatException,
+		IOException
+	{
 		final long[] planeMax = metadata.get(imageIndex).getAxesLengthsPlanar();
 		final long[] planeMin = new long[planeMax.length];
-		savePlane(imageIndex, planeIndex, plane, planeMin, planeMax);
+		savePlane(imageIndex, planeIndex, plane, planeMin, planeMax, config);
+	}
+
+	@Override
+	public void savePlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final long[] planeMin, final long[] planeMax)
+		throws FormatException, IOException
+	{
+		savePlane(imageIndex, planeIndex, plane, planeMin, planeMax,
+			new SCIFIOConfig());
 	}
 
 	@Override
@@ -172,33 +193,18 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public void setColorModel(final ColorModel cm) {
-		this.cm = cm;
+	public void setColorModel(ColorModel cm) {
+		model = cm;
 	}
 
 	@Override
 	public ColorModel getColorModel() {
-		return cm;
+		return model;
 	}
-
-	@Override
-	public void setFramesPerSecond(final int rate) {
-		fps = rate;
-	}
-
-	@Override
-	public int getFramesPerSecond() {
-		return fps;
-	}
-
+	
 	@Override
 	public String[] getCompressionTypes() {
 		return compressionTypes;
-	}
-
-	@Override
-	public int[] getPixelTypes() {
-		return getPixelTypes(getCompression());
 	}
 
 	@Override
@@ -209,8 +215,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public boolean isSupportedType(final int type) {
-		final int[] types = getPixelTypes();
+	public boolean isSupportedType(final int type, final String codec) {
+		final int[] types = getPixelTypes(codec);
 		for (int i = 0; i < types.length; i++) {
 			if (type == types[i]) return true;
 		}
@@ -218,7 +224,9 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public void setCompression(final String compress) throws FormatException {
+	public void isSupportedCompression(final String compress)
+		throws FormatException
+	{
 		for (int i = 0; i < compressionTypes.length; i++) {
 			if (compressionTypes[i].equals(compress)) {
 				compression = compress;
@@ -226,28 +234,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 			}
 		}
 		throw new FormatException("Invalid compression type: " + compress);
-	}
-
-	@Override
-	public String getCompression() {
-		return compression;
-	}
-
-	@Override
-	public void setCodecOptions(final CodecOptions options) {
-		this.options = options;
-	}
-
-	@Override
-	public void changeOutputFile(final String id) throws FormatException,
-		IOException
-	{
-		setDest(id);
-	}
-
-	@Override
-	public void setWriteSequentially(final boolean sequential) {
-		this.sequential = sequential;
 	}
 
 	// -- TypedWriter API Methods --

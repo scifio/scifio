@@ -35,7 +35,7 @@ package io.scif.img.converters;
 import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.common.DataTools;
-import io.scif.img.ImgOptions;
+import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgUtilityService;
 import io.scif.util.FormatTools;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
@@ -62,7 +62,7 @@ public class PlanarAccessConverter extends AbstractPlaneConverter {
 	@SuppressWarnings("unchecked")
 	public <T extends RealType<T>> void populatePlane(final Reader reader,
 		final int imageIndex, final int planeIndex, final byte[] plane,
-		final ImgPlus<T> planarImg, final ImgOptions imgOptions)
+		final ImgPlus<T> planarImg, final SCIFIOConfig config)
 	{
 		final Metadata m = reader.getMetadata();
 

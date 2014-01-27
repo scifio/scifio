@@ -43,6 +43,7 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.common.Constants;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.IRandomAccess;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.services.LocationService;
@@ -279,7 +280,8 @@ public class TextFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			meta.createImageMetadata(1);
 			final ImageMetadata iMeta = meta.get(0);
@@ -417,7 +419,8 @@ public class TextFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();

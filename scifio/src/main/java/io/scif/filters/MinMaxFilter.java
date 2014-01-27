@@ -37,6 +37,7 @@ import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -163,36 +164,69 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
-		return openPlane(imageIndex, planeIndex, new long[planarAxes],
-			getMetadata().get(imageIndex).getAxesLengthsPlanar());
+		return openPlane(imageIndex, planeIndex, new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
-		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],
-			getMetadata().get(imageIndex).getAxesLengthsPlanar());
+		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final long[] planeMin, final long[] planeMax) throws FormatException,
+		final long[] offsets, final long[] lengths) throws FormatException,
 		IOException
 	{
-		return openPlane(imageIndex, planeIndex, createPlane(planeMin, planeMax),
-			planeMin, planeMax);
+		return openPlane(imageIndex, planeIndex, offsets, lengths,
+			new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] offsets, final long[] lengths)
+		Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
+		return openPlane(imageIndex, planeIndex, plane, offsets, lengths,
+			new SCIFIOConfig());
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final SCIFIOConfig config) throws FormatException, IOException
+	{
+		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
+		return openPlane(imageIndex, planeIndex, new long[planarAxes],
+			getMetadata().get(imageIndex).getAxesLengthsPlanar(), config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final SCIFIOConfig config) throws FormatException,
+		IOException
+	{
+		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
+		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],
+			getMetadata().get(imageIndex).getAxesLengthsPlanar(), config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+		throws FormatException, IOException
+	{
+		return openPlane(imageIndex, planeIndex, createPlane(planeMin, planeMax),
+			planeMin, planeMax, config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final long[] offsets, final long[] lengths,
+		final SCIFIOConfig config) throws FormatException, IOException
+	{
 		FormatTools.assertId(getCurrentFile(), true, 2);
-		super.openPlane(imageIndex, planeIndex, plane, offsets, lengths);
+		super.openPlane(imageIndex, planeIndex, plane, offsets, lengths, config);
 
 		updateMinMax(imageIndex, planeIndex, plane.getBytes(), FormatTools
 			.getBytesPerPixel(getMetadata().get(imageIndex).getPixelType()) *
