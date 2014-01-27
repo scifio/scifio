@@ -32,6 +32,7 @@
 
 package io.scif;
 
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.File;
@@ -104,6 +105,54 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 */
 	Plane openPlane(int imageIndex, long planeIndex, Plane plane,
 		long[] planeMin, long[] planeMax) throws FormatException, IOException;
+
+	/**
+	 * As {@link #openPlane(int, long)} with configuration options.
+	 * 
+	 * @param imageIndex the image index within the dataset.
+	 * @param planeIndex the plane index within the image.
+	 * @param config Configuration information to use for this read.
+	 * @return The complete {@code Plane} at the specified indices.
+	 */
+	Plane openPlane(int imageIndex, long planeIndex, SCIFIOConfig config)
+		throws FormatException, IOException;
+
+	/**
+	 * As {@link #openPlane(int, long, long[], long[])} with configuration
+	 * options.
+	 * 
+	 * @param imageIndex the image index within the dataset.
+	 * @param planeIndex the plane index within the image.
+	 * @param planeMin minimal bounds of the planar axes
+	 * @param planeMax maximum bounds of the planar axes
+	 * @param config Configuration information to use for this read.
+	 * @return The desired sub-region at the specified indices.
+	 */
+	Plane openPlane(int imageIndex, long planeIndex, long[] planeMin,
+		long[] planeMax, SCIFIOConfig config) throws FormatException, IOException;
+
+	/**
+	 * Allows a single {@code Plane} object to be reused by reference when opening
+	 * complete planes.
+	 * 
+	 * @see #openPlane(int, long, SCIFIOConfig)
+	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
+	 *           compatible with this {@code Reader}.
+	 */
+	Plane openPlane(int imageIndex, long planeIndex, Plane plane,
+		SCIFIOConfig config) throws FormatException, IOException;
+
+	/**
+	 * Allows a single {@code Plane} object to be reused by reference when opening
+	 * sub-regions of planes.
+	 * 
+	 * @see #openPlane(int, long, long[], long[], SCIFIOConfig)
+	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
+	 *           compatible with this {@code Reader}.
+	 */
+	Plane openPlane(int imageIndex, long planeIndex, Plane plane,
+		long[] planeMin, long[] planeMax, SCIFIOConfig config)
+		throws FormatException, IOException;
 
 	/**
 	 * Obtains a thumbnail version of the {@code Plane} at the specified image and
@@ -191,6 +240,33 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param stream - The stream to read from
 	 */
 	void setSource(RandomAccessInputStream stream) throws IOException;
+
+	/**
+	 * As {@link #setSource(String)} with configuration options.
+	 * 
+	 * @param fileName
+	 * @param config Configuration information to use for this read.
+	 * @throws IOException
+	 */
+	void setSource(String fileName, SCIFIOConfig config) throws IOException;
+
+	/**
+	 * As {@link #setSource(File)} with configuration options.
+	 * 
+	 * @param file
+	 * @param config Configuration information to use for this read.
+	 * @throws IOException
+	 */
+	void setSource(File file, SCIFIOConfig config) throws IOException;
+
+	/**
+	 * As {@link #setSource(RandomAccessInputStream)} with configuration options.
+	 * 
+	 * @param stream - The stream to read from
+	 * @param config Configuration information to use for this read.
+	 */
+	void setSource(RandomAccessInputStream stream, SCIFIOConfig config)
+		throws IOException;
 
 	/**
 	 * Reads a raw plane from disk.

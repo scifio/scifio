@@ -36,6 +36,7 @@ import io.scif.AbstractChecker;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.ByteArrayHandle;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.services.LocationService;
@@ -108,9 +109,9 @@ public class JPEGFormat extends ImageIOFormat {
 		// -- Checker API Methods --
 
 		@Override
-		public boolean isFormat(final String name, final boolean open) {
-			if (open) {
-				return super.isFormat(name, open);
+		public boolean isFormat(final String name, final SCIFIOConfig config) {
+			if (config.checkerIsOpen()) {
+				return super.isFormat(name, config);
 			}
 
 			return FormatTools.checkSuffix(name, getFormat().getSuffixes());
@@ -165,11 +166,12 @@ public class JPEGFormat extends ImageIOFormat {
 
 		@Override
 		public void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			final String id = stream.getFileName();
 			try {
-				super.typedParse(stream, meta);
+				super.typedParse(stream, meta, config);
 			}
 			catch (final CMMException e) {
 				// strip out all but the first application marker

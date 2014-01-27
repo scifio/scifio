@@ -42,6 +42,7 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
@@ -184,7 +185,8 @@ public class PCXFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			log().info("Reading file header");
 
@@ -226,7 +228,7 @@ public class PCXFormat extends AbstractFormat {
 				iMeta.setIndexed(true);
 			}
 
-			addGlobalMeta("Palette type", paletteType);
+			meta.getTable().put("Palette type", paletteType);
 		}
 
 	}
@@ -247,7 +249,8 @@ public class PCXFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getData();

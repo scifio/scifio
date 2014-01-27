@@ -40,6 +40,7 @@ import io.scif.Parser;
 import io.scif.Reader;
 import io.scif.SCIFIOService;
 import io.scif.Writer;
+import io.scif.config.SCIFIOConfig;
 
 import java.util.Collection;
 import java.util.List;
@@ -201,11 +202,10 @@ public interface FormatService extends SCIFIOService {
 	 * Formats are checked in ascending order of their priority.
 	 * 
 	 * @param id the source
-	 * @param open true if the source can be read while checking for
-	 *          compatibility.
+	 * @param config Configuration for this method execution.
 	 * @return A Format reference compatible with the provided source.
 	 */
-	Format getFormat(String id, boolean open) throws FormatException;
+	Format getFormat(String id, SCIFIOConfig config) throws FormatException;
 
 	/**
 	 * Returns a list of all formats that are compatible with the source provided,
@@ -222,13 +222,12 @@ public interface FormatService extends SCIFIOService {
 	 * ordered by their priority.
 	 * 
 	 * @param id the source
-	 * @param open true if the source can be read while checking for
-	 *          compatibility.
+	 * @param config Configuration for this method execution.
 	 * @param greedy if true, the search will terminate after finding the first
 	 *          compatible format
 	 * @return A List of Format references compatible with the provided source.
 	 */
-	List<Format> getFormatList(String id, boolean open, boolean greedy)
+	List<Format> getFormatList(String id, SCIFIOConfig config, boolean greedy)
 		throws FormatException;
 
 	/**

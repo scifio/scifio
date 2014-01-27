@@ -42,6 +42,7 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
@@ -382,7 +383,7 @@ public class GIFFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException, FormatException
 		{
 			log().info("Verifying GIF format");
 
@@ -411,7 +412,7 @@ public class GIFFormat extends AbstractFormat {
 			final boolean gctFlag = (packed & 0x80) != 0;
 			final int gctSize = 2 << (packed & 7);
 			stream.skipBytes(2);
-			addGlobalMeta("Global lookup table size", gctSize);
+			meta.getTable().put("Global lookup table size", gctSize);
 
 			if (gctFlag) {
 				meta.setGct(readLut(gctSize));
@@ -752,7 +753,8 @@ public class GIFFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();

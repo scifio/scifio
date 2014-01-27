@@ -42,6 +42,7 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.Translator;
+import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
 import io.scif.io.RandomAccessInputStream;
@@ -128,9 +129,9 @@ public abstract class ImageIOFormat extends AbstractFormat {
 	public static class Parser<M extends Metadata> extends AbstractParser<M> {
 
 		@Override
-		protected void
-			typedParse(final RandomAccessInputStream stream, final M meta)
-				throws IOException, FormatException
+		protected void typedParse(final RandomAccessInputStream stream,
+			final M meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			log().info("Populating metadata");
 			final DataInputStream dis = new DataInputStream(stream);
@@ -159,8 +160,8 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
-			IOException
+			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			plane.setData(AWTImageTools.getSubimage(meta.getImg(), meta.get(
@@ -192,8 +193,8 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax))

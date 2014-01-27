@@ -32,9 +32,8 @@
 
 package io.scif;
 
-import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
-import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.File;
@@ -67,70 +66,44 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	/** String id of current source. */
 	protected String currentId;
 
-	/** Whether or not to filter out invalid metadata. */
-	protected boolean filterMetadata;
-
-	/** Whether or not to save proprietary metadata in the MetadataStore. */
-	protected boolean saveOriginalMetadata = false;
-
-	/** Metadata parsing options. */
-	protected MetadataOptions metadataOptions = new DefaultMetadataOptions();
-
 	// -- Parser API Methods --
 
 	@Override
 	public M parse(final String fileName) throws IOException, FormatException {
-		@SuppressWarnings("unchecked")
-		final M meta = (M) getFormat().createMetadata();
-		return parse(fileName, meta);
+		return parse(fileName, new SCIFIOConfig());
 	}
 
 	@Override
 	public M parse(final File file) throws IOException, FormatException {
-		@SuppressWarnings("unchecked")
-		final M meta = (M) getFormat().createMetadata();
-		return parse(file, meta);
+		return parse(file, new SCIFIOConfig());
 	}
 
 	@Override
 	public M parse(final RandomAccessInputStream stream) throws IOException,
 		FormatException
 	{
-		@SuppressWarnings("unchecked")
-		final M meta = (M) getFormat().createMetadata();
-		return parse(stream, meta);
+		return parse(stream, new SCIFIOConfig());
 	}
 
 	@Override
 	public M parse(final String fileName, final Metadata meta)
 		throws IOException, FormatException
 	{
-		return parse(fileName, SCIFIOMetadataTools.<M> castMeta(meta));
+		return parse(fileName, meta, new SCIFIOConfig());
 	}
 
 	@Override
 	public M parse(final File file, final Metadata meta) throws IOException,
 		FormatException
 	{
-		return parse(file, SCIFIOMetadataTools.<M> castMeta(meta));
+		return parse(file, meta, new SCIFIOConfig());
 	}
 
 	@Override
 	public M parse(final RandomAccessInputStream stream, final Metadata meta)
 		throws IOException, FormatException
 	{
-		return parse(stream, SCIFIOMetadataTools.<M> castMeta(meta));
-	}
-
-	@Override
-	public void setOriginalMetadataPopulated(final boolean populate) {
-		FormatTools.assertStream(in, false, 1);
-		saveOriginalMetadata = populate;
-	}
-
-	@Override
-	public boolean isOriginalMetadataPopulated() {
-		return saveOriginalMetadata;
+		return parse(stream, meta, new SCIFIOConfig());
 	}
 
 	@Override
@@ -152,17 +125,6 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 			}
 		}
 		return files.toArray(new String[files.size()]);
-	}
-
-	@Override
-	public void setMetadataFiltered(final boolean filter) {
-		FormatTools.assertStream(in, false, 1);
-		filterMetadata = filter;
-	}
-
-	@Override
-	public boolean isMetadataFiltered() {
-		return filterMetadata;
 	}
 
 	@Override
@@ -202,73 +164,30 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		return supportedLevels;
 	}
 
-	@Override
-	public MetadataOptions getMetadataOptions() {
-		return metadataOptions;
-	}
-
-	@Override
-	public void setMetadataOptions(final MetadataOptions options) {
-		metadataOptions = options;
-	}
-
-	@Override
-	public void addMeta(String key, Object value, final MetaTable metaTable) {
-		if (key == null || value == null /* || TODO !isMetadataCollected() */) {
-			return;
-		}
-
-		key = key.trim();
-
-		final boolean string =
-			value instanceof String || value instanceof Character;
-		final boolean simple =
-			string || value instanceof Number || value instanceof Boolean;
-
-		// string value, if passed in value is a string
-		String val = string ? String.valueOf(value) : null;
-
-		if (filterMetadata || (saveOriginalMetadata
-		/* TODO: check if this Parser's metadata is OMEXML metadata &&
-		 *  (getMetadataStore() instanceof OMEXMLMetadata)*/))
-		{
-			// filter out complex data types
-			if (!simple) return;
-
-			// verify key & value are reasonable length
-			final int maxLen = 8192;
-			if (key.length() > maxLen) return;
-			if (string && val.length() > maxLen) return;
-
-			// remove all non-printable characters
-			key = DataTools.sanitize(key);
-			if (string) val = DataTools.sanitize(val);
-
-			// verify key contains at least one alphabetic character
-			if (!key.matches(".*[a-zA-Z].*")) return;
-
-			// remove &lt;, &gt; and &amp; to prevent XML parsing errors
-			final String[] invalidSequences =
-				new String[] { "&lt;", "&gt;", "&amp;", "<", ">", "&" };
-			for (int i = 0; i < invalidSequences.length; i++) {
-				key = key.replaceAll(invalidSequences[i], "");
-				if (string) val = val.replaceAll(invalidSequences[i], "");
-			}
-
-			// verify key & value are not empty
-			if (key.length() == 0) return;
-			if (string && val.trim().length() == 0) return;
-
-			if (string) value = val;
-		}
-
-		metaTable.put(key, val == null ? value : val);
-	}
-
 	// -- TypedParser API Methods --
-
 	@Override
 	public M parse(final String fileName, final M meta) throws IOException,
+		FormatException
+	{
+		return parse(fileName, meta, new SCIFIOConfig());
+	}
+
+	@Override
+	public M parse(final File file, final M meta) throws IOException,
+		FormatException
+	{
+		return parse(file, meta, new SCIFIOConfig());
+	}
+
+	@Override
+	public M parse(final RandomAccessInputStream stream, final M meta)
+		throws IOException, FormatException
+	{
+		return parse(stream, meta, new SCIFIOConfig());
+	}
+	
+	@Override
+	public M parse(final String fileName, final M meta, final SCIFIOConfig config) throws IOException,
 		FormatException
 	{
 		RandomAccessInputStream stream = null;
@@ -290,36 +209,35 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public M parse(final File file, final M meta) throws IOException,
+	public M parse(final File file, final M meta, final SCIFIOConfig config) throws IOException,
 		FormatException
 	{
 		return parse(file.getPath(), meta);
 	}
 
 	@Override
-	public M parse(final RandomAccessInputStream stream, final M meta)
+	public M parse(final RandomAccessInputStream stream, final M meta, final SCIFIOConfig config)
 		throws IOException, FormatException
 	{
 		metadata = meta;
 		if (in == null || !in.getFileName().equals(stream.getFileName())) {
 			init(stream);
 
-			if (saveOriginalMetadata) {
+			if (config.parserIsSaveOriginalMetadata()) {
 				// TODO store all metadata in OMEXML store..
 				// or equivalent function? as per setId.. or handle via annotations
 			}
 		}
 
 		// TODO relying on Abstract-level API
-		metadata.setFiltered(filterMetadata);
-		metadata.setMetadataOptions(metadataOptions);
+		metadata.setFiltered(config.parserIsFiltered());
 		if (metadata.getContext() == null) metadata.setContext(getContext());
 		metadata.setSource(stream);
 		metadata.setDatasetName(stream.getFileName());
 
 		currentId = stream.getFileName();
 
-		typedParse(stream, meta);
+		typedParse(stream, meta, config);
 
 		metadata.populateImageMetadata();
 
@@ -353,58 +271,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	 * layer, Override {@code #parse(String, TypedMetadata)} instead.
 	 * </p>
 	 */
-	protected abstract void typedParse(RandomAccessInputStream stream, M meta)
-		throws IOException, FormatException;
-
-	/** Adds an entry to the global metadata table. */
-	public void addGlobalMeta(final String key, final Object value) {
-		addMeta(key, value, metadata.getTable());
-	}
-
-	/** Adds an entry to the global metadata table. */
-	public void addGlobalMeta(final String key, final boolean value) {
-		addGlobalMeta(key, new Boolean(value));
-	}
-
-	/** Adds an entry to the global metadata table. */
-	public void addGlobalMeta(final String key, final byte value) {
-		addGlobalMeta(key, new Byte(value));
-	}
-
-	/** Adds an entry to the global metadata table. */
-	public void addGlobalMeta(final String key, final short value) {
-		addGlobalMeta(key, new Short(value));
-	}
-
-	/** Adds an entry to the global metadata table. */
-	public void addGlobalMeta(final String key, final int value) {
-		addGlobalMeta(key, new Integer(value));
-	}
-
-	/** Adds an entry to the global metadata table. */
-	public void addGlobalMeta(final String key, final long value) {
-		addGlobalMeta(key, new Long(value));
-	}
-
-	/** Adds an entry to the global metadata table. */
-	public void addGlobalMeta(final String key, final float value) {
-		addGlobalMeta(key, new Float(value));
-	}
-
-	/** Adds an entry to the global metadata table. */
-	public void addGlobalMeta(final String key, final double value) {
-		addGlobalMeta(key, new Double(value));
-	}
-
-	/** Adds an entry to the global metadata table. */
-	public void addGlobalMeta(final String key, final char value) {
-		addGlobalMeta(key, new Character(value));
-	}
-
-	/** Gets a value from the global metadata table. */
-	public Object getGlobalMeta(final String key) {
-		return metadata.getTable().get(key);
-	}
+	protected abstract void typedParse(RandomAccessInputStream stream, M meta,
+		SCIFIOConfig config) throws IOException, FormatException;
 
 	/* Sets the input stream for this parser if provided a new stream */
 	private void init(final RandomAccessInputStream stream) throws IOException {
@@ -431,5 +299,53 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 			infos[i].usedToInitialize = files[i].endsWith(in.getFileName());
 		}
 		return infos;
+	}
+
+	@Override
+	public M parse(String fileName, SCIFIOConfig config)
+		throws IOException, FormatException
+	{
+		@SuppressWarnings("unchecked")
+		final M meta = (M) getFormat().createMetadata();
+		return parse(fileName, meta, config);
+	}
+
+	@Override
+	public M parse(File file, SCIFIOConfig config) throws IOException,
+		FormatException
+	{
+		@SuppressWarnings("unchecked")
+		final M meta = (M) getFormat().createMetadata();
+		return parse(file, meta, config);
+	}
+
+	@Override
+	public M parse(RandomAccessInputStream stream, SCIFIOConfig config)
+		throws IOException, FormatException
+	{
+		@SuppressWarnings("unchecked")
+		final M meta = (M) getFormat().createMetadata();
+		return parse(stream, meta, config);
+	}
+
+	@Override
+	public M parse(String fileName, Metadata meta, SCIFIOConfig config)
+		throws IOException, FormatException
+	{
+		return parse(fileName, SCIFIOMetadataTools.<M> castMeta(meta), config);
+	}
+
+	@Override
+	public M parse(File file, Metadata meta, SCIFIOConfig config)
+		throws IOException, FormatException
+	{
+		return parse(file, SCIFIOMetadataTools.<M> castMeta(meta), config);
+	}
+
+	@Override
+	public M parse(RandomAccessInputStream stream, Metadata meta,
+		SCIFIOConfig config) throws IOException, FormatException
+	{
+		return parse(stream, SCIFIOMetadataTools.<M> castMeta(meta), config);
 	}
 }

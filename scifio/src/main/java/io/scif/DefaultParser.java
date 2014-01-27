@@ -32,6 +32,7 @@
 
 package io.scif;
 
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
@@ -43,8 +44,6 @@ import java.io.IOException;
  * <ul>
  * <li>
  * {@link io.scif.Metadata#isFiltered()}</li>
- * <li>
- * {@link io.scif.Metadata#getMetadataOptions()}</li>
  * <li>
  * {@link io.scif.Metadata#getSource()}</li>
  * <li>
@@ -77,6 +76,9 @@ public class DefaultParser extends AbstractParser<DefaultMetadata> implements
 	 */
 	@Override
 	protected void typedParse(final RandomAccessInputStream stream,
-		final DefaultMetadata meta) throws IOException, FormatException
-	{}
+		final DefaultMetadata meta, final SCIFIOConfig config) throws IOException,
+		FormatException
+	{
+		// No implementation
+	}
 }

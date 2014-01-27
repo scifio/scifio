@@ -166,11 +166,14 @@ public class Show extends AbstractReaderCommand {
 			}
 			else {
 				if (plane == null) {
-					plane = reader.openPlane(imageIndex, planeIndex, planeMin, planeMax);
+					plane =
+						reader.openPlane(imageIndex, planeIndex, planeMin, planeMax,
+							getConfig());
 				}
 				else {
 					plane =
-						reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax);
+						reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax,
+							getConfig());
 				}
 			}
 		}

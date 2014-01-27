@@ -36,6 +36,7 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.SCIFIOService;
 import io.scif.Writer;
+import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
@@ -57,7 +58,7 @@ import java.io.IOException;
 public interface InitializeService extends SCIFIOService {
 
 	/**
-	 * See {@link #initializeReader(String, boolean)}. Will not open the image
+	 * See {@link #initializeReader(String, SCIFIOConfig)}. Will not open the image
 	 * source while parsing metadata.
 	 * 
 	 * @param id Name of the image source to be read.
@@ -71,16 +72,15 @@ public interface InitializeService extends SCIFIOService {
 	 * source fields will be populated.
 	 * 
 	 * @param id Name of the image source to be read.
-	 * @param openFile If true, the image source may be read during metadata
-	 *          parsing.
+	 * @param config Configuration for this method execution.
 	 * @return An initialized {@code Reader}.
 	 */
-	ReaderFilter initializeReader(String id, boolean openFile)
+	ReaderFilter initializeReader(String id, SCIFIOConfig config)
 		throws FormatException, IOException;
 
 	/**
-	 * See {@link #initializeWriter(String, String, boolean)}. Will not open the
-	 * image source while parsing metadata.
+	 * See {@link #initializeWriter(String, String, SCIFIOConfig)}. Will not open
+	 * the image source while parsing metadata.
 	 * 
 	 * @param source Name of the image source to use for parsing metadata.
 	 * @param destination Name of the writing destination.
@@ -90,24 +90,20 @@ public interface InitializeService extends SCIFIOService {
 		throws FormatException, IOException;
 
 	/**
-	 * Convenience method for creating a {@code Writer} component that is ready to
-	 * save planes to the destination image. {@code Metadata} will be parsed from
-	 * the source, translated to the destination's type if necessary, and set
-	 * (along with the destination itself) on the resulting {@code Writer}.
+	 * As {@link #initializeWriter(String, String)} with configuration options.
 	 * 
 	 * @param source Name of the image source to use for parsing metadata.
 	 * @param destination Name of the writing destination.
-	 * @param openSource If true, the image source may be read during metadata
-	 *          parsing.
+	 * @param config Configuration for this method execution.
 	 * @return An initialized {@code Writer}.
 	 */
 	Writer
-		initializeWriter(String source, String destination, boolean openSource)
+		initializeWriter(String source, String destination, SCIFIOConfig config)
 			throws FormatException, IOException;
 
 	/**
-	 * See {@link #initializeWriter(String, String, boolean)}. Will not open the
-	 * image source while parsing metadata.
+	 * See {@link #initializeWriter(String, String, SCIFIOConfig)}. Will not open
+	 * the image source while parsing metadata.
 	 * 
 	 * @param sourceMeta Name of the image source to use for parsing metadata.
 	 * @param destination Name of the writing destination.
@@ -115,6 +111,17 @@ public interface InitializeService extends SCIFIOService {
 	 */
 	Writer initializeWriter(Metadata sourceMeta, String destination)
 		throws FormatException, IOException;
+
+	/**
+	 * As {@link #initializeWriter(Metadata, String)} with configuration options.
+	 * 
+	 * @param sourceMeta Name of the image source to use for parsing metadata.
+	 * @param destination Name of the writing destination.
+	 * @param config Configuration information to use for this parse.
+	 * @return An initialized {@code Writer}.
+	 */
+	Writer initializeWriter(Metadata sourceMeta, String destination,
+		SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
 	 * Convenience method to parse {@link Metadata} without reading the underlying
@@ -134,12 +141,11 @@ public interface InitializeService extends SCIFIOService {
 	 * dataset when parsing, if desired.
 	 * 
 	 * @param id Name of the image source to be read.
-	 * @param openFile If true, the image source may be read during metadata
-	 *          parsing.
+	 * @param config Configuration for this method execution.
 	 * @return Parsed {@link Metadata} for the given source.
 	 * @throws FormatException
 	 * @throws IOException
 	 */
-	Metadata parseMetadata(String id, boolean openFile) throws FormatException,
+	Metadata parseMetadata(String id, SCIFIOConfig config) throws FormatException,
 		IOException;
 }

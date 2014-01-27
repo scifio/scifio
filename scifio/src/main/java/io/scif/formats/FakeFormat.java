@@ -47,6 +47,7 @@ import io.scif.MetadataService;
 import io.scif.Plane;
 import io.scif.Translator;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -444,7 +445,8 @@ public class FakeFormat extends AbstractFormat {
 		/* @See Parser#Parse(RandomAccessInputStream, M) */
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			// No operation. All work is done in the populateImageMetadata method
 			// of the metadata itself (the format-specific metadata is implied
@@ -463,7 +465,8 @@ public class FakeFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane

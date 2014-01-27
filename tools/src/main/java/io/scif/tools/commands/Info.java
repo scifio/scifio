@@ -36,6 +36,7 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.Metadata;
+import io.scif.config.SCIFIOConfig;
 import io.scif.services.InitializeService;
 import io.scif.tools.AbstractSCIFIOToolCommand;
 import io.scif.tools.SCIFIOToolCommand;
@@ -80,7 +81,9 @@ public class Info extends AbstractSCIFIOToolCommand {
 	@Override
 	protected void run() throws CmdLineException {
 		try {
-			final Metadata meta = initializeService.parseMetadata(file, true);
+			final Metadata meta =
+				initializeService.parseMetadata(file, new SCIFIOConfig()
+					.checkerSetOpen(true));
 			printDatasetMetadata(meta);
 			printImageMetadata(meta);
 		}

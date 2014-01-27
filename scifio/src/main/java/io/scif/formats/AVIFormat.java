@@ -44,6 +44,7 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
+import io.scif.MetaTable;
 import io.scif.Plane;
 import io.scif.UnsupportedCompressionException;
 import io.scif.codec.BitBuffer;
@@ -52,6 +53,7 @@ import io.scif.codec.JPEGCodec;
 import io.scif.codec.MSRLECodec;
 import io.scif.codec.MSVideoCodec;
 import io.scif.common.Constants;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
@@ -464,7 +466,8 @@ public class AVIFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			stream.order(true);
 
@@ -506,6 +509,7 @@ public class AVIFormat extends AbstractFormat {
 
 			readChunkHeader();
 			final ImageMetadata m = meta.get(0);
+			final MetaTable globalTable = meta.getTable();
 
 			if (type.equals("RIFF")) {
 				if (!fcc.startsWith("AVI")) {
@@ -560,24 +564,24 @@ public class AVIFormat extends AbstractFormat {
 								if (type.equals("avih")) {
 									spos = in.getFilePointer();
 
-									addGlobalMeta("Microseconds per frame", in.readInt());
-									addGlobalMeta("Max. bytes per second", in.readInt());
+									globalTable.put("Microseconds per frame", in.readInt());
+									globalTable.put("Max. bytes per second", in.readInt());
 
 									in.skipBytes(8);
 
-									addGlobalMeta("Total frames", in.readInt());
-									addGlobalMeta("Initial frames", in.readInt());
+									globalTable.put("Total frames", in.readInt());
+									globalTable.put("Initial frames", in.readInt());
 
 									in.skipBytes(8);
 									m.addAxis(Axes.X, in.readInt());
 
-									addGlobalMeta("Frame height", in.readInt());
-									addGlobalMeta("Scale factor", in.readInt());
-									addGlobalMeta("Frame rate", in.readInt());
-									addGlobalMeta("Start time", in.readInt());
-									addGlobalMeta("Length", in.readInt());
+									globalTable.put("Frame height", in.readInt());
+									globalTable.put("Scale factor", in.readInt());
+									globalTable.put("Frame rate", in.readInt());
+									globalTable.put("Start time", in.readInt());
+									globalTable.put("Length", in.readInt());
 
-									addGlobalMeta("Frame width", m.getAxisLength(Axes.X));
+									globalTable.put("Frame width", m.getAxisLength(Axes.X));
 
 									if (spos + size <= in.length()) {
 										in.seek(spos + size);
@@ -600,9 +604,9 @@ public class AVIFormat extends AbstractFormat {
 									spos = in.getFilePointer();
 									in.skipBytes(40);
 
-									addGlobalMeta("Stream quality", in.readInt());
+									globalTable.put("Stream quality", in.readInt());
 									meta.setBytesPerPlane(in.readInt());
-									addGlobalMeta("Stream sample size", meta.getBytesPerPlane());
+									globalTable.put("Stream sample size", meta.getBytesPerPlane());
 
 									if (spos + size <= in.length()) {
 										in.seek(spos + size);
@@ -633,17 +637,17 @@ public class AVIFormat extends AbstractFormat {
 									meta.setBmpCompression(in.readInt());
 									in.skipBytes(4);
 
-									addGlobalMeta("Horizontal resolution", in.readInt());
-									addGlobalMeta("Vertical resolution", in.readInt());
+									globalTable.put("Horizontal resolution", in.readInt());
+									globalTable.put("Vertical resolution", in.readInt());
 
 									meta.setBmpColorsUsed(in.readInt());
 									in.skipBytes(4);
 
-									addGlobalMeta("Bitmap compression value", meta
+									globalTable.put("Bitmap compression value", meta
 										.getBmpCompression());
-									addGlobalMeta("Number of colors used", meta
+									globalTable.put("Number of colors used", meta
 										.getBmpColorsUsed());
-									addGlobalMeta("Bits per pixel", meta.getBmpBitsPerPixel());
+									globalTable.put("Bits per pixel", meta.getBmpBitsPerPixel());
 
 									// scan line is padded with zeros to be a multiple of 4 bytes
 									int npad = meta.getBmpWidth() % 4;
@@ -838,7 +842,7 @@ public class AVIFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
@@ -1123,8 +1127,8 @@ public class AVIFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();

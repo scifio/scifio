@@ -32,6 +32,8 @@
 
 package io.scif;
 
+import io.scif.common.DataTools;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -47,13 +49,21 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 	MetaTable
 {
 
+	// -- Fields --
+
+	private boolean filtered;
+
 	// -- Constructors --
+
+	public DefaultMetaTable() {
+		this(false);
+	}
 
 	/**
 	 * Basic constructor
 	 */
-	public DefaultMetaTable() {
-
+	public DefaultMetaTable(final boolean filter) {
+		filtered = filter;
 	}
 
 	/**
@@ -85,5 +95,56 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 		}
 
 		put(key, list);
+	}
+	
+	@Override
+	public Object put(String key, Object value) {
+		if (key == null || value == null /* || TODO !isMetadataCollected() */) {
+			return null;
+		}
+
+		key = key.trim();
+
+		final boolean string =
+			value instanceof String || value instanceof Character;
+		final boolean simple =
+			string || value instanceof Number || value instanceof Boolean;
+
+		// string value, if passed in value is a string
+		String val = string ? String.valueOf(value) : null;
+
+		if (filtered)
+		{
+			// filter out complex data types
+			if (!simple) return null;
+
+			// verify key & value are reasonable length
+			final int maxLen = 8192;
+			if (key.length() > maxLen) return null;
+			if (string && val.length() > maxLen) return null;
+
+			// remove all non-printable characters
+			key = DataTools.sanitize(key);
+			if (string) val = DataTools.sanitize(val);
+
+			// verify key contains at least one alphabetic character
+			if (!key.matches(".*[a-zA-Z].*")) return null;
+
+			// remove &lt;, &gt; and &amp; to prevent XML parsing errors
+			final String[] invalidSequences =
+				new String[] { "&lt;", "&gt;", "&amp;", "<", ">", "&" };
+			for (int i = 0; i < invalidSequences.length; i++) {
+				key = key.replaceAll(invalidSequences[i], "");
+				if (string) val = val.replaceAll(invalidSequences[i], "");
+			}
+
+			// verify key & value are not empty
+			if (key.length() == 0) return null;
+			if (string && val.trim().length() == 0) return null;
+
+			if (string) value = val;
+		}
+
+		return super.put(key, val == null ? value : val);
 	}
 }

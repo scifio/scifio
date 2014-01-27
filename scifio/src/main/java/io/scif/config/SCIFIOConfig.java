@@ -1,0 +1,449 @@
+/*
+ * #%L
+ * SCIFIO library for reading and converting scientific file formats.
+ * %%
+ * Copyright (C) 2011 - 2014 Open Microscopy Environment:
+ *   - Board of Regents of the University of Wisconsin-Madison
+ *   - Glencoe Software, Inc.
+ *   - University of Dundee
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+package io.scif.config;
+
+import io.scif.Checker;
+import io.scif.Groupable;
+import io.scif.MetadataLevel;
+import io.scif.Parser;
+import io.scif.Writer;
+import io.scif.codec.CodecOptions;
+import io.scif.img.ImgFactoryHeuristic;
+import io.scif.img.ImgOpener;
+import io.scif.img.ImgSaver;
+import io.scif.img.SubRegion;
+import io.scif.img.converters.PlaneConverter;
+
+import java.awt.image.ColorModel;
+import java.util.HashMap;
+
+import org.scijava.Context;
+
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.cell.CellImgFactory;
+import net.imglib2.img.planar.PlanarImgFactory;
+
+/**
+ * Configuration class for all SCIFIO components. Similar to a {@link Context},
+ * this class is effectively a container for state. However, its intended scope
+ * is per method call stack, and not through a complete application. If any
+ * object in a call stack has behavior that can be modified through this
+ * class, a complete method chain accepting {@code SCIFIOConfig} instances
+ * should be available - even if the intermediate classes do not require
+ * configuration (the need for configuration is, effectively contagious).
+ * <p>
+ * Note that each getter and setter method signature in this class is prefixed
+ * by the component it affects.
+ * </p>
+ *
+ * @author Mark Hiner
+ *
+ * @see Checker
+ * @see Parser
+ * @see Writer
+ * @see Groupable
+ * @see ImgOpener
+ * @see ImgSaver
+ */
+public class SCIFIOConfig extends HashMap<String, Object> {
+
+	// -- Fields --
+
+	// Checker
+	private boolean openDataset = true;
+
+	// Parser
+	private MetadataLevel level;
+	private boolean filterMetadata;
+	private boolean saveOriginalMetadata;
+
+	// Writer
+	private boolean writeSequential;
+	private ColorModel model;
+	private int fps;
+	private String compression;
+	private CodecOptions options;
+
+	// Groupable
+	/** Whether or not to group multi-file formats. */
+	private boolean group = true;
+
+	// ImgOpener
+
+	/**
+	 * Access type options for opening datasets.
+	 * <ul>
+	 * <li>
+   * {@link ImgMode#ARRAY} will attempt to use {@link ArrayImgFactory}</li>
+	 * <li>
+   * {@link ImgMode#AUTO} allows the program to decide, e.g. based on
+	 * available memory.</li>
+	 * <li>
+   * {@link ImgMode#CELL} will attempt to use {@link CellImgFactory}</li>
+	 * <li>
+   * {@link ImgMode#PLANAR} will attempt to use {@link PlanarImgFactory}</li>
+	 * </ul>
+	 * 
+	 * @author Mark Hiner
+	 */
+	public static enum ImgMode {
+		ARRAY, AUTO, CELL, PLANAR;
+	}
+
+	// If true, planarEnabled returns true. If false, cellEnabled returns true.
+	// If null, both planar/cell enabled will return false.
+	private ImgMode[] imgModes = new ImgMode[] { ImgMode.AUTO };
+
+	// Image index
+	private int index = 0;
+
+	// sub-region specification for opening portions of an image
+	private SubRegion region = null;
+
+	// Whether or not to use a MinMaxFilter
+	private boolean computeMinMax = false;
+
+	// Custom plane converter
+	private PlaneConverter planeConverter = null;
+
+	// Custom heuristic for choosing an ImgFactory
+	private ImgFactoryHeuristic imgFactoryHeuristic = null;
+
+	// ImgSaver
+	private boolean writeRGB = true;
+
+	// -- Checker Methods --
+
+	public SCIFIOConfig checkerSetOpen(final boolean open) {
+		openDataset = open;
+		return this;
+	}
+
+	public boolean checkerIsOpen() {
+		return openDataset;
+	}
+
+	// -- Parser methods --
+
+	/**
+	 * @return {@link MetadataLevel} desired for parsing.
+	 */
+	public MetadataLevel parserGetLevel() {
+		return level;
+	}
+
+	/**
+	 * @param level Desired metadata level for parsing.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig parserSetLevel(MetadataLevel level) {
+		this.level = level;
+		return this;
+	}
+
+	/**
+	 * @return True if parsers should filter parsed metadata.
+	 */
+	public boolean parserIsFiltered() {
+		return filterMetadata;
+	}
+
+	/**
+	 * @param filterMetadata Desired filtering behavior for parsing.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig parserSetFiltered(boolean filterMetadata) {
+		this.filterMetadata = filterMetadata;
+		return this;
+	}
+
+	/**
+	 * @return True if parsers should save original metadata.
+	 */
+	public boolean parserIsSaveOriginalMetadata() {
+		return saveOriginalMetadata;
+	}
+
+	/**
+	 * @param saveOriginalMetadata Desired metadata saving behavior for parsing.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig
+		parserSetSaveOriginalMetadata(boolean saveOriginalMetadata)
+	{
+		this.saveOriginalMetadata = saveOriginalMetadata;
+		return this;
+	}
+
+	// -- Writer methods --
+
+	/**
+	 * Sets whether or not we know that planes will be written sequentially. If
+	 * planes are written sequentially and this flag is set, then performance will
+	 * be slightly improved.
+	 * 
+	 * @param sequential Flag for writing sequential planes.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig writerSetSequential(boolean sequential) {
+		writeSequential = sequential;
+		return this;
+	}
+
+	/**
+	 * @return True if writers should write image planes sequentially.
+	 */
+	public boolean writerIsSequential() {
+		return writeSequential;
+	}
+
+	/**
+	 * @param cm ColorModel to use for writing.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig writerSetColorModel(ColorModel cm) {
+		model = cm;
+		return this;
+	}
+
+	/**
+	 * @return The ColorModel to use when writing.
+	 */
+	public ColorModel writerGetColorModel() {
+		return model;
+	}
+
+	/**
+	 * @param rate Desired frames per second to use when writing.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig writerSetFramesPerSecond(int rate) {
+		fps = rate;
+		return this;
+	}
+
+	/**
+	 * @return The number of frames per second to use when writing.
+	 */
+	public int writerGetFramesPerSecond() {
+		return fps;
+	}
+
+	/**
+	 * @param compress Desired compression type to use when writing.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig writerSetCompression(String compress) {
+		compression = compress;
+		return this;
+	}
+
+	/**
+	 * @return The compression type writers will use when writing.
+	 */
+	public String writerGetCompression() {
+		return compression;
+	}
+
+	/**
+	 * @param options Desired CodecOptions to use for writing.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig writerSetCodecOptions(CodecOptions options) {
+		this.options = options;
+		return this;
+	}
+
+	/**
+	 * @return The CodecOptions that writers will use when writing.
+	 */
+	public CodecOptions writerGetCodecOptions() {
+		return options;
+	}
+
+	// -- Groupable methods --
+
+	/**
+	 * @param groupFiles Desired behavior for grouping potential multi-file
+	 *          datasets. If true, these will be grouped into one single dataset.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig groupableSetGroupFiles(final boolean groupFiles) {
+		group = groupFiles;
+		return this;
+	}
+
+	/**
+	 * @return Whether or not Groupable classes should group similar files when
+	 *         operating on them.
+	 */
+	public boolean groupableIsGroupFiles() {
+		return group;
+	}
+
+	// -- ImgOpener methods --
+
+	/**
+	 * @return The access type to attempt to open the dataset with. Default:
+	 *         imgMode.AUTO, which allows the calling program to decide.
+	 */
+	public ImgMode[] imgOpenerGetImgModes() {
+		return imgModes;
+	}
+
+	/**
+	 * @param imgModes A list of ImgMode access types. How these are interpreted
+	 *          is up to the ImgFactoryHeuristic, but it is reasonable to expect
+	 *          modes listed earlier to be preferred.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig imgOpenerSetImgModes(final ImgMode... imgModes) {
+		this.imgModes = imgModes;
+		return this;
+	}
+
+	/**
+	 * @return True if the image should be scaled to its min and max intensities.
+	 *         Default: false
+	 */
+	public boolean imgOpenerIsComputeMinMax() {
+		return computeMinMax;
+	}
+
+	/**
+	 * @param computeMinMax Whether or not images should be scaled to min/max
+	 *          intensities.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig imgOpenerSetComputeMinMax(final boolean computeMinMax) {
+		this.computeMinMax = computeMinMax;
+		return this;
+	}
+
+	/**
+	 * Returns a {@link SubRegion} specifying dimension constraints. This may be
+	 * of a different dimensionality than the underlying image, in which case the
+	 * lengths are assume to be in the natural ordering of the image.
+	 * 
+	 * @return A Subregion specifying dimension offsets and lengths. Default:
+	 *         null
+	 */
+	public SubRegion imgOpenerGetRegion() {
+		return region;
+	}
+
+	/**
+	 * @param region Region constraints for any image to open
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig imgOpenerSetRegion(final SubRegion region) {
+		this.region = region;
+		return this;
+	}
+
+	/**
+	 * @return A custom plane converter. Default: {@code null}
+	 */
+	public PlaneConverter imgOpenerGetPlaneConverter() {
+		return planeConverter;
+	}
+
+	/**
+	 * @param planeConverter Sets a PlaneConverter to use when opening datasets.
+	 *          This is useful when using a custom Img type.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig imgOpenerSetPlaneConverter(final PlaneConverter planeConverter)
+	{
+		this.planeConverter = planeConverter;
+		return this;
+	}
+
+	/**
+	 * @return The ImgFactoryHeuristic to use when selecting an ImgFactory.
+	 *         Default: {@code null}
+	 */
+	public ImgFactoryHeuristic imgOpenerGetImgFactoryHeuristic() {
+		return imgFactoryHeuristic;
+	}
+
+	/**
+	 * @param imgFactoryHeuristic Heuristic to use when selecting an ImgFactory.
+	 *          Will not be used if an ImgFactory is provided to the ImgOpener.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig imgOpenerSetImgFactoryHeuristic(
+		final ImgFactoryHeuristic imgFactoryHeuristic)
+	{
+		this.imgFactoryHeuristic = imgFactoryHeuristic;
+		return this;
+	}
+
+	/**
+	 * @return The image index to be opened. Default: 0
+	 */
+	public int imgOpenerGetIndex() {
+		return index;
+	}
+
+	/**
+	 * @param index Image index to open.
+	 * @return This SCIFIOConfig for method chaining.
+	 * @throws IllegalArgumentException If index < 0
+	 */
+	public SCIFIOConfig imgOpenerSetIndex(final int index) {
+		if (index < 0) throw new IllegalArgumentException("Invalid index: " +
+			index + ". Must be >= 0");
+		this.index = index;
+		return this;
+	}
+
+	// -- ImgSaver methods --
+
+	/**
+	 * @return True if channels should be composited during ImgSaver operation.
+	 */
+	public boolean imgSaverGetWriteRGB() {
+		return writeRGB;
+	}
+
+	/**
+	 * @param rgb Whether or not the ImgSaver should composite channels when
+	 *          writing.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig imgSaverSetWriteRGB(final boolean rgb) {
+		writeRGB = rgb;
+		return this;
+	}
+}

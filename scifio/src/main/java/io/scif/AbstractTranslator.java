@@ -67,7 +67,6 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 		// Boilerplate for common Metadata fields
 		dest.setSource(source.getSource());
 		dest.setFiltered(source.isFiltered());
-		dest.setMetadataOptions(source.getMetadataOptions());
 		dest.setDatasetName(source.getDatasetName());
 
 		// Type-dependent translation

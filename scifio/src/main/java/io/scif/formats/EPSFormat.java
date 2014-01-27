@@ -43,8 +43,10 @@ import io.scif.DefaultTranslator;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
+import io.scif.MetaTable;
 import io.scif.Plane;
 import io.scif.Translator;
+import io.scif.config.SCIFIOConfig;
 import io.scif.formats.tiff.IFD;
 import io.scif.formats.tiff.IFDList;
 import io.scif.formats.tiff.TiffParser;
@@ -183,11 +185,12 @@ public class EPSFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException, FormatException
 		{
 			meta.createImageMetadata(1);
 
 			final ImageMetadata m = meta.get(0);
+			final MetaTable globalTable = meta.getTable();
 
 			log().info("Verifying EPS format");
 
@@ -268,8 +271,8 @@ public class EPSFormat extends AbstractFormat {
 							m.setAxisLength(Axes.X, Integer.parseInt(t[2].trim()) - originY);
 							m.setAxisLength(Axes.Y, Integer.parseInt(t[3].trim()) - originY);
 
-							addGlobalMeta("X-coordinate of origin", originX);
-							addGlobalMeta("Y-coordinate of origin", originY);
+							globalTable.put("X-coordinate of origin", originX);
+							globalTable.put("Y-coordinate of origin", originY);
 						}
 						catch (final NumberFormatException e) {
 							throw new FormatException(
@@ -286,7 +289,7 @@ public class EPSFormat extends AbstractFormat {
 						if (ndx != -1) {
 							final String key = line.substring(0, ndx);
 							final String value = line.substring(ndx + 1);
-							addGlobalMeta(key, value);
+							globalTable.put(key, value);
 						}
 					}
 				}
@@ -327,7 +330,8 @@ public class EPSFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
@@ -472,8 +476,8 @@ public class EPSFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 
 			final byte[] buf = plane.getBytes();

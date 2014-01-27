@@ -32,6 +32,7 @@
 
 package io.scif;
 
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.File;
@@ -117,16 +118,75 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 		throws IOException, FormatException;
 
 	/**
-	 * Specifies whether or not this {@code Parser} should save proprietary
-	 * metadata while parsing.
+	 * As {@link #parse(String)} with configuration options.
+	 * 
+	 * @param fileName Name of the image source to parse.
+	 * @param config Configuration information to use for this parse.
+	 * @return A new {@code Metadata} object of the appropriate type.
 	 */
-	void setOriginalMetadataPopulated(boolean populate);
+	Metadata parse(String fileName, SCIFIOConfig config) throws IOException,
+		FormatException;
 
 	/**
-	 * Returns true if this {@code Parser} should save proprietary metadata while
-	 * parsing.
+	 * As {@link #parse(File)} with configuration options.
+	 * 
+	 * @param file a path to the image file to parse.
+	 * @param config Configuration information to use for this parse.
+	 * @return A new {@code Metadata} object of the appropriate type.
 	 */
-	boolean isOriginalMetadataPopulated();
+	Metadata parse(File file, SCIFIOConfig config) throws IOException,
+		FormatException;
+
+	/**
+	 * As {@link #parse(RandomAccessInputStream)} with configuration options.
+	 * 
+	 * @param stream a random access handle to the image source to parse.
+	 * @param config Configuration information to use for this parse.
+	 * @return A new {@code Metadata} object of the appropriate type.
+	 */
+	Metadata parse(RandomAccessInputStream stream, SCIFIOConfig config)
+		throws IOException, FormatException;
+
+	/**
+	 * As {@link #parse(RandomAccessInputStream, Metadata)} with configuration
+	 * options.
+	 * 
+	 * @param fileName Name of the image source to parse.
+	 * @param meta A base {@code Metadata} to fill.
+	 * @param config Configuration information to use for this parse.
+	 * @return The provided {@code Metadata} after parsing.
+	 * @throws IllegalArgumentException if meta is not assignable from the
+	 *           {@code Metadata} associated with this {@code Parser's Format}
+	 */
+	Metadata parse(String fileName, Metadata meta, SCIFIOConfig config)
+		throws IOException, FormatException;
+
+	/**
+	 * As {@link #parse(File, Metadata)} with configuration options.
+	 * 
+	 * @param file a path to the image file to parse.
+	 * @param meta A base {@code Metadata} to fill.
+	 * @param config Configuration information to use for this parse.
+	 * @return The provided {@code Metadata} after parsing.
+	 * @throws IllegalArgumentException if meta is not assignable from the
+	 *           {@code Metadata} associated with this {@code Parser's Format}
+	 */
+	Metadata parse(File file, Metadata meta, SCIFIOConfig config)
+		throws IOException, FormatException;
+
+	/**
+	 * As {@link #parse(RandomAccessInputStream, Metadata)} with configuration
+	 * options.
+	 * 
+	 * @param stream a random access handle to the image source to parse.
+	 * @param meta A base {@code Metadata} to fill.
+	 * @param config Configuration information to use for this parse.
+	 * @return The provided {@code Metadata} after parsing.
+	 * @throws IllegalArgumentException if meta is not assignable from the
+	 *           {@code Metadata} associated with this {@code Parser's Format}
+	 */
+	Metadata parse(RandomAccessInputStream stream, Metadata meta,
+		SCIFIOConfig config) throws IOException, FormatException;
 
 	/** Returns an array of filenames needed to open this dataset. */
 	String[] getUsedFiles();
@@ -137,18 +197,6 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	 * be returned.
 	 */
 	String[] getUsedFiles(boolean noPixels);
-
-	/**
-	 * Specifies whether ugly metadata (entries with unprintable characters, and
-	 * extremely large entries) should be discarded from the metadata table.
-	 */
-	void setMetadataFiltered(boolean filter);
-
-	/**
-	 * Returns true if ugly metadata (entries with unprintable characters, and
-	 * extremely large entries) are discarded from the metadata table.
-	 */
-	boolean isMetadataFiltered();
 
 	/** Returns an array of filenames needed to open the indicated image index. */
 	String[] getImageUsedFiles(int imageIndex);
@@ -179,13 +227,4 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	 * MetadataCollection
 	 */
 	Set<MetadataLevel> getSupportedMetadataLevels();
-
-	/** Sets the MetadataOptions of this Parser */
-	void setMetadataOptions(MetadataOptions options);
-
-	/** Returns the MetadataOptions for this Parser */
-	MetadataOptions getMetadataOptions();
-
-	/** Adds an entry to the specified Hashtable */
-	void addMeta(String key, Object value, MetaTable meta);
 }

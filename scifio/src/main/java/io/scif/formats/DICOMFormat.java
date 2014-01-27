@@ -51,6 +51,7 @@ import io.scif.codec.JPEG2000Codec;
 import io.scif.codec.JPEGCodec;
 import io.scif.codec.PackbitsCodec;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.services.InitializeService;
@@ -998,8 +999,9 @@ public class DICOMFormat extends AbstractFormat {
 
 					try {
 						final Parser p = (Parser) getFormat().createParser();
-						p.setGroupFiles(false);
-						final Metadata m = p.parse(fileList.get(keys[i]).get(0));
+						final Metadata m =
+							p.parse(fileList.get(keys[i]).get(0), new SCIFIOConfig()
+								.groupableSetGroupFiles(false));
 						add(m.get(0));
 						sizeZ *= fileList.get(keys[i]).size();
 					}
@@ -1068,10 +1070,10 @@ public class DICOMFormat extends AbstractFormat {
 		// -- Checker API Methods --
 
 		@Override
-		public boolean isFormat(final String name, final boolean open) {
+		public boolean isFormat(final String name, final SCIFIOConfig config) {
 			// extension is sufficient as long as it is DIC, DCM, DICOM, J2KI, or J2KR
 			if (FormatTools.checkSuffix(name, DICOM_SUFFIXES)) return true;
-			return super.isFormat(name, open);
+			return super.isFormat(name, config);
 		}
 
 		@Override
@@ -1134,7 +1136,8 @@ public class DICOMFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			meta.createImageMetadata(1);
 
@@ -1166,7 +1169,7 @@ public class DICOMFormat extends AbstractFormat {
 			// some DICOM files have a 128 byte header followed by a 4 byte identifier
 
 			log().info("Verifying DICOM format");
-			final MetadataLevel level = getMetadataOptions().getMetadataLevel();
+			final MetadataLevel level = config.parserGetLevel();
 
 			in.seek(128);
 			if (in.readString(4).equals("DICM")) {
@@ -1232,13 +1235,13 @@ public class DICOMFormat extends AbstractFormat {
 						addInfo(meta, tag, in.readShort());
 						break;
 					case PLANAR_CONFIGURATION:
-						final int config = in.readShort();
-						interleaved = config == 0;
+						final int configuration = in.readShort();
+						interleaved = configuration == 0;
 						if (interleaved) {
 							iMeta.setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y);
 							iMeta.setPlanarAxisCount(3);
 						}
-						addInfo(meta, tag, config);
+						addInfo(meta, tag, configuration);
 						break;
 					case ROWS:
 						if (sizeY == 0) {
@@ -1420,7 +1423,7 @@ public class DICOMFormat extends AbstractFormat {
 				else offsets[i] = baseOffset + planeSize * i;
 			}
 
-			makeFileList();
+			makeFileList(config);
 		}
 
 		@Override
@@ -1441,13 +1444,13 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- Helper methods --
 
-		private void makeFileList() throws FormatException, IOException {
+		private void makeFileList(SCIFIOConfig config) throws FormatException, IOException {
 			log().info("Building file list");
 
 			if (metadata.getFileList() == null &&
 				metadata.getOriginalInstance() != null &&
 				metadata.getOriginalDate() != null &&
-				metadata.getOriginalTime() != null && isGroupFiles())
+				metadata.getOriginalTime() != null && config.groupableIsGroupFiles())
 			{
 				currentId = new Location(getContext(), currentId).getAbsolutePath();
 				final Hashtable<Integer, Vector<String>> fileList =
@@ -1861,8 +1864,8 @@ public class DICOMFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane
@@ -1883,7 +1886,7 @@ public class DICOMFormat extends AbstractFormat {
 				final String file = fileList.get(keys[imageIndex]).get(fileNumber);
 				final io.scif.Reader r = initializeService.initializeReader(file);
 				return (ByteArrayPlane) r.openPlane(imageIndex, planeIndex, plane,
-					planeMin, planeMax);
+					planeMin, planeMax, config);
 			}
 
 			final int ec =

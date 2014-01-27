@@ -32,7 +32,7 @@
 
 package io.scif;
 
-import io.scif.codec.CodecOptions;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessOutputStream;
 
 import java.awt.image.ColorModel;
@@ -83,6 +83,37 @@ public interface Writer extends HasFormat, HasSource {
 	void savePlane(final int imageIndex, final long planeIndex,
 		final Plane plane, final long[] planeMin, final long[] planeMax)
 		throws FormatException, IOException;
+
+	/**
+	 * Saves the provided plane to the specified image and plane index of this
+	 * {@code Writer's} destination image.
+	 * 
+	 * @param imageIndex the image index within the dataset.
+	 * @param planeIndex the plane index within the image.
+	 * @param plane the pixels save
+	 * @param config Configuration information to use for writing.
+	 * @throws FormatException if one of the parameters is invalid.
+	 * @throws IOException if there was a problem writing to the file.
+	 */
+	void savePlane(final int imageIndex, final long planeIndex, final Plane plane,
+		final SCIFIOConfig config) throws FormatException, IOException;
+
+	/**
+	 * Saves the specified tile (sub-region) of the provided plane to the
+	 * specified image and plane index of this {@code Writer's} destination image.
+	 * 
+	 * @param imageIndex the image index within the dataset.
+	 * @param planeIndex the plane index within the image.
+	 * @param plane the pixels save
+	 * @param planeMin minimal bounds of the planar axes
+	 * @param planeMax maximum bounds of the planar axes
+	 * @param config Configuration information to use for writing.
+	 * @throws FormatException if one of the parameters is invalid.
+	 * @throws IOException if there was a problem writing to the file.
+	 */
+	void savePlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final long[] planeMin, final long[] planeMax,
+		final SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
 	 * @return True if this {@code Writer} can save multiple images to a single
@@ -169,51 +200,27 @@ public interface Writer extends HasFormat, HasSource {
 	 *         {@code Writer}.
 	 */
 	RandomAccessOutputStream getStream();
-
-	/** Sets the color model. */
+	
+	/**
+	 * Sets the color model.
+	 * <p>
+	 * NB: the color model should be set before the output destination.
+	 * </p>
+	 */
 	void setColorModel(ColorModel cm);
 
 	/** Gets the color model. */
 	ColorModel getColorModel();
 
-	/** Sets the frames per second to use when writing. */
-	void setFramesPerSecond(int rate);
-
-	/** Gets the frames per second to use when writing. */
-	int getFramesPerSecond();
-
 	/** Gets the available compression types. */
 	String[] getCompressionTypes();
-
-	/** Gets the supported pixel types. */
-	int[] getPixelTypes();
 
 	/** Gets the supported pixel types for the given codec. */
 	int[] getPixelTypes(String codec);
 
 	/** Checks if the given pixel type is supported. */
-	boolean isSupportedType(int type);
+	boolean isSupportedType(int type, String codec);
 
-	/** Sets the current compression type. */
-	void setCompression(String compress) throws FormatException;
-
-	/** Gets the current compression type. */
-	String getCompression();
-
-	/**
-	 * Sets the codec options.
-	 * 
-	 * @param options The options to set.
-	 */
-	void setCodecOptions(CodecOptions options);
-
-	/** Switch the output file for the current dataset. */
-	void changeOutputFile(String id) throws FormatException, IOException;
-
-	/**
-	 * Sets whether or not we know that planes will be written sequentially. If
-	 * planes are written sequentially and this flag is set, then performance will
-	 * be slightly improved.
-	 */
-	void setWriteSequentially(boolean sequential);
+	/** Checks if the given compression type is supported. */
+	void isSupportedCompression(String compress) throws FormatException;
 }

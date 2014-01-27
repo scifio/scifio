@@ -42,6 +42,7 @@ import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.IRandomAccess;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.ZipHandle;
@@ -172,16 +173,15 @@ public class ZipFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			final String baseId =
 				ZipUtilities.unzipId(locationService, stream, meta.getMappedFiles());
 
-			final io.scif.Parser p = formatService.getFormat(baseId).createParser();
-			p.setOriginalMetadataPopulated(isOriginalMetadataPopulated());
-			p.setMetadataFiltered(isMetadataFiltered());
-			p.setMetadataOptions(getMetadataOptions());
-			final io.scif.Metadata m = p.parse(baseId);
+			final io.scif.Parser p =
+				formatService.getFormat(baseId, config).createParser();
+			final io.scif.Metadata m = p.parse(baseId, config);
 
 			meta.setMetadata(m);
 		}
@@ -208,18 +208,19 @@ public class ZipFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public void setSource(final RandomAccessInputStream stream)
-			throws IOException
+		public void setSource(final RandomAccessInputStream stream,
+			final SCIFIOConfig config) throws IOException
 		{
-			super.setSource(ZipUtilities.getRawStream(locationService, stream));
+			super.setSource(ZipUtilities.getRawStream(locationService, stream),
+				config);
 
 			if (reader != null) reader.close();
 
 			final String baseId = ZipUtilities.unzipId(locationService, stream, null);
 
 			try {
-				reader = formatService.getFormat(baseId).createReader();
-				reader.setSource(baseId);
+				reader = formatService.getFormat(baseId, config).createReader();
+				reader.setSource(baseId, config);
 			}
 			catch (final FormatException e) {
 				log().error("Failed to set delegate Reader's source", e);
@@ -253,10 +254,12 @@ public class ZipFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final Plane p =
-				reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax);
+				reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax,
+					config);
 			System.arraycopy(p.getBytes(), 0, plane.getData(), 0,
 				plane.getData().length);
 			return plane;

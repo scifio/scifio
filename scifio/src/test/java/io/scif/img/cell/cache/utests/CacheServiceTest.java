@@ -39,6 +39,7 @@ import static org.testng.AssertJUnit.assertNull;
 import static org.testng.AssertJUnit.assertTrue;
 import io.scif.FormatException;
 import io.scif.SCIFIO;
+import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.cell.SCIFIOCell;
 import io.scif.img.cell.SCIFIOCellCache;
@@ -461,7 +462,9 @@ public class CacheServiceTest {
 	private SCIFIOCellCache<ByteArray> makeCache(final String id)
 		throws FormatException, IOException
 	{
-		final ReaderFilter rf = scifio.initializer().initializeReader(id, true);
+		final ReaderFilter rf =
+			scifio.initializer().initializeReader(id,
+				new SCIFIOConfig().checkerSetOpen(true));
 		final ByteArrayLoader loader = new ByteArrayLoader(rf, null);
 		final SCIFIOCellCache<ByteArray> cellCache =
 			new SCIFIOCellCache<ByteArray>(cs.getContext(), loader);
@@ -473,7 +476,9 @@ public class CacheServiceTest {
 		throws FormatException, IOException
 	{
 		final String id = makeFakeFile(bytes);
-		final ReaderFilter rf = scifio.initializer().initializeReader(id, true);
+		final ReaderFilter rf =
+			scifio.initializer().initializeReader(id,
+				new SCIFIOConfig().checkerSetOpen(true));
 		final ByteArrayLoader loader = new ByteArrayLoader(rf, null);
 		final TestCellCache<ByteArray> cellCache =
 			new TestCellCache<ByteArray>(cs.getContext(), loader);

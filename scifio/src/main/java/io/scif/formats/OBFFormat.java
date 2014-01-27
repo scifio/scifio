@@ -41,6 +41,7 @@ import io.scif.ByteArrayReader;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
@@ -172,7 +173,8 @@ public class OBFFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			meta.getCurrentInflatedFrame().setImageIndex(-1);
 			meta.getCurrentInflatedFrame().setNumber(-1);
@@ -183,7 +185,7 @@ public class OBFFormat extends AbstractFormat {
 
 			final int lengthOfDescription = stream.readInt();
 			final String description = stream.readString(lengthOfDescription);
-			this.addGlobalMeta("Description", description);
+			meta.getTable().put("Description", description);
 
 			if (stackPosition != 0) {
 				meta.createImageMetadata(1);
@@ -379,7 +381,8 @@ public class OBFFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buffer = plane.getBytes();

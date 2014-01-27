@@ -38,6 +38,7 @@ import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ChannelFiller;
 import io.scif.filters.FileStitcher;
 import io.scif.filters.MinMaxFilter;
@@ -71,6 +72,8 @@ import org.scijava.plugin.Parameter;
 public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 
 	// -- Fields --
+
+	private SCIFIOConfig config;
 
 	@Parameter
 	private InitializeService initializeService;
@@ -138,7 +141,7 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 	protected ReaderFilter makeReader(final String path) throws CmdLineException {
 		ReaderFilter reader;
 		try {
-			reader = initializeService.initializeReader(path);
+			reader = initializeService.initializeReader(path, getConfig());
 		}
 		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());
@@ -152,9 +155,6 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 		if (separate) reader.enable(PlaneSeparator.class);
 		if (expand) reader.enable(ChannelFiller.class);
 		if (autoscale) reader.enable(MinMaxFilter.class);
-
-		// Set reader configuration
-		reader.setGroupFiles(!nogroup);
 
 		return reader;
 	}
@@ -261,4 +261,14 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 		int imageIndex, long planeIndex, long planeNo, long[] planeMin,
 		long[] planeMax) throws CmdLineException;
 
+	/**
+	 * @return A {@link SCIFIOConfig} based on the parameters passed to this
+	 *         command.
+	 */
+	protected SCIFIOConfig getConfig() {
+		if (config == null) config =
+			new SCIFIOConfig().groupableSetGroupFiles(!nogroup)
+				.writerSetSequential(true);
+		return config;
+	}
 }

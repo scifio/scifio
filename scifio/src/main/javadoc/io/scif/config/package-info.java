@@ -30,31 +30,29 @@
  * #L%
  */
 
-package io.scif;
-
 /**
- * @author Chris Allan
+ * This package provides configuration options for all SCIFIO components. 
+ * Configuration is achieved through use of the 
+ * {@link io.scif.config.SCIFIOConfig} class. Methods in this class are prefixed
+ * based on what component they are modifying. The {@code SCIFIOConfig} then
+ * operates as a single container of state, passed between each consumer, which 
+ * queries the values that apply to them.
+ * <p>
+ * Configuration is scoped within method execution, thus SCIFIOConfig objects
+ * should not be cached, but instead always passed through method signatures.
+ * </p>
+ * <p>
+ * Adding new configuration options requires three steps:
+ * <ul>
+ * <li>Add the appropriate field(s) and setter/accessor methods to 
+ * {@code SCIFIOConfig}.</li>
+ * <li>Modify the class being configured to accept {@code SCIFIOConfig} objects
+ * and query the desired information.</li>
+ * <li>Update any downstream code of the newly configurable class to pass along
+ * {@code SCIFIOConfig} objects.</li>
+ * </ul>
+ * </p>
+ *
+ * @author Mark Hiner
  */
-public class DefaultMetadataOptions implements MetadataOptions {
-
-	private MetadataLevel level;
-
-	public DefaultMetadataOptions() {
-		this.level = MetadataLevel.ALL;
-	}
-
-	public DefaultMetadataOptions(final MetadataLevel level) {
-		this.level = level;
-	}
-
-	@Override
-	public MetadataLevel getMetadataLevel() {
-		return level;
-	}
-
-	@Override
-	public void setMetadataLevel(final MetadataLevel level) {
-		this.level = level;
-	}
-
-}
+package io.scif.config;

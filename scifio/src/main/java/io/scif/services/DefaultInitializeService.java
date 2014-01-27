@@ -38,6 +38,7 @@ import io.scif.Metadata;
 import io.scif.Parser;
 import io.scif.Reader;
 import io.scif.Writer;
+import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
@@ -80,16 +81,15 @@ public class DefaultInitializeService extends AbstractService implements
 	public ReaderFilter initializeReader(final String id) throws FormatException,
 		IOException
 	{
-		return initializeReader(id, false);
+		return initializeReader(id, new SCIFIOConfig().checkerSetOpen(false));
 	}
 
 	@Override
-	public ReaderFilter initializeReader(final String id, final boolean openFile)
+	public ReaderFilter initializeReader(final String id, final SCIFIOConfig config)
 		throws FormatException, IOException
 	{
-
-		final Reader r = formatService.getFormat(id, openFile).createReader();
-		r.setSource(id);
+		final Reader r = formatService.getFormat(id, config).createReader();
+		r.setSource(id, config);
 		return new ReaderFilter(r);
 	}
 
@@ -97,27 +97,36 @@ public class DefaultInitializeService extends AbstractService implements
 	public Writer initializeWriter(final String source, final String destination)
 		throws FormatException, IOException
 	{
-		return initializeWriter(source, destination, false);
+		return initializeWriter(source, destination, new SCIFIOConfig()
+			.checkerSetOpen(false));
 	}
 
 	@Override
 	public Writer initializeWriter(final String source, final String destination,
-		final boolean openSource) throws FormatException, IOException
+		final SCIFIOConfig config) throws FormatException, IOException
 	{
 
-		final Format sFormat = formatService.getFormat(source, openSource);
+		final Format sFormat = formatService.getFormat(source, config);
 		final Parser parser = sFormat.createParser();
-		final Metadata sourceMeta = parser.parse(source);
+		final Metadata sourceMeta = parser.parse(source, config);
 
-		return initializeWriter(sourceMeta, destination);
+		return initializeWriter(sourceMeta, destination, config);
 	}
 
 	@Override
 	public Writer initializeWriter(final Metadata sourceMeta,
 		final String destination) throws FormatException, IOException
 	{
+		return initializeWriter(sourceMeta, destination, new SCIFIOConfig()
+			.checkerSetOpen(false));
+	}
+
+	@Override
+	public Writer initializeWriter(Metadata sourceMeta, String destination,
+		SCIFIOConfig config) throws FormatException, IOException
+	{
 		final Format sFormat = sourceMeta.getFormat();
-		final Format dFormat = formatService.getFormat(destination, false);
+		final Format dFormat = formatService.getFormat(destination, config);
 		Metadata destMeta = dFormat.createMetadata();
 
 		// if dest is a different format than source, translate..
@@ -137,6 +146,7 @@ public class DefaultInitializeService extends AbstractService implements
 
 		final Writer writer = dFormat.createWriter();
 		writer.setMetadata(destMeta);
+		writer.setColorModel(config.writerGetColorModel());
 		writer.setDest(destination);
 
 		return writer;
@@ -146,16 +156,15 @@ public class DefaultInitializeService extends AbstractService implements
 	public Metadata parseMetadata(final String id) throws IOException,
 		FormatException
 	{
-		final Format format = formatService.getFormat(id);
-		return format.createParser().parse(id);
+		return parseMetadata(id, new SCIFIOConfig().checkerSetOpen(false));
 	}
 
 	@Override
-	public Metadata parseMetadata(final String id, final boolean openFile)
+	public Metadata parseMetadata(final String id, final SCIFIOConfig config)
 		throws FormatException, IOException
 	{
-		final Format format = formatService.getFormat(id, openFile);
-		return format.createParser().parse(id);
+		final Format format = formatService.getFormat(id, config);
+		return format.createParser().parse(id, config);
 	}
 
 	// -- Helper Methods --
@@ -167,11 +176,10 @@ public class DefaultInitializeService extends AbstractService implements
 	 * </p>
 	 */
 	private <N extends Metadata, M extends Metadata> M castMeta(final N metadata,
-		final Class<M> endType)
+		@SuppressWarnings("unused") final Class<M> endType)
 	{
 		@SuppressWarnings("unchecked")
 		final M meta = (M) metadata;
 		return meta;
 	}
-
 }

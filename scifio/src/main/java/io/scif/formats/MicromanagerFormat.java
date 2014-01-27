@@ -44,6 +44,7 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Translator;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.services.FormatService;
@@ -157,8 +158,9 @@ public class MicromanagerFormat extends AbstractFormat {
 		// -- Checker API Methods --
 
 		@Override
-		public boolean isFormat(final String name, final boolean open) {
-			if (!open) return false; // not allowed to touch the file system
+		public boolean isFormat(final String name, final SCIFIOConfig config) {
+			// not allowed to touch the file system
+			if (!config.checkerIsOpen()) return false;
 			if (name.equals(METADATA) || name.endsWith(File.separator + METADATA) ||
 				name.equals(XML) || name.endsWith(File.separator + XML))
 			{
@@ -185,7 +187,7 @@ public class MicromanagerFormat extends AbstractFormat {
 					new RandomAccessInputStream(getContext(), name);
 				final boolean validTIFF = isFormat(s);
 				s.close();
-				return validTIFF && isFormat(metaFile.getAbsolutePath(), open);
+				return validTIFF && isFormat(metaFile.getAbsolutePath(), config);
 			}
 			catch (final NullPointerException e) {}
 			catch (final IOException e) {}
@@ -249,7 +251,8 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			final Vector<Position> positions = new Vector<Position>();
 			meta.setPositions(positions);
@@ -760,7 +763,8 @@ public class MicromanagerFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
@@ -772,7 +776,7 @@ public class MicromanagerFormat extends AbstractFormat {
 					planeIndex);
 
 			if (file != null && new Location(getContext(), file).exists()) {
-				tiffReader.setSource(file);
+				tiffReader.setSource(file, config);
 				return tiffReader.openPlane(imageIndex, 0, plane, planeMin, planeMax);
 			}
 			log().warn(

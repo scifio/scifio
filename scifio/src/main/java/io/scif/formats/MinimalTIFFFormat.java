@@ -44,6 +44,7 @@ import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
 import io.scif.codec.JPEG2000CodecOptions;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.formats.tiff.IFD;
 import io.scif.formats.tiff.IFDList;
 import io.scif.formats.tiff.PhotoInterp;
@@ -409,9 +410,9 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- Parser API Methods --
 
 		@Override
-		protected void
-			typedParse(final RandomAccessInputStream stream, final M meta)
-				throws IOException, FormatException
+		protected void typedParse(final RandomAccessInputStream stream,
+			final M meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			final TiffParser tiffParser = new TiffParser(getContext(), stream);
 			tiffParser.setDoCaching(false);
@@ -605,7 +606,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();

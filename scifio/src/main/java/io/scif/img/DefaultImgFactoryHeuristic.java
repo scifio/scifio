@@ -34,7 +34,7 @@ package io.scif.img;
 
 import io.scif.Metadata;
 import io.scif.common.DataTools;
-import io.scif.img.ImgOptions.ImgMode;
+import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.util.FormatTools;
 import net.imglib2.exception.IncompatibleTypeException;

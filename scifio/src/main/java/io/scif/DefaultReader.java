@@ -32,6 +32,8 @@
 
 package io.scif;
 
+import io.scif.config.SCIFIOConfig;
+
 import java.io.IOException;
 
 /**
@@ -66,11 +68,12 @@ public class DefaultReader extends ByteArrayReader<DefaultMetadata> implements
 	 */
 	@Override
 	public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-		final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax)
-		throws FormatException, IOException
+		final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax,
+		final SCIFIOConfig config)		throws FormatException, IOException
 	{
 		throw new UnsupportedOperationException(
 			"Trying to read using DefaultReader. "
 				+ "Must implement a Reader specifically for this Format");
 	}
+
 }

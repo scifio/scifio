@@ -37,6 +37,7 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.SCIFIO;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTools;
 
 import java.io.File;
@@ -98,12 +99,12 @@ public class DefaultImgUtilityService extends AbstractService implements
 
 	/** Compiles an N-dimensional list of axis lengths from the given reader. */
 	@Override
-	public long[] getDimLengths(final Metadata m, final ImgOptions imgOptions) {
-		final int imageIndex = imgOptions.getIndex();
+	public long[] getDimLengths(final Metadata m, final SCIFIOConfig config) {
+		final int imageIndex = config.imgOpenerGetIndex();
 
 		final long[] dimLengths = m.get(imageIndex).getAxesLengths();
 
-		final SubRegion region = imgOptions.getRegion();
+		final SubRegion region = config.imgOpenerGetRegion();
 
 		for (int i = 0; i < dimLengths.length; i++) {
 
@@ -120,11 +121,11 @@ public class DefaultImgUtilityService extends AbstractService implements
 
 	@Override
 	public long[] getConstrainedLengths(final Metadata m,
-		final ImgOptions imgOptions)
+		final SCIFIOConfig config)
 	{
-		final long[] lengths = getDimLengths(m, imgOptions);
+		final long[] lengths = getDimLengths(m, config);
 
-		final SubRegion r = imgOptions.getRegion();
+		final SubRegion r = config.imgOpenerGetRegion();
 
 		if (r != null) {
 			// set each dimension length = the number of entries for that axis

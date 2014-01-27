@@ -45,20 +45,6 @@ import java.io.IOException;
 public abstract class AbstractGroupable extends AbstractHasSource implements
 	Groupable
 {
-
-	/** Whether or not to group multi-file formats. */
-	private boolean group = true;
-
-	@Override
-	public void setGroupFiles(final boolean groupFiles) {
-		group = groupFiles;
-	}
-
-	@Override
-	public boolean isGroupFiles() {
-		return group;
-	}
-
 	@Override
 	public int fileGroupOption(final String id) throws FormatException,
 		IOException

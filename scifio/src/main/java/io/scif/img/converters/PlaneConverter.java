@@ -34,7 +34,7 @@ package io.scif.img.converters;
 
 import io.scif.Reader;
 import io.scif.SCIFIOPlugin;
-import io.scif.img.ImgOptions;
+import io.scif.config.SCIFIOConfig;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
@@ -54,8 +54,8 @@ public interface PlaneConverter extends SCIFIOPlugin, SingletonPlugin {
 	 * @param planeIndex plane index within the image
 	 * @param source the opened plane
 	 * @param dest the ImgPlus to populate
-	 * @param imgOptions ImgOptions for opening this plane
+	 * @param config SCIFIOConfig for opening this plane
 	 */
 	<T extends RealType<T>> void populatePlane(Reader reader, int imageIndex,
-		int planeIndex, byte[] source, ImgPlus<T> dest, ImgOptions imgOptions);
+		int planeIndex, byte[] source, ImgPlus<T> dest, SCIFIOConfig config);
 }

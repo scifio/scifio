@@ -46,6 +46,7 @@ import io.scif.Translator;
 import io.scif.common.DataTools;
 import io.scif.common.ReflectException;
 import io.scif.common.ReflectedUniverse;
+import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
 import io.scif.io.Location;
@@ -165,7 +166,8 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			log().info("Checking for QuickTime Java");
 
@@ -262,8 +264,8 @@ public class LegacyQTFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
-			IOException
+			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			throws FormatException, IOException
 		{
 			final ReflectedUniverse r = qtJavaService.getUniverse();
 			final Metadata meta = getMetadata();
@@ -377,8 +379,8 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			BufferedImage img = null;
 			final Metadata meta = getMetadata();

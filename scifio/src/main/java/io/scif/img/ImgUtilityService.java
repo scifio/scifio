@@ -34,6 +34,7 @@ package io.scif.img;
 
 import io.scif.Metadata;
 import io.scif.SCIFIOService;
+import io.scif.config.SCIFIOConfig;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
@@ -81,13 +82,13 @@ public interface ImgUtilityService extends SCIFIOService {
 	ArrayDataAccess<?> makeArray(final Object array);
 
 	/** Compiles an N-dimensional list of axis lengths from the given Metadata. */
-	long[] getDimLengths(final Metadata m, final ImgOptions imgOptions);
+	long[] getDimLengths(final Metadata m, final SCIFIOConfig config);
 
 	/**
 	 * Returns an N-dimensional list of axis lengths from the given Metadata,
 	 * constrained by the provided SubRegion (if present)
 	 */
-	long[] getConstrainedLengths(final Metadata m, final ImgOptions imgOptions);
+	long[] getConstrainedLengths(final Metadata m, final SCIFIOConfig config);
 
 	/**
 	 * @param source - the location of the dataset to assess

@@ -32,6 +32,7 @@
 
 package io.scif;
 
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
@@ -71,10 +72,10 @@ public interface Checker extends HasFormat {
 	 * </p>
 	 * 
 	 * @param name path to the image source to check.
-	 * @param open if true, allows file access during the checking process.
+	 * @param config {@link SCIFIOConfig} for this isFormat call.
 	 * @return True if the image source is compatible with this {@code Format}.
 	 */
-	boolean isFormat(String name, boolean open);
+	boolean isFormat(String name, SCIFIOConfig config);
 
 	/**
 	 * Checks if the given stream is a valid stream for this {@code Format}.

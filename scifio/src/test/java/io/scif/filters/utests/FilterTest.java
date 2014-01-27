@@ -37,6 +37,7 @@ import static org.testng.AssertJUnit.assertTrue;
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
+import io.scif.config.SCIFIOConfig;
 import io.scif.filters.AbstractReaderFilter;
 import io.scif.filters.Filter;
 import io.scif.filters.PlaneSeparator;
@@ -93,7 +94,9 @@ public class FilterTest {
 	public void testSetSource() throws FormatException, IOException {
 		final String id2 = "testImg&lengths=256,128,5&axes=X,Y,Time.fake";
 
-		readerFilter = scifio.initializer().initializeReader(id, true);
+		readerFilter =
+			scifio.initializer().initializeReader(id,
+				new SCIFIOConfig().checkerSetOpen(true));
 
 		((ReaderFilter) readerFilter).enable(PlaneSeparator.class);
 

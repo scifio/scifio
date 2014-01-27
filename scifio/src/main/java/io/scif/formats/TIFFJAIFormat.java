@@ -42,6 +42,7 @@ import io.scif.ImageMetadata;
 import io.scif.MissingLibraryException;
 import io.scif.common.ReflectException;
 import io.scif.common.ReflectedUniverse;
+import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
 import io.scif.io.FileHandle;
@@ -170,7 +171,8 @@ public class TIFFJAIFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			log().info("Checking for JAI");
 			ReflectedUniverse r = null;
@@ -249,8 +251,8 @@ public class TIFFJAIFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
-			IOException
+			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			throws FormatException, IOException
 		{
 			FormatTools.checkPlaneForReading(getMetadata(), imageIndex, planeIndex,
 				-1, planeMin, planeMax);

@@ -45,6 +45,7 @@ import io.scif.codec.CodecOptions;
 import io.scif.codec.JPEGCodec;
 import io.scif.codec.PackbitsCodec;
 import io.scif.common.DataTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.io.ByteArrayHandle;
 import io.scif.io.RandomAccessInputStream;
@@ -243,7 +244,8 @@ public class PICTFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			meta.createImageMetadata(1);
 			final ImageMetadata iMeta = meta.get(0);
@@ -292,7 +294,7 @@ public class PICTFormat extends AbstractFormat {
 			}
 			else throw new FormatException("Invalid PICT file");
 
-			addGlobalMeta("Version", versionOne ? 1 : 2);
+			meta.getTable().put("Version", versionOne ? 1 : 2);
 			meta.setVersionOne(versionOne);
 
 			do {
@@ -689,7 +691,8 @@ public class PICTFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();

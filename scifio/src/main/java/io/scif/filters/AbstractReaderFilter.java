@@ -38,6 +38,7 @@ import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.File;
@@ -102,7 +103,10 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	 *          {@code setSource} series.
 	 * @throws IOException
 	 */
-	protected void setSourceHelper(final String source) throws IOException {
+	protected void
+		setSourceHelper(final String source, final SCIFIOConfig config)
+			throws IOException
+	{
 		final String filterSource =
 			getMetadata() == null ? null : getMetadata().getSource().getFileName();
 
@@ -178,8 +182,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	public Plane openPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		openPlaneHelper();
-		return getParent().openPlane(imageIndex, planeIndex);
+		return openPlane(imageIndex, planeIndex, new SCIFIOConfig());
 	}
 
 	@Override
@@ -187,16 +190,15 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException
 	{
-		openPlaneHelper();
-		return getParent().openPlane(imageIndex, planeIndex, planeMin, planeMax);
+		return openPlane(imageIndex, planeIndex, planeMin, planeMax,
+			new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		openPlaneHelper();
-		return getParent().openPlane(imageIndex, planeIndex, plane);
+		return openPlane(imageIndex, planeIndex, plane, new SCIFIOConfig());
 	}
 
 	@Override
@@ -204,9 +206,45 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		final Plane plane, final long[] planeMin, final long[] planeMax)
 		throws FormatException, IOException
 	{
+		return openPlane(imageIndex, planeIndex, plane, planeMin, planeMax,
+			new SCIFIOConfig());
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final SCIFIOConfig config) throws FormatException, IOException
+	{
+		openPlaneHelper();
+		return getParent().openPlane(imageIndex, planeIndex, config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+		throws FormatException, IOException
+	{
+		openPlaneHelper();
+		return getParent().openPlane(imageIndex, planeIndex, planeMin, planeMax,
+			config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final SCIFIOConfig config) throws FormatException,
+		IOException
+	{
+		openPlaneHelper();
+		return getParent().openPlane(imageIndex, planeIndex, plane, config);
+	}
+
+	@Override
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final long[] planeMin, final long[] planeMax,
+		final SCIFIOConfig config) throws FormatException, IOException
+	{
 		openPlaneHelper();
 		return getParent().openPlane(imageIndex, planeIndex, plane, planeMin,
-			planeMax);
+			planeMax, config);
 	}
 
 	@Override
@@ -214,16 +252,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		throws FormatException, IOException
 	{
 		return getParent().openThumbPlane(imageIndex, planeIndex);
-	}
-
-	@Override
-	public void setGroupFiles(final boolean group) {
-		getParent().setGroupFiles(group);
-	}
-
-	@Override
-	public boolean isGroupFiles() {
-		return getParent().isGroupFiles();
 	}
 
 	@Override
@@ -295,13 +323,13 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	@Override
 	public void setSource(final String fileName) throws IOException {
 		getParent().setSource(fileName);
-		setSourceHelper(fileName);
+		setSourceHelper(fileName, new SCIFIOConfig());
 	}
 
 	@Override
 	public void setSource(final File file) throws IOException {
 		getParent().setSource(file);
-		setSourceHelper(file.getAbsolutePath());
+		setSourceHelper(file.getAbsolutePath(), new SCIFIOConfig());
 	}
 
 	@Override
@@ -309,7 +337,27 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		throws IOException
 	{
 		getParent().setSource(stream);
-		setSourceHelper(stream.getFileName());
+		setSourceHelper(stream.getFileName(), new SCIFIOConfig());
+	}
+
+	@Override
+	public void setSource(final String fileName, final SCIFIOConfig config) throws IOException {
+		getParent().setSource(fileName, config);
+		setSourceHelper(fileName, config);
+	}
+
+	@Override
+	public void setSource(final File file, final SCIFIOConfig config) throws IOException {
+		getParent().setSource(file, config);
+		setSourceHelper(file.getAbsolutePath(), config);
+	}
+
+	@Override
+	public void setSource(final RandomAccessInputStream stream, final SCIFIOConfig config)
+		throws IOException
+	{
+		getParent().setSource(stream, config);
+		setSourceHelper(stream.getFileName(), config);
 	}
 
 	@Override

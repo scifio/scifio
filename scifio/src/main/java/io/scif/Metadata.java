@@ -81,13 +81,6 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	boolean isFiltered();
 
 	/**
-	 * Returns the MetadataOptions object that was used to parse this Metadata.
-	 * 
-	 * @return The MetadataOptions used to parse this Metadata
-	 */
-	MetadataOptions getMetadataOptions();
-
-	/**
 	 * Generates format-agnostic image metadata structures based on this
 	 * instance's format-specific metadata.
 	 */
@@ -119,9 +112,6 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 
 	/** Sets whether this metadata was filtered when parsed. */
 	void setFiltered(boolean filtered);
-
-	/** Sets the metadata options that were used during parsing. */
-	void setMetadataOptions(MetadataOptions opts);
 
 	/**
 	 * Adds the provided image metadata to this dataset metadata

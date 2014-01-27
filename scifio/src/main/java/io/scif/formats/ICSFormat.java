@@ -45,6 +45,7 @@ import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.Translator;
 import io.scif.common.DateTools;
+import io.scif.config.SCIFIOConfig;
 import io.scif.img.axes.SCIFIOAxes;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
@@ -1174,7 +1175,8 @@ public class ICSFormat extends AbstractFormat {
 		@SuppressWarnings("unchecked")
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			findCompanion(stream, meta);
 
@@ -1213,7 +1215,7 @@ public class ICSFormat extends AbstractFormat {
 						}
 						final String k = key.toString().trim().replaceAll("\t", " ");
 						final String v = value.toString().trim();
-						addGlobalMeta(k, v);
+						meta.getTable().put(k, v);
 						meta.keyValPairs.put(k.toLowerCase(), v);
 					}
 					else {
@@ -1351,7 +1353,8 @@ public class ICSFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane
@@ -1506,16 +1509,16 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void setSource(final RandomAccessInputStream stream)
-			throws IOException
+		public void setSource(final RandomAccessInputStream stream,
+			final SCIFIOConfig config) throws IOException
 		{
 			if (!getMetadata().versionTwo) {
 				stream.close();
 				super.setSource(new RandomAccessInputStream(getContext(),
-					getMetadata().idsId));
+					getMetadata().idsId), config);
 			}
 			else {
-				super.setSource(stream);
+				super.setSource(stream, config);
 			}
 		}
 
@@ -1551,8 +1554,8 @@ public class ICSFormat extends AbstractFormat {
 
 		@Override
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final long[] planeMin, final long[] planeMax,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			checkParams(imageIndex, planeIndex, plane.getBytes(), planeMin, planeMax);
 			final Metadata meta = getMetadata();
