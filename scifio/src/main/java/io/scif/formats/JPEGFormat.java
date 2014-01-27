@@ -223,12 +223,11 @@ public class JPEGFormat extends ImageIOFormat {
 
 				final ByteArrayHandle bytes = new ByteArrayHandle(v.toByteArray());
 
-				locationService.mapFile(currentId + ".fixed", bytes);
-				super.parse(currentId + ".fixed", meta);
+				locationService.mapFile(getSource().getFileName() + ".fixed", bytes);
+				super.parse(getSource().getFileName() + ".fixed", meta);
 			}
 
-			metadata.setDatasetName(id);
-			currentId = id;
+			getMetadata().setDatasetName(id);
 		}
 	}
 

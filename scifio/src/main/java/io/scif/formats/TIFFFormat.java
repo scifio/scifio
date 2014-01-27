@@ -287,12 +287,12 @@ public class TIFFFormat extends AbstractFormat {
 			final boolean noPixels)
 		{
 			if (noPixels) {
-				return metadata.getCompanionFile() == null ? null
-					: new String[] { metadata.getCompanionFile() };
+				return getMetadata().getCompanionFile() == null ? null
+					: new String[] { getMetadata().getCompanionFile() };
 			}
-			if (metadata.getCompanionFile() != null) return new String[] {
-				metadata.getCompanionFile(), currentId };
-			return new String[] { currentId };
+			if (getMetadata().getCompanionFile() != null) return new String[] {
+				getMetadata().getCompanionFile(), getSource().getFileName() };
+			return new String[] { getSource().getFileName() };
 		}
 
 		// -- BaseTIFFParser API Methods
@@ -365,7 +365,7 @@ public class TIFFFormat extends AbstractFormat {
 
 			if (config.groupableIsGroupFiles()) {
 				final Location currentFile =
-					new Location(getContext(), currentId).getAbsoluteFile();
+					new Location(getContext(), getSource().getFileName()).getAbsoluteFile();
 				final String currentName = currentFile.getName();
 				final Location directory = currentFile.getParentFile();
 				final String[] files = directory.list(true);
@@ -532,7 +532,7 @@ public class TIFFFormat extends AbstractFormat {
 				final long endOfFirstPlane =
 					stripOffsets[stripOffsets.length - 1] +
 						stripByteCounts[stripByteCounts.length - 1];
-				final long totalBytes = in.length() - endOfFirstPlane;
+				final long totalBytes = getSource().length() - endOfFirstPlane;
 				final int totalPlanes = (int) (totalBytes / planeSize) + 1;
 
 				ifds = new IFDList();

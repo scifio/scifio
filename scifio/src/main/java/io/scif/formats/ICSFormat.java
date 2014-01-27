@@ -1234,22 +1234,20 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			reader.close();
-			in.close();
+			getSource().close();
 
 			final String id = meta.isVersionTwo() ? meta.icsId : meta.idsId;
-			in = new RandomAccessInputStream(getContext(), id);
+			updateSource(id);
 
 			if (meta.versionTwo) {
-				String s = in.readString(ICSUtils.NL);
+				String s = getSource().readString(ICSUtils.NL);
 				while (!s.trim().equals("end"))
-					s = in.readString(ICSUtils.NL);
+					s = getSource().readString(ICSUtils.NL);
 			}
 
-			meta.offset = in.getFilePointer();
+			meta.offset = getSource().getFilePointer();
 
-			in.seek(0);
-
-			meta.setSource(in);
+			getSource().seek(0);
 
 			meta.hasInstrumentData =
 				nullKeyCheck(new String[] { "history cube emm nm",
@@ -1264,7 +1262,7 @@ public class ICSFormat extends AbstractFormat {
 		/* Returns true if any of the keys in testKeys has a non-null value */
 		private boolean nullKeyCheck(final String[] testKeys) {
 			for (final String key : testKeys) {
-				if (metadata.get(key) != null) {
+				if (getMetadata().get(key) != null) {
 					return true;
 				}
 			}

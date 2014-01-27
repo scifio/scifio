@@ -416,11 +416,11 @@ public class NativeQTFormat extends AbstractFormat {
 				log().debug("Searching for research fork:");
 				if (f.exists()) {
 					log().debug("\t Found: " + f);
-					if (in != null) in.close();
-					in = new RandomAccessInputStream(getContext(), f.getAbsolutePath());
+					if (getSource() != null) getSource().close();
+					updateSource(f .getAbsolutePath());
 
 					NativeQTUtils.stripHeader(stream);
-					NativeQTUtils.parse(stream, meta, 0, 0, in.length(), log());
+					NativeQTUtils.parse(stream, meta, 0, 0, getSource().length(), log());
 					meta.get(0).setAxisLength(Axes.TIME, offsets.size());
 				}
 				else {

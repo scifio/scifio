@@ -423,7 +423,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				throw new FormatException("Invalid TIFF file");
 			}
 			final boolean little = littleEndian.booleanValue();
-			in.order(little);
+			getSource().order(little);
 
 			log().info("Reading IFDs");
 

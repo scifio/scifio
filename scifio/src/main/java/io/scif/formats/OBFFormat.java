@@ -204,21 +204,21 @@ public class OBFFormat extends AbstractFormat {
 		private long initStack(final long current, final int fileVersion)
 			throws FormatException, IOException
 		{
-			in.seek(current);
+			getSource().seek(current);
 
-			final String magicString = in.readString(STACK_MAGIC_STRING.length());
-			final short magicNumber = in.readShort();
-			final int version = in.readInt();
+			final String magicString = getSource().readString(STACK_MAGIC_STRING.length());
+			final short magicNumber = getSource().readShort();
+			final int version = getSource().readInt();
 
 			if (magicString.equals(STACK_MAGIC_STRING) &&
 				magicNumber == OBFUtilities.MAGIC_NUMBER && version <= STACK_VERSION)
 			{
-				final ImageMetadata iMeta = metadata.get(0);
+				final ImageMetadata iMeta = getMetadata().get(0);
 
 				iMeta.setLittleEndian(OBFUtilities.LITTLE_ENDIAN);
 				iMeta.setThumbnail(false);
 
-				final int numberOfDimensions = in.readInt();
+				final int numberOfDimensions = getSource().readInt();
 				if (numberOfDimensions > 5) {
 					throw new FormatException("Unsupported number of " +
 						numberOfDimensions + " dimensions");
@@ -227,7 +227,7 @@ public class OBFFormat extends AbstractFormat {
 				final int[] sizes = new int[MAXIMAL_NUMBER_OF_DIMENSIONS];
 				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
-					final int size = in.readInt();
+					final int size = getSource().readInt();
 					sizes[dimension] = dimension < numberOfDimensions ? size : 1;
 				}
 
@@ -240,7 +240,7 @@ public class OBFFormat extends AbstractFormat {
 				final List<Double> lengths = new ArrayList<Double>();
 				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
-					final double length = in.readDouble();
+					final double length = getSource().readDouble();
 					if (dimension < numberOfDimensions) {
 						lengths.add(new Double(length));
 					}
@@ -250,53 +250,53 @@ public class OBFFormat extends AbstractFormat {
 				final List<Double> offsets = new ArrayList<Double>();
 				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
-					final double offset = in.readDouble();
+					final double offset = getSource().readDouble();
 					if (dimension < numberOfDimensions) {
 						offsets.add(new Double(offset));
 					}
 				}
 				iMeta.getTable().put("Offsets", offsets);
 
-				final int type = in.readInt();
+				final int type = getSource().readInt();
 				iMeta.setPixelType(OBFUtilities.getPixelType(type));
 				iMeta.setPixelType(OBFUtilities.getBitsPerPixel(type));
 
 				final Stack stack = new Stack();
 
-				final int compression = in.readInt();
+				final int compression = getSource().readInt();
 				stack.setCompression(getCompression(compression));
 
-				in.skipBytes(4);
+				getSource().skipBytes(4);
 
-				final int lengthOfName = in.readInt();
-				final int lengthOfDescription = in.readInt();
+				final int lengthOfName = getSource().readInt();
+				final int lengthOfDescription = getSource().readInt();
 
-				in.skipBytes(8);
+				getSource().skipBytes(8);
 
-				final long lengthOfData = in.readLong();
+				final long lengthOfData = getSource().readLong();
 				stack.setLength(getLength(lengthOfData));
 
-				final long next = in.readLong();
+				final long next = getSource().readLong();
 
-				final String name = in.readString(lengthOfName);
+				final String name = getSource().readString(lengthOfName);
 				iMeta.getTable().put("Name", name);
-				final String description = in.readString(lengthOfDescription);
+				final String description = getSource().readString(lengthOfDescription);
 				iMeta.getTable().put("Description", description);
 
-				stack.setPosition(in.getFilePointer());
+				stack.setPosition(getSource().getFilePointer());
 
-				metadata.getStacks().add(stack);
+				getMetadata().getStacks().add(stack);
 
 				if (fileVersion >= 1) {
-					in.skip(lengthOfData);
+					getSource().skip(lengthOfData);
 
-					final long footer = in.getFilePointer();
-					final int offset = in.readInt();
+					final long footer = getSource().getFilePointer();
+					final int offset = getSource().readInt();
 
 					final List<Boolean> stepsPresent = new ArrayList<Boolean>();
 					for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 					{
-						final int present = in.readInt();
+						final int present = getSource().readInt();
 						if (dimension < numberOfDimensions) {
 							stepsPresent.add(new Boolean(present != 0));
 						}
@@ -304,19 +304,19 @@ public class OBFFormat extends AbstractFormat {
 					final List<Boolean> stepLabelsPresent = new ArrayList<Boolean>();
 					for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 					{
-						final int present = in.readInt();
+						final int present = getSource().readInt();
 						if (dimension < numberOfDimensions) {
 							stepLabelsPresent.add(new Boolean(present != 0));
 						}
 					}
 
-					in.seek(footer + offset);
+					getSource().seek(footer + offset);
 
 					final List<String> labels = new ArrayList<String>();
 					for (int dimension = 0; dimension != numberOfDimensions; ++dimension)
 					{
-						final int length = in.readInt();
-						final String label = in.readString(length);
+						final int length = getSource().readInt();
+						final String label = getSource().readString(length);
 						labels.add(label);
 					}
 					iMeta.getTable().put("Labels", labels);
@@ -327,7 +327,7 @@ public class OBFFormat extends AbstractFormat {
 						final List<Double> list = new ArrayList<Double>();
 						if (stepsPresent.get(dimension)) {
 							for (int position = 0; position != sizes[dimension]; ++position) {
-								final double step = in.readDouble();
+								final double step = getSource().readDouble();
 								list.add(new Double(step));
 							}
 						}
@@ -341,8 +341,8 @@ public class OBFFormat extends AbstractFormat {
 						final List<String> list = new ArrayList<String>();
 						if (stepLabelsPresent.get(dimension)) {
 							for (int position = 0; position != sizes[dimension]; ++position) {
-								final int length = in.readInt();
-								final String label = in.readString(length);
+								final int length = getSource().readInt();
+								final String label = getSource().readString(length);
 								list.add(label);
 							}
 						}

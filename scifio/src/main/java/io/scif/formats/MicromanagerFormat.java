@@ -305,9 +305,9 @@ public class MicromanagerFormat extends AbstractFormat {
 		public String[] getImageUsedFiles(final int imageIndex,
 			final boolean noPixels)
 		{
-			FormatTools.assertId(currentId, true, 1);
+			FormatTools.assertId(getSource(), true, 1);
 			final Vector<String> files = new Vector<String>();
-			for (final Position pos : metadata.getPositions()) {
+			for (final Position pos : getMetadata().getPositions()) {
 				files.add(pos.metadataFile);
 				if (pos.xmlFile != null) {
 					files.add(pos.xmlFile);
@@ -726,7 +726,7 @@ public class MicromanagerFormat extends AbstractFormat {
 					final String key = attributes.getValue("key");
 					final String value = attributes.getValue("value");
 
-					metadata.getTable().put(key, value);
+					getMetadata().getTable().put(key, value);
 				}
 			}
 		}

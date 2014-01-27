@@ -391,7 +391,7 @@ public class GIFFormat extends AbstractFormat {
 			meta.setImages(new Vector<byte[]>());
 			meta.setColorTables(new Vector<int[]>());
 
-			final String ident = in.readString(6);
+			final String ident = getSource().readString(6);
 
 			if (!ident.startsWith(GIF_MAGIC_STRING)) {
 				throw new FormatException("Not a valid GIF file.");
@@ -464,69 +464,69 @@ public class GIFFormat extends AbstractFormat {
 			do {
 				check = readBlock();
 			}
-			while (metadata.getBlockSize() > 0 && check != -1);
+			while (getMetadata().getBlockSize() > 0 && check != -1);
 		}
 
 		private void readImageBlock() throws FormatException, IOException {
-			metadata.setIx(in.readShort());
-			metadata.setIy(in.readShort());
-			metadata.setIw(in.readShort());
-			metadata.setIh(in.readShort());
+			getMetadata().setIx(getSource().readShort());
+			getMetadata().setIy(getSource().readShort());
+			getMetadata().setIw(getSource().readShort());
+			getMetadata().setIh(getSource().readShort());
 
-			final int packed = in.read();
+			final int packed = getSource().read();
 			final boolean lctFlag = (packed & 0x80) != 0;
-			metadata.setInterlace((packed & 0x40) != 0);
+			getMetadata().setInterlace((packed & 0x40) != 0);
 			final int lctSize = 2 << (packed & 7);
 
-			metadata.setAct(lctFlag ? readLut(lctSize) : metadata.getGct());
+			getMetadata().setAct(lctFlag ? readLut(lctSize) : getMetadata().getGct());
 
-			if (metadata.getAct() == null) throw new FormatException(
+			if (getMetadata().getAct() == null) throw new FormatException(
 				"Color table not found.");
 
 			int save = 0;
 
-			if (metadata.isTransparency()) {
-				save = metadata.getAct()[metadata.getTransIndex()];
-				metadata.getAct()[metadata.getTransIndex()] = 0;
+			if (getMetadata().isTransparency()) {
+				save = getMetadata().getAct()[getMetadata().getTransIndex()];
+				getMetadata().getAct()[getMetadata().getTransIndex()] = 0;
 			}
 
 			decodeImageData();
 			skipBlocks();
 
 			// Update the plane count
-			metadata.get(0).setAxisLength(Axes.TIME,
-				metadata.get(0).getAxisLength(Axes.TIME) + 1);
+			getMetadata().get(0).setAxisLength(Axes.TIME,
+				getMetadata().get(0).getAxisLength(Axes.TIME) + 1);
 
-			if (metadata.isTransparency()) metadata.getAct()[metadata.getTransIndex()] =
+			if (getMetadata().isTransparency()) getMetadata().getAct()[getMetadata().getTransIndex()] =
 				save;
 
-			metadata.setLastDispose(metadata.getDispose());
+			getMetadata().setLastDispose(getMetadata().getDispose());
 		}
 
 		/** Decodes LZW image data into a pixel array. Adapted from ImageMagick. */
 		private void decodeImageData() throws IOException {
 			final int nullCode = -1;
-			final int npix = metadata.getIw() * metadata.getIh();
+			final int npix = getMetadata().getIw() * getMetadata().getIh();
 
-			byte[] pixels = metadata.getPixels();
+			byte[] pixels = getMetadata().getPixels();
 
 			if (pixels == null || pixels.length < npix) pixels = new byte[npix];
 
-			short[] prefix = metadata.getPrefix();
-			byte[] suffix = metadata.getSuffix();
-			byte[] pixelStack = metadata.getPixelStack();
+			short[] prefix = getMetadata().getPrefix();
+			byte[] suffix = getMetadata().getSuffix();
+			byte[] pixelStack = getMetadata().getPixelStack();
 
 			if (prefix == null) prefix = new short[MAX_STACK_SIZE];
 			if (suffix == null) suffix = new byte[MAX_STACK_SIZE];
 			if (pixelStack == null) pixelStack = new byte[MAX_STACK_SIZE + 1];
 
-			metadata.setPrefix(prefix);
-			metadata.setSuffix(suffix);
-			metadata.setPixelStack(pixelStack);
+			getMetadata().setPrefix(prefix);
+			getMetadata().setSuffix(suffix);
+			getMetadata().setPixelStack(pixelStack);
 
 			// initialize GIF data stream decoder
 
-			final int dataSize = in.read() & 0xff;
+			final int dataSize = getSource().read() & 0xff;
 
 			final int clear = 1 << dataSize;
 			final int eoi = clear + 1;
@@ -553,7 +553,7 @@ public class GIFFormat extends AbstractFormat {
 							if (count <= 0) break;
 							bi = 0;
 						}
-						datum += (metadata.getdBlock()[bi] & 0xff) << bits;
+						datum += (getMetadata().getdBlock()[bi] & 0xff) << bits;
 						bits += 8;
 						bi++;
 						count--;
@@ -617,28 +617,28 @@ public class GIFFormat extends AbstractFormat {
 
 			for (i = pi; i < npix; i++)
 				pixels[i] = 0;
-			metadata.setPixels(pixels);
+			getMetadata().setPixels(pixels);
 			setPixels();
 		}
 
 		private void setPixels() {
 			// expose destination image's pixels as an int array
 			final byte[] dest =
-				new byte[(int) (metadata.get(0).getAxisLength(Axes.X) * metadata.get(0)
+				new byte[(int) (getMetadata().get(0).getAxisLength(Axes.X) * getMetadata().get(0)
 					.getAxisLength(Axes.Y))];
 			long lastImage = -1;
 
 			// fill in starting image contents based on last image's dispose code
-			if (metadata.getLastDispose() > 0) {
-				if (metadata.getLastDispose() == 3) { // use image before last
-					final long n = metadata.get(0).getPlaneCount() - 2;
+			if (getMetadata().getLastDispose() > 0) {
+				if (getMetadata().getLastDispose() == 3) { // use image before last
+					final long n = getMetadata().get(0).getPlaneCount() - 2;
 					if (n > 0) lastImage = n - 1;
 				}
 
 				if (lastImage != -1) {
-					final byte[] prev = metadata.getImages().get((int) lastImage);
-					System.arraycopy(prev, 0, dest, 0, (int) (metadata.get(0)
-						.getAxisLength(Axes.X) * metadata.get(0).getAxisLength(Axes.Y)));
+					final byte[] prev = getMetadata().getImages().get((int) lastImage);
+					System.arraycopy(prev, 0, dest, 0, (int) (getMetadata().get(0)
+						.getAxisLength(Axes.X) * getMetadata().get(0).getAxisLength(Axes.Y)));
 				}
 			}
 
@@ -647,10 +647,10 @@ public class GIFFormat extends AbstractFormat {
 			int pass = 1;
 			int inc = 8;
 			int iline = 0;
-			for (int i = 0; i < metadata.getIh(); i++) {
+			for (int i = 0; i < getMetadata().getIh(); i++) {
 				int line = i;
-				if (metadata.isInterlace()) {
-					if (iline >= metadata.getIh()) {
+				if (getMetadata().isInterlace()) {
+					if (iline >= getMetadata().getIh()) {
 						pass++;
 						switch (pass) {
 							case 2:
@@ -669,37 +669,37 @@ public class GIFFormat extends AbstractFormat {
 					line = iline;
 					iline += inc;
 				}
-				line += metadata.getIy();
-				if (line < metadata.get(0).getAxisLength(Axes.Y)) {
-					final int k = line * (int) metadata.get(0).getAxisLength(Axes.X);
-					int dx = k + metadata.getIx(); // start of line in dest
-					int dlim = dx + metadata.getIw(); // end of dest line
-					if ((k + metadata.get(0).getAxisLength(Axes.X)) < dlim) dlim =
-						k + (int) metadata.get(0).getAxisLength(Axes.X);
-					int sx = i * metadata.getIw(); // start of line in source
+				line += getMetadata().getIy();
+				if (line < getMetadata().get(0).getAxisLength(Axes.Y)) {
+					final int k = line * (int) getMetadata().get(0).getAxisLength(Axes.X);
+					int dx = k + getMetadata().getIx(); // start of line in dest
+					int dlim = dx + getMetadata().getIw(); // end of dest line
+					if ((k + getMetadata().get(0).getAxisLength(Axes.X)) < dlim) dlim =
+						k + (int) getMetadata().get(0).getAxisLength(Axes.X);
+					int sx = i * getMetadata().getIw(); // start of line in source
 					while (dx < dlim) {
 						// map color and insert in destination
-						final int index = metadata.getPixels()[sx++] & 0xff;
+						final int index = getMetadata().getPixels()[sx++] & 0xff;
 						dest[dx++] = (byte) index;
 					}
 				}
 			}
-			metadata.getColorTables().add(metadata.getAct());
-			metadata.getImages().add(dest);
+			getMetadata().getColorTables().add(getMetadata().getAct());
+			getMetadata().getImages().add(dest);
 		}
 
 		/** Reads the next variable length block. */
 		private int readBlock() throws IOException {
-			if (in.getFilePointer() == in.length()) return -1;
-			metadata.setBlockSize(in.read() & 0xff);
+			if (getSource().getFilePointer() == getSource().length()) return -1;
+			getMetadata().setBlockSize(getSource().read() & 0xff);
 			int n = 0;
 			int count;
 
-			if (metadata.getBlockSize() > 0) {
+			if (getMetadata().getBlockSize() > 0) {
 				try {
-					while (n < metadata.getBlockSize()) {
+					while (n < getMetadata().getBlockSize()) {
 						count =
-							in.read(metadata.getdBlock(), n, metadata.getBlockSize() - n);
+							getSource().read(getMetadata().getdBlock(), n, getMetadata().getBlockSize() - n);
 						if (count == -1) break;
 						n += count;
 					}
@@ -717,7 +717,7 @@ public class GIFFormat extends AbstractFormat {
 			final byte[] c = new byte[nbytes];
 			int n = 0;
 			try {
-				n = in.read(c);
+				n = getSource().read(c);
 			}
 			catch (final IOException e) {}
 

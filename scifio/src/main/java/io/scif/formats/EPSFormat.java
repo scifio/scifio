@@ -194,23 +194,25 @@ public class EPSFormat extends AbstractFormat {
 
 			log().info("Verifying EPS format");
 
-			String line = in.readLine();
+			String line = getSource().readLine();
 			if (!line.trim().startsWith("%!PS")) {
 				// read the TIFF preview
 
 				meta.setTiff(true);
 
-				in.order(true);
-				in.seek(20);
-				final int offset = in.readInt();
-				final int len = in.readInt();
+				getSource().order(true);
+				getSource().seek(20);
+				final int offset = getSource().readInt();
+				final int len = getSource().readInt();
 
 				final byte[] b = new byte[len];
-				in.seek(offset);
-				in.read(b);
+				getSource().seek(offset);
+				getSource().read(b);
 
-				in = new RandomAccessInputStream(getContext(), b);
-				final TiffParser tp = new TiffParser(getContext(), in);
+				RandomAccessInputStream ifdSource =
+					new RandomAccessInputStream(getContext(), b);
+				final TiffParser tp = new TiffParser(getContext(), ifdSource);
+				ifdSource.close();
 				meta.setIfds(tp.getIFDs());
 
 				final IFD firstIFD = meta.getIfds().get(0);
@@ -238,7 +240,7 @@ public class EPSFormat extends AbstractFormat {
 			String image = "image";
 			int lineNum = 1;
 
-			line = in.readLine().trim();
+			line = getSource().readLine().trim();
 
 			m.setAxes(FormatTools.createAxes(Axes.X, Axes.Y, Axes.CHANNEL));
 
@@ -308,7 +310,7 @@ public class EPSFormat extends AbstractFormat {
 					}
 				}
 				lineNum++;
-				line = in.readLine().trim();
+				line = getSource().readLine().trim();
 			}
 
 		}

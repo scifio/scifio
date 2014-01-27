@@ -140,7 +140,7 @@ public class JPEGTileFormat extends AbstractFormat {
 		{
 			final JPEGTileDecoder decoder = new JPEGTileDecoder(getContext());
 			meta.setDecoder(decoder);
-			decoder.initialize(in, 0, 1);
+			decoder.initialize(getSource(), 0, 1);
 		}
 	}
 

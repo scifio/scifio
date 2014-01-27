@@ -204,9 +204,9 @@ public class PGMFormat extends AbstractFormat {
 		// -- Helper Methods --
 
 		private String readNextLine() throws IOException {
-			String line = in.readLine().trim();
+			String line = getSource().readLine().trim();
 			while (line.startsWith("#") || line.length() == 0) {
-				line = in.readLine().trim();
+				line = getSource().readLine().trim();
 			}
 			return line;
 		}

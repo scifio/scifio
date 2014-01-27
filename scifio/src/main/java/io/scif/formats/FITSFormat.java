@@ -149,14 +149,14 @@ public class FITSFormat extends AbstractFormat {
 			meta.createImageMetadata(1);
 			final ImageMetadata iMeta = meta.get(0);
 
-			String line = in.readString(LINE_LENGTH);
+			String line = getSource().readString(LINE_LENGTH);
 			if (!line.startsWith("SIMPLE")) {
 				throw new FormatException("Unsupported FITS file.");
 			}
 
 			String key = "", value = "";
 			while (true) {
-				line = in.readString(LINE_LENGTH);
+				line = getSource().readString(LINE_LENGTH);
 
 				// parse key/value pair
 				final int ndx = line.indexOf("=");
@@ -192,8 +192,8 @@ public class FITSFormat extends AbstractFormat {
 
 				meta.getTable().put(key, value);
 			}
-			while (in.read() == 0x20) { /* Read to pixel data. */}
-			meta.setPixelOffset(in.getFilePointer() - 1);
+			while (getSource().read() == 0x20) { /* Read to pixel data. */}
+			meta.setPixelOffset(getSource().getFilePointer() - 1);
 		}
 	}
 
