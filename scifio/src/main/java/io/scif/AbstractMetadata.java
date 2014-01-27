@@ -58,7 +58,7 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	private RandomAccessInputStream source;
 
 	/* Whether the Metadata should be filtered or not. */
-	protected boolean filtered;
+	private boolean filtered;
 
 	/* Contains a list of metadata objects for each image in this dataset */
 	@io.scif.Field(label = "imageMeta", isList = true)
