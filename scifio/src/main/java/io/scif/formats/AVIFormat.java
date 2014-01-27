@@ -430,13 +430,12 @@ public class AVIFormat extends AbstractFormat {
 
 		public static final String AVI_MAGIC_STRING = "RIFF";
 
-		// -- Constructor --
-
-		public Checker() {
-			suffixNecessary = false;
-		}
-
 		// -- Checker API Methods --
+
+		@Override
+		public boolean suffixNecessary() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)

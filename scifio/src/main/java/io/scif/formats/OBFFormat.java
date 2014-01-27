@@ -141,14 +141,17 @@ public class OBFFormat extends AbstractFormat {
 
 		private static final int FILE_VERSION = 1;
 
-		// -- Constructor --
+		// -- Checker API Methods --
 
-		public Checker() {
-			suffixNecessary = false;
-			suffixSufficient = false;
+		@Override
+		public boolean suffixNecessary() {
+			return false;
 		}
 
-		// -- Checker API Methods --
+		@Override
+		public boolean suffixSufficient() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)

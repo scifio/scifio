@@ -239,14 +239,17 @@ public class JPEG2000Format extends AbstractFormat {
 	 */
 	public static class Checker extends AbstractChecker {
 
-		// -- Constructor --
+		// -- Checker API methods --
 
-		public Checker() {
-			suffixSufficient = false;
-			suffixNecessary = false;
+		@Override
+		public boolean suffixNecessary() {
+			return false;
 		}
 
-		// -- Checker API methods --
+		@Override
+		public boolean suffixSufficient() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)

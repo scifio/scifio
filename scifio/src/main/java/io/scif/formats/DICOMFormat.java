@@ -1060,14 +1060,17 @@ public class DICOMFormat extends AbstractFormat {
 		private static final String[] DICOM_SUFFIXES = { "dic", "dcm", "dicom",
 			"j2ki", "j2kr" };
 
-		// -- Constructor --
+		// -- Checker API Methods --
 
-		public Checker() {
-			suffixSufficient = false;
-			suffixNecessary = false;
+		@Override
+		public boolean suffixNecessary() {
+			return false;
 		}
 
-		// -- Checker API Methods --
+		@Override
+		public boolean suffixSufficient() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final String name, final SCIFIOConfig config) {

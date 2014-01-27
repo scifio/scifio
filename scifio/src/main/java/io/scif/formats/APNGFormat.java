@@ -358,14 +358,12 @@ public class APNGFormat extends AbstractFormat {
 	 */
 	public static class Checker extends AbstractChecker {
 
-		// -- Constructor --
-
-		/** Constructs a new APNGChecker */
-		public Checker() {
-			suffixNecessary = false;
-		}
-
 		// -- Checker API Methods --
+
+		@Override
+		public boolean suffixNecessary() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)

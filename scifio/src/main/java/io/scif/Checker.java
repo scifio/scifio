@@ -54,6 +54,21 @@ public interface Checker extends HasFormat {
 	// -- Checker API methods --
 
 	/**
+	 * Whether the file extension matching one of the format's suffixes is
+	 * necessary to identify the file as a source compatible with this format.
+	 */
+	boolean suffixNecessary();
+
+	/**
+	 * Whether the file extension matching one of the format's suffixes is
+	 * sufficient to identify the file as a source compatible with this format.
+	 * <p>
+	 * If false, the source will have to be read to determine compatibility.
+	 * </p>
+	 */
+	boolean suffixSufficient();
+
+	/**
 	 * Checks if the provided image source is compatible with this {@code Format}.
 	 * Will not open the source during this process.
 	 * 

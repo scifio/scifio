@@ -49,24 +49,17 @@ public abstract class AbstractChecker extends AbstractHasFormat implements
 	Checker
 {
 
-	// -- Fields --
-
-	/**
-	 * Whether the file extension matching one of the format's suffixes is
-	 * necessary to identify the file as a source compatible with this format.
-	 */
-	protected boolean suffixNecessary = true;
-
-	/**
-	 * Whether the file extension matching one of the format's suffixes is
-	 * sufficient to identify the file as a source compatible with this format.
-	 * <p>
-	 * If false, the source will have to be read to determine compatibility.
-	 * </p>
-	 */
-	protected boolean suffixSufficient = true;
-
 	// -- Checker API Methods --
+
+	@Override
+	public boolean suffixNecessary() {
+		return true;
+	}
+
+	@Override
+	public boolean suffixSufficient() {
+		return true;
+	}
 
 	@Override
 	public boolean isFormat(final String name) {
@@ -78,18 +71,18 @@ public abstract class AbstractChecker extends AbstractHasFormat implements
 		boolean open = config.checkerIsOpen();
 
 		// if file extension ID is insufficient and we can't open the file, give up
-		if (!suffixSufficient && !open) return false;
+		if (!suffixSufficient() && !open) return false;
 
-		if (suffixNecessary || suffixSufficient) {
+		if (suffixNecessary() || suffixSufficient()) {
 			// it's worth checking the file extension
 			final boolean suffixMatch =
 				FormatTools.checkSuffix(name, getFormat().getSuffixes());
 
 			// if suffix match is required but it doesn't match, failure
-			if (suffixNecessary && !suffixMatch) return false;
+			if (suffixNecessary() && !suffixMatch) return false;
 
 			// if suffix matches and that's all we need, green light it
-			if (suffixMatch && suffixSufficient) return true;
+			if (suffixMatch && suffixSufficient()) return true;
 		}
 
 		// suffix matching was inconclusive; we need to analyze the file contents

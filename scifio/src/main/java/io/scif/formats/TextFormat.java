@@ -223,13 +223,12 @@ public class TextFormat extends AbstractFormat {
 	 */
 	public static class Checker extends AbstractChecker {
 
-		// -- Constructor --
-
-		public Checker() {
-			suffixSufficient = false;
-		}
-
 		// -- Checker API Methods --
+
+		@Override
+		public boolean suffixSufficient() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)

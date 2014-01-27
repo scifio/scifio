@@ -99,14 +99,17 @@ public class JPEGFormat extends ImageIOFormat {
 
 		private static final int MAX_SIZE = 8192;
 
-		// -- Constructor --
+		// -- Checker API Methods --
 
-		public Checker() {
-			suffixNecessary = false;
-			suffixSufficient = false;
+		@Override
+		public boolean suffixNecessary() {
+			return false;
 		}
 
-		// -- Checker API Methods --
+		@Override
+		public boolean suffixSufficient() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final String name, final SCIFIOConfig config) {

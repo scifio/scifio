@@ -136,13 +136,12 @@ public class PGMFormat extends AbstractFormat {
 
 		public static final char PGM_MAGIC_CHAR = 'P';
 
-		// -- Constructor --
-
-		public Checker() {
-			suffixNecessary = false;
-		}
-
 		// -- Checker API Methods --
+
+		@Override
+		public boolean suffixNecessary() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)
