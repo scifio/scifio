@@ -379,6 +379,13 @@ public class OBFFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
+		// -- AbstractReader API Methods --
+
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.UNKNOWN_DOMAIN };
+		}
+
 		// -- Reader API Methods --
 
 		@Override

@@ -547,10 +547,11 @@ public class MinimalTIFFFormat extends AbstractFormat {
 	 */
 	public static class Reader<M extends Metadata> extends ByteArrayReader<M> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		// -- Reader API Methods --

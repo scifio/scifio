@@ -460,6 +460,13 @@ public class FakeFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
+		// -- AbstractReader API Methods --
+
+		@Override
+		protected String[] createDomainArray() {
+			return new String[0];
+		}
+
 		// -- Reader API methods --
 
 		@Override

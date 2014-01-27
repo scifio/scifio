@@ -746,10 +746,11 @@ public class MicromanagerFormat extends AbstractFormat {
 		/** Helper reader for TIFF files. */
 		private MinimalTIFFFormat.Reader<?> tiffReader;
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.LM_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.LM_DOMAIN };
 		}
 
 		// -- Reader API methods --

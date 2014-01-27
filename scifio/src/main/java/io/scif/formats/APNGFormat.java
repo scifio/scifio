@@ -525,10 +525,11 @@ public class APNGFormat extends AbstractFormat {
 		// Plane index of the last plane that was returned.
 		private long lastPlaneIndex = -1;
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		// -- Reader API Methods --
@@ -607,16 +608,16 @@ public class APNGFormat extends AbstractFormat {
 			stream.write(APNGFormat.PNG_SIGNATURE);
 
 			final int[] coords =
-				metadata.getFctl().get((int) planeIndex).getFrameCoordinates();
+				getMetadata().getFctl().get((int) planeIndex).getFrameCoordinates();
 			// process IHDR chunk
-			final IHDRChunk ihdr = metadata.getIhdr();
+			final IHDRChunk ihdr = getMetadata().getIhdr();
 			processChunk(imageIndex, ihdr.getLength(), ihdr.getOffset(), coords,
 				stream, true);
 
 			// process fcTL and fdAT chunks
 			final FCTLChunk fctl =
-				metadata.getFctl().get(
-					(int) (metadata.isSeparateDefault() ? planeIndex - 1 : planeIndex));
+					getMetadata().getFctl().get(
+					(int) (getMetadata().isSeparateDefault() ? planeIndex - 1 : planeIndex));
 
 			// fdAT chunks are converted to IDAT chunks, as we are essentially
 			// building a standalone single-frame image
@@ -638,7 +639,7 @@ public class APNGFormat extends AbstractFormat {
 			}
 
 			// process PLTE chunks
-			final PLTEChunk plte = metadata.getPlte();
+			final PLTEChunk plte = getMetadata().getPlte();
 			if (plte != null) {
 				processChunk(imageIndex, plte.getLength(), plte.getOffset(), coords,
 					stream, false);

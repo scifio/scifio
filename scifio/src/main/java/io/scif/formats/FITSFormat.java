@@ -202,11 +202,11 @@ public class FITSFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains =
-				new String[] { FormatTools.ASTRONOMY_DOMAIN, FormatTools.UNKNOWN_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.ASTRONOMY_DOMAIN, FormatTools.UNKNOWN_DOMAIN };
 		}
 
 		// -- Reader API Methods --

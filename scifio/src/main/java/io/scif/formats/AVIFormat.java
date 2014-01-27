@@ -834,9 +834,14 @@ public class AVIFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		// -- AbstractReader API Methods --
+
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
+
+		// -- Reader API Methods --
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,

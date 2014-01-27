@@ -1858,12 +1858,19 @@ public class DICOMFormat extends AbstractFormat {
 		@Parameter
 		private InitializeService initializeService;
 
-		public Reader() {
-			domains = new String[] { FormatTools.MEDICAL_DOMAIN };
-			hasCompanionFiles = true;
+		// -- AbstractReader API Methods --
+
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.MEDICAL_DOMAIN };
 		}
 
 		// -- Reader API Methods --
+
+		@Override
+		public boolean hasCompanionFiles() {
+			return true;
+		}
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, long planeIndex,

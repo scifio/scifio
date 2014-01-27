@@ -434,10 +434,11 @@ public class NRRDFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.UNKNOWN_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.UNKNOWN_DOMAIN };
 		}
 
 		// -- Groupable API Methods --

@@ -49,6 +49,7 @@ import io.scif.io.ZipHandle;
 import io.scif.services.FormatService;
 import io.scif.services.InitializeService;
 import io.scif.services.LocationService;
+import io.scif.util.FormatTools;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -191,6 +192,13 @@ public class ZipFormat extends AbstractFormat {
 	 * @author Mark Hiner
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
+
+		// -- AbstractReader API Methods --
+
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.UNKNOWN_DOMAIN };
+		}
 
 		// -- Fields --
 

@@ -475,10 +475,11 @@ public class NativeQTFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		// -- Reader API Methods --

@@ -1339,13 +1339,12 @@ public class ICSFormat extends AbstractFormat {
 		/* Image data. */
 		private byte[] data;
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains =
-				new String[] { FormatTools.LM_DOMAIN, FormatTools.FLIM_DOMAIN,
-					FormatTools.UNKNOWN_DOMAIN };
-			hasCompanionFiles = true;
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.LM_DOMAIN, FormatTools.FLIM_DOMAIN,
+				FormatTools.UNKNOWN_DOMAIN };
 		}
 
 		// -- Reader API Methods --
@@ -1375,20 +1374,20 @@ public class ICSFormat extends AbstractFormat {
 				FormatTools.rasterToPosition(imageIndex, prevPlane, meta);
 
 			if (!gzip) {
-				getStream().seek(metadata.offset + planeIndex * len);
+				getStream().seek(getMetadata().offset + planeIndex * len);
 			}
 			else {
 				long toSkip = (planeIndex - prevPlane - 1) * len;
 				if (gzipStream == null || planeIndex <= prevPlane) {
 					FileInputStream fis = null;
 					toSkip = planeIndex * len;
-					if (metadata.versionTwo) {
-						fis = new FileInputStream(metadata.icsId);
-						fis.skip(metadata.offset);
+					if (getMetadata().versionTwo) {
+						fis = new FileInputStream(getMetadata().icsId);
+						fis.skip(getMetadata().offset);
 					}
 					else {
-						fis = new FileInputStream(metadata.idsId);
-						toSkip += metadata.offset;
+						fis = new FileInputStream(getMetadata().idsId);
+						toSkip += getMetadata().offset;
 					}
 					try {
 						gzipStream = new GZIPInputStream(fis);
@@ -1396,7 +1395,7 @@ public class ICSFormat extends AbstractFormat {
 					catch (final IOException e) {
 						// the 'gzip' flag is set erroneously
 						gzip = false;
-						getStream().seek(metadata.offset + planeIndex * len);
+						getStream().seek(getMetadata().offset + planeIndex * len);
 						gzipStream = null;
 					}
 				}
@@ -1428,7 +1427,7 @@ public class ICSFormat extends AbstractFormat {
 				// channels are stored interleaved, but because there are more than we
 				// can display as RGB, we need to separate them
 				getStream().seek(
-					metadata.offset +
+					getMetadata().offset +
 						len *
 						FormatTools.positionToRaster(0, this, new long[] { coordinates[0],
 							0, coordinates[2] }));
@@ -1501,7 +1500,7 @@ public class ICSFormat extends AbstractFormat {
 		@Override
 		public void setMetadata(final Metadata meta) throws IOException {
 			super.setMetadata(meta);
-			gzip = metadata.get("representation compression").equals("gzip");
+			gzip = getMetadata().get("representation compression").equals("gzip");
 			prevPlane = -1;
 			gzipStream = null;
 			invertY = false;
@@ -1529,7 +1528,7 @@ public class ICSFormat extends AbstractFormat {
 			if (getMetadata().get(0).getAxisLength(SCIFIOAxes.LIFETIME) > 1) {
 				domain[0] = FormatTools.FLIM_DOMAIN;
 			}
-			else if (metadata.hasInstrumentData) {
+			else if (getMetadata().hasInstrumentData) {
 				domain[0] = FormatTools.LM_DOMAIN;
 			}
 
