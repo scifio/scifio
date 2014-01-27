@@ -38,6 +38,8 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+// TODO: Deprecate in favor of org.scijava.util.DebugUtils.
+
 /**
  * A utility class with convenience methods for debugging.
  * 
