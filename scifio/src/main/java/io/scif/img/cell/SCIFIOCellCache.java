@@ -77,7 +77,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	/**
 	 * Used to load image planes when they aren't in the cache.
 	 */
-	final protected SCIFIOArrayLoader<A> loader;
+	final private SCIFIOArrayLoader<A> loader;
 
 	/**
 	 * Unique ID for this cache.
@@ -88,7 +88,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	// was more configurable
 	// e.g. controlling max elements and such.
 	// In-memory cache.
-	final protected Map<Integer, WeakReference<SCIFIOCell<A>>> map =
+	final private Map<Integer, WeakReference<SCIFIOCell<A>>> map =
 		new ConcurrentHashMap<Integer, WeakReference<SCIFIOCell<A>>>();
 
 	// -- Constructor --
