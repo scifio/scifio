@@ -1314,7 +1314,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			formatCompression(ifd);
-			final byte[][] lut = AWTImageTools.get8BitLookupTable(cm);
+			final byte[][] lut = AWTImageTools.get8BitLookupTable(getColorModel());
 			if (lut != null) {
 				final int[] colorMap = new int[lut.length * lut[0].length];
 				for (int i = 0; i < lut.length; i++) {

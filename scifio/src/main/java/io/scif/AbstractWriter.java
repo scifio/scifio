@@ -66,9 +66,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	/** Frame rate to use when writing in frames per second, if applicable. */
 	protected int fps = 10;
 
-	/** Default color model. */
-	protected ColorModel cm;
-
 	/** Available compression types. */
 	protected String[] compressionTypes;
 
