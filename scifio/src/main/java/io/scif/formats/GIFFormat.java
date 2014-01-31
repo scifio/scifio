@@ -70,8 +70,10 @@ public class GIFFormat extends AbstractFormat {
 		return "Graphics Interchange Format";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "gif" };
 	}
 

@@ -118,8 +118,10 @@ public class PICTFormat extends AbstractFormat {
 		return "PICT";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "pict", "pct" };
 	}
 

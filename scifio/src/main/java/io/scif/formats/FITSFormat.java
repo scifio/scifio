@@ -69,8 +69,10 @@ public class FITSFormat extends AbstractFormat {
 		return "Flexible Image Transport System";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "fits", "fts" };
 	}
 

@@ -88,8 +88,10 @@ public class BMPFormat extends AbstractFormat {
 		return "Windows Bitmap";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "bmp" };
 	}
 

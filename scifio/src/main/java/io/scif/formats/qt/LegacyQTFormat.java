@@ -84,8 +84,10 @@ public class LegacyQTFormat extends AbstractFormat {
 		return "QuickTime";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "mov" };
 	}
 

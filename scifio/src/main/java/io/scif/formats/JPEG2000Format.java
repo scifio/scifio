@@ -79,8 +79,10 @@ public class JPEG2000Format extends AbstractFormat {
 		return "JPEG-2000";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "jp2", "j2k", "jpf" };
 	}
 

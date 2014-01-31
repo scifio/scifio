@@ -85,8 +85,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		return "Minimal TIFF";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "tif", "tiff" };
 	}
 

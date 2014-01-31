@@ -70,8 +70,10 @@ public class MNGFormat extends AbstractFormat {
 		return "Multiple Network Graphics";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "mng" };
 	}
 

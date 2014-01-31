@@ -110,8 +110,10 @@ public class FakeFormat extends AbstractFormat {
 		return "Simulated data";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "fake" };
 	}
 

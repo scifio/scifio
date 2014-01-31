@@ -72,8 +72,10 @@ public class PCXFormat extends AbstractFormat {
 		return "PCX";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "pcx" };
 	}
 

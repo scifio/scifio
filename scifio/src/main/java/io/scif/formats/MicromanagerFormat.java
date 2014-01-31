@@ -94,8 +94,10 @@ public class MicromanagerFormat extends AbstractFormat {
 		return "Micro-Manager";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "tif", "tiff", "txt", "xml" };
 	}
 

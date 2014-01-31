@@ -99,8 +99,10 @@ public class NativeQTFormat extends AbstractFormat {
 		return "QuickTime";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "mov" };
 	}
 

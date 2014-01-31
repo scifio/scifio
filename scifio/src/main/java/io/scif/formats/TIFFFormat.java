@@ -91,8 +91,10 @@ public class TIFFFormat extends AbstractFormat {
 		return "Tagged Image File Format";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return TIFF_SUFFIXES;
 	}
 

@@ -66,8 +66,10 @@ public class JPEGFormat extends ImageIOFormat {
 		return "JPEG";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "jpg", "jpeg", "jpe" };
 	}
 

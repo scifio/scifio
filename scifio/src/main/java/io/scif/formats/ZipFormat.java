@@ -75,8 +75,10 @@ public class ZipFormat extends AbstractFormat {
 		return "Zip";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "zip" };
 	}
 

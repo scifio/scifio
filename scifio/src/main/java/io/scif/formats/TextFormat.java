@@ -83,8 +83,10 @@ public class TextFormat extends AbstractFormat {
 		return "Text";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "txt", "csv" };
 	}
 

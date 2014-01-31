@@ -72,8 +72,10 @@ public class JavaFormat extends AbstractFormat {
 		return "Java source code";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "java" };
 	}
 

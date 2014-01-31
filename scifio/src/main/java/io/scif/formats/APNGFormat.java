@@ -99,8 +99,10 @@ public class APNGFormat extends AbstractFormat {
 		return "Animated PNG";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "png" };
 	}
 

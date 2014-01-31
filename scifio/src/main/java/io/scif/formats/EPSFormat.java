@@ -78,8 +78,10 @@ public class EPSFormat extends AbstractFormat {
 		return "Encapsulated PostScript";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "eps", "epsi", "ps" };
 	}
 

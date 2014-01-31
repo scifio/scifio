@@ -88,8 +88,10 @@ public class ICSFormat extends AbstractFormat {
 		return "Image Cytometry Standard";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "ics", "ids" };
 	}
 

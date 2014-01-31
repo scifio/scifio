@@ -151,8 +151,10 @@ public class AVIFormat extends AbstractFormat {
 		return "Audio Video Interleave";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "avi" };
 	}
 

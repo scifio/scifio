@@ -70,8 +70,10 @@ public class NRRDFormat extends AbstractFormat {
 		return "NRRD";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "nrrd", "nhdr" };
 	}
 

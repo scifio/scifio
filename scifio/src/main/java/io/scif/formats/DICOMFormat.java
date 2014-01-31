@@ -93,8 +93,10 @@ public class DICOMFormat extends AbstractFormat {
 		return "DICOM";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "dic", "dcm", "dicom", "jp2", "j2ki", "j2kr", "raw",
 			"ima" };
 	}

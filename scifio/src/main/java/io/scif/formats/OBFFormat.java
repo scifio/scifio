@@ -70,8 +70,10 @@ public class OBFFormat extends AbstractFormat {
 		return "OBF";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "obf", "msr" };
 	}
 

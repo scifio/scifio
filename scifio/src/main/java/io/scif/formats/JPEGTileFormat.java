@@ -68,8 +68,10 @@ public class JPEGTileFormat extends AbstractFormat {
 		return "Tile JPEG";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "jpg", "jpeg" };
 	}
 

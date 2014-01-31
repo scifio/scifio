@@ -83,8 +83,10 @@ public class TIFFJAIFormat extends AbstractFormat {
 		return "Tagged Image File Format";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return formatService.getFormatFromClass(TIFFFormat.class).getSuffixes();
 	}
 

@@ -67,8 +67,10 @@ public class PGMFormat extends AbstractFormat {
 		return "Portable Gray Map";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "pgm" };
 	}
 
