@@ -1081,7 +1081,7 @@ public final class FormatTools {
 		for (int i = 0; i < input.getImageCount(); i++) {
 			for (int j = 0; j < input.getPlaneCount(i); j++) {
 				p = input.openPlane(i, j, config);
-				output.savePlane(i, j, p, config);
+				output.savePlane(i, j, p);
 			}
 		}
 

@@ -45,6 +45,7 @@ import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
+import io.scif.codec.CodecOptions;
 import io.scif.codec.CompressionType;
 import io.scif.codec.JPEG2000BoxType;
 import io.scif.codec.JPEG2000Codec;
@@ -804,22 +805,20 @@ public class JPEG2000Format extends AbstractFormat {
 	 */
 	public static class Writer extends AbstractWriter<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractWriter Methods --
 
-		public Writer() {
-			compressionTypes =
-				new String[] { CompressionType.J2K_LOSSY.getCompression(),
-					CompressionType.J2K.getCompression() };
-			// The default codec options
-			options = JPEG2000CodecOptions.getDefaultOptions();
+		@Override
+		protected String[] makeCompressionTypes() {
+			return new String[] { CompressionType.J2K_LOSSY.getCompression(),
+				CompressionType.J2K.getCompression() };
 		}
 
 		// -- Writer API Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax,
-			final SCIFIOConfig config)			throws FormatException, IOException
+		public void writePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
@@ -834,7 +833,7 @@ public class JPEG2000Format extends AbstractFormat {
 			// int width = retrieve.getPixelsSizeX(series).getValue().intValue();
 			// int height = retrieve.getPixelsSizeY(series).getValue().intValue();
 
-			out
+			getStream()
 				.write(compressBuffer(imageIndex, planeIndex, buf, planeMin, planeMax));
 		}
 
@@ -862,8 +861,8 @@ public class JPEG2000Format extends AbstractFormat {
 				(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			// To be on the save-side
+			CodecOptions options = getCodecOptions();
 			if (options == null) options = JPEG2000CodecOptions.getDefaultOptions();
-			options = new JPEG2000CodecOptions(options);
 			options.width = (int) planeMax[0];
 			options.height = (int) planeMax[1];
 			options.channels = nChannels;
@@ -872,8 +871,8 @@ public class JPEG2000Format extends AbstractFormat {
 			options.interleaved =
 				getMetadata().get(imageIndex).getInterleavedAxisCount() > 0;
 			options.lossless =
-				compression == null ||
-					compression.equals(CompressionType.J2K.getCompression());
+				getCompression() == null ||
+					getCompression().equals(CompressionType.J2K.getCompression());
 			options.colorModel = getColorModel();
 
 			final JPEG2000Codec codec = new JPEG2000Codec();

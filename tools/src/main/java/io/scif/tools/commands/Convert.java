@@ -200,7 +200,7 @@ public class Convert extends AbstractReaderCommand {
 						getConfig());
 			}
 			// write the specified plane
-			writer.savePlane(imageIndex, planeNo, plane, getConfig());
+			writer.savePlane(imageIndex, planeNo, plane);
 		}
 		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());

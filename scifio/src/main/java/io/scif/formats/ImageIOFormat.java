@@ -192,10 +192,17 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			this.kind = kind;
 		}
 
+		// -- AbstractWriter Methods --
+
 		@Override
-		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax,
-			final SCIFIOConfig config) throws FormatException, IOException
+		protected String[] makeCompressionTypes() {
+			return new String[0];
+		}
+
+		@Override
+		public void writePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax))
@@ -220,7 +227,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 				img = ((BufferedImagePlane) plane).getData();
 			}
 
-			ImageIO.write(img, kind, out);
+			ImageIO.write(img, kind, getStream());
 		}
 
 		@Override

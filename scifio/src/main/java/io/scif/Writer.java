@@ -32,6 +32,7 @@
 
 package io.scif;
 
+import io.scif.codec.CodecOptions;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessOutputStream;
 
@@ -85,37 +86,6 @@ public interface Writer extends HasFormat, HasSource {
 		throws FormatException, IOException;
 
 	/**
-	 * Saves the provided plane to the specified image and plane index of this
-	 * {@code Writer's} destination image.
-	 * 
-	 * @param imageIndex the image index within the dataset.
-	 * @param planeIndex the plane index within the image.
-	 * @param plane the pixels save
-	 * @param config Configuration information to use for writing.
-	 * @throws FormatException if one of the parameters is invalid.
-	 * @throws IOException if there was a problem writing to the file.
-	 */
-	void savePlane(final int imageIndex, final long planeIndex, final Plane plane,
-		final SCIFIOConfig config) throws FormatException, IOException;
-
-	/**
-	 * Saves the specified tile (sub-region) of the provided plane to the
-	 * specified image and plane index of this {@code Writer's} destination image.
-	 * 
-	 * @param imageIndex the image index within the dataset.
-	 * @param planeIndex the plane index within the image.
-	 * @param plane the pixels save
-	 * @param planeMin minimal bounds of the planar axes
-	 * @param planeMax maximum bounds of the planar axes
-	 * @param config Configuration information to use for writing.
-	 * @throws FormatException if one of the parameters is invalid.
-	 * @throws IOException if there was a problem writing to the file.
-	 */
-	void savePlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] planeMin, final long[] planeMax,
-		final SCIFIOConfig config) throws FormatException, IOException;
-
-	/**
 	 * @return True if this {@code Writer} can save multiple images to a single
 	 *         file.
 	 */
@@ -146,6 +116,7 @@ public interface Writer extends HasFormat, HasSource {
 
 	/**
 	 * Sets the source that will be written to during {@link #savePlane} calls.
+	 * NB: resets any configuration on this writer.
 	 * 
 	 * @param fileName The name of an image source to be written.
 	 */
@@ -153,6 +124,7 @@ public interface Writer extends HasFormat, HasSource {
 
 	/**
 	 * Sets the source that will be written to during {@link #savePlane} calls.
+	 * NB: resets any configuration on this writer.
 	 * 
 	 * @param file A file-based image source to write to.
 	 */
@@ -160,6 +132,7 @@ public interface Writer extends HasFormat, HasSource {
 
 	/**
 	 * Sets the source that will be written to during {@link #savePlane} calls.
+	 * NB: resets any configuration on this writer.
 	 * 
 	 * @param stream The image source to write to.
 	 */
@@ -167,30 +140,93 @@ public interface Writer extends HasFormat, HasSource {
 		IOException;
 
 	/**
-	 * Sets the source that will be written to during {@link #savePlane} calls.
+	 * As {@link #setDest(String)} with specification for source image index.
 	 * 
 	 * @param fileName The name of an image source to be written.
-	 * @param imageIndex The index of the source to write to (default = 0)
+	 * @param imageIndex The index within the source that will be written.
 	 */
 	void setDest(String fileName, int imageIndex) throws FormatException,
 		IOException;
 
 	/**
-	 * Sets the source that will be written to during {@link #savePlane} calls.
+	 * As {@link #setDest(File)} with specification for source image index.
 	 * 
 	 * @param file A file-based image source to write to.
-	 * @param imageIndex The index of the source to write to (default = 0)
+	 * @param imageIndex The index within the source that will be written.
 	 */
-	void setDest(File file, int imageIndex) throws FormatException, IOException;
+	void setDest(File file, int imageIndex) throws FormatException,
+		IOException;
 
 	/**
-	 * Sets the source that will be written to during {@link #savePlane} calls.
+	 * As {@link #setDest(RandomAccessOutputStream)}, with specification for
+	 * source image index.
 	 * 
 	 * @param stream The image source to write to.
-	 * @param imageIndex The index of the source to write to (default = 0)
+	 * @param imageIndex The index within the source that will be written.
 	 */
 	void setDest(RandomAccessOutputStream stream, int imageIndex)
 		throws FormatException, IOException;
+
+	/**
+	 * As {@link #setDest(String)} with specification for new configuration
+	 * options.
+	 * 
+	 * @param fileName The name of an image source to be written.
+	 * @param config Configuration information to use for this write.
+	 */
+	void setDest(String fileName, SCIFIOConfig config) throws FormatException,
+		IOException;
+
+	/**
+	 * As {@link #setDest(File)} with specification for new configuration options.
+	 * 
+	 * @param file A file-based image source to write to.
+	 * @param config Configuration information to use for this write.
+	 */
+	void setDest(File file, SCIFIOConfig config)
+		throws FormatException, IOException;
+
+	/**
+	 * As {@link #setDest(RandomAccessOutputStream)}, with specification for new
+	 * configuration options.
+	 * 
+	 * @param stream The image source to write to.
+	 * @param config Configuration information to use for this write.
+	 */
+	void setDest(RandomAccessOutputStream stream, SCIFIOConfig config)
+		throws FormatException, IOException;
+
+	/**
+	 * As {@link #setDest(String, int)} with specification for new configuration
+	 * options.
+	 * 
+	 * @param fileName The name of an image source to be written.
+	 * @param imageIndex The index within the source that will be written.
+	 * @param config Configuration information to use for this write.
+	 */
+	void setDest(String fileName, int imageIndex, SCIFIOConfig config)
+		throws FormatException, IOException;
+
+	/**
+	 * As {@link #setDest(File, int)} with specification for new configuration options.
+	 * 
+	 * @param file A file-based image source to write to.
+	 * @param imageIndex The index within the source that will be written.
+	 * @param config Configuration information to use for this write.
+	 */
+	void setDest(File file, int imageIndex, SCIFIOConfig config)
+		throws FormatException, IOException;
+
+	/**
+	 * As {@link #setDest(RandomAccessOutputStream, int)}, with specification for
+	 * new configuration options.
+	 * 
+	 * @param stream The image source to write to.
+	 * @param imageIndex The index within the source that will be written.
+	 * @param config Configuration information to use for this write.
+	 */
+	void setDest(RandomAccessOutputStream stream, int imageIndex,
+		SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
 	 * Retrieves a reference to the output source that will be written to during
@@ -223,4 +259,35 @@ public interface Writer extends HasFormat, HasSource {
 
 	/** Checks if the given compression type is supported. */
 	void isSupportedCompression(String compress) throws FormatException;
+
+	/**
+	 * @return True iff this writer is prepared to write the given plane of the
+	 *         given image index.
+	 */
+	boolean isInitialized(int imageIndex, long planeIndex);
+
+	/**
+	 * @return The current compression being used by the writer
+	 */
+	String getCompression();
+
+	/**
+	 * @return The current frames per second being used by the writer.
+	 */
+	int getFramesPerSecond();
+
+	/**
+	 * @return {@link CodecOptions} used by this writer, if applicable.
+	 */
+	CodecOptions getCodecOptions();
+
+	/**
+	 * @return True if this writer should output planes sequentially.
+	 */
+	boolean writeSequential();
+
+	/**
+	 * @return Number of valid bits per pixel.
+	 */
+	int getValidBits();
 }

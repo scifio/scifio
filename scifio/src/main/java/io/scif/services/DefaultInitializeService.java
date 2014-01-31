@@ -146,8 +146,7 @@ public class DefaultInitializeService extends AbstractService implements
 
 		final Writer writer = dFormat.createWriter();
 		writer.setMetadata(destMeta);
-		writer.setColorModel(config.writerGetColorModel());
-		writer.setDest(destination);
+		writer.setDest(destination, config);
 
 		return writer;
 	}

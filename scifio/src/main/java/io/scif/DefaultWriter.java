@@ -32,8 +32,6 @@
 
 package io.scif;
 
-import io.scif.config.SCIFIOConfig;
-
 import java.io.IOException;
 
 /**
@@ -67,13 +65,17 @@ public class DefaultWriter extends AbstractWriter<DefaultMetadata> implements
 	 * @throws UnsupportedOperationException
 	 */
 	@Override
-	public void savePlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] planeMin, final long[] planeMax,
-		final SCIFIOConfig config) throws FormatException, IOException
+	protected void writePlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final long[] planeMin, final long[] planeMax)
+		throws FormatException, IOException
 	{
 		throw new UnsupportedOperationException(
 			"Trying to write using DefaultWriter. "
 				+ "Must implement a Writer specifically for this Format");
 	}
 
+	@Override
+	protected String[] makeCompressionTypes() {
+		return new String[0];
+	}
 }

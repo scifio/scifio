@@ -376,42 +376,26 @@ public class LegacyQTFormat extends AbstractFormat {
 			this.quality = quality;
 		}
 
-		// -- Writer API Methods --
+		// -- AbstractWriter Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax,
-			final SCIFIOConfig config) throws FormatException, IOException
+		protected String[] makeCompressionTypes() {
+			return new String[0];
+		}
+
+		@Override
+		protected void initialize(final int imageIndex, final long planeIndex,
+			final long[] planeMin, final long[] planeMax) throws FormatException,
+			IOException
 		{
-			BufferedImage img = null;
-			final Metadata meta = getMetadata();
-
-			if (!(plane instanceof BufferedImagePlane)) {
-				final int type = meta.get(imageIndex).getPixelType();
-				img =
-					AWTImageTools.makeImage(plane.getBytes(), (int) meta.get(imageIndex)
-						.getAxisLength(Axes.X), (int) meta.get(imageIndex).getAxisLength(
-						Axes.Y), (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL),
-						meta.get(imageIndex).getInterleavedAxisCount() > 0, FormatTools
-							.getBytesPerPixel(type), FormatTools.isFloatingPoint(type), meta
-							.get(imageIndex).isLittleEndian(), FormatTools.isSigned(type));
-			}
-			else {
-				img = ((BufferedImagePlane) plane).getData();
-			}
-
-			if (r == null) {
-				r = qtJavaService.getUniverse();
-			}
-			qtJavaService.checkQTLibrary();
-
-			if (!initialized[imageIndex][(int) planeIndex]) {
-				initialized[imageIndex][(int) planeIndex] = true;
-
+			if (!isInitialized(imageIndex, (int) planeIndex)) {
+				if (r == null) {
+					r = qtJavaService.getUniverse();
+				}
 				try {
 					r.exec("QTSession.open()");
-					width = img.getWidth();
-					height = img.getHeight();
+					width = (int) getMetadata().get(imageIndex).getAxisLength(Axes.X);
+					height = (int) getMetadata().get(imageIndex).getAxisLength(Axes.Y);
 					r.setVar("path", getMetadata().getDatasetName());
 					r.setVar("width", (float) width);
 					r.setVar("height", (float) height);
@@ -462,6 +446,37 @@ public class LegacyQTFormat extends AbstractFormat {
 					throw new FormatException("Legacy QuickTime writer failed", e);
 				}
 			}
+			super.initialize(imageIndex, planeIndex, planeMin, planeMax);
+		}
+
+		// -- Writer API Methods --
+
+		@Override
+		public void writePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
+		{
+			BufferedImage img = null;
+			final Metadata meta = getMetadata();
+
+			if (!(plane instanceof BufferedImagePlane)) {
+				final int type = meta.get(imageIndex).getPixelType();
+				img =
+					AWTImageTools.makeImage(plane.getBytes(), (int) meta.get(imageIndex)
+						.getAxisLength(Axes.X), (int) meta.get(imageIndex).getAxisLength(
+						Axes.Y), (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL),
+						meta.get(imageIndex).getInterleavedAxisCount() > 0, FormatTools
+							.getBytesPerPixel(type), FormatTools.isFloatingPoint(type), meta
+							.get(imageIndex).isLittleEndian(), FormatTools.isSigned(type));
+			}
+			else {
+				img = ((BufferedImagePlane) plane).getData();
+			}
+
+			if (r == null) {
+				r = qtJavaService.getUniverse();
+			}
+			qtJavaService.checkQTLibrary();
 
 			try {
 				r.exec("pixelData = pixMap.getPixelData()");
@@ -518,9 +533,9 @@ public class LegacyQTFormat extends AbstractFormat {
 				final int sim = ((Integer) r.getVar("similarity")).intValue();
 				final boolean sync = sim == 0;
 				r.exec("dataSize = cfInfo.getDataSize()");
-				r.setVar("fps", fps);
+				r.setVar("fps", getFramesPerSecond());
 				r.setVar("frameRate", TIME_SCALE);
-				r.setVar("rate", TIME_SCALE / fps);
+				r.setVar("rate", TIME_SCALE / getFramesPerSecond());
 
 				if (sync) {
 					r.setVar("sync", 0);

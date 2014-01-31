@@ -584,7 +584,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 								sourcePlane.length, sourcePlane.length);
 						}
 					}
-					w.savePlane(imageIndex, planeIndex, destPlane, config);
+					w.savePlane(imageIndex, planeIndex, destPlane);
 				}
 				catch (final FormatException e) {
 					throw new ImgIOException(e);
@@ -620,7 +620,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 			writer.setMetadata(meta);
 
-			writer.setDest(id);
+			writer.setDest(id, imageIndex, config);
 		}
 		catch (final FormatException e) {
 			throw new ImgIOException(e);

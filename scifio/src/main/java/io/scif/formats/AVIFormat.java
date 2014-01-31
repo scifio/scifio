@@ -1128,12 +1128,19 @@ public class AVIFormat extends AbstractFormat {
 		private long endPos;
 		private long saveidx1Length;
 
+		// -- AbstractWriter Methods --
+
+		@Override
+		protected String[] makeCompressionTypes() {
+			return new String[0];
+		}
+
 		// -- Writer API Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax,
-			final SCIFIOConfig config) throws FormatException, IOException
+		public void writePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
@@ -1150,10 +1157,6 @@ public class AVIFormat extends AbstractFormat {
 			final int nChannels =
 				(int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
-			if (!initialized[imageIndex][(int) planeIndex]) {
-				initialized[imageIndex][(int) planeIndex] = true;
-			}
-
 			// Write the data. Each 3-byte triplet in the bitmap array represents the
 			// relative intensities of blue, green, and red, respectively, for a
 			// pixel.
@@ -1162,12 +1165,12 @@ public class AVIFormat extends AbstractFormat {
 			final int width = xDim - xPad;
 			final int height = buf.length / (width * bytesPerPixel);
 
-			out.seek(idx1Pos);
-			out.writeBytes(DATA_SIGNATURE);
-			savedbLength.add(new Long(out.getFilePointer()));
+			getStream().seek(idx1Pos);
+			getStream().writeBytes(DATA_SIGNATURE);
+			savedbLength.add(new Long(getStream().getFilePointer()));
 
 			// Write the data length
-			out.writeInt(bytesPerPixel * xDim * yDim);
+			getStream().writeInt(bytesPerPixel * xDim * yDim);
 
 			final int rowPad = xPad * bytesPerPixel;
 
@@ -1190,32 +1193,32 @@ public class AVIFormat extends AbstractFormat {
 					}
 					rowBuffer[col * bytesPerPixel + bytesPerPixel - 1] = r;
 				}
-				out.write(rowBuffer);
+				getStream().write(rowBuffer);
 			}
 
 			planesWritten++;
 
 			// Write the idx1 CHUNK
 			// Write the 'idx1' signature
-			idx1Pos = out.getFilePointer();
-			out.seek(SAVE_LIST2_SIZE);
-			out.writeInt((int) (idx1Pos - (SAVE_LIST2_SIZE + 4)));
+			idx1Pos = getStream().getFilePointer();
+			getStream().seek(SAVE_LIST2_SIZE);
+			getStream().writeInt((int) (idx1Pos - (SAVE_LIST2_SIZE + 4)));
 
-			out.seek(idx1Pos);
-			out.writeBytes("idx1");
+			getStream().seek(idx1Pos);
+			getStream().writeBytes("idx1");
 
-			saveidx1Length = out.getFilePointer();
+			saveidx1Length = getStream().getFilePointer();
 
 			// Write the length of the idx1 CHUNK not including the idx1 signature
-			out.writeInt(4 + (planesWritten * 16));
+			getStream().writeInt(4 + (planesWritten * 16));
 
 			for (int z = 0; z < planesWritten; z++) {
 				// In the ckid field write the 4 character code to identify the chunk
 				// 00db or 00dc
-				out.writeBytes(DATA_SIGNATURE);
+				getStream().writeBytes(DATA_SIGNATURE);
 				// Write the flags - select AVIIF_KEYFRAME
-				if (z == 0) out.writeInt(0x10);
-				else out.writeInt(0x00);
+				if (z == 0) getStream().writeInt(0x10);
+				else getStream().writeInt(0x00);
 
 				// AVIIF_KEYFRAME 0x00000010L
 				// The flag indicates key frames in the video sequence.
@@ -1226,25 +1229,25 @@ public class AVIFormat extends AbstractFormat {
 				// AVIIF_LIST 0x00000001L Marks a LIST CHUNK.
 				// AVIIF_TWOCC 2L
 				// AVIIF_COMPUSE 0x0FFF0000L These bits are for compressor use.
-				out.writeInt((int) (savedbLength.get(z) - 4 - SAVE_MOVI));
+				getStream().writeInt((int) (savedbLength.get(z) - 4 - SAVE_MOVI));
 
 				// Write the offset (relative to the 'movi' field) to the relevant
 				// CHUNK. Write the length of the relevant CHUNK. Note that this length
 				// is also written at savedbLength
-				out.writeInt(bytesPerPixel * xDim * yDim);
+				getStream().writeInt(bytesPerPixel * xDim * yDim);
 			}
-			endPos = out.getFilePointer();
-			out.seek(SAVE_FILE_SIZE);
-			out.writeInt((int) (endPos - (SAVE_FILE_SIZE + 4)));
+			endPos = getStream().getFilePointer();
+			getStream().seek(SAVE_FILE_SIZE);
+			getStream().writeInt((int) (endPos - (SAVE_FILE_SIZE + 4)));
 
-			out.seek(saveidx1Length);
-			out.writeInt((int) (endPos - (saveidx1Length + 4)));
+			getStream().seek(saveidx1Length);
+			getStream().writeInt((int) (endPos - (saveidx1Length + 4)));
 
 			// write the total number of planes
-			out.seek(FRAME_OFFSET);
-			out.writeInt(planesWritten);
-			out.seek(FRAME_OFFSET_2);
-			out.writeInt(planesWritten);
+			getStream().seek(FRAME_OFFSET);
+			getStream().writeInt(planesWritten);
+			getStream().seek(FRAME_OFFSET_2);
+			getStream().writeInt(planesWritten);
 		}
 
 		@Override
@@ -1271,17 +1274,11 @@ public class AVIFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void
-			setDest(final RandomAccessOutputStream out, final int imageIndex)
-				throws FormatException, IOException
+		public void setDest(final RandomAccessOutputStream out,
+			final int imageIndex, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
-			super.setDest(out, imageIndex);
-			initialize(imageIndex);
-		}
-
-		// -- Helper Methods --
-
-		private void initialize(final int imageIndex) throws IOException {
+			super.setDest(out, imageIndex, config);
 			savedbLength = new Vector<Long>();
 
 			final Metadata meta = getMetadata();
@@ -1361,7 +1358,7 @@ public class AVIFormat extends AbstractFormat {
 				out.writeInt(0x38);
 
 				// dwMicroSecPerFrame - Write the microseconds per frame
-				microSecPerFrame = (int) (1.0 / fps * 1.0e6);
+				microSecPerFrame = (int) (1.0 / getFramesPerSecond() * 1.0e6);
 				out.writeInt(microSecPerFrame);
 
 				// Write the maximum data rate of the file in bytes per second
@@ -1461,7 +1458,7 @@ public class AVIFormat extends AbstractFormat {
 				out.writeInt(1); // dwScale
 
 				// dwRate - frame rate for video streams
-				out.writeInt(fps);
+				out.writeInt(getFramesPerSecond());
 
 				// dwStart - this field is usually set to zero
 				out.writeInt(0);
