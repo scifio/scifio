@@ -689,25 +689,25 @@ public class NativeQTFormat extends AbstractFormat {
 		private TranslatorService translatorService;
 
 		/** The codec to use. */
-		protected int codec = CODEC_RAW;
+		private int codec = CODEC_RAW;
 
 		/** The quality to use. */
-		protected int quality = QUALITY_NORMAL;
+		private int quality = QUALITY_NORMAL;
 
 		/** Total number of pixel bytes. */
-		protected int numBytes;
+		private int numBytes;
 
 		/** Vector of plane offsets. */
-		protected Vector<Integer> offsets;
+		private Vector<Integer> offsets;
 
 		/** Time the file was created. */
-		protected int created;
+		private int created;
 
 		/** Number of padding bytes in each row. */
-		protected int pad;
+		private int pad;
 
 		/** Whether we need the legacy writer. */
-		protected boolean needLegacy = false;
+		private boolean needLegacy = false;
 
 		private LegacyQTFormat.Writer legacy;
 

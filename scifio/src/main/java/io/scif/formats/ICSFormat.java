@@ -108,25 +108,25 @@ public class ICSFormat extends AbstractFormat {
 		 * Whether this file is ICS version 2, and thus does not have an IDS
 		 * companion
 		 */
-		protected boolean versionTwo = false;
+		private boolean versionTwo = false;
 
 		/** Offset to pixel data */
-		protected long offset = -1;
+		private long offset = -1;
 
 		/** True if instrument information was discovered. */
-		protected boolean hasInstrumentData = false;
+		private boolean hasInstrumentData = false;
 
 		/** True if this planes were stored in RGB order. */
 		private boolean storedRGB;
 
 		/** ICS file name */
-		protected String icsId = "";
+		private String icsId = "";
 
 		/** IDS file name */
-		protected String idsId = "";
+		private String idsId = "";
 
 		/** ICS Metadata */
-		protected Hashtable<String, String> keyValPairs;
+		private Hashtable<String, String> keyValPairs;
 
 		// -- Constructor --
 
@@ -1663,6 +1663,13 @@ public class ICSFormat extends AbstractFormat {
 
 		@Override
 		public void setDest(final String id) throws FormatException, IOException {
+			//FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// Update the id if necessary
+			if (FormatTools.checkSuffix(id, "ids")) {
+				final String metadataFile = makeIcsId(id);
+				setDest(metadataFile);
+				return;
+			}
 			updateMetadataIds(id);
 			super.setDest(id);
 		}
@@ -1671,6 +1678,13 @@ public class ICSFormat extends AbstractFormat {
 		public void setDest(final String id, final int imageIndex)
 			throws FormatException, IOException
 		{
+			//FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// Update the id if necessary
+			if (FormatTools.checkSuffix(id, "ids")) {
+				final String metadataFile = makeIcsId(id);
+				setDest(metadataFile, imageIndex);
+				return;
+			}
 			updateMetadataIds(id);
 			super.setDest(id, imageIndex);
 		}
@@ -1680,6 +1694,13 @@ public class ICSFormat extends AbstractFormat {
 			final SCIFIOConfig config)
 			throws FormatException, IOException
 		{
+			//FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// Update the id if necessary
+			if (FormatTools.checkSuffix(id, "ids")) {
+				final String metadataFile = makeIcsId(id);
+				setDest(metadataFile, imageIndex, config);
+				return;
+			}
 			updateMetadataIds(id);
 			super.setDest(id, imageIndex, config);
 		}
@@ -1692,14 +1713,7 @@ public class ICSFormat extends AbstractFormat {
 			final String currentId =
 				getMetadata().idsId != null ? getMetadata().idsId : getMetadata().icsId;
 
-			// Update the id if necessary
-			if (FormatTools.checkSuffix(getMetadata().idsId, "ids")) {
-				final String metadataFile = makeIcsId(currentId);
-				if (out != null) out.close();
-				setDest(new RandomAccessOutputStream(getContext(), metadataFile),
-					imageIndex, config);
-				return;
-			}
+
 			super.setDest(out, imageIndex, config);
 
 

@@ -104,26 +104,26 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- Fields --
 
 		/** List of IFDs for the current TIFF. */
-		protected IFDList ifds;
+		private IFDList ifds;
 
 		/** List of thumbnail IFDs for the current TIFF. */
-		protected IFDList thumbnailIFDs;
+		private IFDList thumbnailIFDs;
 
 		/**
 		 * List of sub-resolution IFDs for each IFD in the current TIFF with the
 		 * same order as <code>ifds</code>.
 		 */
-		protected List<IFDList> subResolutionIFDs;
+		private List<IFDList> subResolutionIFDs;
 
-		protected TiffParser tiffParser;
+		private TiffParser tiffParser;
 
-		protected boolean equalStrips = false;
+		private boolean equalStrips = false;
 
-		protected boolean use64Bit = false;
+		private boolean use64Bit = false;
 
 		private long lastPlane = 0;
 
-		protected boolean noSubresolutions = false;
+		private boolean noSubresolutions = false;
 
 		/** Number of JPEG 2000 resolution levels. */
 		private Integer resolutionLevels;

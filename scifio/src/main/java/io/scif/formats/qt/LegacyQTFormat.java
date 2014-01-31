@@ -104,10 +104,10 @@ public class LegacyQTFormat extends AbstractFormat {
 		private QTJavaService qtJavaService;
 
 		/** Time offset for each frame. */
-		protected int[] times;
+		private int[] times;
 
 		/** Image containing current frame. */
-		protected Image image;
+		private Image image;
 
 		// -- LegacyQTMetadata getters and setters --
 
@@ -327,13 +327,13 @@ public class LegacyQTFormat extends AbstractFormat {
 		private QTJavaService qtJavaService;
 
 		/** Reflection tool for QuickTime for Java calls. */
-		protected ReflectedUniverse r;
+		private ReflectedUniverse r;
 
 		/** The codec to use. */
-		protected int codec = NativeQTFormat.Writer.CODEC_RAW;
+		private int codec = NativeQTFormat.Writer.CODEC_RAW;
 
 		/** The quality to use. */
-		protected int quality = NativeQTFormat.Writer.QUALITY_NORMAL;
+		private int quality = NativeQTFormat.Writer.QUALITY_NORMAL;
 
 		/** Frame width. */
 		private int width;

@@ -1206,12 +1206,18 @@ public class APNGFormat extends AbstractFormat {
 		private int length;
 
 		// Unique chunk type signature (e.g. "IHDR")
-		protected byte[] CHUNK_SIGNATURE;
+		private byte[] chunkSignature;
+
+		// -- Constructor --
+
+		public APNGChunk(byte[] signature) {
+			chunkSignature = signature;
+		}
 
 		// -- Methods --
 
 		public byte[] getCHUNK_SIGNATURE() {
-			return CHUNK_SIGNATURE;
+			return chunkSignature;
 		}
 
 		public int[] getFrameCoordinates() {
@@ -1256,7 +1262,7 @@ public class APNGFormat extends AbstractFormat {
 		// -- Constructor --
 
 		public IHDRChunk() {
-			CHUNK_SIGNATURE = new byte[] { (byte) 0x49, 0x48, 0x44, 0x52 };
+			super(new byte[] { (byte) 0x49, 0x48, 0x44, 0x52 });
 		}
 
 		// -- Fields --
@@ -1353,7 +1359,7 @@ public class APNGFormat extends AbstractFormat {
 		// -- Constructor --
 
 		public PLTEChunk() {
-			CHUNK_SIGNATURE = new byte[] { (byte) 0x50, 0x4C, 0x54, 0x45 };
+			super(new byte[] { (byte) 0x50, 0x4C, 0x54, 0x45 });
 		}
 
 		// -- Fields --
@@ -1447,8 +1453,8 @@ public class APNGFormat extends AbstractFormat {
 		// -- Constructor --
 
 		public FCTLChunk() {
+			super(new byte[] { (byte) 0x66, 0x63, 0x54, 0x4C });
 			fdatChunks = new ArrayList<FDATChunk>();
-			CHUNK_SIGNATURE = new byte[] { (byte) 0x66, 0x63, 0x54, 0x4C };
 		}
 
 		// -- Methods --
@@ -1552,7 +1558,7 @@ public class APNGFormat extends AbstractFormat {
 		// -- Constructor --
 
 		public IDATChunk() {
-			CHUNK_SIGNATURE = new byte[] { (byte) 0x49, 0x44, 0x41, 0x54 };
+			super(new byte[] { (byte) 0x49, 0x44, 0x41, 0x54 });
 		}
 
 	}
@@ -1572,7 +1578,7 @@ public class APNGFormat extends AbstractFormat {
 		// -- Constructor --
 
 		public ACTLChunk() {
-			CHUNK_SIGNATURE = new byte[] { (byte) 0x61, 0x63, 0x54, 0x4C };
+			super(new byte[] { (byte) 0x61, 0x63, 0x54, 0x4C });
 		}
 
 		// -- Fields --
@@ -1634,7 +1640,7 @@ public class APNGFormat extends AbstractFormat {
 		// -- Constructor --
 
 		public FDATChunk() {
-			CHUNK_SIGNATURE = new byte[] { (byte) 0x66, 0x64, 0x41, 0x54 };
+			super(new byte[] { (byte) 0x66, 0x64, 0x41, 0x54 });
 		}
 
 		// -- Fields --
@@ -1664,7 +1670,7 @@ public class APNGFormat extends AbstractFormat {
 
 		// -- Constructor --
 		public IENDChunk() {
-			CHUNK_SIGNATURE = new byte[] { (byte) 0x49, 0x45, 0x4E, 0x44 };
+			super(new byte[] { (byte) 0x49, 0x45, 0x4E, 0x44 });
 		}
 	}
 }

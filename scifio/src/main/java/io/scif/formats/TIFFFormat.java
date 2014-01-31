@@ -1063,13 +1063,13 @@ public class TIFFFormat extends AbstractFormat {
 		// -- Fields --
 
 		/** Whether or not the output file is a BigTIFF file. */
-		protected boolean isBigTiff;
+		private boolean isBigTiff;
 
 		/** The TiffSaver that will do most of the writing. */
-		protected TiffSaver tiffSaver;
+		private TiffSaver tiffSaver;
 
 		/** Input stream to use when overwriting data. */
-		protected RandomAccessInputStream in;
+		private RandomAccessInputStream in;
 
 		/** Whether or not to check the parameters passed to saveBytes. */
 		private boolean checkParams = true;
@@ -1140,7 +1140,7 @@ public class TIFFFormat extends AbstractFormat {
 			// Ensure that no more than one thread manipulated the initialized array
 			// at one time.
 			synchronized (this) {
-				if (isInitialized(imageIndex, (int) planeIndex))
+				if (!isInitialized(imageIndex, (int) planeIndex))
 				{
 
 					final RandomAccessInputStream tmp =
@@ -1166,7 +1166,7 @@ public class TIFFFormat extends AbstractFormat {
 		{
 			super.setDest(dest, imageIndex, config);
 			synchronized (this) {
-				setupTiffSaver(imageIndex);
+				setupTiffSaver(dest, imageIndex);
 			}
 		}
 
@@ -1379,13 +1379,14 @@ public class TIFFFormat extends AbstractFormat {
 			return index;
 		}
 
-		private void setupTiffSaver(final int imageIndex) throws IOException {
-			getStream().close();
+		private void setupTiffSaver(final RandomAccessOutputStream stream,
+			final int imageIndex) throws IOException
+		{
 			final Metadata meta = getMetadata();
 			// FIXME this seems unnecessary.. but maybe there's a reason to
 			// reconstruct the stream?
 //			out = new RandomAccessOutputStream(getContext(), meta.getDatasetName());
-			tiffSaver = new TiffSaver(getContext(), getStream(), meta.getDatasetName());
+			tiffSaver = new TiffSaver(getContext(), stream, meta.getDatasetName());
 
 			final Boolean bigEndian = !meta.get(imageIndex).isLittleEndian();
 			final boolean littleEndian = !bigEndian.booleanValue();
