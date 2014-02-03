@@ -370,8 +370,8 @@ public class AVIFormat extends AbstractFormat {
 			if (getColorTable(0, 0) != null && !iMeta.isMultichannel()) {
 				iMeta.setIndexed(true);
 				iMeta.addAxis(Axes.CHANNEL, 1);
-				iMeta.setAxisType(2, Axes.CHANNEL);
 				iMeta.setPlanarAxisCount(3);
+				iMeta.setAxisType(2, Axes.CHANNEL);
 			}
 
 			if (getBmpBitsPerPixel() <= 8) {
