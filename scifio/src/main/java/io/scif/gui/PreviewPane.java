@@ -84,33 +84,33 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 	// -- Fields --
 
 	/** Reader for use when loading thumbnails. */
-	protected Reader reader;
+	private Reader reader;
 
 	/** Current ID to load. */
-	protected String loadId;
+	private String loadId;
 
 	/** Last ID loaded. */
-	protected String lastId;
+	private String lastId;
 
 	/** Thumbnail loading thread. */
-	protected Thread loader;
+	private Thread loader;
 
 	/** Flag indicating whether loader thread should keep running. */
-	protected boolean loaderAlive;
+	private boolean loaderAlive;
 
 	/** Method for syncing the view to the model. */
-	protected Runnable refresher;
+	private Runnable refresher;
 
 	// -- Fields - view --
 
 	/** Labels containing thumbnail and dimensional information. */
-	protected JLabel iconLabel, formatLabel, resLabel, zctLabel, typeLabel;
+	private JLabel iconLabel, formatLabel, resLabel, zctLabel, typeLabel;
 
 	// -- Fields - model --
 
-	protected ImageIcon icon;
-	protected String iconText, formatText, resText, npText, typeText;
-	protected String iconTip, formatTip, resTip, zctTip, typeTip;
+	private ImageIcon icon;
+	private String iconText, formatText, resText, npText, typeText;
+	private String iconTip, formatTip, resTip, zctTip, typeTip;
 
 	// -- Constructor --
 
