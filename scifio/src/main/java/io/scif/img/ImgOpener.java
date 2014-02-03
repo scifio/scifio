@@ -545,9 +545,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 		PlaneConverter converter = config.imgOpenerGetPlaneConverter();
 
 		if (converter == null) {
-			// if it's we have a PlanarAccess we can use a PlanarAccess converter,
-			// otherwise
-			// we can use a more general RandomAccess approach
+			// if we have a PlanarAccess we can use a PlanarAccess converter,
+			// otherwise we can use a more general RandomAccess approach
 			if (isArray) {
 				converter = pcService.getArrayConverter();
 			}
@@ -601,14 +600,19 @@ public class ImgOpener extends AbstractImgIOComponent {
 			final int planeIndex =
 				(int) FormatTools.positionToRaster(0, r, npIndices);
 
-			if (config.imgOpenerIsComputeMinMax()) populateMinMax(r, imgPlus,
-				imageIndex);
-			if (tmpPlane == null) tmpPlane =
-				r.openPlane(config.imgOpenerGetIndex(), planeIndex, planarMin,
-					planarLength);
-			else tmpPlane =
-				r.openPlane(config.imgOpenerGetIndex(), planeIndex, tmpPlane,
-					planarMin, planarLength, config);
+			if (config.imgOpenerIsComputeMinMax()) {
+				populateMinMax(r, imgPlus, imageIndex);
+			}
+			if (tmpPlane == null) {
+				tmpPlane =
+					r.openPlane(config.imgOpenerGetIndex(), planeIndex, planarMin,
+						planarLength);
+			}
+			else {
+				tmpPlane =
+					r.openPlane(config.imgOpenerGetIndex(), planeIndex, tmpPlane,
+						planarMin, planarLength, config);
+			}
 
 			// copy the data to the ImgPlus
 			converter.populatePlane(r, imageIndex, planeCount[0],
