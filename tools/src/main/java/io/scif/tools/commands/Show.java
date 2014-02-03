@@ -294,7 +294,7 @@ public class Show extends AbstractReaderCommand {
 	 * desired. Also performs preloading if requested.
 	 */
 	private void mapLocation() throws IOException {
-		if (map != null) locationService.mapId(file, map);
+		if (getMap() != null) locationService.mapId(file, getMap());
 		else if (preload) {
 			final RandomAccessInputStream f =
 				new RandomAccessInputStream(getContext(), file);
