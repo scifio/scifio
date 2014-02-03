@@ -56,7 +56,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Constants --
 
 	/** Default thumbnail width and height. */
-	protected static final long THUMBNAIL_DIMENSION = 128;
+	public static final long THUMBNAIL_DIMENSION = 128;
 
 	// -- Fields --
 
