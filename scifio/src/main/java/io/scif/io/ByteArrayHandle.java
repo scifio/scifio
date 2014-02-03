@@ -50,12 +50,12 @@ public class ByteArrayHandle extends AbstractNIOHandle {
 	// -- Constants --
 
 	/** Initial length of a new file. */
-	protected static final int INITIAL_LENGTH = 1000000;
+	private static final int INITIAL_LENGTH = 1000000;
 
 	// -- Fields --
 
 	/** Backing ByteBuffer. */
-	protected ByteBuffer buffer;
+	private ByteBuffer buffer;
 
 	/** Length of the file. */
 	// protected long length;

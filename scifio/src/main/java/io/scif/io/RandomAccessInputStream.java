@@ -54,28 +54,28 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 	// -- Constants --
 
 	/** Maximum size of the buffer used by the DataInputStream. */
-	protected static final int MAX_OVERHEAD = 1048576;
+	public static final int MAX_OVERHEAD = 1048576;
 
 	/**
 	 * Block size to use when searching through the stream.
 	 */
-	protected static final int DEFAULT_BLOCK_SIZE = 256 * 1024; // 256 KB
+	public static final int DEFAULT_BLOCK_SIZE = 256 * 1024; // 256 KB
 
 	/** Maximum number of bytes to search when searching through the stream. */
-	protected static final int MAX_SEARCH_SIZE = 512 * 1024 * 1024; // 512 MB
+	public static final int MAX_SEARCH_SIZE = 512 * 1024 * 1024; // 512 MB
 
 	// -- Fields --
 
-	protected IRandomAccess raf;
+	private IRandomAccess raf;
 
 	/** The file name. */
-	protected final String file;
+	private final String file;
 
-	protected long length = -1;
+	private long length = -1;
 
-	protected long markedPos = -1;
+	private long markedPos = -1;
 
-	protected String encoding = Constants.ENCODING;
+	private String encoding = Constants.ENCODING;
 
 	private final SCIFIO scifio;
 	private final LogService log;
