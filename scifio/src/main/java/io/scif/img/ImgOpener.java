@@ -309,6 +309,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			final long planeCount = reader.getPlaneCount(imageIndex);
 			try {
 				readPlanes(reader, imageIndex, type, imgPlus, config);
+				reader.close();
 			}
 			catch (final FormatException e) {
 				throw new ImgIOException(e);
