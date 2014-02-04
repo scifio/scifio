@@ -188,6 +188,22 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	Metadata parse(RandomAccessInputStream stream, Metadata meta,
 		SCIFIOConfig config) throws IOException, FormatException;
 
+	/**
+	 * @return The last metadata instance parsed by this parser.
+	 */
+	Metadata getMetadata();
+
+	/**
+	 * @return The last input stream read by this parser.
+	 */
+	RandomAccessInputStream getSource();
+
+	/**
+	 * Updates the source being operated on by this parser (e.g. in multi-file
+	 * formats).
+	 */
+	void updateSource(String source) throws IOException;
+
 	/** Returns an array of filenames needed to open this dataset. */
 	String[] getUsedFiles();
 

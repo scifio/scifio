@@ -54,7 +54,7 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 	// -- Fields --
 
 	/** Valid suffixes for this file format. */
-	protected String[] suffixes;
+	private String[] suffixes;
 
 	private boolean enabled = true;
 
@@ -77,7 +77,26 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 		updateCustomClasses();
 	}
 
+	// -- AbstractFormat Methods --
+
+	/**
+	 * Helper method to cache the suffix array for a format. Concrete format
+	 * classes should implement this method, returning an array of supported
+	 * suffixes.
+	 *
+	 * @return Valid suffixes for this file format.
+	 */
+	protected abstract String[] makeSuffixArray();
+
 	// -- Format API Methods --
+
+	@Override
+	public String[] getSuffixes() {
+		if (suffixes == null) {
+			suffixes = makeSuffixArray();
+		}
+		return suffixes;
+	}
 
 	@Override
 	public void setEnabled(final boolean enabled) {

@@ -35,7 +35,6 @@ package io.scif.formats;
 import io.scif.AbstractFormat;
 import io.scif.AbstractTranslator;
 import io.scif.AbstractWriter;
-import io.scif.ByteArrayPlane;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
@@ -61,7 +60,6 @@ import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
-import io.scif.util.ImageTools;
 import io.scif.xml.XMLService;
 
 import java.io.IOException;
@@ -93,8 +91,10 @@ public class TIFFFormat extends AbstractFormat {
 		return "Tagged Image File Format";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return TIFF_SUFFIXES;
 	}
 
@@ -287,12 +287,12 @@ public class TIFFFormat extends AbstractFormat {
 			final boolean noPixels)
 		{
 			if (noPixels) {
-				return metadata.getCompanionFile() == null ? null
-					: new String[] { metadata.getCompanionFile() };
+				return getMetadata().getCompanionFile() == null ? null
+					: new String[] { getMetadata().getCompanionFile() };
 			}
-			if (metadata.getCompanionFile() != null) return new String[] {
-				metadata.getCompanionFile(), currentId };
-			return new String[] { currentId };
+			if (getMetadata().getCompanionFile() != null) return new String[] {
+				getMetadata().getCompanionFile(), getSource().getFileName() };
+			return new String[] { getSource().getFileName() };
 		}
 
 		// -- BaseTIFFParser API Methods
@@ -365,7 +365,7 @@ public class TIFFFormat extends AbstractFormat {
 
 			if (config.groupableIsGroupFiles()) {
 				final Location currentFile =
-					new Location(getContext(), currentId).getAbsoluteFile();
+					new Location(getContext(), getSource().getFileName()).getAbsoluteFile();
 				final String currentName = currentFile.getName();
 				final Location directory = currentFile.getParentFile();
 				final String[] files = directory.list(true);
@@ -532,7 +532,7 @@ public class TIFFFormat extends AbstractFormat {
 				final long endOfFirstPlane =
 					stripOffsets[stripOffsets.length - 1] +
 						stripByteCounts[stripByteCounts.length - 1];
-				final long totalBytes = in.length() - endOfFirstPlane;
+				final long totalBytes = getSource().length() - endOfFirstPlane;
 				final int totalPlanes = (int) (totalBytes / planeSize) + 1;
 
 				ifds = new IFDList();
@@ -1063,13 +1063,13 @@ public class TIFFFormat extends AbstractFormat {
 		// -- Fields --
 
 		/** Whether or not the output file is a BigTIFF file. */
-		protected boolean isBigTiff;
+		private boolean isBigTiff;
 
 		/** The TiffSaver that will do most of the writing. */
-		protected TiffSaver tiffSaver;
+		private TiffSaver tiffSaver;
 
 		/** Input stream to use when overwriting data. */
-		protected RandomAccessInputStream in;
+		private RandomAccessInputStream in;
 
 		/** Whether or not to check the parameters passed to saveBytes. */
 		private boolean checkParams = true;
@@ -1077,10 +1077,15 @@ public class TIFFFormat extends AbstractFormat {
 		// -- Constructor --
 
 		public Writer() {
-			compressionTypes =
-				new String[] { COMPRESSION_UNCOMPRESSED, COMPRESSION_LZW,
-					COMPRESSION_J2K, COMPRESSION_J2K_LOSSY, COMPRESSION_JPEG };
 			isBigTiff = false;
+		}
+
+		// -- AbstractWriter Methods --
+
+		@Override
+		protected String[] makeCompressionTypes() {
+			return new String[] { COMPRESSION_UNCOMPRESSED, COMPRESSION_LZW,
+				COMPRESSION_J2K, COMPRESSION_J2K_LOSSY, COMPRESSION_JPEG };
 		}
 
 		// -- TIFFWriter API Methods --
@@ -1091,21 +1096,6 @@ public class TIFFFormat extends AbstractFormat {
 		 */
 		public void setBigTiff(final boolean bigTiff) {
 			isBigTiff = bigTiff;
-		}
-
-		/**
-		 * Saves the given image to the specified (possibly already open) file. The
-		 * IFD hashtable allows specification of TIFF parameters such as bit depth,
-		 * compression and units.
-		 */
-		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final IFD ifd) throws IOException, FormatException
-		{
-			final Metadata meta = getMetadata();
-			final int w = (int) meta.get(imageIndex).getAxisLength(Axes.X);
-			final int h = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
-			savePlane(imageIndex, planeIndex, plane, ifd, new long[2], new long[] {
-				w, h });
 		}
 
 		/**
@@ -1131,11 +1121,7 @@ public class TIFFFormat extends AbstractFormat {
 			synchronized (this) {
 				// This operation is synchronized against the TIFF saver.
 				synchronized (tiffSaver) {
-					index =
-						prepareToWriteImage(imageIndex, planeIndex, plane, ifd, x, y, w, h);
-					if (index == -1) {
-						return;
-					}
+					prepareToWriteImage(imageIndex, planeIndex, plane, ifd, x, y, w, h);
 				}
 			}
 
@@ -1144,25 +1130,53 @@ public class TIFFFormat extends AbstractFormat {
 					imageIndex == getMetadata().getImageCount() - 1);
 		}
 
+		// -- AbstractWriter Methods --
+
+		@Override
+		protected void initialize(final int imageIndex, final long planeIndex,
+			final long[] planeMin, final long[] planeMax) throws FormatException,
+			IOException
+		{
+			// Ensure that no more than one thread manipulated the initialized array
+			// at one time.
+			synchronized (this) {
+				if (!isInitialized(imageIndex, (int) planeIndex))
+				{
+
+					final RandomAccessInputStream tmp =
+						new RandomAccessInputStream(getContext(), getMetadata()
+							.getDatasetName());
+					if (tmp.length() == 0) {
+						synchronized (this) {
+							// write TIFF header
+							tiffSaver.writeHeader();
+						}
+					}
+					tmp.close();
+				}
+			}
+		}
+
 		// -- Writer API Methods --
 
 		@Override
 		public void setDest(final RandomAccessOutputStream dest,
-			final int imageIndex) throws FormatException, IOException
+			final int imageIndex, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
-			super.setDest(dest, imageIndex);
+			super.setDest(dest, imageIndex, config);
 			synchronized (this) {
-				setupTiffSaver(imageIndex);
+				setupTiffSaver(dest, imageIndex);
 			}
 		}
 
 		@Override
-		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax,
-			final SCIFIOConfig config) throws FormatException, IOException
+		public void writePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			IFD ifd = new IFD(log());
-			if (!sequential) {
+			if (!writeSequential()) {
 				final TiffParser parser =
 					new TiffParser(getContext(), getMetadata().getDatasetName());
 				try {
@@ -1219,18 +1233,17 @@ public class TIFFFormat extends AbstractFormat {
 		 * @param ifd The IFD table to handle.
 		 */
 		private void formatCompression(final IFD ifd) {
-			if (compression == null) compression = "";
 			TiffCompression compressType = TiffCompression.UNCOMPRESSED;
-			if (compression.equals(COMPRESSION_LZW)) {
+			if (getCompression().equals(COMPRESSION_LZW)) {
 				compressType = TiffCompression.LZW;
 			}
-			else if (compression.equals(COMPRESSION_J2K)) {
+			else if (getCompression().equals(COMPRESSION_J2K)) {
 				compressType = TiffCompression.JPEG_2000;
 			}
-			else if (compression.equals(COMPRESSION_J2K_LOSSY)) {
+			else if (getCompression().equals(COMPRESSION_J2K_LOSSY)) {
 				compressType = TiffCompression.JPEG_2000_LOSSY;
 			}
-			else if (compression.equals(COMPRESSION_JPEG)) {
+			else if (getCompression().equals(COMPRESSION_JPEG)) {
 				compressType = TiffCompression.JPEG;
 			}
 			final Object v = ifd.get(new Integer(IFD.COMPRESSION));
@@ -1255,25 +1268,6 @@ public class TIFFFormat extends AbstractFormat {
 			final boolean interleaved =
 				meta.get(imageIndex).getInterleavedAxisCount() > 0;
 
-			// Ensure that no more than one thread manipulated the initialized array
-			// at one time.
-			synchronized (this) {
-				if (planeIndex < initialized[imageIndex].length &&
-					!initialized[imageIndex][(int) planeIndex])
-				{
-					initialized[imageIndex][(int) planeIndex] = true;
-
-					final RandomAccessInputStream tmp =
-						new RandomAccessInputStream(getContext(), meta.getDatasetName());
-					if (tmp.length() == 0) {
-						synchronized (this) {
-							// write TIFF header
-							tiffSaver.writeHeader();
-						}
-					}
-					tmp.close();
-				}
-			}
 
 			final int type = meta.get(imageIndex).getPixelType();
 			int c = (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
@@ -1284,37 +1278,40 @@ public class TIFFFormat extends AbstractFormat {
 				c = buf.length / (w * h * bytesPerPixel);
 			}
 
-			if (bytesPerPixel > 1 && c != 1 && c != 3) {
-				// split channels
-				checkParams = false;
-
-				if (planeIndex == 0) {
-					initialized[imageIndex] =
-						new boolean[initialized[imageIndex].length * c];
-				}
-				final long[] planeMin = new long[] { x, y };
-				final long[] planeMax = new long[] { w, h };
-				final long[] cIndex = new long[1];
-				final long[] cLength = new long[] { c };
-
-				for (int i = 0; i < c; i++) {
-					cIndex[0] = i;
-					final byte[] b =
-						ImageTools.splitChannels(buf, cIndex, cLength, bytesPerPixel,
-							false, interleaved);
-
-					final ByteArrayPlane bp = new ByteArrayPlane(getContext());
-					bp.populate(getMetadata().get(imageIndex), b, planeMin, planeMax);
-
-					savePlane(imageIndex, planeIndex * c + i, bp, (IFD) ifd.clone(),
-						planeMin, planeMax);
-				}
-				checkParams = true;
-				return -1;
-			}
+			// FIXME no indication of why this logic is necessary. Seems over complex
+			// and fragile due to the modification of the initialized array. If this
+			// is truly necessary, let's find a different way to do it.
+//			if (bytesPerPixel > 1 && c != 1 && c != 3) {
+//				// split channels
+//				checkParams = false;
+//
+//				if (planeIndex == 0) {
+//					initialized[imageIndex] =
+//						new boolean[initialized[imageIndex].length * c];
+//				}
+//				final long[] planeMin = new long[] { x, y };
+//				final long[] planeMax = new long[] { w, h };
+//				final long[] cIndex = new long[1];
+//				final long[] cLength = new long[] { c };
+//
+//				for (int i = 0; i < c; i++) {
+//					cIndex[0] = i;
+//					final byte[] b =
+//						ImageTools.splitChannels(buf, cIndex, cLength, bytesPerPixel,
+//							false, interleaved);
+//
+//					final ByteArrayPlane bp = new ByteArrayPlane(getContext());
+//					bp.populate(getMetadata().get(imageIndex), b, planeMin, planeMax);
+//
+//					savePlane(imageIndex, planeIndex * c + i, bp, (IFD) ifd.clone(),
+//						planeMin, planeMax);
+//				}
+//				checkParams = true;
+//				return -1;
+//			}
 
 			formatCompression(ifd);
-			final byte[][] lut = AWTImageTools.get8BitLookupTable(cm);
+			final byte[][] lut = AWTImageTools.get8BitLookupTable(getColorModel());
 			if (lut != null) {
 				final int[] colorMap = new int[lut.length * lut[0].length];
 				for (int i = 0; i < lut.length; i++) {
@@ -1350,7 +1347,7 @@ public class TIFFFormat extends AbstractFormat {
 
 			if (!isBigTiff) {
 				isBigTiff =
-					(out.length() + 2 * (width * height * c * bytesPerPixel)) >= 4294967296L;
+					(getStream().length() + 2 * (width * height * c * bytesPerPixel)) >= 4294967296L;
 				if (isBigTiff) {
 					throw new FormatException("File is too large; call setBigTiff(true)");
 				}
@@ -1359,11 +1356,11 @@ public class TIFFFormat extends AbstractFormat {
 			// write the image
 			ifd.put(new Integer(IFD.LITTLE_ENDIAN), new Boolean(littleEndian));
 			if (!ifd.containsKey(IFD.REUSE)) {
-				ifd.put(IFD.REUSE, out.length());
-				out.seek(out.length());
+				ifd.put(IFD.REUSE, getStream().length());
+				getStream().seek(getStream().length());
 			}
 			else {
-				out.seek((Long) ifd.get(IFD.REUSE));
+				getStream().seek((Long) ifd.get(IFD.REUSE));
 			}
 
 			ifd.putIFDValue(IFD.PLANAR_CONFIGURATION, interleaved ||
@@ -1382,19 +1379,22 @@ public class TIFFFormat extends AbstractFormat {
 			return index;
 		}
 
-		private void setupTiffSaver(final int imageIndex) throws IOException {
-			out.close();
+		private void setupTiffSaver(final RandomAccessOutputStream stream,
+			final int imageIndex) throws IOException
+		{
 			final Metadata meta = getMetadata();
-			out = new RandomAccessOutputStream(getContext(), meta.getDatasetName());
-			tiffSaver = new TiffSaver(getContext(), out, meta.getDatasetName());
+			// FIXME this seems unnecessary.. but maybe there's a reason to
+			// reconstruct the stream?
+//			out = new RandomAccessOutputStream(getContext(), meta.getDatasetName());
+			tiffSaver = new TiffSaver(getContext(), stream, meta.getDatasetName());
 
 			final Boolean bigEndian = !meta.get(imageIndex).isLittleEndian();
 			final boolean littleEndian = !bigEndian.booleanValue();
 
-			tiffSaver.setWritingSequentially(sequential);
+			tiffSaver.setWritingSequentially(writeSequential());
 			tiffSaver.setLittleEndian(littleEndian);
 			tiffSaver.setBigTiff(isBigTiff);
-			tiffSaver.setCodecOptions(options);
+			tiffSaver.setCodecOptions(getCodecOptions());
 		}
 
 	}

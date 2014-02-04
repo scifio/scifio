@@ -85,8 +85,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		return "Minimal TIFF";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "tif", "tiff" };
 	}
 
@@ -102,26 +104,26 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- Fields --
 
 		/** List of IFDs for the current TIFF. */
-		protected IFDList ifds;
+		private IFDList ifds;
 
 		/** List of thumbnail IFDs for the current TIFF. */
-		protected IFDList thumbnailIFDs;
+		private IFDList thumbnailIFDs;
 
 		/**
 		 * List of sub-resolution IFDs for each IFD in the current TIFF with the
 		 * same order as <code>ifds</code>.
 		 */
-		protected List<IFDList> subResolutionIFDs;
+		private List<IFDList> subResolutionIFDs;
 
-		protected TiffParser tiffParser;
+		private TiffParser tiffParser;
 
-		protected boolean equalStrips = false;
+		private boolean equalStrips = false;
 
-		protected boolean use64Bit = false;
+		private boolean use64Bit = false;
 
 		private long lastPlane = 0;
 
-		protected boolean noSubresolutions = false;
+		private boolean noSubresolutions = false;
 
 		/** Number of JPEG 2000 resolution levels. */
 		private Integer resolutionLevels;
@@ -385,13 +387,12 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 	public static class Checker extends AbstractChecker {
 
-		// -- Constructor --
-
-		public Checker() {
-			suffixNecessary = false;
-		}
-
 		// -- Checker API Methods --
+
+		@Override
+		public boolean suffixNecessary() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream) {
@@ -424,7 +425,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				throw new FormatException("Invalid TIFF file");
 			}
 			final boolean little = littleEndian.booleanValue();
-			in.order(little);
+			getSource().order(little);
 
 			log().info("Reading IFDs");
 
@@ -548,10 +549,11 @@ public class MinimalTIFFFormat extends AbstractFormat {
 	 */
 	public static class Reader<M extends Metadata> extends ByteArrayReader<M> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		// -- Reader API Methods --

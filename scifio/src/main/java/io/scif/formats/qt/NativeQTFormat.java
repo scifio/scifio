@@ -99,8 +99,10 @@ public class NativeQTFormat extends AbstractFormat {
 		return "QuickTime";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "mov" };
 	}
 
@@ -334,14 +336,12 @@ public class NativeQTFormat extends AbstractFormat {
 	 */
 	public static class Checker extends AbstractChecker {
 
-		// -- Constructor --
-
-		public Checker() {
-			suffixNecessary = false;
-
-		}
-
 		// -- Checker API Methods --
+
+		@Override
+		public boolean suffixNecessary() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)
@@ -418,11 +418,11 @@ public class NativeQTFormat extends AbstractFormat {
 				log().debug("Searching for research fork:");
 				if (f.exists()) {
 					log().debug("\t Found: " + f);
-					if (in != null) in.close();
-					in = new RandomAccessInputStream(getContext(), f.getAbsolutePath());
+					if (getSource() != null) getSource().close();
+					updateSource(f .getAbsolutePath());
 
 					NativeQTUtils.stripHeader(stream);
-					NativeQTUtils.parse(stream, meta, 0, 0, in.length(), log());
+					NativeQTUtils.parse(stream, meta, 0, 0, getSource().length(), log());
 					meta.get(0).setAxisLength(Axes.TIME, offsets.size());
 				}
 				else {
@@ -477,10 +477,11 @@ public class NativeQTFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		// -- Reader API Methods --
@@ -688,53 +689,47 @@ public class NativeQTFormat extends AbstractFormat {
 		private TranslatorService translatorService;
 
 		/** The codec to use. */
-		protected int codec = CODEC_RAW;
+		private int codec = CODEC_RAW;
 
 		/** The quality to use. */
-		protected int quality = QUALITY_NORMAL;
+		private int quality = QUALITY_NORMAL;
 
 		/** Total number of pixel bytes. */
-		protected int numBytes;
+		private int numBytes;
 
 		/** Vector of plane offsets. */
-		protected Vector<Integer> offsets;
+		private Vector<Integer> offsets;
 
 		/** Time the file was created. */
-		protected int created;
+		private int created;
 
 		/** Number of padding bytes in each row. */
-		protected int pad;
+		private int pad;
 
 		/** Whether we need the legacy writer. */
-		protected boolean needLegacy = false;
+		private boolean needLegacy = false;
 
 		private LegacyQTFormat.Writer legacy;
 
 		private int numWritten = 0;
 
-		// -- Writer API methods --
+		// -- AbstractWriter Methods --
 
 		@Override
-		public String[] getCompressionTypes() {
-			if (compressionTypes == null) {
-				if (qtJavaService.canDoQT()) {
-					compressionTypes =
-						new String[] {
-							CompressionType.UNCOMPRESSED.getCompression(),
-							// NB: Writing to Motion JPEG-B with QTJava seems to be broken.
-							/*"Motion JPEG-B",*/
-							CompressionType.CINEPAK.getCompression(),
-							CompressionType.ANIMATION.getCompression(),
-							CompressionType.H_263.getCompression(),
-							CompressionType.SORENSON.getCompression(),
-							CompressionType.SORENSON_3.getCompression(),
-							CompressionType.MPEG_4.getCompression() };
-				}
-				else compressionTypes =
-					new String[] { CompressionType.UNCOMPRESSED.getCompression() };
+		protected String[] makeCompressionTypes() {
+			if (qtJavaService.canDoQT()) {
+				return new String[] {
+					CompressionType.UNCOMPRESSED.getCompression(),
+					// NB: Writing to Motion JPEG-B with QTJava seems to be broken.
+					/*"Motion JPEG-B",*/
+					CompressionType.CINEPAK.getCompression(),
+					CompressionType.ANIMATION.getCompression(),
+					CompressionType.H_263.getCompression(),
+					CompressionType.SORENSON.getCompression(),
+					CompressionType.SORENSON_3.getCompression(),
+					CompressionType.MPEG_4.getCompression() };
 			}
-
-			return super.getCompressionTypes();
+			return new String[] { CompressionType.UNCOMPRESSED.getCompression() };
 		}
 
 		// -- QTWriter API methods --
@@ -772,12 +767,43 @@ public class NativeQTFormat extends AbstractFormat {
 			this.quality = quality;
 		}
 
+		// -- AbstractWriter Methods --
+
+		@Override
+		protected void initialize(final int imageIndex, final long planeIndex,
+			final long[] planeMin, final long[] planeMax) throws FormatException,
+			IOException
+		{
+			if (!isInitialized(imageIndex, (int) planeIndex)) {
+				setCodec();
+				if (codec != CODEC_RAW) {
+					needLegacy = true;
+					legacy.setDest(getStream());
+					return;
+				}
+
+				// update the number of pixel bytes written
+				Metadata meta = getMetadata();
+				final int height = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
+				numBytes += (meta.get(imageIndex).getPlaneSize() + pad * height);
+				getStream().seek(BYTE_COUNT_OFFSET);
+				getStream().writeInt(numBytes + 8);
+
+				getStream().seek(offsets.get((int) planeIndex));
+
+				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
+					planeMax))
+				{
+					getStream().skipBytes((int) (meta.get(imageIndex).getPlaneSize() + pad * height));
+				}
+			}
+		}
 		// -- Writer API methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax,
-			final SCIFIOConfig config) throws FormatException, IOException
+		public void writePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
@@ -791,47 +817,19 @@ public class NativeQTFormat extends AbstractFormat {
 				meta.get(imageIndex).getInterleavedAxisCount() > 0;
 			// get the width and height of the image
 			final int width = (int) meta.get(imageIndex).getAxisLength(Axes.X);
-			final int height = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
-
 			// need to check if the width is a multiple of 8
 			// if it is, great; if not, we need to pad each scanline with enough
 			// bytes to make the width a multiple of 8
 
 			final int nChannels =
 				(int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
-			final int planeSize = width * height * nChannels;
-
-			if (!initialized[imageIndex][(int) planeIndex]) {
-				initialized[imageIndex][(int) planeIndex] = true;
-				setCodec();
-				if (codec != CODEC_RAW) {
-					needLegacy = true;
-					legacy.setDest(out);
-					legacy.savePlane(imageIndex, planeIndex, plane, planeMin, planeMax,
-						config);
-					return;
-				}
-
-				// update the number of pixel bytes written
-				numBytes += (planeSize + pad * height);
-				out.seek(BYTE_COUNT_OFFSET);
-				out.writeInt(numBytes + 8);
-
-				out.seek(offsets.get((int) planeIndex));
-
-				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
-					planeMax))
-				{
-					out.skipBytes(planeSize + pad * height);
-				}
-			}
 
 			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			final int x = (int) planeMin[xIndex], y = (int) planeMin[yIndex], w =
 				(int) planeMax[xIndex], h = (int) planeMax[yIndex];
 
-			out.seek(offsets.get((int) planeIndex) + y * (nChannels * width + pad));
+			getStream().seek(offsets.get((int) planeIndex) + y * (nChannels * width + pad));
 
 			// invert each pixel
 			// this will makes the colors look right in other readers (e.g. xine),
@@ -858,13 +856,13 @@ public class NativeQTFormat extends AbstractFormat {
 
 			final int rowLen = tmp.length / h;
 			for (int row = 0; row < h; row++) {
-				out.skipBytes(nChannels * x);
-				out.write(tmp, row * rowLen, rowLen);
+				getStream().skipBytes(nChannels * x);
+				getStream().write(tmp, row * rowLen, rowLen);
 				for (int i = 0; i < pad; i++) {
-					out.writeByte(0);
+					getStream().writeByte(0);
 				}
 				if (row < h - 1) {
-					out.skipBytes(nChannels * (width - w - x));
+					getStream().skipBytes(nChannels * (width - w - x));
 				}
 			}
 			numWritten++;
@@ -882,7 +880,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 		@Override
 		public void close() throws IOException {
-			if (out != null) writeFooter();
+			if (getStream() != null) writeFooter();
 			super.close();
 			numBytes = 0;
 			created = 0;
@@ -891,17 +889,12 @@ public class NativeQTFormat extends AbstractFormat {
 			numWritten = 0;
 		}
 
-		/**
-		 * Sets the source that will be written to during {@link #savePlane} calls.
-		 * 
-		 * @param stream The image source to write to.
-		 * @param imageIndex The index of the source to write to (default = 0)
-		 */
 		@Override
 		public void setDest(final RandomAccessOutputStream stream,
-			final int imageIndex) throws FormatException, IOException
+			final int imageIndex, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
-			super.setDest(stream, imageIndex);
+			super.setDest(stream, imageIndex, config);
 			final Metadata meta = getMetadata();
 			SCIFIOMetadataTools.verifyMinimumPopulated(meta, stream);
 
@@ -928,14 +921,14 @@ public class NativeQTFormat extends AbstractFormat {
 			created = (int) System.currentTimeMillis();
 			numBytes = 0;
 
-			if (out.length() == 0) {
+			if (getStream().length() == 0) {
 				// -- write the first header --
 
 				writeAtom(8, "wide");
 				writeAtom(numBytes + 8, "mdat");
 			}
 			else {
-				out.seek(BYTE_COUNT_OFFSET);
+				getStream().seek(BYTE_COUNT_OFFSET);
 
 				final RandomAccessInputStream in =
 					new RandomAccessInputStream(getContext(), meta.getDatasetName());
@@ -952,27 +945,28 @@ public class NativeQTFormat extends AbstractFormat {
 		// -- Helper methods --
 
 		private void setCodec() {
-			if (compression == null) return;
-			if (compression.equals("Uncompressed")) codec = CODEC_RAW;
+			if (getCompression() == null) return;
+			if (getCompression().equals("Uncompressed")) codec = CODEC_RAW;
 			// NB: Writing to Motion JPEG-B with QTJava seems to be broken.
-			else if (compression.equals("Motion JPEG-B")) codec = CODEC_MOTION_JPEG_B;
-			else if (compression.equals("Cinepak")) codec = CODEC_CINEPAK;
-			else if (compression.equals("Animation")) codec = CODEC_ANIMATION;
-			else if (compression.equals("H.263")) codec = CODEC_H_263;
-			else if (compression.equals("Sorenson")) codec = CODEC_SORENSON;
-			else if (compression.equals("Sorenson 3")) codec = CODEC_SORENSON_3;
-			else if (compression.equals("MPEG 4")) codec = CODEC_MPEG_4;
+			else if (getCompression().equals("Motion JPEG-B")) codec = CODEC_MOTION_JPEG_B;
+			else if (getCompression().equals("Cinepak")) codec = CODEC_CINEPAK;
+			else if (getCompression().equals("Animation")) codec = CODEC_ANIMATION;
+			else if (getCompression().equals("H.263")) codec = CODEC_H_263;
+			else if (getCompression().equals("Sorenson")) codec = CODEC_SORENSON;
+			else if (getCompression().equals("Sorenson 3")) codec = CODEC_SORENSON_3;
+			else if (getCompression().equals("MPEG 4")) codec = CODEC_MPEG_4;
 		}
 
 		private void writeFooter() throws IOException {
-			out.seek(out.length());
+			getStream().seek(getStream().length());
 			final Metadata meta = getMetadata();
 			final int width = (int) meta.get(0).getAxisLength(Axes.X);
 			final int height = (int) meta.get(0).getAxisLength(Axes.Y);
 			final int nChannels = (int) meta.get(0).getAxisLength(Axes.CHANNEL);
 
 			final int timeScale = 1000;
-			final int duration = (int) (numWritten * ((double) timeScale / fps));
+			final int duration =
+				(int) (numWritten * ((double) timeScale / getFramesPerSecond()));
 			final int bitsPerPixel = (nChannels > 1) ? 24 : 40;
 			final int channels = (bitsPerPixel >= 40) ? 1 : 3;
 
@@ -984,25 +978,25 @@ public class NativeQTFormat extends AbstractFormat {
 			// -- write mvhd atom --
 
 			writeAtom(108, "mvhd");
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeInt(created); // creation time
-			out.writeInt((int) System.currentTimeMillis());
-			out.writeInt(timeScale); // time scale
-			out.writeInt(duration); // duration
-			out.write(new byte[] { 0, 1, 0, 0 }); // preferred rate & volume
-			out.write(new byte[] { 0, -1, 0, 0, 0, 0, 0, 0, 0, 0 }); // reserved
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeInt(created); // creation time
+			getStream().writeInt((int) System.currentTimeMillis());
+			getStream().writeInt(timeScale); // time scale
+			getStream().writeInt(duration); // duration
+			getStream().write(new byte[] { 0, 1, 0, 0 }); // preferred rate & volume
+			getStream().write(new byte[] { 0, -1, 0, 0, 0, 0, 0, 0, 0, 0 }); // reserved
 
 			writeRotationMatrix();
 
-			out.writeShort(0); // not sure what this is
-			out.writeInt(0); // preview duration
-			out.writeInt(0); // preview time
-			out.writeInt(0); // poster time
-			out.writeInt(0); // selection time
-			out.writeInt(0); // selection duration
-			out.writeInt(0); // current time
-			out.writeInt(2); // next track's id
+			getStream().writeShort(0); // not sure what this is
+			getStream().writeInt(0); // preview duration
+			getStream().writeInt(0); // preview time
+			getStream().writeInt(0); // poster time
+			getStream().writeInt(0); // selection time
+			getStream().writeInt(0); // selection duration
+			getStream().writeInt(0); // current time
+			getStream().writeInt(2); // next track's id
 
 			// -- write trak atom --
 
@@ -1012,25 +1006,25 @@ public class NativeQTFormat extends AbstractFormat {
 			// -- write tkhd atom --
 
 			writeAtom(92, "tkhd");
-			out.writeShort(0); // version
-			out.writeShort(15); // flags
+			getStream().writeShort(0); // version
+			getStream().writeShort(15); // flags
 
-			out.writeInt(created); // creation time
-			out.writeInt((int) System.currentTimeMillis());
-			out.writeInt(1); // track id
-			out.writeInt(0); // reserved
+			getStream().writeInt(created); // creation time
+			getStream().writeInt((int) System.currentTimeMillis());
+			getStream().writeInt(1); // track id
+			getStream().writeInt(0); // reserved
 
-			out.writeInt(duration); // duration
-			out.writeInt(0); // reserved
-			out.writeInt(0); // reserved
-			out.writeShort(0); // reserved
-			out.writeInt(0); // unknown
+			getStream().writeInt(duration); // duration
+			getStream().writeInt(0); // reserved
+			getStream().writeInt(0); // reserved
+			getStream().writeShort(0); // reserved
+			getStream().writeInt(0); // unknown
 
 			writeRotationMatrix();
 
-			out.writeInt(width); // image width
-			out.writeInt(height); // image height
-			out.writeShort(0); // reserved
+			getStream().writeInt(width); // image width
+			getStream().writeInt(height); // image height
+			getStream().writeShort(0); // reserved
 
 			// -- write edts atom --
 
@@ -1040,13 +1034,13 @@ public class NativeQTFormat extends AbstractFormat {
 
 			writeAtom(28, "elst");
 
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeInt(1); // number of entries in the table
-			out.writeInt(duration); // duration
-			out.writeShort(0); // time
-			out.writeInt(1); // rate
-			out.writeShort(0); // unknown
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeInt(1); // number of entries in the table
+			getStream().writeInt(duration); // duration
+			getStream().writeShort(0); // time
+			getStream().writeInt(1); // rate
+			getStream().writeShort(0); // unknown
 
 			// -- write mdia atom --
 
@@ -1057,26 +1051,26 @@ public class NativeQTFormat extends AbstractFormat {
 
 			writeAtom(32, "mdhd");
 
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeInt(created); // creation time
-			out.writeInt((int) System.currentTimeMillis());
-			out.writeInt(timeScale); // time scale
-			out.writeInt(duration); // duration
-			out.writeShort(0); // language
-			out.writeShort(0); // quality
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeInt(created); // creation time
+			getStream().writeInt((int) System.currentTimeMillis());
+			getStream().writeInt(timeScale); // time scale
+			getStream().writeInt(duration); // duration
+			getStream().writeShort(0); // language
+			getStream().writeShort(0); // quality
 
 			// -- write hdlr atom --
 
 			writeAtom(58, "hdlr");
 
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeBytes("mhlr");
-			out.writeBytes("vide");
-			out.writeBytes("appl");
-			out.write(new byte[] { 16, 0, 0, 0, 0, 1, 1, 11, 25 });
-			out.writeBytes("Apple Video Media Handler");
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeBytes("mhlr");
+			getStream().writeBytes("vide");
+			getStream().writeBytes("appl");
+			getStream().write(new byte[] { 16, 0, 0, 0, 0, 1, 1, 11, 25 });
+			getStream().writeBytes("Apple Video Media Handler");
 
 			// -- write minf atom --
 
@@ -1087,24 +1081,24 @@ public class NativeQTFormat extends AbstractFormat {
 
 			writeAtom(20, "vmhd");
 
-			out.writeShort(0); // version
-			out.writeShort(1); // flags
-			out.writeShort(64); // graphics mode
-			out.writeShort(32768); // opcolor 1
-			out.writeShort(32768); // opcolor 2
-			out.writeShort(32768); // opcolor 3
+			getStream().writeShort(0); // version
+			getStream().writeShort(1); // flags
+			getStream().writeShort(64); // graphics mode
+			getStream().writeShort(32768); // opcolor 1
+			getStream().writeShort(32768); // opcolor 2
+			getStream().writeShort(32768); // opcolor 3
 
 			// -- write hdlr atom --
 
 			writeAtom(57, "hdlr");
 
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeBytes("dhlr");
-			out.writeBytes("alis");
-			out.writeBytes("appl");
-			out.write(new byte[] { 16, 0, 0, 1, 0, 1, 1, 31, 24 });
-			out.writeBytes("Apple Alias Data Handler");
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeBytes("dhlr");
+			getStream().writeBytes("alis");
+			getStream().writeBytes("appl");
+			getStream().write(new byte[] { 16, 0, 0, 1, 0, 1, 1, 31, 24 });
+			getStream().writeBytes("Apple Alias Data Handler");
 
 			// -- write dinf atom --
 
@@ -1114,14 +1108,14 @@ public class NativeQTFormat extends AbstractFormat {
 
 			writeAtom(28, "dref");
 
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeShort(0); // version 2
-			out.writeShort(1); // flags 2
-			out.write(new byte[] { 0, 0, 0, 12 });
-			out.writeBytes("alis");
-			out.writeShort(0); // version 3
-			out.writeShort(1); // flags 3
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeShort(0); // version 2
+			getStream().writeShort(1); // flags 2
+			getStream().write(new byte[] { 0, 0, 0, 12 });
+			getStream().writeBytes("alis");
+			getStream().writeShort(0); // version 3
+			getStream().writeShort(1); // flags 3
 
 			// -- write stbl atom --
 
@@ -1132,103 +1126,104 @@ public class NativeQTFormat extends AbstractFormat {
 
 			writeAtom(118, "stsd");
 
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeInt(1); // number of entries in the table
-			out.write(new byte[] { 0, 0, 0, 102 });
-			out.writeBytes("raw "); // codec
-			out.write(new byte[] { 0, 0, 0, 0, 0, 0 }); // reserved
-			out.writeShort(1); // data reference
-			out.writeShort(1); // version
-			out.writeShort(1); // revision
-			out.writeBytes("appl");
-			out.writeInt(0); // temporal quality
-			out.writeInt(768); // spatial quality
-			out.writeShort(width); // image width
-			out.writeShort(height); // image height
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeInt(1); // number of entries in the table
+			getStream().write(new byte[] { 0, 0, 0, 102 });
+			getStream().writeBytes("raw "); // codec
+			getStream().write(new byte[] { 0, 0, 0, 0, 0, 0 }); // reserved
+			getStream().writeShort(1); // data reference
+			getStream().writeShort(1); // version
+			getStream().writeShort(1); // revision
+			getStream().writeBytes("appl");
+			getStream().writeInt(0); // temporal quality
+			getStream().writeInt(768); // spatial quality
+			getStream().writeShort(width); // image width
+			getStream().writeShort(height); // image height
 			final byte[] dpi = new byte[] { 0, 72, 0, 0 };
-			out.write(dpi); // horizontal dpi
-			out.write(dpi); // vertical dpi
-			out.writeInt(0); // data size
-			out.writeShort(1); // frames per sample
-			out.writeShort(12); // length of compressor name
-			out.writeBytes("Uncompressed"); // compressor name
-			out.writeInt(bitsPerPixel); // unknown
-			out.writeInt(bitsPerPixel); // unknown
-			out.writeInt(bitsPerPixel); // unknown
-			out.writeInt(bitsPerPixel); // unknown
-			out.writeInt(bitsPerPixel); // unknown
-			out.writeShort(bitsPerPixel); // bits per pixel
-			out.writeInt(65535); // ctab ID
-			out.write(new byte[] { 12, 103, 97, 108 }); // gamma
-			out.write(new byte[] { 97, 1, -52, -52, 0, 0, 0, 0 }); // unknown
+			getStream().write(dpi); // horizontal dpi
+			getStream().write(dpi); // vertical dpi
+			getStream().writeInt(0); // data size
+			getStream().writeShort(1); // frames per sample
+			getStream().writeShort(12); // length of compressor name
+			getStream().writeBytes("Uncompressed"); // compressor name
+			getStream().writeInt(bitsPerPixel); // unknown
+			getStream().writeInt(bitsPerPixel); // unknown
+			getStream().writeInt(bitsPerPixel); // unknown
+			getStream().writeInt(bitsPerPixel); // unknown
+			getStream().writeInt(bitsPerPixel); // unknown
+			getStream().writeShort(bitsPerPixel); // bits per pixel
+			getStream().writeInt(65535); // ctab ID
+			getStream().write(new byte[] { 12, 103, 97, 108 }); // gamma
+			getStream().write(new byte[] { 97, 1, -52, -52, 0, 0, 0, 0 }); // unknown
 
 			// -- write stts atom --
 
 			writeAtom(24, "stts");
 
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeInt(1); // number of entries in the table
-			out.writeInt(numWritten); // number of planes
-			out.writeInt((int) ((double) timeScale / fps)); // milliseconds per frame
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeInt(1); // number of entries in the table
+			getStream().writeInt(numWritten); // number of planes
+			// milliseconds per frame
+			getStream().writeInt((int) ((double) timeScale / getFramesPerSecond()));
 
 			// -- write stsc atom --
 
 			writeAtom(28, "stsc");
 
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeInt(1); // number of entries in the table
-			out.writeInt(1); // chunk
-			out.writeInt(1); // samples
-			out.writeInt(1); // id
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeInt(1); // number of entries in the table
+			getStream().writeInt(1); // chunk
+			getStream().writeInt(1); // samples
+			getStream().writeInt(1); // id
 
 			// -- write stsz atom --
 
 			writeAtom(20 + 4 * numWritten, "stsz");
 
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeInt(0); // sample size
-			out.writeInt(numWritten); // number of planes
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeInt(0); // sample size
+			getStream().writeInt(numWritten); // number of planes
 			for (int i = 0; i < numWritten; i++) {
 				// sample size
-				out.writeInt(channels * height * (width + pad));
+				getStream().writeInt(channels * height * (width + pad));
 			}
 
 			// -- write stco atom --
 
 			writeAtom(16 + 4 * numWritten, "stco");
 
-			out.writeShort(0); // version
-			out.writeShort(0); // flags
-			out.writeInt(numWritten); // number of planes
+			getStream().writeShort(0); // version
+			getStream().writeShort(0); // flags
+			getStream().writeInt(numWritten); // number of planes
 			for (int i = 0; i < numWritten; i++) {
 				// write the plane offset
-				out.writeInt(offsets.get(i));
+				getStream().writeInt(offsets.get(i));
 			}
 		}
 
 		/** Write the 3x3 matrix that describes how to rotate the image. */
 		private void writeRotationMatrix() throws IOException {
-			out.writeInt(1);
-			out.writeInt(0);
-			out.writeInt(0);
-			out.writeInt(0);
-			out.writeInt(1);
-			out.writeInt(0);
-			out.writeInt(0);
-			out.writeInt(0);
-			out.writeInt(16384);
+			getStream().writeInt(1);
+			getStream().writeInt(0);
+			getStream().writeInt(0);
+			getStream().writeInt(0);
+			getStream().writeInt(1);
+			getStream().writeInt(0);
+			getStream().writeInt(0);
+			getStream().writeInt(0);
+			getStream().writeInt(16384);
 		}
 
 		/** Write the atom length and type. */
 		private void writeAtom(final int length, final String type)
 			throws IOException
 		{
-			out.writeInt(length);
-			out.writeBytes(type);
+			getStream().writeInt(length);
+			getStream().writeBytes(type);
 		}
 	}
 

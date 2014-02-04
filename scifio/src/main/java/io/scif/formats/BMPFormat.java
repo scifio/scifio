@@ -88,8 +88,10 @@ public class BMPFormat extends AbstractFormat {
 		return "Windows Bitmap";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "bmp" };
 	}
 
@@ -246,23 +248,23 @@ public class BMPFormat extends AbstractFormat {
 
 			// read the first header - 14 bytes
 
-			globalTable.put("Magic identifier", in.readString(2));
+			globalTable.put("Magic identifier", getSource().readString(2));
 
-			globalTable.put("File size (in bytes)", in.readInt());
-			in.skipBytes(4);
+			globalTable.put("File size (in bytes)", getSource().readInt());
+			getSource().skipBytes(4);
 
-			meta.setGlobal(in.readInt());
+			meta.setGlobal(getSource().readInt());
 
 			// read the second header - 40 bytes
 
-			in.skipBytes(4);
+			getSource().skipBytes(4);
 
 			int sizeX = 0, sizeY = 0;
 
 			// get the dimensions
 
-			sizeX = in.readInt();
-			sizeY = in.readInt();
+			sizeX = getSource().readInt();
+			sizeY = getSource().readInt();
 
 			iMeta.addAxis(Axes.X, sizeX);
 			iMeta.addAxis(Axes.Y, sizeY);
@@ -277,22 +279,22 @@ public class BMPFormat extends AbstractFormat {
 				meta.setInvertY(true);
 			}
 
-			globalTable.put("Color planes", in.readShort());
+			globalTable.put("Color planes", getSource().readShort());
 
-			final short bpp = in.readShort();
+			final short bpp = getSource().readShort();
 
 			iMeta.setBitsPerPixel(bpp);
 
-			meta.setCompression(in.readInt());
+			meta.setCompression(getSource().readInt());
 
-			in.skipBytes(4);
-			final int pixelSizeX = in.readInt();
-			final int pixelSizeY = in.readInt();
-			int nColors = in.readInt();
+			getSource().skipBytes(4);
+			final int pixelSizeX = getSource().readInt();
+			final int pixelSizeY = getSource().readInt();
+			int nColors = getSource().readInt();
 			if (nColors == 0 && bpp != 32 && bpp != 24) {
 				nColors = bpp < 8 ? 1 << bpp : 256;
 			}
-			in.skipBytes(4);
+			getSource().skipBytes(4);
 
 			// read the palette, if it exists
 
@@ -301,14 +303,14 @@ public class BMPFormat extends AbstractFormat {
 
 				for (int i = 0; i < nColors; i++) {
 					for (int j = palette.length - 1; j >= 0; j--) {
-						palette[j][i] = in.readByte();
+						palette[j][i] = getSource().readByte();
 					}
-					in.skipBytes(1);
+					getSource().skipBytes(1);
 				}
 
 				meta.palette = new ColorTable8(palette);
 			}
-			else if (nColors != 0) in.skipBytes(nColors * 4);
+			else if (nColors != 0) getSource().skipBytes(nColors * 4);
 
 			if (config.parserGetLevel() != MetadataLevel.MINIMUM) {
 				globalTable.put("Indexed color", meta.getColorTable(0, 0) != null);
@@ -344,10 +346,11 @@ public class BMPFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		// -- Reader API Methods --

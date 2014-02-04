@@ -69,8 +69,10 @@ public class FITSFormat extends AbstractFormat {
 		return "Flexible Image Transport System";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "fits", "fts" };
 	}
 
@@ -149,14 +151,14 @@ public class FITSFormat extends AbstractFormat {
 			meta.createImageMetadata(1);
 			final ImageMetadata iMeta = meta.get(0);
 
-			String line = in.readString(LINE_LENGTH);
+			String line = getSource().readString(LINE_LENGTH);
 			if (!line.startsWith("SIMPLE")) {
 				throw new FormatException("Unsupported FITS file.");
 			}
 
 			String key = "", value = "";
 			while (true) {
-				line = in.readString(LINE_LENGTH);
+				line = getSource().readString(LINE_LENGTH);
 
 				// parse key/value pair
 				final int ndx = line.indexOf("=");
@@ -192,8 +194,8 @@ public class FITSFormat extends AbstractFormat {
 
 				meta.getTable().put(key, value);
 			}
-			while (in.read() == 0x20) { /* Read to pixel data. */}
-			meta.setPixelOffset(in.getFilePointer() - 1);
+			while (getSource().read() == 0x20) { /* Read to pixel data. */}
+			meta.setPixelOffset(getSource().getFilePointer() - 1);
 		}
 	}
 
@@ -202,11 +204,11 @@ public class FITSFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains =
-				new String[] { FormatTools.ASTRONOMY_DOMAIN, FormatTools.UNKNOWN_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.ASTRONOMY_DOMAIN, FormatTools.UNKNOWN_DOMAIN };
 		}
 
 		// -- Reader API Methods --

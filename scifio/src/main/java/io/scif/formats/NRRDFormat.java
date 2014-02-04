@@ -70,8 +70,10 @@ public class NRRDFormat extends AbstractFormat {
 		return "NRRD";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "nrrd", "nhdr" };
 	}
 
@@ -241,13 +243,13 @@ public class NRRDFormat extends AbstractFormat {
 		public String[] getImageUsedFiles(final int imageIndex,
 			final boolean noPixels)
 		{
-			FormatTools.assertId(currentId, true, 1);
+			FormatTools.assertId(getSource(), true, 1);
 			if (noPixels) {
-				if (metadata.getDataFile() == null) return null;
-				return new String[] { currentId };
+				if (getMetadata().getDataFile() == null) return null;
+				return new String[] { getSource().getFileName() };
 			}
-			if (metadata.getDataFile() == null) return new String[] { currentId };
-			return new String[] { currentId, metadata.getDataFile() };
+			if (getMetadata().getDataFile() == null) return new String[] { getSource().getFileName() };
+			return new String[] { getSource().getFileName(), getMetadata().getDataFile() };
 		}
 
 		// -- Abstract Parser API Methods --
@@ -297,7 +299,7 @@ public class NRRDFormat extends AbstractFormat {
 			iMeta.setAxisLength(Axes.TIME, 1);
 			iMeta.setPlanarAxisCount(2);
 
-			String line = in.readLine();
+			String line = getSource().readLine();
 			while (line != null && line.length() > 0) {
 				if (!line.startsWith("#") && !line.startsWith("NRRD")) {
 					// parse key/value pair
@@ -364,7 +366,7 @@ public class NRRDFormat extends AbstractFormat {
 					}
 				}
 
-				line = in.readLine();
+				line = getSource().readLine();
 				if (line != null) line = line.trim();
 			}
 
@@ -375,7 +377,7 @@ public class NRRDFormat extends AbstractFormat {
 			if (meta.getDataFile() == null) meta.setOffset(stream.getFilePointer());
 			else {
 				final Location f =
-					new Location(getContext(), currentId).getAbsoluteFile();
+					new Location(getContext(), getSource().getFileName()).getAbsoluteFile();
 				final Location parent = f.getParentFile();
 				if (f.exists() && parent != null) {
 					String dataFile = meta.getDataFile();
@@ -434,10 +436,11 @@ public class NRRDFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.UNKNOWN_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.UNKNOWN_DOMAIN };
 		}
 
 		// -- Groupable API Methods --

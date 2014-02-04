@@ -55,12 +55,12 @@ public class NIOFileHandle extends AbstractNIOHandle {
 	// -- Static fields --
 
 	/** Default NIO buffer size to facilitate buffered I/O. */
-	protected static int defaultBufferSize = 1048576;
+	private static int defaultBufferSize = 1048576;
 
 	/**
 	 * Default NIO buffer size to facilitate buffered I/O for read/write streams.
 	 */
-	protected static int defaultRWBufferSize = 8192;
+	private static int defaultRWBufferSize = 8192;
 
 	// -- Fields --
 

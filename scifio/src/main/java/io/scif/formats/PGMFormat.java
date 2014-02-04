@@ -67,8 +67,10 @@ public class PGMFormat extends AbstractFormat {
 		return "Portable Gray Map";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "pgm" };
 	}
 
@@ -136,13 +138,12 @@ public class PGMFormat extends AbstractFormat {
 
 		public static final char PGM_MAGIC_CHAR = 'P';
 
-		// -- Constructor --
-
-		public Checker() {
-			suffixNecessary = false;
-		}
-
 		// -- Checker API Methods --
+
+		@Override
+		public boolean suffixNecessary() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)
@@ -205,9 +206,9 @@ public class PGMFormat extends AbstractFormat {
 		// -- Helper Methods --
 
 		private String readNextLine() throws IOException {
-			String line = in.readLine().trim();
+			String line = getSource().readLine().trim();
 			while (line.startsWith("#") || line.length() == 0) {
-				line = in.readLine().trim();
+				line = getSource().readLine().trim();
 			}
 			return line;
 		}
@@ -219,10 +220,11 @@ public class PGMFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		// -- Reader API methods --

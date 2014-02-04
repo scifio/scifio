@@ -110,8 +110,10 @@ public class FakeFormat extends AbstractFormat {
 		return "Simulated data";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "fake" };
 	}
 
@@ -459,6 +461,13 @@ public class FakeFormat extends AbstractFormat {
 	 * specified dimensions and qualities of the "image."
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
+
+		// -- AbstractReader API Methods --
+
+		@Override
+		protected String[] createDomainArray() {
+			return new String[0];
+		}
 
 		// -- Reader API methods --
 

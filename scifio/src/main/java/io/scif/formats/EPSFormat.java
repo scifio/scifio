@@ -78,8 +78,10 @@ public class EPSFormat extends AbstractFormat {
 		return "Encapsulated PostScript";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "eps", "epsi", "ps" };
 	}
 
@@ -194,23 +196,25 @@ public class EPSFormat extends AbstractFormat {
 
 			log().info("Verifying EPS format");
 
-			String line = in.readLine();
+			String line = getSource().readLine();
 			if (!line.trim().startsWith("%!PS")) {
 				// read the TIFF preview
 
 				meta.setTiff(true);
 
-				in.order(true);
-				in.seek(20);
-				final int offset = in.readInt();
-				final int len = in.readInt();
+				getSource().order(true);
+				getSource().seek(20);
+				final int offset = getSource().readInt();
+				final int len = getSource().readInt();
 
 				final byte[] b = new byte[len];
-				in.seek(offset);
-				in.read(b);
+				getSource().seek(offset);
+				getSource().read(b);
 
-				in = new RandomAccessInputStream(getContext(), b);
-				final TiffParser tp = new TiffParser(getContext(), in);
+				RandomAccessInputStream ifdSource =
+					new RandomAccessInputStream(getContext(), b);
+				final TiffParser tp = new TiffParser(getContext(), ifdSource);
+				ifdSource.close();
 				meta.setIfds(tp.getIFDs());
 
 				final IFD firstIFD = meta.getIfds().get(0);
@@ -238,7 +242,7 @@ public class EPSFormat extends AbstractFormat {
 			String image = "image";
 			int lineNum = 1;
 
-			line = in.readLine().trim();
+			line = getSource().readLine().trim();
 
 			m.setAxes(FormatTools.createAxes(Axes.X, Axes.Y, Axes.CHANNEL));
 
@@ -308,7 +312,7 @@ public class EPSFormat extends AbstractFormat {
 					}
 				}
 				lineNum++;
-				line = in.readLine().trim();
+				line = getSource().readLine().trim();
 			}
 
 		}
@@ -319,10 +323,11 @@ public class EPSFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		// -- Reader API Methods --
@@ -471,13 +476,48 @@ public class EPSFormat extends AbstractFormat {
 		// -- Fields --
 
 		private long planeOffset = 0;
+		
+		// -- AbstractWriter Methods --
+
+		@Override
+		protected String[] makeCompressionTypes() {
+			return new String[0];
+		}
+
+		@Override
+		protected void initialize(final int imageIndex, final long planeIndex,
+			final long[] planeMin, final long[] planeMax) throws IOException,
+			FormatException
+		{
+			if (!isInitialized(imageIndex, (int) planeIndex)) {
+
+				writeHeader(imageIndex);
+
+				if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(),
+					planeMin, planeMax))
+				{
+					final int xAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.X);
+					final int yAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.Y);
+					final int w = (int) planeMax[xAxis], h = (int) planeMax[yAxis];
+					final int nChannels =
+							(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
+					// write a dummy plane that will be overwritten in sections
+					final int planeSize = w * h * nChannels;
+					for (int i = 0; i < planeSize; i++) {
+						getStream().writeBytes(DUMMY_PIXEL);
+					}
+				}
+			}
+
+			super.initialize(imageIndex, planeIndex, planeMin, planeMax);
+		}
 
 		// -- Writer API Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax,
-			final SCIFIOConfig config) throws FormatException, IOException
+		public void writePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 
 			final byte[] buf = plane.getBytes();
@@ -496,30 +536,15 @@ public class EPSFormat extends AbstractFormat {
 			// write pixel data
 			// for simplicity, write 80 char lines
 
-			if (!initialized[imageIndex][(int) planeIndex]) {
-				initialized[imageIndex][(int) planeIndex] = true;
-
-				writeHeader(imageIndex);
-
-				if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(),
-					planeMin, planeMax))
-				{
-					// write a dummy plane that will be overwritten in sections
-					final int planeSize = w * h * nChannels;
-					for (int i = 0; i < planeSize; i++) {
-						out.writeBytes(DUMMY_PIXEL);
-					}
-				}
-			}
 
 			final int planeSize = (int) (planeMax[0] * planeMax[1]);
 
 			final StringBuffer buffer = new StringBuffer();
 
 			final int offset = y * sizeX * nChannels * 2;
-			out.seek(planeOffset + offset);
+			getStream().seek(planeOffset + offset);
 			for (int row = 0; row < h; row++) {
-				out.skipBytes(nChannels * x * 2);
+				getStream().skipBytes(nChannels * x * 2);
 				for (int col = 0; col < w * nChannels; col++) {
 					final int i = row * w * nChannels + col;
 					final int index =
@@ -533,15 +558,15 @@ public class EPSFormat extends AbstractFormat {
 						buffer.append(s);
 					}
 				}
-				out.writeBytes(buffer.toString());
+				getStream().writeBytes(buffer.toString());
 				buffer.delete(0, buffer.length());
-				out.skipBytes(nChannels * (sizeX - w - x) * 2);
+				getStream().skipBytes(nChannels * (sizeX - w - x) * 2);
 			}
 
 			// write footer
 
-			out.seek(out.length());
-			out.writeBytes("\nshowpage\n");
+			getStream().seek(getStream().length());
+			getStream().writeBytes("\nshowpage\n");
 		}
 
 		@Override
@@ -559,30 +584,30 @@ public class EPSFormat extends AbstractFormat {
 			final int nChannels =
 				(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 
-			out.writeBytes("%!PS-Adobe-2.0 EPSF-1.2\n");
-			out.writeBytes("%%Title: " + getMetadata().getDatasetName() + "\n");
-			out.writeBytes("%%Creator: SCIFIO\n");
-			out.writeBytes("%%Pages: 1\n");
-			out.writeBytes("%%BoundingBox: 0 0 " + width + " " + height + "\n");
-			out.writeBytes("%%EndComments\n\n");
+			getStream().writeBytes("%!PS-Adobe-2.0 EPSF-1.2\n");
+			getStream().writeBytes("%%Title: " + getMetadata().getDatasetName() + "\n");
+			getStream().writeBytes("%%Creator: SCIFIO\n");
+			getStream().writeBytes("%%Pages: 1\n");
+			getStream().writeBytes("%%BoundingBox: 0 0 " + width + " " + height + "\n");
+			getStream().writeBytes("%%EndComments\n\n");
 
-			out.writeBytes("/ld {load def} bind def\n");
-			out.writeBytes("/s /stroke ld /f /fill ld /m /moveto ld /l "
+			getStream().writeBytes("/ld {load def} bind def\n");
+			getStream().writeBytes("/s /stroke ld /f /fill ld /m /moveto ld /l "
 				+ "/lineto ld /c /curveto ld /rgb {255 div 3 1 roll 255 div 3 1 "
 				+ "roll 255 div 3 1 roll setrgbcolor} def\n");
-			out.writeBytes("0 0 translate\n");
-			out.writeBytes(((float) width) + " " + ((float) height) + " scale\n");
-			out.writeBytes("/picstr 40 string def\n");
-			out.writeBytes(width + " " + height + " 8 [" + width + " 0 0 " +
+			getStream().writeBytes("0 0 translate\n");
+			getStream().writeBytes(((float) width) + " " + ((float) height) + " scale\n");
+			getStream().writeBytes("/picstr 40 string def\n");
+			getStream().writeBytes(width + " " + height + " 8 [" + width + " 0 0 " +
 				(-1 * height) + " 0 " + height +
 				"] {currentfile picstr readhexstring pop} ");
 			if (nChannels == 1) {
-				out.writeBytes("image\n");
+				getStream().writeBytes("image\n");
 			}
 			else {
-				out.writeBytes("false 3 colorimage\n");
+				getStream().writeBytes("false 3 colorimage\n");
 			}
-			planeOffset = out.getFilePointer();
+			planeOffset = getStream().getFilePointer();
 		}
 	}
 

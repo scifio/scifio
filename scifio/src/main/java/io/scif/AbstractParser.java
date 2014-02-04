@@ -57,14 +57,9 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	// -- Fields --
 
-	/** Current image source. */
-	protected RandomAccessInputStream in;
+	/** Last Metadata instance parsed by this parser. */
+	private M metadata;
 
-	/** Metadata for the current source. */
-	protected M metadata;
-
-	/** String id of current source. */
-	protected String currentId;
 
 	// -- Parser API Methods --
 
@@ -107,6 +102,23 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	}
 
 	@Override
+	public M getMetadata() {
+		return metadata;
+	}
+
+	@Override
+	public RandomAccessInputStream getSource() {
+		Metadata m = getMetadata();
+		if (m == null) return null;
+		return m.getSource();
+	}
+
+	@Override
+	public void updateSource(String source) throws IOException {
+		metadata.setSource(new RandomAccessInputStream(getContext(), source));
+	}
+
+	@Override
 	public String[] getUsedFiles() {
 		return getUsedFiles(false);
 	}
@@ -136,7 +148,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	public String[]
 		getImageUsedFiles(final int imageIndex, final boolean noPixels)
 	{
-		return noPixels ? null : new String[] { in.getFileName() };
+		return noPixels ? null : new String[] { getMetadata().getSource()
+			.getFileName() };
 	}
 
 	@Override
@@ -190,22 +203,23 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	public M parse(final String fileName, final M meta, final SCIFIOConfig config) throws IOException,
 		FormatException
 	{
-		RandomAccessInputStream stream = null;
+		RandomAccessInputStream stream = getSource();
 
-		if (in != null) {
-			if (in.getFileName().equals(fileName)) {
-				in.seek(0);
-				stream = in;
+		if (stream != null) {
+			if (stream.getFileName().equals(fileName)) {
+				stream.seek(0);
 			}
 			else {
 				close();
+				stream.close();
+				stream = null;
 			}
 		}
 
 		if (stream == null) stream =
 			new RandomAccessInputStream(getContext(), fileName);
 
-		return parse(stream, meta);
+		return parse(stream, meta, config);
 	}
 
 	@Override
@@ -219,7 +233,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	public M parse(final RandomAccessInputStream stream, final M meta, final SCIFIOConfig config)
 		throws IOException, FormatException
 	{
-		metadata = meta;
+		final RandomAccessInputStream in = getSource();
+
 		if (in == null || !in.getFileName().equals(stream.getFileName())) {
 			init(stream);
 
@@ -230,30 +245,25 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		}
 
 		// TODO relying on Abstract-level API
-		metadata.setFiltered(config.parserIsFiltered());
-		if (metadata.getContext() == null) metadata.setContext(getContext());
-		metadata.setSource(stream);
-		metadata.setDatasetName(stream.getFileName());
+		meta.setFiltered(config.parserIsFiltered());
+		if (meta.getContext() == null) metadata.setContext(getContext());
+		meta.setSource(stream);
+		meta.setDatasetName(stream.getFileName());
 
-		currentId = stream.getFileName();
-
+		metadata = meta;
 		typedParse(stream, meta, config);
 
-		metadata.populateImageMetadata();
+		meta.populateImageMetadata();
 
-		return metadata;
+
+		return meta;
 	}
 
 	// -- HasSource API Methods --
 
 	@Override
 	public void close(final boolean fileOnly) throws IOException {
-		if (in != null) in.close();
 		if (metadata != null) metadata.close(fileOnly);
-		if (!fileOnly) {
-			in = null;
-			currentId = null;
-		}
 	}
 
 	// -- AbstractParser Methods --
@@ -278,15 +288,14 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	private void init(final RandomAccessInputStream stream) throws IOException {
 
 		// Check to see if the stream is already open
-		if (in != null) {
+		if (getMetadata() != null) {
 			final String[] s = getUsedFiles();
 			for (int i = 0; i < s.length; i++) {
-				if (in.getFileName().equals(s[i])) return;
+				if (stream.getFileName().equals(s[i])) return;
 			}
 		}
 
 		close();
-		in = stream;
 	}
 
 	/* Builds a FileInfo array around the provided array of file names */
@@ -296,7 +305,8 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 			infos[i] = new FileInfo();
 			infos[i].filename = files[i];
 			infos[i].reader = getFormat().getReaderClass();
-			infos[i].usedToInitialize = files[i].endsWith(in.getFileName());
+			infos[i].usedToInitialize =
+				files[i].endsWith(getSource().getFileName());
 		}
 		return infos;
 	}
@@ -348,4 +358,5 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	{
 		return parse(stream, SCIFIOMetadataTools.<M> castMeta(meta), config);
 	}
+
 }

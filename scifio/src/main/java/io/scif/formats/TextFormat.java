@@ -83,8 +83,10 @@ public class TextFormat extends AbstractFormat {
 		return "Text";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "txt", "csv" };
 	}
 
@@ -223,13 +225,12 @@ public class TextFormat extends AbstractFormat {
 	 */
 	public static class Checker extends AbstractChecker {
 
-		// -- Constructor --
-
-		public Checker() {
-			suffixSufficient = false;
-		}
-
 		// -- Checker API Methods --
+
+		@Override
+		public boolean suffixSufficient() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final RandomAccessInputStream stream)
@@ -413,6 +414,13 @@ public class TextFormat extends AbstractFormat {
 	 * @author Mark Hiner
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
+
+		// -- AbstractReader API Methods --
+
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.UNKNOWN_DOMAIN };
+		}
 
 		// -- Reader API Methods --
 

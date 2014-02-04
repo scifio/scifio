@@ -68,8 +68,10 @@ public class JPEGTileFormat extends AbstractFormat {
 		return "Tile JPEG";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "jpg", "jpeg" };
 	}
 
@@ -140,7 +142,7 @@ public class JPEGTileFormat extends AbstractFormat {
 		{
 			final JPEGTileDecoder decoder = new JPEGTileDecoder(getContext());
 			meta.setDecoder(decoder);
-			decoder.initialize(in, 0, 1);
+			decoder.initialize(getSource(), 0, 1);
 		}
 	}
 
@@ -149,10 +151,11 @@ public class JPEGTileFormat extends AbstractFormat {
 	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		// -- Reader API methods --

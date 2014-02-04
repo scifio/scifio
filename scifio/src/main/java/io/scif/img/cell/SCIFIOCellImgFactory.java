@@ -74,8 +74,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	// -- Fields --
 
-	protected Reader reader;
-	protected SubRegion subregion;
+	private Reader reader;
+	private SubRegion subregion;
 
 	// -- Constuctors --
 

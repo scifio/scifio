@@ -149,10 +149,11 @@ public abstract class ImageIOFormat extends AbstractFormat {
 	public static class Reader<M extends Metadata> extends BufferedImageReader<M>
 	{
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		// -- Reader API methods --
@@ -183,7 +184,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		// -- Fields --
 
-		protected String kind;
+		private String kind;
 
 		// -- Constructors --
 
@@ -191,10 +192,17 @@ public abstract class ImageIOFormat extends AbstractFormat {
 			this.kind = kind;
 		}
 
+		// -- AbstractWriter Methods --
+
 		@Override
-		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax,
-			final SCIFIOConfig config) throws FormatException, IOException
+		protected String[] makeCompressionTypes() {
+			return new String[0];
+		}
+
+		@Override
+		public void writePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax))
@@ -219,7 +227,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 				img = ((BufferedImagePlane) plane).getData();
 			}
 
-			ImageIO.write(img, kind, out);
+			ImageIO.write(img, kind, getStream());
 		}
 
 		@Override

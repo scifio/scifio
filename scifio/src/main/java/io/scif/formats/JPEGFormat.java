@@ -66,8 +66,10 @@ public class JPEGFormat extends ImageIOFormat {
 		return "JPEG";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "jpg", "jpeg", "jpe" };
 	}
 
@@ -99,14 +101,17 @@ public class JPEGFormat extends ImageIOFormat {
 
 		private static final int MAX_SIZE = 8192;
 
-		// -- Constructor --
+		// -- Checker API Methods --
 
-		public Checker() {
-			suffixNecessary = false;
-			suffixSufficient = false;
+		@Override
+		public boolean suffixNecessary() {
+			return false;
 		}
 
-		// -- Checker API Methods --
+		@Override
+		public boolean suffixSufficient() {
+			return false;
+		}
 
 		@Override
 		public boolean isFormat(final String name, final SCIFIOConfig config) {
@@ -220,12 +225,11 @@ public class JPEGFormat extends ImageIOFormat {
 
 				final ByteArrayHandle bytes = new ByteArrayHandle(v.toByteArray());
 
-				locationService.mapFile(currentId + ".fixed", bytes);
-				super.parse(currentId + ".fixed", meta);
+				locationService.mapFile(getSource().getFileName() + ".fixed", bytes);
+				super.parse(getSource().getFileName() + ".fixed", meta);
 			}
 
-			metadata.setDatasetName(id);
-			currentId = id;
+			getMetadata().setDatasetName(id);
 		}
 	}
 

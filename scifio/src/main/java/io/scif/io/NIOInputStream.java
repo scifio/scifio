@@ -54,26 +54,26 @@ public class NIOInputStream extends InputStream implements DataInput {
 	 * Block size to use when searching through the stream. This value should not
 	 * exceed MAX_OVERHEAD!
 	 */
-	protected static final int DEFAULT_BLOCK_SIZE = 256 * 1024; // 256 KB
+	private static final int DEFAULT_BLOCK_SIZE = 256 * 1024; // 256 KB
 
 	/** Maximum number of bytes to search when searching through the stream. */
-	protected static final int MAX_SEARCH_SIZE = 512 * 1024 * 1024; // 512 MB
+	private static final int MAX_SEARCH_SIZE = 512 * 1024 * 1024; // 512 MB
 
 	// -- Fields --
 
-	protected IRandomAccess raf;
+	private IRandomAccess raf;
 
 	/** The file name. */
-	protected String filename;
+	private String filename;
 
 	/** The file. */
-	protected File file;
+	private File file;
 
 	/** The file channel backed by the random access file. */
-	protected Channel channel;
+	private Channel channel;
 
 	/** Endianness of the stream. */
-	protected boolean isLittleEndian;
+	private boolean isLittleEndian;
 
 	// -- Constructors --
 

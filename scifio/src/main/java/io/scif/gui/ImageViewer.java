@@ -109,32 +109,32 @@ public class ImageViewer extends JFrame implements ActionListener,
 	@Parameter
 	private GUIService guiService;
 
-	protected static final String TITLE = "SCIFIO Viewer";
-	protected static final char ANIMATION_KEY = ' ';
+	private static final String TITLE = "SCIFIO Viewer";
+	private static final char ANIMATION_KEY = ' ';
 
 	// -- Fields --
 
 	/** Current format reader. */
-	protected Reader myReader;
+	private Reader myReader;
 
 	/** Current format writer. */
-	protected Writer myWriter;
+	private Writer myWriter;
 
-	protected JPanel pane;
-	protected ImageIcon icon;
-	protected JLabel iconLabel;
-	protected JPanel sliderPanel;
-	protected JSlider nSlider;
-	protected JLabel probeLabel;
-	protected JMenuItem fileView, fileSave;
+	private JPanel pane;
+	private ImageIcon icon;
+	private JLabel iconLabel;
+	private JPanel sliderPanel;
+	private JSlider nSlider;
+	private JLabel probeLabel;
+	private JMenuItem fileView, fileSave;
 
-	protected String filename;
-	protected BufferedImage[] images;
+	private String filename;
+	private BufferedImage[] images;
 
-	protected boolean anim = false;
-	protected int fps = 10;
+	private boolean anim = false;
+	private int fps = 10;
 
-	protected boolean canCloseReader = true;
+	private boolean canCloseReader = true;
 
 	// -- Constructor --
 
@@ -569,7 +569,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 
 	// -- Helper methods --
 
-	protected StringBuffer sb = new StringBuffer();
+	private StringBuffer sb = new StringBuffer();
 
 	/** Updates cursor probe label. */
 	protected void updateLabel(int x, int y) {

@@ -61,58 +61,112 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	// -- Fields --
 
 	/** Metadata, of the output type, describing the input source. */
-	protected M metadata;
+	private M metadata;
 
 	/** Frame rate to use when writing in frames per second, if applicable. */
-	protected int fps = 10;
-
-	/** Default color model. */
-	protected ColorModel cm;
+	private int fps;
 
 	/** Available compression types. */
-	protected String[] compressionTypes;
+	private String[] compressionTypes;
 
 	/** Current compression type. */
-	protected String compression;
+	private String compression;
 
 	/** The options if required. */
-	protected CodecOptions options;
+	private CodecOptions options;
 
 	/**
 	 * Whether each plane in each image of the current file has been prepped for
 	 * writing.
 	 */
-	protected boolean[][] initialized;
+	private boolean[][] initialized;
 
 	/** The number of valid bits per pixel. */
-	protected int validBits;
+	private int validBits;
 
 	/** Whether or not we are writing planes sequentially. */
-	protected boolean sequential;
+	private boolean sequential;
 
 	/** Where the image should be written. */
-	protected RandomAccessOutputStream out;
+	private RandomAccessOutputStream out;
 
 	/** ColorModel for this Writer. */
 	private ColorModel model;
+
+	// -- AbstractWriter API Methods --
+
+	/**
+	 * Ensure that the arguments that are being passed to saveBytes(...) are
+	 * valid.
+	 * 
+	 * @throws FormatException if any of the arguments is invalid.
+	 */
+	protected void checkParams(final int imageIndex, final long planeIndex,
+		final byte[] buf, final long[] planeMin, final long[] planeMax)
+		throws FormatException
+	{
+		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out, imageIndex);
+	
+		if (buf == null) throw new FormatException("Buffer cannot be null.");
+		long planes = metadata.get(imageIndex).getPlaneCount();
+	
+		if (metadata.get(imageIndex).isMultichannel()) planes *=
+			metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
+	
+		if (planeIndex < 0) throw new FormatException(String.format(
+			"Plane index:%d must be >= 0", planeIndex));
+		if (planeIndex >= planes) {
+			throw new FormatException(String.format("Plane index:%d must be < %d",
+				planeIndex, planes));
+		}
+	
+		FormatTools.checkPlaneForWriting(getMetadata(), imageIndex, planeIndex,
+			buf.length, planeMin, planeMax);
+		FormatTools.assertId(out, true, 0);
+	
+		final int pixelType = metadata.get(imageIndex).getPixelType();
+	
+		if (!DataTools.containsValue(getPixelTypes(compression), pixelType)) {
+			throw new FormatException("Unsupported image type '" +
+				FormatTools.getPixelTypeString(pixelType) + "'.");
+		}
+	}
+
+	/**
+	 * Ensures this writer is prepared to write the given plane of the given
+	 * image.
+	 */
+	protected void initialize(final int imageIndex, final long planeIndex,
+		final long[] planeMin, final long[] planeMax) throws FormatException,
+		IOException
+	{
+		initialized[imageIndex][(int) planeIndex] = true;
+	}
+
+	/**
+	 * @return An array of compression types supported by this format. An empty
+	 *         array indicates no compression.
+	 */
+	protected abstract String[] makeCompressionTypes();
+
+	/**
+	 * Helper method invoked by {@link #savePlane} to perform actual format-
+	 * specific output.
+	 */
+	protected abstract void writePlane(final int imageIndex,
+		final long PlaneIndex, final Plane plane, final long[] planeMin,
+		final long[] planeMax) throws FormatException, IOException;
 
 	// -- Writer API Methods --
 
 	@Override
 	public void savePlane(final int imageIndex, final long planeIndex,
-		final Plane plane) throws FormatException, IOException
-	{
-		savePlane(imageIndex, planeIndex, plane, new SCIFIOConfig());
-	}
-
-	@Override
-	public void savePlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final SCIFIOConfig config) throws FormatException,
+		final Plane plane) throws FormatException,
 		IOException
 	{
 		final long[] planeMax = metadata.get(imageIndex).getAxesLengthsPlanar();
 		final long[] planeMin = new long[planeMax.length];
-		savePlane(imageIndex, planeIndex, plane, planeMin, planeMax, config);
+		savePlane(imageIndex, planeIndex, plane, planeMin, planeMax);
 	}
 
 	@Override
@@ -120,8 +174,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		final Plane plane, final long[] planeMin, final long[] planeMax)
 		throws FormatException, IOException
 	{
-		savePlane(imageIndex, planeIndex, plane, planeMin, planeMax,
-			new SCIFIOConfig());
+		initialize(imageIndex, planeIndex, planeMin, planeMax);
+		writePlane(imageIndex, planeIndex, plane, planeMin, planeMax);
 	}
 
 	@Override
@@ -162,20 +216,63 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	public void setDest(final String fileName, final int imageIndex)
 		throws FormatException, IOException
 	{
-		getMetadata().setDatasetName(fileName);
-		setDest(new RandomAccessOutputStream(getContext(), fileName));
+		setDest(fileName, imageIndex, new SCIFIOConfig());
 	}
 
 	@Override
 	public void setDest(final File file, final int imageIndex)
 		throws FormatException, IOException
 	{
-		setDest(file.getName());
+		setDest(file.getName(), imageIndex, new SCIFIOConfig());
 	}
 
 	@Override
 	public void setDest(final RandomAccessOutputStream out, final int imageIndex)
 		throws FormatException, IOException
+	{
+		setDest(out, imageIndex, new SCIFIOConfig());
+	}
+
+	@Override
+	public void setDest(final String fileName, final SCIFIOConfig config)
+		throws FormatException, IOException
+	{
+		setDest(fileName, 0, config);
+	}
+
+	@Override
+	public void setDest(final File file, final SCIFIOConfig config)
+		throws FormatException, IOException
+	{
+		setDest(file.getName(), 0, config);
+	}
+
+	@Override
+	public void setDest(final RandomAccessOutputStream out,
+		final SCIFIOConfig config) throws FormatException, IOException
+	{
+		setDest(out, 0, config);
+	}
+
+	@Override
+	public void setDest(final String fileName, final int imageIndex,
+		final SCIFIOConfig config) throws FormatException, IOException
+	{
+		getMetadata().setDatasetName(fileName);
+		setDest(new RandomAccessOutputStream(getContext(), fileName), imageIndex,
+			config);
+	}
+
+	@Override
+	public void setDest(final File file, final int imageIndex,
+		final SCIFIOConfig config) throws FormatException, IOException
+	{
+		setDest(file.getName(), imageIndex, config);
+	}
+
+	@Override
+	public void setDest(final RandomAccessOutputStream out, final int imageIndex,
+		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		if (metadata == null) throw new FormatException(
 			"Can not set Destination without setting Metadata first.");
@@ -184,7 +281,17 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		// set metadata.datasetName here when RAOS has better id handling
 
 		this.out = out;
-		initialize(imageIndex);
+		fps = config.writerGetFramesPerSecond();
+		options = config.writerGetCodecOptions();
+		model = config.writerGetColorModel();
+		compression = config.writerGetCompression();
+		sequential = config.writerIsSequential();
+		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
+		initialized = new boolean[metadata.getImageCount()][];
+		for (int i = 0; i < metadata.getImageCount(); i++) {
+			initialized[i] =
+				new boolean[(int) metadata.get(imageIndex).getPlaneCount()];
+		}
 	}
 
 	@Override
@@ -204,9 +311,32 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	
 	@Override
 	public String[] getCompressionTypes() {
+		if (compressionTypes == null) {
+			compressionTypes = makeCompressionTypes();
+		}
 		return compressionTypes;
 	}
 
+	@Override
+	public int getFramesPerSecond() {
+		return fps;
+	}
+
+	@Override
+	public CodecOptions getCodecOptions() {
+		return options;
+	}
+
+	@Override
+	public boolean writeSequential() {
+		return sequential;
+	}
+
+	@Override
+	public int getValidBits() {
+		return validBits;
+	}
+	
 	@Override
 	public int[] getPixelTypes(final String codec) {
 		return new int[] { FormatTools.INT8, FormatTools.UINT8, FormatTools.INT16,
@@ -261,6 +391,16 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		metadata = meta;
 	}
 
+	@Override
+	public boolean isInitialized(int imageIndex, long planeIndex) {
+		return initialized[imageIndex][(int)planeIndex];
+	}
+
+	@Override
+	public String getCompression() {
+		return compression;
+	}
+
 	// -- HasSource API Methods --
 
 	@Override
@@ -269,54 +409,5 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		if (metadata != null) metadata.close(fileOnly);
 		out = null;
 		initialized = null;
-	}
-
-	// -- Helper methods --
-
-	/** Sets up the initialized array and ensures this Writer is ready for writing */
-	private void initialize(final int imageIndex) throws FormatException {
-		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out);
-		initialized = new boolean[metadata.getImageCount()][];
-		for (int i = 0; i < metadata.getImageCount(); i++) {
-			initialized[i] =
-				new boolean[(int) metadata.get(imageIndex).getPlaneCount()];
-		}
-	}
-
-	/**
-	 * Ensure that the arguments that are being passed to saveBytes(...) are
-	 * valid.
-	 * 
-	 * @throws FormatException if any of the arguments is invalid.
-	 */
-	protected void checkParams(final int imageIndex, final long planeIndex,
-		final byte[] buf, final long[] planeMin, final long[] planeMax)
-		throws FormatException
-	{
-		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out, imageIndex);
-
-		if (buf == null) throw new FormatException("Buffer cannot be null.");
-		long planes = metadata.get(imageIndex).getPlaneCount();
-
-		if (metadata.get(imageIndex).isMultichannel()) planes *=
-			metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
-
-		if (planeIndex < 0) throw new FormatException(String.format(
-			"Plane index:%d must be >= 0", planeIndex));
-		if (planeIndex >= planes) {
-			throw new FormatException(String.format("Plane index:%d must be < %d",
-				planeIndex, planes));
-		}
-
-		FormatTools.checkPlaneForWriting(getMetadata(), imageIndex, planeIndex,
-			buf.length, planeMin, planeMax);
-		FormatTools.assertId(out, true, 0);
-
-		final int pixelType = metadata.get(imageIndex).getPixelType();
-
-		if (!DataTools.containsValue(getPixelTypes(compression), pixelType)) {
-			throw new FormatException("Unsupported image type '" +
-				FormatTools.getPixelTypeString(pixelType) + "'.");
-		}
 	}
 }

@@ -58,19 +58,13 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	// -- Fields --
 
 	/** Metadata for the current image source. */
-	protected M metadata;
+	private M metadata;
 
 	/** Whether or not to normalize float data. */
-	protected boolean normalizeData;
+	private boolean normalizeData;
 
 	/** List of domains in which this format is used. */
-	protected String[] domains = new String[0];
-
-	/** Name of current file. */
-	protected String currentId;
-
-	/** Whether this format supports multi-file datasets. */
-	protected boolean hasCompanionFiles = false;
+	private String[] domains;
 
 	private final Class<P> planeClass;
 
@@ -80,6 +74,14 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	public AbstractReader(final Class<P> planeClass) {
 		this.planeClass = planeClass;
 	}
+
+	// -- AbstractReader API Methods --
+
+	/** 
+	 * Helper method to lazily create the domain array for this reader instance,
+	 * to avoid constantly re-creating the array.
+	 */
+	protected abstract String[] createDomainArray();
 
 	// -- Reader API Methods --
 
@@ -174,6 +176,9 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public String[] getDomains() {
+		if (domains == null) {
+			domains = createDomainArray();
+		}
 		return domains;
 	}
 
@@ -227,7 +232,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public boolean hasCompanionFiles() {
-		return hasCompanionFiles;
+		return false;
 	}
 
 	@Override
@@ -286,8 +291,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		if (metadata != null && getStream() != stream) close();
 
 		if (metadata == null) {
-			currentId = stream.getFileName();
-
 			try {
 				@SuppressWarnings("unchecked")
 				final M meta = (M) getFormat().createParser().parse(stream, config);
@@ -511,7 +514,6 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 		if (!fileOnly) {
 			metadata = null;
-			currentId = null;
 		}
 	}
 }

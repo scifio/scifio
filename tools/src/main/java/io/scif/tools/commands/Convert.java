@@ -38,6 +38,7 @@ import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.Writer;
 import io.scif.common.Constants;
+import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ReaderFilter;
 import io.scif.formats.TIFFFormat;
 import io.scif.io.Location;
@@ -114,7 +115,7 @@ public class Convert extends AbstractReaderCommand {
 		// Check overwrite status
 		if (checkOverwrite()) {
 			// Begin conversion process
-			if (map != null) locationService.mapId(in, map);
+			if (getMap() != null) locationService.mapId(in, getMap());
 
 			info(in);
 
@@ -129,8 +130,7 @@ public class Convert extends AbstractReaderCommand {
 					writer.getFormat().getFormatName());
 
 				if (!writer.canDoStacks()) {
-					crop =
-						new long[reader.getMetadata().get(0).getAxesNonPlanar().size() * 2];
+					setCrop(new long[reader.getMetadata().get(0).getAxesNonPlanar().size() * 2]);
 				}
 
 				read(reader);
@@ -200,7 +200,7 @@ public class Convert extends AbstractReaderCommand {
 						getConfig());
 			}
 			// write the specified plane
-			writer.savePlane(imageIndex, planeNo, plane, getConfig());
+			writer.savePlane(imageIndex, planeNo, plane);
 		}
 		catch (final FormatException e) {
 			throw new CmdLineException(null, e.getMessage());
@@ -224,9 +224,11 @@ public class Convert extends AbstractReaderCommand {
 	private Writer makeWriter(final Metadata sourceMeta) throws CmdLineException {
 		Writer writer;
 		try {
-			// Initialize the writer
+			// Initialize the writer, and don't allow files to be opened to determine
+			// format compatibility (as the destination doesn't exist on disk).
 			writer =
-				initializeService.initializeWriter(sourceMeta, out, getConfig());
+				initializeService.initializeWriter(sourceMeta, out, new SCIFIOConfig()
+					.checkerSetOpen(false));
 
 			// Set writer configuration
 			if (writer instanceof TIFFFormat.Writer) {

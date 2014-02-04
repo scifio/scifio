@@ -88,8 +88,10 @@ public class ICSFormat extends AbstractFormat {
 		return "Image Cytometry Standard";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "ics", "ids" };
 	}
 
@@ -106,25 +108,25 @@ public class ICSFormat extends AbstractFormat {
 		 * Whether this file is ICS version 2, and thus does not have an IDS
 		 * companion
 		 */
-		protected boolean versionTwo = false;
+		private boolean versionTwo = false;
 
 		/** Offset to pixel data */
-		protected long offset = -1;
+		private long offset = -1;
 
 		/** True if instrument information was discovered. */
-		protected boolean hasInstrumentData = false;
+		private boolean hasInstrumentData = false;
 
 		/** True if this planes were stored in RGB order. */
 		private boolean storedRGB;
 
 		/** ICS file name */
-		protected String icsId = "";
+		private String icsId = "";
 
 		/** IDS file name */
-		protected String idsId = "";
+		private String idsId = "";
 
 		/** ICS Metadata */
-		protected Hashtable<String, String> keyValPairs;
+		private Hashtable<String, String> keyValPairs;
 
 		// -- Constructor --
 
@@ -1234,22 +1236,20 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			reader.close();
-			in.close();
+			getSource().close();
 
 			final String id = meta.isVersionTwo() ? meta.icsId : meta.idsId;
-			in = new RandomAccessInputStream(getContext(), id);
+			updateSource(id);
 
 			if (meta.versionTwo) {
-				String s = in.readString(ICSUtils.NL);
+				String s = getSource().readString(ICSUtils.NL);
 				while (!s.trim().equals("end"))
-					s = in.readString(ICSUtils.NL);
+					s = getSource().readString(ICSUtils.NL);
 			}
 
-			meta.offset = in.getFilePointer();
+			meta.offset = getSource().getFilePointer();
 
-			in.seek(0);
-
-			meta.setSource(in);
+			getSource().seek(0);
 
 			meta.hasInstrumentData =
 				nullKeyCheck(new String[] { "history cube emm nm",
@@ -1264,7 +1264,7 @@ public class ICSFormat extends AbstractFormat {
 		/* Returns true if any of the keys in testKeys has a non-null value */
 		private boolean nullKeyCheck(final String[] testKeys) {
 			for (final String key : testKeys) {
-				if (metadata.get(key) != null) {
+				if (getMetadata().get(key) != null) {
 					return true;
 				}
 			}
@@ -1339,13 +1339,12 @@ public class ICSFormat extends AbstractFormat {
 		/* Image data. */
 		private byte[] data;
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains =
-				new String[] { FormatTools.LM_DOMAIN, FormatTools.FLIM_DOMAIN,
-					FormatTools.UNKNOWN_DOMAIN };
-			hasCompanionFiles = true;
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.LM_DOMAIN, FormatTools.FLIM_DOMAIN,
+				FormatTools.UNKNOWN_DOMAIN };
 		}
 
 		// -- Reader API Methods --
@@ -1375,20 +1374,20 @@ public class ICSFormat extends AbstractFormat {
 				FormatTools.rasterToPosition(imageIndex, prevPlane, meta);
 
 			if (!gzip) {
-				getStream().seek(metadata.offset + planeIndex * len);
+				getStream().seek(getMetadata().offset + planeIndex * len);
 			}
 			else {
 				long toSkip = (planeIndex - prevPlane - 1) * len;
 				if (gzipStream == null || planeIndex <= prevPlane) {
 					FileInputStream fis = null;
 					toSkip = planeIndex * len;
-					if (metadata.versionTwo) {
-						fis = new FileInputStream(metadata.icsId);
-						fis.skip(metadata.offset);
+					if (getMetadata().versionTwo) {
+						fis = new FileInputStream(getMetadata().icsId);
+						fis.skip(getMetadata().offset);
 					}
 					else {
-						fis = new FileInputStream(metadata.idsId);
-						toSkip += metadata.offset;
+						fis = new FileInputStream(getMetadata().idsId);
+						toSkip += getMetadata().offset;
 					}
 					try {
 						gzipStream = new GZIPInputStream(fis);
@@ -1396,7 +1395,7 @@ public class ICSFormat extends AbstractFormat {
 					catch (final IOException e) {
 						// the 'gzip' flag is set erroneously
 						gzip = false;
-						getStream().seek(metadata.offset + planeIndex * len);
+						getStream().seek(getMetadata().offset + planeIndex * len);
 						gzipStream = null;
 					}
 				}
@@ -1428,7 +1427,7 @@ public class ICSFormat extends AbstractFormat {
 				// channels are stored interleaved, but because there are more than we
 				// can display as RGB, we need to separate them
 				getStream().seek(
-					metadata.offset +
+					getMetadata().offset +
 						len *
 						FormatTools.positionToRaster(0, this, new long[] { coordinates[0],
 							0, coordinates[2] }));
@@ -1501,7 +1500,7 @@ public class ICSFormat extends AbstractFormat {
 		@Override
 		public void setMetadata(final Metadata meta) throws IOException {
 			super.setMetadata(meta);
-			gzip = metadata.get("representation compression").equals("gzip");
+			gzip = getMetadata().get("representation compression").equals("gzip");
 			prevPlane = -1;
 			gzipStream = null;
 			invertY = false;
@@ -1529,7 +1528,7 @@ public class ICSFormat extends AbstractFormat {
 			if (getMetadata().get(0).getAxisLength(SCIFIOAxes.LIFETIME) > 1) {
 				domain[0] = FormatTools.FLIM_DOMAIN;
 			}
-			else if (metadata.hasInstrumentData) {
+			else if (getMetadata().hasInstrumentData) {
 				domain[0] = FormatTools.LM_DOMAIN;
 			}
 
@@ -1550,12 +1549,36 @@ public class ICSFormat extends AbstractFormat {
 		private long lastPlane = -1;
 		private RandomAccessOutputStream pixels;
 
+		// -- AbstractWriter Methods --
+
+		@Override
+		protected String[] makeCompressionTypes() {
+			return new String[0];
+		}
+
+		@Override
+		protected void initialize(final int imageIndex, final long planeIndex,
+			final long[] planeMin, final long[] planeMax) throws FormatException,
+			IOException
+		{
+			if (!isInitialized(imageIndex, (int) planeIndex)) {
+
+				if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(), planeMin,
+					planeMax))
+				{
+					pixels.seek(pixelOffset + (planeIndex + 1) *
+						getMetadata().get(imageIndex).getPlaneSize());
+				}
+			}
+
+			super.initialize(imageIndex, planeIndex, planeMin, planeMax);
+		}
 		// -- Writer API Methods --
 
 		@Override
-		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax,
-			final SCIFIOConfig config) throws FormatException, IOException
+		public void writePlane(final int imageIndex, final long planeIndex,
+			final Plane plane, final long[] planeMin, final long[] planeMax)
+			throws FormatException, IOException
 		{
 			checkParams(imageIndex, planeIndex, plane.getBytes(), planeMin, planeMax);
 			final Metadata meta = getMetadata();
@@ -1580,15 +1603,6 @@ public class ICSFormat extends AbstractFormat {
 			final int planeSize =
 				(int) (meta.get(0).getSize() / meta.get(0).getPlaneCount());
 
-			if (!initialized[imageIndex][(int) planeIndex]) {
-				initialized[imageIndex][(int) planeIndex] = true;
-
-				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
-					planeMax))
-				{
-					pixels.seek(pixelOffset + (planeIndex + 1) * planeSize);
-				}
-			}
 
 			pixels.seek(pixelOffset + planeIndex * planeSize);
 			if (SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax) &&
@@ -1631,7 +1645,7 @@ public class ICSFormat extends AbstractFormat {
 
 		public void close(final int imageIndex) throws IOException {
 			if (lastPlane != getMetadata().get(imageIndex).getPlaneCount() - 1 &&
-				out != null)
+				getStream() != null)
 			{
 				overwriteDimensions(getMetadata(), imageIndex);
 			}
@@ -1649,6 +1663,13 @@ public class ICSFormat extends AbstractFormat {
 
 		@Override
 		public void setDest(final String id) throws FormatException, IOException {
+			//FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// Update the id if necessary
+			if (FormatTools.checkSuffix(id, "ids")) {
+				final String metadataFile = makeIcsId(id);
+				setDest(metadataFile);
+				return;
+			}
 			updateMetadataIds(id);
 			super.setDest(id);
 		}
@@ -1657,36 +1678,44 @@ public class ICSFormat extends AbstractFormat {
 		public void setDest(final String id, final int imageIndex)
 			throws FormatException, IOException
 		{
+			//FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// Update the id if necessary
+			if (FormatTools.checkSuffix(id, "ids")) {
+				final String metadataFile = makeIcsId(id);
+				setDest(metadataFile, imageIndex);
+				return;
+			}
 			updateMetadataIds(id);
 			super.setDest(id, imageIndex);
 		}
 
 		@Override
-		public void
-			setDest(final RandomAccessOutputStream out, final int imageIndex)
-				throws FormatException, IOException
+		public void setDest(final String id, final int imageIndex,
+			final SCIFIOConfig config)
+			throws FormatException, IOException
 		{
-			super.setDest(out, imageIndex);
-			initialize(imageIndex);
+			//FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// Update the id if necessary
+			if (FormatTools.checkSuffix(id, "ids")) {
+				final String metadataFile = makeIcsId(id);
+				setDest(metadataFile, imageIndex, config);
+				return;
+			}
+			updateMetadataIds(id);
+			super.setDest(id, imageIndex, config);
 		}
 
-		// -- Helper methods --
-
-		/* Sets the ICS Metadta icsId and idsId fields */
-		private void updateMetadataIds(final String id) {
-			metadata.idsId = FormatTools.checkSuffix(id, "ids") ? id : makeIdsId(id);
-			metadata.icsId = FormatTools.checkSuffix(id, "ics") ? id : makeIcsId(id);
-		}
-
-		private void initialize(final int imageIndex) throws IOException {
+		@Override
+		public void setDest(final RandomAccessOutputStream out,
+			final int imageIndex, final SCIFIOConfig config) throws FormatException,
+			IOException
+		{
 			final String currentId =
 				getMetadata().idsId != null ? getMetadata().idsId : getMetadata().icsId;
 
-			if (FormatTools.checkSuffix(getMetadata().idsId, "ids")) {
-				final String metadataFile = makeIcsId(currentId);
-				if (out != null) out.close();
-				out = new RandomAccessOutputStream(getContext(), metadataFile);
-			}
+
+			super.setDest(out, imageIndex, config);
+
 
 			if (out.length() == 0) {
 				out.writeBytes("\t\n");
@@ -1708,8 +1737,8 @@ public class ICSFormat extends AbstractFormat {
 				final int[] sizes = overwriteDimensions(meta, imageIndex);
 				dimensionLength = (int) (out.getFilePointer() - dimensionOffset);
 
-				if (validBits != 0) {
-					out.writeBytes("layout\tsignificant_bits\t" + validBits + "\n");
+				if (getValidBits() != 0) {
+					out.writeBytes("layout\tsignificant_bits\t" + getValidBits() + "\n");
 				}
 
 				final boolean signed = FormatTools.isSigned(pixelType);
@@ -1778,11 +1807,19 @@ public class ICSFormat extends AbstractFormat {
 			}
 		}
 
+		// -- Helper methods --
+
+		/* Sets the ICS Metadta icsId and idsId fields */
+		private void updateMetadataIds(final String id) {
+			getMetadata().idsId = FormatTools.checkSuffix(id, "ids") ? id : makeIdsId(id);
+			getMetadata().icsId = FormatTools.checkSuffix(id, "ics") ? id : makeIcsId(id);
+		}
+
 		private int[]
 			overwriteDimensions(final Metadata meta, final int imageIndex)
 				throws IOException
 		{
-			out.seek(dimensionOffset);
+			getStream().seek(dimensionOffset);
 //			final int sizeX = (int) meta.getAxisLength(imageIndex, Axes.X);
 //			final int sizeY = (int) meta.getAxisLength(imageIndex, Axes.Y);
 //			final int z = (int) meta.getAxisLength(imageIndex, Axes.Z);
@@ -1821,15 +1858,15 @@ public class ICSFormat extends AbstractFormat {
 				}
 				dimOrder.append("\t");
 			}
-			out.writeBytes("layout\torder\tbits\t" + dimOrder.toString() + "\n");
-			out.writeBytes("layout\tsizes\t");
+			getStream().writeBytes("layout\torder\tbits\t" + dimOrder.toString() + "\n");
+			getStream().writeBytes("layout\tsizes\t");
 			for (int i = 0; i < sizes.length; i++) {
-				out.writeBytes(sizes[i] + "\t");
+				getStream().writeBytes(sizes[i] + "\t");
 			}
-			while ((out.getFilePointer() - dimensionOffset) < dimensionLength - 1) {
-				out.writeBytes(" ");
+			while ((getStream().getFilePointer() - dimensionOffset) < dimensionLength - 1) {
+				getStream().writeBytes(" ");
 			}
-			out.writeBytes("\n");
+			getStream().writeBytes("\n");
 
 			return sizes;
 		}

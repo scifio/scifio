@@ -94,8 +94,10 @@ public class MicromanagerFormat extends AbstractFormat {
 		return "Micro-Manager";
 	}
 
+	// -- AbstractFormat Methods --
+
 	@Override
-	public String[] getSuffixes() {
+	protected String[] makeSuffixArray() {
 		return new String[] { "tif", "tiff", "txt", "xml" };
 	}
 
@@ -305,9 +307,9 @@ public class MicromanagerFormat extends AbstractFormat {
 		public String[] getImageUsedFiles(final int imageIndex,
 			final boolean noPixels)
 		{
-			FormatTools.assertId(currentId, true, 1);
+			FormatTools.assertId(getSource(), true, 1);
 			final Vector<String> files = new Vector<String>();
-			for (final Position pos : metadata.getPositions()) {
+			for (final Position pos : getMetadata().getPositions()) {
 				files.add(pos.metadataFile);
 				if (pos.xmlFile != null) {
 					files.add(pos.xmlFile);
@@ -726,7 +728,7 @@ public class MicromanagerFormat extends AbstractFormat {
 					final String key = attributes.getValue("key");
 					final String value = attributes.getValue("value");
 
-					metadata.getTable().put(key, value);
+					getMetadata().getTable().put(key, value);
 				}
 			}
 		}
@@ -746,10 +748,11 @@ public class MicromanagerFormat extends AbstractFormat {
 		/** Helper reader for TIFF files. */
 		private MinimalTIFFFormat.Reader<?> tiffReader;
 
-		// -- Constructor --
+		// -- AbstractReader API Methods --
 
-		public Reader() {
-			domains = new String[] { FormatTools.LM_DOMAIN };
+		@Override
+		protected String[] createDomainArray() {
+			return new String[] { FormatTools.LM_DOMAIN };
 		}
 
 		// -- Reader API methods --

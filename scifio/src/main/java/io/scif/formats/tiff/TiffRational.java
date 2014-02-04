@@ -42,7 +42,7 @@ public class TiffRational extends Number implements Comparable<TiffRational> {
 	// -- Fields --
 
 	/** Components of the rational's fractional representation. */
-	protected long numer, denom;
+	private long numer, denom;
 
 	// -- Constructor --
 

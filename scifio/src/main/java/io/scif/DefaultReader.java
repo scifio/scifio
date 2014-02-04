@@ -59,6 +59,13 @@ public class DefaultReader extends ByteArrayReader<DefaultMetadata> implements
 		return format;
 	}
 
+	// -- AbstractReader API Methods --
+
+	@Override
+	protected String[] createDomainArray() {
+		return new String[0];
+	}
+
 	// -- Reader API Methods --
 
 	/**
@@ -75,5 +82,4 @@ public class DefaultReader extends ByteArrayReader<DefaultMetadata> implements
 			"Trying to read using DefaultReader. "
 				+ "Must implement a Reader specifically for this Format");
 	}
-
 }

@@ -44,7 +44,7 @@ import java.io.IOException;
 public abstract class AbstractNIOHandle implements IRandomAccess {
 
 	/** Error message to be used when instantiating an EOFException. */
-	protected static final String EOF_ERROR_MSG =
+	public static final String EOF_ERROR_MSG =
 		"Attempting to read beyond end of file.";
 
 	// -- AbstractNIOHandle methods --

@@ -162,10 +162,17 @@ public class CheckerTest {
 	 */
 	private static class FakeChecker extends io.scif.DefaultChecker {
 
+		private boolean suffixSufficient = false;
+
 		// -- FakeChecker Methods --
 
 		public void setSuffixSufficient(final boolean s) {
 			suffixSufficient = s;
+		}
+
+		@Override
+		public boolean suffixSufficient() {
+			return suffixSufficient;
 		}
 
 		@Override

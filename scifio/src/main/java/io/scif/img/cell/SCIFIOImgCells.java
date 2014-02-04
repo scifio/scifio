@@ -73,9 +73,9 @@ public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
 
 	// -- Fields --
 
-	protected final CachedCells cells;
+	private final CachedCells cells;
 
-	protected final CellCache<A> cache;
+	private final CellCache<A> cache;
 
 	// -- Constructor --
 

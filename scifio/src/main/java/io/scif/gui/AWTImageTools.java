@@ -98,7 +98,7 @@ public final class AWTImageTools {
 	// -- Constants --
 
 	/** ImageObserver for working with AWT images. */
-	protected static final Component OBS = new Container();
+	private static final Component OBS = new Container();
 
 	// -- Constructor --
 

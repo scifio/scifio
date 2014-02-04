@@ -88,11 +88,11 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	private boolean saveOriginalMetadata;
 
 	// Writer
-	private boolean writeSequential;
-	private ColorModel model;
-	private int fps;
-	private String compression;
-	private CodecOptions options;
+	private boolean writeSequential = false;
+	private ColorModel model = null;
+	private int fps = 10;
+	private String compression = "";
+	private CodecOptions options = null;
 
 	// Groupable
 	/** Whether or not to group multi-file formats. */

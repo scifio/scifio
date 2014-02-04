@@ -82,11 +82,11 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 
 	@Option(name = "-t", aliases = "--stitch",
 		usage = "stitch input files with similar names")
-	protected boolean stitch;
+	private boolean stitch;
 
 	@Option(name = "-s", aliases = "--separate",
 		usage = "separate non-XY planar axes")
-	protected boolean separate;
+	private boolean separate;
 
 	// TODO need a ChannelMerger filter
 //	@Option(name = "-m", aliases = "--merge",
@@ -95,19 +95,19 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 
 	@Option(name = "-e", aliases = "--expand",
 		usage = "expand indexed color to RGB")
-	protected boolean expand;
+	private boolean expand;
 
 	@Option(name = "-g", aliases = "--nogroup",
 		usage = "force multi-file datasets to be read as individual files")
-	protected boolean nogroup;
+	private boolean nogroup;
 
 	@Option(name = "-a", aliases = "--autoscale",
 		usage = "automatically adjust brightness and contrast before converting")
-	protected boolean autoscale;
+	private boolean autoscale;
 
 	@Option(name = "-M", aliases = "--map", metaVar = "FILE_NAME",
 		usage = "specify file on disk to which name should be mapped")
-	protected String map;
+	private String map;
 
 	// TODO add image index support
 //	@Option(name = "-i", aliases = "--image", metaVar = "START,END",
@@ -121,15 +121,43 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 		handler = LongArrayOptionHandler.class,
 		usage = "specify a range for non-planar indices. Values are read as [min, max] "
 			+ "pairs in axis order")
-	protected long[] npRange = new long[0];
+	private long[] npRange = new long[0];
 
 	@Option(name = "-C", aliases = "--crop",
 		handler = LongArrayOptionHandler.class,
 		usage = "specify a range for planar axis cropping. Values are read as"
 			+ " [offset, length] pairs in axis order")
-	protected long[] crop = new long[0];
+	private long[] crop = new long[0];
 
 	// -- Helper methods --
+
+	/**
+	 * @return File on disk to map to
+	 */
+	protected String getMap() {
+		return map;
+	}
+
+	/**
+	 * @param map File on disk to map to
+	 */
+	protected void setMap(String map) {
+		this.map = map;
+	}
+
+	/**
+	 * @return Cropped axis lengths as [offset, length] pairs in axis order.
+	 */
+	protected long[] getCrop() {
+		return crop;
+	}
+
+	/**
+	 * @param crop Cropped axis lengths as [offset, length] pairs in axis order.
+	 */
+	protected void setCrop(long[] crop) {
+		this.crop = crop;
+	}
 
 	/**
 	 * Helper method to initialize a reader given the current command parameters.
@@ -215,7 +243,7 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 		// Get the planar offsets/lengths (account for cropping)
 		final long[] planeOffsets = new long[iMeta.getAxesPlanar().size()];
 		final long[] planeLengths = new long[planeOffsets.length];
-		makeRange(crop, planeOffsets, planeLengths, iMeta, iMeta.getAxesPlanar());
+		makeRange(getCrop(), planeOffsets, planeLengths, iMeta, iMeta.getAxesPlanar());
 
 		// Get the non-planar offsets/lengths (e.g. restricting plane indices)
 		final long[] npOffsets = new long[iMeta.getAxesNonPlanar().size()];
@@ -271,4 +299,5 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 				.writerSetSequential(true);
 		return config;
 	}
+
 }
