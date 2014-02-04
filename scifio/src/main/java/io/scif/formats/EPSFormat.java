@@ -187,7 +187,8 @@ public class EPSFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta, final SCIFIOConfig config) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			meta.createImageMetadata(1);
 
@@ -211,7 +212,7 @@ public class EPSFormat extends AbstractFormat {
 				getSource().seek(offset);
 				getSource().read(b);
 
-				RandomAccessInputStream ifdSource =
+				final RandomAccessInputStream ifdSource =
 					new RandomAccessInputStream(getContext(), b);
 				final TiffParser tp = new TiffParser(getContext(), ifdSource);
 				ifdSource.close();
@@ -476,7 +477,7 @@ public class EPSFormat extends AbstractFormat {
 		// -- Fields --
 
 		private long planeOffset = 0;
-		
+
 		// -- AbstractWriter Methods --
 
 		@Override
@@ -500,7 +501,7 @@ public class EPSFormat extends AbstractFormat {
 					final int yAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.Y);
 					final int w = (int) planeMax[xAxis], h = (int) planeMax[yAxis];
 					final int nChannels =
-							(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
+						(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 					// write a dummy plane that will be overwritten in sections
 					final int planeSize = w * h * nChannels;
 					for (int i = 0; i < planeSize; i++) {
@@ -535,7 +536,6 @@ public class EPSFormat extends AbstractFormat {
 
 			// write pixel data
 			// for simplicity, write 80 char lines
-
 
 			final int planeSize = (int) (planeMax[0] * planeMax[1]);
 
@@ -585,22 +585,26 @@ public class EPSFormat extends AbstractFormat {
 				(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			getStream().writeBytes("%!PS-Adobe-2.0 EPSF-1.2\n");
-			getStream().writeBytes("%%Title: " + getMetadata().getDatasetName() + "\n");
+			getStream().writeBytes(
+				"%%Title: " + getMetadata().getDatasetName() + "\n");
 			getStream().writeBytes("%%Creator: SCIFIO\n");
 			getStream().writeBytes("%%Pages: 1\n");
-			getStream().writeBytes("%%BoundingBox: 0 0 " + width + " " + height + "\n");
+			getStream().writeBytes(
+				"%%BoundingBox: 0 0 " + width + " " + height + "\n");
 			getStream().writeBytes("%%EndComments\n\n");
 
 			getStream().writeBytes("/ld {load def} bind def\n");
-			getStream().writeBytes("/s /stroke ld /f /fill ld /m /moveto ld /l "
-				+ "/lineto ld /c /curveto ld /rgb {255 div 3 1 roll 255 div 3 1 "
-				+ "roll 255 div 3 1 roll setrgbcolor} def\n");
+			getStream().writeBytes(
+				"/s /stroke ld /f /fill ld /m /moveto ld /l "
+					+ "/lineto ld /c /curveto ld /rgb {255 div 3 1 roll 255 div 3 1 "
+					+ "roll 255 div 3 1 roll setrgbcolor} def\n");
 			getStream().writeBytes("0 0 translate\n");
-			getStream().writeBytes(((float) width) + " " + ((float) height) + " scale\n");
+			getStream().writeBytes(
+				((float) width) + " " + ((float) height) + " scale\n");
 			getStream().writeBytes("/picstr 40 string def\n");
-			getStream().writeBytes(width + " " + height + " 8 [" + width + " 0 0 " +
-				(-1 * height) + " 0 " + height +
-				"] {currentfile picstr readhexstring pop} ");
+			getStream().writeBytes(
+				width + " " + height + " 8 [" + width + " 0 0 " + (-1 * height) +
+					" 0 " + height + "] {currentfile picstr readhexstring pop} ");
 			if (nChannels == 1) {
 				getStream().writeBytes("image\n");
 			}

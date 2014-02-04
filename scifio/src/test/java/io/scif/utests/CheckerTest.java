@@ -95,8 +95,7 @@ public class CheckerTest {
 		assertFalse(isFormat);
 		stream.close();
 
-		isFormat =
-			c.isFormat(falseId, new SCIFIOConfig().checkerSetOpen(false));
+		isFormat = c.isFormat(falseId, new SCIFIOConfig().checkerSetOpen(false));
 		assertFalse(isFormat);
 	}
 

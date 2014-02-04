@@ -253,7 +253,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	public void setAxisLengths(final long[] axisLengths) {
 		if (axisLengths.length > axes.size()) throw new IllegalArgumentException(
 			"Tried to set " + axisLengths.length + " axis lengths, but " +
-					getAxes().size() + " axes present." + " Call setAxisTypes first.");
+				getAxes().size() + " axes present." + " Call setAxisTypes first.");
 
 		for (int i = 0; i < axisLengths.length; i++) {
 			updateLength(axes.get(i).type(), axisLengths[i]);
@@ -529,7 +529,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		int index = -1;
 
 		// Use effectiveAxes if possible. If not, default to axes.
-		List<CalibratedAxis> knownAxes =
+		final List<CalibratedAxis> knownAxes =
 			effectiveAxes == null ? axes : effectiveAxes;
 
 		for (int i = 0; index == -1 && i < knownAxes.size(); i++) {
@@ -604,26 +604,26 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Helper methods --
 
 	/**
-	 * Computes and caches the effective (non-trailing-length-1 axes) axis
-	 * types for this dataset.
+	 * Computes and caches the effective (non-trailing-length-1 axes) axis types
+	 * for this dataset.
 	 */
 	private List<CalibratedAxis> getEffectiveAxes() {
 		if (effectiveAxes == null && axes != null) {
 			int end = axes.size();
-	
+
 			for (; end > getPlanarAxisCount(); end--) {
 				final CalibratedAxis axis = axes.get(end - 1);
 				if (getAxisLength(axis) > 1) {
 					break;
 				}
 			}
-	
+
 			effectiveAxes = new ArrayList<CalibratedAxis>();
-			for (int i=0; i<end; i++) {
+			for (int i = 0; i < end; i++) {
 				effectiveAxes.add(axes.get(i));
 			}
 		}
-	
+
 		return effectiveAxes;
 	}
 

@@ -130,7 +130,8 @@ public class Convert extends AbstractReaderCommand {
 					writer.getFormat().getFormatName());
 
 				if (!writer.canDoStacks()) {
-					setCrop(new long[reader.getMetadata().get(0).getAxesNonPlanar().size() * 2]);
+					setCrop(new long[reader.getMetadata().get(0).getAxesNonPlanar()
+						.size() * 2]);
 				}
 
 				read(reader);

@@ -67,8 +67,7 @@ public interface TypedParser<M extends TypedMetadata> extends Parser {
 		FormatException;
 
 	@Override
-	M parse(File file, SCIFIOConfig config) throws IOException,
-		FormatException;
+	M parse(File file, SCIFIOConfig config) throws IOException, FormatException;
 
 	@Override
 	M parse(RandomAccessInputStream stream, SCIFIOConfig config)

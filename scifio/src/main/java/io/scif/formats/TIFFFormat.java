@@ -365,7 +365,8 @@ public class TIFFFormat extends AbstractFormat {
 
 			if (config.groupableIsGroupFiles()) {
 				final Location currentFile =
-					new Location(getContext(), getSource().getFileName()).getAbsoluteFile();
+					new Location(getContext(), getSource().getFileName())
+						.getAbsoluteFile();
 				final String currentName = currentFile.getName();
 				final Location directory = currentFile.getParentFile();
 				final String[] files = directory.list(true);
@@ -420,7 +421,8 @@ public class TIFFFormat extends AbstractFormat {
 			final MetaTable table = meta.getTable();
 
 			final int nl = comment.indexOf("\n");
-			table.put("ImageJ", nl < 0 ? comment.substring(7) : comment.substring(7, nl));
+			table.put("ImageJ", nl < 0 ? comment.substring(7) : comment.substring(7,
+				nl));
 			meta.getTable().remove("Comment");
 			meta.setDescription("");
 
@@ -917,10 +919,12 @@ public class TIFFFormat extends AbstractFormat {
 			}
 			table.put("JPEGProc", jpegProc);
 
-			putInt(table, "JPEGInterchangeFormat", firstIFD, IFD.JPEG_INTERCHANGE_FORMAT);
+			putInt(table, "JPEGInterchangeFormat", firstIFD,
+				IFD.JPEG_INTERCHANGE_FORMAT);
 			putInt(table, "JPEGRestartInterval", firstIFD, IFD.JPEG_RESTART_INTERVAL);
 
-			putInt(table, "JPEGLosslessPredictors", firstIFD, IFD.JPEG_LOSSLESS_PREDICTORS);
+			putInt(table, "JPEGLosslessPredictors", firstIFD,
+				IFD.JPEG_LOSSLESS_PREDICTORS);
 			putInt(table, "JPEGPointTransforms", firstIFD, IFD.JPEG_POINT_TRANSFORMS);
 			putInt(table, "JPEGQTables", firstIFD, IFD.JPEG_Q_TABLES);
 			putInt(table, "JPEGDCTables", firstIFD, IFD.JPEG_DC_TABLES);
@@ -1072,7 +1076,7 @@ public class TIFFFormat extends AbstractFormat {
 		private RandomAccessInputStream in;
 
 		/** Whether or not to check the parameters passed to saveBytes. */
-		private boolean checkParams = true;
+		private final boolean checkParams = true;
 
 		// -- Constructor --
 
@@ -1116,7 +1120,7 @@ public class TIFFFormat extends AbstractFormat {
 				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 			if (ifd == null) ifd = new IFD(log());
 			final int type = getMetadata().get(imageIndex).getPixelType();
-			long index = planeIndex;
+			final long index = planeIndex;
 			// This operation is synchronized
 			synchronized (this) {
 				// This operation is synchronized against the TIFF saver.
@@ -1140,8 +1144,7 @@ public class TIFFFormat extends AbstractFormat {
 			// Ensure that no more than one thread manipulated the initialized array
 			// at one time.
 			synchronized (this) {
-				if (!isInitialized(imageIndex, (int) planeIndex))
-				{
+				if (!isInitialized(imageIndex, (int) planeIndex)) {
 
 					final RandomAccessInputStream tmp =
 						new RandomAccessInputStream(getContext(), getMetadata()
@@ -1267,7 +1270,6 @@ public class TIFFFormat extends AbstractFormat {
 			final boolean littleEndian = !bigEndian.booleanValue();
 			final boolean interleaved =
 				meta.get(imageIndex).getInterleavedAxisCount() > 0;
-
 
 			final int type = meta.get(imageIndex).getPixelType();
 			int c = (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);

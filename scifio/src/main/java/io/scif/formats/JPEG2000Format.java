@@ -434,7 +434,8 @@ public class JPEG2000Format extends AbstractFormat {
 							pos);
 					if (pos == originalPos) {
 						getSource().seek(originalPos);
-						if (JPEG2000SegmentMarker.get(getSource().readUnsignedShort()) != null) {
+						if (JPEG2000SegmentMarker.get(getSource().readUnsignedShort()) != null)
+						{
 							log().info("File is a raw codestream not a JP2.");
 							isRawCodestream = true;
 							getSource().seek(originalPos);
@@ -448,8 +449,8 @@ public class JPEG2000Format extends AbstractFormat {
 					switch (boxType) {
 						case CONTIGUOUS_CODESTREAM: {
 							try {
-								parseContiguousCodestream(meta, length == 0 ? getSource().length()
-									: length);
+								parseContiguousCodestream(meta, length == 0 ? getSource()
+									.length() : length);
 							}
 							catch (final Exception e) {
 								log().warn("Could not parse contiguous codestream.", e);
@@ -617,7 +618,8 @@ public class JPEG2000Format extends AbstractFormat {
 							meta.setResolutionLevels(getSource().readUnsignedByte());
 							log().trace(
 								"Found number of resolution levels " +
-									meta.getResolutionLevels() + " at " + getSource().getFilePointer());
+									meta.getResolutionLevels() + " at " +
+									getSource().getFilePointer());
 							break;
 						}
 						case COM:
@@ -835,8 +837,8 @@ public class JPEG2000Format extends AbstractFormat {
 			// int width = retrieve.getPixelsSizeX(series).getValue().intValue();
 			// int height = retrieve.getPixelsSizeY(series).getValue().intValue();
 
-			getStream()
-				.write(compressBuffer(imageIndex, planeIndex, buf, planeMin, planeMax));
+			getStream().write(
+				compressBuffer(imageIndex, planeIndex, buf, planeMin, planeMax));
 		}
 
 		/**

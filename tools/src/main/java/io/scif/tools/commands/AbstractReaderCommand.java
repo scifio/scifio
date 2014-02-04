@@ -121,7 +121,7 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 		handler = LongArrayOptionHandler.class,
 		usage = "specify a range for non-planar indices. Values are read as [min, max] "
 			+ "pairs in axis order")
-	private long[] npRange = new long[0];
+	private final long[] npRange = new long[0];
 
 	@Option(name = "-C", aliases = "--crop",
 		handler = LongArrayOptionHandler.class,
@@ -141,7 +141,7 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 	/**
 	 * @param map File on disk to map to
 	 */
-	protected void setMap(String map) {
+	protected void setMap(final String map) {
 		this.map = map;
 	}
 
@@ -155,7 +155,7 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 	/**
 	 * @param crop Cropped axis lengths as [offset, length] pairs in axis order.
 	 */
-	protected void setCrop(long[] crop) {
+	protected void setCrop(final long[] crop) {
 		this.crop = crop;
 	}
 
@@ -243,7 +243,8 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 		// Get the planar offsets/lengths (account for cropping)
 		final long[] planeOffsets = new long[iMeta.getAxesPlanar().size()];
 		final long[] planeLengths = new long[planeOffsets.length];
-		makeRange(getCrop(), planeOffsets, planeLengths, iMeta, iMeta.getAxesPlanar());
+		makeRange(getCrop(), planeOffsets, planeLengths, iMeta, iMeta
+			.getAxesPlanar());
 
 		// Get the non-planar offsets/lengths (e.g. restricting plane indices)
 		final long[] npOffsets = new long[iMeta.getAxesNonPlanar().size()];
@@ -295,8 +296,8 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 	 */
 	protected SCIFIOConfig getConfig() {
 		if (config == null) config =
-			new SCIFIOConfig().groupableSetGroupFiles(!nogroup)
-				.writerSetSequential(true);
+			new SCIFIOConfig().groupableSetGroupFiles(!nogroup).writerSetSequential(
+				true);
 		return config;
 	}
 

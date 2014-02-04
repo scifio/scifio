@@ -106,26 +106,26 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		throws FormatException
 	{
 		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out, imageIndex);
-	
+
 		if (buf == null) throw new FormatException("Buffer cannot be null.");
 		long planes = metadata.get(imageIndex).getPlaneCount();
-	
+
 		if (metadata.get(imageIndex).isMultichannel()) planes *=
 			metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
-	
+
 		if (planeIndex < 0) throw new FormatException(String.format(
 			"Plane index:%d must be >= 0", planeIndex));
 		if (planeIndex >= planes) {
 			throw new FormatException(String.format("Plane index:%d must be < %d",
 				planeIndex, planes));
 		}
-	
+
 		FormatTools.checkPlaneForWriting(getMetadata(), imageIndex, planeIndex,
 			buf.length, planeMin, planeMax);
 		FormatTools.assertId(out, true, 0);
-	
+
 		final int pixelType = metadata.get(imageIndex).getPixelType();
-	
+
 		if (!DataTools.containsValue(getPixelTypes(compression), pixelType)) {
 			throw new FormatException("Unsupported image type '" +
 				FormatTools.getPixelTypeString(pixelType) + "'.");
@@ -161,8 +161,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 
 	@Override
 	public void savePlane(final int imageIndex, final long planeIndex,
-		final Plane plane) throws FormatException,
-		IOException
+		final Plane plane) throws FormatException, IOException
 	{
 		final long[] planeMax = metadata.get(imageIndex).getAxesLengthsPlanar();
 		final long[] planeMin = new long[planeMax.length];
@@ -300,7 +299,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public void setColorModel(ColorModel cm) {
+	public void setColorModel(final ColorModel cm) {
 		model = cm;
 	}
 
@@ -308,7 +307,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	public ColorModel getColorModel() {
 		return model;
 	}
-	
+
 	@Override
 	public String[] getCompressionTypes() {
 		if (compressionTypes == null) {
@@ -336,7 +335,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	public int getValidBits() {
 		return validBits;
 	}
-	
+
 	@Override
 	public int[] getPixelTypes(final String codec) {
 		return new int[] { FormatTools.INT8, FormatTools.UINT8, FormatTools.INT16,
@@ -392,8 +391,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	}
 
 	@Override
-	public boolean isInitialized(int imageIndex, long planeIndex) {
-		return initialized[imageIndex][(int)planeIndex];
+	public boolean isInitialized(final int imageIndex, final long planeIndex) {
+		return initialized[imageIndex][(int) planeIndex];
 	}
 
 	@Override

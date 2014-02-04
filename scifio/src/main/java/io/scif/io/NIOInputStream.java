@@ -61,7 +61,7 @@ public class NIOInputStream extends InputStream implements DataInput {
 
 	// -- Fields --
 
-	private IRandomAccess raf;
+	private final IRandomAccess raf;
 
 	/** The file name. */
 	private String filename;

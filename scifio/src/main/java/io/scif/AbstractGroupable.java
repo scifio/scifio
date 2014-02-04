@@ -45,6 +45,7 @@ import java.io.IOException;
 public abstract class AbstractGroupable extends AbstractHasSource implements
 	Groupable
 {
+
 	@Override
 	public int fileGroupOption(final String id) throws FormatException,
 		IOException

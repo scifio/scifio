@@ -120,13 +120,13 @@ public class ImageViewer extends JFrame implements ActionListener,
 	/** Current format writer. */
 	private Writer myWriter;
 
-	private JPanel pane;
-	private ImageIcon icon;
-	private JLabel iconLabel;
-	private JPanel sliderPanel;
-	private JSlider nSlider;
-	private JLabel probeLabel;
-	private JMenuItem fileView, fileSave;
+	private final JPanel pane;
+	private final ImageIcon icon;
+	private final JLabel iconLabel;
+	private final JPanel sliderPanel;
+	private final JSlider nSlider;
+	private final JLabel probeLabel;
+	private final JMenuItem fileView, fileSave;
 
 	private String filename;
 	private BufferedImage[] images;
@@ -569,7 +569,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 
 	// -- Helper methods --
 
-	private StringBuffer sb = new StringBuffer();
+	private final StringBuffer sb = new StringBuffer();
 
 	/** Updates cursor probe label. */
 	protected void updateLabel(int x, int y) {

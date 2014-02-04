@@ -83,7 +83,7 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 	 * Helper method to cache the suffix array for a format. Concrete format
 	 * classes should implement this method, returning an array of supported
 	 * suffixes.
-	 *
+	 * 
 	 * @return Valid suffixes for this file format.
 	 */
 	protected abstract String[] makeSuffixArray();

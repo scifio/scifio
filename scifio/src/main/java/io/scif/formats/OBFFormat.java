@@ -208,7 +208,8 @@ public class OBFFormat extends AbstractFormat {
 		{
 			getSource().seek(current);
 
-			final String magicString = getSource().readString(STACK_MAGIC_STRING.length());
+			final String magicString =
+				getSource().readString(STACK_MAGIC_STRING.length());
 			final short magicNumber = getSource().readShort();
 			final int version = getSource().readInt();
 

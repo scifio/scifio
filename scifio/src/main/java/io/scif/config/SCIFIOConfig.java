@@ -47,27 +47,26 @@ import io.scif.img.converters.PlaneConverter;
 import java.awt.image.ColorModel;
 import java.util.HashMap;
 
-import org.scijava.Context;
-
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
+
+import org.scijava.Context;
 
 /**
  * Configuration class for all SCIFIO components. Similar to a {@link Context},
  * this class is effectively a container for state. However, its intended scope
  * is per method call stack, and not through a complete application. If any
- * object in a call stack has behavior that can be modified through this
- * class, a complete method chain accepting {@code SCIFIOConfig} instances
- * should be available - even if the intermediate classes do not require
- * configuration (the need for configuration is, effectively contagious).
+ * object in a call stack has behavior that can be modified through this class,
+ * a complete method chain accepting {@code SCIFIOConfig} instances should be
+ * available - even if the intermediate classes do not require configuration
+ * (the need for configuration is, effectively contagious).
  * <p>
  * Note that each getter and setter method signature in this class is prefixed
  * by the component it affects.
  * </p>
- *
+ * 
  * @author Mark Hiner
- *
  * @see Checker
  * @see Parser
  * @see Writer
@@ -166,7 +165,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @param level Desired metadata level for parsing.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig parserSetLevel(MetadataLevel level) {
+	public SCIFIOConfig parserSetLevel(final MetadataLevel level) {
 		this.level = level;
 		return this;
 	}
@@ -182,7 +181,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @param filterMetadata Desired filtering behavior for parsing.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig parserSetFiltered(boolean filterMetadata) {
+	public SCIFIOConfig parserSetFiltered(final boolean filterMetadata) {
 		this.filterMetadata = filterMetadata;
 		return this;
 	}
@@ -198,8 +197,8 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @param saveOriginalMetadata Desired metadata saving behavior for parsing.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig
-		parserSetSaveOriginalMetadata(boolean saveOriginalMetadata)
+	public SCIFIOConfig parserSetSaveOriginalMetadata(
+		final boolean saveOriginalMetadata)
 	{
 		this.saveOriginalMetadata = saveOriginalMetadata;
 		return this;
@@ -215,7 +214,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @param sequential Flag for writing sequential planes.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig writerSetSequential(boolean sequential) {
+	public SCIFIOConfig writerSetSequential(final boolean sequential) {
 		writeSequential = sequential;
 		return this;
 	}
@@ -231,7 +230,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @param cm ColorModel to use for writing.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig writerSetColorModel(ColorModel cm) {
+	public SCIFIOConfig writerSetColorModel(final ColorModel cm) {
 		model = cm;
 		return this;
 	}
@@ -247,7 +246,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @param rate Desired frames per second to use when writing.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig writerSetFramesPerSecond(int rate) {
+	public SCIFIOConfig writerSetFramesPerSecond(final int rate) {
 		fps = rate;
 		return this;
 	}
@@ -263,7 +262,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @param compress Desired compression type to use when writing.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig writerSetCompression(String compress) {
+	public SCIFIOConfig writerSetCompression(final String compress) {
 		compression = compress;
 		return this;
 	}
@@ -279,7 +278,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @param options Desired CodecOptions to use for writing.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig writerSetCodecOptions(CodecOptions options) {
+	public SCIFIOConfig writerSetCodecOptions(final CodecOptions options) {
 		this.options = options;
 		return this;
 	}
@@ -355,8 +354,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * of a different dimensionality than the underlying image, in which case the
 	 * lengths are assume to be in the natural ordering of the image.
 	 * 
-	 * @return A Subregion specifying dimension offsets and lengths. Default:
-	 *         null
+	 * @return A Subregion specifying dimension offsets and lengths. Default: null
 	 */
 	public SubRegion imgOpenerGetRegion() {
 		return region;
@@ -383,7 +381,8 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 *          This is useful when using a custom Img type.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig imgOpenerSetPlaneConverter(final PlaneConverter planeConverter)
+	public SCIFIOConfig imgOpenerSetPlaneConverter(
+		final PlaneConverter planeConverter)
 	{
 		this.planeConverter = planeConverter;
 		return this;

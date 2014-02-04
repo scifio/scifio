@@ -385,7 +385,8 @@ public class GIFFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta, final SCIFIOConfig config) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			log().info("Verifying GIF format");
 
@@ -499,8 +500,8 @@ public class GIFFormat extends AbstractFormat {
 			getMetadata().get(0).setAxisLength(Axes.TIME,
 				getMetadata().get(0).getAxisLength(Axes.TIME) + 1);
 
-			if (getMetadata().isTransparency()) getMetadata().getAct()[getMetadata().getTransIndex()] =
-				save;
+			if (getMetadata().isTransparency()) getMetadata().getAct()[getMetadata()
+				.getTransIndex()] = save;
 
 			getMetadata().setLastDispose(getMetadata().getDispose());
 		}
@@ -626,8 +627,8 @@ public class GIFFormat extends AbstractFormat {
 		private void setPixels() {
 			// expose destination image's pixels as an int array
 			final byte[] dest =
-				new byte[(int) (getMetadata().get(0).getAxisLength(Axes.X) * getMetadata().get(0)
-					.getAxisLength(Axes.Y))];
+				new byte[(int) (getMetadata().get(0).getAxisLength(Axes.X) * getMetadata()
+					.get(0).getAxisLength(Axes.Y))];
 			long lastImage = -1;
 
 			// fill in starting image contents based on last image's dispose code
@@ -639,8 +640,9 @@ public class GIFFormat extends AbstractFormat {
 
 				if (lastImage != -1) {
 					final byte[] prev = getMetadata().getImages().get((int) lastImage);
-					System.arraycopy(prev, 0, dest, 0, (int) (getMetadata().get(0)
-						.getAxisLength(Axes.X) * getMetadata().get(0).getAxisLength(Axes.Y)));
+					System.arraycopy(prev, 0, dest, 0,
+						(int) (getMetadata().get(0).getAxisLength(Axes.X) * getMetadata()
+							.get(0).getAxisLength(Axes.Y)));
 				}
 			}
 
@@ -701,7 +703,8 @@ public class GIFFormat extends AbstractFormat {
 				try {
 					while (n < getMetadata().getBlockSize()) {
 						count =
-							getSource().read(getMetadata().getdBlock(), n, getMetadata().getBlockSize() - n);
+							getSource().read(getMetadata().getdBlock(), n,
+								getMetadata().getBlockSize() - n);
 						if (count == -1) break;
 						n += count;
 					}

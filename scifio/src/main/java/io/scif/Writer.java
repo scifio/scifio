@@ -154,8 +154,7 @@ public interface Writer extends HasFormat, HasSource {
 	 * @param file A file-based image source to write to.
 	 * @param imageIndex The index within the source that will be written.
 	 */
-	void setDest(File file, int imageIndex) throws FormatException,
-		IOException;
+	void setDest(File file, int imageIndex) throws FormatException, IOException;
 
 	/**
 	 * As {@link #setDest(RandomAccessOutputStream)}, with specification for
@@ -183,8 +182,8 @@ public interface Writer extends HasFormat, HasSource {
 	 * @param file A file-based image source to write to.
 	 * @param config Configuration information to use for this write.
 	 */
-	void setDest(File file, SCIFIOConfig config)
-		throws FormatException, IOException;
+	void setDest(File file, SCIFIOConfig config) throws FormatException,
+		IOException;
 
 	/**
 	 * As {@link #setDest(RandomAccessOutputStream)}, with specification for new
@@ -208,7 +207,8 @@ public interface Writer extends HasFormat, HasSource {
 		throws FormatException, IOException;
 
 	/**
-	 * As {@link #setDest(File, int)} with specification for new configuration options.
+	 * As {@link #setDest(File, int)} with specification for new configuration
+	 * options.
 	 * 
 	 * @param file A file-based image source to write to.
 	 * @param imageIndex The index within the source that will be written.
@@ -236,7 +236,7 @@ public interface Writer extends HasFormat, HasSource {
 	 *         {@code Writer}.
 	 */
 	RandomAccessOutputStream getStream();
-	
+
 	/**
 	 * Sets the color model.
 	 * <p>

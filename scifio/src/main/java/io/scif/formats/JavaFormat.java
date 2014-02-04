@@ -123,9 +123,7 @@ public class JavaFormat extends AbstractFormat {
 			final String pixelType =
 				FormatTools.getPixelTypeString(meta.get(imageIndex).getPixelType());
 			final int type = FormatTools.pixelTypeFromString(pixelType);
-			if (!DataTools.containsValue(getPixelTypes(getCompression()),
-				type))
-			{
+			if (!DataTools.containsValue(getPixelTypes(getCompression()), type)) {
 				throw new FormatException("Unsupported image type '" + pixelType + "'.");
 			}
 			final int bpp = FormatTools.getBytesPerPixel(type);
@@ -184,7 +182,8 @@ public class JavaFormat extends AbstractFormat {
 			final int w, final int h) throws IOException
 		{
 			int i = 0;
-			getStream().writeLine("  public " + type.label() + "[][] " + varName + " = {");
+			getStream().writeLine(
+				"  public " + type.label() + "[][] " + varName + " = {");
 			for (int y = 0; y < h; y++) {
 				getStream().writeBytes("    {");
 				for (int x = 0; x < w; x++) {

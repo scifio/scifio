@@ -55,10 +55,10 @@ public class ReflectedUniverse {
 	// -- Fields --
 
 	/** Hashtable containing all variables present in the universe. */
-	private HashMap<String, Object> variables;
+	private final HashMap<String, Object> variables;
 
 	/** Class loader for imported classes. */
-	private ClassLoader loader;
+	private final ClassLoader loader;
 
 	/** Whether to force our way past restrictive access modifiers. */
 	private boolean force;

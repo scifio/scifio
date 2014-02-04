@@ -162,7 +162,9 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	// -- AbstractReaderFilter API Methods --
 
 	@Override
-	protected void setSourceHelper(final String source, final SCIFIOConfig config) {
+	protected void
+		setSourceHelper(final String source, final SCIFIOConfig config)
+	{
 		final String oldFile = getCurrentFile();
 		if (!source.equals(oldFile) ||
 			metaCheck() &&
@@ -208,7 +210,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		Plane plane, final long[] offsets, final long[] lengths)
+		final Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, plane, offsets, lengths,

@@ -185,7 +185,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		Plane plane, final long[] offsets, final long[] lengths)
+		final Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, plane, offsets, lengths,

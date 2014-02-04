@@ -1181,7 +1181,8 @@ public class DICOMFormat extends AbstractFormat {
 				if (level != MetadataLevel.MINIMUM) {
 					// header exists, so we'll read it
 					getSource().seek(0);
-					meta.getTable().put("Header information", getSource().readString(128));
+					meta.getTable()
+						.put("Header information", getSource().readString(128));
 					getSource().skipBytes(4);
 				}
 				location = 128;
@@ -1201,7 +1202,8 @@ public class DICOMFormat extends AbstractFormat {
 				}
 				log().debug("Reading tag from " + getSource().getFilePointer());
 				final DICOMTag tag =
-					DICOMUtils.getNextTag(getSource(), bigEndianTransferSyntax, oddLocations);
+					DICOMUtils.getNextTag(getSource(), bigEndianTransferSyntax,
+						oddLocations);
 				iMeta.setLittleEndian(tag.isLittleEndian());
 
 				if (tag.getElementLength() <= 0) continue;
@@ -1366,7 +1368,8 @@ public class DICOMFormat extends AbstractFormat {
 
 			getSource().seek(baseOffset - 12);
 			final int len = getSource().readInt();
-			if (len >= 0 && len + getSource().getFilePointer() < getSource().length()) {
+			if (len >= 0 && len + getSource().getFilePointer() < getSource().length())
+			{
 				getSource().skipBytes(len);
 				final int check = getSource().readShort() & 0xffff;
 				if (check == 0xfffe) {
@@ -1438,9 +1441,10 @@ public class DICOMFormat extends AbstractFormat {
 			FormatTools.assertId(getSource(), true, 1);
 			if (noPixels || getMetadata().getFileList() == null) return null;
 			final Integer[] keys =
-					getMetadata().getFileList().keySet().toArray(new Integer[0]);
+				getMetadata().getFileList().keySet().toArray(new Integer[0]);
 			Arrays.sort(keys);
-			final Vector<String> files = getMetadata().getFileList().get(keys[imageIndex]);
+			final Vector<String> files =
+				getMetadata().getFileList().get(keys[imageIndex]);
 			for (final String f : getMetadata().getCompanionFiles()) {
 				files.add(f);
 			}
@@ -1449,7 +1453,9 @@ public class DICOMFormat extends AbstractFormat {
 
 		// -- Helper methods --
 
-		private void makeFileList(SCIFIOConfig config) throws FormatException, IOException {
+		private void makeFileList(final SCIFIOConfig config)
+			throws FormatException, IOException
+		{
 			log().info("Building file list");
 
 			if (getMetadata().getFileList() == null &&
@@ -1475,7 +1481,8 @@ public class DICOMFormat extends AbstractFormat {
 
 				// look for matching files in the current directory
 				final Location currentFile =
-					new Location(getContext(), getSource().getFileName()).getAbsoluteFile();
+					new Location(getContext(), getSource().getFileName())
+						.getAbsoluteFile();
 				Location directory = currentFile.getParentFile();
 				scanDirectory(directory, false);
 
@@ -1523,7 +1530,8 @@ public class DICOMFormat extends AbstractFormat {
 		 */
 		private void attachCompanionFiles(final Vector<String> companionFiles) {
 			final Location parent =
-				new Location(getContext(), getSource().getFileName()).getAbsoluteFile().getParentFile();
+				new Location(getContext(), getSource().getFileName()).getAbsoluteFile()
+					.getParentFile();
 			final Location grandparent = parent.getParentFile();
 
 			if (new Location(getContext(), grandparent, parent.getName() + ".mif")
@@ -1560,7 +1568,8 @@ public class DICOMFormat extends AbstractFormat {
 				final String file =
 					new Location(getContext(), dir, f).getAbsolutePath();
 				log().debug("Checking file " + file);
-				if (!f.equals(getSource().getFileName()) && !file.equals(getSource().getFileName()) &&
+				if (!f.equals(getSource().getFileName()) &&
+					!file.equals(getSource().getFileName()) &&
 					getFormat().createChecker().isFormat(file) &&
 					Arrays.binarySearch(patternFiles, file) >= 0)
 				{
@@ -1713,7 +1722,8 @@ public class DICOMFormat extends AbstractFormat {
 					final int ndx =
 						color.equals("Red") ? 0 : color.equals("Green") ? 1 : 2;
 					final long fp = getSource().getFilePointer();
-					getSource().seek(getSource().getFilePointer() - tag.getElementLength() + 1);
+					getSource().seek(
+						getSource().getFilePointer() - tag.getElementLength() + 1);
 					meta.shortLut[ndx] = new short[tag.getElementLength() / 2];
 					meta.lut[ndx] = new byte[tag.getElementLength() / 2];
 					for (int i = 0; i < meta.lut[ndx].length; i++) {

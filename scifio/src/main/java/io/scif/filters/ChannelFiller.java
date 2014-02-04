@@ -119,7 +119,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		Plane plane, final long[] offsets, final long[] lengths)
+		final Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, plane, offsets, lengths,
@@ -168,8 +168,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 				lastPlaneIndex = planeIndex;
 				lastImageIndex = imageIndex;
 				lastPlane =
-					getParent()
-						.openPlane(imageIndex, planeIndex, plane, offsets, lengths, config);
+					getParent().openPlane(imageIndex, planeIndex, plane, offsets,
+						lengths, config);
 			}
 			return lastPlane;
 		}

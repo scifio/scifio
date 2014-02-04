@@ -175,7 +175,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		Plane plane, final long[] offsets, final long[] lengths)
+		final Plane plane, final long[] offsets, final long[] lengths)
 		throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, plane, offsets, lengths,
@@ -193,7 +193,8 @@ public class PlaneSeparator extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final SCIFIOConfig config) throws FormatException, IOException
+		final Plane plane, final SCIFIOConfig config) throws FormatException,
+		IOException
 	{
 		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
 		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],

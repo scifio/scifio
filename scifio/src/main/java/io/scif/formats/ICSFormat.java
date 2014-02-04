@@ -1563,8 +1563,8 @@ public class ICSFormat extends AbstractFormat {
 		{
 			if (!isInitialized(imageIndex, (int) planeIndex)) {
 
-				if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(), planeMin,
-					planeMax))
+				if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(),
+					planeMin, planeMax))
 				{
 					pixels.seek(pixelOffset + (planeIndex + 1) *
 						getMetadata().get(imageIndex).getPlaneSize());
@@ -1573,6 +1573,7 @@ public class ICSFormat extends AbstractFormat {
 
 			super.initialize(imageIndex, planeIndex, planeMin, planeMax);
 		}
+
 		// -- Writer API Methods --
 
 		@Override
@@ -1602,7 +1603,6 @@ public class ICSFormat extends AbstractFormat {
 			final int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
 			final int planeSize =
 				(int) (meta.get(0).getSize() / meta.get(0).getPlaneCount());
-
 
 			pixels.seek(pixelOffset + planeIndex * planeSize);
 			if (SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax) &&
@@ -1663,7 +1663,7 @@ public class ICSFormat extends AbstractFormat {
 
 		@Override
 		public void setDest(final String id) throws FormatException, IOException {
-			//FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// FIXME consolidate this code in setDest when the RAOS id is exposed.
 			// Update the id if necessary
 			if (FormatTools.checkSuffix(id, "ids")) {
 				final String metadataFile = makeIcsId(id);
@@ -1678,7 +1678,7 @@ public class ICSFormat extends AbstractFormat {
 		public void setDest(final String id, final int imageIndex)
 			throws FormatException, IOException
 		{
-			//FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// FIXME consolidate this code in setDest when the RAOS id is exposed.
 			// Update the id if necessary
 			if (FormatTools.checkSuffix(id, "ids")) {
 				final String metadataFile = makeIcsId(id);
@@ -1691,10 +1691,9 @@ public class ICSFormat extends AbstractFormat {
 
 		@Override
 		public void setDest(final String id, final int imageIndex,
-			final SCIFIOConfig config)
-			throws FormatException, IOException
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
-			//FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// FIXME consolidate this code in setDest when the RAOS id is exposed.
 			// Update the id if necessary
 			if (FormatTools.checkSuffix(id, "ids")) {
 				final String metadataFile = makeIcsId(id);
@@ -1713,9 +1712,7 @@ public class ICSFormat extends AbstractFormat {
 			final String currentId =
 				getMetadata().idsId != null ? getMetadata().idsId : getMetadata().icsId;
 
-
 			super.setDest(out, imageIndex, config);
-
 
 			if (out.length() == 0) {
 				out.writeBytes("\t\n");
@@ -1811,8 +1808,10 @@ public class ICSFormat extends AbstractFormat {
 
 		/* Sets the ICS Metadta icsId and idsId fields */
 		private void updateMetadataIds(final String id) {
-			getMetadata().idsId = FormatTools.checkSuffix(id, "ids") ? id : makeIdsId(id);
-			getMetadata().icsId = FormatTools.checkSuffix(id, "ics") ? id : makeIcsId(id);
+			getMetadata().idsId =
+				FormatTools.checkSuffix(id, "ids") ? id : makeIdsId(id);
+			getMetadata().icsId =
+				FormatTools.checkSuffix(id, "ics") ? id : makeIcsId(id);
 		}
 
 		private int[]
@@ -1858,12 +1857,14 @@ public class ICSFormat extends AbstractFormat {
 				}
 				dimOrder.append("\t");
 			}
-			getStream().writeBytes("layout\torder\tbits\t" + dimOrder.toString() + "\n");
+			getStream().writeBytes(
+				"layout\torder\tbits\t" + dimOrder.toString() + "\n");
 			getStream().writeBytes("layout\tsizes\t");
 			for (int i = 0; i < sizes.length; i++) {
 				getStream().writeBytes(sizes[i] + "\t");
 			}
-			while ((getStream().getFilePointer() - dimensionOffset) < dimensionLength - 1) {
+			while ((getStream().getFilePointer() - dimensionOffset) < dimensionLength - 1)
+			{
 				getStream().writeBytes(" ");
 			}
 			getStream().writeBytes("\n");

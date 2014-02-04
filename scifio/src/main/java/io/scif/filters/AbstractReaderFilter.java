@@ -341,20 +341,24 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public void setSource(final String fileName, final SCIFIOConfig config) throws IOException {
+	public void setSource(final String fileName, final SCIFIOConfig config)
+		throws IOException
+	{
 		getParent().setSource(fileName, config);
 		setSourceHelper(fileName, config);
 	}
 
 	@Override
-	public void setSource(final File file, final SCIFIOConfig config) throws IOException {
+	public void setSource(final File file, final SCIFIOConfig config)
+		throws IOException
+	{
 		getParent().setSource(file, config);
 		setSourceHelper(file.getAbsolutePath(), config);
 	}
 
 	@Override
-	public void setSource(final RandomAccessInputStream stream, final SCIFIOConfig config)
-		throws IOException
+	public void setSource(final RandomAccessInputStream stream,
+		final SCIFIOConfig config) throws IOException
 	{
 		getParent().setSource(stream, config);
 		setSourceHelper(stream.getFileName(), config);

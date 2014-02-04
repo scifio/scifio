@@ -618,8 +618,9 @@ public class APNGFormat extends AbstractFormat {
 
 			// process fcTL and fdAT chunks
 			final FCTLChunk fctl =
-					getMetadata().getFctl().get(
-					(int) (getMetadata().isSeparateDefault() ? planeIndex - 1 : planeIndex));
+				getMetadata().getFctl().get(
+					(int) (getMetadata().isSeparateDefault() ? planeIndex - 1
+						: planeIndex));
 
 			// fdAT chunks are converted to IDAT chunks, as we are essentially
 			// building a standalone single-frame image
@@ -788,7 +789,7 @@ public class APNGFormat extends AbstractFormat {
 
 				// write 8-byte PNG signature
 				out.write(APNGFormat.PNG_SIGNATURE);
-		
+
 				// write IHDR chunk
 				out.writeInt(13);
 				final byte[] b = new byte[17];
@@ -796,10 +797,10 @@ public class APNGFormat extends AbstractFormat {
 				b[1] = 'H';
 				b[2] = 'D';
 				b[3] = 'R';
-		
+
 				DataTools.unpackBytes(width, b, 4, 4, false);
 				DataTools.unpackBytes(height, b, 8, 4, false);
-		
+
 				b[12] = (byte) (bytesPerPixel * 8);
 				if (indexed) b[13] = (byte) 3;
 				else if (nChannels == 1) b[13] = (byte) 0;
@@ -809,14 +810,14 @@ public class APNGFormat extends AbstractFormat {
 				b[14] = getMetadata().getIhdr().getCompressionMethod();
 				b[15] = getMetadata().getIhdr().getFilterMethod();
 				b[16] = getMetadata().getIhdr().getInterlaceMethod();
-		
+
 				out.write(b);
 				out.writeInt(crc(b));
-		
+
 				// write acTL chunk
-		
+
 				final ACTLChunk actl = getMetadata().getActl();
-		
+
 				out.writeInt(8);
 				out.writeBytes("acTL");
 				numFramesPointer = out.getFilePointer();
@@ -838,7 +839,6 @@ public class APNGFormat extends AbstractFormat {
 				throw new FormatException(
 					"APNGWriter does not yet support saving image tiles.");
 			}
-
 
 			// write the data for this frame
 
@@ -892,8 +892,9 @@ public class APNGFormat extends AbstractFormat {
 		private void writeFCTL(final long planeIndex) throws IOException {
 			getStream().writeInt(26);
 			final FCTLChunk fctl =
-					getMetadata().getFctl().get(
-					(int) (getMetadata().isSeparateDefault() ? planeIndex - 1 : planeIndex));
+				getMetadata().getFctl().get(
+					(int) (getMetadata().isSeparateDefault() ? planeIndex - 1
+						: planeIndex));
 			final byte[] b = new byte[30];
 
 			DataTools.unpackBytes(22, b, 0, 4, false);
@@ -1206,11 +1207,11 @@ public class APNGFormat extends AbstractFormat {
 		private int length;
 
 		// Unique chunk type signature (e.g. "IHDR")
-		private byte[] chunkSignature;
+		private final byte[] chunkSignature;
 
 		// -- Constructor --
 
-		public APNGChunk(byte[] signature) {
+		public APNGChunk(final byte[] signature) {
 			chunkSignature = signature;
 		}
 

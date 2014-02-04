@@ -41,6 +41,7 @@ import java.io.IOException;
  * @author Mark Hiner
  */
 public interface Groupable {
+
 	/**
 	 * Returns an int indicating that we cannot, must, or might group the files in
 	 * a given dataset.

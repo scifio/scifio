@@ -208,7 +208,8 @@ public class FITSFormat extends AbstractFormat {
 
 		@Override
 		protected String[] createDomainArray() {
-			return new String[] { FormatTools.ASTRONOMY_DOMAIN, FormatTools.UNKNOWN_DOMAIN };
+			return new String[] { FormatTools.ASTRONOMY_DOMAIN,
+				FormatTools.UNKNOWN_DOMAIN };
 		}
 
 		// -- Reader API Methods --
@@ -216,7 +217,8 @@ public class FITSFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long planeMax[], final SCIFIOConfig config) throws FormatException, IOException
+			final long planeMax[], final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final byte[] buf = plane.getData();
 

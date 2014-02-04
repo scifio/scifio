@@ -215,8 +215,9 @@ public class MetadataTest {
 	 */
 	@Test
 	public void testTrailingAxis() throws IOException, FormatException {
-		final String id = "testImg&planarDims=2&lengths=620,512,1,&axes=X,Y,Time.fake";
-		Metadata m = scifio.initializer().parseMetadata(id);
+		final String id =
+			"testImg&planarDims=2&lengths=620,512,1,&axes=X,Y,Time.fake";
+		final Metadata m = scifio.initializer().parseMetadata(id);
 
 		assertEquals(2, m.get(0).getAxes().size());
 
@@ -229,13 +230,14 @@ public class MetadataTest {
 
 	/**
 	 * Basic down-the-middle test with one bracketed length-1 axis, and one
-	 * trailing length-1 axis. The trailing axis should be disregarded, while
-	 * the bracketed axis should be kept as significant.
+	 * trailing length-1 axis. The trailing axis should be disregarded, while the
+	 * bracketed axis should be kept as significant.
 	 */
 	@Test
 	public void testAxisCount() throws IOException, FormatException {
-		final String id = "testImg&lengths=620,512,1,5,1&axes=X,Y,Time,Z,Channel.fake";
-		Metadata m = scifio.initializer().parseMetadata(id);
+		final String id =
+			"testImg&lengths=620,512,1,5,1&axes=X,Y,Time,Z,Channel.fake";
+		final Metadata m = scifio.initializer().parseMetadata(id);
 
 		assertEquals(4, m.get(0).getAxes().size());
 	}
@@ -247,7 +249,7 @@ public class MetadataTest {
 	@Test
 	public void testAdjustingTrailingAxis() throws IOException, FormatException {
 		final String id = "testImg&lengths=620,512,1,&axes=X,Y,Time,.fake";
-		Metadata m = scifio.initializer().parseMetadata(id);
+		final Metadata m = scifio.initializer().parseMetadata(id);
 
 		assertEquals(2, m.get(0).getAxes().size());
 

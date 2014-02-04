@@ -85,8 +85,8 @@ public class DefaultInitializeService extends AbstractService implements
 	}
 
 	@Override
-	public ReaderFilter initializeReader(final String id, final SCIFIOConfig config)
-		throws FormatException, IOException
+	public ReaderFilter initializeReader(final String id,
+		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		final Reader r = formatService.getFormat(id, config).createReader();
 		r.setSource(id, config);
@@ -122,8 +122,9 @@ public class DefaultInitializeService extends AbstractService implements
 	}
 
 	@Override
-	public Writer initializeWriter(Metadata sourceMeta, String destination,
-		SCIFIOConfig config) throws FormatException, IOException
+	public Writer initializeWriter(final Metadata sourceMeta,
+		final String destination, final SCIFIOConfig config)
+		throws FormatException, IOException
 	{
 		final Format sFormat = sourceMeta.getFormat();
 		final Format dFormat = formatService.getFormat(destination, config);

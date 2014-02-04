@@ -419,7 +419,7 @@ public class NativeQTFormat extends AbstractFormat {
 				if (f.exists()) {
 					log().debug("\t Found: " + f);
 					if (getSource() != null) getSource().close();
-					updateSource(f .getAbsolutePath());
+					updateSource(f.getAbsolutePath());
 
 					NativeQTUtils.stripHeader(stream);
 					NativeQTUtils.parse(stream, meta, 0, 0, getSource().length(), log());
@@ -783,7 +783,7 @@ public class NativeQTFormat extends AbstractFormat {
 				}
 
 				// update the number of pixel bytes written
-				Metadata meta = getMetadata();
+				final Metadata meta = getMetadata();
 				final int height = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
 				numBytes += (meta.get(imageIndex).getPlaneSize() + pad * height);
 				getStream().seek(BYTE_COUNT_OFFSET);
@@ -794,10 +794,12 @@ public class NativeQTFormat extends AbstractFormat {
 				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
 					planeMax))
 				{
-					getStream().skipBytes((int) (meta.get(imageIndex).getPlaneSize() + pad * height));
+					getStream().skipBytes(
+						(int) (meta.get(imageIndex).getPlaneSize() + pad * height));
 				}
 			}
 		}
+
 		// -- Writer API methods --
 
 		@Override
@@ -829,7 +831,8 @@ public class NativeQTFormat extends AbstractFormat {
 			final int x = (int) planeMin[xIndex], y = (int) planeMin[yIndex], w =
 				(int) planeMax[xIndex], h = (int) planeMax[yIndex];
 
-			getStream().seek(offsets.get((int) planeIndex) + y * (nChannels * width + pad));
+			getStream().seek(
+				offsets.get((int) planeIndex) + y * (nChannels * width + pad));
 
 			// invert each pixel
 			// this will makes the colors look right in other readers (e.g. xine),
@@ -948,7 +951,8 @@ public class NativeQTFormat extends AbstractFormat {
 			if (getCompression() == null) return;
 			if (getCompression().equals("Uncompressed")) codec = CODEC_RAW;
 			// NB: Writing to Motion JPEG-B with QTJava seems to be broken.
-			else if (getCompression().equals("Motion JPEG-B")) codec = CODEC_MOTION_JPEG_B;
+			else if (getCompression().equals("Motion JPEG-B")) codec =
+				CODEC_MOTION_JPEG_B;
 			else if (getCompression().equals("Cinepak")) codec = CODEC_CINEPAK;
 			else if (getCompression().equals("Animation")) codec = CODEC_ANIMATION;
 			else if (getCompression().equals("H.263")) codec = CODEC_H_263;

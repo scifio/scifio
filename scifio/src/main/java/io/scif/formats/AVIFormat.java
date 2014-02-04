@@ -532,8 +532,7 @@ public class AVIFormat extends AbstractFormat {
 
 			log().info("Searching for image data");
 
-			while ((getSource().length() - getSource().getFilePointer()) > 4)
-			{
+			while ((getSource().length() - getSource().getFilePointer()) > 4) {
 				listString = getSource().readString(4);
 				if (listString.equals("RIFF")) {
 					getSource().seek(getSource().getFilePointer() - 4);
@@ -566,8 +565,10 @@ public class AVIFormat extends AbstractFormat {
 								if (type.equals("avih")) {
 									spos = getSource().getFilePointer();
 
-									globalTable.put("Microseconds per frame", getSource().readInt());
-									globalTable.put("Max. bytes per second", getSource().readInt());
+									globalTable.put("Microseconds per frame", getSource()
+										.readInt());
+									globalTable.put("Max. bytes per second", getSource()
+										.readInt());
 
 									getSource().skipBytes(8);
 
@@ -608,7 +609,8 @@ public class AVIFormat extends AbstractFormat {
 
 									globalTable.put("Stream quality", getSource().readInt());
 									meta.setBytesPerPlane(getSource().readInt());
-									globalTable.put("Stream sample size", meta.getBytesPerPlane());
+									globalTable
+										.put("Stream sample size", meta.getBytesPerPlane());
 
 									if (spos + size <= getSource().length()) {
 										getSource().seek(spos + size);
@@ -639,7 +641,8 @@ public class AVIFormat extends AbstractFormat {
 									meta.setBmpCompression(getSource().readInt());
 									getSource().skipBytes(4);
 
-									globalTable.put("Horizontal resolution", getSource().readInt());
+									globalTable.put("Horizontal resolution", getSource()
+										.readInt());
 									globalTable.put("Vertical resolution", getSource().readInt());
 
 									meta.setBmpColorsUsed(getSource().readInt());
@@ -772,7 +775,8 @@ public class AVIFormat extends AbstractFormat {
 										foundPixels = true;
 										if (check.startsWith("d")) {
 											if (size > 0 || meta.getBmpCompression() != 0) {
-												meta.getOffsets().add(new Long(getSource().getFilePointer()));
+												meta.getOffsets().add(
+													new Long(getSource().getFilePointer()));
 												meta.getLengths().add(new Long(size));
 												getSource().skipBytes(size);
 											}
@@ -817,7 +821,9 @@ public class AVIFormat extends AbstractFormat {
 				else {
 					// skipping unknown block
 					readTypeAndSize();
-					if (getSource().getFilePointer() + 8 < getSource().length() && !type.equals("idx1")) {
+					if (getSource().getFilePointer() + 8 < getSource().length() &&
+						!type.equals("idx1"))
+					{
 						readTypeAndSize();
 					}
 					else if (!type.equals("idx1")) break;
@@ -849,7 +855,8 @@ public class AVIFormat extends AbstractFormat {
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
 			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException, IOException
+			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();

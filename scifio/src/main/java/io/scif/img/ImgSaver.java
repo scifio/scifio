@@ -122,7 +122,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	{
 		saveImg(id, img, imageIndex, new SCIFIOConfig());
 	}
-	
+
 	/**
 	 * As {@link #saveImg(String, Img)} with configuration options.
 	 * 
@@ -225,7 +225,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	{
 		saveImg(w, img, imageIndex, true, config);
 	}
-	
+
 	// -- Utility methods --
 
 	/**

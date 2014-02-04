@@ -272,8 +272,7 @@ public class DefaultFormatService extends AbstractService implements
 
 	@Override
 	public List<Format> getFormatList(final String id) throws FormatException {
-		return getFormatList(id, new SCIFIOConfig().checkerSetOpen(false),
-			false);
+		return getFormatList(id, new SCIFIOConfig().checkerSetOpen(false), false);
 	}
 
 	@Override

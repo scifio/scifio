@@ -77,7 +77,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	// -- AbstractReader API Methods --
 
-	/** 
+	/**
 	 * Helper method to lazily create the domain array for this reader instance,
 	 * to avoid constantly re-creating the array.
 	 */
@@ -99,7 +99,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		final long[] planeMin, final long[] planeMax) throws FormatException,
 		IOException
 	{
-		return openPlane(imageIndex, planeIndex, planeMin, planeMax, new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, planeMin, planeMax,
+			new SCIFIOConfig());
 	}
 
 	@Override
@@ -119,8 +120,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public P openPlane(int imageIndex, long planeIndex,
-		SCIFIOConfig config) throws FormatException, IOException
+	public P openPlane(final int imageIndex, final long planeIndex,
+		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		final long[] planeMax = metadata.get(imageIndex).getAxesLengthsPlanar();
 		final long[] planeMin = new long[planeMax.length];
@@ -128,8 +129,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public P openPlane(int imageIndex, long planeIndex,
-		long[] planeMin, long[] planeMax, SCIFIOConfig config)
+	public P openPlane(final int imageIndex, final long planeIndex,
+		final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
 		throws FormatException, IOException
 	{
 		P plane = null;
@@ -151,19 +152,19 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		return openPlane(imageIndex, planeIndex, plane, planeMin, planeMax, config);
 	}
 
-
 	@Override
-	public Plane openPlane(int imageIndex, long planeIndex, Plane plane,
-		SCIFIOConfig config) throws FormatException, IOException
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final SCIFIOConfig config) throws FormatException,
+		IOException
 	{
 		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane),
 			config);
 	}
 
 	@Override
-	public Plane openPlane(int imageIndex, long planeIndex, Plane plane,
-		long[] planeMin, long[] planeMax, SCIFIOConfig config)
-		throws FormatException, IOException
+	public Plane openPlane(final int imageIndex, final long planeIndex,
+		final Plane plane, final long[] planeMin, final long[] planeMax,
+		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane),
 			planeMin, planeMax, config);
@@ -353,8 +354,8 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	}
 
 	@Override
-	public P openPlane(int imageIndex, long planeIndex,
-		P plane, SCIFIOConfig config) throws FormatException,
+	public P openPlane(final int imageIndex, final long planeIndex,
+		final P plane, final SCIFIOConfig config) throws FormatException,
 		IOException
 	{
 		return openPlane(imageIndex, planeIndex, plane, plane.getOffsets(), plane

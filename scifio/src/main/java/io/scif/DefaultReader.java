@@ -76,7 +76,7 @@ public class DefaultReader extends ByteArrayReader<DefaultMetadata> implements
 	@Override
 	public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
 		final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax,
-		final SCIFIOConfig config)		throws FormatException, IOException
+		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		throw new UnsupportedOperationException(
 			"Trying to read using DefaultReader. "

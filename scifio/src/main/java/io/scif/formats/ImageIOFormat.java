@@ -184,7 +184,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		// -- Fields --
 
-		private String kind;
+		private final String kind;
 
 		// -- Constructors --
 

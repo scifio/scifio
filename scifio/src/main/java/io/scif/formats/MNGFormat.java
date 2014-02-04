@@ -315,7 +315,7 @@ public class MNGFormat extends AbstractFormat {
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
 			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
-			throws FormatException,			IOException
+			throws FormatException, IOException
 		{
 			final MNGImageInfo info =
 				getMetadata().getDatasetInfo().imageInfo.get(imageIndex);

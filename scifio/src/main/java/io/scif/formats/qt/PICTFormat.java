@@ -322,7 +322,8 @@ public class PICTFormat extends AbstractFormat {
 		private boolean drivePictDecoder(final Metadata meta, final int opcode)
 			throws FormatException, IOException
 		{
-			log().debug("drivePictDecoder(" + opcode + ") @ " + getSource().getFilePointer());
+			log().debug(
+				"drivePictDecoder(" + opcode + ") @ " + getSource().getFilePointer());
 
 			switch (opcode) {
 				case PICT_BITSRGN: // rowBytes must be < 8
@@ -437,7 +438,8 @@ public class PICTFormat extends AbstractFormat {
 			// skip over two rectangles
 			getSource().skipBytes(18);
 
-			if (opcode == PICT_BITSRGN || opcode == PICT_PACKBITSRGN) getSource().skipBytes(2);
+			if (opcode == PICT_BITSRGN || opcode == PICT_PACKBITSRGN) getSource()
+				.skipBytes(2);
 
 			handlePixmap(meta, pixelSize, compCount);
 		}
@@ -517,7 +519,8 @@ public class PICTFormat extends AbstractFormat {
 					if (rawLen > buf.length) rawLen = buf.length;
 
 					if ((getSource().length() - getSource().getFilePointer()) <= rawLen) {
-						rawLen = (int) (getSource().length() - getSource().getFilePointer() - 1);
+						rawLen =
+							(int) (getSource().length() - getSource().getFilePointer() - 1);
 					}
 
 					if (rawLen < 0) {

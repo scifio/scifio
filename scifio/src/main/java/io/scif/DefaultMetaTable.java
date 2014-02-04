@@ -96,7 +96,7 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 
 		put(key, list);
 	}
-	
+
 	@Override
 	public Object put(String key, Object value) {
 		if (key == null || value == null /* || TODO !isMetadataCollected() */) {
@@ -113,8 +113,7 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 		// string value, if passed in value is a string
 		String val = string ? String.valueOf(value) : null;
 
-		if (filtered)
-		{
+		if (filtered) {
 			// filter out complex data types
 			if (!simple) return null;
 

@@ -51,7 +51,7 @@ public class FileHandle implements IRandomAccess {
 	// -- Fields --
 
 	/** The random access file object backing this FileHandle. */
-	private RandomAccessFile raf;
+	private final RandomAccessFile raf;
 
 	// -- Constructors --
 

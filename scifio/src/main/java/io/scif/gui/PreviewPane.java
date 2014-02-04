@@ -104,7 +104,7 @@ public class PreviewPane extends JPanel implements PropertyChangeListener,
 	// -- Fields - view --
 
 	/** Labels containing thumbnail and dimensional information. */
-	private JLabel iconLabel, formatLabel, resLabel, zctLabel, typeLabel;
+	private final JLabel iconLabel, formatLabel, resLabel, zctLabel, typeLabel;
 
 	// -- Fields - model --
 

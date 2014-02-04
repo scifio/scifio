@@ -223,10 +223,10 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final ImgFactory<T> imgFactory, final T type) throws ImgIOException
 	{
 
-		SCIFIOConfig config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+		final SCIFIOConfig config =
+			new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
 
-		final Reader r =
-			createReader(source, config);
+		final Reader r = createReader(source, config);
 
 		return openImg(r, type, imgFactory, config);
 	}
@@ -423,7 +423,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final File idFile = new File(id);
 		final String name = idFile.exists() ? idFile.getName() : id;
 
-		final double[] cal = getCalibration(config.imgOpenerGetIndex(), r.getMetadata());
+		final double[] cal =
+			getCalibration(config.imgOpenerGetIndex(), r.getMetadata());
 		final AxisType[] dimTypes =
 			getAxisTypes(config.imgOpenerGetIndex(), r.getMetadata());
 
@@ -556,19 +557,19 @@ public class ImgOpener extends AbstractImgIOComponent {
 			else converter = pcService.getDefaultConverter();
 		}
 
-		read(imageIndex, imgPlus, r, config, converter, planarMin,
-			planarLength, npRanges, npIndices);
+		read(imageIndex, imgPlus, r, config, converter, planarMin, planarLength,
+			npRanges, npIndices);
 
-		if (config.imgOpenerIsComputeMinMax()) populateMinMax(r, imgPlus, imageIndex);
+		if (config.imgOpenerIsComputeMinMax()) populateMinMax(r, imgPlus,
+			imageIndex);
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void
-		read(final int imageIndex, final ImgPlus imgPlus, final Reader r,
-			final SCIFIOConfig config, final PlaneConverter converter,
-			final long[] planarMin, final long[] planarLength,
-			final DimRange[] npRanges, final long[] npIndices)
-			throws FormatException, IOException
+	private void read(final int imageIndex, final ImgPlus imgPlus,
+		final Reader r, final SCIFIOConfig config, final PlaneConverter converter,
+		final long[] planarMin, final long[] planarLength,
+		final DimRange[] npRanges, final long[] npIndices) throws FormatException,
+		IOException
 	{
 		read(imageIndex, imgPlus, r, config, converter, null, planarMin,
 			planarLength, npRanges, npIndices, 0, new int[] { 0 });
@@ -576,11 +577,10 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Plane read(final int imageIndex, final ImgPlus imgPlus,
-		final Reader r, final SCIFIOConfig config,
-		final PlaneConverter converter, Plane tmpPlane, final long[] planarMin,
-		final long[] planarLength, final DimRange[] npRanges,
-		final long[] npIndices, final int depth, final int[] planeCount)
-		throws FormatException, IOException
+		final Reader r, final SCIFIOConfig config, final PlaneConverter converter,
+		Plane tmpPlane, final long[] planarMin, final long[] planarLength,
+		final DimRange[] npRanges, final long[] npIndices, final int depth,
+		final int[] planeCount) throws FormatException, IOException
 	{
 		if (depth < npRanges.length) {
 			// We need to invert the depth index to get the current non-planar
@@ -590,8 +590,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 			for (int i = 0; i < npRanges[npPosition].indices().size(); i++) {
 				npIndices[npPosition] = npRanges[npPosition].indices().get(i);
 				tmpPlane =
-					read(imageIndex, imgPlus, r, config, converter, tmpPlane,
-						planarMin, planarLength, npRanges, npIndices, depth + 1, planeCount);
+					read(imageIndex, imgPlus, r, config, converter, tmpPlane, planarMin,
+						planarLength, npRanges, npIndices, depth + 1, planeCount);
 			}
 		}
 		else {

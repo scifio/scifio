@@ -248,8 +248,10 @@ public class NRRDFormat extends AbstractFormat {
 				if (getMetadata().getDataFile() == null) return null;
 				return new String[] { getSource().getFileName() };
 			}
-			if (getMetadata().getDataFile() == null) return new String[] { getSource().getFileName() };
-			return new String[] { getSource().getFileName(), getMetadata().getDataFile() };
+			if (getMetadata().getDataFile() == null) return new String[] { getSource()
+				.getFileName() };
+			return new String[] { getSource().getFileName(),
+				getMetadata().getDataFile() };
 		}
 
 		// -- Abstract Parser API Methods --
@@ -377,7 +379,8 @@ public class NRRDFormat extends AbstractFormat {
 			if (meta.getDataFile() == null) meta.setOffset(stream.getFilePointer());
 			else {
 				final Location f =
-					new Location(getContext(), getSource().getFileName()).getAbsoluteFile();
+					new Location(getContext(), getSource().getFileName())
+						.getAbsoluteFile();
 				final Location parent = f.getParentFile();
 				if (f.exists() && parent != null) {
 					String dataFile = meta.getDataFile();
