@@ -103,7 +103,7 @@ public abstract class AbstractSCIFIOToolCommand extends AbstractSCIFIOPlugin
 			err("scifio " + getName() + " [options...] arguments...\nParameters:");
 			// print the list of available options
 			parser.printUsage(System.err);
-			err("");
+			return;
 		}
 		try {
 			run();
