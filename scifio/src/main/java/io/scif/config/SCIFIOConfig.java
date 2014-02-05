@@ -141,6 +141,39 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	// ImgSaver
 	private boolean writeRGB = true;
 
+	// -- Constructors --
+
+	/**
+	 * Zero-param constructor. Creates an empty configuration.
+	 */
+	public SCIFIOConfig() { /* no-op, empty configuration */}
+
+	/**
+	 * Copying constructor. Returns a copy of the given SCIFIOConfig.
+	 * 
+	 * @param config Configuration to copy.
+	 */
+	public SCIFIOConfig(final SCIFIOConfig config) {
+		super(config);
+		openDataset = config.openDataset;
+		level = config.level;
+		filterMetadata = config.filterMetadata;
+		saveOriginalMetadata = config.saveOriginalMetadata;
+		writeSequential = config.writeSequential;
+		model = config.model;
+		fps = config.fps;
+		compression = config.compression;
+		options = config.options;
+		group = config.group;
+		imgModes = config.imgModes;
+		index = config.index;
+		region = config.region;
+		computeMinMax = config.computeMinMax;
+		planeConverter = config.planeConverter;
+		imgFactoryHeuristic = config.imgFactoryHeuristic;
+		writeRGB = config.writeRGB;
+	}
+
 	// -- Checker Methods --
 
 	public SCIFIOConfig checkerSetOpen(final boolean open) {
@@ -444,5 +477,12 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	public SCIFIOConfig imgSaverSetWriteRGB(final boolean rgb) {
 		writeRGB = rgb;
 		return this;
+	}
+
+	// -- Clonable methods --
+
+	@Override
+	public SCIFIOConfig clone() {
+		return new SCIFIOConfig(this);
 	}
 }
