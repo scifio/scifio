@@ -261,7 +261,7 @@ public class Convert extends AbstractReaderCommand {
 				// nooverwrite wasn't specified so check the overwrite field
 				if (overwrite == null) {
 					// overwrite wasn't specified so get user input
-					warn("Warning: output file " + out + "exists.");
+					warn("Warning: output file " + out + " exists.");
 					warn("Do you want to overwrite it? ([y]/n)");
 					try {
 						final BufferedReader r =
