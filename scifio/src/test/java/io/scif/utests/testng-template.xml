@@ -282,6 +282,7 @@
       <classes>
         <class name="io.scif.img.cell.utests.SCIFIOCellImgFactoryTest"/>
         <class name="io.scif.img.cell.utests.SCIFIOCellCacheTest"/>
+        <class name="io.scif.img.cell.utests.SCIFIOCellImgTest"/>
       </classes>
     </test>
     <test name="CacheTest">

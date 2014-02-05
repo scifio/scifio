@@ -43,6 +43,8 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.ImgPlusMetadata;
 
+import org.scijava.Disposable;
+
 /**
  * SCIFIO extension of {@link ImgPlus} that adds
  * {@link #getColorTable(int, int)} API for specifying both the plane and image
@@ -50,7 +52,7 @@ import net.imglib2.meta.ImgPlusMetadata;
  * 
  * @author Mark Hiner
  */
-public class SCIFIOImgPlus<T> extends ImgPlus<T> {
+public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 
 	// -- Constructors --
 
@@ -110,5 +112,14 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> {
 		}
 
 		return table;
+	}
+
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		if (getImg() instanceof SCIFIOCellImg) {
+			((SCIFIOCellImg) getImg()).dispose();
+		}
 	}
 }

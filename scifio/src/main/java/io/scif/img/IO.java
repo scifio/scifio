@@ -74,9 +74,9 @@ public final class IO {
 	/**
 	 * @see ImgOpener#openImg(String)
 	 */
-	public static ImgPlus<?> open(final String source) {
+	public static SCIFIOImgPlus<?> open(final String source) {
 		final ImgOpener opener = opener();
-		ImgPlus<?> imgPlus = null;
+		SCIFIOImgPlus<?> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source);
 			register(imgPlus, opener);
@@ -90,9 +90,9 @@ public final class IO {
 	/**
 	 * As {@link ImgOpener#openImg(String)} with a guaranteed {@link FloatType}.
 	 */
-	public static ImgPlus<FloatType> openFloat(final String source) {
+	public static SCIFIOImgPlus<FloatType> openFloat(final String source) {
 		final ImgOpener opener = opener();
-		ImgPlus<FloatType> imgPlus = null;
+		SCIFIOImgPlus<FloatType> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source, new FloatType());
 			register(imgPlus, opener);
@@ -106,9 +106,9 @@ public final class IO {
 	/**
 	 * As {@link ImgOpener#openImg(String)} with a guaranteed {@link DoubleType}.
 	 */
-	public static ImgPlus<DoubleType> openDouble(final String source) {
+	public static SCIFIOImgPlus<DoubleType> openDouble(final String source) {
 		final ImgOpener opener = opener();
-		ImgPlus<DoubleType> imgPlus = null;
+		SCIFIOImgPlus<DoubleType> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source, new DoubleType());
 			register(imgPlus, opener);
@@ -123,10 +123,11 @@ public final class IO {
 	 * As {@link ImgOpener#openImg(String)} with a guaranteed
 	 * {@link UnsignedByteType}.
 	 */
-	public static ImgPlus<UnsignedByteType> openUnsignedByte(final String source)
+	public static SCIFIOImgPlus<UnsignedByteType> openUnsignedByte(
+		final String source)
 	{
 		final ImgOpener opener = opener();
-		ImgPlus<UnsignedByteType> imgPlus = null;
+		SCIFIOImgPlus<UnsignedByteType> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source, new UnsignedByteType());
 			register(imgPlus, opener);
@@ -140,11 +141,11 @@ public final class IO {
 	/**
 	 * @see ImgOpener#openImg(String, RealType)
 	 */
-	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-		final String source, final T type)
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+		openImg(final String source, final T type)
 	{
 		final ImgOpener opener = opener();
-		ImgPlus<T> imgPlus = null;
+		SCIFIOImgPlus<T> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source, type);
 			register(imgPlus, opener);
@@ -158,11 +159,11 @@ public final class IO {
 	/**
 	 * @see ImgOpener#openImg(String, SCIFIOConfig)
 	 */
-	public static ImgPlus<?> openImg(final String source,
+	public static SCIFIOImgPlus<?> openImg(final String source,
 		final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
-		ImgPlus<?> imgPlus = null;
+		SCIFIOImgPlus<?> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source, config);
 			register(imgPlus, opener);
@@ -176,11 +177,11 @@ public final class IO {
 	/**
 	 * @see ImgOpener#openImg(String, RealType, SCIFIOConfig)
 	 */
-	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-		final String source, final T type, final SCIFIOConfig config)
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+		openImg(final String source, final T type, final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
-		ImgPlus<T> imgPlus = null;
+		SCIFIOImgPlus<T> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source, type, config);
 			register(imgPlus, opener);
@@ -195,11 +196,11 @@ public final class IO {
 	 * @see ImgOpener#openImg(String, ImgFactory)
 	 */
 	@SuppressWarnings("rawtypes")
-	public static ImgPlus<?> openImg(final String source,
+	public static SCIFIOImgPlus<?> openImg(final String source,
 		final ImgFactory imgFactory)
 	{
 		final ImgOpener opener = opener();
-		ImgPlus<?> imgPlus = null;
+		SCIFIOImgPlus<?> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source, imgFactory);
 			register(imgPlus, opener);
@@ -214,11 +215,11 @@ public final class IO {
 	 * @see ImgOpener#openImg(String, ImgFactory, SCIFIOConfig)
 	 */
 	@SuppressWarnings("rawtypes")
-	public static ImgPlus<?> openImg(final String source,
+	public static SCIFIOImgPlus<?> openImg(final String source,
 		final ImgFactory imgFactory, final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
-		ImgPlus<?> imgPlus = null;
+		SCIFIOImgPlus<?> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source, imgFactory, config);
 			register(imgPlus, opener);
@@ -232,11 +233,11 @@ public final class IO {
 	/**
 	 * @see ImgOpener#openImg(String, ImgFactory, RealType)
 	 */
-	public static <T extends RealType<T>> ImgPlus<T> openImg(final String source,
-		final ImgFactory<T> imgFactory, final T type)
+	public static <T extends RealType<T>> SCIFIOImgPlus<T> openImg(
+		final String source, final ImgFactory<T> imgFactory, final T type)
 	{
 		final ImgOpener opener = opener();
-		ImgPlus<T> imgPlus = null;
+		SCIFIOImgPlus<T> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(source, imgFactory, type);
 			register(imgPlus, opener);
@@ -250,11 +251,11 @@ public final class IO {
 	/**
 	 * @see ImgOpener#openImg(Reader, RealType, SCIFIOConfig)
 	 */
-	public static <T extends RealType<T> & NativeType<T>> ImgPlus<T> openImg(
-		final Reader reader, final T type, final SCIFIOConfig config)
+	public static <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T>
+		openImg(final Reader reader, final T type, final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
-		ImgPlus<T> imgPlus = null;
+		SCIFIOImgPlus<T> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(reader, type, config);
 			register(imgPlus, opener);
@@ -268,11 +269,12 @@ public final class IO {
 	/**
 	 * @see ImgOpener#openImg(Reader, RealType, ImgFactory, SCIFIOConfig)
 	 */
-	public static <T extends RealType<T>> ImgPlus<T> openImg(final Reader reader,
-		final T type, final ImgFactory<T> imgFactory, final SCIFIOConfig config)
+	public static <T extends RealType<T>> SCIFIOImgPlus<T> openImg(
+		final Reader reader, final T type, final ImgFactory<T> imgFactory,
+		final SCIFIOConfig config)
 	{
 		final ImgOpener opener = opener();
-		ImgPlus<T> imgPlus = null;
+		SCIFIOImgPlus<T> imgPlus = null;
 		try {
 			imgPlus = opener.openImg(reader, type, imgFactory, config);
 			register(imgPlus, opener);

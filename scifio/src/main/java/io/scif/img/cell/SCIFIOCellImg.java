@@ -34,6 +34,7 @@ package io.scif.img.cell;
 
 import io.scif.FormatException;
 import io.scif.Reader;
+import io.scif.refs.RefManagerService;
 
 import java.io.IOException;
 
@@ -43,13 +44,16 @@ import net.imglib2.img.cell.AbstractCellImg;
 import net.imglib2.img.cell.Cells;
 import net.imglib2.type.NativeType;
 
+import org.scijava.Disposable;
+
 /**
  * {@link AbstractCellImg} implementation for working with {@link SCIFIOCell}s.
  * 
  * @author Mark Hiner
  */
 public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>>
-	extends AbstractCellImg<T, A, C, SCIFIOCellImgFactory<T>>
+	extends AbstractCellImg<T, A, C, SCIFIOCellImgFactory<T>> implements
+	Disposable
 {
 
 	// -- Fields --
@@ -63,6 +67,7 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 	{
 		super(factory, cells);
 		reader = factory.reader();
+		reader.getContext().getService(RefManagerService.class).manage(this);
 	}
 
 	// -- SCIFIOCellImg methods --
@@ -97,6 +102,10 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 		return factory;
 	}
 
+	public Reader reader() {
+		return reader;
+	}
+
 	@Override
 	public SCIFIOCellImg<T, A, C> copy() {
 		@SuppressWarnings("unchecked")
@@ -105,5 +114,13 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 				firstElement().createVariable());
 		super.copyDataTo(copy);
 		return copy;
+	}
+
+	@Override
+	public void dispose() {
+		try {
+			reader.close();
+		}
+		catch (final IOException e) {}
 	}
 }
