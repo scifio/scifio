@@ -367,11 +367,16 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	@Override
 	public void close(final boolean fileOnly) throws IOException {
 		getParent().close(fileOnly);
+		if (wrappedMeta != null) {
+			wrappedMeta.close(fileOnly);
+			wrappedMeta = null;
+		}
+		if (!fileOnly) cleanUp();
 	}
 
 	@Override
 	public void close() throws IOException {
-		getParent().close();
+		close(false);
 	}
 
 	@Override
@@ -455,5 +460,13 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		final Metadata meta = getMetadata();
 
 		return metaClass.isAssignableFrom(meta.getClass());
+	}
+
+	/**
+	 * Helper method that is always called by the {@link #close} method, if the
+	 * {@code fileOnly} flag is false.
+	 */
+	protected void cleanUp() throws IOException {
+		// No-op
 	}
 }

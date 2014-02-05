@@ -394,14 +394,6 @@ public class FileStitcher extends AbstractReaderFilter {
 	}
 
 	@Override
-	public void close(final boolean fileOnly) throws IOException {
-		super.close(fileOnly);
-		if (!fileOnly) {
-			cleanUp();
-		}
-	}
-
-	@Override
 	public Reader[] getUnderlyingReaders() {
 		return readers;
 	}
@@ -430,7 +422,9 @@ public class FileStitcher extends AbstractReaderFilter {
 		return new int[] { fileIndex, imageIndex };
 	}
 
-	private void cleanUp() throws IOException {
+	@Override
+	protected void cleanUp() throws IOException {
+		super.cleanUp();
 		patternIds = false;
 
 		doNotChangePattern = false;
@@ -438,7 +432,9 @@ public class FileStitcher extends AbstractReaderFilter {
 		imagesPerFile = null;
 
 		for (final Reader r : readers) {
-			if (r != null) r.close();
+			if (r != null) {
+				r.close();
+			}
 		}
 
 		readers = null;

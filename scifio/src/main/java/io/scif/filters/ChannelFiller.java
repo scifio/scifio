@@ -237,18 +237,6 @@ public class ChannelFiller extends AbstractReaderFilter {
 		return plane;
 	}
 
-	@Override
-	public void close() throws IOException {
-		close(false);
-	}
-
-	@Override
-	public void close(final boolean fileOnly) throws IOException {
-		super.close(fileOnly);
-
-		if (!fileOnly) cleanUp();
-	}
-
 	// -- AbstractReaderFilter API Methods --
 
 	/* lutLength is 0 until a plane is opened */
@@ -256,7 +244,12 @@ public class ChannelFiller extends AbstractReaderFilter {
 	protected void
 		setSourceHelper(final String source, final SCIFIOConfig config)
 	{
-		cleanUp();
+		try {
+			cleanUp();
+		}
+		catch (final IOException e) {
+			// Nothing to do (this Filter's cleanUp should never throw this)
+		}
 	}
 
 	// -- Prioritized API --
@@ -313,7 +306,9 @@ public class ChannelFiller extends AbstractReaderFilter {
 		return matches;
 	}
 
-	private void cleanUp() {
+	@Override
+	protected void cleanUp() throws IOException {
+		super.cleanUp();
 		lastPlaneIndex = 0;
 		lastImageIndex = 0;
 		lastPlane = null;

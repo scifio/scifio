@@ -380,19 +380,6 @@ public class PlaneSeparator extends AbstractReaderFilter {
 		return ret;
 	}
 
-	@Override
-	public void close() throws IOException {
-		close(false);
-	}
-
-	@Override
-	public void close(final boolean fileOnly) throws IOException {
-		super.close(fileOnly);
-		if (!fileOnly) {
-			cleanUp();
-		}
-	}
-
 	// -- Prioritized API --
 
 	@Override
@@ -475,7 +462,9 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	}
 
 	/* Resets local fields. */
-	private void cleanUp() {
+	@Override
+	protected void cleanUp() throws IOException {
+		super.cleanUp();
 		lastPlane = null;
 		lastPlaneIndex = -1;
 		lastImageIndex = -1;
