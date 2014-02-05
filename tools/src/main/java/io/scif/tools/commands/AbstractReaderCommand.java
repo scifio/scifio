@@ -257,7 +257,8 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 		for (int i = 0; i < planeCounts.length; i++) {
 			planeCounts[i] = npLengths[i] - npOffsets[i];
 		}
-		final long planeCount = DataTools.safeMultiply64(planeCounts);
+		final long planeCount =
+			planeCounts.length > 0 ? DataTools.safeMultiply64(planeCounts) : 1;
 
 		long planeIndex = FormatTools.positionToRaster(0, m, position);
 		Plane plane = null;
