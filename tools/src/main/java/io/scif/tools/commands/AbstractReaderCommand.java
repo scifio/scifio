@@ -237,7 +237,6 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 	 */
 	protected void read(final Reader reader) throws CmdLineException {
 		final Metadata m = reader.getMetadata();
-		long timeLastLogged = System.currentTimeMillis();
 
 		final ImageMetadata iMeta = m.get(0);
 		// Get the planar offsets/lengths (account for cropping)
@@ -270,13 +269,9 @@ public abstract class AbstractReaderCommand extends AbstractSCIFIOToolCommand {
 			plane =
 				processPlane(reader, plane, 0, planeIndex, planeNo++, planeOffsets,
 					planeLengths);
-			final long e = System.currentTimeMillis();
 
-			// Print statistics no more than once a second
-			if ((e - timeLastLogged) / 1000 > 0) {
-				info("Processed: " + planeNo + "/" + planeCount + " planes.");
-				timeLastLogged = e;
-			}
+			// Print statistics
+			info("Processed: " + planeNo + "/" + planeCount + " planes.");
 		}
 		// Verifies the next plane index is valid and updates the plane position
 		while ((planeIndex =
