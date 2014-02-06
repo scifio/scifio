@@ -844,11 +844,11 @@ public class APNGFormat extends AbstractFormat {
 
 			if (numFrames == 0) {
 				// This is the first frame, and also the default image
-				writePixels(imageIndex, "IDAT", plane.getBytes(), planeMin, planeMax);
+				writePixels(imageIndex, "IDAT", plane, planeMin, planeMax);
 			}
 			else {
 				writeFCTL(planeIndex);
-				writePixels(imageIndex, "fdAT", plane.getBytes(), planeMin, planeMax);
+				writePixels(imageIndex, "fdAT", plane, planeMin, planeMax);
 			}
 			numFrames++;
 		}
@@ -944,14 +944,15 @@ public class APNGFormat extends AbstractFormat {
 		}
 
 		private void writePixels(final int imageIndex, final String chunk,
-			final byte[] stream, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
+			final byte[] stream = plane.getBytes();
 
 			final long rgbCCount =
 				getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 			final boolean interleaved =
-				getMetadata().get(0).getInterleavedAxisCount() > 0;
+				plane.getImageMetadata().getInterleavedAxisCount() > 0;
 
 			final int pixelType = getMetadata().get(imageIndex).getPixelType();
 			final boolean signed = FormatTools.isSigned(pixelType);
