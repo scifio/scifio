@@ -183,26 +183,33 @@ public class Convert extends AbstractReaderCommand {
 		final int imageIndex, final long planeIndex, final long planeNo,
 		final long[] planeMin, final long[] planeMax) throws CmdLineException
 	{
-		try {
-			// open the specified plane
-			if (plane == null) {
-				plane =
-					reader.openPlane(imageIndex, planeIndex, planeMin, planeMax,
-						getConfig());
+		// The loop calling this method is reader-centric, controlled by the
+		// number of planes in the Reader. If some were truncated by the writer
+		// - for example if converting to a Format that doesn't support part of
+		// the source dataset -- then we need to prevent this method from executing
+		// too many times.
+		if (planeNo < writer.getMetadata().get(imageIndex).getPlaneCount()) {
+			try {
+				// open the specified plane
+				if (plane == null) {
+					plane =
+						reader.openPlane(imageIndex, planeIndex, planeMin, planeMax,
+							getConfig());
+				}
+				else {
+					plane =
+						reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax,
+							getConfig());
+				}
+				// write the specified plane
+				writer.savePlane(imageIndex, planeNo, plane);
 			}
-			else {
-				plane =
-					reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax,
-						getConfig());
+			catch (final FormatException e) {
+				throw new CmdLineException(null, e.getMessage());
 			}
-			// write the specified plane
-			writer.savePlane(imageIndex, planeNo, plane);
-		}
-		catch (final FormatException e) {
-			throw new CmdLineException(null, e.getMessage());
-		}
-		catch (final IOException e) {
-			throw new CmdLineException(null, e.getMessage());
+			catch (final IOException e) {
+				throw new CmdLineException(null, e.getMessage());
+			}
 		}
 
 		return plane;
