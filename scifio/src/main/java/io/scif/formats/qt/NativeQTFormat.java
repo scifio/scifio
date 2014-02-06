@@ -816,7 +816,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 			final Metadata meta = getMetadata();
 			final boolean interleaved =
-				meta.get(imageIndex).getInterleavedAxisCount() > 0;
+				plane.getImageMetadata().getInterleavedAxisCount() > 0;
 			// get the width and height of the image
 			final int width = (int) meta.get(imageIndex).getAxisLength(Axes.X);
 			// need to check if the width is a multiple of 8

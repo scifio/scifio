@@ -824,9 +824,6 @@ public class JPEG2000Format extends AbstractFormat {
 			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
-			final byte[] buf = plane.getBytes();
-			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
-
 			/*
 			if (!isFullPlane(x, y, w, h)) {
 			  throw new FormatException(
@@ -838,7 +835,7 @@ public class JPEG2000Format extends AbstractFormat {
 			// int height = retrieve.getPixelsSizeY(series).getValue().intValue();
 
 			getStream().write(
-				compressBuffer(imageIndex, planeIndex, buf, planeMin, planeMax));
+				compressBuffer(imageIndex, planeIndex, plane, planeMin, planeMax));
 		}
 
 		/**
@@ -846,16 +843,17 @@ public class JPEG2000Format extends AbstractFormat {
 		 * 
 		 * @param imageIndex the image index within the dataset
 		 * @param planeIndex the plane index within the image
-		 * @param buf the byte array that represents the image tile.
+		 * @param plane the image tile being compressed.
 		 * @param planeMin minimal bounds of the planar axes
 		 * @param planeMax maximum bounds of the planar axes
 		 * @throws FormatException if one of the parameters is invalid.
 		 * @throws IOException if there was a problem writing to the file.
 		 */
 		public byte[] compressBuffer(final int imageIndex, final long planeIndex,
-			final byte[] buf, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final long[] planeMin, final long[] planeMax)
 			throws FormatException, IOException
 		{
+			final byte[] buf = plane.getBytes();
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
 			final boolean littleEndian =
 				getMetadata().get(imageIndex).isLittleEndian();
@@ -867,13 +865,15 @@ public class JPEG2000Format extends AbstractFormat {
 			// To be on the save-side
 			CodecOptions options = getCodecOptions();
 			if (options == null) options = JPEG2000CodecOptions.getDefaultOptions();
-			options.width = (int) planeMax[0];
-			options.height = (int) planeMax[1];
+			options.width =
+				(int) planeMax[getMetadata().get(imageIndex).getAxisIndex(Axes.X)];
+			options.height =
+				(int) planeMax[getMetadata().get(imageIndex).getAxisIndex(Axes.Y)];
 			options.channels = nChannels;
 			options.bitsPerSample = bytesPerPixel * 8;
 			options.littleEndian = littleEndian;
 			options.interleaved =
-				getMetadata().get(imageIndex).getInterleavedAxisCount() > 0;
+				plane.getImageMetadata().getInterleavedAxisCount() > 0;
 			options.lossless =
 				getCompression() == null ||
 					getCompression().equals(CompressionType.J2K.getCompression());

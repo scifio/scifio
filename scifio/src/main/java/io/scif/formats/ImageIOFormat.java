@@ -219,7 +219,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 					AWTImageTools.makeImage(plane.getBytes(), (int) meta.get(imageIndex)
 						.getAxisLength(Axes.X), (int) meta.get(imageIndex).getAxisLength(
 						Axes.Y), (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL),
-						meta.get(imageIndex).getInterleavedAxisCount() > 0, FormatTools
+						plane.getImageMetadata().getInterleavedAxisCount() > 0, FormatTools
 							.getBytesPerPixel(type), FormatTools.isFloatingPoint(type), meta
 							.get(imageIndex).isLittleEndian(), FormatTools.isSigned(type));
 			}

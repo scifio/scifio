@@ -127,7 +127,8 @@ public class DefaultInitializeService extends AbstractService implements
 		throws FormatException, IOException
 	{
 		final Format sFormat = sourceMeta.getFormat();
-		final Format dFormat = formatService.getFormat(destination, config);
+		final Format dFormat =
+			formatService.getWriterByExtension(destination).getFormat();
 		Metadata destMeta = dFormat.createMetadata();
 
 		// if dest is a different format than source, translate..
