@@ -523,7 +523,7 @@ public class EPSFormat extends AbstractFormat {
 
 			final byte[] buf = plane.getBytes();
 			final boolean interleaved =
-				getMetadata().get(imageIndex).getInterleavedAxisCount() > 0;
+				plane.getImageMetadata().getInterleavedAxisCount() > 0;
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
 			final int xAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.Y);
@@ -537,7 +537,7 @@ public class EPSFormat extends AbstractFormat {
 			// write pixel data
 			// for simplicity, write 80 char lines
 
-			final int planeSize = (int) (planeMax[0] * planeMax[1]);
+			final int planeSize = (int) (planeMax[xAxis] * planeMax[yAxis]);
 
 			final StringBuffer buffer = new StringBuffer();
 
