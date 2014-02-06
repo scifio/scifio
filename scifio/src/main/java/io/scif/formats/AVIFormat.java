@@ -1154,7 +1154,7 @@ public class AVIFormat extends AbstractFormat {
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
 			final boolean interleaved =
-				meta.get(imageIndex).getInterleavedAxisCount() > 0;
+				plane.getImageMetadata().getInterleavedAxisCount() > 0;
 
 			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
 			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax))
@@ -1164,7 +1164,7 @@ public class AVIFormat extends AbstractFormat {
 			}
 
 			final int nChannels =
-				(int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
+				(int) plane.getImageMetadata().getAxisLength(Axes.CHANNEL);
 
 			// Write the data. Each 3-byte triplet in the bitmap array represents the
 			// relative intensities of blue, green, and red, respectively, for a
