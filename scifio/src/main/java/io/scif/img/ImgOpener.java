@@ -134,28 +134,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SCIFIOImgPlus<?>
 		openImg(final String source, final SCIFIOConfig config)
 			throws ImgIOException
 	{
 		final Reader r = createReader(source, config);
-		final RealType t = getType(r, config);
-
-		final ImgFactoryHeuristic heuristic = getHeuristic(config);
-
-		ImgFactory imgFactory;
-		try {
-			if (NativeType.class.isAssignableFrom(t.getClass())) imgFactory =
-				heuristic.createFactory(r.getMetadata(), config.imgOpenerGetImgModes(),
-					(NativeType) t);
-			else return null;
-		}
-		catch (final IncompatibleTypeException e) {
-			throw new ImgIOException(e);
-		}
-
-		return openImg(r, t, imgFactory, config);
+		return openImg(r, config);
 	}
 
 	/**
@@ -229,6 +213,38 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final Reader r = createReader(source, config);
 
 		return openImg(r, type, imgFactory, config);
+	}
+
+	/**
+	 * @param reader - An initialized {@link Reader} to use for reading image
+	 *          data.
+	 * @param config - {@link SCIFIOConfig} to use when opening this dataset
+	 * @return - the {@link ImgPlus} or null
+	 * @throws ImgIOException if there is a problem reading the image data.
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public SCIFIOImgPlus<?>
+		openImg(final Reader reader, final SCIFIOConfig config)
+			throws ImgIOException
+	{
+		final RealType t = getType(reader, config);
+
+		final ImgFactoryHeuristic heuristic = getHeuristic(config);
+
+		ImgFactory imgFactory;
+		try {
+			if (NativeType.class.isAssignableFrom(t.getClass())) {
+				imgFactory =
+					heuristic.createFactory(reader.getMetadata(), config
+						.imgOpenerGetImgModes(), (NativeType) t);
+			}
+			else return null;
+		}
+		catch (final IncompatibleTypeException e) {
+			throw new ImgIOException(e);
+		}
+
+		return openImg(reader, t, imgFactory, config);
 	}
 
 	/**
