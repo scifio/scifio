@@ -244,7 +244,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final Reader reader, final T type, final SCIFIOConfig config)
 		throws ImgIOException
 	{
-
 		final ImgFactoryHeuristic heuristic = getHeuristic(config);
 
 		ImgFactory<T> imgFactory;
