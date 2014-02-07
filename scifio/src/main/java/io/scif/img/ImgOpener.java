@@ -98,8 +98,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 		super(ctx);
 	}
 
-	// -- Static methods --
-
 	// -- ImgOpener methods --
 
 	/**
