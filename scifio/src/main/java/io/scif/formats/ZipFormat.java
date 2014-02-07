@@ -168,10 +168,11 @@ public class ZipFormat extends AbstractFormat {
 
 		@Override
 		public Metadata parse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			return super.parse(ZipUtilities.getRawStream(locationService, stream),
-				meta);
+				meta, config);
 		}
 
 		@Override
