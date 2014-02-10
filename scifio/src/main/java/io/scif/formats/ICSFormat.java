@@ -233,7 +233,6 @@ public class ICSFormat extends AbstractFormat {
 			// HACK - support for Gray Institute at Oxford's ICS lifetime data
 			if (lifetime && label != null) {
 				int binCount = 0;
-				imageMeta.addAxis(SCIFIOAxes.LIFETIME, 1);
 				int index = -1;
 
 				if (label.equalsIgnoreCase("t x y")) {
@@ -253,9 +252,8 @@ public class ICSFormat extends AbstractFormat {
 					log().debug("Lifetime data, unexpected 'history labels' " + label);
 				}
 
-				if (index > -1) {
-					imageMeta.setAxisType(index, SCIFIOAxes.LIFETIME);
-					imageMeta.setAxisLength(SCIFIOAxes.LIFETIME, binCount);
+				if (index >= 0) {
+					imageMeta.addAxis(SCIFIOAxes.LIFETIME, binCount);
 				}
 			}
 
