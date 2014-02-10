@@ -34,6 +34,7 @@ package io.scif;
 
 import io.scif.common.DataTools;
 import io.scif.util.FormatTools;
+import io.scif.util.SCIFIOMetadataTools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -456,13 +457,17 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public int getPlanarAxisCount() {
-		if (planarAxisCount == -1) return computePlanarAxisCount();
+		if (planarAxisCount == -1) {
+			return SCIFIOMetadataTools.guessPlanarAxisCount(axes);
+		}
 		return planarAxisCount;
 	}
 
 	@Override
 	public int getInterleavedAxisCount() {
-		if (interleavedAxisCount == -1) return computeInterleavedAxisCount();
+		if (interleavedAxisCount == -1) {
+			return SCIFIOMetadataTools.guessInterleavedAxisCount(axes);
+		}
 		return interleavedAxisCount;
 	}
 
@@ -644,21 +649,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		}
 
 		return effectiveAxes;
-	}
-
-	/**
-	 * We assume that {@link Axes#Y} is the last planar axis.
-	 */
-	private int computePlanarAxisCount() {
-		return getAxisIndex(Axes.Y) + 1;
-	}
-
-	/**
-	 * We assume that {@link Axes#X} defines the border between interleaved and
-	 * non-interleaved planar axes.
-	 */
-	private int computeInterleavedAxisCount() {
-		return getAxisIndex(Axes.X);
 	}
 
 	/**
