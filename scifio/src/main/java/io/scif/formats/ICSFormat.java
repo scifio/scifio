@@ -151,22 +151,40 @@ public class ICSFormat extends AbstractFormat {
 			// Reset the existing axes
 			imageMeta.setAxes(new CalibratedAxis[0], new long[0]);
 
+			AxisType xAxis = Axes.X, yAxis = Axes.Y, zAxis = Axes.Z;
+
+			// HACK - support for Gray Institute at Oxford's ICS lifetime data
+			final boolean lifetime = getLifetime();
+			final String label = getLabels();
+			if (lifetime && label != null) {
+				if (label.equalsIgnoreCase("t x y")) {
+					// NB: The axes are actually (Lifetime, X, Y) not (X, Y, Z)!
+					xAxis = SCIFIOAxes.LIFETIME;
+					yAxis = Axes.X;
+					zAxis = Axes.Y;
+				}
+				else if (label.equalsIgnoreCase("x y t")) {
+					// NB: The Z axis is actually Lifetime!
+					zAxis = SCIFIOAxes.LIFETIME;
+				}
+				else {
+					log().debug("Lifetime data, unexpected 'history labels' " + label);
+				}
+			}
+
 			int bitsPerPixel = 0;
-			int planarAxes = 0;
 
 			// interpret axis information
 			for (int n = 0; n < axes.length; n++) {
 				final String axis = axes[n].toLowerCase();
 				if (axis.equals("x")) {
-					imageMeta.addAxis(Axes.X, (int) axesSizes[n]);
-					planarAxes++;
+					imageMeta.addAxis(xAxis, (int) axesSizes[n]);
 				}
 				else if (axis.equals("y")) {
-					imageMeta.addAxis(Axes.Y, (int) axesSizes[n]);
-					planarAxes++;
+					imageMeta.addAxis(yAxis, (int) axesSizes[n]);
 				}
 				else if (axis.equals("z")) {
-					imageMeta.addAxis(Axes.Z, (int) axesSizes[n]);
+					imageMeta.addAxis(zAxis, (int) axesSizes[n]);
 				}
 				else if (axis.equals("t")) {
 					final int tIndex = imageMeta.getAxisIndex(Axes.TIME);
@@ -189,7 +207,6 @@ public class ICSFormat extends AbstractFormat {
 				else {
 					if (imageMeta.getAxisIndex(Axes.X) == -1) {
 						setStoredRGB(true);
-						planarAxes++;
 					}
 
 					AxisType type = null;
@@ -211,8 +228,6 @@ public class ICSFormat extends AbstractFormat {
 				}
 			}
 
-			imageMeta.setPlanarAxisCount(planarAxes);
-
 			if (getBitsPerPixel() != null) bitsPerPixel = getBitsPerPixel();
 
 			imageMeta.setBitsPerPixel(bitsPerPixel);
@@ -228,36 +243,6 @@ public class ICSFormat extends AbstractFormat {
 			imageMeta.setFalseColor(false);
 			imageMeta.setMetadataComplete(true);
 			imageMeta.setLittleEndian(true);
-
-			final boolean lifetime = getLifetime();
-			final String label = getLabels();
-
-			// HACK - support for Gray Institute at Oxford's ICS lifetime data
-			if (lifetime && label != null) {
-				int binCount = 0;
-				int index = -1;
-
-				if (label.equalsIgnoreCase("t x y")) {
-					binCount = (int) imageMeta.getAxisLength(Axes.X);
-					index = imageMeta.getAxisIndex(Axes.X);
-					imageMeta.setAxisLength(Axes.X, imageMeta.getAxisLength(Axes.Y));
-					imageMeta.setAxisLength(Axes.Y, imageMeta.getAxisLength(Axes.Z));
-					imageMeta.setAxisLength(Axes.Z, 1);
-					imageMeta.setPlanarAxisCount(3);
-				}
-				else if (label.equalsIgnoreCase("x y t")) {
-					index = imageMeta.getAxisIndex(Axes.Y) + 1;
-					binCount = (int) imageMeta.getAxisLength(Axes.Z);
-					imageMeta.setAxisLength(Axes.Z, 1);
-				}
-				else {
-					log().debug("Lifetime data, unexpected 'history labels' " + label);
-				}
-
-				if (index >= 0) {
-					imageMeta.addAxis(SCIFIOAxes.LIFETIME, binCount);
-				}
-			}
 
 			final String byteOrder = getByteOrder();
 			final String rFormat = getRepFormat();
