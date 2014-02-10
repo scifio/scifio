@@ -456,6 +456,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		final SCIFIOImgPlus<T> imgPlus =
 			new SCIFIOImgPlus<T>(img, name, dimTypes, cal);
+		imgPlus.setMetadata(meta);
 		imgPlus.setValidBits(validBits);
 
 		int compositeChannelCount = rgbChannelCount;

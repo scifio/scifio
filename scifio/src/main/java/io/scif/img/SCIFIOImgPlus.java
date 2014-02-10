@@ -33,6 +33,7 @@
 package io.scif.img;
 
 import io.scif.FormatException;
+import io.scif.Metadata;
 import io.scif.img.cell.SCIFIOCellImg;
 
 import java.io.IOException;
@@ -49,10 +50,18 @@ import org.scijava.Disposable;
  * SCIFIO extension of {@link ImgPlus} that adds
  * {@link #getColorTable(int, int)} API for specifying both the plane and image
  * index.
+ * <p>
+ * Also provides direct access to the {@link Metadata} object associated with
+ * the underlying dataset.
+ * </p>
  * 
  * @author Mark Hiner
  */
 public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
+
+	// -- Fields --
+
+	private Metadata metadata;
 
 	// -- Constructors --
 
@@ -60,7 +69,8 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 		super(img);
 	}
 
-	public SCIFIOImgPlus(final Img<T> img, final String name) {
+	public SCIFIOImgPlus(final Img<T> img, final String name)
+	{
 		super(img, name);
 	}
 
@@ -70,7 +80,8 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 		super(img, name, axes);
 	}
 
-	public SCIFIOImgPlus(final Img<T> img, final ImgPlusMetadata metadata) {
+	public SCIFIOImgPlus(final Img<T> img, final ImgPlusMetadata metadata)
+	{
 		super(img, metadata);
 	}
 
@@ -79,6 +90,24 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 	{
 		super(img, name, axes, cal);
 	}
+
+	// -- SCIFIOImgPlus Methods --
+
+	/**
+	 * @return The SCIFIO Metadata object attached to this ImgPlus.
+	 */
+	public Metadata getMetadata() {
+		return metadata;
+	}
+
+	/**
+	 * Sets the {@link Metadata} object for this ImgPlus.
+	 */
+	public void setMetadata(final Metadata meta) {
+		metadata = meta;
+	}
+
+	// -- ImgPlus Methods --
 
 	@Override
 	public ColorTable getColorTable(final int planeIndex) {
