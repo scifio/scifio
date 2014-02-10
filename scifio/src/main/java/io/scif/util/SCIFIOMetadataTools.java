@@ -33,7 +33,6 @@
 package io.scif.util;
 
 import io.scif.FormatException;
-import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.io.RandomAccessOutputStream;
 
@@ -177,40 +176,6 @@ public class SCIFIOMetadataTools {
 		if (src.get(imageIndex).getAxes().size() == 0) {
 			throw new FormatException("Axiscount #" + imageIndex + " is 0");
 		}
-	}
-
-	/**
-	 * Populates the provided ImageMetadata. Automatically looks up bits per pixel
-	 * for the provided pixel type.
-	 */
-	public static void populate(final ImageMetadata iMeta,
-		final CalibratedAxis[] axisTypes, final long[] axisLengths,
-		final int pixelType, final boolean orderCertain,
-		final boolean littleEndian, final boolean indexed,
-		final boolean falseColor, final boolean metadataComplete)
-	{
-		populate(iMeta, axisTypes, axisLengths, pixelType, FormatTools
-			.getBitsPerPixel(pixelType), orderCertain, littleEndian, indexed,
-			falseColor, metadataComplete);
-	}
-
-	/**
-	 * Populates the provided ImageMetadata.
-	 */
-	public static void populate(final ImageMetadata iMeta,
-		final CalibratedAxis[] axisTypes, final long[] axisLengths,
-		final int pixelType, final int bitsPerPixel, final boolean orderCertain,
-		final boolean littleEndian, final boolean indexed,
-		final boolean falseColor, final boolean metadataComplete)
-	{
-		iMeta.setPixelType(pixelType);
-		iMeta.setBitsPerPixel(bitsPerPixel);
-		iMeta.setOrderCertain(orderCertain);
-		iMeta.setLittleEndian(littleEndian);
-		iMeta.setIndexed(indexed);
-		iMeta.setFalseColor(falseColor);
-		iMeta.setMetadataComplete(metadataComplete);
-		iMeta.setAxes(axisTypes, axisLengths);
 	}
 
 	// -- Utility methods -- original metadata --

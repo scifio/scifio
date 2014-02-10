@@ -564,21 +564,40 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void copy(final ImageMetadata toCopy) {
-		table = new DefaultMetaTable(toCopy.getTable());
+		populate(toCopy.getAxes(), toCopy.getAxesLengths(), toCopy.getPixelType(),
+			toCopy.isOrderCertain(), toCopy.isLittleEndian(), toCopy.isIndexed(),
+			toCopy.isFalseColor(), toCopy.isMetadataComplete());
+		this.table = new DefaultMetaTable(toCopy.getTable());
+		this.thumbnail = toCopy.isThumbnail();
+		this.thumbSizeX = toCopy.getThumbSizeX();
+		this.thumbSizeY = toCopy.getThumbSizeY();
+		this.planarAxisCount = toCopy.getPlanarAxisCount();
+	}
 
-		axes = new ArrayList<CalibratedAxis>(toCopy.getAxes());
-		setAxisLengths(toCopy.getAxesLengths().clone());
-		bitsPerPixel = toCopy.getBitsPerPixel();
-		falseColor = toCopy.isFalseColor();
-		indexed = toCopy.isIndexed();
-		planarAxisCount = toCopy.getPlanarAxisCount();
-		littleEndian = toCopy.isLittleEndian();
-		metadataComplete = toCopy.isMetadataComplete();
-		orderCertain = toCopy.isOrderCertain();
-		pixelType = toCopy.getPixelType();
-		thumbnail = toCopy.isThumbnail();
-		thumbSizeX = toCopy.getThumbSizeX();
-		thumbSizeY = toCopy.getThumbSizeY();
+	@Override
+	public void populate(final List<CalibratedAxis> axes, final long[] lengths,
+		final int pixelType, final boolean orderCertain,
+		final boolean littleEndian, final boolean indexed,
+		final boolean falseColor, final boolean metadataComplete)
+	{
+		populate(axes, lengths, pixelType, FormatTools.getBitsPerPixel(pixelType),
+			orderCertain, littleEndian, indexed, falseColor, metadataComplete);
+	}
+
+	@Override
+	public void populate(final List<CalibratedAxis> axes, final long[] lengths,
+		final int pixelType, final int bitsPerPixel, final boolean orderCertain,
+		final boolean littleEndian, final boolean indexed,
+		final boolean falseColor, final boolean metadataComplete)
+	{
+		this.axes = new ArrayList<CalibratedAxis>(axes);
+		setAxisLengths(lengths.clone());
+		this.bitsPerPixel = bitsPerPixel;
+		this.falseColor = falseColor;
+		this.indexed = indexed;
+		this.littleEndian = littleEndian;
+		this.orderCertain = orderCertain;
+		this.pixelType = pixelType;
 	}
 
 	// -- HasTable API Methods --

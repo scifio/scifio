@@ -399,4 +399,20 @@ public interface ImageMetadata extends HasMetaTable {
 	 * @param toCopy - ImageMetadata to copy
 	 */
 	void copy(ImageMetadata toCopy);
+
+	/**
+	 * As
+	 * {@link #populate(List, long[], int, boolean, boolean, boolean, boolean, boolean)}
+	 * but automatically determines bits per pixel.
+	 */
+	void populate(List<CalibratedAxis> axes, long[] lengths, int pixelType,
+		boolean orderCertain, boolean littleEndian, boolean indexed,
+		boolean falseColor, boolean metadataComplete);
+
+	/**
+	 * Convenience method for manually populating an ImageMetadata.
+	 */
+	void populate(List<CalibratedAxis> axes, long[] lengths, int pixelType,
+		int bitsPerPixel, boolean orderCertain, boolean littleEndian,
+		boolean indexed, boolean falseColor, boolean metadataComplete);
 }

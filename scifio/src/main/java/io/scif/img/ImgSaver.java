@@ -47,6 +47,7 @@ import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import net.imglib2.exception.ImgLibException;
 import net.imglib2.exception.IncompatibleTypeException;
@@ -657,8 +658,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 		imgplusMeta.createImageMetadata(imageIndex + 1);
 		meta.createImageMetadata(imageIndex + 1);
 
-		SCIFIOMetadataTools.populate(imgplusMeta.get(imageIndex), axes,
-			axisLengths, pixelType, true, false, false, false, true);
+		imgplusMeta.get(imageIndex).populate(Arrays.asList(axes), axisLengths,
+			pixelType, true, false, false, false, true);
 
 		// Adjust for RGB information
 		if (img.getCompositeChannelCount() > 1) {
