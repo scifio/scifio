@@ -158,28 +158,30 @@ public class ICSFormat extends AbstractFormat {
 			for (int n = 0; n < axes.length; n++) {
 				final String axis = axes[n].toLowerCase();
 				if (axis.equals("x")) {
-					imageMeta.addAxis(Axes.X, new Double(axesSizes[n]).intValue());
+					imageMeta.addAxis(Axes.X, (int) axesSizes[n]);
 					planarAxes++;
 				}
 				else if (axis.equals("y")) {
-					imageMeta.addAxis(Axes.Y, new Double(axesSizes[n]).intValue());
+					imageMeta.addAxis(Axes.Y, (int) axesSizes[n]);
 					planarAxes++;
 				}
 				else if (axis.equals("z")) {
-					imageMeta.addAxis(Axes.Z, new Double(axesSizes[n]).intValue());
+					imageMeta.addAxis(Axes.Z, (int) axesSizes[n]);
 				}
 				else if (axis.equals("t")) {
 					final int tIndex = imageMeta.getAxisIndex(Axes.TIME);
 
 					if (tIndex == -1) {
-						imageMeta.addAxis(Axes.TIME, new Double(axesSizes[n]).intValue());
+						imageMeta.addAxis(Axes.TIME, (int) axesSizes[n]);
 					}
-					else imageMeta.setAxisLength(Axes.TIME, imageMeta
-						.getAxisLength(Axes.TIME) *
-						new Double(axesSizes[n]).intValue());
+					else {
+						final long timeLength =
+							imageMeta.getAxisLength(Axes.TIME) * (int) axesSizes[n];
+						imageMeta.setAxisLength(Axes.TIME, timeLength);
+					}
 				}
 				else if (axis.equals("bits")) {
-					bitsPerPixel = new Double(axesSizes[n]).intValue();
+					bitsPerPixel = (int) axesSizes[n];
 					while (bitsPerPixel % 8 != 0)
 						bitsPerPixel++;
 					if (bitsPerPixel == 24 || bitsPerPixel == 48) bitsPerPixel /= 3;
@@ -205,7 +207,7 @@ public class ICSFormat extends AbstractFormat {
 						type = Axes.unknown();
 					}
 
-					imageMeta.addAxis(type, new Double(axesSizes[n]).longValue());
+					imageMeta.addAxis(type, (long) axesSizes[n]);
 				}
 			}
 
@@ -699,7 +701,7 @@ public class ICSFormat extends AbstractFormat {
 				for (int n = 0; n < pins.length; n++) {
 					if (pins[n].trim().equals("")) continue;
 					try {
-						pinholes.put(new Integer(channel++), new Double(pins[n]));
+						pinholes.put(channel++, new Double(pins[n]));
 					}
 					catch (final NumberFormatException e) {
 						log().debug("Could not parse pinhole", e);
@@ -934,6 +936,7 @@ public class ICSFormat extends AbstractFormat {
 				final String expTime = kv[1];
 				if (expTime.indexOf(" ") != -1) {
 					exposureTime = new Double(expTime.indexOf(" "));
+					// TODO: Catch NumberFormatException? Make more DRY with other logic?
 				}
 			}
 			return exposureTime;
@@ -975,19 +978,19 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		private Double findDoubleValueForKey(final String... keys) {
-			final String kv[] = findValueForKey(keys);
+			final String[] kv = findValueForKey(keys);
 
 			return kv == null ? null : new Double(kv[1]);
 		}
 
 		private Integer findIntValueForKey(final String... keys) {
-			final String kv[] = findValueForKey(keys);
+			final String[] kv = findValueForKey(keys);
 
 			return kv == null ? null : new Integer(kv[1]);
 		}
 
 		private String findStringValueForKey(final String... keys) {
-			final String kv[] = findValueForKey(keys);
+			final String[] kv = findValueForKey(keys);
 
 			return kv == null ? null : kv[1];
 		}
