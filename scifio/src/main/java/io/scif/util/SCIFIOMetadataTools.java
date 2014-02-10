@@ -178,6 +178,46 @@ public class SCIFIOMetadataTools {
 		}
 	}
 
+	// -- Utility methods -- dimensional axes --
+
+	/**
+	 * Guesses at a reasonable default planar axis count for the given list of
+	 * dimensional axes.
+	 * <p>
+	 * The heuristic looks for the first index following both {@link Axes#X} and
+	 * {@link Axes#Y}. If the list does not contain both {@code X} and {@code Y}
+	 * then the guess will equal the total number of axes.
+	 * </p>
+	 */
+	public static int guessPlanarAxisCount(final List<CalibratedAxis> axes) {
+		boolean xFound = false, yFound = false;
+		int d;
+		for (d = 0; d < axes.size(); d++) {
+			if (xFound && yFound) break;
+			final AxisType type = axes.get(d).type();
+			if (type == Axes.X) xFound = true;
+			else if (type == Axes.Y) yFound = true;
+		}
+		return d;
+	}
+
+	/**
+	 * Guesses at a reasonable default interleaved axis count for the given list
+	 * of dimensional axes.
+	 * <p>
+	 * The heuristic looks for the last index preceding both {@link Axes#X} and
+	 * {@link Axes#Y}. If the list does not contain either {@code X} or {@code Y}
+	 * then the guess will equal the total number of axes.
+	 * </p>
+	 */
+	public static int guessInterleavedAxisCount(final List<CalibratedAxis> axes) {
+		for (int d = 0; d < axes.size(); d++) {
+			final AxisType type = axes.get(d).type();
+			if (type == Axes.X || type == Axes.Y) return d;
+		}
+		return axes.size();
+	}
+
 	// -- Utility methods -- original metadata --
 
 	/**
