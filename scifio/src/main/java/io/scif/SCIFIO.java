@@ -36,6 +36,11 @@ import io.scif.app.SCIFIOApp;
 import io.scif.codec.CodecService;
 import io.scif.formats.qt.QTJavaService;
 import io.scif.formats.tiff.TiffService;
+import io.scif.gui.GUIService;
+import io.scif.img.ImgUtilityService;
+import io.scif.img.cell.cache.CacheService;
+import io.scif.img.converters.PlaneConverterService;
+import io.scif.io.NIOService;
 import io.scif.services.FilePatternService;
 import io.scif.services.FormatService;
 import io.scif.services.InitializeService;
@@ -187,4 +192,48 @@ public class SCIFIO extends AbstractGateway {
 		return get(XMLService.class);
 	}
 
+	/**
+	 * CacheService accessor.
+	 *
+	 * @return The CacheService instance associated with the wrapped Context.
+	 */
+	public CacheService<?> cache() {
+		return get(CacheService.class);
+	}
+
+	/**
+	 * GUIService accessor.
+	 *
+	 * @return The GUIService instance associated with the wrapped Context.
+	 */
+	public GUIService gui() {
+		return get(GUIService.class);
+	}
+
+	/**
+	 * ImgUtilityService accessor.
+	 *
+	 * @return The ImgUtilityService instance associated with the wrapped Context.
+	 */
+	public ImgUtilityService imgUtil() {
+		return get(ImgUtilityService.class);
+	}
+
+	/**
+	 * NIOService accessor.
+	 *
+	 * @return The NIOService instance associated with the wrapped Context.
+	 */
+	public NIOService nio() {
+		return get(NIOService.class);
+	}
+
+	/**
+	 * PlaneConverterService accessor.
+	 *
+	 * @return The PlaneConverterService instance associated with the wrapped Context.
+	 */
+	public PlaneConverterService planeConverter() {
+		return get(PlaneConverterService.class);
+	}
 }
