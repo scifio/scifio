@@ -32,9 +32,10 @@
 
 package io.scif.refs;
 
+import io.scif.SCIFIOService;
+
 import java.lang.ref.Reference;
 
-import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 
 /**
@@ -49,7 +50,7 @@ import org.scijava.service.Service;
  * 
  * @author Mark Hiner
  */
-public interface RefManagerService extends SciJavaService {
+public interface RefManagerService extends SCIFIOService {
 
 	/**
 	 * If there is a corresponding {@link CleaningRef} for the given object, it
