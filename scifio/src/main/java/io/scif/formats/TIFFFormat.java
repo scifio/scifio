@@ -1063,6 +1063,7 @@ public class TIFFFormat extends AbstractFormat {
 			CompressionType.J2K_LOSSY.getCompression();
 		public static final String COMPRESSION_JPEG = CompressionType.JPEG
 			.getCompression();
+		public static final String BIG_TIFF_KEY = "WRITE_BIG_TIFF";
 
 		// -- Fields --
 
@@ -1100,6 +1101,13 @@ public class TIFFFormat extends AbstractFormat {
 		 */
 		public void setBigTiff(final boolean bigTiff) {
 			isBigTiff = bigTiff;
+		}
+
+		/**
+		 * @return Whether or not this Writer is configured to write BigTIFF data.
+		 */
+		public boolean isBigTiff() {
+			return isBigTiff;
 		}
 
 		/**
@@ -1170,6 +1178,12 @@ public class TIFFFormat extends AbstractFormat {
 			super.setDest(dest, imageIndex, config);
 			synchronized (this) {
 				setupTiffSaver(dest, imageIndex);
+			}
+			if (config.containsKey(BIG_TIFF_KEY)) {
+				Object o = config.get(BIG_TIFF_KEY);
+				if (o instanceof Boolean) {
+					isBigTiff = (Boolean)o;
+				}
 			}
 		}
 
