@@ -253,11 +253,8 @@ public class PICTFormat extends AbstractFormat {
 			final ImageMetadata iMeta = meta.get(0);
 
 			stream.seek(518);
-			final short sizeY = stream.readShort();
-			final short sizeX = stream.readShort();
-
-			iMeta.setAxisLength(Axes.X, sizeX);
-			iMeta.setAxisLength(Axes.Y, sizeY);
+			short sizeY = stream.readShort();
+			short sizeX = stream.readShort();
 
 			final Vector<Object> strips = new Vector<Object>();
 			final byte[][] lookup = null;
@@ -290,11 +287,15 @@ public class PICTFormat extends AbstractFormat {
 				stream.skipBytes(4);
 				final int y = stream.readShort();
 				final int x = stream.readShort();
-				if (x > 0) iMeta.setAxisLength(Axes.X, x);
-				if (y > 0) iMeta.setAxisLength(Axes.Y, y);
+				if (x > 0) sizeX = (short)x;
+				if (y > 0) sizeY = (short)y;
 				stream.skipBytes(4);
 			}
 			else throw new FormatException("Invalid PICT file");
+
+			iMeta.setAxisLength(Axes.X, sizeX);
+			iMeta.setAxisLength(Axes.Y, sizeY);
+
 
 			meta.getTable().put("Version", versionOne ? 1 : 2);
 			meta.setVersionOne(versionOne);
