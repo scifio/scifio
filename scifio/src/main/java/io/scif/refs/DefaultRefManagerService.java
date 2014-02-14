@@ -71,6 +71,12 @@ public class DefaultRefManagerService extends AbstractService implements
 	// -- Fields --
 
 	/**
+	 * Flag passed by reference to {@link RefCleaner} instances to indicate
+	 * when this service has been disposed.
+	 */
+		private final boolean[] disposed = new boolean[1];
+
+	/**
 	 * Maps managed objects to the reference types which refer to them, ensuring
 	 * individual instances are not managed in the same way.
 	 */
@@ -119,7 +125,8 @@ public class DefaultRefManagerService extends AbstractService implements
 					if (knownRefs.size() == 1) {
 						// If this is the first entry in knownRefs, start a RefCleaner
 						// thread
-						threadService.run(new RefCleaner(queue, knownRefs, logService));
+						threadService
+							.run(new RefCleaner(queue, knownRefs, logService, disposed));
 					}
 				}
 			}
@@ -128,19 +135,20 @@ public class DefaultRefManagerService extends AbstractService implements
 
 	// -- Service API --
 
+	/**
+	 * Signal to any active {@link RefCleaner} that this service has been
+	 * disposed. That should trigger an end of polling operations.
+	 */
 	@Override
 	public void dispose() {
-		// Basically.. if there are any pending Weak/Phantom references that haven't
-		// been queued yet, this should clear them. During the dispose process,
-		// there is probably not going to be more object allocation that could
-		// naturally trigger the GC, thus we need to give some encouragement.
-		System.gc();
+		disposed[0] = false;
 	}
 
 	@Override
 	public void initialize() {
 		// Set default values
 		queue = new ReferenceQueue();
+		disposed[0] = true;
 	}
 
 	// -- Helper Methods --
@@ -180,15 +188,17 @@ public class DefaultRefManagerService extends AbstractService implements
 		private final ReferenceQueue queue;
 		private final Set<Reference> refs;
 		private final LogService logService;
+		private final boolean[] run;
 
 		// -- Constructor --
 
 		public RefCleaner(final ReferenceQueue queue, final Set<Reference> refs,
-			final LogService log)
+			final LogService log, final boolean[] runFlag)
 		{
 			this.queue = queue;
 			this.refs = refs;
 			logService = log;
+			run =  runFlag;
 		}
 
 		// -- Runnable API --
@@ -196,7 +206,7 @@ public class DefaultRefManagerService extends AbstractService implements
 		@Override
 		public void run() {
 			int size = refs.size();
-			while (size > 0) {
+			while (size > 0 && run[0]) {
 				CleaningRef cleaningRef = null;
 				try {
 					cleaningRef = (CleaningRef) queue.remove(50);
@@ -212,6 +222,15 @@ public class DefaultRefManagerService extends AbstractService implements
 						refs.remove(cleaningRef);
 					}
 					size = refs.size();
+				}
+			}
+			// If the RefManagerService was manually disposed, we should force
+			// cleaning of all known refs, as they may not have been enqueued
+			// via normal procedures.
+			if (!run[0]) {
+				for (Reference ref : refs) {
+					CleaningRef cleaningRef = (CleaningRef)ref;
+					cleaningRef.cleanup();
 				}
 			}
 		}
