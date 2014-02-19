@@ -67,7 +67,7 @@ public abstract class AbstractSCIFIOToolCommand extends AbstractSCIFIOPlugin
 	@Option(name = "-v", aliases = "--version", usage = "print version and exit")
 	private boolean printVersion;
 
-	@Option(name = "-d", aliases = "--devug", usage = "turn on debugging output")
+	@Option(name = "-d", aliases = "--debug", usage = "turn on debugging output")
 	private boolean debug;
 
 	// -- SCIFIOToolCommand API --
