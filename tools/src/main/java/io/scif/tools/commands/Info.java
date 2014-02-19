@@ -143,9 +143,9 @@ public class Info extends AbstractSCIFIOToolCommand {
 		info("Plane size: " + iMeta.getPlaneSize());
 		info("Plane count: " + iMeta.getPlaneCount());
 		info("Planar axes: " + getAxisLabels(iMeta.getAxesPlanar()));
-		info("Planar lenghts: " + getAxisLengths(iMeta.getAxesLengthsPlanar()));
+		info("Planar lengths: " + getAxisLengths(iMeta.getAxesLengthsPlanar()));
 		info("Non-planar axes: " + getAxisLabels(iMeta.getAxesNonPlanar()));
-		info("Non-planar lenghts: " +
+		info("Non-planar lengths: " +
 			getAxisLengths(iMeta.getAxesLengthsNonPlanar()));
 		info("Axis calibration: " + getAxisCalibrations(iMeta));
 		info("Pixel type: " + FormatTools.getPixelTypeString(iMeta.getPixelType()));
