@@ -624,7 +624,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 			final IFD firstIFD = ifds.get(0);
 			meta.setLastPlane(planeIndex);
-			final IFD ifd = ifds.get((int) planeIndex);
+			final IFD ifd = ifds.get(imageIndex);
 			if ((firstIFD.getCompression() == TiffCompression.JPEG_2000 || firstIFD
 				.getCompression() == TiffCompression.JPEG_2000_LOSSY) &&
 				meta.getResolutionLevels() != null)
