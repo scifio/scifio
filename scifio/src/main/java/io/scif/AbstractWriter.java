@@ -154,7 +154,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	 * specific output.
 	 */
 	protected abstract void writePlane(final int imageIndex,
-		final long PlaneIndex, final Plane plane, final long[] planeMin,
+		final long planeIndex, final Plane plane, final long[] planeMin,
 		final long[] planeMax) throws FormatException, IOException;
 
 	// -- Writer API Methods --
