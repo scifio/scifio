@@ -152,6 +152,8 @@ public class ICSFormat extends AbstractFormat {
 			imageMeta.setAxes(new CalibratedAxis[0], new long[0]);
 
 			AxisType xAxis = Axes.X, yAxis = Axes.Y, zAxis = Axes.Z;
+			Double[] pixelSizes = getPixelSizes();
+			if (pixelSizes == null) pixelSizes = new Double[]{1.0, 1.0, 1.0, 1.0};
 
 			// HACK - support for Gray Institute at Oxford's ICS lifetime data
 			final boolean lifetime = getLifetime();
@@ -179,12 +181,15 @@ public class ICSFormat extends AbstractFormat {
 				final String axis = axes[n].toLowerCase();
 				if (axis.equals("x")) {
 					imageMeta.addAxis(xAxis, (int) axesSizes[n]);
+					FormatTools.calibrate(imageMeta.getAxis(xAxis), pixelSizes[n], 0);
 				}
 				else if (axis.equals("y")) {
 					imageMeta.addAxis(yAxis, (int) axesSizes[n]);
+					FormatTools.calibrate(imageMeta.getAxis(yAxis), pixelSizes[n], 0);
 				}
 				else if (axis.equals("z")) {
 					imageMeta.addAxis(zAxis, (int) axesSizes[n]);
+					FormatTools.calibrate(imageMeta.getAxis(zAxis), pixelSizes[n], 0);
 				}
 				else if (axis.equals("t")) {
 					final int tIndex = imageMeta.getAxisIndex(Axes.TIME);
