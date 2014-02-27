@@ -92,7 +92,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 
 	@Override
 	public MetaTable getTable() {
-		return super.getTable();
+		return meta.getTable();
 	}
 
 	@Override
