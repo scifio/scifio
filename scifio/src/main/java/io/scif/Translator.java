@@ -32,6 +32,10 @@
 
 package io.scif;
 
+import io.scif.filters.MetadataWrapper;
+
+import java.util.List;
+
 import org.scijava.plugin.SingletonPlugin;
 
 /**
@@ -72,16 +76,13 @@ public interface Translator extends SCIFIOPlugin, SingletonPlugin {
 	 */
 	Class<? extends Metadata> dest();
 
+
 	/**
 	 * Uses the source {@code Metadata} to populate the destination
-	 * {@code Metadata}
-	 * <p>
-	 * NB: this method accepts base {@code Metadata} parameters, but its behavior
-	 * is undefined if at least one {@code Metadata} instance is not of the type
-	 * associated with this {@code Translator's Format}. Neither can the other
-	 * {@code Metadata} be arbitrary, as an appropriate {@code Translator} must be
-	 * defined for the desired direction of translation.
-	 * </p>
+	 * {@code Metadata}. Specifically, the format-specific metadata and/or
+	 * {@link ImageMetadata} of the source are used to populate the format-
+	 * specific metadata of the destination (from which the destination's
+	 * {@link ImageMetadata} can be derived}.
 	 * <p>
 	 * Note that the destination does not have to be empty, but can be built up
 	 * through multiple translations. However each translation step is assumed to
@@ -99,4 +100,23 @@ public interface Translator extends SCIFIOPlugin, SingletonPlugin {
 	 *           {@code Metadata} types of this {@code Translator}.
 	 */
 	void translate(final Metadata source, final Metadata destination);
+
+	/**
+	 * As {@link #translate(Metadata, Metadata)} with the format-specific and
+	 * image metadata explicitly split out.
+	 * <p>
+	 * NB: it is NOT GUARANTEED that the {@link Metadata#getAll()} method of the
+	 * source here will provide equivalent {@link ImageMetadata} as sourceImgMeta.
+	 * For example, if a {@link MetadataWrapper} was used, the two are unlikely to
+	 * match up. This is necessary, as {@code Translator} discovery depends on the
+	 * format of source and destination, but augmentation via wrapping must affect
+	 * the underlying {@code ImageMetadata} non-destructively.
+	 * </p>
+	 * 
+	 * @param source {@code Metadata} to use to populate
+	 * @param sourceImgMeta {@link ImageMetadata} to use to populate
+	 * @param destination {@code Metadata} to be populated
+	 */
+	void translate(final Metadata source,
+		final List<ImageMetadata> sourceImgMeta, final Metadata destination);
 }

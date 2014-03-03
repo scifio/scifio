@@ -1082,7 +1082,7 @@ public class APNGFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void typedTranslate(final io.scif.Metadata source,
+		public void translateImageMetadata(final List<ImageMetadata> source,
 			final Metadata dest)
 		{
 			final IHDRChunk ihdr =

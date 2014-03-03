@@ -34,6 +34,7 @@ package io.scif.services;
 
 import io.scif.Metadata;
 import io.scif.Translator;
+import io.scif.filters.MetadataWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,21 +67,31 @@ public class DefaultTranslatorService extends
 	public Translator findTranslator(final Metadata source, final Metadata dest,
 		final boolean exact)
 	{
-		return findTranslator(source.getClass(), dest.getClass(), exact);
+		Metadata trueSource = source;
+
+		// Unwrap MetadataWrappers to get to the actual format-specific metadata
+		while (trueSource instanceof MetadataWrapper) {
+			trueSource = ((MetadataWrapper) trueSource).unwrap();
+		}
+
+		return findTranslator(trueSource.getClass(), dest.getClass(), exact);
 	}
 
 	@Override
 	public Translator findTranslator(final Class<? extends Metadata> source,
 		final Class<? extends Metadata> dest, final boolean exact)
 	{
+		// try to match the source and destination exactly
 		Translator t = lookup(source, dest);
 
-		// Try to match the destination exactly
-		t = lookup(t, exact, io.scif.Metadata.class, dest);
-		// Try to match the source exactly
-		t = lookup(t, exact, source, io.scif.Metadata.class);
-		// Take any translator
-		t = lookup(t, exact, io.scif.Metadata.class, io.scif.Metadata.class);
+		if (!exact) {
+			// Try to match the destination exactly
+			t = lookup(t, io.scif.Metadata.class, dest);
+			// Try to match the source exactly
+			t = lookup(t, source, io.scif.Metadata.class);
+			// Take any translator
+			t = lookup(t, io.scif.Metadata.class, io.scif.Metadata.class);
+		}
 
 		return t;
 	}
@@ -140,18 +151,16 @@ public class DefaultTranslatorService extends
 	/**
 	 * @param t - If t is null, will attempt to find a suitable translator (in
 	 *          priority order)
-	 * @param exact - If true, will skip the translator search and return t
 	 * @param source - Source class to match
 	 * @param dest - Destination class to match
 	 * @return - Translator capable of translating between the given source and
 	 *         destination
 	 */
 	private Translator
-		lookup(Translator t, final boolean exact,
-			final Class<? extends Metadata> source,
+		lookup(Translator t, final Class<? extends Metadata> source,
 			final Class<? extends Metadata> dest)
 	{
-		if (t == null && !exact) {
+		if (t == null) {
 			// Loop over the translators in priority order to see if we have a
 			// suitable candidate
 			for (int i = 0; i < getInstances().size() && t == null; i++) {

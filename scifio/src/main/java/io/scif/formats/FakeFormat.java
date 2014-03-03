@@ -53,6 +53,7 @@ import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -650,12 +651,12 @@ public class FakeFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void typedTranslate(final io.scif.Metadata source,
+		public void translateImageMetadata(final List<ImageMetadata> source,
 			final Metadata dest)
 		{
 			final ImageMetadata iMeta = source.get(0);
 
-			String fakeId = MetadataService.NAME_KEY + "=" + source.getDatasetName();
+			String fakeId = MetadataService.NAME_KEY + "=" + dest.getDatasetName();
 
 			final String[] axes = new String[iMeta.getAxes().size()];
 			final long[] lengths = new long[axes.length];
@@ -688,7 +689,7 @@ public class FakeFormat extends AbstractFormat {
 				.isMetadataComplete());
 			FakeUtils.appendToken(fakeId, "thumbnail", iMeta.isThumbnail());
 			FakeUtils.appendToken(fakeId, "orderCertain", iMeta.isOrderCertain());
-			FakeUtils.appendToken(fakeId, "images", source.getImageCount());
+			FakeUtils.appendToken(fakeId, "images", source.size());
 
 			if (iMeta.isIndexed()) {
 				final int lutLength =

@@ -62,6 +62,7 @@ import io.scif.util.SCIFIOMetadataTools;
 
 import java.awt.image.IndexColorModel;
 import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 import net.imglib2.display.ColorTable;
@@ -1632,7 +1633,7 @@ public class AVIFormat extends AbstractFormat {
 		}
 
 		@Override
-		protected void typedTranslate(final io.scif.Metadata source,
+		protected void translateImageMetadata(final List<ImageMetadata> source,
 			final Metadata dest)
 		{
 			final Vector<Long> offsets = new Vector<Long>();
@@ -1665,8 +1666,8 @@ public class AVIFormat extends AbstractFormat {
 				(int) source.get(0).getAxisLength(Axes.CHANNEL));
 
 			try {
-				if (source.getSource() == null) offset = 0;
-				else offset = source.getSource().getFilePointer();
+				if (dest.getSource() == null) offset = 0;
+				else offset = dest.getSource().getFilePointer();
 			}
 			catch (final IOException e) {
 				log().error("Error retrieving AVI plane offset", e);

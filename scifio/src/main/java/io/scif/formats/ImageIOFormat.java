@@ -52,6 +52,7 @@ import io.scif.util.SCIFIOMetadataTools;
 import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -254,7 +255,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		}
 
 		@Override
-		protected void typedTranslate(final io.scif.Metadata source,
+		protected void translateImageMetadata(final List<ImageMetadata> source,
 			final Metadata dest)
 		{
 			dest.createImageMetadata(1);

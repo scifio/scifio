@@ -60,6 +60,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
@@ -2045,7 +2046,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void typedTranslate(final io.scif.Metadata source,
+		public void translateImageMetadata(final List<ImageMetadata> source,
 			final Metadata dest)
 		{
 			// note that the destination fields will preserve their default values

@@ -59,6 +59,7 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageProducer;
 import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 import net.imglib2.meta.Axes;
@@ -614,7 +615,7 @@ public class LegacyQTFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void typedTranslate(final io.scif.Metadata source,
+		public void translateImageMetadata(final List<ImageMetadata> source,
 			final Metadata dest)
 		{
 			dest.createImageMetadata(1);

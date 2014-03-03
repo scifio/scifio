@@ -65,6 +65,7 @@ import io.scif.xml.XMLService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import net.imglib2.display.ColorTable;
@@ -1448,7 +1449,7 @@ public class TIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void typedTranslate(final io.scif.Metadata source,
+		public void translateImageMetadata(final List<ImageMetadata> source,
 			final Metadata dest)
 		{
 			final IFDList ifds = new IFDList();

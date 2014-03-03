@@ -32,7 +32,10 @@
 
 package io.scif;
 
+import io.scif.filters.MetadataWrapper;
 import io.scif.util.SCIFIOMetadataTools;
+
+import java.util.List;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Translator} components.
@@ -60,8 +63,22 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 
 	@Override
 	public void translate(final Metadata source, final Metadata dest) {
+		translate(source, source.getAll(), dest);
+	}
+
+	@Override
+	public void translate(final Metadata source,
+		final List<ImageMetadata> sourceImgMeta, final Metadata dest)
+	{
+		Metadata trueSource = source;
+
+		// Unwrap MetadataWrappers to get to the actual format-specific metadata
+		while (trueSource instanceof MetadataWrapper) {
+			trueSource = ((MetadataWrapper) trueSource).unwrap();
+		}
+
 		// Cast the parameters to typed Metadata
-		final M typedSource = SCIFIOMetadataTools.<M> castMeta(source);
+		final M typedSource = SCIFIOMetadataTools.<M> castMeta(trueSource);
 		final N typedDest = SCIFIOMetadataTools.<N> castMeta(dest);
 
 		// Boilerplate for common Metadata fields
@@ -70,26 +87,40 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 		dest.setDatasetName(source.getDatasetName());
 
 		// Type-dependent translation
-		typedTranslate(typedSource, typedDest);
+		translateFormatMetadata(typedSource, typedDest);
+		translateImageMetadata(sourceImgMeta, typedDest);
 
 		// -- Post-translation hook --
 		// Update the source's ImageMetadata based on the translation results
 		dest.populateImageMetadata();
 	}
 
-	// -- AbstractTranslator API --
-
 	/**
-	 * This method should contain the actual logic for populating the
-	 * type-specific fields of the destination Metadata.
+	 * Use format-agnostic metadata ({@link ImageMetadata} to populate the
+	 * destination's format-specific metadata.
 	 * <p>
-	 * This separation of logic allows the translate(Metadata, Metadata) method to
-	 * perform "pre" and "post" translation activities, while facilitating
-	 * type-specific Metadata operations.
+	 * This method must be implemented by every AbstractTranslator subclass,
+	 * as it covers the general case - agnostic of the source.
 	 * </p>
 	 * 
-	 * @param source - Source Metadata
-	 * @param dest - Destination Metadata
+	 * @param source
+	 * @param dest
 	 */
-	protected abstract void typedTranslate(M source, N dest);
+	protected abstract void translateImageMetadata(
+		final List<ImageMetadata> source, final N dest);
+
+	/**
+	 * Use format-specific metadata from the source to populate the destination's
+	 * format-specific metadata.
+	 * <p>
+	 * NB: Override this method when writing a translator from a concrete Metadata
+	 * type.
+	 * </p>
+	 * 
+	 * @param source
+	 * @param dest
+	 */
+	protected void translateFormatMetadata(final M source, final N dest) {
+		// Nothing to do
+	}
 }

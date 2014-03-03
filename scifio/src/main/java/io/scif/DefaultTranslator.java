@@ -62,13 +62,13 @@ public class DefaultTranslator extends AbstractTranslator<Metadata, Metadata> {
 	}
 
 	@Override
-	protected void typedTranslate(final Metadata source, final Metadata dest) {
-		final List<ImageMetadata> metaList = source.getAll();
+	protected void translateImageMetadata(final List<ImageMetadata> source,
+		final Metadata dest)
+	{
+		dest.createImageMetadata(source.size());
 
-		dest.createImageMetadata(metaList.size());
-
-		for (int i = 0; i < metaList.size(); i++) {
-			final ImageMetadata sourceMeta = metaList.get(i);
+		for (int i = 0; i < source.size(); i++) {
+			final ImageMetadata sourceMeta = source.get(i);
 
 			// Need to add a new ImageMetadata
 			if (i >= dest.getImageCount()) {
