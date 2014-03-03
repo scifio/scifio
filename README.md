@@ -77,7 +77,8 @@ Developer documentation:
 More information
 ----------------
 
-For more information, see the [SCIFIO web site](http://scif.io/).
+For more information, see the [SCIFIO FAQ](https://github.com/scifio/scifio/wiki/FAQ)
+and [SCIFIO web site](http://scif.io/).
 
 
 Mailing lists
