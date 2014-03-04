@@ -452,7 +452,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		int sliceCount = 1;
 		for (int i = 0; i < img.numDimensions(); i++) {
-			if (!(img.axis(i).equals(Axes.X) || img.axis(i).equals(Axes.Y))) {
+			if (!(img.axis(i).type().equals(Axes.X) || img.axis(i).type().equals(
+				Axes.Y)))
+			{
 				sliceCount *= img.dimension(i);
 			}
 		}
