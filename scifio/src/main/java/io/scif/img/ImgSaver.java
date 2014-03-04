@@ -658,7 +658,6 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		// Create fresh metadata in source and destination
 		imgplusMeta.createImageMetadata(imageIndex + 1);
-		meta.createImageMetadata(imageIndex + 1);
 
 		imgplusMeta.get(imageIndex).populate(Arrays.asList(axes), axisLengths,
 			pixelType, true, false, false, false, true);
