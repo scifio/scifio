@@ -226,117 +226,122 @@ public class PlaneSeparator extends AbstractReaderFilter {
 		final boolean interleaved =
 			parentMeta.get(imageIndex).getInterleavedAxisCount() > 0;
 
-		if (!parentMeta.get(imageIndex).isIndexed()) {
-			// -> if one or more axes was split out...
-			// dividing current split axis count by parent effective size c (actual c
-			// planes).. shouldn't need to do that any more
-			// trying to determine the positions for each converted axis... should
-			// just be raster to position on just the converted lengths
+		synchronized (this) {
+			if (!parentMeta.get(imageIndex).isIndexed()) {
+				// -> if one or more axes was split out...
+				// dividing current split axis count by parent effective size c (actual
+				// c
+				// planes).. shouldn't need to do that any more
+				// trying to determine the positions for each converted axis... should
+				// just be raster to position on just the converted lengths
 
-			// Get the position of the current plane
-			final long[] completePosition =
-				FormatTools.rasterToPosition(imageIndex, planeIndex, meta);
-			// Isolate the position and lengths of the axis (axes) that have been
-			// split
-			final long[] separatedPosition =
-				Arrays.copyOf(completePosition, splitOffset);
-			final long[] separatedLengths =
-				Arrays.copyOf(meta.get(imageIndex).getAxesLengthsNonPlanar(),
-					splitOffset);
-			final int bpp =
-				FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
+				// Get the position of the current plane
+				final long[] completePosition =
+					FormatTools.rasterToPosition(imageIndex, planeIndex, meta);
+				// Isolate the position and lengths of the axis (axes) that have been
+				// split
+				final long[] separatedPosition =
+					Arrays.copyOf(completePosition, splitOffset);
+				final long[] separatedLengths =
+					Arrays.copyOf(meta.get(imageIndex).getAxesLengthsNonPlanar(),
+						splitOffset);
+				final int bpp =
+					FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
 
-			// Need a byte array plane to copy data into
-			if (!ByteArrayPlane.class.isAssignableFrom(plane.getClass())) {
-				plane =
-					new ByteArrayPlane(getContext(), meta.get(imageIndex), offsets,
-						lengths);
+				// Need a byte array plane to copy data into
+				if (!ByteArrayPlane.class.isAssignableFrom(plane.getClass())) {
+					plane =
+						new ByteArrayPlane(getContext(), meta.get(imageIndex), offsets,
+							lengths);
+				}
+
+				if (!haveCached(source, imageIndex, offsets, lengths)) {
+					int strips = 1;
+
+					// check how big the original image is; if it's larger than the
+					// available memory, we will need to split it into strips (of the last
+					// planar axis)
+
+					final Runtime rt = Runtime.getRuntime();
+					final long availableMemory = rt.freeMemory();
+					final long planeSize = meta.get(imageIndex).getPlaneSize();
+					// If we make strips, they will be of the Y axis
+					final long h = lengths[meta.get(imageIndex).getAxisIndex(Axes.Y)];
+
+					if (availableMemory < planeSize || planeSize > Integer.MAX_VALUE) {
+						strips = (int) Math.sqrt(h);
+					}
+
+					// Compute strip height, and the height of the last strip (in case the
+					// plane is not evenly divisible).
+					final long stripHeight = h / strips;
+					final long lastStripHeight =
+						stripHeight + (h - (stripHeight * strips));
+					byte[] strip =
+						strips == 1 ? plane.getBytes() : new byte[(int) (stripHeight *
+							DataTools.safeMultiply32(Arrays.copyOf(lengths,
+								lengths.length - 1)) * bpp)];
+					updateLastPlaneInfo(source, imageIndex, splitOffset, offsets, lengths);
+					// Populate the strips
+					for (int i = 0; i < strips; i++) {
+						final int parentYIndex =
+							parentMeta.get(imageIndex).getAxisIndex(Axes.Y);
+
+						// Update length and offset for current strip
+						lastPlaneOffsets[parentYIndex] = i * stripHeight;
+						lastPlaneLengths[parentYIndex] =
+							i == strips - 1 ? lastStripHeight : stripHeight;
+
+						// Open the plane
+						lastPlane =
+							getParent().openPlane(imageIndex, (int) source, lastPlaneOffsets,
+								lastPlaneLengths, config);
+						// Store the last recorded offsets/lengths
+						lastPlaneOffsets = offsets;
+						lastPlaneLengths = lengths;
+
+						// Adjust the strip array if this is the last strip, if needed
+						if (strips != 1 && lastStripHeight != stripHeight &&
+							i == strips - 1)
+						{
+							strip =
+								new byte[(int) (lastStripHeight *
+									DataTools.safeMultiply32(Arrays.copyOf(lengths,
+										lengths.length - 1)) * bpp)];
+						}
+
+						// Extract the requested channel from the plane
+						ImageTools.splitChannels(lastPlane.getBytes(), strip,
+							separatedPosition, separatedLengths, bpp, false, interleaved,
+							strips == 1 ? bpp * DataTools.safeMultiply32(lengths)
+								: strip.length);
+						if (strips != 1) {
+							System.arraycopy(strip, 0, plane.getBytes(), (int) (i *
+								stripHeight * DataTools.safeMultiply32(Arrays.copyOf(lengths,
+								lengths.length - 1))) *
+								bpp, strip.length);
+						}
+					}
+				}
+				else {
+					// Have a cached instance of the plane containing the desired region
+					ImageTools.splitChannels(lastPlane.getBytes(), plane.getBytes(),
+						separatedPosition, separatedLengths, bpp, false, interleaved, bpp *
+							DataTools.safeMultiply32(lengths));
+				}
+
+				return plane;
 			}
 
 			if (!haveCached(source, imageIndex, offsets, lengths)) {
-				int strips = 1;
-
-				// check how big the original image is; if it's larger than the
-				// available memory, we will need to split it into strips (of the last
-				// planar axis)
-
-				final Runtime rt = Runtime.getRuntime();
-				final long availableMemory = rt.freeMemory();
-				final long planeSize = meta.get(imageIndex).getPlaneSize();
-				// If we make strips, they will be of the Y axis
-				final long h = lengths[meta.get(imageIndex).getAxisIndex(Axes.Y)];
-
-				if (availableMemory < planeSize || planeSize > Integer.MAX_VALUE) {
-					strips = (int) Math.sqrt(h);
-				}
-
-				// Compute strip height, and the height of the last strip (in case the
-				// plane is not evenly divisible).
-				final long stripHeight = h / strips;
-				final long lastStripHeight = stripHeight + (h - (stripHeight * strips));
-				byte[] strip =
-					strips == 1 ? plane.getBytes()
-						: new byte[(int) (stripHeight *
-							DataTools.safeMultiply32(Arrays.copyOf(lengths,
-								lengths.length - 1)) * bpp)];
+				// Convert the current positional information to the format of the
+				// parent
 				updateLastPlaneInfo(source, imageIndex, splitOffset, offsets, lengths);
-				// Populate the strips
-				for (int i = 0; i < strips; i++) {
-					final int parentYIndex =
-						parentMeta.get(imageIndex).getAxisIndex(Axes.Y);
-
-					// Update length and offset for current strip
-					lastPlaneOffsets[parentYIndex] = i * stripHeight;
-					lastPlaneLengths[parentYIndex] =
-						i == strips - 1 ? lastStripHeight : stripHeight;
-
-					// Open the plane
-					lastPlane =
-						getParent().openPlane(imageIndex, (int) source, lastPlaneOffsets,
-							lastPlaneLengths, config);
-					// Store the last recorded offsets/lengths
-					lastPlaneOffsets = offsets;
-					lastPlaneLengths = lengths;
-
-					// Adjust the strip array if this is the last strip, if needed
-					if (strips != 1 && lastStripHeight != stripHeight && i == strips - 1)
-					{
-						strip =
-							new byte[(int) (lastStripHeight *
-								DataTools.safeMultiply32(Arrays.copyOf(lengths,
-									lengths.length - 1)) * bpp)];
-					}
-
-					// Extract the requested channel from the plane
-					ImageTools.splitChannels(lastPlane.getBytes(), strip,
-						separatedPosition, separatedLengths, bpp, false, interleaved,
-						strips == 1 ? bpp * DataTools.safeMultiply32(lengths)
-							: strip.length);
-					if (strips != 1) {
-						System.arraycopy(strip, 0, plane.getBytes(),
-							(int) (i * stripHeight * DataTools.safeMultiply32(Arrays.copyOf(
-								lengths, lengths.length - 1))) *
-								bpp, strip.length);
-					}
-				}
+				// Delegate directly to the parent
+				lastPlane =
+					getParent().openPlane(imageIndex, planeIndex, plane,
+						lastPlaneOffsets, lastPlaneLengths, config);
 			}
-			else {
-				// Have a cached instance of the plane containing the desired region
-				ImageTools.splitChannels(lastPlane.getBytes(), plane.getBytes(),
-					separatedPosition, separatedLengths, bpp, false, interleaved, bpp *
-						DataTools.safeMultiply32(lengths));
-			}
-
-			return plane;
-		}
-
-		if (!haveCached(source, imageIndex, offsets, lengths)) {
-			// Convert the current positional information to the format of the parent
-			updateLastPlaneInfo(source, imageIndex, splitOffset, offsets, lengths);
-			// Delegate directly to the parent
-			lastPlane =
-				getParent().openPlane(imageIndex, planeIndex, plane, lastPlaneOffsets,
-					lastPlaneLengths, config);
 		}
 		return lastPlane;
 	}
