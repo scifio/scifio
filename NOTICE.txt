@@ -1,5 +1,10 @@
-Copyright (c) 2011 - 2014, Board of Regents of the University of
-Wisconsin-Madison
+Some of SCIFIO's source code was adapted from code in the Bio-Formats library
+with the following license:
+
+Copyright (c) 2005 - 2013, Open Microscopy Environment:
+  - Board of Regents of the University of Wisconsin-Madison
+  - Glencoe Software, Inc.
+  - University of Dundee
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,

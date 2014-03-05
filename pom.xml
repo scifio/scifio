@@ -36,10 +36,8 @@
 				<configuration>
 					<licenseName>bsd_2</licenseName>
 					<projectName>SCIFIO library for reading and converting scientific file formats.</projectName>
-					<organizationName>Open Microscopy Environment:
-  - Board of Regents of the University of Wisconsin-Madison
-  - Glencoe Software, Inc.
-  - University of Dundee</organizationName>
+					<organizationName>Board of Regents of the University of
+Wisconsin-Madison</organizationName>
 				</configuration>
 			</plugin>
 		</plugins>
