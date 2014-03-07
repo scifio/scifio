@@ -123,7 +123,7 @@ public final class SCIFIOTools {
 			cmdMap = new HashMap<String, SCIFIOToolCommand>();
 
 			for (final SCIFIOToolCommand cmd : commands) {
-				cmdMap.put(cmd.getClass().getSimpleName().toLowerCase(), cmd);
+				cmdMap.put(cmd.commandName(), cmd);
 			}
 		}
 	}
