@@ -174,4 +174,16 @@ public abstract class AbstractSCIFIOToolCommand extends AbstractSCIFIOPlugin
 	protected void debug(final String msg) {
 		if (debug) logService.debug(msg);
 	}
+
+
+	// -- SCIFIOToolCommand methods --
+
+	/**
+	 * Default command name is a lower-case version of the class name. Override
+	 * if desired, as this is what is displayed to the user.
+	 */
+	@Override
+	public String commandName() {
+		return getClass().toString().toLowerCase();
+	}
 }

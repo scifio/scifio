@@ -40,6 +40,12 @@ import io.scif.SCIFIOPlugin;
 public interface SCIFIOToolCommand extends SCIFIOPlugin {
 
 	/**
+	 * @return The name for this command. This is what will be used to invoke this
+	 *         command from the command line.
+	 */
+	String commandName();
+
+	/**
 	 * Executes this command with the given arguments.
 	 * 
 	 * @param args A list of command line arguments specific to a given command
