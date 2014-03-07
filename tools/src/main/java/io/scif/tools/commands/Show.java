@@ -253,6 +253,13 @@ public class Show extends AbstractReaderCommand {
 		return plane;
 	}
 
+	// -- SCIFIOToolCommand methods --
+
+	@Override
+	public String commandName() {
+		return "show";
+	}
+
 	// -- Helper methods --
 
 	/**

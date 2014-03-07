@@ -213,6 +213,13 @@ public class Convert extends AbstractReaderCommand {
 		return plane;
 	}
 
+	// -- SCIFIOToolCommand methods --
+
+	@Override
+	public String commandName() {
+		return "convert";
+	}
+
 	// -- Helper methods --
 
 	/**

@@ -88,4 +88,10 @@ public class Help extends AbstractSCIFIOToolCommand {
 		}
 	}
 
+	// -- SCIFIOToolCommand methods --
+
+	@Override
+	public String commandName() {
+		return "help";
+	}
 }

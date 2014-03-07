@@ -115,6 +115,13 @@ public class Info extends AbstractSCIFIOToolCommand {
 		}
 	}
 
+	// -- SCIFIOToolCommand methods --
+
+	@Override
+	public String commandName() {
+		return "info";
+	}
+
 	// -- Helper methods --
 
 	/**
