@@ -1671,7 +1671,16 @@ public class AVIFormat extends AbstractFormat {
 				log().error("Error retrieving AVI plane offset", e);
 			}
 
-			for (int i = 0; i < source.get(0).getPlaneCount(); i++) {
+			// Channels are folded into bmpBitsPerPixel, so they should be omitted
+			// from the plane count.
+			long nonplanarChannels = 1;
+			if (!dest.get(0).isMultichannel()) {
+				nonplanarChannels = source.get(0).getAxisLength(Axes.CHANNEL);
+				length *= source.get(0).getAxisLength(Axes.CHANNEL);
+			}
+
+			for (int i = 0; i < source.get(0).getPlaneCount() / nonplanarChannels; i++)
+			{
 				offsets.add(offset);
 
 				lengths.add(length);
