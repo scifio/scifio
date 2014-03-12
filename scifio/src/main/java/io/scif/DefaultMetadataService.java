@@ -106,6 +106,11 @@ public class DefaultMetadataService extends AbstractService implements
 				continue;
 			}
 			final Object value = map.get(name);
+
+			// TEMP: Until bug is fixed; see
+			// https://github.com/scijava/scijava-common/issues/31
+			if (value == null) continue;
+
 			ClassUtils.setValue(field, metadata, value);
 		}
 	}
