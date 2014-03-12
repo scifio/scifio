@@ -224,6 +224,10 @@ public class DefaultFormatService extends AbstractService implements
 			}
 		}
 
+		if (w == null) {
+			throw new FormatException(
+				"No compatible output format found for extension: " + fileId);
+		}
 		return w;
 	}
 
