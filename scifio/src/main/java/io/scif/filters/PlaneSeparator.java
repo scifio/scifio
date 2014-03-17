@@ -288,7 +288,8 @@ public class PlaneSeparator extends AbstractReaderFilter {
 							parentMeta.get(imageIndex).getAxisIndex(Axes.Y);
 
 						// Update length and offset for current strip
-						lastPlaneOffsets[parentYIndex] = i * stripHeight;
+						lastPlaneOffsets[parentYIndex] =
+							lastPlaneOffsets[parentYIndex] + (i * stripHeight);
 						lastPlaneLengths[parentYIndex] =
 							i == strips - 1 ? lastStripHeight : stripHeight;
 
