@@ -450,12 +450,15 @@ public class PlaneSeparator extends AbstractReaderFilter {
 			lastPlaneLengths != null)
 		{
 			for (int i = 0; i < offsets.length && matches; i++) {
+				//TODO It would be nice to fix up this logic so that we can use cached
+				// planes when requesting a sub-region of the cached plane.
+				// See https://github.com/scifio/scifio/issues/155
 				// Make sure we have the starting point in each axis
-				matches = matches && offsets[i] <= lastPlaneOffsets[i];
+				matches = matches && offsets[i] == lastPlaneOffsets[i];
 				// make sure we have the last positions in each axis
 				matches =
 					matches &&
-						offsets[i] + lengths[i] <= lastPlaneOffsets[i] +
+						offsets[i] + lengths[i] == lastPlaneOffsets[i] +
 							lastPlaneLengths[i];
 			}
 		}
