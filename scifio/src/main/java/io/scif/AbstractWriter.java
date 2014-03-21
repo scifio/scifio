@@ -121,13 +121,6 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		FormatTools.checkPlaneForWriting(getMetadata(), imageIndex, planeIndex,
 			buf.length, planeMin, planeMax);
 		FormatTools.assertId(out, true, 0);
-
-		final int pixelType = metadata.get(imageIndex).getPixelType();
-
-		if (!DataTools.containsValue(getPixelTypes(compression), pixelType)) {
-			throw new FormatException("Unsupported image type '" +
-				FormatTools.getPixelTypeString(pixelType) + "'.");
-		}
 	}
 
 	/**
@@ -386,6 +379,16 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		}
 
 		metadata = meta;
+
+		// Check the first pixel type for compatibility with this writer
+		for (int i = 0; i < metadata.getImageCount(); i++) {
+			final int pixelType = metadata.get(i).getPixelType();
+
+			if (!DataTools.containsValue(getPixelTypes(compression), pixelType)) {
+				throw new FormatException("Unsupported image type '" +
+					FormatTools.getPixelTypeString(pixelType) + "'.");
+			}
+		}
 	}
 
 	@Override
