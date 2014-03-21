@@ -301,9 +301,9 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgSaver#saveImg(String, ImgPlus, int)
+	 * @see ImgSaver#saveImg(String, SCIFIOImgPlus, int)
 	 */
-	public static void saveImg(final String dest, final ImgPlus<?> imgPlus,
+	public static void saveImg(final String dest, final SCIFIOImgPlus<?> imgPlus,
 		final int imageIndex)
 	{
 		try {
@@ -333,9 +333,9 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgSaver#saveImg(Writer, ImgPlus, int)
+	 * @see ImgSaver#saveImg(Writer, SCIFIOImgPlus, int)
 	 */
-	public static void saveImg(final Writer writer, final ImgPlus<?> imgPlus,
+	public static void saveImg(final Writer writer, final SCIFIOImgPlus<?> imgPlus,
 		final int imageIndex)
 	{
 		try {
