@@ -132,4 +132,13 @@ public interface ImgUtilityService extends SCIFIOService {
 	 * @return A double value for the specified pixel.
 	 */
 	double decodeWord(byte[] plane, int index, int pixelType, boolean little);
+
+	/**
+	 * Convenience method for wrapping an {@link Img} as a {@link SCIFIOImgPlus}.
+	 * 
+	 * @param img Img to wrap
+	 * @return SCIFIOImgPlus wrapping the provided Img, or if the provided Img is
+	 *         a SCIFIOImgPlus, casts and returns.
+	 */
+	<T> SCIFIOImgPlus<T> makeSCIFIOImgPlus(final Img<T> img);
 }
