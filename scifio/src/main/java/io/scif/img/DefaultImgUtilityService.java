@@ -618,8 +618,9 @@ public class DefaultImgUtilityService extends AbstractService implements
 	@Override
 	public <T> SCIFIOImgPlus<T> makeSCIFIOImgPlus(final Img<T> img) {
 		if (img instanceof SCIFIOImgPlus) return (SCIFIOImgPlus<T>) img;
-		if (img instanceof ImgPlus) return new SCIFIOImgPlus<T>(((ImgPlus<T>) img)
-			.getImg());
+		if (img instanceof ImgPlus) {
+			return new SCIFIOImgPlus<T>(((ImgPlus<T>) img).getImg());
+		}
 		return new SCIFIOImgPlus<T>(img);
 	}
 
