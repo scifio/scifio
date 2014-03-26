@@ -37,7 +37,6 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Parser;
 import io.scif.Reader;
-import io.scif.SCIFIOService;
 import io.scif.Writer;
 import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTools;
@@ -306,11 +305,6 @@ public class DefaultFormatService extends AbstractService implements
 	@Override
 	public Set<Format> getAllFormats() {
 		return formats();
-	}
-
-	@Override
-	public <T extends SCIFIOService> T getInstance(final Class<T> type) {
-		return getContext().getService(type);
 	}
 
 	@Override

@@ -50,13 +50,8 @@ import org.scijava.Priority;
  * A collection of methods for finding {@link io.scif.Format} instances given a
  * child class, discovering available formats, and managing the list of
  * available formats.
- * <p>
- * Also provides convenience methods for working with the Format-specific
- * services.
- * </p>
  * 
  * @see io.scif.Format
- * @see FormatService#getInstance(Class)
  * @author Mark Hiner
  */
 public interface FormatService extends SCIFIOService {
@@ -232,15 +227,6 @@ public interface FormatService extends SCIFIOService {
 	 * Returns a list of all Formats within this context.
 	 */
 	Set<Format> getAllFormats();
-
-	/**
-	 * Convenience method to obtain TypedService instances within the current
-	 * context.
-	 * 
-	 * @param type - Service type to instantiate
-	 * @return An instance of the requested service
-	 */
-	<T extends SCIFIOService> T getInstance(Class<T> type);
 
 	/**
 	 * @return A list of all Formats that have {@link Writer} implementations.
