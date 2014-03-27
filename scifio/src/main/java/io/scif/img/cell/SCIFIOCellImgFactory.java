@@ -68,6 +68,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	// -- Fields --
 
+	private int index;
 	private Reader reader;
 	private SubRegion subregion;
 
@@ -157,7 +158,6 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 				"Tried to create a new SCIFIOCellImg without a Reader to "
 					+ "use for opening planes.\nCall setReader(Reader) before invoking create()");
 		}
-
 		return (SCIFIOCellImg<T, ?, ?>) type.createSuitableNativeImg(this, dim);
 	}
 
@@ -173,21 +173,34 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 			" does not implement NativeType.");
 	}
 
+	/**
+	 * @return The {@link Reader} attached to this factory. Will be used for any
+	 *         {@link SCIFIOCellImg} instances created for dynamic loading.
+	 */
 	public Reader reader() {
 		return reader;
 	}
 
-	public void setReader(Reader r) {
+	/**
+	 * @param r Reader to use for any created {@link SCIFIOCellImg}s.
+	 * @param imageIndex Image index within the given reader that will be loaded
+	 *          by {@link SCIFIOCellImg}s.
+	 */
+	public void setReader(Reader r, final int imageIndex) {
 		reader = r;
-		// TODO make N-d
+		index = imageIndex;
 
 		if (r instanceof ReaderFilter) r = ((ReaderFilter) r).getTail();
 
 		defaultCellDimensions =
-			new int[] { (int) reader.getOptimalTileWidth(0),
-				(int) reader.getOptimalTileHeight(0), 1, 1, 1 };
+			new int[] { (int) reader.getOptimalTileWidth(imageIndex),
+				(int) reader.getOptimalTileHeight(imageIndex), 1, 1, 1 };
 	}
 
+	/**
+	 * @param region The {@link SubRegion} that will be operated on by any created
+	 *          {@link SCIFIOCellImg}s.
+	 */
 	public void setSubRegion(final SubRegion region) {
 		subregion = region;
 	}
@@ -200,6 +213,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	{
 		dimensions = checkDimensions(dimensions);
 		final int[] cellSize = checkCellSize(defaultCellDimensions, dimensions);
+
+		loader.setIndex(index);
 
 		final SCIFIOCellCache<A> c =
 			new SCIFIOCellCache<A>(reader.getContext(), loader);

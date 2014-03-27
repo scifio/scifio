@@ -58,6 +58,7 @@ import org.scijava.plugin.Parameter;
  */
 public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
+	private int index = 0;
 	final private Reader reader;
 	final private SubRegion subRegion;
 	final private boolean compatible;
@@ -73,6 +74,12 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			imgUtilityService.makeType(reader.getMetadata().get(0).getPixelType());
 		compatible = outputClass().isAssignableFrom(inputType.getClass());
 	}
+
+	@Override
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
 
 	@Override
 	public A loadArray(final int[] dimensions, final long[] min) {
@@ -119,10 +126,10 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 					new DimRange(min[index], min[index] + dimensions[index] - 1);
 
 				if (subRegion != null) {
-					entities *= subRegion.getRange(axis.type()).indices().size();
+					entities *= subRegion.getRange(axis.type()).size();
 				}
 				else {
-					entities *= npRanges[axisIndex].indices().size();
+					entities *= npRanges[axisIndex].size();
 				}
 
 				axisIndex++;
@@ -173,8 +180,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			// We need to invert the depth index to get the current non-planar
 			// axis index, to ensure axes are iteratead in fastest to slowest order
 			final int npPosition = npRanges.length - 1 - depth;
-			for (int i = 0; i < npRanges[npPosition].indices().size(); i++) {
-				npIndices[npPosition] = npRanges[npPosition].indices().get(i);
+			for (int i = 0; i < npRanges[npPosition].size(); i++) {
+				npIndices[npPosition] = npRanges[npPosition].get(i);
 				read(data, tmpPlane, planarMin, planarLength, npRanges, npIndices,
 					depth + 1, planeCount);
 				planeCount++;
@@ -185,9 +192,9 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 				(int) FormatTools.positionToRaster(0, reader, npIndices);
 
 			if (tmpPlane == null) tmpPlane =
-				reader.openPlane(0, planeIndex, planarMin, planarLength);
+				reader.openPlane(index, planeIndex, planarMin, planarLength);
 			else tmpPlane =
-				reader.openPlane(0, planeIndex, tmpPlane, planarMin, planarLength);
+				reader.openPlane(index, planeIndex, tmpPlane, planarMin, planarLength);
 			convertBytes(data, tmpPlane.getBytes(), planeCount);
 		}
 

@@ -33,14 +33,15 @@ package io.scif.img;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
-import java.util.List;
-
 import org.testng.annotations.Test;
 
 /** Tests {@link DimRange}. */
 public class DimRangeTest {
 
-	/** Tests {@link DimRange#indices()}. */
+	/**
+	 * Ensure various parsings are correctly translated to {@code DimRange}
+	 * instances.
+	 */
 	@Test
 	public void testIndices() {
 		// test single value
@@ -77,11 +78,10 @@ public class DimRangeTest {
 	}
 
 	private void assertRange(final DimRange range, final long... indices) {
-		final List<Long> rangeIndices = range.indices();
-		assertNotNull(rangeIndices);
-		assertEquals(indices.length, range.indices().size());
+		assertNotNull(range);
+		assertEquals(indices.length, range.size());
 		for (int i = 0; i < indices.length; i++) {
-			assertEquals(indices[i], rangeIndices.get(i).longValue());
+			assertEquals(indices[i], range.get(i).longValue());
 		}
 	}
 

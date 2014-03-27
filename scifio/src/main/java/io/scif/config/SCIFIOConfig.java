@@ -36,6 +36,7 @@ import io.scif.MetadataLevel;
 import io.scif.Parser;
 import io.scif.Writer;
 import io.scif.codec.CodecOptions;
+import io.scif.img.DimRange;
 import io.scif.img.ImgFactoryHeuristic;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
@@ -121,8 +122,11 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	// If null, both planar/cell enabled will return false.
 	private ImgMode[] imgModes = new ImgMode[] { ImgMode.AUTO };
 
-	// Image index
-	private int index = 0;
+	// Whether ImgOpeners should open all images
+	private boolean openAll = false;
+
+	// Image indices
+	private DimRange range = new DimRange("0");
 
 	// sub-region specification for opening portions of an image
 	private SubRegion region = null;
@@ -164,7 +168,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 		options = config.options;
 		group = config.group;
 		imgModes = config.imgModes;
-		index = config.index;
+		range = config.range;
 		region = config.region;
 		computeMinMax = config.computeMinMax;
 		planeConverter = config.planeConverter;
@@ -440,21 +444,47 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	}
 
 	/**
-	 * @return The image index to be opened. Default: 0
+	 * @return True if all available images should be opened. Useful if the actual
+	 *         range of available images is not known.
 	 */
-	public int imgOpenerGetIndex() {
-		return index;
+	public boolean imgOpenerIsOpenAllImages() {
+		return openAll;
 	}
 
 	/**
-	 * @param index Image index to open.
+	 * @param openAll Whether or not all available images should be opened.
+	 *          Default: false.
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig imgOpenerSetOpenAllImages(final boolean openAll) {
+		this.openAll = openAll;
+		return this;
+	}
+
+	/**
+	 * @return The image range to be opened. Default: [0]
+	 */
+	public DimRange imgOpenerGetRange() {
+		return range;
+	}
+
+	/**
+	 * @param range Range of image indices to open.
+	 * @return This SCIFIOConfig for method chaining.
+	 * @throws IllegalArgumentException If a valid {@link DimRange} can not be
+	 *           parsed.
+	 */
+	public SCIFIOConfig imgOpenerSetRange(final String range) {
+		return imgOpenerSetRange(new DimRange(range));
+	}
+
+	/**
+	 * @param range Image index to open.
 	 * @return This SCIFIOConfig for method chaining.
 	 * @throws IllegalArgumentException If index < 0
 	 */
-	public SCIFIOConfig imgOpenerSetIndex(final int index) {
-		if (index < 0) throw new IllegalArgumentException("Invalid index: " +
-			index + ". Must be >= 0");
-		this.index = index;
+	public SCIFIOConfig imgOpenerSetRange(final DimRange range) {
+		this.range = range;
 		return this;
 	}
 

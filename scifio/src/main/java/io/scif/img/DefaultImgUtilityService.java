@@ -97,8 +97,9 @@ public class DefaultImgUtilityService extends AbstractService implements
 
 	/** Compiles an N-dimensional list of axis lengths from the given reader. */
 	@Override
-	public long[] getDimLengths(final Metadata m, final SCIFIOConfig config) {
-		final int imageIndex = config.imgOpenerGetIndex();
+	public long[] getDimLengths(final Metadata m, final int imageIndex,
+		final SCIFIOConfig config)
+	{
 
 		final long[] dimLengths = m.get(imageIndex).getAxesLengths();
 
@@ -110,7 +111,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 				final DimRange range =
 					region.getRange(m.get(imageIndex).getAxis(i).type());
 				if (range != null) {
-					dimLengths[i] = range.indices().size();
+					dimLengths[i] = range.size();
 				}
 			}
 		}
@@ -118,10 +119,10 @@ public class DefaultImgUtilityService extends AbstractService implements
 	}
 
 	@Override
-	public long[] getConstrainedLengths(final Metadata m,
+	public long[] getConstrainedLengths(final Metadata m, final int imageIndex,
 		final SCIFIOConfig config)
 	{
-		final long[] lengths = getDimLengths(m, config);
+		final long[] lengths = getDimLengths(m, imageIndex, config);
 
 		final SubRegion r = config.imgOpenerGetRegion();
 
@@ -130,7 +131,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 			for (final CalibratedAxis t : m.get(0).getAxes()) {
 				final DimRange range = r.getRange(t.type());
 				if (range != null) lengths[m.get(0).getAxisIndex(t)] =
-					range.indices().size();
+					range.size();
 			}
 		}
 

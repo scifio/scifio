@@ -57,7 +57,7 @@ public class SCIFIOCellImgTest {
 	public void testReaderCleanup() {
 		// Make an id that will trigger cell creation
 		final String id = "lotsofplanes&axes=X,Y,Z&lengths=256,256,100000.fake";
-		final SCIFIOImgPlus<?> img = IO.open(id);
+		final SCIFIOImgPlus<?> img = IO.open(id).get(0);
 		assertNotNull(((SCIFIOCellImg) img.getImg()).reader().getMetadata());
 		img.dispose();
 		assertNull(((SCIFIOCellImg) img.getImg()).reader().getMetadata());

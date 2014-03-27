@@ -40,9 +40,27 @@ import io.scif.img.cell.SCIFIOCellImg;
  */
 public interface SCIFIOArrayLoader<A> {
 
+	/**
+	 * @return Bits per element for the type of this loader.
+	 */
 	int getBitsPerElement();
 
+	/**
+	 * @param dimensions Plane extents
+	 * @param min Plane offsets
+	 * @return An opened plane using the given offsets and extents.
+	 */
 	A loadArray(int[] dimensions, long[] min);
 
+	/**
+	 * @param entities Desired entity capacity
+	 * @return An empty array of this loader's type, capable of holding the given
+	 *         number of entities.
+	 */
 	A emptyArray(final int entities);
+
+	/**
+	 * @param index The image index this loader should use when opening planes.
+	 */
+	void setIndex(int index);
 }

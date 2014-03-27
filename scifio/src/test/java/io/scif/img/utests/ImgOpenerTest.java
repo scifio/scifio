@@ -32,11 +32,19 @@ package io.scif.img.utests;
 
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
+import io.scif.ImageMetadata;
+import io.scif.Metadata;
+import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
+import io.scif.formats.FakeFormat;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
+import io.scif.img.SCIFIOImgPlus;
 import io.scif.img.SubRegion;
 import io.scif.img.cell.SCIFIOCellImgFactory;
+
+import java.util.List;
+
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -75,7 +83,7 @@ public class ImgOpenerTest {
 			"testImg&lengths=512,512,3,5&axes=X,Y,Z,Time&scales=5.0,6.0,7.0,8.0.fake";
 
 		@SuppressWarnings("rawtypes")
-		final ImgPlus imgPlus = imgOpener.openImg(calId);
+		final ImgPlus imgPlus = imgOpener.openImg(calId).get(0);
 
 		assertEquals(5.0, imgPlus.averageScale(0));
 		assertEquals(6.0, imgPlus.averageScale(1));
@@ -112,6 +120,55 @@ public class ImgOpenerTest {
 		}
 	}
 
+	/**
+	 * Tests that opening datasets with multiple images, via
+	 * {@link SCIFIOConfig#imgOpenerIsOpenAllImages()} is working as intended.
+	 * 
+	 * @throws ImgIOException
+	 */
+	@Test
+	public void testOpenAllImages() throws ImgIOException {
+		String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
+
+		// Open all images
+		List<SCIFIOImgPlus<?>> imgs =
+			new MultiImgOpener().openImg(id, new SCIFIOConfig()
+				.imgOpenerSetOpenAllImages(true));
+
+		// Check the size
+		assertEquals(5, imgs.size());
+
+		// Check the adjusted dimensions
+		SCIFIOImgPlus<?> img = imgs.get(0);
+		for (int i = 1; i < imgs.size(); i++) {
+			SCIFIOImgPlus<?> testImg = imgs.get(i);
+			assertEquals(img.dimension(0), testImg.dimension(0) + 10);
+			assertEquals(img.dimension(1), testImg.dimension(1) + 10);
+			img = testImg;
+		}
+	}
+
+	/**
+	 * Tests that opening datasets with multiple images, via
+	 * {@link SCIFIOConfig#imgOpenerGetRange()}, is working as intended.
+	 * @throws ImgIOException 
+	 */
+	public void testOpenImageRange() throws ImgIOException {
+		String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
+
+		// Open images 0 and 3
+		List<SCIFIOImgPlus<?>> imgs =
+			new MultiImgOpener().openImg(id, new SCIFIOConfig()
+				.imgOpenerSetRange("0,3"));
+
+		// Check the size
+		assertEquals(2, imgs.size());
+
+		// Check the adjusted dimensions
+		assertEquals(imgs.get(0).dimension(0), imgs.get(1).dimension(0) + 30);
+		assertEquals(imgs.get(0).dimension(1), imgs.get(1).dimension(1) + 30);
+	}
+
 	// Tests the opening various sub-regions of an image
 	@SuppressWarnings({ "rawtypes" })
 	private void testSubRegion(final ImgFactory factory) throws ImgIOException {
@@ -138,7 +195,7 @@ public class ImgOpenerTest {
 		final SCIFIOConfig options, final long size) throws ImgIOException
 	{
 		ImgPlus imgPlus = null;
-		imgPlus = imgOpener.openImg(id, factory, options);
+		imgPlus = imgOpener.openImg(id, factory, options).get(0);
 		assertNotNull(imgPlus);
 		assertEquals(size, imgPlus.size());
 	}
@@ -151,14 +208,47 @@ public class ImgOpenerTest {
 		final ImgFactory<T> factory = new ArrayImgFactory<T>().imgFactory(type);
 
 		// Try each rawtype openImg method
-		imgPlus = imgOpener.openImg(id, type);
+		imgPlus = imgOpener.openImg(id, type).get(0);
 		assertNotNull(imgPlus);
 		imgPlus = null;
-		imgPlus = imgOpener.openImg(id, type, new SCIFIOConfig());
+		imgPlus = imgOpener.openImg(id, type, new SCIFIOConfig()).get(0);
 		assertNotNull(imgPlus);
 		imgPlus = null;
-		imgPlus = imgOpener.openImg(id, factory, type);
+		imgPlus = imgOpener.openImg(id, factory, type).get(0);
 		assertNotNull(imgPlus);
 		imgPlus = null;
+	}
+
+	// Helper classes for testing
+
+	/**
+	 * Helper {@link ImgOpener} extension to modify {@link ImageMetadata} in a
+	 * multi-series dataset, to verify that specified images are opened when
+	 * requested.
+	 */
+	private class MultiImgOpener extends ImgOpener {
+
+		/**
+		 * When using, for example, {@link FakeFormat} for multi-image datasets, all
+		 * the images are created with the same dimensions. This method allows us to
+		 * add skew to the images, which can then be used to verify that the
+		 * requested images are opened via {@link ImgOpener}.
+		 */
+		@Override
+		public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImg(
+			final Reader reader, final T type, final ImgFactory<T> imgFactory,
+			final SCIFIOConfig config) throws ImgIOException
+		{
+			final Metadata m = reader.getMetadata();
+
+			int offset = 0;
+			for (int i = 0; i < m.getImageCount(); i++) {
+				m.get(i).setAxisLength(Axes.X, m.get(i).getAxisLength(Axes.X) - offset);
+				m.get(i).setAxisLength(Axes.Y, m.get(i).getAxisLength(Axes.Y) - offset);
+				offset += 10;
+			}
+
+			return super.openImg(reader, type, imgFactory, config);
+		}
 	}
 }

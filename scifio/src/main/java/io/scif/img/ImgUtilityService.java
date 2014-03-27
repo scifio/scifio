@@ -80,13 +80,15 @@ public interface ImgUtilityService extends SCIFIOService {
 	ArrayDataAccess<?> makeArray(final Object array);
 
 	/** Compiles an N-dimensional list of axis lengths from the given Metadata. */
-	long[] getDimLengths(final Metadata m, final SCIFIOConfig config);
+	long[] getDimLengths(final Metadata m, final int imageIndex,
+		final SCIFIOConfig config);
 
 	/**
 	 * Returns an N-dimensional list of axis lengths from the given Metadata,
 	 * constrained by the provided SubRegion (if present)
 	 */
-	long[] getConstrainedLengths(final Metadata m, final SCIFIOConfig config);
+	long[] getConstrainedLengths(final Metadata m, final int imageIndex,
+		final SCIFIOConfig config);
 
 	/**
 	 * @param source - the location of the dataset to assess

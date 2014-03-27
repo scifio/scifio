@@ -71,7 +71,8 @@ public class RandomAccessConverter extends AbstractPlaneConverter {
 		final int pixelType = m.get(imageIndex).getPixelType();
 		final boolean little = m.get(imageIndex).isLittleEndian();
 
-		final long[] dimLengths = imgUtilService.getDimLengths(m, config);
+		final long[] dimLengths =
+			imgUtilService.getDimLengths(m, imageIndex, config);
 		final long[] pos = new long[dimLengths.length];
 
 		final int planeX = 0;

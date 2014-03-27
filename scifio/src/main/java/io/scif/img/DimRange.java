@@ -32,7 +32,6 @@ package io.scif.img;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -61,7 +60,7 @@ import java.util.Set;
  * 
  * @author Mark Hiner
  */
-public class DimRange {
+public class DimRange extends ArrayList<Long> {
 
 	// -- Constants --
 
@@ -70,20 +69,13 @@ public class DimRange {
 
 	// -- Fields --
 
-	// Two indices are maintained over the data. A set to allow fast lookup
-	// for contains checks, and a list to provide a consistent guaranteed order.
+	// A set index is maintained to allow fast lookup for contains checks
 	private final Set<Long> setIndex;
-	private final List<Long> listIndex;
-
-	// Head and tail values for this range
-	private Long head;
-	private Long tail;
 
 	// -- Constructors --
 
 	private DimRange() {
 		setIndex = new HashSet<Long>();
-		listIndex = new ArrayList<Long>();
 	}
 
 	public DimRange(final String range) {
@@ -114,11 +106,8 @@ public class DimRange {
 
 			for (long j = start; j <= end; j += step) {
 				setIndex.add(j);
-				listIndex.add(j);
+				add(j);
 			}
-
-			if (i == 0) head = start;
-			if (i == intervals.length - 1) tail = end;
 		}
 	}
 
@@ -130,11 +119,8 @@ public class DimRange {
 	public DimRange(final Long index) {
 		this();
 
-		head = index;
-		tail = index;
-
 		setIndex.add(index);
-		listIndex.add(index);
+		add(index);
 	}
 
 	/**
@@ -146,12 +132,9 @@ public class DimRange {
 	public DimRange(final Long start, final Long end) {
 		this();
 
-		head = start;
-		tail = end;
-
 		for (long l = start; l <= end; l++) {
 			setIndex.add(l);
-			listIndex.add(l);
+			add(l);
 		}
 
 	}
@@ -165,25 +148,16 @@ public class DimRange {
 	public DimRange(final long[] values) {
 		this();
 
-		head = values[0];
-		tail = values[values.length - 1];
-
 		for (final long l : values) {
 			setIndex.add(l);
-			listIndex.add(l);
+			add(l);
 		}
 	}
 
 	// -- DimensionRanges methods --
 
-	/**
-	 * @return a list index over the values in this range
-	 */
-	public List<Long> indices() {
-		return listIndex;
-	}
-
-	public boolean contains(final Long l) {
+	@Override
+	public boolean contains(final Object l) {
 		return setIndex.contains(l);
 	}
 
@@ -191,13 +165,13 @@ public class DimRange {
 	 * @return The first value in this range.
 	 */
 	public Long head() {
-		return head;
+		return get(0);
 	}
 
 	/**
 	 * @return The last value in this range.
 	 */
 	public Long tail() {
-		return tail;
+		return get(size() - 1);
 	}
 }
