@@ -40,7 +40,7 @@ import io.scif.img.DimRange;
 import io.scif.img.ImgFactoryHeuristic;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
-import io.scif.img.SubRegion;
+import io.scif.img.ImageRegion;
 import io.scif.img.converters.PlaneConverter;
 
 import java.awt.image.ColorModel;
@@ -129,7 +129,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	private DimRange range = new DimRange("0");
 
 	// sub-region specification for opening portions of an image
-	private SubRegion region = null;
+	private ImageRegion region = null;
 
 	// Whether or not to use a MinMaxFilter
 	private boolean computeMinMax = false;
@@ -385,13 +385,13 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	}
 
 	/**
-	 * Returns a {@link SubRegion} specifying dimension constraints. This may be
+	 * Returns a {@link ImageRegion} specifying dimension constraints. This may be
 	 * of a different dimensionality than the underlying image, in which case the
 	 * lengths are assume to be in the natural ordering of the image.
 	 * 
 	 * @return A Subregion specifying dimension offsets and lengths. Default: null
 	 */
-	public SubRegion imgOpenerGetRegion() {
+	public ImageRegion imgOpenerGetRegion() {
 		return region;
 	}
 
@@ -399,7 +399,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @param region Region constraints for any image to open
 	 * @return This SCIFIOConfig for method chaining.
 	 */
-	public SCIFIOConfig imgOpenerSetRegion(final SubRegion region) {
+	public SCIFIOConfig imgOpenerSetRegion(final ImageRegion region) {
 		this.region = region;
 		return this;
 	}

@@ -40,7 +40,7 @@ import io.scif.formats.FakeFormat;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
-import io.scif.img.SubRegion;
+import io.scif.img.ImageRegion;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 
 import java.util.List;
@@ -176,13 +176,13 @@ public class ImgOpenerTest {
 		// should get an inner left left 128x128 square
 		AxisType[] axes = new AxisType[] { Axes.X, Axes.Y };
 		String[] ranges = new String[] { "128-255", "128-255" };
-		config.imgOpenerSetRegion(new SubRegion(axes, ranges));
+		config.imgOpenerSetRegion(new ImageRegion(axes, ranges));
 		doTestSubRegion(factory, config, 128 * 128 * 5);
 
 		axes = new AxisType[] { Axes.TIME };
 		ranges = new String[] { "0,2-4:2" };
 		// should get the first, 3rd and 5th T slices
-		config.imgOpenerSetRegion(new SubRegion(axes, ranges));
+		config.imgOpenerSetRegion(new ImageRegion(axes, ranges));
 		doTestSubRegion(factory, config, 512 * 512 * 3);
 
 		// should get the whole image

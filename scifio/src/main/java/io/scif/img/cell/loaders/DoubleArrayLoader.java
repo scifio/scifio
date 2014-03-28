@@ -32,7 +32,7 @@ package io.scif.img.cell.loaders;
 
 import io.scif.ImageMetadata;
 import io.scif.Reader;
-import io.scif.img.SubRegion;
+import io.scif.img.ImageRegion;
 import io.scif.util.FormatTools;
 
 import java.nio.ByteBuffer;
@@ -48,7 +48,7 @@ import net.imglib2.type.numeric.real.DoubleType;
  */
 public class DoubleArrayLoader extends AbstractArrayLoader<DoubleArray> {
 
-	public DoubleArrayLoader(final Reader reader, final SubRegion subRegion) {
+	public DoubleArrayLoader(final Reader reader, final ImageRegion subRegion) {
 		super(reader, subRegion);
 	}
 

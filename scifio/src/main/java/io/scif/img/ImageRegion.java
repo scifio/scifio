@@ -47,7 +47,7 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Mark Hiner
  */
-public class SubRegion {
+public class ImageRegion {
 
 	// -- Fields --
 
@@ -55,7 +55,7 @@ public class SubRegion {
 
 	// -- Constructors --
 
-	public SubRegion(final AxisType[] axes, final String[] ranges) {
+	public ImageRegion(final AxisType[] axes, final String[] ranges) {
 		dimRanges = new HashMap<AxisType, DimRange>();
 
 		if (axes.length != ranges.length) throw new IllegalArgumentException(
@@ -67,7 +67,7 @@ public class SubRegion {
 		}
 	}
 
-	public SubRegion(final AxisType[] axes, final DimRange... ranges) {
+	public ImageRegion(final AxisType[] axes, final DimRange... ranges) {
 		dimRanges = new HashMap<AxisType, DimRange>();
 
 		if (axes.length != ranges.length) throw new IllegalArgumentException(
@@ -79,7 +79,7 @@ public class SubRegion {
 		}
 	}
 
-	public SubRegion(final Map<AxisType, DimRange> ranges) {
+	public ImageRegion(final Map<AxisType, DimRange> ranges) {
 		dimRanges = ranges;
 	}
 

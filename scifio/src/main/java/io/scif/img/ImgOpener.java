@@ -544,7 +544,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final boolean isArray =
 			utils().getArrayAccess(imgPlus) != null && compatibleTypes;
 
-		final SubRegion region = config.imgOpenerGetRegion();
+		final ImageRegion region = config.imgOpenerGetRegion();
 
 		final Metadata m = r.getMetadata();
 

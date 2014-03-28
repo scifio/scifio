@@ -32,7 +32,7 @@ package io.scif.img.cell;
 
 import io.scif.Reader;
 import io.scif.filters.ReaderFilter;
-import io.scif.img.SubRegion;
+import io.scif.img.ImageRegion;
 import io.scif.img.cell.loaders.BitArrayLoader;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.CharArrayLoader;
@@ -70,7 +70,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	private int index;
 	private Reader reader;
-	private SubRegion subregion;
+	private ImageRegion subregion;
 
 	// -- Constuctors --
 
@@ -198,10 +198,10 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	}
 
 	/**
-	 * @param region The {@link SubRegion} that will be operated on by any created
+	 * @param region The {@link ImageRegion} that will be operated on by any created
 	 *          {@link SCIFIOCellImg}s.
 	 */
-	public void setSubRegion(final SubRegion region) {
+	public void setSubRegion(final ImageRegion region) {
 		subregion = region;
 	}
 

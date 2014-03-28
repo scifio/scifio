@@ -36,7 +36,7 @@ import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.img.DimRange;
 import io.scif.img.ImgUtilityService;
-import io.scif.img.SubRegion;
+import io.scif.img.ImageRegion;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -60,13 +60,13 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 	private int index = 0;
 	final private Reader reader;
-	final private SubRegion subRegion;
+	final private ImageRegion subRegion;
 	final private boolean compatible;
 
 	@Parameter
 	private ImgUtilityService imgUtilityService;
 
-	public AbstractArrayLoader(final Reader reader, final SubRegion subRegion) {
+	public AbstractArrayLoader(final Reader reader, final ImageRegion subRegion) {
 		this.reader = reader;
 		this.subRegion = subRegion;
 		reader.getContext().inject(this);
@@ -201,7 +201,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	}
 
 	/**
-	 * Returns true if this loader's {@link SubRegion} contains all of the given
+	 * Returns true if this loader's {@link ImageRegion} contains all of the given
 	 * indices
 	 */
 	private boolean inSubregion(final long[] npIndices) {

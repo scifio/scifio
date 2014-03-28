@@ -103,7 +103,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 
 		final long[] dimLengths = m.get(imageIndex).getAxesLengths();
 
-		final SubRegion region = config.imgOpenerGetRegion();
+		final ImageRegion region = config.imgOpenerGetRegion();
 
 		for (int i = 0; i < dimLengths.length; i++) {
 
@@ -124,7 +124,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	{
 		final long[] lengths = getDimLengths(m, imageIndex, config);
 
-		final SubRegion r = config.imgOpenerGetRegion();
+		final ImageRegion r = config.imgOpenerGetRegion();
 
 		if (r != null) {
 			// set each dimension length = the number of entries for that axis
