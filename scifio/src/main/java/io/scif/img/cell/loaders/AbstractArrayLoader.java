@@ -34,7 +34,7 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
-import io.scif.img.DimRange;
+import io.scif.img.Range;
 import io.scif.img.ImgUtilityService;
 import io.scif.img.ImageRegion;
 import io.scif.util.FormatTools;
@@ -93,8 +93,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			// Lengths in the planar dimensions
 			final long[] planarLength = new long[meta.get(0).getAxesPlanar().size()];
 			// Non-planar indices to open
-			final DimRange[] npRanges =
-				new DimRange[meta.get(0).getAxesNonPlanar().size()];
+			final Range[] npRanges =
+				new Range[meta.get(0).getAxesNonPlanar().size()];
 			final long[] npIndices = new long[npRanges.length];
 
 			int axisIndex = 0;
@@ -123,7 +123,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 				// otherwise just make a straightforward range spanning the passed
 				// dimensional constraints
 				npRanges[axisIndex] =
-					new DimRange(min[index], min[index] + dimensions[index] - 1);
+					new Range(min[index], min[index] + dimensions[index] - 1);
 
 				if (subRegion != null) {
 					entities *= subRegion.getRange(axis.type()).size();
@@ -157,22 +157,22 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 	/**
 	 * Entry point for
-	 * {@link #read(Object, Plane, long[], long[], DimRange[], long[], int, int)}
+	 * {@link #read(Object, Plane, long[], long[], Range[], long[], int, int)}
 	 */
 	private void
 		read(final A data, final long[] planarMin, final long[] planarLength,
-			final DimRange[] npRanges, final long[] npIndices)
+			final Range[] npRanges, final long[] npIndices)
 			throws FormatException, IOException
 	{
 		read(data, null, planarMin, planarLength, npRanges, npIndices, 0, 0);
 	}
 
 	/**
-	 * Recurses over all the provided {@link DimRange}s, reading the corresponding
+	 * Recurses over all the provided {@link Range}s, reading the corresponding
 	 * bytes and storing them in the provided data object.
 	 */
 	private void read(final A data, Plane tmpPlane, final long[] planarMin,
-		final long[] planarLength, final DimRange[] npRanges,
+		final long[] planarLength, final Range[] npRanges,
 		final long[] npIndices, final int depth, int planeCount)
 		throws FormatException, IOException
 	{
@@ -222,9 +222,9 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	}
 
 	/**
-	 * Returns true if the provided {@link DimRange} contains the given index
+	 * Returns true if the provided {@link Range} contains the given index
 	 */
-	private boolean inRange(final DimRange range, final long value) {
+	private boolean inRange(final Range range, final long value) {
 		if (range == null) return true;
 		if (range.contains(value)) return true;
 

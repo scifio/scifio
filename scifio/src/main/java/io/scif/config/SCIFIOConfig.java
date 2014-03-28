@@ -36,7 +36,7 @@ import io.scif.MetadataLevel;
 import io.scif.Parser;
 import io.scif.Writer;
 import io.scif.codec.CodecOptions;
-import io.scif.img.DimRange;
+import io.scif.img.Range;
 import io.scif.img.ImgFactoryHeuristic;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
@@ -126,7 +126,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	private boolean openAll = false;
 
 	// Image indices
-	private DimRange range = new DimRange("0");
+	private Range range = new Range("0");
 
 	// sub-region specification for opening portions of an image
 	private ImageRegion region = null;
@@ -464,18 +464,18 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	/**
 	 * @return The image range to be opened. Default: [0]
 	 */
-	public DimRange imgOpenerGetRange() {
+	public Range imgOpenerGetRange() {
 		return range;
 	}
 
 	/**
 	 * @param range Range of image indices to open.
 	 * @return This SCIFIOConfig for method chaining.
-	 * @throws IllegalArgumentException If a valid {@link DimRange} can not be
+	 * @throws IllegalArgumentException If a valid {@link Range} can not be
 	 *           parsed.
 	 */
 	public SCIFIOConfig imgOpenerSetRange(final String range) {
-		return imgOpenerSetRange(new DimRange(range));
+		return imgOpenerSetRange(new Range(range));
 	}
 
 	/**
@@ -483,7 +483,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * @return This SCIFIOConfig for method chaining.
 	 * @throws IllegalArgumentException If index < 0
 	 */
-	public SCIFIOConfig imgOpenerSetRange(final DimRange range) {
+	public SCIFIOConfig imgOpenerSetRange(final Range range) {
 		this.range = range;
 		return this;
 	}

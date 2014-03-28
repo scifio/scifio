@@ -35,16 +35,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A list of indices for a particular dimension, and is parsed from a properly
- * formatted string. Ranges must match the pattern:
- * {@code \d*(-\d*(:\d*)?)?(,\d*(-\d*(:\d)?*)?)*}
+ * A list of {@link Long} values with extra convenience functionality. Values
+ * can be parsed from a properly formatted string.
+ * <p>
+ * A {@link #head()} and {@link #tail()} convenience method are provided.
+ * Additionally, a hash index is maintained over all values, for faster
+ * {@link #contains(Object)} performance.
+ * </p>
  * <p>
  * Practically, ranges are ","-separated list of selected values. For each
  * selection specified, a start value is mandatory. An (inclusive) end value can
  * be specified using a "-". If an end is specified, a step can also be provided
  * using a ":". So, {@code 5,6-10:2} would select planes 5, 6, 8 and 10 from the
- * dimension associated with this DimRange.
+ * dimension associated with this Range.
  * <p>
+ * Ranges must match the pattern: {@code \d*(-\d*(:\d*)?)?(,\d*(-\d*(:\d)?*)?)*}
  * Valid patterns:
  * <ul>
  * <li>5,10,15</li>
@@ -60,7 +65,7 @@ import java.util.Set;
  * 
  * @author Mark Hiner
  */
-public class DimRange extends ArrayList<Long> {
+public class Range extends ArrayList<Long> {
 
 	// -- Constants --
 
@@ -74,11 +79,11 @@ public class DimRange extends ArrayList<Long> {
 
 	// -- Constructors --
 
-	private DimRange() {
+	private Range() {
 		setIndex = new HashSet<Long>();
 	}
 
-	public DimRange(final String range) {
+	public Range(final String range) {
 		this();
 
 		// Check for invalid patterns
@@ -116,7 +121,7 @@ public class DimRange extends ArrayList<Long> {
 	 * 
 	 * @param index single index for this DimRange.
 	 */
-	public DimRange(final Long index) {
+	public Range(final Long index) {
 		this();
 
 		setIndex.add(index);
@@ -129,7 +134,7 @@ public class DimRange extends ArrayList<Long> {
 	 * @param start inclusive start value
 	 * @param end inclusive end value
 	 */
-	public DimRange(final Long start, final Long end) {
+	public Range(final Long start, final Long end) {
 		this();
 
 		for (long l = start; l <= end; l++) {
@@ -145,7 +150,7 @@ public class DimRange extends ArrayList<Long> {
 	 * 
 	 * @param values explicit list of values in this range
 	 */
-	public DimRange(final long[] values) {
+	public Range(final long[] values) {
 		this();
 
 		for (final long l : values) {

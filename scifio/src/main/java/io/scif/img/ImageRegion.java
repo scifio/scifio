@@ -51,12 +51,12 @@ public class ImageRegion {
 
 	// -- Fields --
 
-	private final Map<AxisType, DimRange> dimRanges;
+	private final Map<AxisType, Range> dimRanges;
 
 	// -- Constructors --
 
 	public ImageRegion(final AxisType[] axes, final String[] ranges) {
-		dimRanges = new HashMap<AxisType, DimRange>();
+		dimRanges = new HashMap<AxisType, Range>();
 
 		if (axes.length != ranges.length) throw new IllegalArgumentException(
 			"Number of axes: " + axes.length + " does not match number of ranges: " +
@@ -67,8 +67,8 @@ public class ImageRegion {
 		}
 	}
 
-	public ImageRegion(final AxisType[] axes, final DimRange... ranges) {
-		dimRanges = new HashMap<AxisType, DimRange>();
+	public ImageRegion(final AxisType[] axes, final Range... ranges) {
+		dimRanges = new HashMap<AxisType, Range>();
 
 		if (axes.length != ranges.length) throw new IllegalArgumentException(
 			"Number of axes: " + axes.length + " does not match number of ranges: " +
@@ -79,7 +79,7 @@ public class ImageRegion {
 		}
 	}
 
-	public ImageRegion(final Map<AxisType, DimRange> ranges) {
+	public ImageRegion(final Map<AxisType, Range> ranges) {
 		dimRanges = ranges;
 	}
 
@@ -89,13 +89,13 @@ public class ImageRegion {
 	 * @param range Dimensional range to add to this SubRegion
 	 */
 	public void addRange(final AxisType axis, final String range) {
-		dimRanges.put(axis, new DimRange(range));
+		dimRanges.put(axis, new Range(range));
 	}
 
 	/**
 	 * @return A list of indices for the specified dimension
 	 */
-	public DimRange getRange(final AxisType axisType) {
+	public Range getRange(final AxisType axisType) {
 		return dimRanges.get(axisType);
 	}
 

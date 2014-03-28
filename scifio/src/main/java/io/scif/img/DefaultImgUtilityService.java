@@ -108,7 +108,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 		for (int i = 0; i < dimLengths.length; i++) {
 
 			if (region != null && i < region.size()) {
-				final DimRange range =
+				final Range range =
 					region.getRange(m.get(imageIndex).getAxis(i).type());
 				if (range != null) {
 					dimLengths[i] = range.size();
@@ -129,7 +129,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 		if (r != null) {
 			// set each dimension length = the number of entries for that axis
 			for (final CalibratedAxis t : m.get(0).getAxes()) {
-				final DimRange range = r.getRange(t.type());
+				final Range range = r.getRange(t.type());
 				if (range != null) lengths[m.get(0).getAxisIndex(t)] =
 					range.size();
 			}

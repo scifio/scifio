@@ -298,11 +298,11 @@ public class ImgOpener extends AbstractImgIOComponent {
 		throws ImgIOException
 	{
 		List<SCIFIOImgPlus<T>> imgPluses = new ArrayList<SCIFIOImgPlus<T>>();
-		DimRange imageRange = null;
+		Range imageRange = null;
 
 		if (config.imgOpenerIsOpenAllImages()) {
 			imageRange =
-				new DimRange("0-" + (reader.getMetadata().getImageCount() - 1));
+				new Range("0-" + (reader.getMetadata().getImageCount() - 1));
 		}
 		else {
 			imageRange = config.imgOpenerGetRange();
@@ -554,8 +554,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final long[] planarLength =
 			new long[m.get(imageIndex).getAxesPlanar().size()];
 		// Non-planar indices to open
-		final DimRange[] npRanges =
-			new DimRange[m.get(imageIndex).getAxesNonPlanar().size()];
+		final Range[] npRanges =
+			new Range[m.get(imageIndex).getAxesNonPlanar().size()];
 		final long[] npIndices = new long[npRanges.length];
 
 		// populate plane dimensions
@@ -581,7 +581,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			}
 			else {
 				npRanges[index++] =
-					new DimRange(0l, m.get(imageIndex).getAxisLength(npAxis.type()) - 1);
+					new Range(0l, m.get(imageIndex).getAxisLength(npAxis.type()) - 1);
 			}
 		}
 
@@ -610,7 +610,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	private void read(final int imageIndex, final ImgPlus imgPlus,
 		final Reader r, final SCIFIOConfig config, final PlaneConverter converter,
 		final long[] planarMin, final long[] planarLength,
-		final DimRange[] npRanges, final long[] npIndices) throws FormatException,
+		final Range[] npRanges, final long[] npIndices) throws FormatException,
 		IOException
 	{
 		read(imageIndex, imgPlus, r, config, converter, null, planarMin,
@@ -621,7 +621,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	private Plane read(final int imageIndex, final ImgPlus imgPlus,
 		final Reader r, final SCIFIOConfig config, final PlaneConverter converter,
 		Plane tmpPlane, final long[] planarMin, final long[] planarLength,
-		final DimRange[] npRanges, final long[] npIndices, final int depth,
+		final Range[] npRanges, final long[] npIndices, final int depth,
 		final int[] planeCount) throws FormatException, IOException
 	{
 		if (depth < npRanges.length) {

@@ -35,7 +35,7 @@ import static org.testng.Assert.assertNotNull;
 
 import org.testng.annotations.Test;
 
-/** Tests {@link DimRange}. */
+/** Tests {@link Range}. */
 public class DimRangeTest {
 
 	/**
@@ -45,39 +45,39 @@ public class DimRangeTest {
 	@Test
 	public void testIndices() {
 		// test single value
-		assertRange(new DimRange("17"), 17);
+		assertRange(new Range("17"), 17);
 
 		// test single range, default step
-		assertRange(new DimRange("1-5"), 1, 2, 3, 4, 5);
+		assertRange(new Range("1-5"), 1, 2, 3, 4, 5);
 
 		// test single range, explicit step where max is in range
-		assertRange(new DimRange("5-15:5"), 5, 10, 15);
+		assertRange(new Range("5-15:5"), 5, 10, 15);
 
 		// test single range, explicit step where max is not in range
-		assertRange(new DimRange("3-10:2"), 3, 5, 7, 9);
+		assertRange(new Range("3-10:2"), 3, 5, 7, 9);
 
 		// test list of single values (descending order should be preserved too)
-		assertRange(new DimRange("3,2,1"), 3, 2, 1);
+		assertRange(new Range("3,2,1"), 3, 2, 1);
 
 		// test pair of ranges
-		assertRange(new DimRange("7-8,4-6"), 7, 8, 4, 5, 6);
+		assertRange(new Range("7-8,4-6"), 7, 8, 4, 5, 6);
 
 		// test mixed list of ranges and values
-		assertRange(new DimRange("1-3,5,8,13"), 1, 2, 3, 5, 8, 13);
+		assertRange(new Range("1-3,5,8,13"), 1, 2, 3, 5, 8, 13);
 
 		// test range where min and max are equal and step is superfluous
-		assertRange(new DimRange("0-0:1"), 0);
+		assertRange(new Range("0-0:1"), 0);
 
 		// test range where min is greater than max (has no elements in range)
-		assertRange(new DimRange("3-1")); // min > max is invalid
+		assertRange(new Range("3-1")); // min > max is invalid
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void testInvalidPattern() {
-		new DimRange("3,2,1,blastoff!");
+		new Range("3,2,1,blastoff!");
 	}
 
-	private void assertRange(final DimRange range, final long... indices) {
+	private void assertRange(final Range range, final long... indices) {
 		assertNotNull(range);
 		assertEquals(indices.length, range.size());
 		for (int i = 0; i < indices.length; i++) {
