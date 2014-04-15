@@ -97,35 +97,38 @@ public class DefaultPlaneConverterService extends
 
 	// -- helpers --
 
-	private void buildDataStructures() {
-		converters = new ConcurrentHashMap<String, PlaneConverter>();
-		converterNames = new ArrayList<String>();
-		for (final PlaneConverter converter : getInstances()) {
-			final String name = converter.getInfo().getName();
-			converters.put(name, converter);
-			converterNames.add(name);
-		}
-	}
-
 	private Map<? extends String, ? extends PlaneConverter> converters() {
-		if (converters == null){
-			synchronized(this) {
-				if (converters == null) {
-					buildDataStructures();
-				}
-			}
-		}
+		if (converters == null) initConverters();
 		return converters;
 	}
 
 	private List<? extends String> converterNames() {
-		if (converterNames == null) {
-			synchronized(this) {
-				if (converters == null) {
-					buildDataStructures();
-				}
-			}
-		}
+		if (converterNames == null) initConverterNames();
 		return converterNames;
+	}
+
+	private synchronized void initConverters() {
+		if (converters != null) return; // already initialized
+
+		final ConcurrentHashMap<String, PlaneConverter> map =
+			new ConcurrentHashMap<String, PlaneConverter>();
+		for (final PlaneConverter converter : getInstances()) {
+			final String name = converter.getInfo().getName();
+			map.put(name, converter);
+		}
+
+		converters = map;
+	}
+
+	private synchronized void initConverterNames() {
+		if (converterNames != null) return; // already initialized
+
+		final ArrayList<String> list = new ArrayList<String>();
+		for (final PlaneConverter converter : getInstances()) {
+			final String name = converter.getInfo().getName();
+			list.add(name);
+		}
+
+		converterNames = list;
 	}
 }
