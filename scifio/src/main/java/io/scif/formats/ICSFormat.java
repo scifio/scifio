@@ -155,6 +155,8 @@ public class ICSFormat extends AbstractFormat {
 			if (pixelSizes == null) pixelSizes = new Double[]{1.0, 1.0, 1.0, 1.0};
 
 			// HACK - support for Gray Institute at Oxford's ICS lifetime data
+			// DEPRECATED - future ICS data will use "parameter labels" with a value
+			// of "micro-time" for the lifetime axis.
 			final boolean lifetime = getLifetime();
 			final String label = getLabels();
 			if (lifetime && label != null) {
@@ -174,6 +176,7 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			int bitsPerPixel = 0;
+			final String[] paramLabels = getParamLabels();
 
 			// interpret axis information
 			for (int n = 0; n < axes.length; n++) {
@@ -229,6 +232,10 @@ public class ICSFormat extends AbstractFormat {
 					}
 
 					imageMeta.addAxis(type, (long) axesSizes[n]);
+				}
+				if (paramLabels[n].equals("micro-time")) {
+					imageMeta.setAxisType(imageMeta.getAxes().size() - 1,
+						SCIFIOAxes.LIFETIME);
 				}
 			}
 
@@ -582,6 +589,12 @@ public class ICSFormat extends AbstractFormat {
 				lifetime = true;
 			}
 			return lifetime;
+		}
+
+		public String[] getParamLabels() {
+			String pLabels = findStringValueForKey("parameter labels");
+			if (pLabels == null) return new String[getAxes().length];
+			return pLabels.split(" ");
 		}
 
 		public String getLabels() {
@@ -1936,6 +1949,7 @@ public class ICSFormat extends AbstractFormat {
 			addKey(root, "parameter", "scale");
 			addKey(root, "parameter", "t");
 			addKey(root, "parameter", "units");
+			addKey(root, "parameter", "labels");
 			addKey(root, "sensor", "s_params", "lambdaem");
 			addKey(root, "sensor", "s_params", "lambdaex");
 			addKey(root, "sensor", "s_params", "pinholeradius");
