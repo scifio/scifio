@@ -279,10 +279,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		final int oldIndex = getAxisIndex(axis);
 
 		// Replace existing axis
-
-		if (oldIndex >= 0) {
-			final long length = axisLengths.remove(axes.get(oldIndex).type());
-			axes.remove(oldIndex);
+		if (oldIndex < 0) {
+			final long length = axisLengths.remove(axes.get(index).type());
+			axes.remove(index);
 
 			if (index == axes.size()) {
 				axes.add(axis);
@@ -303,8 +302,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void setAxisType(final int index, final AxisType axisType) {
-		CalibratedAxis axis = getAxis(index);
-		axis = FormatTools.createAxis(axisType);
+		CalibratedAxis axis = FormatTools.createAxis(axisType);
 		setAxis(index, axis);
 	}
 
