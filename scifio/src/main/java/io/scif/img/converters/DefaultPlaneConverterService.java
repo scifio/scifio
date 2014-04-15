@@ -108,12 +108,24 @@ public class DefaultPlaneConverterService extends
 	}
 
 	private Map<? extends String, ? extends PlaneConverter> converters() {
-		if (converters == null) buildDataStructures();
+		if (converters == null){
+			synchronized(this) {
+				if (converters == null) {
+					buildDataStructures();
+				}
+			}
+		}
 		return converters;
 	}
 
 	private List<? extends String> converterNames() {
-		if (converterNames == null) buildDataStructures();
+		if (converterNames == null) {
+			synchronized(this) {
+				if (converters == null) {
+					buildDataStructures();
+				}
+			}
+		}
 		return converterNames;
 	}
 }
