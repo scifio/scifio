@@ -1132,7 +1132,7 @@ public class TIFFFormat extends AbstractFormat {
 			synchronized (this) {
 				// This operation is synchronized against the TIFF saver.
 				synchronized (tiffSaver) {
-					prepareToWriteImage(imageIndex, planeIndex, plane, ifd, x, y, w, h);
+					prepareToWritePlane(imageIndex, planeIndex, plane, ifd, x, y, w, h);
 				}
 			}
 
@@ -1272,7 +1272,7 @@ public class TIFFFormat extends AbstractFormat {
 		 * This method is factored out from <code>saveBytes()</code> in an attempt
 		 * to ensure thread safety.
 		 */
-		private long prepareToWriteImage(final int imageIndex,
+		private long prepareToWritePlane(final int imageIndex,
 			final long planeIndex, final Plane plane, final IFD ifd, final int x,
 			final int y, final int w, final int h) throws IOException,
 			FormatException
