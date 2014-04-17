@@ -1047,6 +1047,13 @@ public class TIFFFormat extends AbstractFormat {
 
 	/**
 	 * TiffWriter is the file format writer for TIFF files.
+	 * <p>
+	 * NB: BigTIFF writing can be controlled via the {@link #setBigTiff(boolean)}
+	 * method, or by passing a {@link SCIFIOConfig} with a key of
+	 * {@link Writer#BIG_TIFF_KEY} paired to the desired value. If not explicitly
+	 * turned on or off, BigTIFF will be written if the output dataset is larger
+	 * than 2GB in size.
+	 * </p>
 	 */
 	public static class Writer<M extends Metadata> extends AbstractWriter<M> {
 
@@ -1067,7 +1074,7 @@ public class TIFFFormat extends AbstractFormat {
 		// -- Fields --
 
 		/** Whether or not the output file is a BigTIFF file. */
-		private boolean isBigTiff;
+		private Boolean isBigTIFF = null;
 
 		/** The TiffSaver that will do most of the writing. */
 		private TiffSaver tiffSaver;
@@ -1077,12 +1084,6 @@ public class TIFFFormat extends AbstractFormat {
 
 		/** Whether or not to check the parameters passed to saveBytes. */
 		private final boolean checkParams = true;
-
-		// -- Constructor --
-
-		public Writer() {
-			isBigTiff = false;
-		}
 
 		// -- AbstractWriter Methods --
 
@@ -1099,14 +1100,14 @@ public class TIFFFormat extends AbstractFormat {
 		 * reset when close() is called.
 		 */
 		public void setBigTiff(final boolean bigTiff) {
-			isBigTiff = bigTiff;
+			isBigTIFF = bigTiff;
 		}
 
 		/**
 		 * @return Whether or not this Writer is configured to write BigTIFF data.
 		 */
 		public boolean isBigTiff() {
-			return isBigTiff;
+			return isBigTIFF == null ? false : isBigTIFF;
 		}
 
 		/**
@@ -1178,11 +1179,29 @@ public class TIFFFormat extends AbstractFormat {
 			synchronized (this) {
 				setupTiffSaver(dest, imageIndex);
 			}
+
+			// Check if a bigTIFF setting was requested
+			isBigTIFF = null;
 			if (config.containsKey(BIG_TIFF_KEY)) {
 				Object o = config.get(BIG_TIFF_KEY);
 				if (o instanceof Boolean) {
-					isBigTiff = (Boolean)o;
+					isBigTIFF = (Boolean)o;
 				}
+				else {
+					String v = String.valueOf(o).toLowerCase();
+					if (v.startsWith("t")) {
+						isBigTIFF = true;
+					}
+					else if (v.startsWith("f")) {
+						isBigTIFF = false;
+					}
+				}
+			}
+
+			// if isBigTIFF is not explicitly set and the dataset is > 2GB, write
+			// bigTIFF to be safe.
+			if (isBigTIFF == null && getMetadata().getDatasetSize() > 2147483648L) {
+				isBigTIFF = true;
 			}
 		}
 
@@ -1360,11 +1379,14 @@ public class TIFFFormat extends AbstractFormat {
 			ifd.put(IFD.Y_RESOLUTION, new TiffRational(
 				(long) (physicalSizeY * 1000 * 10000), 1000));
 
-			if (!isBigTiff) {
-				isBigTiff =
+			if (!isBigTiff()) {
+				isBigTIFF =
 					(getStream().length() + 2 * (width * height * c * bytesPerPixel)) >= 4294967296L;
-				if (isBigTiff) {
-					throw new FormatException("File is too large; call setBigTiff(true)");
+				if (isBigTiff()) {
+					throw new FormatException(
+						"File is too large for 32-bit TIFF but BigTIFF support was " +
+						"disabled. Please enable by using setBigTiff(true) or passing a " +
+						"SCIFIOConfig object with the appropriate BIG_TIFF_KEY,true pair.");
 				}
 			}
 
@@ -1408,7 +1430,7 @@ public class TIFFFormat extends AbstractFormat {
 
 			tiffSaver.setWritingSequentially(writeSequential());
 			tiffSaver.setLittleEndian(littleEndian);
-			tiffSaver.setBigTiff(isBigTiff);
+			tiffSaver.setBigTiff(isBigTiff());
 			tiffSaver.setCodecOptions(getCodecOptions());
 		}
 
