@@ -140,6 +140,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 		if (cell != null) {
 			return cell;
 		}
+		System.out.println("loading scifio cell: " + index + " on thread: " + Thread.currentThread());
 
 		cell =
 			new SCIFIOCell<A>(cacheService, cacheId, index, cellDims, cellMin, loader
