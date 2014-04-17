@@ -135,7 +135,7 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	@Override
 	public long getDatasetSize() {
-		int size = 0;
+		long size = 0;
 
 		for (int i = 0; i < getAll().size(); i++)
 			size += get(i).getSize();
