@@ -81,7 +81,7 @@ public class Convert extends AbstractReaderCommand {
 
 	@Option(name = "-b", aliases = "--bigtiff",
 		usage = "force BigTIFF files to be written")
-	private boolean bigTiff;
+	private Boolean bigTiff;
 
 	@Option(name = "-o", aliases = "--overwrite",
 		usage = "always overwrite the output file if it exists")
@@ -239,7 +239,7 @@ public class Convert extends AbstractReaderCommand {
 					.checkerSetOpen(false));
 
 			// Set writer configuration
-			if (writer instanceof TIFFFormat.Writer) {
+			if (writer instanceof TIFFFormat.Writer && bigTiff != null) {
 				((TIFFFormat.Writer<?>) writer).setBigTiff(bigTiff);
 			}
 		}
