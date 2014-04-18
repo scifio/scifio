@@ -37,10 +37,10 @@ import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 
 import java.io.IOException;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
-import org.testng.annotations.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests for ensuring that read-only IRandomAccess objects throw an appropriate
@@ -59,7 +59,7 @@ public class ReadOnlyTest {
 	private IRandomAccess fileHandle;
 
 	@Parameters({ "provider" })
-	@BeforeMethod
+	@Before
 	public void setUp(final String provider) throws IOException {
 		final IRandomAccessProviderFactory factory =
 			new IRandomAccessProviderFactory();
@@ -67,12 +67,12 @@ public class ReadOnlyTest {
 		fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
 	}
 
-	@Test(expectedExceptions = { HandleException.class })
+	@Test(expected = HandleException.class)
 	public void isReadOnly() throws IOException {
 		fileHandle.write(0);
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() throws IOException {
 		fileHandle.close();
 	}

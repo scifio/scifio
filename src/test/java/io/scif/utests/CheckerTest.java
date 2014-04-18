@@ -30,10 +30,10 @@
 
 package io.scif.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import io.scif.Checker;
 import io.scif.Format;
 import io.scif.FormatException;
@@ -44,10 +44,10 @@ import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.scijava.Context;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 /**
  * Unit tests for {@link io.scif.Checker} interface methods.
@@ -64,7 +64,7 @@ public class CheckerTest {
 	private FakeChecker fc;
 	private Context context;
 
-	@BeforeMethod
+	@Before
 	public void setUp() throws FormatException {
 		context = new Context();
 		final SCIFIO scifio = new SCIFIO();
@@ -144,7 +144,7 @@ public class CheckerTest {
 		}
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 		context = null;
 		c = null;

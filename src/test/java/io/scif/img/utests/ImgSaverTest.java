@@ -30,7 +30,7 @@
 
 package io.scif.img.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.junit.Assert.assertEquals;
 import io.scif.config.SCIFIOConfig;
 import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.img.ImgIOException;
@@ -42,8 +42,8 @@ import io.scif.services.LocationService;
 import net.imagej.ImgPlus;
 import net.imglib2.exception.IncompatibleTypeException;
 
+import org.junit.Test;
 import org.scijava.Context;
-import org.testng.annotations.Test;
 
 /**
  * Tests for the {@link ImgSaver} class.

@@ -30,10 +30,10 @@
 
 package io.scif.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.SCIFIO;
@@ -49,7 +49,7 @@ import java.io.IOException;
 
 import net.imagej.axis.Axes;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * Unit tests for {@link io.scif.Translator} interface methods.

@@ -30,10 +30,10 @@
 
 package io.scif.img;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /** Tests {@link Range}. */
 public class DimRangeTest {
@@ -72,7 +72,7 @@ public class DimRangeTest {
 		assertRange(new Range("3-1")); // min > max is invalid
 	}
 
-	@Test(expectedExceptions = IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testInvalidPattern() {
 		new Range("3,2,1,blastoff!");
 	}

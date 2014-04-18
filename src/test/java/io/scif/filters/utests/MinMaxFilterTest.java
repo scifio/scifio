@@ -30,7 +30,7 @@
 
 package io.scif.filters.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.junit.Assert.assertEquals;
 import io.scif.FormatException;
 import io.scif.SCIFIO;
 import io.scif.filters.MinMaxFilter;
@@ -40,7 +40,7 @@ import java.io.IOException;
 
 import net.imagej.axis.Axes;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * Tests for {@link MinMaxFilter}.

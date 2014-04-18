@@ -30,11 +30,11 @@
 
 package io.scif.img.cell.cache.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertNull;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import io.scif.FormatException;
 import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
@@ -54,10 +54,10 @@ import java.util.Arrays;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.scijava.Context;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 /**
  * Unit tests for testing the {@link CacheService}. Tests storage and retrieval,
@@ -83,7 +83,7 @@ public class CacheServiceTest {
 	private static CacheService<SCIFIOCell<?>> cs;
 
 	@SuppressWarnings("unchecked")
-	@BeforeMethod
+	@Before
 	public void setUp() {
 		scifio = new SCIFIO();
 		cs = scifio.getContext().getService(CacheService.class);
@@ -92,7 +92,7 @@ public class CacheServiceTest {
 
 	// -- Post-test hooks --
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 		scifio.getContext().dispose();
 	}

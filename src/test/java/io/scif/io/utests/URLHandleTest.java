@@ -30,17 +30,17 @@
 
 package io.scif.io.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.junit.Assert.assertEquals;
 import io.scif.io.HandleException;
 import io.scif.io.URLHandle;
 
 import java.io.EOFException;
 import java.io.IOException;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.scijava.Context;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 /**
  * Unit tests for the loci.common.URLHandle class.
@@ -61,7 +61,7 @@ public class URLHandleTest {
 
 	// -- Setup methods --
 
-	@BeforeMethod
+	@Before
 	public void setup() throws IOException {
 		context = new Context();
 		fileHandle = new URLHandle(context, WEBSITE);
@@ -171,18 +171,18 @@ public class URLHandleTest {
 		assertEquals(0x2c20776f726c6421L, fileHandle.readLong());
 	}
 
-	@Test(expectedExceptions = { EOFException.class })
+	@Test(expected = EOFException.class)
 	public void testEOF() throws IOException {
 		fileHandle.seek(16);
 		fileHandle.readByte();
 	}
 
-	@Test(expectedExceptions = { HandleException.class })
+	@Test(expected = HandleException.class)
 	public void testWrite() throws IOException {
 		fileHandle.write(0);
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() throws IOException {
 		fileHandle.close();
 	}

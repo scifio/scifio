@@ -30,8 +30,8 @@
 
 package io.scif.img.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
@@ -58,14 +58,13 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * Tests for the {@link ImgOpener} class.
  * 
  * @author Mark Hiner
  */
-@Test
 public class ImgOpenerTest {
 
 	// Use the default constructor, which constructs a minimal context,

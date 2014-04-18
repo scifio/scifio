@@ -30,13 +30,13 @@
 
 package io.scif.common.utests;
 
-import static org.testng.AssertJUnit.assertTrue;
+import static org.junit.Assert.assertTrue;
 import io.scif.common.Constants;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * Tests for string encoding.

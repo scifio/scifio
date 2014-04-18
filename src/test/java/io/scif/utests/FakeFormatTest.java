@@ -30,8 +30,8 @@
 
 package io.scif.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
@@ -42,7 +42,7 @@ import java.io.IOException;
 import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * Unit tests for {@link FakeFormat}. The FakeFormat is used in many other
@@ -140,7 +140,7 @@ public class FakeFormatTest {
 	/**
 	 * Test that fake images with more axes than lengths can not be constructed.
 	 */
-	@Test(expectedExceptions = IllegalStateException.class)
+	@Test(expected = IllegalStateException.class)
 	public void testMisMatchedAxes() throws IOException, FormatException {
 		final String moreAxes =
 			"8bit-unsigned&pixelType=uint8lengths=50,50,4&axes=X,Y,Channel,Z,Time.fake";
@@ -151,7 +151,7 @@ public class FakeFormatTest {
 	/**
 	 * Test that fake images with more lengths than axes can not be constructed.
 	 */
-	@Test(expectedExceptions = IllegalStateException.class)
+	@Test(expected = IllegalStateException.class)
 	public void testMisMatchedLengths() throws FormatException, IOException {
 		final String moreLengths =
 			"8bit-unsigned&pixelType=uint8lengths=50,50,4,7,12&axes=X,Y,Channel.fake";

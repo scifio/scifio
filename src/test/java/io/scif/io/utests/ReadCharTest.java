@@ -30,18 +30,18 @@
 
 package io.scif.io.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import io.scif.io.IRandomAccess;
 import io.scif.io.utests.providers.IRandomAccessProvider;
 import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 
 import java.io.IOException;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
-import org.testng.annotations.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests for reading characters from a loci.common.IRandomAccess.
@@ -70,7 +70,7 @@ public class ReadCharTest {
 	private IRandomAccess fileHandle;
 
 	@Parameters({ "provider" })
-	@BeforeMethod
+	@Before
 	public void setUp(final String provider) throws IOException {
 		final IRandomAccessProviderFactory factory =
 			new IRandomAccessProviderFactory();
@@ -144,7 +144,7 @@ public class ReadCharTest {
 		testResetReadChar();
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() throws IOException {
 		fileHandle.close();
 	}

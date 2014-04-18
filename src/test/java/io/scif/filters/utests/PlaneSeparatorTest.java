@@ -30,7 +30,7 @@
 
 package io.scif.filters.utests;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.junit.Assert.assertEquals;
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
@@ -39,8 +39,8 @@ import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
 
+import org.junit.Test;
 import org.scijava.InstantiableException;
-import org.testng.annotations.Test;
 
 /**
  * Tests for {@link PlaneSeparator}.

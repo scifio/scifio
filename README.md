@@ -103,6 +103,5 @@ All we ask is that you check:
 from the top level.
 
 If you're adding a new feature, it would be fantastic if you
-could write a unit test for it! You can add your test to the
-[TestNG template](src/test/java/io/scif/utests/testng-template.xml)
+could write a unit test for it! Simply base it on JUnit
 to have it run by the SCIFIO test suite.
