@@ -22,16 +22,20 @@
 	</repositories>
 
 	<dependencies>
+		<!-- Project dependencies -->
 		<dependency>
-			<groupId>${scifio.groupId}</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>scifio</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<!-- SciJava dependencies -->
 		<dependency>
-			<groupId>${scijava-common.groupId}</groupId>
+			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>
-			<version>${scijava-common.version}</version>
 		</dependency>
+
+		<!-- Third-party dependencies -->
 		<dependency>
 			<groupId>args4j</groupId>
 			<artifactId>args4j</artifactId>

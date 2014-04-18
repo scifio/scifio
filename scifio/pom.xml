@@ -22,34 +22,33 @@
 	</repositories>
 
 	<dependencies>
+		<!-- SciJava dependencies -->
 		<dependency>
-			<groupId>${scifio.groupId}</groupId>
+			<groupId>io.scif</groupId>
 			<artifactId>jai_imageio</artifactId>
 			<version>${jai-imageio.version}</version>
 		</dependency>
-
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
+			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
-			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
+			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-meta</artifactId>
-			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${scijava-common.groupId}</groupId>
+			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>
-			<version>${scijava-common.version}</version>
 		</dependency>
 
+		<!-- Third-party dependencies -->
 		<dependency>
 			<groupId>org.mapdb</groupId>
 			<artifactId>mapdb</artifactId>
 			<version>0.9.7</version>
 		</dependency>
 
+		<!-- Test scope dependencies -->
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
@@ -59,7 +58,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
