@@ -13,6 +13,14 @@
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a next generation library for scientific image format I/O.</description>
 
+	<repositories>
+		<!-- NB: for parent project, in case of partial checkout -->
+		<repository>
+			<id>imagej.public</id>
+			<url>http://maven.imagej.net/content/groups/public</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<!-- NB: dependency:analyze has false warning about xml-apis:xml-apis. -->
 
@@ -86,13 +94,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<!-- NB: for parent project, in case of partial checkout -->
-		<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
-		</repository>
-	</repositories>
 
 </project>

@@ -19,29 +19,10 @@
 	<url>http://scif.io/</url>
 	<inceptionYear>2011</inceptionYear>
 
-	<modules>
-		<module>scifio</module>
-		<module>tools</module>
-	</modules>
-
-	<properties>
-		<jai-imageio.version>1.0.1</jai-imageio.version>
-	</properties>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<configuration>
-					<licenseName>bsd_2</licenseName>
-					<projectName>SCIFIO library for reading and converting scientific file formats.</projectName>
-					<organizationName>Board of Regents of the University of
-Wisconsin-Madison</organizationName>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<organization>
+		<name>SCIFIO</name>
+		<url>http://scif.io/</url>
+	</organization>
 
 	<licenses>
 		<license>
@@ -49,11 +30,6 @@ Wisconsin-Madison</organizationName>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
-	<organization>
-		<name>SCIFIO</name>
-		<url>http://scif.io/</url>
-	</organization>
 
 	<developers>
 		<developer>
@@ -84,16 +60,6 @@ Wisconsin-Madison</organizationName>
 		</developer>
 	</developers>
 
-	<issueManagement>
-		<system>GitHub Issues</system>
-		<url>https://github.com/scifio/scifio/issues</url>
-	</issueManagement>
-
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/view/SCIFIO/</url>
-	</ciManagement>
-
 	<mailingLists>
 		<mailingList>
 			<name>SCIFIO</name>
@@ -104,12 +70,31 @@ Wisconsin-Madison</organizationName>
 		</mailingList>
 	</mailingLists>
 
+	<modules>
+		<module>scifio</module>
+		<module>tools</module>
+	</modules>
+
 	<scm>
 		<connection>scm:git:git://github.com/scifio/scifio</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio</developerConnection>
 		<tag>HEAD</tag>
 		<url>http://github.com/scifio/scifio</url>
 	</scm>
+
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/scifio/scifio/issues</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://jenkins.imagej.net/view/SCIFIO/</url>
+	</ciManagement>
+
+	<properties>
+		<jai-imageio.version>1.0.1</jai-imageio.version>
+	</properties>
 
 	<repositories>
 		<!-- NB: for parent project -->
@@ -118,4 +103,20 @@ Wisconsin-Madison</organizationName>
 			<url>http://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<licenseName>bsd_2</licenseName>
+					<projectName>SCIFIO library for reading and converting scientific file formats.</projectName>
+					<organizationName>Board of Regents of the University of
+Wisconsin-Madison</organizationName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

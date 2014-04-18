@@ -13,6 +13,14 @@
 	<name>SCIFIO Tools</name>
 	<description>Pluggable command-line tools for performing SCIFIO-based image IO operations.</description>
 
+	<repositories>
+		<!-- NB: for parent project, in case of partial checkout -->
+		<repository>
+			<id>imagej.public</id>
+			<url>http://maven.imagej.net/content/groups/public</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>${scifio.groupId}</groupId>
@@ -79,13 +87,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<!-- NB: for parent project, in case of partial checkout -->
-		<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
-		</repository>
-	</repositories>
 
 </project>
