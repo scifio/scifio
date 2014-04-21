@@ -469,6 +469,14 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	}
 
 	/**
+	 * @param index Image index within the dataset to open
+	 * @return This SCIFIOConfig for method chaining.
+	 */
+	public SCIFIOConfig imgOpenerSetIndex(final int index) {
+		return imgOpenerSetRange(new Range(new Long(index)));
+	}
+
+	/**
 	 * @param range Range of image indices to open.
 	 * @return This SCIFIOConfig for method chaining.
 	 * @throws IllegalArgumentException If a valid {@link Range} can not be
