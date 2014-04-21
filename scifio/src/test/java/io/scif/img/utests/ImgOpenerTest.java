@@ -83,7 +83,7 @@ public class ImgOpenerTest {
 			"testImg&lengths=512,512,3,5&axes=X,Y,Z,Time&scales=5.0,6.0,7.0,8.0.fake";
 
 		@SuppressWarnings("rawtypes")
-		final ImgPlus imgPlus = imgOpener.openImg(calId).get(0);
+		final ImgPlus imgPlus = imgOpener.openImgs(calId).get(0);
 
 		assertEquals(5.0, imgPlus.averageScale(0));
 		assertEquals(6.0, imgPlus.averageScale(1));
@@ -132,7 +132,7 @@ public class ImgOpenerTest {
 
 		// Open all images
 		List<SCIFIOImgPlus<?>> imgs =
-			new MultiImgOpener().openImg(id, new SCIFIOConfig()
+			new MultiImgOpener().openImgs(id, new SCIFIOConfig()
 				.imgOpenerSetOpenAllImages(true));
 
 		// Check the size
@@ -158,7 +158,7 @@ public class ImgOpenerTest {
 
 		// Open images 0 and 3
 		List<SCIFIOImgPlus<?>> imgs =
-			new MultiImgOpener().openImg(id, new SCIFIOConfig()
+			new MultiImgOpener().openImgs(id, new SCIFIOConfig()
 				.imgOpenerSetRange("0,3"));
 
 		// Check the size
@@ -195,7 +195,7 @@ public class ImgOpenerTest {
 		final SCIFIOConfig options, final long size) throws ImgIOException
 	{
 		ImgPlus imgPlus = null;
-		imgPlus = imgOpener.openImg(id, factory, options).get(0);
+		imgPlus = imgOpener.openImgs(id, factory, options).get(0);
 		assertNotNull(imgPlus);
 		assertEquals(size, imgPlus.size());
 	}
@@ -208,13 +208,13 @@ public class ImgOpenerTest {
 		final ImgFactory<T> factory = new ArrayImgFactory<T>().imgFactory(type);
 
 		// Try each rawtype openImg method
-		imgPlus = imgOpener.openImg(id, type).get(0);
+		imgPlus = imgOpener.openImgs(id, type).get(0);
 		assertNotNull(imgPlus);
 		imgPlus = null;
-		imgPlus = imgOpener.openImg(id, type, new SCIFIOConfig()).get(0);
+		imgPlus = imgOpener.openImgs(id, type, new SCIFIOConfig()).get(0);
 		assertNotNull(imgPlus);
 		imgPlus = null;
-		imgPlus = imgOpener.openImg(id, factory, type).get(0);
+		imgPlus = imgOpener.openImgs(id, factory, type).get(0);
 		assertNotNull(imgPlus);
 		imgPlus = null;
 	}
@@ -235,7 +235,7 @@ public class ImgOpenerTest {
 		 * requested images are opened via {@link ImgOpener}.
 		 */
 		@Override
-		public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImg(
+		public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImgs(
 			final Reader reader, final T type, final ImgFactory<T> imgFactory,
 			final SCIFIOConfig config) throws ImgIOException
 		{
@@ -248,7 +248,7 @@ public class ImgOpenerTest {
 				offset += 10;
 			}
 
-			return super.openImg(reader, type, imgFactory, config);
+			return super.openImgs(reader, type, imgFactory, config);
 		}
 	}
 }

@@ -107,8 +107,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	public List<SCIFIOImgPlus<?>> openImg(final String source) throws ImgIOException {
-		return openImg(source, new SCIFIOConfig());
+	public List<SCIFIOImgPlus<?>> openImgs(final String source) throws ImgIOException {
+		return openImgs(source, new SCIFIOConfig());
 	}
 
 	/**
@@ -119,10 +119,10 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>> openImg(
+	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>> openImgs(
 		final String source, final T type) throws ImgIOException
 	{
-		return openImg(source, type, new SCIFIOConfig());
+		return openImgs(source, type, new SCIFIOConfig());
 	}
 
 	/**
@@ -135,11 +135,11 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public List<SCIFIOImgPlus<?>>
-		openImg(final String source, final SCIFIOConfig config)
+		openImgs(final String source, final SCIFIOConfig config)
 			throws ImgIOException
 	{
 		final Reader r = createReader(source, config);
-		return openImg(r, config);
+		return openImgs(r, config);
 	}
 
 	/**
@@ -152,13 +152,13 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>> openImg(
+	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>> openImgs(
 		final String source, final T type, final SCIFIOConfig config)
 		throws ImgIOException
 	{
 		final Reader r = createReader(source, config);
 
-		return openImg(r, type, config);
+		return openImgs(r, type, config);
 	}
 
 	/**
@@ -169,10 +169,10 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	@SuppressWarnings("rawtypes")
-	public List<SCIFIOImgPlus<?>> openImg(final String source,
+	public List<SCIFIOImgPlus<?>> openImgs(final String source,
 		final ImgFactory imgFactory) throws ImgIOException
 	{
-		return openImg(source, imgFactory, new SCIFIOConfig()
+		return openImgs(source, imgFactory, new SCIFIOConfig()
 			.imgOpenerSetComputeMinMax(true));
 	}
 
@@ -185,13 +185,13 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public List<SCIFIOImgPlus<?>> openImg(final String source,
+	public List<SCIFIOImgPlus<?>> openImgs(final String source,
 		final ImgFactory imgFactory, final SCIFIOConfig config)
 		throws ImgIOException
 	{
 		final Reader r = createReader(source, config);
 		final RealType t = getType(r);
-		return openImg(r, t, imgFactory, config);
+		return openImgs(r, t, imgFactory, config);
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImg(final String source,
+	public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImgs(final String source,
 		final ImgFactory<T> imgFactory, final T type) throws ImgIOException
 	{
 
@@ -212,7 +212,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		final Reader r = createReader(source, config);
 
-		return openImg(r, type, imgFactory, config);
+		return openImgs(r, type, imgFactory, config);
 	}
 
 	/**
@@ -224,7 +224,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<SCIFIOImgPlus<?>>
-		openImg(final Reader reader, final SCIFIOConfig config)
+		openImgs(final Reader reader, final SCIFIOConfig config)
 			throws ImgIOException
 	{
 		final RealType t = getType(reader);
@@ -244,7 +244,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			throw new ImgIOException(e);
 		}
 
-		return openImg(reader, t, imgFactory, config);
+		return openImgs(reader, t, imgFactory, config);
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>> openImg(
+	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>> openImgs(
 		final Reader reader, final T type, final SCIFIOConfig config)
 		throws ImgIOException
 	{
@@ -272,7 +272,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			throw new ImgIOException(e);
 		}
 
-		return openImg(reader, type, imgFactory, config);
+		return openImgs(reader, type, imgFactory, config);
 	}
 
 	/**
@@ -293,7 +293,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
-	public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImg(final Reader reader,
+	public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImgs(final Reader reader,
 		final T type, final ImgFactory<T> imgFactory, final SCIFIOConfig config)
 		throws ImgIOException
 	{
@@ -366,6 +366,124 @@ public class ImgOpener extends AbstractImgIOComponent {
 			}
 		}
 		return imgPluses;
+	}
+
+	// -- Deprecated API --
+
+	/**
+	 * @deprecated
+	 * @see #openImgs(String)
+	 */
+	@Deprecated
+	public SCIFIOImgPlus<?> openImg(final String source) throws ImgIOException {
+		return openImgs(source).get(0);
+	}
+
+	/**
+	 * @deprecated
+	 * @see #openImgs(String, RealType)
+	 */
+	@Deprecated
+	public <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> openImg(
+		final String source, final T type) throws ImgIOException
+	{
+		return openImgs(source, type).get(0);
+	}
+
+	/**
+	 * @deprecated
+	 * @see #openImgs(Reader, SCIFIOConfig)
+	 */
+	@Deprecated
+	public SCIFIOImgPlus<?>
+		openImg(final String source, final SCIFIOConfig config)
+			throws ImgIOException
+	{
+		return openImgs(source, config).get(0);
+	}
+
+	/**
+	 * @deprecated
+	 * @see #openImgs(Reader, RealType, SCIFIOConfig)
+	 */
+	@Deprecated
+	public <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> openImg(
+		final String source, final T type, final SCIFIOConfig config)
+		throws ImgIOException
+	{
+		return openImgs(source, type, config).get(0);
+	}
+
+	/**
+	 * @deprecated
+	 * @see #openImgs(String, ImgFactory)
+	 */
+	@Deprecated
+	@SuppressWarnings("rawtypes")
+	public SCIFIOImgPlus<?> openImg(final String source,
+		final ImgFactory imgFactory) throws ImgIOException
+	{
+		return openImgs(source, imgFactory).get(0);
+	}
+
+	/**
+	 * @deprecated
+	 * @see #openImgs(String, ImgFactory, SCIFIOConfig)
+	 */
+	@Deprecated
+	@SuppressWarnings("rawtypes")
+	public SCIFIOImgPlus<?> openImg(final String source,
+		final ImgFactory imgFactory, final SCIFIOConfig config)
+		throws ImgIOException
+	{
+		return openImgs(source, imgFactory, config).get(0);
+	}
+
+	/**
+	 * @deprecated
+	 * @see #openImgs(String, ImgFactory, RealType)
+	 */
+	@Deprecated
+	public <T extends RealType<T>> SCIFIOImgPlus<T> openImg(final String source,
+		final ImgFactory<T> imgFactory, final T type) throws ImgIOException
+	{
+		return openImgs(source, imgFactory, type).get(0);
+	}
+
+	/**
+	 * @deprecated
+	 * @see #openImgs(Reader, SCIFIOConfig)
+	 */
+	@Deprecated
+	public SCIFIOImgPlus<?>
+		openImg(final Reader reader, final SCIFIOConfig config)
+			throws ImgIOException
+	{
+		return openImgs(reader, config).get(0);
+	}
+
+	/**
+	 * @deprecated
+	 * @see #openImgs(Reader, RealType, SCIFIOConfig)
+	 */
+	@Deprecated
+	public <T extends RealType<T> & NativeType<T>> SCIFIOImgPlus<T> openImg(
+		final Reader reader, final T type, final SCIFIOConfig config)
+		throws ImgIOException
+	{
+		return openImgs(reader, type, config).get(0);
+	}
+
+	/**
+	 * @deprecated
+	 * @see #openImgs(Reader, RealType, ImgFactory, SCIFIOConfig)
+	 */
+	@Deprecated
+	public <T extends RealType<T>> SCIFIOImgPlus<T> openImg(final Reader reader,
+		final T type, final ImgFactory<T> imgFactory, final SCIFIOConfig config)
+		throws ImgIOException
+	{
+		return openImgs(reader, type, imgFactory, config).get(0);
 	}
 
 	// -- Helper methods --

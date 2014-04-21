@@ -71,13 +71,13 @@ public final class IO {
 	// -- Input Methods --
 
 	/**
-	 * @see ImgOpener#openImg(String)
+	 * @see ImgOpener#openImgs(String)
 	 */
 	public static List<SCIFIOImgPlus<?>> openImgs(final String source) {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<?>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source);
+			imgPlus = opener.openImgs(source);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -87,13 +87,13 @@ public final class IO {
 	}
 
 	/**
-	 * As {@link ImgOpener#openImg(String)} with a guaranteed {@link FloatType}.
+	 * As {@link ImgOpener#openImgs(String)} with a guaranteed {@link FloatType}.
 	 */
 	public static List<SCIFIOImgPlus<FloatType>> openFloatImgs(final String source) {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<FloatType>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, new FloatType());
+			imgPlus = opener.openImgs(source, new FloatType());
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -103,7 +103,7 @@ public final class IO {
 	}
 
 	/**
-	 * As {@link ImgOpener#openImg(String)} with a guaranteed {@link DoubleType}.
+	 * As {@link ImgOpener#openImgs(String)} with a guaranteed {@link DoubleType}.
 	 */
 	public static List<SCIFIOImgPlus<DoubleType>> openDoubleImgs(
 		final String source)
@@ -111,7 +111,7 @@ public final class IO {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<DoubleType>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, new DoubleType());
+			imgPlus = opener.openImgs(source, new DoubleType());
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -121,7 +121,7 @@ public final class IO {
 	}
 
 	/**
-	 * As {@link ImgOpener#openImg(String)} with a guaranteed
+	 * As {@link ImgOpener#openImgs(String)} with a guaranteed
 	 * {@link UnsignedByteType}.
 	 */
 	public static List<SCIFIOImgPlus<UnsignedByteType>> openUnsignedByteImgs(
@@ -130,7 +130,7 @@ public final class IO {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<UnsignedByteType>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, new UnsignedByteType());
+			imgPlus = opener.openImgs(source, new UnsignedByteType());
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -140,7 +140,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(String, RealType)
+	 * @see ImgOpener#openImgs(String, RealType)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
 		openImgs(final String source, final T type)
@@ -148,7 +148,7 @@ public final class IO {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<T>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, type);
+			imgPlus = opener.openImgs(source, type);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -158,7 +158,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(String, SCIFIOConfig)
+	 * @see ImgOpener#openImgs(String, SCIFIOConfig)
 	 */
 	public static List<SCIFIOImgPlus<?>> openImgs(final String source,
 		final SCIFIOConfig config)
@@ -166,7 +166,7 @@ public final class IO {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<?>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, config);
+			imgPlus = opener.openImgs(source, config);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -176,7 +176,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(String, RealType, SCIFIOConfig)
+	 * @see ImgOpener#openImgs(String, RealType, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
 		openImgs(final String source, final T type, final SCIFIOConfig config)
@@ -184,7 +184,7 @@ public final class IO {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<T>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, type, config);
+			imgPlus = opener.openImgs(source, type, config);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -194,7 +194,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(String, ImgFactory)
+	 * @see ImgOpener#openImgs(String, ImgFactory)
 	 */
 	@SuppressWarnings("rawtypes")
 	public static List<SCIFIOImgPlus<?>> openImgs(final String source,
@@ -203,7 +203,7 @@ public final class IO {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<?>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, imgFactory);
+			imgPlus = opener.openImgs(source, imgFactory);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -213,7 +213,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(String, ImgFactory, SCIFIOConfig)
+	 * @see ImgOpener#openImgs(String, ImgFactory, SCIFIOConfig)
 	 */
 	@SuppressWarnings("rawtypes")
 	public static List<SCIFIOImgPlus<?>> openImgs(final String source,
@@ -222,7 +222,7 @@ public final class IO {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<?>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, imgFactory, config);
+			imgPlus = opener.openImgs(source, imgFactory, config);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -232,7 +232,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(String, ImgFactory, RealType)
+	 * @see ImgOpener#openImgs(String, ImgFactory, RealType)
 	 */
 	public static <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImgs(
 		final String source, final ImgFactory<T> imgFactory, final T type)
@@ -240,7 +240,7 @@ public final class IO {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<T>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(source, imgFactory, type);
+			imgPlus = opener.openImgs(source, imgFactory, type);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -250,7 +250,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(Reader, RealType, SCIFIOConfig)
+	 * @see ImgOpener#openImgs(Reader, RealType, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>>
 		openImgs(final Reader reader, final T type, final SCIFIOConfig config)
@@ -258,7 +258,7 @@ public final class IO {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<T>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(reader, type, config);
+			imgPlus = opener.openImgs(reader, type, config);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {
@@ -268,7 +268,7 @@ public final class IO {
 	}
 
 	/**
-	 * @see ImgOpener#openImg(Reader, RealType, ImgFactory, SCIFIOConfig)
+	 * @see ImgOpener#openImgs(Reader, RealType, ImgFactory, SCIFIOConfig)
 	 */
 	public static <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImgs(
 		final Reader reader, final T type, final ImgFactory<T> imgFactory,
@@ -277,7 +277,7 @@ public final class IO {
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<T>> imgPlus = null;
 		try {
-			imgPlus = opener.openImg(reader, type, imgFactory, config);
+			imgPlus = opener.openImgs(reader, type, imgFactory, config);
 			register(imgPlus, opener);
 		}
 		catch (final ImgIOException e) {

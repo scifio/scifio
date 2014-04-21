@@ -64,14 +64,14 @@ public class ReadImage {
 		// read all arguments using auto-detected type with default container
 		System.out.println("== AUTO-DETECTED TYPE, DEFAULT CONTAINER ==");
 		for (final String id : ids) {
-			final ImgPlus<?> img = imageOpener.openImg(id).get(0);
+			final ImgPlus<?> img = imageOpener.openImgs(id).get(0);
 			reportInformation(img);
 		}
 
 		// read all arguments using auto-detected type with default container
 		System.out.println("== AUTO-DETECTED TYPE, CELL CONTAINER ==");
 		for (final String id : ids) {
-			final ImgPlus<?> img = imageOpener.openImg(id).get(0);
+			final ImgPlus<?> img = imageOpener.openImgs(id).get(0);
 			reportInformation(img);
 		}
 
