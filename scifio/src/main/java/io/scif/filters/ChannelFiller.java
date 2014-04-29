@@ -159,7 +159,9 @@ public class ChannelFiller extends AbstractReaderFilter {
 	{
 		// If the wrapped Metadata wasn't indexed, we can use the parent reader
 		// directly
-		if (!getParentMeta().get(imageIndex).isIndexed()) {
+		if (getParentMeta().get(imageIndex).isFalseColor() ||
+			!getParentMeta().get(imageIndex).isIndexed())
+		{
 			if (!haveCached(imageIndex, planeIndex, offsets, lengths)) {
 				lastPlaneOffsets = Arrays.copyOf(offsets, offsets.length);
 				lastPlaneLengths = Arrays.copyOf(lengths, lengths.length);

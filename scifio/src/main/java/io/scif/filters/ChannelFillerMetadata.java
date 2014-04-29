@@ -37,6 +37,7 @@ import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
+import io.scif.img.axes.SCIFIOAxes;
 import io.scif.services.InitializeService;
 import io.scif.util.FormatTools;
 
@@ -134,8 +135,27 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 
 				}
 
-				iMeta.setAxisLength(Axes.CHANNEL, iMeta.getAxisLength(Axes.CHANNEL) *
-					lutLength);
+				if (!iMeta.isFalseColor()) {
+					// Channel is already a planar axis.
+					final int cIndex = iMeta.getAxisIndex(Axes.CHANNEL);
+					if (cIndex >= 0 && cIndex < iMeta.getPlanarAxisCount()) {
+						iMeta.setAxisLength(Axes.CHANNEL,
+							iMeta.getAxisLength(Axes.CHANNEL) * lutLength);
+					}
+					else {
+						if (cIndex >= 0) {
+							// Rename Channel axis to an unknown
+							iMeta.setAxisType(cIndex, Axes.unknown());
+						}
+						// Insert "true" Channels (expanded indexes) to the end of the
+						// planar
+						// axis list.
+						iMeta.addAxis(Axes.CHANNEL, lutLength);
+						iMeta.setAxis(iMeta.getPlanarAxisCount(), iMeta
+							.getAxis(Axes.CHANNEL));
+						iMeta.setPlanarAxisCount(iMeta.getPlanarAxisCount() + 1);
+					}
+				}
 			}
 
 			add(iMeta, false);
