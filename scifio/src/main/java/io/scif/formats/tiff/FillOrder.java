@@ -136,7 +136,7 @@ public enum FillOrder implements CodedEnum {
 	}
 
 	/**
-	 * Retrieves the given name of the photometric interpretation.
+	 * Retrieves the given name of the fill order.
 	 * 
 	 * @return See above.
 	 */
