@@ -479,6 +479,21 @@ public class IFD extends HashMap<Integer, Object> {
 		return getIFDTextValue(IMAGE_DESCRIPTION);
 	}
 
+	/**
+	 * Retrieves the image's fill order (TIFF tag FillOrder) from this IFD.
+	 * 
+	 * @return the image's fill order. As of TIFF 6.0 this is one of:
+	 *         <ul>
+	 *         <li>Normal (1)</li>
+	 *         <li>Reversed (2)</li>
+	 *         </ul>
+	 * @throws FormatException if there is a problem parsing the IFD metadata.
+	 */
+	public FillOrder getFillOrder() throws FormatException {
+		final int fillOrder = getIFDIntValue(FILL_ORDER, 1);
+		return FillOrder.get(fillOrder);
+	}
+
 	/** Returns the width of an image tile. */
 	public long getTileWidth() throws FormatException {
 		final long tileWidth = getIFDLongValue(TILE_WIDTH, 0);
