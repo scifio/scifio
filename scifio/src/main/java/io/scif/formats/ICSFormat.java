@@ -101,6 +101,10 @@ public class ICSFormat extends AbstractFormat {
 	 */
 	public static class Metadata extends AbstractMetadata {
 
+		// -- Constants --
+
+		private static final String MICRO_TIME = "micro-time";
+
 		// -- Fields --
 
 		/**
@@ -154,12 +158,15 @@ public class ICSFormat extends AbstractFormat {
 			Double[] pixelSizes = getPixelSizes();
 			if (pixelSizes == null) pixelSizes = new Double[]{1.0, 1.0, 1.0, 1.0};
 
+			final String[] paramLabels = getParamLabels();
+
 			// HACK - support for Gray Institute at Oxford's ICS lifetime data
 			// DEPRECATED - future ICS data will use "parameter labels" with a value
 			// of "micro-time" for the lifetime axis.
+			// NB: If parameter labels are found, skip the hack.
 			final boolean lifetime = getLifetime();
 			final String label = getLabels();
-			if (lifetime && label != null) {
+			if (noMicroTime(paramLabels) && lifetime && label != null) {
 				if (label.equalsIgnoreCase("t x y")) {
 					// NB: The axes are actually (Lifetime, X, Y) not (X, Y, Z)!
 					xAxis = SCIFIOAxes.LIFETIME;
@@ -176,7 +183,6 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			int bitsPerPixel = 0;
-			final String[] paramLabels = getParamLabels();
 
 			// interpret axis information
 			for (int n = 0; n < axes.length; n++) {
@@ -233,7 +239,7 @@ public class ICSFormat extends AbstractFormat {
 
 					imageMeta.addAxis(type, (long) axesSizes[n]);
 				}
-				if (paramLabels[n].equals("micro-time")) {
+				if (paramLabels[n] != null && paramLabels[n].equals(MICRO_TIME)) {
 					imageMeta.setAxisType(imageMeta.getAxes().size() - 1,
 						SCIFIOAxes.LIFETIME);
 				}
@@ -280,6 +286,18 @@ public class ICSFormat extends AbstractFormat {
 			catch (final FormatException e) {
 				log().error("Could not get pixel type from bytes: " + bytes, e);
 			}
+		}
+
+		/**
+		 * Helper method to check for the micro-time label.
+		 */
+		private boolean noMicroTime(String[] labels) {
+			for (String s : labels) {
+				if (s != null && s.equals(MICRO_TIME)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		// -- HasSource API Methods --
