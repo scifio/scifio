@@ -54,8 +54,9 @@ public interface ImageMetadata extends HasMetaTable {
 	void setThumbSizeY(long thumbSizeY);
 
 	/**
-	 * Sets the number of bytes per pixel. Valid pixel type constants (e.g.,
-	 * {@link FormatTools#INT8}) are enumerated in {@link FormatTools}.
+	 * Sets the data type associated with a pixel. Valid pixel type 
+         * constants (e.g., {@link FormatTools#INT8}) are enumerated in 
+	 * {@link FormatTools}.
 	 */
 	void setPixelType(int pixelType);
 
@@ -188,8 +189,9 @@ public interface ImageMetadata extends HasMetaTable {
 	CalibratedAxis getAxis(AxisType axisType);
 
 	/**
-	 * Returns the number of bytes per pixel. Should correlate with the pixel
-	 * types in {@link io.scif.util.FormatTools}
+	 * Returns the data type associated with a pixel. Valid pixel type 
+         * constants (e.g., {@link FormatTools#INT8}) are enumerated in 
+	 * {@link FormatTools}.
 	 */
 	int getPixelType();
 
