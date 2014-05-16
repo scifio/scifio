@@ -92,10 +92,6 @@
 		<url>http://jenkins.imagej.net/view/SCIFIO/</url>
 	</ciManagement>
 
-	<properties>
-		<jai-imageio.version>1.0.1</jai-imageio.version>
-	</properties>
-
 	<repositories>
 		<!-- NB: for parent project -->
 		<repository>
