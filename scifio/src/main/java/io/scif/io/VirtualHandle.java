@@ -36,9 +36,16 @@ import java.nio.ByteBuffer;
 /**
  * A special IRandomAccess handle for files that don't exist physically. This
  * will allow {@link RandomAccessInputStream} creation using arbitrary Strings,
- * e.g. for {@link io.scif.formats.FakeFormat}. All operations are no-ops.
+ * e.g. for {@link io.scif.formats.FakeFormat}. All reading/writing operations
+ * throw {@link UnsupportedOperationException}.
  */
 public class VirtualHandle extends StreamHandle {
+
+	// -- Constants --
+
+	private static final String FAIL_MSG =
+		"Attempting to read or write from a io.scif.io.VirtualHandle." +
+		" There is no source to operate on.";
 
 	// -- Constructor --
 
@@ -66,36 +73,33 @@ public class VirtualHandle extends StreamHandle {
 
 	@Override
 	public void resetStream() throws IOException {
-		// no-op as there is no backing stream
+		// no-op
 	}
 
 	// -- IRandomAccess API Methods --
 
 	@Override
 	public int read(final byte[] b) throws IOException {
-		// no-op
-		return 0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public int read(final byte[] b, final int off, final int len)
 		throws IOException
 	{
-		// no-op
-		return 0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public int read(final ByteBuffer buffer) throws IOException {
-		// no-op
-		return 0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public int read(final ByteBuffer buffer, final int off, final int len)
 		throws IOException
 	{
-		return 0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
@@ -105,166 +109,156 @@ public class VirtualHandle extends StreamHandle {
 
 	@Override
 	public void write(final ByteBuffer buf) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void write(final ByteBuffer buf, final int off, final int len)
 		throws IOException
 	{
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	// -- DataInput API Methods --
 
 	@Override
 	public char readChar() throws IOException {
-		// no-op
-		return 0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public double readDouble() throws IOException {
-		// no-op
-		return 0.0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public float readFloat() throws IOException {
-		// no-op
-		return 0f;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void readFully(final byte[] b) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void readFully(final byte[] b, final int off, final int len)
 		throws IOException
 	{
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public int readInt() throws IOException {
-		// no-op
-		return 0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public String readLine() throws IOException {
-		throw new IOException("Unimplemented");
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public long readLong() throws IOException {
-		// no-op
-		return 0l;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public short readShort() throws IOException {
-		// no-op
-		return 0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public int readUnsignedByte() throws IOException {
-		// no-op
-		return 0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public int readUnsignedShort() throws IOException {
-		// no-op
-		return 0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public String readUTF() throws IOException {
-		// no-op
-		return "";
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public int skipBytes(final int n) throws IOException {
-		// no-op
-		return 0;
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	// -- DataOutput API methods --
 
 	@Override
 	public void write(final byte[] b) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void write(final byte[] b, final int off, final int len)
 		throws IOException
 	{
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void write(final int b) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeBoolean(final boolean v) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeByte(final int v) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeBytes(final String s) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeChar(final int v) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeChars(final String s) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeDouble(final double v) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeFloat(final float v) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeInt(final int v) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeLong(final long v) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeShort(final int v) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 
 	@Override
 	public void writeUTF(final String str) throws IOException {
-		// no-op
+		throw new UnsupportedOperationException(FAIL_MSG);
 	}
 }
