@@ -226,7 +226,6 @@ public class DefaultLocationService extends AbstractService implements
 				// over-use of RAIS and the mapping of handles by LocationService.
 				// This infrastructure is going to be redone before a 1.0.0 release,
 				// but VirtualHandle is an intermediate fix.
-				log.warn(id + " not found - creating VirtualHandle.");
 				return new VirtualHandle(mapId);
 			}
 		}
