@@ -416,7 +416,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 	// -- Helper methods --
 
-	/* Entry point for writePlanes method, the actual workhorse to save pixels to disk */
+	/**
+	 * Entry point for writePlanes method, the actual workhorse to save pixels to
+	 * disk.
+	 */
 	private void saveImg(final Writer w, final SCIFIOImgPlus<?> img,
 		final int imageIndex, final boolean initializeWriter,
 		final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
@@ -435,6 +438,11 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final String id = img.getSource();
 		final int sliceCount = countSlices(img);
 
+		// Put this image's metadata into the ImgPlus's properties table.
+		img.getProperties().put("scifio.metadata.global", w.getMetadata());
+		img.getProperties().put("scifio.metadata.image",
+			w.getMetadata().get(imageIndex));
+
 		// write pixels
 		writePlanes(w, img, imageIndex, config);
 
@@ -446,8 +454,11 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 	// -- Helper Methods --
 
-	/* Counts the number of slices in the provided ImgPlus.
+	/**
+	 * Counts the number of slices in the provided ImgPlus.
+	 * <p>
 	 * NumSlices = product of the sizes of all non-X,Y planes.
+	 * </p>
 	 */
 	private int countSlices(final SCIFIOImgPlus<?> img) {
 

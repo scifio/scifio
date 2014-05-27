@@ -329,6 +329,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 			imgPlus.initializeColorTables((int) reader.getPlaneCount(imageIndex
 				.intValue()));
 
+			// Put this image's metadata into the ImgPlus's properties table.
+			imgPlus.getProperties().put("scifio.metadata.global",
+				reader.getMetadata());
+			imgPlus.getProperties().put("scifio.metadata.image",
+				reader.getMetadata().get(imageIndex.intValue()));
+
 			// If we have a planar img, read the planes now. Otherwise they
 			// will be read on demand.
 			if (!AbstractCellImgFactory.class.isAssignableFrom(imgFactory.getClass()))
