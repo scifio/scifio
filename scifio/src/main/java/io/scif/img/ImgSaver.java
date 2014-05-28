@@ -157,8 +157,6 @@ public class ImgSaver extends AbstractImgIOComponent {
 		if (config == null) {
 			config = new SCIFIOConfig();
 		}
-		img.setSource(id);
-		img.setName(new File(id).getName());
 		return saveImg(initializeWriter(id, img, imageIndex, config), img,
 			imageIndex, false, config);
 	}
