@@ -475,9 +475,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * Iterates through the planes of the provided {@link SCIFIOImgPlus}, converting
-	 * each to a byte[] if necessary (the SCIFIO writer requires a byte[]) and
-	 * saving the plane. Currently only {@link PlanarImg} is supported.
+	 * Iterates through the planes of the provided {@link SCIFIOImgPlus},
+	 * converting each to a byte[] if necessary (the SCIFIO writer requires a
+	 * byte[]) and saving the plane. Currently only {@link PlanarImg} is
+	 * supported.
 	 * 
 	 * @throws IncompatibleTypeException
 	 */
