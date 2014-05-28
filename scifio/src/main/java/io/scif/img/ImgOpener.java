@@ -108,7 +108,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public List<SCIFIOImgPlus<?>> openImgs(final String source) throws ImgIOException {
-		return openImgs(source, new SCIFIOConfig());
+		return openImgs(source, (SCIFIOConfig)null);
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>> openImgs(
 		final String source, final T type) throws ImgIOException
 	{
-		return openImgs(source, type, new SCIFIOConfig());
+		return openImgs(source, type, null);
 	}
 
 	/**
@@ -135,9 +135,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public List<SCIFIOImgPlus<?>>
-		openImgs(final String source, final SCIFIOConfig config)
+		openImgs(final String source, SCIFIOConfig config)
 			throws ImgIOException
 	{
+		if (config == null) {
+			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+		}
 		final Reader r = createReader(source, config);
 		return openImgs(r, config);
 	}
@@ -153,9 +156,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>> openImgs(
-		final String source, final T type, final SCIFIOConfig config)
+		final String source, final T type, SCIFIOConfig config)
 		throws ImgIOException
 	{
+		if (config == null) {
+			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+		}
 		final Reader r = createReader(source, config);
 
 		return openImgs(r, type, config);
@@ -172,8 +178,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	public List<SCIFIOImgPlus<?>> openImgs(final String source,
 		final ImgFactory imgFactory) throws ImgIOException
 	{
-		return openImgs(source, imgFactory, new SCIFIOConfig()
-			.imgOpenerSetComputeMinMax(true));
+		return openImgs(source, imgFactory, (SCIFIOConfig)null);
 	}
 
 	/**
@@ -186,9 +191,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<SCIFIOImgPlus<?>> openImgs(final String source,
-		final ImgFactory imgFactory, final SCIFIOConfig config)
+		final ImgFactory imgFactory, SCIFIOConfig config)
 		throws ImgIOException
 	{
+		if (config == null) {
+			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+		}
 		final Reader r = createReader(source, config);
 		final RealType t = getType(r);
 		return openImgs(r, t, imgFactory, config);
@@ -224,11 +232,13 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<SCIFIOImgPlus<?>>
-		openImgs(final Reader reader, final SCIFIOConfig config)
+		openImgs(final Reader reader, SCIFIOConfig config)
 			throws ImgIOException
 	{
 		final RealType t = getType(reader);
-
+		if (config == null) {
+			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+		}
 		final ImgFactoryHeuristic heuristic = getHeuristic(config);
 
 		ImgFactory imgFactory;
@@ -257,9 +267,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T extends RealType<T> & NativeType<T>> List<SCIFIOImgPlus<T>> openImgs(
-		final Reader reader, final T type, final SCIFIOConfig config)
+		final Reader reader, final T type, SCIFIOConfig config)
 		throws ImgIOException
 	{
+		if (config == null) {
+			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+		}
 		final ImgFactoryHeuristic heuristic = getHeuristic(config);
 
 		ImgFactory<T> imgFactory;
@@ -294,11 +307,15 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImgs(final Reader reader,
-		final T type, final ImgFactory<T> imgFactory, final SCIFIOConfig config)
+		final T type, final ImgFactory<T> imgFactory, SCIFIOConfig config)
 		throws ImgIOException
 	{
 		List<SCIFIOImgPlus<T>> imgPluses = new ArrayList<SCIFIOImgPlus<T>>();
 		Range imageRange = null;
+
+		if (config == null) {
+			config = new SCIFIOConfig().imgOpenerSetComputeMinMax(true);
+		}
 
 		if (config.imgOpenerIsOpenAllImages()) {
 			imageRange =
