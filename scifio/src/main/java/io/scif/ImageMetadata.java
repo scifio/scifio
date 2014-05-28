@@ -37,6 +37,7 @@ import java.util.List;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.Named;
 
 /**
  * ImageMetadata stores the metadata for a single image within a dataset. Here,
@@ -45,7 +46,7 @@ import net.imglib2.meta.CalibratedAxis;
  * 
  * @author Mark Hiner
  */
-public interface ImageMetadata extends HasMetaTable {
+public interface ImageMetadata extends Named, HasMetaTable {
 
 	/** Sets width (in pixels) of thumbnail planes in this image. */
 	void setThumbSizeX(long thumbSizeX);

@@ -145,7 +145,10 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Field(label = "thumbnail")
 	private boolean thumbnail;
 
-	/** A table of {@link Field} (key, value) pairs. */
+	/** The name of the image. */
+	private String name;
+
+	/** A table of Field key, value pairs */
 	private MetaTable table;
 
 	// -- Constructors --
@@ -599,6 +602,18 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		this.littleEndian = littleEndian;
 		this.orderCertain = orderCertain;
 		this.pixelType = pixelType;
+	}
+
+	// -- Named API methods --
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(final String name) {
+		this.name = name;
 	}
 
 	// -- HasTable API Methods --
