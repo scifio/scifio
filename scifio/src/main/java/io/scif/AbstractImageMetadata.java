@@ -145,7 +145,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Field(label = "thumbnail")
 	private boolean thumbnail;
 
-	/* A table of Field key, value pairs */
+	/** A table of {@link Field} (key, value) pairs. */
 	private MetaTable table;
 
 	// -- Constructors --
