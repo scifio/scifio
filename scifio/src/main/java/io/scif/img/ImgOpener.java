@@ -621,6 +621,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		final SCIFIOImgPlus<T> imgPlus =
 			new SCIFIOImgPlus<T>(img, name, dimTypes, cal);
+		imgPlus.setName(meta.get(imageIndex).getName());
 		imgPlus.setMetadata(meta);
 		imgPlus.setValidBits(validBits);
 
