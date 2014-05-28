@@ -157,6 +157,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		if (config == null) {
 			config = new SCIFIOConfig();
 		}
+		img.setSource(id); // FIXME: Get rid of this HACK!
 		return writeImg(null, img, imageIndex, config);
 	}
 
