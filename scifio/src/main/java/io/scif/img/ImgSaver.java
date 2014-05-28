@@ -157,8 +157,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		if (config == null) {
 			config = new SCIFIOConfig();
 		}
-		return saveImg(initializeWriter(id, img, imageIndex, config), img,
-			imageIndex, false, config);
+		return writeImg(null, img, imageIndex, config);
 	}
 
 	/**
@@ -226,7 +225,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
 		IncompatibleTypeException
 	{
-		saveImg(w, img, imageIndex, true, config);
+		writeImg(w, img, imageIndex, config);
 	}
 
 	// -- Utility methods --
@@ -421,36 +420,68 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Entry point for writePlanes method, the actual workhorse to save pixels to
 	 * disk.
 	 */
-	private Metadata saveImg(final Writer w, final SCIFIOImgPlus<?> img,
-		final int imageIndex, final boolean initializeWriter,
+	private Metadata writeImg(Writer w, final SCIFIOImgPlus<?> img,
+		final int imageIndex,
 		SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
 	{
+		// Create the SCIFIOConfig if needed
 		if (config == null) {
 			config = new SCIFIOConfig();
 		}
 
-		// use the ImgPlus to calculate necessary metadata if
-		if (initializeWriter) {
-			populateMeta(w.getMetadata(), img, config);
-		}
-
+		// Check for a valid source
 		if (img.getSource().length() == 0) {
 			throw new ImgIOException("Provided Image has no attached source.");
 		}
 
-		final long startTime = System.currentTimeMillis();
 		final String id = img.getSource();
 		final int sliceCount = countSlices(img);
 
-		// write pixels
-		writePlanes(w, img, imageIndex, config);
+		// Check for PlanarAccess
+		final PlanarAccess<?> planarAccess = utils().getPlanarAccess(img);
+		if (planarAccess == null) {
+			throw new IncompatibleTypeException(new ImgLibException(), "Only " +
+				PlanarAccess.class + " images supported at this time.");
+		}
 
-		final long endTime = System.currentTimeMillis();
-		final float time = (endTime - startTime) / 1000f;
-		statusService.showStatus(sliceCount, sliceCount, id + ": wrote " +
-			sliceCount + " planes in " + time + " s");
+		final PlanarImg<?, ?> planarImg = (PlanarImg<?, ?>) planarAccess;
 
-		return w.getMetadata();
+		// Perform actual writing if we have planes to write
+		if (img.numDimensions() > 0) {
+			final Class<?> arrayType =
+				planarImg.getPlane(0).getCurrentStorageArray().getClass();
+
+			// If the Writer is null, initialize it
+			if (w == null) {
+				w =
+					initializeWriter(img.getSource(), img, arrayType);
+			}
+
+			if (w.getMetadata() == null) {
+				try {
+					populateMeta(w, img, config, id, imageIndex);
+				}
+				catch (FormatException e) {
+					throw new ImgIOException(e);
+				}
+				catch (IOException e) {
+					throw new ImgIOException(e);
+				}
+			}
+
+			long startTime = System.currentTimeMillis();
+
+			// write pixels
+			writePlanes(w, imageIndex, planarImg, arrayType);
+
+			// Print time statistics
+			final long endTime = System.currentTimeMillis();
+			final float time = (endTime - startTime) / 1000f;
+			statusService.showStatus(sliceCount, sliceCount, id + ": wrote " +
+					sliceCount + " planes in " + time + " s");
+		}
+
+		return w == null ? null : w.getMetadata();
 	}
 
 	// -- Helper Methods --
@@ -480,20 +511,15 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * converting each to a byte[] if necessary (the SCIFIO writer requires a
 	 * byte[]) and saving the plane. Currently only {@link PlanarImg} is
 	 * supported.
+	 * @param arrayType2 
 	 * 
 	 * @throws IncompatibleTypeException
 	 */
-	private void writePlanes(Writer w, final SCIFIOImgPlus<?> img,
-		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
-		IncompatibleTypeException
+	private void writePlanes(final Writer w, final int imageIndex,
+		final PlanarImg<?, ?> planarImg, final Class<?> arrayType)
+		throws ImgIOException, IncompatibleTypeException
 	{
-		final PlanarAccess<?> planarAccess = utils().getPlanarAccess(img);
-		if (planarAccess == null) {
-			throw new IncompatibleTypeException(new ImgLibException(), "Only " +
-				PlanarAccess.class + " images supported at this time.");
-		}
-
-		final PlanarImg<?, ?> planarImg = (PlanarImg<?, ?>) planarAccess;
+		// Get basic statistics
 		final int planeCount = planarImg.numSlices();
 		final Metadata mOut = w.getMetadata();
 		final int rgbChannelCount =
@@ -502,115 +528,94 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final boolean interleaved =
 			mOut.get(imageIndex).getInterleavedAxisCount() > 0;
 
-		if (img.numDimensions() > 0) {
-			final Class<?> arrayType =
-				planarImg.getPlane(0).getCurrentStorageArray().getClass();
+		byte[] sourcePlane = null;
 
-			byte[] sourcePlane = null;
+		// iterate over each plane
+		final long planeOutCount = w.getMetadata().get(imageIndex).getPlaneCount();
 
-			// if we know this image will pass to SCIFIO to be saved,
-			// then delete the old file if it exists
-			if (arrayType == int[].class || arrayType == byte[].class ||
-				arrayType == short[].class || arrayType == long[].class ||
-				arrayType == double[].class || arrayType == float[].class)
-			{
-				final File f = new File(img.getSource());
-				if (f.exists()) {
-					f.delete();
-					w = initializeWriter(img.getSource(), img, imageIndex, config);
-				}
-			}
+		if (planeOutCount < planeCount / rgbChannelCount) {
+			// Warn that some planes were truncated (e.g. going from 4D format to
+			// 3D)
+			statusService.showStatus(0, 0, "Source dataset contains: " + planeCount +
+				" planes, but writer format only supports: " + rgbChannelCount *
+				planeOutCount, true);
+		}
 
-			// iterate over each plane
-			final long planeOutCount =
-				w.getMetadata().get(imageIndex).getPlaneCount();
+		for (int planeIndex = 0; planeIndex < planeOutCount; planeIndex++) {
+			statusService.showStatus(planeIndex, (int) planeOutCount,
+				"Saving plane " + (planeIndex + 1) + "/" + planeOutCount);
+			// save bytes
+			try {
+				final Metadata meta = w.getMetadata();
 
-			if (planeOutCount < planeCount / rgbChannelCount) {
-				// Warn that some planes were truncated (e.g. going from 4D format to
-				// 3D)
-				statusService.showStatus(0, 0, "Source dataset contains: " +
-					planeCount + " planes, but writer format only supports: " +
-					rgbChannelCount * planeOutCount, true);
-			}
+				final long[] planarLengths =
+					meta.get(imageIndex).getAxesLengthsPlanar();
+				final long[] planarMin =
+					SCIFIOMetadataTools.modifyPlanar(imageIndex, meta,
+						new long[planarLengths.length]);
+				final ByteArrayPlane destPlane =
+					new ByteArrayPlane(getContext(), meta.get(imageIndex), planarMin,
+						planarLengths);
 
-			for (int planeIndex = 0; planeIndex < planeOutCount; planeIndex++) {
-				statusService.showStatus(planeIndex, (int) planeOutCount,
-					"Saving plane " + (planeIndex + 1) + "/" + planeOutCount);
-				// save bytes
-				try {
-					final Metadata meta = w.getMetadata();
+				for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++) {
+					final Object curPlane =
+						planarImg.getPlane(cIndex + (planeIndex * rgbChannelCount))
+							.getCurrentStorageArray();
 
-					final long[] planarLengths =
-						meta.get(imageIndex).getAxesLengthsPlanar();
-					final long[] planarMin =
-						SCIFIOMetadataTools.modifyPlanar(imageIndex, meta,
-							new long[planarLengths.length]);
-					final ByteArrayPlane destPlane =
-						new ByteArrayPlane(getContext(), meta.get(imageIndex), planarMin,
-							planarLengths);
+					// Convert current plane if necessary
+					if (arrayType == int[].class) {
+						sourcePlane = DataTools.intsToBytes((int[]) curPlane, false);
+					}
+					else if (arrayType == byte[].class) {
+						sourcePlane = (byte[]) curPlane;
+					}
+					else if (arrayType == short[].class) {
+						sourcePlane = DataTools.shortsToBytes((short[]) curPlane, false);
+					}
+					else if (arrayType == long[].class) {
+						sourcePlane = DataTools.longsToBytes((long[]) curPlane, false);
+					}
+					else if (arrayType == double[].class) {
+						sourcePlane = DataTools.doublesToBytes((double[]) curPlane, false);
+					}
+					else if (arrayType == float[].class) {
+						sourcePlane = DataTools.floatsToBytes((float[]) curPlane, false);
+					}
+					else {
+						throw new IncompatibleTypeException(new ImgLibException(),
+							"PlanarImgs of type " + planarImg.getPlane(0).getClass() +
+								" not supported.");
+					}
 
-					for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++) {
-						final Object curPlane =
-							planarImg.getPlane(cIndex + (planeIndex * rgbChannelCount))
-								.getCurrentStorageArray();
+					if (interleaved) {
+						final int bpp =
+							FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
 
-						// Convert current plane if necessary
-						if (arrayType == int[].class) {
-							sourcePlane = DataTools.intsToBytes((int[]) curPlane, false);
-						}
-						else if (arrayType == byte[].class) {
-							sourcePlane = (byte[]) curPlane;
-						}
-						else if (arrayType == short[].class) {
-							sourcePlane = DataTools.shortsToBytes((short[]) curPlane, false);
-						}
-						else if (arrayType == long[].class) {
-							sourcePlane = DataTools.longsToBytes((long[]) curPlane, false);
-						}
-						else if (arrayType == double[].class) {
-							sourcePlane =
-								DataTools.doublesToBytes((double[]) curPlane, false);
-						}
-						else if (arrayType == float[].class) {
-							sourcePlane = DataTools.floatsToBytes((float[]) curPlane, false);
-						}
-						else {
-							throw new IncompatibleTypeException(new ImgLibException(),
-								"PlanarImgs of type " + planarImg.getPlane(0).getClass() +
-									" not supported.");
-						}
-
-						if (interleaved) {
-							final int bpp =
-								FormatTools.getBytesPerPixel(meta.get(imageIndex)
-									.getPixelType());
-
-							// TODO: Assign all elements in a for loop rather than
-							// using many small System.arraycopy calls. Calling
-							// System.arraycopy is less efficient than element-by-element
-							// copying for small array lengths (~24 elements or less).
-							// See: http://stackoverflow.com/a/12366983
-							for (int i = 0; i < sourcePlane.length / bpp; i += bpp) {
-								System.arraycopy(sourcePlane, i, destPlane.getData(),
-									((i * rgbChannelCount) + cIndex) * bpp, bpp);
-							}
-						}
-						else {
-							// TODO: Consider using destPlane.setData(sourcePlane) instead.
-							// Ideally would also make modifications to avoid the initial
-							// allocation overhead of the destPlane's internal buffer.
-							System.arraycopy(sourcePlane, 0, destPlane.getData(), cIndex *
-								sourcePlane.length, sourcePlane.length);
+						// TODO: Assign all elements in a for loop rather than
+						// using many small System.arraycopy calls. Calling
+						// System.arraycopy is less efficient than element-by-element
+						// copying for small array lengths (~24 elements or less).
+						// See: http://stackoverflow.com/a/12366983
+						for (int i = 0; i < sourcePlane.length / bpp; i += bpp) {
+							System.arraycopy(sourcePlane, i, destPlane.getData(),
+								((i * rgbChannelCount) + cIndex) * bpp, bpp);
 						}
 					}
-					w.savePlane(imageIndex, planeIndex, destPlane);
+					else {
+						// TODO: Consider using destPlane.setData(sourcePlane) instead.
+						// Ideally would also make modifications to avoid the initial
+						// allocation overhead of the destPlane's internal buffer.
+						System.arraycopy(sourcePlane, 0, destPlane.getData(), cIndex *
+							sourcePlane.length, sourcePlane.length);
+					}
 				}
-				catch (final FormatException e) {
-					throw new ImgIOException(e);
-				}
-				catch (final IOException e) {
-					throw new ImgIOException(e);
-				}
+				w.savePlane(imageIndex, planeIndex, destPlane);
+			}
+			catch (final FormatException e) {
+				throw new ImgIOException(e);
+			}
+			catch (final IOException e) {
+				throw new ImgIOException(e);
 			}
 		}
 
@@ -626,25 +631,26 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Creates a new {@link Writer} and sets its id to the provided String.
 	 */
 	private Writer initializeWriter(final String id, final SCIFIOImgPlus<?> img,
-		final int imageIndex, final SCIFIOConfig config) throws ImgIOException
+		final Class<?> arrayType) throws ImgIOException
 	{
 		Writer writer = null;
-		Metadata meta = null;
+
+		// if we know this image will pass to SCIFIO to be saved,
+		// then delete the old file if it exists
+		if (arrayType == int[].class || arrayType == byte[].class ||
+			arrayType == short[].class || arrayType == long[].class ||
+			arrayType == double[].class || arrayType == float[].class)
+		{
+			final File f = new File(img.getSource());
+			if (f.exists()) {
+				f.delete();
+			}
+		}
 
 		try {
 			writer = formatService.getWriterByExtension(id);
-			meta = writer.getFormat().createMetadata();
-
-			populateMeta(meta, img, config);
-
-			writer.setMetadata(meta);
-
-			writer.setDest(id, imageIndex, config);
 		}
 		catch (final FormatException e) {
-			throw new ImgIOException(e);
-		}
-		catch (final IOException e) {
 			throw new ImgIOException(e);
 		}
 
@@ -654,11 +660,16 @@ public class ImgSaver extends AbstractImgIOComponent {
 	/**
 	 * Uses the provided {@link SCIFIOImgPlus} to populate the minimum metadata fields
 	 * necessary for writing.
+	 * @param imageIndex 
+	 * @param id 
 	 */
-	private void populateMeta(final Metadata meta, final SCIFIOImgPlus<?> img,
-		final SCIFIOConfig config) throws ImgIOException
+	private void populateMeta(final Writer w, final SCIFIOImgPlus<?> img,
+		final SCIFIOConfig config, final String id, final int imageIndex)
+		throws FormatException, IOException, ImgIOException
 	{
 		statusService.showStatus("Initializing " + img.getName());
+		final Metadata meta = w.getFormat().createMetadata();
+
 
 		// Get format-specific metadata
 		Metadata imgMeta = img.getMetadata();
@@ -713,5 +724,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 		Translator t = translatorService.findTranslator(imgMeta, meta, false);
 
 		t.translate(imgMeta, imageMeta, meta);
+
+		w.setMetadata(meta);
+		w.setDest(id, imageIndex, config);
 	}
 }
