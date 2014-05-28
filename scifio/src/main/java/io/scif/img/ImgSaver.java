@@ -108,7 +108,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	public Metadata saveImg(final String id, final Img<?> img) throws ImgIOException,
 		IncompatibleTypeException
 	{
-		return saveImg(id, img, new SCIFIOConfig());
+		return saveImg(id, img, null);
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	public Metadata saveImg(final String id, final SCIFIOImgPlus<?> img,
 		final int imageIndex) throws ImgIOException, IncompatibleTypeException
 	{
-		return saveImg(id, img, imageIndex, new SCIFIOConfig());
+		return saveImg(id, img, imageIndex, null);
 	}
 
 	/**
@@ -151,9 +151,12 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws IncompatibleTypeException
 	 */
 	public Metadata saveImg(final String id, final SCIFIOImgPlus<?> img,
-		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
+		final int imageIndex, SCIFIOConfig config) throws ImgIOException,
 		IncompatibleTypeException
 	{
+		if (config == null) {
+			config = new SCIFIOConfig();
+		}
 		img.setSource(id);
 		img.setName(new File(id).getName());
 		return saveImg(initializeWriter(id, img, imageIndex, config), img,
@@ -171,7 +174,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	public void saveImg(final Writer w, final Img<?> img) throws ImgIOException,
 		IncompatibleTypeException
 	{
-		saveImg(w, img, new SCIFIOConfig());
+		saveImg(w, img, null);
 	}
 
 	// TODO IFormatHandler needs to be promoted to be able to get the current
@@ -190,7 +193,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		saveImg(final Writer w, final SCIFIOImgPlus<?> img, final int imageIndex)
 			throws ImgIOException, IncompatibleTypeException
 	{
-		saveImg(w, img, imageIndex, new SCIFIOConfig());
+		saveImg(w, img, imageIndex, null);
 	}
 
 	/**
@@ -422,8 +425,12 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 */
 	private Metadata saveImg(final Writer w, final SCIFIOImgPlus<?> img,
 		final int imageIndex, final boolean initializeWriter,
-		final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
+		SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
 	{
+		if (config == null) {
+			config = new SCIFIOConfig();
+		}
+
 		// use the ImgPlus to calculate necessary metadata if
 		if (initializeWriter) {
 			populateMeta(w.getMetadata(), img, config);
