@@ -105,10 +105,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public void saveImg(final String id, final Img<?> img) throws ImgIOException,
+	public Metadata saveImg(final String id, final Img<?> img) throws ImgIOException,
 		IncompatibleTypeException
 	{
-		saveImg(id, img, new SCIFIOConfig());
+		return saveImg(id, img, new SCIFIOConfig());
 	}
 
 	/**
@@ -120,10 +120,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public void saveImg(final String id, final SCIFIOImgPlus<?> img,
+	public Metadata saveImg(final String id, final SCIFIOImgPlus<?> img,
 		final int imageIndex) throws ImgIOException, IncompatibleTypeException
 	{
-		saveImg(id, img, imageIndex, new SCIFIOConfig());
+		return saveImg(id, img, imageIndex, new SCIFIOConfig());
 	}
 
 	/**
@@ -135,10 +135,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public void saveImg(final String id, final Img<?> img,
+	public Metadata saveImg(final String id, final Img<?> img,
 		final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
 	{
-		saveImg(id, utils().makeSCIFIOImgPlus(img), 0, config);
+		return saveImg(id, utils().makeSCIFIOImgPlus(img), 0, config);
 	}
 
 	/**
@@ -150,14 +150,14 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public void saveImg(final String id, final SCIFIOImgPlus<?> img,
+	public Metadata saveImg(final String id, final SCIFIOImgPlus<?> img,
 		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
 		IncompatibleTypeException
 	{
 		img.setSource(id);
 		img.setName(new File(id).getName());
-		saveImg(initializeWriter(id, img, imageIndex, config), img, imageIndex,
-			false, config);
+		return saveImg(initializeWriter(id, img, imageIndex, config), img,
+			imageIndex, false, config);
 	}
 
 	/**
@@ -420,11 +420,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Entry point for writePlanes method, the actual workhorse to save pixels to
 	 * disk.
 	 */
-	private void saveImg(final Writer w, final SCIFIOImgPlus<?> img,
+	private Metadata saveImg(final Writer w, final SCIFIOImgPlus<?> img,
 		final int imageIndex, final boolean initializeWriter,
 		final SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
 	{
-
 		// use the ImgPlus to calculate necessary metadata if
 		if (initializeWriter) {
 			populateMeta(w.getMetadata(), img, config);
@@ -450,6 +449,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final float time = (endTime - startTime) / 1000f;
 		statusService.showStatus(sliceCount, sliceCount, id + ": wrote " +
 			sliceCount + " planes in " + time + " s");
+
+		return w.getMetadata();
 	}
 
 	// -- Helper Methods --
