@@ -105,8 +105,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public Metadata saveImg(final String id, final Img<?> img) throws ImgIOException,
-		IncompatibleTypeException
+	public Metadata saveImg(final String id, final Img<?> img)
+		throws ImgIOException, IncompatibleTypeException
 	{
 		return saveImg(id, img, null);
 	}
@@ -151,14 +151,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws IncompatibleTypeException
 	 */
 	public Metadata saveImg(final String id, final SCIFIOImgPlus<?> img,
-		final int imageIndex, SCIFIOConfig config) throws ImgIOException,
+		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
 		IncompatibleTypeException
 	{
-		if (config == null) {
-			config = new SCIFIOConfig();
-		}
-		img.setSource(id); // FIXME: Get rid of this HACK!
-		return writeImg(null, img, imageIndex, config);
+		return writeImg(id, null, img, imageIndex, config);
 	}
 
 	/**
@@ -176,7 +172,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	}
 
 	// TODO IFormatHandler needs to be promoted to be able to get the current
-	// file, to get its full path, to provide the ImgPluSCIFIOImgPlusending that, these two IFormatWriter methods are not guaranteed to be
+	// file, to get its full path, to provide the ImgPluSCIFIOImgPlusending that,
+	// these two IFormatWriter methods are not guaranteed to be
 	// useful
 	/**
 	 * {@link Writer} provided. {@link ImgPlus} provided, or wrapped provided
@@ -187,9 +184,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 */
-	public void
-		saveImg(final Writer w, final SCIFIOImgPlus<?> img, final int imageIndex)
-			throws ImgIOException, IncompatibleTypeException
+	public void saveImg(final Writer w, final SCIFIOImgPlus<?> img,
+		final int imageIndex) throws ImgIOException, IncompatibleTypeException
 	{
 		saveImg(w, img, imageIndex, null);
 	}
@@ -214,7 +210,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	// pending that, these two IFormatWriter methods are not guaranteed to be
 	// useful
 	/**
-	 * As {@link #saveImg(Writer, SCIFIOImgPlus, int)}, with configuration options.
+	 * As {@link #saveImg(Writer, SCIFIOImgPlus, int)}, with configuration
+	 * options.
 	 * 
 	 * @param w
 	 * @param img
@@ -226,7 +223,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final int imageIndex, final SCIFIOConfig config) throws ImgIOException,
 		IncompatibleTypeException
 	{
-		writeImg(w, img, imageIndex, config);
+		writeImg(img.getSource(), w, img, imageIndex, config);
 	}
 
 	// -- Utility methods --
@@ -418,25 +415,18 @@ public class ImgSaver extends AbstractImgIOComponent {
 	// -- Helper methods --
 
 	/**
-	 * Entry point for writePlanes method, the actual workhorse to save pixels to
-	 * disk.
+	 * Entry {@link #writeImg} method. Gathers necessary metadata, creates default
+	 * configuration options if needed, and delegates to the appropriate
+	 * intermediate {@link #writeImg} method if able.
 	 */
-	private Metadata writeImg(Writer w, final SCIFIOImgPlus<?> img,
-		final int imageIndex,
-		SCIFIOConfig config) throws ImgIOException, IncompatibleTypeException
+	private Metadata writeImg(final String id, final Writer w,
+		final SCIFIOImgPlus<?> img, final int imageIndex, SCIFIOConfig config)
+		throws ImgIOException, IncompatibleTypeException
 	{
 		// Create the SCIFIOConfig if needed
 		if (config == null) {
 			config = new SCIFIOConfig();
 		}
-
-		// Check for a valid source
-		if (img.getSource().length() == 0) {
-			throw new ImgIOException("Provided Image has no attached source.");
-		}
-
-		final String id = img.getSource();
-		final int sliceCount = countSlices(img);
 
 		// Check for PlanarAccess
 		final PlanarAccess<?> planarAccess = utils().getPlanarAccess(img);
@@ -447,45 +437,94 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		final PlanarImg<?, ?> planarImg = (PlanarImg<?, ?>) planarAccess;
 
-		// Perform actual writing if we have planes to write
+		final int sliceCount = countSlices(img);
+
+		final Class<?> arrayType =
+			planarImg.getPlane(0).getCurrentStorageArray().getClass();
+
+		if (w == null) {
+			if (id == null || id.length() == 0) {
+				throw new ImgIOException(
+					"No output destination or pre-configured Writer was provided, and" +
+					" no way to determine the desired output path. Default value:" +
+					" ImgPlus's source.");
+			}
+			return writeImg(id, img, planarImg, imageIndex, config, arrayType,
+				sliceCount);
+		}
+
+		return writeImg(w, id, img, planarImg, imageIndex,
+			config, arrayType, sliceCount);
+	}
+
+	/**
+	 * Intermediate {@link #writeImg} method. Creates a {@link Writer} for the
+	 * given id.
+	 */
+	private Metadata writeImg(final String id, final SCIFIOImgPlus<?> imgPlus,
+		final PlanarImg<?, ?> img, final int imageIndex, final SCIFIOConfig config,
+		final Class<?> arrayType, final int sliceCount) throws ImgIOException,
+		IncompatibleTypeException
+	{
+		// Create a Writer for the given id
+		final Writer w = initializeWriter(id, arrayType);
+
+		return writeImg(w, id, imgPlus, img, imageIndex, config, arrayType,
+			sliceCount);
+	}
+
+	/**
+	 * Intermediate {@link #writeImg} method. Ensures the given writer has proper
+	 * {@link Metadata}, or creates it if possible.
+	 */
+	private Metadata writeImg(final Writer w, final String id,
+		final SCIFIOImgPlus<?> imgPlus, final PlanarImg<?, ?> img,
+		final int imageIndex, final SCIFIOConfig config, final Class<?> arrayType,
+		final int sliceCount) throws ImgIOException, IncompatibleTypeException
+	{
+		if (w.getMetadata() == null) {
+			if (id == null || id.length() == 0) {
+				throw new ImgIOException(
+					"A Writer with no Metadata was provided, with no way to determine "
+						+ "the desired output path. Default value: ImgPlus's source.");
+			}
+			try {
+				populateMeta(w, imgPlus, config, id, imageIndex);
+			}
+			catch (final FormatException e) {
+				throw new ImgIOException(e);
+			}
+			catch (final IOException e) {
+				throw new ImgIOException(e);
+			}
+		}
+
+		return writeImg(w, img, arrayType, imageIndex, sliceCount);
+	}
+
+	/**
+	 * Terminal {@link #writeImg} method. Performs actual pixel output.
+	 */
+	private Metadata writeImg(final Writer w, final PlanarImg<?, ?> img,
+		final Class<?> arrayType, final int imageIndex, final int sliceCount)
+		throws ImgIOException, IncompatibleTypeException
+	{
 		if (img.numDimensions() > 0) {
-			final Class<?> arrayType =
-				planarImg.getPlane(0).getCurrentStorageArray().getClass();
-
-			// If the Writer is null, initialize it
-			if (w == null) {
-				w =
-					initializeWriter(img.getSource(), img, arrayType);
-			}
-
-			if (w.getMetadata() == null) {
-				try {
-					populateMeta(w, img, config, id, imageIndex);
-				}
-				catch (FormatException e) {
-					throw new ImgIOException(e);
-				}
-				catch (IOException e) {
-					throw new ImgIOException(e);
-				}
-			}
-
-			long startTime = System.currentTimeMillis();
+			final long startTime = System.currentTimeMillis();
 
 			// write pixels
-			writePlanes(w, imageIndex, planarImg, arrayType);
+			writePlanes(w, imageIndex, img, arrayType);
 
 			// Print time statistics
 			final long endTime = System.currentTimeMillis();
 			final float time = (endTime - startTime) / 1000f;
-			statusService.showStatus(sliceCount, sliceCount, id + ": wrote " +
-					sliceCount + " planes in " + time + " s");
+			statusService.showStatus(sliceCount, sliceCount, w.getMetadata()
+				.getDatasetName() +
+				": wrote " + sliceCount + " planes in " + time + " s");
 		}
 
-		return w == null ? null : w.getMetadata();
+		return w.getMetadata();
 	}
-
-	// -- Helper Methods --
 
 	/**
 	 * Counts the number of slices in the provided ImgPlus.
@@ -512,8 +551,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * converting each to a byte[] if necessary (the SCIFIO writer requires a
 	 * byte[]) and saving the plane. Currently only {@link PlanarImg} is
 	 * supported.
-	 * @param arrayType2 
 	 * 
+	 * @param arrayType2
 	 * @throws IncompatibleTypeException
 	 */
 	private void writePlanes(final Writer w, final int imageIndex,
@@ -631,8 +670,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	/**
 	 * Creates a new {@link Writer} and sets its id to the provided String.
 	 */
-	private Writer initializeWriter(final String id, final SCIFIOImgPlus<?> img,
-		final Class<?> arrayType) throws ImgIOException
+	private Writer initializeWriter(final String id, final Class<?> arrayType)
+		throws ImgIOException
 	{
 		Writer writer = null;
 
@@ -642,7 +681,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 			arrayType == short[].class || arrayType == long[].class ||
 			arrayType == double[].class || arrayType == float[].class)
 		{
-			final File f = new File(img.getSource());
+			final File f = new File(id);
 			if (f.exists()) {
 				f.delete();
 			}
@@ -659,10 +698,11 @@ public class ImgSaver extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * Uses the provided {@link SCIFIOImgPlus} to populate the minimum metadata fields
-	 * necessary for writing.
-	 * @param imageIndex 
-	 * @param id 
+	 * Uses the provided {@link SCIFIOImgPlus} to populate the minimum metadata
+	 * fields necessary for writing.
+	 * 
+	 * @param imageIndex
+	 * @param id
 	 */
 	private void populateMeta(final Writer w, final SCIFIOImgPlus<?> img,
 		final SCIFIOConfig config, final String id, final int imageIndex)
@@ -671,10 +711,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 		statusService.showStatus("Initializing " + img.getName());
 		final Metadata meta = w.getFormat().createMetadata();
 
-
 		// Get format-specific metadata
 		Metadata imgMeta = img.getMetadata();
-		List<ImageMetadata> imageMeta = new ArrayList<ImageMetadata>();
+		final List<ImageMetadata> imageMeta = new ArrayList<ImageMetadata>();
 
 		if (imgMeta == null) {
 			imgMeta = new DefaultMetadata();
@@ -682,7 +721,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 			imageMeta.add(imgMeta.get(0));
 		}
 		else {
-			for (int i=0; i<imgMeta.getImageCount(); i++) {
+			for (int i = 0; i < imgMeta.getImageCount(); i++) {
 				imageMeta.add(new DefaultImageMetadata());
 			}
 		}
@@ -698,9 +737,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final long[] axisLengths = new long[img.numDimensions()];
 		img.dimensions(axisLengths);
 
-
 		for (int i = 0; i < imageMeta.size(); i++) {
-			ImageMetadata iMeta = imageMeta.get(i);
+			final ImageMetadata iMeta = imageMeta.get(i);
 			iMeta.populate(Arrays.asList(axes), axisLengths, pixelType, true, false,
 				false, false, true);
 
@@ -722,7 +760,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		}
 
 		// Translate to the output metadata
-		Translator t = translatorService.findTranslator(imgMeta, meta, false);
+		final Translator t = translatorService.findTranslator(imgMeta, meta, false);
 
 		t.translate(imgMeta, imageMeta, meta);
 
