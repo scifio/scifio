@@ -293,6 +293,11 @@
         <class name="io.scif.img.utests.ImgOpenerTest"/>
       </classes>
     </test>
+    <test name="ImgSaverTest">
+      <classes>
+        <class name="io.scif.img.utests.ImgSaverTest"/>
+      </classes>
+    </test>
     <test name="FilterTest">
       <classes>
         <class name="io.scif.filters.utests.FilterTest"/>
