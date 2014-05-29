@@ -125,9 +125,7 @@ public class ByteArrayHandle extends AbstractNIOHandle {
 	// -- IRandomAccess API methods --
 
 	@Override
-	public void close() {
-		buffer = null;
-	}
+	public void close() { }
 
 	@Override
 	public long getFilePointer() {
