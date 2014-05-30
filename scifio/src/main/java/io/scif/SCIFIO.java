@@ -48,6 +48,8 @@ import io.scif.xml.XMLService;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
+import org.scijava.Gateway;
+import org.scijava.plugin.Plugin;
 import org.scijava.service.SciJavaService;
 
 /**
@@ -69,6 +71,7 @@ import org.scijava.service.SciJavaService;
  * @see io.scif.services.FilePatternService
  * @author Mark Hiner
  */
+@Plugin(type = Gateway.class)
 public class SCIFIO extends AbstractGateway {
 
 	// -- Constructors --
