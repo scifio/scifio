@@ -187,7 +187,8 @@ public class MicromanagerFormat extends AbstractFormat {
 					new RandomAccessInputStream(getContext(), name);
 				final boolean validTIFF = isFormat(s);
 				s.close();
-				return validTIFF && isFormat(metaFile.getAbsolutePath(), config);
+				return validTIFF && metaFile.exists() &&
+					isFormat(metaFile.getAbsolutePath(), config);
 			}
 			catch (final NullPointerException e) {}
 			catch (final IOException e) {}
