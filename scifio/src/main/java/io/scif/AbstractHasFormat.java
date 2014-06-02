@@ -45,6 +45,9 @@ public abstract class AbstractHasFormat extends AbstractSCIFIOPlugin implements
 	HasFormat
 {
 
+	private static final String NO_FORMAT =
+		"Format for this metadata could not be determined.";
+
 	@Parameter
 	private FormatService formatService;
 
@@ -54,5 +57,12 @@ public abstract class AbstractHasFormat extends AbstractSCIFIOPlugin implements
 	public Format getFormat() {
 		// All Format lookups go through the FormatService
 		return formatService.getFormatFromComponent(getClass());
+	}
+
+	@Override
+	public String getFormatName() {
+		final Format format = getFormat();
+		if (format == null) return NO_FORMAT;
+		return format.getFormatName();
 	}
 }

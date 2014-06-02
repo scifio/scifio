@@ -439,6 +439,11 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		return getParent().getFormat();
 	}
 
+	@Override
+	public String getFormatName() {
+		return getParent().getFormatName();
+	}
+
 	// -- Contextual API Methods --
 
 	@Override

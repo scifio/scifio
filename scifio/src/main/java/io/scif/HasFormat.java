@@ -46,4 +46,13 @@ public interface HasFormat extends SCIFIOPlugin {
 	 */
 	Format getFormat();
 
+	/**
+	 * Helper method for accessing {@link Format#getFormatName()}. Some
+	 * {@code Formats} may be polymorphic and wish to provide additional name
+	 * information based on the specific dataset open - this method allows
+	 * overriding of that behavior.
+	 * 
+	 * @return the name of the associated Format
+	 */
+	String getFormatName();
 }
