@@ -131,6 +131,11 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		return meta.getFormat();
 	}
 
+	@Override
+	public String getFormatName() {
+		return meta.getFormatName();
+	}
+
 	// -- HasSource API Methods --
 
 	@Override
