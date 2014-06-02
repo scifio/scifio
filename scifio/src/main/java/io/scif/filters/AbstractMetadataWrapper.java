@@ -31,6 +31,7 @@
 package io.scif.filters;
 
 import io.scif.AbstractMetadata;
+import io.scif.Format;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.Metadata;
@@ -121,6 +122,13 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	@Override
 	public void populateImageMetadata() {
 		meta.populateImageMetadata();
+	}
+
+	// -- HasFormat API Methods --
+
+	@Override
+	public Format getFormat() {
+		return meta.getFormat();
 	}
 
 	// -- HasSource API Methods --
