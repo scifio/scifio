@@ -535,6 +535,8 @@ public class OBFFormat extends AbstractFormat {
 		public static int getFileVersion(final RandomAccessInputStream stream)
 			throws IOException
 		{
+			if (!FormatTools.validStream(stream, FILE_MAGIC_STRING.length(), false)) return -1;
+
 			stream.seek(0);
 
 			stream.order(OBFUtilities.LITTLE_ENDIAN);
