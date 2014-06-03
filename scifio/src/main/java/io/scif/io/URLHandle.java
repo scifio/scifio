@@ -123,6 +123,12 @@ public class URLHandle extends StreamHandle {
 	// -- StreamHandle API methods --
 
 	@Override
+	public void setFile(final String file) throws IOException {
+		super.setFile(file);
+		setURL(file);
+	}
+
+	@Override
 	public void resetStream() throws IOException {
 		conn = (new URL(url)).openConnection();
 		setStream(new DataInputStream(new BufferedInputStream(
