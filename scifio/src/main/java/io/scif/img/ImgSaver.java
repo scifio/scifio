@@ -739,8 +739,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		for (int i = 0; i < imageMeta.size(); i++) {
 			final ImageMetadata iMeta = imageMeta.get(i);
-			iMeta.populate(Arrays.asList(axes), axisLengths, pixelType, true, false,
-				false, false, true);
+			iMeta.populate(img.getName(), Arrays.asList(axes), axisLengths,
+				pixelType, true, false, false, false, true);
 
 			// Adjust for RGB information
 			if (img.getCompositeChannelCount() > 1) {

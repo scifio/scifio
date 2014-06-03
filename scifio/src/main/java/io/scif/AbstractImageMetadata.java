@@ -568,9 +568,9 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void copy(final ImageMetadata toCopy) {
-		populate(toCopy.getAxes(), toCopy.getAxesLengths(), toCopy.getPixelType(),
-			toCopy.isOrderCertain(), toCopy.isLittleEndian(), toCopy.isIndexed(),
-			toCopy.isFalseColor(), toCopy.isMetadataComplete());
+		populate(toCopy.getName(), toCopy.getAxes(), toCopy.getAxesLengths(),
+			toCopy.getPixelType(), toCopy.isOrderCertain(), toCopy.isLittleEndian(),
+			toCopy.isIndexed(), toCopy.isFalseColor(), toCopy.isMetadataComplete());
 		this.table = new DefaultMetaTable(toCopy.getTable());
 		this.thumbnail = toCopy.isThumbnail();
 		this.thumbSizeX = toCopy.getThumbSizeX();
@@ -579,21 +579,24 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public void populate(final List<CalibratedAxis> axes, final long[] lengths,
-		final int pixelType, final boolean orderCertain,
+	public void populate(final String name, final List<CalibratedAxis> axes,
+		final long[] lengths, final int pixelType, final boolean orderCertain,
 		final boolean littleEndian, final boolean indexed,
 		final boolean falseColor, final boolean metadataComplete)
 	{
-		populate(axes, lengths, pixelType, FormatTools.getBitsPerPixel(pixelType),
-			orderCertain, littleEndian, indexed, falseColor, metadataComplete);
+		populate(name, axes, lengths, pixelType, FormatTools
+			.getBitsPerPixel(pixelType), orderCertain, littleEndian, indexed,
+			falseColor, metadataComplete);
 	}
 
 	@Override
-	public void populate(final List<CalibratedAxis> axes, final long[] lengths,
-		final int pixelType, final int bitsPerPixel, final boolean orderCertain,
-		final boolean littleEndian, final boolean indexed,
-		final boolean falseColor, final boolean metadataComplete)
+	public void populate(final String name, final List<CalibratedAxis> axes,
+		final long[] lengths, final int pixelType, final int bitsPerPixel,
+		final boolean orderCertain, final boolean littleEndian,
+		final boolean indexed, final boolean falseColor,
+		final boolean metadataComplete)
 	{
+		this.name = name;
 		this.axes = new ArrayList<CalibratedAxis>(axes);
 		setAxisLengths(lengths.clone());
 		this.bitsPerPixel = bitsPerPixel;

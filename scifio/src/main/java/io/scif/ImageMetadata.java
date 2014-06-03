@@ -403,17 +403,18 @@ public interface ImageMetadata extends Named, HasMetaTable {
 
 	/**
 	 * As
-	 * {@link #populate(List, long[], int, boolean, boolean, boolean, boolean, boolean)}
+	 * {@link #populate(String, List, long[], int, boolean, boolean, boolean, boolean, boolean)}
 	 * but automatically determines bits per pixel.
 	 */
-	void populate(List<CalibratedAxis> axes, long[] lengths, int pixelType,
-		boolean orderCertain, boolean littleEndian, boolean indexed,
+	void populate(String name, List<CalibratedAxis> axes, long[] lengths,
+		int pixelType, boolean orderCertain, boolean littleEndian, boolean indexed,
 		boolean falseColor, boolean metadataComplete);
 
 	/**
 	 * Convenience method for manually populating an ImageMetadata.
 	 */
-	void populate(List<CalibratedAxis> axes, long[] lengths, int pixelType,
-		int bitsPerPixel, boolean orderCertain, boolean littleEndian,
-		boolean indexed, boolean falseColor, boolean metadataComplete);
+	void populate(String name, List<CalibratedAxis> axes, long[] lengths,
+		int pixelType, int bitsPerPixel, boolean orderCertain,
+		boolean littleEndian, boolean indexed, boolean falseColor,
+		boolean metadataComplete);
 }
