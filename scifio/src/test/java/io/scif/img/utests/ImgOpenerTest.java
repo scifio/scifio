@@ -102,6 +102,18 @@ public class ImgOpenerTest {
 		doTestGenerics(new DoubleType());
 	}
 
+	@Test
+	public void testCalibrationUnits() throws ImgIOException {
+		final String calId =
+			"testImg&lengths=512,512,3&axes=X,Y,Z&scales=5.0,6.0,7.0&units=micron,um,inches.fake";
+
+		final ImgPlus<?> imgPlus = imgOpener.openImgs(calId).get(0);
+		
+		assertEquals("micron", imgPlus.axis(0).unit());
+		assertEquals("um", imgPlus.axis(1).unit());
+		assertEquals("inches", imgPlus.axis(2).unit());
+	}
+
 	/**
 	 * Test opening images with various ImgOptions set.
 	 */
