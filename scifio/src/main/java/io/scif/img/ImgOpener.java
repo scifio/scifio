@@ -636,7 +636,24 @@ public class ImgOpener extends AbstractImgIOComponent {
 		}
 		imgPlus.setCompositeChannelCount(compositeChannelCount);
 
+		setCalibrationUnits(imgPlus, meta, imageIndex);
+
 		return imgPlus;
+	}
+
+	/**
+	 * Populates the calibration units of the given {@link SCIFIOImgPlus}, using
+	 * the provided {@link Metadata}.
+	 */
+	private <T extends RealType<T>> void setCalibrationUnits(
+		final SCIFIOImgPlus<T> imgPlus, final Metadata m, final int imageIndex)
+	{
+		for (CalibratedAxis axis : m.get(imageIndex).getAxes()) {
+			final int index = imgPlus.dimensionIndex(axis.type());
+			if (index >= 0) {
+				imgPlus.axis(index).setUnit(axis.unit());
+			}
+		}
 	}
 
 	/**
