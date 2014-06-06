@@ -80,8 +80,18 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 		// Max size of a plane of a PlanarImg, or total dataset for ArrayImg. 2GB.
 		final long maxSize = DataTools.safeMultiply64(2, 1024, 1024, 1024);
 
+		/*
+		 * Slightly tricky: totalMemory() returns the amount of RAM claimed currently, not the
+		 * maximum amount Java will claim when asked (that is maxMemory() instead). Likewise,
+		 * freeMemory() returns the number of free bytes *in the currently claimed chunk of
+		 * RAM*, not the number of bytes still available for Java.
+		 *
+		 * Therefore, in the following lines a little arithmetic to obtain the real number of
+		 * available bytes for us to use.
+		 */
+		final Runtime rt = Runtime.getRuntime();
 		final long availableMem =
-			(long) (Runtime.getRuntime().freeMemory() * MEMORY_THRESHOLD);
+			(long) ((rt.freeMemory() + rt.maxMemory() - rt.totalMemory()) * MEMORY_THRESHOLD);
 		long datasetSize = m.getDatasetSize();
 
 		// check for overflow
