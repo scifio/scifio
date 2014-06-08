@@ -45,6 +45,7 @@ import io.scif.img.cell.cache.CacheResult;
 import io.scif.img.cell.cache.CacheService;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.SCIFIOArrayLoader;
+import io.scif.util.MemoryTools;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -496,7 +497,7 @@ public class CacheServiceTest {
 	 */
 	private void clearMem() {
 		if (arraySize == -1) {
-			arraySize = Runtime.getRuntime().freeMemory();
+			arraySize = MemoryTools.totalAvailableMemory();
 			if (arraySize > Integer.MAX_VALUE) {
 				arraySize = Integer.MAX_VALUE;
 			}

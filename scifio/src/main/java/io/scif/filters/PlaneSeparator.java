@@ -39,6 +39,7 @@ import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
+import io.scif.util.MemoryTools;
 
 import java.io.File;
 import java.io.IOException;
@@ -262,8 +263,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 					// available memory, we will need to split it into strips (of the last
 					// planar axis)
 
-					final Runtime rt = Runtime.getRuntime();
-					final long availableMemory = rt.freeMemory();
+					final long availableMemory = MemoryTools.totalAvailableMemory() / 16;
 					final long planeSize = meta.get(imageIndex).getPlaneSize();
 					// If we make strips, they will be of the Y axis
 					final long h = lengths[meta.get(imageIndex).getAxisIndex(Axes.Y)];
