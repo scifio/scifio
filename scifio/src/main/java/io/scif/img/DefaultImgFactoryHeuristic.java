@@ -35,6 +35,7 @@ import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.util.FormatTools;
+import io.scif.util.MemoryTools;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -80,18 +81,8 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 		// Max size of a plane of a PlanarImg, or total dataset for ArrayImg. 2GB.
 		final long maxSize = DataTools.safeMultiply64(2, 1024, 1024, 1024);
 
-		/*
-		 * Slightly tricky: totalMemory() returns the amount of RAM claimed currently, not the
-		 * maximum amount Java will claim when asked (that is maxMemory() instead). Likewise,
-		 * freeMemory() returns the number of free bytes *in the currently claimed chunk of
-		 * RAM*, not the number of bytes still available for Java.
-		 *
-		 * Therefore, in the following lines a little arithmetic to obtain the real number of
-		 * available bytes for us to use.
-		 */
-		final Runtime rt = Runtime.getRuntime();
 		final long availableMem =
-			(long) ((rt.freeMemory() + rt.maxMemory() - rt.totalMemory()) * MEMORY_THRESHOLD);
+			(long) (MemoryTools.totalAvailableMemory() * MEMORY_THRESHOLD);
 		long datasetSize = m.getDatasetSize();
 
 		// check for overflow
