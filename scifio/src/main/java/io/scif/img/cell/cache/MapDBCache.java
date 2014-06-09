@@ -383,7 +383,6 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 		if (db != null) return;
 		db =
 			DBMaker.newTempFileDB().closeOnJvmShutdown().cacheDisable()
-				.transactionDisable().asyncWriteDisable()
-				.randomAccessFileEnableIfNeeded().deleteFilesAfterClose().make();
+				.transactionDisable().deleteFilesAfterClose().make();
 	}
 }
