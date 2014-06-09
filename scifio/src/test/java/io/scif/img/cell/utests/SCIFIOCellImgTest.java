@@ -36,6 +36,7 @@ import io.scif.Metadata;
 import io.scif.img.IO;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.img.cell.SCIFIOCellImg;
+import io.scif.util.MemoryTools;
 
 import java.lang.ref.WeakReference;
 
@@ -84,7 +85,7 @@ public class SCIFIOCellImgTest {
 //			new WeakReference<Metadata>(((SCIFIOCellImg) img.getImg()).reader()
 //				.getMetadata());
 //		img = null;
-//		long arraySize = Runtime.getRuntime().freeMemory();
+//		long arraySize = MemoryTools.totalAvailableMemory();
 //		if (arraySize > Integer.MAX_VALUE) {
 //			arraySize = Integer.MAX_VALUE;
 //		}

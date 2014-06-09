@@ -35,6 +35,7 @@ import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.util.FormatTools;
+import io.scif.util.MemoryTools;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -81,7 +82,7 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 		final long maxSize = DataTools.safeMultiply64(2, 1024, 1024, 1024);
 
 		final long availableMem =
-			(long) (Runtime.getRuntime().freeMemory() * MEMORY_THRESHOLD);
+			(long) (MemoryTools.totalAvailableMemory() * MEMORY_THRESHOLD);
 		long datasetSize = m.getDatasetSize();
 
 		// check for overflow
