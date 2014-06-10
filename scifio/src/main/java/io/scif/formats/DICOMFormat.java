@@ -1888,6 +1888,7 @@ public class DICOMFormat extends AbstractFormat {
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
+			plane.setColorTable(meta.getColorTable(imageIndex, planeIndex));
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane
 				.getData().length, planeMin, planeMax);
 

@@ -271,6 +271,7 @@ public class ZipFormat extends AbstractFormat {
 					config);
 			System.arraycopy(p.getBytes(), 0, plane.getData(), 0,
 				plane.getData().length);
+			plane.setColorTable(getMetadata().getColorTable(imageIndex, planeIndex));
 			return plane;
 		}
 

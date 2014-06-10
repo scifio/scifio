@@ -610,6 +610,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			IOException
 		{
 			final Metadata meta = getMetadata();
+			plane.setColorTable(meta.getColorTable(imageIndex, planeIndex));
 			final byte[] buf = plane.getBytes();
 			final IFDList ifds = meta.getIfds();
 			final TiffParser tiffParser = meta.getTiffParser();

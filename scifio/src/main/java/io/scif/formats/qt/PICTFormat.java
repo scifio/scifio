@@ -700,6 +700,7 @@ public class PICTFormat extends AbstractFormat {
 			IOException
 		{
 			final Metadata meta = getMetadata();
+			plane.setColorTable(meta.getColorTable(imageIndex, planeIndex));
 			final byte[] buf = plane.getBytes();
 
 			if (meta.getJpegOffsets().size() > 0) {
