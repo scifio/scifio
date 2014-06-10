@@ -219,8 +219,11 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		final SCIFIOCellCache<A> c =
 			new SCIFIOCellCache<A>(reader.getContext(), loader);
 
-		return new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(
+		SCIFIOCellImg<T, A, SCIFIOCell<A>> cellImg = new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(
 			c, entitiesPerPixel, dimensions, cellSize));
 
+		cellImg.setLoader(loader);
+
+		return cellImg;
 	}
 }
