@@ -30,7 +30,12 @@
 
 package io.scif.img.cell.loaders;
 
+import io.scif.FormatException;
 import io.scif.img.cell.SCIFIOCellImg;
+
+import java.io.IOException;
+
+import net.imglib2.display.ColorTable;
 
 /**
  * Interface for requesting arrays from SCIFIO {@link io.scif.Reader}s by
@@ -63,4 +68,16 @@ public interface SCIFIOArrayLoader<A> {
 	 * @param index The image index this loader should use when opening planes.
 	 */
 	void setIndex(int index);
+
+	/**
+	 * Returns the {@link ColorTable} for a given set of indices. If the desired
+	 * plane has already been opened, the table should be cached. Otherwise, this
+	 * will trigger the loading of a small sub-plane to access the desired table.
+	 * 
+	 * @param imageIndex Image index of desired {@code ColorTable}
+	 * @param planeIndex Plane index of desired {@code ColorTable}
+	 * @return The {@code ColorTable} for the specified indices
+	 */
+	ColorTable loadTable(int imageIndex, int planeIndex) throws FormatException,
+		IOException;
 }

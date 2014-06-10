@@ -761,6 +761,7 @@ public class JPEG2000Format extends AbstractFormat {
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
+			plane.setColorTable(meta.getColorTable(imageIndex, planeIndex));
 
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);

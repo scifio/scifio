@@ -32,6 +32,7 @@ package io.scif.img.cell;
 
 import io.scif.FormatException;
 import io.scif.Reader;
+import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 import io.scif.refs.RefManagerService;
 
 import java.io.IOException;
@@ -58,6 +59,8 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 
 	private final Reader reader;
 
+	private SCIFIOArrayLoader<?> loader;
+
 	// -- Constructor --
 
 	public SCIFIOCellImg(final SCIFIOCellImgFactory<T> factory,
@@ -79,6 +82,8 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 	public ColorTable getColorTable(final int imageIndex, final int planeIndex)
 		throws FormatException, IOException
 	{
+		if (loader != null) return loader.loadTable(imageIndex, planeIndex);
+
 		final long[] planeMin =
 			new long[reader.getMetadata().get(imageIndex).getAxesPlanar().size()];
 		final long[] planeMax = new long[planeMin.length];
@@ -102,6 +107,10 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 
 	public Reader reader() {
 		return reader;
+	}
+
+	public void setLoader(final SCIFIOArrayLoader<?> loader) {
+		this.loader = loader;
 	}
 
 	@Override

@@ -254,6 +254,7 @@ public class PCXFormat extends AbstractFormat {
 			IOException
 		{
 			final Metadata meta = getMetadata();
+			plane.setColorTable(meta.getColorTable(imageIndex, planeIndex));
 			final byte[] buf = plane.getData();
 
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,

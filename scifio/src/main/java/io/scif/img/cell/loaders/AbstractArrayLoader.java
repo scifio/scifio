@@ -34,13 +34,16 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
-import io.scif.img.Range;
-import io.scif.img.ImgUtilityService;
 import io.scif.img.ImageRegion;
+import io.scif.img.ImgUtilityService;
+import io.scif.img.Range;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import net.imglib2.display.ColorTable;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.type.numeric.RealType;
 
@@ -66,6 +69,10 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	@Parameter
 	private ImgUtilityService imgUtilityService;
 
+	private List<List<ColorTable>> tables;
+
+	private boolean[][] loadedTable;
+
 	public AbstractArrayLoader(final Reader reader, final ImageRegion subRegion) {
 		this.reader = reader;
 		this.subRegion = subRegion;
@@ -80,6 +87,26 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 		this.index = index;
 	}
 
+	@Override
+	public ColorTable loadTable(final int imageIndex, final int planeIndex)
+		throws FormatException, IOException
+	{
+		ColorTable ct = getTable(imageIndex, planeIndex);
+		if (ct == null && !loadedTable()[imageIndex][planeIndex]) {
+			final long[] planeMin =
+				new long[reader.getMetadata().get(imageIndex).getAxesPlanar().size()];
+			final long[] planeMax = new long[planeMin.length];
+			for (int i = 0; i < planeMax.length; i++)
+				planeMax[i] = 1;
+
+			ct =
+				reader.openPlane(imageIndex, planeIndex, planeMin, planeMax)
+					.getColorTable();
+
+			addTable(imageIndex, planeIndex, ct);
+		}
+		return ct;
+	}
 
 	@Override
 	public A loadArray(final int[] dimensions, final long[] min) {
@@ -196,8 +223,75 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			else tmpPlane =
 				reader.openPlane(index, planeIndex, tmpPlane, planarMin, planarLength);
 			convertBytes(data, tmpPlane.getBytes(), planeCount);
+
+			// update color table
+			if (!loadedTable()[index][planeIndex]) {
+				addTable(index, planeIndex, tmpPlane.getColorTable());
+			}
 		}
 
+	}
+
+	private boolean[][] loadedTable() {
+		if (loadedTable == null) {
+			Metadata m = reader.getMetadata();
+			loadedTable =
+				new boolean[m.getImageCount()][(int) m.get(0).getPlaneCount()];
+		}
+		return loadedTable;
+	}
+
+	/**
+	 * Lazy accessor for the 2D {@link ColorTable} list.
+	 */
+	private List<List<ColorTable>> tables() {
+		if (tables == null) {
+			tables = new ArrayList<List<ColorTable>>();
+		}
+		return tables;
+	}
+
+	/**
+	 * @return the possibly null {@link ColorTable} at the specified image and
+	 *         plane indices
+	 */
+	private ColorTable getTable(final int imageIndex, final int planeIndex) {
+		final List<List<ColorTable>> tables = tables();
+	
+		// Ensure capacity
+		if (imageIndex >= tables.size()) {
+			for (int i=tables.size(); i<=imageIndex; i++) {
+				tables.add(new ArrayList<ColorTable>());
+			}
+		}
+
+		final List<ColorTable> imageTable = tables.get(imageIndex);
+	
+		return planeIndex >= imageTable.size() ? null : imageTable.get(planeIndex);
+	}
+
+	/**
+	 * Inserts the given {@link ColorTable} at the specified indices.
+	 */
+	private void addTable(final int imageIndex, final int planeIndex,
+		final ColorTable colorTable)
+	{
+		final ColorTable ct = getTable(imageIndex, planeIndex);
+		if (ct == null) {
+			final List<ColorTable> imageTable = tables.get(imageIndex);
+
+			// Ensure capacity
+			if (imageTable.size() <= planeIndex) {
+				for (int i=imageTable.size(); i<=planeIndex; i++) {
+					imageTable.add(null);
+				}
+			}
+
+			final boolean[][] isLoaded = loadedTable();
+			isLoaded[imageIndex][planeIndex] = true;
+
+			imageTable.set(planeIndex, colorTable);
+		}
 	}
 
 	/**
