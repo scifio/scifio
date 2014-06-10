@@ -450,6 +450,11 @@ public class TIFFFormat extends AbstractFormat {
 				}
 				else if (token.startsWith("unit=")) {
 					meta.setCalibrationUnit(value);
+					for (ImageMetadata iMeta : meta.getAll()) {
+						for (CalibratedAxis axis : iMeta.getAxes()) {
+							axis.setUnit(value);
+						}
+					}
 					table.put("Unit", meta.getCalibrationUnit());
 				}
 				else if (token.startsWith("finterval=")) {
