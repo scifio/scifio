@@ -117,7 +117,7 @@ public class ZipFormat extends AbstractFormat {
 			getColorTable(final int imageIndex, final long planeIndex)
 		{
 			if (HasColorTable.class.isAssignableFrom(metadata.getClass())) return ((HasColorTable) metadata)
-				.getColorTable(0, 0);
+				.getColorTable(imageIndex, planeIndex);
 			return null;
 		}
 
