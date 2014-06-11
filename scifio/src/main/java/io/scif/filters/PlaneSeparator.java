@@ -300,6 +300,8 @@ public class PlaneSeparator extends AbstractReaderFilter {
 						// Store the last recorded offsets/lengths
 						lastPlaneOffsets = offsets;
 						lastPlaneLengths = lengths;
+						// store the color table
+						plane.setColorTable(lastPlane.getColorTable());
 
 						// Adjust the strip array if this is the last strip, if needed
 						if (strips != 1 && lastStripHeight != stripHeight &&
