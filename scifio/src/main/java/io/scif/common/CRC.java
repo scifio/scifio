@@ -52,10 +52,7 @@
 
 package io.scif.common;
 
-/**
- * A simple class the hold and calculate the CRC for sanity checking of the
- * data.
- */
+/** Holds and calculates a CRC for verifying data integrity. */
 public class CRC {
 
 	// -- Constants --
