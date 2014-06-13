@@ -616,7 +616,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 		int rgbChannelCount =
 			base.getMetadata().get(0).isMultichannel() ? (int) base.getMetadata()
 				.get(0).getAxisLength(Axes.CHANNEL) : 1;
-		if (base.getMetadata().get(0).isIndexed()) rgbChannelCount = 3;
 		final int validBits = meta.get(0).getBitsPerPixel();
 
 		final SCIFIOImgPlus<T> imgPlus =
