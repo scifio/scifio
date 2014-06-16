@@ -420,7 +420,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 			final int currentIndex = meta.get(imageIndex).getAxisIndex(axis.type());
 			// This axis is still a planar axis, so we can read it from the
 			// current plane offsets/lengths
-			if (meta.get(imageIndex).getAxisIndex(axis.type()) < meta.get(imageIndex)
+			if (currentIndex >= 0 && currentIndex < meta.get(imageIndex)
 				.getPlanarAxisCount())
 			{
 				lastPlaneOffsets[parentIndex] = offsets[currentIndex];
