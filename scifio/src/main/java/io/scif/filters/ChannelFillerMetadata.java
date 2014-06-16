@@ -114,24 +114,28 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 							e);
 					}
 				}
-				lutLength = cTable.getComponentCount();
-
-				// Attempt to update the pixel type based on the color table type
-				if (ArrayColorTable.class.isAssignableFrom(cTable.getClass())) {
-					final int bitsPerElement = ((ArrayColorTable<?>) cTable).getBits();
-					final boolean signed = FormatTools.isSigned(iMeta.getPixelType());
-					final boolean floating =
-						FormatTools.isFloatingPoint(iMeta.getPixelType());
-
-					try {
-						iMeta.setPixelType(FormatTools.pixelTypeFromBytes(
-							bitsPerElement / 8, signed, floating));
-					}
-					catch (final FormatException e) {
-						log()
+				if (cTable == null) {
+					lutLength = 1;
+				}
+				else {
+					lutLength = cTable.getComponentCount();
+					// Attempt to update the pixel type based on the color table type
+					if (ArrayColorTable.class.isAssignableFrom(cTable.getClass())) {
+						final int bitsPerElement = ((ArrayColorTable<?>) cTable).getBits();
+						final boolean signed = FormatTools.isSigned(iMeta.getPixelType());
+						final boolean floating =
+								FormatTools.isFloatingPoint(iMeta.getPixelType());
+						
+						try {
+							iMeta.setPixelType(FormatTools.pixelTypeFromBytes(
+								bitsPerElement / 8, signed, floating));
+						}
+						catch (final FormatException e) {
+							log()
 							.warn("Could not update pixel type of ChannelFiller metadata.");
+						}
+						
 					}
-
 				}
 
 				if (!iMeta.isFalseColor()) {
