@@ -37,7 +37,6 @@ import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
-import io.scif.img.axes.SCIFIOAxes;
 import io.scif.services.InitializeService;
 import io.scif.util.FormatTools;
 
