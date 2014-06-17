@@ -171,7 +171,6 @@ public class ChannelFiller extends AbstractReaderFilter {
 					getParent().openPlane(imageIndex, planeIndex, plane, offsets,
 						lengths, config);
 			}
-			lastPlane.setColorTable(null);
 			return lastPlane;
 		}
 
