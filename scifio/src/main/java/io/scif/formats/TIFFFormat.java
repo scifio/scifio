@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import net.imglib2.display.ColorTable;
+import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.CalibratedAxis;
 
@@ -120,6 +121,8 @@ public class TIFFFormat extends AbstractFormat {
 		private String calibrationUnit;
 		private Double timeIncrement;
 		private Integer xOrigin, yOrigin;
+		private byte[][] lut;
+		private List<ColorTable> colorTable;
 
 		// -- TIFFMetadata getters and setters --
 
@@ -183,6 +186,14 @@ public class TIFFFormat extends AbstractFormat {
 			return experimenterFirstName;
 		}
 
+		public byte[][] getLut() {
+			return lut;
+		}
+
+		public void setLut(byte[][] lut) {
+			this.lut = lut;
+		}
+
 		public void setExperimenterFirstName(final String experimenterFirstName) {
 			this.experimenterFirstName = experimenterFirstName;
 		}
@@ -209,6 +220,46 @@ public class TIFFFormat extends AbstractFormat {
 
 		public void setImageDescription(final String imageDescription) {
 			this.imageDescription = imageDescription;
+		}
+
+		// -- HasColorTable API Methods --
+
+		@Override
+		public ColorTable
+			getColorTable(final int imageIndex, final long planeIndex)
+		{
+			ColorTable ct = super.getColorTable(imageIndex, planeIndex);
+
+			if (ct == null) {
+				// Check for an ImageJ 1.x lut
+				if (colorTable == null && getLut() != null) {
+					colorTable = new ArrayList<ColorTable>();
+					byte[][] ij1Lut = getLut();
+					for (int i = 0; i < ij1Lut.length; i++) {
+						if (ij1Lut[i].length != 768) colorTable.add(null);
+						else {
+							byte[][] currentLut = new byte[3][256];
+							for (int j = 0; j < 3; j++) {
+								System.arraycopy(ij1Lut[i], j * 256, currentLut[j], 0, 256);
+							}
+							colorTable.add(new ColorTable8(currentLut));
+						}
+					}
+				}
+
+				if (colorTable != null) {
+					// If Axes.CHANNEL is planar, then there's only one color table.
+					// Otherwise, we need to determine which channel the given planeIndex
+					// corresponds to..
+					int ctIndex =
+						(int) FormatTools.getNonPlanarAxisPosition(this, imageIndex,
+							planeIndex, Axes.CHANNEL);
+
+					return colorTable.get(ctIndex);
+				}
+			}
+
+			return ct;
 		}
 
 		// -- Metadata API Methods --
@@ -262,7 +313,6 @@ public class TIFFFormat extends AbstractFormat {
 				yOrigin = null;
 			}
 		}
-
 	}
 
 	/**
@@ -273,6 +323,9 @@ public class TIFFFormat extends AbstractFormat {
 		// -- Constants --
 
 		public static final int IMAGEJ_TAG = 50839;
+		public static final int META_DATA_BYTE_COUNTS = 50838;
+		public static final int MAGIC_NUMBER = 0x494a494a;  // "IJIJ"
+		public static final int LUTS = 0x6c757473;  // "luts" (channel LUTs)
 
 		// -- Fields --
 
@@ -432,6 +485,7 @@ public class TIFFFormat extends AbstractFormat {
 
 			if (ifds.get(0).containsKey(IMAGEJ_TAG)) {
 				comment += "\n" + ifds.get(0).getIFDTextValue(IMAGEJ_TAG);
+				populateIJNonTextAttributes(meta, ifds);
 			}
 
 			// parse ImageJ metadata (ZCT sizes, calibration units, etc.)
@@ -578,6 +632,120 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			m.setAxes(validAxes.toArray(new CalibratedAxis[validAxes.size()]));
+		}
+
+		/**
+		 * Not all ImageJ 1.x comment values can be read via reading the
+		 * {@link IFD#getIFDTextValue(int)} method, as this results in the entire
+		 * string read as {@link shorts} and converted to {@link String}. Any
+		 * parsed objects will be populated as appropriate in the given
+		 * {@link Metadata}.
+		 * <p>
+		 * For example, in the case of LUTs, we need to read the values as bytes -
+		 * thus the necessity of {@link #getLUTs(int, int, int[], short[], int[])}.
+		 * </p>
+		 */
+		private String populateIJNonTextAttributes(final Metadata meta,
+			final IFDList ifds)
+		{
+			int[] metaDataCounts = null;
+			short[] imagejTags = null;
+			boolean littleEndian = false;
+			try {
+				metaDataCounts = ifds.get(0).getIFDIntArray(META_DATA_BYTE_COUNTS);
+				imagejTags = ifds.get(0).getIFDShortArray(IMAGEJ_TAG);
+				littleEndian = ifds.get(0).isLittleEndian();
+			}
+			catch (FormatException e) {
+				return null;
+			}
+
+			final int hdrSize = metaDataCounts[0];
+			if (hdrSize < 12 || hdrSize > 804) return null;
+
+			final int[] sPos = new int[1];
+			final int magicNum = getInt(sPos, imagejTags, littleEndian);
+			if (magicNum != MAGIC_NUMBER) return null;
+			final int nTypes = (hdrSize - 4) / 8;
+			final int[] types = new int[nTypes];
+			final int[] counts = new int[nTypes];
+
+			for (int i = 0; i < nTypes; i++) {
+				types[i] = getInt(sPos, imagejTags, littleEndian);
+				counts[i] = getInt(sPos, imagejTags, littleEndian);
+			}
+
+			int start = 1;
+			for (int i = 0; i < nTypes; i++) {
+				if (types[i] == LUTS) {
+					final byte[][] luts = getLUTs(start, start + counts[i] - 1, metaDataCounts, imagejTags,
+						sPos);
+
+					meta.setLut(luts);
+				}
+				else {
+					skipUnknownType(start, start + counts[i] - 1, metaDataCounts, sPos);
+				}
+				start += counts[i];
+			}
+
+			return null;
+		}
+
+		/**
+		 * Parses an 8-bit color table from an ImageJ 1.x comment.
+		 */
+		private byte[][] getLUTs(int first, int last, int[] metaDataCounts,
+			short[] imagejTags, int[] sPos)
+		{
+			byte[][] channelLuts = new byte[last - first + 1][];
+			int index = 0;
+			for (int i = first; i <= last; i++) {
+				int len = metaDataCounts[i];
+				channelLuts[index] = new byte[len];
+				for (int j = 0; j < len; j++) {
+					channelLuts[index][j] = (byte) imagejTags[sPos[0]++];
+				}
+				index++;
+			}
+			return channelLuts;
+		}
+
+		/**
+		 * Helper method to increment the provided {@code position[0]} value based
+		 * on the length of an ImageJ 1.x metadata type that will not be read.
+		 */
+		private void skipUnknownType(int first, int last, int[] metaDataCounts,
+			int[] position)
+		{
+			for (int i = first; i <= last; i++) {
+				int len = metaDataCounts[i];
+				// skip len bytes
+				position[0] += len;
+			}
+		}
+
+		/**
+		 * Helper method for building ImageJ 1.x type tags from the parsed
+		 * {@code short} comments. Four {@code short} values are taken, starting at
+		 * position {@code start[0]} through {@code start[0] + 3}. These
+		 * {@code shorts} are then combined based on the {@code littleEndian} flag.
+		 * <p>
+		 * NB: the {@code start} array will be updated after this method call, so
+		 * that {@code start[0]_new = start[0]_old + 4}. In this way, {@code start}
+		 * is used to track the current position in the tag array.
+		 * </p>
+		 */
+		private int getInt(int[] start, short[] imageJTags,
+			final boolean littleEndian)
+		{
+			int b1 = imageJTags[start[0]++];
+			int b2 = imageJTags[start[0]++];
+			int b3 = imageJTags[start[0]++];
+			int b4 = imageJTags[start[0]++];
+
+			if (littleEndian) return ((b4 << 24) + (b3 << 16) + (b2 << 8) + (b1 << 0));
+			return ((b1 << 24) + (b2 << 16) + (b3 << 8) + b4);
 		}
 
 		private void
