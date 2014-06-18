@@ -273,6 +273,32 @@ public final class FormatTools {
 	}
 
 	/**
+	 * Returns the position of the specified {@link AxisType} for the given image
+	 * and plane indices.
+	 * 
+	 * @return position of the specified axis type, or 0 if the given axis is
+	 *         planar.
+	 */
+	public static long getNonPlanarAxisPosition(final Metadata m,
+		final int imageIndex, final long planeIndex, final AxisType type)
+	{
+		final ImageMetadata iMeta = m.get(imageIndex);
+		int axisIndex = iMeta.getAxisIndex(type);
+
+		// Axis is a planar axis
+		if (axisIndex < iMeta.getPlanarAxisCount()) return 0;
+
+		// look up position of the given plane
+		final long[] position =
+			rasterToPosition(iMeta.getAxesLengthsNonPlanar(), planeIndex);
+
+		// Compute relative index of the desired axis
+		axisIndex -= iMeta.getPlanarAxisCount();
+
+		return position[axisIndex];
+	}
+
+	/**
 	 * Computes a unique N-D position corresponding to the given rasterized index
 	 * value.
 	 * 
