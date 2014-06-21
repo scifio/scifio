@@ -488,6 +488,10 @@ public class TIFFFormat extends AbstractFormat {
 				populateIJNonTextAttributes(meta, ifds);
 			}
 
+			// unit and spacing, parsed from the ImageJ comment
+			String unit = null;
+			double spacing = 1;
+
 			// parse ImageJ metadata (ZCT sizes, calibration units, etc.)
 			final StringTokenizer st = new StringTokenizer(comment, "\n");
 			while (st.hasMoreTokens()) {
@@ -503,10 +507,11 @@ public class TIFFFormat extends AbstractFormat {
 					table.put("Color mode", value);
 				}
 				else if (token.startsWith("unit=")) {
-					meta.setCalibrationUnit(value);
+					unit = value;
+					meta.setCalibrationUnit(unit);
 					for (ImageMetadata iMeta : meta.getAll()) {
 						for (CalibratedAxis axis : iMeta.getAxes()) {
-							axis.setUnit(value);
+							axis.setUnit(unit);
 						}
 					}
 					table.put("Unit", meta.getCalibrationUnit());
@@ -516,16 +521,8 @@ public class TIFFFormat extends AbstractFormat {
 					table.put("Frame Interval", meta.getTimeIncrement());
 				}
 				else if (token.startsWith("spacing=")) {
-					final double physicalSizeZ = parseDouble(value);
-					if (physicalSizeZ >= 0) {
-						if (meta.get(0).getAxis(Axes.Z) == null) {
-							meta.get(0).addAxis(Axes.Z, 1);
-						}
-
-						FormatTools
-							.calibrate(meta.get(0).getAxis(Axes.Z), physicalSizeZ, 0);
-					}
-					table.put("Spacing", physicalSizeZ);
+					spacing = parseDouble(value);
+					table.put("Spacing", spacing);
 				}
 				else if (token.startsWith("xorigin=")) {
 					meta.setxOrigin(parseInt(value));
@@ -632,6 +629,13 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			m.setAxes(validAxes.toArray(new CalibratedAxis[validAxes.size()]));
+
+			// set spacing and unit for Z axis
+			final CalibratedAxis zAxis = meta.get(0).getAxis(Axes.Z);
+			if (zAxis != null) {
+				if (unit != null) zAxis.setUnit(unit);
+				if (spacing >= 0) FormatTools.calibrate(zAxis, spacing, 0);
+			}
 		}
 
 		/**
