@@ -34,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.SCIFIO;
@@ -43,6 +44,7 @@ import io.scif.util.FormatTools;
 import java.io.IOException;
 
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
 import org.junit.Test;
 
@@ -117,27 +119,22 @@ public class MetadataTest {
 		assertEquals(m.get(0).getAxisIndex(Axes.X), 0);
 	}
 
-	/**
-	 * Verify conditions when interrogating non-existant axes
-	 * 
-	 * @throws FormatException
-	 */
+	/** Verify conditions when interrogating non-existent axes. */
 	@Test
-	public void testMissingAxes() throws FormatException {
-		final Metadata m = scifio.format().getFormat(id).createMetadata();
+	public void testMissingAxes() throws FormatException, IOException {
+		final Format f = scifio.format().getFormat(id);
+		final Metadata m = f.createParser().parse(id);
 
-		// Axis index should be -1, length 0
-		assertEquals(m.get(0).getAxisLength(Axes.X), -1);
-		assertEquals(m.get(0).getAxisLength(Axes.X), 0);
+		// The X and Y axes exist
+		assertEquals(m.get(0).getAxisLength(Axes.X), 620);
+		assertEquals(m.get(0).getAxisLength(Axes.Y), 512);
+		assertEquals(m.get(0).getAxisIndex(Axes.X), 0);
+		assertEquals(m.get(0).getAxisIndex(Axes.Y), 1);
 
-		// Should throw an IndexOutOfBoundsException
-		try {
-			m.get(0).getAxisLength(0);
-			fail("Expected IndexOutOfBoundsException");
-		}
-		catch (IndexOutOfBoundsException exc) {
-			// expected
-		}
+		// The foo axis does not exist
+		final AxisType fooAxis = Axes.get("foo");
+		assertEquals(m.get(0).getAxisLength(fooAxis), 1);
+		assertEquals(m.get(0).getAxisIndex(fooAxis), -1);
 	}
 
 	/**
