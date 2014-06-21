@@ -199,15 +199,15 @@ public final class FormatTools {
 	// Utility methods -- dimensional positions --
 
 	/**
-	 * Wraps the provided AxisType in a CalibratedAxis with calibration = 1.0um.
+	 * Wraps the provided AxisType in a CalibratedAxis with calibration = 1.0.
 	 */
 	public static CalibratedAxis createAxis(final AxisType axisType) {
-		return new DefaultLinearAxis(axisType, "um");
+		return new DefaultLinearAxis(axisType);
 	}
 
 	/**
 	 * Creates an array, wrapping all provided AxisTypes as CalibratedAxis with
-	 * calibration = 1.0um.
+	 * calibration = 1.0.
 	 */
 	public static CalibratedAxis[] createAxes(final AxisType... axisTypes) {
 		final CalibratedAxis[] axes = new CalibratedAxis[axisTypes.length];
