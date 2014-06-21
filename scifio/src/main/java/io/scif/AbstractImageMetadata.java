@@ -269,7 +269,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void setAxisLength(final AxisType axisType, final long length) {
-		if (getAxisIndex(axisType) == -1) {
+		if (getAxisIndex(axisType, axes) == -1) {
 			addAxis(FormatTools.createAxis(axisType), length);
 		}
 		else {
