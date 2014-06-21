@@ -528,19 +528,11 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public int getAxisIndex(final AxisType axisType) {
-		if (axes == null) return -1;
-
-		int index = -1;
-
 		// Use effectiveAxes if possible. If not, default to axes.
 		final List<CalibratedAxis> knownAxes =
 			effectiveAxes == null ? axes : effectiveAxes;
 
-		for (int i = 0; index == -1 && i < knownAxes.size(); i++) {
-			if (knownAxes.get(i).type().equals(axisType)) index = i;
-		}
-
-		return index;
+		return getAxisIndex(axisType, knownAxes);
 	}
 
 	@Override
@@ -665,6 +657,22 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		}
 
 		return effectiveAxes;
+	}
+
+	/**
+	 * Searches the given list of axes for an axis of the given type, returning
+	 * the index of the first match.
+	 */
+	private int getAxisIndex(final AxisType axisType,
+		final List<CalibratedAxis> axisList)
+	{
+		if (axisList == null) return -1;
+		int index = -1;
+		for (int i = 0; index == -1 && i < axisList.size(); i++) {
+			if (axisList.get(i).type().equals(axisType)) index = i;
+		}
+
+		return index;
 	}
 
 	/**
