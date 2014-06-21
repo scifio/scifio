@@ -253,7 +253,7 @@ public class MetadataTest {
 	 */
 	@Test
 	public void testAdjustingTrailingAxis() throws IOException, FormatException {
-		final String id = "testImg&lengths=620,512,1,&axes=X,Y,Time,.fake";
+		final String id = "testImg&lengths=620,512,1&axes=X,Y,Time.fake";
 		final Metadata m = scifio.initializer().parseMetadata(id);
 
 		assertEquals(2, m.get(0).getAxes().size());
