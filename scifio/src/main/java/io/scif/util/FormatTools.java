@@ -245,16 +245,20 @@ public final class FormatTools {
 	}
 
 	/**
-	 * Applies the given scale and origin to the provided CalibratedAxis, if it is
-	 * a {@link LinearAxis}.
+	 * Applies the given scale and origin to the provided {@link CalibratedAxis},
+	 * if it is a {@link LinearAxis}.
+	 * 
+	 * @throws IllegalArgumentException if the axis is not a {@link LinearAxis}.
 	 */
 	public static void calibrate(final CalibratedAxis axis, final double scale,
 		final double origin)
 	{
-		if (axis instanceof LinearAxis) {
-			((LinearAxis) axis).setScale(scale);
-			((LinearAxis) axis).setOrigin(origin);
+		if (!(axis instanceof LinearAxis)) {
+			throw new IllegalArgumentException("Not a linear axis: " + axis);
 		}
+		final LinearAxis linearAxis = (LinearAxis) axis;
+		linearAxis.setScale(scale);
+		linearAxis.setOrigin(origin);
 	}
 
 	/**
