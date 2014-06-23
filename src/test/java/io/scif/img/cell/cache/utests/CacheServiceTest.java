@@ -199,6 +199,10 @@ public class CacheServiceTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testCacheRetrieval() throws FormatException, IOException {
+		// NB: Skip this test on Windows, since it fails
+		// intermittently due to garbage collection issues.
+		if (System.getProperty("os.name").startsWith("win")) return;
+
 		final TestCellCache<ByteArray> cache = makeTestCache(256l * 256l);
 
 		SCIFIOCell<ByteArray> cell =
