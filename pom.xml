@@ -3,77 +3,17 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.scijava</groupId>
-		<artifactId>pom-scijava</artifactId>
-		<version>2.22</version>
+		<groupId>io.scif</groupId>
+		<artifactId>pom-scifio</artifactId>
+		<version>1.0</version>
 		<relativePath />
 	</parent>
 
-	<groupId>io.scif</groupId>
-	<artifactId>pom-scifio</artifactId>
-	<version>0.15.5-SNAPSHOT</version>
-	<packaging>pom</packaging>
+	<artifactId>scifio</artifactId>
+	<version>0.16.0-SNAPSHOT</version>
 
-	<name>SCIFIO projects</name>
-	<description>Umbrella project for SCIFIO software projects.</description>
-	<url>http://scif.io/</url>
-	<inceptionYear>2011</inceptionYear>
-
-	<organization>
-		<name>SCIFIO</name>
-		<url>http://scif.io/</url>
-	</organization>
-
-	<licenses>
-		<license>
-			<name>Simplified BSD License</name>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<developers>
-		<developer>
-			<id>hinerm</id>
-			<name>Mark Hiner</name>
-			<email>hiner@wisc.edu</email>
-			<url>http://developer.imagej.net/users/hinerm</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</developer>
-		<developer>
-			<id>ctrueden</id>
-			<name>Curtis Rueden</name>
-			<email>ctrueden@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/curtis-rueden</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</developer>
-	</developers>
-
-	<mailingLists>
-		<mailingList>
-			<name>SCIFIO</name>
-			<subscribe>http://scif.io/mailman/listinfo/scifio</subscribe>
-			<unsubscribe>http://scif.io/mailman/listinfo/scifio</unsubscribe>
-			<post>scifio@scif.io</post>
-			<archive>http://scif.io/pipermail/scifio/</archive>
-		</mailingList>
-	</mailingLists>
-
-	<modules>
-		<module>scifio</module>
-		<module>tools</module>
-	</modules>
+	<name>SCIFIO Core</name>
+	<description>SCIFIO is a next generation library for scientific image format I/O.</description>
 
 	<scm>
 		<connection>scm:git:git://github.com/scifio/scifio</connection>
@@ -93,23 +33,60 @@
 	</ciManagement>
 
 	<repositories>
-		<!-- NB: for parent project -->
 		<repository>
 			<id>imagej.public</id>
 			<url>http://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
 
+	<dependencies>
+		<!-- SciJava dependencies -->
+		<dependency>
+			<groupId>io.scif</groupId>
+			<artifactId>scifio-jai-imageio</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-meta</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
+		</dependency>
+
+		<!-- Third-party dependencies -->
+		<dependency>
+			<groupId>org.mapdb</groupId>
+			<artifactId>mapdb</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+
+		<!-- Test scope dependencies -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>5.12.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
+				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<licenseName>bsd_2</licenseName>
-					<projectName>SCIFIO library for reading and converting scientific file formats.</projectName>
-					<organizationName>Board of Regents of the University of
-Wisconsin-Madison</organizationName>
+					<suiteXmlFiles>
+						<suiteXmlFile>src/test/java/io/scif/utests/testng-template.xml</suiteXmlFile>
+					</suiteXmlFiles>
 				</configuration>
 			</plugin>
 		</plugins>
