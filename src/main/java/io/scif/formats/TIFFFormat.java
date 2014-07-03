@@ -62,8 +62,10 @@ import io.scif.xml.XMLService;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import net.imglib2.display.ColorTable;
@@ -541,6 +543,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			final ImageMetadata m = meta.get(0);
+			final Set<CalibratedAxis> predefinedAxes = new HashSet<CalibratedAxis>(m.getAxes());
 
 			m.setAxisTypes(Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME);
 
@@ -623,7 +626,7 @@ public class TIFFFormat extends AbstractFormat {
 				new ArrayList<CalibratedAxis>();
 
 			for (final CalibratedAxis axis : m.getAxes()) {
-				if (m.getAxisLength(axis) > 1) {
+				if (predefinedAxes.contains(axis) || m.getAxisLength(axis) > 1) {
 					validAxes.add(axis);
 				}
 			}
