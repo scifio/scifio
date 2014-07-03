@@ -384,13 +384,13 @@ public class TIFFFormat extends AbstractFormat {
 									final Hashtable<String, String> xmlMetadata =
 										xmlService.parseXML(metadata);
 									for (final String key : xmlMetadata.keySet()) {
-										meta.getTable().put(key, xmlMetadata.get(key));
+										table.put(key, xmlMetadata.get(key));
 									}
 								}
 								catch (final IOException e) {}
 							}
 							else {
-								meta.getTable().put(tag.toString(), metadata);
+								table.put(tag.toString(), metadata);
 							}
 						}
 					}
@@ -475,7 +475,7 @@ public class TIFFFormat extends AbstractFormat {
 			final int nl = comment.indexOf("\n");
 			table.put("ImageJ", nl < 0 ? comment.substring(7) : comment.substring(7,
 				nl));
-			meta.getTable().remove("Comment");
+			table.remove("Comment");
 			meta.setDescription("");
 
 			int z = 1, t = 1;
@@ -872,7 +872,7 @@ public class TIFFFormat extends AbstractFormat {
 					final IFD exif = exifIFDs.get(0);
 					for (final Integer key : exif.keySet()) {
 						final int k = key.intValue();
-						meta.getTable().put(getExifTagName(k), exif.get(key));
+						table.put(getExifTagName(k), exif.get(key));
 					}
 				}
 			}
