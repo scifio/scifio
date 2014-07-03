@@ -328,6 +328,7 @@ public class TIFFFormat extends AbstractFormat {
 		public static final int META_DATA_BYTE_COUNTS = 50838;
 		public static final int MAGIC_NUMBER = 0x494a494a;  // "IJIJ"
 		public static final int LUTS = 0x6c757473;  // "luts" (channel LUTs)
+		public static final int LABEL = 0x6c61626c; // "labl" (slice labels)
 
 		// -- Fields --
 
@@ -690,6 +691,12 @@ public class TIFFFormat extends AbstractFormat {
 
 					meta.setLut(luts);
 				}
+				else if (types[i] == LABEL) {
+					meta.get(0).getTable().put(
+						"SliceLabels",
+						getSliceLabels(start, start + counts[i] - 1, metaDataCounts,
+							imagejTags, sPos, littleEndian));
+				}
 				else {
 					skipUnknownType(start, start + counts[i] - 1, metaDataCounts, sPos);
 				}
@@ -718,6 +725,20 @@ public class TIFFFormat extends AbstractFormat {
 			return channelLuts;
 		}
 
+		private String[] getSliceLabels(int first, int last, int[] metaDataCounts,
+			short[] imagejTags, int[] position, final boolean littleEndian) {
+			final String[] result = new String[last - first + 1];
+			for (int i = first; i <= last; i++) {
+				int len = metaDataCounts[i] / 2;
+				final char[] buffer = new char[len];
+				for (int j = 0; j < len; j++) {
+					buffer[j] = getChar(position, imagejTags, littleEndian);
+				}
+				result[i - first] = new String(buffer);
+			}
+			return result;
+		}
+
 		/**
 		 * Helper method to increment the provided {@code position[0]} value based
 		 * on the length of an ImageJ 1.x metadata type that will not be read.
@@ -730,6 +751,13 @@ public class TIFFFormat extends AbstractFormat {
 				// skip len bytes
 				position[0] += len;
 			}
+		}
+
+		private char getChar(int[] start, short[] imageJTags, boolean littleEndian) {
+			int b1 = imageJTags[start[0]++];
+			int b2 = imageJTags[start[0]++];
+			if (littleEndian) return (char) ((b2 << 8) | b1);
+			return (char) ((b1 << 8) | b2);
 		}
 
 		/**
