@@ -60,7 +60,7 @@ For developers
 Several software libraries use SCIFIO for image I/O:
 * SCIFIO has built-in support for opening and saving
   [ImgLib2](https://github.com/imagej/imglib) data structures
-  (see the [io.scif.img](scifio/src/main/java/io/scif/img) package).
+  (see the [io.scif.img](src/main/java/io/scif/img) package).
 * We have [updated Bio-Formats](https://github.com/scifio/bioformats) to
   also support SCIFIO plugins, backwards compatibly with existing code.
 * [ITK](https://github.com/Kitware/ITK) has an
@@ -104,5 +104,5 @@ from the top level.
 
 If you're adding a new feature, it would be fantastic if you
 could write a unit test for it! You can add your test to the
-[TestNG template](scifio/src/test/java/io/scif/utests/testng-template.xml)
+[TestNG template](src/test/java/io/scif/utests/testng-template.xml)
 to have it run by the SCIFIO test suite.
