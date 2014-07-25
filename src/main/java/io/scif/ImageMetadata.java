@@ -48,6 +48,8 @@ import net.imglib2.meta.Named;
  */
 public interface ImageMetadata extends Named, HasMetaTable {
 
+	// -- Setters --
+
 	/** Sets width (in pixels) of thumbnail planes in this image. */
 	void setThumbSizeX(long thumbSizeX);
 
@@ -55,9 +57,8 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	void setThumbSizeY(long thumbSizeY);
 
 	/**
-	 * Sets the data type associated with a pixel. Valid pixel type 
-         * constants (e.g., {@link FormatTools#INT8}) are enumerated in 
-	 * {@link FormatTools}.
+	 * Sets the data type associated with a pixel. Valid pixel type constants
+	 * (e.g., {@link FormatTools#INT8}) are enumerated in {@link FormatTools}.
 	 */
 	void setPixelType(int pixelType);
 
@@ -170,6 +171,25 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	 * values, per {@link FormatTools#createAxis(AxisType)}.
 	 */
 	void setAxisType(int index, AxisType axis);
+
+	// -- Getters --
+
+	/**
+	 * Gets the PlaneMetadata at the specified plane within this image.
+	 * 
+	 * @return The {@link PlaneMetadata} for the given plane.
+	 * @throws ArrayIndexOutOfBoundsException if the plane index is invalid.
+	 */
+	PlaneMetadata get(int planeIndex);
+
+	/**
+	 * Gets the list of PlaneMetadata associated with this image. For planes
+	 * with no plane-specific information, the list entry may be null.
+	 */
+	List<PlaneMetadata> getAll();
+
+	/** Gets the number of planes in this image. */
+	long getPlaneCount();
 
 	/** Returns the size, in bytes, of all planes in this image. */
 	long getSize();
@@ -324,11 +344,6 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	 *         order in the image.
 	 */
 	List<CalibratedAxis> getAxesNonPlanar();
-
-	/**
-	 * @return the number of planes in this image
-	 */
-	long getPlaneCount();
 
 	/**
 	 * Returns an array of the lengths for axes associated with the specified

@@ -40,6 +40,7 @@ import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.MetadataLevel;
 import io.scif.Plane;
+import io.scif.PlaneMetadata;
 import io.scif.Translator;
 import io.scif.codec.CompressionType;
 import io.scif.common.Constants;
@@ -124,7 +125,12 @@ public class TIFFFormat extends AbstractFormat {
 		private Double timeIncrement;
 		private Integer xOrigin, yOrigin;
 		private byte[][] lut;
+
+		/** ImageJ 1.x color tables. */
 		private List<ColorTable> colorTable;
+
+		/** ImageJ 1.x slice labels. */
+		private String[] sliceLabels;
 
 		// -- TIFFMetadata getters and setters --
 
@@ -224,6 +230,11 @@ public class TIFFFormat extends AbstractFormat {
 			this.imageDescription = imageDescription;
 		}
 
+		/** Sets the list of ImageJ 1.x slice labels. */
+		public void setSliceLabels(String[] sliceLabels) {
+			this.sliceLabels = sliceLabels;
+		}
+
 		// -- HasColorTable API Methods --
 
 		@Override
@@ -300,6 +311,14 @@ public class TIFFFormat extends AbstractFormat {
 			}
 			catch (final FormatException e) {
 				log().error("Failed to get x, y pixel sizes", e);
+			}
+
+			// populate slice labels as plane names
+			if (sliceLabels != null) {
+				for (int p = 0; p < sliceLabels.length; p++) {
+					final PlaneMetadata pm = m.get(p);
+					pm.setName(sliceLabels[p]);
+				}
 			}
 		}
 
@@ -645,7 +664,7 @@ public class TIFFFormat extends AbstractFormat {
 		/**
 		 * Not all ImageJ 1.x comment values can be read via reading the
 		 * {@link IFD#getIFDTextValue(int)} method, as this results in the entire
-		 * string read as {@link shorts} and converted to {@link String}. Any
+		 * string read as {@code short}s and converted to {@link String}. Any
 		 * parsed objects will be populated as appropriate in the given
 		 * {@link Metadata}.
 		 * <p>
@@ -692,10 +711,8 @@ public class TIFFFormat extends AbstractFormat {
 					meta.setLut(luts);
 				}
 				else if (types[i] == LABEL) {
-					meta.get(0).getTable().put(
-						"SliceLabels",
-						getSliceLabels(start, start + counts[i] - 1, metaDataCounts,
-							imagejTags, sPos, littleEndian));
+					meta.setSliceLabels(getSliceLabels(start, start + counts[i] - 1,
+						metaDataCounts, imagejTags, sPos, littleEndian));
 				}
 				else {
 					skipUnknownType(start, start + counts[i] - 1, metaDataCounts, sPos);

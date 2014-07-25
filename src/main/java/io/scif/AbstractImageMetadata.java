@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -58,6 +59,10 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	public static final long THUMBNAIL_DIMENSION = 128;
 
 	// -- Fields --
+
+	/** List of metadata objects for each plane in this image. */
+	@Field(label = "planeMeta", isList = true)
+	private HashMap<Long, PlaneMetadata> planeMeta;
 
 	/** Cached list of planar axes. */
 	private List<CalibratedAxis> planarAxes;
@@ -253,13 +258,44 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void setAxisLengths(final long[] axisLengths) {
-		if (axisLengths.length > axes.size()) throw new IllegalArgumentException(
-			"Tried to set " + axisLengths.length + " axis lengths, but " +
-				getAxes().size() + " axes present." + " Call setAxisTypes first.");
+		if (axisLengths.length > axes.size()) {
+			throw new IllegalArgumentException("Tried to set " + axisLengths.length +
+				" axis lengths, but " + getAxes().size() + " axes present." +
+				" Call setAxisTypes first.");
+		}
 
 		for (int i = 0; i < axisLengths.length; i++) {
 			updateLength(axes.get(i).type(), axisLengths[i]);
 		}
+
+		planeMeta.setSize(getPlaneCount());
+		// - Cannot use SizableArrayList for the PlaneMetadatas because there may
+		// be more than Integer.MAX_VALUE planes for the image.
+		// So instead, let's use a hash...
+		// But if we hash from Long to PlaneMetadata, and then the axes are
+		// structured, we have all the same problems as DefaultDataset#getPlane and
+		// ImgPlus#colorTables and similar rasterized nonsense.
+		// So what we really need is a robust way, usable from both SCIFIO and
+		// ImageJ2, to hash information per plane in an N-dimensional way. So...
+		// net.imagej.Position. But maybe without the linked Extents. Maybe.
+		// When are two Positions equal? That will determine how the hash works.
+		// It would be nice, if axis lengths are redone, to preserve as much
+		// metadata as we can. But maybe "nice" isn't worth it... maybe we should
+		// just wipe the planeMeta hash whenever axes change (at minimum, when
+		// clearCachedAxes is called).
+		//
+		// ImgPlus should _have_ a metadata object (currently known as
+		// ImgPlusMetadata, but SCIFIO calls it ImageMetadata and it is similar).
+		// It should not _be_ a metadata. ARGH!
+		//
+		// TODO: Consolidate ImageMetadata with AbstractCalibratedInterval
+		// https://github.com/scifio/scifio/issues/73
+		//
+		// There is more to consolidate than just the CalibratedInterval:
+		// we also want ImgLib2 to have the PlaneMetadata.
+		// Can we simply _move_ ImageMetadata to imglib2-meta, and make it so that
+		// each ImgPlus _has_ an ImageMetadata? Maybe rejigger the names?
+		// This would make things _so much easier_ for SCIFIO to create ImgPluses.
 	}
 
 	@Override
@@ -310,6 +346,33 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	// -- Getters --
+
+	@Override
+	public PlaneMetadata get(final int planeIndex) {
+		PlaneMetadata pm = planeMeta.get(planeIndex);
+		if (pm == null) {
+			// create needed plane metadata lazily
+			pm = new DefaultPlaneMetadata();
+			planeMeta.set(planeIndex, pm);
+		}
+		return pm;
+	}
+
+	@Override
+	public List<PlaneMetadata> getAll() {
+		return planeMeta;
+	}
+
+	@Override
+	public long getPlaneCount() {
+		long length = 1;
+
+		for (final CalibratedAxis t : getAxesNonPlanar()) {
+			length *= getAxisLength(t);
+		}
+
+		return length;
+	}
 
 	@Override
 	public long getSize() {
@@ -400,17 +463,6 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Override
 	public List<CalibratedAxis> getAxesNonPlanar() {
 		return getAxisList(false);
-	}
-
-	@Override
-	public long getPlaneCount() {
-		long length = 1;
-
-		for (final CalibratedAxis t : getAxesNonPlanar()) {
-			length *= getAxisLength(t);
-		}
-
-		return length;
 	}
 
 	@Override
@@ -569,6 +621,11 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		this.thumbSizeX = toCopy.getThumbSizeX();
 		this.thumbSizeY = toCopy.getThumbSizeY();
 		this.planarAxisCount = toCopy.getPlanarAxisCount();
+
+		planeMeta = new ArrayList<PlaneMetadata>();
+		for (final PlaneMetadata pm : toCopy.getAll()) {
+			planeMeta.add(pm == null ? null : pm.copy());
+		}
 	}
 
 	@Override
