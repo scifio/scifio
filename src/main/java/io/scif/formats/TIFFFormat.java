@@ -62,8 +62,10 @@ import io.scif.xml.XMLService;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import net.imglib2.display.ColorTable;
@@ -326,6 +328,7 @@ public class TIFFFormat extends AbstractFormat {
 		public static final int META_DATA_BYTE_COUNTS = 50838;
 		public static final int MAGIC_NUMBER = 0x494a494a;  // "IJIJ"
 		public static final int LUTS = 0x6c757473;  // "luts" (channel LUTs)
+		public static final int LABEL = 0x6c61626c; // "labl" (slice labels)
 
 		// -- Fields --
 
@@ -384,13 +387,13 @@ public class TIFFFormat extends AbstractFormat {
 									final Hashtable<String, String> xmlMetadata =
 										xmlService.parseXML(metadata);
 									for (final String key : xmlMetadata.keySet()) {
-										meta.getTable().put(key, xmlMetadata.get(key));
+										table.put(key, xmlMetadata.get(key));
 									}
 								}
 								catch (final IOException e) {}
 							}
 							else {
-								meta.getTable().put(tag.toString(), metadata);
+								table.put(tag.toString(), metadata);
 							}
 						}
 					}
@@ -475,7 +478,7 @@ public class TIFFFormat extends AbstractFormat {
 			final int nl = comment.indexOf("\n");
 			table.put("ImageJ", nl < 0 ? comment.substring(7) : comment.substring(7,
 				nl));
-			meta.getTable().remove("Comment");
+			table.remove("Comment");
 			meta.setDescription("");
 
 			int z = 1, t = 1;
@@ -541,6 +544,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			final ImageMetadata m = meta.get(0);
+			final Set<CalibratedAxis> predefinedAxes = new HashSet<CalibratedAxis>(m.getAxes());
 
 			m.setAxisTypes(Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME);
 
@@ -623,7 +627,7 @@ public class TIFFFormat extends AbstractFormat {
 				new ArrayList<CalibratedAxis>();
 
 			for (final CalibratedAxis axis : m.getAxes()) {
-				if (m.getAxisLength(axis) > 1) {
+				if (predefinedAxes.contains(axis) || m.getAxisLength(axis) > 1) {
 					validAxes.add(axis);
 				}
 			}
@@ -687,6 +691,15 @@ public class TIFFFormat extends AbstractFormat {
 
 					meta.setLut(luts);
 				}
+				else if (types[i] == LABEL) {
+					// HACK - temporary until SCIFIO metadata API supports per-plane
+					// metadata.
+					// DO NOT RELY ON THIS KEY.
+					meta.get(0).getTable().put(
+						"SliceLabels",
+						getSliceLabels(start, start + counts[i] - 1, metaDataCounts,
+							imagejTags, sPos, littleEndian));
+				}
 				else {
 					skipUnknownType(start, start + counts[i] - 1, metaDataCounts, sPos);
 				}
@@ -715,6 +728,20 @@ public class TIFFFormat extends AbstractFormat {
 			return channelLuts;
 		}
 
+		private String[] getSliceLabels(int first, int last, int[] metaDataCounts,
+			short[] imagejTags, int[] position, final boolean littleEndian) {
+			final String[] result = new String[last - first + 1];
+			for (int i = first; i <= last; i++) {
+				int len = metaDataCounts[i] / 2;
+				final char[] buffer = new char[len];
+				for (int j = 0; j < len; j++) {
+					buffer[j] = getChar(position, imagejTags, littleEndian);
+				}
+				result[i - first] = new String(buffer);
+			}
+			return result;
+		}
+
 		/**
 		 * Helper method to increment the provided {@code position[0]} value based
 		 * on the length of an ImageJ 1.x metadata type that will not be read.
@@ -727,6 +754,13 @@ public class TIFFFormat extends AbstractFormat {
 				// skip len bytes
 				position[0] += len;
 			}
+		}
+
+		private char getChar(int[] start, short[] imageJTags, boolean littleEndian) {
+			int b1 = imageJTags[start[0]++];
+			int b2 = imageJTags[start[0]++];
+			if (littleEndian) return (char) ((b2 << 8) | b1);
+			return (char) ((b1 << 8) | b2);
 		}
 
 		/**
@@ -872,7 +906,7 @@ public class TIFFFormat extends AbstractFormat {
 					final IFD exif = exifIFDs.get(0);
 					for (final Integer key : exif.keySet()) {
 						final int k = key.intValue();
-						meta.getTable().put(getExifTagName(k), exif.get(key));
+						table.put(getExifTagName(k), exif.get(key));
 					}
 				}
 			}
