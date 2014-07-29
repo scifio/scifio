@@ -692,6 +692,9 @@ public class TIFFFormat extends AbstractFormat {
 					meta.setLut(luts);
 				}
 				else if (types[i] == LABEL) {
+					// HACK - temporary until SCIFIO metadata API supports per-plane
+					// metadata.
+					// DO NOT RELY ON THIS KEY.
 					meta.get(0).getTable().put(
 						"SliceLabels",
 						getSliceLabels(start, start + counts[i] - 1, metaDataCounts,
