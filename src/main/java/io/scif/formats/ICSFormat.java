@@ -1787,20 +1787,17 @@ public class ICSFormat extends AbstractFormat {
 					Number value = 1.0;
 					if (axis.type() == Axes.X) {
 						value = meta.get(imageIndex).getAxisLength(Axes.X);
-						units.append("micrometers\t");
 					}
 					else if (axis.type() == Axes.Y) {
 						value = meta.get(imageIndex).getAxisLength(Axes.Y);
-						units.append("micrometers\t");
 					}
 					else if (axis.type() == Axes.Z) {
 						value = meta.get(imageIndex).getAxisLength(Axes.X);
-						units.append("micrometers\t");
 					}
 					else if (axis.type() == Axes.TIME) {
 						value = meta.get(imageIndex).getAxisLength(Axes.TIME);
-						units.append("seconds\t");
 					}
+					units.append(axis.unit() + "\t");
 					out.writeBytes(value + "\t");
 				}
 
