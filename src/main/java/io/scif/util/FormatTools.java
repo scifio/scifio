@@ -262,6 +262,19 @@ public final class FormatTools {
 	}
 
 	/**
+	 * As {@link #calibrate(CalibratedAxis, double, double)} but also sets the
+	 * unit of the axis.
+	 *
+	 * @see CalibratedAxis#setUnit(String)
+	 */
+	public static void calibrate(final CalibratedAxis axis, final double scale,
+		final double origin, final String unit)
+	{
+		calibrate(axis, scale, origin);
+		axis.setUnit(unit);
+	}
+
+	/**
 	 * Gets the average scale over the specified axis of the given image metadata.
 	 * 
 	 * @return the average scale over the axis's values, or 1.0 if the desired
