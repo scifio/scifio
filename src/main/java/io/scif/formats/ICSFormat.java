@@ -183,21 +183,26 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			int bitsPerPixel = 0;
+			String[] units = getUnits();
+
 
 			// interpret axis information
 			for (int n = 0; n < axes.length; n++) {
 				final String axis = axes[n].toLowerCase();
 				if (axis.equals("x")) {
 					imageMeta.addAxis(xAxis, (int) axesSizes[n]);
-					FormatTools.calibrate(imageMeta.getAxis(xAxis), pixelSizes[n], 0);
+					FormatTools.calibrate(imageMeta.getAxis(xAxis), pixelSizes[n], 0,
+						units == null ? "um" : units[n]);
 				}
 				else if (axis.equals("y")) {
 					imageMeta.addAxis(yAxis, (int) axesSizes[n]);
-					FormatTools.calibrate(imageMeta.getAxis(yAxis), pixelSizes[n], 0);
+					FormatTools.calibrate(imageMeta.getAxis(yAxis), pixelSizes[n], 0,
+						units == null ? "um" : units[n]);
 				}
 				else if (axis.equals("z")) {
 					imageMeta.addAxis(zAxis, (int) axesSizes[n]);
-					FormatTools.calibrate(imageMeta.getAxis(zAxis), pixelSizes[n], 0);
+					FormatTools.calibrate(imageMeta.getAxis(zAxis), pixelSizes[n], 0,
+						units == null ? "um" : units[n]);
 				}
 				else if (axis.equals("t")) {
 					final int tIndex = imageMeta.getAxisIndex(Axes.TIME);
@@ -209,6 +214,8 @@ public class ICSFormat extends AbstractFormat {
 						final long timeLength =
 							imageMeta.getAxisLength(Axes.TIME) * (int) axesSizes[n];
 						imageMeta.setAxisLength(Axes.TIME, timeLength);
+						imageMeta.getAxis(Axes.TIME).setUnit(
+							units == null ? "seconds" : units[n]);
 					}
 				}
 				else if (axis.equals("bits")) {
