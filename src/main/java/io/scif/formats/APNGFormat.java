@@ -82,20 +82,13 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Animated PNG")
 public class APNGFormat extends AbstractFormat {
 
 	// -- Constants --
 
 	public static final byte[] PNG_SIGNATURE = new byte[] { (byte) 0x89, 0x50,
 		0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a };
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Animated PNG";
-	}
 
 	// -- AbstractFormat Methods --
 

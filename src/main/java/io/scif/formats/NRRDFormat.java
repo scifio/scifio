@@ -58,15 +58,8 @@ import org.scijava.plugin.Plugin;
 /**
  * File format reader for NRRD files; see http://teem.sourceforge.net/nrrd.
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "NRRD")
 public class NRRDFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "NRRD";
-	}
 
 	// -- AbstractFormat Methods --
 

@@ -65,7 +65,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Windows Bitmap")
 public class BMPFormat extends AbstractFormat {
 
 	// -- Constants --
@@ -78,13 +78,6 @@ public class BMPFormat extends AbstractFormat {
 	private static final int RLE_8 = 1;
 	private static final int RLE_4 = 2;
 	private static final int RGB_MASK = 3;
-
-	// -- Format API MEthods --
-
-	@Override
-	public String getFormatName() {
-		return "Windows Bitmap";
-	}
 
 	// -- AbstractFormat Methods --
 

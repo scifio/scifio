@@ -63,15 +63,8 @@ import org.scijava.plugin.Plugin;
 /**
  * Reader for Zip files.
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Zip")
 public class ZipFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Zip";
-	}
 
 	// -- AbstractFormat Methods --
 

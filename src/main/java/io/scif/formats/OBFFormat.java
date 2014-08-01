@@ -58,15 +58,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Bjoern Thiel
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "OBF")
 public class OBFFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "OBF";
-	}
 
 	// -- AbstractFormat Methods --
 

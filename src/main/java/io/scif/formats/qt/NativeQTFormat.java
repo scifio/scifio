@@ -81,7 +81,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Melissa Linkert
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "QuickTime")
 public class NativeQTFormat extends AbstractFormat {
 
 	// -- Constants --
@@ -90,13 +90,6 @@ public class NativeQTFormat extends AbstractFormat {
 	private static final String[] CONTAINER_TYPES = { "moov", "trak", "udta",
 		"tref", "imap", "mdia", "minf", "stbl", "edts", "mdra", "rmra", "imag",
 		"vnrp", "dinf" };
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "QuickTime";
-	}
 
 	// -- AbstractFormat Methods --
 

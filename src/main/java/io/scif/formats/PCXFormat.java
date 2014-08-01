@@ -60,15 +60,8 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  * @author Melissa Linkert
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "PCX")
 public class PCXFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "PCX";
-	}
 
 	// -- AbstractFormat Methods --
 

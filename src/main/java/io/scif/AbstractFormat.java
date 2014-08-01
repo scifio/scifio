@@ -107,6 +107,11 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 	}
 
 	@Override
+	public String getFormatName() {
+		return getInfo().getName();
+	}
+
+	@Override
 	public Metadata createMetadata() throws FormatException {
 		return createContextualObject(getMetadataClass());
 	}

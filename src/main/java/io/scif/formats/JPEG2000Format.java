@@ -67,15 +67,8 @@ import org.scijava.plugin.Plugin;
 /**
  * JPEG2000Reader is the file format reader for JPEG-2000 images.
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "JPEG-2000")
 public class JPEG2000Format extends AbstractFormat {
-
-	// -- Format API methods --
-
-	@Override
-	public String getFormatName() {
-		return "JPEG-2000";
-	}
 
 	// -- AbstractFormat Methods --
 

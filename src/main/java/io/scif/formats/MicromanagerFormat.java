@@ -71,7 +71,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Micro-Manager")
 public class MicromanagerFormat extends AbstractFormat {
 
 	// -- Constants --
@@ -84,13 +84,6 @@ public class MicromanagerFormat extends AbstractFormat {
 	 * spelling is correct.)
 	 */
 	private static final String XML = "Acqusition.xml";
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Micro-Manager";
-	}
 
 	// -- AbstractFormat Methods --
 

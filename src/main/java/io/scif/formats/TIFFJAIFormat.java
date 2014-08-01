@@ -68,18 +68,12 @@ import org.scijava.plugin.Plugin;
  * "http://java.sun.com/products/java-media/jai/forDevelopers/samples/MultiPageRead.java"
  * >this example</a>.
  */
-@Plugin(type = Format.class, priority = MinimalTIFFFormat.PRIORITY - 1)
+@Plugin(type = Format.class, name = "Tagged Image File Format",
+	priority = MinimalTIFFFormat.PRIORITY - 1)
 public class TIFFJAIFormat extends AbstractFormat {
 
 	@Parameter
 	private FormatService formatService;
-
-	// -- Format API methods --
-
-	@Override
-	public String getFormatName() {
-		return "Tagged Image File Format";
-	}
 
 	// -- AbstractFormat Methods --
 

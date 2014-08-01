@@ -73,15 +73,9 @@ import org.scijava.plugin.Plugin;
  * QuickTime Movie Opener for ImageJ (available at
  * http://rsb.info.nih.gov/ij/plugins/movie-opener.html).
  */
-@Plugin(type = Format.class, priority = Priority.LOW_PRIORITY)
+@Plugin(type = Format.class, name = "QuickTime",
+	priority = Priority.LOW_PRIORITY)
 public class LegacyQTFormat extends AbstractFormat {
-
-	// -- Format API methods --
-
-	@Override
-	public String getFormatName() {
-		return "QuickTime";
-	}
 
 	// -- AbstractFormat Methods --
 

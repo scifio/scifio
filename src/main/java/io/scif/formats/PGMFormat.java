@@ -55,15 +55,8 @@ import org.scijava.plugin.Plugin;
 /**
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Portable Gray Map")
 public class PGMFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Portable Gray Map";
-	}
 
 	// -- AbstractFormat Methods --
 

@@ -77,15 +77,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Image Cytometry Standard")
 public class ICSFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Image Cytometry Standard";
-	}
 
 	// -- AbstractFormat Methods --
 

@@ -56,17 +56,12 @@ import org.scijava.plugin.Plugin;
 /**
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Graphics Interchange Format")
 public class GIFFormat extends AbstractFormat {
 
 	// -- Constants --
 
 	public static final String GIF_MAGIC_STRING = "GIF";
-
-	@Override
-	public String getFormatName() {
-		return "Graphics Interchange Format";
-	}
 
 	// -- AbstractFormat Methods --
 

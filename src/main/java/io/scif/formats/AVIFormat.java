@@ -77,7 +77,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Audio Video Interleave")
 public class AVIFormat extends AbstractFormat {
 
 	// -- Supported compression types --
@@ -142,13 +142,6 @@ public class AVIFormat extends AbstractFormat {
 		(byte) 0xe7, (byte) 0xe8, (byte) 0xe9, (byte) 0xea, (byte) 0xf2,
 		(byte) 0xf3, (byte) 0xf4, (byte) 0xf5, (byte) 0xf6, (byte) 0xf7,
 		(byte) 0xf8, (byte) 0xf9, (byte) 0xfa };
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Audio Video Interleave";
-	}
 
 	// -- AbstractFormat Methods --
 

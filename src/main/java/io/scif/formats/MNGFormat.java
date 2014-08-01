@@ -58,15 +58,8 @@ import org.scijava.plugin.Plugin;
 /**
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Multiple Network Graphics")
 public class MNGFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Multiple Network Graphics";
-	}
 
 	// -- AbstractFormat Methods --
 

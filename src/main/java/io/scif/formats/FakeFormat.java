@@ -87,7 +87,7 @@ import org.scijava.plugin.Plugin;
  * 'rgb-interleaved&lengths=3,512,512&axes=Channel,X,Y&planarDims=3.fake'
  * </pre>
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Simulated data")
 public class FakeFormat extends AbstractFormat {
 
 	// -- Constants --
@@ -100,13 +100,6 @@ public class FakeFormat extends AbstractFormat {
 
 	public FakeFormat() {
 		super();
-	}
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Simulated data";
 	}
 
 	// -- AbstractFormat Methods --

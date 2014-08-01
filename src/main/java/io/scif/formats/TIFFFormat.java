@@ -76,7 +76,8 @@ import net.imglib2.meta.CalibratedAxis;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-@Plugin(type = Format.class, priority = TIFFFormat.PRIORITY)
+@Plugin(type = Format.class, name = "Tagged Image File Format",
+	priority = TIFFFormat.PRIORITY)
 public class TIFFFormat extends AbstractFormat {
 
 	// -- Constants --

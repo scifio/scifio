@@ -71,17 +71,11 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Melissa Linkert
  */
-@Plugin(type = Format.class, priority = MinimalTIFFFormat.PRIORITY)
+@Plugin(type = Format.class, name = "Minimal TIFF",
+	priority = MinimalTIFFFormat.PRIORITY)
 public class MinimalTIFFFormat extends AbstractFormat {
 
 	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Minimal TIFF";
-	}
 
 	// -- AbstractFormat Methods --
 

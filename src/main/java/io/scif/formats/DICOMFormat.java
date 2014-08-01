@@ -75,7 +75,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "DICOM")
 public class DICOMFormat extends AbstractFormat {
 
 	// -- Constants --
@@ -83,13 +83,6 @@ public class DICOMFormat extends AbstractFormat {
 	public static final String DICOM_MAGIC_STRING = "DICM";
 
 	private static final Hashtable<Integer, String> TYPES = buildTypes();
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "DICOM";
-	}
 
 	// -- AbstractFormat Methods --
 

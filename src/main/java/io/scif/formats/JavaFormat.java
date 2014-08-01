@@ -60,15 +60,8 @@ import org.scijava.plugin.Plugin;
  * Format for Java source code. At the moment, this code just writes a very
  * simple container for pixel data.
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Java source code")
 public class JavaFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Java source code";
-	}
 
 	// -- AbstractFormat Methods --
 

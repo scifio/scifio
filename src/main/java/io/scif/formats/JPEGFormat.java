@@ -54,15 +54,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "JPEG")
 public class JPEGFormat extends ImageIOFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "JPEG";
-	}
 
 	// -- AbstractFormat Methods --
 

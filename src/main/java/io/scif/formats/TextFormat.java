@@ -71,15 +71,8 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Text")
 public class TextFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Text";
-	}
 
 	// -- AbstractFormat Methods --
 

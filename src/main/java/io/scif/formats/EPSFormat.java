@@ -66,15 +66,8 @@ import org.scijava.plugin.Plugin;
  * @author Melissa Linkert
  * @author Mark Hiner
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Encapsulated PostScript")
 public class EPSFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Encapsulated PostScript";
-	}
 
 	// -- AbstractFormat Methods --
 

@@ -56,15 +56,9 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Melissa Linkert
  */
-@Plugin(type = Format.class, priority = Priority.LOW_PRIORITY)
+@Plugin(type = Format.class, name = "Tile JPEG",
+	priority = Priority.LOW_PRIORITY)
 public class JPEGTileFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Tile JPEG";
-	}
 
 	// -- AbstractFormat Methods --
 

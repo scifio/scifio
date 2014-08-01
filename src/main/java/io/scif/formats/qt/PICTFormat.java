@@ -66,7 +66,7 @@ import org.scijava.plugin.Plugin;
  * (http://java.sun.com/products/jimi/index.html), ImageMagick
  * (http://www.imagemagick.org), and Java QuickDraw.
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "PICT")
 public class PICTFormat extends AbstractFormat {
 
 	// -- Constants --
@@ -108,12 +108,6 @@ public class PICTFormat extends AbstractFormat {
 
 	public boolean isLegacy() {
 		return legacy;
-	}
-
-	// -- Format API Methods --
-	@Override
-	public String getFormatName() {
-		return "PICT";
 	}
 
 	// -- AbstractFormat Methods --

@@ -57,15 +57,8 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  * @author Melissa Linkert
  */
-@Plugin(type = Format.class)
+@Plugin(type = Format.class, name = "Flexible Image Transport System")
 public class FITSFormat extends AbstractFormat {
-
-	// -- Format API Methods --
-
-	@Override
-	public String getFormatName() {
-		return "Flexible Image Transport System";
-	}
 
 	// -- AbstractFormat Methods --
 
