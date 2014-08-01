@@ -59,6 +59,8 @@ import org.scijava.plugin.Plugin;
 /**
  * Format for Java source code. At the moment, this code just writes a very
  * simple container for pixel data.
+ * 
+ * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Java source code")
 public class JavaFormat extends AbstractFormat {
@@ -72,9 +74,6 @@ public class JavaFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Writer extends AbstractWriter<DefaultMetadata> {
 
 		// -- AbstractWriter Methods --

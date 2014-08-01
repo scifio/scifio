@@ -86,6 +86,9 @@ import org.scijava.plugin.Plugin;
  * 'rgb-image&lengths=512,512,3&axes=X,Y,Channel&planarDims=3.fake'
  * 'rgb-interleaved&lengths=3,512,512&axes=Channel,X,Y&planarDims=3.fake'
  * </pre>
+ * 
+ * @author Mark Hiner
+ * @author Curtis Rueden
  */
 @Plugin(type = Format.class, name = "Simulated data")
 public class FakeFormat extends AbstractFormat {

@@ -74,9 +74,6 @@ public class GIFFormat extends AbstractFormat {
 
 	// -- Nested Classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata implements
 		HasColorTable
 	{
@@ -344,9 +341,6 @@ public class GIFFormat extends AbstractFormat {
 
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Checker extends AbstractChecker {
 
 		// -- Checker API methods --
@@ -361,9 +355,6 @@ public class GIFFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		// -- Constants --
@@ -737,9 +728,6 @@ public class GIFFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- AbstractReader API Methods --

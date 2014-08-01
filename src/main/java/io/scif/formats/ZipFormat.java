@@ -62,6 +62,8 @@ import org.scijava.plugin.Plugin;
 
 /**
  * Reader for Zip files.
+ *
+ * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Zip")
 public class ZipFormat extends AbstractFormat {
@@ -75,9 +77,6 @@ public class ZipFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata implements
 		HasColorTable
 	{
@@ -146,9 +145,6 @@ public class ZipFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		@Parameter
@@ -182,9 +178,6 @@ public class ZipFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- AbstractReader API Methods --

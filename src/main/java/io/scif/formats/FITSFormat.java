@@ -69,9 +69,6 @@ public class FITSFormat extends AbstractFormat {
 
 	// -- Nested Classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata {
 
 		// -- Fields --
@@ -127,9 +124,6 @@ public class FITSFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		private static final int LINE_LENGTH = 80;
@@ -190,9 +184,6 @@ public class FITSFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- AbstractReader API Methods --

@@ -69,9 +69,6 @@ public class PGMFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata {
 
 		// -- Fields --
@@ -122,9 +119,6 @@ public class PGMFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Checker extends AbstractChecker {
 
 		// -- Constants --
@@ -150,9 +144,6 @@ public class PGMFormat extends AbstractFormat {
 
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		// -- Parser API Methods --
@@ -208,9 +199,6 @@ public class PGMFormat extends AbstractFormat {
 
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- AbstractReader API Methods --

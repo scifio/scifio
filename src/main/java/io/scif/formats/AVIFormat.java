@@ -415,9 +415,6 @@ public class AVIFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Checker extends AbstractChecker {
 
 		// -- Constants --
@@ -445,9 +442,6 @@ public class AVIFormat extends AbstractFormat {
 
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		// -- Fields --
@@ -830,9 +824,6 @@ public class AVIFormat extends AbstractFormat {
 
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- AbstractReader API Methods --
@@ -1083,9 +1074,6 @@ public class AVIFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Writer extends AbstractWriter<Metadata> {
 
 		// -- Constants --
@@ -1603,9 +1591,6 @@ public class AVIFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	@Plugin(type = io.scif.Translator.class, priority = Priority.LOW_PRIORITY)
 	public static class Translator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>

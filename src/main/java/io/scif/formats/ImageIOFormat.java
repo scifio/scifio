@@ -64,14 +64,12 @@ import org.scijava.plugin.Plugin;
  * javax.imageio package.
  * 
  * @author Curtis Rueden
+ * @author Mark Hiner
  */
 public abstract class ImageIOFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata {
 
 		// -- Fields --
@@ -121,10 +119,6 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 * @param <M>
-	 */
 	public static class Parser<M extends Metadata> extends AbstractParser<M> {
 
 		@Override
@@ -141,10 +135,6 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 * @param <M>
-	 */
 	public static class Reader<M extends Metadata> extends BufferedImageReader<M>
 	{
 
@@ -175,10 +165,6 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 * @param <M>
-	 */
 	public static class Writer<M extends Metadata> extends AbstractWriter<M> {
 
 		// -- Fields --

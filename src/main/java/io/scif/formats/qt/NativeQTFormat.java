@@ -80,6 +80,7 @@ import org.scijava.plugin.Plugin;
  * as time permits.
  * 
  * @author Melissa Linkert
+ * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "QuickTime")
 public class NativeQTFormat extends AbstractFormat {
@@ -100,9 +101,6 @@ public class NativeQTFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata {
 
 		// -- Fields --
@@ -323,9 +321,6 @@ public class NativeQTFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Checker extends AbstractChecker {
 
 		// -- Checker API Methods --
@@ -355,9 +350,6 @@ public class NativeQTFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		// -- Parser API Methods --
@@ -464,9 +456,6 @@ public class NativeQTFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- AbstractReader API Methods --
@@ -622,9 +611,6 @@ public class NativeQTFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Writer extends AbstractWriter<Metadata> {
 
 		// -- Constants --
@@ -1223,9 +1209,6 @@ public class NativeQTFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
 	public static class NativeQTTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>

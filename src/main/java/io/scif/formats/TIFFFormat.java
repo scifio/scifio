@@ -76,6 +76,13 @@ import net.imglib2.meta.CalibratedAxis;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Handler for the TIFF file format.
+ *
+ * @author Curtis Rueden
+ * @author Melissa Linkert
+ * @author Mark Hiner
+ */
 @Plugin(type = Format.class, name = "Tagged Image File Format",
 	priority = TIFFFormat.PRIORITY)
 public class TIFFFormat extends AbstractFormat {
@@ -87,13 +94,6 @@ public class TIFFFormat extends AbstractFormat {
 	public static final String[] TIFF_SUFFIXES = { "tif", "tiff", "tf2", "tf8",
 		"btf" };
 
-	// -- Format API methods --
-
-	@Override
-	public String getFormatName() {
-		return "Tagged Image File Format";
-	}
-
 	// -- AbstractFormat Methods --
 
 	@Override
@@ -103,9 +103,6 @@ public class TIFFFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends MinimalTIFFFormat.Metadata {
 
 		// -- Fields --
@@ -318,9 +315,6 @@ public class TIFFFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends BaseTIFFParser {
 
 		// -- Constants --
@@ -849,11 +843,8 @@ public class TIFFFormat extends AbstractFormat {
 	}
 
 	/**
-	 * BaseTiffReader is the superclass for file format readers compatible with or
+	 * BaseTiffParser is the superclass for file format readers compatible with or
 	 * derived from the TIFF 6.0 file format.
-	 * 
-	 * @author Curtis Rueden
-	 * @author Melissa Linkert
 	 */
 	public static abstract class BaseTIFFParser extends
 		MinimalTIFFFormat.Parser<Metadata>
@@ -1242,9 +1233,6 @@ public class TIFFFormat extends AbstractFormat {
 	/**
 	 * TiffReader is the file format reader for regular TIFF files, not of any
 	 * specific TIFF variant.
-	 * 
-	 * @author Curtis Rueden
-	 * @author Melissa Linkert
 	 */
 	public static class Reader<M extends Metadata> extends
 		MinimalTIFFFormat.Reader<M>

@@ -55,6 +55,7 @@ import org.scijava.plugin.Plugin;
  * for reading very large JPEG images, as it supports tile-based access.
  * 
  * @author Melissa Linkert
+ * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Tile JPEG",
 	priority = Priority.LOW_PRIORITY)
@@ -69,9 +70,6 @@ public class JPEGTileFormat extends AbstractFormat {
 
 	// -- Nested Classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata {
 
 		// -- Fields --
@@ -120,9 +118,6 @@ public class JPEGTileFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		// -- Parser API Methods --
@@ -138,9 +133,6 @@ public class JPEGTileFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- AbstractReader API Methods --

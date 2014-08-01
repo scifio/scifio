@@ -66,6 +66,8 @@ import org.scijava.plugin.Plugin;
 
 /**
  * JPEG2000Reader is the file format reader for JPEG-2000 images.
+ * 
+ * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "JPEG-2000")
 public class JPEG2000Format extends AbstractFormat {
@@ -79,9 +81,6 @@ public class JPEG2000Format extends AbstractFormat {
 
 	// -- Nested Classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata implements
 		HasColorTable
 	{
@@ -228,9 +227,6 @@ public class JPEG2000Format extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Checker extends AbstractChecker {
 
 		// -- Checker API methods --
@@ -267,9 +263,6 @@ public class JPEG2000Format extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		// -- Fields --
@@ -732,9 +725,6 @@ public class JPEG2000Format extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- AbstractReader API Methods --
@@ -796,9 +786,6 @@ public class JPEG2000Format extends AbstractFormat {
 
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Writer extends AbstractWriter<Metadata> {
 
 		// -- AbstractWriter Methods --

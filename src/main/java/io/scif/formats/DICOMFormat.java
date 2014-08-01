@@ -715,9 +715,6 @@ public class DICOMFormat extends AbstractFormat {
 
 	// -- Nested Classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata implements
 		HasColorTable
 	{
@@ -1044,9 +1041,6 @@ public class DICOMFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Checker extends AbstractChecker {
 
 		// -- Constants --
@@ -1094,9 +1088,6 @@ public class DICOMFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		// -- Constants --
@@ -1854,9 +1845,6 @@ public class DICOMFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		@Parameter

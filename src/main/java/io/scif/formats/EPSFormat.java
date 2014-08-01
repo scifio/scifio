@@ -78,9 +78,6 @@ public class EPSFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata {
 
 		// -- Fields --
@@ -171,9 +168,6 @@ public class EPSFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		@Override
@@ -310,9 +304,6 @@ public class EPSFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- AbstractReader API Methods --
@@ -456,9 +447,6 @@ public class EPSFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Writer extends AbstractWriter<Metadata> {
 
 		// -- Constants --
@@ -608,8 +596,6 @@ public class EPSFormat extends AbstractFormat {
 
 	/**
 	 * Necessary dummy translator, so that an EPS-OMEXML translator can be used.
-	 * 
-	 * @author Mark Hiner
 	 */
 	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
 	public static class EPSTranslator extends DefaultTranslator {

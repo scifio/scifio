@@ -57,6 +57,7 @@ import org.scijava.plugin.Plugin;
  * OBFReader is the file format reader for Imspector OBF files.
  * 
  * @author Bjoern Thiel
+ * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "OBF")
 public class OBFFormat extends AbstractFormat {
@@ -70,9 +71,6 @@ public class OBFFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata {
 
 		// -- Fields --
@@ -156,9 +154,6 @@ public class OBFFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		private static final int STACK_VERSION = 3;
@@ -368,9 +363,6 @@ public class OBFFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- AbstractReader API Methods --

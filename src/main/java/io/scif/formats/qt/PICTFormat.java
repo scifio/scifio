@@ -65,6 +65,9 @@ import org.scijava.plugin.Plugin;
  * was adapted from the PICT readers in <a
  * href="http://java.sun.com/products/jimi/index.html">JIMI</a>, <a
  * href="http://www.imagemagick.org">ImageMagick</a>, and Java QuickDraw.
+ *
+ * @author Melissa Linkert
+ * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "PICT")
 public class PICTFormat extends AbstractFormat {
@@ -119,9 +122,6 @@ public class PICTFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata implements
 		HasColorTable
 	{
@@ -229,9 +229,6 @@ public class PICTFormat extends AbstractFormat {
 
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		// -- Parser API methods --
@@ -670,9 +667,6 @@ public class PICTFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		@Parameter

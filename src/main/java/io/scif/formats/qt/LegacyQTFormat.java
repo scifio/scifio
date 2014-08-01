@@ -86,9 +86,6 @@ public class LegacyQTFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata {
 
 		// -- Fields --
@@ -149,9 +146,6 @@ public class LegacyQTFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		@Parameter
@@ -240,9 +234,6 @@ public class LegacyQTFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends BufferedImageReader<Metadata> {
 
 		@Parameter
@@ -304,9 +295,6 @@ public class LegacyQTFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Writer extends AbstractWriter<Metadata> {
 
 		// -- Constants --
@@ -580,9 +568,6 @@ public class LegacyQTFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
 	public static class LegacyQTTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>

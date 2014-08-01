@@ -94,9 +94,6 @@ public class MicromanagerFormat extends AbstractFormat {
 
 	// -- Nested Classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata {
 
 		// -- Fields --
@@ -140,9 +137,6 @@ public class MicromanagerFormat extends AbstractFormat {
 
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Checker extends AbstractChecker {
 
 		@Parameter
@@ -206,9 +200,6 @@ public class MicromanagerFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
 		// -- Constants --
@@ -727,9 +718,6 @@ public class MicromanagerFormat extends AbstractFormat {
 
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		// -- Fields --
@@ -834,8 +822,6 @@ public class MicromanagerFormat extends AbstractFormat {
 	/**
 	 * Necessary dummy translator, so that a Micromanager-OMEXML translator can be
 	 * used
-	 * 
-	 * @author Mark Hiner
 	 */
 	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
 	public static class MicromanagerTranslator extends DefaultTranslator {

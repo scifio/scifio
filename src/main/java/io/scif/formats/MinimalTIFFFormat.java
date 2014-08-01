@@ -70,6 +70,7 @@ import org.scijava.plugin.Plugin;
  * or derived from the TIFF 6.0 file format.
  * 
  * @author Melissa Linkert
+ * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Minimal TIFF",
 	priority = MinimalTIFFFormat.PRIORITY)
@@ -86,9 +87,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 	// -- Nested classes --
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Metadata extends AbstractMetadata implements
 		HasColorTable
 	{
@@ -392,9 +390,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		}
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Parser<M extends Metadata> extends AbstractParser<M> {
 
 		@Parameter
@@ -536,9 +531,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 	}
 
-	/**
-	 * @author Mark Hiner
-	 */
 	public static class Reader<M extends Metadata> extends ByteArrayReader<M> {
 
 		// -- AbstractReader API Methods --
