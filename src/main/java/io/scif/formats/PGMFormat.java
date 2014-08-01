@@ -53,6 +53,8 @@ import net.imglib2.meta.Axes;
 import org.scijava.plugin.Plugin;
 
 /**
+ * Handler plugin for the PGM file format.
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Portable Gray Map")

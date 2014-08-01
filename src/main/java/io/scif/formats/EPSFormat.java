@@ -607,7 +607,7 @@ public class EPSFormat extends AbstractFormat {
 	}
 
 	/**
-	 * Necessary dummy translator, so that an EPS-OMEXML translator can be used
+	 * Necessary dummy translator, so that an EPS-OMEXML translator can be used.
 	 * 
 	 * @author Mark Hiner
 	 */

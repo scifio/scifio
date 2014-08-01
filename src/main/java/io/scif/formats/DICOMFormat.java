@@ -70,8 +70,9 @@ import org.scijava.plugin.Plugin;
 
 /**
  * DICOMReader is the file format reader for DICOM files. Much of this code is
- * adapted from ImageJ's DICOM reader; see
- * http://rsb.info.nih.gov/ij/developer/source/ij/plugin/DICOM.java.html
+ * adapted from <a
+ * href="http://imagej.net/developer/source/ij/plugin/DICOM.java.html">ImageJ's
+ * DICOM reader</a>.
  * 
  * @author Mark Hiner
  */

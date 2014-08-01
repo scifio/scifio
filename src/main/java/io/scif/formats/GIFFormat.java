@@ -54,6 +54,8 @@ import net.imglib2.meta.Axes;
 import org.scijava.plugin.Plugin;
 
 /**
+ * Handler for the GIF file format.
+ * 
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Graphics Interchange Format")

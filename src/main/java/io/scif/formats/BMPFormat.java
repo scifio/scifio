@@ -58,10 +58,9 @@ import net.imglib2.meta.Axes;
 import org.scijava.plugin.Plugin;
 
 /**
- * BMPReader is the file format reader for Microsoft Bitmap (BMP) files. See <a
- * href="http://astronomy.swin.edu.au/~pbourke/dataformats/bmp/">
- * http://astronomy.swin.edu.au/~pbourke/dataformats/bmp/</a> for a nice
- * description of the BMP file format.
+ * BMPReader is the file format reader for <a
+ * href="https://en.wikipedia.org/wiki/BMP_file_format">Microsoft Bitmap
+ * (BMP)</a> files.
  * 
  * @author Mark Hiner
  */

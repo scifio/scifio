@@ -69,9 +69,9 @@ import org.scijava.plugin.Plugin;
 
 /**
  * LegacyQTReader is a file format reader for QuickTime movie files. To use it,
- * QuickTime for Java must be installed. Much of this code was based on the
- * QuickTime Movie Opener for ImageJ (available at
- * http://rsb.info.nih.gov/ij/plugins/movie-opener.html).
+ * QuickTime for Java must be installed. Much of this code was based on the <a
+ * href="http://imagej.net/plugins/movie-opener.html">QuickTime Movie Opener for
+ * ImageJ</a>.
  */
 @Plugin(type = Format.class, name = "QuickTime",
 	priority = Priority.LOW_PRIORITY)

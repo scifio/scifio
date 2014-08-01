@@ -62,9 +62,9 @@ import org.scijava.plugin.Plugin;
 
 /**
  * PictReader is the file format reader for Apple PICT files. Most of this code
- * was adapted from the PICT readers in JIMI
- * (http://java.sun.com/products/jimi/index.html), ImageMagick
- * (http://www.imagemagick.org), and Java QuickDraw.
+ * was adapted from the PICT readers in <a
+ * href="http://java.sun.com/products/jimi/index.html">JIMI</a>, <a
+ * href="http://www.imagemagick.org">ImageMagick</a>, and Java QuickDraw.
  */
 @Plugin(type = Format.class, name = "PICT")
 public class PICTFormat extends AbstractFormat {

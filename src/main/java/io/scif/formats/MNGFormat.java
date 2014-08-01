@@ -56,6 +56,8 @@ import net.imglib2.meta.Axes;
 import org.scijava.plugin.Plugin;
 
 /**
+ * A handler for the Multiple-image Network Graphics (MNG) file format.
+ * 
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Multiple Network Graphics")

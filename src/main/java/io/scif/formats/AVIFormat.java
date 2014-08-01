@@ -72,8 +72,8 @@ import org.scijava.plugin.Plugin;
 
 /**
  * AVIReader is the file format reader for AVI files. Much of this code was
- * adapted from Wayne Rasband's AVI Movie Reader plugin for ImageJ (available at
- * <a href="http://rsb.info.nih.gov/ij">http://rsb.info.nih.gov/ij</a>).
+ * adapted from Wayne Rasband's AVI Movie Reader plugin for <a
+ * href="http://imagej.net/">ImageJ</a>.
  * 
  * @author Mark Hiner
  */

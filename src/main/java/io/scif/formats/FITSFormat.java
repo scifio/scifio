@@ -51,8 +51,8 @@ import org.scijava.plugin.Plugin;
 
 /**
  * FitsReader is the file format reader for Flexible Image Transport System
- * (FITS) images. Much of this code was adapted from ImageJ
- * (http://rsb.info.nih.gov/ij).
+ * (FITS) images. Much of this code was adapted from <a
+ * href="http://imagej.net/">ImageJ</a>.
  * 
  * @author Mark Hiner
  * @author Melissa Linkert
