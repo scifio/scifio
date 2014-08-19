@@ -153,31 +153,71 @@ public class PGMFormat extends AbstractFormat {
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			final String magic = stream.readLine().trim();
-
+			long height = -1;
+			long width = -1;
+			int max = -1;
+			String magic = null;
 			boolean isBlackAndWhite = false;
+			int varsRead = 0;
+			int numVars = 4;
+
+			while (varsRead < numVars) {
+				String line = stream.readLine();
+				if (line == null) throw new FormatException(
+					"Read entire file without finding complete PGM metadata.");
+				// Truncate comments
+				if (line.contains("#")) line = line.substring(0, line.indexOf("#"));
+				// Metadata should only be numeric, or potentially a key including a "P"
+				line = line.replaceAll("[^P0-9]", " ");
+				final String[] vars = line.split(" ");
+
+				// Populate the appropriate metadata fields for this line
+				for (int i=0; i<vars.length; i++) {
+					varsRead++;
+					switch(varsRead) {
+						case 1:
+							magic = vars[i];
+							if (magic.equals("P1") || magic.equals("P4")) {
+								numVars = 3;
+								isBlackAndWhite = true;
+							}
+							break;
+						case 2:
+							width = Integer.parseInt(vars[i]);
+							break;
+						case 3:
+							height = Integer.parseInt(vars[i]);
+							break;
+						case 4: max = Integer.parseInt(vars[i]);
+							break;
+					}
+				}
+			}
+
+			// Validate the metadata we found
+			if (magic == null || height == -1 || width == -1 ||
+				(!isBlackAndWhite && max == -1))
+			{
+				throw new FormatException(
+					"Incomplete PGM metadata found. Read the following metadata: magic = " +
+						magic + "; height = " + height + "; width = " + width + "; max = " +
+						max);
+			}
 
 			meta.createImageMetadata(1);
 			final ImageMetadata iMeta = meta.get(0);
 
-			String line = readNextLine();
-
-			line = line.replaceAll("[^0-9]", " ");
-			final int space = line.indexOf(" ");
-			iMeta.setAxisLength(Axes.X, Integer.parseInt(line.substring(0, space)
-				.trim()));
-			iMeta.setAxisLength(Axes.Y, Integer.parseInt(line.substring(space + 1)
-				.trim()));
+			// Populate the image metadata
+			iMeta.setAxisLength(Axes.X, width);
+			iMeta.setAxisLength(Axes.Y, height);
 
 			meta.setRawBits(magic.equals("P4") || magic.equals("P5") ||
 				magic.equals("P6"));
 
 			iMeta.setAxisLength(Axes.CHANNEL, (magic.equals("P3") || magic
 				.equals("P6")) ? 3 : 1);
-			isBlackAndWhite = magic.equals("P1") || magic.equals("P4");
 
 			if (!isBlackAndWhite) {
-				final int max = Integer.parseInt(readNextLine());
 				if (max > 255) iMeta.setPixelType(FormatTools.UINT16);
 				else iMeta.setPixelType(FormatTools.UINT8);
 			}
@@ -186,17 +226,6 @@ public class PGMFormat extends AbstractFormat {
 
 			meta.getTable().put("Black and white", isBlackAndWhite);
 		}
-
-		// -- Helper Methods --
-
-		private String readNextLine() throws IOException {
-			String line = getSource().readLine().trim();
-			while (line.startsWith("#") || line.length() == 0) {
-				line = getSource().readLine().trim();
-			}
-			return line;
-		}
-
 	}
 
 	public static class Reader extends ByteArrayReader<Metadata> {
