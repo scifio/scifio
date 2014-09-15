@@ -55,11 +55,7 @@ public class ReadImg {
 	}
 
 	private static void readImg(final File file) throws Exception {
-		// FIXME: Stop using reflection as soon as the generics are resolved!
-//		final ImgPlus<?> img = IO.open(file.getAbsolutePath());
-		final ImgPlus<?> img =
-			(ImgPlus<?>) IO.class.getMethod("open", String.class).invoke(null,
-				file.getAbsolutePath());
+		final ImgPlus<?> img = IO.openImgs(file.getAbsolutePath()).get(0);
 
 		System.out.println("file = " + file);
 		System.out.println("Dimensions:");
