@@ -56,6 +56,15 @@ import java.util.List;
 import net.imglib2.exception.ImgLibException;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImg;
+import net.imglib2.img.basictypeaccess.array.BitArray;
+import net.imglib2.img.basictypeaccess.array.ByteArray;
+import net.imglib2.img.basictypeaccess.array.CharArray;
+import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import net.imglib2.img.basictypeaccess.array.FloatArray;
+import net.imglib2.img.basictypeaccess.array.IntArray;
+import net.imglib2.img.basictypeaccess.array.LongArray;
+import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.img.planar.PlanarImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.CalibratedAxis;
@@ -605,7 +614,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 						planarLengths);
 
 				for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++) {
-					final Object curPlane = getPlaneArray(img, cIndex, planeIndex, rgbChannelCount);
+					final Object curPlane = getPlaneArray(img, rgbChannelCount, cIndex, planeIndex);
 
 					final Class<?> planeClass = curPlane.getClass();
 
@@ -676,8 +685,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	/**
 	 * @return An array of data corresponding to the given plane and channel indices.
 	 */
-	private Object getPlaneArray(final Img<?> img, final int cIndex, final int planeIndex,
-		int rgbChannelCount)
+	private Object getPlaneArray(final Img<?> img, final int rgbChannelCount,
+		final int cIndex, final int planeIndex)
 	{
 		// PlanarImg case
 		if (PlanarImg.class.isAssignableFrom(img.getClass())) {
@@ -685,7 +694,69 @@ public class ImgSaver extends AbstractImgIOComponent {
 			return planarImg.getPlane(cIndex + (planeIndex * rgbChannelCount))
 				.getCurrentStorageArray();
 		}
-		// TODO Array case
+		// ArrayImg case
+		if (ArrayImg.class.isAssignableFrom(img.getClass())) {
+			final ArrayImg<?, ?> arrayImg = (ArrayImg<?, ?>) img;
+			final Object store = arrayImg.update(null);
+			final int planeSize =
+				(int) (arrayImg.dimension(0) * arrayImg.dimension(1));
+
+			if (store instanceof BitArray) {
+				final int[] source = ((BitArray) store).getCurrentStorageArray();
+				final int[] bits = new int[planeSize / 32];
+				System.arraycopy(source, planeSize * planeIndex, bits, 0, bits.length);
+				return bits;
+			}
+			else if (store instanceof ByteArray) {
+				final byte[] source = ((ByteArray) store).getCurrentStorageArray();
+				final byte[] bytes = new byte[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), bytes, 0, bytes.length);
+				return bytes;
+			}
+			else if (store instanceof ShortArray) {
+				final short[] source = ((ShortArray) store).getCurrentStorageArray();
+				final short[] shorts = new short[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), shorts, 0, shorts.length);
+				return shorts;
+			}
+			else if (store instanceof LongArray) {
+				final long[] source = ((LongArray) store).getCurrentStorageArray();
+				final long[] longs = new long[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), longs, 0, longs.length);
+				return longs;
+			}
+			else if (store instanceof CharArray) {
+				final char[] source = ((CharArray) store).getCurrentStorageArray();
+				final char[] chars = new char[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), chars, 0, chars.length);
+				return chars;
+			}
+			else if (store instanceof DoubleArray) {
+				final double[] source = ((DoubleArray) store).getCurrentStorageArray();
+				final double[] doubles = new double[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), doubles, 0, doubles.length);
+				return doubles;
+			}
+			else if (store instanceof FloatArray) {
+				final float[] source = ((FloatArray) store).getCurrentStorageArray();
+				final float[] floats = new float[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), floats, 0, floats.length);
+				return floats;
+			}
+			else if (store instanceof IntArray) {
+				final int[] source = ((IntArray) store).getCurrentStorageArray();
+				final int[] ints = new int[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), ints, 0, ints.length);
+				return ints;
+			}
+		}
 		// TODO General case
 		return null;
 	}
@@ -699,7 +770,16 @@ public class ImgSaver extends AbstractImgIOComponent {
 			final PlanarImg<?, ?> planarImg = (PlanarImg<?, ?>) img;
 			return planarImg.numSlices();
 		}
-		// TODO Array case
+		// ArrayImg case
+		if (ArrayImg.class.isAssignableFrom(img.getClass())) {
+			int count = 1;
+
+			for (int d = 2; d < img.numDimensions(); d++) {
+				count *= img.dimension(d);
+			}
+
+			return count;
+		}
 		// TODO General case
 		return 0;
 	}
