@@ -33,6 +33,8 @@ package io.scif.img;
 import io.scif.ByteArrayPlane;
 import io.scif.DefaultImageMetadata;
 import io.scif.DefaultMetadata;
+import io.scif.DefaultWriter;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
@@ -51,14 +53,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.imglib2.Cursor;
 import net.imglib2.exception.ImgLibException;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
-import net.imglib2.img.basictypeaccess.PlanarAccess;
+import net.imglib2.img.array.ArrayImg;
+import net.imglib2.img.basictypeaccess.array.BitArray;
+import net.imglib2.img.basictypeaccess.array.ByteArray;
+import net.imglib2.img.basictypeaccess.array.CharArray;
+import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import net.imglib2.img.basictypeaccess.array.FloatArray;
+import net.imglib2.img.basictypeaccess.array.IntArray;
+import net.imglib2.img.basictypeaccess.array.LongArray;
+import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.img.planar.PlanarImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.integer.GenericByteType;
+import net.imglib2.type.numeric.integer.GenericIntType;
+import net.imglib2.type.numeric.integer.GenericShortType;
+import net.imglib2.type.numeric.integer.LongType;
+import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.type.numeric.real.FloatType;
 
 import org.scijava.Context;
 import org.scijava.app.StatusService;
@@ -428,19 +446,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 			config = new SCIFIOConfig();
 		}
 
-		// Check for PlanarAccess
-		final PlanarAccess<?> planarAccess = utils().getPlanarAccess(img);
-		if (planarAccess == null) {
-			throw new IncompatibleTypeException(new ImgLibException(), "Only " +
-				PlanarAccess.class + " images supported at this time.");
-		}
-
-		final PlanarImg<?, ?> planarImg = (PlanarImg<?, ?>) planarAccess;
-
 		final int sliceCount = countSlices(img);
-
-		final Class<?> arrayType =
-			planarImg.getPlane(0).getCurrentStorageArray().getClass();
 
 		if (w == null) {
 			if (id == null || id.length() == 0) {
@@ -449,12 +455,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 					" no way to determine the desired output path. Default value:" +
 					" ImgPlus's source.");
 			}
-			return writeImg(id, img, planarImg, imageIndex, config, arrayType,
-				sliceCount);
+			return writeImg(id, img, imageIndex, config, sliceCount);
 		}
 
-		return writeImg(w, id, img, planarImg, imageIndex,
-			config, arrayType, sliceCount);
+		return writeImg(w, id, img, imageIndex, config, sliceCount);
 	}
 
 	/**
@@ -462,15 +466,34 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * given id.
 	 */
 	private Metadata writeImg(final String id, final SCIFIOImgPlus<?> imgPlus,
-		final PlanarImg<?, ?> img, final int imageIndex, final SCIFIOConfig config,
-		final Class<?> arrayType, final int sliceCount) throws ImgIOException,
+		final int imageIndex, final SCIFIOConfig config, final int sliceCount) throws ImgIOException,
 		IncompatibleTypeException
 	{
 		// Create a Writer for the given id
-		final Writer w = initializeWriter(id, arrayType);
+		Writer w = null;
 
-		return writeImg(w, id, imgPlus, img, imageIndex, config, arrayType,
-			sliceCount);
+		try {
+			boolean matches = false;
+			for (final Format format : formatService.getFormatList(id)) {
+				if (!format.getWriterClass().equals(DefaultWriter.class)) {
+					matches = true;
+					break;
+				}
+			}
+
+			if (matches) {
+				final File f = new File(id);
+				if (f.exists()) {
+					f.delete();
+				}
+			}
+			w = formatService.getWriterByExtension(id);
+		}
+		catch (final FormatException e) {
+			throw new ImgIOException(e);
+		}
+
+		return writeImg(w, id, imgPlus, imageIndex, config, sliceCount);
 	}
 
 	/**
@@ -478,9 +501,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * {@link Metadata}, or creates it if possible.
 	 */
 	private Metadata writeImg(final Writer w, final String id,
-		final SCIFIOImgPlus<?> imgPlus, final PlanarImg<?, ?> img,
-		final int imageIndex, final SCIFIOConfig config, final Class<?> arrayType,
-		final int sliceCount) throws ImgIOException, IncompatibleTypeException
+		final SCIFIOImgPlus<?> imgPlus, final int imageIndex,
+		final SCIFIOConfig config, final int sliceCount) throws ImgIOException,
+		IncompatibleTypeException
 	{
 		if (w.getMetadata() == null) {
 			if (id == null || id.length() == 0) {
@@ -499,21 +522,21 @@ public class ImgSaver extends AbstractImgIOComponent {
 			}
 		}
 
-		return writeImg(w, img, arrayType, imageIndex, sliceCount);
+		return writeImg(w, imgPlus, imageIndex, sliceCount);
 	}
 
 	/**
 	 * Terminal {@link #writeImg} method. Performs actual pixel output.
 	 */
-	private Metadata writeImg(final Writer w, final PlanarImg<?, ?> img,
-		final Class<?> arrayType, final int imageIndex, final int sliceCount)
+	private Metadata writeImg(final Writer w, final SCIFIOImgPlus<?> imgPlus,
+		final int imageIndex, final int sliceCount)
 		throws ImgIOException, IncompatibleTypeException
 	{
-		if (img.numDimensions() > 0) {
+		if (imgPlus.numDimensions() > 0) {
 			final long startTime = System.currentTimeMillis();
 
 			// write pixels
-			writePlanes(w, imageIndex, img, arrayType);
+			writePlanes(w, imageIndex, imgPlus);
 
 			// Print time statistics
 			final long endTime = System.currentTimeMillis();
@@ -556,11 +579,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * @throws IncompatibleTypeException
 	 */
 	private void writePlanes(final Writer w, final int imageIndex,
-		final PlanarImg<?, ?> planarImg, final Class<?> arrayType)
+		final SCIFIOImgPlus<?> imgPlus)
 		throws ImgIOException, IncompatibleTypeException
 	{
 		// Get basic statistics
-		final int planeCount = planarImg.numSlices();
 		final Metadata mOut = w.getMetadata();
 		final int rgbChannelCount =
 			mOut.get(imageIndex).isMultichannel() ? (int) mOut.get(imageIndex)
@@ -573,6 +595,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 		// iterate over each plane
 		final long planeOutCount = w.getMetadata().get(imageIndex).getPlaneCount();
 
+		Img<?> img = imgPlus.getImg();
+		final int planeCount = getPlaneCount(img);
 		if (planeOutCount < planeCount / rgbChannelCount) {
 			// Warn that some planes were truncated (e.g. going from 4D format to
 			// 3D)
@@ -598,33 +622,32 @@ public class ImgSaver extends AbstractImgIOComponent {
 						planarLengths);
 
 				for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++) {
-					final Object curPlane =
-						planarImg.getPlane(cIndex + (planeIndex * rgbChannelCount))
-							.getCurrentStorageArray();
+					final Object curPlane = getPlaneArray(img, rgbChannelCount, cIndex, planeIndex);
+
+					final Class<?> planeClass = curPlane.getClass();
 
 					// Convert current plane if necessary
-					if (arrayType == int[].class) {
+					if (planeClass == int[].class) {
 						sourcePlane = DataTools.intsToBytes((int[]) curPlane, false);
 					}
-					else if (arrayType == byte[].class) {
+					else if (planeClass == byte[].class) {
 						sourcePlane = (byte[]) curPlane;
 					}
-					else if (arrayType == short[].class) {
+					else if (planeClass == short[].class) {
 						sourcePlane = DataTools.shortsToBytes((short[]) curPlane, false);
 					}
-					else if (arrayType == long[].class) {
+					else if (planeClass == long[].class) {
 						sourcePlane = DataTools.longsToBytes((long[]) curPlane, false);
 					}
-					else if (arrayType == double[].class) {
+					else if (planeClass == double[].class) {
 						sourcePlane = DataTools.doublesToBytes((double[]) curPlane, false);
 					}
-					else if (arrayType == float[].class) {
+					else if (planeClass == float[].class) {
 						sourcePlane = DataTools.floatsToBytes((float[]) curPlane, false);
 					}
 					else {
 						throw new IncompatibleTypeException(new ImgLibException(),
-							"PlanarImgs of type " + planarImg.getPlane(0).getClass() +
-								" not supported.");
+							"Plane data type: " + planeClass + " not supported.");
 					}
 
 					if (interleaved) {
@@ -668,33 +691,181 @@ public class ImgSaver extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * Creates a new {@link Writer} and sets its id to the provided String.
+	 * @return An array of data corresponding to the given plane and channel indices.
 	 */
-	private Writer initializeWriter(final String id, final Class<?> arrayType)
-		throws ImgIOException
+	private Object getPlaneArray(final Img<?> img, final int rgbChannelCount,
+		final int cIndex, final int planeIndex)
 	{
-		Writer writer = null;
+		// PlanarImg case
+		if (PlanarImg.class.isAssignableFrom(img.getClass())) {
+			final PlanarImg<?, ?> planarImg = (PlanarImg<?, ?>) img;
+			return planarImg.getPlane(cIndex + (planeIndex * rgbChannelCount))
+				.getCurrentStorageArray();
+		}
+		final int planeSize = (int) (img.dimension(0) * img.dimension(1));
 
-		// if we know this image will pass to SCIFIO to be saved,
-		// then delete the old file if it exists
-		if (arrayType == int[].class || arrayType == byte[].class ||
-			arrayType == short[].class || arrayType == long[].class ||
-			arrayType == double[].class || arrayType == float[].class)
-		{
-			final File f = new File(id);
-			if (f.exists()) {
-				f.delete();
+		// ArrayImg case
+		if (ArrayImg.class.isAssignableFrom(img.getClass())) {
+			final ArrayImg<?, ?> arrayImg = (ArrayImg<?, ?>) img;
+			final Object store = arrayImg.update(null);
+
+			// For each array type, just create an appropriate container array
+			// and System.arraycopy the relevant data.
+			if (store instanceof BitArray) {
+				final int[] source = ((BitArray) store).getCurrentStorageArray();
+				final int[] bits = new int[planeSize / 32];
+				System.arraycopy(source, planeSize * planeIndex, bits, 0, bits.length);
+				return bits;
+			}
+			else if (store instanceof ByteArray) {
+				final byte[] source = ((ByteArray) store).getCurrentStorageArray();
+				final byte[] bytes = new byte[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), bytes, 0, bytes.length);
+				return bytes;
+			}
+			else if (store instanceof ShortArray) {
+				final short[] source = ((ShortArray) store).getCurrentStorageArray();
+				final short[] shorts = new short[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), shorts, 0, shorts.length);
+				return shorts;
+			}
+			else if (store instanceof LongArray) {
+				final long[] source = ((LongArray) store).getCurrentStorageArray();
+				final long[] longs = new long[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), longs, 0, longs.length);
+				return longs;
+			}
+			else if (store instanceof CharArray) {
+				final char[] source = ((CharArray) store).getCurrentStorageArray();
+				final char[] chars = new char[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), chars, 0, chars.length);
+				return chars;
+			}
+			else if (store instanceof DoubleArray) {
+				final double[] source = ((DoubleArray) store).getCurrentStorageArray();
+				final double[] doubles = new double[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), doubles, 0, doubles.length);
+				return doubles;
+			}
+			else if (store instanceof FloatArray) {
+				final float[] source = ((FloatArray) store).getCurrentStorageArray();
+				final float[] floats = new float[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), floats, 0, floats.length);
+				return floats;
+			}
+			else if (store instanceof IntArray) {
+				final int[] source = ((IntArray) store).getCurrentStorageArray();
+				final int[] ints = new int[planeSize];
+				System.arraycopy(source, planeSize *
+					(cIndex + (planeIndex * rgbChannelCount)), ints, 0, ints.length);
+				return ints;
 			}
 		}
 
-		try {
-			writer = formatService.getWriterByExtension(id);
+		// Fallback default case - SLOW
+
+		// Get dimensions array
+		final long[] dimensions = new long[img.numDimensions()];
+		img.dimensions(dimensions);
+
+		// Truncate X, Y axes
+		long[] lengths = Arrays.copyOfRange(dimensions, 2, dimensions.length);
+
+		// Get non-X,Y position array
+		final long[] planePosition = FormatTools.rasterToPosition(lengths, planeIndex);
+
+		// Copy plane positions back to dimensions array and set X, Y to start at 0
+		System.arraycopy(planePosition, 0, dimensions, 2, planePosition.length);
+		dimensions[0] = dimensions[1] = 0;
+
+		// Create a primitive array appropriate for the ImgPlus type
+		final Class<?> typeClass = img.firstElement().getClass();
+		Object array = null;
+
+		if (GenericIntType.class.isAssignableFrom(typeClass)) {
+			array = new int[planeSize];
 		}
-		catch (final FormatException e) {
-			throw new ImgIOException(e);
+		else if (GenericByteType.class.isAssignableFrom(typeClass)) {
+			array = new byte[planeSize];
+		}
+		else if (GenericShortType.class.isAssignableFrom(typeClass)) {
+			array = new short[planeSize];
+		}
+		else if (LongType.class.isAssignableFrom(typeClass)) {
+			array = new long[planeSize];
+		}
+		else if (DoubleType.class.isAssignableFrom(typeClass)) {
+			array = new double[planeSize];
+		}
+		else if (FloatType.class.isAssignableFrom(typeClass)) {
+			array = new float[planeSize];
 		}
 
-		return writer;
+		// Ensure we have a compatible type
+		if (array == null) {
+			throw new IllegalArgumentException("Unsupported ImgPlus data type: " +
+				typeClass);
+		}
+
+		// Create a cursor and move it to the first position of the requested
+		// plane
+		final Cursor<?> cursor = img.cursor();
+		cursor.localize(dimensions);
+		cursor.jumpFwd(planeSize * cIndex);
+
+		// Iterate over the positions in this plane, copying the values at
+		// each position to the output array.
+		for (int i=0; i<planeSize; i++) {
+			cursor.fwd();
+			final Object value = cursor.get();
+
+			if (GenericIntType.class.isAssignableFrom(typeClass)) {
+				((int[])array)[i] = (int) ((ComplexType<?>)value).getRealDouble();
+			}
+			else if (GenericByteType.class.isAssignableFrom(typeClass)) {
+				((byte[])array)[i] = (byte) ((ComplexType<?>)value).getRealDouble();
+			}
+			else if (GenericShortType.class.isAssignableFrom(typeClass)) {
+				((short[])array)[i] = (short) ((ComplexType<?>)value).getRealDouble();
+			}
+			else if (LongType.class.isAssignableFrom(typeClass)) {
+				((long[])array)[i] = (long) ((ComplexType<?>)value).getRealDouble();
+			}
+			else if (DoubleType.class.isAssignableFrom(typeClass)) {
+				((double[])array)[i] = (double) ((ComplexType<?>)value).getRealDouble();
+			}
+			else if (FloatType.class.isAssignableFrom(typeClass)) {
+				((float[])array)[i] = (float) ((ComplexType<?>)value).getRealDouble();
+			}
+		}
+
+		// Return the populated array
+		return array;
+	}
+
+	/**
+	 * @return The number of planes in the provided {@link Img}.
+	 */
+	private int getPlaneCount(final Img<?> img) {
+		// PlanarImg case
+		if (PlanarImg.class.isAssignableFrom(img.getClass())) {
+			final PlanarImg<?, ?> planarImg = (PlanarImg<?, ?>) img;
+			return planarImg.numSlices();
+		}
+		// General case
+		int count = 1;
+
+		for (int d = 2; d < img.numDimensions(); d++) {
+			count *= img.dimension(d);
+		}
+
+		return count;
 	}
 
 	/**
