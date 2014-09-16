@@ -289,7 +289,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 
 						// Update length and offset for current strip
 						lastPlaneOffsets[parentYIndex] =
-							lastPlaneOffsets[parentYIndex] + (i * stripHeight);
+							offsets[parentYIndex] + (i * stripHeight);
 						lastPlaneLengths[parentYIndex] =
 							i == strips - 1 ? lastStripHeight : stripHeight;
 
@@ -297,9 +297,6 @@ public class PlaneSeparator extends AbstractReaderFilter {
 						lastPlane =
 							getParent().openPlane(imageIndex, (int) source, lastPlaneOffsets,
 								lastPlaneLengths, config);
-						// Store the last recorded offsets/lengths
-						lastPlaneOffsets = offsets;
-						lastPlaneLengths = lengths;
 						// store the color table
 						plane.setColorTable(lastPlane.getColorTable());
 
