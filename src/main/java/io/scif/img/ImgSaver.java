@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.imglib2.Cursor;
 import net.imglib2.exception.ImgLibException;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
@@ -69,6 +70,13 @@ import net.imglib2.img.planar.PlanarImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.integer.GenericByteType;
+import net.imglib2.type.numeric.integer.GenericIntType;
+import net.imglib2.type.numeric.integer.GenericShortType;
+import net.imglib2.type.numeric.integer.LongType;
+import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.type.numeric.real.FloatType;
 
 import org.scijava.Context;
 import org.scijava.app.StatusService;
@@ -694,13 +702,15 @@ public class ImgSaver extends AbstractImgIOComponent {
 			return planarImg.getPlane(cIndex + (planeIndex * rgbChannelCount))
 				.getCurrentStorageArray();
 		}
+		final int planeSize = (int) (img.dimension(0) * img.dimension(1));
+
 		// ArrayImg case
 		if (ArrayImg.class.isAssignableFrom(img.getClass())) {
 			final ArrayImg<?, ?> arrayImg = (ArrayImg<?, ?>) img;
 			final Object store = arrayImg.update(null);
-			final int planeSize =
-				(int) (arrayImg.dimension(0) * arrayImg.dimension(1));
 
+			// For each array type, just create an appropriate container array
+			// and System.arraycopy the relevant data.
 			if (store instanceof BitArray) {
 				final int[] source = ((BitArray) store).getCurrentStorageArray();
 				final int[] bits = new int[planeSize / 32];
@@ -757,8 +767,86 @@ public class ImgSaver extends AbstractImgIOComponent {
 				return ints;
 			}
 		}
-		// TODO General case
-		return null;
+
+		// Fallback default case - SLOW
+
+		// Get dimensions array
+		final long[] dimensions = new long[img.numDimensions()];
+		img.dimensions(dimensions);
+
+		// Truncate X, Y axes
+		long[] lengths = Arrays.copyOfRange(dimensions, 2, dimensions.length);
+
+		// Get non-X,Y position array
+		final long[] planePosition = FormatTools.rasterToPosition(lengths, planeIndex);
+
+		// Copy plane positions back to dimensions array and set X, Y to start at 0
+		System.arraycopy(planePosition, 0, dimensions, 2, planePosition.length);
+		dimensions[0] = dimensions[1] = 0;
+
+		// Create a primitive array appropriate for the ImgPlus type
+		final Class<?> typeClass = img.firstElement().getClass();
+		Object array = null;
+
+		if (GenericIntType.class.isAssignableFrom(typeClass)) {
+			array = new int[planeSize];
+		}
+		else if (GenericByteType.class.isAssignableFrom(typeClass)) {
+			array = new byte[planeSize];
+		}
+		else if (GenericShortType.class.isAssignableFrom(typeClass)) {
+			array = new short[planeSize];
+		}
+		else if (LongType.class.isAssignableFrom(typeClass)) {
+			array = new long[planeSize];
+		}
+		else if (DoubleType.class.isAssignableFrom(typeClass)) {
+			array = new double[planeSize];
+		}
+		else if (FloatType.class.isAssignableFrom(typeClass)) {
+			array = new float[planeSize];
+		}
+
+		// Ensure we have a compatible type
+		if (array == null) {
+			throw new IllegalArgumentException("Unsupported ImgPlus data type: " +
+				typeClass);
+		}
+
+		// Create a cursor and move it to the first position of the requested
+		// plane
+		final Cursor<?> cursor = img.cursor();
+		cursor.localize(dimensions);
+		cursor.jumpFwd(planeSize * cIndex);
+
+		// Iterate over the positions in this plane, copying the values at
+		// each position to the output array.
+		for (int i=0; i<planeSize; i++) {
+			cursor.fwd();
+			final Object value = cursor.get();
+
+			if (GenericIntType.class.isAssignableFrom(typeClass)) {
+				((int[])array)[i] = (int) ((ComplexType<?>)value).getRealDouble();
+			}
+			else if (GenericByteType.class.isAssignableFrom(typeClass)) {
+				((byte[])array)[i] = (byte) ((ComplexType<?>)value).getRealDouble();
+			}
+			else if (GenericShortType.class.isAssignableFrom(typeClass)) {
+				((short[])array)[i] = (short) ((ComplexType<?>)value).getRealDouble();
+			}
+			else if (LongType.class.isAssignableFrom(typeClass)) {
+				((long[])array)[i] = (long) ((ComplexType<?>)value).getRealDouble();
+			}
+			else if (DoubleType.class.isAssignableFrom(typeClass)) {
+				((double[])array)[i] = (double) ((ComplexType<?>)value).getRealDouble();
+			}
+			else if (FloatType.class.isAssignableFrom(typeClass)) {
+				((float[])array)[i] = (float) ((ComplexType<?>)value).getRealDouble();
+			}
+		}
+
+		// Return the populated array
+		return array;
 	}
 
 	/**
@@ -770,18 +858,14 @@ public class ImgSaver extends AbstractImgIOComponent {
 			final PlanarImg<?, ?> planarImg = (PlanarImg<?, ?>) img;
 			return planarImg.numSlices();
 		}
-		// ArrayImg case
-		if (ArrayImg.class.isAssignableFrom(img.getClass())) {
-			int count = 1;
+		// General case
+		int count = 1;
 
-			for (int d = 2; d < img.numDimensions(); d++) {
-				count *= img.dimension(d);
-			}
-
-			return count;
+		for (int d = 2; d < img.numDimensions(); d++) {
+			count *= img.dimension(d);
 		}
-		// TODO General case
-		return 0;
+
+		return count;
 	}
 
 	/**
