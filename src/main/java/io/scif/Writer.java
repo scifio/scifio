@@ -265,7 +265,8 @@ public interface Writer extends HasFormat, HasSource {
 	boolean isInitialized(int imageIndex, long planeIndex);
 
 	/**
-	 * @return The current compression being used by the writer
+	 * @return The current compression being used by the writer, or null if not
+	 *         set.
 	 */
 	String getCompression();
 

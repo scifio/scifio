@@ -89,7 +89,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	private boolean writeSequential = false;
 	private ColorModel model = null;
 	private int fps = 10;
-	private String compression = "";
+	private String compression = null;
 	private CodecOptions options = null;
 
 	// Groupable

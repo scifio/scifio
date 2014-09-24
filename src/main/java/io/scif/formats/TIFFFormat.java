@@ -1464,17 +1464,19 @@ public class TIFFFormat extends AbstractFormat {
 		 */
 		private void formatCompression(final IFD ifd) {
 			TiffCompression compressType = TiffCompression.UNCOMPRESSED;
-			if (getCompression().equals(COMPRESSION_LZW)) {
-				compressType = TiffCompression.LZW;
-			}
-			else if (getCompression().equals(COMPRESSION_J2K)) {
-				compressType = TiffCompression.JPEG_2000;
-			}
-			else if (getCompression().equals(COMPRESSION_J2K_LOSSY)) {
-				compressType = TiffCompression.JPEG_2000_LOSSY;
-			}
-			else if (getCompression().equals(COMPRESSION_JPEG)) {
-				compressType = TiffCompression.JPEG;
+			if (getCompression() != null) {
+				if (getCompression().equals(COMPRESSION_LZW)) {
+					compressType = TiffCompression.LZW;
+				}
+				else if (getCompression().equals(COMPRESSION_J2K)) {
+					compressType = TiffCompression.JPEG_2000;
+				}
+				else if (getCompression().equals(COMPRESSION_J2K_LOSSY)) {
+					compressType = TiffCompression.JPEG_2000_LOSSY;
+				}
+				else if (getCompression().equals(COMPRESSION_JPEG)) {
+					compressType = TiffCompression.JPEG;
+				}
 			}
 			final Object v = ifd.get(new Integer(IFD.COMPRESSION));
 			if (v == null) ifd.put(new Integer(IFD.COMPRESSION), compressType
