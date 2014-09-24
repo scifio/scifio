@@ -233,7 +233,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	}
 
 	@Override
-	public void close(final boolean fileOnly) throws IOException {
+	public synchronized void close(final boolean fileOnly) throws IOException {
 		super.close(fileOnly);
 		if (!fileOnly) {
 			planarAxisMin = null;
@@ -310,7 +310,17 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
 			for (int axis = 0; axis < planarPositions.length; axis++) {
 				final AxisType type = iMeta.getAxis(axis).type();
-				final double[] planarMin = planarAxisMin.get(imageIndex).get(type);
+				Map<AxisType, double[]> map = planarAxisMin.get(imageIndex);
+				double[] planarMin = null;
+				try {
+					planarMin = map.get(type);
+				}
+			
+			catch (NullPointerException e) {
+				System.out.println("image index: " + imageIndex);
+				System.out.println("planaraxismin size: " + planarAxisMin.size());
+				throw e;
+			}
 				if (planarMin[(int) planarPositions[axis]] > v) {
 					planarMin[(int) planarPositions[axis]] = v;
 				}
@@ -337,7 +347,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	/**
 	 * Ensures internal min/max variables are initialized properly.
 	 */
-	private void initMinMax() {
+	private synchronized void initMinMax() {
 		final io.scif.Metadata m = getMetadata();
 		final int imageCount = m.getImageCount();
 
@@ -347,7 +357,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 				final HashMap<AxisType, double[]> minMap =
 					new HashMap<AxisType, double[]>();
 				final ImageMetadata iMeta = m.get(i);
-				for (final CalibratedAxis axis : iMeta.getAxesPlanar()) {
+				for (final CalibratedAxis axis : iMeta.getAxes()) {
 					final double[] values =
 						new double[(int) iMeta.getAxisLength(axis.type())];
 					Arrays.fill(values, Double.POSITIVE_INFINITY);
@@ -362,7 +372,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 				final HashMap<AxisType, double[]> maxMap =
 					new HashMap<AxisType, double[]>();
 				final ImageMetadata iMeta = m.get(i);
-				for (final CalibratedAxis axis : iMeta.getAxesPlanar()) {
+				for (final CalibratedAxis axis : iMeta.getAxes()) {
 					final double[] values =
 						new double[(int) iMeta.getAxisLength(axis.type())];
 					Arrays.fill(values, Double.NEGATIVE_INFINITY);
