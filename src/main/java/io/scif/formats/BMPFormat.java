@@ -155,6 +155,9 @@ public class BMPFormat extends AbstractFormat {
 				case 32:
 					iMeta.setPixelType(FormatTools.UINT32);
 					break;
+				case 64:
+					iMeta.setPixelType(FormatTools.DOUBLE);
+					break;
 				default:
 					iMeta.setPixelType(FormatTools.UINT8);
 			}
