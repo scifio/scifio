@@ -282,14 +282,16 @@ public class PlaneSeparator extends AbstractReaderFilter {
 							DataTools.safeMultiply32(Arrays.copyOf(lengths,
 								lengths.length - 1)) * bpp)];
 					updateLastPlaneInfo(source, imageIndex, splitOffset, offsets, lengths);
+					final int parentYIndex =
+						parentMeta.get(imageIndex).getAxisIndex(Axes.Y);
+					final int yIndex =
+						meta.get(imageIndex).getAxisIndex(Axes.Y);
+
 					// Populate the strips
 					for (int i = 0; i < strips; i++) {
-						final int parentYIndex =
-							parentMeta.get(imageIndex).getAxisIndex(Axes.Y);
-
 						// Update length and offset for current strip
 						lastPlaneOffsets[parentYIndex] =
-							offsets[parentYIndex] + (i * stripHeight);
+							offsets[yIndex] + (i * stripHeight);
 						lastPlaneLengths[parentYIndex] =
 							i == strips - 1 ? lastStripHeight : stripHeight;
 
