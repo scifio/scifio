@@ -36,12 +36,10 @@ import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
 import io.scif.util.MemoryTools;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -123,26 +121,6 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	}
 
 	// -- AbstractReaderFilter API Methods --
-
-	@Override
-	public void setSource(final String source) throws IOException {
-		cleanUp();
-		super.setSource(source);
-	}
-
-	@Override
-	public void setSource(final File file) throws IOException {
-		cleanUp();
-		super.setSource(file);
-	}
-
-	@Override
-	public void setSource(final RandomAccessInputStream stream)
-		throws IOException
-	{
-		cleanUp();
-		super.setSource(stream);
-	}
 
 	@Override
 	public long getPlaneCount(final int imageIndex) {

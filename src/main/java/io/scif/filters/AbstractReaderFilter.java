@@ -96,6 +96,10 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	/**
 	 * Allows code to be executed regardless of which {@link #setSource} signature
 	 * is called.
+	 * <p>
+	 * The default behavior of this method is to wrap the parent's metadata after
+	 * {@link #setSource} has been called.
+	 * </p>
 	 * 
 	 * @param source - Lowest common denominator of arguments in the
 	 *          {@code setSource} series.
@@ -105,11 +109,18 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 		setSourceHelper(final String source, final SCIFIOConfig config)
 			throws IOException
 	{
-		final String filterSource =
-			getMetadata() == null ? null : getMetadata().getSource().getFileName();
+		if (getMetadata() == null) {
+			cleanUp();
+			return;
+		}
+
+		final String filterSource = getMetadata().getSource().getFileName();
 
 		if (filterSource == null || !filterSource.equals(source)) {
-			setMetadata(getParent().getMetadata());
+			cleanUp();
+			if (getMetadata() instanceof MetadataWrapper) {
+				((MetadataWrapper) wrappedMeta).wrap(getParentMeta());
+			}
 		}
 	}
 
@@ -293,9 +304,16 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	public void setMetadata(final Metadata meta) throws IOException {
 		getParent().setMetadata(meta);
 
-		if (wrappedMeta instanceof MetadataWrapper) ((MetadataWrapper) wrappedMeta)
-			.wrap(meta);
-		else wrappedMeta = meta;
+		if (wrappedMeta != null && wrappedMeta instanceof MetadataWrapper) {
+			if (!((MetadataWrapper) wrappedMeta).unwrap().equals(getParentMeta())) {
+				cleanUp();
+				((MetadataWrapper) wrappedMeta).wrap(meta);
+			}
+		}
+		else {
+			cleanUp();
+			wrappedMeta = meta;
+		}
 	}
 
 	@Override
@@ -320,22 +338,19 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public void setSource(final String fileName) throws IOException {
-		getParent().setSource(fileName);
-		setSourceHelper(fileName, new SCIFIOConfig());
+		setSource(fileName, new SCIFIOConfig());
 	}
 
 	@Override
 	public void setSource(final File file) throws IOException {
-		getParent().setSource(file);
-		setSourceHelper(file.getAbsolutePath(), new SCIFIOConfig());
+		setSource(file.getAbsolutePath(), new SCIFIOConfig());
 	}
 
 	@Override
 	public void setSource(final RandomAccessInputStream stream)
 		throws IOException
 	{
-		getParent().setSource(stream);
-		setSourceHelper(stream.getFileName(), new SCIFIOConfig());
+		setSource(stream.getFileName(), new SCIFIOConfig());
 	}
 
 	@Override

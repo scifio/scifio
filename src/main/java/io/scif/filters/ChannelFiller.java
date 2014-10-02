@@ -237,21 +237,6 @@ public class ChannelFiller extends AbstractReaderFilter {
 		return plane;
 	}
 
-	// -- AbstractReaderFilter API Methods --
-
-	/* lutLength is 0 until a plane is opened */
-	@Override
-	protected void
-		setSourceHelper(final String source, final SCIFIOConfig config)
-	{
-		try {
-			cleanUp();
-		}
-		catch (final IOException e) {
-			// Nothing to do (this Filter's cleanUp should never throw this)
-		}
-	}
-
 	// -- Prioritized API --
 
 	@Override

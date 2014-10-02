@@ -162,7 +162,9 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	@Override
 	protected void
 		setSourceHelper(final String source, final SCIFIOConfig config)
+			throws IOException
 	{
+		super.setSourceHelper(source, config);
 		final String oldFile = getCurrentFile();
 		if (!source.equals(oldFile) ||
 			metaCheck() &&
