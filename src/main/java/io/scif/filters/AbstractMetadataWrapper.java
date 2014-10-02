@@ -119,11 +119,6 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 		meta.setSource(source);
 	}
 
-	@Override
-	public void populateImageMetadata() {
-		meta.populateImageMetadata();
-	}
-
 	// -- HasFormat API Methods --
 
 	@Override

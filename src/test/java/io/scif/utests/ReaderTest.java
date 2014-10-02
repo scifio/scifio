@@ -87,11 +87,11 @@ public class ReaderTest {
 	@Test
 	public void reuseTestFilters() throws FormatException, IOException {
 		// Test each Readerfilter individually
-		reuseFilter(ChannelFiller.class);
-		reuseFilter(PlaneSeparator.class);
+//		reuseFilter(ChannelFiller.class);
+//		reuseFilter(PlaneSeparator.class);
 		reuseFilter(DimensionSwapper.class);
-		reuseFilter(FileStitcher.class);
-		reuseFilter(MinMaxFilter.class);
+//		reuseFilter(FileStitcher.class);
+//		reuseFilter(MinMaxFilter.class);
 	}
 
 	// -- Helper methods --
