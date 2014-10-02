@@ -30,6 +30,25 @@
 
 package io.scif.utests;
 
+import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertTrue;
+import io.scif.FormatException;
+import io.scif.Metadata;
+import io.scif.Reader;
+import io.scif.SCIFIO;
+import io.scif.filters.ChannelFiller;
+import io.scif.filters.DimensionSwapper;
+import io.scif.filters.FileStitcher;
+import io.scif.filters.Filter;
+import io.scif.filters.MinMaxFilter;
+import io.scif.filters.PlaneSeparator;
+import io.scif.filters.ReaderFilter;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -40,4 +59,69 @@ import org.testng.annotations.Test;
 @Test(groups = "readerTests")
 public class ReaderTest {
 
+	private SCIFIO scifio;
+
+	@BeforeMethod
+	public void setUp() {
+		scifio = new SCIFIO();
+	}
+
+	@AfterMethod
+	public void tearDown() {
+		scifio.getContext().dispose();
+	}
+
+	/**
+	 * Ensure that using a single {@link Reader} instance multiple times behaves
+	 * as intended.
+	 */
+	@Test
+	public void reuseTest() throws FormatException, IOException {
+		reuseFilter(null);
+	}
+
+	/**
+	 * Ensure that using a single {@link Reader} instance multiple times behaves
+	 * as intended when {@link Filter}s are enabled.
+	 */
+	@Test
+	public void reuseTestFilters() throws FormatException, IOException {
+		// Test each Readerfilter individually
+		reuseFilter(ChannelFiller.class);
+		reuseFilter(PlaneSeparator.class);
+		reuseFilter(DimensionSwapper.class);
+		reuseFilter(FileStitcher.class);
+		reuseFilter(MinMaxFilter.class);
+	}
+
+	// -- Helper methods --
+
+	private void reuseFilter(final Class<? extends Filter> filterClass)
+		throws FormatException, IOException
+	{
+		final String id1 =
+			"8bit-signed&pixelType=int8&axes=X,Y,Time&lengths=50,50,7.fake";
+		final String id2 =
+			"8bit-signed&pixelType=int8&axes=X,Y,Z,Channel&lengths=50,50,7,3.fake";
+
+		final ReaderFilter reader = scifio.initializer().initializeReader(id1);
+
+		// enable the filter if specified
+		if (filterClass != null) reader.enable(filterClass);
+
+		final byte[] bytes1 = reader.openPlane(0, 0).getBytes();
+
+		// Test reader.setSource
+		reader.setSource(id2);
+		byte[] bytes2 = reader.openPlane(0, 0).getBytes();
+
+		assertFalse(Arrays.equals(bytes1, bytes2));
+
+		// Test reader.setMetadata
+		final Metadata meta = scifio.initializer().parseMetadata(id1);
+		reader.setMetadata(meta);
+		bytes2 = reader.openPlane(0, 0).getBytes();
+
+		assertTrue(Arrays.equals(bytes1, bytes2));
+	}
 }
