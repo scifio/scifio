@@ -82,7 +82,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	 * Generates format-agnostic image metadata structures based on this
 	 * instance's format-specific metadata.
 	 */
-	void populateImageMetadata();
+	void populateImageMetadata(int imageIndex);
 
 	// -- Format-agnostic Metadata API Methods --
 
@@ -112,14 +112,17 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	void setFiltered(boolean filtered);
 
 	/**
-	 * Adds the provided image metadata to this dataset metadata
+	 * Sets the number of images in this dataset.
+	 * 
+	 * @param imageCount - Number of {@link ImageMetadata} in this dataset.
 	 */
-	void add(final ImageMetadata meta);
+	void setImageCount(int count);
 
 	/**
-	 * Creates the specified number of blank ImageMetadata.
-	 * 
-	 * @param imageCount - Number of ImageMetadata to create.
+	 * Sets the {@link ImageMetadata} at a specified image index.
+	 *
+	 * @param imageIndex - Position of the provided ImageMetadata
+	 * @param meta - New ImageMeatadata for the specified position.
 	 */
-	void createImageMetadata(int imageCount);
+	void setImageMetadata(int imageIndex, ImageMetadata meta);
 }

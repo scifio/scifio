@@ -35,7 +35,8 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -60,7 +61,7 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	/* Contains a list of metadata objects for each image in this dataset */
 	@io.scif.Field(label = "imageMeta", isList = true)
-	private List<ImageMetadata> imageMeta;
+	private ImageMetadata[] imageMeta;
 
 	/* A string id for this dataset. */
 	private String datasetName = null;
@@ -75,19 +76,22 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	public AbstractMetadata(final Metadata copy) {
-		this(copy.getAll());
-
-		table = new DefaultMetaTable(copy.getTable());
+		this(copy.getAll(), copy.getTable());
 	}
 
-	public AbstractMetadata(final List<ImageMetadata> list) {
-		imageMeta = new ArrayList<ImageMetadata>();
-		table = new DefaultMetaTable();
+	public AbstractMetadata(final Collection<ImageMetadata> list) {
+		this(list, null);
+	}
 
+	public AbstractMetadata(final Collection<ImageMetadata> list,
+		final MetaTable table)
+	{
+		this.table = table == null ? new DefaultMetaTable() : table;
+		int index = 0;
 		if (list != null) {
-			for (int i = 0; i < list.size(); i++) {
-				final ImageMetadata core = list.get(i);
-				imageMeta.add(core.copy());
+			imageMeta = new ImageMetadata[list.size()];
+			for (final ImageMetadata core : list) {
+				imageMeta[index++] = core.copy();
 			}
 		}
 	}
@@ -120,17 +124,29 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	@Override
 	public ImageMetadata get(final int imageIndex) {
-		return imageMeta.get(imageIndex);
+		if (imageMeta == null) {
+			throw new IllegalStateException(
+				"No image metadata available. Call setImageCount(int) first.");
+		}
+
+		if (imageMeta[imageIndex] == null) populateImageMetadata(imageIndex);
+
+		return imageMeta[imageIndex];
 	}
 
 	@Override
 	public List<ImageMetadata> getAll() {
-		return imageMeta;
+		// Ensure all metadata are initialized
+		for (int i=0; i<imageMeta.length; i++) {
+			get(i);
+		}
+
+		return Arrays.asList(imageMeta);
 	}
 
 	@Override
 	public int getImageCount() {
-		return imageMeta.size();
+		return imageMeta == null ? 0 : imageMeta.length;
 	}
 
 	@Override
@@ -156,16 +172,14 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	@Override
-	public void add(final ImageMetadata meta) {
-		imageMeta.add(meta);
+	public void setImageCount(final int count) {
+		if (imageMeta != null) imageMeta = Arrays.copyOf(imageMeta, count);
+		else imageMeta = new ImageMetadata[count];
 	}
 
 	@Override
-	public void createImageMetadata(final int imageCount) {
-		imageMeta.clear();
-
-		for (int i = 0; i < imageCount; i++)
-			add(new DefaultImageMetadata());
+	public void setImageMetadata(final int imageIndex, final ImageMetadata meta) {
+		imageMeta[imageIndex] = meta;
 	}
 
 	// -- HasMetaTable API Methods --
@@ -225,7 +239,7 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 			}
 
 			table = new DefaultMetaTable();
-			imageMeta = new ArrayList<ImageMetadata>();
+			imageMeta = null;
 
 			// check superclasses and interfaces
 			reset(type.getSuperclass());
