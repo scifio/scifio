@@ -1730,7 +1730,7 @@ public class AVIFormat extends AbstractFormat {
 					new byte[(int) meta.getLengths().get((int) planeIndex).longValue()];
 				stream.read(b);
 				final MSRLECodec codec = new MSRLECodec();
-				codec.setContext(meta.getContext());
+				meta.getContext().inject(codec);
 				buf = codec.decompress(b, options);
 				plane.setData(buf);
 				if (updateLastPlane(meta, planeIndex, dims)) {
@@ -1741,6 +1741,7 @@ public class AVIFormat extends AbstractFormat {
 			}
 			else if (bmpCompression == MS_VIDEO) {
 				final MSVideoCodec codec = new MSVideoCodec();
+				meta.getContext().inject(codec);
 				buf = codec.decompress(stream, options);
 				plane.setData(buf);
 				if (updateLastPlane(meta, planeIndex, dims)) {
@@ -1751,6 +1752,7 @@ public class AVIFormat extends AbstractFormat {
 			}
 			else if (bmpCompression == JPEG) {
 				final JPEGCodec codec = new JPEGCodec();
+				meta.getContext().inject(codec);
 
 				byte[] tmpPlane =
 					new byte[(int) meta.getLengths().get((int) planeIndex).longValue()];
@@ -1824,6 +1826,7 @@ public class AVIFormat extends AbstractFormat {
 			  options[1] = lastImage;
 
 			  CinepakCodec codec = new CinepakCodec();
+				meta.getContext().inject(codec);
 			  buf = codec.decompress(b, options);
 			  lastImage = buf;
 			  if (no == m.imageCount - 1) lastImage = null;
