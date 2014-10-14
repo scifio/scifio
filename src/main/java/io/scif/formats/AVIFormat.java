@@ -309,7 +309,7 @@ public class AVIFormat extends AbstractFormat {
 					nBytes =
 						AVIUtils.extractCompression(this, options, getSource(), null, 0,
 							new int[] { x, y, w, h }).length /
-							w * h;
+							(w * h);
 				}
 				catch (final IOException e) {
 					log().error("IOException while decompressing", e);
@@ -1023,10 +1023,6 @@ public class AVIFormat extends AbstractFormat {
 					options.previousImage = meta.getLastPlaneBytes();
 				}
 
-				final long fileOff =
-					meta.getOffsets().get((int) planeIndex).longValue();
-				getStream().seek(fileOff);
-
 				buf =
 					AVIUtils.extractCompression(meta, options, getStream(), tmpPlane,
 						planeIndex, new int[] { x, y, w, h });
@@ -1723,6 +1719,11 @@ public class AVIFormat extends AbstractFormat {
 		{
 			final int bmpCompression = meta.getBmpCompression();
 
+			final long fileOff =
+				meta.getOffsets().get((int) planeIndex).longValue();
+			long filePointer = stream.getFilePointer();
+			stream.seek(fileOff);
+
 			byte[] buf = null;
 
 			if (bmpCompression == MSRLE) {
@@ -1837,6 +1838,8 @@ public class AVIFormat extends AbstractFormat {
 				throw new UnsupportedCompressionException(bmpCompression +
 					" not supported");
 			}
+
+			stream.seek(filePointer);
 
 			return buf;
 		}
