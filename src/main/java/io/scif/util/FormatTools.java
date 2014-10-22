@@ -283,9 +283,21 @@ public final class FormatTools {
 	public static double getScale(final Metadata m, final int imageIndex,
 		final AxisType axisType)
 	{
-		final CalibratedAxis axis = m.get(imageIndex).getAxis(axisType);
+		return getScale(m.get(imageIndex), axisType);
+	}
+
+	/**
+	 * Gets the average scale over the specified axis of the given image metadata.
+	 *
+	 * @return the average scale over the axis's values, or 1.0 if the desired
+	 *         axis is null.
+	 */
+	public static double getScale(final ImageMetadata imageMeta,
+		final AxisType axisType)
+	{
+		final CalibratedAxis axis = imageMeta.getAxis(axisType);
 		if (axis == null) return 1.0;
-		final long axisLength = m.get(imageIndex).getAxisLength(axis);
+		final long axisLength = imageMeta.getAxisLength(axis);
 		return axis.averageScale(0, axisLength - 1);
 	}
 
