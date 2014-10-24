@@ -40,11 +40,13 @@
 	</repositories>
 
 	<dependencies>
-		<!-- SciJava dependencies -->
+		<!-- SCIFIO dependencies -->
 		<dependency>
 			<groupId>io.scif</groupId>
 			<artifactId>scifio-jai-imageio</artifactId>
 		</dependency>
+
+		<!-- ImgLib2 dependencies -->
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
@@ -53,6 +55,8 @@
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-meta</artifactId>
 		</dependency>
+
+		<!-- SciJava dependencies -->
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>
