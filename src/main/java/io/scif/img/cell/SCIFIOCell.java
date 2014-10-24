@@ -35,7 +35,6 @@ import io.scif.img.cell.cache.CacheService;
 import java.util.Arrays;
 
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
-import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.basictypeaccess.array.CharArray;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
@@ -304,11 +303,6 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 		if (data instanceof ByteArray) {
 			final byte[] bytes = ((ByteArray) data).getCurrentStorageArray();
 			computedataSize(8l * bytes.length);
-			hashCode = Arrays.hashCode(bytes);
-		}
-		else if (data instanceof BitArray) {
-			final int[] bytes = ((BitArray) data).getCurrentStorageArray();
-			computedataSize((long) Integer.SIZE * bytes.length);
 			hashCode = Arrays.hashCode(bytes);
 		}
 		else if (data instanceof CharArray) {

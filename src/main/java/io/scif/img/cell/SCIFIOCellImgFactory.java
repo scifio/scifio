@@ -33,7 +33,6 @@ package io.scif.img.cell;
 import io.scif.Reader;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.ImageRegion;
-import io.scif.img.cell.loaders.BitArrayLoader;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.CharArrayLoader;
 import io.scif.img.cell.loaders.DoubleArrayLoader;
@@ -45,7 +44,6 @@ import io.scif.img.cell.loaders.ShortArrayLoader;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
-import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.basictypeaccess.array.CharArray;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
@@ -55,6 +53,7 @@ import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.img.cell.AbstractCellImgFactory;
 import net.imglib2.type.NativeType;
+import net.imglib2.util.Fraction;
 
 /**
  * {@link AbstractCellImgFactory} implementation for working with
@@ -87,16 +86,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	// -- CellImgFactory API Methods --
 
 	@Override
-	public SCIFIOCellImg<T, BitArray, SCIFIOCell<BitArray>> createBitInstance(
-		final long[] dimensions, final int entitiesPerPixel)
-	{
-		return createInstance(new BitArrayLoader(reader(), subregion), dimensions,
-			entitiesPerPixel);
-	}
-
-	@Override
 	public SCIFIOCellImg<T, ByteArray, SCIFIOCell<ByteArray>> createByteInstance(
-		final long[] dimensions, final int entitiesPerPixel)
+		final long[] dimensions, final Fraction entitiesPerPixel)
 	{
 		return createInstance(new ByteArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
@@ -104,7 +95,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	@Override
 	public SCIFIOCellImg<T, CharArray, SCIFIOCell<CharArray>> createCharInstance(
-		final long[] dimensions, final int entitiesPerPixel)
+		final long[] dimensions, final Fraction entitiesPerPixel)
 	{
 		return createInstance(new CharArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
@@ -112,7 +103,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	@Override
 	public SCIFIOCellImg<T, ShortArray, SCIFIOCell<ShortArray>>
-		createShortInstance(final long[] dimensions, final int entitiesPerPixel)
+		createShortInstance(final long[] dimensions, final Fraction entitiesPerPixel)
 	{
 		return createInstance(new ShortArrayLoader(reader(), subregion),
 			dimensions, entitiesPerPixel);
@@ -120,7 +111,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	@Override
 	public SCIFIOCellImg<T, IntArray, SCIFIOCell<IntArray>> createIntInstance(
-		final long[] dimensions, final int entitiesPerPixel)
+		final long[] dimensions, final Fraction entitiesPerPixel)
 	{
 		return createInstance(new IntArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
@@ -128,7 +119,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	@Override
 	public SCIFIOCellImg<T, LongArray, SCIFIOCell<LongArray>> createLongInstance(
-		final long[] dimensions, final int entitiesPerPixel)
+		final long[] dimensions, final Fraction entitiesPerPixel)
 	{
 		return createInstance(new LongArrayLoader(reader(), subregion), dimensions,
 			entitiesPerPixel);
@@ -136,7 +127,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	@Override
 	public SCIFIOCellImg<T, FloatArray, SCIFIOCell<FloatArray>>
-		createFloatInstance(final long[] dimensions, final int entitiesPerPixel)
+		createFloatInstance(final long[] dimensions, final Fraction entitiesPerPixel)
 	{
 		return createInstance(new FloatArrayLoader(reader(), subregion),
 			dimensions, entitiesPerPixel);
@@ -144,7 +135,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	@Override
 	public SCIFIOCellImg<T, DoubleArray, SCIFIOCell<DoubleArray>>
-		createDoubleInstance(final long[] dimensions, final int entitiesPerPixel)
+		createDoubleInstance(final long[] dimensions, final Fraction entitiesPerPixel)
 	{
 		return createInstance(new DoubleArrayLoader(reader(), subregion),
 			dimensions, entitiesPerPixel);
@@ -209,7 +200,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	private <A extends ArrayDataAccess<?>, L extends SCIFIOArrayLoader<A>>
 		SCIFIOCellImg<T, A, SCIFIOCell<A>> createInstance(final L loader,
-			long[] dimensions, final int entitiesPerPixel)
+			long[] dimensions, final Fraction entitiesPerPixel)
 	{
 		dimensions = checkDimensions(dimensions);
 		final int[] cellSize = checkCellSize(defaultCellDimensions, dimensions);
@@ -219,8 +210,9 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		final SCIFIOCellCache<A> c =
 			new SCIFIOCellCache<A>(reader.getContext(), loader);
 
-		SCIFIOCellImg<T, A, SCIFIOCell<A>> cellImg = new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(
-			c, entitiesPerPixel, dimensions, cellSize));
+		SCIFIOCellImg<T, A, SCIFIOCell<A>> cellImg =
+			new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(c,
+				entitiesPerPixel, dimensions, cellSize));
 
 		cellImg.setLoader(loader);
 

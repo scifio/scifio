@@ -58,7 +58,6 @@ import net.imglib2.exception.ImgLibException;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
-import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.basictypeaccess.array.CharArray;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
@@ -711,13 +710,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 			// For each array type, just create an appropriate container array
 			// and System.arraycopy the relevant data.
-			if (store instanceof BitArray) {
-				final int[] source = ((BitArray) store).getCurrentStorageArray();
-				final int[] bits = new int[planeSize / 32];
-				System.arraycopy(source, planeSize * planeIndex, bits, 0, bits.length);
-				return bits;
-			}
-			else if (store instanceof ByteArray) {
+			if (store instanceof ByteArray) {
 				final byte[] source = ((ByteArray) store).getCurrentStorageArray();
 				final byte[] bytes = new byte[planeSize];
 				System.arraycopy(source, planeSize *

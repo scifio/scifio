@@ -32,7 +32,6 @@ package io.scif.img.converters;
 
 import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
-import io.scif.img.cell.loaders.BitArrayLoader;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.CharArrayLoader;
 import io.scif.img.cell.loaders.DoubleArrayLoader;
@@ -41,7 +40,6 @@ import io.scif.img.cell.loaders.IntArrayLoader;
 import io.scif.img.cell.loaders.LongArrayLoader;
 import io.scif.img.cell.loaders.ShortArrayLoader;
 import net.imglib2.img.array.ArrayImg;
-import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.basictypeaccess.array.CharArray;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
@@ -79,12 +77,7 @@ public class ArrayDataAccessConverter extends AbstractPlaneConverter {
 		// directly.
 		// however that simply may not be feasible given the variety of data types.
 
-		if (store instanceof BitArray) {
-			final BitArrayLoader loader =
-				new BitArrayLoader(reader, config.imgOpenerGetRegion());
-			loader.convertBytes((BitArray) store, source, planeIndex);
-		}
-		else if (store instanceof ByteArray) {
+		if (store instanceof ByteArray) {
 			final ByteArrayLoader loader =
 				new ByteArrayLoader(reader, config.imgOpenerGetRegion());
 			loader.convertBytes((ByteArray) store, source, planeIndex);

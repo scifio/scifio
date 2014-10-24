@@ -34,6 +34,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.cell.AbstractCells;
 import net.imglib2.img.list.AbstractListImg;
+import net.imglib2.util.Fraction;
 import net.imglib2.util.IntervalIndexer;
 
 /**
@@ -77,8 +78,9 @@ public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
 
 	// -- Constructor --
 
-	public SCIFIOImgCells(final CellCache<A> cache, final int entitiesPerPixel,
-		final long[] dimensions, final int[] cellDimensions)
+	public SCIFIOImgCells(final CellCache<A> cache,
+		final Fraction entitiesPerPixel, final long[] dimensions,
+		final int[] cellDimensions)
 	{
 		super(entitiesPerPixel, dimensions, cellDimensions);
 		this.cache = cache;
