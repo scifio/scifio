@@ -37,6 +37,7 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -124,6 +125,9 @@ public class NikonCodec extends AbstractCodec {
 		2, 2, 3, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 8, 5, 9, 4, 10, 3, 11, 12, 2,
 		0, 1, 13, 14 };
 
+	@Parameter
+	private CodecService codecService;
+
 	@Override
 	public byte[] compress(final byte[] data, final CodecOptions options)
 		throws FormatException
@@ -175,7 +179,7 @@ public class NikonCodec extends AbstractCodec {
 			nikon.vPredictor = new int[] { 0, 0, 0, 0 };
 		}
 
-		final HuffmanCodec huffmanCodec = new HuffmanCodec();
+		final HuffmanCodec huffmanCodec = codecService.getCodec(HuffmanCodec.class);
 
 		final byte[] pix = new byte[nikon.maxBytes];
 		in.read(pix);

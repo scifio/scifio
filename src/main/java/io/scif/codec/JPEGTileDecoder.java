@@ -274,10 +274,14 @@ public class JPEGTileDecoder extends AbstractContextual {
 
 		private final Hashtable<Region, byte[]> compressedTiles =
 			new Hashtable<Region, byte[]>();
-		private final JPEGCodec codec = new JPEGCodec();
+		private final JPEGCodec codec;
 		private final CodecOptions options = new CodecOptions();
 
 		private final ByteVector toCompress = new ByteVector();
+
+		@Parameter
+		private CodecService codecService;
+
 		private int row = 0;
 
 		private Region lastRegion = null;
@@ -286,11 +290,12 @@ public class JPEGTileDecoder extends AbstractContextual {
 		private int yy = 0, hh = 0;
 
 		public TileCache(final Context ctx, final int yy, final int hh) {
+			ctx.inject(this);
 			options.interleaved = true;
 			options.littleEndian = false;
 			this.yy = yy;
 			this.hh = hh;
-			codec.setContext(ctx);
+			codec = codecService.getCodec(JPEGCodec.class);
 		}
 
 		public void add(final byte[] pixels, final int x, final int y, final int w)

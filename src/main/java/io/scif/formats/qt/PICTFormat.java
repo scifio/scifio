@@ -39,7 +39,9 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
+import io.scif.codec.Codec;
 import io.scif.codec.CodecOptions;
+import io.scif.codec.CodecService;
 import io.scif.codec.JPEGCodec;
 import io.scif.codec.PackbitsCodec;
 import io.scif.common.DataTools;
@@ -230,6 +232,9 @@ public class PICTFormat extends AbstractFormat {
 	}
 
 	public static class Parser extends AbstractParser<Metadata> {
+
+		@Parameter
+		private CodecService codecService;
 
 		// -- Parser API methods --
 
@@ -527,8 +532,7 @@ public class PICTFormat extends AbstractFormat {
 						meta.get(0).setAxisLength(Axes.CHANNEL, 3);
 					}
 					else {
-						final PackbitsCodec c = new PackbitsCodec();
-						c.setContext(getContext());
+						final PackbitsCodec c = codecService.getCodec(PackbitsCodec.class);
 						final CodecOptions options = new CodecOptions();
 						options.maxBytes = (int) meta.get(0).getAxisLength(Axes.X) * 4;
 						uBuf = c.decompress(buf, options);
@@ -672,6 +676,9 @@ public class PICTFormat extends AbstractFormat {
 		@Parameter
 		private QTJavaService qtJavaService;
 
+		@Parameter
+		private CodecService codecService;
+
 		// -- AbstractReader API Methods --
 
 		@Override
@@ -706,7 +713,8 @@ public class PICTFormat extends AbstractFormat {
 					options.interleaved = meta.get(0).getInterleavedAxisCount() > 0;
 					options.littleEndian = meta.get(0).isLittleEndian();
 
-					v.write(new JPEGCodec().decompress(s, options));
+					final Codec codec = codecService.getCodec(JPEGCodec.class);
+					v.write(codec.decompress(s, options));
 				}
 
 				s.close();

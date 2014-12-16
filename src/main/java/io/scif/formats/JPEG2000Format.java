@@ -44,6 +44,7 @@ import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.codec.CodecOptions;
+import io.scif.codec.CodecService;
 import io.scif.codec.CompressionType;
 import io.scif.codec.JPEG2000BoxType;
 import io.scif.codec.JPEG2000Codec;
@@ -62,6 +63,7 @@ import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -727,6 +729,9 @@ public class JPEG2000Format extends AbstractFormat {
 
 	public static class Reader extends ByteArrayReader<Metadata> {
 
+		@Parameter
+		private CodecService codecService;
+
 		// -- AbstractReader API Methods --
 
 		@Override
@@ -772,8 +777,7 @@ public class JPEG2000Format extends AbstractFormat {
 			}
 
 			getStream().seek(meta.getPixelsOffset());
-			final JPEG2000Codec codec = new JPEG2000Codec();
-			codec.setContext(getContext());
+			final JPEG2000Codec codec = codecService.getCodec(JPEG2000Codec.class);
 			final byte[] lastIndexPlane = codec.decompress(getStream(), options);
 			meta.setLastIndexBytes(lastIndexPlane);
 			final RandomAccessInputStream s =
@@ -787,6 +791,9 @@ public class JPEG2000Format extends AbstractFormat {
 	}
 
 	public static class Writer extends AbstractWriter<Metadata> {
+
+		@Parameter
+		private CodecService codecService;
 
 		// -- AbstractWriter Methods --
 
@@ -858,8 +865,7 @@ public class JPEG2000Format extends AbstractFormat {
 					getCompression().equals(CompressionType.J2K.getCompression());
 			options.colorModel = getColorModel();
 
-			final JPEG2000Codec codec = new JPEG2000Codec();
-			codec.setContext(getContext());
+			final JPEG2000Codec codec = codecService.getCodec(JPEG2000Codec.class);
 			return codec.compress(buf, options);
 		}
 

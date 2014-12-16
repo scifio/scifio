@@ -44,7 +44,9 @@ import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.Translator;
 import io.scif.UnsupportedCompressionException;
+import io.scif.codec.Codec;
 import io.scif.codec.CodecOptions;
+import io.scif.codec.CodecService;
 import io.scif.codec.CompressionType;
 import io.scif.codec.JPEGCodec;
 import io.scif.codec.MJPBCodec;
@@ -1330,7 +1332,10 @@ public class NativeQTFormat extends AbstractFormat {
 							final byte[] b = new byte[(int) (atomSize - 12)];
 							stream.read(b);
 
-							final byte[] output = new ZlibCodec().decompress(b, null);
+							final CodecService codecService =
+								meta.context().service(CodecService.class);
+							final Codec codec = codecService.getCodec(ZlibCodec.class);
+							final byte[] output = codec.decompress(b, null);
 
 							final RandomAccessInputStream oldIn = stream;
 							stream = new RandomAccessInputStream(meta.getContext(), output);
@@ -1487,6 +1492,8 @@ public class NativeQTFormat extends AbstractFormat {
 		private static byte[] uncompress(final byte[] pixs, final String code,
 			final Metadata meta) throws FormatException
 		{
+			final CodecService codecService =
+				meta.context().service(CodecService.class);
 			final CodecOptions options = new MJPBCodecOptions();
 			options.width = (int) meta.get(0).getAxisLength(Axes.X);
 			options.height = (int) meta.get(0).getAxisLength(Axes.Y);
@@ -1499,23 +1506,25 @@ public class NativeQTFormat extends AbstractFormat {
 			options.littleEndian = meta.get(0).isLittleEndian();
 			options.interleaved = meta.get(0).isMultichannel();
 
+			final Codec codec;
 			if (code.equals("raw ")) return pixs;
 			else if (code.equals("rle ")) {
-				return new QTRLECodec().decompress(pixs, options);
+				codec = codecService.getCodec(QTRLECodec.class);
 			}
 			else if (code.equals("rpza")) {
-				return new RPZACodec().decompress(pixs, options);
+				codec = codecService.getCodec(QTRLECodec.class);
 			}
 			else if (code.equals("mjpb")) {
 				((MJPBCodecOptions) options).interlaced = meta.isInterlaced();
-				return new MJPBCodec().decompress(pixs, options);
+				codec = codecService.getCodec(MJPBCodec.class);
 			}
 			else if (code.equals("jpeg")) {
-				return new JPEGCodec().decompress(pixs, options);
+				codec = codecService.getCodec(JPEGCodec.class);
 			}
 			else {
 				throw new UnsupportedCompressionException("Unsupported codec : " + code);
 			}
+			return codec.decompress(pixs, options);
 		}
 
 		/** Cut off header bytes from a resource fork file. */

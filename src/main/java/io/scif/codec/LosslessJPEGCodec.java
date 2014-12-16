@@ -37,6 +37,7 @@ import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ShortArray;
 
@@ -94,6 +95,9 @@ public class LosslessJPEGCodec extends AbstractCodec {
 	public static final int DHP = 0xffde; // define hierarchical progression
 	public static final int EXP = 0xffdf; // expand reference components
 	public static final int COM = 0xfffe; // comment
+
+	@Parameter
+	private CodecService codecService;
 
 	// -- Codec API methods --
 
@@ -167,7 +171,7 @@ public class LosslessJPEGCodec extends AbstractCodec {
 				toDecode = b.toByteArray();
 
 				final BitBuffer bb = new BitBuffer(toDecode);
-				final HuffmanCodec huffman = new HuffmanCodec();
+				final HuffmanCodec huffman = codecService.getCodec(HuffmanCodec.class);
 				final HuffmanCodecOptions huffmanOptions = new HuffmanCodecOptions();
 				huffmanOptions.bitsPerSample = bitsPerSample;
 				huffmanOptions.maxBytes = buf.length / nComponents;

@@ -47,6 +47,7 @@ import io.scif.Plane;
 import io.scif.UnsupportedCompressionException;
 import io.scif.codec.BitBuffer;
 import io.scif.codec.CodecOptions;
+import io.scif.codec.CodecService;
 import io.scif.codec.JPEGCodec;
 import io.scif.codec.MSRLECodec;
 import io.scif.codec.MSVideoCodec;
@@ -1726,12 +1727,14 @@ public class AVIFormat extends AbstractFormat {
 
 			byte[] buf = null;
 
+			final CodecService codecService =
+				meta.context().service(CodecService.class);
+
 			if (bmpCompression == MSRLE) {
 				final byte[] b =
 					new byte[(int) meta.getLengths().get((int) planeIndex).longValue()];
 				stream.read(b);
-				final MSRLECodec codec = new MSRLECodec();
-				meta.getContext().inject(codec);
+				final MSRLECodec codec = codecService.getCodec(MSRLECodec.class);
 				buf = codec.decompress(b, options);
 				plane.setData(buf);
 				if (updateLastPlane(meta, planeIndex, dims)) {
@@ -1741,8 +1744,7 @@ public class AVIFormat extends AbstractFormat {
 				}
 			}
 			else if (bmpCompression == MS_VIDEO) {
-				final MSVideoCodec codec = new MSVideoCodec();
-				meta.getContext().inject(codec);
+				final MSVideoCodec codec = codecService.getCodec(MSVideoCodec.class);
 				buf = codec.decompress(stream, options);
 				plane.setData(buf);
 				if (updateLastPlane(meta, planeIndex, dims)) {
@@ -1752,8 +1754,7 @@ public class AVIFormat extends AbstractFormat {
 				}
 			}
 			else if (bmpCompression == JPEG) {
-				final JPEGCodec codec = new JPEGCodec();
-				meta.getContext().inject(codec);
+				final JPEGCodec codec = codecService.getCodec(JPEGCodec.class);
 
 				byte[] tmpPlane =
 					new byte[(int) meta.getLengths().get((int) planeIndex).longValue()];
@@ -1826,8 +1827,7 @@ public class AVIFormat extends AbstractFormat {
 			  options[0] = new Integer(bmpBitsPerPixel);
 			  options[1] = lastImage;
 
-			  CinepakCodec codec = new CinepakCodec();
-				meta.getContext().inject(codec);
+			  CinepakCodec codec = codecService.getCodec(CinepakCodec.class);
 			  buf = codec.decompress(b, options);
 			  lastImage = buf;
 			  if (no == m.imageCount - 1) lastImage = null;

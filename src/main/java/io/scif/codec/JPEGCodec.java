@@ -44,6 +44,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -51,6 +52,9 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = Codec.class)
 public class JPEGCodec extends AbstractCodec {
+
+	@Parameter
+	private CodecService codecService;
 
 	/**
 	 * The CodecOptions parameter should have the following fields set:
@@ -117,7 +121,8 @@ public class JPEGCodec extends AbstractCodec {
 		catch (final IOException exc) {
 			// probably a lossless JPEG; delegate to LosslessJPEGCodec
 			in.seek(fp);
-			return new LosslessJPEGCodec().decompress(in, options);
+			final Codec codec = codecService.getCodec(LosslessJPEGCodec.class);
+			return codec.decompress(in, options);
 		}
 
 		if (options == null) options = CodecOptions.getDefaultOptions();

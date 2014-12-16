@@ -36,6 +36,7 @@ import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -48,6 +49,9 @@ public class MJPBCodec extends AbstractCodec {
 
 	private static final byte[] HEADER = new byte[] { (byte) 0xff, (byte) 0xd8,
 		0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0x48, 0x48, 0, 0 };
+
+	@Parameter
+	private CodecService codecService;
 
 	// -- Codec API methods --
 
@@ -302,7 +306,7 @@ public class MJPBCodec extends AbstractCodec {
 				v2.add((byte) 0xff);
 				v2.add((byte) 0xd9);
 
-				final JPEGCodec jpeg = new JPEGCodec();
+				final JPEGCodec jpeg = codecService.getCodec(JPEGCodec.class);
 				final byte[] top = jpeg.decompress(v.toByteArray(), options);
 				final byte[] bottom = jpeg.decompress(v2.toByteArray(), options);
 
@@ -335,7 +339,8 @@ public class MJPBCodec extends AbstractCodec {
 			v.add(b.toByteArray());
 			v.add((byte) 0xff);
 			v.add((byte) 0xd9);
-			return new JPEGCodec().decompress(v.toByteArray(), options);
+			final JPEGCodec jpeg = codecService.getCodec(JPEGCodec.class);
+			return jpeg.decompress(v.toByteArray(), options);
 		}
 		catch (final IOException e) {
 			throw new FormatException(e);

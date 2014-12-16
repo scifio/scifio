@@ -45,6 +45,7 @@ import io.scif.MetadataLevel;
 import io.scif.UnsupportedCompressionException;
 import io.scif.codec.Codec;
 import io.scif.codec.CodecOptions;
+import io.scif.codec.CodecService;
 import io.scif.codec.JPEG2000Codec;
 import io.scif.codec.JPEGCodec;
 import io.scif.codec.PackbitsCodec;
@@ -1113,6 +1114,9 @@ public class DICOMFormat extends AbstractFormat {
 		private static final int SEQUENCE_DELIMINATION = 0xFFFEE0DD;
 		private static final int PIXEL_DATA = 0x7FE00010;
 
+		@Parameter
+		private CodecService codecService;
+
 		// -- Parser API Methods --
 
 		@Override
@@ -1371,7 +1375,9 @@ public class DICOMFormat extends AbstractFormat {
 						final CodecOptions options = new CodecOptions();
 						options.maxBytes = planeSize / bytesPerPixel;
 						for (int q = 0; q < bytesPerPixel; q++) {
-							new PackbitsCodec().decompress(getSource(), options);
+							final PackbitsCodec codec =
+								codecService.getCodec(PackbitsCodec.class);
+							codec.decompress(getSource(), options);
 							while (getSource().read() == 0) { /* Read to non-0 data */}
 							getSource().seek(getSource().getFilePointer() - 1);
 						}
@@ -1850,6 +1856,9 @@ public class DICOMFormat extends AbstractFormat {
 		@Parameter
 		private InitializeService initializeService;
 
+		@Parameter
+		private CodecService codecService;
+
 		// -- AbstractReader API Methods --
 
 		@Override
@@ -1908,8 +1917,8 @@ public class DICOMFormat extends AbstractFormat {
 				options.maxBytes =
 					(int) (meta.get(imageIndex).getAxisLength(Axes.X) * meta.get(
 						imageIndex).getAxisLength(Axes.Y));
+				final PackbitsCodec codec = codecService.getCodec(PackbitsCodec.class);
 				for (int c = 0; c < ec; c++) {
-					final PackbitsCodec codec = new PackbitsCodec();
 					byte[] t = null;
 
 					if (bpp > 1) {
@@ -1992,13 +2001,13 @@ public class DICOMFormat extends AbstractFormat {
 					System.arraycopy(tmp, 0, b, 0, b.length);
 				}
 
-				Codec codec = null;
 				final CodecOptions options = new CodecOptions();
 				options.littleEndian = meta.get(imageIndex).isLittleEndian();
 				options.interleaved =
 					meta.get(imageIndex).getInterleavedAxisCount() > 0;
-				if (meta.isJPEG()) codec = new JPEGCodec();
-				else codec = new JPEG2000Codec();
+				final Codec codec =
+					codecService.getCodec(meta.isJPEG() ? JPEGCodec.class
+						: JPEG2000Codec.class);
 				b = codec.decompress(b, options);
 
 				final int rowLen = w * bpp;
