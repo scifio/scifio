@@ -52,7 +52,6 @@ import io.scif.codec.JPEGCodec;
 import io.scif.codec.MJPBCodec;
 import io.scif.codec.MJPBCodecOptions;
 import io.scif.codec.QTRLECodec;
-import io.scif.codec.RPZACodec;
 import io.scif.codec.ZlibCodec;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.Location;
@@ -68,7 +67,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;

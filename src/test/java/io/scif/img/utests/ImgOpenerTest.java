@@ -37,21 +37,21 @@ import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
 import io.scif.formats.FakeFormat;
+import io.scif.img.ImageRegion;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
-import io.scif.img.ImageRegion;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 
 import java.util.List;
 
+import net.imagej.ImgPlus;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;

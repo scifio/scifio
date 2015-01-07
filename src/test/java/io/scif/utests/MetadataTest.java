@@ -33,7 +33,6 @@ package io.scif.utests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
@@ -43,8 +42,8 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
 
 import org.junit.Test;
 

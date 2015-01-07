@@ -36,8 +36,8 @@ import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgUtilityService;
 import io.scif.util.FormatTools;
+import net.imagej.ImgPlus;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Parameter;

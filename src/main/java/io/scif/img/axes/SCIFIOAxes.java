@@ -30,8 +30,8 @@
 
 package io.scif.img.axes;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
 
 /**
  * A collection of {@link AxisType}s useful to scientific image formats.

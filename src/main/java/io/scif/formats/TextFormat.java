@@ -55,7 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;

@@ -57,7 +57,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import net.imglib2.meta.CalibratedAxis;
+import net.imagej.axis.CalibratedAxis;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;

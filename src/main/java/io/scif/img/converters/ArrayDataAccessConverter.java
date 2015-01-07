@@ -39,6 +39,7 @@ import io.scif.img.cell.loaders.FloatArrayLoader;
 import io.scif.img.cell.loaders.IntArrayLoader;
 import io.scif.img.cell.loaders.LongArrayLoader;
 import io.scif.img.cell.loaders.ShortArrayLoader;
+import net.imagej.ImgPlus;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.basictypeaccess.array.CharArray;
@@ -47,7 +48,6 @@ import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Plugin;

@@ -33,8 +33,8 @@ package io.scif.img;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
 
 /**
  * A list of dimensional ranges. Each range is associated with a particular

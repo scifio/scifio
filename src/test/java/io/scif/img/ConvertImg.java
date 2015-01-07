@@ -37,7 +37,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import net.imglib2.meta.ImgPlus;
+import net.imagej.ImgPlus;
 
 import org.scijava.Context;
 

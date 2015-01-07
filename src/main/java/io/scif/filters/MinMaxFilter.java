@@ -45,8 +45,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.CalibratedAxis;
+import net.imagej.axis.AxisType;
+import net.imagej.axis.CalibratedAxis;
 
 import org.scijava.plugin.Plugin;
 

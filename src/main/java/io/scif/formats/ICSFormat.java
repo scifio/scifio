@@ -63,9 +63,9 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.CalibratedAxis;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
+import net.imagej.axis.CalibratedAxis;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;

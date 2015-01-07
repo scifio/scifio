@@ -40,8 +40,8 @@ import io.scif.config.SCIFIOConfig;
 import java.io.IOException;
 import java.util.Arrays;
 
+import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
-import net.imglib2.meta.Axes;
 
 import org.scijava.plugin.Plugin;
 

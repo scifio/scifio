@@ -58,7 +58,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;

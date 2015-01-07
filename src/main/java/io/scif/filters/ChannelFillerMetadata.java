@@ -42,9 +42,9 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
+import net.imagej.axis.Axes;
 import net.imglib2.display.ArrayColorTable;
 import net.imglib2.display.ColorTable;
-import net.imglib2.meta.Axes;
 
 import org.scijava.plugin.Parameter;
 

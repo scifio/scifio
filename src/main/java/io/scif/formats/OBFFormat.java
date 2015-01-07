@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.scijava.plugin.Plugin;
 

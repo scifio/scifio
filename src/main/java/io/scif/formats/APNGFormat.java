@@ -68,9 +68,9 @@ import java.util.zip.DeflaterOutputStream;
 
 import javax.imageio.ImageIO;
 
+import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;

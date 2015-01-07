@@ -32,7 +32,7 @@ package io.scif.filters;
 
 import java.util.List;
 
-import net.imglib2.meta.AxisType;
+import net.imagej.axis.AxisType;
 
 /**
  * {@link io.scif.filters.MetadataWrapper} implementation specifically for use

@@ -34,8 +34,8 @@ import io.scif.io.Location;
 
 import java.io.IOException;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;

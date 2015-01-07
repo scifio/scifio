@@ -68,10 +68,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import net.imagej.axis.Axes;
+import net.imagej.axis.CalibratedAxis;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -48,7 +48,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

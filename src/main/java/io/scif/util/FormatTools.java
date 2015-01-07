@@ -45,11 +45,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.CalibratedAxis;
-import net.imglib2.meta.axis.DefaultLinearAxis;
-import net.imglib2.meta.axis.LinearAxis;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
+import net.imagej.axis.CalibratedAxis;
+import net.imagej.axis.DefaultLinearAxis;
+import net.imagej.axis.LinearAxis;
 
 /**
  * A collection of constants and utility methods applicable for all cycles of

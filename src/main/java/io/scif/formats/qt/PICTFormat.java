@@ -54,10 +54,10 @@ import io.scif.util.FormatTools;
 import java.io.IOException;
 import java.util.Vector;
 
+import net.imagej.axis.Axes;
+import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.axis.DefaultLinearAxis;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

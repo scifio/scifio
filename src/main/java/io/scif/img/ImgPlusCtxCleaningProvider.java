@@ -40,7 +40,7 @@ import java.lang.ref.ReferenceQueue;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.imglib2.meta.ImgPlus;
+import net.imagej.ImgPlus;
 
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;

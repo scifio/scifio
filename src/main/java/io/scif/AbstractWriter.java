@@ -41,7 +41,7 @@ import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Writer} implementations.

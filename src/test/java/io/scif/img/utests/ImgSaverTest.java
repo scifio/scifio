@@ -39,8 +39,8 @@ import io.scif.img.ImgSaver;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.ByteArrayHandle;
 import io.scif.services.LocationService;
+import net.imagej.ImgPlus;
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.meta.ImgPlus;
 
 import org.scijava.Context;
 import org.testng.annotations.Test;

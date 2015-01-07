@@ -36,7 +36,7 @@ import io.scif.SCIFIOService;
 import java.util.List;
 import java.util.Map;
 
-import net.imglib2.meta.ImgPlus;
+import net.imagej.ImgPlus;
 
 import org.scijava.plugin.SingletonService;
 

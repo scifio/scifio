@@ -33,7 +33,7 @@ package io.scif.img.converters;
 import io.scif.Reader;
 import io.scif.SCIFIOPlugin;
 import io.scif.config.SCIFIOConfig;
-import net.imglib2.meta.ImgPlus;
+import net.imagej.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.SingletonPlugin;

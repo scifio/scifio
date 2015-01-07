@@ -45,9 +45,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.CalibratedAxis;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
+import net.imagej.axis.CalibratedAxis;
 
 import org.scijava.plugin.Plugin;
 

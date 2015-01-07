@@ -38,7 +38,7 @@ import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.testng.annotations.Test;
 

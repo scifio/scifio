@@ -51,7 +51,7 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.scijava.plugin.Plugin;
 

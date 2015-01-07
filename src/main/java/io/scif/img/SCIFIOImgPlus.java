@@ -36,11 +36,11 @@ import io.scif.img.cell.SCIFIOCellImg;
 
 import java.io.IOException;
 
+import net.imagej.ImgPlus;
+import net.imagej.ImgPlusMetadata;
+import net.imagej.axis.AxisType;
 import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.ImgPlus;
-import net.imglib2.meta.ImgPlusMetadata;
 
 import org.scijava.Disposable;
 

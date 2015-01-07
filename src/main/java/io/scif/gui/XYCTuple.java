@@ -31,7 +31,7 @@
 package io.scif.gui;
 
 import io.scif.ImageMetadata;
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 /**
  * Helper class for converting N-D Metadata to x,y,c values for use in AWT

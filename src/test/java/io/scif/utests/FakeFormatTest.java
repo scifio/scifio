@@ -39,8 +39,8 @@ import io.scif.formats.FakeFormat;
 
 import java.io.IOException;
 
+import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
-import net.imglib2.meta.Axes;
 
 import org.testng.annotations.Test;
 

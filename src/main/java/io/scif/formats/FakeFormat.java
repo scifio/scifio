@@ -55,12 +55,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import net.imagej.axis.Axes;
+import net.imagej.axis.CalibratedAxis;
+import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.CalibratedAxis;
-import net.imglib2.meta.axis.DefaultLinearAxis;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;

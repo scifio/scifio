@@ -34,8 +34,9 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import net.imglib2.meta.CalibratedAxis;
-import net.imglib2.meta.ImgPlus;
+import net.imagej.ImgPlus;
+import net.imagej.axis.CalibratedAxis;
+
 
 /**
  * A simple manual test of the {@link IO#open(String)} convenience method.

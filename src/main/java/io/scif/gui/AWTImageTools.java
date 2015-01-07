@@ -76,10 +76,10 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.meta.Axes;
 
 /**
  * A utility class with convenience methods for manipulating images in

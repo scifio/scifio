@@ -43,8 +43,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.axis.CalibratedAxis;
 import net.imglib2.display.ColorTable;
-import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Parameter;

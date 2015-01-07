@@ -45,8 +45,8 @@ import java.io.IOException;
 
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
+import net.imagej.ImgPlus;
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.meta.ImgPlus;
 
 import org.scijava.Priority;
 import org.scijava.io.AbstractIOPlugin;

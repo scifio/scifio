@@ -34,10 +34,11 @@ import io.scif.util.FormatTools;
 
 import java.util.List;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.CalibratedAxis;
-import net.imglib2.meta.Named;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
+import net.imagej.axis.CalibratedAxis;
+
+import org.scijava.Named;
 
 /**
  * ImageMetadata stores the metadata for a single image within a dataset. Here,

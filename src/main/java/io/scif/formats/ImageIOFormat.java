@@ -54,7 +54,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;

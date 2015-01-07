@@ -60,7 +60,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;

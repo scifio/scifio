@@ -39,9 +39,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.CalibratedAxis;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
+import net.imagej.axis.CalibratedAxis;
 
 /**
  * Abstract superclass of all {@link io.scif.ImageMetadata} implementations.

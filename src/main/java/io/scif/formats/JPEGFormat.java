@@ -44,7 +44,7 @@ import java.awt.color.CMMException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
