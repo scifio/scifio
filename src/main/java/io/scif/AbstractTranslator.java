@@ -79,10 +79,26 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 		final M typedSource = SCIFIOMetadataTools.<M> castMeta(trueSource);
 		final N typedDest = SCIFIOMetadataTools.<N> castMeta(dest);
 
+		typedTranslate(typedSource, sourceImgMeta, typedDest);
+	}
+
+	/**
+	 * This method provides a hook for subclasses that need access to both
+	 * the {@link Metadata} and {@link ImageMetadata}. It is provided with
+	 * concrete typing for convenience and to limit code duplication.
+	 * <p>
+	 * NB: if this method is just used as a hook to perform some operation
+	 * mid-translation, then {@code super.typedTranslate} should be called
+	 * at the end of the method to continue the normal translation process.
+	 * </p>
+	 */
+	protected void typedTranslate(final M typedSource,
+		final List<ImageMetadata> sourceImgMeta, final N typedDest)
+	{
 		// Boilerplate for common Metadata fields
-		dest.setSource(source.getSource());
-		dest.setFiltered(source.isFiltered());
-		dest.setDatasetName(source.getDatasetName());
+		typedDest.setSource(typedSource.getSource());
+		typedDest.setFiltered(typedSource.isFiltered());
+		typedDest.setDatasetName(typedSource.getDatasetName());
 
 		// Type-dependent translation
 		translateFormatMetadata(typedSource, typedDest);
@@ -90,7 +106,7 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 
 		// -- Post-translation hook --
 		// Update the source's ImageMetadata based on the translation results
-		dest.populateImageMetadata();
+		typedDest.populateImageMetadata();
 	}
 
 	/**
