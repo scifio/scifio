@@ -2,7 +2,7 @@
  * #%L
  * SCIFIO library for reading and converting scientific file formats.
  * %%
- * Copyright (C) 2011 - 2014 Board of Regents of the University of
+ * Copyright (C) 2011 - 2015 Board of Regents of the University of
  * Wisconsin-Madison
  * %%
  * Redistribution and use in source and binary forms, with or without
