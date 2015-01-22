@@ -30,28 +30,15 @@
 
 package io.scif.io;
 
-import io.scif.FormatException;
-import io.scif.Metadata;
-import io.scif.config.SCIFIOConfig;
-import io.scif.config.SCIFIOConfig.ImgMode;
-import io.scif.img.ImgIOException;
-import io.scif.img.ImgOpener;
-import io.scif.img.ImgSaver;
-import io.scif.img.SCIFIOImgPlus;
-import io.scif.services.FormatService;
+import io.scif.services.DatasetIOService;
 
-import java.io.File;
 import java.io.IOException;
 
 import net.imagej.Dataset;
-import net.imagej.DatasetService;
-import net.imagej.ImgPlus;
-import net.imglib2.exception.IncompatibleTypeException;
 
 import org.scijava.Priority;
 import org.scijava.io.AbstractIOPlugin;
 import org.scijava.io.IOPlugin;
-import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -64,13 +51,7 @@ import org.scijava.plugin.Plugin;
 public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
 	@Parameter
-	private FormatService formatService;
-
-	@Parameter
-	private DatasetService datasetService;
-
-	@Parameter
-	private LogService log;
+	private DatasetIOService datasetIOService;
 
 	// -- IOPlugin methods --
 
@@ -81,89 +62,23 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
 	@Override
 	public boolean supportsOpen(final String source) {
-		try {
-			return formatService.getFormat(source, new SCIFIOConfig()
-				.checkerSetOpen(true)) != null;
-		}
-		catch (final FormatException exc) {
-			log.error(exc);
-		}
-		return false;
+		return datasetIOService.canOpen(source);
 	}
 
 	@Override
 	public boolean supportsSave(final String destination) {
-		try {
-			return formatService.getWriterByExtension(destination) != null;
-		}
-		catch (final FormatException exc) {
-			log.error(exc);
-		}
-		return false;
+		return datasetIOService.canOpen(destination);
 	}
 
 	@Override
 	public Dataset open(final String source) throws IOException {
-		final SCIFIOConfig config = new SCIFIOConfig();
-		config.imgOpenerSetIndex(0);
-		return open(source, config);
+		return datasetIOService.open(source);
 	}
 
 	@Override
 	public void save(final Dataset dataset, final String destination)
 		throws IOException
 	{
-		save(dataset, destination, null);
+		datasetIOService.save(dataset, destination);
 	}
-
-	// -- Helper methods --
-
-	private Dataset open(final String source, final SCIFIOConfig config)
-		throws IOException
-	{
-		final ImgOpener imageOpener = new ImgOpener(getContext());
-
-		// skip min/max computation
-		config.imgOpenerSetComputeMinMax(false);
-
-		// prefer planar array structure, for ImageJ1 and ImgSaver compatibility
-		config.imgOpenerSetImgModes(ImgMode.PLANAR);
-
-		try {
-			final SCIFIOImgPlus<?> imgPlus =
-				imageOpener.openImgs(source, config).get(0);
-			@SuppressWarnings({ "rawtypes", "unchecked" })
-			final Dataset dataset = datasetService.create((ImgPlus) imgPlus);
-			return dataset;
-		}
-		catch (final ImgIOException exc) {
-			throw new IOException(exc);
-		}
-	}
-
-	private Metadata save(final Dataset dataset, final String destination,
-		final SCIFIOConfig config) throws IOException
-	{
-		@SuppressWarnings("rawtypes")
-		final ImgPlus img = dataset.getImgPlus();
-
-		final Metadata metadata;
-		final ImgSaver imageSaver = new ImgSaver(getContext());
-		try {
-			metadata = imageSaver.saveImg(destination, img, config);
-		}
-		catch (final ImgIOException exc) {
-			throw new IOException(exc);
-		}
-		catch (final IncompatibleTypeException exc) {
-			throw new IOException(exc);
-		}
-
-		final String name = new File(destination).getName();
-		dataset.setName(name);
-		dataset.setDirty(false);
-
-		return metadata;
-	}
-
 }
