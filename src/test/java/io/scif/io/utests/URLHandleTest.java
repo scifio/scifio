@@ -52,7 +52,8 @@ public class URLHandleTest {
 	// -- Constants --
 
 	/** The contents are "hello, world!". */
-	private static final String WEBSITE = "http://dev.loci.wisc.edu/hello-world";
+	private static final String WEBSITE =
+		URLHandleTest.class.getResource("hello-world").toString();
 
 	// -- Fields --
 
