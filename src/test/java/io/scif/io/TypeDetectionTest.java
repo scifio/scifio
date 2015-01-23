@@ -28,61 +28,53 @@
  * #L%
  */
 
-package io.scif.img;
+package io.scif.io;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import io.scif.io.BZip2Handle;
+import io.scif.io.GZipHandle;
+import io.scif.io.IRandomAccess;
+import io.scif.io.ZipHandle;
+
+import java.io.File;
+import java.io.IOException;
 
 import org.junit.Test;
+import org.scijava.Context;
 
-/** Tests {@link Range}. */
-public class DimRangeTest {
+/**
+ * Tests compressed IRandomAccess implementation type detection.
+ * 
+ * @see IRandomAccess
+ */
+public class TypeDetectionTest {
 
-	/**
-	 * Ensure various parsings are correctly translated to {@code DimRange}
-	 * instances.
-	 */
+	private final Context context = new Context();
+
 	@Test
-	public void testIndices() {
-		// test single value
-		assertRange(new Range("17"), 17);
-
-		// test single range, default step
-		assertRange(new Range("1-5"), 1, 2, 3, 4, 5);
-
-		// test single range, explicit step where max is in range
-		assertRange(new Range("5-15:5"), 5, 10, 15);
-
-		// test single range, explicit step where max is not in range
-		assertRange(new Range("3-10:2"), 3, 5, 7, 9);
-
-		// test list of single values (descending order should be preserved too)
-		assertRange(new Range("3,2,1"), 3, 2, 1);
-
-		// test pair of ranges
-		assertRange(new Range("7-8,4-6"), 7, 8, 4, 5, 6);
-
-		// test mixed list of ranges and values
-		assertRange(new Range("1-3,5,8,13"), 1, 2, 3, 5, 8, 13);
-
-		// test range where min and max are equal and step is superfluous
-		assertRange(new Range("0-0:1"), 0);
-
-		// test range where min is greater than max (has no elements in range)
-		assertRange(new Range("3-1")); // min > max is invalid
+	public void testBZip2TypeDetection() throws IOException {
+		final File invalidFile = File.createTempFile("invalid", ".bz2");
+		invalidFile.deleteOnExit();
+		final BZip2Handle handle = new BZip2Handle(context);
+		assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
+		handle.close();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testInvalidPattern() {
-		new Range("3,2,1,blastoff!");
+	@Test
+	public void testGZipTypeDetection() throws IOException {
+		final File invalidFile = File.createTempFile("invalid", ".gz");
+		invalidFile.deleteOnExit();
+		final GZipHandle handle = new GZipHandle(context);
+		assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
+		handle.close();
 	}
 
-	private void assertRange(final Range range, final long... indices) {
-		assertNotNull(range);
-		assertEquals(indices.length, range.size());
-		for (int i = 0; i < indices.length; i++) {
-			assertEquals(indices[i], range.get(i).longValue());
-		}
+	@Test
+	public void testZipTypeDetection() throws IOException {
+		final File invalidFile = File.createTempFile("invalid", ".zip");
+		invalidFile.deleteOnExit();
+		final ZipHandle handle = new ZipHandle(context);
+		assertEquals(handle.isConstructable(invalidFile.getAbsolutePath()), false);
+		handle.close();
 	}
-
 }

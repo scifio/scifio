@@ -28,61 +28,52 @@
  * #L%
  */
 
-package io.scif.img;
+package io.scif.filters;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import io.scif.FormatException;
+import io.scif.Reader;
+import io.scif.SCIFIO;
+import io.scif.filters.PlaneSeparator;
+import io.scif.filters.ReaderFilter;
+
+import java.io.IOException;
 
 import org.junit.Test;
+import org.scijava.InstantiableException;
 
-/** Tests {@link Range}. */
-public class DimRangeTest {
+/**
+ * Tests for {@link PlaneSeparator}.
+ * 
+ * @author Mark Hiner
+ */
+public class PlaneSeparatorTest {
+
+	private final SCIFIO scifio = new SCIFIO();
+	private final String id =
+		"testImg&lengths=3,4,512,512&axes=Channel,Time,X,Y.fake";
 
 	/**
-	 * Ensure various parsings are correctly translated to {@code DimRange}
-	 * instances.
+	 * Verify that multiple interleaved axes are automatically extracted.
+	 * 
+	 * @throws InstantiableException
 	 */
 	@Test
-	public void testIndices() {
-		// test single value
-		assertRange(new Range("17"), 17);
+	public void testMultipleInterleavedAxes() throws FormatException,
+		IOException, InstantiableException
+	{
+		final Reader filter = scifio.initializer().initializeReader(id);
+		// Verify that we are starting with 4 planar axes, 2 of which are
+		// interleaved
+		assertEquals(4, filter.getMetadata().get(0).getPlanarAxisCount());
+		assertEquals(2, filter.getMetadata().get(0).getInterleavedAxisCount());
+		assertEquals(0, filter.getMetadata().get(0).getAxesNonPlanar().size());
 
-		// test single range, default step
-		assertRange(new Range("1-5"), 1, 2, 3, 4, 5);
-
-		// test single range, explicit step where max is in range
-		assertRange(new Range("5-15:5"), 5, 10, 15);
-
-		// test single range, explicit step where max is not in range
-		assertRange(new Range("3-10:2"), 3, 5, 7, 9);
-
-		// test list of single values (descending order should be preserved too)
-		assertRange(new Range("3,2,1"), 3, 2, 1);
-
-		// test pair of ranges
-		assertRange(new Range("7-8,4-6"), 7, 8, 4, 5, 6);
-
-		// test mixed list of ranges and values
-		assertRange(new Range("1-3,5,8,13"), 1, 2, 3, 5, 8, 13);
-
-		// test range where min and max are equal and step is superfluous
-		assertRange(new Range("0-0:1"), 0);
-
-		// test range where min is greater than max (has no elements in range)
-		assertRange(new Range("3-1")); // min > max is invalid
+		((ReaderFilter) filter).enable(PlaneSeparator.class);
+		// Verify that, after enabling the PlaneSeparator, the default behavior
+		// separates out the 2 interleaved axes to non-planar axes.
+		assertEquals(2, filter.getMetadata().get(0).getPlanarAxisCount());
+		assertEquals(0, filter.getMetadata().get(0).getInterleavedAxisCount());
+		assertEquals(2, filter.getMetadata().get(0).getAxesNonPlanar().size());
 	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testInvalidPattern() {
-		new Range("3,2,1,blastoff!");
-	}
-
-	private void assertRange(final Range range, final long... indices) {
-		assertNotNull(range);
-		assertEquals(indices.length, range.size());
-		for (int i = 0; i < indices.length; i++) {
-			assertEquals(indices[i], range.get(i).longValue());
-		}
-	}
-
 }

@@ -31,58 +31,49 @@
 package io.scif.img;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import io.scif.config.SCIFIOConfig;
+import io.scif.config.SCIFIOConfig.ImgMode;
+import io.scif.img.ImgIOException;
+import io.scif.img.ImgOpener;
+import io.scif.img.ImgSaver;
+import io.scif.img.SCIFIOImgPlus;
+import io.scif.io.ByteArrayHandle;
+import io.scif.services.LocationService;
+import net.imagej.ImgPlus;
+import net.imglib2.exception.IncompatibleTypeException;
 
 import org.junit.Test;
+import org.scijava.Context;
 
-/** Tests {@link Range}. */
-public class DimRangeTest {
+/**
+ * Tests for the {@link ImgSaver} class.
+ * 
+ * @author Mark Hiner
+ */
+public class ImgSaverTest {
+
+	private final String id = "testImg&lengths=512,512,5&axes=X,Y,Time.fake";
+	private final String out = "/Users/mhiner/loci/scifio/test.tif";
+	private final Context ctx = new Context();
+	private final LocationService locationService = ctx
+		.getService(LocationService.class);
 
 	/**
-	 * Ensure various parsings are correctly translated to {@code DimRange}
-	 * instances.
+	 * Write an image to memory using the {@link ImgSaver} and verify that the
+	 * given {@link ImgPlus} is not corrupted during the process.
 	 */
 	@Test
-	public void testIndices() {
-		// test single value
-		assertRange(new Range("17"), 17);
+	public void testImgPlusIntegrity() throws ImgIOException, IncompatibleTypeException {
+		final ImgOpener o = new ImgOpener(ctx);
+		final ImgSaver s = new ImgSaver(ctx);
+		final SCIFIOConfig config =
+			new SCIFIOConfig().imgOpenerSetImgModes(ImgMode.PLANAR);
+		final ByteArrayHandle bah = new ByteArrayHandle();
+		locationService.mapFile(out, bah);
 
-		// test single range, default step
-		assertRange(new Range("1-5"), 1, 2, 3, 4, 5);
-
-		// test single range, explicit step where max is in range
-		assertRange(new Range("5-15:5"), 5, 10, 15);
-
-		// test single range, explicit step where max is not in range
-		assertRange(new Range("3-10:2"), 3, 5, 7, 9);
-
-		// test list of single values (descending order should be preserved too)
-		assertRange(new Range("3,2,1"), 3, 2, 1);
-
-		// test pair of ranges
-		assertRange(new Range("7-8,4-6"), 7, 8, 4, 5, 6);
-
-		// test mixed list of ranges and values
-		assertRange(new Range("1-3,5,8,13"), 1, 2, 3, 5, 8, 13);
-
-		// test range where min and max are equal and step is superfluous
-		assertRange(new Range("0-0:1"), 0);
-
-		// test range where min is greater than max (has no elements in range)
-		assertRange(new Range("3-1")); // min > max is invalid
+		final SCIFIOImgPlus<?> openImg = o.openImgs(id, config).get(0);
+		final String source = new String(openImg.getSource());
+		s.saveImg(out, openImg);
+		assertEquals(source, openImg.getSource());
 	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testInvalidPattern() {
-		new Range("3,2,1,blastoff!");
-	}
-
-	private void assertRange(final Range range, final long... indices) {
-		assertNotNull(range);
-		assertEquals(indices.length, range.size());
-		for (int i = 0; i < indices.length; i++) {
-			assertEquals(indices[i], range.get(i).longValue());
-		}
-	}
-
 }
