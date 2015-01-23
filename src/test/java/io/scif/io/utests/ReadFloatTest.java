@@ -30,6 +30,7 @@
 
 package io.scif.io.utests;
 
+import static io.scif.utests.JUnitHelper.assertCloseEnough;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 import io.scif.io.IRandomAccess;
@@ -105,37 +106,37 @@ public class ReadFloatTest {
 
 	@Test
 	public void testSequential() throws IOException {
-		assertEquals(0.0f, fileHandle.readFloat());
-		assertEquals(1.0f, fileHandle.readFloat());
-		assertEquals(-1.0f, fileHandle.readFloat());
-		assertEquals(3.1415927f, fileHandle.readFloat());
-		assertEquals(Float.MAX_VALUE, fileHandle.readFloat());
-		assertEquals(Float.NEGATIVE_INFINITY, fileHandle.readFloat());
-		assertEquals(Float.NaN, fileHandle.readFloat());
+		assertCloseEnough(0.0f, fileHandle.readFloat());
+		assertCloseEnough(1.0f, fileHandle.readFloat());
+		assertCloseEnough(-1.0f, fileHandle.readFloat());
+		assertCloseEnough(3.1415927f, fileHandle.readFloat());
+		assertCloseEnough(Float.MAX_VALUE, fileHandle.readFloat());
+		assertCloseEnough(Float.NEGATIVE_INFINITY, fileHandle.readFloat());
+		assertCloseEnough(Float.NaN, fileHandle.readFloat());
 	}
 
 	@Test
 	public void testSeekForward() throws IOException {
 		fileHandle.seek(8);
-		assertEquals(-1.0f, fileHandle.readFloat());
-		assertEquals(3.1415927f, fileHandle.readFloat());
+		assertCloseEnough(-1.0f, fileHandle.readFloat());
+		assertCloseEnough(3.1415927f, fileHandle.readFloat());
 	}
 
 	@Test
 	public void testReset() throws IOException {
-		assertEquals(0.0f, fileHandle.readFloat());
-		assertEquals(1.0f, fileHandle.readFloat());
+		assertCloseEnough(0.0f, fileHandle.readFloat());
+		assertCloseEnough(1.0f, fileHandle.readFloat());
 		fileHandle.seek(0);
-		assertEquals(0.0f, fileHandle.readFloat());
-		assertEquals(1.0f, fileHandle.readFloat());
+		assertCloseEnough(0.0f, fileHandle.readFloat());
+		assertCloseEnough(1.0f, fileHandle.readFloat());
 	}
 
 	@Test
 	public void testSeekBack() throws IOException {
 		fileHandle.seek(16);
 		fileHandle.seek(8);
-		assertEquals(-1.0f, fileHandle.readFloat());
-		assertEquals(3.1415927f, fileHandle.readFloat());
+		assertCloseEnough(-1.0f, fileHandle.readFloat());
+		assertCloseEnough(3.1415927f, fileHandle.readFloat());
 	}
 
 	@Test

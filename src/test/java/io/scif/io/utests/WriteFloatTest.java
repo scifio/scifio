@@ -30,6 +30,7 @@
 
 package io.scif.io.utests;
 
+import static io.scif.utests.JUnitHelper.assertCloseEnough;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 import io.scif.io.IRandomAccess;
@@ -128,13 +129,13 @@ public class WriteFloatTest {
 			assertEquals(28, fileHandle.length());
 		}
 		fileHandle.seek(0);
-		assertEquals(0.0f, fileHandle.readFloat());
-		assertEquals(1.0f, fileHandle.readFloat());
-		assertEquals(-1.0f, fileHandle.readFloat());
-		assertEquals(3.1415927f, fileHandle.readFloat());
-		assertEquals(Float.MAX_VALUE, fileHandle.readFloat());
-		assertEquals(Float.NEGATIVE_INFINITY, fileHandle.readFloat());
-		assertEquals(Float.NaN, fileHandle.readFloat());
+		assertCloseEnough(0.0f, fileHandle.readFloat());
+		assertCloseEnough(1.0f, fileHandle.readFloat());
+		assertCloseEnough(-1.0f, fileHandle.readFloat());
+		assertCloseEnough(3.1415927f, fileHandle.readFloat());
+		assertCloseEnough(Float.MAX_VALUE, fileHandle.readFloat());
+		assertCloseEnough(Float.NEGATIVE_INFINITY, fileHandle.readFloat());
+		assertCloseEnough(Float.NaN, fileHandle.readFloat());
 	}
 
 	@Test
@@ -149,8 +150,8 @@ public class WriteFloatTest {
 			assertEquals(16, fileHandle.length());
 		}
 		fileHandle.seek(8);
-		assertEquals(-1.0f, fileHandle.readFloat());
-		assertEquals(3.1415927f, fileHandle.readFloat());
+		assertCloseEnough(-1.0f, fileHandle.readFloat());
+		assertCloseEnough(3.1415927f, fileHandle.readFloat());
 	}
 
 	@Test
@@ -164,14 +165,14 @@ public class WriteFloatTest {
 			assertEquals(8, fileHandle.length());
 		}
 		fileHandle.seek(0);
-		assertEquals(0.0f, fileHandle.readFloat());
-		assertEquals(1.0f, fileHandle.readFloat());
+		assertCloseEnough(0.0f, fileHandle.readFloat());
+		assertCloseEnough(1.0f, fileHandle.readFloat());
 		fileHandle.seek(0);
 		fileHandle.writeFloat(-1.0f);
 		fileHandle.writeFloat(3.1415927f);
 		fileHandle.seek(0);
-		assertEquals(-1.0f, fileHandle.readFloat());
-		assertEquals(3.1415927f, fileHandle.readFloat());
+		assertCloseEnough(-1.0f, fileHandle.readFloat());
+		assertCloseEnough(3.1415927f, fileHandle.readFloat());
 	}
 
 	@After

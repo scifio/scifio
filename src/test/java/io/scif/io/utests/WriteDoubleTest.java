@@ -30,6 +30,7 @@
 
 package io.scif.io.utests;
 
+import static io.scif.utests.JUnitHelper.assertCloseEnough;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 import io.scif.io.IRandomAccess;
@@ -133,13 +134,13 @@ public class WriteDoubleTest {
 			assertEquals(56, fileHandle.length());
 		}
 		fileHandle.seek(0);
-		assertEquals(0.0d, fileHandle.readDouble());
-		assertEquals(1.0d, fileHandle.readDouble());
-		assertEquals(-1.0d, fileHandle.readDouble());
-		assertEquals(3.1415926535897930d, fileHandle.readDouble());
-		assertEquals(Double.MAX_VALUE, fileHandle.readDouble());
-		assertEquals(Double.NEGATIVE_INFINITY, fileHandle.readDouble());
-		assertEquals(Double.NaN, fileHandle.readDouble());
+		assertCloseEnough(0.0d, fileHandle.readDouble());
+		assertCloseEnough(1.0d, fileHandle.readDouble());
+		assertCloseEnough(-1.0d, fileHandle.readDouble());
+		assertCloseEnough(3.1415926535897930d, fileHandle.readDouble());
+		assertCloseEnough(Double.MAX_VALUE, fileHandle.readDouble());
+		assertCloseEnough(Double.NEGATIVE_INFINITY, fileHandle.readDouble());
+		assertCloseEnough(Double.NaN, fileHandle.readDouble());
 	}
 
 	@Test
@@ -154,8 +155,8 @@ public class WriteDoubleTest {
 			assertEquals(32, fileHandle.length());
 		}
 		fileHandle.seek(16);
-		assertEquals(-1.0d, fileHandle.readDouble());
-		assertEquals(3.1415926535897930d, fileHandle.readDouble());
+		assertCloseEnough(-1.0d, fileHandle.readDouble());
+		assertCloseEnough(3.1415926535897930d, fileHandle.readDouble());
 	}
 
 	@Test
@@ -169,8 +170,8 @@ public class WriteDoubleTest {
 			assertEquals(16, fileHandle.length());
 		}
 		fileHandle.seek(0);
-		assertEquals(0.0d, fileHandle.readDouble());
-		assertEquals(1.0d, fileHandle.readDouble());
+		assertCloseEnough(0.0d, fileHandle.readDouble());
+		assertCloseEnough(1.0d, fileHandle.readDouble());
 		fileHandle.seek(0);
 		fileHandle.writeDouble(-1.0d);
 		fileHandle.writeDouble(3.1415926535897930d);

@@ -30,6 +30,7 @@
 
 package io.scif.img.utests;
 
+import static io.scif.utests.JUnitHelper.assertCloseEnough;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import io.scif.ImageMetadata;
@@ -84,10 +85,10 @@ public class ImgOpenerTest {
 		@SuppressWarnings("rawtypes")
 		final ImgPlus imgPlus = imgOpener.openImgs(calId).get(0);
 
-		assertEquals(5.0, imgPlus.averageScale(0));
-		assertEquals(6.0, imgPlus.averageScale(1));
-		assertEquals(7.0, imgPlus.averageScale(2));
-		assertEquals(8.0, imgPlus.averageScale(3));
+		assertCloseEnough(5.0, imgPlus.averageScale(0));
+		assertCloseEnough(6.0, imgPlus.averageScale(1));
+		assertCloseEnough(7.0, imgPlus.averageScale(2));
+		assertCloseEnough(8.0, imgPlus.averageScale(3));
 	}
 
 	/**

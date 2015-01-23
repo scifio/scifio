@@ -30,6 +30,7 @@
 
 package io.scif.io.utests;
 
+import static io.scif.utests.JUnitHelper.assertCloseEnough;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 import io.scif.io.IRandomAccess;
@@ -127,37 +128,37 @@ public class ReadDoubleTest {
 
 	@Test
 	public void testSequential() throws IOException {
-		assertEquals(0.0d, fileHandle.readDouble());
-		assertEquals(1.0d, fileHandle.readDouble());
-		assertEquals(-1.0d, fileHandle.readDouble());
-		assertEquals(3.1415926535897930d, fileHandle.readDouble());
-		assertEquals(Double.MAX_VALUE, fileHandle.readDouble());
-		assertEquals(Double.NEGATIVE_INFINITY, fileHandle.readDouble());
-		assertEquals(Double.NaN, fileHandle.readDouble());
+		assertCloseEnough(0.0d, fileHandle.readDouble());
+		assertCloseEnough(1.0d, fileHandle.readDouble());
+		assertCloseEnough(-1.0d, fileHandle.readDouble());
+		assertCloseEnough(3.1415926535897930d, fileHandle.readDouble());
+		assertCloseEnough(Double.MAX_VALUE, fileHandle.readDouble());
+		assertCloseEnough(Double.NEGATIVE_INFINITY, fileHandle.readDouble());
+		assertCloseEnough(Double.NaN, fileHandle.readDouble());
 	}
 
 	@Test
 	public void testSeekForward() throws IOException {
 		fileHandle.seek(16);
-		assertEquals(-1.0d, fileHandle.readDouble());
-		assertEquals(3.1415926535897930d, fileHandle.readDouble());
+		assertCloseEnough(-1.0d, fileHandle.readDouble());
+		assertCloseEnough(3.1415926535897930d, fileHandle.readDouble());
 	}
 
 	@Test
 	public void testReset() throws IOException {
-		assertEquals(0.0d, fileHandle.readDouble());
-		assertEquals(1.0d, fileHandle.readDouble());
+		assertCloseEnough(0.0d, fileHandle.readDouble());
+		assertCloseEnough(1.0d, fileHandle.readDouble());
 		fileHandle.seek(0);
-		assertEquals(0.0d, fileHandle.readDouble());
-		assertEquals(1.0d, fileHandle.readDouble());
+		assertCloseEnough(0.0d, fileHandle.readDouble());
+		assertCloseEnough(1.0d, fileHandle.readDouble());
 	}
 
 	@Test
 	public void testSeekBack() throws IOException {
 		fileHandle.seek(32);
 		fileHandle.seek(16);
-		assertEquals(-1.0d, fileHandle.readDouble());
-		assertEquals(3.1415926535897930d, fileHandle.readDouble());
+		assertCloseEnough(-1.0d, fileHandle.readDouble());
+		assertCloseEnough(3.1415926535897930d, fileHandle.readDouble());
 	}
 
 	@Test
