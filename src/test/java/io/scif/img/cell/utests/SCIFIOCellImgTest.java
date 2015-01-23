@@ -35,9 +35,7 @@ import static org.junit.Assert.assertNull;
 import io.scif.img.IO;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.img.cell.SCIFIOCellImg;
-import io.scif.util.MemoryTools;
 
-import java.lang.ref.WeakReference;
 
 import org.junit.Test;
 

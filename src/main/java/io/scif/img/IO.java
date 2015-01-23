@@ -30,12 +30,13 @@
 
 package io.scif.img;
 
-import java.util.List;
-
 import io.scif.Reader;
 import io.scif.Writer;
 import io.scif.config.SCIFIOConfig;
 import io.scif.refs.RefManagerService;
+
+import java.util.List;
+
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
