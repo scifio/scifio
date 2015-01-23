@@ -36,11 +36,15 @@ import io.scif.io.utests.providers.IRandomAccessProvider;
 import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
-import org.testng.annotations.Parameters;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Tests for ensuring that read-only IRandomAccess objects throw an appropriate
@@ -48,6 +52,7 @@ import org.junit.Test;
  * 
  * @see io.scif.io.IRandomAccess
  */
+@RunWith(Parameterized.class)
 public class ReadOnlyTest {
 
 	private static final byte[] PAGE = new byte[] {};
@@ -58,9 +63,21 @@ public class ReadOnlyTest {
 
 	private IRandomAccess fileHandle;
 
-	@Parameters({ "provider" })
+	@Parameters
+	public static Collection<Object[]> parameters() {
+		return Arrays.asList(new Object[][] {
+			{ "BZip2Handle" }, { "GZipHandle" }, { "URLHandle" }, { "ZipHandle" }
+		});
+	}
+
+	private final String provider;
+
+	public ReadOnlyTest(final String provider) {
+		this.provider = provider;
+	}
+
 	@Before
-	public void setUp(final String provider) throws IOException {
+	public void setUp() throws IOException {
 		final IRandomAccessProviderFactory factory =
 			new IRandomAccessProviderFactory();
 		final IRandomAccessProvider instance = factory.getInstance(provider);

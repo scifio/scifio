@@ -31,23 +31,27 @@
 package io.scif.io.utests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 import io.scif.io.IRandomAccess;
 import io.scif.io.utests.providers.IRandomAccessProvider;
 import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 
 import java.io.IOException;
+import java.util.Collection;
 
-import org.testng.annotations.Parameters;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Tests for reading characters from a loci.common.IRandomAccess.
  * 
  * @see io.scif.io.IRandomAccess
  */
-@Test(groups = "writeTests")
+@RunWith(Parameterized.class)
 public class WriteCharTest {
 
 	private static final byte[] PAGE = new byte[] { (byte) 0x00, (byte) 0x00,
@@ -64,22 +68,32 @@ public class WriteCharTest {
 
 	private IRandomAccess fileHandle;
 
-	private boolean checkGrowth;
+	@Parameters
+	public static Collection<Object[]> parameters() {
+		return TestParameters.parameters("writeTests");
+	}
 
-	@Parameters({ "provider", "checkGrowth" })
+	private final String provider;
+	private final boolean checkGrowth, testLength;
+
+	public WriteCharTest(final String provider, final boolean checkGrowth, final boolean testLength) {
+		this.provider = provider;
+		this.checkGrowth = checkGrowth;
+		this.testLength = testLength;
+	}
+
 	@Before
-	public void setUp(final String provider,
-		@Optional("false") final String checkGrowth) throws IOException
+	public void setUp() throws IOException
 	{
-		this.checkGrowth = Boolean.parseBoolean(checkGrowth);
 		final IRandomAccessProviderFactory factory =
 			new IRandomAccessProviderFactory();
 		final IRandomAccessProvider instance = factory.getInstance(provider);
 		fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
 	}
 
-	@Test(groups = "initialLengthTest")
+	@Test
 	public void testLength() throws IOException {
+		assumeTrue(testLength);
 		assertEquals(32, fileHandle.length());
 	}
 

@@ -31,23 +31,27 @@
 package io.scif.io.utests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 import io.scif.io.IRandomAccess;
 import io.scif.io.utests.providers.IRandomAccessProvider;
 import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 
 import java.io.IOException;
+import java.util.Collection;
 
-import org.testng.annotations.Parameters;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Tests for reading longs from a loci.common.IRandomAccess.
  * 
  * @see io.scif.io.IRandomAccess
  */
-@Test(groups = "readTests")
+@RunWith(Parameterized.class)
 public class ReadLongTest {
 
 	private static final byte[] PAGE = new byte[] {
@@ -103,9 +107,21 @@ public class ReadLongTest {
 
 	private IRandomAccess fileHandle;
 
-	@Parameters({ "provider" })
+	@Parameters
+	public static Collection<Object[]> parameters() {
+		return TestParameters.parameters("readTests");
+	}
+
+	private final String provider;
+	private final boolean testLength;
+
+	public ReadLongTest(final String provider, final boolean checkGrowth, final boolean testLength) {
+		this.provider = provider;
+		this.testLength = testLength;
+	}
+
 	@Before
-	public void setUp(final String provider) throws IOException {
+	public void setUp() throws IOException {
 		final IRandomAccessProviderFactory factory =
 			new IRandomAccessProviderFactory();
 		final IRandomAccessProvider instance = factory.getInstance(provider);
@@ -114,6 +130,7 @@ public class ReadLongTest {
 
 	@Test
 	public void testLength() throws IOException {
+		assumeTrue(testLength);
 		assertEquals(64, fileHandle.length());
 	}
 

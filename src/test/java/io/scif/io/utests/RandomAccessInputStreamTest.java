@@ -31,6 +31,7 @@
 package io.scif.io.utests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 import io.scif.io.IRandomAccess;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.utests.providers.IRandomAccessProvider;
@@ -38,19 +39,22 @@ import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 import io.scif.services.LocationService;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.scijava.Context;
-import org.testng.annotations.Parameters;
 
 /**
  * Tests for reading bytes from a loci.common.RandomAccessInputStream.
  * 
  * @see io.scif.io.RandomAccessInputStream
  */
-@Test(groups = "readTests")
+@RunWith(Parameterized.class)
 public class RandomAccessInputStreamTest {
 
 	private static final byte[] PAGE = new byte[] { 0, 4, 8, 12, 16, 20, 24, 28,
@@ -69,9 +73,21 @@ public class RandomAccessInputStreamTest {
 	private IRandomAccess fileHandle;
 	private Context context;
 
-	@Parameters({ "provider" })
+	@Parameters
+	public static Collection<Object[]> parameters() {
+		return TestParameters.parameters("readTests");
+	}
+
+	private final String provider;
+	private final boolean testLength;
+
+	public RandomAccessInputStreamTest(final String provider, final boolean checkGrowth, final boolean testLength) {
+		this.provider = provider;
+		this.testLength = testLength;
+	}
+
 	@Before
-	public void setUp(final String provider) throws IOException {
+	public void setUp() throws IOException {
 		final IRandomAccessProviderFactory factory =
 			new IRandomAccessProviderFactory();
 		final IRandomAccessProvider instance = factory.getInstance(provider);
@@ -82,6 +98,7 @@ public class RandomAccessInputStreamTest {
 
 	@Test
 	public void testLength() throws IOException {
+		assumeTrue(testLength);
 		assertEquals(PAGE.length, stream.length());
 	}
 

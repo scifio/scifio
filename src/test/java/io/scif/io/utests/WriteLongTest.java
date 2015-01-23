@@ -31,23 +31,27 @@
 package io.scif.io.utests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 import io.scif.io.IRandomAccess;
 import io.scif.io.utests.providers.IRandomAccessProvider;
 import io.scif.io.utests.providers.IRandomAccessProviderFactory;
 
 import java.io.IOException;
+import java.util.Collection;
 
-import org.testng.annotations.Parameters;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Tests for reading longs from a loci.common.IRandomAccess.
  * 
  * @see io.scif.io.IRandomAccess
  */
-@Test(groups = "writeTests")
+@RunWith(Parameterized.class)
 public class WriteLongTest {
 
 	private static final byte[] PAGE = new byte[] {
@@ -72,22 +76,33 @@ public class WriteLongTest {
 
 	private IRandomAccess fileHandle;
 
-	private boolean checkGrowth;
+	private final String provider;
+	private final boolean checkGrowth, testLength;
 
-	@Parameters({ "provider", "checkGrowth" })
+	@Parameters
+	public static Collection<Object[]> parameters() {
+		return TestParameters.parameters("writeTests");
+	}
+
+
+	public WriteLongTest(final String provider, final boolean checkGrowth, final boolean testLength) {
+		this.provider = provider;
+		this.checkGrowth = checkGrowth;
+		this.testLength = testLength;
+	}
+
 	@Before
-	public void setUp(final String provider,
-		@Optional("false") final String checkGrowth) throws IOException
+	public void setUp() throws IOException
 	{
-		this.checkGrowth = Boolean.parseBoolean(checkGrowth);
 		final IRandomAccessProviderFactory factory =
 			new IRandomAccessProviderFactory();
 		final IRandomAccessProvider instance = factory.getInstance(provider);
 		fileHandle = instance.createMock(PAGE, MODE, BUFFER_SIZE);
 	}
 
-	@Test(groups = "initialLengthTest")
+	@Test
 	public void testLength() throws IOException {
+		assumeTrue(testLength);
 		assertEquals(64, fileHandle.length());
 	}
 

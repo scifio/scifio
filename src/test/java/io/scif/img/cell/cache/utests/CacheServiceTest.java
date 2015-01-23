@@ -45,11 +45,13 @@ import io.scif.img.cell.cache.CacheResult;
 import io.scif.img.cell.cache.CacheService;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.SCIFIOArrayLoader;
+import io.scif.io.utests.TestParameters;
 import io.scif.util.MemoryTools;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.Collection;
 
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
@@ -57,6 +59,9 @@ import net.imglib2.img.basictypeaccess.array.ByteArray;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.scijava.Context;
 
 /**
@@ -65,7 +70,7 @@ import org.scijava.Context;
  * 
  * @author Mark Hiner
  */
-@Test(groups = "cacheTests")
+@RunWith(Parameterized.class)
 public class CacheServiceTest {
 
 	// -- Constants --
@@ -81,6 +86,17 @@ public class CacheServiceTest {
 	private SCIFIO scifio;
 
 	private static CacheService<SCIFIOCell<?>> cs;
+
+	@Parameters
+	public static Collection<Object[]> parameters() {
+		return TestParameters.parameters("cacheTests");
+	}
+
+	private final String provider;
+
+	public CacheServiceTest(final String provider, final boolean checkGrowth, final boolean testLength) {
+		this.provider = provider;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Before

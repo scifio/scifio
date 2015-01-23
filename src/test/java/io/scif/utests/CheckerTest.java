@@ -41,12 +41,17 @@ import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
 import io.scif.formats.FakeFormat;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.io.utests.TestParameters;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.scijava.Context;
 
 /**
@@ -54,7 +59,7 @@ import org.scijava.Context;
  * 
  * @author Mark Hiner
  */
-@Test(groups = "checkerTests")
+@RunWith(Parameterized.class)
 public class CheckerTest {
 
 	private final String id =
@@ -63,6 +68,17 @@ public class CheckerTest {
 	private Checker c;
 	private FakeChecker fc;
 	private Context context;
+
+	@Parameters
+	public static Collection<Object[]> parameters() {
+		return TestParameters.parameters("checkerTests");
+	}
+
+	private final String provider;
+
+	public CheckerTest(final String provider, final boolean checkGrowth, final boolean testLength) {
+		this.provider = provider;
+	}
 
 	@Before
 	public void setUp() throws FormatException {
