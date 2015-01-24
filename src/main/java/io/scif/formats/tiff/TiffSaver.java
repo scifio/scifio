@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -52,7 +52,7 @@ import org.scijava.log.LogService;
 
 /**
  * Parses TIFF data from an input source.
- * 
+ *
  * @author Curtis Rueden
  * @author Eric Kjellman
  * @author Melissa Linkert
@@ -73,19 +73,21 @@ public class TiffSaver extends AbstractContextual {
 
 	/** Whether or not to write BigTIFF data. */
 	private boolean bigTiff = false;
+
 	private boolean sequentialWrite = false;
 
 	/** The codec options if set. */
 	private CodecOptions options;
 
 	private SCIFIO scifio;
+
 	private LogService log;
 
 	// -- Constructors --
 
 	/**
 	 * Constructs a new TIFF saver from the given filename.
-	 * 
+	 *
 	 * @param filename Filename of the output stream that we may use to create
 	 *          extra input or output streams as required.
 	 */
@@ -96,7 +98,7 @@ public class TiffSaver extends AbstractContextual {
 
 	/**
 	 * Constructs a new TIFF saver from the given output source.
-	 * 
+	 *
 	 * @param out Output stream to save TIFF data to.
 	 * @param filename Filename of the output stream that we may use to create
 	 *          extra input or output streams as required.
@@ -120,7 +122,7 @@ public class TiffSaver extends AbstractContextual {
 
 	/**
 	 * Constructs a new TIFF saver from the given output source.
-	 * 
+	 *
 	 * @param out Output stream to save TIFF data to.
 	 * @param bytes In memory byte array handle that we may use to create extra
 	 *          input or output streams as required.
@@ -177,7 +179,7 @@ public class TiffSaver extends AbstractContextual {
 
 	/**
 	 * Sets the codec options.
-	 * 
+	 *
 	 * @param options The value to set.
 	 */
 	public void setCodecOptions(final CodecOptions options) {
@@ -252,7 +254,7 @@ public class TiffSaver extends AbstractContextual {
 
 	/**
 	 * Writes to any rectangle from the passed block.
-	 * 
+	 *
 	 * @param buf The block that is to be written.
 	 * @param ifd The Image File Directories. Mustn't be <code>null</code>.
 	 * @param planeIndex The image index within the current file, starting from 0.
@@ -369,7 +371,8 @@ public class TiffSaver extends AbstractContextual {
 			}
 		}
 
-		// Compress strips according to given differencing and compression schemes,
+		// Compress strips according to given differencing and compression
+		// schemes,
 		// this operation is NOT synchronized and is the ONLY portion of the
 		// TiffWriter.saveBytes() --> TiffSaver.writeImage() stack that is NOT
 		// synchronized.
@@ -400,7 +403,7 @@ public class TiffSaver extends AbstractContextual {
 	/**
 	 * Performs the actual work of dealing with IFD data and writing it to the
 	 * TIFF for a given image or sub-image.
-	 * 
+	 *
 	 * @param ifd The Image File Directories. Mustn't be <code>null</code>.
 	 * @param planeIndex The image index within the current file, starting from 0.
 	 * @param strips The strips to write to the file.
@@ -580,7 +583,7 @@ public class TiffSaver extends AbstractContextual {
 
 	/**
 	 * Writes the given IFD value to the given output object.
-	 * 
+	 *
 	 * @param extraOut buffer to which "extra" IFD information should be written
 	 * @param offset global offset to use for IFD offset values
 	 * @param tag IFD tag to write
@@ -841,7 +844,8 @@ public class TiffSaver extends AbstractContextual {
 
 				// determine the best way to overwrite the old entry
 				if (extraBuf.length() == 0) {
-					// new entry is inline; if old entry wasn't, old data is orphaned
+					// new entry is inline; if old entry wasn't, old data is
+					// orphaned
 					// do not override new offset value since data is inline
 					log.debug("overwriteIFDValue: new entry is inline");
 				}
@@ -853,12 +857,14 @@ public class TiffSaver extends AbstractContextual {
 					log.debug("overwriteIFDValue: old entry is at EOF");
 				}
 				else if (newCount <= entry.getValueCount()) {
-					// new entry is as small or smaller than old entry; overwrite it
+					// new entry is as small or smaller than old entry;
+					// overwrite it
 					newOffset = entry.getValueOffset();
 					log.debug("overwriteIFDValue: new entry is <= old entry");
 				}
 				else {
-					// old entry was elsewhere; append to EOF, orphaning old entry
+					// old entry was elsewhere; append to EOF, orphaning old
+					// entry
 					newOffset = raf.length();
 					log.debug("overwriteIFDValue: old entry will be orphaned");
 				}
@@ -890,7 +896,7 @@ public class TiffSaver extends AbstractContextual {
 
 	/**
 	 * Coverts a list to a primitive array.
-	 * 
+	 *
 	 * @param l The list of <code>Long</code> to convert.
 	 * @return A primitive array of type <code>long[]</code> with the values from
 	 *         </code>l</code>.
@@ -921,7 +927,7 @@ public class TiffSaver extends AbstractContextual {
 
 	/**
 	 * Makes a valid IFD.
-	 * 
+	 *
 	 * @param ifd The IFD to handle.
 	 * @param pixelType The pixel type.
 	 * @param nChannels The number of channels.

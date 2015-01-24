@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -57,7 +57,9 @@ public class Location extends AbstractSCIFIOPlugin {
 	private LocationService locationService;
 
 	private boolean isURL = true;
+
 	private URL url;
+
 	private File file;
 
 	// -- Constructors --
@@ -100,7 +102,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	/**
 	 * Return a list of all of the files in this directory. If 'noHiddenFiles' is
 	 * set to true, then hidden files are omitted.
-	 * 
+	 *
 	 * @see java.io.File#list()
 	 */
 	public String[] list(final boolean noHiddenFiles) {
@@ -175,7 +177,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * If the underlying location is a URL, this method will return true if the
 	 * URL exists. Otherwise, it will return true iff the file exists and is
 	 * readable.
-	 * 
+	 *
 	 * @see java.io.File#canRead()
 	 */
 	public boolean canRead() {
@@ -185,7 +187,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	/**
 	 * If the underlying location is a URL, this method will always return false.
 	 * Otherwise, it will return true iff the file exists and is writable.
-	 * 
+	 *
 	 * @see java.io.File#canWrite()
 	 */
 	public boolean canWrite() {
@@ -197,7 +199,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * this name does not already exist. Note that this operation is only
 	 * supported if the path name can be interpreted as a path to a file on disk
 	 * (i.e. is not a URL).
-	 * 
+	 *
 	 * @return true if the file was created successfully
 	 * @throws IOException if an I/O error occurred, or the abstract pathname is a
 	 *           URL
@@ -211,7 +213,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	/**
 	 * Deletes this file. If {@link #isDirectory()} returns true, then the
 	 * directory must be empty in order to be deleted. URLs cannot be deleted.
-	 * 
+	 *
 	 * @return true if the file was successfully deleted
 	 * @see java.io.File#delete()
 	 */
@@ -222,7 +224,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	/**
 	 * Request that this file be deleted when the JVM terminates. This method will
 	 * do nothing if the pathname represents a URL.
-	 * 
+	 *
 	 * @see java.io.File#deleteOnExit()
 	 */
 	public void deleteOnExit() {
@@ -257,7 +259,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * Returns whether or not the pathname exists. If the pathname is a URL, then
 	 * existence is determined based on whether or not we can successfully read
 	 * content from the URL.
-	 * 
+	 *
 	 * @see java.io.File#exists()
 	 */
 	public boolean exists() {
@@ -304,7 +306,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	/**
 	 * Returns the name of this file, i.e. the last name in the path name
 	 * sequence.
-	 * 
+	 *
 	 * @see java.io.File#getName()
 	 */
 	public String getName() {
@@ -320,7 +322,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * Returns the name of this file's parent directory, i.e. the path name prefix
 	 * and every name in the path name sequence except for the last. If this file
 	 * does not have a parent directory, then null is returned.
-	 * 
+	 *
 	 * @see java.io.File#getParent()
 	 */
 	public String getParent() {
@@ -343,7 +345,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	/**
 	 * Tests whether or not this path name is absolute. If the path name is a URL,
 	 * this method will always return true.
-	 * 
+	 *
 	 * @see java.io.File#isAbsolute()
 	 */
 	public boolean isAbsolute() {
@@ -352,7 +354,7 @@ public class Location extends AbstractSCIFIOPlugin {
 
 	/**
 	 * Returns true if this pathname exists and represents a directory.
-	 * 
+	 *
 	 * @see java.io.File#isDirectory()
 	 */
 	public boolean isDirectory() {
@@ -365,7 +367,7 @@ public class Location extends AbstractSCIFIOPlugin {
 
 	/**
 	 * Returns true if this pathname exists and represents a regular file.
-	 * 
+	 *
 	 * @see java.io.File#exists()
 	 */
 	public boolean isFile() {
@@ -375,7 +377,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	/**
 	 * Returns true if the pathname is 'hidden'. This method will always return
 	 * false if the pathname corresponds to a URL.
-	 * 
+	 *
 	 * @see java.io.File#isHidden()
 	 */
 	public boolean isHidden() {
@@ -385,7 +387,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	/**
 	 * Return the last modification time of this file, in milliseconds since the
 	 * UNIX epoch. If the file does not exist, 0 is returned.
-	 * 
+	 *
 	 * @see java.io.File#lastModified()
 	 * @see java.net.URLConnection#getLastModified()
 	 */
@@ -444,7 +446,7 @@ public class Location extends AbstractSCIFIOPlugin {
 
 	/**
 	 * Return the URL corresponding to this pathname.
-	 * 
+	 *
 	 * @see java.io.File#toURI()
 	 */
 	public URL toURL() throws MalformedURLException {

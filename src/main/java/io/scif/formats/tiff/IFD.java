@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -43,7 +43,7 @@ import org.scijava.log.LogService;
 
 /**
  * Data structure for working with TIFF Image File Directories (IFDs).
- * 
+ *
  * @author Curtis Rueden
  * @author Eric Kjellman
  * @author Melissa Linkert
@@ -55,141 +55,271 @@ public class IFD extends HashMap<Integer, Object> {
 
 	// non-IFD tags (for internal use)
 	public static final int LITTLE_ENDIAN = 0;
+
 	public static final int BIG_TIFF = 1;
+
 	public static final int REUSE = 3;
 
 	// IFD tags
 	public static final int NEW_SUBFILE_TYPE = 254;
+
 	public static final int SUBFILE_TYPE = 255;
+
 	public static final int IMAGE_WIDTH = 256;
+
 	public static final int IMAGE_LENGTH = 257;
+
 	public static final int BITS_PER_SAMPLE = 258;
+
 	public static final int COMPRESSION = 259;
+
 	public static final int PHOTOMETRIC_INTERPRETATION = 262;
+
 	public static final int THRESHHOLDING = 263;
+
 	public static final int CELL_WIDTH = 264;
+
 	public static final int CELL_LENGTH = 265;
+
 	public static final int FILL_ORDER = 266;
+
 	public static final int DOCUMENT_NAME = 269;
+
 	public static final int IMAGE_DESCRIPTION = 270;
+
 	public static final int MAKE = 271;
+
 	public static final int MODEL = 272;
+
 	public static final int STRIP_OFFSETS = 273;
+
 	public static final int ORIENTATION = 274;
+
 	public static final int SAMPLES_PER_PIXEL = 277;
+
 	public static final int ROWS_PER_STRIP = 278;
+
 	public static final int STRIP_BYTE_COUNTS = 279;
+
 	public static final int MIN_SAMPLE_VALUE = 280;
+
 	public static final int MAX_SAMPLE_VALUE = 281;
+
 	public static final int X_RESOLUTION = 282;
+
 	public static final int Y_RESOLUTION = 283;
+
 	public static final int PLANAR_CONFIGURATION = 284;
+
 	public static final int PAGE_NAME = 285;
+
 	public static final int X_POSITION = 286;
+
 	public static final int Y_POSITION = 287;
+
 	public static final int FREE_OFFSETS = 288;
+
 	public static final int FREE_BYTE_COUNTS = 289;
+
 	public static final int GRAY_RESPONSE_UNIT = 290;
+
 	public static final int GRAY_RESPONSE_CURVE = 291;
+
 	public static final int T4_OPTIONS = 292;
+
 	public static final int T6_OPTIONS = 293;
+
 	public static final int RESOLUTION_UNIT = 296;
+
 	public static final int PAGE_NUMBER = 297;
+
 	public static final int TRANSFER_FUNCTION = 301;
+
 	public static final int SOFTWARE = 305;
+
 	public static final int DATE_TIME = 306;
+
 	public static final int ARTIST = 315;
+
 	public static final int HOST_COMPUTER = 316;
+
 	public static final int PREDICTOR = 317;
+
 	public static final int WHITE_POINT = 318;
+
 	public static final int PRIMARY_CHROMATICITIES = 319;
+
 	public static final int COLOR_MAP = 320;
+
 	public static final int HALFTONE_HINTS = 321;
+
 	public static final int TILE_WIDTH = 322;
+
 	public static final int TILE_LENGTH = 323;
+
 	public static final int TILE_OFFSETS = 324;
+
 	public static final int TILE_BYTE_COUNTS = 325;
+
 	public static final int SUB_IFD = 330;
+
 	public static final int INK_SET = 332;
+
 	public static final int INK_NAMES = 333;
+
 	public static final int NUMBER_OF_INKS = 334;
+
 	public static final int DOT_RANGE = 336;
+
 	public static final int TARGET_PRINTER = 337;
+
 	public static final int EXTRA_SAMPLES = 338;
+
 	public static final int SAMPLE_FORMAT = 339;
+
 	public static final int S_MIN_SAMPLE_VALUE = 340;
+
 	public static final int S_MAX_SAMPLE_VALUE = 341;
+
 	public static final int TRANSFER_RANGE = 342;
+
 	public static final int JPEG_TABLES = 347;
+
 	public static final int JPEG_PROC = 512;
+
 	public static final int JPEG_INTERCHANGE_FORMAT = 513;
+
 	public static final int JPEG_INTERCHANGE_FORMAT_LENGTH = 514;
+
 	public static final int JPEG_RESTART_INTERVAL = 515;
+
 	public static final int JPEG_LOSSLESS_PREDICTORS = 517;
+
 	public static final int JPEG_POINT_TRANSFORMS = 518;
+
 	public static final int JPEG_Q_TABLES = 519;
+
 	public static final int JPEG_DC_TABLES = 520;
+
 	public static final int JPEG_AC_TABLES = 521;
+
 	public static final int Y_CB_CR_COEFFICIENTS = 529;
+
 	public static final int Y_CB_CR_SUB_SAMPLING = 530;
+
 	public static final int Y_CB_CR_POSITIONING = 531;
+
 	public static final int REFERENCE_BLACK_WHITE = 532;
+
 	public static final int COPYRIGHT = 33432;
+
 	public static final int EXIF = 34665;
 
 	/** EXIF tags. */
 	public static final int EXPOSURE_TIME = 33434;
+
 	public static final int F_NUMBER = 33437;
+
 	public static final int EXPOSURE_PROGRAM = 34850;
+
 	public static final int SPECTRAL_SENSITIVITY = 34852;
+
 	public static final int ISO_SPEED_RATINGS = 34855;
+
 	public static final int OECF = 34856;
+
 	public static final int EXIF_VERSION = 36864;
+
 	public static final int DATE_TIME_ORIGINAL = 36867;
+
 	public static final int DATE_TIME_DIGITIZED = 36868;
+
 	public static final int COMPONENTS_CONFIGURATION = 37121;
+
 	public static final int COMPRESSED_BITS_PER_PIXEL = 37122;
+
 	public static final int SHUTTER_SPEED_VALUE = 37377;
+
 	public static final int APERTURE_VALUE = 37378;
+
 	public static final int BRIGHTNESS_VALUE = 37379;
+
 	public static final int EXPOSURE_BIAS_VALUE = 37380;
+
 	public static final int MAX_APERTURE_VALUE = 37381;
+
 	public static final int SUBJECT_DISTANCE = 37382;
+
 	public static final int METERING_MODE = 37383;
+
 	public static final int LIGHT_SOURCE = 37384;
+
 	public static final int FLASH = 37385;
+
 	public static final int FOCAL_LENGTH = 37386;
+
 	public static final int MAKER_NOTE = 37500;
+
 	public static final int USER_COMMENT = 37510;
+
 	public static final int SUB_SEC_TIME = 37520;
+
 	public static final int SUB_SEC_TIME_ORIGINAL = 37521;
+
 	public static final int SUB_SEC_TIME_DIGITIZED = 37522;
+
 	public static final int FLASH_PIX_VERSION = 40960;
+
 	public static final int COLOR_SPACE = 40961;
+
 	public static final int PIXEL_X_DIMENSION = 40962;
+
 	public static final int PIXEL_Y_DIMENSION = 40963;
+
 	public static final int RELATED_SOUND_FILE = 40964;
+
 	public static final int FLASH_ENERGY = 41483;
+
 	public static final int SPATIAL_FREQUENCY_RESPONSE = 41484;
+
 	public static final int FOCAL_PLANE_X_RESOLUTION = 41486;
+
 	public static final int FOCAL_PLANE_Y_RESOLUTION = 41487;
+
 	public static final int FOCAL_PLANE_RESOLUTION_UNIT = 41488;
+
 	public static final int SUBJECT_LOCATION = 41492;
+
 	public static final int EXPOSURE_INDEX = 41493;
+
 	public static final int SENSING_METHOD = 41495;
+
 	public static final int FILE_SOURCE = 41728;
+
 	public static final int SCENE_TYPE = 41729;
+
 	public static final int CFA_PATTERN = 41730;
+
 	public static final int CUSTOM_RENDERED = 41985;
+
 	public static final int EXPOSURE_MODE = 41986;
+
 	public static final int WHITE_BALANCE = 41987;
+
 	public static final int DIGITAL_ZOOM_RATIO = 41988;
+
 	public static final int FOCAL_LENGTH_35MM_FILM = 41989;
+
 	public static final int SCENE_CAPTURE_TYPE = 41990;
+
 	public static final int GAIN_CONTROL = 41991;
+
 	public static final int CONTRAST = 41992;
+
 	public static final int SATURATION = 41993;
+
 	public static final int SHARPNESS = 41994;
+
 	public static final int SUBJECT_DISTANCE_RANGE = 41996;
 
 	// -- Fields --
@@ -481,7 +611,7 @@ public class IFD extends HashMap<Integer, Object> {
 
 	/**
 	 * Retrieves the image's fill order (TIFF tag FillOrder) from this IFD.
-	 * 
+	 *
 	 * @return the image's fill order. As of TIFF 6.0 this is one of:
 	 *         <ul>
 	 *         <li>Normal (1)</li>
@@ -532,7 +662,7 @@ public class IFD extends HashMap<Integer, Object> {
 
 	/**
 	 * Retrieves the image's width (TIFF tag ImageWidth) from a given TIFF IFD.
-	 * 
+	 *
 	 * @return the image's width.
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
 	 */
@@ -547,7 +677,7 @@ public class IFD extends HashMap<Integer, Object> {
 
 	/**
 	 * Retrieves the image's length (TIFF tag ImageLength) from a given TIFF IFD.
-	 * 
+	 *
 	 * @return the image's length.
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
 	 */
@@ -563,7 +693,7 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieves the image's bits per sample (TIFF tag BitsPerSample) from a given
 	 * TIFF IFD.
-	 * 
+	 *
 	 * @return the image's bits per sample. The length of the array is equal to
 	 *         the number of samples per pixel.
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
@@ -594,7 +724,7 @@ public class IFD extends HashMap<Integer, Object> {
 
 	/**
 	 * Retrieves the image's pixel type based on the BitsPerSample tag.
-	 * 
+	 *
 	 * @return the pixel type. This is one of: <li>FormatTools.INT8</li> <li>
 	 *         FormatTools.UINT8</li> <li>FormatTools.INT16</li> <li>
 	 *         FormatTools.UINT16</li> <li>FormatTools.INT32</li> <li>
@@ -630,7 +760,7 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieves the image's bytes per sample (derived from tag BitsPerSample)
 	 * from this IFD.
-	 * 
+	 *
 	 * @return the image's bytes per sample. The length of the array is equal to
 	 *         the number of samples per pixel.
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
@@ -653,13 +783,14 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieves the number of samples per pixel for the image (TIFF tag
 	 * SamplesPerPixel) from this IFD.
-	 * 
+	 *
 	 * @return the number of samples per pixel.
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
 	 */
 	public int getSamplesPerPixel() throws FormatException {
 		if (getCompression() == TiffCompression.OLD_JPEG) {
-			return 3; // always RGB
+			return 3; // always
+			// RGB
 		}
 		return getIFDIntValue(SAMPLES_PER_PIXEL, 1);
 	}
@@ -667,7 +798,7 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieves the image's compression type (TIFF tag Compression) from this
 	 * IFD.
-	 * 
+	 *
 	 * @return the image's compression type. As of TIFF 6.0 this is one of:
 	 *         <ul>
 	 *         <li>Uncompressed (1)</li>
@@ -690,7 +821,7 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieves the image's photometric interpretation (TIFF tag
 	 * PhotometricInterpretation) from this IFD.
-	 * 
+	 *
 	 * @return the image's photometric interpretation. As of TIFF 6.0 this is one
 	 *         of:
 	 *         <ul>
@@ -720,7 +851,7 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieves the image's planar configuration (TIFF tag PlanarConfiguration)
 	 * from this IFD.
-	 * 
+	 *
 	 * @return the image's planar configuration. As of TIFF 6.0 this is one of:
 	 *         <ul>
 	 *         <li>Chunky (1)</li>
@@ -740,7 +871,7 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieves the strip offsets for the image (TIFF tag StripOffsets) from this
 	 * IFD.
-	 * 
+	 *
 	 * @return the strip offsets for the image. The length of the array is equal
 	 *         to the number of strips per image. <i>StripsPerImage = floor
 	 *         ((ImageLength + RowsPerStrip - 1) / RowsPerStrip)</i>.
@@ -800,7 +931,7 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieves strip byte counts for the image (TIFF tag StripByteCounts) from
 	 * this IFD.
-	 * 
+	 *
 	 * @return the byte counts for each strip. The length of the array is equal to
 	 *         the number of strips per image. <i>StripsPerImage =
 	 *         floor((ImageLength + RowsPerStrip - 1) / RowsPerStrip)</i>.
@@ -815,12 +946,15 @@ public class IFD extends HashMap<Integer, Object> {
 		}
 		final long imageLength = getImageLength();
 		if (byteCounts == null) {
-			// technically speaking, this shouldn't happen (since TIFF writers are
+			// technically speaking, this shouldn't happen (since TIFF writers
+			// are
 			// required to write the StripByteCounts tag), but we'll support it
 			// anyway
 
-			// don't rely on RowsPerStrip, since it's likely that if the file doesn't
-			// have the StripByteCounts tag, it also won't have the RowsPerStrip tag
+			// don't rely on RowsPerStrip, since it's likely that if the file
+			// doesn't
+			// have the StripByteCounts tag, it also won't have the RowsPerStrip
+			// tag
 			final long[] offsets = getStripOffsets();
 			if (offsets == null) return null;
 			final int bytesPerSample = getBytesPerSample()[0];
@@ -862,7 +996,7 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieves the number of rows per strip for image (TIFF tag RowsPerStrip)
 	 * from this IFD.
-	 * 
+	 *
 	 * @return the number of rows per strip.
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
 	 */
@@ -909,7 +1043,7 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieve the X resolution (TIFF tag XResolution) from this IFD. The
 	 * resolution will be normalized to microns per pixel.
-	 * 
+	 *
 	 * @return the X resolution, in microns per pixel
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
 	 */
@@ -924,7 +1058,7 @@ public class IFD extends HashMap<Integer, Object> {
 	/**
 	 * Retrieve the Y resolution (TIFF tag YResolution) from this IFD. The
 	 * resolution will be normalized to microns per pixel.
-	 * 
+	 *
 	 * @return the Y resolution, in microns per pixel
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
 	 */
@@ -978,7 +1112,8 @@ public class IFD extends HashMap<Integer, Object> {
 				log.trace("\t" + getIFDTagName(tag.intValue()) + "=" + v);
 			}
 			else {
-				// this is an array of primitive types, Strings, or TiffRationals
+				// this is an array of primitive types, Strings, or
+				// TiffRationals
 				log.trace("\t" + getIFDTagName(tag.intValue()) + "=");
 				final int nElements = Array.getLength(value);
 				for (int i = 0; i < nElements; i++) {

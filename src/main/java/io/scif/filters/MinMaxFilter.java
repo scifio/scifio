@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -254,7 +254,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
 	/**
 	 * Updates min/max values based on the given byte array.
-	 * 
+	 *
 	 * @param imageIndex the image index within the dataset
 	 * @param planeIndex the plane index within the image.
 	 * @param buf a pre-allocated buffer.
@@ -273,7 +273,8 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		final int pixelType = iMeta.getPixelType();
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
 		final long planeSize = iMeta.getPlaneSize();
-		// check whether min/max values have already been computed for this plane
+		// check whether min/max values have already been computed for this
+		// plane
 		// and that the buffer requested is actually the entire plane
 		if (len == planeSize &&
 			!Double.isNaN(planeMin[imageIndex][(int) planeIndex])) return;

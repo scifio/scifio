@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,6 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package io.scif;
 
 import org.junit.Assert;
@@ -34,33 +35,38 @@ import org.junit.Assert;
 public class JUnitHelper {
 
 	private final static double DOUBLE_DELTA = 1.0 / (1l << 52);
+
 	private final static float FLOAT_DELTA = 1.0f / (1l << 23);
 
 	/**
-	 * Assert that two floating point numbers are equal up to a very small
-	 * delta.
+	 * Assert that two floating point numbers are equal up to a very small delta.
 	 * <p>
 	 * This method helps with JUnit's removal of the
 	 * {@link Assert#assertEquals(double, double)} functionality.
 	 * </p>
+	 *
 	 * @param expected expected value
 	 * @param actual the value to check against expected
 	 */
-	public static void assertCloseEnough(final double expected, final double actual) {
+	public static void assertCloseEnough(final double expected,
+		final double actual)
+	{
 		Assert.assertEquals(expected, actual, DOUBLE_DELTA);
 	}
 
 	/**
-	 * Assert that two floating point numbers are equal up to a very small
-	 * delta.
+	 * Assert that two floating point numbers are equal up to a very small delta.
 	 * <p>
 	 * This method helps with JUnit's removal of the
 	 * {@link Assert#assertEquals(double, double)} functionality.
 	 * </p>
+	 *
 	 * @param expected expected value
 	 * @param actual the value to check against expected
 	 */
-	public static void assertCloseEnough(final float expected, final float actual) {
+	public static void
+		assertCloseEnough(final float expected, final float actual)
+	{
 		Assert.assertEquals(expected, actual, FLOAT_DELTA);
 	}
 

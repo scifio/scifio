@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,7 +38,7 @@ import java.nio.ByteOrder;
 
 /**
  * Interface for random access into structures (e.g., files or arrays).
- * 
+ *
  * @author Curtis Rueden
  */
 public interface IRandomAccess extends DataInput, DataOutput {
@@ -57,28 +57,28 @@ public interface IRandomAccess extends DataInput, DataOutput {
 
 	/**
 	 * Returns the current order of the stream.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	ByteOrder getOrder();
 
 	/**
 	 * Sets the byte order of the stream.
-	 * 
+	 *
 	 * @param order Order to set.
 	 */
 	void setOrder(ByteOrder order);
 
 	/**
 	 * Reads up to b.length bytes of data from this stream into an array of bytes.
-	 * 
+	 *
 	 * @return the total number of bytes read into the buffer.
 	 */
 	int read(byte[] b) throws IOException;
 
 	/**
 	 * Reads up to len bytes of data from this stream into an array of bytes.
-	 * 
+	 *
 	 * @return the total number of bytes read into the buffer.
 	 */
 	int read(byte[] b, int off, int len) throws IOException;
@@ -91,7 +91,7 @@ public interface IRandomAccess extends DataInput, DataOutput {
 
 	/**
 	 * Reads up to len bytes of data from this stream into a ByteBuffer.
-	 * 
+	 *
 	 * @return the total number of bytes read into the buffer.
 	 */
 	int read(ByteBuffer buffer, int offset, int len) throws IOException;

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -59,7 +59,7 @@ import org.scijava.plugin.PluginService;
  * protectively wrap the wrapped {@code Reader}'s Metadata. If none is found, a
  * reference to the {@code Reader's} Metadata itself is used.
  * </p>
- * 
+ *
  * @author Mark Hiner
  * @see io.scif.Reader
  * @see io.scif.filters.Filter
@@ -96,7 +96,7 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	/**
 	 * Allows code to be executed regardless of which {@link #setSource} signature
 	 * is called.
-	 * 
+	 *
 	 * @param source - Lowest common denominator of arguments in the
 	 *          {@code setSource} series.
 	 * @throws IOException
@@ -458,7 +458,10 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	// -- Helper methods --
 
-	/* Returns true if this filter's metdata can be cast to ChannelFillerMetadata */
+	/*
+	 * Returns true if this filter's metdata can be cast to
+	 * ChannelFillerMetadata
+	 */
 	protected boolean metaCheck() {
 		final Metadata meta = getMetadata();
 

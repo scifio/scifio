@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,8 +34,6 @@ import static io.scif.JUnitHelper.assertCloseEnough;
 import static org.junit.Assert.assertEquals;
 import io.scif.FormatException;
 import io.scif.SCIFIO;
-import io.scif.filters.MinMaxFilter;
-import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
 
@@ -45,12 +43,13 @@ import org.junit.Test;
 
 /**
  * Tests for {@link MinMaxFilter}.
- * 
+ *
  * @author Mark Hiner
  */
 public class MinMaxFilterTest {
 
 	private final SCIFIO scifio = new SCIFIO();
+
 	private final String id =
 		"testImg&lengths=3,127,127,4&axes=Channel,X,Y,Time&planarDims=3.fake";
 
@@ -79,7 +78,8 @@ public class MinMaxFilterTest {
 		assertEquals(null, minMax.getPlaneMaximum(0, 2));
 		assertEquals(null, minMax.getPlaneMinimum(0, 2));
 
-		// Check global axis min/maxes - should be null, as not all planes have been
+		// Check global axis min/maxes - should be null, as not all planes have
+		// been
 		// read
 		assertEquals(null, minMax.getAxisGlobalMaximum(0, Axes.CHANNEL, 0));
 		assertEquals(null, minMax.getAxisGlobalMaximum(0, Axes.CHANNEL, 1));

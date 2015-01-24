@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@ import org.scijava.plugin.Parameter;
 
 /**
  * TODO
- * 
+ *
  * @author Melissa Linkert
  */
 public class JPEGTileDecoder extends AbstractContextual {
@@ -60,7 +60,9 @@ public class JPEGTileDecoder extends AbstractContextual {
 	private LogService log;
 
 	private TileConsumer consumer;
+
 	private TileCache tiles;
+
 	private RandomAccessInputStream in;
 
 	public JPEGTileDecoder(final Context ctx) {
@@ -179,7 +181,9 @@ public class JPEGTileDecoder extends AbstractContextual {
 	class TileConsumer implements ImageConsumer {
 
 		private int width, height;
+
 		private final ImageProducer producer;
+
 		private int yy = 0, hh = 0;
 
 		public TileConsumer(final ImageProducer producer) {
@@ -274,7 +278,9 @@ public class JPEGTileDecoder extends AbstractContextual {
 
 		private final Hashtable<Region, byte[]> compressedTiles =
 			new Hashtable<Region, byte[]>();
+
 		private final JPEGCodec codec;
+
 		private final CodecOptions options = new CodecOptions();
 
 		private final ByteVector toCompress = new ByteVector();
@@ -285,6 +291,7 @@ public class JPEGTileDecoder extends AbstractContextual {
 		private int row = 0;
 
 		private Region lastRegion = null;
+
 		private byte[] lastTile = null;
 
 		private int yy = 0, hh = 0;

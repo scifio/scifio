@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -43,7 +43,7 @@ import java.util.Random;
  * compression classes. Base 1D compression and decompression methods are not
  * implemented here, and are left as abstract. 2D methods do simple
  * concatenation and call to the 1D methods
- * 
+ *
  * @author Eric Kjellman
  */
 public abstract class AbstractCodec extends AbstractSCIFIOPlugin implements
@@ -56,7 +56,7 @@ public abstract class AbstractCodec extends AbstractSCIFIOPlugin implements
 	 * Main testing method default implementation. This method tests whether the
 	 * data is the same after compressing and decompressing, as well as doing a
 	 * basic test of the 2D methods.
-	 * 
+	 *
 	 * @throws FormatException Can only occur if there is a bug in the compress
 	 *           method.
 	 */
@@ -124,7 +124,7 @@ public abstract class AbstractCodec extends AbstractSCIFIOPlugin implements
 	 * 2D data block encoding default implementation. This method simply
 	 * concatenates data[0] + data[1] + ... + data[i] into a 1D block of data,
 	 * then calls the 1D version of compress.
-	 * 
+	 *
 	 * @param data The data to be compressed.
 	 * @param options Options to be used during compression, if appropriate.
 	 * @return The compressed data.
@@ -182,7 +182,7 @@ public abstract class AbstractCodec extends AbstractSCIFIOPlugin implements
 	 * 2D data block decoding default implementation. This method simply
 	 * concatenates data[0] + data[1] + ... + data[i] into a 1D block of data,
 	 * then calls the 1D version of decompress.
-	 * 
+	 *
 	 * @param data The data to be decompressed.
 	 * @return The decompressed data.
 	 * @throws FormatException If input is not a compressed data block of the

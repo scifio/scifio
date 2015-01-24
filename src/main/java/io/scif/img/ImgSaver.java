@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -83,7 +83,7 @@ import org.scijava.plugin.Parameter;
 
 /**
  * Writes out an {@link ImgPlus} using SCIFIO.
- * 
+ *
  * @author Mark Hiner
  * @author Curtis Rueden
  */
@@ -116,7 +116,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * {@link #writePlanes}. These saveImg signatures facilitate multiple pathways
 	 * to that goal. This method is called when a String id and {@link Img} are
 	 * provided.
-	 * 
+	 *
 	 * @param id
 	 * @param img
 	 * @throws ImgIOException
@@ -131,7 +131,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	/**
 	 * String id provided. {@link ImgPlus} provided, or wrapped {@link Img} in
 	 * previous saveImg.
-	 * 
+	 *
 	 * @param id
 	 * @param img
 	 * @throws ImgIOException
@@ -145,7 +145,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 	/**
 	 * As {@link #saveImg(String, Img)} with configuration options.
-	 * 
+	 *
 	 * @param id
 	 * @param img
 	 * @param config Configuration information to use for this write.
@@ -160,7 +160,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 	/**
 	 * As {@link #saveImg(String, SCIFIOImgPlus, int)} with configuration options.
-	 * 
+	 *
 	 * @param id
 	 * @param img
 	 * @param config Configuration information to use for this write.
@@ -176,7 +176,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 	/**
 	 * {@link Writer} and {@link Img} provided
-	 * 
+	 *
 	 * @param w
 	 * @param img
 	 * @throws ImgIOException
@@ -189,13 +189,14 @@ public class ImgSaver extends AbstractImgIOComponent {
 	}
 
 	// TODO IFormatHandler needs to be promoted to be able to get the current
-	// file, to get its full path, to provide the ImgPluSCIFIOImgPlusending that,
+	// file, to get its full path, to provide the ImgPluSCIFIOImgPlusending
+	// that,
 	// these two IFormatWriter methods are not guaranteed to be
 	// useful
 	/**
 	 * {@link Writer} provided. {@link ImgPlus} provided, or wrapped provided
 	 * {@link Img}.
-	 * 
+	 *
 	 * @param w
 	 * @param img
 	 * @throws ImgIOException
@@ -209,7 +210,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 	/**
 	 * As {@link #saveImg(Writer, Img)}, with configuration options.
-	 * 
+	 *
 	 * @param w
 	 * @param img
 	 * @param config Configuration information to use for this write.
@@ -229,7 +230,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	/**
 	 * As {@link #saveImg(Writer, SCIFIOImgPlus, int)}, with configuration
 	 * options.
-	 * 
+	 *
 	 * @param w
 	 * @param img
 	 * @param config Configuration information to use for this write.
@@ -250,7 +251,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * will determine if the provided dimension order, obtained from an ImgLib
 	 * AxisType array, can be converted to a 5-dimensional sequence compatible
 	 * with SCIFIO, and returns that sequence if it exists and null otherwise.
-	 * 
+	 *
 	 * @param newLengths - updated to hold the lengths of the newly ordered axes
 	 */
 	public static String guessDimOrder(final CalibratedAxis[] axes,
@@ -380,7 +381,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 						else if (dimLengths[i] > 1 && sizeOneUnknown) {
 							// we are in a block of unknowns that was started by
 							// one of size 1, but contains an unknown of size > 1,
-							// thus was double counted (once in pass 1, once in pass 2)
+							// thus was double counted (once in pass 1, once in pass
+							// 2)
 							sizeOneUnknown = false;
 							contiguousUnknown--;
 						}
@@ -450,9 +452,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 		if (w == null) {
 			if (id == null || id.length() == 0) {
 				throw new ImgIOException(
-					"No output destination or pre-configured Writer was provided, and" +
-					" no way to determine the desired output path. Default value:" +
-					" ImgPlus's source.");
+					"No output destination or pre-configured Writer was provided, and"
+						+ " no way to determine the desired output path. Default value:"
+						+ " ImgPlus's source.");
 			}
 			return writeImg(id, img, imageIndex, config, sliceCount);
 		}
@@ -465,8 +467,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * given id.
 	 */
 	private Metadata writeImg(final String id, final SCIFIOImgPlus<?> imgPlus,
-		final int imageIndex, final SCIFIOConfig config, final int sliceCount) throws ImgIOException,
-		IncompatibleTypeException
+		final int imageIndex, final SCIFIOConfig config, final int sliceCount)
+		throws ImgIOException, IncompatibleTypeException
 	{
 		// Create a Writer for the given id
 		Writer w = null;
@@ -514,7 +516,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 				populateMeta(w, imgPlus, config, id, imageIndex);
 			}
 			catch (final FormatException e) {
-				throw new ImgIOException(e, "SCIFIO exception when writing to file: " + id);
+				throw new ImgIOException(e, "SCIFIO exception when writing to file: " +
+					id);
 			}
 			catch (final IOException e) {
 				throw new ImgIOException(e, "I/O exception writing to file: " + id);
@@ -528,8 +531,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * Terminal {@link #writeImg} method. Performs actual pixel output.
 	 */
 	private Metadata writeImg(final Writer w, final SCIFIOImgPlus<?> imgPlus,
-		final int imageIndex, final int sliceCount)
-		throws ImgIOException, IncompatibleTypeException
+		final int imageIndex, final int sliceCount) throws ImgIOException,
+		IncompatibleTypeException
 	{
 		if (imgPlus.numDimensions() > 0) {
 			final long startTime = System.currentTimeMillis();
@@ -573,13 +576,13 @@ public class ImgSaver extends AbstractImgIOComponent {
 	 * converting each to a byte[] if necessary (the SCIFIO writer requires a
 	 * byte[]) and saving the plane. Currently only {@link PlanarImg} is
 	 * supported.
-	 * 
+	 *
 	 * @param arrayType2
 	 * @throws IncompatibleTypeException
 	 */
 	private void writePlanes(final Writer w, final int imageIndex,
-		final SCIFIOImgPlus<?> imgPlus)
-		throws ImgIOException, IncompatibleTypeException
+		final SCIFIOImgPlus<?> imgPlus) throws ImgIOException,
+		IncompatibleTypeException
 	{
 		// Get basic statistics
 		final Metadata mOut = w.getMetadata();
@@ -594,10 +597,11 @@ public class ImgSaver extends AbstractImgIOComponent {
 		// iterate over each plane
 		final long planeOutCount = w.getMetadata().get(imageIndex).getPlaneCount();
 
-		Img<?> img = imgPlus.getImg();
+		final Img<?> img = imgPlus.getImg();
 		final int planeCount = getPlaneCount(img);
 		if (planeOutCount < planeCount / rgbChannelCount) {
-			// Warn that some planes were truncated (e.g. going from 4D format to
+			// Warn that some planes were truncated (e.g. going from 4D format
+			// to
 			// 3D)
 			statusService.showStatus(0, 0, "Source dataset contains: " + planeCount +
 				" planes, but writer format only supports: " + rgbChannelCount *
@@ -621,7 +625,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 						planarLengths);
 
 				for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++) {
-					final Object curPlane = getPlaneArray(img, rgbChannelCount, cIndex, planeIndex);
+					final Object curPlane =
+						getPlaneArray(img, rgbChannelCount, cIndex, planeIndex);
 
 					final Class<?> planeClass = curPlane.getClass();
 
@@ -655,8 +660,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 						// TODO: Assign all elements in a for loop rather than
 						// using many small System.arraycopy calls. Calling
-						// System.arraycopy is less efficient than element-by-element
-						// copying for small array lengths (~24 elements or less).
+						// System.arraycopy is less efficient than
+						// element-by-element
+						// copying for small array lengths (~24 elements or
+						// less).
 						// See: http://stackoverflow.com/a/12366983
 						for (int i = 0; i < sourcePlane.length / bpp; i += bpp) {
 							System.arraycopy(sourcePlane, i, destPlane.getData(),
@@ -664,9 +671,12 @@ public class ImgSaver extends AbstractImgIOComponent {
 						}
 					}
 					else {
-						// TODO: Consider using destPlane.setData(sourcePlane) instead.
-						// Ideally would also make modifications to avoid the initial
-						// allocation overhead of the destPlane's internal buffer.
+						// TODO: Consider using destPlane.setData(sourcePlane)
+						// instead.
+						// Ideally would also make modifications to avoid the
+						// initial
+						// allocation overhead of the destPlane's internal
+						// buffer.
 						System.arraycopy(sourcePlane, 0, destPlane.getData(), cIndex *
 							sourcePlane.length, sourcePlane.length);
 					}
@@ -690,7 +700,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	}
 
 	/**
-	 * @return An array of data corresponding to the given plane and channel indices.
+	 * @return An array of data corresponding to the given plane and channel
+	 *         indices.
 	 */
 	private Object getPlaneArray(final Img<?> img, final int rgbChannelCount,
 		final int cIndex, final int planeIndex)
@@ -741,8 +752,10 @@ public class ImgSaver extends AbstractImgIOComponent {
 			else if (store instanceof DoubleArray) {
 				final double[] source = ((DoubleArray) store).getCurrentStorageArray();
 				final double[] doubles = new double[planeSize];
-				System.arraycopy(source, planeSize *
-					(cIndex + (planeIndex * rgbChannelCount)), doubles, 0, doubles.length);
+				System
+					.arraycopy(source, planeSize *
+						(cIndex + (planeIndex * rgbChannelCount)), doubles, 0,
+						doubles.length);
 				return doubles;
 			}
 			else if (store instanceof FloatArray) {
@@ -768,12 +781,14 @@ public class ImgSaver extends AbstractImgIOComponent {
 		img.dimensions(dimensions);
 
 		// Truncate X, Y axes
-		long[] lengths = Arrays.copyOfRange(dimensions, 2, dimensions.length);
+		final long[] lengths = Arrays.copyOfRange(dimensions, 2, dimensions.length);
 
 		// Get non-X,Y position array
-		final long[] planePosition = FormatTools.rasterToPosition(lengths, planeIndex);
+		final long[] planePosition =
+			FormatTools.rasterToPosition(lengths, planeIndex);
 
-		// Copy plane positions back to dimensions array and set X, Y to start at 0
+		// Copy plane positions back to dimensions array and set X, Y to start
+		// at 0
 		System.arraycopy(planePosition, 0, dimensions, 2, planePosition.length);
 		dimensions[0] = dimensions[1] = 0;
 
@@ -814,27 +829,27 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		// Iterate over the positions in this plane, copying the values at
 		// each position to the output array.
-		for (int i=0; i<planeSize; i++) {
+		for (int i = 0; i < planeSize; i++) {
 			cursor.fwd();
 			final Object value = cursor.get();
 
 			if (GenericIntType.class.isAssignableFrom(typeClass)) {
-				((int[])array)[i] = (int) ((ComplexType<?>)value).getRealDouble();
+				((int[]) array)[i] = (int) ((ComplexType<?>) value).getRealDouble();
 			}
 			else if (GenericByteType.class.isAssignableFrom(typeClass)) {
-				((byte[])array)[i] = (byte) ((ComplexType<?>)value).getRealDouble();
+				((byte[]) array)[i] = (byte) ((ComplexType<?>) value).getRealDouble();
 			}
 			else if (GenericShortType.class.isAssignableFrom(typeClass)) {
-				((short[])array)[i] = (short) ((ComplexType<?>)value).getRealDouble();
+				((short[]) array)[i] = (short) ((ComplexType<?>) value).getRealDouble();
 			}
 			else if (LongType.class.isAssignableFrom(typeClass)) {
-				((long[])array)[i] = (long) ((ComplexType<?>)value).getRealDouble();
+				((long[]) array)[i] = (long) ((ComplexType<?>) value).getRealDouble();
 			}
 			else if (DoubleType.class.isAssignableFrom(typeClass)) {
-				((double[])array)[i] = (double) ((ComplexType<?>)value).getRealDouble();
+				((double[]) array)[i] = ((ComplexType<?>) value).getRealDouble();
 			}
 			else if (FloatType.class.isAssignableFrom(typeClass)) {
-				((float[])array)[i] = (float) ((ComplexType<?>)value).getRealDouble();
+				((float[]) array)[i] = (float) ((ComplexType<?>) value).getRealDouble();
 			}
 		}
 
@@ -864,7 +879,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	/**
 	 * Uses the provided {@link SCIFIOImgPlus} to populate the minimum metadata
 	 * fields necessary for writing.
-	 * 
+	 *
 	 * @param imageIndex
 	 * @param id
 	 */

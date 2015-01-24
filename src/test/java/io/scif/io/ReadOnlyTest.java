@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,8 +30,6 @@
 
 package io.scif.io;
 
-import io.scif.io.HandleException;
-import io.scif.io.IRandomAccess;
 import io.scif.io.providers.IRandomAccessProvider;
 import io.scif.io.providers.IRandomAccessProviderFactory;
 
@@ -49,7 +47,7 @@ import org.junit.runners.Parameterized.Parameters;
 /**
  * Tests for ensuring that read-only IRandomAccess objects throw an appropriate
  * exception when a write method is called.
- * 
+ *
  * @see io.scif.io.IRandomAccess
  */
 @RunWith(Parameterized.class)
@@ -65,9 +63,8 @@ public class ReadOnlyTest {
 
 	@Parameters
 	public static Collection<Object[]> parameters() {
-		return Arrays.asList(new Object[][] {
-			{ "BZip2Handle" }, { "GZipHandle" }, { "URLHandle" }, { "ZipHandle" }
-		});
+		return Arrays.asList(new Object[][] { { "BZip2Handle" }, { "GZipHandle" },
+			{ "URLHandle" }, { "ZipHandle" } });
 	}
 
 	private final String provider;

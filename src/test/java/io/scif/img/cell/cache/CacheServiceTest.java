@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,8 +41,6 @@ import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.cell.SCIFIOCell;
 import io.scif.img.cell.SCIFIOCellCache;
-import io.scif.img.cell.cache.CacheResult;
-import io.scif.img.cell.cache.CacheService;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 import io.scif.io.TestParameters;
@@ -67,7 +65,7 @@ import org.scijava.Context;
 /**
  * Unit tests for testing the {@link CacheService}. Tests storage and retrieval,
  * the various configuration options, and edge cases.
- * 
+ *
  * @author Mark Hiner
  */
 @RunWith(Parameterized.class)
@@ -94,7 +92,9 @@ public class CacheServiceTest {
 
 	private final String provider;
 
-	public CacheServiceTest(final String provider, final boolean checkGrowth, final boolean testLength) {
+	public CacheServiceTest(final String provider, final boolean checkGrowth,
+		final boolean testLength)
+	{
 		this.provider = provider;
 	}
 
@@ -118,7 +118,8 @@ public class CacheServiceTest {
 	// Tests points along a simple workflow of loading and caching a cell
 	@Test
 	public void testBasicCacheAndRetrieve() throws FormatException, IOException {
-		// create a cache. This implicitly makes it available to the CacheService
+		// create a cache. This implicitly makes it available to the
+		// CacheService
 		final SCIFIOCellCache<ByteArray> cache1 = makeCache(128l * 128l);
 
 		// load the first cell in that cache
@@ -275,7 +276,8 @@ public class CacheServiceTest {
 			// Wait for the entry to be removed from the cache
 		}
 
-		// Cell should be removed from the cache now (it will be re-cached if GC'd
+		// Cell should be removed from the cache now (it will be re-cached if
+		// GC'd
 		// again)
 		assertNull(cs.retrieve(cache.toString(), 0));
 
@@ -299,7 +301,8 @@ public class CacheServiceTest {
 			clearMem();
 		}
 
-		// Cell should have cached again as it is still modified relative to what's
+		// Cell should have cached again as it is still modified relative to
+		// what's
 		// on disk
 		assertNotNull(cell);
 
@@ -356,7 +359,8 @@ public class CacheServiceTest {
 			// Wait for the cell to hit the disk cache
 		}
 
-		// Clear the cache and try caching cell 2 again. NB: clearCache only works
+		// Clear the cache and try caching cell 2 again. NB: clearCache only
+		// works
 		// if the object has actually been written to disk!
 		cs.clearCache(cache1.toString());
 
@@ -454,7 +458,8 @@ public class CacheServiceTest {
 		assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 0, cell1b));
 		assertEquals(CacheResult.SUCCESS, cs.cache(cache1.toString(), 1, cell2b));
 
-		// Should have succeeded, as these cells are still modified from what was on
+		// Should have succeeded, as these cells are still modified from what
+		// was on
 		// disk
 		assertNotNull(cs.retrieve(cache1.toString(), 0));
 		assertNotNull(cs.retrieve(cache1.toString(), 1));
@@ -530,8 +535,10 @@ public class CacheServiceTest {
 		}
 		catch (final OutOfMemoryError e) {
 			// Typically this should never happen, as garbage collection will
-			// automatically run to collect these array instances. However in some
-			// environments this may be needed, e.g. while running tests during a
+			// automatically run to collect these array instances. However in
+			// some
+			// environments this may be needed, e.g. while running tests during
+			// a
 			// maven release invocation.
 			System.gc();
 		}

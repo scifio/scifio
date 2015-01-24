@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,10 +34,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import io.scif.FormatException;
-import io.scif.Metadata;
-import io.scif.SCIFIO;
-import io.scif.Translator;
 import io.scif.filters.MetadataWrapper;
 import io.scif.filters.PlaneSeparator;
 import io.scif.filters.ReaderFilter;
@@ -58,7 +54,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Unit tests for {@link io.scif.Translator} interface methods.
- * 
+ *
  * @author Mark Hiner
  */
 @RunWith(Parameterized.class)
@@ -71,15 +67,18 @@ public class TranslatorTest {
 
 	private final String provider;
 
-	public TranslatorTest(final String provider, final boolean checkGrowth, final boolean testLength) {
+	public TranslatorTest(final String provider, final boolean checkGrowth,
+		final boolean testLength)
+	{
 		this.provider = provider;
 	}
 
 	private final String id =
 		"interleaved&pixelType=int8&axes=Channel,X,Y,Z&lengths=3,256,256,5.fake";
+
 	private final String output = "testFile.ics";
 
-	private SCIFIO scifio = new SCIFIO();
+	private final SCIFIO scifio = new SCIFIO();
 
 	/**
 	 * Basic translation test. Ensures that we can always translate naively
@@ -87,8 +86,8 @@ public class TranslatorTest {
 	 */
 	@Test
 	public void testDirectTranslation() throws IOException, FormatException {
-		Metadata source = scifio.initializer().parseMetadata(id);
-		Metadata dest = scifio.format().getFormat(output).createMetadata();
+		final Metadata source = scifio.initializer().parseMetadata(id);
+		final Metadata dest = scifio.format().getFormat(output).createMetadata();
 
 		assertTrue(scifio.translator().translate(source, dest, false));
 	}
@@ -99,13 +98,13 @@ public class TranslatorTest {
 	 */
 	@Test
 	public void testWrappedTranslation() throws IOException, FormatException {
-		ReaderFilter rf = scifio.initializer().initializeReader(id);
+		final ReaderFilter rf = scifio.initializer().initializeReader(id);
 
 		// enable a reader filter to trigger metadata wrapping
 		rf.enable(PlaneSeparator.class).separate(Axes.CHANNEL);
 
-		Metadata source = rf.getMetadata();
-		Metadata dest = scifio.format().getFormat(output).createMetadata();
+		final Metadata source = rf.getMetadata();
+		final Metadata dest = scifio.format().getFormat(output).createMetadata();
 
 		// Verify that the ICSTranslator is discovered
 		final Translator t =
@@ -130,8 +129,8 @@ public class TranslatorTest {
 	 */
 	@Test()
 	public void testNoTranslator() throws IOException, FormatException {
-		Metadata source = scifio.initializer().parseMetadata(id);
-		Metadata dest = scifio.format().getFormat(output).createMetadata();
+		final Metadata source = scifio.initializer().parseMetadata(id);
+		final Metadata dest = scifio.format().getFormat(output).createMetadata();
 
 		// This translation should fail, as there is no "Fake to ICS" translator
 		assertFalse(scifio.translator().translate(source, dest, true));

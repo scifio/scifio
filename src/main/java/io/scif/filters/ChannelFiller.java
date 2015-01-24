@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -174,7 +174,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 			return lastPlane;
 		}
 
-		// If we have the cached base plane we can use it to expand, otherwise we'll
+		// If we have the cached base plane we can use it to expand, otherwise
+		// we'll
 		// have to open the plane still.
 		final int lutLength =
 			((ChannelFillerMetadata) getMetadata()).getLutLength();
@@ -277,7 +278,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	/**
 	 * Returns true if we have a cached copy of the requested plane available.
-	 * 
+	 *
 	 * @param lengths
 	 * @param offsets
 	 */
@@ -291,7 +292,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 			lastPlaneLengths != null)
 		{
 			for (int i = 0; i < offsets.length && matches; i++) {
-				//TODO It would be nice to fix up this logic so that we can use cached
+				// TODO It would be nice to fix up this logic so that we can use
+				// cached
 				// planes when requesting a sub-region of the cached plane.
 				// See https://github.com/scifio/scifio/issues/155
 				// Make sure we have the starting point in each axis

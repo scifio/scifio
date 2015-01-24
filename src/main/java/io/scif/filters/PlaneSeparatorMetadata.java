@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,7 +44,7 @@ import org.scijava.plugin.Plugin;
 /**
  * {@link io.scif.filters.MetadataWrapper} implementation specifically for use
  * with the {@link io.scif.filters.PlaneSeparator}.
- * 
+ *
  * @see io.scif.filters.MetadataWrapper
  * @see io.scif.filters.PlaneSeparator
  * @author Mark Hiner
@@ -110,7 +110,8 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 			// offset to the next axis position
 			int offset = 0;
 			for (final AxisType type : splitTypes) {
-				// For each potentially split axis, if it's a planar axis, move it to a
+				// For each potentially split axis, if it's a planar axis, move
+				// it to a
 				// non-planar position
 				if (iMeta.getAxisIndex(type) >= 0 &&
 					iMeta.getAxisIndex(type) < iMeta.getPlanarAxisCount())
@@ -134,7 +135,8 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 		splitTypes.clear();
 		for (final AxisType t : types) {
 			final int axisIndex = unwrap().get(0).getAxisIndex(t);
-			// If the specified axis is present and a planar axis, we can separate it
+			// If the specified axis is present and a planar axis, we can
+			// separate it
 			if (axisIndex >= 0 && axisIndex < unwrap().get(0).getPlanarAxisCount()) {
 				splitTypes.add(t);
 			}

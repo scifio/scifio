@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,7 +39,7 @@ import java.util.Map;
 
 /**
  * Utility class for working with TIFF photometric interpretations.
- * 
+ *
  * @author Curtis Rueden
  * @author Eric Kjellman
  * @author Melissa Linkert
@@ -55,7 +55,9 @@ public enum PhotoInterp implements CodedEnum {
 
 	/** Default luminance values for YCbCr data. */
 	public static final float LUMA_RED = 0.299f;
+
 	public static final float LUMA_GREEN = 0.587f;
+
 	public static final float LUMA_BLUE = 0.114f;
 
 	/** Code for the IFD type in the actual TIFF file. */
@@ -81,7 +83,7 @@ public enum PhotoInterp implements CodedEnum {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param code Integer "code" for the photometric interpretation.
 	 * @param name Given name of the photometric interpretation.
 	 * @param metadataType Metadata type of the photometric interpretation.
@@ -98,7 +100,7 @@ public enum PhotoInterp implements CodedEnum {
 
 	/**
 	 * Retrieves a photometric interpretation by reverse lookup of its "code".
-	 * 
+	 *
 	 * @param code The code to look up.
 	 * @return The <code>PhotoInterp</code> instance for the <code>code</code> or
 	 *         <code>null</code> if it does not exist.
@@ -118,7 +120,7 @@ public enum PhotoInterp implements CodedEnum {
 
 	/**
 	 * Retrieves the given name of the photometric interpretation.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	public String getName() {
@@ -127,7 +129,7 @@ public enum PhotoInterp implements CodedEnum {
 
 	/**
 	 * Retrieves the metadata type of the photometric interpretation.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	public String getMetadataType() {

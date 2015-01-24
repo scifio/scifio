@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -48,7 +48,7 @@ import java.io.IOException;
  * Before a {@code Reader} can be used, it must be initialized via
  * {@link #setSource} and {@link #setMetadata} calls.
  * </p>
- * 
+ *
  * @see io.scif.Plane
  * @see io.scif.Metadata
  * @see io.scif.Writer#savePlane
@@ -61,7 +61,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * Creates a {@link io.scif.Plane} representation of the pixels at the
 	 * specified indices.
-	 * 
+	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
 	 * @return The complete {@code Plane} at the specified indices.
@@ -72,7 +72,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * Creates a {@link io.scif.Plane} representation of a desired sub-region from
 	 * the pixels at the specified indices.
-	 * 
+	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
 	 * @param planeMin minimal bounds of the planar axes
@@ -85,7 +85,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * Allows a single {@code Plane} object to be reused by reference when opening
 	 * complete planes.
-	 * 
+	 *
 	 * @see #openPlane(int, long)
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
@@ -96,7 +96,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * Allows a single {@code Plane} object to be reused by reference when opening
 	 * sub-regions of planes.
-	 * 
+	 *
 	 * @see #openPlane(int, long, long[], long[])
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
@@ -106,7 +106,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * As {@link #openPlane(int, long)} with configuration options.
-	 * 
+	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
 	 * @param config Configuration information to use for this read.
@@ -118,7 +118,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * As {@link #openPlane(int, long, long[], long[])} with configuration
 	 * options.
-	 * 
+	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
 	 * @param planeMin minimal bounds of the planar axes
@@ -132,7 +132,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * Allows a single {@code Plane} object to be reused by reference when opening
 	 * complete planes.
-	 * 
+	 *
 	 * @see #openPlane(int, long, SCIFIOConfig)
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
@@ -143,7 +143,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * Allows a single {@code Plane} object to be reused by reference when opening
 	 * sub-regions of planes.
-	 * 
+	 *
 	 * @see #openPlane(int, long, long[], long[], SCIFIOConfig)
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
@@ -155,7 +155,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * Obtains a thumbnail version of the {@code Plane} at the specified image and
 	 * plane indices.
-	 * 
+	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
 	 * @return A thumbnail version of the {@code Plane} at the specified indices.
@@ -171,7 +171,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Retrieves the current input stream for this reader.
-	 * 
+	 *
 	 * @return A RandomAccessInputStream
 	 */
 	RandomAccessInputStream getStream();
@@ -196,7 +196,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * behavior if provided with a {@code Metadata} instance not associated with
 	 * this {@code Reader} is undefined and should throw an exception.
 	 * </p>
-	 * 
+	 *
 	 * @throws IllegalArgumentException If the provided {@code Metadata} type is
 	 *           not compatible with this {@code Reader}.
 	 */
@@ -218,7 +218,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Sets the source for this reader to read from.
-	 * 
+	 *
 	 * @param fileName
 	 * @throws IOException
 	 */
@@ -226,7 +226,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Sets the source for this reader to read from.
-	 * 
+	 *
 	 * @param file
 	 * @throws IOException
 	 */
@@ -234,14 +234,14 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Sets the source for this reader to read from.
-	 * 
+	 *
 	 * @param stream - The stream to read from
 	 */
 	void setSource(RandomAccessInputStream stream) throws IOException;
 
 	/**
 	 * As {@link #setSource(String)} with configuration options.
-	 * 
+	 *
 	 * @param fileName
 	 * @param config Configuration information to use for this read.
 	 * @throws IOException
@@ -250,7 +250,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * As {@link #setSource(File)} with configuration options.
-	 * 
+	 *
 	 * @param file
 	 * @param config Configuration information to use for this read.
 	 * @throws IOException
@@ -259,7 +259,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * As {@link #setSource(RandomAccessInputStream)} with configuration options.
-	 * 
+	 *
 	 * @param stream - The stream to read from
 	 * @param config Configuration information to use for this read.
 	 */
@@ -268,7 +268,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Reads a raw plane from disk.
-	 * 
+	 *
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
@@ -277,7 +277,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Reads a raw plane from disk.
-	 * 
+	 *
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
@@ -292,7 +292,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Creates a blank plane compatible with this reader.
-	 * 
+	 *
 	 * @param planeOffsets minimal offsets of the planar axes
 	 * @param planeBounds maximum values of the planar axes
 	 * @return The created plane
@@ -301,7 +301,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Creates a blank plane compatible with this reader.
-	 * 
+	 *
 	 * @param meta - ImageMetadata to use to populate the new plane.
 	 * @param planeOffsets minimal offsets of the planar axes
 	 * @param planeBounds maximum values of the planar axes
@@ -317,7 +317,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * NB: this method will fail if the provided {@code Plane} is not compatible
 	 * with this {@code Reader}.
 	 * </p>
-	 * 
+	 *
 	 * @param plane - The base {@link io.scif.Plane} to cast.
 	 * @return The {@code Plane} argument cast to {@code P}.
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not

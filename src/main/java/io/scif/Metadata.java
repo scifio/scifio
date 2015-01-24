@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,7 @@ import java.util.List;
  * minimum, a {@link io.scif.Translator} should be implemented that can convert
  * between {@link io.scif.Metadata} and the new Metadata.
  * </p>
- * 
+ *
  * @see io.scif.Translator
  * @see io.scif.AbstractFormat
  */
@@ -58,14 +58,14 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	/**
 	 * Sets the input source attached to this Metadata object. Note that calling
 	 * this method does not affect the structure of this Metadata object.
-	 * 
+	 *
 	 * @param in - Input source for this Metadata
 	 */
 	void setSource(RandomAccessInputStream in);
 
 	/**
 	 * Returns the source used to generate this Metadata object.
-	 * 
+	 *
 	 * @return - The associated RandomAccessInputStream
 	 */
 	RandomAccessInputStream getSource();
@@ -73,7 +73,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 	/**
 	 * Returns whether or not filterMetadata was set when parsing this Metadata
 	 * object.
-	 * 
+	 *
 	 * @return True if Metadata was filtered when parsing
 	 */
 	boolean isFiltered();
@@ -103,7 +103,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 
 	/**
 	 * Sets the name for this dataset.
-	 * 
+	 *
 	 * @param name - the dataset name
 	 */
 	void setDatasetName(String name);
@@ -118,7 +118,7 @@ public interface Metadata extends Serializable, HasFormat, HasSource,
 
 	/**
 	 * Creates the specified number of blank ImageMetadata.
-	 * 
+	 *
 	 * @param imageCount - Number of ImageMetadata to create.
 	 */
 	void createImageMetadata(int imageCount);

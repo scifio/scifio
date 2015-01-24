@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -112,16 +112,24 @@ public final class FormatTools {
 
 	/** File grouping options. */
 	public static final int MUST_GROUP = 0;
+
 	public static final int CAN_GROUP = 1;
+
 	public static final int CANNOT_GROUP = 2;
 
 	/** Patterns to be used when constructing a pattern for output filenames. */
 	public static final String SERIES_NUM = "%s";
+
 	public static final String SERIES_NAME = "%n";
+
 	public static final String CHANNEL_NUM = "%c";
+
 	public static final String CHANNEL_NAME = "%w";
+
 	public static final String Z_NUM = "%z";
+
 	public static final String T_NUM = "%t";
+
 	public static final String TIMESTAMP = "%A";
 
 	// -- Constants - domains --
@@ -245,9 +253,9 @@ public final class FormatTools {
 	}
 
 	/**
-	 * Applies the given scale and origin to the provided {@link CalibratedAxis},
+	 * Applies the given scale and origin to the provided {@link CalibratedAxis} ,
 	 * if it is a {@link LinearAxis}.
-	 * 
+	 *
 	 * @throws IllegalArgumentException if the axis is not a {@link LinearAxis}.
 	 */
 	public static void calibrate(final CalibratedAxis axis, final double scale,
@@ -276,7 +284,7 @@ public final class FormatTools {
 
 	/**
 	 * Gets the average scale over the specified axis of the given image metadata.
-	 * 
+	 *
 	 * @return the average scale over the axis's values, or 1.0 if the desired
 	 *         axis is null.
 	 */
@@ -304,7 +312,7 @@ public final class FormatTools {
 	/**
 	 * Returns the position of the specified {@link AxisType} for the given image
 	 * and plane indices.
-	 * 
+	 *
 	 * @return position of the specified axis type, or 0 if the given axis is
 	 *         planar.
 	 */
@@ -330,7 +338,7 @@ public final class FormatTools {
 	/**
 	 * Computes a unique N-D position corresponding to the given rasterized index
 	 * value.
-	 * 
+	 *
 	 * @param imageIndex image index within dataset
 	 * @param planeIndex rasterized plane index to convert to axis indices
 	 * @param reader reader used to open the dataset
@@ -345,7 +353,7 @@ public final class FormatTools {
 	/**
 	 * Computes a unique N-D position corresponding to the given rasterized index
 	 * value.
-	 * 
+	 *
 	 * @param imageIndex image index within dataset
 	 * @param planeIndex rasterized plane index to convert to axis indices
 	 * @param m metadata describing the dataset
@@ -361,7 +369,7 @@ public final class FormatTools {
 	/**
 	 * Computes a unique N-D position corresponding to the given rasterized index
 	 * value.
-	 * 
+	 *
 	 * @param lengths the maximum value at each positional dimension
 	 * @param raster rasterized index value
 	 * @return position along each dimensional axis
@@ -375,7 +383,7 @@ public final class FormatTools {
 	/**
 	 * Computes a unique N-D position corresponding to the given rasterized index
 	 * value.
-	 * 
+	 *
 	 * @param lengths the maximum value at each positional dimension
 	 * @param raster rasterized index value
 	 * @param pos preallocated position array to populate with the result
@@ -398,7 +406,7 @@ public final class FormatTools {
 	/**
 	 * Computes the next plane index for a given position, using the current min
 	 * and max planar values. Also updates the position array appropriately.
-	 * 
+	 *
 	 * @param imageIndex image index within dataset
 	 * @param r reader used to open the dataset
 	 * @param pos current position in each dimension
@@ -418,7 +426,7 @@ public final class FormatTools {
 	/**
 	 * Computes the next plane index for a given position, using the current min
 	 * and max planar values. Also updates the position array appropriately.
-	 * 
+	 *
 	 * @param imageIndex image index within dataset
 	 * @param m metadata describing the dataset
 	 * @param pos current position in each dimension
@@ -438,7 +446,7 @@ public final class FormatTools {
 	/**
 	 * Computes the next plane index for a given position, using the current min
 	 * and max planar values. Also updates the position array appropriately.
-	 * 
+	 *
 	 * @param lengths actual dimension lengths
 	 * @param pos current position in each dimension
 	 * @param offsets offsets in each dimension (potentially cropped)
@@ -463,7 +471,8 @@ public final class FormatTools {
 				updated = true;
 			}
 			else {
-				// if not, reset this position and try to update the next position
+				// if not, reset this position and try to update the next
+				// position
 				pos[i] = offsets[i];
 			}
 		}
@@ -478,7 +487,7 @@ public final class FormatTools {
 	/**
 	 * Computes a unique 1-D index corresponding to the given multidimensional
 	 * position.
-	 * 
+	 *
 	 * @param imageIndex image index within dataset
 	 * @param reader reader used to open the dataset
 	 * @param planeIndices position along each dimensional axis
@@ -493,7 +502,7 @@ public final class FormatTools {
 	/**
 	 * Computes a unique 1-D index corresponding to the given multidimensional
 	 * position.
-	 * 
+	 *
 	 * @param imageIndex image index within dataset
 	 * @param m metadata describing the dataset
 	 * @param planeIndices position along each dimensional axis
@@ -509,7 +518,7 @@ public final class FormatTools {
 	/**
 	 * Computes a unique 1-D index corresponding to the given multidimensional
 	 * position.
-	 * 
+	 *
 	 * @param lengths the maximum value for each positional dimension
 	 * @param pos position along each dimensional axis
 	 * @return rasterized index value
@@ -540,7 +549,7 @@ public final class FormatTools {
 	/**
 	 * Asserts that the current file is either null, or not, according to the
 	 * given flag. If the assertion fails, an IllegalStateException is thrown.
-	 * 
+	 *
 	 * @param id File name to test.
 	 * @param notNull True iff id should be non-null.
 	 * @param depth How far back in the stack the calling method is; this name is
@@ -576,7 +585,7 @@ public final class FormatTools {
 	/**
 	 * Asserts that the current file is either null, or not, according to the
 	 * given flag. If the assertion fails, an IllegalStateException is thrown.
-	 * 
+	 *
 	 * @param stream Source to test.
 	 * @param notNull True iff id should be non-null.
 	 * @param depth How far back in the stack the calling method is; this name is
@@ -646,8 +655,9 @@ public final class FormatTools {
 		final long imageCount = m.get(imageIndex).getPlaneCount();
 		if (planeIndex < 0 || planeIndex >= imageCount) {
 			throw new FormatException("Invalid plane number: " + planeIndex + " (" +
-			/* TODO series=" +
-			r.getMetadata().getSeries() + ", */"planeCount=" + planeIndex + ")");
+			/*
+			 * TODO series=" + r.getMetadata().getSeries() + ",
+			 */"planeCount=" + planeIndex + ")");
 		}
 	}
 
@@ -682,7 +692,7 @@ public final class FormatTools {
 	/**
 	 * Checks that the given buffer size is large enough to hold an image with the
 	 * given planar lengths.
-	 * 
+	 *
 	 * @throws FormatException if the buffer is too small
 	 */
 	public static void checkBufferSize(final Metadata m, final int len,
@@ -758,7 +768,7 @@ public final class FormatTools {
 
 	/**
 	 * Takes a string value and maps it to one of the pixel type enumerations.
-	 * 
+	 *
 	 * @param pixelTypeAsString the pixel type as a string.
 	 * @return type enumeration value for use with class constants.
 	 */
@@ -773,7 +783,7 @@ public final class FormatTools {
 
 	/**
 	 * Takes a pixel type value and gets a corresponding string representation.
-	 * 
+	 *
 	 * @param pixelType the pixel type.
 	 * @return string value for human-readable output.
 	 */
@@ -786,7 +796,7 @@ public final class FormatTools {
 
 	/**
 	 * Retrieves how many bytes per pixel the current plane or section has.
-	 * 
+	 *
 	 * @param pixelType the pixel type as retrieved from
 	 * @return the number of bytes per pixel.
 	 * @see io.scif.ImageMetadata#getPixelType()
@@ -811,7 +821,7 @@ public final class FormatTools {
 
 	/**
 	 * Retrieves how many bytes per pixel the current plane or section has.
-	 * 
+	 *
 	 * @param pixelType the pixel type as retrieved from
 	 *          {@link io.scif.ImageMetadata#getPixelType()}.
 	 * @return the number of bytes per pixel.
@@ -823,7 +833,7 @@ public final class FormatTools {
 
 	/**
 	 * Retrieves the number of bytes per pixel in the current plane.
-	 * 
+	 *
 	 * @param pixelType the pixel type, as a String.
 	 * @return the number of bytes per pixel.
 	 * @see #pixelTypeFromString(String)
@@ -835,7 +845,7 @@ public final class FormatTools {
 
 	/**
 	 * Determines whether the given pixel type is floating point or integer.
-	 * 
+	 *
 	 * @param pixelType the pixel type as retrieved from
 	 *          {@link io.scif.ImageMetadata#getPixelType()}.
 	 * @return true if the pixel type is floating point.
@@ -859,7 +869,7 @@ public final class FormatTools {
 
 	/**
 	 * Determines whether the given pixel type is signed or unsigned.
-	 * 
+	 *
 	 * @param pixelType the pixel type as retrieved from
 	 *          {@link io.scif.ImageMetadata#getPixelType()}.
 	 * @return true if the pixel type is signed.
@@ -883,7 +893,7 @@ public final class FormatTools {
 
 	/**
 	 * Returns an appropriate pixel type given the number of bytes per pixel.
-	 * 
+	 *
 	 * @param bytes number of bytes per pixel.
 	 * @param signed whether or not the pixel type should be signed.
 	 * @param fp whether or not these are floating point pixels.
@@ -938,20 +948,16 @@ public final class FormatTools {
 		filename = filename.replaceAll(CHANNEL_NAME, channelName);
 
 		/*
-		//TODO check for date
-		String date = retrieve.getImageAcquisitionDate(imageIndex).getValue();
-		long stamp = 0;
-		if (retrieve.getPlaneCount(imageIndex) > image) {
-		  Double deltaT = retrieve.getPlaneDeltaT(imageIndex, image);
-		  if (deltaT != null) {
-		    stamp = (long) (deltaT * 1000);
-		  }
-		}
-		stamp += DateTools.getTime(date, DateTools.ISO8601_FORMAT);
-		date = DateTools.convertDate(stamp, (int) DateTools.UNIX_EPOCH);
-
-		filename = filename.replaceAll(TIMESTAMP, date);
-		*/
+		 * //TODO check for date String date =
+		 * retrieve.getImageAcquisitionDate(imageIndex).getValue(); long stamp =
+		 * 0; if (retrieve.getPlaneCount(imageIndex) > image) { Double deltaT =
+		 * retrieve.getPlaneDeltaT(imageIndex, image); if (deltaT != null) {
+		 * stamp = (long) (deltaT * 1000); } } stamp += DateTools.getTime(date,
+		 * DateTools.ISO8601_FORMAT); date = DateTools.convertDate(stamp, (int)
+		 * DateTools.UNIX_EPOCH);
+		 *
+		 * filename = filename.replaceAll(TIMESTAMP, date);
+		 */
 
 		return filename;
 	}
@@ -1088,7 +1094,7 @@ public final class FormatTools {
 	/**
 	 * Convenience method for writing all of the images and metadata obtained from
 	 * the specified Reader into the specified Writer.
-	 * 
+	 *
 	 * @param input the pre-initialized Reader used for reading data.
 	 * @param output the uninitialized Writer used for writing data.
 	 * @param outputFile the full path name of the output file to be created.
@@ -1115,7 +1121,7 @@ public final class FormatTools {
 
 	/**
 	 * As {@link #convert(Reader, Writer, String)}, with configuration options.
-	 * 
+	 *
 	 * @param input the pre-initialized Reader used for reading data.
 	 * @param output the uninitialized Writer used for writing data.
 	 * @param outputFile the full path name of the output file to be created.
@@ -1146,7 +1152,7 @@ public final class FormatTools {
 	 * Get the default range for the specified pixel type. Note that this is not
 	 * necessarily the minimum and maximum value which may be stored, but the
 	 * minimum and maximum which should be used for rendering.
-	 * 
+	 *
 	 * @param pixelType the pixel type.
 	 * @return an array containing the min and max as elements 0 and 1,
 	 *         respectively.

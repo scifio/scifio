@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -73,7 +73,7 @@ public class JPEG2000Codec extends AbstractCodec {
 	 * {@link CodecOptions#channels channels} {@link CodecOptions#interleaved
 	 * interleaved} {@link CodecOptions#littleEndian littleEndian}
 	 * {@link CodecOptions#lossless lossless}
-	 * 
+	 *
 	 * @see Codec#compress(byte[], CodecOptions)
 	 */
 	@Override
@@ -96,7 +96,8 @@ public class JPEG2000Codec extends AbstractCodec {
 		int next = 0;
 
 		// NB: Construct BufferedImages manually, rather than using
-		// AWTImageTools.makeImage. The AWTImageTools.makeImage methods construct
+		// AWTImageTools.makeImage. The AWTImageTools.makeImage methods
+		// construct
 		// images that are not properly handled by the JPEG2000 writer.
 		// Specifically, 8-bit multi-channel images are constructed with type
 		// DataBuffer.TYPE_INT (so a single int is used to store all of the
@@ -195,7 +196,7 @@ public class JPEG2000Codec extends AbstractCodec {
 	 * The CodecOptions parameter should have the following fields set:
 	 * {@link CodecOptions#interleaved interleaved}
 	 * {@link CodecOptions#littleEndian littleEndian}
-	 * 
+	 *
 	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
 	 */
 	@Override
@@ -225,7 +226,7 @@ public class JPEG2000Codec extends AbstractCodec {
 	 * The CodecOptions parameter should have the following fields set:
 	 * {@link CodecOptions#interleaved interleaved}
 	 * {@link CodecOptions#littleEndian littleEndian}
-	 * 
+	 *
 	 * @see Codec#decompress(byte[], CodecOptions)
 	 */
 	@Override

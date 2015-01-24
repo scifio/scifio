@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
 /**
  * StreamHandle implementation for reading from Zip-compressed files or byte
  * arrays. Instances of ZipHandle are read-only.
- * 
+ *
  * @see StreamHandle
  * @author Melissa Linkert
  */
@@ -56,9 +56,13 @@ public class ZipHandle extends StreamHandle {
 	// -- Fields --
 
 	private boolean resetStream;
+
 	private RandomAccessInputStream in;
+
 	private ZipInputStream zip;
+
 	private String entryName;
+
 	private int entryCount;
 
 	// -- Constructor --
@@ -85,7 +89,7 @@ public class ZipHandle extends StreamHandle {
 	/**
 	 * Constructs a new ZipHandle corresponding to the given entry of the
 	 * specified Zip file.
-	 * 
+	 *
 	 * @throws HandleException if the given file is not a Zip file.
 	 */
 	public ZipHandle(final Context context, final String file,
@@ -126,7 +130,7 @@ public class ZipHandle extends StreamHandle {
 
 	/**
 	 * Returns the number of entries.
-	 * 
+	 *
 	 * @deprecated The value returned by this method is inconsistent, and not used
 	 *             internally at all, either.
 	 */
@@ -222,7 +226,8 @@ public class ZipHandle extends StreamHandle {
 		while (true) {
 			final ZipEntry entry = zip.getNextEntry();
 			if (entryName == null || entryName.equals(entry.getName())) {
-				// found the matching entry name (or first entry if the name is null)
+				// found the matching entry name (or first entry if the name is
+				// null)
 				if (getLength() < 0) populateLength(entry.getSize());
 				break;
 			}
@@ -241,8 +246,10 @@ public class ZipHandle extends StreamHandle {
 		while (true) {
 			final long skipped = stream.skip(Long.MAX_VALUE);
 			if (skipped == 0) {
-				// NB: End of stream, we hope. Technically there is no contract for
-				// when skip(long) returns 0, but in practice it seems to be when end
+				// NB: End of stream, we hope. Technically there is no contract
+				// for
+				// when skip(long) returns 0, but in practice it seems to be
+				// when end
 				// of stream is reached.
 				break;
 			}

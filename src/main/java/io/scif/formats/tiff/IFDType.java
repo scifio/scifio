@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -66,7 +66,7 @@ public enum IFDType implements CodedEnum {
 
 	/**
 	 * Retrieves a IFD type by reverse lookup of its "code".
-	 * 
+	 *
 	 * @param code The code to look up.
 	 * @return The <code>IFDType</code> instance for the <code>code</code> or
 	 *         <code>null</code> if it does not exist.
@@ -81,7 +81,7 @@ public enum IFDType implements CodedEnum {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param code Integer "code" for the IFD type.
 	 * @param bytesPerElement Number of bytes per element.
 	 */
@@ -97,7 +97,7 @@ public enum IFDType implements CodedEnum {
 
 	/**
 	 * Retrieves the number of bytes per element.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	public int getBytesPerElement() {

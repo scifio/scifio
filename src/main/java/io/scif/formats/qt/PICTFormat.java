@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -78,15 +78,25 @@ public class PICTFormat extends AbstractFormat {
 
 	// opcodes that we need
 	private static final int PICT_CLIP_RGN = 1;
+
 	private static final int PICT_BITSRECT = 0x90;
+
 	private static final int PICT_BITSRGN = 0x91;
+
 	private static final int PICT_PACKBITSRECT = 0x98;
+
 	private static final int PICT_PACKBITSRGN = 0x99;
+
 	private static final int PICT_9A = 0x9a;
+
 	private static final int PICT_END = 0xff;
+
 	private static final int PICT_LONGCOMMENT = 0xa1;
+
 	private static final int PICT_JPEG = 0x18;
+
 	private static final int PICT_TYPE_1 = 0xa9f;
+
 	private static final int PICT_TYPE_2 = 0x9190;
 
 	/** Table used in expanding pixels that use less than 8 bits. */
@@ -281,15 +291,14 @@ public class PICTFormat extends AbstractFormat {
 				stream.skipBytes(4);
 				final int y = stream.readShort();
 				final int x = stream.readShort();
-				if (x > 0) sizeX = (short)x;
-				if (y > 0) sizeY = (short)y;
+				if (x > 0) sizeX = (short) x;
+				if (y > 0) sizeY = (short) y;
 				stream.skipBytes(4);
 			}
 			else throw new FormatException("Invalid PICT file");
 
 			iMeta.setAxisLength(Axes.X, sizeX);
 			iMeta.setAxisLength(Axes.Y, sizeY);
-
 
 			meta.getTable().put("Version", versionOne ? 1 : 2);
 			meta.setVersionOne(versionOne);

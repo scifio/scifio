@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -90,7 +90,9 @@ public class TIFFFormat extends AbstractFormat {
 	// -- Constants --
 
 	public static final double PRIORITY = MinimalTIFFFormat.PRIORITY + 1;
+
 	public static final String[] COMPANION_SUFFIXES = { "xml", "txt" };
+
 	public static final String[] TIFF_SUFFIXES = { "tif", "tiff", "tf2", "tf8",
 		"btf" };
 
@@ -111,17 +113,27 @@ public class TIFFFormat extends AbstractFormat {
 
 		// FIXME: these are duplicating metadata store information..
 		private String creationDate;
+
 		private String experimenterFirstName;
+
 		private String experimenterLastName;
+
 		private String experimenterEmail;
+
 		private String imageDescription;
 
 		private String companionFile;
+
 		private String description;
+
 		private String calibrationUnit;
+
 		private Double timeIncrement;
+
 		private Integer xOrigin, yOrigin;
+
 		private byte[][] lut;
+
 		private List<ColorTable> colorTable;
 
 		// -- TIFFMetadata getters and setters --
@@ -190,7 +202,7 @@ public class TIFFFormat extends AbstractFormat {
 			return lut;
 		}
 
-		public void setLut(byte[][] lut) {
+		public void setLut(final byte[][] lut) {
 			this.lut = lut;
 		}
 
@@ -228,17 +240,17 @@ public class TIFFFormat extends AbstractFormat {
 		public ColorTable
 			getColorTable(final int imageIndex, final long planeIndex)
 		{
-			ColorTable ct = super.getColorTable(imageIndex, planeIndex);
+			final ColorTable ct = super.getColorTable(imageIndex, planeIndex);
 
 			if (ct == null) {
 				// Check for an ImageJ 1.x lut
 				if (colorTable == null && getLut() != null) {
 					colorTable = new ArrayList<ColorTable>();
-					byte[][] ij1Lut = getLut();
+					final byte[][] ij1Lut = getLut();
 					for (int i = 0; i < ij1Lut.length; i++) {
 						if (ij1Lut[i].length != 768) colorTable.add(null);
 						else {
-							byte[][] currentLut = new byte[3][256];
+							final byte[][] currentLut = new byte[3][256];
 							for (int j = 0; j < 3; j++) {
 								System.arraycopy(ij1Lut[i], j * 256, currentLut[j], 0, 256);
 							}
@@ -248,10 +260,12 @@ public class TIFFFormat extends AbstractFormat {
 				}
 
 				if (colorTable != null) {
-					// If Axes.CHANNEL is planar, then there's only one color table.
-					// Otherwise, we need to determine which channel the given planeIndex
+					// If Axes.CHANNEL is planar, then there's only one color
+					// table.
+					// Otherwise, we need to determine which channel the given
+					// planeIndex
 					// corresponds to..
-					int ctIndex =
+					final int ctIndex =
 						(int) FormatTools.getNonPlanarAxisPosition(this, imageIndex,
 							planeIndex, Axes.CHANNEL);
 
@@ -320,9 +334,13 @@ public class TIFFFormat extends AbstractFormat {
 		// -- Constants --
 
 		public static final int IMAGEJ_TAG = 50839;
+
 		public static final int META_DATA_BYTE_COUNTS = 50838;
-		public static final int MAGIC_NUMBER = 0x494a494a;  // "IJIJ"
-		public static final int LUTS = 0x6c757473;  // "luts" (channel LUTs)
+
+		public static final int MAGIC_NUMBER = 0x494a494a; // "IJIJ"
+
+		public static final int LUTS = 0x6c757473; // "luts" (channel LUTs)
+
 		public static final int LABEL = 0x6c61626c; // "labl" (slice labels)
 
 		// -- Fields --
@@ -507,8 +525,8 @@ public class TIFFFormat extends AbstractFormat {
 				else if (token.startsWith("unit=")) {
 					unit = value;
 					meta.setCalibrationUnit(unit);
-					for (ImageMetadata iMeta : meta.getAll()) {
-						for (CalibratedAxis axis : iMeta.getAxes()) {
+					for (final ImageMetadata iMeta : meta.getAll()) {
+						for (final CalibratedAxis axis : iMeta.getAxes()) {
 							axis.setUnit(unit);
 						}
 					}
@@ -539,7 +557,8 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			final ImageMetadata m = meta.get(0);
-			final Set<CalibratedAxis> predefinedAxes = new HashSet<CalibratedAxis>(m.getAxes());
+			final Set<CalibratedAxis> predefinedAxes =
+				new HashSet<CalibratedAxis>(m.getAxes());
 
 			m.setAxisTypes(Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME);
 
@@ -640,9 +659,8 @@ public class TIFFFormat extends AbstractFormat {
 		/**
 		 * Not all ImageJ 1.x comment values can be read via reading the
 		 * {@link IFD#getIFDTextValue(int)} method, as this results in the entire
-		 * string read as {@link shorts} and converted to {@link String}. Any
-		 * parsed objects will be populated as appropriate in the given
-		 * {@link Metadata}.
+		 * string read as {@link shorts} and converted to {@link String}. Any parsed
+		 * objects will be populated as appropriate in the given {@link Metadata}.
 		 * <p>
 		 * For example, in the case of LUTs, we need to read the values as bytes -
 		 * thus the necessity of {@link #getLUTs(int, int, int[], short[], int[])}.
@@ -659,7 +677,7 @@ public class TIFFFormat extends AbstractFormat {
 				imagejTags = ifds.get(0).getIFDShortArray(IMAGEJ_TAG);
 				littleEndian = ifds.get(0).isLittleEndian();
 			}
-			catch (FormatException e) {
+			catch (final FormatException e) {
 				return null;
 			}
 
@@ -681,13 +699,15 @@ public class TIFFFormat extends AbstractFormat {
 			int start = 1;
 			for (int i = 0; i < nTypes; i++) {
 				if (types[i] == LUTS) {
-					final byte[][] luts = getLUTs(start, start + counts[i] - 1, metaDataCounts, imagejTags,
-						sPos);
+					final byte[][] luts =
+						getLUTs(start, start + counts[i] - 1, metaDataCounts, imagejTags,
+							sPos);
 
 					meta.setLut(luts);
 				}
 				else if (types[i] == LABEL) {
-					// HACK - temporary until SCIFIO metadata API supports per-plane
+					// HACK - temporary until SCIFIO metadata API supports
+					// per-plane
 					// metadata.
 					// DO NOT RELY ON THIS KEY.
 					meta.get(0).getTable().put(
@@ -707,13 +727,13 @@ public class TIFFFormat extends AbstractFormat {
 		/**
 		 * Parses an 8-bit color table from an ImageJ 1.x comment.
 		 */
-		private byte[][] getLUTs(int first, int last, int[] metaDataCounts,
-			short[] imagejTags, int[] sPos)
+		private byte[][] getLUTs(final int first, final int last,
+			final int[] metaDataCounts, final short[] imagejTags, final int[] sPos)
 		{
-			byte[][] channelLuts = new byte[last - first + 1][];
+			final byte[][] channelLuts = new byte[last - first + 1][];
 			int index = 0;
 			for (int i = first; i <= last; i++) {
-				int len = metaDataCounts[i];
+				final int len = metaDataCounts[i];
 				channelLuts[index] = new byte[len];
 				for (int j = 0; j < len; j++) {
 					channelLuts[index][j] = (byte) imagejTags[sPos[0]++];
@@ -723,11 +743,13 @@ public class TIFFFormat extends AbstractFormat {
 			return channelLuts;
 		}
 
-		private String[] getSliceLabels(int first, int last, int[] metaDataCounts,
-			short[] imagejTags, int[] position, final boolean littleEndian) {
+		private String[] getSliceLabels(final int first, final int last,
+			final int[] metaDataCounts, final short[] imagejTags,
+			final int[] position, final boolean littleEndian)
+		{
 			final String[] result = new String[last - first + 1];
 			for (int i = first; i <= last; i++) {
-				int len = metaDataCounts[i] / 2;
+				final int len = metaDataCounts[i] / 2;
 				final char[] buffer = new char[len];
 				for (int j = 0; j < len; j++) {
 					buffer[j] = getChar(position, imagejTags, littleEndian);
@@ -741,19 +763,21 @@ public class TIFFFormat extends AbstractFormat {
 		 * Helper method to increment the provided {@code position[0]} value based
 		 * on the length of an ImageJ 1.x metadata type that will not be read.
 		 */
-		private void skipUnknownType(int first, int last, int[] metaDataCounts,
-			int[] position)
+		private void skipUnknownType(final int first, final int last,
+			final int[] metaDataCounts, final int[] position)
 		{
 			for (int i = first; i <= last; i++) {
-				int len = metaDataCounts[i];
+				final int len = metaDataCounts[i];
 				// skip len bytes
 				position[0] += len;
 			}
 		}
 
-		private char getChar(int[] start, short[] imageJTags, boolean littleEndian) {
-			int b1 = imageJTags[start[0]++];
-			int b2 = imageJTags[start[0]++];
+		private char getChar(final int[] start, final short[] imageJTags,
+			final boolean littleEndian)
+		{
+			final int b1 = imageJTags[start[0]++];
+			final int b2 = imageJTags[start[0]++];
 			if (littleEndian) return (char) ((b2 << 8) | b1);
 			return (char) ((b1 << 8) | b2);
 		}
@@ -769,13 +793,13 @@ public class TIFFFormat extends AbstractFormat {
 		 * is used to track the current position in the tag array.
 		 * </p>
 		 */
-		private int getInt(int[] start, short[] imageJTags,
+		private int getInt(final int[] start, final short[] imageJTags,
 			final boolean littleEndian)
 		{
-			int b1 = imageJTags[start[0]++];
-			int b2 = imageJTags[start[0]++];
-			int b3 = imageJTags[start[0]++];
-			int b4 = imageJTags[start[0]++];
+			final int b1 = imageJTags[start[0]++];
+			final int b2 = imageJTags[start[0]++];
+			final int b3 = imageJTags[start[0]++];
+			final int b4 = imageJTags[start[0]++];
 
 			if (littleEndian) return ((b4 << 24) + (b3 << 16) + (b2 << 8) + (b1 << 0));
 			return ((b1 << 24) + (b2 << 16) + (b3 << 8) + b4);
@@ -1153,7 +1177,8 @@ public class TIFFFormat extends AbstractFormat {
 			final int bps = q[0];
 			int numC = q.length;
 
-			// numC isn't set properly if we have an indexed color image, so we need
+			// numC isn't set properly if we have an indexed color image, so we
+			// need
 			// to reset it here
 
 			if (photo == PhotoInterp.RGB_PALETTE || photo == PhotoInterp.CFA_ARRAY) {
@@ -1195,7 +1220,7 @@ public class TIFFFormat extends AbstractFormat {
 
 		/**
 		 * Retrieves the image creation date.
-		 * 
+		 *
 		 * @return the image creation date.
 		 */
 		protected String getImageCreationDate(final Metadata meta) {
@@ -1207,7 +1232,8 @@ public class TIFFFormat extends AbstractFormat {
 
 		// -- Internal FormatReader API methods - metadata convenience --
 
-		// TODO : the 'put' methods that accept primitive types could probably be
+		// TODO : the 'put' methods that accept primitive types could probably
+		// be
 		// removed, as there are now 'addGlobalMeta' methods that accept
 		// primitive types
 
@@ -1256,14 +1282,19 @@ public class TIFFFormat extends AbstractFormat {
 
 		public static final String COMPRESSION_UNCOMPRESSED =
 			CompressionType.UNCOMPRESSED.getCompression();
+
 		public static final String COMPRESSION_LZW = CompressionType.LZW
 			.getCompression();
+
 		public static final String COMPRESSION_J2K = CompressionType.J2K
 			.getCompression();
+
 		public static final String COMPRESSION_J2K_LOSSY =
 			CompressionType.J2K_LOSSY.getCompression();
+
 		public static final String COMPRESSION_JPEG = CompressionType.JPEG
 			.getCompression();
+
 		public static final String BIG_TIFF_KEY = "WRITE_BIG_TIFF";
 
 		// -- Fields --
@@ -1344,7 +1375,8 @@ public class TIFFFormat extends AbstractFormat {
 			final long[] planeMin, final long[] planeMax) throws FormatException,
 			IOException
 		{
-			// Ensure that no more than one thread manipulated the initialized array
+			// Ensure that no more than one thread manipulated the initialized
+			// array
 			// at one time.
 			synchronized (this) {
 				if (!isInitialized(imageIndex, (int) planeIndex)) {
@@ -1378,12 +1410,12 @@ public class TIFFFormat extends AbstractFormat {
 			// Check if a bigTIFF setting was requested
 			isBigTIFF = null;
 			if (config.containsKey(BIG_TIFF_KEY)) {
-				Object o = config.get(BIG_TIFF_KEY);
+				final Object o = config.get(BIG_TIFF_KEY);
 				if (o instanceof Boolean) {
-					isBigTIFF = (Boolean)o;
+					isBigTIFF = (Boolean) o;
 				}
 				else {
-					String v = String.valueOf(o).toLowerCase();
+					final String v = String.valueOf(o).toLowerCase();
 					if (v.startsWith("t")) {
 						isBigTIFF = true;
 					}
@@ -1393,7 +1425,8 @@ public class TIFFFormat extends AbstractFormat {
 				}
 			}
 
-			// if isBigTIFF is not explicitly set and the dataset is > 2GB, write
+			// if isBigTIFF is not explicitly set and the dataset is > 2GB,
+			// write
 			// bigTIFF to be safe.
 			if (isBigTIFF == null && getMetadata().getDatasetSize() > 2147483648L) {
 				isBigTIFF = true;
@@ -1459,7 +1492,7 @@ public class TIFFFormat extends AbstractFormat {
 
 		/**
 		 * Sets the compression code for the specified IFD.
-		 * 
+		 *
 		 * @param ifd The IFD table to handle.
 		 */
 		private void formatCompression(final IFD ifd) {
@@ -1509,8 +1542,10 @@ public class TIFFFormat extends AbstractFormat {
 				c = buf.length / (w * h * bytesPerPixel);
 			}
 
-			// FIXME no indication of why this logic is necessary. Seems over complex
-			// and fragile due to the modification of the initialized array. If this
+			// FIXME no indication of why this logic is necessary. Seems over
+			// complex
+			// and fragile due to the modification of the initialized array. If
+			// this
 			// is truly necessary, let's find a different way to do it.
 //			if (bytesPerPixel > 1 && c != 1 && c != 3) {
 //				// split channels
@@ -1581,9 +1616,9 @@ public class TIFFFormat extends AbstractFormat {
 					(getStream().length() + 2 * (width * height * c * bytesPerPixel)) >= 4294967296L;
 				if (isBigTiff()) {
 					throw new FormatException(
-						"File is too large for 32-bit TIFF but BigTIFF support was " +
-						"disabled. Please enable by using setBigTiff(true) or passing a " +
-						"SCIFIOConfig object with the appropriate BIG_TIFF_KEY,true pair.");
+						"File is too large for 32-bit TIFF but BigTIFF support was "
+							+ "disabled. Please enable by using setBigTiff(true) or passing a "
+							+ "SCIFIOConfig object with the appropriate BIG_TIFF_KEY,true pair.");
 				}
 			}
 

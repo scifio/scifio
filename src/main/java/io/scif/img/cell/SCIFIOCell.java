@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,7 +47,7 @@ import net.imglib2.img.cell.AbstractCell;
 /**
  * {@link AbstractCell} implementation. Stores the actual byte array for a given
  * cell position.
- * 
+ *
  * @author Mark Hiner
  */
 public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
@@ -57,20 +57,27 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	// -- Transient Fields --
 	// These fields are transient to speed up serialization/deserialization.
 	// They should be available externally when the cell is deserialized.
-	private transient CacheService<SCIFIOCell<?>> service; // hook used to cache
+	private transient CacheService<SCIFIOCell<?>> service; // hook used to
+	// cache
+
 	// during
 	// finalization
 	private transient String cacheId; // needed for this cell's hashcode
+
 	private transient int index; // needed for this cell's hashcode
+
 	private transient boolean[] enabled; // whether or not this cell should be
+
 	// cached
 
 	// -- Persistent fields --
 
 	private A data;
+
 	// These fields need to be objects to Phantom references to cache them by
 	// reference
 	private int[] hashes;
+
 	private long[] elementSize;
 
 	// -- Constructors --

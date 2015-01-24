@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -60,7 +60,7 @@ import org.scijava.log.LogService;
  * <p>
  * NB: Each of these methods occurs in its own {@link Context}
  * </p>
- * 
+ *
  * @author Mark Hiner
  */
 public final class IO {
@@ -88,9 +88,11 @@ public final class IO {
 	}
 
 	/**
-	 * As {@link ImgOpener#openImgs(String)} with a guaranteed {@link FloatType}.
+	 * As {@link ImgOpener#openImgs(String)} with a guaranteed {@link FloatType} .
 	 */
-	public static List<SCIFIOImgPlus<FloatType>> openFloatImgs(final String source) {
+	public static List<SCIFIOImgPlus<FloatType>>
+		openFloatImgs(final String source)
+	{
 		final ImgOpener opener = opener();
 		List<SCIFIOImgPlus<FloatType>> imgPlus = null;
 		try {
@@ -339,8 +341,8 @@ public final class IO {
 	/**
 	 * @see ImgSaver#saveImg(Writer, SCIFIOImgPlus, int)
 	 */
-	public static void saveImg(final Writer writer, final SCIFIOImgPlus<?> imgPlus,
-		final int imageIndex)
+	public static void saveImg(final Writer writer,
+		final SCIFIOImgPlus<?> imgPlus, final int imageIndex)
 	{
 		try {
 			new ImgSaver().saveImg(writer, imgPlus, imageIndex);
@@ -365,7 +367,7 @@ public final class IO {
 		final Context ctx = component.getContext();
 		final RefManagerService refManagerService =
 			ctx.getService(RefManagerService.class);
-		for (SCIFIOImgPlus<?> img : imgPlus) {
+		for (final SCIFIOImgPlus<?> img : imgPlus) {
 			refManagerService.manage(img, ctx);
 		}
 	}
@@ -373,7 +375,7 @@ public final class IO {
 	/**
 	 * Creates a new ImgOpener. The first time this method runs, an additional
 	 * Context is created and the logService is cached for future logging.
-	 * 
+	 *
 	 * @return A new ImgOpener instance with its own Context
 	 */
 	private static ImgOpener opener() {
@@ -403,7 +405,7 @@ public final class IO {
 	private static void saveError(final String dest, final Exception e) {
 		logService.error("Failed to save ImgPlus to id: " + dest, e);
 	}
-	
+
 	// -- Deprecated Input Methods --
 
 	/**

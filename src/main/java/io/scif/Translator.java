@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -55,7 +55,7 @@ import org.scijava.plugin.SingletonPlugin;
  * be created through the {@code Format}, and existing {@code Metadata}
  * instances can be reset to ensure no previous information persists.
  * </p>
- * 
+ *
  * @see io.scif.Format#createMetadata()
  * @see io.scif.services.TranslatorService
  * @author Mark Hiner
@@ -74,7 +74,6 @@ public interface Translator extends SCIFIOPlugin, SingletonPlugin {
 	 */
 	Class<? extends Metadata> dest();
 
-
 	/**
 	 * Uses the source {@code Metadata} to populate the destination
 	 * {@code Metadata}. Specifically, the format-specific metadata and/or
@@ -90,7 +89,7 @@ public interface Translator extends SCIFIOPlugin, SingletonPlugin {
 	 * For a reference to a fresh {@code Metadata} instance to use in translation,
 	 * consider the {@link io.scif.Format#createMetadata()} method.
 	 * </p>
-	 * 
+	 *
 	 * @param source {@code Metadata} to use to populate
 	 * @param destination {@code Metadata} to be populated
 	 * @see io.scif.Format#createMetadata()
@@ -110,7 +109,7 @@ public interface Translator extends SCIFIOPlugin, SingletonPlugin {
 	 * format of source and destination, but augmentation via wrapping must affect
 	 * the underlying {@code ImageMetadata} non-destructively.
 	 * </p>
-	 * 
+	 *
 	 * @param source {@code Metadata} to use to populate
 	 * @param sourceImgMeta {@link ImageMetadata} to use to populate
 	 * @param destination {@code Metadata} to be populated

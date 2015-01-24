@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -72,7 +72,7 @@ import org.scijava.plugin.Plugin;
  * <p>
  * Examples:
  * </p>
- * 
+ *
  * <pre>
  * 'multi-series&series=11&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'
  * '8bit-signed&pixelType=int8&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'
@@ -86,7 +86,7 @@ import org.scijava.plugin.Plugin;
  * 'rgb-image&lengths=512,512,3&axes=X,Y,Channel&planarDims=3.fake'
  * 'rgb-interleaved&lengths=3,512,512&axes=Channel,X,Y&planarDims=3.fake'
  * </pre>
- * 
+ *
  * @author Mark Hiner
  * @author Curtis Rueden
  */
@@ -124,7 +124,7 @@ public class FakeFormat extends AbstractFormat {
 	 * NB: Because FakeFormat images can be dynamically constructed in memory,
 	 * ColorTables can be generated before reading image planes.
 	 * </p>
-	 * 
+	 *
 	 * @see io.scif.HasColorTable
 	 */
 	public static class Metadata extends AbstractMetadata implements
@@ -202,7 +202,7 @@ public class FakeFormat extends AbstractFormat {
 
 		/**
 		 * Gets the lookup table attached to this dataset
-		 * 
+		 *
 		 * @return A 2D array of ColorTables. Indexed by image index and plane plane
 		 *         index.
 		 */
@@ -212,7 +212,7 @@ public class FakeFormat extends AbstractFormat {
 
 		/**
 		 * Sets the lookup table for this dataset.
-		 * 
+		 *
 		 * @param luts A 2D array of ColorTables. Indexed by image index and plane
 		 *          plane index.
 		 */
@@ -405,7 +405,7 @@ public class FakeFormat extends AbstractFormat {
 
 		/**
 		 * Gets the lookup table for the first image of this dataset.
-		 * 
+		 *
 		 * @return An array of ColorTables. Indexed by plane number.
 		 * @deprecated Use {@link #getLuts()}
 		 */
@@ -416,7 +416,7 @@ public class FakeFormat extends AbstractFormat {
 
 		/**
 		 * Sets the lookup table for the first image of this dataset.
-		 * 
+		 *
 		 * @param lut - An array of ColorTables. Indexed by plane number.
 		 * @deprecated Use {@link #setLuts(ColorTable[][])}
 		 */
@@ -445,7 +445,8 @@ public class FakeFormat extends AbstractFormat {
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			// No operation. All work is done in the populateImageMetadata method
+			// No operation. All work is done in the populateImageMetadata
+			// method
 			// of the metadata itself (the format-specific metadata is implied
 			// purely by the file name).
 		}
@@ -524,7 +525,8 @@ public class FakeFormat extends AbstractFormat {
 				// planeIndex and
 				// the non-planar indices
 				final int boxSize = 10;
-				// Code for scaling pixel values (see default case in switch below)
+				// Code for scaling pixel values (see default case in switch
+				// below)
 //				final double xMax = meta.getAxisLength(imageIndex, Axes.X);
 //				int boxSize = 2 + meta.getAxesNonPlanar(imageIndex).size();
 //				boxSize = (int) Math.min(boxSize, xMax / boxSize);
@@ -555,12 +557,18 @@ public class FakeFormat extends AbstractFormat {
 							grid -= 2;
 							if (grid < npIndices.length) {
 								pixel = min + npIndices[grid];
-								// The following code allows for scaling the box pixels to the
-								// max intensity of the image. This allows for much easier
-								// plane differentiation in manual testing, but breaks or
-								// complicates automated pixel verification, which is the
-								// primary purpose of these boxes. This code could be
-								// factored out into special "drawBox" methods, with behavior
+								// The following code allows for scaling the box
+								// pixels to the
+								// max intensity of the image. This allows for much
+								// easier
+								// plane differentiation in manual testing, but
+								// breaks or
+								// complicates automated pixel verification, which
+								// is the
+								// primary purpose of these boxes. This code could
+								// be
+								// factored out into special "drawBox" methods, with
+								// behavior
 								// configurable by Fake parameters.
 //								final double npMax =
 //									meta.getAxesLengthsNonPlanar(imageIndex)[grid];
@@ -590,7 +598,8 @@ public class FakeFormat extends AbstractFormat {
 				}
 
 				// scale pixel value by the scale factor
-				// if floating point, convert value to raw IEEE floating point bits
+				// if floating point, convert value to raw IEEE floating point
+				// bits
 				switch (pixelType) {
 					case FormatTools.FLOAT:
 						float floatPixel;
@@ -713,7 +722,7 @@ public class FakeFormat extends AbstractFormat {
 		/**
 		 * Parses the provided path and returns a mapping of all known key/value
 		 * pairs that were discovered.
-		 * 
+		 *
 		 * @param fakePath - A properly formatted .fake id
 		 * @return A mapping of all discovered properties.
 		 */
@@ -745,7 +754,7 @@ public class FakeFormat extends AbstractFormat {
 		/**
 		 * Appends the provided key:value pair to the provided base and returns the
 		 * result.
-		 * 
+		 *
 		 * @return A formatted FakeFormat key:value pair
 		 */
 		public static String appendToken(String base, final String key,
@@ -771,7 +780,7 @@ public class FakeFormat extends AbstractFormat {
 		 * NB: The array parameters will be modified by this method and should
 		 * simply be empty and initialized to the appropriate dimensions.
 		 * </p>
-		 * 
+		 *
 		 * @param indexToValue - a channel size X num values array, mapping indicies
 		 *          to color values.
 		 * @param valueToIndex - a channel size X num values array, mapping color
@@ -787,7 +796,7 @@ public class FakeFormat extends AbstractFormat {
 
 		/**
 		 * Populates the given array with a random mapping of indices to values.
-		 * 
+		 *
 		 * @param indexToValue - An empty array that will be populated with an
 		 *          index:value mapping.
 		 */
@@ -802,7 +811,7 @@ public class FakeFormat extends AbstractFormat {
 		/**
 		 * Populates an array with inverse mapping of values and indices, drawn from
 		 * a base index:value mapping.
-		 * 
+		 *
 		 * @param indexToValue - A populated mapping of indicies to color values.
 		 * @param valueToIndex - An empty array that will be populated with the
 		 *          inverse of indexToValue.

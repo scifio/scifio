@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -52,7 +52,7 @@ import org.scijava.service.Service;
 
 /**
  * Default {@link io.scif.services.LocationService} implementation
- * 
+ *
  * @see io.scif.services.LocationService
  * @author Mark Hiner
  */
@@ -83,6 +83,7 @@ public class DefaultLocationService extends AbstractService implements
 	protected class ListingsResult {
 
 		public final String[] listing;
+
 		public final long time;
 
 		ListingsResult(final String[] listing, final long time) {
@@ -220,11 +221,15 @@ public class DefaultLocationService extends AbstractService implements
 					new NIOFileHandle(nioService, mapId, writable ? "rw" : "r");
 			}
 			catch (final IOException e) {
-				// File doesn't exist on disk, so we'll create a virtual handle that
+				// File doesn't exist on disk, so we'll create a virtual handle
+				// that
 				// can be used even when a physical file doesn't exist.
-				// TODO this solution is not ideal; but we are currently limited by the
-				// over-use of RAIS and the mapping of handles by LocationService.
-				// This infrastructure is going to be redone before a 1.0.0 release,
+				// TODO this solution is not ideal; but we are currently limited
+				// by the
+				// over-use of RAIS and the mapping of handles by
+				// LocationService.
+				// This infrastructure is going to be redone before a 1.0.0
+				// release,
 				// but VirtualHandle is an intermediate fix.
 				return new VirtualHandle(mapId);
 			}
@@ -236,12 +241,15 @@ public class DefaultLocationService extends AbstractService implements
 	@Override
 	public void checkValidId(final String id) throws IOException {
 		if (getMappedFile(id) != null) {
-			// NB: The id maps directly to an IRandomAccess handle, so is valid. Do
-			// not destroy an existing mapped IRandomAccess handle by closing it.
+			// NB: The id maps directly to an IRandomAccess handle, so is valid.
+			// Do
+			// not destroy an existing mapped IRandomAccess handle by closing
+			// it.
 			return;
 		}
 		// NB: Try to actually open a handle to make sure it is valid. Close it
-		// afterward so we don't leave it dangling. The process of doing this will
+		// afterward so we don't leave it dangling. The process of doing this
+		// will
 		// throw IOException if something goes wrong.
 		getHandle(id).close();
 	}

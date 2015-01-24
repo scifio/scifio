@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@ import org.scijava.thread.ThreadService;
 /**
  * {@link CellCache} implementation for {@link SCIFIOCell}s. Loads the requested
  * cell if it is not already in the cache.
- * 
+ *
  * @author Mark Hiner
  */
 public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
@@ -82,7 +82,8 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	 */
 	final private String cacheId = this.toString();
 
-	// TODO: would be nice to replace this with another soft reference cache that
+	// TODO: would be nice to replace this with another soft reference cache
+	// that
 	// was more configurable
 	// e.g. controlling max elements and such.
 	// In-memory cache.
@@ -109,7 +110,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	/**
 	 * Returns the SCIFIOCell at the specified index from this cache, or null if
 	 * index has not been loaded yet.
-	 * 
+	 *
 	 * @param index - linearized cell index to load
 	 * @return The cell at the given index, if found, else null
 	 */
@@ -125,7 +126,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	/**
 	 * Loads the cell at the specified index within the specified cell
 	 * dimensionality, at the specified origin
-	 * 
+	 *
 	 * @param index - linearized cell index to load
 	 * @param cellDims - lengths of each axis of a cell
 	 * @param cellMin - origin position of each cell axis
@@ -165,7 +166,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	 * Maps a weak reference to the given cell. This ensures the cell can be
 	 * garbage collected when it's no longer in use, but can still be returned
 	 * from memory until that point.
-	 * 
+	 *
 	 * @param k - Key to map to the given cell
 	 * @param cell - Cell to put in the in-memory cache
 	 */
@@ -177,7 +178,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	/**
 	 * First checks the local (weak) map. If empty, cache service is checked -
 	 * which can potentially deserialize from disk.
-	 * 
+	 *
 	 * @param id - cache id to look up
 	 * @param index - cell index
 	 * @return The cached cell if it was found, or null

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -43,7 +43,7 @@ import io.scif.SCIFIOPlugin;
  * wrap, allowing the Filter to be used in the same way the wrapped class would
  * be.
  * </p>
- * 
+ *
  * @author Mark Hiner
  */
 public interface Filter extends SCIFIOPlugin {
@@ -61,14 +61,14 @@ public interface Filter extends SCIFIOPlugin {
 
 	/**
 	 * Sets the object which this filter augments.
-	 * 
+	 *
 	 * @param parent - The object wrapped by this filter
 	 */
 	void setParent(Object parent);
 
 	/**
 	 * Returns the object this filter augments.
-	 * 
+	 *
 	 * @return The object wrapped by this filter
 	 */
 	Object getParent();
@@ -76,7 +76,7 @@ public interface Filter extends SCIFIOPlugin {
 	/**
 	 * Returns true if this filter is capable of wrapping instances of the
 	 * provided class.
-	 * 
+	 *
 	 * @param c - Class to check compatibility
 	 * @return True if this filter can call setParent on instances of c
 	 */

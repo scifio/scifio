@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -62,7 +62,7 @@ import java.util.Set;
  * NB: index order is preserved, so if indices are provided out of order, they
  * will remain out of order.
  * </p>
- * 
+ *
  * @author Mark Hiner
  */
 public class Range extends ArrayList<Long> {
@@ -118,7 +118,7 @@ public class Range extends ArrayList<Long> {
 
 	/**
 	 * Creates a singleton DimRange.
-	 * 
+	 *
 	 * @param index single index for this DimRange.
 	 */
 	public Range(final Long index) {
@@ -130,7 +130,7 @@ public class Range extends ArrayList<Long> {
 
 	/**
 	 * Creates the DimRange: [start, end]
-	 * 
+	 *
 	 * @param start inclusive start value
 	 * @param end inclusive end value
 	 */
@@ -147,7 +147,7 @@ public class Range extends ArrayList<Long> {
 	/**
 	 * Constructs a DimRange that includes only the values contained in the
 	 * provided array.
-	 * 
+	 *
 	 * @param values explicit list of values in this range
 	 */
 	public Range(final long[] values) {

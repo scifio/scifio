@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,7 +35,7 @@ import java.util.List;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Format} implementations.
- * 
+ *
  * @see io.scif.Format
  * @see io.scif.Metadata
  * @see io.scif.Parser
@@ -58,9 +58,13 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 
 	// Class references to the components of this Format
 	private Class<? extends Metadata> metadataClass;
+
 	private Class<? extends Checker> checkerClass;
+
 	private Class<? extends Parser> parserClass;
+
 	private Class<? extends Reader> readerClass;
+
 	private Class<? extends Writer> writerClass;
 
 	// -- Constructor --
@@ -81,7 +85,7 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 	 * Helper method to cache the suffix array for a format. Concrete format
 	 * classes should implement this method, returning an array of supported
 	 * suffixes.
-	 * 
+	 *
 	 * @return Valid suffixes for this file format.
 	 */
 	protected abstract String[] makeSuffixArray();
@@ -164,8 +168,8 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 	// -- Helper Methods --
 
 	/*
-	 * Creates a SCIFIO component from its class. Also sets its context based
-	 * on this format's context.
+	 * Creates a SCIFIO component from its class. Also sets its context based on
+	 * this format's context.
 	 */
 	private <T extends HasFormat> T createContextualObject(final Class<T> c)
 		throws FormatException
@@ -240,8 +244,8 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 	}
 
 	/*
-	 * Searches for all nested classes within this class and recursively
-	 * adds them to a complete class list.
+	 * Searches for all nested classes within this class and recursively adds
+	 * them to a complete class list.
 	 */
 	private List<Class<?>> buildClassList() {
 		final Class<?>[] classes = this.getClass().getDeclaredClasses();

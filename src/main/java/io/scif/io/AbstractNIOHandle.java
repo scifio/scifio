@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,7 +34,7 @@ import java.io.IOException;
 
 /**
  * A wrapper for buffered NIO logic that implements the IRandomAccess interface.
- * 
+ *
  * @see IRandomAccess
  * @see java.io.RandomAccessFile
  * @author Chris Allan
@@ -49,7 +49,7 @@ public abstract class AbstractNIOHandle implements IRandomAccess {
 
 	/**
 	 * Ensures that the file mode is either "r" or "rw".
-	 * 
+	 *
 	 * @param mode Mode to validate.
 	 * @throws IllegalArgumentException If an illegal mode is passed.
 	 */
@@ -63,7 +63,7 @@ public abstract class AbstractNIOHandle implements IRandomAccess {
 	/**
 	 * Ensures that the handle has the correct length to be written to and extends
 	 * it as required.
-	 * 
+	 *
 	 * @param writeLength Number of bytes to write.
 	 * @return <code>true</code> if the buffer has not required an extension.
 	 *         <code>false</code> otherwise.
@@ -79,7 +79,7 @@ public abstract class AbstractNIOHandle implements IRandomAccess {
 
 	/**
 	 * Sets the new length of the handle.
-	 * 
+	 *
 	 * @param length New length.
 	 * @throws IOException If there is an error changing the handle's length.
 	 */

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -82,7 +82,7 @@ import org.scijava.service.SciJavaService;
 
 /**
  * A basic renderer for image data.
- * 
+ *
  * @author Curtis Rueden
  * @author Mark Hiner
  */
@@ -108,6 +108,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 	private GUIService guiService;
 
 	private static final String TITLE = "SCIFIO Viewer";
+
 	private static final char ANIMATION_KEY = ' ';
 
 	// -- Fields --
@@ -119,17 +120,25 @@ public class ImageViewer extends JFrame implements ActionListener,
 	private Writer myWriter;
 
 	private final JPanel pane;
+
 	private final ImageIcon icon;
+
 	private final JLabel iconLabel;
+
 	private final JPanel sliderPanel;
+
 	private final JSlider nSlider;
+
 	private final JLabel probeLabel;
+
 	private final JMenuItem fileView, fileSave;
 
 	private String filename;
+
 	private BufferedImage[] images;
 
 	private boolean anim = false;
+
 	private int fps = 10;
 
 	private boolean canCloseReader = true;
@@ -191,7 +200,8 @@ public class ImageViewer extends JFrame implements ActionListener,
 		final JMenuBar menubar = new JMenuBar();
 		// FIXME: currently the menu bar is disabled to restrict the use of
 		// ImageViewer to the Show command. We could attempt to get this
-		// implementation working nicely, or just convert to an IJ2 implementation.
+		// implementation working nicely, or just convert to an IJ2
+		// implementation.
 //		setJMenuBar(menubar);
 
 		final JMenu file = new JMenu("File");
@@ -239,7 +249,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 
 	/**
 	 * Constructs an image viewer.
-	 * 
+	 *
 	 * @param canCloseReader whether or not the underlying reader can be closed
 	 */
 	public ImageViewer(final Context context, final boolean canCloseReader) {

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -95,7 +95,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	 * Returns the image number in the original dataset that corresponds to the
 	 * given image number. For instance, if the original dataset was a single RGB
 	 * image and the given plane index is 2, the return value will be 0.
-	 * 
+	 *
 	 * @param planeIndex is a plane number greater than or equal to 0 and less
 	 *          than getPlaneCount()
 	 * @return the corresponding plane number in the original (unseparated) data.
@@ -230,16 +230,19 @@ public class PlaneSeparator extends AbstractReaderFilter {
 		synchronized (this) {
 			if (!parentMeta.get(imageIndex).isIndexed()) {
 				// -> if one or more axes was split out...
-				// dividing current split axis count by parent effective size c (actual
+				// dividing current split axis count by parent effective size c
+				// (actual
 				// c
 				// planes).. shouldn't need to do that any more
-				// trying to determine the positions for each converted axis... should
+				// trying to determine the positions for each converted axis...
+				// should
 				// just be raster to position on just the converted lengths
 
 				// Get the position of the current plane
 				final long[] completePosition =
 					FormatTools.rasterToPosition(imageIndex, planeIndex, meta);
-				// Isolate the position and lengths of the axis (axes) that have been
+				// Isolate the position and lengths of the axis (axes) that have
+				// been
 				// split
 				final long[] separatedPosition =
 					Arrays.copyOf(completePosition, splitOffset);
@@ -259,8 +262,10 @@ public class PlaneSeparator extends AbstractReaderFilter {
 				if (!haveCached(source, imageIndex, offsets, lengths)) {
 					int strips = 1;
 
-					// check how big the original image is; if it's larger than the
-					// available memory, we will need to split it into strips (of the last
+					// check how big the original image is; if it's larger than
+					// the
+					// available memory, we will need to split it into strips
+					// (of the last
 					// planar axis)
 
 					final long availableMemory = MemoryTools.totalAvailableMemory() / 16;
@@ -272,7 +277,8 @@ public class PlaneSeparator extends AbstractReaderFilter {
 						strips = (int) Math.sqrt(h);
 					}
 
-					// Compute strip height, and the height of the last strip (in case the
+					// Compute strip height, and the height of the last strip
+					// (in case the
 					// plane is not evenly divisible).
 					final long stripHeight = h / strips;
 					final long lastStripHeight =
@@ -284,8 +290,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 					updateLastPlaneInfo(source, imageIndex, splitOffset, offsets, lengths);
 					final int parentYIndex =
 						parentMeta.get(imageIndex).getAxisIndex(Axes.Y);
-					final int yIndex =
-						meta.get(imageIndex).getAxisIndex(Axes.Y);
+					final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
 
 					// Populate the strips
 					for (int i = 0; i < strips; i++) {
@@ -302,7 +307,8 @@ public class PlaneSeparator extends AbstractReaderFilter {
 						// store the color table
 						plane.setColorTable(lastPlane.getColorTable());
 
-						// Adjust the strip array if this is the last strip, if needed
+						// Adjust the strip array if this is the last strip, if
+						// needed
 						if (strips != 1 && lastStripHeight != stripHeight &&
 							i == strips - 1)
 						{
@@ -326,7 +332,8 @@ public class PlaneSeparator extends AbstractReaderFilter {
 					}
 				}
 				else {
-					// Have a cached instance of the plane containing the desired region
+					// Have a cached instance of the plane containing the
+					// desired region
 					ImageTools.splitChannels(lastPlane.getBytes(), plane.getBytes(),
 						separatedPosition, separatedLengths, bpp, false, interleaved, bpp *
 							DataTools.safeMultiply32(lengths));
@@ -336,7 +343,8 @@ public class PlaneSeparator extends AbstractReaderFilter {
 			}
 
 			if (!haveCached(source, imageIndex, offsets, lengths)) {
-				// Convert the current positional information to the format of the
+				// Convert the current positional information to the format of
+				// the
 				// parent
 				updateLastPlaneInfo(source, imageIndex, splitOffset, offsets, lengths);
 				// Delegate directly to the parent
@@ -419,8 +427,8 @@ public class PlaneSeparator extends AbstractReaderFilter {
 			final int currentIndex = meta.get(imageIndex).getAxisIndex(axis.type());
 			// This axis is still a planar axis, so we can read it from the
 			// current plane offsets/lengths
-			if (currentIndex >= 0 && currentIndex < meta.get(imageIndex)
-				.getPlanarAxisCount())
+			if (currentIndex >= 0 &&
+				currentIndex < meta.get(imageIndex).getPlanarAxisCount())
 			{
 				lastPlaneOffsets[parentIndex] = offsets[currentIndex];
 				lastPlaneLengths[parentIndex] = lengths[currentIndex];
@@ -451,7 +459,8 @@ public class PlaneSeparator extends AbstractReaderFilter {
 			lastPlaneLengths != null)
 		{
 			for (int i = 0; i < offsets.length && matches; i++) {
-				//TODO It would be nice to fix up this logic so that we can use cached
+				// TODO It would be nice to fix up this logic so that we can use
+				// cached
 				// planes when requesting a sub-region of the cached plane.
 				// See https://github.com/scifio/scifio/issues/155
 				// Make sure we have the starting point in each axis

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -51,7 +51,7 @@ import org.scijava.plugin.Parameter;
 /**
  * {@link io.scif.filters.MetadataWrapper} implementation specifically for use
  * with the {@link io.scif.filters.ChannelFiller}.
- * 
+ *
  * @see io.scif.filters.MetadataWrapper
  * @see io.scif.filters.ChannelFiller
  * @author Mark Hiner
@@ -119,22 +119,23 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 				}
 				else {
 					lutLength = cTable.getComponentCount();
-					// Attempt to update the pixel type based on the color table type
+					// Attempt to update the pixel type based on the color table
+					// type
 					if (ArrayColorTable.class.isAssignableFrom(cTable.getClass())) {
 						final int bitsPerElement = ((ArrayColorTable<?>) cTable).getBits();
 						final boolean signed = FormatTools.isSigned(iMeta.getPixelType());
 						final boolean floating =
-								FormatTools.isFloatingPoint(iMeta.getPixelType());
-						
+							FormatTools.isFloatingPoint(iMeta.getPixelType());
+
 						try {
 							iMeta.setPixelType(FormatTools.pixelTypeFromBytes(
 								bitsPerElement / 8, signed, floating));
 						}
 						catch (final FormatException e) {
-							log()
-							.warn("Could not update pixel type of ChannelFiller metadata.");
+							log().warn(
+								"Could not update pixel type of ChannelFiller metadata.");
 						}
-						
+
 					}
 				}
 
@@ -150,7 +151,8 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 							// Rename Channel axis to an unknown
 							iMeta.setAxisType(cIndex, Axes.unknown());
 						}
-						// Insert "true" Channels (expanded indexes) to the end of the
+						// Insert "true" Channels (expanded indexes) to the end
+						// of the
 						// planar
 						// axis list.
 						iMeta.addAxis(Axes.CHANNEL, lutLength);

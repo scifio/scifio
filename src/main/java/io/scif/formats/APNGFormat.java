@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -79,7 +79,7 @@ import org.scijava.plugin.Plugin;
  * SCIFIO Format supporting the <a
  * href="http://www.libpng.org/pub/png/spec/">PNG</a> and <a
  * href="https://wiki.mozilla.org/APNG_Specification">APNG</a> image formats.
- * 
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Animated PNG")
@@ -113,10 +113,15 @@ public class APNGFormat extends AbstractFormat {
 
 		// APNG Chunks
 		private List<IDATChunk> idat;
+
 		private List<FCTLChunk> fctl;
+
 		private ACTLChunk actl;
+
 		private IHDRChunk ihdr;
+
 		private PLTEChunk plte;
+
 		private IENDChunk iend;
 
 		// true if the default image is not part of the animation
@@ -225,17 +230,14 @@ public class APNGFormat extends AbstractFormat {
 			}
 
 			/*
-			 * TODO: destination metadata doesn't care about the LUT
-			if (indexed) {
-			  final byte[][] lut = new byte[3][0];
-
-			  lut[0] = source.getPlte().getRed();
-			  lut[1] = source.getPlte().getGreen();
-			  lut[2] = source.getPlte().getBlue();
-
-			  imageMeta.setLut(lut);
-			}
-			*/
+			 * TODO: destination metadata doesn't care about the LUT if
+			 * (indexed) { final byte[][] lut = new byte[3][0];
+			 *
+			 * lut[0] = source.getPlte().getRed(); lut[1] =
+			 * source.getPlte().getGreen(); lut[2] = source.getPlte().getBlue();
+			 *
+			 * imageMeta.setLut(lut); }
+			 */
 
 			// The IHDR contains frame height and width
 			imageMeta.setAxisTypes(Axes.X, Axes.Y);
@@ -583,7 +585,8 @@ public class APNGFormat extends AbstractFormat {
 				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
 					planeMax))
 				{
-					// updates the data of the plane to a sub-image, by reference
+					// updates the data of the plane to a sub-image, by
+					// reference
 					subImg =
 						AWTImageTools.getSubimage(lastPlane.getData(), meta.get(imageIndex)
 							.isLittleEndian(), planeMin, planeMax);
@@ -593,9 +596,11 @@ public class APNGFormat extends AbstractFormat {
 				return plane;
 			}
 
-			// For a non-default frame, the appropriate chunks will be used to create
+			// For a non-default frame, the appropriate chunks will be used to
+			// create
 			// a new image,
-			// which will be read with the standard Java ImageIO and pasted onto frame
+			// which will be read with the standard Java ImageIO and pasted onto
+			// frame
 			// 0.
 			final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			stream.write(APNGFormat.PNG_SIGNATURE);
@@ -723,7 +728,8 @@ public class APNGFormat extends AbstractFormat {
 		// Number of frames written
 		private int numFrames = 0;
 
-		// Pointer to position in acTL chunk to write the number of frames in this
+		// Pointer to position in acTL chunk to write the number of frames in
+		// this
 		// image
 		private long numFramesPointer = 0;
 
@@ -1107,22 +1113,15 @@ public class APNGFormat extends AbstractFormat {
 				/*
 				 * NB: not necessary to preserve ColorTable when translating. If
 				 * an image has a color table it will be parsed and included in
-				 * whatever plane is returned by an openPlane call. So it doesn't
-				 * also need to be preserved in the Metadata.
-				byte[][] lut = null;
-				try {
-				  lut = source.get8BitLookupTable(0);
-				  plte.setRed(lut[0]);
-				  plte.setGreen(lut[1]);
-				  plte.setBlue(lut[2]);
-				}
-				catch (final FormatException e) {
-				  log().error("Format error when finding 8bit lookup table", e);
-				}
-				catch (final IOException e) {
-				  log().error("IO error when finding 8bit lookup table", e);
-				}
-				*/
+				 * whatever plane is returned by an openPlane call. So it
+				 * doesn't also need to be preserved in the Metadata. byte[][]
+				 * lut = null; try { lut = source.get8BitLookupTable(0);
+				 * plte.setRed(lut[0]); plte.setGreen(lut[1]);
+				 * plte.setBlue(lut[2]); } catch (final FormatException e) {
+				 * log().error("Format error when finding 8bit lookup table",
+				 * e); } catch (final IOException e) {
+				 * log().error("IO error when finding 8bit lookup table", e); }
+				 */
 			}
 			else if (sizec == 2) {
 				// grayscale with alpha
@@ -1164,7 +1163,8 @@ public class APNGFormat extends AbstractFormat {
 			}
 
 			// FIXME: all integers in apng should be written big endian per spec
-			// but for bio-formats endianness is supposed to be preserved... resolve?
+			// but for bio-formats endianness is supposed to be preserved...
+			// resolve?
 			dest.setLittleEndian(source.get(0).isLittleEndian());
 
 			final boolean signed = FormatTools.isSigned(source.get(0).getPixelType());
@@ -1656,7 +1656,7 @@ public class APNGFormat extends AbstractFormat {
 	/**
 	 * This class represents the critical IEND chunk that signifies the end of a
 	 * PNG stream.
-	 * 
+	 *
 	 * @author Mark Hiner
 	 */
 	public static class IENDChunk extends APNGChunk {

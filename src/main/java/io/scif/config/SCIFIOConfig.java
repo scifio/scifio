@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -64,7 +64,7 @@ import org.scijava.Context;
  * Note that each getter and setter method signature in this class is prefixed
  * by the component it affects.
  * </p>
- * 
+ *
  * @author Mark Hiner
  * @see Checker
  * @see Parser
@@ -82,14 +82,20 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	// Parser
 	private MetadataLevel level;
+
 	private boolean filterMetadata;
+
 	private boolean saveOriginalMetadata;
 
 	// Writer
 	private boolean writeSequential = false;
+
 	private ColorModel model = null;
+
 	private int fps = 10;
+
 	private String compression = null;
+
 	private CodecOptions options = null;
 
 	// Groupable
@@ -102,16 +108,16 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * Access type options for opening datasets.
 	 * <ul>
 	 * <li>
-   * {@link ImgMode#ARRAY} will attempt to use {@link ArrayImgFactory}</li>
+	 * {@link ImgMode#ARRAY} will attempt to use {@link ArrayImgFactory}</li>
 	 * <li>
-   * {@link ImgMode#AUTO} allows the program to decide, e.g. based on
+	 * {@link ImgMode#AUTO} allows the program to decide, e.g. based on
 	 * available memory.</li>
 	 * <li>
-   * {@link ImgMode#CELL} will attempt to use {@link CellImgFactory}</li>
+	 * {@link ImgMode#CELL} will attempt to use {@link CellImgFactory}</li>
 	 * <li>
-   * {@link ImgMode#PLANAR} will attempt to use {@link PlanarImgFactory}</li>
+	 * {@link ImgMode#PLANAR} will attempt to use {@link PlanarImgFactory}</li>
 	 * </ul>
-	 * 
+	 *
 	 * @author Mark Hiner
 	 */
 	public static enum ImgMode {
@@ -152,7 +158,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	/**
 	 * Copying constructor. Returns a copy of the given SCIFIOConfig.
-	 * 
+	 *
 	 * @param config Configuration to copy.
 	 */
 	public SCIFIOConfig(final SCIFIOConfig config) {
@@ -245,7 +251,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * Sets whether or not we know that planes will be written sequentially. If
 	 * planes are written sequentially and this flag is set, then performance will
 	 * be slightly improved.
-	 * 
+	 *
 	 * @param sequential Flag for writing sequential planes.
 	 * @return This SCIFIOConfig for method chaining.
 	 */
@@ -388,7 +394,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	 * Returns a {@link ImageRegion} specifying dimension constraints. This may be
 	 * of a different dimensionality than the underlying image, in which case the
 	 * lengths are assume to be in the natural ordering of the image.
-	 * 
+	 *
 	 * @return A Subregion specifying dimension offsets and lengths. Default: null
 	 */
 	public ImageRegion imgOpenerGetRegion() {

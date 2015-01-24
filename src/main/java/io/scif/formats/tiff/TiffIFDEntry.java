@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,7 +34,7 @@ package io.scif.formats.tiff;
  * This class represents a single raw TIFF IFD entry. It does not retrieve or
  * store the values from the entry's specific offset and is based on the TIFF
  * 6.0 specification of an IFD entry.
- * 
+ *
  * @author Chris Allan
  */
 public class TiffIFDEntry implements Comparable<Object> {
@@ -65,7 +65,7 @@ public class TiffIFDEntry implements Comparable<Object> {
 
 	/**
 	 * Retrieves the entry's <i>Tag</i> value.
-	 * 
+	 *
 	 * @return the entry's <i>Tag</i> value.
 	 */
 	public int getTag() {
@@ -74,7 +74,7 @@ public class TiffIFDEntry implements Comparable<Object> {
 
 	/**
 	 * Retrieves the entry's <i>Type</i> value.
-	 * 
+	 *
 	 * @return the entry's <i>Type</i> value.
 	 */
 	public IFDType getType() {
@@ -83,7 +83,7 @@ public class TiffIFDEntry implements Comparable<Object> {
 
 	/**
 	 * Retrieves the entry's <i>ValueCount</i> value.
-	 * 
+	 *
 	 * @return the entry's <i>ValueCount</i> value.
 	 */
 	public int getValueCount() {
@@ -92,7 +92,7 @@ public class TiffIFDEntry implements Comparable<Object> {
 
 	/**
 	 * Retrieves the entry's <i>ValueOffset</i> value.
-	 * 
+	 *
 	 * @return the entry's <i>ValueOffset</i> value.
 	 */
 	public long getValueOffset() {

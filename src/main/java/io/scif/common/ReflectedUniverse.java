@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -221,10 +221,13 @@ public class ReflectedUniverse {
 			}
 			final Class<?> cl = (Class<?>) var;
 
-			// Search for a constructor that matches the arguments. Unfortunately,
+			// Search for a constructor that matches the arguments.
+			// Unfortunately,
 			// calling cl.getConstructor(argClasses) does not work, because
-			// getConstructor() is not flexible enough to detect when the arguments
-			// are subclasses of the constructor argument classes, making a brute
+			// getConstructor() is not flexible enough to detect when the
+			// arguments
+			// are subclasses of the constructor argument classes, making a
+			// brute
 			// force search through all public constructors necessary.
 			Constructor<?> constructor = null;
 			final Constructor<?>[] c = cl.getConstructors();

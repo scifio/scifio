@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,7 +40,7 @@ import java.nio.ByteOrder;
 
 /**
  * A wrapper for a byte array that implements the IRandomAccess interface.
- * 
+ *
  * @see IRandomAccess
  */
 public class ByteArrayHandle extends AbstractNIOHandle {
@@ -74,7 +74,7 @@ public class ByteArrayHandle extends AbstractNIOHandle {
 
 	/**
 	 * Creates a random access byte stream to read from, and write to.
-	 * 
+	 *
 	 * @param capacity Number of bytes to initially allocate.
 	 */
 	public ByteArrayHandle(final int capacity) {
@@ -99,7 +99,7 @@ public class ByteArrayHandle extends AbstractNIOHandle {
 	 * Gets the byte buffer backing this handle. <b>NOTE:</b> This is the backing
 	 * buffer. Any modifications to this buffer including position, length and
 	 * capacity will affect subsequent calls upon its source handle.
-	 * 
+	 *
 	 * @return Backing buffer of this handle.
 	 */
 	public ByteBuffer getByteBuffer() {
@@ -125,7 +125,7 @@ public class ByteArrayHandle extends AbstractNIOHandle {
 	// -- IRandomAccess API methods --
 
 	@Override
-	public void close() { }
+	public void close() {}
 
 	@Override
 	public long getFilePointer() {

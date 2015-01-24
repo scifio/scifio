@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -70,7 +70,7 @@ import org.scijava.plugin.Plugin;
  * Thus, we can claim than the number of bytes in compressed output never
  * exceeds 1.41*(number of input bytes)+3.
  * <p>
- * 
+ *
  * @author Mikhail Kovtun
  */
 @Plugin(type = Codec.class)
@@ -87,7 +87,9 @@ public class LZWCodec extends AbstractCodec {
 	private static final int HASH_STEP = 257;
 
 	private static final int CLEAR_CODE = 256;
+
 	private static final int EOI_CODE = 257;
+
 	private static final int FIRST_CODE = 258;
 
 	/** Masks for writing bits in compressor. */
@@ -115,7 +117,8 @@ public class LZWCodec extends AbstractCodec {
 		int outSize = 0;
 		// The output always starts with CLEAR code
 		output[outSize++] = (byte) (CLEAR_CODE >> 1);
-		// Last incomplete byte to be written to output (bits shifted to the right).
+		// Last incomplete byte to be written to output (bits shifted to the
+		// right).
 		// Always contains at least 1 bit, and may contain 8 bits.
 		int currOutByte = CLEAR_CODE & 0x01;
 		// Number of unused bits in currOutByte (from 0 to 7).
@@ -253,7 +256,7 @@ public class LZWCodec extends AbstractCodec {
 	/**
 	 * The CodecOptions parameter should have the following fields set:
 	 * {@link CodecOptions#maxBytes maxBytes}
-	 * 
+	 *
 	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
 	 */
 	@Override
@@ -271,7 +274,8 @@ public class LZWCodec extends AbstractCodec {
 		// Table mapping codes to strings.
 		// Its structure is based on the fact that a string for a code has form:
 		// (string for another code) + (new byte).
-		// Thus, at index 'code': first array contains 'another code', second array
+		// Thus, at index 'code': first array contains 'another code', second
+		// array
 		// contains 'new byte', and third array contains length of the string.
 		// The length is needed to make retrieving the string faster.
 		final int[] anotherCodes = new int[4096];
@@ -289,7 +293,8 @@ public class LZWCodec extends AbstractCodec {
 		int nextCode = FIRST_CODE;
 
 		// Variables to handle reading bit stream:
-		// Byte from 'input[curr_in_pos-1]' -- only 'bits_read' bits on the right
+		// Byte from 'input[curr_in_pos-1]' -- only 'bits_read' bits on the
+		// right
 		// are non-zero
 		int currRead = 0;
 		// Number of bits in 'curr_read' that were not consumed yet
@@ -336,7 +341,8 @@ public class LZWCodec extends AbstractCodec {
 					}
 					if (currCode == EOI_CODE) break;
 					// write string[curr_code] to output
-					// -- but here we are sure that string consists of a single byte
+					// -- but here we are sure that string consists of a single
+					// byte
 					if (currOutPos >= output.length - 1) break;
 					output[currOutPos++] = newBytes[currCode];
 					oldCode = currCode;
@@ -353,7 +359,8 @@ public class LZWCodec extends AbstractCodec {
 						tablePos = anotherCodes[tablePos];
 					}
 					currOutPos += outLength;
-					// 2) Add string[old_code]+firstByte(string[curr_code]) to the table
+					// 2) Add string[old_code]+firstByte(string[curr_code]) to
+					// the table
 					if (nextCode >= anotherCodes.length) break;
 					anotherCodes[nextCode] = oldCode;
 					newBytes[nextCode] = output[i];
@@ -376,7 +383,8 @@ public class LZWCodec extends AbstractCodec {
 					// 2) Write firstByte(string[old_code]) to output
 					if (currOutPos >= output.length - 1) break;
 					output[currOutPos++] = output[i];
-					// 3) Add string[old_code]+firstByte(string[old_code]) to the table
+					// 3) Add string[old_code]+firstByte(string[old_code]) to
+					// the table
 					anotherCodes[nextCode] = oldCode;
 					newBytes[nextCode] = output[i];
 					lengths[nextCode] = outLength + 1;

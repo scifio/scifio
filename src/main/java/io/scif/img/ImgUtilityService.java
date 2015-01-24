@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,7 +44,7 @@ import net.imglib2.type.numeric.RealType;
 
 /**
  * Helper methods for converting between SCIFIO and ImgLib2 data structures.
- * 
+ *
  * @author Stephan Preibisch
  * @author Stephan Saalfeld
  * @author Curtis Rueden
@@ -120,7 +120,7 @@ public interface ImgUtilityService extends SCIFIOService {
 	 * will determine if the provided dimension order, obtained from an ImgLib
 	 * AxisType array, can be converted to a 5-dimensional sequence compatible
 	 * with SCIFIO, and returns that sequence if it exists and null otherwise.
-	 * 
+	 *
 	 * @param newLengths - updated to hold the lengths of the newly ordered axes
 	 */
 	String guessDimOrder(final CalibratedAxis[] axes, final long[] dimLengths,
@@ -136,8 +136,8 @@ public interface ImgUtilityService extends SCIFIOService {
 	double decodeWord(byte[] plane, int index, int pixelType, boolean little);
 
 	/**
-	 * Convenience method for wrapping an {@link Img} as a {@link SCIFIOImgPlus}.
-	 * 
+	 * Convenience method for wrapping an {@link Img} as a {@link SCIFIOImgPlus} .
+	 *
 	 * @param img Img to wrap
 	 * @return SCIFIOImgPlus wrapping the provided Img, or if the provided Img is
 	 *         a SCIFIOImgPlus, casts and returns.

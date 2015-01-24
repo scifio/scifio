@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -43,7 +43,7 @@ import java.util.Set;
  * {@code Parsers} are used to create type-specific {@link io.scif.Metadata}
  * appropriate for their {@code Format} by reading from an image source.
  * </p>
- * 
+ *
  * @see io.scif.Format
  * @author Mark Hiner
  */
@@ -54,7 +54,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	/**
 	 * Creates a {@code Metadata} object using the provided name of an image
 	 * source.
-	 * 
+	 *
 	 * @param fileName Name of the image source to parse.
 	 * @return A new {@code Metadata} object of the appropriate type.
 	 */
@@ -62,7 +62,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Creates a {@code Metadata} object from the provided image file.
-	 * 
+	 *
 	 * @param file a path to the image file to parse.
 	 * @return A new {@code Metadata} object of the appropriate type.
 	 */
@@ -70,7 +70,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Creates a {@code Metadata} object from the provided image source.
-	 * 
+	 *
 	 * @param stream a random access handle to the image source to parse.
 	 * @return A new {@code Metadata} object of the appropriate type.
 	 */
@@ -80,7 +80,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	/**
 	 * Parses metadata using the provided name of an image source, and writes to
 	 * an existing {@code Metadata} object (overwriting may occur).
-	 * 
+	 *
 	 * @param fileName Name of the image source to parse.
 	 * @param meta A base {@code Metadata} to fill.
 	 * @return The provided {@code Metadata} after parsing.
@@ -93,7 +93,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	/**
 	 * Parses metadata from the provided file location to an existing
 	 * {@code Metadata} object (overwriting may occur).
-	 * 
+	 *
 	 * @param file a path to the image file to parse.
 	 * @param meta A base {@code Metadata} to fill.
 	 * @return The provided {@code Metadata} after parsing.
@@ -105,7 +105,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	/**
 	 * Parses metadata from the provided image source to an existing
 	 * {@code Metadata} object (overwriting may occur).
-	 * 
+	 *
 	 * @param stream a random access handle to the image source to parse.
 	 * @param meta A base {@code Metadata} to fill.
 	 * @return The provided {@code Metadata} after parsing.
@@ -117,7 +117,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * As {@link #parse(String)} with configuration options.
-	 * 
+	 *
 	 * @param fileName Name of the image source to parse.
 	 * @param config Configuration information to use for this parse.
 	 * @return A new {@code Metadata} object of the appropriate type.
@@ -127,7 +127,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * As {@link #parse(File)} with configuration options.
-	 * 
+	 *
 	 * @param file a path to the image file to parse.
 	 * @param config Configuration information to use for this parse.
 	 * @return A new {@code Metadata} object of the appropriate type.
@@ -137,7 +137,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * As {@link #parse(RandomAccessInputStream)} with configuration options.
-	 * 
+	 *
 	 * @param stream a random access handle to the image source to parse.
 	 * @param config Configuration information to use for this parse.
 	 * @return A new {@code Metadata} object of the appropriate type.
@@ -148,7 +148,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	/**
 	 * As {@link #parse(RandomAccessInputStream, Metadata)} with configuration
 	 * options.
-	 * 
+	 *
 	 * @param fileName Name of the image source to parse.
 	 * @param meta A base {@code Metadata} to fill.
 	 * @param config Configuration information to use for this parse.
@@ -161,7 +161,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * As {@link #parse(File, Metadata)} with configuration options.
-	 * 
+	 *
 	 * @param file a path to the image file to parse.
 	 * @param meta A base {@code Metadata} to fill.
 	 * @param config Configuration information to use for this parse.
@@ -175,7 +175,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	/**
 	 * As {@link #parse(RandomAccessInputStream, Metadata)} with configuration
 	 * options.
-	 * 
+	 *
 	 * @param stream a random access handle to the image source to parse.
 	 * @param meta A base {@code Metadata} to fill.
 	 * @param config Configuration information to use for this parse.

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,10 +36,6 @@ import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
-import io.scif.filters.AbstractReaderFilter;
-import io.scif.filters.Filter;
-import io.scif.filters.PlaneSeparator;
-import io.scif.filters.ReaderFilter;
 
 import java.io.IOException;
 
@@ -52,13 +48,15 @@ import org.scijava.plugin.PluginInfo;
 
 /**
  * Tests for the {@link Filter} classes.
- * 
+ *
  * @author Mark Hiner
  */
 public class FilterTest {
 
 	private final SCIFIO scifio = makeSCIFIO();
+
 	private final String id = "testImg&lengths=512,512.fake";
+
 	private Reader readerFilter;
 
 	@After
@@ -117,7 +115,8 @@ public class FilterTest {
 		boolean enabledProperly = false;
 		boolean disabledProperly = true;
 
-		// Make sure that our enabled plugin is found, and the disabled one isn't
+		// Make sure that our enabled plugin is found, and the disabled one
+		// isn't
 		while (Filter.class.isAssignableFrom(readerFilter.getClass())) {
 			if (EnabledFilter.class.isAssignableFrom(readerFilter.getClass())) enabledProperly =
 				true;

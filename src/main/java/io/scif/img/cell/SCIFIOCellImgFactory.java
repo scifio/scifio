@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -58,7 +58,7 @@ import net.imglib2.util.Fraction;
 /**
  * {@link AbstractCellImgFactory} implementation for working with
  * {@link SCIFIOCell}s.
- * 
+ *
  * @author Mark Hiner
  */
 public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
@@ -68,7 +68,9 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	// -- Fields --
 
 	private int index;
+
 	private Reader reader;
+
 	private ImageRegion subregion;
 
 	// -- Constuctors --
@@ -102,7 +104,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	}
 
 	@Override
-	public SCIFIOCellImg<T, ShortArray, SCIFIOCell<ShortArray>>
+	public
+		SCIFIOCellImg<T, ShortArray, SCIFIOCell<ShortArray>>
 		createShortInstance(final long[] dimensions, final Fraction entitiesPerPixel)
 	{
 		return createInstance(new ShortArrayLoader(reader(), subregion),
@@ -126,7 +129,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	}
 
 	@Override
-	public SCIFIOCellImg<T, FloatArray, SCIFIOCell<FloatArray>>
+	public
+		SCIFIOCellImg<T, FloatArray, SCIFIOCell<FloatArray>>
 		createFloatInstance(final long[] dimensions, final Fraction entitiesPerPixel)
 	{
 		return createInstance(new FloatArrayLoader(reader(), subregion),
@@ -135,7 +139,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 
 	@Override
 	public SCIFIOCellImg<T, DoubleArray, SCIFIOCell<DoubleArray>>
-		createDoubleInstance(final long[] dimensions, final Fraction entitiesPerPixel)
+		createDoubleInstance(final long[] dimensions,
+			final Fraction entitiesPerPixel)
 	{
 		return createInstance(new DoubleArrayLoader(reader(), subregion),
 			dimensions, entitiesPerPixel);
@@ -189,8 +194,8 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	}
 
 	/**
-	 * @param region The {@link ImageRegion} that will be operated on by any created
-	 *          {@link SCIFIOCellImg}s.
+	 * @param region The {@link ImageRegion} that will be operated on by any
+	 *          created {@link SCIFIOCellImg}s.
 	 */
 	public void setSubRegion(final ImageRegion region) {
 		subregion = region;
@@ -210,7 +215,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		final SCIFIOCellCache<A> c =
 			new SCIFIOCellCache<A>(reader.getContext(), loader);
 
-		SCIFIOCellImg<T, A, SCIFIOCell<A>> cellImg =
+		final SCIFIOCellImg<T, A, SCIFIOCell<A>> cellImg =
 			new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(c,
 				entitiesPerPixel, dimensions, cellSize));
 

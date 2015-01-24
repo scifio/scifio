@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,21 +37,21 @@ import java.io.IOException;
 /**
  * Interface for random access into String-compatible streams, which are
  * discoverable by the SciJava plugin framework.
- * 
+ *
  * @author Mark Hiner
  */
 public interface IStreamAccess extends SCIFIOPlugin, IRandomAccess {
 
 	/**
 	 * Returns true if this handle can be constructed from the provided id.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	boolean isConstructable(String id) throws IOException;
 
 	/**
 	 * Initializes the current handle using the provided file id.
-	 * 
+	 *
 	 * @param file - A String path to the desired file.
 	 * @throws IOException
 	 */

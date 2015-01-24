@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -55,7 +55,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  * OBFReader is the file format reader for Imspector OBF files.
- * 
+ *
  * @author Bjoern Thiel
  * @author Mark Hiner
  */
@@ -76,7 +76,9 @@ public class OBFFormat extends AbstractFormat {
 		// -- Fields --
 
 		private Frame currentInflatedFrame = new Frame();
+
 		private Inflater inflater = new Inflater();
+
 		private List<Stack> stacks = new ArrayList<Stack>();
 
 		// -- OBFMetadata getters and setters --
@@ -157,7 +159,9 @@ public class OBFFormat extends AbstractFormat {
 	public static class Parser extends AbstractParser<Metadata> {
 
 		private static final int STACK_VERSION = 3;
+
 		private static final String STACK_MAGIC_STRING = "OMAS_BF_STACK\n";
+
 		private static final int MAXIMAL_NUMBER_OF_DIMENSIONS = 15;
 
 		// -- AbstractParser API Methods --
@@ -469,7 +473,9 @@ public class OBFFormat extends AbstractFormat {
 		// -- Constants --
 
 		private static final short MAGIC_NUMBER = (short) 0xFFFF;
+
 		private static final boolean LITTLE_ENDIAN = true;
+
 		private static final String FILE_MAGIC_STRING = "OMAS_BF\n";
 
 		// -- Utility methods --
@@ -549,7 +555,9 @@ public class OBFFormat extends AbstractFormat {
 		// -- Fields --
 
 		private long position;
+
 		private long length;
+
 		private boolean compression;
 
 		// -- Getters and Setters --
@@ -584,7 +592,9 @@ public class OBFFormat extends AbstractFormat {
 		// -- Fields --
 
 		private byte[] bytes;
+
 		private int imageIndex;
+
 		private int number;
 
 		// -- Getters and Setters --

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,10 +34,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import io.scif.Checker;
-import io.scif.Format;
-import io.scif.FormatException;
-import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
 import io.scif.formats.FakeFormat;
 import io.scif.io.RandomAccessInputStream;
@@ -56,7 +52,7 @@ import org.scijava.Context;
 
 /**
  * Unit tests for {@link io.scif.Checker} interface methods.
- * 
+ *
  * @author Mark Hiner
  */
 @RunWith(Parameterized.class)
@@ -64,9 +60,13 @@ public class CheckerTest {
 
 	private final String id =
 		"8bit-signed&pixelType=int8&axes=X,Y,Z,C,T&lengths=50,50,3,5,7.fake";
+
 	private final String falseId = "testFile.png";
+
 	private Checker c;
+
 	private FakeChecker fc;
+
 	private Context context;
 
 	@Parameters
@@ -76,7 +76,9 @@ public class CheckerTest {
 
 	private final String provider;
 
-	public CheckerTest(final String provider, final boolean checkGrowth, final boolean testLength) {
+	public CheckerTest(final String provider, final boolean checkGrowth,
+		final boolean testLength)
+	{
 		this.provider = provider;
 	}
 
@@ -169,9 +171,8 @@ public class CheckerTest {
 
 	/*
 	 * Private inner class for testing suffix flags.
-	 * 
-	 * @author Mark Hiner
 	 *
+	 * @author Mark Hiner
 	 */
 	private static class FakeChecker extends io.scif.DefaultChecker {
 
@@ -197,10 +198,12 @@ public class CheckerTest {
 
 		// -- HasFormat Methods --
 
-		// When extending an existing component, the getFormat() method should be
+		// When extending an existing component, the getFormat() method should
+		// be
 		// overriden to ensure
 		// the proper format is returned.
-		// FIXME: index over all components? make Format.createComponent work more
+		// FIXME: index over all components? make Format.createComponent work
+		// more
 		// like services where
 		// you can have a list of components returned... maybe? Or not..
 		@Override

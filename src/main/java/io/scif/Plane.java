@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,7 +44,7 @@ import org.scijava.Contextual;
  * <p>
  * This interface guarantees that a Plane will have a ColorTable, and the pixel
  * data of a Plane can ultimately be converted to a byte[].
- * 
+ *
  * @see net.imglib2.display.ColorTable
  * @author Mark Hiner
  */
@@ -54,14 +54,14 @@ public interface Plane extends Contextual {
 	 * Sets the ColorTable for this plane. ColorTables are used for indexed color
 	 * planes, where the underlying pixel data is an index into the associated
 	 * color (lookup) table.
-	 * 
+	 *
 	 * @param lut - a ColorTable implementation.
 	 */
 	void setColorTable(ColorTable lut);
 
 	/**
 	 * Gets this plane's ColorTable.
-	 * 
+	 *
 	 * @return A reference to the ColorTable instance associated with this plane.
 	 */
 	ColorTable getColorTable();
@@ -70,7 +70,7 @@ public interface Plane extends Contextual {
 	 * Gets this plane's standardized pixel data. This byte[] is guaranteed to be
 	 * consistent across multiple calls to this method, for a given native data
 	 * object.
-	 * 
+	 *
 	 * @return The standardized representation of this plane's data.
 	 */
 	byte[] getBytes();
@@ -79,7 +79,7 @@ public interface Plane extends Contextual {
 	 * Gets the {@link ImageMetadata} associated with this plane. The
 	 * ImageMetadata returned by this method can then be used to answer questions
 	 * about this plane.
-	 * 
+	 *
 	 * @return An ImageMetadata instance describing the image associated with this
 	 *         plane.
 	 */
@@ -97,7 +97,7 @@ public interface Plane extends Contextual {
 
 	/**
 	 * Populates this planes offsets, dimensions and Metadata.
-	 * 
+	 *
 	 * @param meta - ImageMetadata to associate with this Plane
 	 * @param planeOffsets minimal offsets of the planar axes
 	 * @param planeBounds maximum values of the planar axes
@@ -107,7 +107,7 @@ public interface Plane extends Contextual {
 
 	/**
 	 * Populates this plane by copying the fields of the provided plane
-	 * 
+	 *
 	 * @param p - A Plane to copy
 	 * @return A reference to this Plane
 	 */
@@ -115,7 +115,7 @@ public interface Plane extends Contextual {
 
 	/**
 	 * Sets the ImageMetadata representation of the underlying image.
-	 * 
+	 *
 	 * @param meta - an initialized ImageMetadata instance.
 	 */
 	void setImageMetadata(ImageMetadata meta);

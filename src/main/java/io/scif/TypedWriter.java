@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,7 +40,7 @@ import java.io.File;
  * type narrowing, any methods that return SCIFIO components. Also, parallel
  * methods that take SCIFIO component arguments are defined to be type narrowed.
  * </p>
- * 
+ *
  * @author Mark Hiner
  * @param <M> The {@link io.scif.Metadata} type associated with this Writer.
  */
@@ -50,7 +50,7 @@ public interface TypedWriter<M extends TypedMetadata> extends Writer {
 	 * Generic-parameterized {@code setMetadata} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Writer#setMetadata(Metadata)}.
-	 * 
+	 *
 	 * @see io.scif.Parser#parse(File, Metadata)
 	 */
 	void setMetadata(M meta) throws FormatException;

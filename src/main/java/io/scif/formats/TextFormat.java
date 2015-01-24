@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -67,7 +67,7 @@ import org.scijava.plugin.Plugin;
  * documents will require commensurate available RAM. Text format is flexible,
  * but assumed to be in tabular form with a consistent number of columns, and a
  * labeled header line immediately preceding the data.
- * 
+ *
  * @author Curtis Rueden
  * @author Mark Hiner
  */
@@ -359,7 +359,8 @@ public class TextFormat extends AbstractFormat {
 				in.close();
 			}
 			else {
-				// read data using RandomAccessInputStream (data may not be a file)
+				// read data using RandomAccessInputStream (data may not be a
+				// file)
 				final RandomAccessInputStream in =
 					new RandomAccessInputStream(getContext(), handle);
 				int no = 0;
@@ -441,14 +442,16 @@ public class TextFormat extends AbstractFormat {
 		// -- Constants --
 
 		private static final String LABEL_X = "x";
+
 		private static final String LABEL_Y = "y";
+
 		private static final boolean LITTLE_ENDIAN = false;
 
 		/**
 		 * Parses the file looking for the file header. Determines image extents
 		 * (sets sizeX and sizeY). Determines channel names (populates channels
 		 * array).
-		 * 
+		 *
 		 * @return number of rows in the header
 		 */
 		private static int parseFileHeader(final List<String> lines,
@@ -462,7 +465,8 @@ public class TextFormat extends AbstractFormat {
 				if (tokens.length >= 3 && // need at least 3 columns of data
 					lastTokens != null && lastTokens.length == tokens.length)
 				{
-					// consistent number of tokens; might be the header and first data row
+					// consistent number of tokens; might be the header and
+					// first data row
 
 					// allocate rowData as needed
 					if (rowData == null || rowData.length != tokens.length) {
@@ -472,7 +476,8 @@ public class TextFormat extends AbstractFormat {
 					// try to parse the first data row
 					if (getRowData(tokens, rowData)) {
 						log.info("Found header on line " + (meta.getRow() - 1));
-						// looks like tabular data; assume previous line is the header
+						// looks like tabular data; assume previous line is the
+						// header
 						parseHeaderRow(lastTokens, meta);
 						break;
 					}
@@ -518,7 +523,7 @@ public class TextFormat extends AbstractFormat {
 
 		/**
 		 * Parses numerical row data from the given tokens.
-		 * 
+		 *
 		 * @param tokens list of token strings to parse
 		 * @param rowData array to fill in with the data; length must match tokens
 		 * @return true if the data could be parsed

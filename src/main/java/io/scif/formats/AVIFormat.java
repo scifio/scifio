@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -75,7 +75,7 @@ import org.scijava.plugin.Plugin;
  * AVIReader is the file format reader for AVI files. Much of this code was
  * adapted from Wayne Rasband's AVI Movie Reader plugin for <a
  * href="http://imagej.net/">ImageJ</a>.
- * 
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Audio Video Interleave")
@@ -84,9 +84,12 @@ public class AVIFormat extends AbstractFormat {
 	// -- Supported compression types --
 
 	private static final int MSRLE = 1;
+
 	private static final int MS_VIDEO = 1296126531;
+
 	// private static final int CINEPAK = 1684633187;
 	private static final int JPEG = 1196444237;
+
 	private static final int Y8 = 538982489;
 
 	// -- Constants --
@@ -166,7 +169,9 @@ public class AVIFormat extends AbstractFormat {
 		private Vector<Long> lengths;
 
 		private short bmpBitsPerPixel;
+
 		private int bmpCompression, bmpScanLineSize;
+
 		private int bmpColorsUsed, bmpWidth;
 
 		private int bytesPerPlane;
@@ -176,7 +181,9 @@ public class AVIFormat extends AbstractFormat {
 		// -- Cached plane --
 
 		private ByteArrayPlane lastPlane;
+
 		private long lastPlaneIndex;
+
 		private int[] lastDims;
 
 		// -- Metadata Accessors --
@@ -447,7 +454,9 @@ public class AVIFormat extends AbstractFormat {
 
 		// -- Fields --
 		private String type = "error";
+
 		private String fcc = "error";
+
 		private int size = -1;
 
 		// -- Parser API Methods --
@@ -641,7 +650,8 @@ public class AVIFormat extends AbstractFormat {
 										.getBmpColorsUsed());
 									globalTable.put("Bits per pixel", meta.getBmpBitsPerPixel());
 
-									// scan line is padded with zeros to be a multiple of 4 bytes
+									// scan line is padded with zeros to be a
+									// multiple of 4 bytes
 									int npad = meta.getBmpWidth() % 4;
 									if (npad > 0) npad = 4 - npad;
 
@@ -653,7 +663,8 @@ public class AVIFormat extends AbstractFormat {
 										bmpActualColorsUsed = meta.getBmpColorsUsed();
 									}
 									else if (meta.getBmpBitsPerPixel() < 16) {
-										// a value of 0 means we determine this based on the
+										// a value of 0 means we determine this
+										// based on the
 										// bits per pixel
 										bmpActualColorsUsed = 1 << meta.getBmpBitsPerPixel();
 										meta.setBmpColorsUsed(bmpActualColorsUsed);
@@ -1003,7 +1014,8 @@ public class AVIFormat extends AbstractFormat {
 					createPlane(new long[meta.get(imageIndex).getPlanarAxisCount()], meta
 						.get(imageIndex).getAxesLengthsPlanar());
 
-				// If our last cached plane was of insufficient size for the requested
+				// If our last cached plane was of insufficient size for the
+				// requested
 				// region, we need to open it as a full plan.
 				if (meta.getLastDimensions() != null &&
 					!sufficientRegion(meta, x, y, w, h))
@@ -1076,13 +1088,16 @@ public class AVIFormat extends AbstractFormat {
 		// -- Constants --
 
 		private static final long SAVE_MOVI = 4092;
+
 		private static final long SAVE_FILE_SIZE = 4;
 
-		// location of length of strf CHUNK - not including the first 8 bytes with
+		// location of length of strf CHUNK - not including the first 8 bytes
+		// with
 		// strf and size. strn follows the end of this CHUNK.
 		private static final long SAVE_STRF_SIZE = 168;
 
 		private static final long SAVE_STRN_POS = SAVE_STRF_SIZE + 1068;
+
 		private static final long SAVE_JUNK_SIG = SAVE_STRN_POS + 24;
 
 		// location of length of CHUNK with first LIST - not including first 8
@@ -1090,15 +1105,20 @@ public class AVIFormat extends AbstractFormat {
 		private static final long SAVE_LIST1_SIZE = 16;
 
 		// location of length of CHUNK with second LIST - not including first 8
-		// bytes with LIST and size. Note that saveLIST1subSize = saveLIST1Size +
+		// bytes with LIST and size. Note that saveLIST1subSize = saveLIST1Size
+		// +
 		// 76, and that the length size written to saveLIST2Size is 76 less than
 		// that written to saveLIST1Size. JUNK follows the end of this CHUNK.
 		private static final long SAVE_LIST1_SUBSIZE = 92;
 
 		private static final long FRAME_OFFSET = 48;
+
 		private static final long FRAME_OFFSET_2 = 140;
+
 		private static final long PADDING_BYTES = 4076 - SAVE_JUNK_SIG;
+
 		private static final long SAVE_LIST2_SIZE = 4088;
+
 		private static final String DATA_SIGNATURE = "00db";
 
 		// -- Fields --
@@ -1106,12 +1126,17 @@ public class AVIFormat extends AbstractFormat {
 		private int planesWritten = 0;
 
 		private int bytesPerPixel;
+
 		private int xDim, yDim, zDim, tDim, xPad;
+
 		private int microSecPerFrame;
 
 		private Vector<Long> savedbLength;
+
 		private long idx1Pos;
+
 		private long endPos;
+
 		private long saveidx1Length;
 
 		// -- AbstractWriter Methods --
@@ -1143,7 +1168,8 @@ public class AVIFormat extends AbstractFormat {
 			final int nChannels =
 				(int) plane.getImageMetadata().getAxisLength(Axes.CHANNEL);
 
-			// Write the data. Each 3-byte triplet in the bitmap array represents the
+			// Write the data. Each 3-byte triplet in the bitmap array
+			// represents the
 			// relative intensities of blue, green, and red, respectively, for a
 			// pixel.
 			// The color bytes are in reverse order from the Windows convention.
@@ -1195,11 +1221,13 @@ public class AVIFormat extends AbstractFormat {
 
 			saveidx1Length = getStream().getFilePointer();
 
-			// Write the length of the idx1 CHUNK not including the idx1 signature
+			// Write the length of the idx1 CHUNK not including the idx1
+			// signature
 			getStream().writeInt(4 + (planesWritten * 16));
 
 			for (int z = 0; z < planesWritten; z++) {
-				// In the ckid field write the 4 character code to identify the chunk
+				// In the ckid field write the 4 character code to identify the
+				// chunk
 				// 00db or 00dc
 				getStream().writeBytes(DATA_SIGNATURE);
 				// Write the flags - select AVIIF_KEYFRAME
@@ -1210,15 +1238,18 @@ public class AVIFormat extends AbstractFormat {
 				// The flag indicates key frames in the video sequence.
 				// Key frames do not need previous video information to be
 				// decompressed.
-				// AVIIF_NOTIME 0x00000100L The CHUNK does not influence video timing
+				// AVIIF_NOTIME 0x00000100L The CHUNK does not influence video
+				// timing
 				// (for example a palette change CHUNK).
 				// AVIIF_LIST 0x00000001L Marks a LIST CHUNK.
 				// AVIIF_TWOCC 2L
 				// AVIIF_COMPUSE 0x0FFF0000L These bits are for compressor use.
 				getStream().writeInt((int) (savedbLength.get(z) - 4 - SAVE_MOVI));
 
-				// Write the offset (relative to the 'movi' field) to the relevant
-				// CHUNK. Write the length of the relevant CHUNK. Note that this length
+				// Write the offset (relative to the 'movi' field) to the
+				// relevant
+				// CHUNK. Write the length of the relevant CHUNK. Note that this
+				// length
 				// is also written at savedbLength
 				getStream().writeInt(bytesPerPixel * xDim * yDim);
 			}
@@ -1325,21 +1356,25 @@ public class AVIFormat extends AbstractFormat {
 
 			if (out.length() == 0) {
 				out.writeBytes("RIFF"); // signature
-				// Bytes 4 thru 7 contain the length of the file. This length does
+				// Bytes 4 thru 7 contain the length of the file. This length
+				// does
 				// not include bytes 0 thru 7.
 				out.writeInt(0); // for now write 0 for size
 				out.writeBytes("AVI "); // RIFF type
 				// Write the first LIST chunk, which contains
 				// information on data decoding
 				out.writeBytes("LIST"); // CHUNK signature
-				// Write the length of the LIST CHUNK not including the first 8 bytes
-				// with LIST and size. Note that the end of the LIST CHUNK is followed
+				// Write the length of the LIST CHUNK not including the first 8
+				// bytes
+				// with LIST and size. Note that the end of the LIST CHUNK is
+				// followed
 				// by JUNK.
 				out.writeInt((bytesPerPixel == 1) ? 1240 : 216);
 				out.writeBytes("hdrl"); // CHUNK type
 				out.writeBytes("avih"); // Write the avih sub-CHUNK
 
-				// Write the length of the avih sub-CHUNK (38H) not including the
+				// Write the length of the avih sub-CHUNK (38H) not including
+				// the
 				// the first 8 bytes for avihSignature and the length
 				out.writeInt(0x38);
 
@@ -1358,16 +1393,20 @@ public class AVIFormat extends AbstractFormat {
 				// an index at the end of the file. For good performance, all
 				// AVI files should contain an index.
 				// 20H AVIF_MUSTUSEINDEX: Index CHUNK, rather than the physical
-				// ordering of the chunks in the file, must be used to determine the
+				// ordering of the chunks in the file, must be used to determine
+				// the
 				// order of the frames.
-				// 100H AVIF_ISINTERLEAVED: Indicates that the AVI file is interleaved.
+				// 100H AVIF_ISINTERLEAVED: Indicates that the AVI file is
+				// interleaved.
 				// This is used to read data from a CD-ROM more efficiently.
 				// 800H AVIF_TRUSTCKTYPE: USE CKType to find key frames
-				// 10000H AVIF_WASCAPTUREFILE: The AVI file is used for capturing
+				// 10000H AVIF_WASCAPTUREFILE: The AVI file is used for
+				// capturing
 				// real-time video. Applications should warn the user before
 				// writing over a file with this fla set because the user
 				// probably defragmented this file.
-				// 20000H AVIF_COPYRIGHTED: The AVI file contains copyrighted data
+				// 20000H AVIF_COPYRIGHTED: The AVI file contains copyrighted
+				// data
 				// and software. When, this flag is used, software should not
 				// permit the data to be duplicated.
 
@@ -1382,8 +1421,10 @@ public class AVIFormat extends AbstractFormat {
 				// zero audio.
 				out.writeInt(1);
 
-				// dwSuggestedBufferSize - Suggested buffer size for reading the file.
-				// Generally, this size should be large enough to contain the largest
+				// dwSuggestedBufferSize - Suggested buffer size for reading the
+				// file.
+				// Generally, this size should be large enough to contain the
+				// largest
 				// chunk in the file.
 				out.writeInt(0);
 
@@ -1391,7 +1432,8 @@ public class AVIFormat extends AbstractFormat {
 				out.writeInt(xDim - xPad);
 				out.writeInt(yDim); // dwHeight - height in pixels
 
-				// dwReserved[4] - Microsoft says to set the following 4 values to 0.
+				// dwReserved[4] - Microsoft says to set the following 4 values
+				// to 0.
 				out.writeInt(0);
 				out.writeInt(0);
 				out.writeInt(0);
@@ -1400,10 +1442,14 @@ public class AVIFormat extends AbstractFormat {
 				// Write the Stream line header CHUNK
 				out.writeBytes("LIST");
 
-				// Write the size of the first LIST subCHUNK not including the first 8
-				// bytes with LIST and size. Note that saveLIST1subSize = saveLIST1Size
-				// + 76, and that the length written to saveLIST1subSize is 76 less than
-				// the length written to saveLIST1Size. The end of the first LIST
+				// Write the size of the first LIST subCHUNK not including the
+				// first 8
+				// bytes with LIST and size. Note that saveLIST1subSize =
+				// saveLIST1Size
+				// + 76, and that the length written to saveLIST1subSize is 76
+				// less than
+				// the length written to saveLIST1Size. The end of the first
+				// LIST
 				// subCHUNK is followed by JUNK.
 
 				out.writeInt((bytesPerPixel == 1) ? 1164 : 140);
@@ -1411,31 +1457,41 @@ public class AVIFormat extends AbstractFormat {
 				out.writeBytes("strh"); // Write the strh sub-CHUNK
 				out.writeInt(56); // Write length of strh sub-CHUNK
 
-				// fccType - Write the type of data stream - here vids for video stream
+				// fccType - Write the type of data stream - here vids for video
+				// stream
 				out.writeBytes("vids");
 
 				// Write DIB for Microsoft Device Independent Bitmap.
-				// Note: Unfortunately, at least 3 other four character codes are
+				// Note: Unfortunately, at least 3 other four character codes
+				// are
 				// sometimes used for uncompressed AVI videos: 'RGB ', 'RAW ',
 				// 0x00000000
 				out.writeBytes("DIB ");
 
 				out.writeInt(0); // dwFlags
 
-				// 0x00000001 AVISF_DISABLED The stram data should be rendered only when
+				// 0x00000001 AVISF_DISABLED The stram data should be rendered
+				// only when
 				// explicitly enabled.
-				// 0x00010000 AVISF_VIDEO_PALCHANGES Indicates that a palette change is
-				// included in the AVI file. This flag warns the playback software that
+				// 0x00010000 AVISF_VIDEO_PALCHANGES Indicates that a palette
+				// change is
+				// included in the AVI file. This flag warns the playback
+				// software that
 				// it will need to animate the palette.
 
-				// dwPriority - priority of a stream type. For example, in a file with
-				// multiple audio streams, the one with the highest priority might be
+				// dwPriority - priority of a stream type. For example, in a
+				// file with
+				// multiple audio streams, the one with the highest priority
+				// might be
 				// the default one.
 				out.writeInt(0);
 
-				// dwInitialFrames - Specifies how far audio data is skewed ahead of
-				// video frames in interleaved files. Typically, this is about 0.75
-				// seconds. In interleaved files specify the number of frames in the
+				// dwInitialFrames - Specifies how far audio data is skewed
+				// ahead of
+				// video frames in interleaved files. Typically, this is about
+				// 0.75
+				// seconds. In interleaved files specify the number of frames in
+				// the
 				// file prior to the initial frame of the AVI sequence.
 				// Noninterleaved files should use zero.
 				out.writeInt(0);
@@ -1449,49 +1505,65 @@ public class AVIFormat extends AbstractFormat {
 				// dwStart - this field is usually set to zero
 				out.writeInt(0);
 
-				// dwLength - playing time of AVI file as defined by scale and rate
+				// dwLength - playing time of AVI file as defined by scale and
+				// rate
 				// Set equal to the number of frames
 				out.writeInt(tDim * zDim);
 
-				// dwSuggestedBufferSize - Suggested buffer size for reading the stream.
-				// Typically, this contains a value corresponding to the largest chunk
+				// dwSuggestedBufferSize - Suggested buffer size for reading the
+				// stream.
+				// Typically, this contains a value corresponding to the largest
+				// chunk
 				// in a stream.
 				out.writeInt(0);
 
-				// dwQuality - encoding quality given by an integer between 0 and
+				// dwQuality - encoding quality given by an integer between 0
+				// and
 				// 10,000. If set to -1, drivers use the default quality value.
 				out.writeInt(-1);
 
 				// dwSampleSize #
 				// 0 if the video frames may or may not vary in size
 				// If 0, each sample of data(such as a video frame) must be in a
-				// separate chunk. If nonzero, then multiple samples of data can be
+				// separate chunk. If nonzero, then multiple samples of data can
+				// be
 				// grouped into a single chunk within the file.
 				out.writeInt(0);
 
-				// rcFrame - Specifies the destination rectangle for a text or video
-				// stream within the movie rectangle specified by the dwWidth and
-				// dwHeight members of the AVI main header structure. The rcFrame member
-				// is typically used in support of multiple video streams. Set this
-				// rectangle to the coordinates corresponding to the movie rectangle to
-				// update the whole movie rectangle. Units for this member are pixels.
-				// The upper-left corner of the destination rectangle is relative to the
+				// rcFrame - Specifies the destination rectangle for a text or
+				// video
+				// stream within the movie rectangle specified by the dwWidth
+				// and
+				// dwHeight members of the AVI main header structure. The
+				// rcFrame member
+				// is typically used in support of multiple video streams. Set
+				// this
+				// rectangle to the coordinates corresponding to the movie
+				// rectangle to
+				// update the whole movie rectangle. Units for this member are
+				// pixels.
+				// The upper-left corner of the destination rectangle is
+				// relative to the
 				// upper-left corner of the movie rectangle.
 				out.writeShort((short) 0); // left
 				out.writeShort((short) 0); // top
 				out.writeShort((short) 0); // right
 				out.writeShort((short) 0); // bottom
 
-				// Write the size of the stream format CHUNK not including the first 8
-				// bytes for strf and the size. Note that the end of the stream format
+				// Write the size of the stream format CHUNK not including the
+				// first 8
+				// bytes for strf and the size. Note that the end of the stream
+				// format
 				// CHUNK is followed by strn.
 				out.writeBytes("strf"); // Write the stream format chunk
 
 				// write the strf CHUNK size
 				out.writeInt((bytesPerPixel == 1) ? 1068 : 44);
 
-				// Applications should use this size to determine which BITMAPINFO
-				// header structure is being used. This size includes this biSize field.
+				// Applications should use this size to determine which
+				// BITMAPINFO
+				// header structure is being used. This size includes this
+				// biSize field.
 				// biSize- Write header size of BITMAPINFO header structure
 
 				out.writeInt(40);
@@ -1499,10 +1571,14 @@ public class AVIFormat extends AbstractFormat {
 				// biWidth - image width in pixels
 				out.writeInt(xDim);
 
-				// biHeight - image height in pixels. If height is positive, the bitmap
-				// is a bottom up DIB and its origin is in the lower left corner. If
-				// height is negative, the bitmap is a top-down DIB and its origin is
-				// the upper left corner. This negative sign feature is supported by the
+				// biHeight - image height in pixels. If height is positive, the
+				// bitmap
+				// is a bottom up DIB and its origin is in the lower left
+				// corner. If
+				// height is negative, the bitmap is a top-down DIB and its
+				// origin is
+				// the upper left corner. This negative sign feature is
+				// supported by the
 				// Windows Media Player, but it is not supported by PowerPoint.
 				out.writeInt(yDim);
 
@@ -1526,14 +1602,18 @@ public class AVIFormat extends AbstractFormat {
 				final int nColors = 256;
 				out.writeInt(nColors);
 
-				// biClrImportant - specifies that the first x colors of the color table
+				// biClrImportant - specifies that the first x colors of the
+				// color table
 				// are important to the DIB. If the rest of the colors are not
-				// available, the image still retains its meaning in an acceptable
-				// manner. When this field is set to zero, all the colors are important,
+				// available, the image still retains its meaning in an
+				// acceptable
+				// manner. When this field is set to zero, all the colors are
+				// important,
 				// or, rather, their relative importance has not been computed.
 				out.writeInt(0);
 
-				// Write the LUTa.getExtents()[1] color table entries here. They are
+				// Write the LUTa.getExtents()[1] color table entries here. They
+				// are
 				// written: blue byte, green byte, red byte, 0 byte
 				if (bytesPerPixel == 1) {
 					if (lut != null) {
@@ -1560,7 +1640,8 @@ public class AVIFormat extends AbstractFormat {
 				out.writeInt((int) (SAVE_STRN_POS - (SAVE_STRF_SIZE + 4)));
 				out.seek(SAVE_STRN_POS);
 
-				// Use strn to provide zero terminated text string describing the stream
+				// Use strn to provide zero terminated text string describing
+				// the stream
 				out.writeBytes("strn");
 				out.writeInt(16); // Write length of strn sub-CHUNK
 				out.writeBytes("FileAVI write  ");
@@ -1646,7 +1727,8 @@ public class AVIFormat extends AbstractFormat {
 				log().error("Error retrieving AVI plane offset", e);
 			}
 
-			// Channels are folded into bmpBitsPerPixel, so they should be omitted
+			// Channels are folded into bmpBitsPerPixel, so they should be
+			// omitted
 			// from the plane count.
 			long nonplanarChannels = 1;
 			if (!dest.get(0).isMultichannel()) {
@@ -1720,9 +1802,8 @@ public class AVIFormat extends AbstractFormat {
 		{
 			final int bmpCompression = meta.getBmpCompression();
 
-			final long fileOff =
-				meta.getOffsets().get((int) planeIndex).longValue();
-			long filePointer = stream.getFilePointer();
+			final long fileOff = meta.getOffsets().get((int) planeIndex).longValue();
+			final long filePointer = stream.getFilePointer();
 			stream.seek(fileOff);
 
 			byte[] buf = null;
@@ -1766,7 +1847,8 @@ public class AVIFormat extends AbstractFormat {
 				if (motionJPEG) {
 					// this is Motion JPEG data
 					// we must manually insert the Huffman table, as Motion JPEG
-					// uses a fixed (but not stored) Huffman table for all planes
+					// uses a fixed (but not stored) Huffman table for all
+					// planes
 
 					final byte[] fixedPlane =
 						new byte[tmpPlane.length + MJPEG_HUFFMAN_TABLE.length];
@@ -1822,18 +1904,14 @@ public class AVIFormat extends AbstractFormat {
 				}
 			}
 			/*
-			else if (bmpCompression == CINEPAK) {
-			  Object[] options = new Object[2];
-			  options[0] = new Integer(bmpBitsPerPixel);
-			  options[1] = lastImage;
-
-			  CinepakCodec codec = codecService.getCodec(CinepakCodec.class);
-			  buf = codec.decompress(b, options);
-			  lastImage = buf;
-			  if (no == m.imageCount - 1) lastImage = null;
-			  return buf;
-			}
-			*/
+			 * else if (bmpCompression == CINEPAK) { Object[] options = new
+			 * Object[2]; options[0] = new Integer(bmpBitsPerPixel); options[1]
+			 * = lastImage;
+			 *
+			 * CinepakCodec codec = codecService.getCodec(CinepakCodec.class);
+			 * buf = codec.decompress(b, options); lastImage = buf; if (no ==
+			 * m.imageCount - 1) lastImage = null; return buf; }
+			 */
 			else {
 				throw new UnsupportedCompressionException(bmpCompression +
 					" not supported");
@@ -1850,7 +1928,8 @@ public class AVIFormat extends AbstractFormat {
 			// different planes, fine to update
 			if (meta.getLastPlaneIndex() != planeIndex) return true;
 
-			// same plane.. make sure we're not overwriting a larger plane with a
+			// same plane.. make sure we're not overwriting a larger plane with
+			// a
 			// smaller one
 			final int[] lastDims = meta.getLastDimensions();
 			boolean smaller = false;

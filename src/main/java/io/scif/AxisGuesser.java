@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,7 +44,7 @@ import org.scijava.log.LogService;
  * AxisGuesser guesses which blocks in a file pattern correspond to which
  * dimensional axes (Z, T or C), potentially recommending an adjustment in
  * dimension order within the files, depending on the confidence of each guess.
- * 
+ *
  * @author Curtis Rueden
  */
 public class AxisGuesser {
@@ -80,7 +80,9 @@ public class AxisGuesser {
 	private static final String[] S = { "s", "series", "sp" };
 
 	private static final String ONE = "1";
+
 	private static final String TWO = "2";
+
 	private static final String THREE = "3";
 
 	// -- Fields --
@@ -106,7 +108,7 @@ public class AxisGuesser {
 	 * Guesses dimensional axis assignments corresponding to the given file
 	 * pattern, using the specified dimensional information from within each file
 	 * as a guide.
-	 * 
+	 *
 	 * @param fp The file pattern of the files
 	 * @param dimOrder The dimension order (e.g., XYZTC) within each file
 	 * @param sizeZ The number of Z positions within each file
@@ -144,7 +146,8 @@ public class AxisGuesser {
 				l--;
 			}
 
-			// useful prefix segment consists of trailing alphanumeric characters
+			// useful prefix segment consists of trailing alphanumeric
+			// characters
 			int f = l;
 			while (f >= 0 && ch[f] >= 'a' && ch[f] <= 'z')
 				f--;
@@ -218,7 +221,8 @@ public class AxisGuesser {
 			}
 		}
 
-		// -- 2) check for special cases where dimension order should be swapped --
+		// -- 2) check for special cases where dimension order should be swapped
+		// --
 
 		if (!isCertain) { // only switch if dimension order is uncertain
 			if (foundZ && !foundT && sizeZ > 1 && sizeT == 1 || foundT && !foundZ &&
@@ -296,7 +300,7 @@ public class AxisGuesser {
 
 	/**
 	 * Gets the guessed axis type for each dimensional block.
-	 * 
+	 *
 	 * @return An array containing values from the enumeration:
 	 *         <ul>
 	 *         <li>Z_AXIS: focal planes</li>
@@ -311,7 +315,7 @@ public class AxisGuesser {
 
 	/**
 	 * Sets the axis type for each dimensional block.
-	 * 
+	 *
 	 * @param axes An array containing values from the enumeration:
 	 *          <ul>
 	 *          <li>Z_AXIS: focal planes</li>
@@ -346,7 +350,7 @@ public class AxisGuesser {
 
 	/**
 	 * Gets the number of axes in the pattern of the given type.
-	 * 
+	 *
 	 * @param axisType One of:
 	 *          <ul>
 	 *          <li>Z_AXIS: focal planes</li>

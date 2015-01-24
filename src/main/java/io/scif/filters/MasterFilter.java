@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -60,7 +60,7 @@ import org.scijava.Contextual;
  * {@code Filter} API does have a slightly different meaning in the context of a
  * {@code MasterFilter}.
  * </p>
- * 
+ *
  * @author Mark Hiner
  * @param <T> The underlying type of Filter.
  * @see Filter
@@ -73,7 +73,7 @@ public interface MasterFilter<T extends Contextual> extends Filter {
 	 * Inserts an instance of the indicated filter class into the filter stack.
 	 * Returns the filter instance associated with this MasterFilter, which can be
 	 * used for wrapper-specific configuration.
-	 * 
+	 *
 	 * @param filterClass - The type of filter to enable
 	 * @return The enabled filter
 	 */
@@ -82,7 +82,7 @@ public interface MasterFilter<T extends Contextual> extends Filter {
 	/**
 	 * Removes the specified filter from the filter stack, if present. Clears any
 	 * state in the cached instance of the specified filter.
-	 * 
+	 *
 	 * @param filterClass - The type of filter to disable
 	 * @return true if the desired filter was disabled
 	 */
@@ -90,7 +90,7 @@ public interface MasterFilter<T extends Contextual> extends Filter {
 
 	/**
 	 * Returns a list of all filter classes this MasterFilter can enable/disable.
-	 * 
+	 *
 	 * @return A list of discovered filters
 	 */
 	Set<Class<? extends Filter>> getFilterClasses();

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -82,12 +82,19 @@ public class CBZip2InputStream extends InputStream {
 	// -- Constants --
 
 	private static final int BASE_BLOCK_SIZE = 100000;
+
 	private static final int MAX_ALPHA_SIZE = 258;
+
 	private static final int MAX_CODE_LEN = 23;
+
 	private static final int RUNA = 0;
+
 	private static final int RUNB = 1;
+
 	private static final int N_GROUPS = 6;
+
 	private static final int G_SIZE = 50;
+
 	private static final int MAX_SELECTORS = (2 + (900000 / G_SIZE));
 
 	private static final int[] R_NUMS = { 619, 720, 127, 481, 931, 816, 813, 233,
@@ -170,7 +177,9 @@ public class CBZip2InputStream extends InputStream {
 	private boolean blockRandomised;
 
 	private int bsBuff;
+
 	private int bsLive;
+
 	private final CRC crc = new CRC();
 
 	private int nInUse;
@@ -182,29 +191,45 @@ public class CBZip2InputStream extends InputStream {
 	private int currentChar = -1;
 
 	private static final int EOF = 0;
+
 	private static final int START_BLOCK_STATE = 1;
+
 	private static final int RAND_PART_A_STATE = 2;
+
 	private static final int RAND_PART_B_STATE = 3;
+
 	private static final int RAND_PART_C_STATE = 4;
+
 	private static final int NO_RAND_PART_A_STATE = 5;
+
 	private static final int NO_RAND_PART_B_STATE = 6;
+
 	private static final int NO_RAND_PART_C_STATE = 7;
 
 	private int currentState = START_BLOCK_STATE;
 
 	private int storedBlockCRC, storedCombinedCRC;
+
 	private int computedBlockCRC, computedCombinedCRC;
 
 	// Variables used by setup* methods exclusively
 
 	private int suCount;
+
 	private int suCh2;
+
 	private int suChPrev;
+
 	private int suI2;
+
 	private int suJ2;
+
 	private int suRNToGo;
+
 	private int suRTPos;
+
 	private int suTPos;
+
 	private char suZ;
 
 	/**
@@ -221,7 +246,7 @@ public class CBZip2InputStream extends InputStream {
 	 * the magic. Thus callers have to skip the first two bytes. Otherwise this
 	 * constructor will throw an exception.
 	 * </p>
-	 * 
+	 *
 	 * @throws IOException if the stream content is malformed or an I/O error
 	 *           occurs.
 	 * @throws NullPointerException if <tt>in == null</tt>
@@ -692,10 +717,10 @@ public class CBZip2InputStream extends InputStream {
 				ll8[lastShadow] = seqToUnseq[tmp];
 
 				/*
-				 This loop is hammered during decompression,
-				 hence avoid native method call overhead of
-				 System.arraycopy for very small ranges to copy.
-				*/
+				 * This loop is hammered during decompression, hence avoid
+				 * native method call overhead of System.arraycopy for very
+				 * small ranges to copy.
+				 */
 				if (nextSym <= 16) {
 					for (int j = nextSym - 1; j > 0;)
 						yy[j] = yy[--j];
@@ -938,7 +963,9 @@ public class CBZip2InputStream extends InputStream {
 		final boolean[] inUse = new boolean[256]; // 256 byte
 
 		final byte[] seqToUnseq = new byte[256]; // 256 byte
+
 		final byte[] selector = new byte[MAX_SELECTORS]; // 18002 byte
+
 		final byte[] selectorMtf = new byte[MAX_SELECTORS]; // 18002 byte
 
 		/**
@@ -946,22 +973,29 @@ public class CBZip2InputStream extends InputStream {
 		 */
 		final int[] unzftab = new int[256]; // 1024 byte
 
-		final int[][] limit = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192 byte
+		final int[][] limit = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192
+		// byte
+
 		final int[][] base = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192 byte
+
 		final int[][] perm = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192 byte
+
 		final int[] minLens = new int[N_GROUPS]; // 24 byte
 
 		final int[] cftab = new int[257]; // 1028 byte
+
 		final char[] getAndMoveToFrontDecodeYY = new char[256]; // 512 byte
 
 		// 3096 byte
 		final char[][] tempCharArray2d = new char[N_GROUPS][MAX_ALPHA_SIZE];
 
 		final byte[] recvDecodingTablesPos = new byte[N_GROUPS]; // 6 byte
+
 		// ---------------
 		// 60798 byte
 
 		int[] tt; // 3600000 byte
+
 		byte[] ll8; // 900000 byte
 
 		// ---------------

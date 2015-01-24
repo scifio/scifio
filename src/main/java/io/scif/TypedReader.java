@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,7 +42,7 @@ import java.io.IOException;
  * Generics are used in {@code Reader} concrete implementations to type narrow
  * return types, and to provide parallel methods that can type narrow arguments.
  * </p>
- * 
+ *
  * @author Mark Hiner
  * @param <M> - {@link io.scif.Metadata} used by this reader for reading images.
  * @param <P> - {@link io.scif.Plane} return and parameter type for this
@@ -69,7 +69,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * Generic-parameterized {@code openPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Reader#openPlane(int, long, Plane)}.
-	 * 
+	 *
 	 * @see io.scif.Reader#openPlane(int, long, Plane)
 	 */
 	P openPlane(int imageIndex, long planeIndex, P plane) throws FormatException,
@@ -79,7 +79,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * Generic-parameterized {@code openPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Reader#openPlane(int, long, Plane, long[], long[])}.
-	 * 
+	 *
 	 * @see io.scif.Reader#openPlane(int, long, Plane, long[], long[])
 	 */
 	P openPlane(int imageIndex, long planeIndex, P plane, long[] planeMin,
@@ -113,7 +113,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * Generic-parameterized {@code setMetadata} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Reader#setMetadata(Metadata)}.
-	 * 
+	 *
 	 * @see io.scif.Reader#setMetadata(Metadata)
 	 */
 	void setMetadata(M meta) throws IOException;
@@ -125,7 +125,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * Generic-parameterized {@code readPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[], Plane)}
-	 * 
+	 *
 	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[],
 	 *      Plane)
 	 */
@@ -136,7 +136,7 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * Generic-parameterized {@code readPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[], int, Plane)}
-	 * 
+	 *
 	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[],
 	 *      int, Plane)
 	 */
