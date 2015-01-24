@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,10 +38,6 @@ import io.scif.Metadata;
 import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
 import io.scif.formats.FakeFormat;
-import io.scif.img.ImageRegion;
-import io.scif.img.ImgIOException;
-import io.scif.img.ImgOpener;
-import io.scif.img.SCIFIOImgPlus;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 
 import java.util.List;
@@ -63,7 +59,7 @@ import org.junit.Test;
 
 /**
  * Tests for the {@link ImgOpener} class.
- * 
+ *
  * @author Mark Hiner
  */
 public class ImgOpenerTest {
@@ -71,6 +67,7 @@ public class ImgOpenerTest {
 	// Use the default constructor, which constructs a minimal context,
 	// to ensure all necessary services are present
 	private final ImgOpener imgOpener = new ImgOpener();
+
 	private final String id = "testImg&lengths=512,512,5&axes=X,Y,Time.fake";
 
 	/**
@@ -108,7 +105,7 @@ public class ImgOpenerTest {
 			"testImg&lengths=512,512,3&axes=X,Y,Z&scales=5.0,6.0,7.0&units=micron,um,inches.fake";
 
 		final ImgPlus<?> imgPlus = imgOpener.openImgs(calId).get(0);
-		
+
 		assertEquals("micron", imgPlus.axis(0).unit());
 		assertEquals("um", imgPlus.axis(1).unit());
 		assertEquals("inches", imgPlus.axis(2).unit());
@@ -135,15 +132,15 @@ public class ImgOpenerTest {
 	/**
 	 * Tests that opening datasets with multiple images, via
 	 * {@link SCIFIOConfig#imgOpenerIsOpenAllImages()} is working as intended.
-	 * 
+	 *
 	 * @throws ImgIOException
 	 */
 	@Test
 	public void testOpenAllImages() throws ImgIOException {
-		String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
+		final String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
 
 		// Open all images
-		List<SCIFIOImgPlus<?>> imgs =
+		final List<SCIFIOImgPlus<?>> imgs =
 			new MultiImgOpener().openImgs(id, new SCIFIOConfig()
 				.imgOpenerSetOpenAllImages(true));
 
@@ -153,7 +150,7 @@ public class ImgOpenerTest {
 		// Check the adjusted dimensions
 		SCIFIOImgPlus<?> img = imgs.get(0);
 		for (int i = 1; i < imgs.size(); i++) {
-			SCIFIOImgPlus<?> testImg = imgs.get(i);
+			final SCIFIOImgPlus<?> testImg = imgs.get(i);
 			assertEquals(img.dimension(0), testImg.dimension(0) + 10);
 			assertEquals(img.dimension(1), testImg.dimension(1) + 10);
 			img = testImg;
@@ -163,13 +160,14 @@ public class ImgOpenerTest {
 	/**
 	 * Tests that opening datasets with multiple images, via
 	 * {@link SCIFIOConfig#imgOpenerGetRange()}, is working as intended.
-	 * @throws ImgIOException 
+	 *
+	 * @throws ImgIOException
 	 */
 	public void testOpenImageRange() throws ImgIOException {
-		String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
+		final String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
 
 		// Open images 0 and 3
-		List<SCIFIOImgPlus<?>> imgs =
+		final List<SCIFIOImgPlus<?>> imgs =
 			new MultiImgOpener().openImgs(id, new SCIFIOConfig()
 				.imgOpenerSetRange("0,3"));
 

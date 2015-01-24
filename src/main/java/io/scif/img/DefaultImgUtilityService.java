@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -78,7 +78,7 @@ import org.scijava.service.Service;
 
 /**
  * Helper methods for converting between SCIFIO and ImgLib2 data structures.
- * 
+ *
  * @author Stephan Preibisch
  * @author Stephan Saalfeld
  * @author Curtis Rueden
@@ -91,6 +91,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 	// -- Fields --
 
 	private final int BUFFER_SIZE = 256 * 1024; // 256K
+
 	private SCIFIO scifio = null;
 
 	// -- ImgUtilityService methods --
@@ -130,8 +131,7 @@ public class DefaultImgUtilityService extends AbstractService implements
 			// set each dimension length = the number of entries for that axis
 			for (final CalibratedAxis t : m.get(0).getAxes()) {
 				final Range range = r.getRange(t.type());
-				if (range != null) lengths[m.get(0).getAxisIndex(t)] =
-					range.size();
+				if (range != null) lengths[m.get(0).getAxisIndex(t)] = range.size();
 			}
 		}
 
@@ -182,11 +182,13 @@ public class DefaultImgUtilityService extends AbstractService implements
 			if (zip) {
 				in = inZip = new ZipInputStream(in);
 				final ZipEntry zipEntry = inZip.getNextEntry();
-				filename = zipEntry.getName(); // use filename in the zip archive
+				filename = zipEntry.getName(); // use filename in the zip
+				// archive
 			}
 			if (gz) {
 				in = new GZIPInputStream(in);
-				filename = filename.substring(0, filename.length() - 3); // strip .gz
+				filename = filename.substring(0, filename.length() - 3); // strip
+				// .gz
 			}
 			final int dot = filename.lastIndexOf(".");
 			final String prefix = dot < 0 ? filename : filename.substring(0, dot);
@@ -531,7 +533,8 @@ public class DefaultImgUtilityService extends AbstractService implements
 						else if (dimLengths[i] > 1 && sizeOneUnknown) {
 							// we are in a block of unknowns that was started by
 							// one of size 1, but contains an unknown of size > 1,
-							// thus was double counted (once in pass 1, once in pass 2)
+							// thus was double counted (once in pass 1, once in pass
+							// 2)
 							sizeOneUnknown = false;
 							contiguousUnknown--;
 						}

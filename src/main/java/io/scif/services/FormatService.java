@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -50,7 +50,7 @@ import org.scijava.Priority;
  * A collection of methods for finding {@link io.scif.Format} instances given a
  * child class, discovering available formats, and managing the list of
  * available formats.
- * 
+ *
  * @see io.scif.Format
  * @author Mark Hiner
  */
@@ -71,7 +71,7 @@ public interface FormatService extends SCIFIOService {
 	 * <p>
 	 * No effect if the format is already known.
 	 * </p>
-	 * 
+	 *
 	 * @param format a new {@code Format} to support in this context.
 	 * @return True if the {@code Format} was added successfully.
 	 */
@@ -90,7 +90,7 @@ public interface FormatService extends SCIFIOService {
 	/**
 	 * Removes the provided {@code Format} from this context, if it was previously
 	 * available.
-	 * 
+	 *
 	 * @param format the {@code Format} to stop supporting in this context.
 	 * @return True if a format was successfully removed.
 	 */
@@ -108,7 +108,7 @@ public interface FormatService extends SCIFIOService {
 	 * already discovered. The same principle is true if the context-based
 	 * constructor is invoked.
 	 * </p>
-	 * 
+	 *
 	 * @param formatClass the class of the desired {@code Format}
 	 * @return A reference to concrete class of the queried {@code Format}, or
 	 *         null if the {@code Format} was not found.
@@ -123,7 +123,7 @@ public interface FormatService extends SCIFIOService {
 
 	/**
 	 * {@code Format} lookup method using the {@code Reader} component
-	 * 
+	 *
 	 * @param readerClass the class of the {@code Reader} component for the
 	 *          desired {@code Format}
 	 * @return A reference to the queried {@code Format}, or null if the
@@ -133,7 +133,7 @@ public interface FormatService extends SCIFIOService {
 
 	/**
 	 * {@code Format} lookup method using the {@code Writer} component.
-	 * 
+	 *
 	 * @param writerClass the class of the {@code Writer} component for the
 	 *          desired {@code Format}
 	 * @return A reference to the queried {@code Format}, or null if the
@@ -145,14 +145,14 @@ public interface FormatService extends SCIFIOService {
 	 * {@code Writer} lookup method using exclusively the supported suffix list.
 	 * This bypasses the {@code Checker} logic, and thus does not guarantee the
 	 * associated {@code Format} can read image sources of the provided type.
-	 * 
+	 *
 	 * @throws FormatException
 	 */
 	Writer getWriterByExtension(String fileId) throws FormatException;
 
 	/**
 	 * {@code Format} lookup method using the {@code Checker} component.
-	 * 
+	 *
 	 * @param checkerClass the class of the {@code Checker} component for the
 	 *          desired {@code Format}
 	 * @return A reference to the queried {@code Format}, or null if the
@@ -162,7 +162,7 @@ public interface FormatService extends SCIFIOService {
 
 	/**
 	 * {@code Format} lookup method using the {@code Parser} component.
-	 * 
+	 *
 	 * @param parserClass the class of the {@code Parser} component for the
 	 *          desired {@code Format}
 	 * @return A reference to the queried {@code Format}, or null if the
@@ -172,7 +172,7 @@ public interface FormatService extends SCIFIOService {
 
 	/**
 	 * {@code Format} lookup method using the {@code Metadata} component.
-	 * 
+	 *
 	 * @param metadataClass the class of the {@code Metadata} component for the
 	 *          desired {@code Format}
 	 * @return A reference to the queried {@code Format}, or null if the
@@ -184,7 +184,7 @@ public interface FormatService extends SCIFIOService {
 	 * Returns the first Format known to be compatible with the source provided.
 	 * Formats are checked in ascending order of their priority. The source is
 	 * read if necessary to determine compatibility.
-	 * 
+	 *
 	 * @param id the source
 	 * @return A Format reference compatible with the provided source.
 	 */
@@ -193,7 +193,7 @@ public interface FormatService extends SCIFIOService {
 	/**
 	 * Returns the first Format known to be compatible with the source provided.
 	 * Formats are checked in ascending order of their priority.
-	 * 
+	 *
 	 * @param id the source
 	 * @param config Configuration for this method execution.
 	 * @return A Format reference compatible with the provided source.
@@ -204,7 +204,7 @@ public interface FormatService extends SCIFIOService {
 	 * Returns a list of all formats that are compatible with the source provided,
 	 * ordered by their priority. The source is read if necessary to determine
 	 * compatibility.
-	 * 
+	 *
 	 * @param id the source
 	 * @return An List of Format references compatible with the provided source.
 	 */
@@ -213,7 +213,7 @@ public interface FormatService extends SCIFIOService {
 	/**
 	 * Returns a list of all formats that are compatible with the source provided,
 	 * ordered by their priority.
-	 * 
+	 *
 	 * @param id the source
 	 * @param config Configuration for this method execution.
 	 * @param greedy if true, the search will terminate after finding the first

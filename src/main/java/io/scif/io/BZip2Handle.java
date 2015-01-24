@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,7 @@ import org.scijava.plugin.Plugin;
 /**
  * StreamHandle implementation for reading from BZip2-compressed files or byte
  * arrays. Instances of BZip2Handle are read-only.
- * 
+ *
  * @see StreamHandle
  * @author Melissa Linkert
  */
@@ -72,7 +72,7 @@ public class BZip2Handle extends StreamHandle {
 
 	/**
 	 * Construct a new BZip2Handle corresponding to the given file.
-	 * 
+	 *
 	 * @throws HandleException if the given file is not a BZip2 file.
 	 */
 	public BZip2Handle(final Context context, final String file)

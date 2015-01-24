@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -56,7 +56,7 @@ import org.scijava.plugin.Plugin;
  * PCXReader is the file format reader for PCX files (originally used by PC
  * Paintbrush; now used in Zeiss' LSM Image Browser). See
  * http://www.qzx.com/pc-gpe/pcx.txt
- * 
+ *
  * @author Mark Hiner
  * @author Melissa Linkert
  */
@@ -85,6 +85,7 @@ public class PCXFormat extends AbstractFormat {
 		private int bytesPerLine;
 
 		private int nColorPlanes;
+
 		private ColorTable8 lut;
 
 		// -- PCXMetadata getters and setters --

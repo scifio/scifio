@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -74,7 +74,7 @@ import org.scijava.plugin.Plugin;
  * SCIFIO Format supporting the <a
  * href="http://en.wikipedia.org/wiki/Image_Cytometry_Standard">ICS</a> image
  * format.
- * 
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Image Cytometry Standard")
@@ -149,12 +149,13 @@ public class ICSFormat extends AbstractFormat {
 
 			AxisType xAxis = Axes.X, yAxis = Axes.Y, zAxis = Axes.Z;
 			Double[] pixelSizes = getPixelSizes();
-			if (pixelSizes == null) pixelSizes = new Double[]{1.0, 1.0, 1.0, 1.0};
+			if (pixelSizes == null) pixelSizes = new Double[] { 1.0, 1.0, 1.0, 1.0 };
 
 			final String[] paramLabels = getParamLabels();
 
 			// HACK - support for Gray Institute at Oxford's ICS lifetime data
-			// DEPRECATED - future ICS data will use "parameter labels" with a value
+			// DEPRECATED - future ICS data will use "parameter labels" with a
+			// value
 			// of "micro-time" for the lifetime axis.
 			// NB: If parameter labels are found, skip the hack.
 			final boolean lifetime = getLifetime();
@@ -176,8 +177,7 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			int bitsPerPixel = 0;
-			String[] units = getUnits();
-
+			final String[] units = getUnits();
 
 			// interpret axis information
 			for (int n = 0; n < axes.length; n++) {
@@ -291,8 +291,8 @@ public class ICSFormat extends AbstractFormat {
 		/**
 		 * Helper method to check for the micro-time label.
 		 */
-		private boolean noMicroTime(String[] labels) {
-			for (String s : labels) {
+		private boolean noMicroTime(final String[] labels) {
+			for (final String s : labels) {
 				if (s != null && s.equals(MICRO_TIME)) {
 					return false;
 				}
@@ -610,7 +610,7 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		public String[] getParamLabels() {
-			String pLabels = findStringValueForKey("parameter labels");
+			final String pLabels = findStringValueForKey("parameter labels");
 			if (pLabels == null) return new String[getAxes().length];
 			return pLabels.split(" ");
 		}
@@ -956,7 +956,8 @@ public class ICSFormat extends AbstractFormat {
 				final String expTime = kv[1];
 				if (expTime.indexOf(" ") != -1) {
 					exposureTime = new Double(expTime.indexOf(" "));
-					// TODO: Catch NumberFormatException? Make more DRY with other logic?
+					// TODO: Catch NumberFormatException? Make more DRY with
+					// other logic?
 				}
 			}
 			return exposureTime;
@@ -964,8 +965,9 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Helper methods for finding key values --
 
-		/* Given a list of tokens and an array of lists of regular expressions, tries
-		 * to find a match.  If no match is found, looks in OTHER_KEYS.
+		/*
+		 * Given a list of tokens and an array of lists of regular expressions,
+		 * tries to find a match. If no match is found, looks in OTHER_KEYS.
 		 */
 		String[] findKeyValue(final String[] tokens, final String[][] regexesArray)
 		{
@@ -1017,11 +1019,11 @@ public class ICSFormat extends AbstractFormat {
 
 		/*
 		 * Checks the list of keys for non-null values in the global hashtable.
-		 * 
+		 *
 		 * If a non-null value is found, it is returned.
-		 * 
-		 * The returned array includes the matching key first, and the value second.
-		 * 
+		 *
+		 * The returned array includes the matching key first, and the value
+		 * second.
 		 */
 		private String[] findValueForKey(final String... keys) {
 
@@ -1034,12 +1036,11 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		/*
-		 * Iterates through the key set, looking for a key that starts
-		 * and/or ends with the provided partial keys.
-		 * 
+		 * Iterates through the key set, looking for a key that starts and/or
+		 * ends with the provided partial keys.
+		 *
 		 * Returns an array containing the first matching key and its
 		 * corresponding value if found, and an empty array otherwise.
-		 * 
 		 */
 		private String[] findValueIteration(final String starts, final String ends)
 		{
@@ -1054,11 +1055,11 @@ public class ICSFormat extends AbstractFormat {
 		}
 
 		/*
-		 * Given a list of tokens and an array of lists of regular expressions, finds
-		 * a match.  Returns key/value pair if matched, null otherwise.
+		 * Given a list of tokens and an array of lists of regular expressions,
+		 * finds a match. Returns key/value pair if matched, null otherwise.
 		 *
-		 * The first element, tokens[0], has already been matched to a category, i.e.
-		 * 'history', and the regexesArray is category-specific.
+		 * The first element, tokens[0], has already been matched to a category,
+		 * i.e. 'history', and the regexesArray is category-specific.
 		 */
 		private String[] findKeyValueForCategory(final String[] tokens,
 			final String[][] regexesArray)
@@ -1066,7 +1067,8 @@ public class ICSFormat extends AbstractFormat {
 			String[] keyValue = null;
 			for (final String[] regexes : regexesArray) {
 				if (compareTokens(tokens, 1, regexes, 0)) {
-					final int splitIndex = 1 + regexes.length; // add one for the category
+					final int splitIndex = 1 + regexes.length; // add one for
+					// the category
 					final String key = concatenateTokens(tokens, 0, splitIndex);
 					final String value =
 						concatenateTokens(tokens, splitIndex, tokens.length);
@@ -1077,11 +1079,13 @@ public class ICSFormat extends AbstractFormat {
 			return keyValue;
 		}
 
-		/* Given a list of tokens and an array of lists of regular expressions, finds
-		 * a match.  Returns key/value pair if matched, null otherwise.
+		/*
+		 * Given a list of tokens and an array of lists of regular expressions,
+		 * finds a match. Returns key/value pair if matched, null otherwise.
 		 *
-		 * The first element, tokens[0], represents a category and is skipped.  Look
-		 * for a match of a list of regular expressions anywhere in the list of tokens.
+		 * The first element, tokens[0], represents a category and is skipped.
+		 * Look for a match of a list of regular expressions anywhere in the
+		 * list of tokens.
 		 */
 		private String[] findKeyValueOther(final String[] tokens,
 			final String[][] regexesArray)
@@ -1230,7 +1234,8 @@ public class ICSFormat extends AbstractFormat {
 							// Didn't get a valid key so exit
 							break;
 						}
-						// found a valid key, so build the value and create a mapping
+						// found a valid key, so build the value and create a
+						// mapping
 						final StringBuffer value = new StringBuffer(tokens[q++]);
 						for (; q < tokens.length; q++) {
 							value.append(" ");
@@ -1242,9 +1247,11 @@ public class ICSFormat extends AbstractFormat {
 						meta.keyValPairs.put(k.toLowerCase(), v);
 					}
 					else {
-						// Map lookup wasn't null, so we move the keyMap to the next node
+						// Map lookup wasn't null, so we move the keyMap to the
+						// next node
 						keyMap = (Map<String, Object>) o;
-						// if we have a LEAF entry, we know we've found a valid key
+						// if we have a LEAF entry, we know we've found a valid
+						// key
 						if (keyMap.get(ICSUtils.LEAF) != null) validKey = true;
 
 						// Build the key
@@ -1292,7 +1299,10 @@ public class ICSFormat extends AbstractFormat {
 			return false;
 		}
 
-		/* Finds the companion file for a given stream (ICS and IDS are companions) */
+		/*
+		 * Finds the companion file for a given stream (ICS and IDS are
+		 * companions)
+		 */
 		private void findCompanion(final RandomAccessInputStream stream,
 			final Metadata meta) throws IOException, FormatException
 		{
@@ -1318,7 +1328,8 @@ public class ICSFormat extends AbstractFormat {
 			if (!icsFile.exists()) throw new FormatException("ICS file not found.");
 			meta.icsId = icsId;
 
-			// check if we have a v2 ICS file - means there is no companion IDS file
+			// check if we have a v2 ICS file - means there is no companion IDS
+			// file
 			final RandomAccessInputStream f =
 				new RandomAccessInputStream(getContext(), icsId);
 			final String version = f.readString(17).trim();
@@ -1445,7 +1456,8 @@ public class ICSFormat extends AbstractFormat {
 			if (!getMetadata().get(imageIndex).isMultichannel() &&
 				getMetadata().storedRGB())
 			{
-				// channels are stored interleaved, but because there are more than we
+				// channels are stored interleaved, but because there are more
+				// than we
 				// can display as RGB, we need to separate them
 				getStream().seek(
 					getMetadata().offset +
@@ -1565,9 +1577,13 @@ public class ICSFormat extends AbstractFormat {
 		// -- Fields --
 
 		private long dimensionOffset;
+
 		private int dimensionLength;
+
 		private long pixelOffset;
+
 		private long lastPlane = -1;
+
 		private RandomAccessOutputStream pixels;
 
 		// -- AbstractWriter Methods --
@@ -1684,7 +1700,8 @@ public class ICSFormat extends AbstractFormat {
 
 		@Override
 		public void setDest(final String id) throws FormatException, IOException {
-			// FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// FIXME consolidate this code in setDest when the RAOS id is
+			// exposed.
 			// Update the id if necessary
 			if (FormatTools.checkSuffix(id, "ids")) {
 				final String metadataFile = makeIcsId(id);
@@ -1699,7 +1716,8 @@ public class ICSFormat extends AbstractFormat {
 		public void setDest(final String id, final int imageIndex)
 			throws FormatException, IOException
 		{
-			// FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// FIXME consolidate this code in setDest when the RAOS id is
+			// exposed.
 			// Update the id if necessary
 			if (FormatTools.checkSuffix(id, "ids")) {
 				final String metadataFile = makeIcsId(id);
@@ -1714,7 +1732,8 @@ public class ICSFormat extends AbstractFormat {
 		public void setDest(final String id, final int imageIndex,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
-			// FIXME consolidate this code in setDest when the RAOS id is exposed.
+			// FIXME consolidate this code in setDest when the RAOS id is
+			// exposed.
 			// Update the id if necessary
 			if (FormatTools.checkSuffix(id, "ids")) {
 				final String metadataFile = makeIcsId(id);
@@ -1900,8 +1919,9 @@ public class ICSFormat extends AbstractFormat {
 			return setIdExtension(icsId, ".ids");
 		}
 
-		/* Replaces the current extension of the provided id with the
-		 * provided extension
+		/*
+		 * Replaces the current extension of the provided id with the provided
+		 * extension
 		 */
 		private String setIdExtension(String id, final String extension) {
 			id = id.substring(0, id.lastIndexOf("."));
@@ -1927,25 +1947,30 @@ public class ICSFormat extends AbstractFormat {
 			"EEE MMM dd HH:mm:ss yyyy", "EE dd MMM yyyy HH:mm:ss z",
 			"HH:mm:ss dd\\MM\\yy" };
 
-		// These strings appeared in the former metadata field categories but are
+		// These strings appeared in the former metadata field categories but
+		// are
 		// not
 		// found in the LOCI sample files.
 		//
-		// The former metadata field categories table did not save the context, i.e.
-		// the first token such as "document" or "history" and other intermediate
-		// tokens. The preceding tables such as DOCUMENT_KEYS or HISTORY_KEYS use
+		// The former metadata field categories table did not save the context,
+		// i.e.
+		// the first token such as "document" or "history" and other
+		// intermediate
+		// tokens. The preceding tables such as DOCUMENT_KEYS or HISTORY_KEYS
+		// use
 		// this full context.
 		//
-		// In an effort at backward compatibility, these will be used to form key
+		// In an effort at backward compatibility, these will be used to form
+		// key
 		// value pairs if key/value pair not already assigned and they match
 		// anywhere
 		// in the input line.
 		//
 		public static String[][] OTHER_KEYS = { { "cube", "descriptio" }, // sic;
-																																			// also
-																																			// listed
-																																			// in
-																																			// HISTORY_KEYS
+			// also
+			// listed
+			// in
+			// HISTORY_KEYS
 			{ "cube", "description" }, // correction; also listed in HISTORY_KEYS
 			{ "image", "form" }, // also listed in HISTORY_KEYS
 			{ "refinxlensmedium" }, // Could be a mispelling of "refrinxlensmedium";
@@ -2031,7 +2056,8 @@ public class ICSFormat extends AbstractFormat {
 			if (keys.length == 0) {
 				parent.put(LEAF, LEAF);
 			}
-			// the head category may have multiple subcategories, so create a category
+			// the head category may have multiple subcategories, so create a
+			// category
 			// mapping.
 			else {
 				final String node = keys[0];
@@ -2076,7 +2102,8 @@ public class ICSFormat extends AbstractFormat {
 		public void translateImageMetadata(final List<ImageMetadata> source,
 			final Metadata dest)
 		{
-			// note that the destination fields will preserve their default values
+			// note that the destination fields will preserve their default
+			// values
 			// only the keyValPairs will be modified
 
 			Hashtable<String, String> keyValPairs = null;

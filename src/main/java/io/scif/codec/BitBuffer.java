@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,7 +37,7 @@ import org.scijava.log.StderrLogService;
 
 /**
  * A class for reading arbitrary numbers of bits from a byte array.
- * 
+ *
  * @author Eric Kjellman
  */
 public class BitBuffer {
@@ -67,9 +67,13 @@ public class BitBuffer {
 		};
 
 	private final byte[] byteBuffer;
+
 	private int currentByte;
+
 	private int currentBit;
+
 	private final int eofByte;
+
 	private boolean eofFlag;
 
 	/** Default constructor. */
@@ -82,7 +86,7 @@ public class BitBuffer {
 
 	/**
 	 * Skips a number of bits in the BitBuffer.
-	 * 
+	 *
 	 * @param bits Number of bits to skip
 	 */
 	public void skipBits(final long bits) {
@@ -126,7 +130,7 @@ public class BitBuffer {
 	 * Requesting more than 32 bits is allowed, but only up to 32 bits worth of
 	 * data will be returned (the last 32 bits read).
 	 * <p>
-	 * 
+	 *
 	 * @param bitsToRead the number of bits to read from the bit buffer
 	 * @return the value of the bits read
 	 */
@@ -143,7 +147,8 @@ public class BitBuffer {
 					currentBit);
 			}
 
-			// if we need to read from more than the current byte in the buffer...
+			// if we need to read from more than the current byte in the
+			// buffer...
 			final int bitsLeft = 8 - currentBit;
 			if (bitsToRead >= bitsLeft) {
 				toStore <<= bitsLeft;
@@ -154,8 +159,10 @@ public class BitBuffer {
 					toStore += cb & 0xff;
 				}
 				else {
-					// otherwise, only read the appropriate number of bits off the back
-					// side of the byte, in order to "finish" the current byte in the
+					// otherwise, only read the appropriate number of bits off
+					// the back
+					// side of the byte, in order to "finish" the current byte
+					// in the
 					// buffer.
 					toStore += cb & BACK_MASK[bitsLeft];
 					currentBit = 0;
@@ -164,7 +171,8 @@ public class BitBuffer {
 			}
 			else {
 				// We will be able to finish using the current byte.
-				// read the appropriate number of bits off the front side of the byte,
+				// read the appropriate number of bits off the front side of the
+				// byte,
 				// then push them into the int.
 				toStore = toStore << bitsToRead;
 				final int cb = byteBuffer[currentByte] & 0xff;
@@ -184,7 +192,7 @@ public class BitBuffer {
 
 	/**
 	 * Testing method.
-	 * 
+	 *
 	 * @param args Ignored.
 	 */
 	public static void main(final String[] args) {
@@ -200,10 +208,12 @@ public class BitBuffer {
 		log.info("Generating " + trials + " trials.");
 		log.info("Writing to byte array");
 		// we want the trials to be able to be all possible bit lengths.
-		// r.nextInt() by itself is not sufficient... in 50000 trials it would be
+		// r.nextInt() by itself is not sufficient... in 50000 trials it would
+		// be
 		// extremely unlikely to produce bit strings of 1 bit.
 		// instead, we randomly choose from 0 to 2^(i % 32).
-		// Except, 1 << 31 is a negative number in two's complement, so we make it
+		// Except, 1 << 31 is a negative number in two's complement, so we make
+		// it
 		// a random number in the entire range.
 		for (int i = 0; i < trials; i++) {
 			if (31 == i % 32) {

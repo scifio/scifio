@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,7 +42,7 @@ package io.scif;
  * {@link io.scif.services.FormatService}, which maintains a list of singleton
  * {@code Formats} and has many convenience methods relating to their use.
  * </p>
- * 
+ *
  * @author Mark Hiner
  * @see io.scif.SCIFIO
  * @see io.scif.services.FormatService
@@ -54,7 +54,7 @@ public interface Format extends SCIFIOPlugin {
 	/**
 	 * Toggle whether this Format should be used when checking image
 	 * compatibility.
-	 * 
+	 *
 	 * @param enabled - if true, this Format will be used in image/IO. Default:
 	 *          true
 	 */
@@ -67,7 +67,7 @@ public interface Format extends SCIFIOPlugin {
 
 	/**
 	 * Gets the name of this file format.
-	 * 
+	 *
 	 * @return a String representation of this Format's name
 	 */
 	String getFormatName();
@@ -82,14 +82,14 @@ public interface Format extends SCIFIOPlugin {
 	 * <li>bmp</li>
 	 * </ul>
 	 * </p>
-	 * 
+	 *
 	 * @return an array of extensions associated with this Format
 	 */
 	String[] getSuffixes();
 
 	/**
 	 * Create an instance of the Metadata associated with this format.
-	 * 
+	 *
 	 * @return A new {@link io.scif.Metadata} instance compatible with this
 	 *         Format's components
 	 * @throws FormatException
@@ -98,7 +98,7 @@ public interface Format extends SCIFIOPlugin {
 
 	/**
 	 * Create an instance of the Checker associated with this format.
-	 * 
+	 *
 	 * @return A new {@link io.scif.Checker} instance which can determine if
 	 *         sources are compatible with this Format.
 	 * @throws FormatException
@@ -107,7 +107,7 @@ public interface Format extends SCIFIOPlugin {
 
 	/**
 	 * Create an instance of the Parser associated with this format.
-	 * 
+	 *
 	 * @return A new {@link io.scif.Parser} instance capable of populating
 	 *         Metadata compatible with this Format.
 	 * @throws FormatException
@@ -116,7 +116,7 @@ public interface Format extends SCIFIOPlugin {
 
 	/**
 	 * Creates an instance of the Reader associated with this format.
-	 * 
+	 *
 	 * @return A new {@link io.scif.Reader} instance capable of reading datasets
 	 *         of this Format.
 	 * @throws FormatException
@@ -125,7 +125,7 @@ public interface Format extends SCIFIOPlugin {
 
 	/**
 	 * Creates an instance of the Writer associated with this format.
-	 * 
+	 *
 	 * @return A new {@link io.scif.Writer} instance capable of writing datasets
 	 *         of this Format.
 	 * @throws FormatException

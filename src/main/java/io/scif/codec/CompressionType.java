@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -66,7 +66,7 @@ public enum CompressionType implements CodedEnum {
 
 	/**
 	 * Retrieves the compression by reverse lookup of its "code".
-	 * 
+	 *
 	 * @param code The code to look up.
 	 * @return The <code>CompressionType</code> instance for the <code>code</code>
 	 *         or <code>null</code> if it does not exist.
@@ -82,7 +82,7 @@ public enum CompressionType implements CodedEnum {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param code Integer "code" for the IFD type.
 	 * @param compression The type of compression.
 	 */
@@ -93,7 +93,7 @@ public enum CompressionType implements CodedEnum {
 
 	/**
 	 * Implemented as specified by the {@link CodedEnum} I/F.
-	 * 
+	 *
 	 * @see CodedEnum#getCode()
 	 */
 	@Override
@@ -103,7 +103,7 @@ public enum CompressionType implements CodedEnum {
 
 	/**
 	 * Returns the compression.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	public String getCompression() {

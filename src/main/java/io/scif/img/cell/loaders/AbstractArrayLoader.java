@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -56,14 +56,17 @@ import org.scijava.plugin.Parameter;
  * to each subclass's array conversion method. See
  * {@link #convertBytes(Object, byte[], int)}.
  * </p>
- * 
+ *
  * @author Mark Hiner
  */
 public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 	private int index = 0;
+
 	final private Reader reader;
+
 	final private ImageRegion subRegion;
+
 	final private boolean compatible;
 
 	@Parameter
@@ -83,7 +86,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	}
 
 	@Override
-	public void setIndex(int index) {
+	public void setIndex(final int index) {
 		this.index = index;
 	}
 
@@ -120,8 +123,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			// Lengths in the planar dimensions
 			final long[] planarLength = new long[meta.get(0).getAxesPlanar().size()];
 			// Non-planar indices to open
-			final Range[] npRanges =
-				new Range[meta.get(0).getAxesNonPlanar().size()];
+			final Range[] npRanges = new Range[meta.get(0).getAxesNonPlanar().size()];
 			final long[] npIndices = new long[npRanges.length];
 
 			int axisIndex = 0;
@@ -147,7 +149,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			for (final CalibratedAxis axis : meta.get(0).getAxesNonPlanar()) {
 				final int index = meta.get(0).getAxisIndex(axis.type());
 
-				// otherwise just make a straightforward range spanning the passed
+				// otherwise just make a straightforward range spanning the
+				// passed
 				// dimensional constraints
 				npRanges[axisIndex] =
 					new Range(min[index], min[index] + dimensions[index] - 1);
@@ -186,10 +189,9 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	 * Entry point for
 	 * {@link #read(Object, Plane, long[], long[], Range[], long[], int, int)}
 	 */
-	private void
-		read(final A data, final long[] planarMin, final long[] planarLength,
-			final Range[] npRanges, final long[] npIndices)
-			throws FormatException, IOException
+	private void read(final A data, final long[] planarMin,
+		final long[] planarLength, final Range[] npRanges, final long[] npIndices)
+		throws FormatException, IOException
 	{
 		read(data, null, planarMin, planarLength, npRanges, npIndices, 0, 0);
 	}
@@ -199,13 +201,13 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	 * bytes and storing them in the provided data object.
 	 */
 	private void read(final A data, Plane tmpPlane, final long[] planarMin,
-		final long[] planarLength, final Range[] npRanges,
-		final long[] npIndices, final int depth, int planeCount)
-		throws FormatException, IOException
+		final long[] planarLength, final Range[] npRanges, final long[] npIndices,
+		final int depth, int planeCount) throws FormatException, IOException
 	{
 		if (depth < npRanges.length) {
 			// We need to invert the depth index to get the current non-planar
-			// axis index, to ensure axes are iteratead in fastest to slowest order
+			// axis index, to ensure axes are iteratead in fastest to slowest
+			// order
 			final int npPosition = npRanges.length - 1 - depth;
 			for (int i = 0; i < npRanges[npPosition].size(); i++) {
 				npIndices[npPosition] = npRanges[npPosition].get(i);
@@ -234,7 +236,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 	private boolean[][] loadedTable() {
 		if (loadedTable == null) {
-			Metadata m = reader.getMetadata();
+			final Metadata m = reader.getMetadata();
 			loadedTable =
 				new boolean[m.getImageCount()][(int) m.get(0).getPlaneCount()];
 		}
@@ -257,16 +259,16 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	 */
 	private ColorTable getTable(final int imageIndex, final int planeIndex) {
 		final List<List<ColorTable>> tables = tables();
-	
+
 		// Ensure capacity
 		if (imageIndex >= tables.size()) {
-			for (int i=tables.size(); i<=imageIndex; i++) {
+			for (int i = tables.size(); i <= imageIndex; i++) {
 				tables.add(new ArrayList<ColorTable>());
 			}
 		}
 
 		final List<ColorTable> imageTable = tables.get(imageIndex);
-	
+
 		return planeIndex >= imageTable.size() ? null : imageTable.get(planeIndex);
 	}
 
@@ -282,7 +284,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 			// Ensure capacity
 			if (imageTable.size() <= planeIndex) {
-				for (int i=imageTable.size(); i<=planeIndex; i++) {
+				for (int i = imageTable.size(); i <= planeIndex; i++) {
 					imageTable.add(null);
 				}
 			}

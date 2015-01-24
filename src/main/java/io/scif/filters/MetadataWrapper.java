@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -51,7 +51,7 @@ import io.scif.Metadata;
  * will also have the corresponding value set. If not, only the wrapper will be
  * modified.
  * </p>
- * 
+ *
  * @author Mark Hiner
  * @see io.scif.filters.AbstractReaderFilter
  */
@@ -65,7 +65,7 @@ public interface MetadataWrapper extends Metadata {
 	/**
 	 * Sets the {@code Metadata} this wrapper will delegate to. Necessary for the
 	 * sake of a zero-parameter constructor to allow {@code SezPoz} discovery.
-	 * 
+	 *
 	 * @param meta - The Metadata instance to wrap
 	 */
 	void wrap(Metadata meta);

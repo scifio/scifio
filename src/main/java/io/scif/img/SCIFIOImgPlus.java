@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -52,7 +52,7 @@ import org.scijava.Disposable;
  * Also provides direct access to the {@link Metadata} object associated with
  * the underlying dataset.
  * </p>
- * 
+ *
  * @author Mark Hiner
  */
 public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
@@ -67,8 +67,7 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 		super(img);
 	}
 
-	public SCIFIOImgPlus(final Img<T> img, final String name)
-	{
+	public SCIFIOImgPlus(final Img<T> img, final String name) {
 		super(img, name);
 	}
 
@@ -78,8 +77,7 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 		super(img, name, axes);
 	}
 
-	public SCIFIOImgPlus(final Img<T> img, final ImgPlusMetadata metadata)
-	{
+	public SCIFIOImgPlus(final Img<T> img, final ImgPlusMetadata metadata) {
 		super(img, metadata);
 	}
 
@@ -143,7 +141,7 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 
 	@Override
 	public SCIFIOImgPlus<T> copy() {
-		SCIFIOImgPlus<T> copy = new SCIFIOImgPlus<T>(getImg().copy(), this);
+		final SCIFIOImgPlus<T> copy = new SCIFIOImgPlus<T>(getImg().copy(), this);
 		copy.setMetadata(getMetadata());
 		return copy;
 	}

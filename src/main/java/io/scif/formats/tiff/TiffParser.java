@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -50,7 +50,7 @@ import org.scijava.log.LogService;
 
 /**
  * Parses TIFF data from an input source.
- * 
+ *
  * @author Curtis Rueden
  * @author Eric Kjellman
  * @author Melissa Linkert
@@ -85,6 +85,7 @@ public class TiffParser extends AbstractContextual {
 	private IFD firstIFD;
 
 	private final SCIFIO scifio;
+
 	private final LogService log;
 
 	/** Codec options to be used when decoding compressed pixel data. */
@@ -118,7 +119,7 @@ public class TiffParser extends AbstractContextual {
 
 	/**
 	 * Sets whether or not to assume that strips are of equal size.
-	 * 
+	 *
 	 * @param equalStrips Whether or not the strips are of equal size.
 	 */
 	public void setAssumeEqualStrips(final boolean equalStrips) {
@@ -127,7 +128,7 @@ public class TiffParser extends AbstractContextual {
 
 	/**
 	 * Sets the codec options to be used when decompressing pixel data.
-	 * 
+	 *
 	 * @param codecOptions Codec options to use.
 	 */
 	public void setCodecOptions(final CodecOptions codecOptions) {
@@ -137,7 +138,7 @@ public class TiffParser extends AbstractContextual {
 	/**
 	 * Retrieves the current set of codec options being used to decompress pixel
 	 * data.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	public CodecOptions getCodecOptions() {
@@ -176,7 +177,7 @@ public class TiffParser extends AbstractContextual {
 
 	/**
 	 * Checks the TIFF header.
-	 * 
+	 *
 	 * @return true if little-endian, false if big-endian, or null if not a TIFF.
 	 */
 	public Boolean checkHeader() throws IOException {
@@ -329,7 +330,7 @@ public class TiffParser extends AbstractContextual {
 
 	/**
 	 * Retrieve a given entry from the first IFD in the stream.
-	 * 
+	 *
 	 * @param tag the tag of the entry to be retrieved.
 	 * @return an object representing the entry's fields.
 	 * @throws IOException when there is an error accessing the stream.
@@ -923,9 +924,11 @@ public class TiffParser extends AbstractContextual {
 						q * planeSize + pixel * (tileX - x) + outputRowLen * (tileY - y);
 					if (planarConfig == 2) dest += (planeSize * (row / nrows));
 
-					// copying the tile directly will only work if there is no overlap;
+					// copying the tile directly will only work if there is no
+					// overlap;
 					// otherwise, we may be overwriting a previous tile
-					// (or the current tile may be overwritten by a subsequent tile)
+					// (or the current tile may be overwritten by a subsequent
+					// tile)
 					if (rowLen == outputRowLen && overlapX == 0 && overlapY == 0) {
 						System.arraycopy(cachedTileBuffer, src, buf, dest, copy * theight);
 					}
@@ -1017,8 +1020,10 @@ public class TiffParser extends AbstractContextual {
 
 		final BitBuffer bb = new BitBuffer(bytes);
 
-		// Hyper optimisation that takes any 8-bit or 16-bit data, where there is
-		// only one channel, the source byte buffer's size is less than or equal to
+		// Hyper optimisation that takes any 8-bit or 16-bit data, where there
+		// is
+		// only one channel, the source byte buffer's size is less than or equal
+		// to
 		// that of the destination buffer and for which no special unpacking is
 		// required and performs a simple array copy. Over the course of reading
 		// semi-large datasets this can save **billions** of method calls.
@@ -1104,8 +1109,10 @@ public class TiffParser extends AbstractContextual {
 					}
 				}
 				else {
-					// unpack YCbCr samples; these need special handling, as each of
-					// the RGB components depends upon two or more of the YCbCr components
+					// unpack YCbCr samples; these need special handling, as
+					// each of
+					// the RGB components depends upon two or more of the YCbCr
+					// components
 					if (channel == nChannels - 1) {
 						final int lumaIndex = sample + (2 * (sample / block));
 						final int chromaIndex = (sample / block) * (block + 2) + block;
@@ -1150,8 +1157,10 @@ public class TiffParser extends AbstractContextual {
 		}
 		long offset = (previous & ~0xffffffffL) | (in.readInt() & 0xffffffffL);
 
-		// Only adjust the offset if we know that the file is too large for 32-bit
-		// offsets to be accurate; otherwise, we're making the incorrect assumption
+		// Only adjust the offset if we know that the file is too large for
+		// 32-bit
+		// offsets to be accurate; otherwise, we're making the incorrect
+		// assumption
 		// that IFDs are stored sequentially.
 		if (offset < previous && offset != 0 && in.length() > Integer.MAX_VALUE) {
 			offset += 0x100000000L;

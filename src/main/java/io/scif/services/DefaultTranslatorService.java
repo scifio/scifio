@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,7 +47,7 @@ import org.scijava.service.Service;
  * translator can not be found, this service will first try to match the
  * destination type, then source type, then will accept any generic
  * {@link Metadata} translator.
- * 
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Service.class)
@@ -190,7 +190,7 @@ public class DefaultTranslatorService extends
 	/**
 	 * Creates a nested mapping of key1 : (key 2 : translator). Creates
 	 * intermediate map if it doesn't already exist.
-	 * 
+	 *
 	 * @param key1 - key to first-level (outer) map
 	 * @param key2 - key to second-level (inner) map
 	 * @param map - first-level (outer) map

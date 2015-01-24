@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,7 +38,7 @@ import java.io.File;
 /**
  * A collection of utility methods to facilitate {@link io.scif.FilePattern}
  * use.
- * 
+ *
  * @see io.scif.FilePattern
  * @author Mark Hiner
  */
@@ -46,28 +46,28 @@ public interface FilePatternService extends SCIFIOService {
 
 	/**
 	 * Identifies the group pattern from a given file within that group.
-	 * 
+	 *
 	 * @param path The file path to use as a template for the match.
 	 */
 	String findPattern(String path);
 
 	/**
 	 * Identifies the group pattern from a given file within that group.
-	 * 
+	 *
 	 * @param file The file to use as a template for the match.
 	 */
 	String findPattern(Location file);
 
 	/**
 	 * Identifies the group pattern from a given file within that group.
-	 * 
+	 *
 	 * @param file The file to use as a template for the match.
 	 */
 	String findPattern(File file);
 
 	/**
 	 * Identifies the group pattern from a given file within that group.
-	 * 
+	 *
 	 * @param name The filename to use as a template for the match.
 	 * @param dir The directory in which to search for matching files.
 	 */
@@ -75,7 +75,7 @@ public interface FilePatternService extends SCIFIOService {
 
 	/**
 	 * Identifies the group pattern from a given file within that group.
-	 * 
+	 *
 	 * @param name The filename to use as a template for the match.
 	 * @param dir The directory prefix to use for matching files.
 	 * @param nameList The names through which to search for matching files.
@@ -84,7 +84,7 @@ public interface FilePatternService extends SCIFIOService {
 
 	/**
 	 * Identifies the group pattern from a given file within that group.
-	 * 
+	 *
 	 * @param name The filename to use as a template for the match.
 	 * @param dir The directory prefix to use for matching files.
 	 * @param nameList The names through which to search for matching files.

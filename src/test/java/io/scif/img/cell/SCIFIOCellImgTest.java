@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import io.scif.img.IO;
 import io.scif.img.SCIFIOImgPlus;
-import io.scif.img.cell.SCIFIOCellImg;
 import io.scif.io.TestParameters;
 
 import java.util.Collection;
@@ -46,7 +45,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Tests for the {@link SCIFIOCellImg} and related classes.
- * 
+ *
  * @author Mark Hiner
  */
 @RunWith(Parameterized.class)
@@ -59,7 +58,9 @@ public class SCIFIOCellImgTest {
 
 	private final String provider;
 
-	public SCIFIOCellImgTest(final String provider, final boolean checkGrowth, final boolean testLength) {
+	public SCIFIOCellImgTest(final String provider, final boolean checkGrowth,
+		final boolean testLength)
+	{
 		this.provider = provider;
 	}
 
@@ -80,9 +81,11 @@ public class SCIFIOCellImgTest {
 	// This test is currently disabled because it fails for unknown reasons.
 	// It passes from Eclipse, it passes from Maven on the command line, but it
 	// fails when run by Jenkins using Maven.
-	// We're testing the dispose behavior above, the purpose of this test is just
+	// We're testing the dispose behavior above, the purpose of this test is
+	// just
 	// to confirm that disposal occurs when an ImgPlus is garbage collected.
-	// Unfortunately, this will have to wait until we have a better understanding
+	// Unfortunately, this will have to wait until we have a better
+	// understanding
 	// of how to test post-GC events.
 //	/**
 //	 * Test that when a {@link SCIFIOCellImg} is opened and goes out of scope, the
@@ -103,7 +106,7 @@ public class SCIFIOCellImgTest {
 //			arraySize = Integer.MAX_VALUE;
 //		}
 //		final long maxCounts =
-//			Math.round(Math.max(100, 
+//			Math.round(Math.max(100,
 //				(2 * Math.ceil(((double)Runtime.getRuntime().maxMemory() / arraySize)))));
 //		for (int i = 0; i < maxCounts &&
 //			wr.get() != null; i++)

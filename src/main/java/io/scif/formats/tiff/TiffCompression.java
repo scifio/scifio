@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -53,7 +53,7 @@ import java.util.Map;
 
 /**
  * Utility class for performing compression operations with a TIFF file.
- * 
+ *
  * @author Curtis Rueden
  * @author Eric Kjellman
  * @author Melissa Linkert
@@ -216,7 +216,7 @@ public enum TiffCompression implements CodedEnum {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param code Integer "code" for the TIFF compression type.
 	 * @param codecClass TIFF compression codec.
 	 * @param codecName String name of the compression type.
@@ -231,7 +231,7 @@ public enum TiffCompression implements CodedEnum {
 
 	/**
 	 * Retrieves a TIFF compression instance by code.
-	 * 
+	 *
 	 * @param code Integer "code" for the TIFF compression type.
 	 * @return See above.
 	 */
@@ -251,7 +251,7 @@ public enum TiffCompression implements CodedEnum {
 
 	/**
 	 * Retrieves the name of the TIFF compression codec.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	public String getCodecName() {
@@ -277,7 +277,7 @@ public enum TiffCompression implements CodedEnum {
 
 	/**
 	 * Creates a set of codec options for compression.
-	 * 
+	 *
 	 * @param ifd The IFD to create codec options for.
 	 * @return A new codec options instance populated using metadata from
 	 *         <code>ifd</code>.
@@ -290,7 +290,7 @@ public enum TiffCompression implements CodedEnum {
 
 	/**
 	 * Creates a set of codec options for compression.
-	 * 
+	 *
 	 * @param ifd The IFD to create codec options for.
 	 * @return A new codec options instance populated using metadata from
 	 *         <code>ifd</code>.

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -167,14 +167,15 @@ public class PGMFormat extends AbstractFormat {
 					"Read entire file without finding complete PGM metadata.");
 				// Truncate comments
 				if (line.contains("#")) line = line.substring(0, line.indexOf("#"));
-				// Metadata should only be numeric, or potentially a key including a "P"
+				// Metadata should only be numeric, or potentially a key
+				// including a "P"
 				line = line.replaceAll("[^P0-9]", " ");
 				final String[] vars = line.split(" ");
 
 				// Populate the appropriate metadata fields for this line
-				for (int i=0; i<vars.length; i++) {
+				for (int i = 0; i < vars.length; i++) {
 					varsRead++;
-					switch(varsRead) {
+					switch (varsRead) {
 						case 1:
 							magic = vars[i];
 							if (magic.equals("P1") || magic.equals("P4")) {
@@ -188,7 +189,8 @@ public class PGMFormat extends AbstractFormat {
 						case 3:
 							height = Integer.parseInt(vars[i]);
 							break;
-						case 4: max = Integer.parseInt(vars[i]);
+						case 4:
+							max = Integer.parseInt(vars[i]);
 							break;
 					}
 				}
@@ -200,7 +202,12 @@ public class PGMFormat extends AbstractFormat {
 			{
 				throw new FormatException(
 					"Incomplete PGM metadata found. Read the following metadata: magic = " +
-						magic + "; height = " + height + "; width = " + width + "; max = " +
+						magic +
+						"; height = " +
+						height +
+						"; width = " +
+						width +
+						"; max = " +
 						max);
 			}
 

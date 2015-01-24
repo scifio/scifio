@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,7 +36,7 @@ import io.scif.common.DataTools;
  * A utility class with convenience methods for manipulating images in primitive
  * array form. To work with images in {@link java.awt.image.BufferedImage} form,
  * use the {@link io.scif.gui.AWTImageTools} class.
- * 
+ *
  * @author Curtis Rueden
  */
 public final class ImageTools {
@@ -205,7 +205,7 @@ public final class ImageTools {
 	 * bytes that are expected to be in a single channel. In many cases, this will
 	 * match the value of 'rtn.length', but specifying it separately allows 'rtn'
 	 * to be larger than the size of a single channel.
-	 * 
+	 *
 	 * @param pos - positional axes index of the plane to extract
 	 * @param maxLengths - lengths of each split positional axis
 	 * @param planeLength - number of bytes in a split out plane

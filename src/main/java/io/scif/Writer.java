@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,7 @@ import java.io.IOException;
  * the {@link Reader#openPlane} methods) to a destination image location, via
  * the {@link #savePlane} methods.
  * </p>
- * 
+ *
  * @author Mark Hiner
  * @see io.scif.Plane
  * @see io.scif.Reader#openPlane
@@ -57,7 +57,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * Saves the provided plane to the specified image and plane index of this
 	 * {@code Writer's} destination image.
-	 * 
+	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
 	 * @param plane the pixels save
@@ -70,7 +70,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * Saves the specified tile (sub-region) of the provided plane to the
 	 * specified image and plane index of this {@code Writer's} destination image.
-	 * 
+	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
 	 * @param plane the pixels save
@@ -98,7 +98,7 @@ public interface Writer extends HasFormat, HasSource {
 	 * behavior if provided with a {@code Metadata} instance not associated with
 	 * this {@code Writer} is undefined and should throw an exception.
 	 * </p>
-	 * 
+	 *
 	 * @param meta The {@code Metadata} to associate with this {@code Writer}.
 	 * @throws IllegalArgumentException If the provided {@code Metadata} type is
 	 *           not compatible with this {@code Writer}.
@@ -107,7 +107,7 @@ public interface Writer extends HasFormat, HasSource {
 
 	/**
 	 * Gets the {@code Metadata} that will be used when saving planes.
-	 * 
+	 *
 	 * @return The {@code Metadata} associated with this {@code Writer}.
 	 */
 	Metadata getMetadata();
@@ -115,7 +115,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * Sets the source that will be written to during {@link #savePlane} calls.
 	 * NB: resets any configuration on this writer.
-	 * 
+	 *
 	 * @param fileName The name of an image source to be written.
 	 */
 	void setDest(String fileName) throws FormatException, IOException;
@@ -123,7 +123,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * Sets the source that will be written to during {@link #savePlane} calls.
 	 * NB: resets any configuration on this writer.
-	 * 
+	 *
 	 * @param file A file-based image source to write to.
 	 */
 	void setDest(File file) throws FormatException, IOException;
@@ -131,7 +131,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * Sets the source that will be written to during {@link #savePlane} calls.
 	 * NB: resets any configuration on this writer.
-	 * 
+	 *
 	 * @param stream The image source to write to.
 	 */
 	void setDest(RandomAccessOutputStream stream) throws FormatException,
@@ -139,7 +139,7 @@ public interface Writer extends HasFormat, HasSource {
 
 	/**
 	 * As {@link #setDest(String)} with specification for source image index.
-	 * 
+	 *
 	 * @param fileName The name of an image source to be written.
 	 * @param imageIndex The index within the source that will be written.
 	 */
@@ -148,7 +148,7 @@ public interface Writer extends HasFormat, HasSource {
 
 	/**
 	 * As {@link #setDest(File)} with specification for source image index.
-	 * 
+	 *
 	 * @param file A file-based image source to write to.
 	 * @param imageIndex The index within the source that will be written.
 	 */
@@ -157,7 +157,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * As {@link #setDest(RandomAccessOutputStream)}, with specification for
 	 * source image index.
-	 * 
+	 *
 	 * @param stream The image source to write to.
 	 * @param imageIndex The index within the source that will be written.
 	 */
@@ -167,7 +167,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * As {@link #setDest(String)} with specification for new configuration
 	 * options.
-	 * 
+	 *
 	 * @param fileName The name of an image source to be written.
 	 * @param config Configuration information to use for this write.
 	 */
@@ -176,7 +176,7 @@ public interface Writer extends HasFormat, HasSource {
 
 	/**
 	 * As {@link #setDest(File)} with specification for new configuration options.
-	 * 
+	 *
 	 * @param file A file-based image source to write to.
 	 * @param config Configuration information to use for this write.
 	 */
@@ -186,7 +186,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * As {@link #setDest(RandomAccessOutputStream)}, with specification for new
 	 * configuration options.
-	 * 
+	 *
 	 * @param stream The image source to write to.
 	 * @param config Configuration information to use for this write.
 	 */
@@ -196,7 +196,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * As {@link #setDest(String, int)} with specification for new configuration
 	 * options.
-	 * 
+	 *
 	 * @param fileName The name of an image source to be written.
 	 * @param imageIndex The index within the source that will be written.
 	 * @param config Configuration information to use for this write.
@@ -207,7 +207,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * As {@link #setDest(File, int)} with specification for new configuration
 	 * options.
-	 * 
+	 *
 	 * @param file A file-based image source to write to.
 	 * @param imageIndex The index within the source that will be written.
 	 * @param config Configuration information to use for this write.
@@ -218,7 +218,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * As {@link #setDest(RandomAccessOutputStream, int)}, with specification for
 	 * new configuration options.
-	 * 
+	 *
 	 * @param stream The image source to write to.
 	 * @param imageIndex The index within the source that will be written.
 	 * @param config Configuration information to use for this write.
@@ -229,7 +229,7 @@ public interface Writer extends HasFormat, HasSource {
 	/**
 	 * Retrieves a reference to the output source that will be written to during
 	 * {@link #savePlane} calls.
-	 * 
+	 *
 	 * @return The {@code RandomAccessOutputStream} associated with this
 	 *         {@code Writer}.
 	 */

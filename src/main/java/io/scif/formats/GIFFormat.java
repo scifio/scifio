@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -55,7 +55,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  * Handler for the GIF file format.
- * 
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Graphics Interchange Format")
@@ -101,6 +101,7 @@ public class GIFFormat extends AbstractFormat {
 		private int blockSize = 0;
 
 		private int dispose = 0;
+
 		private int lastDispose = 0;
 
 		/** Use transparent color. */
@@ -111,11 +112,15 @@ public class GIFFormat extends AbstractFormat {
 
 		// LZW working arrays
 		private short[] prefix;
+
 		private byte[] suffix;
+
 		private byte[] pixelStack;
+
 		private byte[] pixels;
 
 		private Vector<byte[]> images;
+
 		private Vector<int[]> colorTables;
 
 		// -- GIFMetadata getters and setters --
@@ -360,8 +365,11 @@ public class GIFFormat extends AbstractFormat {
 		// -- Constants --
 
 		private static final int IMAGE_SEPARATOR = 0x2c;
+
 		private static final int EXTENSION = 0x21;
+
 		private static final int END = 0x3b;
+
 		private static final int GRAPHICS = 0xf9;
 
 		/** Maximum buffer size. */
@@ -409,7 +417,8 @@ public class GIFFormat extends AbstractFormat {
 
 			log().info("Reading data blocks");
 
-			// Reading the GIF metadata. Checks for dispose and transparency flags.
+			// Reading the GIF metadata. Checks for dispose and transparency
+			// flags.
 			boolean done = false;
 			while (!done) {
 				int code = stream.read() & 0xff;
@@ -617,7 +626,8 @@ public class GIFFormat extends AbstractFormat {
 					.get(0).getAxisLength(Axes.Y))];
 			long lastImage = -1;
 
-			// fill in starting image contents based on last image's dispose code
+			// fill in starting image contents based on last image's dispose
+			// code
 			if (getMetadata().getLastDispose() > 0) {
 				if (getMetadata().getLastDispose() == 3) { // use image before last
 					final long n = getMetadata().get(0).getPlaneCount() - 2;
@@ -666,7 +676,8 @@ public class GIFFormat extends AbstractFormat {
 					int dlim = dx + getMetadata().getIw(); // end of dest line
 					if ((k + getMetadata().get(0).getAxisLength(Axes.X)) < dlim) dlim =
 						k + (int) getMetadata().get(0).getAxisLength(Axes.X);
-					int sx = i * getMetadata().getIw(); // start of line in source
+					int sx = i * getMetadata().getIw(); // start of line in
+					// source
 					while (dx < dlim) {
 						// map color and insert in destination
 						final int index = getMetadata().getPixels()[sx++] & 0xff;

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -68,7 +68,7 @@ import org.scijava.plugin.Plugin;
 /**
  * MinimalTiffReader is the superclass for file format readers compatible with
  * or derived from the TIFF 6.0 file format.
- * 
+ *
  * @author Melissa Linkert
  * @author Mark Hiner
  */
@@ -251,7 +251,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				}
 				ms0.setBitsPerPixel(firstIFD.getBitsPerSample()[0]);
 
-				// New core metadata now that we know how many sub-resolutions we have.
+				// New core metadata now that we know how many sub-resolutions
+				// we have.
 				if (resolutionLevels != null && subResolutionIFDs.size() > 0) {
 					final IFDList ifds = subResolutionIFDs.get(0);
 
@@ -323,7 +324,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				int[] colorMap = lastIFD.getIFDIntArray(IFD.COLOR_MAP);
 				if (bits[0] <= 16 && bits[0] > 8) {
 					if (colorMap == null || colorMap.length < 65536 * 3) {
-						// it's possible that the LUT is only present in the first IFD
+						// it's possible that the LUT is only present in the
+						// first IFD
 						if (lastPlane != 0) {
 							lastIFD = ifds.get(0);
 							colorMap = lastIFD.getIFDIntArray(IFD.COLOR_MAP);
@@ -343,7 +345,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				}
 				else if (bits[0] <= 8) {
 					if (colorMap == null) {
-						// it's possible that the LUT is only present in the first IFD
+						// it's possible that the LUT is only present in the
+						// first IFD
 						if (lastPlane != 0) {
 							lastIFD = ifds.get(0);
 							colorMap = lastIFD.getIFDIntArray(IFD.COLOR_MAP);
@@ -705,7 +708,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		/**
 		 * Sets the resolution level when we have JPEG 2000 compressed data.
-		 * 
+		 *
 		 * @param ifd The active IFD that is being used in our current
 		 *          <code>openBytes()</code> calling context. It will be the
 		 *          sub-resolution IFD if <code>currentSeries > 0</code>.

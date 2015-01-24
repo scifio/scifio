@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,7 +38,7 @@ import java.util.TimeZone;
 
 /**
  * A utility class with convenience methods for working with dates.
- * 
+ *
  * @author Curtis Rueden
  * @author Chris Allan
  * @author Melissa Linkert
@@ -49,16 +49,24 @@ public final class DateTools {
 
 	/** Timestamp formats. */
 	public static final int UNIX = 0; // January 1, 1970
+
 	public static final int COBOL = 1; // January 1, 1601
+
 	public static final int MICROSOFT = 2; // December 30, 1899
+
 	public static final int ZVI = 3;
+
 	public static final int ALT_ZVI = 4;
 
 	/** Milliseconds until UNIX epoch. */
 	public static final long UNIX_EPOCH = 0;
+
 	public static final long COBOL_EPOCH = 11644473600000L;
+
 	public static final long MICROSOFT_EPOCH = 2209143600000L;
+
 	public static final long ZVI_EPOCH = 2921084975759000L;
+
 	public static final long ALT_ZVI_EPOCH = 2921084284761000L;
 
 	/** ISO 8601 date format string. */
@@ -99,7 +107,8 @@ public final class DateTools {
 	public static String convertDate(final long stamp, final int format,
 		final String outputFormat, final boolean correctTimeZoneForGMT)
 	{
-		// see http://www.merlyn.demon.co.uk/critdate.htm for more information on
+		// see http://www.merlyn.demon.co.uk/critdate.htm for more information
+		// on
 		// dates than you will ever need (or want)
 
 		long ms = stamp;
@@ -139,7 +148,7 @@ public final class DateTools {
 	 * Formats the given date as an ISO 8601 date. Delegates to
 	 * {@link #formatDate(String, String, boolean)}, with the 'lenient' flag set
 	 * to false.
-	 * 
+	 *
 	 * @param date The date to format as ISO 8601.
 	 * @param format The date's input format.
 	 */
@@ -149,7 +158,7 @@ public final class DateTools {
 
 	/**
 	 * Formats the given date as an ISO 8601 date.
-	 * 
+	 *
 	 * @param date The date to format as ISO 8601.
 	 * @param format The date's input format.
 	 * @param lenient Whether or not to leniently parse the date.
@@ -170,7 +179,7 @@ public final class DateTools {
 	 * Formats the given date as an ISO 8601 date. Delegates to
 	 * {@link #formatDate(String, String[], boolean)}, with the 'lenient' flag set
 	 * to false.
-	 * 
+	 *
 	 * @param date The date to format as ISO 8601.
 	 * @param formats The date's possible input formats.
 	 */
@@ -180,7 +189,7 @@ public final class DateTools {
 
 	/**
 	 * Formats the given date as an ISO 8601 date.
-	 * 
+	 *
 	 * @param date The date to format as ISO 8601.
 	 * @param formats The date's possible input formats.
 	 * @param lenient Whether or not to leniently parse the date.

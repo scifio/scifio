@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,10 +33,6 @@ package io.scif.img;
 import static org.junit.Assert.assertEquals;
 import io.scif.config.SCIFIOConfig;
 import io.scif.config.SCIFIOConfig.ImgMode;
-import io.scif.img.ImgIOException;
-import io.scif.img.ImgOpener;
-import io.scif.img.ImgSaver;
-import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.ByteArrayHandle;
 import io.scif.services.LocationService;
 import net.imagej.ImgPlus;
@@ -47,14 +43,17 @@ import org.scijava.Context;
 
 /**
  * Tests for the {@link ImgSaver} class.
- * 
+ *
  * @author Mark Hiner
  */
 public class ImgSaverTest {
 
 	private final String id = "testImg&lengths=512,512,5&axes=X,Y,Time.fake";
+
 	private final String out = "/Users/mhiner/loci/scifio/test.tif";
+
 	private final Context ctx = new Context();
+
 	private final LocationService locationService = ctx
 		.getService(LocationService.class);
 
@@ -63,7 +62,9 @@ public class ImgSaverTest {
 	 * given {@link ImgPlus} is not corrupted during the process.
 	 */
 	@Test
-	public void testImgPlusIntegrity() throws ImgIOException, IncompatibleTypeException {
+	public void testImgPlusIntegrity() throws ImgIOException,
+		IncompatibleTypeException
+	{
 		final ImgOpener o = new ImgOpener(ctx);
 		final ImgSaver s = new ImgSaver(ctx);
 		final SCIFIOConfig config =

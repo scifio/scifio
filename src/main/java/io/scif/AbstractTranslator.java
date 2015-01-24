@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,7 @@ import java.util.List;
  * the type-general Metadata information, delegate to {@code typedTranslate},
  * and then populate the ImageMetadata of the destination.
  * </p>
- * 
+ *
  * @see io.scif.Translator
  * @see io.scif.services.TranslatorService
  * @see io.scif.Metadata
@@ -83,13 +83,13 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 	}
 
 	/**
-	 * This method provides a hook for subclasses that need access to both
-	 * the {@link Metadata} and {@link ImageMetadata}. It is provided with
-	 * concrete typing for convenience and to limit code duplication.
+	 * This method provides a hook for subclasses that need access to both the
+	 * {@link Metadata} and {@link ImageMetadata}. It is provided with concrete
+	 * typing for convenience and to limit code duplication.
 	 * <p>
 	 * NB: if this method is just used as a hook to perform some operation
-	 * mid-translation, then {@code super.typedTranslate} should be called
-	 * at the end of the method to continue the normal translation process.
+	 * mid-translation, then {@code super.typedTranslate} should be called at the
+	 * end of the method to continue the normal translation process.
 	 * </p>
 	 */
 	protected void typedTranslate(final M typedSource,
@@ -113,10 +113,10 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 	 * Use format-agnostic metadata ({@link ImageMetadata} to populate the
 	 * destination's format-specific metadata.
 	 * <p>
-	 * This method must be implemented by every AbstractTranslator subclass,
-	 * as it covers the general case - agnostic of the source.
+	 * This method must be implemented by every AbstractTranslator subclass, as it
+	 * covers the general case - agnostic of the source.
 	 * </p>
-	 * 
+	 *
 	 * @param source
 	 * @param dest
 	 */
@@ -130,7 +130,7 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 	 * NB: Override this method when writing a translator from a concrete Metadata
 	 * type.
 	 * </p>
-	 * 
+	 *
 	 * @param source
 	 * @param dest
 	 */

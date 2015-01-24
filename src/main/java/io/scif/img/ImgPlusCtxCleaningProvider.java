@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
 /**
  * {@link RefProvider} plugin for generating {@link ImgPlusCtxCleaner}
  * instances.
- * 
+ *
  * @author Mark Hiner
  */
 @Plugin(type = RefProvider.class)
@@ -82,7 +82,7 @@ public class ImgPlusCtxCleaningProvider extends AbstractSCIFIOPlugin implements
 	 * this reference as new ImgPlus instances are generated with an anonymous
 	 * Context. This will ensure that when the ImgPlus instances go out of scope,
 	 * the Context is shut down properly.
-	 * 
+	 *
 	 * @author Mark Hiner
 	 */
 	public static class ImgPlusCtxCleaner extends PhantomReference<ImgPlus>

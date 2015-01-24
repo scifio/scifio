@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,7 +35,7 @@ import org.scijava.service.Service;
 /**
  * Exception thrown when there is an object instantiation error or error
  * processing dependencies.
- * 
+ *
  * @author Chris Allan
  */
 public class DependencyException extends Exception {
@@ -48,7 +48,7 @@ public class DependencyException extends Exception {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param message Error message.
 	 */
 	public DependencyException(final String message) {
@@ -57,7 +57,7 @@ public class DependencyException extends Exception {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param message Error message.
 	 * @param klass Failed instantiation class.
 	 */
@@ -70,7 +70,7 @@ public class DependencyException extends Exception {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param message Error message.
 	 * @param klass Failed instantiation class.
 	 * @param cause Upstream exception.
@@ -84,7 +84,7 @@ public class DependencyException extends Exception {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param cause Upstream exception.
 	 */
 	public DependencyException(final Throwable cause) {
@@ -93,7 +93,7 @@ public class DependencyException extends Exception {
 
 	/**
 	 * Returns the class that was used during a failed instantiation.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	public Class<? extends Service> getFailureClass() {

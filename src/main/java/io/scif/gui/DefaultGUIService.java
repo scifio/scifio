@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,7 @@ import org.scijava.service.Service;
 
 /**
  * Basic {@link GUIService} implementation.
- * 
+ *
  * @author Curtis Rueden
  * @author Mark Hiner
  */
@@ -93,7 +93,8 @@ public class DefaultGUIService extends AbstractService implements GUIService {
 	public JFileChooser buildFileChooser(final FileFilter[] filters,
 		final boolean preview)
 	{
-		// NB: construct JFileChooser in the AWT worker thread, to avoid deadlocks
+		// NB: construct JFileChooser in the AWT worker thread, to avoid
+		// deadlocks
 		final JFileChooser[] jfc = new JFileChooser[1];
 		final Runnable r = new Runnable() {
 
@@ -109,7 +110,8 @@ public class DefaultGUIService extends AbstractService implements GUIService {
 					final ComboFileFilter cff = (ComboFileFilter) ff[0];
 					if (ALL_TYPES.equals(cff.getDescription())) combo = cff;
 				}
-				// make an "All supported file types" filter if we don't have one yet
+				// make an "All supported file types" filter if we don't have
+				// one yet
 				if (combo == null) {
 					combo = makeComboFilter(ff);
 					if (combo != null) fc.addChoosableFileFilter(combo);
@@ -122,7 +124,8 @@ public class DefaultGUIService extends AbstractService implements GUIService {
 			}
 		};
 		if (Thread.currentThread().getName().startsWith("AWT-EventQueue")) {
-			// current thread is the AWT event queue thread; just execute the code
+			// current thread is the AWT event queue thread; just execute the
+			// code
 			r.run();
 		}
 		else {

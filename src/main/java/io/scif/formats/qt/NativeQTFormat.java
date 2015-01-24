@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -79,7 +79,7 @@ import org.scijava.plugin.Plugin;
  * not require any external libraries to be installed. Video codecs currently
  * supported: raw, rle, jpeg, mjpb, rpza. Additional video codecs will be added
  * as time permits.
- * 
+ *
  * @author Melissa Linkert
  * @author Mark Hiner
  */
@@ -389,7 +389,8 @@ public class NativeQTFormat extends AbstractFormat {
 			// separated
 			if (meta.isSpork()) {
 				// first we want to check if there is a resource fork present
-				// the resource fork will generally have the same name as the data fork,
+				// the resource fork will generally have the same name as the
+				// data fork,
 				// but will have either the prefix "._" or the suffix ".qtr"
 				// (or <filename>/rsrc on a Mac)
 
@@ -699,8 +700,9 @@ public class NativeQTFormat extends AbstractFormat {
 			if (qtJavaService.canDoQT()) {
 				return new String[] {
 					CompressionType.UNCOMPRESSED.getCompression(),
-					// NB: Writing to Motion JPEG-B with QTJava seems to be broken.
-					/*"Motion JPEG-B",*/
+					// NB: Writing to Motion JPEG-B with QTJava seems to be
+					// broken.
+					/* "Motion JPEG-B", */
 					CompressionType.CINEPAK.getCompression(),
 					CompressionType.ANIMATION.getCompression(),
 					CompressionType.H_263.getCompression(),
@@ -715,7 +717,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 		/**
 		 * Sets the encoded movie's codec.
-		 * 
+		 *
 		 * @param codec Codec value:
 		 *          <ul>
 		 *          <li>QTWriter.CODEC_CINEPAK</li>
@@ -733,7 +735,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 		/**
 		 * Sets the quality of the encoded movie.
-		 * 
+		 *
 		 * @param quality Quality value:
 		 *          <ul>
 		 *          <li>QTWriter.QUALITY_LOW</li>
@@ -814,7 +816,8 @@ public class NativeQTFormat extends AbstractFormat {
 				offsets.get((int) planeIndex) + y * (nChannels * width + pad));
 
 			// invert each pixel
-			// this will makes the colors look right in other readers (e.g. xine),
+			// this will makes the colors look right in other readers (e.g.
+			// xine),
 			// but needs to be reversed in QTReader
 
 			final byte[] tmp = new byte[buf.length];
@@ -967,7 +970,8 @@ public class NativeQTFormat extends AbstractFormat {
 			getStream().writeInt((int) System.currentTimeMillis());
 			getStream().writeInt(timeScale); // time scale
 			getStream().writeInt(duration); // duration
-			getStream().write(new byte[] { 0, 1, 0, 0 }); // preferred rate & volume
+			getStream().write(new byte[] { 0, 1, 0, 0 }); // preferred rate &
+			// volume
 			getStream().write(new byte[] { 0, -1, 0, 0, 0, 0, 0, 0, 0, 0 }); // reserved
 
 			writeRotationMatrix();
@@ -1236,7 +1240,8 @@ public class NativeQTFormat extends AbstractFormat {
 			dest.get(0).setAxisLength(Axes.Y, source.get(0).getAxisLength(Axes.Y));
 			dest.get(0).setAxisLength(Axes.TIME, source.get(0).getPlaneCount());
 
-			// *** HACK *** the Metadata bitsPerPixel field doesn't really matter if
+			// *** HACK *** the Metadata bitsPerPixel field doesn't really
+			// matter if
 			// we're translating to this format.
 			// But it is used to determine RGB status.
 			final int bpp =
@@ -1308,9 +1313,12 @@ public class NativeQTFormat extends AbstractFormat {
 							}
 						}
 
-						// The contents of the matrix we just read determine whether or not
-						// we should flip the width and height. We can check the first two
-						// rows of the matrix - they should correspond to the first two rows
+						// The contents of the matrix we just read determine
+						// whether or not
+						// we should flip the width and height. We can check the
+						// first two
+						// rows of the matrix - they should correspond to the
+						// first two rows
 						// of an identity matrix.
 
 						// TODO : adapt to use the value of flip

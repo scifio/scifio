@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,7 +40,7 @@ import java.util.HashMap;
 /**
  * Contains methods for mapping files and ids, and generating
  * {@link io.scif.io.IRandomAccess} handles for reading from these locations.
- * 
+ *
  * @see io.scif.io.Location
  * @see io.scif.io.IRandomAccess
  * @author Mark Hiner
@@ -63,14 +63,14 @@ public interface LocationService extends SCIFIOService {
 	 * directory could change by the time you access the file. Reasons not to
 	 * cache - the contents of the directories might change during the program
 	 * invocation.
-	 * 
+	 *
 	 * @param cache - true to turn cacheing on, false to leave it off.
 	 */
 	void cacheDirectoryListings(boolean cache);
 
 	/**
 	 * Cache directory listings for this many seconds before relisting.
-	 * 
+	 *
 	 * @param sec - use the cache if a directory list was done within this many
 	 *          seconds.
 	 */
@@ -95,7 +95,7 @@ public interface LocationService extends SCIFIOService {
 	 * filename as the id assists format handlers with type identification and
 	 * pattern matching, and the id can be mapped to the actual filename for
 	 * reading the file's contents.
-	 * 
+	 *
 	 * @see #getMappedId(String)
 	 */
 	void mapId(String id, String filename);
@@ -110,7 +110,7 @@ public interface LocationService extends SCIFIOService {
 	 * original filename is useful for checking the file extension and doing
 	 * pattern matching, but the renamed filename is required to read its
 	 * contents.
-	 * 
+	 *
 	 * @see #mapId(String, String)
 	 */
 	String getMappedId(String id);
@@ -123,7 +123,7 @@ public interface LocationService extends SCIFIOService {
 
 	/**
 	 * Set the id mapping using the given HashMap.
-	 * 
+	 *
 	 * @throws IllegalArgumentException if the given HashMap is null.
 	 */
 	void setIdMap(HashMap<String, Object> map);
@@ -133,7 +133,7 @@ public interface LocationService extends SCIFIOService {
 	 * <p>
 	 * NB: if the file doesn't exist, a {@link VirtualHandle} will be returned.
 	 * </p>
-	 * 
+	 *
 	 * @see io.scif.io.IRandomAccess
 	 */
 	IRandomAccess getHandle(String id) throws IOException;
@@ -143,7 +143,7 @@ public interface LocationService extends SCIFIOService {
 	 * <p>
 	 * NB: if the file doesn't exist, a {@link VirtualHandle} will be returned.
 	 * </p>
-	 * 
+	 *
 	 * @see io.scif.io.IRandomAccess
 	 */
 	IRandomAccess getHandle(String id, boolean writable) throws IOException;
@@ -153,7 +153,7 @@ public interface LocationService extends SCIFIOService {
 	 * <p>
 	 * NB: if the file doesn't exist, a {@link VirtualHandle} will be returned.
 	 * </p>
-	 * 
+	 *
 	 * @see io.scif.io.IRandomAccess
 	 */
 	IRandomAccess getHandle(String id, boolean writable,
@@ -161,7 +161,7 @@ public interface LocationService extends SCIFIOService {
 
 	/**
 	 * Checks that the given id points at a valid data stream.
-	 * 
+	 *
 	 * @param id The id string to validate.
 	 * @throws IOException if the id is not valid.
 	 */

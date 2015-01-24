@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,7 +41,7 @@ import org.scijava.Context;
 /**
  * A utility class with convenience methods for reading, writing and decoding
  * words.
- * 
+ *
  * @author Curtis Rueden
  * @author Chris Allan
  * @author Melissa Linkert
@@ -548,7 +548,7 @@ public final class DataTools {
 	/**
 	 * Translates nBytes of the given long and places the result in the given byte
 	 * array.
-	 * 
+	 *
 	 * @throws IllegalArgumentException if the specified indices fall outside the
 	 *           buffer
 	 */
@@ -573,7 +573,7 @@ public final class DataTools {
 
 	/**
 	 * Convert a byte array to the appropriate 1D primitive type array.
-	 * 
+	 *
 	 * @param b Byte array to convert.
 	 * @param bpp Denotes the number of bytes in the returned primitive type (e.g.
 	 *          if bpp == 2, we should return an array of type short).
@@ -638,7 +638,7 @@ public final class DataTools {
 
 	/**
 	 * Convert a byte array to the appropriate 2D primitive type array.
-	 * 
+	 *
 	 * @param b Byte array to convert.
 	 * @param bpp Denotes the number of bytes in the returned primitive type (e.g.
 	 *          if bpp == 2, we should return an array of type short).
@@ -749,7 +749,7 @@ public final class DataTools {
 
 	/**
 	 * Convert byte array to a hexadecimal string.
-	 * 
+	 *
 	 * @deprecated Use {@link #bytesToHex(byte[])} instead.
 	 */
 	@Deprecated
@@ -871,7 +871,7 @@ public final class DataTools {
 	/**
 	 * Allocates a 1-dimensional byte array matching the product of the given
 	 * sizes.
-	 * 
+	 *
 	 * @param sizes list of sizes from which to allocate the array
 	 * @return a byte array of the appropriate size
 	 * @throws IllegalArgumentException if the total size exceeds 2GB, which is
@@ -890,7 +890,7 @@ public final class DataTools {
 	/**
 	 * Checks that the product of the given sizes does not exceed the 32-bit
 	 * integer limit (i.e., {@link Integer#MAX_VALUE}).
-	 * 
+	 *
 	 * @param sizes list of sizes from which to compute the product
 	 * @return the product of the given sizes
 	 * @throws IllegalArgumentException if the total size exceeds 2GiB, which is
@@ -920,7 +920,7 @@ public final class DataTools {
 	/**
 	 * Checks that the product of the given sizes does not exceed the 64-bit
 	 * integer limit (i.e., {@link Long#MAX_VALUE}).
-	 * 
+	 *
 	 * @param sizes list of sizes from which to compute the product
 	 * @return the product of the given sizes
 	 * @throws IllegalArgumentException if the total size exceeds 8EiB, which is

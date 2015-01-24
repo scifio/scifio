@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@ import org.scijava.service.Service;
 
 /**
  * Default {@link FilePatternService} implementation.
- * 
+ *
  * @see FilePatternService
  * @author Mark Hiner
  */
@@ -173,7 +173,8 @@ public class DefaultFilePatternService extends AbstractService implements
 				}
 			}
 			if (fix) {
-				// tricky; this fixed-width block could represent multiple numberings
+				// tricky; this fixed-width block could represent multiple
+				// numberings
 				final int width = endList[i] - indexList[i];
 
 				// check each character for duplicates
@@ -207,7 +208,8 @@ public class DefaultFilePatternService extends AbstractService implements
 							indexList[i] > 0 ? name.charAt(indexList[i] - 1) : '.';
 						// check if this block represents the series axis
 						if (p == null && c != 'S' && c != 's' && c != 'E' && c != 'e') {
-							// unable to find an appropriate breakdown of numerical blocks
+							// unable to find an appropriate breakdown of
+							// numerical blocks
 							return null;
 						}
 						else if (p == null) {

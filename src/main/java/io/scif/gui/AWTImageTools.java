@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -88,7 +88,7 @@ import net.imglib2.display.ColorTable8;
  * stolen and adapted from <a
  * href="http://forum.java.sun.com/thread.jspa?threadID=522483"> DrLaszloJamf's
  * posts</a> on the Java forums.
- * 
+ *
  * @author Curtis Rueden
  */
 public final class AWTImageTools {
@@ -106,7 +106,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given single-channel byte data.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -121,7 +121,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given single-channel short data.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -136,7 +136,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given single-channel int data.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -151,7 +151,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given single-channel float data.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -164,7 +164,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given single-channel double data.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -179,7 +179,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given byte data.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -210,7 +210,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given short data.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -241,7 +241,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given int data.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -270,7 +270,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given float data.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -291,7 +291,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given double data.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -314,7 +314,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given byte data.
-	 * 
+	 *
 	 * @param data Array containing image data. It is assumed that each channel
 	 *          corresponds to one element of the array. For example, for RGB
 	 *          data, data[0] is R, data[1] is G, and data[2] is B.
@@ -341,7 +341,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given short data.
-	 * 
+	 *
 	 * @param data Array containing image data. It is assumed that each channel
 	 *          corresponds to one element of the array. For example, for RGB
 	 *          data, data[0] is R, data[1] is G, and data[2] is B.
@@ -368,7 +368,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given int data.
-	 * 
+	 *
 	 * @param data Array containing image data. It is assumed that each channel
 	 *          corresponds to one element of the array. For example, for RGB
 	 *          data, data[0] is R, data[1] is G, and data[2] is B.
@@ -393,7 +393,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given single-precision floating point data.
-	 * 
+	 *
 	 * @param data Array containing image data. It is assumed that each channel
 	 *          corresponds to one element of the array. For example, for RGB
 	 *          data, data[0] is R, data[1] is G, and data[2] is B.
@@ -410,7 +410,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an image from the given double-precision floating point data.
-	 * 
+	 *
 	 * @param data Array containing image data. It is assumed that each channel
 	 *          corresponds to one element of the array. For example, for RGB
 	 *          data, data[0] is R, data[1] is G, and data[2] is B.
@@ -430,7 +430,7 @@ public final class AWTImageTools {
 	/**
 	 * Creates an image from the given raw byte array, performing any necessary
 	 * type conversions.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -474,7 +474,7 @@ public final class AWTImageTools {
 	/**
 	 * Creates an image from the given raw byte array, performing any necessary
 	 * type conversions.
-	 * 
+	 *
 	 * @param data Array containing image data, one channel per element.
 	 * @param w Width of image plane.
 	 * @param h Height of image plane.
@@ -537,7 +537,7 @@ public final class AWTImageTools {
 	/**
 	 * Creates an RGB image from the given raw byte array, performing any
 	 * necessary type conversions.
-	 * 
+	 *
 	 * @param data Array containing image data.
 	 * @param c Nuber of channels. NB: Channels over 4 will be discarded.
 	 * @param h Height of image plane.
@@ -571,7 +571,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates an RGB image from the given raw byte array
-	 * 
+	 *
 	 * @param data Array containing channel-separated arrays of image data
 	 * @param h Height of image plane.
 	 * @param w Width of image plane.
@@ -597,7 +597,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Creates a blank image with the given dimensions and transfer type.
-	 * 
+	 *
 	 * @param axes the ordered axis lengths for the new image. Only interested in
 	 *          {@link Axes#CHANNEL}, {@link Axes#X} and {@link Axes#Y}.
 	 * @param type One of the following types:
@@ -851,7 +851,7 @@ public final class AWTImageTools {
 	/**
 	 * Creates a thumbnail image from the provided plane, scaling it to the
 	 * specified thumbnail dimensions.
-	 * 
+	 *
 	 * @param plane - Plane to scale
 	 * @param r - Reader used to open the provided Plane
 	 * @param imageIndex - index of the image the plane was read from
@@ -1290,7 +1290,7 @@ public final class AWTImageTools {
 
 	/**
 	 * Gets the pixel type of the given image.
-	 * 
+	 *
 	 * @return One of the following types:
 	 *         <ul>
 	 *         <li>FormatReader.INT8</li>
@@ -1372,16 +1372,19 @@ public final class AWTImageTools {
 	// int s = w * h;
 	// DataBuffer buf = null;
 	// if (type == DataBuffer.TYPE_BYTE) buf = new DataBufferByte(s, c);
-	// else if (type == DataBuffer.TYPE_USHORT) buf = new DataBufferUShort(s, c);
+	// else if (type == DataBuffer.TYPE_USHORT) buf = new DataBufferUShort(s,
+	// c);
 	// else if (type == DataBuffer.TYPE_INT) buf = new DataBufferInt(s, c);
 	// else if (type == DataBuffer.TYPE_SHORT) buf = new DataBufferShort(s, c);
 	// else if (type == DataBuffer.TYPE_FLOAT) buf = new DataBufferFloat(s, c);
-	// else if (type == DataBuffer.TYPE_DOUBLE) buf = new DataBufferDouble(s, c);
+	// else if (type == DataBuffer.TYPE_DOUBLE) buf = new DataBufferDouble(s,
+	// c);
 	// if (buf == null) return null;
 	//
 	// SampleModel model = new BandedSampleModel(type, w, h, c);
 	// WritableRaster raster = Raster.createWritableRaster(model, buf, null);
-	// BufferedImage target = new BufferedImage(colorModel, raster, false, null);
+	// BufferedImage target = new BufferedImage(colorModel, raster, false,
+	// null);
 	// Graphics2D g2 = target.createGraphics();
 	// g2.drawRenderedImage(image, null);
 	// g2.dispose();

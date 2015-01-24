@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,7 +47,7 @@ import org.scijava.thread.ThreadService;
 
 /**
  * Default {@link RefManagerService} implementation.
- * 
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Service.class)
@@ -69,10 +69,10 @@ public class DefaultRefManagerService extends AbstractService implements
 	// -- Fields --
 
 	/**
-	 * Flag passed by reference to {@link RefCleaner} instances to indicate
-	 * when this service has been disposed.
+	 * Flag passed by reference to {@link RefCleaner} instances to indicate when
+	 * this service has been disposed.
 	 */
-		private final boolean[] disposed = new boolean[1];
+	private final boolean[] disposed = new boolean[1];
 
 	/**
 	 * Maps managed objects to the reference types which refer to them, ensuring
@@ -121,10 +121,11 @@ public class DefaultRefManagerService extends AbstractService implements
 					knownRefs.add(ref);
 
 					if (knownRefs.size() == 1) {
-						// If this is the first entry in knownRefs, start a RefCleaner
+						// If this is the first entry in knownRefs, start a
+						// RefCleaner
 						// thread
-						threadService
-							.run(new RefCleaner(queue, knownRefs, logService, disposed));
+						threadService.run(new RefCleaner(queue, knownRefs, logService,
+							disposed));
 					}
 				}
 			}
@@ -176,7 +177,7 @@ public class DefaultRefManagerService extends AbstractService implements
 	 * registered with the given queue! Otherwise it's quite possible this thread
 	 * will never die and resources will not properly be cleaned.
 	 * </p>
-	 * 
+	 *
 	 * @author Mark Hiner
 	 */
 	private static class RefCleaner implements Runnable {
@@ -184,8 +185,11 @@ public class DefaultRefManagerService extends AbstractService implements
 		// -- Fields --
 
 		private final ReferenceQueue queue;
+
 		private final Set<Reference> refs;
+
 		private final LogService logService;
+
 		private final boolean[] run;
 
 		// -- Constructor --
@@ -196,7 +200,7 @@ public class DefaultRefManagerService extends AbstractService implements
 			this.queue = queue;
 			this.refs = refs;
 			logService = log;
-			run =  runFlag;
+			run = runFlag;
 		}
 
 		// -- Runnable API --
@@ -214,7 +218,8 @@ public class DefaultRefManagerService extends AbstractService implements
 				}
 				synchronized (refs) {
 					if (cleaningRef != null) {
-						// When a reference is pulled from the queue, call its cleanup
+						// When a reference is pulled from the queue, call its
+						// cleanup
 						// method and remove it from the list
 						cleaningRef.cleanup();
 						refs.remove(cleaningRef);
@@ -226,8 +231,8 @@ public class DefaultRefManagerService extends AbstractService implements
 			// cleaning of all known refs, as they may not have been enqueued
 			// via normal procedures.
 			if (!run[0]) {
-				for (Reference ref : refs) {
-					CleaningRef cleaningRef = (CleaningRef)ref;
+				for (final Reference ref : refs) {
+					final CleaningRef cleaningRef = (CleaningRef) ref;
 					cleaningRef.cleanup();
 				}
 			}

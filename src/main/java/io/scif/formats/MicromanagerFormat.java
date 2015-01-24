@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -68,7 +68,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * MicromanagerReader is the file format reader for Micro-Manager files.
- * 
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Micro-Manager")
@@ -842,23 +842,33 @@ public class MicromanagerFormat extends AbstractFormat {
 	public static class Position {
 
 		public String baseTiff;
+
 		public Vector<String> tiffs;
+
 		public HashMap<Index, String> fileNameMap = new HashMap<Index, String>();
 
 		public String metadataFile;
+
 		public String xmlFile;
 
 		public String[] channels;
 
 		public String comment, time;
+
 		public Double exposureTime, sliceThickness, pixelSize;
+
 		public Double[] timestamps;
 
 		public int gain;
+
 		public String binning, detectorID, detectorModel, detectorManufacturer;
+
 		public double temperature;
+
 		public Vector<Double> voltage;
+
 		public String cameraRef;
+
 		public String cameraMode;
 
 		public String getFile(final Metadata meta, final int imageIndex,
@@ -886,7 +896,9 @@ public class MicromanagerFormat extends AbstractFormat {
 	private static class Index {
 
 		public int z;
+
 		public int c;
+
 		public int t;
 
 		public Index(final int[] zct) {

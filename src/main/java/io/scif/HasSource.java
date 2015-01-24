@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,7 +36,7 @@ import java.io.IOException;
  * Interface for components that can be attached to open image sources that
  * should be closed to avoid resource leaks (e.g.
  * {@link io.scif.io.RandomAccessInputStream})
- * 
+ *
  * @see io.scif.io.RandomAccessInputStream
  * @see io.scif.io.RandomAccessOutputStream
  * @author Mark Hiner
@@ -46,7 +46,7 @@ public interface HasSource {
 	/**
 	 * Closes the image source(s) associated with this component, with a toggle to
 	 * determine if the component itself is reset.
-	 * 
+	 *
 	 * @param fileOnly - If true, only the associated source(s) are closed.
 	 */
 	void close(boolean fileOnly) throws IOException;

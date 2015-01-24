@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,7 +41,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  * This class implements Huffman decoding.
- * 
+ *
  * @author Melissa Linkert
  */
 @Plugin(type = Codec.class)
@@ -73,7 +73,7 @@ public class HuffmanCodec extends AbstractCodec {
 	 * {@link HuffmanCodecOptions}, and should have the following fields set:
 	 * {@link HuffmanCodecOptions#table table} {@link CodecOptions#bitsPerSample
 	 * bitsPerSample} {@link CodecOptions#maxBytes maxBytes}
-	 * 
+	 *
 	 * @see Codec#decompress(RandomAccessInputStream, CodecOptions)
 	 */
 	@Override
@@ -144,6 +144,7 @@ public class HuffmanCodec extends AbstractCodec {
 	class Decoder {
 
 		public Decoder[] branch = new Decoder[2];
+
 		private int leafValue = -1;
 
 		public Decoder() {}

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -43,7 +43,7 @@ import java.nio.channels.FileChannel;
 
 /**
  * A wrapper for buffered NIO logic that implements the IRandomAccess interface.
- * 
+ *
  * @see IRandomAccess
  * @see java.io.RandomAccessFile
  * @author Chris Allan
@@ -232,7 +232,8 @@ public class NIOFileHandle extends AbstractNIOHandle {
 		channel.position(position);
 		final int readLength = channel.read(buf);
 		buffer(position + readLength, 0);
-		// Return value of NIO channel's is -1 when zero bytes are read at the end
+		// Return value of NIO channel's is -1 when zero bytes are read at the
+		// end
 		// of the file.
 		return readLength == -1 ? 0 : readLength;
 	}
@@ -511,7 +512,7 @@ public class NIOFileHandle extends AbstractNIOHandle {
 	/**
 	 * Aligns the NIO buffer, maps it if it is not currently and sets all relevant
 	 * positions and offsets.
-	 * 
+	 *
 	 * @param offset The location within the file to read from.
 	 * @param size The requested read length.
 	 * @throws IOException If there is an issue mapping, aligning or allocating

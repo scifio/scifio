@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -76,6 +76,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 	private String encoding = Constants.ENCODING;
 
 	private final SCIFIO scifio;
+
 	private final LogService log;
 
 	// -- Constructors --
@@ -130,7 +131,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 
 	/**
 	 * Sets the native encoding of the stream.
-	 * 
+	 *
 	 * @see Constants#ENCODING
 	 */
 	public void setEncoding(final String encoding) {
@@ -190,7 +191,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 
 	/**
 	 * Reads a string ending with one of the characters in the given string.
-	 * 
+	 *
 	 * @see #findString(String...)
 	 */
 	public String readString(final String lastChars) throws IOException {
@@ -204,7 +205,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 
 	/**
 	 * Reads a string ending with one of the given terminating substrings.
-	 * 
+	 *
 	 * @param terminators The strings for which to search.
 	 * @return The string from the initial position through the end of the
 	 *         terminating sequence, or through the end of the stream if no
@@ -217,7 +218,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 	/**
 	 * Reads or skips a string ending with one of the given terminating
 	 * substrings.
-	 * 
+	 *
 	 * @param saveString Whether to collect the string from the current file
 	 *          pointer to the terminating bytes, and return it. If false, returns
 	 *          null.
@@ -237,7 +238,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 	/**
 	 * Reads a string ending with one of the given terminating substrings, using
 	 * the specified block size for buffering.
-	 * 
+	 *
 	 * @param blockSize The block size to use when reading bytes in chunks.
 	 * @param terminators The strings for which to search.
 	 * @return The string from the initial position through the end of the
@@ -253,7 +254,7 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 	/**
 	 * Reads or skips a string ending with one of the given terminating
 	 * substrings, using the specified block size for buffering.
-	 * 
+	 *
 	 * @param saveString Whether to collect the string from the current file
 	 *          pointer to the terminating bytes, and return it. If false, returns
 	 *          null.

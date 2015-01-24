@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -57,7 +57,7 @@ import org.scijava.service.Service;
 
 /**
  * Default {@link FormatService} implementation
- * 
+ *
  * @see io.scif.services.FormatService
  * @author Mark Hiner
  */
@@ -74,7 +74,7 @@ public class DefaultFormatService extends AbstractService implements
 	// -- Fields --
 
 	/*
-	 * A  list of all available Formats
+	 * A list of all available Formats
 	 */
 	private Set<Format> formats;
 
@@ -255,7 +255,7 @@ public class DefaultFormatService extends AbstractService implements
 	 * Returns the first Format known to be compatible with the source provided.
 	 * Formats are checked in ascending order of their priority. The source is
 	 * read if necessary to determine compatibility.
-	 * 
+	 *
 	 * @param id the source
 	 * @return A Format reference compatible with the provided source.
 	 */

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -59,7 +59,7 @@ import net.imglib2.type.NativeType;
  * NB: ImgMode.CELL is always satisfied. Thus to avoid a particular ImgMode,
  * provide a list excluding the undesired types that includes ImgMode.CELL last.
  * </p>
- * 
+ *
  * @author Mark Hiner
  */
 public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
@@ -78,7 +78,8 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 	{
 		ImgFactory<T> tmpFactory = null;
 
-		// Max size of a plane of a PlanarImg, or total dataset for ArrayImg. 2GB.
+		// Max size of a plane of a PlanarImg, or total dataset for ArrayImg.
+		// 2GB.
 		final long maxSize = DataTools.safeMultiply64(2, 1024, 1024, 1024);
 
 		final long availableMem =
@@ -101,7 +102,8 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 		// loop over ImgOptions in preferred order
 		while (!decided) {
 
-			// get the current mode, or AUTO if we've exhausted the list of modes
+			// get the current mode, or AUTO if we've exhausted the list of
+			// modes
 			final ImgMode mode =
 				modeIndex >= imgModes.length ? ImgMode.AUTO : imgModes[modeIndex++];
 
@@ -110,7 +112,8 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 				else if (datasetSize < maxSize) tmpFactory = new ArrayImgFactory<T>();
 				else tmpFactory = new PlanarImgFactory<T>();
 
-				// FIXME: no CellImgFactory right now.. isn't guaranteed to handle all
+				// FIXME: no CellImgFactory right now.. isn't guaranteed to
+				// handle all
 				// images well (e.g. RGB)
 //        else if (planeSize < maxSize) tmpFactory = new PlanarImgFactory<T>();
 //        else tmpFactory = new CellImgFactory<T>();
@@ -130,7 +133,8 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 				decided = true;
 			}
 			else if (mode.equals(ImgMode.CELL)) {
-				// FIXME: no CellImgFactory right now.. isn't guaranteed to handle all
+				// FIXME: no CellImgFactory right now.. isn't guaranteed to
+				// handle all
 				// images well (e.g. RGB)
 //        if (fitsInMemory) tmpFactory = new CellImgFactory<T>();
 //        else tmpFactory = new SCIFIOCellImgFactory<T>();

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,7 +36,7 @@ import java.io.Serializable;
 
 /**
  * Interface for caching and retrieving objects.
- * 
+ *
  * @author Mark Hiner
  */
 public interface CacheService<T extends Serializable> extends SCIFIOService {
@@ -46,28 +46,28 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	 * vulnerable to race conditions, as successful clearing requires that the
 	 * items to be clear have actually made it to disk. Thus it should not be used
 	 * if there is the chance that transactions are still in process.
-	 * 
+	 *
 	 * @param cacheId cache name to clear
 	 */
 	void clearCache(String cacheId);
 
 	/**
 	 * Removes all entries for all caches
-	 * 
+	 *
 	 * @see #clearCache(String)
 	 */
 	void clearAllCaches();
 
 	/**
 	 * Closes and removes the specified cache.
-	 * 
+	 *
 	 * @param cacheId cache name to remove
 	 */
 	void dropCache(String cacheId);
 
 	/**
 	 * Creates a cache using the specified id
-	 * 
+	 *
 	 * @param cacheId cache to create
 	 */
 	void addCache(String cacheId);
@@ -78,7 +78,7 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	 * NB: If successful, after invoking this method, the cached object should be
 	 * considered "clean" in a dirty/clean context.
 	 * </p>
-	 * 
+	 *
 	 * @param cacheId - Cache this object belongs to
 	 * @param index - Index in the cache of this object
 	 * @param object - object to store
@@ -96,7 +96,7 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	 * re-cache itself when finalized. To disable this feature, use
 	 * {@link #retrieveNoRecache(String, int)}.
 	 * </p>
-	 * 
+	 *
 	 * @param cacheId - Cache the desired object belongs to
 	 * @param index - Index in the cache of the desired object
 	 * @return The cached object for the specified id and index
@@ -106,7 +106,7 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	/**
 	 * As {@link #retrieve(String, int)}, but any flag for automatic caching will
 	 * be disabled if possible.
-	 * 
+	 *
 	 * @param cacheId - Cache the desired object belongs to
 	 * @param index - Index in the cache of the desired object
 	 * @return The cached object for the specified id and index
@@ -120,7 +120,7 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	 * this process will run on a separate thread, there may be a performance hit
 	 * to delete cache entries - e.g. if further caching is blocked. Use this
 	 * method to pre-emptively control when records are deleted.
-	 * 
+	 *
 	 * @param cacheId - Cache to clean
 	 */
 	void cleanRetrieved(final String cacheId);
@@ -135,7 +135,7 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	/**
 	 * Sets the amount of disk space available to caches created by this service's
 	 * manager.
-	 * 
+	 *
 	 * @param maxBytes - max bytes usable by this manager's disk stores.
 	 */
 	void setMaxBytesOnDisk(long maxBytes);

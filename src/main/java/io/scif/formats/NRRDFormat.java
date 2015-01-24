@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -89,6 +89,7 @@ public class NRRDFormat extends AbstractFormat {
 		private String[] pixelSizes;
 
 		private boolean lookForCompanion = true;
+
 		private boolean initializeHelper = false;
 
 		// -- NRRDMetadata getters and setters --
@@ -355,7 +356,8 @@ public class NRRDFormat extends AbstractFormat {
 			}
 
 			// nrrd files store pixel data in addition to metadata
-			// nhdr files don't store pixel data, but instead provide a path to the
+			// nhdr files don't store pixel data, but instead provide a path to
+			// the
 			// pixels file (this can be any format)
 
 			if (meta.getDataFile() == null) meta.setOffset(stream.getFilePointer());
@@ -374,7 +376,8 @@ public class NRRDFormat extends AbstractFormat {
 			}
 
 			if (meta.isInitializeHelper()) {
-				// Find the highest priority non-NRRD format that can support the
+				// Find the highest priority non-NRRD format that can support
+				// the
 				// current
 				// image and cache it as a helper
 				final NRRDFormat nrrd =

@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -68,7 +68,7 @@ import org.scijava.plugin.Plugin;
 
 /**
  * JPEG2000Reader is the file format reader for JPEG-2000 images.
- * 
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "JPEG-2000")
@@ -92,6 +92,7 @@ public class JPEG2000Format extends AbstractFormat {
 		private long pixelsOffset;
 
 		private Index lastIndex = new Index();
+
 		private byte[] lastIndexBytes;
 
 		/** The number of JPEG 2000 resolution levels the file has. */
@@ -99,7 +100,9 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/** The color lookup table associated with this file. */
 		private int[][] lut;
+
 		byte[][] byteLut;
+
 		short[][] shortLut;
 
 		// -- JPEG2000Metadata getters and setters --
@@ -159,10 +162,12 @@ public class JPEG2000Format extends AbstractFormat {
 				getLut() != null);
 			iMeta.setPlanarAxisCount(3);
 
-			// New core metadata now that we know how many sub-resolutions we have.
+			// New core metadata now that we know how many sub-resolutions we
+			// have.
 			if (getResolutionLevels() != null) {
 				final int imageCount = resolutionLevels + 1;
-				// TODO set resolution count get(0).resolutionCount = imageCount;
+				// TODO set resolution count get(0).resolutionCount =
+				// imageCount;
 
 				for (int i = 1; i < imageCount; i++) {
 					final ImageMetadata ms = new DefaultImageMetadata(iMeta);
@@ -293,7 +298,9 @@ public class JPEG2000Format extends AbstractFormat {
 		/** Height of the image as specified in the JPEG 2000 codestream. */
 		private Integer codestreamSizeY;
 
-		/** Number of channels the image as specified in the JPEG 2000 codestream. */
+		/**
+		 * Number of channels the image as specified in the JPEG 2000 codestream.
+		 */
 		private Short codestreamSizeC;
 
 		/** Pixel type as specified in the JPEG 2000 codestream.. */
@@ -320,7 +327,8 @@ public class JPEG2000Format extends AbstractFormat {
 			comments = new ArrayList<String>();
 			final boolean isLittleEndian = stream.isLittleEndian();
 			try {
-				// Parse boxes may need to change the endianness of the input stream so
+				// Parse boxes may need to change the endianness of the input
+				// stream so
 				// we're going to reset it when we're done.
 				parseBoxes(meta);
 			}
@@ -389,7 +397,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Parses the JPEG 2000 JP2 metadata boxes.
-		 * 
+		 *
 		 * @throws IOException Thrown if there is an error reading from the file.
 		 */
 		private void parseBoxes(final Metadata meta) throws IOException {
@@ -500,7 +508,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Parses the JPEG 2000 codestream metadata.
-		 * 
+		 *
 		 * @param length Total length of the codestream block.
 		 * @throws IOException Thrown if there is an error reading from the file.
 		 */
@@ -630,7 +638,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Whether or not the codestream is raw and not JP2 boxed.
-		 * 
+		 *
 		 * @return <code>true</code> if the codestream is raw and <code>false</code>
 		 *         otherwise.
 		 */
@@ -640,7 +648,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Returns the width of the image as specified in the header.
-		 * 
+		 *
 		 * @return See above.
 		 */
 		public Integer getHeaderSizeX() {
@@ -649,7 +657,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Returns the height of the image as specified in the header.
-		 * 
+		 *
 		 * @return See above.
 		 */
 		public Integer getHeaderSizeY() {
@@ -658,7 +666,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Returns the number of channels the image has as specified in the header.
-		 * 
+		 *
 		 * @return See above.
 		 */
 		public Short getHeaderSizeC() {
@@ -667,7 +675,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Returns the pixel type as specified in the header.
-		 * 
+		 *
 		 * @return See above.
 		 */
 		public Integer getHeaderPixelType() {
@@ -676,7 +684,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Returns the width of the image as specified in the header.
-		 * 
+		 *
 		 * @return See above.
 		 */
 		public Integer getCodestreamSizeX() {
@@ -685,7 +693,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Returns the height of the image as specified in the header.
-		 * 
+		 *
 		 * @return See above.
 		 */
 		public Integer getCodestreamSizeY() {
@@ -694,7 +702,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Returns the number of channels the image has as specified in the header.
-		 * 
+		 *
 		 * @return See above.
 		 */
 		public Short getCodestreamSizeC() {
@@ -703,7 +711,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Returns the pixel type as specified in the header.
-		 * 
+		 *
 		 * @return See above.
 		 */
 		public Integer getCodestreamPixelType() {
@@ -811,14 +819,14 @@ public class JPEG2000Format extends AbstractFormat {
 			throws FormatException, IOException
 		{
 			/*
-			if (!isFullPlane(x, y, w, h)) {
-			  throw new FormatException(
-			    "JPEG2000Writer does not yet support saving image tiles.");
-			}
-			*/
+			 * if (!isFullPlane(x, y, w, h)) { throw new FormatException(
+			 * "JPEG2000Writer does not yet support saving image tiles."); }
+			 */
 			// MetadataRetrieve retrieve = getMetadataRetrieve();
-			// int width = retrieve.getPixelsSizeX(series).getValue().intValue();
-			// int height = retrieve.getPixelsSizeY(series).getValue().intValue();
+			// int width =
+			// retrieve.getPixelsSizeX(series).getValue().intValue();
+			// int height =
+			// retrieve.getPixelsSizeY(series).getValue().intValue();
 
 			getStream().write(
 				compressBuffer(imageIndex, planeIndex, plane, planeMin, planeMax));
@@ -826,7 +834,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		/**
 		 * Compresses the buffer.
-		 * 
+		 *
 		 * @param imageIndex the image index within the dataset
 		 * @param planeIndex the plane index within the image
 		 * @param plane the image tile being compressed.
@@ -893,6 +901,7 @@ public class JPEG2000Format extends AbstractFormat {
 	public static class Index {
 
 		private int imageIndex;
+
 		private long planeIndex;
 
 		public Index() {

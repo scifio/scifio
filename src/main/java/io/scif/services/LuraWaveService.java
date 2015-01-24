@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -71,14 +71,14 @@ public interface LuraWaveService extends SCIFIOService, Optional {
 	 * Overrides the license code to use when initializing the LuraWave decoder.
 	 * By default the license code is loaded from the "lurawave.license" system
 	 * property.
-	 * 
+	 *
 	 * @param license String license code.
 	 */
 	public void setLicenseCode(String license);
 
 	/**
 	 * Retrieves the current license code as a string.
-	 * 
+	 *
 	 * @return See above.
 	 */
 	public String getLicenseCode();
@@ -87,7 +87,7 @@ public interface LuraWaveService extends SCIFIOService, Optional {
 	 * Wraps
 	 * {@code com.luratech.lwf.lwfDecoder#lwfDecoder(InputStream, String, String)}
 	 * .
-	 * 
+	 *
 	 * @throws IOException If parsing of the image header fails.
 	 * @throws DependencyException If no license code was specified.
 	 * @throws ServiceException If the license code is invalid.
@@ -105,7 +105,7 @@ public interface LuraWaveService extends SCIFIOService, Optional {
 	 * Wraps
 	 * {@code com.luratech.lwf.lwfDecoder#decodeToMemoryGray8(byte[], int, int, int)}
 	 * .
-	 * 
+	 *
 	 * @throws ServiceException If the license code is invalid.
 	 */
 	public void decodeToMemoryGray8(byte[] image, int limit, int quality,
@@ -115,7 +115,7 @@ public interface LuraWaveService extends SCIFIOService, Optional {
 	 * Wraps
 	 * {@code com.luratech.lwf.lwfDecoder#decodeToMemoryGray16(short[], int, int, int, int, int, int, int, int, int, int)}
 	 * .
-	 * 
+	 *
 	 * @throws ServiceException If the license code is invalid.
 	 */
 	public void decodeToMemoryGray16(short[] image, int imageoffset, int limit,

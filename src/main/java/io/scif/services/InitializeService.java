@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,7 +47,7 @@ import java.io.IOException;
  * {@link io.scif.filters.ReaderFilter} instead of a basic Reader. This is a
  * convenience to allow filters to be enabled if desired.
  * </p>
- * 
+ *
  * @see io.scif.Reader
  * @see io.scif.Writer
  * @see io.scif.filters.ReaderFilter
@@ -58,7 +58,7 @@ public interface InitializeService extends SCIFIOService {
 	/**
 	 * See {@link #initializeReader(String, SCIFIOConfig)}. Will not open the
 	 * image source while parsing metadata.
-	 * 
+	 *
 	 * @param id Name of the image source to be read.
 	 * @return An initialized {@code Reader}.
 	 */
@@ -68,7 +68,7 @@ public interface InitializeService extends SCIFIOService {
 	 * Convenience method for creating a {@code Reader} component that is ready to
 	 * open planes of the provided image source. The reader's {@code Metadata} and
 	 * source fields will be populated.
-	 * 
+	 *
 	 * @param id Name of the image source to be read.
 	 * @param config Configuration for this method execution.
 	 * @return An initialized {@code Reader}.
@@ -79,7 +79,7 @@ public interface InitializeService extends SCIFIOService {
 	/**
 	 * See {@link #initializeWriter(String, String, SCIFIOConfig)}. Will not open
 	 * the image source while parsing metadata.
-	 * 
+	 *
 	 * @param source Name of the image source to use for parsing metadata.
 	 * @param destination Name of the writing destination.
 	 * @return An initialized {@code Writer}.
@@ -89,7 +89,7 @@ public interface InitializeService extends SCIFIOService {
 
 	/**
 	 * As {@link #initializeWriter(String, String)} with configuration options.
-	 * 
+	 *
 	 * @param source Name of the image source to use for parsing metadata.
 	 * @param destination Name of the writing destination.
 	 * @param config Configuration for this method execution.
@@ -102,7 +102,7 @@ public interface InitializeService extends SCIFIOService {
 	/**
 	 * See {@link #initializeWriter(String, String, SCIFIOConfig)}. Will not open
 	 * the image source while parsing metadata.
-	 * 
+	 *
 	 * @param sourceMeta Name of the image source to use for parsing metadata.
 	 * @param destination Name of the writing destination.
 	 * @return An initialized {@code Writer}.
@@ -112,7 +112,7 @@ public interface InitializeService extends SCIFIOService {
 
 	/**
 	 * As {@link #initializeWriter(Metadata, String)} with configuration options.
-	 * 
+	 *
 	 * @param sourceMeta Name of the image source to use for parsing metadata.
 	 * @param destination Name of the writing destination.
 	 * @param config Configuration information to use for this parse.
@@ -126,7 +126,7 @@ public interface InitializeService extends SCIFIOService {
 	 * pixels. Useful when translating to other formats, or simply extracting
 	 * image metadata. Will not open the image source when determining format
 	 * compatibility.
-	 * 
+	 *
 	 * @param id Name of the image source to be read.
 	 * @return Parsed {@link Metadata} for the given source.
 	 * @throws FormatException
@@ -137,7 +137,7 @@ public interface InitializeService extends SCIFIOService {
 	/**
 	 * As {@link #parseMetadata(String)} with a flag to open the underlying
 	 * dataset when parsing, if desired.
-	 * 
+	 *
 	 * @param id Name of the image source to be read.
 	 * @param config Configuration for this method execution.
 	 * @return Parsed {@link Metadata} for the given source.

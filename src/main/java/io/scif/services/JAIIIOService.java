@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -46,7 +46,7 @@ public interface JAIIIOService extends SCIFIOService {
 
 	/**
 	 * Writes an image using JAI Image I/O using the JPEG 2000 codec.
-	 * 
+	 *
 	 * @param out Target output stream.
 	 * @param img Source buffered image.
 	 * @param options Options for the JPEG 2000 codec.
@@ -60,7 +60,7 @@ public interface JAIIIOService extends SCIFIOService {
 
 	/**
 	 * Writes an image using JAI Image I/O using the JPEG 2000 codec.
-	 * 
+	 *
 	 * @param out Target output stream.
 	 * @param img Source buffered image.
 	 * @param lossless Whether or not to compress losslessly.
@@ -80,7 +80,7 @@ public interface JAIIIOService extends SCIFIOService {
 
 	/**
 	 * Reads an image using JAI Image I/O using the JPEG 2000 codec.
-	 * 
+	 *
 	 * @param in Target input stream.
 	 * @param options Options for the JPEG 2000 codec.
 	 * @return An AWT buffered image.
@@ -94,7 +94,7 @@ public interface JAIIIOService extends SCIFIOService {
 
 	/**
 	 * Reads an image using JAI Image I/O using the JPEG 2000 codec.
-	 * 
+	 *
 	 * @param in Target input stream.
 	 * @return An AWT buffered image.
 	 * @throws IOException Thrown if there is an error reading from or writing to
@@ -108,7 +108,7 @@ public interface JAIIIOService extends SCIFIOService {
 
 	/**
 	 * Reads an image into a raster using JAI Image I/O using the JPEG 2000 codec.
-	 * 
+	 *
 	 * @param in Target input stream.
 	 * @param options Options for the JPEG 2000 codec.
 	 * @return An AWT image raster.
@@ -122,7 +122,7 @@ public interface JAIIIOService extends SCIFIOService {
 
 	/**
 	 * Reads an image into a raster using JAI Image I/O using the JPEG 2000 codec.
-	 * 
+	 *
 	 * @param in Target input stream.
 	 * @return An AWT image raster.
 	 * @throws IOException Thrown if there is an error reading from or writing to

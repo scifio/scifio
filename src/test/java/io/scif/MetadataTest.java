@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,10 +33,6 @@ package io.scif;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import io.scif.Format;
-import io.scif.FormatException;
-import io.scif.Metadata;
-import io.scif.SCIFIO;
 import io.scif.img.axes.SCIFIOAxes;
 import io.scif.util.FormatTools;
 
@@ -49,20 +45,22 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link io.scif.Metadata} interface methods.
- * 
+ *
  * @author Mark Hiner
  */
 public class MetadataTest {
 
 	private final SCIFIO scifio = new SCIFIO();
+
 	private final String id =
 		"testImg&lengths=620,512,5,6,7&axes=X,Y,Time,Z,Channel.fake";
+
 	private final String ndId =
 		"ndImg&axes=X,Y,Z,Channel,Time,Lifetime,Spectra,&lengths=256,128,2,6,10,4,8.fake";
 
 	/**
 	 * Down the middle test that verifies each method of the Metadata API.
-	 * 
+	 *
 	 * @throws FormatException
 	 * @throws IOException
 	 */
@@ -101,7 +99,7 @@ public class MetadataTest {
 
 	/**
 	 * Verify conditions when adding axes
-	 * 
+	 *
 	 * @throws FormatException
 	 */
 	@Test
@@ -260,7 +258,8 @@ public class MetadataTest {
 
 		assertEquals(3, m.get(0).getAxes().size());
 
-		// Revert the trailing axis's length to 1. It should be disregarded again.
+		// Revert the trailing axis's length to 1. It should be disregarded
+		// again.
 		m.get(0).setAxisLength(Axes.TIME, 1);
 
 		assertEquals(2, m.get(0).getAxes().size());

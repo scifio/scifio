@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,7 +42,7 @@ import java.io.IOException;
  * are associated with is compatibile with a given image. This is accomplished
  * via the {@link #isFormat} methods.
  * </p>
- * 
+ *
  * @see io.scif.Format
  * @see io.scif.HasFormat
  * @author Mark Hiner
@@ -69,7 +69,7 @@ public interface Checker extends HasFormat {
 	/**
 	 * Checks if the provided image source is compatible with this {@code Format}.
 	 * Will not open the source during this process.
-	 * 
+	 *
 	 * @param name path to the image source to check.
 	 * @return True if the image source is compatible with this {@code Format}.
 	 */
@@ -83,7 +83,7 @@ public interface Checker extends HasFormat {
 	 * relatively expensive file system operations (such as file existence tests
 	 * and directory listings) may be performed.
 	 * </p>
-	 * 
+	 *
 	 * @param name path to the image source to check.
 	 * @param config {@link SCIFIOConfig} for this isFormat call.
 	 * @return True if the image source is compatible with this {@code Format}.
@@ -92,7 +92,7 @@ public interface Checker extends HasFormat {
 
 	/**
 	 * Checks if the given stream is a valid stream for this {@code Format}.
-	 * 
+	 *
 	 * @param stream the image source to check.
 	 * @return True if {@code stream} is compatible with this {@code Format}.
 	 * @throws IOException
@@ -101,7 +101,7 @@ public interface Checker extends HasFormat {
 
 	/**
 	 * Checks if the given bytes are a valid header for this {@code Format}.
-	 * 
+	 *
 	 * @param block the byte array to check.
 	 * @return True if {@code block} is compatible with this {@code Format}.
 	 */

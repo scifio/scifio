@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,7 @@ import net.imagej.axis.CalibratedAxis;
 
 /**
  * A utility class for working with {@link io.scif.Metadata} objects.
- * 
+ *
  * @see io.scif.Metadata
  * @author Mark Hiner
  */
@@ -140,7 +140,7 @@ public class SCIFIOMetadataTools {
 	/**
 	 * Checks whether the given metadata object has the minimum metadata populated
 	 * to successfully describe an Image.
-	 * 
+	 *
 	 * @throws FormatException if there is a missing metadata field, or the
 	 *           metadata object is uninitialized
 	 */
@@ -153,7 +153,7 @@ public class SCIFIOMetadataTools {
 	/**
 	 * Checks whether the given metadata object has the minimum metadata populated
 	 * to successfully describe the nth Image.
-	 * 
+	 *
 	 * @throws FormatException if there is a missing metadata field, or the
 	 *           metadata object is uninitialized
 	 */
@@ -242,12 +242,13 @@ public class SCIFIOMetadataTools {
 
 	/**
 	 * Helper class that pairs an AxisType with a length.
-	 * 
+	 *
 	 * @author Mark Hiner
 	 */
 	public static class AxisValue {
 
 		private CalibratedAxis type;
+
 		private long length;
 
 		public AxisValue(final AxisType type, final long length) {

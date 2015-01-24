@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,7 +39,7 @@ import net.imglib2.util.IntervalIndexer;
 
 /**
  * {@link AbstractCells} implementation for working with {@link SCIFIOCell}s.
- * 
+ *
  * @author Mark Hiner
  */
 public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
@@ -53,14 +53,14 @@ public class SCIFIOImgCells<A extends ArrayDataAccess<?>> extends
 
 		/**
 		 * Get the cell at a specified index.
-		 * 
+		 *
 		 * @return cell at index or null if the cell is not in the cache.
 		 */
 		public SCIFIOCell<A> get(final int index);
 
 		/**
 		 * Load a cell into memory and put it into the cache at the specified index.
-		 * 
+		 *
 		 * @param index cell is stored at this index in the cache.
 		 * @param cellDims dimensions of the cell.
 		 * @param cellMin offset of the cell in image coordinates.

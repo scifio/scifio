@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -56,7 +56,7 @@ public class RandomAccessOutputStream extends OutputStream implements
 
 	/**
 	 * Constructs a random access stream around the given file.
-	 * 
+	 *
 	 * @param file Filename to open the stream for.
 	 * @throws IOException If there is a problem opening the file.
 	 */
@@ -69,7 +69,7 @@ public class RandomAccessOutputStream extends OutputStream implements
 
 	/**
 	 * Constructs a random access stream around the given handle.
-	 * 
+	 *
 	 * @param handle Handle to open the stream for.
 	 */
 	public RandomAccessOutputStream(final IRandomAccess handle) {
@@ -131,7 +131,7 @@ public class RandomAccessOutputStream extends OutputStream implements
 
 	/**
 	 * Writes bytes to the stream from the given buffer.
-	 * 
+	 *
 	 * @param b Source buffer to read data from.
 	 * @throws IOException If there is an error writing to the stream.
 	 */

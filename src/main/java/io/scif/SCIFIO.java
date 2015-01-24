@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -62,7 +62,7 @@ import org.scijava.service.SciJavaService;
  * This class is intended to be a disposable wrapper that can easily be created
  * and forgotten as needed.
  * </p>
- * 
+ *
  * @see org.scijava.Context
  * @see io.scif.services.InitializeService
  * @see io.scif.services.FormatService
@@ -83,7 +83,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * Creates a new SCIFIO application with zero or all services..
-	 * 
+	 *
 	 * @param empty If true, the context will be empty; otherwise, it will be
 	 *          initialized with all available services.
 	 */
@@ -93,7 +93,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * Creates a new SCIFIO wrapping the provided context.
-	 * 
+	 *
 	 * @param context - The context to wrap
 	 */
 	public SCIFIO(final Context context) {
@@ -104,7 +104,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * InitializeService accessor.
-	 * 
+	 *
 	 * @return The InitializeService instance associated with the wrapped Context.
 	 */
 	public InitializeService initializer() {
@@ -113,7 +113,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * FormatService accessor.
-	 * 
+	 *
 	 * @return The FormatService instance associated with the wrapped Context.
 	 */
 	public FormatService format() {
@@ -122,7 +122,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * MetadataService accessor.
-	 * 
+	 *
 	 * @return The MetadataService instance associated with the wrapped Context.
 	 */
 	public MetadataService metadata() {
@@ -131,7 +131,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * TranslatorService accessor.
-	 * 
+	 *
 	 * @return The TranslatorService instance associated with the wrapped Context.
 	 */
 	public TranslatorService translator() {
@@ -140,7 +140,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * LocationService accessor.
-	 * 
+	 *
 	 * @return The LocationService instance associated with the wrapped Context.
 	 */
 	public LocationService location() {
@@ -149,7 +149,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * FilePatternService accessor.
-	 * 
+	 *
 	 * @return The FilePatternService instance associated with the wrapped
 	 *         Context.
 	 */
@@ -159,7 +159,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * CodecService accessor.
-	 * 
+	 *
 	 * @return The CodecService instance associated with the wrapped Context.
 	 */
 	public CodecService codec() {
@@ -168,7 +168,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * TiffService accessor.
-	 * 
+	 *
 	 * @return The TiffService instance associated with the wrapped Context.
 	 */
 	public TiffService tiff() {
@@ -177,7 +177,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * QTJavaService accessor.
-	 * 
+	 *
 	 * @return The QTJavaService instance associated with the wrapped Context.
 	 */
 	public QTJavaService qtJava() {
@@ -186,7 +186,7 @@ public class SCIFIO extends AbstractGateway {
 
 	/**
 	 * XMLService accessor.
-	 * 
+	 *
 	 * @return The XMLService instance associated with the wrapped Context.
 	 */
 	public XMLService xml() {
@@ -232,7 +232,8 @@ public class SCIFIO extends AbstractGateway {
 	/**
 	 * PlaneConverterService accessor.
 	 *
-	 * @return The PlaneConverterService instance associated with the wrapped Context.
+	 * @return The PlaneConverterService instance associated with the wrapped
+	 *         Context.
 	 */
 	public PlaneConverterService planeConverter() {
 		return get(PlaneConverterService.class);
