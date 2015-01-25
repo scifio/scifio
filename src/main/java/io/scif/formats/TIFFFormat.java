@@ -1622,7 +1622,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			// write the image
-			ifd.put(new Integer(IFD.LITTLE_ENDIAN), new Boolean(littleEndian));
+			ifd.put(new Integer(IFD.LITTLE_ENDIAN), Boolean.valueOf(littleEndian));
 			if (!ifd.containsKey(IFD.REUSE)) {
 				ifd.put(IFD.REUSE, getStream().length());
 				getStream().seek(getStream().length());
