@@ -52,7 +52,7 @@ public class LocationTest {
 	// -- Constants --
 	private final String OS = System.getProperty("os.name").toLowerCase();
 
-	private final boolean isWindows = OS.indexOf("win") >= 0;
+	private final boolean isWindows = OS.contains("win");
 
 	// -- Fields --
 
@@ -121,8 +121,8 @@ public class LocationTest {
 	public void testReadWriteMode() {
 		for (int i = 0; i < files.length; i++) {
 			final String msg = files[i].getName();
-			assertEquals(msg, files[i].canRead(), mode[i].indexOf("r") != -1);
-			assertEquals(msg, files[i].canWrite(), mode[i].indexOf("w") != -1);
+			assertEquals(msg, files[i].canRead(), mode[i].contains("r"));
+			assertEquals(msg, files[i].canWrite(), mode[i].contains("w"));
 		}
 	}
 
@@ -215,7 +215,7 @@ public class LocationTest {
 			if (file.isDirectory() && !path.endsWith(File.separator)) {
 				path += File.separator;
 			}
-			if (path.indexOf("://") == -1 && path.indexOf(":/") == -1) {
+			if (!path.contains("://") && !path.contains(":/")) {
 				path = new File(path).toURI().toURL().toString();
 			}
 			final URL baseURL = file.toURL();

@@ -166,7 +166,7 @@ public class ReflectedUniverse {
 			catch (final RuntimeException exc) {
 				// HACK: workaround for bug in Apache Axis2
 				final String msg = exc.getMessage();
-				if (msg != null && msg.indexOf("ClassNotFound") < 0) throw exc;
+				if (msg != null && !msg.contains("ClassNotFound")) throw exc;
 				log.debug("No such class: " + command, exc);
 				throw new ReflectException("No such class: " + command, exc);
 			}

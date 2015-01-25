@@ -137,9 +137,9 @@ public class Location extends AbstractSCIFIOPlugin {
 					final byte[] b = new byte[is.available()];
 					is.read(b);
 					String s = new String(b, Constants.ENCODING);
-					if (s.toLowerCase().indexOf("</html>") != -1) foundEnd = true;
+					if (s.toLowerCase().contains("</html>")) foundEnd = true;
 
-					while (s.indexOf("a href") != -1) {
+					while (s.contains("a href")) {
 						final int ndx = s.indexOf("a href") + 8;
 						final int idx = s.indexOf("\"", ndx);
 						if (idx < 0) break;

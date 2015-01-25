@@ -251,7 +251,7 @@ public class DefaultQTJavaService extends AbstractService implements
 		if (initialized) return;
 
 		final String arch = System.getProperty("os.arch");
-		if (arch != null && arch.indexOf("64") >= 0) {
+		if (arch != null && arch.contains("64")) {
 			// QTJava is not supported on 64-bit Java; don't even try
 			noQT = true;
 			jvm64Bit = true;
@@ -296,7 +296,7 @@ public class DefaultQTJavaService extends AbstractService implements
 			final Throwable t = err.getException();
 			if (t instanceof SecurityException) {
 				final SecurityException exc = (SecurityException) t;
-				if (exc.getMessage().indexOf("expired") >= 0) expiredQT = true;
+				if (exc.getMessage().contains("expired")) expiredQT = true;
 			}
 		}
 		catch (final Throwable t) {

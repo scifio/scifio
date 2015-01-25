@@ -392,7 +392,7 @@ public class TIFFFormat extends AbstractFormat {
 							}
 							String metadata =
 								DataTools.stripString(new String(b, Constants.ENCODING));
-							if (metadata.indexOf("xml") != -1) {
+							if (metadata.contains("xml")) {
 								metadata = metadata.substring(metadata.indexOf("<"));
 								metadata =
 									"<root>" + xmlService.sanitizeXML(metadata) + "</root>";
@@ -441,7 +441,7 @@ public class TIFFFormat extends AbstractFormat {
 				if (files != null) {
 					for (final String file : files) {
 						String name = file;
-						if (name.indexOf(".") != -1) {
+						if (name.contains(".")) {
 							name = name.substring(0, name.indexOf("."));
 						}
 
@@ -477,7 +477,7 @@ public class TIFFFormat extends AbstractFormat {
 			final String software =
 				meta.getIfds().get(0).getIFDTextValue(IFD.SOFTWARE);
 			return comment != null && software != null &&
-				software.indexOf("MetaMorph") != -1;
+				software.contains("MetaMorph");
 		}
 
 		private void parseCommentImageJ(final Metadata meta, String comment)
