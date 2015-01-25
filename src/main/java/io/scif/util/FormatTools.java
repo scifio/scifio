@@ -538,10 +538,10 @@ public final class FormatTools {
 	 * lengths.
 	 */
 	public static long getRasterLength(final long[] lengths) {
-		long len = 1;
-		for (int i = 0; i < lengths.length; i++)
-			len *= lengths[i];
-		return len;
+		long length = 1;
+		for (final long lengthVal : lengths)
+			length *= lengthVal;
+		return length;
 	}
 
 	// -- Utility methods - sanity checking
@@ -1193,8 +1193,7 @@ public final class FormatTools {
 				throw new IllegalArgumentException("Invalid pixel type");
 		}
 
-		final long[] values = { min, max };
-		return values;
+		return new long[] { min, max };
 	}
 
 	/** Performs suffix matching for the given filename. */
@@ -1207,11 +1206,11 @@ public final class FormatTools {
 		checkSuffix(final String name, final String[] suffixList)
 	{
 		final String lname = name.toLowerCase();
-		for (int i = 0; i < suffixList.length; i++) {
-			final String s = "." + suffixList[i];
+		for (final String suffix : suffixList) {
+			final String s = "." + suffix;
 			if (lname.endsWith(s)) return true;
-			for (int j = 0; j < COMPRESSION_SUFFIXES.length; j++) {
-				if (lname.endsWith(s + "." + COMPRESSION_SUFFIXES[j])) return true;
+			for (final String COMPRESSION_SUFFIX : COMPRESSION_SUFFIXES) {
+				if (lname.endsWith(s + "." + COMPRESSION_SUFFIX)) return true;
 			}
 		}
 		return false;

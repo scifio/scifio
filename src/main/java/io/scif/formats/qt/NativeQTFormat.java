@@ -339,10 +339,8 @@ public class NativeQTFormat extends AbstractFormat {
 			if (!FormatTools.validStream(stream, blockLen, false)) return false;
 			// use a crappy hack for now
 			final String s = stream.readString(blockLen);
-			for (int i = 0; i < CONTAINER_TYPES.length; i++) {
-				if (s.indexOf(CONTAINER_TYPES[i]) >= 0 &&
-					!CONTAINER_TYPES[i].equals("imag"))
-				{
+			for (final String CONTAINER_TYPE : CONTAINER_TYPES) {
+				if (s.indexOf(CONTAINER_TYPE) >= 0 && !CONTAINER_TYPE.equals("imag")) {
 					return true;
 				}
 			}
@@ -1478,8 +1476,8 @@ public class NativeQTFormat extends AbstractFormat {
 
 		/** Checks if the given String is a container atom type. */
 		private static boolean isContainer(final String type) {
-			for (int i = 0; i < CONTAINER_TYPES.length; i++) {
-				if (type.equals(CONTAINER_TYPES[i])) return true;
+			for (final String CONTAINER_TYPE : CONTAINER_TYPES) {
+				if (type.equals(CONTAINER_TYPE)) return true;
 			}
 			return false;
 		}

@@ -514,9 +514,9 @@ public final class ImageTools {
 		int min = Integer.MAX_VALUE;
 
 		if (bits <= 8) {
-			for (int j = 0; j < plane.length; j++) {
-				if (plane[j] < min) min = plane[j];
-				if (plane[j] > max) max = plane[j];
+			for (final byte planeVal : plane) {
+				if (planeVal < min) min = planeVal;
+				if (planeVal > max) max = planeVal;
 			}
 		}
 		else if (bits == 16) {

@@ -154,8 +154,8 @@ public class AxisGuesser {
 			p = p.substring(f + 1, l + 1);
 
 			// check against known Z prefixes
-			for (int j = 0; j < Z.length; j++) {
-				if (p.equals(Z[j])) {
+			for (final String zPre : Z) {
+				if (p.equals(zPre)) {
 					axisTypes[i] = Z_AXIS;
 					foundZ = true;
 					break;
@@ -164,8 +164,8 @@ public class AxisGuesser {
 			if (axisTypes[i] != UNKNOWN_AXIS) continue;
 
 			// check against known T prefixes
-			for (int j = 0; j < T.length; j++) {
-				if (p.equals(T[j])) {
+			for (final String tPre : T) {
+				if (p.equals(tPre)) {
 					axisTypes[i] = T_AXIS;
 					foundT = true;
 					break;
@@ -174,8 +174,8 @@ public class AxisGuesser {
 			if (axisTypes[i] != UNKNOWN_AXIS) continue;
 
 			// check against known C prefixes
-			for (int j = 0; j < C.length; j++) {
-				if (p.equals(C[j])) {
+			for (final String cPre : C) {
+				if (p.equals(cPre)) {
 					axisTypes[i] = C_AXIS;
 					foundC = true;
 					break;
@@ -184,8 +184,8 @@ public class AxisGuesser {
 			if (axisTypes[i] != UNKNOWN_AXIS) continue;
 
 			// check against known series prefixes
-			for (int j = 0; j < S.length; j++) {
-				if (p.equals(S[j])) {
+			for (final String sPre : S) {
+				if (p.equals(sPre)) {
 					axisTypes[i] = S_AXIS;
 					break;
 				}
@@ -361,8 +361,8 @@ public class AxisGuesser {
 	 */
 	public int getAxisCount(final int axisType) {
 		int num = 0;
-		for (int i = 0; i < axisTypes.length; i++) {
-			if (axisTypes[i] == axisType) num++;
+		for (final int type : axisTypes) {
+			if (type == axisType) num++;
 		}
 		return num;
 	}

@@ -718,10 +718,10 @@ public class ICSFormat extends AbstractFormat {
 			if (kv != null) {
 				final String pins[] = kv[1].split(" ");
 				int channel = 0;
-				for (int n = 0; n < pins.length; n++) {
-					if (pins[n].trim().equals("")) continue;
+				for (final String pin : pins) {
+					if (pin.trim().equals("")) continue;
 					try {
-						pinholes.put(channel++, new Double(pins[n]));
+						pinholes.put(channel++, new Double(pin));
 					}
 					catch (final NumberFormatException e) {
 						log().debug("Could not parse pinhole", e);
@@ -1897,8 +1897,8 @@ public class ICSFormat extends AbstractFormat {
 			getStream().writeBytes(
 				"layout\torder\tbits\t" + dimOrder.toString() + "\n");
 			getStream().writeBytes("layout\tsizes\t");
-			for (int i = 0; i < sizes.length; i++) {
-				getStream().writeBytes(sizes[i] + "\t");
+			for (final int size : sizes) {
+				getStream().writeBytes(size + "\t");
 			}
 			while ((getStream().getFilePointer() - dimensionOffset) < dimensionLength - 1)
 			{

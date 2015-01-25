@@ -141,8 +141,8 @@ public class MJPBCodec extends AbstractCodec {
 
 					int sum = 0;
 
-					for (int i = 0; i < lumAcBits.length; i++) {
-						sum += lumAcBits[i] & 0xff;
+					for (final byte lumAcBit : lumAcBits) {
+						sum += lumAcBit & 0xff;
 					}
 
 					lumAc = new byte[sum];
@@ -187,18 +187,18 @@ public class MJPBCodec extends AbstractCodec {
 
 			// insert zero after each byte equal to 0xff
 			final ByteVector b = new ByteVector();
-			for (int i = 0; i < raw.length; i++) {
-				b.add(raw[i]);
-				if (raw[i] == (byte) 0xff) {
+			for (final byte rawByte : raw) {
+				b.add(rawByte);
+				if (rawByte == (byte) 0xff) {
 					b.add((byte) 0);
 				}
 			}
 
 			if (raw2 == null) raw2 = new byte[0];
 			final ByteVector b2 = new ByteVector();
-			for (int i = 0; i < raw2.length; i++) {
-				b2.add(raw2[i]);
-				if (raw2[i] == (byte) 0xff) {
+			for (final byte rawByte : raw2) {
+				b2.add(rawByte);
+				if (rawByte == (byte) 0xff) {
 					b2.add((byte) 0);
 				}
 			}

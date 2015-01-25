@@ -195,14 +195,14 @@ public abstract class AbstractCodec extends AbstractSCIFIOPlugin implements
 		if (data == null) throw new IllegalArgumentException(
 			"No data to decompress.");
 		int len = 0;
-		for (int i = 0; i < data.length; i++) {
-			len += data[i].length;
+		for (final byte[] aData1 : data) {
+			len += aData1.length;
 		}
 		final byte[] toDecompress = new byte[len];
 		int curPos = 0;
-		for (int i = 0; i < data.length; i++) {
-			System.arraycopy(data[i], 0, toDecompress, curPos, data[i].length);
-			curPos += data[i].length;
+		for (final byte[] aData : data) {
+			System.arraycopy(aData, 0, toDecompress, curPos, aData.length);
+			curPos += aData.length;
 		}
 		return decompress(toDecompress, options);
 	}

@@ -916,8 +916,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final long[] axisLengths = new long[img.numDimensions()];
 		img.dimensions(axisLengths);
 
-		for (int i = 0; i < imageMeta.size(); i++) {
-			final ImageMetadata iMeta = imageMeta.get(i);
+		for (final ImageMetadata iMeta : imageMeta) {
 			iMeta.populate(img.getName(), Arrays.asList(axes), axisLengths,
 				pixelType, true, false, false, false, true);
 

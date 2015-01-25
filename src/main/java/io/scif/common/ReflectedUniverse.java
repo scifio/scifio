@@ -296,11 +296,10 @@ public class ReflectedUniverse {
 			// arguments are subclasses of the method argument classes, making a
 			// brute force search through all public methods necessary.
 			Method method = null;
-			final Method[] m = varClass.getMethods();
-			for (int i = 0; i < m.length; i++) {
-				if (force) m[i].setAccessible(true);
-				if (methodName.equals(m[i].getName())) {
-					final Class<?>[] params = m[i].getParameterTypes();
+			for (final Method candidateMethod : varClass.getMethods()) {
+				if (force) candidateMethod.setAccessible(true);
+				if (methodName.equals(candidateMethod.getName())) {
+					final Class<?>[] params = candidateMethod.getParameterTypes();
 					if (params.length == args.length) {
 						boolean match = true;
 						for (int j = 0; j < params.length; j++) {
@@ -310,7 +309,7 @@ public class ReflectedUniverse {
 							}
 						}
 						if (match) {
-							method = m[i];
+							method = candidateMethod;
 							break;
 						}
 					}

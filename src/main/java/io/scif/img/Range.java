@@ -95,8 +95,8 @@ public class Range extends ArrayList<Long> {
 		final String[] intervals = range.split(",");
 
 		// Iterate over each axis of the region and extract its constraints
-		for (int i = 0; i < intervals.length; i++) {
-			final String[] rangeTokens = intervals[i].split("-");
+		for (final String interval : intervals) {
+			final String[] rangeTokens = interval.split("-");
 
 			final long start = Long.parseLong(rangeTokens[0]);
 			long end = start;
