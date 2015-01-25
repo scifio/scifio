@@ -47,7 +47,7 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 	// -- Fields --
 
 	/** List of filters to be combined. */
-	private final FileFilter[] filts;
+	private final FileFilter[] fileFilters;
 
 	/** Description. */
 	private final String desc;
@@ -56,8 +56,8 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 
 	/** Constructs a new filter from a list of other filters. */
 	public ComboFileFilter(final FileFilter[] filters, final String description) {
-		filts = new FileFilter[filters.length];
-		System.arraycopy(filters, 0, filts, 0, filters.length);
+		fileFilters = new FileFilter[filters.length];
+		System.arraycopy(filters, 0, fileFilters, 0, filters.length);
 		desc = description;
 	}
 
@@ -65,8 +65,8 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 
 	/** Gets the list of file filters forming this filter combination. */
 	public FileFilter[] getFilters() {
-		final FileFilter[] ff = new FileFilter[filts.length];
-		System.arraycopy(filts, 0, ff, 0, filts.length);
+		final FileFilter[] ff = new FileFilter[fileFilters.length];
+		System.arraycopy(fileFilters, 0, ff, 0, fileFilters.length);
 		return ff;
 	}
 
@@ -121,9 +121,9 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 
 	/** Accepts files with the proper filename prefix. */
 	@Override
-	public boolean accept(final File f) {
-		for (int i = 0; i < filts.length; i++) {
-			if (filts[i].accept(f)) return true;
+	public boolean accept(final File file) {
+		for (final FileFilter filter : fileFilters) {
+			if (filter.accept(file)) return true;
 		}
 		return false;
 	}
@@ -141,9 +141,9 @@ public class ComboFileFilter extends FileFilter implements java.io.FileFilter,
 	public String toString() {
 		final StringBuffer sb = new StringBuffer("ComboFileFilter: ");
 		sb.append(desc);
-		for (int i = 0; i < filts.length; i++) {
+		for (final FileFilter fileFilter : fileFilters) {
 			sb.append("\n\t");
-			sb.append(filts[i].toString());
+			sb.append(fileFilter.toString());
 		}
 		return sb.toString();
 	}

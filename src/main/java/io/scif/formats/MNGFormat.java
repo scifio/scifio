@@ -269,10 +269,10 @@ public class MNGFormat extends AbstractFormat {
 			datasetInfo.imageInfo.clear();
 			final int imageCount = keys.length;
 
-			for (int i = 0; i < imageCount; i++) {
+			for (final String key : keys) {
 				final MNGImageInfo inf = new MNGImageInfo();
-				inf.offsets = imageOffsets.get(keys[i]);
-				inf.lengths = imageLengths.get(keys[i]);
+				inf.offsets = imageOffsets.get(key);
+				inf.lengths = imageLengths.get(key);
 				datasetInfo.imageInfo.add(inf);
 			}
 			datasetInfo.keys = keys;

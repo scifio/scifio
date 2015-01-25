@@ -378,8 +378,8 @@ public class DefaultFilePatternService extends AbstractService implements
 		matchFiles(final String[] inFiles, final NumberFilter filter)
 	{
 		final List<String> list = new ArrayList<String>();
-		for (int i = 0; i < inFiles.length; i++) {
-			if (filter.accept(inFiles[i])) list.add(inFiles[i]);
+		for (final String inFile : inFiles) {
+			if (filter.accept(inFile)) list.add(inFile);
 		}
 		return list.toArray(new String[0]);
 	}

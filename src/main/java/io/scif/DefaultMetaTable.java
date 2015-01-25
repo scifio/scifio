@@ -130,9 +130,9 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 			// remove &lt;, &gt; and &amp; to prevent XML parsing errors
 			final String[] invalidSequences =
 				new String[] { "&lt;", "&gt;", "&amp;", "<", ">", "&" };
-			for (int i = 0; i < invalidSequences.length; i++) {
-				key = key.replaceAll(invalidSequences[i], "");
-				if (string) val = val.replaceAll(invalidSequences[i], "");
+			for (final String invalidSequence : invalidSequences) {
+				key = key.replaceAll(invalidSequence, "");
+				if (string) val = val.replaceAll(invalidSequence, "");
 			}
 
 			// verify key & value are not empty

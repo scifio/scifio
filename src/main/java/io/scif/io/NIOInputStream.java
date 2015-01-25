@@ -276,10 +276,10 @@ public class NIOInputStream extends InputStream implements DataInput {
 
 			// check output, returning smallest possible string
 			int min = Integer.MAX_VALUE, tagLen = 0;
-			for (int t = 0; t < terminators.length; t++) {
-				final int len = terminators[t].length();
+			for (final String terminator : terminators) {
+				final int len = terminator.length();
 				final int start = (int) (loc - bytesDropped - len);
-				final int value = out.indexOf(terminators[t], start < 0 ? 0 : start);
+				final int value = out.indexOf(terminator, start < 0 ? 0 : start);
 				if (value >= 0 && value < min) {
 					match = true;
 					min = value;

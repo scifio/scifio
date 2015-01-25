@@ -197,8 +197,8 @@ public final class DateTools {
 	public static String formatDate(final String date, final String[] formats,
 		final boolean lenient)
 	{
-		for (int i = 0; i < formats.length; i++) {
-			final String result = formatDate(date, formats[i], lenient);
+		for (final String format : formats) {
+			final String result = formatDate(date, format, lenient);
 			if (result != null) return result;
 		}
 		return null;

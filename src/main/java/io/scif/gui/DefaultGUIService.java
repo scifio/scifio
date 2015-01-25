@@ -116,8 +116,8 @@ public class DefaultGUIService extends AbstractService implements GUIService {
 					combo = makeComboFilter(ff);
 					if (combo != null) fc.addChoosableFileFilter(combo);
 				}
-				for (int i = 0; i < ff.length; i++)
-					fc.addChoosableFileFilter(ff[i]);
+				for (final FileFilter filter : ff)
+					fc.addChoosableFileFilter(filter);
 				if (combo != null) fc.setFileFilter(combo);
 				if (preview) new PreviewPane(getContext(), fc);
 				jfc[0] = fc;
