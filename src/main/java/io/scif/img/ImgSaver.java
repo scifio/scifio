@@ -89,7 +89,7 @@ import org.scijava.plugin.Parameter;
  */
 public class ImgSaver extends AbstractImgIOComponent {
 
-	@Parameter
+	@Parameter(required = false)
 	private StatusService statusService;
 
 	@Parameter
@@ -540,9 +540,11 @@ public class ImgSaver extends AbstractImgIOComponent {
 			// Print time statistics
 			final long endTime = System.currentTimeMillis();
 			final float time = (endTime - startTime) / 1000f;
-			statusService.showStatus(sliceCount, sliceCount, w.getMetadata()
-				.getDatasetName() +
-				": wrote " + sliceCount + " planes in " + time + " s");
+			if (statusService != null) {
+				statusService.showStatus(sliceCount, sliceCount, w.getMetadata()
+					.getDatasetName() +
+					": wrote " + sliceCount + " planes in " + time + " s");
+			}
 		}
 
 		return w.getMetadata();
@@ -599,14 +601,18 @@ public class ImgSaver extends AbstractImgIOComponent {
 		if (planeOutCount < planeCount / rgbChannelCount) {
 			// Warn that some planes were truncated (e.g. going from 4D format to
 			// 3D)
-			statusService.showStatus(0, 0, "Source dataset contains: " + planeCount +
-				" planes, but writer format only supports: " + rgbChannelCount *
-				planeOutCount, true);
+			if (statusService != null) {
+				statusService.showStatus(0, 0, "Source dataset contains: " + planeCount +
+					" planes, but writer format only supports: " + rgbChannelCount *
+					planeOutCount, true);
+			}
 		}
 
 		for (int planeIndex = 0; planeIndex < planeOutCount; planeIndex++) {
-			statusService.showStatus(planeIndex, (int) planeOutCount,
-				"Saving plane " + (planeIndex + 1) + "/" + planeOutCount);
+			if (statusService != null) {
+				statusService.showStatus(planeIndex, (int) planeOutCount,
+					"Saving plane " + (planeIndex + 1) + "/" + planeOutCount);
+			}
 			// save bytes
 			try {
 				final Metadata meta = w.getMetadata();
@@ -872,7 +878,9 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final SCIFIOConfig config, final String id, final int imageIndex)
 		throws FormatException, IOException, ImgIOException
 	{
-		statusService.showStatus("Initializing " + img.getName());
+		if (statusService != null) {
+			statusService.showStatus("Initializing " + img.getName());
+		}
 		final Metadata meta = w.getFormat().createMetadata();
 
 		// Get format-specific metadata

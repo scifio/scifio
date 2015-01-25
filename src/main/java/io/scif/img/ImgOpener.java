@@ -79,7 +79,7 @@ import org.scijava.plugin.Parameter;
  */
 public class ImgOpener extends AbstractImgIOComponent {
 
-	@Parameter
+	@Parameter(required = false)
 	private StatusService statusService;
 
 	@Parameter
@@ -369,8 +369,10 @@ public class ImgOpener extends AbstractImgIOComponent {
 				}
 				final long endTime = System.currentTimeMillis();
 				final float time = (endTime - startTime) / 1000f;
-				statusService.showStatus(id + ": read " + planeCount + " planes in " +
-					time + "s");
+				if (statusService != null) {
+					statusService.showStatus(id + ": read " + planeCount + " planes in " +
+						time + "s");
+				}
 			}
 			imgPluses.add(imgPlus);
 		}
@@ -378,7 +380,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 		// Close the reader if needed
 		if (AbstractCellImgFactory.class.isAssignableFrom(imgFactory.getClass()))
 		{
-			statusService.showStatus("Created CellImg for dynamic loading");
+			if (statusService != null) {
+				statusService.showStatus("Created CellImg for dynamic loading");
+			}
 		}
 		else {
 			try {
@@ -535,7 +539,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 	{
 
 		final boolean computeMinMax = config.imgOpenerIsComputeMinMax();
-		statusService.showStatus("Initializing " + source);
+		if (statusService != null) {
+			statusService.showStatus("Initializing " + source);
+		}
 
 		ReaderFilter r = null;
 		try {
