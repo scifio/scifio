@@ -123,8 +123,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 	{
 		final InputStream is = new FileInputStream(file);
 		try {
-			final Document doc = parseDOM(is);
-			return doc;
+			return parseDOM(is);
 		}
 		finally {
 			is.close();
@@ -138,8 +137,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		final byte[] bytes = xml.getBytes(Constants.ENCODING);
 		final InputStream is = new ByteArrayInputStream(bytes);
 		try {
-			final Document doc = parseDOM(is);
-			return doc;
+			return parseDOM(is);
 		}
 		finally {
 			is.close();

@@ -623,10 +623,8 @@ public class PICTFormat extends AbstractFormat {
 
 			byte v;
 			final int count = 8 / bitSize; // number of pixels in a byte
-			final int maskshift = bitSize; // num bits to shift mask
 			final int pixelshift = 8 - bitSize; // num bits to shift pixel
 			int tpixelshift = 0;
-			final int pixelshiftdelta = bitSize;
 			int tmask; // temp mask
 
 			if (bitSize != 1 && bitSize != 2 && bitSize != 4) {
@@ -642,8 +640,8 @@ public class PICTFormat extends AbstractFormat {
 				v = ib[i];
 				for (int t = 0; t < count && o < ob.length; t++, o++) {
 					ob[o] = (byte) (((v & tmask) >>> tpixelshift) & 0xff);
-					tmask = (byte) ((tmask & 0xff) >>> maskshift);
-					tpixelshift -= pixelshiftdelta;
+					tmask = (byte) ((tmask & 0xff) >>> bitSize);
+					tpixelshift -= bitSize;
 				}
 			}
 		}

@@ -691,9 +691,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 		@SuppressWarnings("rawtypes")
 		final RealType inputType =
 			utils().makeType(r.getMetadata().get(0).getPixelType());
-		final T outputType = type;
 		final boolean compatibleTypes =
-			outputType.getClass().isAssignableFrom(inputType.getClass());
+			type.getClass().isAssignableFrom(inputType.getClass());
 
 		// populate planes
 		final boolean isPlanar = planarAccess != null && compatibleTypes;

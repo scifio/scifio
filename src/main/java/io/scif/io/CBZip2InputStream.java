@@ -957,7 +957,7 @@ public class CBZip2InputStream extends InputStream {
 		}
 	}
 
-	private static final class Data extends Object {
+	private static final class Data {
 
 		// (with blockSize 900k)
 		final boolean[] inUse = new boolean[256]; // 256 byte

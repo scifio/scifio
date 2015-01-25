@@ -68,8 +68,7 @@ public class RefMapCleaningProvider extends AbstractSCIFIOPlugin implements
 	public Reference makeRef(final Object referent, final ReferenceQueue queue,
 		final Object... params)
 	{
-		final Reference ref = new RefMapCleaner(referent, queue, params);
-		return ref;
+		return new RefMapCleaner(referent, queue, params);
 	}
 
 	// -- Provided reference class --

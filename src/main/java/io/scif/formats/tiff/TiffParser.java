@@ -853,10 +853,8 @@ public class TiffParser extends AbstractContextual {
 		final int endX = (int) width + x;
 		final int endY = (int) height + y;
 
-		final long w = tileWidth;
-		final long h = tileLength;
-		final int rowLen = pixel * (int) w;// tileWidth;
-		final int tileSize = (int) (rowLen * h);// tileLength);
+		final int rowLen = pixel * (int) tileWidth;// tileWidth;
+		final int tileSize = (int) (rowLen * tileLength);// tileLength);
 
 		final int planeSize = (int) (width * height * pixel);
 		final int outputRowLen = (int) (pixel * width);

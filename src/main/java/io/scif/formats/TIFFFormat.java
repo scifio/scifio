@@ -1354,7 +1354,6 @@ public class TIFFFormat extends AbstractFormat {
 				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 			if (ifd == null) ifd = new IFD(log());
 			final int type = getMetadata().get(imageIndex).getPixelType();
-			final long index = planeIndex;
 			// This operation is synchronized
 			synchronized (this) {
 				// This operation is synchronized against the TIFF saver.
@@ -1363,7 +1362,7 @@ public class TIFFFormat extends AbstractFormat {
 				}
 			}
 
-			tiffSaver.writeImage(buf, ifd, index, type, x, y, w, h,
+			tiffSaver.writeImage(buf, ifd, planeIndex, type, x, y, w, h,
 				planeIndex == getMetadata().get(imageIndex).getPlaneCount() - 1 &&
 					imageIndex == getMetadata().getImageCount() - 1);
 		}
@@ -1641,8 +1640,7 @@ public class TIFFFormat extends AbstractFormat {
 			ifd.putIFDValue(IFD.SAMPLE_FORMAT, sampleFormat);
 
 			long index = planeIndex;
-			final int realSeries = imageIndex;
-			for (int i = 0; i < realSeries; i++) {
+			for (int i = 0; i < imageIndex; i++) {
 				index += meta.get(i).getPlaneCount();
 			}
 			return index;

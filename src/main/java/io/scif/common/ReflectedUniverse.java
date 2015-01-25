@@ -457,8 +457,7 @@ public class ReflectedUniverse {
 			return fieldVal;
 		}
 		// get variable
-		final Object var = variables.get(varName);
-		return var;
+		return variables.get(varName);
 	}
 
 	/** Sets whether access modifiers (protected, private, etc.) are ignored. */
