@@ -191,7 +191,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * @see java.io.File#canWrite()
 	 */
 	public boolean canWrite() {
-		return isURL ? false : file.canWrite();
+		return !isURL && file.canWrite();
 	}
 
 	/**
@@ -349,7 +349,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * @see java.io.File#isAbsolute()
 	 */
 	public boolean isAbsolute() {
-		return isURL ? true : file.isAbsolute();
+		return isURL || file.isAbsolute();
 	}
 
 	/**
@@ -381,7 +381,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * @see java.io.File#isHidden()
 	 */
 	public boolean isHidden() {
-		return isURL ? false : file.isHidden();
+		return !isURL && file.isHidden();
 	}
 
 	/**
