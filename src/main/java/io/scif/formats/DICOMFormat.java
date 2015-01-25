@@ -1211,11 +1211,11 @@ public class DICOMFormat extends AbstractFormat {
 						else if (s.startsWith("1.2.840.10008.1.2.4")) isJPEG = true;
 						else if (s.startsWith("1.2.840.10008.1.2.5")) isRLE = true;
 						else if (s.equals("1.2.8.10008.1.2.1.99")) isDeflate = true;
-						else if (s.indexOf("1.2.4") > -1 || s.indexOf("1.2.5") > -1) {
+						else if (s.contains("1.2.4") || s.contains("1.2.5")) {
 							throw new UnsupportedCompressionException(
 								"Sorry, compression type " + s + " not supported");
 						}
-						if (s.indexOf("1.2.840.10008.1.2.2") >= 0) {
+						if (s.contains("1.2.840.10008.1.2.2")) {
 							bigEndianTransferSyntax = true;
 						}
 						break;

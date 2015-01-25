@@ -160,7 +160,7 @@ public class MicromanagerFormat extends AbstractFormat {
 						stream.readString((int) Math.min(blockSize, length));
 					stream.close();
 					return length > 0 &&
-						(data.indexOf("Micro-Manager") >= 0 || data.indexOf("micromanager") >= 0);
+						(data.contains("Micro-Manager") || data.contains("micromanager"));
 				}
 				catch (final IOException e) {
 					return false;
@@ -256,12 +256,12 @@ public class MicromanagerFormat extends AbstractFormat {
 
 				// look for other positions
 
-				if (parentFile.getName().indexOf("Pos_") >= 0) {
+				if (parentFile.getName().contains("Pos_")) {
 					parentFile = parentFile.getParentFile();
 					final String[] dirs = parentFile.list(true);
 					Arrays.sort(dirs);
 					for (final String dir : dirs) {
-						if (dir.indexOf("Pos_") >= 0) {
+						if (dir.contains("Pos_")) {
 							final Position pos = new Position();
 							final Location posDir =
 								new Location(getContext(), parentFile, dir);
@@ -418,8 +418,8 @@ public class MicromanagerFormat extends AbstractFormat {
 			final int[] slice = new int[3];
 			while (st.hasMoreTokens()) {
 				String token = st.nextToken().trim();
-				final boolean open = token.indexOf("[") != -1;
-				boolean closed = token.indexOf("]") != -1;
+				final boolean open = token.contains("[");
+				boolean closed = token.contains("]");
 				if (open ||
 					(!open && !closed && !token.equals("{") && !token.startsWith("}")))
 				{
@@ -434,7 +434,7 @@ public class MicromanagerFormat extends AbstractFormat {
 						final StringBuffer valueBuffer = new StringBuffer();
 						while (!closed) {
 							token = st.nextToken();
-							closed = token.indexOf("]") != -1;
+							closed = token.contains("]");
 							valueBuffer.append(token);
 						}
 						value = valueBuffer.toString();
@@ -576,7 +576,7 @@ public class MicromanagerFormat extends AbstractFormat {
 						}
 						else if (key.equals("Core-Camera")) p.cameraRef = value;
 						else if (key.equals(p.cameraRef + "-Binning")) {
-							if (value.indexOf("x") != -1) p.binning = value;
+							if (value.contains("x")) p.binning = value;
 							else p.binning = value + "x" + value;
 						}
 						else if (key.equals(p.cameraRef + "-CameraID")) p.detectorID =
@@ -631,7 +631,7 @@ public class MicromanagerFormat extends AbstractFormat {
 			log().info("Building list of TIFFs");
 			final Position p = meta.getPositions().get(posIndex);
 			String prefix = "";
-			if (baseTiff.indexOf(File.separator) != -1) {
+			if (baseTiff.contains(File.separator)) {
 				prefix =
 					baseTiff.substring(0, baseTiff.lastIndexOf(File.separator) + 1);
 				baseTiff = baseTiff.substring(baseTiff.lastIndexOf(File.separator) + 1);
@@ -662,7 +662,7 @@ public class MicromanagerFormat extends AbstractFormat {
 						filename.append("_");
 
 						String channel = p.channels[c];
-						if (channel.indexOf("-") != -1) {
+						if (channel.contains("-")) {
 							channel = channel.substring(0, channel.indexOf("-"));
 						}
 						filename.append(channel);

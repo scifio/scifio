@@ -340,12 +340,11 @@ public class NativeQTFormat extends AbstractFormat {
 			// use a crappy hack for now
 			final String s = stream.readString(blockLen);
 			for (final String CONTAINER_TYPE : CONTAINER_TYPES) {
-				if (s.indexOf(CONTAINER_TYPE) >= 0 && !CONTAINER_TYPE.equals("imag")) {
+				if (s.contains(CONTAINER_TYPE) && !CONTAINER_TYPE.equals("imag")) {
 					return true;
 				}
 			}
-			return s.indexOf("wide") >= 0 || s.indexOf("mdat") >= 0 ||
-				s.indexOf("ftypqt") >= 0;
+			return s.contains("wide") || s.contains("mdat") || s.contains("ftypqt");
 		}
 	}
 
@@ -393,7 +392,7 @@ public class NativeQTFormat extends AbstractFormat {
 				// (or <filename>/rsrc on a Mac)
 
 				String base = null;
-				if (id.indexOf(".") != -1) {
+				if (id.contains(".")) {
 					base = id.substring(0, id.lastIndexOf("."));
 				}
 				else base = id;

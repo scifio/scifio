@@ -954,7 +954,7 @@ public class ICSFormat extends AbstractFormat {
 			Double exposureTime = null;
 			if (kv != null) {
 				final String expTime = kv[1];
-				if (expTime.indexOf(" ") != -1) {
+				if (expTime.contains(" ")) {
 					exposureTime = new Double(expTime.indexOf(" "));
 					// TODO: Catch NumberFormatException? Make more DRY with
 					// other logic?
