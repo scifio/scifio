@@ -415,7 +415,7 @@ public class FileStitcher extends AbstractReaderFilter {
 	private int[] computeFileIndex(int imageIndex) {
 		if (noStitch) return new int[] { imageIndex, 0 };
 		int fileIndex = 0;
-		while (imageIndex >= 0 + imagesPerFile[fileIndex]) {
+		while (imageIndex >= imagesPerFile[fileIndex]) {
 			imageIndex -= imagesPerFile[fileIndex++];
 		}
 
