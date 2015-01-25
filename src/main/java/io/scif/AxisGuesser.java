@@ -33,6 +33,7 @@ package io.scif;
 import io.scif.io.Location;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
@@ -440,7 +441,7 @@ public class AxisGuesser {
 					final boolean certain = reader.getMetadata().get(0).isOrderCertain();
 					reader.close();
 					log.info("[done]");
-					log.info("\tdimOrder = " + dimOrder + " (" +
+					log.info("\tdimOrder = " + Arrays.toString(dimOrder) + " (" +
 						(certain ? "certain" : "uncertain") + ")");
 					log.info("\tsizeZ = " + sizeZ);
 					log.info("\tsizeT = " + sizeT);
@@ -475,8 +476,8 @@ public class AxisGuesser {
 						log.info("\t" + blocks[i] + "\t" + axis + " (prefix = " +
 							prefixes[i] + ")");
 					}
-					if (!dimOrder.equals(newOrder)) {
-						log.info("Adjusted dimension order = " + newOrder + " (" +
+					if (!Arrays.equals(dimOrder, newOrder)) {
+						log.info("Adjusted dimension order = " + Arrays.toString(newOrder) + " (" +
 							(isCertain ? "certain" : "uncertain") + ")");
 					}
 				}
