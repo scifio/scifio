@@ -49,7 +49,7 @@ public abstract class AbstractSCIFIOPlugin extends AbstractRichPlugin implements
 	@Parameter
 	private LogService log;
 
-	@Parameter
+	@Parameter(required = false)
 	private AppService appService;
 
 	@Override
@@ -59,7 +59,8 @@ public abstract class AbstractSCIFIOPlugin extends AbstractRichPlugin implements
 
 	@Override
 	public String getVersion() {
-		return appService.getApp(SCIFIOApp.NAME).getVersion();
+		return appService == null ? "(unknown)" :
+				appService.getApp(SCIFIOApp.NAME).getVersion();
 	}
 
 }
