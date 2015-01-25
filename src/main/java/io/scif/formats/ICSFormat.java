@@ -1503,7 +1503,7 @@ public class ICSFormat extends AbstractFormat {
 					final int topOffset = r * rowLen;
 					final int bottomOffset = (h - r - 1) * rowLen;
 					System.arraycopy(plane.getBytes(), topOffset, row, 0, rowLen);
-					System.arraycopy(plane.getBytes(), bottomOffset, plane, topOffset,
+					System.arraycopy(plane.getBytes(), bottomOffset, plane.getBytes(), topOffset,
 						rowLen);
 					System.arraycopy(row, 0, plane.getBytes(), bottomOffset, rowLen);
 				}
