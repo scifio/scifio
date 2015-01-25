@@ -36,6 +36,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 import java.text.DecimalFormatSymbols;
 
 import org.scijava.Context;
@@ -571,6 +576,120 @@ public final class DataTools {
 				buf[ndx + i] = (byte) ((value >> (8 * (nBytes - i - 1))) & 0xff);
 			}
 		}
+	}
+
+	/**
+	 * Calculate min and max of a given buffer
+	 * 
+	 * @param b Byte array to analyze.
+	 * @param bpp Denotes the number of bytes in the returned primitive type (e.g.
+	 *          if bpp == 2, we should return an array of type short).
+	 * @param signed whether the pixel values are signed
+	 * @param fp If set and bpp == 4 or bpp == 8, then return floats or doubles.
+	 * @param little Whether byte array is in little-endian order.
+	 */
+	public static void minAndMax(final byte[] b, final int bpp,
+		final boolean signed, final boolean fp, final boolean little, final double[] minAndMax)
+	{
+		if (b.length == 0) {
+			minAndMax[0] = Double.POSITIVE_INFINITY;
+			minAndMax[1] = Double.NEGATIVE_INFINITY;
+			return;
+		}
+
+		double min, max;
+
+		if (bpp == 1) {
+			if (signed) {
+				min = max = b[0];
+				for (byte v : b) {
+					if (max < v) max = v;
+					else if (min > v) min = v;
+				}
+			} else {
+				min = max = b[0] & 0xff;
+				for (byte s : b) {
+					int v = s & 0xff;
+					if (max < v) max = v;
+					else if (min > v) min = v;
+				}
+			}
+		} else {
+			final ByteBuffer buffer = ByteBuffer.wrap(b);
+			buffer.order(little ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+			if (bpp == 2) {
+				final ShortBuffer values = buffer.asShortBuffer();
+				if (signed) {
+					min = max = values.get();
+					while (values.hasRemaining()) {
+						short v = values.get();
+						if (max < v) max = v;
+						else if (min > v) min = v;
+					}
+				} else {
+					min = max = values.get() & 0xffff;
+					while (values.hasRemaining()) {
+						int v = values.get() & 0xffff;
+						if (max < v) max = v;
+						else if (min > v) min = v;
+					}
+				}
+			}
+			else if (bpp == 4 && fp) {
+				final FloatBuffer values = buffer.asFloatBuffer();
+				min = max = values.get();
+				while (values.hasRemaining()) {
+					float v = values.get();
+					if (max < v) max = v;
+					else if (min > v) min = v;
+				}
+			}
+			else if (bpp == 4) {
+				final IntBuffer values = buffer.asIntBuffer();
+				if (signed) {
+					min = max = values.get();
+					while (values.hasRemaining()) {
+						int v = values.get();
+						if (max < v) max = v;
+						else if (min > v) min = v;
+					}
+				} else {
+					min = max = values.get() & 0xffffffffl;
+					while (values.hasRemaining()) {
+						long v = values.get() & 0xffffffffl;
+						if (max < v) max = v;
+						else if (min > v) min = v;
+					}
+				}
+			}
+			else if (bpp == 8 && fp) {
+				final DoubleBuffer values = buffer.asDoubleBuffer();
+				min = max = values.get();
+				while (values.hasRemaining()) {
+					double v = values.get();
+					if (max < v) max = v;
+					else if (min > v) min = v;
+				}
+			}
+			else if (bpp == 8) {
+				final LongBuffer values = buffer.asLongBuffer();
+				if (signed) {
+					min = max = values.get();
+					while (values.hasRemaining()) {
+						long v = values.get();
+						if (max < v) max = v;
+						else if (min > v) min = v;
+					}
+				} else {
+					throw new IllegalArgumentException("Cannot handle unsigned long");
+				}
+			}
+			else {
+				throw new IllegalArgumentException("Unhandled format (bpp: " + bpp + " signed: " + signed + " fp: " + fp);
+			}
+		}
+		minAndMax[0] = min;
+		minAndMax[1] = max;
 	}
 
 	/**
