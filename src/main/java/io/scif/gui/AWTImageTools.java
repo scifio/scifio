@@ -1968,8 +1968,7 @@ public final class AWTImageTools {
 		catch (final InterruptedException exc) {
 			return false;
 		}
-		if (MediaTracker.COMPLETE != tracker.statusID(0, false)) return false;
-		return true;
+		return MediaTracker.COMPLETE == tracker.statusID(0, false);
 	}
 
 	/**

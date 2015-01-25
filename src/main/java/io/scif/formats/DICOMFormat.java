@@ -1706,7 +1706,7 @@ public class DICOMFormat extends AbstractFormat {
 					}
 					catch (final NumberFormatException e) {}
 				}
-				else if (key.indexOf("Palette Color LUT Data") != -1) {
+				else if (key.contains("Palette Color LUT Data")) {
 					final String color = key.substring(0, key.indexOf(" ")).trim();
 					final int ndx =
 						color.equals("Red") ? 0 : color.equals("Green") ? 1 : 2;

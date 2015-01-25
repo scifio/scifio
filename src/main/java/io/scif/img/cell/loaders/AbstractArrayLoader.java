@@ -322,9 +322,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	 */
 	private boolean inRange(final Range range, final long value) {
 		if (range == null) return true;
-		if (range.contains(value)) return true;
+		return range.contains(value);
 
-		return false;
 	}
 
 	// -- AbstractArrayLoader API --
