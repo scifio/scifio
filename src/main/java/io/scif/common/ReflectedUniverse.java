@@ -249,7 +249,7 @@ public class ReflectedUniverse {
 				}
 			}
 			if (constructor == null) {
-				final StringBuffer sb = new StringBuffer(command);
+				final StringBuilder sb = new StringBuilder(command);
 				for (int i = 0; i < args.length; i++) {
 					sb.append(i == 0 ? "(" : ", ");
 					sb.append(args[i].getClass().getName());

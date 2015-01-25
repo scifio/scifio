@@ -431,7 +431,7 @@ public class MicromanagerFormat extends AbstractFormat {
 						value = token.substring(token.indexOf(":") + 1);
 					}
 					else if (!closed) {
-						final StringBuffer valueBuffer = new StringBuffer();
+						final StringBuilder valueBuffer = new StringBuilder();
 						while (!closed) {
 							token = st.nextToken();
 							closed = token.contains("]");
@@ -638,7 +638,7 @@ public class MicromanagerFormat extends AbstractFormat {
 			}
 
 			final String[] blocks = baseTiff.split("_");
-			final StringBuffer filename = new StringBuffer();
+			final StringBuilder filename = new StringBuilder();
 			for (int t = 0; t < meta.get(posIndex).getAxisLength(Axes.TIME); t++) {
 				for (int c = 0; c < meta.get(posIndex).getAxisLength(Axes.CHANNEL); c++)
 				{

@@ -989,7 +989,7 @@ public class ICSFormat extends AbstractFormat {
 		private String concatenateTokens(final String[] tokens, final int start,
 			final int stop)
 		{
-			final StringBuffer returnValue = new StringBuffer();
+			final StringBuilder returnValue = new StringBuilder();
 			for (int i = start; i < tokens.length && i < stop; ++i) {
 				returnValue.append(tokens[i]);
 				if (i < stop - 1) {
@@ -1220,7 +1220,7 @@ public class ICSFormat extends AbstractFormat {
 			{
 				line = line.trim().toLowerCase();
 				final String[] tokens = line.split("[ \t]");
-				final StringBuffer key = new StringBuffer();
+				final StringBuilder key = new StringBuilder();
 				Map<String, Object> keyMap = ICSUtils.keys;
 				boolean validKey = false;
 				for (int q = 0; q < tokens.length; q++) {
@@ -1236,7 +1236,7 @@ public class ICSFormat extends AbstractFormat {
 						}
 						// found a valid key, so build the value and create a
 						// mapping
-						final StringBuffer value = new StringBuffer(tokens[q++]);
+						final StringBuilder value = new StringBuilder(tokens[q++]);
 						for (; q < tokens.length; q++) {
 							value.append(" ");
 							value.append(tokens[q].trim());
@@ -1800,7 +1800,7 @@ public class ICSFormat extends AbstractFormat {
 
 				out.writeBytes("\nparameter\tscale\t1.000000\t");
 
-				final StringBuffer units = new StringBuffer();
+				final StringBuilder units = new StringBuilder();
 
 				for (final CalibratedAxis axis : meta.get(imageIndex).getAxes()) {
 					Number value = 1.0;
@@ -1864,7 +1864,7 @@ public class ICSFormat extends AbstractFormat {
 			final int pixelType = meta.get(imageIndex).getPixelType();
 			final int bytesPerPixel = FormatTools.getBytesPerPixel(pixelType);
 
-			final StringBuffer dimOrder = new StringBuffer();
+			final StringBuilder dimOrder = new StringBuilder();
 			final int[] sizes = new int[6];
 			int nextSize = 0;
 			sizes[nextSize++] = 8 * bytesPerPixel;
