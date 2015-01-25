@@ -349,7 +349,7 @@ public class ReflectedUniverse {
 
 	/** Registers a variable of primitive type boolean in the universe. */
 	public void setVar(final String varName, final boolean b) {
-		setVar(varName, new Boolean(b));
+		setVar(varName, Boolean.valueOf(b));
 	}
 
 	/** Registers a variable of primitive type byte in the universe. */

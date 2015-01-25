@@ -73,7 +73,7 @@ public class ImgSaverTest {
 		locationService.mapFile(out, bah);
 
 		final SCIFIOImgPlus<?> openImg = o.openImgs(id, config).get(0);
-		final String source = new String(openImg.getSource());
+		final String source = openImg.getSource();
 		s.saveImg(out, openImg);
 		assertEquals(source, openImg.getSource());
 	}

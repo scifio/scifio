@@ -291,7 +291,7 @@ public class OBFFormat extends AbstractFormat {
 					{
 						final int present = getSource().readInt();
 						if (dimension < numberOfDimensions) {
-							stepsPresent.add(new Boolean(present != 0));
+							stepsPresent.add(Boolean.valueOf(present != 0));
 						}
 					}
 					final List<Boolean> stepLabelsPresent = new ArrayList<Boolean>();
@@ -299,7 +299,7 @@ public class OBFFormat extends AbstractFormat {
 					{
 						final int present = getSource().readInt();
 						if (dimension < numberOfDimensions) {
-							stepLabelsPresent.add(new Boolean(present != 0));
+							stepLabelsPresent.add(Boolean.valueOf(present != 0));
 						}
 					}
 
