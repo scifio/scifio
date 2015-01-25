@@ -155,8 +155,11 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 				npRanges[axisIndex] =
 					new Range(min[index], min[index] + dimensions[index] - 1);
 
-				if (subRegion != null) {
-					entities *= subRegion.getRange(axis.type()).size();
+				Range r;
+				// If there is a sub-region and it has a range specified over this axis,
+				// use the restricted entity count.
+				if (subRegion != null && (r = subRegion.getRange(axis.type())) != null) {
+					entities *= r.size();
 				}
 				else {
 					entities *= npRanges[axisIndex].size();
