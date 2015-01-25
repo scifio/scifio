@@ -425,7 +425,7 @@ public final class DataTools {
 
 	/** Translates the given byte array into a String of hexadecimal digits. */
 	public static String bytesToHex(final byte[] bytes) {
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		for (final byte b : bytes) {
 			final String hexString = Integer.toHexString(b & 0xff);
 			if (hexString.length() == 1) sb.append("0");
@@ -759,7 +759,7 @@ public final class DataTools {
 
 	/** Remove null bytes from a string. */
 	public static String stripString(final String toStrip) {
-		final StringBuffer s = new StringBuffer();
+		final StringBuilder s = new StringBuilder();
 		for (int i = 0; i < toStrip.length(); i++) {
 			if (toStrip.charAt(i) != 0) {
 				s.append(toStrip.charAt(i));

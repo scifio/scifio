@@ -518,7 +518,7 @@ public class EPSFormat extends AbstractFormat {
 
 			final int planeSize = (int) (planeMax[xAxis] * planeMax[yAxis]);
 
-			final StringBuffer buffer = new StringBuffer();
+			final StringBuilder buffer = new StringBuilder();
 
 			final int offset = y * sizeX * nChannels * 2;
 			getStream().seek(planeOffset + offset);

@@ -1485,7 +1485,7 @@ public class NativeQTFormat extends AbstractFormat {
 		private static void print(final int depth, final long size,
 			final String type, final LogService log)
 		{
-			final StringBuffer sb = new StringBuffer();
+			final StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < depth; i++)
 				sb.append(" ");
 			sb.append(type + " : [" + size + "]");
