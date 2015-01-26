@@ -253,7 +253,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	public boolean equals(final Object obj) {
 		final String absPath = getAbsolutePath();
 		String thatPath = null;
-
+		if (obj == null) return false;
 		if (obj instanceof Location) {
 			thatPath = ((Location) obj).getAbsolutePath();
 		}
