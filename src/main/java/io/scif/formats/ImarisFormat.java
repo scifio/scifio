@@ -36,27 +36,27 @@ import org.scijava.plugin.Plugin;
 public class ImarisFormat extends AbstractFormat {
 
    //for testing
-   public static void main(String[] args) throws IOException, FormatException {
-      final SCIFIO scifio = new SCIFIO();
-      String name = "mitosis";
-      final String sampleImage = "/Users/henrypinkard/Desktop/" + name + ".tif";
-      final String outPath = "/Users/henrypinkard/Desktop/" + name + ".ims";
-
-      final Location l = new Location(scifio.getContext(), outPath);
-      if (l.exists()) {
-         l.delete();
-      }
-      final Reader reader = scifio.initializer().initializeReader(sampleImage);
-      final io.scif.Writer writer
-              = scifio.initializer().initializeWriter(sampleImage, outPath);
-      for (int i = 0; i < reader.getImageCount(); i++) {
-         for (int j = 0; j < reader.getPlaneCount(i); j++) {
-            writer.savePlane(i, j, reader.openPlane(i, j));
-         }
-      }
-      reader.close();
-      writer.close();
-   }
+//   public static void main(String[] args) throws IOException, FormatException {
+//      final SCIFIO scifio = new SCIFIO();
+//      String name = "mitosis";
+//      final String sampleImage = "/Users/henrypinkard/Desktop/" + name + ".tif";
+//      final String outPath = "/Users/henrypinkard/Desktop/" + name + ".ims";
+//
+//      final Location l = new Location(scifio.getContext(), outPath);
+//      if (l.exists()) {
+//         l.delete();
+//      }
+//      final Reader reader = scifio.initializer().initializeReader(sampleImage);
+//      final io.scif.Writer writer
+//              = scifio.initializer().initializeWriter(sampleImage, outPath);
+//      for (int i = 0; i < reader.getImageCount(); i++) {
+//         for (int j = 0; j < reader.getPlaneCount(i); j++) {
+//            writer.savePlane(i, j, reader.openPlane(i, j));
+//         }
+//      }
+//      reader.close();
+//      writer.close();
+//   }
 
    @Override
    public String getFormatName() {
@@ -250,7 +250,7 @@ public class ImarisFormat extends AbstractFormat {
                      + "supports 8 or 16 bit pixels");
          }
          
-         System.out.println(planeIndex + "\t" + c + "\t" + z + "\t" + t);
+//         System.out.println(planeIndex + "\t" + c + "\t" + z + "\t" + t);
          imsWriter.addImage(pixels, z, c, t, dnt);
          
       }
