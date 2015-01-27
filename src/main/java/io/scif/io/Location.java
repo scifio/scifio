@@ -395,7 +395,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * @see java.io.File#isHidden()
 	 */
 	public boolean isHidden() {
-		return isURL ? false : file.isHidden();
+		return isURL ? false : file.getName().startsWith(".");
 	}
 
 	/**
