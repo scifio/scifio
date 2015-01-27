@@ -119,7 +119,8 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * @see java.io.File#list()
 	 */
 	public String[] list(final boolean noHiddenFiles) {
-		final String key = getAbsolutePath() + Boolean.toString(noHiddenFiles);
+		final String path = getAbsolutePath();
+		final String key = path + Boolean.toString(noHiddenFiles);
 		String[] result = null;
 
 		result = locationService.getCachedListing(key);
@@ -149,7 +150,7 @@ public class Location extends AbstractSCIFIOPlugin {
 						s = s.substring(idx + 1);
 						if (f.startsWith("?")) continue;
 						final Location check =
-							new Location(getContext(), getAbsolutePath(), f);
+							new Location(getContext(), path, f);
 						if (check.exists() && (!noHiddenFiles || !check.isHidden())) {
 							files.add(check.getName());
 						}
@@ -167,8 +168,8 @@ public class Location extends AbstractSCIFIOPlugin {
 			if (f == null) return null;
 			for (final String name : f) {
 				if (!noHiddenFiles ||
-					!(name.startsWith(".") || new Location(getContext(), file
-						.getAbsolutePath(), name).isHidden()))
+					!(name.startsWith(".") || new Location(getContext(), path, name)
+						.isHidden()))
 				{
 					files.add(name);
 				}
@@ -448,10 +449,11 @@ public class Location extends AbstractSCIFIOPlugin {
 	 */
 	public Location[] listFiles() {
 		final String[] s = list();
+		final String path = getAbsolutePath();
 		if (s == null) return null;
 		final Location[] f = new Location[s.length];
 		for (int i = 0; i < f.length; i++) {
-			f[i] = new Location(getContext(), getAbsolutePath(), s[i]);
+			f[i] = new Location(getContext(), path, s[i]);
 			f[i] = f[i].getAbsoluteFile();
 		}
 		return f;
