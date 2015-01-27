@@ -415,10 +415,10 @@ public class TiffParser extends AbstractContextual {
 			}
 			Object value = null;
 
-			final long inputLen = in.length();
-			if (count * bpe + pointer > inputLen) {
+			final long inLength = in.length();
+			if (count * bpe + pointer > inLength) {
 				final int oldCount = count;
-				count = (int) ((inputLen - pointer) / bpe);
+				count = (int) ((inLength - pointer) / bpe);
 				log.trace("getIFDs: truncated " + (oldCount - count) +
 					" array elements for tag " + tag);
 				if (count < 0) count = oldCount;
@@ -464,11 +464,12 @@ public class TiffParser extends AbstractContextual {
 		final IFDType type = entry.getType();
 		final int count = entry.getValueCount();
 		final long offset = entry.getValueOffset();
+		final long inLength = in.length();
 
 		log.trace("Reading entry " + entry.getTag() + " from " + offset +
 			"; type=" + type + ", count=" + count);
 
-		if (offset >= in.length()) {
+		if (offset >= inLength) {
 			return null;
 		}
 
@@ -531,7 +532,7 @@ public class TiffParser extends AbstractContextual {
 			if (count == 1) return new Long(in.readInt());
 			final long[] longs = new long[count];
 			for (int j = 0; j < count; j++) {
-				if (in.getFilePointer() + 4 <= in.length()) {
+				if (in.getFilePointer() + 4 <= inLength) {
 					longs[j] = in.readInt();
 				}
 			}

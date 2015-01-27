@@ -162,22 +162,23 @@ public class MNGFormat extends AbstractFormat {
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			getSource().order(false);
+			final RandomAccessInputStream inputStream = getSource();
+			inputStream.order(false);
 
 			log().info("Verifying MNG format");
 
 			final MNGDatasetInfo datasetInfo = new MNGDatasetInfo();
 			datasetInfo.imageInfo.add(new MNGImageInfo());
 
-			getSource().skipBytes(12);
+			inputStream.skipBytes(12);
 
-			if (!"MHDR".equals(getSource().readString(4))) {
+			if (!"MHDR".equals(inputStream.readString(4))) {
 				throw new FormatException("Invalid MNG file.");
 			}
 
 			log().info("Reading dimensions");
 
-			getSource().skipBytes(32);
+			inputStream.skipBytes(32);
 
 			final Vector<Long> stack = new Vector<Long>();
 			int maxIterations = 0;
@@ -187,11 +188,11 @@ public class MNGFormat extends AbstractFormat {
 
 			// read sequence of [len, code, value] tags
 
-			while (getSource().getFilePointer() < getSource().length()) {
-				final int len = getSource().readInt();
-				final String code = getSource().readString(4);
+			while (inputStream.getFilePointer() < inputStream.length()) {
+				final int len = inputStream.readInt();
+				final String code = inputStream.readString(4);
 
-				final long fp = getSource().getFilePointer();
+				final long fp = inputStream.getFilePointer();
 
 				if (code.equals("IHDR")) {
 					datasetInfo.imageInfo.get(0).offsets.add(fp - 8);
@@ -205,13 +206,13 @@ public class MNGFormat extends AbstractFormat {
 				}
 				else if (code.equals("LOOP")) {
 					stack.add(fp + len + 4);
-					getSource().skipBytes(1);
-					maxIterations = getSource().readInt();
+					inputStream.skipBytes(1);
+					maxIterations = inputStream.readInt();
 				}
 				else if (code.equals("ENDL")) {
 					final long seek = stack.get(stack.size() - 1).longValue();
 					if (currentIteration < maxIterations) {
-						getSource().seek(seek);
+						inputStream.seek(seek);
 						currentIteration++;
 					}
 					else {
@@ -221,7 +222,7 @@ public class MNGFormat extends AbstractFormat {
 					}
 				}
 
-				getSource().seek(fp + len + 4);
+				inputStream.seek(fp + len + 4);
 			}
 
 			log().info("Populating metadata");
@@ -237,7 +238,7 @@ public class MNGFormat extends AbstractFormat {
 			meta.getTable().put("Number of frames", info.offsets.size());
 			for (int i = 0; i < info.offsets.size(); i++) {
 				final long offset = info.offsets.get(i);
-				getSource().seek(offset);
+				inputStream.seek(offset);
 				final long end = info.lengths.get(i);
 				if (end < offset) continue;
 				final BufferedImage img = readImage(meta, end);

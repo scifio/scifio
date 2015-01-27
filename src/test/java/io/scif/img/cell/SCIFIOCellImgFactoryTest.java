@@ -30,7 +30,6 @@
 
 package io.scif.img.cell;
 
-
 /**
  * Unit tests for {@link SCIFIOCellImgFactory}.
  *

@@ -272,8 +272,8 @@ public class RandomAccessInputStream extends InputStream implements DataInput {
 		final StringBuilder out = new StringBuilder();
 		final long startPos = getFilePointer();
 		long bytesDropped = 0;
-		final long inputLen = length();
-		long maxLen = inputLen - startPos;
+		final long inLength = length();
+		long maxLen = inLength - startPos;
 		final boolean tooLong = saveString && maxLen > MAX_SEARCH_SIZE;
 		if (tooLong) maxLen = MAX_SEARCH_SIZE;
 		boolean match = false;

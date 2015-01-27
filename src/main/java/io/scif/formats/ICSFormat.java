@@ -1264,20 +1264,21 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			reader.close();
-			getSource().close();
+			final RandomAccessInputStream inputStream = getSource();
+			inputStream.close();
 
 			final String id = meta.isVersionTwo() ? meta.icsId : meta.idsId;
 			updateSource(id);
 
 			if (meta.versionTwo) {
-				String s = getSource().readString(ICSUtils.NL);
+				String s = inputStream.readString(ICSUtils.NL);
 				while (!s.trim().equals("end"))
-					s = getSource().readString(ICSUtils.NL);
+					s = inputStream.readString(ICSUtils.NL);
 			}
 
-			meta.offset = getSource().getFilePointer();
+			meta.offset = inputStream.getFilePointer();
 
-			getSource().seek(0);
+			inputStream.seek(0);
 
 			meta.hasInstrumentData =
 				nullKeyCheck(new String[] { "history cube emm nm",
