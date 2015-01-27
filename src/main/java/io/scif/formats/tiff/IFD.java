@@ -487,7 +487,7 @@ public class IFD extends HashMap<Integer, Object> {
 			value = sb.toString();
 		}
 		else if (o instanceof short[]) {
-			final StringBuffer sb = new StringBuffer();
+			final StringBuilder sb = new StringBuilder();
 			for (final short s : ((short[]) o)) {
 				if (!Character.isISOControl((char) s)) {
 					sb.append((char) s);

@@ -137,9 +137,9 @@ public class Location extends AbstractSCIFIOPlugin {
 					final byte[] b = new byte[is.available()];
 					is.read(b);
 					String s = new String(b, Constants.ENCODING);
-					if (s.toLowerCase().indexOf("</html>") != -1) foundEnd = true;
+					if (s.toLowerCase().contains("</html>")) foundEnd = true;
 
-					while (s.indexOf("a href") != -1) {
+					while (s.contains("a href")) {
 						final int ndx = s.indexOf("a href") + 8;
 						final int idx = s.indexOf("\"", ndx);
 						if (idx < 0) break;
@@ -205,7 +205,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * @see java.io.File#canWrite()
 	 */
 	public boolean canWrite() {
-		return isURL ? false : file.canWrite();
+		return !isURL && file.canWrite();
 	}
 
 	/**
@@ -251,16 +251,15 @@ public class Location extends AbstractSCIFIOPlugin {
 	 */
 	@Override
 	public boolean equals(final Object obj) {
+		if (obj == null) return false;
 		final String absPath = getAbsolutePath();
-		String thatPath = null;
-
+		String thatPath;
 		if (obj instanceof Location) {
 			thatPath = ((Location) obj).getAbsolutePath();
 		}
 		else {
 			thatPath = obj.toString();
 		}
-
 		return absPath.equals(thatPath);
 	}
 
@@ -363,7 +362,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * @see java.io.File#isAbsolute()
 	 */
 	public boolean isAbsolute() {
-		return isURL ? true : file.isAbsolute();
+		return isURL || file.isAbsolute();
 	}
 
 	/**
@@ -395,7 +394,7 @@ public class Location extends AbstractSCIFIOPlugin {
 	 * @see java.io.File#isHidden()
 	 */
 	public boolean isHidden() {
-		return isURL ? false : file.isHidden();
+		return !isURL && file.isHidden();
 	}
 
 	/**

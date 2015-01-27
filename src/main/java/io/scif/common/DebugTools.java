@@ -68,11 +68,11 @@ public final class DebugTools {
 	 */
 	public static String getFieldName(final Class<?> c, final int value) {
 		final Field[] fields = c.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			if (!Modifier.isStatic(fields[i].getModifiers())) continue;
-			fields[i].setAccessible(true);
+		for (final Field field : fields) {
+			if (!Modifier.isStatic(field.getModifiers())) continue;
+			field.setAccessible(true);
 			try {
-				if (fields[i].getInt(null) == value) return fields[i].getName();
+				if (field.getInt(null) == value) return field.getName();
 			}
 			catch (final IllegalAccessException exc) {}
 			catch (final IllegalArgumentException exc) {}

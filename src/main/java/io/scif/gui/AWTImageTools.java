@@ -1515,7 +1515,7 @@ public final class AWTImageTools {
 		if (images == null || images.length == 0) return null;
 
 		// create list of pixels arrays
-		final Object[] list = new Object[images.length];
+		final Object[] pixelArrays = new Object[images.length];
 		int c = 0, type = 0;
 		for (int i = 0; i < images.length; i++) {
 			final Object o = getPixels(images[i]);
@@ -1545,7 +1545,7 @@ public final class AWTImageTools {
 				c += ((double[][]) o).length;
 			}
 			if (c > 4) return null;
-			list[i] = o;
+			pixelArrays[i] = o;
 		}
 		if (c < 1 || c > 4) return null;
 
@@ -1556,10 +1556,10 @@ public final class AWTImageTools {
 		if (type == DataBuffer.TYPE_BYTE) {
 			final byte[][] pix = new byte[c][];
 			int ndx = 0;
-			for (int i = 0; i < list.length; i++) {
-				final byte[][] b = (byte[][]) list[i];
-				for (int j = 0; j < b.length; j++)
-					pix[ndx++] = b[j];
+			for (final Object array : pixelArrays) {
+				final byte[][] bytes = (byte[][]) array;
+				for (final byte[] byteValue : bytes)
+					pix[ndx++] = byteValue;
 			}
 			while (ndx < pix.length)
 				pix[ndx++] = new byte[w * h]; // blank channel
@@ -1568,10 +1568,10 @@ public final class AWTImageTools {
 		if (type == DataBuffer.TYPE_USHORT || type == DataBuffer.TYPE_SHORT) {
 			final short[][] pix = new short[c][];
 			int ndx = 0;
-			for (int i = 0; i < list.length; i++) {
-				final short[][] b = (short[][]) list[i];
-				for (int j = 0; j < b.length; j++)
-					pix[ndx++] = b[j];
+			for (final Object array : pixelArrays) {
+				final short[][] shorts = (short[][]) array;
+				for (final short[] shortsValue : shorts)
+					pix[ndx++] = shortsValue;
 			}
 			while (ndx < pix.length)
 				pix[ndx++] = new short[w * h]; // blank channel
@@ -1580,10 +1580,10 @@ public final class AWTImageTools {
 		if (type == DataBuffer.TYPE_INT) {
 			final int[][] pix = new int[c][];
 			int ndx = 0;
-			for (int i = 0; i < list.length; i++) {
-				final int[][] b = (int[][]) list[i];
-				for (int j = 0; j < b.length; j++)
-					pix[ndx++] = b[j];
+			for (final Object array : pixelArrays) {
+				final int[][] ints = (int[][]) array;
+				for (final int[] intValue : ints)
+					pix[ndx++] = intValue;
 			}
 			while (ndx < pix.length)
 				pix[ndx++] = new int[w * h]; // blank channel
@@ -1592,10 +1592,10 @@ public final class AWTImageTools {
 		if (type == DataBuffer.TYPE_FLOAT) {
 			final float[][] pix = new float[c][];
 			int ndx = 0;
-			for (int i = 0; i < list.length; i++) {
-				final float[][] b = (float[][]) list[i];
-				for (int j = 0; j < b.length; j++)
-					pix[ndx++] = b[j];
+			for (final Object array : pixelArrays) {
+				final float[][] floats = (float[][]) array;
+				for (final float[] floatValue : floats)
+					pix[ndx++] = floatValue;
 			}
 			while (ndx < pix.length)
 				pix[ndx++] = new float[w * h]; // blank channel
@@ -1604,10 +1604,10 @@ public final class AWTImageTools {
 		if (type == DataBuffer.TYPE_DOUBLE) {
 			final double[][] pix = new double[c][];
 			int ndx = 0;
-			for (int i = 0; i < list.length; i++) {
-				final double[][] b = (double[][]) list[i];
-				for (int j = 0; j < b.length; j++)
-					pix[ndx++] = b[j];
+			for (final Object array : pixelArrays) {
+				final double[][] doubles = (double[][]) array;
+				for (final double[] doublesValue : doubles)
+					pix[ndx++] = doublesValue;
 			}
 			while (ndx < pix.length)
 				pix[ndx++] = new double[w * h]; // blank channel

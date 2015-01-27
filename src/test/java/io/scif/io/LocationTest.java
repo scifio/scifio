@@ -52,7 +52,7 @@ public class LocationTest {
 	// -- Constants --
 	private final String OS = System.getProperty("os.name").toLowerCase();
 
-	private final boolean isWindows = OS.indexOf("win") >= 0;
+	private final boolean isWindows = OS.contains("win");
 
 	// -- Fields --
 
@@ -121,8 +121,8 @@ public class LocationTest {
 	public void testReadWriteMode() {
 		for (int i = 0; i < files.length; i++) {
 			final String msg = files[i].getName();
-			assertEquals(msg, files[i].canRead(), mode[i].indexOf("r") != -1);
-			assertEquals(msg, files[i].canWrite(), mode[i].indexOf("w") != -1);
+			assertEquals(msg, files[i].canRead(), mode[i].contains("r"));
+			assertEquals(msg, files[i].canWrite(), mode[i].contains("w"));
 		}
 	}
 
@@ -181,29 +181,29 @@ public class LocationTest {
 
 	@Test
 	public void testListFiles() {
-		for (int i = 0; i < files.length; i++) {
-			final String[] completeList = files[i].list();
-			final String[] unhiddenList = files[i].list(true);
-			final Location[] fileList = files[i].listFiles();
+		for (final Location file : files) {
+			final String[] completeList = file.list();
+			final String[] unhiddenList = file.list(true);
+			final Location[] fileList = file.listFiles();
 
-			if (!files[i].isDirectory()) {
-				assertEquals(files[i].getName(), completeList, null);
-				assertEquals(files[i].getName(), unhiddenList, null);
-				assertEquals(files[i].getName(), fileList, null);
+			if (!file.isDirectory()) {
+				assertEquals(file.getName(), completeList, null);
+				assertEquals(file.getName(), unhiddenList, null);
+				assertEquals(file.getName(), fileList, null);
 				continue;
 			}
 
-			assertEquals(files[i].getName(), completeList.length, fileList.length);
+			assertEquals(file.getName(), completeList.length, fileList.length);
 
 			final List<String> complete = Arrays.asList(completeList);
 			for (final String child : unhiddenList) {
-				assertEquals(files[i].getName(), complete.contains(child), true);
-				assertEquals(files[i].getName(), new Location(context, files[i], child)
+				assertEquals(file.getName(), complete.contains(child), true);
+				assertEquals(file.getName(), new Location(context, file, child)
 					.isHidden(), false);
 			}
 
 			for (int f = 0; f < fileList.length; f++) {
-				assertEquals(files[i].getName(), fileList[f].getName(), completeList[f]);
+				assertEquals(file.getName(), fileList[f].getName(), completeList[f]);
 			}
 		}
 	}
@@ -215,7 +215,7 @@ public class LocationTest {
 			if (file.isDirectory() && !path.endsWith(File.separator)) {
 				path += File.separator;
 			}
-			if (path.indexOf("://") == -1 && path.indexOf(":/") == -1) {
+			if (!path.contains("://") && !path.contains(":/")) {
 				path = new File(path).toURI().toURL().toString();
 			}
 			final URL baseURL = file.toURL();

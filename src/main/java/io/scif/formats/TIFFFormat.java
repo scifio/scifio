@@ -392,7 +392,7 @@ public class TIFFFormat extends AbstractFormat {
 							}
 							String metadata =
 								DataTools.stripString(new String(b, Constants.ENCODING));
-							if (metadata.indexOf("xml") != -1) {
+							if (metadata.contains("xml")) {
 								metadata = metadata.substring(metadata.indexOf("<"));
 								metadata =
 									"<root>" + xmlService.sanitizeXML(metadata) + "</root>";
@@ -441,7 +441,7 @@ public class TIFFFormat extends AbstractFormat {
 				if (files != null) {
 					for (final String file : files) {
 						String name = file;
-						if (name.indexOf(".") != -1) {
+						if (name.contains(".")) {
 							name = name.substring(0, name.indexOf("."));
 						}
 
@@ -477,7 +477,7 @@ public class TIFFFormat extends AbstractFormat {
 			final String software =
 				meta.getIfds().get(0).getIFDTextValue(IFD.SOFTWARE);
 			return comment != null && software != null &&
-				software.indexOf("MetaMorph") != -1;
+				software.contains("MetaMorph");
 		}
 
 		private void parseCommentImageJ(final Metadata meta, String comment)
@@ -1354,7 +1354,6 @@ public class TIFFFormat extends AbstractFormat {
 				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
 			if (ifd == null) ifd = new IFD(log());
 			final int type = getMetadata().get(imageIndex).getPixelType();
-			final long index = planeIndex;
 			// This operation is synchronized
 			synchronized (this) {
 				// This operation is synchronized against the TIFF saver.
@@ -1363,7 +1362,7 @@ public class TIFFFormat extends AbstractFormat {
 				}
 			}
 
-			tiffSaver.writeImage(buf, ifd, index, type, x, y, w, h,
+			tiffSaver.writeImage(buf, ifd, planeIndex, type, x, y, w, h,
 				planeIndex == getMetadata().get(imageIndex).getPlaneCount() - 1 &&
 					imageIndex == getMetadata().getImageCount() - 1);
 		}
@@ -1623,7 +1622,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 
 			// write the image
-			ifd.put(new Integer(IFD.LITTLE_ENDIAN), new Boolean(littleEndian));
+			ifd.put(new Integer(IFD.LITTLE_ENDIAN), Boolean.valueOf(littleEndian));
 			if (!ifd.containsKey(IFD.REUSE)) {
 				ifd.put(IFD.REUSE, getStream().length());
 				getStream().seek(getStream().length());
@@ -1641,8 +1640,7 @@ public class TIFFFormat extends AbstractFormat {
 			ifd.putIFDValue(IFD.SAMPLE_FORMAT, sampleFormat);
 
 			long index = planeIndex;
-			final int realSeries = imageIndex;
-			for (int i = 0; i < realSeries; i++) {
+			for (int i = 0; i < imageIndex; i++) {
 				index += meta.get(i).getPlaneCount();
 			}
 			return index;

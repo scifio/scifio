@@ -203,7 +203,7 @@ public class TiffParser extends AbstractContextual {
 			return null;
 		}
 
-		return new Boolean(littleEndian);
+		return Boolean.valueOf(littleEndian);
 	}
 
 	/** Returns whether or not the current TIFF file contains BigTIFF data. */
@@ -377,8 +377,8 @@ public class TiffParser extends AbstractContextual {
 		final IFD ifd = new IFD(log);
 
 		// save little-endian flag to internal LITTLE_ENDIAN tag
-		ifd.put(new Integer(IFD.LITTLE_ENDIAN), new Boolean(in.isLittleEndian()));
-		ifd.put(new Integer(IFD.BIG_TIFF), new Boolean(bigTiff));
+		ifd.put(new Integer(IFD.LITTLE_ENDIAN), Boolean.valueOf(in.isLittleEndian()));
+		ifd.put(new Integer(IFD.BIG_TIFF), Boolean.valueOf(bigTiff));
 
 		// read in directory entries for this IFD
 		log.trace("getIFDs: seeking IFD at " + offset);
@@ -853,10 +853,8 @@ public class TiffParser extends AbstractContextual {
 		final int endX = (int) width + x;
 		final int endY = (int) height + y;
 
-		final long w = tileWidth;
-		final long h = tileLength;
-		final int rowLen = pixel * (int) w;// tileWidth;
-		final int tileSize = (int) (rowLen * h);// tileLength);
+		final int rowLen = pixel * (int) tileWidth;// tileWidth;
+		final int tileSize = (int) (rowLen * tileLength);// tileLength);
 
 		final int planeSize = (int) (width * height * pixel);
 		final int outputRowLen = (int) (pixel * width);

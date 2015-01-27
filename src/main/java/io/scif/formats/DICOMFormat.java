@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -74,7 +74,7 @@ import org.scijava.plugin.Plugin;
  * adapted from <a
  * href="http://imagej.net/developer/source/ij/plugin/DICOM.java.html">ImageJ's
  * DICOM reader</a>.
- * 
+ *
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "DICOM")
@@ -1211,11 +1211,11 @@ public class DICOMFormat extends AbstractFormat {
 						else if (s.startsWith("1.2.840.10008.1.2.4")) isJPEG = true;
 						else if (s.startsWith("1.2.840.10008.1.2.5")) isRLE = true;
 						else if (s.equals("1.2.8.10008.1.2.1.99")) isDeflate = true;
-						else if (s.indexOf("1.2.4") > -1 || s.indexOf("1.2.5") > -1) {
+						else if (s.contains("1.2.4") || s.contains("1.2.5")) {
 							throw new UnsupportedCompressionException(
 								"Sorry, compression type " + s + " not supported");
 						}
-						if (s.indexOf("1.2.840.10008.1.2.2") >= 0) {
+						if (s.contains("1.2.840.10008.1.2.2")) {
 							bigEndianTransferSyntax = true;
 						}
 						break;
@@ -1663,12 +1663,11 @@ public class DICOMFormat extends AbstractFormat {
 		private void addInfo(final Metadata meta, final DICOMTag tag,
 			final String value) throws IOException
 		{
-			final String oldValue = value;
 			String info = getHeaderInfo(tag, value);
 
 			if (info != null && tag.get() != ITEM) {
 				info = info.trim();
-				if (info.equals("")) info = oldValue == null ? "" : oldValue.trim();
+				if (info.equals("")) info = value == null ? "" : value.trim();
 
 				String key = TYPES.get(tag.get());
 				if (key == null) {
@@ -1706,7 +1705,7 @@ public class DICOMFormat extends AbstractFormat {
 					}
 					catch (final NumberFormatException e) {}
 				}
-				else if (key.indexOf("Palette Color LUT Data") != -1) {
+				else if (key.contains("Palette Color LUT Data")) {
 					final String color = key.substring(0, key.indexOf(" ")).trim();
 					final int ndx =
 						color.equals("Red") ? 0 : color.equals("Green") ? 1 : 2;

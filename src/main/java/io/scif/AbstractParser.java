@@ -287,9 +287,9 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 		// Check to see if the stream is already open
 		if (getMetadata() != null) {
-			final String[] s = getUsedFiles();
-			for (int i = 0; i < s.length; i++) {
-				if (stream.getFileName().equals(s[i])) return;
+			final String[] usedFiles = getUsedFiles();
+			for (final String fileName : usedFiles) {
+				if (stream.getFileName().equals(fileName)) return;
 			}
 		}
 

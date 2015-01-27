@@ -197,7 +197,7 @@ public class NRRDFormat extends AbstractFormat {
 				return true;
 			}
 
-			if (name.indexOf(".") >= 0) {
+			if (name.contains(".")) {
 				name = name.substring(0, name.lastIndexOf("."));
 			}
 
@@ -293,10 +293,10 @@ public class NRRDFormat extends AbstractFormat {
 					meta.getTable().put(key, v);
 
 					if (key.equals("type")) {
-						if (v.indexOf("char") != -1 || v.indexOf("8") != -1) {
+						if (v.contains("char") || v.contains("8")) {
 							iMeta.setPixelType(FormatTools.UINT8);
 						}
-						else if (v.indexOf("short") != -1 || v.indexOf("16") != -1) {
+						else if (v.contains("short") || v.contains("16")) {
 							iMeta.setPixelType(FormatTools.UINT16);
 						}
 						else if (v.equals("int") || v.equals("signed int") ||

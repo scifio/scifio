@@ -142,7 +142,7 @@ public class DefaultFilePatternService extends AbstractService implements
 		}
 
 		// analyze each block, building pattern as we go
-		final StringBuffer sb = new StringBuffer(dir);
+		final StringBuilder sb = new StringBuilder(dir);
 
 		for (int i = 0; i < q; i++) {
 			final int last = i > 0 ? endList[i - 1] : 0;
@@ -248,7 +248,7 @@ public class DefaultFilePatternService extends AbstractService implements
 		final String dir =
 			names[0].substring(0, names[0].lastIndexOf(File.separator) + 1);
 
-		final StringBuffer pattern = new StringBuffer();
+		final StringBuilder pattern = new StringBuilder();
 		pattern.append(Pattern.quote(dir));
 
 		for (int i = 0; i < names.length; i++) {
@@ -356,7 +356,7 @@ public class DefaultFilePatternService extends AbstractService implements
 		}
 		final String sb = b.toString();
 		final String se = e.toString();
-		final StringBuffer bounds = new StringBuffer("<");
+		final StringBuilder bounds = new StringBuilder("<");
 		if (fixed) {
 			final int zeroes = se.length() - sb.length();
 			for (int i = 0; i < zeroes; i++)
@@ -378,8 +378,8 @@ public class DefaultFilePatternService extends AbstractService implements
 		matchFiles(final String[] inFiles, final NumberFilter filter)
 	{
 		final List<String> list = new ArrayList<String>();
-		for (int i = 0; i < inFiles.length; i++) {
-			if (filter.accept(inFiles[i])) list.add(inFiles[i]);
+		for (final String inFile : inFiles) {
+			if (filter.accept(inFile)) list.add(inFile);
 		}
 		return list.toArray(new String[0]);
 	}

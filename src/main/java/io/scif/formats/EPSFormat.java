@@ -236,8 +236,7 @@ public class EPSFormat extends AbstractFormat {
 			while (line != null && !line.equals("%%EOF")) {
 				if (line.endsWith(image)) {
 					if (!line.startsWith(image)) {
-						if (line.indexOf("colorimage") != -1) m.setAxisLength(Axes.CHANNEL,
-							3);
+						if (line.contains("colorimage")) m.setAxisLength(Axes.CHANNEL, 3);
 						final String[] t = line.split(" ");
 						try {
 							m.setAxisLength(Axes.X, Integer.parseInt(t[0]));
@@ -519,7 +518,7 @@ public class EPSFormat extends AbstractFormat {
 
 			final int planeSize = (int) (planeMax[xAxis] * planeMax[yAxis]);
 
-			final StringBuffer buffer = new StringBuffer();
+			final StringBuilder buffer = new StringBuilder();
 
 			final int offset = y * sizeX * nChannels * 2;
 			getStream().seek(planeOffset + offset);

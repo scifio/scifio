@@ -490,9 +490,7 @@ public class CacheServiceTest {
 			scifio.initializer().initializeReader(id,
 				new SCIFIOConfig().checkerSetOpen(true));
 		final ByteArrayLoader loader = new ByteArrayLoader(rf, null);
-		final SCIFIOCellCache<ByteArray> cellCache =
-			new SCIFIOCellCache<ByteArray>(cs.getContext(), loader);
-		return cellCache;
+		return new SCIFIOCellCache<ByteArray>(cs.getContext(), loader);
 	}
 
 	// Creates a TestCellCache for the given id
@@ -504,9 +502,7 @@ public class CacheServiceTest {
 			scifio.initializer().initializeReader(id,
 				new SCIFIOConfig().checkerSetOpen(true));
 		final ByteArrayLoader loader = new ByteArrayLoader(rf, null);
-		final TestCellCache<ByteArray> cellCache =
-			new TestCellCache<ByteArray>(cs.getContext(), loader);
-		return cellCache;
+		return new TestCellCache<ByteArray>(cs.getContext(), loader);
 	}
 
 	private void enableCells(final boolean enabled, final SCIFIOCell<?>... cells)

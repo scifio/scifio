@@ -70,8 +70,7 @@ public class ImgPlusCtxCleaningProvider extends AbstractSCIFIOPlugin implements
 	public Reference makeRef(final Object referent, final ReferenceQueue queue,
 		final Object... params)
 	{
-		final Reference ref = new ImgPlusCtxCleaner(referent, queue, params);
-		return ref;
+		return new ImgPlusCtxCleaner(referent, queue, params);
 	}
 
 	// -- Provided reference class --

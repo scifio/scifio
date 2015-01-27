@@ -89,8 +89,8 @@ public class DimensionSwapper extends AbstractReaderFilter {
 		}
 
 		// Check for unknown AxisTypes
-		for (int i = 0; i < newOrder.length; i++) {
-			if (!oldOrder.contains(newOrder[i])) throw new IllegalArgumentException(
+		for (final AxisType axisType : newOrder) {
+			if (!oldOrder.contains(axisType)) throw new IllegalArgumentException(
 				"newOrder specifies different axes");
 		}
 

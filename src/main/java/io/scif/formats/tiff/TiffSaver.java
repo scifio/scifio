@@ -485,8 +485,8 @@ public class TiffSaver extends AbstractContextual {
 		{
 			final long[] ifdOffsets =
 				isTiled ? ifd.getIFDLongArray(IFD.TILE_OFFSETS) : ifd.getStripOffsets();
-			for (int i = 0; i < ifdOffsets.length; i++) {
-				offsets.add(ifdOffsets[i]);
+			for (final long ifdOffset : ifdOffsets) {
+				offsets.add(ifdOffset);
 			}
 		}
 		else {
@@ -736,8 +736,8 @@ public class TiffSaver extends AbstractContextual {
 			out.writeShort(IFDType.DOUBLE.getCode()); // type
 			writeIntValue(out, q.length);
 			writeIntValue(out, offset + extraOut.length());
-			for (int i = 0; i < q.length; i++) {
-				extraOut.writeDouble(q[i]); // values
+			for (final double doubleVal : q) {
+				extraOut.writeDouble(doubleVal); // values
 			}
 		}
 		else {

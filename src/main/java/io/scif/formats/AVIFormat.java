@@ -1852,10 +1852,10 @@ public class AVIFormat extends AbstractFormat {
 
 					final byte[] fixedPlane =
 						new byte[tmpPlane.length + MJPEG_HUFFMAN_TABLE.length];
-					System.arraycopy(plane, 0, fixedPlane, 0, 20);
+					System.arraycopy(plane.getBytes(), 0, fixedPlane, 0, 20);
 					System.arraycopy(MJPEG_HUFFMAN_TABLE, 0, fixedPlane, 20,
 						MJPEG_HUFFMAN_TABLE.length);
-					System.arraycopy(plane, 20, fixedPlane,
+					System.arraycopy(plane.getBytes(), 20, fixedPlane,
 						20 + MJPEG_HUFFMAN_TABLE.length, tmpPlane.length - 20);
 
 					tmpPlane = fixedPlane;

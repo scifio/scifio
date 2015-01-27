@@ -85,8 +85,7 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 		table = new DefaultMetaTable();
 
 		if (list != null) {
-			for (int i = 0; i < list.size(); i++) {
-				final ImageMetadata core = list.get(i);
+			for (final ImageMetadata core : list) {
 				imageMeta.add(core.copy());
 			}
 		}

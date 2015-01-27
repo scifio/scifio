@@ -172,7 +172,7 @@ public class BitWriter {
 		// Testing string functionality
 		final Random r = new Random();
 		log.info("Generating 5000 random bits for String test");
-		final StringBuffer sb = new StringBuffer(5000);
+		final StringBuilder sb = new StringBuilder(5000);
 		for (int i = 0; i < 5000; i++) {
 			sb.append(r.nextInt(2));
 		}
