@@ -100,7 +100,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 
 	// Groupable
 	/** Whether or not to group multi-file formats. */
-	private boolean group = true;
+	private boolean group = false;
 
 	// ImgOpener
 
