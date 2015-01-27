@@ -99,6 +99,10 @@ public class DefaultDatasetIOService extends AbstractService implements
 	public Dataset open(final String source) throws IOException {
 		final SCIFIOConfig config = new SCIFIOConfig();
 		config.imgOpenerSetIndex(0);
+		// skip min/max computation
+		config.imgOpenerSetComputeMinMax(false);
+		// prefer planar array structure, for ImageJ1 and ImgSaver compatibility
+		config.imgOpenerSetImgModes(ImgMode.PLANAR);
 		return open(source, config);
 	}
 
@@ -107,10 +111,6 @@ public class DefaultDatasetIOService extends AbstractService implements
 		throws IOException
 	{
 		final ImgOpener imageOpener = new ImgOpener(getContext());
-		// skip min/max computation
-		config.imgOpenerSetComputeMinMax(false);
-		// prefer planar array structure, for ImageJ1 and ImgSaver compatibility
-		config.imgOpenerSetImgModes(ImgMode.PLANAR);
 		try {
 			final SCIFIOImgPlus<?> imgPlus =
 				imageOpener.openImgs(source, config).get(0);
