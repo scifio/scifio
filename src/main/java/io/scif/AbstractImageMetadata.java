@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
@@ -67,6 +68,18 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	/** Cached list of significant (non-trailing length 1) axes. */
 	private List<CalibratedAxis> effectiveAxes;
+
+	private long[] planarLengths;
+	private long[] extendedLengths;
+	private long[] effectiveLengths;
+
+	/**
+	 * Maps axis counts to arrays of that length which can be re-used as needed by
+	 * {@link #getAxisLength} signatures. Creating a new {@code long[]} every time
+	 * this method is called is fairly terrible performance-wise.
+	 */
+	private Map<List<CalibratedAxis>, long[]> cachedLengths =
+		new HashMap<List<CalibratedAxis>, long[]>();
 
 	/** Width (in pixels) of thumbnail planes in this image. */
 	@Field(label = "thumbSizeX")
@@ -420,10 +433,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public long[] getAxesLengths(final List<CalibratedAxis> axes) {
-		final long[] lengths = new long[axes.size()];
-
-		for (int i = 0; i < axes.size(); i++) {
-			lengths[i] = getAxisLength(axes.get(i));
+		long[] lengths = cachedLengths.get(axes);
+		if (lengths == null) {
+			lengths = new long[axes.size()];
+			for (int i = 0; i < axes.size(); i++) {
+				lengths[i] = getAxisLength(axes.get(i));
+			}
+			cachedLengths.put(axes, lengths);
 		}
 
 		return lengths;
@@ -651,8 +667,15 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 			}
 
 			effectiveAxes = new ArrayList<CalibratedAxis>();
+			if (effectiveLengths == null || effectiveLengths.length != end) {
+				effectiveLengths = new long[end];
+				cachedLengths.put(effectiveAxes, effectiveLengths);
+			}
+
 			for (int i = 0; i < end; i++) {
-				effectiveAxes.add(axes.get(i));
+				final CalibratedAxis axis = axes.get(i);
+				effectiveAxes.add(axis);
+				effectiveLengths[i] = getAxisLength(axis);
 			}
 		}
 
@@ -683,6 +706,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		planarAxes = null;
 		extendedAxes = null;
 		effectiveAxes = null;
+		cachedLengths.clear();
 	}
 
 	private void updateLength(final AxisType axisType, final long value) {
@@ -699,18 +723,30 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		int index = -1;
 		int end = -1;
 		List<CalibratedAxis> axisList = null;
+		long[] axisLengths = null;
 
 		if (planar) {
 			if (planarAxes == null) planarAxes = new ArrayList<CalibratedAxis>();
 			axisList = planarAxes;
 			index = 0;
 			end = getPlanarAxisCount();
+			if (planarLengths == null || planarLengths.length < end) {
+				planarLengths = new long[end];
+				cachedLengths.put(planarAxes, planarLengths);
+			}
+			axisLengths = planarLengths;
 		}
 		else {
 			if (extendedAxes == null) extendedAxes = new ArrayList<CalibratedAxis>();
 			axisList = extendedAxes;
 			index = getPlanarAxisCount();
 			end = getAxes().size();
+			final int size = end - index;
+			if (extendedLengths == null || extendedLengths.length < size) {
+				extendedLengths = new long[end];
+				cachedLengths.put(extendedAxes, extendedLengths);
+			}
+			axisLengths = extendedLengths;
 		}
 
 		if (axisList.size() == 0) {
@@ -721,13 +757,15 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 					int position = 0;
 					for (; index < end; index++) {
+						final CalibratedAxis axis = getAxes().get(index);
 						if (position <= axisList.size()) {
-							axisList.add(getAxes().get(index));
+							axisList.add(axis);
 							position++;
 						}
 						else {
-							axisList.set(position++, getAxes().get(index));
+							axisList.set(position++, axis);
 						}
+						axisLengths[position - 1] = getAxisLength(axis);
 					}
 				}
 			}
