@@ -41,6 +41,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
@@ -50,6 +52,10 @@ import org.scijava.plugin.Parameter;
  * strongly recommended that you use this instead of java.io.File.
  */
 public class Location extends AbstractSCIFIOPlugin {
+
+	private static final String URL_REGEX =
+		"^([a-z]{1,7}:){1,2}//[-a-zA-Z0-9+&@#/%$'?=~_|!:,.;]+";
+	private static final Pattern urlPattern = Pattern.compile(URL_REGEX);
 
 	// -- Fields --
 
@@ -71,11 +77,18 @@ public class Location extends AbstractSCIFIOPlugin {
 	public Location(final Context context, final String pathname) {
 		this(context);
 		log().trace("Location(" + pathname + ")");
-		try {
-			url = new URL(locationService.getMappedId(pathname));
+
+		final Matcher m = urlPattern.matcher(pathname);
+		if(m.find()) {
+			try {
+				url = new URL(locationService.getMappedId(pathname));
+			}
+			catch (final MalformedURLException e) {
+				log().trace("Location is not a URL", e);
+				isURL = false;
+			}
 		}
-		catch (final MalformedURLException e) {
-			log().trace("Location is not a URL", e);
+		else {
 			isURL = false;
 		}
 		if (!isURL) file = new File(locationService.getMappedId(pathname));
