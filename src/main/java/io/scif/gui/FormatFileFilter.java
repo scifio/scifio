@@ -70,18 +70,17 @@ public class FormatFileFilter extends FileFilter implements java.io.FileFilter,
 	 */
 	public FormatFileFilter(final Format format) {
 		this.format = format;
-		final StringBuffer sb = new StringBuffer(format.getFormatName());
-		final String[] exts = format.getSuffixes();
+		final StringBuilder sb = new StringBuilder(format.getFormatName());
 		boolean first = true;
-		for (int i = 0; i < exts.length; i++) {
-			if (exts[i] == null || exts[i].equals("")) continue;
+		for (final String suffix : format.getSuffixes()) {
+			if (suffix == null || suffix.equals("")) continue;
 			if (first) {
 				sb.append(" (");
 				first = false;
 			}
 			else sb.append(", ");
 			sb.append("*.");
-			sb.append(exts[i]);
+			sb.append(suffix);
 		}
 		sb.append(")");
 		desc = sb.toString();

@@ -265,7 +265,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 			myReader = initializeService.initializeReader(id);
 			final long planeCount = myReader.getMetadata().get(0).getPlaneCount();
 			final ProgressMonitor progress =
-				new ProgressMonitor(this, "Reading " + id, null, 0, 0 + 1);
+				new ProgressMonitor(this, "Reading " + id, null, 0, 1);
 			progress.setProgress(1);
 			final BufferedImage[] img = new BufferedImage[(int) planeCount];
 			for (long planeIndex = 0; planeIndex < planeCount; planeIndex++) {
@@ -273,7 +273,7 @@ public class ImageViewer extends JFrame implements ActionListener,
 				final Plane plane = myReader.openPlane(0, planeIndex);
 				img[(int) planeIndex] = AWTImageTools.openImage(plane, myReader, 0);
 			}
-			progress.setProgress(0 + 2);
+			progress.setProgress(2);
 			setImages(myReader, img);
 			myReader.close(true);
 		}

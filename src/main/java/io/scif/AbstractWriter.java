@@ -337,23 +337,23 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	@Override
 	public boolean isSupportedType(final int type, final String codec) {
 		final int[] types = getPixelTypes(codec);
-		for (int i = 0; i < types.length; i++) {
-			if (type == types[i]) return true;
+		for (final int otherType : types) {
+			if (type == otherType) return true;
 		}
 		return false;
 	}
 
 	@Override
-	public void isSupportedCompression(final String compress)
+	public void isSupportedCompression(final String compression)
 		throws FormatException
 	{
-		for (int i = 0; i < compressionTypes.length; i++) {
-			if (compressionTypes[i].equals(compress)) {
-				compression = compress;
+		for (final String compressionType : compressionTypes) {
+			if (compressionType.equals(compression)) {
+				this.compression = compression;
 				return;
 			}
 		}
-		throw new FormatException("Invalid compression type: " + compress);
+		throw new FormatException("Invalid compression type: " + compression);
 	}
 
 	// -- TypedWriter API Methods --

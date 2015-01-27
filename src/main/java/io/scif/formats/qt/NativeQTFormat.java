@@ -339,15 +339,12 @@ public class NativeQTFormat extends AbstractFormat {
 			if (!FormatTools.validStream(stream, blockLen, false)) return false;
 			// use a crappy hack for now
 			final String s = stream.readString(blockLen);
-			for (int i = 0; i < CONTAINER_TYPES.length; i++) {
-				if (s.indexOf(CONTAINER_TYPES[i]) >= 0 &&
-					!CONTAINER_TYPES[i].equals("imag"))
-				{
+			for (final String CONTAINER_TYPE : CONTAINER_TYPES) {
+				if (s.contains(CONTAINER_TYPE) && !CONTAINER_TYPE.equals("imag")) {
 					return true;
 				}
 			}
-			return s.indexOf("wide") >= 0 || s.indexOf("mdat") >= 0 ||
-				s.indexOf("ftypqt") >= 0;
+			return s.contains("wide") || s.contains("mdat") || s.contains("ftypqt");
 		}
 	}
 
@@ -395,7 +392,7 @@ public class NativeQTFormat extends AbstractFormat {
 				// (or <filename>/rsrc on a Mac)
 
 				String base = null;
-				if (id.indexOf(".") != -1) {
+				if (id.contains(".")) {
 					base = id.substring(0, id.lastIndexOf("."));
 				}
 				else base = id;
@@ -1478,8 +1475,8 @@ public class NativeQTFormat extends AbstractFormat {
 
 		/** Checks if the given String is a container atom type. */
 		private static boolean isContainer(final String type) {
-			for (int i = 0; i < CONTAINER_TYPES.length; i++) {
-				if (type.equals(CONTAINER_TYPES[i])) return true;
+			for (final String CONTAINER_TYPE : CONTAINER_TYPES) {
+				if (type.equals(CONTAINER_TYPE)) return true;
 			}
 			return false;
 		}
@@ -1488,7 +1485,7 @@ public class NativeQTFormat extends AbstractFormat {
 		private static void print(final int depth, final long size,
 			final String type, final LogService log)
 		{
-			final StringBuffer sb = new StringBuffer();
+			final StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < depth; i++)
 				sb.append(" ");
 			sb.append(type + " : [" + size + "]");

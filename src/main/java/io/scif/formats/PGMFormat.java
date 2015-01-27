@@ -173,24 +173,24 @@ public class PGMFormat extends AbstractFormat {
 				final String[] vars = line.split(" ");
 
 				// Populate the appropriate metadata fields for this line
-				for (int i = 0; i < vars.length; i++) {
+				for (final String var : vars) {
 					varsRead++;
 					switch (varsRead) {
 						case 1:
-							magic = vars[i];
+							magic = var;
 							if (magic.equals("P1") || magic.equals("P4")) {
 								numVars = 3;
 								isBlackAndWhite = true;
 							}
 							break;
 						case 2:
-							width = Integer.parseInt(vars[i]);
+							width = Integer.parseInt(var);
 							break;
 						case 3:
-							height = Integer.parseInt(vars[i]);
+							height = Integer.parseInt(var);
 							break;
 						case 4:
-							max = Integer.parseInt(vars[i]);
+							max = Integer.parseInt(var);
 							break;
 					}
 				}

@@ -166,7 +166,7 @@ public class ReflectedUniverse {
 			catch (final RuntimeException exc) {
 				// HACK: workaround for bug in Apache Axis2
 				final String msg = exc.getMessage();
-				if (msg != null && msg.indexOf("ClassNotFound") < 0) throw exc;
+				if (msg != null && !msg.contains("ClassNotFound")) throw exc;
 				log.debug("No such class: " + command, exc);
 				throw new ReflectException("No such class: " + command, exc);
 			}
@@ -249,7 +249,7 @@ public class ReflectedUniverse {
 				}
 			}
 			if (constructor == null) {
-				final StringBuffer sb = new StringBuffer(command);
+				final StringBuilder sb = new StringBuilder(command);
 				for (int i = 0; i < args.length; i++) {
 					sb.append(i == 0 ? "(" : ", ");
 					sb.append(args[i].getClass().getName());
@@ -296,11 +296,10 @@ public class ReflectedUniverse {
 			// arguments are subclasses of the method argument classes, making a
 			// brute force search through all public methods necessary.
 			Method method = null;
-			final Method[] m = varClass.getMethods();
-			for (int i = 0; i < m.length; i++) {
-				if (force) m[i].setAccessible(true);
-				if (methodName.equals(m[i].getName())) {
-					final Class<?>[] params = m[i].getParameterTypes();
+			for (final Method candidateMethod : varClass.getMethods()) {
+				if (force) candidateMethod.setAccessible(true);
+				if (methodName.equals(candidateMethod.getName())) {
+					final Class<?>[] params = candidateMethod.getParameterTypes();
 					if (params.length == args.length) {
 						boolean match = true;
 						for (int j = 0; j < params.length; j++) {
@@ -310,7 +309,7 @@ public class ReflectedUniverse {
 							}
 						}
 						if (match) {
-							method = m[i];
+							method = candidateMethod;
 							break;
 						}
 					}
@@ -350,7 +349,7 @@ public class ReflectedUniverse {
 
 	/** Registers a variable of primitive type boolean in the universe. */
 	public void setVar(final String varName, final boolean b) {
-		setVar(varName, new Boolean(b));
+		setVar(varName, Boolean.valueOf(b));
 	}
 
 	/** Registers a variable of primitive type byte in the universe. */

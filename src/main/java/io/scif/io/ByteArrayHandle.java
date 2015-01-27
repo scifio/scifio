@@ -413,9 +413,9 @@ public class ByteArrayHandle extends AbstractNIOHandle {
 	public void writeChars(final String s) throws IOException {
 		final int len = 2 * s.length();
 		validateLength(len);
-		final char[] c = s.toCharArray();
-		for (int i = 0; i < c.length; i++) {
-			writeChar(c[i]);
+		final char[] chars = s.toCharArray();
+		for (final char c : chars) {
+			writeChar(c);
 		}
 	}
 

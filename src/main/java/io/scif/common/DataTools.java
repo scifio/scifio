@@ -424,12 +424,12 @@ public final class DataTools {
 	}
 
 	/** Translates the given byte array into a String of hexadecimal digits. */
-	public static String bytesToHex(final byte[] b) {
-		final StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < b.length; i++) {
-			final String a = Integer.toHexString(b[i] & 0xff);
-			if (a.length() == 1) sb.append("0");
-			sb.append(a);
+	public static String bytesToHex(final byte[] bytes) {
+		final StringBuilder sb = new StringBuilder();
+		for (final byte b : bytes) {
+			final String hexString = Integer.toHexString(b & 0xff);
+			if (hexString.length() == 1) sb.append("0");
+			sb.append(hexString);
 		}
 		return sb.toString();
 	}
@@ -759,7 +759,7 @@ public final class DataTools {
 
 	/** Remove null bytes from a string. */
 	public static String stripString(final String toStrip) {
-		final StringBuffer s = new StringBuffer();
+		final StringBuilder s = new StringBuilder();
 		for (int i = 0; i < toStrip.length(); i++) {
 			if (toStrip.charAt(i) != 0) {
 				s.append(toStrip.charAt(i));
@@ -808,14 +808,14 @@ public final class DataTools {
 		// determine the finite min and max values
 		float min = Float.MAX_VALUE;
 		float max = Float.MIN_VALUE;
-		for (int i = 0; i < data.length; i++) {
-			if (data[i] == Float.POSITIVE_INFINITY ||
-				data[i] == Float.NEGATIVE_INFINITY)
+		for (final float floatValue : data) {
+			if (floatValue == Float.POSITIVE_INFINITY ||
+				floatValue == Float.NEGATIVE_INFINITY)
 			{
 				continue;
 			}
-			if (data[i] < min) min = data[i];
-			if (data[i] > max) max = data[i];
+			if (floatValue < min) min = floatValue;
+			if (floatValue > max) max = floatValue;
 		}
 
 		// normalize infinity values
@@ -842,14 +842,14 @@ public final class DataTools {
 		// determine the finite min and max values
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
-		for (int i = 0; i < data.length; i++) {
-			if (data[i] == Double.POSITIVE_INFINITY ||
-				data[i] == Double.NEGATIVE_INFINITY)
+		for (final double doubleValue : data) {
+			if (doubleValue == Double.POSITIVE_INFINITY ||
+				doubleValue == Double.NEGATIVE_INFINITY)
 			{
 				continue;
 			}
-			if (data[i] < min) min = data[i];
-			if (data[i] > max) max = data[i];
+			if (doubleValue < min) min = doubleValue;
+			if (doubleValue > max) max = doubleValue;
 		}
 
 		// normalize infinity values

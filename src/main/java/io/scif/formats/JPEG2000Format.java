@@ -359,9 +359,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 			iMeta.setLittleEndian(false);
 
-			final ArrayList<String> comments = getComments();
-			for (int i = 0; i < comments.size(); i++) {
-				final String comment = comments.get(i);
+			for (final String comment : getComments()) {
 				final int equal = comment.indexOf("=");
 				if (equal >= 0) {
 					final String key = comment.substring(0, equal);

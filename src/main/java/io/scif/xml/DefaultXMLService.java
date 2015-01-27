@@ -195,7 +195,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 
 	@Override
 	public String escapeXML(final String s) {
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < s.length(); i++) {
 			final char c = s.charAt(i);
@@ -243,7 +243,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 		final boolean preserveCData)
 	{
 		if (xml == null) return null; // garbage in, garbage out
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		final StringTokenizer st = new StringTokenizer(xml, "<>", true);
 		int indent = 0, noSpace = 0;
 		boolean first = true, element = false;
