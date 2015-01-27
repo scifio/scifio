@@ -15,6 +15,10 @@
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a next generation library for scientific image format I/O.</description>
 
+	<properties>
+	<scijava-common.version>2.37.1-SNAPSHOT</scijava-common.version>
+	</properties>
+
 	<scm>
 		<connection>scm:git:git://github.com/scifio/scifio</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio</developerConnection>
