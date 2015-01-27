@@ -525,13 +525,14 @@ public class NIOFileHandle extends AbstractNIOHandle {
 			newPosition > bufferStartPosition + bufferSize || buffer == null)
 		{
 			bufferStartPosition = offset;
-			if (length() > 0 && length() - 1 < bufferStartPosition) {
-				bufferStartPosition = length() - 1;
+			long currentLength = length();
+			if (currentLength > 0 && currentLength - 1 < bufferStartPosition) {
+				bufferStartPosition = currentLength - 1;
 			}
-			long newSize = Math.min(length() - bufferStartPosition, bufferSize);
+			long newSize = Math.min(currentLength - bufferStartPosition, bufferSize);
 			if (newSize < size && newSize == bufferSize) newSize = size;
-			if (newSize + bufferStartPosition > length()) {
-				newSize = length() - bufferStartPosition;
+			if (newSize + bufferStartPosition > currentLength) {
+				newSize = currentLength - bufferStartPosition;
 			}
 			offset = bufferStartPosition;
 			final ByteOrder byteOrder = buffer == null ? order : getOrder();
