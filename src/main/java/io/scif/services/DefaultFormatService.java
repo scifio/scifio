@@ -114,7 +114,7 @@ public class DefaultFormatService extends AbstractService implements
 	public String[] getSuffixes() {
 		final TreeSet<String> ts = new TreeSet<String>();
 
-		for (final Format f : formats) {
+		for (final Format f : formats()) {
 			for (final String s : f.getSuffixes()) {
 				ts.add(s);
 			}
