@@ -30,7 +30,7 @@
 
 package io.scif.services;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertArrayEquals;
 
 import org.junit.After;
 import org.junit.Before;
@@ -61,7 +61,13 @@ public class FormatServiceTest {
 	@Test
 	public void testGetSuffixes() {
 		final String[] suffixes = formatService.getSuffixes();
-		assertNotNull(suffixes);
+		final String[] expectedSuffixes =
+			{ "avi", "bmp", "btf", "csv", "dcm", "dic", "dicom", "eps", "epsi",
+				"fake", "fits", "fts", "gif", "ics", "ids", "ima", "j2k", "j2ki",
+				"j2kr", "java", "jp2", "jpe", "jpeg", "jpf", "jpg", "mng", "mov",
+				"msr", "nhdr", "nrrd", "obf", "pct", "pcx", "pgm", "pict", "png", "ps",
+				"raw", "tf2", "tf8", "tif", "tiff", "txt", "xml", "zip" };
+		assertArrayEquals(expectedSuffixes, suffixes);
 	}
 
 }
