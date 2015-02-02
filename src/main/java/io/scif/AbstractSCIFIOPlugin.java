@@ -30,9 +30,8 @@
 
 package io.scif;
 
-import io.scif.app.SCIFIOApp;
+import io.scif.services.FormatService;
 
-import org.scijava.app.AppService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Parameter;
@@ -50,7 +49,7 @@ public abstract class AbstractSCIFIOPlugin extends AbstractRichPlugin implements
 	private LogService log;
 
 	@Parameter
-	private AppService appService;
+	private FormatService formatService;
 
 	@Override
 	public LogService log() {
@@ -59,7 +58,7 @@ public abstract class AbstractSCIFIOPlugin extends AbstractRichPlugin implements
 
 	@Override
 	public String getVersion() {
-		return appService.getApp(SCIFIOApp.NAME).getVersion();
+		return formatService.getVersion();
 	}
 
 }

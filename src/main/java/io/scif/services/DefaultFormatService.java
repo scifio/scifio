@@ -38,6 +38,7 @@ import io.scif.Metadata;
 import io.scif.Parser;
 import io.scif.Reader;
 import io.scif.Writer;
+import io.scif.app.SCIFIOApp;
 import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTools;
 
@@ -49,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.scijava.app.AppService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -70,6 +72,9 @@ public class DefaultFormatService extends AbstractService implements
 
 	@Parameter
 	private PluginService pluginService;
+
+	@Parameter
+	private AppService appService;
 
 	// -- Fields --
 
@@ -310,6 +315,13 @@ public class DefaultFormatService extends AbstractService implements
 	@Override
 	public Collection<Format> getOutputFormats() {
 		return writerMap().values();
+	}
+
+	// -- Versioned methods --
+
+	@Override
+	public String getVersion() {
+		return appService.getApp(SCIFIOApp.NAME).getVersion();
 	}
 
 	// -- Private Methods --
