@@ -56,6 +56,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.thread.ThreadService;
 
 /**
  * Default {@link FormatService} implementation
@@ -75,6 +76,9 @@ public class DefaultFormatService extends AbstractService implements
 
 	@Parameter
 	private AppService appService;
+
+	@Parameter
+	private ThreadService threadService;
 
 	// -- Fields --
 
@@ -324,61 +328,67 @@ public class DefaultFormatService extends AbstractService implements
 		return appService.getApp(SCIFIOApp.NAME).getVersion();
 	}
 
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		// TODO replace with preload implementation.
+		// See https://github.com/scijava/scijava-common/issues/145
+		threadService.run(new Runnable() {
+
+			@Override
+			public void run() {
+				formats = new TreeSet<Format>();
+				formatMap = new HashMap<Class<?>, Format>();
+				checkerMap = new HashMap<Class<?>, Format>();
+				parserMap = new HashMap<Class<?>, Format>();
+				readerMap = new HashMap<Class<?>, Format>();
+				writerMap = new HashMap<Class<?>, Format>();
+				metadataMap = new HashMap<Class<?>, Format>();
+
+				for (final Format format : pluginService
+					.createInstancesOfType(Format.class))
+				{
+					addFormat(format);
+				}
+			}
+		});
+	}
+
 	// -- Private Methods --
 
 	private Set<Format> formats() {
-		if (formats == null) initializeSingletons();
+		while (formats == null) {}
 		return formats;
 	}
 
 	private Map<Class<?>, Format> formatMap() {
-		if (formatMap == null) initializeSingletons();
+		while (formatMap == null) {}
 		return formatMap;
 	}
 
 	private Map<Class<?>, Format> checkerMap() {
-		if (checkerMap == null) initializeSingletons();
+		while (checkerMap == null) {}
 		return checkerMap;
 	}
 
 	private Map<Class<?>, Format> parserMap() {
-		if (parserMap == null) initializeSingletons();
+		while (parserMap == null) {}
 		return parserMap;
 	}
 
 	private Map<Class<?>, Format> readerMap() {
-		if (readerMap == null) initializeSingletons();
+		while (readerMap == null) {}
 		return readerMap;
 	}
 
 	private Map<Class<?>, Format> writerMap() {
-		if (writerMap == null) initializeSingletons();
+		while (writerMap == null) {}
 		return writerMap;
 	}
 
 	private Map<Class<?>, Format> metadataMap() {
-		if (metadataMap == null) initializeSingletons();
+		while (metadataMap == null) {}
 		return metadataMap;
 	}
-
-	/*
-	 * Discovers the list of formats and creates singleton instances of each.
-	 */
-	private synchronized void initializeSingletons() {
-		if (formats != null) return;
-		formats = new TreeSet<Format>();
-		formatMap = new HashMap<Class<?>, Format>();
-		checkerMap = new HashMap<Class<?>, Format>();
-		parserMap = new HashMap<Class<?>, Format>();
-		readerMap = new HashMap<Class<?>, Format>();
-		writerMap = new HashMap<Class<?>, Format>();
-		metadataMap = new HashMap<Class<?>, Format>();
-
-		for (final Format format : pluginService
-			.createInstancesOfType(Format.class))
-		{
-			addFormat(format);
-		}
-	}
-
 }
