@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.WeakHashMap;
 
 import org.scijava.app.AppService;
 import org.scijava.plugin.Parameter;
@@ -117,6 +118,15 @@ public class DefaultFormatService extends AbstractService implements
 	 */
 	private Map<Class<?>, Format> metadataMap;
 
+	/*
+	 * Maps String ids to their associated Format.
+	 * TODO: Update this logic for
+	 * https://github.com/scifio/scifio/issues/237
+	 */
+	private Map<String, Format> formatCache;
+
+	private boolean dirtyFormatCache = false;
+
 	// -- FormatService API Methods --
 
 	@Override
@@ -139,6 +149,7 @@ public class DefaultFormatService extends AbstractService implements
 
 		formats().add(format);
 		formatMap().put(format.getClass(), format);
+		dirtyFormatCache = true;
 
 		addComponents(format);
 		if (format.getContext() == null) format.setContext(getContext());
@@ -277,7 +288,12 @@ public class DefaultFormatService extends AbstractService implements
 	public Format getFormat(final String id, final SCIFIOConfig config)
 		throws FormatException
 	{
-		return getFormatList(id, config, true).get(0);
+		Format format = formatCache().get(id);
+		if (format == null) {
+			format = getFormatList(id, config, true).get(0);
+			formatCache().put(id, format);
+		}
+		return format;
 	}
 
 	@Override
@@ -345,6 +361,7 @@ public class DefaultFormatService extends AbstractService implements
 				readerMap = new HashMap<Class<?>, Format>();
 				writerMap = new HashMap<Class<?>, Format>();
 				metadataMap = new HashMap<Class<?>, Format>();
+				formatCache = new WeakHashMap<String, Format>();
 
 				for (final Format format : pluginService
 					.createInstancesOfType(Format.class))
@@ -391,4 +408,14 @@ public class DefaultFormatService extends AbstractService implements
 		while (metadataMap == null) {}
 		return metadataMap;
 	}
+
+	private Map<String, Format> formatCache() {
+		while (formatCache == null) {}
+		if (dirtyFormatCache) {
+			formatCache.clear();
+			dirtyFormatCache = false;
+		}
+		return formatCache;
+	}
+
 }
