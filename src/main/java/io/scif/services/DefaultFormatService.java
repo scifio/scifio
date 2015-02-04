@@ -52,6 +52,7 @@ import java.util.TreeSet;
 import java.util.WeakHashMap;
 
 import org.scijava.app.AppService;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -80,6 +81,9 @@ public class DefaultFormatService extends AbstractService implements
 
 	@Parameter
 	private ThreadService threadService;
+
+	@Parameter
+	private LogService logService;
 
 	// -- Fields --
 
@@ -126,6 +130,19 @@ public class DefaultFormatService extends AbstractService implements
 	private Map<String, Format> formatCache;
 
 	private boolean dirtyFormatCache = false;
+
+	// Flag to mark if this service has been initialized or not.
+	private boolean initialized = false;
+
+	// If this value returns true, the current thread has permission to access
+	// uninitialized data structures.
+	private final ThreadLocal<Boolean> threadLock = new ThreadLocal<Boolean>() {
+
+		@Override
+		protected Boolean initialValue() {
+			return false;
+		}
+	};
 
 	// -- FormatService API Methods --
 
@@ -354,6 +371,9 @@ public class DefaultFormatService extends AbstractService implements
 
 			@Override
 			public void run() {
+				// Allow this thread to bypass the initialization check
+				threadLock.set(true);
+
 				formats = new TreeSet<Format>();
 				formatMap = new HashMap<Class<?>, Format>();
 				checkerMap = new HashMap<Class<?>, Format>();
@@ -363,10 +383,17 @@ public class DefaultFormatService extends AbstractService implements
 				metadataMap = new HashMap<Class<?>, Format>();
 				formatCache = new WeakHashMap<String, Format>();
 
+				// Initialize format information
 				for (final Format format : pluginService
 					.createInstancesOfType(Format.class))
 				{
 					addFormat(format);
+				}
+
+				// Wake up any waiting threads
+				synchronized (DefaultFormatService.this) {
+					initialized = true;
+					DefaultFormatService.this.notifyAll();
 				}
 			}
 		});
@@ -375,42 +402,42 @@ public class DefaultFormatService extends AbstractService implements
 	// -- Private Methods --
 
 	private Set<Format> formats() {
-		while (formats == null) {}
+		checkLock();
 		return formats;
 	}
 
 	private Map<Class<?>, Format> formatMap() {
-		while (formatMap == null) {}
+		checkLock();
 		return formatMap;
 	}
 
 	private Map<Class<?>, Format> checkerMap() {
-		while (checkerMap == null) {}
+		checkLock();
 		return checkerMap;
 	}
 
 	private Map<Class<?>, Format> parserMap() {
-		while (parserMap == null) {}
+		checkLock();
 		return parserMap;
 	}
 
 	private Map<Class<?>, Format> readerMap() {
-		while (readerMap == null) {}
+		checkLock();
 		return readerMap;
 	}
 
 	private Map<Class<?>, Format> writerMap() {
-		while (writerMap == null) {}
+		checkLock();
 		return writerMap;
 	}
 
 	private Map<Class<?>, Format> metadataMap() {
-		while (metadataMap == null) {}
+		checkLock();
 		return metadataMap;
 	}
 
 	private Map<String, Format> formatCache() {
-		while (formatCache == null) {}
+		checkLock();
 		if (dirtyFormatCache) {
 			formatCache.clear();
 			dirtyFormatCache = false;
@@ -418,4 +445,30 @@ public class DefaultFormatService extends AbstractService implements
 		return formatCache;
 	}
 
+	/**
+	 * Helper method that checks if one of these is true:
+	 * <ul>
+	 * <li>This thread is given permission to access data structures before
+	 * initialization</li>
+	 * <li>The FormatService is initialized</li>
+	 * </ul>
+	 * If either is true, returns harmlessly. If not, this thread waits for the
+	 * initialization thread to complete.
+	 */
+	private void checkLock() {
+		if (!(initialized || threadLock.get())) {
+			synchronized (this) {
+				// Double locked to avoid missing signals
+				if (!(initialized || threadLock.get())) {
+					try {
+						wait();
+					}
+					catch (InterruptedException e) {
+						logService.error("DefaultFormatService: "
+							+ "Interrupted while waiting for format initialization.", e);
+					}
+				}
+			}
+		}
+	}
 }
