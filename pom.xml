@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>scifio</artifactId>
-	<version>0.20.1-SNAPSHOT</version>
+	<version>0.21.1-SNAPSHOT</version>
 
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a next generation library for scientific image format I/O.</description>
