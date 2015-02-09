@@ -34,6 +34,7 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
+import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ChannelFiller;
 import io.scif.filters.MinMaxFilter;
@@ -768,8 +769,13 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final long[] planarMin, final long[] planarLength, final Range[] npRanges,
 		final long[] npIndices) throws FormatException, IOException
 	{
+		int numPlanes = npRanges.length == 0 ? 0 : 1;
+		for (final Range range : npRanges) {
+			numPlanes = DataTools.safeMultiply32(numPlanes, range.size());
+		}
+
 		read(imageIndex, imgPlus, r, config, converter, null, planarMin,
-			planarLength, npRanges, npIndices, 0, new int[] { 0 });
+			planarLength, npRanges, npIndices, 0, new int[] { 0 }, numPlanes);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -777,7 +783,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final Reader r, final SCIFIOConfig config, final PlaneConverter converter,
 		Plane tmpPlane, final long[] planarMin, final long[] planarLength,
 		final Range[] npRanges, final long[] npIndices, final int depth,
-		final int[] planeCount) throws FormatException, IOException
+		final int[] planesRead, final int numPlanes) throws FormatException, IOException
 	{
 		if (depth < npRanges.length) {
 			// We need to invert the depth index to get the current non-planar
@@ -789,10 +795,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 				npIndices[npPosition] = npRanges[npPosition].get(i);
 				tmpPlane =
 					read(imageIndex, imgPlus, r, config, converter, tmpPlane, planarMin,
-						planarLength, npRanges, npIndices, depth + 1, planeCount);
+						planarLength, npRanges, npIndices, depth + 1, planesRead, numPlanes);
 			}
 		}
 		else {
+			r.log().info("Reading plane " + planesRead[0] + " of " + numPlanes);
+
 			// Terminal step. Reads the plane at the rasterized index, given the
 			// non-planar indices
 			final int planeIndex =
@@ -811,14 +819,14 @@ public class ImgOpener extends AbstractImgIOComponent {
 			}
 
 			// copy the data to the ImgPlus
-			converter.populatePlane(r, imageIndex, planeCount[0],
+			converter.populatePlane(r, imageIndex, planesRead[0],
 				tmpPlane.getBytes(), imgPlus, config);
 
 			// store color table
-			imgPlus.setColorTable(tmpPlane.getColorTable(), planeCount[0]);
+			imgPlus.setColorTable(tmpPlane.getColorTable(), planesRead[0]);
 
 			// Update plane count
-			planeCount[0]++;
+			planesRead[0]++;
 		}
 
 		return tmpPlane;
