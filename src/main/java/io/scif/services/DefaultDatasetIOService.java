@@ -38,6 +38,7 @@ import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
 import io.scif.img.SCIFIOImgPlus;
+import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +46,8 @@ import java.io.IOException;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
 import net.imagej.ImgPlus;
+import net.imagej.axis.Axes;
+import net.imagej.axis.CalibratedAxis;
 import net.imglib2.exception.IncompatibleTypeException;
 
 import org.scijava.log.LogService;
@@ -112,10 +115,19 @@ public class DefaultDatasetIOService extends AbstractService implements
 	{
 		final ImgOpener imageOpener = new ImgOpener(getContext());
 		try {
+			// TODO openImgs we are only using the first image index in the
+			// SCIFIOConfig.imgOpenerGetRange - so this image index corresponds to the
+			// first ImgPlus in the list returned by the ImgOpener. See
+			// https://github.com/scifio/scifio/issues/259
+
 			final SCIFIOImgPlus<?> imgPlus =
 				imageOpener.openImgs(source, config).get(0);
+			final int imageIndex = config.imgOpenerGetRange().get(0).intValue();
+
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			final Dataset dataset = datasetService.create((ImgPlus) imgPlus);
+
+			updateDataset(dataset, imgPlus.getMetadata(), imageIndex);
 			return dataset;
 		}
 		catch (final ImgIOException exc) {
@@ -162,5 +174,41 @@ public class DefaultDatasetIOService extends AbstractService implements
 		}
 		final Dataset revertedDataset = open(source);
 		revertedDataset.copyInto(dataset);
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * The {@link DatasetService#create} methods make a best guess for populating
+	 * {@link Dataset} information. But this can be incorrect/over-aggressive,
+	 * e.g. in the case of RGBMerged state.
+	 * <p>
+	 * If we have access to the {@link Metadata} instance backing a
+	 * {@code Dataset}, we can use it to more accurately populate these settings.
+	 * </p>
+	 *
+	 * @param dataset Dataset instance to update.
+	 * @param metadata Metadata instance to query for updated information.
+	 * @param imageIndex Index of the desired image within the dataset.
+	 */
+	private void updateDataset(final Dataset dataset, final Metadata metadata,
+		final int imageIndex)
+	{
+		// If the original image had some level of merged channels, we should set
+		// RGBmerged to true for the sake of backwards compatibility.
+		// See https://github.com/imagej/imagej-legacy/issues/104
+		final Metadata unwrappedMeta = SCIFIOMetadataTools.unwrapMetadata(metadata);
+
+		// Look for Axes.CHANNEL in the planar axis list. If found, set RGBMerged to
+		// true.
+		boolean rgbMerged = false;
+
+		for (final CalibratedAxis axis : unwrappedMeta.get(imageIndex)
+			.getAxesPlanar())
+		{
+			if (axis.type().equals(Axes.CHANNEL)) rgbMerged = true;
+		}
+
+		dataset.setRGBMerged(rgbMerged);
 	}
 }
