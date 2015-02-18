@@ -32,7 +32,7 @@ package io.scif.services;
 
 import io.scif.Metadata;
 import io.scif.Translator;
-import io.scif.filters.MetadataWrapper;
+import io.scif.util.SCIFIOMetadataTools;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,12 +65,8 @@ public class DefaultTranslatorService extends
 	public Translator findTranslator(final Metadata source, final Metadata dest,
 		final boolean exact)
 	{
-		Metadata trueSource = source;
-
 		// Unwrap MetadataWrappers to get to the actual format-specific metadata
-		while (trueSource instanceof MetadataWrapper) {
-			trueSource = ((MetadataWrapper) trueSource).unwrap();
-		}
+		final Metadata trueSource = SCIFIOMetadataTools.unwrapMetadata(source);
 
 		return findTranslator(trueSource.getClass(), dest.getClass(), exact);
 	}

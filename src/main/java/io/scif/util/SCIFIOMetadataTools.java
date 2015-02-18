@@ -32,6 +32,7 @@ package io.scif.util;
 
 import io.scif.FormatException;
 import io.scif.Metadata;
+import io.scif.filters.MetadataWrapper;
 import io.scif.io.RandomAccessOutputStream;
 
 import java.util.Arrays;
@@ -135,6 +136,25 @@ public class SCIFIOMetadataTools {
 		// TODO need to check for safe casting here..
 
 		return (M) meta;
+	}
+
+	/**
+	 * Unwraps the provided {@link Metadata} class if it has been wrapped in
+	 * {@link MetadataWrapper}(s).
+	 *
+	 * @param meta Metadata instance to unwrap
+	 * @return If meta is a MetadataWrapper, the tail wrapped Metadata. Otherwise
+	 *         meta is returned directly.
+	 */
+	public static Metadata unwrapMetadata(final Metadata meta) {
+		Metadata unwrappedMeta = meta;
+
+		// Unwrap MetadataWrappers to get to the actual format-specific metadata
+		while (unwrappedMeta instanceof MetadataWrapper) {
+			unwrappedMeta = ((MetadataWrapper) unwrappedMeta).unwrap();
+		}
+
+		return unwrappedMeta;
 	}
 
 	/**

@@ -30,7 +30,6 @@
 
 package io.scif;
 
-import io.scif.filters.MetadataWrapper;
 import io.scif.util.SCIFIOMetadataTools;
 
 import java.util.List;
@@ -68,12 +67,7 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 	public void translate(final Metadata source,
 		final List<ImageMetadata> sourceImgMeta, final Metadata dest)
 	{
-		Metadata trueSource = source;
-
-		// Unwrap MetadataWrappers to get to the actual format-specific metadata
-		while (trueSource instanceof MetadataWrapper) {
-			trueSource = ((MetadataWrapper) trueSource).unwrap();
-		}
+		final Metadata trueSource = SCIFIOMetadataTools.unwrapMetadata(source);
 
 		// Cast the parameters to typed Metadata
 		final M typedSource = SCIFIOMetadataTools.<M> castMeta(trueSource);
