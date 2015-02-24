@@ -1094,6 +1094,7 @@ public class DICOMFormat extends AbstractFormat {
 		// -- Constants --
 
 		private static final int PIXEL_REPRESENTATION = 0x00280103;
+		private static final int PIXEL_SIGN = 0x00281041;
 		private static final int TRANSFER_SYNTAX_UID = 0x00020010;
 		private static final int SLICE_SPACING = 0x00180088;
 		private static final int SAMPLES_PER_PIXEL = 0x00280002;
@@ -1267,6 +1268,7 @@ public class DICOMFormat extends AbstractFormat {
 						addInfo(meta, tag, bitsPerPixel);
 						break;
 					case PIXEL_REPRESENTATION:
+					case PIXEL_SIGN:
 						final short ss = getSource().readShort();
 						signed = ss == 1;
 						addInfo(meta, tag, ss);
