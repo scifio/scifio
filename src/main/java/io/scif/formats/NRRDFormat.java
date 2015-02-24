@@ -226,14 +226,15 @@ public class NRRDFormat extends AbstractFormat {
 		public String[] getImageUsedFiles(final int imageIndex,
 			final boolean noPixels)
 		{
-			FormatTools.assertId(getSource(), true, 1);
+			final RandomAccessInputStream inputStream = getSource();
+			FormatTools.assertId(inputStream, true, 1);
 			if (noPixels) {
 				if (getMetadata().getDataFile() == null) return null;
-				return new String[] { getSource().getFileName() };
+				return new String[] { inputStream.getFileName() };
 			}
-			if (getMetadata().getDataFile() == null) return new String[] { getSource()
+			if (getMetadata().getDataFile() == null) return new String[] { inputStream
 				.getFileName() };
-			return new String[] { getSource().getFileName(),
+			return new String[] { inputStream.getFileName(),
 				getMetadata().getDataFile() };
 		}
 
@@ -276,6 +277,7 @@ public class NRRDFormat extends AbstractFormat {
 
 			meta.createImageMetadata(1);
 			final ImageMetadata iMeta = meta.get(0);
+			final RandomAccessInputStream inputStream = getSource();
 
 			iMeta.setAxisLength(Axes.X, 1);
 			iMeta.setAxisLength(Axes.Y, 1);
@@ -284,7 +286,7 @@ public class NRRDFormat extends AbstractFormat {
 			iMeta.setAxisLength(Axes.TIME, 1);
 			iMeta.setPlanarAxisCount(2);
 
-			String line = getSource().readLine();
+			String line = inputStream.readLine();
 			while (line != null && line.length() > 0) {
 				if (!line.startsWith("#") && !line.startsWith("NRRD")) {
 					// parse key/value pair
@@ -351,7 +353,7 @@ public class NRRDFormat extends AbstractFormat {
 					}
 				}
 
-				line = getSource().readLine();
+				line = inputStream.readLine();
 				if (line != null) line = line.trim();
 			}
 
@@ -363,7 +365,7 @@ public class NRRDFormat extends AbstractFormat {
 			if (meta.getDataFile() == null) meta.setOffset(stream.getFilePointer());
 			else {
 				final Location f =
-					new Location(getContext(), getSource().getFileName())
+					new Location(getContext(), inputStream.getFileName())
 						.getAbsoluteFile();
 				final Location parent = f.getParentFile();
 				if (f.exists() && parent != null) {

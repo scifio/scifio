@@ -227,28 +227,29 @@ public class BMPFormat extends AbstractFormat {
 
 			final ImageMetadata iMeta = meta.get(0);
 			final MetaTable globalTable = meta.getTable();
+			final RandomAccessInputStream inputStream = getSource();
 
 			stream.order(true);
 
 			// read the first header - 14 bytes
 
-			globalTable.put("Magic identifier", getSource().readString(2));
+			globalTable.put("Magic identifier", inputStream.readString(2));
 
-			globalTable.put("File size (in bytes)", getSource().readInt());
-			getSource().skipBytes(4);
+			globalTable.put("File size (in bytes)", inputStream.readInt());
+			inputStream.skipBytes(4);
 
-			meta.setGlobal(getSource().readInt());
+			meta.setGlobal(inputStream.readInt());
 
 			// read the second header - 40 bytes
 
-			getSource().skipBytes(4);
+			inputStream.skipBytes(4);
 
 			int sizeX = 0, sizeY = 0;
 
 			// get the dimensions
 
-			sizeX = getSource().readInt();
-			sizeY = getSource().readInt();
+			sizeX = inputStream.readInt();
+			sizeY = inputStream.readInt();
 
 			iMeta.addAxis(Axes.X, sizeX);
 			iMeta.addAxis(Axes.Y, sizeY);
@@ -263,22 +264,22 @@ public class BMPFormat extends AbstractFormat {
 				meta.setInvertY(true);
 			}
 
-			globalTable.put("Color planes", getSource().readShort());
+			globalTable.put("Color planes", inputStream.readShort());
 
-			final short bpp = getSource().readShort();
+			final short bpp = inputStream.readShort();
 
 			iMeta.setBitsPerPixel(bpp);
 
-			meta.setCompression(getSource().readInt());
+			meta.setCompression(inputStream.readInt());
 
-			getSource().skipBytes(4);
-			final int pixelSizeX = getSource().readInt();
-			final int pixelSizeY = getSource().readInt();
-			int nColors = getSource().readInt();
+			inputStream.skipBytes(4);
+			final int pixelSizeX = inputStream.readInt();
+			final int pixelSizeY = inputStream.readInt();
+			int nColors = inputStream.readInt();
 			if (nColors == 0 && bpp != 32 && bpp != 24) {
 				nColors = bpp < 8 ? 1 << bpp : 256;
 			}
-			getSource().skipBytes(4);
+			inputStream.skipBytes(4);
 
 			// read the palette, if it exists
 
@@ -287,14 +288,14 @@ public class BMPFormat extends AbstractFormat {
 
 				for (int i = 0; i < nColors; i++) {
 					for (int j = palette.length - 1; j >= 0; j--) {
-						palette[j][i] = getSource().readByte();
+						palette[j][i] = inputStream.readByte();
 					}
-					getSource().skipBytes(1);
+					inputStream.skipBytes(1);
 				}
 
 				meta.palette = new ColorTable8(palette);
 			}
-			else if (nColors != 0) getSource().skipBytes(nColors * 4);
+			else if (nColors != 0) inputStream.skipBytes(nColors * 4);
 
 			if (config.parserGetLevel() != MetadataLevel.MINIMUM) {
 				globalTable.put("Indexed color", meta.getColorTable(0, 0) != null);
@@ -354,12 +355,13 @@ public class BMPFormat extends AbstractFormat {
 			final int sizeX = (int) meta.get(imageIndex).getAxisLength(Axes.X);
 			final int sizeY = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
 			final int sizeC = (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
+			final RandomAccessInputStream inputStream = getStream();
 
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
 				buf.length, planeMin, planeMax);
 
 			if (compression != RAW &&
-				getStream().length() < FormatTools.getPlaneSize(this, imageIndex))
+				inputStream.length() < FormatTools.getPlaneSize(this, imageIndex))
 			{
 				throw new UnsupportedCompressionException(compression +
 					" not supported");
@@ -368,7 +370,7 @@ public class BMPFormat extends AbstractFormat {
 			final int rowsToSkip = meta.isInvertY() ? y : sizeY - (h + y);
 			final int rowLength =
 				sizeX * (meta.get(imageIndex).isIndexed() ? 1 : sizeC);
-			getStream().seek(meta.getGlobal() + rowsToSkip * rowLength);
+			inputStream.seek(meta.getGlobal() + rowsToSkip * rowLength);
 
 			int pad = ((rowLength * bpp) / 8) % 2;
 			if (pad == 0) pad = ((rowLength * bpp) / 8) % 4;
@@ -377,11 +379,11 @@ public class BMPFormat extends AbstractFormat {
 			if (bpp >= 8) planeSize *= (bpp / 8);
 			else planeSize /= (8 / bpp);
 			planeSize += pad * h;
-			if (planeSize + getStream().getFilePointer() > getStream().length()) {
+			if (planeSize + inputStream.getFilePointer() > inputStream.length()) {
 				planeSize -= (pad * h);
 
 				// sometimes we have RGB images with a single padding byte
-				if (planeSize + sizeY + getStream().getFilePointer() <= getStream()
+				if (planeSize + sizeY + inputStream.getFilePointer() <= inputStream
 					.length())
 				{
 					pad = 1;
@@ -392,10 +394,10 @@ public class BMPFormat extends AbstractFormat {
 				}
 			}
 
-			getStream().skipBytes(rowsToSkip * pad);
+			inputStream.skipBytes(rowsToSkip * pad);
 
 			final byte[] rawPlane = new byte[planeSize];
-			getStream().read(rawPlane);
+			inputStream.read(rawPlane);
 
 			final BitBuffer bb = new BitBuffer(rawPlane);
 

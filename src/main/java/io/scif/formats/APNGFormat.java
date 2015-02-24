@@ -413,7 +413,8 @@ public class APNGFormat extends AbstractFormat {
 			// 3) 'length' bytes of data
 			// 4) 32 bit CRC
 
-			while (stream.getFilePointer() < stream.length()) {
+			final long inLength = stream.length();
+			while (stream.getFilePointer() < inLength) {
 				final int length = stream.readInt();
 				final String type = stream.readString(4);
 				final long offset = stream.getFilePointer();
@@ -489,7 +490,7 @@ public class APNGFormat extends AbstractFormat {
 				}
 				else if (type.equals("IEND")) {
 					chunk = new IENDChunk();
-					stream.skipBytes((int) (stream.length() - stream.getFilePointer()));
+					stream.skipBytes((int) (inLength - stream.getFilePointer()));
 					meta.setIend((IENDChunk) chunk);
 				}
 				else stream.skipBytes(length);
@@ -499,7 +500,7 @@ public class APNGFormat extends AbstractFormat {
 					chunk.setLength(length);
 				}
 
-				if (stream.getFilePointer() < stream.length() - 4) {
+				if (stream.getFilePointer() < inLength - 4) {
 					stream.skipBytes(4); // skip the CRC
 				}
 			}

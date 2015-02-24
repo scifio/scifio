@@ -196,12 +196,13 @@ public class OBFFormat extends AbstractFormat {
 		private long initStack(final long current, final int fileVersion)
 			throws FormatException, IOException
 		{
-			getSource().seek(current);
+			final RandomAccessInputStream inputStream = getSource();
+			inputStream.seek(current);
 
 			final String magicString =
-				getSource().readString(STACK_MAGIC_STRING.length());
-			final short magicNumber = getSource().readShort();
-			final int version = getSource().readInt();
+				inputStream.readString(STACK_MAGIC_STRING.length());
+			final short magicNumber = inputStream.readShort();
+			final int version = inputStream.readInt();
 
 			if (magicString.equals(STACK_MAGIC_STRING) &&
 				magicNumber == OBFUtilities.MAGIC_NUMBER && version <= STACK_VERSION)
@@ -211,7 +212,7 @@ public class OBFFormat extends AbstractFormat {
 				iMeta.setLittleEndian(OBFUtilities.LITTLE_ENDIAN);
 				iMeta.setThumbnail(false);
 
-				final int numberOfDimensions = getSource().readInt();
+				final int numberOfDimensions = inputStream.readInt();
 				if (numberOfDimensions > 5) {
 					throw new FormatException("Unsupported number of " +
 						numberOfDimensions + " dimensions");
@@ -220,7 +221,7 @@ public class OBFFormat extends AbstractFormat {
 				final int[] sizes = new int[MAXIMAL_NUMBER_OF_DIMENSIONS];
 				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
-					final int size = getSource().readInt();
+					final int size = inputStream.readInt();
 					sizes[dimension] = dimension < numberOfDimensions ? size : 1;
 				}
 
@@ -233,7 +234,7 @@ public class OBFFormat extends AbstractFormat {
 				final List<Double> lengths = new ArrayList<Double>();
 				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
-					final double length = getSource().readDouble();
+					final double length = inputStream.readDouble();
 					if (dimension < numberOfDimensions) {
 						lengths.add(new Double(length));
 					}
@@ -243,53 +244,53 @@ public class OBFFormat extends AbstractFormat {
 				final List<Double> offsets = new ArrayList<Double>();
 				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
-					final double offset = getSource().readDouble();
+					final double offset = inputStream.readDouble();
 					if (dimension < numberOfDimensions) {
 						offsets.add(new Double(offset));
 					}
 				}
 				iMeta.getTable().put("Offsets", offsets);
 
-				final int type = getSource().readInt();
+				final int type = inputStream.readInt();
 				iMeta.setPixelType(OBFUtilities.getPixelType(type));
 				iMeta.setPixelType(OBFUtilities.getBitsPerPixel(type));
 
 				final Stack stack = new Stack();
 
-				final int compression = getSource().readInt();
+				final int compression = inputStream.readInt();
 				stack.setCompression(getCompression(compression));
 
-				getSource().skipBytes(4);
+				inputStream.skipBytes(4);
 
-				final int lengthOfName = getSource().readInt();
-				final int lengthOfDescription = getSource().readInt();
+				final int lengthOfName = inputStream.readInt();
+				final int lengthOfDescription = inputStream.readInt();
 
-				getSource().skipBytes(8);
+				inputStream.skipBytes(8);
 
-				final long lengthOfData = getSource().readLong();
+				final long lengthOfData = inputStream.readLong();
 				stack.setLength(getLength(lengthOfData));
 
-				final long next = getSource().readLong();
+				final long next = inputStream.readLong();
 
-				final String name = getSource().readString(lengthOfName);
+				final String name = inputStream.readString(lengthOfName);
 				iMeta.getTable().put("Name", name);
-				final String description = getSource().readString(lengthOfDescription);
+				final String description = inputStream.readString(lengthOfDescription);
 				iMeta.getTable().put("Description", description);
 
-				stack.setPosition(getSource().getFilePointer());
+				stack.setPosition(inputStream.getFilePointer());
 
 				getMetadata().getStacks().add(stack);
 
 				if (fileVersion >= 1) {
-					getSource().skip(lengthOfData);
+					inputStream.skip(lengthOfData);
 
-					final long footer = getSource().getFilePointer();
-					final int offset = getSource().readInt();
+					final long footer = inputStream.getFilePointer();
+					final int offset = inputStream.readInt();
 
 					final List<Boolean> stepsPresent = new ArrayList<Boolean>();
 					for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 					{
-						final int present = getSource().readInt();
+						final int present = inputStream.readInt();
 						if (dimension < numberOfDimensions) {
 							stepsPresent.add(Boolean.valueOf(present != 0));
 						}
@@ -297,19 +298,19 @@ public class OBFFormat extends AbstractFormat {
 					final List<Boolean> stepLabelsPresent = new ArrayList<Boolean>();
 					for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 					{
-						final int present = getSource().readInt();
+						final int present = inputStream.readInt();
 						if (dimension < numberOfDimensions) {
 							stepLabelsPresent.add(Boolean.valueOf(present != 0));
 						}
 					}
 
-					getSource().seek(footer + offset);
+					inputStream.seek(footer + offset);
 
 					final List<String> labels = new ArrayList<String>();
 					for (int dimension = 0; dimension != numberOfDimensions; ++dimension)
 					{
-						final int length = getSource().readInt();
-						final String label = getSource().readString(length);
+						final int length = inputStream.readInt();
+						final String label = inputStream.readString(length);
 						labels.add(label);
 					}
 					iMeta.getTable().put("Labels", labels);
@@ -320,7 +321,7 @@ public class OBFFormat extends AbstractFormat {
 						final List<Double> list = new ArrayList<Double>();
 						if (stepsPresent.get(dimension)) {
 							for (int position = 0; position != sizes[dimension]; ++position) {
-								final double step = getSource().readDouble();
+								final double step = inputStream.readDouble();
 								list.add(new Double(step));
 							}
 						}
@@ -334,8 +335,8 @@ public class OBFFormat extends AbstractFormat {
 						final List<String> list = new ArrayList<String>();
 						if (stepLabelsPresent.get(dimension)) {
 							for (int position = 0; position != sizes[dimension]; ++position) {
-								final int length = getSource().readInt();
-								final String label = getSource().readString(length);
+								final int length = inputStream.readInt();
+								final String label = inputStream.readString(length);
 								list.add(label);
 							}
 						}

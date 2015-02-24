@@ -79,7 +79,7 @@ public class Location extends AbstractSCIFIOPlugin {
 		log().trace("Location(" + pathname + ")");
 
 		final Matcher m = urlPattern.matcher(pathname);
-		if(m.find()) {
+		if (m.find()) {
 			try {
 				url = new URL(locationService.getMappedId(pathname));
 			}

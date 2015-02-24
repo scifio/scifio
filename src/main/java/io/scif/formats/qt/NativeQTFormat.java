@@ -754,9 +754,10 @@ public class NativeQTFormat extends AbstractFormat {
 		{
 			if (!isInitialized(imageIndex, (int) planeIndex)) {
 				setCodec();
+				final RandomAccessOutputStream outputStream = getStream();
 				if (codec != CODEC_RAW) {
 					needLegacy = true;
-					legacy.setDest(getStream());
+					legacy.setDest(outputStream);
 					return;
 				}
 
@@ -764,16 +765,17 @@ public class NativeQTFormat extends AbstractFormat {
 				final Metadata meta = getMetadata();
 				final int height = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
 				numBytes += (meta.get(imageIndex).getPlaneSize() + pad * height);
-				getStream().seek(BYTE_COUNT_OFFSET);
-				getStream().writeInt(numBytes + 8);
+				outputStream.seek(BYTE_COUNT_OFFSET);
+				outputStream.writeInt(numBytes + 8);
 
-				getStream().seek(offsets.get((int) planeIndex));
+				outputStream.seek(offsets.get((int) planeIndex));
 
 				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
 					planeMax))
 				{
-					getStream().skipBytes(
-						(int) (meta.get(imageIndex).getPlaneSize() + pad * height));
+					outputStream
+						.skipBytes((int) (meta.get(imageIndex).getPlaneSize() + pad *
+							height));
 				}
 			}
 		}
@@ -809,8 +811,9 @@ public class NativeQTFormat extends AbstractFormat {
 			final int x = (int) planeMin[xIndex], y = (int) planeMin[yIndex], w =
 				(int) planeMax[xIndex], h = (int) planeMax[yIndex];
 
-			getStream().seek(
-				offsets.get((int) planeIndex) + y * (nChannels * width + pad));
+			final RandomAccessOutputStream outputStream = getStream();
+			outputStream.seek(offsets.get((int) planeIndex) + y *
+				(nChannels * width + pad));
 
 			// invert each pixel
 			// this will makes the colors look right in other readers (e.g.
@@ -838,13 +841,13 @@ public class NativeQTFormat extends AbstractFormat {
 
 			final int rowLen = tmp.length / h;
 			for (int row = 0; row < h; row++) {
-				getStream().skipBytes(nChannels * x);
-				getStream().write(tmp, row * rowLen, rowLen);
+				outputStream.skipBytes(nChannels * x);
+				outputStream.write(tmp, row * rowLen, rowLen);
 				for (int i = 0; i < pad; i++) {
-					getStream().writeByte(0);
+					outputStream.writeByte(0);
 				}
 				if (row < h - 1) {
-					getStream().skipBytes(nChannels * (width - w - x));
+					outputStream.skipBytes(nChannels * (width - w - x));
 				}
 			}
 			numWritten++;
@@ -941,7 +944,8 @@ public class NativeQTFormat extends AbstractFormat {
 		}
 
 		private void writeFooter() throws IOException {
-			getStream().seek(getStream().length());
+			final RandomAccessOutputStream outputStream = getStream();
+			outputStream.seek(outputStream.length());
 			final Metadata meta = getMetadata();
 			final int width = (int) meta.get(0).getAxisLength(Axes.X);
 			final int height = (int) meta.get(0).getAxisLength(Axes.Y);
@@ -961,26 +965,26 @@ public class NativeQTFormat extends AbstractFormat {
 			// -- write mvhd atom --
 
 			writeAtom(108, "mvhd");
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeInt(created); // creation time
-			getStream().writeInt((int) System.currentTimeMillis());
-			getStream().writeInt(timeScale); // time scale
-			getStream().writeInt(duration); // duration
-			getStream().write(new byte[] { 0, 1, 0, 0 }); // preferred rate &
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeInt(created); // creation time
+			outputStream.writeInt((int) System.currentTimeMillis());
+			outputStream.writeInt(timeScale); // time scale
+			outputStream.writeInt(duration); // duration
+			outputStream.write(new byte[] { 0, 1, 0, 0 }); // preferred rate &
 			// volume
-			getStream().write(new byte[] { 0, -1, 0, 0, 0, 0, 0, 0, 0, 0 }); // reserved
+			outputStream.write(new byte[] { 0, -1, 0, 0, 0, 0, 0, 0, 0, 0 }); // reserved
 
 			writeRotationMatrix();
 
-			getStream().writeShort(0); // not sure what this is
-			getStream().writeInt(0); // preview duration
-			getStream().writeInt(0); // preview time
-			getStream().writeInt(0); // poster time
-			getStream().writeInt(0); // selection time
-			getStream().writeInt(0); // selection duration
-			getStream().writeInt(0); // current time
-			getStream().writeInt(2); // next track's id
+			outputStream.writeShort(0); // not sure what this is
+			outputStream.writeInt(0); // preview duration
+			outputStream.writeInt(0); // preview time
+			outputStream.writeInt(0); // poster time
+			outputStream.writeInt(0); // selection time
+			outputStream.writeInt(0); // selection duration
+			outputStream.writeInt(0); // current time
+			outputStream.writeInt(2); // next track's id
 
 			// -- write trak atom --
 
@@ -990,25 +994,25 @@ public class NativeQTFormat extends AbstractFormat {
 			// -- write tkhd atom --
 
 			writeAtom(92, "tkhd");
-			getStream().writeShort(0); // version
-			getStream().writeShort(15); // flags
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(15); // flags
 
-			getStream().writeInt(created); // creation time
-			getStream().writeInt((int) System.currentTimeMillis());
-			getStream().writeInt(1); // track id
-			getStream().writeInt(0); // reserved
+			outputStream.writeInt(created); // creation time
+			outputStream.writeInt((int) System.currentTimeMillis());
+			outputStream.writeInt(1); // track id
+			outputStream.writeInt(0); // reserved
 
-			getStream().writeInt(duration); // duration
-			getStream().writeInt(0); // reserved
-			getStream().writeInt(0); // reserved
-			getStream().writeShort(0); // reserved
-			getStream().writeInt(0); // unknown
+			outputStream.writeInt(duration); // duration
+			outputStream.writeInt(0); // reserved
+			outputStream.writeInt(0); // reserved
+			outputStream.writeShort(0); // reserved
+			outputStream.writeInt(0); // unknown
 
 			writeRotationMatrix();
 
-			getStream().writeInt(width); // image width
-			getStream().writeInt(height); // image height
-			getStream().writeShort(0); // reserved
+			outputStream.writeInt(width); // image width
+			outputStream.writeInt(height); // image height
+			outputStream.writeShort(0); // reserved
 
 			// -- write edts atom --
 
@@ -1018,13 +1022,13 @@ public class NativeQTFormat extends AbstractFormat {
 
 			writeAtom(28, "elst");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeInt(1); // number of entries in the table
-			getStream().writeInt(duration); // duration
-			getStream().writeShort(0); // time
-			getStream().writeInt(1); // rate
-			getStream().writeShort(0); // unknown
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeInt(1); // number of entries in the table
+			outputStream.writeInt(duration); // duration
+			outputStream.writeShort(0); // time
+			outputStream.writeInt(1); // rate
+			outputStream.writeShort(0); // unknown
 
 			// -- write mdia atom --
 
@@ -1035,26 +1039,26 @@ public class NativeQTFormat extends AbstractFormat {
 
 			writeAtom(32, "mdhd");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeInt(created); // creation time
-			getStream().writeInt((int) System.currentTimeMillis());
-			getStream().writeInt(timeScale); // time scale
-			getStream().writeInt(duration); // duration
-			getStream().writeShort(0); // language
-			getStream().writeShort(0); // quality
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeInt(created); // creation time
+			outputStream.writeInt((int) System.currentTimeMillis());
+			outputStream.writeInt(timeScale); // time scale
+			outputStream.writeInt(duration); // duration
+			outputStream.writeShort(0); // language
+			outputStream.writeShort(0); // quality
 
 			// -- write hdlr atom --
 
 			writeAtom(58, "hdlr");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeBytes("mhlr");
-			getStream().writeBytes("vide");
-			getStream().writeBytes("appl");
-			getStream().write(new byte[] { 16, 0, 0, 0, 0, 1, 1, 11, 25 });
-			getStream().writeBytes("Apple Video Media Handler");
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeBytes("mhlr");
+			outputStream.writeBytes("vide");
+			outputStream.writeBytes("appl");
+			outputStream.write(new byte[] { 16, 0, 0, 0, 0, 1, 1, 11, 25 });
+			outputStream.writeBytes("Apple Video Media Handler");
 
 			// -- write minf atom --
 
@@ -1065,24 +1069,24 @@ public class NativeQTFormat extends AbstractFormat {
 
 			writeAtom(20, "vmhd");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(1); // flags
-			getStream().writeShort(64); // graphics mode
-			getStream().writeShort(32768); // opcolor 1
-			getStream().writeShort(32768); // opcolor 2
-			getStream().writeShort(32768); // opcolor 3
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(1); // flags
+			outputStream.writeShort(64); // graphics mode
+			outputStream.writeShort(32768); // opcolor 1
+			outputStream.writeShort(32768); // opcolor 2
+			outputStream.writeShort(32768); // opcolor 3
 
 			// -- write hdlr atom --
 
 			writeAtom(57, "hdlr");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeBytes("dhlr");
-			getStream().writeBytes("alis");
-			getStream().writeBytes("appl");
-			getStream().write(new byte[] { 16, 0, 0, 1, 0, 1, 1, 31, 24 });
-			getStream().writeBytes("Apple Alias Data Handler");
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeBytes("dhlr");
+			outputStream.writeBytes("alis");
+			outputStream.writeBytes("appl");
+			outputStream.write(new byte[] { 16, 0, 0, 1, 0, 1, 1, 31, 24 });
+			outputStream.writeBytes("Apple Alias Data Handler");
 
 			// -- write dinf atom --
 
@@ -1092,14 +1096,14 @@ public class NativeQTFormat extends AbstractFormat {
 
 			writeAtom(28, "dref");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeShort(0); // version 2
-			getStream().writeShort(1); // flags 2
-			getStream().write(new byte[] { 0, 0, 0, 12 });
-			getStream().writeBytes("alis");
-			getStream().writeShort(0); // version 3
-			getStream().writeShort(1); // flags 3
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeShort(0); // version 2
+			outputStream.writeShort(1); // flags 2
+			outputStream.write(new byte[] { 0, 0, 0, 12 });
+			outputStream.writeBytes("alis");
+			outputStream.writeShort(0); // version 3
+			outputStream.writeShort(1); // flags 3
 
 			// -- write stbl atom --
 
@@ -1110,96 +1114,97 @@ public class NativeQTFormat extends AbstractFormat {
 
 			writeAtom(118, "stsd");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeInt(1); // number of entries in the table
-			getStream().write(new byte[] { 0, 0, 0, 102 });
-			getStream().writeBytes("raw "); // codec
-			getStream().write(new byte[] { 0, 0, 0, 0, 0, 0 }); // reserved
-			getStream().writeShort(1); // data reference
-			getStream().writeShort(1); // version
-			getStream().writeShort(1); // revision
-			getStream().writeBytes("appl");
-			getStream().writeInt(0); // temporal quality
-			getStream().writeInt(768); // spatial quality
-			getStream().writeShort(width); // image width
-			getStream().writeShort(height); // image height
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeInt(1); // number of entries in the table
+			outputStream.write(new byte[] { 0, 0, 0, 102 });
+			outputStream.writeBytes("raw "); // codec
+			outputStream.write(new byte[] { 0, 0, 0, 0, 0, 0 }); // reserved
+			outputStream.writeShort(1); // data reference
+			outputStream.writeShort(1); // version
+			outputStream.writeShort(1); // revision
+			outputStream.writeBytes("appl");
+			outputStream.writeInt(0); // temporal quality
+			outputStream.writeInt(768); // spatial quality
+			outputStream.writeShort(width); // image width
+			outputStream.writeShort(height); // image height
 			final byte[] dpi = new byte[] { 0, 72, 0, 0 };
-			getStream().write(dpi); // horizontal dpi
-			getStream().write(dpi); // vertical dpi
-			getStream().writeInt(0); // data size
-			getStream().writeShort(1); // frames per sample
-			getStream().writeShort(12); // length of compressor name
-			getStream().writeBytes("Uncompressed"); // compressor name
-			getStream().writeInt(bitsPerPixel); // unknown
-			getStream().writeInt(bitsPerPixel); // unknown
-			getStream().writeInt(bitsPerPixel); // unknown
-			getStream().writeInt(bitsPerPixel); // unknown
-			getStream().writeInt(bitsPerPixel); // unknown
-			getStream().writeShort(bitsPerPixel); // bits per pixel
-			getStream().writeInt(65535); // ctab ID
-			getStream().write(new byte[] { 12, 103, 97, 108 }); // gamma
-			getStream().write(new byte[] { 97, 1, -52, -52, 0, 0, 0, 0 }); // unknown
+			outputStream.write(dpi); // horizontal dpi
+			outputStream.write(dpi); // vertical dpi
+			outputStream.writeInt(0); // data size
+			outputStream.writeShort(1); // frames per sample
+			outputStream.writeShort(12); // length of compressor name
+			outputStream.writeBytes("Uncompressed"); // compressor name
+			outputStream.writeInt(bitsPerPixel); // unknown
+			outputStream.writeInt(bitsPerPixel); // unknown
+			outputStream.writeInt(bitsPerPixel); // unknown
+			outputStream.writeInt(bitsPerPixel); // unknown
+			outputStream.writeInt(bitsPerPixel); // unknown
+			outputStream.writeShort(bitsPerPixel); // bits per pixel
+			outputStream.writeInt(65535); // ctab ID
+			outputStream.write(new byte[] { 12, 103, 97, 108 }); // gamma
+			outputStream.write(new byte[] { 97, 1, -52, -52, 0, 0, 0, 0 }); // unknown
 
 			// -- write stts atom --
 
 			writeAtom(24, "stts");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeInt(1); // number of entries in the table
-			getStream().writeInt(numWritten); // number of planes
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeInt(1); // number of entries in the table
+			outputStream.writeInt(numWritten); // number of planes
 			// milliseconds per frame
-			getStream().writeInt((int) ((double) timeScale / getFramesPerSecond()));
+			outputStream.writeInt((int) ((double) timeScale / getFramesPerSecond()));
 
 			// -- write stsc atom --
 
 			writeAtom(28, "stsc");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeInt(1); // number of entries in the table
-			getStream().writeInt(1); // chunk
-			getStream().writeInt(1); // samples
-			getStream().writeInt(1); // id
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeInt(1); // number of entries in the table
+			outputStream.writeInt(1); // chunk
+			outputStream.writeInt(1); // samples
+			outputStream.writeInt(1); // id
 
 			// -- write stsz atom --
 
 			writeAtom(20 + 4 * numWritten, "stsz");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeInt(0); // sample size
-			getStream().writeInt(numWritten); // number of planes
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeInt(0); // sample size
+			outputStream.writeInt(numWritten); // number of planes
 			for (int i = 0; i < numWritten; i++) {
 				// sample size
-				getStream().writeInt(channels * height * (width + pad));
+				outputStream.writeInt(channels * height * (width + pad));
 			}
 
 			// -- write stco atom --
 
 			writeAtom(16 + 4 * numWritten, "stco");
 
-			getStream().writeShort(0); // version
-			getStream().writeShort(0); // flags
-			getStream().writeInt(numWritten); // number of planes
+			outputStream.writeShort(0); // version
+			outputStream.writeShort(0); // flags
+			outputStream.writeInt(numWritten); // number of planes
 			for (int i = 0; i < numWritten; i++) {
 				// write the plane offset
-				getStream().writeInt(offsets.get(i));
+				outputStream.writeInt(offsets.get(i));
 			}
 		}
 
 		/** Write the 3x3 matrix that describes how to rotate the image. */
 		private void writeRotationMatrix() throws IOException {
-			getStream().writeInt(1);
-			getStream().writeInt(0);
-			getStream().writeInt(0);
-			getStream().writeInt(0);
-			getStream().writeInt(1);
-			getStream().writeInt(0);
-			getStream().writeInt(0);
-			getStream().writeInt(0);
-			getStream().writeInt(16384);
+			final RandomAccessOutputStream outputStream = getStream();
+			outputStream.writeInt(1);
+			outputStream.writeInt(0);
+			outputStream.writeInt(0);
+			outputStream.writeInt(0);
+			outputStream.writeInt(1);
+			outputStream.writeInt(0);
+			outputStream.writeInt(0);
+			outputStream.writeInt(0);
+			outputStream.writeInt(16384);
 		}
 
 		/** Write the atom length and type. */
@@ -1253,22 +1258,23 @@ public class NativeQTFormat extends AbstractFormat {
 	private static class NativeQTUtils {
 
 		/** Parse all of the atoms in the file. */
-		private static void parse(RandomAccessInputStream stream,
+		private static void parse(RandomAccessInputStream inputStream,
 			final Metadata meta, int depth, long offset, final long length,
 			final LogService log) throws FormatException, IOException
 		{
+			final long inLength = inputStream.length();
 			while (offset < length) {
-				stream.seek(offset);
+				inputStream.seek(offset);
 
 				// first 4 bytes are the atom size
-				long atomSize = stream.readInt() & 0xffffffffL;
+				long atomSize = inputStream.readInt() & 0xffffffffL;
 
 				// read the atom type
-				final String atomType = stream.readString(4);
+				final String atomType = inputStream.readString(4);
 
 				// if atomSize is 1, then there is an 8 byte extended size
 				if (atomSize == 1) {
-					atomSize = stream.readLong();
+					atomSize = inputStream.readLong();
 				}
 
 				if (atomSize < 0) {
@@ -1280,33 +1286,32 @@ public class NativeQTFormat extends AbstractFormat {
 
 				// if this is a container atom, parse the children
 				if (isContainer(atomType)) {
-					parse(stream, meta, depth++, stream.getFilePointer(), offset +
-						atomSize, log);
+					parse(inputStream, meta, depth++, inputStream.getFilePointer(),
+						offset + atomSize, log);
 				}
 				else {
-					if (atomSize == 0) atomSize = stream.length();
-					final long oldpos = stream.getFilePointer();
+					if (atomSize == 0) atomSize = inLength;
+					final long oldpos = inputStream.getFilePointer();
 
 					if (atomType.equals("mdat")) {
 						// we've found the pixel data
-						meta.setPixelOffset(stream.getFilePointer());
+						meta.setPixelOffset(inputStream.getFilePointer());
 						// "size" includes the size and offset bytes
 						meta.setPixelBytes(atomSize - 8);
 
-						if (meta.getPixelBytes() > (stream.length() - meta.getPixelOffset()))
-						{
-							meta.setPixelBytes(stream.length() - meta.getPixelOffset());
+						if (meta.getPixelBytes() > (inLength - meta.getPixelOffset())) {
+							meta.setPixelBytes(inLength - meta.getPixelOffset());
 						}
 					}
 					else if (atomType.equals("tkhd")) {
 						// we've found the dimensions
 
-						stream.skipBytes(38);
+						inputStream.skipBytes(38);
 						final int[][] matrix = new int[3][3];
 
 						for (int i = 0; i < matrix.length; i++) {
 							for (int j = 0; j < matrix[0].length; j++) {
-								matrix[i][j] = stream.readInt();
+								matrix[i][j] = inputStream.readInt();
 							}
 						}
 
@@ -1322,30 +1327,31 @@ public class NativeQTFormat extends AbstractFormat {
 						meta.setFlip(matrix[0][0] == 0 && matrix[1][0] != 0);
 
 						if (meta.get(0).getAxisIndex(Axes.X) == -1) meta.get(0)
-							.setAxisLength(Axes.X, stream.readInt());
+							.setAxisLength(Axes.X, inputStream.readInt());
 						if (meta.get(0).getAxisIndex(Axes.Y) == -1) meta.get(0)
-							.setAxisLength(Axes.Y, stream.readInt());
+							.setAxisLength(Axes.Y, inputStream.readInt());
 					}
 					else if (atomType.equals("cmov")) {
-						stream.skipBytes(8);
-						if ("zlib".equals(stream.readString(4))) {
-							atomSize = stream.readInt();
-							stream.skipBytes(4);
-							stream.readInt(); // uncompressedSize
+						inputStream.skipBytes(8);
+						if ("zlib".equals(inputStream.readString(4))) {
+							atomSize = inputStream.readInt();
+							inputStream.skipBytes(4);
+							inputStream.readInt(); // uncompressedSize
 
 							final byte[] b = new byte[(int) (atomSize - 12)];
-							stream.read(b);
+							inputStream.read(b);
 
 							final CodecService codecService =
 								meta.context().service(CodecService.class);
 							final Codec codec = codecService.getCodec(ZlibCodec.class);
 							final byte[] output = codec.decompress(b, null);
 
-							final RandomAccessInputStream oldIn = stream;
-							stream = new RandomAccessInputStream(meta.getContext(), output);
-							parse(stream, meta, 0, 0, output.length, log);
-							stream.close();
-							stream = oldIn;
+							final RandomAccessInputStream oldIn = inputStream;
+							inputStream =
+								new RandomAccessInputStream(meta.getContext(), output);
+							parse(inputStream, meta, 0, 0, output.length, log);
+							inputStream.close();
+							inputStream = oldIn;
 						}
 						else {
 							throw new UnsupportedCompressionException(
@@ -1357,12 +1363,12 @@ public class NativeQTFormat extends AbstractFormat {
 
 						if (meta.getOffsets().size() > 0) break;
 						meta.setSpork(false);
-						stream.skipBytes(4);
+						inputStream.skipBytes(4);
 						final int planeCount = (int) meta.get(0).getAxisLength(Axes.TIME);
-						final int numPlanes = stream.readInt();
+						final int numPlanes = inputStream.readInt();
 						if (numPlanes != planeCount) {
-							stream.seek(stream.getFilePointer() - 4);
-							int off = stream.readInt();
+							inputStream.seek(inputStream.getFilePointer() - 4);
+							int off = inputStream.readInt();
 							meta.getOffsets().add(new Integer(off));
 							for (int i = 1; i < planeCount; i++) {
 								if ((meta.getChunkSizes().size() > 0) &&
@@ -1377,20 +1383,20 @@ public class NativeQTFormat extends AbstractFormat {
 						}
 						else {
 							for (int i = 0; i < numPlanes; i++) {
-								meta.getOffsets().add(new Integer(stream.readInt()));
+								meta.getOffsets().add(new Integer(inputStream.readInt()));
 							}
 						}
 					}
 					else if (atomType.equals("stsd")) {
 						// found video codec and pixel depth information
 
-						stream.skipBytes(4);
-						final int numEntries = stream.readInt();
-						stream.skipBytes(4);
+						inputStream.skipBytes(4);
+						final int numEntries = inputStream.readInt();
+						inputStream.skipBytes(4);
 
 						for (int i = 0; i < numEntries; i++) {
 							if (i == 0) {
-								meta.setCodec(stream.readString(4));
+								meta.setCodec(inputStream.readString(4));
 
 								if (!meta.getCodec().equals("raw ") &&
 									!meta.getCodec().equals("rle ") &&
@@ -1402,49 +1408,49 @@ public class NativeQTFormat extends AbstractFormat {
 										"Unsupported codec: " + meta.getCodec());
 								}
 
-								stream.skipBytes(16);
-								if (stream.readShort() == 0) {
-									stream.skipBytes(56);
+								inputStream.skipBytes(16);
+								if (inputStream.readShort() == 0) {
+									inputStream.skipBytes(56);
 
-									meta.setBitsPerPixel(stream.readShort());
+									meta.setBitsPerPixel(inputStream.readShort());
 									if (meta.getCodec().equals("rpza")) meta.setBitsPerPixel(8);
-									stream.skipBytes(10);
-									meta.setInterlaced(stream.read() == 2);
+									inputStream.skipBytes(10);
+									meta.setInterlaced(inputStream.read() == 2);
 									meta.getTable().put("Codec", meta.getCodec());
 									meta.getTable().put("Bits per pixel", meta.getBitsPerPixel());
-									stream.skipBytes(9);
+									inputStream.skipBytes(9);
 								}
 							}
 							else {
-								meta.setAltCodec(stream.readString(4));
+								meta.setAltCodec(inputStream.readString(4));
 								meta.getTable().put("Second codec", meta.getAltCodec());
 							}
 						}
 					}
 					else if (atomType.equals("stsz")) {
 						// found the number of planes
-						stream.skipBytes(4);
-						meta.setRawSize(stream.readInt());
-						meta.get(0).setAxisLength(Axes.TIME, stream.readInt());
+						inputStream.skipBytes(4);
+						meta.setRawSize(inputStream.readInt());
+						meta.get(0).setAxisLength(Axes.TIME, inputStream.readInt());
 
 						if (meta.getRawSize() == 0) {
-							stream.seek(stream.getFilePointer() - 4);
+							inputStream.seek(inputStream.getFilePointer() - 4);
 							for (int b = 0; b < meta.get(0).getAxisLength(Axes.TIME); b++) {
-								meta.getChunkSizes().add(new Integer(stream.readInt()));
+								meta.getChunkSizes().add(new Integer(inputStream.readInt()));
 							}
 						}
 					}
 					else if (atomType.equals("stsc")) {
-						stream.skipBytes(4);
+						inputStream.skipBytes(4);
 
-						final int numChunks = stream.readInt();
+						final int numChunks = inputStream.readInt();
 
 						if (meta.getAltCodec() != null) {
 							int prevChunk = 0;
 							for (int i = 0; i < numChunks; i++) {
-								final int chunk = stream.readInt();
-								final int planesPerChunk = stream.readInt();
-								final int id = stream.readInt();
+								final int chunk = inputStream.readInt();
+								final int planesPerChunk = inputStream.readInt();
+								final int id = inputStream.readInt();
 
 								if (id == 2) meta.setAltPlanes(meta.getAltPlanes() +
 									planesPerChunk * (chunk - prevChunk));
@@ -1454,17 +1460,17 @@ public class NativeQTFormat extends AbstractFormat {
 						}
 					}
 					else if (atomType.equals("stts")) {
-						stream.skipBytes(12);
-						final int fps = stream.readInt();
+						inputStream.skipBytes(12);
+						final int fps = inputStream.readInt();
 						meta.getTable().put("Frames per second", fps);
 					}
-					if (oldpos + atomSize < stream.length()) {
-						stream.seek(oldpos + atomSize);
+					if (oldpos + atomSize < inLength) {
+						inputStream.seek(oldpos + atomSize);
 					}
 					else break;
 				}
 
-				if (atomSize == 0) offset = stream.length();
+				if (atomSize == 0) offset = inLength;
 				else offset += atomSize;
 
 				// if a 'udta' atom, skip ahead 4 bytes

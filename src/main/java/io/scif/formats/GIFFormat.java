@@ -466,12 +466,13 @@ public class GIFFormat extends AbstractFormat {
 		}
 
 		private void readImageBlock() throws FormatException, IOException {
-			getMetadata().setIx(getSource().readShort());
-			getMetadata().setIy(getSource().readShort());
-			getMetadata().setIw(getSource().readShort());
-			getMetadata().setIh(getSource().readShort());
+			final RandomAccessInputStream inputStream = getSource();
+			getMetadata().setIx(inputStream.readShort());
+			getMetadata().setIy(inputStream.readShort());
+			getMetadata().setIw(inputStream.readShort());
+			getMetadata().setIh(inputStream.readShort());
 
-			final int packed = getSource().read();
+			final int packed = inputStream.read();
 			final boolean lctFlag = (packed & 0x80) != 0;
 			getMetadata().setInterlace((packed & 0x40) != 0);
 			final int lctSize = 2 << (packed & 7);
@@ -691,8 +692,9 @@ public class GIFFormat extends AbstractFormat {
 
 		/** Reads the next variable length block. */
 		private int readBlock() throws IOException {
-			if (getSource().getFilePointer() == getSource().length()) return -1;
-			getMetadata().setBlockSize(getSource().read() & 0xff);
+			final RandomAccessInputStream inputStream = getSource();
+			if (inputStream.getFilePointer() == inputStream.length()) return -1;
+			getMetadata().setBlockSize(inputStream.read() & 0xff);
 			int n = 0;
 			int count;
 
@@ -700,8 +702,9 @@ public class GIFFormat extends AbstractFormat {
 				try {
 					while (n < getMetadata().getBlockSize()) {
 						count =
-							getSource().read(getMetadata().getdBlock(), n,
-								getMetadata().getBlockSize() - n);
+							inputStream.read(getMetadata().getdBlock(), n, getMetadata()
+								.getBlockSize() -
+								n);
 						if (count == -1) break;
 						n += count;
 					}

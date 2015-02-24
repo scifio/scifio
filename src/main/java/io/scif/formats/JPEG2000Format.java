@@ -399,7 +399,8 @@ public class JPEG2000Format extends AbstractFormat {
 		 * @throws IOException Thrown if there is an error reading from the file.
 		 */
 		private void parseBoxes(final Metadata meta) throws IOException {
-			final long originalPos = getSource().getFilePointer();
+			final RandomAccessInputStream inputStream = getSource();
+			final long originalPos = inputStream.getFilePointer();
 			long nextPos = 0;
 			long pos = originalPos;
 			log().trace("Parsing JPEG 2000 boxes at " + pos);
@@ -407,13 +408,13 @@ public class JPEG2000Format extends AbstractFormat {
 			JPEG2000BoxType boxType;
 
 			while (pos < maximumReadOffset) {
-				pos = getSource().getFilePointer();
-				length = getSource().readInt();
-				boxCode = getSource().readInt();
+				pos = inputStream.getFilePointer();
+				length = inputStream.readInt();
+				boxCode = inputStream.readInt();
 				boxType = JPEG2000BoxType.get(boxCode);
 				if (boxType == JPEG2000BoxType.SIGNATURE_WRONG_ENDIANNESS) {
 					log().trace("Swapping endianness during box parsing.");
-					getSource().order(!getSource().isLittleEndian());
+					inputStream.order(!inputStream.isLittleEndian());
 					length = DataTools.swap(length);
 				}
 				nextPos = pos + length;
@@ -425,13 +426,13 @@ public class JPEG2000Format extends AbstractFormat {
 						"Unknown JPEG 2000 box 0x" + Integer.toHexString(boxCode) + " at " +
 							pos);
 					if (pos == originalPos) {
-						getSource().seek(originalPos);
-						if (JPEG2000SegmentMarker.get(getSource().readUnsignedShort()) != null)
+						inputStream.seek(originalPos);
+						if (JPEG2000SegmentMarker.get(inputStream.readUnsignedShort()) != null)
 						{
 							log().info("File is a raw codestream not a JP2.");
 							isRawCodestream = true;
-							getSource().seek(originalPos);
-							parseContiguousCodestream(meta, getSource().length());
+							inputStream.seek(originalPos);
+							parseContiguousCodestream(meta, inputStream.length());
 						}
 					}
 				}
@@ -441,7 +442,7 @@ public class JPEG2000Format extends AbstractFormat {
 					switch (boxType) {
 						case CONTIGUOUS_CODESTREAM: {
 							try {
-								parseContiguousCodestream(meta, length == 0 ? getSource()
+								parseContiguousCodestream(meta, length == 0 ? inputStream
 									.length() : length);
 							}
 							catch (final Exception e) {
@@ -450,25 +451,25 @@ public class JPEG2000Format extends AbstractFormat {
 							break;
 						}
 						case HEADER: {
-							getSource().skipBytes(4);
-							final String s = getSource().readString(4);
+							inputStream.skipBytes(4);
+							final String s = inputStream.readString(4);
 							if (s.equals("ihdr")) {
-								headerSizeY = getSource().readInt();
-								headerSizeX = getSource().readInt();
-								headerSizeC = getSource().readShort();
-								final int type = getSource().read();
-								getSource().skipBytes(3);
+								headerSizeY = inputStream.readInt();
+								headerSizeX = inputStream.readInt();
+								headerSizeC = inputStream.readShort();
+								final int type = inputStream.read();
+								inputStream.skipBytes(3);
 								headerPixelType = convertPixelType(type);
 							}
 							parseBoxes(meta);
 							break;
 						}
 						case PALETTE:
-							final int nEntries = getSource().readShort();
-							final int nColumns = getSource().read();
+							final int nEntries = inputStream.readShort();
+							final int nColumns = inputStream.read();
 							final int[] bitDepths = new int[nColumns];
 							for (int i = 0; i < bitDepths.length; i++) {
-								bitDepths[i] = getSource().read() & 0x7f;
+								bitDepths[i] = inputStream.read() & 0x7f;
 								while ((bitDepths[i] % 8) != 0) {
 									bitDepths[i]++;
 								}
@@ -478,10 +479,10 @@ public class JPEG2000Format extends AbstractFormat {
 							for (int i = 0; i < nColumns; i++) {
 								for (int j = 0; j < lut[i].length; j++) {
 									if (bitDepths[i] == 8) {
-										lut[i][j] = getSource().read();
+										lut[i][j] = inputStream.read();
 									}
 									else if (bitDepths[i] == 16) {
-										lut[i][j] = getSource().readShort();
+										lut[i][j] = inputStream.readShort();
 									}
 								}
 							}
@@ -500,7 +501,7 @@ public class JPEG2000Format extends AbstractFormat {
 					break;
 				}
 				log().trace("Seeking to next box at " + nextPos);
-				getSource().seek(nextPos);
+				inputStream.seek(nextPos);
 			}
 		}
 
@@ -513,25 +514,26 @@ public class JPEG2000Format extends AbstractFormat {
 		private void parseContiguousCodestream(final Metadata meta,
 			final long length) throws IOException
 		{
+			final RandomAccessInputStream inputStream = getSource();
 			if (codestreamOffset == 0) {
-				codestreamOffset = getSource().getFilePointer();
+				codestreamOffset = inputStream.getFilePointer();
 			}
 
 			JPEG2000SegmentMarker segmentMarker;
 			int segmentMarkerCode = 0, segmentLength = 0;
-			long pos = getSource().getFilePointer(), nextPos = 0;
+			long pos = inputStream.getFilePointer(), nextPos = 0;
 			log().trace(
 				"Parsing JPEG 2000 contiguous codestream of length " + length + " at " +
 					pos);
 			final long maximumReadOffset = pos + length;
 			boolean terminate = false;
 			while (pos < maximumReadOffset && !terminate) {
-				pos = getSource().getFilePointer();
-				segmentMarkerCode = getSource().readUnsignedShort();
+				pos = inputStream.getFilePointer();
+				segmentMarkerCode = inputStream.readUnsignedShort();
 				segmentMarker = JPEG2000SegmentMarker.get(segmentMarkerCode);
 				if (segmentMarker == JPEG2000SegmentMarker.SOC_WRONG_ENDIANNESS) {
 					log().trace("Swapping endianness during segment marker parsing.");
-					getSource().order(!getSource().isLittleEndian());
+					inputStream.order(!inputStream.isLittleEndian());
 					segmentMarkerCode = JPEG2000SegmentMarker.SOC.getCode();
 					segmentMarker = JPEG2000SegmentMarker.SOC;
 				}
@@ -547,7 +549,7 @@ public class JPEG2000Format extends AbstractFormat {
 					segmentLength = 0;
 				}
 				else {
-					segmentLength = getSource().readUnsignedShort();
+					segmentLength = inputStream.readUnsignedShort();
 				}
 				nextPos = pos + segmentLength + 2;
 				if (segmentMarker == null) {
@@ -571,15 +573,15 @@ public class JPEG2000Format extends AbstractFormat {
 						case SIZ: {
 							// Skipping:
 							// * Capability (uint16)
-							getSource().skipBytes(2);
-							codestreamSizeX = getSource().readInt();
+							inputStream.skipBytes(2);
+							codestreamSizeX = inputStream.readInt();
 							log().trace(
 								"Read reference grid width " + codestreamSizeX + " at " +
-									getSource().getFilePointer());
-							codestreamSizeY = getSource().readInt();
+									inputStream.getFilePointer());
+							codestreamSizeY = inputStream.readInt();
 							log().trace(
 								"Read reference grid height " + codestreamSizeY + " at " +
-									getSource().getFilePointer());
+									inputStream.getFilePointer());
 							// Skipping:
 							// * Horizontal image offset (uint32)
 							// * Vertical image offset (uint32)
@@ -587,17 +589,17 @@ public class JPEG2000Format extends AbstractFormat {
 							// * Tile height (uint32)
 							// * Horizontal tile offset (uint32)
 							// * Vertical tile offset (uint32)
-							getSource().skipBytes(24);
-							codestreamSizeC = getSource().readShort();
+							inputStream.skipBytes(24);
+							codestreamSizeC = inputStream.readShort();
 							log().trace(
 								"Read total components " + codestreamSizeC + " at " +
-									getSource().getFilePointer());
-							final int type = getSource().read();
-							getSource().skipBytes(3);
+									inputStream.getFilePointer());
+							final int type = inputStream.read();
+							inputStream.skipBytes(3);
 							codestreamPixelType = convertPixelType(type);
 							log().trace(
 								"Read codestream pixel type " + codestreamPixelType + " at " +
-									getSource().getFilePointer());
+									inputStream.getFilePointer());
 							break;
 						}
 						case COD: {
@@ -606,17 +608,17 @@ public class JPEG2000Format extends AbstractFormat {
 							// * Progression order (uint8)
 							// * Total quality layers (uint16)
 							// * Multiple component transform (uint8)
-							getSource().skipBytes(5);
-							meta.setResolutionLevels(getSource().readUnsignedByte());
+							inputStream.skipBytes(5);
+							meta.setResolutionLevels(inputStream.readUnsignedByte());
 							log().trace(
 								"Found number of resolution levels " +
 									meta.getResolutionLevels() + " at " +
-									getSource().getFilePointer());
+									inputStream.getFilePointer());
 							break;
 						}
 						case COM:
-							getSource().skipBytes(2);
-							final String comment = getSource().readString(segmentLength - 4);
+							inputStream.skipBytes(2);
+							final String comment = inputStream.readString(segmentLength - 4);
 							comments.add(comment);
 							break;
 						default:
@@ -630,7 +632,7 @@ public class JPEG2000Format extends AbstractFormat {
 					break;
 				}
 				log().trace("Seeking to next segment marker at " + nextPos);
-				getSource().seek(nextPos);
+				inputStream.seek(nextPos);
 			}
 		}
 
