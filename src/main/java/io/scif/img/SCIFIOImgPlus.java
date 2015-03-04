@@ -39,6 +39,7 @@ import java.io.IOException;
 import net.imagej.ImgPlus;
 import net.imagej.ImgPlusMetadata;
 import net.imagej.axis.AxisType;
+import net.imagej.axis.CalibratedAxis;
 import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
 
@@ -85,6 +86,10 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 		final AxisType[] axes, final double[] cal)
 	{
 		super(img, name, axes, cal);
+	}
+
+	public SCIFIOImgPlus(final ImgPlus<T> imgPlus) {
+		this(imgPlus.getImg(), imgPlus.getName(), getTypes(imgPlus));
 	}
 
 	// -- SCIFIOImgPlus Methods --
@@ -153,5 +158,20 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 		if (getImg() instanceof SCIFIOCellImg) {
 			((SCIFIOCellImg) getImg()).dispose();
 		}
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * @return An array of {@link AxisType} corresponding to the axes of the
+	 *         provided {@link ImgPlus}.
+	 */
+	private static AxisType[] getTypes(final ImgPlus<?> imgPlus) {
+		final AxisType[] types = new AxisType[imgPlus.numDimensions()];
+		for (int i = 0; i < types.length; i++) {
+			types[i] = imgPlus.axis(i).type();
+		}
+
+		return types;
 	}
 }
