@@ -586,6 +586,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	{
 		// Get basic statistics
 		final Metadata mOut = w.getMetadata();
+		validate(mOut, w);
+
 		final int rgbChannelCount =
 			mOut.get(imageIndex).isMultichannel() ? (int) mOut.get(imageIndex)
 				.getAxisLength(Axes.CHANNEL) : 1;
@@ -697,6 +699,15 @@ public class ImgSaver extends AbstractImgIOComponent {
 		catch (final IOException e) {
 			throw new ImgIOException(e);
 		}
+	}
+
+	/**
+	 * Check if the provided Metadata and Writer are sufficiently populated for
+	 * writing.
+	 */
+	private void validate(final Metadata meta, final Writer w) {
+		if (meta == null) throw new IllegalStateException(
+			"No Metadata attached to " + w.getFormat().getFormatName() + " writer.");
 	}
 
 	/**
