@@ -516,11 +516,12 @@ public class ImgSaver extends AbstractImgIOComponent {
 				populateMeta(w, imgPlus, config, id, imageIndex);
 			}
 			catch (final FormatException e) {
-				throw new ImgIOException(e, "SCIFIO exception when writing to file: " +
-					id);
+				throw new ImgIOException(e, "SCIFIO exception when writing to file " +
+					id + ":\n" + e.getMessage());
 			}
 			catch (final IOException e) {
-				throw new ImgIOException(e, "I/O exception writing to file: " + id);
+				throw new ImgIOException(e, "I/O exception writing to file " + id +
+					":\n" + e.getMessage());
 			}
 		}
 
