@@ -603,9 +603,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 		final Img<?> img = imgPlus.getImg();
 		final int planeCount = getPlaneCount(img);
 		if (planeOutCount < planeCount / rgbChannelCount) {
-			// Warn that some planes were truncated (e.g. going from 4D format
-			// to
-			// 3D)
+			// Warn that some planes were truncated (e.g. going from 4D format to 3D)
 			statusService.showStatus(0, 0, "Source dataset contains: " + planeCount +
 				" planes, but writer format only supports: " + rgbChannelCount *
 				planeOutCount, true);
