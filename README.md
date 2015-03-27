@@ -1,6 +1,8 @@
 [SCIFIO](http://scif.io/)
 ======
 
+[![Join the chat at https://gitter.im/scifio/scifio](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/scifio/scifio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 SCIFIO (SCientific Image Format Input & Output) is an extensible Java framework
 for reading and writing images, particularly N-dimensional scientific images.
 
