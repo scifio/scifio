@@ -34,6 +34,7 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
+import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ChannelFiller;
 import io.scif.filters.MinMaxFilter;
@@ -344,6 +345,16 @@ public class ImgOpener extends AbstractImgIOComponent {
 			imgPlus.setSource(id);
 			imgPlus.initializeColorTables((int) reader.getPlaneCount(imageIndex
 				.intValue()));
+
+			if (!config.imgOpenerIsComputeMinMax()) {
+				final long[] defaultMinMax =
+					FormatTools.defaultMinMax(reader.getMetadata().get(
+						imageIndex.intValue()).getPixelType());
+				for (int c = 0; c < imgPlus.getCompositeChannelCount(); c++) {
+					imgPlus.setChannelMinimum(c, defaultMinMax[0]);
+					imgPlus.setChannelMaximum(c, defaultMinMax[1]);
+				}
+			}
 
 			// Put this image's metadata into the ImgPlus's properties table.
 			imgPlus.getProperties().put("scifio.metadata.global",
