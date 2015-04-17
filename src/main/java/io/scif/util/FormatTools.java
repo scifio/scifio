@@ -1196,6 +1196,62 @@ public final class FormatTools {
 		return new long[] { min, max };
 	}
 
+	/**
+	 * Get the default range for the specified bits per pixel. Note that this is
+	 * not necessarily the minimum and maximum value which may be stored, but the
+	 * minimum and maximum which should be used for rendering.
+	 *
+	 * @return an array containing the min and max as elements 0 and 1,
+	 *         respectively.
+	 * @throws IllegalArgumentException if the bits per pixel are non-positive.
+	 */
+	public static long[] defaultMinMax(final int bitsPerPixel, final boolean signed) {
+		if (bitsPerPixel <= 0) throw new IllegalArgumentException(
+			"Bits per pixel must be positive. Value was: " + bitsPerPixel);
+
+		long min = 0, max = 0;
+		int bits = bitsPerPixel;
+
+		if (signed) {
+			bits--;
+			min = (long) - Math.pow(2, bits);
+		}
+
+		max = (long) Math.pow(2, bits) - 1;
+
+		return new long[] { min, max };
+	}
+
+	/**
+	 * Helper method to delegate to {@link #defaultMinMax(int, boolean)} or
+	 * {@link #defaultMinMax(int)} based on the given parameters. If a valid
+	 * bitsPerPixel is available, that will be preferred over pixelType.
+	 *
+	 * @return an array containing the min and max as elements 0 and 1,
+	 *         respectively.
+	 */
+	public static long[]
+		defaultMinMax(final int pixelType, final int bitsPerPixel)
+	{
+		if (bitsPerPixel > 0) {
+			return defaultMinMax(bitsPerPixel, isSigned(pixelType));
+		}
+
+		return defaultMinMax(pixelType);
+	}
+
+	/**
+	 * Helper method to get the default range for the specified
+	 * {@link ImageMetadata}.
+	 *
+	 * @return an array containing the min and max as elements 0 and 1,
+	 *         respectively.
+	 */
+	public static long[] defaultMinMax(final ImageMetadata iMeta)
+	{
+		return defaultMinMax(iMeta.getPixelType(), iMeta.getBitsPerPixel());
+	}
+
 	/** Performs suffix matching for the given filename. */
 	public static boolean checkSuffix(final String name, final String suffix) {
 		return checkSuffix(name, new String[] { suffix });
