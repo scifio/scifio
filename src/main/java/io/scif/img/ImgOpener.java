@@ -349,7 +349,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			if (!config.imgOpenerIsComputeMinMax()) {
 				final long[] defaultMinMax =
 					FormatTools.defaultMinMax(reader.getMetadata().get(
-						imageIndex.intValue()).getPixelType());
+						imageIndex.intValue()));
 				for (int c = 0; c < imgPlus.getCompositeChannelCount(); c++) {
 					imgPlus.setChannelMinimum(c, defaultMinMax[0]);
 					imgPlus.setChannelMaximum(c, defaultMinMax[1]);
