@@ -29,7 +29,7 @@
 
 	<ciManagement>
 		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/view/SCIFIO/</url>
+		<url>http://jenkins.imagej.net/job/SCIFIO/</url>
 	</ciManagement>
 
 	<repositories>
