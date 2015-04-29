@@ -1,3 +1,5 @@
+![](http://jenkins.imagej.net/view/SCIFIO/lastBuild/badge/icon)
+
 [SCIFIO](http://scif.io/)
 ======
 
