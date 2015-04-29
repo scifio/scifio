@@ -1,4 +1,4 @@
-[![](http://jenkins.imagej.net/view/SCIFIO/lastBuild/badge/icon)](http://jenkins.imagej.net/view/SCIFIO/)
+[![](http://jenkins.imagej.net/view/SCIFIO/lastBuild/badge/icon)](http://jenkins.imagej.net/job/SCIFIO/)
 
 [SCIFIO](http://scif.io/)
 ======
