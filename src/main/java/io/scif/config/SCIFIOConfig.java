@@ -36,11 +36,11 @@ import io.scif.MetadataLevel;
 import io.scif.Parser;
 import io.scif.Writer;
 import io.scif.codec.CodecOptions;
-import io.scif.img.Range;
+import io.scif.img.ImageRegion;
 import io.scif.img.ImgFactoryHeuristic;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
-import io.scif.img.ImageRegion;
+import io.scif.img.Range;
 import io.scif.img.converters.PlaneConverter;
 
 import java.awt.image.ColorModel;
