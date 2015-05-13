@@ -21,12 +21,10 @@
 		<tag>HEAD</tag>
 		<url>http://github.com/scifio/scifio</url>
 	</scm>
-
 	<issueManagement>
 		<system>GitHub Issues</system>
 		<url>https://github.com/scifio/scifio/issues</url>
 	</issueManagement>
-
 	<ciManagement>
 		<system>Jenkins</system>
 		<url>http://jenkins.imagej.net/view/SCIFIO/</url>
