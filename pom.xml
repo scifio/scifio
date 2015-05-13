@@ -30,6 +30,7 @@
 		<url>http://jenkins.imagej.net/view/SCIFIO/</url>
 	</ciManagement>
 
+	<properties><scijava-common.version>3.0.0-SNAPSHOT</scijava-common.version></properties>
 	<repositories>
 		<repository>
 			<id>imagej.public</id>

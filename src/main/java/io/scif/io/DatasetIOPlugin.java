@@ -40,7 +40,6 @@ import io.scif.img.ImgSaver;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.services.FormatService;
 
-import java.io.File;
 import java.io.IOException;
 
 import net.imagej.Dataset;
@@ -48,9 +47,14 @@ import net.imagej.DatasetService;
 import net.imagej.ImgPlus;
 import net.imglib2.exception.IncompatibleTypeException;
 
+import org.scijava.Named;
 import org.scijava.Priority;
 import org.scijava.io.AbstractIOPlugin;
+import org.scijava.io.FileLocation;
 import org.scijava.io.IOPlugin;
+import org.scijava.io.Location;
+import org.scijava.io.URILocation;
+import org.scijava.io.URLLocation;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -80,9 +84,9 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 	}
 
 	@Override
-	public boolean supportsOpen(final String source) {
+	public boolean supportsOpen(final Location source) {
 		try {
-			return formatService.getFormat(source, new SCIFIOConfig()
+			return formatService.getFormat(id(source), new SCIFIOConfig()
 				.checkerSetOpen(true)) != null;
 		}
 		catch (final FormatException exc) {
@@ -92,9 +96,9 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 	}
 
 	@Override
-	public boolean supportsSave(final String destination) {
+	public boolean supportsSave(final Location destination) {
 		try {
-			return formatService.getWriterByExtension(destination) != null;
+			return formatService.getWriterByExtension(id(destination)) != null;
 		}
 		catch (final FormatException exc) {
 			log.error(exc);
@@ -103,14 +107,14 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 	}
 
 	@Override
-	public Dataset open(final String source) throws IOException {
+	public Dataset open(final Location source) throws IOException {
 		final SCIFIOConfig config = new SCIFIOConfig();
 		config.imgOpenerSetIndex(0);
 		return open(source, config);
 	}
 
 	@Override
-	public void save(final Dataset dataset, final String destination)
+	public void save(final Dataset dataset, final Location destination)
 		throws IOException
 	{
 		save(dataset, destination, null);
@@ -118,7 +122,7 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
 	// -- Helper methods --
 
-	private Dataset open(final String source, final SCIFIOConfig config)
+	private Dataset open(final Location source, final SCIFIOConfig config)
 		throws IOException
 	{
 		final ImgOpener imageOpener = new ImgOpener(getContext());
@@ -131,7 +135,7 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
 		try {
 			final SCIFIOImgPlus<?> imgPlus =
-				imageOpener.openImgs(source, config).get(0);
+				imageOpener.openImgs(id(source), config).get(0);
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			final Dataset dataset = datasetService.create((ImgPlus) imgPlus);
 			return dataset;
@@ -141,7 +145,7 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 		}
 	}
 
-	private Metadata save(final Dataset dataset, final String destination,
+	private Metadata save(final Dataset dataset, final Location destination,
 		final SCIFIOConfig config) throws IOException
 	{
 		@SuppressWarnings("rawtypes")
@@ -150,7 +154,7 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 		final Metadata metadata;
 		final ImgSaver imageSaver = new ImgSaver(getContext());
 		try {
-			metadata = imageSaver.saveImg(destination, img, config);
+			metadata = imageSaver.saveImg(id(destination), img, config);
 		}
 		catch (final ImgIOException exc) {
 			throw new IOException(exc);
@@ -159,11 +163,38 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 			throw new IOException(exc);
 		}
 
-		final String name = new File(destination).getName();
-		dataset.setName(name);
+		if (destination instanceof Named) {
+			dataset.setName(((Named) destination).getName());
+		}
 		dataset.setDirty(false);
 
 		return metadata;
+	}
+
+	/**
+	 * Converts the given {@link Location} to a {@link String} {@code id}
+	 * compatible with the SCIFIO API.
+	 * <p>
+	 * <b>NB: This method is temporary, until SCIFIO can be updated across the
+	 * board to use {@link Location} objects instead of {@link String}s. See also
+	 * <a href="https://github.com/scifio/scifio/issues/181">#181</a> and <a
+	 * href="https://github.com/scifio/scifio/issues/75">#75</a>.</b>
+	 * 
+	 * @param loc The location to express as a {@link String}.
+	 * @return A {@link String} {@code id} representing the {@link Location}.
+	 */
+	private String id(final Location loc) {
+		if (loc instanceof FileLocation) {
+			return ((FileLocation) loc).getFile().getAbsolutePath();
+		}
+		if (loc instanceof URLLocation) {
+			return ((URLLocation) loc).getURL().toExternalForm();
+		}
+		if (loc instanceof URILocation) {
+			return ((URILocation) loc).getURI().toString();
+		}
+		throw new IllegalArgumentException("Unsupported location type: " +
+			loc.getClass().getName());
 	}
 
 }
