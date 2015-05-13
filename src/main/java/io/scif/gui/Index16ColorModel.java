@@ -30,13 +30,13 @@
 
 package io.scif.gui;
 
-import io.scif.common.DataTools;
-
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+
+import org.scijava.util.Bytes;
 
 /**
  * ColorModel that handles 16 bits per channel lookup tables.
@@ -134,21 +134,21 @@ public class Index16ColorModel extends ColorModel {
 	public int getBlue(final int pixel) {
 		if (blueShort == null) return 0;
 		final int blue = blueShort[pixel] & 0xffff;
-		return littleEndian ? DataTools.swap(blue) : blue;
+		return littleEndian ? Bytes.swap(blue) : blue;
 	}
 
 	@Override
 	public int getGreen(final int pixel) {
 		if (greenShort == null) return 0;
 		final int green = greenShort[pixel] & 0xffff;
-		return littleEndian ? DataTools.swap(green) : green;
+		return littleEndian ? Bytes.swap(green) : green;
 	}
 
 	@Override
 	public int getRed(final int pixel) {
 		if (redShort == null) return 0;
 		final int red = redShort[pixel] & 0xffff;
-		return littleEndian ? DataTools.swap(red) : red;
+		return littleEndian ? Bytes.swap(red) : red;
 	}
 
 }

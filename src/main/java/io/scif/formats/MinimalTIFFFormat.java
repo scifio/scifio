@@ -41,7 +41,6 @@ import io.scif.FormatException;
 import io.scif.HasColorTable;
 import io.scif.ImageMetadata;
 import io.scif.codec.JPEG2000CodecOptions;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.formats.tiff.IFD;
 import io.scif.formats.tiff.IFDList;
@@ -64,6 +63,7 @@ import net.imglib2.display.ColorTable8;
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * MinimalTiffReader is the superclass for file format readers compatible with
@@ -642,7 +642,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				final byte[] newBuf = new byte[buf.length];
 				for (int i = 0; i < nPixels; i++) {
 					final int v =
-						DataTools.bytesToInt(buf, i * nBytes, nBytes, meta.get(imageIndex)
+						Bytes.toInt(buf, i * nBytes, nBytes, meta.get(imageIndex)
 							.isLittleEndian());
 					final int sign = v >> bits;
 					int exponent =
@@ -670,7 +670,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 					mantissa <<= (23 - mantissaBits);
 
 					final int value = (sign << 31) | (exponent << 23) | mantissa;
-					DataTools.unpackBytes(value, newBuf, i * 4, 4, meta.get(imageIndex)
+					Bytes.unpack(value, newBuf, i * 4, 4, meta.get(imageIndex)
 						.isLittleEndian());
 				}
 				System.arraycopy(newBuf, 0, buf, 0, newBuf.length);

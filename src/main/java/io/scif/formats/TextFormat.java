@@ -40,7 +40,6 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.common.Constants;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.IRandomAccess;
 import io.scif.io.RandomAccessInputStream;
@@ -60,6 +59,7 @@ import net.imagej.axis.Axes;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * Reader for text files containing tables of data. All image planes are stored
@@ -427,7 +427,7 @@ public class TextFormat extends AbstractFormat {
 					final int xx = x + i;
 					final int index = yy * (int) meta.get(0).getAxisLength(Axes.X) + xx;
 					final int bits = Float.floatToIntBits(planeFloats[index]);
-					DataTools.unpackBytes(bits, buf, q, 4, TextUtils.LITTLE_ENDIAN);
+					Bytes.unpack(bits, buf, q, 4, TextUtils.LITTLE_ENDIAN);
 					q += 4;
 				}
 			}

@@ -43,7 +43,6 @@ import io.scif.Plane;
 import io.scif.Translator;
 import io.scif.codec.CompressionType;
 import io.scif.common.Constants;
-import io.scif.common.DataTools;
 import io.scif.common.DateTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.formats.tiff.IFD;
@@ -75,6 +74,7 @@ import net.imglib2.display.ColorTable8;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.StringUtils;
 
 /**
  * Handler for the TIFF file format.
@@ -373,7 +373,7 @@ public class TIFFFormat extends AbstractFormat {
 								b[i] = (byte) s[i];
 							}
 							String metadata =
-								DataTools.stripString(new String(b, Constants.ENCODING));
+								StringUtils.stripNulls(new String(b, Constants.ENCODING));
 							if (metadata.indexOf("xml") != -1) {
 								metadata = metadata.substring(metadata.indexOf("<"));
 								metadata =

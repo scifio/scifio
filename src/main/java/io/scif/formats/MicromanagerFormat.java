@@ -41,7 +41,6 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Translator;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
@@ -63,6 +62,8 @@ import net.imagej.axis.Axes;
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.DigestUtils;
+import org.scijava.util.FileUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -331,7 +332,7 @@ public class MicromanagerFormat extends AbstractFormat {
 			throws IOException, FormatException
 		{
 			final Position p = meta.getPositions().get(posIndex);
-			final String s = DataTools.readFile(getContext(), p.metadataFile);
+			final String s = stringFromFile(p.metadataFile);
 			parsePosition(s, meta, posIndex);
 
 			buildTIFFList(meta, posIndex);
@@ -687,11 +688,17 @@ public class MicromanagerFormat extends AbstractFormat {
 			throws IOException
 		{
 			final Position p = meta.getPositions().get(imageIndex);
-			String xmlData = DataTools.readFile(getContext(), p.xmlFile);
+			String xmlData = stringFromFile(p.xmlFile);
 			xmlData = xmlService.sanitizeXML(xmlData);
 
 			final DefaultHandler handler = new MicromanagerHandler();
 			xmlService.parseXML(xmlData, handler);
+		}
+
+		/** Reads a string from a file path. */
+		private String stringFromFile(final String path) throws IOException {
+			final byte[] bytes = FileUtils.readFile(new File(path));
+			return DigestUtils.string(bytes);
 		}
 
 		// -- Helper classes --

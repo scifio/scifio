@@ -49,7 +49,6 @@ import io.scif.codec.CodecService;
 import io.scif.codec.JPEG2000Codec;
 import io.scif.codec.JPEGCodec;
 import io.scif.codec.PackbitsCodec;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
@@ -68,6 +67,7 @@ import net.imglib2.display.ColorTable8;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * DICOMReader is the file format reader for DICOM files. Much of this code is
@@ -2047,8 +2047,8 @@ public class DICOMFormat extends AbstractFormat {
 					final boolean little = meta.get(imageIndex).isLittleEndian();
 					for (int i = 0; i < plane.getBytes().length; i += 2) {
 						final short s =
-							DataTools.bytesToShort(plane.getBytes(), i, 2, little);
-						DataTools.unpackBytes(meta.getMaxPixelValue() - s,
+							Bytes.toShort(plane.getBytes(), i, 2, little);
+						Bytes.unpack(meta.getMaxPixelValue() - s,
 							plane.getBytes(), i, 2, little);
 					}
 				}
@@ -2199,7 +2199,7 @@ public class DICOMFormat extends AbstractFormat {
 						return stream.readInt();
 					}
 					tag.setVR(IMPLICIT_VR);
-					return DataTools.bytesToInt(b, stream.isLittleEndian());
+					return Bytes.toInt(b, stream.isLittleEndian());
 				case AE:
 				case AS:
 				case AT:
@@ -2225,10 +2225,10 @@ public class DICOMFormat extends AbstractFormat {
 				case QQ:
 					// Explicit VR with 16-bit length
 					if (tag.get() == 0x00283006) {
-						return DataTools.bytesToInt(b, 2, 2, stream.isLittleEndian());
+						return Bytes.toInt(b, 2, 2, stream.isLittleEndian());
 					}
-					int n1 = DataTools.bytesToShort(b, 2, 2, stream.isLittleEndian());
-					int n2 = DataTools.bytesToShort(b, 2, 2, !stream.isLittleEndian());
+					int n1 = Bytes.toShort(b, 2, 2, stream.isLittleEndian());
+					int n2 = Bytes.toShort(b, 2, 2, !stream.isLittleEndian());
 					n1 &= 0xffff;
 					n2 &= 0xffff;
 					if (n1 < 0 || n1 + stream.getFilePointer() > stream.length()) return n2;
@@ -2239,9 +2239,9 @@ public class DICOMFormat extends AbstractFormat {
 					return 8;
 				default:
 					tag.setVR(IMPLICIT_VR);
-					int len = DataTools.bytesToInt(b, stream.isLittleEndian());
+					int len = Bytes.toInt(b, stream.isLittleEndian());
 					if (len + stream.getFilePointer() > stream.length() || len < 0) {
-						len = DataTools.bytesToInt(b, 2, 2, stream.isLittleEndian());
+						len = Bytes.toInt(b, 2, 2, stream.isLittleEndian());
 						len &= 0xffff;
 					}
 					return len;

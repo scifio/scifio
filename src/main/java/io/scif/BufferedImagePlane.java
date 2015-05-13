@@ -30,12 +30,12 @@
 
 package io.scif;
 
-import io.scif.common.DataTools;
 import io.scif.gui.AWTImageTools;
 
 import java.awt.image.BufferedImage;
 
 import org.scijava.Context;
+import org.scijava.util.Bytes;
 
 /**
  * A {@link io.scif.Plane} implementation using a
@@ -97,7 +97,7 @@ public class BufferedImagePlane extends
 					for (int c = 0; c < ts.length; c++) {
 						int offset = c * ts[c].length * 2;
 						for (int i = 0; i < ts[c].length; i++) {
-							DataTools.unpackBytes(ts[c][i], cachedBytes, offset, 2,
+							Bytes.unpack(ts[c][i], cachedBytes, offset, 2,
 								getImageMetadata().isLittleEndian());
 							offset += 2;
 						}

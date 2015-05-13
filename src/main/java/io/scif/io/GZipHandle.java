@@ -30,8 +30,6 @@
 
 package io.scif.io;
 
-import io.scif.common.DataTools;
-
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -40,6 +38,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * StreamHandle implementation for reading from gzip-compressed files or byte
@@ -88,7 +87,7 @@ public class GZipHandle extends StreamHandle {
 		final byte[] b = new byte[2];
 		s.read(b);
 		s.close();
-		return DataTools.bytesToInt(b, true) == GZIPInputStream.GZIP_MAGIC;
+		return Bytes.toInt(b, true) == GZIPInputStream.GZIP_MAGIC;
 	}
 
 	@Override

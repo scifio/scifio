@@ -30,7 +30,8 @@
 
 package io.scif.util;
 
-import io.scif.common.DataTools;
+import org.scijava.util.ArrayUtils;
+import org.scijava.util.Bytes;
 
 /**
  * A utility class with convenience methods for manipulating images in primitive
@@ -172,7 +173,7 @@ public final class ImageTools {
 			final byte tmp = a[0];
 			a[0] = a[2];
 			a[2] = tmp;
-			rtn[i] = DataTools.bytesToInt(a, true);
+			rtn[i] = Bytes.toInt(a, true);
 		}
 
 		return rtn;
@@ -241,7 +242,7 @@ public final class ImageTools {
 			int next = 0;
 			// TODO may need to do more to sort out the actual axis order
 			for (int i = 0; i < array.length; i +=
-				bytes * DataTools.safeMultiply32(maxLengths))
+				bytes * ArrayUtils.safeMultiply32(maxLengths))
 			{
 				for (int k = 0; k < bytes; k++) {
 					if (next < rtn.length) rtn[next] =
@@ -490,7 +491,7 @@ public final class ImageTools {
 		final byte[] out = new byte[b.length / bpp];
 
 		for (int i = 0; i < b.length; i += bpp) {
-			int s = DataTools.bytesToInt(b, i, bpp, little);
+			int s = Bytes.toInt(b, i, bpp, little);
 
 			if (s >= max) s = 255;
 			else if (s <= min) s = 0;
@@ -521,14 +522,14 @@ public final class ImageTools {
 		}
 		else if (bits == 16) {
 			for (int j = 0; j < plane.length; j += 2) {
-				final short s = DataTools.bytesToShort(plane, j, 2, littleEndian);
+				final short s = Bytes.toShort(plane, j, 2, littleEndian);
 				if (s < min) min = s;
 				if (s > max) max = s;
 			}
 		}
 		else if (bits == 32) {
 			for (int j = 0; j < plane.length; j += 4) {
-				final int s = DataTools.bytesToInt(plane, j, 4, littleEndian);
+				final int s = Bytes.toInt(plane, j, 4, littleEndian);
 				if (s < min) min = s;
 				if (s > max) max = s;
 			}
@@ -591,7 +592,7 @@ public final class ImageTools {
 		final short[][] rtn = new short[lut.length][b.length / 2];
 		for (int i = 0; i < b.length / 2; i++) {
 			for (int j = 0; j < lut.length; j++) {
-				final int index = DataTools.bytesToInt(b, i * 2, 2, le);
+				final int index = Bytes.toInt(b, i * 2, 2, le);
 				rtn[j][i] = lut[j][index];
 			}
 		}
@@ -644,11 +645,11 @@ public final class ImageTools {
 					}
 
 					final short v = (short) (sum / ncomps);
-					DataTools.unpackBytes(v, buf, row * width * 6 + col * 6 + 2, 2,
+					Bytes.unpack(v, buf, row * width * 6 + col * 6 + 2, 2,
 						littleEndian);
 				}
 				else {
-					DataTools.unpackBytes(s[plane + row * width + col], buf, row * width *
+					Bytes.unpack(s[plane + row * width + col], buf, row * width *
 						6 + col * 6 + 2, 2, littleEndian);
 				}
 
@@ -704,11 +705,11 @@ public final class ImageTools {
 					}
 
 					final short v = (short) (sum / ncomps);
-					DataTools.unpackBytes(v, buf, row * width * 6 + col * 6, 2,
+					Bytes.unpack(v, buf, row * width * 6 + col * 6, 2,
 						littleEndian);
 				}
 				else {
-					DataTools.unpackBytes(s[row * width + col], buf, row * width * 6 +
+					Bytes.unpack(s[row * width + col], buf, row * width * 6 +
 						col * 6, 2, littleEndian);
 				}
 
@@ -764,11 +765,11 @@ public final class ImageTools {
 					}
 
 					final short v = (short) (sum / ncomps);
-					DataTools.unpackBytes(v, buf, row * width * 6 + col * 6 + 4, 2,
+					Bytes.unpack(v, buf, row * width * 6 + col * 6 + 4, 2,
 						littleEndian);
 				}
 				else {
-					DataTools.unpackBytes(s[2 * plane + row * width + col], buf, row *
+					Bytes.unpack(s[2 * plane + row * width + col], buf, row *
 						width * 6 + col * 6 + 4, 2, littleEndian);
 				}
 			}

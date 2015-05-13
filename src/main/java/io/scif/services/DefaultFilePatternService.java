@@ -33,7 +33,6 @@ package io.scif.services;
 import io.scif.AxisGuesser;
 import io.scif.FilePattern;
 import io.scif.NumberFilter;
-import io.scif.common.DataTools;
 import io.scif.io.Location;
 
 import java.io.File;
@@ -46,6 +45,7 @@ import java.util.regex.Pattern;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.util.ArrayUtils;
 
 /**
  * Default {@link FilePatternService} implementation.
@@ -148,7 +148,7 @@ public class DefaultFilePatternService extends AbstractService implements
 			final int last = i > 0 ? endList[i - 1] : 0;
 			final String prefix = name.substring(last, indexList[i]);
 			final int axisType = AxisGuesser.getAxisType(prefix);
-			if (DataTools.containsValue(excludeAxes, axisType)) {
+			if (ArrayUtils.contains(excludeAxes, axisType)) {
 				sb.append(name.substring(last, endList[i]));
 				continue;
 			}
@@ -298,7 +298,7 @@ public class DefaultFilePatternService extends AbstractService implements
 			if (!patterns.contains(pattern) &&
 				(!new Location(getContext(), pattern).exists() || base.equals(pattern)) &&
 				patternSuffix.equals(baseSuffix) &&
-				DataTools.indexOf(checkFiles, base) >= 0)
+				ArrayUtils.indexOf(checkFiles, base) >= 0)
 			{
 				patterns.add(pattern);
 			}

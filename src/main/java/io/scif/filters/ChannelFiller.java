@@ -34,7 +34,6 @@ import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
 import io.scif.FormatException;
 import io.scif.Plane;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 
 import java.io.IOException;
@@ -44,6 +43,7 @@ import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * For indexed color data representing true color, factors out the indices,
@@ -213,7 +213,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 			for (int i = 0; i < index.length / bytesPerIndex && pt < buf.length; i++)
 			{
 				final int iVal =
-					DataTools.bytesToInt(index, i * bytesPerIndex, bytesPerIndex,
+					Bytes.toInt(index, i * bytesPerIndex, bytesPerIndex,
 						getMetadata().get(imageIndex).isLittleEndian());
 				for (int j = 0; j < lutLength; j++) {
 					buf[pt++] = (byte) lut.get(j, iVal);
@@ -225,7 +225,7 @@ public class ChannelFiller extends AbstractReaderFilter {
 				for (int i = 0; i < index.length / bytesPerIndex && pt < buf.length; i++)
 				{
 					final int iVal =
-						DataTools.bytesToInt(index, i * bytesPerIndex, bytesPerIndex,
+						Bytes.toInt(index, i * bytesPerIndex, bytesPerIndex,
 							getMetadata().get(imageIndex).isLittleEndian());
 					buf[pt++] = (byte) lut.get(j, iVal);
 				}

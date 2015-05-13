@@ -31,7 +31,6 @@
 package io.scif.io;
 
 import io.scif.AbstractSCIFIOPlugin;
-import io.scif.common.DataTools;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -41,6 +40,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import org.scijava.Context;
+import org.scijava.util.Bytes;
 
 /**
  * Abstract IRandomAccess implementation for reading from InputStreams and
@@ -283,14 +283,14 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 	public double readDouble() throws IOException {
 		fp += 8;
 		final double v = stream.readDouble();
-		return order.equals(ByteOrder.LITTLE_ENDIAN) ? DataTools.swap(v) : v;
+		return order.equals(ByteOrder.LITTLE_ENDIAN) ? Bytes.swap(v) : v;
 	}
 
 	@Override
 	public float readFloat() throws IOException {
 		fp += 4;
 		final float v = stream.readFloat();
-		return order.equals(ByteOrder.LITTLE_ENDIAN) ? DataTools.swap(v) : v;
+		return order.equals(ByteOrder.LITTLE_ENDIAN) ? Bytes.swap(v) : v;
 	}
 
 	@Override
@@ -311,7 +311,7 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 	public int readInt() throws IOException {
 		fp += 4;
 		final int v = stream.readInt();
-		return order.equals(ByteOrder.LITTLE_ENDIAN) ? DataTools.swap(v) : v;
+		return order.equals(ByteOrder.LITTLE_ENDIAN) ? Bytes.swap(v) : v;
 	}
 
 	@Override
@@ -323,14 +323,14 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 	public long readLong() throws IOException {
 		fp += 8;
 		final long v = stream.readLong();
-		return order.equals(ByteOrder.LITTLE_ENDIAN) ? DataTools.swap(v) : v;
+		return order.equals(ByteOrder.LITTLE_ENDIAN) ? Bytes.swap(v) : v;
 	}
 
 	@Override
 	public short readShort() throws IOException {
 		fp += 2;
 		final short v = stream.readShort();
-		return order.equals(ByteOrder.LITTLE_ENDIAN) ? DataTools.swap(v) : v;
+		return order.equals(ByteOrder.LITTLE_ENDIAN) ? Bytes.swap(v) : v;
 	}
 
 	@Override
@@ -389,7 +389,7 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
 		}
-		if (order.equals(ByteOrder.LITTLE_ENDIAN)) b = DataTools.swap(b);
+		if (order.equals(ByteOrder.LITTLE_ENDIAN)) b = Bytes.swap(b);
 		outStream.write(b);
 	}
 
@@ -406,7 +406,7 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
 		}
-		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = DataTools.swap(v);
+		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = Bytes.swap(v);
 		outStream.writeByte(v);
 	}
 
@@ -423,7 +423,7 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
 		}
-		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = DataTools.swap(v);
+		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = Bytes.swap(v);
 		outStream.writeChar(v);
 	}
 
@@ -440,7 +440,7 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
 		}
-		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = DataTools.swap(v);
+		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = Bytes.swap(v);
 		outStream.writeDouble(v);
 	}
 
@@ -449,7 +449,7 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
 		}
-		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = DataTools.swap(v);
+		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = Bytes.swap(v);
 		outStream.writeFloat(v);
 	}
 
@@ -458,7 +458,7 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
 		}
-		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = DataTools.swap(v);
+		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = Bytes.swap(v);
 		outStream.writeInt(v);
 	}
 
@@ -467,7 +467,7 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
 		}
-		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = DataTools.swap(v);
+		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = Bytes.swap(v);
 		outStream.writeLong(v);
 	}
 
@@ -476,7 +476,7 @@ public abstract class StreamHandle extends AbstractSCIFIOPlugin implements
 		if (outStream == null) {
 			throw new HandleException("This stream is read-only.");
 		}
-		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = DataTools.swap(v);
+		if (order.equals(ByteOrder.LITTLE_ENDIAN)) v = Bytes.swap(v);
 		outStream.writeShort(v);
 	}
 

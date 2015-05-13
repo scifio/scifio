@@ -34,7 +34,6 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.SCIFIO;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTools;
 
@@ -75,6 +74,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.util.Bytes;
 
 /**
  * Helper methods for converting between SCIFIO and ImgLib2 data structures.
@@ -593,22 +593,22 @@ public class DefaultImgUtilityService extends AbstractService implements
 				value = plane[index];
 				break;
 			case FormatTools.UINT16:
-				value = DataTools.bytesToShort(plane, 2 * index, 2, little) & 0xffff;
+				value = Bytes.toShort(plane, 2 * index, 2, little) & 0xffff;
 				break;
 			case FormatTools.INT16:
-				value = DataTools.bytesToShort(plane, 2 * index, 2, little);
+				value = Bytes.toShort(plane, 2 * index, 2, little);
 				break;
 			case FormatTools.UINT32:
-				value = DataTools.bytesToInt(plane, 4 * index, 4, little) & 0xffffffffL;
+				value = Bytes.toInt(plane, 4 * index, 4, little) & 0xffffffffL;
 				break;
 			case FormatTools.INT32:
-				value = DataTools.bytesToInt(plane, 4 * index, 4, little);
+				value = Bytes.toInt(plane, 4 * index, 4, little);
 				break;
 			case FormatTools.FLOAT:
-				value = DataTools.bytesToFloat(plane, 4 * index, 4, little);
+				value = Bytes.toFloat(plane, 4 * index, 4, little);
 				break;
 			case FormatTools.DOUBLE:
-				value = DataTools.bytesToDouble(plane, 8 * index, 8, little);
+				value = Bytes.toDouble(plane, 8 * index, 8, little);
 				break;
 			default:
 				value = Double.NaN;

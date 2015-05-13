@@ -33,7 +33,6 @@ package io.scif.formats;
 import io.scif.AbstractChecker;
 import io.scif.Format;
 import io.scif.FormatException;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.ByteArrayHandle;
 import io.scif.io.RandomAccessInputStream;
@@ -48,6 +47,7 @@ import net.imagej.axis.Axes;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * JPEGReader is the file format reader for JPEG images.
@@ -175,14 +175,14 @@ public class JPEGFormat extends ImageIOFormat {
 				v.write(tag);
 
 				stream.read(tag);
-				int tagValue = DataTools.bytesToShort(tag, false) & 0xffff;
+				int tagValue = Bytes.toShort(tag, false) & 0xffff;
 				boolean appNoteFound = false;
 				while (tagValue != 0xffdb) {
 					if (!appNoteFound || (tagValue < 0xffe0 && tagValue >= 0xfff0)) {
 						v.write(tag);
 
 						stream.read(tag);
-						final int len = DataTools.bytesToShort(tag, false) & 0xffff;
+						final int len = Bytes.toShort(tag, false) & 0xffff;
 						final byte[] tagContents = new byte[len - 2];
 						stream.read(tagContents);
 						v.write(tag);
@@ -190,7 +190,7 @@ public class JPEGFormat extends ImageIOFormat {
 					}
 					else {
 						stream.read(tag);
-						final int len = DataTools.bytesToShort(tag, false) & 0xffff;
+						final int len = Bytes.toShort(tag, false) & 0xffff;
 						stream.skipBytes(len - 2);
 					}
 
@@ -198,7 +198,7 @@ public class JPEGFormat extends ImageIOFormat {
 						appNoteFound = true;
 					}
 					stream.read(tag);
-					tagValue = DataTools.bytesToShort(tag, false) & 0xffff;
+					tagValue = Bytes.toShort(tag, false) & 0xffff;
 				}
 				v.write(tag);
 				final byte[] remainder =

@@ -34,7 +34,6 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Plane;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.util.FormatTools;
 
@@ -49,6 +48,8 @@ import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ArrayUtils;
+import org.scijava.util.Bytes;
 
 /**
  * Logic to compute minimum and maximum values for each plane. For each plane,
@@ -228,7 +229,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 
 		updateMinMax(imageIndex, planeIndex, plane.getBytes(), FormatTools
 			.getBytesPerPixel(getMetadata().get(imageIndex).getPixelType()) *
-			DataTools.safeMultiply32(lengths));
+			ArrayUtils.safeMultiply32(lengths));
 		return plane;
 	}
 
@@ -292,7 +293,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		for (int i = 0; i < pixels; i++) {
 			// get the value for this pixel
 			final int idx = bpp * i;
-			long bits = DataTools.bytesToLong(buf, idx, bpp, little);
+			long bits = Bytes.toLong(buf, idx, bpp, little);
 			if (signed) {
 				if (bits >= threshold) bits -= 2 * threshold;
 			}

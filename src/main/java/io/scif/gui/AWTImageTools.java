@@ -36,7 +36,6 @@ import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
-import io.scif.common.DataTools;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
 
@@ -80,6 +79,8 @@ import net.imagej.axis.Axes;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
+
+import org.scijava.util.Bytes;
 
 /**
  * A utility class with convenience methods for manipulating images in
@@ -451,7 +452,7 @@ public final class AWTImageTools {
 		final boolean fp, final boolean little, final boolean signed)
 	{
 		final Object pixels =
-			DataTools.makeDataArray(data, bpp % 3 == 0 ? bpp / 3 : bpp, fp, little);
+			Bytes.makeArray(data, bpp % 3 == 0 ? bpp / 3 : bpp, fp, little);
 
 		if (pixels instanceof byte[]) {
 			return makeImage((byte[]) pixels, w, h, c, interleaved, signed);
@@ -493,7 +494,7 @@ public final class AWTImageTools {
 		Object v = null;
 		for (int i = 0; i < c; i++) {
 			final Object pixels =
-				DataTools.makeDataArray(data[i], bpp % 3 == 0 ? bpp / 3 : bpp, fp,
+				Bytes.makeArray(data[i], bpp % 3 == 0 ? bpp / 3 : bpp, fp,
 					little);
 			if (pixels instanceof byte[]) {
 				if (v == null) v = new byte[c][];
@@ -775,13 +776,13 @@ public final class AWTImageTools {
 		final boolean indexed = meta.get(imageIndex).isIndexed();
 
 		if (pixelType == FormatTools.FLOAT) {
-			float[] f = (float[]) DataTools.makeDataArray(bytes, 4, true, little);
-			if (normal) f = DataTools.normalizeFloats(f);
+			float[] f = (float[]) Bytes.makeArray(bytes, 4, true, little);
+			if (normal) f = Bytes.normalize(f);
 			return makeImage(f, w, h, rgbChanCount, interleaved);
 		}
 		else if (pixelType == FormatTools.DOUBLE) {
-			double[] d = (double[]) DataTools.makeDataArray(bytes, 8, true, little);
-			if (normal) d = DataTools.normalizeDoubles(d);
+			double[] d = (double[]) Bytes.makeArray(bytes, 8, true, little);
+			if (normal) d = Bytes.normalize(d);
 			return makeImage(d, w, h, rgbChanCount, interleaved);
 		}
 
@@ -1155,7 +1156,7 @@ public final class AWTImageTools {
 			pixelBytes = new byte[s.length][s[0].length * 2];
 			for (int i = 0; i < pixelBytes.length; i++) {
 				for (int j = 0; j < s[0].length; j++) {
-					DataTools.unpackBytes(s[i][j], pixelBytes[i], j * 2, 2, little);
+					Bytes.unpack(s[i][j], pixelBytes[i], j * 2, 2, little);
 				}
 			}
 		}
@@ -1182,7 +1183,7 @@ public final class AWTImageTools {
 				pixelBytes = new byte[in.length][in[0].length * 4];
 				for (int i = 0; i < pixelBytes.length; i++) {
 					for (int j = 0; j < in[0].length; j++) {
-						DataTools.unpackBytes(in[i][j], pixelBytes[i], j * 4, 4, little);
+						Bytes.unpack(in[i][j], pixelBytes[i], j * 4, 4, little);
 					}
 				}
 			}
@@ -1193,7 +1194,7 @@ public final class AWTImageTools {
 			for (int i = 0; i < pixelBytes.length; i++) {
 				for (int j = 0; j < in[0].length; j++) {
 					final int v = Float.floatToIntBits(in[i][j]);
-					DataTools.unpackBytes(v, pixelBytes[i], j * 4, 4, little);
+					Bytes.unpack(v, pixelBytes[i], j * 4, 4, little);
 				}
 			}
 		}
@@ -1203,7 +1204,7 @@ public final class AWTImageTools {
 			for (int i = 0; i < pixelBytes.length; i++) {
 				for (int j = 0; j < in[0].length; j++) {
 					final long v = Double.doubleToLongBits(in[i][j]);
-					DataTools.unpackBytes(v, pixelBytes[i], j * 8, 8, little);
+					Bytes.unpack(v, pixelBytes[i], j * 8, 8, little);
 				}
 			}
 		}
@@ -1235,7 +1236,7 @@ public final class AWTImageTools {
 			pixelBytes = new byte[s.length][s[0].length * bpp];
 			for (int i = 0; i < pixelBytes.length; i++) {
 				for (int j = 0; j < s[0].length; j++) {
-					DataTools.unpackBytes(s[i][j], pixelBytes[i], j * bpp, bpp, little);
+					Bytes.unpack(s[i][j], pixelBytes[i], j * bpp, bpp, little);
 				}
 			}
 		}
@@ -1246,7 +1247,7 @@ public final class AWTImageTools {
 			pixelBytes = new byte[in.length][in[0].length * bpp];
 			for (int i = 0; i < pixelBytes.length; i++) {
 				for (int j = 0; j < in[0].length; j++) {
-					DataTools.unpackBytes(in[i][j], pixelBytes[i], j * bpp, bpp, little);
+					Bytes.unpack(in[i][j], pixelBytes[i], j * bpp, bpp, little);
 				}
 			}
 		}
@@ -1257,7 +1258,7 @@ public final class AWTImageTools {
 			for (int i = 0; i < pixelBytes.length; i++) {
 				for (int j = 0; j < in[0].length; j++) {
 					final int v = Float.floatToIntBits(in[i][j]);
-					DataTools.unpackBytes(v, pixelBytes[i], j * bpp, bpp, little);
+					Bytes.unpack(v, pixelBytes[i], j * bpp, bpp, little);
 				}
 			}
 		}
@@ -1268,7 +1269,7 @@ public final class AWTImageTools {
 			for (int i = 0; i < pixelBytes.length; i++) {
 				for (int j = 0; j < in[0].length; j++) {
 					final long v = Double.doubleToLongBits(in[i][j]);
-					DataTools.unpackBytes(v, pixelBytes[i], j * bpp, bpp, little);
+					Bytes.unpack(v, pixelBytes[i], j * bpp, bpp, little);
 				}
 			}
 		}
@@ -2067,7 +2068,7 @@ public final class AWTImageTools {
 			final Index16ColorModel model = (Index16ColorModel) img.getColorModel();
 			final short[][] s = new short[3][indices[0].length / 2];
 			for (int i = 0; i < s[0].length; i++) {
-				final int ndx = DataTools.bytesToInt(indices[0], i * 2, 2, le) & 0xffff;
+				final int ndx = Bytes.toInt(indices[0], i * 2, 2, le) & 0xffff;
 				s[0][i] = (short) (model.getRed(ndx) & 0xffff);
 				s[1][i] = (short) (model.getRed(ndx) & 0xffff);
 				s[2][i] = (short) (model.getRed(ndx) & 0xffff);

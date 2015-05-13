@@ -32,7 +32,6 @@ package io.scif.img.converters;
 
 import io.scif.Metadata;
 import io.scif.Reader;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.img.ImgUtilityService;
 import io.scif.util.FormatTools;
@@ -42,6 +41,7 @@ import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * {@link PlaneConverter} implementation specialized for populating
@@ -70,7 +70,7 @@ public class PlanarAccessConverter extends AbstractPlaneConverter {
 		final int bpp = FormatTools.getBytesPerPixel(pixelType);
 		final boolean fp = FormatTools.isFloatingPoint(pixelType);
 		final boolean little = m.get(imageIndex).isLittleEndian();
-		Object planeArray = DataTools.makeDataArray(plane, bpp, fp, little);
+		Object planeArray = Bytes.makeArray(plane, bpp, fp, little);
 		if (planeArray == plane) {
 			// array was returned by reference; make a copy
 			final byte[] planeCopy = new byte[plane.length];

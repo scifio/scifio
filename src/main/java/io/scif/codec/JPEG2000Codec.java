@@ -31,7 +31,6 @@
 package io.scif.codec;
 
 import io.scif.FormatException;
-import io.scif.common.DataTools;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.UnsignedIntBuffer;
 import io.scif.io.RandomAccessInputStream;
@@ -49,6 +48,7 @@ import java.io.IOException;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * This class implements JPEG 2000 compression and decompression.
@@ -130,7 +130,7 @@ public class JPEG2000Codec extends AbstractCodec {
 				for (int q = 0; q < plane; q++) {
 					for (int c = 0; c < j2kOptions.channels; c++) {
 						s[c][q] =
-							DataTools.bytesToShort(data, next, 2, j2kOptions.littleEndian);
+							Bytes.toShort(data, next, 2, j2kOptions.littleEndian);
 						next += 2;
 					}
 				}
@@ -139,7 +139,7 @@ public class JPEG2000Codec extends AbstractCodec {
 				for (int c = 0; c < j2kOptions.channels; c++) {
 					for (int q = 0; q < plane; q++) {
 						s[c][q] =
-							DataTools.bytesToShort(data, next, 2, j2kOptions.littleEndian);
+							Bytes.toShort(data, next, 2, j2kOptions.littleEndian);
 						next += 2;
 					}
 				}
@@ -156,7 +156,7 @@ public class JPEG2000Codec extends AbstractCodec {
 				for (int q = 0; q < plane; q++) {
 					for (int c = 0; c < j2kOptions.channels; c++) {
 						s[c][q] =
-							DataTools.bytesToInt(data, next, 4, j2kOptions.littleEndian);
+							Bytes.toInt(data, next, 4, j2kOptions.littleEndian);
 						next += 4;
 					}
 				}
@@ -165,7 +165,7 @@ public class JPEG2000Codec extends AbstractCodec {
 				for (int c = 0; c < j2kOptions.channels; c++) {
 					for (int q = 0; q < plane; q++) {
 						s[c][q] =
-							DataTools.bytesToInt(data, next, 4, j2kOptions.littleEndian);
+							Bytes.toInt(data, next, 4, j2kOptions.littleEndian);
 						next += 4;
 					}
 				}

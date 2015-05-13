@@ -30,10 +30,10 @@
 
 package io.scif;
 
-import io.scif.common.DataTools;
 import io.scif.util.FormatTools;
 
 import org.scijava.Context;
+import org.scijava.util.ArrayUtils;
 
 /**
  * A naive {@link io.scif.Plane} implementation that uses {@code byte[]} for its
@@ -79,7 +79,7 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 		lengths[lengths.length - 1] =
 			FormatTools.getBytesPerPixel(getImageMetadata().getPixelType());
 
-		buf = DataTools.allocate(lengths);
+		buf = ArrayUtils.allocate(lengths);
 		return buf;
 	}
 }

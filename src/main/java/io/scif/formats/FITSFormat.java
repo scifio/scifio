@@ -38,7 +38,6 @@ import io.scif.ByteArrayReader;
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -48,6 +47,7 @@ import java.io.IOException;
 import net.imagej.axis.Axes;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ArrayUtils;
 
 /**
  * FitsReader is the file format reader for Flexible Image Transport System
@@ -99,7 +99,7 @@ public class FITSFormat extends AbstractFormat {
 					FormatTools.getBytesPerPixel(iMeta.getPixelType());
 
 			try {
-				if (DataTools.safeMultiply64(planeSize, iMeta.getAxisLength(Axes.Z)) > (getSource()
+				if (ArrayUtils.safeMultiply64(planeSize, iMeta.getAxisLength(Axes.Z)) > (getSource()
 					.length() - pixelOffset))
 				{
 					iMeta.setAxisLength(Axes.Z,
