@@ -629,7 +629,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 			new SCIFIOImgPlus<T>(img, name, dimTypes, cal);
 		final String metaName = meta.get(imageIndex).getName();
 		if (metaName != null) imgPlus.setName(metaName);
-		imgPlus.setMetadata(meta);
+		imgPlus.setMetadata((Metadata) imgPlus.getProperties().get(
+			"scifio.metadata.global"));
 		imgPlus.setValidBits(validBits);
 
 		int compositeChannelCount = rgbChannelCount;
