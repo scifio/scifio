@@ -31,6 +31,7 @@
 package io.scif.img;
 
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.img.cell.SCIFIOCellImg;
 
@@ -107,6 +108,20 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 	 */
 	public void setMetadata(final Metadata meta) {
 		getProperties().put(GLOBAL_META, meta);
+	}
+
+	/**
+	 * @return The SCIFIO {@link ImageMetadata} object attached to this ImgPlus.
+	 */
+	public ImageMetadata getImageMetadata() {
+		return (ImageMetadata) getProperties().get(IMAGE_META);
+	}
+
+	/**
+	 * Sets the {@link ImageMetadata} object for this ImgPlus.
+	 */
+	public void setImageMetadata(final ImageMetadata imageMeta) {
+		getProperties().put(IMAGE_META, imageMeta);
 	}
 
 	// -- ImgPlus Methods --
