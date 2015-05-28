@@ -58,9 +58,10 @@ import org.scijava.Disposable;
  */
 public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 
-	// -- Fields --
+	// -- Constants --
 
-	private Metadata metadata;
+	public static final String GLOBAL_META = "scifio.metadata.global";
+	public static final String IMAGE_META = "scifio.metadata.image";
 
 	// -- Constructors --
 
@@ -98,14 +99,14 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 	 * @return The SCIFIO Metadata object attached to this ImgPlus.
 	 */
 	public Metadata getMetadata() {
-		return metadata;
+		return (Metadata) getProperties().get(GLOBAL_META);
 	}
 
 	/**
 	 * Sets the {@link Metadata} object for this ImgPlus.
 	 */
 	public void setMetadata(final Metadata meta) {
-		metadata = meta;
+		getProperties().put(GLOBAL_META, meta);
 	}
 
 	// -- ImgPlus Methods --
