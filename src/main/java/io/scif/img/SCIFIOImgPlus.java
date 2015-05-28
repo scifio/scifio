@@ -96,7 +96,7 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 	// -- SCIFIOImgPlus Methods --
 
 	/**
-	 * @return The SCIFIO Metadata object attached to this ImgPlus.
+	 * @return The SCIFIO {@link Metadata} object attached to this ImgPlus.
 	 */
 	public Metadata getMetadata() {
 		return (Metadata) getProperties().get(GLOBAL_META);
