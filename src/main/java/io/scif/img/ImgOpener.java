@@ -354,10 +354,9 @@ public class ImgOpener extends AbstractImgIOComponent {
 			}
 
 			// Put this image's metadata into the ImgPlus's properties table.
-			imgPlus.getProperties().put("scifio.metadata.global",
-				reader.getMetadata());
-			imgPlus.getProperties().put("scifio.metadata.image",
-				reader.getMetadata().get(i(imageIndex)));
+			final Metadata meta = reader.getMetadata();
+			imgPlus.setMetadata(meta);
+			imgPlus.setImageMetadata(meta.get(i(imageIndex)));
 
 			// If we have a planar img, read the planes now. Otherwise they
 			// will be read on demand.

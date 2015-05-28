@@ -126,8 +126,7 @@ public class DefaultDatasetIOService extends AbstractService implements
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			final Dataset dataset = datasetService.create((ImgPlus) imgPlus);
 
-			final ImageMetadata imageMeta =
-				(ImageMetadata) imgPlus.getProperties().get("scifio.metadata.image");
+			final ImageMetadata imageMeta = imgPlus.getImageMetadata();
 			updateDataset(dataset, imageMeta);
 			return dataset;
 		}
