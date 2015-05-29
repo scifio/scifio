@@ -31,6 +31,7 @@
 package io.scif.services;
 
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.config.SCIFIOConfig;
 import io.scif.config.SCIFIOConfig.ImgMode;
@@ -38,7 +39,6 @@ import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
 import io.scif.img.SCIFIOImgPlus;
-import io.scif.util.SCIFIOMetadataTools;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,12 +122,12 @@ public class DefaultDatasetIOService extends AbstractService implements
 
 			final SCIFIOImgPlus<?> imgPlus =
 				imageOpener.openImgs(source, config).get(0);
-			final int imageIndex = config.imgOpenerGetRange().get(0).intValue();
 
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			final Dataset dataset = datasetService.create((ImgPlus) imgPlus);
 
-			updateDataset(dataset, imgPlus.getMetadata(), imageIndex);
+			final ImageMetadata imageMeta = imgPlus.getImageMetadata();
+			updateDataset(dataset, imageMeta);
 			return dataset;
 		}
 		catch (final ImgIOException exc) {
@@ -188,24 +188,20 @@ public class DefaultDatasetIOService extends AbstractService implements
 	 * </p>
 	 *
 	 * @param dataset Dataset instance to update.
-	 * @param metadata Metadata instance to query for updated information.
-	 * @param imageIndex Index of the desired image within the dataset.
+	 * @param imageMeta Metadata instance to query for updated information.
 	 */
-	private void updateDataset(final Dataset dataset, final Metadata metadata,
-		final int imageIndex)
+	private void updateDataset(final Dataset dataset,
+		final ImageMetadata imageMeta)
 	{
 		// If the original image had some level of merged channels, we should set
 		// RGBmerged to true for the sake of backwards compatibility.
 		// See https://github.com/imagej/imagej-legacy/issues/104
-		final Metadata unwrappedMeta = SCIFIOMetadataTools.unwrapMetadata(metadata);
 
 		// Look for Axes.CHANNEL in the planar axis list. If found, set RGBMerged to
 		// true.
 		boolean rgbMerged = false;
 
-		for (final CalibratedAxis axis : unwrappedMeta.get(imageIndex)
-			.getAxesPlanar())
-		{
+		for (final CalibratedAxis axis : imageMeta.getAxesPlanar()) {
 			if (axis.type().equals(Axes.CHANNEL)) rgbMerged = true;
 		}
 

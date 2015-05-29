@@ -329,27 +329,24 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 			// create image and read metadata
 			final long[] dimLengths =
-				utils().getConstrainedLengths(reader.getMetadata(),
-					imageIndex.intValue(), config);
+				utils().getConstrainedLengths(reader.getMetadata(), i(imageIndex),
+					config);
 			if (SCIFIOCellImgFactory.class.isAssignableFrom(imgFactory.getClass())) {
-				((SCIFIOCellImgFactory<?>) imgFactory).setReader(reader, imageIndex
-					.intValue());
+				((SCIFIOCellImgFactory<?>) imgFactory).setReader(reader, i(imageIndex));
 				((SCIFIOCellImgFactory<?>) imgFactory).setSubRegion(config
 					.imgOpenerGetRegion());
 			}
 			final Img<T> img = imgFactory.create(dimLengths, type);
 			final SCIFIOImgPlus<T> imgPlus =
-				makeImgPlus(img, reader, imageIndex.intValue());
+				makeImgPlus(img, reader, i(imageIndex));
 
 			final String id = reader.getCurrentFile();
 			imgPlus.setSource(id);
-			imgPlus.initializeColorTables((int) reader.getPlaneCount(imageIndex
-				.intValue()));
+			imgPlus.initializeColorTables(i(reader.getPlaneCount(i(imageIndex))));
 
 			if (!config.imgOpenerIsComputeMinMax()) {
 				final long[] defaultMinMax =
-					FormatTools.defaultMinMax(reader.getMetadata().get(
-						imageIndex.intValue()));
+					FormatTools.defaultMinMax(reader.getMetadata().get(i(imageIndex)));
 				for (int c = 0; c < imgPlus.getCompositeChannelCount(); c++) {
 					imgPlus.setChannelMinimum(c, defaultMinMax[0]);
 					imgPlus.setChannelMaximum(c, defaultMinMax[1]);
@@ -357,19 +354,18 @@ public class ImgOpener extends AbstractImgIOComponent {
 			}
 
 			// Put this image's metadata into the ImgPlus's properties table.
-			imgPlus.getProperties().put("scifio.metadata.global",
-				reader.getMetadata());
-			imgPlus.getProperties().put("scifio.metadata.image",
-				reader.getMetadata().get(imageIndex.intValue()));
+			final Metadata meta = reader.getMetadata();
+			imgPlus.setMetadata(meta);
+			imgPlus.setImageMetadata(meta.get(i(imageIndex)));
 
 			// If we have a planar img, read the planes now. Otherwise they
 			// will be read on demand.
 			if (!AbstractCellImgFactory.class.isAssignableFrom(imgFactory.getClass()))
 			{
 				final float startTime = System.currentTimeMillis();
-				final long planeCount = reader.getPlaneCount(imageIndex.intValue());
+				final long planeCount = reader.getPlaneCount(i(imageIndex));
 				try {
-					readPlanes(reader, imageIndex.intValue(), type, imgPlus, config);
+					readPlanes(reader, i(imageIndex), type, imgPlus, config);
 				}
 				catch (final FormatException e) {
 					throw new ImgIOException(e);
@@ -629,7 +625,6 @@ public class ImgOpener extends AbstractImgIOComponent {
 			new SCIFIOImgPlus<T>(img, name, dimTypes, cal);
 		final String metaName = meta.get(imageIndex).getName();
 		if (metaName != null) imgPlus.setName(metaName);
-		imgPlus.setMetadata(meta);
 		imgPlus.setValidBits(validBits);
 
 		int compositeChannelCount = rgbChannelCount;
@@ -851,4 +846,22 @@ public class ImgOpener extends AbstractImgIOComponent {
 			imgPlus.setChannelMaximum(c, max == null ? Double.NaN : max);
 		}
 	}
+
+	/**
+	 * Safely downcasts a {@code long} value to an {@code int}.
+	 * 
+	 * @throws IllegalArgumentException if the {@code long} value is not within
+	 *           the range of valid {@code int} values.
+	 */
+	private int i(final long l) {
+		// TODO: Move this and similar methods to org.scijava.util.NumberUtils.
+		if (l > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Value too large: " + l);
+		}
+		if (l < Integer.MIN_VALUE) {
+			throw new IllegalArgumentException("Value too small: " + l);
+		}
+		return (int) l;
+	}
+
 }

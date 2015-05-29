@@ -31,6 +31,7 @@
 package io.scif.img;
 
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.img.cell.SCIFIOCellImg;
 
@@ -58,9 +59,10 @@ import org.scijava.Disposable;
  */
 public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 
-	// -- Fields --
+	// -- Constants --
 
-	private Metadata metadata;
+	public static final String GLOBAL_META = "scifio.metadata.global";
+	public static final String IMAGE_META = "scifio.metadata.image";
 
 	// -- Constructors --
 
@@ -95,17 +97,31 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 	// -- SCIFIOImgPlus Methods --
 
 	/**
-	 * @return The SCIFIO Metadata object attached to this ImgPlus.
+	 * @return The SCIFIO {@link Metadata} object attached to this ImgPlus.
 	 */
 	public Metadata getMetadata() {
-		return metadata;
+		return (Metadata) getProperties().get(GLOBAL_META);
 	}
 
 	/**
 	 * Sets the {@link Metadata} object for this ImgPlus.
 	 */
 	public void setMetadata(final Metadata meta) {
-		metadata = meta;
+		getProperties().put(GLOBAL_META, meta);
+	}
+
+	/**
+	 * @return The SCIFIO {@link ImageMetadata} object attached to this ImgPlus.
+	 */
+	public ImageMetadata getImageMetadata() {
+		return (ImageMetadata) getProperties().get(IMAGE_META);
+	}
+
+	/**
+	 * Sets the {@link ImageMetadata} object for this ImgPlus.
+	 */
+	public void setImageMetadata(final ImageMetadata imageMeta) {
+		getProperties().put(IMAGE_META, imageMeta);
 	}
 
 	// -- ImgPlus Methods --
