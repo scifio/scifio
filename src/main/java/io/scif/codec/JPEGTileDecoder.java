@@ -31,7 +31,6 @@
 package io.scif.codec;
 
 import io.scif.FormatException;
-import io.scif.common.Region;
 import io.scif.io.RandomAccessInputStream;
 
 import java.awt.Image;
@@ -46,6 +45,7 @@ import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.IntRect;
 
 /**
  * TODO
@@ -276,8 +276,8 @@ public class JPEGTileDecoder extends AbstractContextual {
 
 		private static final int ROW_COUNT = 128;
 
-		private final Hashtable<Region, byte[]> compressedTiles =
-			new Hashtable<Region, byte[]>();
+		private final Hashtable<IntRect, byte[]> compressedTiles =
+			new Hashtable<IntRect, byte[]>();
 
 		private final JPEGCodec codec;
 
@@ -290,7 +290,7 @@ public class JPEGTileDecoder extends AbstractContextual {
 
 		private int row = 0;
 
-		private Region lastRegion = null;
+		private IntRect lastRegion = null;
 
 		private byte[] lastTile = null;
 
@@ -314,7 +314,7 @@ public class JPEGTileDecoder extends AbstractContextual {
 			if ((y % ROW_COUNT) == ROW_COUNT - 1 || y == getHeight() - 1 ||
 				y == yy + hh - 1)
 			{
-				final Region r = new Region(x, y - row + 1, w, row);
+				final IntRect r = new IntRect(x, y - row + 1, w, row);
 				options.width = w;
 				options.height = row;
 				options.channels = 1;
@@ -344,7 +344,7 @@ public class JPEGTileDecoder extends AbstractContextual {
 			if ((y % ROW_COUNT) == ROW_COUNT - 1 || y == getHeight() - 1 ||
 				y == yy + hh - 1)
 			{
-				final Region r = new Region(x, y - row + 1, w, row);
+				final IntRect r = new IntRect(x, y - row + 1, w, row);
 				options.width = w;
 				options.height = row;
 				options.channels = 3;
@@ -362,9 +362,9 @@ public class JPEGTileDecoder extends AbstractContextual {
 		public byte[] get(final int x, final int y, final int w, final int h)
 			throws FormatException
 		{
-			final Region[] keys = compressedTiles.keySet().toArray(new Region[0]);
-			Region r = new Region(x, y, w, h);
-			for (final Region key : keys) {
+			final IntRect[] keys = compressedTiles.keySet().toArray(new IntRect[0]);
+			IntRect r = new IntRect(x, y, w, h);
+			for (final IntRect key : keys) {
 				if (key.intersects(r)) {
 					r = key;
 				}

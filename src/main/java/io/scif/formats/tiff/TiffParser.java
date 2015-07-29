@@ -30,16 +30,6 @@
 
 package io.scif.formats.tiff;
 
-import io.scif.FormatException;
-import io.scif.SCIFIO;
-import io.scif.codec.BitBuffer;
-import io.scif.codec.CodecOptions;
-import io.scif.common.Constants;
-import io.scif.common.DataTools;
-import io.scif.common.Region;
-import io.scif.enumeration.EnumException;
-import io.scif.io.RandomAccessInputStream;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Vector;
@@ -47,6 +37,16 @@ import java.util.Vector;
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.log.LogService;
+import org.scijava.util.IntRect;
+
+import io.scif.FormatException;
+import io.scif.SCIFIO;
+import io.scif.codec.BitBuffer;
+import io.scif.codec.CodecOptions;
+import io.scif.common.Constants;
+import io.scif.common.DataTools;
+import io.scif.enumeration.EnumException;
+import io.scif.io.RandomAccessInputStream;
 
 /**
  * Parses TIFF data from an input source.
@@ -848,7 +848,7 @@ public class TiffParser extends AbstractContextual {
 		final long nrows = numTileRows;
 		if (planarConfig == 2) numTileRows *= samplesPerPixel;
 
-		final Region imageBounds = new Region(x, y, (int) width, (int) height);
+		final IntRect imageBounds = new IntRect(x, y, (int) width, (int) height);
 
 		final int endX = (int) width + x;
 		final int endY = (int) height + y;
@@ -869,8 +869,8 @@ public class TiffParser extends AbstractContextual {
 
 		cachedTileBuffer = new byte[bufferSize];
 
-		final Region tileBounds =
-			new Region(0, 0, (int) tileWidth, (int) tileLength);
+		final IntRect tileBounds =
+			new IntRect(0, 0, (int) tileWidth, (int) tileLength);
 
 		for (int row = 0; row < numTileRows; row++) {
 			// make the first row shorter to account for row overlap
