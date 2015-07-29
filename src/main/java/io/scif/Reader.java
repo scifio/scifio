@@ -262,8 +262,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-		Block readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
-			long[] blockMax, Block block) throws IOException;
+		Block readBlock(RandomAccessInputStream s, int imageIndex, Interval pos,
+			Interval range, Block block) throws IOException;
 
 	/**
 	 * Reads a raw block from disk.
@@ -271,11 +271,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-		Block readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
-			long[] blockMax, int scanlinePad, Block block) throws IOException;
-
-	/** Determines the number of blocks in the current file. */
-		long getBlockCount(int imageIndex);
+		Block readBlock(RandomAccessInputStream s, int imageIndex, Interval pos,
+			Interval range, int scanlinePad, Block block) throws IOException;
 
 	/** Determines the number of images in the current file. */
 		int getImageCount();
@@ -283,8 +280,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * Creates a blank block compatible with this reader.
 	 *
-	 *@param extents The extents of the new block
-	 *
+	 * @param extents The extents of the new block
 	 * @return The created block
 	 */
 		Block createBlock(Interval extents);

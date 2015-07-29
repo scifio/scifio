@@ -30,11 +30,12 @@
 
 package io.scif;
 
+import java.io.IOException;
+
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
+import net.imglib2.Interval;
 import net.imglib2.type.NativeType;
-
-import java.io.IOException;
 
 /**
  * Interface for all {@link io.scif.Reader} implementations that use generic
@@ -58,57 +59,69 @@ public interface TypedReader<M extends TypedMetadata, T extends NativeType<T>, B
 {
 
 	@Override
-	B openBlock(int imageIndex, long blockIndex) throws FormatException,
-		IOException;
+		B openBlock(int imageIndex, long blockIndex) throws FormatException,
+			IOException;
 
 	@Override
-		B
-		openBlock(int imageIndex, long blockIndex, long[] blockMin, long[] blockMax)
+		B openBlock(int imageIndex, long blockIndex, Block block)
 			throws FormatException, IOException;
 
 	/**
-	 * Generic-parameterized {@code openBlock} method, using
-	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#openBlock(int, long, Block)}.
-	 *
-	 * @see io.scif.Reader#openBlock(int, long, Block)
+	 * Version of {@link #openBlock(int, long, Block)} with type-narrowed input
+	 * parameter.
 	 */
-	B openBlock(int imageIndex, long blockIndex, B block) throws FormatException,
-		IOException;
-
-	/**
-	 * Generic-parameterized {@code openBlock} method, using
-	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#openBlock(int, long, Block, long[], long[])}.
-	 *
-	 * @see io.scif.Reader#openBlock(int, long, Block, long[], long[])
-	 */
-	B openBlock(int imageIndex, long blockIndex, B block, long[] blockMin,
-		long[] blockMax) throws FormatException, IOException;
+		B openBlock(int imageIndex, long blockIndex, B block)
+			throws FormatException, IOException;
 
 	@Override
-	B openBlock(int imageIndex, long blockIndex, SCIFIOConfig config)
-		throws FormatException, IOException;
+		B openBlock(int imageIndex, long blockIndex, SCIFIOConfig config)
+			throws FormatException, IOException;
 
 	@Override
-	B openBlock(int imageIndex, long blockIndex, long[] blockMin,
-		long[] blockMax, SCIFIOConfig config) throws FormatException, IOException;
+		B openBlock(int imageIndex, long blockIndex, Block block,
+			SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
-	 * @see io.scif.TypedReader#openBlock(int, long, DataBlock)
+	 * Version of {@link #openBlock(int, long, Block, SCIFIOConfig)} with
+	 * type-narrowed input parameter.
 	 */
-	B openBlock(int imageIndex, long blockIndex, B block, SCIFIOConfig config)
-		throws FormatException, IOException;
-
-	/**
-	 * @see io.scif.TypedReader#openBlock(int, long, DataBlock, long[], long[])
-	 */
-	B openBlock(int imageIndex, long blockIndex, B block, long[] blockMin,
-		long[] blockMax, SCIFIOConfig config) throws FormatException, IOException;
+		B openBlock(int imageIndex, long blockIndex, B block, SCIFIOConfig config)
+			throws FormatException, IOException;
 
 	@Override
-	B openThumbBlock(int imageIndex, long blockIndex) throws FormatException,
-		IOException;
+		B openRegion(int imageIndex, Interval pos, Interval range)
+			throws FormatException, IOException;
+
+	@Override
+		B openRegion(int imageIndex, Interval pos, Interval range, Block block)
+			throws FormatException, IOException;
+
+	/**
+	 * Version of {@link #openRegion(int, Interval, Interval, Block)} with
+	 * type-narrowed input parameter.
+	 */
+		B openRegion(int imageIndex, Interval pos, Interval range, B block)
+			throws FormatException, IOException;
+
+	@Override
+		B openRegion(int imageIndex, Interval pos, Interval range,
+			SCIFIOConfig config) throws FormatException, IOException;
+
+	@Override
+		B openRegion(int imageIndex, Interval pos, Interval range, Block block,
+			SCIFIOConfig config) throws FormatException, IOException;
+
+	/**
+	 * Version of
+	 * {@link #openRegion(int, Interval, Interval, Block, SCIFIOConfig)} with
+	 * type-narrowed input parameter.
+	 */
+		B openRegion(int imageIndex, Interval pos, Interval range, B block,
+			SCIFIOConfig config) throws FormatException, IOException;
+
+	@Override
+		B openThumbBlock(int imageIndex, long blockIndex) throws FormatException,
+			IOException;
 
 	/**
 	 * Generic-parameterized {@code setMetadata} method, using
@@ -117,39 +130,39 @@ public interface TypedReader<M extends TypedMetadata, T extends NativeType<T>, B
 	 *
 	 * @see io.scif.Reader#setMetadata(Metadata)
 	 */
-	void setMetadata(M meta) throws IOException;
+		void setMetadata(M meta) throws IOException;
 
 	@Override
-	M getMetadata();
+		M getMetadata();
 
 	/**
 	 * Generic-parameterized {@code readBlock} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readBlock(RandomAccessInputStream, int, long[], long[], Block)}
+	 * {@link io.scif.Reader#readBlock(RandomAccessInputStream, int, Interval, Interval, Block)}
 	 *
-	 * @see io.scif.Reader#readBlock(RandomAccessInputStream, int, long[], long[],
-	 *      Block)
+	 * @see io.scif.Reader#readBlock(RandomAccessInputStream, int, Interval,
+	 *      Interval, Block)
 	 */
-	B readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
-		long[] blockMax, B block) throws IOException;
+		B readBlock(RandomAccessInputStream s, int imageIndex, Interval pos,
+			Interval range, B block) throws IOException;
 
 	/**
 	 * Generic-parameterized {@code readBlock} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readBlock(RandomAccessInputStream, int, long[], long[], int, Block)}
+	 * {@link io.scif.Reader#readBlock(RandomAccessInputStream, int, Interval, Interval, int, Block)}
 	 *
-	 * @see io.scif.Reader#readBlock(RandomAccessInputStream, int, long[], long[],
-	 *      int, Block)
+	 * @see io.scif.Reader#readBlock(RandomAccessInputStream, int, Interval,
+	 *      Interval, int, Block)
 	 */
-	B readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
-		long[] blockMax, int scanlinePad, B block) throws IOException;
+		B readBlock(RandomAccessInputStream s, int imageIndex, Interval pos,
+			Interval range, int scanlinePad, B block) throws IOException;
 
 	@Override
-	B createBlock(long[] blockOffsets, long[] blockBounds);
+		B createBlock(Interval extents);
 
 	/**
 	 * Returns the class of {@code Blocks} associated with this {@code Reader}.
 	 */
-	Class<B> getBlockClass();
+		Class<B> getBlockClass();
 
 }
