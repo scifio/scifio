@@ -39,6 +39,10 @@
 		</repository>
 	</repositories>
 
+	<properties>
+			<mapdb.version>1.0.3</mapdb.version>
+	</properties>
+
 	<dependencies>
 		<!-- SCIFIO dependencies -->
 		<dependency>
@@ -68,7 +72,7 @@
 		<dependency>
 			<groupId>org.mapdb</groupId>
 			<artifactId>mapdb</artifactId>
-			<version>1.0.3</version>
+			<version>${mapdb.version}</version>
 		</dependency>
 
 		<!-- Test scope dependencies -->
