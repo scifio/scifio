@@ -30,16 +30,17 @@
 
 package io.scif.util;
 
-import io.scif.FormatException;
-import io.scif.Metadata;
-import io.scif.filters.MetadataWrapper;
-import io.scif.io.RandomAccessOutputStream;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import io.scif.FormatException;
+import io.scif.ImageMetadata;
+import io.scif.Metadata;
+import io.scif.filters.MetadataWrapper;
+import io.scif.io.RandomAccessOutputStream;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
@@ -57,6 +58,79 @@ public class SCIFIOMetadataTools {
 	private SCIFIOMetadataTools() {}
 
 	// -- Utility Methods -- Metadata --
+
+	/**
+	 * Counts the number of interleaved axes for specified image of the given {@link Metadata}
+	 */
+	public static int countInterleavedAxes(final Metadata meta, final int imageIndex) {
+		return countInterleavedAxes(meta.get(imageIndex));
+	}
+
+	/**
+	 * Counts the number of interleaved axes in a given {@link ImageMetadata}
+	 */
+	public static int countInterleavedAxes(final ImageMetadata iMeta) {
+		return getInterleavedAxes(iMeta).size();
+	}
+
+	/**
+	 * Returns the interleaved axes for specified image of the given {@link Metadata}
+	 */
+	public static List<AxisType> getInterleavedAxes(final Metadata metadata, final int imageIndex) {
+		return getInterleavedAxes(metadata.get(imageIndex));
+	}
+
+	/**
+	 * Returns the interleaved axes in a given {@link ImageMetadata}
+	 */
+	public static List<AxisType> getInterleavedAxes(final ImageMetadata iMeta) {
+		final List<AxisType> axes = getPlanarAxes(iMeta);
+		axes.remove(Axes.X);
+		axes.remove(Axes.Y);
+		return axes;
+	}
+
+	/**
+	 * Counts the number of planar axes for specified image of the given {@link Metadata}
+	 */
+	public static int countPlanarAxes(final Metadata meta, final int imageIndex) {
+		return countPlanarAxes(meta.get(imageIndex));
+	}
+
+	/**
+	 * Counts the number of planar axes in a given {@link ImageMetadata}
+	 */
+	public static int countPlanarAxes(final ImageMetadata iMeta) {
+		return getPlanarAxes(iMeta).size();
+	}
+
+	/**
+	 * Returns the planar axes for specified image of the given {@link Metadata}
+	 */
+	public static List<AxisType> getPlanarAxes(final Metadata metadata, final int imageIndex) {
+		return getPlanarAxes(metadata.get(imageIndex));
+	}
+
+	/**
+	 * Returns the planar axes in a given {@link ImageMetadata}
+	 */
+	public static List<AxisType> getPlanarAxes(final ImageMetadata iMeta) {
+		final List<AxisType> axes = new ArrayList<AxisType>();
+
+		boolean sawX=false, sawY=false;
+
+		// Iterate over the axes in the target ImageMetadata.
+		// Once we have seen both Axes.X and Axes.Y we have identified all planar
+		// axes.
+		for (int i=0; !sawX && !sawY && i<iMeta.getAxes().size(); i++) {
+			final CalibratedAxis axis = iMeta.getAxis(i);
+			axes.add(axis.type());
+			if (axis.type().equals(Axes.X)) sawX = true;
+			else if (axis.type().equals(Axes.Y)) sawY = true;
+		}
+
+		return axes;
+	}
 
 	/**
 	 * Returns true if the provided axes correspond to a complete image plane
