@@ -32,6 +32,7 @@ package io.scif;
 
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
+import net.imglib2.type.NativeType;
 
 import java.io.IOException;
 
@@ -45,68 +46,68 @@ import java.io.IOException;
  *
  * @author Mark Hiner
  * @param <M> - {@link io.scif.Metadata} used by this reader for reading images.
- * @param <P> - {@link io.scif.Plane} return and parameter type for this
- *          reader's {@link #openPlane} and {@link #readPlane} methods.
- * @see #openPlane
- * @see #readPlane
+ * @param <B> - {@link io.scif.Block} return and parameter type for this
+ *          reader's {@link #openBlock} and {@link #readBlock} methods.
+ * @see #openBlock
+ * @see #readBlock
  * @see #setMetadata
  * @see #getMetadata
  */
-public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
+public interface TypedReader<M extends TypedMetadata, T extends NativeType<T>, B extends TypedBlock<T, ?>>
 	extends Reader
 {
 
 	@Override
-	P openPlane(int imageIndex, long planeIndex) throws FormatException,
+	B openBlock(int imageIndex, long blockIndex) throws FormatException,
 		IOException;
 
 	@Override
-		P
-		openPlane(int imageIndex, long planeIndex, long[] planeMin, long[] planeMax)
+		B
+		openBlock(int imageIndex, long blockIndex, long[] blockMin, long[] blockMax)
 			throws FormatException, IOException;
 
 	/**
-	 * Generic-parameterized {@code openPlane} method, using
+	 * Generic-parameterized {@code openBlock} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#openPlane(int, long, Plane)}.
+	 * {@link io.scif.Reader#openBlock(int, long, Block)}.
 	 *
-	 * @see io.scif.Reader#openPlane(int, long, Plane)
+	 * @see io.scif.Reader#openBlock(int, long, Block)
 	 */
-	P openPlane(int imageIndex, long planeIndex, P plane) throws FormatException,
+	B openBlock(int imageIndex, long blockIndex, B block) throws FormatException,
 		IOException;
 
 	/**
-	 * Generic-parameterized {@code openPlane} method, using
+	 * Generic-parameterized {@code openBlock} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#openPlane(int, long, Plane, long[], long[])}.
+	 * {@link io.scif.Reader#openBlock(int, long, Block, long[], long[])}.
 	 *
-	 * @see io.scif.Reader#openPlane(int, long, Plane, long[], long[])
+	 * @see io.scif.Reader#openBlock(int, long, Block, long[], long[])
 	 */
-	P openPlane(int imageIndex, long planeIndex, P plane, long[] planeMin,
-		long[] planeMax) throws FormatException, IOException;
+	B openBlock(int imageIndex, long blockIndex, B block, long[] blockMin,
+		long[] blockMax) throws FormatException, IOException;
 
 	@Override
-	P openPlane(int imageIndex, long planeIndex, SCIFIOConfig config)
+	B openBlock(int imageIndex, long blockIndex, SCIFIOConfig config)
 		throws FormatException, IOException;
 
 	@Override
-	P openPlane(int imageIndex, long planeIndex, long[] planeMin,
-		long[] planeMax, SCIFIOConfig config) throws FormatException, IOException;
+	B openBlock(int imageIndex, long blockIndex, long[] blockMin,
+		long[] blockMax, SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
-	 * @see io.scif.TypedReader#openPlane(int, long, DataPlane)
+	 * @see io.scif.TypedReader#openBlock(int, long, DataBlock)
 	 */
-	P openPlane(int imageIndex, long planeIndex, P plane, SCIFIOConfig config)
+	B openBlock(int imageIndex, long blockIndex, B block, SCIFIOConfig config)
 		throws FormatException, IOException;
 
 	/**
-	 * @see io.scif.TypedReader#openPlane(int, long, DataPlane, long[], long[])
+	 * @see io.scif.TypedReader#openBlock(int, long, DataBlock, long[], long[])
 	 */
-	P openPlane(int imageIndex, long planeIndex, P plane, long[] planeMin,
-		long[] planeMax, SCIFIOConfig config) throws FormatException, IOException;
+	B openBlock(int imageIndex, long blockIndex, B block, long[] blockMin,
+		long[] blockMax, SCIFIOConfig config) throws FormatException, IOException;
 
 	@Override
-	P openThumbPlane(int imageIndex, long planeIndex) throws FormatException,
+	B openThumbBlock(int imageIndex, long blockIndex) throws FormatException,
 		IOException;
 
 	/**
@@ -122,33 +123,33 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	M getMetadata();
 
 	/**
-	 * Generic-parameterized {@code readPlane} method, using
+	 * Generic-parameterized {@code readBlock} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[], Plane)}
+	 * {@link io.scif.Reader#readBlock(RandomAccessInputStream, int, long[], long[], Block)}
 	 *
-	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[],
-	 *      Plane)
+	 * @see io.scif.Reader#readBlock(RandomAccessInputStream, int, long[], long[],
+	 *      Block)
 	 */
-	P readPlane(RandomAccessInputStream s, int imageIndex, long[] planeMin,
-		long[] planeMax, P plane) throws IOException;
+	B readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
+		long[] blockMax, B block) throws IOException;
 
 	/**
-	 * Generic-parameterized {@code readPlane} method, using
+	 * Generic-parameterized {@code readBlock} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[], int, Plane)}
+	 * {@link io.scif.Reader#readBlock(RandomAccessInputStream, int, long[], long[], int, Block)}
 	 *
-	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[],
-	 *      int, Plane)
+	 * @see io.scif.Reader#readBlock(RandomAccessInputStream, int, long[], long[],
+	 *      int, Block)
 	 */
-	P readPlane(RandomAccessInputStream s, int imageIndex, long[] planeMin,
-		long[] planeMax, int scanlinePad, P plane) throws IOException;
+	B readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
+		long[] blockMax, int scanlinePad, B block) throws IOException;
 
 	@Override
-	P createPlane(long[] planeOffsets, long[] planeBounds);
+	B createBlock(long[] blockOffsets, long[] blockBounds);
 
 	/**
-	 * Returns the class of {@code Planes} associated with this {@code Reader}.
+	 * Returns the class of {@code Blocks} associated with this {@code Reader}.
 	 */
-	Class<P> getPlaneClass();
+	Class<B> getBlockClass();
 
 }

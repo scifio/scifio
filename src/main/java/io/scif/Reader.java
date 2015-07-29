@@ -39,19 +39,19 @@ import java.io.IOException;
 /**
  * Interface for all SCIFIO Readers.
  * <p>
- * {@code Reader} components generate {@link io.scif.Plane} representations of
- * images via the {@link #openPlane} methods. These planes can then be used by
+ * {@code Reader} components generate {@link io.scif.Block} representations of
+ * images via the {@link #openBlock} methods. These blocks can then be used by
  * calling software (e.g. for display) or passed to another method for writing
- * to an output source (e.g. via the {@link io.scif.Writer#savePlane} methods).
+ * to an output source (e.g. via the {@link io.scif.Writer#saveBlock} methods).
  * </p>
  * <p>
  * Before a {@code Reader} can be used, it must be initialized via
  * {@link #setSource} and {@link #setMetadata} calls.
  * </p>
  *
- * @see io.scif.Plane
+ * @see io.scif.Block
  * @see io.scif.Metadata
- * @see io.scif.Writer#savePlane
+ * @see io.scif.Writer#saveBlock
  * @author Mark Hiner
  */
 public interface Reader extends HasFormat, HasSource, Groupable {
@@ -59,108 +59,108 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	// -- Reader API methods --
 
 	/**
-	 * Creates a {@link io.scif.Plane} representation of the pixels at the
+	 * Creates a {@link io.scif.Block} representation of the pixels at the
 	 * specified indices.
 	 *
 	 * @param imageIndex the image index within the dataset.
-	 * @param planeIndex the plane index within the image.
-	 * @return The complete {@code Plane} at the specified indices.
+	 * @param blockIndex the block index within the image.
+	 * @return The complete {@code Block} at the specified indices.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex) throws FormatException,
+	Block openBlock(int imageIndex, long blockIndex) throws FormatException,
 		IOException;
 
 	/**
-	 * Creates a {@link io.scif.Plane} representation of a desired sub-region from
+	 * Creates a {@link io.scif.Block} representation of a desired sub-region from
 	 * the pixels at the specified indices.
 	 *
 	 * @param imageIndex the image index within the dataset.
-	 * @param planeIndex the plane index within the image.
-	 * @param planeMin minimal bounds of the planar axes
-	 * @param planeMax maximum bounds of the planar axes
+	 * @param blockIndex the block index within the image.
+	 * @param blockMin minimal bounds of the planar axes
+	 * @param blockMax maximum bounds of the planar axes
 	 * @return The desired sub-region at the specified indices.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, long[] planeMin,
-		long[] planeMax) throws FormatException, IOException;
+	Block openBlock(int imageIndex, long blockIndex, long[] blockMin,
+		long[] blockMax) throws FormatException, IOException;
 
 	/**
-	 * Allows a single {@code Plane} object to be reused by reference when opening
-	 * complete planes.
+	 * Allows a single {@code Block} object to be reused by reference when opening
+	 * complete blocks.
 	 *
-	 * @see #openPlane(int, long)
-	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
+	 * @see #openBlock(int, long)
+	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, Plane plane)
+	Block openBlock(int imageIndex, long blockIndex, Block block)
 		throws FormatException, IOException;
 
 	/**
-	 * Allows a single {@code Plane} object to be reused by reference when opening
-	 * sub-regions of planes.
+	 * Allows a single {@code Block} object to be reused by reference when opening
+	 * sub-regions of blocks.
 	 *
-	 * @see #openPlane(int, long, long[], long[])
-	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
+	 * @see #openBlock(int, long, long[], long[])
+	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, Plane plane,
-		long[] planeMin, long[] planeMax) throws FormatException, IOException;
+	Block openBlock(int imageIndex, long blockIndex, Block block,
+		long[] blockMin, long[] blockMax) throws FormatException, IOException;
 
 	/**
-	 * As {@link #openPlane(int, long)} with configuration options.
+	 * As {@link #openBlock(int, long)} with configuration options.
 	 *
 	 * @param imageIndex the image index within the dataset.
-	 * @param planeIndex the plane index within the image.
+	 * @param blockIndex the block index within the image.
 	 * @param config Configuration information to use for this read.
-	 * @return The complete {@code Plane} at the specified indices.
+	 * @return The complete {@code Block} at the specified indices.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, SCIFIOConfig config)
+	Block openBlock(int imageIndex, long blockIndex, SCIFIOConfig config)
 		throws FormatException, IOException;
 
 	/**
-	 * As {@link #openPlane(int, long, long[], long[])} with configuration
+	 * As {@link #openBlock(int, long, long[], long[])} with configuration
 	 * options.
 	 *
 	 * @param imageIndex the image index within the dataset.
-	 * @param planeIndex the plane index within the image.
-	 * @param planeMin minimal bounds of the planar axes
-	 * @param planeMax maximum bounds of the planar axes
+	 * @param blockIndex the block index within the image.
+	 * @param blockMin minimal bounds of the planar axes
+	 * @param blockMax maximum bounds of the planar axes
 	 * @param config Configuration information to use for this read.
 	 * @return The desired sub-region at the specified indices.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, long[] planeMin,
-		long[] planeMax, SCIFIOConfig config) throws FormatException, IOException;
+	Block openBlock(int imageIndex, long blockIndex, long[] blockMin,
+		long[] blockMax, SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
-	 * Allows a single {@code Plane} object to be reused by reference when opening
-	 * complete planes.
+	 * Allows a single {@code Block} object to be reused by reference when opening
+	 * complete blocks.
 	 *
-	 * @see #openPlane(int, long, SCIFIOConfig)
-	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
+	 * @see #openBlock(int, long, SCIFIOConfig)
+	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, Plane plane,
+	Block openBlock(int imageIndex, long blockIndex, Block block,
 		SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
-	 * Allows a single {@code Plane} object to be reused by reference when opening
-	 * sub-regions of planes.
+	 * Allows a single {@code Block} object to be reused by reference when opening
+	 * sub-regions of blocks.
 	 *
-	 * @see #openPlane(int, long, long[], long[], SCIFIOConfig)
-	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
+	 * @see #openBlock(int, long, long[], long[], SCIFIOConfig)
+	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, Plane plane,
-		long[] planeMin, long[] planeMax, SCIFIOConfig config)
+	Block openBlock(int imageIndex, long blockIndex, Block block,
+		long[] blockMin, long[] blockMax, SCIFIOConfig config)
 		throws FormatException, IOException;
 
 	/**
-	 * Obtains a thumbnail version of the {@code Plane} at the specified image and
-	 * plane indices.
+	 * Obtains a thumbnail version of the {@code Block} at the specified image and
+	 * block indices.
 	 *
 	 * @param imageIndex the image index within the dataset.
-	 * @param planeIndex the plane index within the image.
-	 * @return A thumbnail version of the {@code Plane} at the specified indices.
+	 * @param blockIndex the block index within the image.
+	 * @return A thumbnail version of the {@code Block} at the specified indices.
 	 */
-	Plane openThumbPlane(int imageIndex, long planeIndex) throws FormatException,
+	Block openThumbBlock(int imageIndex, long blockIndex) throws FormatException,
 		IOException;
 
 	/** Returns the current file. */
@@ -182,10 +182,10 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 */
 	Reader[] getUnderlyingReaders();
 
-	/** Returns the optimal sub-image width for use with {@link #openPlane}. */
+	/** Returns the optimal sub-image width for use with {@link #openBlock}. */
 	long getOptimalTileWidth(int imageIndex);
 
-	/** Returns the optimal sub-image height for use with {@link #openPlane}. */
+	/** Returns the optimal sub-image height for use with {@link #openBlock}. */
 	long getOptimalTileHeight(int imageIndex);
 
 	/**
@@ -267,61 +267,61 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 		throws IOException;
 
 	/**
-	 * Reads a raw plane from disk.
+	 * Reads a raw block from disk.
 	 *
-	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
+	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane readPlane(RandomAccessInputStream s, int imageIndex, long[] planeMin,
-		long[] planeMax, Plane plane) throws IOException;
+	Block readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
+		long[] blockMax, Block block) throws IOException;
 
 	/**
-	 * Reads a raw plane from disk.
+	 * Reads a raw block from disk.
 	 *
-	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
+	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane readPlane(RandomAccessInputStream s, int imageIndex, long[] planeMin,
-		long[] planeMax, int scanlinePad, Plane plane) throws IOException;
+	Block readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
+		long[] blockMax, int scanlinePad, Block block) throws IOException;
 
-	/** Determines the number of planes in the current file. */
-	long getPlaneCount(int imageIndex);
+	/** Determines the number of blocks in the current file. */
+	long getBlockCount(int imageIndex);
 
 	/** Determines the number of images in the current file. */
 	int getImageCount();
 
 	/**
-	 * Creates a blank plane compatible with this reader.
+	 * Creates a blank block compatible with this reader.
 	 *
-	 * @param planeOffsets minimal offsets of the planar axes
-	 * @param planeBounds maximum values of the planar axes
-	 * @return The created plane
+	 * @param blockOffsets minimal offsets of the planar axes
+	 * @param blockBounds maximum values of the planar axes
+	 * @return The created block
 	 */
-	Plane createPlane(long[] planeOffsets, long[] planeBounds);
+	Block createBlock(long[] blockOffsets, long[] blockBounds);
 
 	/**
-	 * Creates a blank plane compatible with this reader.
+	 * Creates a blank block compatible with this reader.
 	 *
-	 * @param meta - ImageMetadata to use to populate the new plane.
-	 * @param planeOffsets minimal offsets of the planar axes
-	 * @param planeBounds maximum values of the planar axes
-	 * @return The created plane
+	 * @param meta - ImageMetadata to use to populate the new block.
+	 * @param blockOffsets minimal offsets of the planar axes
+	 * @param blockBounds maximum values of the planar axes
+	 * @return The created block
 	 */
-	Plane
-		createPlane(ImageMetadata meta, long[] planeOffsets, long[] planeBounds);
+	Block
+		createBlock(ImageMetadata meta, long[] blockOffsets, long[] blockBounds);
 
 	/**
-	 * Convenience method for casting {@code Plane} implementations to the type
+	 * Convenience method for casting {@code Block} implementations to the type
 	 * associated with this {@code Reader}.
 	 * <p>
-	 * NB: this method will fail if the provided {@code Plane} is not compatible
+	 * NB: this method will fail if the provided {@code Block} is not compatible
 	 * with this {@code Reader}.
 	 * </p>
 	 *
-	 * @param plane - The base {@link io.scif.Plane} to cast.
-	 * @return The {@code Plane} argument cast to {@code P}.
-	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
+	 * @param block - The base {@link io.scif.Block} to cast.
+	 * @return The {@code Block} argument cast to {@code P}.
+	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	<P extends Plane> P castToTypedPlane(Plane plane);
+	<P extends Block> P castToTypedBlock(Block block);
 }
