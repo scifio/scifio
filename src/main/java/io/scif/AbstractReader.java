@@ -38,6 +38,7 @@ import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 import net.imglib2.type.NativeType;
 
 /**
@@ -360,17 +361,15 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 		final B block, final SCIFIOConfig config) throws FormatException,
 		IOException
 	{
-		return openBlock(imageIndex, blockIndex, block, block.getOffsets(), block
-			.getInterval().getLengths(), config);
+		return openBlock(imageIndex, blockIndex, block, , config);
 	}
 
 	@Override
 	public B openBlock(final int imageIndex, final long blockIndex,
-		final B block, final long[] blockMin, final long[] blockMax)
+		final B block, final Interval ivalToOpen)
 		throws FormatException, IOException
 	{
-		return openBlock(imageIndex, blockIndex, block, block.getOffsets(), block
-			.getLengths(), new SCIFIOConfig());
+		return openBlock(imageIndex, blockIndex, block, ival, new SCIFIOConfig());
 	}
 
 	@Override

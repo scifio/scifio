@@ -30,11 +30,12 @@
 
 package io.scif;
 
-import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
-
 import java.io.File;
 import java.io.IOException;
+
+import io.scif.config.SCIFIOConfig;
+import io.scif.io.RandomAccessInputStream;
+import net.imglib2.Interval;
 
 /**
  * Interface for all SCIFIO Readers.
@@ -66,21 +67,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param blockIndex the block index within the image.
 	 * @return The complete {@code Block} at the specified indices.
 	 */
-	Block openBlock(int imageIndex, long blockIndex) throws FormatException,
-		IOException;
-
-	/**
-	 * Creates a {@link io.scif.Block} representation of a desired sub-region from
-	 * the pixels at the specified indices.
-	 *
-	 * @param imageIndex the image index within the dataset.
-	 * @param blockIndex the block index within the image.
-	 * @param blockMin minimal bounds of the planar axes
-	 * @param blockMax maximum bounds of the planar axes
-	 * @return The desired sub-region at the specified indices.
-	 */
-	Block openBlock(int imageIndex, long blockIndex, long[] blockMin,
-		long[] blockMax) throws FormatException, IOException;
+		Block openBlock(int imageIndex, long blockIndex) throws FormatException,
+			IOException;
 
 	/**
 	 * Allows a single {@code Block} object to be reused by reference when opening
@@ -90,44 +78,18 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Block openBlock(int imageIndex, long blockIndex, Block block)
-		throws FormatException, IOException;
-
-	/**
-	 * Allows a single {@code Block} object to be reused by reference when opening
-	 * sub-regions of blocks.
-	 *
-	 * @see #openBlock(int, long, long[], long[])
-	 * @throws IllegalArgumentException If the provided {@code Block} type is not
-	 *           compatible with this {@code Reader}.
-	 */
-	Block openBlock(int imageIndex, long blockIndex, Block block,
-		long[] blockMin, long[] blockMax) throws FormatException, IOException;
+		Block openBlock(int imageIndex, long blockIndex, Block block)
+			throws FormatException, IOException;
 
 	/**
 	 * As {@link #openBlock(int, long)} with configuration options.
 	 *
-	 * @param imageIndex the image index within the dataset.
-	 * @param blockIndex the block index within the image.
-	 * @param config Configuration information to use for this read.
-	 * @return The complete {@code Block} at the specified indices.
+	 * @see #openBlock(int, long)
+	 * @throws IllegalArgumentException If the provided {@code Block} type is not
+	 *           compatible with this {@code Reader}.
 	 */
-	Block openBlock(int imageIndex, long blockIndex, SCIFIOConfig config)
-		throws FormatException, IOException;
-
-	/**
-	 * As {@link #openBlock(int, long, long[], long[])} with configuration
-	 * options.
-	 *
-	 * @param imageIndex the image index within the dataset.
-	 * @param blockIndex the block index within the image.
-	 * @param blockMin minimal bounds of the planar axes
-	 * @param blockMax maximum bounds of the planar axes
-	 * @param config Configuration information to use for this read.
-	 * @return The desired sub-region at the specified indices.
-	 */
-	Block openBlock(int imageIndex, long blockIndex, long[] blockMin,
-		long[] blockMax, SCIFIOConfig config) throws FormatException, IOException;
+		Block openBlock(int imageIndex, long blockIndex, SCIFIOConfig config)
+			throws FormatException, IOException;
 
 	/**
 	 * Allows a single {@code Block} object to be reused by reference when opening
@@ -137,20 +99,51 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Block openBlock(int imageIndex, long blockIndex, Block block,
-		SCIFIOConfig config) throws FormatException, IOException;
+		Block openBlock(int imageIndex, long blockIndex, Block block,
+			SCIFIOConfig config) throws FormatException, IOException;
+
+	/**
+	 * Creates a {@link io.scif.Block} representation of a desired sub-region from
+	 * the pixels at the specified indices.
+	 *
+	 * @param imageIndex the image index within the dataset.
+	 * @param pos starting position (offsets) of the range to open
+	 * @param range the extents of the range to open
+	 * @return The desired sub-region at the specified indices.
+	 */
+		Block openRegion(int imageIndex, Interval pos, Interval range)
+			throws FormatException, IOException;
 
 	/**
 	 * Allows a single {@code Block} object to be reused by reference when opening
 	 * sub-regions of blocks.
 	 *
-	 * @see #openBlock(int, long, long[], long[], SCIFIOConfig)
+	 * @see #openRegion(int, Interval, Interval)
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Block openBlock(int imageIndex, long blockIndex, Block block,
-		long[] blockMin, long[] blockMax, SCIFIOConfig config)
-		throws FormatException, IOException;
+		Block openRegion(int imageIndex, Interval pos, Interval range, Block block)
+			throws FormatException, IOException;
+
+	/**
+	 * As {@link #openRegion(int, Interval, Interval)} with configuration options.
+	 *
+	 * @see #openRegion(int, Interval, Interval)
+	 * @return The desired sub-region at the specified indices.
+	 */
+		Block openRegion(int imageIndex, Interval pos, Interval range,
+			SCIFIOConfig config) throws FormatException, IOException;
+
+	/**
+	 * Allows a single {@code Block} object to be reused by reference when opening
+	 * sub-regions of blocks.
+	 *
+	 * @see #openRegion(int, Interval, Interval)
+	 * @throws IllegalArgumentException If the provided {@code Block} type is not
+	 *           compatible with this {@code Reader}.
+	 */
+		Block openRegion(int imageIndex, Interval pos, Interval range, Block block,
+			SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
 	 * Obtains a thumbnail version of the {@code Block} at the specified image and
@@ -160,33 +153,30 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param blockIndex the block index within the image.
 	 * @return A thumbnail version of the {@code Block} at the specified indices.
 	 */
-	Block openThumbBlock(int imageIndex, long blockIndex) throws FormatException,
-		IOException;
+		Block openThumbBlock(int imageIndex, long blockIndex)
+			throws FormatException, IOException;
 
 	/** Returns the current file. */
-	String getCurrentFile();
+		String getCurrentFile();
 
 	/** Returns the list of domains represented by the current file. */
-	String[] getDomains();
+		String[] getDomains();
 
 	/**
 	 * Retrieves the current input stream for this reader.
 	 *
 	 * @return A RandomAccessInputStream
 	 */
-	RandomAccessInputStream getStream();
+		RandomAccessInputStream getStream();
 
 	/**
 	 * Retrieves all underlying readers. Returns null if there are no underlying
 	 * readers.
 	 */
-	Reader[] getUnderlyingReaders();
+		Reader[] getUnderlyingReaders();
 
-	/** Returns the optimal sub-image width for use with {@link #openBlock}. */
-	long getOptimalTileWidth(int imageIndex);
-
-	/** Returns the optimal sub-image height for use with {@link #openBlock}. */
-	long getOptimalTileHeight(int imageIndex);
+	/** Returns the optimal sub-image extents for use with {@link #openBlock}. */
+		Interval getOptimalBlockSize(int imageIndex);
 
 	/**
 	 * Sets the Metadata for this Reader.
@@ -200,21 +190,21 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Metadata} type is
 	 *           not compatible with this {@code Reader}.
 	 */
-	void setMetadata(Metadata meta) throws IOException;
+		void setMetadata(Metadata meta) throws IOException;
 
 	/** Gets the type-specific Metadata for this Reader */
-	Metadata getMetadata();
+		Metadata getMetadata();
 
 	// TODO remove normalization methods
 	/** Specifies whether or not to normalize float data. */
-	void setNormalized(boolean normalize);
+		void setNormalized(boolean normalize);
 
 	/** Returns true if we should normalize float data. */
-	boolean isNormalized();
+		boolean isNormalized();
 
 	/** Returns true if this format supports multi-file datasets. */
 	@Override
-	boolean hasCompanionFiles();
+		boolean hasCompanionFiles();
 
 	/**
 	 * Sets the source for this reader to read from.
@@ -222,7 +212,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param fileName
 	 * @throws IOException
 	 */
-	void setSource(String fileName) throws IOException;
+		void setSource(String fileName) throws IOException;
 
 	/**
 	 * Sets the source for this reader to read from.
@@ -230,14 +220,14 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param file
 	 * @throws IOException
 	 */
-	void setSource(File file) throws IOException;
+		void setSource(File file) throws IOException;
 
 	/**
 	 * Sets the source for this reader to read from.
 	 *
 	 * @param stream - The stream to read from
 	 */
-	void setSource(RandomAccessInputStream stream) throws IOException;
+		void setSource(RandomAccessInputStream stream) throws IOException;
 
 	/**
 	 * As {@link #setSource(String)} with configuration options.
@@ -246,7 +236,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param config Configuration information to use for this read.
 	 * @throws IOException
 	 */
-	void setSource(String fileName, SCIFIOConfig config) throws IOException;
+		void setSource(String fileName, SCIFIOConfig config) throws IOException;
 
 	/**
 	 * As {@link #setSource(File)} with configuration options.
@@ -255,7 +245,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param config Configuration information to use for this read.
 	 * @throws IOException
 	 */
-	void setSource(File file, SCIFIOConfig config) throws IOException;
+		void setSource(File file, SCIFIOConfig config) throws IOException;
 
 	/**
 	 * As {@link #setSource(RandomAccessInputStream)} with configuration options.
@@ -263,8 +253,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @param stream - The stream to read from
 	 * @param config Configuration information to use for this read.
 	 */
-	void setSource(RandomAccessInputStream stream, SCIFIOConfig config)
-		throws IOException;
+		void setSource(RandomAccessInputStream stream, SCIFIOConfig config)
+			throws IOException;
 
 	/**
 	 * Reads a raw block from disk.
@@ -272,8 +262,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Block readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
-		long[] blockMax, Block block) throws IOException;
+		Block readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
+			long[] blockMax, Block block) throws IOException;
 
 	/**
 	 * Reads a raw block from disk.
@@ -281,34 +271,23 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Block readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
-		long[] blockMax, int scanlinePad, Block block) throws IOException;
+		Block readBlock(RandomAccessInputStream s, int imageIndex, long[] blockMin,
+			long[] blockMax, int scanlinePad, Block block) throws IOException;
 
 	/** Determines the number of blocks in the current file. */
-	long getBlockCount(int imageIndex);
+		long getBlockCount(int imageIndex);
 
 	/** Determines the number of images in the current file. */
-	int getImageCount();
+		int getImageCount();
 
 	/**
 	 * Creates a blank block compatible with this reader.
 	 *
-	 * @param blockOffsets minimal offsets of the planar axes
-	 * @param blockBounds maximum values of the planar axes
-	 * @return The created block
-	 */
-	Block createBlock(long[] blockOffsets, long[] blockBounds);
-
-	/**
-	 * Creates a blank block compatible with this reader.
+	 *@param extents The extents of the new block
 	 *
-	 * @param meta - ImageMetadata to use to populate the new block.
-	 * @param blockOffsets minimal offsets of the planar axes
-	 * @param blockBounds maximum values of the planar axes
 	 * @return The created block
 	 */
-	Block
-		createBlock(ImageMetadata meta, long[] blockOffsets, long[] blockBounds);
+		Block createBlock(Interval extents);
 
 	/**
 	 * Convenience method for casting {@code Block} implementations to the type
