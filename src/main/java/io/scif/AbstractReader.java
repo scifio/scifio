@@ -95,27 +95,9 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 
 	@Override
 	public B openBlock(final int imageIndex, final long blockIndex,
-		final long[] blockMin, final long[] blockMax) throws FormatException,
-		IOException
-	{
-		return openBlock(imageIndex, blockIndex, blockMin, blockMax,
-			new SCIFIOConfig());
-	}
-
-	@Override
-	public B openBlock(final int imageIndex, final long blockIndex,
 		final Block block) throws FormatException, IOException
 	{
 		return openBlock(imageIndex, blockIndex, this.<B> castToTypedBlock(block));
-	}
-
-	@Override
-	public B openBlock(final int imageIndex, final long blockIndex,
-		final Block block, final long[] blockMin, final long[] blockMax)
-		throws FormatException, IOException
-	{
-		return openBlock(imageIndex, blockIndex, this.<B> castToTypedBlock(block),
-			blockMin, blockMax);
 	}
 
 	@Override
@@ -129,44 +111,57 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 
 	@Override
 	public B openBlock(final int imageIndex, final long blockIndex,
-		final long[] blockMin, final long[] blockMax, final SCIFIOConfig config)
-		throws FormatException, IOException
-	{
-		B block = null;
-
-		try {
-			block = createBlock(blockMin, blockMax);
-		}
-		catch (final IllegalArgumentException e) {
-			throw new FormatException(
-				"Image block too large. Only 2GB of data can "
-					+ "be extracted at one time. You can workaround the problem by opening "
-					+ "the block in tiles; for further details, see: "
-					+ "http://www.openmicroscopy.org/site/support/faq/bio-formats/"
-					+ "i-see-an-outofmemory-or-negativearraysize-error-message-when-"
-					+ "attempting-to-open-an-svs-or-jpeg-2000-file.-what-does-this-mean",
-				e);
-		}
-
-		return openBlock(imageIndex, blockIndex, block, blockMin, blockMax, config);
-	}
-
-	@Override
-	public Block openBlock(final int imageIndex, final long blockIndex,
 		final Block block, final SCIFIOConfig config) throws FormatException,
-		IOException
+			IOException
 	{
 		return openBlock(imageIndex, blockIndex, this.<B> castToTypedBlock(block),
 			config);
 	}
 
 	@Override
-	public Block openBlock(final int imageIndex, final long blockIndex,
-		final Block block, final long[] blockMin, final long[] blockMax,
-		final SCIFIOConfig config) throws FormatException, IOException
+	public B openRegion(final int imageIndex, Interval range)
+		throws FormatException, IOException
 	{
-		return openBlock(imageIndex, blockIndex, this.<B> castToTypedBlock(block),
-			blockMin, blockMax, config);
+		return openRegion(imageIndex, range, new SCIFIOConfig());
+	}
+
+	@Override
+	public B openRegion(final int imageIndex,
+		final Interval range, final Block block) throws FormatException,
+			IOException
+	{
+		return openRegion(imageIndex, range, this.<B> castToTypedBlock(block));
+	}
+
+	@Override
+	public B openRegion(final int imageIndex,
+		final Interval range, final SCIFIOConfig config) throws FormatException,
+			IOException
+	{
+		B block = null;
+
+		try {
+			block = createBlock(range);
+		}
+		catch (final IllegalArgumentException e) {
+			throw new FormatException("Image block too large. Only 2GB of data can " +
+				"be extracted at one time. You can workaround the problem by opening " +
+				"the block in tiles; for further details, see: " +
+				"http://www.openmicroscopy.org/site/support/faq/bio-formats/" +
+				"i-see-an-outofmemory-or-negativearraysize-error-message-when-" +
+				"attempting-to-open-an-svs-or-jpeg-2000-file.-what-does-this-mean", e);
+		}
+
+		return openRegion(imageIndex, range, block, config);
+	}
+
+	@Override
+	public B openRegion(final int imageIndex,
+		final Interval range, final Block block, final SCIFIOConfig config)
+			throws FormatException, IOException
+	{
+		return openRegion(imageIndex, range, this.<B> castToTypedBlock(block),
+			config);
 	}
 
 	@Override
@@ -194,20 +189,19 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 	}
 
 	@Override
-	public long getOptimalTileWidth(final int imageIndex) {
+	public Interval getOptimalBlockSize(final int imageIndex) {
+		// x optimal
 		return metadata.get(imageIndex).getAxisLength(Axes.X);
-	}
-
-	@Override
-	public long getOptimalTileHeight(final int imageIndex) {
-		final int bpp =
-			FormatTools.getBytesPerPixel(metadata.get(imageIndex).getPixelType());
+		// y optimal
+		final int bpp = FormatTools.getBytesPerPixel(metadata.get(imageIndex)
+			.getPixelType());
 
 		final long width = metadata.get(imageIndex).getAxisLength(Axes.X);
 		final long rgbcCount = metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 		final long maxHeight = (1024 * 1024) / (width * rgbcCount * bpp);
 		return Math.min(maxHeight, metadata.get(imageIndex).getAxisLength(Axes.Y));
+		//TODO put these with padded 1's for the rest of the dims..?
 	}
 
 	@Override
@@ -257,16 +251,16 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 		throws IOException
 	{
 
-		if (getStream() != null && getStream().getFileName() != null &&
-			getStream().getFileName().equals(fileName))
+		if (getStream() != null && getStream().getFileName() != null && getStream()
+			.getFileName().equals(fileName))
 		{
 			getStream().seek(0);
 			return;
 		}
 
 		close();
-		final RandomAccessInputStream stream =
-			new RandomAccessInputStream(getContext(), fileName);
+		final RandomAccessInputStream stream = new RandomAccessInputStream(
+			getContext(), fileName);
 		try {
 			setMetadata(getFormat().createParser().parse(stream, config));
 		}
@@ -290,9 +284,8 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 	{
 		final String currentSource = getStream().getFileName();
 		final String newSource = stream.getFileName();
-		if (metadata != null &&
-			(currentSource == null || newSource == null || !getStream().getFileName()
-				.equals(stream.getFileName()))) close();
+		if (metadata != null && (currentSource == null || newSource == null ||
+			!getStream().getFileName().equals(stream.getFileName()))) close();
 
 		if (metadata == null) {
 			try {
@@ -308,25 +301,20 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 
 	@Override
 	public Block readBlock(final RandomAccessInputStream s, final int imageIndex,
-		final long[] blockMin, final long[] blockMax, final Block block)
-		throws IOException
+		final Interval range, final Block block)
+			throws IOException
 	{
-		return readBlock(s, imageIndex, blockMin, blockMax, this
+		return readBlock(s, imageIndex, range, this
 			.<B> castToTypedBlock(block));
 	}
 
 	@Override
 	public Block readBlock(final RandomAccessInputStream s, final int imageIndex,
-		final long[] blockMin, final long[] blockMax, final int scanlinePad,
+		final Interval range, final int scanlinePad,
 		final Block block) throws IOException
 	{
-		return readBlock(s, imageIndex, blockMin, blockMax, scanlinePad, this
+		return readBlock(s, imageIndex, range, scanlinePad, this
 			.<B> castToTypedBlock(block));
-	}
-
-	@Override
-	public long getBlockCount(final int imageIndex) {
-		return metadata.get(imageIndex).getBlockCount();
 	}
 
 	@Override
@@ -349,27 +337,16 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 	// -- TypedReader API --
 
 	@Override
-	public B
-		openBlock(final int imageIndex, final long blockIndex, final B block)
-			throws FormatException, IOException
+	public B openBlock(final int imageIndex, final long blockIndex, final B block)
+		throws FormatException, IOException
 	{
 		return openBlock(imageIndex, blockIndex, block, new SCIFIOConfig());
 	}
 
 	@Override
-	public B openBlock(final int imageIndex, final long blockIndex,
-		final B block, final SCIFIOConfig config) throws FormatException,
-		IOException
+	public B openRegion(final int imageIndex, final Interval range, final B block) throws FormatException, IOException
 	{
-		return openBlock(imageIndex, blockIndex, block, , config);
-	}
-
-	@Override
-	public B openBlock(final int imageIndex, final long blockIndex,
-		final B block, final Interval ivalToOpen)
-		throws FormatException, IOException
-	{
-		return openBlock(imageIndex, blockIndex, block, ival, new SCIFIOConfig());
+		return openRegion(imageIndex, range, block, new SCIFIOConfig());
 	}
 
 	@Override
@@ -383,55 +360,53 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 
 	@Override
 	public B readBlock(final RandomAccessInputStream s, final int imageIndex,
-		final long[] blockMin, final long[] blockMax, final B block)
-		throws IOException
+		final Interval range, final B block)
+			throws IOException
 	{
-		return readBlock(s, imageIndex, blockMin, blockMax, 0, block);
+		return readBlock(s, imageIndex, range, 0, block);
 	}
 
 	@Override
 	public B readBlock(final RandomAccessInputStream s, final int imageIndex,
-		final long[] blockMin, final long[] blockMax, final int scanlinePad,
+		final Interval range, final int scanlinePad,
 		final B block) throws IOException
 	{
-		final int bpp =
-			FormatTools.getBytesPerPixel(metadata.get(imageIndex).getPixelType());
+		final int bpp = FormatTools.getBytesPerPixel(metadata.get(imageIndex)
+			.getPixelType());
 
 		final byte[] bytes = block.getBytes();
 		final int xIndex = metadata.get(imageIndex).getAxisIndex(Axes.X);
 		final int yIndex = metadata.get(imageIndex).getAxisIndex(Axes.Y);
-		if (SCIFIOMetadataTools
-			.wholeBlock(imageIndex, metadata, blockMin, blockMax) &&
-			scanlinePad == 0)
+		if (SCIFIOMetadataTools.wholeBlock(imageIndex, metadata,
+			range) && scanlinePad == 0)
 		{
 			s.read(bytes);
 		}
-		else if (SCIFIOMetadataTools.wholeRow(imageIndex, metadata, blockMin,
-			blockMax) &&
-			scanlinePad == 0)
+		else if (SCIFIOMetadataTools.wholeRow(imageIndex, metadata,
+			range) && scanlinePad == 0)
 		{
-			if (metadata.get(imageIndex).getInterleavedAxisCount() > 0) {
+			if (SCIFIOMetadataTools.countInterleavedAxes(metadata, imageIndex) > 0) {
 				int bytesToSkip = bpp;
-				bytesToSkip *= blockMax[xIndex];
+				bytesToSkip *= range.min(xIndex);
 				int bytesToRead = bytesToSkip;
-				for (int i = 0; i < blockMin.length; i++) {
+				for (int i = 0; i < range.numDimensions(); i++) {
 					if (i != xIndex) {
 						if (i == yIndex) {
-							bytesToSkip *= blockMin[i];
+							bytesToSkip *= range.min(i);
 						}
 						else {
-							bytesToSkip *= blockMax[i];
+							bytesToSkip *= range.dimension(i);
 						}
-						bytesToRead *= blockMax[i];
+						bytesToRead *= range.dimension(i);
 					}
 				}
 				s.skip(bytesToSkip);
 				s.read(bytes, 0, bytesToRead);
 			}
 			else {
-				final int rowLen = (int) (bpp * blockMax[xIndex]);
-				final int h = (int) blockMax[yIndex];
-				final int y = (int) blockMin[yIndex];
+				final int rowLen = (int) (bpp * range.dimension(xIndex));
+				final int h = (int) range.dimension(yIndex);
+				final int y = (int) range.min(yIndex);
 				long c = metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
 				if (c <= 0 || !metadata.get(imageIndex).isMultichannel()) c = 1;
 				for (int channel = 0; channel < c; channel++) {
@@ -441,47 +416,47 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 					if (channel < c - 1) {
 						// no need to skip bytes after reading final channel
 						s.skipBytes((int) (metadata.get(imageIndex).getAxisLength(Axes.Y) -
-							y - h) *
-							rowLen);
+							y - h) * rowLen);
 					}
 				}
 			}
 		}
 		else {
-			final int scanlineWidth =
-				(int) metadata.get(imageIndex).getAxisLength(Axes.X) + scanlinePad;
-			if (metadata.get(imageIndex).getInterleavedAxisCount() > 0) {
+			final int scanlineWidth = (int) metadata.get(imageIndex).getAxisLength(
+				Axes.X) + scanlinePad;
+			if (SCIFIOMetadataTools.countInterleavedAxes(metadata, imageIndex) > 0) {
 				long blockProduct = bpp;
-				for (int i = 0; i < blockMin.length; i++) {
-					if (i != xIndex && i != yIndex) blockProduct *=
-						metadata.get(imageIndex).getAxisLength(i);
+				for (int i = 0; i < range.numDimensions(); i++) {
+					if (i != xIndex && i != yIndex) blockProduct *= metadata.get(
+						imageIndex).getAxisLength(i);
 				}
 				int bytesToSkip = scanlineWidth * (int) blockProduct;
-				s.skipBytes((int) blockMin[yIndex] * bytesToSkip);
+				s.skipBytes((int) range.min(yIndex) * bytesToSkip);
 
 				bytesToSkip = bpp;
 				int bytesToRead = bytesToSkip;
-				bytesToRead *= blockMax[xIndex];
+				bytesToRead *= range.dimension(xIndex);
 				bytesToRead *= blockProduct;
-				bytesToSkip *= blockMin[xIndex];
+				bytesToSkip *= range.min(xIndex);
 				bytesToSkip *= blockProduct;
 
-				for (int row = 0; row < blockMax[yIndex]; row++) {
+				for (int row = 0; row < range.dimension(yIndex); row++) {
 					s.skipBytes(bytesToSkip);
 					s.read(bytes, row * bytesToRead, bytesToRead);
-					if (row < blockMax[yIndex] - 1) {
+					if (row < range.dimension(yIndex) - 1) {
 						// no need to skip bytes after reading final row
-						s.skipBytes((int) (blockProduct * (scanlineWidth - blockMax[xIndex] - blockMin[xIndex])));
+						s.skipBytes((int) (blockProduct * (scanlineWidth -
+							range.dimension(xIndex) - range.min(xIndex)))); // FIXME or just range.dimension??
 					}
 				}
 			}
 			else {
 				final long c = metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
-				final int w = (int) blockMax[xIndex];
-				final int h = (int) blockMax[yIndex];
-				final int x = (int) blockMin[xIndex];
-				final int y = (int) blockMin[yIndex];
+				final int w = (int) range.dimension(xIndex);
+				final int h = (int) range.dimension(yIndex);
+				final int x = (int) range.min(xIndex);
+				final int y = (int) range.min(yIndex);
 				for (int channel = 0; channel < c; channel++) {
 					s.skipBytes(y * scanlineWidth * bpp);
 					for (int row = 0; row < h; row++) {
@@ -495,8 +470,8 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 					}
 					if (channel < c - 1) {
 						// no need to skip bytes after reading final channel
-						s.skipBytes(scanlineWidth * bpp *
-							(int) (metadata.get(imageIndex).getAxisLength(Axes.Y) - y - h));
+						s.skipBytes(scanlineWidth * bpp * (int) (metadata.get(imageIndex)
+							.getAxisLength(Axes.Y) - y - h));
 					}
 				}
 			}

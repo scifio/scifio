@@ -107,42 +107,41 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * the pixels at the specified indices.
 	 *
 	 * @param imageIndex the image index within the dataset.
-	 * @param pos starting position (offsets) of the range to open
 	 * @param range the extents of the range to open
 	 * @return The desired sub-region at the specified indices.
 	 */
-		Block openRegion(int imageIndex, Interval pos, Interval range)
+		Block openRegion(int imageIndex, Interval range)
 			throws FormatException, IOException;
 
 	/**
 	 * Allows a single {@code Block} object to be reused by reference when opening
 	 * sub-regions of blocks.
 	 *
-	 * @see #openRegion(int, Interval, Interval)
+	 * @see #openRegion(int, Interval)
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-		Block openRegion(int imageIndex, Interval pos, Interval range, Block block)
+		Block openRegion(int imageIndex, Interval range, Block block)
 			throws FormatException, IOException;
 
 	/**
-	 * As {@link #openRegion(int, Interval, Interval)} with configuration options.
+	 * As {@link #openRegion(int, Interval)} with configuration options.
 	 *
-	 * @see #openRegion(int, Interval, Interval)
+	 * @see #openRegion(int, Interval)
 	 * @return The desired sub-region at the specified indices.
 	 */
-		Block openRegion(int imageIndex, Interval pos, Interval range,
+		Block openRegion(int imageIndex, Interval range,
 			SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
 	 * Allows a single {@code Block} object to be reused by reference when opening
 	 * sub-regions of blocks.
 	 *
-	 * @see #openRegion(int, Interval, Interval)
+	 * @see #openRegion(int, Interval)
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-		Block openRegion(int imageIndex, Interval pos, Interval range, Block block,
+		Block openRegion(int imageIndex, Interval range, Block block,
 			SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
@@ -262,7 +261,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-		Block readBlock(RandomAccessInputStream s, int imageIndex, Interval pos,
+		Block readBlock(RandomAccessInputStream s, int imageIndex,
 			Interval range, Block block) throws IOException;
 
 	/**
@@ -271,7 +270,7 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Block} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-		Block readBlock(RandomAccessInputStream s, int imageIndex, Interval pos,
+		Block readBlock(RandomAccessInputStream s, int imageIndex,
 			Interval range, int scanlinePad, Block block) throws IOException;
 
 	/** Determines the number of images in the current file. */

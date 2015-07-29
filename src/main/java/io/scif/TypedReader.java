@@ -89,34 +89,34 @@ public interface TypedReader<M extends TypedMetadata, T extends NativeType<T>, B
 			throws FormatException, IOException;
 
 	@Override
-		B openRegion(int imageIndex, Interval pos, Interval range)
+		B openRegion(int imageIndex, Interval range)
 			throws FormatException, IOException;
 
 	@Override
-		B openRegion(int imageIndex, Interval pos, Interval range, Block block)
+		B openRegion(int imageIndex, Interval range, Block block)
 			throws FormatException, IOException;
 
 	/**
-	 * Version of {@link #openRegion(int, Interval, Interval, Block)} with
+	 * Version of {@link #openRegion(int, Interval, Block)} with
 	 * type-narrowed input parameter.
 	 */
-		B openRegion(int imageIndex, Interval pos, Interval range, B block)
+		B openRegion(int imageIndex, Interval range, B block)
 			throws FormatException, IOException;
 
 	@Override
-		B openRegion(int imageIndex, Interval pos, Interval range,
+		B openRegion(int imageIndex, Interval range,
 			SCIFIOConfig config) throws FormatException, IOException;
 
 	@Override
-		B openRegion(int imageIndex, Interval pos, Interval range, Block block,
+		B openRegion(int imageIndex, Interval range, Block block,
 			SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
 	 * Version of
-	 * {@link #openRegion(int, Interval, Interval, Block, SCIFIOConfig)} with
+	 * {@link #openRegion(int, Interval, Block, SCIFIOConfig)} with
 	 * type-narrowed input parameter.
 	 */
-		B openRegion(int imageIndex, Interval pos, Interval range, B block,
+		B openRegion(int imageIndex, Interval range, B block,
 			SCIFIOConfig config) throws FormatException, IOException;
 
 	@Override
@@ -138,23 +138,23 @@ public interface TypedReader<M extends TypedMetadata, T extends NativeType<T>, B
 	/**
 	 * Generic-parameterized {@code readBlock} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readBlock(RandomAccessInputStream, int, Interval, Interval, Block)}
+	 * {@link io.scif.Reader#readBlock(RandomAccessInputStream, int, Interval, Block)}
 	 *
-	 * @see io.scif.Reader#readBlock(RandomAccessInputStream, int, Interval,
+	 * @see io.scif.Reader#readBlock(RandomAccessInputStream, int,
 	 *      Interval, Block)
 	 */
-		B readBlock(RandomAccessInputStream s, int imageIndex, Interval pos,
+		B readBlock(RandomAccessInputStream s, int imageIndex,
 			Interval range, B block) throws IOException;
 
 	/**
 	 * Generic-parameterized {@code readBlock} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readBlock(RandomAccessInputStream, int, Interval, Interval, int, Block)}
+	 * {@link io.scif.Reader#readBlock(RandomAccessInputStream, int, Interval, int, Block)}
 	 *
-	 * @see io.scif.Reader#readBlock(RandomAccessInputStream, int, Interval,
+	 * @see io.scif.Reader#readBlock(RandomAccessInputStream, int,
 	 *      Interval, int, Block)
 	 */
-		B readBlock(RandomAccessInputStream s, int imageIndex, Interval pos,
+		B readBlock(RandomAccessInputStream s, int imageIndex,
 			Interval range, int scanlinePad, B block) throws IOException;
 
 	@Override
