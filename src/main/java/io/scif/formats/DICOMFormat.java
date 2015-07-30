@@ -959,7 +959,7 @@ public class DICOMFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			log().info("Populating metadata");
 
 			// TODO this isn't going to work because each parsing will

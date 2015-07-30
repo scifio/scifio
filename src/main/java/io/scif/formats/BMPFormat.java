@@ -136,7 +136,7 @@ public class BMPFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			log().info("Populating metadata");
 
 			int bpp = get(0).getBitsPerPixel();

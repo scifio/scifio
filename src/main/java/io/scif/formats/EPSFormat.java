@@ -137,7 +137,7 @@ public class EPSFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			if (get(0).getAxisLength(Axes.CHANNEL) == 0) get(0).setAxisLength(
 				Axes.CHANNEL, 1);
 

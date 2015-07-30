@@ -116,7 +116,7 @@ public class ZipFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			// clears existing metadata
 			createImageMetadata(0);
 

@@ -206,7 +206,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			createImageMetadata(1);
 			final ImageMetadata ms0 = get(0);
 

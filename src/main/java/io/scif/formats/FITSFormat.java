@@ -88,7 +88,7 @@ public class FITSFormat extends AbstractFormat {
 		// -- Metadata API methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
 			if (iMeta.getAxisLength(Axes.Z) == 0) iMeta.setAxisLength(Axes.Z, 1);

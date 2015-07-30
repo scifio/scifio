@@ -117,7 +117,7 @@ public class PCXFormat extends AbstractFormat {
 		// -- Metadata API methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 
 			final ImageMetadata iMeta = get(0);
 			iMeta.setAxisLength(Axes.CHANNEL, nColorPlanes);

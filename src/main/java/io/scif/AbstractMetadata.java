@@ -30,13 +30,13 @@
 
 package io.scif;
 
-import io.scif.io.RandomAccessInputStream;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.scif.io.RandomAccessInputStream;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Metadata} implementations.
@@ -92,6 +92,11 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	// -- Metadata API Methods --
+
+	@Override
+	public void clearImageMetadata() {
+		imageMeta.clear();
+	}
 
 	@Override
 	public void setSource(final RandomAccessInputStream source) {
@@ -157,14 +162,6 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	@Override
 	public void add(final ImageMetadata meta) {
 		imageMeta.add(meta);
-	}
-
-	@Override
-	public void createImageMetadata(final int imageCount) {
-		imageMeta.clear();
-
-		for (int i = 0; i < imageCount; i++)
-			add(new DefaultImageMetadata());
 	}
 
 	// -- HasMetaTable API Methods --

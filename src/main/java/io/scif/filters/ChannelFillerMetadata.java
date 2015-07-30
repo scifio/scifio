@@ -77,7 +77,7 @@ public class ChannelFillerMetadata extends AbstractMetadataWrapper {
 	// -- Metadata API methods --
 
 	@Override
-	public void populateImageMetadata() {
+	public void clearImageMetadata() {
 		final Metadata m = unwrap();
 		createImageMetadata(0);
 

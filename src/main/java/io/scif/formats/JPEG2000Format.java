@@ -155,7 +155,7 @@ public class JPEG2000Format extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 			iMeta.setAxisTypes(Axes.CHANNEL, Axes.X, Axes.Y);
 			iMeta.setIndexed(!(iMeta.getAxisLength(Axes.CHANNEL) > 1) &&

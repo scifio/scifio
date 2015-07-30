@@ -100,7 +100,7 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 
 		// -- Post-translation hook --
 		// Update the source's ImageMetadata based on the translation results
-		typedDest.populateImageMetadata();
+		typedDest.clearImageMetadata();
 	}
 
 	/**

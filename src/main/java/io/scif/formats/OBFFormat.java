@@ -110,7 +110,7 @@ public class OBFFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
 			iMeta.setPlanarAxisCount(2);

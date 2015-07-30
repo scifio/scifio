@@ -120,7 +120,7 @@ public class LegacyQTFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			final BufferedImage img = AWTImageTools.makeBuffered(image);
 			final ImageMetadata iMeta = get(0);
 

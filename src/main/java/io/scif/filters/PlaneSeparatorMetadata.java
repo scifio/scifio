@@ -70,7 +70,7 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 	public void separate(final AxisType... types) {
 		if (unwrap() != null) {
 			matchTypes(types);
-			populateImageMetadata();
+			clearImageMetadata();
 		}
 	}
 
@@ -100,7 +100,7 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 	// -- Metadata API Methods --
 
 	@Override
-	public void populateImageMetadata() {
+	public void clearImageMetadata() {
 		final Metadata m = unwrap();
 		createImageMetadata(0);
 

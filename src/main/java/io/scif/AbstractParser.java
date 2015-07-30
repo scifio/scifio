@@ -252,7 +252,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 		metadata = meta;
 		typedParse(stream, meta, config);
 
-		meta.populateImageMetadata();
+		meta.clearImageMetadata();
 
 		return meta;
 	}
@@ -270,7 +270,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 	 * A helper method, called by
 	 * {@link #parse(RandomAccessInputStream, TypedMetadata)}. Allows for
 	 * boilerplate code to come after parsing, specifically calls to
-	 * {@link Metadata#populateImageMetadata()}.
+	 * {@link Metadata#clearImageMetadata()}.
 	 * <p>
 	 * This method should be implemented to populate any format-specific Metadata.
 	 * </p>

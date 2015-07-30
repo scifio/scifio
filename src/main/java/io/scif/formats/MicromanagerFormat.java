@@ -113,7 +113,7 @@ public class MicromanagerFormat extends AbstractFormat {
 		// -- Metadata API methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 
 			for (int i = 0; i < getImageCount(); i++) {
 				final ImageMetadata ms = get(i);

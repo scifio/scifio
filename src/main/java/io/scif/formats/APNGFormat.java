@@ -190,7 +190,7 @@ public class APNGFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			createImageMetadata(1);
 
 			final ImageMetadata imageMeta = get(0);

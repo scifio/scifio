@@ -153,7 +153,7 @@ public class NRRDFormat extends AbstractFormat {
 		// -- Metadata API methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
 			if (iMeta.getAxisLength(Axes.CHANNEL) > 1) {

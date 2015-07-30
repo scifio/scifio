@@ -114,7 +114,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			createImageMetadata(1);
 			final ImageMetadata m = get(0);
 

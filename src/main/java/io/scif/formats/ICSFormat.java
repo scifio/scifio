@@ -133,7 +133,7 @@ public class ICSFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			// Common metadata population
 			createImageMetadata(1);
 

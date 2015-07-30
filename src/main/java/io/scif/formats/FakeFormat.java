@@ -253,7 +253,7 @@ public class FakeFormat extends AbstractFormat {
 		 * Generates ImageMetadata based on the id of this dataset.
 		 */
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			final MetadataService metadataService =
 				getContext().getService(MetadataService.class);
 

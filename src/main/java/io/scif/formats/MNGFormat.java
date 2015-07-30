@@ -101,7 +101,7 @@ public class MNGFormat extends AbstractFormat {
 		// -- Metadata API methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			final String[] keys = getDatasetInfo().keys;
 
 			final int imageCount = keys.length;

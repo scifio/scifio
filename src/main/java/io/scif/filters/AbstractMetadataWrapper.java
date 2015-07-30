@@ -86,7 +86,7 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	public void wrap(final Metadata meta) {
 		this.meta = meta;
 		setSource(meta.getSource());
-		populateImageMetadata();
+		clearImageMetadata();
 	}
 
 	@Override
@@ -120,8 +120,8 @@ public abstract class AbstractMetadataWrapper extends AbstractMetadata
 	}
 
 	@Override
-	public void populateImageMetadata() {
-		meta.populateImageMetadata();
+	public void clearImageMetadata() {
+		meta.clearImageMetadata();
 	}
 
 	// -- HasFormat API Methods --

@@ -89,7 +89,7 @@ public class JPEGTileFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			createImageMetadata(1);
 			final ImageMetadata iMeta = get(0);
 

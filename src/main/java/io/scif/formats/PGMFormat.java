@@ -99,7 +99,7 @@ public class PGMFormat extends AbstractFormat {
 		// -- Metadata API Methods --
 
 		@Override
-		public void populateImageMetadata() {
+		public void clearImageMetadata() {
 			final ImageMetadata iMeta = get(0);
 
 			iMeta.setPlanarAxisCount(iMeta.getAxisLength(Axes.CHANNEL) == 3 ? 3 : 2);

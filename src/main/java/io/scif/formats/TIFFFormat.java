@@ -285,8 +285,8 @@ public class TIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void populateImageMetadata() {
-			if (populateImageMetadata) super.populateImageMetadata();
+		public void clearImageMetadata() {
+			if (populateImageMetadata) super.clearImageMetadata();
 
 			final ImageMetadata m = get(0);
 
@@ -484,7 +484,7 @@ public class TIFFFormat extends AbstractFormat {
 			throws FormatException, IOException
 		{
 
-			meta.populateImageMetadata();
+			meta.clearImageMetadata();
 			meta.populateImageMetadata = false;
 			final MetaTable table = meta.getTable();
 
