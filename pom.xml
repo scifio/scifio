@@ -41,6 +41,7 @@
 
 	<properties>
 			<mapdb.version>1.0.3</mapdb.version>
+			<imagej-common.version>0.15.2-SNAPSHOT</imagej-common.version>
 	</properties>
 
 	<dependencies>
