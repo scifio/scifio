@@ -30,6 +30,12 @@
 
 package io.scif;
 
+import java.util.List;
+
+import net.imagej.axis.CalibratedAxis;
+import net.imglib2.Dimensions;
+import net.imglib2.Interval;
+
 /**
  * Default implementation of {@link ImageMetadata}. No added functionality over
  * {@link io.scif.AbstractImageMetadata}.
@@ -42,12 +48,73 @@ public class DefaultImageMetadata extends AbstractImageMetadata {
 
 	// -- Constructors --
 
-	public DefaultImageMetadata() {
-		super();
+
+	public DefaultImageMetadata(final int n) {
+		super(n);
 	}
 
-	public DefaultImageMetadata(final ImageMetadata copy) {
-		super(copy);
+	public DefaultImageMetadata(final int n, final CalibratedAxis... axes) {
+		super(n, axes);
+	}
+
+	public DefaultImageMetadata(final int n, final List<CalibratedAxis> axes) {
+		super(n, axes);
+	}
+
+	public DefaultImageMetadata(final Interval interval) {
+		super(interval);
+	}
+
+	public DefaultImageMetadata(final Interval interval, final CalibratedAxis... axes) {
+		super(interval, axes);
+	}
+
+	public DefaultImageMetadata(final Interval interval, final List<CalibratedAxis> axes) {
+		super(interval, axes);
+	}
+
+	public DefaultImageMetadata(final Dimensions dimensions) {
+		super(dimensions);
+	}
+
+	public DefaultImageMetadata(final Dimensions dimensions, final CalibratedAxis... axes) {
+		super(dimensions, axes);
+	}
+
+	public DefaultImageMetadata(final Dimensions dimensions, final List<CalibratedAxis> axes) {
+		super(dimensions, axes);
+	}
+
+	public DefaultImageMetadata(final long[] dimensions) {
+		super(dimensions);
+	}
+
+	public DefaultImageMetadata(final long[] dimensions, final CalibratedAxis... axes) {
+		super(dimensions, axes);
+	}
+
+	public DefaultImageMetadata(final long[] dimensions, final List<CalibratedAxis> axes) {
+		super(dimensions, axes);
+	}
+
+	public DefaultImageMetadata(final long[] min, final long[] max) {
+		super(min, max);
+	}
+
+	public DefaultImageMetadata(final long[] min, final long[] max,
+		final CalibratedAxis... axes)
+	{
+		super(min, max, axes);
+	}
+
+	public DefaultImageMetadata(final long[] min, final long[] max,
+		final List<CalibratedAxis> axes)
+	{
+		super(min, max, axes);
+	}
+
+	public DefaultImageMetadata(final ImageMetadata source) {
+		super(source);
 	}
 
 	// -- ImageMetadata API Methods --

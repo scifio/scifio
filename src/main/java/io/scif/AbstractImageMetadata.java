@@ -120,65 +120,65 @@ public abstract class AbstractImageMetadata extends
 
 	// -- Constructors --
 
-	AbstractImageMetadata(final int n) {
+	public AbstractImageMetadata(final int n) {
 		super(n);
 	}
 
-	AbstractImageMetadata(final int n, final CalibratedAxis... axes) {
+	public AbstractImageMetadata(final int n, final CalibratedAxis... axes) {
 		super(n, axes);
 	}
 
-	AbstractImageMetadata(final int n, final List<CalibratedAxis> axes) {
+	public AbstractImageMetadata(final int n, final List<CalibratedAxis> axes) {
 		super(n, axes);
 	}
 
-	AbstractImageMetadata(final Interval interval) {
+	public AbstractImageMetadata(final Interval interval) {
 		super(interval);
 	}
 
-	AbstractImageMetadata(final Interval interval, final CalibratedAxis... axes) {
+	public AbstractImageMetadata(final Interval interval, final CalibratedAxis... axes) {
 		super(interval, axes);
 	}
 
-	AbstractImageMetadata(final Interval interval, final List<CalibratedAxis> axes) {
+	public AbstractImageMetadata(final Interval interval, final List<CalibratedAxis> axes) {
 		super(interval, axes);
 	}
 
-	AbstractImageMetadata(final Dimensions dimensions) {
+	public AbstractImageMetadata(final Dimensions dimensions) {
 		super(dimensions);
 	}
 
-	AbstractImageMetadata(final Dimensions dimensions, final CalibratedAxis... axes) {
+	public AbstractImageMetadata(final Dimensions dimensions, final CalibratedAxis... axes) {
 		super(dimensions, axes);
 	}
 
-	AbstractImageMetadata(final Dimensions dimensions, final List<CalibratedAxis> axes) {
+	public AbstractImageMetadata(final Dimensions dimensions, final List<CalibratedAxis> axes) {
 		super(dimensions, axes);
 	}
 
-	AbstractImageMetadata(final long[] dimensions) {
+	public AbstractImageMetadata(final long[] dimensions) {
 		super(dimensions);
 	}
 
-	AbstractImageMetadata(final long[] dimensions, final CalibratedAxis... axes) {
+	public AbstractImageMetadata(final long[] dimensions, final CalibratedAxis... axes) {
 		super(dimensions, axes);
 	}
 
-	AbstractImageMetadata(final long[] dimensions, final List<CalibratedAxis> axes) {
+	public AbstractImageMetadata(final long[] dimensions, final List<CalibratedAxis> axes) {
 		super(dimensions, axes);
 	}
 
-	AbstractImageMetadata(final long[] min, final long[] max) {
+	public AbstractImageMetadata(final long[] min, final long[] max) {
 		super(min, max);
 	}
 
-	AbstractImageMetadata(final long[] min, final long[] max,
+	public AbstractImageMetadata(final long[] min, final long[] max,
 		final CalibratedAxis... axes)
 	{
 		super(min, max, axes);
 	}
 
-	AbstractImageMetadata(final long[] min, final long[] max,
+	public AbstractImageMetadata(final long[] min, final long[] max,
 		final List<CalibratedAxis> axes)
 	{
 		super(min, max, axes);
