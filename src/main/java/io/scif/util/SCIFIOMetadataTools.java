@@ -62,9 +62,12 @@ public class SCIFIOMetadataTools {
 	// -- Utility Methods -- Metadata --
 
 	/**
-	 * Counts the number of interleaved axes for specified image of the given {@link Metadata}
+	 * Counts the number of interleaved axes for specified image of the given
+	 * {@link Metadata}
 	 */
-	public static int countInterleavedAxes(final Metadata meta, final int imageIndex) {
+	public static int countInterleavedAxes(final Metadata meta,
+		final int imageIndex)
+	{
 		return countInterleavedAxes(meta.get(imageIndex));
 	}
 
@@ -72,28 +75,31 @@ public class SCIFIOMetadataTools {
 	 * Counts the number of interleaved axes in a given {@link ImageMetadata}
 	 */
 	public static int countInterleavedAxes(final ImageMetadata iMeta) {
-		return getInterleavedAxes(iMeta).size();
+		return getInterleavedAxes(iMeta).numDimensions();
 	}
 
 	/**
-	 * Returns the interleaved axes for specified image of the given {@link Metadata}
+	 * Returns the interleaved axes for specified image of the given
+	 * {@link Metadata}
 	 */
-	public static DefaultCalibratedSpace getInterleavedAxes(final Metadata metadata, final int imageIndex) {
+	public static DefaultCalibratedSpace getInterleavedAxes(
+		final Metadata metadata, final int imageIndex)
+	{
 		return getInterleavedAxes(metadata.get(imageIndex));
 	}
 
 	/**
 	 * Returns the interleaved axes in a given {@link ImageMetadata}
 	 */
-	public static DefaultCalibratedSpace getInterleavedAxes(final ImageMetadata iMeta) {
-		final List<AxisType> axes = getPlanarAxes(iMeta);
-		axes.remove(Axes.X);
-		axes.remove(Axes.Y);
-		return axes;
+	public static DefaultCalibratedSpace getInterleavedAxes(
+		final ImageMetadata iMeta)
+	{
+		return getPlanarAxes(iMeta, false);
 	}
 
 	/**
-	 * Counts the number of planar axes for specified image of the given {@link Metadata}
+	 * Counts the number of planar axes for specified image of the given
+	 * {@link Metadata}
 	 */
 	public static int countPlanarAxes(final Metadata meta, final int imageIndex) {
 		return countPlanarAxes(meta.get(imageIndex));
@@ -103,35 +109,47 @@ public class SCIFIOMetadataTools {
 	 * Counts the number of planar axes in a given {@link ImageMetadata}
 	 */
 	public static int countPlanarAxes(final ImageMetadata iMeta) {
-		return getPlanarAxes(iMeta).size();
+		return getPlanarAxes(iMeta).numDimensions();
 	}
 
 	/**
 	 * Returns the planar axes for specified image of the given {@link Metadata}
 	 */
-	public static DefaultCalibratedSpace getPlanarAxes(final Metadata metadata, final int imageIndex) {
+	public static DefaultCalibratedSpace getPlanarAxes(final Metadata metadata,
+		final int imageIndex)
+	{
 		return getPlanarAxes(metadata.get(imageIndex));
 	}
 
 	/**
 	 * Returns the planar axes in a given {@link ImageMetadata}
 	 */
-	public static DefaultCalibratedSpace getPlanarAxes(final ImageMetadata iMeta) {
-		final List<AxisType> axes = new ArrayList<AxisType>();
+	public static DefaultCalibratedSpace getPlanarAxes(
+		final ImageMetadata iMeta)
+	{
+		return getPlanarAxes(iMeta, true);
+	}
 
-		boolean sawX=false, sawY=false;
+	/**
+	 * @param metadata
+	 * @param imageIndex
+	 * @return True if {@link Axes#CHANNEL} appears before {@link Axes#X} or
+	 *         {@link Axes#Y} in the specified image of the given {@link Metadata}
+	 *         .
+	 */
+	public boolean isMultichannel(final Metadata metadata, final int imageIndex) {
+		return isMultichannel(metadata.get(imageIndex));
+	}
 
-		// Iterate over the axes in the target ImageMetadata.
-		// Once we have seen both Axes.X and Axes.Y we have identified all planar
-		// axes.
-		for (int i=0; !sawX && !sawY && i<iMeta.getAxes().size(); i++) {
-			final CalibratedAxis axis = iMeta.getAxis(i);
-			axes.add(axis.type());
-			if (axis.type().equals(Axes.X)) sawX = true;
-			else if (axis.type().equals(Axes.Y)) sawY = true;
-		}
-
-		return axes;
+	/**
+	 * @param iMeta
+	 * @return True if {@link Axes#CHANNEL} appears before {@link Axes#X} or
+	 *         {@link Axes#Y} in the target {@link ImageMetadata}.
+	 */
+	public boolean isMultichannel(final ImageMetadata iMeta) {
+		final int cIndex = iMeta.dimensionIndex(Axes.CHANNEL);
+		return cIndex < iMeta.dimensionIndex(Axes.X) || cIndex < iMeta
+			.dimensionIndex(Axes.Y);
 	}
 
 	/**
@@ -141,9 +159,9 @@ public class SCIFIOMetadataTools {
 		final Interval range)
 	{
 		final boolean wholePlane = wholeRow(imageIndex, meta, range);
-		final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
-		return wholePlane && range.min(yIndex) == 0 &&
-			range.dimension(yIndex) == meta.get(imageIndex).getAxisLength(Axes.Y);
+		final int yIndex = meta.get(imageIndex).dimensionIndex(Axes.Y);
+		return wholePlane && range.min(yIndex) == 0 && range.dimension(
+			yIndex) == meta.get(imageIndex).dimension(Axes.Y);
 	}
 
 	/**
@@ -153,49 +171,15 @@ public class SCIFIOMetadataTools {
 		final Interval range)
 	{
 		boolean wholeRow = true;
-		final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
+		final int yIndex = meta.get(imageIndex).dimensionIndex(Axes.Y);
 
 		for (int i = 0; wholeRow && i < range.numDimensions(); i++) {
 			if (i == yIndex) continue;
-			if (range.min(i) != 0 ||
-				range.dimension(i) != meta.get(imageIndex).getAxisLength(i)) wholeRow = false;
+			if (range.min(i) != 0 || range.dimension(i) != meta.get(imageIndex)
+				.dimension(i)) wholeRow = false;
 		}
 
 		return wholeRow;
-	}
-
-	/**
-	 * Replaces the first values.length of the provided Metadata's planar axes
-	 * with the values.
-	 */
-	public static long[] modifyPlanar(final int imageIndex, final Metadata meta,
-		final long... values)
-	{
-		final AxisValue[] axes = new AxisValue[values.length];
-		final List<CalibratedAxis> axisTypes = meta.get(imageIndex).getAxes();
-
-		for (int i = 0; i < axes.length && i < axisTypes.size(); i++) {
-			axes[i] = new AxisValue(axisTypes.get(i).type(), values[i]);
-		}
-
-		return modifyPlanar(imageIndex, meta, axes);
-	}
-
-	/**
-	 * Iterates over the provided Metadata's planar axes, replacing any instances
-	 * of axes with the paired values.
-	 */
-	public static long[] modifyPlanar(final int imageIndex, final Metadata meta,
-		final AxisValue... axes)
-	{
-		final long[] planarAxes = meta.get(imageIndex).getAxesLengthsPlanar();
-
-		for (final AxisValue v : axes) {
-			planarAxes[meta.get(imageIndex).getAxisIndex(v.getType())] =
-				v.getLength();
-		}
-
-		return planarAxes;
 	}
 
 	/**
@@ -255,19 +239,19 @@ public class SCIFIOMetadataTools {
 	 */
 	public static void verifyMinimumPopulated(final Metadata src,
 		final RandomAccessOutputStream out, final int imageIndex)
-		throws FormatException
+			throws FormatException
 	{
 		if (src == null) {
-			throw new FormatException("Metadata object is null; "
-				+ "call Writer.setMetadata() first");
+			throw new FormatException("Metadata object is null; " +
+				"call Writer.setMetadata() first");
 		}
 
 		if (out == null) {
-			throw new FormatException("RandomAccessOutputStream object is null; "
-				+ "call Writer.setSource(<String/File/RandomAccessOutputStream>) first");
+			throw new FormatException("RandomAccessOutputStream object is null; " +
+				"call Writer.setSource(<String/File/RandomAccessOutputStream>) first");
 		}
 
-		if (src.get(imageIndex).getAxes().size() == 0) {
+		if (src.get(imageIndex).numDimensions() == 0) {
 			throw new FormatException("Axiscount #" + imageIndex + " is 0");
 		}
 	}
@@ -334,38 +318,34 @@ public class SCIFIOMetadataTools {
 		return keys;
 	}
 
-	// -- Utility class --
+	// -- Utility Methods --
 
 	/**
-	 * Helper class that pairs an AxisType with a length.
-	 *
-	 * @author Mark Hiner
+	 * Helper method to get all the planar axes in a given ImageMetadata. Returns
+	 * the minimal set of leading axes that includes both {@link Axes.X} and
+	 * {@link Axes.Y}. Whether or not X and Y are themselves included in the
+	 * returned set can be controlled with {@code includeXY} - if false, the
+	 * resulting set is the list of interleaved axes.
 	 */
-	public static class AxisValue {
+	private static DefaultCalibratedSpace getPlanarAxes(final ImageMetadata iMeta,
+		final boolean includeXY)
+	{
+		final List<CalibratedAxis> axes = new ArrayList<CalibratedAxis>();
 
-		private CalibratedAxis type;
+		int xyCount = 0;
 
-		private long length;
-
-		public AxisValue(final AxisType type, final long length) {
-			this.type = FormatTools.createAxis(type);
-			this.length = length;
+		// Iterate over the axes in the target ImageMetadata.
+		// Once we have seen both Axes.X and Axes.Y we have identified all planar
+		// axes.
+		for (int i = 0; xyCount < 2 && i < iMeta.numDimensions(); i++) {
+			final CalibratedAxis axis = iMeta.axis(i);
+			if (axis.type().equals(Axes.X) || axis.type().equals(Axes.Y)) {
+				if (includeXY) axes.add(axis);
+				xyCount++;
+			}
+			else axes.add(axis);
 		}
 
-		public long getLength() {
-			return length;
-		}
-
-		public void setLength(final long length) {
-			this.length = length;
-		}
-
-		public AxisType getType() {
-			return type.type();
-		}
-
-		public void setType(final CalibratedAxis type) {
-			this.type = type;
-		}
+		return new DefaultCalibratedSpace(axes);
 	}
 }

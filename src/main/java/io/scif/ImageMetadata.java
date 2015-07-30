@@ -30,8 +30,6 @@
 
 package io.scif;
 
-import java.util.List;
-
 import org.scijava.Named;
 
 import io.scif.util.FormatTools;
@@ -45,91 +43,93 @@ import net.imagej.interval.CalibratedInterval;
  *
  * @author Mark Hiner
  */
-public interface ImageMetadata extends CalibratedInterval<CalibratedAxis>, Named, HasMetaTable {
+public interface ImageMetadata extends CalibratedInterval<CalibratedAxis>,
+	Named, HasMetaTable
+{
 
 	// getInterval
-	
+
 	/** Sets width (in pixels) of thumbnail blocks in this image. */
-	void setThumbSizeX(long thumbSizeX);
+		void setThumbSizeX(long thumbSizeX);
 
 	/** Sets height (in pixels) of thumbnail blocks in this image. */
-	void setThumbSizeY(long thumbSizeY);
+		void setThumbSizeY(long thumbSizeY);
 
 	/**
 	 * Sets the data type associated with a pixel. Valid pixel type constants
 	 * (e.g., {@link FormatTools#INT8}) are enumerated in {@link FormatTools}.
 	 */
-	void setPixelType(int pixelType);
+		void setPixelType(int pixelType);
 
 	/** Sets the number of valid bits per pixel. */
-	void setBitsPerPixel(int bitsPerPixel);
+		void setBitsPerPixel(int bitsPerPixel);
 
 	/**
 	 * Sets whether or not we are confident that the dimension order is correct.
 	 */
-	void setOrderCertain(boolean orderCertain);
+		void setOrderCertain(boolean orderCertain);
 
 	/** Sets whether or not each pixel's bytes are in little endian order. */
-	void setLittleEndian(boolean littleEndian);
+		void setLittleEndian(boolean littleEndian);
 
 	/**
 	 * Sets whether or not the blocks are stored as indexed color. An indexed
 	 * color image treats each pixel value as an index into a color table
 	 * containing one or more (typically 3) actual values for the pixel.
 	 */
-	void setIndexed(boolean indexed);
+		void setIndexed(boolean indexed);
 
 	/** Sets whether or not we can ignore the color map (if present). */
-	void setFalseColor(boolean falseColor);
+		void setFalseColor(boolean falseColor);
 
 	/**
 	 * Sets whether or not we are confident that all of the metadata stored within
 	 * the image has been parsed.
 	 */
-	void setMetadataComplete(boolean metadataComplete);
+		void setMetadataComplete(boolean metadataComplete);
 
 	/**
 	 * Sets whether or not this image is a lower-resolution copy of another image.
 	 */
-	void setThumbnail(boolean thumbnail);
+		void setThumbnail(boolean thumbnail);
 
 	/** Returns the size, in bytes, of this image. */
-	long getSize();
+		long getSize();
 
 	/** Returns the width (in pixels) of the thumbnail blocks in this image. */
-	long getThumbSizeX();
+		long getThumbSizeX();
 
 	/** Returns the height (in pixels) of the thumbnail blocks in this image. */
-	long getThumbSizeY();
+		long getThumbSizeY();
 
 	/**
 	 * Returns the data type associated with a pixel. Valid pixel type constants
 	 * (e.g., {@link FormatTools#INT8}) are enumerated in {@link FormatTools}.
 	 */
-	int getPixelType();
+		int getPixelType();
 
 	/** Returns the number of valid bits per pixel. */
-	int getBitsPerPixel();
+		int getBitsPerPixel();
 
 	/**
 	 * Returns true if we are confident that the dimension order is correct.
 	 */
-	boolean isOrderCertain();
+		boolean isOrderCertain();
 
 	/** Returns true if each pixel's bytes are in little endian order. */
-	boolean isLittleEndian();
+		boolean isLittleEndian();
 
 	/** Returns true if the blocks are stored as indexed color. */
-	boolean isIndexed();
+		boolean isIndexed();
 
 	/** Returns true if we can ignore the color map (if present). */
-	boolean isFalseColor();
+		boolean isFalseColor();
 
 	/**
 	 * Returns true if we are confident that all of the metadata stored within the
 	 * image has been parsed.
 	 */
-	boolean isMetadataComplete();
+		boolean isMetadataComplete();
 
 	/**
 	 * Determines whether or not this image is a lower-resolution copy of another
@@ -137,39 +137,38 @@ public interface ImageMetadata extends CalibratedInterval<CalibratedAxis>, Named
 	 *
 	 * @return true if this image is a thumbnail
 	 */
-	boolean isThumbnail();
+		boolean isThumbnail();
 
 	/**
 	 * @return the number of blocks in this image
 	 */
-	long getBlockCount();
+		long getBlockCount();
 
 	/**
 	 * @return A new copy of this ImageMetadata.
 	 */
-	ImageMetadata copy();
+		ImageMetadata copy();
 
 	/**
 	 * Populates this ImageMetadata using the provided instance.
 	 *
 	 * @param toCopy - ImageMetadata to copy
 	 */
-	void copy(ImageMetadata toCopy);
+		void copy(ImageMetadata toCopy);
 
 	/**
 	 * As
-	 * {@link #populate(String, List, long[], int, boolean, boolean, boolean, boolean, boolean)}
+	 * {@link #populate(String,int, boolean, boolean, boolean, boolean, boolean)}
 	 * but automatically determines bits per pixel.
 	 */
-	void populate(String name, List<CalibratedAxis> axes, long[] lengths,
-		int pixelType, boolean orderCertain, boolean littleEndian, boolean indexed,
-		boolean falseColor, boolean metadataComplete);
+		void populate(String name, int pixelType, boolean orderCertain,
+			boolean littleEndian, boolean indexed, boolean falseColor,
+			boolean metadataComplete);
 
 	/**
 	 * Convenience method for manually populating an ImageMetadata.
 	 */
-	void populate(String name, List<CalibratedAxis> axes, long[] lengths,
-		int pixelType, int bitsPerPixel, boolean orderCertain,
-		boolean littleEndian, boolean indexed, boolean falseColor,
-		boolean metadataComplete);
+		void populate(String name, int pixelType, int bitsPerPixel,
+			boolean orderCertain, boolean littleEndian, boolean indexed,
+			boolean falseColor, boolean metadataComplete);
 }

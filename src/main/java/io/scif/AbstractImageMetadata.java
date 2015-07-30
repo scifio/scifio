@@ -34,13 +34,13 @@ import java.util.List;
 
 import io.scif.common.DataTools;
 import io.scif.util.FormatTools;
+import io.scif.util.SCIFIOMetadataTools;
 import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.interval.AbstractCalibratedInterval;
+import net.imagej.space.DefaultCalibratedSpace;
 import net.imglib2.Dimensions;
-import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
-import net.imglib2.RealInterval;
 
 /**
  * Abstract superclass of all {@link io.scif.ImageMetadata} implementations.
@@ -248,9 +248,7 @@ public abstract class AbstractImageMetadata extends
 		long size = 1;
 
 		for (int i=0; i<numDimensions(); i++) {
-			//FIXME should we be long-backed instead of doubles?
-			//FIXME should we have a method in CalibratedRealInterval that is Max - Min?
-			size = DataTools.safeMultiply64(size, (long)(realMax(i) - realMin(i)));
+			size = DataTools.safeMultiply64(size, dimension(i));
 		}
 
 		final int bytesPerPixel = getBitsPerPixel() / 8;
@@ -265,9 +263,8 @@ public abstract class AbstractImageMetadata extends
 		// If the X thumbSize isn't explicitly set, scale the actual width using
 		// the thumbnail dimension constant
 		if (thumbX == 0) {
-			//FIXME want this API in calibratedrealinterval
-			final long sx = (long)(realMax(dimensionIndex(Axes.X)) - realMin(dimensionIndex(Axes.X)));
-			final long sy = (long)(realMax(dimensionIndex(Axes.Y)) - realMin(dimensionIndex(Axes.Y)));
+			final long sx = dimension(Axes.X);
+			final long sy = dimension(Axes.Y);
 
 			if (sx < THUMBNAIL_DIMENSION && sy < THUMBNAIL_DIMENSION) thumbX = sx;
 			else if (sx > sy) thumbX = THUMBNAIL_DIMENSION;
@@ -285,9 +282,8 @@ public abstract class AbstractImageMetadata extends
 		// If the Y thumbSize isn't explicitly set, scale the actual width using
 		// the thumbnail dimension constant
 		if (thumbY == 0) {
-			//FIXME want this API in calibratedrealinterval
-			final long sx = (long)(realMax(dimensionIndex(Axes.X)) - realMin(dimensionIndex(Axes.X)));
-			final long sy = (long)(realMax(dimensionIndex(Axes.Y)) - realMin(dimensionIndex(Axes.Y)));
+			final long sx = dimension(Axes.X);
+			final long sy = dimension(Axes.Y);
 			thumbY = 1;
 
 			if (sx < THUMBNAIL_DIMENSION && sy < THUMBNAIL_DIMENSION) thumbY = sy;
@@ -314,8 +310,11 @@ public abstract class AbstractImageMetadata extends
 	public long getBlockCount() {
 		long length = 1;
 
-		for (final CalibratedAxis t : getAxesNonPlanar()) {
-			length *= getAxisLength(t);
+		DefaultCalibratedSpace planarAxes = SCIFIOMetadataTools.getPlanarAxes(this);
+
+		for (int i=0; i<planarAxes.numDimensions(); i++)
+		{
+			length *= dimension(planarAxes.axis(i).type());
 		}
 
 		return length;
@@ -337,12 +336,6 @@ public abstract class AbstractImageMetadata extends
 	}
 
 	@Override
-	public boolean isMultichannel() {
-		final int cIndex = getAxisIndex(Axes.CHANNEL);
-		return (cIndex < getPlanarAxisCount() && cIndex >= 0);
-	}
-
-	@Override
 	public boolean isFalseColor() {
 		return falseColor;
 	}
@@ -359,7 +352,7 @@ public abstract class AbstractImageMetadata extends
 
 	@Override
 	public void copy(final ImageMetadata toCopy) {
-		populate(toCopy.getName(), toCopy.getAxes(), toCopy.getAxesLengths(), toCopy
+		populate(toCopy.getName(), toCopy
 			.getPixelType(), toCopy.isOrderCertain(), toCopy.isLittleEndian(), toCopy
 				.isIndexed(), toCopy.isFalseColor(), toCopy.isMetadataComplete());
 		// TODO Use setters, not direct assignment.
@@ -370,19 +363,17 @@ public abstract class AbstractImageMetadata extends
 	}
 
 	@Override
-	public void populate(final String name, final List<CalibratedAxis> axes,
-		final long[] lengths, final int pixelType, final boolean orderCertain,
+	public void populate(final String name, final int pixelType, final boolean orderCertain,
 		final boolean littleEndian, final boolean indexed, final boolean falseColor,
 		final boolean metadataComplete)
 	{
-		populate(name, axes, lengths, pixelType, FormatTools.getBitsPerPixel(
+		populate(name, pixelType, FormatTools.getBitsPerPixel(
 			pixelType), orderCertain, littleEndian, indexed, falseColor,
 			metadataComplete);
 	}
 
 	@Override
-	public void populate(final String name, final List<CalibratedAxis> axes,
-		final long[] lengths, final int pixelType, final int bitsPerPixel,
+	public void populate(final String name, final int pixelType, final int bitsPerPixel,
 		final boolean orderCertain, final boolean littleEndian,
 		final boolean indexed, final boolean falseColor,
 		final boolean metadataComplete)
