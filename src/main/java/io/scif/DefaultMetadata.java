@@ -62,6 +62,13 @@ public class DefaultMetadata extends AbstractMetadata implements
 		super(list);
 	}
 
+	// -- AbstractImageMetadata API Methods --
+	
+	@Override
+	protected ImageMetadata generateImageMetadata(int imageIndex) {
+		return null;
+	}
+
 	// -- HasFormat API Methods --
 
 	@Override

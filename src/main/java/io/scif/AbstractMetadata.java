@@ -124,11 +124,16 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 
 	@Override
 	public ImageMetadata get(final int imageIndex) {
+		ensureMetadataExists(imageIndex);
 		return imageMeta.get(imageIndex);
 	}
 
 	@Override
 	public List<ImageMetadata> getAll() {
+		for (int i=0; i<getImageCount(); i++) {
+			ensureMetadataExists(i);
+		}
+
 		return imageMeta;
 	}
 
@@ -188,7 +193,26 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 		if (!fileOnly) reset(getClass());
 	}
 
+	// -- AbstractMetadata API --
+
+	/**
+	 * Using the format-specific metadata contained in this object, generate
+	 * the {@link ImageMetadata} for this dataset at the given image index.
+	 */
+	protected abstract ImageMetadata generateImageMetadata(final int imageIndex);
+
 	// -- Helper Methods --
+
+	/**
+	 * Ensures there is {@link ImageMetadata} for the specified image index,
+	 * creating it if it is not already present.
+	 */
+	private void ensureMetadataExists(final int imageIndex) {
+		if (imageMeta.size() <= imageIndex || imageMeta.get(imageIndex) == null) {
+			final ImageMetadata iMeta = generateImageMetadata(imageIndex);
+			imageMeta.set(imageIndex, iMeta);
+		}
+	}
 
 	private void reset(final Class<?> type) {
 		if (type == null || type == AbstractMetadata.class) return;
