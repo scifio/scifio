@@ -104,6 +104,7 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 	public B openBlock(final int imageIndex, final long blockIndex,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
+		//FIXME how should we get Intervals from the Metadata?
 		final long[] blockMax = metadata.get(imageIndex).getAxesLengthsPlanar();
 		final long[] blockMin = new long[blockMax.length];
 		return openBlock(imageIndex, blockIndex, blockMin, blockMax, config);
@@ -190,6 +191,9 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 
 	@Override
 	public Interval getOptimalBlockSize(final int imageIndex) {
+		// actually this maybe shouldn't return an interval, because it's a block SIZE
+		// which doesn't specify minimums...
+		
 		// x optimal
 		return metadata.get(imageIndex).getAxisLength(Axes.X);
 		// y optimal
@@ -395,17 +399,17 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 							bytesToSkip *= range.min(i);
 						}
 						else {
-							bytesToSkip *= range.dimension(i);
+							bytesToSkip *= range.max(i);
 						}
-						bytesToRead *= range.dimension(i);
+						bytesToRead *= range.max(i);
 					}
 				}
 				s.skip(bytesToSkip);
 				s.read(bytes, 0, bytesToRead);
 			}
 			else {
-				final int rowLen = (int) (bpp * range.dimension(xIndex));
-				final int h = (int) range.dimension(yIndex);
+				final int rowLen = (int) (bpp * range.max(xIndex));
+				final int h = (int) range.max(yIndex);
 				final int y = (int) range.min(yIndex);
 				long c = metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
 				if (c <= 0 || !metadata.get(imageIndex).isMultichannel()) c = 1;
@@ -435,26 +439,26 @@ public abstract class AbstractReader<M extends TypedMetadata, T extends NativeTy
 
 				bytesToSkip = bpp;
 				int bytesToRead = bytesToSkip;
-				bytesToRead *= range.dimension(xIndex);
+				bytesToRead *= range.max(xIndex);
 				bytesToRead *= blockProduct;
 				bytesToSkip *= range.min(xIndex);
 				bytesToSkip *= blockProduct;
 
-				for (int row = 0; row < range.dimension(yIndex); row++) {
+				for (int row = 0; row < range.max(yIndex); row++) {
 					s.skipBytes(bytesToSkip);
 					s.read(bytes, row * bytesToRead, bytesToRead);
-					if (row < range.dimension(yIndex) - 1) {
+					if (row < range.max(yIndex) - 1) {
 						// no need to skip bytes after reading final row
 						s.skipBytes((int) (blockProduct * (scanlineWidth -
-							range.dimension(xIndex) - range.min(xIndex)))); // FIXME or just range.dimension??
+							range.max(xIndex) - range.min(xIndex))));
 					}
 				}
 			}
 			else {
 				final long c = metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
-				final int w = (int) range.dimension(xIndex);
-				final int h = (int) range.dimension(yIndex);
+				final int w = (int) range.max(xIndex);
+				final int h = (int) range.max(yIndex);
 				final int x = (int) range.min(xIndex);
 				final int y = (int) range.min(yIndex);
 				for (int channel = 0; channel < c; channel++) {

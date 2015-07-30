@@ -1,7 +1,11 @@
 package io.scif;
 
-import net.imglib2.type.NativeType;
+/**
+ * @author hinerm
+ *
+ * @param <T> - The backing type (e.g. byte[], bufferedimage, etc..)
+ */
+public interface TypedBlock<T> extends Block {
 
-public interface TypedBlock<T extends NativeType<T>, A> extends Block {
-
+	T get();
 }

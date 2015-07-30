@@ -35,8 +35,8 @@ import java.util.List;
 import org.scijava.Named;
 
 import io.scif.util.FormatTools;
-import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
+import net.imagej.interval.CalibratedInterval;
 
 /**
  * ImageMetadata stores the metadata for a single image within a dataset. Here,
@@ -45,8 +45,10 @@ import net.imagej.axis.CalibratedAxis;
  *
  * @author Mark Hiner
  */
-public interface ImageMetadata extends Named, HasMetaTable {
+public interface ImageMetadata extends CalibratedInterval<CalibratedAxis>, Named, HasMetaTable {
 
+	// getInterval
+	
 	/** Sets width (in pixels) of thumbnail blocks in this image. */
 	void setThumbSizeX(long thumbSizeX);
 
@@ -91,74 +93,14 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	 */
 	void setThumbnail(boolean thumbnail);
 
-	/**
-	 * Convenience method to set both the axis types and lengths for this
-	 * ImageMetadata.
-	 */
-	void setAxes(CalibratedAxis[] axes, long[] axisLengths);
-
-	/**
-	 * Sets the Axes types for this image. Order is implied by ordering within
-	 * this array
-	 */
-	void setAxisTypes(AxisType... axisTypes);
-
-	/**
-	 * Sets the Axes types for this image. Order is implied by ordering within
-	 * this array
-	 */
-	void setAxes(CalibratedAxis... axes);
-
-	/**
-	 * Sets the lengths of each axis. Order is parallel of {@code axes}.
-	 * <p>
-	 * NB: axes must already exist for this method to be called. Use
-	 * {@link #setAxes(CalibratedAxis[])} or {@link #setAxes}
-	 */
-	void setAxisLengths(long[] axisLengths);
-
-	/**
-	 * Sets the length for the specified axis. Adds the axis if if its type is not
-	 * already present in the image.
-	 */
-	void setAxisLength(CalibratedAxis axis, long length);
-
-	/**
-	 * As {@link #setAxisLength(CalibratedAxis, long)} but requires only the
-	 * AxisType.
-	 */
-	void setAxisLength(AxisType axis, long length);
-
-	/**
-	 * Sets the axis at the specified index, if an axis with a matching type is
-	 * not already defined. Otherwise the axes are re-ordered, per
-	 * {@link java.util.List#add(int, Object)}.
-	 */
-	void setAxis(int index, CalibratedAxis axis);
-
-	/**
-	 * As {@link #setAxis(int, CalibratedAxis)} but using the default calibration
-	 * values, per {@link FormatTools#createAxis(AxisType)}.
-	 */
-	void setAxisType(int index, AxisType axis);
-
 	/** Returns the size, in bytes, of this image. */
 	long getSize();
-
-	/** Returns the size, in bytes, of one block in this image. */
-	long getBlockSize();
 
 	/** Returns the width (in pixels) of the thumbnail blocks in this image. */
 	long getThumbSizeX();
 
 	/** Returns the height (in pixels) of the thumbnail blocks in this image. */
 	long getThumbSizeY();
-
-	/**
-	 * Returns the CalibratedAxis associated with the given type. Useful to
-	 * retrieve calibration information.
-	 */
-	CalibratedAxis getAxis(AxisType axisType);
 
 	/**
 	 * Returns the data type associated with a pixel. Valid pixel type constants
@@ -198,123 +140,9 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	boolean isThumbnail();
 
 	/**
-	 * Gets the axis of the (zero-indexed) specified block.
-	 *
-	 * @param axisIndex - index of the desired axis within this image
-	 * @return Type of the desired block.
-	 */
-	CalibratedAxis getAxis(final int axisIndex);
-
-	/**
-	 * Gets the length of the (zero-indexed) specified block.
-	 *
-	 * @param axisIndex - index of the desired axis within this image
-	 * @return Length of the desired axis, or 0 if the axis is not found.
-	 */
-	long getAxisLength(final int axisIndex);
-
-	/**
-	 * A convenience method for looking up the length of an axis based on its
-	 * type. No knowledge of block ordering is necessary.
-	 *
-	 * @param t - CalibratedAxis to look up
-	 * @return Length of axis t, or 0 if the axis is not found.
-	 */
-	long getAxisLength(final CalibratedAxis t);
-
-	/**
-	 * As {@link #getAxisLength(CalibratedAxis)} but only requires the
-	 * {@link AxisType} of the desired axis.
-	 *
-	 * @param t - CalibratedAxis to look up
-	 * @return Length of axis t, or 0 if the axis is not found.
-	 */
-	long getAxisLength(final AxisType t);
-
-	/**
-	 * Returns the array index for the specified CalibratedAxis. This index can be
-	 * used in other Axes methods for looking up lengths, etc...
-	 * <p>
-	 * This method can also be used as an existence check for the target
-	 * CalibratedAxis.
-	 * </p>
-	 *
-	 * @param axis - axis to look up
-	 * @return The index of the desired axis or -1 if not found.
-	 */
-	int getAxisIndex(final CalibratedAxis axis);
-
-	/**
-	 * As {@link #getAxisIndex(CalibratedAxis)} but only requires the
-	 * {@link AxisType} of the desired axis.
-	 *
-	 * @param axisType - axis type to look up
-	 * @return The index of the desired axis or -1 if not found.
-	 */
-	int getAxisIndex(final AxisType axisType);
-
-	/**
-	 * Returns an array of the types for axes associated with the specified image
-	 * index. Order is consistent with the axis length (int) array returned by
-	 * {@link #getAxesLengths()}.
-	 * <p>
-	 * CalibratedAxis order is sorted and represents order within the image.
-	 * </p>
-	 *
-	 * @return List of CalibratedAxes. Ordering in the list indicates the axis
-	 *         order in the image.
-	 */
-	List<CalibratedAxis> getAxes();
-
-	/**
 	 * @return the number of blocks in this image
 	 */
 	long getBlockCount();
-
-	/**
-	 * Returns an array of the lengths for axes associated with the specified
-	 * image index.
-	 * <p>
-	 * Ordering is consistent with the CalibratedAxis array returned by
-	 * {@link #getAxes()}.
-	 * </p>
-	 *
-	 * @return Sorted axis length array
-	 */
-	long[] getAxesLengths();
-
-	/**
-	 * Returns an array of the lengths for axes in the provided AxisType list.
-	 * <p>
-	 * Ordering of the lengths is consistent with the provided ordering.
-	 * </p>
-	 *
-	 * @return Sorted axis length array
-	 */
-	long[] getAxesLengths(final List<CalibratedAxis> axes);
-
-	/**
-	 * Appends the provided {@link CalibratedAxis} to the metadata's list of axes,
-	 * with a length of 1.
-	 *
-	 * @param axis - The new axis
-	 */
-	void addAxis(final CalibratedAxis axis);
-
-	/**
-	 * Appends the provided CalibratedAxis to the current CalibratedAxis array and
-	 * creates a corresponding entry with the specified value in axis lengths.
-	 *
-	 * @param axis - The new axis
-	 * @param value - length of the new axis
-	 */
-	void addAxis(final CalibratedAxis axis, final long value);
-
-	/**
-	 * As {@link #addAxis(CalibratedAxis, long)} using the default calibration
-	 * value, per {@link FormatTools#createAxis(AxisType)}.
-	 */
-	void addAxis(final AxisType axisType, final long value);
 
 	/**
 	 * @return A new copy of this ImageMetadata.

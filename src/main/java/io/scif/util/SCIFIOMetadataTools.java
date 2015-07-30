@@ -44,6 +44,7 @@ import io.scif.io.RandomAccessOutputStream;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
+import net.imagej.space.DefaultCalibratedSpace;
 import net.imglib2.Interval;
 
 /**
@@ -77,14 +78,14 @@ public class SCIFIOMetadataTools {
 	/**
 	 * Returns the interleaved axes for specified image of the given {@link Metadata}
 	 */
-	public static List<AxisType> getInterleavedAxes(final Metadata metadata, final int imageIndex) {
+	public static DefaultCalibratedSpace getInterleavedAxes(final Metadata metadata, final int imageIndex) {
 		return getInterleavedAxes(metadata.get(imageIndex));
 	}
 
 	/**
 	 * Returns the interleaved axes in a given {@link ImageMetadata}
 	 */
-	public static List<AxisType> getInterleavedAxes(final ImageMetadata iMeta) {
+	public static DefaultCalibratedSpace getInterleavedAxes(final ImageMetadata iMeta) {
 		final List<AxisType> axes = getPlanarAxes(iMeta);
 		axes.remove(Axes.X);
 		axes.remove(Axes.Y);
@@ -108,14 +109,14 @@ public class SCIFIOMetadataTools {
 	/**
 	 * Returns the planar axes for specified image of the given {@link Metadata}
 	 */
-	public static List<AxisType> getPlanarAxes(final Metadata metadata, final int imageIndex) {
+	public static DefaultCalibratedSpace getPlanarAxes(final Metadata metadata, final int imageIndex) {
 		return getPlanarAxes(metadata.get(imageIndex));
 	}
 
 	/**
 	 * Returns the planar axes in a given {@link ImageMetadata}
 	 */
-	public static List<AxisType> getPlanarAxes(final ImageMetadata iMeta) {
+	public static DefaultCalibratedSpace getPlanarAxes(final ImageMetadata iMeta) {
 		final List<AxisType> axes = new ArrayList<AxisType>();
 
 		boolean sawX=false, sawY=false;
