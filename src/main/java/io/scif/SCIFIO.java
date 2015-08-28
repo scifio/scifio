@@ -103,48 +103,21 @@ public class SCIFIO extends AbstractGateway {
 	// -- Service Accessors --
 
 	/**
-	 * InitializeService accessor.
+	 * CacheService accessor.
 	 *
-	 * @return The InitializeService instance associated with the wrapped Context.
+	 * @return The CacheService instance associated with the wrapped Context.
 	 */
-	public InitializeService initializer() {
-		return get(InitializeService.class);
+	public CacheService<?> cache() {
+		return get(CacheService.class);
 	}
 
 	/**
-	 * FormatService accessor.
+	 * CodecService accessor.
 	 *
-	 * @return The FormatService instance associated with the wrapped Context.
+	 * @return The CodecService instance associated with the wrapped Context.
 	 */
-	public FormatService format() {
-		return get(FormatService.class);
-	}
-
-	/**
-	 * MetadataService accessor.
-	 *
-	 * @return The MetadataService instance associated with the wrapped Context.
-	 */
-	public MetadataService metadata() {
-		return get(MetadataService.class);
-	}
-
-	/**
-	 * TranslatorService accessor.
-	 *
-	 * @return The TranslatorService instance associated with the wrapped Context.
-	 */
-	public TranslatorService translator() {
-		return get(TranslatorService.class);
-	}
-
-	/**
-	 * LocationService accessor.
-	 *
-	 * @return The LocationService instance associated with the wrapped Context.
-	 */
-	public LocationService location() {
-		return get(LocationService.class);
+	public CodecService codec() {
+		return get(CodecService.class);
 	}
 
 	/**
@@ -158,48 +131,12 @@ public class SCIFIO extends AbstractGateway {
 	}
 
 	/**
-	 * CodecService accessor.
+	 * FormatService accessor.
 	 *
-	 * @return The CodecService instance associated with the wrapped Context.
+	 * @return The FormatService instance associated with the wrapped Context.
 	 */
-	public CodecService codec() {
-		return get(CodecService.class);
-	}
-
-	/**
-	 * TiffService accessor.
-	 *
-	 * @return The TiffService instance associated with the wrapped Context.
-	 */
-	public TiffService tiff() {
-		return get(TiffService.class);
-	}
-
-	/**
-	 * QTJavaService accessor.
-	 *
-	 * @return The QTJavaService instance associated with the wrapped Context.
-	 */
-	public QTJavaService qtJava() {
-		return get(QTJavaService.class);
-	}
-
-	/**
-	 * XMLService accessor.
-	 *
-	 * @return The XMLService instance associated with the wrapped Context.
-	 */
-	public XMLService xml() {
-		return get(XMLService.class);
-	}
-
-	/**
-	 * CacheService accessor.
-	 *
-	 * @return The CacheService instance associated with the wrapped Context.
-	 */
-	public CacheService<?> cache() {
-		return get(CacheService.class);
+	public FormatService format() {
+		return get(FormatService.class);
 	}
 
 	/**
@@ -221,6 +158,33 @@ public class SCIFIO extends AbstractGateway {
 	}
 
 	/**
+	 * InitializeService accessor.
+	 *
+	 * @return The InitializeService instance associated with the wrapped Context.
+	 */
+	public InitializeService initializer() {
+		return get(InitializeService.class);
+	}
+
+	/**
+	 * LocationService accessor.
+	 *
+	 * @return The LocationService instance associated with the wrapped Context.
+	 */
+	public LocationService location() {
+		return get(LocationService.class);
+	}
+
+	/**
+	 * MetadataService accessor.
+	 *
+	 * @return The MetadataService instance associated with the wrapped Context.
+	 */
+	public MetadataService metadata() {
+		return get(MetadataService.class);
+	}
+
+	/**
 	 * NIOService accessor.
 	 *
 	 * @return The NIOService instance associated with the wrapped Context.
@@ -237,5 +201,41 @@ public class SCIFIO extends AbstractGateway {
 	 */
 	public PlaneConverterService planeConverter() {
 		return get(PlaneConverterService.class);
+	}
+
+	/**
+	 * QTJavaService accessor.
+	 *
+	 * @return The QTJavaService instance associated with the wrapped Context.
+	 */
+	public QTJavaService qtJava() {
+		return get(QTJavaService.class);
+	}
+
+	/**
+	 * TiffService accessor.
+	 *
+	 * @return The TiffService instance associated with the wrapped Context.
+	 */
+	public TiffService tiff() {
+		return get(TiffService.class);
+	}
+
+	/**
+	 * TranslatorService accessor.
+	 *
+	 * @return The TranslatorService instance associated with the wrapped Context.
+	 */
+	public TranslatorService translator() {
+		return get(TranslatorService.class);
+	}
+
+	/**
+	 * XMLService accessor.
+	 *
+	 * @return The XMLService instance associated with the wrapped Context.
+	 */
+	public XMLService xml() {
+		return get(XMLService.class);
 	}
 }
