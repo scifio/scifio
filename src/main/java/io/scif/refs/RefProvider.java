@@ -47,7 +47,7 @@ import org.scijava.plugin.SingletonPlugin;
  *
  * @author Mark Hiner
  */
-public interface RefProvider extends SCIFIOPlugin, SingletonPlugin {
+public interface RefProvider<T> extends SCIFIOPlugin, SingletonPlugin {
 
 	/**
 	 * @param referent - potential referent to test
@@ -63,5 +63,6 @@ public interface RefProvider extends SCIFIOPlugin, SingletonPlugin {
 	 * @param params - list of parameters required by the new reference
 	 * @return The created reference.
 	 */
-	Reference makeRef(Object referent, ReferenceQueue queue, Object... params);
+	Reference<T> makeRef(Object referent, ReferenceQueue<T> queue,
+		Object... params);
 }

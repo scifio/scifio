@@ -33,6 +33,7 @@ package io.scif.img.cell.cache;
 import io.scif.img.cell.SCIFIOCell;
 import io.scif.refs.RefManagerService;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -58,7 +59,7 @@ import org.scijava.thread.ThreadService;
  * @author Mark Hiner
  */
 @Plugin(type = Service.class)
-public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
+public class MapDBCache extends AbstractCacheService {
 
 	// -- Parameters --
 
@@ -146,8 +147,14 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 
 	@Override
 	public CacheResult cache(final String cacheId, final int index,
-		final SCIFIOCell<?> cell)
+		final Serializable obj)
 	{
+		if (!(obj instanceof SCIFIOCell)) {
+			throw new IllegalArgumentException("object is not a SCIFIOCell: " +
+				obj.getClass().getName());
+		}
+		final SCIFIOCell<?> cell = (SCIFIOCell<?>) obj;
+
 		if (!cell.isEnabled()[0]) {
 			return CacheResult.CELL_DISABLED;
 		}
