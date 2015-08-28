@@ -92,9 +92,10 @@ public class SCIFIO extends AbstractGateway {
 	}
 
 	/**
-	 * Creates a new SCIFIO wrapping the provided context.
-	 *
-	 * @param context - The context to wrap
+	 * Creates a new SCIFIO application context which wraps the given existing
+	 * SciJava context.
+	 * 
+	 * @see Context
 	 */
 	public SCIFIO(final Context context) {
 		super(SCIFIOApp.NAME, context);
