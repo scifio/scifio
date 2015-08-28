@@ -101,7 +101,7 @@ public class SCIFIO extends AbstractGateway {
 		super(SCIFIOApp.NAME, context);
 	}
 
-	// -- Service Accessors --
+	// -- SCIFIO methods - services --
 
 	/**
 	 * CacheService accessor.
