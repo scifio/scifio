@@ -98,146 +98,144 @@ public class SCIFIO extends AbstractGateway {
 	// -- SCIFIO methods - services --
 
 	/**
-	 * CacheService accessor.
+	 * Gets this application context's {@link CacheService}.
 	 *
-	 * @return The CacheService instance associated with the wrapped Context.
+	 * @return The {@link CacheService} of this application context.
 	 */
 	public CacheService<?> cache() {
 		return get(CacheService.class);
 	}
 
 	/**
-	 * CodecService accessor.
+	 * Gets this application context's {@link CodecService}.
 	 *
-	 * @return The CodecService instance associated with the wrapped Context.
+	 * @return The {@link CodecService} of this application context.
 	 */
 	public CodecService codec() {
 		return get(CodecService.class);
 	}
 
 	/**
-	 * DatasetIOService accessor.
+	 * Gets this application context's {@link DatasetIOService}.
 	 *
-	 * @return The DatasetIOService instance associated with the wrapped Context.
+	 * @return The {@link DatasetIOService} of this application context.
 	 */
 	public DatasetIOService datasetIO() {
 		return get(DatasetIOService.class);
 	}
 
 	/**
-	 * FilePatternService accessor.
+	 * Gets this application context's {@link FilePatternService}.
 	 *
-	 * @return The FilePatternService instance associated with the wrapped
-	 *         Context.
+	 * @return The {@link FilePatternService} of this application context.
 	 */
 	public FilePatternService filePattern() {
 		return get(FilePatternService.class);
 	}
 
 	/**
-	 * FormatService accessor.
+	 * Gets this application context's {@link FormatService}.
 	 *
-	 * @return The FormatService instance associated with the wrapped Context.
+	 * @return The {@link FormatService} of this application context.
 	 */
 	public FormatService format() {
 		return get(FormatService.class);
 	}
 
 	/**
-	 * GUIService accessor.
+	 * Gets this application context's {@link GUIService}.
 	 *
-	 * @return The GUIService instance associated with the wrapped Context.
+	 * @return The {@link GUIService} of this application context.
 	 */
 	public GUIService gui() {
 		return get(GUIService.class);
 	}
 
 	/**
-	 * ImgUtilityService accessor.
+	 * Gets this application context's {@link ImgUtilityService}.
 	 *
-	 * @return The ImgUtilityService instance associated with the wrapped Context.
+	 * @return The {@link ImgUtilityService} of this application context.
 	 */
 	public ImgUtilityService imgUtil() {
 		return get(ImgUtilityService.class);
 	}
 
 	/**
-	 * InitializeService accessor.
+	 * Gets this application context's {@link InitializeService}.
 	 *
-	 * @return The InitializeService instance associated with the wrapped Context.
+	 * @return The {@link InitializeService} of this application context.
 	 */
 	public InitializeService initializer() {
 		return get(InitializeService.class);
 	}
 
 	/**
-	 * LocationService accessor.
+	 * Gets this application context's {@link LocationService}.
 	 *
-	 * @return The LocationService instance associated with the wrapped Context.
+	 * @return The {@link LocationService} of this application context.
 	 */
 	public LocationService location() {
 		return get(LocationService.class);
 	}
 
 	/**
-	 * MetadataService accessor.
+	 * Gets this application context's {@link MetadataService}.
 	 *
-	 * @return The MetadataService instance associated with the wrapped Context.
+	 * @return The {@link MetadataService} of this application context.
 	 */
 	public MetadataService metadata() {
 		return get(MetadataService.class);
 	}
 
 	/**
-	 * NIOService accessor.
+	 * Gets this application context's {@link NIOService}.
 	 *
-	 * @return The NIOService instance associated with the wrapped Context.
+	 * @return The {@link NIOService} of this application context.
 	 */
 	public NIOService nio() {
 		return get(NIOService.class);
 	}
 
 	/**
-	 * PlaneConverterService accessor.
+	 * Gets this application context's {@link PlaneConverterService}.
 	 *
-	 * @return The PlaneConverterService instance associated with the wrapped
-	 *         Context.
+	 * @return The {@link PlaneConverterService} of this application context.
 	 */
 	public PlaneConverterService planeConverter() {
 		return get(PlaneConverterService.class);
 	}
 
 	/**
-	 * QTJavaService accessor.
+	 * Gets this application context's {@link QTJavaService}.
 	 *
-	 * @return The QTJavaService instance associated with the wrapped Context.
+	 * @return The {@link QTJavaService} of this application context.
 	 */
 	public QTJavaService qtJava() {
 		return get(QTJavaService.class);
 	}
 
 	/**
-	 * TiffService accessor.
+	 * Gets this application context's {@link TiffService}.
 	 *
-	 * @return The TiffService instance associated with the wrapped Context.
+	 * @return The {@link TiffService} of this application context.
 	 */
 	public TiffService tiff() {
 		return get(TiffService.class);
 	}
 
 	/**
-	 * TranslatorService accessor.
+	 * Gets this application context's {@link TranslatorService}.
 	 *
-	 * @return The TranslatorService instance associated with the wrapped Context.
+	 * @return The {@link TranslatorService} of this application context.
 	 */
 	public TranslatorService translator() {
 		return get(TranslatorService.class);
 	}
 
 	/**
-	 * XMLService accessor.
+	 * Gets this application context's {@link XMLService}.
 	 *
-	 * @return The XMLService instance associated with the wrapped Context.
+	 * @return The {@link XMLService} of this application context.
 	 */
 	public XMLService xml() {
 		return get(XMLService.class);
