@@ -39,6 +39,7 @@ import io.scif.img.ImgUtilityService;
 import io.scif.img.cell.cache.CacheService;
 import io.scif.img.converters.PlaneConverterService;
 import io.scif.io.NIOService;
+import io.scif.services.DatasetIOService;
 import io.scif.services.FilePatternService;
 import io.scif.services.FormatService;
 import io.scif.services.InitializeService;
@@ -112,6 +113,15 @@ public class SCIFIO extends AbstractGateway {
 	 */
 	public CodecService codec() {
 		return get(CodecService.class);
+	}
+
+	/**
+	 * DatasetIOService accessor.
+	 *
+	 * @return The DatasetIOService instance associated with the wrapped Context.
+	 */
+	public DatasetIOService datasetIO() {
+		return get(DatasetIOService.class);
 	}
 
 	/**
