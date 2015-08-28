@@ -39,7 +39,7 @@ import java.io.Serializable;
  *
  * @author Mark Hiner
  */
-public interface CacheService<T extends Serializable> extends SCIFIOService {
+public interface CacheService extends SCIFIOService {
 
 	/**
 	 * Removes all entries from the specified cache. Note: this method is
@@ -84,7 +84,7 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	 * @param object - object to store
 	 * @return CacheResult based on the outcome
 	 */
-	CacheResult cache(String cacheId, int index, T object);
+	CacheResult cache(String cacheId, int index, Serializable object);
 
 	/**
 	 * Returns the object at the desired index from the specified index. The entry
@@ -101,7 +101,7 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	 * @param index - Index in the cache of the desired object
 	 * @return The cached object for the specified id and index
 	 */
-	T retrieve(String cacheId, int index);
+	Serializable retrieve(String cacheId, int index);
 
 	/**
 	 * As {@link #retrieve(String, int)}, but any flag for automatic caching will
@@ -111,7 +111,7 @@ public interface CacheService<T extends Serializable> extends SCIFIOService {
 	 * @param index - Index in the cache of the desired object
 	 * @return The cached object for the specified id and index
 	 */
-	T retrieveNoRecache(String cacheId, int index);
+	Serializable retrieveNoRecache(String cacheId, int index);
 
 	/**
 	 * Start a new thread to remove all previously-retrieved entries for a given

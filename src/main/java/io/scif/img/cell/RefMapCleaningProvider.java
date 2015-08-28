@@ -49,8 +49,8 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  */
 @Plugin(type = RefProvider.class)
-public class RefMapCleaningProvider extends AbstractSCIFIOPlugin implements
-	RefProvider
+public class RefMapCleaningProvider<T> extends AbstractSCIFIOPlugin implements
+	RefProvider<T>
 {
 
 	// -- RefProvider API --

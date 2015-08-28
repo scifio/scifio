@@ -53,8 +53,8 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  */
 @Plugin(type = RefProvider.class)
-public class SCIFIOCellImgCleaningProvider extends AbstractSCIFIOPlugin
-	implements RefProvider
+public class SCIFIOCellImgCleaningProvider<T> extends AbstractSCIFIOPlugin
+	implements RefProvider<T>
 {
 
 	// -- RefProvider API --

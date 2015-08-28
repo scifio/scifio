@@ -59,7 +59,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	// -- Parameters --
 
 	@Parameter
-	private CacheService<SCIFIOCell<?>> cacheService;
+	private CacheService cacheService;
 
 	@Parameter
 	private RefManagerService refManagerService;

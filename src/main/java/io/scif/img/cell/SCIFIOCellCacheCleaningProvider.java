@@ -39,6 +39,8 @@ import java.lang.ref.PhantomReference;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 
+import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
+
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -49,8 +51,8 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  */
 @Plugin(type = RefProvider.class)
-public class SCIFIOCellCacheCleaningProvider extends AbstractSCIFIOPlugin
-	implements RefProvider
+public class SCIFIOCellCacheCleaningProvider<A extends ArrayDataAccess<?>>
+	extends AbstractSCIFIOPlugin implements RefProvider<SCIFIOCellCache<A>>
 {
 
 	// -- RefProvider API --
@@ -64,10 +66,18 @@ public class SCIFIOCellCacheCleaningProvider extends AbstractSCIFIOPlugin
 	}
 
 	@Override
-	public Reference makeRef(final Object referent, final ReferenceQueue queue,
-		final Object... params)
+	public Reference<SCIFIOCellCache<A>> makeRef(final Object referent,
+		final ReferenceQueue<SCIFIOCellCache<A>> queue, final Object... params)
 	{
-		final Reference ref = new SCIFIOCellCacheCleaner(referent, queue);
+		if (!(referent instanceof Reference)) {
+			throw new IllegalArgumentException("Invalid referent: " +
+				referent.getClass().getName());
+		}
+		// FIXME: Check for compatible generic parameter if possible.
+		@SuppressWarnings("unchecked")
+		final SCIFIOCellCache<A> cache = (SCIFIOCellCache<A>) referent;
+		final Reference<SCIFIOCellCache<A>> ref =
+			new SCIFIOCellCacheCleaner<A>(cache, queue);
 		getContext().inject(ref);
 		return ref;
 	}
@@ -81,14 +91,14 @@ public class SCIFIOCellCacheCleaningProvider extends AbstractSCIFIOPlugin
 	 *
 	 * @author Mark Hiner
 	 */
-	public static class SCIFIOCellCacheCleaner extends
-		PhantomReference<SCIFIOCellCache> implements CleaningRef
+	public static class SCIFIOCellCacheCleaner<A extends ArrayDataAccess<?>>
+		extends PhantomReference<SCIFIOCellCache<A>> implements CleaningRef
 	{
 
 		// -- Parameters --
 
 		@Parameter
-		private CacheService<SCIFIOCell<?>> cacheService;
+		private CacheService cacheService;
 
 		// -- Fields --
 
@@ -99,9 +109,10 @@ public class SCIFIOCellCacheCleaningProvider extends AbstractSCIFIOPlugin
 
 		// -- Constructors --
 
-		public SCIFIOCellCacheCleaner(final Object cache, final ReferenceQueue queue)
+		public SCIFIOCellCacheCleaner(final SCIFIOCellCache<A> cache,
+			final ReferenceQueue<SCIFIOCellCache<A>> queue)
 		{
-			super((SCIFIOCellCache<?>) cache, queue);
+			super(cache, queue);
 			cacheId = ((SCIFIOCellCache<?>) cache).getCacheId();
 		}
 

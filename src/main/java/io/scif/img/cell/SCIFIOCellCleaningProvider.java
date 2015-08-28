@@ -52,8 +52,8 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  */
 @Plugin(type = RefProvider.class)
-public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
-	RefProvider
+public class SCIFIOCellCleaningProvider<A extends ArrayDataAccess<?>> extends
+	AbstractSCIFIOPlugin implements RefProvider<SCIFIOCell<A>>
 {
 
 	// -- RefProvider API --
@@ -66,10 +66,17 @@ public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
 	}
 
 	@Override
-	public Reference makeRef(final Object referent, final ReferenceQueue queue,
-		final Object... params)
+	public Reference<SCIFIOCell<A>> makeRef(final Object referent,
+		final ReferenceQueue<SCIFIOCell<A>> queue, final Object... params)
 	{
-		final Reference ref = new SCIFIOCellCleaner(referent, queue);
+		if (!(referent instanceof Reference)) {
+			throw new IllegalArgumentException("Invalid referent: " +
+				referent.getClass().getName());
+		}
+		// FIXME: Check for compatible generic parameter if possible.
+		@SuppressWarnings("unchecked")
+		final SCIFIOCell<A> cell = (SCIFIOCell<A>) referent;
+		final Reference<SCIFIOCell<A>> ref = new SCIFIOCellCleaner<A>(cell, queue);
 		getContext().inject(ref);
 		return ref;
 	}
@@ -83,8 +90,8 @@ public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
 	 *
 	 * @author Mark Hiner
 	 */
-	public static class SCIFIOCellCleaner<A extends ArrayDataAccess<?>> extends
-		PhantomReference<SCIFIOCell<A>> implements CleaningRef
+	public static class SCIFIOCellCleaner<A extends ArrayDataAccess<?>>
+		extends PhantomReference<SCIFIOCell<A>> implements CleaningRef
 	{
 
 		// -- Parameters --
@@ -93,7 +100,7 @@ public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
 		private LogService logService;
 
 		@Parameter
-		private CacheService<SCIFIOCell<?>> service;
+		private CacheService service;
 
 		// -- Fields --
 
@@ -115,12 +122,12 @@ public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
 
 		// -- Constructor --
 
-		public SCIFIOCellCleaner(final Object referent, final ReferenceQueue queue)
+		public SCIFIOCellCleaner(final SCIFIOCell<A> cell,
+			final ReferenceQueue<SCIFIOCell<A>> queue)
 		{
-			super((SCIFIOCell<A>) referent, queue);
+			super(cell, queue);
 			// The cell needs to be reconstructed, basically, to cache it.
 			// So we need to store every non-transient field.
-			final SCIFIOCell<A> cell = (SCIFIOCell<A>) referent;
 			data = cell.getData();
 			hashes = cell.getHashes();
 			elementSize = cell.getESizeArray();

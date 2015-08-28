@@ -198,7 +198,7 @@ public class SCIFIO extends AbstractGateway {
 	 *
 	 * @return The CacheService instance associated with the wrapped Context.
 	 */
-	public CacheService<?> cache() {
+	public CacheService cache() {
 		return get(CacheService.class);
 	}
 

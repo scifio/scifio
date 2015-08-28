@@ -30,8 +30,6 @@
 
 package io.scif.img.cell.cache;
 
-import java.io.Serializable;
-
 import org.scijava.service.AbstractService;
 
 /**
@@ -40,8 +38,8 @@ import org.scijava.service.AbstractService;
  *
  * @author Mark Hiner
  */
-public abstract class AbstractCacheService<T extends Serializable> extends
-	AbstractService implements CacheService<T>
+public abstract class AbstractCacheService extends AbstractService implements
+	CacheService
 {
 
 	// -- Fields --

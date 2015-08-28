@@ -83,7 +83,7 @@ public class CacheServiceTest {
 
 	private SCIFIO scifio;
 
-	private static CacheService<SCIFIOCell<?>> cs;
+	private static CacheService cs;
 
 	@Parameters
 	public static Collection<Object[]> parameters() {

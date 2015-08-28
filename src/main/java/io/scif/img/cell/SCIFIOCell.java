@@ -57,8 +57,7 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	// -- Transient Fields --
 	// These fields are transient to speed up serialization/deserialization.
 	// They should be available externally when the cell is deserialized.
-	private transient CacheService<SCIFIOCell<?>> service; // hook used to
-	// cache
+	private transient CacheService service; // hook used to cache
 
 	// during
 	// finalization
@@ -89,9 +88,8 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	/**
 	 * Standard constructor
 	 */
-	public SCIFIOCell(final CacheService<SCIFIOCell<?>> service,
-		final String cacheId, final int index, final int[] dimensions,
-		final long[] min, final A data)
+	public SCIFIOCell(final CacheService service, final String cacheId,
+		final int index, final int[] dimensions, final long[] min, final A data)
 	{
 		super(dimensions, min);
 		this.data = data;
@@ -154,7 +152,7 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	/**
 	 * @param service CacheService reference
 	 */
-	public void setService(final CacheService<SCIFIOCell<?>> service) {
+	public void setService(final CacheService service) {
 		this.service = service;
 	}
 
