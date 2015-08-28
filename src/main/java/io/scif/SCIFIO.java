@@ -76,7 +76,10 @@ public class SCIFIO extends AbstractGateway {
 
 	// -- Constructors --
 
-	/** Creates a new SCIFIO application context with all available services. */
+	/**
+	 * Creates a new SCIFIO application context with all SCIFIO and SciJava
+	 * services.
+	 */
 	public SCIFIO() {
 		this(new Context(SciJavaService.class, SCIFIOService.class));
 	}
