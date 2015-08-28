@@ -82,16 +82,6 @@ public class SCIFIO extends AbstractGateway {
 	}
 
 	/**
-	 * Creates a new SCIFIO application with zero or all services..
-	 *
-	 * @param empty If true, the context will be empty; otherwise, it will be
-	 *          initialized with all available services.
-	 */
-	public SCIFIO(final boolean empty) {
-		this(new Context(empty));
-	}
-
-	/**
 	 * Creates a new SCIFIO application context which wraps the given existing
 	 * SciJava context.
 	 * 
