@@ -51,6 +51,10 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = IStreamAccess.class)
 public class URLHandle extends StreamHandle {
 
+	// -- Constants --
+
+	private static final String[] SUPPORTED_PROTOCOLS = { "http:", "https:", "file:" };
+
 	// -- Fields --
 
 	/** URL of open socket */
@@ -94,9 +98,18 @@ public class URLHandle extends StreamHandle {
 			throw new HandleException(url + " is not a valid url.");
 		}
 
-		if (!url.startsWith("http") && !url.startsWith("file:")) {
+		boolean hasSupportedProtocol = false;
+		for (String protocol : SUPPORTED_PROTOCOLS) {
+			if (url.startsWith(protocol)) {
+				hasSupportedProtocol = true;
+				break;
+			}
+		}
+
+		if (!hasSupportedProtocol) {
 			url = "http://" + url;
 		}
+
 		this.url = url;
 		resetStream();
 	}
@@ -117,7 +130,13 @@ public class URLHandle extends StreamHandle {
 
 	@Override
 	public boolean isConstructable(final String id) throws IOException {
-		return id.startsWith("http:") || id.startsWith("file:");
+		for (String protocol : SUPPORTED_PROTOCOLS) {
+			if (id.startsWith(protocol)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	// -- StreamHandle API methods --
