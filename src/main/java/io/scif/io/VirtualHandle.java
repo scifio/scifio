@@ -122,6 +122,16 @@ public class VirtualHandle extends StreamHandle {
 	// -- DataInput API Methods --
 
 	@Override
+	public boolean readBoolean() throws IOException {
+		throw new UnsupportedOperationException(FAIL_MSG);
+	}
+
+	@Override
+	public byte readByte() throws IOException {
+		throw new UnsupportedOperationException(FAIL_MSG);
+	}
+
+	@Override
 	public char readChar() throws IOException {
 		throw new UnsupportedOperationException(FAIL_MSG);
 	}
