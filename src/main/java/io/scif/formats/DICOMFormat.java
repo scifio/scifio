@@ -1799,20 +1799,6 @@ public class DICOMFormat extends AbstractFormat {
 			switch (vr) {
 				case DICOMUtils.AE:
 				case DICOMUtils.AS:
-				case DICOMUtils.CS:
-				case DICOMUtils.DA:
-				case DICOMUtils.DS:
-				case DICOMUtils.DT:
-				case DICOMUtils.IS:
-				case DICOMUtils.LO:
-				case DICOMUtils.LT:
-				case DICOMUtils.PN:
-				case DICOMUtils.SH:
-				case DICOMUtils.ST:
-				case DICOMUtils.TM:
-				case DICOMUtils.UI:
-					value = getSource().readString(tag.getElementLength());
-					break;
 				case DICOMUtils.AT:
 					// Cannot fix element length to 4, because AT value representation is
 					// always
@@ -1832,6 +1818,20 @@ public class DICOMFormat extends AbstractFormat {
 					}
 					// Convert the bytes to a string
 					value = DataTools.bytesToHex(bytes);
+					break;
+				case DICOMUtils.CS:
+				case DICOMUtils.DA:
+				case DICOMUtils.DS:
+				case DICOMUtils.DT:
+				case DICOMUtils.IS:
+				case DICOMUtils.LO:
+				case DICOMUtils.LT:
+				case DICOMUtils.PN:
+				case DICOMUtils.SH:
+				case DICOMUtils.ST:
+				case DICOMUtils.TM:
+				case DICOMUtils.UI:
+					value = getSource().readString(tag.getElementLength());
 					break;
 				case DICOMUtils.US:
 					if (tag.getElementLength() == 2) value =
