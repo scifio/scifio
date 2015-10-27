@@ -1799,7 +1799,6 @@ public class DICOMFormat extends AbstractFormat {
 			switch (vr) {
 				case DICOMUtils.AE:
 				case DICOMUtils.AS:
-				case DICOMUtils.AT:
 				case DICOMUtils.CS:
 				case DICOMUtils.DA:
 				case DICOMUtils.DS:
@@ -1814,6 +1813,24 @@ public class DICOMFormat extends AbstractFormat {
 				case DICOMUtils.UI:
 					value = getSource().readString(tag.getElementLength());
 					break;
+	      case DICOMUtils.AT:
+	        // Cannot fix element length to 4, because AT value representation is always
+	        // 4 bytes long (DICOM specs PS3.5 §6.2), but value multiplicity is 1-n 
+	        byte[] bytes = new byte[tag.getElementLength()];
+	        // Read from stream
+	        getSource().readFully(bytes);
+	        // If little endian, swap bytes to get a string with a user friendly
+	        // representation of tag group and tag element
+	        if (tag.littleEndian) {
+	          for (int i = 0; i < bytes.length / 2; ++i) {
+	            byte t = bytes[2 * i];
+	            bytes[2 * i] = bytes[2 * i + 1];
+	            bytes[2 * i + 1] = t;
+	          }
+	        }
+	        // Convert the bytes to a string
+	        value = DataTools.bytesToHex(bytes);
+	        break;
 				case DICOMUtils.US:
 					if (tag.getElementLength() == 2) value =
 						Integer.toString(getSource().readShort());
