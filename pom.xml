@@ -21,16 +21,18 @@
 		<tag>HEAD</tag>
 		<url>http://github.com/scifio/scifio</url>
 	</scm>
-
 	<issueManagement>
 		<system>GitHub Issues</system>
 		<url>https://github.com/scifio/scifio/issues</url>
 	</issueManagement>
-
 	<ciManagement>
 		<system>Jenkins</system>
 		<url>http://jenkins.imagej.net/job/SCIFIO/</url>
 	</ciManagement>
+
+	<properties>
+			<mapdb.version>1.0.3</mapdb.version>
+	</properties>
 
 	<repositories>
 		<repository>
@@ -38,10 +40,6 @@
 			<url>http://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
-
-	<properties>
-			<mapdb.version>1.0.3</mapdb.version>
-	</properties>
 
 	<dependencies>
 		<!-- SCIFIO dependencies -->
@@ -82,5 +80,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 </project>
