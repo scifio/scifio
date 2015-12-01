@@ -31,15 +31,21 @@
 package io.scif.img;
 
 import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+
+import org.junit.After;
+import org.junit.Test;
+import org.scijava.Context;
+
 import io.scif.config.SCIFIOConfig;
 import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.io.ByteArrayHandle;
 import io.scif.services.LocationService;
 import net.imagej.ImgPlus;
+import net.imglib2.RandomAccess;
 import net.imglib2.exception.IncompatibleTypeException;
-
-import org.junit.Test;
-import org.scijava.Context;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
  * Tests for the {@link ImgSaver} class.
@@ -50,12 +56,18 @@ public class ImgSaverTest {
 
 	private final String id = "testImg&lengths=512,512,5&axes=X,Y,Time.fake";
 
-	private final String out = "/Users/mhiner/loci/scifio/test.tif";
+	private final String out = "test.tif";
 
 	private final Context ctx = new Context();
 
-	private final LocationService locationService = ctx
-		.getService(LocationService.class);
+	private final LocationService locationService = ctx.getService(
+		LocationService.class);
+
+	@After
+	public void cleanup() {
+		final File f = new File(out);
+		if (f.exists()) f.delete();
+	}
 
 	/**
 	 * Write an image to memory using the {@link ImgSaver} and verify that the
@@ -67,8 +79,8 @@ public class ImgSaverTest {
 	{
 		final ImgOpener o = new ImgOpener(ctx);
 		final ImgSaver s = new ImgSaver(ctx);
-		final SCIFIOConfig config =
-			new SCIFIOConfig().imgOpenerSetImgModes(ImgMode.PLANAR);
+		final SCIFIOConfig config = new SCIFIOConfig().imgOpenerSetImgModes(
+			ImgMode.PLANAR);
 		final ByteArrayHandle bah = new ByteArrayHandle();
 		locationService.mapFile(out, bah);
 
@@ -76,5 +88,71 @@ public class ImgSaverTest {
 		final String source = openImg.getSource();
 		s.saveImg(out, openImg);
 		assertEquals(source, openImg.getSource());
+	}
+
+	/**
+	 * Test that ImgSaver writes each plane of a multi-plane PlanarImg correctly
+	 */
+	@Test
+	public void testPlanarPlaneSaving() throws ImgIOException,
+		IncompatibleTypeException
+	{
+		final SCIFIOConfig config = new SCIFIOConfig().imgOpenerSetImgModes(
+			ImgMode.PLANAR);
+
+		testPlaneSavingForConfig(config);
+	}
+
+	/**
+	 * Test that ImgSaver writes each plane of a multi-plane CellImg correctly
+	 */
+	@Test
+	public void testSlowPlaneSaving() throws ImgIOException,
+		IncompatibleTypeException
+	{
+		final SCIFIOConfig config = new SCIFIOConfig().imgOpenerSetImgModes(
+			ImgMode.CELL);
+
+		testPlaneSavingForConfig(config);
+	}
+
+	/**
+	 * Test that ImgSaver writes each plane of a multi-plane ArrayImg correctly
+	 */
+	@Test
+	public void testArrayPlaneSaving() throws ImgIOException,
+		IncompatibleTypeException
+	{
+		final SCIFIOConfig config = new SCIFIOConfig().imgOpenerSetImgModes(
+			ImgMode.ARRAY);
+
+		testPlaneSavingForConfig(config);
+	}
+
+	// -- Helper methods --
+
+	private void testPlaneSavingForConfig(final SCIFIOConfig config) throws ImgIOException,
+		IncompatibleTypeException
+	{
+		final ImgOpener o = new ImgOpener(ctx);
+		final ImgSaver s = new ImgSaver(ctx);
+
+		// write the image
+		SCIFIOImgPlus<UnsignedByteType> openImg = o.openImgs(id,
+			new UnsignedByteType(), config).get(0);
+		s.saveImg(out, openImg);
+
+		// re-read the written image and check dimensions
+		openImg = o.<UnsignedByteType> openImgs(out, new UnsignedByteType()).get(0);
+
+		// fakes start with 10 0's, then pixel value == plane index.. 
+		// so we have to skip along the x-axis a bit
+		int[] pos = { 11, 0, 0 };
+		for (int i = 0; i < 5; i++) {
+			pos[2] = i;
+			RandomAccess<UnsignedByteType> randomAccess = openImg.randomAccess();
+			randomAccess.setPosition(pos);
+			assertEquals(i, randomAccess.get().getRealDouble(), 0.0001);
+		}
 	}
 }
