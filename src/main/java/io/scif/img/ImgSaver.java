@@ -30,6 +30,16 @@
 
 package io.scif.img;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.scijava.Context;
+import org.scijava.app.StatusService;
+import org.scijava.plugin.Parameter;
+
 import io.scif.ByteArrayPlane;
 import io.scif.DefaultImageMetadata;
 import io.scif.DefaultMetadata;
@@ -46,17 +56,10 @@ import io.scif.services.FormatService;
 import io.scif.services.TranslatorService;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
-import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.exception.ImgLibException;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
@@ -76,10 +79,6 @@ import net.imglib2.type.numeric.integer.GenericShortType;
 import net.imglib2.type.numeric.integer.LongType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
-
-import org.scijava.Context;
-import org.scijava.app.StatusService;
-import org.scijava.plugin.Parameter;
 
 /**
  * Writes out an {@link ImgPlus} using SCIFIO.
@@ -833,34 +832,43 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		// Create a cursor and move it to the first position of the requested
 		// plane
-		final Cursor<?> cursor = img.cursor();
-		cursor.localize(dimensions);
-		cursor.jumpFwd(planeSize * cIndex);
+		RandomAccess<?> randomAccess = img.randomAccess();
+		randomAccess.setPosition(dimensions);
 
 		// Iterate over the positions in this plane, copying the values at
 		// each position to the output array.
-		for (int i = 0; i < planeSize; i++) {
-			cursor.fwd();
-			final Object value = cursor.get();
+		int idx = 0;
+		for (int i = 0; i < img.dimension(1); i++) {
+			for (int j = 0; j < img.dimension(0); j++) {
+				final Object value = randomAccess.get();
 
-			if (GenericIntType.class.isAssignableFrom(typeClass)) {
-				((int[]) array)[i] = (int) ((ComplexType<?>) value).getRealDouble();
+				if (GenericIntType.class.isAssignableFrom(typeClass)) {
+					((int[]) array)[idx++] = (int) ((ComplexType<?>) value)
+						.getRealDouble();
+				}
+				else if (GenericByteType.class.isAssignableFrom(typeClass)) {
+					((byte[]) array)[idx++] = (byte) ((ComplexType<?>) value)
+						.getRealDouble();
+				}
+				else if (GenericShortType.class.isAssignableFrom(typeClass)) {
+					((short[]) array)[idx++] = (short) ((ComplexType<?>) value)
+						.getRealDouble();
+				}
+				else if (LongType.class.isAssignableFrom(typeClass)) {
+					((long[]) array)[idx++] = (long) ((ComplexType<?>) value)
+						.getRealDouble();
+				}
+				else if (DoubleType.class.isAssignableFrom(typeClass)) {
+					((double[]) array)[idx++] = ((ComplexType<?>) value).getRealDouble();
+				}
+				else if (FloatType.class.isAssignableFrom(typeClass)) {
+					((float[]) array)[idx++] = (float) ((ComplexType<?>) value)
+						.getRealDouble();
+				}
+				randomAccess.fwd(0);
 			}
-			else if (GenericByteType.class.isAssignableFrom(typeClass)) {
-				((byte[]) array)[i] = (byte) ((ComplexType<?>) value).getRealDouble();
-			}
-			else if (GenericShortType.class.isAssignableFrom(typeClass)) {
-				((short[]) array)[i] = (short) ((ComplexType<?>) value).getRealDouble();
-			}
-			else if (LongType.class.isAssignableFrom(typeClass)) {
-				((long[]) array)[i] = (long) ((ComplexType<?>) value).getRealDouble();
-			}
-			else if (DoubleType.class.isAssignableFrom(typeClass)) {
-				((double[]) array)[i] = ((ComplexType<?>) value).getRealDouble();
-			}
-			else if (FloatType.class.isAssignableFrom(typeClass)) {
-				((float[]) array)[i] = (float) ((ComplexType<?>) value).getRealDouble();
-			}
+			dimensions[1]++;
+			randomAccess.setPosition(dimensions);
 		}
 
 		// Return the populated array
