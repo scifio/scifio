@@ -835,6 +835,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 		RandomAccess<?> randomAccess = img.randomAccess();
 		randomAccess.setPosition(dimensions);
 
+		//TODO jump ahead to the requested channel? Not sure if that is needed or not..
+
 		// Iterate over the positions in this plane, copying the values at
 		// each position to the output array.
 		int idx = 0;
