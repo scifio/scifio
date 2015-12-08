@@ -40,8 +40,10 @@ import io.scif.Reader;
 import io.scif.Writer;
 import io.scif.app.SCIFIOApp;
 import io.scif.config.SCIFIOConfig;
+import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -339,6 +341,59 @@ public class DefaultFormatService extends AbstractService implements
 
 		if (formatList.isEmpty()) {
 			throw new FormatException(id + ": No supported format found.");
+		}
+
+		return formatList;
+	}
+
+	@Override
+	public Format getFormat(final RandomAccessInputStream source)
+		throws FormatException
+	{
+		return getFormat(source, new SCIFIOConfig().checkerSetOpen(true));
+	}
+
+	@Override
+	public Format getFormat(final RandomAccessInputStream source, final SCIFIOConfig config)
+		throws FormatException
+	{
+		return getFormatList(source, config, true).get(0);
+	}
+
+	@Override
+	public List<Format> getFormatList(final RandomAccessInputStream source)
+		throws FormatException
+	{
+		return getFormatList(source, new SCIFIOConfig().checkerSetOpen(true), false);
+	}
+
+	@Override
+	public List<Format> getFormatList(final RandomAccessInputStream source,
+		final SCIFIOConfig config, final boolean greedy) throws FormatException
+	{
+		final List<Format> formatList = new ArrayList<Format>();
+
+		boolean found = false;
+
+		for (final Format format : formats()) {
+			try {
+				if (!found && format.isEnabled() &&
+					format.createChecker().isFormat(source))
+				{
+					// if greedy is true, we can end after finding the first format
+					found = greedy;
+					formatList.add(format);
+				}
+				// Reset the stream
+				source.seek(0);
+			}
+			catch (final IOException e) {
+				throw new FormatException(e);
+			}
+		}
+
+		if (formatList.isEmpty()) {
+			throw new FormatException("No supported format found.");
 		}
 
 		return formatList;

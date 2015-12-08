@@ -30,6 +30,13 @@
 
 package io.scif.services;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import org.scijava.Priority;
+import org.scijava.Versioned;
+
 import io.scif.Checker;
 import io.scif.Format;
 import io.scif.FormatException;
@@ -39,13 +46,7 @@ import io.scif.Reader;
 import io.scif.SCIFIOService;
 import io.scif.Writer;
 import io.scif.config.SCIFIOConfig;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import org.scijava.Priority;
-import org.scijava.Versioned;
+import io.scif.io.RandomAccessInputStream;
 
 /**
  * A collection of methods for finding {@link io.scif.Format} instances given a
@@ -222,6 +223,47 @@ public interface FormatService extends SCIFIOService, Versioned {
 	 * @return A List of Format references compatible with the provided source.
 	 */
 	List<Format> getFormatList(String id, SCIFIOConfig config, boolean greedy)
+		throws FormatException;
+
+	/**
+	 * As {@link #getFormat(String)} but takes an initialized
+	 * {@link RandomAccessInputStream}.
+	 *
+	 * @param source the source
+	 * @return A Format reference compatible with the provided source.
+	 */
+	Format getFormat(RandomAccessInputStream source) throws FormatException;
+
+	/**
+	 * As {@link #getFormat(String, SCIFIOConfig)} but takes an initialized
+	 * {@link RandomAccessInputStream}.
+	 *
+	 * @param source the source
+	 * @param config Configuration for this method execution.
+	 * @return A Format reference compatible with the provided source.
+	 */
+	Format getFormat(RandomAccessInputStream source, SCIFIOConfig config) throws FormatException;
+
+	/**
+	 * As {@link #getFormatList(String)} but takes an initialized
+	 * {@link RandomAccessInputStream}.
+	 *
+	 * @param source the source
+	 * @return An List of Format references compatible with the provided source.
+	 */
+	List<Format> getFormatList(RandomAccessInputStream source) throws FormatException;
+
+	/**
+	 * As {@link #getFormatList(String, SCIFIOConfig, boolean)} but takes an initialized
+	 * {@link RandomAccessInputStream}.
+	 *
+	 * @param source the source
+	 * @param config Configuration for this method execution.
+	 * @param greedy if true, the search will terminate after finding the first
+	 *          compatible format
+	 * @return A List of Format references compatible with the provided source.
+	 */
+	List<Format> getFormatList(RandomAccessInputStream source, SCIFIOConfig config, boolean greedy)
 		throws FormatException;
 
 	/**
