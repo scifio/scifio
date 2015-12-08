@@ -319,9 +319,13 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * @throws ImgIOException if there is a problem reading the image data.
 	 */
 	public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImgs(
-		final Reader reader, final T type, final ImgFactory<T> imgFactory,
+		Reader reader, final T type, final ImgFactory<T> imgFactory,
 		SCIFIOConfig config) throws ImgIOException
 	{
+		if (!ReaderFilter.class.isAssignableFrom(reader.getClass())) {
+			reader = new ReaderFilter(reader);
+		}
+
 		final List<SCIFIOImgPlus<T>> imgPluses = new ArrayList<SCIFIOImgPlus<T>>();
 		Range imageRange = null;
 
