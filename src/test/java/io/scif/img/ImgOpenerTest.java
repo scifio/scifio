@@ -33,15 +33,23 @@ package io.scif.img;
 import static io.scif.JUnitHelper.assertCloseEnough;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.junit.Test;
+import org.scijava.Context;
+
+import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
+import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
 import io.scif.formats.FakeFormat;
+import io.scif.formats.GIFFormat;
 import io.scif.img.cell.SCIFIOCellImgFactory;
-
-import java.util.List;
-
+import io.scif.io.RandomAccessInputStream;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
@@ -54,8 +62,6 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
-
-import org.junit.Test;
 
 /**
  * Tests for the {@link ImgOpener} class.
@@ -178,6 +184,40 @@ public class ImgOpenerTest {
 		// Check the adjusted dimensions
 		assertEquals(imgs.get(0).dimension(0), imgs.get(1).dimension(0) + 30);
 		assertEquals(imgs.get(0).dimension(1), imgs.get(1).dimension(1) + 30);
+	}
+
+	/**
+	 * Tests using the {@link ImgOpener} when opening a non-String source.
+	 */
+	@Test
+	public void testOpenNonString() throws ImgIOException, IOException, FormatException {
+		final Context c = imgOpener.getContext();
+		final SCIFIO scifio = new SCIFIO(c);
+
+		// Make a GIF byte array
+		//  - From http://giflib.sourceforge.net/whatsinagif/bits_and_bytes.html
+		final byte[] bytes = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x0A,
+			0x00, 0x0A, 0x00, (byte) 0x91, 0x00, 0x00, (byte) 0xFF, (byte) 0xFF,
+			(byte) 0xFF, (byte) 0xFF, 0x00, 0x00, 0x00, 0x00, (byte) 0xFF, 0x00, 0x00,
+			0x00, 0x21, (byte) 0xF9, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2C, 0x00,
+			0x00, 0x00, 0x00, 0x0A, 0x00, 0x0A, 0x00, 0x00, 0x02, 0x16, (byte) 0x8C,
+			0x2D, (byte) 0x99, (byte) 0x87, 0x2A, 0x1C, (byte) 0xDC, 0x33,
+			(byte) 0xA0, 0x02, 0x75, (byte) 0xEC, (byte) 0x95, (byte) 0xFA,
+			(byte) 0xA8, (byte) 0xDE, 0x60, (byte) 0x8C, 0x04, (byte) 0x91, 0x4C,
+			0x01, 0x00, 0x3B };
+
+		//Get the GIFFormat associated with this context
+		final GIFFormat format = scifio.format().getFormatFromClass(GIFFormat.class);
+
+		// Create and initialize a reader
+		final Reader r = format.createReader();
+		final RandomAccessInputStream stream = new RandomAccessInputStream(c, bytes);
+		r.setSource(stream);
+
+		// Open an ImgPlus from the reader
+		ImgPlus<?> img = imgOpener.openImgs(r).get(0);
+
+		assertNotNull(img);
 	}
 
 	// Tests the opening various sub-regions of an image
