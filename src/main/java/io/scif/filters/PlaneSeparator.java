@@ -214,7 +214,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 		Plane plane, final long[] offsets, final long[] lengths,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 		FormatTools.checkPlaneNumber(getMetadata(), imageIndex, planeIndex);
 		final Metadata meta = getMetadata();
 		final Metadata parentMeta = getParentMeta();
@@ -360,7 +360,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
 		throws FormatException, IOException
 	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 
 		final int source = (int) getOriginalIndex(imageIndex, planeIndex);
 		final Plane thumb = getParent().openThumbPlane(imageIndex, source);

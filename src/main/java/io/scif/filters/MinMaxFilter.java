@@ -147,7 +147,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	 * trusted.
 	 */
 	public boolean isMinMaxPopulated(final int imageIndex) {
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 		return minMaxDone != null && minMaxDone[imageIndex] == getImageCount();
 	}
 
@@ -223,7 +223,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		final Plane plane, final long[] offsets, final long[] lengths,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 		super.openPlane(imageIndex, planeIndex, plane, offsets, lengths, config);
 
 		updateMinMax(imageIndex, planeIndex, plane.getBytes(), FormatTools
@@ -397,7 +397,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		final int index, final List<Map<AxisType, double[]>> planarAxisValues)
 		throws FormatException
 	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 		if (index < 0 || index >= getMetadata().get(imageIndex).getAxisLength(type))
 		{
 			throw new FormatException("Invalid " + type.getLabel() + " index: " +
@@ -420,7 +420,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	private Double getAxisKnownValue(final int imageIndex, final AxisType type,
 		final int index, final List<Map<AxisType, double[]>> planarAxisValues)
 	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 		return planarAxisValues == null ? null : getAxisValue(planarAxisValues.get(
 			imageIndex).get(type), index);
 	}
@@ -440,7 +440,7 @@ public class MinMaxFilter extends AbstractReaderFilter {
 	private Double getPlaneValue(final int imageIndex, final long planeIndex,
 		final double[][] planeValues)
 	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 		if (planeValues == null) return null;
 		if (Double.isNaN(planeValues[imageIndex][(int) planeIndex])) return null;
 

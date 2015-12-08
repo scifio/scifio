@@ -75,7 +75,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	 * reversed).
 	 */
 	public void swapDimensions(final int imageIndex, final AxisType... newOrder) {
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 
 		// Check for null order
 		if (newOrder == null) throw new IllegalArgumentException("order is null");
@@ -116,7 +116,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	public void setOutputOrder(final int imageIndex,
 		final List<AxisType> outputOrder)
 	{
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 
 		if (metaCheck() &&
 			!(((DimensionSwapperMetadata) getMetadata()).getOutputOrder() == null))
@@ -130,7 +130,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	 * Returns the order for reading AxisTypes from disk.
 	 */
 	public List<AxisType> getInputOrder(final int imageIndex) {
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 
 		if (inputOrder == null) inputOrder = new ArrayList<AxisType>();
 		final List<CalibratedAxis> axes = getMetadata().get(imageIndex).getAxes();
@@ -146,7 +146,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	 * Returns the (potentially swapped) output order of the AxisTypes.
 	 */
 	public List<AxisType> getDimensionOrder(final int imageIndex) {
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 		List<AxisType> outOrder = null;
 
 		if (metaCheck()) {
@@ -258,7 +258,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	@Override
 	public Metadata getMetadata() {
-		FormatTools.assertId(getCurrentFile(), true, 2);
+//		FormatTools.assertId(getCurrentFile(), true, 2);
 		return super.getMetadata();
 	}
 
