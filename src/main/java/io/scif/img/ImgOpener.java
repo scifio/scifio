@@ -227,6 +227,18 @@ public class ImgOpener extends AbstractImgIOComponent {
 	/**
 	 * @param reader - An initialized {@link Reader} to use for reading image
 	 *          data.
+	 * @return - the {@link ImgPlus} or null
+	 * @throws ImgIOException if there is a problem reading the image data.
+	 */
+	public List<SCIFIOImgPlus<?>> openImgs(final Reader reader)
+		throws ImgIOException
+	{
+		return openImgs(reader, null);
+	}
+
+	/**
+	 * @param reader - An initialized {@link Reader} to use for reading image
+	 *          data.
 	 * @param config - {@link SCIFIOConfig} to use when opening this dataset
 	 * @return - the {@link ImgPlus} or null
 	 * @throws ImgIOException if there is a problem reading the image data.
