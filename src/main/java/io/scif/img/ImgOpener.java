@@ -34,7 +34,6 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.filters.ChannelFiller;
 import io.scif.filters.MinMaxFilter;
@@ -340,7 +339,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			final SCIFIOImgPlus<T> imgPlus =
 				makeImgPlus(img, reader, i(imageIndex));
 
-			final String id = reader.getCurrentFile();
+			String id = reader.getCurrentFile();
 			imgPlus.setSource(id);
 			imgPlus.initializeColorTables(i(reader.getPlaneCount(i(imageIndex))));
 
@@ -375,7 +374,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 				}
 				final long endTime = System.currentTimeMillis();
 				final float time = (endTime - startTime) / 1000f;
-				statusService.showStatus(id + ": read " + planeCount + " planes in " +
+				statusService.showStatus(id == null ? "Image" : id + ": read " + planeCount + " planes in " +
 					time + "s");
 			}
 			imgPluses.add(imgPlus);
@@ -606,8 +605,14 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final Img<T> img, final Reader r, final int imageIndex)
 	{
 		final String id = r.getCurrentFile();
-		final File idFile = new File(id);
-		final String name = idFile.exists() ? idFile.getName() : id;
+		String name = null;
+
+		if (id != null) {
+			final File idFile = new File(id);
+			name = idFile.exists() ? idFile.getName() : id;
+		}
+
+		if (name == null) name = "Image: " + r.getFormatName();
 
 		final double[] cal = getCalibration(imageIndex, r.getMetadata());
 		final AxisType[] dimTypes = getAxisTypes(imageIndex, r.getMetadata());
