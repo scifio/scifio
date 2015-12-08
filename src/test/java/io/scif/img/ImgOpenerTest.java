@@ -163,6 +163,7 @@ public class ImgOpenerTest {
 	 *
 	 * @throws ImgIOException
 	 */
+	@Test
 	public void testOpenImageRange() throws ImgIOException {
 		final String id = "testImg&images=5&lengths=512,512&axes=X,Y.fake";
 
