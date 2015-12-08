@@ -40,6 +40,7 @@ import java.util.List;
 import org.junit.Test;
 import org.scijava.Context;
 
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
@@ -47,7 +48,6 @@ import io.scif.Reader;
 import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
 import io.scif.formats.FakeFormat;
-import io.scif.formats.GIFFormat;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.io.RandomAccessInputStream;
 import net.imagej.ImgPlus;
@@ -206,12 +206,13 @@ public class ImgOpenerTest {
 			(byte) 0xA8, (byte) 0xDE, 0x60, (byte) 0x8C, 0x04, (byte) 0x91, 0x4C,
 			0x01, 0x00, 0x3B };
 
-		//Get the GIFFormat associated with this context
-		final GIFFormat format = scifio.format().getFormatFromClass(GIFFormat.class);
+		final RandomAccessInputStream stream = new RandomAccessInputStream(c, bytes);
+
+		//Get the appropriate format
+		final Format format = scifio.format().getFormat(stream);
 
 		// Create and initialize a reader
 		final Reader r = format.createReader();
-		final RandomAccessInputStream stream = new RandomAccessInputStream(c, bytes);
 		r.setSource(stream);
 
 		// Open an ImgPlus from the reader
