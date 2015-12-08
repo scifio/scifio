@@ -287,7 +287,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 	public void setSource(final RandomAccessInputStream stream,
 		final SCIFIOConfig config) throws IOException
 	{
-		final String currentSource = getStream().getFileName();
+		final String currentSource = getStream() == null ? null : getStream().getFileName();
 		final String newSource = stream.getFileName();
 		if (metadata != null &&
 			(currentSource == null || newSource == null || !getStream().getFileName()
