@@ -172,10 +172,20 @@ public class MicromanagerFormat extends AbstractFormat {
 				final Location metaFile = new Location(getContext(), parent, METADATA);
 				final RandomAccessInputStream s =
 					new RandomAccessInputStream(getContext(), name);
-				final boolean validTIFF = isFormat(s);
+				boolean validTIFF = isFormat(s);
+				final io.scif.Checker checker;
+				try {
+					checker = formatService.getFormatFromClass(MinimalTIFFFormat.class)
+						.createChecker();
+					validTIFF = checker.isFormat(s);
+				}
+				catch (final FormatException e) {
+					log().error("Failed to create a MinimalTIFFChecker", e);
+					validTIFF = false;
+				}
 				s.close();
-				return validTIFF && metaFile.exists() &&
-					isFormat(metaFile.getAbsolutePath(), config);
+				return validTIFF && metaFile.exists() && isFormat(metaFile
+					.getAbsolutePath(), config);
 			}
 			catch (final NullPointerException e) {}
 			catch (final IOException e) {}
@@ -186,17 +196,7 @@ public class MicromanagerFormat extends AbstractFormat {
 		public boolean isFormat(final RandomAccessInputStream stream)
 			throws IOException
 		{
-			io.scif.Checker checker;
-			try {
-				checker =
-					formatService.getFormatFromClass(MinimalTIFFFormat.class)
-						.createChecker();
-				return checker.isFormat(stream);
-			}
-			catch (final FormatException e) {
-				log().error("Failed to create a MinimalTIFFChecker", e);
-				return false;
-			}
+			return false;
 		}
 	}
 
@@ -250,32 +250,33 @@ public class MicromanagerFormat extends AbstractFormat {
 				new Location(getContext(), stream.getFileName()).getAbsoluteFile();
 			Location parentFile = file.getParentFile();
 			String metadataFile = METADATA;
-			if (file.exists()) {
-				metadataFile =
+			if (!file.exists()) throw new IllegalStateException(
+					"MicromanagerFormat: No companion metadata file");
+
+			metadataFile =
 					new Location(getContext(), parentFile, METADATA).getAbsolutePath();
 
-				// look for other positions
+			// look for other positions
 
-				if (parentFile.getName().contains("Pos_")) {
-					parentFile = parentFile.getParentFile();
-					final String[] dirs = parentFile.list(true);
-					Arrays.sort(dirs);
-					for (final String dir : dirs) {
-						if (dir.contains("Pos_")) {
-							final Position pos = new Position();
-							final Location posDir =
+			if (parentFile.getName().contains("Pos_")) {
+				parentFile = parentFile.getParentFile();
+				final String[] dirs = parentFile.list(true);
+				Arrays.sort(dirs);
+				for (final String dir : dirs) {
+					if (dir.contains("Pos_")) {
+						final Position pos = new Position();
+						final Location posDir =
 								new Location(getContext(), parentFile, dir);
-							pos.metadataFile =
+						pos.metadataFile =
 								new Location(getContext(), posDir, METADATA).getAbsolutePath();
-							positions.add(pos);
-						}
+						positions.add(pos);
 					}
 				}
-				else {
-					final Position pos = new Position();
-					pos.metadataFile = metadataFile;
-					positions.add(pos);
-				}
+			}
+			else {
+				final Position pos = new Position();
+				pos.metadataFile = metadataFile;
+				positions.add(pos);
 			}
 
 			final int imageCount = positions.size();
