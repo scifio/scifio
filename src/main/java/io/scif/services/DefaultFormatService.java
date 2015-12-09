@@ -494,8 +494,13 @@ public class DefaultFormatService extends AbstractService implements
 	private Map<String, Format> formatCache() {
 		checkLock();
 		if (dirtyFormatCache) {
-			formatCache.clear();
-			dirtyFormatCache = false;
+			// Double lock so that a cache is only cleared once
+			synchronized (formatCache) {
+				if (dirtyFormatCache) {
+					formatCache.clear();
+					dirtyFormatCache = false;
+				}
+			}
 		}
 		return formatCache;
 	}
