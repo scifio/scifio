@@ -445,11 +445,7 @@ public class DefaultFormatService extends AbstractService implements
 					addFormat(format);
 				}
 
-				// Wake up any waiting threads
-				synchronized (DefaultFormatService.this) {
-					initialized = true;
-					DefaultFormatService.this.notifyAll();
-				}
+				initialized = true;
 			}
 		});
 	}
@@ -519,13 +515,14 @@ public class DefaultFormatService extends AbstractService implements
 		if (!(initialized || threadLock.get())) {
 			synchronized (this) {
 				// Double locked to avoid missing signals
-				if (!(initialized || threadLock.get())) {
+				while (!(initialized || threadLock.get())) {
 					try {
-						wait();
+						// Limit excessive polling
+						Thread.sleep(100);
 					}
 					catch (InterruptedException e) {
-						logService.error("DefaultFormatService: "
-							+ "Interrupted while waiting for format initialization.", e);
+						logService.error("DefaultFormatService: " +
+							"Interrupted while waiting for format initialization.", e);
 					}
 				}
 			}
