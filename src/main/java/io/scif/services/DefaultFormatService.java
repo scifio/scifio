@@ -168,7 +168,6 @@ public class DefaultFormatService extends AbstractService implements
 
 		formats().add(format);
 		formatMap().put(format.getClass(), format);
-		dirtyFormatCache = true;
 
 		addComponents(format);
 		if (format.getContext() == null) format.setContext(getContext());
@@ -179,6 +178,7 @@ public class DefaultFormatService extends AbstractService implements
 	public boolean removeFormat(final Format format) {
 		removeComponents(format);
 		formatMap().remove(format.getClass());
+		dirtyFormatCache = true;
 		return formats().remove(format);
 	}
 
