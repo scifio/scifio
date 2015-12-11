@@ -166,10 +166,15 @@ public class DefaultFormatService extends AbstractService implements
 		// already have an entry for this format
 		if (formatMap().get(format.getClass()) != null) return false;
 
-		formats().add(format);
-		formatMap().put(format.getClass(), format);
+		synchronized(formats) {
+			// synchronized lock to protect format adding
+			if (formatMap().get(format.getClass()) == null) {
+				formats().add(format);
+				formatMap().put(format.getClass(), format);
+				addComponents(format);
+			}
+		}
 
-		addComponents(format);
 		if (format.getContext() == null) format.setContext(getContext());
 		return true;
 	}
@@ -310,7 +315,10 @@ public class DefaultFormatService extends AbstractService implements
 		Format format = formatCache().get(id);
 		if (format == null) {
 			format = getFormatList(id, config, true).get(0);
-			formatCache().put(id, format);
+			synchronized (formats) {
+				// Synchronized to protect cache modification
+				if (formatCache().get(id) == null) formatCache().put(id, format);
+			}
 		}
 		return format;
 	}
