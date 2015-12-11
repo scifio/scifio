@@ -31,11 +31,18 @@
 package io.scif.services;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
+import java.math.BigInteger;
+import java.util.Random;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.thread.ThreadService;
+
+import io.scif.FormatException;
 
 /**
  * Tests {@link FormatService}.
@@ -68,6 +75,53 @@ public class FormatServiceTest {
 				"msr", "nhdr", "nrrd", "obf", "pct", "pcx", "pgm", "pict", "png", "ps",
 				"raw", "tf2", "tf8", "tif", "tiff", "txt", "xml", "zip" };
 		assertArrayEquals(expectedSuffixes, suffixes);
+	}
+
+	/**
+	 * Test simultaneous format caching on multiple threads.
+	 *
+	 * NB: not annotated as a unit test due to length of execution.
+	 */
+//	@Test
+	public void testMultiThreaded() throws InterruptedException {
+		final ThreadService ts = formatService.getContext().service(
+			ThreadService.class);
+		final Random random = new Random();
+		final long baseTime = System.currentTimeMillis();
+
+		final int threads = 500;
+		final int[] count = new int[1];
+
+		final Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				final long time = System.currentTimeMillis();
+
+				while (System.currentTimeMillis() - time < 10000) {
+					final String s = new BigInteger(64, random).toString() + ".tif";
+					try {
+						formatService.getFormat(s);
+					}
+					catch (FormatException exc) {
+						return;
+					}
+				}
+
+				synchronized (count) {
+					count[0]++;
+				}
+			}
+		};
+
+		for (int i=0; i<threads; i++) {
+			ts.run(runnable);
+		}
+
+		while (System.currentTimeMillis() - baseTime < 30000) {
+			Thread.sleep(100);
+		}
+
+		assertEquals(threads, count[0]);
 	}
 
 }
