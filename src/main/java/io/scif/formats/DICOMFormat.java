@@ -1469,7 +1469,7 @@ public class DICOMFormat extends AbstractFormat {
 				final Location currentFile = new Location(getContext(), getSource()
 					.getFileName()).getAbsoluteFile();
 				Location directory = currentFile.getParentFile();
-				scanDirectory(directory, false);
+				scanDirectory(fileList, directory, false);
 
 				// move up a directory and look for other directories that
 				// could contain matching files
@@ -1481,7 +1481,7 @@ public class DICOMFormat extends AbstractFormat {
 						final Location f = new Location(getContext(), directory, subdir)
 							.getAbsoluteFile();
 						if (!f.isDirectory()) continue;
-						scanDirectory(f, true);
+						scanDirectory(fileList, f, true);
 					}
 				}
 
@@ -1534,8 +1534,9 @@ public class DICOMFormat extends AbstractFormat {
 		/**
 		 * Scan the given directory for files that belong to this dataset.
 		 */
-		private void scanDirectory(final Location dir, final boolean checkSeries)
-			throws FormatException, IOException
+		private void scanDirectory(
+			final Hashtable<Integer, Vector<String>> fileList, final Location dir,
+			final boolean checkSeries) throws FormatException, IOException
 		{
 			final Location currentFile = new Location(getContext(), getSource()
 				.getFileName()).getAbsoluteFile();
@@ -1555,7 +1556,7 @@ public class DICOMFormat extends AbstractFormat {
 					.getFileName()) && getFormat().createChecker().isFormat(file) &&
 					Arrays.binarySearch(patternFiles, file) >= 0)
 				{
-					addFileToList(file, checkSeries);
+					addFileToList(fileList, file, checkSeries);
 				}
 			}
 		}
@@ -1563,8 +1564,10 @@ public class DICOMFormat extends AbstractFormat {
 		/**
 		 * Determine if the given file belongs in the same dataset as this file.
 		 */
-		private void addFileToList(final String file, final boolean checkSeries)
-			throws FormatException, IOException
+
+		private void addFileToList(
+			final Hashtable<Integer, Vector<String>> fileList, final String file,
+			final boolean checkSeries) throws FormatException, IOException
 		{
 			final RandomAccessInputStream stream = new RandomAccessInputStream(
 				getContext(), file);
@@ -1628,8 +1631,6 @@ public class DICOMFormat extends AbstractFormat {
 			{
 				int position = Integer.parseInt(instance) - 1;
 				if (position < 0) position = 0;
-				final Hashtable<Integer, Vector<String>> fileList = getMetadata()
-					.getFileList();
 				if (fileList.get(fileSeries) == null) {
 					fileList.put(fileSeries, new Vector<String>());
 				}
