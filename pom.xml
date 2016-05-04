@@ -19,10 +19,7 @@
 		<developer>
 			<id>hinerm</id>
 			<name>Mark Hiner</name>
-			<email>hiner@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/mark-hiner</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<url>http://imagej.net/User:Hinerm</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -32,15 +29,11 @@
 				<role>support</role>
 				<role>maintainer</role>
 			</roles>
-			<timezone>-6</timezone>
 		</developer>
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<email>ctrueden@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/curtis-rueden</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<url>http://imagej.net/User:Rueden</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -50,7 +43,6 @@
 				<role>support</role>
 				<role>maintainer</role>
 			</roles>
-			<timezone>-6</timezone>
 		</developer>
 	</developers>
 	<contributors>
@@ -65,6 +57,7 @@
 		</contributor>
 		<contributor>
 			<name>Gabriel Einsdorf</name>
+			<url>http://imagej.net/User:Gab1one</url>
 			<properties><id>gab1one</id></properties>
 		</contributor>
 		<contributor>
