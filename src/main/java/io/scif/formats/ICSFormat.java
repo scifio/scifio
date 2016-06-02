@@ -192,12 +192,12 @@ public class ICSFormat extends AbstractFormat {
 					FormatTools.calibrate(imageMeta.getAxis(yAxis), pixelSizes[n], 0,
 						units == null ? "um" : units[n]);
 				}
-				else if (axis.equals("z")) {
+				else if (axis.equals("z") && pixelSizes[n] > 1) {
 					imageMeta.addAxis(zAxis, (int) axesSizes[n]);
 					FormatTools.calibrate(imageMeta.getAxis(zAxis), pixelSizes[n], 0,
 						units == null ? "um" : units[n]);
 				}
-				else if (axis.equals("t")) {
+				else if (axis.equals("t") && pixelSizes[n] > 1) {
 					final int tIndex = imageMeta.getAxisIndex(Axes.TIME);
 
 					if (tIndex == -1) {
