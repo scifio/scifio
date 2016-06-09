@@ -17,20 +17,6 @@
 
 	<developers>
 		<developer>
-			<id>hinerm</id>
-			<name>Mark Hiner</name>
-			<url>http://imagej.net/User:Hinerm</url>
-			<roles>
-				<role>founder</role>
-				<role>lead</role>
-				<role>developer</role>
-				<role>debugger</role>
-				<role>reviewer</role>
-				<role>support</role>
-				<role>maintainer</role>
-			</roles>
-		</developer>
-		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
 			<url>http://imagej.net/User:Rueden</url>
@@ -46,6 +32,12 @@
 		</developer>
 	</developers>
 	<contributors>
+		<contributor>
+			<name>Mark Hiner</name>
+			<url>http://imagej.net/User:Hinerm</url>
+			<roles><role>founder</role></roles>
+			<properties><id>hinerm</id></properties>
+		</contributor>
 		<contributor>
 			<name>Johannes Schindelin</name>
 			<url>http://imagej.net/User:Schindelin</url>
