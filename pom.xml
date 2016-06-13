@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>scifio</artifactId>
-	<version>0.27.3-SNAPSHOT</version>
+	<version>0.27.3</version>
 
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a next generation library for scientific image format I/O.</description>
@@ -69,7 +69,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/scifio/scifio</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio</developerConnection>
-		<tag>HEAD</tag>
+		<tag>scifio-0.27.3</tag>
 		<url>http://github.com/scifio/scifio</url>
 	</scm>
 	<issueManagement>
