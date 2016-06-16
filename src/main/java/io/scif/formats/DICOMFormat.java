@@ -1265,9 +1265,12 @@ public class DICOMFormat extends AbstractFormat {
 						addInfo(meta, tag, bitsPerPixel);
 						break;
 					case PIXEL_REPRESENTATION:
-					case PIXEL_SIGN:
 						final short ss = getSource().readShort();
 						signed = ss == 1;
+						addInfo(meta, tag, ss);
+						break;
+					case PIXEL_SIGN:
+						final short ss = getSource().readShort();
 						addInfo(meta, tag, ss);
 						break;
 					case 537262910:
