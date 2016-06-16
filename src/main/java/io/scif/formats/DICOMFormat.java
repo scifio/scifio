@@ -1270,8 +1270,8 @@ public class DICOMFormat extends AbstractFormat {
 						addInfo(meta, tag, ss);
 						break;
 					case PIXEL_SIGN:
-						final short ss = getSource().readShort();
-						addInfo(meta, tag, ss);
+						final short sss = getSource().readShort();
+						addInfo(meta, tag, sss);
 						break;
 					case 537262910:
 					case WINDOW_WIDTH:
