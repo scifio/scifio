@@ -1200,6 +1200,7 @@ public class DICOMFormat extends AbstractFormat {
 					" fp=" + getSource().getFilePointer());
 
 				String s = null;
+				short ss;
 				switch (tag.get()) {
 					case TRANSFER_SYNTAX_UID:
 						// this tag can indicate which compression scheme is used
@@ -1265,12 +1266,12 @@ public class DICOMFormat extends AbstractFormat {
 						addInfo(meta, tag, bitsPerPixel);
 						break;
 					case PIXEL_REPRESENTATION:
-						final short ss = getSource().readShort();
+						ss = getSource().readShort();
 						signed = ss == 1;
 						addInfo(meta, tag, ss);
 						break;
 					case PIXEL_SIGN:
-						final short ss = getSource().readShort();
+						ss = getSource().readShort();
 						addInfo(meta, tag, ss);
 						break;
 					case 537262910:
