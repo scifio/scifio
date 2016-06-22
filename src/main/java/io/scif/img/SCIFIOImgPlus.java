@@ -171,8 +171,9 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 
 	@Override
 	public void dispose() {
-		if (getImg() instanceof SCIFIOCellImg) {
-			((SCIFIOCellImg) getImg()).dispose();
+		final Object img = getImg();
+		if (img instanceof Disposable) {
+			((Disposable) img).dispose();
 		}
 	}
 
