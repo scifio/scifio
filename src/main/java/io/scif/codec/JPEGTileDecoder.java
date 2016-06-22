@@ -277,7 +277,7 @@ public class JPEGTileDecoder extends AbstractContextual {
 		private static final int ROW_COUNT = 128;
 
 		private final Hashtable<IntRect, byte[]> compressedTiles =
-			new Hashtable<IntRect, byte[]>();
+			new Hashtable<>();
 
 		private final JPEGCodec codec;
 

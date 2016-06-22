@@ -127,7 +127,7 @@ public class ICSFormat extends AbstractFormat {
 		// -- Constructor --
 
 		public Metadata() {
-			keyValPairs = new Hashtable<String, String>();
+			keyValPairs = new Hashtable<>();
 		}
 
 		// -- Metadata API Methods --
@@ -306,7 +306,7 @@ public class ICSFormat extends AbstractFormat {
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
 
-			if (!fileOnly) keyValPairs = new Hashtable<String, String>();
+			if (!fileOnly) keyValPairs = new Hashtable<>();
 		}
 
 		// -- ICSMetadata Methods --
@@ -690,7 +690,7 @@ public class ICSFormat extends AbstractFormat {
 		public Hashtable<Integer, String> getChannelNames() {
 			final String[] kv = findValueForKey("parameter ch");
 			final Hashtable<Integer, String> channelNames =
-				new Hashtable<Integer, String>();
+				new Hashtable<>();
 			if (kv != null) {
 				final String[] names = kv[1].split(" ");
 				for (int n = 0; n < names.length; n++) {
@@ -714,7 +714,7 @@ public class ICSFormat extends AbstractFormat {
 		public Hashtable<Integer, Double> getPinholes() {
 			final String[] kv = findValueForKey("sensor s_params pinholeradius");
 			final Hashtable<Integer, Double> pinholes =
-				new Hashtable<Integer, Double>();
+				new Hashtable<>();
 			if (kv != null) {
 				final String pins[] = kv[1].split(" ");
 				int channel = 0;
@@ -790,7 +790,7 @@ public class ICSFormat extends AbstractFormat {
 		public Hashtable<Integer, Integer> getWavelengths() {
 			final String[] kv = findValueForKey("history wavelength*");
 			final Hashtable<Integer, Integer> wavelengths =
-				new Hashtable<Integer, Integer>();
+				new Hashtable<>();
 			if (kv != null) {
 				final String[] waves = kv[1].split(" ");
 				for (int n = 0; n < waves.length; n++) {
@@ -902,7 +902,7 @@ public class ICSFormat extends AbstractFormat {
 
 		public Hashtable<Integer, Double> getGains() {
 			final String[] kv = findValueForKey("history gain");
-			final Hashtable<Integer, Double> gains = new Hashtable<Integer, Double>();
+			final Hashtable<Integer, Double> gains = new Hashtable<>();
 			if (kv != null) {
 				Integer n = new Integer(0);
 				try {
@@ -1983,7 +1983,7 @@ public class ICSFormat extends AbstractFormat {
 		public static final Map<String, Object> keys = createKeyMap();
 
 		private static Map<String, Object> createKeyMap() {
-			final Map<String, Object> root = new HashMap<String, Object>();
+			final Map<String, Object> root = new HashMap<>();
 
 			addKey(root, "parameter", "ch");
 			addKey(root, "parameter", "scale");
@@ -2065,7 +2065,7 @@ public class ICSFormat extends AbstractFormat {
 				Map<String, Object> child = null;
 				// check for existing map
 				if (o == null) {
-					child = new HashMap<String, Object>();
+					child = new HashMap<>();
 					parent.put(node, child);
 				}
 				else {
@@ -2108,7 +2108,7 @@ public class ICSFormat extends AbstractFormat {
 
 			Hashtable<String, String> keyValPairs = null;
 			if (dest.getKeyValPairs() == null) keyValPairs =
-				new Hashtable<String, String>();
+				new Hashtable<>();
 			else keyValPairs = dest.getKeyValPairs();
 
 			final int numAxes = source.get(0).getAxes().size();

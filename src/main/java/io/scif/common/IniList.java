@@ -56,7 +56,7 @@ public class IniList extends ArrayList<IniTable> {
 	 * format "[table name] table key".
 	 */
 	public HashMap<String, String> flattenIntoHashMap() {
-		final HashMap<String, String> h = new HashMap<String, String>();
+		final HashMap<String, String> h = new HashMap<>();
 		for (final IniTable table : this) {
 			final String tableName = table.get(IniTable.HEADER_KEY);
 			for (final String key : table.keySet()) {

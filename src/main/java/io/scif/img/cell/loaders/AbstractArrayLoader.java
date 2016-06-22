@@ -248,7 +248,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	 */
 	private List<List<ColorTable>> tables() {
 		if (tables == null) {
-			tables = new ArrayList<List<ColorTable>>();
+			tables = new ArrayList<>();
 		}
 		return tables;
 	}

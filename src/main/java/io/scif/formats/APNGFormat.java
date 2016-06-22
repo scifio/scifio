@@ -136,8 +136,8 @@ public class APNGFormat extends AbstractFormat {
 		// -- Constructor --
 
 		public Metadata() {
-			fctl = new ArrayList<FCTLChunk>();
-			idat = new ArrayList<IDATChunk>();
+			fctl = new ArrayList<>();
+			idat = new ArrayList<>();
 		}
 
 		// -- APNGMetadata API Methods --
@@ -341,8 +341,8 @@ public class APNGFormat extends AbstractFormat {
 			super.close(fileOnly);
 
 			if (!fileOnly) {
-				fctl = new ArrayList<FCTLChunk>();
-				idat = new ArrayList<IDATChunk>();
+				fctl = new ArrayList<>();
+				idat = new ArrayList<>();
 			}
 		}
 	}
@@ -1088,7 +1088,7 @@ public class APNGFormat extends AbstractFormat {
 				dest.getPlte() == null ? new PLTEChunk() : dest.getPlte();
 			final ACTLChunk actl =
 				dest.getActl() == null ? new ACTLChunk() : dest.getActl();
-			final List<FCTLChunk> fctl = new ArrayList<FCTLChunk>();
+			final List<FCTLChunk> fctl = new ArrayList<>();
 
 			dest.setIhdr(ihdr);
 			dest.setPlte(plte);
@@ -1447,7 +1447,7 @@ public class APNGFormat extends AbstractFormat {
 
 		public FCTLChunk() {
 			super(new byte[] { (byte) 0x66, 0x63, 0x54, 0x4C });
-			fdatChunks = new ArrayList<FDATChunk>();
+			fdatChunks = new ArrayList<>();
 		}
 
 		// -- Methods --

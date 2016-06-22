@@ -324,7 +324,7 @@ public class JPEG2000Format extends AbstractFormat {
 			int sizeX, sizeY, sizeC, pixelType;
 
 			this.maximumReadOffset = maximumReadOffset;
-			comments = new ArrayList<String>();
+			comments = new ArrayList<>();
 			final boolean isLittleEndian = stream.isLittleEndian();
 			try {
 				// Parse boxes may need to change the endianness of the input

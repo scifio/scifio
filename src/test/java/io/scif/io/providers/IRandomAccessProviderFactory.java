@@ -41,7 +41,7 @@ import java.util.Map;
 public class IRandomAccessProviderFactory {
 
 	private static final Map<String, IRandomAccessProvider> providers =
-		new HashMap<String, IRandomAccessProvider>();
+		new HashMap<>();
 
 	static {
 		providers.put("NewByteArrayHandle", new NewByteArrayHandleProvider());

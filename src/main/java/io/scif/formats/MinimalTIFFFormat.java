@@ -300,7 +300,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				}
 				ifds = null;
 				thumbnailIFDs = null;
-				subResolutionIFDs = new ArrayList<IFDList>();
+				subResolutionIFDs = new ArrayList<>();
 				lastPlane = 0;
 				tiffParser = null;
 				resolutionLevels = null;

@@ -162,7 +162,7 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 
 	@Override
 	public SCIFIOImgPlus<T> copy() {
-		final SCIFIOImgPlus<T> copy = new SCIFIOImgPlus<T>(getImg().copy(), this);
+		final SCIFIOImgPlus<T> copy = new SCIFIOImgPlus<>(getImg().copy(), this);
 		copy.setMetadata(getMetadata());
 		return copy;
 	}

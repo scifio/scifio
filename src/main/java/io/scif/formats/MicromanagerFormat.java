@@ -221,7 +221,7 @@ public class MicromanagerFormat extends AbstractFormat {
 			throws FormatException, IOException
 		{
 			source.createImageMetadata(jsonData.length);
-			final Vector<Position> positions = new Vector<Position>();
+			final Vector<Position> positions = new Vector<>();
 			for (int pos = 0; pos < jsonData.length; pos++) {
 				final Position p = new Position();
 				p.metadataFile = "Position #" + (pos + 1);
@@ -239,7 +239,7 @@ public class MicromanagerFormat extends AbstractFormat {
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
-			final Vector<Position> positions = new Vector<Position>();
+			final Vector<Position> positions = new Vector<>();
 			meta.setPositions(positions);
 
 			log().info("Reading metadata file");
@@ -292,7 +292,7 @@ public class MicromanagerFormat extends AbstractFormat {
 			final boolean noPixels)
 		{
 			FormatTools.assertId(getSource(), true, 1);
-			final Vector<String> files = new Vector<String>();
+			final Vector<String> files = new Vector<>();
 			for (final Position pos : getMetadata().getPositions()) {
 				files.add(pos.metadataFile);
 				if (pos.xmlFile != null) {
@@ -349,16 +349,16 @@ public class MicromanagerFormat extends AbstractFormat {
 			log().info("Finding image file names");
 
 			// find the name of a TIFF file
-			p.tiffs = new Vector<String>();
+			p.tiffs = new Vector<>();
 
 			// build list of TIFF files
 
 			buildTIFFList(meta, posIndex, parent + File.separator + p.baseTiff);
 
 			if (p.tiffs.size() == 0) {
-				final Vector<String> uniqueZ = new Vector<String>();
-				final Vector<String> uniqueC = new Vector<String>();
-				final Vector<String> uniqueT = new Vector<String>();
+				final Vector<String> uniqueZ = new Vector<>();
+				final Vector<String> uniqueC = new Vector<>();
+				final Vector<String> uniqueT = new Vector<>();
 
 				final Location dir =
 					new Location(getContext(), p.metadataFile).getAbsoluteFile()
@@ -412,8 +412,8 @@ public class MicromanagerFormat extends AbstractFormat {
 
 			log().info("Populating metadata");
 
-			final Vector<Double> stamps = new Vector<Double>();
-			p.voltage = new Vector<Double>();
+			final Vector<Double> stamps = new Vector<>();
+			p.voltage = new Vector<>();
 
 			final StringTokenizer st = new StringTokenizer(jsonData, "\n");
 			final int[] slice = new int[3];
@@ -846,7 +846,7 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		public Vector<String> tiffs;
 
-		public HashMap<Index, String> fileNameMap = new HashMap<Index, String>();
+		public HashMap<Index, String> fileNameMap = new HashMap<>();
 
 		public String metadataFile;
 

@@ -297,7 +297,7 @@ public class TiffParser extends AbstractContextual {
 			bigTiff ? TiffConstants.BIG_TIFF_BYTES_PER_ENTRY
 				: TiffConstants.BYTES_PER_ENTRY;
 
-		final Vector<Long> offsets = new Vector<Long>();
+		final Vector<Long> offsets = new Vector<>();
 		long offset = getFirstOffset();
 		while (offset > 0 && offset < in.length()) {
 			in.seek(offset);
@@ -445,7 +445,7 @@ public class TiffParser extends AbstractContextual {
 
 	/** Fill in IFD entries that are stored at an arbitrary offset. */
 	public void fillInIFD(final IFD ifd) throws IOException {
-		final HashSet<TiffIFDEntry> entries = new HashSet<TiffIFDEntry>();
+		final HashSet<TiffIFDEntry> entries = new HashSet<>();
 		for (final Object key : ifd.keySet()) {
 			if (ifd.get(key) instanceof TiffIFDEntry) {
 				entries.add((TiffIFDEntry) ifd.get(key));

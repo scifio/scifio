@@ -79,7 +79,7 @@ public class OBFFormat extends AbstractFormat {
 
 		private Inflater inflater = new Inflater();
 
-		private List<Stack> stacks = new ArrayList<Stack>();
+		private List<Stack> stacks = new ArrayList<>();
 
 		// -- OBFMetadata getters and setters --
 
@@ -120,7 +120,7 @@ public class OBFFormat extends AbstractFormat {
 
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
-			stacks = new ArrayList<Stack>();
+			stacks = new ArrayList<>();
 			currentInflatedFrame = new Frame();
 			inflater = new Inflater();
 
@@ -230,7 +230,7 @@ public class OBFFormat extends AbstractFormat {
 				iMeta.setAxisLength(Axes.CHANNEL, sizes[3]);
 				iMeta.setAxisLength(Axes.TIME, sizes[4]);
 
-				final List<Double> lengths = new ArrayList<Double>();
+				final List<Double> lengths = new ArrayList<>();
 				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
 					final double length = getSource().readDouble();
@@ -240,7 +240,7 @@ public class OBFFormat extends AbstractFormat {
 				}
 				iMeta.getTable().put("Lengths", lengths);
 
-				final List<Double> offsets = new ArrayList<Double>();
+				final List<Double> offsets = new ArrayList<>();
 				for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 				{
 					final double offset = getSource().readDouble();
@@ -286,7 +286,7 @@ public class OBFFormat extends AbstractFormat {
 					final long footer = getSource().getFilePointer();
 					final int offset = getSource().readInt();
 
-					final List<Boolean> stepsPresent = new ArrayList<Boolean>();
+					final List<Boolean> stepsPresent = new ArrayList<>();
 					for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 					{
 						final int present = getSource().readInt();
@@ -294,7 +294,7 @@ public class OBFFormat extends AbstractFormat {
 							stepsPresent.add(Boolean.valueOf(present != 0));
 						}
 					}
-					final List<Boolean> stepLabelsPresent = new ArrayList<Boolean>();
+					final List<Boolean> stepLabelsPresent = new ArrayList<>();
 					for (int dimension = 0; dimension != MAXIMAL_NUMBER_OF_DIMENSIONS; ++dimension)
 					{
 						final int present = getSource().readInt();
@@ -305,7 +305,7 @@ public class OBFFormat extends AbstractFormat {
 
 					getSource().seek(footer + offset);
 
-					final List<String> labels = new ArrayList<String>();
+					final List<String> labels = new ArrayList<>();
 					for (int dimension = 0; dimension != numberOfDimensions; ++dimension)
 					{
 						final int length = getSource().readInt();
@@ -314,10 +314,10 @@ public class OBFFormat extends AbstractFormat {
 					}
 					iMeta.getTable().put("Labels", labels);
 
-					final List<List<Double>> steps = new ArrayList<List<Double>>();
+					final List<List<Double>> steps = new ArrayList<>();
 					for (int dimension = 0; dimension != numberOfDimensions; ++dimension)
 					{
-						final List<Double> list = new ArrayList<Double>();
+						final List<Double> list = new ArrayList<>();
 						if (stepsPresent.get(dimension)) {
 							for (int position = 0; position != sizes[dimension]; ++position) {
 								final double step = getSource().readDouble();
@@ -328,10 +328,10 @@ public class OBFFormat extends AbstractFormat {
 					}
 					iMeta.getTable().put("Steps", steps);
 
-					final List<List<String>> stepLabels = new ArrayList<List<String>>();
+					final List<List<String>> stepLabels = new ArrayList<>();
 					for (int dimension = 0; dimension != numberOfDimensions; ++dimension)
 					{
-						final List<String> list = new ArrayList<String>();
+						final List<String> list = new ArrayList<>();
 						if (stepLabelsPresent.get(dimension)) {
 							for (int position = 0; position != sizes[dimension]; ++position) {
 								final int length = getSource().readInt();

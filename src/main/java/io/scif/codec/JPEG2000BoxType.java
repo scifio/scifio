@@ -65,7 +65,7 @@ public enum JPEG2000BoxType implements CodedEnum {
 
 	/** Map used to retrieve the box type corresponding to the code. */
 	private static final Map<Integer, JPEG2000BoxType> lookup =
-		new HashMap<Integer, JPEG2000BoxType>();
+		new HashMap<>();
 
 	/** Reverse lookup of code to box type enumerate value. */
 	static {

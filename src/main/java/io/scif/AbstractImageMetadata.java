@@ -154,8 +154,8 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	// -- Constructors --
 
 	public AbstractImageMetadata() {
-		axes = new ArrayList<CalibratedAxis>();
-		axisLengths = new HashMap<AxisType, Long>();
+		axes = new ArrayList<>();
+		axisLengths = new HashMap<>();
 	}
 
 	public AbstractImageMetadata(final ImageMetadata copy) {
@@ -247,7 +247,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void setAxes(final CalibratedAxis... axisTypes) {
-		this.axes = new ArrayList<CalibratedAxis>(Arrays.asList(axisTypes));
+		this.axes = new ArrayList<>(Arrays.asList(axisTypes));
 		clearCachedAxes();
 	}
 
@@ -542,7 +542,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public void addAxis(final CalibratedAxis axis, final long value) {
-		if (axes == null) axes = new ArrayList<CalibratedAxis>();
+		if (axes == null) axes = new ArrayList<>();
 
 		// See if the axis already exists
 		if (!axes.contains(axis)) {
@@ -591,7 +591,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	{
 		// FIXME: Use setters, not direct assignment.
 		this.name = name;
-		this.axes = new ArrayList<CalibratedAxis>(axes);
+		this.axes = new ArrayList<>(axes);
 		setAxisLengths(lengths.clone());
 		this.bitsPerPixel = bitsPerPixel;
 		this.falseColor = falseColor;
@@ -650,7 +650,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 				}
 			}
 
-			effectiveAxes = new ArrayList<CalibratedAxis>();
+			effectiveAxes = new ArrayList<>();
 			for (int i = 0; i < end; i++) {
 				effectiveAxes.add(axes.get(i));
 			}
@@ -701,13 +701,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		List<CalibratedAxis> axisList = null;
 
 		if (planar) {
-			if (planarAxes == null) planarAxes = new ArrayList<CalibratedAxis>();
+			if (planarAxes == null) planarAxes = new ArrayList<>();
 			axisList = planarAxes;
 			index = 0;
 			end = getPlanarAxisCount();
 		}
 		else {
-			if (extendedAxes == null) extendedAxes = new ArrayList<CalibratedAxis>();
+			if (extendedAxes == null) extendedAxes = new ArrayList<>();
 			axisList = extendedAxes;
 			index = getPlanarAxisCount();
 			end = getAxes().size();

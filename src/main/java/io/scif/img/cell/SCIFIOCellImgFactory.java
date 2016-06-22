@@ -213,10 +213,10 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		loader.setIndex(index);
 
 		final SCIFIOCellCache<A> c =
-			new SCIFIOCellCache<A>(reader.getContext(), loader);
+			new SCIFIOCellCache<>(reader.getContext(), loader);
 
 		final SCIFIOCellImg<T, A, SCIFIOCell<A>> cellImg =
-			new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(c,
+			new SCIFIOCellImg<>(this, new SCIFIOImgCells<>(c,
 				entitiesPerPixel, dimensions, cellSize));
 
 		cellImg.setLoader(loader);

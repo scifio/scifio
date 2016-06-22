@@ -1405,7 +1405,7 @@ public final class AWTImageTools {
 			cm.createCompatibleWritableRaster(width, height);
 		final boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
 		final Hashtable<String, Object> properties =
-			new Hashtable<String, Object>();
+			new Hashtable<>();
 		final String[] keys = img.getPropertyNames();
 		if (keys != null) {
 			for (int i = 0; i < keys.length; i++) {

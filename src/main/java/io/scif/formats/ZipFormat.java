@@ -88,7 +88,7 @@ public class ZipFormat extends AbstractFormat {
 
 		private io.scif.Metadata metadata;
 
-		private List<String> mappedFiles = new ArrayList<String>();
+		private List<String> mappedFiles = new ArrayList<>();
 
 		// -- ZipMetadata methods --
 
@@ -141,7 +141,7 @@ public class ZipFormat extends AbstractFormat {
 			if (metadata != null) metadata.close(fileOnly);
 			if (!fileOnly) metadata = null;
 
-			mappedFiles = new ArrayList<String>();
+			mappedFiles = new ArrayList<>();
 		}
 	}
 

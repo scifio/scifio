@@ -623,9 +623,9 @@ public class DefaultImgUtilityService extends AbstractService implements
 	public <T> SCIFIOImgPlus<T> makeSCIFIOImgPlus(final Img<T> img) {
 		if (img instanceof SCIFIOImgPlus) return (SCIFIOImgPlus<T>) img;
 		if (img instanceof ImgPlus) {
-			return new SCIFIOImgPlus<T>((ImgPlus<T>) img);
+			return new SCIFIOImgPlus<>((ImgPlus<T>) img);
 		}
-		return new SCIFIOImgPlus<T>(img);
+		return new SCIFIOImgPlus<>(img);
 	}
 
 	// -- Helper Methods --

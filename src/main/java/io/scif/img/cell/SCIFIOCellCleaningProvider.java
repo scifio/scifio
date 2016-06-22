@@ -140,7 +140,7 @@ public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
 			// Create a new cell using all the non-transient information we
 			// stored
 			SCIFIOCell<A> cell =
-				new SCIFIOCell<A>(data, hashes[1], hashes[0], elementSize[0], dims, min);
+				new SCIFIOCell<>(data, hashes[1], hashes[0], elementSize[0], dims, min);
 			cell.cacheOnFinalize(enabled[0]);
 			// Cache the cell
 			final CacheResult result = service.cache(cacheId, index, cell);

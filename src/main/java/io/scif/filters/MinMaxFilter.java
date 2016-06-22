@@ -343,10 +343,10 @@ public class MinMaxFilter extends AbstractReaderFilter {
 		final int imageCount = m.getImageCount();
 
 		if (planarAxisMin == null) {
-			planarAxisMin = new ArrayList<Map<AxisType, double[]>>();
+			planarAxisMin = new ArrayList<>();
 			for (int i = 0; i < imageCount; i++) {
 				final HashMap<AxisType, double[]> minMap =
-					new HashMap<AxisType, double[]>();
+					new HashMap<>();
 				final ImageMetadata iMeta = m.get(i);
 				for (final CalibratedAxis axis : iMeta.getAxesPlanar()) {
 					final double[] values =
@@ -358,10 +358,10 @@ public class MinMaxFilter extends AbstractReaderFilter {
 			}
 		}
 		if (planarAxisMax == null) {
-			planarAxisMax = new ArrayList<Map<AxisType, double[]>>();
+			planarAxisMax = new ArrayList<>();
 			for (int i = 0; i < imageCount; i++) {
 				final HashMap<AxisType, double[]> maxMap =
-					new HashMap<AxisType, double[]>();
+					new HashMap<>();
 				final ImageMetadata iMeta = m.get(i);
 				for (final CalibratedAxis axis : iMeta.getAxesPlanar()) {
 					final double[] values =

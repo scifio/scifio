@@ -912,7 +912,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		// Get format-specific metadata
 		Metadata imgMeta = img.getMetadata();
-		final List<ImageMetadata> imageMeta = new ArrayList<ImageMetadata>();
+		final List<ImageMetadata> imageMeta = new ArrayList<>();
 
 		if (imgMeta == null) {
 			imgMeta = new DefaultMetadata();

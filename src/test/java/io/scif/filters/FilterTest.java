@@ -70,9 +70,9 @@ public class FilterTest {
 		final Context ctx = scifio.getContext();
 
 		final PluginInfo<Filter> enabledInfo =
-			new PluginInfo<Filter>(EnabledFilter.class, Filter.class);
+			new PluginInfo<>(EnabledFilter.class, Filter.class);
 		final PluginInfo<Filter> disabledInfo =
-			new PluginInfo<Filter>(DisabledFilter.class, Filter.class);
+			new PluginInfo<>(DisabledFilter.class, Filter.class);
 
 		ctx.getPluginIndex().add(enabledInfo);
 		ctx.getPluginIndex().add(disabledInfo);

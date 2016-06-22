@@ -101,7 +101,7 @@ public class DICOMFormat extends AbstractFormat {
 	 * literally thousands of fields defined by the DICOM specifications.
 	 */
 	private static Hashtable<Integer, String> buildTypes() {
-		final Hashtable<Integer, String> dict = new Hashtable<Integer, String>();
+		final Hashtable<Integer, String> dict = new Hashtable<>();
 
 		dict.put(0x00020002, "Media Storage SOP Class UID");
 		dict.put(0x00020003, "Media Storage SOP Instance UID");
@@ -745,7 +745,7 @@ public class DICOMFormat extends AbstractFormat {
 		private String originalDate, originalTime, originalInstance;
 		private int originalSeries;
 
-		private Vector<String> companionFiles = new Vector<String>();
+		private Vector<String> companionFiles = new Vector<>();
 
 		// Getters and Setters
 
@@ -1138,7 +1138,7 @@ public class DICOMFormat extends AbstractFormat {
 			final ImageMetadata iMeta = meta.get(0);
 
 			// look for companion files
-			final Vector<String> companionFiles = new Vector<String>();
+			final Vector<String> companionFiles = new Vector<>();
 			attachCompanionFiles(companionFiles);
 			meta.setCompanionFiles(companionFiles);
 
@@ -1455,7 +1455,7 @@ public class DICOMFormat extends AbstractFormat {
 						.getOriginalTime() != null && config.groupableIsGroupFiles())
 			{
 				final Hashtable<Integer, Vector<String>> fileList =
-					new Hashtable<Integer, Vector<String>>();
+					new Hashtable<>();
 				final Integer s = new Integer(getMetadata().getOriginalSeries());
 				fileList.put(s, new Vector<String>());
 
@@ -1504,7 +1504,7 @@ public class DICOMFormat extends AbstractFormat {
 			}
 			else if (getMetadata().getFileList() == null) {
 				final Hashtable<Integer, Vector<String>> fileList =
-					new Hashtable<Integer, Vector<String>>();
+					new Hashtable<>();
 				fileList.put(0, new Vector<String>());
 				fileList.get(0).add(getSource().getFileName());
 				getMetadata().setFileList(fileList);

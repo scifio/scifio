@@ -155,7 +155,7 @@ public class PICTFormat extends AbstractFormat {
 		/** Color lookup table for palette color images. */
 		private byte[][] lookup;
 
-		private Vector<Long> jpegOffsets = new Vector<Long>();
+		private Vector<Long> jpegOffsets = new Vector<>();
 
 		// -- PICTFormat Metadata getters and setters --
 
@@ -226,7 +226,7 @@ public class PICTFormat extends AbstractFormat {
 				versionOne = false;
 				lookup = null;
 				if (jpegOffsets != null) jpegOffsets.clear();
-				else jpegOffsets = new Vector<Long>();
+				else jpegOffsets = new Vector<>();
 			}
 		}
 
@@ -260,7 +260,7 @@ public class PICTFormat extends AbstractFormat {
 			short sizeY = stream.readShort();
 			short sizeX = stream.readShort();
 
-			final Vector<Object> strips = new Vector<Object>();
+			final Vector<Object> strips = new Vector<>();
 			final byte[][] lookup = null;
 			boolean versionOne = false;
 			meta.setStrips(strips);

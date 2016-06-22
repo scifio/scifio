@@ -111,7 +111,7 @@ public class DefaultPlaneConverterService extends
 		if (converters != null) return; // already initialized
 
 		final ConcurrentHashMap<String, PlaneConverter> map =
-			new ConcurrentHashMap<String, PlaneConverter>();
+			new ConcurrentHashMap<>();
 		for (final PlaneConverter converter : getInstances()) {
 			final String name = converter.getInfo().getName();
 			map.put(name, converter);
@@ -123,7 +123,7 @@ public class DefaultPlaneConverterService extends
 	private synchronized void initConverterNames() {
 		if (converterNames != null) return; // already initialized
 
-		final ArrayList<String> list = new ArrayList<String>();
+		final ArrayList<String> list = new ArrayList<>();
 		for (final PlaneConverter converter : getInstances()) {
 			final String name = converter.getInfo().getName();
 			list.add(name);
