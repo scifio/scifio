@@ -82,7 +82,7 @@
 	</ciManagement>
 
 	<properties>
-			<mapdb.version>1.0.3</mapdb.version>
+		<mapdb.version>1.0.3</mapdb.version>
 	</properties>
 
 	<repositories>
