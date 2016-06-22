@@ -2019,8 +2019,9 @@ public class DICOMFormat extends AbstractFormat {
 				options.littleEndian = meta.get(imageIndex).isLittleEndian();
 				options.interleaved = meta.get(imageIndex)
 					.getInterleavedAxisCount() > 0;
-				final Codec codec = codecService.getCodec(meta.isJPEG()
-					? JPEGCodec.class : JPEG2000Codec.class);
+				final Codec codec = meta.isJPEG() ? //
+					codecService.getCodec(JPEGCodec.class) : //
+					codecService.getCodec(JPEG2000Codec.class);
 				b = codec.decompress(b, options);
 
 				final int rowLen = w * bpp;
