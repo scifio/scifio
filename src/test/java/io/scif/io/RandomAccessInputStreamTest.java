@@ -32,6 +32,7 @@ package io.scif.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
+
 import io.scif.io.providers.IRandomAccessProvider;
 import io.scif.io.providers.IRandomAccessProviderFactory;
 import io.scif.services.LocationService;

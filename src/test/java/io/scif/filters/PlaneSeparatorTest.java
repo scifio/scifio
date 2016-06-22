@@ -31,6 +31,7 @@
 package io.scif.filters;
 
 import static org.junit.Assert.assertEquals;
+
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.SCIFIO;

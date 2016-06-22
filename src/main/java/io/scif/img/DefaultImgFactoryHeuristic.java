@@ -36,6 +36,7 @@ import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.util.FormatTools;
 import io.scif.util.MemoryTools;
+
 import net.imagej.axis.Axes;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;

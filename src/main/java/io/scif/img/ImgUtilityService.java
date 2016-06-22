@@ -33,6 +33,7 @@ package io.scif.img;
 import io.scif.Metadata;
 import io.scif.SCIFIOService;
 import io.scif.config.SCIFIOConfig;
+
 import net.imagej.ImgPlus;
 import net.imagej.axis.CalibratedAxis;
 import net.imglib2.img.Img;

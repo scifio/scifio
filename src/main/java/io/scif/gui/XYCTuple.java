@@ -31,6 +31,7 @@
 package io.scif.gui;
 
 import io.scif.ImageMetadata;
+
 import net.imagej.axis.Axes;
 
 /**

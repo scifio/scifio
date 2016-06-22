@@ -32,6 +32,7 @@ package io.scif.filters;
 
 import static io.scif.JUnitHelper.assertCloseEnough;
 import static org.junit.Assert.assertEquals;
+
 import io.scif.FormatException;
 import io.scif.SCIFIO;
 

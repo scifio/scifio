@@ -30,19 +30,6 @@
 
 package io.scif.formats;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Vector;
-
-import net.imagej.axis.Axes;
-import net.imglib2.display.ColorTable;
-import net.imglib2.display.ColorTable16;
-import net.imglib2.display.ColorTable8;
-
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-
 import io.scif.AbstractChecker;
 import io.scif.AbstractFormat;
 import io.scif.AbstractMetadata;
@@ -68,6 +55,19 @@ import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.services.InitializeService;
 import io.scif.util.FormatTools;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import net.imagej.axis.Axes;
+import net.imglib2.display.ColorTable;
+import net.imglib2.display.ColorTable16;
+import net.imglib2.display.ColorTable8;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * DICOMReader is the file format reader for DICOM files. Much of this code is

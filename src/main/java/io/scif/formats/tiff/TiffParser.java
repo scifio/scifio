@@ -30,15 +30,6 @@
 
 package io.scif.formats.tiff;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Vector;
-
-import org.scijava.AbstractContextual;
-import org.scijava.Context;
-import org.scijava.log.LogService;
-import org.scijava.util.IntRect;
-
 import io.scif.FormatException;
 import io.scif.SCIFIO;
 import io.scif.codec.BitBuffer;
@@ -47,6 +38,15 @@ import io.scif.common.Constants;
 import io.scif.common.DataTools;
 import io.scif.enumeration.EnumException;
 import io.scif.io.RandomAccessInputStream;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Vector;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.log.LogService;
+import org.scijava.util.IntRect;
 
 /**
  * Parses TIFF data from an input source.

@@ -32,6 +32,7 @@ package io.scif.img.cell;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+
 import io.scif.img.IO;
 import io.scif.img.SCIFIOImgPlus;
 import io.scif.io.TestParameters;
