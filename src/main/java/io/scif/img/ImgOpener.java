@@ -326,7 +326,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			reader = new ReaderFilter(reader);
 		}
 
-		final List<SCIFIOImgPlus<T>> imgPluses = new ArrayList<SCIFIOImgPlus<T>>();
+		final List<SCIFIOImgPlus<T>> imgPluses = new ArrayList<>();
 		Range imageRange = null;
 
 		if (config == null) {
@@ -578,7 +578,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 	 * all non-X,Y planar axes. Always tries to split {@link Axes#CHANNEL}.
 	 */
 	private AxisType[] axesToSplit(final ReaderFilter r) {
-		final Set<AxisType> axes = new HashSet<AxisType>();
+		final Set<AxisType> axes = new HashSet<>();
 		final Metadata meta = r.getTail().getMetadata();
 		// Split any non-X,Y axis
 		for (final CalibratedAxis t : meta.get(0).getAxesPlanar()) {
@@ -643,7 +643,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		final int validBits = meta.get(0).getBitsPerPixel();
 
 		final SCIFIOImgPlus<T> imgPlus =
-			new SCIFIOImgPlus<T>(img, name, dimTypes, cal);
+			new SCIFIOImgPlus<>(img, name, dimTypes, cal);
 		final String metaName = meta.get(imageIndex).getName();
 		if (metaName != null) imgPlus.setName(metaName);
 		imgPlus.setValidBits(validBits);

@@ -245,7 +245,7 @@ public class TIFFFormat extends AbstractFormat {
 			if (ct == null) {
 				// Check for an ImageJ 1.x lut
 				if (colorTable == null && getLut() != null) {
-					colorTable = new ArrayList<ColorTable>();
+					colorTable = new ArrayList<>();
 					final byte[][] ij1Lut = getLut();
 					for (int i = 0; i < ij1Lut.length; i++) {
 						if (ij1Lut[i].length != 768) colorTable.add(null);
@@ -558,7 +558,7 @@ public class TIFFFormat extends AbstractFormat {
 
 			final ImageMetadata m = meta.get(0);
 			final Set<CalibratedAxis> predefinedAxes =
-				new HashSet<CalibratedAxis>(m.getAxes());
+				new HashSet<>(m.getAxes());
 
 			m.setAxisTypes(Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME);
 
@@ -638,7 +638,7 @@ public class TIFFFormat extends AbstractFormat {
 
 			// Clean up length 1 axes
 			final ArrayList<CalibratedAxis> validAxes =
-				new ArrayList<CalibratedAxis>();
+				new ArrayList<>();
 
 			for (final CalibratedAxis axis : m.getAxes()) {
 				if (predefinedAxes.contains(axis) || m.getAxisLength(axis) > 1) {

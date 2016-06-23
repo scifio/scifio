@@ -33,6 +33,8 @@ package io.scif.services;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import io.scif.FormatException;
+
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -41,8 +43,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.thread.ThreadService;
-
-import io.scif.FormatException;
 
 /**
  * Tests {@link FormatService}.

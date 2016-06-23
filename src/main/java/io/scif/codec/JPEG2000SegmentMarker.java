@@ -63,7 +63,7 @@ public enum JPEG2000SegmentMarker implements CodedEnum {
 
 	/** Map used to retrieve the segment marker corresponding to the code. */
 	private static final Map<Integer, JPEG2000SegmentMarker> lookup =
-		new HashMap<Integer, JPEG2000SegmentMarker>();
+		new HashMap<>();
 
 	/** Reverse lookup of code to segment marker enumerate value. */
 	static {

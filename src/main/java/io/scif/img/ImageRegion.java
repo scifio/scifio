@@ -56,7 +56,7 @@ public class ImageRegion {
 	// -- Constructors --
 
 	public ImageRegion(final AxisType[] axes, final String[] ranges) {
-		dimRanges = new HashMap<AxisType, Range>();
+		dimRanges = new HashMap<>();
 
 		if (axes.length != ranges.length) throw new IllegalArgumentException(
 			"Number of axes: " + axes.length + " does not match number of ranges: " +
@@ -68,7 +68,7 @@ public class ImageRegion {
 	}
 
 	public ImageRegion(final AxisType[] axes, final Range... ranges) {
-		dimRanges = new HashMap<AxisType, Range>();
+		dimRanges = new HashMap<>();
 
 		if (axes.length != ranges.length) throw new IllegalArgumentException(
 			"Number of axes: " + axes.length + " does not match number of ranges: " +

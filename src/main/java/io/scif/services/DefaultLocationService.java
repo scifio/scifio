@@ -73,7 +73,7 @@ public class DefaultLocationService extends AbstractService implements
 	private PluginService pluginService;
 
 	/** Map from given filenames to actual filenames. */
-	private HashMap<String, Object> idMap = new HashMap<String, Object>();
+	private HashMap<String, Object> idMap = new HashMap<>();
 
 	private volatile boolean cacheListings = false;
 
@@ -93,7 +93,7 @@ public class DefaultLocationService extends AbstractService implements
 	}
 
 	private ConcurrentHashMap<String, ListingsResult> fileListings =
-		new ConcurrentHashMap<String, ListingsResult>();
+		new ConcurrentHashMap<>();
 
 	// -- Location API methods --
 
@@ -116,13 +116,13 @@ public class DefaultLocationService extends AbstractService implements
 
 	@Override
 	public void clearDirectoryListingsCache() {
-		fileListings = new ConcurrentHashMap<String, ListingsResult>();
+		fileListings = new ConcurrentHashMap<>();
 	}
 
 	@Override
 	public void cleanStaleCacheEntries() {
 		final long t = System.nanoTime() - cacheNanos;
-		final ArrayList<String> staleKeys = new ArrayList<String>();
+		final ArrayList<String> staleKeys = new ArrayList<>();
 		for (final String key : fileListings.keySet()) {
 			if (fileListings.get(key).time < t) {
 				staleKeys.add(key);

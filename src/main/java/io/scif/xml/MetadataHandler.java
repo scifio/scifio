@@ -48,7 +48,7 @@ class MetadataHandler extends BaseHandler {
 	private String currentQName;
 
 	private final Hashtable<String, String> metadata =
-		new Hashtable<String, String>();
+		new Hashtable<>();
 
 	public MetadataHandler() {
 		this(new StderrLogService());

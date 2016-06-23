@@ -91,7 +91,7 @@ public enum FillOrder implements CodedEnum {
 	private String name;
 
 	private static final Map<Integer, FillOrder> lookup =
-		new HashMap<Integer, FillOrder>();
+		new HashMap<>();
 
 	/** Reverse lookup of code to IFD type enumerate value. */
 	static {

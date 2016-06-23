@@ -249,7 +249,7 @@ public abstract class AbstractFormat extends AbstractSCIFIOPlugin implements
 	 */
 	private List<Class<?>> buildClassList() {
 		final Class<?>[] classes = this.getClass().getDeclaredClasses();
-		final List<Class<?>> classList = new ArrayList<Class<?>>();
+		final List<Class<?>> classList = new ArrayList<>();
 
 		for (final Class<?> c : classes) {
 			check(c, classList);

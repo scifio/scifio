@@ -126,7 +126,7 @@ public class Location extends AbstractSCIFIOPlugin {
 		result = locationService.getCachedListing(key);
 		if (result != null) return result;
 
-		final ArrayList<String> files = new ArrayList<String>();
+		final ArrayList<String> files = new ArrayList<>();
 		if (isURL) {
 			try {
 				final URLConnection c = url.openConnection();

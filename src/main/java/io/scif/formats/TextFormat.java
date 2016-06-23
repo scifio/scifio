@@ -339,7 +339,7 @@ public class TextFormat extends AbstractFormat {
 		}
 
 		private List<String> readFile(final String id) throws IOException {
-			final List<String> lines = new ArrayList<String>();
+			final List<String> lines = new ArrayList<>();
 			long time = System.currentTimeMillis();
 			final IRandomAccess handle = locationService.getMappedFile(id);
 			if (handle == null) {
@@ -548,7 +548,7 @@ public class TextFormat extends AbstractFormat {
 			final Metadata meta)
 		{
 			meta.setRowLength(tokens.length);
-			final List<String> channelsList = new ArrayList<String>();
+			final List<String> channelsList = new ArrayList<>();
 			for (int i = 0; i < meta.getRowLength(); i++) {
 				final String token = tokens[i];
 				if (token.equals(LABEL_X)) meta.setxIndex(i);

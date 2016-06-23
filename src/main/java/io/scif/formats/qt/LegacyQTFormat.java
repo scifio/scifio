@@ -203,7 +203,7 @@ public class LegacyQTFormat extends AbstractFormat {
 				r.setVar("one", 1f);
 				r.exec("timeInfo = new TimeInfo(zero, zero)");
 				r.exec("moviePlayer.setTime(zero)");
-				final Vector<Integer> v = new Vector<Integer>();
+				final Vector<Integer> v = new Vector<>();
 				int time = 0;
 				Integer q = new Integer(time);
 				do {

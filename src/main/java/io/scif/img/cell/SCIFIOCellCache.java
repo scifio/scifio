@@ -88,7 +88,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	// e.g. controlling max elements and such.
 	// In-memory cache.
 	final private Map<Integer, WeakReference<SCIFIOCell<A>>> map =
-		new ConcurrentHashMap<Integer, WeakReference<SCIFIOCell<A>>>();
+		new ConcurrentHashMap<>();
 
 	// -- Constructor --
 
@@ -143,7 +143,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 		}
 
 		cell =
-			new SCIFIOCell<A>(cacheService, cacheId, index, cellDims, cellMin, loader
+			new SCIFIOCell<>(cacheService, cacheId, index, cellDims, cellMin, loader
 				.loadArray(cellDims, cellMin));
 		refManagerService.manage(cell);
 
@@ -171,7 +171,7 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	 * @param cell - Cell to put in the in-memory cache
 	 */
 	private void cache(final Integer k, final SCIFIOCell<A> cell) {
-		map.put(k, new WeakReference<SCIFIOCell<A>>(cell));
+		map.put(k, new WeakReference<>(cell));
 		refManagerService.manage(cell, k, map);
 	}
 

@@ -1296,7 +1296,7 @@ public class AVIFormat extends AbstractFormat {
 			IOException
 		{
 			super.setDest(out, imageIndex, config);
-			savedbLength = new Vector<Long>();
+			savedbLength = new Vector<>();
 
 			final Metadata meta = getMetadata();
 
@@ -1690,8 +1690,8 @@ public class AVIFormat extends AbstractFormat {
 		protected void translateImageMetadata(final List<ImageMetadata> source,
 			final Metadata dest)
 		{
-			final Vector<Long> offsets = new Vector<Long>();
-			final Vector<Long> lengths = new Vector<Long>();
+			final Vector<Long> offsets = new Vector<>();
+			final Vector<Long> lengths = new Vector<>();
 			dest.setOffsets(offsets);
 			dest.setLengths(lengths);
 			dest.createImageMetadata(1);

@@ -77,17 +77,17 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	private DB db;
 
 	/** List of caches. */
-	private final Set<String> caches = new TreeSet<String>();
+	private final Set<String> caches = new TreeSet<>();
 
 	/** Map of keys stored in this cache to the last hash stored on disk. */
 	private final Map<Integer, Integer> knownKeys =
-		new ConcurrentHashMap<Integer, Integer>();
+		new ConcurrentHashMap<>();
 
 	/**
 	 * List of all keys that have been retrieved so far. These keys are OK to
 	 * delete from disk.
 	 */
-	private final Set<Integer> retrievedKeys = new HashSet<Integer>();
+	private final Set<Integer> retrievedKeys = new HashSet<>();
 
 	/** Maximum cache size, in bytes. */
 	private long maxCacheSize = Long.MAX_VALUE;
@@ -96,7 +96,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 	private final boolean[] cleaning = { false };
 
 	private final Queue<Set<Integer>> cleaningQueue =
-		new LinkedList<Set<Integer>>();
+		new LinkedList<>();
 
 	// -- CacheService API Methods --
 
@@ -300,7 +300,7 @@ public class MapDBCache extends AbstractCacheService<SCIFIOCell<?>> {
 			}
 		}
 		synchronized (cleaningQueue) {
-			cleaningQueue.add(new HashSet<Integer>(retrievedKeys));
+			cleaningQueue.add(new HashSet<>(retrievedKeys));
 		}
 		retrievedKeys.clear();
 

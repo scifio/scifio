@@ -60,7 +60,7 @@ public class TestParameters {
 		{ "ZipHandle", false, true, asSet("readTests"), asSet("readLineTest") } };
 
 	private final static <T> Set<T> asSet(final T... values) {
-		final Set<T> result = new HashSet<T>();
+		final Set<T> result = new HashSet<>();
 		for (final T value : values) {
 			result.add(value);
 		}
@@ -80,7 +80,7 @@ public class TestParameters {
 
 	public static Collection<Object[]> parameters(final String... groups) {
 		final Set<String> groupSet = groups.length == 0 ? null : asSet(groups);
-		final Collection<Object[]> result = new ArrayList<Object[]>();
+		final Collection<Object[]> result = new ArrayList<>();
 		for (final Object[] values : parameters) {
 			if (groupSet != null) {
 				// includes

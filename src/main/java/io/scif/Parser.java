@@ -238,7 +238,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Returns a list of MetadataLevel options for determining the granularity of
-	 * MetadataCollection
+	 * Metadata collection.
 	 */
 	Set<MetadataLevel> getSupportedMetadataLevels();
 }

@@ -34,6 +34,7 @@ import io.scif.ImageMetadata;
 import io.scif.Reader;
 import io.scif.img.ImageRegion;
 import io.scif.util.FormatTools;
+
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.type.numeric.integer.GenericByteType;
 

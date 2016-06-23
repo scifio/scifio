@@ -114,7 +114,7 @@ public class CaseInsensitiveLocation extends Location {
 		 * mapping of case insensitive name to case sensitive (real) name on disc.
 		 */
 		private final HashMap<String, HashMap<String, String>> cache =
-			new HashMap<String, HashMap<String, String>>();
+			new HashMap<>();
 
 		/**
 		 * The constructor.
@@ -135,7 +135,7 @@ public class CaseInsensitiveLocation extends Location {
 			final String dirname = dir.getAbsolutePath();
 			HashMap<String, String> s = cache.get(dirname);
 			if (s == null && dir.exists()) {
-				s = new HashMap<String, String>();
+				s = new HashMap<>();
 				cache.put(dirname, s);
 
 				final String[] files = dir.list();

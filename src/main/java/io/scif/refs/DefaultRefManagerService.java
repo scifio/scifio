@@ -79,12 +79,12 @@ public class DefaultRefManagerService extends AbstractService implements
 	 * individual instances are not managed in the same way.
 	 */
 	private final Map<Object, Set<Class<?>>> managed =
-		new WeakHashMap<Object, Set<Class<?>>>();
+		new WeakHashMap<>();
 
 	/**
 	 * A list of all managed references.
 	 */
-	private final Set<Reference> knownRefs = new HashSet<Reference>();
+	private final Set<Reference> knownRefs = new HashSet<>();
 
 	/**
 	 * Queue used for all references. This is polled on a separate thread, and
@@ -111,7 +111,7 @@ public class DefaultRefManagerService extends AbstractService implements
 					Set<Class<?>> refs = managed.get(toManage);
 
 					if (refs == null) {
-						refs = new HashSet<Class<?>>();
+						refs = new HashSet<>();
 						managed.put(toManage, refs);
 					}
 					refs.add(ref.getClass());

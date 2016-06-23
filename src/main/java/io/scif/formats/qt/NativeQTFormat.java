@@ -359,8 +359,8 @@ public class NativeQTFormat extends AbstractFormat {
 		{
 
 			meta.setSpork(true);
-			final Vector<Integer> offsets = new Vector<Integer>();
-			final Vector<Integer> chunkSizes = new Vector<Integer>();
+			final Vector<Integer> offsets = new Vector<>();
+			final Vector<Integer> chunkSizes = new Vector<>();
 			RandomAccessInputStream cachedStream = null;
 
 			meta.setOffsets(offsets);
@@ -899,7 +899,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 				legacy.setCodec(codec);
 			}
-			offsets = new Vector<Integer>();
+			offsets = new Vector<>();
 			created = (int) System.currentTimeMillis();
 			numBytes = 0;
 

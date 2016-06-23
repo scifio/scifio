@@ -32,20 +32,21 @@ package io.scif.img;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-
-import org.junit.After;
-import org.junit.Test;
-import org.scijava.Context;
-
 import io.scif.config.SCIFIOConfig;
 import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.io.ByteArrayHandle;
 import io.scif.services.LocationService;
+
+import java.io.File;
+
 import net.imagej.ImgPlus;
 import net.imglib2.RandomAccess;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
+
+import org.junit.After;
+import org.junit.Test;
+import org.scijava.Context;
 
 /**
  * Tests for the {@link ImgSaver} class.

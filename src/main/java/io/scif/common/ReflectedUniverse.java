@@ -90,7 +90,7 @@ public class ReflectedUniverse {
 	}
 
 	public ReflectedUniverse(final ClassLoader loader, final LogService log) {
-		variables = new HashMap<String, Object>();
+		variables = new HashMap<>();
 		this.loader = loader == null ? getClass().getClassLoader() : loader;
 		this.log = log == null ? new StderrLogService() : log;
 	}

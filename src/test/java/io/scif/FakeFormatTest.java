@@ -32,6 +32,7 @@ package io.scif;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import io.scif.formats.FakeFormat;
 
 import java.io.IOException;

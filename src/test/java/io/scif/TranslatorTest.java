@@ -34,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import io.scif.filters.MetadataWrapper;
 import io.scif.filters.PlaneSeparator;
 import io.scif.filters.ReaderFilter;
