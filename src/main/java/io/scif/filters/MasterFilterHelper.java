@@ -87,10 +87,10 @@ public class MasterFilterHelper<T extends Contextual> extends AbstractFilter<T>
 
 	// Instance map to maintain singletons of matching plugins
 	private final HashMap<Class<? extends Filter>, Filter> instanceMap =
-		new HashMap<Class<? extends Filter>, Filter>();
+		new HashMap<>();
 
 	// A sorted set of enabled filters
-	private final TreeSet<Filter> enabled = new TreeSet<Filter>();
+	private final TreeSet<Filter> enabled = new TreeSet<>();
 
 	// -- Constructor --
 

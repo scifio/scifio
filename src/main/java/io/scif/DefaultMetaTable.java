@@ -78,7 +78,7 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 	public void putList(final String key, final Object value) {
 		Object list = get(key);
 
-		if (list == null) list = new Vector<Object>();
+		if (list == null) list = new Vector<>();
 
 		if (list instanceof Vector) {
 			@SuppressWarnings("unchecked")
@@ -86,7 +86,7 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 			valueList.add(value);
 		}
 		else {
-			final Vector<Object> v = new Vector<Object>();
+			final Vector<Object> v = new Vector<>();
 			v.add(list);
 			v.add(value);
 			list = v;

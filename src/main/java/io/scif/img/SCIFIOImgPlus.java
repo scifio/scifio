@@ -40,7 +40,6 @@ import java.io.IOException;
 import net.imagej.ImgPlus;
 import net.imagej.ImgPlusMetadata;
 import net.imagej.axis.AxisType;
-import net.imagej.axis.CalibratedAxis;
 import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
 
@@ -162,7 +161,7 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 
 	@Override
 	public SCIFIOImgPlus<T> copy() {
-		final SCIFIOImgPlus<T> copy = new SCIFIOImgPlus<T>(getImg().copy(), this);
+		final SCIFIOImgPlus<T> copy = new SCIFIOImgPlus<>(getImg().copy(), this);
 		copy.setMetadata(getMetadata());
 		return copy;
 	}
@@ -171,8 +170,9 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 
 	@Override
 	public void dispose() {
-		if (getImg() instanceof SCIFIOCellImg) {
-			((SCIFIOCellImg) getImg()).dispose();
+		final Object img = getImg();
+		if (img instanceof Disposable) {
+			((Disposable) img).dispose();
 		}
 	}
 

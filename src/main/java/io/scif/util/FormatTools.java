@@ -969,7 +969,7 @@ public final class FormatTools {
 	public static String[] getFilenames(final String pattern, final Reader r)
 		throws FormatException, IOException
 	{
-		final Vector<String> filenames = new Vector<String>();
+		final Vector<String> filenames = new Vector<>();
 		String filename = null;
 		for (int series = 0; series < r.getImageCount(); series++) {
 			for (int image = 0; image < r.getImageCount(); image++) {

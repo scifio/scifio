@@ -41,6 +41,7 @@ import io.scif.img.cell.loaders.IntArrayLoader;
 import io.scif.img.cell.loaders.LongArrayLoader;
 import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 import io.scif.img.cell.loaders.ShortArrayLoader;
+
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
@@ -213,10 +214,10 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		loader.setIndex(index);
 
 		final SCIFIOCellCache<A> c =
-			new SCIFIOCellCache<A>(reader.getContext(), loader);
+			new SCIFIOCellCache<>(reader.getContext(), loader);
 
 		final SCIFIOCellImg<T, A, SCIFIOCell<A>> cellImg =
-			new SCIFIOCellImg<T, A, SCIFIOCell<A>>(this, new SCIFIOImgCells<A>(c,
+			new SCIFIOCellImg<>(this, new SCIFIOImgCells<>(c,
 				entitiesPerPixel, dimensions, cellSize));
 
 		cellImg.setLoader(loader);

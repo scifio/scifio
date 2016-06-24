@@ -31,6 +31,7 @@
 package io.scif.util;
 
 import static org.junit.Assert.assertEquals;
+
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Reader;

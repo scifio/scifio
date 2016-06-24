@@ -80,7 +80,7 @@ public class Range extends ArrayList<Long> {
 	// -- Constructors --
 
 	private Range() {
-		setIndex = new HashSet<Long>();
+		setIndex = new HashSet<>();
 	}
 
 	public Range(final String range) {

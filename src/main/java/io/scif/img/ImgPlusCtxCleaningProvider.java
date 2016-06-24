@@ -92,7 +92,7 @@ public class ImgPlusCtxCleaningProvider extends AbstractSCIFIOPlugin implements
 		// -- Fields --
 
 		private static Map<Context, Integer> ctxRefs =
-			new HashMap<Context, Integer>();
+			new HashMap<>();
 
 		private Context ctx;
 

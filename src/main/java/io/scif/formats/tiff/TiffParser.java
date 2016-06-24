@@ -30,15 +30,6 @@
 
 package io.scif.formats.tiff;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Vector;
-
-import org.scijava.AbstractContextual;
-import org.scijava.Context;
-import org.scijava.log.LogService;
-import org.scijava.util.IntRect;
-
 import io.scif.FormatException;
 import io.scif.SCIFIO;
 import io.scif.codec.BitBuffer;
@@ -47,6 +38,15 @@ import io.scif.common.Constants;
 import io.scif.common.DataTools;
 import io.scif.enumeration.EnumException;
 import io.scif.io.RandomAccessInputStream;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Vector;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.log.LogService;
+import org.scijava.util.IntRect;
 
 /**
  * Parses TIFF data from an input source.
@@ -297,7 +297,7 @@ public class TiffParser extends AbstractContextual {
 			bigTiff ? TiffConstants.BIG_TIFF_BYTES_PER_ENTRY
 				: TiffConstants.BYTES_PER_ENTRY;
 
-		final Vector<Long> offsets = new Vector<Long>();
+		final Vector<Long> offsets = new Vector<>();
 		long offset = getFirstOffset();
 		while (offset > 0 && offset < in.length()) {
 			in.seek(offset);
@@ -445,7 +445,7 @@ public class TiffParser extends AbstractContextual {
 
 	/** Fill in IFD entries that are stored at an arbitrary offset. */
 	public void fillInIFD(final IFD ifd) throws IOException {
-		final HashSet<TiffIFDEntry> entries = new HashSet<TiffIFDEntry>();
+		final HashSet<TiffIFDEntry> entries = new HashSet<>();
 		for (final Object key : ifd.keySet()) {
 			if (ifd.get(key) instanceof TiffIFDEntry) {
 				entries.add((TiffIFDEntry) ifd.get(key));

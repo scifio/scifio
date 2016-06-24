@@ -205,7 +205,7 @@ public enum TiffCompression implements CodedEnum {
 
 	private static Map<Integer, TiffCompression> getCompressionMap() {
 		final Map<Integer, TiffCompression> lookup =
-			new HashMap<Integer, TiffCompression>();
+			new HashMap<>();
 		for (final TiffCompression v : EnumSet.allOf(TiffCompression.class)) {
 			lookup.put(v.getCode(), v);
 		}

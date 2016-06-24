@@ -454,8 +454,8 @@ public class TiffSaver extends AbstractContextual {
 
 		// record strip byte counts and offsets
 
-		final List<Long> byteCounts = new ArrayList<Long>();
-		final List<Long> offsets = new ArrayList<Long>();
+		final List<Long> byteCounts = new ArrayList<>();
+		final List<Long> offsets = new ArrayList<>();
 		long totalTiles = tilesPerRow * tilesPerColumn;
 
 		if (!interleaved) {
@@ -549,7 +549,7 @@ public class TiffSaver extends AbstractContextual {
 	public void writeIFD(final IFD ifd, final long nextOffset)
 		throws FormatException, IOException
 	{
-		final TreeSet<Integer> keys = new TreeSet<Integer>(ifd.keySet());
+		final TreeSet<Integer> keys = new TreeSet<>(ifd.keySet());
 		int keyCount = keys.size();
 
 		if (ifd.containsKey(new Integer(IFD.LITTLE_ENDIAN))) keyCount--;

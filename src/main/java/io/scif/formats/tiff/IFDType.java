@@ -55,7 +55,7 @@ public enum IFDType implements CodedEnum {
 	private int bytesPerElement;
 
 	private static final Map<Integer, IFDType> lookup =
-		new HashMap<Integer, IFDType>();
+		new HashMap<>();
 
 	/** Reverse lookup of code to IFD type enumerate value. */
 	static {

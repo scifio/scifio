@@ -56,7 +56,7 @@ public class HuffmanCodec extends AbstractCodec {
 	private int leafCounter;
 
 	private final HashMap<short[], Decoder> cachedDecoders =
-		new HashMap<short[], Decoder>();
+		new HashMap<>();
 
 	// -- Codec API methods --
 

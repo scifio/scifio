@@ -281,7 +281,7 @@ public class DefaultFilePatternService extends AbstractService implements
 		if (dot < 0) baseSuffix = "";
 		else baseSuffix = baseSuffix.substring(dot + 1);
 
-		final ArrayList<String> patterns = new ArrayList<String>();
+		final ArrayList<String> patterns = new ArrayList<>();
 		final int[] exclude = new int[] { AxisGuesser.S_AXIS };
 		for (final String name : nameList) {
 			final String pattern = findPattern(name, dir, nameList, exclude);
@@ -377,7 +377,7 @@ public class DefaultFilePatternService extends AbstractService implements
 	private String[]
 		matchFiles(final String[] inFiles, final NumberFilter filter)
 	{
-		final List<String> list = new ArrayList<String>();
+		final List<String> list = new ArrayList<>();
 		for (final String inFile : inFiles) {
 			if (filter.accept(inFile)) list.add(inFile);
 		}

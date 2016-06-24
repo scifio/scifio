@@ -56,7 +56,7 @@ public class ReaderFilter extends AbstractReaderFilter implements
 	 * @param r - Reader to be wrapped
 	 */
 	public ReaderFilter(final Reader r) {
-		fHelper = new MasterFilterHelper<Reader>(r, Reader.class);
+		fHelper = new MasterFilterHelper<>(r, Reader.class);
 	}
 
 	// -- MasterFilter API Methods --

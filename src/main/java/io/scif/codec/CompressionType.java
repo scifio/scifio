@@ -55,7 +55,7 @@ public enum CompressionType implements CodedEnum {
 
 	/** Map used to retrieve the compression type corresponding to the code. */
 	private static final Map<Integer, CompressionType> lookup =
-		new HashMap<Integer, CompressionType>();
+		new HashMap<>();
 
 	/** Reverse lookup of code to compression type enumerate value. */
 	static {

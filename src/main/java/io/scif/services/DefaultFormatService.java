@@ -150,7 +150,7 @@ public class DefaultFormatService extends AbstractService implements
 
 	@Override
 	public String[] getSuffixes() {
-		final TreeSet<String> ts = new TreeSet<String>();
+		final TreeSet<String> ts = new TreeSet<>();
 
 		for (final Format f : formats()) {
 			for (final String s : f.getSuffixes()) {
@@ -333,7 +333,7 @@ public class DefaultFormatService extends AbstractService implements
 		final boolean greedy) throws FormatException
 	{
 
-		final List<Format> formatList = new ArrayList<Format>();
+		final List<Format> formatList = new ArrayList<>();
 
 		boolean found = false;
 
@@ -379,7 +379,7 @@ public class DefaultFormatService extends AbstractService implements
 	public List<Format> getFormatList(final RandomAccessInputStream source,
 		final SCIFIOConfig config, final boolean greedy) throws FormatException
 	{
-		final List<Format> formatList = new ArrayList<Format>();
+		final List<Format> formatList = new ArrayList<>();
 
 		boolean found = false;
 
@@ -437,14 +437,14 @@ public class DefaultFormatService extends AbstractService implements
 				// Allow this thread to bypass the initialization check
 				threadLock.set(true);
 
-				formats = new TreeSet<Format>();
-				formatMap = new HashMap<Class<?>, Format>();
-				checkerMap = new HashMap<Class<?>, Format>();
-				parserMap = new HashMap<Class<?>, Format>();
-				readerMap = new HashMap<Class<?>, Format>();
-				writerMap = new HashMap<Class<?>, Format>();
-				metadataMap = new HashMap<Class<?>, Format>();
-				formatCache = new WeakHashMap<String, Format>();
+				formats = new TreeSet<>();
+				formatMap = new HashMap<>();
+				checkerMap = new HashMap<>();
+				parserMap = new HashMap<>();
+				readerMap = new HashMap<>();
+				writerMap = new HashMap<>();
+				metadataMap = new HashMap<>();
+				formatCache = new WeakHashMap<>();
 
 				// Initialize format information
 				for (final Format format : pluginService

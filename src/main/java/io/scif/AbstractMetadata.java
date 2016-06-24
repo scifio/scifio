@@ -81,7 +81,7 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 	}
 
 	public AbstractMetadata(final List<ImageMetadata> list) {
-		imageMeta = new ArrayList<ImageMetadata>();
+		imageMeta = new ArrayList<>();
 		table = new DefaultMetaTable();
 
 		if (list != null) {
@@ -224,7 +224,7 @@ public abstract class AbstractMetadata extends AbstractHasSource implements
 			}
 
 			table = new DefaultMetaTable();
-			imageMeta = new ArrayList<ImageMetadata>();
+			imageMeta = new ArrayList<>();
 
 			// check superclasses and interfaces
 			reset(type.getSuperclass());

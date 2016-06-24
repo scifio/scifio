@@ -132,7 +132,7 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	public List<AxisType> getInputOrder(final int imageIndex) {
 //		FormatTools.assertId(getCurrentFile(), true, 2);
 
-		if (inputOrder == null) inputOrder = new ArrayList<AxisType>();
+		if (inputOrder == null) inputOrder = new ArrayList<>();
 		final List<CalibratedAxis> axes = getMetadata().get(imageIndex).getAxes();
 
 		for (int i = 0; i < axes.size(); i++) {

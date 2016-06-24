@@ -176,7 +176,7 @@ public class DefaultTranslatorService extends
 	 */
 	private void createTranslatorMap() {
 		sourceToDestMap =
-			new HashMap<Class<? extends Metadata>, Map<Class<? extends Metadata>, Translator>>();
+			new HashMap<>();
 		for (final Translator translator : getInstances()) {
 			addToMap(translator.source(), translator.dest(), sourceToDestMap,
 				translator);
@@ -204,7 +204,7 @@ public class DefaultTranslatorService extends
 
 		// Create the map if it doesn't already exist
 		if (innerMap == null) {
-			innerMap = new HashMap<Class<? extends Metadata>, Translator>();
+			innerMap = new HashMap<>();
 			map.put(key1, innerMap);
 		}
 

@@ -111,7 +111,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 
 			@Override
 			protected HashMap<URI, Schema> initialValue() {
-				return new HashMap<URI, Schema>();
+				return new HashMap<>();
 			}
 		};
 
@@ -408,7 +408,7 @@ public class DefaultXMLService extends AbstractService implements XMLService {
 				firstTag = xml.substring(0, gt + 1).toLowerCase();
 			}
 
-			final Set<String> namespaces = new HashSet<String>();
+			final Set<String> namespaces = new HashSet<>();
 			Pattern pattern = Pattern.compile(" xmlns:(\\w+)");
 			Matcher matcher = pattern.matcher(firstTag);
 			while (matcher.find()) {

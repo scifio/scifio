@@ -62,7 +62,7 @@ public class DefaultMetadataService extends AbstractService implements
 
 	@Override
 	public Map<String, Object> parse(final String data, final String regex) {
-		final HashMap<String, Object> map = new HashMap<String, Object>();
+		final HashMap<String, Object> map = new HashMap<>();
 
 		final String[] tokens = data.split(regex);
 

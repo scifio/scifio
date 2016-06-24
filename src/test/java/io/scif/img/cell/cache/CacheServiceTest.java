@@ -35,6 +35,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import io.scif.FormatException;
 import io.scif.SCIFIO;
 import io.scif.config.SCIFIOConfig;
@@ -225,7 +226,7 @@ public class CacheServiceTest {
 		SCIFIOCell<ByteArray> cell =
 			cache.load(0, new int[] { 128, 128 }, new long[] { 0l, 0l });
 		WeakReference<SCIFIOCell<ByteArray>> ref =
-			new WeakReference<SCIFIOCell<ByteArray>>(cell);
+			new WeakReference<>(cell);
 		// First, test with no modifications to the cell
 		cell = null;
 
@@ -244,7 +245,7 @@ public class CacheServiceTest {
 
 		// dirty it and create another weak ref
 		cell.getData().setValue(42, (byte) 0xace);
-		ref = new WeakReference<SCIFIOCell<ByteArray>>(cell);
+		ref = new WeakReference<>(cell);
 
 		// Wait for the ref to clear
 		cell = null;
@@ -282,7 +283,7 @@ public class CacheServiceTest {
 		assertNull(cs.retrieve(cache.toString(), 0));
 
 		// repeat to ensure multiple cachings work
-		ref = new WeakReference<SCIFIOCell<ByteArray>>(cell);
+		ref = new WeakReference<>(cell);
 
 		cell = null;
 		time = System.currentTimeMillis();
@@ -491,7 +492,7 @@ public class CacheServiceTest {
 				new SCIFIOConfig().checkerSetOpen(true));
 		final ByteArrayLoader loader = new ByteArrayLoader(rf, null);
 		final SCIFIOCellCache<ByteArray> cellCache =
-			new SCIFIOCellCache<ByteArray>(cs.getContext(), loader);
+			new SCIFIOCellCache<>(cs.getContext(), loader);
 		return cellCache;
 	}
 
@@ -505,7 +506,7 @@ public class CacheServiceTest {
 				new SCIFIOConfig().checkerSetOpen(true));
 		final ByteArrayLoader loader = new ByteArrayLoader(rf, null);
 		final TestCellCache<ByteArray> cellCache =
-			new TestCellCache<ByteArray>(cs.getContext(), loader);
+			new TestCellCache<>(cs.getContext(), loader);
 		return cellCache;
 	}
 

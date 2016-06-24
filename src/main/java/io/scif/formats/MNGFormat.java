@@ -179,7 +179,7 @@ public class MNGFormat extends AbstractFormat {
 
 			getSource().skipBytes(32);
 
-			final Vector<Long> stack = new Vector<Long>();
+			final Vector<Long> stack = new Vector<>();
 			int maxIterations = 0;
 			int currentIteration = 0;
 
@@ -229,9 +229,9 @@ public class MNGFormat extends AbstractFormat {
 			// easiest way to get image dimensions is by opening the first plane
 
 			final Hashtable<String, Vector<Long>> imageOffsets =
-				new Hashtable<String, Vector<Long>>();
+				new Hashtable<>();
 			final Hashtable<String, Vector<Long>> imageLengths =
-				new Hashtable<String, Vector<Long>>();
+				new Hashtable<>();
 
 			final MNGImageInfo info = datasetInfo.imageInfo.get(0);
 			meta.getTable().put("Number of frames", info.offsets.size());
@@ -245,14 +245,14 @@ public class MNGFormat extends AbstractFormat {
 					img.getWidth() + "-" + img.getHeight() + "-" +
 						img.getRaster().getNumBands() + "-" +
 						AWTImageTools.getPixelType(img);
-				Vector<Long> v = new Vector<Long>();
+				Vector<Long> v = new Vector<>();
 				if (imageOffsets.containsKey(data)) {
 					v = imageOffsets.get(data);
 				}
 				v.add(new Long(offset));
 				imageOffsets.put(data, v);
 
-				v = new Vector<Long>();
+				v = new Vector<>();
 				if (imageLengths.containsKey(data)) {
 					v = imageLengths.get(data);
 				}
@@ -343,15 +343,15 @@ public class MNGFormat extends AbstractFormat {
 
 	private static class MNGDatasetInfo {
 
-		public Vector<MNGImageInfo> imageInfo = new Vector<MNGImageInfo>();
+		public Vector<MNGImageInfo> imageInfo = new Vector<>();
 
 		public String[] keys;
 	}
 
 	private static class MNGImageInfo {
 
-		public Vector<Long> offsets = new Vector<Long>();
+		public Vector<Long> offsets = new Vector<>();
 
-		public Vector<Long> lengths = new Vector<Long>();
+		public Vector<Long> lengths = new Vector<>();
 	}
 }

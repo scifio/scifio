@@ -113,8 +113,8 @@ public class FilePattern {
 
 		// locate numerical blocks
 		final int len = pattern.length();
-		final List<Integer> lt = new ArrayList<Integer>(len);
-		final List<Integer> gt = new ArrayList<Integer>(len);
+		final List<Integer> lt = new ArrayList<>(len);
+		final List<Integer> gt = new ArrayList<>(len);
 		int left = -1;
 		while (true) {
 			left = pattern.indexOf(FilePatternBlock.BLOCK_START, left + 1);
@@ -159,7 +159,7 @@ public class FilePattern {
 		}
 
 		// build file listing
-		final List<String> fileList = new ArrayList<String>();
+		final List<String> fileList = new ArrayList<>();
 		buildFiles("", num, fileList);
 		files = fileList.toArray(new String[0]);
 
@@ -348,7 +348,7 @@ public class FilePattern {
 	}
 
 	private String[] getAllFiles(final String dir) {
-		final ArrayList<String> files = new ArrayList<String>();
+		final ArrayList<String> files = new ArrayList<>();
 
 		final Location root = new Location(scifio.getContext(), dir);
 		final String[] children = root.list();

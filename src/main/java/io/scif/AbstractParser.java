@@ -122,7 +122,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	@Override
 	public String[] getUsedFiles(final boolean noPixels) {
-		final Vector<String> files = new Vector<String>();
+		final Vector<String> files = new Vector<>();
 		for (int i = 0; i < metadata.getImageCount(); i++) {
 			final String[] s = getImageUsedFiles(i, noPixels);
 			if (s != null) {
@@ -167,7 +167,7 @@ public abstract class AbstractParser<M extends TypedMetadata> extends
 
 	@Override
 	public Set<MetadataLevel> getSupportedMetadataLevels() {
-		final Set<MetadataLevel> supportedLevels = new HashSet<MetadataLevel>();
+		final Set<MetadataLevel> supportedLevels = new HashSet<>();
 		supportedLevels.add(MetadataLevel.ALL);
 		supportedLevels.add(MetadataLevel.NO_OVERLAYS);
 		supportedLevels.add(MetadataLevel.MINIMUM);

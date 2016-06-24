@@ -36,6 +36,7 @@ import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.util.FormatTools;
 import io.scif.util.MemoryTools;
+
 import net.imagej.axis.Axes;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
@@ -108,9 +109,9 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 				modeIndex >= imgModes.length ? ImgMode.AUTO : imgModes[modeIndex++];
 
 			if (mode.equals(ImgMode.AUTO)) {
-				if (!fitsInMemory) tmpFactory = new SCIFIOCellImgFactory<T>();
-				else if (datasetSize < maxSize) tmpFactory = new ArrayImgFactory<T>();
-				else tmpFactory = new PlanarImgFactory<T>();
+				if (!fitsInMemory) tmpFactory = new SCIFIOCellImgFactory<>();
+				else if (datasetSize < maxSize) tmpFactory = new ArrayImgFactory<>();
+				else tmpFactory = new PlanarImgFactory<>();
 
 				// FIXME: no CellImgFactory right now.. isn't guaranteed to
 				// handle all
@@ -123,13 +124,13 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 			else if (mode.equals(ImgMode.ARRAY) && datasetSize < maxSize &&
 				fitsInMemory)
 			{
-				tmpFactory = new ArrayImgFactory<T>();
+				tmpFactory = new ArrayImgFactory<>();
 				decided = true;
 			}
 			else if (mode.equals(ImgMode.PLANAR) && planeSize < maxSize &&
 				fitsInMemory)
 			{
-				tmpFactory = new PlanarImgFactory<T>();
+				tmpFactory = new PlanarImgFactory<>();
 				decided = true;
 			}
 			else if (mode.equals(ImgMode.CELL)) {
@@ -138,7 +139,7 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 				// images well (e.g. RGB)
 //        if (fitsInMemory) tmpFactory = new CellImgFactory<T>();
 //        else tmpFactory = new SCIFIOCellImgFactory<T>();
-				tmpFactory = new SCIFIOCellImgFactory<T>();
+				tmpFactory = new SCIFIOCellImgFactory<>();
 
 				decided = true;
 			}

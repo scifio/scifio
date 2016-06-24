@@ -55,7 +55,7 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 	// -- Fields --
 
 	/** List of Axes to separate. */
-	private Set<AxisType> splitTypes = new HashSet<AxisType>();
+	private Set<AxisType> splitTypes = new HashSet<>();
 
 	// -- PlanarAxisSeparatorMetadata API Methods --
 
@@ -85,7 +85,7 @@ public class PlaneSeparatorMetadata extends AbstractMetadataWrapper {
 
 	@Override
 	public void wrap(final Metadata meta) {
-		splitTypes = new HashSet<AxisType>();
+		splitTypes = new HashSet<>();
 		for (int i = 0; i < meta.get(0).getInterleavedAxisCount(); i++) {
 			splitTypes.add(meta.get(0).getAxis(i).type());
 		}

@@ -33,6 +33,7 @@ package io.scif;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import io.scif.img.axes.SCIFIOAxes;
 import io.scif.util.FormatTools;
 

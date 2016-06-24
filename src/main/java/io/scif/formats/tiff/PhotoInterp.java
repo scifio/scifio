@@ -70,7 +70,7 @@ public enum PhotoInterp implements CodedEnum {
 	private String metadataType;
 
 	private static final Map<Integer, PhotoInterp> lookup =
-		new HashMap<Integer, PhotoInterp>();
+		new HashMap<>();
 
 	/** Reverse lookup of code to IFD type enumerate value. */
 	static {

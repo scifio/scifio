@@ -30,19 +30,6 @@
 
 package io.scif.formats;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Vector;
-
-import net.imagej.axis.Axes;
-import net.imglib2.display.ColorTable;
-import net.imglib2.display.ColorTable16;
-import net.imglib2.display.ColorTable8;
-
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-
 import io.scif.AbstractChecker;
 import io.scif.AbstractFormat;
 import io.scif.AbstractMetadata;
@@ -68,6 +55,19 @@ import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.services.InitializeService;
 import io.scif.util.FormatTools;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import net.imagej.axis.Axes;
+import net.imglib2.display.ColorTable;
+import net.imglib2.display.ColorTable16;
+import net.imglib2.display.ColorTable8;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * DICOMReader is the file format reader for DICOM files. Much of this code is
@@ -4464,7 +4464,7 @@ public class DICOMFormat extends AbstractFormat {
 		private String originalDate, originalTime, originalInstance;
 		private int originalSeries;
 
-		private Vector<String> companionFiles = new Vector<String>();
+		private Vector<String> companionFiles = new Vector<>();
 
 		// Getters and Setters
 
@@ -4857,7 +4857,7 @@ public class DICOMFormat extends AbstractFormat {
 			final ImageMetadata iMeta = meta.get(0);
 
 			// look for companion files
-			final Vector<String> companionFiles = new Vector<String>();
+			final Vector<String> companionFiles = new Vector<>();
 			attachCompanionFiles(companionFiles);
 			meta.setCompanionFiles(companionFiles);
 
@@ -5170,7 +5170,7 @@ public class DICOMFormat extends AbstractFormat {
 						.getOriginalTime() != null && config.groupableIsGroupFiles())
 			{
 				final Hashtable<Integer, Vector<String>> fileList =
-					new Hashtable<Integer, Vector<String>>();
+					new Hashtable<>();
 				final Integer s = new Integer(getMetadata().getOriginalSeries());
 				fileList.put(s, new Vector<String>());
 
@@ -5219,7 +5219,7 @@ public class DICOMFormat extends AbstractFormat {
 			}
 			else if (getMetadata().getFileList() == null) {
 				final Hashtable<Integer, Vector<String>> fileList =
-					new Hashtable<Integer, Vector<String>>();
+					new Hashtable<>();
 				fileList.put(0, new Vector<String>());
 				fileList.get(0).add(getSource().getFileName());
 				getMetadata().setFileList(fileList);
@@ -5738,8 +5738,9 @@ public class DICOMFormat extends AbstractFormat {
 				options.littleEndian = meta.get(imageIndex).isLittleEndian();
 				options.interleaved = meta.get(imageIndex)
 					.getInterleavedAxisCount() > 0;
-				final Codec codec = codecService.getCodec(meta.isJPEG()
-					? JPEGCodec.class : JPEG2000Codec.class);
+				final Codec codec = meta.isJPEG() ? //
+					codecService.getCodec(JPEGCodec.class) : //
+					codecService.getCodec(JPEG2000Codec.class);
 				b = codec.decompress(b, options);
 
 				final int rowLen = w * bpp;
