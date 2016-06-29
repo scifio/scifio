@@ -5522,7 +5522,7 @@ public class DICOMFormat extends AbstractFormat {
 				case DICOMUtils.AT:
 					// Cannot fix element length to 4, because AT value representation is
 					// always
-					// 4 bytes long (DICOM specs PS3.5 §6.2), but value multiplicity is
+					// 4 bytes long (DICOM specs PS3.5 par.6.2), but value multiplicity is
 					// 1-n
 					final byte[] bytes = new byte[tag.getElementLength()];
 					// Read from stream
