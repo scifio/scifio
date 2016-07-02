@@ -50,7 +50,6 @@ import io.scif.codec.JPEG2000BoxType;
 import io.scif.codec.JPEG2000Codec;
 import io.scif.codec.JPEG2000CodecOptions;
 import io.scif.codec.JPEG2000SegmentMarker;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -65,6 +64,7 @@ import net.imglib2.display.ColorTable8;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * JPEG2000Reader is the file format reader for JPEG-2000 images.
@@ -414,7 +414,7 @@ public class JPEG2000Format extends AbstractFormat {
 				if (boxType == JPEG2000BoxType.SIGNATURE_WRONG_ENDIANNESS) {
 					log().trace("Swapping endianness during box parsing.");
 					getSource().order(!getSource().isLittleEndian());
-					length = DataTools.swap(length);
+					length = Bytes.swap(length);
 				}
 				nextPos = pos + length;
 				if (length >= 8) {

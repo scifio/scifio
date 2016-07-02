@@ -30,11 +30,11 @@
 
 package io.scif;
 
-import io.scif.common.DataTools;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+
+import org.scijava.util.StringUtils;
 
 /**
  * Default {@link MetaTable} implementation. Provides a copying constructor and
@@ -121,8 +121,8 @@ public class DefaultMetaTable extends HashMap<String, Object> implements
 			if (string && val.length() > maxLen) return null;
 
 			// remove all non-printable characters
-			key = DataTools.sanitize(key);
-			if (string) val = DataTools.sanitize(val);
+			key = StringUtils.sanitize(key);
+			if (string) val = StringUtils.sanitize(val);
 
 			// verify key contains at least one alphabetic character
 			if (!key.matches(".*[a-zA-Z].*")) return null;

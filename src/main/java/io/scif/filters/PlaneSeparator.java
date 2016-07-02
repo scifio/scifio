@@ -34,7 +34,6 @@ import io.scif.ByteArrayPlane;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -50,6 +49,7 @@ import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ArrayUtils;
 
 /**
  * Logic to automatically separate the channels in a file.
@@ -285,7 +285,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 						stripHeight + (h - (stripHeight * strips));
 					byte[] strip =
 						strips == 1 ? plane.getBytes() : new byte[(int) (stripHeight *
-							DataTools.safeMultiply32(Arrays.copyOf(lengths,
+							ArrayUtils.safeMultiply32(Arrays.copyOf(lengths,
 								lengths.length - 1)) * bpp)];
 					updateLastPlaneInfo(source, imageIndex, splitOffset, offsets, lengths);
 					final int parentYIndex =
@@ -314,18 +314,18 @@ public class PlaneSeparator extends AbstractReaderFilter {
 						{
 							strip =
 								new byte[(int) (lastStripHeight *
-									DataTools.safeMultiply32(Arrays.copyOf(lengths,
+									ArrayUtils.safeMultiply32(Arrays.copyOf(lengths,
 										lengths.length - 1)) * bpp)];
 						}
 
 						// Extract the requested channel from the plane
 						ImageTools.splitChannels(lastPlane.getBytes(), strip,
 							separatedPosition, separatedLengths, bpp, false, interleaved,
-							strips == 1 ? bpp * DataTools.safeMultiply32(lengths)
+							strips == 1 ? bpp * ArrayUtils.safeMultiply32(lengths)
 								: strip.length);
 						if (strips != 1) {
 							System.arraycopy(strip, 0, plane.getBytes(), (int) (i *
-								stripHeight * DataTools.safeMultiply32(Arrays.copyOf(lengths,
+								stripHeight * ArrayUtils.safeMultiply32(Arrays.copyOf(lengths,
 								lengths.length - 1))) *
 								bpp, strip.length);
 						}
@@ -336,7 +336,7 @@ public class PlaneSeparator extends AbstractReaderFilter {
 					// desired region
 					ImageTools.splitChannels(lastPlane.getBytes(), plane.getBytes(),
 						separatedPosition, separatedLengths, bpp, false, interleaved, bpp *
-							DataTools.safeMultiply32(lengths));
+							ArrayUtils.safeMultiply32(lengths));
 				}
 
 				return plane;

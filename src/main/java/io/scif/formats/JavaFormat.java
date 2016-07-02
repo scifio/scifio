@@ -37,7 +37,6 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Plane;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
@@ -55,6 +54,8 @@ import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ArrayUtils;
+import org.scijava.util.Bytes;
 
 /**
  * Format for Java source code. At the moment, this code just writes a very
@@ -113,7 +114,7 @@ public class JavaFormat extends AbstractFormat {
 			final String pixelType =
 				FormatTools.getPixelTypeString(meta.get(imageIndex).getPixelType());
 			final int type = FormatTools.pixelTypeFromString(pixelType);
-			if (!DataTools.containsValue(getPixelTypes(getCompression()), type)) {
+			if (!ArrayUtils.contains(getPixelTypes(getCompression()), type)) {
 				throw new FormatException("Unsupported image type '" + pixelType + "'.");
 			}
 			final int bpp = FormatTools.getBytesPerPixel(type);
@@ -123,7 +124,7 @@ public class JavaFormat extends AbstractFormat {
 
 			// write array
 			final String varName = "image" + imageIndex + "Plane" + planeIndex;
-			final Object array = DataTools.makeDataArray(buf, bpp, fp, little);
+			final Object array = Bytes.makeArray(buf, bpp, fp, little);
 
 			getStream().seek(getStream().length());
 			writePlane(varName, getType(array), (int) planeMax[0], (int) planeMax[1]);

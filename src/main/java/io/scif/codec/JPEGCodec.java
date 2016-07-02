@@ -31,7 +31,6 @@
 package io.scif.codec;
 
 import io.scif.FormatException;
-import io.scif.common.DataTools;
 import io.scif.gui.AWTImageTools;
 import io.scif.io.RandomAccessInputStream;
 
@@ -46,6 +45,7 @@ import javax.imageio.ImageIO;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * This class implements JPEG compression and decompression.
@@ -135,9 +135,9 @@ public class JPEGCodec extends AbstractCodec {
 			final int mask = (int) (Math.pow(2, nBytes * 8) - 1);
 			for (int i = 0; i < buf[0].length; i += nBytes) {
 				final int y =
-					DataTools.bytesToInt(buf[0], i, nBytes, options.littleEndian);
-				int cb = DataTools.bytesToInt(buf[1], i, nBytes, options.littleEndian);
-				int cr = DataTools.bytesToInt(buf[2], i, nBytes, options.littleEndian);
+					Bytes.toInt(buf[0], i, nBytes, options.littleEndian);
+				int cb = Bytes.toInt(buf[1], i, nBytes, options.littleEndian);
+				int cr = Bytes.toInt(buf[2], i, nBytes, options.littleEndian);
 
 				cb = Math.max(0, cb - 128);
 				cr = Math.max(0, cr - 128);
@@ -146,9 +146,9 @@ public class JPEGCodec extends AbstractCodec {
 				final int green = (int) (y - 0.34414 * cb - 0.71414 * cr) & mask;
 				final int blue = (int) (y + 1.772 * cb) & mask;
 
-				DataTools.unpackBytes(red, buf[0], i, nBytes, options.littleEndian);
-				DataTools.unpackBytes(green, buf[1], i, nBytes, options.littleEndian);
-				DataTools.unpackBytes(blue, buf[2], i, nBytes, options.littleEndian);
+				Bytes.unpack(red, buf[0], i, nBytes, options.littleEndian);
+				Bytes.unpack(green, buf[1], i, nBytes, options.littleEndian);
+				Bytes.unpack(blue, buf[2], i, nBytes, options.littleEndian);
 			}
 		}
 

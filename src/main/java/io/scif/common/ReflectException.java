@@ -33,7 +33,10 @@ package io.scif.common;
 /**
  * ReflectException is the exception thrown when something goes wrong performing
  * a reflected operation with ReflectedUniverse.
+ * 
+ * @deprecated Use {@link org.scijava.util.ReflectException} instead.
  */
+@Deprecated
 public class ReflectException extends Exception {
 
 	public ReflectException() {

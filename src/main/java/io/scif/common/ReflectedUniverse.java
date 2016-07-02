@@ -47,7 +47,10 @@ import org.scijava.log.StderrLogService;
 
 /**
  * A general-purpose reflection wrapper class.
+ * 
+ * @deprecated Use {@link org.scijava.util.ReflectedUniverse} instead.
  */
+@Deprecated
 public class ReflectedUniverse {
 
 	// -- Fields --

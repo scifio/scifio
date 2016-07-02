@@ -45,7 +45,11 @@ import org.scijava.Context;
  * @author Curtis Rueden
  * @author Chris Allan
  * @author Melissa Linkert
+ * @deprecated Use these classes instead: {@link org.scijava.util.Bytes},
+ *             {@link org.scijava.util.StringUtils},
+ *             {@link org.scijava.util.ArrayUtils}
  */
+@Deprecated
 public final class DataTools {
 
 	// -- Constants --
