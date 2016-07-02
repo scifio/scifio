@@ -34,7 +34,6 @@ import io.scif.DependencyException;
 import io.scif.FormatException;
 import io.scif.MissingLibraryException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.common.DataTools;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.services.LuraWaveService;
 import io.scif.services.ServiceException;
@@ -45,6 +44,7 @@ import java.io.IOException;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * This class provides LuraWave decompression, using LuraWave's Java decoding
@@ -135,7 +135,7 @@ public class LuraWaveCodec extends AbstractCodec {
 
 			final byte[] output = new byte[w * h * 2];
 			for (int i = 0; i < image16.length; i++) {
-				DataTools.unpackBytes(image16[i], output, i * 2, 2, true);
+				Bytes.unpack(image16[i], output, i * 2, 2, true);
 			}
 			return output;
 		}

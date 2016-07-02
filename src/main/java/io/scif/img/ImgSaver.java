@@ -40,7 +40,6 @@ import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Translator;
 import io.scif.Writer;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.services.FormatService;
 import io.scif.services.TranslatorService;
@@ -80,6 +79,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.Bytes;
 
 /**
  * Writes out an {@link ImgPlus} using SCIFIO.
@@ -633,22 +633,22 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 					// Convert current plane if necessary
 					if (planeClass == int[].class) {
-						sourcePlane = DataTools.intsToBytes((int[]) curPlane, false);
+						sourcePlane = Bytes.fromInts((int[]) curPlane, false);
 					}
 					else if (planeClass == byte[].class) {
 						sourcePlane = (byte[]) curPlane;
 					}
 					else if (planeClass == short[].class) {
-						sourcePlane = DataTools.shortsToBytes((short[]) curPlane, false);
+						sourcePlane = Bytes.fromShorts((short[]) curPlane, false);
 					}
 					else if (planeClass == long[].class) {
-						sourcePlane = DataTools.longsToBytes((long[]) curPlane, false);
+						sourcePlane = Bytes.fromLongs((long[]) curPlane, false);
 					}
 					else if (planeClass == double[].class) {
-						sourcePlane = DataTools.doublesToBytes((double[]) curPlane, false);
+						sourcePlane = Bytes.fromDoubles((double[]) curPlane, false);
 					}
 					else if (planeClass == float[].class) {
-						sourcePlane = DataTools.floatsToBytes((float[]) curPlane, false);
+						sourcePlane = Bytes.fromFloats((float[]) curPlane, false);
 					}
 					else {
 						throw new IncompatibleTypeException(new ImgLibException(),

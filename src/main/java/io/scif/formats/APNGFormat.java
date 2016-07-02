@@ -74,6 +74,7 @@ import net.imglib2.display.ColorTable8;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * SCIFIO Format supporting the <a
@@ -623,7 +624,7 @@ public class APNGFormat extends AbstractFormat {
 			for (final FDATChunk fdat : fctl.getFdatChunks()) {
 				getStream().seek(fdat.getOffset() + 4);
 				byte[] b = new byte[fdat.getLength() + 8];
-				DataTools.unpackBytes(fdat.getLength() - 4, b, 0, 4, getMetadata().get(
+				Bytes.unpack(fdat.getLength() - 4, b, 0, 4, getMetadata().get(
 					imageIndex).isLittleEndian());
 				b[4] = 'I';
 				b[5] = 'D';
@@ -631,7 +632,7 @@ public class APNGFormat extends AbstractFormat {
 				b[7] = 'T';
 				getStream().read(b, 8, b.length - 12);
 				final int crc = (int) computeCRC(b, b.length - 4);
-				DataTools.unpackBytes(crc, b, b.length - 4, 4, getMetadata().get(
+				Bytes.unpack(crc, b, b.length - 4, 4, getMetadata().get(
 					imageIndex).isLittleEndian());
 				stream.write(b);
 				b = null;
@@ -698,20 +699,20 @@ public class APNGFormat extends AbstractFormat {
 			throws IOException
 		{
 			byte[] b = new byte[length + 12];
-			DataTools.unpackBytes(length, b, 0, 4, getMetadata().get(imageIndex)
+			Bytes.unpack(length, b, 0, 4, getMetadata().get(imageIndex)
 				.isLittleEndian());
 			final byte[] typeBytes = (isIHDR ? "IHDR".getBytes() : "PLTE".getBytes());
 			System.arraycopy(typeBytes, 0, b, 4, 4);
 			getStream().seek(offset);
 			getStream().read(b, 8, b.length - 12);
 			if (isIHDR) {
-				DataTools.unpackBytes(coords[2], b, 8, 4, getMetadata().get(imageIndex)
+				Bytes.unpack(coords[2], b, 8, 4, getMetadata().get(imageIndex)
 					.isLittleEndian());
-				DataTools.unpackBytes(coords[3], b, 12, 4, getMetadata()
+				Bytes.unpack(coords[3], b, 12, 4, getMetadata()
 					.get(imageIndex).isLittleEndian());
 			}
 			final int crc = (int) computeCRC(b, b.length - 4);
-			DataTools.unpackBytes(crc, b, b.length - 4, 4, getMetadata().get(
+			Bytes.unpack(crc, b, b.length - 4, 4, getMetadata().get(
 				imageIndex).isLittleEndian());
 			stream.write(b);
 			b = null;
@@ -795,8 +796,8 @@ public class APNGFormat extends AbstractFormat {
 				b[2] = 'D';
 				b[3] = 'R';
 
-				DataTools.unpackBytes(width, b, 4, 4, false);
-				DataTools.unpackBytes(height, b, 8, 4, false);
+				Bytes.unpack(width, b, 4, 4, false);
+				Bytes.unpack(height, b, 8, 4, false);
 
 				b[12] = (byte) (bytesPerPixel * 8);
 				if (indexed) b[13] = (byte) 3;
@@ -894,19 +895,19 @@ public class APNGFormat extends AbstractFormat {
 						: planeIndex));
 			final byte[] b = new byte[30];
 
-			DataTools.unpackBytes(22, b, 0, 4, false);
+			Bytes.unpack(22, b, 0, 4, false);
 			b[0] = 'f';
 			b[1] = 'c';
 			b[2] = 'T';
 			b[3] = 'L';
 
-			DataTools.unpackBytes(nextSequenceNumber++, b, 4, 4, false);
-			DataTools.unpackBytes(fctl.getWidth(), b, 8, 4, false);
-			DataTools.unpackBytes(fctl.getHeight(), b, 12, 4, false);
-			DataTools.unpackBytes(fctl.getxOffset(), b, 16, 4, false);
-			DataTools.unpackBytes(fctl.getyOffset(), b, 20, 4, false);
-			DataTools.unpackBytes(fctl.getDelayNum(), b, 24, 2, false);
-			DataTools.unpackBytes(fctl.getDelayDen(), b, 26, 2, false);
+			Bytes.unpack(nextSequenceNumber++, b, 4, 4, false);
+			Bytes.unpack(fctl.getWidth(), b, 8, 4, false);
+			Bytes.unpack(fctl.getHeight(), b, 12, 4, false);
+			Bytes.unpack(fctl.getxOffset(), b, 16, 4, false);
+			Bytes.unpack(fctl.getyOffset(), b, 20, 4, false);
+			Bytes.unpack(fctl.getDelayNum(), b, 24, 2, false);
+			Bytes.unpack(fctl.getDelayDen(), b, 26, 2, false);
 			b[28] = fctl.getDisposeOp();
 			b[29] = fctl.getBlendOp();
 
@@ -968,7 +969,7 @@ public class APNGFormat extends AbstractFormat {
 			final ByteArrayOutputStream s = new ByteArrayOutputStream();
 			s.write(chunk.getBytes());
 			if (chunk.equals("fdAT")) {
-				s.write(DataTools.intToBytes(nextSequenceNumber++, false));
+				s.write(Bytes.fromInt(nextSequenceNumber++, false));
 			}
 			final DeflaterOutputStream deflater = new DeflaterOutputStream(s);
 			final long planeSize = stream.length / rgbCCount;
@@ -984,9 +985,9 @@ public class APNGFormat extends AbstractFormat {
 							final int offset =
 								(int) (i * rgbCCount * width + col) * bytesPerPixel;
 							final int pixel =
-								DataTools.bytesToInt(stream, offset, bytesPerPixel,
+								Bytes.toInt(stream, offset, bytesPerPixel,
 									getMetadata().get(0).isLittleEndian());
-							DataTools.unpackBytes(pixel, rowBuf, col * bytesPerPixel,
+							Bytes.unpack(pixel, rowBuf, col * bytesPerPixel,
 								bytesPerPixel, false);
 						}
 					}
@@ -999,7 +1000,7 @@ public class APNGFormat extends AbstractFormat {
 							final int offset =
 								(int) (c * planeSize + (i * width + col) * bytesPerPixel);
 							int pixel =
-								DataTools.bytesToInt(stream, offset, bytesPerPixel,
+								Bytes.toInt(stream, offset, bytesPerPixel,
 									getMetadata().get(0).isLittleEndian());
 							if (signed) {
 								if (pixel < max) pixel += max;
@@ -1039,8 +1040,8 @@ public class APNGFormat extends AbstractFormat {
 			b[1] = 'c';
 			b[2] = 'T';
 			b[3] = 'L';
-			DataTools.unpackBytes(numFrames, b, 4, 4, false);
-			DataTools.unpackBytes(getMetadata().getActl() == null ? 0 : getMetadata()
+			Bytes.unpack(numFrames, b, 4, 4, false);
+			Bytes.unpack(getMetadata().getActl() == null ? 0 : getMetadata()
 				.getActl().getNumPlays(), b, 8, 4, false);
 			getStream().writeInt(crc(b));
 		}

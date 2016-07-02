@@ -32,13 +32,13 @@ package io.scif.codec;
 
 import io.scif.FormatException;
 import io.scif.UnsupportedCompressionException;
-import io.scif.common.DataTools;
 import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 import org.scijava.util.ShortArray;
 
 /**
@@ -238,13 +238,13 @@ public class LosslessJPEGCodec extends AbstractCodec {
 							nextSample - (width + 1) * bytesPerSample + componentOffset;
 
 						final int sampleA =
-							indexA < 0 ? 0 : DataTools.bytesToInt(buf, indexA,
+							indexA < 0 ? 0 : Bytes.toInt(buf, indexA,
 								bytesPerSample, false);
 						final int sampleB =
-							indexB < 0 ? 0 : DataTools.bytesToInt(buf, indexB,
+							indexB < 0 ? 0 : Bytes.toInt(buf, indexB,
 								bytesPerSample, false);
 						final int sampleC =
-							indexC < 0 ? 0 : DataTools.bytesToInt(buf, indexC,
+							indexC < 0 ? 0 : Bytes.toInt(buf, indexC,
 								bytesPerSample, false);
 
 						if (nextSample > 0) {
@@ -277,7 +277,7 @@ public class LosslessJPEGCodec extends AbstractCodec {
 
 						final int offset = componentOffset + nextSample;
 
-						DataTools.unpackBytes(v, buf, offset, bytesPerSample, false);
+						Bytes.unpack(v, buf, offset, bytesPerSample, false);
 					}
 					nextSample += bytesPerSample;
 				}

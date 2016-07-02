@@ -30,7 +30,6 @@
 
 package io.scif;
 
-import io.scif.common.DataTools;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
@@ -42,6 +41,8 @@ import java.util.List;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
+
+import org.scijava.util.ArrayUtils;
 
 /**
  * Abstract superclass of all {@link io.scif.ImageMetadata} implementations.
@@ -316,12 +317,12 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 		long size = 1;
 
 		for (final CalibratedAxis a : getAxes()) {
-			size = DataTools.safeMultiply64(size, getAxisLength(a));
+			size = ArrayUtils.safeMultiply64(size, getAxisLength(a));
 		}
 
 		final int bytesPerPixel = getBitsPerPixel() / 8;
 
-		return DataTools.safeMultiply64(size, bytesPerPixel);
+		return ArrayUtils.safeMultiply64(size, bytesPerPixel);
 	}
 
 	@Override

@@ -31,7 +31,6 @@
 package io.scif;
 
 import io.scif.codec.CodecOptions;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
@@ -42,6 +41,8 @@ import java.io.File;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+
+import org.scijava.util.ArrayUtils;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Writer} implementations.
@@ -384,7 +385,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		for (int i = 0; i < metadata.getImageCount(); i++) {
 			final int pixelType = metadata.get(i).getPixelType();
 
-			if (!DataTools.containsValue(getPixelTypes(compression), pixelType)) {
+			if (!ArrayUtils.contains(getPixelTypes(compression), pixelType)) {
 				throw new FormatException("Unsupported image type '" +
 					FormatTools.getPixelTypeString(pixelType) + "'.");
 			}

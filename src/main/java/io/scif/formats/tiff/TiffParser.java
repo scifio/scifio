@@ -35,7 +35,6 @@ import io.scif.SCIFIO;
 import io.scif.codec.BitBuffer;
 import io.scif.codec.CodecOptions;
 import io.scif.common.Constants;
-import io.scif.common.DataTools;
 import io.scif.enumeration.EnumException;
 import io.scif.io.RandomAccessInputStream;
 
@@ -46,6 +45,7 @@ import java.util.Vector;
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.log.LogService;
+import org.scijava.util.Bytes;
 import org.scijava.util.IntRect;
 
 /**
@@ -717,11 +717,11 @@ public class TiffParser extends AbstractContextual {
 					final int[] samples = new int[buf.length / pixel];
 					for (int i = 0; i < samples.length; i++) {
 						samples[i] =
-							DataTools.bytesToInt(buf, i * realBytes, realBytes, littleEndian);
+							Bytes.toInt(buf, i * realBytes, realBytes, littleEndian);
 					}
 
 					for (int i = 0; i < samples.length; i++) {
-						DataTools.unpackBytes(samples[i], buf, i * pixel, pixel,
+						Bytes.unpack(samples[i], buf, i * pixel, pixel,
 							littleEndian);
 					}
 				}
@@ -1094,7 +1094,7 @@ public class TiffParser extends AbstractContextual {
 						}
 					}
 					else {
-						value = DataTools.bytesToLong(bytes, index, numBytes, littleEndian);
+						value = Bytes.toLong(bytes, index, numBytes, littleEndian);
 					}
 
 					if (photoInterp == PhotoInterp.WHITE_IS_ZERO ||
@@ -1104,7 +1104,7 @@ public class TiffParser extends AbstractContextual {
 					}
 
 					if (outputIndex + numBytes <= samples.length) {
-						DataTools.unpackBytes(value, samples, outputIndex, numBytes,
+						Bytes.unpack(value, samples, outputIndex, numBytes,
 							littleEndian);
 					}
 				}

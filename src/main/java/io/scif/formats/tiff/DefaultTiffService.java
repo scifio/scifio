@@ -31,13 +31,13 @@
 package io.scif.formats.tiff;
 
 import io.scif.FormatException;
-import io.scif.common.DataTools;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.util.Bytes;
 
 /**
  * Default service for working with TIFF files.
@@ -66,9 +66,9 @@ public class DefaultTiffService extends AbstractService implements TiffService {
 
 			for (int b = input.length - bytes; b >= 0; b -= bytes) {
 				if (b / len % width == 0) continue;
-				int value = DataTools.bytesToInt(input, b, bytes, little);
-				value -= DataTools.bytesToInt(input, b - len, bytes, little);
-				DataTools.unpackBytes(value, input, b, bytes, little);
+				int value = Bytes.toInt(input, b, bytes, little);
+				value -= Bytes.toInt(input, b - len, bytes, little);
+				Bytes.unpack(value, input, b, bytes, little);
 			}
 		}
 		else if (predictor != 1) {
@@ -96,9 +96,9 @@ public class DefaultTiffService extends AbstractService implements TiffService {
 
 			for (int b = 0; b <= input.length - bytes; b += bytes) {
 				if (b / len % width == 0) continue;
-				int value = DataTools.bytesToInt(input, b, bytes, little);
-				value += DataTools.bytesToInt(input, b - len, bytes, little);
-				DataTools.unpackBytes(value, input, b, bytes, little);
+				int value = Bytes.toInt(input, b, bytes, little);
+				value += Bytes.toInt(input, b - len, bytes, little);
+				Bytes.unpack(value, input, b, bytes, little);
 			}
 		}
 		else if (predictor != 1) {

@@ -41,7 +41,6 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.Translator;
-import io.scif.common.DataTools;
 import io.scif.common.ReflectException;
 import io.scif.common.ReflectedUniverse;
 import io.scif.config.SCIFIOConfig;
@@ -66,6 +65,7 @@ import org.scijava.Priority;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * LegacyQTReader is a file format reader for QuickTime movie files. To use it,
@@ -479,7 +479,7 @@ public class LegacyQTFormat extends AbstractFormat {
 					for (int j = px.length; j < 4; j++) {
 						b[j] = px[j % px.length][i];
 					}
-					pixels[i] = DataTools.bytesToInt(b, true);
+					pixels[i] = Bytes.toInt(b, true);
 				}
 
 				if (pixels2 == null) pixels2 = new int[intsPerRow * height];

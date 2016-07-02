@@ -31,7 +31,6 @@
 package io.scif.img;
 
 import io.scif.Metadata;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.img.cell.SCIFIOCellImgFactory;
 import io.scif.util.FormatTools;
@@ -43,6 +42,8 @@ import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.type.NativeType;
+
+import org.scijava.util.ArrayUtils;
 
 /**
  * Default {@link ImgFactoryHeuristic} implementation. Uses the following
@@ -81,7 +82,7 @@ public class DefaultImgFactoryHeuristic implements ImgFactoryHeuristic {
 
 		// Max size of a plane of a PlanarImg, or total dataset for ArrayImg.
 		// 2GB.
-		final long maxSize = DataTools.safeMultiply64(2, 1024, 1024, 1024);
+		final long maxSize = ArrayUtils.safeMultiply64(2, 1024, 1024, 1024);
 
 		final long availableMem =
 			(long) (MemoryTools.totalAvailableMemory() * MEMORY_THRESHOLD);

@@ -44,7 +44,6 @@ import io.scif.ImageMetadata;
 import io.scif.MetadataService;
 import io.scif.Plane;
 import io.scif.Translator;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.Location;
 import io.scif.io.RandomAccessInputStream;
@@ -64,6 +63,7 @@ import net.imglib2.display.ColorTable8;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * FakeFormat is the file format reader for faking input data. It is mainly
@@ -628,7 +628,7 @@ public class FakeFormat extends AbstractFormat {
 					index += (int) partialIndex;
 				}
 				index *= bpp;
-				DataTools.unpackBytes(pixel, plane.getBytes(), index, bpp, little);
+				Bytes.unpack(pixel, plane.getBytes(), index, bpp, little);
 			}
 		}
 	}

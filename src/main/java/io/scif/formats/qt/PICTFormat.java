@@ -44,7 +44,6 @@ import io.scif.codec.CodecOptions;
 import io.scif.codec.CodecService;
 import io.scif.codec.JPEGCodec;
 import io.scif.codec.PackbitsCodec;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.io.ByteArrayHandle;
@@ -61,6 +60,7 @@ import net.imglib2.display.ColorTable8;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Bytes;
 
 /**
  * PictReader is the file format reader for Apple PICT files. Most of this code
@@ -495,7 +495,7 @@ public class PICTFormat extends AbstractFormat {
 					switch (pixelSize) {
 						case 16:
 							for (int i = 0; i < meta.get(0).getAxisLength(Axes.X); i++) {
-								uBufI[i] = DataTools.bytesToShort(buf, i * 2, 2, false);
+								uBufI[i] = Bytes.toShort(buf, i * 2, 2, false);
 							}
 							meta.getStrips().add(uBufI);
 							buf = null;
@@ -662,12 +662,12 @@ public class PICTFormat extends AbstractFormat {
 					if (b >= 0) {
 						end = o + b + 1;
 						while (o < end && o < ob.length && (i + 1) < ib.length) {
-							ob[o++] = DataTools.bytesToShort(ib, i, 2, false);
+							ob[o++] = Bytes.toShort(ib, i, 2, false);
 							i += 2;
 						}
 					}
 					else if (b != -128) {
-						rep = DataTools.bytesToShort(ib, i, 2, false);
+						rep = Bytes.toShort(ib, i, 2, false);
 						i += 2;
 						end = o - b + 1;
 						while (o < end && o < ob.length) {
