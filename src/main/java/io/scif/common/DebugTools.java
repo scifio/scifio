@@ -42,7 +42,9 @@ import java.lang.reflect.Modifier;
  * A utility class with convenience methods for debugging.
  *
  * @author Curtis Rueden
+ * @deprecated Use {@link org.scijava.util.DebugUtils} instead.
  */
+@Deprecated
 public final class DebugTools {
 
 	// -- Constructor --
