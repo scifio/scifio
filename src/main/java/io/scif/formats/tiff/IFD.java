@@ -31,7 +31,6 @@
 package io.scif.formats.tiff;
 
 import io.scif.FormatException;
-import io.scif.common.DebugTools;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -40,6 +39,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.scijava.log.LogService;
+import org.scijava.util.DebugUtils;
 
 /**
  * Data structure for working with TIFF Image File Directories (IFDs).
@@ -1127,16 +1127,19 @@ public class IFD extends HashMap<Integer, Object> {
 
 	/** Gets the name of the IFD tag encoded by the given number. */
 	public static String getIFDTagName(final int tag) {
-		return getFieldName(tag);
+		return DebugUtils.getFieldName(IFD.class, tag);
 	}
 
 	/**
 	 * This method uses reflection to scan the values of this class's static
 	 * fields, returning the first matching field's name. It is probably not very
 	 * efficient, and is mainly intended for debugging.
+	 * 
+	 * @deprecated Use {@link DebugUtils#getFieldName(Class, int)} instead.
 	 */
+	@Deprecated
 	public static String getFieldName(final int value) {
-		return DebugTools.getFieldName(IFD.class, value);
+		return DebugUtils.getFieldName(IFD.class, value);
 	}
 
 }
