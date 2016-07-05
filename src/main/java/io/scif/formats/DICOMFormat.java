@@ -1070,20 +1070,20 @@ public class DICOMFormat extends AbstractFormat {
 
 					}
 					else if (info.startsWith("MONOCHROME")) {
-	          // The LUT has to be inverted, not the image pixel values
-				    // meta.setInverted(info.endsWith("1"));
-            if (info.endsWith("1")) {
-              meta.lut = new byte[3][256];
-              meta.shortLut = new short[3][65536];
-              for (int index = 0; index < meta.lut.length; index++) {
-                for (int i = 0; i < meta.lut[index].length; i++) {
-                  meta.lut[index][meta.lut[index].length - 1 - i] = (byte)(i & 0xff);
-                }
-                for (int i = 0; i < meta.shortLut[index].length; i++) {
-                  meta.shortLut[index][meta.shortLut[index].length - 1 - i] = (short)(i & 0xffff);
-                }
-              }
-            }
+						// The LUT has to be inverted, not the image pixel values
+						// meta.setInverted(info.endsWith("1"));
+						if (info.endsWith("1")) {
+							meta.lut = new byte[3][256];
+							meta.shortLut = new short[3][65536];
+							for (int index = 0; index < meta.lut.length; index++) {
+								for (int i = 0; i < meta.lut[index].length; i++) {
+									meta.lut[index][meta.lut[index].length - 1 - i] = (byte)(i & 0xff);
+								}
+								for (int i = 0; i < meta.shortLut[index].length; i++) {
+									meta.shortLut[index][meta.shortLut[index].length - 1 - i] = (short)(i & 0xffff);
+								}
+							}
+						}
 					}
 				}
 				else if (key.equals("Acquisition Date")) meta.setOriginalDate(info);
