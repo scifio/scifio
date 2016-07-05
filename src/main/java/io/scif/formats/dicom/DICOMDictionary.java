@@ -46,7 +46,7 @@ import java.util.Hashtable;
  */
 public class DICOMDictionary {
 
-	private Hashtable<Integer, String[]> table = new Hashtable<>();
+	private Hashtable<Integer, String[]> table = new Hashtable<>(4000);
 
 	public DICOMDictionary() {
 		addAttributes();
@@ -54,7 +54,7 @@ public class DICOMDictionary {
 
 	/** Checks whether the given code is in the dictionary. */
 	public boolean has(final int code) {
-		return table.contains(code);
+		return table.containsKey(code);
 	}
 
 	/** Gets the name for the given code. */
