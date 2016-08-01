@@ -55,7 +55,7 @@ import org.scijava.Context;
  */
 public class ImgSaverTest {
 
-	private final String id = "testImg&lengths=512,512,5&axes=X,Y,Time.fake";
+	private final String id = "testImg&lengths=512,512,2,3&axes=X,Y,Z,Time.fake";
 
 	private final String out = "test.tif";
 
