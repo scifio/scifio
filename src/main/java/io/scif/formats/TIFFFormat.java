@@ -1558,17 +1558,10 @@ public class TIFFFormat extends AbstractFormat {
 			ifd.put(new Integer(IFD.IMAGE_WIDTH), new Long(width));
 			ifd.put(new Integer(IFD.IMAGE_LENGTH), new Long(height));
 
-			Double physicalSizeX = meta.get(0).getAxis(Axes.X).averageScale(0, 1);
-			if (physicalSizeX == null || physicalSizeX.doubleValue() == 0) {
-				physicalSizeX = 0d;
-			}
-			else physicalSizeX = 1d / physicalSizeX;
-
-			Double physicalSizeY = meta.get(0).getAxis(Axes.Y).averageScale(0, 1);
-			if (physicalSizeY == null || physicalSizeY.doubleValue() == 0) {
-				physicalSizeY = 0d;
-			}
-			else physicalSizeY = 1d / physicalSizeY;
+			final double avgScaleX = meta.get(0).getAxis(Axes.X).averageScale(0, 1);
+			final double physicalSizeX = avgScaleX == 0 ? 0 : 1 / avgScaleX;
+			final double avgScaleY = meta.get(0).getAxis(Axes.Y).averageScale(0, 1);
+			final double physicalSizeY = avgScaleY == 0 ? 0 : 1 / avgScaleY;
 
 			ifd.put(IFD.RESOLUTION_UNIT, 3);
 			ifd.put(IFD.X_RESOLUTION, new TiffRational(
