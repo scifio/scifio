@@ -1239,8 +1239,7 @@ public class TIFFFormat extends AbstractFormat {
 		// -- Internal FormatReader API methods - metadata convenience --
 
 		// TODO : the 'put' methods that accept primitive types could probably
-		// be
-		// removed, as there are now 'addGlobalMeta' methods that accept
+		// be removed, as there are now 'addGlobalMeta' methods that accept
 		// primitive types
 
 		protected void put(final MetaTable table, final String key, final IFD ifd,
@@ -1289,17 +1288,17 @@ public class TIFFFormat extends AbstractFormat {
 		public static final String COMPRESSION_UNCOMPRESSED =
 			CompressionType.UNCOMPRESSED.getCompression();
 
-		public static final String COMPRESSION_LZW = CompressionType.LZW
-			.getCompression();
+		public static final String COMPRESSION_LZW = //
+			CompressionType.LZW.getCompression();
 
-		public static final String COMPRESSION_J2K = CompressionType.J2K
-			.getCompression();
+		public static final String COMPRESSION_J2K = //
+			CompressionType.J2K.getCompression();
 
 		public static final String COMPRESSION_J2K_LOSSY =
 			CompressionType.J2K_LOSSY.getCompression();
 
-		public static final String COMPRESSION_JPEG = CompressionType.JPEG
-			.getCompression();
+		public static final String COMPRESSION_JPEG = //
+			CompressionType.JPEG.getCompression();
 
 		public static final String BIG_TIFF_KEY = "WRITE_BIG_TIFF";
 
