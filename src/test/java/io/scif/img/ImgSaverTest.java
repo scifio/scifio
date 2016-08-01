@@ -108,7 +108,7 @@ public class ImgSaverTest {
 	 * Test that ImgSaver writes each plane of a multi-plane CellImg correctly
 	 */
 	@Test
-	public void testSlowPlaneSaving() throws ImgIOException,
+	public void testCellPlaneSaving() throws ImgIOException,
 		IncompatibleTypeException
 	{
 		final SCIFIOConfig config = new SCIFIOConfig().imgOpenerSetImgModes(
