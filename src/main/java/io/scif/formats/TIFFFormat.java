@@ -659,7 +659,7 @@ public class TIFFFormat extends AbstractFormat {
 		/**
 		 * Not all ImageJ 1.x comment values can be read via reading the
 		 * {@link IFD#getIFDTextValue(int)} method, as this results in the entire
-		 * string read as {@link shorts} and converted to {@link String}. Any parsed
+		 * string read as {@code short}s and converted to {@link String}. Any parsed
 		 * objects will be populated as appropriate in the given {@link Metadata}.
 		 * <p>
 		 * For example, in the case of LUTs, we need to read the values as bytes -
