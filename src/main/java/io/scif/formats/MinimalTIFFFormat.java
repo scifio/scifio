@@ -417,7 +417,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			final boolean little = littleEndian.booleanValue();
 			getSource().order(little);
 
-			log().info("Reading IFDs");
+			log().debug("Reading IFDs");
 
 			final IFDList allIFDs = tiffParser.getIFDs();
 
@@ -442,7 +442,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				}
 			}
 
-			log().info("Populating metadata");
+			log().debug("Populating metadata");
 
 			tiffParser.setAssumeEqualStrips(meta.isEqualStrips());
 			for (final IFD ifd : ifds) {

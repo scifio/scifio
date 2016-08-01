@@ -373,7 +373,7 @@ public class TIFFFormat extends AbstractFormat {
 			final String comment = ifds.get(0).getComment();
 			final MetaTable table = meta.getTable();
 
-			log().info("Checking comment style");
+			log().debug("Checking comment style");
 
 			// check for reusable proprietary tags (65000-65535),
 			// which may contain additional metadata
