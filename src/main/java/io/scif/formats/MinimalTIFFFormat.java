@@ -207,7 +207,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		@Override
 		public void populateImageMetadata() {
-			createImageMetadata(1);
+			if (getImageCount() == 0) createImageMetadata(1);
 			final ImageMetadata ms0 = get(0);
 
 			final IFD firstIFD = ifds.get(0);
@@ -230,10 +230,6 @@ public class MinimalTIFFFormat extends AbstractFormat {
 				if (samples > 1) {
 					ms0.setAxisLength(Axes.CHANNEL, samples);
 					planarAxes = 3;
-				}
-
-				if (ifds.size() > 1) {
-					ms0.setAxisLength(Axes.TIME, ifds.size());
 				}
 
 				ms0.setPlanarAxisCount(planarAxes);
