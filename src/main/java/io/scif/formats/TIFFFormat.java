@@ -70,7 +70,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
+import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
@@ -421,6 +423,10 @@ public class TIFFFormat extends AbstractFormat {
 				}
 			}
 
+			// check for SCIFIO-style TIFF comment
+			final boolean scifio = checkCommentSCIFIO(comment);
+			if (scifio) parseCommentSCIFIO(meta, comment);
+
 			// check for ImageJ-style TIFF comment
 			final boolean ij = checkCommentImageJ(comment);
 			if (ij) parseCommentImageJ(meta, comment);
@@ -469,6 +475,10 @@ public class TIFFFormat extends AbstractFormat {
 
 		// -- Helper methods --
 
+		private boolean checkCommentSCIFIO(final String comment) {
+			return comment != null && comment.startsWith("SCIFIO=");
+		}
+
 		private boolean checkCommentImageJ(final String comment) {
 			return comment != null && comment.startsWith("ImageJ=");
 		}
@@ -480,6 +490,54 @@ public class TIFFFormat extends AbstractFormat {
 				meta.getIfds().get(0).getIFDTextValue(IFD.SOFTWARE);
 			return comment != null && software != null &&
 				software.contains("MetaMorph");
+		}
+
+		private void parseCommentSCIFIO(final Metadata meta, final String comment) {
+			final MetaTable table = meta.getTable();
+			table.remove("Comment");
+			meta.setDescription("");
+
+			meta.populateImageMetadata();
+			meta.populateImageMetadata = false;
+
+			String[] axes = null;
+			String[] lengths = null;
+			String[] scales = null;
+			String[] units = null;
+
+			final StringTokenizer st = new StringTokenizer(comment, "\n");
+			while (st.hasMoreTokens()) {
+				final String token = st.nextToken();
+				final int eq = token.indexOf("=");
+				if (eq < 0) continue;
+				final String value = token.substring(eq + 1);
+
+				if (token.startsWith("axes=")) axes = value.split(",");
+				else if (token.startsWith("lengths=")) lengths = value.split(",");
+				else if (token.startsWith("scales=")) scales = value.split(",");
+				else if (token.startsWith("units=")) units = value.split(",");
+			}
+			if (axes == null || lengths == null || scales == null || units == null) {
+				return;
+			}
+
+			for (int i=0; i<axes.length; i++) {
+				final AxisType type = Axes.get(axes[i]);
+				final String unit = units[i];
+				final double scale = Double.parseDouble(scales[i]);
+				final DefaultLinearAxis axis = new DefaultLinearAxis(type, unit, scale);
+				final int axisIndex = meta.get(0).getAxisIndex(type);
+				if (axisIndex < 0) {
+					// add new axis
+					meta.get(0).addAxis(axis);
+				}
+				else {
+					// overwrite existing axis
+					meta.get(0).setAxis(axisIndex, axis);
+				}
+				final long length = Long.parseLong(lengths[i]);
+				meta.get(0).setAxisLength(axis, length);
+			}
 		}
 
 		private void parseCommentImageJ(final Metadata meta, String comment)
