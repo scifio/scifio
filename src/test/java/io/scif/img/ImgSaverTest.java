@@ -31,6 +31,8 @@
 package io.scif.img;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import io.scif.config.SCIFIOConfig;
 import io.scif.config.SCIFIOConfig.ImgMode;
@@ -38,6 +40,7 @@ import io.scif.io.ByteArrayHandle;
 import io.scif.services.LocationService;
 
 import java.io.File;
+import java.util.Iterator;
 
 import net.imagej.ImgPlus;
 import net.imglib2.RandomAccess;
@@ -139,22 +142,37 @@ public class ImgSaverTest {
 		final ImgSaver s = new ImgSaver(ctx);
 
 		// write the image
-		SCIFIOImgPlus<UnsignedByteType> openImg = o.openImgs(id,
+		final SCIFIOImgPlus<UnsignedByteType> before = o.openImgs(id,
 			new UnsignedByteType(), config).get(0);
-		s.saveImg(out, openImg);
+		s.saveImg(out, before);
 
-		// re-read the written image and check dimensions
-		openImg = o.openImgs(out, new UnsignedByteType()).get(0);
+		// re-read the written image and check for consistency
+		final SCIFIOImgPlus<UnsignedByteType> after = o.openImgs(out,
+			new UnsignedByteType()).get(0);
+		assertImagesEqual(before, after);
+	}
 
-		// fakes start with 10 0's, then pixel value == plane index..
-		// so we have to skip along the x-axis a bit
-		final int[] pos = { 11, 0, 0 };
-		for (int i = 0; i < 5; i++) {
-			pos[2] = i;
-			final RandomAccess<UnsignedByteType> randomAccess = //
-				openImg.randomAccess();
-			randomAccess.setPosition(pos);
-			assertEquals(i, randomAccess.get().getRealDouble(), 0.0001);
+	// TODO: Migrate this into a shared ImageJ Common test library Assert class.
+	private static <T> void assertImagesEqual(final ImgPlus<T> expected,
+		final ImgPlus<T> actual)
+	{
+		// TODO: Check dimensional lengths and types.
+
+		// check pixels
+		assertIterationsEqual(expected, actual);
+	}
+
+	// TODO: This was stolen from ImageJ Ops AbstractOpTest.
+	// It should really live in a shared test library of ImgLib2 (probably).
+	private static <T> void assertIterationsEqual(final Iterable<T> expected,
+		final Iterable<T> actual)
+	{
+		final Iterator<T> e = expected.iterator();
+		final Iterator<T> a = actual.iterator();
+		while (e.hasNext()) {
+			assertTrue("Fewer elements than expected", a.hasNext());
+			assertEquals(e.next(), a.next());
 		}
+		assertFalse("More elements than expected", a.hasNext());
 	}
 }
