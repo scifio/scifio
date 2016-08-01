@@ -66,6 +66,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
@@ -1454,6 +1456,7 @@ public class TIFFFormat extends AbstractFormat {
 					}
 				}
 			}
+			if (planeIndex == 0) addDimensionalAxisInfo(ifd, imageIndex);
 
 			savePlane(imageIndex, planeIndex, plane, ifd, planeMin, planeMax);
 		}
@@ -1621,6 +1624,47 @@ public class TIFFFormat extends AbstractFormat {
 			tiffSaver.setCodecOptions(getCodecOptions());
 		}
 
+		private void addDimensionalAxisInfo(final IFD ifd, final int imageIndex) {
+			// NB: Add dimensional metadata to TIFF comment of first plane's IFD.
+			final ImageMetadata imageMeta = getMetadata().get(imageIndex);
+
+			// Special case axes for ImageJ 1.x compatibility.
+			final CalibratedAxis cAxis = imageMeta.getAxis(Axes.CHANNEL);
+			final CalibratedAxis zAxis = imageMeta.getAxis(Axes.Z);
+			final CalibratedAxis tAxis = imageMeta.getAxis(Axes.TIME);
+
+			// All axes, for N-dimensional support.
+			// NB: Yes, this is a hacky list of parallel lists.
+			// And yes, we assume that all axes have linear scale.
+			// This is merely an interim solution until SCIFIO can
+			// marshal and unmarshal axes in an extensible way.
+			final List<CalibratedAxis> axes = imageMeta.getAxes();
+			final String types = list(axes, a -> a.type().toString());
+			final String lengths = list(axes, a -> "" + imageMeta.getAxisLength(a));
+			final String scales = list(axes, a -> "" + a.averageScale(0, 1));
+			final String units = list(axes, a -> a.unit());
+
+			final String comment = "" + //
+				"SCIFIO=" + getVersion() + "\n" + //
+				"axes=" + types + "\n" + //
+				"lengths=" + lengths + "\n" + //
+				"scales=" + scales + "\n" + //
+				"units=" + units + "\n" + //
+				"bitsPerPixel=" + imageMeta.getBitsPerPixel() + "\n" + //
+				// NB: The following fields are for ImageJ 1.x compatibility.
+				"images=" + imageMeta.getPlaneCount() + "\n" + //
+				"channels=" + imageMeta.getAxisLength(cAxis) + "\n" + //
+				"slices=" + imageMeta.getAxisLength(zAxis) + "\n" + //
+				"frames=" + imageMeta.getAxisLength(tAxis) + "\n" + //
+				"hyperstack=true\n" + //
+				"mode=composite\n" + //
+				"unit=" + axes.get(0).unit() + "\n";
+			ifd.putIFDValue(IFD.IMAGE_DESCRIPTION, comment);
+		}
+
+		private <T> String list(final List<T> l, final Function<T, String> f) {
+			return String.join(",", l.stream().map(f).collect(Collectors.toList()));
+		}
 	}
 
 	/**
