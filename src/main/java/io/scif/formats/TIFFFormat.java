@@ -462,12 +462,6 @@ public class TIFFFormat extends AbstractFormat {
 				}
 			}
 
-			// TODO : parse companion file once loci.parsers package is in place
-
-//    MetadataStore store = makeFilterMetadata();
-//    if (meta.getDescription() != null) {
-//      store.setImageDescription(description, 0);
-//    }
 			super.initMetadata(meta, config);
 		}
 
@@ -1547,40 +1541,6 @@ public class TIFFFormat extends AbstractFormat {
 				c = buf.length / (w * h * bytesPerPixel);
 			}
 
-			// FIXME no indication of why this logic is necessary. Seems over
-			// complex
-			// and fragile due to the modification of the initialized array. If
-			// this
-			// is truly necessary, let's find a different way to do it.
-//			if (bytesPerPixel > 1 && c != 1 && c != 3) {
-//				// split channels
-//				checkParams = false;
-//
-//				if (planeIndex == 0) {
-//					initialized[imageIndex] =
-//						new boolean[initialized[imageIndex].length * c];
-//				}
-//				final long[] planeMin = new long[] { x, y };
-//				final long[] planeMax = new long[] { w, h };
-//				final long[] cIndex = new long[1];
-//				final long[] cLength = new long[] { c };
-//
-//				for (int i = 0; i < c; i++) {
-//					cIndex[0] = i;
-//					final byte[] b =
-//						ImageTools.splitChannels(buf, cIndex, cLength, bytesPerPixel,
-//							false, interleaved);
-//
-//					final ByteArrayPlane bp = new ByteArrayPlane(getContext());
-//					bp.populate(getMetadata().get(imageIndex), b, planeMin, planeMax);
-//
-//					savePlane(imageIndex, planeIndex * c + i, bp, (IFD) ifd.clone(),
-//						planeMin, planeMax);
-//				}
-//				checkParams = true;
-//				return -1;
-//			}
-
 			formatCompression(ifd);
 			final byte[][] lut = AWTImageTools.get8BitLookupTable(getColorModel());
 			if (lut != null) {
@@ -1654,12 +1614,9 @@ public class TIFFFormat extends AbstractFormat {
 		}
 
 		private void setupTiffSaver(final RandomAccessOutputStream stream,
-			final int imageIndex) throws IOException
+			final int imageIndex)
 		{
 			final Metadata meta = getMetadata();
-			// FIXME this seems unnecessary.. but maybe there's a reason to
-			// reconstruct the stream?
-//			out = new RandomAccessOutputStream(getContext(), meta.getDatasetName());
 			tiffSaver = new TiffSaver(getContext(), stream, meta.getDatasetName());
 
 			final Boolean bigEndian = !meta.get(imageIndex).isLittleEndian();
