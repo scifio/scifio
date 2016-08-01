@@ -30,6 +30,7 @@
 
 package io.scif.img;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -43,6 +44,7 @@ import java.io.File;
 import java.util.Iterator;
 
 import net.imagej.ImgPlus;
+import net.imagej.axis.CalibratedAxis;
 import net.imglib2.RandomAccess;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
@@ -156,7 +158,19 @@ public class ImgSaverTest {
 	private static <T> void assertImagesEqual(final ImgPlus<T> expected,
 		final ImgPlus<T> actual)
 	{
-		// TODO: Check dimensional lengths and types.
+		// check dimensional lengths
+		final long[] eDims = new long[expected.numDimensions()];
+		expected.dimensions(eDims);
+		final long[] aDims = new long[actual.numDimensions()];
+		actual.dimensions(aDims);
+		assertArrayEquals(eDims, aDims);
+
+		// check dimensional axes
+		final CalibratedAxis[] eAxes = new CalibratedAxis[expected.numDimensions()];
+		expected.axes(eAxes);
+		final CalibratedAxis[] aAxes = new CalibratedAxis[actual.numDimensions()];
+		actual.axes(aAxes);
+		assertArrayEquals(eAxes, aAxes);
 
 		// check pixels
 		assertIterationsEqual(expected, actual);
