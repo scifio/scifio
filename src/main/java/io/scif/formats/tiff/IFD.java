@@ -1064,9 +1064,10 @@ public class IFD extends HashMap<Integer, Object> {
 	 * @return the X resolution, in microns per pixel
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
 	 */
-	public double getXResolution() throws FormatException {
+	public Double getXResolution() throws FormatException {
 		final TiffRational xResolution = getIFDRationalValue(X_RESOLUTION);
-		final double x = xResolution == null ? 0 : 1 / xResolution.doubleValue();
+		if (xResolution == null) return null;
+		final double x = 1 / xResolution.doubleValue();
 
 		final int multiplier = getResolutionMultiplier();
 		return x * multiplier;
@@ -1079,9 +1080,10 @@ public class IFD extends HashMap<Integer, Object> {
 	 * @return the Y resolution, in microns per pixel
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
 	 */
-	public double getYResolution() throws FormatException {
+	public Double getYResolution() throws FormatException {
 		final TiffRational yResolution = getIFDRationalValue(Y_RESOLUTION);
-		final double y = yResolution == null ? 0 : 1 / yResolution.doubleValue();
+		if (yResolution == null) return null;
+		final double y = 1 / yResolution.doubleValue();
 
 		final int multiplier = getResolutionMultiplier();
 		return y * multiplier;

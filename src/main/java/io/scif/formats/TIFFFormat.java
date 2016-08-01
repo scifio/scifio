@@ -294,16 +294,22 @@ public class TIFFFormat extends AbstractFormat {
 			// set the X and Y pixel dimensions
 
 			try {
-				final double pixX = getIfds().get(0).getXResolution();
-				final double pixY = getIfds().get(0).getYResolution();
+				final Double pixX = getIfds().get(0).getXResolution();
+				final Double pixY = getIfds().get(0).getYResolution();
 
-				if (pixX > 0 && pixX < Double.POSITIVE_INFINITY) {
+				if (pixX == null) {
+					// NB: Ignore undefined value.
+				}
+				else if (pixX > 0 && pixX < Double.POSITIVE_INFINITY) {
 					FormatTools.calibrate(m.getAxis(Axes.X), pixX, 0);
 				}
 				else {
 					log().warn("Expected positive value for PhysicalSizeX; got " + pixX);
 				}
-				if (pixY > 0 && pixX < Double.POSITIVE_INFINITY) {
+				if (pixY == null) {
+					// NB: Ignore undefined value.
+				}
+				else if (pixY > 0 && pixY < Double.POSITIVE_INFINITY) {
 					FormatTools.calibrate(m.getAxis(Axes.Y), pixY, 0);
 				}
 				else {
