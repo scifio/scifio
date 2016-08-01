@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -132,8 +132,8 @@ public class ImgSaverTest {
 
 	// -- Helper methods --
 
-	private void testPlaneSavingForConfig(final SCIFIOConfig config) throws ImgIOException,
-		IncompatibleTypeException
+	private void testPlaneSavingForConfig(final SCIFIOConfig config)
+		throws ImgIOException, IncompatibleTypeException
 	{
 		final ImgOpener o = new ImgOpener(ctx);
 		final ImgSaver s = new ImgSaver(ctx);
@@ -146,12 +146,13 @@ public class ImgSaverTest {
 		// re-read the written image and check dimensions
 		openImg = o.openImgs(out, new UnsignedByteType()).get(0);
 
-		// fakes start with 10 0's, then pixel value == plane index.. 
+		// fakes start with 10 0's, then pixel value == plane index..
 		// so we have to skip along the x-axis a bit
-		int[] pos = { 11, 0, 0 };
+		final int[] pos = { 11, 0, 0 };
 		for (int i = 0; i < 5; i++) {
 			pos[2] = i;
-			RandomAccess<UnsignedByteType> randomAccess = openImg.randomAccess();
+			final RandomAccess<UnsignedByteType> randomAccess = //
+				openImg.randomAccess();
 			randomAccess.setPosition(pos);
 			assertEquals(i, randomAccess.get().getRealDouble(), 0.0001);
 		}
