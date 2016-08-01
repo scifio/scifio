@@ -144,7 +144,7 @@ public class ImgSaverTest {
 		s.saveImg(out, openImg);
 
 		// re-read the written image and check dimensions
-		openImg = o.<UnsignedByteType> openImgs(out, new UnsignedByteType()).get(0);
+		openImg = o.openImgs(out, new UnsignedByteType()).get(0);
 
 		// fakes start with 10 0's, then pixel value == plane index.. 
 		// so we have to skip along the x-axis a bit
