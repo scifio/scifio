@@ -1025,19 +1025,36 @@ public class IFD extends HashMap<Integer, Object> {
 	}
 
 	/**
+	 * Retrieves the image's resolution unit (TIFF tag ResolutionUnit) from this
+	 * IFD.
+	 *
+	 * @return the image's resolution unit. As of TIFF 6.0 this is one of:
+	 *         <ul>
+	 *         <li>None (1)</li>
+	 *         <li>Inch (2)</li>
+	 *         <li>Centimeter (2)</li>
+	 *         </ul>
+	 * @throws FormatException if there is a problem parsing the IFD metadata.
+	 */
+	public ResolutionUnit getResolutionUnit() throws FormatException {
+		final int resolutionUnit = getIFDIntValue(RESOLUTION_UNIT, 1);
+		return ResolutionUnit.get(resolutionUnit);
+	}
+
+	/**
 	 * Retrieve the value by which to multiply the X and Y resolution so that the
 	 * resolutions are in microns per pixel.
 	 */
-	public int getResolutionMultiplier() {
-		final int resolutionUnit = getIFDIntValue(RESOLUTION_UNIT);
-		int multiplier = 1;
-		if (resolutionUnit == 2) {
-			multiplier = 25400;
+	public int getResolutionMultiplier() throws FormatException {
+		final ResolutionUnit resolutionUnit = getResolutionUnit();
+		switch (resolutionUnit) {
+			case INCH:
+				return 25400;
+			case CENTIMETER:
+				return 10000;
+			default:
+				return 1;
 		}
-		else if (resolutionUnit == 3) {
-			multiplier = 10000;
-		}
-		return multiplier;
 	}
 
 	/**
@@ -1047,9 +1064,10 @@ public class IFD extends HashMap<Integer, Object> {
 	 * @return the X resolution, in microns per pixel
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
 	 */
-	public double getXResolution() throws FormatException {
+	public Double getXResolution() throws FormatException {
 		final TiffRational xResolution = getIFDRationalValue(X_RESOLUTION);
-		final double x = xResolution == null ? 0 : 1 / xResolution.doubleValue();
+		if (xResolution == null) return null;
+		final double x = 1 / xResolution.doubleValue();
 
 		final int multiplier = getResolutionMultiplier();
 		return x * multiplier;
@@ -1062,9 +1080,10 @@ public class IFD extends HashMap<Integer, Object> {
 	 * @return the Y resolution, in microns per pixel
 	 * @throws FormatException if there is a problem parsing the IFD metadata.
 	 */
-	public double getYResolution() throws FormatException {
+	public Double getYResolution() throws FormatException {
 		final TiffRational yResolution = getIFDRationalValue(Y_RESOLUTION);
-		final double y = yResolution == null ? 0 : 1 / yResolution.doubleValue();
+		if (yResolution == null) return null;
+		final double y = 1 / yResolution.doubleValue();
 
 		final int multiplier = getResolutionMultiplier();
 		return y * multiplier;

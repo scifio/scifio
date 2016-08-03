@@ -66,9 +66,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
+import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
@@ -294,16 +298,22 @@ public class TIFFFormat extends AbstractFormat {
 			// set the X and Y pixel dimensions
 
 			try {
-				final double pixX = getIfds().get(0).getXResolution();
-				final double pixY = getIfds().get(0).getYResolution();
+				final Double pixX = getIfds().get(0).getXResolution();
+				final Double pixY = getIfds().get(0).getYResolution();
 
-				if (pixX > 0 && pixX < Double.POSITIVE_INFINITY) {
+				if (pixX == null) {
+					// NB: Ignore undefined value.
+				}
+				else if (pixX > 0 && pixX < Double.POSITIVE_INFINITY) {
 					FormatTools.calibrate(m.getAxis(Axes.X), pixX, 0);
 				}
 				else {
 					log().warn("Expected positive value for PhysicalSizeX; got " + pixX);
 				}
-				if (pixY > 0 && pixX < Double.POSITIVE_INFINITY) {
+				if (pixY == null) {
+					// NB: Ignore undefined value.
+				}
+				else if (pixY > 0 && pixY < Double.POSITIVE_INFINITY) {
 					FormatTools.calibrate(m.getAxis(Axes.Y), pixY, 0);
 				}
 				else {
@@ -373,7 +383,7 @@ public class TIFFFormat extends AbstractFormat {
 			final String comment = ifds.get(0).getComment();
 			final MetaTable table = meta.getTable();
 
-			log().info("Checking comment style");
+			log().debug("Checking comment style");
 
 			// check for reusable proprietary tags (65000-65535),
 			// which may contain additional metadata
@@ -412,6 +422,10 @@ public class TIFFFormat extends AbstractFormat {
 					}
 				}
 			}
+
+			// check for SCIFIO-style TIFF comment
+			final boolean scifio = checkCommentSCIFIO(comment);
+			if (scifio) parseCommentSCIFIO(meta, comment);
 
 			// check for ImageJ-style TIFF comment
 			final boolean ij = checkCommentImageJ(comment);
@@ -456,16 +470,14 @@ public class TIFFFormat extends AbstractFormat {
 				}
 			}
 
-			// TODO : parse companion file once loci.parsers package is in place
-
-//    MetadataStore store = makeFilterMetadata();
-//    if (meta.getDescription() != null) {
-//      store.setImageDescription(description, 0);
-//    }
 			super.initMetadata(meta, config);
 		}
 
 		// -- Helper methods --
+
+		private boolean checkCommentSCIFIO(final String comment) {
+			return comment != null && comment.startsWith("SCIFIO=");
+		}
 
 		private boolean checkCommentImageJ(final String comment) {
 			return comment != null && comment.startsWith("ImageJ=");
@@ -478,6 +490,54 @@ public class TIFFFormat extends AbstractFormat {
 				meta.getIfds().get(0).getIFDTextValue(IFD.SOFTWARE);
 			return comment != null && software != null &&
 				software.contains("MetaMorph");
+		}
+
+		private void parseCommentSCIFIO(final Metadata meta, final String comment) {
+			final MetaTable table = meta.getTable();
+			table.remove("Comment");
+			meta.setDescription("");
+
+			meta.populateImageMetadata();
+			meta.populateImageMetadata = false;
+
+			String[] axes = null;
+			String[] lengths = null;
+			String[] scales = null;
+			String[] units = null;
+
+			final StringTokenizer st = new StringTokenizer(comment, "\n");
+			while (st.hasMoreTokens()) {
+				final String token = st.nextToken();
+				final int eq = token.indexOf("=");
+				if (eq < 0) continue;
+				final String value = token.substring(eq + 1);
+
+				if (token.startsWith("axes=")) axes = value.split(",");
+				else if (token.startsWith("lengths=")) lengths = value.split(",");
+				else if (token.startsWith("scales=")) scales = value.split(",");
+				else if (token.startsWith("units=")) units = value.split(",");
+			}
+			if (axes == null || lengths == null || scales == null || units == null) {
+				return;
+			}
+
+			for (int i=0; i<axes.length; i++) {
+				final AxisType type = Axes.get(axes[i]);
+				final String unit = units[i];
+				final double scale = Double.parseDouble(scales[i]);
+				final DefaultLinearAxis axis = new DefaultLinearAxis(type, unit, scale);
+				final int axisIndex = meta.get(0).getAxisIndex(type);
+				if (axisIndex < 0) {
+					// add new axis
+					meta.get(0).addAxis(axis);
+				}
+				else {
+					// overwrite existing axis
+					meta.get(0).setAxis(axisIndex, axis);
+				}
+				final long length = Long.parseLong(lengths[i]);
+				meta.get(0).setAxisLength(axis, length);
+			}
 		}
 
 		private void parseCommentImageJ(final Metadata meta, String comment)
@@ -659,7 +719,7 @@ public class TIFFFormat extends AbstractFormat {
 		/**
 		 * Not all ImageJ 1.x comment values can be read via reading the
 		 * {@link IFD#getIFDTextValue(int)} method, as this results in the entire
-		 * string read as {@link shorts} and converted to {@link String}. Any parsed
+		 * string read as {@code short}s and converted to {@link String}. Any parsed
 		 * objects will be populated as appropriate in the given {@link Metadata}.
 		 * <p>
 		 * For example, in the case of LUTs, we need to read the values as bytes -
@@ -1233,8 +1293,7 @@ public class TIFFFormat extends AbstractFormat {
 		// -- Internal FormatReader API methods - metadata convenience --
 
 		// TODO : the 'put' methods that accept primitive types could probably
-		// be
-		// removed, as there are now 'addGlobalMeta' methods that accept
+		// be removed, as there are now 'addGlobalMeta' methods that accept
 		// primitive types
 
 		protected void put(final MetaTable table, final String key, final IFD ifd,
@@ -1283,17 +1342,17 @@ public class TIFFFormat extends AbstractFormat {
 		public static final String COMPRESSION_UNCOMPRESSED =
 			CompressionType.UNCOMPRESSED.getCompression();
 
-		public static final String COMPRESSION_LZW = CompressionType.LZW
-			.getCompression();
+		public static final String COMPRESSION_LZW = //
+			CompressionType.LZW.getCompression();
 
-		public static final String COMPRESSION_J2K = CompressionType.J2K
-			.getCompression();
+		public static final String COMPRESSION_J2K = //
+			CompressionType.J2K.getCompression();
 
 		public static final String COMPRESSION_J2K_LOSSY =
 			CompressionType.J2K_LOSSY.getCompression();
 
-		public static final String COMPRESSION_JPEG = CompressionType.JPEG
-			.getCompression();
+		public static final String COMPRESSION_JPEG = //
+			CompressionType.JPEG.getCompression();
 
 		public static final String BIG_TIFF_KEY = "WRITE_BIG_TIFF";
 
@@ -1455,6 +1514,7 @@ public class TIFFFormat extends AbstractFormat {
 					}
 				}
 			}
+			if (planeIndex == 0) addDimensionalAxisInfo(ifd, imageIndex);
 
 			savePlane(imageIndex, planeIndex, plane, ifd, planeMin, planeMax);
 		}
@@ -1542,40 +1602,6 @@ public class TIFFFormat extends AbstractFormat {
 				c = buf.length / (w * h * bytesPerPixel);
 			}
 
-			// FIXME no indication of why this logic is necessary. Seems over
-			// complex
-			// and fragile due to the modification of the initialized array. If
-			// this
-			// is truly necessary, let's find a different way to do it.
-//			if (bytesPerPixel > 1 && c != 1 && c != 3) {
-//				// split channels
-//				checkParams = false;
-//
-//				if (planeIndex == 0) {
-//					initialized[imageIndex] =
-//						new boolean[initialized[imageIndex].length * c];
-//				}
-//				final long[] planeMin = new long[] { x, y };
-//				final long[] planeMax = new long[] { w, h };
-//				final long[] cIndex = new long[1];
-//				final long[] cLength = new long[] { c };
-//
-//				for (int i = 0; i < c; i++) {
-//					cIndex[0] = i;
-//					final byte[] b =
-//						ImageTools.splitChannels(buf, cIndex, cLength, bytesPerPixel,
-//							false, interleaved);
-//
-//					final ByteArrayPlane bp = new ByteArrayPlane(getContext());
-//					bp.populate(getMetadata().get(imageIndex), b, planeMin, planeMax);
-//
-//					savePlane(imageIndex, planeIndex * c + i, bp, (IFD) ifd.clone(),
-//						planeMin, planeMax);
-//				}
-//				checkParams = true;
-//				return -1;
-//			}
-
 			formatCompression(ifd);
 			final byte[][] lut = AWTImageTools.get8BitLookupTable(getColorModel());
 			if (lut != null) {
@@ -1593,17 +1619,10 @@ public class TIFFFormat extends AbstractFormat {
 			ifd.put(new Integer(IFD.IMAGE_WIDTH), new Long(width));
 			ifd.put(new Integer(IFD.IMAGE_LENGTH), new Long(height));
 
-			Double physicalSizeX = meta.get(0).getAxis(Axes.X).averageScale(0, 1);
-			if (physicalSizeX == null || physicalSizeX.doubleValue() == 0) {
-				physicalSizeX = 0d;
-			}
-			else physicalSizeX = 1d / physicalSizeX;
-
-			Double physicalSizeY = meta.get(0).getAxis(Axes.Y).averageScale(0, 1);
-			if (physicalSizeY == null || physicalSizeY.doubleValue() == 0) {
-				physicalSizeY = 0d;
-			}
-			else physicalSizeY = 1d / physicalSizeY;
+			final double avgScaleX = meta.get(0).getAxis(Axes.X).averageScale(0, 1);
+			final double physicalSizeX = avgScaleX == 0 ? 0 : 1 / avgScaleX;
+			final double avgScaleY = meta.get(0).getAxis(Axes.Y).averageScale(0, 1);
+			final double physicalSizeY = avgScaleY == 0 ? 0 : 1 / avgScaleY;
 
 			ifd.put(IFD.RESOLUTION_UNIT, 3);
 			ifd.put(IFD.X_RESOLUTION, new TiffRational(
@@ -1649,12 +1668,9 @@ public class TIFFFormat extends AbstractFormat {
 		}
 
 		private void setupTiffSaver(final RandomAccessOutputStream stream,
-			final int imageIndex) throws IOException
+			final int imageIndex)
 		{
 			final Metadata meta = getMetadata();
-			// FIXME this seems unnecessary.. but maybe there's a reason to
-			// reconstruct the stream?
-//			out = new RandomAccessOutputStream(getContext(), meta.getDatasetName());
 			tiffSaver = new TiffSaver(getContext(), stream, meta.getDatasetName());
 
 			final Boolean bigEndian = !meta.get(imageIndex).isLittleEndian();
@@ -1666,6 +1682,47 @@ public class TIFFFormat extends AbstractFormat {
 			tiffSaver.setCodecOptions(getCodecOptions());
 		}
 
+		private void addDimensionalAxisInfo(final IFD ifd, final int imageIndex) {
+			// NB: Add dimensional metadata to TIFF comment of first plane's IFD.
+			final ImageMetadata imageMeta = getMetadata().get(imageIndex);
+
+			// Special case axes for ImageJ 1.x compatibility.
+			final CalibratedAxis cAxis = imageMeta.getAxis(Axes.CHANNEL);
+			final CalibratedAxis zAxis = imageMeta.getAxis(Axes.Z);
+			final CalibratedAxis tAxis = imageMeta.getAxis(Axes.TIME);
+
+			// All axes, for N-dimensional support.
+			// NB: Yes, this is a hacky list of parallel lists.
+			// And yes, we assume that all axes have linear scale.
+			// This is merely an interim solution until SCIFIO can
+			// marshal and unmarshal axes in an extensible way.
+			final List<CalibratedAxis> axes = imageMeta.getAxes();
+			final String types = list(axes, a -> a.type().toString());
+			final String lengths = list(axes, a -> "" + imageMeta.getAxisLength(a));
+			final String scales = list(axes, a -> "" + a.averageScale(0, 1));
+			final String units = list(axes, a -> a.unit());
+
+			final String comment = "" + //
+				"SCIFIO=" + getVersion() + "\n" + //
+				"axes=" + types + "\n" + //
+				"lengths=" + lengths + "\n" + //
+				"scales=" + scales + "\n" + //
+				"units=" + units + "\n" + //
+				"bitsPerPixel=" + imageMeta.getBitsPerPixel() + "\n" + //
+				// NB: The following fields are for ImageJ 1.x compatibility.
+				"images=" + imageMeta.getPlaneCount() + "\n" + //
+				"channels=" + imageMeta.getAxisLength(cAxis) + "\n" + //
+				"slices=" + imageMeta.getAxisLength(zAxis) + "\n" + //
+				"frames=" + imageMeta.getAxisLength(tAxis) + "\n" + //
+				"hyperstack=true\n" + //
+				"mode=composite\n" + //
+				"unit=" + axes.get(0).unit() + "\n";
+			ifd.putIFDValue(IFD.IMAGE_DESCRIPTION, comment);
+		}
+
+		private <T> String list(final List<T> l, final Function<T, String> f) {
+			return String.join(",", l.stream().map(f).collect(Collectors.toList()));
+		}
 	}
 
 	/**

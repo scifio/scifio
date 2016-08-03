@@ -249,7 +249,7 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	 * Gets the length of the (zero-indexed) specified plane.
 	 *
 	 * @param axisIndex - index of the desired axis within this image
-	 * @return Length of the desired axis, or 0 if the axis is not found.
+	 * @return Length of the desired axis, or 1 if the axis is not found.
 	 */
 	long getAxisLength(final int axisIndex);
 
@@ -258,7 +258,7 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	 * type. No knowledge of plane ordering is necessary.
 	 *
 	 * @param t - CalibratedAxis to look up
-	 * @return Length of axis t, or 0 if the axis is not found.
+	 * @return Length of axis t, or 1 if the axis is not found.
 	 */
 	long getAxisLength(final CalibratedAxis t);
 
@@ -267,7 +267,7 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	 * {@link AxisType} of the desired axis.
 	 *
 	 * @param t - CalibratedAxis to look up
-	 * @return Length of axis t, or 0 if the axis is not found.
+	 * @return Length of axis t, or 1 if the axis is not found.
 	 */
 	long getAxisLength(final AxisType t);
 

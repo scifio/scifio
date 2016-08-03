@@ -508,7 +508,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	@Override
 	public long getAxisLength(final CalibratedAxis t) {
-		return getAxisLength(t.type());
+		return t == null ? 1 : getAxisLength(t.type());
 	}
 
 	@Override
