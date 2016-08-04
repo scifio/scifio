@@ -90,7 +90,7 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 	}
 
 	public SCIFIOImgPlus(final ImgPlus<T> imgPlus) {
-		this(imgPlus.getImg(), imgPlus.getName(), getTypes(imgPlus));
+		this(imgPlus.getImg(), imgPlus);
 	}
 
 	// -- SCIFIOImgPlus Methods --
@@ -174,20 +174,5 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 		if (img instanceof Disposable) {
 			((Disposable) img).dispose();
 		}
-	}
-
-	// -- Helper methods --
-
-	/**
-	 * @return An array of {@link AxisType} corresponding to the axes of the
-	 *         provided {@link ImgPlus}.
-	 */
-	private static AxisType[] getTypes(final ImgPlus<?> imgPlus) {
-		final AxisType[] types = new AxisType[imgPlus.numDimensions()];
-		for (int i = 0; i < types.length; i++) {
-			types[i] = imgPlus.axis(i).type();
-		}
-
-		return types;
 	}
 }
