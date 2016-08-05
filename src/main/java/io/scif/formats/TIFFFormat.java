@@ -523,7 +523,8 @@ public class TIFFFormat extends AbstractFormat {
 
 			for (int i=0; i<axes.length; i++) {
 				final AxisType type = Axes.get(axes[i]);
-				final String unit = units[i];
+				final String unit = (units[i] != null) ?
+					units[i].replace("\\u00B5", "µ") : null;
 				final double scale = Double.parseDouble(scales[i]);
 				final DefaultLinearAxis axis = new DefaultLinearAxis(type, unit, scale);
 				final int axisIndex = meta.get(0).getAxisIndex(type);
@@ -1700,7 +1701,7 @@ public class TIFFFormat extends AbstractFormat {
 			final String types = list(axes, a -> a.type().toString());
 			final String lengths = list(axes, a -> "" + imageMeta.getAxisLength(a));
 			final String scales = list(axes, a -> "" + a.averageScale(0, 1));
-			final String units = list(axes, a -> a.unit());
+			final String units = list(axes, a -> replaceMu(a.unit()));
 
 			final String comment = "" + //
 				"SCIFIO=" + getVersion() + "\n" + //
@@ -1716,12 +1717,23 @@ public class TIFFFormat extends AbstractFormat {
 				"frames=" + imageMeta.getAxisLength(tAxis) + "\n" + //
 				"hyperstack=true\n" + //
 				"mode=composite\n" + //
-				"unit=" + axes.get(0).unit() + "\n";
+				"unit=" + replaceMu(axes.get(0).unit()) + "\n";
 			ifd.putIFDValue(IFD.IMAGE_DESCRIPTION, comment);
 		}
 
 		private <T> String list(final List<T> l, final Function<T, String> f) {
 			return String.join(",", l.stream().map(f).collect(Collectors.toList()));
+		}
+
+		/**
+		 * Replaces Unicode micro sign with 'u'
+		 * 
+		 * @param unit a {@link String}
+		 * @return {@code unit} if it does not contain micro sign or a new
+		 *         {@link String} with micro sign replace by 'u'
+		 */
+		private String replaceMu(final String unit) {
+			return (unit != null) ? unit.replace("µ", "\\u00B5") : null;
 		}
 	}
 
