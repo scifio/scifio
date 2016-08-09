@@ -51,7 +51,7 @@ import org.scijava.Context;
 import org.scijava.log.LogService;
 
 /**
- * Parses TIFF data from an input source.
+ * Writes TIFF data to an output location.
  *
  * @author Curtis Rueden
  * @author Eric Kjellman

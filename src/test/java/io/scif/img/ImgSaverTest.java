@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,7 +30,10 @@
 
 package io.scif.img;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import io.scif.config.SCIFIOConfig;
 import io.scif.config.SCIFIOConfig.ImgMode;
@@ -38,8 +41,10 @@ import io.scif.io.ByteArrayHandle;
 import io.scif.services.LocationService;
 
 import java.io.File;
+import java.util.Iterator;
 
 import net.imagej.ImgPlus;
+import net.imagej.axis.CalibratedAxis;
 import net.imglib2.RandomAccess;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
@@ -55,7 +60,7 @@ import org.scijava.Context;
  */
 public class ImgSaverTest {
 
-	private final String id = "testImg&lengths=512,512,5&axes=X,Y,Time.fake";
+	private final String id = "testImg&lengths=512,512,2,3&axes=X,Y,Z,Time.fake";
 
 	private final String out = "test.tif";
 
@@ -108,7 +113,7 @@ public class ImgSaverTest {
 	 * Test that ImgSaver writes each plane of a multi-plane CellImg correctly
 	 */
 	@Test
-	public void testSlowPlaneSaving() throws ImgIOException,
+	public void testCellPlaneSaving() throws ImgIOException,
 		IncompatibleTypeException
 	{
 		final SCIFIOConfig config = new SCIFIOConfig().imgOpenerSetImgModes(
@@ -132,28 +137,56 @@ public class ImgSaverTest {
 
 	// -- Helper methods --
 
-	private void testPlaneSavingForConfig(final SCIFIOConfig config) throws ImgIOException,
-		IncompatibleTypeException
+	private void testPlaneSavingForConfig(final SCIFIOConfig config)
+		throws ImgIOException, IncompatibleTypeException
 	{
 		final ImgOpener o = new ImgOpener(ctx);
 		final ImgSaver s = new ImgSaver(ctx);
 
 		// write the image
-		SCIFIOImgPlus<UnsignedByteType> openImg = o.openImgs(id,
+		final SCIFIOImgPlus<UnsignedByteType> before = o.openImgs(id,
 			new UnsignedByteType(), config).get(0);
-		s.saveImg(out, openImg);
+		s.saveImg(out, before);
 
-		// re-read the written image and check dimensions
-		openImg = o.<UnsignedByteType> openImgs(out, new UnsignedByteType()).get(0);
+		// re-read the written image and check for consistency
+		final SCIFIOImgPlus<UnsignedByteType> after = o.openImgs(out,
+			new UnsignedByteType()).get(0);
+		assertImagesEqual(before, after);
+	}
 
-		// fakes start with 10 0's, then pixel value == plane index.. 
-		// so we have to skip along the x-axis a bit
-		int[] pos = { 11, 0, 0 };
-		for (int i = 0; i < 5; i++) {
-			pos[2] = i;
-			RandomAccess<UnsignedByteType> randomAccess = openImg.randomAccess();
-			randomAccess.setPosition(pos);
-			assertEquals(i, randomAccess.get().getRealDouble(), 0.0001);
+	// TODO: Migrate this into a shared ImageJ Common test library Assert class.
+	private static <T> void assertImagesEqual(final ImgPlus<T> expected,
+		final ImgPlus<T> actual)
+	{
+		// check dimensional lengths
+		final long[] eDims = new long[expected.numDimensions()];
+		expected.dimensions(eDims);
+		final long[] aDims = new long[actual.numDimensions()];
+		actual.dimensions(aDims);
+		assertArrayEquals(eDims, aDims);
+
+		// check dimensional axes
+		final CalibratedAxis[] eAxes = new CalibratedAxis[expected.numDimensions()];
+		expected.axes(eAxes);
+		final CalibratedAxis[] aAxes = new CalibratedAxis[actual.numDimensions()];
+		actual.axes(aAxes);
+		assertArrayEquals(eAxes, aAxes);
+
+		// check pixels
+		assertIterationsEqual(expected, actual);
+	}
+
+	// TODO: This was stolen from ImageJ Ops AbstractOpTest.
+	// It should really live in a shared test library of ImgLib2 (probably).
+	private static <T> void assertIterationsEqual(final Iterable<T> expected,
+		final Iterable<T> actual)
+	{
+		final Iterator<T> e = expected.iterator();
+		final Iterator<T> a = actual.iterator();
+		while (e.hasNext()) {
+			assertTrue("Fewer elements than expected", a.hasNext());
+			assertEquals(e.next(), a.next());
 		}
+		assertFalse("More elements than expected", a.hasNext());
 	}
 }

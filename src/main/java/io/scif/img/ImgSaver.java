@@ -111,8 +111,8 @@ public class ImgSaver extends AbstractImgIOComponent {
 	// -- ImgSaver methods --
 
 	/**
-	 * saveImg is the entry point for saving an {@link ImgPlus} The goal is to get
-	 * to a {@link Writer} and {@link ImgPlus} which are then passed to
+	 * Entry point for saving an {@link ImgPlus}. The goal is to get to a
+	 * {@link Writer} and {@link ImgPlus} which are then passed to
 	 * {@link #writePlanes}. These saveImg signatures facilitate multiple pathways
 	 * to that goal. This method is called when a String id and {@link Img} are
 	 * provided.
@@ -575,11 +575,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 	/**
 	 * Iterates through the planes of the provided {@link SCIFIOImgPlus},
 	 * converting each to a byte[] if necessary (the SCIFIO writer requires a
-	 * byte[]) and saving the plane. Currently only {@link PlanarImg} is
-	 * supported.
-	 *
-	 * @param arrayType2
-	 * @throws IncompatibleTypeException
+	 * byte[]) and saving the plane.
 	 */
 	private void writePlanes(final Writer w, final int imageIndex,
 		final SCIFIOImgPlus<?> imgPlus) throws ImgIOException,

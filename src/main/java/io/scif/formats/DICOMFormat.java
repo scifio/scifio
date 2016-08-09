@@ -330,8 +330,9 @@ public class DICOMFormat extends AbstractFormat {
 					return lut8;
 				case FormatTools.INT16:
 				case FormatTools.UINT16:
-					if (shortLut != null && lut16 == null) lut16 = new ColorTable16(
-						shortLut);
+					if (shortLut != null && lut16 == null) {
+						lut16 = new ColorTable16(shortLut);
+					}
 					return lut16;
 			}
 

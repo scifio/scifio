@@ -94,6 +94,11 @@ public abstract class AbstractTranslator<M extends Metadata, N extends Metadata>
 		typedDest.setFiltered(typedSource.isFiltered());
 		typedDest.setDatasetName(typedSource.getDatasetName());
 
+		// Directly copy format-agnostic ImageMetadata from source to destination
+		for (final ImageMetadata imageMeta : sourceImgMeta) {
+			typedDest.add(imageMeta.copy());
+		}
+
 		// Type-dependent translation
 		translateFormatMetadata(typedSource, typedDest);
 		translateImageMetadata(sourceImgMeta, typedDest);

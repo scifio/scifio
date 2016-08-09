@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+import net.imagej.axis.CalibratedAxis;
 
 import org.scijava.util.ArrayUtils;
 
