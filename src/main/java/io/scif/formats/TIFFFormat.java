@@ -443,10 +443,10 @@ public class TIFFFormat extends AbstractFormat {
 				parseCommentGeneric(meta, comment);
 			}
 
-			// map third dimension to Z axis if no comments are available
+			// map third dimension to unknown axis if no metadata is available
 			if (!scifio && !ij && !metamorph) {
 				meta.populateImageMetadata();
-				final AxisType type = Axes.get("Z");
+				final AxisType type = Axes.unknown();
 				final DefaultLinearAxis axis = new DefaultLinearAxis(type);
 				final int axisIndex = meta.get(0).getAxisIndex(type);
 				if (axisIndex < 0) {
