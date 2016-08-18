@@ -443,8 +443,20 @@ public class TIFFFormat extends AbstractFormat {
 				parseCommentGeneric(meta, comment);
 			}
 
-			// check for another file with the same name
+			// map third dimension to unknown axis if no metadata is available
+			if (!scifio && !ij && !metamorph) {
+				meta.populateImageMetadata();
+				final AxisType type = Axes.unknown();
+				final DefaultLinearAxis axis = new DefaultLinearAxis(type);
+				final int axisIndex = meta.get(0).getAxisIndex(type);
+				if (axisIndex < 0) {
+					// add new axis
+					meta.get(0).addAxis(axis);
+				}
+				meta.get(0).setAxisLength(axis, meta.getIfds().size());
+			}
 
+			// check for another file with the same name
 			if (config.groupableIsGroupFiles()) {
 				final Location currentFile =
 					new Location(getContext(), getSource().getFileName())
