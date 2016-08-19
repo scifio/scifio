@@ -964,7 +964,7 @@ public class TiffSaver extends AbstractContextual {
 			ifd.putIFDValue(IFD.Y_RESOLUTION, new TiffRational(1, 1));
 		}
 		if (ifd.get(IFD.SOFTWARE) == null) {
-			ifd.putIFDValue(IFD.SOFTWARE, "OME Bio-Formats");
+			ifd.putIFDValue(IFD.SOFTWARE, "SCIFIO");
 		}
 		if (ifd.get(IFD.ROWS_PER_STRIP) == null) {
 			ifd.putIFDValue(IFD.ROWS_PER_STRIP, new long[] { 1 });
