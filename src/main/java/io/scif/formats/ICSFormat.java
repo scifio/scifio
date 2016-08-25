@@ -192,12 +192,12 @@ public class ICSFormat extends AbstractFormat {
 					FormatTools.calibrate(imageMeta.getAxis(yAxis), pixelSizes[n], 0,
 						units == null ? "um" : units[n]);
 				}
-				else if (axis.equals("z") && pixelSizes[n] > 1) {
+				else if (axis.equals("z") && axesSizes[n] > 1) {
 					imageMeta.addAxis(zAxis, (int) axesSizes[n]);
 					FormatTools.calibrate(imageMeta.getAxis(zAxis), pixelSizes[n], 0,
 						units == null ? "um" : units[n]);
 				}
-				else if (axis.equals("t") && pixelSizes[n] > 1) {
+				else if (axis.equals("t") && axesSizes[n] > 1) {
 					final int tIndex = imageMeta.getAxisIndex(Axes.TIME);
 
 					if (tIndex == -1) {
@@ -1805,16 +1805,16 @@ public class ICSFormat extends AbstractFormat {
 				for (final CalibratedAxis axis : meta.get(imageIndex).getAxes()) {
 					Number value = 1.0;
 					if (axis.type() == Axes.X) {
-						value = meta.get(imageIndex).getAxisLength(Axes.X);
+						value = axis.averageScale(0, 1);
 					}
 					else if (axis.type() == Axes.Y) {
-						value = meta.get(imageIndex).getAxisLength(Axes.Y);
+						value = axis.averageScale(0, 1);
 					}
 					else if (axis.type() == Axes.Z) {
-						value = meta.get(imageIndex).getAxisLength(Axes.X);
+						value = axis.averageScale(0, 1);
 					}
 					else if (axis.type() == Axes.TIME) {
-						value = meta.get(imageIndex).getAxisLength(Axes.TIME);
+						value = axis.averageScale(0, 1);
 					}
 					units.append(axis.unit() + "\t");
 					out.writeBytes(value + "\t");
@@ -2201,6 +2201,15 @@ public class ICSFormat extends AbstractFormat {
 			}
 
 			keyValPairs.put("representation byte_order", byteOrder);
+			
+			final List<CalibratedAxis> axes = source.get(0).getAxes();
+
+			String scale = "";
+			for (int i = 0; i < axes.size(); i++) {
+				scale += axes.get(i).averageScale(0, 1) + " ";
+			}
+
+			keyValPairs.put("parameter scale", scale);
 
 			dest.setKeyValPairs(keyValPairs);
 		}
