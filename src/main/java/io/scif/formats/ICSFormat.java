@@ -1314,7 +1314,7 @@ public class ICSFormat extends AbstractFormat {
 		 * companions)
 		 */
 		private void findCompanion(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta) throws FormatException
 		{
 			if (stream.getFileName() == null) return;
 
