@@ -1185,18 +1185,6 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- ICSFormat.Parser Methods --
 
-		/**
-		 * @return True if the provided id is a version 2 ics id.
-		 */
-		public boolean isVersionTwo(final String id) throws IOException {
-			final RandomAccessInputStream f =
-				new RandomAccessInputStream(getContext(), id);
-			final boolean singleFile =
-				f.readString(17).trim().equals("ics_version\t2.0");
-			f.close();
-			return singleFile;
-		}
-
 		// -- Parser API Methods --
 
 		@SuppressWarnings("unchecked")
@@ -1211,8 +1199,7 @@ public class ICSFormat extends AbstractFormat {
 				new RandomAccessInputStream(getContext(), meta.getIcsId());
 
 			reader.seek(0);
-			reader.readString(ICSUtils.NL);
-			String line = reader.readString(ICSUtils.NL);
+			String line = reader.findString(ICSUtils.NL);
 			// Extracts the key, value pairs from each line and
 			// inserts them into the ICSMetadata object
 			while (line != null && !line.trim().equals("end") &&
@@ -1260,19 +1247,42 @@ public class ICSFormat extends AbstractFormat {
 					}
 				}
 
-				line = reader.readString(ICSUtils.NL);
+				line = reader.findString(ICSUtils.NL);
 			}
 
-			reader.close();
-			getSource().close();
+			// check which version of ICS
+			final Object icsVersion = meta.getTable().get("ics_version");
+			if (icsVersion == null) {
+				reader.close();
+				throw new FormatException("Cannot discern ICS version");
+			}
+			else if (icsVersion.equals("1.0")) {
+				// split file format: ICS for metadata, IDS for pixel data
+				meta.setVersionTwo(false);
 
-			final String id = meta.isVersionTwo() ? meta.icsId : meta.idsId;
-			updateSource(id);
+				// verify that data file is present
+				final String idsId = meta.getIdsId();
+				if (!new Location(getContext(), idsId).exists()) {
+					reader.close();
+					throw new FormatException("Data file does not exist: " + idsId);
+				}
 
-			if (meta.versionTwo) {
-				String s = getSource().readString(ICSUtils.NL);
-				while (!s.trim().equals("end"))
-					s = getSource().readString(ICSUtils.NL);
+				// close the ICS file
+				reader.close();
+				getSource().close(); // NB: Probably not necessary? But just to be safe...
+
+				// switch to the IDS file
+				updateSource(meta.getIdsId());
+			}
+			else if (icsVersion.equals("2.0")) {
+				// unified file format: ICS contains metadata and pixel data; no IDS file
+				meta.setVersionTwo(true);
+				meta.setIdsId(meta.getIcsId());
+				meta.setSource(reader);
+			}
+			else {
+				reader.close();
+				throw new FormatException("Unsupported ICS version: " + icsVersion);
 			}
 
 			meta.offset = getSource().getFilePointer();
@@ -1304,11 +1314,12 @@ public class ICSFormat extends AbstractFormat {
 		 * companions)
 		 */
 		private void findCompanion(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta) throws FormatException
 		{
 			if (stream.getFileName() == null) return;
 
-			String icsId = stream.getFileName(), idsId = stream.getFileName();
+			String icsId, idsId;
+			icsId = idsId = stream.getFileName();
 			final int dot = icsId.lastIndexOf(".");
 			final String ext = dot < 0 ? "" : icsId.substring(dot + 1).toLowerCase();
 			if (ext.equals("ics")) {
@@ -1326,25 +1337,7 @@ public class ICSFormat extends AbstractFormat {
 
 			final Location icsFile = new Location(getContext(), icsId);
 			if (!icsFile.exists()) throw new FormatException("ICS file not found.");
-			meta.icsId = icsId;
-
-			// check if we have a v2 ICS file - means there is no companion IDS
-			// file
-			final RandomAccessInputStream f =
-				new RandomAccessInputStream(getContext(), icsId);
-			final String version = f.readString(17).trim();
-			f.close();
-
-			if (version.equals("ics_version\t2.0")) {
-				meta.versionTwo = true;
-				meta.idsId = icsId;
-			}
-			else {
-				final Location idsFile = new Location(getContext(), idsId);
-				if (!idsFile.exists()) throw new FormatException(
-					"IDS file does not exist.");
-				meta.idsId = idsId;
-			}
+			meta.setIcsId(icsId);
 		}
 	}
 
@@ -1937,8 +1930,8 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Constants --
 
-		/** Newline characters. */
-		public static final String NL = "\r\n";
+		/** Newline terminator sequences. */
+		private static final String[] NL = {"\n", "\r\n"};
 
 		public static final String LEAF = "VALID_LEAF";
 
@@ -1985,6 +1978,7 @@ public class ICSFormat extends AbstractFormat {
 		private static Map<String, Object> createKeyMap() {
 			final Map<String, Object> root = new HashMap<>();
 
+			addKey(root, "ics_version");
 			addKey(root, "parameter", "ch");
 			addKey(root, "parameter", "scale");
 			addKey(root, "parameter", "t");
