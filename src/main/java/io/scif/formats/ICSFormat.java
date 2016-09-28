@@ -1269,7 +1269,7 @@ public class ICSFormat extends AbstractFormat {
 
 				// close the ICS file
 				reader.close();
-				getSource().close();
+				getSource().close(); // NB: Probably not necessary? But just to be safe...
 
 				// switch to the IDS file
 				updateSource(meta.getIdsId());
