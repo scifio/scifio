@@ -1199,7 +1199,7 @@ public class ICSFormat extends AbstractFormat {
 				new RandomAccessInputStream(getContext(), meta.getIcsId());
 
 			reader.seek(0);
-			String line = reader.readString(ICSUtils.NL);
+			String line = reader.findString(ICSUtils.NL);
 			// Extracts the key, value pairs from each line and
 			// inserts them into the ICSMetadata object
 			while (line != null && !line.trim().equals("end") &&
@@ -1247,7 +1247,7 @@ public class ICSFormat extends AbstractFormat {
 					}
 				}
 
-				line = reader.readString(ICSUtils.NL);
+				line = reader.findString(ICSUtils.NL);
 			}
 
 			// check which version of ICS
@@ -1930,8 +1930,8 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- Constants --
 
-		/** Newline characters. */
-		public static final String NL = "\r\n";
+		/** Newline terminator sequences. */
+		private static final String[] NL = {"\n", "\r\n"};
 
 		public static final String LEAF = "VALID_LEAF";
 
