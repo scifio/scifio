@@ -1296,7 +1296,8 @@ public class ICSFormat extends AbstractFormat {
 		{
 			if (stream.getFileName() == null) return;
 
-			String icsId = stream.getFileName(), idsId = stream.getFileName();
+			String icsId, idsId;
+			icsId = idsId = stream.getFileName();
 			final int dot = icsId.lastIndexOf(".");
 			final String ext = dot < 0 ? "" : icsId.substring(dot + 1).toLowerCase();
 			if (ext.equals("ics")) {
