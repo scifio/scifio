@@ -1257,7 +1257,7 @@ public class ICSFormat extends AbstractFormat {
 			final String id = meta.isVersionTwo() ? meta.icsId : meta.idsId;
 			updateSource(id);
 
-			if (meta.versionTwo) {
+			if (meta.isVersionTwo()) {
 				String s = getSource().readString(ICSUtils.NL);
 				while (!s.trim().equals("end"))
 					s = getSource().readString(ICSUtils.NL);
@@ -1314,7 +1314,7 @@ public class ICSFormat extends AbstractFormat {
 
 			final Location icsFile = new Location(getContext(), icsId);
 			if (!icsFile.exists()) throw new FormatException("ICS file not found.");
-			meta.icsId = icsId;
+			meta.setIcsId(icsId);
 
 			// check if we have a v2 ICS file - means there is no companion IDS
 			// file
