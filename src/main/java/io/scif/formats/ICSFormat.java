@@ -1185,18 +1185,6 @@ public class ICSFormat extends AbstractFormat {
 
 		// -- ICSFormat.Parser Methods --
 
-		/**
-		 * @return True if the provided id is a version 2 ics id.
-		 */
-		public boolean isVersionTwo(final String id) throws IOException {
-			final RandomAccessInputStream f =
-				new RandomAccessInputStream(getContext(), id);
-			final boolean singleFile =
-				f.readString(17).trim().equals("ics_version\t2.0");
-			f.close();
-			return singleFile;
-		}
-
 		// -- Parser API Methods --
 
 		@SuppressWarnings("unchecked")
