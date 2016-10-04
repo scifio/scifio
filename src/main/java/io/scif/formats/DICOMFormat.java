@@ -941,7 +941,7 @@ public class DICOMFormat extends AbstractFormat {
 				log().debug("Checking file " + file);
 				if (!f.equals(getSource().getFileName()) && !file.equals(getSource()
 					.getFileName()) && getFormat().createChecker().isFormat(file) &&
-					Arrays.binarySearch(patternFiles, file) >= 0)
+					Arrays.binarySearch(patternFiles, file.replaceAll("\\\\", "\\\\\\\\")) >= 0)
 				{
 					addFileToList(fileList, file, checkSeries);
 				}
