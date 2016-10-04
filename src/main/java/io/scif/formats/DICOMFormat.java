@@ -1298,7 +1298,7 @@ public class DICOMFormat extends AbstractFormat {
 				final int fileNumber = (int) (planeIndex / meta.getImagesPerFile());
 				planeIndex = planeIndex % meta.getImagesPerFile();
 				final String file = fileList.get(keys[imageIndex]).get(fileNumber);
-				final io.scif.Reader r = initializeService.initializeReader(file);
+				final io.scif.Reader r = initializeService.initializeReader(file, new SCIFIOConfig().checkerSetOpen(true));
 				return (ByteArrayPlane) r.openPlane(imageIndex, planeIndex, plane,
 					planeMin, planeMax, config);
 			}
