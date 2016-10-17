@@ -42,6 +42,8 @@ import io.scif.img.SCIFIOImgPlus;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
@@ -135,6 +137,44 @@ public class DefaultDatasetIOService extends AbstractService implements
 		}
 	}
 
+        
+    @Override
+    public List<net.imagej.Dataset> openAll(String source)
+            throws IOException
+    {
+            final SCIFIOConfig config = new SCIFIOConfig();
+            config.imgOpenerSetImgModes(ImgMode.PLANAR);
+            return openAll(source, config);
+    }
+
+    @Override
+    public List<net.imagej.Dataset> openAll(String source, SCIFIOConfig config)
+            throws IOException
+    {
+            final ArrayList<Dataset> datasetList = new ArrayList<>();
+
+            final ImgOpener imageOpener = new ImgOpener(getContext());
+            try {
+                final List<SCIFIOImgPlus<?>> openImgs = imageOpener.openImgs(source, config);
+                for (int imgId = 0; imgId != openImgs.size(); imgId++) {
+                    
+                    final SCIFIOImgPlus<?> imgPlus = openImgs.get(imgId);
+                    
+                    @SuppressWarnings({"rawtypes", "unchecked"})
+                    final Dataset dataset = datasetService.create((ImgPlus) imgPlus);
+
+                    final ImageMetadata imageMeta = imgPlus.getImageMetadata();
+                    updateDataset(dataset, imageMeta);
+                    datasetList.add(dataset);
+                }
+
+            } catch (final ImgIOException exc) {
+                throw new IOException(exc);
+            }
+            return datasetList;
+    }
+
+
 	@Override
 	public Metadata save(final Dataset dataset, final String destination)
 		throws IOException
@@ -207,4 +247,6 @@ public class DefaultDatasetIOService extends AbstractService implements
 
 		dataset.setRGBMerged(rgbMerged);
 	}
+
+    
 }
