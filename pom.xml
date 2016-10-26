@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>scifio</artifactId>
-	<version>0.29.1-SNAPSHOT</version>
+	<version>0.30.1-SNAPSHOT</version>
 
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a library for scientific N-dimensional image I/O.</description>
