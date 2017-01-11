@@ -74,7 +74,7 @@ Developer documentation:
 * See the [SCIFIO tutorials](https://github.com/scifio/scifio-tutorials) for a
   step-by-step introduction to the SCIFIO API.
 * See also the
-  [SCIFIO Javadocs](http://jenkins.imagej.net/job/SCIFIO-javadoc/javadoc/?).
+  [SCIFIO Javadocs](https://javadoc.imagej.net/SCIFIO/).
 
 
 More information
