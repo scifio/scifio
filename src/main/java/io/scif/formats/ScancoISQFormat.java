@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
+import net.imagej.axis.Axes;
 import net.imagej.axis.DefaultLinearAxis;
 
 import org.scijava.plugin.Plugin;
@@ -114,6 +115,14 @@ public class ScancoISQFormat extends AbstractFormat {
 
 	public static class Metadata extends AbstractMetadata {
 
+		/**
+		 * The unit of the spatial calibration, e.g. "voxel size"
+		 * <p>
+		 * NB (Default)UnitService recognises "µm" as "um"
+		 * </p>
+		 */
+		public static final String UNIT = "um";
+
 		/** Bytes in an ISQ header block */
 		public static final int HEADER_BLOCK = 512;
 		/**
@@ -178,6 +187,9 @@ public class ScancoISQFormat extends AbstractFormat {
 		private int intensity;
 		@Field(label = "Starting byte of image data")
 		private int dataOffset = HEADER_BLOCK;
+		private double voxelWidth;
+		private double voxelHeight;
+		private double voxelDepth;
 
 		public LocalDate getCreationDate() {
 			return creationDate;
@@ -437,11 +449,19 @@ public class ScancoISQFormat extends AbstractFormat {
 			metadata.setPixelType(FormatTools.INT16);
 			metadata.setOrderCertain(true);
 			metadata.setPlanarAxisCount(2);
-			metadata.setAxes(new DefaultLinearAxis(), new DefaultLinearAxis(),
-				new DefaultLinearAxis());
+			setVoxelDimensions();
+			metadata.setAxes(new DefaultLinearAxis(Axes.X, UNIT, voxelWidth),
+				new DefaultLinearAxis(Axes.Y, UNIT, voxelHeight), new DefaultLinearAxis(
+					Axes.Z, UNIT, voxelDepth));
 			metadata.setAxisLengths(new long[] { width, height, slices });
-            // TODO add mm calibrated x,y,z axes
-            // TODO add calibration function 1 / muScaling 1/cm
+			// TODO add calibration function 1 / muScaling 1/cm
+		}
+
+		private void setVoxelDimensions() {
+			voxelWidth = 1.0 * physicalWidth / width;
+			voxelHeight = 1.0 * physicalHeight / height;
+			voxelDepth = 1.0 * physicalDepth / slices;
+
 		}
 	}
 
@@ -485,7 +505,7 @@ public class ScancoISQFormat extends AbstractFormat {
 			meta.setIntensity(stream.readInt());
 			stream.seek(508);
 			meta.setDataOffset(stream.readInt());
-            // TODO Get Scanco metadata visible to user
+			// TODO Get Scanco metadata visible to user
 		}
 	}
 
@@ -501,20 +521,10 @@ public class ScancoISQFormat extends AbstractFormat {
 			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
-			final Metadata metadata = getMetadata();
-			final int width = metadata.getWidth();
-			final int height = metadata.getHeight();
-			final ImageMetadata imageMetadata = metadata.get(0);
-			final int bytesPerPixel = imageMetadata.getBitsPerPixel() / 8;
-			final int planeBytes = width * height * bytesPerPixel;
-			final int offset = (int) (metadata.dataOffset + planeBytes * planeIndex);
-
 			final RandomAccessInputStream stream = getStream();
+			final int offset = getMetadata().dataOffset;
 			stream.seek(offset);
-			stream.read(plane.getData(), 0, planeBytes);
-			plane.setImageMetadata(imageMetadata);
-
-			return plane;
+			return readPlane(stream, imageIndex, planeMin, planeMax, plane);
 		}
 	}
 }
