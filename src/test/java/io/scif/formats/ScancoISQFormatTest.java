@@ -1,12 +1,11 @@
 
 package io.scif.formats;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import io.scif.ByteArrayPlane;
 import io.scif.ImageMetadata;
-import io.scif.Plane;
-import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -14,7 +13,10 @@ import io.scif.util.FormatTools;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.LocalDate;
-import java.util.Random;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import net.imagej.axis.CalibratedAxis;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -33,13 +35,11 @@ public class ScancoISQFormatTest {
 		new ScancoISQFormat.Checker();
 	private static final ScancoISQFormat format = new ScancoISQFormat();
 	private static ScancoISQFormat.Parser parser;
-	private static Reader reader;
 
 	@BeforeClass
 	public static void oneTimeSetup() throws Exception {
 		format.setContext(context);
 		parser = (ScancoISQFormat.Parser) format.createParser();
-		reader = format.createReader();
 	}
 
 	@AfterClass
@@ -74,23 +74,36 @@ public class ScancoISQFormatTest {
 
 	@Test
 	public void testPopulateImageMetadata() throws Exception {
+		// SETUP
 		final ScancoISQFormat.Metadata metadata = (ScancoISQFormat.Metadata) format
 			.createMetadata();
-		metadata.setWidth(15);
-		metadata.setHeight(14);
-		metadata.setSlices(13);
+		final int[] dimensions = { 15, 14, 13 };
+		final int[] physicalDimensions = { 45, 35, 20 };
+		final double[] voxelDimensions = IntStream.range(0, 3).mapToDouble(
+			i -> 1.0 * physicalDimensions[i] / dimensions[i]).toArray();
+		metadata.setPhysicalWidth(physicalDimensions[0]);
+		metadata.setPhysicalHeight(physicalDimensions[1]);
+		metadata.setPhysicalDepth(physicalDimensions[2]);
+		metadata.setWidth(dimensions[0]);
+		metadata.setHeight(dimensions[1]);
+		metadata.setSlices(dimensions[2]);
 		metadata.populateImageMetadata();
+
+		// EXECUTE
 		final ImageMetadata imgMeta = metadata.get(0);
 
+		// VERIFY
 		assertTrue(imgMeta.isLittleEndian());
 		assertTrue(imgMeta.isOrderCertain());
 		assertEquals(16, imgMeta.getBitsPerPixel());
 		assertEquals(FormatTools.INT16, imgMeta.getPixelType());
 		assertEquals(2, imgMeta.getPlanarAxisCount());
-		assertEquals(3, imgMeta.getAxes().size());
-		assertEquals(15, imgMeta.getAxisLength(0));
-		assertEquals(14, imgMeta.getAxisLength(1));
-		assertEquals(13, imgMeta.getAxisLength(2));
+		final List<CalibratedAxis> axes = imgMeta.getAxes();
+		assertEquals(3, axes.size());
+		for (int i = 0; i < 3; i++) {
+			assertEquals(dimensions[i], imgMeta.getAxisLength(i));
+			assertEquals(voxelDimensions[i], axes.get(i).averageScale(0, 1), 1e-12);
+		}
 	}
 
 	@Test
@@ -195,52 +208,5 @@ public class ScancoISQFormatTest {
 		assertEquals(intensity, metadata.getIntensity());
 		assertEquals(ScancoISQFormat.Metadata.HEADER_BLOCK, metadata
 			.getDataOffset());
-	}
-
-	@Test
-	public void testOpenPlane() throws Exception {
-		// SETUP
-		final int width = 5;
-		final int height = 5;
-		final int depth = 5;
-		final int planeBytes = width * height * 2;
-		final int imageBytes = width * height * depth * 2;
-		final long[] planeMin = { 0, 0 };
-		final long[] planeMax = { width, height };
-		final int planeIndex = 1;
-		final int offset = planeIndex * planeBytes;
-		final SCIFIOConfig config = new SCIFIOConfig();
-		// Mock a .isq image input stream
-		final ByteBuffer buffer = ByteBuffer.allocate(
-			ScancoISQFormat.Metadata.HEADER_BLOCK + imageBytes);
-		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		buffer.position(44);
-		buffer.putInt(width);
-		buffer.putInt(height);
-		buffer.putInt(depth);
-		buffer.position(ScancoISQFormat.Metadata.HEADER_BLOCK);
-		// Add random image data
-		final Random random = new Random(0xC0FFEE);
-		final byte[] imageData = new byte[imageBytes];
-		random.nextBytes(imageData);
-		buffer.put(imageData);
-		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
-			buffer.array());
-		reader.setSource(stream);
-		// Create an empty plane where the "image" is read
-		final ByteArrayPlane emptyPlane = new ByteArrayPlane(context);
-		emptyPlane.setData(new byte[planeBytes]);
-
-		// EXERCISE
-		// Read a plane from the image
-		final Plane result = reader.openPlane(0, planeIndex, emptyPlane, planeMin,
-			planeMax, config);
-
-		// VERIFY
-		final byte[] bytes = result.getBytes();
-		for (int i = 0; i < planeBytes; i++) {
-			assertEquals("Plane pixel data incorrect at index " + i, imageData[i +
-				offset], bytes[i]);
-		}
 	}
 }
