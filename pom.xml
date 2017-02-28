@@ -98,8 +98,8 @@
 		<url>https://github.com/scifio/scifio/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/SCIFIO/</url>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/scifio/scifio</url>
 	</ciManagement>
 
 	<properties>
