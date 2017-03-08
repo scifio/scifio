@@ -158,5 +158,11 @@ Wisconsin-Madison</license.copyrightOwners>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+	 <dependency>
+	  <groupId>cisd</groupId>
+	  <artifactId>jhdf5</artifactId>
+	  <version>13.06.2</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 </project>
