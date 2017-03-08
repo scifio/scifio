@@ -1,16 +1,7 @@
 
 package io.scif.formats;
 
-import io.scif.AbstractChecker;
-import io.scif.AbstractFormat;
-import io.scif.AbstractMetadata;
-import io.scif.AbstractParser;
-import io.scif.ByteArrayPlane;
-import io.scif.ByteArrayReader;
-import io.scif.Field;
-import io.scif.Format;
-import io.scif.FormatException;
-import io.scif.ImageMetadata;
+import io.scif.*;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -190,6 +181,8 @@ public class ScancoISQFormat extends AbstractFormat {
 		private double voxelWidth;
 		private double voxelHeight;
 		private double voxelDepth;
+		/** Number of bytes in a single slice of the image */
+		private int sliceBytes;
 
 		public LocalDate getCreationDate() {
 			return creationDate;
@@ -302,6 +295,8 @@ public class ScancoISQFormat extends AbstractFormat {
 		public int getWidth() {
 			return width;
 		}
+
+		public int getSliceBytes() { return sliceBytes; }
 
 		/**
 		 * Converts the given timestamp to a creation date
@@ -454,14 +449,23 @@ public class ScancoISQFormat extends AbstractFormat {
 				new DefaultLinearAxis(Axes.Y, UNIT, voxelHeight), new DefaultLinearAxis(
 					Axes.Z, UNIT, voxelDepth));
 			metadata.setAxisLengths(new long[] { width, height, slices });
+			setSliceBytes();
 			// TODO add calibration function 1 / muScaling 1/cm
+		}
+
+		private void setSliceBytes() {
+			final ImageMetadata imageMetadata = get(0);
+			if (imageMetadata == null) {
+				return;
+			}
+			final int bytesPerPixel = imageMetadata.getBitsPerPixel() / 8;
+			sliceBytes = width * height * bytesPerPixel;
 		}
 
 		private void setVoxelDimensions() {
 			voxelWidth = 1.0 * physicalWidth / width;
 			voxelHeight = 1.0 * physicalHeight / height;
 			voxelDepth = 1.0 * physicalDepth / slices;
-
 		}
 	}
 
@@ -522,7 +526,8 @@ public class ScancoISQFormat extends AbstractFormat {
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final RandomAccessInputStream stream = getStream();
-			final int offset = getMetadata().dataOffset;
+			final Metadata metadata = getMetadata();
+			final int offset = (int) (metadata.dataOffset + metadata.sliceBytes * planeIndex);
 			stream.seek(offset);
 			return readPlane(stream, imageIndex, planeMin, planeMax, plane);
 		}
