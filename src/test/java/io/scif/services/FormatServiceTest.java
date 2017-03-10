@@ -79,8 +79,9 @@ public class FormatServiceTest {
 
 	/**
 	 * Test simultaneous format caching on multiple threads.
-	 *
+	 * <p>
 	 * NB: not annotated as a unit test due to length of execution.
+	 * </p>
 	 */
 //	@Test
 	public void testMultiThreaded() throws InterruptedException {
@@ -93,6 +94,7 @@ public class FormatServiceTest {
 		final int[] count = new int[1];
 
 		final Runnable runnable = new Runnable() {
+
 			@Override
 			public void run() {
 				final long time = System.currentTimeMillis();
@@ -113,7 +115,7 @@ public class FormatServiceTest {
 			}
 		};
 
-		for (int i=0; i<threads; i++) {
+		for (int i = 0; i < threads; i++) {
 			ts.run(runnable);
 		}
 
