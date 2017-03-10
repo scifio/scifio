@@ -70,10 +70,10 @@ public class FormatServiceTest {
 		final String[] suffixes = formatService.getSuffixes();
 		final String[] expectedSuffixes = { "avi", "bmp", "btf", "csv", "dcm",
 			"dic", "dicom", "eps", "epsi", "fake", "fits", "fts", "gif", "ics", "ids",
-			"ima", "isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg", "jpf",
-			"jpg", "mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx", "pgm",
-			"pict", "png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt", "xml",
-			"zip" };
+			"ima", "img", "isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg",
+			"jpf", "jpg", "mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx",
+			"pgm", "pict", "png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt",
+			"xml", "zip" };
 		assertArrayEquals(expectedSuffixes, suffixes);
 	}
 
