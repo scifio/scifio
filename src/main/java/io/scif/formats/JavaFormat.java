@@ -30,7 +30,14 @@
 
 package io.scif.formats;
 
-import io.scif.*;
+import io.scif.AbstractFormat;
+import io.scif.AbstractWriter;
+import io.scif.DefaultMetadata;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.ImageMetadata;
+import io.scif.Metadata;
+import io.scif.Plane;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
@@ -86,7 +93,7 @@ public class JavaFormat extends AbstractFormat {
 			IOException
 		{
 			super.setDest(stream, imageIndex, config);
-			if (getStream().length() == 0) { writeHeader(); }
+			if (getStream().length() == 0) writeHeader();
 		}
 
 		@Override
@@ -119,8 +126,7 @@ public class JavaFormat extends AbstractFormat {
 			final String varName = "image" + imageIndex + "Plane" + planeIndex;
 			final Object array = Bytes.makeArray(buf, bpp, fp, little);
 
-			final RandomAccessOutputStream output = getStream();
-			output.seek(output.length());
+			getStream().seek(getStream().length());
 			writePlane(varName, getType(array), (int) planeMax[0], (int) planeMax[1]);
 
 		}
@@ -139,7 +145,7 @@ public class JavaFormat extends AbstractFormat {
 
 		@Override
 		public void close() throws IOException {
-			if (getStream() != null) { writeFooter(); }
+			if (getStream() != null) writeFooter();
 			super.close();
 		}
 
@@ -169,8 +175,7 @@ public class JavaFormat extends AbstractFormat {
 		{
 			int i = 0;
 			final RandomAccessOutputStream stream = getStream();
-			stream.writeLine(
-				"  public " + type.label() + "[][] " + varName + " = {");
+			stream.writeLine("  public " + type.label() + "[][] " + varName + " = {");
 			for (int y = 0; y < h; y++) {
 				stream.writeBytes("    {");
 				for (int x = 0; x < w - 1; x++) {
