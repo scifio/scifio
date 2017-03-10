@@ -78,6 +78,11 @@
 			<name>Daniel Seebacher</name>
 			<properties><id>seebacherd</id></properties>
 		</contributor>
+		<contributor>
+			<name>Richard Domander</name>
+			<url>http://imagej.net/User:Rdom</url>
+			<properties><id>rimadoma</id></properties>
+		</contributor>
 	</contributors>
 
 	<mailingLists>

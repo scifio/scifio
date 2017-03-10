@@ -70,17 +70,18 @@ public class FormatServiceTest {
 		final String[] suffixes = formatService.getSuffixes();
 		final String[] expectedSuffixes = { "avi", "bmp", "btf", "csv", "dcm",
 			"dic", "dicom", "eps", "epsi", "fake", "fits", "fts", "gif", "ics", "ids",
-			"ima", "isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg", "jpf",
-			"jpg", "mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx", "pgm",
-			"pict", "png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt", "xml",
-			"zip" };
+			"ima", "img", "isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg",
+			"jpf", "jpg", "mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx",
+			"pgm", "pict", "png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt",
+			"xml", "zip" };
 		assertArrayEquals(expectedSuffixes, suffixes);
 	}
 
 	/**
 	 * Test simultaneous format caching on multiple threads.
-	 *
+	 * <p>
 	 * NB: not annotated as a unit test due to length of execution.
+	 * </p>
 	 */
 //	@Test
 	public void testMultiThreaded() throws InterruptedException {
@@ -92,28 +93,25 @@ public class FormatServiceTest {
 		final int threads = 500;
 		final int[] count = new int[1];
 
-		final Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				final long time = System.currentTimeMillis();
+		final Runnable runnable = () -> {
+			final long time = System.currentTimeMillis();
 
-				while (System.currentTimeMillis() - time < 10000) {
-					final String s = new BigInteger(64, random).toString() + ".tif";
-					try {
-						formatService.getFormat(s);
-					}
-					catch (FormatException exc) {
-						return;
-					}
+			while (System.currentTimeMillis() - time < 10000) {
+				final String s = new BigInteger(64, random).toString() + ".tif";
+				try {
+					formatService.getFormat(s);
 				}
+				catch (FormatException exc) {
+					return;
+				}
+			}
 
-				synchronized (count) {
-					count[0]++;
-				}
+			synchronized (count) {
+				count[0]++;
 			}
 		};
 
-		for (int i=0; i<threads; i++) {
+		for (int i = 0; i < threads; i++) {
 			ts.run(runnable);
 		}
 
