@@ -1,6 +1,14 @@
 .DS_Store
-.classpath
-.project
-.settings
-target
 test-output
+
+# Eclipse #
+/.classpath
+/.project
+/.settings/
+
+# Maven #
+/target/
+
+# IntelliJ #
+/.idea/
+*.iml

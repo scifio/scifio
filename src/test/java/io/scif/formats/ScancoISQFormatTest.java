@@ -1,10 +1,13 @@
 
 package io.scif.formats;
 
-import static org.junit.Assert.*;
 
-import io.scif.ByteArrayPlane;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import io.scif.ImageMetadata;
+import io.scif.ByteArrayPlane;
 import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;

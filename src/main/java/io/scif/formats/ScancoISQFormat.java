@@ -1,7 +1,16 @@
 
 package io.scif.formats;
 
-import io.scif.*;
+import io.scif.AbstractChecker;
+import io.scif.AbstractFormat;
+import io.scif.AbstractMetadata;
+import io.scif.AbstractParser;
+import io.scif.ByteArrayPlane;
+import io.scif.ByteArrayReader;
+import io.scif.Field;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -296,7 +305,9 @@ public class ScancoISQFormat extends AbstractFormat {
 			return width;
 		}
 
-		public int getSliceBytes() { return sliceBytes; }
+		public int getSliceBytes() {
+			return sliceBytes;
+		}
 
 		/**
 		 * Converts the given timestamp to a creation date
@@ -527,7 +538,8 @@ public class ScancoISQFormat extends AbstractFormat {
 		{
 			final RandomAccessInputStream stream = getStream();
 			final Metadata metadata = getMetadata();
-			final int offset = (int) (metadata.dataOffset + metadata.sliceBytes * planeIndex);
+			final int offset = (int) (metadata.dataOffset + metadata.sliceBytes *
+				planeIndex);
 			stream.seek(offset);
 			return readPlane(stream, imageIndex, planeMin, planeMax, plane);
 		}
