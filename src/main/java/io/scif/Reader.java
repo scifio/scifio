@@ -268,6 +268,10 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Reads a raw plane from disk.
+	 * <p>
+	 * NB Presumes that the source stream {@code s} is set to the correct offset,
+	 * i.e. start of the plane
+	 * </p>
 	 *
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
@@ -277,6 +281,10 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 
 	/**
 	 * Reads a raw plane from disk.
+	 * <p>
+	 * NB Presumes that the source stream {@code s} is set to the correct offset,
+	 * i.e. start of the plane
+	 * </p>
 	 *
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.

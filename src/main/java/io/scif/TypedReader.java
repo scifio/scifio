@@ -125,6 +125,10 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * Generic-parameterized {@code readPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[], Plane)}
+	 * <p>
+	 * NB Presumes that the source stream {@code s} is set to the correct offset,
+	 * i.e. start of the plane
+	 * </p>
 	 *
 	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[],
 	 *      Plane)
@@ -136,6 +140,10 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	 * Generic-parameterized {@code readPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[], int, Plane)}
+	 * <p>
+	 * NB Presumes that the source stream {@code s} is set to the correct offset,
+	 * i.e. start of the plane
+	 * </p>
 	 *
 	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, long[], long[],
 	 *      int, Plane)

@@ -1,11 +1,14 @@
 
 package io.scif.formats;
 
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import io.scif.ImageMetadata;
+import io.scif.ByteArrayPlane;
+import io.scif.Reader;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -177,6 +180,7 @@ public class ScancoISQFormatTest {
 
 		// EXERCISE
 		parser.typedParse(stream, metadata, config);
+		metadata.populateImageMetadata();
 
 		// VERIFY
 		assertEquals(patientIndex, metadata.getPatientIndex());
@@ -208,5 +212,38 @@ public class ScancoISQFormatTest {
 		assertEquals(intensity, metadata.getIntensity());
 		assertEquals(ScancoISQFormat.Metadata.HEADER_BLOCK, metadata
 			.getDataOffset());
+		assertEquals(2 * width * height, metadata.getSliceBytes());
+	}
+
+	@Test
+	public void testOpenPlane() throws Exception {
+		// SETUP
+		final int width = 10;
+		final int height = 10;
+		final int depth = 3;
+		final int planeBytes = width * height * 2;
+		final int imageBytes = depth * planeBytes;
+		final long[] planeMin = { 0, 0, 0 };
+		final long[] planeMax = { width, height, depth };
+		final ByteArrayPlane plane = new ByteArrayPlane(context);
+		plane.setData(new byte[planeBytes]);
+		final ByteBuffer buffer = ByteBuffer.allocate(
+			ScancoISQFormat.Metadata.HEADER_BLOCK + imageBytes);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		buffer.position(44);
+		buffer.putInt(width).putInt(height).putInt(depth);
+		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
+			buffer.array());
+		final Reader reader = format.createReader();
+		reader.setSource(stream);
+
+		// EXECUTE
+		reader.openPlane(0, 1, plane, planeMin, planeMax, new SCIFIOConfig());
+
+		// VERIFY
+		assertEquals(
+			"Position of stream incorrect: should point to the beginning of the 3rd slice",
+			ScancoISQFormat.Metadata.HEADER_BLOCK + 2 * planeBytes, stream
+				.getFilePointer());
 	}
 }
