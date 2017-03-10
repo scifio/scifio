@@ -93,25 +93,21 @@ public class FormatServiceTest {
 		final int threads = 500;
 		final int[] count = new int[1];
 
-		final Runnable runnable = new Runnable() {
+		final Runnable runnable = () -> {
+			final long time = System.currentTimeMillis();
 
-			@Override
-			public void run() {
-				final long time = System.currentTimeMillis();
-
-				while (System.currentTimeMillis() - time < 10000) {
-					final String s = new BigInteger(64, random).toString() + ".tif";
-					try {
-						formatService.getFormat(s);
-					}
-					catch (FormatException exc) {
-						return;
-					}
+			while (System.currentTimeMillis() - time < 10000) {
+				final String s = new BigInteger(64, random).toString() + ".tif";
+				try {
+					formatService.getFormat(s);
 				}
-
-				synchronized (count) {
-					count[0]++;
+				catch (FormatException exc) {
+					return;
 				}
+			}
+
+			synchronized (count) {
+				count[0]++;
 			}
 		};
 
