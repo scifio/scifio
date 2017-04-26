@@ -32,7 +32,7 @@
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<url>http://imagej.net/User:Rueden</url>
+			<url>https://imagej.net/User:Rueden</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -47,13 +47,13 @@
 	<contributors>
 		<contributor>
 			<name>Mark Hiner</name>
-			<url>http://imagej.net/User:Hinerm</url>
+			<url>https://imagej.net/User:Hinerm</url>
 			<roles><role>founder</role></roles>
 			<properties><id>hinerm</id></properties>
 		</contributor>
 		<contributor>
 			<name>Johannes Schindelin</name>
-			<url>http://imagej.net/User:Schindelin</url>
+			<url>https://imagej.net/User:Schindelin</url>
 			<properties><id>dscho</id></properties>
 		</contributor>
 		<contributor>
@@ -62,12 +62,12 @@
 		</contributor>
 		<contributor>
 			<name>Gabriel Einsdorf</name>
-			<url>http://imagej.net/User:Gab1one</url>
+			<url>https://imagej.net/User:Gab1one</url>
 			<properties><id>gab1one</id></properties>
 		</contributor>
 		<contributor>
 			<name>Henry Pinkard</name>
-			<url>http://imagej.net/User:HPinkard</url>
+			<url>https://imagej.net/User:HPinkard</url>
 			<properties><id>henrypinkard</id></properties>
 		</contributor>
 		<contributor>
@@ -80,7 +80,7 @@
 		</contributor>
 		<contributor>
 			<name>Richard Domander</name>
-			<url>http://imagej.net/User:Rdom</url>
+			<url>https://imagej.net/User:Rdom</url>
 			<properties><id>rimadoma</id></properties>
 		</contributor>
 	</contributors>
@@ -96,7 +96,7 @@
 		<connection>scm:git:git://github.com/scifio/scifio</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://github.com/scifio/scifio</url>
+		<url>https://github.com/scifio/scifio</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
@@ -121,7 +121,7 @@ Wisconsin-Madison</license.copyrightOwners>
 	<repositories>
 		<repository>
 			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
+			<url>https://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
 
