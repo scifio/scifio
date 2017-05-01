@@ -27,6 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  * Provides a set of Services (singletons within a given context)
  * for working with SCIFIO objects.
@@ -45,14 +46,6 @@
  *  been generalized to contain services that plug into the scijava-common context.
  *  New services should follow an interface/implementation paradigm,
  *  and use the {@link org.scijava.service.Service} annotation.
- *  </li>
- * </ul>
- * 
- * <h3>Future plans</h3>
- * NB: items with an asterisk (*) are of unknown merit and may or may not
- * be implemented, pending discussion.
- * <ul>
- *  <li>
  *  </li>
  * </ul>
  * 

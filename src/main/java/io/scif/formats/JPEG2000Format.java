@@ -637,7 +637,7 @@ public class JPEG2000Format extends AbstractFormat {
 		/**
 		 * Whether or not the codestream is raw and not JP2 boxed.
 		 *
-		 * @return <code>true</code> if the codestream is raw and <code>false</code>
+		 * @return {@code true} if the codestream is raw and {@code false}
 		 *         otherwise.
 		 */
 		public boolean isRawCodestream() {

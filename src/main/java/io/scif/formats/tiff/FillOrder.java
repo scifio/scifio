@@ -119,8 +119,8 @@ public enum FillOrder implements CodedEnum {
 	 * Retrieves a fill order by reverse lookup of its "code".
 	 *
 	 * @param code The code to look up.
-	 * @return The <code>FillOrder</code> instance for the <code>code</code> or
-	 *         <code>null</code> if it does not exist.
+	 * @return The {@code FillOrder} instance for the {@code code} or
+	 *         {@code null} if it does not exist.
 	 */
 	public static FillOrder get(final int code) {
 		final FillOrder toReturn = lookup.get(code);

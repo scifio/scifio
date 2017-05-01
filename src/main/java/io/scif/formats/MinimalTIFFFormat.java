@@ -101,7 +101,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		/**
 		 * List of sub-resolution IFDs for each IFD in the current TIFF with the
-		 * same order as <code>ifds</code>.
+		 * same order as {@code ifds}.
 		 */
 		private List<IFDList> subResolutionIFDs;
 
@@ -706,8 +706,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		 * Sets the resolution level when we have JPEG 2000 compressed data.
 		 *
 		 * @param ifd The active IFD that is being used in our current
-		 *          <code>openBytes()</code> calling context. It will be the
-		 *          sub-resolution IFD if <code>currentSeries > 0</code>.
+		 *          {@code openBytes()} calling context. It will be the
+		 *          sub-resolution IFD if {@code currentSeries > 0}.
 		 */
 		protected void setResolutionLevel(final IFD ifd) {
 			final Metadata meta = getMetadata();

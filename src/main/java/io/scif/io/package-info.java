@@ -27,6 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  * Provides the classes for reading and writing information between
  * image sources.
@@ -46,8 +47,6 @@
  * </ul>
  * 
  * <h3>Future plans</h3>
- * NB: items with an asterisk (*) are of unknown merit and may or may not
- * be implemented, pending discussion.
  * <ul>
  *  <li>
  *  {code IRandomAccess} naming. The {@code IRandomAccess} interface should
@@ -65,6 +64,5 @@
  * </ul>
  * 
  * @author Mark Hiner
- *
  */
 package io.scif.io;

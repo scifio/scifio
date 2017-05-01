@@ -50,7 +50,7 @@ public interface NIOService extends SCIFIOService {
 	 * Allocates or maps the desired file data into memory.
 	 * <p>
 	 * This method provides a facade to byte buffer allocation that enables
-	 * <code>FileChannel.map()</code> usage on platforms where it's unlikely to
+	 * {@code FileChannel.map()} usage on platforms where it's unlikely to
 	 * give us problems and heap allocation where it is.
 	 * </p>
 	 *

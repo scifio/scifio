@@ -50,12 +50,12 @@ import org.scijava.util.ArrayUtils;
  * heuristic to select a factory:
  * <ul>
  * <li>Check each ImgMode in order</li>
- * <li>If ImgMode.ARRAY, select if dataset size < 2GB</li>
- * <li>If ImgMode.PLANAR, select if plane size < 2GB and dataset fits memory.
+ * <li>If ImgMode.ARRAY, select if dataset size &lt; 2GB</li>
+ * <li>If ImgMode.PLANAR, select if plane size &lt; 2GB and dataset fits memory.
  * <li>
  * <li>If ImgMode.CELL, return a SCIFIOCellImgFactory.</li>
  * <li>If ImgMode.AUTO or none of the requested types could be selected, check
- * as though the order were ARRAY -> PLANAR -> CELL.</li>
+ * as though the order were ARRAY -&gt; PLANAR -&gt; CELL.</li>
  * </ul>
  * <p>
  * NB: ImgMode.CELL is always satisfied. Thus to avoid a particular ImgMode,

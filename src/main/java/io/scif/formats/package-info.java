@@ -27,6 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  * Provides {@link io.scif.Format} implementations for all file formats that are
  * supported by default in SCIFIO.
@@ -48,8 +49,6 @@
  * </ul>
  * 
  * <h3>Future plans</h3>
- * NB: items with an asterisk (*) are of unknown merit and may or may not
- * be implemented, pending discussion.
  * <ul>
  *  <li>
  *  Convert the remaining open source formats (in the scifio component,

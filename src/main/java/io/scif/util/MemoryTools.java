@@ -46,10 +46,11 @@ public class MemoryTools {
 	 * instead). Likewise, freeMemory() returns the number of free bytes <i>in the
 	 * currently claimed chunk of RAM</i>, not the number of bytes still available
 	 * for Java.
-	 * <p>
 	 * </p>
+	 * <p>
 	 * Therefore, a little arithmetic is required to obtain the real number of
-	 * available bytes for us to use. </p>
+	 * available bytes for us to use.
+	 * </p>
 	 *
 	 * @return the amount of memory available for data
 	 */

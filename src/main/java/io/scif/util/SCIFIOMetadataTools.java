@@ -126,9 +126,7 @@ public class SCIFIOMetadataTools {
 	 * Casts the provided Metadata object to the generic type of this method.
 	 * <p>
 	 * Usage: To cast a Metadata instance to ConcreteMetadata, use:
-	 * <p>
-	 * {@code SCIFIOMetadataTools.<ConcreteMetadata>castMeta(meta)}
-	 * </p>
+	 * {@code SCIFIOMetadataTools.<ConcreteMetadata>castMeta(meta)}.
 	 * </p>
 	 */
 	@SuppressWarnings("unchecked")

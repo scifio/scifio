@@ -24,12 +24,12 @@ import org.scijava.plugin.Plugin;
  * </p>
  * <p>
  * Scanco ISQ Header Information:
+ * </p>
  * <ul>
  * <li>Scanco uses OpenVMS on Alpha workstations</li>
  * <li>Little endian byte order (the least significant bit occupies the lowest
  * memory position)</li>
  * </ul>
- * </p>
  * <p>
  * 
  * <pre>
@@ -68,7 +68,6 @@ import org.scijava.plugin.Plugin;
  * ...
  * 508  int     data_offset; // Number of optional header blocks
  * </pre>
- * </p>
  *
  * @author B. Koller (SCANCO Medical AG, April 2005)
  * @author K.-H. Kunzelmann (Operative Dentistry, LMU-München, Ger, April 2006)

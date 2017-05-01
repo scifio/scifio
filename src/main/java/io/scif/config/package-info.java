@@ -30,17 +30,20 @@
 
 /**
  * This package provides configuration options for all SCIFIO components. 
+ * <p>
  * Configuration is achieved through use of the 
  * {@link io.scif.config.SCIFIOConfig} class. Methods in this class are prefixed
  * based on what component they are modifying. The {@code SCIFIOConfig} then
  * operates as a single container of state, passed between each consumer, which 
  * queries the values that apply to them.
+ * </p>
  * <p>
  * Configuration is scoped within method execution, thus SCIFIOConfig objects
  * should not be cached, but instead always passed through method signatures.
  * </p>
  * <p>
  * Adding new configuration options requires three steps:
+ * </p>
  * <ul>
  * <li>Add the appropriate field(s) and setter/accessor methods to 
  * {@code SCIFIOConfig}.</li>
@@ -49,7 +52,6 @@
  * <li>Update any downstream code of the newly configurable class to pass along
  * {@code SCIFIOConfig} objects.</li>
  * </ul>
- * </p>
  *
  * @author Mark Hiner
  */

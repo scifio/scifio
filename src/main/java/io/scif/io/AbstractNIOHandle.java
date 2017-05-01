@@ -65,8 +65,8 @@ public abstract class AbstractNIOHandle implements IRandomAccess {
 	 * it as required.
 	 *
 	 * @param writeLength Number of bytes to write.
-	 * @return <code>true</code> if the buffer has not required an extension.
-	 *         <code>false</code> otherwise.
+	 * @return {@code true} if the buffer has not required an extension.
+	 *         {@code false} otherwise.
 	 * @throws IOException If there is an error changing the handle's length.
 	 */
 	protected boolean validateLength(final int writeLength) throws IOException {

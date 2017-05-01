@@ -27,6 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  * Provides a {@link io.scif.Reader} backed {@link net.imglib2.img.cell.CellImg}
  * implementation and supporting classes.
@@ -41,6 +42,5 @@
  * </p>
  * 
  * @author Mark Hiner
- *
  */
 package io.scif.img.cell;

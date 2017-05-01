@@ -74,11 +74,7 @@ public class BufferedImagePlane extends
 	 * <p>
 	 * NB: If this plane contains multiple channels, the planes for each channel
 	 * will be condensed to a single array. The first entry for each channel's
-	 * data will have an offset of:
-	 * <p>
-	 * <code>channelIndex * planeSize</code>
-	 * </p>
-	 * </p>
+	 * data will have an offset of: {@code channelIndex * planeSize}.
 	 *
 	 * @return The byte[] extracted from this Plane's BufferedImage
 	 */

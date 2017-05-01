@@ -1591,7 +1591,7 @@ public class TIFFFormat extends AbstractFormat {
 
 		/**
 		 * Performs the preparation for work prior to the usage of the TIFF saver.
-		 * This method is factored out from <code>saveBytes()</code> in an attempt
+		 * This method is factored out from {@code saveBytes()} in an attempt
 		 * to ensure thread safety.
 		 */
 		private long prepareToWritePlane(final int imageIndex,

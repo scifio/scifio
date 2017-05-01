@@ -27,6 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  *  Provides utility classes for common operations on or by SCIFIO components.
  *
@@ -40,15 +41,6 @@
  *  </li>
  * </ul>
  * 
- * <h3>Future plans</h3>
- * NB: items with an asterisk (*) are of unknown merit and may or may not
- * be implemented, pending discussion.
- * <ul>
- *  <li>
- *  </li>
- * </ul>
- * 
  * @author Mark Hiner
- *
  */
 package io.scif.util;

@@ -27,8 +27,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
- * Provides SCIFIO-based classes for working with {@link net.imglib2.meta.ImgPlus}
+ * Provides SCIFIO-based classes for working with {@link net.imagej.ImgPlus}
  * from the imglib2 library.
  * <p>
  * {@link io.scif.img.ImgOpener} is used for creating ImgPluses, using
@@ -40,6 +41,5 @@
  * </p>
  * 
  * @author Mark Hiner
- *
  */
 package io.scif.img;

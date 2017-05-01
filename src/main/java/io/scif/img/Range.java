@@ -48,16 +48,16 @@ import java.util.Set;
  * be specified using a "-". If an end is specified, a step can also be provided
  * using a ":". So, {@code 5,6-10:2} would select planes 5, 6, 8 and 10 from the
  * dimension associated with this Range.
+ * </p>
  * <p>
  * Ranges must match the pattern: {@code \d*(-\d*(:\d*)?)?(,\d*(-\d*(:\d)?*)?)*}
  * Valid patterns:
+ * </p>
  * <ul>
  * <li>5,10,15</li>
  * <li>5-10,7,10-25:3</li>
  * <li>1-100:1,1-50:2,15-20</li>
  * </ul>
- * </p>
- * </p>
  * <p>
  * NB: index order is preserved, so if indices are provided out of order, they
  * will remain out of order.

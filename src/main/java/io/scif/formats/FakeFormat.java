@@ -72,20 +72,19 @@ import org.scijava.util.Bytes;
  * <p>
  * Examples:
  * </p>
- *
- * <pre>
- * 'multi-series&series=11&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'
- * '8bit-signed&pixelType=int8&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'
- * '8bit-unsigned&pixelType=uint8&axes=X,Y,Z,Channel&lengths=1,50,3,5.fake'
- * '16bit-signed&pixelType=int16&axes=X,Y,Z,Channel,Time&lengths=1,50,3,7.fake'
- * '16bit-unsigned&pixelType=uint16&sizeZ=3&axes=X,Y,&lengths=1,1.fake'
- * '32bit-signed&pixelType=int32&sizeZ=3&axes=X,Y,Z,,Time&lengths=50,50.fake'
- * '32bit-unsigned&pixelType=uint32&axes=X,Y,Z&lengths=50,50,3.fake'
- * '32bit-floating&pixelType=float&axes=X,Y&lengths=1,1.fake'
- * '64bit-floating&pixelType=double&axes=X,Y,Time&lengths=256,256,3.fake'
- * 'rgb-image&lengths=512,512,3&axes=X,Y,Channel&planarDims=3.fake'
- * 'rgb-interleaved&lengths=3,512,512&axes=Channel,X,Y&planarDims=3.fake'
- * </pre>
+ * <ul>
+ * <li>{@code 'multi-series&series=11&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'}</li>
+ * <li>{@code '8bit-signed&pixelType=int8&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'}</li>
+ * <li>{@code '8bit-unsigned&pixelType=uint8&axes=X,Y,Z,Channel&lengths=1,50,3,5.fake'}</li>
+ * <li>{@code '16bit-signed&pixelType=int16&axes=X,Y,Z,Channel,Time&lengths=1,50,3,7.fake'}</li>
+ * <li>{@code '16bit-unsigned&pixelType=uint16&sizeZ=3&axes=X,Y,&lengths=1,1.fake'}</li>
+ * <li>{@code '32bit-signed&pixelType=int32&sizeZ=3&axes=X,Y,Z,,Time&lengths=50,50.fake'}</li>
+ * <li>{@code '32bit-unsigned&pixelType=uint32&axes=X,Y,Z&lengths=50,50,3.fake'}</li>
+ * <li>{@code '32bit-floating&pixelType=float&axes=X,Y&lengths=1,1.fake'}</li>
+ * <li>{@code '64bit-floating&pixelType=double&axes=X,Y,Time&lengths=256,256,3.fake'}</li>
+ * <li>{@code 'rgb-image&lengths=512,512,3&axes=X,Y,Channel&planarDims=3.fake'}</li>
+ * <li>{@code 'rgb-interleaved&lengths=3,512,512&axes=Channel,X,Y&planarDims=3.fake'}</li>
+ * </ul>
  *
  * @author Mark Hiner
  * @author Curtis Rueden

@@ -495,7 +495,7 @@ public class SCIFIOConfig extends HashMap<String, Object> {
 	/**
 	 * @param range Image index to open.
 	 * @return This SCIFIOConfig for method chaining.
-	 * @throws IllegalArgumentException If index < 0
+	 * @throws IllegalArgumentException If index &lt; 0
 	 */
 	public SCIFIOConfig imgOpenerSetRange(final Range range) {
 		this.range = range;

@@ -39,6 +39,7 @@ import java.io.IOException;
  * Default {@link io.scif.Parser} implementation.
  * <p>
  * Populates the following fields:
+ * </p>
  * <ul>
  * <li>
  * {@link io.scif.Metadata#isFiltered()}</li>
@@ -47,7 +48,6 @@ import java.io.IOException;
  * <li>
  * {@link io.scif.Metadata#getDatasetName()}</li>
  * </ul>
- * </p>
  *
  * @see io.scif.Parser
  * @author Mark Hiner

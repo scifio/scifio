@@ -79,7 +79,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 
 	/**
 	 * Describes the number of bytes per pixel. Must be one of the <i>static</i>
-	 * pixel types (e.g. <code>INT8</code>) in {@link io.scif.util.FormatTools}.
+	 * pixel types (e.g. {@code INT8}) in {@link io.scif.util.FormatTools}.
 	 */
 	@Field(label = "pixelType")
 	private int pixelType;

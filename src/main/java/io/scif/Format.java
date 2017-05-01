@@ -76,12 +76,12 @@ public interface Format extends SCIFIOPlugin {
 	 * Gets the default file suffixes for this file format.
 	 * <p>
 	 * Sample valid suffixes:
+	 * </p>
 	 * <ul>
 	 * <li>png</li>
 	 * <li>avi</li>
 	 * <li>bmp</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @return an array of extensions associated with this Format
 	 */

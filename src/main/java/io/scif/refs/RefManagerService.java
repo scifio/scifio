@@ -61,8 +61,6 @@ public interface RefManagerService extends SCIFIOService {
 	 * referent. An object shouldn't require more than one cleanup for a given
 	 * usage.
 	 * </p>
-	 *
-	 * @param toManage Instance to manage via {@link CleaningRef}
 	 */
 	void manage(Object referent, Object... params);
 }

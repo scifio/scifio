@@ -27,11 +27,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  * Provides a {@link io.scif.img.cell.cache.CacheService} interface for dynamically
  * caching and retrieving image pixel data to and from disk.
  * <p>
  * When a service is obtained, the following cache configuration options can be used:
+ * </p>
  * <ul>
  *   <li>{@link io.scif.img.cell.cache.CacheService#enable(boolean)} to enable or
  *   disable caching.</li>
@@ -41,13 +43,11 @@
  *   or not non-dirty are cached. By default this is {@code false} and only
  *   dirty cells are cached.</li>
  * </ul>
- * </p>
  * <p>
  * Caching is enabled by default when using {@link io.scif.img.cell.SCIFIOCellImg}
  * types.
  * </p>
  * 
  * @author Mark Hiner
- *
  */
 package io.scif.img.cell.cache;

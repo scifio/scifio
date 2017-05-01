@@ -78,8 +78,8 @@ public enum JPEG2000BoxType implements CodedEnum {
 	 * Retrieves the box type by reverse lookup of its "code".
 	 *
 	 * @param code The code to look up.
-	 * @return The <code>JPEG2000BoxType</code> instance for the <code>code</code>
-	 *         or <code>null</code> if it does not exist.
+	 * @return The {@code JPEG2000BoxType} instance for the {@code code}
+	 *         or {@code null} if it does not exist.
 	 */
 	public static JPEG2000BoxType get(final int code) {
 		return lookup.get(code);

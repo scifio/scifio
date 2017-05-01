@@ -280,7 +280,7 @@ public enum TiffCompression implements CodedEnum {
 	 *
 	 * @param ifd The IFD to create codec options for.
 	 * @return A new codec options instance populated using metadata from
-	 *         <code>ifd</code>.
+	 *         {@code ifd}.
 	 */
 	public CodecOptions getCompressionCodecOptions(final IFD ifd)
 		throws FormatException
@@ -293,7 +293,7 @@ public enum TiffCompression implements CodedEnum {
 	 *
 	 * @param ifd The IFD to create codec options for.
 	 * @return A new codec options instance populated using metadata from
-	 *         <code>ifd</code>.
+	 *         {@code ifd}.
 	 * @param opt The codec options to copy.
 	 */
 	public CodecOptions

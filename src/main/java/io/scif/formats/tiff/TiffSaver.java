@@ -256,15 +256,15 @@ public class TiffSaver extends AbstractContextual {
 	 * Writes to any rectangle from the passed block.
 	 *
 	 * @param buf The block that is to be written.
-	 * @param ifd The Image File Directories. Mustn't be <code>null</code>.
+	 * @param ifd The Image File Directories. Mustn't be {@code null}.
 	 * @param planeIndex The image index within the current file, starting from 0.
 	 * @param pixelType The type of pixels.
 	 * @param x The X-coordinate of the top-left corner.
 	 * @param y The Y-coordinate of the top-left corner.
 	 * @param w The width of the rectangle.
 	 * @param h The height of the rectangle.
-	 * @param last Pass <code>true</code> if it is the last image,
-	 *          <code>false</code> otherwise.
+	 * @param last Pass {@code true} if it is the last image,
+	 *          {@code false} otherwise.
 	 * @throws FormatException
 	 * @throws IOException
 	 */
@@ -404,11 +404,11 @@ public class TiffSaver extends AbstractContextual {
 	 * Performs the actual work of dealing with IFD data and writing it to the
 	 * TIFF for a given image or sub-image.
 	 *
-	 * @param ifd The Image File Directories. Mustn't be <code>null</code>.
+	 * @param ifd The Image File Directories. Mustn't be {@code null}.
 	 * @param planeIndex The image index within the current file, starting from 0.
 	 * @param strips The strips to write to the file.
-	 * @param last Pass <code>true</code> if it is the last image,
-	 *          <code>false</code> otherwise.
+	 * @param last Pass {@code true} if it is the last image,
+	 *          {@code false} otherwise.
 	 * @param x The initial X offset of the strips/tiles to write.
 	 * @param y The initial Y offset of the strips/tiles to write.
 	 * @throws FormatException
@@ -897,8 +897,8 @@ public class TiffSaver extends AbstractContextual {
 	/**
 	 * Coverts a list to a primitive array.
 	 *
-	 * @param l The list of <code>Long</code> to convert.
-	 * @return A primitive array of type <code>long[]</code> with the values from
+	 * @param l The list of {@code Long} to convert.
+	 * @return A primitive array of type {@code long[]} with the values from
 	 *         </code>l</code>.
 	 */
 	private long[] toPrimitiveArray(final List<Long> l) {

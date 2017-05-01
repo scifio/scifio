@@ -27,6 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  * Provides wrapping classes for modifying the performance of one or more of
  * a {link io.scif.Format}'s components.
@@ -61,8 +62,6 @@
  * </ul>
  * 
  * <h3>Future plans</h3>
- * NB: items with an asterisk (*) are of unknown merit and may or may not
- * be implemented, pending discussion.
  * <ul>
  *  <li>
  *  Implement Filters for the remaining component types.

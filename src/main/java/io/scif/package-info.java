@@ -27,6 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  * Provides the interfaces and default implementations for the components of
  * SCIFIO, and the context for instantiating these components.
@@ -38,6 +39,7 @@
  * Support for a given image format in SCIFIO is established by implementing
  * the {@link io.scif.Format} interface. Each Format consists of six types of
  * components:
+ * </p>
  * <ul>
  *  <li>
  *  {@link io.scif.Checker} - determines if the {@code Format} can read/write a
@@ -68,9 +70,9 @@
  *  only writable Formats require translators to their Metadata type.
  *  </li>
  * </ul>
- * </p>
  * <p>
  * The intended workflow in SCIFIO takes an image source through the following steps:
+ * </p>
  * <ol>
  *  <li>
  *  Use each discovered Format's Checker to determine if that Format is compatible with
@@ -97,7 +99,6 @@
  *  by the Reader are passed, as desired, to the Writer for saving to an output source.
  *  </li>
  * </ol>
- * </p>
  * <p>
  * The {@link io.scif.SCIFIO} class wraps {@link org.scijava.Context}
  * instances and provides convenient access to many services.
@@ -156,8 +157,7 @@
  *  {@code series} each containing multiple {@code images}. In SCIFIO, we adopt
  *  the OME terminology that you open a {@code dataset} that contains one or
  *  more {@code images}. Each {@code image} has a number of {@code planes}.
- *  <p>
- *  <table>
+ *  <table summary="Bio-Formats vs. SCIFIO terminology comparison">
  *    <tr>
  *      <th>Bio-Formats</th>
  *      <th>SCIFIO</th>
@@ -175,7 +175,6 @@
  *      <td>Plane</td>
  *    </tr>
  *  </table>
- *  </p>
  *  </li>
  *  <li>
  *  Addition of generic parameterization. Because of the prevalence of related
@@ -192,7 +191,7 @@
  *  <li>
  *  <p>
  *  Serialization. The {@link io.scif.Metadata} class implements
- *  {@link java.io.Serializble}. The idea behind metadata serialization is that
+ *  {@link java.io.Serializable}. The idea behind metadata serialization is that
  *  parsing the metadata is one of the most expensive processes of image IO.
  *  If metadata can be saved for future sessions, then repeated analysis of
  *  the associated dataset can be, potentially quite significantly, sped up.
@@ -201,14 +200,14 @@
  *  <li>
  *  Dimensionality changes. Bio-Formats was hard-coded to be 5D (some
  *  permutation of XYZCT). To be fully extensible SCIFIO should be N-D.
- *  The current SCIFIO implementation uses ImgLib2 {@link net.imglib2.meta.Axes} to
- *  get away from the strict 5D representation.
+ *  The current SCIFIO implementation uses ImgLib2 {@link net.imagej.axis.Axes}
+ *  to get away from the strict 5D representation.
  *  <p>
  *  However, many methods in SCIFIO (especially utility methods) are still
  *  effectively 5D, as they were strictly ported from Bio-Formats code. Thus
  *  this is still an area for refinement. Especially given that the parallel
- *  axis length and type arrays are somewhat confusing, when they could be replaced
- *  by a single object.
+ *  axis length and type arrays are somewhat confusing, when they could be
+ *  replaced by a single object.
  *  </p>
  *  </li>
  *  <li>

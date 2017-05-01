@@ -50,7 +50,7 @@ import org.scijava.util.Bytes;
  * This class provides LuraWave decompression, using LuraWave's Java decoding
  * library. Compression is not supported. Decompression requires a LuraWave
  * license code, specified in the lurawave.license system property (e.g.,
- * <code>-Dlurawave.license=XXXX</code> on the command line).
+ * {@code -Dlurawave.license=XXXX} on the command line).
  *
  * @author Curtis Rueden
  */
