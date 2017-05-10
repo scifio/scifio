@@ -326,17 +326,91 @@ public class DICOMFormat extends AbstractFormat {
 			switch (pixelType) {
 				case FormatTools.INT8:
 				case FormatTools.UINT8:
-					if (lut != null && lut8 == null) lut8 = new ColorTable8(lut);
+					if (lut8 == null) {
+						// Need to create  the lut8
+						if (isInverted()) {
+							// If inverted then lut shall be inverted
+							if (lut == null) {
+								// If lut does not exists create an inverted one
+								lut = createInvertedLut8();
+							} else {
+								// If lut does exists inverted it
+								invertLut8(lut);
+							}
+						}
+						if (lut != null) {
+							lut8 = new ColorTable8(lut);
+						}
+					}
 					return lut8;
 				case FormatTools.INT16:
 				case FormatTools.UINT16:
-					if (shortLut != null && lut16 == null) {
-						lut16 = new ColorTable16(shortLut);
+					if (lut16 == null) {
+						// Need to create  the lut16
+						if (isInverted()) {
+							// If inverted then lut shall be inverted
+							if (shortLut == null) {
+								// If lut does not exists create an inverted one
+								shortLut = createInvertedLut16();
+							} else {
+								// If lut does exists inverted it
+								invertLut16(shortLut);
+							}
+						}
+						if (shortLut != null) {
+							lut16 = new ColorTable16(shortLut);
+						}
 					}
 					return lut16;
 			}
 
 			return null;
+		}
+		
+		private static byte[][] createInvertedLut8() 
+		{
+			byte[][] lut = new byte[3][256];
+			for (int i = 0; i < lut.length; i++) {
+				for (int j = 0; j < lut[i].length; j++) {
+					lut[i][lut[i].length - 1 - j] = (byte)(j & 0xff);
+				}
+			}
+			return lut;
+		}
+
+		private static void invertLut8(byte[][] lut) 
+		{
+			for (int i = 0; i < lut.length; i++) {
+				for (int j = 0; j < lut[i].length; j++) {
+					final byte v0 = lut[i][j];
+					final byte v1 = lut[i][lut[i].length - 1 - j];
+					lut[i][i] = v1;
+					lut[i][lut[i].length - 1 - j] = v0;
+				}
+			}
+		}
+
+		private static short[][] createInvertedLut16() 
+		{
+			short[][] lut = new short[3][65536];
+			for (int i = 0; i < lut.length; i++) {
+				for (int j = 0; j < lut[i].length; j++) {
+					lut[i][lut[i].length - 1 - j] = (short)(j & 0xffff);
+				}
+			}
+			return lut;
+		}
+
+		private static void invertLut16(short[][] lut) 
+		{
+			for (int i = 0; i < lut.length; i++) {
+				for (int j = 0; j < lut[i].length; j++) {
+					final short v0 = lut[i][j];
+					final short v1 = lut[i][lut[i].length - 1 - j];
+					lut[i][i] = v1;
+					lut[i][lut[i].length - 1 - j] = v0;
+				}
+			}
 		}
 
 		// -- Metadata API Methods --
@@ -1430,26 +1504,6 @@ public class DICOMFormat extends AbstractFormat {
 			else {
 				// plane is not compressed
 				readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
-			}
-
-			if (meta.isInverted()) {
-				// pixels are stored such that white -> 0; invert the values so that
-				// white -> 255 (or 65535)
-				if (bpp == 1) {
-					for (int i = 0; i < plane.getBytes().length; i++) {
-						plane.getBytes()[i] = (byte) (255 - plane.getBytes()[i]);
-					}
-				}
-				else if (bpp == 2) {
-					if (meta.getMaxPixelValue() == -1) meta.setMaxPixelValue(65535);
-					final boolean little = meta.get(imageIndex).isLittleEndian();
-					for (int i = 0; i < plane.getBytes().length; i += 2) {
-						final short s = Bytes.toShort(plane.getBytes(), i, 2,
-							little);
-						Bytes.unpack(meta.getMaxPixelValue() - s, plane.getBytes(),
-							i, 2, little);
-					}
-				}
 			}
 
 			// NB: do *not* apply the rescale function
