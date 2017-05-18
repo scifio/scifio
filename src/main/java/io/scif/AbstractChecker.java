@@ -87,12 +87,10 @@ public abstract class AbstractChecker extends AbstractHasFormat implements
 		// suffix matching was inconclusive; we need to analyze the file
 		// contents
 		if (!open) return false; // not allowed to open any files
-		try {
-			final RandomAccessInputStream stream =
-				new RandomAccessInputStream(getContext(), name);
-			final boolean isFormat = isFormat(stream);
-			stream.close();
-			return isFormat;
+		try (final RandomAccessInputStream stream = new RandomAccessInputStream(
+			getContext(), name))
+		{
+			return isFormat(stream);
 		}
 		catch (final IOException exc) {
 			log().debug("", exc);
@@ -109,12 +107,10 @@ public abstract class AbstractChecker extends AbstractHasFormat implements
 
 	@Override
 	public boolean checkHeader(final byte[] block) {
-		try {
-			final RandomAccessInputStream stream =
-				new RandomAccessInputStream(getContext(), block);
-			final boolean isFormat = isFormat(stream);
-			stream.close();
-			return isFormat;
+		try (final RandomAccessInputStream stream = new RandomAccessInputStream(
+			getContext(), block))
+		{
+			return isFormat(stream);
 		}
 		catch (final IOException e) {
 			log().debug("", e);
