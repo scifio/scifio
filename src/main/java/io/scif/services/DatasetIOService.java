@@ -71,7 +71,7 @@ public interface DatasetIOService extends SCIFIOService {
 
         
         /**
-         * Load all the datasets from a given source (such as a file on dick).
+         * Load all the datasets from a given source (such as a file on disk).
          * (Useful for files containing image series)
          * @param source path on the disk
          * @return a list of all datasets contained by the image file.
