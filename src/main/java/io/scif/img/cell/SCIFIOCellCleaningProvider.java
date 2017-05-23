@@ -83,7 +83,7 @@ public class SCIFIOCellCleaningProvider extends AbstractSCIFIOPlugin implements
 	 *
 	 * @author Mark Hiner
 	 */
-	public static class SCIFIOCellCleaner<A extends ArrayDataAccess<?>> extends
+	public static class SCIFIOCellCleaner<A extends ArrayDataAccess<A>> extends
 		PhantomReference<SCIFIOCell<A>> implements CleaningRef
 	{
 

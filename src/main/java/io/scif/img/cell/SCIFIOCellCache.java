@@ -30,7 +30,6 @@
 
 package io.scif.img.cell;
 
-import io.scif.img.cell.SCIFIOImgCells.CellCache;
 import io.scif.img.cell.cache.CacheService;
 import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 import io.scif.refs.RefManagerService;
@@ -52,8 +51,7 @@ import org.scijava.thread.ThreadService;
  *
  * @author Mark Hiner
  */
-public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
-	CellCache<A>
+public class SCIFIOCellCache<A extends ArrayDataAccess<A>>
 {
 
 	// -- Parameters --
@@ -114,7 +112,6 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	 * @param index - linearized cell index to load
 	 * @return The cell at the given index, if found, else null
 	 */
-	@Override
 	public SCIFIOCell<A> get(final int index) {
 		final SCIFIOCell<A> cell = checkCache(cacheId, index);
 
@@ -132,7 +129,6 @@ public class SCIFIOCellCache<A extends ArrayDataAccess<?>> implements
 	 * @param cellMin - origin position of each cell axis
 	 * @return The cell at the specified index
 	 */
-	@Override
 	public SCIFIOCell<A> load(final int index, final int[] cellDims,
 		final long[] cellMin)
 	{

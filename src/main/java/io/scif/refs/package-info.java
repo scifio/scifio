@@ -51,5 +51,5 @@
  * 
  * @author Mark Hiner
  */
-package io.scif.memory;
+package io.scif.refs;
 

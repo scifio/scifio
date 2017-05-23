@@ -42,7 +42,7 @@ import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
-import net.imglib2.img.cell.AbstractCell;
+import net.imglib2.img.cell.Cell;
 
 /**
  * {@link AbstractCell} implementation. Stores the actual byte array for a given
@@ -50,7 +50,7 @@ import net.imglib2.img.cell.AbstractCell;
  *
  * @author Mark Hiner
  */
-public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
+public class SCIFIOCell<A extends ArrayDataAccess<A>> extends Cell<A> {
 
 	private static final long serialVersionUID = 660070520155729477L;
 
@@ -72,8 +72,6 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 
 	// -- Persistent fields --
 
-	private A data;
-
 	// These fields need to be objects to Phantom references to cache them by
 	// reference
 	private int[] hashes;
@@ -82,10 +80,6 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 
 	// -- Constructors --
 
-	public SCIFIOCell() {
-		// deserialization constructor - no op
-	}
-
 	/**
 	 * Standard constructor
 	 */
@@ -93,8 +87,7 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 		final String cacheId, final int index, final int[] dimensions,
 		final long[] min, final A data)
 	{
-		super(dimensions, min);
-		this.data = data;
+		super(dimensions, min, data);
 		this.service = service;
 		this.cacheId = cacheId;
 		this.index = index;
@@ -109,11 +102,11 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	 * reference.
 	 */
 	public SCIFIOCell(final SCIFIOCell<A> toCopy) {
+		super(toCopy.dimensions, toCopy.min, toCopy.getData());
 		this.service = toCopy.service;
 		this.cacheId = toCopy.cacheId;
 		this.index = toCopy.index;
 		this.enabled = toCopy.enabled;
-		this.data = toCopy.data;
 		this.hashes[0] = toCopy.hashes[0];
 		this.hashes[1] = toCopy.hashes[1];
 		this.elementSize[0] = toCopy.elementSize[0];
@@ -125,8 +118,7 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	public SCIFIOCell(final A data, final int currentHash, final int cleanHash,
 		final long elementSize, final int[] dimensions, final long[] min)
 	{
-		super(dimensions, min);
-		this.data = data;
+		super(dimensions, min, data);
 		hashes = new int[] { cleanHash, currentHash };
 		this.elementSize = new long[] { elementSize };
 		enabled = new boolean[1];
@@ -141,14 +133,6 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	public void cacheOnFinalize(final boolean e) {
 		if (enabled == null) enabled = new boolean[] { e };
 		else enabled[0] = e;
-	}
-
-	/**
-	 * @return the data stored in this cell
-	 */
-	@Override
-	public A getData() {
-		return data;
 	}
 
 	/**
@@ -202,7 +186,7 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 		// Take a hash of the underlying data. If this is different
 		// at finalization, we know this cell is dirty and should be
 		// serialized.
-		hashes[0] = computeHash(data);
+		hashes[0] = computeHash(getData());
 
 		// If data isn't an ArrayAccess object, this will cause it to always
 		// look dirty compared to future computeHash calls.
@@ -268,7 +252,7 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 	 * of its underlying data.
 	 */
 	public void update() {
-		hashes[1] = computeHash(data);
+		hashes[1] = computeHash(getData());
 	}
 
 	// -- Object method overrides --
@@ -294,7 +278,7 @@ public class SCIFIOCell<A extends ArrayDataAccess<?>> extends AbstractCell<A> {
 		int result = 17;
 		result = 31 * result + index;
 		result = 31 * result + cacheId.hashCode();
-		result = 31 * result + data.hashCode();
+		result = 31 * result + getData().hashCode();
 
 		return result;
 	}

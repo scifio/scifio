@@ -60,7 +60,6 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
-import net.imglib2.img.cell.AbstractCellImgFactory;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
@@ -375,7 +374,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 			// If we have a planar img, read the planes now. Otherwise they
 			// will be read on demand.
-			if (!AbstractCellImgFactory.class.isAssignableFrom(imgFactory.getClass()))
+			if (!SCIFIOCellImgFactory.class.isAssignableFrom(imgFactory.getClass()))
 			{
 				final float startTime = System.currentTimeMillis();
 				final long planeCount = reader.getPlaneCount(i(imageIndex));
@@ -397,7 +396,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 		}
 
 		// Close the reader if needed
-		if (AbstractCellImgFactory.class.isAssignableFrom(imgFactory.getClass())) {
+		if (SCIFIOCellImgFactory.class.isAssignableFrom(imgFactory.getClass())) {
 			statusService.showStatus("Created CellImg for dynamic loading");
 		}
 		else {

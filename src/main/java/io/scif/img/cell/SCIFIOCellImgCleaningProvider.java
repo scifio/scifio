@@ -30,21 +30,20 @@
 
 package io.scif.img.cell;
 
-import io.scif.AbstractSCIFIOPlugin;
-import io.scif.Reader;
-import io.scif.img.cell.cache.CacheService;
-import io.scif.refs.CleaningRef;
-import io.scif.refs.RefProvider;
-
 import java.io.IOException;
 import java.lang.ref.PhantomReference;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 
-import net.imglib2.img.cell.AbstractCell;
-import net.imglib2.type.NativeType;
-
 import org.scijava.plugin.Plugin;
+
+import io.scif.AbstractSCIFIOPlugin;
+import io.scif.Reader;
+import io.scif.img.cell.cache.CacheService;
+import io.scif.refs.CleaningRef;
+import io.scif.refs.RefProvider;
+import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
+import net.imglib2.type.NativeType;
 
 /**
  * {@link RefProvider} plugin for creating {@link SCIFIOCellImgCleaner}
@@ -84,17 +83,17 @@ public class SCIFIOCellImgCleaningProvider extends AbstractSCIFIOPlugin
 	 *
 	 * @author Mark Hiner
 	 */
-	public static class SCIFIOCellImgCleaner<T extends NativeType<T>, A, C extends AbstractCell<A>>
-		extends PhantomReference<SCIFIOCellImg<T, A, C>> implements CleaningRef
+	public static class SCIFIOCellImgCleaner<T extends NativeType<T>, A extends ArrayDataAccess<A>>
+		extends PhantomReference<SCIFIOCellImg<T, A>> implements CleaningRef
 	{
 
 		private final Reader reader;
 
 		public SCIFIOCellImgCleaner(final Object referent,
-			final ReferenceQueue<? super SCIFIOCellImg<T, A, C>> q)
+			final ReferenceQueue<? super SCIFIOCellImg<T, A>> q)
 		{
-			super((SCIFIOCellImg<T, A, C>) referent, q);
-			reader = ((SCIFIOCellImg<T, A, C>) referent).reader();
+			super((SCIFIOCellImg<T, A>) referent, q);
+			reader = ((SCIFIOCellImg<T, A>) referent).reader();
 		}
 
 		@Override

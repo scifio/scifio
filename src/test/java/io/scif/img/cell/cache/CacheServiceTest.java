@@ -547,7 +547,7 @@ public class CacheServiceTest {
 
 	// -- HelperClass --
 
-	private static class TestCellCache<A extends ArrayDataAccess<?>> extends
+	private static class TestCellCache<A extends ArrayDataAccess<A>> extends
 		SCIFIOCellCache<A>
 	{
 

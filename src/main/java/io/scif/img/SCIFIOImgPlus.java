@@ -143,7 +143,7 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 		{
 			try {
 				table =
-					((SCIFIOCellImg<?, ?, ?>) getImg()).getColorTable(imageIndex,
+					((SCIFIOCellImg<?, ?>) getImg()).getColorTable(imageIndex,
 						planeIndex);
 			}
 			catch (final FormatException e) {

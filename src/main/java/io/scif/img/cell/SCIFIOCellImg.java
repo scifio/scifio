@@ -30,28 +30,29 @@
 
 package io.scif.img.cell;
 
+import java.io.IOException;
+
+import org.scijava.Disposable;
+
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 import io.scif.refs.RefManagerService;
-
-import java.io.IOException;
-
 import net.imglib2.display.ColorTable;
-import net.imglib2.img.cell.AbstractCell;
+import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.cell.AbstractCellImg;
-import net.imglib2.img.cell.Cells;
+import net.imglib2.img.cell.CellGrid;
+import net.imglib2.img.cell.LazyCellImg.LazyCells;
 import net.imglib2.type.NativeType;
-
-import org.scijava.Disposable;
+import net.imglib2.util.Fraction;
 
 /**
  * {@link AbstractCellImg} implementation for working with {@link SCIFIOCell}s.
  *
  * @author Mark Hiner
  */
-public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>>
-	extends AbstractCellImg<T, A, C, SCIFIOCellImgFactory<T>> implements
+public class SCIFIOCellImg<T extends NativeType<T>, A extends ArrayDataAccess<A>>
+	extends AbstractCellImg<T, A, SCIFIOCell<A>, LazyCells<SCIFIOCell<A>>> implements
 	Disposable
 {
 
@@ -61,12 +62,16 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 
 	private SCIFIOArrayLoader<?> loader;
 
+	private final SCIFIOCellImgFactory<T> factory;
+
 	// -- Constructor --
 
 	public SCIFIOCellImg(final SCIFIOCellImgFactory<T> factory,
-		final Cells<A, C> cells)
+		final CellGrid grid, final LazyCells<SCIFIOCell<A>> cells,
+		final Fraction entitiesPerPixel)
 	{
-		super(factory, cells);
+		super(grid, cells, entitiesPerPixel);
+		this.factory = factory;
 		reader = factory.reader();
 		reader.getContext().getService(RefManagerService.class).manage(this);
 	}
@@ -95,12 +100,6 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public A update(final Object cursor) {
-		return ((CellContainerSampler<T, A, C>) cursor).getCell().getData();
-	}
-
-	@Override
 	public SCIFIOCellImgFactory<T> factory() {
 		return factory;
 	}
@@ -114,10 +113,10 @@ public class SCIFIOCellImg<T extends NativeType<T>, A, C extends AbstractCell<A>
 	}
 
 	@Override
-	public SCIFIOCellImg<T, A, C> copy() {
+	public SCIFIOCellImg<T, A> copy() {
 		@SuppressWarnings("unchecked")
-		final SCIFIOCellImg<T, A, C> copy =
-			(SCIFIOCellImg<T, A, C>) factory().create(dimension,
+		final SCIFIOCellImg<T, A> copy =
+			(SCIFIOCellImg<T, A>) factory().create(dimension,
 				firstElement().createVariable());
 		super.copyDataTo(copy);
 		return copy;
