@@ -153,7 +153,6 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 			dimensions, entitiesPerPixel);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public SCIFIOCellImg<T, ?> create(final long[] dim, final T type) {
 		if (reader == null) {
