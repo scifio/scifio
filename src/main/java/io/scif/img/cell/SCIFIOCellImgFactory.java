@@ -44,6 +44,7 @@ import io.scif.img.cell.loaders.IntArrayLoader;
 import io.scif.img.cell.loaders.LongArrayLoader;
 import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 import io.scif.img.cell.loaders.ShortArrayLoader;
+
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.NativeImgFactory;
@@ -62,10 +63,10 @@ import net.imglib2.type.NativeType;
 import net.imglib2.util.Fraction;
 
 /**
- * {@link AbstractCellImgFactory} implementation for working with
- * {@link SCIFIOCell}s.
+ * {@link ImgFactory} implementation for working with {@link SCIFIOCell}s.
  *
  * @author Mark Hiner
+ * @author Tobias Pietzsch
  */
 public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeImgFactory<T>
 {
@@ -82,13 +83,11 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 
 	private int[] defaultCellDimensions;
 
-	public SCIFIOCellImgFactory()
-	{
+	public SCIFIOCellImgFactory() {
 		this( 10 );
 	}
 
-	public SCIFIOCellImgFactory( final int... cellDimensions )
-	{
+	public SCIFIOCellImgFactory(final int... cellDimensions) {
 		defaultCellDimensions = cellDimensions.clone();
 		verifyDimensions( defaultCellDimensions );
 	}
