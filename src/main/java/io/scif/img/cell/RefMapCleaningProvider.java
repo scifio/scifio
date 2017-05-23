@@ -81,7 +81,7 @@ public class RefMapCleaningProvider extends AbstractSCIFIOPlugin implements
 	 *
 	 * @author Mark Hiner
 	 */
-	public static class RefMapCleaner<A extends ArrayDataAccess<?>> extends
+	public static class RefMapCleaner<A extends ArrayDataAccess<A>> extends
 		WeakReference<SCIFIOCell<A>> implements CleaningRef
 	{
 
