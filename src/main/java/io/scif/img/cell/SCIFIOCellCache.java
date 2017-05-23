@@ -46,8 +46,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
 
 /**
- * {@link CellCache} implementation for {@link SCIFIOCell}s. Loads the requested
- * cell if it is not already in the cache.
+ * A cache for {@link SCIFIOCell}s. Loads the requested cell if it is not
+ * already in the cache.
  *
  * @author Mark Hiner
  */

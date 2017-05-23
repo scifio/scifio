@@ -33,7 +33,7 @@
  * <p>
  * The {@link io.scif.refs.RefManagerService} provides a dedicated thread for
  * polling reference queues, looking for available references. The 
- * {@link io.scif.refs.RefManagerservice#manage(Object, Object[])} method is
+ * {@link io.scif.refs.RefManagerService#manage(Object, Object[])} method is
  * used to create and enqueue a new reference. The first parameter is the
  * object to manage, and it must have a corresponding
  * {@link io.scif.refs.RefProvider} that matches the given {@code Object[]}
