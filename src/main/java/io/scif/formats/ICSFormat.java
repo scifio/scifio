@@ -1327,6 +1327,7 @@ public class ICSFormat extends AbstractFormat {
 				final char[] c = idsId.toCharArray();
 				c[c.length - 2]++;
 				idsId = new String(c);
+				meta.setIdsId(idsId);
 			}
 			else if (ext.equals("ids")) {
 				// convert D to C regardless of case
