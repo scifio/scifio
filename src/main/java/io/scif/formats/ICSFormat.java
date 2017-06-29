@@ -207,9 +207,9 @@ public class ICSFormat extends AbstractFormat {
 						final long timeLength =
 							imageMeta.getAxisLength(Axes.TIME) * (int) axesSizes[n];
 						imageMeta.setAxisLength(Axes.TIME, timeLength);
-						imageMeta.getAxis(Axes.TIME).setUnit(
-							units == null ? "seconds" : units[n]);
 					}
+					imageMeta.getAxis(Axes.TIME).setUnit(
+					units == null ? "seconds" : units[n]);
 				}
 				else if (axis.equals("bits")) {
 					bitsPerPixel = (int) axesSizes[n];
@@ -238,6 +238,7 @@ public class ICSFormat extends AbstractFormat {
 					}
 
 					imageMeta.addAxis(type, (long) axesSizes[n]);
+					imageMeta.getAxis(type).setUnit(units == null ? "unknown" : units[n]);
 				}
 				if (paramLabels[n] != null && paramLabels[n].equals(MICRO_TIME)) {
 					imageMeta.setAxisType(imageMeta.getAxes().size() - 1,
@@ -1327,6 +1328,7 @@ public class ICSFormat extends AbstractFormat {
 				final char[] c = idsId.toCharArray();
 				c[c.length - 2]++;
 				idsId = new String(c);
+				meta.setIdsId(idsId);
 			}
 			else if (ext.equals("ids")) {
 				// convert D to C regardless of case
@@ -2109,50 +2111,55 @@ public class ICSFormat extends AbstractFormat {
 
 			String order = "";
 			String sizes = "";
+			String units = "";
 
 			for (int i = 0; i < numAxes; i++) {
-				final AxisType axis = source.get(0).getAxis(i).type();
+				CalibratedAxis axis = source.get(0).getAxis(i);
+				final AxisType axisType = axis.type();
 
 				// flag for RGB images
-				if (axis.equals(Axes.X)) {
+				if (axisType.equals(Axes.X)) {
 					order += "x";
 				}
-				else if (axis.equals(Axes.Y)) {
+				else if (axisType.equals(Axes.Y)) {
 					order += "y";
 				}
-				else if (axis.equals(Axes.Z)) {
+				else if (axisType.equals(Axes.Z)) {
 					order += "z";
 				}
-				else if (axis.equals(Axes.TIME)) {
+				else if (axisType.equals(Axes.TIME)) {
 					order += "t";
 				}
-				else if (axis.equals(Axes.CHANNEL)) {
+				else if (axisType.equals(Axes.CHANNEL)) {
 					// ICS flag for RGB images
 					if (source.get(0).isMultichannel()) {
 						order = "c " + order;
 						sizes = source.get(0).getAxisLength(i) + " " + sizes;
+						units += axis.unit() + " ";
 						continue;
 					}
 
 					order += "c";
 				}
-				else if (axis.equals(SCIFIOAxes.PHASE)) {
+				else if (axisType.equals(SCIFIOAxes.PHASE)) {
 					order += "p";
 				}
-				else if (axis.equals(SCIFIOAxes.FREQUENCY)) {
+				else if (axisType.equals(SCIFIOAxes.FREQUENCY)) {
 					order += "f";
 				}
 				else {
-					if (axis.getLabel().equals("bits")) order += "bits";
+					if (axisType.getLabel().equals("bits")) order += "bits";
 					else order += "u";
 				}
 
 				order += " ";
 				sizes += source.get(0).getAxisLength(i) + " ";
+				units += axis.unit() + " ";
 			}
 
 			keyValPairs.put("layout sizes", sizes);
 			keyValPairs.put("layout order", order);
+			keyValPairs.put("parameter units", units);
 
 			keyValPairs.put("layout significant_bits", "" +
 				source.get(0).getBitsPerPixel());
