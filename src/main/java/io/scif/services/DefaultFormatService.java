@@ -430,42 +430,38 @@ public class DefaultFormatService extends AbstractService implements
 	public void initialize() {
 		// TODO replace with preload implementation.
 		// See https://github.com/scijava/scijava-common/issues/145
-		threadService.run(new Runnable() {
+		threadService.run(() -> {
+			// Allow this thread to bypass the initialization check
+			threadLock.set(true);
 
-			@Override
-			public void run() {
-				// Allow this thread to bypass the initialization check
-				threadLock.set(true);
+			formats = new TreeSet<>();
+			formatMap = new HashMap<>();
+			checkerMap = new HashMap<>();
+			parserMap = new HashMap<>();
+			readerMap = new HashMap<>();
+			writerMap = new HashMap<>();
+			metadataMap = new HashMap<>();
+			formatCache = new WeakHashMap<>();
 
-				formats = new TreeSet<>();
-				formatMap = new HashMap<>();
-				checkerMap = new HashMap<>();
-				parserMap = new HashMap<>();
-				readerMap = new HashMap<>();
-				writerMap = new HashMap<>();
-				metadataMap = new HashMap<>();
-				formatCache = new WeakHashMap<>();
-
-				// HACK: Wait until the FormatService is available from the context
-				// before initializing all the formats. Otherwise, any Format that
-				// has the FormatService as a parameter will fail to inject.
-				// TODO: Fix this to be less nightmarish.
-				while (context().getService(DefaultFormatService.class) == null) {
-					try {
-						Thread.sleep(50);
-					}
-					catch (InterruptedException exc) { }
+			// HACK: Wait until the FormatService is available from the context
+			// before initializing all the formats. Otherwise, any Format that
+			// has the FormatService as a parameter will fail to inject.
+			// TODO: Fix this to be less nightmarish.
+			while (context().getService(DefaultFormatService.class) == null) {
+				try {
+					Thread.sleep(50);
 				}
-
-				// Initialize format information
-				for (final Format format : pluginService
-					.createInstancesOfType(Format.class))
-				{
-					addFormat(format);
-				}
-
-				initialized = true;
+				catch (InterruptedException exc) { }
 			}
+
+			// Initialize format information
+			for (final Format format : pluginService
+					.createInstancesOfType(Format.class))
+			{
+				addFormat(format);
+			}
+
+			initialized = true;
 		});
 	}
 
