@@ -446,6 +446,17 @@ public class DefaultFormatService extends AbstractService implements
 				metadataMap = new HashMap<>();
 				formatCache = new WeakHashMap<>();
 
+				// HACK: Wait until the FormatService is available from the context
+				// before initializing all the formats. Otherwise, any Format that
+				// has the FormatService as a parameter will fail to inject.
+				// TODO: Fix this to be less nightmarish.
+				while (context().getService(DefaultFormatService.class) == null) {
+					try {
+						Thread.sleep(50);
+					}
+					catch (InterruptedException exc) { }
+				}
+
 				// Initialize format information
 				for (final Format format : pluginService
 					.createInstancesOfType(Format.class))
