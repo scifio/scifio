@@ -35,39 +35,60 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.scijava.Context;
+
 import io.scif.config.SCIFIOConfig;
 import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.io.ByteArrayHandle;
 import io.scif.services.LocationService;
-
-import java.io.File;
-import java.util.Iterator;
-
 import net.imagej.ImgPlus;
 import net.imagej.axis.CalibratedAxis;
-import net.imglib2.RandomAccess;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
-
-import org.junit.After;
-import org.junit.Test;
-import org.scijava.Context;
 
 /**
  * Tests for the {@link ImgSaver} class.
  *
  * @author Mark Hiner
  */
+@RunWith(Parameterized.class)
 public class ImgSaverTest {
 
-	private final String id = "testImg&lengths=512,512,2,3&axes=X,Y,Z,Time.fake";
-
-	private final String out = "test.tif";
+	private final String id;
+	private final String out;
 
 	private final Context ctx = new Context();
-
 	private final LocationService locationService = ctx.getService(
 		LocationService.class);
+
+	public ImgSaverTest(final String format, final String lengths,
+		final String axes)
+	{
+		id = "testImg&lengths=" + lengths + "&axes=" + axes + ".fake";
+		out = "test." + format;
+	}
+
+	@Parameters(name = "Format: {0}; Lengths: {1}; Channels: {2}")
+	public static Collection<Object[]> getParams() {
+		final List<Object[]> params = new ArrayList<>();
+		params.add(new Object[] { ".tiff", "100,100,3,2", "X,Y,Z,Time" });
+		params.add(new Object[] { ".tiff", "100,100,3,2", "X,Y,Channel,Z" });
+		params.add(new Object[] { ".tiff", "100,100,3,2", "X,Y,Channel,Time" });
+		params.add(new Object[] { ".tiff", "100,100,3,3,2", "X,Y,Channel,Z,Time" });
+		params.add(new Object[] { ".tiff", "100,100,3", "X,Y,Channel" });
+		return params;
+	}
 
 	@After
 	public void cleanup() {
