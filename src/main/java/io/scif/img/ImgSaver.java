@@ -791,7 +791,7 @@ public class ImgSaver extends AbstractImgIOComponent {
 
 		// Get non-X,Y position array
 		final long[] planePosition =
-			FormatTools.rasterToPosition(lengths, planeIndex);
+			FormatTools.rasterToPosition(lengths, cIndex + (planeIndex * rgbChannelCount));
 
 		// Copy plane positions back to dimensions array and set X, Y to start
 		// at 0
