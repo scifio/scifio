@@ -58,8 +58,8 @@ import org.scijava.plugin.Plugin;
  * meaningful metadata, because it helps to position the separate slice files.
  * This plugin has NOT been tested with a true Stratec 3D file.
  *
- * @author Timo Rantalainen (School of Exercise & Nut. Sci., Deakin University,
- *         Melbourne 2011)
+ * @author Timo Rantalainen (School of Exercise &amp; Nut. Sci., Deakin
+ *         University, Melbourne 2011)
  * @author Michael Doube (Royal Veterinary College, London)
  * @author Richard Domander (Royal Veterinary College, London)
  */
