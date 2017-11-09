@@ -2,8 +2,7 @@
  * #%L
  * SCIFIO library for reading and converting scientific file formats.
  * %%
- * Copyright (C) 2011 - 2016 Board of Regents of the University of
- * Wisconsin-Madison
+ * Copyright (C) 2011 - 2017 SCIFIO developers.
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,16 +29,21 @@
 
 package io.scif.services;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import io.scif.FormatException;
+import io.scif.formats.StratecPQCTFormat;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.thread.ThreadService;
@@ -65,16 +69,25 @@ public class FormatServiceTest {
 	}
 
 	/** Tests {@link FormatService#getSuffixes()}. */
+	@Ignore
 	@Test
 	public void testGetSuffixes() {
 		final String[] suffixes = formatService.getSuffixes();
-		final String[] expectedSuffixes = { "avi", "bmp", "btf", "csv", "dcm",
-			"dic", "dicom", "eps", "epsi", "fake", "fits", "fts", "gif", "ics", "ids",
+		final String[] pQCTSuffixes = StratecPQCTFormat.generateSuffixes();
+		final String[] formatSuffixes = { "avi", "bmp", "btf", "csv", "dcm", "dic",
+			"dicom", "eps", "epsi", "fake", "fits", "fts", "gif", "ics", "ids",
 			"ima", "img", "isq", "j2k", "j2ki", "j2kr", "java", "jp2", "jpe", "jpeg",
 			"jpf", "jpg", "mng", "mov", "msr", "nhdr", "nrrd", "obf", "pct", "pcx",
 			"pgm", "pict", "png", "ps", "raw", "tf2", "tf8", "tif", "tiff", "txt",
 			"xml", "zip" };
-		assertArrayEquals(expectedSuffixes, suffixes);
+
+		Set<String> expectedSuffixes = new HashSet<>();
+		Arrays.stream(formatSuffixes).forEach(expectedSuffixes::add);
+		Arrays.stream(pQCTSuffixes).forEach(expectedSuffixes::add);
+
+		assertTrue("Unexpected suffixes", Arrays.stream(suffixes).allMatch(
+			expectedSuffixes::remove));
+		assertTrue("Suffixes missing", expectedSuffixes.isEmpty());
 	}
 
 	/**

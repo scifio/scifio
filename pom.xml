@@ -11,7 +11,7 @@
 
 	<groupId>io.scif</groupId>
 	<artifactId>scifio</artifactId>
-	<version>0.33.1-SNAPSHOT</version>
+	<version>0.34.0-SNAPSHOT</version>
 
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a library for scientific N-dimensional image I/O.</description>
@@ -111,8 +111,7 @@
 		<package-name>io.scif</package-name>
 
 		<license.licenseName>bsd_2</license.licenseName>
-		<license.copyrightOwners>Board of Regents of the University of
-Wisconsin-Madison</license.copyrightOwners>
+		<license.copyrightOwners>SCIFIO developers.</license.copyrightOwners>
 		<license.projectName>SCIFIO library for reading and converting scientific file formats.</license.projectName>
 
 		<imglib2.version>4.2.1</imglib2.version>
