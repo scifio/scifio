@@ -66,7 +66,7 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
 	@Override
 	public boolean supportsSave(final String destination) {
-		return datasetIOService.canOpen(destination);
+		return datasetIOService.canSave(destination);
 	}
 
 	@Override
