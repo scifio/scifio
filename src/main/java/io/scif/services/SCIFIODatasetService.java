@@ -46,7 +46,9 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Priority;
+import org.scijava.log.LogService;
 import org.scijava.object.ObjectService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
@@ -70,6 +72,9 @@ import org.scijava.service.ServiceIndex;
 public class SCIFIODatasetService extends AbstractService implements
 	DatasetService
 {
+
+	@Parameter(required = false)
+	private LogService log;
 
 	// -- Fields --
 
@@ -151,16 +156,19 @@ public class SCIFIODatasetService extends AbstractService implements
 
 	@Override
 	public boolean canOpen(final String source) {
+		warnDeprecated("canOpen(String)");
 		return datasetIOService().canOpen(source);
 	}
 
 	@Override
 	public boolean canSave(final String destination) {
+		warnDeprecated("canSave(String)");
 		return datasetIOService().canSave(destination);
 	}
 
 	@Override
 	public Dataset open(final String source) throws IOException {
+		warnDeprecated("open(String)");
 		return datasetIOService().open(source);
 	}
 
@@ -168,11 +176,13 @@ public class SCIFIODatasetService extends AbstractService implements
 	public Dataset open(final String source, final Object config)
 		throws IOException
 	{
+		warnDeprecated("open(String, Object)");
 		return datasetIOService().open(source, getConfig(config));
 	}
 
 	@Override
 	public void revert(final Dataset dataset) throws IOException {
+		warnDeprecated("revert(Dataset)");
 		datasetIOService().revert(dataset);
 	}
 
@@ -180,6 +190,7 @@ public class SCIFIODatasetService extends AbstractService implements
 	public Object save(final Dataset dataset, final String destination)
 		throws IOException
 	{
+		warnDeprecated("save(Dataset, String)");
 		return datasetIOService().save(dataset, destination);
 	}
 
@@ -187,6 +198,7 @@ public class SCIFIODatasetService extends AbstractService implements
 	public Object save(final Dataset dataset, final String destination,
 		final Object config) throws IOException
 	{
+		warnDeprecated("save(Dataset, String, Object)");
 		return datasetIOService().save(dataset, destination, getConfig(config));
 	}
 
@@ -196,6 +208,14 @@ public class SCIFIODatasetService extends AbstractService implements
 	public void initialize() {}
 
 	// -- Helper methods --
+
+	private void warnDeprecated(final String method) {
+		if (log != null) {
+			log.warn("DatasetService." + method + " is deprecated! " +
+				"Soon, this method will be removed in a future relase. " +
+				"Please use DatasetIOService from SCIFIO instead.");
+		}
+	}
 
 	/**
 	 * @return The given parameter cast as a {@link SCIFIOConfig}, or null if not
