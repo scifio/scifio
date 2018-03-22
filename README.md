@@ -84,11 +84,11 @@ For more information, see the [SCIFIO FAQ](https://github.com/scifio/scifio/wiki
 and [SCIFIO web site](http://scif.io/).
 
 
-Mailing list
--------------
+Getting help
+------------
 
-* [scifio@scif.io](http://scif.io/mailman/listinfo/scifio):
-  for SCIFIO questions.
+SCIFIO uses the [ImageJ Forum](http://forum.imagej.net/) for support. Start
+a new topic [tagged with `scifio`](http://forum.imagej.net/tag/scifio).
 
 Contributing to SCIFIO
 ----------------------
