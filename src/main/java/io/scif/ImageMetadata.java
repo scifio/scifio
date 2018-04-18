@@ -170,6 +170,24 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	 */
 	void setAxisType(int index, AxisType axis);
 
+	/**
+	 * Sets the ROIs associated with this image.
+	 * <p>
+	 * FIXME: Do not type this on {@code Object}. Once the relevant rich data
+	 * structures are created, use those instead!
+	 * </p>
+	 */
+	void setRois(Object rois);
+
+	/**
+	 * Sets the tables associated with this image.
+	 * <p>
+	 * FIXME: Do not type this on {@code Object}. Once the relevant rich data
+	 * structures are created, use those instead!
+	 * </p>
+	 */
+	void setTables(Object tables);
+
 	/** Returns the size, in bytes, of all planes in this image. */
 	long getSize();
 
@@ -363,6 +381,24 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	 * @return Sorted axis length array
 	 */
 	long[] getAxesLengthsNonPlanar();
+
+	/**
+	 * Retrieves the ROIs associated with this image.
+	 * <p>
+	 * FIXME: Do not type this on {@code Object}. Once the relevant rich data
+	 * structures are created, use those instead!
+	 * </p>
+	 */
+	Object getRois();
+
+	/**
+	 * Retrieves the tables associated with this image.
+	 * <p>
+	 * FIXME: Do not type this on {@code Object}. Once the relevant rich data
+	 * structures are created, use those instead!
+	 * </p>
+	 */
+	Object getTables();
 
 	/**
 	 * Appends the provided {@link CalibratedAxis} to the metadata's list of axes,
