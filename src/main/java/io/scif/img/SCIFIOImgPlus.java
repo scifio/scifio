@@ -120,6 +120,8 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 	 */
 	public void setImageMetadata(final ImageMetadata imageMeta) {
 		getProperties().put(IMAGE_META, imageMeta);
+		getProperties().put("rois", imageMeta.getRois());
+		getProperties().put("tables", imageMeta.getTables());
 	}
 
 	// -- ImgPlus Methods --
