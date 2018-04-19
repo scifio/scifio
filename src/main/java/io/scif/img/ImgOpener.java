@@ -370,6 +370,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			final Metadata meta = reader.getMetadata();
 			imgPlus.setMetadata(meta);
 			imgPlus.setImageMetadata(meta.get(i(imageIndex)));
+			imgPlus.setRoisAndTablesProperties(meta, i(imageIndex));
 
 			// If we have a planar img, read the planes now. Otherwise they
 			// will be read on demand.
