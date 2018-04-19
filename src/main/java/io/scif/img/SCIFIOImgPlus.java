@@ -32,6 +32,7 @@ package io.scif.img;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
+import io.scif.filters.MetadataWrapper;
 import io.scif.img.cell.SCIFIOCellImg;
 
 import java.io.IOException;
@@ -120,8 +121,28 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 	 */
 	public void setImageMetadata(final ImageMetadata imageMeta) {
 		getProperties().put(IMAGE_META, imageMeta);
-		getProperties().put("rois", imageMeta.getRois());
-		getProperties().put("tables", imageMeta.getTables());
+	}
+
+	/**
+	 * Sets the ROIs and tables properties based on the {@link ImageMetadata}. If
+	 * the given {@link Metadata} is a {@link MetadataWrapper}, this method will
+	 * recurse through the layers searching for the first filled ROIs and tables
+	 * fields.
+	 *
+	 * @param meta the {@link Metadata} whose associated {@link ImageMetadata}
+	 *          will be checked
+	 * @param index the index of the {@link ImageMetadata}
+	 */
+	public void setRoisAndTablesProperties(final Metadata meta, final int index) {
+		final boolean roisSet = getProperties().get("rois") != null;
+		final boolean tablesSet = getProperties().get("tables") != null;
+		if (roisSet && tablesSet) return;
+
+		if (!roisSet) getProperties().put("rois", meta.get(index).getRois());
+		if (!tablesSet) getProperties().put("tables", meta.get(index).getTables());
+
+		if (meta instanceof MetadataWrapper) setRoisAndTablesProperties(
+			((MetadataWrapper) meta).unwrap(), index);
 	}
 
 	// -- ImgPlus Methods --
