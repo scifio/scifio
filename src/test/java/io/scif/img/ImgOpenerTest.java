@@ -120,19 +120,13 @@ public class ImgOpenerTest {
 	/**
 	 * Test opening images with various ImgOptions set.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void testImgOptions() throws IncompatibleTypeException, ImgIOException
 	{
-		final NativeType t = new UnsignedByteType();
-
-		final ImgFactory aif = new ArrayImgFactory(t);
-		final ImgFactory pif = new PlanarImgFactory(t);
-		final ImgFactory sif = new SCIFIOCellImgFactory(t);
-
-		for (final ImgFactory f : new ImgFactory[] { aif, pif, sif }) {
-			testSubRegion(f);
-		}
+		final UnsignedByteType t = new UnsignedByteType();
+		testSubRegion(new ArrayImgFactory<>(t));
+		testSubRegion(new PlanarImgFactory<>(t));
+		testSubRegion(new SCIFIOCellImgFactory<>(t));
 	}
 
 	/**
@@ -222,8 +216,9 @@ public class ImgOpenerTest {
 	}
 
 	// Tests the opening various sub-regions of an image
-	@SuppressWarnings({ "rawtypes" })
-	private void testSubRegion(final ImgFactory factory) throws ImgIOException {
+	private <T extends RealType<T> & NativeType<T>> void testSubRegion(
+		final ImgFactory<T> factory) throws ImgIOException
+	{
 		final SCIFIOConfig config = new SCIFIOConfig();
 		// should get an inner left left 128x128 square
 		AxisType[] axes = new AxisType[] { Axes.X, Axes.Y };
@@ -242,12 +237,11 @@ public class ImgOpenerTest {
 		doTestSubRegion(factory, config, 512 * 512 * 5);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private void doTestSubRegion(final ImgFactory factory,
-		final SCIFIOConfig options, final long size) throws ImgIOException
+	private <T extends RealType<T> & NativeType<T>> void doTestSubRegion(
+		final ImgFactory<T> factory, final SCIFIOConfig options, final long size)
+		throws ImgIOException
 	{
-		ImgPlus imgPlus = null;
-		imgPlus = imgOpener.openImgs(id, factory, options).get(0);
+		final ImgPlus<T> imgPlus = imgOpener.openImgs(id, factory, options).get(0);
 		assertNotNull(imgPlus);
 		assertEquals(size, imgPlus.size());
 	}
@@ -266,7 +260,7 @@ public class ImgOpenerTest {
 		imgPlus = imgOpener.openImgs(id, type, new SCIFIOConfig()).get(0);
 		assertNotNull(imgPlus);
 		imgPlus = null;
-		imgPlus = imgOpener.openImgs(id, factory, type).get(0);
+		imgPlus = imgOpener.openImgs(id, factory).get(0);
 		assertNotNull(imgPlus);
 		imgPlus = null;
 	}
@@ -288,7 +282,7 @@ public class ImgOpenerTest {
 		 */
 		@Override
 		public <T extends RealType<T>> List<SCIFIOImgPlus<T>> openImgs(
-			final Reader reader, final T type, final ImgFactory<T> imgFactory,
+			final Reader reader, final ImgFactory<T> imgFactory,
 			final SCIFIOConfig config) throws ImgIOException
 		{
 			final Metadata m = reader.getMetadata();
@@ -300,7 +294,7 @@ public class ImgOpenerTest {
 				offset += 10;
 			}
 
-			return super.openImgs(reader, type, imgFactory, config);
+			return super.openImgs(reader, imgFactory, config);
 		}
 	}
 }
