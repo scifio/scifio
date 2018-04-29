@@ -48,17 +48,11 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.NativeImgFactory;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
-import net.imglib2.img.basictypeaccess.array.ByteArray;
-import net.imglib2.img.basictypeaccess.array.CharArray;
-import net.imglib2.img.basictypeaccess.array.DoubleArray;
-import net.imglib2.img.basictypeaccess.array.FloatArray;
-import net.imglib2.img.basictypeaccess.array.IntArray;
-import net.imglib2.img.basictypeaccess.array.LongArray;
-import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.img.cell.CellGrid;
 import net.imglib2.img.cell.LazyCellImg;
 import net.imglib2.img.cell.LazyCellImg.LazyCells;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.NativeTypeFactory;
 import net.imglib2.util.Fraction;
 
 /**
@@ -78,88 +72,32 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 
 	private ImageRegion subregion;
 
-	// -- Constuctors --
-
 	private int[] defaultCellDimensions;
 
-	public SCIFIOCellImgFactory() {
-		this( 10 );
+	// -- Constructors --
+
+	public SCIFIOCellImgFactory(final T type) {
+		this(type, 10);
 	}
 
-	public SCIFIOCellImgFactory(final int... cellDimensions) {
+	public SCIFIOCellImgFactory(final T type, final int... cellDimensions) {
+		super(type);
 		defaultCellDimensions = cellDimensions.clone();
 		verifyDimensions( defaultCellDimensions );
 	}
 
-	// -- CellImgFactory API Methods --
+	// -- ImgFactory API Methods --
 
 	@Override
-	public SCIFIOCellImg<T, ByteArray> createByteInstance(
-		final long[] dimensions, final Fraction entitiesPerPixel)
-	{
-		return createInstance(new ByteArrayLoader(reader(), subregion), dimensions,
-			entitiesPerPixel);
-	}
-
-	@Override
-	public SCIFIOCellImg<T, CharArray> createCharInstance(
-		final long[] dimensions, final Fraction entitiesPerPixel)
-	{
-		return createInstance(new CharArrayLoader(reader(), subregion), dimensions,
-			entitiesPerPixel);
-	}
-
-	@Override
-	public
-		SCIFIOCellImg<T, ShortArray>
-		createShortInstance(final long[] dimensions, final Fraction entitiesPerPixel)
-	{
-		return createInstance(new ShortArrayLoader(reader(), subregion),
-			dimensions, entitiesPerPixel);
-	}
-
-	@Override
-	public SCIFIOCellImg<T, IntArray> createIntInstance(
-		final long[] dimensions, final Fraction entitiesPerPixel)
-	{
-		return createInstance(new IntArrayLoader(reader(), subregion), dimensions,
-			entitiesPerPixel);
-	}
-
-	@Override
-	public SCIFIOCellImg<T, LongArray> createLongInstance(
-		final long[] dimensions, final Fraction entitiesPerPixel)
-	{
-		return createInstance(new LongArrayLoader(reader(), subregion), dimensions,
-			entitiesPerPixel);
-	}
-
-	@Override
-	public
-		SCIFIOCellImg<T, FloatArray>
-		createFloatInstance(final long[] dimensions, final Fraction entitiesPerPixel)
-	{
-		return createInstance(new FloatArrayLoader(reader(), subregion),
-			dimensions, entitiesPerPixel);
-	}
-
-	@Override
-	public SCIFIOCellImg<T, DoubleArray>
-		createDoubleInstance(final long[] dimensions,
-			final Fraction entitiesPerPixel)
-	{
-		return createInstance(new DoubleArrayLoader(reader(), subregion),
-			dimensions, entitiesPerPixel);
-	}
-
-	@Override
-	public SCIFIOCellImg<T, ?> create(final long[] dim, final T type) {
+	public SCIFIOCellImg<T, ?> create(final long... dimensions) {
 		if (reader == null) {
 			throw new IllegalStateException(
-				"Tried to create a new SCIFIOCellImg without a Reader to "
-					+ "use for opening planes.\nCall setReader(Reader) before invoking create()");
+					"Tried to create a new SCIFIOCellImg without a Reader to "
+							+ "use for opening planes.\nCall setReader(Reader) before invoking create()");
 		}
-		return (SCIFIOCellImg<T, ?>) type.createSuitableNativeImg(this, dim);
+		@SuppressWarnings( { "unchecked", "rawtypes" } )
+		SCIFIOCellImg<T, ?> img = createInstance(dimensions, type(), (NativeTypeFactory) type().getNativeTypeFactory());
+		return img;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -168,7 +106,7 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 		throws IncompatibleTypeException
 	{
 		if (NativeType.class.isInstance(type)) return new SCIFIOCellImgFactory(
-			defaultCellDimensions);
+				(NativeType) type, defaultCellDimensions);
 		throw new IncompatibleTypeException(this, type.getClass()
 			.getCanonicalName() +
 			" does not implement NativeType.");
@@ -208,21 +146,47 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 
 	// -- Helper Methods --
 
-	private <A extends ArrayDataAccess<A>, L extends SCIFIOArrayLoader<A>>
-		SCIFIOCellImg<T, A> createInstance(final L loader,
-			final long[] dimensions, final Fraction entitiesPerPixel)
+	@SuppressWarnings( "unchecked" )
+	private <A extends ArrayDataAccess<A>, L extends SCIFIOArrayLoader<A>> L createArrayLoader(
+			final NativeTypeFactory<?, ? super A> typeFactory)
+	{
+		switch ( typeFactory.getPrimitiveType() )
+		{
+		case BYTE:
+			return (L) new ByteArrayLoader(reader(), subregion);
+		case CHAR:
+			return (L) new CharArrayLoader(reader(), subregion);
+		case DOUBLE:
+			return (L) new DoubleArrayLoader(reader(), subregion);
+		case FLOAT:
+			return (L) new FloatArrayLoader(reader(), subregion);
+		case INT:
+			return (L) new IntArrayLoader(reader(), subregion);
+		case LONG:
+			return (L) new LongArrayLoader(reader(), subregion);
+		case SHORT:
+			return (L) new ShortArrayLoader(reader(), subregion);
+		default:
+			throw new IllegalArgumentException();
+		}
+	}
+
+	private <A extends ArrayDataAccess<A>> SCIFIOCellImg<T, A> createInstance(
+			final long[] dimensions,
+			final T type,
+			final NativeTypeFactory< T, A > typeFactory)
 	{
 		verifyDimensions( dimensions );
 
 		final int n = dimensions.length;
+		final Fraction entitiesPerPixel = type.getEntitiesPerPixel();
 		final int[] cellDimensions = getCellDimensions( defaultCellDimensions, n, entitiesPerPixel );
 
 		final CellGrid grid = new CellGrid( dimensions, cellDimensions );
 
-		loader.setIndex(index);
-
-		final SCIFIOCellCache<A> cache =
-			new SCIFIOCellCache<>(reader.getContext(), loader);
+		SCIFIOArrayLoader<A> loader = createArrayLoader(typeFactory);
+		loader.setIndex( index );
+		final SCIFIOCellCache<A> cache = new SCIFIOCellCache<>(reader.getContext(), loader);
 
 		final LazyCellImg.Get<SCIFIOCell<A>> getter =
 			new LazyCellImg.Get<SCIFIOCell<A>>()
@@ -242,8 +206,46 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 			};
 
 		final SCIFIOCellImg<T, A> cellImg = new SCIFIOCellImg<>(this, grid, new LazyCells<>(grid.getGridDimensions(), getter), entitiesPerPixel);
+		cellImg.setLinkedType( typeFactory.createLinkedType(cellImg) );
 		cellImg.setLoader(loader);
 
 		return cellImg;
+	}
+
+
+	/*
+	 * -----------------------------------------------------------------------
+	 *
+	 * Deprecated API.
+	 *
+	 * Supports backwards compatibility with ImgFactories that are constructed
+	 * without a type instance or supplier.
+	 *
+	 * -----------------------------------------------------------------------
+	 */
+
+	@Deprecated
+	public SCIFIOCellImgFactory() {
+		this( 10 );
+	}
+
+	@Deprecated
+	public SCIFIOCellImgFactory(final int... cellDimensions) {
+		defaultCellDimensions = cellDimensions.clone();
+		verifyDimensions( defaultCellDimensions );
+	}
+
+	@Deprecated
+	@Override
+	public SCIFIOCellImg<T, ?> create(final long[] dim, final T type) {
+		if (reader == null) {
+			throw new IllegalStateException(
+					"Tried to create a new SCIFIOCellImg without a Reader to "
+							+ "use for opening planes.\nCall setReader(Reader) before invoking create()");
+		}
+		cache( type );
+		@SuppressWarnings( { "unchecked", "rawtypes" } )
+		SCIFIOCellImg<T, ?> img = createInstance( dim, type, (NativeTypeFactory) type.getNativeTypeFactory() );
+		return img;
 	}
 }

@@ -126,9 +126,9 @@ public class ImgOpenerTest {
 	{
 		final NativeType t = new UnsignedByteType();
 
-		final ImgFactory aif = new ArrayImgFactory().imgFactory(t);
-		final ImgFactory pif = new PlanarImgFactory().imgFactory(t);
-		final ImgFactory sif = new SCIFIOCellImgFactory().imgFactory(t);
+		final ImgFactory aif = new ArrayImgFactory(t);
+		final ImgFactory pif = new PlanarImgFactory(t);
+		final ImgFactory sif = new SCIFIOCellImgFactory(t);
 
 		for (final ImgFactory f : new ImgFactory[] { aif, pif, sif }) {
 			testSubRegion(f);
@@ -257,7 +257,7 @@ public class ImgOpenerTest {
 	{
 		ImgPlus<T> imgPlus = null;
 
-		final ImgFactory<T> factory = new ArrayImgFactory<T>().imgFactory(type);
+		final ImgFactory<T> factory = new ArrayImgFactory<>(type);
 
 		// Try each rawtype openImg method
 		imgPlus = imgOpener.openImgs(id, type).get(0);
