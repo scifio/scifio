@@ -35,7 +35,6 @@ import io.scif.formats.qt.QTJavaService;
 import io.scif.formats.tiff.TiffService;
 import io.scif.gui.GUIService;
 import io.scif.img.ImgUtilityService;
-import io.scif.img.cell.cache.CacheService;
 import io.scif.img.converters.PlaneConverterService;
 import io.scif.io.NIOService;
 import io.scif.services.DatasetIOService;
@@ -95,15 +94,6 @@ public class SCIFIO extends AbstractGateway {
 	}
 
 	// -- SCIFIO methods - services --
-
-	/**
-	 * Gets this application context's {@link CacheService}.
-	 *
-	 * @return The {@link CacheService} of this application context.
-	 */
-	public CacheService<?> cache() {
-		return get(CacheService.class);
-	}
 
 	/**
 	 * Gets this application context's {@link CodecService}.

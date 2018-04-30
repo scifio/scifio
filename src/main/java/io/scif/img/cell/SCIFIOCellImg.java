@@ -29,32 +29,31 @@
 
 package io.scif.img.cell;
 
-import java.io.IOException;
-
-import org.scijava.Disposable;
-
 import io.scif.FormatException;
 import io.scif.Reader;
 import io.scif.img.cell.loaders.SCIFIOArrayLoader;
-import io.scif.refs.RefManagerService;
+
+import java.io.IOException;
+
+import net.imglib2.cache.Cache;
+import net.imglib2.cache.img.CachedCellImg;
 import net.imglib2.display.ColorTable;
-import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
 import net.imglib2.img.cell.AbstractCellImg;
+import net.imglib2.img.cell.Cell;
 import net.imglib2.img.cell.CellGrid;
-import net.imglib2.img.cell.LazyCellImg.LazyCells;
 import net.imglib2.type.NativeType;
 import net.imglib2.util.Fraction;
+
+import org.scijava.Disposable;
 
 /**
  * {@link AbstractCellImg} implementation for working with {@link SCIFIOCell}s.
  *
  * @author Mark Hiner
  */
-public class SCIFIOCellImg<T extends NativeType<T>, A extends ArrayDataAccess<A>>
-	extends AbstractCellImg<T, A, SCIFIOCell<A>, LazyCells<SCIFIOCell<A>>> implements
-	Disposable
+public class SCIFIOCellImg<T extends NativeType<T>, A> extends
+	CachedCellImg<T, A> implements Disposable
 {
-
 	// -- Fields --
 
 	private final Reader reader;
@@ -66,13 +65,12 @@ public class SCIFIOCellImg<T extends NativeType<T>, A extends ArrayDataAccess<A>
 	// -- Constructor --
 
 	public SCIFIOCellImg(final SCIFIOCellImgFactory<T> factory,
-		final CellGrid grid, final LazyCells<SCIFIOCell<A>> cells,
-		final Fraction entitiesPerPixel)
+		final CellGrid grid, final Fraction entitiesPerPixel,
+		final Cache<Long, Cell<A>> cache, final A accessType)
 	{
-		super(grid, cells, entitiesPerPixel);
+		super(grid, entitiesPerPixel, cache, accessType);
 		this.factory = factory;
 		reader = factory.reader();
-		reader.getContext().getService(RefManagerService.class).manage(this);
 	}
 
 	// -- SCIFIOCellImg methods --
@@ -88,8 +86,8 @@ public class SCIFIOCellImg<T extends NativeType<T>, A extends ArrayDataAccess<A>
 	{
 		if (loader != null) return loader.loadTable(imageIndex, planeIndex);
 
-		final long[] planeMin =
-			new long[reader.getMetadata().get(imageIndex).getAxesPlanar().size()];
+		final long[] planeMin = new long[reader.getMetadata().get(imageIndex)
+			.getAxesPlanar().size()];
 		final long[] planeMax = new long[planeMin.length];
 		for (int i = 0; i < planeMax.length; i++)
 			planeMax[i] = 1;
@@ -114,9 +112,8 @@ public class SCIFIOCellImg<T extends NativeType<T>, A extends ArrayDataAccess<A>
 	@Override
 	public SCIFIOCellImg<T, A> copy() {
 		@SuppressWarnings("unchecked")
-		final SCIFIOCellImg<T, A> copy =
-			(SCIFIOCellImg<T, A>) factory().create(dimension,
-				firstElement().createVariable());
+		final SCIFIOCellImg<T, A> copy = (SCIFIOCellImg<T, A>) factory().create(
+			dimension);
 		super.copyDataTo(copy);
 		return copy;
 	}

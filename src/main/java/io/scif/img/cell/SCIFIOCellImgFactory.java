@@ -29,41 +29,69 @@
 
 package io.scif.img.cell;
 
-import static net.imglib2.img.cell.CellImgFactory.getCellDimensions;
-import static net.imglib2.img.cell.CellImgFactory.verifyDimensions;
-
 import io.scif.Reader;
 import io.scif.filters.ReaderFilter;
 import io.scif.img.ImageRegion;
+import io.scif.img.cell.loaders.AbstractArrayLoader;
 import io.scif.img.cell.loaders.ByteArrayLoader;
 import io.scif.img.cell.loaders.CharArrayLoader;
 import io.scif.img.cell.loaders.DoubleArrayLoader;
 import io.scif.img.cell.loaders.FloatArrayLoader;
 import io.scif.img.cell.loaders.IntArrayLoader;
 import io.scif.img.cell.loaders.LongArrayLoader;
-import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 import io.scif.img.cell.loaders.ShortArrayLoader;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Function;
+
+import net.imglib2.Dimensions;
+import net.imglib2.cache.Cache;
+import net.imglib2.cache.CacheLoader;
+import net.imglib2.cache.IoSync;
+import net.imglib2.cache.LoaderRemoverCache;
+import net.imglib2.cache.img.AccessIo;
+import net.imglib2.cache.img.CellLoader;
+import net.imglib2.cache.img.DirtyDiskCellCache;
+import net.imglib2.cache.img.DiskCachedCellImgOptions;
+import net.imglib2.cache.img.DiskCellCache;
+import net.imglib2.cache.img.LoadedCellCacheLoader;
+import net.imglib2.cache.img.SingleCellArrayImg;
+import net.imglib2.cache.ref.GuardedStrongRefLoaderRemoverCache;
+import net.imglib2.cache.ref.SoftRefLoaderRemoverCache;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.NativeImgFactory;
+import net.imglib2.img.basictypeaccess.ArrayDataAccessFactory;
 import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
+import net.imglib2.img.basictypeaccess.array.ByteArray;
+import net.imglib2.img.basictypeaccess.array.CharArray;
+import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import net.imglib2.img.basictypeaccess.array.FloatArray;
+import net.imglib2.img.basictypeaccess.array.IntArray;
+import net.imglib2.img.basictypeaccess.array.LongArray;
+import net.imglib2.img.basictypeaccess.array.ShortArray;
+import net.imglib2.img.cell.Cell;
 import net.imglib2.img.cell.CellGrid;
-import net.imglib2.img.cell.LazyCellImg;
-import net.imglib2.img.cell.LazyCellImg.LazyCells;
+import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.NativeTypeFactory;
 import net.imglib2.util.Fraction;
+import net.imglib2.util.Intervals;
+import net.imglib2.util.Util;
 
 /**
- * {@link ImgFactory} implementation for working with {@link SCIFIOCell}s.
+ * Factory for creating {@link SCIFIOCellImg}s. See
+ * {@link DiskCachedCellImgOptions} for available configuration options and
+ * defaults.
  *
- * @author Mark Hiner
  * @author Tobias Pietzsch
+ * @author Mark Hiner
  */
-public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeImgFactory<T>
+public class SCIFIOCellImgFactory<T extends NativeType<T>> extends
+	NativeImgFactory<T>
 {
-
 	// -- Fields --
 
 	private int index;
@@ -74,47 +102,53 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 
 	private int[] defaultCellDimensions;
 
+	private DiskCachedCellImgOptions factoryOptions;
+
 	// -- Constructors --
 
+	/**
+	 * Create a new {@link SCIFIOCellImgFactory} with default configuration.
+	 */
 	public SCIFIOCellImgFactory(final T type) {
-		this(type, 10);
+		this(type, DiskCachedCellImgOptions.options());
 	}
 
-	public SCIFIOCellImgFactory(final T type, final int... cellDimensions) {
+	/**
+	 * Create a new {@link SCIFIOCellImgFactory} with the specified configuration.
+	 *
+	 * @param optional configuration options.
+	 */
+	public SCIFIOCellImgFactory(final T type,
+		final DiskCachedCellImgOptions optional)
+	{
 		super(type);
-		defaultCellDimensions = cellDimensions.clone();
-		verifyDimensions( defaultCellDimensions );
+		this.factoryOptions = optional;
 	}
 
 	// -- ImgFactory API Methods --
 
 	@Override
 	public SCIFIOCellImg<T, ?> create(final long... dimensions) {
-		if (reader == null) {
-			throw new IllegalStateException(
-					"Tried to create a new SCIFIOCellImg without a Reader to "
-							+ "use for opening planes.\nCall setReader(Reader) before invoking create()");
-		}
-		@SuppressWarnings( { "unchecked", "rawtypes" } )
-		SCIFIOCellImg<T, ?> img = createInstance(dimensions, type(), (NativeTypeFactory) type().getNativeTypeFactory());
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		final SCIFIOCellImg<T, ?> img = create(dimensions, type(),
+			(NativeTypeFactory) type().getNativeTypeFactory());
 		return img;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public <S> ImgFactory<S> imgFactory(final S type)
-		throws IncompatibleTypeException
-	{
-		if (NativeType.class.isInstance(type)) return new SCIFIOCellImgFactory(
-				(NativeType) type, defaultCellDimensions);
-		throw new IncompatibleTypeException(this, type.getClass()
-			.getCanonicalName() +
-			" does not implement NativeType.");
+	public SCIFIOCellImg<T, ?> create(final Dimensions dimensions) {
+		return create(Intervals.dimensionsAsLongArray(dimensions));
+	}
+
+	@Override
+	public SCIFIOCellImg<T, ?> create(final int[] dimensions) {
+		return create(Util.int2long(dimensions));
 	}
 
 	/**
 	 * @return The {@link Reader} attached to this factory. Will be used for any
-	 *         {@link SCIFIOCellImg} instances created for dynamic loading.
+	 *         {@link io.scif.img.cell.SCIFIOCellImg} instances created for
+	 *         dynamic loading.
 	 */
 	public Reader reader() {
 		return reader;
@@ -131,14 +165,13 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 
 		if (r instanceof ReaderFilter) r = ((ReaderFilter) r).getTail();
 
-		defaultCellDimensions =
-			new int[] { (int) reader.getOptimalTileWidth(imageIndex),
-				(int) reader.getOptimalTileHeight(imageIndex), 1, 1, 1 };
+		defaultCellDimensions = new int[] { (int) reader.getOptimalTileWidth(
+			imageIndex), (int) reader.getOptimalTileHeight(imageIndex), 1, 1, 1 };
 	}
 
 	/**
 	 * @param region The {@link ImageRegion} that will be operated on by any
-	 *          created {@link SCIFIOCellImg}s.
+	 *          created {@link io.scif.img.cell.SCIFIOCellImg}s.
 	 */
 	public void setSubRegion(final ImageRegion region) {
 		subregion = region;
@@ -146,72 +179,163 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 
 	// -- Helper Methods --
 
-	@SuppressWarnings( "unchecked" )
-	private <A extends ArrayDataAccess<A>, L extends SCIFIOArrayLoader<A>> L createArrayLoader(
-			final NativeTypeFactory<?, ? super A> typeFactory)
+	private static class SCIFIOCellLoader<T extends NativeType<T>, A> implements
+		CellLoader<T>
 	{
-		switch ( typeFactory.getPrimitiveType() )
+
+		private final AbstractArrayLoader<A> loader;
+
+		private final Function<Object, A> wrap;
+
+		SCIFIOCellLoader(final AbstractArrayLoader<A> loader,
+			final Function<Object, A> wrap)
 		{
-		case BYTE:
-			return (L) new ByteArrayLoader(reader(), subregion);
-		case CHAR:
-			return (L) new CharArrayLoader(reader(), subregion);
-		case DOUBLE:
-			return (L) new DoubleArrayLoader(reader(), subregion);
-		case FLOAT:
-			return (L) new FloatArrayLoader(reader(), subregion);
-		case INT:
-			return (L) new IntArrayLoader(reader(), subregion);
-		case LONG:
-			return (L) new LongArrayLoader(reader(), subregion);
-		case SHORT:
-			return (L) new ShortArrayLoader(reader(), subregion);
-		default:
-			throw new IllegalArgumentException();
+			this.loader = loader;
+			this.wrap = wrap;
+		}
+
+		@Override
+		public void load(final SingleCellArrayImg<T, ?> cell) throws Exception {
+			final A data = wrap.apply(cell.getStorageArray());
+			final long[] dimensions = new long[cell.numDimensions()];
+			cell.dimensions(dimensions);
+			final long[] min = new long[cell.numDimensions()];
+			cell.min(min);
+			loader.loadArray(Util.long2int(dimensions), min, data);
 		}
 	}
 
-	private <A extends ArrayDataAccess<A>> SCIFIOCellImg<T, A> createInstance(
-			final long[] dimensions,
-			final T type,
-			final NativeTypeFactory< T, A > typeFactory)
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private <A extends ArrayDataAccess<A>> SCIFIOCellLoader<T, A>
+		createCellLoader(final NativeTypeFactory<T, A> typeFactory)
 	{
-		verifyDimensions( dimensions );
-
-		final int n = dimensions.length;
-		final Fraction entitiesPerPixel = type.getEntitiesPerPixel();
-		final int[] cellDimensions = getCellDimensions( defaultCellDimensions, n, entitiesPerPixel );
-
-		final CellGrid grid = new CellGrid( dimensions, cellDimensions );
-
-		SCIFIOArrayLoader<A> loader = createArrayLoader(typeFactory);
-		loader.setIndex( index );
-		final SCIFIOCellCache<A> cache = new SCIFIOCellCache<>(reader.getContext(), loader);
-
-		final LazyCellImg.Get<SCIFIOCell<A>> getter =
-			new LazyCellImg.Get<SCIFIOCell<A>>()
-		{
-
-				@Override
-				public SCIFIOCell<A> get(final long index) {
-					// Attempt to get the cell from memory
-					final SCIFIOCell<A> cell = cache.get((int) index);
-					if (cell != null) return cell;
-					// Load the cell
-					final long[] cellMin = new long[grid.numDimensions()];
-					final int[] cellDims = new int[grid.numDimensions()];
-					grid.getCellDimensions(index, cellMin, cellDims);
-					return cache.load((int) index, cellDims, cellMin);
-				}
-			};
-
-		final SCIFIOCellImg<T, A> cellImg = new SCIFIOCellImg<>(this, grid, new LazyCells<>(grid.getGridDimensions(), getter), entitiesPerPixel);
-		cellImg.setLinkedType( typeFactory.createLinkedType(cellImg) );
-		cellImg.setLoader(loader);
-
-		return cellImg;
+		switch (typeFactory.getPrimitiveType()) {
+			case BYTE:
+				return new SCIFIOCellLoader(new ByteArrayLoader(reader, subregion),
+					o -> new ByteArray((byte[]) o));
+			case CHAR:
+				return new SCIFIOCellLoader(new CharArrayLoader(reader, subregion),
+					o -> new CharArray((char[]) o));
+			case DOUBLE:
+				return new SCIFIOCellLoader(new DoubleArrayLoader(reader, subregion),
+					o -> new DoubleArray((double[]) o));
+			case FLOAT:
+				return new SCIFIOCellLoader(new FloatArrayLoader(reader, subregion),
+					o -> new FloatArray((float[]) o));
+			case INT:
+				return new SCIFIOCellLoader(new IntArrayLoader(reader, subregion),
+					o -> new IntArray((int[]) o));
+			case LONG:
+				return new SCIFIOCellLoader(new LongArrayLoader(reader, subregion),
+					o -> new LongArray((long[]) o));
+			case SHORT:
+				return new SCIFIOCellLoader(new ShortArrayLoader(reader, subregion),
+					o -> new ShortArray((short[]) o));
+			default:
+				throw new IllegalArgumentException();
+		}
 	}
 
+	private <A extends ArrayDataAccess<A>> SCIFIOCellImg<T, ? extends A> create(
+		final long[] dimensions, final T type,
+		final NativeTypeFactory<T, A> typeFactory)
+	{
+		final SCIFIOCellLoader<T, A> cellLoader = createCellLoader(typeFactory);
+		cellLoader.loader.setIndex(index);
+
+		final DiskCachedCellImgOptions.Values options = factoryOptions.values;
+
+		final Fraction entitiesPerPixel = type.getEntitiesPerPixel();
+
+		final CellGrid grid = createCellGrid(dimensions, entitiesPerPixel);
+
+		final CellLoader<T> actualCellLoader = options.initializeCellsAsDirty()
+			? cell -> {
+				cellLoader.load(cell);
+				cell.setDirty();
+			} : cellLoader;
+		final CacheLoader<Long, Cell<A>> backingLoader = LoadedCellCacheLoader.get(
+			grid, actualCellLoader, type, options.accessFlags());
+
+		final Path blockcache = createBlockCachePath(options);
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final DiskCellCache<A> diskcache = options.dirtyAccesses()
+			? new DirtyDiskCellCache(blockcache, grid, backingLoader, AccessIo.get(
+				type, options.accessFlags()), entitiesPerPixel) : new DiskCellCache<>(
+					blockcache, grid, backingLoader, AccessIo.get(type, options
+						.accessFlags()), entitiesPerPixel);
+
+		final IoSync<Long, Cell<A>> iosync = new IoSync<>(diskcache, options
+			.numIoThreads(), options.maxIoQueueSize());
+
+		LoaderRemoverCache<Long, Cell<A>> listenableCache;
+		switch (options.cacheType()) {
+			case BOUNDED:
+				listenableCache = new GuardedStrongRefLoaderRemoverCache<>(options
+					.maxCacheSize());
+				break;
+			case SOFTREF:
+			default:
+				listenableCache = new SoftRefLoaderRemoverCache<>();
+				break;
+		}
+
+		final Cache<Long, Cell<A>> cache = listenableCache.withRemover(iosync)
+			.withLoader(iosync);
+
+		final A accessType = ArrayDataAccessFactory.get(typeFactory, options
+			.accessFlags());
+		final SCIFIOCellImg<T, ? extends A> img = new SCIFIOCellImg<>(this, grid,
+			entitiesPerPixel, cache, accessType);
+		img.setLinkedType(typeFactory.createLinkedType(img));
+		return img;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public <S> ImgFactory<S> imgFactory(final S type)
+		throws IncompatibleTypeException
+	{
+		if (NativeType.class.isInstance(type)) return new SCIFIOCellImgFactory(
+			(NativeType) type, factoryOptions);
+		throw new IncompatibleTypeException(this, type.getClass()
+			.getCanonicalName() + " does not implement NativeType.");
+	}
+
+	private CellGrid createCellGrid(final long[] dimensions,
+		final Fraction entitiesPerPixel)
+	{
+		CellImgFactory.verifyDimensions(dimensions);
+		final int n = dimensions.length;
+		final int[] cellDimensions = CellImgFactory.getCellDimensions(
+			defaultCellDimensions, n, entitiesPerPixel);
+		return new CellGrid(dimensions, cellDimensions);
+	}
+
+	private Path createBlockCachePath(
+		final DiskCachedCellImgOptions.Values options)
+	{
+		try {
+			final Path cache = options.cacheDirectory();
+			final Path dir = options.tempDirectory();
+			final String prefix = options.tempDirectoryPrefix();
+			final boolean deleteOnExit = options.deleteCacheDirectoryOnExit();
+			if (cache != null) {
+				if (!Files.isDirectory(cache)) {
+					Files.createDirectories(cache);
+					if (deleteOnExit) DiskCellCache.addDeleteHook(cache);
+				}
+				return cache;
+			}
+			else if (dir != null) return DiskCellCache.createTempDirectory(dir,
+				prefix, deleteOnExit);
+			else return DiskCellCache.createTempDirectory(prefix, deleteOnExit);
+		}
+		catch (final IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	/*
 	 * -----------------------------------------------------------------------
@@ -226,13 +350,13 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 
 	@Deprecated
 	public SCIFIOCellImgFactory() {
-		this( 10 );
+		this(10);
 	}
 
 	@Deprecated
 	public SCIFIOCellImgFactory(final int... cellDimensions) {
+		this.factoryOptions = DiskCachedCellImgOptions.options();
 		defaultCellDimensions = cellDimensions.clone();
-		verifyDimensions( defaultCellDimensions );
 	}
 
 	@Deprecated
@@ -240,12 +364,13 @@ public final class SCIFIOCellImgFactory<T extends NativeType<T>> extends NativeI
 	public SCIFIOCellImg<T, ?> create(final long[] dim, final T type) {
 		if (reader == null) {
 			throw new IllegalStateException(
-					"Tried to create a new SCIFIOCellImg without a Reader to "
-							+ "use for opening planes.\nCall setReader(Reader) before invoking create()");
+				"Tried to create a new SCIFIOCellImg without a Reader to " +
+					"use for opening planes.\nCall setReader(Reader) before invoking create()");
 		}
-		cache( type );
-		@SuppressWarnings( { "unchecked", "rawtypes" } )
-		SCIFIOCellImg<T, ?> img = createInstance( dim, type, (NativeTypeFactory) type.getNativeTypeFactory() );
+		cache(type);
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		final SCIFIOCellImg<T, ?> img = create(dim, type, (NativeTypeFactory) type
+			.getNativeTypeFactory());
 		return img;
 	}
 }
