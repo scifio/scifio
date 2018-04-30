@@ -158,12 +158,6 @@
 			<artifactId>scijava-common</artifactId>
 		</dependency>
 
-		<!-- Third-party dependencies -->
-		<dependency>
-			<groupId>org.mapdb</groupId>
-			<artifactId>mapdb</artifactId>
-		</dependency>
-
 		<!-- Test scope dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
