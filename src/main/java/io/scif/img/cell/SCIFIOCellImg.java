@@ -38,7 +38,6 @@ import java.io.IOException;
 import net.imglib2.cache.Cache;
 import net.imglib2.cache.img.CachedCellImg;
 import net.imglib2.display.ColorTable;
-import net.imglib2.img.cell.AbstractCellImg;
 import net.imglib2.img.cell.Cell;
 import net.imglib2.img.cell.CellGrid;
 import net.imglib2.type.NativeType;
@@ -47,9 +46,10 @@ import net.imglib2.util.Fraction;
 import org.scijava.Disposable;
 
 /**
- * {@link AbstractCellImg} implementation for working with {@link SCIFIOCell}s.
+ * {@link CachedCellImg} implementation backed by a SCIFIO {@link Reader}.
  *
  * @author Mark Hiner
+ * @author Tobias Pietzsch
  */
 public class SCIFIOCellImg<T extends NativeType<T>, A> extends
 	CachedCellImg<T, A> implements Disposable
