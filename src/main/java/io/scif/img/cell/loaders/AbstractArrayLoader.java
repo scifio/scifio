@@ -184,6 +184,62 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 		}
 	}
 
+	public void loadArray(final int[] dimensions, final long[] min, final A data) {
+		synchronized (reader) {
+			final Metadata meta = reader.getMetadata();
+
+			// Starting indices for the planar dimensions
+			final long[] planarMin = new long[meta.get(0).getAxesPlanar().size()];
+			// Lengths in the planar dimensions
+			final long[] planarLength = new long[meta.get(0).getAxesPlanar().size()];
+			// Non-planar indices to open
+			final Range[] npRanges = new Range[meta.get(0).getAxesNonPlanar().size()];
+			final long[] npIndices = new long[npRanges.length];
+
+			int axisIndex = 0;
+			// Get planar ranges
+			for (final CalibratedAxis axis : meta.get(0).getAxesPlanar()) {
+				final int index = meta.get(0).getAxisIndex(axis.type());
+
+				// Constrain on passed dims
+				if (index < dimensions.length) {
+					planarMin[axisIndex] = min[index];
+					planarLength[axisIndex] = dimensions[index];
+				}
+				else {
+					planarLength[axisIndex] = 1;
+				}
+
+				axisIndex++;
+			}
+
+			axisIndex = 0;
+			for (final CalibratedAxis axis : meta.get(0).getAxesNonPlanar()) {
+				final int index = meta.get(0).getAxisIndex(axis.type());
+
+				// otherwise just make a straightforward range spanning the
+				// passed
+				// dimensional constraints
+				npRanges[axisIndex] =
+						new Range(min[index], min[index] + dimensions[index] - 1);
+
+				axisIndex++;
+			}
+
+			try {
+				read(data, planarMin, planarLength, npRanges, npIndices);
+			}
+			catch (final FormatException e) {
+				throw new IllegalStateException(
+						"Could not open a plane for the given dimensions", e);
+			}
+			catch (final IOException e) {
+				throw new IllegalStateException(
+						"Could not open a plane for the given dimensions", e);
+			}
+		}
+	}
+
 	/**
 	 * Entry point for
 	 * {@link #read(Object, Plane, long[], long[], Range[], long[], int, int)}

@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>20.2.0</version>
+		<version>20.4.0</version>
 		<relativePath />
 	</parent>
 
 	<groupId>io.scif</groupId>
 	<artifactId>scifio</artifactId>
-	<version>0.34.1-SNAPSHOT</version>
+	<version>0.35.0-SNAPSHOT</version>
 
 	<name>SCIFIO Core</name>
 	<description>SCIFIO is a library for scientific N-dimensional image I/O.</description>
@@ -114,10 +114,12 @@
 		<license.copyrightOwners>SCIFIO developers.</license.copyrightOwners>
 		<license.projectName>SCIFIO library for reading and converting scientific file formats.</license.projectName>
 
-		<mapdb.version>1.0.3</mapdb.version>
-
 		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
 		<releaseProfiles>deploy-to-imagej</releaseProfiles>
+
+		<imglib2.version>5.1.0</imglib2.version>
+		<imglib2-cache.version>1.0.0-beta-8</imglib2-cache.version>
+		<imagej-common.version>0.25.0</imagej-common.version>
 	</properties>
 
 	<repositories>
@@ -145,18 +147,15 @@
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-cache</artifactId>
+		</dependency>
 
 		<!-- SciJava dependencies -->
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>
-		</dependency>
-
-		<!-- Third-party dependencies -->
-		<dependency>
-			<groupId>org.mapdb</groupId>
-			<artifactId>mapdb</artifactId>
-			<version>${mapdb.version}</version>
 		</dependency>
 
 		<!-- Test scope dependencies -->

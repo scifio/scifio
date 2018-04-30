@@ -72,7 +72,7 @@ import org.scijava.util.Bytes;
  * Examples:
  * </p>
  * <ul>
- * <li>{@code 'multi-series&series=11&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'}</li>
+ * <li>{@code 'multi-image&images=11&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'}</li>
  * <li>{@code '8bit-signed&pixelType=int8&axes=X,Y,Z,Channel,Time&lengths=1,50,3,5,7.fake'}</li>
  * <li>{@code '8bit-unsigned&pixelType=uint8&axes=X,Y,Z,Channel&lengths=1,50,3,5.fake'}</li>
  * <li>{@code '16bit-signed&pixelType=int16&axes=X,Y,Z,Channel,Time&lengths=1,50,3,7.fake'}</li>
