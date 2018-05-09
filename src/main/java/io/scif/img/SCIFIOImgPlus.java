@@ -123,28 +123,6 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 		getProperties().put(IMAGE_META, imageMeta);
 	}
 
-	/**
-	 * Sets the ROIs and tables properties based on the {@link ImageMetadata}. If
-	 * the given {@link Metadata} is a {@link MetadataWrapper}, this method will
-	 * recurse through the layers searching for the first filled ROIs and tables
-	 * fields.
-	 *
-	 * @param meta the {@link Metadata} whose associated {@link ImageMetadata}
-	 *          will be checked
-	 * @param index the index of the {@link ImageMetadata}
-	 */
-	public void setRoisAndTablesProperties(final Metadata meta, final int index) {
-		final boolean roisSet = getProperties().get("rois") != null;
-		final boolean tablesSet = getProperties().get("tables") != null;
-		if (roisSet && tablesSet) return;
-
-		if (!roisSet) getProperties().put("rois", meta.get(index).getRois());
-		if (!tablesSet) getProperties().put("tables", meta.get(index).getTables());
-
-		if (meta instanceof MetadataWrapper) setRoisAndTablesProperties(
-			((MetadataWrapper) meta).unwrap(), index);
-	}
-
 	// -- ImgPlus Methods --
 
 	@Override
@@ -196,5 +174,29 @@ public class SCIFIOImgPlus<T> extends ImgPlus<T> implements Disposable {
 		if (img instanceof Disposable) {
 			((Disposable) img).dispose();
 		}
+	}
+
+	// -- Internal methods --
+
+	/**
+	 * Sets the ROIs and tables properties based on the {@link ImageMetadata}. If
+	 * the given {@link Metadata} is a {@link MetadataWrapper}, this method will
+	 * recurse through the layers searching for the first filled ROIs and tables
+	 * fields.
+	 *
+	 * @param meta the {@link Metadata} whose associated {@link ImageMetadata}
+	 *          will be checked
+	 * @param index the index of the {@link ImageMetadata}
+	 */
+	void setROIsAndTablesProperties(final Metadata meta, final int index) {
+		final boolean roisSet = getProperties().get("rois") != null;
+		final boolean tablesSet = getProperties().get("tables") != null;
+		if (roisSet && tablesSet) return;
+
+		if (!roisSet) getProperties().put("rois", meta.get(index).getROIs());
+		if (!tablesSet) getProperties().put("tables", meta.get(index).getTables());
+
+		if (meta instanceof MetadataWrapper) setROIsAndTablesProperties(
+			((MetadataWrapper) meta).unwrap(), index);
 	}
 }

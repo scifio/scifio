@@ -145,21 +145,13 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Field(label = "thumbnail")
 	private boolean thumbnail;
 
-	/**
-	 * The ROIs for this image.
-	 * <p>
-	 * FIXME: Don't type this on {@code Object}.
-	 * </p>
-	 */
+	// TODO: Consider typing rois and tables on more specific data structures.
+
+	/** The ROIs for this image. */
 	@Field(label = "ROIs")
 	private Object rois;
 
-	/**
-	 * The tables for this image.
-	 * <p>
-	 * FIXME: Don't type this on {@code Object}.
-	 * </p>
-	 */
+	/** The tables for this image. */
 	@Field(label = "tables")
 	private Object tables;
 
@@ -328,7 +320,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public void setRois(final Object rois) {
+	public void setROIs(final Object rois) {
 		this.rois = rois;
 	}
 
@@ -564,7 +556,7 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	}
 
 	@Override
-	public Object getRois() {
+	public Object getROIs() {
 		return rois;
 	}
 

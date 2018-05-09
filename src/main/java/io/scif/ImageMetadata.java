@@ -170,22 +170,12 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	 */
 	void setAxisType(int index, AxisType axis);
 
-	/**
-	 * Sets the ROIs associated with this image.
-	 * <p>
-	 * FIXME: Do not type this on {@code Object}. Once the relevant rich data
-	 * structures are created, use those instead!
-	 * </p>
-	 */
-	void setRois(Object rois);
+	// TODO: Consider typing rois and tables on more specific data structures.
 
-	/**
-	 * Sets the tables associated with this image.
-	 * <p>
-	 * FIXME: Do not type this on {@code Object}. Once the relevant rich data
-	 * structures are created, use those instead!
-	 * </p>
-	 */
+	/** Sets the ROIs associated with this image. */
+	void setROIs(Object rois);
+
+	/** Sets the tables associated with this image. */
 	void setTables(Object tables);
 
 	/** Returns the size, in bytes, of all planes in this image. */
@@ -382,22 +372,12 @@ public interface ImageMetadata extends Named, HasMetaTable {
 	 */
 	long[] getAxesLengthsNonPlanar();
 
-	/**
-	 * Retrieves the ROIs associated with this image.
-	 * <p>
-	 * FIXME: Do not type this on {@code Object}. Once the relevant rich data
-	 * structures are created, use those instead!
-	 * </p>
-	 */
-	Object getRois();
+	// TODO: Consider typing rois and tables on more specific data structures.
 
-	/**
-	 * Retrieves the tables associated with this image.
-	 * <p>
-	 * FIXME: Do not type this on {@code Object}. Once the relevant rich data
-	 * structures are created, use those instead!
-	 * </p>
-	 */
+	/** Retrieves the ROIs associated with this image. */
+	Object getROIs();
+
+	/** Retrieves the tables associated with this image. */
 	Object getTables();
 
 	/**
