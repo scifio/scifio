@@ -145,6 +145,16 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	@Field(label = "thumbnail")
 	private boolean thumbnail;
 
+	// TODO: Consider typing rois and tables on more specific data structures.
+
+	/** The ROIs for this image. */
+	@Field(label = "ROIs")
+	private Object rois;
+
+	/** The tables for this image. */
+	@Field(label = "tables")
+	private Object tables;
+
 	/** The name of the image. */
 	private String name;
 
@@ -307,6 +317,16 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 	public void setAxisType(final int index, final AxisType axisType) {
 		final CalibratedAxis axis = FormatTools.createAxis(axisType);
 		setAxis(index, axis);
+	}
+
+	@Override
+	public void setROIs(final Object rois) {
+		this.rois = rois;
+	}
+
+	@Override
+	public void setTables(final Object tables) {
+		this.tables = tables;
 	}
 
 	// -- Getters --
@@ -533,6 +553,16 @@ public abstract class AbstractImageMetadata implements ImageMetadata {
 			effectiveAxes == null ? axes : effectiveAxes;
 
 		return getAxisIndex(axisType, knownAxes);
+	}
+
+	@Override
+	public Object getROIs() {
+		return rois;
+	}
+
+	@Override
+	public Object getTables() {
+		return tables;
 	}
 
 	@Override
