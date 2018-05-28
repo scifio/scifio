@@ -30,9 +30,11 @@
 package io.scif.img.cell.loaders;
 
 import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
+import io.scif.filters.MetadataWrapper;
 import io.scif.img.ImageRegion;
 import io.scif.img.ImgUtilityService;
 import io.scif.img.Range;
@@ -275,10 +277,19 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			final int planeIndex =
 				(int) FormatTools.positionToRaster(0, reader, npIndices);
 
-			if (tmpPlane == null) tmpPlane =
-				reader.openPlane(index, planeIndex, planarMin, planarLength);
-			else tmpPlane =
-				reader.openPlane(index, planeIndex, tmpPlane, planarMin, planarLength);
+			final long[] imagePlanarLengths = getPlanarAxisLengths(reader
+				.getMetadata());
+			final long[] planarMax = new long[planarMin.length];
+			for (int i = 0; i < planarMax.length; i++) {
+				final long computedMax = planarMin[i] + planarLength[i] - 1;
+				planarMax[i] = computedMax > imagePlanarLengths[i] - 1
+					? imagePlanarLengths[i] - 1 : computedMax;
+			}
+
+			if (tmpPlane == null) tmpPlane = reader.openPlane(index, planeIndex,
+				planarMin, planarMax);
+			else tmpPlane = reader.openPlane(index, planeIndex, tmpPlane, planarMin,
+				planarMax);
 			convertBytes(data, tmpPlane.getBytes(), planeCount);
 
 			// update color table
@@ -287,6 +298,17 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			}
 		}
 
+	}
+
+	private long[] getPlanarAxisLengths(final Metadata meta) {
+		final ImageMetadata imgMeta = unwrap(meta);
+		return imgMeta.getAxesLengthsPlanar();
+	}
+
+	private ImageMetadata unwrap(final Metadata meta) {
+		if (meta instanceof MetadataWrapper) return unwrap(((MetadataWrapper) meta)
+			.unwrap());
+		return meta.get(0);
 	}
 
 	private boolean[][] loadedTable() {
