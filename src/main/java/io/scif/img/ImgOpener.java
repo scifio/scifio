@@ -331,7 +331,7 @@ public class ImgOpener extends AbstractImgIOComponent {
 			imgPlus.setSource(id);
 			imgPlus.initializeColorTables(i(reader.getPlaneCount(i(imageIndex))));
 
-			if (!config.imgOpenerIsComputeMinMax()) {
+			if (config.imgOpenerIsComputeMinMax()) {
 				final long[] defaultMinMax =
 					FormatTools.defaultMinMax(reader.getMetadata().get(i(imageIndex)));
 				for (int c = 0; c < imgPlus.getCompositeChannelCount(); c++) {
