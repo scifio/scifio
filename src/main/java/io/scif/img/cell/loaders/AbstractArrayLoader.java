@@ -277,13 +277,13 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			final int planeIndex =
 				(int) FormatTools.positionToRaster(0, reader, npIndices);
 
-			final long[] imagePlanarLengths = getPlanarAxisLengths(reader
-				.getMetadata());
+			final long[] imagePlanarLengths = //
+				getPlanarAxisLengths(reader.getMetadata());
 			final long[] planarMax = new long[planarMin.length];
 			for (int i = 0; i < planarMax.length; i++) {
-				final long computedMax = planarMin[i] + planarLength[i] - 1;
-				planarMax[i] = computedMax > imagePlanarLengths[i] - 1
-					? imagePlanarLengths[i] - 1 : computedMax;
+				final long computedMax = planarMin[i] + planarLength[i];
+				planarMax[i] = computedMax > imagePlanarLengths[i] ? //
+					imagePlanarLengths[i] : computedMax;
 			}
 
 			if (tmpPlane == null) tmpPlane = reader.openPlane(index, planeIndex,

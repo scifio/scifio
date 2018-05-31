@@ -74,8 +74,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
-	 * @param planeMin minimal bounds of the planar axes
-	 * @param planeMax maximum bounds of the planar axes
+	 * @param planeMin minimal bounds of the planar axes -- INCLUSIVE
+	 * @param planeMax maximum bounds of the planar axes -- EXCLUSIVE
 	 * @return The desired sub-region at the specified indices.
 	 */
 	Plane openPlane(int imageIndex, long planeIndex, long[] planeMin,
@@ -120,8 +120,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
-	 * @param planeMin minimal bounds of the planar axes
-	 * @param planeMax maximum bounds of the planar axes
+	 * @param planeMin minimal bounds of the planar axes -- INCLUSIVE
+	 * @param planeMax maximum bounds of the planar axes -- EXCLUSIVE
 	 * @param config Configuration information to use for this read.
 	 * @return The desired sub-region at the specified indices.
 	 */
