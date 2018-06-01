@@ -75,6 +75,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
@@ -1450,12 +1451,13 @@ public final class AWTImageTools {
 	}
 
 	// -- Image manipulation --
+
 	/** Returns a subimage of the specified image. */
 	public static BufferedImage getSubimage(final BufferedImage image,
-		final boolean littleEndian, final long[] planeMin, final long[] planeMax)
+		final boolean littleEndian, final Interval bounds)
 	{
-		return getSubimage(image, littleEndian, (int) planeMin[0],
-			(int) planeMin[1], (int) planeMax[0], (int) planeMax[1]);
+		return getSubimage(image, littleEndian, //
+			i(bounds.min(0)), i(bounds.min(1)), i(bounds.dimension(0)), i(bounds.dimension(1)));
 	}
 
 	/** Returns a subimage of the specified image. */
@@ -2100,5 +2102,15 @@ public final class AWTImageTools {
 		lut[1] = m.getGreens();
 		lut[2] = m.getBlues();
 		return lut;
+	}
+
+	private static int i(long value) {
+		if (value > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("Value too large: " + value);
+		}
+		if (value < Integer.MIN_VALUE) {
+			throw new IllegalArgumentException("Value too small: " + value);
+		}
+		return (int) value;
 	}
 }

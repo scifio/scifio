@@ -128,8 +128,8 @@ public class OpenDataset extends ContextCommand {
 		if (crop != null && crop) {
 			if (validRange()) {
 				Map<AxisType, Range> region = new HashMap<AxisType, Range>();
-				region.put(Axes.X, new Range(new Long(x), new Long(w)));
-				region.put(Axes.Y, new Range(new Long(y), new Long(h)));
+				region.put(Axes.X, new Range(new Long(x), new Long(x + w - 1)));
+				region.put(Axes.Y, new Range(new Long(y), new Long(y + h - 1)));
 				config.imgOpenerSetRegion(new ImageRegion(region));
 			}
 			else {

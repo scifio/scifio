@@ -35,6 +35,8 @@ import io.scif.img.cell.loaders.SCIFIOArrayLoader;
 
 import java.io.IOException;
 
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 import net.imglib2.cache.Cache;
 import net.imglib2.cache.img.CachedCellImg;
 import net.imglib2.display.ColorTable;
@@ -86,14 +88,14 @@ public class SCIFIOCellImg<T extends NativeType<T>, A> extends
 	{
 		if (loader != null) return loader.loadTable(imageIndex, planeIndex);
 
-		final long[] planeMin = new long[reader.getMetadata().get(imageIndex)
-			.getAxesPlanar().size()];
-		final long[] planeMax = new long[planeMin.length];
-		for (int i = 0; i < planeMax.length; i++)
-			planeMax[i] = 1;
+		final int planarAxisCount = //
+			reader.getMetadata().get(imageIndex).getAxesPlanar().size();
+		final long[] dims = new long[planarAxisCount];
+		for (int i = 0; i < dims.length; i++)
+			dims[i] = 1;
+		final Interval bounds = new FinalInterval(dims);
 
-		return reader.openPlane(imageIndex, planeIndex, planeMin, planeMax)
-			.getColorTable();
+		return reader.openPlane(imageIndex, planeIndex, bounds).getColorTable();
 	}
 
 	@Override

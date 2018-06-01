@@ -47,6 +47,9 @@ import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.DefaultLinearAxis;
 import net.imagej.axis.LinearAxis;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+import net.imglib2.util.Intervals;
 
 /**
  * A collection of constants and utility methods applicable for all cycles of
@@ -623,11 +626,10 @@ public final class FormatTools {
 	 */
 	public static void checkPlaneForReading(final Metadata m,
 		final int imageIndex, final long planeIndex, final int bufLength,
-		final long[] planeMin, final long[] planeMax) throws FormatException
+		final Interval bounds) throws FormatException
 	{
 		assertId(m.getSource(), true, 2);
-		checkPlaneForWriting(m, imageIndex, planeIndex, bufLength, planeMin,
-			planeMax);
+		checkPlaneForWriting(m, imageIndex, planeIndex, bufLength, bounds);
 	}
 
 	/**
@@ -638,11 +640,11 @@ public final class FormatTools {
 	 */
 	public static void checkPlaneForWriting(final Metadata m,
 		final int imageIndex, final long planeIndex, final int bufLength,
-		final long[] planeMin, final long[] planeMax) throws FormatException
+		final Interval bounds) throws FormatException
 	{
 		checkPlaneNumber(m, imageIndex, planeIndex);
-		checkTileSize(m, planeMin, planeMax, imageIndex);
-		if (bufLength >= 0) checkBufferSize(m, bufLength, planeMax, imageIndex);
+		checkTileSize(m, bounds, imageIndex);
+		if (bufLength >= 0) checkBufferSize(m, bufLength, bounds, imageIndex);
 	}
 
 	/** Checks that the given plane number is valid for the given reader. */
@@ -659,19 +661,20 @@ public final class FormatTools {
 	}
 
 	/** Checks that the given tile size is valid for the given reader. */
-	public static void checkTileSize(final Metadata m, final long[] planeMin,
-		final long[] planeMax, final int imageIndex) throws FormatException
+	public static void checkTileSize(final Metadata m, final Interval bounds,
+		final int imageIndex) throws FormatException
 	{
 		final List<CalibratedAxis> axes = m.get(imageIndex).getAxesPlanar();
 
 		for (int i = 0; i < axes.size(); i++) {
-			final long start = planeMin[i];
-			final long end = planeMax[i];
+			final long start = bounds.min(i);
+			final long end = bounds.max(i);
 			final long length = m.get(imageIndex).getAxisLength(axes.get(i));
 
-			if (start < 0 || end < 0 || (start + end) > length) throw new FormatException(
-				"Invalid planar size: start=" + start + ", end=" + end +
-					", length in metadata=" + length);
+			if (start < 0 || end < 0 || end >= length) {
+				throw new FormatException("Invalid planar size: start=" + start +
+					", end=" + end + ", length in metadata=" + length);
+			}
 		}
 	}
 
@@ -682,8 +685,8 @@ public final class FormatTools {
 	public static void checkBufferSize(final int imageIndex, final Metadata m,
 		final int len) throws FormatException
 	{
-		checkBufferSize(m, len, m.get(imageIndex).getAxesLengthsPlanar(),
-			imageIndex);
+		checkBufferSize(m, len, //
+			new FinalInterval(m.get(imageIndex).getAxesLengthsPlanar()), imageIndex);
 	}
 
 	/**
@@ -693,10 +696,9 @@ public final class FormatTools {
 	 * @throws FormatException if the buffer is too small
 	 */
 	public static void checkBufferSize(final Metadata m, final int len,
-		final long[] planeLengths, final int imageIndex) throws FormatException
+		final Interval bounds, final int imageIndex) throws FormatException
 	{
-		final long size =
-			getPlaneSize(m, new long[planeLengths.length], planeLengths, imageIndex);
+		final long size = getPlaneSize(m, bounds, imageIndex);
 		if (size > len) {
 			throw new FormatException("Buffer too small (got " + len + ", expected " +
 				size + ").");
@@ -730,35 +732,29 @@ public final class FormatTools {
 		final int height, final int imageIndex)
 	{
 		final ImageMetadata iMeta = m.get(imageIndex);
-		final long[] planeMin = new long[iMeta.getPlanarAxisCount()];
-		final long[] planeMax = new long[iMeta.getPlanarAxisCount()];
-		for (int i = 0; i < planeMax.length; i++) {
+		final long[] lengths = new long[iMeta.getPlanarAxisCount()];
+		for (int i = 0; i < lengths.length; i++) {
 			final AxisType type = iMeta.getAxis(i).type();
 			if (type == Axes.X) {
-				planeMax[i] = width;
+				lengths[i] = width;
 			}
 			else if (type == Axes.Y) {
-				planeMax[i] = height;
+				lengths[i] = height;
 			}
 			else {
-				planeMax[i] = iMeta.getAxisLength(type);
+				lengths[i] = iMeta.getAxisLength(type);
 			}
 		}
-		return getPlaneSize(m, planeMin, planeMax, imageIndex);
+		final FinalInterval bounds = new FinalInterval(lengths);
+		return getPlaneSize(m, bounds, imageIndex);
 	}
 
 	/** Returns the size in bytes of a plane with the given minima and maxima. */
-	public static long getPlaneSize(final Metadata m, final long[] planeMin,
-		final long[] planeMax, final int imageIndex)
+	public static long getPlaneSize(final Metadata m, final Interval bounds,
+		final int imageIndex)
 	{
-		if (planeMin.length != planeMax.length) throw new IllegalArgumentException(
-			"Plane min array size: " + planeMin.length +
-				" does not match plane max array size: " + planeMax.length);
-		long length = m.get(imageIndex).getBitsPerPixel() / 8;
-		for (int i = 0; i < planeMin.length; i++) {
-			length *= planeMax[i] - planeMin[i];
-		}
-		return length;
+		final long bytesPerPixel = m.get(imageIndex).getBitsPerPixel() / 8;
+		return bytesPerPixel * Intervals.numElements(bounds);
 	}
 
 	// -- Utility methods - pixel types --

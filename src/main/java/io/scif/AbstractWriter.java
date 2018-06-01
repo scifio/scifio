@@ -40,7 +40,8 @@ import java.io.File;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
-import net.imagej.axis.CalibratedAxis;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 
 import org.scijava.util.ArrayUtils;
 
@@ -101,8 +102,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	 * @throws FormatException if any of the arguments is invalid.
 	 */
 	protected void checkParams(final int imageIndex, final long planeIndex,
-		final byte[] buf, final long[] planeMin, final long[] planeMax)
-		throws FormatException
+		final byte[] buf, final Interval bounds) throws FormatException
 	{
 		SCIFIOMetadataTools.verifyMinimumPopulated(metadata, out, imageIndex);
 
@@ -120,7 +120,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 		}
 
 		FormatTools.checkPlaneForWriting(getMetadata(), imageIndex, planeIndex,
-			buf.length, planeMin, planeMax);
+			buf.length, bounds);
 		FormatTools.assertId(out, true, 0);
 	}
 
@@ -129,7 +129,7 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	 * image.
 	 */
 	protected void initialize(final int imageIndex, final long planeIndex,
-		final long[] planeMin, final long[] planeMax) throws FormatException,
+		final Interval bounds) throws FormatException,
 		IOException
 	{
 		initialized[imageIndex][(int) planeIndex] = true;
@@ -146,8 +146,8 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	 * specific output.
 	 */
 	protected abstract void writePlane(final int imageIndex,
-		final long planeIndex, final Plane plane, final long[] planeMin,
-		final long[] planeMax) throws FormatException, IOException;
+		final long planeIndex, final Plane plane, final Interval bounds)
+		throws FormatException, IOException;
 
 	// -- Writer API Methods --
 
@@ -155,18 +155,18 @@ public abstract class AbstractWriter<M extends TypedMetadata> extends
 	public void savePlane(final int imageIndex, final long planeIndex,
 		final Plane plane) throws FormatException, IOException
 	{
-		final long[] planeMax = metadata.get(imageIndex).getAxesLengthsPlanar();
-		final long[] planeMin = new long[planeMax.length];
-		savePlane(imageIndex, planeIndex, plane, planeMin, planeMax);
+		final Interval bounds = //
+			new FinalInterval(metadata.get(imageIndex).getAxesLengthsPlanar());
+		savePlane(imageIndex, planeIndex, plane, bounds);
 	}
 
 	@Override
 	public void savePlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] planeMin, final long[] planeMax)
+		final Plane plane, final Interval bounds)
 		throws FormatException, IOException
 	{
-		initialize(imageIndex, planeIndex, planeMin, planeMax);
-		writePlane(imageIndex, planeIndex, plane, planeMin, planeMax);
+		initialize(imageIndex, planeIndex, bounds);
+		writePlane(imageIndex, planeIndex, plane, bounds);
 	}
 
 	@Override

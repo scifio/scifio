@@ -41,6 +41,7 @@ import java.util.List;
 
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
+import net.imglib2.Interval;
 
 import org.scijava.plugin.Plugin;
 
@@ -198,19 +199,19 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final long[] offsets, final long[] lengths) throws FormatException,
+		final Interval bounds) throws FormatException,
 		IOException
 	{
-		return openPlane(imageIndex, planeIndex, offsets, lengths,
+		return openPlane(imageIndex, planeIndex, bounds,
 			new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] offsets, final long[] lengths)
+		final Plane plane, final Interval bounds)
 		throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, offsets, lengths,
+		return openPlane(imageIndex, planeIndex, plane, bounds,
 			new SCIFIOConfig());
 	}
 
@@ -223,11 +224,11 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final long[] offsets, final long[] lengths, final SCIFIOConfig config)
+		final Interval bounds, final SCIFIOConfig config)
 		throws FormatException, IOException
 	{
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex),
-			offsets, lengths, config);
+			bounds, config);
 	}
 
 	@Override
@@ -241,11 +242,11 @@ public class DimensionSwapper extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] offsets, final long[] lengths,
-		final SCIFIOConfig config) throws FormatException, IOException
+		final Plane plane, final Interval bounds, final SCIFIOConfig config)
+		throws FormatException, IOException
 	{
 		return super.openPlane(imageIndex, reorder(imageIndex, planeIndex), plane,
-			offsets, lengths, config);
+			bounds, config);
 	}
 
 	@Override

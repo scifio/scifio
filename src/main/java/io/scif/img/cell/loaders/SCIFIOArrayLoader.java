@@ -34,6 +34,7 @@ import io.scif.img.cell.SCIFIOCellImg;
 
 import java.io.IOException;
 
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 
 /**
@@ -50,11 +51,10 @@ public interface SCIFIOArrayLoader<A> {
 	int getBitsPerElement();
 
 	/**
-	 * @param dimensions Plane extents
-	 * @param min Plane offsets
-	 * @return An opened plane using the given offsets and extents.
+	 * @param bounds bounds of the plane.
+	 * @return An opened plane using the given bounds.
 	 */
-	A loadArray(int[] dimensions, long[] min);
+	A loadArray(Interval bounds);
 
 	/**
 	 * @param entities Desired entity capacity

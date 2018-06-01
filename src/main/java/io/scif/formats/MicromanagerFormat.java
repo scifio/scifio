@@ -57,6 +57,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
@@ -748,14 +749,13 @@ public class MicromanagerFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 
 			final String file =
 				meta.getPositions().get(imageIndex).getFile(meta, imageIndex,
@@ -763,7 +763,7 @@ public class MicromanagerFormat extends AbstractFormat {
 
 			if (file != null && new Location(getContext(), file).exists()) {
 				tiffReader.setSource(file, config);
-				return tiffReader.openPlane(imageIndex, 0, plane, planeMin, planeMax);
+				return tiffReader.openPlane(imageIndex, 0, plane, bounds);
 			}
 			log().warn(
 				"File for image #" + planeIndex + " (" + file + ") is missing.");

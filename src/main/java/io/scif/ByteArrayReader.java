@@ -29,11 +29,7 @@
 
 package io.scif;
 
-import io.scif.util.FormatTools;
-
-import java.io.IOException;
-
-import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 /**
  * Abstract superclass for all {@link io.scif.Reader} implementations that
@@ -57,17 +53,15 @@ public abstract class ByteArrayReader<M extends TypedMetadata> extends
 	// -- Reader API Methods --
 
 	@Override
-	public ByteArrayPlane createPlane(final long[] planeOffsets,
-		final long[] planeBounds)
-	{
-		return createPlane(getMetadata().get(0), planeOffsets, planeBounds);
+	public ByteArrayPlane createPlane(final Interval bounds) {
+		return createPlane(getMetadata().get(0), bounds);
 	}
 
 	@Override
 	public ByteArrayPlane createPlane(final ImageMetadata meta,
-		final long[] planeOffsets, final long[] planeBounds)
+		final Interval bounds)
 	{
-		return new ByteArrayPlane(getContext(), meta, planeOffsets, planeBounds);
+		return new ByteArrayPlane(getContext(), meta, bounds);
 	}
 
 }

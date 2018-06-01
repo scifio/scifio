@@ -35,6 +35,8 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.File;
 import java.io.IOException;
 
+import net.imglib2.Interval;
+
 /**
  * Interface for all SCIFIO Readers.
  * <p>
@@ -74,12 +76,11 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
-	 * @param planeMin minimal bounds of the planar axes -- INCLUSIVE
-	 * @param planeMax maximum bounds of the planar axes -- EXCLUSIVE
+	 * @param bounds bounds of the planar axes.
 	 * @return The desired sub-region at the specified indices.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, long[] planeMin,
-		long[] planeMax) throws FormatException, IOException;
+	Plane openPlane(int imageIndex, long planeIndex, Interval bounds)
+		throws FormatException, IOException;
 
 	/**
 	 * Allows a single {@code Plane} object to be reused by reference when opening
@@ -96,12 +97,12 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * Allows a single {@code Plane} object to be reused by reference when opening
 	 * sub-regions of planes.
 	 *
-	 * @see #openPlane(int, long, long[], long[])
+	 * @see #openPlane(int, long, Interval)
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, Plane plane,
-		long[] planeMin, long[] planeMax) throws FormatException, IOException;
+	Plane openPlane(int imageIndex, long planeIndex, Plane plane, Interval bounds)
+		throws FormatException, IOException;
 
 	/**
 	 * As {@link #openPlane(int, long)} with configuration options.
@@ -115,18 +116,16 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 		throws FormatException, IOException;
 
 	/**
-	 * As {@link #openPlane(int, long, long[], long[])} with configuration
-	 * options.
+	 * As {@link #openPlane(int, long, Interval)} with configuration options.
 	 *
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
-	 * @param planeMin minimal bounds of the planar axes -- INCLUSIVE
-	 * @param planeMax maximum bounds of the planar axes -- EXCLUSIVE
+	 * @param bounds bounds of the planar axes.
 	 * @param config Configuration information to use for this read.
 	 * @return The desired sub-region at the specified indices.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, long[] planeMin,
-		long[] planeMax, SCIFIOConfig config) throws FormatException, IOException;
+	Plane openPlane(int imageIndex, long planeIndex, Interval bounds,
+		SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
 	 * Allows a single {@code Plane} object to be reused by reference when opening
@@ -143,13 +142,12 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * Allows a single {@code Plane} object to be reused by reference when opening
 	 * sub-regions of planes.
 	 *
-	 * @see #openPlane(int, long, long[], long[], SCIFIOConfig)
+	 * @see #openPlane(int, long, Interval, SCIFIOConfig)
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane openPlane(int imageIndex, long planeIndex, Plane plane,
-		long[] planeMin, long[] planeMax, SCIFIOConfig config)
-		throws FormatException, IOException;
+	Plane openPlane(int imageIndex, long planeIndex, Plane plane, Interval bounds,
+		SCIFIOConfig config) throws FormatException, IOException;
 
 	/** Returns the current file. */
 	String getCurrentFile();
@@ -264,8 +262,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane readPlane(RandomAccessInputStream s, int imageIndex, long[] planeMin,
-		long[] planeMax, Plane plane) throws IOException;
+	Plane readPlane(RandomAccessInputStream s, int imageIndex, Interval bounds,
+		Plane plane) throws IOException;
 
 	/**
 	 * Reads a raw plane from disk.
@@ -277,8 +275,8 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException If the provided {@code Plane} type is not
 	 *           compatible with this {@code Reader}.
 	 */
-	Plane readPlane(RandomAccessInputStream s, int imageIndex, long[] planeMin,
-		long[] planeMax, int scanlinePad, Plane plane) throws IOException;
+	Plane readPlane(RandomAccessInputStream s, int imageIndex, Interval bounds,
+		int scanlinePad, Plane plane) throws IOException;
 
 	/** Determines the number of planes in the current file. */
 	long getPlaneCount(int imageIndex);
@@ -289,22 +287,19 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 	/**
 	 * Creates a blank plane compatible with this reader.
 	 *
-	 * @param planeOffsets minimal offsets of the planar axes
-	 * @param planeBounds maximum values of the planar axes
+	 * @param bounds bounds of the planar axes.
 	 * @return The created plane
 	 */
-	Plane createPlane(long[] planeOffsets, long[] planeBounds);
+	Plane createPlane(Interval bounds);
 
 	/**
 	 * Creates a blank plane compatible with this reader.
 	 *
 	 * @param meta - ImageMetadata to use to populate the new plane.
-	 * @param planeOffsets minimal offsets of the planar axes
-	 * @param planeBounds maximum values of the planar axes
+	 * @param bounds bounds of the planar axes.
 	 * @return The created plane
 	 */
-	Plane
-		createPlane(ImageMetadata meta, long[] planeOffsets, long[] planeBounds);
+	Plane createPlane(ImageMetadata meta, Interval bounds);
 
 	/**
 	 * Convenience method for casting {@code Plane} implementations to the type

@@ -45,8 +45,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imagej.axis.CalibratedAxis;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.util.Intervals;
 
 import org.scijava.plugin.Parameter;
 
@@ -103,9 +106,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			for (int i = 0; i < planeMax.length; i++)
 				planeMax[i] = 1;
 
-			ct =
-				reader.openPlane(imageIndex, planeIndex, planeMin, planeMax)
-					.getColorTable();
+			final FinalInterval bounds = new FinalInterval(planeMin, planeMax);
+			ct = reader.openPlane(imageIndex, planeIndex, bounds).getColorTable();
 
 			addTable(imageIndex, planeIndex, ct);
 		}
@@ -113,7 +115,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	}
 
 	@Override
-	public A loadArray(final int[] dimensions, final long[] min) {
+	public A loadArray(final Interval bounds) {
 		synchronized (reader) {
 			final Metadata meta = reader.getMetadata();
 
@@ -122,7 +124,7 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			// Starting indices for the planar dimensions
 			final long[] planarMin = new long[meta.get(0).getAxesPlanar().size()];
 			// Lengths in the planar dimensions
-			final long[] planarLength = new long[meta.get(0).getAxesPlanar().size()];
+			final long[] planarMax = new long[meta.get(0).getAxesPlanar().size()];
 			// Non-planar indices to open
 			final Range[] npRanges = new Range[meta.get(0).getAxesNonPlanar().size()];
 			final long[] npIndices = new long[npRanges.length];
@@ -133,15 +135,11 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 				final int index = meta.get(0).getAxisIndex(axis.type());
 
 				// Constrain on passed dims
-				if (index < dimensions.length) {
-					planarMin[axisIndex] = min[index];
-					planarLength[axisIndex] = dimensions[index];
+				if (index < bounds.numDimensions()) {
+					planarMin[axisIndex] = bounds.min(index);
+					planarMax[axisIndex] = bounds.max(index);
+					entities *= bounds.dimension(index);
 				}
-				else {
-					planarLength[axisIndex] = 1;
-				}
-
-				entities *= planarLength[axisIndex];
 
 				axisIndex++;
 			}
@@ -150,11 +148,9 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			for (final CalibratedAxis axis : meta.get(0).getAxesNonPlanar()) {
 				final int index = meta.get(0).getAxisIndex(axis.type());
 
-				// otherwise just make a straightforward range spanning the
-				// passed
-				// dimensional constraints
-				npRanges[axisIndex] =
-					new Range(min[index], min[index] + dimensions[index] - 1);
+				// otherwise just make a straightforward range
+				// spanning the passed dimensional constraints
+				npRanges[axisIndex] = new Range(bounds.min(index), bounds.max(index));
 
 				if (subRegion != null) {
 					entities *= subRegion.getRange(axis.type()).size();
@@ -171,7 +167,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			data = emptyArray(entities);
 
 			try {
-				read(data, planarMin, planarLength, npRanges, npIndices);
+				final Interval planarBounds = new FinalInterval(planarMin, planarMax);
+				read(data, planarBounds, npRanges, npIndices);
 			}
 			catch (final FormatException e) {
 				throw new IllegalStateException(
@@ -186,50 +183,52 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 		}
 	}
 
-	public void loadArray(final int[] dimensions, final long[] min, final A data) {
+	public void loadArray(final Interval bounds, final A data) {
 		synchronized (reader) {
 			final Metadata meta = reader.getMetadata();
 
+			final List<CalibratedAxis> planarAxes = meta.get(0).getAxesPlanar();
+			final List<CalibratedAxis> nonPlanarAxes = meta.get(0).getAxesNonPlanar();
+			final int planarAxisCount = planarAxes.size();
+			final int nonPlanarAxisCount = nonPlanarAxes.size();
+
 			// Starting indices for the planar dimensions
-			final long[] planarMin = new long[meta.get(0).getAxesPlanar().size()];
+			final long[] planarMin = new long[planarAxisCount];
 			// Lengths in the planar dimensions
-			final long[] planarLength = new long[meta.get(0).getAxesPlanar().size()];
+			final long[] planarMax = new long[planarAxisCount];
 			// Non-planar indices to open
-			final Range[] npRanges = new Range[meta.get(0).getAxesNonPlanar().size()];
+			final Range[] npRanges = new Range[nonPlanarAxisCount];
 			final long[] npIndices = new long[npRanges.length];
 
 			int axisIndex = 0;
 			// Get planar ranges
-			for (final CalibratedAxis axis : meta.get(0).getAxesPlanar()) {
+			for (final CalibratedAxis axis : planarAxes) {
 				final int index = meta.get(0).getAxisIndex(axis.type());
 
 				// Constrain on passed dims
-				if (index < dimensions.length) {
-					planarMin[axisIndex] = min[index];
-					planarLength[axisIndex] = dimensions[index];
-				}
-				else {
-					planarLength[axisIndex] = 1;
+				if (index < bounds.numDimensions()) {
+					planarMin[axisIndex] = bounds.min(index);
+					planarMax[axisIndex] = bounds.max(index);
 				}
 
 				axisIndex++;
 			}
 
 			axisIndex = 0;
-			for (final CalibratedAxis axis : meta.get(0).getAxesNonPlanar()) {
+			for (final CalibratedAxis axis : nonPlanarAxes) {
 				final int index = meta.get(0).getAxisIndex(axis.type());
 
 				// otherwise just make a straightforward range spanning the
 				// passed
 				// dimensional constraints
-				npRanges[axisIndex] =
-						new Range(min[index], min[index] + dimensions[index] - 1);
+				npRanges[axisIndex] = new Range(bounds.min(index), bounds.max(index));
 
 				axisIndex++;
 			}
 
 			try {
-				read(data, planarMin, planarLength, npRanges, npIndices);
+				final Interval planarBounds = new FinalInterval(planarMin, planarMax);
+				read(data, planarBounds, npRanges, npIndices);
 			}
 			catch (final FormatException e) {
 				throw new IllegalStateException(
@@ -244,22 +243,21 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 
 	/**
 	 * Entry point for
-	 * {@link #read(Object, Plane, long[], long[], Range[], long[], int, int)}
+	 * {@link #read(Object, Plane, Interval, Range[], long[], int, int)}
 	 */
-	private void read(final A data, final long[] planarMin,
-		final long[] planarLength, final Range[] npRanges, final long[] npIndices)
-		throws FormatException, IOException
+	private void read(final A data, final Interval bounds, final Range[] npRanges,
+		final long[] npIndices) throws FormatException, IOException
 	{
-		read(data, null, planarMin, planarLength, npRanges, npIndices, 0, 0);
+		read(data, null, bounds, npRanges, npIndices, 0, 0);
 	}
 
 	/**
 	 * Recurses over all the provided {@link Range}s, reading the corresponding
 	 * bytes and storing them in the provided data object.
 	 */
-	private void read(final A data, Plane tmpPlane, final long[] planarMin,
-		final long[] planarLength, final Range[] npRanges, final long[] npIndices,
-		final int depth, int planeCount) throws FormatException, IOException
+	private void read(final A data, Plane tmpPlane, final Interval bounds,
+		final Range[] npRanges, final long[] npIndices, final int depth,
+		int planeCount) throws FormatException, IOException
 	{
 		if (depth < npRanges.length) {
 			// We need to invert the depth index to get the current non-planar
@@ -268,8 +266,8 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			final int npPosition = npRanges.length - 1 - depth;
 			for (int i = 0; i < npRanges[npPosition].size(); i++) {
 				npIndices[npPosition] = npRanges[npPosition].get(i);
-				read(data, tmpPlane, planarMin, planarLength, npRanges, npIndices,
-					depth + 1, planeCount);
+				read(data, tmpPlane, bounds, npRanges, npIndices, depth + 1,
+					planeCount);
 				planeCount++;
 			}
 		}
@@ -277,19 +275,20 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			final int planeIndex =
 				(int) FormatTools.positionToRaster(0, reader, npIndices);
 
-			final long[] imagePlanarLengths = //
-				getPlanarAxisLengths(reader.getMetadata());
-			final long[] planarMax = new long[planarMin.length];
-			for (int i = 0; i < planarMax.length; i++) {
-				final long computedMax = planarMin[i] + planarLength[i];
-				planarMax[i] = computedMax > imagePlanarLengths[i] ? //
-					imagePlanarLengths[i] : computedMax;
-			}
+			validateBounds(getPlanarAxisLengths(reader.getMetadata()), bounds);
 
-			if (tmpPlane == null) tmpPlane = reader.openPlane(index, planeIndex,
-				planarMin, planarMax);
-			else tmpPlane = reader.openPlane(index, planeIndex, tmpPlane, planarMin,
-				planarMax);
+			if (tmpPlane == null) {
+				tmpPlane = reader.openPlane(index, planeIndex, bounds);
+			}
+			else {
+				// Sanity check!
+				final long expectedLength = Intervals.numElements(bounds);
+				if (tmpPlane.getBytes().length != expectedLength) {
+					throw new IllegalArgumentException("Expected tmpPlane length " +
+						expectedLength + " but was " + tmpPlane.getBytes().length);
+				}
+				tmpPlane = reader.openPlane(index, planeIndex, tmpPlane, bounds);
+			}
 			convertBytes(data, tmpPlane.getBytes(), planeCount);
 
 			// update color table
@@ -298,6 +297,23 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 			}
 		}
 
+	}
+
+	private void validateBounds(final long[] lengths, final Interval bounds) {
+		final int expectedDims = lengths.length;
+		final int actualDims = bounds.numDimensions();
+		if (expectedDims != actualDims) {
+			throw new IllegalArgumentException("Expected bounds of dimensionality " +
+				expectedDims + " but was " + actualDims);
+		}
+		for (int d = 0; d < bounds.numDimensions(); d++) {
+			final long expectedDim = lengths[d];
+			final long actualDim = bounds.dimension(d);
+			if (expectedDim != actualDim) {
+				throw new IllegalArgumentException("Expected bound #" + d +
+					" of length " + expectedDim + " but was " + actualDim);
+			}
+		}
 	}
 
 	private long[] getPlanarAxisLengths(final Metadata meta) {

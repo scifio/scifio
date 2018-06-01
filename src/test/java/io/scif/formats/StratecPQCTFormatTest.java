@@ -29,12 +29,19 @@
 
 package io.scif.formats;
 
-import static io.scif.formats.StratecPQCTFormat.*;
-import static org.junit.Assert.*;
+import static io.scif.formats.StratecPQCTFormat.DEVICE_NAME_INDEX;
+import static io.scif.formats.StratecPQCTFormat.HEADER_SIZE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import io.scif.ByteArrayPlane;
 import io.scif.ImageMetadata;
 import io.scif.config.SCIFIOConfig;
+import io.scif.formats.StratecPQCTFormat.Checker;
+import io.scif.formats.StratecPQCTFormat.Metadata;
+import io.scif.formats.StratecPQCTFormat.Parser;
+import io.scif.formats.StratecPQCTFormat.Reader;
 import io.scif.io.ByteArrayHandle;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -49,6 +56,8 @@ import java.util.List;
 import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.DefaultLinearAxis;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -316,8 +325,6 @@ public class StratecPQCTFormatTest {
 		final short width = 10;
 		final short height = 10;
 		final int planeBytes = width * height * 2;
-		final long[] planeMin = { 0, 0 };
-		final long[] planeMax = { width, height };
 		final ByteArrayPlane plane = new ByteArrayPlane(context);
 		plane.setData(new byte[planeBytes]);
 		final ByteBuffer buffer = ByteBuffer.allocate(
@@ -332,7 +339,8 @@ public class StratecPQCTFormatTest {
 		reader.setSource(stream);
 
 		// EXECUTE
-		reader.openPlane(0, 0, plane, planeMin, planeMax, new SCIFIOConfig());
+		final Interval bounds = new FinalInterval(width, height);
+		reader.openPlane(0, 0, plane, bounds, new SCIFIOConfig());
 
 		// VERIFY
 		assertEquals(

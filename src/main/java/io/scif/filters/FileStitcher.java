@@ -47,6 +47,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import net.imagej.axis.Axes;
+import net.imglib2.Interval;
+
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -328,12 +331,12 @@ public class FileStitcher extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] offsets, final long[] lengths,
+		final Plane plane, final Interval bounds,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		// If no stitching, delegate to parent
 		if (noStitch) return getParent().openPlane(imageIndex, planeIndex, plane,
-			offsets, lengths, new SCIFIOConfig().groupableSetGroupFiles(false));
+			bounds, new SCIFIOConfig().groupableSetGroupFiles(false));
 
 		// Check for plane compatibility
 		Plane bp;
@@ -351,7 +354,7 @@ public class FileStitcher extends AbstractReaderFilter {
 			adjustedIndex[1] < readers[adjustedIndex[0]].getImageCount())
 		{
 			final Reader r = readers[adjustedIndex[0]];
-			return r.openPlane(adjustedIndex[1], planeIndex, bp, offsets, lengths,
+			return r.openPlane(adjustedIndex[1], planeIndex, bp, bounds,
 				config);
 		}
 

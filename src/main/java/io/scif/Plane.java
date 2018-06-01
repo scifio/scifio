@@ -29,7 +29,9 @@
 
 package io.scif;
 
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
+import net.imglib2.util.Intervals;
 
 import org.scijava.Contextual;
 
@@ -85,24 +87,39 @@ public interface Plane extends Contextual {
 	ImageMetadata getImageMetadata();
 
 	/**
-	 * @return The offsets of this Plane relative to the origin image
+	 * @return The minimums of this plane relative to the origin image
 	 */
-	long[] getOffsets();
+	default long[] getMin() {
+		return Intervals.minAsLongArray(getBounds());
+	}
+
+	/**
+	 * @return The maximums of this plane relative to the origin image
+	 */
+	default long[] getMax() {
+		return Intervals.maxAsLongArray(getBounds());
+	}
 
 	/**
 	 * @return The lengths of each axis of this plane
 	 */
-	long[] getLengths();
+	default long[] getLengths() {
+		return Intervals.dimensionsAsLongArray(getBounds());
+	}
+
+	/**
+	 * @return The bounds of this plane relative to the origin image
+	 */
+	Interval getBounds();
 
 	/**
 	 * Populates this planes offsets, dimensions and Metadata.
 	 *
 	 * @param meta - ImageMetadata to associate with this Plane
-	 * @param planeOffsets minimal offsets of the planar axes
-	 * @param planeBounds maximum values of the planar axes
+	 * @param bounds bounds of the planar axes.
 	 * @return A reference to this Plane
 	 */
-	Plane populate(ImageMetadata meta, long[] planeOffsets, long[] planeBounds);
+	Plane populate(ImageMetadata meta, Interval bounds);
 
 	/**
 	 * Populates this plane by copying the fields of the provided plane
@@ -120,12 +137,7 @@ public interface Plane extends Contextual {
 	void setImageMetadata(ImageMetadata meta);
 
 	/**
-	 * Sets this plane's offset from 0 relative to the underlying image.
+	 * Sets this plane's bounds relative to the underlying image.
 	 */
-	void setOffsets(long[] offsets);
-
-	/**
-	 * Sets this plane's axis lengths
-	 */
-	void setLengths(long[] lengths);
+	void setBounds(Interval bounds);
 }

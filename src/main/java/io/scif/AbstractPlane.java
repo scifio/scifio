@@ -29,6 +29,7 @@
 
 package io.scif;
 
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 
 import org.scijava.AbstractContextual;
@@ -58,11 +59,9 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 	/** Metadata describing the underlying image. */
 	private ImageMetadata meta = null;
 
-	/** offsets into the underlying image. */
-	private long[] offsets;
+	/** Bounds of the underlying image. */
+	private Interval bounds;
 
-	/** axis lengths */
-	private long[] lengths;
 
 	// -- Constructor --
 
@@ -71,11 +70,11 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 	}
 
 	public AbstractPlane(final Context context, final ImageMetadata meta,
-		final long[] planeOffsets, final long[] planeBounds)
+		final Interval bounds)
 	{
 		setContext(context);
 		// TODO bounds checking?
-		populate(meta, planeOffsets, planeBounds);
+		populate(meta, bounds);
 	}
 
 	// -- DataPlane API methods --
@@ -108,49 +107,32 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 	}
 
 	@Override
-	public long[] getOffsets() {
-		return offsets;
-	}
-
-	@Override
-	public long[] getLengths() {
-		return lengths;
-	}
-
-	@Override
 	public P populate(final Plane p) {
-		return populate(p.getImageMetadata(), p.getOffsets(), p.getLengths());
+		return populate(p.getImageMetadata(), p.getBounds());
 	}
 
 	@Override
 	public P populate(final DataPlane<T> plane) {
-		return populate(plane.getImageMetadata(), plane.getData(), plane
-			.getOffsets(), plane.getLengths());
+		return populate(plane.getImageMetadata(), plane.getData(), //
+			plane.getBounds());
 	}
 
 	@Override
-	public P populate(final ImageMetadata meta, final long[] planeOffsets,
-		final long[] planeBounds)
-	{
-		return populate(meta, null, planeOffsets, planeBounds);
+	public P populate(final ImageMetadata meta, final Interval bounds) {
+		return populate(meta, null, bounds);
 	}
 
 	@Override
-	public P populate(final T data, final long[] planeOffsets,
-		final long[] planeBounds)
-	{
-		return populate(null, data, planeOffsets, planeBounds);
+	public P populate(final T data, final Interval bounds) {
+		return populate(null, data, bounds);
 	}
 
 	@Override
-	public P populate(final ImageMetadata meta, T data,
-		final long[] planeOffsets, final long[] planeBounds)
-	{
+	public P populate(final ImageMetadata meta, T data, final Interval bounds) {
 		setImageMetadata(meta);
-		if (data == null) data = blankPlane(planeOffsets, planeBounds);
+		if (data == null) data = blankPlane(bounds);
 		setData(data);
-		setOffsets(planeOffsets);
-		setLengths(planeBounds);
+		setBounds(bounds);
 
 		@SuppressWarnings("unchecked")
 		final P pl = (P) this;
@@ -163,20 +145,19 @@ public abstract class AbstractPlane<T, P extends DataPlane<T>> extends
 	}
 
 	@Override
-	public void setOffsets(final long[] planeOffsets) {
-		offsets = planeOffsets;
+	public Interval getBounds() {
+		return bounds;
 	}
 
 	@Override
-	public void setLengths(final long[] planeBounds) {
-		lengths = planeBounds;
+	public void setBounds(final Interval bounds) {
+		this.bounds = bounds;
 	}
 
 	// -- Internal AbstractPlane API --
 
 	/**
-	 * @return an empty data conforming to the given planeOffsets and planeBounds
+	 * @return an empty data conforming to the given planar bounds.
 	 */
-	protected abstract T blankPlane(final long[] planeOffsets,
-		final long[] planeBounds);
+	protected abstract T blankPlane(final Interval bounds);
 }

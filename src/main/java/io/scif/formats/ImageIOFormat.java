@@ -54,6 +54,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
@@ -149,12 +150,12 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			final Interval bounds, final SCIFIOConfig config)
 			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
-			plane.setData(AWTImageTools.getSubimage(meta.getImg(), meta.get(
-				imageIndex).isLittleEndian(), planeMin, planeMax));
+			plane.setData(AWTImageTools.getSubimage(meta.getImg(), //
+				meta.get(imageIndex).isLittleEndian(), bounds));
 			return plane;
 		}
 
@@ -185,11 +186,11 @@ public abstract class ImageIOFormat extends AbstractFormat {
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
-			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax))
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds))
 			{
 				throw new FormatException(
 					"ImageIOWriter does not support writing tiles");

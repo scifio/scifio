@@ -54,6 +54,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -236,14 +237,14 @@ public class TIFFJAIFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			final Interval bounds, final SCIFIOConfig config)
 			throws FormatException, IOException
 		{
 			FormatTools.checkPlaneForReading(getMetadata(), imageIndex, planeIndex,
-				-1, planeMin, planeMax);
+				-1, bounds);
 			final BufferedImage img = openBufferedImage(getMetadata(), planeIndex);
 			plane.setData(AWTImageTools.getSubimage(img, getMetadata()
-				.get(imageIndex).isLittleEndian(), planeMin, planeMax));
+				.get(imageIndex).isLittleEndian(), bounds));
 			return plane;
 		}
 	}

@@ -65,6 +65,7 @@ import java.util.zip.GZIPInputStream;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
+import net.imglib2.Interval;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
@@ -1377,17 +1378,17 @@ public class ICSFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane
-				.getData().length, planeMin, planeMax);
+				.getData().length, bounds);
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
 
 			final int bpp =
 				FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
@@ -1484,11 +1485,11 @@ public class ICSFormat extends AbstractFormat {
 			else if (gzip) {
 				final RandomAccessInputStream s =
 					new RandomAccessInputStream(getContext(), data);
-				readPlane(s, imageIndex, planeMin, planeMax, plane);
+				readPlane(s, imageIndex, bounds, plane);
 				s.close();
 			}
 			else {
-				readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
+				readPlane(getStream(), imageIndex, bounds, plane);
 			}
 
 			if (invertY) {
@@ -1589,44 +1590,44 @@ public class ICSFormat extends AbstractFormat {
 
 		@Override
 		protected void initialize(final int imageIndex, final long planeIndex,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
+			final Interval bounds) throws FormatException,
 			IOException
 		{
 			if (!isInitialized(imageIndex, (int) planeIndex)) {
 
 				if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(),
-					planeMin, planeMax))
+					bounds))
 				{
 					pixels.seek(pixelOffset + (planeIndex + 1) *
 						getMetadata().get(imageIndex).getPlaneSize());
 				}
 			}
 
-			super.initialize(imageIndex, planeIndex, planeMin, planeMax);
+			super.initialize(imageIndex, planeIndex, bounds);
 		}
 
 		// -- Writer API Methods --
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
-			checkParams(imageIndex, planeIndex, plane.getBytes(), planeMin, planeMax);
+			checkParams(imageIndex, planeIndex, plane.getBytes(), bounds);
 			final Metadata meta = getMetadata();
 			final boolean interleaved =
 				plane.getImageMetadata().getInterleavedAxisCount() > 0;
 
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
 
 			int rgbChannels = 1;
 
 			if (meta.get(imageIndex).isMultichannel()) {
 				final int cIndex = meta.get(imageIndex).getAxisIndex(Axes.CHANNEL);
-				rgbChannels = (int) (planeMax[cIndex] - planeMin[cIndex]);
+				rgbChannels = (int) (bounds.dimension(cIndex));
 			}
 
 			final int sizeX = (int) meta.get(imageIndex).getAxisLength(Axes.X);
@@ -1636,7 +1637,7 @@ public class ICSFormat extends AbstractFormat {
 				(int) (meta.get(0).getSize() / meta.get(0).getPlaneCount());
 
 			pixels.seek(pixelOffset + planeIndex * planeSize);
-			if (SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax) &&
+			if (SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds) &&
 				(interleaved || rgbChannels == 1))
 			{
 				pixels.write(plane.getBytes());

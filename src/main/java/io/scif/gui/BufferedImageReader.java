@@ -31,8 +31,17 @@ package io.scif.gui;
 
 import io.scif.AbstractReader;
 import io.scif.BufferedImagePlane;
+import io.scif.FormatException;
 import io.scif.ImageMetadata;
+import io.scif.Metadata;
 import io.scif.TypedMetadata;
+import io.scif.util.FormatTools;
+
+import java.io.IOException;
+
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+import net.imglib2.util.Intervals;
 
 /**
  * BufferedImageReader is the superclass for file format readers that use
@@ -54,16 +63,15 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 	// -- Reader API Methods --
 
 	@Override
-	public BufferedImagePlane createPlane(final long[] planeOffsets,
-		final long[] planeBounds)
+	public BufferedImagePlane createPlane(final Interval bounds)
 	{
-		return createPlane(getMetadata().get(0), planeOffsets, planeBounds);
+		return createPlane(getMetadata().get(0), bounds);
 	}
 
 	@Override
 	public BufferedImagePlane createPlane(final ImageMetadata meta,
-		final long[] planeOffsets, final long[] planeBounds)
+		final Interval bounds)
 	{
-		return new BufferedImagePlane(getContext(), meta, planeOffsets, planeBounds);
+		return new BufferedImagePlane(getContext(), meta, bounds);
 	}
 }

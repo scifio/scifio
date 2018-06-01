@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Vector;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
@@ -250,7 +251,7 @@ public class LegacyQTFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			final Interval bounds, final SCIFIOConfig config)
 			throws FormatException, IOException
 		{
 			final ReflectedUniverse r = qtJavaService.getUniverse();
@@ -268,9 +269,9 @@ public class LegacyQTFormat extends AbstractFormat {
 			}
 			final BufferedImage bimg =
 				AWTImageTools.getSubimage(AWTImageTools.makeBuffered(meta.getImage()),
-					meta.get(imageIndex).isLittleEndian(), planeMin, planeMax);
+					meta.get(imageIndex).isLittleEndian(), bounds);
 
-			plane.populate(meta.get(imageIndex), bimg, planeMin, planeMax);
+			plane.populate(meta.get(imageIndex), bimg, bounds);
 			return plane;
 		}
 
@@ -367,7 +368,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		@Override
 		protected void initialize(final int imageIndex, final long planeIndex,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
+			final Interval bounds) throws FormatException,
 			IOException
 		{
 			if (!isInitialized(imageIndex, (int) planeIndex)) {
@@ -428,14 +429,14 @@ public class LegacyQTFormat extends AbstractFormat {
 					throw new FormatException("Legacy QuickTime writer failed", e);
 				}
 			}
-			super.initialize(imageIndex, planeIndex, planeMin, planeMax);
+			super.initialize(imageIndex, planeIndex, bounds);
 		}
 
 		// -- Writer API Methods --
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
 			BufferedImage img = null;

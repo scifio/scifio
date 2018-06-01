@@ -29,6 +29,8 @@
 
 package io.scif;
 
+import net.imglib2.Interval;
+
 /**
  * Extension of the base {@link Plane} interface. Adds the concept of a native
  * underlying data representation.
@@ -68,22 +70,19 @@ public interface DataPlane<T> extends Plane {
 	 * provided data representation of the pixels in that region.
 	 *
 	 * @param data Pixel information for the region of this plane.
-	 * @param planeOffsets minimal offsets of the planar axes
-	 * @param planeBounds maximum values of the planar axes
+	 * @param bounds bounds of the planar axes.
 	 * @return A reference to this plane
 	 */
-	DataPlane<T> populate(T data, long[] planeOffsets, long[] planeBounds);
+	DataPlane<T> populate(T data, Interval bounds);
 
 	/**
-	 * As {@link #populate(Object, long[], long[])}, but also sets the
-	 * ImageMetadata of the source from which this Plane was read.
+	 * As {@link #populate(Object, Interval)}, but also sets the ImageMetadata of
+	 * the source from which this Plane was read.
 	 *
 	 * @param meta ImageMetadata of the source associated with this Plane
 	 * @param data Pixel information for the region of this plane.
-	 * @param planeOffsets minimal offsets of the planar axes
-	 * @param planeBounds maximum values of the planar axes
+	 * @param bounds bounds of the planar axes.
 	 * @return A reference to this plane
 	 */
-	DataPlane<T> populate(ImageMetadata meta, T data, long[] planeOffsets,
-		long[] planeBounds);
+	DataPlane<T> populate(ImageMetadata meta, T data, Interval bounds);
 }

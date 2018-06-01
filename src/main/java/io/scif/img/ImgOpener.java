@@ -55,6 +55,8 @@ import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
@@ -586,11 +588,12 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		final Metadata m = r.getMetadata();
 
-		// Starting indices for the planar dimensions
-		final long[] planarMin = new long[m.get(imageIndex).getAxesPlanar().size()];
-		// Lengths in the planar dimensions
-		final long[] planarLength =
-			new long[m.get(imageIndex).getAxesPlanar().size()];
+		final List<CalibratedAxis> planarAxes = m.get(imageIndex).getAxesPlanar();
+		final int planarAxisCount = planarAxes.size();
+
+		// [min, max] of the planar dimensions
+		final long[] planarMin = new long[planarAxisCount];
+		final long[] planarMax = new long[planarAxisCount];
 		// Non-planar indices to open
 		final Range[] npRanges =
 			new Range[m.get(imageIndex).getAxesNonPlanar().size()];
@@ -598,18 +601,18 @@ public class ImgOpener extends AbstractImgIOComponent {
 
 		// populate plane dimensions
 		int index = 0;
-		for (final CalibratedAxis planarAxis : m.get(imageIndex).getAxesPlanar()) {
+		for (final CalibratedAxis planarAxis : planarAxes) {
 			if (region != null && region.hasRange(planarAxis.type())) {
 				planarMin[index] = region.getRange(planarAxis.type()).head();
-				planarLength[index] =
-					region.getRange(planarAxis.type()).tail() - planarMin[index] + 1;
+				planarMax[index] = region.getRange(planarAxis.type()).tail();
 			}
 			else {
 				planarMin[index] = 0;
-				planarLength[index] = m.get(imageIndex).getAxisLength(planarAxis);
+				planarMax[index] = m.get(imageIndex).getAxisLength(planarAxis) - 1;
 			}
 			index++;
 		}
+		final Interval bounds = new FinalInterval(planarMin, planarMax);
 
 		// determine non-planar indices to open
 		index = 0;
@@ -637,29 +640,29 @@ public class ImgOpener extends AbstractImgIOComponent {
 			else converter = pcService.getDefaultConverter();
 		}
 
-		read(imageIndex, imgPlus, r, config, converter, planarMin, planarLength,
-			npRanges, npIndices);
+		read(imageIndex, imgPlus, r, config, converter, bounds, npRanges,
+			npIndices);
 
 		if (config.imgOpenerIsComputeMinMax()) populateMinMax(r, imgPlus,
 			imageIndex);
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void read(final int imageIndex, final ImgPlus imgPlus,
-		final Reader r, final SCIFIOConfig config, final PlaneConverter converter,
-		final long[] planarMin, final long[] planarLength, final Range[] npRanges,
-		final long[] npIndices) throws FormatException, IOException
+	private void read(final int imageIndex, final ImgPlus imgPlus, final Reader r,
+		final SCIFIOConfig config, final PlaneConverter converter,
+		final Interval bounds, final Range[] npRanges, final long[] npIndices)
+		throws FormatException, IOException
 	{
-		read(imageIndex, imgPlus, r, config, converter, null, planarMin,
-			planarLength, npRanges, npIndices, 0, new int[] { 0 });
+		read(imageIndex, imgPlus, r, config, converter, null, bounds, npRanges,
+			npIndices, 0, new int[] { 0 });
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Plane read(final int imageIndex, final ImgPlus imgPlus,
 		final Reader r, final SCIFIOConfig config, final PlaneConverter converter,
-		Plane tmpPlane, final long[] planarMin, final long[] planarLength,
-		final Range[] npRanges, final long[] npIndices, final int depth,
-		final int[] planeCount) throws FormatException, IOException
+		Plane tmpPlane, final Interval bounds, final Range[] npRanges,
+		final long[] npIndices, final int depth, final int[] planeCount)
+		throws FormatException, IOException
 	{
 		if (depth < npRanges.length) {
 			// We need to invert the depth index to get the current non-planar
@@ -669,9 +672,8 @@ public class ImgOpener extends AbstractImgIOComponent {
 			// Recursive step. Sets the non-planar indices
 			for (int i = 0; i < npRanges[npPosition].size(); i++) {
 				npIndices[npPosition] = npRanges[npPosition].get(i);
-				tmpPlane =
-					read(imageIndex, imgPlus, r, config, converter, tmpPlane, planarMin,
-						planarLength, npRanges, npIndices, depth + 1, planeCount);
+				tmpPlane = read(imageIndex, imgPlus, r, config, converter, tmpPlane,
+					bounds, npRanges, npIndices, depth + 1, planeCount);
 			}
 		}
 		else {
@@ -683,13 +685,14 @@ public class ImgOpener extends AbstractImgIOComponent {
 			if (config.imgOpenerIsComputeMinMax()) {
 				populateMinMax(r, imgPlus, imageIndex);
 			}
+			// FIXME: what if tmpPlane length does not match bounds size?
+			// Invent a utility method for checking tmpPlane vs. bounds.
 			if (tmpPlane == null) {
-				tmpPlane = r.openPlane(imageIndex, planeIndex, planarMin, planarLength);
+				tmpPlane = r.openPlane(imageIndex, planeIndex, bounds);
 			}
 			else {
-				tmpPlane =
-					r.openPlane(imageIndex, planeIndex, tmpPlane, planarMin,
-						planarLength, config);
+				tmpPlane = r.openPlane(imageIndex, planeIndex, tmpPlane, bounds,
+					config);
 			}
 
 			// copy the data to the ImgPlus

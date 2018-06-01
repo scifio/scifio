@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 
 import org.scijava.plugin.Parameter;
@@ -247,12 +248,11 @@ public class ZipFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Plane p =
-				reader.openPlane(imageIndex, planeIndex, plane, planeMin, planeMax,
+				reader.openPlane(imageIndex, planeIndex, plane, bounds,
 					config);
 			System.arraycopy(p.getBytes(), 0, plane.getData(), 0,
 				plane.getData().length);

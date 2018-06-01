@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
@@ -751,9 +752,8 @@ public class GIFFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
@@ -761,9 +761,9 @@ public class GIFFormat extends AbstractFormat {
 			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
 			plane.setColorTable(meta.getColorTable(0, 0));
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
-			final int x = (int) planeMin[xIndex], y = (int) planeMin[yIndex], w =
-				(int) planeMax[xIndex], h = (int) planeMax[yIndex];
+				buf.length, bounds);
+			final int x = (int) bounds.min(xIndex), y = (int) bounds.min(yIndex), //
+					w = (int) bounds.dimension(xIndex), h = (int) bounds.dimension(yIndex);
 			final int[] act = meta.getColorTables().get((int) planeIndex);
 
 			final byte[] b = meta.getImages().get((int) planeIndex);

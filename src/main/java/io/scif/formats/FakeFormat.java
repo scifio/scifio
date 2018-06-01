@@ -56,6 +56,7 @@ import java.util.Random;
 import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.DefaultLinearAxis;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
@@ -467,42 +468,41 @@ public class FakeFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane
-				.getData().length, planeMin, planeMax);
+				.getData().length, bounds);
 			plane.setImageMetadata(meta.get(imageIndex));
 
 			final long[] pos =
 				FormatTools.rasterToPosition(meta.get(imageIndex)
 					.getAxesLengthsNonPlanar(), planeIndex);
 
-			final long[] planarIndices = new long[planeMin.length];
+			final long[] planarIndices = new long[bounds.numDimensions()];
 
-			openPlaneHelper(imageIndex, planeIndex, meta, plane, planeMin, planeMax,
+			openPlaneHelper(imageIndex, planeIndex, meta, plane, bounds,
 				pos, planarIndices, 0, -1, -1);
 
 			return plane;
 		}
 
 		private void openPlaneHelper(final int imageIndex, final long planeIndex,
-			final Metadata meta, final Plane plane, final long[] planeMin,
-			final long[] planeLengths, final long[] npIndices,
-			final long[] planeIndices, final int planarPos, long xPos, long yPos)
+			final Metadata meta, final Plane plane, final Interval bounds,
+			final long[] npIndices, final long[] planeIndices, final int planarPos,
+			long xPos, long yPos)
 		{
-			if (planarPos < planeMin.length) {
+			if (planarPos < bounds.numDimensions()) {
 				// Recursively descend along each planar axis
-				for (int i = 0; i < planeLengths[planarPos]; i++) {
+				for (int i = 0; i < bounds.dimension(planarPos); i++) {
 					if (planarPos == meta.get(imageIndex).getAxisIndex(Axes.X)) xPos =
-						planeMin[planarPos] + i;
+						bounds.min(planarPos) + i;
 					if (planarPos == meta.get(imageIndex).getAxisIndex(Axes.Y)) yPos =
-						planeMin[planarPos] + i;
-					planeIndices[planarPos] = planeMin[planarPos] + i;
-					openPlaneHelper(imageIndex, planeIndex, meta, plane, planeMin,
-						planeLengths, npIndices, planeIndices, planarPos + 1, xPos, yPos);
+						bounds.min(planarPos) + i;
+					planeIndices[planarPos] = bounds.min(planarPos) + i;
+					openPlaneHelper(imageIndex, planeIndex, meta, plane, bounds,
+						npIndices, planeIndices, planarPos + 1, xPos, yPos);
 				}
 			}
 			else {
@@ -619,9 +619,9 @@ public class FakeFormat extends AbstractFormat {
 				int index = 0;
 				// Index is sum of each position * all previous axes lengths
 				for (int i = planeIndices.length - 1; i >= 0; i--) {
-					long partialIndex = planeIndices[i] - planeMin[i];
+					long partialIndex = planeIndices[i] - bounds.min(i);
 					for (int j = 0; j < i; j++) {
-						partialIndex *= planeLengths[j];
+						partialIndex *= bounds.dimension(j);
 					}
 					index += (int) partialIndex;
 				}

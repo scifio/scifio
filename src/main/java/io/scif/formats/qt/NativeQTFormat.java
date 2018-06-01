@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.Vector;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
@@ -467,15 +468,14 @@ public class NativeQTFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getData();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 
 			String code = meta.getCodec();
 			if (planeIndex >= meta.get(imageIndex).getPlaneCount() -
@@ -571,8 +571,8 @@ public class NativeQTFormat extends AbstractFormat {
 
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
 			final int srcRowLen =
 				(int) (meta.get(imageIndex).getAxisLength(Axes.X) * bpp * meta.get(
 					imageIndex).getAxisLength(Axes.CHANNEL));
@@ -748,7 +748,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 		@Override
 		protected void initialize(final int imageIndex, final long planeIndex,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
+			final Interval bounds) throws FormatException,
 			IOException
 		{
 			if (!isInitialized(imageIndex, (int) planeIndex)) {
@@ -768,9 +768,7 @@ public class NativeQTFormat extends AbstractFormat {
 
 				getStream().seek(offsets.get((int) planeIndex));
 
-				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
-					planeMax))
-				{
+				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds)) {
 					getStream().skipBytes(
 						(int) (meta.get(imageIndex).getPlaneSize() + pad * height));
 				}
@@ -781,13 +779,13 @@ public class NativeQTFormat extends AbstractFormat {
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
-			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
+			checkParams(imageIndex, planeIndex, buf, bounds);
 			if (needLegacy) {
-				legacy.savePlane(imageIndex, planeIndex, plane, planeMin, planeMax);
+				legacy.savePlane(imageIndex, planeIndex, plane, bounds);
 				return;
 			}
 
@@ -805,8 +803,8 @@ public class NativeQTFormat extends AbstractFormat {
 
 			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xIndex], y = (int) planeMin[yIndex], w =
-				(int) planeMax[xIndex], h = (int) planeMax[yIndex];
+			final int x = (int) bounds.min(xIndex), y = (int) bounds.min(yIndex), //
+					w = (int) bounds.dimension(xIndex), h = (int) bounds.dimension(yIndex);
 
 			getStream().seek(
 				offsets.get((int) planeIndex) + y * (nChannels * width + pad));
