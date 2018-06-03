@@ -29,6 +29,8 @@
 
 package io.scif;
 
+import io.scif.config.SCIFIOConfig;
+import io.scif.img.ImageRegion;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
@@ -36,7 +38,8 @@ import io.scif.img.SCIFIOImgPlus;
 import java.io.File;
 import java.util.List;
 
-import javax.swing.JFileChooser;
+import net.imagej.axis.Axes;
+import net.imagej.axis.AxisType;
 
 /**
  * Sample main method for reading images using SCIFIO.
@@ -46,13 +49,18 @@ import javax.swing.JFileChooser;
 public class Main {
 
 	public static void main(final String... args) throws ImgIOException {
-		final JFileChooser fileChooser = new JFileChooser();
-		if (fileChooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) return;
-		final File file = fileChooser.getSelectedFile();
+//		final JFileChooser fileChooser = new JFileChooser();
+//		if (fileChooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) return;
+//		final File file = fileChooser.getSelectedFile();
+		final File file = new File("/Users/curtis/data/mri-stack.tif");
 
 		final SCIFIO scifio = new SCIFIO();
+		AxisType[] axes = {Axes.X, Axes.Y};
+		String[] ranges = {"80-140", "100-150"};
+		ImageRegion region = new ImageRegion(axes, ranges);
+		final SCIFIOConfig config = new SCIFIOConfig().imgOpenerSetRegion(region);
 		final List<SCIFIOImgPlus<?>> imgs = //
-			new ImgOpener(scifio.context()).openImgs(file.getAbsolutePath());
+			new ImgOpener(scifio.context()).openImgs(file.getAbsolutePath(), config);
 		System.out.println("Found " + imgs.size() + " images");
 		for (final SCIFIOImgPlus<?> img : imgs) {
 			System.out.println("\t" + img);

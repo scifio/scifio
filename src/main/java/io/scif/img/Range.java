@@ -169,6 +169,9 @@ public class Range extends ArrayList<Long> {
 	 * @return The first value in this range.
 	 */
 	public Long head() {
+		if (isEmpty()) {
+			throw new RuntimeException("WTF");
+		}
 		return get(0);
 	}
 
@@ -176,6 +179,9 @@ public class Range extends ArrayList<Long> {
 	 * @return The last value in this range.
 	 */
 	public Long tail() {
+		if (isEmpty()) {
+			throw new RuntimeException("WTF");
+		}
 		return get(size() - 1);
 	}
 }
