@@ -304,8 +304,15 @@ public class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	{
 		CellImgFactory.verifyDimensions(dimensions);
 		final int n = dimensions.length;
+
+		final int[] defaultDims = new int[dimensions.length];
+		for (int d = 0; d < defaultDims.length; d++) {
+			defaultDims[d] = dimensions[d] < defaultCellDimensions[d] ? //
+				(int) dimensions[d] : defaultCellDimensions[d];
+		}
+
 		final int[] cellDimensions = CellImgFactory.getCellDimensions(
-			defaultCellDimensions, n, entitiesPerPixel);
+			defaultDims, n, entitiesPerPixel);
 		return new CellGrid(dimensions, cellDimensions);
 	}
 
