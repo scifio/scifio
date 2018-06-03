@@ -43,7 +43,6 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.Translator;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
@@ -1006,8 +1005,7 @@ public class APNGFormat extends AbstractFormat {
 								else pixel -= max;
 							}
 							final int output = (int) (col * rgbCCount + c) * bytesPerPixel;
-							DataTools
-								.unpackBytes(pixel, rowBuf, output, bytesPerPixel, false);
+							Bytes.unpack(pixel, rowBuf, output, bytesPerPixel, false);
 						}
 					}
 				}

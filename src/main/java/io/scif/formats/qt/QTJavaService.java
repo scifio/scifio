@@ -32,11 +32,12 @@ package io.scif.formats.qt;
 import io.scif.FormatException;
 import io.scif.MissingLibraryException;
 import io.scif.SCIFIOService;
-import io.scif.common.ReflectException;
-import io.scif.common.ReflectedUniverse;
 
 import java.awt.Dimension;
 import java.awt.Image;
+
+import org.scijava.util.ReflectException;
+import org.scijava.util.ReflectedUniverse;
 
 /**
  * Interface for services that work with QuickTime for Java.
