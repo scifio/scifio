@@ -300,18 +300,15 @@ public abstract class AbstractArrayLoader<A> implements SCIFIOArrayLoader<A> {
 	}
 
 	private void validateBounds(final long[] lengths, final Interval bounds) {
-		final int expectedDims = lengths.length;
-		final int actualDims = bounds.numDimensions();
-		if (expectedDims != actualDims) {
+		if (lengths.length != bounds.numDimensions()) {
 			throw new IllegalArgumentException("Expected bounds of dimensionality " +
-				expectedDims + " but was " + actualDims);
+				lengths.length + " but was " + bounds.numDimensions());
 		}
 		for (int d = 0; d < bounds.numDimensions(); d++) {
-			final long expectedDim = lengths[d];
-			final long actualDim = bounds.dimension(d);
-			if (expectedDim != actualDim) {
-				throw new IllegalArgumentException("Expected bound #" + d +
-					" of length " + expectedDim + " but was " + actualDim);
+			if (bounds.min(d) < 0 || bounds.max(d) >= lengths[d]) {
+				throw new IllegalArgumentException("Bound #" + d + " of " + //
+					"[" + bounds.min(d) + ", " + bounds.max(d) + "] " + //
+					"is not contained in [0, " + lengths[d] + "]");
 			}
 		}
 	}
