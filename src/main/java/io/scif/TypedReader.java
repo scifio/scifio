@@ -104,10 +104,6 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	P openPlane(int imageIndex, long planeIndex, P plane, long[] planeMin,
 		long[] planeMax, SCIFIOConfig config) throws FormatException, IOException;
 
-	@Override
-	P openThumbPlane(int imageIndex, long planeIndex) throws FormatException,
-		IOException;
-
 	/**
 	 * Generic-parameterized {@code setMetadata} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with

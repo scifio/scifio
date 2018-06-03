@@ -249,13 +249,6 @@ public class DimensionSwapper extends AbstractReaderFilter {
 	}
 
 	@Override
-	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
-		throws FormatException, IOException
-	{
-		return super.openThumbPlane(imageIndex, reorder(imageIndex, planeIndex));
-	}
-
-	@Override
 	public Metadata getMetadata() {
 //		FormatTools.assertId(getCurrentFile(), true, 2);
 		return super.getMetadata();

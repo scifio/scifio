@@ -245,13 +245,6 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
-		throws FormatException, IOException
-	{
-		return getParent().openThumbPlane(imageIndex, planeIndex);
-	}
-
-	@Override
 	public int fileGroupOption(final String id) throws FormatException,
 		IOException
 	{

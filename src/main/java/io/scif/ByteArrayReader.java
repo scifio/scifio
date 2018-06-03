@@ -57,27 +57,6 @@ public abstract class ByteArrayReader<M extends TypedMetadata> extends
 	// -- Reader API Methods --
 
 	@Override
-	public ByteArrayPlane openThumbPlane(final int imageIndex,
-		final long planeIndex) throws FormatException, IOException
-	{
-		FormatTools.assertStream(getStream(), true, 1);
-		final Metadata meta = getMetadata();
-		final long[] planeBounds = meta.get(imageIndex).getAxesLengthsPlanar();
-		final long[] planeOffsets = new long[planeBounds.length];
-
-		planeBounds[meta.get(imageIndex).getAxisIndex(Axes.X)] =
-			meta.get(imageIndex).getThumbSizeX();
-		planeBounds[meta.get(imageIndex).getAxisIndex(Axes.Y)] =
-			meta.get(imageIndex).getThumbSizeX();
-
-		final ByteArrayPlane plane = createPlane(planeOffsets, planeBounds);
-
-		plane.setData(FormatTools.openThumbBytes(this, imageIndex, planeIndex));
-
-		return plane;
-	}
-
-	@Override
 	public ByteArrayPlane createPlane(final long[] planeOffsets,
 		final long[] planeBounds)
 	{

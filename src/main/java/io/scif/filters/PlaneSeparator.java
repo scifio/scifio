@@ -355,43 +355,6 @@ public class PlaneSeparator extends AbstractReaderFilter {
 		return lastPlane;
 	}
 
-	@Override
-	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
-		throws FormatException, IOException
-	{
-//		FormatTools.assertId(getCurrentFile(), true, 2);
-
-		final int source = (int) getOriginalIndex(imageIndex, planeIndex);
-		final Plane thumb = getParent().openThumbPlane(imageIndex, source);
-
-		ByteArrayPlane ret = null;
-
-		if (ByteArrayPlane.class.isAssignableFrom(thumb.getClass())) {
-			ret = (ByteArrayPlane) thumb;
-		}
-		else {
-			ret = new ByteArrayPlane(thumb.getContext());
-			ret.populate(thumb);
-		}
-
-		final int splitOffset = ((PlaneSeparatorMetadata) getMetadata()).offset();
-		final long[] completePosition =
-			FormatTools.rasterToPosition(getMetadata().get(imageIndex)
-				.getAxesLengths(), planeIndex);
-		final long[] maxLengths =
-			Arrays.copyOf(getMetadata().get(imageIndex).getAxesLengthsNonPlanar(),
-				((PlaneSeparatorMetadata) getMetadata()).offset());
-		final long[] pos = Arrays.copyOf(completePosition, splitOffset);
-
-		final int bpp =
-			FormatTools
-				.getBytesPerPixel(getMetadata().get(imageIndex).getPixelType());
-
-		ret.setData(ImageTools.splitChannels(thumb.getBytes(), pos, maxLengths,
-			bpp, false, false));
-		return ret;
-	}
-
 	// -- Prioritized API --
 
 	@Override

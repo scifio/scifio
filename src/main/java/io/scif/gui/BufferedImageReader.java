@@ -31,13 +31,8 @@ package io.scif.gui;
 
 import io.scif.AbstractReader;
 import io.scif.BufferedImagePlane;
-import io.scif.FormatException;
 import io.scif.ImageMetadata;
-import io.scif.Metadata;
 import io.scif.TypedMetadata;
-import io.scif.util.FormatTools;
-
-import java.io.IOException;
 
 /**
  * BufferedImageReader is the superclass for file format readers that use
@@ -57,25 +52,6 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 	}
 
 	// -- Reader API Methods --
-
-	@Override
-	public BufferedImagePlane openThumbPlane(final int imageIndex,
-		final long planeIndex) throws FormatException, IOException
-	{
-		FormatTools.assertStream(getStream(), true, 1);
-		final Metadata meta = getMetadata();
-		final long[] planeBounds = meta.get(imageIndex).getAxesLengthsPlanar();
-		final long[] planeOffsets = new long[planeBounds.length];
-
-		final BufferedImagePlane plane = createPlane(planeOffsets, planeBounds);
-
-		plane.setData(AWTImageTools.openThumbImage(
-			openPlane(imageIndex, planeIndex), this, imageIndex, planeBounds,
-			(int) meta.get(imageIndex).getThumbSizeX(), (int) meta.get(imageIndex)
-				.getThumbSizeY(), false));
-
-		return plane;
-	}
 
 	@Override
 	public BufferedImagePlane createPlane(final long[] planeOffsets,

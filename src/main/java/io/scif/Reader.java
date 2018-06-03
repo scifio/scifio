@@ -151,17 +151,6 @@ public interface Reader extends HasFormat, HasSource, Groupable {
 		long[] planeMin, long[] planeMax, SCIFIOConfig config)
 		throws FormatException, IOException;
 
-	/**
-	 * Obtains a thumbnail version of the {@code Plane} at the specified image and
-	 * plane indices.
-	 *
-	 * @param imageIndex the image index within the dataset.
-	 * @param planeIndex the plane index within the image.
-	 * @return A thumbnail version of the {@code Plane} at the specified indices.
-	 */
-	Plane openThumbPlane(int imageIndex, long planeIndex) throws FormatException,
-		IOException;
-
 	/** Returns the current file. */
 	String getCurrentFile();
 
