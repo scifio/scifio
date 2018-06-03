@@ -826,7 +826,7 @@ public class MicromanagerFormat extends AbstractFormat {
 	 * Necessary dummy translator, so that a Micromanager-OMEXML translator can be
 	 * used
 	 */
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class MicromanagerTranslator extends DefaultTranslator {
 
 		@Override

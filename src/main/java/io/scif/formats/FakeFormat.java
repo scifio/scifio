@@ -634,7 +634,7 @@ public class FakeFormat extends AbstractFormat {
 	/**
 	 * Translator from {@link io.scif.Metadata} to FakeFormat$Metadata.
 	 */
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class FakeTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{

@@ -1668,7 +1668,7 @@ public class AVIFormat extends AbstractFormat {
 		}
 	}
 
-	@Plugin(type = io.scif.Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = io.scif.Translator.class, priority = Priority.LOW)
 	public static class Translator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{

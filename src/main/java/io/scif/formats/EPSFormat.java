@@ -596,7 +596,7 @@ public class EPSFormat extends AbstractFormat {
 	/**
 	 * Necessary dummy translator, so that an EPS-OMEXML translator can be used.
 	 */
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class EPSTranslator extends DefaultTranslator {
 
 		// -- Translator API Methods --

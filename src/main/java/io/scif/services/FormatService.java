@@ -59,7 +59,7 @@ public interface FormatService extends SCIFIOService, Versioned {
 
 	// -- Priority constant --
 
-	public static final double PRIORITY = Priority.LOW_PRIORITY;
+	public static final double PRIORITY = Priority.LOW;
 
 	/**
 	 * Returns a complete list of all suffixes supported within this context.

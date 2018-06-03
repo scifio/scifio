@@ -1059,7 +1059,7 @@ public class APNGFormat extends AbstractFormat {
 	 * used to write it can not be guaranteed valid.
 	 * </p>
 	 */
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class APNGTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{

@@ -220,7 +220,7 @@ public abstract class ImageIOFormat extends AbstractFormat {
 		}
 	}
 
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class ImageIOTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{

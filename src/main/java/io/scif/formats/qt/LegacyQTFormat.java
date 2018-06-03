@@ -73,7 +73,7 @@ import org.scijava.util.ReflectedUniverse;
  * ImageJ</a>.
  */
 @Plugin(type = Format.class, name = "QuickTime",
-	priority = Priority.LOW_PRIORITY)
+	priority = Priority.LOW)
 public class LegacyQTFormat extends AbstractFormat {
 
 	// -- AbstractFormat Methods --
@@ -567,7 +567,7 @@ public class LegacyQTFormat extends AbstractFormat {
 		}
 	}
 
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class LegacyQTTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{

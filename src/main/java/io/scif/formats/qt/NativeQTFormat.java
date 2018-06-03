@@ -1210,7 +1210,7 @@ public class NativeQTFormat extends AbstractFormat {
 		}
 	}
 
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class NativeQTTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{

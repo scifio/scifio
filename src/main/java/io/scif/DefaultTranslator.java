@@ -43,7 +43,7 @@ import org.scijava.plugin.Plugin;
  * @see io.scif.ImageMetadata
  * @author Mark Hiner
  */
-@Plugin(type = Translator.class, priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = Translator.class, priority = Priority.VERY_LOW)
 public class DefaultTranslator extends AbstractTranslator<Metadata, Metadata> {
 
 	// -- Translater API Methods --

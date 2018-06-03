@@ -57,7 +57,7 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Tile JPEG",
-	priority = Priority.LOW_PRIORITY)
+	priority = Priority.LOW)
 public class JPEGTileFormat extends AbstractFormat {
 
 	// -- AbstractFormat Methods --

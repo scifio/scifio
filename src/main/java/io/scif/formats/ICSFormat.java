@@ -2076,7 +2076,7 @@ public class ICSFormat extends AbstractFormat {
 	 * SCIFIO file format Translator for ICS Metadata objects to the SCIFIO Core
 	 * metadata type.
 	 */
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class ICSTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{

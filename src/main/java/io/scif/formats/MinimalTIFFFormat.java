@@ -75,7 +75,7 @@ import org.scijava.util.Bytes;
 	priority = MinimalTIFFFormat.PRIORITY)
 public class MinimalTIFFFormat extends AbstractFormat {
 
-	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
+	public static final double PRIORITY = Priority.VERY_LOW;
 
 	// -- AbstractFormat Methods --
 
