@@ -47,6 +47,8 @@ import java.nio.file.Path;
 import java.util.function.Function;
 
 import net.imglib2.Dimensions;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 import net.imglib2.cache.Cache;
 import net.imglib2.cache.CacheLoader;
 import net.imglib2.cache.IoSync;
@@ -184,20 +186,34 @@ public class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	{
 
 		private final AbstractArrayLoader<A> loader;
-
+		private final Interval bounds;
 		private final Function<Object, A> wrap;
 
 		SCIFIOCellLoader(final AbstractArrayLoader<A> loader,
-			final Function<Object, A> wrap)
+			final ImageRegion region, final Function<Object, A> wrap)
 		{
 			this.loader = loader;
+			bounds = regionToBounds(region);
 			this.wrap = wrap;
 		}
 
 		@Override
 		public void load(final SingleCellArrayImg<T, ?> cell) throws Exception {
 			final A data = wrap.apply(cell.getStorageArray());
-			loader.loadArray(cell, data);
+			final long[] min = Intervals.minAsLongArray(cell);
+			final long[] max = Intervals.maxAsLongArray(cell);
+			for (int d = 0; d < bounds.numDimensions(); d++) {
+				final long offset = bounds.min(d);
+				min[d] += offset;
+				max[d] += offset;
+			}
+			loader.loadArray(new FinalInterval(min, max), data);
+		}
+
+		private Interval regionToBounds(final ImageRegion region) {
+			region.
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
@@ -208,25 +224,25 @@ public class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		switch (typeFactory.getPrimitiveType()) {
 			case BYTE:
 				return new SCIFIOCellLoader(new ByteArrayLoader(reader, subregion),
-					o -> new ByteArray((byte[]) o));
+					subregion, o -> new ByteArray((byte[]) o));
 			case CHAR:
 				return new SCIFIOCellLoader(new CharArrayLoader(reader, subregion),
-					o -> new CharArray((char[]) o));
+					subregion, o -> new CharArray((char[]) o));
 			case DOUBLE:
 				return new SCIFIOCellLoader(new DoubleArrayLoader(reader, subregion),
-					o -> new DoubleArray((double[]) o));
+					subregion, o -> new DoubleArray((double[]) o));
 			case FLOAT:
 				return new SCIFIOCellLoader(new FloatArrayLoader(reader, subregion),
-					o -> new FloatArray((float[]) o));
+					subregion, o -> new FloatArray((float[]) o));
 			case INT:
 				return new SCIFIOCellLoader(new IntArrayLoader(reader, subregion),
-					o -> new IntArray((int[]) o));
+					subregion, o -> new IntArray((int[]) o));
 			case LONG:
 				return new SCIFIOCellLoader(new LongArrayLoader(reader, subregion),
-					o -> new LongArray((long[]) o));
+					subregion, o -> new LongArray((long[]) o));
 			case SHORT:
 				return new SCIFIOCellLoader(new ShortArrayLoader(reader, subregion),
-					o -> new ShortArray((short[]) o));
+					subregion, o -> new ShortArray((short[]) o));
 			default:
 				throw new IllegalArgumentException();
 		}
