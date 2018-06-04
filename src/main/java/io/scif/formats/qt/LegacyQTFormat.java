@@ -40,8 +40,6 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.Translator;
-import io.scif.common.ReflectException;
-import io.scif.common.ReflectedUniverse;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
@@ -59,12 +57,15 @@ import java.util.List;
 import java.util.Vector;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
+import org.scijava.util.ReflectException;
+import org.scijava.util.ReflectedUniverse;
 
 /**
  * LegacyQTReader is a file format reader for QuickTime movie files. To use it,
@@ -73,7 +74,7 @@ import org.scijava.util.Bytes;
  * ImageJ</a>.
  */
 @Plugin(type = Format.class, name = "QuickTime",
-	priority = Priority.LOW_PRIORITY)
+	priority = Priority.LOW)
 public class LegacyQTFormat extends AbstractFormat {
 
 	// -- AbstractFormat Methods --
@@ -250,7 +251,7 @@ public class LegacyQTFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			final Interval bounds, final SCIFIOConfig config)
 			throws FormatException, IOException
 		{
 			final ReflectedUniverse r = qtJavaService.getUniverse();
@@ -268,9 +269,9 @@ public class LegacyQTFormat extends AbstractFormat {
 			}
 			final BufferedImage bimg =
 				AWTImageTools.getSubimage(AWTImageTools.makeBuffered(meta.getImage()),
-					meta.get(imageIndex).isLittleEndian(), planeMin, planeMax);
+					meta.get(imageIndex).isLittleEndian(), bounds);
 
-			plane.populate(meta.get(imageIndex), bimg, planeMin, planeMax);
+			plane.populate(meta.get(imageIndex), bimg, bounds);
 			return plane;
 		}
 
@@ -367,7 +368,7 @@ public class LegacyQTFormat extends AbstractFormat {
 
 		@Override
 		protected void initialize(final int imageIndex, final long planeIndex,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
+			final Interval bounds) throws FormatException,
 			IOException
 		{
 			if (!isInitialized(imageIndex, (int) planeIndex)) {
@@ -428,14 +429,14 @@ public class LegacyQTFormat extends AbstractFormat {
 					throw new FormatException("Legacy QuickTime writer failed", e);
 				}
 			}
-			super.initialize(imageIndex, planeIndex, planeMin, planeMax);
+			super.initialize(imageIndex, planeIndex, bounds);
 		}
 
 		// -- Writer API Methods --
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
 			BufferedImage img = null;
@@ -567,7 +568,7 @@ public class LegacyQTFormat extends AbstractFormat {
 		}
 	}
 
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class LegacyQTTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{

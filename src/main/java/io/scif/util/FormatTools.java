@@ -35,8 +35,6 @@ import io.scif.Metadata;
 import io.scif.Plane;
 import io.scif.Reader;
 import io.scif.Writer;
-import io.scif.common.ReflectException;
-import io.scif.common.ReflectedUniverse;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 
@@ -49,6 +47,9 @@ import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.DefaultLinearAxis;
 import net.imagej.axis.LinearAxis;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+import net.imglib2.util.Intervals;
 
 /**
  * A collection of constants and utility methods applicable for all cycles of
@@ -625,11 +626,10 @@ public final class FormatTools {
 	 */
 	public static void checkPlaneForReading(final Metadata m,
 		final int imageIndex, final long planeIndex, final int bufLength,
-		final long[] planeMin, final long[] planeMax) throws FormatException
+		final Interval bounds) throws FormatException
 	{
 		assertId(m.getSource(), true, 2);
-		checkPlaneForWriting(m, imageIndex, planeIndex, bufLength, planeMin,
-			planeMax);
+		checkPlaneForWriting(m, imageIndex, planeIndex, bufLength, bounds);
 	}
 
 	/**
@@ -640,11 +640,11 @@ public final class FormatTools {
 	 */
 	public static void checkPlaneForWriting(final Metadata m,
 		final int imageIndex, final long planeIndex, final int bufLength,
-		final long[] planeMin, final long[] planeMax) throws FormatException
+		final Interval bounds) throws FormatException
 	{
 		checkPlaneNumber(m, imageIndex, planeIndex);
-		checkTileSize(m, planeMin, planeMax, imageIndex);
-		if (bufLength >= 0) checkBufferSize(m, bufLength, planeMax, imageIndex);
+		checkTileSize(m, bounds, imageIndex);
+		if (bufLength >= 0) checkBufferSize(m, bufLength, bounds, imageIndex);
 	}
 
 	/** Checks that the given plane number is valid for the given reader. */
@@ -661,19 +661,20 @@ public final class FormatTools {
 	}
 
 	/** Checks that the given tile size is valid for the given reader. */
-	public static void checkTileSize(final Metadata m, final long[] planeMin,
-		final long[] planeMax, final int imageIndex) throws FormatException
+	public static void checkTileSize(final Metadata m, final Interval bounds,
+		final int imageIndex) throws FormatException
 	{
 		final List<CalibratedAxis> axes = m.get(imageIndex).getAxesPlanar();
 
 		for (int i = 0; i < axes.size(); i++) {
-			final long start = planeMin[i];
-			final long end = planeMax[i];
+			final long start = bounds.min(i);
+			final long end = bounds.max(i);
 			final long length = m.get(imageIndex).getAxisLength(axes.get(i));
 
-			if (start < 0 || end < 0 || (start + end) > length) throw new FormatException(
-				"Invalid planar size: start=" + start + ", end=" + end +
-					", length in metadata=" + length);
+			if (start < 0 || end < 0 || end >= length) {
+				throw new FormatException("Invalid planar size: start=" + start +
+					", end=" + end + ", length in metadata=" + length);
+			}
 		}
 	}
 
@@ -684,8 +685,8 @@ public final class FormatTools {
 	public static void checkBufferSize(final int imageIndex, final Metadata m,
 		final int len) throws FormatException
 	{
-		checkBufferSize(m, len, m.get(imageIndex).getAxesLengthsPlanar(),
-			imageIndex);
+		checkBufferSize(m, len, //
+			new FinalInterval(m.get(imageIndex).getAxesLengthsPlanar()), imageIndex);
 	}
 
 	/**
@@ -695,10 +696,9 @@ public final class FormatTools {
 	 * @throws FormatException if the buffer is too small
 	 */
 	public static void checkBufferSize(final Metadata m, final int len,
-		final long[] planeLengths, final int imageIndex) throws FormatException
+		final Interval bounds, final int imageIndex) throws FormatException
 	{
-		final long size =
-			getPlaneSize(m, new long[planeLengths.length], planeLengths, imageIndex);
+		final long size = getPlaneSize(m, bounds, imageIndex);
 		if (size > len) {
 			throw new FormatException("Buffer too small (got " + len + ", expected " +
 				size + ").");
@@ -732,35 +732,29 @@ public final class FormatTools {
 		final int height, final int imageIndex)
 	{
 		final ImageMetadata iMeta = m.get(imageIndex);
-		final long[] planeMin = new long[iMeta.getPlanarAxisCount()];
-		final long[] planeMax = new long[iMeta.getPlanarAxisCount()];
-		for (int i = 0; i < planeMax.length; i++) {
+		final long[] lengths = new long[iMeta.getPlanarAxisCount()];
+		for (int i = 0; i < lengths.length; i++) {
 			final AxisType type = iMeta.getAxis(i).type();
 			if (type == Axes.X) {
-				planeMax[i] = width;
+				lengths[i] = width;
 			}
 			else if (type == Axes.Y) {
-				planeMax[i] = height;
+				lengths[i] = height;
 			}
 			else {
-				planeMax[i] = iMeta.getAxisLength(type);
+				lengths[i] = iMeta.getAxisLength(type);
 			}
 		}
-		return getPlaneSize(m, planeMin, planeMax, imageIndex);
+		final FinalInterval bounds = new FinalInterval(lengths);
+		return getPlaneSize(m, bounds, imageIndex);
 	}
 
 	/** Returns the size in bytes of a plane with the given minima and maxima. */
-	public static long getPlaneSize(final Metadata m, final long[] planeMin,
-		final long[] planeMax, final int imageIndex)
+	public static long getPlaneSize(final Metadata m, final Interval bounds,
+		final int imageIndex)
 	{
-		if (planeMin.length != planeMax.length) throw new IllegalArgumentException(
-			"Plane min array size: " + planeMin.length +
-				" does not match plane max array size: " + planeMax.length);
-		long length = m.get(imageIndex).getBitsPerPixel() / 8;
-		for (int i = 0; i < planeMin.length; i++) {
-			length *= planeMax[i] - planeMin[i];
-		}
-		return length;
+		final long bytesPerPixel = m.get(imageIndex).getBitsPerPixel() / 8;
+		return bytesPerPixel * Intervals.numElements(bounds);
 	}
 
 	// -- Utility methods - pixel types --
@@ -992,100 +986,6 @@ public final class FormatTools {
 			totalPlanes += r.getMetadata().get(series).getPlaneCount();
 		}
 		return totalPlanes / filenames.length;
-	}
-
-	// -- Utility methods -- other
-
-	/**
-	 * Default implementation for {@link Reader#openThumbPlane(int, long)}. At the
-	 * moment, it uses {@link java.awt.image.BufferedImage} objects to resize
-	 * thumbnails, so it is not safe for use in headless contexts. In the future,
-	 * we may reimplement the image scaling logic purely with byte arrays, but
-	 * handling every case would be substantial effort, so doing so is currently a
-	 * low priority item.
-	 */
-	public static byte[] openThumbBytes(final Reader reader,
-		final int imageIndex, final long planeIndex) throws FormatException,
-		IOException
-	{
-		// NB: Dependency on AWT here is unfortunate, but very difficult to
-		// eliminate in general. We use reflection to limit class loading
-		// problems with AWT on Mac OS X.
-		final ReflectedUniverse r = new ReflectedUniverse(reader.log());
-		byte[][] bytes = null;
-		try {
-			r.exec("import io.scif.gui.AWTImageTools");
-
-			final long planeSize = getPlaneSize(reader, imageIndex);
-			Plane plane = null;
-			if (planeSize < 0) {
-				final Metadata m = reader.getMetadata();
-				final long[] planeMax = m.get(imageIndex).getAxesLengthsPlanar();
-				final long[] planeMin = new long[planeMax.length];
-
-				final int xIndex = m.get(imageIndex).getAxisIndex(Axes.X);
-				final int yIndex = m.get(imageIndex).getAxisIndex(Axes.Y);
-				final long width = m.get(imageIndex).getThumbSizeX() * 4;
-				final long height = m.get(imageIndex).getThumbSizeY() * 4;
-
-				planeMin[xIndex] =
-					(m.get(imageIndex).getAxisLength(Axes.X) - width) / 2;
-				planeMin[yIndex] =
-					(m.get(imageIndex).getAxisLength(Axes.Y) - height) / 2;
-				planeMax[xIndex] = width;
-				planeMax[yIndex] = height;
-
-				plane = reader.openPlane(imageIndex, planeIndex, planeMin, planeMax);
-			}
-			else {
-				plane = reader.openPlane(imageIndex, planeIndex);
-			}
-
-			r.setVar("plane", plane);
-			r.setVar("reader", reader);
-			r.setVar("sizeX", reader.getMetadata().get(imageIndex).getAxisLength(
-				Axes.X));
-			r.setVar("sizeY", reader.getMetadata().get(imageIndex).getAxisLength(
-				Axes.Y));
-			r.setVar("thumbSizeX", reader.getMetadata().get(imageIndex)
-				.getThumbSizeX());
-			r.setVar("thumbSizeY", reader.getMetadata().get(imageIndex)
-				.getThumbSizeY());
-			r.setVar("little", reader.getMetadata().get(imageIndex).isLittleEndian());
-			r.setVar("imageIndex", imageIndex);
-			r.exec("thumb = AWTImageTools.openThumbImage(plane, reader, imageIndex, sizeX, sizeY,"
-				+ " thumbSizeX, thumbSizeY, false)");
-
-			bytes = (byte[][]) r.exec("AWTImageTools.getPixelBytes(thumb, little)");
-		}
-		catch (final ReflectException exc) {
-			throw new FormatException(exc);
-		}
-
-		if (bytes.length == 1) return bytes[0];
-		final long rgbChannelCount =
-			reader.getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
-		final byte[] rtn = new byte[(int) rgbChannelCount * bytes[0].length];
-
-		if (!(reader.getMetadata().get(imageIndex).getInterleavedAxisCount() > 0)) {
-			for (int i = 0; i < rgbChannelCount; i++) {
-				System
-					.arraycopy(bytes[i], 0, rtn, bytes[0].length * i, bytes[i].length);
-			}
-		}
-		else {
-			final int bpp =
-				FormatTools.getBytesPerPixel(reader.getMetadata().get(imageIndex)
-					.getPixelType());
-
-			for (int i = 0; i < bytes[0].length / bpp; i += bpp) {
-				for (int j = 0; j < rgbChannelCount; j++) {
-					System.arraycopy(bytes[j], i, rtn, (int) (i * rgbChannelCount) + j *
-						bpp, bpp);
-				}
-			}
-		}
-		return rtn;
 	}
 
 	// -- Conversion convenience methods --

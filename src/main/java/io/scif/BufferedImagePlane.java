@@ -33,6 +33,9 @@ import io.scif.gui.AWTImageTools;
 
 import java.awt.image.BufferedImage;
 
+import net.imglib2.Interval;
+import net.imglib2.util.Intervals;
+
 import org.scijava.Context;
 import org.scijava.util.Bytes;
 
@@ -61,9 +64,9 @@ public class BufferedImagePlane extends
 	}
 
 	public BufferedImagePlane(final Context context, final ImageMetadata meta,
-		final long[] planeOffsets, final long[] planeBounds)
+		final Interval bounds)
 	{
-		super(context, meta, planeOffsets, planeBounds);
+		super(context, meta, bounds);
 	}
 
 	// -- Plane API methods --
@@ -107,18 +110,11 @@ public class BufferedImagePlane extends
 	// -- AbstractPlane API --
 
 	@Override
-	protected BufferedImage blankPlane(final long[] planeOffsets,
-		final long[] planeBounds)
-	{
+	protected BufferedImage blankPlane(final Interval bounds) {
 		final int type = getImageMetadata().getPixelType();
 
-		final long[] axes = new long[planeOffsets.length];
-
-		for (int i = 0; i < axes.length; i++) {
-			axes[i] = planeBounds[i] - planeOffsets[i];
-		}
-
-		return AWTImageTools.blankImage(getImageMetadata(), axes, type);
+		return AWTImageTools.blankImage(getImageMetadata(), //
+			Intervals.dimensionsAsLongArray(bounds), type);
 	}
 
 	@Override

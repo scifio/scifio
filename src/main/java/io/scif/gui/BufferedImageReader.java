@@ -39,6 +39,10 @@ import io.scif.util.FormatTools;
 
 import java.io.IOException;
 
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+import net.imglib2.util.Intervals;
+
 /**
  * BufferedImageReader is the superclass for file format readers that use
  * java.awt.image.BufferedImage as the native data type.
@@ -59,35 +63,15 @@ public abstract class BufferedImageReader<M extends TypedMetadata> extends
 	// -- Reader API Methods --
 
 	@Override
-	public BufferedImagePlane openThumbPlane(final int imageIndex,
-		final long planeIndex) throws FormatException, IOException
+	public BufferedImagePlane createPlane(final Interval bounds)
 	{
-		FormatTools.assertStream(getStream(), true, 1);
-		final Metadata meta = getMetadata();
-		final long[] planeBounds = meta.get(imageIndex).getAxesLengthsPlanar();
-		final long[] planeOffsets = new long[planeBounds.length];
-
-		final BufferedImagePlane plane = createPlane(planeOffsets, planeBounds);
-
-		plane.setData(AWTImageTools.openThumbImage(
-			openPlane(imageIndex, planeIndex), this, imageIndex, planeBounds,
-			(int) meta.get(imageIndex).getThumbSizeX(), (int) meta.get(imageIndex)
-				.getThumbSizeY(), false));
-
-		return plane;
-	}
-
-	@Override
-	public BufferedImagePlane createPlane(final long[] planeOffsets,
-		final long[] planeBounds)
-	{
-		return createPlane(getMetadata().get(0), planeOffsets, planeBounds);
+		return createPlane(getMetadata().get(0), bounds);
 	}
 
 	@Override
 	public BufferedImagePlane createPlane(final ImageMetadata meta,
-		final long[] planeOffsets, final long[] planeBounds)
+		final Interval bounds)
 	{
-		return new BufferedImagePlane(getContext(), meta, planeOffsets, planeBounds);
+		return new BufferedImagePlane(getContext(), meta, bounds);
 	}
 }

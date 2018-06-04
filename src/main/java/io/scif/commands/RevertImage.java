@@ -2,7 +2,7 @@
  * #%L
  * SCIFIO library for reading and converting scientific file formats.
  * %%
- * Copyright (C) 2011 - 2017 SCIFIO developers.
+ * Copyright (C) 2011 - 2018 SCIFIO developers.
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,58 +27,68 @@
  * #L%
  */
 
-package io.scif.common;
+package io.scif.commands;
 
-import java.io.ByteArrayOutputStream;
+import io.scif.services.DatasetIOService;
+
 import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
-// TODO: Deprecate in favor of org.scijava.util.DebugUtils.
+import net.imagej.Dataset;
+
+import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.log.LogService;
+import org.scijava.menu.MenuConstants;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.UIService;
 
 /**
- * A utility class with convenience methods for debugging.
- *
+ * Resets the current {@link Dataset} to its original state.
+ * 
+ * @author Barry DeZonia
  * @author Curtis Rueden
- * @deprecated Use {@link org.scijava.util.DebugUtils} instead.
  */
-@Deprecated
-public final class DebugTools {
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
+	@Menu(label = "Revert", weight = 20, mnemonic = 'v', accelerator = "^R") }, attrs = { @Attr(name = "no-legacy") })
+public class RevertImage extends ContextCommand {
 
-	// -- Constructor --
+	@Parameter
+	private LogService log;
 
-	private DebugTools() {}
+	@Parameter
+	private DatasetIOService datasetIOService;
 
-	// -- DebugTools methods --
+	@Parameter
+	private UIService uiService;
 
-	/** Extracts the given exception's corresponding stack trace to a string. */
-	public static String getStackTrace(final Throwable t) {
+	@Parameter(type = ItemIO.BOTH)
+	private Dataset dataset;
+
+	@Override
+	public void run() {
 		try {
-			final ByteArrayOutputStream out = new ByteArrayOutputStream();
-			t.printStackTrace(new PrintStream(out, false, Constants.ENCODING));
-			return new String(out.toByteArray(), Constants.ENCODING);
+			datasetIOService.revert(dataset);
 		}
-		catch (final IOException e) {}
-		return null;
+		catch (final IOException exc) {
+			log.error(exc);
+			uiService.showDialog(exc.getMessage(),
+				DialogPrompt.MessageType.ERROR_MESSAGE);
+		}
 	}
 
-	/**
-	 * This method uses reflection to scan the values of the given class's static
-	 * fields, returning the first matching field's name.
-	 */
-	public static String getFieldName(final Class<?> c, final int value) {
-		final Field[] fields = c.getDeclaredFields();
-		for (final Field field : fields) {
-			if (!Modifier.isStatic(field.getModifiers())) continue;
-			field.setAccessible(true);
-			try {
-				if (field.getInt(null) == value) return field.getName();
-			}
-			catch (final IllegalAccessException exc) {}
-			catch (final IllegalArgumentException exc) {}
-		}
-		return "" + value;
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
 	}
 
 }

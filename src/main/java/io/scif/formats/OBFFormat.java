@@ -49,6 +49,7 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.plugin.Plugin;
 
@@ -379,16 +380,15 @@ public class OBFFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buffer = plane.getBytes();
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
 			final int rows = (int) meta.get(imageIndex).getAxisLength(Axes.Y);
 			final int columns = (int) meta.get(imageIndex).getAxisLength(Axes.X);
 			final int bytesPerPixel = meta.get(imageIndex).getBitsPerPixel() / 8;

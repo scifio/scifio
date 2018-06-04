@@ -57,6 +57,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
@@ -748,16 +749,15 @@ public class JPEG2000Format extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
 			plane.setColorTable(meta.getColorTable(imageIndex, planeIndex));
 
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 
 			if (meta.getLastIndex().getImageIndex() == imageIndex &&
 				meta.getLastIndex().getPlaneIndex() == planeIndex &&
@@ -765,7 +765,7 @@ public class JPEG2000Format extends AbstractFormat {
 			{
 				final RandomAccessInputStream s =
 					new RandomAccessInputStream(getContext(), meta.getLastIndexBytes());
-				readPlane(s, imageIndex, planeMin, planeMax, plane);
+				readPlane(s, imageIndex, bounds, plane);
 				s.close();
 				return plane;
 			}
@@ -787,7 +787,7 @@ public class JPEG2000Format extends AbstractFormat {
 			meta.setLastIndexBytes(lastIndexPlane);
 			final RandomAccessInputStream s =
 				new RandomAccessInputStream(getContext(), lastIndexPlane);
-			readPlane(s, imageIndex, planeMin, planeMax, plane);
+			readPlane(s, imageIndex, bounds, plane);
 			s.close();
 			meta.setLastIndex(imageIndex, planeIndex);
 			return plane;
@@ -812,7 +812,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
 			/*
@@ -826,7 +826,7 @@ public class JPEG2000Format extends AbstractFormat {
 			// retrieve.getPixelsSizeY(series).getValue().intValue();
 
 			getStream().write(
-				compressBuffer(imageIndex, planeIndex, plane, planeMin, planeMax));
+				compressBuffer(imageIndex, planeIndex, plane, bounds));
 		}
 
 		/**
@@ -835,31 +835,27 @@ public class JPEG2000Format extends AbstractFormat {
 		 * @param imageIndex the image index within the dataset
 		 * @param planeIndex the plane index within the image
 		 * @param plane the image tile being compressed.
-		 * @param planeMin minimal bounds of the planar axes
-		 * @param planeMax maximum bounds of the planar axes
+		 * @param bounds bounds of the planar axes.
 		 * @throws FormatException if one of the parameters is invalid.
 		 * @throws IOException if there was a problem writing to the file.
 		 */
 		public byte[] compressBuffer(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final Interval bounds) throws FormatException,
+			IOException
 		{
+			final ImageMetadata imageMeta = getMetadata().get(imageIndex);
+
 			final byte[] buf = plane.getBytes();
-			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
-			final boolean littleEndian =
-				getMetadata().get(imageIndex).isLittleEndian();
-			final int bytesPerPixel =
-				getMetadata().get(imageIndex).getBitsPerPixel() / 8;
-			final int nChannels =
-				(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
+			checkParams(imageIndex, planeIndex, buf, bounds);
+			final boolean littleEndian = imageMeta.isLittleEndian();
+			final int bytesPerPixel = imageMeta.getBitsPerPixel() / 8;
+			final int nChannels = (int) imageMeta.getAxisLength(Axes.CHANNEL);
 
 			// To be on the save-side
 			CodecOptions options = getCodecOptions();
 			if (options == null) options = JPEG2000CodecOptions.getDefaultOptions();
-			options.width =
-				(int) planeMax[getMetadata().get(imageIndex).getAxisIndex(Axes.X)];
-			options.height =
-				(int) planeMax[getMetadata().get(imageIndex).getAxisIndex(Axes.Y)];
+			options.width = (int) bounds.dimension(imageMeta.getAxisIndex(Axes.X));
+			options.height = (int) bounds.dimension(imageMeta.getAxisIndex(Axes.Y));
 			options.channels = nChannels;
 			options.bitsPerSample = bytesPerPixel * 8;
 			options.littleEndian = littleEndian;

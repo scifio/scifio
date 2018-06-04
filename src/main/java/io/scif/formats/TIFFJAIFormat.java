@@ -37,8 +37,6 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.MissingLibraryException;
-import io.scif.common.ReflectException;
-import io.scif.common.ReflectedUniverse;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
@@ -56,9 +54,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ReflectException;
+import org.scijava.util.ReflectedUniverse;
 
 /**
  * TiffJAIReader is a file format reader for TIFF images. It uses the Java
@@ -165,7 +166,7 @@ public class TIFFJAIFormat extends AbstractFormat {
 			ReflectedUniverse r = null;
 
 			try {
-				r = new ReflectedUniverse(log());
+				r = new ReflectedUniverse();
 				r.exec("import javax.media.jai.NullOpImage");
 				r.exec("import javax.media.jai.OpImage");
 				r.exec("import com.sun.media.jai.codec.FileSeekableStream");
@@ -236,14 +237,14 @@ public class TIFFJAIFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			final Interval bounds, final SCIFIOConfig config)
 			throws FormatException, IOException
 		{
 			FormatTools.checkPlaneForReading(getMetadata(), imageIndex, planeIndex,
-				-1, planeMin, planeMax);
+				-1, bounds);
 			final BufferedImage img = openBufferedImage(getMetadata(), planeIndex);
 			plane.setData(AWTImageTools.getSubimage(img, getMetadata()
-				.get(imageIndex).isLittleEndian(), planeMin, planeMax));
+				.get(imageIndex).isLittleEndian(), bounds));
 			return plane;
 		}
 	}

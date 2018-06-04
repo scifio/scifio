@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.plugin.Plugin;
 
@@ -247,18 +248,17 @@ public class PGMFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 
 			getStream().seek(meta.getOffset());
 			if (meta.isRawBits()) {
-				readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
+				readPlane(getStream(), imageIndex, bounds, plane);
 			}
 			else {
 				final ByteArrayHandle handle = new ByteArrayHandle();
@@ -283,7 +283,7 @@ public class PGMFormat extends AbstractFormat {
 				final RandomAccessInputStream s =
 					new RandomAccessInputStream(getContext(), handle);
 				s.seek(0);
-				readPlane(s, imageIndex, planeMin, planeMax, plane);
+				readPlane(s, imageIndex, bounds, plane);
 				s.close();
 			}
 

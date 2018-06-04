@@ -51,6 +51,7 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.plugin.Plugin;
 
@@ -294,7 +295,7 @@ public class MNGFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			final Interval bounds, final SCIFIOConfig config)
 			throws FormatException, IOException
 		{
 			final MNGImageInfo info =
@@ -309,7 +310,7 @@ public class MNGFormat extends AbstractFormat {
 			// BytePackedRaster is used
 			img =
 				AWTImageTools.getSubimage(img, getMetadata().get(imageIndex)
-					.isLittleEndian(), planeMin, planeMax);
+					.isLittleEndian(), bounds);
 
 			plane.setData(img);
 			return plane;

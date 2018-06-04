@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
@@ -75,7 +76,7 @@ import org.scijava.util.Bytes;
 	priority = MinimalTIFFFormat.PRIORITY)
 public class MinimalTIFFFormat extends AbstractFormat {
 
-	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
+	public static final double PRIORITY = Priority.VERY_LOW;
 
 	// -- AbstractFormat Methods --
 
@@ -541,57 +542,9 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openThumbPlane(final int imageIndex,
-			final long planeIndex) throws FormatException, IOException
-		{
-			final Metadata meta = getMetadata();
-			final IFDList thumbnailIFDs = meta.getThumbnailIFDs();
-			if (thumbnailIFDs == null || thumbnailIFDs.size() <= planeIndex) {
-				return super.openThumbPlane(imageIndex, planeIndex);
-			}
-			final TiffParser tiffParser = meta.getTiffParser();
-			tiffParser.fillInIFD(thumbnailIFDs.get((int) planeIndex));
-			int[] bps = null;
-			try {
-				bps = thumbnailIFDs.get((int) planeIndex).getBitsPerSample();
-			}
-			catch (final FormatException e) {}
-
-			if (bps == null) {
-				return super.openThumbPlane(imageIndex, planeIndex);
-			}
-
-			int b = bps[0];
-			while ((b % 8) != 0)
-				b++;
-			b /= 8;
-			if (b != FormatTools
-				.getBytesPerPixel(meta.get(imageIndex).getPixelType()) ||
-				bps.length != meta.get(imageIndex).getAxisLength(Axes.CHANNEL))
-			{
-				return super.openThumbPlane(imageIndex, planeIndex);
-			}
-
-			byte[] buf =
-				new byte[(int) (meta.get(imageIndex).getThumbSizeX() *
-					meta.get(imageIndex).getThumbSizeY() *
-					meta.get(imageIndex).getAxisLength(Axes.CHANNEL) * FormatTools
-					.getBytesPerPixel(meta.get(imageIndex).getPixelType()))];
-
-			final ByteArrayPlane plane = new ByteArrayPlane(getContext());
-			buf = tiffParser.getSamples(thumbnailIFDs.get((int) planeIndex), buf);
-			plane.populate(meta.get(imageIndex), buf, new long[2], new long[] {
-				meta.get(imageIndex).getThumbSizeX(),
-				meta.get(imageIndex).getThumbSizeY() });
-
-			return plane;
-		}
-
-		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			plane.setColorTable(meta.getColorTable(imageIndex, planeIndex));
@@ -600,10 +553,10 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			final TiffParser tiffParser = meta.getTiffParser();
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 
 			final IFD firstIFD = ifds.get(0);
 			meta.setLastPlane(planeIndex);

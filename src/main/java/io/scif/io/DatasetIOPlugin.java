@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author Curtis Rueden
  */
-@Plugin(type = IOPlugin.class, priority = Priority.LOW_PRIORITY)
+@Plugin(type = IOPlugin.class, priority = Priority.LOW)
 public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
 	@Parameter

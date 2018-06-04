@@ -36,10 +36,12 @@ import io.scif.Plane;
 import io.scif.config.SCIFIOConfig;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import net.imagej.axis.Axes;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
+import net.imglib2.util.Intervals;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -70,11 +72,8 @@ public class ChannelFiller extends AbstractReaderFilter {
 	 */
 	private Plane lastPlane = null;
 
-	/** Offsets of last plane opened. */
-	private long[] lastPlaneOffsets = null;
-
-	/** Lengths of last plane opened. */
-	private long[] lastPlaneLengths = null;
+	/** Bounds of last plane opened. */
+	private Interval lastPlaneBounds = null;
 
 	// -- Constructor --
 
@@ -107,29 +106,26 @@ public class ChannelFiller extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final long[] offsets, final long[] lengths) throws FormatException,
+		final Interval bounds) throws FormatException,
 		IOException
 	{
-		return openPlane(imageIndex, planeIndex, offsets, lengths,
-			new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] offsets, final long[] lengths)
+		final Plane plane, final Interval bounds)
 		throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, offsets, lengths,
-			new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, plane, bounds, new SCIFIOConfig());
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
-		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
-		return openPlane(imageIndex, planeIndex, new long[planarAxes],
-			getMetadata().get(imageIndex).getAxesLengthsPlanar(), config);
+		final Interval bounds = planarBounds(imageIndex);
+		return openPlane(imageIndex, planeIndex, bounds, config);
 	}
 
 	@Override
@@ -137,38 +133,35 @@ public class ChannelFiller extends AbstractReaderFilter {
 		final Plane plane, final SCIFIOConfig config) throws FormatException,
 		IOException
 	{
-		final int planarAxes = getMetadata().get(imageIndex).getPlanarAxisCount();
-		return openPlane(imageIndex, planeIndex, plane, new long[planarAxes],
-			getMetadata().get(imageIndex).getAxesLengthsPlanar(), config);
+		final Interval bounds = planarBounds(imageIndex);
+		return openPlane(imageIndex, planeIndex, plane, bounds, config);
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final long[] offsets, final long[] lengths, final SCIFIOConfig config)
+		final Interval bounds, final SCIFIOConfig config)
 		throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, createPlane(getMetadata().get(
-			imageIndex), offsets, lengths), offsets, lengths, config);
+		final Plane plane = createPlane(getMetadata().get(imageIndex), bounds);
+		return openPlane(imageIndex, planeIndex, plane, bounds, config);
 	}
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		Plane plane, final long[] offsets, final long[] lengths,
-		final SCIFIOConfig config) throws FormatException, IOException
+		Plane plane, final Interval bounds, final SCIFIOConfig config)
+		throws FormatException, IOException
 	{
 		// If the wrapped Metadata wasn't indexed, we can use the parent reader
 		// directly
 		if (getParentMeta().get(imageIndex).isFalseColor() ||
 			!getParentMeta().get(imageIndex).isIndexed())
 		{
-			if (!haveCached(imageIndex, planeIndex, offsets, lengths)) {
-				lastPlaneOffsets = Arrays.copyOf(offsets, offsets.length);
-				lastPlaneLengths = Arrays.copyOf(lengths, lengths.length);
+			if (!haveCached(imageIndex, planeIndex, bounds)) {
+				lastPlaneBounds = new FinalInterval(bounds);
 				lastPlaneIndex = planeIndex;
 				lastImageIndex = imageIndex;
-				lastPlane =
-					getParent().openPlane(imageIndex, planeIndex, plane, offsets,
-						lengths, config);
+				lastPlane = getParent().openPlane(imageIndex, planeIndex, plane, bounds,
+					config);
 			}
 			return lastPlane;
 		}
@@ -179,24 +172,22 @@ public class ChannelFiller extends AbstractReaderFilter {
 		final int lutLength =
 			((ChannelFillerMetadata) getMetadata()).getLutLength();
 
-		if (!haveCached(imageIndex, planeIndex, offsets, lengths)) {
-			updateLastPlaneInfo(imageIndex, lutLength, offsets, lengths);
+		if (!haveCached(imageIndex, planeIndex, bounds)) {
+			updateLastPlaneInfo(imageIndex, lutLength, bounds);
 
 			// Now we can read the desired plane
-			lastPlane =
-				getParent().openPlane(imageIndex, planeIndex, lastPlaneOffsets,
-					lastPlaneLengths, config);
+			lastPlane = getParent().openPlane(imageIndex, planeIndex, //
+				lastPlaneBounds, config);
 			lastPlaneIndex = planeIndex;
 			lastImageIndex = imageIndex;
-			lastPlaneOffsets = Arrays.copyOf(offsets, offsets.length);
-			lastPlaneLengths = Arrays.copyOf(lengths, lengths.length);
+
+			lastPlaneBounds = bounds;
 		}
 
 		// Make sure we have a compatible plane type
 		if (!ByteArrayPlane.class.isAssignableFrom(plane.getClass())) {
-			plane =
-				new ByteArrayPlane(getContext(), getMetadata().get(imageIndex),
-					offsets, lengths);
+			plane = new ByteArrayPlane(getContext(), //
+				getMetadata().get(imageIndex), bounds);
 		}
 
 		final byte[] buf = plane.getBytes();
@@ -260,54 +251,36 @@ public class ChannelFiller extends AbstractReaderFilter {
 	}
 
 	// -- Helper Methods --
+
 	/**
 	 * Converts the given plane information using the current metadata to a format
 	 * usable by the wrapped reader, stored in the "lastPlane"... variables.
 	 */
 	private void updateLastPlaneInfo(final int imageIndex, final int lutLength,
-		final long[] offsets, final long[] lengths)
+		final Interval bounds)
 	{
-		lastPlaneOffsets = Arrays.copyOf(offsets, offsets.length);
-		lastPlaneLengths = Arrays.copyOf(lengths, lengths.length);
+		final long[] min = Intervals.minAsLongArray(bounds);
+		final long[] max = Intervals.maxAsLongArray(bounds);
 
 		final int cIndex = getMetadata().get(imageIndex).getAxisIndex(Axes.CHANNEL);
-		lastPlaneOffsets[cIndex] = lastPlaneOffsets[cIndex] / lutLength;
-		lastPlaneLengths[cIndex] = lastPlaneLengths[cIndex] / lutLength;
+		min[cIndex] = min[cIndex] / lutLength;
+		max[cIndex] = max[cIndex] / lutLength;
+		lastPlaneBounds = new FinalInterval(min, max);
 	}
 
 	/**
 	 * Returns true if we have a cached copy of the requested plane available.
-	 *
-	 * @param lengths
-	 * @param offsets
 	 */
 	private boolean haveCached(final int imageIndex, final long planeIndex,
-		final long[] offsets, final long[] lengths)
+		final Interval bounds)
 	{
-		boolean matches = planeIndex == lastPlaneIndex;
-		matches = matches && (imageIndex == lastImageIndex);
-
-		if (lastPlane != null && lastPlaneOffsets != null &&
-			lastPlaneLengths != null)
-		{
-			for (int i = 0; i < offsets.length && matches; i++) {
-				// TODO It would be nice to fix up this logic so that we can use
-				// cached
-				// planes when requesting a sub-region of the cached plane.
-				// See https://github.com/scifio/scifio/issues/155
-				// Make sure we have the starting point in each axis
-				matches = matches && offsets[i] == lastPlaneOffsets[i];
-				// make sure we have the last positions in each axis
-				matches =
-					matches &&
-						offsets[i] + lengths[i] == lastPlaneOffsets[i] +
-							lastPlaneLengths[i];
-			}
-		}
-		else {
-			matches = false;
-		}
-		return matches;
+		// TODO It would be nice to fix up this logic so that we can use
+		// cached planes when requesting a sub-region of the cached plane.
+		// See https://github.com/scifio/scifio/issues/155
+		return planeIndex == lastPlaneIndex && //
+			imageIndex == lastImageIndex && //
+			lastPlane != null && lastPlaneBounds != null && //
+			Intervals.equals(bounds, lastPlaneBounds);
 	}
 
 	@Override
@@ -316,7 +289,6 @@ public class ChannelFiller extends AbstractReaderFilter {
 		lastPlaneIndex = 0;
 		lastImageIndex = 0;
 		lastPlane = null;
-		lastPlaneLengths = null;
-		lastPlaneOffsets = null;
+		lastPlaneBounds = null;
 	}
 }

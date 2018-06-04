@@ -38,6 +38,8 @@ import java.io.File;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 
 /**
  * Abstract superclass of all SCIFIO {@link io.scif.Reader} implementations.
@@ -93,11 +95,9 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public P openPlane(final int imageIndex, final long planeIndex,
-		final long[] planeMin, final long[] planeMax) throws FormatException,
-		IOException
+		final Interval bounds) throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, planeMin, planeMax,
-			new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig());
 	}
 
 	@Override
@@ -109,31 +109,31 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public P openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] planeMin, final long[] planeMax)
-		throws FormatException, IOException
+		final Plane plane, final Interval bounds) throws FormatException,
+		IOException
 	{
 		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane),
-			planeMin, planeMax);
+			bounds);
 	}
 
 	@Override
 	public P openPlane(final int imageIndex, final long planeIndex,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
-		final long[] planeMax = metadata.get(imageIndex).getAxesLengthsPlanar();
-		final long[] planeMin = new long[planeMax.length];
-		return openPlane(imageIndex, planeIndex, planeMin, planeMax, config);
+		final Interval bounds = //
+			new FinalInterval(metadata.get(imageIndex).getAxesLengthsPlanar());
+		return openPlane(imageIndex, planeIndex, bounds, config);
 	}
 
 	@Override
 	public P openPlane(final int imageIndex, final long planeIndex,
-		final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
-		throws FormatException, IOException
+		final Interval bounds, final SCIFIOConfig config) throws FormatException,
+		IOException
 	{
 		P plane = null;
 
 		try {
-			plane = createPlane(planeMin, planeMax);
+			plane = createPlane(bounds);
 		}
 		catch (final IllegalArgumentException e) {
 			throw new FormatException(
@@ -146,7 +146,7 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 				e);
 		}
 
-		return openPlane(imageIndex, planeIndex, plane, planeMin, planeMax, config);
+		return openPlane(imageIndex, planeIndex, plane, bounds, config);
 	}
 
 	@Override
@@ -160,11 +160,11 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] planeMin, final long[] planeMax,
-		final SCIFIOConfig config) throws FormatException, IOException
+		final Plane plane, final Interval bounds, final SCIFIOConfig config)
+		throws FormatException, IOException
 	{
 		return openPlane(imageIndex, planeIndex, this.<P> castToTypedPlane(plane),
-			planeMin, planeMax, config);
+			bounds, config);
 	}
 
 	@Override
@@ -306,19 +306,18 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final long[] planeMin, final long[] planeMax, final Plane plane)
+		final Interval bounds, final Plane plane)
 		throws IOException
 	{
-		return readPlane(s, imageIndex, planeMin, planeMax, this
-			.<P> castToTypedPlane(plane));
+		return readPlane(s, imageIndex, bounds, this.<P> castToTypedPlane(plane));
 	}
 
 	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final long[] planeMin, final long[] planeMax, final int scanlinePad,
+		final Interval bounds, final int scanlinePad,
 		final Plane plane) throws IOException
 	{
-		return readPlane(s, imageIndex, planeMin, planeMax, scanlinePad, this
+		return readPlane(s, imageIndex, bounds, scanlinePad, this
 			.<P> castToTypedPlane(plane));
 	}
 
@@ -359,17 +358,15 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		final P plane, final SCIFIOConfig config) throws FormatException,
 		IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, plane.getOffsets(), plane
-			.getLengths(), config);
+		return openPlane(imageIndex, planeIndex, plane, plane.getBounds(), config);
 	}
 
 	@Override
-	public P openPlane(final int imageIndex, final long planeIndex,
-		final P plane, final long[] planeMin, final long[] planeMax)
-		throws FormatException, IOException
+	public P openPlane(final int imageIndex, final long planeIndex, final P plane,
+		final Interval bounds) throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, plane.getOffsets(), plane
-			.getLengths(), new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, plane, plane.getBounds(),
+			new SCIFIOConfig());
 	}
 
 	@Override
@@ -383,15 +380,15 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 
 	@Override
 	public P readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final long[] planeMin, final long[] planeMax, final P plane)
+		final Interval bounds, final P plane)
 		throws IOException
 	{
-		return readPlane(s, imageIndex, planeMin, planeMax, 0, plane);
+		return readPlane(s, imageIndex, bounds, 0, plane);
 	}
 
 	@Override
 	public P readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final long[] planeMin, final long[] planeMax, final int scanlinePad,
+		final Interval bounds, final int scanlinePad,
 		final P plane) throws IOException
 	{
 		final int bpp =
@@ -400,38 +397,36 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 		final byte[] bytes = plane.getBytes();
 		final int xIndex = metadata.get(imageIndex).getAxisIndex(Axes.X);
 		final int yIndex = metadata.get(imageIndex).getAxisIndex(Axes.Y);
-		if (SCIFIOMetadataTools
-			.wholePlane(imageIndex, metadata, planeMin, planeMax) &&
+		if (SCIFIOMetadataTools.wholePlane(imageIndex, metadata, bounds) &&
 			scanlinePad == 0)
 		{
 			s.read(bytes);
 		}
-		else if (SCIFIOMetadataTools.wholeRow(imageIndex, metadata, planeMin,
-			planeMax) &&
+		else if (SCIFIOMetadataTools.wholeRow(imageIndex, metadata, bounds) &&
 			scanlinePad == 0)
 		{
 			if (metadata.get(imageIndex).getInterleavedAxisCount() > 0) {
 				int bytesToSkip = bpp;
-				bytesToSkip *= planeMax[xIndex];
+				bytesToSkip *= bounds.max(xIndex);
 				int bytesToRead = bytesToSkip;
-				for (int i = 0; i < planeMin.length; i++) {
+				for (int i = 0; i < bounds.numDimensions(); i++) {
 					if (i != xIndex) {
 						if (i == yIndex) {
-							bytesToSkip *= planeMin[i];
+							bytesToSkip *= bounds.min(i);
 						}
 						else {
-							bytesToSkip *= planeMax[i];
+							bytesToSkip *= bounds.max(i);
 						}
-						bytesToRead *= planeMax[i];
+						bytesToRead *= bounds.max(i);
 					}
 				}
 				s.skip(bytesToSkip);
 				s.read(bytes, 0, bytesToRead);
 			}
 			else {
-				final int rowLen = (int) (bpp * planeMax[xIndex]);
-				final int h = (int) planeMax[yIndex];
-				final int y = (int) planeMin[yIndex];
+				final int rowLen = (int) (bpp * bounds.max(xIndex));
+				final int h = (int) bounds.max(yIndex);
+				final int y = (int) bounds.min(yIndex);
 				long c = metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
 				if (c <= 0 || !metadata.get(imageIndex).isMultichannel()) c = 1;
 				for (int channel = 0; channel < c; channel++) {
@@ -452,36 +447,36 @@ public abstract class AbstractReader<M extends TypedMetadata, P extends DataPlan
 				(int) metadata.get(imageIndex).getAxisLength(Axes.X) + scanlinePad;
 			if (metadata.get(imageIndex).getInterleavedAxisCount() > 0) {
 				long planeProduct = bpp;
-				for (int i = 0; i < planeMin.length; i++) {
+				for (int i = 0; i < bounds.numDimensions(); i++) {
 					if (i != xIndex && i != yIndex) planeProduct *=
 						metadata.get(imageIndex).getAxisLength(i);
 				}
 				int bytesToSkip = scanlineWidth * (int) planeProduct;
-				s.skipBytes((int) planeMin[yIndex] * bytesToSkip);
+				s.skipBytes((int) bounds.min(yIndex) * bytesToSkip);
 
 				bytesToSkip = bpp;
 				int bytesToRead = bytesToSkip;
-				bytesToRead *= planeMax[xIndex];
+				bytesToRead *= bounds.max(xIndex);
 				bytesToRead *= planeProduct;
-				bytesToSkip *= planeMin[xIndex];
+				bytesToSkip *= bounds.min(xIndex);
 				bytesToSkip *= planeProduct;
 
-				for (int row = 0; row < planeMax[yIndex]; row++) {
+				for (int row = 0; row <= bounds.max(yIndex); row++) {
 					s.skipBytes(bytesToSkip);
 					s.read(bytes, row * bytesToRead, bytesToRead);
-					if (row < planeMax[yIndex] - 1) {
+					if (row < bounds.max(yIndex)) {
 						// no need to skip bytes after reading final row
-						s.skipBytes((int) (planeProduct * (scanlineWidth - planeMax[xIndex] - planeMin[xIndex])));
+						s.skipBytes((int) (planeProduct * (scanlineWidth - bounds.dimension(xIndex))));
 					}
 				}
 			}
 			else {
 				final long c = metadata.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
-				final int w = (int) planeMax[xIndex];
-				final int h = (int) planeMax[yIndex];
-				final int x = (int) planeMin[xIndex];
-				final int y = (int) planeMin[yIndex];
+				final int w = (int) bounds.max(xIndex);
+				final int h = (int) bounds.max(yIndex);
+				final int x = (int) bounds.min(xIndex);
+				final int y = (int) bounds.min(yIndex);
 				for (int channel = 0; channel < c; channel++) {
 					s.skipBytes(y * scanlineWidth * bpp);
 					for (int row = 0; row < h; row++) {

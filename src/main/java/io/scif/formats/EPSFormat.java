@@ -54,6 +54,7 @@ import io.scif.util.SCIFIOMetadataTools;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
@@ -316,19 +317,18 @@ public class EPSFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
 
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 
 			if (meta.isTiff()) {
 				final long[] offsets = meta.getIfds().get(0).getStripOffsets();
@@ -336,7 +336,7 @@ public class EPSFormat extends AbstractFormat {
 
 				final int[] map = meta.getIfds().get(0).getIFDIntArray(IFD.COLOR_MAP);
 				if (map == null) {
-					readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
+					readPlane(getStream(), imageIndex, bounds, plane);
 					return plane;
 				}
 
@@ -386,7 +386,7 @@ public class EPSFormat extends AbstractFormat {
 				FormatTools.getBytesPerPixel(meta.get(imageIndex).getPixelType());
 			if (meta.isBinary()) {
 				// pixels are stored as raw bytes
-				readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
+				readPlane(getStream(), imageIndex, bounds, plane);
 			}
 			else {
 				// pixels are stored as a 2 character hexadecimal value
@@ -465,7 +465,7 @@ public class EPSFormat extends AbstractFormat {
 
 		@Override
 		protected void initialize(final int imageIndex, final long planeIndex,
-			final long[] planeMin, final long[] planeMax) throws IOException,
+			final Interval bounds) throws IOException,
 			FormatException
 		{
 			if (!isInitialized(imageIndex, (int) planeIndex)) {
@@ -473,11 +473,12 @@ public class EPSFormat extends AbstractFormat {
 				writeHeader(imageIndex);
 
 				if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(),
-					planeMin, planeMax))
+					bounds))
 				{
 					final int xAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.X);
 					final int yAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.Y);
-					final int w = (int) planeMax[xAxis], h = (int) planeMax[yAxis];
+					final int w = (int) bounds.dimension(xAxis);
+					final int h = (int) bounds.dimension(yAxis);
 					final int nChannels =
 						(int) getMetadata().get(imageIndex).getAxisLength(Axes.CHANNEL);
 					// write a dummy plane that will be overwritten in sections
@@ -488,25 +489,25 @@ public class EPSFormat extends AbstractFormat {
 				}
 			}
 
-			super.initialize(imageIndex, planeIndex, planeMin, planeMax);
+			super.initialize(imageIndex, planeIndex, bounds);
 		}
 
 		// -- Writer API Methods --
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
 
 			final byte[] buf = plane.getBytes();
 			final boolean interleaved =
 				plane.getImageMetadata().getInterleavedAxisCount() > 0;
-			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
+			checkParams(imageIndex, planeIndex, buf, bounds);
 			final int xAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.max(xAxis), h = (int) bounds.max(yAxis);
 			final int sizeX =
 				(int) getMetadata().get(imageIndex).getAxisLength(Axes.X);
 			final int nChannels =
@@ -515,7 +516,7 @@ public class EPSFormat extends AbstractFormat {
 			// write pixel data
 			// for simplicity, write 80 char lines
 
-			final int planeSize = (int) (planeMax[xAxis] * planeMax[yAxis]);
+			final int planeSize = (int) (bounds.max(xAxis) * bounds.max(yAxis));
 
 			final StringBuilder buffer = new StringBuilder();
 
@@ -596,7 +597,7 @@ public class EPSFormat extends AbstractFormat {
 	/**
 	 * Necessary dummy translator, so that an EPS-OMEXML translator can be used.
 	 */
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class EPSTranslator extends DefaultTranslator {
 
 		// -- Translator API Methods --

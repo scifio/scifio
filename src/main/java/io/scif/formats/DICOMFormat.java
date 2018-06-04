@@ -61,6 +61,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
@@ -1350,18 +1351,18 @@ public class DICOMFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			plane.setColorTable(meta.getColorTable(imageIndex, planeIndex));
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, plane
-				.getData().length, planeMin, planeMax);
+				.getData().length, bounds);
 
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.max(xAxis), h = (int) bounds.max(yAxis);
 
 			final Hashtable<Integer, Vector<String>> fileList = meta.getFileList();
 
@@ -1373,7 +1374,7 @@ public class DICOMFormat extends AbstractFormat {
 				final String file = fileList.get(keys[imageIndex]).get(fileNumber);
 				final io.scif.Reader r = initializeService.initializeReader(file, new SCIFIOConfig().checkerSetOpen(true));
 				return (ByteArrayPlane) r.openPlane(imageIndex, planeIndex, plane,
-					planeMin, planeMax, config);
+					bounds, config);
 			}
 
 			final int ec = meta.get(0).isIndexed() ? 1 : (int) meta.get(imageIndex)
@@ -1502,7 +1503,7 @@ public class DICOMFormat extends AbstractFormat {
 			}
 			else {
 				// plane is not compressed
-				readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
+				readPlane(getStream(), imageIndex, bounds, plane);
 			}
 
 			// NB: do *not* apply the rescale function

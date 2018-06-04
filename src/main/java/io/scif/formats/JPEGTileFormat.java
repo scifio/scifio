@@ -45,6 +45,7 @@ import io.scif.util.FormatTools;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
@@ -57,7 +58,7 @@ import org.scijava.plugin.Plugin;
  * @author Mark Hiner
  */
 @Plugin(type = Format.class, name = "Tile JPEG",
-	priority = Priority.LOW_PRIORITY)
+	priority = Priority.LOW)
 public class JPEGTileFormat extends AbstractFormat {
 
 	// -- AbstractFormat Methods --
@@ -145,18 +146,17 @@ public class JPEGTileFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final byte[] buf = plane.getBytes();
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.max(xAxis), h = (int) bounds.max(yAxis);
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 
 			final int c = (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 

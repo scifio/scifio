@@ -51,6 +51,7 @@ import io.scif.util.ImageTools;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
@@ -337,15 +338,14 @@ public class BMPFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xIndex], y = (int) planeMin[yIndex], w =
-				(int) planeMax[xIndex], h = (int) planeMax[yIndex];
+			final int x = (int) bounds.min(xIndex), y = (int) bounds.min(yIndex), //
+					w = (int) bounds.max(xIndex), h = (int) bounds.max(yIndex);
 
 			final byte[] buf = plane.getData();
 			final int compression = meta.getCompression();
@@ -355,7 +355,7 @@ public class BMPFormat extends AbstractFormat {
 			final int sizeC = (int) meta.get(imageIndex).getAxisLength(Axes.CHANNEL);
 
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 
 			if (compression != RAW &&
 				getStream().length() < FormatTools.getPlaneSize(this, imageIndex))

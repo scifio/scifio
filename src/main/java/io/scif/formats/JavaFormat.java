@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import net.imglib2.Interval;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
 import net.imglib2.img.basictypeaccess.array.FloatArray;
@@ -97,14 +98,14 @@ public class JavaFormat extends AbstractFormat {
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
-			throws FormatException, IOException
+			final Plane plane, final Interval bounds) throws FormatException,
+			IOException
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
 
-			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
-			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax))
+			checkParams(imageIndex, planeIndex, buf, bounds);
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds))
 			{
 				throw new FormatException(
 					"JavaWriter does not yet support saving image tiles.");
@@ -126,8 +127,7 @@ public class JavaFormat extends AbstractFormat {
 			final Object array = Bytes.makeArray(buf, bpp, fp, little);
 
 			getStream().seek(getStream().length());
-			writePlane(varName, getType(array), (int) planeMax[0], (int) planeMax[1]);
-
+			writePlane(varName, getType(array), (int) bounds.dimension(0), (int) bounds.dimension(1));
 		}
 
 		@Override

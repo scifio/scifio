@@ -72,6 +72,7 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 import net.imagej.axis.DefaultLinearAxis;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
@@ -1413,16 +1414,15 @@ public class TIFFFormat extends AbstractFormat {
 		 * compression and units.
 		 */
 		public void savePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, IFD ifd, final long[] planeMin, final long[] planeMax)
+			final Plane plane, IFD ifd, final Interval bounds)
 			throws IOException, FormatException
 		{
 			final byte[] buf = plane.getBytes();
-			if (checkParams) checkParams(imageIndex, planeIndex, buf, planeMin,
-				planeMax);
+			if (checkParams) checkParams(imageIndex, planeIndex, buf, bounds);
 			final int xAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = getMetadata().get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
 			if (ifd == null) ifd = new IFD(log());
 			final int type = getMetadata().get(imageIndex).getPixelType();
 			final long index = planeIndex;
@@ -1443,7 +1443,7 @@ public class TIFFFormat extends AbstractFormat {
 
 		@Override
 		protected void initialize(final int imageIndex, final long planeIndex,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
+			final Interval bounds) throws FormatException,
 			IOException
 		{
 			// Ensure that no more than one thread manipulated the initialized
@@ -1506,7 +1506,7 @@ public class TIFFFormat extends AbstractFormat {
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
 			IFD ifd = new IFD(log());
@@ -1528,7 +1528,7 @@ public class TIFFFormat extends AbstractFormat {
 			}
 			if (planeIndex == 0) addDimensionalAxisInfo(ifd, imageIndex);
 
-			savePlane(imageIndex, planeIndex, plane, ifd, planeMin, planeMax);
+			savePlane(imageIndex, planeIndex, plane, ifd, bounds);
 		}
 
 		@Override

@@ -46,6 +46,9 @@ import io.scif.util.FormatTools;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -157,8 +160,7 @@ public class KontronFormatTest {
 		final short width = 10;
 		final short height = 10;
 		final int planeBytes = width * height * 2;
-		final long[] planeMin = { 0, 0 };
-		final long[] planeMax = { width, height };
+		final Interval bounds = new FinalInterval(width, height);
 		final ByteArrayPlane plane = new ByteArrayPlane(context);
 		plane.setData(new byte[planeBytes]);
 		final ByteBuffer buffer = ByteBuffer.allocate(HEADER_BYTES + planeBytes);
@@ -171,7 +173,7 @@ public class KontronFormatTest {
 		reader.setSource(stream);
 
 		// EXECUTE
-		reader.openPlane(0, 0, plane, planeMin, planeMax, new SCIFIOConfig());
+		reader.openPlane(0, 0, plane, bounds, new SCIFIOConfig());
 
 		// VERIFY
 		assertEquals(

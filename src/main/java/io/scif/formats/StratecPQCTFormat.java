@@ -29,7 +29,15 @@
 
 package io.scif.formats;
 
-import io.scif.*;
+import io.scif.AbstractChecker;
+import io.scif.AbstractFormat;
+import io.scif.AbstractMetadata;
+import io.scif.AbstractParser;
+import io.scif.ByteArrayPlane;
+import io.scif.ByteArrayReader;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.ImageMetadata;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
@@ -42,6 +50,7 @@ import java.util.Date;
 
 import net.imagej.axis.Axes;
 import net.imagej.axis.DefaultLinearAxis;
+import net.imglib2.Interval;
 
 import org.scijava.plugin.Plugin;
 
@@ -438,12 +447,12 @@ public class StratecPQCTFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] planeMin, final long[] planeMax,
+			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final RandomAccessInputStream stream = getStream();
 			stream.seek(HEADER_SIZE);
-			return readPlane(stream, imageIndex, planeMin, planeMax, plane);
+			return readPlane(stream, imageIndex, bounds, plane);
 		}
 	}
 }

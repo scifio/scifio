@@ -2,7 +2,7 @@
  * #%L
  * SCIFIO library for reading and converting scientific file formats.
  * %%
- * Copyright (C) 2011 - 2017 SCIFIO developers.
+ * Copyright (C) 2011 - 2018 SCIFIO developers.
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,32 +26,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+package io.scif.commands;
 
-package io.scif.common;
+import net.imagej.Dataset;
+
+import org.scijava.command.Command;
+import org.scijava.menu.MenuConstants;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Plugin;
 
 /**
- * ReflectException is the exception thrown when something goes wrong performing
- * a reflected operation with ReflectedUniverse.
+ * {@link Command} for saving a {@link Dataset} to a given destination.
  * 
- * @deprecated Use {@link org.scijava.util.ReflectException} instead.
+ * @author Mark Hiner
  */
-@Deprecated
-public class ReflectException extends Exception {
-
-	public ReflectException() {
-		super();
-	}
-
-	public ReflectException(final String s) {
-		super(s);
-	}
-
-	public ReflectException(final String s, final Throwable cause) {
-		super(s, cause);
-	}
-
-	public ReflectException(final Throwable cause) {
-		super(cause);
-	}
-
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT),
+	@Menu(label = "Export"), @Menu(label = "Image...  ") })
+public class SaveDataset extends SaveAsImage {
+// Trivial extension. Just want a new menu path.
 }

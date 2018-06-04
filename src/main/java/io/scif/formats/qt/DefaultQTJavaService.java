@@ -31,8 +31,6 @@ package io.scif.formats.qt;
 
 import io.scif.FormatException;
 import io.scif.MissingLibraryException;
-import io.scif.common.ReflectException;
-import io.scif.common.ReflectedUniverse;
 
 import java.awt.Dimension;
 import java.awt.Image;
@@ -50,6 +48,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.util.ReflectException;
+import org.scijava.util.ReflectedUniverse;
 
 /**
  * Default service for working with QuickTime for Java.

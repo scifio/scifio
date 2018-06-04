@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -457,15 +458,14 @@ public class NRRDFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 			final Metadata meta = getMetadata();
 
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 
 			// TODO : add support for additional encoding types
 			if (meta.getDataFile() == null) {
@@ -473,7 +473,7 @@ public class NRRDFormat extends AbstractFormat {
 					final long planeSize = FormatTools.getPlaneSize(this, imageIndex);
 					getStream().seek(meta.getOffset() + planeIndex * planeSize);
 
-					readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
+					readPlane(getStream(), imageIndex, bounds, plane);
 					return plane;
 				}
 				throw new UnsupportedCompressionException("Unsupported encoding: " +
@@ -484,7 +484,7 @@ public class NRRDFormat extends AbstractFormat {
 					new RandomAccessInputStream(getContext(), meta.getDataFile());
 				s.seek(meta.getOffset() + planeIndex *
 					FormatTools.getPlaneSize(this, imageIndex));
-				readPlane(s, imageIndex, planeMin, planeMax, plane);
+				readPlane(s, imageIndex, bounds, plane);
 				s.close();
 				return plane;
 			}
@@ -493,8 +493,8 @@ public class NRRDFormat extends AbstractFormat {
 			if (meta.isInitializeHelper() && meta.getDataFile() != null &&
 				meta.getHelper() != null)
 			{
-				meta.getHelper().openPlane(imageIndex, planeIndex, plane, planeMin,
-					planeMax, config);
+				meta.getHelper().openPlane(imageIndex, planeIndex, plane, bounds,
+					config);
 				return plane;
 			}
 

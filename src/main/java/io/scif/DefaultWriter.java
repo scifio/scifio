@@ -31,6 +31,8 @@ package io.scif;
 
 import java.io.IOException;
 
+import net.imglib2.Interval;
+
 /**
  * Non-functional default {@link io.scif.Writer} implementation. For use in
  * {@link io.scif.Format}s that do not need a Writer.
@@ -63,7 +65,7 @@ public class DefaultWriter extends AbstractWriter<DefaultMetadata> implements
 	 */
 	@Override
 	protected void writePlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] planeMin, final long[] planeMax)
+		final Plane plane, final Interval bounds)
 		throws FormatException, IOException
 	{
 		throw new UnsupportedOperationException(

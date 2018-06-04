@@ -41,6 +41,9 @@ import io.scif.io.RandomAccessInputStream;
 import java.io.File;
 import java.io.IOException;
 
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -184,11 +187,10 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final long[] planeMin, final long[] planeMax) throws FormatException,
+		final Interval bounds) throws FormatException,
 		IOException
 	{
-		return openPlane(imageIndex, planeIndex, planeMin, planeMax,
-			new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, bounds, new SCIFIOConfig());
 	}
 
 	@Override
@@ -200,11 +202,10 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] planeMin, final long[] planeMax)
+		final Plane plane, final Interval bounds)
 		throws FormatException, IOException
 	{
-		return openPlane(imageIndex, planeIndex, plane, planeMin, planeMax,
-			new SCIFIOConfig());
+		return openPlane(imageIndex, planeIndex, plane, bounds, new SCIFIOConfig());
 	}
 
 	@Override
@@ -217,12 +218,11 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+		final Interval bounds, final SCIFIOConfig config)
 		throws FormatException, IOException
 	{
 		openPlaneHelper();
-		return getParent().openPlane(imageIndex, planeIndex, planeMin, planeMax,
-			config);
+		return getParent().openPlane(imageIndex, planeIndex, bounds, config);
 	}
 
 	@Override
@@ -236,19 +236,11 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] planeMin, final long[] planeMax,
+		final Plane plane, final Interval bounds,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		openPlaneHelper();
-		return getParent().openPlane(imageIndex, planeIndex, plane, planeMin,
-			planeMax, config);
-	}
-
-	@Override
-	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
-		throws FormatException, IOException
-	{
-		return getParent().openThumbPlane(imageIndex, planeIndex);
+		return getParent().openPlane(imageIndex, planeIndex, plane, bounds, config);
 	}
 
 	@Override
@@ -378,21 +370,20 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 
 	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final long[] planeMin, final long[] planeMax, final Plane plane)
+		final Interval bounds, final Plane plane)
 		throws IOException
 	{
 		readPlaneHelper();
-		return getParent().readPlane(s, imageIndex, planeMin, planeMax, plane);
+		return getParent().readPlane(s, imageIndex, bounds, plane);
 	}
 
 	@Override
 	public Plane readPlane(final RandomAccessInputStream s, final int imageIndex,
-		final long[] planeMin, final long[] planeMax, final int scanlinePad,
+		final Interval bounds, final int scanlinePad,
 		final Plane plane) throws IOException
 	{
 		readPlaneHelper();
-		return getParent().readPlane(s, imageIndex, planeMin, planeMax,
-			scanlinePad, plane);
+		return getParent().readPlane(s, imageIndex, bounds, scanlinePad, plane);
 	}
 
 	@Override
@@ -406,15 +397,13 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	}
 
 	@Override
-	public Plane createPlane(final long[] planeMin, final long[] planeMax) {
-		return getParent().createPlane(planeMin, planeMax);
+	public Plane createPlane(final Interval bounds) {
+		return getParent().createPlane(bounds);
 	}
 
 	@Override
-	public Plane createPlane(final ImageMetadata meta, final long[] planeMin,
-		final long[] planeMax)
-	{
-		return getParent().createPlane(meta, planeMin, planeMax);
+	public Plane createPlane(final ImageMetadata meta, final Interval bounds) {
+		return getParent().createPlane(meta, bounds);
 	}
 
 	@Override
@@ -473,5 +462,11 @@ public abstract class AbstractReaderFilter extends AbstractFilter<Reader>
 	 */
 	protected void cleanUp() throws IOException {
 		// No-op
+	}
+
+	protected Interval planarBounds(final int imageIndex) {
+		final Interval bounds = //
+			new FinalInterval(getMetadata().get(imageIndex).getAxesLengthsPlanar());
+		return bounds;
 	}
 }

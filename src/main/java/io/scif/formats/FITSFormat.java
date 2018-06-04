@@ -44,6 +44,7 @@ import io.scif.util.FormatTools;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ArrayUtils;
@@ -197,19 +198,18 @@ public class FITSFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long planeMax[], final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getData();
 
 			FormatTools.checkPlaneForReading(getMetadata(), imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 
 			getStream().seek(
 				getMetadata().getPixelOffset() + planeIndex *
 					FormatTools.getPlaneSize(this, imageIndex));
-			return readPlane(getStream(), imageIndex, planeMin, planeMax, plane);
+			return readPlane(getStream(), imageIndex, bounds, plane);
 		}
 	}
 }

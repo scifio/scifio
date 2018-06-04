@@ -29,7 +29,9 @@
 
 package io.scif.formats;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import io.scif.ByteArrayPlane;
 import io.scif.ImageMetadata;
@@ -45,6 +47,8 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import net.imagej.axis.CalibratedAxis;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -248,8 +252,6 @@ public class ScancoISQFormatTest {
 		final int depth = 3;
 		final int planeBytes = width * height * 2;
 		final int imageBytes = depth * planeBytes;
-		final long[] planeMin = { 0, 0, 0 };
-		final long[] planeMax = { width, height, depth };
 		final ByteArrayPlane plane = new ByteArrayPlane(context);
 		plane.setData(new byte[planeBytes]);
 		final ByteBuffer buffer = ByteBuffer.allocate(
@@ -263,7 +265,8 @@ public class ScancoISQFormatTest {
 		reader.setSource(stream);
 
 		// EXECUTE
-		reader.openPlane(0, 1, plane, planeMin, planeMax, new SCIFIOConfig());
+		final Interval bounds = new FinalInterval(width, height, depth);
+		reader.openPlane(0, 1, plane, bounds, new SCIFIOConfig());
 
 		// VERIFY
 		assertEquals(

@@ -43,7 +43,6 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
 import io.scif.Translator;
-import io.scif.common.DataTools;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
@@ -68,6 +67,8 @@ import java.util.zip.DeflaterOutputStream;
 import javax.imageio.ImageIO;
 
 import net.imagej.axis.Axes;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
@@ -539,12 +540,12 @@ public class APNGFormat extends AbstractFormat {
 		@Override
 		public BufferedImagePlane openPlane(final int imageIndex,
 			final long planeIndex, final BufferedImagePlane plane,
-			final long[] planeMin, final long[] planeMax, final SCIFIOConfig config)
+			final Interval bounds, final SCIFIOConfig config)
 			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, -1,
-				planeMin, planeMax);
+				bounds);
 
 			// If the last processed (cached) plane is requested, return the
 			// requested sub-image, but don't update the last plane (in case the
@@ -553,12 +554,12 @@ public class APNGFormat extends AbstractFormat {
 
 				final BufferedImage subImage =
 					AWTImageTools.getSubimage(lastPlane.getData(), meta.get(imageIndex)
-						.isLittleEndian(), planeMin, planeMax);
+						.isLittleEndian(), bounds);
 				plane.setData(subImage);
 				return plane;
 			}
 			else if (lastPlane == null) {
-				lastPlane = createPlane(planeMin, planeMax);
+				lastPlane = createPlane(bounds);
 				if (getMetadata().get(imageIndex).isIndexed()) {
 					final PLTEChunk plte = meta.getPlte();
 					if (plte != null) {
@@ -576,20 +577,18 @@ public class APNGFormat extends AbstractFormat {
 				final DataInputStream dis =
 					new DataInputStream(new BufferedInputStream(getStream(), 4096));
 				BufferedImage subImg = ImageIO.read(dis);
-				lastPlane.populate(meta.get(imageIndex), subImg, planeMin, planeMax);
+				lastPlane.populate(meta.get(imageIndex), subImg, bounds);
 
 				lastPlaneIndex = 0;
 
 				plane.setData(lastPlane.getData());
 
-				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin,
-					planeMax))
-				{
+				if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds)) {
 					// updates the data of the plane to a sub-image, by
 					// reference
 					subImg =
 						AWTImageTools.getSubimage(lastPlane.getData(), meta.get(imageIndex)
-							.isLittleEndian(), planeMin, planeMax);
+							.isLittleEndian(), bounds);
 					plane.setData(subImg);
 				}
 
@@ -651,10 +650,9 @@ public class APNGFormat extends AbstractFormat {
 			dis.close();
 
 			// Recover first plane
-			final long[] firstPlaneLengths =
-				meta.get(imageIndex).getAxesLengthsPlanar();
-			final long[] firstPlaneOffsets = new long[firstPlaneLengths.length];
-			openPlane(imageIndex, 0, firstPlaneOffsets, firstPlaneLengths, config);
+			final Interval firstPlaneBounds = //
+				new FinalInterval(meta.get(imageIndex).getAxesLengthsPlanar());
+			openPlane(imageIndex, 0, firstPlaneBounds, config);
 
 			// paste current image onto first plane
 			// NB: last plane read was the first plane
@@ -667,8 +665,7 @@ public class APNGFormat extends AbstractFormat {
 				new BufferedImage(lastPlane.getData().getColorModel(), firstRaster,
 					false, null);
 
-			lastPlane.populate(getMetadata().get(imageIndex), bImg, planeMin,
-				planeMax);
+			lastPlane.populate(getMetadata().get(imageIndex), bImg, bounds);
 
 			lastPlaneIndex = planeIndex;
 			return plane.populate(lastPlane);
@@ -746,7 +743,7 @@ public class APNGFormat extends AbstractFormat {
 
 		@Override
 		protected void initialize(final int imageIndex, final long planeIndex,
-			final long[] planeMin, final long[] planeMax) throws FormatException,
+			final Interval bounds) throws FormatException,
 			IOException
 		{
 			if (!isInitialized(imageIndex, planeIndex)) {
@@ -759,7 +756,7 @@ public class APNGFormat extends AbstractFormat {
 				}
 			}
 
-			super.initialize(imageIndex, planeIndex, planeMin, planeMax);
+			super.initialize(imageIndex, planeIndex, bounds);
 		}
 
 		// -- Writer API Methods --
@@ -826,13 +823,11 @@ public class APNGFormat extends AbstractFormat {
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
-			checkParams(imageIndex, planeIndex, plane.getBytes(), planeMin, planeMax);
-			if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(), planeMin,
-				planeMax))
-			{
+			checkParams(imageIndex, planeIndex, plane.getBytes(), bounds);
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(), bounds)) {
 				throw new FormatException(
 					"APNGWriter does not yet support saving image tiles.");
 			}
@@ -841,11 +836,11 @@ public class APNGFormat extends AbstractFormat {
 
 			if (numFrames == 0) {
 				// This is the first frame, and also the default image
-				writePixels(imageIndex, "IDAT", plane, planeMin, planeMax);
+				writePixels(imageIndex, "IDAT", plane, bounds);
 			}
 			else {
 				writeFCTL(planeIndex);
-				writePixels(imageIndex, "fdAT", plane, planeMin, planeMax);
+				writePixels(imageIndex, "fdAT", plane, bounds);
 			}
 			numFrames++;
 		}
@@ -941,7 +936,7 @@ public class APNGFormat extends AbstractFormat {
 		}
 
 		private void writePixels(final int imageIndex, final String chunk,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
 			final byte[] stream = plane.getBytes();
@@ -954,9 +949,7 @@ public class APNGFormat extends AbstractFormat {
 			final int pixelType = getMetadata().get(imageIndex).getPixelType();
 			final boolean signed = FormatTools.isSigned(pixelType);
 
-			if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(), planeMin,
-				planeMax))
-			{
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, getMetadata(), bounds)) {
 				throw new FormatException("APNGWriter does not support writing tiles.");
 			}
 
@@ -1006,8 +999,8 @@ public class APNGFormat extends AbstractFormat {
 								else pixel -= max;
 							}
 							final int output = (int) (col * rgbCCount + c) * bytesPerPixel;
-							DataTools
-								.unpackBytes(pixel, rowBuf, output, bytesPerPixel, false);
+
+							Bytes.unpack(pixel, rowBuf, output, bytesPerPixel, false);
 						}
 					}
 				}
@@ -1061,7 +1054,7 @@ public class APNGFormat extends AbstractFormat {
 	 * used to write it can not be guaranteed valid.
 	 * </p>
 	 */
-	@Plugin(type = Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = Translator.class, priority = Priority.LOW)
 	public static class APNGTranslator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{

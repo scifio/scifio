@@ -197,11 +197,7 @@ public class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 		@Override
 		public void load(final SingleCellArrayImg<T, ?> cell) throws Exception {
 			final A data = wrap.apply(cell.getStorageArray());
-			final long[] dimensions = new long[cell.numDimensions()];
-			cell.dimensions(dimensions);
-			final long[] min = new long[cell.numDimensions()];
-			cell.min(min);
-			loader.loadArray(Util.long2int(dimensions), min, data);
+			loader.loadArray(cell, data);
 		}
 	}
 
@@ -308,8 +304,15 @@ public class SCIFIOCellImgFactory<T extends NativeType<T>> extends
 	{
 		CellImgFactory.verifyDimensions(dimensions);
 		final int n = dimensions.length;
+
+		final int[] defaultDims = new int[dimensions.length];
+		for (int d = 0; d < defaultDims.length; d++) {
+			defaultDims[d] = dimensions[d] < defaultCellDimensions[d] ? //
+				(int) dimensions[d] : defaultCellDimensions[d];
+		}
+
 		final int[] cellDimensions = CellImgFactory.getCellDimensions(
-			defaultCellDimensions, n, entitiesPerPixel);
+			defaultDims, n, entitiesPerPixel);
 		return new CellGrid(dimensions, cellDimensions);
 	}
 

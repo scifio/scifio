@@ -42,6 +42,7 @@ import java.util.Map;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
+import net.imglib2.Interval;
 
 /**
  * A utility class for working with {@link io.scif.Metadata} objects.
@@ -61,30 +62,29 @@ public class SCIFIOMetadataTools {
 	 * Returns true if the provided axes correspond to a complete image plane
 	 */
 	public static boolean wholePlane(final int imageIndex, final Metadata meta,
-		final long[] planeMin, final long[] planeMax)
+		final Interval bounds)
 	{
-		final boolean wholePlane = wholeRow(imageIndex, meta, planeMin, planeMax);
+		final boolean wholePlane = wholeRow(imageIndex, meta, bounds);
 		final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
-		return wholePlane && planeMin[yIndex] == 0 &&
-			planeMax[yIndex] == meta.get(imageIndex).getAxisLength(Axes.Y);
+		return wholePlane && bounds.min(yIndex) == 0 &&
+			bounds.max(yIndex) == meta.get(imageIndex).getAxisLength(Axes.Y) - 1;
 	}
 
 	/**
 	 * Returns true if the provided axes correspond to a complete image row
 	 */
 	public static boolean wholeRow(final int imageIndex, final Metadata meta,
-		final long[] planeMin, final long[] planeMax)
+		final Interval bounds)
 	{
-		boolean wholeRow = true;
 		final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
 
-		for (int i = 0; wholeRow && i < planeMin.length; i++) {
-			if (i == yIndex) continue;
-			if (planeMin[i] != 0 ||
-				planeMax[i] != meta.get(imageIndex).getAxisLength(i)) wholeRow = false;
+		for (int d = 0; d < bounds.numDimensions(); d++) {
+			if (d == yIndex) continue;
+			final long length = meta.get(imageIndex).getAxisLength(d);
+			if (bounds.min(d) != 0 || bounds.dimension(d) != length) return false;
 		}
 
-		return wholeRow;
+		return true;
 	}
 
 	/**

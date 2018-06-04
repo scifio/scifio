@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -330,12 +331,12 @@ public class FileStitcher extends AbstractReaderFilter {
 
 	@Override
 	public Plane openPlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] offsets, final long[] lengths,
+		final Plane plane, final Interval bounds,
 		final SCIFIOConfig config) throws FormatException, IOException
 	{
 		// If no stitching, delegate to parent
 		if (noStitch) return getParent().openPlane(imageIndex, planeIndex, plane,
-			offsets, lengths, new SCIFIOConfig().groupableSetGroupFiles(false));
+			bounds, new SCIFIOConfig().groupableSetGroupFiles(false));
 
 		// Check for plane compatibility
 		Plane bp;
@@ -353,7 +354,7 @@ public class FileStitcher extends AbstractReaderFilter {
 			adjustedIndex[1] < readers[adjustedIndex[0]].getImageCount())
 		{
 			final Reader r = readers[adjustedIndex[0]];
-			return r.openPlane(adjustedIndex[1], planeIndex, bp, offsets, lengths,
+			return r.openPlane(adjustedIndex[1], planeIndex, bp, bounds,
 				config);
 		}
 
@@ -361,35 +362,6 @@ public class FileStitcher extends AbstractReaderFilter {
 		// this file does not contain enough image planes
 		Arrays.fill(bp.getBytes(), (byte) 0);
 		return bp;
-	}
-
-	@Override
-	public Plane openThumbPlane(final int imageIndex, final long planeIndex)
-		throws FormatException, IOException
-	{
-		// If no stitching, delegate to parent
-		if (noStitch) return getParent().openThumbPlane(imageIndex, planeIndex);
-
-		// If this is a valid image index, get the appropriate reader and
-		// return the corresponding plane
-		final int[] adjustedIndex = computeFileIndex(imageIndex);
-		if (adjustedIndex[0] < readers.length &&
-			adjustedIndex[1] < readers[adjustedIndex[0]].getImageCount())
-		{
-			final Reader r = readers[adjustedIndex[0]];
-			return r.openThumbPlane(adjustedIndex[1], planeIndex);
-		}
-
-		// return a blank image to cover for the fact that
-		// this file does not contain enough image planes
-		final long[] thumbPlaneOffsets =
-			new long[getParentMeta().get(0).getAxesPlanar().size()];
-		final long[] thumbPlaneBounds = getParentMeta().get(0).getAxesLengths();
-		thumbPlaneBounds[getParentMeta().get(0).getAxisIndex(Axes.X)] =
-			getParentMeta().get(0).getThumbSizeX();
-		thumbPlaneBounds[getParentMeta().get(0).getAxisIndex(Axes.Y)] =
-			getParentMeta().get(0).getThumbSizeY();
-		return getParent().createPlane(thumbPlaneOffsets, thumbPlaneBounds);
 	}
 
 	@Override

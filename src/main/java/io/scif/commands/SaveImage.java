@@ -2,7 +2,7 @@
  * #%L
  * SCIFIO library for reading and converting scientific file formats.
  * %%
- * Copyright (C) 2011 - 2017 SCIFIO developers.
+ * Copyright (C) 2011 - 2018 SCIFIO developers.
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,54 +27,63 @@
  * #L%
  */
 
-package io.scif;
+package io.scif.commands;
 
-import java.util.List;
+import java.io.File;
+import java.util.HashMap;
 
-import org.scijava.Priority;
+import net.imagej.Dataset;
+import net.imagej.ImgPlus;
+
+import org.scijava.command.Command;
+import org.scijava.command.CommandService;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Basic {@link io.scif.Translator} implementation. Can convert between any two
- * Metadata implementations because only {@link io.scif.ImageMetadata} is used.
- *
- * @see io.scif.Translator
- * @see io.scif.DefaultMetadata
- * @see io.scif.ImageMetadata
+ * Saves the current {@link Dataset} to disk.
+ * 
+ * @author Barry DeZonia
  * @author Mark Hiner
  */
-@Plugin(type = Translator.class, priority = Priority.VERY_LOW)
-public class DefaultTranslator extends AbstractTranslator<Metadata, Metadata> {
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
+	@Menu(label = "Save", weight = 20, mnemonic = 's', accelerator = "^S") }, attrs = { @Attr(name = "no-legacy") })
+public class SaveImage extends ContextCommand {
 
-	// -- Translater API Methods --
+	@Parameter
+	private CommandService commandService;
 
-	@Override
-	public Class<? extends io.scif.Metadata> source() {
-		return io.scif.Metadata.class;
-	}
-
-	@Override
-	public Class<? extends io.scif.Metadata> dest() {
-		return io.scif.Metadata.class;
-	}
+	@Parameter
+	private Dataset dataset;
 
 	@Override
-	protected void translateImageMetadata(final List<ImageMetadata> source,
-		final Metadata dest)
-	{
-		dest.createImageMetadata(source.size());
+	public void run() {
+		final HashMap<String, Object> inputMap = new HashMap<String, Object>();
+		inputMap.put("dataset", dataset);
 
-		for (int i = 0; i < source.size(); i++) {
-			final ImageMetadata sourceMeta = source.get(i);
+		final ImgPlus<?> img = dataset.getImgPlus();
+		final String source = img.getSource();
 
-			// Need to add a new ImageMetadata
-			if (i >= dest.getImageCount()) {
-				dest.add(new DefaultImageMetadata(sourceMeta));
-			}
-			// Update the existing ImageMetadata using sourceMeta
-			else {
-				dest.get(i).copy(sourceMeta);
-			}
+		final File sourceFile = source.isEmpty() ? null : new File(source);
+
+		if (sourceFile != null && sourceFile.isFile()) {
+			inputMap.put("outputFile", new File(source));
 		}
+		commandService.run(SaveAsImage.class, true, inputMap);
 	}
+	
+	public void setDataset(Dataset d) {
+		dataset = d;
+	}
+	
+	public Dataset getDataset() {
+		return dataset;
+	}
+
 }

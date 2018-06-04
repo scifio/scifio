@@ -31,6 +31,8 @@ package io.scif;
 
 import io.scif.util.FormatTools;
 
+import net.imglib2.Interval;
+
 import org.scijava.Context;
 import org.scijava.util.ArrayUtils;
 
@@ -51,9 +53,9 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 	}
 
 	public ByteArrayPlane(final Context context, final ImageMetadata meta,
-		final long[] planeOffsets, final long[] planeLengths)
+		final Interval bounds)
 	{
-		super(context, meta, planeOffsets, planeLengths);
+		super(context, meta, bounds);
 	}
 
 	// -- Plane API methods --
@@ -66,19 +68,17 @@ public class ByteArrayPlane extends AbstractPlane<byte[], ByteArrayPlane> {
 	// -- AbstractPlane API --
 
 	@Override
-	protected byte[] blankPlane(final long[] planeOffsets,
-		final long[] planeBounds)
-	{
+	protected byte[] blankPlane(final Interval bounds) {
 		byte[] buf = null;
 
-		final long[] lengths = new long[planeOffsets.length + 1];
-		for (int i = 0; i < lengths.length - 1; i++) {
-			lengths[i] = planeBounds[i];
+		final long[] sizes = new long[bounds.numDimensions() + 1];
+		for (int i = 0; i < sizes.length - 1; i++) {
+			sizes[i] = bounds.dimension(i);
 		}
-		lengths[lengths.length - 1] =
+		sizes[sizes.length - 1] =
 			FormatTools.getBytesPerPixel(getImageMetadata().getPixelType());
 
-		buf = ArrayUtils.allocate(lengths);
+		buf = ArrayUtils.allocate(sizes);
 		return buf;
 	}
 }

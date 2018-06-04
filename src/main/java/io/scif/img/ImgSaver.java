@@ -54,6 +54,7 @@ import java.util.List;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.CalibratedAxis;
+import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.exception.ImgLibException;
 import net.imglib2.exception.IncompatibleTypeException;
@@ -616,9 +617,12 @@ public class ImgSaver extends AbstractImgIOComponent {
 				final long[] planarMin =
 					SCIFIOMetadataTools.modifyPlanar(imageIndex, meta,
 						new long[planarLengths.length]);
+				final long[] planarMax = new long[planarMin.length];
+				for (int d = 0; d < planarMax.length; d++)
+					planarMax[d] = planarMin[d] + planarLengths[d] - 1;
+				final FinalInterval bounds = new FinalInterval(planarMin, planarMax);
 				final ByteArrayPlane destPlane =
-					new ByteArrayPlane(getContext(), meta.get(imageIndex), planarMin,
-						planarLengths);
+					new ByteArrayPlane(getContext(), meta.get(imageIndex), bounds);
 
 				for (int cIndex = 0; cIndex < rgbChannelCount; cIndex++) {
 					final Object curPlane =

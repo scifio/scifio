@@ -64,6 +64,8 @@ import java.util.List;
 import java.util.Vector;
 
 import net.imagej.axis.Axes;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
@@ -848,14 +850,13 @@ public class AVIFormat extends AbstractFormat {
 
 		@Override
 		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] planeMin,
-			final long[] planeMax, final SCIFIOConfig config) throws FormatException,
-			IOException
+			final long planeIndex, final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final byte[] buf = plane.getBytes();
 			final Metadata meta = getMetadata();
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex,
-				buf.length, planeMin, planeMax);
+				buf.length, bounds);
 			plane.setColorTable(meta.getColorTable(0, 0));
 
 			final int bytes =
@@ -870,8 +871,8 @@ public class AVIFormat extends AbstractFormat {
 			}
 			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
 			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) planeMin[xAxis], y = (int) planeMin[yAxis], w =
-				(int) planeMax[xAxis], h = (int) planeMax[yAxis];
+			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
+					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
 
 			final long fileOff = meta.getOffsets().get((int) planeIndex).longValue();
 			final long end =
@@ -1009,9 +1010,9 @@ public class AVIFormat extends AbstractFormat {
 
 				// if not full plane, open the full plane and then decompress
 
-				final ByteArrayPlane tmpPlane =
-					createPlane(new long[meta.get(imageIndex).getPlanarAxisCount()], meta
-						.get(imageIndex).getAxesLengthsPlanar());
+				final Interval bounds = //
+					new FinalInterval(meta.get(imageIndex).getAxesLengthsPlanar());
+				final ByteArrayPlane tmpPlane = createPlane(bounds);
 
 				// If our last cached plane was of insufficient size for the
 				// requested
@@ -1149,7 +1150,7 @@ public class AVIFormat extends AbstractFormat {
 
 		@Override
 		public void writePlane(final int imageIndex, final long planeIndex,
-			final Plane plane, final long[] planeMin, final long[] planeMax)
+			final Plane plane, final Interval bounds)
 			throws FormatException, IOException
 		{
 			final Metadata meta = getMetadata();
@@ -1157,8 +1158,8 @@ public class AVIFormat extends AbstractFormat {
 			final boolean interleaved =
 				plane.getImageMetadata().getInterleavedAxisCount() > 0;
 
-			checkParams(imageIndex, planeIndex, buf, planeMin, planeMax);
-			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, planeMin, planeMax))
+			checkParams(imageIndex, planeIndex, buf, bounds);
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds))
 			{
 				throw new FormatException(
 					"AVIWriter does not yet support saving image tiles.");
@@ -1668,7 +1669,7 @@ public class AVIFormat extends AbstractFormat {
 		}
 	}
 
-	@Plugin(type = io.scif.Translator.class, priority = Priority.LOW_PRIORITY)
+	@Plugin(type = io.scif.Translator.class, priority = Priority.LOW)
 	public static class Translator extends
 		AbstractTranslator<io.scif.Metadata, Metadata>
 	{

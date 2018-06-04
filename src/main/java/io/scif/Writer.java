@@ -37,6 +37,8 @@ import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
 
+import net.imglib2.Interval;
+
 /**
  * Interface for all SCIFIO writers.
  * <p>
@@ -73,13 +75,12 @@ public interface Writer extends HasFormat, HasSource {
 	 * @param imageIndex the image index within the dataset.
 	 * @param planeIndex the plane index within the image.
 	 * @param plane the pixels save
-	 * @param planeMin minimal bounds of the planar axes
-	 * @param planeMax maximum bounds of the planar axes
+	 * @param bounds bounds of the planar axes.
 	 * @throws FormatException if one of the parameters is invalid.
 	 * @throws IOException if there was a problem writing to the file.
 	 */
 	void savePlane(final int imageIndex, final long planeIndex,
-		final Plane plane, final long[] planeMin, final long[] planeMax)
+		final Plane plane, final Interval bounds)
 		throws FormatException, IOException;
 
 	/**

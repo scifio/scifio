@@ -53,7 +53,7 @@ import org.scijava.service.Service;
  * @see io.scif.services.InitializeService
  * @author Mark Hiner
  */
-@Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
+@Plugin(type = Service.class, priority = Priority.LOW)
 public class DefaultInitializeService extends AbstractService implements
 	InitializeService
 {
