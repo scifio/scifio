@@ -29,6 +29,8 @@
 
 package io.scif;
 
+import org.scijava.io.location.Location;
+
 /**
  * Interface for all SCIFIO formats.
  * <p>
@@ -155,4 +157,14 @@ public interface Format extends SCIFIOPlugin {
 	 * @return The class of the Writer associated with this format
 	 */
 	Class<?> getWriterClass();
+
+	/**
+	 * This is only needed by Format that depend on their own Location types
+	 * (e.g. OMEROFormat)
+	 * @param outputLocation
+	 * @return if this LocationType is owned by this format
+	 */
+	default boolean ownsLocationType(Location outputLocation) {
+		return false;
+	}
 }

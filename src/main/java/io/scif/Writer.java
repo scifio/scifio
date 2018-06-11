@@ -31,12 +31,12 @@ package io.scif;
 
 import io.scif.codec.CodecOptions;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessOutputStream;
 
 import java.awt.image.ColorModel;
-import java.io.File;
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import net.imglib2.Interval;
 
 /**
@@ -115,124 +115,86 @@ public interface Writer extends HasFormat, HasSource {
 	 * Sets the source that will be written to during {@link #savePlane} calls.
 	 * NB: resets any configuration on this writer.
 	 *
-	 * @param fileName The name of an image source to be written.
+	 * @param location The {@link Location} to where the image source will be
+	 *          written.
 	 */
-	void setDest(String fileName) throws FormatException, IOException;
+	void setDest(Location location) throws FormatException, IOException;
 
 	/**
 	 * Sets the source that will be written to during {@link #savePlane} calls.
 	 * NB: resets any configuration on this writer.
 	 *
-	 * @param file A file-based image source to write to.
+	 * @param handle The image source to write to.
 	 */
-	void setDest(File file) throws FormatException, IOException;
+	void setDest(DataHandle<Location> handle) throws FormatException, IOException;
 
 	/**
-	 * Sets the source that will be written to during {@link #savePlane} calls.
-	 * NB: resets any configuration on this writer.
+	 * As {@link #setDest(Location)} with specification for source image index.
 	 *
-	 * @param stream The image source to write to.
+	 * @param location The {@link Location} of an image source to be written.
+	 * @param imageIndex The index within the source that will be written.
 	 */
-	void setDest(RandomAccessOutputStream stream) throws FormatException,
+	void setDest(Location location, int imageIndex) throws FormatException,
 		IOException;
 
 	/**
-	 * As {@link #setDest(String)} with specification for source image index.
+	 * As {@link #setDest(DataHandle)}, with specification for source image index.
 	 *
-	 * @param fileName The name of an image source to be written.
+	 * @param handle The image source to write to.
 	 * @param imageIndex The index within the source that will be written.
 	 */
-	void setDest(String fileName, int imageIndex) throws FormatException,
-		IOException;
-
-	/**
-	 * As {@link #setDest(File)} with specification for source image index.
-	 *
-	 * @param file A file-based image source to write to.
-	 * @param imageIndex The index within the source that will be written.
-	 */
-	void setDest(File file, int imageIndex) throws FormatException, IOException;
-
-	/**
-	 * As {@link #setDest(RandomAccessOutputStream)}, with specification for
-	 * source image index.
-	 *
-	 * @param stream The image source to write to.
-	 * @param imageIndex The index within the source that will be written.
-	 */
-	void setDest(RandomAccessOutputStream stream, int imageIndex)
+	void setDest(DataHandle<Location> handle, int imageIndex)
 		throws FormatException, IOException;
 
 	/**
-	 * As {@link #setDest(String)} with specification for new configuration
+	 * As {@link #setDest(Location)} with specification for new configuration
 	 * options.
 	 *
-	 * @param fileName The name of an image source to be written.
+	 * @param location The {@link Location} of an image source to be written.
 	 * @param config Configuration information to use for this write.
 	 */
-	void setDest(String fileName, SCIFIOConfig config) throws FormatException,
+	void setDest(Location location, SCIFIOConfig config) throws FormatException,
 		IOException;
 
 	/**
-	 * As {@link #setDest(File)} with specification for new configuration options.
+	 * As {@link #setDest(DataHandle)}, with specification for new configuration
+	 * options.
 	 *
-	 * @param file A file-based image source to write to.
+	 * @param handle The image source to write to.
 	 * @param config Configuration information to use for this write.
 	 */
-	void setDest(File file, SCIFIOConfig config) throws FormatException,
-		IOException;
+	void setDest(DataHandle<Location> handle, SCIFIOConfig config)
+		throws FormatException, IOException;
 
 	/**
-	 * As {@link #setDest(RandomAccessOutputStream)}, with specification for new
+	 * As {@link #setDest(Location, int)} with specification for new configuration
+	 * options.
+	 *
+	 * @param location The {@link Location} of an image source to be written.
+	 * @param imageIndex The index within the source that will be written.
+	 * @param config Configuration information to use for this write.
+	 */
+	void setDest(Location location, int imageIndex, SCIFIOConfig config)
+		throws FormatException, IOException;
+
+	/**
+	 * As {@link #setDest(DataHandle, int)}, with specification for new
 	 * configuration options.
 	 *
-	 * @param stream The image source to write to.
-	 * @param config Configuration information to use for this write.
-	 */
-	void setDest(RandomAccessOutputStream stream, SCIFIOConfig config)
-		throws FormatException, IOException;
-
-	/**
-	 * As {@link #setDest(String, int)} with specification for new configuration
-	 * options.
-	 *
-	 * @param fileName The name of an image source to be written.
+	 * @param handle The image source to write to.
 	 * @param imageIndex The index within the source that will be written.
 	 * @param config Configuration information to use for this write.
 	 */
-	void setDest(String fileName, int imageIndex, SCIFIOConfig config)
+	void setDest(DataHandle<Location> handle, int imageIndex, SCIFIOConfig config)
 		throws FormatException, IOException;
-
-	/**
-	 * As {@link #setDest(File, int)} with specification for new configuration
-	 * options.
-	 *
-	 * @param file A file-based image source to write to.
-	 * @param imageIndex The index within the source that will be written.
-	 * @param config Configuration information to use for this write.
-	 */
-	void setDest(File file, int imageIndex, SCIFIOConfig config)
-		throws FormatException, IOException;
-
-	/**
-	 * As {@link #setDest(RandomAccessOutputStream, int)}, with specification for
-	 * new configuration options.
-	 *
-	 * @param stream The image source to write to.
-	 * @param imageIndex The index within the source that will be written.
-	 * @param config Configuration information to use for this write.
-	 */
-	void setDest(RandomAccessOutputStream stream, int imageIndex,
-		SCIFIOConfig config) throws FormatException, IOException;
 
 	/**
 	 * Retrieves a reference to the output source that will be written to during
 	 * {@link #savePlane} calls.
 	 *
-	 * @return The {@code RandomAccessOutputStream} associated with this
-	 *         {@code Writer}.
+	 * @return The {@link DataHandle}} associated with this {@code Writer}.
 	 */
-	RandomAccessOutputStream getStream();
+	DataHandle<Location> getHandle();
 
 	/**
 	 * Sets the color model.

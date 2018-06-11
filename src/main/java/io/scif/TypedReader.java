@@ -30,10 +30,11 @@
 package io.scif;
 
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 
 import java.io.IOException;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 import net.imglib2.Interval;
 
 /**
@@ -120,31 +121,30 @@ public interface TypedReader<M extends TypedMetadata, P extends DataPlane<?>>
 	/**
 	 * Generic-parameterized {@code readPlane} method, using
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, Interval, Plane)}
+	 * {@link io.scif.Reader#readPlane(DataHandle, int, long[], long[], Plane)}
+	 * <p>
+	 * NB Presumes that the source stream {@code s} is set to the correct offset,
+	 * i.e. start of the plane
+	 * </p>
+	 *
+	 * @see io.scif.Reader#readPlane(DataHandle, int, Interval, Plane)
+	 */
+	P readPlane(DataHandle<Location> s, int imageIndex, Interval bounds,
+		P plane) throws IOException;
+
+	/**
+	 * Generic-parameterized {@code readPlane} method, using
+	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
+	 * {@link io.scif.Reader#readPlane(DataHandle, int, Interval, int, Plane)}
 	 * <p>
 	 * NB Presumes that the source stream {@code s} is set to the correct offset,
 	 * i.e. start of the plane
 	 * </p>
 	 *
 	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, Interval,
-	 *      Plane)
+	 *      int, Plane)
 	 */
-	P readPlane(RandomAccessInputStream s, int imageIndex, Interval bounds,
-		P plane) throws IOException;
-
-	/**
-	 * Generic-parameterized {@code readPlane} method, using
-	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
-	 * {@link io.scif.Reader#readPlane(RandomAccessInputStream, int, Interval, int, Plane)}
-	 * <p>
-	 * NB Presumes that the source stream {@code s} is set to the correct offset,
-	 * i.e. start of the plane
-	 * </p>
-	 *
-	 * @see io.scif.Reader#readPlane(RandomAccessInputStream, int, Interval, int,
-	 *      Plane)
-	 */
-	P readPlane(RandomAccessInputStream s, int imageIndex, Interval bounds,
+	P readPlane(DataHandle<Location> s, int imageIndex, Interval bounds,
 		int scanlinePad, P plane) throws IOException;
 
 	@Override

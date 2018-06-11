@@ -29,27 +29,31 @@
 
 package io.scif;
 
-import java.io.IOException;
-
-import org.scijava.io.location.Location;
-
 /**
- * Interface for components that can group multiple files together (e.g. for
- * Parsing metadata or reading pixels)
- *
- * @author Mark Hiner
+ * Encompasses basic metadata about a Loation.
  */
-public interface Groupable {
+public class LocationInfo {
+
+	// -- Fields --
+
+	/** Absolute path to this file. */
+	public String locationName;
+
+	/** io.scif.Reader implementation that would be used to read this file. */
+	public Class<?> reader;
 
 	/**
-	 * Returns an int indicating that we cannot, must, or might group the files in
-	 * a given dataset.
+	 * Whether or not this file can be passed to the appropriate reader's
+	 * setId(String) method.
 	 */
-	int fileGroupOption(Location id) throws FormatException, IOException;
+	public boolean usedToInitialize;
 
-	/** Returns true if this is a single-file format. */
-	boolean isSingleFile(Location id) throws FormatException, IOException;
+	// -- Object API methods --
 
-	/** Returns true if this format supports multi-file datasets. */
-	boolean hasCompanionFiles();
+	@Override
+	public String toString() {
+		return "filename = " + locationName + "\nreader = " + reader.getName() +
+			"\nused to initialize = " + usedToInitialize;
+	}
+
 }

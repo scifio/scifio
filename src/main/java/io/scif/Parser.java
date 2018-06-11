@@ -30,11 +30,12 @@
 package io.scif;
 
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Set;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 
 /**
  * Interface for all SCIFIO Parsers.
@@ -51,21 +52,13 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	// -- Parser API methods --
 
 	/**
-	 * Creates a {@code Metadata} object using the provided name of an image
+	 * Creates a {@code Metadata} object using the provided location of an image
 	 * source.
 	 *
-	 * @param fileName Name of the image source to parse.
+	 * @param location the {@link Location} of the image source to parse.
 	 * @return A new {@code Metadata} object of the appropriate type.
 	 */
-	Metadata parse(String fileName) throws IOException, FormatException;
-
-	/**
-	 * Creates a {@code Metadata} object from the provided image file.
-	 *
-	 * @param file a path to the image file to parse.
-	 * @return A new {@code Metadata} object of the appropriate type.
-	 */
-	Metadata parse(File file) throws IOException, FormatException;
+	Metadata parse(Location location) throws IOException, FormatException;
 
 	/**
 	 * Creates a {@code Metadata} object from the provided image source.
@@ -73,107 +66,70 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	 * @param stream a random access handle to the image source to parse.
 	 * @return A new {@code Metadata} object of the appropriate type.
 	 */
-	Metadata parse(RandomAccessInputStream stream) throws IOException,
+	Metadata parse(DataHandle<Location> stream) throws IOException,
 		FormatException;
 
 	/**
 	 * Parses metadata using the provided name of an image source, and writes to
 	 * an existing {@code Metadata} object (overwriting may occur).
 	 *
-	 * @param fileName Name of the image source to parse.
+	 * @param location the {@link Location} of the image source to parse.
 	 * @param meta A base {@code Metadata} to fill.
 	 * @return The provided {@code Metadata} after parsing.
 	 * @throws IllegalArgumentException if meta is not assignable from the
 	 *           {@code Metadata} associated with this {@code Parser's Format}
 	 */
-	Metadata parse(String fileName, Metadata meta) throws IOException,
+	Metadata parse(Location location, Metadata meta) throws IOException,
 		FormatException;
-
-	/**
-	 * Parses metadata from the provided file location to an existing
-	 * {@code Metadata} object (overwriting may occur).
-	 *
-	 * @param file a path to the image file to parse.
-	 * @param meta A base {@code Metadata} to fill.
-	 * @return The provided {@code Metadata} after parsing.
-	 * @throws IllegalArgumentException if meta is not assignable from the
-	 *           {@code Metadata} associated with this {@code Parser's Format}
-	 */
-	Metadata parse(File file, Metadata meta) throws IOException, FormatException;
 
 	/**
 	 * Parses metadata from the provided image source to an existing
 	 * {@code Metadata} object (overwriting may occur).
 	 *
-	 * @param stream a random access handle to the image source to parse.
+	 * @param stream A {@link DataHandle} to the image source to parse.
 	 * @param meta A base {@code Metadata} to fill.
 	 * @return The provided {@code Metadata} after parsing.
 	 * @throws IllegalArgumentException if meta is not assignable from the
 	 *           {@code Metadata} associated with this {@code Parser's Format}
 	 */
-	Metadata parse(RandomAccessInputStream stream, Metadata meta)
-		throws IOException, FormatException;
+	Metadata parse(DataHandle<Location> stream, Metadata meta) throws IOException,
+		FormatException;
 
 	/**
-	 * As {@link #parse(String)} with configuration options.
+	 * As {@link #parse(Location)} with configuration options.
 	 *
 	 * @param fileName Name of the image source to parse.
 	 * @param config Configuration information to use for this parse.
 	 * @return A new {@code Metadata} object of the appropriate type.
 	 */
-	Metadata parse(String fileName, SCIFIOConfig config) throws IOException,
+	Metadata parse(Location fileName, SCIFIOConfig config) throws IOException,
 		FormatException;
 
 	/**
-	 * As {@link #parse(File)} with configuration options.
+	 * As {@link #parse(DataHandle)} with configuration options.
 	 *
-	 * @param file a path to the image file to parse.
+	 * @param handle a {@link DataHandle} to the image source to parse.
 	 * @param config Configuration information to use for this parse.
 	 * @return A new {@code Metadata} object of the appropriate type.
 	 */
-	Metadata parse(File file, SCIFIOConfig config) throws IOException,
-		FormatException;
-
-	/**
-	 * As {@link #parse(RandomAccessInputStream)} with configuration options.
-	 *
-	 * @param stream a random access handle to the image source to parse.
-	 * @param config Configuration information to use for this parse.
-	 * @return A new {@code Metadata} object of the appropriate type.
-	 */
-	Metadata parse(RandomAccessInputStream stream, SCIFIOConfig config)
+	Metadata parse(DataHandle<Location> handle, SCIFIOConfig config)
 		throws IOException, FormatException;
 
 	/**
-	 * As {@link #parse(RandomAccessInputStream, Metadata)} with configuration
-	 * options.
+	 * As {@link #parse(Location, Metadata)} with configuration options.
 	 *
-	 * @param fileName Name of the image source to parse.
+	 * @param fileName the {@link Location} of the image source to parse.
 	 * @param meta A base {@code Metadata} to fill.
 	 * @param config Configuration information to use for this parse.
 	 * @return The provided {@code Metadata} after parsing.
 	 * @throws IllegalArgumentException if meta is not assignable from the
 	 *           {@code Metadata} associated with this {@code Parser's Format}
 	 */
-	Metadata parse(String fileName, Metadata meta, SCIFIOConfig config)
+	Metadata parse(Location fileName, Metadata meta, SCIFIOConfig config)
 		throws IOException, FormatException;
 
 	/**
-	 * As {@link #parse(File, Metadata)} with configuration options.
-	 *
-	 * @param file a path to the image file to parse.
-	 * @param meta A base {@code Metadata} to fill.
-	 * @param config Configuration information to use for this parse.
-	 * @return The provided {@code Metadata} after parsing.
-	 * @throws IllegalArgumentException if meta is not assignable from the
-	 *           {@code Metadata} associated with this {@code Parser's Format}
-	 */
-	Metadata parse(File file, Metadata meta, SCIFIOConfig config)
-		throws IOException, FormatException;
-
-	/**
-	 * As {@link #parse(RandomAccessInputStream, Metadata)} with configuration
-	 * options.
+	 * /** As {@link #parse(DataHandle, Metadata)} with configuration options.
 	 *
 	 * @param stream a random access handle to the image source to parse.
 	 * @param meta A base {@code Metadata} to fill.
@@ -182,7 +138,7 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	 * @throws IllegalArgumentException if meta is not assignable from the
 	 *           {@code Metadata} associated with this {@code Parser's Format}
 	 */
-	Metadata parse(RandomAccessInputStream stream, Metadata meta,
+	Metadata parse(DataHandle<Location> stream, Metadata meta,
 		SCIFIOConfig config) throws IOException, FormatException;
 
 	/**
@@ -191,53 +147,59 @@ public interface Parser extends HasFormat, HasSource, Groupable {
 	Metadata getMetadata();
 
 	/**
-	 * @return The last input stream read by this parser.
+	 * @return The last {@link DataHandle} read by this parser.
 	 */
-	RandomAccessInputStream getSource();
+	DataHandle<Location> getSource();
+
+	/**
+	 * @return The last Location read from by this parser.
+	 */
+	Location getSourceLocation();
 
 	/**
 	 * Updates the source being operated on by this parser (e.g. in multi-file
 	 * formats).
 	 */
-	void updateSource(String source) throws IOException;
+	void updateSource(Location source) throws IOException;
 
 	/** Returns an array of filenames needed to open this dataset. */
-	String[] getUsedFiles();
+	Location[] getUsedFiles();
 
 	/**
 	 * Returns an array of filenames needed to open this dataset. If the
 	 * 'noPixels' flag is set, then only files that do not contain pixel data will
 	 * be returned.
 	 */
-	String[] getUsedFiles(boolean noPixels);
+	Location[] getUsedLocations(boolean noPixels);
 
 	/** Returns an array of filenames needed to open the indicated image index. */
-	String[] getImageUsedFiles(int imageIndex);
+	Location[] getImageUsedFiles(int imageIndex);
 
 	/**
 	 * Returns an array of filenames needed to open the indicated image. If the
 	 * 'noPixels' flag is set, then only files that do not contain pixel data will
 	 * be returned.
 	 */
-	String[] getImageUsedFiles(int imageIndex, boolean noPixels);
+	Location[] getImageUsedFiles(int imageIndex, boolean noPixels);
 
 	/**
-	 * Returns an array of FileInfo objects representing the files needed to open
+	 * Returns an array of LocationInfo objects representing the Locations needed to open
 	 * this dataset. If the 'noPixels' flag is set, then only files that do not
 	 * contain pixel data will be returned.
 	 */
-	FileInfo[] getAdvancedUsedFiles(boolean noPixels);
+	LocationInfo[] getAdvancedUsedLocations(boolean noPixels);
 
 	/**
-	 * Returns an array of FileInfo objects representing the files needed to open
+	 * Returns an array of LocationInfo objects representing the Locations needed to open
 	 * the current series. If the 'noPixels' flag is set, then only files that do
 	 * not contain pixel data will be returned.
 	 */
-	FileInfo[] getAdvancedImageUsedFiles(int imageIndex, boolean noPixels);
+	LocationInfo[] getAdvancedImageUsedLocations(int imageIndex, boolean noPixels);
 
 	/**
 	 * Returns a list of MetadataLevel options for determining the granularity of
 	 * Metadata collection.
 	 */
 	Set<MetadataLevel> getSupportedMetadataLevels();
+
 }

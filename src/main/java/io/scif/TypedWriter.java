@@ -29,7 +29,7 @@
 
 package io.scif;
 
-import java.io.File;
+import org.scijava.io.location.Location;
 
 /**
  * Interface for all {@link io.scif.Writer} implementations that use generic
@@ -50,7 +50,7 @@ public interface TypedWriter<M extends TypedMetadata> extends Writer {
 	 * {@link io.scif.TypedMetadata} to avoid type erasure conflicts with
 	 * {@link io.scif.Writer#setMetadata(Metadata)}.
 	 *
-	 * @see io.scif.Parser#parse(File, Metadata)
+	 * @see io.scif.Parser#parse(Location, Metadata)
 	 */
 	void setMetadata(M meta) throws FormatException;
 
