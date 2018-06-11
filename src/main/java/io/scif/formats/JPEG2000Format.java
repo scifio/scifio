@@ -50,7 +50,6 @@ import io.scif.codec.JPEG2000Codec;
 import io.scif.codec.JPEG2000CodecOptions;
 import io.scif.codec.JPEG2000SegmentMarker;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -62,6 +61,11 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.BytesLocation;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -249,23 +253,23 @@ public class JPEG2000Format extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> handle)
 			throws IOException
 		{
 			final int blockLen = 40;
-			if (!FormatTools.validStream(stream, blockLen, false)) return false;
-			boolean validStart = (stream.readShort() & 0xffff) == 0xff4f;
+			if (!FormatTools.validStream(handle, blockLen, false)) return false;
+			boolean validStart = (handle.readShort() & 0xffff) == 0xff4f;
 			if (!validStart) {
-				stream.skipBytes(2);
-				validStart = stream.readInt() == JPEG2000BoxType.SIGNATURE.getCode();
+				handle.skipBytes(2);
+				validStart = handle.readInt() == JPEG2000BoxType.SIGNATURE.getCode();
 
 				if (validStart) {
-					stream.skipBytes(12);
-					validStart = !stream.readString(4).equals("jpx ");
+					handle.skipBytes(12);
+					validStart = !handle.readString(4).equals("jpx ");
 				}
 			}
-			stream.seek(stream.length() - 2);
-			final boolean validEnd = (stream.readShort() & 0xffff) == 0xffd9;
+			handle.seek(handle.length() - 2);
+			final boolean validEnd = (handle.readShort() & 0xffff) == 0xffd9;
 			return validStart && validEnd;
 		}
 	}
@@ -314,7 +318,7 @@ public class JPEG2000Format extends AbstractFormat {
 
 		// -- JPEG2000Parse methods --
 
-		public void parse(final RandomAccessInputStream stream, final Metadata meta,
+		public void parse(final DataHandle<Location> stream, final Metadata meta,
 			final long maximumReadOffset) throws IOException
 		{
 
@@ -333,7 +337,8 @@ public class JPEG2000Format extends AbstractFormat {
 				parseBoxes(meta);
 			}
 			finally {
-				getSource().order(isLittleEndian);
+				stream.setOrder(isLittleEndian ? ByteOrder.LITTLE_ENDIAN
+					: ByteOrder.BIG_ENDIAN);
 			}
 
 			if (isRawCodestream()) {
@@ -376,7 +381,7 @@ public class JPEG2000Format extends AbstractFormat {
 		// -- Parser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -399,7 +404,7 @@ public class JPEG2000Format extends AbstractFormat {
 		 * @throws IOException Thrown if there is an error reading from the file.
 		 */
 		private void parseBoxes(final Metadata meta) throws IOException {
-			final long originalPos = getSource().getFilePointer();
+			final long originalPos = getSource().offset();
 			long nextPos = 0;
 			long pos = originalPos;
 			log().trace("Parsing JPEG 2000 boxes at " + pos);
@@ -407,13 +412,14 @@ public class JPEG2000Format extends AbstractFormat {
 			JPEG2000BoxType boxType;
 
 			while (pos < maximumReadOffset) {
-				pos = getSource().getFilePointer();
+				pos = getSource().offset();
 				length = getSource().readInt();
 				boxCode = getSource().readInt();
 				boxType = JPEG2000BoxType.get(boxCode);
 				if (boxType == JPEG2000BoxType.SIGNATURE_WRONG_ENDIANNESS) {
 					log().trace("Swapping endianness during box parsing.");
-					getSource().order(!getSource().isLittleEndian());
+					getSource().setOrder(getSource().isLittleEndian()
+						? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
 					length = Bytes.swap(length);
 				}
 				nextPos = pos + length;
@@ -514,23 +520,24 @@ public class JPEG2000Format extends AbstractFormat {
 			final long length) throws IOException
 		{
 			if (codestreamOffset == 0) {
-				codestreamOffset = getSource().getFilePointer();
+				codestreamOffset = getSource().offset();
 			}
 
 			JPEG2000SegmentMarker segmentMarker;
 			int segmentMarkerCode = 0, segmentLength = 0;
-			long pos = getSource().getFilePointer(), nextPos = 0;
+			long pos = getSource().offset(), nextPos = 0;
 			log().trace("Parsing JPEG 2000 contiguous codestream of length " +
 				length + " at " + pos);
 			final long maximumReadOffset = pos + length;
 			boolean terminate = false;
 			while (pos < maximumReadOffset && !terminate) {
-				pos = getSource().getFilePointer();
+				pos = getSource().offset();
 				segmentMarkerCode = getSource().readUnsignedShort();
 				segmentMarker = JPEG2000SegmentMarker.get(segmentMarkerCode);
 				if (segmentMarker == JPEG2000SegmentMarker.SOC_WRONG_ENDIANNESS) {
 					log().trace("Swapping endianness during segment marker parsing.");
-					getSource().order(!getSource().isLittleEndian());
+					getSource().setOrder(getSource().isLittleEndian()
+						? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
 					segmentMarkerCode = JPEG2000SegmentMarker.SOC.getCode();
 					segmentMarker = JPEG2000SegmentMarker.SOC;
 				}
@@ -572,10 +579,10 @@ public class JPEG2000Format extends AbstractFormat {
 							getSource().skipBytes(2);
 							codestreamSizeX = getSource().readInt();
 							log().trace("Read reference grid width " + codestreamSizeX +
-								" at " + getSource().getFilePointer());
+								" at " + getSource().offset());
 							codestreamSizeY = getSource().readInt();
 							log().trace("Read reference grid height " + codestreamSizeY +
-								" at " + getSource().getFilePointer());
+								" at " + getSource().offset());
 							// Skipping:
 							// * Horizontal image offset (uint32)
 							// * Vertical image offset (uint32)
@@ -586,12 +593,12 @@ public class JPEG2000Format extends AbstractFormat {
 							getSource().skipBytes(24);
 							codestreamSizeC = getSource().readShort();
 							log().trace("Read total components " + codestreamSizeC + " at " +
-								getSource().getFilePointer());
+								getSource().offset());
 							final int type = getSource().read();
 							getSource().skipBytes(3);
 							codestreamPixelType = convertPixelType(type);
 							log().trace("Read codestream pixel type " + codestreamPixelType +
-								" at " + getSource().getFilePointer());
+								" at " + getSource().offset());
 							break;
 						}
 						case COD: {
@@ -603,7 +610,7 @@ public class JPEG2000Format extends AbstractFormat {
 							getSource().skipBytes(5);
 							meta.setResolutionLevels(getSource().readUnsignedByte());
 							log().trace("Found number of resolution levels " + meta
-								.getResolutionLevels() + " at " + getSource().getFilePointer());
+								.getResolutionLevels() + " at " + getSource().offset());
 							break;
 						}
 						case COM:
@@ -728,6 +735,9 @@ public class JPEG2000Format extends AbstractFormat {
 	public static class Reader extends ByteArrayReader<Metadata> {
 
 		@Parameter
+		private DataHandleService dataHandleService;
+
+		@Parameter
 		private CodecService codecService;
 
 		// -- AbstractReader API Methods --
@@ -755,8 +765,9 @@ public class JPEG2000Format extends AbstractFormat {
 				.getLastIndex().getPlaneIndex() == planeIndex && meta
 					.getLastIndexBytes() != null)
 			{
-				final RandomAccessInputStream s = new RandomAccessInputStream(
-					getContext(), meta.getLastIndexBytes());
+				final DataHandle<Location> s = dataHandleService.create(
+					new BytesLocation(meta.getLastIndexBytes()));
+
 				readPlane(s, imageIndex, bounds, plane);
 				s.close();
 				return plane;
@@ -773,12 +784,12 @@ public class JPEG2000Format extends AbstractFormat {
 				options.resolution = imageIndex;
 			}
 
-			getStream().seek(meta.getPixelsOffset());
+			getHandle().seek(meta.getPixelsOffset());
 			final JPEG2000Codec codec = codecService.getCodec(JPEG2000Codec.class);
-			final byte[] lastIndexPlane = codec.decompress(getStream(), options);
+			final byte[] lastIndexPlane = codec.decompress(getHandle(), options);
 			meta.setLastIndexBytes(lastIndexPlane);
-			final RandomAccessInputStream s = new RandomAccessInputStream(
-				getContext(), lastIndexPlane);
+			final DataHandle<Location> s = dataHandleService.create(new BytesLocation(
+				meta.getLastIndexBytes()));
 			readPlane(s, imageIndex, bounds, plane);
 			s.close();
 			meta.setLastIndex(imageIndex, planeIndex);
@@ -817,7 +828,7 @@ public class JPEG2000Format extends AbstractFormat {
 			// int height =
 			// retrieve.getPixelsSizeY(series).getValue().intValue();
 
-			getStream().write(compressBuffer(imageIndex, planeIndex, plane, bounds));
+			getHandle().write(compressBuffer(imageIndex, planeIndex, plane, bounds));
 		}
 
 		/**
