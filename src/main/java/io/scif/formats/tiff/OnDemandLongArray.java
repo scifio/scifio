@@ -29,26 +29,25 @@
 
 package io.scif.formats.tiff;
 
-import io.scif.io.RandomAccessInputStream;
-
 import java.io.IOException;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 
 /**
  * @author Melissa Linkert
  */
 public class OnDemandLongArray {
 
-	private RandomAccessInputStream stream;
+	private DataHandle<Location> stream;
 
 	private int size;
 
 	private long start;
 
-	public OnDemandLongArray(final RandomAccessInputStream in)
-		throws IOException
-	{
+	public OnDemandLongArray(final DataHandle<Location> in) throws IOException {
 		stream = in;
-		start = stream.getFilePointer();
+		start = stream.offset();
 	}
 
 	public void setSize(final int size) {
@@ -56,7 +55,7 @@ public class OnDemandLongArray {
 	}
 
 	public long get(final int index) throws IOException {
-		final long fp = stream.getFilePointer();
+		final long fp = stream.offset();
 		stream.seek(start + index * 8);
 		final long value = stream.readLong();
 		stream.seek(fp);

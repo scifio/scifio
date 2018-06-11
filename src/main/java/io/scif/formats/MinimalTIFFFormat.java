@@ -46,7 +46,6 @@ import io.scif.formats.tiff.IFDList;
 import io.scif.formats.tiff.PhotoInterp;
 import io.scif.formats.tiff.TiffCompression;
 import io.scif.formats.tiff.TiffParser;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.services.FormatService;
 import io.scif.util.FormatTools;
 
@@ -61,6 +60,9 @@ import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 
 import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.Bytes;
@@ -384,7 +386,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream) {
+		public boolean isFormat(final DataHandle<Location> stream) {
 			return new TiffParser(getContext(), stream).isValidHeader();
 		}
 	}
@@ -397,9 +399,8 @@ public class MinimalTIFFFormat extends AbstractFormat {
 		// -- Parser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
-			final M meta, final SCIFIOConfig config) throws IOException,
-			FormatException
+		protected void typedParse(final DataHandle<Location> stream, final M meta,
+			final SCIFIOConfig config) throws IOException, FormatException
 		{
 			final TiffParser tiffParser = new TiffParser(getContext(), stream);
 			tiffParser.setDoCaching(false);
@@ -410,14 +411,15 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			if (littleEndian == null) {
 				throw new FormatException("Invalid TIFF file");
 			}
-			final boolean little = littleEndian.booleanValue();
-			getSource().order(little);
+
+			getSource().setOrder(littleEndian ? ByteOrder.LITTLE_ENDIAN
+				: ByteOrder.BIG_ENDIAN);
 
 			log().debug("Reading IFDs");
 
 			final IFDList allIFDs = tiffParser.getIFDs();
 
-			if (allIFDs == null || allIFDs.size() == 0) {
+			if (allIFDs == null || allIFDs.isEmpty()) {
 				throw new FormatException("No IFDs found");
 			}
 
@@ -546,10 +548,12 @@ public class MinimalTIFFFormat extends AbstractFormat {
 			final byte[] buf = plane.getBytes();
 			final IFDList ifds = meta.getIfds();
 			final TiffParser tiffParser = meta.getTiffParser();
-			final int xAxis = meta.get(imageIndex).getAxisIndex(Axes.X);
-			final int yAxis = meta.get(imageIndex).getAxisIndex(Axes.Y);
-			final int x = (int) bounds.min(xAxis), y = (int) bounds.min(yAxis), //
-					w = (int) bounds.dimension(xAxis), h = (int) bounds.dimension(yAxis);
+			final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
+			final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
+			final int x = (int) bounds.min(xIndex);
+			final int y = (int) bounds.min(yIndex);
+			final int w = (int) bounds.dimension(xIndex);
+			final int h = (int) bounds.dimension(yIndex);
 			FormatTools.checkPlaneForReading(meta, imageIndex, planeIndex, buf.length,
 				bounds);
 
@@ -626,7 +630,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		@Override
 		public long getOptimalTileWidth(final int imageIndex) {
-			FormatTools.assertId(getStream().getFileName(), true, 1);
+			FormatTools.assertId(getHandle().get().getName(), true, 1);
 			try {
 				return getMetadata().getIfds().get(0).getTileWidth();
 			}
@@ -638,7 +642,7 @@ public class MinimalTIFFFormat extends AbstractFormat {
 
 		@Override
 		public long getOptimalTileHeight(final int imageIndex) {
-			FormatTools.assertId(getStream().getFileName(), true, 1);
+			FormatTools.assertId(getHandle().get().getName(), true, 1);
 			try {
 				return getMetadata().getIfds().get(0).getTileLength();
 			}

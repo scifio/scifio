@@ -39,6 +39,7 @@ import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 
 import org.junit.Test;
+import org.scijava.io.location.FileLocation;
 
 /**
  * Tests reading of TIFF files without (dimensional) metainformation.
@@ -54,7 +55,8 @@ public class TIFFFormatTest {
 	@Test
 	public void testTiffWithoutMetadata() {
 		final URL tiffWithoutMetadata = getClass().getResource("tiny-10x10x3.tif");
-		final ImgPlus<?> img = IO.openImgs(tiffWithoutMetadata.getPath()).get(0);
+		final ImgPlus<?> img = IO.open(new FileLocation(tiffWithoutMetadata
+			.getPath())).get(0);
 
 		assertEquals(3, img.numDimensions());
 		assertEquals(10, img.dimension(0));
