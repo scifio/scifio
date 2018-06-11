@@ -38,6 +38,8 @@ import java.util.List;
 
 import javax.swing.JFileChooser;
 
+import org.scijava.io.location.FileLocation;
+
 /**
  * Sample main method for reading images using SCIFIO.
  *
@@ -52,7 +54,7 @@ public class Main {
 
 		final SCIFIO scifio = new SCIFIO();
 		final List<SCIFIOImgPlus<?>> imgs = //
-			new ImgOpener(scifio.context()).openImgs(file.getAbsolutePath());
+			new ImgOpener(scifio.context()).openImgs(new FileLocation(file));
 		System.out.println("Found " + imgs.size() + " images");
 		for (final SCIFIOImgPlus<?> img : imgs) {
 			System.out.println("\t" + img);

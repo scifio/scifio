@@ -35,33 +35,32 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import io.scif.config.SCIFIOConfig;
-import io.scif.formats.FakeFormat;
-import io.scif.io.RandomAccessInputStream;
-import io.scif.io.TestParameters;
+import io.scif.formats.TestImgFormat;
+import io.scif.io.location.TestImgLocation;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.scijava.Context;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.location.DummyLocation;
+import org.scijava.io.location.Location;
 
 /**
  * Unit tests for {@link io.scif.Checker} interface methods.
  *
  * @author Mark Hiner
  */
-@RunWith(Parameterized.class)
 public class CheckerTest {
 
-	private final String id =
-		"8bit-signed&pixelType=int8&axes=X,Y,Z,C,T&lengths=50,50,3,5,7.fake";
+	private final Location id = new TestImgLocation.Builder().name("8bit-signed")
+		.pixelType("int8").axes("X", "Y", "Z", "C", "T").lengths(50, 50, 4, 5, 7)
+		.build();
 
-	private final String falseId = "testFile.png";
+	private final Location falseId = new DummyLocation();
 
 	private Checker c;
 
@@ -69,18 +68,7 @@ public class CheckerTest {
 
 	private Context context;
 
-	@Parameters
-	public static Collection<Object[]> parameters() {
-		return TestParameters.parameters("checkerTests");
-	}
-
-	private final String provider;
-
-	public CheckerTest(final String provider, final boolean checkGrowth,
-		final boolean testLength)
-	{
-		this.provider = provider;
-	}
+	private DataHandleService dataHandleService;
 
 	@Before
 	public void setUp() throws FormatException {
@@ -90,6 +78,7 @@ public class CheckerTest {
 		c = f.createChecker();
 		fc = new FakeChecker();
 		fc.setContext(context);
+		dataHandleService = context.getService(DataHandleService.class);
 	}
 
 	@Test
@@ -105,12 +94,6 @@ public class CheckerTest {
 		isFormat = c.isFormat(id, new SCIFIOConfig().checkerSetOpen(true));
 		assertTrue(isFormat);
 
-		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
-			id);
-		isFormat = c.isFormat(stream);
-		assertFalse(isFormat);
-		stream.close();
-
 		isFormat = c.isFormat(falseId, new SCIFIOConfig().checkerSetOpen(false));
 		assertFalse(isFormat);
 	}
@@ -119,31 +102,40 @@ public class CheckerTest {
 	public void checkHeaderTest() {
 		boolean isFormat = false;
 
-		isFormat = c.checkHeader(id.getBytes());
+		isFormat = c.checkHeader(id.getName().getBytes());
 		assertFalse(isFormat);
 	}
 
 	@Test
 	public void suffixSufficientTests() throws IOException {
-		fc.setSuffixSufficient(false);
+
+		// test with suffix sufficient
+		fc.setSuffixSufficient(true);
 		boolean isFormat = false;
 
 		isFormat = fc.isFormat(id);
 		assertTrue(isFormat);
 
 		isFormat = fc.isFormat(id, new SCIFIOConfig().checkerSetOpen(false));
-		assertFalse(isFormat);
+		assertTrue(isFormat);
 
 		isFormat = fc.isFormat(id, new SCIFIOConfig().checkerSetOpen(true));
 		assertTrue(isFormat);
 
-		final RandomAccessInputStream stream = new RandomAccessInputStream(context,
-			id);
-		isFormat = fc.isFormat(stream);
-		assertTrue(isFormat);
-		stream.close();
+		// test with suffix not sufficient
+		// will return false because we can not open handles on TestImgLocation
+		fc.setSuffixSufficient(false);
 
-		isFormat = fc.checkHeader(id.getBytes());
+		isFormat = fc.isFormat(id);
+		assertFalse(isFormat);
+
+		isFormat = fc.isFormat(id, new SCIFIOConfig().checkerSetOpen(false));
+		assertFalse(isFormat);
+
+		isFormat = fc.isFormat(id, new SCIFIOConfig().checkerSetOpen(true));
+		assertFalse(isFormat);
+
+		isFormat = fc.checkHeader(id.getName().getBytes());
 		assertTrue(isFormat);
 	}
 
@@ -157,9 +149,7 @@ public class CheckerTest {
 
 		assertNotNull(format);
 
-		if (format != null) {
-			assertEquals(c.getFormat().getCheckerClass(), c.getClass());
-		}
+		assertEquals(c.getFormat().getCheckerClass(), c.getClass());
 	}
 
 	@After
@@ -190,7 +180,7 @@ public class CheckerTest {
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
 			return true;
@@ -199,17 +189,14 @@ public class CheckerTest {
 		// -- HasFormat Methods --
 
 		// When extending an existing component, the getFormat() method should
-		// be
-		// overriden to ensure
-		// the proper format is returned.
+		// be overriden to ensure the proper format is returned.
 		// FIXME: index over all components? make Format.createComponent work
-		// more
-		// like services where
+		// more like services where
 		// you can have a list of components returned... maybe? Or not..
 		@Override
 		public Format getFormat() {
 			final SCIFIO scifio = new SCIFIO(getContext());
-			return scifio.format().getFormatFromClass(FakeFormat.class);
+			return scifio.format().getFormatFromClass(TestImgFormat.class);
 		}
 	}
 }
