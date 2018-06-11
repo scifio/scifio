@@ -32,7 +32,6 @@ package io.scif.util;
 import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.filters.MetadataWrapper;
-import io.scif.io.RandomAccessOutputStream;
 
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -43,6 +42,9 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
 import net.imglib2.Interval;
+
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
 
 /**
  * A utility class for working with {@link io.scif.Metadata} objects.
@@ -162,7 +164,7 @@ public class SCIFIOMetadataTools {
 	 *           metadata object is uninitialized
 	 */
 	public static void verifyMinimumPopulated(final Metadata src,
-		final RandomAccessOutputStream out) throws FormatException
+		final DataHandle<Location> out) throws FormatException
 	{
 		verifyMinimumPopulated(src, out, 0);
 	}
@@ -175,8 +177,7 @@ public class SCIFIOMetadataTools {
 	 *           metadata object is uninitialized
 	 */
 	public static void verifyMinimumPopulated(final Metadata src,
-		final RandomAccessOutputStream out, final int imageIndex)
-		throws FormatException
+		final DataHandle<Location> out, final int imageIndex) throws FormatException
 	{
 		if (src == null) {
 			throw new FormatException("Metadata object is null; " +
@@ -184,8 +185,8 @@ public class SCIFIOMetadataTools {
 		}
 
 		if (out == null) {
-			throw new FormatException("RandomAccessOutputStream object is null; " +
-				"call Writer.setSource(<String/File/RandomAccessOutputStream>) first");
+			throw new FormatException("DataHandle object is null; " +
+				"call Writer.setSource(<Location/DataHandle>) first");
 		}
 
 		if (src.get(imageIndex).getAxes().size() == 0) {
@@ -194,6 +195,30 @@ public class SCIFIOMetadataTools {
 	}
 
 	// -- Utility methods -- dimensional axes --
+
+	public static void verifyMinimumPopulated(Metadata src, Location loc)
+		throws FormatException
+	{
+		verifyMinimumPopulated(src, loc, 0);
+	}
+
+	public static void verifyMinimumPopulated(Metadata src, Location loc,
+		int imageIndex) throws FormatException
+	{
+		if (src == null) {
+			throw new FormatException("Metadata object is null; " +
+				"call Writer.setMetadata() first");
+		}
+
+		if (loc == null) {
+			throw new FormatException("Location object is null; " +
+				"call Writer.setSource(<Location>) first");
+		}
+
+		if (src.get(imageIndex).getAxes().size() == 0) {
+			throw new FormatException("Axiscount #" + imageIndex + " is 0");
+		}
+	}
 
 	/**
 	 * Guesses at a reasonable default planar axis count for the given list of
