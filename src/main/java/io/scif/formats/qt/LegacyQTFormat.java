@@ -43,8 +43,6 @@ import io.scif.Translator;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
-import io.scif.io.Location;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.awt.Dimension;
@@ -60,6 +58,9 @@ import net.imagej.axis.Axes;
 import net.imglib2.Interval;
 
 import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -153,7 +154,7 @@ public class LegacyQTFormat extends AbstractFormat {
 		// -- Parser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -167,8 +168,12 @@ public class LegacyQTFormat extends AbstractFormat {
 				r.exec("QTSession.open()");
 
 				// open movie file
-				final Location file = new Location(getContext(), stream.getFileName());
-				r.setVar("path", file.getAbsolutePath());
+				final Location file = stream.get();
+				if (!(file instanceof FileLocation)) {
+					throw new IOException(
+						"Legacy QTFormat can only read from local disks!");
+				}
+				r.setVar("path", ((FileLocation) file).getFile().getAbsolutePath());
 				r.exec("qtf = new QTFile(path)");
 				r.exec("openMovieFile = OpenMovieFile.asRead(qtf)");
 				r.exec("m = Movie.fromFile(openMovieFile)");
