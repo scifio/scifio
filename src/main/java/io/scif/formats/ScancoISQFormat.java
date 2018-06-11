@@ -40,7 +40,6 @@ import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -53,6 +52,9 @@ import net.imagej.axis.Axes;
 import net.imagej.axis.DefaultLinearAxis;
 import net.imglib2.Interval;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandle.ByteOrder;
+import org.scijava.io.location.Location;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -131,7 +133,7 @@ public class ScancoISQFormat extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> stream)
 			throws IOException
 		{
 			final byte[] firstBytes = new byte[ISQ_ID.length()];
@@ -511,13 +513,13 @@ public class ScancoISQFormat extends AbstractFormat {
 	public static class Parser extends AbstractParser<Metadata> {
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
 			config.imgOpenerSetComputeMinMax(true);
 
-			stream.order(true);
+			stream.setOrder(ByteOrder.LITTLE_ENDIAN);
 			stream.seek(28);
 			meta.setPatientIndex(stream.readInt());
 			meta.setScannerId(stream.readInt());
@@ -564,7 +566,7 @@ public class ScancoISQFormat extends AbstractFormat {
 			final ByteArrayPlane plane, final Interval bounds,
 			final SCIFIOConfig config) throws FormatException, IOException
 		{
-			final RandomAccessInputStream stream = getStream();
+			final DataHandle<Location> stream = getHandle();
 			final Metadata metadata = getMetadata();
 			final int offset = (int) (metadata.dataOffset + metadata.sliceBytes *
 				planeIndex);
